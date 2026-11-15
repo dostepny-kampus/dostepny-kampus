@@ -17,10 +17,12 @@ import org.jspecify.annotations.Nullable;
  * @param clientOperationId Identyfikator operacji z telefonu albo null, gdy nie podano
  * @param type Rodzaj zmiany albo null, gdy nie podano
  * @param marker Znacznik przy rodzaju SET_INSPECTION_MARKER albo null
+ * @param markerId Cofany znacznik przy rodzaju REVOKE_INSPECTION_MARKER albo null
  * @since 0.1.0
  */
 record SyncOperationJson(
-    @Nullable UUID clientOperationId, @Nullable String type, @Nullable Marker marker
+    @Nullable UUID clientOperationId, @Nullable String type, @Nullable Marker marker,
+    @Nullable UUID markerId
 ) {
 
     /**
@@ -45,6 +47,27 @@ record SyncOperationJson(
     }
 
     /**
+     * Mówi, czy operacja cofa znacznik piętra obejrzanego.
+     *
+     * @return Prawda dla rodzaju REVOKE_INSPECTION_MARKER
+     */
+    boolean revokesMarker() {
+        return "REVOKE_INSPECTION_MARKER".equals(this.type);
+    }
+
+    /**
+     * Znacznik do cofnięcia.
+     *
+     * @return Identyfikator z pola markerId
+     */
+    UUID revoked() {
+        if (this.markerId == null) {
+            throw new InvalidInput("Brak identyfikatora znacznika w polu markerId");
+        }
+        return this.markerId;
+    }
+
+    /**
      * Znacznik do zapisu.
      *
      * @param author Identyfikator konta z tokenu
@@ -58,7 +81,8 @@ record SyncOperationJson(
     }
 
     /**
-     * Sprawdza kształt operacji: identyfikator i znacznik przy jego postawieniu.
+     * Sprawdza kształt operacji: identyfikator, znacznik przy jego postawieniu i identyfikator
+     * znacznika przy cofnięciu.
      *
      * @param author Identyfikator konta z tokenu
      */
@@ -66,6 +90,9 @@ record SyncOperationJson(
         this.operation();
         if (this.placesMarker()) {
             this.toMarker(author);
+        }
+        if (this.revokesMarker()) {
+            this.revoked();
         }
     }
 

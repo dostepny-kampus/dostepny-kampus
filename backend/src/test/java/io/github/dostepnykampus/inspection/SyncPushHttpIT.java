@@ -20,9 +20,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Znacznik piętra obejrzanego serwer zapisuje, a ponowne wysłanie tego samego znacznika nie
- * zapisuje go drugi raz.
+ * zapisuje go drugi raz; cofnięcie własnego znacznika jest udane, także powtórzone, a cudzego
+ * odrzucone.
  *
- * <p>Wymagania: US15.1, US15.3, BR-9, BR-20</p>
+ * <p>Wymagania: US15.1, US15.2, US15.3, BR-9, BR-20</p>
  *
  * @since 0.1.0
  */
@@ -33,14 +34,9 @@ final class SyncPushHttpIT {
     @Test
     void savesMarkerFromCollector(final WebApplicationContext context)
         throws Exception {
-        final UUID id = UUID.randomUUID();
         Assertions.assertEquals(
             "200 APPLIED, zapisanych 1",
-            String.format(
-                "%s, zapisanych %d",
-                SyncPushHttpIT.push(context, "COLLECTOR", id, "C-13"),
-                SyncPushHttpIT.saved(context, id)
-            ),
+            SyncPushHttpIT.pushed(context, UUID.randomUUID(), "C-13"),
             "Zbierający nie zapisał znacznika piętra"
         );
     }
@@ -51,11 +47,7 @@ final class SyncPushHttpIT {
         SyncPushHttpIT.push(context, "COLLECTOR", id, "C-13");
         Assertions.assertEquals(
             "200 APPLIED, zapisanych 1",
-            String.format(
-                "%s, zapisanych %d",
-                SyncPushHttpIT.push(context, "COLLECTOR", id, "C-13"),
-                SyncPushHttpIT.saved(context, id)
-            ),
+            SyncPushHttpIT.pushed(context, id, "C-13"),
             "Ponowne wysłanie znacznika zapisało go drugi raz albo nie zwróciło wyniku"
         );
     }
@@ -63,15 +55,74 @@ final class SyncPushHttpIT {
     @Test
     void rejectsMarkerOfUnknownBuilding(final WebApplicationContext context)
         throws Exception {
-        final UUID id = UUID.randomUUID();
         Assertions.assertEquals(
             "200 REJECTED, zapisanych 0",
-            String.format(
-                "%s, zapisanych %d",
-                SyncPushHttpIT.push(context, "COLLECTOR", id, "Z-99"),
-                SyncPushHttpIT.saved(context, id)
-            ),
+            SyncPushHttpIT.pushed(context, UUID.randomUUID(), "Z-99"),
             "Serwer zapisał znacznik w budynku, którego nie zna"
+        );
+    }
+
+    @Test
+    void revokesOwnMarkerAlsoWhenRepeated(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = UUID.randomUUID();
+        SyncPushHttpIT.push(context, "COLLECTOR", id, "C-13");
+        Assertions.assertEquals(
+            "200 APPLIED, 200 APPLIED, cofnięty true",
+            String.format(
+                "%s, %s, cofnięty %b",
+                SyncPushHttpIT.revoke(context, id), SyncPushHttpIT.revoke(context, id),
+                SyncPushHttpIT.revoked(context, id)
+            ),
+            "Zbierający nie cofnął własnego znacznika albo powtórzone cofnięcie nie jest udane"
+        );
+    }
+
+    @Test
+    void rejectsRevokeOfForeignAndUnknownMarker(final WebApplicationContext context)
+        throws Exception {
+        final UUID foreign = UUID.randomUUID();
+        context.getBean(JdbcClient.class).sql(
+            "INSERT INTO inspection_markers (id, building_symbol, author) VALUES (:id, 'C-13', 'inne-konto')"
+        ).param("id", foreign).update();
+        Assertions.assertEquals(
+            "200 REJECTED, 200 REJECTED, cofnięty false",
+            String.format(
+                "%s, %s, cofnięty %b",
+                SyncPushHttpIT.revoke(context, foreign),
+                SyncPushHttpIT.revoke(context, UUID.randomUUID()),
+                SyncPushHttpIT.revoked(context, foreign)
+            ),
+            "Cofnięcie cudzego albo nieistniejącego znacznika nie zostało odrzucone"
+        );
+    }
+
+    private static String revoke(final WebApplicationContext context, final UUID id)
+        throws Exception {
+        return SyncPushHttpIT.send(
+            context, "COLLECTOR",
+            String.join(
+                "",
+                "{\"operations\":[{\"clientOperationId\":\"", UUID.randomUUID().toString(),
+                "\",\"type\":\"REVOKE_INSPECTION_MARKER\",\"markerId\":\"", id.toString(),
+                "\"}]}"
+            )
+        );
+    }
+
+    private static boolean revoked(final WebApplicationContext context, final UUID id) {
+        return context.getBean(JdbcClient.class).sql(
+            "SELECT revoked FROM inspection_markers WHERE id = :id"
+        ).param("id", id).query(Boolean.class).single();
+    }
+
+    private static String pushed(
+        final WebApplicationContext context, final UUID id, final String building
+    ) throws Exception {
+        return String.format(
+            "%s, zapisanych %d",
+            SyncPushHttpIT.push(context, "COLLECTOR", id, building),
+            SyncPushHttpIT.saved(context, id)
         );
     }
 
@@ -79,11 +130,17 @@ final class SyncPushHttpIT {
         final WebApplicationContext context, final String role, final UUID id,
         final String building
     ) throws Exception {
+        return SyncPushHttpIT.send(context, role, SyncPushHttpIT.body(id, building));
+    }
+
+    private static String send(
+        final WebApplicationContext context, final String role, final String content
+    ) throws Exception {
         final MockHttpServletResponse response = context.getBean(MockMvc.class).perform(
             MockMvcRequestBuilders.post("/sync/push")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", role))
-                .content(SyncPushHttpIT.body(id, building))
+                .content(content)
         ).andReturn().getResponse();
         String outcome = "";
         if (response.getContentAsString().contains("\"APPLIED\"")) {

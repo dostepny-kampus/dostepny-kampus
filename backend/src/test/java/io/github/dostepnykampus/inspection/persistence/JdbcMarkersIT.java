@@ -17,9 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * Zapis znaczników: raz, także po powtórzeniu, i w budynku podstawowym bez piętra.
+ * Zapis znaczników: raz, także po powtórzeniu, i w budynku podstawowym bez piętra; cofnąć
+ * można tylko własny znacznik.
  *
- * <p>Wymagania: US15.1, BR-9, BR-20</p>
+ * <p>Wymagania: US15.1, US15.2, BR-9, BR-20</p>
  *
  * @since 0.1.0
  */
@@ -39,6 +40,25 @@ final class JdbcMarkersIT {
                 .sql("SELECT count(*) FROM inspection_markers WHERE id = :id").param("id", id)
                 .query(Integer.class).single(),
             "Powtórzony znacznik zapisał się drugi raz"
+        );
+    }
+
+    @Test
+    void revokesOwnMarkerAndRefusesForeignOne(final WebApplicationContext context) {
+        final UUID id = UUID.randomUUID();
+        final MarkerRepository markers = context.getBean(MarkerRepository.class);
+        markers.place(new NewMarker(id, new MarkerPlace.Floor("C-13", "0"), "konto-a"));
+        Assertions.assertEquals(
+            "cudzy: false, nieistniejący: false, własny: true, cofnięty: true",
+            String.format(
+                "cudzy: %b, nieistniejący: %b, własny: %b, cofnięty: %b",
+                markers.revoke(id, "konto-b"), markers.revoke(UUID.randomUUID(), "konto-a"),
+                markers.revoke(id, "konto-a"),
+                context.getBean(JdbcClient.class)
+                    .sql("SELECT revoked FROM inspection_markers WHERE id = :id")
+                    .param("id", id).query(Boolean.class).single()
+            ),
+            "Cofnięcie znacznika nie działa tylko dla jego autora"
         );
     }
 

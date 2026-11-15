@@ -16,10 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Zapis znaczników piętra obejrzanego: znacznik w budynku, którego serwer nie zna, jest
- * pomijany, a pozostałe z paczki zapisują się w jednej transakcji.
+ * Zapis i cofanie znaczników piętra obejrzanego: znacznik w budynku, którego serwer nie zna,
+ * jest pomijany, a pozostałe z paczki zapisują się w jednej transakcji.
  *
- * <p>Wymagania: US15.1, US15.3, BR-9, BR-20</p>
+ * <p>Wymagania: US15.1, US15.2, US15.3, BR-9, BR-20</p>
  *
  * @since 0.1.0
  */
@@ -59,5 +59,24 @@ public class MarkerService {
             }
         }
         return unknown;
+    }
+
+    /**
+     * Cofa znaczniki z paczki w jednej transakcji; cudzy albo nieistniejący znacznik zostaje bez
+     * zmian, a cofnięcie już cofniętego jest udane.
+     *
+     * @param ids Identyfikatory cofanych znaczników w kolejności zapisu w telefonie
+     * @param author Identyfikator konta z tokenu
+     * @return Identyfikatory znaczników, których konto nie ma
+     */
+    @Transactional
+    public Set<UUID> revoke(final List<UUID> ids, final String author) {
+        final Set<UUID> missing = new HashSet<>(0);
+        for (final UUID id : ids) {
+            if (!this.repository.revoke(id, author)) {
+                missing.add(id);
+            }
+        }
+        return missing;
     }
 }
