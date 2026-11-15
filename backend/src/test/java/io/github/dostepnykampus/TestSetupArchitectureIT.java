@@ -78,7 +78,7 @@ final class TestSetupArchitectureIT {
             "kontekst modułu zgłoszeń potrzebuje magazynu zdjęć,",
             "którego konteksty modułów budynków i tożsamości nie mają"
         ),
-        "io.github.dostepnykampus.KeycloakTokenTest",
+        "io.github.dostepnykampus.KeycloakTokenIT",
         String.join(
             " ",
             "sprawdza token z prawdziwego Keycloaka domyślnym dekoderem,",

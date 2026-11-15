@@ -28,7 +28,7 @@ import tools.jackson.databind.ObjectMapper;
  * @since 0.1.0
  */
 @IntegrationTest
-final class SubmissionsWriteContractTest {
+final class SubmissionsWriteContractIT {
 
     /** Wiersz zarezerwowany dla sekwencyjnych scenariuszy tej klasy, usuwany po każdym teście. */
     private static final UUID ID = UUID.fromString("3ade39ac-7364-4bd7-ab83-2644ef3636cc");
@@ -36,7 +36,7 @@ final class SubmissionsWriteContractTest {
     @AfterEach
     void clean(final WebApplicationContext context) {
         context.getBean(JdbcClient.class).sql("DELETE FROM submissions WHERE id = :id")
-            .param("id", SubmissionsWriteContractTest.ID).update();
+            .param("id", SubmissionsWriteContractIT.ID).update();
     }
 
     @Test
@@ -131,10 +131,10 @@ final class SubmissionsWriteContractTest {
     private UUID create(final WebApplicationContext context) throws Exception {
         this.clean(context);
         Assertions.assertEquals(
-            201, this.post(context, SubmissionsWriteContractTest.ID, "original").getStatus(),
+            201, this.post(context, SubmissionsWriteContractIT.ID, "original").getStatus(),
             "Zgłoszenie wyjściowe zostaje utworzone"
         );
-        return SubmissionsWriteContractTest.ID;
+        return SubmissionsWriteContractIT.ID;
     }
 
     private MockHttpServletResponse post(

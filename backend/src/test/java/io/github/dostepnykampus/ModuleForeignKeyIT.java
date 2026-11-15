@@ -20,12 +20,12 @@ import org.springframework.jdbc.core.simple.JdbcClient;
  * @since 0.1.0
  */
 @IntegrationTest
-final class ModuleForeignKeyTest {
+final class ModuleForeignKeyIT {
 
     @Test
     void keepsForeignKeysInsideModule(final ApplicationContext context) throws IOException {
         Assertions.assertEquals(
-            Set.of(), ModuleForeignKeyTest.crossings(context),
+            Set.of(), ModuleForeignKeyIT.crossings(context),
             "Klucz obcy wskazuje tabelę innego modułu albo tabelę bez właściciela"
         );
     }

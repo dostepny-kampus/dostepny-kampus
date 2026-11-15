@@ -23,7 +23,7 @@ import org.springframework.context.ApplicationContext;
  * @since 0.1.0
  */
 @IntegrationTest
-final class PlanSettingsTest {
+final class PlanSettingsIT {
 
     @Test
     void nfrFortySevenEverySymbolIsKnownBuilding(final ApplicationContext context) {

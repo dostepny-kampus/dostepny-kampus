@@ -30,14 +30,14 @@ import tools.jackson.databind.json.JsonMapper;
  * @since 0.1.0
  */
 @IntegrationTest
-final class ErrorsHttpTest {
+final class ErrorsHttpIT {
 
     @Test
     void givesBadRequestProblemWithDetail(@LocalServerPort final int port)
         throws Exception {
         MatcherAssert.assertThat(
             "Niepoprawne dane nie dają 400 application/problem+json z opisem w detail",
-            ErrorsHttpTest.problem(port, "/proba-bledow/niepoprawne"),
+            ErrorsHttpIT.problem(port, "/proba-bledow/niepoprawne"),
             Matchers.equalTo(
                 "400 application/problem+json 400 Szerokość 91 jest poza zakresem WGS84"
             )
@@ -49,7 +49,7 @@ final class ErrorsHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Brak zasobu nie daje 404 application/problem+json z opisem w detail",
-            ErrorsHttpTest.problem(port, "/proba-bledow/brak"),
+            ErrorsHttpIT.problem(port, "/proba-bledow/brak"),
             Matchers.equalTo("404 application/problem+json 404 Nie ma budynku Z-99")
         );
     }
@@ -59,7 +59,7 @@ final class ErrorsHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Nieoczekiwany wyjątek nie daje 500 application/problem+json",
-            ErrorsHttpTest.problem(port, "/proba-bledow/awaria"),
+            ErrorsHttpIT.problem(port, "/proba-bledow/awaria"),
             Matchers.startsWith("500 application/problem+json 500 ")
         );
     }
@@ -69,7 +69,7 @@ final class ErrorsHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Odpowiedź 500 ujawnia klasę albo komunikat wyjątku",
-            ErrorsHttpTest.send(port, "/proba-bledow/awaria").body(),
+            ErrorsHttpIT.send(port, "/proba-bledow/awaria").body(),
             Matchers.not(
                 Matchers.anyOf(
                     Matchers.containsString("IllegalStateException"),
@@ -85,7 +85,7 @@ final class ErrorsHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Konflikt z bieżącym stanem nie daje 409 application/problem+json z opisem w detail",
-            ErrorsHttpTest.problem(port, "/proba-bledow/konflikt"),
+            ErrorsHttpIT.problem(port, "/proba-bledow/konflikt"),
             Matchers.equalTo("409 application/problem+json 409 Na serwerze jest nowsza wersja")
         );
     }
@@ -96,7 +96,7 @@ final class ErrorsHttpTest {
         MatcherAssert.assertThat(
             "Odpowiedź 409 nie ma na najwyższym poziomie obiektu currentState z polami rekordu",
             JsonMapper.shared().readTree(
-                ErrorsHttpTest.send(port, "/proba-bledow/konflikt").body()
+                ErrorsHttpIT.send(port, "/proba-bledow/konflikt").body()
             ).path("currentState"),
             Matchers.equalTo(
                 JsonMapper.shared().readTree("{\"version\":3,\"status\":\"IN_REVIEW\"}")
@@ -105,7 +105,7 @@ final class ErrorsHttpTest {
     }
 
     private static String problem(final int port, final String path) throws Exception {
-        final HttpResponse<String> reply = ErrorsHttpTest.send(port, path);
+        final HttpResponse<String> reply = ErrorsHttpIT.send(port, path);
         MatcherAssert.assertThat(
             "Odpowiedź błędu nie jest schematem Problem z kontraktu",
             new OpenApiContract().violations("Problem", reply.body()),
