@@ -210,6 +210,8 @@ Odstępy leżą na siatce 4 dp [5], a skrypt sprawdza wielokrotność. Cel dotyk
 | Zaokrąglenia | `zaokraglenia.kapsula`        | 24 dp   | kontrolki 48 dp, np. „Wstecz” na mapie, przyciski +/−, piętra w przełączniku, segmenty, małe przyciski                      | styl „Karta miejsca”                                     |
 | Zaokrąglenia | `zaokraglenia.bardzo_duze`    | 28 dp   | przyciski 56 dp i przypięte, pole wyszukiwania, przełącznik pięter, górne rogi arkusza                                      | styl „Karta miejsca” (Material 3, kształt bardzo duży)   |
 | Ikony        | `ikony.rozmiar`               | 24 dp   | ikona oznaczenia wejścia, chipu, przycisku i paska dolnego, zawsze z napisem obok                                           | NFR-21, słownik użytkownika (Metafory i ikony)           |
+| Ikony        | `ikony.znak_mapy`             | 28 dp   | znak wejścia „Dostępne” i „Niedostępne” na mapie V1                                                                         | US1.4, US2.1, NFR-21                                     |
+| Ikony        | `ikony.znak_mapy_brak_danych` | 20 dp   | znak wejścia „Brak danych” na mapie V1; w legendzie i na kartach ma rozmiar zwykłego znaku                                  | US1.4, US2.1, NFR-16, NFR-21                             |
 
 <!-- vale on -->
 <!-- wymiary:end -->
