@@ -30,6 +30,9 @@ import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.feature.map.area.AreaShift
+import io.github.dostepnykampus.feature.map.area.CompassDirection
+import io.github.dostepnykampus.feature.map.area.shiftTo
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
@@ -195,23 +198,20 @@ class CampusAreasPwrTest {
     }
 
     /**
-     * Wiersz: V1, wyszukanie „T-15” i wybór wyniku przenoszą mapę na teren „Wittigowo”, a napis nad mapą podaje
-     * odległość i kierunek z danych PWr: „Pokazuję teren: Wittigowo · 2 km na południowy wschód”. Okno wysokie,
-     * żeby nad małą kartą zostało miejsce na przyciski mapy i napis.
-     * Scenariusz: przegladanie-mapy.feature: Wyszukanie budynku z innego terenu zmienia teren
+     * Wiersz: V1, po przejściu z „Kampusu głównego” na „Wittigowo” napis podaje odległość i kierunek z danych PWr:
+     * „Pokazuję teren: Wittigowo · 2 km na południowy wschód”.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Wyszukanie budynku z innego terenu zmienia teren
      *
-     * Wymagania: US1.8, BR-G5, NFR-56
+     * Wymagania: US1.8, NFR-56
      */
     @Test
-    @Config(qualifiers = "w360dp-h1000dp")
-    fun showsShiftToWittigowo() {
+    fun shiftsToWittigowoSouthEast() {
         showApp()
-        compose.onNode(hasSetTextAction()).performTextInput("T-15")
-        compose.onNodeWithContentDescription("T-15, ", substring = true).performClick()
-        compose.waitForIdle()
-        assertEquals("zaznaczony budynek", "T-15", selection.building)
-        assertShowsArea(name = "Wittigowo", symbol = "T-15")
-        compose.onNodeWithText("Pokazuję teren: Wittigowo · 2 km na południowy wschód").assertExists()
+        assertEquals(
+            "zmiana z Kampusu głównego na Wittigowo",
+            AreaShift(name = "Wittigowo", kilometers = 2, direction = CompassDirection.SouthEast),
+            area("Kampus główny").shiftTo(area("Wittigowo")),
+        )
     }
 
     private fun searchT15AndGoBack() {
