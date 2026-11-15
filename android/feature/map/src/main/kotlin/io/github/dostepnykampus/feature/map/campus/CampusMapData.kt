@@ -118,8 +118,14 @@ fun CampusMapData.boundsOf(symbol: String?): CampusBounds? =
  * @property symbols symbole budynków terenu
  * @property bounds prostokąt opisany na granicy terenu, powiększony o 50 m z każdej strony; granica jest z pliku
  *   granic terenów, a teren spoza pliku albo z budynkiem poza prostokątem granicy ma za granicę kontury budynków
+ * @property boundary wielokąt granicy terenu z pliku granic terenów; `null`, gdy granicą są kontury budynków
  */
-data class MapArea(val name: String, val symbols: List<String>, val bounds: CampusBounds)
+data class MapArea(
+    val name: String,
+    val symbols: List<String>,
+    val bounds: CampusBounds,
+    val boundary: GeoArea? = null,
+)
 
 /**
  * Wejście zaznaczone na mapie pinezką z podpisem.
@@ -208,8 +214,13 @@ fun campusMapData(catalog: BuildingCatalog, boundaries: Map<String, GeoArea> = P
     val areas =
         campusAreas(catalog.buildings).mapNotNull { area ->
             val outlines = area.buildings.flatMap { it.outline.points() }
-            areaBounds(boundary = boundaries[area.name]?.points(), outlines = outlines)
-                ?.let { MapArea(area.name, area.symbols, it) }
+            val boundary = boundaries[area.name]?.takeIf { it.encloses(outlines) }
+            (boundary?.points() ?: outlines)
+                .takeIf { it.isNotEmpty() }
+                ?.let { edge ->
+                    val bounds = computeBbox(edge.map(GeoPoint::toPosition)).withCampusMargin()
+                    MapArea(name = area.name, symbols = area.symbols, bounds = bounds, boundary = boundary)
+                }
         }
     val startArea = areas.firstOrNull { START_BUILDING in it.symbols } ?: areas.firstOrNull()
     return CampusMapData(
@@ -238,14 +249,9 @@ private fun Building.outlineBounds(): Pair<String, CampusBounds>? =
         symbol to CampusBounds(west = box.west, south = box.south, east = box.east, north = box.north)
     }
 
-private fun areaBounds(boundary: List<GeoPoint>?, outlines: List<GeoPoint>): CampusBounds? {
-    val box = boundary?.let { computeBbox(it.map(GeoPoint::toPosition)) }
-    val isEnclosing =
-        box != null && outlines.all { it.longitude in box.west..box.east && it.latitude in box.south..box.north }
-    val points = boundary?.takeIf { isEnclosing } ?: outlines
-    return points
-        .takeIf { it.isNotEmpty() }
-        ?.let { all -> computeBbox(all.map(GeoPoint::toPosition)).withCampusMargin() }
+private fun GeoArea.encloses(outlines: List<GeoPoint>): Boolean {
+    val box = computeBbox(points().map(GeoPoint::toPosition))
+    return outlines.all { it.longitude in box.west..box.east && it.latitude in box.south..box.north }
 }
 
 private fun BoundingBox.withCampusMargin(): CampusBounds {

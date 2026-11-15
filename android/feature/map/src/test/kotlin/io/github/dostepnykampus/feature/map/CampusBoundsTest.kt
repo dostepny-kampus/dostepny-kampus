@@ -23,6 +23,7 @@ import io.github.dostepnykampus.feature.map.campus.START_BUILDING
 import io.github.dostepnykampus.feature.map.campus.boundsOf
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import kotlin.math.cos
 import kotlin.math.log2
@@ -59,10 +60,14 @@ class CampusBoundsTest {
         val boundary = rectangle(west = 16.99, south = 59.99, east = 17.02, north = 60.01)
         val wider = listOf(16.99 - 2 * LAT_50_M, 59.99 - LAT_50_M, 17.02 + 2 * LAT_50_M, 60.01 + LAT_50_M)
         val catalog = catalog(START_BUILDING to start)
-        assertBounds(wider, campusMapData(catalog, mapOf("Kampus główny" to boundary)).bounds)
+        val bounded = campusMapData(catalog, mapOf("Kampus główny" to boundary))
+        assertBounds(wider, bounded.bounds)
+        assertEquals(boundary, bounded.areas.single().boundary, "Teren ma granicę z pliku")
         val aside = rectangle(west = 17.005, south = 60.0, east = 17.02, north = 60.004)
         val outlines = listOf(17.0 - 2 * LAT_50_M, 60.0 - LAT_50_M, 17.01 + 2 * LAT_50_M, 60.004 + LAT_50_M)
-        assertBounds(outlines, campusMapData(catalog, mapOf("Kampus główny" to aside)).bounds)
+        val skipped = campusMapData(catalog, mapOf("Kampus główny" to aside))
+        assertBounds(outlines, skipped.bounds)
+        assertNull(skipped.areas.single().boundary, "Pominięta granica nie trafia na mapę")
     }
 
     /**

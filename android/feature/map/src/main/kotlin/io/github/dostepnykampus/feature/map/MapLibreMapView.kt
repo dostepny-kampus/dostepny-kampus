@@ -39,7 +39,6 @@ import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.styleColors
 import io.github.dostepnykampus.feature.map.camera.toCamera
 import io.github.dostepnykampus.feature.map.camera.toPosition
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
@@ -111,7 +110,7 @@ object MapLibreMapView : CampusMapView {
         val density = LocalDensity.current
         val colors = DostepnyKampusTheme.mapColors
         val styleColors = colors.styleColors()
-        val style = rememberMapStyle(data = data, bounds = selection.bounds, colors = styleColors)
+        val style = rememberMapStyle(data = data, selection = selection, colors = styleColors)
         val look = remember(data, selection, styleColors) { selectionLook(data, selection, styleColors) }
         val labelSize = LABEL_TEXT_SP * density.density * density.fontScale.coerceAtMost(LABEL_MAX_FONT_SCALE)
         val tolerance = TOUCH_TOLERANCE_DP * density.density
@@ -363,19 +362,20 @@ internal fun northUpOptions(context: Context): MapLibreMapOptions =
         .tiltGesturesEnabled(false)
 
 /**
- * Styl mapy jako napis JSON bez zaznaczenia budynku, wejścia i bariery. Powstaje od nowa tylko po zmianie danych
- * [data], granic terenu [bounds] albo barw [colors]; zaznaczenie i ruch kamery rekomponują widok mapy, ale stylu
- * nie budują. Funkcja [build] składa styl.
+ * Styl mapy jako napis JSON bez zaznaczenia budynku, wejścia i bariery: z [selection] bierze tylko prostokąt
+ * i granicę terenu. Powstaje od nowa tylko po zmianie danych [data], terenu albo barw [colors]; zaznaczenie i ruch
+ * kamery rekomponują widok mapy, ale stylu nie budują. Funkcja [build] składa styl.
  */
 @Composable
 internal fun rememberMapStyle(
     data: CampusMapData,
-    bounds: CampusBounds?,
+    selection: MapSelection,
     colors: MapStyleColors,
-    build: (CampusMapData, CampusBounds?, MapStyleColors) -> String = { mapData, area, palette ->
-        campusMapStyle(data = mapData, selection = MapSelection(bounds = area), colors = palette)
-    },
-): String = remember(data, bounds, colors) { build(data, bounds, colors) }
+    build: (CampusMapData, MapSelection, MapStyleColors) -> String = ::campusMapStyle,
+): String =
+    remember(data, selection.bounds, selection.boundary, colors) {
+        build(data, MapSelection(bounds = selection.bounds, boundary = selection.boundary), colors)
+    }
 
 /**
  * Dodaje do stylu obrazy niezależne od zaznaczenia: podpisy konturów [labels], znaki wejść, pinezkę oraz znaki
