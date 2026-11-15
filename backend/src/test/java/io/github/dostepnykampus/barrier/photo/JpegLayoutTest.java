@@ -47,7 +47,7 @@ final class JpegLayoutTest {
     }
 
     private static byte[] comments(final int count) {
-        final ByteArrayOutputStream bytes = new ByteArrayOutputStream(count * 4 + 8);
+        final ByteArrayOutputStream bytes = new ByteArrayOutputStream((count * 4) + 8);
         bytes.writeBytes(new byte[] {(byte) 0xFF, (byte) 0xD8});
         for (int idx = 0; idx < count; idx += 1) {
             bytes.writeBytes(new byte[] {(byte) 0xFF, (byte) 0xFE, 0, 2});
