@@ -110,7 +110,6 @@ class LocateBuildingTest {
                 LocateResult.OutsideBuilding(courtyardBuilding()),
                 locateBuilding(point(x = x, y = y), buildings()),
                 "punkt ($x, $y) na konturze",
-                "punkt w rogu leży na zewnątrz",
             )
         }
     }
@@ -155,7 +154,6 @@ class LocateBuildingTest {
                 LocateResult.InsideOutline(courtyardBuilding()),
                 locateBuilding(point(x = x, y = y), buildings()),
                 "punkt ($x, $y) w konturze",
-                "punkt blisko krawędzi leży wewnątrz",
             )
         }
     }
