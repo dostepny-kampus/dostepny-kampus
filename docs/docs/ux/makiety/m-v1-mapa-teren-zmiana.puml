@@ -8,7 +8,7 @@ $pole_tekstowe("Wpisz symbol budynku, np. C-13")
 $przelacznik("Mapa", "Lista budynków", 1)
 $przycisk("Wittigowo ▾")
 $przycisk("Legenda")
-$mapa("mapa terenu Wittigowo z zaznaczonym budynkiem T-15; nad podpisem mapy napis: Pokazuję teren: Wittigowo · 2 km na północny wschód", "", "info")
+$mapa("mapa terenu Wittigowo z zaznaczonym budynkiem T-15; nad podpisem mapy napis: Pokazuję teren: Wittigowo · 2 km na południowy wschód", "", "info")
 $pasek_dolny_konto()
 $ekran_koniec()
 @endsalt
