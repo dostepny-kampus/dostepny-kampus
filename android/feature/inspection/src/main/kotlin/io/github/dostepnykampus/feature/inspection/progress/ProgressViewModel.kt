@@ -48,8 +48,6 @@ sealed interface ProgressUiState {
  *
  * Wymagania: US11.1, US11.2, NFR-50
  *
- * TODO(#2121): podłączyć do ekranu K1.
- *
  * @param progress źródło postępu inwentaryzacji
  * @param clock zegar chwili odczytu
  */
