@@ -42,21 +42,33 @@ class CoordinatorEntryTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    /** Koordynator widzi wejście do K1. */
+    /**
+     * Koordynator widzi wejście do K1.
+     *
+     * Wymagania: US11.1
+     */
     @Test
     fun coordinatorSeesProgress() {
         show(StaffRole.COORDINATOR)
         compose.onNodeWithText("Postęp inwentaryzacji").assertIsDisplayed()
     }
 
-    /** Zbierający nie widzi wejścia do K1. */
+    /**
+     * Zbierający nie widzi wejścia do K1.
+     *
+     * Wymagania: US14.1
+     */
     @Test
     fun collectorHasNoProgress() {
         show(StaffRole.COLLECTOR)
         compose.onNodeWithText("Postęp inwentaryzacji").assertDoesNotExist()
     }
 
-    /** Weryfikator nie widzi wejścia do K1. */
+    /**
+     * Weryfikator nie widzi wejścia do K1.
+     *
+     * Wymagania: US14.1
+     */
     @Test
     fun verifierHasNoProgress() {
         show(StaffRole.VERIFIER)
