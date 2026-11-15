@@ -76,10 +76,6 @@ internal const val OSM_TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
  * @property buildingOutline kontur budynków PWr (`pwr_kontur`)
  * @property selectedOutline obrys zaznaczonego budynku (`pwr_wybrany`), grubszy niż kontur
  * @property isNight motyw ciemny: podkład jest wtedy odwrócony, żeby mapa nie raziła na ciemnym ekranie
- * @property edge nieużywane: mapa nie rysuje granicy terenu
- * @property edgeHalo nieużywane: mapa nie rysuje granicy terenu
- * @property outside nieużywane: mapa nie ma wyblaknięcia poza terenem
- * @property outsideOpacity nieużywane: mapa nie ma wyblaknięcia poza terenem
  * @property dimmed wypełnienie budynków obok zaznaczonego (`budynek`)
  * @property dimmedOutline kontur budynków obok zaznaczonego (`budynek_kontur`)
  * @property plan kolory planu piętra; bez nich plan ma barwy budynków
@@ -90,11 +86,6 @@ data class MapStyleColors(
     val buildingOutline: String,
     val selectedOutline: String,
     val isNight: Boolean = false,
-    // TODO(#2632): usunąć pola granicy terenu razem z jej tokenami.
-    val edge: String = buildingOutline,
-    val edgeHalo: String = land,
-    val outside: String = land,
-    val outsideOpacity: Double = 0.0,
     val dimmed: String = building,
     val dimmedOutline: String = buildingOutline,
     val plan: PlanColors =

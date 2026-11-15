@@ -36,8 +36,8 @@ private val AppTypography = typography(AtkinsonHyperlegibleNext)
  * Schemat kolorów jasny albo ciemny według [darkTheme], domyślnie według ustawienia systemu. Paleta jest
  * stała: bez kolorów dynamicznych z tapety, bo kontrast par z tokenów jest sprawdzony tylko dla
  * tej palety. Typografia w krój Atkinson Hyperlegible Next wbudowany w aplikację, rozmiary w sp: tekst
- * rośnie z ustawieniem czcionki telefonu. Kolory oznaczeń wejścia i mapy oraz krycie warstw mapy daje
- * [DostepnyKampusTheme.statusColors], [DostepnyKampusTheme.mapColors] i [DostepnyKampusTheme.mapOpacity].
+ * rośnie z ustawieniem czcionki telefonu. Kolory oznaczeń wejścia i mapy daje [DostepnyKampusTheme.statusColors]
+ * i [DostepnyKampusTheme.mapColors].
  *
  * Wymagania: NFR-16, NFR-20
  */
@@ -75,9 +75,4 @@ public object DostepnyKampusTheme {
     internal val isDark: Boolean
         @Composable @ReadOnlyComposable
         get() = MaterialTheme.colorScheme === DarkColorScheme
-
-    /** Krycie warstw mapy (sekcja `mapa.krycie`) do stylu mapy, według [isDark]. Wymagania: US1.7 */
-    public val mapOpacity: MapOpacity
-        @Composable @ReadOnlyComposable
-        get() = if (isDark) DarkMapOpacity else LightMapOpacity
 }
