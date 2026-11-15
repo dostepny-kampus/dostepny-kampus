@@ -66,8 +66,8 @@ class EditBaseVersionTest {
             )
             target.sendAll()
 
-            assertEquals(listOf(ID), creates, "zgłoszenie utworzone raz")
-            assertEquals(listOf(ID to SERVER_VERSION), edits, "edycja idzie od wersji z serwera")
+            assertEquals(listOf(ID), creates, "wysłane zgłoszenie powstało na serwerze raz")
+            assertEquals(listOf(ID to SERVER_VERSION), edits, "poprawka wysłanego zgłoszenia idzie jako edycja")
         }
 
     @Test
