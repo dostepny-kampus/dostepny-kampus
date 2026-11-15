@@ -36,18 +36,8 @@ import io.github.dostepnykampus.core.designsystem.campusDay
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.feature.capture.R
-import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
 import io.github.dostepnykampus.feature.capture.report.form.PhotoSection
-
-/**
- * Czynności C7.
- *
- * @property camera aparat „Zrób zdjęcie”
- * @property onSend „Wyślij do sprawdzenia” i „Spróbuj ponownie”
- * @property onBack „Wstecz”
- */
-data class RemovedActions(val camera: PhotoCamera, val onSend: () -> Unit, val onBack: () -> Unit)
 
 /**
  * Treść C7 „Usunięcie bariery” dla stanu [state], bez ViewModelu: dane zgłoszenia przyjętego bez edycji, nowe
