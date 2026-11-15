@@ -25,7 +25,8 @@ import tools.jackson.databind.JsonNode;
 /**
  * Odpowiedź ze zgłoszeniem (W4-4): treść płasko obok identyfikatora, wersji,
  * statusu i chwili utworzenia jako napisu ISO-8601, bez pól pustych i flag
- * fałszywych; data weryfikacji tylko przy zgłoszeniu przyjętym, a powód odrzucenia i duplikat tylko przy odrzuconym.
+ * fałszywych; data weryfikacji tylko przy zgłoszeniu przyjętym, a powód odrzucenia i duplikat
+ * tylko przy odrzuconym.
  *
  * @since 0.1.0
  */
