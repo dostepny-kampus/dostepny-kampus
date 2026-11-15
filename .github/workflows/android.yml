@@ -382,7 +382,10 @@ jobs:
         continue-on-error: true
         with:
           name: raporty-testy
-          path: android/**/build/reports/
+          # Obrazy porównania Roborazzi pokazują, czym zrzut różni się od wzorca (#2195).
+          path: |
+            android/**/build/reports/
+            android/**/build/outputs/roborazzi/
           if-no-files-found: ignore
       - name: Udostępnij cache budowania zadaniu po scaleniu i następnym grupom kolejki
         # Cache zapisany w grupie kolejki należy do jej tymczasowej gałęzi, której inne przebiegi nie widzą; artefakt widzą.
