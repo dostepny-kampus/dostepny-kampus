@@ -38,7 +38,8 @@ class CampusGroundsTest {
         val catalog = parseBuildingCatalog(File(System.getProperty("dostepnykampus.buildings")).readText())
         val outlines = catalog.buildings.flatMap { it.outline.allRings().flatten() }
         assertTrue(outlines.all(PwrGrounds::covers), "kontury budynków na terenie PWr")
-        val east = PwrAreaBoundaries.getValue("Kampus główny").allRings().flatten().maxBy { it.longitude }
+        val main = PwrAreaBoundaries.getValue("Kampus główny").allRings()
+        val east = main.flatten().maxBy { it.longitude }
         assertTrue(PwrGrounds.covers(east), "punkt granicy")
         val beyond = east.copy(longitude = east.longitude + METERS_20 / cos(Math.toRadians(east.latitude)))
         assertFalse(PwrGrounds.covers(beyond), "20 m za granicą")
