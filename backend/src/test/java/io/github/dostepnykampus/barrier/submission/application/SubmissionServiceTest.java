@@ -203,7 +203,7 @@ final class SubmissionServiceTest {
     }
 
     @Test
-    void claimReturnsRepositoryResultAndPassesReviewer() {
+    void returnsClaimResultAndPassesReviewer() {
         final EditResult result = new EditResult.Saved(SubmissionServiceTest.STORED);
         final SubmissionServiceTest.RecordingSubmissions fake =
             new SubmissionServiceTest.RecordingSubmissions(null, result);

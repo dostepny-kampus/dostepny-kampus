@@ -56,7 +56,7 @@ final class Puwg1992Test {
     }
 
     @Test
-    void centralMeridianHasFalseEasting() {
+    void givesFalseEastingOnCentralMeridian() {
         Assertions.assertArrayEquals(
             new double[] {500_000.0, 459_309.209_4},
             Puwg1992Test.point(19.0, 52.0),
