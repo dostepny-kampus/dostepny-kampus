@@ -172,7 +172,7 @@ class SharedFixtureArchitectureTest {
                 |AcceptedBarriersCopyTest AccessTokenInterceptorTest AppNavigatorTest AppShellScreenshotTest
                 |AppShellTest ArchitectureTest BarrierCacheDaoTest BarrierNamesTest BarrierSheetTest
                 |BottomBarTest BuildingCacheDaoTest BuildingCardModesTest BuildingCardOfflineTest BuildingCardTest
-                |BuildingCatalogCacheTest BuildingCatalogParserTest BuildingCatalogRepositoryTest
+                |BuildingCatalogCacheTest BuildingCatalogRepositoryTest
                 |BuildingListTest BuildingOnMapCameraTest BuildingsApiTest CampusAreaEdgeDeviceTest CampusAreasPwrTest
                 |CampusBoundsTest CampusMapBarriersStyleTest CampusMapDataTest CampusMapEntrancesStyleTest
                 |CampusMapGeometryTest CampusMapScreenTest CampusMapSelectionStyleTest CampusMapStyleTest
@@ -180,7 +180,7 @@ class SharedFixtureArchitectureTest {
                 |CardServerEntrancesTest CollectorReachTest ConflictEditTest DebugRolesTest DebugSignInTest
                 |DeviceStepsTest DtoContractTest EditBaseVersionTest EditDuringSendTest EntranceAssessmentTest
                 |EntranceHiltTest EntranceOnMapTest FirstLaunchRepositoryTest
-                |FirstLaunchViewModelTest FloorMarkersTest FloorPickerTest GnssLocationSwitchTest
+                |FloorMarkersTest FloorPickerTest GnssLocationSwitchTest
                 |GnssPositionFixesTest GnssSatellitesTest GuestSignInTest HelpScreenTest JsonTextCallTest
                 |KDocDescriptionLengthTest ListEntryTest LocationModuleTest
                 |LocationPermissionTest LoginExpiredGateTest MainActivityTest MapAreaPanelTest

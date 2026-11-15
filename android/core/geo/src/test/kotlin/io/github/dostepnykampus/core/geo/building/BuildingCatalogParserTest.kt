@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.geo.parseGeoArea
 import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -24,7 +25,7 @@ import java.io.File
  * Wymagania: US1, US17.1, BR-24, US2
  */
 class BuildingCatalogParserTest {
-    private val catalog =
+    private fun catalog(): BuildingCatalog =
         parseBuildingCatalog(
             collection(
                 building(id = 1, symbols = C13, shown = "Budynek testowy", geometry = square(x = 0)),
@@ -38,7 +39,8 @@ class BuildingCatalogParserTest {
             ),
         )
 
-    private val real by lazy { parseBuildingCatalog(File(System.getProperty("dostepnykampus.buildings")).readText()) }
+    private fun real(): BuildingCatalog =
+        parseBuildingCatalog(File(System.getProperty("dostepnykampus.buildings")).readText())
 
     @Test
     fun readsOutlineFromText() {
@@ -49,6 +51,7 @@ class BuildingCatalogParserTest {
 
     @Test
     fun makesBuildingPerSymbol() {
+        val catalog = catalog()
         assertEquals(listOf("C-13", "H-14", "C-3", "C-4"), catalog.buildings.map { it.symbol })
         assertEquals("Budynek testowy", catalog.buildings.first().name)
         assertEquals("© OpenStreetMap contributors", catalog.attribution)
@@ -56,6 +59,7 @@ class BuildingCatalogParserTest {
 
     @Test
     fun mergesSameSymbol() {
+        val catalog = catalog()
         val h14 = catalog.buildings.single { it.symbol == "H-14" }
         assertEquals(GeoMultiPolygon(listOf(polygon(x = 2), polygon(x = 4))), h14.outline)
         assertEquals("Budynek drugi", h14.name)
@@ -63,6 +67,7 @@ class BuildingCatalogParserTest {
 
     @Test
     fun sharesOutline() {
+        val catalog = catalog()
         val (c3, c4) = catalog.buildings.filter { it.symbol in setOf("C-3", "C-4") }
         assertEquals(polygon(x = 6), c3.outline)
         assertEquals(c3.outline, c4.outline)
@@ -71,6 +76,7 @@ class BuildingCatalogParserTest {
 
     @Test
     fun readsEntranceMarking() {
+        val catalog = catalog()
         val c13 = catalog.entrances.filter { it.buildingSymbol == "C-13" }
         assertEquals(
             listOf(EntranceMarking.ACCESSIBLE, EntranceMarking.INACCESSIBLE, EntranceMarking.NO_DATA),
@@ -84,6 +90,7 @@ class BuildingCatalogParserTest {
 
     @Test
     fun sharesEntrance() {
+        val catalog = catalog()
         val shared = catalog.entrances.filter { it.id == "node/8" }
         assertEquals(listOf("C-3", "C-4"), shared.map { it.buildingSymbol })
         assertEquals(listOf(EntranceMarking.NO_DATA, EntranceMarking.NO_DATA), shared.map { it.marking })
@@ -111,6 +118,7 @@ class BuildingCatalogParserTest {
     /** Wiersz: w prawdziwych danych nazwa nie powtarza symbolu swojego budynku; wyjątkiem jest „M-6 bis”. */
     @Test
     fun keepsRealNamesWithoutSymbol() {
+        val real = real()
         val names = real.buildings.associate { it.symbol to it.name }
         val repeated = names.filter { (symbol, name) -> name?.contains(symbol) == true }
         assertEquals(mapOf("M-6" to "M-6 bis"), repeated)
@@ -133,6 +141,7 @@ class BuildingCatalogParserTest {
 
     @Test
     fun readsRealFileAsReadme() {
+        val real = real()
         val entrances = real.entrances.distinctBy { it.id }
         assertEquals(95, real.buildings.size)
         assertEquals(72, entrances.size)

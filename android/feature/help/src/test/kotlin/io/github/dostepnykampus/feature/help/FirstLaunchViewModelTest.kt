@@ -16,10 +16,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.AfterEachCallback
+import org.junit.jupiter.api.extension.BeforeEachCallback
+import org.junit.jupiter.api.extension.ExtensionContext
+import org.junit.jupiter.api.extension.RegisterExtension
 import java.io.IOException
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
@@ -31,43 +33,25 @@ import kotlin.reflect.cast
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class FirstLaunchViewModelTest {
-    private var reads = 0
-    private var isHelpSeen = false
-    private val firstLaunch =
-        object : FirstLaunch {
-            override suspend fun isFirstLaunch(): Boolean {
-                reads++
-                return !isHelpSeen
-            }
-
-            override suspend fun markHelpSeen() {
-                isHelpSeen = true
-            }
-        }
-
-    @BeforeEach
-    fun main() {
-        Dispatchers.setMain(UnconfinedTestDispatcher())
-    }
-
-    @AfterEach
-    fun reset() {
-        Dispatchers.resetMain()
-    }
+    @JvmField
+    @RegisterExtension
+    val main = MainDispatcher()
 
     @Test
     fun readsFirstLaunchOnce() {
+        val firstLaunch = MemoryFirstLaunch()
         val start = FirstLaunchViewModel(firstLaunch)
         assertEquals(true, start.firstLaunchState.value, "pierwsze uruchomienie")
         assertEquals(true, start.firstLaunchState.value, "pierwsze uruchomienie bez ponownego odczytu")
-        assertEquals(1, reads, "jeden odczyt")
+        assertEquals(1, firstLaunch.reads, "jeden odczyt")
     }
 
     @Test
     fun savesHelpSeen() {
+        val firstLaunch = MemoryFirstLaunch()
         val start = FirstLaunchViewModel(firstLaunch)
         start.markHelpSeen()
-        assertEquals(true, isHelpSeen, "zapamiętany znacznik pomocy")
+        assertEquals(true, firstLaunch.isHelpSeen, "zapamiętany znacznik pomocy")
         assertEquals(false, FirstLaunchViewModel(firstLaunch).firstLaunchState.value, "koniec pierwszego uruchomienia")
     }
 
@@ -97,6 +81,7 @@ class FirstLaunchViewModelTest {
 
     @Test
     fun savesAfterClear() {
+        val firstLaunch = MemoryFirstLaunch()
         val saving = CompletableDeferred<Unit>()
         val slow =
             object : FirstLaunch by firstLaunch {
@@ -114,6 +99,31 @@ class FirstLaunchViewModelTest {
         ViewModelProvider.create(store, factory)[FirstLaunchViewModel::class].markHelpSeen()
         store.clear()
         saving.complete(Unit)
-        assertEquals(true, isHelpSeen, "zapis po zamknięciu modelu")
+        assertEquals(true, firstLaunch.isHelpSeen, "zapis po zamknięciu modelu")
+    }
+}
+
+private class MemoryFirstLaunch : FirstLaunch {
+    var reads = 0
+    var isHelpSeen = false
+
+    override suspend fun isFirstLaunch(): Boolean {
+        reads++
+        return !isHelpSeen
+    }
+
+    override suspend fun markHelpSeen() {
+        isHelpSeen = true
+    }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+private class MainDispatcher : BeforeEachCallback, AfterEachCallback {
+    override fun beforeEach(context: ExtensionContext) {
+        Dispatchers.setMain(UnconfinedTestDispatcher())
+    }
+
+    override fun afterEach(context: ExtensionContext) {
+        Dispatchers.resetMain()
     }
 }
