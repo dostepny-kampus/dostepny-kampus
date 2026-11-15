@@ -82,7 +82,6 @@ class CoordinatorEntryTest {
                 AppShell(firstLaunch = false, roles = roles, onFirstHelpLeft = {}) { route -> Screen(route) }
             }
         }
-        /* Napis pozycji paska łamie się twardą spacją zależnie od szerokości, więc szukamy po jego końcówce. */
         compose.onNodeWithText("praca", substring = true).performClick()
     }
 
