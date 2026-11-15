@@ -181,8 +181,8 @@ class CampusMapStyleTest {
     }
 
     /**
-     * Warstwy stoją w stałej kolejności. Warstwy zaznaczenia są zawsze, a warstw terenu nie ma bez granic.
-     * Wymagania: US1.7, US3.3
+     * Warstwy stoją w stałej kolejności. Warstwy zaznaczenia i terenu są zawsze; bez granic źródło terenu jest
+     * puste, więc zmiana terenu nie wymaga nowego stylu. Wymagania: US1.7, US3.3, BR-G5
      */
     @Test
     fun ordersOptionalLayers() {
@@ -190,13 +190,18 @@ class CampusMapStyleTest {
         val base = listOf("lad", "osm", BUILDINGS_LAYER, "kontury") + PLAN
         val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)
         val pin = listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
+        val area = listOf(OUTSIDE_LAYER, EDGE_HALO_LAYER, EDGE_LAYER)
         val bareIds = bare.jsonObject.array("layers").map { it.jsonObject.text("id") }
-        assertEquals(base + SELECTED_LAYER + marks + pin, bareIds)
-        val sources = setOf("osm", "budynki", "podpisy", "wejscia", "bariery", CHOSEN_SOURCE, PLAN_SOURCE)
-        assertEquals(sources, bare.jsonObject.obj("sources").keys)
+        assertEquals(base + SELECTED_LAYER + area + marks + pin, bareIds)
+        val sources =
+            setOf("osm", "budynki", "podpisy", "wejscia", "bariery", AREA_SOURCE, CHOSEN_SOURCE, PLAN_SOURCE)
+        val bareSources = bare.jsonObject.obj("sources")
+        assertEquals(sources, bareSources.keys)
+        val empty = bareSources.obj(AREA_SOURCE).obj("data").array("features")
+        assertEquals(0, empty.size, "bez granic teren jest pusty")
         val entrance = SelectedEntrance(id = "w1", location = STYLE_ORIGIN, label = "Główne", buildingSymbol = "C-13")
         val full = Json.parseToJsonElement(styled(data.selection(building = "C-13", entrance = entrance)))
-        val expected = base + SELECTED_LAYER + listOf(OUTSIDE_LAYER, EDGE_HALO_LAYER, EDGE_LAYER) + marks + pin
+        val expected = base + SELECTED_LAYER + area + marks + pin
         assertEquals(expected, full.jsonObject.array("layers").map { it.jsonObject.text("id") })
     }
 

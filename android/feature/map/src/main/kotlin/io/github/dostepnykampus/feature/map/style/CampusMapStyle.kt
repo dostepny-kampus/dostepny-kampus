@@ -9,7 +9,6 @@ import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
-import io.github.dostepnykampus.feature.map.campus.featureCollection
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -17,7 +16,10 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.Style
+import org.maplibre.android.style.sources.RasterSource
+import org.maplibre.android.style.sources.TileSet
 
 /** Warstwa wypełnienia konturów; widok mapy szuka w niej dotkniętego budynku. */
 internal const val BUILDINGS_LAYER = "budynki"
@@ -60,12 +62,15 @@ internal const val OUTLINES_COLOR = "line-color"
 
 internal const val BUILDINGS_SOURCE = BUILDINGS_LAYER
 private const val ENTRANCES_SOURCE = ENTRANCES_LAYER
-private const val BASEMAP = "osm"
+
+/** Warstwa i źródło podkładu OSM. Wymagania: NFR-39 */
+internal const val BASEMAP = "osm"
 private const val LABELS = "podpisy"
 internal const val LABEL = "label"
 private const val STYLE_VERSION = 8
 private const val TILE_SIZE = 256
 private const val TILE_MAX_ZOOM = 19
+private const val TILE_JSON = "2.2.0"
 private const val OUTLINE_WIDTH = 1.5
 
 /** Kafelki podkładu z serwerów OSM, pobierane tylko online i bez zapisu do użytku offline (ADR-0005). */
@@ -143,8 +148,7 @@ fun campusMapStyle(
             put(key = "version", value = STYLE_VERSION)
             val all = sources(data = data, selection = selection, look = look, basemap = basemap)
             put(key = "sources", element = all)
-            val isBounded = selection.bounds != null
-            val list = layers(look = look, isBounded = isBounded, colors = colors, basemap = basemap)
+            val list = layers(look = look, colors = colors, basemap = basemap)
             put(key = "layers", element = list)
         }
     return style.toString()
@@ -169,15 +173,12 @@ private fun sources(data: CampusMapData, selection: MapSelection, look: Selectio
         put(key = LABELS, element = geoJsonSource(data.labelPoints))
         put(key = ENTRANCES_SOURCE, element = geoJsonSource(data.entrances))
         put(key = BARRIERS_SOURCE, element = geoJsonSource(data.barriers))
-        selection.bounds?.let { bounds ->
-            val area = areaFeatures(boundary = selection.boundary, bounds = bounds)
-            put(key = AREA_SOURCE, element = geoJsonSource(featureCollection(area)))
-        }
+        put(key = AREA_SOURCE, element = geoJsonSource(areaOf(selection)))
         put(key = CHOSEN_SOURCE, element = geoJsonSource(look.chosenEntrance))
         put(key = PLAN_SOURCE, element = geoJsonSource(look.plan))
     }
 
-private fun layers(look: SelectionLook, isBounded: Boolean, colors: MapStyleColors, basemap: Basemap?): JsonArray =
+private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap?): JsonArray =
     buildJsonArray {
         add(styleLayer(id = "lad", type = "background") { paint("background-color" to JsonPrimitive(colors.land)) })
         add(
@@ -198,7 +199,7 @@ private fun layers(look: SelectionLook, isBounded: Boolean, colors: MapStyleColo
         )
         planLayers(colors.plan, look.planFloor).forEach { add(it) }
         add(selectedLayer(look.selectedFilter, colors))
-        if (isBounded) areaLayers(colors).forEach { add(it) }
+        areaLayers(colors).forEach { add(it) }
         add(marksLayer(look.entrancesFilter, look.entrancesMinZoom))
         barrierLayers().forEach { add(it) }
         add(symbolLayer(id = LABELS, source = LABELS, image = property(LABEL)))
@@ -206,7 +207,23 @@ private fun layers(look: SelectionLook, isBounded: Boolean, colors: MapStyleColo
         chosenLayers().forEach { add(it) }
     }
 
-private fun basemapSource(bounds: CampusBounds?): JsonObject =
+/**
+ * Źródło kafelków podkładu takie jak w [campusMapStyle], z kafelkami tylko w prostokącie [bounds] (bez niego
+ * z całego świata), do wymiany źródła w wczytanym stylu. Wymagania: NFR-39
+ */
+internal fun basemapTiles(bounds: CampusBounds?): RasterSource {
+    val tiles = TileSet(TILE_JSON, OSM_TILES)
+    tiles.setMaxZoom(TILE_MAX_ZOOM.toFloat())
+    bounds?.let { area ->
+        tiles.setBounds(
+            LatLngBounds.from(latNorth = area.north, lonEast = area.east, latSouth = area.south, lonWest = area.west),
+        )
+    }
+    return RasterSource(BASEMAP, tiles, TILE_SIZE)
+}
+
+/** Źródło kafelków podkładu w stylu JSON, z kafelkami tylko w prostokącie [bounds]; `null`: cały świat. */
+internal fun basemapSource(bounds: CampusBounds?): JsonObject =
     buildJsonObject {
         put(key = "type", value = "raster")
         put(key = "tiles", element = JsonArray(listOf(JsonPrimitive(OSM_TILES))))

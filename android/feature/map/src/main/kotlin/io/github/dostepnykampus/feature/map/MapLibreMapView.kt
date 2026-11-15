@@ -51,6 +51,7 @@ import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.campus.symbolsAt
 import io.github.dostepnykampus.feature.map.style.BARRIERS_LAYER
+import io.github.dostepnykampus.feature.map.style.BASEMAP
 import io.github.dostepnykampus.feature.map.style.BUILDINGS_LAYER
 import io.github.dostepnykampus.feature.map.style.Basemap
 import io.github.dostepnykampus.feature.map.style.MapImages
@@ -59,6 +60,7 @@ import io.github.dostepnykampus.feature.map.style.MapStyleTarget
 import io.github.dostepnykampus.feature.map.style.MapTileHttpEntryPoint
 import io.github.dostepnykampus.feature.map.style.SelectionLook
 import io.github.dostepnykampus.feature.map.style.asStyleText
+import io.github.dostepnykampus.feature.map.style.basemapTiles
 import io.github.dostepnykampus.feature.map.style.campusMapStyle
 import io.github.dostepnykampus.feature.map.style.labelImage
 import io.github.dostepnykampus.feature.map.style.numbers
@@ -66,6 +68,7 @@ import io.github.dostepnykampus.feature.map.style.rememberMapImages
 import io.github.dostepnykampus.feature.map.style.roomNumberBitmap
 import io.github.dostepnykampus.feature.map.style.roomNumberImage
 import io.github.dostepnykampus.feature.map.style.selectionLook
+import io.github.dostepnykampus.feature.map.style.showArea
 import io.github.dostepnykampus.feature.map.style.showSelection
 import io.github.dostepnykampus.feature.map.style.styleBuilder
 import kotlinx.serialization.json.JsonArray
@@ -123,13 +126,7 @@ object MapLibreMapView : CampusMapView {
         val labelSize = LABEL_TEXT_SP * density.density * density.fontScale.coerceAtMost(LABEL_MAX_FONT_SCALE)
         val tolerance = TOUCH_TOLERANCE_DP * density.density
         val images = rememberMapImages(colors = colors, density = density.density, labelSize = labelSize)
-        val mapView =
-            remember {
-                MapLibre.getInstance(context)
-                val tiles = EntryPointAccessors.fromApplication<MapTileHttpEntryPoint>(context.applicationContext)
-                HttpRequestUtil.setOkHttpClient(tiles.mapTileHttp().calls)
-                MapView(context, northUpOptions(context))
-            }
+        val mapView = rememberMapView(context)
         FollowScreenLifecycle(mapView)
         var map by remember { mutableStateOf<MapLibreMap?>(null) }
         var size by remember { mutableStateOf(IntSize.Zero) }
@@ -163,6 +160,7 @@ object MapLibreMapView : CampusMapView {
             look = look,
             selection = selection,
             images = images,
+            basemap = basemap,
         )
         map.FollowEachMoveOnce(move = move, inset = inset, limits = limits)
         AndroidView(factory = { mapView }, modifier = modifier.onSizeChanged { size = it })
@@ -193,18 +191,24 @@ object MapLibreMapView : CampusMapView {
         look: SelectionLook,
         selection: MapSelection,
         images: MapImages,
+        basemap: Basemap?,
     ) {
         val map = this
         var loaded by remember { mutableStateOf<Style?>(null) }
         val currentData by rememberUpdatedState(data)
         val currentLook by rememberUpdatedState(look)
         val currentSelection by rememberUpdatedState(selection)
+        val area = ShownArea(area = MapSelection(bounds = selection.bounds, boundary = selection.boundary), basemap)
+        val currentArea by rememberUpdatedState(area)
+        var shown by remember { mutableStateOf<ShownArea?>(null) }
         DisposableEffect(map, style, images) {
             loaded = null
+            val built = currentArea
             style?.let { json ->
                 map?.setStyle(styleBuilder(json)) { ready ->
                     ready.addMapImages(labels = currentData.labels, images = images)
                     StyleTarget(ready).showSelection(currentLook, selectionImages(currentSelection, images))
+                    shown = built
                     loaded = ready
                 }
             }
@@ -214,7 +218,26 @@ object MapLibreMapView : CampusMapView {
             loaded?.let { StyleTarget(it).showSelection(look, selectionImages(currentSelection, images)) }
             onDispose {}
         }
+        DisposableEffect(loaded, area) {
+            loaded?.takeIf { area != shown }?.let { ready ->
+                StyleTarget(ready).showArea(area = area.area, basemap = area.basemap)
+                shown = area
+            }
+            onDispose {}
+        }
     }
+
+    /** Teren [area] i podkład [basemap] pokazane w wczytanym stylu. */
+    private data class ShownArea(val area: MapSelection, val basemap: Basemap?)
+
+    @Composable
+    private fun rememberMapView(context: Context): MapView =
+        remember {
+            MapLibre.getInstance(context)
+            val tiles = EntryPointAccessors.fromApplication<MapTileHttpEntryPoint>(context.applicationContext)
+            HttpRequestUtil.setOkHttpClient(tiles.mapTileHttp().calls)
+            MapView(context, northUpOptions(context))
+        }
 
     @Composable
     private fun FollowScreenLifecycle(mapView: MapView) {
@@ -369,6 +392,14 @@ object MapLibreMapView : CampusMapView {
 
         override fun image(name: String, image: Bitmap) = style.addImage(name, image)
 
+        override fun basemapBounds(bounds: CampusBounds?) {
+            val layer = style.getLayer(BASEMAP) ?: return
+            style.removeLayer(layer)
+            style.removeSource(BASEMAP)
+            style.addSource(basemapTiles(bounds))
+            style.addLayerBelow(layer, BUILDINGS_LAYER)
+        }
+
         private fun expressionOf(value: JsonElement): Expression = Expression.Converter.convert(value.asStyleText())
     }
 }
@@ -389,9 +420,10 @@ internal fun northUpOptions(context: Context): MapLibreMapOptions =
 
 /**
  * Styl mapy jako napis JSON bez zaznaczenia budynku, wejścia i bariery: z [selection] bierze tylko prostokąt
- * i granicę terenu, a podkład ogranicza do obszaru [basemap]. Powstaje od nowa tylko po zmianie danych [data],
- * terenu, barw [colors] albo [basemap]; zaznaczenie i ruch kamery stylu nie budują. Z terenem, a bez [basemap] (mapa
- * jeszcze bez rozmiaru) stylu nie ma. Funkcja [build] składa styl.
+ * i granicę terenu, a podkład ogranicza do obszaru [basemap]. Powstaje od nowa tylko po zmianie danych [data]
+ * albo barw [colors]; zmiana terenu i podkładu idzie do wczytanego stylu przez `showArea`, a zaznaczenie i ruch
+ * kamery stylu nie budują. Z terenem, a bez [basemap] (mapa jeszcze bez rozmiaru) stylu nie ma. Funkcja [build]
+ * składa styl.
  */
 @Composable
 internal fun rememberMapStyle(
@@ -401,9 +433,11 @@ internal fun rememberMapStyle(
     basemap: Basemap?,
     build: (CampusMapData, MapSelection, MapStyleColors, Basemap?) -> String = ::campusMapStyle,
 ): String? =
-    remember(data, selection.bounds, selection.boundary, colors, basemap) {
-        val area = MapSelection(bounds = selection.bounds, boundary = selection.boundary)
-        if (selection.bounds != null && basemap == null) null else build(data, area, colors, basemap)
+    (selection.bounds == null || basemap != null).let { isMeasured ->
+        remember(data, colors, isMeasured) {
+            val area = MapSelection(bounds = selection.bounds, boundary = selection.boundary)
+            if (isMeasured) build(data, area, colors, basemap) else null
+        }
     }
 
 /**
