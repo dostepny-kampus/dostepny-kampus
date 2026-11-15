@@ -20,7 +20,7 @@ class CardModeTest {
      * Wymagania: US2.9, NFR-20
      */
     @Test
-    fun nfr20_large_font_opens_direct() {
+    fun opensDirectForLargeFont() {
         val modes = listOf(1f, 1.49f, 1.5f, 2f).map { cardModeFor(fontScale = it) }
         assertEquals(listOf(CardMode.Expanded, CardMode.Expanded, CardMode.Direct, CardMode.Direct), modes)
     }
@@ -32,7 +32,7 @@ class CardModeTest {
      * Wymagania: NFR-20, NFR-51, NFR-22
      */
     @Test
-    fun nfr51_wide_or_landscape_direct() {
+    fun opensDirectWhenWide() {
         val modes =
             listOf(
                 CardWindow(fontScale = 1.49f, widthDp = 599, isLandscape = false),

@@ -31,14 +31,14 @@ import java.io.File
 class DataApiArchitectureTest {
     /** Publiczne API `:core:data` nie ma typów `:core:network`. */
     @Test
-    fun infra_data_api_skips_network() {
+    fun keepsNetworkOutOfDataApi() {
         val files = Konsist.scopeFromProduction(moduleName = MODULE).files
         assertEquals(emptyList<String>(), violations(files), HINT)
     }
 
     /** Typ sieci w publicznej sygnaturze lub właściwości łamie regułę; w `internal` i w `di` nie. */
     @Test
-    fun infra_data_api_rule_rejects(
+    fun rejectsNetworkInDataApi(
         @TempDir fixtures: File,
     ) {
         source(fixtures = fixtures, name = "Open", pack = "x", body = "class Open(val reply: ApiResult<Int>)")

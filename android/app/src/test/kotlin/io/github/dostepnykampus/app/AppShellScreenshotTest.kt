@@ -136,43 +136,43 @@ class AppShellScreenshotTest {
 
     /** V1: przyciski mapy, podpis OSM i pasek dolny. Wymagania: NFR-16, NFR-37 */
     @Test
-    fun nfr37_v1_jasny() {
+    fun drawsLightMap() {
         capture(isSheetOpen = false)
     }
 
     /** V1: wynik pod polem po wpisaniu „c13”. Wymagania: US1.1 */
     @Test
-    fun us1_1_v1_wynik_jasny() {
+    fun drawsLightSearchResult() {
         capture(isSheetOpen = false, query = "c13")
     }
 
     /** V1 przy otwartej klawiaturze: bez przycisków mapy, z podpisem OSM. Wymagania: NFR-53 */
     @Test
-    fun nfr53_v1_klawiatura_jasny() {
+    fun drawsLightKeyboard() {
         capture(isSheetOpen = false, query = "c13", isKeyboardOpen = true)
     }
 
     /** V1: brak wyniku dla „C-31”, PW-9. Wymagania: UC1 */
     @Test
-    fun us1_1_v1_brak_wyniku_jasny() {
+    fun drawsLightNoResult() {
         capture(isSheetOpen = false, query = "C-31")
     }
 
     /** V1 bez internetu przy danych z aplikacji: linia „Bez internetu” bez daty. Wymagania: US9.1, NFR-10 */
     @Test
-    fun us9_1_v1_bez_internetu_jasny() {
+    fun drawsLightOffline() {
         capture(isSheetOpen = false, isOnline = false)
     }
 
     /** V2 mała karta bez internetu: plakietka „Bez internetu” nad symbolem. Wymagania: US2.8, NFR-10 */
     @Test
-    fun nfr10_v2_arkusz_bez_internetu() {
+    fun drawsOfflineSheet() {
         capture(isOnline = false)
     }
 
     /** V1 z wybraną listą budynków. Wymagania: NFR-19 */
     @Test
-    fun nfr19_v1_lista_jasny() {
+    fun drawsLightList() {
         capture(isSheetOpen = false, isList = true)
     }
 
@@ -185,19 +185,19 @@ class AppShellScreenshotTest {
 
     /** V2 jako mała karta nad V1. Wymagania: NFR-16 */
     @Test
-    fun nfr16_v2_arkusz_jasny() {
+    fun drawsLightSheet() {
         capture()
     }
 
     @Test
-    fun nfr16_v2_arkusz_ciemny() {
+    fun drawsDarkSheet() {
         RuntimeEnvironment.setQualifiers("+night")
         capture()
     }
 
     /** Czcionka 200 %: nagłówek, uchwyt i pasek dolny. Wymagania: NFR-20 */
     @Test
-    fun nfr20_v2_arkusz_200() {
+    fun drawsSheetAtFont200() {
         RuntimeEnvironment.setFontScale(2f)
         capture()
     }

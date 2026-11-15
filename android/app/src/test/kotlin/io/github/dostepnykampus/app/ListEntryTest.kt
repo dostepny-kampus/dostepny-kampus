@@ -84,7 +84,7 @@ class ListEntryTest {
 
     /** Wiersz: V1, dotknięcie konturu budynku → V2, mała karta nad mapą także przy TalkBack. Wymagania: US2.8 */
     @Test
-    fun us2_8_contour_talkback_compact() {
+    fun keepsCompactForContour() {
         choice.savedChoice.value = false
         showApp()
         compose.waitUntil { compose.onAllNodesWithText(OSM).fetchSemanticsNodes().isNotEmpty() }
@@ -100,7 +100,7 @@ class ListEntryTest {
      * Wymagania: US2.8, NFR-19, NFR-22
      */
     @Test
-    fun nfr19_list_compact_to_list() {
+    fun returnsCompactToList() {
         shadowOf(compose.activity.getSystemService(AccessibilityManager::class.java)).setTouchExplorationEnabled(false)
         val restoration = StateRestorationTester(compose)
         restoration.setContent { Shell() }
@@ -120,7 +120,7 @@ class ListEntryTest {
      * Wymagania: US1.1, US2.8
      */
     @Test
-    fun us1_1_search_talkback_compact() {
+    fun keepsCompactForSearch() {
         choice.savedChoice.value = false
         showApp()
         compose.onNode(hasSetTextAction()).performTextInput("A-1")

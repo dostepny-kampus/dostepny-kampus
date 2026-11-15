@@ -141,16 +141,16 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 | dziedzina bez frameworków, adapter nie woła adaptera | `BarrierArchitectureTest` (A-1…A-9), dziś tylko `barrier`: #1704 |
 | nazwy pakietów ze słownika, zakazane nazwy, głębokość | serwer #1665, Android #1672 |
 | opis każdego pakietu | serwer `PackageDescriptionArchitectureTest`, Android #1673 |
-| brak cykli między pakietami modułu | serwer #1667; Android: podpakiet nie importuje korzenia (poza `R`), Konsist `infra_feature_part_skips_root` |
+| brak cykli między pakietami modułu | serwer #1667; Android: podpakiet nie importuje korzenia (poza `R`), Konsist `keepsPartsOffRoot` |
 | moduł serwera uruchamia się sam | #1670 |
 | migracje modułu w jego katalogu, brak kluczy obcych między modułami | #1671 |
 | najwyżej 15 plików w pakiecie | `PackageSizeArchitectureTest` (serwer i Android) |
 | moduł Androida ma kod produkcyjny | `ModuleContentArchitectureTest` |
-| moduł funkcji nie widzi bazy i sieci | kompilator: moduł funkcji nie ma ich w zależnościach, także w testach; Konsist `infra_a1_ui_no_network_or_db`; Module Graph Assert: #1674 |
+| moduł funkcji nie widzi bazy i sieci | kompilator: moduł funkcji nie ma ich w zależnościach, także w testach; Konsist `keepsUiOffNetworkAndDb`; Module Graph Assert: #1674 |
 | tylko `:core:data` i `:app` zależą od bazy i sieci (sieci także `:systemtest`), nigdy przez `api` | `StorageDependencyArchitectureTest` |
-| moduł funkcji nie importuje innego modułu funkcji | Konsist `infra_a1_feature_not_on_other` |
-| publiczne API `:core:data` (poza `di`) bez typów `:core:network` | Konsist `infra_data_api_skips_network` |
-| moduł `core` nie importuje modułu funkcji | Konsist `infra_a1_core_not_on_feature` |
+| moduł funkcji nie importuje innego modułu funkcji | Konsist `keepsFeatureOffOther` |
+| publiczne API `:core:data` (poza `di`) bez typów `:core:network` | Konsist `keepsNetworkOutOfDataApi` |
+| moduł `core` nie importuje modułu funkcji | Konsist `keepsCoreOffFeature` |
 | jawna widoczność w modułach `core` | `explicitApi()`; `:core:data`: #1625 |
 | kontrakt publicznych interfejsów `:core:data` | #1675 |
 | zadeklarowane zależności Gradle są używane i mają właściwy zakres | `buildHealth` |

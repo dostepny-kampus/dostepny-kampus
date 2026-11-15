@@ -20,13 +20,13 @@ import java.io.File
 class ClassNameArchitectureTest {
     /** Kod produkcyjny nie ma zbiorczych klas pomocniczych. */
     @Test
-    fun infra_class_name_not_catch_all() {
+    fun forbidsCatchAllNames() {
         assertEquals(emptyList<String>(), violations(Konsist.scopeFromProduction()), HINT)
     }
 
     /** Nazwy `Utils`, `Helper` i `Manager` łamią regułę, rola `ViewModel` nie. */
     @Test
-    fun infra_class_name_rejects(
+    fun rejectsCatchAllName(
         @TempDir fixtures: File,
     ) {
         File(fixtures, "Samples.kt").writeText(

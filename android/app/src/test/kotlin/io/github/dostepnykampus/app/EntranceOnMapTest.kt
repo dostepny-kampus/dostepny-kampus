@@ -155,7 +155,7 @@ class EntranceOnMapTest {
 
     /** Wiersz E2 (O1, O2, O4): V3 → V1; mapa dostaje wybrane wejście z punktem i podpisem z nazwą. */
     @Test
-    fun us3_3_map_gets_entrance() {
+    fun passesEntranceToMap() {
         showEntranceOnMap(namedCatalog())
         val expected = SelectedEntrance(id = NAMED_ID, location = NAMED_AT, label = NAMED, buildingSymbol = "A-1")
         assertEquals(expected, selections.last().entrance)
@@ -163,7 +163,7 @@ class EntranceOnMapTest {
 
     /** Wiersz E2, E4: wejście bez nazwy w danych dostaje podpis zastępczy, także dla TalkBack. */
     @Test
-    fun us3_3_unnamed_gets_fallback() {
+    fun namesUnnamedEntrance() {
         val json = catalog(entrance(10, NAMED_AT, """"entrance":"yes","wheelchair":"yes""""), *OTHERS)
         showEntranceOnMap(json)
         val selected = selections.last().entrance
@@ -174,7 +174,7 @@ class EntranceOnMapTest {
 
     /** Wiersz E2 (O5): pozostałe wejścia, także niedostępne i bez danych, zostają w danych mapy. */
     @Test
-    fun us3_3_other_entrances_stay() {
+    fun keepsOtherEntrances() {
         val (data, _) = showEntranceOnMap(namedCatalog())
         assertEquals(NAMED_ID, selections.last().entrance?.id)
         assertEquals(3, Regex("\"marking\"").findAll(data.entrances.toString()).count())
@@ -182,14 +182,14 @@ class EntranceOnMapTest {
 
     /** Wiersz E3 (O3): kamera na wejściu, nie na budynku (środek budynku to 0,5; 0,5). */
     @Test
-    fun us3_3_camera_on_entrance() {
+    fun centersCameraOnEntrance() {
         val (_, camera) = showEntranceOnMap(namedCatalog())
         assertEquals(NAMED_AT, camera.center)
     }
 
     /** Wiersz E4: TalkBack czyta nazwę zaznaczonego wejścia i budynek. */
     @Test
-    fun nfr18_entrance_read_aloud() {
+    fun readsEntranceAloud() {
         showEntranceOnMap(namedCatalog())
         compose.onNode(read(SELECTED_NAMED)).assertExists()
     }

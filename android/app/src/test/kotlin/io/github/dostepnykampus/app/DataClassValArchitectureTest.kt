@@ -20,13 +20,13 @@ import java.io.File
 class DataClassValArchitectureTest {
     /** Klasy danych modułów modelu i danych mają tylko `val`. */
     @Test
-    fun infra_data_class_only_val() {
+    fun allowsOnlyVal() {
         assertEquals(emptyList<String>(), violations(Konsist.scopeFromProduction(), MODULES), HINT)
     }
 
     /** Właściwość `var` w konstruktorze i w ciele łamie regułę; zwykła klasa z `var` nie. */
     @Test
-    fun infra_data_class_rejects_var(
+    fun rejectsVar(
         @TempDir fixtures: File,
     ) {
         File(fixtures, "Samples.kt").writeText(

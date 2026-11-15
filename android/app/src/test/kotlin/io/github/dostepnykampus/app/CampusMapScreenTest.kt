@@ -117,6 +117,8 @@ internal fun dispatchStatusBar(activity: ComponentActivity) {
  * Ekran V1 z widokiem zastępczym zamiast MapLibre i katalogiem „Budynek testowy” (nie dane PWr).
  *
  * `KEYBOARD_HEIGHT`: Wysokość klawiatury w pikselach: przy gęstości zrzutów 2× to 300 dp, jak na telefonie.
+ *
+ * Wymagania: US2, US1
  */
 @RunWith(RobolectricTestRunner::class)
 class CampusMapScreenTest {
@@ -184,7 +186,7 @@ class CampusMapScreenTest {
 
     /** Plakietka jest niska jak w hi-fi, ale odnośnik ma cel dotyku 48 dp. Wymagania: NFR-17 */
     @Test
-    fun nfr53_buttons_nfr37_osm_us2() {
+    fun showsButtonsAndOsm() {
         compose.setContent { Screen() }
         compose.onNodeWithContentDescription("Powiększ").performClick()
         compose.onNodeWithContentDescription("Przesuń mapę w górę").performClick()
@@ -206,7 +208,7 @@ class CampusMapScreenTest {
      * Wymagania: NFR-39, NFR-53
      */
     @Test
-    fun nfr53_arrows_stop_at_edge() {
+    fun stopsArrowsAtEdge() {
         compose.setContent { Screen() }
         repeat(times = 5) { compose.onNodeWithContentDescription("Pomniejsz").performClick() }
         repeat(times = 40) { compose.onNodeWithContentDescription("Przesuń mapę w prawo").performClick() }
@@ -221,7 +223,7 @@ class CampusMapScreenTest {
      * Wymagania: NFR-39, NFR-53
      */
     @Test
-    fun nfr39_zoom_out_stops_at_campus() {
+    fun stopsZoomOutAtCampus() {
         ring = "[[0,0],[0.001,0],[0.001,0.001],[0,0]]"
         compose.setContent { Screen() }
         repeat(times = 20) { compose.onNodeWithContentDescription("Pomniejsz").performClick() }
@@ -240,7 +242,7 @@ class CampusMapScreenTest {
      * Wymagania: NFR-19, NFR-20, NFR-37
      */
     @Test
-    fun nfr20_list_start_short_osm() {
+    fun shortensOsmOnList() {
         compose.setContent { Screen(fontScale = 1.5f) }
         compose.onNode(hasText("Lista") and hasContentDescription("Lista budynków")).assertIsSelected()
         compose.onNode(hasText("Mapa") and isSelectable()).performClick()
@@ -254,7 +256,7 @@ class CampusMapScreenTest {
      * Wymagania: NFR-19
      */
     @Test
-    fun nfr19_saved_list_choice() {
+    fun keepsListChoice() {
         choice.savedChoice.value = true
         compose.setContent { Screen() }
         compose.onNode(listToggle).assertIsSelected()
@@ -263,7 +265,7 @@ class CampusMapScreenTest {
 
     /** Wiersz: kontur wspólny „C-13/C-14” → arkusz „Który budynek?”, przycisk budynku → V2. */
     @Test
-    fun us2_which_building_opens_v2() {
+    fun opensCardFromChoice() {
         compose.setContent { Screen() }
         compose.waitForIdle()
         compose.runOnUiThread { touch(listOf("C-13", "C-14")) }
@@ -279,7 +281,7 @@ class CampusMapScreenTest {
 
     /** Wiersz: „Zamknij” w arkuszu „Który budynek?” → V1 bez arkusza. */
     @Test
-    fun us2_which_building_closes() {
+    fun closesBuildingChoice() {
         compose.setContent { Screen() }
         compose.waitForIdle()
         compose.runOnUiThread { touch(listOf("C-13", "C-14")) }
@@ -294,7 +296,7 @@ class CampusMapScreenTest {
      * zostawia.
      */
     @Test
-    fun us2_which_building_empty_tap() {
+    fun closesChoiceOnEmptyTap() {
         compose.setContent { Screen() }
         compose.waitForIdle()
         compose.runOnUiThread { touch(listOf("C-13", "C-14")) }
@@ -308,7 +310,7 @@ class CampusMapScreenTest {
      * Wymagania: NFR-53
      */
     @Test
-    fun nfr53_keyboard_hides_buttons() {
+    fun hidesButtonsForKeyboard() {
         compose.setContent { Screen() }
         keyboard(isOpen = true)
         compose.onNodeWithContentDescription("Powiększ").assertDoesNotExist()
@@ -365,7 +367,7 @@ class CampusMapScreenTest {
      * Wymagania: NFR-16
      */
     @Test
-    fun nfr16_status_bar_background() {
+    fun paintsStatusBar() {
         var sheet by mutableStateOf(200.dp)
         compose.setContent { Screen(focus = "C-13", sheet = sheet) }
         compose.runOnUiThread { dispatchStatusBar(compose.activity) }
@@ -401,7 +403,7 @@ class CampusMapScreenTest {
      * Wymagania: US2.8, NFR-17
      */
     @Test
-    fun us2_8_empty_map_tap() {
+    fun handlesEmptyMapTap() {
         compose.setContent { Screen(focus = "C-13", sheet = 200.dp) }
         compose.waitForIdle()
         compose.runOnUiThread { listOf(listOf("C-13"), listOf("C-13", "C-14")).forEach(touch) }
@@ -449,7 +451,7 @@ class CampusMapScreenTest {
      * Wymagania: US1.1
      */
     @Test
-    fun us1_1_search_c13_no_dash() {
+    fun findsC13WithoutDash() {
         assertFindsC13("C13")
     }
 
@@ -460,7 +462,7 @@ class CampusMapScreenTest {
      * Wymagania: US1.1
      */
     @Test
-    fun us1_1_search_c13_lowercase() {
+    fun findsC13InLowercase() {
         assertFindsC13("c-13")
     }
 
@@ -471,7 +473,7 @@ class CampusMapScreenTest {
      * Wymagania: US1.1
      */
     @Test
-    fun us1_1_search_c13_exact() {
+    fun findsC13Exactly() {
         assertFindsC13("C-13")
     }
 
@@ -484,7 +486,7 @@ class CampusMapScreenTest {
 
     /** Wiersz: pole symbolu „c14” → wynik „Budynek C-14” → V2 z obrysem. Wymagania: US1.1 */
     @Test
-    fun us1_1_search_result_opens_v2() {
+    fun opensCardFromResult() {
         compose.setContent { Screen() }
         compose.onNode(hasSetTextAction()).performTextInput("c14")
         compose.onNodeWithText("Budynek C-14", useUnmergedTree = true).assertExists()
@@ -502,7 +504,7 @@ class CampusMapScreenTest {
      * Wymagania: US1.1, NFR-15
      */
     @Test
-    fun us1_1_result_hides_keyboard() {
+    fun hidesKeyboardOnResult() {
         val keyboard = HidingKeyboard()
         compose.setContent { CompositionLocalProvider(LocalSoftwareKeyboardController provides keyboard) { Screen() } }
         enterTouchMode()
@@ -515,7 +517,7 @@ class CampusMapScreenTest {
 
     /** Wiersz: „A-1 329” → stan „brak wyniku”; „×” „Wyczyść pole” → pole puste. */
     @Test
-    fun us1_1_no_result_and_clear() {
+    fun clearsNoResult() {
         compose.setContent { Screen() }
         compose.onNode(hasSetTextAction()).performTextInput("A-1 329")
         compose.onNodeWithText("Nie znaleźliśmy budynku „A-1 329”.").assertExists()
@@ -531,7 +533,7 @@ class CampusMapScreenTest {
      * Wymagania: NFR-19, US2.5
      */
     @Test
-    fun nfr19_list_opens_v2_on_map() {
+    fun opensCardFromList() {
         var sheet by mutableStateOf(0.dp)
         compose.setContent { Screen(sheet = sheet) }
         compose.onNode(listToggle).performClick().assertIsSelected()
@@ -549,7 +551,7 @@ class CampusMapScreenTest {
 
     /** Wiersz: V1, lista i pole symbolu → lista zawężona do wpisanego budynku. Wymagania: NFR-19, US1.1 */
     @Test
-    fun nfr19_symbol_narrows_list() {
+    fun narrowsListBySymbol() {
         compose.setContent { Screen() }
         compose.onNode(listToggle).performClick()
         compose.onNode(hasSetTextAction()).performTextInput("c14")
@@ -559,7 +561,7 @@ class CampusMapScreenTest {
 
     /** Wiersz: V1, brak wyniku → „Lista budynków” w karcie czyści pole i pokazuje całą listę (PW-9). Wymagania: UC1 */
     @Test
-    fun uc1_3a_no_result_opens_list() {
+    fun opensListOnNoResult() {
         compose.setContent { Screen() }
         compose.onNode(hasSetTextAction()).performTextInput("C-31")
         val inCard = hasAnyAncestor(SemanticsMatcher.keyIsDefined(SemanticsProperties.LiveRegion))
@@ -576,7 +578,7 @@ class CampusMapScreenTest {
      * Wymagania: US9.1, NFR-10
      */
     @Test
-    fun us9_1_offline_line() {
+    fun showsOfflineLine() {
         compose.setContent { Screen() }
         compose.onNodeWithText("Bez internetu", substring = true).assertDoesNotExist()
         online.value = false
@@ -590,7 +592,7 @@ class CampusMapScreenTest {
 
     /** Wiersz: V2 otwarte od razu, „Pokaż budynek na mapie” → V1 z zaznaczonym budynkiem. Wymagania: US2.9 */
     @Test
-    fun us1_1_focus_reaches_map() {
+    fun movesFocusToMap() {
         compose.setContent { Screen(focus = "C-14") }
         compose.waitForIdle()
         assertEquals("C-14", focuses.last())
@@ -598,7 +600,7 @@ class CampusMapScreenTest {
 
     /** Wiersz: V2, „Wstecz” → V1 w poprzednim stanie z tym samym widokiem kamery. */
     @Test
-    fun us1_camera_survives_restore() {
+    fun keepsCameraAfterRestore() {
         val restoration = StateRestorationTester(compose)
         restoration.setContent { Screen() }
         compose.onNodeWithContentDescription("Powiększ").performClick()

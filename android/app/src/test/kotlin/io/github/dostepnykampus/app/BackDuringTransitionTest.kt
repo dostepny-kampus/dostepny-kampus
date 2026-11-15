@@ -63,7 +63,7 @@ class BackDuringTransitionTest {
      * Wymagania: US3, US1.1
      */
     @Test
-    fun us3_back_mid_transition() {
+    fun goesBackMidTransition() {
         compose.setContent { Shell() }
         compose.onNodeWithText("A-1").performClick()
         compose.waitForIdle()
@@ -84,7 +84,7 @@ class BackDuringTransitionTest {
 
     /** Wiersz kontrolny: V2 → V3, „Wstecz” po końcu przejścia → V2; kolejne „Wstecz” → V1. Wymagania: US3, US1.1 */
     @Test
-    fun us3_back_after_transition() {
+    fun goesBackAfterTransition() {
         compose.setContent { Shell() }
         compose.onNodeWithText("A-1").performClick()
         compose.waitForIdle()
