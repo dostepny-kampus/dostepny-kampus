@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.database
 
+import android.app.Application
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import io.github.dostepnykampus.core.database.submission.PendingPhotoEntity
@@ -36,7 +37,7 @@ class QueueAfterRestartTest {
             val app = RuntimeEnvironment.getApplication()
             val before = DatabaseModule.database(app)
             IDS.forEachIndexed { index, id ->
-                before.pendingSubmissions().save(submission(id, savedAt = index.toLong()), photos(of = id))
+                before.pendingSubmissions().save(submission(id, savedAt = index.toLong()), photos(app, of = id))
                 before.ownSubmissions().save(OwnSubmissionEntity(id = id, savedAtMillis = index.toLong(), kind = KIND))
             }
             before.close()
@@ -55,9 +56,9 @@ class QueueAfterRestartTest {
             assertTrue(own.all { it.state == OwnSubmissionState.LOCAL })
         }
 
-    private fun photos(of: String): List<PendingPhotoEntity> =
+    private fun photos(app: Application, of: String): List<PendingPhotoEntity> =
         (1..PHOTOS_EACH).map { number ->
-            val file = File(RuntimeEnvironment.getApplication().filesDir, "zdjecia/$of-$number.jpg").apply { parentFile?.mkdirs() }
+            val file = File(app.filesDir, "zdjecia/$of-$number.jpg").apply { parentFile?.mkdirs() }
             file.writeBytes(byteArrayOf(1, 2, 3))
             PendingPhotoEntity(submissionId = of, photoId = "$of-$number", path = file.path, isUploaded = false)
         }
