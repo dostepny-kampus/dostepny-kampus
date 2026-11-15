@@ -43,7 +43,7 @@ class SubmissionSyncAtStartTest {
 
     /** Wiersz: start aplikacji planuje wysyłkę, która czeka na internet. Wymagania: NFR-6 */
     @Test
-    fun nfr6_start_waits_for_network() {
+    fun waitsForNetworkAtStart() {
         SubmissionSyncInitializer().create(app)
         val work = syncWork().single()
         assertEquals(WorkInfo.State.ENQUEUED, work.state)
@@ -52,7 +52,7 @@ class SubmissionSyncAtStartTest {
 
     /** Wiersz: drugi start w tym samym oknie nie dubluje zadania. Wymagania: NFR-6 */
     @Test
-    fun nfr6_second_start_one_work() {
+    fun keepsOneWorkOnSecondStart() {
         SubmissionSyncInitializer().create(app)
         SubmissionSyncInitializer().create(app)
         assertEquals(1, syncWork().size)
@@ -65,7 +65,7 @@ class SubmissionSyncAtStartTest {
      * Wymagania: NFR-6
      */
     @Test
-    fun nfr6_save_appends_work() {
+    fun appendsWorkOnSave() {
         val scheduler = SubmissionSyncScheduler(app)
         scheduler.schedule()
         scheduler.scheduleAfterSave()
@@ -76,7 +76,7 @@ class SubmissionSyncAtStartTest {
 
     /** Wiersz: inicjalizator jest w manifeście, więc system woła go przy starcie procesu. Wymagania: NFR-6 */
     @Test
-    fun nfr6_initializer_in_manifest() {
+    fun listsInitializerInManifest() {
         val provider =
             app.packageManager.getProviderInfo(
                 ComponentName(app, InitializationProvider::class.java),

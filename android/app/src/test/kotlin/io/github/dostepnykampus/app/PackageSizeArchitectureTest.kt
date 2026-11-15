@@ -19,21 +19,21 @@ import java.io.File
 class PackageSizeArchitectureTest {
     /** Pakiety spoza listy wyjątków mieszczą się w limicie. */
     @Test
-    fun infra_package_fits_limit() {
+    fun limitsPackageSize() {
         val found = oversized(Konsist.scopeFromProduction().files)
         assertEquals(emptyMap<String, Int>(), found - OVERSIZED.keys, HINT)
     }
 
     /** Wpis listy wyjątków dla pakietu, który mieści się w limicie, czerwieni test. */
     @Test
-    fun infra_package_list_shrinks() {
+    fun shrinksPackageList() {
         val found = oversized(Konsist.scopeFromProduction().files)
         assertEquals(emptySet<String>(), OVERSIZED.keys - found.keys)
     }
 
     /** Szesnasty plik w pakiecie łamie regułę, piętnaście plików nie. */
     @Test
-    fun infra_package_rule_rejects(
+    fun rejectsLargePackage(
         @TempDir fixtures: File,
     ) {
         val full = File(fixtures, "full").apply { mkdirs() }

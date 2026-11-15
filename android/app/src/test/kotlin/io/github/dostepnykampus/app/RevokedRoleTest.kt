@@ -81,7 +81,7 @@ class RevokedRoleTest {
      * Scenariusz: synchronizacja.feature: Odebrana rola zostawia zgłoszenie w telefonie ze statusem „Nie wysłano”
      */
     @Test
-    fun us9_5_revoked_role() {
+    fun handlesRevokedRole() {
         val queue = queue()
         runBlocking {
             queue.save(precise(), photo())

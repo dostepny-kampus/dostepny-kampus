@@ -145,7 +145,7 @@ class SheetBackGestureTest {
      * Wymagania: US2
      */
     @Test
-    fun us2_cancel_keeps_half_sheet() = checkCancel(isExpanded = false)
+    fun keepsHalfSheetOnCancel() = checkCancel(isExpanded = false)
 
     /**
      * Wiersz: V2 rozwinięte, gest „Wstecz” 0,6 i anulowanie → arkusz w dół, potem znów rozwinięty, V2 zostaje.
@@ -153,7 +153,7 @@ class SheetBackGestureTest {
      * Wymagania: US2
      */
     @Test
-    fun us2_cancel_keeps_full_sheet() = checkCancel(isExpanded = true)
+    fun keepsFullSheetOnCancel() = checkCancel(isExpanded = true)
 
     /**
      * Wiersz: V2, gest „Wstecz” 0,5 i zakończenie → mapa V1 nad arkuszem nie przenika i nie blaknie;
@@ -162,7 +162,7 @@ class SheetBackGestureTest {
      * Wymagania: US2, US1.1, NFR-15
      */
     @Test
-    fun us1_1_gesture_closes_v2() {
+    fun closesCardOnGesture() {
         compose.setContent { Shell() }
         openSheet(isExpanded = false)
         val before = mapBand()
@@ -179,7 +179,7 @@ class SheetBackGestureTest {
 
     /** Wiersz: V1, dotknięcie konturu → V2, „Wstecz” przyciskiem → V1: mapa nie miga. Wymagania: US2 */
     @Test
-    fun us2_open_close_map_unchanged() {
+    fun keepsMapOnOpenAndClose() {
         compose.setContent { Shell() }
         val before = mapBand()
         compose.mainClock.autoAdvance = false
@@ -193,7 +193,7 @@ class SheetBackGestureTest {
 
     /** Wiersz: V2 rozwinięte, odtworzenie aktywności → arkusz dalej rozwinięty. Wymagania: NFR-22 */
     @Test
-    fun nfr22_full_sheet_restored() {
+    fun restoresFullSheet() {
         val restoration = StateRestorationTester(compose)
         restoration.setContent { Shell() }
         openSheet(isExpanded = true)
@@ -241,7 +241,7 @@ class SheetBackGestureTest {
      * Wymagania: US1.1
      */
     @Test
-    fun us1_1_half_sheet_slides_out() = checkSlideOut(isExpanded = false)
+    fun slidesHalfSheetOut() = checkSlideOut(isExpanded = false)
 
     /**
      * Wiersz: pełny ekran po małej karcie, „Wstecz” przyciskiem albo gestem → znowu mała karta, V2 zostaje;
@@ -250,7 +250,7 @@ class SheetBackGestureTest {
      * Wymagania: NFR-15, US2.8
      */
     @Test
-    fun nfr15_full_back_collapses() {
+    fun collapsesFullOnBack() {
         compose.setContent { Shell() }
         openSheet(isExpanded = true)
         compose.mainClock.autoAdvance = true
@@ -272,7 +272,7 @@ class SheetBackGestureTest {
      * Wymagania: US2.8, NFR-53
      */
     @Test
-    fun us2_8_handle_drag_expands() {
+    fun expandsOnHandleDrag() {
         compose.setContent { Shell() }
         compose.onNodeWithText("A-1").performClick()
         compose.onNode(sheetHandle(isExpanded = false)).performTouchInput {
@@ -308,7 +308,7 @@ class SheetBackGestureTest {
      * Wymagania: US2
      */
     @Test
-    fun us2_half_sheet_slides_back() = checkSlideBack(isExpanded = false)
+    fun slidesHalfSheetBack() = checkSlideBack(isExpanded = false)
 
     /**
      * Wiersz: V2 rozwinięte, gest „Wstecz” 0,6 i anulowanie → arkusz wraca płynnie i zostaje rozwinięty.
@@ -316,7 +316,7 @@ class SheetBackGestureTest {
      * Wymagania: US2
      */
     @Test
-    fun us2_full_sheet_slides_back() = checkSlideBack(isExpanded = true)
+    fun slidesFullSheetBack() = checkSlideBack(isExpanded = true)
 
     /**
      * Wiersz: mała karta, „Wstecz” przyciskiem, bez gestu → arkusz dojeżdża w dół, potem V2 zdjęte z historii.
@@ -324,7 +324,7 @@ class SheetBackGestureTest {
      * Wymagania: US1.1
      */
     @Test
-    fun us1_1_back_button_slides_out() {
+    fun slidesOutOnBackButton() {
         compose.setContent { Shell() }
         openSheet(isExpanded = false)
         val bottom = mapBottom()
@@ -340,7 +340,7 @@ class SheetBackGestureTest {
 
     /** Wiersz: mała karta, gest „Wstecz” 0,2 → 0,6 → arkusz od razu tam, gdzie palec, bez animacji. Wymagania: US2 */
     @Test
-    fun us2_sheet_follows_finger() {
+    fun followsFinger() {
         compose.setContent { Shell() }
         openSheet(isExpanded = false)
         val before = sheetTop("przed gestem")
@@ -360,7 +360,7 @@ class SheetBackGestureTest {
      * Wymagania: US1.1
      */
     @Test
-    fun us1_1_second_back_closes_once() {
+    fun closesOnceOnSecondBack() {
         var backs = 0
         compose.setContent {
             NavDisplay(
@@ -388,7 +388,7 @@ class SheetBackGestureTest {
      * Wymagania: US1.1
      */
     @Test
-    fun us1_1_gesture_while_closing() {
+    fun handlesGestureWhileClosing() {
         compose.setContent { Shell() }
         openSheet(isExpanded = false)
         pressBack()
@@ -410,7 +410,7 @@ class SheetBackGestureTest {
      * Wymagania: US1.1, US2
      */
     @Test
-    fun us1_1_reopen_after_slide_out() {
+    fun reopensAfterSlideOut() {
         compose.setContent { Shell() }
         openSheet(isExpanded = false)
         val before = sheetTop("przed zamknięciem")
@@ -431,7 +431,7 @@ class SheetBackGestureTest {
      * Wymagania: US2
      */
     @Test
-    fun us2_cancel_same_frame_slides() {
+    fun slidesOnSameFrameCancel() {
         compose.setContent { Shell() }
         openSheet(isExpanded = false)
         val before = sheetTop("przed gestem")
@@ -453,7 +453,7 @@ class SheetBackGestureTest {
      * Wymagania: NFR-52
      */
     @Test
-    fun nfr52_sheet_below_status_bar() {
+    fun keepsSheetBelowStatusBar() {
         compose.setContent { Shell() }
         val bars = WindowInsetsCompat.Builder().setInsets(Type.statusBars(), Insets.of(0, 24, 0, 0)).build()
         val view = compose.activity.findViewById<ViewGroup>(android.R.id.content).getChildAt(0)

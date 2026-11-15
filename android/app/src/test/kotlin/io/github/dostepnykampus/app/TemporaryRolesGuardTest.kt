@@ -20,12 +20,12 @@ import java.io.File
  */
 class TemporaryRolesGuardTest {
     @Test
-    fun `bez logowania adnotacja jest`() {
+    fun requiresAnnotationWithoutLogin() {
         assertEquals(emptySet<String>(), leftovers(Konsist.scopeFromProduction().files))
     }
 
     @Test
-    fun `logowanie i adnotacja to błąd`(
+    fun rejectsLoginWithAnnotation(
         @TempDir fixtures: File,
     ) {
         val files =
@@ -40,7 +40,7 @@ class TemporaryRolesGuardTest {
     }
 
     @Test
-    fun `sama adnotacja przechodzi`(
+    fun acceptsAnnotationAlone(
         @TempDir fixtures: File,
     ) {
         val files = fixtures.fixture(name = "TymczasoweRole.kt", source = "package $ACCOUNT\n\n$ANNOTATION")

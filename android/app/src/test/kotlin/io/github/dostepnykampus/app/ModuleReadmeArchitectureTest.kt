@@ -19,33 +19,33 @@ import java.io.File
 class ModuleReadmeArchitectureTest {
     /** Moduły spoza listy wyjątków mają pełny opis zgodny z zależnościami. */
     @Test
-    fun infra_readme_matches_build() {
+    fun matchesReadmeToBuild() {
         val found = problems(projectRoot())
         assertEquals(emptyMap<String, String>(), found - UNDESCRIBED.keys, HINT)
     }
 
     /** Wpis listy wyjątków dla modułu, który ma już pełny opis, czerwieni test. */
     @Test
-    fun infra_readme_list_shrinks() {
+    fun shrinksReadmeList() {
         assertEquals(emptySet<String>(), UNDESCRIBED.keys - problems(projectRoot()).keys)
     }
 
     /** Moduły spoza listy wyjątków opisują w części „Pakiety” dokładnie swoje pakiety produkcyjne. */
     @Test
-    fun infra_readme_packages_match() {
+    fun matchesReadmePackages() {
         val found = packageProblems(projectRoot())
         assertEquals(emptyMap<String, String>(), found - NO_PACKAGES.keys, PACKAGES_HINT)
     }
 
     /** Wpis listy wyjątków dla modułu, który ma już poprawną część „Pakiety”, czerwieni test. */
     @Test
-    fun infra_readme_packages_shrink() {
+    fun shrinksPackageList() {
         assertEquals(emptySet<String>(), NO_PACKAGES.keys - packageProblems(projectRoot()).keys)
     }
 
     /** Brak części „Pakiety”, pakiet bez linii i linia o nieistniejącym pakiecie łamią regułę. */
     @Test
-    fun infra_readme_packages_rejects(
+    fun rejectsReadmePackages(
         @TempDir root: File,
     ) {
         File(root, "settings.gradle.kts")
@@ -62,7 +62,7 @@ class ModuleReadmeArchitectureTest {
 
     /** Brak części opisu i zależność spoza `build.gradle.kts` łamią regułę, pełny zgodny opis nie. */
     @Test
-    fun infra_readme_rule_rejects(
+    fun rejectsReadme(
         @TempDir root: File,
     ) {
         File(root, "settings.gradle.kts").writeText("""include(":core:ok", ":core:partial", ":core:wrong")""")

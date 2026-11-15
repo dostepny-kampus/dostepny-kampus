@@ -19,23 +19,23 @@ class NullabilityArchitectureTest {
     private val production = Konsist.scopeFromProduction().files
 
     @Test
-    fun dec122_model_nullable_listed() {
+    fun listsNullableModelFields() {
         assertEquals(emptySet<String>(), nullablePropertiesOutsideList(production))
     }
 
     @Test
-    fun dec124_listed_nullable_exist() {
+    fun keepsListedNullableReal() {
         val present = nullableProperties(scope(production, MODEL))
         assertEquals(NULLABLE_IN_MODEL.keys, present.intersect(NULLABLE_IN_MODEL.keys))
     }
 
     @Test
-    fun dec122_dto_only_in_network() {
+    fun keepsDtoInNetwork() {
         assertEquals(emptySet<String>(), dtoOutsideNetwork(Konsist.scopeFromProject().files))
     }
 
     @Test
-    fun dec122_rule_rejects_nullable(
+    fun rejectsUnlistedNullable(
         @TempDir fixtures: File,
     ) {
         val files =
@@ -68,7 +68,7 @@ class NullabilityArchitectureTest {
     }
 
     @Test
-    fun dec122_rule_rejects_dto(
+    fun rejectsDtoOutsideNetwork(
         @TempDir fixtures: File,
     ) {
         val files =
@@ -84,7 +84,7 @@ class NullabilityArchitectureTest {
     }
 
     @Test
-    fun dec122_empty_scope_fails(
+    fun failsOnEmptyScope(
         @TempDir fixtures: File,
     ) {
         val files =

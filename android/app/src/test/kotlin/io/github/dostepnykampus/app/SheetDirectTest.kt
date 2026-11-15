@@ -81,7 +81,7 @@ class SheetDirectTest {
      */
     @Test
     @Config(fontScale = 2f)
-    fun nfr20_large_font_v2_direct() {
+    fun opensDirectAtLargeFont() {
         show()
         checkDirect("czcionka 200 %")
     }
@@ -94,7 +94,7 @@ class SheetDirectTest {
      */
     @Test
     @Config(fontScale = 2f)
-    fun nfr15_direct_back_one_step() {
+    fun goesBackOneStepFromDirect() {
         show()
         compose.onNodeWithText("Wstecz").performClick()
         compose.onNodeWithText("V1").assertExists("V1 po jednym „Wstecz” w górnym pasku")
@@ -116,7 +116,7 @@ class SheetDirectTest {
      * Wymagania: NFR-51, NFR-20, NFR-22
      */
     @Test
-    fun nfr22_mode_follows_window() {
+    fun followsWindowMode() {
         var size by mutableStateOf(DpSize(width = 360.dp, height = 800.dp))
         var fontScale by mutableFloatStateOf(1f)
         compose.setContent {

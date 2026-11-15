@@ -28,7 +28,11 @@ import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
-/** Testy przejść; komentarz nad testem bez scenariusza podaje wiersz tabeli mapy nawigacji (ekran, czynność, AC/BR). */
+/**
+ * Testy przejść; komentarz nad testem bez scenariusza podaje wiersz tabeli mapy nawigacji (ekran, czynność, AC/BR).
+ *
+ * Wymagania: US14.2, US2, US4.6, US4.1
+ */
 class AppNavigatorTest {
     private val stack = mutableListOf<NavKey>(MapRoute())
     private val visitor = Account.SignedIn()
@@ -52,19 +56,19 @@ class AppNavigatorTest {
 
     /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcja przy pierwszym uruchomieniu. */
     @Test
-    fun us5_1_first_launch_opens_v5() {
+    fun opensHelpOnFirstLaunch() {
         assertEquals(stackOf(HelpRoute(isFirstLaunch = true)), startBackStack(firstLaunch = true))
     }
 
     /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy. */
     @Test
-    fun us5_1_next_launch_opens_v1() {
+    fun opensMapOnNextLaunch() {
         assertEquals(stackOf(), startBackStack(firstLaunch = false))
     }
 
     /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy. */
     @Test
-    fun us5_1_first_launch_back_v1() {
+    fun goesBackToMapOnFirstLaunch() {
         stack += startBackStack(firstLaunch = true).drop(1)
         navigator().back()
         assertEquals(stackOf(), stack)
@@ -77,7 +81,7 @@ class AppNavigatorTest {
      * Wymagania: US5.1
      */
     @Test
-    fun us5_1_first_help_left_via_l1() {
+    fun leavesFirstHelpViaSignIn() {
         stack += startBackStack(firstLaunch = true).drop(1)
         navigator().run {
             open(TopLevel.ACCOUNT)
@@ -93,7 +97,7 @@ class AppNavigatorTest {
      * Wymagania: US5.1
      */
     @Test
-    fun us5_1_bar_help_left_keeps_flag() {
+    fun keepsFlagOnBarHelpLeave() {
         navigator().run {
             open(TopLevel.HELP)
             open(TopLevel.ACCOUNT)
@@ -104,7 +108,7 @@ class AppNavigatorTest {
 
     /** Scenariusz (częściowo): zgloszenie-szybkie.feature: Gość rezygnuje z logowania. */
     @Test
-    fun uc7_1b_guest_not_now_v1() {
+    fun returnsGuestToMap() {
         navigator().run {
             open(TopLevel.REPORT)
             backToMap()
@@ -114,7 +118,7 @@ class AppNavigatorTest {
 
     /** Wiersz: pasek dolny (V1, V5, L2), „Mapa” → V1. Wymagania: US1 */
     @Test
-    fun us1_bar_map_returns_to_v1() {
+    fun returnsToMapFromBar() {
         stack += listOf(HelpRoute(), AccountRoute)
         navigator().open(TopLevel.MAP)
         assertEquals(stackOf(), stack)
@@ -122,7 +126,7 @@ class AppNavigatorTest {
 
     /** Wiersz: pasek dolny, ponowne dotknięcie wybranej pozycji → pierwszy ekran sekcji. Wymagania: NFR-15 */
     @Test
-    fun nfr15_reselect_restarts_v5() {
+    fun restartsHelpOnReselect() {
         navigator(visitor).run {
             open(TopLevel.ACCOUNT)
             open(TopLevel.HELP)
@@ -138,7 +142,7 @@ class AppNavigatorTest {
 
     /** Wiersz: pasek dolny, ponowne dotknięcie „Mapa” → V1 bez arkusza i wyniku wyszukiwania. Wymagania: NFR-15 */
     @Test
-    fun nfr15_reselect_map_restarts_v1() {
+    fun restartsMapOnReselect() {
         navigator().run {
             val key = contentKey(index = 0)
             open(TopLevel.HELP)
@@ -157,7 +161,7 @@ class AppNavigatorTest {
      * Wymagania: NFR-15
      */
     @Test
-    fun nfr15_same_screen_twice_keys() {
+    fun keysSameScreenTwice() {
         navigator(visitor).run {
             open(TopLevel.ACCOUNT)
             open(TopLevel.HELP)
@@ -170,7 +174,7 @@ class AppNavigatorTest {
 
     /** Wiersz: pasek dolny, „Zgłoś barierę” → V4, zalogowani. Wymagania: US4 */
     @Test
-    fun us4_bar_report_signed_in_v4() {
+    fun opensReportWhenSignedIn() {
         navigator(visitor).open(TopLevel.REPORT)
         assertEquals(stackOf(ReportRoute()), stack)
     }
@@ -179,14 +183,14 @@ class AppNavigatorTest {
      * Scenariusz (częściowo): zgloszenie-szybkie.feature: Gość niezalogowany jest proszony o logowanie przed zdjęciem.
      */
     @Test
-    fun us14_2_bar_report_guest_l1() {
+    fun opensSignInForGuestReport() {
         navigator().open(TopLevel.REPORT)
         assertEquals(stackOf(SignInRoute(isForReport = true)), stack)
     }
 
     /** Scenariusz (częściowo): przegladanie-mapy.feature: Instrukcję można otworzyć ponownie z pomocy. */
     @Test
-    fun us5_1_bar_help_v5_back_returns() {
+    fun returnsFromBarHelp() {
         navigator(visitor).run {
             open(TopLevel.ACCOUNT)
             repeat(times = 2) { open(TopLevel.HELP) }
@@ -198,7 +202,7 @@ class AppNavigatorTest {
 
     /** Wiersz: pasek dolny, „Konto” → L1. Wymagania: RO-GOS, US14 */
     @Test
-    fun us14_bar_account_guest_l1() {
+    fun opensSignInForGuestAccount() {
         navigator().open(TopLevel.ACCOUNT)
         assertEquals(stackOf(SignInRoute(isForReport = false)), stack)
     }
@@ -209,7 +213,7 @@ class AppNavigatorTest {
      * Wymagania: US14.1, RO-ODW
      */
     @Test
-    fun us14_1_bar_account_l2() {
+    fun opensAccount() {
         listOf(visitor, Account.SignedIn(setOf(StaffRole.VERIFIER))).forEach { account ->
             navigator(account).run {
                 backToMap()
@@ -221,14 +225,14 @@ class AppNavigatorTest {
 
     /** Wiersz: każdy ekran poza V1, „Wstecz”: V1 jest na dole historii, wstecz zamyka aplikację. Wymagania: NFR-15 */
     @Test
-    fun nfr15_back_on_v1_closes_app() {
+    fun closesAppOnMapBack() {
         assertFalse(navigator().back())
         assertEquals(stackOf(), stack)
     }
 
     /** Wymagania wspólne, wiersz „Pasek dolny na V1, V2, V3, V5 i L2”: L1 i V4 bez paska. */
     @Test
-    fun us14_1_bar_only_on_bar_screens() {
+    fun showsBarOnBarScreensOnly() {
         val expected = listOf(TopLevel.MAP, TopLevel.MAP, TopLevel.MAP, TopLevel.HELP, TopLevel.ACCOUNT)
         val routes = listOf(MapRoute(), BuildingRoute("A-1"), EntrancesRoute("A-1"), HelpRoute(), AccountRoute)
         assertEquals(expected, routes.map(::selectedItem))
@@ -239,7 +243,7 @@ class AppNavigatorTest {
 
     /** Wiersz: mała karta V2, „Wstecz” → V1 bez zaznaczenia budynku. Wymagania: US2.8 */
     @Test
-    fun us2_8_v2_back_v1_unselected() {
+    fun unselectsOnCardBack() {
         navigator().run {
             openBuilding(symbol = "C-13")
             back()
@@ -254,7 +258,7 @@ class AppNavigatorTest {
      * Wymagania: US2.8
      */
     @Test
-    fun us2_other_building_replaces_v2() {
+    fun replacesCardWithOther() {
         navigator().run {
             openBuilding(symbol = "C-13")
             openBuilding(symbol = "A-1")
@@ -271,7 +275,7 @@ class AppNavigatorTest {
      * Wymagania: US2.8, NFR-17
      */
     @Test
-    fun us2_8_empty_map_closes_v2() {
+    fun closesCardOnEmptyMap() {
         val selected = MapRoute(MapFocus.Building("A-1"))
         navigator().run {
             showOnMap(MapFocus.Building("A-1"))
@@ -294,7 +298,7 @@ class AppNavigatorTest {
      * Wymagania: US2.8
      */
     @Test
-    fun us2_8_v3_back_v1_selected() {
+    fun keepsSelectionOnEntranceBack() {
         navigator().run {
             openBuilding(symbol = "A-1")
             openEntrances(symbol = "A-1")
@@ -310,7 +314,7 @@ class AppNavigatorTest {
      * Wymagania: US2.1, US3
      */
     @Test
-    fun us3_2_v1_v2_v3_back_v2() {
+    fun goesBackToCard() {
         navigator().run {
             openBuilding(symbol = "A-1")
             openEntrances(symbol = "A-1")
@@ -330,7 +334,7 @@ class AppNavigatorTest {
      * Wymagania: US2.8, NFR-19
      */
     @Test
-    fun nfr19_list_compact_keeps_list() {
+    fun keepsListWhenCompact() {
         mapChoiceNavigator().run {
             openBuildingFromList("A-1", false)
             assertEquals(listOf(MapRoute(MapFocus.Building("A-1")), BuildingRoute("A-1")), stack)
@@ -350,7 +354,7 @@ class AppNavigatorTest {
      * Wymagania: US3.2, NFR-19, NFR-15, US2.9
      */
     @Test
-    fun nfr19_talkback_list_tap_direct() {
+    fun opensDirectFromTalkBackList() {
         mapChoiceNavigator().run {
             openBuildingFromList("A-1", true)
             assertEquals(BuildingRoute("A-1", isDirect = true), current)
@@ -369,7 +373,7 @@ class AppNavigatorTest {
      * Wymagania: US2.9, NFR-19
      */
     @Test
-    fun us2_9_show_on_map_chooses_map() {
+    fun choosesMapOnShow() {
         mapChoiceNavigator().run {
             openBuildingFromList("A-1", true)
             showOnMap(MapFocus.Building("A-1"))
@@ -385,7 +389,7 @@ class AppNavigatorTest {
      * Wymagania: US2.1, NFR-15
      */
     @Test
-    fun us2_1_entrance_chooses_map() {
+    fun choosesMapForEntrance() {
         mapChoiceNavigator().run {
             showOnMap(MapFocus.Entrance(id = "A-1-glowne", buildingSymbol = "A-1"))
             open(TopLevel.MAP)
@@ -401,7 +405,7 @@ class AppNavigatorTest {
      * Wymagania: UC7
      */
     @Test
-    fun us4_6_report_at_entrance() {
+    fun reportsAtEntrance() {
         navigator(visitor).run {
             openBuilding(symbol = "A-1")
             report(entranceId = "A-1-glowne")
@@ -418,7 +422,7 @@ class AppNavigatorTest {
      *   automatycznie.
      */
     @Test
-    fun us4_1_three_steps_sent_p2() {
+    fun sendsAfterThreeSteps() {
         navigator(visitor).run {
             openBuilding(symbol = "D-2")
             report()
@@ -433,7 +437,7 @@ class AppNavigatorTest {
 
     /** Wysłanie bez internetu: potwierdzenie mówi, że zdjęcie wyśle się samo. Wymagania: US4.2 */
     @Test
-    fun us4_2_sent_offline() {
+    fun sendsOffline() {
         navigator(visitor).run {
             report()
             reportSent(isSavedOffline = true)
@@ -443,7 +447,7 @@ class AppNavigatorTest {
 
     /** Scenariusz (częściowo): zgloszenie-szybkie.feature: Gość po zalogowaniu wraca do zgłoszenia szybkiego. */
     @Test
-    fun us14_2_guest_signed_in_v4() {
+    fun opensReportAfterGuestSignIn() {
         navigator().run {
             openBuilding(symbol = "A-1")
             report(entranceId = "A-1-glowne")
@@ -455,7 +459,7 @@ class AppNavigatorTest {
 
     /** Wiersz: strona logowania, wejście z „Konto”, zalogowanie → L2, P3. Wymagania: UC6 */
     @Test
-    fun uc6_signed_in_from_account_l2() {
+    fun signsInFromAccount() {
         navigator().open(TopLevel.ACCOUNT)
         navigator(visitor).signedIn()
         assertEquals(stackOf(AccountRoute), stack)
@@ -463,7 +467,7 @@ class AppNavigatorTest {
 
     /** Wiersz: L2, „Zmierz i zgłoś barierę” → C1, potem C1 „Dalej” → C2. Wymagania: US6 */
     @Test
-    fun us6_l2_to_c1_to_c2() {
+    fun goesFromAccountToForm() {
         val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = "A-1")
         stack += AccountRoute
         navigator(collector).run {
@@ -481,7 +485,7 @@ class AppNavigatorTest {
      * Wymagania: NFR-54
      */
     @Test
-    fun nfr54_saved_opens_c3() {
+    fun opensOwnListAfterSave() {
         val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = null)
         stack += listOf(AccountRoute, MeasureRoute, form)
         navigator(collector).reportSaved()
@@ -494,7 +498,7 @@ class AppNavigatorTest {
      * Wymagania: US8.1, NFR-54
      */
     @Test
-    fun us8_1_c3_measure_same_c3() {
+    fun returnsToSameOwnList() {
         val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = "A-1")
         stack += AccountRoute
         navigator(collector).run {
@@ -508,7 +512,7 @@ class AppNavigatorTest {
 
     /** Wiersz: C3 „Otwórz” → poprawka C2, „Zapisz” → to samo C3. Wymagania: US8.3, NFR-54 */
     @Test
-    fun us8_3_open_edit_saved_same_c3() {
+    fun returnsToOwnListAfterEdit() {
         stack += listOf(AccountRoute, MySubmissionsRoute)
         navigator(collector).run {
             openEdit("s1")
@@ -520,7 +524,7 @@ class AppNavigatorTest {
 
     /** Wiersz: poprawka C2 „Zmień miejsce” → C1, „Dalej” → C2, „Zapisz” → to samo C3. Wymagania: US7.4, US8.3 */
     @Test
-    fun us8_3_edit_change_place() {
+    fun changesPlaceOnEdit() {
         val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = "A-1")
         stack += listOf(AccountRoute, MySubmissionsRoute, ReportEditRoute("s1"))
         navigator(collector).run {
@@ -534,7 +538,7 @@ class AppNavigatorTest {
 
     /** Wiersz: „Otwórz” i „Zmień miejsce” poza C3 i poprawką nic nie robią. Wymagania: US8.3 */
     @Test
-    fun us8_3_edit_only_from_c3() {
+    fun editsOnlyFromOwnList() {
         stack += AccountRoute
         navigator(collector).run {
             openEdit("s1")
@@ -545,7 +549,7 @@ class AppNavigatorTest {
 
     /** Wiersz: V4, „Wstecz” między krokami nie usuwa zdjęcia ani grupy. Wymagania: US4.8 */
     @Test
-    fun us4_8_steps_keep_photo() {
+    fun keepsPhotoAcrossSteps() {
         navigator(visitor).run {
             report()
             nextReportStep(ReportRoute(photoId = "z-1", photoPath = "/z-1.jpg"))

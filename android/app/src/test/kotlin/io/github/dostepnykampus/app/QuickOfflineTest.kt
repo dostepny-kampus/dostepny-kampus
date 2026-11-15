@@ -86,7 +86,7 @@ class QuickOfflineTest {
      * Scenariusz: zgloszenie-szybkie.feature: Zgłoszenie szybkie bez sieci zapisuje się w telefonie
      */
     @Test
-    fun us4_2_offline_saved_in_phone() {
+    fun savesOfflineOnPhone() {
         val viewModel = viewModel()
         compose.setContent {
             val lookup by viewModel.lookup.collectAsState()

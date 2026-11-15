@@ -34,7 +34,7 @@ private const val MID_TRANSITION_MILLIS = 48L
 
 /**
  * „Wstecz” naciśnięte, gdy V3 jest już w drzewie semantyki, a przejście sceny V2 → V3 jeszcze trwa (zegar Compose
- * zatrzymany). Tak robi test emulatora `CampusPathDeviceTest.us3_search_card_entrances`. `MID_TRANSITION_MILLIS` to
+ * zatrzymany). Tak robi test emulatora `CampusPathDeviceTest.goesFromSearchToEntrances`. `MID_TRANSITION_MILLIS` to
  * klatka zegara Compose, w której przejście V2 → V3 już trwa, ale się nie skończyło.
  */
 @RunWith(RobolectricTestRunner::class)

@@ -329,7 +329,7 @@ class CampusMapScreenTest {
      */
     @Test
     @Config(qualifiers = "w360dp-h800dp")
-    fun nfr37_osm_above_sheet() {
+    fun keepsOsmAboveSheet() {
         compose.setContent { Screen(sheet = 400.dp) }
         val bottom = compose.onRoot().getBoundsInRoot().bottom
         val osm = compose.onNodeWithText("© OpenStreetMap contributors").getBoundsInRoot()
@@ -350,7 +350,7 @@ class CampusMapScreenTest {
      */
     @Test
     @Config(qualifiers = "w360dp-h800dp")
-    fun us2_8_low_map_has_no_buttons() {
+    fun hidesButtonsOnLowMap() {
         var sheet by mutableStateOf(560.dp)
         compose.setContent { Screen(focus = "C-13", sheet = sheet) }
         compose.onNodeWithContentDescription("Pomniejsz").assertDoesNotExist()
@@ -387,7 +387,7 @@ class CampusMapScreenTest {
      */
     @Test
     @Config(qualifiers = "w360dp-h800dp")
-    fun nfr53_buttons_below_status_bar() {
+    fun placesButtonsBelowStatusBar() {
         compose.setContent { Screen(focus = "C-13", sheet = 400.dp) }
         compose.runOnUiThread { dispatchStatusBar(compose.activity) }
         compose.waitForIdle()
@@ -421,7 +421,7 @@ class CampusMapScreenTest {
      */
     @Test
     @Config(qualifiers = "w360dp-h800dp")
-    fun us1_1_focus_above_sheet() {
+    fun keepsFocusAboveSheet() {
         var sheet by mutableStateOf(0.dp)
         compose.setContent { Screen(focus = "C-14", sheet = sheet) }
         compose.waitForIdle()

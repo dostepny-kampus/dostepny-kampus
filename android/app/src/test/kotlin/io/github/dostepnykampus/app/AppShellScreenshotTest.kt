@@ -54,7 +54,7 @@ import kotlin.coroutines.EmptyCoroutineContext
  * Katalog to „Budynek testowy” C-13, nie dane PWr. Zrzut robi akcja zamiast dotyku, więc na przełączniku nie ma
  * śladu dotknięcia. Przy dużej czcionce V1 startuje na liście, więc V2 otwiera budynek z listy.
  *
- * Wymagania: NFR-19
+ * Wymagania: NFR-19, NFR-51
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -179,7 +179,7 @@ class AppShellScreenshotTest {
     /** Przy czcionce 200 % V1 startuje na liście budynków, a przełącznik ma napis „Lista”. Wymagania: NFR-19, NFR-20 */
     @Test
     @Config(fontScale = 2f)
-    fun nfr20_v1_lista_200() {
+    fun drawsListAtLargeFont() {
         capture(isSheetOpen = false)
     }
 
@@ -205,7 +205,7 @@ class AppShellScreenshotTest {
     /** Okno ≥ 600 dp: pasek z boku, a arkusz dalej od dołu. */
     @Test
     @Config(qualifiers = "w640dp-h480dp-xhdpi")
-    fun nfr51_v2_arkusz_szerokie() {
+    fun drawsWideSheet() {
         capture()
     }
 }
