@@ -176,10 +176,11 @@ class MigrationTest {
         helper
             .runMigrationsAndValidate(DB_NAME, 9, true, MIGRATION_8_9)
             .use { ninth ->
-                val lift = ninth.query("SELECT lift_id, lift_floors_json FROM floor_rooms").use { row ->
-                    row.moveToFirst()
-                    listOf(row.isNull(0), row.isNull(1))
-                }
+                val lift =
+                    ninth.query("SELECT lift_id, lift_floors_json FROM floor_rooms").use { row ->
+                        row.moveToFirst()
+                        listOf(row.isNull(0), row.isNull(1))
+                    }
 
                 assertEquals(listOf(true, true), lift)
             }
