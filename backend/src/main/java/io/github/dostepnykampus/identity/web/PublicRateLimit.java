@@ -76,7 +76,7 @@ final class PublicRateLimit implements Filter {
     ) throws IOException, ServletException {
         final HttpServletRequest http = (HttpServletRequest) request;
         if (http.getHeader(HttpHeaders.AUTHORIZATION) != null
-            || this.settings.unlimitedAddresses().contains(http.getRemoteAddr())) {
+            || this.settings.exempt().contains(http.getRemoteAddr())) {
             chain.doFilter(request, response);
         } else {
             final ConsumptionProbe probe = this.buckets
@@ -110,11 +110,8 @@ final class PublicRateLimit implements Filter {
 
     private Bucket bucket() {
         final int limit = this.settings.publicPerMinute();
-        return Bucket.builder()
-            .addLimit(
-                Bandwidth.builder().capacity(limit)
-                    .refillIntervally(limit, Duration.ofMinutes(1)).build()
-            )
-            .build();
+        final Bandwidth bandwidth = Bandwidth.builder().capacity(limit)
+            .refillIntervally(limit, Duration.ofMinutes(1)).build();
+        return Bucket.builder().addLimit(bandwidth).build();
     }
 }

@@ -16,11 +16,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * <p>Wymagania: NFR-34</p>
  *
  * @param publicPerMinute Największa liczba żądań bez logowania z jednego adresu na minutę
- * @param unlimitedAddresses Adresy klientów bez limitu, np. adres monitoringu
+ * @param exempt Adresy klientów bez limitu, np. adres monitoringu
  * @since 0.1.0
  */
 @ConfigurationProperties("dk.rate-limit")
-public record RateLimitSettings(int publicPerMinute, List<String> unlimitedAddresses) {
+public record RateLimitSettings(int publicPerMinute, List<String> exempt) {
 
     /**
      * Sprawdza limit i kopiuje listę adresów.
@@ -31,6 +31,6 @@ public record RateLimitSettings(int publicPerMinute, List<String> unlimitedAddre
                 "dk.rate-limit.public-per-minute: limit mniejszy niż 1: %d".formatted(publicPerMinute)
             );
         }
-        unlimitedAddresses = List.copyOf(Objects.requireNonNullElse(unlimitedAddresses, List.of()));
+        exempt = List.copyOf(Objects.requireNonNullElse(exempt, List.of()));
     }
 }

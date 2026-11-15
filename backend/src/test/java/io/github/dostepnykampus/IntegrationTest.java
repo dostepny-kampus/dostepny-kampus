@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Import;
 @Tag("kontekst-springa")
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = "dk.rate-limit.unlimited-addresses=127.0.0.1"
+    properties = "dk.rate-limit.exempt=127.0.0.1"
 )
 @Import(
     {
