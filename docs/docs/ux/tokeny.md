@@ -226,6 +226,8 @@ Kontenery, karty, dzielniki i przyciski obrysowane mają ramkę 1 dp. Pola tekst
 
 Wysokości elementów (cień) są w sekcji `wysokosci` pliku, w poziomach Material 3 [11]. Pływające kontrolki mapy mają 3 dp, a przypięty pasek czynności i mała karta V2 nad mapą 6 dp. W ciemnym motywie cień słabo widać, więc element pływający ma też obwódkę 1 dp. Skrypt strony jeszcze nie pokazuje tej sekcji w tabelach.
 
+Nagłówek V1 z polem wyszukiwania nie pływa nad mapą, więc nie ma cienia. Od mapy oddziela go linia 1 dp `outlineVariant`, a pole jest białe (`surfaceContainerLowest`). Ramka pola zostaje 2 dp, bo pole dotyka się w słońcu (PE-1).
+
 ## Jak faza C używa pliku
 
 | Część pliku | Co powstaje w aplikacji |

@@ -413,7 +413,7 @@ wysokosci:
   kontrolki_mapy:
     dp: 3              # Material 3, poziom 2
     obwodka_ciemny: "#454E53"
-    uzycie: pływające kontrolki mapy („Powiększ”, „Pomniejsz”, strzałki przesuwania, „ⓘ”, przełącznik pięter, legenda, „Wstecz”), napis o zmianie terenu, nagłówek z polem wyszukiwania (V1)
+    uzycie: pływające kontrolki mapy („Powiększ”, „Pomniejsz”, strzałki przesuwania, „ⓘ”, przełącznik pięter, legenda, „Wstecz”), napis o zmianie terenu
     zrodlo: styl „Karta miejsca”
   pasek_czynnosci:
     dp: 6              # Material 3, poziom 3; cień pada w górę
