@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.shared.json;
 
+import java.beans.PropertyEditor;
+import java.util.function.Supplier;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -21,14 +23,24 @@ import org.springframework.web.bind.annotation.InitBinder;
 public final class TextParameterBinding {
 
     /**
-     * Tworzy wiązanie bez stanu.
+     * Źródło edytorów napisu; edytor ma stan, więc każde wiązanie dostaje nowy.
+     */
+    private final Supplier<PropertyEditor> editors;
+
+    /**
+     * Tworzy wiązanie z edytorem odrzucającym znak NUL.
      */
     public TextParameterBinding() {
-        // Bez stanu: reguła napisów jest stała.
+        this.editors = NulRejectingEditor::new;
     }
 
+    /**
+     * Rejestruje regułę napisów w wiązaniu parametrów jednego żądania.
+     *
+     * @param binder Wiązanie parametrów żądania
+     */
     @InitBinder
-    static void register(final WebDataBinder binder) {
-        binder.registerCustomEditor(String.class, new NulRejectingEditor());
+    public void register(final WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, this.editors.get());
     }
 }
