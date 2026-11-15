@@ -84,7 +84,7 @@ internal fun MapColors.styleColors(): MapStyleColors =
         edge = granicaTerenu.hex(),
         edgeHalo = granicaTerenuObwodka.hex(),
         outside = MaterialTheme.colorScheme.background.hex(),
-        outsideOpacity = DostepnyKampusTheme.mapOpacity.terenPoza.toString().toDouble(),
+        outsideOpacity = DostepnyKampusTheme.mapOpacity.terenPoza.toExactDouble(),
         dimmed = budynek.hex(),
         dimmedOutline = budynekKontur.hex(),
         plan =
@@ -124,3 +124,5 @@ internal fun CameraPosition.toCamera(): MapCamera =
         center = GeoPoint(longitude = target?.longitude ?: 0.0, latitude = target?.latitude ?: 0.0),
         zoom = zoom,
     )
+
+private fun Float.toExactDouble(): Double = toString().toDouble()

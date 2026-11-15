@@ -74,7 +74,13 @@ internal fun areaLayers(colors: MapStyleColors): List<JsonObject> {
     val haloWidth = EDGE_WIDTH + 2 * HALO_WIDTH
     return listOf(
         outside,
-        lineLayer(id = EDGE_HALO_LAYER, source = AREA_SOURCE, color = colors.edgeHalo, width = haloWidth, filter = line),
+        lineLayer(
+            id = EDGE_HALO_LAYER,
+            source = AREA_SOURCE,
+            color = colors.edgeHalo,
+            width = haloWidth,
+            filter = line,
+        ),
         lineLayer(id = EDGE_LAYER, source = AREA_SOURCE, color = colors.edge, width = EDGE_WIDTH, filter = line),
     )
 }
