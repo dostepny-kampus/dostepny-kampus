@@ -44,12 +44,9 @@ class InspectionProgressApiTest {
 
     @Test
     fun us11_1_basic_building() {
-        val body =
-            """[{"buildingSymbol":"B-4","detailLevel":"BASIC","inspected":true,"pendingSubmissions":0,
-                "acceptedSubmissions":1,"entrancesTotal":2,"entrancesCheckedOnSite":2,"markers":[]}]"""
         val expected =
             BuildingProgress("B-4", InspectionCoverage.Whole(isInspected = true), 0, 1, 2, 2, emptyList())
-        val result = served(code = 200, body = body) { it.progress() }.first
+        val result = served(code = 200, body = BASIC) { it.progress() }.first
         assertEquals(ApiResult.Success(listOf(expected)), result, "postęp budynku podstawowego")
     }
 
@@ -62,7 +59,7 @@ class InspectionProgressApiTest {
     }
 
     @Test
-    fun us11_3_unknown_marker_is_not_found() {
+    fun us11_3_unknown_marker_404() {
         val result = served(code = 404, body = """{"type":"about:blank"}""") { it.revoke(MARKER) }.first
         assertEquals(ApiResult.NotFound, result, "znacznika nie ma na serwerze")
     }
@@ -82,7 +79,7 @@ class InspectionProgressApiTest {
     }
 
     @Test
-    fun us11_1_bad_body_is_server_error() {
+    fun us11_1_bad_body_server_error() {
         val result = served(code = 200, body = "to nie JSON") { it.progress() }.first
         val error = assertInstanceOf(ApiResult.ServerError::class.java, result, "zła treść jako błąd serwera")
         assertEquals(200, error.code, "kod odpowiedzi ze złą treścią")
@@ -104,6 +101,9 @@ class InspectionProgressApiTest {
 
     private companion object {
         const val MARKER = "3c2b1a09-8f7e-4d6c-b5a4-918273645546"
+        const val BASIC =
+            """[{"buildingSymbol":"B-4","detailLevel":"BASIC","inspected":true,"pendingSubmissions":0,
+                "acceptedSubmissions":1,"entrancesTotal":2,"entrancesCheckedOnSite":2,"markers":[]}]"""
         const val PROGRESS =
             """[{"buildingSymbol":"A-1","detailLevel":"DETAILED","floorsTotal":5,"floorsInspected":3,
                 "pendingSubmissions":2,"acceptedSubmissions":7,"entrancesTotal":4,"entrancesCheckedOnSite":1,

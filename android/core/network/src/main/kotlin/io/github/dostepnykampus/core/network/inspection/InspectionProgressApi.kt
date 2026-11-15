@@ -46,7 +46,12 @@ public class InspectionProgressApi(private val http: OkHttpClient, private val j
      * @param markerId identyfikator UUID cofanego znacznika
      */
     public suspend fun revoke(markerId: String): ApiResult<Unit> {
-        val target = base.newBuilder().addPathSegment(MARKERS).addPathSegment(markerId).build()
+        val target =
+            base
+                .newBuilder()
+                .addPathSegment(MARKERS)
+                .addPathSegment(markerId)
+                .build()
         return http.exchange(request(target, delete = true)) { code, _ ->
             if (code == HTTP_NO_CONTENT) ApiResult.Success(Unit) else unexpectedResult(code)
         }
