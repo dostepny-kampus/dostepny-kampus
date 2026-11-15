@@ -79,7 +79,7 @@ fun ProgressContent(
 }
 
 @Composable
-private fun Loading() {
+internal fun Loading() {
     Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         CircularProgressIndicator()
         Text(stringResource(R.string.postep_wczytujemy), style = MaterialTheme.typography.bodyLarge)
