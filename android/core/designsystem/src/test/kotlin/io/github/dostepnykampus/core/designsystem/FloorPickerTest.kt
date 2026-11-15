@@ -13,6 +13,7 @@ import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
@@ -65,6 +66,34 @@ class FloorPickerTest {
         val bounds = compose.onNodeWithText("Parter").getUnclippedBoundsInRoot()
         assertEquals("Opcja ma zajmować całą szerokość", 360.dp, bounds.right - bounds.left)
         assertTrue("Opcja ma mieć co najmniej 56 dp wysokości", bounds.bottom - bounds.top >= 56.dp)
+    }
+
+    /**
+     * Kolumna: w kółku krótki napis, TalkBack czyta pełną etykietę jako przycisk opcji, wybrana ma stan
+     * „wybrane”, cel co najmniej 48 dp. Wymagania: NFR-17, NFR-18, US16.1
+     */
+    @Test
+    fun readsFullLabelInColumn() {
+        compose.setContent {
+            DostepnyKampusTheme {
+                val short = options.items.map { it.copy(short = it.key) }
+                FloorPicker(
+                    options = FloorOptions(short),
+                    selectedKey = "p1",
+                    onSelect = { chosen += it },
+                    layout = FloorPickerLayout.COLUMN,
+                )
+            }
+        }
+        val radio = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton)
+        compose.onNodeWithContentDescription("1 piętro").assert(radio).assertIsSelected()
+        val parter = compose.onNodeWithContentDescription("Parter")
+        parter.assertIsNotSelected()
+        parter.performClick()
+        assertEquals("Kliknięcie „Parter” wybiera piętro w kolumnie", listOf("p0"), chosen.map { it.key })
+        val bounds = parter.getUnclippedBoundsInRoot()
+        assertTrue("Piętro w kolumnie ma mieć co najmniej 48 dp", bounds.bottom - bounds.top >= 48.dp)
+        compose.onNodeWithText("Piętro").assertExists()
     }
 
     /** Czcionka 200 %: napisy rosną, a cel dotyku zostaje co najmniej 48 dp. Wymagania: NFR-20 */

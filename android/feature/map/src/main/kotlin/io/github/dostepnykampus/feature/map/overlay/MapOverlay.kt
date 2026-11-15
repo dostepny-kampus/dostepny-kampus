@@ -10,6 +10,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -59,6 +60,7 @@ private enum class MapPanel { Area, Legend, Info }
  * @param onAreaShow widok startowy terenu wybranego w panelu
  * @param modifier wymiary nakładki, zwykle cała mapa bez części zasłoniętej
  * @param hasPanels czy mapa ma przycisk terenu, „Legendę” i „ⓘ”; nie ma ich nad arkuszem V2
+ * @param side elementy przy prawej krawędzi pod przyciskami mapy, a bez przycisków u góry, np. kolumna pięter
  * @param content elementy nad nakładką
  */
 @Composable
@@ -71,20 +73,23 @@ internal fun MapOverlay(
     onAreaShow: (MapCamera) -> Unit,
     modifier: Modifier = Modifier,
     hasPanels: Boolean = hasControls,
+    side: @Composable ColumnScope.() -> Unit = {},
     content: @Composable BoxScope.() -> Unit,
 ) {
     var saved by rememberSaveable { mutableStateOf<MapPanel?>(null) }
     val open = saved.takeIf { hasPanels }
     Box(modifier) {
-        if (hasControls && open == null) {
-            MapControls(
-                camera = camera,
-                onCameraChange = { moved ->
-                    areas.acknowledge()
-                    onCameraChange(moved)
-                },
-                modifier = Modifier.align(Alignment.TopEnd),
-            )
+        Column(modifier = Modifier.align(Alignment.TopEnd), horizontalAlignment = Alignment.End) {
+            if (hasControls && open == null) {
+                MapControls(
+                    camera = camera,
+                    onCameraChange = { moved ->
+                        areas.acknowledge()
+                        onCameraChange(moved)
+                    },
+                )
+            }
+            side()
         }
         if (open == MapPanel.Area) {
             Box(Modifier.matchParentSize().pointerInput(Unit) { detectTapGestures { saved = null } })

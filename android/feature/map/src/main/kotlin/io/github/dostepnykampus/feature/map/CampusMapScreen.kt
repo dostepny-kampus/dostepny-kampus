@@ -56,6 +56,7 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.overlay.MapOverlay
 import io.github.dostepnykampus.feature.map.overlay.MapStatusBar
 import io.github.dostepnykampus.feature.map.overlay.dataDay
+import io.github.dostepnykampus.feature.map.plan.FloorColumn
 import io.github.dostepnykampus.feature.map.plan.ShownPlan
 
 private const val TOP_STATE = "top"
@@ -146,6 +147,7 @@ fun CampusMapScreen(
  * @param motion zapis ruchów mapy do budynku nad kartą V2
  * @param plan plan piętra budynku przy środku mapy; `null`, gdy planu nie widać
  * @param onCamera widok mapy po ruchu kamery
+ * @param onFloorChoose piętro wybrane w kolumnie pięter: symbol budynku i identyfikator piętra
  */
 @Composable
 fun CampusMapScreen(
@@ -162,6 +164,7 @@ fun CampusMapScreen(
     motion: MapMotion? = null,
     plan: ShownPlan? = null,
     onCamera: (MapCamera) -> Unit = {},
+    onFloorChoose: (String, String) -> Unit = { _, _ -> },
 ) {
     val catalog = state.catalog
     val isCovered = contentPadding.calculateBottomPadding() > 0.dp
@@ -200,6 +203,7 @@ fun CampusMapScreen(
                         motion = motion,
                         plan = plan,
                         onCamera = onCamera,
+                        onFloorChoose = onFloorChoose,
                         onBuildingClick = onBuildingClick,
                         onEmptyMapClick = onEmptyMapClick,
                         modifier = Modifier.fillMaxSize(),
@@ -223,6 +227,7 @@ private fun CampusMap(
     motion: MapMotion?,
     plan: ShownPlan?,
     onCamera: (MapCamera) -> Unit,
+    onFloorChoose: (String, String) -> Unit,
     onBuildingClick: (String) -> Unit,
     onEmptyMapClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -271,6 +276,15 @@ private fun CampusMap(
                 onAreaShow = state::keep,
                 modifier = Modifier.fillMaxSize().safeDrawingPadding().then(aboveSheet),
                 hasPanels = !state.isCovered && !isKeyboardOpen,
+                side = {
+                    plan?.let {
+                        FloorColumn(
+                            plan = it,
+                            onChoose = onFloorChoose,
+                            modifier = Modifier.weight(weight = 1f, fill = false).padding(Odstepy.s),
+                        )
+                    }
+                },
             ) {
                 val sheetModifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
                 ChosenBarrierSheet(
