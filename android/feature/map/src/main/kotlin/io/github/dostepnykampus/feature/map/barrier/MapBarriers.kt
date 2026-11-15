@@ -24,11 +24,17 @@ const val BARRIER_ID = "id"
 /** Właściwość punktu bariery z nazwą uciążliwości: `HINDRANCE`, `ONLY_WITH_HELP` albo `BLOCKING`. */
 const val BARRIER_SEVERITY = "severity"
 
+/** Właściwość punktu bariery z symbolem budynku; brak, gdy zgłoszenie jest poza budynkiem. Wymagania: US16.1 */
+const val BARRIER_BUILDING = "building"
+
+/** Właściwość punktu bariery z piętrem budynku szczegółowego (`Floor.id`); brak bez piętra. Wymagania: US16.1 */
+const val BARRIER_FLOOR = "floor"
+
 /**
- * Te same dane mapy z barierami [barriers] jako punktami warstwy barier. Pusta lista czyści
- * warstwę, więc zgłoszenie, które przestało być przyjęte, znika z mapy.
+ * Te same dane mapy z barierami [barriers] jako punktami warstwy barier, z budynkiem i piętrem zgłoszenia.
+ * Pusta lista czyści warstwę, więc zgłoszenie, które przestało być przyjęte, znika z mapy.
  *
- * Wymagania: US1.3, BR-6
+ * Wymagania: US1.3, BR-6, US16.1
  */
 fun CampusMapData.withBarriers(barriers: List<AcceptedBarrier>): CampusMapData {
     val features =
@@ -37,6 +43,8 @@ fun CampusMapData.withBarriers(barriers: List<AcceptedBarrier>): CampusMapData {
                 buildJsonObject {
                     put(key = BARRIER_ID, value = barrier.id)
                     put(key = BARRIER_SEVERITY, value = barrier.severity.name)
+                    barrier.buildingSymbol?.let { put(key = BARRIER_BUILDING, value = it) }
+                    barrier.floor?.floorId?.let { put(key = BARRIER_FLOOR, value = it) }
                 }
             Feature(Point(barrier.location.toPosition()), properties)
         }

@@ -201,7 +201,7 @@ private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap
         add(selectedLayer(look.selectedFilter, colors))
         areaLayers(colors).forEach { add(it) }
         add(marksLayer(look.entrancesFilter, look.entrancesMinZoom))
-        barrierLayers().forEach { add(it) }
+        barrierLayers(look.barriersFilter).forEach { add(it) }
         add(symbolLayer(id = LABELS, source = LABELS, image = property(LABEL)))
         add(chosenBarrierLayer(look.chosenBarrierFilter))
         chosenLayers().forEach { add(it) }
