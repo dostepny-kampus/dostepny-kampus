@@ -33,20 +33,31 @@ import org.springframework.web.context.WebApplicationContext;
 final class SyncPushHttpTest {
 
     @Test
-    void usFifteenOneSavesMarkerFromCollectorOnce(final WebApplicationContext context)
+    void usFifteenOneSavesMarkerFromCollector(final WebApplicationContext context)
         throws Exception {
         final UUID id = UUID.randomUUID();
-        final String first = SyncPushHttpTest.push(context, "COLLECTOR", id, "C-13");
-        final int once = SyncPushHttpTest.saved(context, id);
-        final String second = SyncPushHttpTest.push(context, "COLLECTOR", id, "C-13");
         Assertions.assertEquals(
             "200 APPLIED, zapisanych 1",
-            String.format("%s, zapisanych %d", first, once),
+            String.format(
+                "%s, zapisanych %d",
+                SyncPushHttpTest.push(context, "COLLECTOR", id, "C-13"),
+                SyncPushHttpTest.saved(context, id)
+            ),
             "Zbierający nie zapisał znacznika piętra"
         );
+    }
+
+    @Test
+    void brNineSavesRepeatedMarkerOnce(final WebApplicationContext context) throws Exception {
+        final UUID id = UUID.randomUUID();
+        SyncPushHttpTest.push(context, "COLLECTOR", id, "C-13");
         Assertions.assertEquals(
             "200 APPLIED, zapisanych 1",
-            String.format("%s, zapisanych %d", second, SyncPushHttpTest.saved(context, id)),
+            String.format(
+                "%s, zapisanych %d",
+                SyncPushHttpTest.push(context, "COLLECTOR", id, "C-13"),
+                SyncPushHttpTest.saved(context, id)
+            ),
             "Ponowne wysłanie znacznika zapisało go drugi raz albo nie zwróciło wyniku"
         );
     }
@@ -74,14 +85,7 @@ final class SyncPushHttpTest {
             MockMvcRequestBuilders.post("/sync/push")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", role))
-                .content(
-                    String.join(
-                        "",
-                        "{\"operations\":[{\"clientOperationId\":\"", UUID.randomUUID().toString(),
-                        "\",\"type\":\"SET_INSPECTION_MARKER\",\"marker\":{\"id\":\"",
-                        id.toString(), "\",\"buildingSymbol\":\"", building, "\"}}]}"
-                    )
-                )
+                .content(SyncPushHttpTest.body(id, building))
         ).andReturn().getResponse();
         String outcome = "";
         if (response.getContentAsString().contains("\"APPLIED\"")) {
@@ -92,9 +96,18 @@ final class SyncPushHttpTest {
         return String.format("%d%s", response.getStatus(), outcome);
     }
 
+    private static String body(final UUID id, final String building) {
+        return String.join(
+            "",
+            "{\"operations\":[{\"clientOperationId\":\"", UUID.randomUUID().toString(),
+            "\",\"type\":\"SET_INSPECTION_MARKER\",\"marker\":{\"id\":\"",
+            id.toString(), "\",\"buildingSymbol\":\"", building, "\"}}]}"
+        );
+    }
+
     private static int saved(final WebApplicationContext context, final UUID id) {
-        return context.getBean(JdbcClient.class)
-            .sql("SELECT count(*) FROM inspection_markers WHERE id = :id").param("id", id)
-            .query(Integer.class).single();
+        return context.getBean(JdbcClient.class).sql(
+            "SELECT count(*) FROM inspection_markers WHERE id = :id"
+        ).param("id", id).query(Integer.class).single();
     }
 }
