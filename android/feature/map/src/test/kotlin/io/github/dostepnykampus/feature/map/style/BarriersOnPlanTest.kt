@@ -62,12 +62,12 @@ class BarriersOnPlanTest {
             .map { it.getValue("id").jsonPrimitive.content }
     }
 
-    /** Wylicza wyrażenia stylu użyte w filtrze barier dla właściwości punktu [properties]. */
     private fun evaluate(expression: JsonElement, properties: JsonObject): JsonElement {
         if (expression !is JsonArray) return expression
         val name = expression.first().jsonPrimitive.content
         val arguments = expression.drop(1)
         fun value(index: Int) = evaluate(arguments[index], properties)
+
         return when (name) {
             "get" -> properties[arguments[0].jsonPrimitive.content] ?: JsonNull
             "has" -> JsonPrimitive(arguments[0].jsonPrimitive.content in properties)

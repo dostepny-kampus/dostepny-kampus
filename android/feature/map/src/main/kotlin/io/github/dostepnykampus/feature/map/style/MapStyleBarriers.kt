@@ -27,6 +27,8 @@ internal const val CHOSEN_BARRIER_LAYER = "bariera_wybrana"
 /** Źródło stylu z punktami barier. */
 internal const val BARRIERS_SOURCE = BARRIERS_LAYER
 
+private const val FILTER = "filter"
+
 /** Bok obrazu znaku bariery na mapie w dp. */
 internal const val BARRIER_SIGN_DP = 32
 
@@ -69,8 +71,8 @@ internal fun barrierLayers(filter: JsonElement = barriersOnPlan(building = null,
     val signs =
         symbolLayer(id = BARRIERS_LAYER, source = BARRIERS_SOURCE, image = bySeverity(::barrierSignImage), OVERLAP)
     return listOf(
-        JsonObject(words + ("minzoom" to JsonPrimitive(BARRIER_WORD_ZOOM)) + ("filter" to filter)),
-        JsonObject(signs + ("filter" to filter)),
+        JsonObject(words + ("minzoom" to JsonPrimitive(BARRIER_WORD_ZOOM)) + (FILTER to filter)),
+        JsonObject(signs + (FILTER to filter)),
     )
 }
 
@@ -104,7 +106,7 @@ internal fun chosenBarrierLayer(filter: JsonElement): JsonObject {
             image = bySeverity(::chosenBarrierImage),
             OVERLAP,
         )
-    return JsonObject(sign + ("filter" to filter))
+    return JsonObject(sign + (FILTER to filter))
 }
 
 /** Filtr warstwy [CHOSEN_BARRIER_LAYER]: tylko bariera [id]. */
