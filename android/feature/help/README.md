@@ -4,6 +4,11 @@
 
 Pomoc: ekran z krokami obsługi i jego pokazanie przy pierwszym uruchomieniu.
 
+## Pakiety
+
+- `feature.help` — ekran instrukcji, jej kroki i pierwsze uruchomienie.
+- `feature.help.navigation` — trasa ekranu instrukcji.
+
 ## API
 
 Trasa pomocy w pakiecie `navigation`.
