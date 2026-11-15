@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -276,29 +277,35 @@ private fun CampusMap(
                 onAreaShow = state::keep,
                 modifier = Modifier.fillMaxSize().safeDrawingPadding().then(aboveSheet),
                 hasPanels = !state.isCovered && !isKeyboardOpen,
-                side = {
-                    plan?.let {
-                        FloorColumn(
-                            plan = it,
-                            onChoose = onFloorChoose,
-                            modifier = Modifier.weight(weight = 1f, fill = false).padding(Odstepy.s),
-                        )
-                    }
-                },
+                side = { FloorColumn(plan = plan, onChoose = onFloorChoose) },
             ) {
-                val sheetModifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
-                ChosenBarrierSheet(
-                    id = barrierId,
-                    barriers = barriers,
-                    catalog = catalog,
-                    onClose = { barrierId = null },
-                    onBuildingClick = onBuildingClick,
-                    modifier = sheetModifier,
-                )
-                BuildingChoices(catalog = catalog, state = state, onChoose = onBuildingClick, modifier = sheetModifier)
+                val barrier = ChosenBarrier(id = barrierId, barriers = barriers, onClose = { barrierId = null })
+                MapSheets(barrier = barrier, catalog = catalog, state = state, onBuildingClick = onBuildingClick)
             }
         }
     }
+}
+
+/** Zaznaczona przeszkoda [id] spośród [barriers] i zamknięcie jej karty [onClose]. */
+private data class ChosenBarrier(val id: String?, val barriers: ShownBarriers, val onClose: () -> Unit)
+
+@Composable
+private fun BoxScope.MapSheets(
+    barrier: ChosenBarrier,
+    catalog: BuildingCatalog?,
+    state: MapSceneState,
+    onBuildingClick: (String) -> Unit,
+) {
+    val modifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
+    ChosenBarrierSheet(
+        id = barrier.id,
+        barriers = barrier.barriers,
+        catalog = catalog,
+        onClose = barrier.onClose,
+        onBuildingClick = onBuildingClick,
+        modifier = modifier,
+    )
+    BuildingChoices(catalog = catalog, state = state, onChoose = onBuildingClick, modifier = modifier)
 }
 
 @Composable
