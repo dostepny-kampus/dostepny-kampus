@@ -17,8 +17,6 @@ import java.util.regex.Pattern;
  * nie ma znaczenia, a między literą i numerem budynku może stać dywiz, inna kreska, odstęp albo
  * nic, więc „A-1 329”, „a1 329” i „A 1 329” szukają sali 329 w budynku A-1.
  *
- * <p>TODO(#1474): odczytywać parametr q w operacji searchRooms.</p>
- *
  * <p>Wymagania: US18.1</p>
  *
  * @since 0.1.0
@@ -38,7 +36,8 @@ public final class RoomQuery {
     private final String text;
 
     /**
-     * Zapytanie z tekstu; tekst bez numeru sali daje {@link InvalidInput} przy odczycie części.
+     * Zapytanie z tekstu; tekst bez numeru sali albo dłuższy niż 50 znaków daje
+     * {@link InvalidInput} przy odczycie części.
      *
      * @param text Tekst parametru {@code q}
      */
@@ -72,9 +71,9 @@ public final class RoomQuery {
 
     private Matcher parts() {
         final Matcher parts = RoomQuery.TEXT.matcher(this.text);
-        if (!parts.matches()) {
+        if (this.text.length() > 50 || !parts.matches()) {
             throw new InvalidInput(
-                "Parametr q to numer sali, opcjonalnie po symbolu budynku, np. A-1 329"
+                "Parametr q to numer sali, opcjonalnie po symbolu budynku, np. A-1 329, do 50 znaków"
             );
         }
         return parts;

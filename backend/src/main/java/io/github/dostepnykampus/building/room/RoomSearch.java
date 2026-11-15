@@ -10,8 +10,6 @@ import java.util.List;
 /**
  * Wyszukiwanie sali po numerze w zapisanych planach pięter.
  *
- * <p>TODO(#1474): zwracać sale w operacji searchRooms.</p>
- *
  * <p>Wymagania: US18.1</p>
  *
  * @since 0.1.0
