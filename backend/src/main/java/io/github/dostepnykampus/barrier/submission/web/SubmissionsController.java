@@ -80,7 +80,7 @@ public final class SubmissionsController {
     ) {
         final SubmissionQuery query = filter.toQuery();
         final List<Submission> found;
-        if (filter.mine()) {
+        if (filter.own()) {
             found = this.finder.own(SubmissionsController.name(account), query);
         } else {
             found = this.finder.list(query);
