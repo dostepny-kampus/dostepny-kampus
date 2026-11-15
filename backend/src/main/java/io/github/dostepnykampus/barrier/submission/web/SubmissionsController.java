@@ -9,16 +9,19 @@ import io.github.dostepnykampus.barrier.submission.CreateResult;
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.Reader;
 import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.SubmissionEdit;
 import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionService;
 import io.github.dostepnykampus.shared.error.ConflictingState;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
+import io.github.dostepnykampus.shared.error.InvalidInput;
 import io.github.dostepnykampus.shared.error.MissingLogin;
 import io.github.dostepnykampus.shared.error.MissingResource;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
@@ -175,7 +178,8 @@ public final class SubmissionsController {
     /**
      * Zapisuje edycję zgłoszenia, jeśli na serwerze jest ta sama wersja,
      * od której zaczęto edycję. Cudzego zgłoszenia
-     * nie zmienia nikt poza autorem.
+     * nie zmienia nikt poza autorem. Edycja z innym polem replacesSubmissionId niż zapisane
+     * daje 400.
      *
      * <p>Wymagania: US8.3, US9.3, BR-10, BR-3</p>
      *
@@ -192,7 +196,13 @@ public final class SubmissionsController {
         if (this.finder.foreign(id, account.getName())) {
             throw new ForbiddenChange("Zgłoszenie zmienia tylko jego autor");
         }
-        return switch (this.service.update(body.toCommand(id))) {
+        final SubmissionEdit edit = body.toCommand(id);
+        if (this.finder.find(id).filter(
+            saved -> !Objects.equals(saved.content().replaces(), edit.content().replaces())
+        ).isPresent()) {
+            throw new InvalidInput("Edycja nie zmienia pola replacesSubmissionId");
+        }
+        return switch (this.service.update(edit)) {
             case EditResult.Saved saved -> new SubmissionResponse(saved.submission());
             case EditResult.Conflict conflict -> throw new ConflictingState(
                 "Na serwerze jest inna wersja zgłoszenia albo jego status nie pozwala na zmianę",
