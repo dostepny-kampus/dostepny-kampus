@@ -304,7 +304,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Kampus główny”
     Jeżeli wyszuka „T-15” i wybierze wynik
     Wtedy widzi mapę terenu „Wittigowo” z zaznaczonym budynkiem T-15
-    Oraz widzi napis „Pokazuję teren: Wittigowo”
+    Oraz widzi napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód”
 
   @US1.8 @aplikacja
   Scenariusz: Zamknięcie karty budynku z innego terenu zostawia ten teren

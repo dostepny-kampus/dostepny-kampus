@@ -15,6 +15,7 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -38,9 +39,9 @@ import org.robolectric.annotation.GraphicsMode
 
 /**
  * Napis o zmianie terenu na nakładce mapy V1 na prostokątach testowych (nie dane PWr):
- * zaznaczony budynek „T-15” leży na terenie „Wittigowo”, a mapa pokazywała „Kampus główny”.
+ * zaznaczony budynek „T-15” leży na terenie „Wittigowo” około 2,1 km na wschód, a mapa pokazywała „Kampus główny”.
  *
- * Wymagania: US1.8, NFR-18, NFR-23
+ * Wymagania: US1.8, NFR-18, NFR-23, NFR-56
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -55,16 +56,17 @@ class MapOverlayNoticeTest {
 
     /**
      * Wiersz: V1, po zmianie terenu przez zaznaczony budynek nad podpisem mapy stoi napis „Pokazuję teren:
-     * Wittigowo”, który TalkBack czyta sam.
+     * Wittigowo · 2 km na wschód”, który TalkBack czyta sam, z przecinkiem zamiast kropki.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Wyszukanie budynku z innego terenu zmienia teren
      *
-     * Wymagania: US1.8, NFR-18
+     * Wymagania: US1.8, NFR-18, NFR-56
      */
     @Test
     fun showsNoticeAboveAttribution() {
         compose.setContent { Overlay() }
-        val notice = compose.onNodeWithText("Pokazuję teren: Wittigowo")
+        val notice = compose.onNodeWithText(NOTICE)
         notice.assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.LiveRegion))
+        notice.assert(hasContentDescription("Pokazuję teren: Wittigowo, 2 km na wschód"))
         val attribution = compose.onNodeWithText("© OpenStreetMap contributors").getUnclippedBoundsInRoot()
         assertTrue(notice.getUnclippedBoundsInRoot().bottom <= attribution.top)
     }
@@ -78,7 +80,7 @@ class MapOverlayNoticeTest {
     fun hidesNoticeAfterMove() {
         compose.setContent { Overlay() }
         compose.onNodeWithContentDescription("Przesuń mapę w górę").performClick()
-        compose.onNodeWithText("Pokazuję teren: Wittigowo").assertDoesNotExist()
+        compose.onNodeWithText(NOTICE).assertDoesNotExist()
     }
 
     @Test
@@ -101,5 +103,9 @@ class MapOverlayNoticeTest {
                 content = {},
             )
         }
+    }
+
+    private companion object {
+        const val NOTICE = "Pokazuję teren: Wittigowo · 2 km na wschód"
     }
 }
