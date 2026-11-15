@@ -8,8 +8,10 @@ package io.github.dostepnykampus.app
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.Dp
@@ -25,6 +27,7 @@ import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -52,9 +55,15 @@ class SheetEntranceTest {
         val stack = mutableStateListOf<NavKey>(MapRoute())
         show(stack, motion)
         compose.mainClock.autoAdvance = false
-        compose.runOnUiThread { stack.add(BuildingRoute(symbol = "A-1")) }
-        compose.mainClock.advanceTimeByFrame()
-        compose.runOnUiThread { motion.record(move(durationMillis = MOVE_MILLIS)) }
+        compose.runOnUiThread {
+            stack.add(BuildingRoute(symbol = "A-1"))
+            Snapshot.sendApplyNotifications()
+        }
+        awaitCard()
+        compose.runOnUiThread {
+            motion.record(move(durationMillis = MOVE_MILLIS))
+            Snapshot.sendApplyNotifications()
+        }
         compose.mainClock.advanceTimeByFrame()
         compose.mainClock.advanceTimeBy(MOVE_MILLIS / 2)
         val midway = cardTop()
@@ -76,7 +85,10 @@ class SheetEntranceTest {
         show(stack, motion)
         val rest = cardTop()
         compose.mainClock.autoAdvance = false
-        compose.runOnUiThread { stack[1] = BuildingRoute(symbol = "A-2") }
+        compose.runOnUiThread {
+            stack[1] = BuildingRoute(symbol = "A-2")
+            Snapshot.sendApplyNotifications()
+        }
         compose.mainClock.advanceTimeByFrame()
         compose.mainClock.advanceTimeByFrame()
         assertEquals("nowa treść od razu na miejscu", rest.value, cardTop(symbol = "A-2").value, 0.5f)
@@ -88,15 +100,27 @@ class SheetEntranceTest {
         val motion = MapMotion()
         val stack = mutableStateListOf<NavKey>(MapRoute())
         show(stack, motion)
-        compose.runOnUiThread { stack.add(BuildingRoute(symbol = "A-1")) }
+        compose.runOnUiThread {
+            stack.add(BuildingRoute(symbol = "A-1"))
+            Snapshot.sendApplyNotifications()
+        }
         compose.waitForIdle()
         val rest = cardTop()
-        compose.runOnUiThread { stack.removeAt(1) }
+        compose.runOnUiThread {
+            stack.removeAt(1)
+            Snapshot.sendApplyNotifications()
+        }
         compose.waitForIdle()
         compose.mainClock.autoAdvance = false
-        compose.runOnUiThread { stack.add(BuildingRoute(symbol = "A-1")) }
-        compose.mainClock.advanceTimeByFrame()
-        compose.runOnUiThread { motion.record(move(durationMillis = 0L)) }
+        compose.runOnUiThread {
+            stack.add(BuildingRoute(symbol = "A-1"))
+            Snapshot.sendApplyNotifications()
+        }
+        awaitCard()
+        compose.runOnUiThread {
+            motion.record(move(durationMillis = 0L))
+            Snapshot.sendApplyNotifications()
+        }
         compose.mainClock.advanceTimeByFrame()
         compose.mainClock.advanceTimeByFrame()
         assertEquals("bez animacji karta od razu na miejscu", rest.value, cardTop().value, 0.5f)
@@ -110,6 +134,17 @@ class SheetEntranceTest {
             }
         }
         compose.waitForIdle()
+    }
+
+    /** Klatki, aż NavDisplay złoży kartę; ruch mapy zapisuje się dopiero po złożeniu sceny, jak w aplikacji. */
+    private fun awaitCard() {
+        repeat(MAX_FRAMES) {
+            compose.mainClock.advanceTimeByFrame()
+            if (compose.onAllNodesWithText("${BuildingRoute(symbol = "A-1")}").fetchSemanticsNodes().isNotEmpty()) {
+                return
+            }
+        }
+        fail("karta nie pojawiła się w $MAX_FRAMES klatkach")
     }
 
     private fun cardTop(symbol: String = "A-1"): Dp {
@@ -126,5 +161,6 @@ class SheetEntranceTest {
     private companion object {
         const val MOVE_MILLIS = 400L
         const val FRAME_MARGIN_MILLIS = 64L
+        const val MAX_FRAMES = 5
     }
 }
