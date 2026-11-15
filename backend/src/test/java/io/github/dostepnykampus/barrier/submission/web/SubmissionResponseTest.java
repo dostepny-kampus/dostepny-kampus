@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Odpowiedź ze zgłoszeniem (W4-4): treść płasko obok identyfikatora, wersji,
  * statusu i chwili utworzenia jako napisu ISO-8601, bez pól pustych i flag
- * fałszywych; data weryfikacji tylko przy zgłoszeniu przyjętym (BR-17).
+ * fałszywych; data weryfikacji tylko przy zgłoszeniu przyjętym.
  *
  * @since 0.1.0
  */

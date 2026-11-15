@@ -17,11 +17,13 @@ import org.jspecify.annotations.Nullable;
 /**
  * Odpowiedź z zgłoszeniem, schemat Submission w OpenAPI.
  *
+ * <p>Wymagania: BR-17</p>
+ *
  * @param id Identyfikator zgłoszenia
  * @param version Wersja zgłoszenia
  * @param status Status zgłoszenia
  * @param createdAt Chwila utworzenia zgłoszenia
- * @param verifiedAt Chwila przyjęcia albo {@code null}, gdy zgłoszenia nie przyjęto (BR-17)
+ * @param verifiedAt Chwila przyjęcia albo {@code null}, gdy zgłoszenia nie przyjęto
  * @param content Treść zgłoszenia, w JSON płasko obok pozostałych pól
  * @since 0.1.0
  */
