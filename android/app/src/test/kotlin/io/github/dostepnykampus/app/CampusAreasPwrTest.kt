@@ -124,6 +124,26 @@ class CampusAreasPwrTest {
     }
 
     /**
+     * Wiersz: V1, strzałka przesuwania na terenie startowym, którego osoba nie wybierała, dochodzi do brzegu
+     * prostokąta terenu → komunikat TalkBack z nazwą „Kampus główny”.
+     * Scenariusz: przegladanie-mapy.feature: Przy granicy terenu TalkBack mówi, jak zmienić teren.
+     *
+     * Wymagania: US1.7, NFR-53
+     */
+    @Test
+    fun announcesEndOfStartArea() {
+        showApp()
+        val notice = hasContentDescription(EDGE_NOTICE)
+        repeat(MAX_PANS) {
+            if (compose.onAllNodes(notice).fetchSemanticsNodes().isEmpty()) {
+                compose.onNodeWithContentDescription("Przesuń mapę w prawo").performClick()
+                compose.waitForIdle()
+            }
+        }
+        compose.onNode(notice).assertExists("komunikat o końcu terenu Kampus główny przy brzegu")
+    }
+
+    /**
      * Wiersz: V1, panel „Teren na mapie” ma pięć terenów PWr, „Kampus główny” wybrany, przy innych liczba
      * budynków i odległość.
      * Scenariusz: przegladanie-mapy.feature: Lista terenów podaje nazwę, liczbę budynków i odległość.
@@ -251,6 +271,9 @@ class CampusAreasPwrTest {
     private companion object {
         const val DATA_TIMEOUT = 10_000L
         const val SCROLL_STEP = 100f
+        const val MAX_PANS = 60
+        const val EDGE_NOTICE =
+            "Tu kończy się teren Kampus główny. Inny teren wybierzesz przyciskiem «Zmień teren» u góry mapy."
         val AreaHeading =
             SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading) and
                 hasContentDescription(" budyn", substring = true)

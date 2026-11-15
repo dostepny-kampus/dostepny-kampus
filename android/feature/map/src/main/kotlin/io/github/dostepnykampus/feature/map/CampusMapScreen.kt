@@ -39,6 +39,7 @@ import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
+import io.github.dostepnykampus.feature.map.area.AreaEdgeAnnouncement
 import io.github.dostepnykampus.feature.map.area.MapAreas
 import io.github.dostepnykampus.feature.map.area.rememberMapAreas
 import io.github.dostepnykampus.feature.map.barrier.BarrierDescriptions
@@ -238,6 +239,7 @@ private fun CampusMap(
                 modifier = Modifier.fillMaxSize(),
             )
             scene.selection.entrance?.let { EntranceDescription(it) }
+            AreaEdgeAnnouncement(camera = camera, bounds = state.limits.bounds, area = areas.current?.name)
             MapStatusBar(topInset, isShown = state.isCovered)
             val underBar = if (state.isCovered) topInset.asPaddingValues() else PaddingValues()
             val aboveSheet = Modifier.padding(underBar).padding(contentPadding)
