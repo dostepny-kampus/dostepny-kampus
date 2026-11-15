@@ -15,9 +15,11 @@ import io.github.dostepnykampus.barrier.submission.content.SubmissionFloor;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
+import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.JsonNode;
@@ -29,7 +31,7 @@ import tools.jackson.databind.node.ObjectNode;
  * jako to samo drzewo. Nieznany rodzaj, zdjęcie bez UUID, liczba zamiast symbolu budynku
  * i ciało, które nie jest obiektem, kończą wiązanie błędem.
  *
- * <p>Wymagania: US4, US7, US8.4, US17.2, BR-18, BR-19</p>
+ * <p>Wymagania: US4, US7, US8.4, US17.2, BR-18, BR-19, BR-24</p>
  *
  * @since 0.1.0
  */
@@ -182,6 +184,107 @@ final class SubmissionContentJsonTest {
                 node -> SubmissionContentJsonTest.replacing(node).put("barrierRemoved", true)
             ).ordinaryChange(),
             "Usunięta bariera nie jest zwykłą zmianą"
+        );
+    }
+
+    @Test
+    void omitsFalseFlagsAndMissingFields() {
+        final ObjectNode input = JsonBodies.with(
+            node -> {
+                node.put("manualCorrection", false);
+                node.put("barrierRemoved", false);
+                node.set("floor", JsonBodies.json("{'number':1,'mezzanine':false}"));
+            }
+        );
+        Assertions.assertAll(
+            () -> Assertions.assertEquals(
+                JsonBodies.json(JsonBodies.QUICK),
+                JsonBodies.roundTrip(JsonBodies.with(node -> { })),
+                "Pola puste zapisane jako null"
+            ),
+            () -> Assertions.assertEquals(
+                JsonBodies.with(node -> node.set("floor", JsonBodies.json("{'number':1}"))),
+                JsonBodies.roundTrip(input),
+                "Fałszywa flaga wróciła jako pole"
+            )
+        );
+    }
+
+    @Test
+    void rejectsExplicitNull() {
+        Assertions.assertAll(
+            Stream.of(
+                "kind", "location", "accuracyMeters", "manualCorrection", "floor",
+                "barrierGroup", "barrierType", "description", "replacesSubmissionId",
+                "barrierRemoved", "entranceMarking", "photoIds"
+            ).map(
+                field -> () -> JsonBodies.failsBinding(
+                    String.format("Null w polu %s przeszedł", field), node -> node.putNull(field)
+                )
+            )
+        );
+        JsonBodies.failsBinding(
+            "Null w piętrze przeszedł",
+            node -> node.set("floor", JsonBodies.json("{'mezzanine':null}"))
+        );
+        JsonBodies.failsBinding(
+            "Null we współrzędnych przeszedł",
+            node -> node.set(
+                "location", JsonBodies.json("{'type':'Point','coordinates':[17.06,null]}")
+            )
+        );
+    }
+
+    @Test
+    void rejectsEmptyTextInEnumFields() {
+        Assertions.assertAll(
+            Stream.of("kind", "barrierGroup", "entranceMarking").map(
+                field -> () -> JsonBodies.failsBinding(
+                    String.format("Pusty napis w polu %s przeszedł", field),
+                    node -> node.put(field, "")
+                )
+            )
+        );
+    }
+
+    @Test
+    void rejectsNoDataMarking() {
+        final Consumer<ObjectNode> marking = node -> {
+            node.put("kind", "ENTRANCE_MARKING");
+            node.put("entranceId", "node/7");
+        };
+        Assertions.assertAll(
+            () -> Assertions.assertEquals(
+                NewEntranceMarking.INACCESSIBLE,
+                JsonBodies.bind(
+                    JsonBodies.with(
+                        marking.andThen(node -> node.put("entranceMarking", "INACCESSIBLE"))
+                    )
+                ).toContent().entranceMarking(),
+                "Oznaczenie niedostępne nie przeszło"
+            ),
+            () -> JsonBodies.failsBinding(
+                "Zmiana oznaczenia na brak danych przeszła",
+                marking.andThen(node -> node.put("entranceMarking", "NO_DATA"))
+            )
+        );
+    }
+
+    @Test
+    void givesInvalidInputForMissingRequiredFields() {
+        Assertions.assertAll(
+            Stream.of("kind", "location", "photoIds").map(
+                field -> () -> Assertions.assertThrows(
+                    InvalidInput.class,
+                    () -> JsonBodies.bind(JsonBodies.with(node -> node.remove(field))).toContent(),
+                    String.format("Brak pola %s nie dał błędu 400", field)
+                )
+            )
+        );
+        Assertions.assertThrows(
+            InvalidInput.class,
+            () -> JsonBodies.bind(JsonBodies.json("{}")).toContent(),
+            "Pusta treść nie dała błędu 400"
         );
     }
 
