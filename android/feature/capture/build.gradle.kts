@@ -52,6 +52,7 @@ dependencies {
     testImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.robolectric.annotations)
     testImplementation(libs.robolectric.shadows.framework)
+    testImplementation(libs.roborazzi.core)
     testImplementation(libs.androidx.compose.ui.test.manifest)
     constraints {
         implementation(libs.androidx.core.ktx) {
