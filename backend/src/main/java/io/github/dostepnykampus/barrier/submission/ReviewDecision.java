@@ -60,6 +60,10 @@ public sealed interface ReviewDecision
         /**
          * Przyjęcie bez braków; brak identyfikatora albo konta kończy się wyjątkiem
          * NullPointerException.
+         *
+         * @param id Identyfikator zgłoszenia
+         * @param expectedVersion Wersja, którą ocenił Weryfikator
+         * @param reviewer Identyfikator konta Weryfikatora
          */
         public Accepted {
             Objects.requireNonNull(id, "id");
@@ -88,6 +92,11 @@ public sealed interface ReviewDecision
         /**
          * Odrzucenie bez braków; brak identyfikatora, konta albo powodu kończy się wyjątkiem
          * NullPointerException, a pusty powód wyjątkiem IllegalArgumentException.
+         *
+         * @param id Identyfikator zgłoszenia
+         * @param expectedVersion Wersja, którą ocenił Weryfikator
+         * @param reviewer Identyfikator konta Weryfikatora
+         * @param reason Niepusty powód odrzucenia
          */
         public Rejected {
             Objects.requireNonNull(id, "id");
