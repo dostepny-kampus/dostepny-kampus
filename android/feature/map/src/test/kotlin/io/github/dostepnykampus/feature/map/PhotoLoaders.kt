@@ -9,6 +9,7 @@ import android.content.Context
 import coil3.ColorImage
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
+import coil3.annotation.DelicateCoilApi
 import coil3.intercept.Interceptor
 import coil3.request.ErrorResult
 import coil3.request.ImageResult
@@ -21,6 +22,7 @@ internal const val PHOTO_URL = "https://serwer.test/submissions/z1/photos/p1"
 private const val PHOTO_COLOR = 0xFF336699.toInt()
 
 /** Ustawia domyślny [ImageLoader] testu na [interceptors] bez sieci. */
+@OptIn(DelicateCoilApi::class)
 internal fun usePhotoLoader(context: Context, vararg interceptors: Interceptor) {
     val loader = ImageLoader.Builder(context).components { interceptors.forEach { add(it) } }.build()
     SingletonImageLoader.setUnsafe(loader)
