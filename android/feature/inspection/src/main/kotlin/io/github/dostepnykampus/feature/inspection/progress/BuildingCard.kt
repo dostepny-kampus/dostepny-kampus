@@ -96,6 +96,7 @@ private fun coverageText(coverage: InspectionCoverage): String =
             stringResource(R.string.postep_pietra, inspected, total, percent)
         }
 
-        is InspectionCoverage.Whole ->
+        is InspectionCoverage.Whole -> {
             stringResource(if (coverage.isInspected) R.string.postep_obejrzany else R.string.postep_nieobejrzany)
+        }
     }
