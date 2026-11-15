@@ -94,7 +94,8 @@ class MapStylePlanTest {
         val layers = style.items("layers").associate { it.jsonObject.text("id") to it.jsonObject }
 
         val filters = listOf(PLAN_ROOMS_LAYER, PLAN_OUTLINE_LAYER).map { layers.getValue(it).getValue("filter") }
-        val source = style.getValue("sources").jsonObject.getValue(PLAN_SOURCE).jsonObject.getValue("data")
+        val sources = style.getValue("sources").jsonObject
+        val source = sources.getValue(PLAN_SOURCE).jsonObject.getValue("data")
         assertEquals(
             listOf(planFilter(floor = "P1", kind = "room"), planFilter(floor = "P1", kind = "outline"), 2),
             filters + source.jsonObject.items("features").size,

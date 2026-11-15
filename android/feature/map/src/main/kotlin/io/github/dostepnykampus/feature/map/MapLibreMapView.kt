@@ -406,8 +406,14 @@ internal fun Style.addMapImages(labels: List<String>, images: MapImages) {
  * planu. Wymagania: US3.3, US16.1
  */
 internal fun selectionImages(selection: MapSelection, images: MapImages): Map<String, Bitmap> {
-    val rooms = selection.plan?.let { it.rooms[it.floor] }?.rooms.orEmpty()
-    val numbers = rooms.asSequence().filter { it.isLabelled }.mapNotNull { it.number }.toSet()
+    val floor = selection.plan?.let { it.rooms[it.floor] }
+    val rooms = floor?.rooms.orEmpty()
+    val numbers =
+        rooms
+            .asSequence()
+            .filter { it.isLabelled }
+            .mapNotNull { it.number }
+            .toSet()
     val caption = entranceCaption(selected = selection.entrance, colors = images.colors, labelSize = images.labelSize)
     return caption + numbers.associate { roomNumberImage(it) to roomNumberBitmap(it, images.colors, images.labelSize) }
 }

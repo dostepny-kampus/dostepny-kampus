@@ -30,7 +30,8 @@ private const val STOP_TIMEOUT_MS = 5_000L
 @HiltViewModel
 class MapPlanViewModel
     @Inject
-    constructor(repository: BuildingCatalogRepository, plans: FloorPlans) : ViewModel() {
+    constructor(repository: BuildingCatalogRepository, plans: FloorPlans) :
+        ViewModel() {
         private val plan = MapPlan(plans)
 
         /** Plan piętra budynku przy środku mapy; `null`, gdy planu nie widać. */
