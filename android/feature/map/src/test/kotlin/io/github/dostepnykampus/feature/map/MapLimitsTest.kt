@@ -66,6 +66,20 @@ class MapLimitsTest {
         assertEquals(span, landscape.north, DEGREE_DELTA, "poziomy: północ o pół wysokości widoku")
     }
 
+    /**
+     * Wiersz: V1, przelot na inny teren — podkład zaczyna się pół poziomu poniżej najmniejszego powiększenia terenu,
+     * więc w środku przelotu nie jest rysowany ani pobierany, a w kafelkach podkładu terenu jest od tego powiększenia.
+     *
+     * Wymagania: NFR-39
+     */
+    @Test
+    fun hidesBasemapBelowArea() {
+        val area = CampusBounds(west = 0.0, south = 0.0, east = span, north = span)
+        val limits = MapLimits(area, widthDp = 400.0, heightDp = 800.0)
+        assertEquals(limits.minZoom - 0.5, limits.basemap.minZoom, ZOOM_DELTA, "podkład od pół poziomu niżej")
+        assertEquals(limits.tileBounds, limits.basemap.bounds, "kafelki podkładu w prostokącie z pół widoku")
+    }
+
     private companion object {
         const val ZOOM_DELTA = 1e-3
         const val DEGREE_DELTA = 1e-9

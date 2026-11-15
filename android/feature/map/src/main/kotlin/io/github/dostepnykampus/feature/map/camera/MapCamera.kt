@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.map.camera
 
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import io.github.dostepnykampus.feature.map.style.Basemap
 import kotlin.math.PI
 import kotlin.math.asinh
 import kotlin.math.atan
@@ -26,6 +27,7 @@ private const val MAX_ZOOM = 20.0
 private const val QUARTER_VIEW_DEGREES_AT_ZOOM_0 = 70.0
 private const val WORLD_DP_AT_ZOOM_0 = 512.0
 private const val FULL_TURN_DEGREES = 360.0
+private const val BASEMAP_ZOOM_MARGIN = 0.5
 
 /**
  * Widok mapy V1. Przyciski „Powiększ”, „Pomniejsz” i cztery strzałki zmieniają go bez gestów (WCAG 2.5.1, WCAG 2.5.7).
@@ -108,6 +110,14 @@ internal class MapLimits(val bounds: CampusBounds, val widthDp: Double, val heig
                 north = latitudeOf(mercatorY(bounds.north) + halfY),
             )
         }
+
+    /**
+     * Podkład terenu: kafelki w [tileBounds] od pół poziomu poniżej [minZoom]. Przelot na inny teren oddala mapę
+     * bardziej, więc w jego środku podkładu nie ma, a przy zejściu do celu wraca.
+     *
+     * Wymagania: NFR-39
+     */
+    val basemap: Basemap get() = Basemap(bounds = tileBounds, minZoom = minZoom - BASEMAP_ZOOM_MARGIN)
 
     /**
      * Widok [camera] w granicach: środek w [bounds], powiększenie co najmniej [minZoom]. Strzałki i „Pomniejsz”

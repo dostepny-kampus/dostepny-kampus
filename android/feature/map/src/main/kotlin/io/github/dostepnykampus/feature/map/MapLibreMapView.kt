@@ -33,6 +33,7 @@ import io.github.dostepnykampus.feature.map.building.entranceImages
 import io.github.dostepnykampus.feature.map.camera.CameraMotion
 import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
+import io.github.dostepnykampus.feature.map.camera.FlightLimits
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
@@ -41,7 +42,6 @@ import io.github.dostepnykampus.feature.map.camera.padding
 import io.github.dostepnykampus.feature.map.camera.styleColors
 import io.github.dostepnykampus.feature.map.camera.toCamera
 import io.github.dostepnykampus.feature.map.camera.toPosition
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
@@ -49,6 +49,7 @@ import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.campus.symbolsAt
 import io.github.dostepnykampus.feature.map.style.BARRIERS_LAYER
 import io.github.dostepnykampus.feature.map.style.BUILDINGS_LAYER
+import io.github.dostepnykampus.feature.map.style.Basemap
 import io.github.dostepnykampus.feature.map.style.MapImages
 import io.github.dostepnykampus.feature.map.style.MapStyleColors
 import io.github.dostepnykampus.feature.map.style.MapStyleTarget
@@ -69,6 +70,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonPrimitive
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraUpdateFactory
+import org.maplibre.android.constants.MapLibreConstants
 import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE
@@ -133,7 +135,7 @@ object MapLibreMapView : CampusMapView {
                 density.mapLimits(selection.bounds, size).takeIf { size != IntSize.Zero }
             }
         val style =
-            rememberMapStyle(data = data, selection = selection, colors = styleColors, tiles = limits?.tileBounds)
+            rememberMapStyle(data = data, selection = selection, colors = styleColors, basemap = limits?.basemap)
         val currentMove by rememberUpdatedState(move)
         val currentInset by rememberUpdatedState(inset)
         val currentData by rememberUpdatedState(data)
@@ -159,20 +161,20 @@ object MapLibreMapView : CampusMapView {
             selection = selection,
             images = images,
         )
-        DisposableEffect(map, limits) {
-            limits?.let { map?.limitTo(it) }
-            onDispose {}
-        }
-        map.FollowEachMoveOnce(move = move, inset = inset)
+        map.FollowEachMoveOnce(move = move, inset = inset, limits = limits)
         AndroidView(factory = { mapView }, modifier = modifier.onSizeChanged { size = it })
     }
 
     @Composable
-    private fun MapLibreMap?.FollowEachMoveOnce(move: CameraTransition, inset: MapInset) {
+    private fun MapLibreMap?.FollowEachMoveOnce(move: CameraTransition, inset: MapInset, limits: MapLimits?) {
         val driver = remember(this) { this?.let(::CameraDriver) }
         val currentInset by rememberUpdatedState(inset)
         DisposableEffect(driver, move) {
             driver?.follow(move, currentInset)
+            onDispose {}
+        }
+        DisposableEffect(driver, limits) {
+            driver?.limit(limits)
             onDispose {}
         }
         DisposableEffect(driver, inset) {
@@ -267,27 +269,35 @@ object MapLibreMapView : CampusMapView {
         }
     }
 
-    private fun MapLibreMap.limitTo(limits: MapLimits) {
-        val bounds = limits.bounds
-        val target =
-            LatLngBounds.from(
-                latNorth = bounds.north,
-                lonEast = bounds.east,
-                latSouth = bounds.south,
-                lonWest = bounds.west,
-            )
-        setLatLngBoundsForCameraTarget(target)
-        setMinZoomPreference(limits.minZoom)
-    }
-
     /**
      * Ruchy kamery mapy [map] po jednym. Ruch niesie dopełnienie z chwili startu; dopełnienie zmienione
      * w trakcie ruchu czeka na jego koniec, bo przerwałoby ruch, a samo przesuwa mapę płynnie w 300 ms. Gest osoby
-     * przerywa ruch sam (MapLibre).
+     * przerywa ruch sam (MapLibre). Na czas przelotu granice kamery są zdjęte ([FlightLimits]).
      */
     private class CameraDriver(private val map: MapLibreMap) {
         private var inset = MapInset()
         private var running: Run? = null
+        private val limits = FlightLimits { limitTo(it) }
+
+        fun limit(next: MapLimits?) = limits.limit(next)
+
+        private fun limitTo(area: MapLimits?) {
+            if (area == null) {
+                map.setLatLngBoundsForCameraTarget(null)
+                map.setMinZoomPreference(MapLibreConstants.MINIMUM_ZOOM.toDouble())
+                return
+            }
+            val bounds = area.bounds
+            val target =
+                LatLngBounds.from(
+                    latNorth = bounds.north,
+                    lonEast = bounds.east,
+                    latSouth = bounds.south,
+                    lonWest = bounds.west,
+                )
+            map.setLatLngBoundsForCameraTarget(target)
+            map.setMinZoomPreference(area.minZoom)
+        }
 
         fun pad(next: MapInset) {
             inset = next
@@ -302,6 +312,7 @@ object MapLibreMapView : CampusMapView {
             val update = CameraUpdateFactory.newCameraPosition(move.camera.toPosition(inset))
             val millis = move.durationMillis.toInt()
             running = null
+            if (move.motion == CameraMotion.FLIGHT) limits.startFlight() else limits.endFlight()
             when (move.motion) {
                 CameraMotion.NONE -> map.moveCamera(update)
                 CameraMotion.EASE -> map.easeCamera(update, millis, start())
@@ -320,6 +331,7 @@ object MapLibreMapView : CampusMapView {
             private fun settle() {
                 if (running !== this) return
                 running = null
+                limits.endFlight()
                 pad(inset)
             }
         }
@@ -374,8 +386,8 @@ internal fun northUpOptions(context: Context): MapLibreMapOptions =
 
 /**
  * Styl mapy jako napis JSON bez zaznaczenia budynku, wejścia i bariery: z [selection] bierze tylko prostokąt
- * i granicę terenu, a podkład ogranicza do prostokąta [tiles]. Powstaje od nowa tylko po zmianie danych [data],
- * terenu, barw [colors] albo [tiles]; zaznaczenie i ruch kamery stylu nie budują. Z terenem, a bez [tiles] (mapa
+ * i granicę terenu, a podkład ogranicza do obszaru [basemap]. Powstaje od nowa tylko po zmianie danych [data],
+ * terenu, barw [colors] albo [basemap]; zaznaczenie i ruch kamery stylu nie budują. Z terenem, a bez [basemap] (mapa
  * jeszcze bez rozmiaru) stylu nie ma. Funkcja [build] składa styl.
  */
 @Composable
@@ -383,12 +395,12 @@ internal fun rememberMapStyle(
     data: CampusMapData,
     selection: MapSelection,
     colors: MapStyleColors,
-    tiles: CampusBounds?,
-    build: (CampusMapData, MapSelection, MapStyleColors, CampusBounds?) -> String = ::campusMapStyle,
+    basemap: Basemap?,
+    build: (CampusMapData, MapSelection, MapStyleColors, Basemap?) -> String = ::campusMapStyle,
 ): String? =
-    remember(data, selection.bounds, selection.boundary, colors, tiles) {
+    remember(data, selection.bounds, selection.boundary, colors, basemap) {
         val area = MapSelection(bounds = selection.bounds, boundary = selection.boundary)
-        if (selection.bounds != null && tiles == null) null else build(data, area, colors, tiles)
+        if (selection.bounds != null && basemap == null) null else build(data, area, colors, basemap)
     }
 
 /**
