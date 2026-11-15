@@ -4,6 +4,10 @@
 
 Pozycja telefonu z GNSS: źródła położenia, satelity i uśrednianie pomiaru.
 
+## Pakiety
+
+- `core.location` — źródła położenia GNSS, stan satelitów i uśrednianie pomiarów.
+
 ## API
 
 Interfejsy źródeł położenia i uśrednianie pozycji. Implementacje GNSS i wiązania Hilt (`LocationModule`) są `internal`.

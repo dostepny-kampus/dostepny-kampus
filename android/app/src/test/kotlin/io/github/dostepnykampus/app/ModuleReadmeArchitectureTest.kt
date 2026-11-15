@@ -235,13 +235,6 @@ class ModuleReadmeArchitectureTest {
 
         val NO_PACKAGES =
             mapOf(
-                ":core:model" to 1829,
-                ":core:geo" to 1829,
-                ":core:location" to 1829,
-                ":core:database" to 1829,
-                ":core:network" to 1829,
-                ":core:data" to 1829,
-                ":core:designsystem" to 1829,
                 ":app" to 1830,
                 ":feature:map" to 1830,
                 ":feature:capture" to 1830,
