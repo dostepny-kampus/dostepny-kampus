@@ -40,9 +40,13 @@ class RefusedResaveTest {
             queue.save(precise(FIRST, severity = 2), photo(tempDir, FIRST))
             store.createResults.addLast(ServerReply.Fault(code = BAD_REQUEST))
             queue.sendAll()
-            assertEquals(OwnSubmissionState.REFUSED, history.rows.getValue(ID).state)
+            assertEquals(
+                OwnSubmissionState.REFUSED,
+                history.rows.getValue(ID).state,
+                "odmowa serwera odrzuca zgłoszenie",
+            )
             queue.sendAll()
-            assertEquals(1, sent.size)
+            assertEquals(1, sent.size, "odrzucone zgłoszenie nie idzie drugi raz")
 
             val before = scheduled
             queue.saveEdit(
@@ -52,15 +56,15 @@ class RefusedResaveTest {
             )
 
             val local = history.rows.getValue(ID)
-            assertEquals(OwnSubmissionState.LOCAL, local.state)
-            assertNull(local.refusalCode)
-            assertEquals(before + 1, scheduled)
+            assertEquals(OwnSubmissionState.LOCAL, local.state, "poprawka wraca do stanu lokalnego")
+            assertNull(local.refusalCode, "poprawka czyści kod odmowy")
+            assertEquals(before + 1, scheduled, "poprawka planuje wysyłkę")
 
             queue.sendAll()
 
-            assertEquals(2, sent.size)
-            assertEquals(1, sent.last().severity)
-            assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state)
+            assertEquals(2, sent.size, "poprawka idzie na serwer")
+            assertEquals(1, sent.last().severity, "poprawka niesie nową uciążliwość")
+            assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state, "poprawka jest wysłana")
         }
 
     private fun queue(): SubmissionQueue =

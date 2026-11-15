@@ -48,8 +48,8 @@ class EditBaseVersionTest {
             )
             target.sendAll()
 
-            assertEquals(listOf(ID), creates)
-            assertEquals(listOf(ID to SERVER_VERSION), edits)
+            assertEquals(listOf(ID), creates, "zgłoszenie utworzone raz")
+            assertEquals(listOf(ID to SERVER_VERSION), edits, "edycja idzie od wersji z serwera")
         }
 
     @Test
@@ -66,8 +66,8 @@ class EditBaseVersionTest {
             )
             target.sendAll()
 
-            assertEquals(listOf(ID), creates)
-            assertEquals(listOf(ID to SERVER_VERSION), edits)
+            assertEquals(listOf(ID), creates, "wysłane zgłoszenie powstało na serwerze raz")
+            assertEquals(listOf(ID to SERVER_VERSION), edits, "poprawka wysłanego zgłoszenia idzie jako edycja")
         }
 
     @Test
@@ -84,11 +84,11 @@ class EditBaseVersionTest {
                         target.saveEdit(EditedSubmission(ID, baseVersion = null), precise(PHOTO), photo(tempDir, PHOTO))
                     }
                 }
-            assertEquals(SaveRefusal.UNKNOWN_VERSION, refused.reason)
+            assertEquals(SaveRefusal.UNKNOWN_VERSION, refused.reason, "zapis bez wersji jest odrzucony")
             target.sendAll()
 
-            assertEquals(listOf(ID), creates)
-            assertEquals(emptyList<Pair<String, Int>>(), edits)
+            assertEquals(listOf(ID), creates, "zgłoszenie utworzone raz")
+            assertEquals(emptyList<Pair<String, Int>>(), edits, "edycja nie idzie na serwer")
         }
 
     @Test
@@ -104,8 +104,8 @@ class EditBaseVersionTest {
 
             target.sendAll()
 
-            assertEquals(listOf(ID), creates)
-            assertEquals(emptyList<Pair<String, Int>>(), edits)
+            assertEquals(listOf(ID), creates, "zgłoszenie utworzone raz")
+            assertEquals(emptyList<Pair<String, Int>>(), edits, "edycja nie idzie na serwer")
         }
 
     private fun queue(history: FakeHistory?): SubmissionQueue =

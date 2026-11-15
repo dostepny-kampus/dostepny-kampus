@@ -70,11 +70,11 @@ class RefusedSubmissionTest {
             queue.save(precise(PHOTO), photo(tempDir, PHOTO))
             store.createResults.addLast(ServerReply.Fault(code = 500))
 
-            assertFalse(queue.sendAll())
-            assertTrue(queue.sendAll())
+            assertFalse(queue.sendAll(), "pierwszy przebieg kończy się odmową")
+            assertTrue(queue.sendAll(), "drugi przebieg kończy się powodzeniem")
 
-            assertEquals(2, creates)
-            assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state)
+            assertEquals(2, creates, "zgłoszenie idzie na serwer drugi raz")
+            assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state, "zgłoszenie jest wysłane")
         }
 
     @Test
@@ -83,11 +83,15 @@ class RefusedSubmissionTest {
             queue.save(precise(PHOTO), photo(tempDir, PHOTO))
             store.createResults.addLast(ServerReply.Offline)
 
-            assertFalse(queue.sendAll())
-            assertEquals(OwnSubmissionState.LOCAL, history.rows.getValue(ID).state)
-            assertTrue(queue.sendAll())
+            assertFalse(queue.sendAll(), "pierwszy przebieg kończy się odmową")
+            assertEquals(
+                OwnSubmissionState.LOCAL,
+                history.rows.getValue(ID).state,
+                "zgłoszenie wraca do stanu lokalnego",
+            )
+            assertTrue(queue.sendAll(), "drugi przebieg kończy się powodzeniem")
 
-            assertEquals(2, creates)
+            assertEquals(2, creates, "zgłoszenie idzie na serwer drugi raz")
         }
 
     @Test
@@ -98,13 +102,17 @@ class RefusedSubmissionTest {
 
             queue.sendAll()
             queue.sendAll()
-            assertEquals(1, creates)
-            assertTrue(queue.loginExpired.value)
-            assertEquals(OwnSubmissionState.LOCAL, history.rows.getValue(ID).state)
+            assertEquals(1, creates, "zgłoszenie idzie na serwer raz")
+            assertTrue(queue.loginExpired.value, "wygasłe logowanie jest zgłoszone")
+            assertEquals(
+                OwnSubmissionState.LOCAL,
+                history.rows.getValue(ID).state,
+                "zgłoszenie zostaje lokalne",
+            )
 
             queue.onLoggedIn()
             queue.sendAll()
-            assertEquals(2, creates)
+            assertEquals(2, creates, "zgłoszenie idzie na serwer drugi raz")
         }
 
     @Test
@@ -119,11 +127,15 @@ class RefusedSubmissionTest {
                 precise(PHOTO, severity = 1),
                 photo(tempDir, PHOTO),
             )
-            assertEquals(OwnSubmissionState.LOCAL, history.rows.getValue(ID).state)
+            assertEquals(
+                OwnSubmissionState.LOCAL,
+                history.rows.getValue(ID).state,
+                "zgłoszenie zostaje lokalne",
+            )
             queue.sendAll()
 
-            assertEquals(2, creates)
-            assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state)
+            assertEquals(2, creates, "zgłoszenie idzie na serwer drugi raz")
+            assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state, "zgłoszenie jest wysłane")
         }
 
     private fun refusedOnce(result: ServerReply<Submission>, code: Int) =
@@ -134,12 +146,12 @@ class RefusedSubmissionTest {
             queue.sendAll()
             queue.sendAll()
 
-            assertEquals(1, creates)
+            assertEquals(1, creates, "zgłoszenie idzie na serwer raz")
             val row = history.rows.getValue(ID)
-            assertEquals(OwnSubmissionState.REFUSED, row.state)
-            assertEquals(code, row.refusalCode)
+            assertEquals(OwnSubmissionState.REFUSED, row.state, "zgłoszenie jest odrzucone")
+            assertEquals(code, row.refusalCode, "kod odmowy z serwera")
             val left = store.rows.single()
-            assertTrue(left.submission.isRefused)
+            assertTrue(left.submission.isRefused, "odrzucone zgłoszenie zostaje w kolejce")
         }
 
     private companion object {

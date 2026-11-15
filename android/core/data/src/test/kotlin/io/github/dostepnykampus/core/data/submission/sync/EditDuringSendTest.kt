@@ -60,8 +60,8 @@ class EditDuringSendTest {
         runBlocking {
             editWhileSendWaitsForServer()
 
-            assertEquals(listOf("create 2", "update 1 3"), calls)
-            assertEquals(emptyList<Any>(), store.rows)
+            assertEquals(listOf("create 2", "update 1 3"), calls, "poprawka z czasu wysyłki idzie jako edycja")
+            assertEquals(emptyList<Any>(), store.rows, "kolejka po wysyłce jest pusta")
         }
 
     private suspend fun editWhileSendWaitsForServer() =

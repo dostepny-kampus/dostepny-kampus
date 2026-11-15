@@ -38,13 +38,17 @@ class OwnStatusesTest {
             history.markSent("a")
             val rejected = server("a").copy(status = SubmissionStatus.REJECTED, rejectionReason = REASON, version = 3)
 
-            assertEquals(StatusRefresh.DONE, refresh(ApiResult.Success(listOf(rejected))))
+            assertEquals(
+                StatusRefresh.DONE,
+                refresh(ApiResult.Success(listOf(rejected))),
+                "odświeżenie statusów kończy się powodzeniem",
+            )
 
             val row = history.rows.getValue("a")
-            assertEquals("REJECTED", row.serverStatus)
-            assertEquals(REASON, row.rejectionReason)
-            assertEquals(3, row.serverVersion)
-            assertEquals(1, row.savedAtMillis)
+            assertEquals("REJECTED", row.serverStatus, "status z serwera")
+            assertEquals(REASON, row.rejectionReason, "powód odrzucenia z serwera")
+            assertEquals(3, row.serverVersion, "wersja z serwera")
+            assertEquals(1, row.savedAtMillis, "czas zapisu zostaje")
         }
 
     @Test
@@ -53,10 +57,10 @@ class OwnStatusesTest {
             refresh(ApiResult.Success(listOf(server("b"))))
 
             val row = history.rows.getValue("b")
-            assertEquals(OwnSubmissionState.SENT, row.state)
-            assertEquals("TB-5", row.barrierType)
-            assertEquals(CREATED.toEpochMilli(), row.savedAtMillis)
-            assertEquals("SENT", row.serverStatus)
+            assertEquals(OwnSubmissionState.SENT, row.state, "zgłoszenie jest wysłane")
+            assertEquals("TB-5", row.barrierType, "typ bariery zostaje")
+            assertEquals(CREATED.toEpochMilli(), row.savedAtMillis, "czas zapisu to czas utworzenia")
+            assertEquals("SENT", row.serverStatus, "status z serwera")
         }
 
     @Test
@@ -66,24 +70,32 @@ class OwnStatusesTest {
 
             refresh(ApiResult.Success(listOf(server("q").copy(content = quick))))
 
-            assertNull(history.rows["q"])
+            assertNull(history.rows["q"], "zgłoszenie szybkie nie trafia do historii")
         }
 
     @Test
     fun handlesOfflineAndError() =
         runBlocking {
-            assertEquals(StatusRefresh.OFFLINE, refresh(ApiResult.NetworkError(IOException())))
-            assertEquals(StatusRefresh.FAILED, refresh(ApiResult.ServerError(code = 403)))
-            assertEquals(StatusRefresh.FAILED, refresh(ApiResult.NotFound))
+            assertEquals(
+                StatusRefresh.OFFLINE,
+                refresh(ApiResult.NetworkError(IOException())),
+                "brak sieci to tryb offline",
+            )
+            assertEquals(
+                StatusRefresh.FAILED,
+                refresh(ApiResult.ServerError(code = 403)),
+                "błąd serwera to niepowodzenie",
+            )
+            assertEquals(StatusRefresh.FAILED, refresh(ApiResult.NotFound), "brak zasobu to niepowodzenie")
         }
 
     @Test
     fun givesModelWithStatus() {
         val row = OwnSubmissionEntity(id = "a", savedAtMillis = 1, kind = "PRECISE", serverStatus = "IN_REVIEW")
 
-        assertEquals(SubmissionStatus.IN_REVIEW, row.toOwnSubmission().serverStatus)
-        assertNull(row.copy(serverStatus = "LOST").toOwnSubmission().serverStatus)
-        assertNull(row.copy(serverStatus = null).toOwnSubmission().serverStatus)
+        assertEquals(SubmissionStatus.IN_REVIEW, row.toOwnSubmission().serverStatus, "znany status jest czytany")
+        assertNull(row.copy(serverStatus = "LOST").toOwnSubmission().serverStatus, "nieznany status znika")
+        assertNull(row.copy(serverStatus = null).toOwnSubmission().serverStatus, "brak statusu zostaje pusty")
     }
 
     private suspend fun refresh(result: ApiResult<List<Submission>>): StatusRefresh =

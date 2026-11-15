@@ -24,28 +24,40 @@ class PendingSubmissionMapperTest {
     fun roundTripsContent() {
         val content = fullContent()
 
-        assertEquals(content, pending(content).toSubmissionContent())
+        assertEquals(content, pending(content).toSubmissionContent(), "treść po zapisie i odczycie jest ta sama")
     }
 
     @Test
     fun rejectsUnknownKind() {
         val saved = withRow { it.copy(kind = "SPEED") }
 
-        assertThrows(IllegalArgumentException::class.java) { saved.toSubmissionContent() }
+        assertThrows(
+            IllegalArgumentException::class.java,
+            { saved.toSubmissionContent() },
+            "nieznany rodzaj zgłoszenia zrywa odczyt",
+        )
     }
 
     @Test
     fun rejectsUnknownGroup() {
         val saved = withRow { it.copy(barrierGroup = "STAIRS") }
 
-        assertThrows(IllegalArgumentException::class.java) { saved.toSubmissionContent() }
+        assertThrows(
+            IllegalArgumentException::class.java,
+            { saved.toSubmissionContent() },
+            "nieznana grupa bariery zrywa odczyt",
+        )
     }
 
     @Test
     fun rejectsUnknownMarking() {
         val saved = withRow { it.copy(entranceMarking = "CLOSED") }
 
-        assertThrows(IllegalArgumentException::class.java) { saved.toSubmissionContent() }
+        assertThrows(
+            IllegalArgumentException::class.java,
+            { saved.toSubmissionContent() },
+            "nieznane oznaczenie wejścia zrywa odczyt",
+        )
     }
 
     private fun withRow(row: (PendingSubmissionEntity) -> PendingSubmissionEntity): PendingSubmissionWithPhotos {

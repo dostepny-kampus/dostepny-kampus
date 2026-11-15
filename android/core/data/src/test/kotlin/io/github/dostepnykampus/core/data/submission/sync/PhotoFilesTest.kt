@@ -56,7 +56,7 @@ class PhotoFilesTest {
 
             queue.sendAll()
 
-            photos.forEach { assertFalse(File(it.path).exists()) }
+            photos.forEach { assertFalse(File(it.path).exists(), "plik po wysłaniu jest usunięty") }
         }
 
     @Test
@@ -68,7 +68,7 @@ class PhotoFilesTest {
 
             queue.sendAll()
 
-            assertTrue(File(photos.single().path).exists())
+            assertTrue(File(photos.single().path).exists(), "plik czekającego zgłoszenia zostaje")
         }
 
     @Test
@@ -81,8 +81,8 @@ class PhotoFilesTest {
 
             queue.saveEdit(EditedSubmission(id = ID, baseVersion = null), precise("p1", "p3"), second)
 
-            assertFalse(File(first[1].path).exists())
-            second.forEach { assertTrue(File(it.path).exists()) }
+            assertFalse(File(first[1].path).exists(), "plik zastąpiony poprawką jest usunięty")
+            second.forEach { assertTrue(File(it.path).exists(), "plik poprawki zostaje") }
         }
 
     private fun server(id: String, content: SubmissionContent): Submission =

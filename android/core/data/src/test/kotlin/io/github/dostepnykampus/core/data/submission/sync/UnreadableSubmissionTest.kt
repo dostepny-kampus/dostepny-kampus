@@ -58,9 +58,9 @@ class UnreadableSubmissionTest {
             queue.save(precise("p2"), photo(tempDir, "p2"))
             File(lost.single().path).delete()
 
-            assertTrue(queue.sendAll())
+            assertTrue(queue.sendAll(), "przebieg wysyłki kończy się powodzeniem")
 
-            assertEquals(listOf(FIRST, SECOND), created)
+            assertEquals(listOf(FIRST, SECOND), created, "oba zgłoszenia próbują iść na serwer")
             assertUnreadable()
         }
 
@@ -72,25 +72,25 @@ class UnreadableSubmissionTest {
             val old = store.rows.first { it.submission.id == FIRST }
             store.rows[store.rows.indexOf(old)] = old.copy(submission = old.submission.copy(barrierGroup = "STARA"))
 
-            assertTrue(queue.sendAll())
+            assertTrue(queue.sendAll(), "przebieg wysyłki kończy się powodzeniem")
 
-            assertEquals(listOf(SECOND), created)
+            assertEquals(listOf(SECOND), created, "nieczytelne zgłoszenie nie idzie na serwer")
             assertUnreadable()
             val dao =
                 object : PendingEditDao {
                     override suspend fun find(id: String): PendingSubmissionWithPhotos? =
                         store.rows.find { it.submission.id == id }
                 }
-            assertNull(pendingEditsOf(dao).load(FIRST))
+            assertNull(pendingEditsOf(dao).load(FIRST), "nieczytelnego zgłoszenia nie da się poprawić")
         }
 
     private fun assertUnreadable() {
         val first = history.rows.getValue(FIRST)
-        assertEquals(OwnSubmissionState.REFUSED, first.state)
-        assertNull(first.refusalCode)
-        assertEquals(OwnSubmissionState.SENT, history.rows.getValue(SECOND).state)
+        assertEquals(OwnSubmissionState.REFUSED, first.state, "nieczytelne zgłoszenie jest odrzucone")
+        assertNull(first.refusalCode, "nieczytelne zgłoszenie nie ma kodu odmowy")
+        assertEquals(OwnSubmissionState.SENT, history.rows.getValue(SECOND).state, "kolejne zgłoszenie jest wysłane")
         val left = store.rows.single()
-        assertTrue(left.submission.isRefused)
+        assertTrue(left.submission.isRefused, "nieczytelne zgłoszenie zostaje w kolejce jako odrzucone")
     }
 
     private companion object {
