@@ -19,7 +19,31 @@ private const val SECTOR_DEGREES = 45.0
  *
  * Wymagania: US1.8, NFR-56
  */
-enum class CompassDirection { North, NorthEast, East, SouthEast, South, SouthWest, West, NorthWest }
+enum class CompassDirection {
+    /** Na północ. */
+    North,
+
+    /** Na północny wschód. */
+    NorthEast,
+
+    /** Na wschód. */
+    East,
+
+    /** Na południowy wschód. */
+    SouthEast,
+
+    /** Na południe. */
+    South,
+
+    /** Na południowy zachód. */
+    SouthWest,
+
+    /** Na zachód. */
+    West,
+
+    /** Na północny zachód. */
+    NorthWest,
+}
 
 /**
  * Zmiana terenu mapy do napisu „Pokazuję teren: Wittigowo · 2 km na południowy wschód”.
