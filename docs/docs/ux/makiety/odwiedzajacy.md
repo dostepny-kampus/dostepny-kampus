@@ -192,6 +192,7 @@ Czynność główna: jak w stanie zwykłym, na nowym terenie.
 | --- | --- |
 | Przycisk terenu pokazuje nową nazwę: „Wittigowo” | US1.6, US1.8 |
 | Napis „Pokazuję teren: Wittigowo” nad mapą mówi o zmianie terenu | US1.8, NFR-18 |
+| Zamknięcie karty zostawia teren „Wittigowo” | US1.8, BR-G5 |
 
 ## V2 Karta budynku
 

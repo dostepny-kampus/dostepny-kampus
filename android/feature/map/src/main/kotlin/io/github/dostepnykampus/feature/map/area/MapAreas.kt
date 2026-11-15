@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map.area
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -38,18 +39,21 @@ internal fun AreaOrder.otherAreaOf(symbol: String): String? =
  * Wymagania: US1.6, US1.7, US1.8
  *
  * @param data dane mapy z terenami; `null`, dopóki ich nie ma
- * @param symbol budynek zaznaczenia z trasy; bez wyboru osoby to on wyznacza teren
- * @param chosen zapisywana nazwa terenu wybranego przez osobę; `null` bez wyboru
+ * @param symbol budynek zaznaczenia z trasy; dopóki teren nie jest ustawiony, to on wyznacza teren
+ * @param chosen zapisywana nazwa terenu pokazanego na mapie: wybranego przez osobę albo ustawionego jednorazowo
+ *   przez wybór budynku z innego terenu; `null`, dopóki mapa stoi na terenie startowym
  * @param seen zapisywana nazwa terenu, o którym osoba już wie: wybrała go albo ruszyła na nim mapę; `null`, dopóki
  *   widziała tylko teren startowy
+ * @param followed zapisywany symbol budynku, którego teren mapa już pokazała; `null` bez zaznaczenia
  */
 internal class MapAreas(
     private val data: CampusMapData?,
     private val symbol: String?,
     private val chosen: MutableState<String?>,
     private val seen: MutableState<String?>,
+    private val followed: MutableState<String?>,
 ) {
-    /** Nazwa terenu wybranego przez osobę; `null`, gdy teren wynika z zaznaczenia albo jest startowy. */
+    /** Nazwa terenu ustawionego przez osobę albo wyborem budynku; `null`, gdy mapa stoi na terenie startowym. */
     val chosenName: String? get() = chosen.value
 
     /** Teren pokazany na mapie; `null` bez danych mapy. */
@@ -80,12 +84,31 @@ internal class MapAreas(
         get() {
             val known = seen.value ?: data?.areaOf(chosen = null, symbol = null)?.name
             val shown = current?.name
-            return shown.takeIf { chosen.value == null && it != known }
+            return shown.takeIf { it != known }
         }
 
     /** Osoba wie o pokazanym terenie, np. ruszyła mapę przyciskiem: napis o zmianie terenu znika. Wymagania: US1.8 */
     fun acknowledge() {
         current?.let { seen.value = it.name }
+    }
+
+    /**
+     * Zdarzenie zmiany zaznaczenia: nowy budynek ustawia teren mapy na jego teren, raz. Dalej teren zmienia
+     * tylko osoba: zmiana albo zniknięcie zaznaczenia go nie rusza, a ten sam budynek nie ustawia go ponownie.
+     *
+     * Wymagania: US1.8, BR-G5
+     */
+    fun followSelection() {
+        val selected = symbol
+        if (selected == null) {
+            followed.value = null
+            return
+        }
+        val area = data?.areaOf(chosen = null, symbol = selected) ?: return
+        if (followed.value != selected) {
+            chosen.value = area.name
+            followed.value = selected
+        }
     }
 
     /**
@@ -110,14 +133,16 @@ internal class MapAreas(
 }
 
 /**
- * Tereny mapy z danych [layers] i zaznaczenia [focus] z trasy. Wybór osoby jest zapisywany, więc wraca po obrocie
- * ekranu i po „Wstecz” z V2; nowe zaznaczenie z trasy, np. budynek z wyszukiwania, znów wyznacza teren.
+ * Tereny mapy z danych [layers] i zaznaczenia [focus] z trasy. Teren jest zapisywany, więc wraca po obrocie
+ * ekranu i po „Wstecz” z V2. Wybór budynku z innego terenu, np. z wyszukiwania, ustawia teren raz; potem zmienia go
+ * tylko osoba, a zamknięcie karty i zniknięcie zaznaczenia go zostawiają.
  *
  * Wymagania: NFR-22, US1.8
  */
 @Composable
 internal fun rememberMapAreas(layers: CampusMapData?, focus: MapFocus?): MapAreas {
-    val chosen = rememberSaveable(focus) { mutableStateOf<String?>(null) }
+    val chosen = rememberSaveable { mutableStateOf<String?>(null) }
+    val followed = rememberSaveable { mutableStateOf<String?>(null) }
     val symbol =
         when (focus) {
             is MapFocus.Building -> focus.symbol
@@ -125,5 +150,10 @@ internal fun rememberMapAreas(layers: CampusMapData?, focus: MapFocus?): MapArea
             null -> null
         }
     val seen = rememberSaveable { mutableStateOf<String?>(null) }
-    return remember(layers, symbol, chosen) { MapAreas(data = layers, symbol = symbol, chosen = chosen, seen = seen) }
+    val areas =
+        remember(layers, symbol, chosen) {
+            MapAreas(data = layers, symbol = symbol, chosen = chosen, seen = seen, followed = followed)
+        }
+    SideEffect { areas.followSelection() }
+    return areas
 }

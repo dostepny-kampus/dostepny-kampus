@@ -40,5 +40,6 @@ internal object MapAreaFixtures {
             symbol = symbol,
             chosen = mutableStateOf(null),
             seen = mutableStateOf(null),
+            followed = mutableStateOf(null),
         )
 }

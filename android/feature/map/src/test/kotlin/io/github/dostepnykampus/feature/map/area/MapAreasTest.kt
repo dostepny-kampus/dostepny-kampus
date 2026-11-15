@@ -41,7 +41,10 @@ class MapAreasTest {
 
     private val seen = mutableStateOf<String?>(null)
 
-    private fun areas(symbol: String? = null) = MapAreas(data = data, symbol = symbol, chosen = chosen, seen = seen)
+    private val followed = mutableStateOf<String?>(null)
+
+    private fun areas(symbol: String? = null) =
+        MapAreas(data = data, symbol = symbol, chosen = chosen, seen = seen, followed = followed)
 
     /**
      * Wiersz: V1, budynek z innego terenu zmienia teren i daje napis „Pokazuję teren: Wittigowo”; napis znika,
@@ -130,6 +133,50 @@ class MapAreasTest {
         assertEquals("Bartoszowice", areas(symbol = "P-14").current?.name)
         chosen.value = "Wittigowo"
         assertEquals("Wittigowo", areas(symbol = "P-14").current?.name)
+    }
+
+    /**
+     * Wiersz: V1, wybór budynku z innego terenu ustawia teren raz; zamknięcie karty zostawia ten teren i napis
+     * o zmianie.
+     * Scenariusz: przegladanie-mapy.feature: Zamknięcie karty budynku z innego terenu zostawia ten teren
+     *
+     * Wymagania: US1.8, BR-G5
+     */
+    @Test
+    fun us1_8_area_kept_no_selection() {
+        areas(symbol = "T-15").followSelection()
+        assertEquals("Wittigowo", chosen.value)
+        areas().followSelection()
+        assertEquals("Wittigowo", areas().current?.name)
+        assertEquals("Wittigowo", areas().notice)
+        assertNull(followed.value)
+    }
+
+    /**
+     * Wiersz: V1, teren wybrany przez osobę po wyborze budynku zostaje, także gdy zaznaczenie znika albo wraca
+     * to samo.
+     * Scenariusz: przegladanie-mapy.feature: Teren wybrany przez osobę zostaje po zamknięciu karty
+     *
+     * Wymagania: US1.8, BR-G5
+     */
+    @Test
+    fun us1_8_own_choice_kept() {
+        areas(symbol = "T-15").followSelection()
+        areas(symbol = "T-15").show("Kampus główny")
+        areas(symbol = "T-15").followSelection()
+        assertEquals("Kampus główny", areas(symbol = "T-15").current?.name)
+        areas().followSelection()
+        assertEquals("Kampus główny", areas().current?.name)
+        assertNull(areas().notice)
+    }
+
+    /** Wiersz: V1, nowy budynek z innego terenu po wyborze osoby znów ustawia teren raz. Wymagania: US1.8 */
+    @Test
+    fun us1_8_new_building_sets_area() {
+        areas(symbol = "T-15").followSelection()
+        areas(symbol = "T-15").show("Kampus główny")
+        areas(symbol = "P-14").followSelection()
+        assertEquals("Bartoszowice", areas().current?.name)
     }
 
     private fun building(symbol: String, south: Double): Building {
