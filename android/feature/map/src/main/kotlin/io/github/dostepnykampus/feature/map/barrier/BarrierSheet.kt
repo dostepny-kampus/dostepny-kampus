@@ -137,8 +137,8 @@ internal fun BarrierFacts(chosen: ChosenBarrier) {
         Text(
             text =
                 barrierPlace(
-                    buildingSymbol = barrier.buildingSymbol,
-                    buildingName = chosen.building?.name,
+                    symbol = barrier.buildingSymbol,
+                    name = chosen.building?.name,
                     entrance = chosen.entrance,
                     floor = barrier.floor,
                 ),

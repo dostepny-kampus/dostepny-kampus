@@ -47,6 +47,6 @@ class BarrierPlaceTest {
     }
 
     private fun show(symbol: String?, name: String?, entrance: String?, floor: SubmissionFloor?) {
-        compose.setContent { Text(barrierPlace(buildingSymbol = symbol, buildingName = name, entrance = entrance, floor = floor)) }
+        compose.setContent { Text(barrierPlace(symbol = symbol, name = name, entrance = entrance, floor = floor)) }
     }
 }
