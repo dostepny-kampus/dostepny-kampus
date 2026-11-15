@@ -263,19 +263,19 @@ report() {
 # Linia w komentarzu HTML albo w bloku kodu nie jest widoczna w opisie PR, więc się nie liczy.
 # Linia z powodem tylko wyjaśnia zmianę. Bramkę otwiera druga osoba: PR_APPROVED_BY to login osoby, która nadała
 # PR etykietę `zmiana-regul-zatwierdzona` (podaje go przepływ straznik-jakosci.yml); autor PR sam jej nie otworzy.
-# Wyjątek: właściciel repozytorium (RULES_OWNER z przepływu) ustala reguły, więc jego etykieta liczy się także
-# w jego własnym PR.
+# Wyjątek: osoby ustalające reguły (RULES_OWNERS z przepływu, loginy po przecinku) mogą zatwierdzić także
+# własny PR.
 reason=0
 gate=0
 approver="${PR_APPROVED_BY:-}"
 author="${PR_AUTHOR:-}"
-owner="${RULES_OWNER:-}"
+owners=",$(tr '[:upper:]' '[:lower:]' <<<"${RULES_OWNERS:-}" | tr -d ' '),"
 body="$(printf '%s\n' "${PR_BODY:-}" | tr -d '\r' | perl -0pe 's/<!--.*?-->//gs; s/^```.*?^```//gms')"
 if ((!dependabot)) && grep -qE '^Zmiana reguł jakości:[[:space:]]*[^[:space:]]' <<<"$body"; then
   reason=1
 fi
 if ((reason)) && [[ -n $approver ]] &&
-  { [[ ${approver,,} != "${author,,}" ]] || [[ -n $owner && ${approver,,} == "${owner,,}" ]]; }; then
+  { [[ ${approver,,} != "${author,,}" ]] || [[ $owners == *",${approver,,},"* ]]; }; then
   gate=1
 fi
 
