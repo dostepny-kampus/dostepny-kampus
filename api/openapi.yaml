@@ -894,7 +894,7 @@ components:
           description: "`PRECISE` — pomiar precyzyjny, `QUICK` — zgłoszenie szybkie, `ENTRANCE_MARKING` — zmiana oznaczenia wejścia."
           enum: [PRECISE, QUICK, ENTRANCE_MARKING]
         location: {$ref: '#/components/schemas/GeoPoint', description: "Miejsce bariery po pomiarze precyzyjnym albo bieżąca pozycja."}
-        accuracyMeters: {type: number, format: double, minimum: 0, description: "Dokładność pozycji w metrach (US6.1)."}
+        accuracyMeters: {type: number, format: double, minimum: 0, maximum: 10000, description: "Dokładność pozycji w metrach (US6.1)."}
         manualCorrection: {type: boolean, default: false, description: "Oznaczenie „korekta ręczna” (US6.3, US6.4)."}
         buildingSymbol: {type: string, description: "Budynek; brak to „poza budynkiem” (BR-G2). W zgłoszeniu szybkim ustala go serwer z konturu (BR-14)."}
         floor: {$ref: '#/components/schemas/SubmissionFloor', description: "Piętro; w budynku wymagane przy pomiarze precyzyjnym (BR-7), w zgłoszeniu szybkim może być puste (BR-14)."}
