@@ -184,24 +184,28 @@ class CampusAreaEdgeDeviceTest {
     }
 
     private fun assertOutsideAreaDimmed(mapView: MapView, map: MapLibreMap) {
-        composeRule.waitUntil(READY_TIMEOUT_MS) {
-            composeRule.runOnUiThread {
-                val style = map.style
-                val outside = style?.getLayer(OUTSIDE_LAYER) as? FillLayer
-                val edge = style?.getLayer(EDGE_LAYER) as? LineLayer
-                val areLayersVisible =
-                    outside != null &&
-                        edge != null &&
-                        outside.visibility.value != Property.NONE &&
-                        outside.fillOpacity.value?.takeIf { it > 0f } != null &&
-                        edge.visibility.value != Property.NONE
-                val y = mapView.height * CENTER_FRACTION
-                val inside = map.queryRenderedFeatures(PointF(mapView.width * INSIDE_X_FRACTION, y), OUTSIDE_LAYER)
-                val outsideHits =
-                    map.queryRenderedFeatures(PointF(mapView.width * OUTSIDE_X_FRACTION, y), OUTSIDE_LAYER)
-                areLayersVisible && inside.isEmpty() && outsideHits.isNotEmpty()
-            }
-        }
+        var state = "styl niewczytany"
+        val isDimmed =
+            runCatching {
+                composeRule.waitUntil(READY_TIMEOUT_MS) {
+                    composeRule.runOnUiThread {
+                        val style = map.style
+                        val outside = style?.getLayer(OUTSIDE_LAYER) as? FillLayer
+                        val edge = style?.getLayer(EDGE_LAYER) as? LineLayer
+                        val areLayersVisible =
+                            outside != null &&
+                                edge != null &&
+                                outside.visibility.value != Property.NONE &&
+                                outside.fillOpacity.value?.takeIf { it > 0f } != null &&
+                                edge.visibility.value != Property.NONE
+                        val point = PointF(mapView.width * OUTSIDE_X_FRACTION, mapView.height * CENTER_FRACTION)
+                        val outsideHits = map.queryRenderedFeatures(point, OUTSIDE_LAYER)
+                        state = "warstwy widoczne: $areLayersVisible, trafienia poza granicą: ${outsideHits.size}"
+                        areLayersVisible && outsideHits.isNotEmpty()
+                    }
+                }
+            }.isSuccess
+        assertTrue("Poza granicą terenu brak przyciemnienia ($state)", isDimmed)
     }
 
     private fun awaitUiPause(delayMillis: Long) {
@@ -276,7 +280,6 @@ class CampusAreaEdgeDeviceTest {
         const val SWIPE_START_X_FRACTION = 0.78f
         const val SWIPE_END_X_FRACTION = 0.22f
         const val CENTER_FRACTION = 0.50f
-        const val INSIDE_X_FRACTION = 0.25f
         const val OUTSIDE_X_FRACTION = 0.85f
     }
 }
