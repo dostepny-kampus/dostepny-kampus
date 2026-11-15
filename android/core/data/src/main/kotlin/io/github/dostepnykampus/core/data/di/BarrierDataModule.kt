@@ -11,6 +11,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.barrier.BarrierListCopy
+import io.github.dostepnykampus.core.data.barrier.PhotoAddressBarriers
 import io.github.dostepnykampus.core.data.barrier.ServerAcceptedBarriers
 import io.github.dostepnykampus.core.data.server.toReply
 import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
@@ -29,5 +30,9 @@ internal object BarrierDataModule {
         api: SubmissionsApi,
         cache: BarrierCacheDao,
         @IoContext ioContext: CoroutineContext,
-    ): AcceptedBarriers = ServerAcceptedBarriers(BarrierListCopy(cache, ioContext)) { api.accepted().toReply { it } }
+    ): AcceptedBarriers =
+        PhotoAddressBarriers(
+            source = ServerAcceptedBarriers(BarrierListCopy(cache, ioContext)) { api.accepted().toReply { it } },
+            address = api::photoUrl,
+        )
 }
