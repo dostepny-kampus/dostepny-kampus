@@ -32,7 +32,16 @@
     <string name="mapa_teren_wybrany">wybrany</string>
     <string name="mapa_teren_inny">%1$s · inny teren</string>
     <string name="mapa_teren_inny_opis">teren %1$s, inny teren</string>
-    <string name="mapa_teren_pokazuje">Pokazuję teren: %1$s</string>
+    <string name="mapa_teren_pokazuje">Pokazuję teren: %1$s · %2$d km %3$s</string>
+    <string name="mapa_teren_pokazuje_opis">Pokazuję teren: %1$s, %2$d km %3$s</string>
+    <string name="mapa_kierunek_polnoc">na północ</string>
+    <string name="mapa_kierunek_polnocny_wschod">na północny wschód</string>
+    <string name="mapa_kierunek_wschod">na wschód</string>
+    <string name="mapa_kierunek_poludniowy_wschod">na południowy wschód</string>
+    <string name="mapa_kierunek_poludnie">na południe</string>
+    <string name="mapa_kierunek_poludniowy_zachod">na południowy zachód</string>
+    <string name="mapa_kierunek_zachod">na zachód</string>
+    <string name="mapa_kierunek_polnocny_zachod">na północny zachód</string>
     <string name="mapa_teren_granica">Tu kończy się teren %1$s. Inny teren wybierzesz przyciskiem «Zmień teren» u góry mapy.</string>
     <string name="mapa_teren_naglowek">%1$s · %2$d</string>
     <string name="mapa_teren_naglowek_opis">%1$s, %2$s</string>

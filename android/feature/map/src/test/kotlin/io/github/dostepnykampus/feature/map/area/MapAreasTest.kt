@@ -47,20 +47,27 @@ class MapAreasTest {
         MapAreas(data = data, symbol = symbol, chosen = chosen, seen = seen, followed = followed)
 
     /**
-     * Wiersz: V1, budynek z innego terenu zmienia teren i daje napis „Pokazuję teren: Wittigowo”; napis znika,
-     * gdy osoba ruszy mapę, i nie wraca dla tego terenu.
+     * Wiersz: V1, budynek z innego terenu zmienia teren i daje napis „Pokazuję teren: Wittigowo · 2 km na północ”
+     * z odległością i kierunkiem od terenu, o którym osoba wiedziała; napis znika, gdy osoba ruszy mapę, i nie wraca
+     * dla tego terenu.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Wyszukanie budynku z innego terenu zmienia teren
      *
-     * Wymagania: US1.8
+     * Wymagania: US1.8, NFR-56
      */
     @Test
     fun showsNoticeAfterBuilding() {
         assertNull(areas().notice)
         assertNull(areas(symbol = START_BUILDING).notice)
-        assertEquals("Wittigowo", areas(symbol = "T-15").notice)
+        assertEquals(
+            AreaShift(name = "Wittigowo", kilometers = 2, direction = CompassDirection.North),
+            areas(symbol = "T-15").notice,
+        )
         areas(symbol = "T-15").acknowledge()
         assertNull(areas(symbol = "T-15").notice)
-        assertEquals("Kampus główny", areas(symbol = "A-2").notice)
+        assertEquals(
+            AreaShift(name = "Kampus główny", kilometers = 2, direction = CompassDirection.South),
+            areas(symbol = "A-2").notice,
+        )
     }
 
     /** Wiersz: V1, teren wybrany przez osobę w panelu nie daje napisu o zmianie terenu. Wymagania: US1.7, US1.8 */
@@ -70,7 +77,10 @@ class MapAreasTest {
         assertNull(areas().notice)
         chosen.value = null
         assertNull(areas(symbol = "T-15").notice)
-        assertEquals("Bartoszowice", areas(symbol = "P-14").notice)
+        assertEquals(
+            AreaShift(name = "Bartoszowice", kilometers = 4, direction = CompassDirection.North),
+            areas(symbol = "P-14").notice,
+        )
     }
 
     /**
@@ -148,7 +158,10 @@ class MapAreasTest {
         assertEquals("Wittigowo", chosen.value)
         areas().followSelection()
         assertEquals("Wittigowo", areas().current?.name)
-        assertEquals("Wittigowo", areas().notice)
+        assertEquals(
+            AreaShift(name = "Wittigowo", kilometers = 2, direction = CompassDirection.North),
+            areas().notice,
+        )
         assertNull(followed.value)
     }
 

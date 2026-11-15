@@ -30,6 +30,9 @@ import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.feature.map.area.AreaShift
+import io.github.dostepnykampus.feature.map.area.CompassDirection
+import io.github.dostepnykampus.feature.map.area.shiftTo
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
@@ -192,6 +195,23 @@ class CampusAreasPwrTest {
         compose.waitForIdle()
         assertEquals("T-15", selection.building)
         assertShowsArea(name = "Wittigowo", symbol = "T-15", hasSwitch = false)
+    }
+
+    /**
+     * Wiersz: V1, po przejściu z „Kampusu głównego” na „Wittigowo” napis podaje odległość i kierunek z danych PWr:
+     * „Pokazuję teren: Wittigowo · 2 km na południowy wschód”.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Wyszukanie budynku z innego terenu zmienia teren
+     *
+     * Wymagania: US1.8, NFR-56
+     */
+    @Test
+    fun shiftsToWittigowoSouthEast() {
+        showApp()
+        assertEquals(
+            "zmiana z Kampusu głównego na Wittigowo",
+            AreaShift(name = "Wittigowo", kilometers = 2, direction = CompassDirection.SouthEast),
+            area("Kampus główny").shiftTo(area("Wittigowo")),
+        )
     }
 
     private fun searchT15AndGoBack() {
