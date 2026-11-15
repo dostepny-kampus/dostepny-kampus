@@ -21,9 +21,10 @@ import org.springframework.transaction.support.TransactionOperations;
  * spoza planu znika z pomieszczeniami, pusty numer to NULL, punkt podpisu leży w konturze. Zapis
  * liczy grupę funkcji i podpis: z pomieszczeń piętra o tym samym numerze tylko największe, od
  * 20 m². Obrys piętra to suma pomieszczeń poszerzonych i zwężonych o 0,5 m: wypełnia ściany
- * między pomieszczeniami, a granicę zewnętrzną zostawia na konturach.
+ * między pomieszczeniami, a granicę zewnętrzną zostawia na konturach. Budynek z planem jest
+ * szczegółowy (detail_level DETAILED).
  *
- * <p>Wymagania: US16, US18, NFR-40</p>
+ * <p>Wymagania: US16, US18, BR-G1, NFR-40</p>
  *
  * @since 0.1.0
  */
@@ -71,6 +72,9 @@ public final class PostgisPlans implements FloorPlans {
                 rooms.stream().filter(room -> known.contains(room.floorId()))
                     .forEach(room -> this.room(building, room));
                 this.derive(building);
+                this.jdbc.sql(
+                    "UPDATE buildings SET detail_level = 'DETAILED' WHERE symbol = :building"
+                ).param("building", building).update();
             }
         );
     }
