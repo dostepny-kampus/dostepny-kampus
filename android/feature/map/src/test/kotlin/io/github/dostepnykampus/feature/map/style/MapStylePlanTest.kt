@@ -15,6 +15,7 @@ import io.github.dostepnykampus.feature.map.campus.selection
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -35,6 +36,22 @@ class MapStylePlanTest {
                 """{"floor":"P0","kind":"room","category":"CORRIDOR"}""",
             )
         assertEquals(expected, parts.map(JsonElement::toString), "Obiekty planu nie mają piętra i rodzaju")
+    }
+
+    @Test
+    fun numbersOnlyLabelledRooms() {
+        val rooms = plan(RoomCategory.CLASSROOM, RoomCategory.CLASSROOM, RoomCategory.CORRIDOR).rooms
+        val labelled = rooms.mapIndexed { index, room -> room.copy(number = "10$index", isLabelled = index != 1) }
+        val features = planFeatures(mapOf("P0" to plan().copy(rooms = labelled)))
+        val parts = features.jsonObject.items("features").map { it.jsonObject }
+        val numbers = parts.filter { it.part("properties").text("kind") == "number" }
+
+        val images = numbers.map { it.part("properties").text("image") }
+        assertEquals(listOf("sala: 100", "sala: 102"), images, "Numer dostała sala bez podpisu albo bez numeru")
+        assertEquals("Point", numbers.first().part("geometry").text("type"), "Numer sali nie stoi w punkcie podpisu")
+        val layer = layers().getValue(PLAN_NUMBERS_LAYER)
+        assertEquals(19.0, layer.getValue("minzoom").jsonPrimitive.double, "Numery sal widać przed powiększeniem 19")
+        assertEquals(planFilter(floor = null, kind = "number"), layer.getValue("filter"), "Numery widać bez piętra")
     }
 
     @Test
@@ -100,6 +117,8 @@ class MapStylePlanTest {
         )
 
     private fun JsonObject.text(key: String): String = getValue(key).jsonPrimitive.content
+
+    private fun JsonObject.part(key: String): JsonObject = getValue(key).jsonObject
 
     private fun JsonObject.items(key: String): List<JsonElement> = getValue(key).jsonArray
 

@@ -11,6 +11,7 @@ import android.graphics.Paint
 import android.graphics.Typeface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.core.graphics.createBitmap
@@ -22,7 +23,14 @@ import kotlin.math.ceil
 private const val LABEL_HALO_PER_TEXT = 0.25f
 
 /** Obraz podpisu konturu: tekst `napis_pwr` z obwódką `obwodka` (para kontrastu z tokenów). Wymagania: NFR-16 */
-internal fun labelImage(label: String, colors: MapColors, size: Float): Bitmap {
+internal fun labelImage(label: String, colors: MapColors, size: Float): Bitmap =
+    textImage(label = label, text = colors.napisPwr, halo = colors.obwodka, size = size)
+
+/** Obraz numeru sali na planie: tekst `napis_ulica` z obwódką `obwodka` (para kontrastu). Wymagania: US16.1 */
+internal fun roomNumberBitmap(number: String, colors: MapColors, size: Float): Bitmap =
+    textImage(label = number, text = colors.napisUlica, halo = colors.obwodka, size = size)
+
+private fun textImage(label: String, text: Color, halo: Color, size: Float): Bitmap {
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     paint.textSize = size
     paint.typeface = Typeface.DEFAULT_BOLD
@@ -33,7 +41,7 @@ internal fun labelImage(label: String, colors: MapColors, size: Float): Bitmap {
     val height = ceil(paint.descent() - paint.ascent() + 2 * margin).toInt()
     val bitmap = createBitmap(width, height)
     val canvas = Canvas(bitmap)
-    listOf(Paint.Style.STROKE to colors.obwodka, Paint.Style.FILL to colors.napisPwr).forEach { (style, color) ->
+    listOf(Paint.Style.STROKE to halo, Paint.Style.FILL to text).forEach { (style, color) ->
         paint.style = style
         paint.color = color.toArgb()
         canvas.drawText(label, margin, margin - paint.ascent(), paint)
