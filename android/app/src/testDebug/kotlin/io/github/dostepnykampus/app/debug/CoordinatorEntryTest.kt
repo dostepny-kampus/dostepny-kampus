@@ -50,7 +50,7 @@ class CoordinatorEntryTest {
     @Test
     fun coordinatorSeesProgress() {
         show(StaffRole.COORDINATOR)
-        compose.onNodeWithText("Postęp inwentaryzacji").assertIsDisplayed()
+        compose.onNodeWithText(PROGRESS).assertIsDisplayed()
     }
 
     /**
@@ -61,7 +61,7 @@ class CoordinatorEntryTest {
     @Test
     fun collectorHasNoProgress() {
         show(StaffRole.COLLECTOR)
-        compose.onNodeWithText("Postęp inwentaryzacji").assertDoesNotExist()
+        compose.onNodeWithText(PROGRESS).assertDoesNotExist()
     }
 
     /**
@@ -72,7 +72,7 @@ class CoordinatorEntryTest {
     @Test
     fun verifierHasNoProgress() {
         show(StaffRole.VERIFIER)
-        compose.onNodeWithText("Postęp inwentaryzacji").assertDoesNotExist()
+        compose.onNodeWithText(PROGRESS).assertDoesNotExist()
     }
 
     private fun show(role: StaffRole) {
@@ -82,11 +82,16 @@ class CoordinatorEntryTest {
                 AppShell(firstLaunch = false, roles = roles, onFirstHelpLeft = {}) { route -> Screen(route) }
             }
         }
-        compose.onNodeWithText("Konto i praca").performClick()
+        /* Napis pozycji paska łamie się twardą spacją zależnie od szerokości, więc szukamy po jego końcówce. */
+        compose.onNodeWithText("praca", substring = true).performClick()
     }
 
     @Composable
     private fun AppNavigator.Screen(route: NavKey) {
         if (route is MapRoute) Text("V1") else AppScreen(route)
+    }
+
+    private companion object {
+        const val PROGRESS = "Postęp inwentaryzacji"
     }
 }
