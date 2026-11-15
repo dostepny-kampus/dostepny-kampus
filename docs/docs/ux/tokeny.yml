@@ -23,7 +23,7 @@ wersja: 1
 #     użytkownika. Może stać w spokojnym, lekko zabarwionym kontenerze, ale znaczenie niosą
 #     kształt i słowo, a nie barwa kontenera.
 #   * Na mapie i w legendzie barwa jest drugim nośnikiem znaczenia znaków wejść i barier
-#     (role `znak…`). Wejście „Dostępne” jest zielononiebieskie, „Niedostępne” i „Brak
+#     (`mapa.kolory.znak_…`). Wejście „Dostępne” jest zielononiebieskie, „Niedostępne” i „Brak
 #     danych” mają kolor tekstu mapy. Uciążliwość: żółty, pomarańczowy, ciemna czerwień;
 #     jasność maleje z uciążliwością, więc kolejność widać też w odcieniach szarości.
 #     Czerwień ma tylko „Blokada”. Każdy znak ma obwódkę `mapa.kolory.papier` i kontur
@@ -190,52 +190,6 @@ kolory:
     ciemny: "#FFCAC4"  # jasny łososiowy; na ciemnym tle ≥ 7:1
     uzycie: tekst błędu walidacji przy polu i nad formularzem, koło „!” przy nim, ramka pola z błędem; ramka, koło „!” i słowo „Ważne” w ostrzeżeniu; nigdy dla oznaczenia wejścia, statusu ani uciążliwości
     zrodlo: NFR-15 (WCAG 3.3.1), NFR-21
-  # Znaki wejść i barier na mapie i w legendzie. Barwa powtarza kształt i słowo, których
-  # nie zastępuje (NFR-21). Odcienie z palety bezpiecznej przy daltonizmie (Okabe i Ito),
-  # jasność maleje z uciążliwością. Poza mapą i legendą tych ról nie ma.
-  znakDostepne:
-    jasny: "#00795C"   # zielony niebieskawy
-    ciemny: "#35C79B"
-    uzycie: wnętrze koła znaku wejścia „Dostępne” na mapie i w legendzie
-    zrodlo: NFR-21, US1.4, US2.1
-  onZnakDostepne:
-    jasny: "#FFFFFF"
-    ciemny: "#101314"
-    uzycie: ptaszek w znaku wejścia „Dostępne”
-    zrodlo: NFR-16
-  znakUtrudnienie:
-    jasny: "#F5CB14"   # żółty, najjaśniejszy
-    ciemny: "#F7D442"
-    uzycie: wnętrze trójkąta znaku „Utrudnienie” na mapie i w legendzie
-    zrodlo: NFR-21, US1.3, US1.4
-  onZnakUtrudnienie:
-    jasny: "#181C1D"
-    ciemny: "#101314"
-    uzycie: znak „!” w trójkącie „Utrudnienie”
-    zrodlo: NFR-16
-  znakTylkoZPomoca:
-    jasny: "#E87A00"   # pomarańczowy
-    ciemny: "#F28C28"
-    uzycie: wnętrze tarczy znaku „Tylko z pomocą” na mapie i w legendzie
-    zrodlo: NFR-21, US1.3, US1.4
-  onZnakTylkoZPomoca:
-    jasny: "#181C1D"
-    ciemny: "#101314"
-    uzycie: dwie osoby w tarczy „Tylko z pomocą”
-    zrodlo: NFR-16
-  # „Blokada”: zaokrąglona tablica z jedną poziomą belką, jak znak zakazu wjazdu. Poza mapą
-  # i legendą tablica ma kolor tekstu, a belka kolor tła.
-  znakBlokada:
-    jasny: "#A3180A"   # ciemna czerwień, najciemniejsza; jedyna czerwień wśród znaków
-    ciemny: "#D92D1A"
-    uzycie: tablica znaku „Blokada” na mapie i w legendzie
-    zrodlo: NFR-21, US1.3, US1.4
-  onZnakBlokada:
-    jasny: "#FFFFFF"
-    ciemny: "#FFFFFF"
-    uzycie: pozioma belka na tablicy „Blokada”
-    zrodlo: NFR-16
-
 # ---------------------------------------------------------------------------
 # Kontrast — pary sprawdzane przez scripts/kontrast.py dla obu motywów,
 # także po symulacji protanopii i deuteranopii.
@@ -269,10 +223,6 @@ kontrast:
     - {kolor: onStatusDostepneContainer, tlo: statusDostepneContainer, rodzaj: tekst, gdzie: "„Dostępne” i koło ze znakiem ✓"}
     - {kolor: onStatusNiedostepneContainer, tlo: statusNiedostepneContainer, rodzaj: tekst, gdzie: "„Niedostępne” i ośmiokąt ze znakiem ✕"}
     - {kolor: onStatusBrakDanychContainer, tlo: statusBrakDanychContainer, rodzaj: tekst, gdzie: "„Brak danych” i romb ze znakiem ?"}
-    - {kolor: onZnakDostepne, tlo: znakDostepne, rodzaj: komponent, gdzie: "ptaszek w znaku „Dostępne”"}
-    - {kolor: onZnakUtrudnienie, tlo: znakUtrudnienie, rodzaj: komponent, gdzie: "„!” w znaku „Utrudnienie”"}
-    - {kolor: onZnakTylkoZPomoca, tlo: znakTylkoZPomoca, rodzaj: komponent, gdzie: "dwie osoby w znaku „Tylko z pomocą”"}
-    - {kolor: onZnakBlokada, tlo: znakBlokada, rodzaj: komponent, gdzie: "belka w znaku „Blokada”"}
     - {kolor: error, tlo: surface, rodzaj: tekst, gdzie: "błąd przy polu"}
     - {kolor: error, tlo: surfaceContainerLowest, rodzaj: tekst, gdzie: "błąd przy polu w kontenerze grupy, „Ważne” w ostrzeżeniu"}
     - {kolor: error, tlo: surfaceContainer, rodzaj: tekst, gdzie: "błąd przy polu na tle ekranu (C2, C6, C7, R2, K2)"}
@@ -509,6 +459,18 @@ mapa:
     sciezka: {jasny: "#004E5E", ciemny: "#6A818A", uzycie: ścieżka dostosowana}
     tusz: {jasny: "#181C1D", ciemny: "#D5DADC", uzycie: "kontur znaków wejść i barier, znak „Niedostępne”, ikony pochylni i planu"}
     papier: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: "obwódka znaków wejść i barier, wnętrze znaczników"}
+    # Znaki wejść i barier na mapie i w legendzie. Barwa powtarza kształt i słowo, których nie zastępuje (NFR-21).
+    # Odcienie z palety bezpiecznej przy daltonizmie (Okabe i Ito), jasność maleje z uciążliwością.
+    # „Blokada”: zaokrąglona tablica z jedną poziomą belką, jak znak zakazu wjazdu; poza mapą i legendą tablica
+    # ma kolor tekstu, a belka kolor tła.
+    znak_dostepne: {jasny: "#00795C", ciemny: "#35C79B", uzycie: "wnętrze koła znaku wejścia „Dostępne”"}
+    znak_dostepne_symbol: {jasny: "#FFFFFF", ciemny: "#101314", uzycie: "ptaszek w znaku wejścia „Dostępne”"}
+    znak_utrudnienie: {jasny: "#F5CB14", ciemny: "#F7D442", uzycie: "wnętrze trójkąta znaku „Utrudnienie”"}
+    znak_utrudnienie_symbol: {jasny: "#181C1D", ciemny: "#101314", uzycie: "„!” w trójkącie „Utrudnienie”"}
+    znak_tylko_z_pomoca: {jasny: "#E87A00", ciemny: "#F28C28", uzycie: "wnętrze tarczy znaku „Tylko z pomocą”"}
+    znak_tylko_z_pomoca_symbol: {jasny: "#181C1D", ciemny: "#101314", uzycie: "dwie osoby w tarczy „Tylko z pomocą”"}
+    znak_blokada: {jasny: "#A3180A", ciemny: "#D92D1A", uzycie: "tablica znaku „Blokada”"}
+    znak_blokada_symbol: {jasny: "#FFFFFF", ciemny: "#FFFFFF", uzycie: "pozioma belka na tablicy „Blokada”"}
     # Granica terenu (BR-G5): ciągła linia z obwódką w kolorze przeciwnym, żeby była widoczna na każdym podkładzie.
     granica_terenu: {jasny: "#181C1D", ciemny: "#D5DADC", uzycie: "linia granicy terenu, 2 dp"}
     granica_terenu_obwodka: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: "obwódka linii granicy terenu, 1,5 dp z każdej strony"}
@@ -542,6 +504,10 @@ mapa:
     - {kolor: tusz, tlo: pwr, rodzaj: komponent, gdzie: znacznik wejścia na budynku PWr}
     - {kolor: tusz, tlo: pwr_podstawowy, rodzaj: komponent, gdzie: znacznik wejścia na budynku podstawowym}
     - {kolor: papier, tlo: tusz, rodzaj: komponent, gdzie: znak wewnątrz znacznika}
+    - {kolor: znak_dostepne_symbol, tlo: znak_dostepne, rodzaj: komponent, gdzie: "ptaszek w znaku „Dostępne”"}
+    - {kolor: znak_utrudnienie_symbol, tlo: znak_utrudnienie, rodzaj: komponent, gdzie: "„!” w znaku „Utrudnienie”"}
+    - {kolor: znak_tylko_z_pomoca_symbol, tlo: znak_tylko_z_pomoca, rodzaj: komponent, gdzie: "dwie osoby w znaku „Tylko z pomocą”"}
+    - {kolor: znak_blokada_symbol, tlo: znak_blokada, rodzaj: komponent, gdzie: "belka w znaku „Blokada”"}
     - {kolor: tusz, tlo: p_korytarz, rodzaj: komponent, gdzie: ikona planu na korytarzu}
     - {kolor: tusz, tlo: p_winda, rodzaj: komponent, gdzie: ikona windy}
     - {kolor: tusz, tlo: p_sala, rodzaj: komponent, gdzie: "znak windy, toalety i bariery na sali"}
