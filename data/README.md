@@ -7,7 +7,9 @@ Kontury budynków Politechniki Wrocławskiej i wejścia na ich obrysie, pobrane 
 | `buildings/pwr-buildings.geojson` | wszystkie kontury i wejścia w jednym pliku |
 | `buildings/LICENSE` | nota licencyjna ODbL dla danych |
 | `scripts/export_buildings.py` | skrypt eksportu z Overpass API |
-| `requirements.txt` | zależności skryptu z dokładnymi wersjami |
+| `areas/` | granice pięciu terenów PWr (`pwr-areas.geojson`), zapisane obszary uczelni z OSM i `LICENSE` ODbL |
+| `scripts/export_areas.py` | skrypt liczenia granic terenów |
+| `requirements.txt` | zależności skryptów z dokładnymi wersjami |
 
 Stan eksportu z 28.10.2026: 95 symboli budynków, 95 konturów z OSM i 72 wejścia, w tym 1 z tagiem `wheelchair`.
 
@@ -50,9 +52,36 @@ Symbol budynku pochodzi z tagu `ref` (`A1`, `C19`, `D8a` zamieniamy na `A-1`, `C
 
 Pole `display_name` to nazwa budynku do pokazania obok jego symbolu: aplikacja i serwer czytają ją z pliku i same nazwy nie przerabiają. Powstaje z `name` w `scripts/display_name.py`: symbol swojego budynku znika razem z łącznikiem `/` albo `-`, także ze środka nazwy (`A-1 / Budynek główny` daje `Budynek główny`, `Dom Studencki T-6 "Alcatraz"` daje `Dom Studencki "Alcatraz"`). Kontur bez nazwy albo z nazwą z samych symboli (`C-3/C-4`) nie ma tego pola. Gdy po symbolu zostają mniej niż 4 litery (`M-6 bis`), `display_name` jest równy `name`. Cudzysłowy zostają jak w OSM.
 
+## Granice terenów
+
+`areas/pwr-areas.geojson` to `FeatureCollection` (EPSG:4326, 7 miejsc po przecinku) z pięcioma obiektami, po jednym na teren, w kolejności „Kampus główny”, „Wittigowo”, „Bartoszowice”, „Długa”, „T-9 Atol”. Każdy ma geometrię `Polygon` albo `MultiPolygon` i właściwości `name` oraz `symbols` (symbole budynków terenu, posortowane naturalnie). Aplikacja i serwer używają tej geometrii bez przeliczania (BR-G5).
+
+Budynki dzielą się na tereny tak jak w aplikacji: do jednego terenu należą kontury, z których każdy leży najwyżej 600 m od innego konturu tego terenu. Nazwę terenu wyznacza symbol jego budynku: `A-1`, `T-15`, `P-14`, `M-3`, `T-9`.
+
+Granicę każdego terenu skrypt liczy w metrach, w lokalnym rzucie równoodległościowym wokół środka terenu (promień Ziemi 6 371 008,8 m); dla terenu do ok. 2 km błąd odległości to rząd centymetrów:
+
+1. Obszary `amenity=university` Politechniki Wrocławskiej z OSM, zapisane w `areas/osm-university-areas.geojson` (z polami `retrieved` i `osm_base`), przypisuje do terenu, gdy po buforze +50 m styka się z konturem budynku tego terenu albo go przecina. Obszar bez budynku PWr w pobliżu nie należy do żadnego terenu i jest pomijany.
+2. Łączy kontury budynków terenu z przypisanymi obszarami OSM i robi bufor +50 m, potem -20 m: przerwy węższe niż ok. 100 m się zamykają, a granica ma zapas 30 m.
+3. Upraszcza wynik algorytmem Douglasa-Peuckera z tolerancją 10 m, z zachowaniem topologii.
+4. Sprawdza, że każdy kontur budynku leży całkowicie wewnątrz granicy swojego terenu, także po zaokrągleniu współrzędnych. Gdy nie, powtarza liczenie z buforem +55 m, a gdy dalej nie leży, kończy się błędem.
+
+Stan eksportu z 15.11.2026 (obszary OSM z bazy z 14.11.2026):
+
+| Teren | Symboli budynków | Obszarów OSM w granicy |
+| --- | --- | --- |
+| Kampus główny | 78 | 13 |
+| Wittigowo | 9 | 1 |
+| Bartoszowice | 3 | 1 |
+| Długa | 4 | 1 |
+| T-9 Atol | 1 | 0 |
+
+Wszystkie 16 obszarów OSM trafiło do terenu. Teren „T-9 Atol” nie ma obszaru w OSM, więc jego granica wynika z samych konturów budynku. Żaden kontur nie wymagał dodatkowego bufora +5 m.
+
+Granice liczymy poleceniem `.venv/bin/python data/scripts/export_areas.py` (offline, z zapisanych obszarów OSM i `buildings/pwr-buildings.geojson`). Opcja `--fetch` najpierw pobiera obszary OSM z Overpass API i nadpisuje `areas/osm-university-areas.geojson`. Po odświeżeniu konturów budynków granice liczymy od nowa.
+
 ## Licencja i atrybucja
 
-Dane w `buildings/` są na licencji [Open Database License 1.0](https://opendatacommons.org/licenses/odbl/1-0/) (ODbL). Każde użycie, także na mapie w aplikacji, podaje atrybucję:
+Dane w `buildings/` i `areas/` są na licencji [Open Database License 1.0](https://opendatacommons.org/licenses/odbl/1-0/) (ODbL). Każde użycie, także na mapie w aplikacji, podaje atrybucję:
 
 > © OpenStreetMap contributors
 
