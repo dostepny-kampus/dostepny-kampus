@@ -1,0 +1,84 @@
+name: kontrola-sprintu
+
+# Ciężka część kontroli Androida (APK, emulatory, pełny test systemowy, buildHealth) dla głowy bieżącej gałęzi
+# sprintu, po scaleniu, a nie w kolejce. Harmonogram GitHub czyta ten plik z gałęzi domyślnej, ale gałąź do
+# sprawdzenia wybiera skrypt. Wynik to status `kontrola-sprintu` na sprawdzonym commicie.
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+    inputs:
+      galaz:
+        description: 'Gałąź do sprawdzenia mimo istniejącego statusu (puste: bieżące gałęzie sprint/N)'
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kontrola-sprintu
+  cancel-in-progress: false
+
+jobs:
+  cel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      statuses: write
+    outputs:
+      jest: ${{ steps.cel.outputs.jest }}
+      galaz: ${{ steps.cel.outputs.galaz }}
+      sha: ${{ steps.cel.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Wybierz gałąź sprintu i commit do sprawdzenia
+        id: cel
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GALAZ: ${{ inputs.galaz }}
+          ADRES: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: bash .github/scripts/kontrola-sprintu-cel.sh
+
+  android:
+    needs: cel
+    if: needs.cel.outputs.jest == 'true'
+    permissions:
+      actions: read
+      contents: read
+    uses: ./.github/workflows/android.yml
+    with:
+      sha: ${{ needs.cel.outputs.sha }}
+
+  wynik:
+    needs: [cel, android]
+    # always(): status trzeba zapisać także po porażce albo anulowaniu przebiegu Androida.
+    if: ${{ always() && needs.cel.outputs.jest == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      statuses: write
+    steps:
+      - name: Zapisz wynik jako status commita
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          GALAZ: ${{ needs.cel.outputs.galaz }}
+          SHA: ${{ needs.cel.outputs.sha }}
+          WYNIK: ${{ needs.android.result }}
+          ADRES: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          stan=failure
+          opis="Czerwona ciężka kontrola ${GALAZ} (${WYNIK})"
+          if [[ $WYNIK == success ]]; then
+            stan=success
+            opis="Zielona ciężka kontrola ${GALAZ}"
+          fi
+          gh api -X POST "repos/${REPO}/statuses/${SHA}" -f state="$stan" -f context=kontrola-sprintu \
+            -f description="$opis" -f target_url="$ADRES" >/dev/null
+          echo "${SHA:0:7}: ${stan} — ${opis}" | tee -a "$GITHUB_STEP_SUMMARY"
