@@ -41,4 +41,8 @@ dependencies {
     testImplementation(libs.robolectric.annotations)
     testImplementation(libs.robolectric.shadows.framework)
     testImplementation(libs.androidx.compose.ui.test.manifest)
+    constraints {
+        /* Starsze espresso-core z zależności testów Compose nie działa z Robolectric na bieżącym SDK. */
+        testImplementation(libs.androidx.test.espresso.core)
+    }
 }
