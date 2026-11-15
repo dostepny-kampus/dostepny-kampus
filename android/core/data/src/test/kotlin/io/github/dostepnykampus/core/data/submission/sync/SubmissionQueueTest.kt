@@ -40,10 +40,10 @@ class SubmissionQueueTest {
     fun sendsAndClearsQueue() =
         runBlocking {
             saveTwoPhotos()
-            assertTrue(queue().sendAll())
+            assertTrue(queue().sendAll(), "wysyłka kończy się powodzeniem")
 
-            assertEquals(listOf(SENT_ID to "p1", SENT_ID to "p2"), store.photos)
-            assertTrue(store.rows.isEmpty())
+            assertEquals(listOf(SENT_ID to "p1", SENT_ID to "p2"), store.photos, "zdjęcia wysłane po kolei")
+            assertTrue(store.rows.isEmpty(), "kolejka pusta po wysyłce")
         }
 
     @Test
@@ -51,17 +51,24 @@ class SubmissionQueueTest {
         runBlocking {
             saveTwoPhotos()
             store.photoResults.addLast(ServerReply.Offline)
-            assertFalse(queue().sendAll())
+            assertFalse(queue().sendAll(), "pierwszy przebieg z zerwaniem kończy się niepowodzeniem")
 
-            assertEquals(SENT_ID, store.created.single())
+            assertEquals(SENT_ID, store.created.single(), "treść utworzona raz")
             val row = store.rows.single()
-            assertTrue(store.photos.isEmpty() && row.photos.none { it.isUploaded })
+            assertTrue(
+                store.photos.isEmpty() && row.photos.none { it.isUploaded },
+                "po zerwaniu żadne zdjęcie nie jest wysłane",
+            )
 
-            assertTrue(queue().sendAll())
+            assertTrue(queue().sendAll(), "drugi przebieg kończy się powodzeniem")
 
-            assertEquals(1, store.created.size)
-            assertEquals(listOf(SENT_ID to "p1", SENT_ID to "p2"), store.photos)
-            assertTrue(store.rows.isEmpty())
+            assertEquals(1, store.created.size, "treść nie jest tworzona ponownie")
+            assertEquals(
+                listOf(SENT_ID to "p1", SENT_ID to "p2"),
+                store.photos,
+                "brakujące zdjęcia wysłane po wznowieniu",
+            )
+            assertTrue(store.rows.isEmpty(), "kolejka pusta po wznowieniu")
         }
 
     @Test
@@ -71,11 +78,11 @@ class SubmissionQueueTest {
             store.createResults.addLast(ServerReply.Fault(code = 400))
             queue().sendAll()
 
-            assertTrue(store.created.isEmpty())
-            assertTrue(store.photos.isEmpty())
+            assertTrue(store.created.isEmpty(), "odmowa nie tworzy treści")
+            assertTrue(store.photos.isEmpty(), "odmowa nie wysyła zdjęć")
             val left = store.rows.single()
-            assertTrue(left.submission.isCreatedOnServer == false)
-            assertTrue(left.submission.isRefused)
+            assertTrue(left.submission.isCreatedOnServer == false, "odmowa zostawia treść nieutworzoną")
+            assertTrue(left.submission.isRefused, "odmowa oznacza zgłoszenie w kolejce")
         }
 
     /**
@@ -90,10 +97,10 @@ class SubmissionQueueTest {
             store.createResults.addLast(ServerReply.Fault(code = 400))
 
             queue().sendAll()
-            assertTrue(queue().sendAll())
-            assertTrue(queue().sendAll())
+            assertTrue(queue().sendAll(), "pierwszy przebieg po odmowie kończy się powodzeniem")
+            assertTrue(queue().sendAll(), "drugi przebieg po odmowie kończy się powodzeniem")
 
-            assertEquals(1, creates)
+            assertEquals(1, creates, "odmowa nie jest ponawiana")
         }
 
     @Test
@@ -102,7 +109,7 @@ class SubmissionQueueTest {
             var scheduled = 0
             saveTwoPhotos(queue(onSaved = { scheduled++ }))
 
-            assertEquals(1, scheduled)
+            assertEquals(1, scheduled, "zapis uruchamia planowanie wysyłki")
         }
 
     @Test
@@ -114,8 +121,12 @@ class SubmissionQueueTest {
             val edited = EditedSubmission(id = SENT_ID, baseVersion = null)
             target.saveEdit(edited, content = fullContent().copy(severity = 3), photos = drafts())
 
-            assertEquals(listOf(SENT_ID), store.rows.map { it.submission.id })
-            assertEquals(listOf(3), store.rows.map { it.submission.severity })
+            assertEquals(
+                listOf(SENT_ID),
+                store.rows.map { it.submission.id },
+                "poprawka zastępuje wiersz o tym samym id",
+            )
+            assertEquals(listOf(3), store.rows.map { it.submission.severity }, "poprawka zmienia nasilenie")
         }
 
     @Test
@@ -124,11 +135,11 @@ class SubmissionQueueTest {
             val target = queue()
             target.saveEdit(EditedSubmission(id = "s1", baseVersion = 4), fullContent(), drafts())
 
-            assertTrue(target.sendAll())
+            assertTrue(target.sendAll(), "poprawka z wersją kończy przebieg powodzeniem")
 
-            assertEquals(listOf("s1" to 4), edits)
-            assertEquals(0, creates)
-            assertEquals(emptyList<String>(), store.rows.map { it.submission.id })
+            assertEquals(listOf("s1" to 4), edits, "poprawka z wersją trafia do serwera")
+            assertEquals(0, creates, "poprawka nie tworzy nowej treści")
+            assertEquals(emptyList<String>(), store.rows.map { it.submission.id }, "kolejka pusta po poprawce")
         }
 
     @Test
@@ -141,8 +152,12 @@ class SubmissionQueueTest {
 
             target.sendAll()
 
-            assertEquals(listOf("s1"), store.rows.map { it.submission.id })
-            assertEquals(emptyList<Pair<String, String>>(), store.photos)
+            assertEquals(
+                listOf("s1"),
+                store.rows.map { it.submission.id },
+                "konflikt wersji zostawia poprawkę w kolejce",
+            )
+            assertEquals(emptyList<Pair<String, String>>(), store.photos, "konflikt nie wysyła zdjęć")
         }
 
     /**
@@ -174,7 +189,7 @@ class SubmissionQueueTest {
             target.save(fullContent(), drafts())
             target.sendAll()
 
-            assertEquals(listOf("z-pierwsze", "a-drugie"), sent)
+            assertEquals(listOf("z-pierwsze", "a-drugie"), sent, "kolejność wysyłki zgodna z kolejnością zapisu")
         }
 
     private fun queue(onSaved: () -> Unit = {}): SubmissionQueue =

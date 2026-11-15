@@ -36,7 +36,11 @@ class SubmissionSyncWorkerTest {
     @Test
     fun finishesOnEmptyQueue() =
         runBlocking {
-            assertEquals(ListenableWorker.Result.success(), queue().syncResult())
+            assertEquals(
+                ListenableWorker.Result.success(),
+                queue().syncResult(),
+                "pusta kolejka kończy zadanie powodzeniem",
+            )
         }
 
     @Test
@@ -46,8 +50,12 @@ class SubmissionSyncWorkerTest {
             target.save(content(), photos())
             store.createResults.addLast(ServerReply.Offline)
 
-            assertEquals(ListenableWorker.Result.retry(), target.syncResult())
-            assertEquals(listOf(SENT_ID), store.rows.map { it.submission.id })
+            assertEquals(ListenableWorker.Result.retry(), target.syncResult(), "brak sieci ponawia zadanie")
+            assertEquals(
+                listOf(SENT_ID),
+                store.rows.map { it.submission.id },
+                "brak sieci zostawia zgłoszenie w kolejce",
+            )
         }
 
     /**
@@ -62,9 +70,13 @@ class SubmissionSyncWorkerTest {
             target.save(content(), photos())
             store.createResults.addLast(ServerReply.Fault(code = code))
 
-            assertEquals(ListenableWorker.Result.retry(), target.syncResult())
-            assertEquals(listOf(SENT_ID), store.rows.map { it.submission.id })
-            assertFalse(target.loginExpired.value)
+            assertEquals(ListenableWorker.Result.retry(), target.syncResult(), "awaria 5xx daje ponowienie")
+            assertEquals(
+                listOf(SENT_ID),
+                store.rows.map { it.submission.id },
+                "awaria 5xx zostawia zgłoszenie w kolejce",
+            )
+            assertFalse(target.loginExpired.value, "awaria 5xx nie wygasza logowania")
         }
 
     @Test
@@ -74,11 +86,15 @@ class SubmissionSyncWorkerTest {
             target.save(content(), photos())
             store.createResults.addLast(ServerReply.Fault(code = 401))
 
-            assertEquals(ListenableWorker.Result.success(), target.syncResult())
-            assertTrue(target.loginExpired.value)
-            assertEquals(listOf(SENT_ID), store.rows.map { it.submission.id })
-            assertEquals(ListenableWorker.Result.success(), target.syncResult())
-            assertEquals(1, sends)
+            assertEquals(ListenableWorker.Result.success(), target.syncResult(), "401 kończy zadanie bez ponowienia")
+            assertTrue(target.loginExpired.value, "401 wygasza logowanie")
+            assertEquals(listOf(SENT_ID), store.rows.map { it.submission.id }, "401 zostawia zgłoszenie w kolejce")
+            assertEquals(
+                ListenableWorker.Result.success(),
+                target.syncResult(),
+                "kolejny przebieg po 401 bez ponowienia",
+            )
+            assertEquals(1, sends, "po 401 wysyłka nie jest ponawiana")
         }
 
     @Test
@@ -92,10 +108,14 @@ class SubmissionSyncWorkerTest {
 
             target.onLoggedIn()
 
-            assertFalse(target.loginExpired.value)
-            assertEquals(scheduledBefore + 1, schedules)
-            assertEquals(ListenableWorker.Result.success(), target.syncResult())
-            assertEquals(emptyList<String>(), store.rows.map { it.submission.id })
+            assertFalse(target.loginExpired.value, "logowanie czyści wygaśnięcie")
+            assertEquals(scheduledBefore + 1, schedules, "logowanie planuje wysyłkę")
+            assertEquals(
+                ListenableWorker.Result.success(),
+                target.syncResult(),
+                "po logowaniu zadanie kończy się powodzeniem",
+            )
+            assertEquals(emptyList<String>(), store.rows.map { it.submission.id }, "po logowaniu kolejka jest pusta")
         }
 
     @ParameterizedTest
@@ -106,9 +126,17 @@ class SubmissionSyncWorkerTest {
             target.save(content(), photos())
             store.createResults.addLast(if (code == 404) ServerReply.Missing else ServerReply.Fault(code = code))
 
-            assertEquals(ListenableWorker.Result.success(), target.syncResult())
-            assertEquals(listOf(SENT_ID), store.rows.map { it.submission.id })
-            assertFalse(target.loginExpired.value)
+            assertEquals(
+                ListenableWorker.Result.success(),
+                target.syncResult(),
+                "odmowa 4xx kończy zadanie bez ponowienia",
+            )
+            assertEquals(
+                listOf(SENT_ID),
+                store.rows.map { it.submission.id },
+                "odmowa 4xx zostawia zgłoszenie w kolejce",
+            )
+            assertFalse(target.loginExpired.value, "odmowa 4xx nie wygasza logowania")
         }
 
     @Test
@@ -117,10 +145,14 @@ class SubmissionSyncWorkerTest {
             val target = queue()
             target.save(content(), photos())
 
-            assertEquals(ListenableWorker.Result.success(), target.syncResult())
-            assertEquals(listOf(SENT_ID), store.created)
-            assertEquals(listOf(SENT_ID to "p1"), store.photos)
-            assertEquals(emptyList<String>(), store.rows.map { it.submission.id })
+            assertEquals(
+                ListenableWorker.Result.success(),
+                target.syncResult(),
+                "wysłane zgłoszenie kończy zadanie powodzeniem",
+            )
+            assertEquals(listOf(SENT_ID), store.created, "treść wysłana raz")
+            assertEquals(listOf(SENT_ID to "p1"), store.photos, "zdjęcie wysłane razem z treścią")
+            assertEquals(emptyList<String>(), store.rows.map { it.submission.id }, "wysłane znika z kolejki")
         }
 
     private fun queue(): SubmissionQueue =

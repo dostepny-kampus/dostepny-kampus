@@ -53,9 +53,9 @@ class OwnHistoryTest {
         runBlocking {
             val saved: SavedSubmission = queue().save(precise(PHOTO), photo(tempDir, PHOTO))
             val pending = store.all().single()
-            assertEquals(ID, saved.id)
-            assertEquals(saved.id, pending.submission.id)
-            assertEquals(saved.id, history.rows.getValue(saved.id).id)
+            assertEquals(ID, saved.id, "wynik wskazuje zapisany wiersz")
+            assertEquals(saved.id, pending.submission.id, "kolejka trzyma zgłoszenie o tym samym id")
+            assertEquals(saved.id, history.rows.getValue(saved.id).id, "historia ma wiersz o id zapisu")
         }
 
     @Test
@@ -64,8 +64,8 @@ class OwnHistoryTest {
             queue().save(precise(PHOTO), photo(tempDir, PHOTO))
 
             val row = history.rows.getValue(ID)
-            assertEquals(OwnSubmissionState.LOCAL, row.state)
-            assertEquals("TB-5", row.barrierType)
+            assertEquals(OwnSubmissionState.LOCAL, row.state, "nowy zapis ma stan lokalny")
+            assertEquals("TB-5", row.barrierType, "typ bariery trafia do historii")
         }
 
     @Test
@@ -73,7 +73,7 @@ class OwnHistoryTest {
         runBlocking {
             queue().save(precise(PHOTO).copy(kind = SubmissionKind.QUICK), photo(tempDir, PHOTO))
 
-            assertTrue(history.rows.isEmpty())
+            assertTrue(history.rows.isEmpty(), "szybkie zgłoszenie nie trafia do historii")
         }
 
     /**
@@ -88,8 +88,8 @@ class OwnHistoryTest {
             target.sendAll()
 
             val row = history.rows.getValue(ID)
-            assertEquals(OwnSubmissionState.SENT, row.state)
-            assertEquals(3, row.serverVersion)
+            assertEquals(OwnSubmissionState.SENT, row.state, "potwierdzone zgłoszenie ma stan wysłane")
+            assertEquals(3, row.serverVersion, "wersja serwera trafia do historii")
         }
 
     /**
@@ -104,7 +104,11 @@ class OwnHistoryTest {
             store.createResults.addLast(ServerReply.Offline)
             target.sendAll()
 
-            assertEquals(OwnSubmissionState.LOCAL, history.rows.getValue(ID).state)
+            assertEquals(
+                OwnSubmissionState.LOCAL,
+                history.rows.getValue(ID).state,
+                "bez sieci zgłoszenie zostaje lokalne",
+            )
         }
 
     /**
@@ -130,23 +134,31 @@ class OwnHistoryTest {
             val photos = photo(tempDir, PHOTO)
             target.save(precise(PHOTO), photos)
 
-            assertFalse(target.sendAll())
-            assertEquals(setOf(ID), remote.keys)
+            assertFalse(target.sendAll(), "przerwana odpowiedź kończy przebieg niepowodzeniem")
+            assertEquals(setOf(ID), remote.keys, "serwer zapamiętał jedno zgłoszenie")
             val pending = store.rows.single().submission
-            assertEquals(ID, pending.id)
-            assertFalse(pending.isCreatedOnServer)
-            assertTrue(store.photos.isEmpty())
-            assertTrue(File(photos.single().path).exists())
-            assertEquals(OwnSubmissionState.LOCAL, history.rows.getValue(ID).state)
+            assertEquals(ID, pending.id, "kolejka zachowuje id zgłoszenia")
+            assertFalse(pending.isCreatedOnServer, "treść niepotwierdzona nie jest uznana za utworzoną")
+            assertTrue(store.photos.isEmpty(), "zdjęcie nie jest wysłane przed potwierdzeniem treści")
+            assertTrue(File(photos.single().path).exists(), "plik zdjęcia zostaje na dysku")
+            assertEquals(
+                OwnSubmissionState.LOCAL,
+                history.rows.getValue(ID).state,
+                "po przerwaniu historia pokazuje stan lokalny",
+            )
 
-            assertTrue(target.sendAll())
-            assertEquals(listOf(ID, ID), sent.map { it.first })
-            assertEquals(sent.first(), sent.last())
-            assertEquals(1, remote.size)
-            assertEquals(listOf(ID to PHOTO), store.photos)
-            assertTrue(store.rows.isEmpty())
-            assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state)
-            assertEquals(3, history.rows.getValue(ID).serverVersion)
+            assertTrue(target.sendAll(), "drugi przebieg kończy się powodzeniem")
+            assertEquals(listOf(ID, ID), sent.map { it.first }, "ponowienie używa tego samego id")
+            assertEquals(sent.first(), sent.last(), "ponowienie wysyła tę samą treść")
+            assertEquals(1, remote.size, "serwer nie dostaje duplikatu")
+            assertEquals(listOf(ID to PHOTO), store.photos, "zdjęcie wysłane po ponowieniu treści")
+            assertTrue(store.rows.isEmpty(), "po wysyłce kolejka jest pusta")
+            assertEquals(
+                OwnSubmissionState.SENT,
+                history.rows.getValue(ID).state,
+                "po ponowieniu historia pokazuje stan wysłane",
+            )
+            assertEquals(3, history.rows.getValue(ID).serverVersion, "po ponowieniu historia ma wersję serwera")
         }
 
     /**
@@ -160,14 +172,18 @@ class OwnHistoryTest {
             target.save(precise(PHOTO), photo(tempDir, PHOTO))
             store.createResults.addLast(ServerReply.Fault(code = SERVICE_UNAVAILABLE))
 
-            assertFalse(target.sendAll())
+            assertFalse(target.sendAll(), "awaria serwera kończy przebieg niepowodzeniem")
             val row = history.rows.getValue(ID)
-            assertEquals(OwnSubmissionState.LOCAL, row.state)
-            assertNull(row.refusalCode)
-            assertEquals(listOf(ID), store.all().map { it.submission.id })
+            assertEquals(OwnSubmissionState.LOCAL, row.state, "awaria 503 zostawia stan lokalny")
+            assertNull(row.refusalCode, "awaria 503 nie ustawia kodu odmowy")
+            assertEquals(listOf(ID), store.all().map { it.submission.id }, "po awarii zgłoszenie czeka w kolejce")
 
-            assertTrue(target.sendAll())
-            assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state)
+            assertTrue(target.sendAll(), "kolejny przebieg po awarii kończy się powodzeniem")
+            assertEquals(
+                OwnSubmissionState.SENT,
+                history.rows.getValue(ID).state,
+                "kolejny przebieg po awarii wysyła zgłoszenie",
+            )
         }
 
     @Test
@@ -179,8 +195,8 @@ class OwnHistoryTest {
             target.sendAll()
 
             val row = history.rows.getValue(ID)
-            assertEquals(OwnSubmissionState.REFUSED, row.state)
-            assertEquals(422, row.refusalCode)
+            assertEquals(OwnSubmissionState.REFUSED, row.state, "odmowa treści daje stan odrzucone")
+            assertEquals(422, row.refusalCode, "odmowa zapisuje kod w historii")
         }
 
     /**
@@ -198,21 +214,25 @@ class OwnHistoryTest {
             val refusal = if (code == 404) ServerReply.Missing else ServerReply.Fault(code)
             if (isPhoto) store.photoResults.addLast(refusal) else store.createResults.addLast(refusal)
 
-            assertTrue(target.sendAll())
+            assertTrue(target.sendAll(), "przebieg z odmową kończy się powodzeniem")
             val pending = store.rows.single().submission
-            assertTrue(pending.isRefused)
-            assertEquals(isPhoto, pending.isCreatedOnServer)
-            assertTrue(File(photos.single().path).exists())
+            assertTrue(pending.isRefused, "odmowa oznacza zgłoszenie w kolejce")
+            assertEquals(isPhoto, pending.isCreatedOnServer, "treść utworzona tylko przy odmowie zdjęcia")
+            assertTrue(File(photos.single().path).exists(), "plik zdjęcia zostaje po odmowie")
             val row = history.rows.getValue(ID)
-            assertEquals(OwnSubmissionState.REFUSED, row.state)
-            assertEquals(code, row.refusalCode)
+            assertEquals(OwnSubmissionState.REFUSED, row.state, "historia pokazuje odrzucone po odmowie")
+            assertEquals(code, row.refusalCode, "historia zapisuje kod odmowy z serwera")
 
-            assertTrue(target.sendAll())
-            assertTrue(target.sendAll())
-            assertEquals(if (isPhoto) 1 else 0, photoAttempts)
-            assertEquals(if (isPhoto) listOf(ID) else emptyList<String>(), store.created)
-            assertEquals(pending, store.rows.single().submission)
-            assertEquals(row, history.rows.getValue(ID))
+            assertTrue(target.sendAll(), "drugi przebieg pomija odrzucone")
+            assertTrue(target.sendAll(), "trzeci przebieg pomija odrzucone")
+            assertEquals(if (isPhoto) 1 else 0, photoAttempts, "zdjęcie nie jest ponawiane po odmowie")
+            assertEquals(
+                if (isPhoto) listOf(ID) else emptyList<String>(),
+                store.created,
+                "treść nie jest ponawiana po odmowie",
+            )
+            assertEquals(pending, store.rows.single().submission, "odrzucone zgłoszenie w kolejce bez zmian")
+            assertEquals(row, history.rows.getValue(ID), "wiersz historii po odmowie bez zmian")
         }
 
     /** Scenariusz: zgloszenia-zbierajacego.feature: Edycja zgłoszenia przed decyzją Weryfikatora. */
@@ -232,10 +252,10 @@ class OwnHistoryTest {
             )
 
             val row = history.rows.getValue(ID)
-            assertEquals(2, row.severity)
-            assertEquals(OwnSubmissionState.SENT, row.state)
-            assertEquals(status.name, row.serverStatus)
-            assertEquals(3, row.serverVersion)
+            assertEquals(2, row.severity, "edycja zmienia nasilenie w historii")
+            assertEquals(OwnSubmissionState.SENT, row.state, "edycja zachowuje stan wysłane")
+            assertEquals(status.name, row.serverStatus, "edycja zachowuje status z serwera")
+            assertEquals(3, row.serverVersion, "edycja zachowuje wersję serwera")
         }
     }
 
@@ -251,8 +271,8 @@ class OwnHistoryTest {
             )
 
             val row = history.rows.getValue(ID)
-            assertEquals(OwnSubmissionState.LOCAL, row.state)
-            assertEquals(1, row.severity)
+            assertEquals(OwnSubmissionState.LOCAL, row.state, "edycja niewysłanego zostaje lokalna")
+            assertEquals(1, row.severity, "edycja niewysłanego zmienia nasilenie")
         }
 
     /**
@@ -275,12 +295,16 @@ class OwnHistoryTest {
             queue().save(precise(PHOTO).copy(barrierType = "TB-9", buildingSymbol = "D-2"), photo(tempDir, PHOTO))
 
             val row = history.rows.getValue(ID)
-            assertEquals(OwnSubmissionState.LOCAL, row.state)
-            assertEquals("TB-9", row.barrierType)
+            assertEquals(OwnSubmissionState.LOCAL, row.state, "nowe zgłoszenie ma stan lokalny")
+            assertEquals("TB-9", row.barrierType, "nowe zgłoszenie ma typ bariery z zapisu")
             val pending = store.rows.single().submission
-            assertNull(pending.replacesSubmissionId)
-            assertNull(pending.baseVersion)
-            assertEquals("nieaktualne", history.rows.getValue(OLD).rejectionReason)
+            assertNull(pending.replacesSubmissionId, "nowe zgłoszenie nie zastępuje starego")
+            assertNull(pending.baseVersion, "nowe zgłoszenie nie ma wersji bazowej")
+            assertEquals(
+                "nieaktualne",
+                history.rows.getValue(OLD).rejectionReason,
+                "stare zgłoszenie zachowuje powód odrzucenia",
+            )
         }
 
     private fun queue(
