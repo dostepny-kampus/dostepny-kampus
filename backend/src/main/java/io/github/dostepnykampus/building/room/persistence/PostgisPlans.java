@@ -5,7 +5,9 @@
  */
 package io.github.dostepnykampus.building.room.persistence;
 
+import io.github.dostepnykampus.building.room.BuildingPlan;
 import io.github.dostepnykampus.building.room.FloorPlans;
+import io.github.dostepnykampus.building.room.PlanEntrance;
 import io.github.dostepnykampus.building.room.PlanFloor;
 import io.github.dostepnykampus.building.room.PlanRoom;
 import io.github.dostepnykampus.building.room.PwrFunction;
@@ -17,14 +19,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionOperations;
 
 /**
- * Plan budynku w tabelach floors i rooms, zastępowany w jednej transakcji bez duplikatów; piętro
- * spoza planu znika z pomieszczeniami, pusty numer to NULL, punkt podpisu leży w konturze. Zapis
- * liczy grupę funkcji i podpis: z pomieszczeń piętra o tym samym numerze tylko największe, od
- * 20 m². Obrys piętra to suma pomieszczeń poszerzonych i zwężonych o 0,5 m: wypełnia ściany
- * między pomieszczeniami, a granicę zewnętrzną zostawia na konturach. Budynek z planem jest
- * szczegółowy (detail_level DETAILED).
+ * Plan budynku w tabelach floors i rooms, zastępowany w jednej transakcji; piętro spoza planu
+ * znika z pomieszczeniami, pusty numer to NULL, punkt podpisu leży w konturze. Podpis ma tylko
+ * największe od 20 m² z pomieszczeń piętra o tym samym numerze. Obrys piętra to suma pomieszczeń
+ * poszerzonych i zwężonych o 0,5 m. Budynek z planem jest szczegółowy (DETAILED). Wejście bierze
+ * piętro najbliższego wejścia PWr z piętrem planu do 15 m, a bez takiego wejścia ma NULL.
  *
- * <p>Wymagania: US16, US18, BR-G1, NFR-40</p>
+ * <p>Wymagania: US16, US18, US18.2, BR-G1, NFR-40</p>
  *
  * @since 0.1.0
  */
@@ -53,9 +54,11 @@ public final class PostgisPlans implements FloorPlans {
     }
 
     @Override
-    public void save(
-        final String building, final List<PlanFloor> floors, final List<PlanRoom> rooms
-    ) {
+    public void save(final BuildingPlan plan) {
+        final String building = plan.building();
+        final List<PlanFloor> floors = plan.floors();
+        final List<PlanRoom> rooms = plan.rooms();
+        final List<PlanEntrance> entrances = plan.entrances();
         final Set<String> known = floors.stream().map(PlanFloor::id).collect(Collectors.toSet());
         this.transaction.executeWithoutResult(
             status -> {
@@ -75,6 +78,7 @@ public final class PostgisPlans implements FloorPlans {
                 this.jdbc.sql(
                     "UPDATE buildings SET detail_level = 'DETAILED' WHERE symbol = :building"
                 ).param("building", building).update();
+                this.entrances(building, known, entrances);
             }
         );
     }
@@ -136,5 +140,29 @@ public final class PostgisPlans implements FloorPlans {
             WHERE building_symbol = :building
             """
         ).param("building", building).update();
+    }
+
+    private void entrances(
+        final String building, final Set<String> known, final List<PlanEntrance> entrances
+    ) {
+        this.jdbc.sql(
+            """
+            UPDATE entrances SET floor_id = (
+                SELECT pwr.floor
+                FROM unnest(CAST(:floors AS TEXT[]), CAST(:points AS TEXT[])) AS pwr (floor, point),
+                    LATERAL (
+                        SELECT ST_SetSRID(ST_GeomFromGeoJSON(pwr.point), 4326)::geography AS spot
+                    ) AS place
+                WHERE pwr.floor = ANY(:known)
+                    AND ST_DWithin(place.spot, entrances.location::geography, 15)
+                ORDER BY ST_Distance(place.spot, entrances.location::geography), pwr.floor
+                LIMIT 1
+            )
+            WHERE building_symbol = :building
+            """
+        ).param("building", building).param("known", known.toArray(String[]::new))
+            .param("floors", entrances.stream().map(PlanEntrance::floorId).toArray(String[]::new))
+            .param("points", entrances.stream().map(PlanEntrance::point).toArray(String[]::new))
+            .update();
     }
 }

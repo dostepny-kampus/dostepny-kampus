@@ -6,10 +6,8 @@
 
 package io.github.dostepnykampus.building.room;
 
-import java.util.List;
-
 /**
- * Zapis zaimportowanych pięter i pomieszczeń budynku.
+ * Zapis zaimportowanych pięter i pomieszczeń budynku oraz piętra jego wejść.
  *
  * @since 0.1.0
  */
@@ -17,11 +15,9 @@ import java.util.List;
 public interface FloorPlans {
 
     /**
-     * Zapisuje piętra oraz pomieszczenia budynku bez duplikatów.
+     * Zapisuje piętra oraz pomieszczenia budynku bez duplikatów i ustawia piętro jego wejść.
      *
-     * @param building Symbol budynku
-     * @param floors Lista pięter
-     * @param rooms Lista pomieszczeń
+     * @param plan Plan budynku z usługi
      */
-    void save(String building, List<PlanFloor> floors, List<PlanRoom> rooms);
+    void save(BuildingPlan plan);
 }

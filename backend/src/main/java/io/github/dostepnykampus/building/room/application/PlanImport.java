@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.building.room.application;
 
+import io.github.dostepnykampus.building.room.BuildingPlan;
 import io.github.dostepnykampus.building.room.FloorPlans;
 import io.github.dostepnykampus.building.room.PlanFloor;
 import io.github.dostepnykampus.building.room.PlanRoom;
@@ -22,12 +23,12 @@ import org.springframework.stereotype.Component;
 
 /**
  * Ręczny import planów pięter PWr (ADR-0012), uruchamiany profilem import-pwr. Każdy budynek z
- * konfiguracji dostaje piętra swojego identyfikatora FACILITY_ID i pomieszczenia swojej warstwy.
+ * konfiguracji dostaje piętra swojego FACILITY_ID oraz pomieszczenia i wejścia swoich warstw.
  * Import rusza, gdy aplikacja jest gotowa (po wszystkich zadaniach startu), a po nim aplikacja
  * się zamyka. Opcja --budynek ogranicza import do podanych symboli. Każdy budynek zapisuje się
  * osobno, więc błąd usługi przerywa import, a budynki zapisane wcześniej zostają.
  *
- * <p>Wymagania: US16, NFR-40, NFR-47</p>
+ * <p>Wymagania: US16, US18.2, NFR-40, NFR-47</p>
  *
  * @since 0.1.0
  */
@@ -80,7 +81,11 @@ final class PlanImport implements ApplicationListener<ApplicationReadyEvent> {
         final List<PlanFloor> floors = this.source.floors(service, layer.levels()).stream()
             .filter(floor -> floor.id().startsWith(prefix)).toList();
         final List<PlanRoom> rooms = this.source.rooms(service, layer.rooms());
-        this.store.save(layer.symbol(), floors, rooms);
+        this.store.save(
+            new BuildingPlan(
+                layer.symbol(), floors, rooms, this.source.entrances(service, layer.entrances())
+            )
+        );
         PlanImport.LOG.info(
             "Plan {}: {} pięter, {} pomieszczeń z usługi", layer.symbol(), floors.size(),
             rooms.size()
