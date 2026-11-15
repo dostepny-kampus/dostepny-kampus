@@ -35,6 +35,7 @@ class MapStylePlanTest {
                 """{"floor":"P0","kind":"outline"}""",
                 """{"floor":"P0","kind":"room","category":"ELEVATOR"}""",
                 """{"floor":"P0","kind":"room","category":"CORRIDOR"}""",
+                """{"floor":"P0","kind":"sign","image":"znak planu: ELEVATOR"}""",
             )
         assertEquals(expected, parts.map(JsonElement::toString), "Obiekty planu nie mają piętra i rodzaju")
     }
@@ -53,6 +54,19 @@ class MapStylePlanTest {
         val layer = layers().getValue(PLAN_NUMBERS_LAYER)
         assertEquals(19.0, layer.getValue("minzoom").jsonPrimitive.double, "Numery sal widać przed powiększeniem 19")
         assertEquals(planFilter(floor = null, kind = "number"), layer.getValue("filter"), "Numery widać bez piętra")
+    }
+
+    @Test
+    fun signsLiftToiletAndStairs() {
+        val categories = RoomCategory.entries.toTypedArray()
+        val features = planFeatures(mapOf("P0" to plan(*categories))).jsonObject.items("features")
+        val signs = features.map { it.jsonObject.part("properties") }.filter { it.text("kind") == "sign" }
+
+        val expected =
+            listOf(RoomCategory.STAIRCASE, RoomCategory.ELEVATOR, RoomCategory.ACCESSIBLE_TOILET).map(::planSignImage)
+        assertEquals(expected, signs.map { it.text("image") }, "Znak ma pomieszczenie bez znaku albo go brakuje")
+        val layer = layers().getValue(PLAN_SIGNS_LAYER)
+        assertEquals(planFilter(floor = null, kind = "sign"), layer.getValue("filter"), "Znaki planu widać bez piętra")
     }
 
     @Test

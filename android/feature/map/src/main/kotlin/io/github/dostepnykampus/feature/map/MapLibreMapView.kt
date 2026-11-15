@@ -53,6 +53,7 @@ import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.campus.symbolsAt
+import io.github.dostepnykampus.feature.map.plan.planSignImages
 import io.github.dostepnykampus.feature.map.style.BARRIERS_LAYER
 import io.github.dostepnykampus.feature.map.style.BASEMAP
 import io.github.dostepnykampus.feature.map.style.BUILDINGS_LAYER
@@ -468,12 +469,14 @@ internal fun rememberMapStyle(
 
 /**
  * Dodaje do stylu obrazy niezależne od zaznaczenia: podpisy konturów [labels], znaki wejść, pinezkę oraz znaki
- * i słowa uciążliwości barier, bo napisy ze stylu wymagają sieci.
+ * i słowa uciążliwości barier oraz znaki planu, bo napisy ze stylu wymagają sieci.
  */
 internal fun Style.addMapImages(labels: List<String>, images: MapImages) {
     labels.forEach { label -> addImage(label, labelImage(label, images.colors, images.labelSize)) }
     entranceImages(colors = images.colors, density = images.density).forEach { (name, image) -> addImage(name, image) }
     barrierImages(images).forEach { (name, image) -> addImage(name, image) }
+    val signs = planSignImages(colors = images.colors, density = images.density)
+    signs.forEach { (name, image) -> addImage(name, image) }
 }
 
 /**
