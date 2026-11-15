@@ -130,7 +130,8 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 | jawna lista zależności modułu serwera | `ModularityIT` (`modulesDeclareAllowedDependencies`, `infraVerifiesModuleBoundaries`) |
 | korzeń modułu: `package-info.java`, `api`, tematy albo warstwy; typy `api` bez typów wnętrza; zależność od `api` zapisana jako `moduł :: api` | `ModuleRootArchitectureIT` |
 | kierunek warstw w obu układach modułu | `LayerDirectionArchitectureIT` (#1668) |
-| dziedzina bez frameworków, adapter nie woła adaptera | `BarrierArchitectureTest` (A-1…A-9), dziś tylko `barrier`: #1704 |
+| dziedzina bez frameworków, adapter nie woła adaptera | `LayerDirectionArchitectureIT` w każdym module |
+| technologia w warstwach: JDBC, `JsonNode`, porty, API innego modułu, wyjątki HTTP, typy błędów | `TechnologyArchitectureIT` (A-2, A-3, A-4, A-6, A-7) w każdym module, `ArchitectureIT` (A-9) |
 | nazwy pakietów ze słownika, zakazane nazwy, głębokość | serwer #1665, Android #1672 |
 | opis każdego pakietu | serwer `PackageDescriptionArchitectureIT`, Android #1673 |
 | brak cykli między pakietami modułu | serwer #1667; Android: podpakiet nie importuje korzenia (poza `R`), Konsist `keepsPartsOffRoot` |
