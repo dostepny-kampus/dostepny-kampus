@@ -66,7 +66,7 @@ class BarrierPhotoTest {
         compose.onNodeWithContentDescription(DESCRIPTION).assertDoesNotExist()
     }
 
-    /** Wiersz: błąd pobrania → komunikat i przycisk „Spróbuj ponownie” o wysokości co najmniej 48 dp. Wymagania: NFR-50 */
+    /** Wiersz: błąd pobrania → komunikat i „Spróbuj ponownie” o wysokości co najmniej 48 dp. Wymagania: NFR-50 */
     @Test
     fun showsErrorWithRetryOnFailure() {
         show(PHOTO_URL, photoFailing())
