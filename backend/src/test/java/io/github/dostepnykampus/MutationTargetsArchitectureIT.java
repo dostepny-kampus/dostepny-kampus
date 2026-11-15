@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
     packagesOf = DostepnyKampusApplication.class,
     importOptions = ImportOption.DoNotIncludeTests.class
 )
-final class MutationTargetsArchitectureTest {
+final class MutationTargetsArchitectureIT {
 
     /**
      * Lista wzorców klas mutowanych.
@@ -49,7 +49,7 @@ final class MutationTargetsArchitectureTest {
 
     @ArchTest
     void everyTargetPatternMatchesClass(final JavaClasses classes) throws IOException {
-        final List<String> patterns = MutationTargetsArchitectureTest.patterns(
+        final List<String> patterns = MutationTargetsArchitectureIT.patterns(
             Files.readString(Path.of("pom.xml"))
         );
         Assertions.assertAll(
@@ -58,7 +58,7 @@ final class MutationTargetsArchitectureTest {
             ),
             () -> Assertions.assertEquals(
                 List.of(),
-                MutationTargetsArchitectureTest.unmatched(
+                MutationTargetsArchitectureIT.unmatched(
                     patterns,
                     classes.stream().map(JavaClass::getName).collect(Collectors.toSet())
                 ),
@@ -71,8 +71,8 @@ final class MutationTargetsArchitectureTest {
     void rejectsPatternWithoutClass() {
         Assertions.assertEquals(
             List.of("a.Moved*"),
-            MutationTargetsArchitectureTest.unmatched(
-                MutationTargetsArchitectureTest.patterns(
+            MutationTargetsArchitectureIT.unmatched(
+                MutationTargetsArchitectureIT.patterns(
                     String.join(
                         "", "<targetClasses>", "<param>a.*.domain.*</param>",
                         "<param>a.Moved*</param>", "</targetClasses>"
@@ -85,15 +85,15 @@ final class MutationTargetsArchitectureTest {
     }
 
     private static List<String> patterns(final String pom) {
-        return MutationTargetsArchitectureTest.TARGETS.matcher(pom).results().flatMap(
-            block -> MutationTargetsArchitectureTest.PARAM.matcher(block.group(1)).results()
+        return MutationTargetsArchitectureIT.TARGETS.matcher(pom).results().flatMap(
+            block -> MutationTargetsArchitectureIT.PARAM.matcher(block.group(1)).results()
         ).map(param -> param.group(1)).toList();
     }
 
     private static List<String> unmatched(final List<String> patterns, final Set<String> names) {
         return patterns.stream().filter(
             glob -> names.stream().noneMatch(
-                MutationTargetsArchitectureTest.regex(glob).asMatchPredicate()
+                MutationTargetsArchitectureIT.regex(glob).asMatchPredicate()
             )
         ).toList();
     }

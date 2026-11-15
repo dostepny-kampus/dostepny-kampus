@@ -39,7 +39,7 @@ import org.junit.jupiter.api.io.TempDir;
     packagesOf = DostepnyKampusApplication.class,
     importOptions = ImportOption.DoNotIncludeTests.class
 )
-final class LayerDirectionArchitectureTest {
+final class LayerDirectionArchitectureIT {
 
     /**
      * Pakiety, od których dziedzina nie zależy.
@@ -66,15 +66,15 @@ final class LayerDirectionArchitectureTest {
 
     @ArchTest
     void modulesKeepLayerDirection(final JavaClasses classes) {
-        LayerDirectionArchitectureTest.direction(ModuleLayers.modules()).check(classes);
+        LayerDirectionArchitectureIT.direction(ModuleLayers.modules()).check(classes);
     }
 
     @ArchTest
     void domainSkipsFrameworksOutsideExceptionList(final JavaClasses classes) {
         KnownViolations.check(
             classes,
-            LayerDirectionArchitectureTest.KNOWN,
-            known -> LayerDirectionArchitectureTest.frameworks(ModuleLayers.modules(), known)
+            LayerDirectionArchitectureIT.KNOWN,
+            known -> LayerDirectionArchitectureIT.frameworks(ModuleLayers.modules(), known)
         );
     }
 
@@ -89,8 +89,8 @@ final class LayerDirectionArchitectureTest {
         this.type("topic.part.application", "Service", "topic.part.Model");
         this.type("topic.part.web", "Controller", "topic.part.application.Service");
         Assertions.assertFalse(
-            LayerDirectionArchitectureTest.direction(
-                Stream.of("flat", "topic").map(LayerDirectionArchitectureTest::at).toList()
+            LayerDirectionArchitectureIT.direction(
+                Stream.of("flat", "topic").map(LayerDirectionArchitectureIT::at).toList()
             ).evaluate(this.compiled()).hasViolation(),
             "Reguła odrzuciła zależności zgodne z kierunkiem warstw"
         );
@@ -101,8 +101,8 @@ final class LayerDirectionArchitectureTest {
         this.type("up.web", "Controller", "");
         this.type("up.submission", "Model", "up.web.Controller");
         Assertions.assertTrue(
-            LayerDirectionArchitectureTest.direction(
-                List.of(LayerDirectionArchitectureTest.at("up"))
+            LayerDirectionArchitectureIT.direction(
+                List.of(LayerDirectionArchitectureIT.at("up"))
             ).evaluate(this.compiled()).hasViolation(),
             "Reguła przepuściła dziedzinę tematu zależną od warstwy web"
         );
@@ -113,8 +113,8 @@ final class LayerDirectionArchitectureTest {
         this.type("side.photo.storage", "Store", "");
         this.type("side.photo.json", "Content", "side.photo.storage.Store");
         Assertions.assertTrue(
-            LayerDirectionArchitectureTest.direction(
-                List.of(LayerDirectionArchitectureTest.at("side"))
+            LayerDirectionArchitectureIT.direction(
+                List.of(LayerDirectionArchitectureIT.at("side"))
             ).evaluate(this.compiled()).hasViolation(),
             "Reguła przepuściła adapter json zależny od adaptera storage"
         );
@@ -124,8 +124,8 @@ final class LayerDirectionArchitectureTest {
     void rejectsFrameworkInTopicDomain() throws IOException {
         this.type("frame.submission", "Model", "java.sql.Connection");
         Assertions.assertTrue(
-            LayerDirectionArchitectureTest.frameworks(
-                List.of(LayerDirectionArchitectureTest.at("frame")), Set.of()
+            LayerDirectionArchitectureIT.frameworks(
+                List.of(LayerDirectionArchitectureIT.at("frame")), Set.of()
             ).evaluate(this.compiled()).hasViolation(),
             "Reguła przepuściła dziedzinę tematu zależną od JDBC"
         );
@@ -154,9 +154,9 @@ final class LayerDirectionArchitectureTest {
     private static ArchRule frameworks(final Collection<String> roots, final Set<String> skipped) {
         return ArchRuleDefinition.noClasses()
             .that(ModuleLayers.in(roots, "domain"))
-            .and(DescribedPredicate.not(LayerDirectionArchitectureTest.inside(skipped)))
+            .and(DescribedPredicate.not(LayerDirectionArchitectureIT.inside(skipped)))
             .should().dependOnClassesThat()
-            .resideInAnyPackage(LayerDirectionArchitectureTest.frameworkPackages())
+            .resideInAnyPackage(LayerDirectionArchitectureIT.frameworkPackages())
             .allowEmptyShould(true);
     }
 
@@ -171,15 +171,15 @@ final class LayerDirectionArchitectureTest {
     }
 
     private static String[] frameworkPackages() {
-        return LayerDirectionArchitectureTest.FRAMEWORKS.toArray(String[]::new);
+        return LayerDirectionArchitectureIT.FRAMEWORKS.toArray(String[]::new);
     }
 
     private static String at(final String root) {
-        return String.format("%s.%s", LayerDirectionArchitectureTest.SAMPLES, root);
+        return String.format("%s.%s", LayerDirectionArchitectureIT.SAMPLES, root);
     }
 
     private JavaClasses compiled() throws IOException {
-        return new ArchSamples(this.dir).compiled(LayerDirectionArchitectureTest.SAMPLES);
+        return new ArchSamples(this.dir).compiled(LayerDirectionArchitectureIT.SAMPLES);
     }
 
     private void type(final String pack, final String name, final String field)
@@ -188,8 +188,8 @@ final class LayerDirectionArchitectureTest {
         if (field.isEmpty() || field.startsWith("java.")) {
             type = field;
         } else {
-            type = LayerDirectionArchitectureTest.at(field);
+            type = LayerDirectionArchitectureIT.at(field);
         }
-        new ArchSamples(this.dir).type(LayerDirectionArchitectureTest.at(pack), name, type);
+        new ArchSamples(this.dir).type(LayerDirectionArchitectureIT.at(pack), name, type);
     }
 }

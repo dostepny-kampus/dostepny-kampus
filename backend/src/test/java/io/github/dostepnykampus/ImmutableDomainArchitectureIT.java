@@ -25,7 +25,7 @@ import org.junit.jupiter.api.io.TempDir;
  *
  * @since 0.1.0
  */
-final class ImmutableDomainArchitectureTest {
+final class ImmutableDomainArchitectureIT {
 
     /**
      * Pakiet przykładów kompilowanych przez test.
@@ -46,7 +46,7 @@ final class ImmutableDomainArchitectureTest {
                 new ClassFileImporter()
                     .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
                     .importPackagesOf(DostepnyKampusApplication.class),
-                ImmutableDomainArchitectureTest.rule(ModuleLayers.modules())
+                ImmutableDomainArchitectureIT.rule(ModuleLayers.modules())
             ),
             "Pola klas dziedziny i API nie są final"
         );
@@ -61,12 +61,12 @@ final class ImmutableDomainArchitectureTest {
             {"submission.content", "Place", "private final double lat = 0;"},
             {"submission.web", "Controller", "int calls;"},
         }) {
-            ImmutableDomainArchitectureTest.type(samples, sample[0], sample[1], sample[2]);
+            ImmutableDomainArchitectureIT.type(samples, sample[0], sample[1], sample[2]);
         }
         Assertions.assertEquals(
             2,
-            ImmutableDomainArchitectureTest.rule(List.of(ImmutableDomainArchitectureTest.SAMPLES))
-                .evaluate(samples.compiled(ImmutableDomainArchitectureTest.SAMPLES))
+            ImmutableDomainArchitectureIT.rule(List.of(ImmutableDomainArchitectureIT.SAMPLES))
+                .evaluate(samples.compiled(ImmutableDomainArchitectureIT.SAMPLES))
                 .getFailureReport().getDetails().size(),
             "Reguła przepuściła zmienne pole dziedziny albo API albo odrzuciła pole adaptera"
         );
@@ -86,7 +86,7 @@ final class ImmutableDomainArchitectureTest {
     private static void type(
         final ArchSamples samples, final String pack, final String name, final String field
     ) throws IOException {
-        final String full = String.format("%s.%s", ImmutableDomainArchitectureTest.SAMPLES, pack);
+        final String full = String.format("%s.%s", ImmutableDomainArchitectureIT.SAMPLES, pack);
         samples.write(
             full, name, String.format("package %s;%nfinal class %s { %s }%n", full, name, field)
         );

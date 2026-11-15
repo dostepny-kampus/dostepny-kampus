@@ -22,7 +22,7 @@ import org.junit.jupiter.api.io.TempDir;
  *
  * @since 0.1.0
  */
-final class PackageDescriptionArchitectureTest {
+final class PackageDescriptionArchitectureIT {
 
     /**
      * Pierwsze zdanie Javadoc: tekst przed pierwszą kropką, bez znaczników.
@@ -41,7 +41,7 @@ final class PackageDescriptionArchitectureTest {
     void describesEveryProductionPackage() throws IOException {
         Assertions.assertEquals(
             List.of(),
-            PackageDescriptionArchitectureTest.undescribed(Path.of("src", "main", "java")),
+            PackageDescriptionArchitectureIT.undescribed(Path.of("src", "main", "java")),
             "Pakiet nie ma package-info.java ze zdaniem opisu"
         );
     }
@@ -60,7 +60,7 @@ final class PackageDescriptionArchitectureTest {
         );
         Assertions.assertEquals(
             List.of("a/bare", "a/empty"),
-            PackageDescriptionArchitectureTest.undescribed(this.dir),
+            PackageDescriptionArchitectureIT.undescribed(this.dir),
             "Reguła przepuściła pakiet bez opisu albo odrzuciła pakiet z opisem"
         );
     }
@@ -80,7 +80,7 @@ final class PackageDescriptionArchitectureTest {
                 .filter(file -> !"package-info.java".equals(file.getFileName().toString()))
                 .map(Path::getParent)
                 .distinct()
-                .filter(pack -> !PackageDescriptionArchitectureTest.described(pack))
+                .filter(pack -> !PackageDescriptionArchitectureIT.described(pack))
                 .map(pack -> root.relativize(pack).toString().replace('\\', '/'))
                 .sorted()
                 .toList();
@@ -92,7 +92,7 @@ final class PackageDescriptionArchitectureTest {
         boolean result = false;
         if (Files.exists(info)) {
             try {
-                result = PackageDescriptionArchitectureTest.SENTENCE
+                result = PackageDescriptionArchitectureIT.SENTENCE
                     .matcher(Files.readString(info)).find();
             } catch (final IOException ex) {
                 throw new IllegalStateException(String.format("Brak odczytu %s", info), ex);

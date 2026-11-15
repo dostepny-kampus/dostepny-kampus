@@ -31,7 +31,7 @@ import org.springframework.modulith.core.JavaPackage;
  *
  * @since 0.1.0
  */
-final class PackageNameArchitectureTest {
+final class PackageNameArchitectureIT {
 
     /**
      * Nazwy warstw, dozwolone obok tematów.
@@ -44,7 +44,7 @@ final class PackageNameArchitectureTest {
     void usesDictionaryNamesInProductionPackages() throws IOException {
         Assertions.assertEquals(
             List.of(),
-            PackageNameArchitectureTest.problems(
+            PackageNameArchitectureIT.problems(
                 new ClassFileImporter()
                     .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
                     .importPackagesOf(DostepnyKampusApplication.class)
@@ -55,7 +55,7 @@ final class PackageNameArchitectureTest {
                     .map(ApplicationModule::getBasePackage)
                     .map(JavaPackage::getName)
                     .toList(),
-                PackageNameArchitectureTest.dictionary()
+                PackageNameArchitectureIT.dictionary()
             ),
             "Pakiet ma nazwę spoza słownika tematów i warstw albo leży za głęboko"
         );
@@ -65,7 +65,7 @@ final class PackageNameArchitectureTest {
     void rejectsUnknownNameAndTooDeepPackage() {
         Assertions.assertEquals(
             List.of("m.submission.content.json.web: głębokość", "m.util: util"),
-            PackageNameArchitectureTest.problems(
+            PackageNameArchitectureIT.problems(
                 new TreeSet<>(
                     List.of(
                         "m", "m.submission", "m.submission.content.json",
@@ -86,7 +86,7 @@ final class PackageNameArchitectureTest {
         for (final String pack : packages) {
             for (final String root : roots) {
                 if (pack.startsWith(String.format("%s.", root))) {
-                    found.addAll(PackageNameArchitectureTest.wrong(pack, root, names));
+                    found.addAll(PackageNameArchitectureIT.wrong(pack, root, names));
                 }
             }
         }
@@ -102,7 +102,7 @@ final class PackageNameArchitectureTest {
             found.add(String.format("%s: głębokość", pack));
         }
         for (final String part : parts) {
-            if (!names.contains(part) && !PackageNameArchitectureTest.LAYERS.contains(part)) {
+            if (!names.contains(part) && !PackageNameArchitectureIT.LAYERS.contains(part)) {
                 found.add(String.format("%s: %s", pack, part));
             }
         }

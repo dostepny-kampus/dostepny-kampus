@@ -32,7 +32,7 @@ import org.springframework.modulith.core.JavaPackage;
  *
  * @since 0.1.0
  */
-final class ModuleDescriptionArchitectureTest {
+final class ModuleDescriptionArchitectureIT {
 
     /**
      * Akapity opisu modułu w wymaganej kolejności.
@@ -70,7 +70,7 @@ final class ModuleDescriptionArchitectureTest {
                 Path.of("src", "main", "java", pack.getName().replace('.', '/'))
                     .resolve("package-info.java")
             );
-            final String problem = ModuleDescriptionArchitectureTest.problem(
+            final String problem = ModuleDescriptionArchitectureIT.problem(
                 text,
                 pack.getAnnotation(ApplicationModule.class)
                     .map(annotation -> Set.of(annotation.allowedDependencies()))
@@ -98,15 +98,15 @@ final class ModuleDescriptionArchitectureTest {
         Assertions.assertEquals(
             List.of("", "", "akapity", "zależności"),
             List.of(
-                ModuleDescriptionArchitectureTest.problem(full, Set.of("shared")),
-                ModuleDescriptionArchitectureTest.problem(
+                ModuleDescriptionArchitectureIT.problem(full, Set.of("shared")),
+                ModuleDescriptionArchitectureIT.problem(
                     full.replace("{@code shared}", "{@code building :: api}"),
                     Set.of("building :: api")
                 ),
-                ModuleDescriptionArchitectureTest.problem(
+                ModuleDescriptionArchitectureIT.problem(
                     full.replace("<p>API: b.</p>", ""), Set.of("shared")
                 ),
-                ModuleDescriptionArchitectureTest.problem(full, Set.of("building", "shared"))
+                ModuleDescriptionArchitectureIT.problem(full, Set.of("building", "shared"))
             ),
             "Reguła przepuściła opis bez akapitu albo z zależnościami spoza listy modułu"
         );
@@ -114,19 +114,19 @@ final class ModuleDescriptionArchitectureTest {
 
     private static String problem(final String text, final Set<String> allowed) {
         final List<String> parts = new ArrayList<>(5);
-        final Matcher part = ModuleDescriptionArchitectureTest.PART.matcher(text);
+        final Matcher part = ModuleDescriptionArchitectureIT.PART.matcher(text);
         while (part.find()) {
             parts.add(part.group(1));
         }
         final Set<String> described = new TreeSet<>();
-        final Matcher block = ModuleDescriptionArchitectureTest.DEPENDENCIES.matcher(text);
+        final Matcher block = ModuleDescriptionArchitectureIT.DEPENDENCIES.matcher(text);
         if (block.find()) {
-            final Matcher name = ModuleDescriptionArchitectureTest.MODULE.matcher(block.group(1));
+            final Matcher name = ModuleDescriptionArchitectureIT.MODULE.matcher(block.group(1));
             while (name.find()) {
                 described.add(name.group(1));
             }
         }
-        final boolean complete = ModuleDescriptionArchitectureTest.PARTS.equals(parts);
+        final boolean complete = ModuleDescriptionArchitectureIT.PARTS.equals(parts);
         final String result;
         if (complete && new TreeSet<>(allowed).equals(described)) {
             result = "";
