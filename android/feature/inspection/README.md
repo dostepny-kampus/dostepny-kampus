@@ -6,11 +6,12 @@ Postęp inwentaryzacji dla Koordynatora: lista budynków z postępem (K1) i znac
 
 ## Pakiety
 
-- `feature.inspection.progress` — stan i ViewModel listy postępu budynków.
+- `feature.inspection.navigation` — trasa ekranu postępu.
+- `feature.inspection.progress` — ekran, stan i ViewModel listy postępu budynków.
 
 ## API
 
-Stan listy postępu i jego ViewModel w pakiecie `progress`.
+Trasa ekranu w pakiecie `navigation`; ekran i jego ViewModel w pakiecie `progress`.
 
 ## Zależności
 
