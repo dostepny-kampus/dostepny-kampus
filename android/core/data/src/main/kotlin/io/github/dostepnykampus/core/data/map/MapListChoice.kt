@@ -8,19 +8,24 @@ package io.github.dostepnykampus.core.data.map
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
-import androidx.datastore.preferences.preferencesDataStore
+import androidx.datastore.preferences.preferencesDataStoreFile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-/** Plik ustawień mapy; jeden DataStore na proces, bo tak wymaga DataStore dla jednego pliku. */
-internal val Context.mapDataStore by preferencesDataStore(
-    name = "mapa",
-    corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
-)
+/**
+ * Plik ustawień mapy. DataStore wymaga jednej instancji na plik, więc wołający trzyma wynik jako
+ * jedyny w swoim grafie; nowy graf (inny proces, inny test) dostaje nową instancję.
+ */
+internal fun mapDataStore(context: Context): DataStore<Preferences> =
+    PreferenceDataStoreFactory.create(
+        corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
+        produceFile = { context.preferencesDataStoreFile("mapa") },
+    )
 
 /**
  * Ostatni wybór w przełączniku „Mapa” i „Lista budynków” na V1; aplikacja pamięta go po zamknięciu.
