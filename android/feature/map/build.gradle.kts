@@ -12,6 +12,7 @@ plugins {
 
 dependencies {
     api(libs.androidx.compose.foundation.layout)
+    api(libs.coil.compose.core)
     api(libs.androidx.compose.runtime)
     api(libs.androidx.compose.ui)
     api(libs.androidx.lifecycle.viewmodel)
@@ -38,6 +39,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
     implementation(libs.androidx.core)
+    implementation(libs.coil.compose)
     implementation(libs.hilt.core)
     api(libs.kotlinx.serialization.json)
     implementation(libs.maplibre.android)
@@ -47,6 +49,9 @@ dependencies {
     implementation(libs.spatialk.turf)
     implementation(libs.spatialk.units)
     testImplementation(libs.okhttp.mockwebserver)
+    testImplementation(libs.coil.core)
+    testImplementation(libs.coil.singleton)
+    testImplementation(libs.coil.test)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit4)
     testImplementation(libs.androidx.activity)

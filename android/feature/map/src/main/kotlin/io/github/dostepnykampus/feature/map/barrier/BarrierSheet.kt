@@ -120,9 +120,9 @@ internal fun SeverityBadge(severity: Severity) {
 }
 
 /**
- * Typ bariery jako nagłówek, miejsce z [barrierPlace] i „Sprawdzone 14.10.2026”.
+ * Typ bariery jako nagłówek, miejsce z [barrierPlace], „Sprawdzone 14.10.2026” i zdjęcie z [BarrierPhoto].
  *
- * Wymagania: US1.5, US2.2
+ * Wymagania: US1.5, US2.2, BR-17
  */
 @Composable
 internal fun BarrierFacts(chosen: ChosenBarrier) {
@@ -152,5 +152,6 @@ internal fun BarrierFacts(chosen: ChosenBarrier) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        BarrierPhoto(chosen)
     }
 }

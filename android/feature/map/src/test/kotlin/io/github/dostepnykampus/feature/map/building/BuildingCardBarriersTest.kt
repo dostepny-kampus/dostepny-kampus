@@ -8,6 +8,8 @@ package io.github.dostepnykampus.feature.map.building
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performScrollTo
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
@@ -18,6 +20,9 @@ import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
+import io.github.dostepnykampus.feature.map.PHOTO_URL
+import io.github.dostepnykampus.feature.map.photoAvailable
+import io.github.dostepnykampus.feature.map.usePhotoLoader
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,11 +39,11 @@ class BuildingCardBarriersTest {
 
     /**
      * Wiersz: zgłoszenie przyjęte budynku → pod „Bariery w budynku” typ, uciążliwość, miejsce z wejściem i piętrem
-     *   oraz „Sprawdzone 12.11.2026”. Zdjęcia w grupie jeszcze nie ma.
-     * Scenariusz (częściowo): przegladanie-mapy.feature: Zgłoszenie przyjęte na karcie budynku ma zdjęcie i datę
+     *   oraz „Sprawdzone 12.11.2026” i zdjęcie z opisem.
+     * Scenariusz: przegladanie-mapy.feature: Zgłoszenie przyjęte na karcie budynku ma zdjęcie i datę
      *   weryfikacji
      *
-     * Wymagania: US2.2, BR-17
+     * Wymagania: US2.2, BR-17, NFR-18
      */
     @Test
     fun showsAcceptedReportOnCard() {
@@ -47,6 +52,8 @@ class BuildingCardBarriersTest {
         compose.onNodeWithText("Bariery w budynku").performScrollTo().assertIsDisplayed()
         val texts = listOf("Blokada", "Schody przy wejściu", "Budynek A-1 · Główne, parter", "Sprawdzone 12.11.2026")
         texts.forEach { compose.onNodeWithText(it).performScrollTo().assertIsDisplayed() }
+        compose.waitUntil(WAIT_MS) { photoShown() }
+        compose.onNodeWithContentDescription(PHOTO).performScrollTo().assertIsDisplayed()
     }
 
     /**
@@ -83,7 +90,10 @@ class BuildingCardBarriersTest {
         compose.onNodeWithText("Brak zgłoszonych barier").assertDoesNotExist()
     }
 
+    private fun photoShown() = compose.onAllNodesWithContentDescription(PHOTO).fetchSemanticsNodes().isNotEmpty()
+
     private fun show(barriers: List<AcceptedBarrier>?) {
+        usePhotoLoader(compose.activity, photoAvailable())
         val entrances = orderedEntrances(listOf(ENTRANCE))
         compose.setContent {
             DostepnyKampusTheme {
@@ -110,6 +120,8 @@ class BuildingCardBarriersTest {
     }
 
     private companion object {
+        const val WAIT_MS = 5_000L
+        const val PHOTO = "Zdjęcie bariery: Schody przy wejściu"
         val ENTRANCE =
             Entrance(
                 id = "a1-main",
@@ -131,6 +143,8 @@ class BuildingCardBarriersTest {
                 verifiedAt = Instant.parse("2026-11-12T10:00:00Z"),
                 entranceId = "a1-main",
                 floor = SubmissionFloor(number = 0),
+                photoIds = listOf("p1"),
+                photoUrl = PHOTO_URL,
             )
     }
 }
