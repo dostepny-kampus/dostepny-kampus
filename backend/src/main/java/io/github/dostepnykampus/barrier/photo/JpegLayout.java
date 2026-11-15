@@ -19,11 +19,6 @@ import java.io.IOException;
 final class JpegLayout {
 
     /**
-     * Największa liczba segmentów przed danymi obrazu.
-     */
-    private static final int MAX_SEGMENTS = 64;
-
-    /**
      * Bajty pliku.
      */
     private final byte[] jpeg;
@@ -41,15 +36,19 @@ final class JpegLayout {
     void verify() throws IOException {
         int position = 2;
         int count = 0;
-        while (position + 3 < this.jpeg.length
-            && (this.jpeg[position] & 0xFF) == 0xFF
-            && (this.jpeg[position + 1] & 0xFF) != 0xDA) {
+        while (this.segment(position)) {
             count += 1;
-            if (count > JpegLayout.MAX_SEGMENTS) {
+            if (count > 64) {
                 throw new IOException("Ponad 64 segmenty przed danymi obrazu JPEG");
             }
             position += 2 + ((this.jpeg[position + 2] & 0xFF) << 8)
                 + (this.jpeg[position + 3] & 0xFF);
         }
+    }
+
+    private boolean segment(final int position) {
+        return position + 3 < this.jpeg.length
+            && (this.jpeg[position] & 0xFF) == 0xFF
+            && (this.jpeg[position + 1] & 0xFF) != 0xDA;
     }
 }
