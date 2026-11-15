@@ -30,11 +30,8 @@ sealed interface ProgressUiState {
      * @property readAt chwila odczytu, pokazywana jako „Stan z …”
      * @property isRefreshing czy trwa odświeżanie; lista z poprzedniego odczytu zostaje widoczna
      */
-    data class Ready(
-        val buildings: List<BuildingProgress>,
-        val readAt: Instant,
-        val isRefreshing: Boolean = false,
-    ) : ProgressUiState
+    data class Ready(val buildings: List<BuildingProgress>, val readAt: Instant, val isRefreshing: Boolean = false) :
+        ProgressUiState
 
     /** Bez internetu: postęp liczy serwer, więc bez sieci go nie widać. */
     data object Offline : ProgressUiState
@@ -58,13 +55,7 @@ sealed interface ProgressUiState {
  */
 @HiltViewModel
 class ProgressViewModel
-    internal constructor(
-        private val progress: InspectionProgress,
-        private val clock: Clock,
-    ) : ViewModel() {
-        @Inject
-        constructor(progress: InspectionProgress) : this(progress, Clock.systemDefaultZone())
-
+    internal constructor(private val progress: InspectionProgress, private val clock: Clock) : ViewModel() {
         private val current = MutableStateFlow<ProgressUiState>(ProgressUiState.Loading)
 
         /** Stan listy; zmienia się tylko po otwarciu i po [refresh]. */
@@ -74,10 +65,13 @@ class ProgressViewModel
             load()
         }
 
+        @Inject
+        constructor(progress: InspectionProgress) : this(progress, Clock.systemDefaultZone())
+
         /** „Odśwież” i „Spróbuj ponownie”: czyta postęp od nowa; w trakcie odczytu nie startuje drugiego. */
         fun refresh() {
             val shown = current.value
-            val isBusy = shown == ProgressUiState.Loading || (shown is ProgressUiState.Ready && shown.isRefreshing)
+            val isBusy = shown == ProgressUiState.Loading || shown is ProgressUiState.Ready && shown.isRefreshing
             if (!isBusy) {
                 current.value = (shown as? ProgressUiState.Ready)?.copy(isRefreshing = true) ?: ProgressUiState.Loading
                 load()
@@ -93,9 +87,11 @@ class ProgressViewModel
                 is ServerReply.Ok -> ProgressUiState.Ready(buildings = value, readAt = clock.instant())
                 ServerReply.Offline -> ProgressUiState.Offline
                 ServerReply.Missing -> ProgressUiState.ServerError
-                is ServerReply.Fault ->
-                    if (code == FORBIDDEN) ProgressUiState.Forbidden else ProgressUiState.ServerError
+                is ServerReply.Fault -> faultState(code)
             }
+
+        private fun faultState(code: Int): ProgressUiState =
+            if (code == FORBIDDEN) ProgressUiState.Forbidden else ProgressUiState.ServerError
 
         private companion object {
             const val FORBIDDEN = 403
