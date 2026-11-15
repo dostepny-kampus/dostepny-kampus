@@ -105,7 +105,7 @@ private fun Accepted(barrier: AcceptedBarrier) {
             val text = stringResource(R.string.usuniecie_sprawdzone, "${day.dayOfMonth}.${day.monthValue}.${day.year}")
             Text(text, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        // TODO(#2015): zdjęcie zgłoszenia przyjętego, gdy aplikacja będzie je pobierać
+        // TODO(#2299): zdjęcie zgłoszenia przyjętego z BarrierPhoto przeniesionego do wspólnego modułu
     }
 }
 
