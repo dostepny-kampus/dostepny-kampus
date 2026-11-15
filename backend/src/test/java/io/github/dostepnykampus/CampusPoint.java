@@ -8,14 +8,8 @@ package io.github.dostepnykampus;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
 /**
- * Punkt na terenie PWr albo przy jego granicy, wybrany z geometrii z pliku danych
+ * Punkt na terenie PWr albo przy jego granicy, wybrany z geometrii w pliku danych
  * {@code data/areas/pwr-areas.geojson}.
- *
- * <p>{@link #GAP} leży na terenie Wittigowo w przerwie 60 m między budynkami P-20 i P-23,
- * w połowie drogi między ich konturami. {@link #MARGIN} leży na tym samym terenie 20 m za
- * obszarem uczelni z OpenStreetMap, ponad 30 m od każdego budynku, więc do terenu
- * należy tylko przez zapas granicy. Pozostałe punkty wylicza baza z granic w tabeli
- * {@code campus_areas}.</p>
  *
  * <p>Wymagania: BR-G5, US4.9</p>
  *
@@ -26,12 +20,12 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 public record CampusPoint(double lat, double lon) {
 
     /**
-     * Środek przerwy 60 m między dwoma budynkami jednego terenu.
+     * Punkt w środku przerwy 60 m między budynkami P-20 i P-23 terenu Wittigowo.
      */
     public static final CampusPoint GAP = new CampusPoint(51.101_318_6, 17.088_970_1);
 
     /**
-     * Punkt 20 m za obszarem uczelni, w zapasie terenu.
+     * Punkt na terenie Wittigowo 20 m za obszarem uczelni, ponad 30 m od każdego budynku.
      */
     public static final CampusPoint MARGIN = new CampusPoint(51.101_438, 17.088_110_8);
 
