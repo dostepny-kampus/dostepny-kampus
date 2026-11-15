@@ -70,6 +70,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonPrimitive
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraUpdateFactory
+import org.maplibre.android.constants.MapLibreConstants
 import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE
@@ -271,7 +272,7 @@ object MapLibreMapView : CampusMapView {
     private fun MapLibreMap.limitTo(limits: MapLimits?) {
         if (limits == null) {
             setLatLngBoundsForCameraTarget(null)
-            resetMinZoomPreference()
+            setMinZoomPreference(MapLibreConstants.MINIMUM_ZOOM.toDouble())
             return
         }
         val bounds = limits.bounds
