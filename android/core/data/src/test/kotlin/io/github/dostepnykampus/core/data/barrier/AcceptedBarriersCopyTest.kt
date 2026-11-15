@@ -10,13 +10,13 @@ import io.github.dostepnykampus.core.database.cache.BARRIER_CACHE_SINGLE_ROW
 import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
 import io.github.dostepnykampus.core.database.cache.BarrierCacheEntity
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.Submission
-import io.github.dostepnykampus.core.model.SubmissionStatus
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
+import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

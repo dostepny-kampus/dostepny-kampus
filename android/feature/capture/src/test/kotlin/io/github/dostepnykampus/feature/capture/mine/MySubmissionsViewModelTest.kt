@@ -9,8 +9,8 @@ import io.github.dostepnykampus.core.data.submission.own.OwnSubmission
 import io.github.dostepnykampus.core.data.submission.own.RefusalReason
 import io.github.dostepnykampus.core.data.submission.own.SendState
 import io.github.dostepnykampus.core.data.submission.own.StatusRefresh
-import io.github.dostepnykampus.core.model.SubmissionStatus
 import io.github.dostepnykampus.core.model.submission.BarrierType
+import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

@@ -3,12 +3,10 @@
  * Author: Myroslav Hryniuka
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.model
+package io.github.dostepnykampus.core.model.submission
 
+import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.EntranceMarking
-import io.github.dostepnykampus.core.model.submission.BarrierGroup
-import io.github.dostepnykampus.core.model.submission.SubmissionContent
-import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

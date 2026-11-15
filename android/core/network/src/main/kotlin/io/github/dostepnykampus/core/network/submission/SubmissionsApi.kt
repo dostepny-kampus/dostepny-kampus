@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.core.network.submission
 
-import io.github.dostepnykampus.core.model.Submission
+import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.exchange

@@ -10,7 +10,7 @@ import io.github.dostepnykampus.core.database.submission.PendingPhotoEntity
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionWithPhotos
-import io.github.dostepnykampus.core.model.Submission
+import io.github.dostepnykampus.core.model.submission.Submission
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

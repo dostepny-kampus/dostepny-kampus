@@ -9,7 +9,7 @@ import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
-import io.github.dostepnykampus.core.model.SubmissionStatus
+import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import java.time.Instant

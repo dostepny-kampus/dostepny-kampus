@@ -19,10 +19,10 @@ import io.github.dostepnykampus.core.data.submission.sync.SubmissionServer
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStamps
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
-import io.github.dostepnykampus.core.model.Submission
-import io.github.dostepnykampus.core.model.SubmissionStatus
+import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
+import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse

@@ -6,10 +6,10 @@
 package io.github.dostepnykampus.core.data.server
 
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.Submission
-import io.github.dostepnykampus.core.model.SubmissionStatus
+import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
+import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.submission.SubmissionEdit
 import org.junit.jupiter.api.Assertions.assertEquals
