@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.building;
 
+import io.github.dostepnykampus.CampusBoundary;
 import io.github.dostepnykampus.CampusPoint;
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.building.api.CampusArea;
@@ -56,7 +57,7 @@ final class CampusAreaIT {
         MatcherAssert.assertThat(
             "Punkt na linii granicy leży poza terenem PWr",
             CampusAreaIT.covers(
-                context, CampusPoint.onBoundary(context.getBean(JdbcClient.class))
+                context, new CampusBoundary(context.getBean(JdbcClient.class)).onLine()
             ),
             Matchers.is(true)
         );
@@ -67,7 +68,7 @@ final class CampusAreaIT {
         MatcherAssert.assertThat(
             "Punkt 20 m za granicą leży na terenie PWr",
             CampusAreaIT.covers(
-                context, CampusPoint.beyondBoundary(context.getBean(JdbcClient.class), 20)
+                context, new CampusBoundary(context.getBean(JdbcClient.class)).beyond(20)
             ),
             Matchers.is(false)
         );
