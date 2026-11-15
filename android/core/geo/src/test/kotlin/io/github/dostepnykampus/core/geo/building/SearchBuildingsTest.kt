@@ -20,10 +20,6 @@ import java.io.File
  * Wymagania: US1.1, US1.2
  */
 class SearchBuildingsTest {
-    private val outline = GeoPolygon(listOf(List(4) { GeoPoint(longitude = 0.0, latitude = 0.0) }))
-    private val buildings =
-        listOf("C-1", "C-13", "C-3", "D-8a").map { Building(symbol = it, name = null, outline = outline) }
-
     /** Scenariusz (częściowo): przegladanie-mapy.feature: Wyszukanie budynku po symbolu w różnym zapisie. */
     @ParameterizedTest
     @ValueSource(strings = ["C13", "c-13", "C-13"])
@@ -62,5 +58,10 @@ class SearchBuildingsTest {
         assertEquals(listOf("A-1"), searchBuildings("A-1", real.buildings).map { it.symbol })
     }
 
-    private fun symbols(query: String): List<String> = searchBuildings(query, buildings).map { it.symbol }
+    private fun symbols(query: String): List<String> = searchBuildings(query, buildings()).map { it.symbol }
+
+    private fun buildings(): List<Building> {
+        val outline = GeoPolygon(listOf(List(4) { GeoPoint(longitude = 0.0, latitude = 0.0) }))
+        return listOf("C-1", "C-13", "C-3", "D-8a").map { Building(symbol = it, name = null, outline = outline) }
+    }
 }

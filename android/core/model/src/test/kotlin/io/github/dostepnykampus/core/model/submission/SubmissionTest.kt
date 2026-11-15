@@ -14,27 +14,19 @@ import java.time.Instant
 
 /** Zgłoszenie z serwera jako wartość: reguły treści i wersji z kontraktu. Wymagania: BR-7, BR-8, BR-10, BR-24 */
 class SubmissionTest {
-    private val quick =
-        SubmissionContent(
-            kind = SubmissionKind.QUICK,
-            location = GeoPoint(longitude = 17.06209, latitude = 51.10785),
-            photoIds = listOf("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d"),
-            barrierGroup = BarrierGroup.OTHER,
-        )
-
     @Test
     fun allowsQuickWithoutPhoto() {
-        assertThrows<IllegalArgumentException> { quick.copy(photoIds = emptyList()) }
+        assertThrows<IllegalArgumentException> { quick().copy(photoIds = emptyList()) }
     }
 
     @Test
     fun rejectsSeverityAboveThree() {
-        assertThrows<IllegalArgumentException> { quick.copy(severity = 4) }
+        assertThrows<IllegalArgumentException> { quick().copy(severity = 4) }
     }
 
     @Test
     fun neverMarksNoData() {
-        assertThrows<IllegalArgumentException> { quick.copy(entranceMarking = EntranceMarking.NO_DATA) }
+        assertThrows<IllegalArgumentException> { quick().copy(entranceMarking = EntranceMarking.NO_DATA) }
     }
 
     @Test
@@ -45,10 +37,18 @@ class SubmissionTest {
     @Test
     fun bumpsVersionOnEdit() {
         val first = submission(version = 1)
-        val edited = first.copy(version = 2, content = quick.copy(severity = 3))
+        val edited = first.copy(version = 2, content = quick().copy(severity = 3))
         assertEquals(first.id, edited.id)
         assertEquals(2, edited.version)
     }
+
+    private fun quick(): SubmissionContent =
+        SubmissionContent(
+            kind = SubmissionKind.QUICK,
+            location = GeoPoint(longitude = 17.06209, latitude = 51.10785),
+            photoIds = listOf("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d"),
+            barrierGroup = BarrierGroup.OTHER,
+        )
 
     private fun submission(version: Int): Submission =
         Submission(
@@ -56,6 +56,6 @@ class SubmissionTest {
             version = version,
             status = SubmissionStatus.SENT,
             createdAt = Instant.parse("2026-11-03T18:00:00Z"),
-            content = quick,
+            content = quick(),
         )
 }

@@ -20,25 +20,23 @@ import org.junit.jupiter.api.assertThrows
  * Wymagania: US1
  */
 class GeoAreaJsonTest {
-    private val json = Json
-
     @Test
     fun readsPolygonFromField() {
-        val area = json.decodeFromString(GeoAreaJson, """{"type":"Polygon","coordinates":[$SQUARE]}""")
+        val area = Json.decodeFromString(GeoAreaJson, """{"type":"Polygon","coordinates":[$SQUARE]}""")
         assertEquals(GeoPolygon(listOf(square())), area)
     }
 
     @Test
     fun roundTripsMultipolygon() {
         val area: GeoArea = GeoMultiPolygon(listOf(GeoPolygon(listOf(square())), GeoPolygon(listOf(square()))))
-        val text = json.encodeToString(GeoAreaJson, area)
-        assertEquals(area, json.decodeFromString(GeoAreaJson, text))
+        val text = Json.encodeToString(GeoAreaJson, area)
+        assertEquals(area, Json.decodeFromString(GeoAreaJson, text))
     }
 
     @Test
     fun rejectsPointAsOutline() {
         assertThrows<IllegalArgumentException> {
-            json.decodeFromString(GeoAreaJson, """{"type":"Point","coordinates":[17.0,51.0]}""")
+            Json.decodeFromString(GeoAreaJson, """{"type":"Point","coordinates":[17.0,51.0]}""")
         }
     }
 

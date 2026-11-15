@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test
  * Wymagania: US6.2, BR-G4
  */
 class BuildingHintTest {
-    private val building =
+    private fun building(): Building =
         Building(
             symbol = "A-1",
             name = "Gmach Główny",
@@ -41,7 +41,7 @@ class BuildingHintTest {
                 ),
         )
 
-    private val gridBuilding =
+    private fun gridBuilding(): Building =
         Building(
             symbol = "A-1",
             name = "Budynek z dziedzińcem",
@@ -51,8 +51,8 @@ class BuildingHintTest {
     @Test
     fun placesInsideOutline() {
         val point = GeoPoint(longitude = LON + SIDE / 2, latitude = LAT + SIDE / 2)
-        val hint = buildingHints(point, listOf(building)).suggested
-        assertEquals(BuildingHint(building, distanceMeters = 0.0, isInside = true), hint)
+        val hint = buildingHints(point, listOf(building())).suggested
+        assertEquals(BuildingHint(building(), distanceMeters = 0.0, isInside = true), hint)
         assertTrue(hint?.isInside == true)
     }
 
@@ -63,8 +63,8 @@ class BuildingHintTest {
      */
     @Test
     fun keepsEdgeHintOutside() {
-        val hint = checkNotNull(buildingHints(gridPoint(x = 8.0, y = 4.0), listOf(gridBuilding)).suggested)
-        assertEquals(gridBuilding, hint.building)
+        val hint = checkNotNull(buildingHints(gridPoint(x = 8.0, y = 4.0), listOf(gridBuilding())).suggested)
+        assertEquals(gridBuilding(), hint.building)
         assertEquals(0.0, hint.distanceMeters, EXACT)
         assertFalse(hint.isInside)
     }
@@ -72,8 +72,8 @@ class BuildingHintTest {
     /** Wiersz: G2 — to samo dla krawędzi dziedzińca. Wymagania: BR-G2 */
     @Test
     fun keepsCourtyardHintOutside() {
-        val hint = checkNotNull(buildingHints(gridPoint(x = 3.0, y = 4.0), listOf(gridBuilding)).suggested)
-        assertEquals(gridBuilding, hint.building)
+        val hint = checkNotNull(buildingHints(gridPoint(x = 3.0, y = 4.0), listOf(gridBuilding())).suggested)
+        assertEquals(gridBuilding(), hint.building)
         assertEquals(0.0, hint.distanceMeters, EXACT)
         assertFalse(hint.isInside)
     }
@@ -81,8 +81,8 @@ class BuildingHintTest {
     /** Wiersz: G3 — punkt ściśle w konturze tuż przy krawędzi: ten budynek, 0 m, w konturze. Wymagania: US6.2 */
     @Test
     fun hintsInsideNearEdge() {
-        val hint = checkNotNull(buildingHints(gridPoint(x = 7.9375, y = 4.0), listOf(gridBuilding)).suggested)
-        assertEquals(gridBuilding, hint.building)
+        val hint = checkNotNull(buildingHints(gridPoint(x = 7.9375, y = 4.0), listOf(gridBuilding())).suggested)
+        assertEquals(gridBuilding(), hint.building)
         assertEquals(0.0, hint.distanceMeters, EXACT)
         assertTrue(hint.isInside)
     }
@@ -95,7 +95,7 @@ class BuildingHintTest {
     @Test
     fun hintsWithin50M() {
         listOf(30.0, 49.0).forEach { meters ->
-            val hint = checkNotNull(buildingHints(north(meters), listOf(building)).suggested)
+            val hint = checkNotNull(buildingHints(north(meters), listOf(building())).suggested)
             assertEquals(meters, hint.distanceMeters, METER)
         }
     }
@@ -103,7 +103,7 @@ class BuildingHintTest {
     /** Wiersz: 60 m od konturu → bez podpowiedzi, zgłoszenie „poza budynkiem”. */
     @Test
     fun skipsHintBeyond50M() {
-        assertNull(buildingHints(north(meters = 60.0), listOf(building)).suggested)
+        assertNull(buildingHints(north(meters = 60.0), listOf(building())).suggested)
     }
 
     @Test
