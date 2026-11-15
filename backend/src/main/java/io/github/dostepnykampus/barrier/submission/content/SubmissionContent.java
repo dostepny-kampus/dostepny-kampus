@@ -21,7 +21,7 @@ import org.jspecify.annotations.Nullable;
  * @param entranceId Wejście, którego dotyczy zgłoszenie, albo null
  * @param entranceMarking Nowe oznaczenie wejścia albo null
  * @param replaces Zastępowane zgłoszenie albo null
- * @param photoIds Identyfikatory zdjęć, co najmniej jeden
+ * @param photoIds Identyfikatory zdjęć, od jednego do dziesięciu
  * @since 0.1.0
  */
 public record SubmissionContent(
@@ -35,14 +35,14 @@ public record SubmissionContent(
 ) {
 
     /**
-     * Treść z rodzajem, miejscem, szczegółami i co najmniej jednym zdjęciem;
-     * lista zdjęć jest niemodyfikowalną kopią. Pusta lista zdjęć oraz
-     * naruszenie reguł rodzaju kończą się
+     * Treść z rodzajem, miejscem, szczegółami i od jednego do dziesięciu zdjęć;
+     * lista zdjęć jest niemodyfikowalną kopią. Pusta albo dłuższa lista zdjęć,
+     * wejście dłuższe niż 64 znaki oraz naruszenie reguł rodzaju kończą się
      * niekontrolowanym wyjątkiem {@link InvalidSubmission}; pola spoza rodzaju
      * nie są sprawdzane. Brak rodzaju, miejsca, szczegółów albo listy zdjęć
      * kończy się wyjątkiem NullPointerException.
      *
-     * <p>Wymagania: BR-7, BR-8, BR-19, BR-24, US7.3</p>
+     * <p>Wymagania: BR-7, BR-8, BR-19, BR-24, US7.3, NFR-34</p>
      */
     public SubmissionContent {
         Objects.requireNonNull(kind, "kind");
@@ -53,6 +53,12 @@ public record SubmissionContent(
             throw new InvalidSubmission(
                 "Zgłoszenie wymaga co najmniej jednego UUID zdjęcia w polu photoIds"
             );
+        }
+        if (photoIds.size() > 10) {
+            throw new InvalidSubmission("Zgłoszenie ma najwyżej 10 zdjęć w polu photoIds");
+        }
+        if (entranceId != null && entranceId.length() > 64) {
+            throw new InvalidSubmission("Identyfikator wejścia ma najwyżej 64 znaki");
         }
         SubmissionContent.checkRemoval(barrier, replaces);
         if (kind == SubmissionKind.QUICK) {
