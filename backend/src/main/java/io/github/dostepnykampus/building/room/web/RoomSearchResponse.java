@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.building.room.web;
 
+import io.github.dostepnykampus.building.domain.DataSource;
 import io.github.dostepnykampus.building.room.RoomHit;
 import io.github.dostepnykampus.building.web.FloorResponse;
 import java.util.List;
@@ -26,7 +27,7 @@ public record RoomSearchResponse(String source, List<Hit> results) {
      * @param hits Znalezione sale
      */
     public RoomSearchResponse(final List<RoomHit> hits) {
-        this("Politechnika Wrocławska", hits.stream().map(Hit::new).toList());
+        this(DataSource.PWR.label(), hits.stream().map(Hit::new).toList());
     }
 
     /**

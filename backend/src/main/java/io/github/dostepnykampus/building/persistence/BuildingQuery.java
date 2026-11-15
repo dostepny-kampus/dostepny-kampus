@@ -10,6 +10,7 @@ import io.github.dostepnykampus.building.domain.Building;
 import io.github.dostepnykampus.building.domain.BuildingCard;
 import io.github.dostepnykampus.building.domain.BuildingList;
 import io.github.dostepnykampus.building.domain.Buildings;
+import io.github.dostepnykampus.building.domain.DataSource;
 import io.github.dostepnykampus.building.domain.Entrance;
 import io.github.dostepnykampus.building.domain.Floor;
 import io.github.dostepnykampus.building.domain.FloorList;
@@ -102,7 +103,7 @@ public final class BuildingQuery implements Buildings {
             WHERE symbol = ?
             """
         ).param(symbol).query(String.class).optional().map(
-            found -> new FloorList("Politechnika Wrocławska", this.buildingFloors(found))
+            found -> new FloorList(DataSource.PWR.label(), this.buildingFloors(found))
         );
     }
 
