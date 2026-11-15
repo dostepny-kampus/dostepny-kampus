@@ -19,8 +19,7 @@ import org.springframework.context.annotation.Import;
  * w kontenerach oraz punkty HTTP tylko dla testów ({@code FailingController},
  * {@code StrictJsonHttpIT.Binding}). Wszystkie testy z tą adnotacją dzielą jeden kontekst
  * i kontenery; nie dodawaj {@code @SpringBootTest}, {@code @DirtiesContext} ani
- * {@code @MockitoBean}, bo każdy zakłada osobny kontekst. Adres 127.0.0.1, z którego idą
- * żądania testów, nie ma limitu żądań bez logowania.
+ * {@code @MockitoBean}, bo każdy zakłada osobny kontekst.
  *
  * <p>Znacznik {@code kontekst-springa} wyłącza te testy z analizy PIT.</p>
  *
