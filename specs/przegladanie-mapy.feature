@@ -294,8 +294,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy poza granicą terenu widzi wyblakły podkład
     Oraz granicę terenu pokazuje linia z obwódką
 
-  # komunikat przy granicy terenu: #2114
-  @US1.7 @aplikacja @do-zrobienia
+  @US1.7 @aplikacja
   Scenariusz: Przy granicy terenu TalkBack mówi, jak zmienić teren
     Zakładając, że Gość niezalogowany z włączonym TalkBack ma otwartą mapę kampusu na terenie „Kampus główny”
     Jeżeli przesunie mapę przyciskami do granicy terenu
