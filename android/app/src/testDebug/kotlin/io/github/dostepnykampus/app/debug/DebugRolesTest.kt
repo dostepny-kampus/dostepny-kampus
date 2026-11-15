@@ -56,7 +56,9 @@ class DebugRolesTest {
     fun switchOffersAllRoles() {
         val chosen = mutableListOf<DebugRole>()
         compose.setContent { DostepnyKampusTheme { RoleSwitch(current = Account.Guest, onChoose = { chosen += it }) } }
-        listOf("Gość", "Odwiedzający", "Zbierający", "Koordynator").forEach { compose.onNodeWithText(it).assertIsDisplayed() }
+        listOf("Gość", "Odwiedzający", "Zbierający", "Koordynator").forEach {
+            compose.onNodeWithText(it).assertIsDisplayed()
+        }
         compose.onNodeWithText("Weryfikator").performClick()
         assertEquals(listOf(DebugRole.VERIFIER), chosen)
     }

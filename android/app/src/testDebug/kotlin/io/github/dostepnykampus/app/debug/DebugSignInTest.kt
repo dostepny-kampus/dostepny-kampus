@@ -75,9 +75,11 @@ class DebugSignInTest {
     fun coordinatorSignsIn() {
         val token = jwt("COORDINATOR", "offline_access")
         server.enqueue(MockResponse().setBody("""{"access_token":"$token","token_type":"Bearer"}"""))
-        assertTrue(runBlocking { signIn.choose(DebugRole.COORDINATOR) })
-        assertTrue(server.takeRequest().body.readUtf8().contains("username=koordynator.test"))
-        assertEquals(Account.SignedIn(setOf(StaffRole.COORDINATOR)), roles.account.value)
+        assertTrue("logowanie Koordynatora", runBlocking { signIn.choose(DebugRole.COORDINATOR) })
+        val form = server.takeRequest().body.readUtf8()
+        assertTrue("użytkownik testowy Koordynatora", form.contains("username=koordynator.test"))
+        val expected = Account.SignedIn(setOf(StaffRole.COORDINATOR))
+        assertEquals("konto z roli w tokenie", expected, roles.account.value)
     }
 
     /** „Gość” usuwa token i wylogowuje. */
