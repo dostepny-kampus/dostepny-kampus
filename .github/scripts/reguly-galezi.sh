@@ -5,7 +5,8 @@
 set -euo pipefail
 
 # Kontrola zgodności reguł gałęzi z listą wymaganych kontroli (wymagane-kontrole.txt). Każdy job z listy musi
-# istnieć w jakimś workflow (klucz joba albo jego `name`) i być wymaganą kontrolą w każdym zestawie reguł,
+# istnieć w jakimś workflow (klucz joba albo jego `name`) albo jako status commita (tekst `context=<nazwa>`
+# w workflow albo w skrypcie z sąsiedniego katalogu `scripts`) i być wymaganą kontrolą w każdym zestawie reguł,
 # który lista przy nim wymienia. Reguły gałęzi zmienia się poza PR, więc kontrola działa po wypchnięciu
 # na sprint/* i raz dziennie.
 # Zestawy reguł: `gh api repos/$GH_REPO/rulesets` (lista) i jedno wywołanie na zestaw; w teście zamiast sieci
@@ -53,6 +54,7 @@ fi
 "${PYTHON:-python3}" - "$workflows" "$lista" "$dane" <<'PY'
 import json
 import pathlib
+import re
 import sys
 
 try:
@@ -70,6 +72,8 @@ for path in list(workflows.glob("*.yml")) + list(workflows.glob("*.yaml")):
         jobs.add(key)
         if isinstance(job, dict) and job.get("name"):
             jobs.add(str(job["name"]))
+for path in list(workflows.glob("*.yml")) + list((workflows.parent / "scripts").glob("*.sh")):
+    jobs.update(re.findall(r"\bcontext=([A-Za-z0-9_-]+)", path.read_text(encoding="utf-8")))
 
 required = {}
 found = 0
@@ -103,7 +107,7 @@ for line in lista.read_text(encoding="utf-8").splitlines():
         continue
     job, *rulesets = line.split()
     if job not in jobs:
-        report(f"job `{job}` z listy wymaganych kontroli nie istnieje w żadnym workflow.")
+        report(f"job `{job}` z listy wymaganych kontroli nie istnieje w żadnym workflow ani jako status commita.")
     for name in rulesets:
         known = contexts(name)
         if known is not None and job not in known:

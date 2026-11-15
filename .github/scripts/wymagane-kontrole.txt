@@ -2,6 +2,7 @@
 # Plik reguł jakości: zmiana wymaga linii „Zmiana reguł jakości” w opisie PR.
 pr-guard main sprint
 kontrola main sprint
+kontrola-sprintu main
 serwer main sprint
 spojnosc main sprint
 kontrakt main sprint
