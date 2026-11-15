@@ -17,4 +17,15 @@
     <string name="postep_brak_uprawnien">Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.</string>
     <string name="postep_sprobuj_ponownie">Spróbuj ponownie</string>
     <string name="postep_wroc_do_mapy">Wróć do mapy</string>
+    <string name="znaczniki_naglowek">Obejrzane piętra</string>
+    <string name="znaczniki_postep">Obejrzane piętra: %1$d z %2$d</string>
+    <string name="znaczniki_obejrzany">Budynek obejrzany</string>
+    <string name="znaczniki_nieobejrzany">Budynek nieobejrzany</string>
+    <string name="znaczniki_pietro">Piętro %1$s</string>
+    <string name="znaczniki_caly_budynek">Cały budynek</string>
+    <string name="znaczniki_autor">Znacznik: Zbierający, %1$s</string>
+    <string name="znaczniki_cofnij">Cofnij znacznik</string>
+    <string name="znaczniki_zostaw">Zostaw znacznik</string>
+    <string name="znaczniki_pytanie_pietra">Cofnąć znacznik piętra %1$s? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.</string>
+    <string name="znaczniki_pytanie_budynku">Cofnąć znacznik całego budynku? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.</string>
 </resources>
