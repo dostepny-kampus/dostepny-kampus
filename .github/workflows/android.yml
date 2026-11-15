@@ -24,6 +24,13 @@ on:
   merge_group:
     types:
       - checks_requested
+  workflow_call:
+    # Kontrola sprintu (kontrola-sprintu.yml): pełny przebieg na wskazanym commicie gałęzi sprintu.
+    inputs:
+      sha:
+        description: Commit gałęzi sprintu do sprawdzenia
+        required: true
+        type: string
   schedule:
     # Nocne pełne przejście testu systemowego na domyślnej gałęzi (sprint/N): łapie też zmiany samego serwera i infra/,
     # których push do gałęzi sprintu (filtr paths wyżej) nie uruchamia.
@@ -34,8 +41,8 @@ permissions:
 
 concurrency:
   # Push po scaleniu tylko przekłada cache z grupy kolejki, więc każdy commit ma własną grupę i nic go nie anuluje.
-  # Dla PR i grupy kolejki nowszy przebieg anuluje starszy.
-  group: android-${{ github.event_name == 'push' && github.sha || github.ref }}
+  # Dla PR i grupy kolejki nowszy przebieg anuluje starszy; kontrola sprintu ma grupę sprawdzanego commita.
+  group: android-${{ inputs.sha || (github.event_name == 'push' && github.sha || github.ref) }}
   cancel-in-progress: true
 
 jobs:
@@ -108,13 +115,15 @@ jobs:
         # z serwerem i bazą uruchomionymi na runnerze; porażka każdego wariantu czerwieni `budowanie`.
         # PR albo grupa ze zmianą samego serwera albo infra/ uruchamia tylko test systemowy, a w PR i w grupie kolejki
         # jest to wersja dymna (krok „Testy na emulatorze”); pełny zestaw idzie po pushu do sprint/* i nocą (schedule).
-        include: ${{ fromJSON((github.event_name == 'push' || github.event_name == 'schedule' || needs.zmiany.outputs.android == 'false') && '[{"api":36,"zestaw":"system"}]' || '[{"api":26,"zestaw":"aplikacja"},{"api":36,"zestaw":"aplikacja"},{"api":36,"zestaw":"system"}]') }}
+        # Kontrola sprintu (inputs.sha) uruchamia wszystkie trzy warianty, a test systemowy w pełnej wersji.
+        include: ${{ fromJSON(!inputs.sha && (github.event_name == 'push' || github.event_name == 'schedule' || needs.zmiany.outputs.android == 'false') &&'[{"api":36,"zestaw":"system"}]' || '[{"api":26,"zestaw":"aplikacja"},{"api":36,"zestaw":"aplikacja"},{"api":36,"zestaw":"system"}]') }}
     env:
       IMAGE: system-images;android-${{ matrix.api }};default;x86_64
     steps:
       - uses: actions/checkout@v7.0.1
         if: matrix.zestaw == 'system'
         with:
+          ref: ${{ inputs.sha }}
           persist-credentials: false
       - uses: actions/setup-java@v6.2.0
         if: matrix.zestaw == 'system'
@@ -197,7 +206,7 @@ jobs:
         env:
           ZESTAW: ${{ matrix.zestaw }}
           # Pełny test systemowy tylko po pushu do sprint/* i nocą; w PR i w grupie kolejki wersja dymna.
-          PELNY: ${{ github.event_name == 'push' || github.event_name == 'schedule' }}
+          PELNY: ${{ github.event_name == 'push' || github.event_name == 'schedule' || (inputs.sha || '') != '' }}
           DYMNY: io.github.dostepnykampus.systemtest.BuildingCardFromServerTest#
         run: |
           # Uruchamiacz testów (np. własny runner Hilt) odczytujemy z zainstalowanego APK testów, nie z konfiguracji workflow.
@@ -278,6 +287,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          ref: ${{ inputs.sha }}
           persist-credentials: false
       - name: Przygotuj JDK i cache Gradle
         uses: ./.github/actions/android-gradle
@@ -334,6 +344,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          ref: ${{ inputs.sha }}
           persist-credentials: false
       - name: Przygotuj JDK i cache Gradle
         id: gradle
@@ -433,6 +444,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          ref: ${{ inputs.sha }}
           persist-credentials: false
       - name: Policz klucze cache Gradle
         id: gradle
@@ -514,6 +526,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          ref: ${{ inputs.sha }}
           persist-credentials: false
       - name: Przygotuj JDK i cache Gradle
         uses: ./.github/actions/android-gradle
