@@ -27,7 +27,7 @@ final class SubmissionContentTest {
     private static final UUID PHOTO = UUID.fromString("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d");
 
     @Test
-    void usFourRejectsSubmissionWithoutPhoto() {
+    void rejectsSubmissionWithoutPhoto() {
         Assertions.assertEquals(
             "Zgłoszenie wymaga co najmniej jednego UUID zdjęcia w polu photoIds",
             Assertions.assertThrows(
@@ -40,7 +40,7 @@ final class SubmissionContentTest {
     }
 
     @Test
-    void usFourRejectsMissingRequiredComponents() {
+    void rejectsMissingRequiredComponents() {
         final SubmissionContent valid = SubmissionContentTest.content(
             List.of(SubmissionContentTest.PHOTO)
         );
@@ -77,7 +77,7 @@ final class SubmissionContentTest {
     }
 
     @Test
-    void usFourCopiesPhotoIdsAsUnmodifiableList() {
+    void copiesPhotoIdsAsUnmodifiableList() {
         final List<UUID> source = new ArrayList<>(List.of(SubmissionContentTest.PHOTO));
         final SubmissionContent content = SubmissionContentTest.content(source);
         source.add(UUID.randomUUID());

@@ -136,7 +136,7 @@ final class NewSubmissionRequestTest {
     }
 
     @Test
-    void usFourRejectsSubmissionIdThatIsNoUuid() {
+    void rejectsSubmissionIdThatIsNoUuid() {
         Assertions.assertAll(
             Stream.of("'abc'", "''", "42").map(
                 id -> () -> Assertions.assertThrows(
@@ -151,7 +151,7 @@ final class NewSubmissionRequestTest {
     }
 
     @Test
-    void usFourRejectsBodyThatIsNoObject() {
+    void rejectsBodyThatIsNoObject() {
         Assertions.assertThrows(
             MismatchedInputException.class,
             () -> WebBodies.MAPPER.readValue("[]", NewSubmissionRequest.class),

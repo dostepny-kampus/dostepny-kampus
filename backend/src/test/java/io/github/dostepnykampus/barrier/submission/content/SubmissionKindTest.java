@@ -23,7 +23,7 @@ import org.junit.jupiter.api.function.Executable;
  *
  * @since 0.1.0
  */
-final class SubmissionKindRulesTest {
+final class SubmissionKindTest {
 
     /**
      * Zgłoszenie zastępowane przez usunięcie bariery.
@@ -33,7 +33,7 @@ final class SubmissionKindRulesTest {
     /**
      * Miejsce w budynku z rozpoznanym piętrem.
      */
-    private static final SubmissionPlace INSIDE = SubmissionKindRulesTest.place(
+    private static final SubmissionPlace INSIDE = SubmissionKindTest.place(
         "C-13", new SubmissionFloor(null, 0, false)
     );
 
@@ -48,10 +48,10 @@ final class SubmissionKindRulesTest {
     void needsReplacedSubmissionForEveryKind() {
         Assertions.assertAll(
             Stream.of(SubmissionKind.values()).map(
-                kind -> () -> SubmissionKindRulesTest.rejected(
+                kind -> () -> SubmissionKindTest.rejected(
                     "„Bariera usunięta” wymaga zgłoszenia w polu replacesSubmissionId (BR-19)",
                     String.format("Usunięcie bez zgłoszenia przeszło dla %s", kind),
-                    () -> SubmissionKindRulesTest.removal(kind, null)
+                    () -> SubmissionKindTest.removal(kind, null)
                 )
             )
         );
@@ -62,7 +62,7 @@ final class SubmissionKindRulesTest {
         Assertions.assertAll(
             Stream.of(SubmissionKind.values()).map(
                 kind -> () -> Assertions.assertDoesNotThrow(
-                    () -> SubmissionKindRulesTest.removal(kind, SubmissionKindRulesTest.REPLACED),
+                    () -> SubmissionKindTest.removal(kind, SubmissionKindTest.REPLACED),
                     String.format("Usunięcie ze zgłoszeniem odrzucono dla %s", kind)
                 )
             )
@@ -73,9 +73,9 @@ final class SubmissionKindRulesTest {
     void needsBarrierGroup() {
         Assertions.assertEquals(
             "Zgłoszenie szybkie wymaga grupy barier (BR-8)",
-            SubmissionKindRulesTest.message(
+            SubmissionKindTest.message(
                 "Zgłoszenie szybkie bez grupy barier przeszło",
-                () -> SubmissionKindRulesTest.valid(
+                () -> SubmissionKindTest.valid(
                     SubmissionKind.QUICK, new BarrierDetails(null, null, null, null, false)
                 )
             ),
@@ -87,9 +87,9 @@ final class SubmissionKindRulesTest {
     void needsBarrierType() {
         Assertions.assertEquals(
             "Pomiar precyzyjny wymaga typu bariery (BR-7)",
-            SubmissionKindRulesTest.message(
+            SubmissionKindTest.message(
                 "Pomiar bez typu przeszedł",
-                () -> SubmissionKindRulesTest.valid(
+                () -> SubmissionKindTest.valid(
                     SubmissionKind.PRECISE, new BarrierDetails(null, null, 2, null, false)
                 )
             ),
@@ -101,9 +101,9 @@ final class SubmissionKindRulesTest {
     void needsSeverityUnlessBarrierRemoved() {
         Assertions.assertEquals(
             "Pomiar precyzyjny wymaga uciążliwości (BR-7)",
-            SubmissionKindRulesTest.message(
+            SubmissionKindTest.message(
                 "Pomiar bez uciążliwości przeszedł",
-                () -> SubmissionKindRulesTest.valid(
+                () -> SubmissionKindTest.valid(
                     SubmissionKind.PRECISE,
                     new BarrierDetails(null, new BarrierType(3), null, null, false)
                 )
@@ -116,12 +116,12 @@ final class SubmissionKindRulesTest {
     void needsIdentifiedFloorInBuilding() {
         Assertions.assertAll(
             Stream.of(null, new SubmissionFloor(null, null, false)).map(
-                floor -> () -> SubmissionKindRulesTest.rejected(
+                floor -> () -> SubmissionKindTest.rejected(
                     "Pomiar precyzyjny w budynku wymaga piętra (BR-7)",
                     "Pomiar w budynku bez rozpoznanego piętra przeszedł",
-                    () -> SubmissionKindRulesTest.content(
-                        SubmissionKind.PRECISE, SubmissionKindRulesTest.place("C-13", floor),
-                        SubmissionKindRulesTest.GOOD, null, null, null
+                    () -> SubmissionKindTest.content(
+                        SubmissionKind.PRECISE, SubmissionKindTest.place("C-13", floor),
+                        SubmissionKindTest.GOOD, null, null, null
                     )
                 )
             )
@@ -132,13 +132,13 @@ final class SubmissionKindRulesTest {
     void acceptsFloorByIdOrNumberAndNoFloorOutsideBuildings() {
         Assertions.assertAll(
             Stream.of(
-                SubmissionKindRulesTest.place("C-13", new SubmissionFloor("p1", null, false)),
-                SubmissionKindRulesTest.place("C-13", new SubmissionFloor(null, -1, true)),
-                SubmissionKindRulesTest.place(null, null)
+                SubmissionKindTest.place("C-13", new SubmissionFloor("p1", null, false)),
+                SubmissionKindTest.place("C-13", new SubmissionFloor(null, -1, true)),
+                SubmissionKindTest.place(null, null)
             ).map(
                 place -> () -> Assertions.assertDoesNotThrow(
-                    () -> SubmissionKindRulesTest.content(
-                        SubmissionKind.PRECISE, place, SubmissionKindRulesTest.GOOD,
+                    () -> SubmissionKindTest.content(
+                        SubmissionKind.PRECISE, place, SubmissionKindTest.GOOD,
                         null, null, null
                     ),
                     "Poprawne miejsce pomiaru zostało odrzucone"
@@ -148,13 +148,13 @@ final class SubmissionKindRulesTest {
     }
 
     @Test
-    void usSevenThreeNeedsDescriptionOfOtherBarrier() {
+    void needsDescriptionOfOtherBarrier() {
         Assertions.assertAll(
             Stream.of(null, "", "   ").map(
-                text -> () -> SubmissionKindRulesTest.rejected(
+                text -> () -> SubmissionKindTest.rejected(
                     "Typ TB-29 „inna bariera” wymaga opisu (US7.3)",
                     "TB-29 bez opisu przeszedł",
-                    () -> SubmissionKindRulesTest.valid(
+                    () -> SubmissionKindTest.valid(
                         SubmissionKind.PRECISE,
                         new BarrierDetails(null, new BarrierType(29), 2, text, false)
                     )
@@ -164,17 +164,17 @@ final class SubmissionKindRulesTest {
     }
 
     @Test
-    void usSevenThreeAcceptsOtherBarrierWithDescriptionAndOthersWithout() {
+    void acceptsOtherBarrierWithDescriptionAndOthersWithout() {
         Assertions.assertAll(
             () -> Assertions.assertDoesNotThrow(
-                () -> SubmissionKindRulesTest.valid(
+                () -> SubmissionKindTest.valid(
                     SubmissionKind.PRECISE,
                     new BarrierDetails(null, new BarrierType(29), 2, "Słup", false)
                 ),
                 "TB-29 z opisem została odrzucona"
             ),
             () -> Assertions.assertDoesNotThrow(
-                () -> SubmissionKindRulesTest.valid(
+                () -> SubmissionKindTest.valid(
                     SubmissionKind.PRECISE,
                     new BarrierDetails(null, new BarrierType(28), 2, null, false)
                 ),
@@ -186,9 +186,9 @@ final class SubmissionKindRulesTest {
     @Test
     void needsEntranceIdAndMarking() {
         Assertions.assertAll(
-            () -> SubmissionKindRulesTest.entranceRejected(null, NewEntranceMarking.ACCESSIBLE),
-            () -> SubmissionKindRulesTest.entranceRejected("node/1", null),
-            () -> SubmissionKindRulesTest.entranceRejected(null, null)
+            () -> SubmissionKindTest.entranceRejected(null, NewEntranceMarking.ACCESSIBLE),
+            () -> SubmissionKindTest.entranceRejected("node/1", null),
+            () -> SubmissionKindTest.entranceRejected(null, null)
         );
     }
 
@@ -198,30 +198,30 @@ final class SubmissionKindRulesTest {
             () -> Assertions.assertAll(
                 Stream.of(SubmissionKind.values()).map(
                     kind -> () -> Assertions.assertDoesNotThrow(
-                        () -> SubmissionKindRulesTest.valid(kind, SubmissionKindRulesTest.GOOD),
+                        () -> SubmissionKindTest.valid(kind, SubmissionKindTest.GOOD),
                         String.format("Poprawna treść rodzaju %s została odrzucona", kind)
                     )
                 )
             ),
             () -> Assertions.assertDoesNotThrow(
-                () -> SubmissionKindRulesTest.content(
-                    SubmissionKind.QUICK, SubmissionKindRulesTest.place("C-13", null),
-                    SubmissionKindRulesTest.GOOD, null, null, null
+                () -> SubmissionKindTest.content(
+                    SubmissionKind.QUICK, SubmissionKindTest.place("C-13", null),
+                    SubmissionKindTest.GOOD, null, null, null
                 ),
                 "Typ bariery w zgłoszeniu szybkim został odrzucony"
             ),
             () -> Assertions.assertDoesNotThrow(
-                () -> SubmissionKindRulesTest.content(
-                    SubmissionKind.ENTRANCE_MARKING, SubmissionKindRulesTest.place("C-13", null),
+                () -> SubmissionKindTest.content(
+                    SubmissionKind.ENTRANCE_MARKING, SubmissionKindTest.place("C-13", null),
                     new BarrierDetails(null, null, null, null, false),
                     "node/1", NewEntranceMarking.INACCESSIBLE, null
                 ),
                 "Zmiana oznaczenia wejścia bez bariery została odrzucona"
             ),
             () -> Assertions.assertDoesNotThrow(
-                () -> SubmissionKindRulesTest.content(
-                    SubmissionKind.PRECISE, SubmissionKindRulesTest.INSIDE,
-                    SubmissionKindRulesTest.GOOD, "node/1", NewEntranceMarking.ACCESSIBLE, null
+                () -> SubmissionKindTest.content(
+                    SubmissionKind.PRECISE, SubmissionKindTest.INSIDE,
+                    SubmissionKindTest.GOOD, "node/1", NewEntranceMarking.ACCESSIBLE, null
                 ),
                 "Wejście w pomiarze precyzyjnym zostało odrzucone"
             )
@@ -231,11 +231,11 @@ final class SubmissionKindRulesTest {
     @Test
     void rejectsTypeOutsideOfClassificationAndSeverityAboveThree() {
         Assertions.assertAll(
-            () -> SubmissionKindRulesTest.rejected(
+            () -> SubmissionKindTest.rejected(
                 "Typ bariery spoza TB-1…TB-29", "Typ TB-30 przeszedł",
                 () -> new BarrierType("TB-30")
             ),
-            () -> SubmissionKindRulesTest.rejected(
+            () -> SubmissionKindTest.rejected(
                 "Uciążliwość spoza zakresu 1–3", "Uciążliwość 4 przeszła",
                 () -> new BarrierDetails(null, null, 4, null, false)
             )
@@ -257,18 +257,18 @@ final class SubmissionKindRulesTest {
     }
 
     private static void entranceRejected(final String entrance, final NewEntranceMarking marking) {
-        SubmissionKindRulesTest.rejected(
+        SubmissionKindTest.rejected(
             "Zmiana oznaczenia wejścia wymaga entranceId i entranceMarking (BR-24)",
             "Zmiana oznaczenia wejścia z brakami przeszła",
-            () -> SubmissionKindRulesTest.content(
-                SubmissionKind.ENTRANCE_MARKING, SubmissionKindRulesTest.INSIDE,
-                SubmissionKindRulesTest.GOOD, entrance, marking, null
+            () -> SubmissionKindTest.content(
+                SubmissionKind.ENTRANCE_MARKING, SubmissionKindTest.INSIDE,
+                SubmissionKindTest.GOOD, entrance, marking, null
             )
         );
     }
 
     private static void rejected(final String detail, final String why, final Executable build) {
-        Assertions.assertEquals(detail, SubmissionKindRulesTest.message(why, build), "Zły opis");
+        Assertions.assertEquals(detail, SubmissionKindTest.message(why, build), "Zły opis");
     }
 
     private static String message(final String why, final Executable build) {
@@ -276,16 +276,16 @@ final class SubmissionKindRulesTest {
     }
 
     private static SubmissionContent removal(final SubmissionKind kind, final UUID replaces) {
-        return SubmissionKindRulesTest.content(
-            kind, SubmissionKindRulesTest.INSIDE,
+        return SubmissionKindTest.content(
+            kind, SubmissionKindTest.INSIDE,
             new BarrierDetails(BarrierGroup.OTHER, new BarrierType(3), null, null, true),
             "node/1", NewEntranceMarking.ACCESSIBLE, replaces
         );
     }
 
     private static SubmissionContent valid(final SubmissionKind kind, final BarrierDetails bar) {
-        return SubmissionKindRulesTest.content(
-            kind, SubmissionKindRulesTest.INSIDE, bar, "node/1", NewEntranceMarking.ACCESSIBLE, null
+        return SubmissionKindTest.content(
+            kind, SubmissionKindTest.INSIDE, bar, "node/1", NewEntranceMarking.ACCESSIBLE, null
         );
     }
 

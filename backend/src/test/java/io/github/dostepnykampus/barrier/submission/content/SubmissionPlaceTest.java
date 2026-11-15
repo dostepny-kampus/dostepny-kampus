@@ -25,7 +25,7 @@ final class SubmissionPlaceTest {
     private static final String NEGATIVE = "Dokładność pozycji jest ujemna";
 
     @Test
-    void usSixRejectsNegativeAccuracy() {
+    void rejectsNegativeAccuracy() {
         Assertions.assertAll(
             Stream.of(-0.001, -1.0, Double.NEGATIVE_INFINITY).map(
                 accuracy -> () -> Assertions.assertEquals(
@@ -42,7 +42,7 @@ final class SubmissionPlaceTest {
     }
 
     @Test
-    void usSixRejectsNanAccuracy() {
+    void rejectsNanAccuracy() {
         Assertions.assertEquals(
             SubmissionPlaceTest.NEGATIVE,
             Assertions.assertThrows(
@@ -55,7 +55,7 @@ final class SubmissionPlaceTest {
     }
 
     @Test
-    void usSixAcceptsZeroAndMissingAccuracy() {
+    void acceptsZeroAndMissingAccuracy() {
         Assertions.assertAll(
             () -> Assertions.assertDoesNotThrow(
                 () -> SubmissionPlaceTest.place(0.0, "B1"),
@@ -69,7 +69,7 @@ final class SubmissionPlaceTest {
     }
 
     @Test
-    void usSixRejectsMissingPoint() {
+    void rejectsMissingPoint() {
         Assertions.assertThrows(
             NullPointerException.class,
             () -> new SubmissionPlace(null, 1.0, false, "B1", null),
