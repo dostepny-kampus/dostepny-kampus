@@ -371,7 +371,7 @@ Metafora to obraz albo pojęcie, które osoba zna spoza aplikacji. Może nią by
 | plan piętra na ścianie korytarza | plan piętra z windami i toaletami, „Pokaż na planie” | układ ekranu | Plany pięter, np. plan ewakuacji, wiszą na korytarzach wielu budynków. | US16.1 |
 | aparat fotograficzny | „Zgłoś barierę” | ikona i słowo | Zdjęcie to znana czynność i nie wymaga pisania. | US4.1 |
 | ptaszek, krzyżyk i znak zapytania z listy kontrolnej | „Dostępne”, „Niedostępne”, „Brak danych” | ikona i słowo | Ptaszek znaczy „tak”, krzyżyk „nie”, a znak zapytania „nie wiadomo”. | US17.1, NFR-21 |
-| znaki drogowe: trójkąt ostrzegawczy, dwie osoby, zapora | uciążliwość „Utrudnienie”, „Tylko z pomocą”, „Blokada” | ikona i słowo, na mapie także barwa | Znaki drogowe zna każdy kierowca i pieszy. Barwy na mapie są jak na znakach bezpieczeństwa: żółty i pomarańczowy to „uwaga”, czerwony to „zakaz”. | NFR-21 |
+| znaki drogowe: trójkąt ostrzegawczy, dwie osoby, zakaz wjazdu | uciążliwość „Utrudnienie”, „Tylko z pomocą”, „Blokada” | ikona i słowo, na mapie także barwa | Znaki drogowe zna każdy kierowca i pieszy. Barwy na mapie są jak na znakach bezpieczeństwa: żółty i pomarańczowy to „uwaga”, czerwony to „zakaz”. | NFR-21 |
 | pieczątka z datą przeglądu, jak na gaśnicy | „Sprawdzone 12.11.2026” przy wejściu i barierze | słowo i data | Data mówi, kiedy ktoś to sprawdził, więc wiadomo, czy można ufać (N2). | US2.2, US17.3 |
 | strzałka „wróć” | „Wstecz” ze strzałką w lewo | ikona i słowo | Strzałkę osoba zna z telefonu, a słowo mówi, co się stanie. | NFR-15 |
 | instrukcja krok po kroku | „Krok 1 z 3” w zgłoszeniu | słowo i numer | Osoba wie, ile jeszcze zostało. | US4 |
@@ -401,7 +401,7 @@ Zatwierdzone makiety hi-fi rysują znaki oznaczenia wejścia i uciążliwości w
 | oznaczenie „brak danych” | `minus`; hi-fi: romb ze znakiem ?, na mapie V1 mniejszy i pusty w środku | „Brak danych” | znak zapytania, czyli „nie wiadomo”; inny niż ptaszek i krzyżyk, jak w [tokenach](tokeny.md) (US17.1) |
 | uciążliwość 1 | `warning`; hi-fi: trójkąt z „!”, na mapie i w legendzie żółty | „Utrudnienie” | trójkąt jak drogowy znak ostrzegawczy: uważaj |
 | uciążliwość 2 | `people`; hi-fi: tarcza z dwiema osobami, na mapie i w legendzie pomarańczowa | „Tylko z pomocą” | dwie osoby: przejdziesz z drugą osobą |
-| uciążliwość 3 | `ban`; hi-fi: zapora z ukośnymi pasami, na mapie i w legendzie ciemnoczerwona | „Blokada” | znak zakazu albo zapora drogowa: tędy nie |
+| uciążliwość 3 | `ban`; hi-fi: zaokrąglona tablica z jedną poziomą belką, na mapie i w legendzie ciemnoczerwona z białą belką | „Blokada” | znak zakazu wjazdu: tędy nie; pojedyncza belka zostaje czytelna także w małym znaku na mapie |
 | status „lokalne” | `phone` | „W telefonie” | kształt telefonu: zgłoszenie jest tylko w nim |
 | status „wysłane” | `data-transfer-upload` | „Wysłane” | strzałka w górę: poszło dalej |
 | status „w weryfikacji” | `eye` | „W weryfikacji” | oko: ktoś teraz ogląda |
