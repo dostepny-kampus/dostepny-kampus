@@ -36,4 +36,11 @@ class AreaBoundariesTest {
         val expected = GeoPolygon(listOf(ring.map { (lon, lat) -> GeoPoint(longitude = lon, latitude = lat) }))
         assertEquals(mapOf("T-9 Atol" to expected), parseAreaBoundaries(geoJson), "granica terenu T-9 Atol")
     }
+
+    /** Granice wbudowane w aplikację to treść pliku granic z katalogu danych repozytorium. */
+    @Test
+    fun buildsInBoundariesFile() {
+        val file = parseAreaBoundaries(File(System.getProperty("dostepnykampus.areas")).readText())
+        assertEquals(file, PwrAreaBoundaries, "granice w aplikacji i w pliku danych")
+    }
 }

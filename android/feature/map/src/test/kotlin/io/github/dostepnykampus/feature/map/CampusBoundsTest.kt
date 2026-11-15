@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import io.github.dostepnykampus.core.geo.PwrAreaBoundaries
 import io.github.dostepnykampus.core.geo.allRings
-import io.github.dostepnykampus.core.geo.parseAreaBoundaries
 import io.github.dostepnykampus.core.model.GeoArea
 import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -17,7 +17,6 @@ import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.PanDirection
 import io.github.dostepnykampus.feature.map.camera.moved
-import io.github.dostepnykampus.feature.map.campus.AREAS_GEOJSON
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.START_BUILDING
 import io.github.dostepnykampus.feature.map.campus.boundsOf
@@ -78,7 +77,7 @@ class CampusBoundsTest {
      */
     @Test
     fun nfr39_atol_from_pwr_boundary() {
-        val points = parseAreaBoundaries(AREAS_GEOJSON).getValue("T-9 Atol").allRings().flatten()
+        val points = PwrAreaBoundaries.getValue("T-9 Atol").allRings().flatten()
         val (west, east) = points.minOf { it.longitude } to points.maxOf { it.longitude }
         val (south, north) = points.minOf { it.latitude } to points.maxOf { it.latitude }
         val inside = rectangle(west = west, south = south, east = west + 1e-5, north = south + 1e-5)

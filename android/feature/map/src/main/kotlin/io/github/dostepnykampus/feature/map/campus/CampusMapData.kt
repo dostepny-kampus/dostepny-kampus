@@ -5,10 +5,10 @@
  */
 package io.github.dostepnykampus.feature.map.campus
 
+import io.github.dostepnykampus.core.geo.PwrAreaBoundaries
 import io.github.dostepnykampus.core.geo.allRings
 import io.github.dostepnykampus.core.geo.campusAreas
 import io.github.dostepnykampus.core.geo.labelPoint
-import io.github.dostepnykampus.core.geo.parseAreaBoundaries
 import io.github.dostepnykampus.core.geo.toGeometry
 import io.github.dostepnykampus.core.geo.toPosition
 import io.github.dostepnykampus.core.model.GeoArea
@@ -43,8 +43,6 @@ const val OUTLINE_NUMBER = "outline"
 private const val LABEL_SEPARATOR = "/"
 
 private val CAMPUS_MARGIN = 50.meters
-
-private val PwrAreaBoundaries: Map<String, GeoArea> by lazy { parseAreaBoundaries(AREAS_GEOJSON) }
 
 /**
  * Dane warstw mapy V1 z katalogu budynków jako kolekcje GeoJSON w elementach JSON dla źródeł mapy, bez sieci.

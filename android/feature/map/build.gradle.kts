@@ -10,49 +10,6 @@ plugins {
     id("dostepnykampus.android.roborazzi")
 }
 
-/**
- * Treść pliku granic terenów jako stała `AREAS_GEOJSON`: dane mapy czytają granice bez zasobów Androida, także
- * w teście JVM.
- */
-@CacheableTask
-abstract class GenerateAreaBoundaries : DefaultTask() {
-    @get:InputFile
-    @get:PathSensitive(PathSensitivity.NONE)
-    abstract val source: RegularFileProperty
-
-    @get:OutputDirectory
-    abstract val outputDirectory: DirectoryProperty
-
-    @TaskAction
-    fun generate() {
-        val text = source.get().asFile.readText()
-        check('$' !in text && "\"\"\"" !in text) { "Pliku granic terenów nie da się wstawić do napisu Kotlina" }
-        val output = outputDirectory.get().asFile.apply { deleteRecursively() }
-        val file = output.resolve("io/github/dostepnykampus/feature/map/campus/AreasGeoJson.kt")
-        file.parentFile.mkdirs()
-        val quotes = "\"\"\""
-        file.writeText(
-            "package io.github.dostepnykampus.feature.map.campus\n\n" +
-                "/** Treść pliku `data/areas/pwr-areas.geojson`. */\n" +
-                "internal const val AREAS_GEOJSON: String = $quotes$text$quotes\n",
-        )
-    }
-}
-
-val generateAreaBoundaries =
-    tasks.register<GenerateAreaBoundaries>("generateAreaBoundaries") {
-        source.set(layout.projectDirectory.file("../../../data/areas/pwr-areas.geojson"))
-    }
-
-androidComponents {
-    onVariants { variant ->
-        variant.sources.kotlin?.addGeneratedSourceDirectory(
-            generateAreaBoundaries,
-            GenerateAreaBoundaries::outputDirectory,
-        )
-    }
-}
-
 dependencies {
     api(libs.androidx.compose.foundation.layout)
     api(libs.coil.compose.core)
