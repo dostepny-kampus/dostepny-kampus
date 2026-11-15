@@ -36,7 +36,6 @@ final class RouteParityIT {
      * Operacje kontraktu bez handlera i powód każdej; lista tylko się kurczy.
      */
     static final Map<String, String> PENDING = Map.ofEntries(
-        Map.entry("GET /rooms", "wyszukiwanie sal: moduł budynków"),
         Map.entry("GET /review/queue", "kolejka Weryfikatora: moduł weryfikacji"),
         Map.entry("GET /sync/pull", "pobranie zmian do aplikacji: synchronizacja"),
         Map.entry("DELETE /inspection-markers/{}", "znaczniki inspekcji: moduł inspekcji"),

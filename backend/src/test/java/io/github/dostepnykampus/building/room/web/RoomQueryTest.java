@@ -44,10 +44,15 @@ final class RoomQueryTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"", "   ", "A-1 329 330", "budynek A-1 sala 329"})
+    @ValueSource(
+        strings = {
+            "", "   ", "A-1 329 330", "budynek A-1 sala 329",
+            "A-1 12345678901234567890123456789012345678901234567"
+        }
+    )
     void rejectsTextWithoutRoomNumber(final String text) {
         MatcherAssert.assertThat(
-            "Tekst bez numeru sali albo z nadmiarem części nie dał błędu 400",
+            "Tekst bez numeru sali, z nadmiarem części albo za długi nie dał błędu 400",
             Assertions.assertThrows(
                 InvalidInput.class, () -> new RoomQuery(text).number(),
                 "Zły tekst zapytania został przyjęty"
