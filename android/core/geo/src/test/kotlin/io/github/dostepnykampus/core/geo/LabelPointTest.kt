@@ -19,11 +19,9 @@ import java.io.File
 
 /** Punkt podpisu na kształtach testowych „Budynek testowy” (nie dane PWr) i na pliku konturów z repozytorium. */
 class LabelPointTest {
-    private val square = ring(0.0 to 0.0, 4.0 to 0.0, 4.0 to 4.0, 0.0 to 4.0)
-
     @Test
     fun placesSquareLabelNearCenter() {
-        val point = labelPoint(GeoPolygon(listOf(square)))
+        val point = labelPoint(GeoPolygon(listOf(square())))
         assertEquals(2.0, point.longitude, CELL)
         assertEquals(2.0, point.latitude, CELL)
     }
@@ -31,7 +29,7 @@ class LabelPointTest {
     @Test
     fun keepsLabelOutOfCourtyard() {
         val courtyard = ring(1.0 to 1.0, 3.0 to 1.0, 3.0 to 3.0, 1.0 to 3.0)
-        val point = labelPoint(GeoPolygon(listOf(square, courtyard)))
+        val point = labelPoint(GeoPolygon(listOf(square(), courtyard)))
         val isInCourtyard = point.longitude in 1.0..3.0 && point.latitude in 1.0..3.0
         assertTrue(!isInCourtyard && point.longitude in 0.0..4.0 && point.latitude in 0.0..4.0)
     }
@@ -46,7 +44,7 @@ class LabelPointTest {
     @Test
     fun usesLargestPart() {
         val small = ring(10.0 to 0.0, 11.0 to 0.0, 11.0 to 1.0, 10.0 to 1.0)
-        val point = labelPoint(GeoMultiPolygon(listOf(GeoPolygon(listOf(small)), GeoPolygon(listOf(square)))))
+        val point = labelPoint(GeoMultiPolygon(listOf(GeoPolygon(listOf(small)), GeoPolygon(listOf(square())))))
         assertTrue(point.longitude < 4.0)
     }
 
@@ -60,6 +58,8 @@ class LabelPointTest {
             }
         assertEquals(emptyList<String>(), outside.map(Building::symbol))
     }
+
+    private fun square(): List<GeoPoint> = ring(0.0 to 0.0, 4.0 to 0.0, 4.0 to 4.0, 0.0 to 4.0)
 
     private fun ring(vararg corners: Pair<Double, Double>): List<GeoPoint> =
         (corners.toList() + corners.first()).map { (x, y) -> GeoPoint(longitude = x, latitude = y) }

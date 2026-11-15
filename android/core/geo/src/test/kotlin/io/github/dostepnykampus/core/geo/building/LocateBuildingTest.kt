@@ -17,14 +17,14 @@ import org.junit.jupiter.api.Test
  * (około 17 m), dokładnie zapisywalnej w `Double`, więc punkt na krawędzi leży na niej bez błędu zaokrąglenia.
  */
 class LocateBuildingTest {
-    private val courtyardBuilding =
+    private fun courtyardBuilding(): Building =
         Building(
             symbol = "A-1",
             name = "Budynek z dziedzińcem",
             outline = GeoPolygon(listOf(square(x = 0, y = 0, size = 8), square(x = 3, y = 3, size = 2))),
         )
 
-    private val twoPartBuilding =
+    private fun twoPartBuilding(): Building =
         Building(
             symbol = "B-1",
             name = "Budynek z dwóch części",
@@ -37,7 +37,7 @@ class LocateBuildingTest {
                 ),
         )
 
-    private val compoundCourtyardBuilding =
+    private fun compoundCourtyardBuilding(): Building =
         Building(
             symbol = "C-1",
             name = "Budynek złożony z dziedzińcem w drugiej części",
@@ -50,7 +50,7 @@ class LocateBuildingTest {
                 ),
         )
 
-    private val triangleBuilding =
+    private fun triangleBuilding(): Building =
         Building(
             symbol = "D-1",
             name = "Budynek z ukośną krawędzią",
@@ -62,28 +62,34 @@ class LocateBuildingTest {
                 ),
         )
 
-    private val buildings = listOf(courtyardBuilding, twoPartBuilding)
+    private fun buildings(): List<Building> = listOf(courtyardBuilding(), twoPartBuilding())
 
     @Test
     fun findsPointInsideOutline() {
-        assertEquals(LocateResult.InsideOutline(courtyardBuilding), locateBuilding(point(x = 1, y = 1), buildings))
+        assertEquals(LocateResult.InsideOutline(courtyardBuilding()), locateBuilding(point(x = 1, y = 1), buildings()))
     }
 
     @Test
     fun findsPointInMultipolygonPart() {
-        assertEquals(LocateResult.InsideOutline(twoPartBuilding), locateBuilding(point(x = 13, y = 7), buildings))
+        assertEquals(LocateResult.InsideOutline(twoPartBuilding()), locateBuilding(point(x = 13, y = 7), buildings()))
     }
 
     /** Wiersz: G1 — punkt na zewnętrznej krawędzi jest poza budynkiem, z jego propozycją. Wymagania: US6.2, BR-G2 */
     @Test
     fun leavesOutlineEdgeOutside() {
-        assertEquals(LocateResult.OutsideBuilding(courtyardBuilding), locateBuilding(point(x = 8, y = 4), buildings))
+        assertEquals(
+            LocateResult.OutsideBuilding(courtyardBuilding()),
+            locateBuilding(point(x = 8, y = 4), buildings()),
+        )
     }
 
     /** Wiersz: G2 — punkt na krawędzi dziedzińca jest poza budynkiem, z jego propozycją. Wymagania: US6.2, BR-G2 */
     @Test
     fun leavesCourtyardEdgeOutside() {
-        assertEquals(LocateResult.OutsideBuilding(courtyardBuilding), locateBuilding(point(x = 3, y = 4), buildings))
+        assertEquals(
+            LocateResult.OutsideBuilding(courtyardBuilding()),
+            locateBuilding(point(x = 3, y = 4), buildings()),
+        )
     }
 
     /** Wiersz: G1 — każdy z boków i wierzchołek konturu jest poza budynkiem. Wymagania: US6.2, BR-G2 */
@@ -91,8 +97,8 @@ class LocateBuildingTest {
     fun leavesEverySideCornerOutside() {
         listOf(0 to 4, 4 to 0, 4 to 8, 0 to 0, 8 to 8).forEach { (x, y) ->
             assertEquals(
-                LocateResult.OutsideBuilding(courtyardBuilding),
-                locateBuilding(point(x = x, y = y), buildings),
+                LocateResult.OutsideBuilding(courtyardBuilding()),
+                locateBuilding(point(x = x, y = y), buildings()),
                 "punkt ($x, $y) na konturze",
             )
         }
@@ -106,17 +112,17 @@ class LocateBuildingTest {
     @Test
     fun leavesCompoundHoleEdgeOutside() {
         assertEquals(
-            LocateResult.OutsideBuilding(compoundCourtyardBuilding),
-            locateBuilding(point(x = 23, y = 10), listOf(compoundCourtyardBuilding)),
+            LocateResult.OutsideBuilding(compoundCourtyardBuilding()),
+            locateBuilding(point(x = 23, y = 10), listOf(compoundCourtyardBuilding())),
         )
     }
 
     /** Wiersz: G2 — krawędź zewnętrzna tej samej części złożonej jest poza, a ścisłe wnętrze w. Wymagania: BR-G2 */
     @Test
     fun splitsCompoundEdgeAndBody() {
-        val compound = listOf(compoundCourtyardBuilding)
-        val outside = LocateResult.OutsideBuilding(compoundCourtyardBuilding)
-        val inside = LocateResult.InsideOutline(compoundCourtyardBuilding)
+        val compound = listOf(compoundCourtyardBuilding())
+        val outside = LocateResult.OutsideBuilding(compoundCourtyardBuilding())
+        val inside = LocateResult.InsideOutline(compoundCourtyardBuilding())
         assertEquals(outside, locateBuilding(point(x = 28, y = 10), compound))
         assertEquals(inside, locateBuilding(point(x = 21, y = 7), compound))
     }
@@ -130,8 +136,8 @@ class LocateBuildingTest {
     fun findsPointNearEdgesInside() {
         listOf(7.9375 to 4.0, 0.0625 to 4.0, 3.0 to 2.9375, 3.0 to 5.0625).forEach { (x, y) ->
             assertEquals(
-                LocateResult.InsideOutline(courtyardBuilding),
-                locateBuilding(point(x = x, y = y), buildings),
+                LocateResult.InsideOutline(courtyardBuilding()),
+                locateBuilding(point(x = x, y = y), buildings()),
                 "punkt ($x, $y) w konturze",
             )
         }
@@ -145,8 +151,8 @@ class LocateBuildingTest {
     @Test
     fun leavesDiagonalEdgeOutside() {
         assertEquals(
-            LocateResult.OutsideBuilding(triangleBuilding),
-            locateBuilding(point(x = 34, y = 4), listOf(triangleBuilding)),
+            LocateResult.OutsideBuilding(triangleBuilding()),
+            locateBuilding(point(x = 34, y = 4), listOf(triangleBuilding())),
         )
     }
 
@@ -154,8 +160,8 @@ class LocateBuildingTest {
     @Test
     fun findsPointInDiagonalBox() {
         assertEquals(
-            LocateResult.InsideOutline(triangleBuilding),
-            locateBuilding(point(x = 32, y = 2), listOf(triangleBuilding)),
+            LocateResult.InsideOutline(triangleBuilding()),
+            locateBuilding(point(x = 32, y = 2), listOf(triangleBuilding())),
         )
     }
 
@@ -165,24 +171,27 @@ class LocateBuildingTest {
      */
     @Test
     fun findsPointOnEdgeExtension() {
-        assertEquals(LocateResult.InsideOutline(courtyardBuilding), locateBuilding(point(x = 2, y = 3), buildings))
+        assertEquals(LocateResult.InsideOutline(courtyardBuilding()), locateBuilding(point(x = 2, y = 3), buildings()))
     }
 
     /** Wiersz: G3, O5 — punkt około 4 mm w głąb od krawędzi (1/4096 kroku siatki) jest w budynku. */
     @Test
     fun findsPointFourMmInside() {
         val almostOnEdge = point(x = 8.0 - 1.0 / 4096, y = 4.0)
-        assertEquals(LocateResult.InsideOutline(courtyardBuilding), locateBuilding(almostOnEdge, buildings))
+        assertEquals(LocateResult.InsideOutline(courtyardBuilding()), locateBuilding(almostOnEdge, buildings()))
     }
 
     @Test
     fun leavesCourtyardOutside() {
-        assertEquals(LocateResult.OutsideBuilding(courtyardBuilding), locateBuilding(point(x = 4, y = 4), buildings))
+        assertEquals(
+            LocateResult.OutsideBuilding(courtyardBuilding()),
+            locateBuilding(point(x = 4, y = 4), buildings()),
+        )
     }
 
     @Test
     fun givesNearestBuildingOutside() {
-        assertEquals(LocateResult.OutsideBuilding(twoPartBuilding), locateBuilding(point(x = 11, y = 7), buildings))
+        assertEquals(LocateResult.OutsideBuilding(twoPartBuilding()), locateBuilding(point(x = 11, y = 7), buildings()))
     }
 
     @Test

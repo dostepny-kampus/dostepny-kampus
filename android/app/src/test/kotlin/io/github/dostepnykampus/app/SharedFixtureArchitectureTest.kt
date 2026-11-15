@@ -172,17 +172,17 @@ class SharedFixtureArchitectureTest {
                 |AcceptedBarriersCopyTest AccessTokenInterceptorTest AppNavigatorTest AppShellScreenshotTest
                 |AppShellTest ArchitectureTest BarrierCacheDaoTest BarrierNamesTest BarrierSheetTest
                 |BottomBarTest BuildingCacheDaoTest BuildingCardModesTest BuildingCardOfflineTest BuildingCardTest
-                |BuildingCatalogCacheTest BuildingCatalogParserTest BuildingCatalogRepositoryTest BuildingHintTest
+                |BuildingCatalogCacheTest BuildingCatalogParserTest BuildingCatalogRepositoryTest
                 |BuildingListTest BuildingOnMapCameraTest BuildingsApiTest CampusAreaEdgeDeviceTest CampusAreasPwrTest
                 |CampusBoundsTest CampusMapBarriersStyleTest CampusMapDataTest CampusMapEntrancesStyleTest
                 |CampusMapGeometryTest CampusMapScreenTest CampusMapSelectionStyleTest CampusMapStyleTest
                 |CampusMapViewModelTest CampusPathDeviceTest CancellationTest
                 |CardServerEntrancesTest CollectorReachTest ConflictEditTest DebugRolesTest DebugSignInTest
                 |DeviceStepsTest DtoContractTest EditBaseVersionTest EditDuringSendTest EntranceAssessmentTest
-                |EntranceDistanceTest EntranceHiltTest EntranceOnMapTest EntranceTest FirstLaunchRepositoryTest
-                |FirstLaunchViewModelTest FloorMarkersTest FloorPickerTest GeoAreaJsonTest GnssLocationSwitchTest
+                |EntranceHiltTest EntranceOnMapTest FirstLaunchRepositoryTest
+                |FirstLaunchViewModelTest FloorMarkersTest FloorPickerTest GnssLocationSwitchTest
                 |GnssPositionFixesTest GnssSatellitesTest GuestSignInTest HelpScreenTest JsonTextCallTest
-                |KDocDescriptionLengthTest LabelPointTest ListEntryTest LocateBuildingTest LocationModuleTest
+                |KDocDescriptionLengthTest ListEntryTest LocationModuleTest
                 |LocationPermissionTest LoginExpiredGateTest MainActivityTest MapAreaPanelTest
                 |MapAreaSwitchTest MapAreasTest MapBarrierNamesTest MapBarrierTouchTest MapBarriersLoadTest
                 |MapCameraTest MapCatalogFromFileTest MapControlsTest MapGeometryFlowTest MapGeometryFocusTest
@@ -190,7 +190,7 @@ class SharedFixtureArchitectureTest {
                 |MapSceneStateTest MapSelectionImagesTest MapStreamConcurrencyTest MapStyleRememberTest MapTileHttpTest
                 |MapTileNetworkDeviceTest MeasurePathTest MeasureScreenTest MeasureViewModelTest MeasuredPlaceTest
                 |MeasuredReportTest MigrationTest MySubmissionsScreenTest MySubmissionsViewModelTest
-                |NearestBuildingsTest NoHistoryNumberInKDocTest NoLineCommentTest NullabilityArchitectureTest
+                |NoHistoryNumberInKDocTest NoLineCommentTest NullabilityArchitectureTest
                 |OrphanPhotosTest OwnHistoryTest OwnListPathTest OwnListTest OwnStatusesTest OwnSubmissionDaoTest
                 |PendingEditMappingTest PendingEditsTest PendingMarkerChangeDaoTest PendingSubmissionDaoTest
                 |PermissionsTest PhotoCameraTest PhotoFilesTest PlaceSectionTest PositionAveragingTest
@@ -199,10 +199,10 @@ class SharedFixtureArchitectureTest {
                 |RemovedViewModelTest ReportAtEntranceTest ReportDraftTest ReportEditScreenTest ReportEditTest
                 |ReportEditViewModelTest ReportFloorsTest ReportFormScreenTest ReportFormViewModelTest
                 |ReportMissingFieldTest ReportScreenTest RequirementIdOutsideLineTest RevokedRoleTest SaveDuringSendTest
-                |SavedReportTest SearchBuildingsTest SearchOtherAreaTest SelectedEntranceTest ServerBuildingCatalogTest
+                |SavedReportTest SearchOtherAreaTest SelectedEntranceTest ServerBuildingCatalogTest
                 |SheetBackGestureTest ShowEntranceTest SubmissionCardTest SubmissionFlagsTest SubmissionJsonTest
                 |SubmissionPhotoReadTest SubmissionQueueTest SubmissionSyncAtStartTest SubmissionSyncWorkerTest
-                |SubmissionTest SubmissionsApiTest SubmissionsContractTest TestViewModelsTest TokensTest
+                |SubmissionsApiTest SubmissionsContractTest TestViewModelsTest TokensTest
                 |UnreadableSubmissionTest
             """.trimMargin()
                 .lines()

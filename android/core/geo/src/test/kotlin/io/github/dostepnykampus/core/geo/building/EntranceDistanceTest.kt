@@ -14,14 +14,12 @@ import org.junit.jupiter.api.Test
 
 /** Najbliższe wejście do punktu pomiaru z odległością w metrach. Wymagania: US7.4 */
 class EntranceDistanceTest {
-    private val point = GeoPoint(longitude = LON, latitude = LAT)
-
     @Test
     fun picksNearerOfTwoEntrances() {
         val far = entrance(id = "far", latitudeMeters = 30.0)
         val near = entrance(id = "near", latitudeMeters = 3.0)
 
-        val result = requireNotNull(nearestEntrance(point, listOf(far, near)))
+        val result = requireNotNull(nearestEntrance(point(), listOf(far, near)))
 
         assertEquals("near", result.entrance.id)
         assertEquals(3.0, result.meters, TOLERANCE_METERS)
@@ -29,8 +27,10 @@ class EntranceDistanceTest {
 
     @Test
     fun givesNothingWithoutEntrances() {
-        assertNull(nearestEntrance(point, emptyList()))
+        assertNull(nearestEntrance(point(), emptyList()))
     }
+
+    private fun point(): GeoPoint = GeoPoint(longitude = LON, latitude = LAT)
 
     private fun entrance(id: String, latitudeMeters: Double): Entrance =
         Entrance(

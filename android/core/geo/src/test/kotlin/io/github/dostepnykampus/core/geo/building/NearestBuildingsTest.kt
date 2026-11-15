@@ -15,16 +15,11 @@ import org.junit.jupiter.api.Test
 
 /** Sekcja „Wybierz budynek” na C1: budynki najbliżej punktu, od najbliższego, z odległością. Wymagania: US6.2, NFR-4 */
 class NearestBuildingsTest {
-    private val near = square(symbol = "A-1", south = LAT)
-    private val middle = square(symbol = "A-2", south = LAT + 2 * SIDE)
-    private val far = square(symbol = "A-3", south = LAT + 4 * SIDE)
-    private val farthest = square(symbol = "A-4", south = LAT + 6 * SIDE)
-
     /** Punkt na południe od budynków: trzy najbliższe, od najbliższego, z odległością od krawędzi w metrach. */
     @Test
     fun sortsByDistance() {
         val point = GeoPoint(longitude = LON + SIDE / 2, latitude = LAT - SIDE / 10)
-        val hints = buildingHints(point, listOf(farthest, far, near, middle)).nearby
+        val hints = buildingHints(point, listOf(farthest(), far(), near(), middle())).nearby
 
         assertEquals(listOf("A-1", "A-2", "A-3"), hints.map { it.building.symbol })
         assertEquals(SIDE / 10 * METERS_PER_DEGREE, hints.first().distanceMeters, METER)
@@ -36,12 +31,20 @@ class NearestBuildingsTest {
     @Test
     fun putsInsideFirst() {
         val point = GeoPoint(longitude = LON + SIDE / 2, latitude = LAT + 2.4 * SIDE)
-        val hints = buildingHints(point, listOf(near, middle, far), limit = 2).nearby
+        val hints = buildingHints(point, listOf(near(), middle(), far()), limit = 2).nearby
 
         assertEquals(listOf("A-2", "A-1"), hints.map { it.building.symbol })
         assertEquals(0.0, hints.first().distanceMeters)
         assertTrue(hints.first().isInside)
     }
+
+    private fun near(): Building = square(symbol = "A-1", south = LAT)
+
+    private fun middle(): Building = square(symbol = "A-2", south = LAT + 2 * SIDE)
+
+    private fun far(): Building = square(symbol = "A-3", south = LAT + 4 * SIDE)
+
+    private fun farthest(): Building = square(symbol = "A-4", south = LAT + 6 * SIDE)
 
     private fun square(symbol: String, south: Double): Building =
         Building(
