@@ -113,6 +113,22 @@ class MapAreasTest {
         assertFalse(areas(symbol = "T-15").isNoticeNew)
     }
 
+    /**
+     * Wiersz: V2, napis o zmianie terenu jest znany już w chwili wyboru budynku, zanim mapa przejdzie na jego teren,
+     * więc kamera może zostawić na niego miejsce od razu.
+     *
+     * Wymagania: US1.8, US2.8
+     */
+    @Test
+    fun predictsSelectionNotice() {
+        val shift = AreaShift(name = "Wittigowo", kilometers = 2, direction = CompassDirection.North)
+        assertNull(areas().selectionNotice)
+        assertEquals(shift, areas(symbol = "T-15").selectionNotice)
+        areas(symbol = "T-15").followSelection()
+        assertEquals(shift, areas(symbol = "T-15").selectionNotice)
+        assertNull(areas(symbol = START_BUILDING).selectionNotice)
+    }
+
     /** Wiersz: V1, teren wybrany przez osobę w panelu nie daje napisu o zmianie terenu. Wymagania: US1.7, US1.8 */
     @Test
     fun skipsNoticeForOwnChoice() {

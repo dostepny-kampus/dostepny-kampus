@@ -15,11 +15,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.feature.map.R
@@ -52,7 +57,7 @@ internal fun AreaNotice(shift: AreaShift, isNew: Boolean, onShow: (Boolean) -> U
         border = mapControlBorder(),
     ) {
         Text(
-            text = stringResource(R.string.mapa_teren_pokazuje, shift.name, shift.kilometers, direction),
+            text = noticeText(shift),
             modifier =
                 Modifier.padding(Odstepy.m).semantics {
                     contentDescription = description
@@ -62,6 +67,31 @@ internal fun AreaNotice(shift: AreaShift, isNew: Boolean, onShow: (Boolean) -> U
         )
     }
 }
+
+/**
+ * Wysokość napisu [shift] razem z odstępami wokół na mapie szerokiej na [width], liczona bez rysowania napisu;
+ * `0.dp` bez napisu.
+ *
+ * Wymagania: US2.8, NFR-53
+ */
+@Composable
+internal fun rememberNoticeHeight(shift: AreaShift?, width: Dp): Dp {
+    if (shift == null) return 0.dp
+    val text = noticeText(shift)
+    val style = MaterialTheme.typography.bodyLarge
+    val measurer = rememberTextMeasurer()
+    val density = LocalDensity.current
+    val around = (Odstepy.s + Odstepy.m) * 2
+    return remember(text, style, width, density) {
+        val maxWidth = with(density) { (width - around).roundToPx() }.coerceAtLeast(minimumValue = 0)
+        val laid = measurer.measure(text = text, style = style, constraints = Constraints(maxWidth = maxWidth))
+        with(density) { laid.size.height.toDp() } + around
+    }
+}
+
+@Composable
+private fun noticeText(shift: AreaShift): String =
+    stringResource(R.string.mapa_teren_pokazuje, shift.name, shift.kilometers, stringResource(shift.direction.label))
 
 private val CompassDirection.label: Int
     get() =
