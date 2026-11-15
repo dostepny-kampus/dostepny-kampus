@@ -417,6 +417,10 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
           <excludedGroups>
             <param>kontekst-springa</param>
           </excludedGroups>
+          <!-- Scenariusze Cucumber nie dziedziczą znacznika klasy zestawu, więc same zestawy są wykluczone po nazwie. -->
+          <excludedTestClasses>
+            <param>io.github.dostepnykampus.*Specs</param>
+          </excludedTestClasses>
           <threads>4</threads>
           <mutationThreshold>100</mutationThreshold>
           <outputFormats>
