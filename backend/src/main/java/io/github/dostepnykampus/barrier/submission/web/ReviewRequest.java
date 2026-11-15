@@ -7,6 +7,7 @@ package io.github.dostepnykampus.barrier.submission.web;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.dostepnykampus.barrier.submission.ReviewDecision;
+import io.github.dostepnykampus.barrier.submission.content.BarrierType;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
@@ -14,7 +15,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * Ciało decyzji Weryfikatora, schemat ReviewDecision w OpenAPI.
  *
- * <p>Wymagania: US10, BR-3, BR-16</p>
+ * <p>Wymagania: US10, US10.3, BR-3, BR-14, BR-16</p>
  *
  * @param decision Rodzaj decyzji: ACCEPT albo REJECT
  * @param version Wersja zgłoszenia, którą ocenił Weryfikator
@@ -33,7 +34,8 @@ record ReviewRequest(
 
     /**
      * Przenosi ciało żądania do decyzji domeny; brak wersji, nieznany rodzaj decyzji
-     * i odrzucenie bez powodu kończą się wyjątkiem {@link InvalidSubmission}.
+     * i odrzucenie bez powodu kończą się wyjątkiem {@link InvalidSubmission}; tak samo
+     * przyjęcie z samym typem bariery albo samą uciążliwością.
      *
      * @param path Identyfikator zgłoszenia z adresu
      * @param reviewer Identyfikator konta Weryfikatora
@@ -45,7 +47,7 @@ record ReviewRequest(
         }
         final ReviewDecision result;
         if ("ACCEPT".equals(this.decision)) {
-            result = new ReviewDecision.Accepted(path, this.version, reviewer);
+            result = this.accepted(path, this.version, reviewer);
         } else if ("REJECT".equals(this.decision)) {
             if (this.rejectionReason == null || this.rejectionReason.isBlank()) {
                 throw new InvalidSubmission("Odrzucenie wymaga powodu w polu rejectionReason");
@@ -55,6 +57,24 @@ record ReviewRequest(
             );
         } else {
             throw new InvalidSubmission("Pole decision przyjmuje ACCEPT albo REJECT");
+        }
+        return result;
+    }
+
+    private ReviewDecision accepted(final UUID path, final int expected, final String reviewer) {
+        if (this.barrierType == null && this.severity != null) {
+            throw new InvalidSubmission("Uciążliwość wymaga też typu w polu barrierType");
+        }
+        if (this.barrierType != null && this.severity == null) {
+            throw new InvalidSubmission("Typ bariery wymaga też uciążliwości w polu severity");
+        }
+        final ReviewDecision result;
+        if (this.barrierType == null || this.severity == null) {
+            result = new ReviewDecision.Accepted(path, expected, reviewer);
+        } else {
+            result = new ReviewDecision.Classified(
+                path, expected, reviewer, new BarrierType(this.barrierType), this.severity
+            );
         }
         return result;
     }

@@ -5,6 +5,9 @@
  */
 package io.github.dostepnykampus.barrier.submission;
 
+import io.github.dostepnykampus.barrier.submission.content.BarrierType;
+import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
@@ -13,7 +16,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Decyzja Weryfikatora: przyjęcie albo odrzucenie z niepustym powodem.
  *
- * <p>Wymagania: BR-16</p>
+ * <p>Wymagania: US10.3, BR-14, BR-16</p>
  *
  * @since 0.1.0
  */
@@ -41,6 +44,31 @@ final class ReviewDecisionTest {
                 new ReviewDecision.Rejected(SubmissionSamples.ID, 1, "konto", "powód").outcome()
             ),
             "Status po decyzji nie zgadza się z rodzajem decyzji"
+        );
+    }
+
+    @Test
+    void requiresClassificationOfQuickSubmission() {
+        Assertions.assertThrows(
+            InvalidSubmission.class,
+            () -> new ReviewDecision.Accepted(SubmissionSamples.ID, 1, "konto")
+                .admit(SubmissionKind.QUICK),
+            "Przyjęcie zgłoszenia szybkiego bez typu i uciążliwości zostało dopuszczone"
+        );
+    }
+
+    @Test
+    void refusesClassificationOfOtherKinds() {
+        Assertions.assertAll(
+            Stream.of(SubmissionKind.PRECISE, SubmissionKind.ENTRANCE_MARKING).map(
+                kind -> () -> Assertions.assertThrows(
+                    InvalidSubmission.class,
+                    () -> new ReviewDecision.Classified(
+                        SubmissionSamples.ID, 1, "konto", new BarrierType(3), 2
+                    ).admit(kind),
+                    String.format("Typ i uciążliwość przy rodzaju %s zostały dopuszczone", kind)
+                )
+            )
         );
     }
 }

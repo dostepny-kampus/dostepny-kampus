@@ -5,19 +5,23 @@
  */
 package io.github.dostepnykampus.barrier.submission;
 
+import io.github.dostepnykampus.barrier.submission.content.BarrierType;
+import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
 import java.util.Objects;
 import java.util.UUID;
 
 /**
  * Decyzja Weryfikatora o zgłoszeniu, które wziął do weryfikacji: przyjęcie albo
- * odrzucenie z niepustym powodem.
+ * odrzucenie z niepustym powodem. Przyjęcie zgłoszenia szybkiego niesie typ bariery
+ * i uciążliwość ustalone przez Weryfikatora, przyjęcie innych zgłoszeń ich nie niesie.
  *
- * <p>Wymagania: US10, BR-3, BR-11, BR-16</p>
+ * <p>Wymagania: US10, US10.3, BR-3, BR-11, BR-14, BR-16</p>
  *
  * @since 0.1.0
  */
 public sealed interface ReviewDecision
-    permits ReviewDecision.Accepted, ReviewDecision.Rejected {
+    permits ReviewDecision.Accepted, ReviewDecision.Classified, ReviewDecision.Rejected {
 
     /**
      * Identyfikator zgłoszenia.
@@ -48,6 +52,17 @@ public sealed interface ReviewDecision
     SubmissionStatus outcome();
 
     /**
+     * Sprawdza, czy decyzja pasuje do rodzaju zgłoszenia: przyjęcie zgłoszenia szybkiego
+     * wymaga typu i uciążliwości, a przyjęcie innego rodzaju ich nie przyjmuje; niezgodność
+     * kończy się wyjątkiem {@link InvalidSubmission}.
+     *
+     * <p>Wymagania: US10.3, BR-14</p>
+     *
+     * @param kind Rodzaj zgłoszenia, którego dotyczy decyzja
+     */
+    void admit(SubmissionKind kind);
+
+    /**
      * Przyjęcie zgłoszenia.
      *
      * @param id Identyfikator zgłoszenia
@@ -73,6 +88,64 @@ public sealed interface ReviewDecision
         @Override
         public SubmissionStatus outcome() {
             return SubmissionStatus.ACCEPTED;
+        }
+
+        @Override
+        public void admit(final SubmissionKind kind) {
+            if (kind == SubmissionKind.QUICK) {
+                throw new InvalidSubmission(
+                    "Przyjęcie zgłoszenia szybkiego wymaga pól barrierType i severity (BR-14)"
+                );
+            }
+        }
+    }
+
+    /**
+     * Przyjęcie zgłoszenia szybkiego z typem bariery i uciążliwością.
+     *
+     * @param id Identyfikator zgłoszenia
+     * @param expectedVersion Wersja, którą ocenił Weryfikator
+     * @param reviewer Identyfikator konta Weryfikatora
+     * @param type Typ bariery ustalony przez Weryfikatora
+     * @param severity Uciążliwość od 1 do 3 ustalona przez Weryfikatora
+     * @since 0.1.0
+     */
+    record Classified(
+        UUID id, int expectedVersion, String reviewer, BarrierType type, int severity
+    ) implements ReviewDecision {
+
+        /**
+         * Przyjęcie z typem i uciążliwością; brak identyfikatora, konta albo typu kończy się
+         * wyjątkiem NullPointerException, a uciążliwość spoza zakresu 1–3 wyjątkiem
+         * {@link InvalidSubmission}.
+         *
+         * @param id Identyfikator zgłoszenia
+         * @param expectedVersion Wersja, którą ocenił Weryfikator
+         * @param reviewer Identyfikator konta Weryfikatora
+         * @param type Typ bariery ustalony przez Weryfikatora
+         * @param severity Uciążliwość od 1 do 3 ustalona przez Weryfikatora
+         */
+        public Classified {
+            Objects.requireNonNull(id, "id");
+            Objects.requireNonNull(reviewer, "reviewer");
+            Objects.requireNonNull(type, "type");
+            if (severity < 1 || severity > 3) {
+                throw new InvalidSubmission("Uciążliwość spoza zakresu 1–3");
+            }
+        }
+
+        @Override
+        public SubmissionStatus outcome() {
+            return SubmissionStatus.ACCEPTED;
+        }
+
+        @Override
+        public void admit(final SubmissionKind kind) {
+            if (kind != SubmissionKind.QUICK) {
+                throw new InvalidSubmission(
+                    "Typ bariery i uciążliwość ustala się tylko przy zgłoszeniu szybkim (BR-14)"
+                );
+            }
         }
     }
 
@@ -109,6 +182,11 @@ public sealed interface ReviewDecision
         @Override
         public SubmissionStatus outcome() {
             return SubmissionStatus.REJECTED;
+        }
+
+        @Override
+        public void admit(final SubmissionKind kind) {
+            Objects.requireNonNull(kind, "kind");
         }
     }
 }
