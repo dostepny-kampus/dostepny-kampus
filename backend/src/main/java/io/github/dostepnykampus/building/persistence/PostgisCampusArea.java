@@ -10,8 +10,8 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
 /**
- * Teren PWr w PostGIS: odległość punktu od konturów budynków liczy
- * baza na elipsoidzie, w metrach na ziemi.
+ * Teren PWr w PostGIS: punkt należy do terenu, gdy któraś z granic
+ * w tabeli campus_areas go pokrywa, także na linii granicy.
  *
  * <p>Wymagania: BR-G5</p>
  *
@@ -21,14 +21,14 @@ import org.springframework.stereotype.Component;
 public final class PostgisCampusArea implements CampusArea {
 
     /**
-     * Dostęp do tabeli buildings.
+     * Dostęp do tabeli campus_areas.
      */
     private final JdbcClient jdbc;
 
     /**
      * Tworzy adapter.
      *
-     * @param jdbc Dostęp do tabeli buildings
+     * @param jdbc Dostęp do tabeli campus_areas
      */
     public PostgisCampusArea(final JdbcClient jdbc) {
         this.jdbc = jdbc;
@@ -39,17 +39,12 @@ public final class PostgisCampusArea implements CampusArea {
         return this.jdbc.sql(
             """
             SELECT EXISTS (
-                SELECT 1 FROM buildings
-                WHERE ST_DWithin(
-                    outline::geography,
-                    ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography,
-                    :radius
-                )
+                SELECT 1 FROM campus_areas
+                WHERE ST_Covers(boundary, ST_SetSRID(ST_MakePoint(:lon, :lat), 4326))
             )
             """
         ).param("lat", lat)
             .param("lon", lon)
-            .param("radius", CampusArea.RADIUS_METERS)
             .query(Boolean.class)
             .single();
     }
