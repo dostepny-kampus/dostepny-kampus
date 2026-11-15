@@ -59,7 +59,7 @@ class SheetEntranceTest {
             stack.add(BuildingRoute(symbol = "A-1"))
             Snapshot.sendApplyNotifications()
         }
-        awaitCard()
+        advanceUntilCardComposed()
         compose.runOnUiThread {
             motion.record(move(durationMillis = MOVE_MILLIS))
             Snapshot.sendApplyNotifications()
@@ -116,7 +116,7 @@ class SheetEntranceTest {
             stack.add(BuildingRoute(symbol = "A-1"))
             Snapshot.sendApplyNotifications()
         }
-        awaitCard()
+        advanceUntilCardComposed()
         compose.runOnUiThread {
             motion.record(move(durationMillis = 0L))
             Snapshot.sendApplyNotifications()
@@ -136,8 +136,7 @@ class SheetEntranceTest {
         compose.waitForIdle()
     }
 
-    /** Klatki, aż NavDisplay złoży kartę; ruch mapy zapisuje się dopiero po złożeniu sceny, jak w aplikacji. */
-    private fun awaitCard() {
+    private fun advanceUntilCardComposed() {
         repeat(MAX_FRAMES) {
             compose.mainClock.advanceTimeByFrame()
             if (compose.onAllNodesWithText("${BuildingRoute(symbol = "A-1")}").fetchSemanticsNodes().isNotEmpty()) {
