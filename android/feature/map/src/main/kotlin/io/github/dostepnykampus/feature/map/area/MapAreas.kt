@@ -14,14 +14,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
-import io.github.dostepnykampus.feature.map.data.AreaChoice
-import io.github.dostepnykampus.feature.map.data.AreaNeighbor
-import io.github.dostepnykampus.feature.map.data.CampusMapData
-import io.github.dostepnykampus.feature.map.data.MapArea
-import io.github.dostepnykampus.feature.map.data.areaChoices
-import io.github.dostepnykampus.feature.map.data.areaNeighbor
-import io.github.dostepnykampus.feature.map.data.areaOf
-import io.github.dostepnykampus.feature.map.data.center
+import io.github.dostepnykampus.feature.map.campus.CampusMapData
+import io.github.dostepnykampus.feature.map.campus.MapArea
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
 /**

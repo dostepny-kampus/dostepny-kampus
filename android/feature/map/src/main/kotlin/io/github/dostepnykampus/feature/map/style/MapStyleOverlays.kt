@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.geo.toPosition
-import io.github.dostepnykampus.feature.map.data.CampusBounds
-import io.github.dostepnykampus.feature.map.data.SelectedEntrance
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject

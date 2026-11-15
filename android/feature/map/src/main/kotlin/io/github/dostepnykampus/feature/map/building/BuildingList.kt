@@ -31,7 +31,7 @@ import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.area.AreaOrder
 import io.github.dostepnykampus.feature.map.area.buildingsWord
-import io.github.dostepnykampus.feature.map.data.MapArea
+import io.github.dostepnykampus.feature.map.campus.MapArea
 
 /**
  * Lista budynków V1 podzielona nagłówkami terenów z liczbą budynków, np. „Wittigowo · 9”. W terenie

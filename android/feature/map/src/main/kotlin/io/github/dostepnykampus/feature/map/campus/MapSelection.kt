@@ -3,7 +3,9 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map.data
+package io.github.dostepnykampus.feature.map.campus
+
+import io.github.dostepnykampus.feature.map.area.areaOf
 
 /**
  * Zaznaczenie na mapie V1. Zmienia się przy każdym wyborze osoby, a dane katalogu [CampusMapData] zostają te same,

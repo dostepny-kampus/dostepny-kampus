@@ -20,8 +20,8 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.geo.building.searchBuildings
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.area.AreaOrder
-import io.github.dostepnykampus.feature.map.data.CampusBounds
-import io.github.dostepnykampus.feature.map.data.MapArea
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import io.github.dostepnykampus.feature.map.campus.MapArea
 import io.github.dostepnykampus.feature.map.unitSquareBuilding
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

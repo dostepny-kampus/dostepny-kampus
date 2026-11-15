@@ -12,10 +12,10 @@ import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
-import io.github.dostepnykampus.feature.map.data.MapSelection
-import io.github.dostepnykampus.feature.map.data.SelectedEntrance
-import io.github.dostepnykampus.feature.map.data.campusMapData
-import io.github.dostepnykampus.feature.map.data.selection
+import io.github.dostepnykampus.feature.map.campus.MapSelection
+import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
+import io.github.dostepnykampus.feature.map.campus.campusMapData
+import io.github.dostepnykampus.feature.map.campus.selection
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement

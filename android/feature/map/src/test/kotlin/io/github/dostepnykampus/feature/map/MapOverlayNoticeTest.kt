@@ -24,9 +24,9 @@ import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.MapAreaFixtures.area
 import io.github.dostepnykampus.feature.map.MapAreaFixtures.twoAreas
+import io.github.dostepnykampus.feature.map.area.center
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
-import io.github.dostepnykampus.feature.map.data.center
 import io.github.dostepnykampus.feature.map.overlay.MapOverlay
 import org.junit.Assert.assertTrue
 import org.junit.Rule

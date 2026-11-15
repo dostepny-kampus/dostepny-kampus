@@ -7,9 +7,9 @@ package io.github.dostepnykampus.feature.map
 
 import androidx.compose.runtime.mutableStateOf
 import io.github.dostepnykampus.feature.map.area.MapAreas
-import io.github.dostepnykampus.feature.map.data.CampusBounds
-import io.github.dostepnykampus.feature.map.data.CampusMapData
-import io.github.dostepnykampus.feature.map.data.MapArea
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import io.github.dostepnykampus.feature.map.campus.CampusMapData
+import io.github.dostepnykampus.feature.map.campus.MapArea
 import kotlinx.serialization.json.JsonObject
 
 /** Tereny testowe mapy V1 na prostokątach (nie dane PWr), wspólne dla testów nakładki. */

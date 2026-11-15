@@ -34,7 +34,7 @@ import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.building.BuildingCardScreen
 import io.github.dostepnykampus.feature.map.building.BuildingCardViewModel
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
-import io.github.dostepnykampus.feature.map.data.CampusMapData
+import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute

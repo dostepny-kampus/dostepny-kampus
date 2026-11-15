@@ -20,7 +20,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import io.github.dostepnykampus.feature.map.data.AreaChoice
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test

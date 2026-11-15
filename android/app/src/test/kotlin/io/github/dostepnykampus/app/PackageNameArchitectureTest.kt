@@ -112,9 +112,6 @@ class PackageNameArchitectureTest {
         const val HINT =
             "Pakiet ma nazwę spoza słownika tematów i warstw, leży za głęboko albo powtarza temat modułu"
 
-        val EXCEPTIONS =
-            mapOf(
-                "$BASE.feature.map.data" to "#1689",
-            )
+        val EXCEPTIONS = emptyMap<String, String>()
     }
 }
