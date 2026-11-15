@@ -41,6 +41,7 @@ import io.github.dostepnykampus.feature.map.camera.padding
 import io.github.dostepnykampus.feature.map.camera.styleColors
 import io.github.dostepnykampus.feature.map.camera.toCamera
 import io.github.dostepnykampus.feature.map.camera.toPosition
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
@@ -112,7 +113,6 @@ object MapLibreMapView : CampusMapView {
         val density = LocalDensity.current
         val colors = DostepnyKampusTheme.mapColors
         val styleColors = colors.styleColors()
-        val style = rememberMapStyle(data = data, selection = selection, colors = styleColors)
         val look = remember(data, selection, styleColors) { selectionLook(data, selection, styleColors) }
         val labelSize = LABEL_TEXT_SP * density.density * density.fontScale.coerceAtMost(LABEL_MAX_FONT_SCALE)
         val tolerance = TOUCH_TOLERANCE_DP * density.density
@@ -127,7 +127,12 @@ object MapLibreMapView : CampusMapView {
         FollowScreenLifecycle(mapView)
         var map by remember { mutableStateOf<MapLibreMap?>(null) }
         var size by remember { mutableStateOf(IntSize.Zero) }
-        val limits = remember(selection.bounds, size, density) { density.mapLimits(selection.bounds, size) }
+        val limits =
+            remember(selection.bounds, size, density) {
+                density.mapLimits(selection.bounds, size).takeIf { size != IntSize.Zero }
+            }
+        val style =
+            rememberMapStyle(data = data, selection = selection, colors = styleColors, tiles = limits?.tileBounds)
         val currentMove by rememberUpdatedState(move)
         val currentInset by rememberUpdatedState(inset)
         val currentData by rememberUpdatedState(data)
@@ -154,7 +159,7 @@ object MapLibreMapView : CampusMapView {
             images = images,
         )
         DisposableEffect(map, limits) {
-            if (size != IntSize.Zero) limits?.let { map?.limitTo(it) }
+            limits?.let { map?.limitTo(it) }
             onDispose {}
         }
         map.FollowEachMoveOnce(move = move, inset = inset)
@@ -177,7 +182,7 @@ object MapLibreMapView : CampusMapView {
 
     @Composable
     private fun MapLibreMap?.FollowStyle(
-        style: String,
+        style: String?,
         data: CampusMapData,
         look: SelectionLook,
         entrance: SelectedEntrance?,
@@ -190,10 +195,12 @@ object MapLibreMapView : CampusMapView {
         val currentEntrance by rememberUpdatedState(entrance)
         DisposableEffect(map, style, images) {
             loaded = null
-            map?.setStyle(styleBuilder(style)) { ready ->
-                ready.addMapImages(labels = currentData.labels, images = images)
-                StyleTarget(ready).showSelection(currentLook, selectionImages(currentEntrance, images))
-                loaded = ready
+            style?.let { json ->
+                map?.setStyle(styleBuilder(json)) { ready ->
+                    ready.addMapImages(labels = currentData.labels, images = images)
+                    StyleTarget(ready).showSelection(currentLook, selectionImages(currentEntrance, images))
+                    loaded = ready
+                }
             }
             onDispose {}
         }
@@ -366,18 +373,21 @@ internal fun northUpOptions(context: Context): MapLibreMapOptions =
 
 /**
  * Styl mapy jako napis JSON bez zaznaczenia budynku, wejścia i bariery: z [selection] bierze tylko prostokąt
- * i granicę terenu. Powstaje od nowa tylko po zmianie danych [data], terenu albo barw [colors]; zaznaczenie i ruch
- * kamery rekomponują widok mapy, ale stylu nie budują. Funkcja [build] składa styl.
+ * i granicę terenu, a podkład ogranicza do prostokąta [tiles]. Powstaje od nowa tylko po zmianie danych [data],
+ * terenu, barw [colors] albo [tiles]; zaznaczenie i ruch kamery stylu nie budują. Z terenem, a bez [tiles] (mapa
+ * jeszcze bez rozmiaru) stylu nie ma. Funkcja [build] składa styl.
  */
 @Composable
 internal fun rememberMapStyle(
     data: CampusMapData,
     selection: MapSelection,
     colors: MapStyleColors,
-    build: (CampusMapData, MapSelection, MapStyleColors) -> String = ::campusMapStyle,
-): String =
-    remember(data, selection.bounds, selection.boundary, colors) {
-        build(data, MapSelection(bounds = selection.bounds, boundary = selection.boundary), colors)
+    tiles: CampusBounds?,
+    build: (CampusMapData, MapSelection, MapStyleColors, CampusBounds?) -> String = ::campusMapStyle,
+): String? =
+    remember(data, selection.bounds, selection.boundary, colors, tiles) {
+        val area = MapSelection(bounds = selection.bounds, boundary = selection.boundary)
+        if (selection.bounds != null && tiles == null) null else build(data, area, colors, tiles)
     }
 
 /**

@@ -9,9 +9,11 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import kotlin.math.PI
 import kotlin.math.asinh
+import kotlin.math.atan
 import kotlin.math.cos
 import kotlin.math.log2
 import kotlin.math.pow
+import kotlin.math.sinh
 import kotlin.math.tan
 
 /** Powiększenie pierwszego widoku: symbole budynków są czytelne. */
@@ -89,6 +91,25 @@ internal class MapLimits(val bounds: CampusBounds, val widthDp: Double, val heig
         )
 
     /**
+     * Prostokąt podkładu: [bounds] powiększony o pół szerokości i pół wysokości widoku przy [minZoom],
+     * żeby przy brzegu terenu nie było pustych pasów bez podkładu.
+     *
+     * Wymagania: NFR-39
+     */
+    val tileBounds: CampusBounds
+        get() {
+            val world = WORLD_DP_AT_ZOOM_0 * 2.0.pow(minZoom)
+            val halfLongitude = widthDp / 2 / world * FULL_TURN_DEGREES
+            val halfY = heightDp / 2 / world * (2 * PI)
+            return CampusBounds(
+                west = bounds.west - halfLongitude,
+                south = latitudeOf(mercatorY(bounds.south) - halfY),
+                east = bounds.east + halfLongitude,
+                north = latitudeOf(mercatorY(bounds.north) + halfY),
+            )
+        }
+
+    /**
      * Widok [camera] w granicach: środek w [bounds], powiększenie co najmniej [minZoom]. Strzałki i „Pomniejsz”
      * zatrzymują się na granicy bez komunikatu.
      */
@@ -105,6 +126,9 @@ internal fun fitZoom(viewDp: Double, worldShare: Double): Double = log2(viewDp /
 
 /** Współrzędna pionowa szerokości [latitude] w rzucie Merkatora, w radianach. */
 internal fun mercatorY(latitude: Double): Double = asinh(tan(Math.toRadians(latitude)))
+
+/** Szerokość geograficzna w stopniach dla współrzędnej pionowej [y] rzutu Merkatora w radianach. */
+internal fun latitudeOf(y: Double): Double = Math.toDegrees(atan(sinh(y)))
 
 /**
  * Kierunek strzałki przesuwania mapy, np. „Przesuń mapę w górę”.

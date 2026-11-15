@@ -47,7 +47,8 @@ class MapStyleRememberTest {
     private var camera by mutableStateOf(MapCamera(center = a, zoom = 16.0))
     private val cameras = mutableListOf<MapCamera>()
     private val builds = mutableListOf<String>()
-    private val styles = mutableListOf<String>()
+    private val styles = mutableListOf<String?>()
+    private var tiles by mutableStateOf<CampusBounds?>(null)
 
     /** Sam ruch kamery rekomponuje widok, ale stylu nie buduje drugi raz. */
     @Test
@@ -81,13 +82,33 @@ class MapStyleRememberTest {
         show()
         val area = CampusBounds(west = 0.0, south = 0.0, east = 1.0, north = 1.0)
         compose.runOnIdle { data = dataOf(building, other) }
-        compose.runOnIdle { selection = MapSelection(bounds = area) }
+        compose.runOnIdle {
+            selection = MapSelection(bounds = area)
+            tiles = area
+        }
         compose.runOnIdle { selection = selection.copy(boundary = outline) }
         compose.runOnIdle { colors = day.copy(isNight = true) }
+        compose.runOnIdle { tiles = area.copy(west = -1.0) }
         compose.runOnIdle {
-            assertEquals(5, builds.size)
-            assertEquals(5, builds.toSet().size)
+            assertEquals(6, builds.size)
+            assertEquals(6, builds.toSet().size)
             assertEquals(builds.last(), styles.last())
+        }
+    }
+
+    /** Z terenem styl powstaje dopiero z prostokątem podkładu, czyli po pomiarze mapy. Wymagania: NFR-39 */
+    @Test
+    fun waitsForMeasuredMap() {
+        selection = MapSelection(bounds = CampusBounds(west = 0.0, south = 0.0, east = 1.0, north = 1.0))
+        show()
+        compose.runOnIdle {
+            assertEquals("bez rozmiaru mapy styl nie powstaje", 0, builds.size)
+            assertEquals("bez rozmiaru mapy brak stylu", null, styles.last())
+        }
+        compose.runOnIdle { tiles = selection.bounds }
+        compose.runOnIdle {
+            assertEquals("po pomiarze jeden styl", 1, builds.size)
+            assertEquals("po pomiarze styl gotowy", builds.single(), styles.last())
         }
     }
 
@@ -95,8 +116,13 @@ class MapStyleRememberTest {
         compose.setContent {
             val seen = camera
             val style =
-                rememberMapStyle(data = data, selection = selection, colors = colors) { mapData, area, palette ->
-                    campusMapStyle(mapData, area, palette).also(builds::add)
+                rememberMapStyle(
+                    data = data,
+                    selection = selection,
+                    colors = colors,
+                    tiles = tiles,
+                ) { mapData, area, palette, box ->
+                    campusMapStyle(data = mapData, selection = area, colors = palette, tiles = box).also(builds::add)
                 }
             SideEffect {
                 cameras += seen

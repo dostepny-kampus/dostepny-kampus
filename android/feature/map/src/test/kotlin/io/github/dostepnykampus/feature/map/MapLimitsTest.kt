@@ -47,7 +47,27 @@ class MapLimitsTest {
         assertEquals(14.0 + log2(1.5), MapLimits(tall, widthDp = 1024.0, heightDp = 768.0).minZoom, ZOOM_DELTA)
     }
 
+    /**
+     * Wiersz: V1, podkład sięga poza prostokąt terenu o pół widoku mapy przy najmniejszym powiększeniu,
+     * więc przy brzegu terenu nie ma pustych pasów: na pionowym telefonie 400 × 800 dp i na poziomym 1024 × 768 dp.
+     *
+     * Wymagania: NFR-39
+     */
+    @Test
+    fun extendsTilesByHalfView() {
+        val wide = CampusBounds(west = 0.0, south = -span / 8, east = span, north = span / 8)
+        val tall = CampusBounds(west = 0.0, south = -span / 2, east = span / 8, north = span / 2)
+        val portrait = MapLimits(wide, widthDp = 400.0, heightDp = 800.0).tileBounds
+        val landscape = MapLimits(tall, widthDp = 1024.0, heightDp = 768.0).tileBounds
+        assertEquals(-span / 2, portrait.west, DEGREE_DELTA, "pionowy: zachód o pół szerokości widoku")
+        assertEquals(1.5 * span, portrait.east, DEGREE_DELTA, "pionowy: wschód o pół szerokości widoku")
+        assertEquals(span / 8 + span, portrait.north, DEGREE_DELTA, "pionowy: północ o pół wysokości widoku")
+        assertEquals(span / 8 + 2 * span / 3, landscape.east, DEGREE_DELTA, "poziomy: wschód o pół szerokości")
+        assertEquals(span, landscape.north, DEGREE_DELTA, "poziomy: północ o pół wysokości widoku")
+    }
+
     private companion object {
         const val ZOOM_DELTA = 1e-3
+        const val DEGREE_DELTA = 1e-9
     }
 }
