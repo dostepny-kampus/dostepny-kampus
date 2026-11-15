@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.building
@@ -38,9 +38,9 @@ class BuildingCatalogCacheTest {
         val repository = repository(remote = { listed("A-2") })
         runBlocking {
             repository.catalog()
-            assertTrue(fake.entity?.run { listJson.contains("Serwer A-2") } == true)
-            assertEquals(42L, fake.entity?.syncedAt)
-            assertEquals(Instant.ofEpochMilli(42L), repository.syncedAt())
+            assertTrue(fake.entity?.run { listJson.contains("Serwer A-2") } == true, "lista budynków zapisana w kopii")
+            assertEquals(42L, fake.entity?.syncedAt, "czas zapisu kopii")
+            assertEquals(Instant.ofEpochMilli(42L), repository.syncedAt(), "czas synchronizacji z repozytorium")
         }
     }
 
@@ -56,11 +56,15 @@ class BuildingCatalogCacheTest {
         runBlocking {
             online.catalog()
             val restored = offline.catalog()
-            assertEquals(SERVER_SOURCE, restored.attribution)
-            assertEquals(listOf("A-2", "N-1"), restored.buildings.map { it.symbol })
-            assertEquals(listOf("Serwer A-2", "Serwer N-1"), restored.buildings.map { it.name })
-            assertEquals(listOf(outline(), outline()), restored.buildings.map { it.outline })
-            assertEquals(Instant.ofEpochMilli(42L), offline.syncedAt())
+            assertEquals(SERVER_SOURCE, restored.attribution, "źródło danych z kopii")
+            assertEquals(listOf("A-2", "N-1"), restored.buildings.map { it.symbol }, "symbole budynków z kopii")
+            assertEquals(
+                listOf("Serwer A-2", "Serwer N-1"),
+                restored.buildings.map { it.name },
+                "nazwy budynków z kopii",
+            )
+            assertEquals(listOf(outline(), outline()), restored.buildings.map { it.outline }, "obrysy budynków z kopii")
+            assertEquals(Instant.ofEpochMilli(42L), offline.syncedAt(), "czas synchronizacji z kopii")
         }
     }
 
@@ -74,8 +78,8 @@ class BuildingCatalogCacheTest {
         fake.entity = BuildingCacheEntity(id = BUILDING_CACHE_SINGLE_ROW, listJson = "{", syncedAt = 7L)
         val repository = repository(remote = { OFFLINE })
         runBlocking {
-            assertEquals(catalog(), repository.catalog())
-            assertNull(repository.syncedAt())
+            assertEquals(catalog(), repository.catalog(), "katalog wbudowany bez kopii")
+            assertNull(repository.syncedAt(), "brak czasu synchronizacji bez kopii")
         }
     }
 

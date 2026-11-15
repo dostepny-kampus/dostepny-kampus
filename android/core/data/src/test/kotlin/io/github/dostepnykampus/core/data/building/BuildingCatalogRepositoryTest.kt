@@ -44,20 +44,20 @@ class BuildingCatalogRepositoryTest {
     @Test
     fun ordersSymbolsNaturally() {
         val symbols = runBlocking { repository.catalog() }.buildings.map { it.symbol }
-        assertEquals(listOf("A-1", "A-2", "A-10", "B-1", "D-8a"), symbols)
+        assertEquals(listOf("A-1", "A-2", "A-10", "B-1", "D-8a"), symbols, "symbole budynków w kolejności")
     }
 
     @Test
     fun keepsVisitorEntrancesOnly() {
         val types = runBlocking { repository.catalog() }.entrances.map { it.type }
-        assertEquals(listOf("main", "service", "staircase", "yes"), types)
+        assertEquals(listOf("main", "service", "staircase", "yes"), types, "typy wejść w kolejności")
     }
 
     @Test
     fun readsFileOnce() {
         val first = runBlocking { repository.catalog() }
-        assertSame(first, runBlocking { repository.catalog() })
-        assertEquals(1, reads.get())
+        assertSame(first, runBlocking { repository.catalog() }, "drugie pobranie daje ten sam katalog")
+        assertEquals(1, reads.get(), "plik czytany raz")
     }
 
     /**
@@ -83,8 +83,8 @@ class BuildingCatalogRepositoryTest {
             while (held.isNotEmpty()) held.removeFirst().run()
             val (first, second) = calls.awaitAll()
             assertEquals(1 to false, pendingReads to isAnyDone, "wywołania nie trwały naraz albo każde czyta plik")
-            assertSame(first, second)
-            assertEquals(1, reads.get())
+            assertSame(first, second, "drugie wywołanie dostaje ten sam katalog")
+            assertEquals(1, reads.get(), "plik czytany raz")
         }
     }
 
@@ -93,10 +93,10 @@ class BuildingCatalogRepositoryTest {
         val file = File(requireNotNull(System.getProperty("dostepnykampus.buildings")) { "Test uruchamia Gradle" })
         val real = BuildingCatalogRepository(EmptyCoroutineContext) { file.readText() }
         val catalog = runBlocking { real.catalog() }
-        assertEquals(95, catalog.buildings.size)
-        assertEquals(70, catalog.entrances.size)
+        assertEquals(95, catalog.buildings.size, "liczba budynków w katalogu")
+        assertEquals(70, catalog.entrances.size, "liczba wejść w katalogu")
         val visitorTypes = setOf("main", "yes", "service", "staircase", "secondary")
-        assertEquals(visitorTypes, catalog.entrances.mapNotNull { it.type }.toSet())
+        assertEquals(visitorTypes, catalog.entrances.mapNotNull { it.type }.toSet(), "typy wejść w katalogu")
     }
 
     /**
@@ -113,7 +113,11 @@ class BuildingCatalogRepositoryTest {
                 val api = BuildingsApi(http, NetworkModule.json(), server.url("/").toString())
                 runBlocking { DataModule.cardEntrances(api).entrances("A-1") }
             }
-        assertEquals(listOf(EntranceAssessment(LocalDate.of(2026, 10, 1), WALKTHROUGH)), found.map { it.assessment })
+        assertEquals(
+            listOf(EntranceAssessment(LocalDate.of(2026, 10, 1), WALKTHROUGH)),
+            found.map { it.assessment },
+            "ocena wejścia z katalogu",
+        )
     }
 
     private fun collection(features: List<String>): String =

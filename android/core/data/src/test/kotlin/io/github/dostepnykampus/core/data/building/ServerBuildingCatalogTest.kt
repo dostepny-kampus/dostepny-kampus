@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.building
@@ -49,12 +49,16 @@ class ServerBuildingCatalogTest {
                     ),
                 )
             }
-        assertEquals(listOf("A-2", "A-10"), merged.buildings.map { it.symbol })
-        assertEquals(listOf("Nowy A-2", "Nowy A-10"), merged.buildings.map { it.name })
-        assertEquals(listOf(outline, outline), merged.buildings.map { it.outline })
-        assertEquals(listOf("A-2", "A-10"), merged.entrances.map { it.buildingSymbol })
-        assertEquals(SERVER_SOURCE, merged.attribution)
-        assertEquals(listOf("A-2", "A-10", "C-1"), catalog().entrances.map { it.buildingSymbol })
+        assertEquals(listOf("A-2", "A-10"), merged.buildings.map { it.symbol }, "symbole połączonych budynków")
+        assertEquals(listOf("Nowy A-2", "Nowy A-10"), merged.buildings.map { it.name }, "nazwy z serwera")
+        assertEquals(listOf(outline, outline), merged.buildings.map { it.outline }, "obrysy połączonych budynków")
+        assertEquals(listOf("A-2", "A-10"), merged.entrances.map { it.buildingSymbol }, "wejścia połączonych budynków")
+        assertEquals(SERVER_SOURCE, merged.attribution, "źródło danych z serwera")
+        assertEquals(
+            listOf("A-2", "A-10", "C-1"),
+            catalog().entrances.map { it.buildingSymbol },
+            "katalog wbudowany bez zmian",
+        )
     }
 
     /** Wiersz: plan pięter ma tylko budynek szczegółowy z listy serwera; z pliku nie ma żadnego. Wymagania: BR-G1 */
@@ -69,25 +73,29 @@ class ServerBuildingCatalogTest {
         val server = catalog { ServerReply.Ok(BuildingList(source = SERVER_SOURCE, buildings = buildings)) }
 
         val offline = catalog { ServerReply.Offline }
-        assertEquals(listOf(setOf("A-1"), emptySet()), listOf(server.detailed, offline.detailed))
+        assertEquals(
+            listOf(setOf("A-1"), emptySet()),
+            listOf(server.detailed, offline.detailed),
+            "szczegóły z serwera i offline",
+        )
     }
 
     @Test
     fun usesAssetOnNetworkError() {
         val failed = catalog { ServerReply.Offline }
-        assertEquals(catalog(), failed)
+        assertEquals(catalog(), failed, "błąd serwera zostawia katalog wbudowany")
     }
 
     @Test
     fun usesAssetOnServerError() {
         val failed = catalog { ServerReply.Fault(SERVER_ERROR) }
-        assertEquals(catalog(), failed)
+        assertEquals(catalog(), failed, "offline zostawia katalog wbudowany")
     }
 
     @Test
     fun usesAssetForEmptyList() {
         val empty = catalog { ServerReply.Ok(BuildingList(source = SERVER_SOURCE, buildings = emptyList())) }
-        assertEquals(catalog(), empty)
+        assertEquals(catalog(), empty, "pusta lista zostawia katalog wbudowany")
     }
 
     /**
@@ -99,7 +107,7 @@ class ServerBuildingCatalogTest {
     fun asksServerOnce() {
         val repository = repository({ listed("A-2") }, { listed("A-2", "N-1") })
         runBlocking { repeat(2) { repository.catalog() } }
-        assertEquals(1, serverCalls.get())
+        assertEquals(1, serverCalls.get(), "serwer pytany raz")
     }
 
     /**
@@ -112,9 +120,17 @@ class ServerBuildingCatalogTest {
     fun retriesAfterOffline() {
         val repository = repository({ OFFLINE }, { listed("A-2", "N-1") })
         runBlocking {
-            assertEquals(catalog(), repository.catalog())
-            assertEquals(listOf("A-2", "N-1"), repository.refresh().buildings.map { it.symbol })
-            assertEquals(listOf("A-2", "N-1"), repository.catalog().buildings.map { it.symbol })
+            assertEquals(catalog(), repository.catalog(), "katalog wbudowany przed pobraniem")
+            assertEquals(
+                listOf("A-2", "N-1"),
+                repository.refresh().buildings.map { it.symbol },
+                "budynki po odświeżeniu",
+            )
+            assertEquals(
+                listOf("A-2", "N-1"),
+                repository.catalog().buildings.map { it.symbol },
+                "budynki w katalogu po odświeżeniu",
+            )
         }
     }
 
@@ -123,10 +139,14 @@ class ServerBuildingCatalogTest {
     fun seesNewBuildingOnRetry() {
         val repository = repository({ listed("A-2") }, { listed("A-2", "N-1") })
         runBlocking {
-            assertEquals(listOf("A-2"), repository.catalog().buildings.map { it.symbol })
-            assertEquals(listOf("A-2", "N-1"), repository.refresh().buildings.map { it.symbol })
+            assertEquals(listOf("A-2"), repository.catalog().buildings.map { it.symbol }, "budynki przed odświeżeniem")
+            assertEquals(
+                listOf("A-2", "N-1"),
+                repository.refresh().buildings.map { it.symbol },
+                "budynki po odświeżeniu",
+            )
         }
-        assertEquals(2, serverCalls.get())
+        assertEquals(2, serverCalls.get(), "serwer pytany dwa razy")
     }
 
     /**
@@ -141,15 +161,15 @@ class ServerBuildingCatalogTest {
             repository({ listed("A-2", "N-1") }, { OFFLINE }, { throw IOException("zerwane połączenie") })
         runBlocking {
             val downloaded = repository.catalog()
-            assertEquals(downloaded, repository.refresh())
+            assertEquals(downloaded, repository.refresh(), "pobrany katalog po odświeżeniu")
             val afterError =
                 try {
                     repository.refresh()
                 } catch (expected: IOException) {
                     downloaded
                 }
-            assertEquals(downloaded, afterError)
-            assertEquals(downloaded, repository.catalog())
+            assertEquals(downloaded, afterError, "katalog po błędzie jak pobrany")
+            assertEquals(downloaded, repository.catalog(), "katalog po błędzie jak pobrany")
         }
     }
 
@@ -176,11 +196,15 @@ class ServerBuildingCatalogTest {
             val opened = launch { repository.catalog() }
             val retried = launch { repository.refresh() }
             repeat(PENDING_YIELDS) { yield() }
-            assertEquals(1, serverCalls.get())
+            assertEquals(1, serverCalls.get(), "serwer pytany raz")
             gate.complete(Unit)
             opened.join()
             retried.join()
-            assertEquals(listOf("A-2", "N-1"), repository.catalog().buildings.map { it.symbol })
+            assertEquals(
+                listOf("A-2", "N-1"),
+                repository.catalog().buildings.map { it.symbol },
+                "budynki po zakończeniu pobierania",
+            )
         }
     }
 

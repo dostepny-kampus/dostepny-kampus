@@ -23,7 +23,7 @@ class ServerEntrancesTest {
         runBlocking {
             val entrances = ServerEntrancesRepository { ServerReply.Ok(CARD) }
 
-            assertEquals(listOf(ENTRANCE), entrances.entrances(SYMBOL))
+            assertEquals(listOf(ENTRANCE), entrances.entrances(SYMBOL), "wejścia budynku z serwera")
         }
 
     @Test
@@ -32,13 +32,21 @@ class ServerEntrancesTest {
             val answers = ArrayDeque(listOf(ServerReply.Ok(CARD), ServerReply.Offline, ServerReply.Fault(SERVER_ERROR)))
             val entrances = ServerEntrancesRepository { answers.removeFirst() }
 
-            assertEquals(List(3) { listOf(ENTRANCE) }, List(3) { entrances.entrances(SYMBOL) })
+            assertEquals(
+                List(3) { listOf(ENTRANCE) },
+                List(3) { entrances.entrances(SYMBOL) },
+                "powtórne pytania dają te same wejścia",
+            )
         }
 
     @Test
     fun givesEmptyForMissingFirst() =
         runBlocking {
-            assertEquals(emptyList<Entrance>(), ServerEntrancesRepository { ServerReply.Missing }.entrances(SYMBOL))
+            assertEquals(
+                emptyList<Entrance>(),
+                ServerEntrancesRepository { ServerReply.Missing }.entrances(SYMBOL),
+                "brak zasobu daje pustą listę wejść",
+            )
         }
 
     private companion object {

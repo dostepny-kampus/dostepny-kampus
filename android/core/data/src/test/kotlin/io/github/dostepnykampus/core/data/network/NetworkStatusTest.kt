@@ -25,6 +25,6 @@ class NetworkStatusTest {
                 internet(NET_CAPABILITY_VALIDATED),
                 internet(),
             )
-        assertEquals(listOf(true, true, false, false, false), cases)
+        assertEquals(listOf(true, true, false, false, false), cases, "stany połączenia dla kolejnych przypadków")
     }
 }

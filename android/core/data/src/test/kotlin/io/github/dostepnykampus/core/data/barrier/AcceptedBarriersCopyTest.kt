@@ -36,9 +36,9 @@ class AcceptedBarriersCopyTest {
             val online = source { ServerReply.Ok(listOf(typed, bare)) }.barriers()
             val offline = source { OFFLINE }.barriers()
 
-            assertEquals(online, offline)
-            assertEquals(listOf("z1", "z2"), offline.map(AcceptedBarrier::id))
-            assertEquals(SYNCED, dao.entity?.syncedAt)
+            assertEquals(online, offline, "kopia offline równa odpowiedzi serwera")
+            assertEquals(listOf("z1", "z2"), offline.map(AcceptedBarrier::id), "identyfikatory z kopii offline")
+            assertEquals(SYNCED, dao.entity?.syncedAt, "czas synchronizacji zapisany z kopią")
         }
 
     /** Wiersz: źródło podaje chwilę pobrania barier z odpowiedzi i z kopii; bez obu jej nie ma. Wymagania: NFR-10 */
@@ -51,7 +51,11 @@ class AcceptedBarriersCopyTest {
             val offline = source { OFFLINE }.apply { barriers() }.syncedAt()
 
             val synced = Instant.ofEpochMilli(SYNCED)
-            assertEquals(listOf(null, synced, synced), listOf(none, online, offline))
+            assertEquals(
+                listOf(null, synced, synced),
+                listOf(none, online, offline),
+                "brak kopii, potem dane z serwera i z kopii",
+            )
         }
 
     /**
@@ -69,8 +73,16 @@ class AcceptedBarriersCopyTest {
             dao.entity = dao.entity?.copy(listJson = OLD_COPY)
             val old = source { OFFLINE }.barriers().single()
 
-            assertEquals(Triple("w1", floor, listOf("p1")), restored.run { Triple(entranceId, this.floor, photoIds) })
-            assertEquals(Triple(null, null, emptyList<String>()), old.run { Triple(entranceId, this.floor, photoIds) })
+            assertEquals(
+                Triple("w1", floor, listOf("p1")),
+                restored.run { Triple(entranceId, this.floor, photoIds) },
+                "zapisane pola wejścia i zdjęć wracają, stara kopia ma puste",
+            )
+            assertEquals(
+                Triple(null, null, emptyList<String>()),
+                old.run { Triple(entranceId, this.floor, photoIds) },
+                "stara kopia bez pól wejścia i zdjęć",
+            )
         }
 
     /** Wiersz: bez kopii i przy zepsutej kopii brak odpowiedzi serwera daje pustą listę. Wymagania: NFR-11 */
@@ -83,7 +95,11 @@ class AcceptedBarriersCopyTest {
             dao.entity = dao.entity?.copy(listJson = UNKNOWN_SEVERITY)
             val unknown = source { OFFLINE }.barriers()
 
-            assertEquals(List(3) { emptyList<AcceptedBarrier>() }, listOf(without, broken, unknown))
+            assertEquals(
+                List(3) { emptyList<AcceptedBarrier>() },
+                listOf(without, broken, unknown),
+                "brak, uszkodzenie i nieznana wersja dają pustą listę",
+            )
         }
 
     /** Wiersz: udana pusta odpowiedź zastępuje kopię, więc nieprzyjęta bariera nie wraca z kopii. Wymagania: US1.3 */
@@ -94,7 +110,11 @@ class AcceptedBarriersCopyTest {
             source { ServerReply.Ok(one) }.barriers()
             source { ServerReply.Ok(emptyList()) }.barriers()
 
-            assertEquals(emptyList<AcceptedBarrier>(), source { OFFLINE }.barriers())
+            assertEquals(
+                emptyList<AcceptedBarrier>(),
+                source { OFFLINE }.barriers(),
+                "offline bez kopii daje pustą listę",
+            )
         }
 
     private fun source(accepted: suspend () -> ServerReply<List<Submission>>) =

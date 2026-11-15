@@ -31,7 +31,11 @@ class MapListChoiceRepositoryTest {
         val isListBefore =
             withRepository { repository -> repository.savedChoice.first().also { repository.choose(false) } }
 
-        assertEquals(listOf(null, false), listOf(isListBefore, withRepository { it.savedChoice.first() }))
+        assertEquals(
+            listOf(null, false),
+            listOf(isListBefore, withRepository { it.savedChoice.first() }),
+            "brak wyboru, potem zapisany wybór mapy",
+        )
     }
 
     private fun <T> withRepository(block: suspend (MapListChoiceRepository) -> T): T =

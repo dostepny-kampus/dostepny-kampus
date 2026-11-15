@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.building
@@ -20,7 +20,7 @@ class BuildingFloorsTest {
         runBlocking {
             val floors = ServerFloorsRepository { ServerReply.Ok(LIST) }
 
-            assertEquals(LIST, floors.floors("C-13"))
+            assertEquals(LIST, floors.floors("C-13"), "piętra budynku C-13")
         }
 
     @Test
@@ -35,11 +35,11 @@ class BuildingFloorsTest {
                     answers.removeFirst()
                 }
 
-            assertEquals(LIST, floors.floors("C-13"))
-            assertEquals(LIST, floors.floors("C-13"))
-            assertNull(floors.floors("A-1"))
-            assertNull(floors.floors("X-9"))
-            assertEquals(listOf("C-13", "C-13", "A-1", "X-9"), asked)
+            assertEquals(LIST, floors.floors("C-13"), "pierwsze pytanie o piętra C-13")
+            assertEquals(LIST, floors.floors("C-13"), "powtórne pytanie o piętra C-13")
+            assertNull(floors.floors("A-1"), "brak pięter A-1")
+            assertNull(floors.floors("X-9"), "brak pięter X-9")
+            assertEquals(listOf("C-13", "C-13", "A-1", "X-9"), asked, "zapytania o piętra w kolejności")
         }
 
     private companion object {
