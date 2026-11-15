@@ -83,7 +83,7 @@ class CampusAreaEdgeDeviceTest {
             composeRule.waitUntil(SWIPE_SETTLE_TIMEOUT_MS) { !tracker.isMoving.get() }
             composeRule.waitForIdle()
             val swipeLine = eastSwipeLine(mapView)
-            panEastUntilEdge(swipeLine, tracker, map, mainBounds)
+            panEastUntilEdge(swipeLine, tracker, map, mainBounds.east - EDGE_TOLERANCE_DEGREES)
             val edgeTarget = composeRule.runOnUiThread { requireNotNull(map.cameraPosition.target) }
             assertAtEastEdgeWithinBounds(edgeTarget, mainBounds)
             repeat(EXTRA_SWIPES_AT_EDGE) {
@@ -147,23 +147,17 @@ class CampusAreaEdgeDeviceTest {
             Offset(location[0] + mapView.width * SWIPE_END_X_FRACTION, y)
     }
 
-    private fun panEastUntilEdge(
-        swipeLine: Pair<Offset, Offset>,
-        tracker: MotionTracker,
-        map: MapLibreMap,
-        bounds: CampusBounds,
-    ) {
+    private fun panEastUntilEdge(line: Pair<Offset, Offset>, tracker: MotionTracker, map: MapLibreMap, east: Double) {
         var swipes = 0
-        while (swipes < MAX_PAN_SWIPES && !isAtEastEdge(map, bounds)) {
-            performEastSwipe(swipeLine, tracker)
+        while (swipes < MAX_PAN_SWIPES && longitudeOf(map) < east) {
+            performEastSwipe(line, tracker)
             composeRule.waitForIdle()
             swipes++
         }
     }
 
-    private fun isAtEastEdge(map: MapLibreMap, bounds: CampusBounds): Boolean =
-        composeRule.runOnUiThread { requireNotNull(map.cameraPosition.target) }.longitude >=
-            bounds.east - EDGE_TOLERANCE_DEGREES
+    private fun longitudeOf(map: MapLibreMap): Double =
+        composeRule.runOnUiThread { requireNotNull(map.cameraPosition.target) }.longitude
 
     private fun performEastSwipe(swipeLine: Pair<Offset, Offset>, tracker: MotionTracker) {
         val idleBefore = tracker.idleCount.get()
