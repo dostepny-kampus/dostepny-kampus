@@ -4,44 +4,26 @@
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 set -euo pipefail
 
+# Test pakuj-serwer-systemowy.sh: skrypt pakuje serwer bez testów i qulice, a pobranie zależności ponawia wspólny
+# mvn-z-ponowieniem.sh (jego przypadki sprawdza mvn-z-ponowieniem-test.sh). Tu sprawdzamy tylko argumenty mvnw.
 script="$(cd "$(dirname "$0")" && pwd)/pakuj-serwer-systemowy.sh"
 test_dir="$(mktemp -d)"
 trap 'rm -rf "$test_dir"' EXIT
 cd "$test_dir"
-mkdir bin
-printf '#!/usr/bin/env bash\nexit 0\n' > bin/sleep
-cat > mvnw <<'SH'
-#!/usr/bin/env bash
-printf '%s\n' "$*" >> attempts
-if [[ $CASE == transient && $(wc -l < attempts) == 2 || $CASE == success ]]; then
-  exit 0
+printf '#!/usr/bin/env bash\nprintf "%%s\\n" "$*" > args\n' > mvnw
+chmod +x mvnw
+
+bash "$script"
+want='-B -q -DskipTests -Dqulice.skip=true -Djacoco.skip=true package'
+if [[ $(cat args) != "$want" ]]; then
+  echo "BŁĄD: mvnw dostał „$(cat args)”, oczekiwano „${want}”"
+  exit 1
 fi
-case "$CASE" in
-  compile) echo '[ERROR] Compilation failure' ;;
-  *) echo '[FATAL] Could not find artifact org.example:parent:pom:1.0 in central (https://repo.maven.apache.org/maven2)' ;;
-esac
-exit 17
-SH
-chmod +x mvnw bin/sleep
+echo "OK: argumenty pakowania serwera"
 
-run_case() {
-  local name="$1" expected="$2" count="$3" status=0
-  rm -f attempts
-  CASE="$name" PATH="$test_dir/bin:$PATH" bash "$script" > output 2>&1 || status=$?
-  if [[ $status != "$expected" || $(wc -l < attempts) != "$count" ]]; then
-    cat output
-    exit 1
-  fi
-  if ((count == 2)); then
-    tail -n 1 attempts | grep -qE '(^| )-U( |$)'
-  fi
-  if [[ $name == persistent ]]; then
-    grep -q '::error title=Maven Central::' output
-  fi
-  echo "OK: $name"
-}
-
-run_case success 0 1
-run_case transient 0 2
-run_case persistent 17 2
-run_case compile 17 1
+bash "$script" -o
+if [[ $(cat args) != "-o ${want}" ]]; then
+  echo "BŁĄD: dodatkowy argument nie trafił przed argumenty pakowania: „$(cat args)”"
+  exit 1
+fi
+echo "OK: dodatkowe argumenty idą przed argumentami pakowania"

@@ -15,7 +15,8 @@ set -euo pipefail
 # GITHUB_OUTPUT, opcjonalnie GALAZ, ADRES (link do przebiegu), TERAZ (sekundy epoki, do testu).
 kontekst=kontrola-sprintu
 obszar=(android backend infra data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml .github/actions/android-gradle
-  .github/workflows/android.yml .github/workflows/kontrola-sprintu.yml .github/scripts/pakuj-serwer-systemowy.sh)
+  .github/workflows/android.yml .github/workflows/kontrola-sprintu.yml .github/scripts/pakuj-serwer-systemowy.sh
+  .github/scripts/mvn-z-ponowieniem.sh)
 teraz="${TERAZ:-$(date -u +%s)}"
 
 stan() {
