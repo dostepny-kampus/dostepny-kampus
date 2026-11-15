@@ -18,6 +18,8 @@ opisy w kodzie), mówi [AGENTS.md](AGENTS.md).
    PR z `sprint/N` tego repozytorium do `main` nie musi zamykać pojedynczego issue.
    Kolejka uruchamia kontrole także na wyniku scalenia (zdarzenie `merge_group`, np. w [`android.yml`](.github/workflows/android.yml)
    i [`api.yml`](.github/workflows/api.yml)); squash i kolejka to ustawienia repozytorium, nie plik.
+   Android w grupie kolejki uruchamia tylko `testy` (kompilacja, lint, detekt, testy jednostkowe i architektury, Roborazzi);
+   APK, emulatory i `buildHealth` biegną na PR i w kontroli sprintu (punkt 7), a push po scaleniu tylko przekłada cache.
    Aby dodać PR do kolejki, użyj przycisku „Merge when ready” lub polecenia `gh pr merge N` po zalogowaniu
    na konto z prawem scalania w repozytorium.
    Gdy grupa ma to samo drzewo plików, co zielony przebieg na PR, i nie zmienia `.github/` względem bazy, ciężkie joby są

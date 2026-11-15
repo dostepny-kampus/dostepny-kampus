@@ -31,10 +31,6 @@ on:
         description: Commit gałęzi sprintu do sprawdzenia
         required: true
         type: string
-  schedule:
-    # Nocne pełne przejście testu systemowego na domyślnej gałęzi (sprint/N): łapie też zmiany samego serwera i infra/,
-    # których push do gałęzi sprintu (filtr paths wyżej) nie uruchamia.
-    - cron: '43 2 * * *'
 
 permissions:
   contents: read
@@ -104,8 +100,8 @@ jobs:
 
   emulator:
     needs: [zmiany, apk]
-    # Push do gałęzi sprintu i harmonogram uruchamiają tylko pełny test systemowy; push do main nie uruchamia nic.
-    if: ${{ !cancelled() && (github.event_name != 'push' || startsWith(github.ref, 'refs/heads/sprint/')) && needs.apk.result == 'success' }}
+    # Tylko PR i kontrola sprintu: tylko one budują APK.
+    if: ${{ !cancelled() && needs.apk.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
@@ -113,10 +109,9 @@ jobs:
       matrix:
         # Testy aplikacji na wersji minimalnej i docelowej z NFR-41 oraz test systemowy (moduł `systemtest`)
         # z serwerem i bazą uruchomionymi na runnerze; porażka każdego wariantu czerwieni `budowanie`.
-        # PR albo grupa ze zmianą samego serwera albo infra/ uruchamia tylko test systemowy, a w PR i w grupie kolejki
-        # jest to wersja dymna (krok „Testy na emulatorze”); pełny zestaw idzie po pushu do sprint/* i nocą (schedule).
-        # Kontrola sprintu (inputs.sha) uruchamia wszystkie trzy warianty, a test systemowy w pełnej wersji.
-        include: ${{ fromJSON(!inputs.sha && (github.event_name == 'push' || github.event_name == 'schedule' || needs.zmiany.outputs.android == 'false') &&'[{"api":36,"zestaw":"system"}]' || '[{"api":26,"zestaw":"aplikacja"},{"api":36,"zestaw":"aplikacja"},{"api":36,"zestaw":"system"}]') }}
+        # PR ze zmianą samego serwera albo infra/ uruchamia tylko test systemowy; w PR to wersja dymna (krok „Testy
+        # na emulatorze”). Kontrola sprintu (inputs.sha) uruchamia wszystkie trzy warianty i pełny test systemowy.
+        include: ${{ fromJSON(!inputs.sha && needs.zmiany.outputs.android == 'false' && '[{"api":36,"zestaw":"system"}]' || '[{"api":26,"zestaw":"aplikacja"},{"api":36,"zestaw":"aplikacja"},{"api":36,"zestaw":"system"}]') }}
     env:
       IMAGE: system-images;android-${{ matrix.api }};default;x86_64
     steps:
@@ -205,8 +200,8 @@ jobs:
         timeout-minutes: 15
         env:
           ZESTAW: ${{ matrix.zestaw }}
-          # Pełny test systemowy tylko po pushu do sprint/* i nocą; w PR i w grupie kolejki wersja dymna.
-          PELNY: ${{ github.event_name == 'push' || github.event_name == 'schedule' || (inputs.sha || '') != '' }}
+          # Pełny test systemowy tylko w kontroli sprintu; w PR wersja dymna.
+          PELNY: ${{ (inputs.sha || '') != '' }}
           DYMNY: io.github.dostepnykampus.systemtest.BuildingCardFromServerTest#
         run: |
           # Uruchamiacz testów (np. własny runner Hilt) odczytujemy z zainstalowanego APK testów, nie z konfiguracji workflow.
@@ -228,7 +223,7 @@ jobs:
           if [[ $ZESTAW == system && $PELNY != true ]]; then
             grep -F "$DYMNY" "$RUNNER_TEMP/lista-testow.txt" > "$RUNNER_TEMP/lista-dymna.txt" || true
             mv "$RUNNER_TEMP/lista-dymna.txt" "$RUNNER_TEMP/lista-testow.txt"
-            echo "Wersja dymna testu systemowego (pełny zestaw po pushu do sprint/* i nocą)."
+            echo "Wersja dymna testu systemowego (pełny zestaw w kontroli sprintu)."
           fi
           wszystkie="$(wc -l < "$RUNNER_TEMP/lista-testow.txt")"
           echo "Testy w APK: ${wszystkie}"
@@ -274,8 +269,9 @@ jobs:
 
   apk:
     needs: [porownanie, zmiany]
-    # Push do sprint/* i harmonogram budują APK tylko dla pełnego testu systemowego (zmiany i porownanie są wtedy pominięte).
-    if: ${{ !cancelled() && (github.event_name == 'schedule' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/sprint/') || github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true' || needs.zmiany.outputs.system == 'true')) }}
+    # APK, emulatory i analiza zależności: PR i kontrola sprintu (inputs.sha), nie grupa kolejki ani push; w kolejce
+    # nie padały, a kontrola sprintu sprawdza głowę sprintu po scaleniu.
+    if: ${{ !cancelled() && (inputs.sha || github.event_name == 'pull_request' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true' || needs.zmiany.outputs.system == 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -331,7 +327,7 @@ jobs:
 
   testy:
     needs: [porownanie, zmiany]
-    if: &warunek-testy ${{ !cancelled() && github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
+    if: ${{ !cancelled() && github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -514,9 +510,9 @@ jobs:
             "${prefiks[1]}${RUNNER_OS}-${RUNNER_ARCH}-"
 
   analiza-zaleznosci:
-    # Ten sam warunek co `testy`: błąd analizy zatrzymuje PR i grupę kolejki przez check `budowanie`, zanim trafi na gałąź.
+    # Jak `apk`: PR i kontrola sprintu, bez grupy kolejki; błąd analizy zatrzymuje PR przez check `budowanie`.
     needs: [porownanie, zmiany]
-    if: *warunek-testy
+    if: ${{ !cancelled() && (inputs.sha || github.event_name == 'pull_request' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
@@ -545,8 +541,9 @@ jobs:
     needs: [porownanie, zmiany, testy, apk, emulator, analiza-zaleznosci]
     # always(): także po anulowaniu poprzednich zadań, żeby anulowana część dawała czerwony check, a nie pominięty.
     # Gdy grupa kolejki ma drzewo sprawdzone na PR, wszystkie zadania są pominięte, więc i ten check (pominięty = zaliczony).
-    # Działa też wtedy, gdy zmiana samego serwera albo infra/ uruchamia tylko test systemowy.
-    if: ${{ always() && github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true' || needs.zmiany.outputs.system == 'true') }}
+    # Działa też w PR, w którym zmiana samego serwera albo infra/ uruchamia tylko test systemowy; w grupie kolejki
+    # liczą się tylko `testy`, więc bez zmiany Androida check jest pominięty.
+    if: ${{ always() && github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true' || github.event_name != 'merge_group' && needs.zmiany.outputs.system == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -557,8 +554,9 @@ jobs:
       - name: Sprawdź wyniki wszystkich zadań Androida
         env:
           ZMIANY: ${{ needs.zmiany.result }}
-          # Bez zmiany aplikacji testy i analiza zależności są pominięte; liczą się APK i test systemowy.
+          # Grupa kolejki: tylko testy. Poza kolejką APK i emulatory, a przy zmianie aplikacji także testy i analiza
+          # zależności (bez niej są pominięte i liczy się test systemowy).
           WYNIKI: >-
-            ${{ needs.apk.result }} ${{ needs.emulator.result }}
-            ${{ needs.zmiany.outputs.android != 'false' && format('{0} {1}', needs.testy.result, needs.analiza-zaleznosci.result) || '' }}
+            ${{ github.event_name == 'merge_group' && needs.testy.result || format('{0} {1}', needs.apk.result, needs.emulator.result) }}
+            ${{ github.event_name != 'merge_group' && needs.zmiany.outputs.android != 'false' && format('{0} {1}', needs.testy.result, needs.analiza-zaleznosci.result) || '' }}
         run: bash .github/scripts/wyniki-androida.sh
