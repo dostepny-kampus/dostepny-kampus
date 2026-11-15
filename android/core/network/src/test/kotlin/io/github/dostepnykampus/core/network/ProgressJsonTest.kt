@@ -75,7 +75,11 @@ class ProgressJsonTest {
         ],
     )
     fun bad_body_is_illegal_argument(body: String) {
-        assertThrows(IllegalArgumentException::class.java) { NetworkModule.json().decodeProgress(body) }
+        assertThrows(
+            IllegalArgumentException::class.java,
+            { NetworkModule.json().decodeProgress(body) },
+            "treść niezgodna z kontraktem to błąd treści",
+        )
     }
 
     private companion object {
