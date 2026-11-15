@@ -68,11 +68,6 @@ public object DostepnyKampusTheme {
         @Composable @ReadOnlyComposable
         get() = LocalMapColors.current
 
-    /** Krycie warstw mapy (sekcja `mapa.krycie`) do stylu mapy, według [isDark]. Wymagania: US1.7 */
-    public val mapOpacity: MapOpacity
-        @Composable @ReadOnlyComposable
-        get() = if (isDark) DarkMapOpacity else LightMapOpacity
-
     /**
      * Czy obowiązuje ciemny schemat kolorów z tokenów, wybrany w [DostepnyKampusTheme] przez `darkTheme`. Porównuje
      * schemat bieżącego [MaterialTheme] z ciemnym schematem modułu, a nie jasność koloru; poza motywem fałsz.
@@ -80,4 +75,9 @@ public object DostepnyKampusTheme {
     internal val isDark: Boolean
         @Composable @ReadOnlyComposable
         get() = MaterialTheme.colorScheme === DarkColorScheme
+
+    /** Krycie warstw mapy (sekcja `mapa.krycie`) do stylu mapy, według [isDark]. Wymagania: US1.7 */
+    public val mapOpacity: MapOpacity
+        @Composable @ReadOnlyComposable
+        get() = if (isDark) DarkMapOpacity else LightMapOpacity
 }
