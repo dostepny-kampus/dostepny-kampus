@@ -58,6 +58,7 @@ import io.github.dostepnykampus.feature.map.overlay.OfflinePill
  * @param modifier wymiary nadane przez arkusz; mała karta ma wysokość treści, pełny ekran wypełnia całe miejsce
  * @param onReportEntrance „Zgłoś barierę przy wejściu” dla identyfikatora wejścia
  * @param onShowEntrance „Pokaż wejście na mapie” dla identyfikatora wejścia zalecanego
+ * @param onReportRemoval „Zgłoś, że bariery nie ma” dla identyfikatora zgłoszenia; `null` ukrywa przycisk
  * @param viewModel stan karty; w aplikacji z grafu Hilt, w testach z podróbką katalogu
  */
 @Composable
@@ -71,6 +72,7 @@ fun BuildingCardScreen(
     modifier: Modifier = Modifier,
     onReportEntrance: (String) -> Unit = {},
     onShowEntrance: (String) -> Unit = {},
+    onReportRemoval: ((String) -> Unit)? = null,
     viewModel: BuildingCardViewModel =
         hiltViewModel<BuildingCardViewModel, BuildingCardViewModel.Factory>(
             creationCallback = { factory -> factory.create(symbol) },
@@ -91,6 +93,7 @@ fun BuildingCardScreen(
         onRetry = viewModel::retry,
         modifier = modifier,
         onShowEntrance = onShowEntrance,
+        onReportRemoval = onReportRemoval,
     )
 }
 
@@ -109,6 +112,7 @@ fun BuildingCardContent(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     onShowEntrance: (String) -> Unit = {},
+    onReportRemoval: ((String) -> Unit)? = null,
 ) {
     val isFullScreen = mode != CardMode.Compact
     Column(if (isFullScreen) modifier.fillMaxSize() else modifier) {
@@ -133,6 +137,7 @@ fun BuildingCardContent(
                 isFullScreen = isFullScreen,
                 onReportEntrance = onReportEntrance,
                 onShowEntrance = onShowEntrance,
+                onReportRemoval = onReportRemoval,
                 onRetry = onRetry,
             )
         }
@@ -145,9 +150,17 @@ private fun FactsOrMissing(
     isFullScreen: Boolean,
     onReportEntrance: (String) -> Unit,
     onShowEntrance: (String) -> Unit,
+    onReportRemoval: ((String) -> Unit)?,
     onRetry: () -> Unit,
 ) {
-    if (card is BuildingCardUiState.Ready && isFullScreen) BuildingFacts(card, onReportEntrance, onShowEntrance)
+    if (card is BuildingCardUiState.Ready && isFullScreen) {
+        BuildingFacts(
+            card = card,
+            onReportEntrance = onReportEntrance,
+            onShowEntrance = onShowEntrance,
+            onReportRemoval = onReportRemoval,
+        )
+    }
     if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = onRetry)
 }
 
@@ -191,6 +204,7 @@ private fun BuildingFacts(
     card: BuildingCardUiState.Ready,
     onReportEntrance: (String) -> Unit,
     onShowEntrance: (String) -> Unit,
+    onReportRemoval: ((String) -> Unit)?,
 ) {
     val common = commonAssessment(card.entrances)
     common?.let { AssessmentLine(it) }
@@ -204,7 +218,7 @@ private fun BuildingFacts(
             )
         }
     }
-    BarriersGroup(card)
+    BarriersGroup(card, onReportRemoval)
 }
 
 @Composable

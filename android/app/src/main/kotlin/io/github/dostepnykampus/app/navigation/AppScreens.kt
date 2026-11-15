@@ -31,11 +31,14 @@ import io.github.dostepnykampus.app.SheetState
 import io.github.dostepnykampus.app.cardMode
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
+import io.github.dostepnykampus.core.model.Account
+import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.core.model.isSignedIn
 import io.github.dostepnykampus.feature.capture.measure.MeasureScreen
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
+import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
@@ -129,6 +132,7 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         MeasureRoute -> MeasureScreen(onBack = { back() }, onNext = { openReportForm(it) })
         is ReportFormRoute -> ReportFormScreen(route = route, onLeave = { back() }, onSave = save, draft = reportDraft)
         is ReportEditRoute -> ReportEdit(route)
+        is RemovedRoute -> Removed(route)
         MySubmissionsRoute -> MySubmissions()
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
         is SignInRoute, AccountRoute -> Account(route)
@@ -162,9 +166,10 @@ private fun AppNavigator.HiltBuildingCard(
 /**
  * V2 ze stanem [state] i czynnościami podpiętymi do nawigatora; „Zgłoś barierę przy wejściu” prowadzi do V4
  * z wybranym wejściem, a Gościa najpierw do L1. „Pokaż wejście na mapie” prowadzi do V1
- * z zaznaczonym wejściem tego budynku. [onRetry] to „Spróbuj ponownie”.
+ * z zaznaczonym wejściem tego budynku. „Zgłoś, że bariery nie ma” widzi tylko Zbierający i prowadzi do C7.
+ * [onRetry] to „Spróbuj ponownie”.
  *
- * Wymagania: US4.6, US14.2, US3.3, US2.1
+ * Wymagania: US4.6, US14.2, US3.3, US2.1, US8.4
  */
 @Composable
 internal fun AppNavigator.BuildingCard(
@@ -174,6 +179,8 @@ internal fun AppNavigator.BuildingCard(
     onRetry: () -> Unit,
 ) {
     val card = sheetCard()
+    val roles by account.collectAsStateWithLifecycle()
+    val isCollector = StaffRole.COLLECTOR in (roles as? Account.SignedIn)?.staffRoles.orEmpty()
     BuildingCardContent(
         symbol = symbol,
         mode = card.mode,
@@ -185,6 +192,7 @@ internal fun AppNavigator.BuildingCard(
         onClose = card.onClose,
         onReportEntrance = { report(it) },
         onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = symbol)) },
+        onReportRemoval = this::openRemoved.takeIf { isCollector },
         onRetry = onRetry,
     )
 }

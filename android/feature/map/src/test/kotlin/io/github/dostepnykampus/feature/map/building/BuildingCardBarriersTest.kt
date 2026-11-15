@@ -11,6 +11,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -23,6 +24,7 @@ import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.feature.map.PHOTO_URL
 import io.github.dostepnykampus.feature.map.photoAvailable
 import io.github.dostepnykampus.feature.map.usePhotoLoader
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -90,9 +92,34 @@ class BuildingCardBarriersTest {
         compose.onNodeWithText("Brak zgłoszonych barier").assertDoesNotExist()
     }
 
+    /**
+     * Wiersz: Zbierający widzi przy zgłoszeniu przyjętym „Zgłoś, że bariery nie ma”; dotknięcie podaje jego
+     *   identyfikator, a bez uprawnienia przycisku nie ma.
+     * Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Inny Zbierający niż autor zgłasza usunięcie bariery
+     *
+     * Wymagania: US8.4, BR-19
+     */
+    @Test
+    fun collectorSeesRemovalButton() {
+        val reported = mutableListOf<String>()
+        show(listOf(BARRIER)) { reported.add(it) }
+
+        compose.onNodeWithText("Zgłoś, że bariery nie ma").performScrollTo().performClick()
+
+        assertEquals("Przycisk podaje identyfikator zgłoszenia", listOf("z1"), reported)
+    }
+
+    /** Wiersz: bez uprawnienia Zbierającego przycisku „Zgłoś, że bariery nie ma” nie ma. Wymagania: US8.4 */
+    @Test
+    fun noRoleHidesRemovalButton() {
+        show(listOf(BARRIER))
+
+        compose.onNodeWithText("Zgłoś, że bariery nie ma").assertDoesNotExist()
+    }
+
     private fun photoShown() = compose.onAllNodesWithContentDescription(PHOTO).fetchSemanticsNodes().isNotEmpty()
 
-    private fun show(barriers: List<AcceptedBarrier>?) {
+    private fun show(barriers: List<AcceptedBarrier>?, onReportRemoval: ((String) -> Unit)? = null) {
         usePhotoLoader(compose.activity, photoAvailable())
         val entrances = orderedEntrances(listOf(ENTRANCE))
         compose.setContent {
@@ -114,6 +141,7 @@ class BuildingCardBarriersTest {
                     onClose = {},
                     onReportEntrance = {},
                     onRetry = {},
+                    onReportRemoval = onReportRemoval,
                 )
             }
         }

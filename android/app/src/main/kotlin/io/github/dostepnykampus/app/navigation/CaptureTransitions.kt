@@ -8,8 +8,10 @@ package io.github.dostepnykampus.app.navigation
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
+import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
+import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 
 /** L2 → C1: „Zmierz i zgłoś barierę”. Wymagania: US6, US14.1 */
 fun AppNavigator.measure() {
@@ -31,6 +33,11 @@ fun AppNavigator.openEdit(submissionId: String) {
     if (current == MySubmissionsRoute) leaving { add(ReportEditRoute(submissionId)) }
 }
 
+/** V2 → C7: „Zgłoś, że bariery nie ma” przy zgłoszeniu przyjętym; poza V2 nic nie robi. Wymagania: US8.4 */
+fun AppNavigator.openRemoved(acceptedId: String) {
+    if (current is BuildingRoute) leaving { add(RemovedRoute(acceptedId)) }
+}
+
 /** Poprawka C2 → C1: „Zmień miejsce”; pola czekają w szkicu, po „Dalej” wraca C2 z nowym miejscem. Wymagania: US7.4 */
 fun AppNavigator.changeEditPlace() {
     if (current is ReportEditRoute) {
@@ -42,9 +49,9 @@ fun AppNavigator.changeEditPlace() {
 }
 
 /**
- * „Zapisz” na C2: C1 i C2 znikają z historii i otwiera się C3 ze statusem „W telefonie”, więc „Wstecz” z C3 wraca
- * tam, skąd zaczęła się praca (P2). Pomiar zaczęty z C3 wraca do tego samego C3, bez drugiego wpisu.
- * Poprawka z C3 też znika z historii i wraca to samo C3.
+ * „Zapisz” na C2 albo „Wyślij do sprawdzenia” na C7: C1, C2 i C7 znikają z historii i otwiera się C3 ze statusem
+ * „W telefonie”, więc „Wstecz” z C3 wraca tam, skąd zaczęła się praca (P2). Pomiar zaczęty z C3 wraca do tego
+ * samego C3, bez drugiego wpisu. Poprawka z C3 też znika z historii i wraca to samo C3.
  *
  * Wymagania: NFR-54, US9.1, US8.3
  */
@@ -56,8 +63,8 @@ fun AppNavigator.reportSaved() {
 }
 
 /**
- * Czy trasa należy do zbierania zgłoszenia (C1 i C2): od niej zależy życie szkicu zgłoszenia i zdejmowanie ekranów
+ * Czy trasa należy do zbierania zgłoszenia (C1, C2 i C7): od niej zależy życie szkicu zgłoszenia i zdejmowanie ekranów
  * ze stosu po zapisie. Jedyna lista takich tras; nową trasę zbierania dopisuje się tylko tutaj.
  */
 internal fun NavKey.isCaptureRoute(): Boolean =
-    this == MeasureRoute || this is ReportFormRoute || this is ReportEditRoute
+    this == MeasureRoute || this is ReportFormRoute || this is ReportEditRoute || this is RemovedRoute
