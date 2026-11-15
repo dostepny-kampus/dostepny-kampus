@@ -138,16 +138,21 @@ class CampusMapStyleTest {
     }
 
     /**
-     * Wiersz: V1, mapa zostaje na obszarze kampusu; podkładu spoza tego prostokąta aplikacja nie pobiera.
+     * Wiersz: V1, podkładu spoza prostokąta terenu powiększonego o pół widoku mapy aplikacja nie pobiera; bez
+     * podanego prostokąta podkładu jest nim prostokąt terenu.
      *
      * Wymagania: NFR-39
      */
     @Test
-    fun limitsBasemapToCampus() {
+    fun limitsBasemapToTiles() {
         val bounds = CampusBounds(west = 16.9, south = 59.9, east = 17.1, north = 60.1)
-        val bounded = Json.parseToJsonElement(styled(MapSelection(bounds = bounds))).jsonObject
-        val osm = bounded.obj("sources").obj("osm")
-        assertEquals(listOf(16.9, 59.9, 17.1, 60.1), osm["bounds"]?.run { jsonArray.map { it.jsonPrimitive.double } })
+        val tiles = CampusBounds(west = 16.8, south = 59.8, east = 17.2, north = 60.2)
+        val area = MapSelection(bounds = bounds)
+        val style = campusMapStyle(data = data, selection = area, colors = colors, tiles = tiles)
+        val wider = Json.parseToJsonElement(style).jsonObject.obj("sources")
+        val plain = Json.parseToJsonElement(styled(area)).jsonObject.obj("sources")
+        assertEquals(listOf(16.8, 59.8, 17.2, 60.2), wider.obj("osm").boundsDegrees(), "w prostokącie podkładu")
+        assertEquals(listOf(16.9, 59.9, 17.1, 60.1), plain.obj("osm").boundsDegrees(), "bez niego w terenie")
     }
 
     @Test
@@ -196,6 +201,8 @@ class CampusMapStyleTest {
         campusMapStyle(data = data, selection = selection, colors = colors)
 
     private fun JsonObject.obj(key: String): JsonObject = getValue(key).jsonObject
+
+    private fun JsonObject.boundsDegrees(): List<Double> = array("bounds").map { it.jsonPrimitive.double }
 
     private fun JsonObject.array(key: String): JsonArray = getValue(key).jsonArray
 
