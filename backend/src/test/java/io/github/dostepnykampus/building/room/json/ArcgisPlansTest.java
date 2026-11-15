@@ -45,7 +45,7 @@ final class ArcgisPlansTest {
     private static final String QUERY = "/FeatureServer/2/query";
 
     @Test
-    void usSixteenReadsRoomOutlineNumberAndFunction() throws IOException {
+    void readsRoomOutlineNumberAndFunction() throws IOException {
         MatcherAssert.assertThat(
             "Pomieszczenie nie ma piętra, numeru, funkcji i konturu MultiPolygon",
             ArcgisPlansTest.rooms().get(0),
@@ -61,7 +61,7 @@ final class ArcgisPlansTest {
     }
 
     @Test
-    void usEighteenGivesEmptyNumberAndKeepsFunctionOther() throws IOException {
+    void givesEmptyNumberAndKeepsFunctionOther() throws IOException {
         MatcherAssert.assertThat(
             "Brak numeru nie dał pustego numeru albo funkcja „Inne” nie została",
             ArcgisPlansTest.rooms().stream()
@@ -92,7 +92,7 @@ final class ArcgisPlansTest {
     }
 
     @Test
-    void usSixteenReadsFloorsWithIdLabelAndOrder() throws IOException {
+    void readsFloorsWithIdLabelAndOrder() throws IOException {
         final HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
         server.createContext(
             "/FeatureServer/1/query",

@@ -27,7 +27,7 @@ import tools.jackson.databind.ObjectMapper;
 final class EntrancesHttpIT {
 
     @Test
-    void usTwoShowsEntranceMarking(final WebApplicationContext context)
+    void showsEntranceMarking(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Oznaczenie wejścia B-8 nie jest polem wejścia na karcie",
@@ -39,7 +39,7 @@ final class EntrancesHttpIT {
     }
 
     @Test
-    void usTwoOmitsMissingEntranceName(final WebApplicationContext context)
+    void omitsMissingEntranceName(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Wejście bez opisu w danych ma pole name na karcie",
@@ -51,7 +51,7 @@ final class EntrancesHttpIT {
     }
 
     @Test
-    void usTwoShowsAllEntrancesOfBuilding(final WebApplicationContext context)
+    void showsAllEntrancesOfBuilding(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Karta P-23 nie ma 12 wejść z pliku konturów",

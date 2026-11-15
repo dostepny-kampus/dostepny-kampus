@@ -30,7 +30,7 @@ import tools.jackson.databind.ObjectMapper;
  * <p>Każdy test zaczyna od pustej tabeli, bez budynków z pliku konturów;
  * transakcja testu przywraca je po teście.</p>
  *
- * <p>Wymagania: US1, NFR-40</p>
+ * <p>Wymagania: US1, NFR-40, US2, US6.2</p>
  *
  * @since 0.1.0
  */
@@ -45,7 +45,7 @@ final class BuildingsHttpIT {
     }
 
     @Test
-    void usOneListsBuildingsBySymbol(final WebApplicationContext context)
+    void listsBuildingsBySymbol(final WebApplicationContext context)
         throws Exception {
         final JdbcClient jdbc = context.getBean(JdbcClient.class);
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
@@ -59,7 +59,7 @@ final class BuildingsHttpIT {
     }
 
     @Test
-    void usOneOmitsNameOfUnnamedBuildingInList(final WebApplicationContext context)
+    void omitsNameOfUnnamedBuildingInList(final WebApplicationContext context)
         throws Exception {
         final JdbcClient jdbc = context.getBean(JdbcClient.class);
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
@@ -73,7 +73,7 @@ final class BuildingsHttpIT {
     }
 
     @Test
-    void usTwoOmitsNameOfUnnamedBuildingInCard(final WebApplicationContext context)
+    void omitsNameOfUnnamedBuildingInCard(final WebApplicationContext context)
         throws Exception {
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
         BuildingsHttpIT.insertUnnamed(
@@ -87,7 +87,7 @@ final class BuildingsHttpIT {
     }
 
     @Test
-    void usOneListsNoBuildingsWhenTableIsEmpty(final WebApplicationContext context)
+    void listsNoBuildingsWhenTableIsEmpty(final WebApplicationContext context)
         throws Exception {
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
         MatcherAssert.assertThat(
@@ -116,7 +116,7 @@ final class BuildingsHttpIT {
     }
 
     @Test
-    void usTwoReturnsBuildingCardWithoutEntrances(final WebApplicationContext context)
+    void returnsBuildingCardWithoutEntrances(final WebApplicationContext context)
         throws Exception {
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
         BuildingsHttpIT.insert(
@@ -130,7 +130,7 @@ final class BuildingsHttpIT {
     }
 
     @Test
-    void usTwoReturnsNotFoundForUnknownSymbol(final WebApplicationContext context)
+    void returnsNotFoundForUnknownSymbol(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Nieznany symbol budynku nie jest błędem 404",
@@ -140,7 +140,7 @@ final class BuildingsHttpIT {
     }
 
     @Test
-    void usSixTwoLocatesPointInsideOutline(final WebApplicationContext context)
+    void locatesPointInsideOutline(final WebApplicationContext context)
         throws Exception {
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
         BuildingsHttpIT.insert(
@@ -154,7 +154,7 @@ final class BuildingsHttpIT {
     }
 
     @Test
-    void usSixTwoSuggestsNearestBuilding(final WebApplicationContext context)
+    void suggestsNearestBuilding(final WebApplicationContext context)
         throws Exception {
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
         BuildingsHttpIT.insert(
@@ -168,7 +168,7 @@ final class BuildingsHttpIT {
     }
 
     @Test
-    void usSixTwoLeavesFarPointWithoutBuilding(final WebApplicationContext context)
+    void leavesFarPointWithoutBuilding(final WebApplicationContext context)
         throws Exception {
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
         BuildingsHttpIT.insert(
@@ -182,7 +182,7 @@ final class BuildingsHttpIT {
     }
 
     @Test
-    void usSixTwoDescribesPointOutsideRange(final WebApplicationContext context)
+    void describesPointOutsideRange(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Odpowiedź 400 podpowiedzi budynku nie ma opisu w detail",
@@ -192,7 +192,7 @@ final class BuildingsHttpIT {
     }
 
     @Test
-    void usTwoDescribesMissingBuilding(final WebApplicationContext context)
+    void describesMissingBuilding(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Odpowiedź 404 karty budynku nie ma opisu w detail",
@@ -215,7 +215,7 @@ final class BuildingsHttpIT {
             "Brak długości nie jest błędem 400; /buildings/locate?lat=51"
         }
     )
-    void usSixTwoRejectsInvalidCoordinates(
+    void rejectsInvalidCoordinates(
         final String message, final String url, final WebApplicationContext context
     ) throws Exception {
         MatcherAssert.assertThat(

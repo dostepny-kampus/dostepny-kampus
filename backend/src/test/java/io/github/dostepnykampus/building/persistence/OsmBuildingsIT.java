@@ -29,7 +29,7 @@ import tools.jackson.databind.ObjectMapper;
  * Po starcie serwera tabela buildings ma budynki z pliku
  * konturów OpenStreetMap (ADR-0008), a punkty końcowe je zwracają.
  *
- * <p>Wymagania: US1</p>
+ * <p>Wymagania: US1, US2, US6.2, US17</p>
  *
  * @since 0.1.0
  */
@@ -37,7 +37,7 @@ import tools.jackson.databind.ObjectMapper;
 final class OsmBuildingsIT {
 
     @Test
-    void usOneMergesOutlinesOfOneSymbol(final WebApplicationContext context) {
+    void mergesOutlinesOfOneSymbol(final WebApplicationContext context) {
         MatcherAssert.assertThat(
             "Dwa kontury H-14 nie tworzą jednego wielokąta złożonego",
             context.getBean(JdbcClient.class).sql(
@@ -48,7 +48,7 @@ final class OsmBuildingsIT {
     }
 
     @Test
-    void usOneSharesOutlineBetweenSymbols(final WebApplicationContext context) {
+    void sharesOutlineBetweenSymbols(final WebApplicationContext context) {
         MatcherAssert.assertThat(
             "C-3 i C-4 nie mają wspólnego konturu",
             context.getBean(JdbcClient.class).sql(
@@ -62,7 +62,7 @@ final class OsmBuildingsIT {
     }
 
     @Test
-    void usOneLeavesBuildingWithoutNameWhenDataHasNone(final WebApplicationContext context) {
+    void leavesBuildingWithoutNameWhenDataHasNone(final WebApplicationContext context) {
         MatcherAssert.assertThat(
             "Budynek bez nazwy w danych dostał nazwę",
             OsmBuildingsIT.names(context, "L-1"),
@@ -71,7 +71,7 @@ final class OsmBuildingsIT {
     }
 
     @Test
-    void usOneDropsNameThatIsOwnSymbol(final WebApplicationContext context) {
+    void dropsNameThatIsOwnSymbol(final WebApplicationContext context) {
         MatcherAssert.assertThat(
             "Nazwa równa własnemu symbolowi C-13 została zapisana",
             OsmBuildingsIT.names(context, "C-13"),
@@ -80,7 +80,7 @@ final class OsmBuildingsIT {
     }
 
     @Test
-    void usOneDropsNameThatIsOtherSymbol(final WebApplicationContext context) {
+    void dropsNameThatIsOtherSymbol(final WebApplicationContext context) {
         MatcherAssert.assertThat(
             "Nazwa T-22 cudzego symbolu została zapisana dla T-18 i T-22",
             OsmBuildingsIT.names(context, "T-18", "T-22"),
@@ -89,7 +89,7 @@ final class OsmBuildingsIT {
     }
 
     @Test
-    void usOneDropsNameThatListsSymbols(final WebApplicationContext context) {
+    void dropsNameThatListsSymbols(final WebApplicationContext context) {
         MatcherAssert.assertThat(
             "Nazwa C-3/C-4 złożona z samych symboli została zapisana",
             OsmBuildingsIT.names(context, "C-3", "C-4"),
@@ -98,7 +98,7 @@ final class OsmBuildingsIT {
     }
 
     @Test
-    void usTwoSavesNameWithoutOwnSymbol(final WebApplicationContext context) {
+    void savesNameWithoutOwnSymbol(final WebApplicationContext context) {
         MatcherAssert.assertThat(
             "Nazwa budynku na serwerze powtarza symbol albo różni się od nazwy w aplikacji",
             OsmBuildingsIT.names(context, "A-1", "M-6", "T-6"),
@@ -107,7 +107,7 @@ final class OsmBuildingsIT {
     }
 
     @Test
-    void usSixTwoLocatesRealBuilding(final WebApplicationContext context)
+    void locatesRealBuilding(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Punkt w konturze A-1 z pliku nie wskazuje A-1",
@@ -120,7 +120,7 @@ final class OsmBuildingsIT {
     }
 
     @Test
-    void usOneRunsAgainWhenFileChanges(
+    void runsAgainWhenFileChanges(
         final WebApplicationContext context, @TempDir final Path directory
     ) throws IOException {
         final Path file = directory.resolve("buildings.geojson");
@@ -151,7 +151,7 @@ final class OsmBuildingsIT {
     }
 
     @Test
-    void usSeventeenRemovesStaleImportedEntrances(
+    void removesStaleImportedEntrances(
         final WebApplicationContext context, @TempDir final Path directory
     ) throws IOException {
         final Path file = directory.resolve("buildings.geojson");

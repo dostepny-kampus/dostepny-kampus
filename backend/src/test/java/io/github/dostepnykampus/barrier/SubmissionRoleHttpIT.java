@@ -45,7 +45,7 @@ final class SubmissionRoleHttpIT {
     private static final String QUICK = "\"kind\":\"QUICK\",\"barrierGroup\":\"OTHER\"";
 
     @Test
-    void usSevenRefusesCollectorWorkWithoutCollectorRole(final WebApplicationContext context) {
+    void refusesCollectorWorkWithoutCollectorRole(final WebApplicationContext context) {
         final String replacing = String.format(
             "%s,\"replacesSubmissionId\":\"%s\"", SubmissionRoleHttpIT.QUICK, UUID.randomUUID()
         );
@@ -70,7 +70,7 @@ final class SubmissionRoleHttpIT {
     }
 
     @Test
-    void usSevenAcceptsPreciseFromCollector(final WebApplicationContext context) throws Exception {
+    void acceptsPreciseFromCollector(final WebApplicationContext context) throws Exception {
         Assertions.assertEquals(
             "201, zapisanych 1",
             SubmissionRoleHttpIT.outcome(
@@ -81,7 +81,7 @@ final class SubmissionRoleHttpIT {
     }
 
     @Test
-    void usFourAcceptsQuickFromEveryRole(final WebApplicationContext context) {
+    void acceptsQuickFromEveryRole(final WebApplicationContext context) {
         Assertions.assertAll(
             Stream.of("VISITOR", "COLLECTOR", "VERIFIER", "COORDINATOR").map(
                 role -> () -> Assertions.assertEquals(

@@ -45,7 +45,7 @@ final class PwrFunctionTest {
             "Inne|OTHER"
         }
     )
-    void usSixteenMapsFunctionOfPwrToCategory(final String function, final RoomCategory group) {
+    void mapsFunctionOfPwrToCategory(final String function, final RoomCategory group) {
         MatcherAssert.assertThat(
             String.format("Funkcja „%s” trafiła do złej grupy", function),
             new PwrFunction(function).category(),
@@ -55,7 +55,7 @@ final class PwrFunctionTest {
 
     @ParameterizedTest
     @CsvSource({"'  KORYTARZ ',CORRIDOR", "toaleta męska,TOILET"})
-    void usSixteenIgnoresCaseAndSpaces(final String function, final RoomCategory group) {
+    void ignoresCaseAndSpaces(final String function, final RoomCategory group) {
         MatcherAssert.assertThat(
             "Wielkość liter albo spacje zmieniły grupę funkcji",
             new PwrFunction(function).category(),

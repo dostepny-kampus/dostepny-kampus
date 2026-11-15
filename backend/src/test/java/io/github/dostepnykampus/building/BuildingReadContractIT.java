@@ -51,7 +51,7 @@ final class BuildingReadContractIT {
     }
 
     @Test
-    void usSeventeenShowsMetadataWithMainEntranceFirst(
+    void showsMetadataWithMainEntranceFirst(
         final WebApplicationContext context
     ) throws Exception {
         context.getBean(JdbcClient.class).sql(
@@ -108,7 +108,7 @@ final class BuildingReadContractIT {
     }
 
     @Test
-    void usSixteenOneListsBuildingFloorsOrderedWithPwrSource(
+    void listsBuildingFloorsOrderedWithPwrSource(
         final WebApplicationContext context
     ) throws Exception {
         final JdbcClient jdbc = context.getBean(JdbcClient.class);
@@ -138,7 +138,7 @@ final class BuildingReadContractIT {
     }
 
     @Test
-    void usSixteenTwoReturnsEmptyFloorsForBuildingWithoutFloors(
+    void returnsEmptyFloorsForBuildingWithoutFloors(
         final WebApplicationContext context
     ) throws Exception {
         MatcherAssert.assertThat(
@@ -153,7 +153,7 @@ final class BuildingReadContractIT {
     }
 
     @Test
-    void usSixteenReturnsNotFoundForUnknownBuildingFloors(
+    void returnsNotFoundForUnknownBuildingFloors(
         final WebApplicationContext context
     ) throws Exception {
         final MockHttpServletResponse reply = context.getBean(MockMvc.class)

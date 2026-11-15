@@ -54,7 +54,7 @@ final class SubmissionsTypedHttpIT {
 
     @ParameterizedTest
     @ValueSource(strings = {"status=", "status=,"})
-    void usOneRejectsEmptyStatus(final String query, final WebApplicationContext context)
+    void rejectsEmptyStatus(final String query, final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Pusty filtr status nie daje 400 application/problem+json",
@@ -67,7 +67,7 @@ final class SubmissionsTypedHttpIT {
 
     @ParameterizedTest
     @ValueSource(strings = {"mine=true", "mine=true&status=SENT", "mine=true&status=ACCEPTED"})
-    void usEightNeedsLoginForOwn(final String query, final WebApplicationContext context)
+    void needsLoginForOwn(final String query, final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Własne zgłoszenia bez logowania nie dają 401",
@@ -140,7 +140,7 @@ final class SubmissionsTypedHttpIT {
     }
 
     @Test
-    void usEightReportsUnknownSubmissionAsMissing(final WebApplicationContext context)
+    void reportsUnknownSubmissionAsMissing(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Edycja nieistniejącego zgłoszenia nie daje 404 z opisem",
@@ -155,7 +155,7 @@ final class SubmissionsTypedHttpIT {
     }
 
     @Test
-    void usFourOmitsEmptyFieldsInCreated(final WebApplicationContext context)
+    void omitsEmptyFieldsInCreated(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Odpowiedź POST ma pola null albo flagi false",
@@ -173,7 +173,7 @@ final class SubmissionsTypedHttpIT {
     }
 
     @Test
-    void usEightOmitsEmptyFieldsInEdited(final WebApplicationContext context)
+    void omitsEmptyFieldsInEdited(final WebApplicationContext context)
         throws Exception {
         SubmissionsTypedHttpIT.add(context, "SENT", 1);
         MatcherAssert.assertThat(

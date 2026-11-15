@@ -25,7 +25,7 @@ import tools.jackson.databind.json.JsonMapper;
 final class OsmFileTest {
 
     @Test
-    void usOneMergesOutlinesAndKeepsFirstName() {
+    void mergesOutlinesAndKeepsFirstName() {
         MatcherAssert.assertThat(
             "Budynki z pliku mają złe kontury, nazwy albo kolejność",
             OsmFileTest.file().buildings(),
@@ -61,7 +61,7 @@ final class OsmFileTest {
     }
 
     @Test
-    void usOneReadsAttribution() {
+    void readsAttribution() {
         MatcherAssert.assertThat(
             "Atrybucja nie pochodzi z pliku",
             OsmFileTest.file().attribution(),
@@ -70,7 +70,7 @@ final class OsmFileTest {
     }
 
     @Test
-    void usOneChangesChecksumWhenImportFormatChanges() {
+    void changesChecksumWhenImportFormatChanges() {
         final byte[] content = "{}".getBytes(StandardCharsets.UTF_8);
         MatcherAssert.assertThat(
             "Zmiana wersji importu nie zmienia sumy kontrolnej",
@@ -80,7 +80,7 @@ final class OsmFileTest {
     }
 
     @Test
-    void usOneChangesChecksumWhenFileChanges() {
+    void changesChecksumWhenFileChanges() {
         MatcherAssert.assertThat(
             "Zmiana treści pliku nie zmienia sumy kontrolnej",
             OsmFile.checksum("{}".getBytes(StandardCharsets.UTF_8), OsmBuildings.FORMAT),

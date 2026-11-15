@@ -36,7 +36,7 @@ final class IdentityModuleIT {
     }
 
     @Test
-    void usFourteenOneAnswersProfileInModuleContext(final WebApplicationContext context)
+    void answersProfileInModuleContext(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Moduł tożsamości bez innych modułów nie zwraca profilu",

@@ -51,7 +51,7 @@ final class FloorPlanMigrationIT {
     }
 
     @Test
-    void usSixteenStoresRoomCategoryLabelAndFloorOutline(final ApplicationContext context) {
+    void storesRoomCategoryLabelAndFloorOutline(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Brak kategorii, punktu podpisu, znacznika podpisu albo obrysu piętra w schemacie",
             context.getBean(JdbcClient.class).sql(
@@ -74,7 +74,7 @@ final class FloorPlanMigrationIT {
     }
 
     @Test
-    void usSixteenStoresLabelPointAndFloorOutlineInWgs(final ApplicationContext context) {
+    void storesLabelPointAndFloorOutlineInWgs(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Punkt podpisu albo obrys piętra nie ma typu i układu EPSG:4326",
             context.getBean(JdbcClient.class).sql(

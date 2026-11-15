@@ -32,7 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
 final class SubmissionPointHttpIT {
 
     @Test
-    void usFourRejectsInvalidPointAtHttpBoundary(final WebApplicationContext context) {
+    void rejectsInvalidPointAtHttpBoundary(final WebApplicationContext context) {
         Assertions.assertAll(
             Stream.of(
                 SubmissionPointHttpIT.point("[181,0]"),
@@ -50,7 +50,7 @@ final class SubmissionPointHttpIT {
     }
 
     @Test
-    void usSevenRejectsNonNumericLatitudeAtHttpBoundary(final WebApplicationContext context) {
+    void rejectsNonNumericLatitudeAtHttpBoundary(final WebApplicationContext context) {
         final UUID id = UUID.randomUUID();
         Assertions.assertAll(
             () -> Assertions.assertEquals(
@@ -71,7 +71,7 @@ final class SubmissionPointHttpIT {
     }
 
     @Test
-    void usEightRejectsInvalidPointOnEdit(final WebApplicationContext context)
+    void rejectsInvalidPointOnEdit(final WebApplicationContext context)
         throws Exception {
         final UUID id = UUID.randomUUID();
         SubmissionPointHttpIT.post(context, id, SubmissionPointHttpIT.point("[17.05,51.108]"));
