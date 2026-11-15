@@ -107,7 +107,8 @@ internal fun Json.decodeFloorList(body: String): FloorList {
 }
 
 /**
- * Pomieszczenia piętra z [body] (`RoomList`): grupa, punkt podpisu, znacznik podpisu i obrys piętra bez zmian.
+ * Pomieszczenia piętra z [body] (`RoomList`): grupa, punkt podpisu, znacznik podpisu, piętra windy i obrys piętra
+ * bez zmian.
  * Zła treść jak w [decodeBuildingList]. Wymagania: US16.1
  */
 internal fun Json.decodeRoomList(body: String): RoomList {
@@ -125,6 +126,8 @@ internal fun Json.decodeRoomList(body: String): RoomList {
                     geometry = decodeFromJsonElement(GeoAreaJson, it.geometry),
                     labelPoint = it.labelPoint.toModel(),
                     isLabelled = it.labelled,
+                    liftId = it.liftId,
+                    liftFloors = it.liftFloors.orEmpty(),
                 )
             },
     )

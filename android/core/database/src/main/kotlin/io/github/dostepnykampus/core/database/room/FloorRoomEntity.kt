@@ -23,6 +23,8 @@ import androidx.room.Entity
  * @property labelLongitude długość geograficzna punktu podpisu
  * @property labelLatitude szerokość geograficzna punktu podpisu
  * @property isLabelled czy numer jest podpisany na planie
+ * @property liftId winda łącząca piętra; `null` poza windą
+ * @property liftFloorsJson piętra windy jako tablica JSON identyfikatorów; `null` poza windą
  */
 @Entity(tableName = "floor_rooms", primaryKeys = ["building_symbol", "floor_id", "id"])
 public data class FloorRoomEntity(
@@ -36,4 +38,6 @@ public data class FloorRoomEntity(
     @ColumnInfo(name = "label_longitude") val labelLongitude: Double,
     @ColumnInfo(name = "label_latitude") val labelLatitude: Double,
     @ColumnInfo(name = "labelled") val isLabelled: Boolean,
+    @ColumnInfo(name = "lift_id") val liftId: String? = null,
+    @ColumnInfo(name = "lift_floors_json") val liftFloorsJson: String? = null,
 )

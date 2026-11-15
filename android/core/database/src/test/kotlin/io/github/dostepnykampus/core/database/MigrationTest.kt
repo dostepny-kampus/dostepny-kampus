@@ -162,6 +162,29 @@ class MigrationTest {
                 assertEquals(listOf(1, 0, 0), listOf(queued, plans, rooms))
             }
     }
+
+    @Test
+    fun keepsRoomsFrom8To9() {
+        helper.createDatabase(DB_NAME, 8).use { eighth ->
+            eighth.execSQL(
+                "INSERT INTO floor_rooms (building_symbol, floor_id, id, number, function, category, geometry_json," +
+                    " label_longitude, label_latitude, labelled) VALUES ('A-1', 'P0', 'r', '1', 'Winda', 'ELEVATOR'," +
+                    " '{}', 17.0, 51.0, 1)",
+            )
+        }
+
+        helper
+            .runMigrationsAndValidate(DB_NAME, 9, true, MIGRATION_8_9)
+            .use { ninth ->
+                val lift =
+                    ninth.query("SELECT lift_id, lift_floors_json FROM floor_rooms").use { row ->
+                        row.moveToFirst()
+                        listOf(row.isNull(0), row.isNull(1))
+                    }
+
+                assertEquals(listOf(true, true), lift)
+            }
+    }
 }
 
 private fun readCount(cursor: Cursor): Int {

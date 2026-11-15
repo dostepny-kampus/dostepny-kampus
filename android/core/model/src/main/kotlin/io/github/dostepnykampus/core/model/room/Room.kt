@@ -54,6 +54,8 @@ public enum class RoomCategory {
  * @property geometry kontur pomieszczenia
  * @property labelPoint punkt wewnątrz pomieszczenia na numer i znacznik wyniku
  * @property isLabelled czy numer jest podpisany na planie (pole `labelled`)
+ * @property liftId winda łącząca piętra, wspólna dla pomieszczeń jednego szybu; `null` poza windą
+ * @property liftFloors identyfikatory pięter windy od najniższego; pusta poza windą
  */
 public data class Room(
     val id: String,
@@ -63,6 +65,8 @@ public data class Room(
     val geometry: GeoArea,
     val labelPoint: GeoPoint,
     val isLabelled: Boolean,
+    val liftId: String? = null,
+    val liftFloors: List<String> = emptyList(),
 )
 
 /**
