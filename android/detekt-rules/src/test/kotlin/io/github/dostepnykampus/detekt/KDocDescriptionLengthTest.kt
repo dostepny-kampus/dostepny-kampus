@@ -15,34 +15,34 @@ class KDocDescriptionLengthTest {
     private val rule = KDocDescriptionLength(Config.empty)
 
     @Test
-    fun `siedem linii opisu to błąd`() {
+    fun rejectsSevenDescriptionLines() {
         assertEquals(listOf(1), lines(kdoc(description = 7)))
     }
 
     @Test
-    fun `sześć linii opisu przechodzi`() {
+    fun acceptsSixDescriptionLines() {
         assertEquals(emptyList<Int>(), lines(kdoc(description = 6)))
     }
 
     @Test
-    fun `znaczniki nie są liczone`() {
+    fun skipsTags() {
         assertEquals(emptyList<Int>(), lines(kdoc(description = 6, tags = 5)))
     }
 
     @Test
-    fun `linia wymagań nie jest liczona`() {
+    fun skipsRequirementsLine() {
         val text = kdoc(description = 6).dropLast(2) + listOf(" *", " * Wymagania: US1", " */", "fun a() = 1")
         assertEquals(emptyList<Int>(), lines(text))
     }
 
     @Test
-    fun `puste linie nie są liczone`() {
+    fun skipsBlankLines() {
         val text = listOf("/**", " * a", " *", " * b", " *", " * c", " *", " * d", " * e", " * f", " */", "fun a() = 1")
         assertEquals(emptyList<Int>(), lines(text))
     }
 
     @Test
-    fun `opis w linii otwarcia liczony`() {
+    fun countsOpeningLineText() {
         val text = listOf("/** a", " * b", " * c", " * d", " * e", " * f", " * g */", "fun a() = 1")
         assertEquals(listOf(1), lines(text))
     }

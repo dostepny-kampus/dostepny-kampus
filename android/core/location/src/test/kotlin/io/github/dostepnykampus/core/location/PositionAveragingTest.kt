@@ -18,7 +18,7 @@ class PositionAveragingTest {
     private val start = PositionAveraging(startMillis = START)
 
     @Test
-    fun us6_1_equal_fixes_midpoint() {
+    fun averagesEqualFixesToMidpoint() {
         val average =
             start
                 .withFix(fix(longitude = 17.0, latitude = 51.0, accuracy = 6.0, at = 1_000))
@@ -32,7 +32,7 @@ class PositionAveragingTest {
 
     /** Waga odczytu to odwrotność kwadratu promienia ufności: odczyt 1 m waży 4 razy więcej niż 2 m. */
     @Test
-    fun us6_1_weights_by_accuracy() {
+    fun weightsByAccuracy() {
         val average =
             start
                 .withFix(fix(longitude = 17.0, latitude = 51.0, accuracy = 1.0, at = 1_000))
@@ -45,7 +45,7 @@ class PositionAveragingTest {
 
     /** Ostatnia znana pozycja sprzed startu i odczyt po 30 s nie wchodzą do średniej. */
     @Test
-    fun us6_1_only_fixes_in_window() {
+    fun usesOnlyFixesInWindow() {
         val average =
             start
                 .withFix(fix(longitude = 10.0, latitude = 50.0, accuracy = 1.0, at = -1))
@@ -58,7 +58,7 @@ class PositionAveragingTest {
     }
 
     @Test
-    fun us6_1_skips_unknown_accuracy() {
+    fun skipsUnknownAccuracy() {
         val averaging =
             listOf(Double.NaN, Double.POSITIVE_INFINITY, 0.0, -3.0).fold(start) { state, accuracy ->
                 state.withFix(fix(longitude = 17.0, latitude = 51.0, accuracy = accuracy, at = 1_000))
@@ -67,7 +67,7 @@ class PositionAveragingTest {
     }
 
     @Test
-    fun us6_1_has_accuracy() {
+    fun hasAccuracy() {
         assertEquals(
             listOf(true, false, false, false, false),
             listOf(4.5, 0.0, -1.0, Double.NaN, Double.POSITIVE_INFINITY).map {
@@ -77,13 +77,13 @@ class PositionAveragingTest {
     }
 
     @Test
-    fun us6_1_no_fix_no_average() {
+    fun givesNoAverageWithoutFix() {
         assertNull(start.average())
     }
 
     /** Napis „Pomiar: zostało 12 s” zaokrągla w górę, więc 0 s pojawia się dopiero na końcu. */
     @Test
-    fun us6_1_countdown_seconds() {
+    fun countsDownSeconds() {
         assertEquals(
             listOf(30, 30, 13, 1, 0, 0),
             listOf(0L, 1L, 17_500L, 29_999L, 30_000L, 45_000L).map { start.remainingSeconds(START + it) },
@@ -91,14 +91,14 @@ class PositionAveragingTest {
     }
 
     @Test
-    fun us6_1_finished_after_window() {
+    fun finishesAfterWindow() {
         assertFalse(start.isFinished(START + AVERAGING_MILLIS - 1))
         assertTrue(start.isFinished(START + AVERAGING_MILLIS))
     }
 
     /** „Powtórz pomiar” zaczyna nowe pełne 30 s bez odczytów poprzedniego pomiaru. */
     @Test
-    fun nfr23_repeat_starts_over() {
+    fun startsOverOnRepeat() {
         val first = start.withFix(fix(longitude = 17.0, latitude = 51.0, accuracy = 6.0, at = 1_000))
         val repeated = first.restart(startMillis = START + 40_000)
         assertNull(repeated.average())

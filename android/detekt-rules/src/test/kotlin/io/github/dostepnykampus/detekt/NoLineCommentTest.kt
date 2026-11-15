@@ -17,17 +17,17 @@ class NoLineCommentTest {
     private val rule = NoLineComment(Config.empty)
 
     @Test
-    fun `komentarz liniowy to błąd`() {
+    fun rejectsLineComment() {
         assertEquals(listOf(4), lines("package a", "", "class Bad {", "    // opis", "}"))
     }
 
     @Test
-    fun `komentarz na końcu linii`() {
+    fun rejectsTrailingComment() {
         assertEquals(listOf(3), lines("package a", "", "val x = 1 // opis"))
     }
 
     @Test
-    fun `skrypt kts też jest sprawdzany`() {
+    fun checksKtsScript() {
         val script =
             compileContentForTest(
                 content = listOf("plugins {", "    // opis", "}").joinToString(separator = "\n"),
@@ -37,39 +37,39 @@ class NoLineCommentTest {
     }
 
     @Test
-    fun `surowy napis przechodzi`() {
+    fun acceptsRawString() {
         assertEquals(emptyList<Int>(), lines("val s = $QUOTES", "// to nie komentarz", QUOTES))
     }
 
     @Test
-    fun `napis z wieloma dolarami`() {
+    fun findsCommentAfterDollarString() {
         val source = "val s = $DOLLARS$QUOTES$DOLLARS{${QUOTE}a$QUOTE} $DOLLAR// tekst$QUOTES"
         assertEquals(listOf(2), lines(source, "val y = $DOLLARS$QUOTE//$QUOTE // opis"))
     }
 
     @Test
-    fun `KDoc i adres przechodzą`() {
+    fun acceptsKdocAndUrl() {
         val source = listOf("/*", " * Dostępny Kampus", " */", "package a", "", "/** Opis. */", "val url = $URL")
         assertEquals(emptyList<Int>(), lines(*source.toTypedArray()))
     }
 
     @Test
-    fun `blok zagnieżdżony z ukośnikami`() {
+    fun skipsNestedBlockComment() {
         assertEquals(emptyList<Int>(), lines("/* zewnętrzny /* wewnętrzny */ // dalej w zewnętrznym */", "val x = 1"))
     }
 
     @Test
-    fun `komentarz po szablonie napisu`() {
+    fun rejectsCommentAfterTemplate() {
         assertEquals(listOf(2), lines("val s = $TEMPLATE", "val y = 2 // opis"))
     }
 
     @Test
-    fun `znacznik z numerem przechodzi`() {
+    fun acceptsMarkerWithNumber() {
         assertEquals(emptyList<Int>(), lines("class Later {", "    $MARKER", "    val x = 1 $MARKER", "}"))
     }
 
     @Test
-    fun `znacznik niepełny to błąd`() {
+    fun rejectsIncompleteMarker() {
         val loose = listOf("// TODO: opis", "// TODO(#12)", "// TODO(12): opis", "// TODO(#12):")
         assertEquals(listOf(1, 2, 3, 4), lines(*loose.toTypedArray()))
     }

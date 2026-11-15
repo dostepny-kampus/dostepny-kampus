@@ -15,47 +15,47 @@ class NoHistoryNumberInKDocTest {
     private val rule = NoHistoryNumberInKDoc(Config.empty)
 
     @Test
-    fun `numer issue to błąd`() {
+    fun rejectsIssueNumber() {
         assertEquals(listOf(1), lines("/** Zwraca listę (#123). */", "fun a() = 1"))
     }
 
     @Test
-    fun `numer decyzji to błąd`() {
+    fun rejectsDecisionNumber() {
         assertEquals(listOf(1), lines("/** Zwraca listę (decyzja 82). */", "fun a() = 1"))
     }
 
     @Test
-    fun `numer decyzji w dwóch liniach`() {
+    fun rejectsSplitDecisionNumber() {
         assertEquals(listOf(1), lines("/**", " * Zwraca listę (decyzja", " * 82).", " */", "fun a() = 1"))
     }
 
     @Test
-    fun `decyzje z numerem w zdaniu`() {
+    fun rejectsDecisionsInSentence() {
         assertEquals(listOf(1), lines("/** Motyw z tokenów (decyzje projektu nr 48 i 50). */", "fun a() = 1"))
     }
 
     @Test
-    fun `jeden blok to jedno zgłoszenie`() {
+    fun reportsOnceForOneBlock() {
         assertEquals(listOf(1), lines("/** Lista (#1), (#2), decyzja 3. */", "fun a() = 1"))
     }
 
     @Test
-    fun `znacznik odłożenia przechodzi`() {
+    fun acceptsTodoMarker() {
         assertEquals(emptyList<Int>(), lines("/** Zwraca listę. ${MARKER}sortowanie. */", "fun a() = 1"))
     }
 
     @Test
-    fun `decyzja bez numeru przechodzi`() {
+    fun acceptsDecisionWithoutNumber() {
         assertEquals(emptyList<Int>(), lines("/** Czeka na decyzję osoby (BR-26). */", "fun a() = 1"))
     }
 
     @Test
-    fun `kolor i encja przechodzą`() {
+    fun acceptsColorAndEntity() {
         assertEquals(emptyList<Int>(), lines("/** Tło `#1A2B3C`, znak &#123; i adres a/#12. */", "fun a() = 1"))
     }
 
     @Test
-    fun `komentarz blokowy pominięty`() {
+    fun skipsBlockComment() {
         assertEquals(emptyList<Int>(), lines("/* Nagłówek (#123). */", "fun a() = 1"))
     }
 

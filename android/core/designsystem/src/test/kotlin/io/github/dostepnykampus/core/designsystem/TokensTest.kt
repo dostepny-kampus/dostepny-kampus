@@ -20,6 +20,11 @@ import org.snakeyaml.engine.v2.api.LoadSettings
 import java.io.File
 import kotlin.reflect.full.memberProperties
 
+/**
+ * Kolory, typografia i wymiary motywu pochodzą z pliku tokenów.
+ *
+ * Wymagania: NFR-16, NFR-20, NFR-17
+ */
 class TokensTest {
     private val tokens =
         File(requireNotNull(System.getProperty("tokens.file")) { "Brak ścieżki pliku tokenów" })
@@ -34,7 +39,7 @@ class TokensTest {
         )
 
     @Test
-    fun nfr16_kolory_z_tokenow() {
+    fun takesColorsFromTokens() {
         themes.forEach { (theme, mapColors) ->
             val (name, scheme, statusColors) = theme
             tokens.sub("kolory").forEach { (key, value) ->
@@ -48,7 +53,7 @@ class TokensTest {
     }
 
     @Test
-    fun nfr20_typografia_z_tokenow() {
+    fun takesTypographyFromTokens() {
         val typography = typography(FontFamily.Default)
         val section = tokens.sub("typografia")
         section.sub("style").forEach { (key, value) ->
@@ -63,7 +68,7 @@ class TokensTest {
     }
 
     @Test
-    fun nfr17_wymiary_z_tokenow() {
+    fun takesSizesFromTokens() {
         val generated =
             mapOf(
                 "odstepy" to Odstepy,

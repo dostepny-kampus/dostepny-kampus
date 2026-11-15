@@ -30,18 +30,18 @@ import org.robolectric.annotation.GraphicsMode
 @Config(qualifiers = "w360dp-h900dp-xhdpi")
 class FloorPickerScreenshotTest {
     @Test
-    fun nfr16_pietra_jasny() {
+    fun drawsLightFloors() {
         capture()
     }
 
     @Test
-    fun nfr16_pietra_ciemny() {
+    fun drawsDarkFloors() {
         RuntimeEnvironment.setQualifiers("+night")
         capture()
     }
 
     @Test
-    fun nfr20_pietra_200() {
+    fun drawsFloorsAtFont200() {
         RuntimeEnvironment.setFontScale(2f)
         capture()
     }

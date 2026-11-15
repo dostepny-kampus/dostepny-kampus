@@ -22,27 +22,27 @@ class SubmissionTest {
         )
 
     @Test
-    fun br8_quick_without_photo() {
+    fun allowsQuickWithoutPhoto() {
         assertThrows<IllegalArgumentException> { quick.copy(photoIds = emptyList()) }
     }
 
     @Test
-    fun br7_severity_above_three() {
+    fun rejectsSeverityAboveThree() {
         assertThrows<IllegalArgumentException> { quick.copy(severity = 4) }
     }
 
     @Test
-    fun br24_marking_never_no_data() {
+    fun neverMarksNoData() {
         assertThrows<IllegalArgumentException> { quick.copy(entranceMarking = EntranceMarking.NO_DATA) }
     }
 
     @Test
-    fun br10_version_starts_at_one() {
+    fun startsVersionAtOne() {
         assertThrows<IllegalArgumentException> { submission(version = 0) }
     }
 
     @Test
-    fun br10_edit_is_next_version() {
+    fun bumpsVersionOnEdit() {
         val first = submission(version = 1)
         val edited = first.copy(version = 2, content = quick.copy(severity = 3))
         assertEquals(first.id, edited.id)

@@ -15,32 +15,32 @@ class RequirementIdOutsideLineTest {
     private val rule = RequirementIdOutsideLine(Config.empty)
 
     @Test
-    fun `identyfikator w zdaniu to błąd`() {
+    fun rejectsIdInSentence() {
         assertEquals(listOf(1), lines("/** Zwraca listę budynków (US1.1). */"))
     }
 
     @Test
-    fun `znacznik z wymaganiem to błąd`() {
+    fun rejectsMarkerWithRequirement() {
         assertEquals(listOf(1), lines("/**", " * Zwraca listę.", " *", " * @param a próg z NFR-3", " */"))
     }
 
     @Test
-    fun `linia wymagań przechodzi`() {
+    fun acceptsRequirementsLine() {
         assertEquals(emptyList<Int>(), lines("/**", " * Zwraca listę.", " *", " * Wymagania: US1.1, BR-G2", " */"))
     }
 
     @Test
-    fun `wymagania na końcu przechodzą`() {
+    fun acceptsTrailingRequirements() {
         assertEquals(emptyList<Int>(), lines("/** Zwraca listę. Wymagania: US1.1, RO-GOS */"))
     }
 
     @Test
-    fun `symbole i kod przechodzą`() {
+    fun acceptsSymbolsAndCode() {
         assertEquals(emptyList<Int>(), lines("/** Budynek C-13, M-6 i typ TB-29, kod `US1.1`. */"))
     }
 
     @Test
-    fun `bez dwukropka to zdanie`() {
+    fun treatsNoColonAsSentence() {
         assertEquals(listOf(1), lines("/** Wymagania wspólne i NFR-19 mówią o tym. */"))
     }
 

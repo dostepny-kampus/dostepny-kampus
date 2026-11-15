@@ -12,17 +12,17 @@ import org.junit.jupiter.api.Test
 /** Oznaczenia wejścia odpowiadają wartościom `EntranceMarking` z kontraktu API. Wymagania: US2.1, US17.1, BR-24 */
 class EntranceMarkingTest {
     @Test
-    fun us2_1_names_match_contract() {
+    fun matchesContractNames() {
         assertEquals(CONTRACT_VALUES, EntranceMarking.entries.map(EntranceMarking::name))
     }
 
     @Test
-    fun us2_1_contract_value_parsed() {
+    fun parsesContractValue() {
         assertEquals(EntranceMarking.entries, CONTRACT_VALUES.map(EntranceMarking::valueOf))
     }
 
     @Test
-    fun us17_1_no_data_distinct() {
+    fun keepsNoDataDistinct() {
         assertNotEquals(EntranceMarking.INACCESSIBLE, EntranceMarking.valueOf("NO_DATA"))
     }
 

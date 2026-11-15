@@ -13,7 +13,7 @@ import java.util.ServiceLoader
 /** detekt znajduje reguły projektu przez `ServiceLoader` z wpisu w `META-INF/services`. */
 class DostepnyKampusRuleSetProviderTest {
     @Test
-    fun `detekt znajduje reguły`() {
+    fun providesRules() {
         val rules =
             ServiceLoader
                 .load(RuleSetProvider::class.java)
