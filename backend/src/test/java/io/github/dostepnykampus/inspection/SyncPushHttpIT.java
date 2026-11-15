@@ -28,48 +28,48 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @IntegrationTest
 @Transactional
-final class SyncPushHttpTest {
+final class SyncPushHttpIT {
 
     @Test
-    void usFifteenOneSavesMarkerFromCollector(final WebApplicationContext context)
+    void savesMarkerFromCollector(final WebApplicationContext context)
         throws Exception {
         final UUID id = UUID.randomUUID();
         Assertions.assertEquals(
             "200 APPLIED, zapisanych 1",
             String.format(
                 "%s, zapisanych %d",
-                SyncPushHttpTest.push(context, "COLLECTOR", id, "C-13"),
-                SyncPushHttpTest.saved(context, id)
+                SyncPushHttpIT.push(context, "COLLECTOR", id, "C-13"),
+                SyncPushHttpIT.saved(context, id)
             ),
             "Zbierający nie zapisał znacznika piętra"
         );
     }
 
     @Test
-    void brNineSavesRepeatedMarkerOnce(final WebApplicationContext context) throws Exception {
+    void savesRepeatedMarkerOnce(final WebApplicationContext context) throws Exception {
         final UUID id = UUID.randomUUID();
-        SyncPushHttpTest.push(context, "COLLECTOR", id, "C-13");
+        SyncPushHttpIT.push(context, "COLLECTOR", id, "C-13");
         Assertions.assertEquals(
             "200 APPLIED, zapisanych 1",
             String.format(
                 "%s, zapisanych %d",
-                SyncPushHttpTest.push(context, "COLLECTOR", id, "C-13"),
-                SyncPushHttpTest.saved(context, id)
+                SyncPushHttpIT.push(context, "COLLECTOR", id, "C-13"),
+                SyncPushHttpIT.saved(context, id)
             ),
             "Ponowne wysłanie znacznika zapisało go drugi raz albo nie zwróciło wyniku"
         );
     }
 
     @Test
-    void usFifteenThreeRejectsMarkerOfUnknownBuilding(final WebApplicationContext context)
+    void rejectsMarkerOfUnknownBuilding(final WebApplicationContext context)
         throws Exception {
         final UUID id = UUID.randomUUID();
         Assertions.assertEquals(
             "200 REJECTED, zapisanych 0",
             String.format(
                 "%s, zapisanych %d",
-                SyncPushHttpTest.push(context, "COLLECTOR", id, "Z-99"),
-                SyncPushHttpTest.saved(context, id)
+                SyncPushHttpIT.push(context, "COLLECTOR", id, "Z-99"),
+                SyncPushHttpIT.saved(context, id)
             ),
             "Serwer zapisał znacznik w budynku, którego nie zna"
         );
@@ -83,7 +83,7 @@ final class SyncPushHttpTest {
             MockMvcRequestBuilders.post("/sync/push")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", role))
-                .content(SyncPushHttpTest.body(id, building))
+                .content(SyncPushHttpIT.body(id, building))
         ).andReturn().getResponse();
         String outcome = "";
         if (response.getContentAsString().contains("\"APPLIED\"")) {
