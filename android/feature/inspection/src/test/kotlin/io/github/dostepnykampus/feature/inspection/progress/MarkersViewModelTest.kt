@@ -51,7 +51,7 @@ class MarkersViewModelTest {
         }
 
     /**
-     * Scenariusz: postep-inwentaryzacji.feature: Bez potwierdzenia znacznik zostaje (Koordynator)
+     * Scenariusz: postep-inwentaryzacji.feature: Bez potwierdzenia znacznik zostaje
      *
      * Wymagania: US11.3
      */
