@@ -492,6 +492,12 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
                     <include>pwr-buildings.geojson</include>
                   </includes>
                 </resource>
+                <resource>
+                  <directory>${project.basedir}/../data/areas</directory>
+                  <includes>
+                    <include>pwr-areas.geojson</include>
+                  </includes>
+                </resource>
               </resources>
             </configuration>
           </execution>
