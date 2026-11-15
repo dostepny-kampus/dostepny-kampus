@@ -36,6 +36,7 @@ include(
     ":feature:map",
     ":feature:capture",
     ":feature:help",
+    ":feature:inspection",
     ":detekt-rules",
     ":systemtest",
 )

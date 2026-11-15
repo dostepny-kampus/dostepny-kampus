@@ -96,6 +96,7 @@ Moduł to moduł Gradle. Granicę wyznacza kompilator: moduł widzi tylko to, co
 | `:feature:map` | mapa kampusu, karta budynku, bariery na mapie | `:core:model`, `:core:data`, `:core:geo`, `:core:designsystem` |
 | `:feature:capture` | zgłaszanie barier i moje zgłoszenia | jak `:feature:map` oraz `:core:location` |
 | `:feature:help` | pomoc i pierwsze uruchomienie | `:core:model`, `:core:data`, `:core:designsystem` |
+| `:feature:inspection` | postęp inwentaryzacji Koordynatora: lista budynków i znaczniki do cofnięcia | `:core:model`, `:core:data`, `:core:designsystem` |
 | `:core:data` | repozytoria, kolejka wysyłki, synchronizacja | `:core:model`, `:core:database`, `:core:network`, `:core:geo` |
 | `:core:database` | baza Room | — |
 | `:core:network` | klient HTTP serwera | `:core:model`, `:core:geo` |
