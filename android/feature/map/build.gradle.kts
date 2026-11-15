@@ -32,13 +32,9 @@ abstract class GenerateAreaBoundaries : DefaultTask() {
         file.parentFile.mkdirs()
         val quotes = "\"\"\""
         file.writeText(
-            "package io.github.dostepnykampus.feature.map.campus
-
-" +
-                "/** Treść pliku `data/areas/pwr-areas.geojson`. */
-" +
-                "internal const val AREAS_GEOJSON: String = $quotes$text$quotes
-",
+            "package io.github.dostepnykampus.feature.map.campus\n\n" +
+                "/** Treść pliku `data/areas/pwr-areas.geojson`. */\n" +
+                "internal const val AREAS_GEOJSON: String = $quotes$text$quotes\n",
         )
     }
 }
