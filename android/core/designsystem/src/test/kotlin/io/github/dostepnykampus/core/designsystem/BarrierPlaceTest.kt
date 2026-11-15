@@ -25,7 +25,7 @@ class BarrierPlaceTest {
     /** Wiersz: miejsce to budynek z nazwą, wejście i piętro. Wymagania: US1.5 */
     @Test
     fun namesBuildingEntranceFloor() {
-        show("A-1", "Gmach Główny", "Wejście Cesarskie", SubmissionFloor(number = 0))
+        show(symbol = "A-1", name = "Gmach Główny", entrance = "Wejście Cesarskie", floor = SubmissionFloor(number = 0))
 
         compose.onNodeWithText("A-1 Gmach Główny · Wejście Cesarskie, parter").assertExists()
     }
@@ -33,7 +33,7 @@ class BarrierPlaceTest {
     /** Wiersz: budynek bez nazwy to „Budynek C-13”, piętro z dopiskiem „półpiętro”. Wymagania: US1.5 */
     @Test
     fun namesMezzanineWithoutName() {
-        show("C-13", null, null, SubmissionFloor(number = 2, isMezzanine = true))
+        show(symbol = "C-13", name = null, entrance = null, floor = SubmissionFloor(number = 2, isMezzanine = true))
 
         compose.onNodeWithText("Budynek C-13 · piętro 2, półpiętro").assertExists()
     }
@@ -41,12 +41,12 @@ class BarrierPlaceTest {
     /** Wiersz: bariera poza budynkiem ma „Poza budynkiem”. Wymagania: US1.5, BR-G2 */
     @Test
     fun namesOutside() {
-        show(null, null, null, null)
+        show(symbol = null, name = null, entrance = null, floor = null)
 
         compose.onNodeWithText("Poza budynkiem").assertExists()
     }
 
     private fun show(symbol: String?, name: String?, entrance: String?, floor: SubmissionFloor?) {
-        compose.setContent { Text(barrierPlace(symbol, name, entrance, floor)) }
+        compose.setContent { Text(barrierPlace(buildingSymbol = symbol, buildingName = name, entrance = entrance, floor = floor)) }
     }
 }

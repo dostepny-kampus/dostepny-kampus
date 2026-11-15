@@ -135,7 +135,13 @@ internal fun BarrierFacts(chosen: ChosenBarrier) {
             fontWeight = Typografia.wyroznienieWaga,
         )
         Text(
-            text = barrierPlace(barrier.buildingSymbol, chosen.building?.name, chosen.entrance, barrier.floor),
+            text =
+                barrierPlace(
+                    buildingSymbol = barrier.buildingSymbol,
+                    buildingName = chosen.building?.name,
+                    entrance = chosen.entrance,
+                    floor = barrier.floor,
+                ),
             style = MaterialTheme.typography.bodyLarge,
         )
         barrier.verifiedAt?.let { verified ->
