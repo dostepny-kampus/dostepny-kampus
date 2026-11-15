@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.barrier.submission.web;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import io.github.dostepnykampus.barrier.submission.Rejection;
 import io.github.dostepnykampus.barrier.submission.Submission;
@@ -26,7 +27,7 @@ import org.jspecify.annotations.Nullable;
  * @param createdAt Chwila utworzenia zgłoszenia
  * @param verifiedAt Chwila przyjęcia albo {@code null}, gdy zgłoszenia nie przyjęto
  * @param rejectionReason Powód odrzucenia albo {@code null}, gdy zgłoszenia nie odrzucono
- * @param duplicateOfSubmissionId Wcześniejsze zgłoszenie wskazane przy odrzuceniu duplikatu
+ * @param duplicateOf Wcześniejsze zgłoszenie wskazane przy odrzuceniu duplikatu
  * @param content Treść zgłoszenia, w JSON płasko obok pozostałych pól
  * @since 0.1.0
  */
@@ -34,7 +35,8 @@ import org.jspecify.annotations.Nullable;
 record SubmissionResponse(
     UUID id, int version, SubmissionStatus status, Instant createdAt,
     @Nullable Instant verifiedAt, @Nullable String rejectionReason,
-    @Nullable UUID duplicateOfSubmissionId, @JsonUnwrapped SubmissionContentJson content
+    @JsonProperty("duplicateOfSubmissionId") @Nullable UUID duplicateOf,
+    @JsonUnwrapped SubmissionContentJson content
 ) {
 
     /**
