@@ -15,6 +15,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -88,6 +89,7 @@ internal fun BuildingCard(building: BuildingProgress, onOpen: () -> Unit) {
 }
 
 @Composable
+@ReadOnlyComposable
 private fun coverageText(coverage: InspectionCoverage): String =
     when (coverage) {
         is InspectionCoverage.Floors -> {
