@@ -202,8 +202,8 @@ class CampusMapScreenTest {
     }
 
     /**
-     * Wiersz: V1, strzałki przesuwania zatrzymują się na granicy obszaru kampusu, czyli konturów powiększonych
-     * o 500 m z każdej strony, bez komunikatu.
+     * Wiersz: V1, strzałki przesuwania zatrzymują się na brzegu prostokąta terenu, czyli konturów (teren spoza
+     * pliku granic) powiększonych o 50 m z każdej strony, bez komunikatu.
      *
      * Wymagania: NFR-39, NFR-53
      */
@@ -213,7 +213,7 @@ class CampusMapScreenTest {
         repeat(times = 5) { compose.onNodeWithContentDescription("Pomniejsz").performClick() }
         repeat(times = 40) { compose.onNodeWithContentDescription("Przesuń mapę w prawo").performClick() }
         compose.waitForIdle()
-        assertEquals(1.0 + 500.0 / 111_195.0, cameras.last().center.longitude, 5e-5)
+        assertEquals(1.0 + 50.0 / 111_195.0, cameras.last().center.longitude, 5e-5)
     }
 
     /**
