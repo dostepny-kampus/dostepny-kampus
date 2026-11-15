@@ -70,6 +70,16 @@ class DebugSignInTest {
         assertEquals(Account.SignedIn(setOf(StaffRole.VERIFIER)), roles.account.value)
     }
 
+    /** Koordynator: logowanie użytkownika `koordynator.test`, a konto z rolą z tokenu. */
+    @Test
+    fun coordinatorSignsIn() {
+        val token = jwt("COORDINATOR", "offline_access")
+        server.enqueue(MockResponse().setBody("""{"access_token":"$token","token_type":"Bearer"}"""))
+        assertTrue(runBlocking { signIn.choose(DebugRole.COORDINATOR) })
+        assertTrue(server.takeRequest().body.readUtf8().contains("username=koordynator.test"))
+        assertEquals(Account.SignedIn(setOf(StaffRole.COORDINATOR)), roles.account.value)
+    }
+
     /** „Gość” usuwa token i wylogowuje. */
     @Test
     fun guestDropsToken() {

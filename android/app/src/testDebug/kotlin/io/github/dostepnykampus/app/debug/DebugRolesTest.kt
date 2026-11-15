@@ -51,12 +51,12 @@ class DebugRolesTest {
         compose.onNodeWithText("Konto").assertIsDisplayed()
     }
 
-    /** Przełącznik pokazuje cztery role i zwraca wybraną. */
+    /** Przełącznik pokazuje wszystkie role i zwraca wybraną. */
     @Test
-    fun switchOffersFourRoles() {
+    fun switchOffersAllRoles() {
         val chosen = mutableListOf<DebugRole>()
         compose.setContent { DostepnyKampusTheme { RoleSwitch(current = Account.Guest, onChoose = { chosen += it }) } }
-        listOf("Gość", "Odwiedzający", "Zbierający").forEach { compose.onNodeWithText(it).assertIsDisplayed() }
+        listOf("Gość", "Odwiedzający", "Zbierający", "Koordynator").forEach { compose.onNodeWithText(it).assertIsDisplayed() }
         compose.onNodeWithText("Weryfikator").performClick()
         assertEquals(listOf(DebugRole.VERIFIER), chosen)
     }
