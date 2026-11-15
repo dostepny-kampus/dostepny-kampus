@@ -13,6 +13,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +54,33 @@ final class ForeignSubmissionHttpIT {
                     .param("id", id).query(Integer.class).single()
             ),
             Matchers.equalTo("403 1")
+        );
+    }
+
+    @Test
+    void refusesResendOfForeignSubmissionId(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = ForeignSubmissionHttpIT.foreign(context);
+        final MockHttpServletResponse response = context.getBean(MockMvc.class).perform(
+            MockMvcRequestBuilders.post("/submissions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    String.join(
+                        "",
+                        "{\"id\":\"", id.toString(), "\",\"kind\":\"QUICK\",",
+                        "\"barrierGroup\":\"OTHER\",\"location\":{\"type\":\"Point\",",
+                        "\"coordinates\":[17.06209,51.10785]},\"photoIds\":[\"",
+                        ForeignSubmissionHttpIT.PHOTO.toString(), "\"]}"
+                    )
+                )
+                .with(new AsCollector())
+        ).andReturn().getResponse();
+        MatcherAssert.assertThat(
+            "Wysłanie cudzego id nie dało 403 albo oddało treść zgłoszenia",
+            "%d %b".formatted(
+                response.getStatus(), response.getContentAsString().contains("\"version\"")
+            ),
+            Matchers.equalTo("403 false")
         );
     }
 
