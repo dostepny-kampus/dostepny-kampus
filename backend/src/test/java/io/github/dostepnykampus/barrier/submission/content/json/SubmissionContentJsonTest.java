@@ -19,10 +19,14 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.exc.MismatchedInputException;
 
 /**
  * Pełna treść zgłoszenia z OpenAPI w JSON (W3-1): wiąże się z domeną i wraca
- * jako to samo drzewo.
+ * jako to samo drzewo. Nieznany rodzaj, zdjęcie bez UUID, liczba zamiast symbolu budynku
+ * i ciało, które nie jest obiektem, kończą wiązanie błędem.
+ *
+ * <p>Wymagania: US4, US7</p>
  *
  * @since 0.1.0
  */
@@ -57,6 +61,44 @@ final class SubmissionContentJsonTest {
             () -> Assertions.assertEquals(
                 full, JsonBodies.roundTrip(full), "Zapis treści różni się od wejścia"
             )
+        );
+    }
+
+    @Test
+    void usFourRejectsUnknownKind() {
+        Assertions.assertThrows(
+            MismatchedInputException.class,
+            () -> JsonBodies.bind(JsonBodies.with(node -> node.put("kind", "FAST"))),
+            "Nieznany rodzaj zgłoszenia przeszedł"
+        );
+    }
+
+    @Test
+    void usFourRejectsPhotoIdThatIsNoUuid() {
+        Assertions.assertThrows(
+            MismatchedInputException.class,
+            () -> JsonBodies.bind(
+                JsonBodies.with(node -> node.set("photoIds", JsonBodies.json("['foto']")))
+            ),
+            "Zdjęcie bez UUID przeszło"
+        );
+    }
+
+    @Test
+    void usSevenRejectsNumericBuildingSymbol() {
+        Assertions.assertThrows(
+            MismatchedInputException.class,
+            () -> JsonBodies.bind(JsonBodies.with(node -> node.put("buildingSymbol", 13))),
+            "Liczba zamiast symbolu budynku przeszła"
+        );
+    }
+
+    @Test
+    void usFourRejectsBodyThatIsNoObject() {
+        Assertions.assertThrows(
+            MismatchedInputException.class,
+            () -> JsonBodies.bind(JsonBodies.json("[]")),
+            "Tablica JSON przeszła jako zgłoszenie"
         );
     }
 }

@@ -83,7 +83,7 @@ final class StrictJsonHttpTest {
     static final class Binding {
 
         @PostMapping("/proba-wiazania")
-        String bind(@RequestBody final StrictJsonTest.Sample sample) {
+        String bind(@RequestBody final StrictJsonConfigurationTest.Sample sample) {
             return sample.toString();
         }
     }
