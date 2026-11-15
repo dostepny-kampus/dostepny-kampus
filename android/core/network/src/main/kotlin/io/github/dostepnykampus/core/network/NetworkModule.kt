@@ -12,6 +12,7 @@ import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.network.auth.AccessTokenInterceptor
 import io.github.dostepnykampus.core.network.auth.AccessTokens
 import io.github.dostepnykampus.core.network.building.BuildingsApi
+import io.github.dostepnykampus.core.network.inspection.InspectionProgressApi
 import io.github.dostepnykampus.core.network.inspection.MarkerChangesApi
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 import kotlinx.serialization.json.Json
@@ -74,4 +75,10 @@ public object NetworkModule {
     @Singleton
     public fun markerChangesApi(http: OkHttpClient, json: Json): MarkerChangesApi =
         MarkerChangesApi(http = http, json = json, baseUrl = BuildConfig.API_BASE_URL)
+
+    /** Postęp inwentaryzacji i cofnięcie znacznika przez Koordynatora; ten sam adres co [buildingsApi]. */
+    @Provides
+    @Singleton
+    public fun inspectionProgressApi(http: OkHttpClient, json: Json): InspectionProgressApi =
+        InspectionProgressApi(http = http, json = json, baseUrl = BuildConfig.API_BASE_URL)
 }

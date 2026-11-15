@@ -10,6 +10,7 @@ import io.github.dostepnykampus.core.network.auth.AccessTokens
 import io.github.dostepnykampus.core.network.building.ApiBuilding
 import io.github.dostepnykampus.core.network.building.BuildingsApi
 import io.github.dostepnykampus.core.network.building.decodeBuildingList
+import io.github.dostepnykampus.core.network.inspection.InspectionProgressApi
 import io.github.dostepnykampus.core.network.inspection.MarkerChangesApi
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertInstanceOf
@@ -30,6 +31,11 @@ class NetworkModuleTest {
             MarkerChangesApi::class.java,
             NetworkModule.markerChangesApi(http = http, json = json),
             "klient zmian znaczników z modułu",
+        )
+        assertInstanceOf(
+            InspectionProgressApi::class.java,
+            NetworkModule.inspectionProgressApi(http = http, json = json),
+            "klient postępu z modułu",
         )
         assertInstanceOf(AccessTokenInterceptor::class.java, http.interceptors.single(), "przechwytywacz tokenu konta")
         val parsed = json.decodeBuildingList("""{"source":"x","extra":1,"buildings":[]}""")
