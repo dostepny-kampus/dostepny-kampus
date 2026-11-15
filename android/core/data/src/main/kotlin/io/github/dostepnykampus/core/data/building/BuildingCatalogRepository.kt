@@ -15,8 +15,10 @@ import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.network.building.ApiBuilding
 import io.github.dostepnykampus.core.network.building.BuildingList
 import io.github.dostepnykampus.core.network.building.DetailLevel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.completeWith
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.channelFlow
@@ -36,8 +38,9 @@ public const val BUILDINGS_ASSET: String = "pwr-buildings.geojson"
  * tylko dla budynków podanych przez serwer. Bez niego, przy błędzie albo pustej liście katalog jest z pliku, chyba że
  * wcześniej pobrano katalog z serwera albo jego kopię w [buildingCache]. Budynki są sortowane naturalnie po symbolu
  * (A-2 przed A-10), bez wejść `emergency`, `exit` i `garage`. Trwające pobranie jest wspólne dla [catalogUpdates],
- * [catalog] i [refresh]; [catalogUpdates] oddaje najpierw katalog bez czekania, potem katalog z serwera. Anulowanie
- * prowadzącego pobranie każe pozostałym pytać od nowa. [syncedAt] to chwila pobrania z serwera, którą widzi katalog.
+ * [catalog] i [refresh]; [catalogUpdates] oddaje najpierw katalog bez czekania, potem katalog z serwera. Błąd
+ * prowadzącego pobranie dostają też czekający, bez ponownego odczytu i zapytania, a jego anulowanie każe pozostałym
+ * pytać od nowa. [syncedAt] to chwila pobrania z serwera, którą widzi katalog.
  *
  * Wymagania: US1, US1.2, US17.3, BR-25, NFR-11, NFR-10
  *
@@ -141,29 +144,38 @@ public class BuildingCatalogRepository internal constructor(
 
     private suspend fun follow(running: CompletableDeferred<BuildingCatalog>, isFresh: Boolean): BuildingCatalog {
         running.join()
-        return if (running.isCancelled) fetched(isFresh) else running.await()
+        return try {
+            running.await()
+        } catch (_: CancellationException) {
+            fetched(isFresh)
+        }
     }
 
+    /** Wynik albo błąd prowadzącego trafia do czekających przez [mine]; anulowanie [mine] to ponowienie. */
     private suspend fun lead(mine: CompletableDeferred<BuildingCatalog>, isFresh: Boolean): BuildingCatalog {
         try {
-            val file = readBundled(isFresh)
-            val server = nonEmptyServerList()
-            if (server != null) {
-                val synced = SyncedBuildingList(list = server, syncedAtMillis = nowMillis())
-                downloaded.value = Downloaded(file.withServerList(server), synced.syncedAtMillis)
-                copy?.save(synced)
-            } else if (downloaded.value == null) {
-                val restored = copy?.restore()
-                downloaded.value = restored?.let { Downloaded(file.withServerList(it.list), it.syncedAtMillis) }
-            }
-            val result = downloaded.value?.catalog ?: file
-            cached = result
-            mine.complete(result)
-            return result
+            mine.completeWith(runCatching { load(isFresh) })
+            return mine.await()
         } finally {
             synchronized(lock) { inflight = null }
             mine.cancel()
         }
+    }
+
+    private suspend fun load(isFresh: Boolean): BuildingCatalog {
+        val file = readBundled(isFresh)
+        val server = nonEmptyServerList()
+        if (server != null) {
+            val synced = SyncedBuildingList(list = server, syncedAtMillis = nowMillis())
+            downloaded.value = Downloaded(file.withServerList(server), synced.syncedAtMillis)
+            copy?.save(synced)
+        } else if (downloaded.value == null) {
+            val restored = copy?.restore()
+            downloaded.value = restored?.let { Downloaded(file.withServerList(it.list), it.syncedAtMillis) }
+        }
+        val result = downloaded.value?.catalog ?: file
+        cached = result
+        return result
     }
 
     private suspend fun readBundled(isFresh: Boolean): BuildingCatalog =
