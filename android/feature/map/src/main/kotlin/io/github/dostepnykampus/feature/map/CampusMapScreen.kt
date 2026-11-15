@@ -43,6 +43,7 @@ import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.area.AreaEdgeAnnouncement
 import io.github.dostepnykampus.feature.map.area.MapAreas
 import io.github.dostepnykampus.feature.map.area.rememberMapAreas
+import io.github.dostepnykampus.feature.map.area.rememberNoticeHeight
 import io.github.dostepnykampus.feature.map.barrier.BarrierDescriptions
 import io.github.dostepnykampus.feature.map.barrier.ChosenBarrierSheet
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
@@ -246,6 +247,8 @@ private fun CampusMap(
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
     var barrierId by rememberSaveable { mutableStateOf<String?>(null) }
+    val width = with(LocalDensity.current) { size.width.toDp() }
+    val notice = rememberNoticeHeight(shift = areas.selectionNotice, width = width)
     val state =
         rememberMapSceneState(
             layers = layers,
@@ -256,6 +259,7 @@ private fun CampusMap(
             size = size,
             top = top,
             motion = motion,
+            notice = notice,
         )
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
         val scene = state.scene

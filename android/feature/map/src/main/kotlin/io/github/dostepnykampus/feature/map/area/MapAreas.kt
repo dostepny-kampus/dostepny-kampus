@@ -90,6 +90,21 @@ internal class MapAreas(
         }
 
     /**
+     * Napis o zmianie terenu, który da zaznaczony budynek: [notice], a zanim mapa przejdzie na teren budynku,
+     * zmiana z terenu znanego osobie na teren budynku. `null` bez zaznaczenia albo bez zmiany terenu.
+     *
+     * Wymagania: US1.8, US2.8
+     */
+    val selectionNotice: AreaShift?
+        get() {
+            val selected = symbol ?: return null
+            if (followed.value == selected) return notice
+            val known = data?.areaOf(chosen = seen.value, symbol = null)
+            val target = data?.areaOf(chosen = null, symbol = selected)
+            return if (known == null || target == null || known == target) null else known.shiftTo(target)
+        }
+
+    /**
      * Czy napis [notice] jest pokazywany pierwszy raz. Ten sam napis pokazany znów, np. po zamknięciu panelu,
      * nie jest nowy.
      *
