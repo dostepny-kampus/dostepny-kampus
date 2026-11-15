@@ -24,7 +24,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @IntegrationTest
 @Transactional
-final class ReplacedSubmissionHttpTest {
+final class ReplacedSubmissionHttpIT {
 
     /**
      * Pola zgłoszenia szybkiego.
@@ -36,7 +36,7 @@ final class ReplacedSubmissionHttpTest {
         throws Exception {
         Assertions.assertEquals(
             "404, zapisanych 0",
-            ReplacedSubmissionHttpTest.change(context, UUID.randomUUID()),
+            ReplacedSubmissionHttpIT.change(context, UUID.randomUUID()),
             "Serwer przyjął zmianę zgłoszenia, którego nie ma"
         );
     }
@@ -45,10 +45,10 @@ final class ReplacedSubmissionHttpTest {
     void refusesChangeOfUnacceptedSubmission(final WebApplicationContext context)
         throws Exception {
         final UUID sent = UUID.randomUUID();
-        new SubmissionRequests(context).create(sent, ReplacedSubmissionHttpTest.QUICK);
+        new SubmissionRequests(context).create(sent, ReplacedSubmissionHttpIT.QUICK);
         Assertions.assertEquals(
             "409, zapisanych 0",
-            ReplacedSubmissionHttpTest.change(context, sent),
+            ReplacedSubmissionHttpIT.change(context, sent),
             "Serwer przyjął zmianę zgłoszenia, którego Weryfikator nie przyjął"
         );
     }
@@ -56,12 +56,12 @@ final class ReplacedSubmissionHttpTest {
     @Test
     void returnsSavedChangeAgain(final WebApplicationContext context) throws Exception {
         final UUID replaced = UUID.randomUUID();
-        new SubmissionRequests(context).create(replaced, ReplacedSubmissionHttpTest.QUICK);
+        new SubmissionRequests(context).create(replaced, ReplacedSubmissionHttpIT.QUICK);
         final JdbcClient jdbc = context.getBean(JdbcClient.class);
         jdbc.sql("UPDATE submissions SET status = 'ACCEPTED' WHERE id = :id")
             .param("id", replaced).update();
         final UUID id = UUID.randomUUID();
-        final String fields = ReplacedSubmissionHttpTest.replacing(replaced);
+        final String fields = ReplacedSubmissionHttpIT.replacing(replaced);
         new SubmissionRequests(context).create(id, fields);
         jdbc.sql("UPDATE submissions SET status = 'ARCHIVED' WHERE id = :id")
             .param("id", replaced).update();
@@ -78,7 +78,7 @@ final class ReplacedSubmissionHttpTest {
         return String.format(
             "%d, zapisanych %d",
             new SubmissionRequests(context).create(
-                id, ReplacedSubmissionHttpTest.replacing(replaced)
+                id, ReplacedSubmissionHttpIT.replacing(replaced)
             ),
             context.getBean(JdbcClient.class)
                 .sql("SELECT count(*) FROM submissions WHERE id = :id").param("id", id)
@@ -88,7 +88,7 @@ final class ReplacedSubmissionHttpTest {
 
     private static String replacing(final UUID replaced) {
         return String.format(
-            "%s,\"replacesSubmissionId\":\"%s\"", ReplacedSubmissionHttpTest.QUICK, replaced
+            "%s,\"replacesSubmissionId\":\"%s\"", ReplacedSubmissionHttpIT.QUICK, replaced
         );
     }
 }

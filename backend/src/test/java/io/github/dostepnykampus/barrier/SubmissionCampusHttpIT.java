@@ -31,7 +31,7 @@ import tools.jackson.databind.ObjectMapper;
  */
 @IntegrationTest
 @Transactional
-final class SubmissionCampusHttpTest {
+final class SubmissionCampusHttpIT {
 
     /**
      * Punkt około 400 m od budynku H-4.
@@ -50,9 +50,9 @@ final class SubmissionCampusHttpTest {
         MatcherAssert.assertThat(
             "Zgłoszenie 400 m od budynku nie zostało przyjęte",
             List.of(
-                SubmissionCampusHttpTest.post(context, id, SubmissionCampusHttpTest.NEAR)
+                SubmissionCampusHttpIT.post(context, id, SubmissionCampusHttpIT.NEAR)
                     .getStatus(),
-                SubmissionCampusHttpTest.saved(context, id)
+                SubmissionCampusHttpIT.saved(context, id)
             ),
             Matchers.equalTo(List.of(201, 1))
         );
@@ -64,7 +64,7 @@ final class SubmissionCampusHttpTest {
     ) throws Exception {
         final UUID id = UUID.randomUUID();
         final MockHttpServletResponse response =
-            SubmissionCampusHttpTest.post(context, id, SubmissionCampusHttpTest.FAR);
+            SubmissionCampusHttpIT.post(context, id, SubmissionCampusHttpIT.FAR);
         MatcherAssert.assertThat(
             "Zgłoszenie 600 m od budynków nie dostało odmowy z rodzajem błędu",
             List.of(
@@ -72,7 +72,7 @@ final class SubmissionCampusHttpTest {
                 context.getBean(ObjectMapper.class)
                     .readTree(response.getContentAsString(StandardCharsets.UTF_8))
                     .path("type").asString(),
-                SubmissionCampusHttpTest.saved(context, id)
+                SubmissionCampusHttpIT.saved(context, id)
             ),
             Matchers.equalTo(List.of(400, OutsideCampus.TYPE.toString(), 0))
         );

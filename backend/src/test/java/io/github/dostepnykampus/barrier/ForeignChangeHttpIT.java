@@ -24,7 +24,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @IntegrationTest
 @Transactional
-final class ForeignChangeHttpTest {
+final class ForeignChangeHttpIT {
 
     /**
      * Pola pomiaru precyzyjnego TB-13 w budynku C-13.
@@ -40,9 +40,9 @@ final class ForeignChangeHttpTest {
         throws Exception {
         Assertions.assertEquals(
             "403, zapisanych 0",
-            ForeignChangeHttpTest.change(
-                context, ForeignChangeHttpTest.accepted(context, "inne-konto"),
-                ForeignChangeHttpTest.PRECISE.replace("\"severity\":2", "\"severity\":3")
+            ForeignChangeHttpIT.change(
+                context, ForeignChangeHttpIT.accepted(context, "inne-konto"),
+                ForeignChangeHttpIT.PRECISE.replace("\"severity\":2", "\"severity\":3")
             ),
             "Serwer przyjął zwykłą zmianę cudzego zgłoszenia z pomiaru precyzyjnego"
         );
@@ -53,9 +53,9 @@ final class ForeignChangeHttpTest {
         throws Exception {
         Assertions.assertEquals(
             "201, zapisanych 1",
-            ForeignChangeHttpTest.change(
-                context, ForeignChangeHttpTest.accepted(context, "inne-konto"),
-                ForeignChangeHttpTest.PRECISE.replace("\"severity\":2", "\"barrierRemoved\":true")
+            ForeignChangeHttpIT.change(
+                context, ForeignChangeHttpIT.accepted(context, "inne-konto"),
+                ForeignChangeHttpIT.PRECISE.replace("\"severity\":2", "\"barrierRemoved\":true")
             ),
             "Serwer odrzucił zmianę „bariera usunięta” od innego Zbierającego"
         );
@@ -66,9 +66,9 @@ final class ForeignChangeHttpTest {
         throws Exception {
         Assertions.assertEquals(
             "201, zapisanych 1",
-            ForeignChangeHttpTest.change(
-                context, ForeignChangeHttpTest.accepted(context, "konto-testowe"),
-                ForeignChangeHttpTest.PRECISE.replace("\"severity\":2", "\"severity\":3")
+            ForeignChangeHttpIT.change(
+                context, ForeignChangeHttpIT.accepted(context, "konto-testowe"),
+                ForeignChangeHttpIT.PRECISE.replace("\"severity\":2", "\"severity\":3")
             ),
             "Serwer odrzucił zwykłą zmianę od autora zgłoszenia"
         );
@@ -86,7 +86,7 @@ final class ForeignChangeHttpTest {
             .param("id", quick).update();
         Assertions.assertEquals(
             "201, zapisanych 1",
-            ForeignChangeHttpTest.change(context, quick, ForeignChangeHttpTest.PRECISE),
+            ForeignChangeHttpIT.change(context, quick, ForeignChangeHttpIT.PRECISE),
             "Serwer odrzucił zmianę cudzego zgłoszenia szybkiego"
         );
     }
@@ -94,7 +94,7 @@ final class ForeignChangeHttpTest {
     private static UUID accepted(final WebApplicationContext context, final String author)
         throws Exception {
         final UUID id = UUID.randomUUID();
-        new SubmissionRequests(context).create(id, ForeignChangeHttpTest.PRECISE);
+        new SubmissionRequests(context).create(id, ForeignChangeHttpIT.PRECISE);
         context.getBean(JdbcClient.class)
             .sql("UPDATE submissions SET author = :author, status = 'ACCEPTED' WHERE id = :id")
             .param("author", author).param("id", id).update();

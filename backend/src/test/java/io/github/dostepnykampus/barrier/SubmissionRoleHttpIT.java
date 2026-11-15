@@ -28,7 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @IntegrationTest
 @Transactional
-final class SubmissionRoleHttpTest {
+final class SubmissionRoleHttpIT {
 
     /**
      * Pola pomiaru precyzyjnego TB-13 w budynku C-13.
@@ -47,20 +47,20 @@ final class SubmissionRoleHttpTest {
     @Test
     void usSevenRefusesCollectorWorkWithoutCollectorRole(final WebApplicationContext context) {
         final String replacing = String.format(
-            "%s,\"replacesSubmissionId\":\"%s\"", SubmissionRoleHttpTest.QUICK, UUID.randomUUID()
+            "%s,\"replacesSubmissionId\":\"%s\"", SubmissionRoleHttpIT.QUICK, UUID.randomUUID()
         );
         Assertions.assertAll(
             Stream.of("VISITOR", "VERIFIER", "COORDINATOR", "VERIFIER+COORDINATOR").flatMap(
                 role -> Stream.of(
-                    SubmissionRoleHttpTest.PRECISE,
-                    SubmissionRoleHttpTest.PRECISE.replace("PRECISE", "ENTRANCE_MARKING"),
+                    SubmissionRoleHttpIT.PRECISE,
+                    SubmissionRoleHttpIT.PRECISE.replace("PRECISE", "ENTRANCE_MARKING"),
                     replacing
                 ).map(
                     fields -> () -> {
                         final UUID id = UUID.randomUUID();
                         Assertions.assertEquals(
                             "403, zapisanych 0",
-                            SubmissionRoleHttpTest.outcome(context, role, id, fields),
+                            SubmissionRoleHttpIT.outcome(context, role, id, fields),
                             String.format("Rola %s wysłała: %s", role, fields)
                         );
                     }
@@ -73,8 +73,8 @@ final class SubmissionRoleHttpTest {
     void usSevenAcceptsPreciseFromCollector(final WebApplicationContext context) throws Exception {
         Assertions.assertEquals(
             "201, zapisanych 1",
-            SubmissionRoleHttpTest.outcome(
-                context, "COLLECTOR", UUID.randomUUID(), SubmissionRoleHttpTest.PRECISE
+            SubmissionRoleHttpIT.outcome(
+                context, "COLLECTOR", UUID.randomUUID(), SubmissionRoleHttpIT.PRECISE
             ),
             "Zbierający nie wysłał pomiaru precyzyjnego"
         );
@@ -86,8 +86,8 @@ final class SubmissionRoleHttpTest {
             Stream.of("VISITOR", "COLLECTOR", "VERIFIER", "COORDINATOR").map(
                 role -> () -> Assertions.assertEquals(
                     "201, zapisanych 1",
-                    SubmissionRoleHttpTest.outcome(
-                        context, role, UUID.randomUUID(), SubmissionRoleHttpTest.QUICK
+                    SubmissionRoleHttpIT.outcome(
+                        context, role, UUID.randomUUID(), SubmissionRoleHttpIT.QUICK
                     ),
                     String.format("Rola %s nie wysłała zgłoszenia szybkiego", role)
                 )
@@ -104,7 +104,7 @@ final class SubmissionRoleHttpTest {
                 MockMvcRequestBuilders.post("/submissions")
                     .contentType(MediaType.APPLICATION_JSON)
                     .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", role))
-                    .content(SubmissionRoleHttpTest.body(id, fields))
+                    .content(SubmissionRoleHttpIT.body(id, fields))
             ).andReturn().getResponse().getStatus(),
             context.getBean(JdbcClient.class)
                 .sql("SELECT count(*) FROM submissions WHERE id = :id").param("id", id)

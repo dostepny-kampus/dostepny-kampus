@@ -32,7 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @IntegrationTest
 @Transactional
-final class OwnSubmissionsHttpTest {
+final class OwnSubmissionsHttpIT {
 
     /**
      * Adres listy własnych zgłoszeń.
@@ -41,15 +41,15 @@ final class OwnSubmissionsHttpTest {
 
     @Test
     void usEightListsOnlyOwnInAnyStatus(final WebApplicationContext context) throws Exception {
-        final UUID own = OwnSubmissionsHttpTest.add(context, "REJECTED");
-        final UUID foreign = OwnSubmissionsHttpTest.add(context, "SENT");
+        final UUID own = OwnSubmissionsHttpIT.add(context, "REJECTED");
+        final UUID foreign = OwnSubmissionsHttpIT.add(context, "SENT");
         context.getBean(JdbcClient.class)
             .sql("UPDATE submissions SET author = 'inne-konto' WHERE id = :id")
             .param("id", foreign).update();
         MatcherAssert.assertThat(
             "Lista własnych nie ma odrzuconego zgłoszenia autora albo ma cudze",
             context.getBean(MockMvc.class).perform(
-                MockMvcRequestBuilders.get(OwnSubmissionsHttpTest.OWN).with(new AsCollector())
+                MockMvcRequestBuilders.get(OwnSubmissionsHttpIT.OWN).with(new AsCollector())
             ).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
             Matchers.allOf(
                 Matchers.containsString(own.toString()),
@@ -64,7 +64,7 @@ final class OwnSubmissionsHttpTest {
         MatcherAssert.assertThat(
             "Własne zgłoszenia bez roli Zbierającego nie dają 403",
             context.getBean(MockMvc.class).perform(
-                MockMvcRequestBuilders.get(OwnSubmissionsHttpTest.OWN).with(new AsVerifier())
+                MockMvcRequestBuilders.get(OwnSubmissionsHttpIT.OWN).with(new AsVerifier())
             ).andReturn().getResponse().getStatus(),
             Matchers.equalTo(403)
         );

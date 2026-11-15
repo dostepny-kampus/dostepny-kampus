@@ -36,16 +36,16 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @IntegrationTest
 @Transactional
-final class PhotoUploadLimitHttpTest {
+final class PhotoUploadLimitHttpIT {
 
     @ParameterizedTest
     @ValueSource(longs = {-1, 1, 5_000_001})
     void boundsReadBeforeRejecting(
         final long declared, final WebApplicationContext context
     ) throws Exception {
-        final UUID id = PhotoUploadLimitHttpTest.add(context);
+        final UUID id = PhotoUploadLimitHttpIT.add(context);
         final ByteArrayInputStream source = new ByteArrayInputStream(new byte[5_000_100]);
-        final MockHttpServletResponse response = PhotoUploadLimitHttpTest.put(
+        final MockHttpServletResponse response = PhotoUploadLimitHttpIT.put(
             context, id, source, declared
         );
         int consumed = 5_000_001;
@@ -56,7 +56,7 @@ final class PhotoUploadLimitHttpTest {
             "Przekroczenie limitu nie zatrzymuje odczytu albo zapisuje zdjęcie",
             List.of(
                 response.getStatus(), 5_000_100 - source.available(),
-                PhotoUploadLimitHttpTest.getStatus(context, id)
+                PhotoUploadLimitHttpIT.getStatus(context, id)
             ),
             Matchers.equalTo(List.of(413, consumed, 404))
         );
@@ -69,8 +69,8 @@ final class PhotoUploadLimitHttpTest {
     ) throws Exception {
         MatcherAssert.assertThat(
             "Poprawne zdjęcie mieszczące się w limicie nie daje204",
-            PhotoUploadLimitHttpTest.put(
-                context, PhotoUploadLimitHttpTest.add(context),
+            PhotoUploadLimitHttpIT.put(
+                context, PhotoUploadLimitHttpIT.add(context),
                 new ByteArrayInputStream(Arrays.copyOf(JpegCleanerTest.photo(), size)), size
             ).getStatus(),
             Matchers.equalTo(204)
@@ -106,7 +106,7 @@ final class PhotoUploadLimitHttpTest {
         if (declared >= 0) {
             request.addHeader(HttpHeaders.CONTENT_LENGTH, declared);
         }
-        return PhotoUploadLimitHttpTest.mvc(context).perform(servlet -> request)
+        return PhotoUploadLimitHttpIT.mvc(context).perform(servlet -> request)
             .andReturn().getResponse();
     }
 
@@ -115,7 +115,7 @@ final class PhotoUploadLimitHttpTest {
         context.getBean(JdbcClient.class)
             .sql("UPDATE submissions SET status = 'ACCEPTED' WHERE id = :id")
             .param("id", id).update();
-        return PhotoUploadLimitHttpTest.mvc(context).perform(
+        return PhotoUploadLimitHttpIT.mvc(context).perform(
             MockMvcRequestBuilders.get("/submissions/{id}/photos/{photo}", id, id)
         ).andReturn().getResponse().getStatus();
     }

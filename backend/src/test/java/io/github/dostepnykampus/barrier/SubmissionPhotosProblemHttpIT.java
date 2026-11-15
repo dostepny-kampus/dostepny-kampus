@@ -29,7 +29,7 @@ import tools.jackson.databind.ObjectMapper;
  */
 @IntegrationTest
 @Transactional
-final class SubmissionPhotosProblemHttpTest {
+final class SubmissionPhotosProblemHttpIT {
 
     /** Zdjęcie z listy photoIds. */
     private static final UUID PHOTO = UUID.fromString("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d");
@@ -51,7 +51,7 @@ final class SubmissionPhotosProblemHttpTest {
     void givesProblemWithDetail(final String scenario, final WebApplicationContext context)
         throws Exception {
         final PhotoRequests requests = new PhotoRequests(context);
-        final String photo = SubmissionPhotosProblemHttpTest.PHOTO.toString();
+        final String photo = SubmissionPhotosProblemHttpIT.PHOTO.toString();
         UUID id = requests.add("SENT", photo);
         byte[] body = JpegCleanerTest.photo();
         switch (scenario) {
@@ -61,10 +61,10 @@ final class SubmissionPhotosProblemHttpTest {
         }
         MatcherAssert.assertThat(
             "Błąd ".concat(scenario).concat(" nie jest problem+json ze statusem i opisem"),
-            SubmissionPhotosProblemHttpTest.problem(
-                requests.put(id, SubmissionPhotosProblemHttpTest.PHOTO, body), context
+            SubmissionPhotosProblemHttpIT.problem(
+                requests.put(id, SubmissionPhotosProblemHttpIT.PHOTO, body), context
             ),
-            Matchers.matchesPattern(SubmissionPhotosProblemHttpTest.EXPECTED.get(scenario))
+            Matchers.matchesPattern(SubmissionPhotosProblemHttpIT.EXPECTED.get(scenario))
         );
     }
 
@@ -80,8 +80,8 @@ final class SubmissionPhotosProblemHttpTest {
         }
         MatcherAssert.assertThat(
             "Brak zgłoszenia albo zdjęcia na liście nie daje 404 problem+json z opisem",
-            SubmissionPhotosProblemHttpTest.problem(
-                requests.put(id, SubmissionPhotosProblemHttpTest.PHOTO, JpegCleanerTest.photo()),
+            SubmissionPhotosProblemHttpIT.problem(
+                requests.put(id, SubmissionPhotosProblemHttpIT.PHOTO, JpegCleanerTest.photo()),
                 context
             ),
             Matchers.matchesPattern(

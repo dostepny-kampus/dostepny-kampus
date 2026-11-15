@@ -28,7 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @IntegrationTest
 @Transactional
-final class ForeignSubmissionHttpTest {
+final class ForeignSubmissionHttpIT {
 
     /**
      * Zdjęcie z listy photoIds zgłoszenia próbnego.
@@ -38,7 +38,7 @@ final class ForeignSubmissionHttpTest {
     @Test
     void refusesEditOfForeignSubmission(final WebApplicationContext context)
         throws Exception {
-        final UUID id = ForeignSubmissionHttpTest.foreign(context);
+        final UUID id = ForeignSubmissionHttpIT.foreign(context);
         MatcherAssert.assertThat(
             "Edycja cudzego zgłoszenia nie dała 403 albo zmieniła wersję",
             "%d %d".formatted(
@@ -64,7 +64,7 @@ final class ForeignSubmissionHttpTest {
             context.getBean(MockMvc.class).perform(
                 MockMvcRequestBuilders.put(
                     "/submissions/{id}/photos/{photo}",
-                    ForeignSubmissionHttpTest.foreign(context), ForeignSubmissionHttpTest.PHOTO
+                    ForeignSubmissionHttpIT.foreign(context), ForeignSubmissionHttpIT.PHOTO
                 ).contentType(MediaType.IMAGE_JPEG).content(new byte[] {1})
                     .with(new AsCollector())
             ).andReturn().getResponse().getStatus(),
@@ -74,7 +74,7 @@ final class ForeignSubmissionHttpTest {
 
     private static UUID foreign(final WebApplicationContext context) {
         final UUID id = new SampleSubmissions(context)
-            .add("SENT", SampleSubmissions.quick(ForeignSubmissionHttpTest.PHOTO));
+            .add("SENT", SampleSubmissions.quick(ForeignSubmissionHttpIT.PHOTO));
         context.getBean(JdbcClient.class)
             .sql("UPDATE submissions SET author = 'inne-konto' WHERE id = :id")
             .param("id", id).update();

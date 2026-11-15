@@ -31,7 +31,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @IntegrationTest
 @Transactional
-final class SubmissionPhotosStatusHttpTest {
+final class SubmissionPhotosStatusHttpIT {
 
     /** Zdjęcie z listy photoIds. */
     private static final UUID PHOTO = UUID.fromString("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d");
@@ -51,18 +51,18 @@ final class SubmissionPhotosStatusHttpTest {
         final SubmissionStatus status, final WebApplicationContext context
     ) throws Exception {
         final PhotoRequests requests = new PhotoRequests(context);
-        final String photo = SubmissionPhotosStatusHttpTest.PHOTO.toString();
+        final String photo = SubmissionPhotosStatusHttpIT.PHOTO.toString();
         final UUID id = requests.add(status.name(), photo);
         final int written = requests.put(
-            id, SubmissionPhotosStatusHttpTest.PHOTO, JpegCleanerTest.photo()
+            id, SubmissionPhotosStatusHttpIT.PHOTO, JpegCleanerTest.photo()
         ).getStatus();
         context.getBean(PhotoStore.class).put(
-            id, SubmissionPhotosStatusHttpTest.PHOTO, JpegCleanerTest.photo()
+            id, SubmissionPhotosStatusHttpIT.PHOTO, JpegCleanerTest.photo()
         );
         MatcherAssert.assertThat(
             "Zapis albo odczyt zdjęcia w statusie ".concat(status.name()).concat(" daje zły kod"),
             List.of(written, requests.get(id, photo).getStatus()),
-            Matchers.equalTo(SubmissionPhotosStatusHttpTest.CODES.get(status))
+            Matchers.equalTo(SubmissionPhotosStatusHttpIT.CODES.get(status))
         );
     }
 
@@ -71,7 +71,7 @@ final class SubmissionPhotosStatusHttpTest {
         throws Exception {
         final PhotoRequests requests = new PhotoRequests(context);
         final UUID id = requests.add(
-            "ACCEPTED", SubmissionPhotosStatusHttpTest.PHOTO.toString()
+            "ACCEPTED", SubmissionPhotosStatusHttpIT.PHOTO.toString()
         );
         final UUID other = UUID.randomUUID();
         context.getBean(PhotoStore.class).put(id, other, JpegCleanerTest.photo());
@@ -86,11 +86,11 @@ final class SubmissionPhotosStatusHttpTest {
     void comparesPhotoIdsAsUuid(final WebApplicationContext context)
         throws Exception {
         final PhotoRequests requests = new PhotoRequests(context);
-        final String lower = SubmissionPhotosStatusHttpTest.PHOTO.toString();
+        final String lower = SubmissionPhotosStatusHttpIT.PHOTO.toString();
         final String upper = lower.toUpperCase(Locale.ROOT);
         final UUID id = requests.add("ACCEPTED", upper);
         context.getBean(PhotoStore.class).put(
-            id, SubmissionPhotosStatusHttpTest.PHOTO, JpegCleanerTest.photo()
+            id, SubmissionPhotosStatusHttpIT.PHOTO, JpegCleanerTest.photo()
         );
         MatcherAssert.assertThat(
             "Wielkość liter w identyfikatorze zdjęcia zmienia wynik odczytu",
