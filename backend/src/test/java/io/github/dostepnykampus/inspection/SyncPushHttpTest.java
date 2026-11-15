@@ -8,7 +8,6 @@ package io.github.dostepnykampus.inspection;
 import io.github.dostepnykampus.IntegrationTest;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -29,7 +28,6 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @IntegrationTest
 @Transactional
-@Disabled("Czeka na handler POST /sync/push: #2159")
 final class SyncPushHttpTest {
 
     @Test

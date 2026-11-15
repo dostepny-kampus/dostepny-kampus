@@ -19,8 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Zapis znaczników piętra obejrzanego: znacznik w budynku, którego serwer nie zna, jest
  * pomijany, a pozostałe z paczki zapisują się w jednej transakcji.
  *
- * <p>TODO(#2159): wywołać z POST /sync/push.</p>
- *
  * <p>Wymagania: US15.1, US15.3, BR-9, BR-20</p>
  *
  * @since 0.1.0
