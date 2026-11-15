@@ -29,6 +29,7 @@ dependencies {
     implementation(project(":feature:map"))
     implementation(project(":feature:capture"))
     implementation(project(":feature:help"))
+    implementation(project(":feature:inspection"))
     implementation(project(":core:data"))
     implementation(project(":core:database"))
     implementation(project(":core:designsystem"))

@@ -47,6 +47,7 @@ import io.github.dostepnykampus.feature.capture.quick.QuickReportScreen
 import io.github.dostepnykampus.feature.capture.report.form.ReportFormScreen
 import io.github.dostepnykampus.feature.help.HelpScreen
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
+import io.github.dostepnykampus.feature.inspection.navigation.ProgressRoute
 import io.github.dostepnykampus.feature.map.building.BuildingCardContent
 import io.github.dostepnykampus.feature.map.building.BuildingCardUiState
 import io.github.dostepnykampus.feature.map.building.BuildingCardViewModel
@@ -58,6 +59,7 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlin.math.roundToInt
 import io.github.dostepnykampus.feature.capture.R as CaptureR
+import io.github.dostepnykampus.feature.inspection.R as InspectionR
 
 /** Szerokość okna w dp, od której pasek nawigacji stoi z boku, a V2 otwiera się od razu na pełnym ekranie. */
 internal const val WIDE_WINDOW_DP = 600
@@ -111,6 +113,9 @@ internal fun AppNavigator.sheetCard(): SheetCard {
 
 private typealias Action = Pair<String, () -> Unit>
 
+private val Account.isCoordinator: Boolean
+    get() = this is Account.SignedIn && StaffRole.COORDINATOR in staffRoles
+
 /**
  * Ekran trasy [route] z czynnościami podpiętymi do nawigatora. V1 to mapa z `feature:map` ze stanem w ViewModel
  * z grafu Hilt, V2 karta budynku, V3 „Którędy wejść”, C1, C2 i C3 z `feature:capture` i V5 z `feature:help`, reszta
@@ -134,6 +139,7 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         is ReportEditRoute -> ReportEdit(route)
         is RemovedRoute -> Removed(route)
         MySubmissionsRoute -> MySubmissions()
+        ProgressRoute -> InspectionProgress()
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
         is SignInRoute, AccountRoute -> Account(route)
         is MapRoute -> HiltMapScreen(focus = route.focus)
@@ -224,10 +230,12 @@ private fun AppNavigator.Account(route: NavKey) {
         }
 
         isWork -> {
+            val progress = stringResource(InspectionR.string.postep_naglowek) to { inspectionProgress() }
             Stub(
                 title,
                 stringResource(R.string.zmierz_i_zglos) to { measure() },
                 stringResource(CaptureR.string.moje_naglowek) to { mySubmissions() },
+                *listOfNotNull(progress.takeIf { current.isCoordinator }).toTypedArray(),
             )
         }
 
