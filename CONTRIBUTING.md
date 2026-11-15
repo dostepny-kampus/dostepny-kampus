@@ -25,6 +25,12 @@ opisy w kodzie), mówi [AGENTS.md](AGENTS.md).
    Ryzyko: test niestabilny, który przypadkiem przeszedł na PR, nie jest w kolejce sprawdzany drugi raz.
 6. Po scaleniu issue z opisu PR jest zamykane z komentarzem „Zrobione w #PR”
    ([`zamykanie-issue.yml`](.github/workflows/zamykanie-issue.yml), [`zamknij-issue.sh`](.github/scripts/zamknij-issue.sh)).
+7. **Kontrola sprintu** ([`kontrola-sprintu.yml`](.github/workflows/kontrola-sprintu.yml),
+   [`kontrola-sprintu-cel.sh`](.github/scripts/kontrola-sprintu-cel.sh)) co godzinę bierze głowę każdej gałęzi `sprint/N`,
+   której nie ma jeszcze w `main`, uruchamia na niej pełny przebieg [`android.yml`](.github/workflows/android.yml) (APK,
+   emulatory, pełny test systemowy, `buildHealth`) i zapisuje wynik jako status commita `kontrola-sprintu`. Głowę z tym
+   statusem pomija; gdy od ostatniego sprawdzonego commita nie zmienił się Android, serwer, `infra/` ani dane budynków,
+   stawia zielony status bez budowy. Ręczne uruchomienie z nazwą gałęzi sprawdza ją zawsze.
 
 Aktualizacje zależności otwiera Dependabot do gałęzi sprintu ([`dependabot.yml`](.github/dependabot.yml)); PR Dependabota
 jest zwolniony z kontroli „PR od issue”.
