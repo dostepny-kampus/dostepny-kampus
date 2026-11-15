@@ -94,6 +94,10 @@
     <string name="karta_kazde_pietro">Na każdym piętrze: %1$s – %2$s.</string>
     <string name="karta_nie_ma_na_pietrach">Nie ma na piętrach: %1$s.</string>
     <string name="karta_i">i</string>
+    <string name="karta_pietra">Piętra</string>
+    <string name="karta_bez_planu">Nie mamy planu pięter tego budynku.</string>
+    <string name="karta_zwiniete">zwinięte</string>
+    <string name="karta_rozwiniete">rozwinięte</string>
     <string name="wizyta_naglowek">Którędy wejść do %1$s</string>
     <string name="wizyta_brak_danych">Nie mamy jeszcze danych o wejściach do budynku %1$s.</string>
     <string name="wizyta_dostepne">Budynek %1$s ma wejście dostępne: »%2$s«.</string>

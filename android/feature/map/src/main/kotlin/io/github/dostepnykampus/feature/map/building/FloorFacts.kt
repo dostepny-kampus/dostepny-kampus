@@ -60,8 +60,6 @@ data class FloorFacts(val elevator: FloorPresence?, val toilet: FloorPresence?, 
  * funkcje poza korytarzem, klatką schodową, windą i toaletami, najwyżej cztery, od najczęstszej; przy równej
  * liczbie w kolejności pierwszego wystąpienia. Piętro bez planu nie ma windy, toalety ani opisu.
  *
- * TODO(#2481): grupa „Piętra” na karcie budynku.
- *
  * Wymagania: US16.3, US2.3, NFR-19
  */
 fun floorFacts(floors: List<Floor>, rooms: Map<String, RoomList>): FloorFacts {
