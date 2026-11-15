@@ -72,6 +72,21 @@ class QuickSendStepTest {
         compose.onNodeWithText("Ustalamy, gdzie jesteś…").assertDoesNotExist()
     }
 
+    /**
+     * Wiersz: V4 stan „Poza terenem PWr” → komunikat zamiast zdania o miejscu; grupa zostaje.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie szybkie tylko na terenie PWr
+     *
+     * Wymagania: US4.9, BR-G5
+     */
+    @Test
+    fun showsOutsideGrounds() {
+        val report = QuickReport(photo = photo, group = BarrierGroup.TOILETS)
+        show(report = report, isFloorAsked = false, lookup = QuickLookup.Outside)
+        compose.onNodeWithText("Jesteś poza terenem PWr.", substring = true).assertIsDisplayed()
+        compose.onNodeWithText("Toalety").assertIsDisplayed()
+        compose.onNodeWithText("Ustalamy, gdzie jesteś…").assertDoesNotExist()
+    }
+
     /** Wiersz: V4 potwierdzenie → zgłoszenie trafi do weryfikacji. Wymagania: US4.4 */
     @Test
     fun showsThankYou() {

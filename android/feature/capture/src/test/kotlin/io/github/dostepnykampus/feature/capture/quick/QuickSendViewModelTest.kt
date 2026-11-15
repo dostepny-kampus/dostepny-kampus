@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.BuildingFloors
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
+import io.github.dostepnykampus.core.geo.CampusGrounds
 import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource
@@ -52,6 +53,7 @@ class QuickSendViewModelTest {
     private val locationOn = MutableStateFlow(true)
     private val saved = mutableListOf<SubmissionContent>()
     private var failure: Exception? = null
+    private var isOnGrounds = true
     private val report =
         QuickReport(
             photo = PendingPhotoDraft(photoId = "zdjecie-1", path = "/zdjecia/zdjecie-1.jpg"),
@@ -69,7 +71,12 @@ class QuickSendViewModelTest {
             },
             networkStatus = NetworkStatus { online },
             buildingFloors = BuildingFloors { null },
-            buildingLookup = BuildingLookup(BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS }, dispatcher),
+            buildingLookup =
+                BuildingLookup(
+                    catalog = BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS },
+                    computeContext = dispatcher,
+                    grounds = CampusGrounds { isOnGrounds },
+                ),
         )
     }
 
@@ -182,6 +189,32 @@ class QuickSendViewModelTest {
             viewModel.send(report)
             runCurrent()
             assertEquals(1, saved.size)
+        }
+
+    /**
+     * Pozycja poza terenem PWr: „Wyślij” niczego nie zapisuje, a „Spróbuj ponownie” ustala pozycję od nowa; zdjęcie
+     * i grupa zostają.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie szybkie tylko na terenie PWr
+     *
+     * Wymagania: US4.9, BR-G5
+     */
+    @Test
+    fun refusesPositionOutsideGrounds() =
+        runTest(dispatcher) {
+            isOnGrounds = false
+            watch()
+            fix(OUTSIDE)
+            assertEquals(QuickLookup.Outside, viewModel.lookup.value, "pozycja poza terenem PWr")
+            viewModel.send(report)
+            runCurrent()
+            assertEquals(emptyList<SubmissionContent>(), saved, "bez zapisu poza terenem")
+            isOnGrounds = true
+            viewModel.retry()
+            runCurrent()
+            fix(OUTSIDE)
+            viewModel.send(report)
+            runCurrent()
+            assertEquals(listOf(OUTSIDE), saved.map { it.location }, "zapis po powrocie na teren")
         }
 
     /** Wyłączona lokalizacja → „Brak pozycji”; po włączeniu ustalanie wraca samo. Wymagania: UC7 */
