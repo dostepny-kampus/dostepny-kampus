@@ -63,7 +63,7 @@ class CardBarriersViewModelTest {
 
     /** Wiersz: bariery nie są ani z serwera, ani z kopii → stan karty nie ma danych o barierach. Wymagania: US2.7 */
     @Test
-    fun us2_7_not_synced_is_no_data() =
+    fun hasNoDataWhenNotSynced() =
         runTest {
             Dispatchers.setMain(StandardTestDispatcher(testScheduler))
             val barriers = cardBarriers(listOf(barrier(id = "z1", symbol = "A-1")), syncedAt = null)
