@@ -7,8 +7,8 @@ package io.github.dostepnykampus.feature.map.area
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -48,9 +48,9 @@ internal fun AreaOrder.otherAreaOf(symbol: String): String? =
  * @param symbol budynek zaznaczenia z trasy; dopóki teren nie jest ustawiony, to on wyznacza teren
  * @param chosen zapisywana nazwa terenu pokazanego na mapie: wybranego przez osobę albo ustawionego jednorazowo
  *   przez wybór budynku z innego terenu; `null`, dopóki mapa stoi na terenie startowym
- * @param followed zapisywany symbol budynku, którego teren mapa już pokazała; `null` bez zaznaczenia
  * @param seen zapisywana nazwa terenu, o którym osoba już wie: wybrała go albo ruszyła na nim mapę; `null`, dopóki
  *   widziała tylko teren startowy
+ * @param followed zapisywany symbol budynku, którego teren mapa już pokazała; `null` bez zaznaczenia
  */
 internal class MapAreas(
     private val data: CampusMapData?,
@@ -160,6 +160,6 @@ internal fun rememberMapAreas(layers: CampusMapData?, focus: MapFocus?): MapArea
         remember(layers, symbol, chosen) {
             MapAreas(data = layers, symbol = symbol, chosen = chosen, seen = seen, followed = followed)
         }
-    LaunchedEffect(areas) { areas.followSelection() }
+    SideEffect { areas.followSelection() }
     return areas
 }
