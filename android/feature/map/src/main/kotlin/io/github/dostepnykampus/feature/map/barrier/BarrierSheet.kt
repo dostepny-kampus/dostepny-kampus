@@ -33,6 +33,7 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.marking.SeverityIcon
+import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.submission.Severity
@@ -133,7 +134,16 @@ internal fun BarrierFacts(chosen: ChosenBarrier) {
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = Typografia.wyroznienieWaga,
         )
-        Text(text = barrierPlace(chosen), style = MaterialTheme.typography.bodyLarge)
+        Text(
+            text =
+                barrierPlace(
+                    symbol = barrier.buildingSymbol,
+                    name = chosen.building?.name,
+                    entrance = chosen.entrance,
+                    floor = barrier.floor,
+                ),
+            style = MaterialTheme.typography.bodyLarge,
+        )
         barrier.verifiedAt?.let { verified ->
             val day = DAY_FORMAT.format(verified.atZone(CampusZone).toLocalDate())
             Text(

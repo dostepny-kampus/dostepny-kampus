@@ -45,4 +45,10 @@
     <string name="uciazliwosc_pomoc_opis">Osoba pokona ją tylko z pomocą innej osoby albo urządzenia obsługiwanego przez pracownika.</string>
     <string name="uciazliwosc_blokada">Blokada</string>
     <string name="uciazliwosc_blokada_opis">Osoba nie pokona jej wcale albo tylko wtedy, gdy ktoś ją przeniesie.</string>
+    <string name="miejsce_poza">Poza budynkiem</string>
+    <string name="miejsce_budynek">Budynek %1$s</string>
+    <string name="miejsce_budynek_z_nazwa">%1$s %2$s</string>
+    <string name="miejsce_parter">parter</string>
+    <string name="miejsce_pietro">piętro %1$d</string>
+    <string name="miejsce_polpietro">półpiętro</string>
 </resources>
