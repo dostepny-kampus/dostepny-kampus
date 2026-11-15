@@ -77,8 +77,7 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
       | nie potwierdzi odbioru zgłoszenia  | lokalne  |
       | potwierdzi odbiór zgłoszenia       | wysłane  |
 
-  # kroki serwera: #1262
-  @US8.2 @serwer @do-zrobienia
+  @US8.2 @serwer
   Scenariusz: Status „w weryfikacji” po wzięciu zgłoszenia przez Weryfikatora
     Zakładając, że zgłoszenie Zbierającego ma status „wysłane”
     Jeżeli Weryfikator weźmie je z kolejki
@@ -97,7 +96,7 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
       | wysłane       |
       | w weryfikacji |
 
-  # kroki serwera: #1262
+  # kroki serwera: #2456
   @US8.3 @BR-3 @BR-16 @serwer @do-zrobienia
   Scenariusz: Poprawa i ponowne wysłanie zgłoszenia odrzuconego
     Zakładając, że zgłoszenie Zbierającego odrzucono z powodem „Zdjęcie nie pokazuje progu”
