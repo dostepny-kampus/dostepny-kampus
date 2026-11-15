@@ -350,8 +350,7 @@ class CampusMapScreenTest {
         assertEquals(true, down.bottom <= bottom - 400.dp)
         compose.onNodeWithContentDescription("Przesuń mapę w górę").assertExists()
         compose.onNodeWithText("Mapa kampusu").assertDoesNotExist()
-        compose.onNodeWithText("Legenda").assertDoesNotExist()
-        compose.onNodeWithContentDescription("O danych mapy").assertDoesNotExist()
+        compose.onNodeWithContentDescription("Legenda i źródła mapy").assertDoesNotExist()
     }
 
     /**

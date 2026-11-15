@@ -41,10 +41,10 @@ import java.time.LocalDate
 private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
 
 /** Panel otwarty na mapie V1. Naraz otwarty jest najwyżej jeden, więc stanem nakładki jest jedna wartość. */
-private enum class MapPanel { Area, Legend, Info }
+private enum class MapPanel { Area, Info }
 
 /**
- * Nakładka mapy V1: przyciski powiększania i przesuwania, przycisk terenu nad „Legendą”, „ⓘ”, podpis OSM, po zmianie
+ * Nakładka mapy V1: przyciski powiększania i przesuwania, przycisk terenu, „ⓘ” z legendą, podpis OSM, po zmianie
  * terenu napis „Pokazuję teren: …” i nad nimi [content]. Otwarty panel zasłania przyciski, które by na nim leżały;
  * dotknięcie mapy obok panelu terenu zamyka go. Otwarty panel jest stanem zapisywanym. Nad małą kartą V2 zostają
  * tylko przyciski powiększania i przesuwania, podpis OSM i napis o zmianie terenu tuż nad kartą.
@@ -54,12 +54,12 @@ private enum class MapPanel { Area, Legend, Info }
  * @param camera widok kamery, od którego liczą się przyciski mapy
  * @param hasControls czy mapa ma przyciski powiększania i przesuwania; nie ma ich przy otwartej klawiaturze
  *  ani nad arkuszem V2, gdy wolnej mapy jest mniej niż 300 dp
- * @param dataDay dzień danych pokazany w panelu „ⓘ”
+ * @param dataDay dzień danych pokazany w legendzie pod „ⓘ”
  * @param onCameraChange widok kamery po dotknięciu przycisku mapy
  * @param areas tereny mapy: lista do panelu „Teren na mapie” i wybór terenu
  * @param onAreaShow widok startowy terenu wybranego w panelu
  * @param modifier wymiary nakładki, zwykle cała mapa bez części zasłoniętej
- * @param hasPanels czy mapa ma przycisk terenu, „Legendę” i „ⓘ”; nie ma ich nad arkuszem V2
+ * @param hasPanels czy mapa ma przycisk terenu i „ⓘ”; nie ma ich nad arkuszem V2
  * @param hasNotice czy mapa może pokazać napis o zmianie terenu; nie przy otwartej klawiaturze
  * @param side elementy przy prawej krawędzi pod przyciskami mapy, a bez przycisków u góry, np. kolumna pięter
  * @param content elementy nad nakładką
@@ -98,7 +98,7 @@ internal fun MapOverlay(
         }
         if (hasPanels && open != MapPanel.Info) {
             val above = Modifier.align(Alignment.TopStart).padding(bottom = MapControlTouchSize + Odstepy.s)
-            AreaAndLegendColumn(
+            AreaColumn(
                 areas = areas,
                 open = open,
                 onOpenChange = { saved = it },
@@ -125,7 +125,7 @@ internal fun MapOverlay(
 }
 
 @Composable
-private fun AreaAndLegendColumn(
+private fun AreaColumn(
     areas: MapAreas,
     open: MapPanel?,
     onOpenChange: (MapPanel?) -> Unit,
@@ -146,12 +146,6 @@ private fun AreaAndLegendColumn(
                     .weight(weight = 1f, fill = false)
                     .padding(start = Odstepy.s, top = Odstepy.s, end = Odstepy.s),
         )
-        if (open != MapPanel.Area) {
-            MapLegend(
-                isOpen = open == MapPanel.Legend,
-                onOpenChange = { onOpenChange(MapPanel.Legend.takeIf { _ -> it }) },
-            )
-        }
     }
 }
 
