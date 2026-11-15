@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 final class BarrierDetailsTest {
 
     @Test
-    void usSevenRejectsSeverityOutsideOneToThree() {
+    void rejectsSeverityOutsideOneToThree() {
         Assertions.assertAll(
             Stream.of(0, 4, -1, Integer.MAX_VALUE).map(
                 severity -> () -> Assertions.assertEquals(
@@ -36,7 +36,7 @@ final class BarrierDetailsTest {
     }
 
     @Test
-    void usSevenAcceptsSeverityInRangeAndMissing() {
+    void acceptsSeverityInRangeAndMissing() {
         Assertions.assertAll(
             Stream.of(1, 2, 3, null).map(
                 severity -> () -> Assertions.assertDoesNotThrow(
@@ -48,7 +48,7 @@ final class BarrierDetailsTest {
     }
 
     @Test
-    void usSevenRejectsDescriptionLongerThanTwoThousand() {
+    void rejectsDescriptionLongerThanTwoThousand() {
         Assertions.assertEquals(
             "Opis dłuższy niż 2000 znaków",
             Assertions.assertThrows(
@@ -61,7 +61,7 @@ final class BarrierDetailsTest {
     }
 
     @Test
-    void usSevenAcceptsDescriptionOfTwoThousand() {
+    void acceptsDescriptionOfTwoThousand() {
         Assertions.assertDoesNotThrow(
             () -> BarrierDetailsTest.details(null, "x".repeat(2000)),
             "Opis o 2000 znaków został odrzucony"
@@ -69,7 +69,7 @@ final class BarrierDetailsTest {
     }
 
     @Test
-    void usSevenAcceptsAllFieldsMissing() {
+    void acceptsAllFieldsMissing() {
         Assertions.assertDoesNotThrow(
             () -> new BarrierDetails(null, null, null, null, false),
             "Szczegóły bez żadnego pola zostały odrzucone"

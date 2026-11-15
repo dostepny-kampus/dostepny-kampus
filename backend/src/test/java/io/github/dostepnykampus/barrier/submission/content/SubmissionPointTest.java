@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 final class SubmissionPointTest {
 
     @Test
-    void usFourAcceptsClosedCoordinateBounds() {
+    void acceptsClosedCoordinateBounds() {
         Assertions.assertAll(
             Stream.of(-180.0, 0.0, 180.0).flatMap(
                 longitude -> Stream.of(-90.0, 0.0, 90.0).map(
@@ -34,7 +34,7 @@ final class SubmissionPointTest {
     }
 
     @Test
-    void usFourKeepsLongitudeBeforeLatitude() {
+    void keepsLongitudeBeforeLatitude() {
         final SubmissionPoint point = new SubmissionPoint(17.062_09, 51.107_85);
         Assertions.assertAll(
             () -> Assertions.assertEquals(
@@ -47,7 +47,7 @@ final class SubmissionPointTest {
     }
 
     @Test
-    void usFourRejectsInvalidLongitudeThroughConstructor() {
+    void rejectsInvalidLongitudeThroughConstructor() {
         Assertions.assertAll(
             Stream.of(
                 -180.000_001, 180.000_001, Double.NaN,
@@ -63,7 +63,7 @@ final class SubmissionPointTest {
     }
 
     @Test
-    void usSevenRejectsInvalidLatitudeThroughConstructor() {
+    void rejectsInvalidLatitudeThroughConstructor() {
         Assertions.assertAll(
             Stream.of(
                 -90.000_001, 90.000_001, Double.NaN,

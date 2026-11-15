@@ -26,7 +26,7 @@ final class BarrierTypeTest {
     private static final String OUTSIDE = "Typ bariery spoza TB-1…TB-29";
 
     @Test
-    void usSevenThreeParsesNumberOfEveryType() {
+    void parsesNumberOfEveryType() {
         Assertions.assertAll(
             IntStream.rangeClosed(1, 29).mapToObj(
                 number -> () -> Assertions.assertEquals(
@@ -39,7 +39,7 @@ final class BarrierTypeTest {
     }
 
     @Test
-    void usSevenThreeKeepsCodeOfEveryType() {
+    void keepsCodeOfEveryType() {
         Assertions.assertAll(
             IntStream.rangeClosed(1, 29).mapToObj(number -> String.format("TB-%d", number)).map(
                 code -> () -> Assertions.assertEquals(
@@ -52,7 +52,7 @@ final class BarrierTypeTest {
     }
 
     @Test
-    void usSevenThreeMarksOnlyTwentyNineAsOther() {
+    void marksOnlyTwentyNineAsOther() {
         Assertions.assertAll(
             IntStream.rangeClosed(1, 29).mapToObj(
                 number -> () -> Assertions.assertEquals(
@@ -65,7 +65,7 @@ final class BarrierTypeTest {
     }
 
     @Test
-    void usSevenThreeRejectsCodeOutsidePattern() {
+    void rejectsCodeOutsidePattern() {
         Assertions.assertAll(
             Stream.of(
                 "TB-0", "TB-30", "TB-01", "tb-1", " TB-1", "TB-1 ", "TB1", "",
@@ -87,7 +87,7 @@ final class BarrierTypeTest {
     }
 
     @Test
-    void usSevenThreeRejectsNumberOutsideClassification() {
+    void rejectsNumberOutsideClassification() {
         Assertions.assertAll(
             Stream.of(0, 30, -1, Integer.MIN_VALUE, Integer.MAX_VALUE).map(
                 number -> () -> Assertions.assertEquals(
