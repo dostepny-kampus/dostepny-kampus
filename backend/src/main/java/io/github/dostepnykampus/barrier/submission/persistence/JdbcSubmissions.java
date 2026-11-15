@@ -149,11 +149,12 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
             this.jdbc.sql(JdbcSubmissions.INSERT).param("author", submission.author()),
             submission.id(), submission.content()
         );
+        if (created.isEmpty() && this.foreign(submission.id(), submission.author())) {
+            throw new ForbiddenChange("Zgłoszenie o tym identyfikatorze złożyła inna osoba");
+        }
         final CreateResult result;
         if (created.isPresent()) {
             result = new CreateResult.Created(created.get());
-        } else if (this.foreign(submission.id(), submission.author())) {
-            throw new ForbiddenChange("Zgłoszenie o tym identyfikatorze złożyła inna osoba");
         } else {
             result = new CreateResult.Existing(
                 this.find(submission.id()).orElseThrow(
