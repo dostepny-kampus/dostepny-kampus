@@ -91,14 +91,9 @@ final class ReviewHttpIT {
     @Test
     void refusesQuickSubmissionWithoutClassification(final WebApplicationContext context)
         throws Exception {
-        final UUID id = ReviewHttpIT.sent(context, "inne-konto");
-        ReviewHttpIT.claim(context, id);
         MatcherAssert.assertThat(
-            "Przyjęcie zgłoszenia szybkiego bez typu i uciążliwości nie dało 400 i statusu IN_REVIEW",
-            List.of(
-                ReviewHttpIT.review(context, id, "{\"decision\":\"ACCEPT\",\"version\":1}"),
-                ReviewHttpIT.status(context, id)
-            ),
+            "Przyjęcie zgłoszenia szybkiego bez typu i uciążliwości nie dało 400 i IN_REVIEW",
+            ReviewHttpIT.refused(context, "{\"decision\":\"ACCEPT\",\"version\":1}"),
             Matchers.contains(400, "IN_REVIEW")
         );
     }
@@ -106,16 +101,11 @@ final class ReviewHttpIT {
     @Test
     void refusesSeverityOutsideRange(final WebApplicationContext context)
         throws Exception {
-        final UUID id = ReviewHttpTest.sent(context, "inne-konto");
-        ReviewHttpTest.claim(context, id);
         MatcherAssert.assertThat(
             "Uciążliwość 4 przy przyjęciu nie dała 400 i statusu IN_REVIEW",
-            List.of(
-                ReviewHttpTest.review(
-                    context, id,
-                    "{\"decision\":\"ACCEPT\",\"version\":1,\"barrierType\":\"TB-3\",\"severity\":4}"
-                ),
-                ReviewHttpTest.status(context, id)
+            ReviewHttpIT.refused(
+                context,
+                "{\"decision\":\"ACCEPT\",\"version\":1,\"barrierType\":\"TB-3\",\"severity\":4}"
             ),
             Matchers.contains(400, "IN_REVIEW")
         );
@@ -213,6 +203,15 @@ final class ReviewHttpIT {
         MatcherAssert.assertThat(
             "Wzięcie zgłoszenia wziętego przez innego Weryfikatora nie dało 409",
             ReviewHttpIT.claim(context, id), Matchers.equalTo(409)
+        );
+    }
+
+    private static List<Object> refused(final WebApplicationContext context, final String body)
+        throws Exception {
+        final UUID id = ReviewHttpIT.sent(context, "inne-konto");
+        ReviewHttpIT.claim(context, id);
+        return List.of(
+            ReviewHttpIT.review(context, id, body), ReviewHttpIT.status(context, id)
         );
     }
 
