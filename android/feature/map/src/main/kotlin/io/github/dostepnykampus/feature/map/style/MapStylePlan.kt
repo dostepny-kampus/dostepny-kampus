@@ -35,12 +35,24 @@ internal const val PLAN_OUTLINE_LAYER = "plan_obrys"
 /** Warstwa numerów sal wybranego piętra od powiększenia 19 (R12). Wymagania: US16.1 */
 internal const val PLAN_NUMBERS_LAYER = "plan_numery"
 
+/** Warstwa znaków windy, toalety dostosowanej i schodów na planie. Wymagania: US16.1 */
+internal const val PLAN_SIGNS_LAYER = "plan_znaki"
+
+/** Bok obrazu znaku na planie w dp. */
+internal const val PLAN_SIGN_DP = 28
+
+/** Grupy funkcji, które mają na planie znak zamiast samego koloru. Wymagania: US16.1 */
+internal val PLAN_SIGN_CATEGORIES =
+    setOf(RoomCategory.ELEVATOR, RoomCategory.ACCESSIBLE_TOILET, RoomCategory.STAIRCASE)
+
 private const val FLOOR = "floor"
 private const val KIND = "kind"
 private const val CATEGORY = "category"
 private const val ROOM = "room"
 private const val OUTLINE = "outline"
 private const val NUMBER = "number"
+private const val SIGN = "sign"
+private const val FILTER = "filter"
 private const val IMAGE = "image"
 private const val NUMBERS_MIN_ZOOM = 19.0
 private const val WALL_WIDTH = 1.0
@@ -68,7 +80,8 @@ data class PlanColors(
 /**
  * Obiekty planu pięter [floors] (identyfikator piętra → jego plan): pomieszczenie z właściwościami `floor`, `kind`
  * = `room` i `category`, ściana piętra z `floor` i `kind` = `outline`; piętro bez pomieszczeń nie ma ściany. Punkt
- * podpisu pomieszczenia z `labelled` ma `kind` = `number` i nazwę obrazu numeru `image` z [roomNumberImage].
+ * podpisu pomieszczenia z `labelled` ma `kind` = `number` i nazwę obrazu numeru `image` z [roomNumberImage]. Punkt
+ * podpisu windy, toalety dostosowanej i klatki schodowej ma `kind` = `sign` i obraz znaku z [planSignImage].
  *
  * Wymagania: US16.1
  */
@@ -80,15 +93,23 @@ internal fun planFeatures(floors: Map<String, RoomList>): JsonElement =
             val rooms = plan.rooms.map { room -> Feature(room.geometry.toGeometry(), part(floor, ROOM, room.category)) }
             val numbers =
                 plan.rooms.filter { it.isLabelled }.mapNotNull { room ->
-                    room.number?.let { Feature(Point(room.labelPoint.toPosition()), part(floor, NUMBER, image = it)) }
+                    room.number?.let {
+                        Feature(Point(room.labelPoint.toPosition()), part(floor, NUMBER, image = roomNumberImage(it)))
+                    }
                 }
-            outline + rooms + numbers
+            val signs =
+                plan.rooms.filter { it.category in PLAN_SIGN_CATEGORIES }.map { room ->
+                    val image = planSignImage(room.category)
+                    Feature(Point(room.labelPoint.toPosition()), part(floor, SIGN, image = image))
+                }
+            outline + rooms + signs + numbers
         },
     )
 
 /**
  * Warstwy planu w kolorach [colors]: pomieszczenia piętra [floor] według grupy funkcji, ich ściany, grubsza ściana
- * piętra i numery sal od powiększenia 19; numer, który zachodzi na inny, znika. Bez piętra filtry nie przepuszczają
+ * piętra, znaki windy, toalety dostosowanej i schodów oraz numery sal od powiększenia 19; numer albo znak, który
+ * zachodzi na inny, znika. Bez piętra filtry nie przepuszczają
  * niczego.
  *
  * Wymagania: US16.1, NFR-16
@@ -97,7 +118,7 @@ internal fun planLayers(colors: PlanColors, floor: String? = null): List<JsonObj
     val none = planFilter(floor = floor, kind = ROOM)
     val fill =
         styleLayer(id = PLAN_ROOMS_LAYER, type = "fill", source = PLAN_SOURCE) {
-            put(key = "filter", element = none)
+            put(key = FILTER, element = none)
             paint("fill-color" to categoryColor(colors))
         }
     return listOf(
@@ -111,8 +132,12 @@ internal fun planLayers(colors: PlanColors, floor: String? = null): List<JsonObj
             filter = planFilter(floor = floor, kind = OUTLINE),
         ),
         JsonObject(
+            symbolLayer(id = PLAN_SIGNS_LAYER, source = PLAN_SOURCE, image = property(IMAGE)) +
+                (FILTER to planFilter(floor = floor, kind = SIGN)),
+        ),
+        JsonObject(
             symbolLayer(id = PLAN_NUMBERS_LAYER, source = PLAN_SOURCE, image = property(IMAGE)) +
-                ("filter" to planFilter(floor = floor, kind = NUMBER)) +
+                (FILTER to planFilter(floor = floor, kind = NUMBER)) +
                 ("minzoom" to JsonPrimitive(NUMBERS_MIN_ZOOM)),
         ),
     )
@@ -120,6 +145,9 @@ internal fun planLayers(colors: PlanColors, floor: String? = null): List<JsonObj
 
 /** Nazwa obrazu numeru sali [number]; przedrostek odróżnia go od podpisów budynków. Wymagania: US16.1 */
 internal fun roomNumberImage(number: String): String = "sala: $number"
+
+/** Nazwa obrazu znaku grupy funkcji [category] na planie. Wymagania: US16.1 */
+internal fun planSignImage(category: RoomCategory): String = "znak planu: ${category.name}"
 
 /**
  * Pokazuje w stylu z [planLayers] obiekty planu [features] z [planFeatures] i piętro [floor]; bez piętra plan
@@ -130,6 +158,7 @@ internal fun MapStyleTarget.showPlan(floor: String?, features: JsonElement) {
     filter(layer = PLAN_ROOMS_LAYER, filter = planFilter(floor = floor, kind = ROOM))
     filter(layer = PLAN_WALLS_LAYER, filter = planFilter(floor = floor, kind = ROOM))
     filter(layer = PLAN_OUTLINE_LAYER, filter = planFilter(floor = floor, kind = OUTLINE))
+    filter(layer = PLAN_SIGNS_LAYER, filter = planFilter(floor = floor, kind = SIGN))
     filter(layer = PLAN_NUMBERS_LAYER, filter = planFilter(floor = floor, kind = NUMBER))
 }
 
@@ -164,5 +193,5 @@ private fun part(floor: String, kind: String, category: RoomCategory? = null, im
         put(key = FLOOR, value = floor)
         put(key = KIND, value = kind)
         category?.let { put(key = CATEGORY, value = it.name) }
-        image?.let { put(key = IMAGE, value = roomNumberImage(it)) }
+        image?.let { put(key = IMAGE, value = it) }
     }
