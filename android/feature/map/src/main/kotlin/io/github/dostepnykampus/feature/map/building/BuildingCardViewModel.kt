@@ -44,13 +44,14 @@ sealed interface BuildingCardUiState {
      * @property symbol symbol budynku, np. `A-1`
      * @property name nazwa z danych; `null`, gdy danych nazwy nie ma
      * @property entrances wejścia odwiedzających, zalecane pierwsze
-     * @property barriers zgłoszenia przyjęte tego budynku; pusta lista, gdy nie ma ich albo nie pobrano
+     * @property barriers zgłoszenia przyjęte tego budynku; pusta lista, gdy dane o barierach są, a budynek nie ma
+     *   zgłoszeń; `null`, gdy telefon nie ma danych o barierach
      */
     data class Ready(
         val symbol: String,
         val name: String?,
         val entrances: List<OrderedEntrance>,
-        val barriers: List<AcceptedBarrier> = emptyList(),
+        val barriers: List<AcceptedBarrier>? = null,
     ) : BuildingCardUiState
 }
 
@@ -63,7 +64,7 @@ sealed interface BuildingCardUiState {
  * zastępuje wejścia z pliku. Pusta lista (brak sieci, błąd serwera, nic pobranego wcześniej) zostawia wejścia
  * z pliku bez komunikatu błędu. Zgłoszenia przyjęte budynku pobiera tak samo. Zamknięcie karty przerywa pobieranie.
  *
- * Wymagania: US2, BR-25, NFR-12, US17.3, NFR-10, US2.2
+ * Wymagania: US2, BR-25, NFR-12, US17.3, NFR-10, US2.2, US2.4, US2.7
  */
 @HiltViewModel(assistedFactory = BuildingCardViewModel.Factory::class)
 class BuildingCardViewModel
@@ -79,7 +80,7 @@ class BuildingCardViewModel
 
         private val fromServer = MutableStateFlow(emptyList<Entrance>())
 
-        private val barriers = MutableStateFlow(emptyList<AcceptedBarrier>())
+        private val barriers = MutableStateFlow<List<AcceptedBarrier>?>(null)
 
         /** Bieżący stan karty. */
         val uiState: StateFlow<BuildingCardUiState> =
@@ -98,7 +99,11 @@ class BuildingCardViewModel
         init {
             viewModelScope.launch { fromServer.value = serverEntrances.entrances(symbol) }
             viewModelScope.launch {
-                barriers.value = acceptedBarriers.barriers().filter { it.buildingSymbol == symbol }
+                val accepted = acceptedBarriers.barriers()
+                barriers.value =
+                    acceptedBarriers.syncedAt()?.let {
+                        accepted.filter { barrier -> barrier.buildingSymbol == symbol }
+                    }
             }
         }
 
@@ -114,7 +119,7 @@ class BuildingCardViewModel
                 card
             }
 
-        private fun withBarriers(card: BuildingCardUiState, accepted: List<AcceptedBarrier>): BuildingCardUiState =
+        private fun withBarriers(card: BuildingCardUiState, accepted: List<AcceptedBarrier>?): BuildingCardUiState =
             if (card is BuildingCardUiState.Ready) card.copy(barriers = accepted) else card
 
         private suspend fun catalogFor(repository: BuildingCatalogRepository, attempt: Int): BuildingCatalog =

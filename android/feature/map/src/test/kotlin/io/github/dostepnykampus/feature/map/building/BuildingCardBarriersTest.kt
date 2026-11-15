@@ -25,7 +25,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.time.Instant
 
-/** Grupa „Bariery w budynku” na V2. Wymagania: US2.2, US2.4, BR-17 */
+/** Grupa „Bariery w budynku” na V2. Wymagania: US2.2, US2.4, US2.7, BR-17 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class BuildingCardBarriersTest {
@@ -50,21 +50,40 @@ class BuildingCardBarriersTest {
     }
 
     /**
-     * Wiersz: budynek bez zgłoszeń przyjętych → karta nie ma grupy „Bariery w budynku”.
+     * Wiersz: dane o barierach są, budynek bez zgłoszeń przyjętych → pod „Bariery w budynku” ramka „Brak zgłoszonych
+     *   barier” ze zdaniem, kiedy bariera się pojawi.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Karta budynku bez zgłoszeń przyjętych nie sugeruje braku
      *   barier
      *
      * Wymagania: US2.4
      */
     @Test
-    fun hidesGroupWithoutReports() {
+    fun showsEmptyStateWithoutReports() {
         show(emptyList())
+
+        compose.onNodeWithText("Bariery w budynku").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Brak zgłoszonych barier").performScrollTo().assertIsDisplayed()
+        val sentence = "Bariera pojawi się tutaj, gdy ktoś ją zgłosi i zostanie sprawdzona."
+        compose.onNodeWithText(sentence).performScrollTo().assertIsDisplayed()
+    }
+
+    /**
+     * Wiersz: telefon bez danych o barierach → karta nie ma grupy „Bariery w budynku” ani stanu pustego.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Bez danych o barierach lista i karta budynku nic o barierach
+     *   nie mówią
+     *
+     * Wymagania: US2.7
+     */
+    @Test
+    fun hidesGroupWithoutData() {
+        show(null)
 
         compose.onNodeWithText("Wejścia").assertIsDisplayed()
         compose.onNodeWithText("Bariery w budynku").assertDoesNotExist()
+        compose.onNodeWithText("Brak zgłoszonych barier").assertDoesNotExist()
     }
 
-    private fun show(barriers: List<AcceptedBarrier>) {
+    private fun show(barriers: List<AcceptedBarrier>?) {
         val entrances = orderedEntrances(listOf(ENTRANCE))
         compose.setContent {
             DostepnyKampusTheme {
