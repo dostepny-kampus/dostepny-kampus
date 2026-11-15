@@ -64,6 +64,11 @@ potential-bugs:
 
 style:
   excludes: ['**/build/generated/**']
+  CascadingCallWrapping:
+    # Przeczy ktlint>ChainMethodContinuation: po wielowierszowej lambdzie chce wywołania w nowej linii, a tamta
+    # przy zamykającym `}`, więc taki łańcuch nie przechodzi żadnej formy. Zawijanie łańcuchów sprawdza
+    # ChainMethodContinuation.
+    active: false
   # Moduły core działają w trybie explicitApi(), który wymaga jawnego `public`, a widoczność w nich sprawdza
   # kompilator. Detekt nie widzi trybu jawnego API i uznaje ten modyfikator za zbędny.
   RedundantVisibilityModifier:
