@@ -24,6 +24,7 @@ overlay	temat	nakładka mapy	Elementy nad mapą: sterowanie, legenda, informacja
 own	temat	własne zgłoszenia	Zgłoszenia osoby zapisane na urządzeniu i ich statusy.
 pending	temat	oczekujące zmiany	Zmiany zgłoszeń czekające na wysłanie.
 photo	temat	zdjęcie	Zdjęcie zgłoszenia: wykonanie, zapis, wysłanie.
+plan	temat	plan piętra	Plan piętra budynku na mapie i wybór budynku, którego plan widać.
 quick	ścieżka	szybkie zgłoszenie	Zgłoszenie wejścia w kilku krokach.
 removed	ścieżka	bariera usunięta	Zgłoszenie, że bariery ze zgłoszenia przyjętego już nie ma (C7).
 report	ścieżka	pełne zgłoszenie	Formularz i edycja pełnego zgłoszenia.
