@@ -58,7 +58,7 @@ internal fun planSignImages(colors: MapColors, density: Float): Map<String, Bitm
             density = Density(1f),
             layoutDirection = LayoutDirection.Ltr,
             canvas = Canvas(image),
-            size = Size(side, side),
+            size = Size(width = side, height = side),
         ) {
             scale(scale = side / SIGN_UNITS, pivot = Offset.Zero) { drawSign(category, colors) }
         }
@@ -71,8 +71,8 @@ private fun DrawScope.drawSign(category: RoomCategory, colors: MapColors) {
     val back = if (isStairs) colors.papier else colors.tusz
     val front = if (isStairs) colors.tusz else colors.papier
     val corner = CornerRadius(FRAME_RADIUS)
-    val frame = Offset(FRAME_INSET, FRAME_INSET)
-    val square = Size(FRAME_SIDE, FRAME_SIDE)
+    val frame = Offset(x = FRAME_INSET, y = FRAME_INSET)
+    val square = Size(width = FRAME_SIDE, height = FRAME_SIDE)
     drawRoundRect(color = back, topLeft = frame, size = square, cornerRadius = corner)
     if (isStairs) {
         drawRoundRect(
@@ -86,7 +86,7 @@ private fun DrawScope.drawSign(category: RoomCategory, colors: MapColors) {
     } else if (category == RoomCategory.ELEVATOR) {
         drawPath(path = PathParser().parsePathString(LIFT_ARROWS).toPath(), color = front)
     } else {
-        drawCircle(color = front, radius = HEAD_RADIUS, center = Offset(HEAD_X, HEAD_Y))
+        drawCircle(color = front, radius = HEAD_RADIUS, center = Offset(x = HEAD_X, y = HEAD_Y))
         drawLine(path = WHEELCHAIR_BODY, color = front)
         drawLine(path = WHEELCHAIR_WHEEL, color = front)
     }
