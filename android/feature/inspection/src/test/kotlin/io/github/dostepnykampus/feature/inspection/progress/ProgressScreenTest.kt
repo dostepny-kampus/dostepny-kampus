@@ -35,7 +35,11 @@ class ProgressScreenTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    /** Przykład „4 z 5 pięter, 80%” z wymagań K1 z liczbami zgłoszeń i wejść. */
+    /**
+     * Przykład „4 z 5 pięter, 80%” z wymagań K1 z liczbami zgłoszeń i wejść.
+     *
+     * Wymagania: US11.1
+     */
     @Test
     fun showsDetailedBuilding() {
         show(ready(DETAILED))
@@ -46,7 +50,11 @@ class ProgressScreenTest {
         compose.onNodeWithText("Wejścia sprawdzone na miejscu: 1 z 6").assertIsDisplayed()
     }
 
-    /** Budynek podstawowy: „Obejrzany” albo „Nieobejrzany”, bez wejść sprawdzonych na miejscu. */
+    /**
+     * Budynek podstawowy: „Obejrzany” albo „Nieobejrzany”, bez wejść sprawdzonych na miejscu.
+     *
+     * Wymagania: US11.1
+     */
     @Test
     fun showsBasicBuildings() {
         show(ready(BASIC_SEEN, BASIC_UNSEEN))
@@ -55,7 +63,11 @@ class ProgressScreenTest {
         compose.onAllNodesWithText("Wejścia sprawdzone na miejscu", substring = true).assertCountEquals(0)
     }
 
-    /** „Otwórz” przy budynku przekazuje jego symbol do C5. */
+    /**
+     * „Otwórz” przy budynku przekazuje jego symbol do C5.
+     *
+     * Wymagania: US11.3
+     */
     @Test
     fun openPassesSymbol() {
         val opened = mutableListOf<String>()
@@ -64,7 +76,11 @@ class ProgressScreenTest {
         assertEquals("symbol otwartego budynku", listOf("A-1"), opened)
     }
 
-    /** „Odśwież” czyta postęp od nowa, a obok stoi chwila odczytu. */
+    /**
+     * „Odśwież” czyta postęp od nowa, a obok stoi chwila odczytu.
+     *
+     * Wymagania: US11.2
+     */
     @Test
     fun refreshReadsAgain() {
         var refreshes = 0
@@ -74,21 +90,33 @@ class ProgressScreenTest {
         assertEquals("liczba odświeżeń", 1, refreshes)
     }
 
-    /** W trakcie odświeżania „Odśwież” jest wyłączony. */
+    /**
+     * W trakcie odświeżania „Odśwież” jest wyłączony.
+     *
+     * Wymagania: US11.2
+     */
     @Test
     fun refreshDisabledWhileBusy() {
         show(ready(DETAILED, isRefreshing = true))
         compose.onNodeWithText("Odśwież").assertIsNotEnabled()
     }
 
-    /** Wczytywanie: „Wczytujemy postęp…”. */
+    /**
+     * Wczytywanie: „Wczytujemy postęp…”.
+     *
+     * Wymagania: US11.2
+     */
     @Test
     fun showsLoading() {
         show(ProgressUiState.Loading)
         compose.onNodeWithText("Wczytujemy postęp…").assertIsDisplayed()
     }
 
-    /** Bez internetu: linia, komunikat i „Spróbuj ponownie” odświeża. */
+    /**
+     * Bez internetu: linia, komunikat i „Spróbuj ponownie” odświeża.
+     *
+     * Wymagania: NFR-50
+     */
     @Test
     fun offlineOffersRetry() {
         var refreshes = 0
@@ -99,7 +127,11 @@ class ProgressScreenTest {
         assertEquals("liczba ponowień", 1, refreshes)
     }
 
-    /** Błąd serwera: komunikat i „Spróbuj ponownie”. */
+    /**
+     * Błąd serwera: komunikat i „Spróbuj ponownie”.
+     *
+     * Wymagania: US11.2
+     */
     @Test
     fun serverErrorOffersRetry() {
         show(ProgressUiState.ServerError)
@@ -107,7 +139,11 @@ class ProgressScreenTest {
         compose.onNodeWithText("Spróbuj ponownie").assertIsDisplayed()
     }
 
-    /** Brak uprawnień: komunikat i „Wróć do mapy”. */
+    /**
+     * Brak uprawnień: komunikat i „Wróć do mapy”.
+     *
+     * Wymagania: US11.2
+     */
     @Test
     fun forbiddenLeadsBack() {
         var back = 0

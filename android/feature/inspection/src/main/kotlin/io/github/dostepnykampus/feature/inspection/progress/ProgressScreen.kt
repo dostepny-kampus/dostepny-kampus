@@ -31,7 +31,6 @@ import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.feature.inspection.R
 
 /**
-/**
  * K1 „Postęp inwentaryzacji” ze stanem z modelu widoku.
  *
  * Wymagania: US11.1, US11.2
