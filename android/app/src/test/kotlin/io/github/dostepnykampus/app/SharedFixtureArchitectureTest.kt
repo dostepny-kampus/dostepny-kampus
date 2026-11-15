@@ -170,15 +170,15 @@ class SharedFixtureArchitectureTest {
         val KNOWN =
             """
                 |AcceptedBarriersCopyTest AccessTokenInterceptorTest AppNavigatorTest AppShellScreenshotTest
-                |AppShellTest ArchitectureTest BarrierCacheDaoTest BarrierNamesTest BarrierSheetTest
-                |BottomBarTest BuildingCacheDaoTest BuildingCardModesTest BuildingCardOfflineTest BuildingCardTest
+                |AppShellTest ArchitectureTest BarrierNamesTest BarrierSheetTest
+                |BottomBarTest BuildingCardModesTest BuildingCardOfflineTest BuildingCardTest
                 |BuildingCatalogCacheTest BuildingCatalogParserTest BuildingCatalogRepositoryTest
                 |BuildingListTest BuildingOnMapCameraTest BuildingsApiTest CampusAreaEdgeDeviceTest CampusAreasPwrTest
                 |CampusBoundsTest CampusMapBarriersStyleTest CampusMapDataTest CampusMapEntrancesStyleTest
                 |CampusMapGeometryTest CampusMapScreenTest CampusMapSelectionStyleTest CampusMapStyleTest
                 |CampusMapViewModelTest CampusPathDeviceTest CancellationTest
                 |CardServerEntrancesTest CollectorReachTest ConflictEditTest DebugRolesTest DebugSignInTest
-                |DeviceStepsTest DtoContractTest EditBaseVersionTest EditDuringSendTest EntranceAssessmentTest
+                |DtoContractTest EditBaseVersionTest EditDuringSendTest EntranceAssessmentTest
                 |EntranceHiltTest EntranceOnMapTest FirstLaunchRepositoryTest
                 |FirstLaunchViewModelTest FloorMarkersTest FloorPickerTest GnssLocationSwitchTest
                 |GnssPositionFixesTest GnssSatellitesTest GuestSignInTest HelpScreenTest JsonTextCallTest
@@ -189,12 +189,12 @@ class SharedFixtureArchitectureTest {
                 |MapGesturesTest MapLimitsTest MapListChoiceRepositoryTest MapOverlayNoticeTest
                 |MapSceneStateTest MapSelectionImagesTest MapStreamConcurrencyTest MapStyleRememberTest MapTileHttpTest
                 |MapTileNetworkDeviceTest MeasurePathTest MeasureScreenTest MeasureViewModelTest MeasuredPlaceTest
-                |MeasuredReportTest MigrationTest MySubmissionsScreenTest MySubmissionsViewModelTest
+                |MeasuredReportTest MySubmissionsScreenTest MySubmissionsViewModelTest
                 |NoHistoryNumberInKDocTest NoLineCommentTest NullabilityArchitectureTest
-                |OrphanPhotosTest OwnHistoryTest OwnListPathTest OwnListTest OwnStatusesTest OwnSubmissionDaoTest
-                |PendingEditMappingTest PendingEditsTest PendingMarkerChangeDaoTest PendingSubmissionDaoTest
+                |OrphanPhotosTest OwnHistoryTest OwnListPathTest OwnListTest OwnStatusesTest
+                |PendingEditMappingTest PendingEditsTest
                 |PermissionsTest PhotoCameraTest PhotoFilesTest PlaceSectionTest PositionAveragingTest
-                |QueueAfterRestartTest QueueTransactionTest QuickOfflineTest QuickReportRouteTest QuickReportScreenTest
+                |QueueTransactionTest QuickOfflineTest QuickReportRouteTest QuickReportScreenTest
                 |QuickReportTest QuickSendStepTest QuickSendViewModelTest RefusedResaveTest RefusedSubmissionTest
                 |RemovedViewModelTest ReportAtEntranceTest ReportDraftTest ReportEditScreenTest ReportEditTest
                 |ReportEditViewModelTest ReportFloorsTest ReportFormScreenTest ReportFormViewModelTest

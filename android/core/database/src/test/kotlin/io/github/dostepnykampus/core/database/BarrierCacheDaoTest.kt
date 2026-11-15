@@ -10,10 +10,8 @@ import io.github.dostepnykampus.core.database.cache.BARRIER_CACHE_SINGLE_ROW
 import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
 import io.github.dostepnykampus.core.database.cache.BarrierCacheEntity
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -22,33 +20,15 @@ import org.robolectric.RuntimeEnvironment
 /** Kopia barier ze zgłoszeń przyjętych w bazie Room: jeden wiersz, nowy zapis zastępuje poprzedni. Wymagania: NFR-10 */
 @RunWith(RobolectricTestRunner::class)
 class BarrierCacheDaoTest {
-    private lateinit var database: DkDatabase
-    private lateinit var dao: BarrierCacheDao
-
-    @Before
-    fun open() {
-        database =
-            Room
-                .inMemoryDatabaseBuilder(RuntimeEnvironment.getApplication(), DkDatabase::class.java)
-                .allowMainThreadQueries()
-                .build()
-        dao = database.barrierCache()
-    }
-
-    @After
-    fun close() {
-        database.close()
-    }
-
     @Test
     fun staysEmptyBeforeFirstSave() =
-        runTest {
+        stored { dao ->
             assertNull(dao.get())
         }
 
     @Test
     fun returnsSavedList() =
-        runTest {
+        stored { dao ->
             val entity = BarrierCacheEntity(id = BARRIER_CACHE_SINGLE_ROW, listJson = LIST_JSON, syncedAt = 42)
             dao.save(entity)
 
@@ -57,13 +37,26 @@ class BarrierCacheDaoTest {
 
     @Test
     fun replacesOldOnNewSave() =
-        runTest {
+        stored { dao ->
             dao.save(BarrierCacheEntity(id = BARRIER_CACHE_SINGLE_ROW, listJson = LIST_JSON, syncedAt = 1))
             val newer = BarrierCacheEntity(id = BARRIER_CACHE_SINGLE_ROW, listJson = "{}", syncedAt = 9)
             dao.save(newer)
 
             assertEquals(newer, dao.get())
         }
+
+    private fun stored(check: suspend (BarrierCacheDao) -> Unit) {
+        val database =
+            Room
+                .inMemoryDatabaseBuilder(RuntimeEnvironment.getApplication(), DkDatabase::class.java)
+                .allowMainThreadQueries()
+                .build()
+        try {
+            runTest { check(database.barrierCache()) }
+        } finally {
+            database.close()
+        }
+    }
 }
 
 private const val LIST_JSON = """{"barriers":[{"id":"z1"},{"id":"z2"}]}"""

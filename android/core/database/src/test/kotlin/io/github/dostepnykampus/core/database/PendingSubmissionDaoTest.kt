@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Yevhenii Lukianenko
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.database
@@ -12,11 +12,9 @@ import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionWithPhotos
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -29,27 +27,9 @@ import org.robolectric.RuntimeEnvironment
  */
 @RunWith(RobolectricTestRunner::class)
 class PendingSubmissionDaoTest {
-    private lateinit var database: DkDatabase
-    private lateinit var dao: PendingSubmissionDao
-
-    @Before
-    fun open() {
-        database =
-            Room
-                .inMemoryDatabaseBuilder(RuntimeEnvironment.getApplication(), DkDatabase::class.java)
-                .allowMainThreadQueries()
-                .build()
-        dao = database.pendingSubmissions()
-    }
-
-    @After
-    fun close() {
-        database.close()
-    }
-
     @Test
     fun savesWithPhotos() =
-        runTest {
+        stored { _, dao ->
             dao.save(submission(id = ID, savedAt = 2), photos("p1", "p2", of = ID))
             val saved = dao.observe().first().single()
             assertEquals(submission(id = ID, savedAt = 2), saved.submission)
@@ -58,7 +38,7 @@ class PendingSubmissionDaoTest {
 
     @Test
     fun listsOldestFirst() =
-        runTest {
+        stored { _, dao ->
             dao.save(submission(id = "b", savedAt = 5), photos("p", of = "b"))
             dao.save(submission(id = "a", savedAt = 9), photos("p", of = "a"))
             assertEquals(listOf("b", "a"), dao.all().map { it.submission.id })
@@ -66,7 +46,7 @@ class PendingSubmissionDaoTest {
 
     @Test
     fun replacesOnResave() =
-        runTest {
+        stored { _, dao ->
             dao.save(submission(id = ID, savedAt = 1), photos("p1", "p2", of = ID))
             val replaced = dao.save(submission(id = ID, savedAt = 1).copy(severity = 3), photos("p2", "p3", of = ID))
             assertEquals(listOf("zdjecia/p1.jpg"), replaced)
@@ -77,7 +57,7 @@ class PendingSubmissionDaoTest {
 
     @Test
     fun keepsProgress() =
-        runTest {
+        stored { _, dao ->
             dao.save(submission(id = ID, savedAt = 1), photos("p1", "p2", of = ID))
             dao.markCreated(ID)
             dao.markUploaded(submissionId = ID, photoId = "p1")
@@ -88,7 +68,7 @@ class PendingSubmissionDaoTest {
 
     @Test
     fun removesSent() =
-        runTest {
+        stored { _, dao ->
             dao.save(submission(id = ID, savedAt = 1), photos("p1", of = ID))
             dao.delete(ID)
             assertEquals(emptyList<PendingSubmissionWithPhotos>(), dao.all())
@@ -97,7 +77,7 @@ class PendingSubmissionDaoTest {
     /** Odrzucone zgłoszenie zostaje w telefonie, ale kolejka go nie oddaje do wysyłki. Wymagania: BR-26 */
     @Test
     fun skipsRefusedInQueue() =
-        runTest {
+        stored { _, dao ->
             dao.save(submission(id = "a", savedAt = 1), photos("p1", of = "a"))
             dao.save(submission(id = "b", savedAt = 2), photos("p2", of = "b"))
             dao.markRefused("a")
@@ -114,7 +94,7 @@ class PendingSubmissionDaoTest {
      */
     @Test
     fun findsRefusedToo() =
-        runTest {
+        stored { database, dao ->
             dao.save(submission(id = ID, savedAt = 1), photos("p1", "p2", of = ID))
             dao.markRefused(ID)
             val found = checkNotNull(database.pendingEdits().find(ID))
@@ -159,6 +139,19 @@ class PendingSubmissionDaoTest {
             path = "zdjecia/$photoId.jpg",
             isUploaded = false,
         )
+
+    private fun stored(check: suspend (DkDatabase, PendingSubmissionDao) -> Unit) {
+        val database =
+            Room
+                .inMemoryDatabaseBuilder(RuntimeEnvironment.getApplication(), DkDatabase::class.java)
+                .allowMainThreadQueries()
+                .build()
+        try {
+            runTest { check(database, database.pendingSubmissions()) }
+        } finally {
+            database.close()
+        }
+    }
 
     private companion object {
         const val ID = "0b6f6c1e-8a43-4d5e-9f43-2f1d3c4b5a69"

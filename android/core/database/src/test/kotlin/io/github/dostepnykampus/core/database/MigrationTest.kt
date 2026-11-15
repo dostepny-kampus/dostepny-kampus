@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Yevhenii Lukianenko
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.database
@@ -22,10 +22,9 @@ import org.robolectric.RobolectricTestRunner
  */
 @RunWith(RobolectricTestRunner::class)
 class MigrationTest {
-    private val helper = MigrationTestHelper(InstrumentationRegistry.getInstrumentation(), DkDatabase::class.java)
-
     @Test
     fun keepsQueueFrom1To2() {
+        val helper = migrationHelper()
         helper.createDatabase(DB_NAME, 1).use { first ->
             first.execSQL(
                 "INSERT INTO pending_submissions (id, saved_at, created_on_server, kind, longitude, latitude)" +
@@ -49,6 +48,7 @@ class MigrationTest {
 
     @Test
     fun keepsQueueFrom2To3() {
+        val helper = migrationHelper()
         helper.createDatabase(DB_NAME, 2).use { second ->
             second.execSQL(
                 "INSERT INTO pending_submissions (id, saved_at, created_on_server, kind, longitude, latitude)" +
@@ -69,6 +69,7 @@ class MigrationTest {
 
     @Test
     fun keepsQueueFrom3To4() {
+        val helper = migrationHelper()
         helper.createDatabase(DB_NAME, 3).use { third ->
             third.execSQL(
                 "INSERT INTO pending_submissions (id, saved_at, created_on_server, kind, longitude, latitude)" +
@@ -90,6 +91,7 @@ class MigrationTest {
 
     @Test
     fun keepsHistoryFrom4To5() {
+        val helper = migrationHelper()
         helper.createDatabase(DB_NAME, 4).use { fourth ->
             fourth.execSQL("INSERT INTO own_submissions (id, saved_at, kind, state) VALUES ('a', 7, 'PRECISE', 'SENT')")
         }
@@ -108,6 +110,7 @@ class MigrationTest {
 
     @Test
     fun keepsHistoryFrom5To6() {
+        val helper = migrationHelper()
         helper.createDatabase(DB_NAME, 5).use { fifth ->
             fifth.execSQL("INSERT INTO own_submissions (id, saved_at, kind, state) VALUES ('a', 7, 'PRECISE', 'SENT')")
             fifth.execSQL("INSERT INTO building_cache (id, list_json, synced_at) VALUES (1, '{}', 7)")
@@ -126,6 +129,7 @@ class MigrationTest {
 
     @Test
     fun keepsQueueFrom6To7() {
+        val helper = migrationHelper()
         helper.createDatabase(DB_NAME, 6).use { sixth ->
             sixth.execSQL(
                 "INSERT INTO pending_submissions (id, saved_at, created_on_server, kind, longitude, latitude)" +
@@ -145,6 +149,7 @@ class MigrationTest {
 
     @Test
     fun keepsQueueFrom7To8() {
+        val helper = migrationHelper()
         helper.createDatabase(DB_NAME, 7).use { seventh ->
             seventh.execSQL(
                 "INSERT INTO pending_submissions (id, saved_at, created_on_server, kind, longitude, latitude)" +
@@ -163,6 +168,9 @@ class MigrationTest {
             }
     }
 }
+
+private fun migrationHelper() =
+    MigrationTestHelper(InstrumentationRegistry.getInstrumentation(), DkDatabase::class.java)
 
 private fun readCount(cursor: Cursor): Int {
     cursor.moveToFirst()

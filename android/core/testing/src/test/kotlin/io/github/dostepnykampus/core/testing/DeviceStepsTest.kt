@@ -36,14 +36,12 @@ class DeviceStepsTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private val steps = DeviceSteps(compose, waitMs = 2_000L)
-
     /** Wstecz zamyka pomoc, a wpisany symbol i wybór wyniku prowadzą do karty z przyciskiem wejść. */
     @Test
     fun helpThenCard() {
         compose.setContent { Campus() }
-        steps.leaveHelp()
-        steps.openCard("A-1")
+        steps().leaveHelp()
+        steps().openCard("A-1")
         assertTrue("Pomoc po Wstecz", compose.onAllNodes(hasText("Pomoc")).fetchSemanticsNodes().isEmpty())
     }
 
@@ -52,9 +50,11 @@ class DeviceStepsTest {
     fun missingNodeTimesOut() {
         compose.setContent { BasicText("Mapa") }
         assertThrows("Brak węzła po czasie", ComposeTimeoutException::class.java) {
-            steps.waitFor(hasText(CHECK_ENTRANCES))
+            steps().waitFor(hasText(CHECK_ENTRANCES))
         }
     }
+
+    private fun steps() = DeviceSteps(compose, waitMs = 2_000L)
 
     @Composable
     private fun Campus() {

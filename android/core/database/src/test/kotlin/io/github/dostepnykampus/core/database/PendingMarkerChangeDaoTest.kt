@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.database
@@ -11,9 +11,7 @@ import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeEnti
 import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeType
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -22,28 +20,10 @@ import org.robolectric.RuntimeEnvironment
 /** Kolejka zmian znaczników piętra obejrzanego w bazie telefonu. Wymagania: US15.3, BR-9, NFR-5 */
 @RunWith(RobolectricTestRunner::class)
 class PendingMarkerChangeDaoTest {
-    private lateinit var database: DkDatabase
-    private lateinit var dao: PendingMarkerChangeDao
-
-    @Before
-    fun open() {
-        database =
-            Room
-                .inMemoryDatabaseBuilder(RuntimeEnvironment.getApplication(), DkDatabase::class.java)
-                .allowMainThreadQueries()
-                .build()
-        dao = database.pendingMarkerChanges()
-    }
-
-    @After
-    fun close() {
-        database.close()
-    }
-
     /** Zmiany wracają w kolejności zapisu, a ponowny zapis operacji nie dodaje drugiego wiersza. */
     @Test
     fun keepsChangesInOrder() =
-        runTest {
+        stored { dao ->
             dao.save(change(operation = "o2", marker = "m2", savedAt = 9))
             dao.save(change(operation = "o1", marker = "m1", savedAt = 5))
             dao.save(change(operation = "o1", marker = "m1", savedAt = 5))
@@ -53,7 +33,7 @@ class PendingMarkerChangeDaoTest {
     /** Cofnięcie znacznika, który serwer już ma, czeka w kolejce obok innych zmian. */
     @Test
     fun queuesRevokeOfSent() =
-        runTest {
+        stored { dao ->
             dao.save(change(operation = "o1", marker = "m1", savedAt = 5))
             dao.saveRevoke(revoke(operation = "o2", marker = "m0", savedAt = 7))
             assertEquals(
@@ -65,7 +45,7 @@ class PendingMarkerChangeDaoTest {
     /** Cofnięcie znacznika, którego postawienie jeszcze czeka, usuwa to postawienie i nic nie dodaje. */
     @Test
     fun dropsRevokeOfWaiting() =
-        runTest {
+        stored { dao ->
             dao.save(change(operation = "o1", marker = "m1", savedAt = 5))
             dao.saveRevoke(revoke(operation = "o2", marker = "m1", savedAt = 7))
             assertEquals(emptyList<PendingMarkerChangeEntity>(), dao.observe().first())
@@ -74,7 +54,7 @@ class PendingMarkerChangeDaoTest {
     /** Zmiana odebrana przez serwer znika z kolejki, pozostałe zostają. */
     @Test
     fun removesSentChange() =
-        runTest {
+        stored { dao ->
             dao.save(change(operation = "o1", marker = "m1", savedAt = 5))
             dao.save(change(operation = "o2", marker = "m2", savedAt = 9))
             dao.delete("o1")
@@ -93,4 +73,17 @@ class PendingMarkerChangeDaoTest {
 
     private fun revoke(operation: String, marker: String, savedAt: Long): PendingMarkerChangeEntity =
         change(operation = operation, marker = marker, savedAt = savedAt).copy(type = PendingMarkerChangeType.REVOKE)
+
+    private fun stored(check: suspend (PendingMarkerChangeDao) -> Unit) {
+        val database =
+            Room
+                .inMemoryDatabaseBuilder(RuntimeEnvironment.getApplication(), DkDatabase::class.java)
+                .allowMainThreadQueries()
+                .build()
+        try {
+            runTest { check(database.pendingMarkerChanges()) }
+        } finally {
+            database.close()
+        }
+    }
 }

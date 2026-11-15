@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.database
@@ -11,10 +11,8 @@ import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -24,24 +22,6 @@ import java.io.IOException
 /** Historia własnych zgłoszeń w bazie Room: od najnowszego, bez duplikatów, ze stanem wysyłki. Wymagania: US8, NFR-5 */
 @RunWith(RobolectricTestRunner::class)
 class OwnSubmissionDaoTest {
-    private lateinit var database: DkDatabase
-    private lateinit var dao: OwnSubmissionDao
-
-    @Before
-    fun open() {
-        database =
-            Room
-                .inMemoryDatabaseBuilder(RuntimeEnvironment.getApplication(), DkDatabase::class.java)
-                .allowMainThreadQueries()
-                .build()
-        dao = database.ownSubmissions()
-    }
-
-    @After
-    fun close() {
-        database.close()
-    }
-
     /**
      * Wiersz: C3 po odświeżeniu → status, powód i wersja z serwera, stan wysyłki zostaje.
      * Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Zgłoszenie odrzucone pokazuje powód odrzucenia
@@ -50,7 +30,7 @@ class OwnSubmissionDaoTest {
      */
     @Test
     fun savesServerStatus() =
-        runTest {
+        stored { _, dao ->
             dao.save(own(id = "a", savedAt = 1))
             dao.markSent(id = "a")
             dao.saveServerStatus(id = "a", status = "REJECTED", reason = "Zdjęcie nieostre", version = 3)
@@ -69,7 +49,7 @@ class OwnSubmissionDaoTest {
      */
     @Test
     fun rollsBackTogether() =
-        runTest {
+        stored { database, dao ->
             dao.save(own(id = "a", savedAt = 1))
 
             val failure =
@@ -91,7 +71,7 @@ class OwnSubmissionDaoTest {
     /** Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Najnowsze zgłoszenia są na górze listy. */
     @Test
     fun listsNewestFirst() =
-        runTest {
+        stored { _, dao ->
             dao.save(own(id = "a", savedAt = 1))
             dao.save(own(id = "b", savedAt = 2))
 
@@ -100,7 +80,7 @@ class OwnSubmissionDaoTest {
 
     @Test
     fun replacesRowOnEdit() =
-        runTest {
+        stored { _, dao ->
             dao.save(own(id = "a", savedAt = 1))
             dao.save(own(id = "a", savedAt = 5).copy(severity = 3))
 
@@ -112,7 +92,7 @@ class OwnSubmissionDaoTest {
 
     @Test
     fun keepsServerVersionWhenSent() =
-        runTest {
+        stored { _, dao ->
             dao.save(own(id = "a", savedAt = 1))
             dao.markRefused(id = "a", code = 422)
             dao.saveVersion(id = "a", version = 4)
@@ -127,7 +107,7 @@ class OwnSubmissionDaoTest {
 
     @Test
     fun keepsRefusalCode() =
-        runTest {
+        stored { _, dao ->
             dao.save(own(id = "a", savedAt = 1))
             dao.markRefused(id = "a", code = 422)
 
@@ -136,6 +116,19 @@ class OwnSubmissionDaoTest {
             assertEquals(OwnSubmissionState.REFUSED, row.state)
             assertEquals(422, row.refusalCode)
         }
+
+    private fun stored(check: suspend (DkDatabase, OwnSubmissionDao) -> Unit) {
+        val database =
+            Room
+                .inMemoryDatabaseBuilder(RuntimeEnvironment.getApplication(), DkDatabase::class.java)
+                .allowMainThreadQueries()
+                .build()
+        try {
+            runTest { check(database, database.ownSubmissions()) }
+        } finally {
+            database.close()
+        }
+    }
 }
 
 private fun own(id: String, savedAt: Long) =

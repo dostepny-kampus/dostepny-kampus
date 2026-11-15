@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.database
@@ -26,8 +26,6 @@ import java.io.File
  */
 @RunWith(RobolectricTestRunner::class)
 class QueueAfterRestartTest {
-    private val app = RuntimeEnvironment.getApplication()
-
     /**
      * Restart to nowa instancja bazy na tym samym pliku, jak po uruchomieniu procesu od nowa.
      * Scenariusz: synchronizacja.feature: Zgłoszenia zapisane bez sieci przetrwają restart telefonu
@@ -35,6 +33,7 @@ class QueueAfterRestartTest {
     @Test
     fun keepsLocalAfterRestart() =
         runTest {
+            val app = RuntimeEnvironment.getApplication()
             val before = DatabaseModule.database(app)
             IDS.forEachIndexed { index, id ->
                 before.pendingSubmissions().save(submission(id, savedAt = index.toLong()), photos(of = id))
@@ -58,7 +57,7 @@ class QueueAfterRestartTest {
 
     private fun photos(of: String): List<PendingPhotoEntity> =
         (1..PHOTOS_EACH).map { number ->
-            val file = File(app.filesDir, "zdjecia/$of-$number.jpg").apply { parentFile?.mkdirs() }
+            val file = File(RuntimeEnvironment.getApplication().filesDir, "zdjecia/$of-$number.jpg").apply { parentFile?.mkdirs() }
             file.writeBytes(byteArrayOf(1, 2, 3))
             PendingPhotoEntity(submissionId = of, photoId = "$of-$number", path = file.path, isUploaded = false)
         }
