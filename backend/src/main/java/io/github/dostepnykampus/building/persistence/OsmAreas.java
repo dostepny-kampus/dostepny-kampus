@@ -88,7 +88,9 @@ final class OsmAreas implements JavaMigration {
         OsmAreas.save(connection, this.mapper.readTree(this.content()).required("features"));
     }
 
-    private static void save(final Connection connection, final JsonNode features) throws SQLException {
+    private static void save(
+        final Connection connection, final JsonNode features
+    ) throws SQLException {
         try (PreparedStatement insert = connection.prepareStatement(OsmAreas.INSERT)) {
             for (final JsonNode feature : features) {
                 insert.setString(1, feature.required("properties").required("name").asString());

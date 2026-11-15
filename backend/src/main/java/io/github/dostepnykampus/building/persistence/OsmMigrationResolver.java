@@ -29,7 +29,7 @@ final class OsmMigrationResolver implements FlywayConfigurationCustomizer, Migra
 
     /**
      * Ścieżka lokalizacji migracji, której historia wykonuje import.
-     */
+     * Lokalizacja migracji, której historia wykonuje import.
     private final String location;
 
     OsmMigrationResolver(final JavaMigration migration, final String location) {
