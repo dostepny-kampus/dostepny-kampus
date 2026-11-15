@@ -163,6 +163,7 @@ class NullabilityArchitectureTest {
                 "Entrance.name" to "dane OpenStreetMap nie podają opisu wejścia",
                 "Entrance.type" to "wejście spoza danych OpenStreetMap nie ma tagu entrance",
                 "Entrance.assessment" to "wejście z pliku konturów nie ma dnia i źródła oznaczenia, US17.3",
+                "Entrance.floorId" to "wejście z pliku konturów i bez piętra planu w danych PWr nie ma piętra, US16.1",
                 "Room.number" to "$OPTIONAL, plan PWr nie podaje numeru korytarza ani klatki, US16.1",
                 "Submission.rejectionReason" to "$BY_STATUS, BR-16",
                 "Submission.verifiedAt" to "$BY_STATUS, BR-17",
