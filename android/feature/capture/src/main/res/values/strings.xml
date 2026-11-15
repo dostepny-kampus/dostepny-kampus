@@ -137,4 +137,10 @@
     <string name="moje_sprawdzamy">Sprawdzamy statusy…</string>
     <string name="moje_blad_statusow">Nie udało się sprawdzić statusów, ale zgłoszenia są bezpieczne w telefonie. Spróbuj ponownie za chwilę.</string>
     <string name="moje_typ_nieznany">Nieznany typ bariery</string>
+    <string name="usuniecie_naglowek">Zgłoś, że bariery nie ma</string>
+    <string name="usuniecie_sprawdzone">Sprawdzone %1$s</string>
+    <string name="usuniecie_nowe_zdjecie">Nowe zdjęcie miejsca</string>
+    <string name="usuniecie_brak_zdjecia">Dodaj zdjęcie miejsca, aby wysłać zgłoszenie.</string>
+    <string name="usuniecie_zostaje">Bariera zostanie na mapie, dopóki Weryfikator nie sprawdzi zgłoszenia.</string>
+    <string name="usuniecie_wyslij">Wyślij do sprawdzenia</string>
 </resources>

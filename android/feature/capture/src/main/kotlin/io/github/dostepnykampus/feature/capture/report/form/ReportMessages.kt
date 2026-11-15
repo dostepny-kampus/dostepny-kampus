@@ -39,14 +39,19 @@ import io.github.dostepnykampus.feature.capture.report.edit.ReportUiState
 
 /**
  * „Zdjęcie”: ostrzeżenie „Ważne” jak w kroku 1 V4, podgląd zdjęć, „Zrób zdjęcie” i komunikat, gdy zdjęcia nie dało
- * się zapisać (PW-8).
+ * się zapisać (PW-8). [error] stoi nad „Zrób zdjęcie”.
  *
  * Wymagania: US7.1, NFR-25, NFR-50
  */
 @Composable
-internal fun PhotoSection(photos: PhotoPaths, camera: PhotoCamera) {
+internal fun PhotoSection(
+    photos: PhotoPaths,
+    camera: PhotoCamera,
+    title: String = stringResource(R.string.formularz_zdjecie),
+    error: String? = null,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        SectionTitle(stringResource(R.string.formularz_zdjecie))
+        SectionTitle(title)
         OutlinedCard(
             modifier = Modifier.fillMaxWidth(),
             border = BorderStroke(Obramowania.ramka, MaterialTheme.colorScheme.error),
@@ -62,6 +67,9 @@ internal fun PhotoSection(photos: PhotoPaths, camera: PhotoCamera) {
             }
         }
         PhotoPreviews(photos)
+        if (error != null) {
+            Text(text = error, color = MaterialTheme.colorScheme.error, fontWeight = Typografia.wyroznienieWaga)
+        }
         val hasPhoto = photos.items.isNotEmpty()
         val label = if (hasPhoto) R.string.formularz_zrob_nowe_zdjecie else R.string.formularz_zrob_zdjecie
         FilledTonalButton(
