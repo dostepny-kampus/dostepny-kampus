@@ -139,6 +139,7 @@ public final class SubmissionsController {
      * przyjętego składa tylko Zbierający, a zmianę cudzego zgłoszenia innego niż szybkie tylko
      * autor, chyba że zmiana oznacza „bariera usunięta”. Zmiana zgłoszenia, którego nie ma albo
      * którego składający nie widzi, daje 404, a widocznego, ale nieprzyjętego, 409 z nim.
+     * Identyfikator zgłoszenia innej osoby daje 403 bez jego treści i niczego nie zapisuje.
      *
      * <p>Wymagania: BR-9, BR-3, US7, US17.2, US8.4, BR-18, BR-19, BR-5</p>
      *
@@ -163,6 +164,10 @@ public final class SubmissionsController {
             throw new ForbiddenChange("Zwykłą zmianę tego zgłoszenia składa tylko jego autor");
         }
         final CreateResult result = this.service.create(body.toCommand(account.getName()));
+        if (result instanceof CreateResult.Existing
+            && this.finder.foreign(result.submission().id(), account.getName())) {
+            throw new ForbiddenChange("Zgłoszenie o tym identyfikatorze złożyła inna osoba");
+        }
         final HttpStatus status;
         if (result instanceof CreateResult.Created) {
             status = HttpStatus.CREATED;
