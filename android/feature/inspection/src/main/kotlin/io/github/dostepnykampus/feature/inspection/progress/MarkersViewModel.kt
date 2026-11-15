@@ -105,7 +105,7 @@ class MarkersViewModel
             when (progress.revoke(markerId)) {
                 is ServerReply.Ok -> MarkersUiState.Ready(without(shown.building, markerId))
                 ServerReply.Offline -> shown.copy(asking = null, failure = RevokeFailure.OFFLINE)
-                else -> shown.copy(asking = null, failure = RevokeFailure.SERVER)
+                ServerReply.Missing, is ServerReply.Fault -> shown.copy(asking = null, failure = RevokeFailure.SERVER)
             }
 
         private fun update(change: (MarkersUiState.Ready) -> MarkersUiState.Ready) {
