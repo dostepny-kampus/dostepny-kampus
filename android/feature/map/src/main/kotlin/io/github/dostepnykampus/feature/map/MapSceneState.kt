@@ -46,8 +46,7 @@ private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore
  * Wymagania: BR-G5, NFR-39
  *
  * @property scene dane katalogu z zaznaczeniem; `null`, dopóki nie ma danych mapy
- * @property camera widok do pokazania: zapisany, na zaznaczonym wejściu albo startowy; nad arkuszem V2 zaznaczony
- *   budynek mieści się w wolnej części mapy, dopóki osoba nie ruszy mapy; `null` bez danych
+ * @property shown widok do pokazania z zasłoniętym dołem mapy; `null` bez danych
  * @property limits granice kamery dla terenu i rozmiaru mapy; `null` przed pomiarem mapy
  * @property cover czy arkusz V2 zasłania dół mapy i czy nad nim mieszczą się przyciski mapy
  * @param choices zapisywana lista budynków do wyboru
@@ -55,12 +54,18 @@ private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore
  */
 internal class MapSceneState(
     val scene: MapScene?,
-    val camera: MapCamera?,
+    val shown: SceneCamera?,
     val limits: MapLimits?,
     val cover: MapCover,
     private val choices: MutableState<List<String>>,
     private val onCamera: (MapCamera) -> Unit,
 ) {
+    /** Widok do pokazania, zob. [SceneCamera.camera]; `null` bez danych. */
+    val camera: MapCamera? get() = shown?.camera
+
+    /** Zasłonięty dół mapy w pikselach, zob. [SceneCamera.bottomInset]. */
+    val bottomInset: Double get() = shown?.bottomInset ?: 0.0
+
     /** Arkusz V2 zasłania dół mapy. */
     val isCovered: Boolean get() = cover != MapCover.NONE
 
@@ -138,15 +143,26 @@ internal fun rememberMapSceneState(
     val outline = layers?.run { outlinesBySymbol[selection?.building] }.takeIf { isCovered }
     val fit = outline?.run { fitted(this, free) }
     val card = rememberCardCamera(building = selection?.building, fit = fit?.run { limits?.clamp(this) ?: this })
+    val above = card.camera?.takeIf { isCovered }
     return MapSceneState(
         scene = scene,
-        camera = card.camera?.takeIf { isCovered }?.copy(bottomInset = inset) ?: uncovered,
+        shown = above?.let { SceneCamera(it, bottomInset = inset) } ?: uncovered?.let(::SceneCamera),
         limits = limits,
         cover = mapCover(isCovered, hasControls = free.hasRoomForControls),
         choices = choices,
         onCamera = cameraKeeper(isCovered, onMap = view.keep, onCard = card.keep),
     )
 }
+
+/**
+ * Widok mapy V1 do pokazania.
+ *
+ * @property camera widok: zapisany, na zaznaczonym wejściu albo startowy; nad arkuszem V2 zaznaczony budynek mieści
+ *   się w wolnej części mapy, dopóki osoba nie ruszy mapy
+ * @property bottomInset zasłonięty arkuszem V2 dół mapy w pikselach, gdy [camera] stawia budynek nad arkuszem; 0 bez
+ *   tego
+ */
+internal data class SceneCamera(val camera: MapCamera, val bottomInset: Double = 0.0)
 
 /**
  * Zasłonięcie mapy V1 przez arkusz V2. Nad arkuszem przyciski mapy stoją tylko przy co najmniej 300 dp wolnej mapy.
@@ -165,8 +181,8 @@ internal fun mapCover(isCovered: Boolean, hasControls: Boolean): MapCover =
 
 /**
  * Zapis widoku kamery po ruchu osoby. Nad arkuszem V2 ([isCovered]) widok trafia do [onCard], więc kamera nie
- * ustawia już budynku na nowo. Trafia też do [onMap], bez dopełnienia arkusza, więc po zamknięciu
- * karty zostaje widok osoby, a widok sprzed karty wraca tylko wtedy, gdy osoba nie ruszyła mapy.
+ * ustawia już budynku na nowo. Trafia też do [onMap], więc po zamknięciu karty zostaje widok osoby, a widok
+ * sprzed karty wraca tylko wtedy, gdy osoba nie ruszyła mapy.
  */
 internal fun cameraKeeper(
     isCovered: Boolean,
@@ -175,7 +191,7 @@ internal fun cameraKeeper(
 ): (MapCamera) -> Unit =
     { idle ->
         if (isCovered) onCard(idle)
-        onMap(idle.copy(bottomInset = 0.0))
+        onMap(idle)
     }
 
 /**

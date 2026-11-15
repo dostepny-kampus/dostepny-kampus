@@ -42,7 +42,7 @@ class MapBarrierTouchTest {
     private var touchBuildings: (List<String>) -> Unit = {}
     private var marked: String? = null
     private val fakeMap =
-        CampusMapView { _: CampusMapData, selection, _, _, onBuildingsTouch, onBarrierTouch, _: Modifier ->
+        CampusMapView { _: CampusMapData, selection, _, _, _, onBuildingsTouch, onBarrierTouch, _: Modifier ->
             marked = selection.barrier
             touchBuildings = onBuildingsTouch
             touchBarrier = onBarrierTouch

@@ -65,7 +65,7 @@ class MapBarrierNamesTest {
                 onSearch = {},
                 onBuildingClick = {},
                 contentPadding = PaddingValues(bottom = sheet),
-                mapView = { _, _, _, _, _, _, _ -> },
+                mapView = { _, _, _, _, _, _, _, _ -> },
             )
         }
     }

@@ -32,11 +32,9 @@ private const val FULL_TURN_DEGREES = 360.0
  * Wymagania: NFR-53
  *
  * @property center środek widoku
- * @property zoom powiększenie mapy
- * @property bottomInset zasłonięty dół widoku w pikselach, np. pod arkuszem V2; [center] stoi wtedy w środku
- *   części odkrytej
+ * @property zoom powiększenie mapy; pod arkuszem V2 [center] stoi w środku części odkrytej
  */
-data class MapCamera(val center: GeoPoint, val zoom: Double, val bottomInset: Double = 0.0)
+data class MapCamera(val center: GeoPoint, val zoom: Double)
 
 /**
  * Wolna część mapy nad arkuszem V2, w dp.
@@ -54,7 +52,7 @@ internal data class FreeMap(val widthDp: Double, val heightDp: Double, val endDp
 /**
  * Widok, w którym prostokąt [outline] budynku mieści się cały w wolnej części mapy [free], obok przycisków mapy.
  * Mały budynek nie jest powiększany ponad [FIT_MAX_ZOOM], więc sąsiednie zostają
- * widoczne. Środek widoku liczy się dla części nad arkuszem; [MapCamera.bottomInset] ustawia wołający.
+ * widoczne. Środek widoku liczy się dla części nad arkuszem; dopełnienie arkusza ustawia wołający.
  *
  * Wymagania: US1.4, US2.8
  */
