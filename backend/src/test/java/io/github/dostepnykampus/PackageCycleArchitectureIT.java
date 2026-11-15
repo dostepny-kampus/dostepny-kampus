@@ -52,12 +52,6 @@ final class PackageCycleArchitectureIT {
      */
     private static final String SAMPLES = "io.github.dostepnykampus.archsamples.cycle";
 
-    /**
-     * Katalog na źródła i klasy przykładu, nowy w każdym teście.
-     */
-    @TempDir
-    private Path dir;
-
     @ArchTest
     void packagesHaveNoCycles(final JavaClasses classes) {
         PackageCycleArchitectureIT.cycles("io.github.dostepnykampus").check(classes);
@@ -75,12 +69,14 @@ final class PackageCycleArchitectureIT {
     }
 
     @Test
-    void acceptsOneWayDependencies() throws IOException {
-        this.type("way.api", "Event", "");
-        this.type("way.submission", "Model", "way.api.Event");
-        this.type("way.submission.web", "Controller", "way.submission.Model");
-        this.type("way.photo", "Model", "way.submission.Model");
-        final JavaClasses classes = this.compiled();
+    void acceptsOneWayDependencies(@TempDir final Path dir) throws IOException {
+        PackageCycleArchitectureIT.type(dir, "way.api", "Event", "");
+        PackageCycleArchitectureIT.type(dir, "way.submission", "Model", "way.api.Event");
+        PackageCycleArchitectureIT.type(
+            dir, "way.submission.web", "Controller", "way.submission.Model"
+        );
+        PackageCycleArchitectureIT.type(dir, "way.photo", "Model", "way.submission.Model");
+        final JavaClasses classes = PackageCycleArchitectureIT.compiled(dir);
         Assertions.assertFalse(
             PackageCycleArchitectureIT.cycles(PackageCycleArchitectureIT.SAMPLES)
                 .evaluate(classes).hasViolation()
@@ -92,36 +88,40 @@ final class PackageCycleArchitectureIT {
     }
 
     @Test
-    void rejectsCycleBetweenTopics() throws IOException {
-        this.type("loop.photo", "Model", "loop.submission.Model");
-        this.type("loop.submission", "Model", "loop.photo.Model");
+    void rejectsCycleBetweenTopics(@TempDir final Path dir) throws IOException {
+        PackageCycleArchitectureIT.type(dir, "loop.photo", "Model", "loop.submission.Model");
+        PackageCycleArchitectureIT.type(dir, "loop.submission", "Model", "loop.photo.Model");
         Assertions.assertTrue(
             PackageCycleArchitectureIT.cycles(PackageCycleArchitectureIT.SAMPLES)
-                .evaluate(this.compiled()).hasViolation(),
+                .evaluate(PackageCycleArchitectureIT.compiled(dir)).hasViolation(),
             "Reguła przepuściła cykl między tematami"
         );
     }
 
     @Test
-    void rejectsCycleBetweenTopicAndLayer() throws IOException {
-        this.type("nest.submission.web", "Controller", "");
-        this.type("nest.submission", "Model", "nest.submission.web.Controller");
-        this.type("nest.submission.web", "Request", "nest.submission.Model");
+    void rejectsCycleBetweenTopicAndLayer(@TempDir final Path dir) throws IOException {
+        PackageCycleArchitectureIT.type(dir, "nest.submission.web", "Controller", "");
+        PackageCycleArchitectureIT.type(
+            dir, "nest.submission", "Model", "nest.submission.web.Controller"
+        );
+        PackageCycleArchitectureIT.type(
+            dir, "nest.submission.web", "Request", "nest.submission.Model"
+        );
         Assertions.assertTrue(
             PackageCycleArchitectureIT.cycles(PackageCycleArchitectureIT.SAMPLES)
-                .evaluate(this.compiled()).hasViolation(),
+                .evaluate(PackageCycleArchitectureIT.compiled(dir)).hasViolation(),
             "Reguła przepuściła cykl między tematem a jego warstwą"
         );
     }
 
     @Test
-    void rejectsSubpackageUsingModuleRoot() throws IOException {
-        this.type("top", "Area", "");
-        this.type("top.persistence", "Rows", "top.Area");
+    void rejectsSubpackageUsingModuleRoot(@TempDir final Path dir) throws IOException {
+        PackageCycleArchitectureIT.type(dir, "top", "Area", "");
+        PackageCycleArchitectureIT.type(dir, "top.persistence", "Rows", "top.Area");
         Assertions.assertTrue(
             PackageCycleArchitectureIT.root(
                 List.of(PackageCycleArchitectureIT.at("top")), Set.of()
-            ).evaluate(this.compiled()).hasViolation(),
+            ).evaluate(PackageCycleArchitectureIT.compiled(dir)).hasViolation(),
             "Reguła przepuściła podpakiet zależny od korzenia modułu"
         );
     }
@@ -162,18 +162,19 @@ final class PackageCycleArchitectureIT {
         return String.format("%s.%s", PackageCycleArchitectureIT.SAMPLES, pack);
     }
 
-    private JavaClasses compiled() throws IOException {
-        return new ArchSamples(this.dir).compiled(PackageCycleArchitectureIT.SAMPLES);
+    private static JavaClasses compiled(final Path dir) throws IOException {
+        return new ArchSamples(dir).compiled(PackageCycleArchitectureIT.SAMPLES);
     }
 
-    private void type(final String pack, final String name, final String field)
-        throws IOException {
+    private static void type(
+        final Path dir, final String pack, final String name, final String field
+    ) throws IOException {
         final String type;
         if (field.isEmpty()) {
             type = field;
         } else {
             type = PackageCycleArchitectureIT.at(field);
         }
-        new ArchSamples(this.dir).type(PackageCycleArchitectureIT.at(pack), name, type);
+        new ArchSamples(dir).type(PackageCycleArchitectureIT.at(pack), name, type);
     }
 }

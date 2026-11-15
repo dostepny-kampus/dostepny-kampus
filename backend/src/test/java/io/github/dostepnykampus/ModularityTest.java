@@ -54,12 +54,6 @@ final class ModularityTest {
      */
     private static final Path DIAGRAM = Path.of("../docs/docs/architektura/moduly-serwera.iuml");
 
-    /**
-     * Katalog na przykładowe źródła, nowy w każdym teście.
-     */
-    @TempDir
-    private Path dir;
-
     @Test
     void modulesHaveClassesAndDescription() {
         Assertions.assertEquals(
@@ -73,17 +67,18 @@ final class ModularityTest {
     }
 
     @Test
-    void rejectsModuleWithoutClassesOrDescription() throws IOException {
-        this.description("alpha", "/** Opis. */%n");
-        this.description("beta", "");
-        this.description("empty", "/** Opis. */%n");
+    void rejectsModuleWithoutClassesOrDescription(@TempDir final Path dir)
+        throws IOException {
+        ModularityTest.description(dir, "alpha", "/** Opis. */%n");
+        ModularityTest.description(dir, "beta", "");
+        ModularityTest.description(dir, "empty", "/** Opis. */%n");
         Assertions.assertEquals(
             List.of(
                 String.format("%s.beta", ModularityTest.SAMPLES),
                 String.format("%s.empty", ModularityTest.SAMPLES)
             ),
             ModularityTest.incomplete(
-                new ClassFileImporter().importPackages(ModularityTest.SAMPLES), this.dir,
+                new ClassFileImporter().importPackages(ModularityTest.SAMPLES), dir,
                 List.of(
                     String.format("%s.alpha", ModularityTest.SAMPLES),
                     String.format("%s.beta", ModularityTest.SAMPLES),
@@ -244,8 +239,9 @@ final class ModularityTest {
         return result;
     }
 
-    private void description(final String module, final String javadoc) throws IOException {
-        final Path folder = this.dir.resolve(
+    private static void description(final Path dir, final String module, final String javadoc)
+        throws IOException {
+        final Path folder = dir.resolve(
             String.format("%s.%s", ModularityTest.SAMPLES, module).replace('.', '/')
         );
         Files.createDirectories(folder);

@@ -71,12 +71,6 @@ final class NullabilityArchitectureIT {
         "Entrance", Set.of("name", "type", "floorId")
     );
 
-    /**
-     * Katalog na źródła i klasy przykładów.
-     */
-    @TempDir
-    private Path dir;
-
     @ArchTest
     void productionHasNoNullUnmarked(final JavaClasses classes) {
         Assertions.assertDoesNotThrow(
@@ -107,11 +101,11 @@ final class NullabilityArchitectureIT {
 
     @ParameterizedTest
     @MethodSource("samples")
-    void judgesFixtureClasses(final Sample sample)
+    void judgesFixtureClasses(final Sample sample, @TempDir final Path dir)
         throws IOException, URISyntaxException {
         MatcherAssert.assertThat(
             String.format("Reguła źle oceniła przykład %s", sample.label()),
-            NullabilityArchitectureIT.violated(this.dir, sample),
+            NullabilityArchitectureIT.violated(dir, sample),
             Matchers.is(sample.violating())
         );
     }
