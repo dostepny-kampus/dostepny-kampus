@@ -63,9 +63,9 @@ public final class ReviewController {
     }
 
     /**
-     * Zapisuje decyzję Weryfikatora o zgłoszeniu, które wziął. Własne zgłoszenie
+     * Przyjmuje albo odrzuca zgłoszenie wzięte przez Weryfikatora. Własne zgłoszenie
      * i wzięte przez innego Weryfikatora albo przez nikogo dają 403, inna wersja
-     * niż aktualna albo status po decyzji 409 z wersją serwera.
+     * niż aktualna albo status po rozstrzygnięciu 409 z wersją serwera.
      *
      * <p>Wymagania: US10, BR-4, BR-11, BR-3, BR-16</p>
      *

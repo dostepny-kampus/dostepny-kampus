@@ -47,7 +47,7 @@ record ReviewRequest(
         final ReviewDecision result;
         if ("ACCEPT".equals(this.decision)) {
             result = new ReviewDecision(
-                path, this.version, reviewer, SubmissionStatus.ACCEPTED, null
+                path, this.version, reviewer, SubmissionStatus.ACCEPTED, ""
             );
         } else if ("REJECT".equals(this.decision)) {
             if (this.rejectionReason == null || this.rejectionReason.isBlank()) {

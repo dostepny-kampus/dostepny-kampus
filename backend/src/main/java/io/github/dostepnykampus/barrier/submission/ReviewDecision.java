@@ -7,7 +7,6 @@ package io.github.dostepnykampus.barrier.submission;
 
 import java.util.Objects;
 import java.util.UUID;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Decyzja Weryfikatora o zgłoszeniu, które wziął do weryfikacji.
@@ -18,21 +17,22 @@ import org.jspecify.annotations.Nullable;
  * @param expectedVersion Wersja, którą ocenił Weryfikator
  * @param reviewer Identyfikator konta Weryfikatora
  * @param outcome Status po decyzji: ACCEPTED albo REJECTED
- * @param reason Powód odrzucenia albo null przy przyjęciu
+ * @param reason Powód odrzucenia albo pusty tekst przy przyjęciu
  * @since 0.1.0
  */
 public record ReviewDecision(
     UUID id, int expectedVersion, String reviewer, SubmissionStatus outcome,
-    @Nullable String reason
+    String reason
 ) {
 
     /**
-     * Decyzja bez braków; brak identyfikatora, konta albo wyniku kończy się wyjątkiem
+     * Decyzja bez braków; brak identyfikatora, konta, wyniku albo powodu kończy się wyjątkiem
      * NullPointerException.
      */
     public ReviewDecision {
         Objects.requireNonNull(id, "id");
         Objects.requireNonNull(reviewer, "reviewer");
         Objects.requireNonNull(outcome, "outcome");
+        Objects.requireNonNull(reason, "reason");
     }
 }

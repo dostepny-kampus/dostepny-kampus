@@ -95,7 +95,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
      */
     private static final String DECIDE = String.format(
         """
-            UPDATE submissions SET status = :status, rejection_reason = :reason
+            UPDATE submissions SET status = :status, rejection_reason = NULLIF(:reason, '')
             WHERE id = :id AND version = :version AND status = 'IN_REVIEW'
                 AND reviewer = :reviewer
             RETURNING %s
