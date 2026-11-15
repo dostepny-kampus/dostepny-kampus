@@ -70,7 +70,55 @@ Wymagania: [V1 Mapa kampusu](../wymagania-ekranow.md#v1-mapa-kampusu).
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Znaleziona sala: w polu A-1 329, nad mapą „Piętro:” z wyborem Piwnica, Parter, 1, 2, 3 i zaznaczonym 2, plan piętra z oznaczoną salą 329 i piktogramami z podpisami Toaleta i Winda, a w arkuszu cztery kroki: Wejście dostosowane, parter, Winda przy klatkach C i D, 2 piętro, Sala 329 przy klatkach A i B, ok. 85 m od windy, i przycisk Pokaż opis budynku](obrazy/m-v1-mapa-sala-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-jasny.webp) | [![Ta sama sala w motywie ciemnym z ciemnym planem piętra](obrazy/m-v1-mapa-sala-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-ciemny.webp) | [![Kroki do sali przy czcionce 200% na cały ekran: u góry tylko Wstecz, potem Sala 329, cztery kroki oraz przyciski Pokaż opis budynku i Pokaż na mapie](obrazy/m-v1-mapa-sala-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-jasny-200.webp) |
+| [![Znaleziona sala: plan 2 piętra A-1, po prawej kolumna Piętro z zaznaczonym 2, na planie sala 329 z numerem kroku 4 i winda z numerem kroku 2, a w arkuszu cztery kroki: Wejście dostosowane, parter, Winda przy klatkach C i D, 2 piętro, Sala 329 przy klatkach A i B, ok. 85 m od windy, i przycisk Pokaż opis budynku](obrazy/m-v1-mapa-sala-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-jasny.webp) | [![Ta sama sala w motywie ciemnym z ciemnym planem piętra](obrazy/m-v1-mapa-sala-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-ciemny.webp) | [![Kroki do sali przy czcionce 200% na cały ekran: u góry tylko Wstecz, potem Sala 329, cztery kroki oraz przyciski Pokaż opis budynku i Pokaż na mapie](obrazy/m-v1-mapa-sala-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-jasny-200.webp) |
+
+### V1: plan piętra
+
+`m-v1-mapa-plan` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-plan-pietra) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.1, NFR-40
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Plan parteru A-1 po przybliżeniu: sale, korytarze, klatki schodowe w kreski i toalety w kolorach grup, znaki windy i toalety dostosowanej, sąsiednie budynki przygaszone, po prawej pod przyciskami mapy kolumna Piętro z piętrami od 3 do -1 i zaznaczonym 0, na dole podpis Źródło: Politechnika Wrocławska](obrazy/m-v1-mapa-plan-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-jasny.webp) | [![Ten sam plan parteru w motywie ciemnym: te same grupy kolorów, przyciemnione](obrazy/m-v1-mapa-plan-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-ciemny.webp) | [![Ten sam plan przy czcionce 200%: kolumna pięter przewija się, zaznaczone piętro jest widoczne](obrazy/m-v1-mapa-plan-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-jasny-200.webp) |
+
+### V1: budynek bez planu
+
+`m-v1-mapa-plan-podstawowy` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-budynek-bez-planu) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.2, BR-G1
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Przybliżony budynek podstawowy A-4: nad mapą zdanie Nie mamy planu pięter tego budynku, budynek zalany bez planu i bez kolumny pięter](obrazy/m-v1-mapa-plan-podstawowy-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-podstawowy-jasny.webp) | [![To samo zdanie i budynek bez planu w motywie ciemnym](obrazy/m-v1-mapa-plan-podstawowy-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-podstawowy-ciemny.webp) | [![To samo zdanie przy czcionce 200% w dwóch wierszach, przyciski mapy schodzą pod nie](obrazy/m-v1-mapa-plan-podstawowy-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-podstawowy-jasny-200.webp) |
+
+### V1: winda na planie
+
+`m-v1-mapa-plan-winda` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-winda-na-planie) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.1, US18.2
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Plan 2 piętra A-1 przesunięty do windy, pod nim arkusz: A-1, Winda przy klatkach C i D, przycisk Zamknij i zdanie Jedzie na: piwnica, parter, 1, 2 (tutaj jesteś) i 3 piętro](obrazy/m-v1-mapa-plan-winda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-jasny.webp) | [![Ten sam arkusz windy w motywie ciemnym](obrazy/m-v1-mapa-plan-winda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-ciemny.webp) | [![Arkusz windy przy czcionce 200% na cały ekran: u góry Wstecz, niżej Winda, piętra i przycisk Pokaż na mapie](obrazy/m-v1-mapa-plan-winda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-jasny-200.webp) |
+
+### V1: legenda przy planie
+
+`m-v1-mapa-plan-legenda` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-legenda-przy-planie) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.1, US2.1
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Legenda otwarta nad planem parteru, przewinięta do barier i planu: Utrudnienie, Tylko z pomocą, Blokada, Bariera bez podanego piętra ze znakiem zapytania, Sala, Korytarz, Schody, Toaleta, Winda, Toaleta dla osób z niepełnosprawnością, Szukana sala](obrazy/m-v1-mapa-plan-legenda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-jasny.webp) | [![Ta sama legenda przy planie w motywie ciemnym](obrazy/m-v1-mapa-plan-legenda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-ciemny.webp) | [![Ta sama legenda przy czcionce 200%: pozycje w kilku wierszach, legenda przewija się](obrazy/m-v1-mapa-plan-legenda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-jasny-200.webp) |
+
+### V1: bariery na planie
+
+`m-v1-mapa-plan-bariery` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-bariery-na-planie) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.1, BR-14, NFR-18
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Plan 2 piętra A-1: znak bariery Tylko z pomocą z tego piętra oraz znak bariery bez podanego piętra ze znakiem zapytania w kółku; bariery parteru nie widać](obrazy/m-v1-mapa-plan-bariery-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-bariery-jasny.webp) | [![Te same bariery na planie w motywie ciemnym](obrazy/m-v1-mapa-plan-bariery-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-bariery-ciemny.webp) | [![Te same bariery na planie przy czcionce 200%](obrazy/m-v1-mapa-plan-bariery-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-bariery-jasny-200.webp) |
+
+### V1: numery sal na planie
+
+`m-v1-mapa-plan-numery` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.1, NFR-16
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Plan 2 piętra A-1 bardzo blisko przy sali 329: jeden numer na grupę pomieszczeń, bez numerów małych pomieszczeń](obrazy/m-v1-mapa-plan-numery-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-numery-jasny.webp) | [![Te same numery sal w motywie ciemnym](obrazy/m-v1-mapa-plan-numery-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-numery-ciemny.webp) | [![Te same numery sal przy czcionce 200%](obrazy/m-v1-mapa-plan-numery-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-numery-jasny-200.webp) |
 
 ### V1: legenda
 

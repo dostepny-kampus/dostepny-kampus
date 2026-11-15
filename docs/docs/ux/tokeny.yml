@@ -476,6 +476,9 @@ mapa:
     - {kolor: papier, tlo: tusz, rodzaj: komponent, gdzie: znak wewnątrz znacznika}
     - {kolor: tusz, tlo: p_korytarz, rodzaj: komponent, gdzie: ikona planu na korytarzu}
     - {kolor: tusz, tlo: p_winda, rodzaj: komponent, gdzie: ikona windy}
+    - {kolor: tusz, tlo: p_sala, rodzaj: komponent, gdzie: "znak windy, toalety i bariery na sali"}
+    - {kolor: tusz, tlo: p_inne, rodzaj: komponent, gdzie: ikona schodów na klatce schodowej}
+    - {kolor: tusz, tlo: p_wc, rodzaj: komponent, gdzie: "napis WC na toalecie"}
     - {kolor: p_kontur, tlo: p_sala, rodzaj: komponent, gdzie: ściany sali}
     - {kolor: p_kontur, tlo: p_korytarz, rodzaj: komponent, gdzie: ściany korytarza}
     - {kolor: p_kontur, tlo: p_inne, rodzaj: komponent, gdzie: ściany innych pomieszczeń}
