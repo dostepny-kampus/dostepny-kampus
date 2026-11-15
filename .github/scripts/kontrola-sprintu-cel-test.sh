@@ -82,6 +82,9 @@ przypadek "świeży pending to przebieg w toku" \
 przypadek "pending sprzed ponad 3 godzin to przerwany przebieg" \
   "$c pending 2026-11-15T08:00:00Z\n$d success 2026-11-15T10:00:00Z" "jest=true\ngalaz=sprint/4\nsha=$c\nod=" \
   "$c pending"
+przypadek "error na głowie: ponowne sprawdzenie mimo braku zmian" \
+  "$b success 2026-11-15T10:00:00Z\n$c error 2026-11-15T11:00:00Z" "jest=true\ngalaz=sprint/4\nsha=$c\nod=$b" \
+  "$c pending"
 przypadek "brak statusów w historii: sprawdzenie bez punktu odniesienia" "" \
   "jest=true\ngalaz=sprint/4\nsha=$c\nod=" "$c pending"
 przypadek "GALAZ wymusza sprawdzenie mimo statusu i braku zmian" \
