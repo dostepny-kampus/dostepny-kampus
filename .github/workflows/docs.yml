@@ -15,6 +15,7 @@ on:
       - "backend/src/test/java/**"
       - "android/**/src/test*/**"
       - "android/**/src/*Test*/**"
+      - "android/systemtest/src/main/**"
       - ".github/workflows/docs.yml"
       - ".github/actions/narzedzia-dokumentacji/**"
       - ".github/scripts/zmiany-obszaru.sh"
@@ -71,8 +72,8 @@ jobs:
           GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
         run: >-
           .github/scripts/zmiany-obszaru.sh dokumentacja docs specs .github/workflows/docs.yml backend/src/test/java
-          ':(glob)android/**/src/test*/**' ':(glob)android/**/src/*Test*/**' .github/scripts/zmiany-obszaru.sh
-          .github/actions/narzedzia-dokumentacji
+          ':(glob)android/**/src/test*/**' ':(glob)android/**/src/*Test*/**' android/systemtest/src/main
+          .github/scripts/zmiany-obszaru.sh .github/actions/narzedzia-dokumentacji
 
   kontrola:
     needs: [porownanie, zmiany]

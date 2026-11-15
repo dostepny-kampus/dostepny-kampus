@@ -86,11 +86,14 @@ class ScenarioTestsTest(unittest.TestCase):
     def test_only_test_source_sets_outside_build_are_scanned(self) -> None:
         self.assertEqual({level for level, _, _ in scenario_tests("brak")}, {"UWAGA"})
         with tempfile.TemporaryDirectory() as android:
-            for folder in ("src/main", "src/testDebug", "src/androidTest", "build/x/src/test", "src/screenshotTest"):
+            folders = ("src/main", "src/testDebug", "src/androidTest", "build/x/src/test", "src/screenshotTest",
+                       "systemtest/src/main", "app/systemtest/src/main")
+            for folder in folders:
                 (Path(android) / folder).mkdir(parents=True)
                 (Path(android) / folder / "A.kt").write_text("// scenariusz: brak sieci\n", encoding="utf-8")
             bad = check_ids.collect(DATA / "brak", DATA / "brak", Path(android)).bad_markers
-        self.assertEqual(sorted(Path(loc.path).parent.name for loc in bad), ["androidTest", "screenshotTest", "testDebug"])
+            found = sorted(Path(loc.path).parent.relative_to(android).as_posix() for loc in bad)
+        self.assertEqual(found, ["src/androidTest", "src/screenshotTest", "src/testDebug", "systemtest/src/main"])
 
     def test_release_flag_turns_warnings_into_errors(self) -> None:
         args = ["--docs", str(DATA / "brak"), "--specs", str(DATA / "scenariusze"), "--android", str(DATA / "android-poprawne")]
