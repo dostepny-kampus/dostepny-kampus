@@ -37,7 +37,7 @@ final class JdbcReadIT {
     }
 
     @Test
-    void usEightFindsEveryStatus(final ApplicationContext context) {
+    void findsEveryStatus(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         for (final SubmissionStatus status : SubmissionStatus.values()) {
             Assertions.assertEquals(
@@ -48,7 +48,7 @@ final class JdbcReadIT {
     }
 
     @Test
-    void usEightListFiltersAndOrdersByCreation(final ApplicationContext context) {
+    void filtersAndOrdersListByCreation(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         final String home = SubmissionData.BUILDING;
         final SubmissionStatus sent = SubmissionStatus.SENT;
@@ -88,7 +88,7 @@ final class JdbcReadIT {
     }
 
     @Test
-    void usEightListOrdersByCreationThenId(final ApplicationContext context) {
+    void ordersListByCreationThenId(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         final SubmissionContent content = SubmissionData.content("o");
         final SubmissionStatus sent = SubmissionStatus.SENT;
@@ -109,7 +109,7 @@ final class JdbcReadIT {
     }
 
     @Test
-    void usEightOwnListLeavesOtherAuthorsOut(final ApplicationContext context) {
+    void leavesOtherAuthorsOutOfOwnList(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         final SubmissionContent content = SubmissionData.content("o");
         final UUID own = data.seed(1, content, SubmissionStatus.REJECTED);

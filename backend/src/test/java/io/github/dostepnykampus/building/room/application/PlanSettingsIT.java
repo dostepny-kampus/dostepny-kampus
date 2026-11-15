@@ -26,7 +26,7 @@ import org.springframework.context.ApplicationContext;
 final class PlanSettingsIT {
 
     @Test
-    void nfrFortySevenEverySymbolIsKnownBuilding(final ApplicationContext context) {
+    void knowsEveryBuildingSymbol(final ApplicationContext context) {
         final KnownBuildings known = context.getBean(KnownBuildings.class);
         MatcherAssert.assertThat(
             "Konfiguracja planów ma symbol spoza tabeli buildings",
@@ -39,7 +39,7 @@ final class PlanSettingsIT {
     }
 
     @Test
-    void nfrFortySevenNoSymbolOrLayerRepeats(final ApplicationContext context) {
+    void repeatsNoSymbolOrLayer(final ApplicationContext context) {
         final List<PlanSettings.Layer> layers = context.getBean(PlanSettings.class).buildings();
         final Set<String> symbols = new HashSet<>();
         final Set<String> rooms = new HashSet<>();
@@ -54,7 +54,7 @@ final class PlanSettingsIT {
     }
 
     @Test
-    void nfrFortySevenReadsAllDetailedBuildings(final ApplicationContext context) {
+    void readsAllDetailedBuildings(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Konfiguracja planów nie ma 24 budynków szczegółowych",
             context.getBean(PlanSettings.class).buildings(),

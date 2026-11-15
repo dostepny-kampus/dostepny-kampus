@@ -23,7 +23,7 @@ import tools.jackson.databind.ObjectMapper;
  * Zapis przez HTTP bez transakcji testowej: retry i konflikty zachowują
  * treść, a poprawna edycja zapisuje treść i wersję.
  *
- * <p>Wymagania: BR-3, BR-9, BR-10, BR-18</p>
+ * <p>Wymagania: BR-3, BR-9, BR-10, BR-18, US8</p>
  *
  * @since 0.1.0
  */
@@ -50,7 +50,7 @@ final class SubmissionsWriteContractIT {
     }
 
     @Test
-    void usEightEditAndStaleConflict(final WebApplicationContext context) throws Exception {
+    void conflictsOnStaleEdit(final WebApplicationContext context) throws Exception {
         final UUID id = this.create(context);
         final List<Object> saved = this.observed(
             context, id, this.put(context, id, "edited", ",\"version\":1")
@@ -67,7 +67,7 @@ final class SubmissionsWriteContractIT {
     }
 
     @Test
-    void usEightEditPreservesStatusRules(final WebApplicationContext context) throws Exception {
+    void keepsStatusRulesOnEdit(final WebApplicationContext context) throws Exception {
         final List<List<Object>> actual = new ArrayList<>(3);
         for (final String status : List.of("SENT", "IN_REVIEW", "REJECTED")) {
             final UUID id = this.create(context);
@@ -106,7 +106,7 @@ final class SubmissionsWriteContractIT {
     }
 
     @Test
-    void usEightRejectsInvalidVersion(final WebApplicationContext context) throws Exception {
+    void rejectsInvalidVersion(final WebApplicationContext context) throws Exception {
         final UUID id = this.create(context);
         final List<List<Object>> actual = new ArrayList<>(4);
         for (final String version : List.of(
