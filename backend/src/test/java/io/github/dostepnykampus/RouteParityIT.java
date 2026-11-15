@@ -39,7 +39,6 @@ final class RouteParityIT {
         Map.entry("GET /buildings/{}/floors/{}/rooms", "sale piętra: moduł budynków"),
         Map.entry("GET /rooms", "wyszukiwanie sal: moduł budynków"),
         Map.entry("GET /review/queue", "kolejka Weryfikatora: moduł weryfikacji"),
-        Map.entry("POST /sync/push", "wysyłka zmian z aplikacji: synchronizacja"),
         Map.entry("GET /sync/pull", "pobranie zmian do aplikacji: synchronizacja"),
         Map.entry("DELETE /inspection-markers/{}", "znaczniki inspekcji: moduł inspekcji"),
         Map.entry("GET /progress", "postęp inspekcji: moduł inspekcji"),
