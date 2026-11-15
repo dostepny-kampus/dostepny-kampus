@@ -194,11 +194,10 @@ class CampusMapViewModel(
         return results.onStart { emit(BuildingSearch()) }
     }
 
-    private suspend fun roomsFor(query: String): List<FoundRoom> =
-        when (val reply = roomSearch.search(query)) {
-            is ServerReply.Ok -> reply.value
-            else -> emptyList()
-        }
+    private suspend fun roomsFor(query: String): List<FoundRoom> = when (val reply = roomSearch.search(query)) {
+        is ServerReply.Ok -> reply.value
+        else -> emptyList()
+    }
 
     /** Bariery z jednego pytania źródła razem z chwilą ich pobrania z serwera. */
     private data class FetchedBarriers(val barriers: List<AcceptedBarrier>, val syncedAt: Instant?)
