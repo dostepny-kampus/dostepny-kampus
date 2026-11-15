@@ -103,8 +103,10 @@ final class SyncPushHttpIT {
     void savesMarkerOfFloorInBuilding(final WebApplicationContext context)
         throws Exception {
         context.getBean(JdbcClient.class).sql(
-            "INSERT INTO floors (building_symbol, id, label, sort_order) "
-                + "VALUES ('C-13', 'test-f0', 'Parter', 0)"
+            """
+            INSERT INTO floors (building_symbol, id, label, sort_order)
+            VALUES ('C-13', 'test-f0', 'Parter', 0)
+            """
         ).update();
         final UUID id = UUID.randomUUID();
         Assertions.assertEquals(
