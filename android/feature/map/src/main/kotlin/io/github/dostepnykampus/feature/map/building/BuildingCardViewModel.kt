@@ -153,7 +153,8 @@ class BuildingCardViewModel
         }
     }
 
-private suspend fun floorFactsOrNull(plans: FloorPlans, symbol: String): FloorFacts? {
+/** Fakty o piętrach budynku [symbol] z planu w [plans]; `null`, gdy budynek nie ma planu ani jego kopii. */
+internal suspend fun floorFactsOrNull(plans: FloorPlans, symbol: String): FloorFacts? {
     plans.download(symbol)
     val floors = plans.floors(symbol)?.floors.orEmpty()
     val rooms = floors.mapNotNull { floor -> plans.rooms(symbol, floor.id)?.let { floor.id to it } }.toMap()

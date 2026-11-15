@@ -37,11 +37,11 @@ class CardFloorsViewModelTest {
     fun readsLiftFromBuildingPlan() =
         runTest {
             Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-            val facts = cardFloors(stored = true)
+            val facts = cardFloors(isStored = true)
             Dispatchers.resetMain()
             assertEquals(
                 listOf("Parter"),
-                facts?.elevator?.floors?.map { it.name },
+                facts?.elevator?.run { floors.map { it.name } },
                 "Karta nie wzięła windy z planu budynku",
             )
         }
@@ -50,18 +50,18 @@ class CardFloorsViewModelTest {
     fun hasNoFloorsWithoutPlan() =
         runTest {
             Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-            val facts = cardFloors(stored = false)
+            val facts = cardFloors(isStored = false)
             Dispatchers.resetMain()
             assertEquals(null, facts, "Budynek bez planu w telefonie dostał fakty o piętrach")
         }
 
-    private fun TestScope.cardFloors(stored: Boolean): FloorFacts? {
+    private fun TestScope.cardFloors(isStored: Boolean): FloorFacts? {
         val card =
             BuildingCardViewModel(
                 symbol = "A-1",
                 repository = BuildingCatalogRepository(EmptyCoroutineContext) { ASSET_JSON },
                 networkStatus = { flowOf(true) },
-                plans = Plans(stored),
+                plans = Plans(isStored),
             )
         val collector = backgroundScope.launch { card.uiState.collect {} }
         advanceUntilIdle()
@@ -72,16 +72,16 @@ class CardFloorsViewModelTest {
         return ready.floors
     }
 
-    /** Plan budynku A-1 z windą na parterze, gdy [stored]; bez kopii nic nie ma. */
-    private class Plans(private val stored: Boolean) : FloorPlans {
-        override suspend fun download(symbol: String): Boolean = stored
+    /** Plan budynku A-1 z windą na parterze, gdy [isStored]; bez kopii nic nie ma. */
+    private class Plans(private val isStored: Boolean) : FloorPlans {
+        override suspend fun download(symbol: String): Boolean = isStored
 
         override suspend fun floors(symbol: String): FloorList? =
             FloorList(source = SOURCE, floors = listOf(Floor(id = "P0", label = "Parter", order = 0)))
-                .takeIf { stored }
+                .takeIf { isStored }
 
         override suspend fun rooms(symbol: String, floor: String): RoomList? =
-            RoomList(source = SOURCE, floorOutline = NO_OUTLINE, rooms = listOf(LIFT)).takeIf { stored }
+            RoomList(source = SOURCE, floorOutline = NO_OUTLINE, rooms = listOf(LIFT)).takeIf { isStored }
     }
 
     private companion object {
