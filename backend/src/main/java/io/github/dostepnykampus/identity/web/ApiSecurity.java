@@ -34,8 +34,9 @@ import tools.jackson.databind.json.JsonMapper;
  * Zabezpieczenia API: zabronione wszystko, czego kontrakt {@code api/openapi.yaml} nie
  * dopuszcza (ADR-0003). Serwer zasobów OAuth 2.0 bez własnego logowania; role są
  * w {@code realm_access.roles} tokenu. Operacje publiczne nie wymagają tokenu, lista
- * własnych zgłoszeń (parametr mine inny niż false) wymaga roli Zbierającego. Pozostałe bez ważnego tokenu
- * dają 401, bez roli 403, jako {@code application/problem+json}; inna ścieżka jest odrzucana.
+ * własnych zgłoszeń (parametr mine inny niż false) wymaga roli Zbierającego. Pozostałe
+ * bez ważnego tokenu dają 401, bez roli 403, jako {@code application/problem+json}; inna
+ * ścieżka jest odrzucana.
  *
  * <p>Wymagania: NFR-33, US14.1, US8.1</p>
  *
