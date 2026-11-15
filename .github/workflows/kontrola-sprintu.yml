@@ -49,8 +49,10 @@ jobs:
   android:
     needs: cel
     if: needs.cel.outputs.jest == 'true'
+    # Zapis cache żąda tylko `czyszczenie-cache` (biegnie wyłącznie na push), ale GitHub sprawdza uprawnienia
+    # wszystkich zadań wywoływanego workflow przed startem; bez `actions: write` przebieg kończy się startup_failure.
     permissions:
-      actions: read
+      actions: write
       contents: read
     uses: ./.github/workflows/android.yml
     with:
