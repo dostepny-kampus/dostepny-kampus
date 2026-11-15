@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test
 class SubmissionPhotoUrlTest {
     /** Adres to serwer, `/submissions/{submissionId}/photos/{photoId}` i nic więcej. */
     @Test
-    fun us2_2_url_of_photo() {
+    fun buildsPhotoAddress() {
         val api = SubmissionsApi(OkHttpClient(), NetworkModule.json(), "http://10.0.2.2:8080/")
         val url = api.photoUrl(submissionId = "6f1c", photoId = "9a2b")
         assertEquals("http://10.0.2.2:8080/submissions/6f1c/photos/9a2b", url, "adres zdjęcia")
@@ -22,7 +22,7 @@ class SubmissionPhotoUrlTest {
 
     /** Adres serwera ze ścieżką zostaje przed `/submissions`. */
     @Test
-    fun us2_2_url_keeps_server_path() {
+    fun keepsServerPath() {
         val api = SubmissionsApi(OkHttpClient(), NetworkModule.json(), "https://example.org/api/")
         val url = api.photoUrl(submissionId = "6f1c", photoId = "9a2b")
         assertEquals("https://example.org/api/submissions/6f1c/photos/9a2b", url, "adres ze ścieżką serwera")
@@ -30,7 +30,7 @@ class SubmissionPhotoUrlTest {
 
     /** Ukośnik i znak zapytania w identyfikatorze nie zmieniają zasobu ani nie tworzą zapytania. */
     @Test
-    fun us2_2_url_encodes_segments() {
+    fun encodesPathSegments() {
         val api = SubmissionsApi(OkHttpClient(), NetworkModule.json(), "http://10.0.2.2:8080/")
         val url = api.photoUrl(submissionId = "a/b", photoId = "c?d")
         assertEquals("http://10.0.2.2:8080/submissions/a%2Fb/photos/c%3Fd", url, "zakodowane segmenty")
