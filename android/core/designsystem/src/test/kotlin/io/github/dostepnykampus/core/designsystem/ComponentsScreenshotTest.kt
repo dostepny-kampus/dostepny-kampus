@@ -46,8 +46,8 @@ class ComponentsScreenshotTest {
     }
 
     @Test
+    @Config(qualifiers = "+night")
     fun drawsDarkTheme() {
-        RuntimeEnvironment.setQualifiers("+night")
         captureComponents()
     }
 

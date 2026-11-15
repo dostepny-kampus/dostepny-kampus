@@ -36,7 +36,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import java.time.LocalDate
@@ -93,8 +92,8 @@ class MapInfoTest {
 
     /** Zrzut do porównania z makietą hi-fi V1 „źródła danych”, motyw ciemny. */
     @Test
+    @Config(qualifiers = "+night")
     fun nfr37_hifi_motyw_ciemny() {
-        RuntimeEnvironment.setQualifiers("+night")
         compose.setContent { Info(isOpenAtStart = true) }
         compose.onRoot().captureRoboImage()
     }
