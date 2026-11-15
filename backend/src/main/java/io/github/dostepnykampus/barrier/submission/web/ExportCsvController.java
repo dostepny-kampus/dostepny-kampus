@@ -17,6 +17,7 @@ import io.github.dostepnykampus.shared.geo.Puwg1992;
 import io.github.dostepnykampus.shared.geo.Puwg1992Point;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import org.apache.commons.csv.CSVFormat;
 import org.jspecify.annotations.Nullable;
@@ -36,6 +37,11 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public final class ExportCsvController {
+
+    /**
+     * Pierwsze znaki, od których arkusz kalkulacyjny zaczyna formułę.
+     */
+    private static final Set<Character> FORMULA = Set.of('=', '+', '-', '@', '\t', '\r');
 
     /** Przyjęte zgłoszenia. */
     private final SubmissionReading submissions;
@@ -77,7 +83,7 @@ public final class ExportCsvController {
 
     private static String text(final String value) {
         String result = value;
-        if (!value.isEmpty() && "=+-@\t\r".indexOf(value.charAt(0)) >= 0) {
+        if (!value.isEmpty() && ExportCsvController.FORMULA.contains(value.charAt(0))) {
             result = "'".concat(value);
         }
         return result;

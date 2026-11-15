@@ -14,6 +14,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.hamcrest.MatcherAssert;
@@ -81,7 +82,8 @@ final class ExportCsvHttpIT {
     void prefixesFormulaLikeDescriptionWithApostrophe(final WebApplicationContext context)
         throws Exception {
         final SampleSubmissions samples = new SampleSubmissions(context);
-        final List<String> starts = List.of("=", "+", "-", "@", "\t", "\r");
+        final List<String> starts = Stream.of('=', '+', '-', '@', '\t', '\r')
+            .map(String::valueOf).toList();
         for (final String start : starts) {
             samples.add(
                 "ACCEPTED",
@@ -98,8 +100,9 @@ final class ExportCsvHttpIT {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer COORDINATOR")
         ).andReturn().getResponse().getContentAsString();
         final List<String> descriptions = new ArrayList<>(starts.size());
-        try (CSVParser parser = CSVFormat.RFC4180.builder().setHeader()
-            .setSkipHeaderRecord(true).get().parse(new StringReader(csv))) {
+        final CSVFormat format = CSVFormat.RFC4180.builder().setHeader()
+            .setSkipHeaderRecord(true).get();
+        try (CSVParser parser = format.parse(new StringReader(csv))) {
             parser.forEach(record -> descriptions.add(record.get("description")));
         }
         MatcherAssert.assertThat(
