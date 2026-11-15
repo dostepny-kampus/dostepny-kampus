@@ -45,8 +45,9 @@ permissions:
 
 concurrency:
   # Push po scaleniu tylko przekłada cache z grupy kolejki, więc każdy commit ma własną grupę i nic go nie anuluje.
-  # Dla PR i grupy kolejki nowszy przebieg anuluje starszy; kontrola sprintu ma grupę sprawdzanego commita.
-  group: android-${{ inputs.sha || (github.event_name == 'push' && github.sha || github.ref) }}
+  # Dla PR i grupy kolejki nowszy przebieg anuluje starszy. Pełny przebieg (kontrola sprintu, ręczny) ma grupę
+  # sprawdzanego commita z przedrostkiem: kontrola startuje po tym samym pushu i nie może anulować przeniesienia cache.
+  group: android-${{ inputs.sha && format('pelny-{0}', inputs.sha) || (github.event_name == 'push' && github.sha || github.ref) }}
   cancel-in-progress: true
 
 jobs:
