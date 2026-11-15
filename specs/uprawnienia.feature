@@ -83,8 +83,7 @@ Funkcja: Logowanie, role i zaproszenia
     Wtedy próba jest odrzucona
     Oraz konto z adresem nowy@example.org nie dostaje roli Zbierającego
 
-  # kroki serwera: #1991
-  @BR-4 @BR-1 @serwer @do-zrobienia
+  @BR-4 @BR-1 @serwer
   Scenariusz: Osoba z rolami Zbierającego i Weryfikatora nie przyjmie własnego zgłoszenia
     Zakładając, że osoba ma role Zbierającego i Weryfikatora
     Oraz jako Zbierający wysłała zgłoszenie TB-1 „schody przy wejściu” przy A-1
