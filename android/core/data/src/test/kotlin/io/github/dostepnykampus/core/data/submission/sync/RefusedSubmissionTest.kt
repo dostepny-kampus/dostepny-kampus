@@ -11,7 +11,10 @@ import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.pho
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.precise
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.server
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
+import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.Submission
+import io.github.dostepnykampus.core.model.submission.SubmissionFloor
+import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -138,6 +141,30 @@ class RefusedSubmissionTest {
             assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state, "zgłoszenie jest wysłane")
         }
 
+    /**
+     * Serwer odrzuca zgłoszenie szybkie z miejscem 20 m za granicą terenu PWr (400): zgłoszenie zostaje w telefonie
+     * ze statusem „Nie wysłano” i z wybranym piętrem.
+     * Scenariusz: zgloszenie-szybkie.feature: Zgłoszenie odrzucone przez serwer jako spoza terenu PWr zostaje
+     *   w telefonie
+     *
+     * Wymagania: US4.9, BR-G5
+     */
+    @Test
+    fun keepsRefusedOutsideGrounds() =
+        runBlocking {
+            val floor = SubmissionFloor(floorId = "A-1/1", number = 1)
+            val quick = precise(PHOTO).copy(kind = SubmissionKind.QUICK, location = BEYOND_GROUNDS, floor = floor)
+            queue.save(quick, photo(tempDir, PHOTO))
+            store.createResults.addLast(ServerReply.Fault(code = 400))
+
+            queue.sendAll()
+
+            assertEquals(OwnSubmissionState.REFUSED, history.rows.getValue(ID).state, "status „Nie wysłano”")
+            val left = store.rows.single().submission
+            assertTrue(left.isRefused, "zgłoszenie zostaje w telefonie")
+            assertEquals("A-1/1" to 1, left.floorId to left.floorNumber, "zgłoszenie zostaje z piętrem")
+        }
+
     private fun refusedOnce(result: ServerReply<Submission>, code: Int) =
         runBlocking {
             queue.save(precise(PHOTO), photo(tempDir, PHOTO))
@@ -157,5 +184,8 @@ class RefusedSubmissionTest {
     private companion object {
         const val ID = "s-odmowa"
         const val PHOTO = "p-odmowa"
+
+        /** 20 m na wschód od najdalej na wschód wysuniętego punktu granicy „Kampusu głównego”. */
+        val BEYOND_GROUNDS = GeoPoint(longitude = 17.06891, latitude = 51.10841)
     }
 }

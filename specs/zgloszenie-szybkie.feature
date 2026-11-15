@@ -209,8 +209,7 @@ Funkcja: Zgłoszenie szybkie
     Jeżeli aplikacja wyśle zgłoszenie z miejscem 20 m za granicą terenu PWr
     Wtedy serwer odrzuca zgłoszenie
 
-  # odrzucenie w aplikacji: #2373
-  @US4.9 @BR-G5 @aplikacja @do-zrobienia
+  @US4.9 @BR-G5 @aplikacja
   Scenariusz: Zgłoszenie odrzucone przez serwer jako spoza terenu PWr zostaje w telefonie
     Zakładając, że Zbierający jest zalogowany z rolą Zbierającego
     Oraz serwer odrzucił zgłoszenie z miejscem 20 m za granicą terenu PWr
