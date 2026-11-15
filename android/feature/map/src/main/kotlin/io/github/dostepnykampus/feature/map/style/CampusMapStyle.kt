@@ -111,8 +111,19 @@ data class MapStyleColors(
 )
 
 /**
+ * Podkład OSM mapy: przy powiększeniu mniejszym niż [minZoom], np. w środku przelotu na inny teren, MapLibre go
+ * nie rysuje ani nie pobiera.
+ *
+ * Wymagania: NFR-39
+ *
+ * @property bounds prostokąt, w którym są kafelki podkładu
+ * @property minZoom najmniejsze powiększenie, przy którym podkład jest rysowany
+ */
+data class Basemap(val bounds: CampusBounds, val minZoom: Double = 0.0)
+
+/**
  * Styl mapy V1 (ADR-0005) jako tekst JSON: kontury i podpisy ze źródła w aplikacji zawsze, podkład OSM tylko online,
- * tylko w prostokącie [tiles] i przygaszony. Zaznaczony budynek [MapSelection.building] ma grubszy obrys i jako jedyny
+ * tylko w obszarze [basemap] i przygaszony. Zaznaczony budynek [MapSelection.building] ma grubszy obrys i jako jedyny
  * znaki wejść; wejście [MapSelection.entrance] ma pinezkę z podpisem. Poza granicą terenu [MapSelection.boundary]
  * (bez niej poza prostokątem [MapSelection.bounds]) mapa jest wyblakła, a bariery mają znak uciążliwości. Warstwy
  * zaznaczenia są w stylu zawsze, więc style dla różnych zaznaczeń różnią się tylko polami [SelectionLook]
@@ -124,14 +135,17 @@ fun campusMapStyle(
     data: CampusMapData,
     selection: MapSelection,
     colors: MapStyleColors,
-    tiles: CampusBounds? = selection.bounds,
+    basemap: Basemap? = selection.bounds?.let { Basemap(bounds = it) },
 ): String {
     val look = selectionLook(data, selection, colors)
     val style =
         buildJsonObject {
             put(key = "version", value = STYLE_VERSION)
-            put(key = "sources", element = sources(data = data, selection = selection, look = look, tiles = tiles))
-            put(key = "layers", element = layers(look, isBounded = selection.bounds != null, colors = colors))
+            val all = sources(data = data, selection = selection, look = look, basemap = basemap)
+            put(key = "sources", element = all)
+            val isBounded = selection.bounds != null
+            val list = layers(look = look, isBounded = isBounded, colors = colors, basemap = basemap)
+            put(key = "layers", element = list)
         }
     return style.toString()
 }
@@ -152,10 +166,10 @@ private fun sources(
     data: CampusMapData,
     selection: MapSelection,
     look: SelectionLook,
-    tiles: CampusBounds?,
+    basemap: Basemap?,
 ): JsonObject =
     buildJsonObject {
-        put(key = BASEMAP, element = basemapSource(tiles))
+        put(key = BASEMAP, element = basemapSource(basemap?.bounds))
         put(key = BUILDINGS_SOURCE, element = geoJsonSource(data.buildings))
         put(key = LABELS, element = geoJsonSource(data.labelPoints))
         put(key = ENTRANCES_SOURCE, element = geoJsonSource(data.entrances))
@@ -168,11 +182,12 @@ private fun sources(
         put(key = PLAN_SOURCE, element = geoJsonSource(look.plan))
     }
 
-private fun layers(look: SelectionLook, isBounded: Boolean, colors: MapStyleColors): JsonArray =
+private fun layers(look: SelectionLook, isBounded: Boolean, colors: MapStyleColors, basemap: Basemap?): JsonArray =
     buildJsonArray {
         add(styleLayer(id = "lad", type = "background") { paint("background-color" to JsonPrimitive(colors.land)) })
         add(
             styleLayer(id = BASEMAP, type = "raster", source = BASEMAP) {
+                put(key = "minzoom", value = basemap?.minZoom ?: 0.0)
                 put(key = "paint", element = basemapPaint(colors))
             },
         )
