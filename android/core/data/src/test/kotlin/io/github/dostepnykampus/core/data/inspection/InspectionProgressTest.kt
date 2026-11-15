@@ -28,7 +28,7 @@ import java.time.Instant
  */
 class InspectionProgressTest {
     @Test
-    fun us11_1_progress_is_ok() {
+    fun us11ProgressIsOk() {
         val marker =
             InspectionMarker(
                 id = MARKER,
@@ -52,28 +52,28 @@ class InspectionProgressTest {
     }
 
     @Test
-    fun us11_1_forbidden_is_fault() {
+    fun us11ForbiddenIsFault() {
         assertEquals(ServerReply.Fault(FORBIDDEN), answered(FORBIDDEN, "{}") { it.buildings() }, "403 przy odczycie")
     }
 
     @Test
-    fun us11_3_revoke_is_ok() {
+    fun us11RevokeIsOk() {
         assertEquals(ServerReply.Ok(Unit), answered(NO_CONTENT, "") { it.revoke(MARKER) }, "204 przy cofnięciu")
     }
 
     @Test
-    fun us11_3_unknown_marker_missing() {
+    fun us11UnknownMarkerMissing() {
         assertEquals(ServerReply.Missing, answered(NOT_FOUND, "{}") { it.revoke(MARKER) }, "nieznany znacznik")
     }
 
     @Test
-    fun us11_3_revoke_forbidden_fault() {
+    fun us11RevokeForbiddenFault() {
         val reply = answered(FORBIDDEN, "{}") { it.revoke(MARKER) }
         assertEquals(ServerReply.Fault(FORBIDDEN), reply, "403 przy cofnięciu")
     }
 
     @Test
-    fun us11_3_offline_revoke() {
+    fun us11OfflineRevoke() {
         val offline =
             MockWebServer().use { server ->
                 server.start()
