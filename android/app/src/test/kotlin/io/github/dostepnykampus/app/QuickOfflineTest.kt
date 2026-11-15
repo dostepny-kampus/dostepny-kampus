@@ -128,4 +128,4 @@ class QuickOfflineTest {
 private const val WAIT_MS = 5_000L
 private const val ACCURACY = 6.0
 private const val NO_BUILDINGS = """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[]}"""
-private val STREET = GeoPoint(longitude = 17.10, latitude = 51.20)
+private val STREET = GeoPoint(longitude = 17.059, latitude = 51.109)

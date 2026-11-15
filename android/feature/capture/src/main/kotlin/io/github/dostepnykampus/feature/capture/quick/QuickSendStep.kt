@@ -25,10 +25,10 @@ import io.github.dostepnykampus.feature.capture.photo.PhotoPreviews
 /**
  * Krok 3 V4 przed „Wyślij”: miniatura zdjęcia, wybrana grupa, piętro albo „Nie wiem”, jeśli było pytanie,
  * i zdanie o dołączeniu bieżącego miejsca. Gdy pozycja jest jeszcze nieznana,
- * zamiast zdania „Ustalamy, gdzie jesteś…”; „Wyślij” wtedy czeka. Przy „Brak pozycji” komunikat mówi,
- * co zrobić; zdjęcie i grupa zostają.
+ * zamiast zdania „Ustalamy, gdzie jesteś…”; „Wyślij” wtedy czeka. Przy „Brak pozycji” i pozycji poza terenem PWr
+ * komunikat mówi, co zrobić; zdjęcie i grupa zostają.
  *
- * Wymagania: US4.1, US4.5, NFR-27, NFR-23, UC7
+ * Wymagania: US4.1, US4.5, NFR-27, NFR-23, UC7, US4.9
  *
  * @param report zgłoszenie po kroku 2
  * @param isFloorAsked czy krok 2 pytał o piętro
@@ -50,15 +50,24 @@ internal fun QuickSendSummary(report: QuickReport, isFloorAsked: Boolean, lookup
             }
 
             QuickLookup.Lost -> {
-                Text(
-                    text = stringResource(R.string.szybkie_brak_pozycji),
-                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-                    color = MaterialTheme.colorScheme.error,
-                    fontWeight = Typografia.wyroznienieWaga,
-                )
+                LookupProblem(stringResource(R.string.szybkie_brak_pozycji))
+            }
+
+            QuickLookup.Outside -> {
+                LookupProblem(stringResource(R.string.szybkie_poza_terenem))
             }
         }
     }
+}
+
+@Composable
+private fun LookupProblem(text: String) {
+    Text(
+        text = text,
+        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+        color = MaterialTheme.colorScheme.error,
+        fontWeight = Typografia.wyroznienieWaga,
+    )
 }
 
 /**

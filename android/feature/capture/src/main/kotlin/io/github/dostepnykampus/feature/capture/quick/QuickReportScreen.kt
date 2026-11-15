@@ -237,7 +237,7 @@ private fun QuickSendStep(
             .collect { sent(it == QuickSendStage.SAVED_OFFLINE) }
     }
     QuickSendSummary(report = report, isFloorAsked = route.isFloorAsked, lookup = lookup)
-    if (lookup == QuickLookup.Lost) {
+    if (lookup == QuickLookup.Lost || lookup == QuickLookup.Outside) {
         MainButton(text = stringResource(R.string.formularz_sprobuj_ponownie), onClick = viewModel::retry)
         OutlinedButton(onClick = onGiveUp, modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk)) {
             Text(stringResource(R.string.szybkie_zrezygnuj))

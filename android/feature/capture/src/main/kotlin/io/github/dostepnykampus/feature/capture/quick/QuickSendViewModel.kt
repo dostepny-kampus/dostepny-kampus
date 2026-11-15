@@ -71,6 +71,9 @@ sealed interface QuickLookup {
     /** Telefon zgłosił, że nie ustali pozycji: błąd odbiornika albo wyłączona lokalizacja. */
     data object Lost : QuickLookup
 
+    /** Pozycja poza terenem PWr: zgłoszenia nie da się wysłać, zdjęcie i grupa zostają. Wymagania: US4.9, BR-G5 */
+    data object Outside : QuickLookup
+
     /**
      * Pozycja do zgłoszenia.
      *
@@ -85,9 +88,9 @@ sealed interface QuickLookup {
  * Pozycja to pierwszy odczyt ze znaną dokładnością, a budynek z konturu w katalogu bez sieci decyduje, czy piętro
  * idzie do zgłoszenia. Odbiornik nasłuchuje, gdy ekran jest widoczny; „Wyślij” czeka na pozycję bez
  * limitu czasu. „Brak pozycji” wywołuje zdarzenie odbiornika albo wyłączenie lokalizacji, nie upływ czasu;
- * „Spróbuj ponownie” ustala pozycję od nowa.
+ * „Spróbuj ponownie” ustala pozycję od nowa. Pozycja poza terenem PWr nie trafia do zgłoszenia.
  *
- * Wymagania: US4.1, NFR-27, US4.5, BR-14, BR-G2, NFR-23
+ * Wymagania: US4.1, NFR-27, US4.5, BR-14, BR-G2, NFR-23, US4.9, BR-G5
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -110,7 +113,7 @@ class QuickSendViewModel
 
         private val lookups: Flow<QuickLookup> = attempts.flatMapLatest { whenLocationOn() }
 
-        /** Bieżąca pozycja, jej ustalanie albo „Brak pozycji”. */
+        /** Bieżąca pozycja, jej ustalanie, „Brak pozycji” albo pozycja poza terenem PWr. */
         val lookup: StateFlow<QuickLookup> =
             lookups.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), QuickLookup.Locating)
 
@@ -122,7 +125,7 @@ class QuickSendViewModel
                 .mapLatest { symbol -> floorsOf(symbol) }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), emptyList())
 
-        /** „Spróbuj ponownie” po „Brak pozycji”: ustalanie od nowa; zdjęcie i grupa zostają. */
+        /** „Spróbuj ponownie” po „Brak pozycji” albo poza terenem PWr: ustalanie od nowa; zdjęcie i grupa zostają. */
         fun retry() {
             attempts.value++
         }
@@ -156,12 +159,15 @@ class QuickSendViewModel
                 .fixes()
                 .filter { it.hasAccuracy }
                 .take(1)
-                .map<PositionFix, QuickLookup> { fix -> QuickLookup.Found(located(fix)) }
+                .map { fix -> lookupAt(fix) }
                 .onStart { emit(QuickLookup.Locating) }
                 .catch { cause ->
                     if (cause !is SecurityException && cause !is IllegalArgumentException) throw cause
                     emit(QuickLookup.Lost)
                 }
+
+        private suspend fun lookupAt(fix: PositionFix): QuickLookup =
+            if (buildingLookup.isOnGrounds(fix.point)) QuickLookup.Found(located(fix)) else QuickLookup.Outside
 
         private suspend fun floorsOf(symbol: String?): List<Floor> =
             if (symbol == null) emptyList() else buildingFloors.floors(symbol)?.floors.orEmpty()

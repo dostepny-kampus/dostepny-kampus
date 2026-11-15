@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.core.geo
 
 import io.github.dostepnykampus.core.model.GeoArea
+import io.github.dostepnykampus.core.model.GeoPoint
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
@@ -38,3 +39,21 @@ public fun parseAreaBoundaries(geoJson: String): Map<String, GeoArea> =
         requireNotNull(name) { "Teren bez nazwy w pliku granic terenów" }
         name to feature.geometry.toArea()
     }
+
+/**
+ * Teren, na którym wolno złożyć zgłoszenie: punkt należy do niego wewnątrz granicy albo na jej linii, jak `ST_Covers`
+ * na serwerze.
+ *
+ * Wymagania: BR-G5, US4.9
+ */
+public fun interface CampusGrounds {
+    /** Czy [point] leży wewnątrz granicy terenu albo na jej linii. */
+    public fun covers(point: GeoPoint): Boolean
+}
+
+/** Teren złożony z granic [boundaries]: punkt należy do niego, gdy leży na którymkolwiek z nich. Wymagania: BR-G5 */
+public fun campusGrounds(boundaries: Map<String, GeoArea>): CampusGrounds =
+    CampusGrounds { point -> boundaries.values.any { it.covers(point) } }
+
+/** Teren PWr z granic [PwrAreaBoundaries]. Wymagania: BR-G5, US4.9 */
+public val PwrGrounds: CampusGrounds by lazy { campusGrounds(PwrAreaBoundaries) }

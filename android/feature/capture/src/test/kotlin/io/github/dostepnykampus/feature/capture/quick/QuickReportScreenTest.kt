@@ -258,7 +258,7 @@ class QuickReportScreenTest {
     private companion object {
         const val ACCURACY = 6.0
         val INSIDE = GeoPoint(longitude = 17.0605, latitude = 51.1105)
-        val OUTSIDE = GeoPoint(longitude = 17.07, latitude = 51.12)
+        val OUTSIDE = GeoPoint(longitude = 17.059, latitude = 51.109)
         const val CAMPUS =
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
                 """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"A-1",""" +
