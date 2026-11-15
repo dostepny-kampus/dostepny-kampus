@@ -25,21 +25,24 @@ private fun evaluate(expression: JsonElement, properties: JsonObject, zoom: Doub
     if (expression !is JsonArray) return expression
     val name = expression.first().jsonPrimitive.content
     val arguments = expression.drop(1)
-
-    fun value(index: Int) = evaluate(expression = arguments[index], properties = properties, zoom = zoom)
-
-    fun all(test: (Int) -> Boolean) = arguments.indices.all(test)
-
     return when (name) {
         "get" -> properties[arguments[0].jsonPrimitive.content] ?: JsonNull
         "has" -> JsonPrimitive(arguments[0].jsonPrimitive.content in properties)
         "zoom" -> JsonPrimitive(zoom)
-        "!" -> JsonPrimitive(!value(0).jsonPrimitive.boolean)
-        "==" -> JsonPrimitive(value(0) == value(1))
-        "!=" -> JsonPrimitive(value(0) != value(1))
-        ">=" -> JsonPrimitive(value(0).jsonPrimitive.double >= value(1).jsonPrimitive.double)
-        "any" -> JsonPrimitive(!all { !value(it).jsonPrimitive.boolean })
-        "all" -> JsonPrimitive(all { value(it).jsonPrimitive.boolean })
-        else -> error("Wyrażenie $name poza filtrami barier")
+        else -> {
+            val values = arguments.map { evaluate(expression = it, properties = properties, zoom = zoom) }
+            JsonPrimitive(logic(name = name, values = values))
+        }
     }
 }
+
+private fun logic(name: String, values: List<JsonElement>): Boolean =
+    when (name) {
+        "!" -> !values[0].jsonPrimitive.boolean
+        "==" -> values[0] == values[1]
+        "!=" -> values[0] != values[1]
+        ">=" -> values[0].jsonPrimitive.double >= values[1].jsonPrimitive.double
+        "any" -> values.any { it.jsonPrimitive.boolean }
+        "all" -> values.all { it.jsonPrimitive.boolean }
+        else -> error("Wyrażenie $name poza filtrami barier")
+    }

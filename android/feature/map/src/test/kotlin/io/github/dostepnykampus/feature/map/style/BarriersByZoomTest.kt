@@ -46,7 +46,7 @@ class BarriersByZoomTest {
     }
 
     @Test
-    fun showsBarriersOfSelectedBuildingAtAnyZoom() {
+    fun showsSelectedAtAnyZoom() {
         assertEquals(
             listOf("C-13 HINDRANCE", "C-13 ONLY_WITH_HELP", "C-13 BLOCKING", "A-1 BLOCKING"),
             shown(building = "C-13", zoom = 15.0),
@@ -55,7 +55,7 @@ class BarriersByZoomTest {
     }
 
     @Test
-    fun showsEverySeverityFromZoom16WithSelectedBuilding() {
+    fun showsAllSelectedFromZoom16() {
         listOf(16.0, 17.0).forEach { zoom ->
             assertEquals(
                 BARRIERS.map { it.id },
@@ -66,7 +66,8 @@ class BarriersByZoomTest {
     }
 
     private fun shown(building: String?, zoom: Double): List<String> {
-        val filter = selectionLook(data, data.selection(building = building), styleColors()).barriersFilter
+        val selection = data.selection(building = building)
+        val filter = selectionLook(data = data, selection = selection, colors = styleColors()).barriersFilter
         val features = data.barriers.jsonObject.getValue("features").jsonArray
         return features
             .map { it.jsonObject.getValue("properties").jsonObject }

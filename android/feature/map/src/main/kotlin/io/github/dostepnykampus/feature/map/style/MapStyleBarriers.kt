@@ -106,7 +106,7 @@ internal fun barriersByZoom(buildings: List<String>?): JsonElement {
     val blocking = expression("==", property(BARRIER_SEVERITY), JsonPrimitive(Severity.BLOCKING.name))
     val zoomed = expression(">=", expression("zoom"), JsonPrimitive(MINOR_BARRIER_ZOOM))
     val selected = buildings.orEmpty().map { expression("==", property(BARRIER_BUILDING), JsonPrimitive(it)) }
-    return expression("any", blocking, zoomed, *selected.toTypedArray())
+    return JsonArray(listOf(JsonPrimitive("any"), blocking, zoomed) + selected)
 }
 
 /**
