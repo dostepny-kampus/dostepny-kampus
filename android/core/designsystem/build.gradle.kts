@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.geometry)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.unit)
+    implementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.junit4)
     testImplementation(libs.androidx.activity)
     testImplementation(libs.androidx.compose.ui.test)
