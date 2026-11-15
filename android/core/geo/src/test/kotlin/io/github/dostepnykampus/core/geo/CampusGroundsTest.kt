@@ -45,7 +45,23 @@ class CampusGroundsTest {
         assertFalse(PwrGrounds.covers(beyond), "20 m za granicą")
     }
 
+    /**
+     * Na danych PWr: punkt na „Kampusie głównym” ponad 60 m od konturu najbliższego budynku leży na terenie, więc
+     * zgłoszenie szybkie stamtąd jest przyjmowane, a mapa pokazuje kontury budynków jak wszędzie.
+     * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Mapa działa daleko od budynków PWr
+     */
+    @Test
+    fun coversFarFromBuildings() {
+        val catalog = parseBuildingCatalog(File(System.getProperty("dostepnykampus.buildings")).readText())
+        val nearest = catalog.buildings.minOf { it.outline.edgeDistanceMeters(FAR_FROM_BUILDINGS) }
+        assertTrue(nearest >= 60.0, "najbliższy kontur $nearest m od punktu")
+        assertFalse(catalog.buildings.any { it.outline.covers(FAR_FROM_BUILDINGS) }, "punkt poza konturami")
+        assertTrue(PwrAreaBoundaries.getValue("Kampus główny").covers(FAR_FROM_BUILDINGS), "punkt na Kampusie głównym")
+        assertTrue(PwrGrounds.covers(FAR_FROM_BUILDINGS), "punkt na terenie PWr")
+    }
+
     private companion object {
         const val METERS_20 = 20.0 / 111_320.0
+        val FAR_FROM_BUILDINGS = GeoPoint(longitude = 17.05519, latitude = 51.10351)
     }
 }

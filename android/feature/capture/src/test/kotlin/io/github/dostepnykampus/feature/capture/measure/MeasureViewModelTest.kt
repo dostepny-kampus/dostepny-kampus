@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.capture.measure
 
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.geo.PwrGrounds
 import io.github.dostepnykampus.core.location.ElapsedClock
 import io.github.dostepnykampus.core.location.GnssSystem
 import io.github.dostepnykampus.core.location.LocationSwitch
@@ -370,7 +371,7 @@ class MeasureViewModelTest {
         }
 
     /**
-     * 30 m na północ od konturu A-1: podpowiedź A-1 do potwierdzenia, punkt nie leży w konturze.
+     * 30 m na południe od konturu A-1, na terenie PWr: podpowiedź A-1 do potwierdzenia, punkt nie leży w konturze.
      * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od odległości od
      *   konturu
      *
@@ -379,14 +380,14 @@ class MeasureViewModelTest {
     @Test
     fun suggestsBuildingAt30Meters() =
         runTest(dispatcher) {
-            finish(northOfA1(meters = 30.0))
+            finish(southOfA1(meters = 30.0))
             val suggested = place() as PlaceChoice.Suggested
             assertEquals("A-1", suggested.hint.building.symbol)
             assertFalse(suggested.hint.isInside)
         }
 
     /**
-     * Tuż poniżej progu 50 m od konturu A-1: nadal podpowiedź A-1 do potwierdzenia.
+     * Tuż poniżej progu 50 m na południe od konturu A-1, na terenie PWr: nadal podpowiedź A-1 do potwierdzenia.
      * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od odległości od
      *   konturu
      *
@@ -395,14 +396,15 @@ class MeasureViewModelTest {
     @Test
     fun suggestsBuildingAt49Meters() =
         runTest(dispatcher) {
-            finish(northOfA1(meters = 49.0))
+            finish(southOfA1(meters = 49.0))
             val suggested = place() as PlaceChoice.Suggested
             assertEquals("A-1", suggested.hint.building.symbol)
             assertFalse(suggested.hint.isInside)
         }
 
     /**
-     * 60 m od konturu A-1 i dalej od innych budynków: bez podpowiedzi, od razu „poza budynkiem”.
+     * 60 m na południe od konturu A-1, na terenie PWr i dalej od innych budynków: bez podpowiedzi, od razu „poza
+     * budynkiem”.
      * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od odległości od
      *   konturu
      *
@@ -411,12 +413,15 @@ class MeasureViewModelTest {
     @Test
     fun putsPointAt60MetersOutside() =
         runTest(dispatcher) {
-            finish(northOfA1(meters = 60.0))
+            finish(southOfA1(meters = 60.0))
             assertEquals(PlaceChoice.Outside, place())
         }
 
-    private fun northOfA1(meters: Double): GeoPoint =
-        GeoPoint(longitude = A1_POINT.longitude, latitude = A1_NORTH_EDGE + meters / METERS_PER_DEGREE)
+    private fun southOfA1(meters: Double): GeoPoint {
+        val point = GeoPoint(longitude = A1_POINT.longitude, latitude = A1_SOUTH_EDGE - meters / METERS_PER_DEGREE)
+        assertTrue(PwrGrounds.covers(point), "punkt pomiaru $meters m od A-1 na terenie PWr")
+        return point
+    }
 
     private fun TestScope.finish(point: GeoPoint = A1_POINT) {
         watch()
@@ -444,7 +449,7 @@ class MeasureViewModelTest {
         val A1_POINT = GeoPoint(longitude = 17.0605, latitude = 51.1105)
         val MOVED = GeoPoint(longitude = 17.0606, latitude = 51.1106)
         val A1_EDGE_POINT = GeoPoint(longitude = 17.06, latitude = 51.1105)
-        const val A1_NORTH_EDGE = 51.111
+        const val A1_SOUTH_EDGE = 51.11
         const val METERS_PER_DEGREE = 111_195.0
         val CAMPUS =
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
