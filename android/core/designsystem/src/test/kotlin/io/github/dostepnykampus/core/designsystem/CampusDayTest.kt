@@ -23,7 +23,7 @@ class CampusDayTest {
     }
 
     @Test
-    fun countsSummerMomentWithTwoHourOffset() {
+    fun countsSummerMomentWithOffset() {
         assertEquals("1.8.2026", campusDay(Instant.parse("2026-07-31T22:30:00Z")))
     }
 }
