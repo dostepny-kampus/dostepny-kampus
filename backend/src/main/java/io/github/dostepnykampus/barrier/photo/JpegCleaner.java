@@ -38,10 +38,11 @@ public final class JpegCleaner extends JpegRewriter {
      *
      * @param jpeg Plik JPEG z telefonu
      * @return Plik JPEG bez EXIF, XMP, IPTC i komentarzy
-     * @throws IOException Gdy nagłówek nie jest poprawnym JPEG, obraz jest za duży albo
-     *  jego dane są uszkodzone
+     * @throws IOException Gdy nagłówek nie jest poprawnym JPEG, ma ponad 64 segmenty, obraz
+     *  jest za duży albo jego dane są uszkodzone
      */
     public byte[] strip(final byte[] jpeg) throws IOException {
+        new JpegLayout(jpeg).verify();
         final byte[] clean;
         try {
             clean = this.rewrite(jpeg);
