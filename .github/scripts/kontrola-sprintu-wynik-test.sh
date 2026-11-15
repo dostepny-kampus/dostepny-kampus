@@ -5,8 +5,8 @@
 set -euo pipefail
 
 # Test kontrola-sprintu-wynik.sh. Własne `gh` zwraca historię statusów, otwarte issue i nieudane zadania ze zmiennych,
-# a zapis statusu, komentarz, zamknięcie i założenie issue dopisuje do dziennika. Repozytorium ma trzy commity
-# z numerami PR w temacie; OD to pierwszy, SHA ostatni.
+# a zapis statusu, ponowne uruchomienie workflow, komentarz, zamknięcie i założenie issue dopisuje do dziennika.
+# Repozytorium ma trzy commity z numerami PR w temacie; OD to pierwszy, SHA ostatni.
 script="$(cd "$(dirname "$0")" && pwd)/kontrola-sprintu-wynik.sh"
 workdir="$(mktemp -d)"
 trap 'rm -rf "$workdir"' EXIT
@@ -21,6 +21,7 @@ case "$1 $2" in
   'api repos/'*'/jobs'*) printf '%b' "$FAKE_NIEUDANE" ;;
   'issue list') printf '%s' "$FAKE_OTWARTE" ;;
   'issue comment' | 'issue close') echo "$2 $3" >>"$FAKE_LOG" ;;
+  'workflow run') echo "ponowienie $3 $5" >>"$FAKE_LOG" ;;
   'issue create')
     while (($#)); do
       [[ $1 == --milestone ]] && echo "create $2" >>"$FAKE_LOG"
@@ -45,8 +46,8 @@ przypadek() {
   local name="$1" status=0 out ok=1
   : >"$workdir/log"
   : >"$workdir/tresc"
-  out="$(cd "$repo" && GITHUB_REPOSITORY=org/repo GALAZ=sprint/4 SHA="$sha" OD="$od" WYNIK="$2" RUN_ID=5 ADRES=adres \
-    FAKE_HISTORIA="$3" FAKE_OTWARTE="$4" FAKE_NIEUDANE='- `android / emulator`\n' FAKE_LOG="$workdir/log" \
+  out="$(cd "$repo" && GITHUB_REPOSITORY=org/repo GITHUB_REF_NAME=sprint/4 GALAZ=sprint/4 SHA="$sha" OD="$od" \
+    WYNIK="$2" RUN_ID=5 ADRES=adres FAKE_HISTORIA="$3" FAKE_OTWARTE="$4" FAKE_NIEUDANE='- `android / emulator`\n' FAKE_LOG="$workdir/log" \
     FAKE_TRESC="$workdir/tresc" PATH="$workdir/bin:$PATH" bash "$script" 2>&1)" || status=$?
   [[ $status == 0 && $(cat "$workdir/log") == "$(printf '%b' "$5")" ]] || ok=0
   for tekst in "${@:6}"; do
@@ -67,8 +68,10 @@ przypadek() {
 
 przypadek "zielona bez otwartego issue: tylko status" success "" "" "status success"
 przypadek "zielona z otwartym issue: zamknięcie" success "pending\nfailure\n" 7 "status success\nclose 7"
-przypadek "pierwsza porażka: error bez issue" failure "pending\n" "" "status error"
-przypadek "anulowanie liczy się jak porażka" cancelled "pending\n" "" "status error"
+przypadek "pierwsza porażka: error i od razu ponowny przebieg, bez issue" failure "pending\n" "" \
+  "status error\nponowienie kontrola-sprintu.yml sprint/4"
+przypadek "anulowanie liczy się jak porażka" cancelled "pending\n" "" \
+  "status error\nponowienie kontrola-sprintu.yml sprint/4"
 przypadek "druga porażka bez issue: failure i nowe issue z podejrzanymi" failure "pending\nerror\npending\n" "" \
   "status failure\ncreate Sprint 4" "#12" "#13" '!#11' '`android / emulator`' "### Rozwiązanie" "sprint/4"
 przypadek "druga porażka przy otwartym issue: komentarz" failure "pending\nerror\npending\n" 7 \
