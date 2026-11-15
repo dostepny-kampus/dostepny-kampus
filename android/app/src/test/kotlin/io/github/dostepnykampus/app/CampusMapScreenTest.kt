@@ -139,7 +139,7 @@ class CampusMapScreenTest {
         CampusMapView { _: CampusMapData, selection, move, inset, _, onBuildingsTouch, _, _: Modifier ->
             cameras += move.camera
             moves += move
-            insets += inset
+            insets += inset.bottom
             focuses += selection.building
             touch = onBuildingsTouch
         }
