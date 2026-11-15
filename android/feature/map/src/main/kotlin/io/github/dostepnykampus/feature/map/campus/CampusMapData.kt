@@ -9,7 +9,6 @@ import io.github.dostepnykampus.core.geo.PwrAreaBoundaries
 import io.github.dostepnykampus.core.geo.allRings
 import io.github.dostepnykampus.core.geo.campusAreas
 import io.github.dostepnykampus.core.geo.labelPoint
-import io.github.dostepnykampus.core.geo.toGeometry
 import io.github.dostepnykampus.core.geo.toPosition
 import io.github.dostepnykampus.core.model.GeoArea
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -40,7 +39,8 @@ const val START_BUILDING = "A-1"
 /** Właściwość obiektu konturu z jego numerem w [CampusMapData.outlines]; czyta ją dotknięcie mapy. */
 const val OUTLINE_NUMBER = "outline"
 
-private const val LABEL_SEPARATOR = "/"
+/** Znak między symbolami w podpisie konturu wspólnego, np. „C-3/C-4”. */
+internal const val LABEL_SEPARATOR = "/"
 
 private val CAMPUS_MARGIN = 100.meters
 
@@ -48,11 +48,11 @@ private val CAMPUS_MARGIN = 100.meters
  * Dane warstw mapy V1 z katalogu budynków jako kolekcje GeoJSON w elementach JSON dla źródeł mapy, bez sieci.
  * Styl wstawia je do źródeł bez parsowania napisu.
  *
- * Wymagania: US1, US1.4, NFR-10, US1.2, BR-G5, NFR-39, NFR-11, US2.8, US1.1, US1.3
+ * Wymagania: US1, US1.4, NFR-10, US1.2, BR-G5, NFR-39, NFR-11, US2.8, US1.1, US1.3, US16.1
  *
  * @property buildings kontury budynków; obiekt ma właściwość `label`, czyli podpis konturu na mapie, listę
- *   `symbols` i numer `outline` konturu w [outlines]. Kontur wspólny kilku symboli to jeden obiekt z podpisem
- *   „C-3/C-4”
+ *   `symbols`, numer `outline` konturu w [outlines] i `detailed` z [BuildingCatalog.detailed]. Kontur wspólny
+ *   kilku symboli to jeden obiekt z podpisem „C-3/C-4”, szczegółowy, gdy plan pięter ma któryś z jego budynków
  * @property labels podpisy konturów, każdy raz, w kolejności katalogu; widok mapy rysuje z nich obrazy podpisów
  * @property labelPoints punkty podpisów, jeden na kontur, wewnątrz konturu, z właściwością `label`. Podpis przy
  *   konturze dzielonym na kafelki pojawiałby się w każdym kawałku albo w żadnym (reguła 4 wymagań wspólnych)
@@ -176,16 +176,7 @@ data class CampusBounds(val west: Double, val south: Double, val east: Double, v
  */
 fun campusMapData(catalog: BuildingCatalog, boundaries: Map<String, GeoArea> = PwrAreaBoundaries): CampusMapData {
     val outlines = catalog.buildings.groupBy(keySelector = Building::outline, valueTransform = Building::symbol)
-    val buildings =
-        outlines.entries.mapIndexed { number, (outline, symbols) ->
-            val properties =
-                buildJsonObject {
-                    put(key = "label", value = symbols.joinToString(separator = LABEL_SEPARATOR))
-                    put(key = "symbols", element = JsonArray(symbols.map { JsonPrimitive(it) }))
-                    put(key = OUTLINE_NUMBER, value = number)
-                }
-            Feature(outline.toGeometry(), properties)
-        }
+    val buildings = outlineFeatures(outlines = outlines, detailed = catalog.detailed)
     val labelled =
         outlines.map { (outline, symbols) ->
             if (Thread.interrupted()) throw InterruptedException("liczenie geometrii przerwane")

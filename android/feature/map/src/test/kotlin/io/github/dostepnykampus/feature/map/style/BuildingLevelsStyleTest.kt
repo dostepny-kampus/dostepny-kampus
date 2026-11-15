@@ -77,16 +77,15 @@ class BuildingLevelsStyleTest {
 
     @Test
     fun dimsNeighboursOfBothLevels() {
-        val own = """["any",["in","A-2",["get","symbols"]]]"""
-        val style = style(building = "A-2")
-        val fill = style.layer(BUILDINGS_LAYER).paint(BUILDINGS_FILL)
-        val line = style.layer(OUTLINES_LAYER).paint(OUTLINES_COLOR)
+        val state = """["boolean",["feature-state","$DIMMED_STATE"],false]"""
+        val fill = style(building = "A-2").layer(BUILDINGS_LAYER).paint(BUILDINGS_FILL)
         assertEquals(
-            """["case",$own,["case",$level,"#BFE0EC","#DDECF1"],"#D6DBDD"]""",
+            """["case",$state,"#D6DBDD",["case",$level,"#BFE0EC","#DDECF1"]]""",
             fill,
-            "Przy zaznaczonym budynku podstawowym sąsiedzi nie są przygaszeni albo budynki straciły poziom",
+            "Przygaszenie sąsiadów nie obejmuje obu poziomów albo budynki straciły poziom",
         )
-        assertEquals("""["case",$own,"#004E5E","#C2C9CC"]""", line, "Kontury sąsiadów nie są przygaszone")
+        val dimmed = selectionLook(data, data.selection(building = "A-2")).dimmed
+        assertEquals(listOf(true, false), dimmed, "Przy zaznaczonym budynku podstawowym A-1 nie jest przygaszony")
     }
 
     private fun style(building: String? = null): JsonObject =

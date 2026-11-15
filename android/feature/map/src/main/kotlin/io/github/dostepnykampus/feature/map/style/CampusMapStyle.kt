@@ -57,13 +57,21 @@ private const val LABELS = "podpisy"
 internal const val LABELS_SOURCE = LABELS
 internal const val LABEL = "label"
 private const val STYLE_VERSION = 8
-private const val OUTLINE_WIDTH = 1.5
+
+/** Grubość konturu budynku szczegółowego (z planem pięter) w dp: gruby kontur. Wymagania: US16.1, NFR-21 */
+internal const val DETAILED_OUTLINE_DP = 2.4
+
+/** Grubość konturu budynku podstawowego (bez planu pięter) w dp: cienki ciągły kontur. Wymagania: US16.1, NFR-21 */
+internal const val BASIC_OUTLINE_DP = 1.0
+
+private val OUTLINE_WIDTH =
+    byLevel(detailed = JsonPrimitive(DETAILED_OUTLINE_DP), basic = JsonPrimitive(BASIC_OUTLINE_DP))
 
 /**
  * Wygląd stylu mapy: kolory z tokenów `mapa.kolory` jako `#RRGGBB` i rozmiar napisów podkładu.
  *
  * @property land tło lądu (`lad`)
- * @property building wypełnienie budynków PWr (`pwr`)
+ * @property building wypełnienie budynków szczegółowych, z planem pięter (`pwr`)
  * @property buildingOutline kontur budynków PWr (`pwr_kontur`)
  * @property selectedOutline obrys zaznaczonego budynku (`pwr_wybrany`), grubszy niż kontur
  * @property dimmed wypełnienie budynków obok zaznaczonego (`budynek`)
@@ -71,6 +79,8 @@ private const val OUTLINE_WIDTH = 1.5
  * @property plan kolory planu piętra; bez nich plan ma barwy budynków
  * @property basemap kolory podkładu wektorowego; bez nich mapa nie ma podkładu, tylko tło [land]
  * @property labelSize wysokość napisów podkładu w dp mapy, z tokenu `mapa.napisy_sp` i skali czcionki
+ * @property basicBuilding wypełnienie budynków podstawowych, bez planu pięter (`pwr_podstawowy`); bez niego budynki
+ *   obu poziomów mają barwę [building]
  */
 data class MapStyleColors(
     val land: String,
@@ -90,6 +100,7 @@ data class MapStyleColors(
         ),
     val basemap: BasemapColors? = null,
     val labelSize: Double = Typografia.napisyMapy.value.toDouble(),
+    val basicBuilding: String = building,
 )
 
 /**
@@ -162,13 +173,15 @@ private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap
         }
         add(
             styleLayer(id = BUILDINGS_LAYER, type = "fill", source = BUILDINGS_SOURCE) {
-                paint(BUILDINGS_FILL to tone(own = colors.building, dimmed = colors.dimmed))
+                val fill =
+                    byLevel(detailed = JsonPrimitive(colors.building), basic = JsonPrimitive(colors.basicBuilding))
+                paint(BUILDINGS_FILL to tone(own = fill, dimmed = colors.dimmed))
             },
         )
         add(
             styleLayer(id = OUTLINES_LAYER, type = "line", source = BUILDINGS_SOURCE) {
-                val color = tone(own = colors.buildingOutline, dimmed = colors.dimmedOutline)
-                paint(OUTLINES_COLOR to color, "line-width" to JsonPrimitive(OUTLINE_WIDTH))
+                val color = tone(own = JsonPrimitive(colors.buildingOutline), dimmed = colors.dimmedOutline)
+                paint(OUTLINES_COLOR to color, "line-width" to OUTLINE_WIDTH)
             },
         )
         planLayers(colors.plan, look.planFloor).forEach { add(it) }

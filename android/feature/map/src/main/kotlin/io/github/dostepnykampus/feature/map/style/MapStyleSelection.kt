@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map.style
 
 import android.graphics.Bitmap
+import io.github.dostepnykampus.feature.map.campus.BUILDING_DETAILED
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.featureCollection
@@ -33,13 +34,22 @@ internal const val DIMMED_STATE = "przygaszony"
  *
  * Wymagania: US2.8, NFR-56
  */
-internal fun tone(own: String, dimmed: String): JsonElement =
+internal fun tone(own: JsonElement, dimmed: String): JsonElement =
     expression(
         "case",
         expression("boolean", expression("feature-state", JsonPrimitive(DIMMED_STATE)), JsonPrimitive(false)),
         JsonPrimitive(dimmed),
-        JsonPrimitive(own),
+        own,
     )
+
+/**
+ * Wartość pola stylu według poziomu budynku: [detailed] dla budynku szczegółowego (z planem pięter), [basic] dla
+ * podstawowego.
+ *
+ * Wymagania: US16.1, NFR-21
+ */
+internal fun byLevel(detailed: JsonPrimitive, basic: JsonPrimitive): JsonElement =
+    expression("case", expression("==", property(BUILDING_DETAILED), JsonPrimitive(true)), detailed, basic)
 
 /** Warstwa grubszego obrysu `pwr_wybrany` z filtrem [filter] z [SelectionLook.selectedFilter]. Wymagania: US1.1 */
 internal fun selectedLayer(filter: JsonElement, colors: MapStyleColors): JsonObject =
@@ -80,9 +90,10 @@ internal data class SelectionLook(
  * i znaki wejść ma tylko on, przy każdym powiększeniu. Bez zaznaczenia filtry obrysu i bariery niczego nie
  * przepuszczają, filtr wejść przepuszcza wszystkie od powiększenia 17, a źródło wejścia jest puste. Plan
  * [MapSelection.plan] pokazuje wybrane piętro i bariery tego piętra; dane planu idą osobno przez [showPlanData].
- * Bariery widać według [barriersByZoom], a bariery zaznaczonego budynku przy każdym powiększeniu.
+ * Bariery widać według [barriersByZoom], a bariery zaznaczonego budynku przy każdym powiększeniu. Wypełnienie
+ * budynku zależy od jego poziomu, a przygaszenie sąsiadów działa tak samo dla obu poziomów.
  *
- * Wymagania: US1.1, US1.4, US2.8, US2.1, NFR-15, US1.3
+ * Wymagania: US1.1, US1.4, US2.8, US2.1, NFR-15, US1.3, US16.1
  */
 internal fun selectionLook(data: CampusMapData, selection: MapSelection): SelectionLook {
     val chosen = data.outlineOf(selection.building)
