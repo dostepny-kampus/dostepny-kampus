@@ -83,6 +83,36 @@ class MapOverlayNoticeTest {
         compose.onNodeWithText(NOTICE).assertDoesNotExist()
     }
 
+    /**
+     * Wiersz: V1, przy otwartej małej karcie V2 napis o zmianie terenu stoi nad kartą, choć przycisku terenu,
+     * „Legendy” i „ⓘ” nad kartą nie ma.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Wyszukanie budynku z innego terenu zmienia teren
+     *
+     * Wymagania: US1.8, US2.8, NFR-56
+     */
+    @Test
+    fun showsNoticeAboveSmallCard() {
+        compose.setContent { Overlay(hasPanels = false) }
+        compose.onNodeWithText(NOTICE).assertExists()
+        compose.onNodeWithText("Legenda").assertDoesNotExist()
+    }
+
+    /**
+     * Wiersz: V1, TalkBack czyta napis o zmianie terenu raz: po zamknięciu panelu, który go zasłaniał, napis wraca
+     * bez komunikatu stanu.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: TalkBack czyta napis o zmianie terenu raz, po nagłówku karty
+     *
+     * Wymagania: US1.8, NFR-18
+     */
+    @Test
+    fun announcesNoticeOnce() {
+        compose.setContent { Overlay() }
+        compose.onNodeWithText("Legenda").performClick()
+        compose.onNodeWithText(NOTICE).assertDoesNotExist()
+        compose.onNodeWithText("Zamknij").performClick()
+        compose.onNodeWithText(NOTICE).assert(SemanticsMatcher.keyNotDefined(SemanticsProperties.LiveRegion))
+    }
+
     @Test
     fun matchesLightMockup() {
         compose.setContent { Overlay() }
@@ -90,7 +120,7 @@ class MapOverlayNoticeTest {
     }
 
     @Composable
-    private fun Overlay() {
+    private fun Overlay(hasPanels: Boolean = true) {
         DostepnyKampusTheme {
             MapOverlay(
                 camera = MapCamera(center = other.bounds.center, zoom = START_ZOOM),
@@ -100,6 +130,8 @@ class MapOverlayNoticeTest {
                 areas = areas,
                 onAreaShow = {},
                 modifier = Modifier.fillMaxSize().background(Color(color = 0xFFBEE3F2)),
+                hasPanels = hasPanels,
+                hasNotice = true,
                 content = {},
             )
         }

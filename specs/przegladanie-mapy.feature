@@ -299,24 +299,21 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli przesunie mapę przyciskami do granicy terenu
     Wtedy TalkBack raz mówi „Tu kończy się teren Kampus główny. Inny teren wybierzesz przyciskiem «Zmień teren» u góry mapy.”
 
-  # napis przy otwartej małej karcie: #2459
-  @US1.8 @BR-G5 @aplikacja @do-zrobienia
+  @US1.8 @BR-G5 @aplikacja
   Scenariusz: Wyszukanie budynku z innego terenu zmienia teren
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Kampus główny”
     Jeżeli wyszuka „T-15” i wybierze wynik
     Wtedy widzi mapę terenu „Wittigowo” z zaznaczonym budynkiem T-15
     Oraz widzi napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód”
 
-  # napis przy otwartej małej karcie: #2459
-  @US1.8 @NFR-56 @aplikacja @do-zrobienia
+  @US1.8 @NFR-56 @aplikacja
   Scenariusz: TalkBack czyta napis o zmianie terenu raz, po nagłówku karty
     Zakładając, że Gość niezalogowany z włączonym TalkBack ma otwartą mapę kampusu na terenie „Kampus główny”
     Jeżeli wyszuka „T-15” i wybierze wynik
     Wtedy TalkBack czyta nagłówek karty budynku T-15
     Oraz potem raz czyta „Pokazuję teren: Wittigowo · 2 km na południowy wschód”
 
-  # napis przy otwartej małej karcie: #2459
-  @US1.8 @NFR-23 @aplikacja @do-zrobienia
+  @US1.8 @NFR-23 @aplikacja
   Scenariusz: Ruch mapy gasi widoczny napis o zmianie terenu
     Zakładając, że Gość niezalogowany wyszukał „T-15”, wybrał wynik i widzi napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód”
     Jeżeli przesunie mapę gestem

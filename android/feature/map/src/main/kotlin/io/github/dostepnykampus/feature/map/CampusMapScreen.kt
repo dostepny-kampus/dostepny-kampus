@@ -266,7 +266,10 @@ private fun CampusMap(
                 selection = scene.selection.copy(barrier = barrierId, plan = plan),
                 move = move,
                 inset = state.inset,
-                onCameraIdle = { view -> onCamera(view.also { state.keep(it) }) },
+                onCameraIdle = { view ->
+                    areas.acknowledge()
+                    onCamera(view.also { state.keep(it) })
+                },
                 onBuildingsTouch = { state.touch(it, onBuildingClick, onEmptyMapClick).also { barrierId = null } },
                 onBarrierTouch = { barrierId = it.also { state.dismiss() } },
                 modifier = Modifier.fillMaxSize(),
@@ -285,6 +288,7 @@ private fun CampusMap(
                 onAreaShow = state::keep,
                 modifier = Modifier.fillMaxSize().safeDrawingPadding().then(aboveSheet),
                 hasPanels = !state.isCovered && !isKeyboardOpen,
+                hasNotice = !isKeyboardOpen,
                 side = { FloorColumn(plan = plan, onChoose = onFloorChoose) },
             ) {
                 val barrier = ChosenBarrier(id = barrierId, barriers = barriers, onClose = { barrierId = null })
