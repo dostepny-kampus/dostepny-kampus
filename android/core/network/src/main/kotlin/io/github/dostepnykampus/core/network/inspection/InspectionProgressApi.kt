@@ -7,13 +7,14 @@ package io.github.dostepnykampus.core.network.inspection
 
 import io.github.dostepnykampus.core.model.inspection.BuildingProgress
 import io.github.dostepnykampus.core.network.ApiResult
+import io.github.dostepnykampus.core.network.decodedResult
 import io.github.dostepnykampus.core.network.exchange
+import io.github.dostepnykampus.core.network.unexpectedResult
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import java.net.HttpURLConnection.HTTP_NO_CONTENT
 import java.net.HttpURLConnection.HTTP_OK
 
@@ -36,7 +37,7 @@ public class InspectionProgressApi(private val http: OkHttpClient, private val j
     /** Postęp wszystkich budynków z aktywnymi znacznikami do cofnięcia. */
     public suspend fun progress(): ApiResult<List<BuildingProgress>> =
         http.exchange(request(base.newBuilder().addPathSegment(PROGRESS).build(), delete = false)) { code, body ->
-            if (code == HTTP_OK) decoded(code) { json.decodeProgress(body) } else other(code)
+            if (code == HTTP_OK) decodedResult(code) { json.decodeProgress(body) } else unexpectedResult(code)
         }
 
     /**
@@ -47,7 +48,7 @@ public class InspectionProgressApi(private val http: OkHttpClient, private val j
     public suspend fun revoke(markerId: String): ApiResult<Unit> {
         val target = base.newBuilder().addPathSegment(MARKERS).addPathSegment(markerId).build()
         return http.exchange(request(target, delete = true)) { code, _ ->
-            if (code == HTTP_NO_CONTENT) ApiResult.Success(Unit) else other(code)
+            if (code == HTTP_NO_CONTENT) ApiResult.Success(Unit) else unexpectedResult(code)
         }
     }
 
@@ -61,15 +62,5 @@ public class InspectionProgressApi(private val http: OkHttpClient, private val j
         const val MARKERS = "inspection-markers"
         const val ACCEPT = "Accept"
         const val ACCEPTED_TYPES = "application/json, application/problem+json"
-
-        fun <T> decoded(code: Int, decode: () -> T): ApiResult<T> =
-            try {
-                ApiResult.Success(decode())
-            } catch (error: IllegalArgumentException) {
-                ApiResult.ServerError(code = code, cause = error)
-            }
-
-        fun other(code: Int): ApiResult<Nothing> =
-            if (code == HTTP_NOT_FOUND) ApiResult.NotFound else ApiResult.ServerError(code)
     }
 }

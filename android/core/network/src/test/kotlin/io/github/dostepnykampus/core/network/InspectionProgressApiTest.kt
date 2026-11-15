@@ -7,9 +7,6 @@ package io.github.dostepnykampus.core.network
 
 import io.github.dostepnykampus.core.model.inspection.BuildingProgress
 import io.github.dostepnykampus.core.model.inspection.InspectionCoverage
-import io.github.dostepnykampus.core.model.inspection.InspectionMarker
-import io.github.dostepnykampus.core.model.inspection.MarkerPlace
-import io.github.dostepnykampus.core.model.inspection.ProgressMarker
 import io.github.dostepnykampus.core.network.inspection.InspectionProgressApi
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
@@ -21,7 +18,6 @@ import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import java.time.Instant
 
 /**
  * Postęp inwentaryzacji (`GET /progress`) i cofnięcie znacznika (`DELETE /inspection-markers/{markerId}`).
@@ -32,15 +28,6 @@ class InspectionProgressApiTest {
     @Test
     fun us11_1_progress_is_get() {
         val (result, sent) = served(code = 200, body = PROGRESS) { it.progress() }
-        val marker =
-            InspectionMarker(
-                id = MARKER,
-                buildingSymbol = "A-1",
-                place = MarkerPlace.Floor("A-1-2"),
-                createdAt = Instant.parse("2026-11-10T09:30:00Z"),
-                isRevoked = false,
-                isMine = false,
-            )
         val expected =
             BuildingProgress(
                 buildingSymbol = "A-1",
@@ -49,7 +36,7 @@ class InspectionProgressApiTest {
                 acceptedSubmissions = 7,
                 entrancesTotal = 4,
                 entrancesCheckedOnSite = 1,
-                markers = listOf(ProgressMarker(marker = marker, authorPseudonym = "Autor 14")),
+                markers = emptyList(),
             )
         assertEquals(ApiResult.Success(listOf(expected)), result, "postęp budynku szczegółowego")
         assertEquals(listOf("GET", "/progress"), listOf(sent.method, sent.path), "metoda i ścieżka żądania")
@@ -118,11 +105,8 @@ class InspectionProgressApiTest {
     private companion object {
         const val MARKER = "3c2b1a09-8f7e-4d6c-b5a4-918273645546"
         const val PROGRESS =
-            """[
-                {"buildingSymbol":"A-1","detailLevel":"DETAILED","floorsTotal":5,"floorsInspected":3,
-                 "pendingSubmissions":2,"acceptedSubmissions":7,"entrancesTotal":4,"entrancesCheckedOnSite":1,
-                 "markers":[{"id":"$MARKER","buildingSymbol":"A-1","floorId":"A-1-2",
-                  "createdAt":"2026-11-10T09:30:00Z","revoked":false,"mine":false,"authorPseudonym":"Autor 14"}]}
-            ]"""
+            """[{"buildingSymbol":"A-1","detailLevel":"DETAILED","floorsTotal":5,"floorsInspected":3,
+                "pendingSubmissions":2,"acceptedSubmissions":7,"entrancesTotal":4,"entrancesCheckedOnSite":1,
+                "markers":[]}]"""
     }
 }
