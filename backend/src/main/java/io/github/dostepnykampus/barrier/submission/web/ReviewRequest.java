@@ -33,11 +33,6 @@ record ReviewRequest(
 ) {
 
     /**
-     * Największa liczba znaków powodu odrzucenia, równa długości kolumny w bazie.
-     */
-    private static final int REASON_LIMIT = 500;
-
-    /**
      * Przenosi ciało żądania do decyzji domeny; brak wersji, nieznany rodzaj decyzji,
      * odrzucenie bez powodu i powód dłuższy niż 500 znaków kończą się wyjątkiem
      * {@link InvalidSubmission}; tak samo przyjęcie z samym typem bariery albo samą
@@ -58,7 +53,7 @@ record ReviewRequest(
             if (this.rejectionReason == null || this.rejectionReason.isBlank()) {
                 throw new InvalidSubmission("Odrzucenie wymaga powodu w polu rejectionReason");
             }
-            if (this.rejectionReason.length() > ReviewRequest.REASON_LIMIT) {
+            if (this.rejectionReason.length() > 500) {
                 throw new InvalidSubmission("Powód odrzucenia ma najwyżej 500 znaków");
             }
             result = new ReviewDecision.Rejected(
