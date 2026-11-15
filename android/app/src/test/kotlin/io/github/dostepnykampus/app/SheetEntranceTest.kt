@@ -84,7 +84,7 @@ class SheetEntranceTest {
 
     /** Wiersz: systemowe „Usuń animacje” — ruch mapy ma czas 0, więc karta od razu stoi na miejscu. */
     @Test
-    fun showsCardAtOnceWithoutAnimations() {
+    fun showsAtOnceWithoutMotion() {
         val motion = MapMotion()
         val stack = mutableStateListOf<NavKey>(MapRoute())
         show(stack, motion)

@@ -7,6 +7,7 @@ package io.github.dostepnykampus.app
 
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -24,7 +25,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -36,6 +36,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
@@ -53,6 +54,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -62,7 +64,6 @@ import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -80,6 +81,8 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.feature.map.building.CardMode
+import io.github.dostepnykampus.feature.map.camera.MOVE_WAIT_MILLIS
+import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.CoroutineStart
@@ -88,6 +91,7 @@ import kotlinx.coroutines.launch
 private const val SHEET_KEY = "arkusz"
 private const val MAP_KEY = "mapa"
 private const val MATERIAL_DURATION_MEDIUM2_MILLIS = 300
+
 private val MaterialStandardEasing = CubicBezierEasing(a = 0.2f, b = 0f, c = 0f, d = 1f)
 private val MaterialStandardMediumSlide =
     tween<Float>(durationMillis = MATERIAL_DURATION_MEDIUM2_MILLIS, easing = MaterialStandardEasing)
@@ -120,44 +124,51 @@ internal val LocalSheetPadding = compositionLocalOf { SheetLayout() }
  *
  * Wymagania: US2.9, NFR-20, NFR-51
  */
-internal fun CardWindow.sceneStrategies(): List<SceneStrategy<NavKey>> =
-    if (cardMode() == CardMode.Direct) emptyList() else listOf(SheetSceneStrategy)
+internal fun CardWindow.sceneStrategies(sheet: SheetSceneStrategy): List<SceneStrategy<NavKey>> =
+    if (cardMode() == CardMode.Direct) emptyList() else listOf(sheet)
 
 /**
  * Strategia sceny dla V2: wpis z metadanymi arkusza ([metadata]) nad samym V1 rysuje się jako arkusz od dołu nad żywym
- * V1, chyba że V2 otwiera się od razu na pełnym ekranie ([sceneStrategies]); otwarcie i zamknięcie V2 nie zmienia
- * sceny. Przewidywany gest „Wstecz” przesuwa arkusz za palcem, po anulowaniu arkusz wraca, a po zakończeniu pełny ekran
- * zwija się do małej karty, która dojeżdża w dół i raz zamyka V2; „Wstecz” w trakcie dojazdu jest pochłaniane. Ruch ma
- * czas `medium2` i krzywą standardową Material 3. Scena, z której NavDisplay przechodzi do innej, nie odbiera „Wstecz”.
- * Inne układy historii zostawia scenie z jednym ekranem.
+ * V1, chyba że V2 otwiera się od razu na pełnym ekranie ([sceneStrategies]). Przewidywany gest „Wstecz” przesuwa arkusz
+ * za palcem, a po zakończeniu pełny ekran zwija się do małej karty, która dojeżdża w dół i raz zamyka V2. Zamknięty
+ * arkusz wjeżdża w czasie i po krzywej ruchu mapy z [motion], otwarty tylko zmienia treść. Scena, z której NavDisplay
+ * przechodzi do innej, nie odbiera „Wstecz”. Inne układy historii zostawia scenie z jednym ekranem.
  *
- * Wymagania: NFR-15, US3
+ * Wymagania: NFR-15, US3, NFR-56
  */
-internal object SheetSceneStrategy : SceneStrategy<NavKey> {
-    private val sheet: Map<String, Any> = mapOf(SHEET_KEY to true)
-    private val map: Map<String, Any> = mapOf(MAP_KEY to true)
-
-    /** Metadane wpisu [route]: V1 to mapa, V2 arkusz nad V1, chyba że [BuildingRoute.isDirect], inne trasy bez. */
-    fun metadata(route: NavKey): Map<String, Any> =
-        when (route) {
-            is MapRoute -> map
-            is BuildingRoute -> if (route.isDirect) emptyMap() else sheet
-            else -> emptyMap()
-        }
-
+internal class SheetSceneStrategy(private val motion: MapMotion) : SceneStrategy<NavKey> {
     override fun SceneStrategyScope<NavKey>.calculateScene(entries: List<NavEntry<NavKey>>): Scene<NavKey>? {
-        val isMapAlone = entries.size == 1 && MAP_KEY in entries.first().metadata
+        val base = entries.firstOrNull() ?: return null
+        val isMapAlone = entries.size == 1 && MAP_KEY in base.metadata
         val isSheetOverMap = entries.size == 2 && SHEET_KEY in entries.last().metadata
         return when {
-            isMapAlone -> SheetScene(map = entries.first(), sheet = null, onBack = onBack)
-            isSheetOverMap -> SheetScene(map = entries.first(), sheet = entries.last(), onBack = onBack)
+            isMapAlone -> SheetScene(map = base, sheet = null, motion = motion, onBack = onBack)
+            isSheetOverMap -> SheetScene(map = base, sheet = entries.last(), motion = motion, onBack = onBack)
             else -> null
         }
     }
+
+    /** Metadane wpisów sceny. */
+    companion object {
+        private val sheet: Map<String, Any> = mapOf(SHEET_KEY to true)
+        private val map: Map<String, Any> = mapOf(MAP_KEY to true)
+
+        /** Metadane wpisu [route]: V1 to mapa, V2 arkusz nad V1, chyba że [BuildingRoute.isDirect], inne trasy bez. */
+        fun metadata(route: NavKey): Map<String, Any> =
+            when (route) {
+                is MapRoute -> map
+                is BuildingRoute -> if (route.isDirect) emptyMap() else sheet
+                else -> emptyMap()
+            }
+    }
 }
 
-private data class SheetScene(val map: NavEntry<NavKey>, val sheet: NavEntry<NavKey>?, val onBack: () -> Unit) :
-    Scene<NavKey> {
+private data class SheetScene(
+    val map: NavEntry<NavKey>,
+    val sheet: NavEntry<NavKey>?,
+    val motion: MapMotion,
+    val onBack: () -> Unit,
+) : Scene<NavKey> {
     override val key: Any = map.contentKey
     override val entries: List<NavEntry<NavKey>> = listOfNotNull(map, sheet)
     override val previousEntries: List<NavEntry<NavKey>> = if (sheet == null) emptyList() else listOf(map)
@@ -166,6 +177,7 @@ private data class SheetScene(val map: NavEntry<NavKey>, val sheet: NavEntry<Nav
         val shift = remember(sheet?.contentKey) { Animatable(0f) }
         var isClosing by remember(sheet?.contentKey) { mutableStateOf(false) }
         var height by remember(sheet?.contentKey) { mutableStateOf(0.dp) }
+        val hidden = rememberSheetEntrance(sheet = sheet?.contentKey, motion = motion)
         val density = LocalDensity.current
         val scope = rememberCoroutineScope()
         Box(modifier = Modifier.fillMaxSize()) {
@@ -197,7 +209,13 @@ private data class SheetScene(val map: NavEntry<NavKey>, val sheet: NavEntry<Nav
                         Modifier
                             .align(Alignment.BottomCenter)
                             .onSizeChanged { height = with(density) { it.height.toDp() } }
-                            .offset { IntOffset(x = 0, y = sheetBackOffset(shift.value, height).roundToPx()) },
+                            .layout { measurable, constraints ->
+                                val placeable = measurable.measure(constraints)
+                                layout(width = placeable.width, height = placeable.height) {
+                                    val down = sheetBackOffset(shift.value + hidden.value, placeable.height.toDp())
+                                    placeable.place(x = 0, y = down.roundToPx())
+                                }
+                            },
                 ) {
                     val layout = SheetLayout(isExpanded = state.isExpanded)
                     CompositionLocalProvider(LocalSheetPadding provides layout) { sheet.Content() }
@@ -205,6 +223,27 @@ private data class SheetScene(val map: NavEntry<NavKey>, val sheet: NavEntry<Nav
             }
         }
     }
+}
+
+/**
+ * Część wysokości arkusza [sheet] schowana pod dolną krawędzią: zamknięty arkusz zaczyna schowany i wjeżdża w czasie
+ * następnego ruchu mapy z [motion], po krzywej [MapMotion.Easing]; czas ma już skalę animacji systemu. Bez ruchu mapy
+ * w ciągu [MOVE_WAIT_MILLIS] wjeżdża w czasie `medium2`. Arkusz otwarty, który tylko zmienia treść, nie wjeżdża.
+ *
+ * Wymagania: NFR-56, US2.8
+ */
+@Composable
+internal fun rememberSheetEntrance(sheet: Any?, motion: MapMotion): Animatable<Float, AnimationVector1D> {
+    val wasShown = remember { mutableStateOf(false) }
+    val hidden = remember(sheet) { Animatable(if (sheet != null && !wasShown.value) 1f else 0f) }
+    val after = remember(sheet) { motion.moves }
+    SideEffect { wasShown.value = sheet != null }
+    LaunchedEffect(hidden) {
+        if (hidden.value != 0f) {
+            motion.slide(value = hidden, target = 0f, after = after, fallback = MaterialStandardMediumSlide)
+        }
+    }
+    return hidden
 }
 
 /**
