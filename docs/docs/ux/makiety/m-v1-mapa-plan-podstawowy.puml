@@ -1,0 +1,17 @@
+@startsalt
+' V1 Mapa kampusu, przybliżony budynek podstawowy (US16.2, BR-G1): zdanie o braku planu, bez kolumny pięter.
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_startowy("Mapa kampusu")
+$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$przelacznik("Mapa", "Lista budynków", 1)
+$przycisk("Kampus główny ▾")
+$przycisk("Legenda")
+$ramka()
+Nie mamy planu pięter tego budynku.
+}
+$mapa("kontur C-13 z symbolem na środku mapy przy powiększeniu 17, bez planu; sąsiednie budynki przygaszone", "", "info")
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

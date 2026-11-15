@@ -121,7 +121,7 @@ Czynność główna: „Pokaż opis budynku”, która otwiera V2.
 | Element | AC/BR/NFR |
 | --- | --- |
 | W polu „A-1 329”: symbol budynku i numer sali | decyzja 44 |
-| Wybór piętra z etykietami z danych PWr jako zastępnikami; zaznaczone piętro sali | US16.1, NFR-21 |
+| Kolumna pięter po prawej na górze mapy, bo arkusz zajmuje dół; wybrane piętro sali | US16.1, NFR-21 |
 | Plan piętra z wyróżnioną salą i krótkimi podpisami; pod mapą „Źródło: Politechnika Wrocławska” | US16.1, NFR-40 |
 | Nagłówek arkusza „A-1: Sala 329”, funkcja sali jako zastępnik i piętro z danych PWr | decyzja 44, NFR-40 |
 | Kroki tekstem od wejścia zalecanego, bez linii trasy | BR-25, decyzja 44, decyzja 48 |
@@ -133,6 +133,65 @@ Czynność główna: „Pokaż opis budynku”, która otwiera V2.
 | Plan piętra | po „Pokaż na planie” na V2: plan bez arkusza sali |
 | Sala bez drogi | w arkuszu zamiast kroków komunikat „Nie znaleźliśmy w danych wejścia i windy…” (BR-25) |
 | Brak sali | komunikat „Nie znaleźliśmy sali »X« w budynku A-1…” z przyciskiem „Pokaż opis budynku” |
+
+### V1: plan piętra
+
+![Makieta V1 po przybliżeniu budynku szczegółowego: plan parteru A-1 w kolorach grup z numerami sal, przygaszone sąsiednie budynki, przyciski mapy, kolumna pięter z napisem Piętro i wybranym parterem w kółku, podpis źródła](../../_generated/m-v1-mapa-plan.svg)
+
+Czynność główna: wybór piętra w kolumnie pięter.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| Plan pojawia się sam przy powiększeniu co najmniej 17 dla budynku szczegółowego na środku mapy; inne budynki przygaszone z podpisami | US16.1, NFR-11 |
+| Na start piętro wejścia zalecanego; gdy dane go nie podają, parter | US16.1, BR-25 |
+| Kolumna pięter pod przyciskami mapy: „Piętro”, najwyższe u góry, wybrane w kółku, numery zamiast etykiet; TalkBack czyta pełną etykietę | US16.1, NFR-17, NFR-18, NFR-21 |
+| Pod mapą „Źródło: Politechnika Wrocławska” | NFR-40 |
+
+### V1: budynek bez planu
+
+![Makieta V1 po przybliżeniu budynku podstawowego C-13: nad mapą zdanie Nie mamy planu pięter tego budynku, mapa z konturem C-13 bez planu i bez kolumny pięter](../../_generated/m-v1-mapa-plan-podstawowy.svg)
+
+Czynność główna: brak; zdanie mówi, dlaczego planu nie widać.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| Nad mapą „Nie mamy planu pięter tego budynku.” przy powiększeniu co najmniej 17 | US16.2, BR-G1 |
+| Bez kolumny pięter i bez podpisu źródła planu | US16.2 |
+
+### V1: winda na planie
+
+![Makieta V1 po dotknięciu windy na planie 2 piętra A-1: arkusz z nagłówkiem Winda i przyciskiem Zamknij, klatkami C i D oraz piętrami, na które jedzie winda, z dopiskiem tutaj jesteś przy 2 piętrze](../../_generated/m-v1-mapa-plan-winda.svg)
+
+Czynność główna: przeczytanie, na które piętra jedzie winda.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| Dotknięcie windy na planie otwiera arkusz „Winda” z klatkami, przy których stoi | US16.1, US18.2 |
+| „Jedzie na: …” z piętrami windy; przy bieżącym piętrze „(tutaj jesteś)” | US16.1, US18.2, NFR-18 |
+| „Zamknij” w nagłówku; przy dużej czcionce arkusz na cały ekran | NFR-53, NFR-20 |
+
+### V1: legenda przy planie
+
+![Makieta V1 z otwartą legendą nad planem: nagłówek Legenda z Zamknij, znaki wejść i bariery, kolory sali, korytarza i klatki schodowej, znaki windy i toalety dostosowanej, znak zgłoszenia bez piętra, podpis źródła i Przewiń w dół](../../_generated/m-v1-mapa-plan-legenda.svg)
+
+Czynność główna: odczytanie znaków planu.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| Znaki mapy z napisami, jak bez planu | US1.4, NFR-21 |
+| Gdy widać plan: sala, korytarz, klatka schodowa, winda, toaleta dostosowana i „?” zgłoszenia bez piętra | US1.4, US16.1, NFR-21 |
+| Na końcu „Źródło: Politechnika Wrocławska”, a gdy treść się nie mieści, „Przewiń w dół ↓” | NFR-40, NFR-20 |
+
+### V1: bariery na planie
+
+![Makieta V1 z planem 1 piętra A-1: znak bariery Tylko z pomocą przy toalecie na swoim piętrze i znak bariery ze znakiem zapytania przy klatce B, bo zgłoszenie nie ma piętra](../../_generated/m-v1-mapa-plan-bariery.svg)
+
+Czynność główna: dotknięcie znaku bariery, jak bez planu.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| Zgłoszenie przyjęte z piętrem stoi tylko na swoim piętrze | US16.1, BR-14 |
+| Zgłoszenie bez piętra stoi na każdym piętrze ze znakiem „?”, a TalkBack czyta „piętro nieznane” | US16.1, BR-14, NFR-18 |
 
 ### V1: bariera na mapie
 
