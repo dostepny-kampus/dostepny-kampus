@@ -55,7 +55,10 @@ sealed interface ProgressUiState {
  */
 @HiltViewModel
 class ProgressViewModel
-    internal constructor(private val progress: InspectionProgress, private val clock: Clock) : ViewModel() {
+    internal constructor(
+        private val progress: InspectionProgress,
+        private val clock: Clock,
+    ) : ViewModel() {
         private val current = MutableStateFlow<ProgressUiState>(ProgressUiState.Loading)
 
         /** Stan listy; zmienia się tylko po otwarciu i po [refresh]. */
@@ -71,7 +74,7 @@ class ProgressViewModel
         /** „Odśwież” i „Spróbuj ponownie”: czyta postęp od nowa; w trakcie odczytu nie startuje drugiego. */
         fun refresh() {
             val shown = current.value
-            val isBusy = shown == ProgressUiState.Loading || shown is ProgressUiState.Ready && shown.isRefreshing
+            val isBusy = shown == ProgressUiState.Loading || (shown is ProgressUiState.Ready && shown.isRefreshing)
             if (!isBusy) {
                 current.value = (shown as? ProgressUiState.Ready)?.copy(isRefreshing = true) ?: ProgressUiState.Loading
                 load()
