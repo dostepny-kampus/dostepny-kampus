@@ -7,7 +7,6 @@ package io.github.dostepnykampus.barrier.submission.web;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.dostepnykampus.barrier.submission.ReviewDecision;
-import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
@@ -46,16 +45,13 @@ record ReviewRequest(
         }
         final ReviewDecision result;
         if ("ACCEPT".equals(this.decision)) {
-            result = new ReviewDecision(
-                path, this.version, reviewer, SubmissionStatus.ACCEPTED, ""
-            );
+            result = new ReviewDecision.Accepted(path, this.version, reviewer);
         } else if ("REJECT".equals(this.decision)) {
             if (this.rejectionReason == null || this.rejectionReason.isBlank()) {
                 throw new InvalidSubmission("Odrzucenie wymaga powodu w polu rejectionReason");
             }
-            result = new ReviewDecision(
-                path, this.version, reviewer, SubmissionStatus.REJECTED,
-                this.rejectionReason
+            result = new ReviewDecision.Rejected(
+                path, this.version, reviewer, this.rejectionReason
             );
         } else {
             throw new InvalidSubmission("Pole decision przyjmuje ACCEPT albo REJECT");
