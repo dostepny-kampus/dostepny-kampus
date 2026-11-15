@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 /**
  * Odpowiedzi {@code application/problem+json} (RFC 9457) dla wyjątków obsługi żądania:
  * {@link InvalidInput} 400, {@link MissingLogin} 401, {@link ForbiddenChange} 403
- * i {@link MissingResource} 404 z opisem wyjątku w {@code detail}; {@link ConflictingState}
- * 409 też z bieżącym stanem we właściwości {@link ConflictingState#property()}. Inny wyjątek
- * daje 500 bez nazwy klasy i komunikatu. {@code ResponseStatusException}
+ * i {@link MissingResource} 404, {@link TooLargeBody} 413 z opisem wyjątku w {@code detail};
+ * {@link ConflictingState} 409 też z bieżącym stanem we właściwości
+ * {@link ConflictingState#property()}. Inny wyjątek daje 500 bez nazwy klasy i komunikatu. {@code ResponseStatusException}
  * i {@code ErrorResponseException} obsługuje wcześniej Spring Boot.
  *
  * @since 0.1.0
@@ -56,6 +56,12 @@ public final class ProblemResponses {
     ProblemDetail missing(final MissingResource error) {
         this.log.debug("Brak zasobu: {}", error.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, error.getMessage());
+    }
+
+    @ExceptionHandler
+    ProblemDetail tooLarge(final TooLargeBody error) {
+        this.log.debug("Za duże ciało żądania: {}", error.getMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONTENT_TOO_LARGE, error.getMessage());
     }
 
     @ExceptionHandler
