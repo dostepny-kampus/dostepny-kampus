@@ -50,9 +50,9 @@ jobs:
       contents: read
       issues: write
     steps:
+      # Pełna kopia gałęzi domyślnej: nadrzędne wskazane w kodzie zostaje otwarte.
       - uses: actions/checkout@v7.0.1
         with:
-          sparse-checkout: .github/scripts
           persist-credentials: false
       - name: Zamknij issue nadrzędne, gdy to było ostatnie otwarte sub-issue
         env:
