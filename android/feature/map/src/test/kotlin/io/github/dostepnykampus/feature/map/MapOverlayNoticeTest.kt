@@ -84,8 +84,8 @@ class MapOverlayNoticeTest {
     }
 
     /**
-     * Wiersz: V1, przy otwartej małej karcie V2 napis o zmianie terenu stoi nad kartą, choć przycisku terenu,
-     * „Legendy” i „ⓘ” nad kartą nie ma.
+     * Wiersz: V1, przy otwartej małej karcie V2 napis o zmianie terenu stoi nad kartą, choć przycisku terenu
+     * i „ⓘ” nad kartą nie ma.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Wyszukanie budynku z innego terenu zmienia teren
      *
      * Wymagania: US1.8, US2.8, NFR-56
@@ -94,7 +94,7 @@ class MapOverlayNoticeTest {
     fun showsNoticeAboveSmallCard() {
         compose.setContent { Overlay(hasPanels = false) }
         compose.onNodeWithText(NOTICE).assertExists()
-        compose.onNodeWithText("Legenda").assertDoesNotExist()
+        compose.onNodeWithContentDescription("Legenda i źródła mapy").assertDoesNotExist()
     }
 
     /**
@@ -107,7 +107,7 @@ class MapOverlayNoticeTest {
     @Test
     fun announcesNoticeOnce() {
         compose.setContent { Overlay() }
-        compose.onNodeWithText("Legenda").performClick()
+        compose.onNodeWithContentDescription("Legenda i źródła mapy").performClick()
         compose.onNodeWithText(NOTICE).assertDoesNotExist()
         compose.onNodeWithText("Zamknij").performClick()
         compose.onNodeWithText(NOTICE).assert(SemanticsMatcher.keyNotDefined(SemanticsProperties.LiveRegion))

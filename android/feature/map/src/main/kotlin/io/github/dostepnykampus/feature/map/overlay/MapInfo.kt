@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -50,11 +51,10 @@ internal fun BuildingCatalog.dataDay(): LocalDate? {
 }
 
 /**
- * Przycisk „ⓘ” mapy V1 według makiety hi-fi: koło w prawym dolnym rogu mapy, a nad nim, gdy [isOpen], panel
- * „Źródła danych” z licencją i źródłami. Cel dotyku 48 dp, nazwę „Informacje o mapie” czyta
- * TalkBack.
+ * Przycisk „ⓘ” mapy V1, a nad nim, gdy [isOpen], arkusz legendy: znaki mapy, a po nich źródła danych z dniem
+ * stanu danych PWr.
  *
- * Wymagania: NFR-37, NFR-40, NFR-17, NFR-18
+ * Wymagania: US1.4, NFR-21, NFR-37, NFR-40, NFR-17, NFR-18
  *
  * @param isOpen czy panel jest otwarty
  * @param dataDay dzień stanu danych PWr albo `null`, gdy dane go nie podają
@@ -88,27 +88,39 @@ private fun InfoPanel(dataDay: LocalDate?, onClose: () -> Unit, modifier: Modifi
         shadowElevation = Wysokosci.kontrolkiMapy,
         border = mapControlBorder(),
     ) {
-        val inner = Modifier.verticalScroll(rememberScrollState()).padding(Odstepy.m)
-        Column(inner, verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        val scroll = rememberScrollState()
+        Column {
             InfoHeader(onClose)
-            StreetSource()
-            val day = dataDay?.let { campusDay(it) }
-            val campus =
-                if (day == null) {
-                    stringResource(R.string.mapa_zrodla_pwr)
-                } else {
-                    stringResource(R.string.mapa_zrodla_pwr_stan, day)
-                }
-            Text(text = campus, style = MaterialTheme.typography.bodyLarge)
+            HorizontalDivider()
+            val inner = Modifier.weight(weight = 1f, fill = false).verticalScroll(scroll).padding(Odstepy.m)
+            Column(inner, verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+                LegendSigns()
+                HorizontalDivider()
+                Text(
+                    text = stringResource(R.string.mapa_zrodla),
+                    modifier = Modifier.semantics { heading() },
+                    style = MaterialTheme.typography.titleSmall,
+                )
+                StreetSource()
+                val day = dataDay?.let { campusDay(it) }
+                val campus =
+                    if (day == null) {
+                        stringResource(R.string.mapa_zrodla_pwr)
+                    } else {
+                        stringResource(R.string.mapa_zrodla_pwr_stan, day)
+                    }
+                Text(text = campus, style = MaterialTheme.typography.bodyLarge)
+            }
+            if (scroll.canScrollForward) ScrollHint()
         }
     }
 }
 
 @Composable
 private fun InfoHeader(onClose: () -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.padding(start = Odstepy.m, end = Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text = stringResource(R.string.mapa_zrodla),
+            text = stringResource(R.string.mapa_legenda),
             modifier = Modifier.weight(1f).semantics { heading() },
             style = MaterialTheme.typography.titleMedium,
         )
