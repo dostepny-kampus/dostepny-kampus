@@ -59,11 +59,11 @@ internal fun FloorsGroup(facts: FloorFacts?) {
     GroupContainer(title = stringResource(R.string.karta_pietra)) {
         if (facts == null) {
             Text(text = stringResource(R.string.karta_bez_planu), style = MaterialTheme.typography.bodyLarge)
-            return@GroupContainer
-        }
-        facts.floors.forEachIndexed { index, described ->
-            if (index > 0) HorizontalDivider()
-            FloorRow(described)
+        } else {
+            facts.floors.forEachIndexed { index, described ->
+                if (index > 0) HorizontalDivider()
+                FloorRow(described)
+            }
         }
     }
 }
