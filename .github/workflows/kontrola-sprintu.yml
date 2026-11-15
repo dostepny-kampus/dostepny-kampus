@@ -1,10 +1,11 @@
 name: kontrola-sprintu
 
-# Ciężka część kontroli Androida (APK, emulatory, pełny test systemowy, buildHealth) dla głowy bieżącej gałęzi
-# sprintu, po scaleniu, a nie w kolejce. Startuje po każdym wypchnięciu na sprint/*; harmonogram GitHub bywa
-# opóźniony o godziny albo pomijany, więc zostaje tylko jako zapas. Gałąź do sprawdzenia wybiera skrypt. Wynik to
-# status `kontrola-sprintu` na sprawdzonym commicie. Naraz biegnie jeden przebieg i czeka najwyżej jeden: przebieg
-# kończy się na swoim commicie, a nowsze wypchnięcie zastępuje czekający, więc następny bierze najnowszą głowę.
+# Ciężka część kontroli Androida (APK, emulatory, pełny test systemowy, buildHealth) i testy mutacyjne PIT serwera
+# dla głowy bieżącej gałęzi sprintu, po scaleniu, a nie w kolejce. Startuje po każdym wypchnięciu na sprint/*;
+# harmonogram GitHub bywa opóźniony o godziny albo pomijany, więc zostaje tylko jako zapas. Gałąź do sprawdzenia
+# wybiera skrypt. Wynik to status `kontrola-sprintu` na sprawdzonym commicie. Naraz biegnie jeden przebieg i czeka
+# najwyżej jeden: przebieg kończy się na swoim commicie, a nowsze wypchnięcie zastępuje czekający, więc następny
+# bierze najnowszą głowę.
 on:
   push:
     branches:
@@ -63,9 +64,20 @@ jobs:
     with:
       sha: ${{ needs.cel.outputs.sha }}
 
+  serwer:
+    needs: cel
+    if: ${{ !cancelled() && (needs.cel.result != 'success' || !cancelled() && (needs.cel.outputs.jest == 'true')) }}
+    # Jak przy Androidzie: uprawnienia muszą pokryć każde zadanie backend.yml, także pominięte (`zmiany`).
+    permissions:
+      actions: read
+      contents: read
+    uses: ./.github/workflows/backend.yml
+    with:
+      sha: ${{ needs.cel.outputs.sha }}
+
   wynik:
-    needs: [cel, android]
-    # always(): status trzeba zapisać także po porażce albo anulowaniu przebiegu Androida.
+    needs: [cel, android, serwer]
+    # always(): status trzeba zapisać także po porażce albo anulowaniu przebiegu Androida albo PIT serwera.
     if: ${{ always() && needs.cel.outputs.jest == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -85,7 +97,9 @@ jobs:
           GALAZ: ${{ needs.cel.outputs.galaz }}
           SHA: ${{ needs.cel.outputs.sha }}
           OD: ${{ needs.cel.outputs.od }}
-          WYNIK: ${{ needs.android.result }}
+          WYNIK: >-
+            ${{ needs.android.result == 'success' && needs.serwer.result == 'success' && 'success'
+            || format('android {0}, serwer {1}', needs.android.result, needs.serwer.result) }}
           RUN_ID: ${{ github.run_id }}
           ADRES: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         shell: bash
