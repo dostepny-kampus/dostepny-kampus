@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -27,6 +28,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -42,6 +44,7 @@ import tools.jackson.databind.json.JsonMapper;
  *
  * @since 0.1.0
  */
+@EnableConfigurationProperties(RateLimitSettings.class)
 @Configuration(proxyBeanMethods = false)
 public final class ApiSecurity {
 
@@ -56,18 +59,22 @@ public final class ApiSecurity {
      *
      * @param http Budowa zabezpieczeń żądań
      * @param mapper Zapis odpowiedzi odmowy
+     * @param limit Limit żądań bez logowania
      * @return Zbudowany łańcuch dla wszystkich żądań
      * @throws Exception Gdy konfiguracji nie da się zbudować
      */
     @Bean
     static SecurityFilterChain api(
-        final HttpSecurity http, final JsonMapper mapper
+        final HttpSecurity http, final JsonMapper mapper, final RateLimitSettings limit
     ) throws Exception {
         final JwtAuthenticationConverter roles = new JwtAuthenticationConverter();
         roles.setJwtGrantedAuthoritiesConverter(ApiSecurity::authorities);
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(
             sessions -> sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        );
+        http.addFilterBefore(
+            new PublicRateLimit(limit, mapper), BearerTokenAuthenticationFilter.class
         );
         http.authorizeHttpRequests(ApiSecurity::rules);
         http.oauth2ResourceServer(
