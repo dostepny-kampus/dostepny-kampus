@@ -352,8 +352,8 @@ object MapLibreMapView : CampusMapView {
 
 /**
  * Ustawienia widoku mapy V1: bez logo i podpisu biblioteki, bez gestu obrotu i pochylenia. Północ jest zawsze
- * u góry, bo tak liczą strzałki przesuwania, granica terenu i przycisk sąsiedniego terenu, a [MapCamera] nie zna
- * obrotu. Przesuwanie i powiększanie gestem zostają.
+ * u góry, bo tak liczą strzałki przesuwania i granica terenu, a [MapCamera] nie zna obrotu. Przesuwanie
+ * i powiększanie gestem zostają.
  */
 internal fun northUpOptions(context: Context): MapLibreMapOptions =
     MapLibreMapOptions

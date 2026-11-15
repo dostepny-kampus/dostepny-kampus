@@ -5,13 +5,16 @@
  */
 package io.github.dostepnykampus.feature.map.camera
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
+import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
@@ -63,6 +66,14 @@ internal fun Density.mapLimits(bounds: CampusBounds?, size: IntSize): MapLimits?
         MapLimits(area, widthDp = width.toDouble(), heightDp = height.toDouble())
     }
 
+/**
+ * Kolory stylu mapy z palety mapy motywu; poza granicą terenu na mapę pada `background` motywu z kryciem
+ * `mapa.krycie.teren_poza`.
+ *
+ * Wymagania: NFR-16, BR-G5
+ */
+@Composable
+@ReadOnlyComposable
 internal fun MapColors.styleColors(): MapStyleColors =
     MapStyleColors(
         land = lad.hex(),
@@ -70,7 +81,10 @@ internal fun MapColors.styleColors(): MapStyleColors =
         buildingOutline = pwrKontur.hex(),
         selectedOutline = pwrWybrany.hex(),
         isNight = lad.luminance() < NIGHT_LAND_LUMINANCE,
-        ink = tusz.hex(),
+        edge = granicaTerenu.hex(),
+        edgeHalo = granicaTerenuObwodka.hex(),
+        outside = MaterialTheme.colorScheme.background.hex(),
+        outsideOpacity = DostepnyKampusTheme.mapOpacity.terenPoza.toString().toDouble(),
         dimmed = budynek.hex(),
         dimmedOutline = budynekKontur.hex(),
         plan =
