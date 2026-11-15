@@ -54,8 +54,13 @@ f004773a4efe3d62cae0f41e6f12ca61b8f290b54e78288f16eb0b9508e2e3c5  ux/makiety/m-v
 af787b0bba01afd83f5e71988d44e810c822eefcd5d229ef5a502d537b090a58  ux/makiety/m-v1-mapa-brak-sieci.puml
 10d7dcc8a887fd89c5b844566e7c886efc95f2653563164695803067e851564b  ux/makiety/m-v1-mapa-lista.puml
 f463e5add2d95b30048051e85fbfc918f13a0525dcd14a54b18bd854f6cf51e7  ux/makiety/m-v1-mapa-pierwsze-otwarcie.puml
+6575ba0069b104f4704edde21d0ce942e7324f926aa305c094098ce17a2821ce  ux/makiety/m-v1-mapa-plan-bariery.puml
+243801e64a1a76c3975a679b72c53191f411df7d3482f7a18e91ab4c1181847f  ux/makiety/m-v1-mapa-plan-legenda.puml
+9528a12831971627b77c4b93bfa574fbe535e1730468344081a597fec1ba64ee  ux/makiety/m-v1-mapa-plan-podstawowy.puml
+c363172fffd1f87e2cee68d1c7d164b7e8ec3abece67a8de8271fc6f1c0e152d  ux/makiety/m-v1-mapa-plan-winda.puml
+cd1aaa01bfe61eabaa327eeb4eee9ed5d7055818b98d6ed8df193fc421d4ab89  ux/makiety/m-v1-mapa-plan.puml
 1c61c1dc4d5cdc6506b128b30a0f9d975d7991454d2a73860f409ae323605ef5  ux/makiety/m-v1-mapa-pusty.puml
-8d4da5544b0825778c93c2e3b583fc9061cff3e8d10d30b6d130466bec8cef43  ux/makiety/m-v1-mapa-sala.puml
+82e4e0cd79f7cdf5313df4bcf6ccd30ffa094e00f9256080246ce21771ad1184  ux/makiety/m-v1-mapa-sala.puml
 24d8a46c248754961b8a87e6839f80e680b722a3d9ea09f5c7d0c6854cbb9a94  ux/makiety/m-v1-mapa-teren-granica.puml
 4955489a61f6668b32df5ec7b60441c0c2d1b8ddf65d19db745458016ffa5b22  ux/makiety/m-v1-mapa-teren-panel.puml
 85c9569400058edbcfb8f79f7ba91a72bde86f8401f2c8a73f29592e03edb57f  ux/makiety/m-v1-mapa-teren-wynik.puml

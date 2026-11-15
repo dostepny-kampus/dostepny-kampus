@@ -1,0 +1,29 @@
+@startsalt
+' V1 Mapa kampusu, legenda przy widocznym planie (US1.4, NFR-21): znaki mapy i pozycje planu z napisami.
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_startowy("Mapa kampusu")
+$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$przelacznik("Mapa", "Lista budynków", 1)
+$przycisk("Kampus główny ▾")
+$przycisk("Legenda")
+$ramka()
+{ <b>Legenda</b> | [Zamknij] }
+$dostepne() wejście
+$niedostepne() wejście
+$brak_danych() wejście
+$blokada() bariera z uciążliwością
+<i>[kolor]</i> sala
+<i>[kolor]</i> korytarz
+<i>[kolor]</i> klatka schodowa
+<i>[znak]</i> winda
+<i>[znak]</i> toaleta dostosowana
+(?) zgłoszenie bez piętra
+Źródło: Politechnika Wrocławska
+Przewiń w dół ↓
+}
+$mapa("plan parteru A-1 pod legendą", "", "info")
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt
