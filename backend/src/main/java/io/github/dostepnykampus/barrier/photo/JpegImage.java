@@ -27,11 +27,6 @@ import javax.imageio.stream.ImageInputStream;
 final class JpegImage {
 
     /**
-     * Największa szerokość i wysokość obrazu w pikselach.
-     */
-    private static final int MAX_SIDE = 4096;
-
-    /**
      * Krok próbkowania przy dekodowaniu.
      */
     private static final int STEP = 16;
@@ -53,13 +48,15 @@ final class JpegImage {
      */
     void verify() throws IOException {
         final ImageReader reader = ImageIO.getImageReadersByFormatName("jpeg").next();
-        try (ImageInputStream input = ImageIO.createImageInputStream(
-            new ByteArrayInputStream(this.jpeg)
-        )) {
+        try (
+            ImageInputStream input = ImageIO.createImageInputStream(
+                new ByteArrayInputStream(this.jpeg)
+            )
+        ) {
             final List<String> warnings = new ArrayList<>(1);
             reader.setInput(input, true, true);
             reader.addIIOReadWarningListener((source, warning) -> warnings.add(warning));
-            if (Math.max(reader.getWidth(0), reader.getHeight(0)) > JpegImage.MAX_SIDE) {
+            if (Math.max(reader.getWidth(0), reader.getHeight(0)) > 4096) {
                 throw new IOException("Obraz większy niż 4096 × 4096 pikseli");
             }
             final ImageReadParam sampled = reader.getDefaultReadParam();

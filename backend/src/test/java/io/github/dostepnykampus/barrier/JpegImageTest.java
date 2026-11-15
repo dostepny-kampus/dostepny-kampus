@@ -36,8 +36,7 @@ final class JpegImageTest {
     @Test
     void rejectsForeignImageData() throws IOException {
         final byte[] jpeg = JpegImageTest.image();
-        final int start = JpegImageTest.scan(jpeg);
-        Arrays.fill(jpeg, start, jpeg.length - 2, (byte) '<');
+        Arrays.fill(jpeg, JpegImageTest.scan(jpeg), jpeg.length - 2, (byte) '<');
         Assertions.assertThrows(
             IOException.class,
             () -> new JpegCleaner().strip(jpeg),
