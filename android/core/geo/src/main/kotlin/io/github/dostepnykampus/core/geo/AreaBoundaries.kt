@@ -13,6 +13,14 @@ import org.maplibre.spatialk.geojson.FeatureCollection
 import org.maplibre.spatialk.geojson.Geometry
 
 /**
+ * Granice terenów PWr z pliku `data/areas/pwr-areas.geojson` wbudowanego w aplikację, po nazwie terenu (właściwość
+ * `name`, ta sama co w [campusAreas]); czytane przy pierwszym użyciu.
+ *
+ * Wymagania: BR-G5, US1.7
+ */
+public val PwrAreaBoundaries: Map<String, GeoArea> by lazy { parseAreaBoundaries(AREAS_GEOJSON) }
+
+/**
  * Granice terenów PWr z pliku w formacie `data/areas/pwr-areas.geojson`, bez sieci, po nazwie terenu (właściwość
  * `name`, ta sama co w [campusAreas]). Granica to wielokąt albo kilka wielokątów.
  *
