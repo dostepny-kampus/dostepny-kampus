@@ -231,4 +231,5 @@ class CampusMapStyleTest {
         ring.zipWithNext().sumOf { (from, to) -> from.longitude * to.latitude - to.longitude * from.latitude }
 }
 
-private val PLAN = listOf(PLAN_ROOMS_LAYER, PLAN_WALLS_LAYER, PLAN_OUTLINE_LAYER, PLAN_NUMBERS_LAYER)
+private val PLAN =
+    listOf(PLAN_ROOMS_LAYER, PLAN_WALLS_LAYER, PLAN_OUTLINE_LAYER, PLAN_SIGNS_LAYER, PLAN_NUMBERS_LAYER)
