@@ -87,7 +87,7 @@ interface MainActivityEntryPoint {
     /** Konto i role osoby. Wymagania: US14.1 */
     fun roles(): RoleProvider
 
-    /** Wybór „Mapa” albo „Lista budynków” w V1. Wymagania: NFR-19 */
+    /** Widok V1, mapa albo lista. Wymagania: NFR-19 */
     fun mapListChoice(): MapListChoice
 
     /** Kolejka zgłoszeń: prośba o logowanie po 401 i wznowienie po zalogowaniu. Wymagania: BR-26 */
