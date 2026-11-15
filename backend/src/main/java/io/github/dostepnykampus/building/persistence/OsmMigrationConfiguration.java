@@ -58,11 +58,11 @@ public final class OsmMigrationConfiguration {
      * @return Powtarzalna migracja
      */
     @Bean
-    static OsmAreas osmAreas(
+    static FileMigration osmAreas(
         final ObjectMapper mapper,
         @Value("classpath:data/pwr-areas.geojson") final Resource file
     ) {
-        return new OsmAreas(mapper, file);
+        return new FileMigration("tereny PWr", file, OsmAreas.FORMAT, new OsmAreas(mapper));
     }
 
     /**
@@ -72,7 +72,7 @@ public final class OsmMigrationConfiguration {
      * @return Konfiguracja rejestracji migracji
      */
     @Bean
-    static FlywayConfigurationCustomizer areasMigration(final OsmAreas migration) {
+    static FlywayConfigurationCustomizer areasMigration(final FileMigration migration) {
         return new OsmMigrationResolver(migration, "db/migration/building");
     }
 }
