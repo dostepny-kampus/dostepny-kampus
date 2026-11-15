@@ -6,16 +6,15 @@
 package io.github.dostepnykampus.feature.map.building
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,11 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.GroupContainer
-import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.overlay.MapControlIcons
 
@@ -48,59 +47,55 @@ internal fun floorDescriptionText(functions: List<Counted>): String =
 
 /**
  * Grupa „Piętra” z faktów [facts]: piętra od najniższego, opis piętra rozwijany etykietą, na start zwinięty;
- * piętro bez opisu ma samą etykietę. Bez faktów o piętrach grupa ma napis o braku planu.
- *
- * TODO(#2470): „Pokaż na planie” przy piętrze.
+ * piętro bez opisu ma samą etykietę. Pod etykietą „Pokaż na planie” daje [onShowPlan] identyfikator piętra.
+ * Bez faktów o piętrach grupa ma napis o braku planu.
  *
  * Wymagania: US16.3, US16.2, NFR-17, NFR-18, NFR-19
  */
 @Composable
-internal fun FloorsGroup(facts: FloorFacts?) {
+internal fun FloorsGroup(facts: FloorFacts?, onShowPlan: (String) -> Unit = {}) {
     GroupContainer(title = stringResource(R.string.karta_pietra)) {
         if (facts == null) {
             Text(text = stringResource(R.string.karta_bez_planu), style = MaterialTheme.typography.bodyLarge)
         } else {
             facts.floors.forEachIndexed { index, described ->
                 if (index > 0) HorizontalDivider()
-                FloorRow(described)
+                FloorRow(described = described, onShowPlan = { onShowPlan(described.floor.id) })
             }
         }
     }
 }
 
 @Composable
-private fun FloorRow(described: FloorDescription) {
-    var isExpanded by rememberSaveable(described.floor.id) { mutableStateOf(false) }
+private fun FloorRow(described: FloorDescription, onShowPlan: () -> Unit) {
     val label = described.floor.label
-    if (described.functions.isEmpty()) {
-        Row(
-            modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.minimum),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(text = label, style = MaterialTheme.typography.titleMedium)
-        }
-        return
-    }
+    var isExpanded by rememberSaveable(described.floor.id) { mutableStateOf(false) }
+    val isExpandable = described.functions.isNotEmpty()
     val state = stringResource(if (isExpanded) R.string.karta_rozwiniete else R.string.karta_zwiniete)
-    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {
+    val header = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.minimum)
+    Column {
         Row(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = CeleDotyku.minimum)
-                    .clickable(role = Role.Button) { isExpanded = !isExpanded }
-                    .semantics { stateDescription = state },
+                if (isExpandable) {
+                    header
+                        .clickable(role = Role.Button) { isExpanded = !isExpanded }
+                        .semantics { stateDescription = state }
+                } else {
+                    header
+                },
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(text = label, modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
-            Icon(if (isExpanded) MapControlIcons.Up else MapControlIcons.Down, contentDescription = null)
+            if (isExpandable) {
+                Icon(if (isExpanded) MapControlIcons.Up else MapControlIcons.Down, contentDescription = null)
+            }
         }
         if (isExpanded) {
-            Text(
-                text = floorDescriptionText(described.functions),
-                modifier = Modifier.padding(bottom = Odstepy.s),
-                style = MaterialTheme.typography.bodyLarge,
-            )
+            Text(text = floorDescriptionText(described.functions), style = MaterialTheme.typography.bodyLarge)
+        }
+        val action = stringResource(R.string.karta_pokaz_na_planie_czytaj, label)
+        TextButton(onClick = onShowPlan, modifier = Modifier.semantics { contentDescription = action }) {
+            Text(stringResource(R.string.karta_pokaz_na_planie))
         }
     }
 }

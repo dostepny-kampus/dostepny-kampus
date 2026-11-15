@@ -23,12 +23,13 @@ sealed interface MapFocus {
     /**
      * Budynek o symbolu [symbol], np. `C-13`. [command] to tożsamość polecenia „Pokaż budynek na mapie”, po którym
      * kamera staje na budynku; każde dotknięcie przycisku dostaje inną. Bez niego (`null`) budynek jest tylko
-     * zaznaczony, a widok zostaje, np. po „Wstecz” z V2.
+     * zaznaczony, a widok zostaje, np. po „Wstecz” z V2. [floor] to piętro planu do pokazania po „Pokaż na planie”;
+     * `null` zostawia piętro wybrane przez plan.
      *
-     * Wymagania: US2.9
+     * Wymagania: US2.9, US16.1
      */
     @Serializable
-    data class Building(val symbol: String, val command: Long? = null) : MapFocus
+    data class Building(val symbol: String, val command: Long? = null, val floor: String? = null) : MapFocus
 
     /**
      * Wejście o identyfikatorze [id] z danych wejść, pokazane z ekranu budynku [buildingSymbol]; TalkBack

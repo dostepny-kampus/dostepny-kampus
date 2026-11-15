@@ -98,6 +98,8 @@
     <string name="karta_bez_planu">Nie mamy planu pięter tego budynku.</string>
     <string name="karta_zwiniete">zwinięte</string>
     <string name="karta_rozwiniete">rozwinięte</string>
+    <string name="karta_pokaz_na_planie">Pokaż na planie</string>
+    <string name="karta_pokaz_na_planie_czytaj">Pokaż na planie: %1$s</string>
     <string name="wizyta_naglowek">Którędy wejść do %1$s</string>
     <string name="wizyta_brak_danych">Nie mamy jeszcze danych o wejściach do budynku %1$s.</string>
     <string name="wizyta_dostepne">Budynek %1$s ma wejście dostępne: »%2$s«.</string>
