@@ -44,7 +44,7 @@ class RoomSearchApiTest {
     }
 
     @Test
-    fun returnsEmptyListWhenNothingMatches() {
+    fun returnsEmptyWhenNothingMatches() {
         val (result, _) = served(json("""{"source":"Politechnika Wrocławska","results":[]}""")) { searchRooms("999") }
 
         assertEquals(ApiResult.Success(emptyList<FoundRoom>()), result, "Brak sali nie dał pustej listy")
