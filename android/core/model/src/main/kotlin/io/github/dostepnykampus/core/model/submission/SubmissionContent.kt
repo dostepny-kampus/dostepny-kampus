@@ -3,8 +3,9 @@
  * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.model
+package io.github.dostepnykampus.core.model.submission
 
+import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 
 /**

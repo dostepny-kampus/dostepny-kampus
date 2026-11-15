@@ -5,8 +5,6 @@
  */
 package io.github.dostepnykampus.core.model.submission
 
-import io.github.dostepnykampus.core.model.BarrierGroup
-
 /**
  * Typ bariery z klasyfikacji TB-1…TB-29 w słowniku projektu, przypisany do jednej z sześciu grup barier.
  * Nazwy dla ludzi są w zasobach ekranów; tu jest tylko kod kontraktu i grupa.

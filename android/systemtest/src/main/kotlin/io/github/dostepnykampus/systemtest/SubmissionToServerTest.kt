@@ -6,12 +6,12 @@
 package io.github.dostepnykampus.systemtest
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
-import io.github.dostepnykampus.core.model.SubmissionContent
-import io.github.dostepnykampus.core.model.SubmissionKind
+import io.github.dostepnykampus.core.model.submission.BarrierGroup
+import io.github.dostepnykampus.core.model.submission.SubmissionContent
+import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.NetworkModule
 import io.github.dostepnykampus.core.network.auth.AccessTokens

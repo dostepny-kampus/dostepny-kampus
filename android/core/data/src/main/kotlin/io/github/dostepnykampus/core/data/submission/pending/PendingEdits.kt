@@ -9,7 +9,7 @@ import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.database.submission.PendingEditDao
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionWithPhotos
-import io.github.dostepnykampus.core.model.SubmissionContent
+import io.github.dostepnykampus.core.model.submission.SubmissionContent
 
 /**
  * Własne zgłoszenie z kolejki telefonu otwarte do poprawki w C2.

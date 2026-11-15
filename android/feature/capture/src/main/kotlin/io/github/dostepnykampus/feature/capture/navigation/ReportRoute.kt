@@ -6,7 +6,7 @@
 package io.github.dostepnykampus.feature.capture.navigation
 
 import androidx.navigation3.runtime.NavKey
-import io.github.dostepnykampus.core.model.BarrierGroup
+import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import kotlinx.serialization.Serializable
 
 /**

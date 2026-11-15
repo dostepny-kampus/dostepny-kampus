@@ -6,7 +6,7 @@
 package io.github.dostepnykampus.core.network
 
 import io.github.dostepnykampus.core.model.Submission
-import io.github.dostepnykampus.core.model.SubmissionContent
+import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.ID
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.PHOTO
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.POINT

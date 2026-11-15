@@ -8,12 +8,12 @@ package io.github.dostepnykampus.core.data.submission.pending
 import io.github.dostepnykampus.core.database.submission.PendingPhotoEntity
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionWithPhotos
-import io.github.dostepnykampus.core.model.BarrierGroup
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.SubmissionContent
-import io.github.dostepnykampus.core.model.SubmissionFloor
-import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.model.building.EntranceMarking
+import io.github.dostepnykampus.core.model.submission.BarrierGroup
+import io.github.dostepnykampus.core.model.submission.SubmissionContent
+import io.github.dostepnykampus.core.model.submission.SubmissionFloor
+import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test

@@ -9,7 +9,7 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import io.github.dostepnykampus.core.designsystem.marking.descriptionRes
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
-import io.github.dostepnykampus.core.model.BarrierGroup
+import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import org.junit.Assert.assertEquals

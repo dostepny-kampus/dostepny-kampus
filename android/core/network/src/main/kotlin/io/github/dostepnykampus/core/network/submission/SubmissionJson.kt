@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.core.network.submission
 
 import io.github.dostepnykampus.core.model.Submission
-import io.github.dostepnykampus.core.model.SubmissionContent
-import io.github.dostepnykampus.core.model.SubmissionFloor
+import io.github.dostepnykampus.core.model.submission.SubmissionContent
+import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.network.building.toJson
 import io.github.dostepnykampus.core.network.building.toModel
 import io.github.dostepnykampus.core.network.decodeContract

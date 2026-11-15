@@ -5,10 +5,10 @@
  */
 package io.github.dostepnykampus.core.network
 
-import io.github.dostepnykampus.core.model.BarrierGroup
-import io.github.dostepnykampus.core.model.SubmissionKind
 import io.github.dostepnykampus.core.model.SubmissionStatus
 import io.github.dostepnykampus.core.model.building.EntranceMarking
+import io.github.dostepnykampus.core.model.submission.BarrierGroup
+import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.ID
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.precise
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.quick

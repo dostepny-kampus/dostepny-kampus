@@ -10,7 +10,7 @@ import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.pho
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.precise
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.server
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
-import io.github.dostepnykampus.core.model.SubmissionContent
+import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull

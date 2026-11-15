@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.core.model.submission
 
-import io.github.dostepnykampus.core.model.BarrierGroup
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
