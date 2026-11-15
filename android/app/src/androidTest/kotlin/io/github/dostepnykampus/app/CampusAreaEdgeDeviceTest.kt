@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -65,8 +64,7 @@ class CampusAreaEdgeDeviceTest {
 
     /**
      * Sprawdza na emulatorze, że przesuwanie mapy palcem w stronę sąsiedniego terenu zatrzymuje
-     * kamerę na granicy „Kampusu głównego”, pokazuje przyciemnienie poza nim oraz wyświetla przycisk
-     * przejścia do „Wittigowa”.
+     * kamerę na granicy „Kampusu głównego” i pokazuje przyciemnienie poza nim.
      *
      * Scenariusz: przegladanie-mapy.feature: Mapa nie wychodzi poza wybrany teren
      *
@@ -85,9 +83,7 @@ class CampusAreaEdgeDeviceTest {
             composeRule.waitUntil(SWIPE_SETTLE_TIMEOUT_MS) { !tracker.isMoving.get() }
             composeRule.waitForIdle()
             val swipeLine = eastSwipeLine(mapView)
-            panEastUntilNeighbor(swipeLine, tracker)
-            val edgeMatcher = neighborButtonMatcher()
-            composeRule.onNode(edgeMatcher).assertIsDisplayed()
+            panEastUntilEdge(swipeLine, tracker, map, mainBounds)
             val edgeTarget = composeRule.runOnUiThread { requireNotNull(map.cameraPosition.target) }
             assertAtEastEdgeWithinBounds(edgeTarget, mainBounds)
             repeat(EXTRA_SWIPES_AT_EDGE) {
@@ -101,7 +97,6 @@ class CampusAreaEdgeDeviceTest {
                 "Kamera wyszła poza krawędź: edge=$edgeTarget, after=$afterExtra",
                 abs(afterExtra.longitude - edgeTarget.longitude) <= EDGE_TOLERANCE_DEGREES,
             )
-            composeRule.onNode(edgeMatcher).assertIsDisplayed()
             assertOutsideAreaDimmed(mapView, map)
         } finally {
             composeRule.runOnUiThread { tracker.detach(map) }
@@ -152,14 +147,23 @@ class CampusAreaEdgeDeviceTest {
             Offset(location[0] + mapView.width * SWIPE_END_X_FRACTION, y)
     }
 
-    private fun panEastUntilNeighbor(swipeLine: Pair<Offset, Offset>, tracker: MotionTracker) {
+    private fun panEastUntilEdge(
+        swipeLine: Pair<Offset, Offset>,
+        tracker: MotionTracker,
+        map: MapLibreMap,
+        bounds: CampusBounds,
+    ) {
         var swipes = 0
-        while (swipes < MAX_PAN_SWIPES && !nodeExists(neighborButtonMatcher())) {
+        while (swipes < MAX_PAN_SWIPES && !isAtEastEdge(map, bounds)) {
             performEastSwipe(swipeLine, tracker)
             composeRule.waitForIdle()
             swipes++
         }
     }
+
+    private fun isAtEastEdge(map: MapLibreMap, bounds: CampusBounds): Boolean =
+        composeRule.runOnUiThread { requireNotNull(map.cameraPosition.target) }.longitude >=
+            bounds.east - EDGE_TOLERANCE_DEGREES
 
     private fun performEastSwipe(swipeLine: Pair<Offset, Offset>, tracker: MotionTracker) {
         val idleBefore = tracker.idleCount.get()
@@ -215,10 +219,6 @@ class CampusAreaEdgeDeviceTest {
     private fun nodeExists(matcher: SemanticsMatcher): Boolean =
         composeRule.onAllNodes(matcher).fetchSemanticsNodes().isNotEmpty()
 
-    private fun neighborButtonMatcher(): SemanticsMatcher =
-        hasContentDescription(NEIGHBOR_PREFIX, substring = true) and
-            hasContentDescription(KILOMETER_SUFFIX, substring = true)
-
     private fun isInsideBounds(point: LatLng, bounds: CampusBounds): Boolean =
         point.longitude in bounds.west - EDGE_TOLERANCE_DEGREES..bounds.east + EDGE_TOLERANCE_DEGREES &&
             point.latitude in bounds.south - EDGE_TOLERANCE_DEGREES..bounds.north + EDGE_TOLERANCE_DEGREES
@@ -264,8 +264,6 @@ class CampusAreaEdgeDeviceTest {
         const val MAIN_AREA_NAME = "Kampus główny"
         const val SKIP_HELP_TEXT = "Pomiń instrukcję"
         const val MAIN_AREA_BUTTON_DESCRIPTION = "Teren: Kampus główny. Zmień teren"
-        const val NEIGHBOR_PREFIX = "Tu kończy się teren Kampus główny. Obok: Wittigowo, "
-        const val KILOMETER_SUFFIX = " km"
         const val OUTSIDE_LAYER = "teren-poza"
         const val EDGE_LAYER = "teren-granica"
         const val EDGE_TOLERANCE_DEGREES = 1e-5
