@@ -37,5 +37,5 @@ internal fun inspectionProgressOf(api: InspectionProgressApi): InspectionProgres
     object : InspectionProgress {
         override suspend fun buildings(): ServerReply<List<BuildingProgress>> = api.progress().toReply { it }
 
-        override suspend fun revoke(markerId: String): ServerReply<Unit> = api.revoke(markerId).toReply { it }
+        override suspend fun revoke(markerId: String): ServerReply<Unit> = api.revoke(markerId).toReply { }
     }
