@@ -144,7 +144,9 @@ Wzór pochodzi z WCAG: współczynnik to `(L1 + 0,05) / (L2 + 0,05)`. L1 to lumi
 <!-- vale on -->
 <!-- kontrast:end -->
 
-Paleta mapy jest w sekcji `mapa` pliku: podkład, budynki PWr i plan piętra w obu motywach, z listą par kontrastu w tym samym zapisie. Budynek szczegółowy ma pełne tło `pwr` i gruby kontur, budynek podstawowy blade tło `pwr_podstawowy` i cienki ciągły kontur; różni je jasność tła i grubość konturu, nie sam odcień (NFR-21). Granicę terenu pokazuje linia `granica_terenu` z obwódką `granica_terenu_obwodka`. Poza granicą na podkład pada kolor `background` z kryciem z `mapa.krycie.teren_poza` (BR-G5). Znacznik wejścia ma ten sam kształt co oznaczenie na karcie (NFR-21).
+Paleta mapy jest w sekcji `mapa` pliku: podkład, budynki PWr i plan piętra w obu motywach, z listą par kontrastu w tym samym zapisie. Granicę terenu pokazuje linia `granica_terenu` z obwódką `granica_terenu_obwodka`. Poza granicą na podkład pada kolor `background` z kryciem z `mapa.krycie.teren_poza` (BR-G5). Znacznik wejścia ma ten sam kształt co oznaczenie na karcie (NFR-21).
+
+Budynek szczegółowy ma pełne tło `pwr` i gruby kontur. Budynek podstawowy ma blade tło `pwr_podstawowy` i cienki ciągły kontur. Różni je jasność tła i grubość konturu, a nie sam odcień (NFR-21).
 
 Te pary mają te same progi (napisy 7:1, kontury i znaczniki 3:1) i spełniają je także po symulacji daltonizmu. Skrypt strony jeszcze ich nie sprawdza ani nie pokazuje w tabelach. Mapę nieba na C1 rysuje aplikacja, więc używa tylko ról z pliku, a system satelity rozróżnia kształt i podpis (US6.5).
 
