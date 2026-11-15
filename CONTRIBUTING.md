@@ -30,13 +30,15 @@ opisy w kodzie), mówi [AGENTS.md](AGENTS.md).
 6. Po scaleniu issue z opisu PR jest zamykane z komentarzem „Zrobione w #PR”
    ([`zamykanie-issue.yml`](.github/workflows/zamykanie-issue.yml), [`zamknij-issue.sh`](.github/scripts/zamknij-issue.sh)).
 7. **Kontrola sprintu** ([`kontrola-sprintu.yml`](.github/workflows/kontrola-sprintu.yml),
-   [`kontrola-sprintu-cel.sh`](.github/scripts/kontrola-sprintu-cel.sh)) trzy razy na godzinę bierze głowę gałęzi `sprint/N` z najwyższym N,
+   [`kontrola-sprintu-cel.sh`](.github/scripts/kontrola-sprintu-cel.sh)) po każdym wypchnięciu na `sprint/N` (i co godzinę
+   z harmonogramu GitHub jako zapas) bierze głowę gałęzi `sprint/N` z najwyższym N,
    której nie ma jeszcze w `main`, uruchamia na niej pełny przebieg [`android.yml`](.github/workflows/android.yml) (APK,
    emulatory, pełny test systemowy, `buildHealth`; bez `testy`, które głowa przeszła w kolejce) i zapisuje wynik
    jako status commita `kontrola-sprintu`. Głowę z tym statusem pomija; gdy od ostatniego sprawdzonego commita
    nie zmienił się Android, serwer, `infra/` ani dane budynków, stawia zielony status bez budowy. Ręczne uruchomienie
-   z nazwą gałęzi sprawdza ją zawsze.
-   Pierwsza porażka daje status `error` i ponowienie w następnym przebiegu; druga — status `failure` i jedno issue
+   z nazwą gałęzi sprawdza ją zawsze. Naraz biegnie jeden przebieg i czeka najwyżej jeden: przebieg kończy się na
+   swoim commicie, a nowsze wypchnięcie zastępuje czekający, więc następny sprawdza najnowszą głowę.
+   Pierwsza porażka daje status `error` i od razu ponowny przebieg; druga — status `failure` i jedno issue
    `sprint-czerwony` dla gałęzi z nieudanymi zadaniami i PR scalonymi od ostatniego wyniku; kolejne porażki dopisują
    komentarz, a zielony wynik zamyka issue ([`kontrola-sprintu-wynik.sh`](.github/scripts/kontrola-sprintu-wynik.sh)).
 

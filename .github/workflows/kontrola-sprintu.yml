@@ -1,11 +1,16 @@
 name: kontrola-sprintu
 
 # Ciężka część kontroli Androida (APK, emulatory, pełny test systemowy, buildHealth) dla głowy bieżącej gałęzi
-# sprintu, po scaleniu, a nie w kolejce. Harmonogram GitHub czyta ten plik z gałęzi domyślnej, ale gałąź do
-# sprawdzenia wybiera skrypt. Wynik to status `kontrola-sprintu` na sprawdzonym commicie.
+# sprintu, po scaleniu, a nie w kolejce. Startuje po każdym wypchnięciu na sprint/*; harmonogram GitHub bywa
+# opóźniony o godziny albo pomijany, więc zostaje tylko jako zapas. Gałąź do sprawdzenia wybiera skrypt. Wynik to
+# status `kontrola-sprintu` na sprawdzonym commicie. Naraz biegnie jeden przebieg i czeka najwyżej jeden: przebieg
+# kończy się na swoim commicie, a nowsze wypchnięcie zastępuje czekający, więc następny bierze najnowszą głowę.
 on:
+  push:
+    branches:
+      - 'sprint/*'
   schedule:
-    - cron: '7,27,47 * * * *'
+    - cron: '17 * * * *'
   workflow_dispatch:
     inputs:
       galaz:
@@ -64,8 +69,9 @@ jobs:
     if: ${{ always() && needs.cel.outputs.jest == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    # actions: write — ponowne uruchomienie tego workflow po pierwszej porażce.
     permissions:
-      actions: read
+      actions: write
       contents: read
       issues: write
       statuses: write

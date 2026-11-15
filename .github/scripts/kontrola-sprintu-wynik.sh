@@ -7,11 +7,12 @@ set -euo pipefail
 # Zapisuje wynik kontroli sprintu jako status `kontrola-sprintu` commita SHA i prowadzi jedno issue czerwonego sprintu
 # dla gałęzi GALAZ (etykieta `sprint-czerwony`, tytuł z nazwą gałęzi).
 # - WYNIK=success: status success; otwarte issue tej gałęzi dostaje komentarz z commitem i jest zamykane.
-# - inny WYNIK, a commit nie miał jeszcze statusu error: status error bez issue; wybór commita
-#   (kontrola-sprintu-cel.sh) sprawdzi go ponownie w następnym przebiegu, więc przypadkowa porażka nie robi issue.
+# - inny WYNIK, a commit nie miał jeszcze statusu error: status error bez issue i od razu ręczne uruchomienie
+#   workflow (czeka na koniec bieżącego przebiegu); wybór commita (kontrola-sprintu-cel.sh) sprawdzi go ponownie,
+#   więc przypadkowa porażka nie robi issue.
 # - inny WYNIK po wcześniejszym error: status failure; otwarte issue dostaje komentarz, inaczej powstaje nowe
 #   z nieudanymi zadaniami przebiegu i PR scalonymi od commita OD (ostatni wcześniejszy wynik) jako podejrzanymi.
-# Środowisko: GITHUB_REPOSITORY, GALAZ, SHA, OD (może być puste), WYNIK, RUN_ID, ADRES (link do przebiegu).
+# Środowisko: GITHUB_REPOSITORY, GITHUB_REF_NAME (gałąź z plikiem workflow do ponowienia), GALAZ, SHA, OD (może być puste), WYNIK, RUN_ID, ADRES (link do przebiegu).
 repo="$GITHUB_REPOSITORY"
 krotki="${SHA:0:7}"
 
@@ -35,6 +36,7 @@ fi
 if ! gh api "repos/${repo}/commits/${SHA}/statuses" --paginate \
   --jq '.[] | select(.context == "kontrola-sprintu") | .state' | grep -qx error; then
   ustaw error "Pierwsza porażka (${WYNIK}), ponowienie w następnym przebiegu"
+  gh workflow run kontrola-sprintu.yml --ref "$GITHUB_REF_NAME"
   exit 0
 fi
 
