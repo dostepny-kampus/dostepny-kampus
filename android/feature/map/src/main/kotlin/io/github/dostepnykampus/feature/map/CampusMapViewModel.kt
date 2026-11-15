@@ -14,8 +14,11 @@ import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.di.ComputeContext
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.NetworkStatus
+import io.github.dostepnykampus.core.data.room.RoomSearch
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.geo.building.searchBuildings
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
+import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.map.barrier.withBarriers
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
@@ -88,6 +91,7 @@ data class CampusMapUiState(
  * @property computeContext kontekst obliczeń geometrii; w aplikacji `Dispatchers.Default` z grafu Hilt
  * @property geometry dane mapy z katalogu, przerywalne przerwaniem wątku; w aplikacji pamięć `CampusMapDataCache`
  * @param barriers bariery ze zgłoszeń przyjętych; w testach bez barier
+ * @param roomSearch wyszukiwanie sali na serwerze; w testach bez sal
  */
 @HiltViewModel
 class CampusMapViewModel(
@@ -97,6 +101,7 @@ class CampusMapViewModel(
     internal val computeContext: CoroutineContext,
     internal val geometry: (BuildingCatalog) -> CampusMapData,
     barriers: AcceptedBarriers = AcceptedBarriers { emptyList() },
+    private val roomSearch: RoomSearch = RoomSearch { ServerReply.Ok(emptyList()) },
 ) : ViewModel() {
     private val queries = MutableStateFlow("")
 
@@ -138,9 +143,10 @@ class CampusMapViewModel(
         networkStatus: NetworkStatus,
         mapListChoice: MapListChoice,
         barriers: AcceptedBarriers,
+        roomSearch: RoomSearch,
         @ComputeContext computeContext: CoroutineContext,
         cache: CampusMapDataCache,
-    ) : this(repository, networkStatus, mapListChoice, computeContext, cache::dataFor, barriers)
+    ) : this(repository, networkStatus, mapListChoice, computeContext, cache::dataFor, barriers, roomSearch)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun Flow<Boolean>.onNetworkChange(barriers: AcceptedBarriers): Flow<FetchedBarriers> =
@@ -164,7 +170,12 @@ class CampusMapViewModel(
             )
         }
 
-    /** Szuka budynku po symbolu [query] w [computeContext]; wynik przychodzi w [CampusMapUiState.search]. */
+    /**
+     * Szuka budynku po symbolu [query] w [computeContext], a gdy go nie ma i tekst ma cyfry, sali na serwerze; wynik
+     * przychodzi w [CampusMapUiState.search].
+     *
+     * Wymagania: US1.3, US18.1
+     */
     fun search(query: String) {
         queries.value = query
     }
@@ -176,10 +187,18 @@ class CampusMapViewModel(
         val results =
             pairs.mapLatest { (catalog, query) ->
                 val found = catalog?.let { withContext(computeContext) { searchBuildings(query, it.buildings) } }
-                BuildingSearch(query = query, buildings = found)
+                val isRoomQuery = found?.isEmpty() == true && query.any(Char::isDigit)
+                val rooms = if (isRoomQuery) roomsFor(query.trim()) else emptyList()
+                BuildingSearch(query = query, buildings = found, rooms = rooms)
             }
         return results.onStart { emit(BuildingSearch()) }
     }
+
+    private suspend fun roomsFor(query: String): List<FoundRoom> =
+        when (val reply = roomSearch.search(query)) {
+            is ServerReply.Ok -> reply.value
+            else -> emptyList()
+        }
 
     /** Bariery z jednego pytania źródła razem z chwilą ich pobrania z serwera. */
     private data class FetchedBarriers(val barriers: List<AcceptedBarrier>, val syncedAt: Instant?)
