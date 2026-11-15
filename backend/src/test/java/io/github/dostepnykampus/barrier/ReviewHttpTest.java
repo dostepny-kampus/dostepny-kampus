@@ -50,13 +50,12 @@ final class ReviewHttpTest {
         throws Exception {
         final UUID id = ReviewHttpTest.sent(context, "inne-konto");
         MatcherAssert.assertThat(
-            "Wzięcie cudzego zgłoszenia nie dało 200 i statusu „w weryfikacji”",
-            List.of(ReviewHttpTest.claim(context, id), ReviewHttpTest.status(context, id)),
-            Matchers.contains(200, "IN_REVIEW")
-        );
-        MatcherAssert.assertThat(
-            "Ponowne wzięcie przez tego samego Weryfikatora nie dało 200",
-            ReviewHttpTest.claim(context, id), Matchers.equalTo(200)
+            "Wzięcie cudzego zgłoszenia, także ponowne, nie dało 200 i statusu „w weryfikacji”",
+            List.of(
+                ReviewHttpTest.claim(context, id), ReviewHttpTest.status(context, id),
+                ReviewHttpTest.claim(context, id)
+            ),
+            Matchers.contains(200, "IN_REVIEW", 200)
         );
     }
 

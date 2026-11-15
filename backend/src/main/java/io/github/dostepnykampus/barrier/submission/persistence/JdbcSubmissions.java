@@ -145,15 +145,17 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
 
     @Override
     public EditResult update(final SubmissionEdit edit) {
-        final Optional<Submission> saved = this.write(
-            this.jdbc.sql(JdbcSubmissions.UPDATE)
-                .param("version", edit.expectedVersion())
-                .param("from", JdbcSubmissions.editable(Function.identity()))
-                .param("to", JdbcSubmissions.editable(SubmissionStatus::afterEdit)),
-            edit.id(),
-            edit.content()
+        return this.written(
+            this.write(
+                this.jdbc.sql(JdbcSubmissions.UPDATE)
+                    .param("version", edit.expectedVersion())
+                    .param("from", JdbcSubmissions.editable(Function.identity()))
+                    .param("to", JdbcSubmissions.editable(SubmissionStatus::afterEdit)),
+                edit.id(),
+                edit.content()
+            ),
+            edit.id()
         );
-        return this.written(saved, edit.id());
     }
 
     @Override
