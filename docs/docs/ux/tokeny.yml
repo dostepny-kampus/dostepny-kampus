@@ -395,6 +395,14 @@ ikony:
     dp: 24             # ikona oznaczenia wejścia i chipu rośnie z tekstem: 1,33 wysokości napisu
     uzycie: ikona oznaczenia wejścia, chipu, przycisku i paska dolnego, zawsze z napisem obok
     zrodlo: NFR-21, słownik użytkownika (Metafory i ikony)
+  znak_mapy:
+    dp: 28
+    uzycie: znak wejścia „Dostępne” i „Niedostępne” na mapie V1
+    zrodlo: US1.4, US2.1, NFR-21
+  znak_mapy_brak_danych:
+    dp: 20             # cichy znak: mniej informacji, mniejsza waga; pusty romb, wnętrze `papier`, kontur i ? `tusz`
+    uzycie: znak wejścia „Brak danych” na mapie V1; w legendzie i na kartach ma rozmiar zwykłego znaku
+    zrodlo: US1.4, US2.1, NFR-16, NFR-21
 
 # ---------------------------------------------------------------------------
 # Wysokości (cień) w dp, poziomy Material 3. Skrypt strony jeszcze ich nie sprawdza.
