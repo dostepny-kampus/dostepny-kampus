@@ -68,7 +68,7 @@ final class NullabilityArchitectureTest {
         "SubmissionQuery", Set.of("buildingSymbol", "floorId"),
         "Building", Set.of("name"),
         "BuildingCard", Set.of("name"),
-        "Entrance", Set.of("name", "type")
+        "Entrance", Set.of("name", "type", "floorId")
     );
 
     /**

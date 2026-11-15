@@ -752,6 +752,7 @@ components:
         type: {type: string, description: "Rodzaj wejścia z tagu OpenStreetMap `entrance`, np. `main`, `service`, `emergency`; brak, gdy dane go nie podają."}
         main: {type: boolean, description: "Czy to wejście główne."}
         location: {$ref: '#/components/schemas/GeoPoint', description: "Położenie wejścia."}
+        floorId: {type: string, description: "Piętro wejścia z listy pięter budynku (`Floor.id`) z warstwy wejść PWr; brak, gdy dane go nie podają (US18.2)."}
         marking: {$ref: '#/components/schemas/EntranceMarking'}
         markingDate: {type: string, format: date, description: "Dzień importu albo dzień przyjęcia zmiany oznaczenia wejścia (US17.3)."}
         markingSource:

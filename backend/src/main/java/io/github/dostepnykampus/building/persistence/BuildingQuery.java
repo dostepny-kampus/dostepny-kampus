@@ -144,7 +144,7 @@ public final class BuildingQuery implements Buildings {
         return this.jdbc.sql(
             """
             SELECT id, building_symbol, name, type, main,
-                ST_AsGeoJSON(location) AS location, marking,
+                ST_AsGeoJSON(location) AS location, floor_id, marking,
                 marking_date::text AS marking_date, marking_source
             FROM entrances
             WHERE building_symbol = :symbol
@@ -158,6 +158,7 @@ public final class BuildingQuery implements Buildings {
                 rows.getString("type"),
                 rows.getBoolean("main"),
                 BuildingQuery.text(rows, "location"),
+                rows.getString("floor_id"),
                 new Entrance.Marking(
                     BuildingQuery.text(rows, "marking"),
                     BuildingQuery.text(rows, "marking_date"),
