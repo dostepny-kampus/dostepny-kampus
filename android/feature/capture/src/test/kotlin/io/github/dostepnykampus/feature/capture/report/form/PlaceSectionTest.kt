@@ -67,7 +67,7 @@ class PlaceSectionTest {
      *   przycisk „Poza budynkiem”
      */
     @Test
-    fun us6_2_hint_name_and_distance() {
+    fun showsHintNameAndDistance() {
         show(PlaceChoice.Suggested(BuildingHint(a1, distanceMeters = 12.4, isInside = false)))
         compose
             .onNodeWithText("Czy to budynek A-1?")
@@ -82,7 +82,7 @@ class PlaceSectionTest {
     }
 
     @Test
-    fun us6_2_choose_from_list() {
+    fun choosesFromList() {
         show(PlaceChoice.Suggested(BuildingHint(a1, distanceMeters = 0.0, isInside = true)))
         compose.onNodeWithText("Punkt leży w obrysie budynku").assertIsDisplayed()
         compose.onNodeWithText("Wybierz inny").performClick()
@@ -92,7 +92,7 @@ class PlaceSectionTest {
     }
 
     @Test
-    fun br_g2_leave_outside() {
+    fun leavesOutside() {
         show(PlaceChoice.Suggested(BuildingHint(a1, distanceMeters = 30.0, isInside = false)))
         compose.onNodeWithText("Poza budynkiem").performClick()
         assertEquals(listOf("outside"), actions)
@@ -100,7 +100,7 @@ class PlaceSectionTest {
 
     /** Wiersz: C1 „Wybór innego budynku” → „Poza budynkiem” na końcu listy zamyka wybór. Wymagania: US6.2 */
     @Test
-    fun us6_2_outside_from_list() {
+    fun choosesOutsideFromList() {
         show(PlaceChoice.Outside)
         compose.onNodeWithText("Wybierz budynek").performClick()
         compose.onNodeWithText("Budynek B-1 Budynek B-1, 31 m").assertIsDisplayed()
@@ -111,7 +111,7 @@ class PlaceSectionTest {
 
     /** „Wybierz inny” pokazuje sekcję na ekranie, nie okno: najbliższe budynki od najbliższego z odległością. */
     @Test
-    fun us6_2_nearest_section() {
+    fun showsNearestSection() {
         show(PlaceChoice.Chosen(b1))
         compose.onNodeWithText("Wybierz inny").performClick()
         compose.onNode(isDialog()).assertDoesNotExist()
@@ -129,14 +129,14 @@ class PlaceSectionTest {
 
     /** Daleko od budynków: „poza budynkiem” bez komunikatu o błędzie, a budynek można wybrać. Wymagania: BR-G4 */
     @Test
-    fun br_g4_outside_without_error() {
+    fun showsOutsideWithoutError() {
         show(PlaceChoice.Outside)
         compose.onNodeWithText("Miejsce: poza budynkiem").assertIsDisplayed()
         compose.onNodeWithText("Wybierz budynek").assertIsDisplayed()
     }
 
     @Test
-    fun us6_2_chosen_building() {
+    fun showsChosenBuilding() {
         show(PlaceChoice.Chosen(b1))
         compose.onNodeWithText("Budynek: B-1 Budynek B-1").assertIsDisplayed()
     }

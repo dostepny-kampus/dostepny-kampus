@@ -55,7 +55,7 @@ class ReportFormScreenTest {
 
     /** Wiersz: C1, „Dalej” → C2 z miejscem z pomiaru. Wymagania: US6, US7.4 */
     @Test
-    fun us6_form_with_measured_place() {
+    fun showsMeasuredPlace() {
         show()
         compose.onNodeWithText("Opisz barierę").assertIsDisplayed()
         compose.onNodeWithText("Gmach Główny", substring = true).assertIsDisplayed()
@@ -63,7 +63,7 @@ class ReportFormScreenTest {
 
     /** Wiersz: C2, „Wstecz” bez zmian → poprzedni ekran bez pytania. Wymagania: US7.4 */
     @Test
-    fun us7_4_back_unchanged_leaves() {
+    fun leavesOnBackUnchanged() {
         show()
         compose.onNodeWithText("Wstecz").performClick()
         compose.waitForIdle()

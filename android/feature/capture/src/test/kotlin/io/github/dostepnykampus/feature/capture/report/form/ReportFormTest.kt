@@ -25,7 +25,7 @@ import org.junit.jupiter.api.assertThrows
  */
 class ReportFormTest {
     @Test
-    fun `pusty ma wszystkie braki`() {
+    fun listsAllMissingWhenEmpty() {
         assertEquals(
             ReportCheck.Incomplete(
                 listOf(
@@ -40,24 +40,24 @@ class ReportFormTest {
     }
 
     @Test
-    fun `brak tylko typu bariery`() {
+    fun missesOnlyType() {
         assertEquals(listOf(ReportFormError.MISSING_BARRIER_TYPE), complete().copy(barrierType = null).errors())
     }
 
     @Test
-    fun `brak tylko zdjęcia`() {
+    fun missesOnlyPhoto() {
         assertEquals(listOf(ReportFormError.MISSING_PHOTO), complete().copy(photoIds = emptyList()).errors())
     }
 
     @Test
-    fun `w budynku brak piętra`() {
+    fun missesFloorInBuilding() {
         val noFloor = complete().copy(floor = null)
 
         assertEquals(ReportCheck.Incomplete(listOf(ReportFormError.MISSING_FLOOR)), noFloor.check())
     }
 
     @Test
-    fun `TB-29 wymaga opisu`() {
+    fun requiresDescriptionForOther() {
         val other = complete().copy(barrierType = BarrierType.OTHER_BARRIER)
 
         assertEquals(listOf(ReportFormError.MISSING_DESCRIPTION), other.copy(description = "").errors())
@@ -66,7 +66,7 @@ class ReportFormTest {
     }
 
     @Test
-    fun `kompletny daje pomiar`() {
+    fun buildsMeasurementWhenComplete() {
         assertEquals(
             ReportCheck.Complete(
                 SubmissionContent(
@@ -88,7 +88,7 @@ class ReportFormTest {
     }
 
     @Test
-    fun `pusty opis to null`() {
+    fun turnsEmptyDescriptionToNull() {
         val check = complete().check() as ReportCheck.Complete
 
         assertNull(check.content.description)
@@ -102,7 +102,7 @@ class ReportFormTest {
      * Wymagania: US7.2
      */
     @Test
-    fun `piętro budynku podstawowego`() {
+    fun acceptsBasicBuildingFloor() {
         val examples =
             listOf(
                 Triple("0", false, SubmissionFloor(number = 0, isMezzanine = false)),
@@ -118,7 +118,7 @@ class ReportFormTest {
     }
 
     @Test
-    fun `piętro wpisane liczbą`() {
+    fun acceptsTypedFloor() {
         val form = complete().copy(floor = ReportFloor.Numbered(number = -1, isMezzanine = true))
         val check = form.check() as ReportCheck.Complete
 
@@ -132,7 +132,7 @@ class ReportFormTest {
      * Wymagania: BR-G3
      */
     @Test
-    fun `budynek bez planów, piętro 3`() {
+    fun acceptsFloorWithoutPlans() {
         val form =
             complete().copy(
                 place = A1.copy(buildingSymbol = "B-1"),
@@ -145,7 +145,7 @@ class ReportFormTest {
     }
 
     @Test
-    fun `poza budynkiem bez piętra`() {
+    fun dropsFloorOutside() {
         val outside = A1.copy(buildingSymbol = null)
         val check = complete().copy(place = outside, floor = null).check() as ReportCheck.Complete
 
@@ -155,14 +155,14 @@ class ReportFormTest {
     }
 
     @Test
-    fun `zmiana przyjętego`() {
+    fun marksAcceptedChange() {
         val check = complete().copy(replacesSubmissionId = "s-old").check() as ReportCheck.Complete
 
         assertEquals("s-old", check.content.replacesSubmissionId)
     }
 
     @Test
-    fun `zmiana pola widoczna`() {
+    fun showsFieldChange() {
         val start = ReportForm(place = A1)
 
         assertEquals(start, start.copy())
@@ -170,7 +170,7 @@ class ReportFormTest {
     }
 
     @Test
-    fun `numer piętra z tekstu`() {
+    fun parsesFloorNumber() {
         assertEquals(0, parseFloorNumber("0"))
         assertEquals(-2, parseFloorNumber(" -2 "))
         assertEquals(12, parseFloorNumber("12"))

@@ -50,7 +50,7 @@ class ReportMissingFieldTest {
      *   zgłoszenia nie da się zapisać
      */
     @Test
-    fun us7_1_no_type_not_saved() {
+    fun blocksSaveWithoutType() {
         saveWith(floor, rating, photo)
         assertOnlyMessage("Brakuje typu bariery. Uzupełnij to pole, aby zapisać.")
     }
@@ -61,7 +61,7 @@ class ReportMissingFieldTest {
      *   zgłoszenia nie da się zapisać
      */
     @Test
-    fun us7_1_no_severity_not_saved() {
+    fun blocksSaveWithoutSeverity() {
         saveWith(floor, type, photo)
         assertOnlyMessage("Brakuje uciążliwości. Uzupełnij to pole, aby zapisać.")
     }
@@ -72,7 +72,7 @@ class ReportMissingFieldTest {
      *   nie da się zapisać
      */
     @Test
-    fun us7_1_no_photo_not_saved() {
+    fun blocksSaveWithoutPhoto() {
         saveWith(floor, type, rating)
         assertOnlyMessage("Brakuje zdjęcia. Zrób zdjęcie, aby zapisać.")
     }
@@ -82,7 +82,7 @@ class ReportMissingFieldTest {
      * Scenariusz: pomiar-precyzyjny.feature: W budynku trzeba podać piętro
      */
     @Test
-    fun br7_no_floor_not_saved() {
+    fun blocksSaveWithoutFloor() {
         saveWith(type, rating, photo)
         assertOnlyMessage("Brakuje piętra. Uzupełnij to pole, aby zapisać.")
     }
@@ -92,7 +92,7 @@ class ReportMissingFieldTest {
      * Scenariusz: pomiar-precyzyjny.feature: Typ TB-29 „inna bariera” wymaga opisu
      */
     @Test
-    fun us7_3_other_no_description() {
+    fun blocksOtherWithoutDescription() {
         saveWith(floor, ReportEdit.Type(BarrierType.OTHER_BARRIER), ReportEdit.Rating(Severity.ONLY_WITH_HELP), photo)
         assertOnlyMessage("Brakuje opisu. Przy typie „inna bariera” opis jest obowiązkowy.")
     }
