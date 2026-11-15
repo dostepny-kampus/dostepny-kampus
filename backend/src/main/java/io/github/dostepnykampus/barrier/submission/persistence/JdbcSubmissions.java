@@ -153,7 +153,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                     .param("to", JdbcSubmissions.editable(SubmissionStatus::afterEdit)),
                 edit.id(),
                 edit.content()
-            ),
+            ).orElse(null),
             edit.id()
         );
     }
@@ -162,7 +162,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     public EditResult claim(final UUID id, final String reviewer) {
         return this.written(
             this.jdbc.sql(JdbcSubmissions.CLAIM).param("id", id).param("reviewer", reviewer)
-                .query(this.rows).optional(),
+                .query(this.rows).optional().orElse(null),
             id
         );
     }
@@ -246,10 +246,10 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
             );
     }
 
-    private EditResult written(final Optional<Submission> saved, final UUID id) {
+    private EditResult written(@Nullable final Submission saved, final UUID id) {
         final EditResult result;
-        if (saved.isPresent()) {
-            result = new EditResult.Saved(saved.get());
+        if (saved != null) {
+            result = new EditResult.Saved(saved);
         } else {
             result = this.find(id).<EditResult>map(EditResult.Conflict::new)
                 .orElseGet(() -> new EditResult.Missing(id));
