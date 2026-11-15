@@ -18,17 +18,31 @@ import io.github.dostepnykampus.feature.map.CampusMapUiState
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.MapLibreMapView
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
+import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import io.github.dostepnykampus.feature.map.plan.MapPlanViewModel
+import io.github.dostepnykampus.feature.map.plan.ShownPlan
 
-/** V1 ze stanem [viewModel] z grafu Hilt i zaznaczeniem [focus] z trasy. Wymagania: US1, US3.3, NFR-19 */
+/**
+ * V1 ze stanem [viewModel] i planem piętra [planViewModel] z grafu Hilt oraz zaznaczeniem [focus] z trasy.
+ *
+ * Wymagania: US1, US3.3, NFR-19, US16.1
+ */
 @Composable
-internal fun AppNavigator.HiltMapScreen(focus: MapFocus?, viewModel: CampusMapViewModel = hiltViewModel()) {
+internal fun AppNavigator.HiltMapScreen(
+    focus: MapFocus?,
+    viewModel: CampusMapViewModel = hiltViewModel(),
+    planViewModel: MapPlanViewModel = hiltViewModel(),
+) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val plan by planViewModel.shown.collectAsStateWithLifecycle()
     MapScreen(
         focus = focus,
         state = state,
         onListChange = viewModel::chooseList,
         onSearch = viewModel::search,
+        plan = plan,
+        onCamera = planViewModel::camera,
     )
 }
 
@@ -37,7 +51,8 @@ internal fun AppNavigator.HiltMapScreen(focus: MapFocus?, viewModel: CampusMapVi
  * z czynnościami podpiętymi do nawigatora; [onListChange] zapisuje wybór w przełączniku „Mapa” i „Lista budynków”,
  * a [onSearch] liczy wyszukiwanie w modelu widoku. Budynek z listy przy TalkBack otwiera V2
  * od razu na pełnym ekranie. Przyciski i podpis OSM stoją nad arkuszem V2.
- * [mapView] w aplikacji to MapLibre, testy podają podróbkę.
+ * [mapView] w aplikacji to MapLibre, testy podają podróbkę. [plan] to plan piętra przy środku mapy, a [onCamera]
+ * dostaje widok mapy po ruchu kamery.
  *
  * Wymagania: US1.1, US2.1, NFR-19
  */
@@ -48,6 +63,8 @@ internal fun AppNavigator.MapScreen(
     onListChange: (Boolean) -> Unit,
     onSearch: (String) -> Unit,
     mapView: CampusMapView = MapLibreMapView,
+    plan: ShownPlan? = null,
+    onCamera: (MapCamera) -> Unit = {},
 ) {
     val accessibility = checkNotNull(LocalContext.current.getSystemService(AccessibilityManager::class.java))
     CampusMapScreen(
@@ -61,5 +78,7 @@ internal fun AppNavigator.MapScreen(
         onListBuildingClick = { openBuildingFromList(it, accessibility.isTouchExplorationEnabled) },
         mapView = mapView,
         motion = mapMotion,
+        plan = plan,
+        onCamera = onCamera,
     )
 }

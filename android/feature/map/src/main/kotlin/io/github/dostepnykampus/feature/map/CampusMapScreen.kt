@@ -48,6 +48,7 @@ import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
 import io.github.dostepnykampus.feature.map.building.BuildingChoice
 import io.github.dostepnykampus.feature.map.building.BuildingChoiceSheet
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
+import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
@@ -55,6 +56,7 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.overlay.MapOverlay
 import io.github.dostepnykampus.feature.map.overlay.MapStatusBar
 import io.github.dostepnykampus.feature.map.overlay.dataDay
+import io.github.dostepnykampus.feature.map.plan.ShownPlan
 
 private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"
@@ -142,6 +144,8 @@ fun CampusMapScreen(
  * @param onListBuildingClick budynek dotknięty na liście
  * @param mapView widok mapy
  * @param motion zapis ruchów mapy do budynku nad kartą V2
+ * @param plan plan piętra budynku przy środku mapy; `null`, gdy planu nie widać
+ * @param onCamera widok mapy po ruchu kamery
  */
 @Composable
 fun CampusMapScreen(
@@ -156,6 +160,8 @@ fun CampusMapScreen(
     onListBuildingClick: (String) -> Unit = onBuildingClick,
     mapView: CampusMapView = MapLibreMapView,
     motion: MapMotion? = null,
+    plan: ShownPlan? = null,
+    onCamera: (MapCamera) -> Unit = {},
 ) {
     val catalog = state.catalog
     val isCovered = contentPadding.calculateBottomPadding() > 0.dp
@@ -192,6 +198,8 @@ fun CampusMapScreen(
                         contentPadding = contentPadding,
                         mapView = mapView,
                         motion = motion,
+                        plan = plan,
+                        onCamera = onCamera,
                         onBuildingClick = onBuildingClick,
                         onEmptyMapClick = onEmptyMapClick,
                         modifier = Modifier.fillMaxSize(),
@@ -213,6 +221,8 @@ private fun CampusMap(
     contentPadding: PaddingValues,
     mapView: CampusMapView,
     motion: MapMotion?,
+    plan: ShownPlan?,
+    onCamera: (MapCamera) -> Unit,
     onBuildingClick: (String) -> Unit,
     onEmptyMapClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -239,10 +249,10 @@ private fun CampusMap(
             val camera = move.camera
             mapView.Show(
                 data = scene.data,
-                selection = scene.selection.copy(barrier = barrierId),
+                selection = scene.selection.copy(barrier = barrierId, plan = plan),
                 move = move,
                 inset = state.inset,
-                onCameraIdle = state::keep,
+                onCameraIdle = { view -> onCamera(view.also { state.keep(it) }) },
                 onBuildingsTouch = { state.touch(it, onBuildingClick, onEmptyMapClick).also { barrierId = null } },
                 onBarrierTouch = { barrierId = it.also { state.dismiss() } },
                 modifier = Modifier.fillMaxSize(),

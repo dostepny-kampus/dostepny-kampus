@@ -17,8 +17,6 @@ import kotlin.coroutines.CoroutineContext
 /**
  * Plany pięter budynków z kopią w telefonie, do rysowania planu bez sieci.
  *
- * TODO(#1476): wiązanie Hilt i pobranie przy otwarciu budynku na mapie.
- *
  * Wymagania: US16.1, NFR-10, NFR-40
  */
 public interface FloorPlans {

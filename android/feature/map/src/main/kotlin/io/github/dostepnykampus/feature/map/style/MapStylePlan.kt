@@ -87,16 +87,14 @@ internal fun planFeatures(floors: Map<String, RoomList>): JsonElement =
     )
 
 /**
- * Warstwy planu w kolorach [colors]: pomieszczenia według grupy funkcji, ich ściany, grubsza ściana piętra i numery
- * sal od powiększenia 19; numer, który zachodzi na inny, znika.
- * Filtry nie przepuszczają niczego, dopóki widok mapy nie wybierze piętra.
- *
- * TODO(#1476): pokazanie pobranego planu i wybranego piętra w widoku mapy.
+ * Warstwy planu w kolorach [colors]: pomieszczenia piętra [floor] według grupy funkcji, ich ściany, grubsza ściana
+ * piętra i numery sal od powiększenia 19; numer, który zachodzi na inny, znika. Bez piętra filtry nie przepuszczają
+ * niczego.
  *
  * Wymagania: US16.1, NFR-16
  */
-internal fun planLayers(colors: PlanColors): List<JsonObject> {
-    val none = planFilter(floor = null, kind = ROOM)
+internal fun planLayers(colors: PlanColors, floor: String? = null): List<JsonObject> {
+    val none = planFilter(floor = floor, kind = ROOM)
     val fill =
         styleLayer(id = PLAN_ROOMS_LAYER, type = "fill", source = PLAN_SOURCE) {
             put(key = "filter", element = none)
@@ -110,11 +108,11 @@ internal fun planLayers(colors: PlanColors): List<JsonObject> {
             source = PLAN_SOURCE,
             color = colors.wall,
             width = OUTLINE_WIDTH,
-            filter = planFilter(floor = null, kind = OUTLINE),
+            filter = planFilter(floor = floor, kind = OUTLINE),
         ),
         JsonObject(
             symbolLayer(id = PLAN_NUMBERS_LAYER, source = PLAN_SOURCE, image = property(IMAGE)) +
-                ("filter" to planFilter(floor = null, kind = NUMBER)) +
+                ("filter" to planFilter(floor = floor, kind = NUMBER)) +
                 ("minzoom" to JsonPrimitive(NUMBERS_MIN_ZOOM)),
         ),
     )
@@ -122,6 +120,18 @@ internal fun planLayers(colors: PlanColors): List<JsonObject> {
 
 /** Nazwa obrazu numeru sali [number]; przedrostek odróżnia go od podpisów budynków. Wymagania: US16.1 */
 internal fun roomNumberImage(number: String): String = "sala: $number"
+
+/**
+ * Pokazuje w stylu z [planLayers] obiekty planu [features] z [planFeatures] i piętro [floor]; bez piętra plan
+ * znika. Wymagania: US16.1
+ */
+internal fun MapStyleTarget.showPlan(floor: String?, features: JsonElement) {
+    data(source = PLAN_SOURCE, geoJson = features.asStyleText())
+    filter(layer = PLAN_ROOMS_LAYER, filter = planFilter(floor = floor, kind = ROOM))
+    filter(layer = PLAN_WALLS_LAYER, filter = planFilter(floor = floor, kind = ROOM))
+    filter(layer = PLAN_OUTLINE_LAYER, filter = planFilter(floor = floor, kind = OUTLINE))
+    filter(layer = PLAN_NUMBERS_LAYER, filter = planFilter(floor = floor, kind = NUMBER))
+}
 
 /** Filtr obiektów rodzaju [kind] piętra [floor]; bez piętra nie przepuszcza niczego. */
 internal fun planFilter(floor: String?, kind: String): JsonElement =

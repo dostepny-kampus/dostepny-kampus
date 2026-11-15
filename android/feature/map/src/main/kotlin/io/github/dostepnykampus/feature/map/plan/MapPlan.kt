@@ -23,8 +23,6 @@ import kotlinx.coroutines.flow.update
 /**
  * Plan piętra pokazany na mapie.
  *
- * TODO(#1476): rysowanie planu wybranego piętra w widoku mapy.
- *
  * Wymagania: US16.1
  *
  * @property building symbol budynku z planem

@@ -12,10 +12,12 @@ import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
+import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
+import io.github.dostepnykampus.feature.map.plan.ShownPlan
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -124,6 +126,7 @@ class CampusMapSelectionStyleTest {
                 data.selection(building = "A-1"),
                 data.selection(building = "A-2", entrance = chosen),
                 data.selection().copy(barrier = "b1"),
+                data.selection().copy(plan = plan()),
             )
         selections.forEach { selection ->
             val ready = JsonStyle(campusMapStyle(data, MapSelection(bounds = selection.bounds), colors))
@@ -147,6 +150,11 @@ class CampusMapSelectionStyleTest {
         val data = sources.getValue(ENTRANCES_LAYER).jsonObject.getValue("data")
         val features = data.jsonObject.getValue("features").jsonArray
         return features.map { it.jsonObject.getValue("properties").jsonObject }
+    }
+
+    private fun plan(): ShownPlan {
+        val floor = RoomList(source = "", floorOutline = building("A-1", name = "").outline, rooms = emptyList())
+        return ShownPlan(building = "A-1", floors = emptyList(), floor = "P0", rooms = mapOf("P0" to floor))
     }
 
     private fun building(symbol: String, name: String): Building {

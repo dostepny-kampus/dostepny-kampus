@@ -10,13 +10,18 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.MapColors
+import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
+import io.github.dostepnykampus.core.model.room.Room
+import io.github.dostepnykampus.core.model.room.RoomCategory
+import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
+import io.github.dostepnykampus.feature.map.plan.ShownPlan
 import io.github.dostepnykampus.feature.map.selectionImages
 import kotlinx.serialization.json.JsonElement
 import org.junit.Assert.assertEquals
@@ -53,8 +58,8 @@ class MapSelectionImagesTest {
         val images = images()
         val target = Recorded()
 
-        val look = selectionLook(data, data.selection(entrance = entrance), colors)
-        target.showSelection(look, selectionImages(entrance, images))
+        val selection = data.selection(entrance = entrance)
+        target.showSelection(selectionLook(data, selection, colors), selectionImages(selection, images))
 
         assertEquals(listOf(entranceCaptionImage("Główne")), target.images)
     }
@@ -65,11 +70,40 @@ class MapSelectionImagesTest {
         val images = images()
         val target = Recorded()
 
-        val look = selectionLook(data, data.selection(building = "C-13"), colors)
-        target.showSelection(look, selectionImages(null, images))
+        val selection = data.selection(building = "C-13")
+        target.showSelection(selectionLook(data, selection, colors), selectionImages(selection, images))
 
         assertEquals(emptyList<String>(), target.images)
     }
+
+    /** Plan dodaje obrazy podpisanych numerów sal tylko wybranego piętra. Wymagania: US16.1 */
+    @Test
+    fun addsNumbersOfChosenFloor() {
+        val rooms =
+            listOf(room("329", isLabelled = true), room("330", isLabelled = false), room(null, isLabelled = true))
+        val floors = mapOf("P0" to floor(rooms), "P1" to floor(listOf(room("101", isLabelled = true))))
+        val plan = ShownPlan(building = "C-13", floors = emptyList(), floor = "P0", rooms = floors)
+        val target = Recorded()
+
+        val selection = data.selection().copy(plan = plan)
+        target.showSelection(selectionLook(data, selection, colors), selectionImages(selection, images()))
+
+        assertEquals("Plan nie dodał numerów sal wybranego piętra", listOf(roomNumberImage("329")), target.images)
+    }
+
+    private fun floor(rooms: List<Room>) =
+        RoomList(source = "", floorOutline = GeoMultiPolygon(emptyList()), rooms = rooms)
+
+    private fun room(number: String?, isLabelled: Boolean) =
+        Room(
+            id = number.orEmpty(),
+            number = number,
+            function = "Sala",
+            category = RoomCategory.CLASSROOM,
+            geometry = GeoMultiPolygon(emptyList()),
+            labelPoint = a,
+            isLabelled = isLabelled,
+        )
 
     private fun images(): MapImages {
         var palette: MapColors? = null
