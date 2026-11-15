@@ -31,8 +31,9 @@ fun AppNavigator.openMarkers(symbol: String) {
  */
 @Composable
 internal fun AppNavigator.Inspection(route: NavKey) {
-    when (route) {
-        is MarkersRoute -> MarkersScreen(symbol = route.buildingSymbol, onBack = { back() })
-        else -> ProgressScreen(ProgressActions(onBack = { back() }, onOpen = { openMarkers(it) }))
+    if (route is MarkersRoute) {
+        MarkersScreen(symbol = route.buildingSymbol, onBack = { back() })
+    } else {
+        ProgressScreen(ProgressActions(onBack = { back() }, onOpen = { openMarkers(it) }))
     }
 }

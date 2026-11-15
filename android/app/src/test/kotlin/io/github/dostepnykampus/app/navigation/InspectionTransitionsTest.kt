@@ -29,9 +29,9 @@ class InspectionTransitionsTest {
     /**
      * „Otwórz” przy budynku w K1 prowadzi do C5 tego budynku.
      *
-     * Wiersz: K1, „Otwórz”, C5, RO-KOO.
+     * Wiersz: K1, „Otwórz”, C5.
      *
-     * Wymagania: US11.3
+     * Wymagania: US11.3, RO-KOO
      */
     @Test
     fun openLeadsToMarkers() {
@@ -42,12 +42,12 @@ class InspectionTransitionsTest {
     /**
      * „Wstecz” z C5 wraca do K1.
      *
-     * Wiersz: C5, „Wstecz”, K1, RO-KOO.
+     * Wiersz: C5, „Wstecz”, K1.
      *
-     * Wymagania: US11.3
+     * Wymagania: US11.3, RO-KOO
      */
     @Test
-    fun backFromMarkersReturnsToProgress() {
+    fun backFromMarkersToProgress() {
         navigator().run {
             openMarkers(SYMBOL)
             back()
@@ -61,7 +61,7 @@ class InspectionTransitionsTest {
      * Wymagania: US11.3
      */
     @Test
-    fun openOutsideProgressChangesNothing() {
+    fun openOutsideProgressIgnored() {
         stack.removeAt(stack.lastIndex)
         navigator().openMarkers(SYMBOL)
         assertEquals(listOf(MapRoute(), AccountRoute), stack, "stos bez K1")
