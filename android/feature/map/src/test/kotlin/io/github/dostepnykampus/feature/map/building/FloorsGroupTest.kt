@@ -107,7 +107,7 @@ class FloorsGroupTest {
     }
 
     private companion object {
-        /** Czas, po którym fala dotknięcia i rozwinięcie opisu na pewno się kończą; dotyk nie zostawia fokusu na zrzucie. */
+        /** Czas, po którym kończą się fala dotknięcia i rozwinięcie opisu; dotyk nie zostawia fokusu. */
         const val RIPPLE_END_MS = 2_000L
 
         val FACTS =
