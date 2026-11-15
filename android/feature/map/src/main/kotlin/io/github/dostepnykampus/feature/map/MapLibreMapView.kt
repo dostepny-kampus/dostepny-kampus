@@ -45,7 +45,6 @@ import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
-import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.campus.symbolsAt
 import io.github.dostepnykampus.feature.map.style.BARRIERS_LAYER
@@ -60,6 +59,8 @@ import io.github.dostepnykampus.feature.map.style.campusMapStyle
 import io.github.dostepnykampus.feature.map.style.labelImage
 import io.github.dostepnykampus.feature.map.style.numbers
 import io.github.dostepnykampus.feature.map.style.rememberMapImages
+import io.github.dostepnykampus.feature.map.style.roomNumberBitmap
+import io.github.dostepnykampus.feature.map.style.roomNumberImage
 import io.github.dostepnykampus.feature.map.style.selectionLook
 import io.github.dostepnykampus.feature.map.style.showSelection
 import io.github.dostepnykampus.feature.map.style.styleBuilder
@@ -155,7 +156,7 @@ object MapLibreMapView : CampusMapView {
             style = style,
             data = data,
             look = look,
-            entrance = selection.entrance,
+            selection = selection,
             images = images,
         )
         DisposableEffect(map, limits) {
@@ -185,27 +186,27 @@ object MapLibreMapView : CampusMapView {
         style: String?,
         data: CampusMapData,
         look: SelectionLook,
-        entrance: SelectedEntrance?,
+        selection: MapSelection,
         images: MapImages,
     ) {
         val map = this
         var loaded by remember { mutableStateOf<Style?>(null) }
         val currentData by rememberUpdatedState(data)
         val currentLook by rememberUpdatedState(look)
-        val currentEntrance by rememberUpdatedState(entrance)
+        val currentSelection by rememberUpdatedState(selection)
         DisposableEffect(map, style, images) {
             loaded = null
             style?.let { json ->
                 map?.setStyle(styleBuilder(json)) { ready ->
                     ready.addMapImages(labels = currentData.labels, images = images)
-                    StyleTarget(ready).showSelection(currentLook, selectionImages(currentEntrance, images))
+                    StyleTarget(ready).showSelection(currentLook, selectionImages(currentSelection, images))
                     loaded = ready
                 }
             }
             onDispose {}
         }
         DisposableEffect(loaded, look) {
-            loaded?.let { StyleTarget(it).showSelection(look, selectionImages(currentEntrance, images)) }
+            loaded?.let { StyleTarget(it).showSelection(look, selectionImages(currentSelection, images)) }
             onDispose {}
         }
     }
@@ -400,6 +401,14 @@ internal fun Style.addMapImages(labels: List<String>, images: MapImages) {
     barrierImages(images).forEach { (name, image) -> addImage(name, image) }
 }
 
-/** Obrazy zależne od zaznaczonego wejścia [selected]: tylko podpis z jego nazwą. Wymagania: US3.3 */
-internal fun selectionImages(selected: SelectedEntrance?, images: MapImages): Map<String, Bitmap> =
-    entranceCaption(selected = selected, colors = images.colors, labelSize = images.labelSize)
+/**
+ * Obrazy zależne od zaznaczenia [selection]: podpis zaznaczonego wejścia z jego nazwą i numery sal wybranego piętra
+ * planu. Wymagania: US3.3, US16.1
+ */
+internal fun selectionImages(selection: MapSelection, images: MapImages): Map<String, Bitmap> {
+    val plan = selection.plan
+    val numbers =
+        plan?.rooms?.get(plan.floor)?.rooms.orEmpty().filter { it.isLabelled }.mapNotNull { it.number }.toSet()
+    val caption = entranceCaption(selected = selection.entrance, colors = images.colors, labelSize = images.labelSize)
+    return caption + numbers.associate { roomNumberImage(it) to roomNumberBitmap(it, images.colors, images.labelSize) }
+}

@@ -7,12 +7,13 @@ package io.github.dostepnykampus.feature.map.campus
 
 import io.github.dostepnykampus.core.model.GeoArea
 import io.github.dostepnykampus.feature.map.area.areaOf
+import io.github.dostepnykampus.feature.map.plan.ShownPlan
 
 /**
  * Zaznaczenie na mapie V1. Zmienia się przy każdym wyborze osoby, a dane katalogu [CampusMapData] zostają te same,
  * więc mapa odróżnia „zmienił się katalog” od „zmieniło się zaznaczenie”.
  *
- * Wymagania: US1.1, US3.3, US1.7, US1.8, BR-G5, US1.5, NFR-21
+ * Wymagania: US1.1, US3.3, US1.7, US1.8, BR-G5, US1.5, NFR-21, US16.1
  *
  * @property building symbol budynku z grubszym obrysem, np. po „Wstecz” z V2; `null` bez zaznaczenia
  * @property entrance wejście z pinezką i podpisem, np. po „Pokaż wejście na mapie”; `null`
@@ -22,6 +23,7 @@ import io.github.dostepnykampus.feature.map.area.areaOf
  * @property barrier identyfikator bariery z otwartym arkuszem; jej znak jest na mapie większy i w obwódce;
  * `null` bez wybranej bariery
  * @property boundary wielokąt granicy terenu pokazanego na mapie; `null`, gdy granicą jest prostokąt [bounds]
+ * @property plan plan piętra budynku przy środku mapy; `null`, gdy planu nie widać
  */
 data class MapSelection(
     val building: String? = null,
@@ -29,6 +31,7 @@ data class MapSelection(
     val bounds: CampusBounds? = null,
     val barrier: String? = null,
     val boundary: GeoArea? = null,
+    val plan: ShownPlan? = null,
 )
 
 /**

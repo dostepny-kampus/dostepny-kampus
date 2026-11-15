@@ -12,6 +12,7 @@ import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
+import io.github.dostepnykampus.feature.map.plan.ShownPlan
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -85,11 +86,29 @@ class MapStylePlanTest {
         assertEquals(listOf(hidden, hidden), filters, "Plan widać bez wybranego piętra")
     }
 
-    private fun layers(): Map<String, JsonObject> {
+    @Test
+    fun showsChosenFloorOfPlan() {
+        val rooms = mapOf("P1" to plan(RoomCategory.OTHER))
+        val plan = ShownPlan(building = "A", floors = emptyList(), floor = "P1", rooms = rooms)
+        val style = style(plan)
+        val layers = style.items("layers").associate { it.jsonObject.text("id") to it.jsonObject }
+
+        val filters = listOf(PLAN_ROOMS_LAYER, PLAN_OUTLINE_LAYER).map { layers.getValue(it).getValue("filter") }
+        val source = style.getValue("sources").jsonObject.getValue(PLAN_SOURCE).jsonObject.getValue("data")
+        assertEquals(
+            listOf(planFilter(floor = "P1", kind = "room"), planFilter(floor = "P1", kind = "outline"), 2),
+            filters + source.jsonObject.items("features").size,
+            "Plan nie pokazuje wybranego piętra z jego obiektami",
+        )
+    }
+
+    private fun layers(): Map<String, JsonObject> =
+        style(plan = null).items("layers").associate { it.jsonObject.text("id") to it.jsonObject }
+
+    private fun style(plan: ShownPlan?): JsonObject {
         val colors = styleColors().copy(plan = TOKENS)
         val data = campusMapData(styleCatalog())
-        val style = Json.parseToJsonElement(campusMapStyle(data, data.selection(), colors)).jsonObject
-        return style.items("layers").associate { it.jsonObject.text("id") to it.jsonObject }
+        return Json.parseToJsonElement(campusMapStyle(data, data.selection().copy(plan = plan), colors)).jsonObject
     }
 
     private fun colorOf(match: List<JsonElement>, category: RoomCategory): String {

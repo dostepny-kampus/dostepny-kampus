@@ -165,7 +165,7 @@ private fun sources(
             put(key = AREA_SOURCE, element = geoJsonSource(featureCollection(area)))
         }
         put(key = CHOSEN_SOURCE, element = geoJsonSource(look.chosenEntrance))
-        put(key = PLAN_SOURCE, element = geoJsonSource(featureCollection(emptyList())))
+        put(key = PLAN_SOURCE, element = geoJsonSource(look.plan))
     }
 
 private fun layers(look: SelectionLook, isBounded: Boolean, colors: MapStyleColors): JsonArray =
@@ -186,7 +186,7 @@ private fun layers(look: SelectionLook, isBounded: Boolean, colors: MapStyleColo
                 paint(OUTLINES_COLOR to look.outlinesColor, "line-width" to JsonPrimitive(OUTLINE_WIDTH))
             },
         )
-        planLayers(colors.plan).forEach { add(it) }
+        planLayers(colors.plan, look.planFloor).forEach { add(it) }
         add(selectedLayer(look.selectedFilter, colors))
         if (isBounded) areaLayers(colors).forEach { add(it) }
         add(marksLayer(look.entrancesFilter, look.entrancesMinZoom))
