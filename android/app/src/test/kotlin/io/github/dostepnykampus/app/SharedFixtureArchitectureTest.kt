@@ -170,7 +170,7 @@ class SharedFixtureArchitectureTest {
         val KNOWN =
             """
                 |AcceptedBarriersCopyTest AccessTokenInterceptorTest AppNavigatorTest AppShellScreenshotTest
-                |AppShellTest ArchitectureTest AreaNeighborTest BarrierCacheDaoTest BarrierNamesTest BarrierSheetTest
+                |AppShellTest ArchitectureTest BarrierCacheDaoTest BarrierNamesTest BarrierSheetTest
                 |BottomBarTest BuildingCacheDaoTest BuildingCardModesTest BuildingCardOfflineTest BuildingCardTest
                 |BuildingCatalogCacheTest BuildingCatalogParserTest BuildingCatalogRepositoryTest BuildingHintTest
                 |BuildingListTest BuildingOnMapCameraTest BuildingsApiTest CampusAreaEdgeDeviceTest CampusAreasPwrTest
@@ -183,10 +183,10 @@ class SharedFixtureArchitectureTest {
                 |FirstLaunchViewModelTest FloorMarkersTest FloorPickerTest GeoAreaJsonTest GnssLocationSwitchTest
                 |GnssPositionFixesTest GnssSatellitesTest GuestSignInTest HelpScreenTest JsonTextCallTest
                 |KDocDescriptionLengthTest LabelPointTest ListEntryTest LocateBuildingTest LocationModuleTest
-                |LocationPermissionTest LoginExpiredGateTest MainActivityTest MapAreaNeighborTest MapAreaPanelTest
+                |LocationPermissionTest LoginExpiredGateTest MainActivityTest MapAreaPanelTest
                 |MapAreaSwitchTest MapAreasTest MapBarrierNamesTest MapBarrierTouchTest MapBarriersLoadTest
                 |MapCameraTest MapCatalogFromFileTest MapControlsTest MapGeometryFlowTest MapGeometryFocusTest
-                |MapGesturesTest MapLimitsTest MapListChoiceRepositoryTest MapOverlayNeighborTest MapOverlayNoticeTest
+                |MapGesturesTest MapLimitsTest MapListChoiceRepositoryTest MapOverlayNoticeTest
                 |MapSceneStateTest MapSelectionImagesTest MapStreamConcurrencyTest MapStyleRememberTest MapTileHttpTest
                 |MapTileNetworkDeviceTest MeasurePathTest MeasureScreenTest MeasureViewModelTest MeasuredPlaceTest
                 |MeasuredReportTest MigrationTest MySubmissionsScreenTest MySubmissionsViewModelTest
