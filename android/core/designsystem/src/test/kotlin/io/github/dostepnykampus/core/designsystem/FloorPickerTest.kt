@@ -53,9 +53,9 @@ class FloorPickerTest {
         parter.assert(radio)
         parter.assertIsNotSelected()
         parter.performClick()
-        assertEquals(listOf(options.items.first()), chosen)
+        assertEquals("Kliknięcie „Parter” wybiera pierwszą opcję", listOf(options.items.first()), chosen)
         val bounds = compose.onNodeWithText("Parter").getUnclippedBoundsInRoot()
-        assertTrue(bounds.bottom - bounds.top >= 48.dp)
+        assertTrue("Chip ma mieć co najmniej 48 dp wysokości", bounds.bottom - bounds.top >= 48.dp)
     }
 
     /** Lista: opcje na całą szerokość, każda co najmniej 56 dp. Wymagania: NFR-17 */
@@ -63,8 +63,8 @@ class FloorPickerTest {
     fun fillsListWidth() {
         show(FloorPickerLayout.LIST)
         val bounds = compose.onNodeWithText("Parter").getUnclippedBoundsInRoot()
-        assertEquals(360.dp, bounds.right - bounds.left)
-        assertTrue(bounds.bottom - bounds.top >= 56.dp)
+        assertEquals("Opcja ma zajmować całą szerokość", 360.dp, bounds.right - bounds.left)
+        assertTrue("Opcja ma mieć co najmniej 56 dp wysokości", bounds.bottom - bounds.top >= 56.dp)
     }
 
     /** Czcionka 200 %: napisy rosną, a cel dotyku zostaje co najmniej 48 dp. Wymagania: NFR-20 */
@@ -73,6 +73,6 @@ class FloorPickerTest {
     fun fitsChipsInLargeFont() {
         show(FloorPickerLayout.CHIPS)
         val bounds = compose.onNodeWithText("1 piętro").getUnclippedBoundsInRoot()
-        assertTrue(bounds.bottom - bounds.top >= 48.dp)
+        assertTrue("Chip przy czcionce 200 % ma mieć co najmniej 48 dp", bounds.bottom - bounds.top >= 48.dp)
     }
 }

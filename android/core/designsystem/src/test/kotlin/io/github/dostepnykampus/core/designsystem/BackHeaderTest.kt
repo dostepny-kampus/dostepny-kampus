@@ -43,7 +43,10 @@ class BackHeaderTest {
         show()
         val back = compose.onNodeWithText("Wstecz").getUnclippedBoundsInRoot()
         val title = compose.onNodeWithText(TITLE).getUnclippedBoundsInRoot()
-        assertTrue(title.left > back.right && title.top < back.bottom)
+        assertTrue(
+            "Tytuł ma stać na prawo od „Wstecz” w tym samym wierszu",
+            title.left > back.right && title.top < back.bottom,
+        )
     }
 
     /**
@@ -57,7 +60,11 @@ class BackHeaderTest {
         show()
         val back = compose.onNodeWithText("Wstecz").getUnclippedBoundsInRoot()
         val title = compose.onNodeWithText(TITLE).getUnclippedBoundsInRoot()
-        assertTrue(title.top > back.bottom)
-        assertEquals(listOf(16f, 328f), listOf(title.left.value, (title.right - title.left).value))
+        assertTrue("Tytuł ma być pod „Wstecz”", title.top > back.bottom)
+        assertEquals(
+            "Tytuł ma zaczynać się na 16 dp i mieć 328 dp szerokości",
+            listOf(16f, 328f),
+            listOf(title.left.value, (title.right - title.left).value),
+        )
     }
 }

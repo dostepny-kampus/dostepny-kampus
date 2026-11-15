@@ -65,7 +65,7 @@ class BottomBarTest {
         }
         compose.onNodeWithText("Pomoc").assertIsSelected()
         compose.onNodeWithText("Mapa").assertIsNotSelected().performClick()
-        assertEquals(listOf(0), chosen)
+        assertEquals("Kliknięcie „Mapa” wybiera kartę 0", listOf(0), chosen)
     }
 
     @Test
@@ -90,7 +90,7 @@ class BottomBarTest {
     fun drawsBarAt360Font200() {
         capture()
         val sizes = listOf("Mapa", "Zgłoś barierę", "Pomoc", "Konto", "Konto i\u00A0praca").map(::fontSizeOf)
-        assertEquals(1, sizes.distinct().size)
+        assertEquals("Wszystkie napisy mają ten sam rozmiar czcionki", 1, sizes.distinct().size)
     }
 
     private fun capture() {
