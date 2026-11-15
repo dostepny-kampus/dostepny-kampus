@@ -11,7 +11,7 @@ package io.github.dostepnykampus.building.room;
  * <p>Wymagania: US16, NFR-40</p>
  *
  * @param id Identyfikator piętra, ten sam co piętro pomieszczenia
- * @param label Nazwa piętra z danych PWr
+ * @param label Etykieta piętra wyliczona z nazwy w danych PWr, np. „2 piętro”
  * @param order Numer piętra; większy to wyżej, 0 to parter
  * @since 0.1.0
  */

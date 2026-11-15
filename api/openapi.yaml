@@ -19,7 +19,7 @@ info:
     | `Entrance`, `main` | wejście, wejście główne |
     | `marking`: `ACCESSIBLE`, `INACCESSIBLE`, `NO_DATA` | oznaczenie wejścia: dostępne, niedostępne, brak danych |
     | `markingSource`: `IMPORT`, `WALKTHROUGH` | źródło oznaczenia: import, obchód |
-    | `Floor`, `label` | piętro, etykieta piętra z danych PWr |
+    | `Floor`, `label` | piętro, etykieta piętra wyliczona z nazwy w danych PWr |
     | `Room` | pomieszczenie z planu piętra |
     | `source` | źródło danych w podpisie (NFR-40) |
     | `Submission` | zgłoszenie |
@@ -778,7 +778,7 @@ components:
       required: [id, label, order]
       properties:
         id: {type: string, description: "Identyfikator piętra."}
-        label: {type: string, description: "Etykieta piętra z danych PWr, pokazywana w przełączniku pięter."}
+        label: {type: string, description: "Etykieta piętra wyliczona z nazwy w danych PWr bez symbolu budynku, np. \"Parter\", \"Piwnica\", \"2 piętro\"."}
         order: {type: integer, description: "Kolejność piętra w budynku; większa liczba to wyższe piętro."}
     FloorList:
       type: object

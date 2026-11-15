@@ -75,7 +75,7 @@ final class ArcgisPlans implements PlanSource {
             .filter(floor -> !floor.path("LEVEL_ID").asString("").isBlank()).map(
                 floor -> new PlanFloor(
                     floor.path("LEVEL_ID").asString("").strip(),
-                    floor.path("NAME").asString("").strip(),
+                    new FloorName(floor.path("NAME").asString("")).label(),
                     floor.path("LEVEL_NUMBER").asInt(0)
                 )
             ).toList();
