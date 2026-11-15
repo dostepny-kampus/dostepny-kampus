@@ -25,7 +25,7 @@ internal fun floorOptions(plan: ShownPlan): FloorOptions =
     FloorOptions(plan.floors.reversed().map { FloorOption(key = it.id, label = it.label, short = "${it.order}") })
 
 /**
- * Kolumna pięter planu [plan] przy prawej krawędzi mapy (R9), najwyżej na resztę wysokości kolumny; bez planu
+ * Kolumna pięter planu [plan] przy lewej krawędzi mapy, najwyżej na resztę wysokości kolumny; bez planu
  * nic nie pokazuje. Wybór piętra idzie do [onChoose] z symbolem budynku i identyfikatorem piętra.
  *
  * Wymagania: US16.1, NFR-17, NFR-18, NFR-20
