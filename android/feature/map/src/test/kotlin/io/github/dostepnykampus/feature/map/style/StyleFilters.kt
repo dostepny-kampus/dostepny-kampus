@@ -29,10 +29,7 @@ private fun evaluate(expression: JsonElement, properties: JsonObject, zoom: Doub
         "get" -> properties[arguments[0].jsonPrimitive.content] ?: JsonNull
         "has" -> JsonPrimitive(arguments[0].jsonPrimitive.content in properties)
         "zoom" -> JsonPrimitive(zoom)
-        else -> {
-            val values = arguments.map { evaluate(expression = it, properties = properties, zoom = zoom) }
-            JsonPrimitive(logic(name = name, values = values))
-        }
+        else -> JsonPrimitive(logic(name = name, values = arguments.map { evaluate(it, properties, zoom) }))
     }
 }
 
