@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.submission.web;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.dostepnykampus.barrier.submission.ReviewDecision;
 import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
@@ -19,14 +20,15 @@ import org.jspecify.annotations.Nullable;
  * @param decision Rodzaj decyzji: ACCEPT albo REJECT
  * @param version Wersja zgłoszenia, którą ocenił Weryfikator
  * @param rejectionReason Powód odrzucenia, wymagany przy REJECT
- * @param duplicateOfSubmissionId Wcześniejsze zgłoszenie przy duplikacie; jeszcze nie zapisywane
+ * @param duplicateOf Wcześniejsze zgłoszenie przy duplikacie; jeszcze nie zapisywane
  * @param barrierType Typ bariery ustalony przy przyjęciu
  * @param severity Uciążliwość ustalona przy przyjęciu
  * @since 0.1.0
  */
 record ReviewRequest(
     @Nullable String decision, @Nullable Integer version, @Nullable String rejectionReason,
-    @Nullable UUID duplicateOfSubmissionId, @Nullable String barrierType,
+    @JsonProperty("duplicateOfSubmissionId") @Nullable UUID duplicateOf,
+    @Nullable String barrierType,
     @Nullable Integer severity
 ) {
 

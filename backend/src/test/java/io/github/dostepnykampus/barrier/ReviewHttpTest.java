@@ -35,9 +35,6 @@ final class ReviewHttpTest {
      */
     private static final UUID PHOTO = UUID.fromString("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d");
 
-    /** Przyjęcie wersji 1. */
-    private static final String ACCEPT = "{\"decision\":\"ACCEPT\",\"version\":1}";
-
     @Test
     void refusesReviewOfOwnSubmission(final WebApplicationContext context)
         throws Exception {
@@ -140,7 +137,8 @@ final class ReviewHttpTest {
         throws Exception {
         return context.getBean(MockMvc.class).perform(
             MockMvcRequestBuilders.post("/submissions/{id}/review", id)
-                .contentType(MediaType.APPLICATION_JSON).content(ReviewHttpTest.ACCEPT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"decision\":\"ACCEPT\",\"version\":1}")
                 .with(new AsVerifier())
         ).andReturn().getResponse().getStatus();
     }
