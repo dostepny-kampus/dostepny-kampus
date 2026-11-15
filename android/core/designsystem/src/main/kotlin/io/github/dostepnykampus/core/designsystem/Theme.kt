@@ -19,8 +19,6 @@ private val LocalStatusColors = staticCompositionLocalOf { LightStatusColors }
 
 private val LocalMapColors = staticCompositionLocalOf { LightMapColors }
 
-private val LocalMapOpacity = staticCompositionLocalOf { LightMapOpacity }
-
 private val AtkinsonHyperlegibleNext =
     FontFamily(
         Font(R.font.atkinson_hyperlegible_next_regular, FontWeight.Normal),
@@ -48,7 +46,6 @@ public fun DostepnyKampusTheme(darkTheme: Boolean = isSystemInDarkTheme(), conte
     CompositionLocalProvider(
         LocalStatusColors provides if (darkTheme) DarkStatusColors else LightStatusColors,
         LocalMapColors provides if (darkTheme) DarkMapColors else LightMapColors,
-        LocalMapOpacity provides if (darkTheme) DarkMapOpacity else LightMapOpacity,
     ) {
         MaterialTheme(
             colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme,
@@ -71,10 +68,10 @@ public object DostepnyKampusTheme {
         @Composable @ReadOnlyComposable
         get() = LocalMapColors.current
 
-    /** Krycie warstw mapy (sekcja `mapa.krycie`) do stylu mapy. Wymagania: US1.7 */
+    /** Krycie warstw mapy (sekcja `mapa.krycie`) do stylu mapy, według [isDark]. Wymagania: US1.7 */
     public val mapOpacity: MapOpacity
         @Composable @ReadOnlyComposable
-        get() = LocalMapOpacity.current
+        get() = if (isDark) DarkMapOpacity else LightMapOpacity
 
     /**
      * Czy obowiązuje ciemny schemat kolorów z tokenów, wybrany w [DostepnyKampusTheme] przez `darkTheme`. Porównuje
