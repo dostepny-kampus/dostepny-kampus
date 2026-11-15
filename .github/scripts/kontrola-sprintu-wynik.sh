@@ -53,7 +53,7 @@ tresc="$(mktemp)"
 cat >"$tresc" <<EOF
 ### Problem
 
-Ciężka kontrola sprintu (APK, emulatory, pełny test systemowy, buildHealth) jest czerwona na \`${GALAZ}\` dwa razy z rzędu na commicie ${SHA}: ${ADRES}
+Ciężka kontrola sprintu (APK, emulatory, pełny test systemowy, buildHealth) jest czerwona na \`${GALAZ}\` na commicie ${SHA}: ${ADRES}
 
 Nieudane zadania:
 ${nieudane:-- brak danych}
