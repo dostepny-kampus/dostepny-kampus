@@ -249,7 +249,7 @@ jobs:
     needs: [porownanie, zmiany]
     # APK i analiza zależności: PR i przebieg na wskazanym commicie (inputs.sha), nie grupa kolejki ani push; w kolejce
     # nie padały, a kontrola sprintu sprawdza głowę sprintu po scaleniu.
-    if: ${{ !cancelled() && (inputs.sha || github.event_name == 'pull_request' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true')) }}
+    if: &warunek-apk ${{ !cancelled() && (inputs.sha || github.event_name == 'pull_request' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -491,7 +491,7 @@ jobs:
   analiza-zaleznosci:
     # Jak `apk`: PR i kontrola sprintu, bez grupy kolejki; błąd analizy zatrzymuje PR przez check `budowanie`.
     needs: [porownanie, zmiany]
-    if: ${{ !cancelled() && (inputs.sha || github.event_name == 'pull_request' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true')) }}
+    if: *warunek-apk
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
