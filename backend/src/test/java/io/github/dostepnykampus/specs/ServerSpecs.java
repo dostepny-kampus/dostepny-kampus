@@ -32,7 +32,8 @@ import org.junit.platform.suite.api.Suite;
     key = Constants.GLUE_PROPERTY_NAME, value = "io.github.dostepnykampus.specs"
 )
 @ConfigurationParameter(
-    key = Constants.FILTER_TAGS_PROPERTY_NAME, value = "@serwer and not @do-zrobienia"
+    key = Constants.FILTER_TAGS_PROPERTY_NAME,
+    value = "@serwer and not @do-zrobienia and not @usluga-logowania"
 )
 public final class ServerSpecs {
 
