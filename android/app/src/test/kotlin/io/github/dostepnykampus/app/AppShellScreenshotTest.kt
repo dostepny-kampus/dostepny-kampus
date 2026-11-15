@@ -190,8 +190,8 @@ class AppShellScreenshotTest {
     }
 
     @Test
+    @Config(qualifiers = "+night")
     fun drawsDarkSheet() {
-        RuntimeEnvironment.setQualifiers("+night")
         capture()
     }
 

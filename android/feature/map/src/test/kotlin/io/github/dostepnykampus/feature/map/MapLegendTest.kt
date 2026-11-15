@@ -34,7 +34,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
@@ -73,8 +72,8 @@ class MapLegendTest {
     }
 
     @Test
+    @Config(qualifiers = "+night")
     fun us1_4_hifi_motyw_ciemny() {
-        RuntimeEnvironment.setQualifiers("+night")
         compose.setContent { Legend(isOpenAtStart = true) }
         compose.onRoot().captureRoboImage()
     }

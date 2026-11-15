@@ -62,8 +62,8 @@ class HelpScreenshotTest {
     }
 
     @Test
+    @Config(qualifiers = "+night")
     fun drawsDarkStep1() {
-        RuntimeEnvironment.setQualifiers("+night")
         capture(isFirstStep = true)
     }
 
@@ -81,8 +81,8 @@ class HelpScreenshotTest {
     }
 
     @Test
+    @Config(qualifiers = "+night")
     fun drawsDarkStep2() {
-        RuntimeEnvironment.setQualifiers("+night")
         capture(isFirstStep = false)
     }
 

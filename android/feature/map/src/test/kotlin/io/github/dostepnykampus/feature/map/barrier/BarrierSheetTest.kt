@@ -39,7 +39,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import java.time.Instant
@@ -106,8 +105,8 @@ class BarrierSheetTest {
 
     /** Zrzut do porównania z makietą hi-fi „m-v1-mapa-bariera”, motyw ciemny. */
     @Test
+    @Config(qualifiers = "+night")
     fun matchesDarkMockup() {
-        RuntimeEnvironment.setQualifiers("+night")
         compose.setContent { Sheet(inBuilding()) }
         compose.onRoot().captureRoboImage()
     }
