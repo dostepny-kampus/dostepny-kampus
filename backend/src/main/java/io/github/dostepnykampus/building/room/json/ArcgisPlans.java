@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.building.room.json;
 
+import io.github.dostepnykampus.building.room.PlanEntrance;
 import io.github.dostepnykampus.building.room.PlanFloor;
 import io.github.dostepnykampus.building.room.PlanRoom;
 import io.github.dostepnykampus.building.room.PlanSource;
@@ -24,7 +25,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Odczyt pięter i pomieszczeń z warstw usługi ArcGIS PWr (FeatureServer) w formacie
+ * Odczyt pięter, pomieszczeń i wejść z warstw usługi ArcGIS PWr (FeatureServer) w formacie
  * GeoJSON w układzie WGS 84; kolejne strony wyników są pobierane do ostatniej. Wielokąt
  * pomieszczenia staje się konturem MultiPolygon, pomieszczenie bez wielokąta jest pomijane.
  * Piętro bez identyfikatora LEVEL_ID jest pomijane. Wielkość liter nazw pól pomieszczenia jest
@@ -94,6 +95,17 @@ final class ArcgisPlans implements PlanSource {
                 )
             ).stream()
         ).toList();
+    }
+
+    @Override
+    public List<PlanEntrance> entrances(final String service, final int layer) {
+        return this.features(service, layer, "*", true).stream()
+            .filter(feature -> "Point".equals(feature.path("geometry").path("type").asString("")))
+            .filter(feature -> !ArcgisPlans.field(feature, "pietro").isEmpty()).map(
+                feature -> new PlanEntrance(
+                    ArcgisPlans.field(feature, "pietro"), feature.get("geometry").toString()
+                )
+            ).toList();
     }
 
     private static String field(final JsonNode feature, final String... names) {

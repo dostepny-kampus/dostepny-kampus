@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.building.room.application;
 
+import io.github.dostepnykampus.building.room.PlanEntrance;
 import io.github.dostepnykampus.building.room.PlanFloor;
 import io.github.dostepnykampus.building.room.PlanRoom;
 import io.github.dostepnykampus.building.room.PlanSource;
@@ -37,6 +38,14 @@ final class PlanImportTest {
             new PlanSettings.Layer("D-1", "D1D2", "K1.D1", 5, 1, 0),
             new PlanSettings.Layer("D-2", "D1D2", "K1.D2", 5, 3, 0)
         )
+    );
+
+    /**
+     * Piętra wspólnej warstwy pięter dwóch budynków.
+     */
+    private static final List<PlanFloor> FLOORS = List.of(
+        new PlanFloor("K1.D1.P0", "Bud. D1 parter", 0),
+        new PlanFloor("K1.D2.P0", "Bud. D2 parter", 0)
     );
 
     @Test
@@ -85,10 +94,7 @@ final class PlanImportTest {
         return new PlanSource() {
             @Override
             public List<PlanFloor> floors(final String service, final int layer) {
-                return List.of(
-                    new PlanFloor("K1.D1.P0", "Bud. D1 parter", 0),
-                    new PlanFloor("K1.D2.P0", "Bud. D2 parter", 0)
-                );
+                return PlanImportTest.FLOORS;
             }
 
             @Override
@@ -98,6 +104,11 @@ final class PlanImportTest {
                         String.format("%s/%d", service, layer), "K1.D1.P0", "1", "Sala", "{}"
                     )
                 );
+            }
+
+            @Override
+            public List<PlanEntrance> entrances(final String service, final int layer) {
+                return List.of();
             }
         };
     }

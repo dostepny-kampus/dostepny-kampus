@@ -8,9 +8,11 @@ package io.github.dostepnykampus.building.room;
 import java.util.List;
 
 /**
- * Plany pięter z warstw pięter i pomieszczeń usługi FeatureServer.
+ * Plany pięter z warstw pięter, pomieszczeń i wejść usługi FeatureServer.
  *
- * <p>Wymagania: US16, NFR-40</p>
+ * <p>TODO(#1472): wejścia czytać w imporcie planów i dopasować piętro wejść budynku.</p>
+ *
+ * <p>Wymagania: US16, US18.2, NFR-40</p>
  *
  * @since 0.1.0
  */
@@ -33,4 +35,13 @@ public interface PlanSource {
      * @return Pomieszczenia z konturem w kolejności usługi
      */
     List<PlanRoom> rooms(String service, int layer);
+
+    /**
+     * Wejścia z warstwy wejść; wejście bez piętra albo bez punktu jest pomijane.
+     *
+     * @param service Adres usługi FeatureServer bez końcowego ukośnika
+     * @param layer Numer warstwy wejść
+     * @return Wejścia z piętrem w kolejności usługi
+     */
+    List<PlanEntrance> entrances(String service, int layer);
 }
