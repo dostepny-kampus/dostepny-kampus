@@ -14,7 +14,7 @@ Konwencje opisuje strona [Makiety](index.md). Stan, który różni się jednym n
 | L1 Prośba o logowanie | zwykły, brak sieci | wejście z „Konto”, błąd |
 | L2 Konto | Odwiedzający, rola pracownicza, klauzula, wycofanie zgody | brak sieci |
 
-Pole tekstowe, przełącznik „Mapa” i „Lista budynków”, mapa z podpisem OpenStreetMap i przyciski mapy pochodzą z `_wspolne.iuml`, tak jak na C1 i R1. W pliku `_odwiedzajacy.iuml` są numer kroku V4 i V5 oraz części karty budynku V2: góra karty, wejście, grupy z planów PWr i dół karty. Każdy przycisk na pełną szerokość ma tę samą szerokość na wszystkich ekranach.
+Pole tekstowe, mapa z podpisem OpenStreetMap i przyciski mapy pochodzą z `_wspolne.iuml`, tak jak na C1 i R1. W pliku `_odwiedzajacy.iuml` są numer kroku V4 i V5 oraz części karty budynku V2: góra karty, wejście, grupy z planów PWr i dół karty. Każdy przycisk na pełną szerokość ma tę samą szerokość na wszystkich ekranach.
 
 ## V1 Mapa kampusu
 
@@ -30,7 +30,7 @@ Czynność główna: wpisanie symbolu budynku w pole na górze ekranu.
 | --- | --- |
 | Nagłówek „Mapa kampusu” bez „Wstecz”, bo to ekran startowy | wymagania wspólne, NFR-15 |
 | Pole „Wpisz symbol budynku, np. C-13” na pełną szerokość, pierwsze pod nagłówkiem | US1.1, PW-8 |
-| Przełącznik „Mapa” i „Lista budynków”; wybraną pozycję widać po kształcie pola | NFR-19, NFR-21 |
+| „Pokaż listę” w wierszu tytułu; na liście „Pokaż mapę” | NFR-19 |
 | Przycisk terenu nad „Legendą” z nazwą wybranego terenu, np. „Kampus główny”; otwiera panel „Teren na mapie” | US1.6, US1.7, NFR-17, NFR-18 |
 | „ⓘ” przy podpisie otwiera arkusz „Legenda”: znaki mapy i planu z napisami, na końcu źródła | US1.4, NFR-21, decyzja 48 |
 | Zastępnik mapy: mapa ulic, kontury budynków, bariery ze zgłoszeń przyjętych | US1, US1.3, US10.6, NFR-11 |
@@ -67,7 +67,7 @@ Czynność główna: dotknięcie budynku na liście, które otwiera V2.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Lista budynków” wybrana w przełączniku | NFR-19 |
+| Lista otwarta przyciskiem „Pokaż listę”; w wierszu tytułu „Pokaż mapę” | NFR-19 |
 | Pozycja: „Budynek A-1”, nazwa z danych, bariery z uciążliwością tekstem i ikoną; cała ramka pozycji to jeden cel dotyku | NFR-19, US1.3, NFR-21, NFR-17 |
 | Bariery A-1 jak we wzorcu V2: schody przy wejściu głównym [1], pozostałe jako zastępnik | US1.3, BR-7 |
 | Lista daje tę samą informację co mapa, więc jest drogą dla TalkBack | NFR-19, NFR-18 |
@@ -80,12 +80,12 @@ Czynność główna: dotknięcie budynku na liście, które otwiera V2.
 
 ![Makieta V1 w stanie pustym: komunikat Nie znaleźliśmy budynku z przyciskiem Lista budynków pod polem symbolu](../../_generated/m-v1-mapa-pusty.svg)
 
-Czynność główna: „Lista budynków” w komunikacie, gdy wyszukiwanie nic nie dało.
+Czynność główna: „Pokaż listę” w komunikacie, gdy wyszukiwanie nic nie dało.
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | Komunikat z katalogu; wpisany tekst jako zastępnik | UC1 3a, NFR-50, PW-9 |
-| Przycisk „Lista budynków” przełącza widok na listę | UC1 3a, NFR-19 |
+| Przycisk „Pokaż listę” przełącza widok na listę | UC1 3a, NFR-19 |
 | Komunikat stoi zaraz pod polem, więc osoba widzi go tam, gdzie pisała | NFR-15 (WCAG 3.3.1) |
 
 ### V1: brak sieci
@@ -268,7 +268,7 @@ Czynność główna: „Sprawdź, którędy wejść”.
 | Element | AC/BR/NFR |
 | --- | --- |
 | Mapa z konturem budynku na środku, wyróżnionym; mapa pod kartą bez nazw dla TalkBack | US2.8, NFR-19 |
-| Przyciski mapy nad kartą: „Powiększ”, „Pomniejsz” i strzałki; bez nagłówka, pola symbolu i przełącznika | NFR-53, decyzja 151 |
+| Przyciski mapy nad kartą: „Powiększ”, „Pomniejsz” i strzałki; bez wiersza tytułu i pola symbolu | NFR-53, decyzja 151 |
 | Uchwyt: przycisk „Rozwiń opis budynku” ze stanem; otwiera pełny ekran | US2.8, NFR-18, NFR-53 |
 | Wiersz o wejściach zamiast chipów; inne napisy: „Brak wejścia dostępnego”, „Brak danych o wejściach” | US2.8, US3.1, NFR-21 |
 | „Sprawdź, którędy wejść” wypełniony i obrysowany „Zamknij”; bez „Pokaż budynek na mapie” | US2.8, US3.2, NFR-53 |
