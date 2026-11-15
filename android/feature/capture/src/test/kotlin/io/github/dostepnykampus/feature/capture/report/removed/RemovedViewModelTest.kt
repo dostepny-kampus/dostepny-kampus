@@ -80,8 +80,8 @@ class RemovedViewModelTest {
             viewModel.send()
             runCurrent()
             val expected = RemovedUiState(previous = lift, isPhotoMissing = true, stage = RemovedStage.EDITING)
-            assertEquals(expected, viewModel.uiState.value)
-            assertEquals(emptyList<Any>(), saved)
+            assertEquals(expected, viewModel.uiState.value, "brak zdjęcia zatrzymuje wysłanie")
+            assertEquals(emptyList<Any>(), saved, "bez zdjęcia nic nie zapisano")
         }
 
     /**
@@ -109,8 +109,8 @@ class RemovedViewModelTest {
                     replacesSubmissionId = "tb9",
                     isBarrierRemoved = true,
                 )
-            assertEquals(listOf(expected to listOf(photo)), saved)
-            assertEquals(RemovedStage.SAVED, viewModel.uiState.value.stage)
+            assertEquals(listOf(expected to listOf(photo)), saved, "zapisana zmiana ze zdjęciem")
+            assertEquals(RemovedStage.SAVED, viewModel.uiState.value.stage, "etap po zapisie")
         }
 
     /** Brak miejsca w telefonie zostawia zdjęcie i pozwala wysłać ponownie. Wymagania: NFR-7 */
@@ -123,12 +123,12 @@ class RemovedViewModelTest {
             viewModel.send()
             runCurrent()
 
-            assertEquals(RemovedStage.SAVE_FAILED, viewModel.uiState.value.stage)
-            assertEquals(emptyList<Any>(), saved)
+            assertEquals(RemovedStage.SAVE_FAILED, viewModel.uiState.value.stage, "etap po błędzie zapisu")
+            assertEquals(emptyList<Any>(), saved, "nic nie zapisano po błędzie")
             failure = null
             viewModel.send()
             runCurrent()
 
-            assertEquals(RemovedStage.SAVED, viewModel.uiState.value.stage)
+            assertEquals(RemovedStage.SAVED, viewModel.uiState.value.stage, "etap po ponownym zapisie")
         }
 }
