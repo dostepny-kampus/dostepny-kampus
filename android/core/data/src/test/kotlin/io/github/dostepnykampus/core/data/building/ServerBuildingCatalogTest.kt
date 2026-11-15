@@ -57,6 +57,21 @@ class ServerBuildingCatalogTest {
         assertEquals(listOf("A-2", "A-10", "C-1"), catalog().entrances.map { it.buildingSymbol })
     }
 
+    /** Wiersz: plan pięter ma tylko budynek szczegółowy z listy serwera; z pliku nie ma żadnego. Wymagania: BR-G1 */
+    @Test
+    fun marksDetailedFromServer() {
+        val outline = square(SERVER_SPAN)
+        val buildings =
+            listOf(
+                apiBuilding(symbol = "A-1", name = "A-1", outline = outline, level = DetailLevel.DETAILED),
+                apiBuilding(symbol = "A-2", name = "A-2", outline = outline),
+            )
+        val server = catalog { ServerReply.Ok(BuildingList(source = SERVER_SOURCE, buildings = buildings)) }
+
+        val offline = catalog { ServerReply.Offline }
+        assertEquals(listOf(setOf("A-1"), emptySet()), listOf(server.detailed, offline.detailed))
+    }
+
     @Test
     fun usesAssetOnNetworkError() {
         val failed = catalog { ServerReply.Offline }
@@ -199,10 +214,15 @@ class ServerBuildingCatalogTest {
             ),
         )
 
-    private fun apiBuilding(symbol: String, name: String, outline: GeoPolygon): ApiBuilding =
+    private fun apiBuilding(
+        symbol: String,
+        name: String,
+        outline: GeoPolygon,
+        level: DetailLevel = DetailLevel.BASIC,
+    ): ApiBuilding =
         ApiBuilding(
             building = Building(symbol = symbol, name = name, outline = outline),
-            detailLevel = DetailLevel.BASIC,
+            detailLevel = level,
         )
 
     private fun square(span: Double): GeoPolygon =
