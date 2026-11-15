@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.map
 
 import android.provider.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -29,6 +30,7 @@ import io.github.dostepnykampus.feature.map.camera.ENTRANCE_ZOOM
 import io.github.dostepnykampus.feature.map.camera.FreeMap
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
+import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.camera.byControl
 import io.github.dostepnykampus.feature.map.camera.cameraTransition
@@ -124,9 +126,9 @@ internal class MapSceneState(
  * Stan sceny mapy z danych [layers], katalogu [catalog], zaznaczenia [focus] z trasy i nazwy terenu [area]
  * wybranego przez osobę, dla mapy o rozmiarze [size] zasłoniętej od dołu arkuszem V2 na wysokość
  * [cover]. Widok kamery i lista budynków do wyboru są zapisywane,
- * więc wracają po „Wstecz” z V2 i po obrocie ekranu.
+ * więc wracają po „Wstecz” z V2 i po obrocie ekranu. Każdy ruch nad kartą do nowego budynku trafia do [motion].
  *
- * Wymagania: US1.7, NFR-22
+ * Wymagania: US1.7, NFR-22, NFR-56
  */
 @Composable
 internal fun rememberMapSceneState(
@@ -136,6 +138,7 @@ internal fun rememberMapSceneState(
     area: String?,
     cover: Dp,
     size: IntSize,
+    motion: MapMotion? = null,
 ): MapSceneState {
     val scene = rememberMapScene(layers = layers, catalog = catalog, focus = focus, area = area)
     val selection = scene?.selection
@@ -156,6 +159,7 @@ internal fun rememberMapSceneState(
         remember(selection?.building, outline != null) {
             pickMove(from = last.startOr(uncovered), outline = outline, free = free, scale = scale, limits = limits)
         }
+    motion.RecordPick(pick)
     val card = rememberCardMove(building = selection?.building, pick = pick)
     val above = card.move?.takeIf { isCovered }
     val move = above ?: uncovered?.byControl()
@@ -235,6 +239,12 @@ private class ShownCamera {
     fun keep(shown: MapCamera?) {
         camera = shown
     }
+}
+
+@Composable
+private fun MapMotion?.RecordPick(pick: CameraTransition?) {
+    val motion = this
+    LaunchedEffect(motion, pick) { if (motion != null && pick != null) motion.record(pick) }
 }
 
 private fun pickMove(
