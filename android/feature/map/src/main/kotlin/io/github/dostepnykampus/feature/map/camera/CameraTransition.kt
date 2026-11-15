@@ -1,0 +1,137 @@
+/*
+ * Dostępny Kampus
+ * Author: Vladyslav Yevkov
+ * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+ */
+package io.github.dostepnykampus.feature.map.camera
+
+import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.hypot
+import kotlin.math.ln
+import kotlin.math.pow
+import kotlin.math.roundToLong
+import kotlin.math.sqrt
+
+private const val FLIGHT_CURVE = 1.42
+private const val VISIBLE_MILLIS = 300.0
+private const val NEAR_MILLIS = 400.0
+private const val FLIGHT_MIN_MILLIS = 400.0
+private const val FLIGHT_MAX_MILLIS = 1500.0
+private const val FLIGHT_MILLIS_PER_PATH = 250.0
+private const val WORLD_DP_AT_ZOOM_0 = 512.0
+private const val FULL_TURN_DEGREES = 360.0
+private const val SAME_PLACE_DP = 1e-6
+
+/**
+ * Rodzaj ruchu mapy do wybranego budynku.
+ *
+ * Wymagania: US2.8, NFR-56
+ */
+internal enum class CameraMotion {
+    /** Bez ruchu: systemowe „Usuń animacje”, od razu stan końcowy. */
+    NONE,
+
+    /** Przesunięcie, z ewentualną zmianą powiększenia, po krzywej MapLibre. */
+    EASE,
+
+    /** Przelot: oddalenie, przesunięcie i przybliżenie jednym ruchem (van Wijk–Nuij). */
+    FLIGHT,
+}
+
+/**
+ * Ruch mapy do budynku: widok docelowy [camera] dla wolnej części mapy (dopełnienie arkusza ustawia wołający),
+ * rodzaj ruchu [motion] i jego czas [durationMillis].
+ *
+ * Wymagania: US2.8, NFR-56
+ */
+internal data class CameraTransition(val camera: MapCamera, val motion: CameraMotion, val durationMillis: Long)
+
+/**
+ * Ruch mapy z widoku [from] do budynku o prostokącie [outline] w wolnej części mapy [free] przy systemowej
+ * skali animacji [animationScale]. Rodzaj zależy tylko od położenia budynku względem widoku: cały kontur
+ * widoczny — przesunięcie 300 ms; środek budynku najwyżej szerokość wolnej mapy od środka widoku —
+ * przesunięcie 400 ms; dalej — przelot, którego czas rośnie z drogą od 400 ms do najwyżej 1,5 s.
+ * Powiększenie [from] zostaje: mniejsze niż [START_ZOOM] rośnie do niego, a takie, przy którym kontur się
+ * nie mieści, maleje, aż się zmieści. Skala 0 daje ruch [CameraMotion.NONE], inna mnoży czas.
+ *
+ * Wymagania: US2.8, US3.2, NFR-56
+ */
+internal fun cameraTransition(
+    from: MapCamera,
+    outline: CampusBounds,
+    free: FreeMap,
+    animationScale: Float,
+): CameraTransition {
+    val zoom = maxOf(a = from.zoom, b = START_ZOOM).coerceAtMost(fittingZoom(outline, free))
+    val camera = centered(outline, zoom, free)
+    val distance = distanceDp(from = from, to = camera)
+    val (motion, millis) =
+        when {
+            animationScale <= 0f -> CameraMotion.NONE to 0.0
+            isVisible(outline, from, free) -> CameraMotion.EASE to VISIBLE_MILLIS
+            distance <= free.widthDp -> CameraMotion.EASE to NEAR_MILLIS
+            else -> CameraMotion.FLIGHT to flightMillis(from = from, to = camera, free = free, distance = distance)
+        }
+    val duration = (millis * animationScale).roundToLong()
+    return CameraTransition(camera = camera, motion = motion, durationMillis = duration)
+}
+
+private fun flightMillis(from: MapCamera, to: MapCamera, free: FreeMap, distance: Double): Double {
+    val rho2 = FLIGHT_CURVE * FLIGHT_CURVE
+    val w0 = maxOf(a = free.widthDp, b = free.heightDp)
+    val w1 = w0 / 2.0.pow(to.zoom - from.zoom)
+    val path =
+        if (distance < SAME_PLACE_DP) {
+            abs(ln(w1 / w0)) / FLIGHT_CURVE
+        } else {
+            val start = (w1 * w1 - w0 * w0 + rho2 * rho2 * distance * distance) / (2 * w0 * rho2 * distance)
+            val end = (w1 * w1 - w0 * w0 - rho2 * rho2 * distance * distance) / (2 * w1 * rho2 * distance)
+            (ln(sqrt(end * end + 1) - end) - ln(sqrt(start * start + 1) - start)) / FLIGHT_CURVE
+        }
+    val millis = path * FLIGHT_MILLIS_PER_PATH
+    return millis.coerceIn(minimumValue = FLIGHT_MIN_MILLIS, maximumValue = FLIGHT_MAX_MILLIS)
+}
+
+private fun fittingZoom(outline: CampusBounds, free: FreeMap): Double {
+    val width = (free.widthDp - free.endDp - 2 * free.marginDp).coerceAtLeast(minimumValue = 1.0)
+    val height = (free.heightDp - 2 * free.marginDp).coerceAtLeast(minimumValue = 1.0)
+    return minOf(
+        a = fitZoom(viewDp = width, worldShare = (outline.east - outline.west) / FULL_TURN_DEGREES),
+        b = fitZoom(viewDp = height, worldShare = (mercatorY(outline.north) - mercatorY(outline.south)) / (2 * PI)),
+    )
+}
+
+private fun centered(outline: CampusBounds, zoom: Double, free: FreeMap): MapCamera {
+    val behindControls = free.endDp / 2 / dpPerDegree(zoom)
+    val center =
+        GeoPoint(
+            longitude = (outline.west + outline.east) / 2 + behindControls,
+            latitude = (outline.south + outline.north) / 2,
+        )
+    return MapCamera(center = center, zoom = zoom)
+}
+
+private fun isVisible(outline: CampusBounds, view: MapCamera, free: FreeMap): Boolean {
+    val perDegree = dpPerDegree(view.zoom)
+    val perRadian = WORLD_DP_AT_ZOOM_0 * 2.0.pow(view.zoom) / (2 * PI)
+    val middle = mercatorY(view.center.latitude)
+    val left = (outline.west - view.center.longitude) * perDegree
+    val right = (outline.east - view.center.longitude) * perDegree
+    val top = (middle - mercatorY(outline.north)) * perRadian
+    val bottom = (middle - mercatorY(outline.south)) * perRadian
+    val halfWidth = free.widthDp / 2 - free.marginDp
+    val halfHeight = free.heightDp / 2 - free.marginDp
+    return left >= -halfWidth && right <= halfWidth - free.endDp && top >= -halfHeight && bottom <= halfHeight
+}
+
+private fun distanceDp(from: MapCamera, to: MapCamera): Double {
+    val east = (to.center.longitude - from.center.longitude) * dpPerDegree(from.zoom)
+    val perRadian = WORLD_DP_AT_ZOOM_0 * 2.0.pow(from.zoom) / (2 * PI)
+    val south = (mercatorY(from.center.latitude) - mercatorY(to.center.latitude)) * perRadian
+    return hypot(x = east, y = south)
+}
+
+private fun dpPerDegree(zoom: Double): Double = WORLD_DP_AT_ZOOM_0 * 2.0.pow(zoom) / FULL_TURN_DEGREES
