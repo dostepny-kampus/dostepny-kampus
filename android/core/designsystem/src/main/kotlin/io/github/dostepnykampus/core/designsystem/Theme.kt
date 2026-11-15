@@ -19,6 +19,8 @@ private val LocalStatusColors = staticCompositionLocalOf { LightStatusColors }
 
 private val LocalMapColors = staticCompositionLocalOf { LightMapColors }
 
+private val LocalMapOpacity = staticCompositionLocalOf { LightMapOpacity }
+
 private val AtkinsonHyperlegibleNext =
     FontFamily(
         Font(R.font.atkinson_hyperlegible_next_regular, FontWeight.Normal),
@@ -36,8 +38,8 @@ private val AppTypography = typography(AtkinsonHyperlegibleNext)
  * Schemat kolorów jasny albo ciemny według [darkTheme], domyślnie według ustawienia systemu. Paleta jest
  * stała: bez kolorów dynamicznych z tapety, bo kontrast par z tokenów jest sprawdzony tylko dla
  * tej palety. Typografia w krój Atkinson Hyperlegible Next wbudowany w aplikację, rozmiary w sp: tekst
- * rośnie z ustawieniem czcionki telefonu. Kolory oznaczeń wejścia i mapy daje
- * [DostepnyKampusTheme.statusColors] i [DostepnyKampusTheme.mapColors].
+ * rośnie z ustawieniem czcionki telefonu. Kolory oznaczeń wejścia i mapy oraz krycie warstw mapy daje
+ * [DostepnyKampusTheme.statusColors], [DostepnyKampusTheme.mapColors] i [DostepnyKampusTheme.mapOpacity].
  *
  * Wymagania: NFR-16, NFR-20
  */
@@ -46,6 +48,7 @@ public fun DostepnyKampusTheme(darkTheme: Boolean = isSystemInDarkTheme(), conte
     CompositionLocalProvider(
         LocalStatusColors provides if (darkTheme) DarkStatusColors else LightStatusColors,
         LocalMapColors provides if (darkTheme) DarkMapColors else LightMapColors,
+        LocalMapOpacity provides if (darkTheme) DarkMapOpacity else LightMapOpacity,
     ) {
         MaterialTheme(
             colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme,
@@ -67,6 +70,11 @@ public object DostepnyKampusTheme {
     public val mapColors: MapColors
         @Composable @ReadOnlyComposable
         get() = LocalMapColors.current
+
+    /** Krycie warstw mapy (sekcja `mapa.krycie`) do stylu mapy. Wymagania: US1.7 */
+    public val mapOpacity: MapOpacity
+        @Composable @ReadOnlyComposable
+        get() = LocalMapOpacity.current
 
     /**
      * Czy obowiązuje ciemny schemat kolorów z tokenów, wybrany w [DostepnyKampusTheme] przez `darkTheme`. Porównuje
