@@ -32,6 +32,7 @@ jobs:
       jest: ${{ steps.cel.outputs.jest }}
       galaz: ${{ steps.cel.outputs.galaz }}
       sha: ${{ steps.cel.outputs.sha }}
+      od: ${{ steps.cel.outputs.od }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -62,23 +63,23 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
+      actions: read
+      contents: read
+      issues: write
       statuses: write
     steps:
-      - name: Zapisz wynik jako status commita
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Zapisz wynik jako status commita i prowadź issue czerwonego sprintu
         env:
           GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
           GALAZ: ${{ needs.cel.outputs.galaz }}
           SHA: ${{ needs.cel.outputs.sha }}
+          OD: ${{ needs.cel.outputs.od }}
           WYNIK: ${{ needs.android.result }}
+          RUN_ID: ${{ github.run_id }}
           ADRES: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          stan=failure
-          opis="Czerwona ciężka kontrola ${GALAZ} (${WYNIK})"
-          if [[ $WYNIK == success ]]; then
-            stan=success
-            opis="Zielona ciężka kontrola ${GALAZ}"
-          fi
-          gh api -X POST "repos/${REPO}/statuses/${SHA}" -f state="$stan" -f context=kontrola-sprintu \
-            -f description="$opis" -f target_url="$ADRES" >/dev/null
-          echo "${SHA:0:7}: ${stan} — ${opis}" | tee -a "$GITHUB_STEP_SUMMARY"
+        shell: bash
+        run: bash .github/scripts/kontrola-sprintu-wynik.sh | tee -a "$GITHUB_STEP_SUMMARY"
