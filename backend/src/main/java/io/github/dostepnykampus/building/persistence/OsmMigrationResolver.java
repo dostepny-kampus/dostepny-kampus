@@ -41,7 +41,7 @@ final class OsmMigrationResolver implements FlywayConfigurationCustomizer, Migra
     public void customize(final FluentConfiguration configuration) {
         configuration.javaMigrations(
             Arrays.stream(configuration.getJavaMigrations())
-                .filter(existing -> existing != this.migration)
+                .filter(existing -> !this.migration.equals(existing))
                 .toArray(JavaMigration[]::new)
         );
         final MigrationResolver[] resolvers = configuration.getResolvers();
