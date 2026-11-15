@@ -8,6 +8,7 @@ package io.github.dostepnykampus.core.network
 import io.github.dostepnykampus.core.model.inspection.BuildingProgress
 import io.github.dostepnykampus.core.model.inspection.InspectionCoverage
 import io.github.dostepnykampus.core.model.inspection.InspectionMarker
+import io.github.dostepnykampus.core.model.inspection.MarkerPlace
 import io.github.dostepnykampus.core.network.inspection.decodeProgress
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -31,7 +32,7 @@ class ProgressJsonTest {
             InspectionMarker(
                 id = MARKER,
                 buildingSymbol = "A-1",
-                floorId = "A-1-2",
+                place = MarkerPlace.Floor("A-1-2"),
                 createdAt = Instant.parse("2026-11-10T09:30:00Z"),
                 isRevoked = false,
                 isMine = false,

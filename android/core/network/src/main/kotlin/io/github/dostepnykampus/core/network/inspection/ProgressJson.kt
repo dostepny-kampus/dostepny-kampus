@@ -8,6 +8,7 @@ package io.github.dostepnykampus.core.network.inspection
 import io.github.dostepnykampus.core.model.inspection.BuildingProgress
 import io.github.dostepnykampus.core.model.inspection.InspectionCoverage
 import io.github.dostepnykampus.core.model.inspection.InspectionMarker
+import io.github.dostepnykampus.core.model.inspection.MarkerPlace
 import io.github.dostepnykampus.core.network.decodeContract
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
@@ -57,7 +58,7 @@ private fun InspectionMarkerJson.toModel(): InspectionMarker =
     InspectionMarker(
         id = id,
         buildingSymbol = buildingSymbol,
-        floorId = floorId,
+        place = floorId?.let { MarkerPlace.Floor(it) } ?: MarkerPlace.WholeBuilding,
         createdAt = receivedAt(createdAt),
         isRevoked = revoked,
         isMine = mine,

@@ -55,7 +55,7 @@ public sealed interface InspectionCoverage {
  *
  * @property id identyfikator UUID znacznika
  * @property buildingSymbol budynek znacznika
- * @property floorId piętro budynku szczegółowego; `null` dla znacznika całego budynku podstawowego
+ * @property place obejrzane piętro albo cały budynek
  * @property createdAt chwila odbioru znacznika przez serwer
  * @property isRevoked czy znacznik cofnięto
  * @property isMine czy znacznik postawiła osoba z tokenu
@@ -63,8 +63,21 @@ public sealed interface InspectionCoverage {
 public data class InspectionMarker(
     val id: String,
     val buildingSymbol: String,
-    val floorId: String?,
+    val place: MarkerPlace,
     val createdAt: Instant,
     val isRevoked: Boolean,
     val isMine: Boolean,
 )
+
+/** Czego dotyczy znacznik. Wymagania: US15.1, BR-20 */
+public sealed interface MarkerPlace {
+    /**
+     * Piętro budynku szczegółowego.
+     *
+     * @property floorId identyfikator piętra
+     */
+    public data class Floor(val floorId: String) : MarkerPlace
+
+    /** Cały budynek podstawowy: znacznik „obejrzany”. */
+    public data object WholeBuilding : MarkerPlace
+}
