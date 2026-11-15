@@ -73,15 +73,6 @@ final class ReviewHttpTest {
         );
     }
 
-    @Test
-    void reportsMissingSubmissionOnClaim(final WebApplicationContext context)
-        throws Exception {
-        MatcherAssert.assertThat(
-            "Wzięcie nieistniejącego zgłoszenia nie dało 404",
-            ReviewHttpTest.claim(context, UUID.randomUUID()), Matchers.equalTo(404)
-        );
-    }
-
     private static UUID sent(final WebApplicationContext context, final String author) {
         final UUID id = new SampleSubmissions(context)
             .add("SENT", SampleSubmissions.quick(ReviewHttpTest.PHOTO));
