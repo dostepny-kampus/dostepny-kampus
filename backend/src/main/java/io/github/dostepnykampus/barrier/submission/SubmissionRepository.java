@@ -25,7 +25,8 @@ public interface SubmissionRepository {
     void lock(UUID id);
 
     /**
-     * Zapisuje nowe zgłoszenie albo zwraca już zapisane o tym identyfikatorze.
+     * Zapisuje nowe zgłoszenie albo zwraca autorowi już zapisane o tym identyfikatorze;
+     * identyfikator zgłoszenia innego autora kończy się wyjątkiem ForbiddenChange bez zapisu.
      *
      * @param submission Komenda utworzenia
      * @return Zgłoszenie utworzone albo istniejące, bez zmiany treści i wersji

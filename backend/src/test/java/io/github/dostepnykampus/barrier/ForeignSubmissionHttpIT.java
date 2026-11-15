@@ -13,6 +13,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +58,24 @@ final class ForeignSubmissionHttpIT {
     }
 
     @Test
+    void refusesResendOfForeignSubmissionId(final WebApplicationContext context)
+        throws Exception {
+        final MockHttpServletResponse response = context.getBean(MockMvc.class).perform(
+            MockMvcRequestBuilders.post("/submissions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ForeignSubmissionHttpIT.quick(ForeignSubmissionHttpIT.foreign(context)))
+                .with(new AsCollector())
+        ).andReturn().getResponse();
+        MatcherAssert.assertThat(
+            "Wysłanie cudzego id nie dało 403 albo oddało treść zgłoszenia",
+            "%d %b".formatted(
+                response.getStatus(), response.getContentAsString().contains("\"version\"")
+            ),
+            Matchers.equalTo("403 false")
+        );
+    }
+
+    @Test
     void refusesPhotoForForeignSubmission(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
@@ -69,6 +88,16 @@ final class ForeignSubmissionHttpIT {
                     .with(new AsCollector())
             ).andReturn().getResponse().getStatus(),
             Matchers.equalTo(403)
+        );
+    }
+
+    private static String quick(final UUID id) {
+        return String.join(
+            "",
+            "{\"id\":\"", id.toString(), "\",\"kind\":\"QUICK\",",
+            "\"barrierGroup\":\"OTHER\",\"location\":{\"type\":\"Point\",",
+            "\"coordinates\":[17.06209,51.10785]},\"photoIds\":[\"",
+            ForeignSubmissionHttpIT.PHOTO.toString(), "\"]}"
         );
     }
 

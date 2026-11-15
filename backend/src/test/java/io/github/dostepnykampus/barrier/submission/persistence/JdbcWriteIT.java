@@ -13,6 +13,7 @@ import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.SubmissionEdit;
 import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
+import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,14 @@ final class JdbcWriteIT {
             new NewSubmission(id, SubmissionData.content("pierwsza"), SubmissionData.AUTHOR)
         );
         final CreateResult repeated = data.repo().create(
-            new NewSubmission(id, SubmissionData.content("druga"), "inne-konto")
+            new NewSubmission(id, SubmissionData.content("druga"), SubmissionData.AUTHOR)
+        );
+        Assertions.assertThrows(
+            ForbiddenChange.class,
+            () -> data.repo().create(
+                new NewSubmission(id, SubmissionData.content("trzecia"), "inne-konto")
+            ),
+            "Inne konto dostało zapisane zgłoszenie"
         );
         final Submission expected = new Submission(
             id, 1, SubmissionStatus.SENT, data.created(id), SubmissionData.content("pierwsza")

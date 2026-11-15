@@ -19,6 +19,7 @@ import io.github.dostepnykampus.barrier.submission.SubmissionRepository;
 import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import io.github.dostepnykampus.barrier.submission.content.json.SubmissionContentJson;
+import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -148,6 +149,9 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
             this.jdbc.sql(JdbcSubmissions.INSERT).param("author", submission.author()),
             submission.id(), submission.content()
         );
+        if (created.isEmpty() && this.foreign(submission.id(), submission.author())) {
+            throw new ForbiddenChange("Zgłoszenie o tym identyfikatorze złożyła inna osoba");
+        }
         final CreateResult result;
         if (created.isPresent()) {
             result = new CreateResult.Created(created.get());
