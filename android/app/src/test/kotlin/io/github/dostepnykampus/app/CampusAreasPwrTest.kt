@@ -13,6 +13,7 @@ import androidx.compose.ui.semantics.SemanticsNode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollToNodeAction
@@ -181,11 +182,11 @@ class CampusAreasPwrTest {
     }
 
     /**
-     * Wiersz: V1, wyszukanie „T-15” i wybór wyniku zaznacza T-15 i przenosi granicę mapy na teren
-     * „Wittigowo”.
-     * Scenariusz (częściowo): przegladanie-mapy.feature: Wyszukanie budynku z innego terenu zmienia teren
+     * Wiersz: V1, wyszukanie „T-15” i wybór wyniku zaznacza T-15, przenosi granicę mapy na teren „Wittigowo”
+     * i nad małą kartą pokazuje napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód”.
+     * Scenariusz: przegladanie-mapy.feature: Wyszukanie budynku z innego terenu zmienia teren
      *
-     * Wymagania: US1.8, BR-G5
+     * Wymagania: US1.8, BR-G5, NFR-56
      */
     @Test
     fun searchesOtherPwrArea() {
@@ -195,6 +196,7 @@ class CampusAreasPwrTest {
         compose.waitForIdle()
         assertEquals("T-15", selection.building)
         assertShowsArea(name = "Wittigowo", symbol = "T-15", hasSwitch = false)
+        compose.onNodeWithText("Pokazuję teren: Wittigowo · 2 km na południowy wschód").assertIsDisplayed()
     }
 
     /**

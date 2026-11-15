@@ -47,7 +47,7 @@ private enum class MapPanel { Area, Legend, Info }
  * Nakładka mapy V1: przyciski powiększania i przesuwania, przycisk terenu nad „Legendą”, „ⓘ”, podpis OSM, po zmianie
  * terenu napis „Pokazuję teren: …” i nad nimi [content]. Otwarty panel zasłania przyciski, które by na nim leżały;
  * dotknięcie mapy obok panelu terenu zamyka go. Otwarty panel jest stanem zapisywanym. Nad małą kartą V2 zostają
- * tylko przyciski powiększania i przesuwania oraz podpis OSM.
+ * tylko przyciski powiększania i przesuwania, podpis OSM i napis o zmianie terenu tuż nad kartą.
  *
  * Wymagania: NFR-53, US1.6, US1.7, NFR-37, US1.8, US2.8
  *
@@ -60,6 +60,7 @@ private enum class MapPanel { Area, Legend, Info }
  * @param onAreaShow widok startowy terenu wybranego w panelu
  * @param modifier wymiary nakładki, zwykle cała mapa bez części zasłoniętej
  * @param hasPanels czy mapa ma przycisk terenu, „Legendę” i „ⓘ”; nie ma ich nad arkuszem V2
+ * @param hasNotice czy mapa może pokazać napis o zmianie terenu; nie przy otwartej klawiaturze
  * @param side elementy przy prawej krawędzi pod przyciskami mapy, a bez przycisków u góry, np. kolumna pięter
  * @param content elementy nad nakładką
  */
@@ -73,6 +74,7 @@ internal fun MapOverlay(
     onAreaShow: (MapCamera) -> Unit,
     modifier: Modifier = Modifier,
     hasPanels: Boolean = hasControls,
+    hasNotice: Boolean = hasPanels,
     side: @Composable ColumnScope.() -> Unit = {},
     content: @Composable BoxScope.() -> Unit,
 ) {
@@ -105,7 +107,9 @@ internal fun MapOverlay(
             )
         }
         Column(Modifier.align(Alignment.BottomStart)) {
-            areas.notice?.takeIf { hasPanels && open == null }?.let { AreaNotice(it) }
+            areas.notice?.takeIf { hasNotice && open == null }?.let {
+                AreaNotice(shift = it, isNew = areas.isNoticeNew, onShown = areas::noticeShown)
+            }
             OsmAttribution()
         }
         if (hasPanels) {

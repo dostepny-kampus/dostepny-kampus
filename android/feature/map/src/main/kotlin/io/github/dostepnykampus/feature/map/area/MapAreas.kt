@@ -44,6 +44,8 @@ internal fun AreaOrder.otherAreaOf(symbol: String): String? =
  * @param seen zapisywana nazwa terenu, o którym osoba już wie: wybrała go albo ruszyła na nim mapę; `null`, dopóki
  *   widziała tylko teren startowy
  * @param followed zapisywany symbol budynku, którego teren mapa już pokazała; `null` bez zaznaczenia
+ * @param announced zapisywana nazwa terenu, którego napis był już pokazany; `null` przed pierwszym napisem
+ * @param onScreen czy napis o zmianie terenu jest teraz na ekranie
  */
 internal class MapAreas(
     private val data: CampusMapData?,
@@ -51,6 +53,8 @@ internal class MapAreas(
     private val chosen: MutableState<String?>,
     private val seen: MutableState<String?>,
     private val followed: MutableState<String?>,
+    private val announced: MutableState<String?> = mutableStateOf(null),
+    private val onScreen: MutableState<Boolean> = mutableStateOf(false),
 ) {
     /** Nazwa terenu ustawionego przez osobę albo wyborem budynku; `null`, gdy mapa stoi na terenie startowym. */
     val chosenName: String? get() = chosen.value
@@ -87,9 +91,32 @@ internal class MapAreas(
             return if (known == null || shown == null || shown == known) null else known.shiftTo(shown)
         }
 
-    /** Osoba wie o pokazanym terenie, np. ruszyła mapę przyciskiem: napis o zmianie terenu znika. Wymagania: US1.8 */
+    /**
+     * Czy napis [notice] jest pokazywany pierwszy raz. Ten sam napis pokazany znów, np. po zamknięciu panelu,
+     * nie jest nowy.
+     *
+     * Wymagania: US1.8, NFR-18
+     */
+    val isNoticeNew: Boolean get() = notice != null && announced.value != current?.name
+
+    /**
+     * Napis o zmianie terenu wszedł na ekran ([isShown]) albo z niego zszedł. Pokazany napis jest już przeczytany.
+     *
+     * Wymagania: US1.8, NFR-18
+     */
+    fun noticeShown(isShown: Boolean) {
+        onScreen.value = isShown
+        if (isShown) announced.value = current?.name
+    }
+
+    /**
+     * Osoba ruszyła mapę przyciskiem albo gestem. Gdy napis o zmianie terenu był wtedy na ekranie, osoba wie
+     * o pokazanym terenie i napis znika; ruch przy zasłoniętym napisie go nie gasi.
+     *
+     * Wymagania: US1.8, NFR-23
+     */
     fun acknowledge() {
-        current?.let { seen.value = it.name }
+        if (onScreen.value) current?.let { seen.value = it.name }
     }
 
     /**
@@ -143,9 +170,19 @@ internal fun rememberMapAreas(layers: CampusMapData?, focus: MapFocus?): MapArea
             null -> null
         }
     val seen = rememberSaveable { mutableStateOf<String?>(null) }
+    val announced = rememberSaveable { mutableStateOf<String?>(null) }
+    val onScreen = remember { mutableStateOf(false) }
     val areas =
         remember(layers, symbol, chosen) {
-            MapAreas(data = layers, symbol = symbol, chosen = chosen, seen = seen, followed = followed)
+            MapAreas(
+                data = layers,
+                symbol = symbol,
+                chosen = chosen,
+                seen = seen,
+                followed = followed,
+                announced = announced,
+                onScreen = onScreen,
+            )
         }
     SideEffect { areas.followSelection() }
     return areas

@@ -15,7 +15,9 @@ import io.github.dostepnykampus.feature.map.campus.START_BUILDING
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
@@ -43,8 +45,20 @@ class MapAreasTest {
 
     private val followed = mutableStateOf<String?>(null)
 
+    private val announced = mutableStateOf<String?>(null)
+
+    private val onScreen = mutableStateOf(false)
+
     private fun areas(symbol: String? = null) =
-        MapAreas(data = data, symbol = symbol, chosen = chosen, seen = seen, followed = followed)
+        MapAreas(
+            data = data,
+            symbol = symbol,
+            chosen = chosen,
+            seen = seen,
+            followed = followed,
+            announced = announced,
+            onScreen = onScreen,
+        )
 
     /**
      * Wiersz: V1, budynek z innego terenu zmienia teren i daje napis „Pokazuję teren: Wittigowo · 2 km na północ”
@@ -62,12 +76,42 @@ class MapAreasTest {
             AreaShift(name = "Wittigowo", kilometers = 2, direction = CompassDirection.North),
             areas(symbol = "T-15").notice,
         )
+        areas(symbol = "T-15").noticeShown(isShown = true)
         areas(symbol = "T-15").acknowledge()
         assertNull(areas(symbol = "T-15").notice)
         assertEquals(
             AreaShift(name = "Kampus główny", kilometers = 2, direction = CompassDirection.South),
             areas(symbol = "A-2").notice,
         )
+    }
+
+    /**
+     * Wiersz: V1, ruch mapy gasi napis o zmianie terenu tylko wtedy, gdy napis był w tej chwili na ekranie.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Ruch mapy gasi widoczny napis o zmianie terenu
+     *
+     * Wymagania: US1.8, NFR-23
+     */
+    @Test
+    fun keepsHiddenNoticeOnMove() {
+        areas(symbol = "T-15").acknowledge()
+        assertEquals("Wittigowo", areas(symbol = "T-15").notice?.name)
+        areas(symbol = "T-15").noticeShown(isShown = true)
+        areas(symbol = "T-15").acknowledge()
+        assertNull(areas(symbol = "T-15").notice)
+    }
+
+    /**
+     * Wiersz: V1, TalkBack czyta napis o zmianie terenu raz: po pierwszym pokazaniu ten sam napis nie jest nowy.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: TalkBack czyta napis o zmianie terenu raz, po nagłówku karty
+     *
+     * Wymagania: US1.8, NFR-18
+     */
+    @Test
+    fun announcesNoticeOnce() {
+        assertTrue(areas(symbol = "T-15").isNoticeNew)
+        areas(symbol = "T-15").noticeShown(isShown = true)
+        areas(symbol = "T-15").noticeShown(isShown = false)
+        assertFalse(areas(symbol = "T-15").isNoticeNew)
     }
 
     /** Wiersz: V1, teren wybrany przez osobę w panelu nie daje napisu o zmianie terenu. Wymagania: US1.7, US1.8 */

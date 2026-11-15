@@ -10,6 +10,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -19,32 +23,45 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.overlay.mapControlBorder
 
 /**
  * Napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód” nad podpisem mapy według makiety hi-fi: mapa
  * zmieniła teren na [shift], bo zaznaczony budynek leży na tym terenie. Odległość i kierunek mówią, gdzie jest nowy
- * teren, bez patrzenia na ruch mapy. TalkBack czyta go sam, raz. Zostaje bez limitu czasu, dopóki osoba nie ruszy
- * mapy przyciskiem albo nie wybierze terenu.
+ * teren, bez patrzenia na ruch mapy. Napis jest komunikatem stanu tylko przy pierwszym pokazaniu ([isNew]).
+ * Wejście na ekran i zejście z niego oddaje [onShown]. Zostaje bez limitu czasu (NFR-23).
  *
  * Wymagania: US1.8, NFR-18, NFR-23, NFR-56
  */
 @Composable
-internal fun AreaNotice(shift: AreaShift, modifier: Modifier = Modifier) {
+internal fun AreaNotice(
+    shift: AreaShift,
+    isNew: Boolean,
+    onShown: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val direction = stringResource(shift.direction.label)
     val description = stringResource(R.string.mapa_teren_pokazuje_opis, shift.name, shift.kilometers, direction)
+    val isLive = remember { isNew }
+    val shown by rememberUpdatedState(onShown)
+    DisposableEffect(Unit) {
+        shown(true)
+        onDispose { shown(false) }
+    }
     Surface(
         modifier = modifier.padding(Odstepy.s),
         shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.inverseSurface,
-        contentColor = MaterialTheme.colorScheme.inverseOnSurface,
+        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+        contentColor = MaterialTheme.colorScheme.onSurface,
         shadowElevation = Wysokosci.kontrolkiMapy,
+        border = mapControlBorder(),
     ) {
         Text(
             text = stringResource(R.string.mapa_teren_pokazuje, shift.name, shift.kilometers, direction),
             modifier =
                 Modifier.padding(Odstepy.m).semantics {
                     contentDescription = description
-                    liveRegion = LiveRegionMode.Polite
+                    if (isLive) liveRegion = LiveRegionMode.Polite
                 },
             style = MaterialTheme.typography.bodyLarge,
         )
