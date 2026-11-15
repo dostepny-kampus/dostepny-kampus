@@ -94,9 +94,10 @@ data class MapStyleColors(
 /**
  * Styl mapy V1 (ADR-0005) jako tekst JSON: kontury i podpisy ze źródła w aplikacji zawsze, podkład OSM tylko online,
  * tylko w obszarze kampusu i przygaszony. Zaznaczony budynek [MapSelection.building] ma grubszy obrys i jako jedyny
- * znaki wejść; wejście [MapSelection.entrance] ma pinezkę z podpisem. Obszar poza [MapSelection.bounds] jest
- * przyciemniony, a bariery mają znak uciążliwości. Warstwy zaznaczenia są w stylu zawsze, więc style dla różnych
- * zaznaczeń różnią się tylko polami [SelectionLook] z [selectionLook].
+ * znaki wejść; wejście [MapSelection.entrance] ma pinezkę z podpisem. Obszar poza granicą terenu
+ * [MapSelection.boundary] (bez niej poza prostokątem [MapSelection.bounds]) jest przyciemniony, a bariery mają znak
+ * uciążliwości. Warstwy zaznaczenia są w stylu zawsze, więc style dla różnych zaznaczeń różnią się tylko polami
+ * [SelectionLook] z [selectionLook].
  *
  * Wymagania: NFR-10, NFR-39, US1.1, US1.4, US2.8, US2.1, NFR-21, US3.3, NFR-16, US1.7, BR-G5, US1.3
  */
@@ -105,7 +106,7 @@ fun campusMapStyle(data: CampusMapData, selection: MapSelection, colors: MapStyl
     val style =
         buildJsonObject {
             put(key = "version", value = STYLE_VERSION)
-            put(key = "sources", element = sources(data, selection.bounds, look))
+            put(key = "sources", element = sources(data, selection, look))
             put(key = "layers", element = layers(look, isBounded = selection.bounds != null, colors = colors))
         }
     return style.toString()
@@ -123,14 +124,17 @@ internal fun entranceMarkImage(marking: EntranceMarking): String = "wejscie_${ma
 /** Nazwa obrazu podpisu zaznaczonego wejścia o nazwie [label]; przedrostek odróżnia go od podpisów budynków. */
 internal fun entranceCaptionImage(label: String): String = "wejscie: $label"
 
-private fun sources(data: CampusMapData, bounds: CampusBounds?, look: SelectionLook): JsonObject =
+private fun sources(data: CampusMapData, selection: MapSelection, look: SelectionLook): JsonObject =
     buildJsonObject {
-        put(key = BASEMAP, element = basemapSource(bounds))
+        put(key = BASEMAP, element = basemapSource(selection.bounds))
         put(key = BUILDINGS_SOURCE, element = geoJsonSource(data.buildings))
         put(key = LABELS, element = geoJsonSource(data.labelPoints))
         put(key = ENTRANCES_SOURCE, element = geoJsonSource(data.entrances))
         put(key = BARRIERS_SOURCE, element = geoJsonSource(data.barriers))
-        bounds?.let { put(key = AREA_SOURCE, element = geoJsonSource(featureCollection(areaFeatures(it)))) }
+        selection.bounds?.let { bounds ->
+            val area = areaFeatures(boundary = selection.boundary, bounds = bounds)
+            put(key = AREA_SOURCE, element = geoJsonSource(featureCollection(area)))
+        }
         put(key = CHOSEN_SOURCE, element = geoJsonSource(look.chosenEntrance))
     }
 
