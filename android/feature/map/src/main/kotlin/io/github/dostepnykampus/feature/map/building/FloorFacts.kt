@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.room.Room
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.room.RoomList
+import java.util.Locale
 
 private const val MAX_FUNCTIONS = 4
 
@@ -89,3 +90,33 @@ private fun presence(floors: List<Floor>, rooms: Map<String, RoomList>, category
 }
 
 private fun Map<String, RoomList>.roomsOf(floor: Floor): List<Room> = this[floor.id]?.rooms.orEmpty()
+
+/**
+ * Słowa tekstu pięter z windą albo toaletą.
+ *
+ * @property onFloors „Na piętrach: %1$s.”
+ * @property everywhere „Na każdym piętrze: %1$s – %2$s.”
+ * @property missing „Nie ma na piętrach: %1$s.”
+ * @property and spójnik przed ostatnią pozycją listy
+ */
+internal data class PresenceWords(val onFloors: String, val everywhere: String, val missing: String, val and: String)
+
+/**
+ * Tekst pięter z pomieszczeniem [presence] w słowach [words]: lista pięter z liczbą w nawiasie przy kilku i piętra
+ * bez niego albo zakres od najniższego do najwyższego, gdy jest na każdym piętrze.
+ *
+ * Wymagania: US16.3, NFR-40
+ */
+internal fun presenceText(presence: FloorPresence, words: PresenceWords): String {
+    val floors = presence.floors
+    if (presence.missing.isEmpty()) {
+        return words.everywhere.format(Locale.ROOT, floors.first().name, floors.last().name)
+    }
+    val listed = floors.map { if (it.count > 1) "${it.name} (${it.count})" else it.name }
+    val present = words.onFloors.format(Locale.ROOT, joined(listed, words.and))
+    return "$present ${words.missing.format(Locale.ROOT, joined(presence.missing, words.and))}"
+}
+
+/** Pozycje [items] po przecinku, ostatnia po spójniku [and], np. „a, b i c”. */
+internal fun joined(items: List<String>, and: String): String =
+    if (items.size < 2) items.joinToString() else "${items.dropLast(1).joinToString()} $and ${items.last()}"
