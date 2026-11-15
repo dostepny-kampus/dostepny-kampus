@@ -283,20 +283,22 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
   @US1.7 @BR-G5 @NFR-39 @aplikacja
   Scenariusz: Mapa nie wychodzi poza wybrany teren
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Kampus główny”
-    Jeżeli przesunie mapę do granicy terenu w stronę terenu „Wittigowo”
+    Jeżeli przesunie mapę do brzegu terenu w stronę terenu „Wittigowo”
     Wtedy mapa dalej się nie przesuwa
+    Oraz brzeg mapy leży na brzegu prostokąta terenu
 
-  @US1.7 @BR-G5 @NFR-16 @aplikacja
-  Scenariusz: Poza granicą terenu podkład jest wyblakły, a granicę pokazuje linia
-    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Kampus główny”
-    Jeżeli przesunie mapę do granicy terenu
-    Wtedy poza granicą terenu widzi wyblakły podkład
-    Oraz granicę terenu pokazuje linia z obwódką
+  # cały widok w prostokącie terenu: #2626, bez granicy i wyblaknięcia: #2627
+  @US1.7 @BR-G5 @NFR-39 @aplikacja @do-zrobienia
+  Scenariusz: Przy najmniejszym powiększeniu widać cały teren
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Wittigowo”
+    Jeżeli pomniejszy mapę do końca
+    Wtedy prostokąt terenu wypełnia mapę
+    Oraz mapa nie pokazuje granicy terenu ani wyblakłego podkładu
 
   @US1.7 @aplikacja
   Scenariusz: Przy granicy terenu TalkBack mówi, jak zmienić teren
     Zakładając, że Gość niezalogowany z włączonym TalkBack ma otwartą mapę kampusu na terenie „Kampus główny”
-    Jeżeli przesunie mapę przyciskami do granicy terenu
+    Jeżeli przesunie mapę przyciskami do brzegu terenu
     Wtedy TalkBack raz mówi „Tu kończy się teren Kampus główny. Inny teren wybierzesz przyciskiem «Zmień teren» u góry mapy.”
 
   @US1.8 @BR-G5 @aplikacja

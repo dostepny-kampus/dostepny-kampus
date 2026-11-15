@@ -219,15 +219,15 @@ Czynność główna: wybranie terenu z listy, które pokazuje mapę tego terenu.
 | Teren na liście: nazwa, liczba budynków i odległość od wybranego terenu; wybrany ma znak „✓” i napis „wybrany” | US1.7, NFR-21 |
 | Wybranie terenu zamyka panel i pokazuje mapę tego terenu | US1.7, BR-G5 |
 
-### V1: granica terenu
+### V1: brzeg terenu
 
-![Makieta V1 przy granicy terenu Kampus główny: poza terenem wyblakły podkład, granicę pokazuje linia z obwódką, u góry przycisk terenu](../../_generated/m-v1-mapa-teren-granica.svg)
+![Makieta V1 przy wschodnim brzegu terenu Kampus główny: mapa kończy się na brzegu prostokąta terenu, bez linii granicy, u góry przycisk terenu](../../_generated/m-v1-mapa-teren-granica.svg)
 
 Czynność główna: przycisk terenu, który otwiera listę terenów.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| Mapa nie wychodzi poza prostokąt wokół wybranego terenu; poza granicą terenu podkład jest wyblakły, a granicę pokazuje linia z obwódką | US1.7, BR-G5, NFR-16, NFR-39 |
+| Cały widok mapy zostaje w prostokącie wokół wybranego terenu; mapa nie rysuje granicy terenu i nie wybiela otoczenia | US1.7, BR-G5, NFR-39 |
 | Przy dojściu do granicy TalkBack ogłasza raz: „Tu kończy się teren Kampus główny. Inny teren wybierzesz przyciskiem «Zmień teren» u góry mapy.” | US1.7, NFR-18 |
 
 ### V1: wynik z innego terenu

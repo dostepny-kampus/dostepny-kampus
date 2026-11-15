@@ -66,9 +66,7 @@ class CampusAreaEdgeDeviceTest {
      * Sprawdza na emulatorze, że przesuwanie mapy palcem w stronę sąsiedniego terenu zatrzymuje
      * kamerę na granicy „Kampusu głównego”, a poza granicą mapa jest wyblakła i granicę pokazuje linia z obwódką.
      *
-     * Scenariusz: przegladanie-mapy.feature: Mapa nie wychodzi poza wybrany teren
-     * Scenariusz (częściowo): przegladanie-mapy.feature: Poza granicą terenu podkład jest wyblakły, a granicę
-     *   pokazuje linia
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Mapa nie wychodzi poza wybrany teren
      *
      * Wymagania: US1.7, BR-G5, NFR-39, NFR-41
      */
