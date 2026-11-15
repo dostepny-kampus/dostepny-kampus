@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Odpowiedź ze zgłoszeniem (W4-4): treść płasko obok identyfikatora, wersji,
  * statusu i chwili utworzenia jako napisu ISO-8601, bez pól pustych i flag
- * fałszywych.
+ * fałszywych; data weryfikacji tylko przy zgłoszeniu przyjętym.
  *
  * @since 0.1.0
  */
@@ -45,19 +45,42 @@ final class SubmissionResponseTest {
                     new Submission(
                         WebBodies.ID, 2, SubmissionStatus.IN_REVIEW,
                         Instant.parse("2026-03-01T10:00:00Z"),
-                        new SubmissionContent(
-                            SubmissionKind.QUICK,
-                            new SubmissionPlace(
-                                new SubmissionPoint(17.06, 51.1), 4.5, false, "B1",
-                                new SubmissionFloor("p2", 2, false)
-                            ),
-                            new BarrierDetails(BarrierGroup.OTHER, null, 2, "opis", false),
-                            null, null, null, List.of(WebBodies.PHOTO)
-                        )
+                        SubmissionResponseTest.content()
                     )
                 )
             ),
             "Odpowiedź różni się od oczekiwanego JSON"
+        );
+    }
+
+    @Test
+    void writesVerificationTimeOfAcceptedSubmission() {
+        final String verified = "2026-03-02T09:30:00Z";
+        Assertions.assertEquals(
+            verified,
+            WebBodies.MAPPER.valueToTree(
+                new SubmissionResponse(
+                    new Submission(
+                        WebBodies.ID, 1, SubmissionStatus.ACCEPTED,
+                        Instant.parse("2026-03-01T10:00:00Z"),
+                        SubmissionResponseTest.content(),
+                        Instant.parse(verified)
+                    )
+                )
+            ).path("verifiedAt").asString(),
+            "Odpowiedź przyjętego zgłoszenia nie ma daty weryfikacji"
+        );
+    }
+
+    private static SubmissionContent content() {
+        return new SubmissionContent(
+            SubmissionKind.QUICK,
+            new SubmissionPlace(
+                new SubmissionPoint(17.06, 51.1), 4.5, false, "B1",
+                new SubmissionFloor("p2", 2, false)
+            ),
+            new BarrierDetails(BarrierGroup.OTHER, null, 2, "opis", false),
+            null, null, null, List.of(WebBodies.PHOTO)
         );
     }
 }

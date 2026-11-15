@@ -47,6 +47,11 @@ final class SubmissionsReadHttpIT {
     private static final String CREATED = "2026-11-04T10:00:00Z";
 
     /**
+     * Chwila przyjęcia zgłoszeń przyjętych z tej klasy.
+     */
+    private static final String VERIFIED = "2026-11-05T09:30:00Z";
+
+    /**
      * Piętro zgłoszeń wyszukiwanych w testach listy.
      */
     private static final String FLOOR = "A-1-0";
@@ -212,9 +217,15 @@ final class SubmissionsReadHttpIT {
                 "Próg przy wejściu", row.photo()
             )
         );
-        context.getBean(JdbcClient.class)
-            .sql("UPDATE submissions SET created_at = CAST(:created AS TIMESTAMPTZ) WHERE id = :id")
-            .param("created", SubmissionsReadHttpIT.CREATED).param("id", row.id()).update();
+        context.getBean(JdbcClient.class).sql(
+            """
+            UPDATE submissions SET created_at = CAST(:created AS TIMESTAMPTZ),
+                verified_at = CASE WHEN status = 'ACCEPTED'
+                    THEN CAST(:verified AS TIMESTAMPTZ) END
+            WHERE id = :id
+            """
+        ).param("created", SubmissionsReadHttpIT.CREATED)
+            .param("verified", SubmissionsReadHttpIT.VERIFIED).param("id", row.id()).update();
         return row;
     }
 
@@ -268,16 +279,20 @@ final class SubmissionsReadHttpIT {
         }
 
         /**
-         * Zgłoszenie, jakie według schematu Submission zwraca serwer.
+         * Zgłoszenie przyjęte, jakie według schematu Submission zwraca serwer.
          *
          * @param context Kontekst z ObjectMapper
          * @return Treść z polami nadanymi przez serwer
          */
         JsonNode expected(final WebApplicationContext context) {
             return context.getBean(ObjectMapper.class).readTree(
-                String.format(
-                    "%s,\"id\":\"%s\",\"version\":1,\"status\":\"%s\",\"createdAt\":\"%s\"}",
-                    this.content(), this.id, this.status, SubmissionsReadHttpIT.CREATED
+                String.join(
+                    "",
+                    "%s,\"id\":\"%s\",\"version\":1,\"status\":\"%s\",",
+                    "\"createdAt\":\"%s\",\"verifiedAt\":\"%s\"}"
+                ).formatted(
+                    this.content(), this.id, this.status, SubmissionsReadHttpIT.CREATED,
+                    SubmissionsReadHttpIT.VERIFIED
                 )
             );
         }
