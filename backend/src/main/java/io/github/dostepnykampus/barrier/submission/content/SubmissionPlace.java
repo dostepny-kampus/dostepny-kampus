@@ -31,14 +31,14 @@ public record SubmissionPlace(
 ) {
 
     /**
-     * Miejsce z punktem i nieujemną dokładnością; brak dokładności jest
-     * dozwolony. Ujemna albo NaN dokładność kończy się wyjątkiem
-     * InvalidSubmission.
+     * Miejsce z punktem i dokładnością od 0 do 10000 m; brak dokładności jest
+     * dozwolony. Dokładność spoza tego zakresu, nieskończona albo NaN kończy się
+     * wyjątkiem InvalidSubmission.
      */
     public SubmissionPlace {
         Objects.requireNonNull(point, "point");
-        if (accuracyMeters != null && (accuracyMeters.isNaN() || accuracyMeters < 0)) {
-            throw new InvalidSubmission("Dokładność pozycji jest ujemna");
+        if (accuracyMeters != null && !(accuracyMeters >= 0 && accuracyMeters <= 10_000)) {
+            throw new InvalidSubmission("Dokładność pozycji spoza zakresu 0–10000 m");
         }
     }
 
