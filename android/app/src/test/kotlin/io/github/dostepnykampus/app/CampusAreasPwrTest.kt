@@ -56,11 +56,11 @@ class CampusAreasPwrTest {
     private var selection = MapSelection()
     private var camera: MapCamera? = null
     private val fakeMap =
-        CampusMapView { shownData, shownSelection, shownCamera, _, _, _, _ ->
+        CampusMapView { shownData, shownSelection, move, _, _, _, _, _ ->
             areas = shownData.areas
             outlines = shownData.outlinesBySymbol
             selection = shownSelection
-            camera = shownCamera
+            camera = move.camera
         }
 
     private fun showApp(isFirstLaunch: Boolean = false, waitForMap: Boolean = true) {

@@ -53,6 +53,8 @@ import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.CampusMapScreen
+import io.github.dostepnykampus.feature.map.camera.CameraMotion
+import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
@@ -126,13 +128,17 @@ class CampusMapScreenTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val cameras = mutableListOf<MapCamera>()
+    private val moves = mutableListOf<CameraTransition>()
+    private val insets = mutableListOf<Double>()
     private val focuses = mutableListOf<String?>()
     private val opened = mutableListOf<String>()
     private var emptyTaps = 0
     private var touch: (List<String>) -> Unit = {}
     private val fakeMap =
-        CampusMapView { _: CampusMapData, selection, camera, _, onBuildingsTouch, _, _: Modifier ->
-            cameras += camera
+        CampusMapView { _: CampusMapData, selection, move, inset, _, onBuildingsTouch, _, _: Modifier ->
+            cameras += move.camera
+            moves += move
+            insets += inset
             focuses += selection.building
             touch = onBuildingsTouch
         }
@@ -429,19 +435,44 @@ class CampusMapScreenTest {
         sheet = 400.dp
         compose.waitForIdle()
         val aboveSheet = cameras.last()
-        assertEquals(true, aboveSheet.bottomInset > 0)
-        assertEquals(true, aboveSheet.copy(bottomInset = 0.0) != start)
+        assertEquals(true, insets.last() > 0)
+        assertEquals(true, aboveSheet != start)
         sheet = 0.dp
         compose.waitForIdle()
-        assertEquals(start, cameras.last())
+        assertEquals(start to 0.0, cameras.last() to insets.last())
         sheet = 400.dp
         compose.onNodeWithContentDescription("Powiększ").performClick()
         compose.waitForIdle()
         val closer = aboveSheet.copy(zoom = aboveSheet.zoom + 1)
-        assertEquals(closer, cameras.last())
+        assertEquals(CameraTransition(closer, CameraMotion.FLIGHT, durationMillis = 300), moves.last())
         sheet = 0.dp
         compose.waitForIdle()
-        assertEquals(closer.copy(bottomInset = 0.0), cameras.last())
+        assertEquals(closer to 0.0, cameras.last() to insets.last())
+    }
+
+    /**
+     * Wiersz: nad małą kartą V2 osoba ruszyła mapę, potem arkusz zmienia wysokość → ruch kamery ten sam, zmienia
+     * się tylko zasłonięty dół mapy, więc mapa nie dostaje nowego celu.
+     *
+     * Wymagania: US2.8, NFR-56
+     */
+    @Test
+    @Config(qualifiers = "w360dp-h800dp")
+    fun movesOnlyInsetWithSheetHeight() {
+        var sheet by mutableStateOf(400.dp)
+        compose.setContent { Screen(focus = "C-14", sheet = sheet) }
+        compose.waitForIdle()
+        compose.onNodeWithContentDescription("Pomniejsz").performClick()
+        compose.waitForIdle()
+        val moved = moves.last()
+        val shownInsets =
+            listOf(300.dp, 350.dp, 320.dp).map { height ->
+                sheet = height
+                compose.waitForIdle()
+                assertEquals(moved, moves.last())
+                insets.last()
+            }
+        assertEquals(3, shownInsets.distinct().size)
     }
 
     /**

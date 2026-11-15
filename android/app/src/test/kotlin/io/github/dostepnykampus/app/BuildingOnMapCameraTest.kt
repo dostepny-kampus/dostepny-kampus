@@ -103,16 +103,18 @@ class BuildingOnMapCameraTest {
     private val shown = mutableListOf<Pair<CampusMapData, MapCamera>>()
     private var touch: (List<String>) -> Unit = {}
     private var mapSize = IntSize.Zero
+    private var bottomInset = 0.0
     private var density = 1f
     private var isIdleReported = false
     private val choice = TestMapListChoice()
     private val repository = BuildingCatalogRepository(ioContext = EmptyCoroutineContext) { CATALOG }
     private val fakeMap =
-        CampusMapView { data: CampusMapData, _, camera, onCameraIdle, onBuildingsTouch, _, modifier: Modifier ->
-            shown += data to camera
+        CampusMapView { data: CampusMapData, _, move, inset, onCameraIdle, onBuildingsTouch, _, modifier: Modifier ->
+            shown += data to move.camera
+            bottomInset = inset
             touch = onBuildingsTouch
             density = LocalDensity.current.density
-            SideEffect { if (isIdleReported) onCameraIdle(camera) }
+            SideEffect { if (isIdleReported) onCameraIdle(move.camera) }
             Box(modifier.onSizeChanged { mapSize = it })
         }
 

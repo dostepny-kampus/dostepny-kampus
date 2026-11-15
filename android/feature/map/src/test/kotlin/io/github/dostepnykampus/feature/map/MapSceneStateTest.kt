@@ -28,6 +28,7 @@ class MapSceneStateTest {
             scene = null,
             camera = start,
             limits = limits,
+            bottomInset = 0.0,
             cover = mapCover(isCovered, hasControls = true),
             choices = choices,
             onCamera = cameraKeeper(isCovered, onMap = { cameras += it }, onCard = { cardCameras += it }),
@@ -87,16 +88,16 @@ class MapSceneStateTest {
 
     /**
      * Wiersz: V1 z małą kartą V2, osoba przesunęła mapę → jej widok jest widokiem karty i zostaje po zamknięciu
-     * karty, bez dopełnienia arkusza.
+     * karty.
      *
      * Wymagania: US2.8
      */
     @Test
     fun us2_8_moved_view_stays() {
-        val underSheet = start.copy(bottomInset = 400.0)
-        state(isCovered = true).keep(underSheet)
-        assertEquals(listOf(underSheet), cardCameras)
-        assertEquals(listOf(start), cameras)
+        val moved = start.copy(zoom = start.zoom + 1)
+        state(isCovered = true).keep(moved)
+        assertEquals(listOf(moved), cardCameras)
+        assertEquals(listOf(moved), cameras)
     }
 
     /**
