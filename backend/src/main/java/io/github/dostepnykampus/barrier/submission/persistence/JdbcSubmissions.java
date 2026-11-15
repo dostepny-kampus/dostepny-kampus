@@ -95,7 +95,11 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
      */
     private static final String DECIDE = String.format(
         """
-            UPDATE submissions SET status = :status, rejection_reason = :reason
+            UPDATE submissions SET status = :status, rejection_reason = :reason,
+                content = CASE WHEN CAST(:type AS TEXT) IS NULL THEN content
+                    ELSE content || JSONB_BUILD_OBJECT(
+                        'barrierType', CAST(:type AS TEXT), 'severity', CAST(:severity AS INT)
+                    ) END
             WHERE id = :id AND version = :version AND status = 'IN_REVIEW'
                 AND reviewer = :reviewer
             RETURNING %s
@@ -190,6 +194,8 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                 .param("reviewer", decision.reviewer())
                 .param("status", decision.outcome().name())
                 .param("reason", JdbcSubmissions.reason(decision))
+                .param("type", JdbcSubmissions.type(decision))
+                .param("severity", JdbcSubmissions.severity(decision))
                 .query(this.rows).optional().orElse(null),
             decision.id()
         );
@@ -285,6 +291,26 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
         final String result;
         if (decision instanceof ReviewDecision.Rejected rejected) {
             result = rejected.reason();
+        } else {
+            result = null;
+        }
+        return result;
+    }
+
+    private static @Nullable String type(final ReviewDecision decision) {
+        final String result;
+        if (decision instanceof ReviewDecision.Classified classified) {
+            result = classified.type().code();
+        } else {
+            result = null;
+        }
+        return result;
+    }
+
+    private static @Nullable Integer severity(final ReviewDecision decision) {
+        final Integer result;
+        if (decision instanceof ReviewDecision.Classified classified) {
+            result = classified.severity();
         } else {
             result = null;
         }

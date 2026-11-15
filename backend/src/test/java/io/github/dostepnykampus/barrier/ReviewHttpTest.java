@@ -22,7 +22,7 @@ import org.springframework.web.context.WebApplicationContext;
 /**
  * Weryfikator bierze cudze zgłoszenie do weryfikacji i rozstrzyga je, ale nie własne.
  *
- * <p>Wymagania: BR-4, BR-11, BR-3, BR-16</p>
+ * <p>Wymagania: US10.3, BR-4, BR-11, BR-3, BR-14, BR-16</p>
  *
  * @since 0.1.0
  */
@@ -73,6 +73,37 @@ final class ReviewHttpTest {
     }
 
     @Test
+    void savesClassificationOfAcceptedQuickSubmission(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = ReviewHttpTest.sent(context, "inne-konto");
+        ReviewHttpTest.claim(context, id);
+        MatcherAssert.assertThat(
+            "Przyjęcie zgłoszenia szybkiego nie dało 200 i typu z uciążliwością w treści",
+            List.of(
+                ReviewHttpTest.review(context, id),
+                ReviewHttpTest.field(context, id, "barrierType"),
+                ReviewHttpTest.field(context, id, "severity")
+            ),
+            Matchers.contains(200, "TB-3", "2")
+        );
+    }
+
+    @Test
+    void refusesQuickSubmissionWithoutClassification(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = ReviewHttpTest.sent(context, "inne-konto");
+        ReviewHttpTest.claim(context, id);
+        MatcherAssert.assertThat(
+            "Przyjęcie zgłoszenia szybkiego bez typu i uciążliwości nie dało 400 i statusu IN_REVIEW",
+            List.of(
+                ReviewHttpTest.review(context, id, "{\"decision\":\"ACCEPT\",\"version\":1}"),
+                ReviewHttpTest.status(context, id)
+            ),
+            Matchers.contains(400, "IN_REVIEW")
+        );
+    }
+
+    @Test
     void reportsMissingSubmissionOnClaim(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
@@ -89,7 +120,8 @@ final class ReviewHttpTest {
         MatcherAssert.assertThat(
             "Decyzja o innej wersji niż aktualna nie dała 409",
             ReviewHttpTest.review(
-                context, id, "{\"decision\":\"ACCEPT\",\"version\":2}"
+                context, id,
+                "{\"decision\":\"ACCEPT\",\"version\":2,\"barrierType\":\"TB-3\",\"severity\":2}"
             ),
             Matchers.equalTo(409)
         );
@@ -181,6 +213,14 @@ final class ReviewHttpTest {
             .param("id", id).query(String.class).single();
     }
 
+    private static String field(
+        final WebApplicationContext context, final UUID id, final String name
+    ) {
+        return context.getBean(JdbcClient.class)
+            .sql("SELECT content ->> :name FROM submissions WHERE id = :id")
+            .param("name", name).param("id", id).query(String.class).single();
+    }
+
     private static int claim(final WebApplicationContext context, final UUID id)
         throws Exception {
         return context.getBean(MockMvc.class).perform(
@@ -190,7 +230,10 @@ final class ReviewHttpTest {
 
     private static int review(final WebApplicationContext context, final UUID id)
         throws Exception {
-        return ReviewHttpTest.review(context, id, "{\"decision\":\"ACCEPT\",\"version\":1}");
+        return ReviewHttpTest.review(
+            context, id,
+            "{\"decision\":\"ACCEPT\",\"version\":1,\"barrierType\":\"TB-3\",\"severity\":2}"
+        );
     }
 
     private static int review(

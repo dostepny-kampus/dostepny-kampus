@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.barrier.submission.web;
 
 import io.github.dostepnykampus.barrier.submission.EditResult;
+import io.github.dostepnykampus.barrier.submission.ReviewDecision;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionService;
 import io.github.dostepnykampus.shared.error.ConflictingState;
@@ -67,7 +68,7 @@ public final class ReviewController {
      * i wzięte przez innego Weryfikatora albo przez nikogo dają 403, inna wersja
      * niż aktualna albo status po rozstrzygnięciu 409 z wersją serwera.
      *
-     * <p>Wymagania: US10, BR-4, BR-11, BR-3, BR-16</p>
+     * <p>Wymagania: US10, US10.3, BR-4, BR-11, BR-3, BR-14, BR-16</p>
      *
      * @param id Identyfikator zgłoszenia
      * @param body Decyzja według schematu ReviewDecision
@@ -83,9 +84,9 @@ public final class ReviewController {
         if (!this.finder.claimedBy(id, account.getName())) {
             throw new ForbiddenChange("Zgłoszenie nie jest wzięte przez tego Weryfikatora");
         }
-        return ReviewController.saved(
-            this.service.decide(body.toDecision(id, account.getName()))
-        );
+        final ReviewDecision decision = body.toDecision(id, account.getName());
+        decision.admit(this.finder.find(id).orElseThrow().content().kind());
+        return ReviewController.saved(this.service.decide(decision));
     }
 
     private void checkNotOwn(final UUID id, final Principal account) {
