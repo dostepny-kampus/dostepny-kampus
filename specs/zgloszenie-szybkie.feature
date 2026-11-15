@@ -190,7 +190,7 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie nie powstaje
     Oraz aplikacja wraca do mapy kampusu
 
-  # granica terenu w aplikacji: #2087
+  # granica terenu w aplikacji: #2254
   @US4.9 @BR-G5 @aplikacja @serwer @do-zrobienia
   Szablon scenariusza: Zgłoszenie szybkie tylko na terenie PWr
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
@@ -210,7 +210,7 @@ Funkcja: Zgłoszenie szybkie
     Jeżeli aplikacja wyśle zgłoszenie z miejscem 20 m za granicą terenu PWr
     Wtedy serwer odrzuca zgłoszenie
 
-  # odrzucenie w aplikacji: #2087
+  # odrzucenie w aplikacji: #2254
   @US4.9 @BR-G5 @aplikacja @do-zrobienia
   Scenariusz: Zgłoszenie odrzucone przez serwer jako spoza terenu PWr zostaje w telefonie
     Zakładając, że Zbierający jest zalogowany z rolą Zbierającego
