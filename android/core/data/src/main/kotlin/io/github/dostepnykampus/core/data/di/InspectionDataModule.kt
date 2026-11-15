@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.di
@@ -10,13 +10,16 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.inspection.FloorMarkers
+import io.github.dostepnykampus.core.data.inspection.InspectionProgress
 import io.github.dostepnykampus.core.data.inspection.MarkerSync
 import io.github.dostepnykampus.core.data.inspection.floorMarkersOf
+import io.github.dostepnykampus.core.data.inspection.inspectionProgressOf
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionSyncScheduler
 import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeDao
+import io.github.dostepnykampus.core.network.inspection.InspectionProgressApi
 import io.github.dostepnykampus.core.network.inspection.MarkerChangesApi
 
-/** Wiązania Hilt znaczników piętra obejrzanego. */
+/** Wiązania Hilt znaczników piętra obejrzanego i postępu inwentaryzacji. */
 @Module
 @InstallIn(SingletonComponent::class)
 internal object InspectionDataModule {
@@ -29,4 +32,8 @@ internal object InspectionDataModule {
     @Provides
     fun markerSync(queue: PendingMarkerChangeDao, api: MarkerChangesApi): MarkerSync =
         MarkerSync(queue = queue, push = api::push)
+
+    /** Postęp inwentaryzacji z serwera. Wymagania: US11.1, US11.3, BR-21 */
+    @Provides
+    fun inspectionProgress(api: InspectionProgressApi): InspectionProgress = inspectionProgressOf(api)
 }
