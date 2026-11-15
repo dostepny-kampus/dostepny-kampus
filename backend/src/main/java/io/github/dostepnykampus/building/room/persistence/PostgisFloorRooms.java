@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.building.room.persistence;
 
+import io.github.dostepnykampus.building.domain.FloorList;
 import io.github.dostepnykampus.building.room.FloorRooms;
 import io.github.dostepnykampus.building.room.RoomList;
 import java.util.List;
@@ -49,7 +50,7 @@ public final class PostgisFloorRooms implements FloorRooms {
             """
         ).param("building", building).param("floor", floor).query(String.class).optional().map(
             outline -> new RoomList(
-                "Politechnika Wrocławska", outline, this.listed(building, floor)
+                FloorList.PWR_SOURCE, outline, this.listed(building, floor)
             )
         );
     }
