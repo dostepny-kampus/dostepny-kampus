@@ -83,7 +83,7 @@ final class OsmEntrancesIT {
         final Connection connection = DataSourceUtils.getConnection(
             context.getBean(DataSource.class)
         );
-        context.getBean(OsmBuildings.class).migrate(
+        context.getBean("osmBuildings", FileMigration.class).migrate(
             new Context() {
                 @Override
                 public Configuration getConfiguration() {
