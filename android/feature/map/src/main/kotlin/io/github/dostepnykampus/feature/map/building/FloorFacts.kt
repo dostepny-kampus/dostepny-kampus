@@ -67,7 +67,7 @@ fun floorFacts(floors: List<Floor>, rooms: Map<String, RoomList>): FloorFacts {
     val ordered = floors.sortedBy { it.order }
     val descriptions =
         ordered.map { floor ->
-            val described = rooms.of(floor).filter { it.category !in UNDESCRIBED }
+            val described = rooms.roomsOf(floor).filter { it.category !in UNDESCRIBED }
             val functions = described.groupingBy { it.function }.eachCount()
             val top = functions.entries.sortedByDescending { it.value }.take(MAX_FUNCTIONS)
             FloorDescription(floor = floor, functions = top.map { Counted(name = it.key, count = it.value) })
@@ -80,14 +80,12 @@ fun floorFacts(floors: List<Floor>, rooms: Map<String, RoomList>): FloorFacts {
 }
 
 private fun presence(floors: List<Floor>, rooms: Map<String, RoomList>, category: RoomCategory): FloorPresence? {
-    val counts = floors.associateWith { floor -> rooms.of(floor).count { it.category == category } }
+    val counts = floors.associateWith { floor -> rooms.roomsOf(floor).count { it.category == category } }
     val present = floors.filter { counts.getValue(it) > 0 }
-    return present.takeIf { it.isNotEmpty() }?.let {
-        FloorPresence(
-            floors = present.map { Counted(name = it.label, count = counts.getValue(it)) },
-            missing = floors.filter { counts.getValue(it) == 0 }.map { it.label },
-        )
-    }
+    return FloorPresence(
+        floors = present.map { Counted(name = it.label, count = counts.getValue(it)) },
+        missing = floors.filter { counts.getValue(it) == 0 }.map { it.label },
+    ).takeIf { present.isNotEmpty() }
 }
 
-private fun Map<String, RoomList>.of(floor: Floor): List<Room> = this[floor.id]?.rooms.orEmpty()
+private fun Map<String, RoomList>.roomsOf(floor: Floor): List<Room> = this[floor.id]?.rooms.orEmpty()
