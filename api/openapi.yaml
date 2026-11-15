@@ -256,7 +256,8 @@ paths:
       description: >-
         Edycja własnego zgłoszenia przed decyzją Weryfikatora albo poprawka odrzuconego, które wraca do statusu „wysłane”
         (US8.3, BR-3). Inna wersja na serwerze albo zgłoszenie przyjęte lub archiwalne daje 409 z wersją z serwera;
-        nic nie zapisuje się samo (US9.3, BR-10). Zmiana zgłoszenia przyjętego to nowe zgłoszenie (BR-18).
+        nic nie zapisuje się samo (US9.3, BR-10). Zmiana zgłoszenia przyjętego to nowe zgłoszenie (BR-18), więc edycja
+        nie zmienia `replacesSubmissionId`; inna wartość niż zapisana daje 400.
       tags: [barrier]
       security: [{keycloak: [COLLECTOR]}]
       requestBody:

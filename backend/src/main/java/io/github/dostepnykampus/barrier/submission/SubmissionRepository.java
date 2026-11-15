@@ -35,6 +35,8 @@ public interface SubmissionRepository {
 
     /**
      * Zapisuje edycję, gdy wersja bazowa zgadza się z zapisaną i status pozwala edytować.
+     * Edycja z innym zastępowanym zgłoszeniem niż zapisane kończy się wyjątkiem
+     * InvalidSubmission bez zapisu.
      *
      * @param edit Komenda edycji
      * @return Zgłoszenie zapisane, bieżący stan przy konflikcie albo brak zgłoszenia
