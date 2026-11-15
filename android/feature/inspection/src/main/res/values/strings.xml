@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pl">
+    <string name="postep_naglowek">Postęp inwentaryzacji</string>
+    <string name="postep_wczytujemy">Wczytujemy postęp…</string>
+    <string name="postep_bez_internetu">Bez internetu</string>
+    <string name="postep_wymaga_internetu">Ta czynność wymaga internetu. Połącz się z internetem i spróbuj ponownie.</string>
+    <string name="postep_blad_serwera">Serwer chwilowo nie odpowiada. Spróbuj ponownie za kilka minut.</string>
+    <string name="postep_brak_uprawnien">Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.</string>
+    <string name="postep_sprobuj_ponownie">Spróbuj ponownie</string>
+    <string name="postep_wroc_do_mapy">Wróć do mapy</string>
+</resources>
