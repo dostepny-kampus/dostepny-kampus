@@ -228,7 +228,11 @@ Nad kartą zostają przyciski mapy, a zaznaczony budynek mieści się w części
 
 `m-v2-karta-budynku-mala-teren` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.8, NFR-56
 
-Budynek T-15 wybrany z wyszukiwania na terenie Kampus główny: mapa przeleciała na teren Wittigowo. Napis o zmianie terenu stoi tuż nad małą kartą i podpisem OpenStreetMap, gdzie patrzy osoba, i nie zasłania budynku ani przycisków mapy. Ma wygląd przycisków mapy: w ciemnym motywie nie jest jasną plamą. TalkBack czyta go raz, po nagłówku karty. Budynek mieści się w części mapy nad napisem.
+Budynek T-15 wybrany z wyszukiwania na terenie Kampus główny: mapa przeleciała na teren Wittigowo. Budynek mieści się w części mapy nad napisem o zmianie terenu. Napis:
+
+- stoi tuż nad małą kartą i podpisem OpenStreetMap, gdzie patrzy osoba, i nie zasłania budynku ani przycisków mapy;
+- ma wygląd przycisków mapy, więc w ciemnym motywie nie jest jasną plamą;
+- TalkBack czyta go raz, po nagłówku karty.
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
