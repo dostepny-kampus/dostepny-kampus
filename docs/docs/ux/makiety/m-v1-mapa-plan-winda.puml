@@ -3,12 +3,10 @@
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
-$naglowek_startowy("Mapa kampusu")
+$naglowek_mapy("Pokaż listę")
 $pole_tekstowe("Wpisz symbol budynku, np. C-13")
-$przelacznik("Mapa", "Lista budynków", 1)
 $przycisk("Kampus główny ▾")
-$przycisk("Legenda")
-$mapa("plan 2 piętra A-1 z wyróżnioną windą; kolumna pięter po prawej, wybrane 2", "", "info")
+$mapa("plan 2 piętra A-1 z wyróżnioną windą; kolumna pięter po lewej pod przyciskiem terenu, wybrane 2", "", "info")
 Źródło: Politechnika Wrocławska
 $ramka()
 { <b>Winda</b> | [Zamknij] }

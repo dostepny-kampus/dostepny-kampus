@@ -3,11 +3,9 @@
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
-$naglowek_startowy("Mapa kampusu")
+$naglowek_mapy("Pokaż listę")
 $pole_tekstowe("Wpisz symbol budynku, np. C-13")
-$przelacznik("Mapa", "Lista budynków", 1)
 $przycisk("Kampus główny ▾")
-$przycisk("Legenda")
 $mapa("mapa ulic OpenStreetMap, kontury budynków z symbolami, znaki barier; wybrany znak przy A-1", "", "info")
 $ramka()
 <b><i>[typ bariery z danych]</i></b>
