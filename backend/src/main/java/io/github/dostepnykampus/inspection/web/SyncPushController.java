@@ -50,7 +50,7 @@ public final class SyncPushController {
      *
      * @param body Paczka według schematu z żądania
      * @param account Zalogowane konto; jego nazwa to identyfikator z tokenu
-     * @param request Żądanie, z którego odczytywana jest rola konta
+     * @param request Bieżące żądanie HTTP; z niego pochodzi rola konta
      * @return Wyniki operacji w kolejności żądania
      */
     @PostMapping("/sync/push")

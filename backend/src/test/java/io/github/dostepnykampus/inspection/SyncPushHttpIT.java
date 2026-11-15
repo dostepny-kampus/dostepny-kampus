@@ -48,11 +48,11 @@ final class SyncPushHttpIT {
             Stream.of("VISITOR", "VERIFIER", "COORDINATOR", "VERIFIER+COORDINATOR").map(
                 role -> () -> {
                     final UUID id = UUID.randomUUID();
-                    final String reply = SyncPushHttpIT.push(context, role, id, "C-13");
                     Assertions.assertEquals(
                         "200 REJECTED 403, zapisanych 0",
                         String.format(
-                            "%s, zapisanych %d", reply, SyncPushHttpIT.saved(context, id)
+                            "%s, zapisanych %d", SyncPushHttpIT.push(context, role, id, "C-13"),
+                            SyncPushHttpIT.saved(context, id)
                         ),
                         String.format("Rola %s postawiła znacznik piętra", role)
                     );
