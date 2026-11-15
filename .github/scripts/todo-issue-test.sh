@@ -103,6 +103,8 @@ run_case "Kotlin: PR zamyka #5, a @Ignore wskazuje #5: naruszenie" 1 'ten PR zam
 run_case ".feature: tag @do-zrobienia bez numeru issue" 1 "$tmp_no_number" specs/uprawnienia.feature $'@serwer @do-zrobienia\nScenariusz: x'
 run_case ".feature: tag @do-zrobienia z numerem w komentarzu nad nim" 0 '' specs/uprawnienia.feature $'# Tymczasowo wyłączony, poprawka w #5\n@serwer @do-zrobienia\nScenariusz: x'
 run_case ".feature: tag @do-zrobienia z zamkniętym issue w komentarzu" 1 "$closed" specs/uprawnienia.feature $'# poprawka w #6\n@serwer @do-zrobienia\nScenariusz: x'
+run_case ".feature: tag @do-zrobienia nad tabelą Przykłady bez numeru issue" 1 "$tmp_no_number" specs/uprawnienia.feature $'Szablon scenariusza: x\n  @do-zrobienia\n  Przykłady:'
+run_case ".feature: tag @do-zrobienia nad tabelą Przykłady z numerem w komentarzu" 0 '' specs/uprawnienia.feature $'Szablon scenariusza: x\n  # kroki serwera: #5\n  @do-zrobienia\n  Przykłady:'
 run_case ".feature: tag @wip z numerem w tej samej linii" 0 '' specs/mapa.feature $'@wip #5\nScenariusz: x'
 run_case ".feature: tag @ignore bez numeru" 1 "$tmp_no_number" specs/mapa.feature $'@ignore\nScenariusz: x'
 run_case ".feature: zwykłe tagi bez wykluczenia" 0 '' specs/mapa.feature $'@US1.1 @BR-2\nScenariusz: x'

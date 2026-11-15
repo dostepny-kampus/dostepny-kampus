@@ -219,6 +219,18 @@ Przykład: `/** Scenariusz: przegladanie-mapy.feature: Instrukcja przy pierwszym
 
 Scenariusz z tagiem `@serwer` nie ma znacznika. Wykonuje go zestaw Cucumber w testach serwera, który czyta plik z katalogu `specs/` wprost. Zestaw wykonuje scenariusze `@serwer` bez tagu `@do-zrobienia`, a krok bez definicji daje czerwony test. Strona pokrycia liczy taki scenariusz jako „pełny” w warstwie serwera, gdy zestaw wskazuje jego plik.
 
+Tag `@do-zrobienia` można dać też jednej tabeli „Przykłady” szablonu scenariusza: Gherkin pozwala podzielić przykłady na kilka tabel, a tag nad tabelą odkłada tylko jej wiersze. Zestaw Cucumber wykonuje pozostałe wiersze, więc warstwa serwera szablonu ma stan „częściowo”, gdy część wierszy jest odłożona, „pełny”, gdy żaden, i „brak”, gdy każdy. Komentarz nad tagiem przy tabeli też podaje numer otwartego zadania, na przykład:
+
+```gherkin
+    # kroki serwera: #1242
+    @do-zrobienia
+    Przykłady:
+      | rola        | czynność           |
+      | Weryfikator | oznaczenie piętra  |
+```
+
+Kontrola nowych i zmienionych scenariuszy przyjmuje szablon, którego każdy wiersz ma test albo leży w tabeli z takim tagiem.
+
 Pokrycie nie może spaść: scenariusz, który miał test pełny albo częściowy, nie może go stracić. Nowy scenariusz i scenariusz ze zmienionymi krokami wchodzi z pełnym testem. Gdy testu jeszcze nie ma, scenariusz dostaje tag `@do-zrobienia`, a komentarz nad tagiem podaje numer otwartego zadania, na przykład `# test w #1189`. Obie reguły sprawdza CI względem gałęzi docelowej.
 
 Tabela [Pokrycie scenariuszy testami](../_generated/pokrycie-testami.md) ma wiersz dla każdego scenariusza: jego kryteria i reguły, testy (moduł, klasa i funkcja testu) i stan „pełny”, „częściowo” albo „brak”. Ma tyle wierszy, ile scenariuszy, dlatego jest na osobnej stronie. Strony nie ma w repozytorium: powstaje przy budowie dokumentacji, więc zmiana testu nie zmienia żadnego pliku dokumentacji.
