@@ -32,7 +32,7 @@ class EntranceImagesTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     @Test
-    fun drawsNoDataSmallerThanOtherMarks() {
+    fun drawsNoDataSmaller() {
         val images = entranceImages(colors = colors(), density = 1f)
         val sizes = EntranceMarking.entries.associateWith { images.getValue(entranceMarkImage(it)).width }
         assertEquals(
