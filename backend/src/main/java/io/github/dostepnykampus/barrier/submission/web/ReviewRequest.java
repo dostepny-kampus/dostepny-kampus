@@ -20,7 +20,7 @@ import org.jspecify.annotations.Nullable;
  * @param decision Rodzaj decyzji: ACCEPT albo REJECT
  * @param version Wersja zgłoszenia, którą ocenił Weryfikator
  * @param rejectionReason Powód odrzucenia, wymagany przy REJECT
- * @param duplicateOf Wcześniejsze zgłoszenie przy duplikacie; jeszcze nie zapisywane
+ * @param duplicateOf Wcześniejsze zgłoszenie przy duplikacie, zapisywane przy REJECT
  * @param barrierType Typ bariery ustalony przy przyjęciu
  * @param severity Uciążliwość ustalona przy przyjęciu
  * @since 0.1.0
@@ -53,7 +53,7 @@ record ReviewRequest(
                 throw new InvalidSubmission("Odrzucenie wymaga powodu w polu rejectionReason");
             }
             result = new ReviewDecision.Rejected(
-                path, this.version, reviewer, this.rejectionReason
+                path, this.version, reviewer, this.rejectionReason, this.duplicateOf
             );
         } else {
             throw new InvalidSubmission("Pole decision przyjmuje ACCEPT albo REJECT");

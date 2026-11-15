@@ -7,6 +7,7 @@ package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.AsVerifier;
 import io.github.dostepnykampus.IntegrationTest;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
@@ -18,6 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Weryfikator bierze cudze zgłoszenie do weryfikacji i rozstrzyga je, ale nie własne.
@@ -168,6 +171,43 @@ final class ReviewHttpIT {
     }
 
     @Test
+    void returnsRejectionReasonAndDuplicateInResponse(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = ReviewHttpIT.sent(context, "inne-konto");
+        final UUID earlier = UUID.fromString("0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d");
+        ReviewHttpIT.claim(context, id);
+        ReviewHttpIT.review(
+            context, id,
+            String.format(
+                "{\"decision\":\"REJECT\",\"version\":1,\"rejectionReason\":\"Duplikat\",\"duplicateOfSubmissionId\":\"%s\"}",
+                earlier
+            )
+        );
+        final JsonNode body = ReviewHttpIT.fetched(context, id);
+        MatcherAssert.assertThat(
+            "Odpowiedź odrzuconego zgłoszenia nie ma powodu i duplikatu",
+            List.of(
+                body.path("rejectionReason").asString(),
+                body.path("duplicateOfSubmissionId").asString()
+            ),
+            Matchers.contains("Duplikat", earlier.toString())
+        );
+    }
+
+    @Test
+    void omitsRejectionFieldsOfSubmissionNotRejected(final WebApplicationContext context)
+        throws Exception {
+        final JsonNode body = ReviewHttpIT.fetched(
+            context, ReviewHttpIT.sent(context, "inne-konto")
+        );
+        MatcherAssert.assertThat(
+            "Odpowiedź zgłoszenia nieodrzuconego ma pola odrzucenia",
+            List.of(body.has("rejectionReason"), body.has("duplicateOfSubmissionId")),
+            Matchers.contains(false, false)
+        );
+    }
+
+    @Test
     void refusesClaimOfOwnSubmission(final WebApplicationContext context)
         throws Exception {
         final UUID id = ReviewHttpIT.sent(context, "konto-testowe");
@@ -212,6 +252,15 @@ final class ReviewHttpIT {
         ReviewHttpIT.claim(context, id);
         return List.of(
             ReviewHttpIT.review(context, id, body), ReviewHttpIT.status(context, id)
+        );
+    }
+
+    private static JsonNode fetched(final WebApplicationContext context, final UUID id)
+        throws Exception {
+        return context.getBean(ObjectMapper.class).readTree(
+            context.getBean(MockMvc.class).perform(
+                MockMvcRequestBuilders.get("/submissions/{id}", id).with(new AsVerifier())
+            ).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8)
         );
     }
 

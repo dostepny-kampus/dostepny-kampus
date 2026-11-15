@@ -65,6 +65,26 @@ final class SubmissionsEditHttpIT {
     }
 
     @Test
+    void clearsRejectionOfEditedSubmission(final WebApplicationContext context)
+        throws Exception {
+        new SampleSubmissions(context).add(
+            SubmissionsEditHttpIT.ID, "REJECTED",
+            SampleSubmissions.quick(UUID.fromString("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d"))
+        );
+        context.getBean(JdbcClient.class)
+            .sql("UPDATE submissions SET rejection_reason = 'Nieczytelne' WHERE id = :id")
+            .param("id", SubmissionsEditHttpIT.ID).update();
+        MatcherAssert.assertThat(
+            "Poprawka odrzuconego zgłoszenia zostawiła stary powód odrzucenia",
+            context.getBean(ObjectMapper.class).readTree(
+                SubmissionsEditHttpIT.put(context, SubmissionsEditHttpIT.ID, "1")
+                    .getContentAsString(StandardCharsets.UTF_8)
+            ).has("rejectionReason"),
+            Matchers.equalTo(false)
+        );
+    }
+
+    @Test
     void givesServerVersionOnConflict(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
