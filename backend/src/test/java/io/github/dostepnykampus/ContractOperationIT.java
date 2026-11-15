@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
  *
  * @since 0.1.0
  */
-final class ContractOperationTest {
+final class ContractOperationIT {
 
     @Test
     void keepsPrefixAnonymousVariablesAndVerbsInOperations() {

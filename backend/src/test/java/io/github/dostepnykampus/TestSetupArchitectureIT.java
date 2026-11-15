@@ -106,7 +106,7 @@ final class TestSetupArchitectureIT {
      * Klasy, które budują klienta HTTP same, z powodem; lista może tylko maleć.
      */
     private static final Map<String, String> OWN_CLIENT = Map.of(
-        "io.github.dostepnykampus.OpenApiContractTest",
+        "io.github.dostepnykampus.OpenApiContractIT",
         String.join(
             " ",
             "sprawdza samą kontrolę kontraktu na kontrolerze z gotową odpowiedzią,",

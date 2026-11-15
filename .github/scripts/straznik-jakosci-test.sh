@@ -100,8 +100,8 @@ final class ArchitectureTest {
     static final ArchRule CYCLES = slices().matching("kampus.(*)..").should().beFreeOfCycles();
 }
 JAVA
-  printf 'package kampus;\n\nfinal class ModularityTest {\n    @Test\n    void verifiesModules() {\n%s\n    }\n}\n' \
-    '        ApplicationModules.of(Application.class).verify();' >"$test_dir/ModularityTest.java"
+  printf 'package kampus;\n\nfinal class ModularityIT {\n    @Test\n    void verifiesModules() {\n%s\n    }\n}\n' \
+    '        ApplicationModules.of(Application.class).verify();' >"$test_dir/ModularityIT.java"
   printf 'package kampus.building;\n\nfinal class BuildingTest {\n    @Test\n    void keepsName() {\n%s\n    }\n}\n' \
     '        assertEquals("C-13", new Building("C-13").name());' >"$test_dir/building/BuildingTest.java"
   printf 'package kampus.app\n\nclass ArchitectureTest {\n    @Test\n    fun viewModelsLiveInUi() {\n%s\n    }\n}\n' \
@@ -192,7 +192,7 @@ jvm_config_absent() { rm backend/.mvn/jvm.config; }
 jvm_config_add() { echo '--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED' >backend/.mvn/jvm.config; }
 
 architecture_drop_rule() { sed -i '6,8d' "$test_dir/ArchitectureTest.java"; }
-modularity_delete() { git rm --quiet "$test_dir/ModularityTest.java"; }
+modularity_delete() { git rm --quiet "$test_dir/ModularityIT.java"; }
 architecture_rename() { git mv "$test_dir/ArchitectureTest.java" "$test_dir/Layers.java"; }
 konsist_edit() { sed -i 's/"..ui.."/"..ui..", "..map.."/' "$android_test/ArchitectureTest.kt"; }
 architecture_new_it() {
@@ -312,7 +312,7 @@ run_case "S2: edytowany jvm.config" "$changed" jvm_config_edit
 run_case "S2: dodany jvm.config" "$changed" jvm_config_add jvm_config_absent
 
 run_case "S3, O3: usunięta reguła z ArchitectureTest.java" "$changed" architecture_drop_rule
-run_case "S3: usunięty ModularityTest.java" "$removed" modularity_delete
+run_case "S3: usunięty ModularityIT.java" "$removed" modularity_delete
 run_case "S3: przeniesiony ArchitectureTest.java" "$changed" architecture_rename
 run_case "S3: zmieniony ArchitectureTest.kt w Androidzie" "$changed" konsist_edit
 run_case "S3: nowy plik reguł w backendzie" "$changed" architecture_new_backend

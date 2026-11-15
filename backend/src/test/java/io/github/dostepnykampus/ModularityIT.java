@@ -37,7 +37,7 @@ import org.springframework.modulith.docs.Documenter;
  *
  * @since 0.1.0
  */
-final class ModularityTest {
+final class ModularityIT {
 
     /**
      * Pakiet przykładowych modułów w katalogu testów.
@@ -64,9 +64,9 @@ final class ModularityTest {
     void modulesHaveClassesAndDescription() {
         Assertions.assertEquals(
             List.of(),
-            ModularityTest.incomplete(
-                ModularityTest.production(), Path.of("src", "main", "java"),
-                ModularityTest.packages(ApplicationModules.of(DostepnyKampusApplication.class))
+            ModularityIT.incomplete(
+                ModularityIT.production(), Path.of("src", "main", "java"),
+                ModularityIT.packages(ApplicationModules.of(DostepnyKampusApplication.class))
             ),
             "Moduł serwera nie ma klasy produkcyjnej albo opisu w package-info.java"
         );
@@ -79,15 +79,15 @@ final class ModularityTest {
         this.description("empty", "/** Opis. */%n");
         Assertions.assertEquals(
             List.of(
-                String.format("%s.beta", ModularityTest.SAMPLES),
-                String.format("%s.empty", ModularityTest.SAMPLES)
+                String.format("%s.beta", ModularityIT.SAMPLES),
+                String.format("%s.empty", ModularityIT.SAMPLES)
             ),
-            ModularityTest.incomplete(
-                new ClassFileImporter().importPackages(ModularityTest.SAMPLES), this.dir,
+            ModularityIT.incomplete(
+                new ClassFileImporter().importPackages(ModularityIT.SAMPLES), this.dir,
                 List.of(
-                    String.format("%s.alpha", ModularityTest.SAMPLES),
-                    String.format("%s.beta", ModularityTest.SAMPLES),
-                    String.format("%s.empty", ModularityTest.SAMPLES)
+                    String.format("%s.alpha", ModularityIT.SAMPLES),
+                    String.format("%s.beta", ModularityIT.SAMPLES),
+                    String.format("%s.empty", ModularityIT.SAMPLES)
                 )
             ),
             "Reguła przepuściła moduł bez klas albo bez opisu w package-info.java"
@@ -98,8 +98,8 @@ final class ModularityTest {
     void limitsSharedToErrorJsonAndGeo() {
         Assertions.assertEquals(
             List.of(),
-            ModularityTest.foreign(
-                ModularityTest.production(), "io.github.dostepnykampus.shared"
+            ModularityIT.foreign(
+                ModularityIT.production(), "io.github.dostepnykampus.shared"
             ),
             "Moduł shared ma klasę poza podpakietami error, json i geo"
         );
@@ -109,7 +109,7 @@ final class ModularityTest {
     void holdsOnlyApplicationInBasePackage() {
         Assertions.assertEquals(
             List.of(DostepnyKampusApplication.class.getName()),
-            ModularityTest.production().stream()
+            ModularityIT.production().stream()
                 .filter(type -> "io.github.dostepnykampus".equals(type.getPackageName()))
                 .filter(type -> !"package-info".equals(type.getSimpleName()))
                 .map(JavaClass::getName)
@@ -122,9 +122,9 @@ final class ModularityTest {
     void rejectsSharedSubpackageOutsideList() {
         Assertions.assertEquals(
             List.of("alpha", "beta"),
-            ModularityTest.foreign(
-                new ClassFileImporter().importPackages(ModularityTest.SAMPLES),
-                ModularityTest.SAMPLES
+            ModularityIT.foreign(
+                new ClassFileImporter().importPackages(ModularityIT.SAMPLES),
+                ModularityIT.SAMPLES
             ),
             "Reguła przepuściła podpakiet shared spoza error, json i geo"
         );
@@ -143,9 +143,9 @@ final class ModularityTest {
     void modulesDeclareAllowedDependencies() {
         Assertions.assertEquals(
             List.of(),
-            ModularityTest.undeclared(
-                ModularityTest.production(),
-                ModularityTest.packages(ApplicationModules.of(DostepnyKampusApplication.class))
+            ModularityIT.undeclared(
+                ModularityIT.production(),
+                ModularityIT.packages(ApplicationModules.of(DostepnyKampusApplication.class))
             ),
             "Moduł serwera nie ma @ApplicationModule z jawną listą allowedDependencies"
         );
@@ -154,10 +154,10 @@ final class ModularityTest {
     @Test
     void rejectsModuleWithoutDeclaredDependencies() {
         Assertions.assertEquals(
-            List.of(String.format("%s.beta", ModularityTest.SAMPLES)),
-            ModularityTest.undeclared(
-                new ClassFileImporter().importPackages(ModularityTest.SAMPLES),
-                ModularityTest.packages(ModularityTest.samples())
+            List.of(String.format("%s.beta", ModularityIT.SAMPLES)),
+            ModularityIT.undeclared(
+                new ClassFileImporter().importPackages(ModularityIT.SAMPLES),
+                ModularityIT.packages(ModularityIT.samples())
             ),
             "Reguła przepuściła moduł bez @ApplicationModule"
         );
@@ -166,19 +166,19 @@ final class ModularityTest {
     @Test
     void rejectsDependencyOutsideDeclaredList() {
         Assertions.assertTrue(
-            ModularityTest.samples().detectViolations().hasViolations(),
+            ModularityIT.samples().detectViolations().hasViolations(),
             "Weryfikacja przepuściła zależność od modułu spoza allowedDependencies"
         );
     }
 
     @Test
     void repeatsDeclaredDependenciesInVerificationPackageInfo() {
-        final JavaClasses main = ModularityTest.production();
+        final JavaClasses main = ModularityIT.production();
         Assertions.assertEquals(
             List.of(),
             ApplicationModules.of(DostepnyKampusApplication.class).stream()
                 .map(ApplicationModule::getBasePackage)
-                .filter(pack -> ModularityTest.shadowed(main, pack))
+                .filter(pack -> ModularityIT.shadowed(main, pack))
                 .map(JavaPackage::getName)
                 .toList(),
             "package-info testów zasłania listę modułu; powtórz w nim to samo @ApplicationModule"
@@ -195,10 +195,10 @@ final class ModularityTest {
         MatcherAssert.assertThat(
             String.format(
                 "Schemat modułów na stronie dokumentacji jest nieaktualny; skopiuj %s do %s",
-                folder.resolve("components.puml"), ModularityTest.DIAGRAM
+                folder.resolve("components.puml"), ModularityIT.DIAGRAM
             ),
-            ModularityTest.lines(ModularityTest.DIAGRAM),
-            Matchers.equalTo(ModularityTest.lines(folder.resolve("components.puml")))
+            ModularityIT.lines(ModularityIT.DIAGRAM),
+            Matchers.equalTo(ModularityIT.lines(folder.resolve("components.puml")))
         );
     }
 
@@ -216,7 +216,7 @@ final class ModularityTest {
         final JavaClasses classes, final Path sources, final List<String> modules
     ) {
         return modules.stream()
-            .filter(name -> ModularityTest.incomplete(classes, sources, name))
+            .filter(name -> ModularityIT.incomplete(classes, sources, name))
             .sorted()
             .toList();
     }
@@ -228,7 +228,7 @@ final class ModularityTest {
         return classes.stream()
             .filter(type -> !"package-info".equals(type.getSimpleName()))
             .noneMatch(type -> String.format("%s.", type.getPackageName()).startsWith(prefix))
-            || !ModularityTest.described(sources, name);
+            || !ModularityIT.described(sources, name);
     }
 
     private static boolean described(final Path sources, final String name) {
@@ -246,13 +246,13 @@ final class ModularityTest {
 
     private void description(final String module, final String javadoc) throws IOException {
         final Path folder = this.dir.resolve(
-            String.format("%s.%s", ModularityTest.SAMPLES, module).replace('.', '/')
+            String.format("%s.%s", ModularityIT.SAMPLES, module).replace('.', '/')
         );
         Files.createDirectories(folder);
         Files.writeString(
             folder.resolve("package-info.java"),
             String.format(
-                String.format("%s%s", javadoc, "package %s.%s;%n"), ModularityTest.SAMPLES, module
+                String.format("%s%s", javadoc, "package %s.%s;%n"), ModularityIT.SAMPLES, module
             )
         );
     }
@@ -264,7 +264,7 @@ final class ModularityTest {
             .map(JavaClass::getPackageName)
             .filter(name -> String.format("%s.", name).startsWith(prefix))
             .map(name -> String.format("%s.", name).substring(prefix.length()).split("\\.", 2)[0])
-            .filter(sub -> !ModularityTest.SHARED.contains(sub))
+            .filter(sub -> !ModularityIT.SHARED.contains(sub))
             .distinct()
             .sorted()
             .toList();
@@ -274,7 +274,7 @@ final class ModularityTest {
         final JavaClasses classes, final List<String> packages
     ) {
         return packages.stream()
-            .filter(name -> ModularityTest.declared(classes, name).isEmpty())
+            .filter(name -> ModularityIT.declared(classes, name).isEmpty())
             .sorted()
             .toList();
     }
@@ -291,7 +291,7 @@ final class ModularityTest {
     }
 
     private static boolean shadowed(final JavaClasses main, final JavaPackage pack) {
-        return !ModularityTest.declared(main, pack.getName()).equals(
+        return !ModularityIT.declared(main, pack.getName()).equals(
             pack.getAnnotation(org.springframework.modulith.ApplicationModule.class)
                 .map(annotation -> List.of(annotation.allowedDependencies()))
         );
@@ -311,6 +311,6 @@ final class ModularityTest {
     }
 
     private static ApplicationModules samples() {
-        return ApplicationModules.of(ModularityTest.SAMPLES, location -> true);
+        return ApplicationModules.of(ModularityIT.SAMPLES, location -> true);
     }
 }

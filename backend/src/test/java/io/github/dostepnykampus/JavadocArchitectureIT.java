@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
  *
  * @since 0.1.0
  */
-final class JavadocArchitectureTest {
+final class JavadocArchitectureIT {
 
     /**
      * Blok Javadoc.
@@ -85,8 +85,8 @@ final class JavadocArchitectureTest {
         MatcherAssert.assertThat(
             "Javadoc serwera ma historię, za długi opis albo wymagania poza linią Wymagania",
             Stream.of("src/main/java", "src/test/java")
-                .flatMap(JavadocArchitectureTest::sources)
-                .flatMap(path -> JavadocArchitectureTest.violations(path).stream())
+                .flatMap(JavadocArchitectureIT::sources)
+                .flatMap(path -> JavadocArchitectureIT.violations(path).stream())
                 .toList(),
             Matchers.empty()
         );
@@ -96,8 +96,8 @@ final class JavadocArchitectureTest {
     void reportsIssueAndDecisionNumbers() {
         MatcherAssert.assertThat(
             "Numer issue albo decyzji w Javadoc nie jest zgłaszany",
-            JavadocArchitectureTest.problems(
-                JavadocArchitectureTest.text(
+            JavadocArchitectureIT.problems(
+                JavadocArchitectureIT.text(
                     "/** Zwraca listę (#123). */", "/**", " * Lista (decyzja", " * 82).", " */"
                 )
             ),
@@ -109,7 +109,7 @@ final class JavadocArchitectureTest {
     void passesDeferredWorkMarker() {
         MatcherAssert.assertThat(
             "Znacznik pracy odłożonej jest zgłaszany jak historia",
-            JavadocArchitectureTest.problems(
+            JavadocArchitectureIT.problems(
                 "/** Lista. %sODO(#12): sortowanie. */".formatted("T")
             ),
             Matchers.empty()
@@ -120,8 +120,8 @@ final class JavadocArchitectureTest {
     void reportsLongDescriptionWithoutTags() {
         MatcherAssert.assertThat(
             "Długość opisu liczy znaczniki albo nie zgłasza siedmiu linii",
-            JavadocArchitectureTest.problems(
-                JavadocArchitectureTest.text(
+            JavadocArchitectureIT.problems(
+                JavadocArchitectureIT.text(
                     "/**",
                     " * a",
                     " * b",
@@ -152,8 +152,8 @@ final class JavadocArchitectureTest {
     void keepsRequirementIdsInRequirementsLine() {
         MatcherAssert.assertThat(
             "Identyfikator wymagania poza linią Wymagania nie jest zgłaszany",
-            JavadocArchitectureTest.problems(
-                JavadocArchitectureTest.text(
+            JavadocArchitectureIT.problems(
+                JavadocArchitectureIT.text(
                     "/** Odczyt budynków (US1). */",
                     "/**",
                     " * Odczyt budynków.",
@@ -174,7 +174,7 @@ final class JavadocArchitectureTest {
     private static Stream<Path> sources(final String root) {
         try (Stream<Path> files = Files.walk(Path.of(root))) {
             return files.filter(path -> path.toString().endsWith(".java"))
-                .filter(path -> !path.endsWith("JavadocArchitectureTest.java"))
+                .filter(path -> !path.endsWith("JavadocArchitectureIT.java"))
                 .toList().stream();
         } catch (final IOException ex) {
             throw new UncheckedIOException(ex);
@@ -183,7 +183,7 @@ final class JavadocArchitectureTest {
 
     private static List<String> violations(final Path path) {
         try {
-            return JavadocArchitectureTest.problems(
+            return JavadocArchitectureIT.problems(
                 Files.readString(path, StandardCharsets.UTF_8)
             ).stream().map(problem -> "%s:%s".formatted(path, problem)).toList();
         } catch (final IOException ex) {
@@ -193,33 +193,33 @@ final class JavadocArchitectureTest {
 
     private static List<String> problems(final String source) {
         final List<String> found = new ArrayList<>(0);
-        final Matcher block = JavadocArchitectureTest.BLOCK.matcher(source);
+        final Matcher block = JavadocArchitectureIT.BLOCK.matcher(source);
         int counted = 0;
         int line = 1;
         while (block.find()) {
-            line += JavadocArchitectureTest.newlines(source.substring(counted, block.start()));
+            line += JavadocArchitectureIT.newlines(source.substring(counted, block.start()));
             counted = block.start();
             final String body = block.group(1);
-            final String flat = JavadocArchitectureTest.DEFERRED.matcher(
+            final String flat = JavadocArchitectureIT.DEFERRED.matcher(
                 body.replaceAll("\\s*\\n\\s*\\*?", " ")
             ).replaceAll("");
-            if (JavadocArchitectureTest.ISSUE.matcher(flat).find()
-                || JavadocArchitectureTest.DECISION.matcher(flat).find()) {
+            if (JavadocArchitectureIT.ISSUE.matcher(flat).find()
+                || JavadocArchitectureIT.DECISION.matcher(flat).find()) {
                 found.add("%d historia".formatted(line));
             }
-            final List<String> lines = Arrays.stream(JavadocArchitectureTest.LINE.split(body))
-                .map(text -> JavadocArchitectureTest.DECORATION.matcher(text).replaceFirst(""))
+            final List<String> lines = Arrays.stream(JavadocArchitectureIT.LINE.split(body))
+                .map(text -> JavadocArchitectureIT.DECORATION.matcher(text).replaceFirst(""))
                 .toList();
             if (lines.stream().takeWhile(text -> !text.startsWith("@"))
                 .filter(text -> !text.isBlank())
-                .filter(text -> !JavadocArchitectureTest.REQUIREMENTS.matcher(text).find())
+                .filter(text -> !JavadocArchitectureIT.REQUIREMENTS.matcher(text).find())
                 .count() > 6) {
                 found.add("%d długość".formatted(line));
             }
             if (lines.stream()
-                .map(text -> JavadocArchitectureTest.CODE.matcher(text).replaceAll(""))
-                .map(text -> JavadocArchitectureTest.REQUIREMENTS.matcher(text).replaceAll(""))
-                .anyMatch(text -> JavadocArchitectureTest.REQUIREMENT.matcher(text).find())) {
+                .map(text -> JavadocArchitectureIT.CODE.matcher(text).replaceAll(""))
+                .map(text -> JavadocArchitectureIT.REQUIREMENTS.matcher(text).replaceAll(""))
+                .anyMatch(text -> JavadocArchitectureIT.REQUIREMENT.matcher(text).find())) {
                 found.add("%d wymagania".formatted(line));
             }
         }

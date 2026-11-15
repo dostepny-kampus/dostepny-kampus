@@ -28,7 +28,7 @@ import org.junit.jupiter.params.provider.CsvSource;
  *
  * @since 0.1.0
  */
-final class SharedFixtureArchitectureTest {
+final class SharedFixtureArchitectureIT {
 
     /**
      * Klasy testów ze wspólnym polem albo metodą przygotowania i issue, które to usuwa; nazwy
@@ -39,7 +39,7 @@ final class SharedFixtureArchitectureTest {
         "ImmutableDomainArchitectureIT",
         "LayerDirectionArchitectureIT",
         "MockFreeArchitectureIT",
-        "ModularityTest",
+        "ModularityIT",
         "ModuleRootArchitectureIT",
         "NullabilityArchitectureIT",
         "PackageCycleArchitectureIT",
@@ -79,16 +79,16 @@ final class SharedFixtureArchitectureTest {
      * Reguła: klasa z metodami testów nie ma wspólnego pola ani metody przygotowania.
      */
     private static final ExceptionListRule RULE = new ExceptionListRule(
-        type -> SharedFixtureArchitectureTest.tested(type)
-            && SharedFixtureArchitectureTest.shared(type),
-        SharedFixtureArchitectureTest.KNOWN
+        type -> SharedFixtureArchitectureIT.tested(type)
+            && SharedFixtureArchitectureIT.shared(type),
+        SharedFixtureArchitectureIT.KNOWN
     );
 
     @Test
     void testsPrepareOwnData() {
         Assertions.assertEquals(
             List.of(),
-            SharedFixtureArchitectureTest.RULE.fresh(),
+            SharedFixtureArchitectureIT.RULE.fresh(),
             "Klasa testu ma pole obiektu albo metodę przygotowania; dane przygotuj w teście"
         );
     }
@@ -97,7 +97,7 @@ final class SharedFixtureArchitectureTest {
     void exceptionListHoldsOnlyExistingViolations() {
         Assertions.assertEquals(
             List.of(),
-            SharedFixtureArchitectureTest.RULE.stale(),
+            SharedFixtureArchitectureIT.RULE.stale(),
             "Wyjątek z listy już nie jest naruszeniem; usuń wpis"
         );
     }
@@ -118,8 +118,8 @@ final class SharedFixtureArchitectureTest {
         throws IOException {
         Assertions.assertEquals(
             rejected,
-            SharedFixtureArchitectureTest.sample(dir, members).contains(
-                String.format("%s.Sample", SharedFixtureArchitectureTest.SAMPLES)
+            SharedFixtureArchitectureIT.sample(dir, members).contains(
+                String.format("%s.Sample", SharedFixtureArchitectureIT.SAMPLES)
             ),
             String.format("Reguła źle oceniła klasę z elementami: %s", members)
         );
@@ -127,7 +127,7 @@ final class SharedFixtureArchitectureTest {
 
     private static boolean tested(final JavaClass type) {
         return type.getMethods().stream().anyMatch(
-            method -> SharedFixtureArchitectureTest.TESTS.stream()
+            method -> SharedFixtureArchitectureIT.TESTS.stream()
                 .anyMatch(method::isAnnotatedWith)
         );
     }
@@ -139,18 +139,18 @@ final class SharedFixtureArchitectureTest {
                     && !field.getModifiers().contains(JavaModifier.SYNTHETIC)
             ),
             type.getMethods().stream().map(
-                method -> SharedFixtureArchitectureTest.SETUPS.stream()
+                method -> SharedFixtureArchitectureIT.SETUPS.stream()
                     .anyMatch(method::isAnnotatedWith)
             )
         ).anyMatch(Boolean::booleanValue);
     }
 
     private static Set<String> sample(final Path dir, final String members) throws IOException {
-        return SharedFixtureArchitectureTest.RULE.sample(
-            dir, SharedFixtureArchitectureTest.SAMPLES,
+        return SharedFixtureArchitectureIT.RULE.sample(
+            dir, SharedFixtureArchitectureIT.SAMPLES,
             String.format(
                 "package %s;%nimport org.junit.jupiter.api.Test;%nfinal class Sample { %s }%n",
-                SharedFixtureArchitectureTest.SAMPLES, members
+                SharedFixtureArchitectureIT.SAMPLES, members
             )
         );
     }

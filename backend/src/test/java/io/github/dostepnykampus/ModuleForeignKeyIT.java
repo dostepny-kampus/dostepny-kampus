@@ -31,8 +31,8 @@ final class ModuleForeignKeyIT {
     }
 
     private static Set<String> crossings(final ApplicationContext context) throws IOException {
-        return ModuleMigrationTest.crossings(
-            ModuleMigrationTest.owners(),
+        return ModuleMigrationIT.crossings(
+            ModuleMigrationIT.owners(),
             context.getBean(JdbcClient.class).sql(
                 String.join(
                     " ",

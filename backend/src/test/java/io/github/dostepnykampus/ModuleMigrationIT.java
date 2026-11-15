@@ -33,7 +33,7 @@ import org.springframework.modulith.core.ApplicationModules;
  *
  * @since 0.1.0
  */
-final class ModuleMigrationTest {
+final class ModuleMigrationIT {
 
     /**
      * Katalog migracji SQL.
@@ -71,9 +71,9 @@ final class ModuleMigrationTest {
     @Test
     void holdsOnlyMigrationsBeforeModulesInRoot() throws IOException {
         Assertions.assertEquals(
-            ModuleMigrationTest.BEFORE_MODULES,
-            ModuleMigrationTest.names(
-                ModuleMigrationTest.MIGRATIONS.resolve(ModuleMigrationTest.ROOT)
+            ModuleMigrationIT.BEFORE_MODULES,
+            ModuleMigrationIT.names(
+                ModuleMigrationIT.MIGRATIONS.resolve(ModuleMigrationIT.ROOT)
             ),
             "Nowa migracja należy do katalogu modułu, nie do __root"
         );
@@ -86,10 +86,10 @@ final class ModuleMigrationTest {
             .map(ApplicationModule::getIdentifier)
             .map(Object::toString)
             .collect(Collectors.toCollection(TreeSet::new));
-        allowed.add(ModuleMigrationTest.ROOT);
+        allowed.add(ModuleMigrationIT.ROOT);
         Assertions.assertEquals(
             List.of(),
-            ModuleMigrationTest.names(ModuleMigrationTest.MIGRATIONS).stream()
+            ModuleMigrationIT.names(ModuleMigrationIT.MIGRATIONS).stream()
                 .filter(name -> !allowed.contains(name))
                 .toList(),
             "Migracja leży poza katalogiem modułu albo __root"
@@ -100,7 +100,7 @@ final class ModuleMigrationTest {
     void rejectsForeignKeyToOtherModuleAndAcceptsOwnTable() {
         Assertions.assertEquals(
             Set.of("notes -> areas", "points -> missing"),
-            ModuleMigrationTest.crossings(
+            ModuleMigrationIT.crossings(
                 Map.of("areas", "geo", "points", "geo", "notes", "note"),
                 List.of(
                     List.of("points", "areas"), List.of("notes", "areas"),
@@ -119,12 +119,12 @@ final class ModuleMigrationTest {
      * @throws IOException Gdy nie da się przeczytać migracji
      */
     static Map<String, String> owners() throws IOException {
-        final Map<String, String> owners = new HashMap<>(ModuleMigrationTest.ROOT_OWNERS);
-        try (Stream<Path> files = Files.walk(ModuleMigrationTest.MIGRATIONS)) {
+        final Map<String, String> owners = new HashMap<>(ModuleMigrationIT.ROOT_OWNERS);
+        try (Stream<Path> files = Files.walk(ModuleMigrationIT.MIGRATIONS)) {
             for (final Path file : files.filter(Files::isRegularFile).toList()) {
                 final String folder = file.getParent().getFileName().toString();
-                if (!ModuleMigrationTest.ROOT.equals(folder)) {
-                    ModuleMigrationTest.created(Files.readString(file))
+                if (!ModuleMigrationIT.ROOT.equals(folder)) {
+                    ModuleMigrationIT.created(Files.readString(file))
                         .forEach(table -> owners.put(table, folder));
                 }
             }
@@ -143,7 +143,7 @@ final class ModuleMigrationTest {
         final Map<String, String> owners, final List<List<String>> keys
     ) {
         return keys.stream()
-            .filter(key -> !ModuleMigrationTest.inside(owners, key.get(0), key.get(1)))
+            .filter(key -> !ModuleMigrationIT.inside(owners, key.get(0), key.get(1)))
             .map(key -> String.format("%s -> %s", key.get(0), key.get(1)))
             .collect(Collectors.toCollection(TreeSet::new));
     }
@@ -156,7 +156,7 @@ final class ModuleMigrationTest {
 
     private static List<String> created(final String sql) {
         final List<String> tables = new ArrayList<>(2);
-        final Matcher matcher = ModuleMigrationTest.CREATED.matcher(sql);
+        final Matcher matcher = ModuleMigrationIT.CREATED.matcher(sql);
         while (matcher.find()) {
             tables.add(matcher.group(1).toLowerCase(Locale.ROOT));
         }
