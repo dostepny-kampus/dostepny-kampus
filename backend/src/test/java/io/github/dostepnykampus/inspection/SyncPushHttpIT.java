@@ -21,10 +21,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Znacznik piętra obejrzanego serwer zapisuje, a ponowne wysłanie tego samego znacznika nie
- * zapisuje go drugi raz; cofnięcie własnego znacznika jest udane, także powtórzone, a cudzego
- * odrzucone.
+ * zapisuje go drugi raz; znacznik piętra spoza budynku jest odrzucony. Cofnięcie własnego
+ * znacznika jest udane, także powtórzone, a cudzego odrzucone.
  *
- * <p>Wymagania: US15.1, US15.2, US15.3, BR-9, BR-20</p>
+ * <p>Wymagania: US15.1, US15.2, US15.3, BR-9, BR-20, BR-21</p>
  *
  * @since 0.1.0
  */
@@ -79,6 +79,46 @@ final class SyncPushHttpIT {
             "200 REJECTED, zapisanych 0",
             SyncPushHttpIT.pushed(context, UUID.randomUUID(), "Z-99"),
             "Serwer zapisał znacznik w budynku, którego nie zna"
+        );
+    }
+
+    @Test
+    void rejectsMarkerOfFloorOutsideBuilding(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = UUID.randomUUID();
+        Assertions.assertEquals(
+            "200 REJECTED, zapisanych 0",
+            String.format(
+                "%s, zapisanych %d",
+                SyncPushHttpIT.send(
+                    context, "COLLECTOR", SyncPushHttpIT.floor(id, "C-13", "nie-ma-pietra")
+                ),
+                SyncPushHttpIT.saved(context, id)
+            ),
+            "Serwer zapisał znacznik piętra, którego nie ma w budynku"
+        );
+    }
+
+    @Test
+    void savesMarkerOfFloorInBuilding(final WebApplicationContext context)
+        throws Exception {
+        context.getBean(JdbcClient.class).sql(
+            """
+            INSERT INTO floors (building_symbol, id, label, sort_order)
+            VALUES ('C-13', 'test-f0', 'Parter', 0)
+            """
+        ).update();
+        final UUID id = UUID.randomUUID();
+        Assertions.assertEquals(
+            "200 APPLIED, zapisanych 1",
+            String.format(
+                "%s, zapisanych %d",
+                SyncPushHttpIT.send(
+                    context, "COLLECTOR", SyncPushHttpIT.floor(id, "C-13", "test-f0")
+                ),
+                SyncPushHttpIT.saved(context, id)
+            ),
+            "Serwer nie zapisał znacznika piętra, które jest w budynku"
         );
     }
 
@@ -179,6 +219,16 @@ final class SyncPushHttpIT {
             "{\"operations\":[{\"clientOperationId\":\"", UUID.randomUUID().toString(),
             "\",\"type\":\"SET_INSPECTION_MARKER\",\"marker\":{\"id\":\"",
             id.toString(), "\",\"buildingSymbol\":\"", building, "\"}}]}"
+        );
+    }
+
+    private static String floor(final UUID id, final String building, final String floor) {
+        return String.join(
+            "",
+            "{\"operations\":[{\"clientOperationId\":\"", UUID.randomUUID().toString(),
+            "\",\"type\":\"SET_INSPECTION_MARKER\",\"marker\":{\"id\":\"",
+            id.toString(), "\",\"buildingSymbol\":\"", building, "\",\"floorId\":\"",
+            floor, "\"}}]}"
         );
     }
 
