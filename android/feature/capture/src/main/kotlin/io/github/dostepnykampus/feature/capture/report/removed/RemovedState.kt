@@ -7,8 +7,8 @@ package io.github.dostepnykampus.feature.capture.report.removed
 
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
-import io.github.dostepnykampus.core.model.SubmissionContent
-import io.github.dostepnykampus.core.model.SubmissionKind
+import io.github.dostepnykampus.core.model.submission.SubmissionContent
+import io.github.dostepnykampus.core.model.submission.SubmissionKind
 
 /** Etap ekranu C7 „Usunięcie bariery”. Wymagania: US8.4 */
 enum class RemovedStage {
