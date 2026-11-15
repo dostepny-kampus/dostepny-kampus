@@ -45,15 +45,7 @@ final class SubmissionResponseTest {
                     new Submission(
                         WebBodies.ID, 2, SubmissionStatus.IN_REVIEW,
                         Instant.parse("2026-03-01T10:00:00Z"),
-                        new SubmissionContent(
-                            SubmissionKind.QUICK,
-                            new SubmissionPlace(
-                                new SubmissionPoint(17.06, 51.1), 4.5, false, "B1",
-                                new SubmissionFloor("p2", 2, false)
-                            ),
-                            new BarrierDetails(BarrierGroup.OTHER, null, 2, "opis", false),
-                            null, null, null, List.of(WebBodies.PHOTO)
-                        )
+                        SubmissionResponseTest.content()
                     )
                 )
             ),
@@ -71,20 +63,24 @@ final class SubmissionResponseTest {
                     new Submission(
                         WebBodies.ID, 1, SubmissionStatus.ACCEPTED,
                         Instant.parse("2026-03-01T10:00:00Z"),
-                        new SubmissionContent(
-                            SubmissionKind.QUICK,
-                            new SubmissionPlace(
-                                new SubmissionPoint(17.06, 51.1), 4.5, false, "B1",
-                                new SubmissionFloor("p2", 2, false)
-                            ),
-                            new BarrierDetails(BarrierGroup.OTHER, null, 2, "opis", false),
-                            null, null, null, List.of(WebBodies.PHOTO)
-                        ),
+                        SubmissionResponseTest.content(),
                         Instant.parse(verified)
                     )
                 )
             ).path("verifiedAt").asString(),
             "Odpowiedź przyjętego zgłoszenia nie ma daty weryfikacji"
+        );
+    }
+
+    private static SubmissionContent content() {
+        return new SubmissionContent(
+            SubmissionKind.QUICK,
+            new SubmissionPlace(
+                new SubmissionPoint(17.06, 51.1), 4.5, false, "B1",
+                new SubmissionFloor("p2", 2, false)
+            ),
+            new BarrierDetails(BarrierGroup.OTHER, null, 2, "opis", false),
+            null, null, null, List.of(WebBodies.PHOTO)
         );
     }
 }
