@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 public final class TextParameterBinding {
 
     /**
-     * Źródło edytorów napisu; edytor ma stan, więc każde wiązanie dostaje nowy.
+     * Fabryka edytorów napisu; edytor ma stan, więc każde wiązanie dostaje nowy.
      */
     private final Supplier<PropertyEditor> editors;
 
