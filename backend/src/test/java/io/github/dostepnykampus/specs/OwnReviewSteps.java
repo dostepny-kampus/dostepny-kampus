@@ -41,7 +41,7 @@ public final class OwnReviewSteps {
     /**
      * Separator ról w tokenie testowym.
      */
-    private static final Pattern PLUS = Pattern.compile("\+");
+    private static final Pattern PLUS = Pattern.compile("[+]");
 
     /**
      * Klient żądań HTTP do aplikacji.
