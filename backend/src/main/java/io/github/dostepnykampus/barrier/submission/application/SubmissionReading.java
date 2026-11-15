@@ -85,6 +85,19 @@ public final class SubmissionReading {
     }
 
     /**
+     * Sprawdza, czy zgłoszenie wzięło do weryfikacji to konto.
+     *
+     * <p>Wymagania: BR-11</p>
+     *
+     * @param id Identyfikator zgłoszenia
+     * @param account Identyfikator konta Weryfikatora
+     * @return Prawda, gdy konto wzięło zgłoszenie
+     */
+    public boolean claimedBy(final UUID id, final String account) {
+        return this.finder.claimedBy(id, account);
+    }
+
+    /**
      * Sprawdza, czy zmianę przyjętego zgłoszenia może złożyć tylko autor, a konto nim nie jest.
      *
      * <p>Wymagania: BR-18</p>

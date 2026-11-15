@@ -182,6 +182,11 @@ final class SubmissionReadingTest {
         }
 
         @Override
+        public boolean claimedBy(final UUID id, final String account) {
+            throw new UnsupportedOperationException("Sprawdzenie zmiany nie pyta o Weryfikatora");
+        }
+
+        @Override
         public boolean authorOnly(final UUID id, final String account) {
             throw new UnsupportedOperationException("Sprawdzenie zmiany nie pyta o autora");
         }

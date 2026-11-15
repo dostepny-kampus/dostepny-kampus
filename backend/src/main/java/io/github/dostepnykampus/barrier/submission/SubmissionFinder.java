@@ -51,6 +51,17 @@ public interface SubmissionFinder {
     boolean foreign(UUID id, String account);
 
     /**
+     * Sprawdza, czy zgłoszenie istnieje i wzięło je do weryfikacji to konto.
+     *
+     * <p>Wymagania: BR-11</p>
+     *
+     * @param id Identyfikator zgłoszenia
+     * @param account Identyfikator konta Weryfikatora
+     * @return Prawda, gdy konto wzięło zgłoszenie; fałsz dla cudzego, niczyjego i braku
+     */
+    boolean claimedBy(UUID id, String account);
+
+    /**
      * Sprawdza, czy zwykłą zmianę zgłoszenia przyjętego może złożyć tylko
      * autor, a konto nim nie jest: zgłoszenie istnieje, złożyło je
      * inne konto i nie jest zgłoszeniem szybkim.

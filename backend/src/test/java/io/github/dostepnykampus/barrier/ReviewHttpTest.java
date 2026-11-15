@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -19,9 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * Weryfikator bierze cudze zgłoszenie do weryfikacji, ale nie własne.
+ * Weryfikator bierze cudze zgłoszenie do weryfikacji i rozstrzyga je, ale nie własne.
  *
- * <p>Wymagania: BR-4, BR-11</p>
+ * <p>Wymagania: BR-4, BR-11, BR-3, BR-16</p>
  *
  * @since 0.1.0
  */
@@ -33,6 +34,43 @@ final class ReviewHttpTest {
      * Zdjęcie zgłoszenia próbnego.
      */
     private static final UUID PHOTO = UUID.fromString("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d");
+
+    @Test
+    void refusesReviewOfOwnSubmission(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = ReviewHttpTest.sent(context, "konto-testowe");
+        MatcherAssert.assertThat(
+            "Decyzja o własnym zgłoszeniu nie dała 403 albo zmieniła jego status",
+            List.of(
+                ReviewHttpTest.review(context, id), ReviewHttpTest.status(context, id)
+            ),
+            Matchers.contains(403, "SENT")
+        );
+    }
+
+    @Test
+    void refusesReviewOfSubmissionNotClaimed(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Decyzja o zgłoszeniu niewziętym przez Weryfikatora nie dała 403",
+            ReviewHttpTest.review(context, ReviewHttpTest.sent(context, "inne-konto")),
+            Matchers.equalTo(403)
+        );
+    }
+
+    @Test
+    void acceptsSubmissionClaimedByReviewer(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = ReviewHttpTest.sent(context, "inne-konto");
+        ReviewHttpTest.claim(context, id);
+        MatcherAssert.assertThat(
+            "Przyjęcie wziętego zgłoszenia nie dało 200 i statusu „przyjęte”",
+            List.of(
+                ReviewHttpTest.review(context, id), ReviewHttpTest.status(context, id)
+            ),
+            Matchers.contains(200, "ACCEPTED")
+        );
+    }
 
     @Test
     void refusesClaimOfOwnSubmission(final WebApplicationContext context)
@@ -92,6 +130,16 @@ final class ReviewHttpTest {
         throws Exception {
         return context.getBean(MockMvc.class).perform(
             MockMvcRequestBuilders.post("/submissions/{id}/claim", id).with(new AsVerifier())
+        ).andReturn().getResponse().getStatus();
+    }
+
+    private static int review(final WebApplicationContext context, final UUID id)
+        throws Exception {
+        return context.getBean(MockMvc.class).perform(
+            MockMvcRequestBuilders.post("/submissions/{id}/review", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"decision\":\"ACCEPT\",\"version\":1}")
+                .with(new AsVerifier())
         ).andReturn().getResponse().getStatus();
     }
 }
