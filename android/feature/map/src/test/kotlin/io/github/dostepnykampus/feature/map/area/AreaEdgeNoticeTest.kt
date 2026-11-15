@@ -20,25 +20,21 @@ class AreaEdgeNoticeTest {
      * Wymagania: US1.7, NFR-19
      */
     @Test
-    fun announcesOnceUntilViewLeavesEdge() {
-        val notice = AreaEdgeNotice()
-        val steps = listOf(point(longitude = 17.0), point(longitude = 17.1), point(longitude = 17.1))
-        val back = listOf(point(longitude = 17.0), point(longitude = 17.1))
-        val announced = (steps + back).map { notice.isDue(area = AREA, atEdge = it.isAtEdgeOf(BOUNDS)) }
-        assertEquals(listOf(false, true, false, false, true), announced, "ogłoszenia przy kolejnych widokach")
+    fun announcesOnceUntilEdgeLeft() {
+        val views = listOf(point(), point(longitude = 17.1), point(longitude = 17.1), point(), point(longitude = 17.1))
+        val names = views.map { areaEdgeName(area = AREA, atEdge = it.isAtEdgeOf(BOUNDS)) }
+        assertEquals(listOf(null, AREA, AREA, null, AREA), names, "nazwa terenu w kolejnych widokach")
     }
 
     @Test
-    fun announcesAgainAfterAreaChange() {
-        val notice = AreaEdgeNotice()
-        assertEquals(true, notice.isDue(area = AREA, atEdge = true), "pierwsze ogłoszenie")
-        assertEquals(true, notice.isDue(area = "Wittigowo", atEdge = true), "ogłoszenie po zmianie terenu")
-        assertEquals(false, notice.isDue(area = "Wittigowo", atEdge = true), "powtórka bez odsunięcia")
+    fun changesNameAfterAreaChange() {
+        assertEquals(AREA, areaEdgeName(area = AREA, atEdge = true), "teren przed zmianą")
+        assertEquals("Wittigowo", areaEdgeName(area = "Wittigowo", atEdge = true), "teren po zmianie")
     }
 
     @Test
     fun staysSilentWithoutChosenArea() {
-        assertEquals(false, AreaEdgeNotice().isDue(area = null, atEdge = true), "brak nazwy terenu")
+        assertEquals(null, areaEdgeName(area = null, atEdge = true), "brak nazwy terenu")
     }
 
     @Test

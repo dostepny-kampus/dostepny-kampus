@@ -8,11 +8,6 @@ package io.github.dostepnykampus.feature.map.area
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -39,28 +34,18 @@ private fun Double.isOnEdge(low: Double, high: Double): Boolean =
     this <= low + EDGE_TOLERANCE_DEGREES || this >= high - EDGE_TOLERANCE_DEGREES
 
 /**
- * Pilnuje, by komunikat o końcu terenu padł raz: [isDue] zwraca prawdę przy dojściu do brzegu, a powtórzenie jest
- * możliwe dopiero po odsunięciu widoku od brzegu albo po zmianie terenu.
+ * Nazwa terenu w komunikacie o jego końcu: [area], gdy widok jest na brzegu ([atEdge]), inaczej `null`. Region
+ * dynamiczny TalkBack czyta tekst przy każdej jego zmianie, więc komunikat pada raz przy dojściu do brzegu,
+ * ponownie dopiero po odsunięciu widoku od brzegu albo po zmianie terenu.
  *
  * Wymagania: US1.7, NFR-19
  */
-internal class AreaEdgeNotice {
-    private var area: String? = null
-    private var isAtEdge = false
-
-    /** Czy przy widoku na brzegu ([atEdge]) terenu [area] trzeba teraz ogłosić koniec terenu. */
-    fun isDue(area: String?, atEdge: Boolean): Boolean {
-        val due = area != null && atEdge && (!isAtEdge || area != this.area)
-        this.area = area
-        isAtEdge = atEdge
-        return due
-    }
-}
+internal fun areaEdgeName(area: String?, atEdge: Boolean): String? = area.takeIf { atEdge }
 
 /**
  * Niewidoczne ogłoszenie dla TalkBack: „Tu kończy się teren Kampus główny. Inny teren wybierzesz przyciskiem
- * «Zmień teren» u góry mapy.” Nic nie rysuje; ogłasza raz przy dojściu widoku [camera] do brzegu [bounds] terenu
- * [area], zob. [AreaEdgeNotice].
+ * «Zmień teren» u góry mapy.” Nic nie rysuje; ogłasza przy dojściu widoku [camera] do brzegu [bounds] terenu
+ * [area], zob. [areaEdgeName].
  *
  * Wymagania: US1.7, NFR-19
  */
@@ -71,10 +56,8 @@ internal fun AreaEdgeAnnouncement(
     area: String?,
     modifier: Modifier = Modifier,
 ) {
-    val notice = remember { AreaEdgeNotice() }
-    var isDue by remember { mutableStateOf(value = false) }
-    LaunchedEffect(camera, bounds, area) { isDue = notice.isDue(area, atEdge = camera.isAtEdgeOf(bounds)) }
-    val text = if (isDue && area != null) stringResource(R.string.mapa_teren_granica, area) else ""
+    val name = areaEdgeName(area, atEdge = camera.isAtEdgeOf(bounds))
+    val text = name?.let { stringResource(R.string.mapa_teren_granica, it) }.orEmpty()
     Box(
         modifier.size(1.dp).semantics {
             liveRegion = LiveRegionMode.Polite
