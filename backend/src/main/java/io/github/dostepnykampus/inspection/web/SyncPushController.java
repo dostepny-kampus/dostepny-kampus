@@ -6,8 +6,10 @@
 package io.github.dostepnykampus.inspection.web;
 
 import io.github.dostepnykampus.inspection.application.MarkerService;
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
@@ -41,21 +43,27 @@ public final class SyncPushController {
      * Zapisuje znaczniki z paczki w jednej transakcji; wynik każdej operacji jest osobny, a
      * znacznik o zapisanym już identyfikatorze nie powstaje drugi raz. Cofnięcia wykonują się
      * po zapisach: cofnięcie własnego znacznika, także powtórzone, jest udane, a cudzego albo
-     * nieistniejącego odrzucone. Błąd w ciele którejkolwiek operacji daje 400 przed zapisem.
+     * nieistniejącego odrzucone. Znacznik od konta bez roli Zbierającego jest odrzucony z 403
+     * i niezapisany. Błąd w ciele którejkolwiek operacji daje 400 przed zapisem.
      *
      * <p>Wymagania: US15.1, US15.3, BR-9, BR-20</p>
      *
      * @param body Paczka według schematu z żądania
      * @param account Zalogowane konto; jego nazwa to identyfikator z tokenu
+     * @param request Bieżące żądanie HTTP; z niego pochodzi rola konta
      * @return Wyniki operacji w kolejności żądania
      */
     @PostMapping("/sync/push")
-    SyncPushResponse push(@RequestBody final SyncPushRequest body, final Principal account) {
+    SyncPushResponse push(
+        @RequestBody final SyncPushRequest body, final Principal account,
+        final HttpServletRequest request
+    ) {
         final String author = account.getName();
+        final boolean collector = request.isUserInRole("COLLECTOR");
         final List<SyncOperationJson> operations = body.checked();
         operations.forEach(operation -> operation.check(author));
         final Set<UUID> unknown = this.service.place(
-            operations.stream().filter(SyncOperationJson::placesMarker)
+            operations.stream().filter(operation -> collector && operation.placesMarker())
                 .map(operation -> operation.toMarker(author)).toList()
         );
         final Set<UUID> missing = this.service.revoke(
@@ -65,9 +73,26 @@ public final class SyncPushController {
         );
         return new SyncPushResponse(
             operations.stream().map(
-                operation -> SyncPushController.result(operation, author, unknown, missing)
+                operation -> SyncPushController.allowed(operation, collector).orElseGet(
+                    () -> SyncPushController.result(operation, author, unknown, missing)
+                )
             ).toList()
         );
+    }
+
+    private static Optional<SyncResultResponse> allowed(
+        final SyncOperationJson operation, final boolean collector
+    ) {
+        Optional<SyncResultResponse> result = Optional.empty();
+        if (operation.placesMarker() && !collector) {
+            result = Optional.of(
+                SyncResultResponse.rejected(
+                    operation.operation(), HttpStatus.FORBIDDEN,
+                    "Znacznik obejrzanego wymaga roli Zbierającego"
+                )
+            );
+        }
+        return result;
     }
 
     private static SyncResultResponse result(
