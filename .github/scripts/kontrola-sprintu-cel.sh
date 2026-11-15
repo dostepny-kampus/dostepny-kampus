@@ -7,7 +7,7 @@ set -euo pipefail
 # Wybiera commit dla kontroli sprintu. Bez GALAZ bierze tylko gałąź `origin/sprint/N` z najwyższym N: nowy sprint
 # powstaje z `main` dopiero po scaleniu poprzedniego, więc starsze gałęzie spoza `main` to historia sprzed tego
 # porządku. Głowę, która jest już w `origin/main`, pomija. Głowę ze statusem `kontrola-sprintu` success, failure albo
-# świeżym `pending` pomija; `pending` starszy niż 3 godziny (przerwany przebieg) i `error` (pierwsza porażka) sprawdza
+# świeżym `pending` pomija; `pending` starszy niż 3 godziny (przerwany przebieg) i `error` (ustawiony ręcznie) sprawdza
 # znowu. Gdy od ostatniego commita ze statusem success albo failure nic się nie zmieniło w obszarze Androida
 # i serwera, stawia success bez budowy. Głowę do sprawdzenia oznacza `pending` i zapisuje do $GITHUB_OUTPUT:
 # jest=true, galaz, sha, od; inaczej jest=false.

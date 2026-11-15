@@ -4,8 +4,8 @@
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 set -euo pipefail
 
-# Test kontrola-sprintu-wynik.sh. Własne `gh` zwraca historię statusów, otwarte issue i nieudane zadania ze zmiennych,
-# a zapis statusu, ponowne uruchomienie workflow, komentarz, zamknięcie i założenie issue dopisuje do dziennika.
+# Test kontrola-sprintu-wynik.sh. Własne `gh` zwraca otwarte issue i nieudane zadania ze zmiennych, a zapis statusu,
+# komentarz, zamknięcie i założenie issue dopisuje do dziennika.
 # Repozytorium ma trzy commity z numerami PR w temacie; OD to pierwszy, SHA ostatni.
 script="$(cd "$(dirname "$0")" && pwd)/kontrola-sprintu-wynik.sh"
 workdir="$(mktemp -d)"
@@ -17,11 +17,9 @@ cat >"$workdir/bin/gh" <<'SH'
 set -euo pipefail
 case "$1 $2" in
   'api -X') for a in "$@"; do if [[ $a == state=* ]]; then echo "status ${a#state=}" >>"$FAKE_LOG"; fi; done ;;
-  'api repos/'*'/statuses') printf '%b' "$FAKE_HISTORIA" ;;
   'api repos/'*'/jobs'*) printf '%b' "$FAKE_NIEUDANE" ;;
   'issue list') printf '%s' "$FAKE_OTWARTE" ;;
   'issue comment' | 'issue close') echo "$2 $3" >>"$FAKE_LOG" ;;
-  'workflow run') echo "ponowienie $3 $5" >>"$FAKE_LOG" ;;
   'issue create')
     while (($#)); do
       [[ $1 == --milestone ]] && echo "create $2" >>"$FAKE_LOG"
@@ -68,13 +66,9 @@ przypadek() {
 
 przypadek "zielona bez otwartego issue: tylko status" success "" "" "status success"
 przypadek "zielona z otwartym issue: zamknięcie" success "pending\nfailure\n" 7 "status success\nclose 7"
-przypadek "pierwsza porażka: error i od razu ponowny przebieg, bez issue" failure "pending\n" "" \
-  "status error\nponowienie kontrola-sprintu.yml sprint/4"
-przypadek "anulowanie liczy się jak porażka" cancelled "pending\n" "" \
-  "status error\nponowienie kontrola-sprintu.yml sprint/4"
-przypadek "druga porażka bez issue: failure i nowe issue z podejrzanymi" failure "pending\nerror\npending\n" "" \
+przypadek "pierwsza porażka: failure i nowe issue z podejrzanymi" failure "pending\n" "" \
   "status failure\ncreate Sprint 4" "#12" "#13" '!#11' '`android / emulator`' "### Rozwiązanie" "sprint/4"
-przypadek "druga porażka przy otwartym issue: komentarz" failure "pending\nerror\npending\n" 7 \
-  "status failure\ncomment 7"
+przypadek "anulowanie liczy się jak porażka" cancelled "pending\n" "" "status failure\ncreate Sprint 4"
+przypadek "porażka przy otwartym issue: komentarz" failure "pending\n" 7 "status failure\ncomment 7"
 
 exit "$((failures > 0 ? 1 : 0))"
