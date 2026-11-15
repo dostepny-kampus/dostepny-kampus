@@ -14,7 +14,6 @@ import io.github.dostepnykampus.core.model.inspection.BuildingProgress
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.net.HttpURLConnection.HTTP_FORBIDDEN
 import java.time.Clock
 import java.time.Instant
 import javax.inject.Inject
@@ -95,6 +94,10 @@ class ProgressViewModel
                 ServerReply.Offline -> ProgressUiState.Offline
                 ServerReply.Missing -> ProgressUiState.ServerError
                 is ServerReply.Fault ->
-                    if (code == HTTP_FORBIDDEN) ProgressUiState.Forbidden else ProgressUiState.ServerError
+                    if (code == FORBIDDEN) ProgressUiState.Forbidden else ProgressUiState.ServerError
             }
+
+        private companion object {
+            const val FORBIDDEN = 403
+        }
     }
