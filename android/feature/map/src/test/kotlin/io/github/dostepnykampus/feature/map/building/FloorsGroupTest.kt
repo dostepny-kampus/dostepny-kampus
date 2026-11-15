@@ -69,6 +69,7 @@ class FloorsGroupTest {
     fun matchesLightMockup() {
         compose.setContent { Group(FACTS) }
         compose.onNodeWithText("Parter").performClick()
+        compose.mainClock.advanceTimeBy(RIPPLE_END_MS)
         compose.onRoot().captureRoboImage()
     }
 
@@ -78,6 +79,7 @@ class FloorsGroupTest {
     fun matchesDarkMockup() {
         compose.setContent { Group(FACTS) }
         compose.onNodeWithText("Parter").performClick()
+        compose.mainClock.advanceTimeBy(RIPPLE_END_MS)
         compose.onRoot().captureRoboImage()
     }
 
@@ -103,6 +105,9 @@ class FloorsGroupTest {
     }
 
     private companion object {
+        /** Czas, po którym fala dotknięcia i rozwinięcie opisu na pewno się kończą. */
+        const val RIPPLE_END_MS = 2_000L
+
         val FACTS =
             FloorFacts(
                 elevator = null,
