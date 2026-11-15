@@ -38,7 +38,7 @@ opisy w kodzie), mówi [AGENTS.md](AGENTS.md).
    nie zmienił się Android, serwer, `infra/` ani dane budynków, stawia zielony status bez budowy. Ręczne uruchomienie
    z nazwą gałęzi sprawdza ją zawsze. Naraz biegnie jeden przebieg i czeka najwyżej jeden: przebieg kończy się na
    swoim commicie, a nowsze wypchnięcie zastępuje czekający, więc następny sprawdza najnowszą głowę.
-   Pierwsza porażka daje status `error` i od razu ponowny przebieg; druga — status `failure` i jedno issue
+   Każda porażka daje od razu status `failure` i jedno issue
    `sprint-czerwony` dla gałęzi z nieudanymi zadaniami i PR scalonymi od ostatniego wyniku; kolejne porażki dopisują
    komentarz, a zielony wynik zamyka issue ([`kontrola-sprintu-wynik.sh`](.github/scripts/kontrola-sprintu-wynik.sh)).
 
