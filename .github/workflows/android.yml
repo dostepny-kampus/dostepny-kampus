@@ -50,30 +50,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  porownanie:
-    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
-    permissions:
-      actions: read
-      contents: read
-    uses: ./.github/workflows/drzewo-grupy.yml
-    with:
-      workflow: android.yml
-
   zmiany:
     # Także dla grupy kolejki: bez tego każda grupa budowała aplikację i uruchamiała emulatory, choć PR nie zmieniał Androida.
     # Gdy zadanie się nie powiedzie, pozostałe idą mimo to, a check `budowanie` jest czerwony.
     if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
+    permissions:
+      actions: read
+      contents: read
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
+      pomin: ${{ steps.drzewo.outputs.pomin }}
       android: ${{ steps.diff.outputs.android }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 2
           persist-credentials: false
+      - id: drzewo
+        uses: ./.github/actions/drzewo-grupy
+        with:
+          workflow: android.yml
       - name: Sprawdź, czy PR albo grupa w kolejce zmienia aplikację Android, jej dane, tokeny albo własne kroki CI
         id: diff
+        if: steps.drzewo.outputs.pomin != 'true'
         env:
           EVENT: ${{ github.event_name }}
           GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
@@ -303,9 +303,9 @@ jobs:
           retention-days: 7
 
   testy:
-    needs: [porownanie, zmiany]
+    needs: zmiany
     # Bez przebiegu na wskazanym commicie: kontrola sprintu sprawdza głowę, którą `testy` przeszły już w kolejce.
-    if: ${{ !cancelled() && !inputs.sha && github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
+    if: ${{ !cancelled() && !inputs.sha && github.event_name != 'push' && needs.zmiany.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -490,8 +490,8 @@ jobs:
   analiza-zaleznosci:
     # PR ze zmianą Androida i przebieg na wskazanym commicie, bez grupy kolejki; błąd analizy zatrzymuje PR przez
     # check `budowanie`.
-    needs: [porownanie, zmiany]
-    if: ${{ !cancelled() && (inputs.sha || github.event_name == 'pull_request' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true')) }}
+    needs: zmiany
+    if: ${{ !cancelled() && (inputs.sha || github.event_name == 'pull_request' && needs.zmiany.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
@@ -517,11 +517,11 @@ jobs:
           retention-days: 7
 
   budowanie:
-    needs: [porownanie, zmiany, testy, apk, emulator, analiza-zaleznosci]
+    needs: [zmiany, testy, apk, emulator, analiza-zaleznosci]
     # always(): także po anulowaniu poprzednich zadań, żeby anulowana część dawała czerwony check, a nie pominięty.
     # Gdy grupa kolejki ma drzewo sprawdzone na PR, wszystkie zadania są pominięte, więc i ten check (pominięty = zaliczony).
     # Bez zmiany Androida check jest pominięty.
-    if: ${{ always() && github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
+    if: ${{ always() && github.event_name != 'push' && needs.zmiany.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

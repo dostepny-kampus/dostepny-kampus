@@ -25,7 +25,7 @@ opisy w kodzie), mówi [AGENTS.md](AGENTS.md).
    Aby dodać PR do kolejki, użyj przycisku „Merge when ready” lub polecenia `gh pr merge N` po zalogowaniu
    na konto z prawem scalania w repozytorium.
    Gdy grupa ma to samo drzewo plików, co zielony przebieg na PR, i nie zmienia `.github/` względem bazy, ciężkie joby są
-   pomijane ([`drzewo-grupy.yml`](.github/workflows/drzewo-grupy.yml)); zmiana `.github/` albo `sprint/N` wymusza pełny przebieg.
+   pomijane ([`drzewo-grupy`](.github/actions/drzewo-grupy/action.yml)); zmiana `.github/` albo `sprint/N` wymusza pełny przebieg.
    Ryzyko: test niestabilny, który przypadkiem przeszedł na PR, nie jest w kolejce sprawdzany drugi raz.
 6. Po scaleniu issue z opisu PR jest zamykane z komentarzem „Zrobione w #PR”
    ([`zamykanie-issue.yml`](.github/workflows/zamykanie-issue.yml), [`zamknij-issue.sh`](.github/scripts/zamknij-issue.sh)).

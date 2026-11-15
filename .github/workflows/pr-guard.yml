@@ -30,25 +30,16 @@ env:
   TYPOS_SHA256: 93c301fd4120ff076e2cc2a6d6a61cab4a4bdb81899287c0938b452e56d1f454
 
 jobs:
-  porownanie:
-    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
-    permissions:
-      actions: read
-      contents: read
-    uses: ./.github/workflows/drzewo-grupy.yml
-    with:
-      workflow: pr-guard.yml
-
   # Lekkie kontrole w jednym zadaniu, żeby przebieg zajmował jedną maszynę. Każdy krok biegnie także po porażce
   # wcześniejszego (`!cancelled()`), więc przebieg pokazuje naraz wszystkie czerwone kontrole.
   # Kontrole danych PR (rozmiar, tytuł, zależności) przeszły na PR i w kolejce scalania nie są powtarzane.
   # Kontrole kodu pomija grupa kolejki z drzewem i tytułem równym w pełni zielonemu przebiegowi na PR (#726).
   pr-guard:
-    needs: porownanie
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
+      actions: read
       contents: read
       issues: read
     steps:
@@ -56,6 +47,12 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+
+      # Na PR zapisuje drzewo scalenia, w grupie kolejki porównuje je z drzewem sprawdzonym na PR (pomin).
+      - id: drzewo
+        uses: ./.github/actions/drzewo-grupy
+        with:
+          workflow: pr-guard.yml
 
       - name: "rozmiar: policz zmienione linie"
         if: ${{ !cancelled() && github.event_name != 'merge_group' }}
@@ -71,7 +68,7 @@ jobs:
           bash .github/scripts/rozmiar-pr.sh "$BASE_SHA" "$HEAD_SHA" 300
 
       - uses: actions/setup-node@v7.1.0
-        if: &kod ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' }}
+        if: &kod ${{ !cancelled() && steps.drzewo.outputs.pomin != 'true' }}
         with:
           node-version: 24
           package-manager-cache: false
@@ -79,7 +76,7 @@ jobs:
       # W kolejce scalania sprawdzamy commity grupy (base_sha..head_sha): komunikat commitu squash bierze tytuł PR,
       # który można zmienić jeszcze w kolejce.
       - name: "commity: zainstaluj commitlint z pliku lock"
-        if: &commity ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && github.event.pull_request.user.login != 'dependabot[bot]' }}
+        if: &commity ${{ !cancelled() && steps.drzewo.outputs.pomin != 'true' && github.event.pull_request.user.login != 'dependabot[bot]' }}
         working-directory: .github/commitlint
         run: npm ci --no-audit --no-fund
       - name: "commity: sprawdź komunikaty commitów"
@@ -101,7 +98,7 @@ jobs:
           fi
           npx --no-install commitlint --from "$from" --to "$HEAD_SHA" --verbose
       - name: "commity: sprawdź tytuł PR z numerem dopisywanym przez squash"
-        if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && github.event_name != 'merge_group' && github.event.pull_request.user.login != 'dependabot[bot]' }}
+        if: ${{ !cancelled() && steps.drzewo.outputs.pomin != 'true' && github.event_name != 'merge_group' && github.event.pull_request.user.login != 'dependabot[bot]' }}
         working-directory: .github/commitlint
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
