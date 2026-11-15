@@ -162,12 +162,7 @@ internal fun entranceMarkImage(marking: EntranceMarking): String = "wejscie_${ma
 /** Nazwa obrazu podpisu zaznaczonego wejścia o nazwie [label]; przedrostek odróżnia go od podpisów budynków. */
 internal fun entranceCaptionImage(label: String): String = "wejscie: $label"
 
-private fun sources(
-    data: CampusMapData,
-    selection: MapSelection,
-    look: SelectionLook,
-    basemap: Basemap?,
-): JsonObject =
+private fun sources(data: CampusMapData, selection: MapSelection, look: SelectionLook, basemap: Basemap?): JsonObject =
     buildJsonObject {
         put(key = BASEMAP, element = basemapSource(basemap?.bounds))
         put(key = BUILDINGS_SOURCE, element = geoJsonSource(data.buildings))
