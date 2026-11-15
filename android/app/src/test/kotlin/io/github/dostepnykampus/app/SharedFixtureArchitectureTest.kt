@@ -181,22 +181,22 @@ class SharedFixtureArchitectureTest {
                 |DeviceStepsTest DtoContractTest EditBaseVersionTest EditDuringSendTest EntranceAssessmentTest
                 |EntranceDistanceTest EntranceHiltTest EntranceOnMapTest EntranceTest FirstLaunchRepositoryTest
                 |FirstLaunchViewModelTest FloorMarkersTest FloorPickerTest GeoAreaJsonTest GnssLocationSwitchTest
-                |GnssPositionFixesTest GnssSatellitesTest GuestSignInTest HelpScreenTest InspectionMarkersApiTest
-                |JsonTextCallTest KDocDescriptionLengthTest LabelPointTest ListEntryTest LocateBuildingTest
-                |LocationModuleTest LocationPermissionTest LoginExpiredGateTest MainActivityTest MapAreaNeighborTest
-                |MapAreaPanelTest MapAreaSwitchTest MapAreasTest MapBarrierNamesTest MapBarrierTouchTest
-                |MapBarriersLoadTest MapCameraTest MapCatalogFromFileTest MapControlsTest MapGeometryFlowTest
-                |MapGeometryFocusTest MapGesturesTest MapLimitsTest MapListChoiceRepositoryTest MapOverlayNeighborTest
-                |MapOverlayNoticeTest MapSceneStateTest MapSelectionImagesTest MapStreamConcurrencyTest
-                |MapStyleRememberTest MapTileHttpTest MapTileNetworkDeviceTest MeasurePathTest MeasureScreenTest
-                |MeasureViewModelTest MeasuredPlaceTest MeasuredReportTest MigrationTest MySubmissionsScreenTest
-                |MySubmissionsViewModelTest NearestBuildingsTest NoHistoryNumberInKDocTest NoLineCommentTest
-                |NullabilityArchitectureTest OrphanPhotosTest OwnHistoryTest OwnListPathTest OwnListTest OwnStatusesTest
-                |OwnSubmissionDaoTest PendingEditMappingTest PendingEditsTest PendingMarkerChangeDaoTest
-                |PendingSubmissionDaoTest PermissionsTest PhotoCameraTest PhotoFilesTest PlaceSectionTest
-                |PositionAveragingTest QueueAfterRestartTest QueueTransactionTest QuickOfflineTest QuickReportRouteTest
-                |QuickReportScreenTest QuickReportTest QuickSendStepTest QuickSendViewModelTest RefusedResaveTest
-                |RefusedSubmissionTest ReportAtEntranceTest ReportDraftTest ReportEditScreenTest ReportEditTest
+                |GnssPositionFixesTest GnssSatellitesTest GuestSignInTest HelpScreenTest JsonTextCallTest
+                |KDocDescriptionLengthTest LabelPointTest ListEntryTest LocateBuildingTest LocationModuleTest
+                |LocationPermissionTest LoginExpiredGateTest MainActivityTest MapAreaNeighborTest MapAreaPanelTest
+                |MapAreaSwitchTest MapAreasTest MapBarrierNamesTest MapBarrierTouchTest MapBarriersLoadTest
+                |MapCameraTest MapCatalogFromFileTest MapControlsTest MapGeometryFlowTest MapGeometryFocusTest
+                |MapGesturesTest MapLimitsTest MapListChoiceRepositoryTest MapOverlayNeighborTest MapOverlayNoticeTest
+                |MapSceneStateTest MapSelectionImagesTest MapStreamConcurrencyTest MapStyleRememberTest MapTileHttpTest
+                |MapTileNetworkDeviceTest MeasurePathTest MeasureScreenTest MeasureViewModelTest MeasuredPlaceTest
+                |MeasuredReportTest MigrationTest MySubmissionsScreenTest MySubmissionsViewModelTest
+                |NearestBuildingsTest NoHistoryNumberInKDocTest NoLineCommentTest NullabilityArchitectureTest
+                |OrphanPhotosTest OwnHistoryTest OwnListPathTest OwnListTest OwnStatusesTest OwnSubmissionDaoTest
+                |PendingEditMappingTest PendingEditsTest PendingMarkerChangeDaoTest PendingSubmissionDaoTest
+                |PermissionsTest PhotoCameraTest PhotoFilesTest PlaceSectionTest PositionAveragingTest
+                |QueueAfterRestartTest QueueTransactionTest QuickOfflineTest QuickReportRouteTest QuickReportScreenTest
+                |QuickReportTest QuickSendStepTest QuickSendViewModelTest RefusedResaveTest RefusedSubmissionTest
+                |RemovedViewModelTest ReportAtEntranceTest ReportDraftTest ReportEditScreenTest ReportEditTest
                 |ReportEditViewModelTest ReportFloorsTest ReportFormScreenTest ReportFormViewModelTest
                 |ReportMissingFieldTest ReportScreenTest RequirementIdOutsideLineTest RevokedRoleTest SaveDuringSendTest
                 |SavedReportTest SearchBuildingsTest SearchOtherAreaTest SelectedEntranceTest ServerBuildingCatalogTest
