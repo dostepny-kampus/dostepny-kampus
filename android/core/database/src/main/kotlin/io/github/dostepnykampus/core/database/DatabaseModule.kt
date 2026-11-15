@@ -15,6 +15,7 @@ import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
 import io.github.dostepnykampus.core.database.cache.BuildingCacheDao
 import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeDao
+import io.github.dostepnykampus.core.database.room.FloorPlanDao
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.submission.PendingEditDao
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
@@ -31,11 +32,11 @@ internal object DatabaseModule {
     @Singleton
     fun database(
         @ApplicationContext context: Context,
-    ): DkDatabase =
-        Room
-            .databaseBuilder(context, DkDatabase::class.java, NAME)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
-            .build()
+    ): DkDatabase {
+        val builder = Room.databaseBuilder(context, DkDatabase::class.java, NAME)
+        ALL_MIGRATIONS.forEach { builder.addMigrations(it) }
+        return builder.build()
+    }
 
     /** Kolejka zgłoszeń z [database]. */
     @Provides
@@ -60,4 +61,8 @@ internal object DatabaseModule {
     /** Kolejka zmian znaczników piętra obejrzanego z [database]. Wymagania: US15.3 */
     @Provides
     fun pendingMarkerChanges(database: DkDatabase): PendingMarkerChangeDao = database.pendingMarkerChanges()
+
+    /** Kopie planów pięter i pomieszczeń z [database]. Wymagania: US16.1, NFR-10 */
+    @Provides
+    fun floorPlans(database: DkDatabase): FloorPlanDao = database.floorPlans()
 }

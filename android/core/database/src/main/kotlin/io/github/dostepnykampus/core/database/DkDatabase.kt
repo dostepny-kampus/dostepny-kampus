@@ -13,6 +13,9 @@ import io.github.dostepnykampus.core.database.cache.BuildingCacheDao
 import io.github.dostepnykampus.core.database.cache.BuildingCacheEntity
 import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeDao
 import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeEntity
+import io.github.dostepnykampus.core.database.room.FloorPlanDao
+import io.github.dostepnykampus.core.database.room.FloorPlanEntity
+import io.github.dostepnykampus.core.database.room.FloorRoomEntity
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.PendingEditDao
@@ -22,9 +25,9 @@ import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
 
 /**
  * Baza lokalna aplikacji (Room): zgłoszenia czekające na wysłanie,
- * historia własnych zgłoszeń oraz kopie listy budynków i barier ze zgłoszeń przyjętych.
+ * historia własnych zgłoszeń oraz kopie listy budynków, barier ze zgłoszeń przyjętych i planów pięter.
  *
- * Wymagania: NFR-5, US8, NFR-10
+ * Wymagania: NFR-5, US8, NFR-10, US16.1
  */
 @Database(
     entities = [
@@ -34,8 +37,10 @@ import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
         OwnSubmissionEntity::class,
         BarrierCacheEntity::class,
         PendingMarkerChangeEntity::class,
+        FloorPlanEntity::class,
+        FloorRoomEntity::class,
     ],
-    version = 7,
+    version = 8,
     exportSchema = true,
 )
 internal abstract class DkDatabase : RoomDatabase() {
@@ -56,4 +61,7 @@ internal abstract class DkDatabase : RoomDatabase() {
 
     /** Kolejka zmian znaczników piętra obejrzanego. */
     abstract fun pendingMarkerChanges(): PendingMarkerChangeDao
+
+    /** Kopie planów pięter i pomieszczeń. */
+    abstract fun floorPlans(): FloorPlanDao
 }

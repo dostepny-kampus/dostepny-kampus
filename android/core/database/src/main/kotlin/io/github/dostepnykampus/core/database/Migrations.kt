@@ -70,3 +70,29 @@ internal val MIGRATION_6_7: Migration =
             )
         }
     }
+
+/** Migracja 7→8: kopie planów pięter i pomieszczeń. Wymagania: US16.1, NFR-10 */
+internal val MIGRATION_7_8: Migration =
+    object : Migration(7, 8) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                "CREATE TABLE IF NOT EXISTS `floor_plans` (" +
+                    "`building_symbol` TEXT NOT NULL, `floor_id` TEXT NOT NULL, `label` TEXT NOT NULL, " +
+                    "`sort_order` INTEGER NOT NULL, `source` TEXT NOT NULL, " +
+                    "`outline_json` TEXT NOT NULL, `synced_at` INTEGER NOT NULL, " +
+                    "PRIMARY KEY(`building_symbol`, `floor_id`))",
+            )
+            db.execSQL(
+                "CREATE TABLE IF NOT EXISTS `floor_rooms` (" +
+                    "`building_symbol` TEXT NOT NULL, `floor_id` TEXT NOT NULL, `id` TEXT NOT NULL, " +
+                    "`number` TEXT, `function` TEXT NOT NULL, `category` TEXT NOT NULL, " +
+                    "`geometry_json` TEXT NOT NULL, `label_longitude` REAL NOT NULL, " +
+                    "`label_latitude` REAL NOT NULL, `labelled` INTEGER NOT NULL, " +
+                    "PRIMARY KEY(`building_symbol`, `floor_id`, `id`))",
+            )
+        }
+    }
+
+/** Wszystkie migracje od wersji 1 w kolejności wersji. */
+internal val ALL_MIGRATIONS: List<Migration> =
+    listOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
