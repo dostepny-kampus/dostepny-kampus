@@ -32,10 +32,9 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.designsystem.campusDay
 import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.feature.map.R
-import io.github.dostepnykampus.feature.map.campus.CampusZone
-import io.github.dostepnykampus.feature.map.campus.DAY_FORMAT
 import java.time.Instant
 
 private val NoInternetIcon =
@@ -77,7 +76,7 @@ internal fun OfflineLine(syncedAt: Instant?, modifier: Modifier = Modifier) {
                 Text(
                     text =
                         syncedAt?.let { synced ->
-                            val day = DAY_FORMAT.format(synced.atZone(CampusZone).toLocalDate())
+                            val day = campusDay(synced)
                             stringResource(R.string.mapa_bez_internetu_dane_z, day)
                         } ?: stringResource(R.string.mapa_bez_internetu),
                     style = MaterialTheme.typography.bodyLarge,
