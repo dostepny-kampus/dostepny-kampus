@@ -11,19 +11,13 @@ import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.room.Room
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.room.RoomList
-import io.github.dostepnykampus.core.network.building.BuildingsApi
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
-import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.SocketPolicy
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Test
 import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import java.net.HttpURLConnection.HTTP_OK
-import java.util.concurrent.TimeUnit
 
 /**
  * Pomieszczenia piętra (`listFloorRooms`) na MockWebServer: odpowiedź bez zmian, pusty obrys, 404,
@@ -94,14 +88,6 @@ class FloorRoomsApiTest {
             labelPoint = GeoPoint(longitude = 0.5, latitude = 0.25),
             isLabelled = number != null,
         )
-
-    private fun <T> served(response: MockResponse, call: suspend BuildingsApi.() -> T): Pair<T, String?> =
-        MockWebServer().use { server ->
-            server.enqueue(response)
-            server.start()
-            val api = BuildingsApi(http = OkHttpClient(), json = Json, baseUrl = server.url("/").toString())
-            runBlocking { api.call() } to server.takeRequest(timeout = 1, unit = TimeUnit.SECONDS)?.path
-        }
 
     private fun json(code: Int, body: String): MockResponse =
         MockResponse().setResponseCode(code).setHeader(name = "Content-Type", value = "application/json").setBody(body)

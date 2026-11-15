@@ -11,18 +11,12 @@ import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.core.model.room.Room
 import io.github.dostepnykampus.core.model.room.RoomCategory
-import io.github.dostepnykampus.core.network.building.BuildingsApi
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
-import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.SocketPolicy
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Test
 import java.net.HttpURLConnection.HTTP_OK
-import java.util.concurrent.TimeUnit
 
 /** Klient wyszukiwania sali `GET /rooms?q=`: budynek, piętro i sala z wyniku. Wymagania: US18.1 */
 class RoomSearchApiTest {
@@ -63,14 +57,6 @@ class RoomSearchApiTest {
 
         assertInstanceOf(ApiResult.NetworkError::class.java, result, "Zerwane połączenie nie dało błędu sieci")
     }
-
-    private fun <T> served(response: MockResponse, call: suspend BuildingsApi.() -> T): Pair<T, String?> =
-        MockWebServer().use { server ->
-            server.enqueue(response)
-            server.start()
-            val api = BuildingsApi(http = OkHttpClient(), json = Json, baseUrl = server.url("/").toString())
-            runBlocking { api.call() } to server.takeRequest(timeout = 1, unit = TimeUnit.SECONDS)?.path
-        }
 
     private fun json(body: String): MockResponse =
         MockResponse()
