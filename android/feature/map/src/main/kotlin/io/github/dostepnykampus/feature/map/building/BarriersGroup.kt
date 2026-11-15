@@ -19,7 +19,7 @@ import io.github.dostepnykampus.feature.map.barrier.ChosenBarrier
 import io.github.dostepnykampus.feature.map.barrier.SeverityBadge
 
 /**
- * Grupa „Bariery w budynku” na karcie: każde zgłoszenie przyjęte budynku z uciążliwością, typem, miejscem i dniem
+ * Grupa „Bariery w budynku” na karcie: każde zgłoszenie przyjęte budynku z uciążliwością, typem, miejscem, dniem
  * sprawdzenia, w tych samych słowach co arkusz bariery na mapie. Gdy dane są, a budynek nie ma zgłoszeń przyjętych,
  * grupa jest w stanie pustym; bez danych o barierach grupy nie ma.
  * TODO(#2042): przycisk zgłoszenia bariery w stanie pustym.

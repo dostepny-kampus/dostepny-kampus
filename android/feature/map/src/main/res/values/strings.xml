@@ -45,6 +45,9 @@
     <string name="mapa_bariera_bez_typu">Bariera</string>
     <string name="mapa_bariera_opis_budynku">Pokaż opis budynku</string>
     <string name="mapa_bariera_sprawdzone">Sprawdzone %1$s</string>
+    <string name="mapa_bariera_zdjecie">Zdjęcie bariery: %1$s</string>
+    <string name="mapa_zdjecie_wczytujemy">Wczytujemy zdjęcie…</string>
+    <string name="mapa_zdjecie_blad">Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.</string>
     <string name="mapa_otwiera_opis_budynku">otwiera opis budynku</string>
     <string name="mapa_kampusu">Mapa kampusu</string>
     <string name="mapa_szukaj_podpowiedz">Wpisz symbol budynku, np. C-13</string>
