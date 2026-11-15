@@ -170,11 +170,7 @@ private fun FloorColumn(
 }
 
 @Composable
-private fun FloorCircle(
-    option: FloorOption,
-    isSelected: Boolean,
-    onSelect: (FloorOption) -> Unit,
-) {
+private fun FloorCircle(option: FloorOption, isSelected: Boolean, onSelect: (FloorOption) -> Unit) {
     val colors = MaterialTheme.colorScheme
     val shown = remember { BringIntoViewRequester() }
     LaunchedEffect(isSelected) { if (isSelected) shown.bringIntoView() }
