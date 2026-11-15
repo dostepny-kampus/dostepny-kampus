@@ -17,10 +17,12 @@ import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
 import io.github.dostepnykampus.barrier.submission.SubmissionRepository;
 import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
+import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import io.github.dostepnykampus.barrier.submission.content.json.SubmissionContentJson;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -165,6 +167,11 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
 
     @Override
     public EditResult update(final SubmissionEdit edit) {
+        if (this.find(edit.id()).filter(
+            saved -> !Objects.equals(saved.content().replaces(), edit.content().replaces())
+        ).isPresent()) {
+            throw new InvalidSubmission("Edycja nie zmienia pola replacesSubmissionId");
+        }
         return this.written(
             this.write(
                 this.jdbc.sql(JdbcSubmissions.UPDATE)
