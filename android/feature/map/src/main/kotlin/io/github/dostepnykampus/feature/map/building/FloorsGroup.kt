@@ -70,13 +70,13 @@ internal fun FloorsGroup(facts: FloorFacts?, onShowPlan: (String) -> Unit = {}) 
 private fun FloorRow(described: FloorDescription, onShowPlan: () -> Unit) {
     val label = described.floor.label
     var isExpanded by rememberSaveable(described.floor.id) { mutableStateOf(false) }
-    val canExpand = described.functions.isNotEmpty()
+    val isExpandable = described.functions.isNotEmpty()
     val state = stringResource(if (isExpanded) R.string.karta_rozwiniete else R.string.karta_zwiniete)
     val header = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.minimum)
     Column {
         Row(
             modifier =
-                if (canExpand) {
+                if (isExpandable) {
                     header
                         .clickable(role = Role.Button) { isExpanded = !isExpanded }
                         .semantics { stateDescription = state }
@@ -86,7 +86,9 @@ private fun FloorRow(described: FloorDescription, onShowPlan: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(text = label, modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
-            if (canExpand) Icon(if (isExpanded) MapControlIcons.Up else MapControlIcons.Down, contentDescription = null)
+            if (isExpandable) {
+                Icon(if (isExpanded) MapControlIcons.Up else MapControlIcons.Down, contentDescription = null)
+            }
         }
         if (isExpanded) {
             Text(text = floorDescriptionText(described.functions), style = MaterialTheme.typography.bodyLarge)

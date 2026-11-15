@@ -7,7 +7,7 @@ package io.github.dostepnykampus.app.navigation
 
 import android.view.accessibility.AccessibilityManager
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -38,10 +38,7 @@ internal fun AppNavigator.HiltMapScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val plan by planViewModel.shown.collectAsStateWithLifecycle()
-    LaunchedEffect(focus) {
-        val building = focus as? MapFocus.Building
-        building?.floor?.let { planViewModel.chooseFloor(building = building.symbol, floor = it) }
-    }
+    SideEffect { planViewModel.show(focus) }
     MapScreen(
         focus = focus,
         state = state,
