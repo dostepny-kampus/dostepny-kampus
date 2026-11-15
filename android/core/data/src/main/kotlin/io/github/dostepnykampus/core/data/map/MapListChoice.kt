@@ -5,22 +5,12 @@
  */
 package io.github.dostepnykampus.core.data.map
 
-import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.emptyPreferences
-import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-
-/** Plik ustawień mapy; jeden DataStore na proces, bo tak wymaga DataStore dla jednego pliku. */
-internal val Context.mapDataStore by preferencesDataStore(
-    name = "mapa",
-    corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
-)
 
 /**
  * Ostatni wybór w przełączniku „Mapa” i „Lista budynków” na V1; aplikacja pamięta go po zamknięciu.

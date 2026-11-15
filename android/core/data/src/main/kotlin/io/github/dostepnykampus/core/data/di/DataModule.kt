@@ -20,7 +20,6 @@ import io.github.dostepnykampus.core.data.building.ServerFloorsRepository
 import io.github.dostepnykampus.core.data.building.assetRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.map.MapListChoiceRepository
-import io.github.dostepnykampus.core.data.map.mapDataStore
 import io.github.dostepnykampus.core.data.network.ConnectivityNetworkStatus
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.server.ServerCard
@@ -28,7 +27,6 @@ import io.github.dostepnykampus.core.data.server.toReply
 import io.github.dostepnykampus.core.data.server.toServerEdit
 import io.github.dostepnykampus.core.data.start.FirstLaunch
 import io.github.dostepnykampus.core.data.start.FirstLaunchRepository
-import io.github.dostepnykampus.core.data.start.startDataStore
 import io.github.dostepnykampus.core.data.submission.own.OwnStatuses
 import io.github.dostepnykampus.core.data.submission.own.OwnSubmissions
 import io.github.dostepnykampus.core.data.submission.own.ownStatusesOf
@@ -84,7 +82,8 @@ public object DataModule {
     /** Wybór „Mapa” albo „Lista budynków” w pliku ustawień mapy. Wymagania: NFR-19 */
     @Provides
     @Singleton
-    public fun mapListChoice(app: Application): MapListChoice = MapListChoiceRepository(app.mapDataStore)
+    public fun mapListChoice(app: Application, @IoContext ioContext: CoroutineContext): MapListChoice =
+        MapListChoiceRepository(app.settingsStore(name = "mapa", ioContext = ioContext))
 
     /** Stan internetu z usługi systemowej telefonu. Wymagania: US9.1 */
     @Provides
@@ -95,7 +94,8 @@ public object DataModule {
     /** Pierwsze uruchomienie w pliku ustawień startu. Wymagania: US5.1 */
     @Provides
     @Singleton
-    public fun firstLaunch(app: Application): FirstLaunch = FirstLaunchRepository(app.startDataStore)
+    public fun firstLaunch(app: Application, @IoContext ioContext: CoroutineContext): FirstLaunch =
+        FirstLaunchRepository(app.settingsStore(name = "start", ioContext = ioContext))
 
     /** Planowanie wysyłki kolejki po powrocie sieci; start aplikacji zwołuje je osobno. Wymagania: NFR-6 */
     @Provides
