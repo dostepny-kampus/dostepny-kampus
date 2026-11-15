@@ -54,3 +54,38 @@ Przykład powtórzenia zapytania OSV; pozostałe pakiety z tabeli sprawdza się 
 
 Treść należy wysłać metodą POST do `https://api.osv.dev/v1/query`.
 Ocena nie zmienia wersji ani reguł jakości. Zmiana klienta HTTP wymaga osobnego zadania i testów w CI.
+
+## Coil 3.6.3
+
+Zadanie: [#2107](https://github.com/dostepny-kampus/dostepny-kampus/issues/2107), ciąg dalszy w [#2015](https://github.com/dostepny-kampus/dostepny-kampus/issues/2015).
+
+Data sprawdzenia: 15 listopada 2026. Decyzja: wersja `3.6.3` dla `coil-compose` i `coil-network-okhttp`.
+
+| Kryterium | Wynik |
+| --- | --- |
+| Dokładna wersja | `coil = "3.6.3"` w katalogu wersji Androida; ta sama wersja dla obu artefaktów. To najnowsze stabilne wydanie w [Maven Central](https://repo1.maven.org/maven2/io/coil-kt/coil3/coil-compose/maven-metadata.xml). |
+| Licencja | Apache-2.0, dozwolona przez ADR-0004. Potwierdzają ją [licencja wydania](https://github.com/coil-kt/coil/blob/3.6.3/LICENSE.txt) i [metadane Maven Central](https://repo1.maven.org/maven2/io/coil-kt/coil3/coil-network-okhttp-android/3.6.3/coil-network-okhttp-android-3.6.3.pom). |
+| Aktualność | Wydanie z 18.09.2026, więc mieści się w ostatnich 12 miesiącach; [historia wydania](https://github.com/coil-kt/coil/blob/3.6.3/CHANGELOG.md). |
+| Potrzeba | Zdjęcie zgłoszenia przyjętego trzeba pobrać z serwera i pokazać w karcie budynku i arkuszu bariery. Biblioteka daje pamięć podręczną, dobór rozmiaru i przerwanie pobierania razem z kompozycją, więc nie piszemy własnego pobierania bajtów i dekodowania (ADR-0004: gotowa biblioteka zamiast własnej infrastruktury). |
+| Zgodność z OkHttp | `coil-network-okhttp` przyjmuje `okhttp3.Call.Factory`, więc korzysta z klienta aplikacji z `core:network` i jego puli połączeń. Wydanie deklaruje OkHttp `4.12.0`; Gradle zostawia wersję `5.5.1` z katalogu, a użyty interfejs `Call.Factory` jest w obu wersjach ten sam. Zgodność sprawdza CI przy pierwszym użyciu. |
+| Użycie | Ten wpis dodaje tylko wersję i biblioteki do katalogu. `coil-compose` i `coil-network-okhttp` trafiają do modułu, który ich używa, razem z interfejsem w #2015. |
+
+### Znane podatności Coil
+
+Zapytania do [OSV](https://google.github.io/osv.dev/post-v1-query/) wykonano 15.11.2026.
+Dla każdego pakietu podano ekosystem `Maven` i dokładną wersję `3.6.3`.
+
+| Pakiet | Liczba znalezionych wpisów |
+| --- | --- |
+| `io.coil-kt.coil3:coil-compose` | 0 |
+| `io.coil-kt.coil3:coil-compose-android` | 0 |
+| `io.coil-kt.coil3:coil-network-okhttp` | 0 |
+| `io.coil-kt.coil3:coil-network-okhttp-android` | 0 |
+| `io.coil-kt.coil3:coil-core` | 0 |
+| `io.coil-kt.coil3:coil-network-core` | 0 |
+
+[GitHub Advisory Database](https://api.github.com/advisories?ecosystem=maven&affects=io.coil-kt.coil3%3Acoil-compose%403.6.3)
+także zwróciła pustą listę dla `coil-compose@3.6.3` i `coil-network-okhttp@3.6.3`.
+Nie znaleziono publicznego wpisu obejmującego sprawdzone wersje w tych bazach na dzień oceny.
+Aktualizacje i nowe zgłoszenia podatności nadal sprawdza Dependabot.
+Zapytanie OSV powtarza się jak dla OkHttp, zmieniając `name` i `version`.
