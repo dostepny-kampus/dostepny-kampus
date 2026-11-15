@@ -28,7 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @IntegrationTest
 @Transactional
-final class ReviewHttpTest {
+final class ReviewHttpIT {
 
     /**
      * Zdjęcie zgłoszenia próbnego.
@@ -38,11 +38,11 @@ final class ReviewHttpTest {
     @Test
     void refusesReviewOfOwnSubmission(final WebApplicationContext context)
         throws Exception {
-        final UUID id = ReviewHttpTest.sent(context, "konto-testowe");
+        final UUID id = ReviewHttpIT.sent(context, "konto-testowe");
         MatcherAssert.assertThat(
             "Decyzja o własnym zgłoszeniu nie dała 403 albo zmieniła jego status",
             List.of(
-                ReviewHttpTest.review(context, id), ReviewHttpTest.status(context, id)
+                ReviewHttpIT.review(context, id), ReviewHttpIT.status(context, id)
             ),
             Matchers.contains(403, "SENT")
         );
@@ -53,7 +53,7 @@ final class ReviewHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Decyzja o zgłoszeniu niewziętym przez Weryfikatora nie dała 403",
-            ReviewHttpTest.review(context, ReviewHttpTest.sent(context, "inne-konto")),
+            ReviewHttpIT.review(context, ReviewHttpIT.sent(context, "inne-konto")),
             Matchers.equalTo(403)
         );
     }
@@ -61,12 +61,12 @@ final class ReviewHttpTest {
     @Test
     void acceptsSubmissionClaimedByReviewer(final WebApplicationContext context)
         throws Exception {
-        final UUID id = ReviewHttpTest.sent(context, "inne-konto");
-        ReviewHttpTest.claim(context, id);
+        final UUID id = ReviewHttpIT.sent(context, "inne-konto");
+        ReviewHttpIT.claim(context, id);
         MatcherAssert.assertThat(
             "Przyjęcie wziętego zgłoszenia nie dało 200 i statusu „przyjęte”",
             List.of(
-                ReviewHttpTest.review(context, id), ReviewHttpTest.status(context, id)
+                ReviewHttpIT.review(context, id), ReviewHttpIT.status(context, id)
             ),
             Matchers.contains(200, "ACCEPTED")
         );
@@ -75,14 +75,14 @@ final class ReviewHttpTest {
     @Test
     void savesClassificationOfAcceptedQuickSubmission(final WebApplicationContext context)
         throws Exception {
-        final UUID id = ReviewHttpTest.sent(context, "inne-konto");
-        ReviewHttpTest.claim(context, id);
+        final UUID id = ReviewHttpIT.sent(context, "inne-konto");
+        ReviewHttpIT.claim(context, id);
         MatcherAssert.assertThat(
             "Przyjęcie zgłoszenia szybkiego nie dało 200 i typu z uciążliwością w treści",
             List.of(
-                ReviewHttpTest.review(context, id),
-                ReviewHttpTest.field(context, id, "barrierType"),
-                ReviewHttpTest.field(context, id, "severity")
+                ReviewHttpIT.review(context, id),
+                ReviewHttpIT.field(context, id, "barrierType"),
+                ReviewHttpIT.field(context, id, "severity")
             ),
             Matchers.contains(200, "TB-3", "2")
         );
@@ -91,13 +91,13 @@ final class ReviewHttpTest {
     @Test
     void refusesQuickSubmissionWithoutClassification(final WebApplicationContext context)
         throws Exception {
-        final UUID id = ReviewHttpTest.sent(context, "inne-konto");
-        ReviewHttpTest.claim(context, id);
+        final UUID id = ReviewHttpIT.sent(context, "inne-konto");
+        ReviewHttpIT.claim(context, id);
         MatcherAssert.assertThat(
             "Przyjęcie zgłoszenia szybkiego bez typu i uciążliwości nie dało 400 i statusu IN_REVIEW",
             List.of(
-                ReviewHttpTest.review(context, id, "{\"decision\":\"ACCEPT\",\"version\":1}"),
-                ReviewHttpTest.status(context, id)
+                ReviewHttpIT.review(context, id, "{\"decision\":\"ACCEPT\",\"version\":1}"),
+                ReviewHttpIT.status(context, id)
             ),
             Matchers.contains(400, "IN_REVIEW")
         );
@@ -108,18 +108,18 @@ final class ReviewHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Wzięcie nieistniejącego zgłoszenia nie dało 404",
-            ReviewHttpTest.claim(context, UUID.randomUUID()), Matchers.equalTo(404)
+            ReviewHttpIT.claim(context, UUID.randomUUID()), Matchers.equalTo(404)
         );
     }
 
     @Test
     void conflictsOnReviewOfStaleVersion(final WebApplicationContext context)
         throws Exception {
-        final UUID id = ReviewHttpTest.sent(context, "inne-konto");
-        ReviewHttpTest.claim(context, id);
+        final UUID id = ReviewHttpIT.sent(context, "inne-konto");
+        ReviewHttpIT.claim(context, id);
         MatcherAssert.assertThat(
             "Decyzja o innej wersji niż aktualna nie dała 409",
-            ReviewHttpTest.review(
+            ReviewHttpIT.review(
                 context, id,
                 "{\"decision\":\"ACCEPT\",\"version\":2,\"barrierType\":\"TB-3\",\"severity\":2}"
             ),
@@ -130,11 +130,11 @@ final class ReviewHttpTest {
     @Test
     void refusesRejectionWithoutReason(final WebApplicationContext context)
         throws Exception {
-        final UUID id = ReviewHttpTest.sent(context, "inne-konto");
-        ReviewHttpTest.claim(context, id);
+        final UUID id = ReviewHttpIT.sent(context, "inne-konto");
+        ReviewHttpIT.claim(context, id);
         MatcherAssert.assertThat(
             "Odrzucenie bez powodu nie dało 400",
-            ReviewHttpTest.review(
+            ReviewHttpIT.review(
                 context, id, "{\"decision\":\"REJECT\",\"version\":1}"
             ),
             Matchers.equalTo(400)
@@ -144,16 +144,16 @@ final class ReviewHttpTest {
     @Test
     void rejectsClaimedSubmissionWithReason(final WebApplicationContext context)
         throws Exception {
-        final UUID id = ReviewHttpTest.sent(context, "inne-konto");
-        ReviewHttpTest.claim(context, id);
+        final UUID id = ReviewHttpIT.sent(context, "inne-konto");
+        ReviewHttpIT.claim(context, id);
         MatcherAssert.assertThat(
             "Odrzucenie z powodem nie dało 200 i statusu „odrzucone”",
             List.of(
-                ReviewHttpTest.review(
+                ReviewHttpIT.review(
                     context, id,
                     "{\"decision\":\"REJECT\",\"version\":1,\"rejectionReason\":\"Nieczytelne\"}"
                 ),
-                ReviewHttpTest.status(context, id)
+                ReviewHttpIT.status(context, id)
             ),
             Matchers.contains(200, "REJECTED")
         );
@@ -162,10 +162,10 @@ final class ReviewHttpTest {
     @Test
     void refusesClaimOfOwnSubmission(final WebApplicationContext context)
         throws Exception {
-        final UUID id = ReviewHttpTest.sent(context, "konto-testowe");
+        final UUID id = ReviewHttpIT.sent(context, "konto-testowe");
         MatcherAssert.assertThat(
             "Wzięcie własnego zgłoszenia nie dało 403 albo zmieniło jego status",
-            List.of(ReviewHttpTest.claim(context, id), ReviewHttpTest.status(context, id)),
+            List.of(ReviewHttpIT.claim(context, id), ReviewHttpIT.status(context, id)),
             Matchers.contains(403, "SENT")
         );
     }
@@ -173,12 +173,12 @@ final class ReviewHttpTest {
     @Test
     void claimsForeignSubmissionOnceAndAgain(final WebApplicationContext context)
         throws Exception {
-        final UUID id = ReviewHttpTest.sent(context, "inne-konto");
+        final UUID id = ReviewHttpIT.sent(context, "inne-konto");
         MatcherAssert.assertThat(
             "Wzięcie cudzego zgłoszenia, także ponowne, nie dało 200 i statusu „w weryfikacji”",
             List.of(
-                ReviewHttpTest.claim(context, id), ReviewHttpTest.status(context, id),
-                ReviewHttpTest.claim(context, id)
+                ReviewHttpIT.claim(context, id), ReviewHttpIT.status(context, id),
+                ReviewHttpIT.claim(context, id)
             ),
             Matchers.contains(200, "IN_REVIEW", 200)
         );
@@ -188,19 +188,19 @@ final class ReviewHttpTest {
     void conflictsOnSubmissionClaimedByAnotherReviewer(
         final WebApplicationContext context
     ) throws Exception {
-        final UUID id = ReviewHttpTest.sent(context, "inne-konto");
+        final UUID id = ReviewHttpIT.sent(context, "inne-konto");
         context.getBean(JdbcClient.class)
             .sql("UPDATE submissions SET status = 'IN_REVIEW', reviewer = 'inny' WHERE id = :id")
             .param("id", id).update();
         MatcherAssert.assertThat(
             "Wzięcie zgłoszenia wziętego przez innego Weryfikatora nie dało 409",
-            ReviewHttpTest.claim(context, id), Matchers.equalTo(409)
+            ReviewHttpIT.claim(context, id), Matchers.equalTo(409)
         );
     }
 
     private static UUID sent(final WebApplicationContext context, final String author) {
         final UUID id = new SampleSubmissions(context)
-            .add("SENT", SampleSubmissions.quick(ReviewHttpTest.PHOTO));
+            .add("SENT", SampleSubmissions.quick(ReviewHttpIT.PHOTO));
         context.getBean(JdbcClient.class)
             .sql("UPDATE submissions SET author = :author WHERE id = :id")
             .param("author", author).param("id", id).update();
@@ -230,7 +230,7 @@ final class ReviewHttpTest {
 
     private static int review(final WebApplicationContext context, final UUID id)
         throws Exception {
-        return ReviewHttpTest.review(
+        return ReviewHttpIT.review(
             context, id,
             "{\"decision\":\"ACCEPT\",\"version\":1,\"barrierType\":\"TB-3\",\"severity\":2}"
         );
