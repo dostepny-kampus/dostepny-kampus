@@ -34,13 +34,16 @@ import io.github.dostepnykampus.feature.map.building.entranceImages
 import io.github.dostepnykampus.feature.map.camera.CameraMotion
 import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
+import io.github.dostepnykampus.feature.map.camera.FlightArea
 import io.github.dostepnykampus.feature.map.camera.FlightLimits
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
+import io.github.dostepnykampus.feature.map.camera.StyleArea
 import io.github.dostepnykampus.feature.map.camera.belowTop
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.padding
+import io.github.dostepnykampus.feature.map.camera.styleAreaOf
 import io.github.dostepnykampus.feature.map.camera.styleColors
 import io.github.dostepnykampus.feature.map.camera.toCamera
 import io.github.dostepnykampus.feature.map.camera.toPosition
@@ -135,7 +138,8 @@ object MapLibreMapView : CampusMapView {
                 density.mapLimits(selection.bounds, size.belowTop(inset.top)).takeIf { size != IntSize.Zero }
             }
         val basemap = remember(selection.bounds, size, density) { density.basemapOf(selection.bounds, size) }
-        val style = rememberMapStyle(data = data, selection = selection, colors = styleColors, basemap = basemap)
+        val area = styleAreaOf(selection = selection, basemap = basemap)
+        val areas = remember { FlightArea(area) }
         val currentMove by rememberUpdatedState(move)
         val currentInset by rememberUpdatedState(inset)
         val currentData by rememberUpdatedState(data)
@@ -155,20 +159,26 @@ object MapLibreMapView : CampusMapView {
             onDispose { map = null }
         }
         map.FollowStyle(
-            style = style,
             data = data,
             look = look,
             selection = selection,
             images = images,
-            basemap = basemap,
+            colors = styleColors,
+            area = areas.shown,
         )
-        map.FollowEachMoveOnce(move = move, inset = inset, limits = limits)
+        map.FollowEachMoveOnce(move = move, inset = inset, limits = limits, area = area, areas = areas)
         AndroidView(factory = { mapView }, modifier = modifier.onSizeChanged { size = it })
     }
 
     @Composable
-    private fun MapLibreMap?.FollowEachMoveOnce(move: CameraTransition, inset: MapInset, limits: MapLimits?) {
-        val driver = remember(this) { this?.let(::CameraDriver) }
+    private fun MapLibreMap?.FollowEachMoveOnce(
+        move: CameraTransition,
+        inset: MapInset,
+        limits: MapLimits?,
+        area: StyleArea,
+        areas: FlightArea,
+    ) {
+        val driver = remember(this) { this?.let { CameraDriver(map = it, areas = areas) } }
         val currentInset by rememberUpdatedState(inset)
         DisposableEffect(driver, move) {
             driver?.follow(move, currentInset)
@@ -176,6 +186,10 @@ object MapLibreMapView : CampusMapView {
         }
         DisposableEffect(driver, limits) {
             driver?.limit(limits)
+            onDispose {}
+        }
+        DisposableEffect(area) {
+            areas.area(area)
             onDispose {}
         }
         DisposableEffect(driver, inset) {
@@ -186,21 +200,21 @@ object MapLibreMapView : CampusMapView {
 
     @Composable
     private fun MapLibreMap?.FollowStyle(
-        style: String?,
         data: CampusMapData,
         look: SelectionLook,
         selection: MapSelection,
         images: MapImages,
-        basemap: Basemap?,
+        colors: MapStyleColors,
+        area: StyleArea,
     ) {
         val map = this
+        val style = rememberMapStyle(data = data, selection = area.area, colors = colors, basemap = area.basemap)
         var loaded by remember { mutableStateOf<Style?>(null) }
         val currentData by rememberUpdatedState(data)
         val currentLook by rememberUpdatedState(look)
         val currentSelection by rememberUpdatedState(selection)
-        val area = ShownArea(area = MapSelection(bounds = selection.bounds, boundary = selection.boundary), basemap)
         val currentArea by rememberUpdatedState(area)
-        var shown by remember { mutableStateOf<ShownArea?>(null) }
+        var shown by remember { mutableStateOf<StyleArea?>(null) }
         DisposableEffect(map, style, images) {
             loaded = null
             val built = currentArea
@@ -226,9 +240,6 @@ object MapLibreMapView : CampusMapView {
             onDispose {}
         }
     }
-
-    /** Teren [area] i podkład [basemap] pokazane w wczytanym stylu. */
-    private data class ShownArea(val area: MapSelection, val basemap: Basemap?)
 
     @Composable
     private fun rememberMapView(context: Context): MapView =
@@ -298,12 +309,17 @@ object MapLibreMapView : CampusMapView {
     /**
      * Ruchy kamery mapy [map] po jednym. Ruch niesie dopełnienie z chwili startu; dopełnienie zmienione
      * w trakcie ruchu czeka na jego koniec, bo przerwałoby ruch, a samo przesuwa mapę płynnie w 300 ms. Gest osoby
-     * przerywa ruch sam (MapLibre). Na czas przelotu granice kamery są zdjęte ([FlightLimits]).
+     * przerywa ruch sam (MapLibre). Na czas przelotu granice kamery są zdjęte ([FlightLimits]), a teren i podkład
+     * starego terenu zostają do zejścia poniżej powiększenia podkładu ([areas]).
      */
-    private class CameraDriver(private val map: MapLibreMap) {
+    private class CameraDriver(private val map: MapLibreMap, private val areas: FlightArea) {
         private var inset = MapInset()
         private var running: Run? = null
         private val limits = FlightLimits { limitTo(it) }
+
+        init {
+            map.addOnCameraMoveListener { areas.zoom(map.cameraPosition.zoom) }
+        }
 
         fun limit(next: MapLimits?) = limits.limit(next)
 
@@ -338,7 +354,7 @@ object MapLibreMapView : CampusMapView {
             val update = CameraUpdateFactory.newCameraPosition(move.camera.toPosition(inset))
             val millis = move.durationMillis.toInt()
             running = null
-            if (move.motion == CameraMotion.FLIGHT) limits.startFlight() else limits.endFlight()
+            if (move.motion == CameraMotion.FLIGHT) startFlight() else endFlight()
             when (move.motion) {
                 CameraMotion.NONE -> map.moveCamera(update)
                 CameraMotion.EASE -> map.easeCamera(update, millis, start())
@@ -347,6 +363,16 @@ object MapLibreMapView : CampusMapView {
         }
 
         private fun start(): Run = Run().also { running = it }
+
+        fun startFlight() {
+            limits.startFlight()
+            areas.startFlight()
+        }
+
+        fun endFlight() {
+            limits.endFlight()
+            areas.endFlight()
+        }
 
         /** Jeden ruch; koniec ruchu wcześniejszego, przerwanego przez nowy, niczego nie zmienia. */
         private inner class Run : MapLibreMap.CancelableCallback {
@@ -357,7 +383,7 @@ object MapLibreMapView : CampusMapView {
             private fun settle() {
                 if (running !== this) return
                 running = null
-                limits.endFlight()
+                endFlight()
                 pad(inset)
             }
         }
