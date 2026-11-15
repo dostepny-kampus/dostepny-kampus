@@ -27,6 +27,10 @@ private const val SERVER_ASSESSMENT = "Z map i opisów, stan z "
  * i karta budynku idą z serwera pod adresem z `API_BASE_URL`. Dzień i źródło oznaczenia wejść ma tylko odpowiedź
  * serwera, nie plik konturów w aplikacji.
  *
+ * Test wykonuje ze scenariusza demo tylko krok karty budynku A-1 z serwera. Nie wykonuje kroków bez ekranu albo
+ * przepływu w aplikacji: zapisu zgłoszenia TB-1 bez sieci, wysyłki po powrocie sieci, przyjęcia przez Weryfikatora,
+ * postępu pięter i eksportu GeoJSON.
+ *
  * Wymagania: US17.3, NFR-41
  */
 @RunWith(AndroidJUnit4::class)
@@ -45,6 +49,7 @@ class BuildingCardFromServerTest {
 
     /**
      * Scenariusz (częściowo): oznaczenie-wejscia.feature: Wspólna data i źródło stoją raz nad listą wejść.
+     * Scenariusz (częściowo): scenariusz-demo.feature: Schody przy wejściu głównym A-1 od pomiaru do eksportu
      *
      * Wymagania: US17.3, US1.1, US2.8
      */
