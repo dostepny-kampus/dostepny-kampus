@@ -68,7 +68,7 @@ class BuildingCardMissingScreenTest {
      * Wymagania: NFR-10, US2.7
      */
     @Test
-    fun nfr10_unknown_shows_missing() {
+    fun showsMissingForUnknown() {
         showCard("Z-9")
         compose.onNodeWithText(MISSING_TEXT, substring = true).assertIsDisplayed()
         compose.onNodeWithText(RETRY_TEXT).assertIsDisplayed()
@@ -80,7 +80,7 @@ class BuildingCardMissingScreenTest {
      * Wymagania: NFR-10, US2.7
      */
     @Test
-    fun nfr10_known_hides_missing() {
+    fun hidesMissingForKnown() {
         showCard("A-1")
         compose.onNodeWithText("Gmach Główny").assertIsDisplayed()
         compose.onNodeWithText(MISSING_TEXT, substring = true).assertDoesNotExist()
@@ -94,7 +94,7 @@ class BuildingCardMissingScreenTest {
      * Wymagania: NFR-10
      */
     @Test
-    fun nfr10_retry_click_reads_again() {
+    fun readsAgainOnRetry() {
         val reads = AtomicInteger()
         showCard("N-1") { if (reads.incrementAndGet() == 1) listOf(GMACH) else listOf(GMACH, NEW_BUILDING) }
         compose.onNodeWithText(MISSING_TEXT, substring = true).assertIsDisplayed()

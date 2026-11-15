@@ -44,7 +44,7 @@ class CardAssessmentTextTest {
      * Wymagania: US17.3, BR-24
      */
     @Test
-    fun us17_3_server_answer_to_screen() {
+    fun showsServerAnswer() {
         val viewModel =
             BuildingCardViewModel(
                 symbol = "A-1",

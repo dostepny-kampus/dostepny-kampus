@@ -70,7 +70,7 @@ class BuildingCardModesTest {
      * Wymagania: US2.8, US3.2
      */
     @Test
-    fun us2_8_compact_card() {
+    fun showsCompactCard() {
         card(CardMode.Compact)
         listOf("Wejścia", "Schody", BACK, SHOW, "Pokaż na mapie").forEach {
             compose.onNodeWithText(it).assertDoesNotExist()
@@ -87,7 +87,7 @@ class BuildingCardModesTest {
      * Wymagania: NFR-10, US2.8
      */
     @Test
-    fun nfr10_offline_pill_above_name() {
+    fun showsOfflinePillAboveName() {
         online.value = false
         card(CardMode.Compact)
         listOf(CardMode.Compact, CardMode.Expanded).forEach { mode ->
@@ -107,7 +107,7 @@ class BuildingCardModesTest {
      * Wymagania: US3.2, US2.9
      */
     @Test
-    fun us3_2_check_first_in_content() {
+    fun putsCheckFirstInContent() {
         card(CardMode.Direct)
         listOf(CardMode.Direct, CardMode.Expanded).forEach { fullScreen ->
             show(fullScreen)
@@ -128,7 +128,7 @@ class BuildingCardModesTest {
      * Wymagania: NFR-15, US2.8
      */
     @Test
-    fun nfr15_each_action_its_callback() {
+    fun callsEachActionCallback() {
         card(CardMode.Compact)
         compose.onNodeWithText(CLOSE).performClick()
         compose.onNodeWithText(CHECK).performClick()
@@ -146,7 +146,7 @@ class BuildingCardModesTest {
      */
     @Test
     @Config(fontScale = 2f)
-    fun nfr20_large_font_all_scrolls() {
+    fun scrollsAllAtLargeFont() {
         card(CardMode.Direct)
         listOf(NAME, CHECK, SHOW, "Wejścia").forEach { compose.onNodeWithText(it).assert(inScroll) }
         assertOrder(CHECK, SHOW, "Wejścia")
@@ -164,7 +164,7 @@ class BuildingCardModesTest {
      * Wymagania: US4.6, NFR-18
      */
     @Test
-    fun us4_6_report_at_each_entrance() {
+    fun offersReportAtEachEntrance() {
         card(CardMode.Direct)
         listOf(CardMode.Direct, CardMode.Expanded).forEach { fullScreen ->
             show(fullScreen)
@@ -186,7 +186,7 @@ class BuildingCardModesTest {
      * Wymagania: US4.6
      */
     @Test
-    fun us4_6_report_passes_entrance() {
+    fun passesEntranceToReport() {
         card(CardMode.Expanded)
         ENTRANCES.forEach { (name, _) -> reportButton(name).performScrollTo().performClick() }
         assertEquals(ENTRANCES.map { (_, id) -> "report $id" }, calls)
@@ -198,7 +198,7 @@ class BuildingCardModesTest {
      * Wymagania: US4.6
      */
     @Test
-    fun us4_6_compact_has_no_report() {
+    fun hidesReportOnCompact() {
         card(CardMode.Direct)
         compose.onAllNodes(hasText(REPORT)).assertCountEquals(ENTRANCES.size)
         show(CardMode.Compact)
@@ -214,7 +214,7 @@ class BuildingCardModesTest {
      * Wymagania: US3.3, US2.1, BR-25, NFR-18
      */
     @Test
-    fun us3_3_show_recommended_only() {
+    fun showsRecommendedOnly() {
         card(CardMode.Direct)
         listOf(CardMode.Direct, CardMode.Expanded).forEach { fullScreen ->
             show(fullScreen)
@@ -235,7 +235,7 @@ class BuildingCardModesTest {
      * Wymagania: US3.3, BR-25
      */
     @Test
-    fun us3_3_no_show_no_recommended() {
+    fun hidesShowWithoutRecommended() {
         card(CardMode.Direct)
         compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(1)
         symbol.value = "B-4"
@@ -249,7 +249,7 @@ class BuildingCardModesTest {
      * Wymagania: US3.3
      */
     @Test
-    fun us3_3_compact_has_no_show() {
+    fun hidesShowOnCompact() {
         card(CardMode.Direct)
         compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(1)
         show(CardMode.Compact)
