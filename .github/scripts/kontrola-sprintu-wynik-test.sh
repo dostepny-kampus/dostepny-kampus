@@ -16,7 +16,7 @@ cat >"$workdir/bin/gh" <<'SH'
 #!/usr/bin/env bash
 set -euo pipefail
 case "$1 $2" in
-  'api -X') for a in "$@"; do [[ $a == state=* ]] && echo "status ${a#state=}" >>"$FAKE_LOG"; done ;;
+  'api -X') for a in "$@"; do if [[ $a == state=* ]]; then echo "status ${a#state=}" >>"$FAKE_LOG"; fi; done ;;
   'api repos/'*'/statuses') printf '%b' "$FAKE_HISTORIA" ;;
   'api repos/'*'/jobs'*) printf '%b' "$FAKE_NIEUDANE" ;;
   'issue list') printf '%s' "$FAKE_OTWARTE" ;;
