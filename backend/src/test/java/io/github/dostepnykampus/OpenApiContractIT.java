@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @since 0.1.0
  */
-final class OpenApiContractTest {
+final class OpenApiContractIT {
 
     /**
      * Zgodna karta budynku bez wejść.
@@ -57,7 +57,7 @@ final class OpenApiContractTest {
         final RequestBuilder request, final ResponseEntity<String> reply, final String name
     ) {
         Assertions.assertDoesNotThrow(
-            () -> OpenApiContractTest.answer(request, reply).andExpect(new OpenApiContract()),
+            () -> OpenApiContractIT.answer(request, reply).andExpect(new OpenApiContract()),
             String.format("Zgodna wymiana nie przechodzi: %s", name)
         );
     }
@@ -72,7 +72,7 @@ final class OpenApiContractTest {
             String.valueOf(
                 Assertions.assertThrows(
                     AssertionError.class,
-                    () -> OpenApiContractTest.answer(request, reply)
+                    () -> OpenApiContractIT.answer(request, reply)
                         .andExpect(new OpenApiContract()),
                     "Niezgodna wymiana kończy się błędem asercji"
                 ).getMessage()
@@ -100,9 +100,9 @@ final class OpenApiContractTest {
             }
         );
         for (int done = 0; done < 3; done += 1) {
-            OpenApiContractTest.answer(
+            OpenApiContractIT.answer(
                 MockMvcRequestBuilders.get("/buildings/A-1"),
-                OpenApiContractTest.json(200, OpenApiContractTest.CARD)
+                OpenApiContractIT.json(200, OpenApiContractIT.CARD)
             ).andExpect(contract);
         }
         MatcherAssert.assertThat(
@@ -114,49 +114,49 @@ final class OpenApiContractTest {
         return Stream.of(
             Arguments.of(
                 MockMvcRequestBuilders.get("/buildings/A-1"),
-                OpenApiContractTest.json(200, OpenApiContractTest.CARD), "karta budynku"
+                OpenApiContractIT.json(200, OpenApiContractIT.CARD), "karta budynku"
             ),
             Arguments.of(
                 (RequestBuilder) servlet -> new MockHttpServletRequest(
                     servlet, "GET", "/buildings/A-1"
                 ),
-                OpenApiContractTest.json(200, OpenApiContractTest.CARD),
+                OpenApiContractIT.json(200, OpenApiContractIT.CARD),
                 "żądanie złożone ręcznie, bez pathInfo"
             ),
             Arguments.of(
-                OpenApiContractTest.locate("51.1"),
-                OpenApiContractTest.json(200, "{\"insideOutline\":false}"),
+                OpenApiContractIT.locate("51.1"),
+                OpenApiContractIT.json(200, "{\"insideOutline\":false}"),
                 "ścieżka bez szablonu przed szablonem /buildings/{symbol}"
             ),
             Arguments.of(
-                OpenApiContractTest.review(
+                OpenApiContractIT.review(
                     "{\"decision\":\"REJECT\",\"version\":1,\"rejectionReason\":\"Duplikat\"}"
                 ),
-                OpenApiContractTest.problem(401, "{\"title\":\"Brak tokenu\",\"status\":401}"),
+                OpenApiContractIT.problem(401, "{\"title\":\"Brak tokenu\",\"status\":401}"),
                 "zgodne ciało żądania"
             ),
             Arguments.of(
-                MockMvcRequestBuilders.put(OpenApiContractTest.PHOTO).contentType("image/jpeg"),
+                MockMvcRequestBuilders.put(OpenApiContractIT.PHOTO).contentType("image/jpeg"),
                 ResponseEntity.noContent().<String>build(),
                 "treść żądania strumieniem, niewidoczna dla biblioteki"
             ),
             Arguments.of(
-                OpenApiContractTest.photo(MediaType.IMAGE_JPEG),
+                OpenApiContractIT.photo(MediaType.IMAGE_JPEG),
                 ResponseEntity.noContent().<String>build(), "zdjęcie JPEG jako treść nie-JSON"
             ),
             Arguments.of(
-                MockMvcRequestBuilders.get(OpenApiContractTest.PHOTO),
+                MockMvcRequestBuilders.get(OpenApiContractIT.PHOTO),
                 ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body("zdjęcie"),
                 "odpowiedź JPEG"
             ),
             Arguments.of(
-                OpenApiContractTest.review("{\"decision\":\"REJECT\",\"version\":1}"),
-                OpenApiContractTest.problem(400, "{\"title\":\"Błąd\",\"status\":400}"),
+                OpenApiContractIT.review("{\"decision\":\"REJECT\",\"version\":1}"),
+                OpenApiContractIT.problem(400, "{\"title\":\"Błąd\",\"status\":400}"),
                 "niezgodne żądanie odrzucone statusem 400 z Problem"
             ),
             Arguments.of(
-                OpenApiContractTest.locate("abc"),
-                OpenApiContractTest.problem(400, "{\"title\":\"Błąd\",\"status\":400}"),
+                OpenApiContractIT.locate("abc"),
+                OpenApiContractIT.problem(400, "{\"title\":\"Błąd\",\"status\":400}"),
                 "parametr złego typu odrzucony statusem 400"
             )
         );
@@ -165,50 +165,50 @@ final class OpenApiContractTest {
     private static Stream<Arguments> violating() {
         return Stream.of(
             Arguments.of(
-                OpenApiContractTest.locate("abc"),
-                OpenApiContractTest.json(200, "{\"insideOutline\":false}"),
+                OpenApiContractIT.locate("abc"),
+                OpenApiContractIT.json(200, "{\"insideOutline\":false}"),
                 "GET /buildings/locate 200: validation.request.parameter.schema.type"
             ),
-            OpenApiContractTest.card("\"detailLevel\":\"BASIC\",", "", "property 'detailLevel'"),
-            OpenApiContractTest.card("\"A-1\"", "1", "body.schema.type /symbol "),
-            OpenApiContractTest.card("BASIC", "MEDIUM", "body.schema.enum /detailLevel "),
+            OpenApiContractIT.card("\"detailLevel\":\"BASIC\",", "", "property 'detailLevel'"),
+            OpenApiContractIT.card("\"A-1\"", "1", "body.schema.type /symbol "),
+            OpenApiContractIT.card("BASIC", "MEDIUM", "body.schema.enum /detailLevel "),
             Arguments.of(
-                MockMvcRequestBuilders.get("/nieznane"), OpenApiContractTest.json(200, "{}"),
+                MockMvcRequestBuilders.get("/nieznane"), OpenApiContractIT.json(200, "{}"),
                 "GET /nieznane 200: validation.request.path.missing"
             ),
             Arguments.of(
                 MockMvcRequestBuilders.get("/buildings/A-1"),
-                OpenApiContractTest.problem(500, "{\"title\":\"Błąd\",\"status\":500}"),
+                OpenApiContractIT.problem(500, "{\"title\":\"Błąd\",\"status\":500}"),
                 "GET /buildings/A-1 500: validation.response.status.unknown"
             ),
             Arguments.of(
                 MockMvcRequestBuilders.get("/buildings/A-1"),
                 ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN)
-                    .body(OpenApiContractTest.CARD),
+                    .body(OpenApiContractIT.CARD),
                 "A-1 200: validation.response.contentType.notAllowed"
             ),
             Arguments.of(
                 MockMvcRequestBuilders.get("/buildings"),
-                OpenApiContractTest.problem(405, "{\"status\":405}"),
+                OpenApiContractIT.problem(405, "{\"status\":405}"),
                 "GET /buildings 405: validation.response.body.schema.required"
             ),
             Arguments.of(
-                OpenApiContractTest.review("{\"decision\":\"REJECT\",\"version\":1}"),
-                OpenApiContractTest.json(200, "{}"),
+                OpenApiContractIT.review("{\"decision\":\"REJECT\",\"version\":1}"),
+                OpenApiContractIT.json(200, "{}"),
                 "review 200: validation.request.body.schema"
             ),
             Arguments.of(
-                OpenApiContractTest.review("{\"decision\":\"REJECT\",\"version\":1}"),
-                OpenApiContractTest.problem(400, "{\"status\":400}"),
+                OpenApiContractIT.review("{\"decision\":\"REJECT\",\"version\":1}"),
+                OpenApiContractIT.problem(400, "{\"status\":400}"),
                 "review 400: validation.response.body.schema.required"
             ),
             Arguments.of(
-                MockMvcRequestBuilders.get(OpenApiContractTest.PHOTO),
+                MockMvcRequestBuilders.get(OpenApiContractIT.PHOTO),
                 ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body("zdjęcie"),
                 "200: validation.response.contentType.notAllowed"
             ),
             Arguments.of(
-                OpenApiContractTest.photo(MediaType.TEXT_PLAIN),
+                OpenApiContractIT.photo(MediaType.TEXT_PLAIN),
                 ResponseEntity.noContent().<String>build(),
                 "204: validation.request.contentType.notAllowed"
             ),
@@ -225,13 +225,13 @@ final class OpenApiContractTest {
     ) {
         return Arguments.of(
             MockMvcRequestBuilders.get("/buildings/A-1"),
-            OpenApiContractTest.json(200, OpenApiContractTest.CARD.replace(part, replacement)),
+            OpenApiContractIT.json(200, OpenApiContractIT.CARD.replace(part, replacement)),
             message
         );
     }
 
     private static RequestBuilder photo(final MediaType type) {
-        return MockMvcRequestBuilders.put(OpenApiContractTest.PHOTO).contentType(type)
+        return MockMvcRequestBuilders.put(OpenApiContractIT.PHOTO).contentType(type)
             .content(new byte[] {(byte) 0xFF, (byte) 0xD8});
     }
 

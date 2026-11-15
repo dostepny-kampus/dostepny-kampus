@@ -36,7 +36,7 @@ istnieją, są w części „Stan dziś” razem z issue, które je usuwa.
 ## Serwer
 
 Moduł to pakiet najwyższego poziomu pod `io.github.dostepnykampus`. Wszystkie działają w jednym procesie,
-granice sprawdza Spring Modulith. Schemat zależności modułów powstaje z kodu (`ModularityTest` porównuje
+granice sprawdza Spring Modulith. Schemat zależności modułów powstaje z kodu (`ModularityIT` porównuje
 go z plikiem `moduly-serwera.iuml`); moduł bez zależności, dziś `identity`, nie ma na nim strzałek.
 
 ![Diagram zależności modułów serwera: barrier zależy od building i shared, inspection zależy od building, building zależy od shared](../_generated/moduly-serwera.svg)
@@ -132,10 +132,10 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
 
 | Punkt zasady | Kontrola |
 | --- | --- |
-| brak cykli i dostępu do wnętrza cudzego modułu serwera | `ModularityTest.infraVerifiesModuleBoundaries` |
-| moduł serwera ma kod i opis, bez stałej listy nazw | `ModularityTest.modulesHaveClassesAndDescription` |
-| pakiet główny i lista podpakietów `shared` | `ModularityTest` (`basePackageHoldsOnlyApplication`, `sharedHasOnlyErrorJsonAndGeo`) |
-| jawna lista zależności modułu serwera | `ModularityTest` (`modulesDeclareAllowedDependencies`, `infraVerifiesModuleBoundaries`) |
+| brak cykli i dostępu do wnętrza cudzego modułu serwera | `ModularityIT.infraVerifiesModuleBoundaries` |
+| moduł serwera ma kod i opis, bez stałej listy nazw | `ModularityIT.modulesHaveClassesAndDescription` |
+| pakiet główny i lista podpakietów `shared` | `ModularityIT` (`basePackageHoldsOnlyApplication`, `sharedHasOnlyErrorJsonAndGeo`) |
+| jawna lista zależności modułu serwera | `ModularityIT` (`modulesDeclareAllowedDependencies`, `infraVerifiesModuleBoundaries`) |
 | korzeń modułu: `package-info.java`, `api`, tematy albo warstwy; typy `api` bez typów wnętrza; zależność od `api` zapisana jako `moduł :: api` | `ModuleRootArchitectureIT` |
 | kierunek warstw w obu układach modułu | `LayerDirectionArchitectureIT` (#1668) |
 | dziedzina bez frameworków, adapter nie woła adaptera | `BarrierArchitectureTest` (A-1…A-9), dziś tylko `barrier`: #1704 |
