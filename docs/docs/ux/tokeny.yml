@@ -440,9 +440,11 @@ mapa:
     chodnik: {jasny: "#F7F9FA", ciemny: "#22272A", uzycie: chodniki i place}
     budynek: {jasny: "#D6DBDD", ciemny: "#23282B", uzycie: budynki spoza PWr}
     budynek_kontur: {jasny: "#C2C9CC", ciemny: "#2C3236", uzycie: kontur budynków spoza PWr}
-    pwr: {jasny: "#BFE0EC", ciemny: "#2A3640", uzycie: wypełnienie budynków PWr}
+    pwr: {jasny: "#BFE0EC", ciemny: "#2A3640", uzycie: "wypełnienie budynków szczegółowych (z planem pięter)"}
+    # Budynek podstawowy: blade tło, tuż nad lądem; od szczegółowego odróżnia go jasność tła i cienki kontur.
+    pwr_podstawowy: {jasny: "#DDECF1", ciemny: "#222B31", uzycie: "wypełnienie budynków podstawowych (bez planu pięter)"}
     # Ciemny kontur PWr: najciemniejszy ton, który do wypełnienia ma ≥ 3:1 także po symulacji daltonizmu.
-    pwr_kontur: {jasny: "#004E5E", ciemny: "#68848F", uzycie: "kontur budynków PWr (jasny = primary)"}
+    pwr_kontur: {jasny: "#004E5E", ciemny: "#68848F", uzycie: "kontur budynków PWr (jasny = primary): gruby przy szczegółowym, cienki ciągły przy podstawowym"}
     # Obrys wybranego budynku jest grubszy niż kontur; wybór pokazuje też arkusz z nazwą (NFR-21).
     pwr_wybrany: {jasny: "#001F27", ciemny: "#7AA6B5", uzycie: obrys wybranego budynku}
     napis_pwr: {jasny: "#00303B", ciemny: "#D9DFE2", uzycie: "symbol budynku, „Sala 329”, „Winda”, „Toaleta”"}
@@ -473,14 +475,17 @@ mapa:
     - {kolor: napis_ulica, tlo: obwodka, rodzaj: tekst, gdzie: "nazwy ulic, numery sal"}
     - {kolor: napis_woda, tlo: obwodka, rodzaj: tekst, gdzie: nazwa rzeki}
     - {kolor: pwr_kontur, tlo: lad, rodzaj: komponent, gdzie: kontur budynku PWr na podkładzie}
-    - {kolor: pwr_kontur, tlo: pwr, rodzaj: komponent, gdzie: kontur budynku PWr do wypełnienia}
+    - {kolor: pwr_kontur, tlo: pwr, rodzaj: komponent, gdzie: kontur budynku szczegółowego do wypełnienia}
+    - {kolor: pwr_kontur, tlo: pwr_podstawowy, rodzaj: komponent, gdzie: kontur budynku podstawowego do wypełnienia}
     - {kolor: pwr_kontur, tlo: budynek, rodzaj: komponent, gdzie: kontur PWr przy budynku spoza PWr}
     - {kolor: pwr_wybrany, tlo: pwr, rodzaj: komponent, gdzie: obrys wybranego budynku do wypełnienia}
+    - {kolor: pwr_wybrany, tlo: pwr_podstawowy, rodzaj: komponent, gdzie: obrys wybranego budynku podstawowego do wypełnienia}
     - {kolor: pwr_wybrany, tlo: lad, rodzaj: komponent, gdzie: obrys wybranego budynku na podkładzie}
     - {kolor: sciezka, tlo: lad, rodzaj: komponent, gdzie: ścieżka dostosowana na podkładzie}
     - {kolor: sciezka, tlo: droga, rodzaj: komponent, gdzie: ścieżka dostosowana na ulicy}
     - {kolor: tusz, tlo: lad, rodzaj: komponent, gdzie: "znacznik wejścia, ikona pochylni"}
     - {kolor: tusz, tlo: pwr, rodzaj: komponent, gdzie: znacznik wejścia na budynku PWr}
+    - {kolor: tusz, tlo: pwr_podstawowy, rodzaj: komponent, gdzie: znacznik wejścia na budynku podstawowym}
     - {kolor: papier, tlo: tusz, rodzaj: komponent, gdzie: znak wewnątrz znacznika}
     - {kolor: tusz, tlo: p_korytarz, rodzaj: komponent, gdzie: ikona planu na korytarzu}
     - {kolor: tusz, tlo: p_winda, rodzaj: komponent, gdzie: ikona windy}
