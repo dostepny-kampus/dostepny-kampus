@@ -146,6 +146,7 @@ private fun EntranceJson.toModel(): Entrance =
         location = location.toModel(),
         marking = EntranceMarking.valueOf(marking.name),
         assessment = EntranceAssessment(date = markingDay(markingDate), source = markingSource.toModel()),
+        floorId = floorId,
     )
 
 private fun BuildingJson.toModel(json: Json): ApiBuilding =

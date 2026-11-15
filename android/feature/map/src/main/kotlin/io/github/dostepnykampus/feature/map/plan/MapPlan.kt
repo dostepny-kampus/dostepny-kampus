@@ -5,10 +5,12 @@
  */
 package io.github.dostepnykampus.feature.map.plan
 
+import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.room.RoomList
+import io.github.dostepnykampus.feature.map.building.orderedEntrances
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -40,16 +42,16 @@ data class ShownPlan(
 /**
  * Plan piętra przy bieżącym widoku mapy. Budynek wybiera [planFocus] z budynków szczegółowych katalogu (R2, R3).
  * Plan budynku pobiera się z serwera raz na udane pobranie, a bez sieci pochodzi z kopii [plans]. Na start jest
- * parter albo najniższe piętro (R5); wybrane piętro budynku zostaje zapamiętane na czas życia obiektu (R6).
- * Budynek bez kopii planu nie ma planu.
+ * piętro wejścia zalecanego z [entrances], a gdy dane go nie podają albo plan nie ma tego piętra — parter albo
+ * najniższe piętro (R5); wybrane piętro budynku zostaje zapamiętane na czas życia obiektu (R6). Budynek bez kopii
+ * planu nie ma planu.
  *
- * TODO(#2412): piętro zalecanego wejścia na start (R5).
- *
- * Wymagania: US16.1, US16.2, BR-G1, NFR-10
+ * Wymagania: US16.1, US16.2, BR-G1, BR-25, NFR-10
  *
  * @param plans plany pięter z kopią w telefonie
+ * @param entrances wejścia budynku z serwera z piętrem wejścia
  */
-internal class MapPlan(private val plans: FloorPlans) {
+internal class MapPlan(private val plans: FloorPlans, private val entrances: ServerEntrances) {
     private val cameras = MutableStateFlow<MapCamera?>(null)
     private val chosen = MutableStateFlow<Map<String, String>>(emptyMap())
     private val downloaded = mutableSetOf<String>()
@@ -84,7 +86,12 @@ internal class MapPlan(private val plans: FloorPlans) {
         if (symbol !in downloaded && plans.download(symbol)) downloaded += symbol
         val floors = plans.floors(symbol)?.floors.orEmpty()
         val rooms = floors.mapNotNull { floor -> plans.rooms(symbol, floor.id)?.let { floor.id to it } }.toMap()
-        val start = floors.firstOrNull { it.order == 0 } ?: floors.firstOrNull()
+        val recommended = orderedEntrances(entrances.entrances(symbol)).firstOrNull { it.isRecommended }
+        val entranceFloor = recommended?.run { entrance.floorId }
+        val start =
+            floors.firstOrNull { it.id == entranceFloor }
+                ?: floors.firstOrNull { it.order == 0 }
+                ?: floors.firstOrNull()
         return start?.let { ShownPlan(building = symbol, floors = floors, floor = it.id, rooms = rooms) }
     }
 }

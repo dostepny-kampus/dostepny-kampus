@@ -5,12 +5,15 @@
  */
 package io.github.dostepnykampus.feature.map.plan
 
+import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
+import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.room.RoomList
@@ -27,14 +30,14 @@ import org.junit.jupiter.api.Test
 /**
  * Plan piętra przy widoku mapy: budynek, piętro na start, pamięć piętra i pobranie planu.
  *
- * Wymagania: US16.1, NFR-10
+ * Wymagania: US16.1, BR-25, NFR-10
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MapPlanTest {
     @Test
     fun showsGroundFloorAtCenter() =
         runTest(UnconfinedTestDispatcher()) {
-            val plan = MapPlan(Plans())
+            val plan = MapPlan(Plans(), entrances())
             val shown = collected(plan)
             plan.camera(MapCamera(center = INSIDE_A, zoom = 18.0))
             assertEquals(
@@ -47,7 +50,7 @@ class MapPlanTest {
     @Test
     fun remembersChosenFloor() =
         runTest(UnconfinedTestDispatcher()) {
-            val plan = MapPlan(Plans())
+            val plan = MapPlan(Plans(), entrances())
             val shown = collected(plan)
             plan.camera(MapCamera(center = INSIDE_A, zoom = 18.0))
             plan.choose(building = "A", floor = "P1")
@@ -59,7 +62,7 @@ class MapPlanTest {
     @Test
     fun hidesPlanOfBuildingWithoutCopy() =
         runTest(UnconfinedTestDispatcher()) {
-            val plan = MapPlan(Plans(stored = emptySet()))
+            val plan = MapPlan(Plans(stored = emptySet()), entrances())
             val shown = collected(plan)
             plan.camera(MapCamera(center = INSIDE_A, zoom = 18.0))
             assertEquals(null, shown.value, "Budynek bez kopii planu dostał plan")
@@ -69,7 +72,7 @@ class MapPlanTest {
     fun downloadsPlanOnceAfterSuccess() =
         runTest(UnconfinedTestDispatcher()) {
             val plans = Plans()
-            val plan = MapPlan(plans)
+            val plan = MapPlan(plans, entrances())
             val shown = collected(plan)
             plan.camera(MapCamera(center = INSIDE_A, zoom = 18.0))
             plan.camera(MapCamera(center = INSIDE_A, zoom = 15.0))
@@ -78,6 +81,40 @@ class MapPlanTest {
                 listOf("A", "A"),
                 plans.downloads + listOfNotNull(shown.value?.building),
                 "Plan budynku pobrany ponownie po udanym pobraniu albo niepokazany",
+            )
+        }
+
+    @Test
+    fun startsOnEntranceFloor() =
+        runTest(UnconfinedTestDispatcher()) {
+            val plan = MapPlan(Plans(), entrances(floor = "P1"))
+            val shown = collected(plan)
+            plan.camera(MapCamera(center = INSIDE_A, zoom = 18.0))
+            assertEquals("P1", shown.value?.floor, "Plan nie zaczął się na piętrze zalecanego wejścia")
+        }
+
+    @Test
+    fun startsOnGroundForUnknownFloor() =
+        runTest(UnconfinedTestDispatcher()) {
+            val plan = MapPlan(Plans(), entrances(floor = "P7"))
+            val shown = collected(plan)
+            plan.camera(MapCamera(center = INSIDE_A, zoom = 18.0))
+            assertEquals("P0", shown.value?.floor, "Piętro wejścia spoza planu nie dało parteru")
+        }
+
+    private fun entrances(floor: String? = null): ServerEntrances =
+        ServerEntrances { symbol ->
+            listOf(
+                Entrance(
+                    id = "w1",
+                    buildingSymbol = symbol,
+                    name = null,
+                    isMain = true,
+                    type = null,
+                    location = INSIDE_A,
+                    marking = EntranceMarking.ACCESSIBLE,
+                    floorId = floor,
+                ),
             )
         }
 

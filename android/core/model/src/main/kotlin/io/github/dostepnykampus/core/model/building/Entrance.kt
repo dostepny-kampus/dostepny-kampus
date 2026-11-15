@@ -22,6 +22,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
  * @property marking oznaczenie wejścia z danych
  * @property assessment dzień i źródło oznaczenia z serwera; `null` dla wejścia z pliku konturów,
  *   który ich nie podaje
+ * @property floorId piętro wejścia z listy pięter budynku (`Floor.id`); `null`, gdy dane go nie podają
  */
 public data class Entrance(
     val id: String,
@@ -32,6 +33,7 @@ public data class Entrance(
     val location: GeoPoint,
     val marking: EntranceMarking,
     val assessment: EntranceAssessment? = null,
+    val floorId: String? = null,
 ) {
     /** Czy rodzaj wejścia kwalifikuje je do pokazania odwiedzającym. Wymagania: BR-25 */
     val isForVisitors: Boolean
