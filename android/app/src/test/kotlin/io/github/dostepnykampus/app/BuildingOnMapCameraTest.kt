@@ -74,6 +74,7 @@ private fun building(symbol: String, longitude: Double, latitude: Double, corner
 private val BUILDINGS =
     listOf(
         building(symbol = "A-1", longitude = 17.05, latitude = 51.11, corners = SQUARE),
+        building(symbol = "A-2", longitude = 17.0506, latitude = 51.11, corners = SQUARE),
         building(symbol = "T-9", longitude = 17.065, latitude = 51.11, corners = SQUARE),
         building(symbol = "C-13", longitude = 17.05, latitude = 51.125, corners = SQUARE),
         building(symbol = "U-1", longitude = 17.05, latitude = 51.10, corners = U_SHAPE),
@@ -88,6 +89,7 @@ private fun mercatorY(latitude: Double): Double = asinh(tan(Math.toRadians(latit
  * „Pokaż budynek na mapie” z V2 przez prawdziwe ekrany aplikacji do kamery podróbki widoku mapy: budynek jest widoczny,
  * a dalsze przesuwanie i obrót zostają przy osobie. Katalog jest syntetyczny: A-1 w środku pierwszego widoku, T-9 i
  * C-13 ponad kilometr od niego, U-1 w kształcie litery U (`U_SHAPE`), którego środek obrysu leży poza obszarem podpisu.
+ * A-2 stoi obok A-1 w tym samym terenie, więc prostokąt pierwszego terenu jest szerszy niż widok startowy.
  * `shows` sprawdza, czy punkt podpisu (`labelPointOf`) leży w niezasłoniętej części mapy (Merkator), a `showOnMap`
  * idzie od listy V1 przez V2 otwarte od razu (TalkBack).
  *
@@ -272,7 +274,7 @@ class BuildingOnMapCameraTest {
     }
 
     /**
-     * Wiersz: K3, po „Pokaż” i geście osoby na V1 mała karta innego budynku i „Wstecz” bez ruszania mapy
+     * Wiersz: K3, po „Pokaż” i geście osoby na V1 mała karta budynku i „Wstecz” bez ruszania mapy
      * → widok jak przed kartą. Widok mapy zgłasza kamerę tylko po geście osoby, więc przy
      * otwartej karcie atrapa nic nie zgłasza.
      */
@@ -283,7 +285,7 @@ class BuildingOnMapCameraTest {
         compose.waitForIdle()
         val before = shown.last().second
         isIdleReported = false
-        compose.runOnUiThread { touch(listOf("A-1")) }
+        compose.runOnUiThread { touch(listOf("T-9")) }
         compose.waitForIdle()
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
         compose.waitForIdle()
