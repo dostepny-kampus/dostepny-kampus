@@ -21,6 +21,8 @@ import kotlin.coroutines.CoroutineContext
  *
  * Wymagania: BR-G5, US4.9
  *
+ * @param catalog katalog budynków z konturami
+ * @param computeContext wątek obliczeń położenia
  * @param grounds teren, na którym wolno złożyć zgłoszenie
  */
 class BuildingLookup

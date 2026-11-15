@@ -161,8 +161,7 @@ class QuickSendViewModel
                 .take(1)
                 .map<PositionFix, QuickLookup> { fix ->
                     if (buildingLookup.isOnGrounds(fix.point)) QuickLookup.Found(located(fix)) else QuickLookup.Outside
-                }
-                .onStart { emit(QuickLookup.Locating) }
+                }.onStart { emit(QuickLookup.Locating) }
                 .catch { cause ->
                     if (cause !is SecurityException && cause !is IllegalArgumentException) throw cause
                     emit(QuickLookup.Lost)
