@@ -182,7 +182,7 @@ public final class QuickPlaceSteps {
      * @param meters Odległość od granicy w metrach
      * @throws Exception Gdy MockMvc nie wykona żądania
      */
-    @When("^aplikacja wyśle zgłoszenie z miejscem (\d+) m za granicą terenu PWr$")
+    @When("^aplikacja wyśle zgłoszenie z miejscem (\\d+) m za granicą terenu PWr$")
     public void sendsFromAfar(final int meters) throws Exception {
         this.place = new CampusBoundary(this.jdbc).beyond(meters).json();
         this.send(QuickPlaceSteps.OTHER);
