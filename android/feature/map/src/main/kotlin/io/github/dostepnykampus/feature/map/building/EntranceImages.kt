@@ -17,8 +17,10 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
+import io.github.dostepnykampus.core.designsystem.Ikony
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.designsystem.marking.markingImage
+import io.github.dostepnykampus.core.designsystem.marking.outlinedMarkingImage
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
 import io.github.dostepnykampus.feature.map.style.ENTRANCE_MARK_DP
@@ -38,24 +40,33 @@ private const val PIN_DOT = "M12 11.5a2.5 2.5 0 1 1 0-5a2.5 2.5 0 0 1 0 5z"
 
 /**
  * Obrazy wejść niezależne od zaznaczenia: znaki wszystkich oznaczeń i pinezka zaznaczonego wejścia.
+ * „Brak danych” to cichy znak: pusty romb z tokenu `ikony.znak_mapy_brak_danych`, wnętrze `papier`, kontur
+ * i znak `tusz`. Pozostałe oznaczenia mają pełny kształt `tusz` wielkości [ENTRANCE_MARK_DP].
  * Pinezka ma jednostki 2 dp (14 × 20), a jej czubek stoi na dole obrazu, gdzie jest kotwica.
  *
- * Wymagania: US2.1, US3.3
+ * Wymagania: US1.4, US2.1, US3.3, NFR-21
  */
 internal fun entranceImages(colors: MapColors, density: Float): Map<String, Bitmap> {
-    val marks =
-        EntranceMarking.entries.associate { marking ->
-            val image =
-                markingImage(
-                    marking = marking,
-                    sizePx = ceil(ENTRANCE_MARK_DP * density).toInt(),
-                    shapeColor = colors.tusz,
-                    markColor = colors.papier,
-                )
-            entranceMarkImage(marking) to image
-        }
+    val marks = EntranceMarking.entries.associate { entranceMarkImage(it) to markImage(it, colors, density) }
     return marks + (ENTRANCE_PIN_IMAGE to pinImage(unitPx = density * PIN_UNIT_DP, colors = colors))
 }
+
+private fun markImage(marking: EntranceMarking, colors: MapColors, density: Float): Bitmap =
+    if (marking == EntranceMarking.NO_DATA) {
+        outlinedMarkingImage(
+            marking = marking,
+            sizePx = ceil(Ikony.znakMapyBrakDanych.value * density).toInt(),
+            lineColor = colors.tusz,
+            fillColor = colors.papier,
+        )
+    } else {
+        markingImage(
+            marking = marking,
+            sizePx = ceil(ENTRANCE_MARK_DP * density).toInt(),
+            shapeColor = colors.tusz,
+            markColor = colors.papier,
+        )
+    }
 
 /** Obraz podpisu z nazwą zaznaczonego wejścia [selected] o wysokości [labelSize]; bez zaznaczenia brak obrazów. */
 internal fun entranceCaption(selected: SelectedEntrance?, colors: MapColors, labelSize: Float): Map<String, Bitmap> =
