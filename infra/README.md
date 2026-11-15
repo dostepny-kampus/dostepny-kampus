@@ -34,6 +34,18 @@ Compose czyta zmienne z `infra/.env`, którego nie ma w repozytorium. Serwer czy
 | `DK_AUTH_PORT` | port usługi logowania na `127.0.0.1` | `8180` |
 | `DK_AUTH_ISSUER` | adres realmu, którego tokeny przyjmuje serwer | `http://localhost:8180/realms/dostepny-kampus` |
 
+## Import planów pięter PWr
+
+Plany pięter importuje się ręcznie ([ADR-0012](../docs/docs/architektura/decyzje/0012-import-planow-pieter.md)). Polecenie czyta warstwy z `backend/src/main/resources/pwr-plans.yaml` i pobiera piętra i pomieszczenia z usługi ArcGIS PWr. Zapisuje je w bazie z sekcji „Uruchomienie” i kończy się bez serwera HTTP.
+
+```sh
+cd backend
+./mvnw spring-boot:run -Dspring-boot.run.profiles=import-pwr
+./mvnw spring-boot:run -Dspring-boot.run.profiles=import-pwr -Dspring-boot.run.arguments=--budynek=A-1
+```
+
+Opcja `--budynek` ogranicza import do podanych symboli. Ponowne uruchomienie zastępuje plan budynku bez duplikatów. Dziennik podaje liczbę pięter i pomieszczeń każdego budynku.
+
 ## Usługa logowania
 
 Keycloak wczytuje przy starcie realm `dostepny-kampus` z pliku `keycloak/realm.json`. Adres realmu to `http://localhost:8180/realms/dostepny-kampus`, jak w kontrakcie API.

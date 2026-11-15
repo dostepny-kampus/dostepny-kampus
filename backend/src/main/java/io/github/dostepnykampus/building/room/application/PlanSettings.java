@@ -14,8 +14,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * szczegółowy. Budynek bez wpisu jest podstawowy. Plik zawiera tylko adresy warstw, bez danych
  * PWr.
  *
- * <p>TODO(#1824): czytać warstwy w poleceniu importu.</p>
- *
  * <p>Wymagania: NFR-40, NFR-47, BR-G1</p>
  *
  * @param service Katalog usług ArcGIS PWr bez końcowego ukośnika
