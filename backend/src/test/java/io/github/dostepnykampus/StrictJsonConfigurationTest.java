@@ -25,7 +25,7 @@ import tools.jackson.databind.module.SimpleModule;
 
 /**
  * Testy W2-1–W2-6: wiązanie ciała JSON nie zamienia typów wartości, odrzuca
- * jawny {@code null} i identyfikator spoza postaci 8-4-4-4-12, a poprawne
+ * jawny {@code null}, znak NUL w napisie i identyfikator spoza postaci 8-4-4-4-12, a poprawne
  * ciało (identyfikator małymi albo wielkimi literami, liczba bez ułamka
  * w polu liczbowym, pole spoza schematu, brak pól nieobowiązkowych) przechodzi.
  * Brakujące pole dostaje wartość braku z deserializatora swojego typu.
@@ -89,6 +89,17 @@ final class StrictJsonConfigurationTest {
             StrictJsonConfigurationTest.outcomes(
                 "{\"accuracyMeters\":null}", "{\"manualCorrection\":null}",
                 "{\"version\":null}", "{\"floorId\":null}", "{\"id\":null}"
+            ),
+            StrictJsonConfigurationTest.allRejected()
+        );
+    }
+
+    @Test
+    void rejectsNulCharacterInText() {
+        MatcherAssert.assertThat(
+            "Znak NUL w polu tekstowym przeszedł",
+            StrictJsonConfigurationTest.outcomes(
+                "{\"floorId\":\"p\\u0000\"}", "{\"floorId\":\"\\u0000\"}"
             ),
             StrictJsonConfigurationTest.allRejected()
         );
