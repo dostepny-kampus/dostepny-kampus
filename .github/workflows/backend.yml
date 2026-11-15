@@ -76,6 +76,9 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/java-serwera
+      - name: Zależności skryptów danych
+        if: ${{ github.event_name != 'push' }}
+        run: python3 -m pip install --no-input -r ../data/requirements.txt
       - name: Testy skryptów danych
         if: ${{ github.event_name != 'push' }}
         working-directory: data/scripts
