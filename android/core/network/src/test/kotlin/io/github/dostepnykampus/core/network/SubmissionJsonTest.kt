@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.network
@@ -38,22 +38,26 @@ class SubmissionJsonTest {
     @Test
     fun br9_new_has_phone_id() {
         val sent = json.parseToJsonElement(json.encodeNewSubmission(id = ID, content = quick)).jsonObject
-        assertEquals("\"$ID\"", sent.getValue("id").toString())
+        assertEquals("\"$ID\"", sent.getValue("id").toString(), "identyfikator telefonu w nowym zgłoszeniu")
         val location = sent.getValue("location").jsonObject
-        assertEquals("[17.06209,51.10785]", location.getValue("coordinates").toString())
+        assertEquals(
+            "[17.06209,51.10785]",
+            location.getValue("coordinates").toString(),
+            "współrzędne w nowym zgłoszeniu",
+        )
     }
 
     @Test
     fun br9_new_omits_empty_fields() {
         val sent = json.parseToJsonElement(json.encodeNewSubmission(id = ID, content = quick)).jsonObject
-        assertFalse("severity" in sent)
-        assertFalse("buildingSymbol" in sent)
+        assertFalse("severity" in sent, "brak ważności w wysyłce")
+        assertFalse("buildingSymbol" in sent, "brak budynku w wysyłce")
     }
 
     @Test
     fun br10_update_has_base_version() {
         val sent = json.parseToJsonElement(json.encodeSubmissionUpdate(version = 2, content = quick)).jsonObject
-        assertEquals("2", sent.getValue("version").toString())
+        assertEquals("2", sent.getValue("version").toString(), "wersja bazowa aktualizacji")
     }
 
     @Test
@@ -76,16 +80,16 @@ class SubmissionJsonTest {
         val sent = json.encodeNewSubmission(id = ID, content = precise)
         val meta = """"version":1,"status":"ACCEPTED","createdAt":"$TIME","verifiedAt":"$TIME","""
         val back = decode(sent.replaceFirst(oldValue = "{", newValue = "{$meta"))
-        assertEquals(precise, back.content)
-        assertEquals(Instant.parse(TIME), back.verifiedAt)
+        assertEquals(precise, back.content, "treść po pełnym obiegu")
+        assertEquals(Instant.parse(TIME), back.verifiedAt, "data weryfikacji po obiegu")
     }
 
     @Test
     fun us8_1_server_submission() {
         val submission = json.decodeSubmission(SERVER)
-        assertEquals(SubmissionStatus.SENT, submission.status)
-        assertEquals(Instant.parse("2026-11-03T18:00:00Z"), submission.createdAt)
-        assertEquals(quick.copy(buildingSymbol = "A-1"), submission.content)
+        assertEquals(SubmissionStatus.SENT, submission.status, "status zgłoszenia z serwera")
+        assertEquals(Instant.parse("2026-11-03T18:00:00Z"), submission.createdAt, "data utworzenia z serwera")
+        assertEquals(quick.copy(buildingSymbol = "A-1"), submission.content, "treść zgłoszenia z serwera")
     }
 
     @Test

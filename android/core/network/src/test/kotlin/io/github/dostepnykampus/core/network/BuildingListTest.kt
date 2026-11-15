@@ -32,8 +32,8 @@ class BuildingListTest {
     @Test
     fun us1_list() {
         val list = json.decodeBuildingList(BUILDING_LIST_JSON)
-        assertEquals("© OpenStreetMap contributors", list.source)
-        assertEquals(listOf(c13(DetailLevel.DETAILED)), list.buildings)
+        assertEquals("© OpenStreetMap contributors", list.source, "źródło danych listy")
+        assertEquals(listOf(c13(DetailLevel.DETAILED)), list.buildings, "budynki z listy")
     }
 
     @Test
@@ -41,10 +41,10 @@ class BuildingListTest {
         val listed = json.decodeBuildingList(BUILDING_LIST_JSON.replace(oldValue = NAME_FIELD, newValue = ""))
         val listedAll = listed.buildings
         val listedBuilding = listedAll.single().building
-        assertEquals(null, listedBuilding.name)
+        assertEquals(null, listedBuilding.name, "brak nazwy budynku na liście")
         val card = json.decodeBuildingDetails(BUILDING_DETAILS_JSON.replace(oldValue = NAME_FIELD, newValue = ""))
         val cardBuilding = card.building
-        assertEquals(null, cardBuilding.name)
+        assertEquals(null, cardBuilding.name, "brak nazwy budynku na karcie")
     }
 
     @Test
@@ -52,17 +52,17 @@ class BuildingListTest {
         val listed = json.decodeBuildingList(BUILDING_LIST_JSON.replace(oldValue = NAME, newValue = "C-13"))
         val listedAll = listed.buildings
         val listedBuilding = listedAll.single().building
-        assertEquals("C-13", listedBuilding.name)
+        assertEquals("C-13", listedBuilding.name, "nazwa-symbol na liście")
         val card = json.decodeBuildingDetails(BUILDING_DETAILS_JSON.replace(oldValue = NAME, newValue = "C-3/C-4"))
         val cardBuilding = card.building
-        assertEquals("C-3/C-4", cardBuilding.name)
+        assertEquals("C-3/C-4", cardBuilding.name, "nazwa-symbol na karcie")
     }
 
     @Test
     fun us2_building_with_entrance() {
         val card = json.decodeBuildingDetails(BUILDING_DETAILS_JSON)
-        assertEquals(c13(DetailLevel.BASIC).building, card.building)
-        assertEquals(DetailLevel.BASIC, card.detailLevel)
+        assertEquals(c13(DetailLevel.BASIC).building, card.building, "budynek z karty")
+        assertEquals(DetailLevel.BASIC, card.detailLevel, "poziom szczegółowości karty")
         assertEquals(
             Entrance(
                 id = "c13-main",
@@ -75,6 +75,7 @@ class BuildingListTest {
                 assessment = EntranceAssessment(LocalDate.of(2026, 10, 1), AssessmentSource.IMPORT),
             ),
             card.entrances.single(),
+            "wejście z karty",
         )
     }
 
@@ -86,16 +87,24 @@ class BuildingListTest {
                     """"location":{"type":"Point","coordinates":[17,51]},"marking":"NO_DATA",""" +
                     """"markingDate":"2026-11-03","markingSource":"IMPORT"}""",
             ).entrances.single()
-        assertEquals(null, entrance.name)
-        assertEquals("emergency", entrance.type)
+        assertEquals(null, entrance.name, "brak nazwy wejścia")
+        assertEquals("emergency", entrance.type, "typ wejścia")
     }
 
     @Test
     fun us6_2_locate() {
         val inside = json.decodeLocateResult("""{"buildingSymbol":"C-13","insideOutline":true}""")
-        assertEquals(BuildingAtPoint(buildingSymbol = "C-13", isInsideOutline = true), inside)
+        assertEquals(
+            BuildingAtPoint(buildingSymbol = "C-13", isInsideOutline = true),
+            inside,
+            "budynek w punkcie wewnątrz obrysu",
+        )
         val outside = json.decodeLocateResult("""{"insideOutline":false}""")
-        assertEquals(BuildingAtPoint(buildingSymbol = null, isInsideOutline = false), outside)
+        assertEquals(
+            BuildingAtPoint(buildingSymbol = null, isInsideOutline = false),
+            outside,
+            "brak budynku poza obrysem",
+        )
     }
 
     @Test

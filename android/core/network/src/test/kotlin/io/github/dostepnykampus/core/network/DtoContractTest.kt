@@ -55,7 +55,7 @@ class DtoContractTest {
     @Test
     fun d1_detects_hand_written_dto() {
         val checked = listOf(HandWrittenDto::class.java, Submission::class.java, BuildingsApi::class.java)
-        assertEquals(listOf(true, false, false), checked.map(::isHandWrittenDto))
+        assertEquals(listOf(true, false, false), checked.map(::isHandWrittenDto), "rozpoznanie ręcznych klas DTO")
     }
 
     @Test
@@ -73,7 +73,7 @@ class DtoContractTest {
                 val outside = json.parseToJsonElement(body).jsonObject.keys - allowed
                 spec.violations(pointer, body) + outside.map { "pole żądania '$it' poza schematem" }
             }
-        assertEquals(emptyList<String>(), problems)
+        assertEquals(emptyList<String>(), problems, "naruszenia schematu żądań")
     }
 
     @Test
@@ -90,7 +90,7 @@ class DtoContractTest {
                 val body = spec.sample(spec.node("/components/schemas/$schema")).toString()
                 runCatching { decode(body) }.exceptionOrNull()?.let { "$schema: ${it.message.orEmpty()}" }
             }
-        assertEquals(emptyList<String>(), problems)
+        assertEquals(emptyList<String>(), problems, "odpowiedzi budynków niezgodne z kontraktem")
     }
 
     @Test
@@ -110,7 +110,7 @@ class DtoContractTest {
                 "$name: model $model, kontrakt $contract"
                     .takeIf { model.toSet() != contract.toSet() }
             }
-        assertEquals(emptyList<String>(), problems)
+        assertEquals(emptyList<String>(), problems, "wartości wyliczeń modelu i kontraktu")
     }
 
     @Test
@@ -129,7 +129,7 @@ class DtoContractTest {
             bodies.mapNotNull { (schema, decode) ->
                 runCatching { decode() }.exceptionOrNull()?.let { "$schema: ${it.message.orEmpty()}" }
             }
-        assertEquals(emptyList<String>(), problems)
+        assertEquals(emptyList<String>(), problems, "odpowiedzi zgłoszeń niezgodne z kontraktem")
     }
 
     private fun isHandWrittenDto(type: Class<*>): Boolean =

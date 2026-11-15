@@ -58,17 +58,17 @@ class FirstLaunchViewModelTest {
     @Test
     fun readsFirstLaunchOnce() {
         val start = FirstLaunchViewModel(firstLaunch)
-        assertEquals(true, start.firstLaunchState.value)
-        assertEquals(true, start.firstLaunchState.value)
-        assertEquals(1, reads)
+        assertEquals(true, start.firstLaunchState.value, "pierwsze uruchomienie")
+        assertEquals(true, start.firstLaunchState.value, "pierwsze uruchomienie bez ponownego odczytu")
+        assertEquals(1, reads, "jeden odczyt")
     }
 
     @Test
     fun savesHelpSeen() {
         val start = FirstLaunchViewModel(firstLaunch)
         start.markHelpSeen()
-        assertEquals(true, isHelpSeen)
-        assertEquals(false, FirstLaunchViewModel(firstLaunch).firstLaunchState.value)
+        assertEquals(true, isHelpSeen, "zapamiętany znacznik pomocy")
+        assertEquals(false, FirstLaunchViewModel(firstLaunch).firstLaunchState.value, "koniec pierwszego uruchomienia")
     }
 
     @Test
@@ -80,7 +80,7 @@ class FirstLaunchViewModelTest {
                 override suspend fun markHelpSeen() = Unit
             }
 
-        assertEquals(false, FirstLaunchViewModel(broken).firstLaunchState.value)
+        assertEquals(false, FirstLaunchViewModel(broken).firstLaunchState.value, "pomoc pominięta po błędzie")
     }
 
     @Test
@@ -114,6 +114,6 @@ class FirstLaunchViewModelTest {
         ViewModelProvider.create(store, factory)[FirstLaunchViewModel::class].markHelpSeen()
         store.clear()
         saving.complete(Unit)
-        assertEquals(true, isHelpSeen)
+        assertEquals(true, isHelpSeen, "zapis po zamknięciu modelu")
     }
 }

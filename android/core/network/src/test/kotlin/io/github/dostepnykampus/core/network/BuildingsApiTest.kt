@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Yevhenii Lukianenko
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.network
@@ -49,19 +49,19 @@ class BuildingsApiTest {
     fun us1_list() {
         enqueue(HTTP_OK, BUILDING_LIST_JSON)
         val list = json.decodeBuildingList(BUILDING_LIST_JSON)
-        assertEquals(ApiResult.Success(list), blocking { listBuildings() })
+        assertEquals(ApiResult.Success(list), blocking { listBuildings() }, "lista budynków z serwera")
         val recorded = server.takeRequest()
-        assertEquals("GET", recorded.method)
-        assertEquals("/buildings", recorded.path)
-        assertEquals(JSON, recorded.getHeader("Accept"))
+        assertEquals("GET", recorded.method, "metoda żądania listy")
+        assertEquals("/buildings", recorded.path, "adres listy")
+        assertEquals(JSON, recorded.getHeader("Accept"), "nagłówek Accept")
     }
 
     @Test
     fun us2_building() {
         enqueue(HTTP_OK, BUILDING_DETAILS_JSON)
         val card = json.decodeBuildingDetails(BUILDING_DETAILS_JSON)
-        assertEquals(ApiResult.Success(card), blocking { building("C-13") })
-        assertEquals("/buildings/C-13", server.takeRequest().path)
+        assertEquals(ApiResult.Success(card), blocking { building("C-13") }, "karta budynku z serwera")
+        assertEquals("/buildings/C-13", server.takeRequest().path, "adres karty")
     }
 
     @Test
@@ -69,11 +69,15 @@ class BuildingsApiTest {
         enqueue(HTTP_OK, """{"buildingSymbol":"C-13","insideOutline":true}""")
         val inside = blocking { locate(latitude = 51.0, longitude = 17.0) }
         val expected = json.decodeLocateResult("""{"buildingSymbol":"C-13","insideOutline":true}""")
-        assertEquals(ApiResult.Success(expected), inside)
-        assertEquals("/buildings/locate?lat=51.0&lon=17.0", server.takeRequest().path)
+        assertEquals(ApiResult.Success(expected), inside, "budynek w punkcie")
+        assertEquals("/buildings/locate?lat=51.0&lon=17.0", server.takeRequest().path, "adres wyszukania budynku")
         enqueue(HTTP_OK, """{"insideOutline":false}""")
         val outside = json.decodeLocateResult("""{"insideOutline":false}""")
-        assertEquals(ApiResult.Success(outside), blocking { locate(latitude = 51.0, longitude = 17.0) })
+        assertEquals(
+            ApiResult.Success(outside),
+            blocking { locate(latitude = 51.0, longitude = 17.0) },
+            "brak budynku w punkcie",
+        )
     }
 
     @Test
@@ -83,10 +87,14 @@ class BuildingsApiTest {
         val lowest =
             listOf("c13-p" to "Piwnica", "c13-0" to "Parter", "c13-1" to "1 piętro")
                 .mapIndexed { index, (id, label) -> Floor(id = id, label = label, order = index - 1) }
-        assertEquals(ApiResult.Success(FloorList(source = "Politechnika Wrocławska", floors = lowest)), floors)
-        assertEquals("/buildings/C-13/floors", server.takeRequest().path)
+        assertEquals(
+            ApiResult.Success(FloorList(source = "Politechnika Wrocławska", floors = lowest)),
+            floors,
+            "lista pięter z serwera",
+        )
+        assertEquals("/buildings/C-13/floors", server.takeRequest().path, "adres listy pięter")
         enqueue(code = HTTP_NOT_FOUND, body = """{"status":404}""", contentType = PROBLEM)
-        assertEquals(ApiResult.NotFound, blocking { floors("C-99") })
+        assertEquals(ApiResult.NotFound, blocking { floors("C-99") }, "brak budynku dla pięter")
     }
 
     @Test
@@ -96,39 +104,45 @@ class BuildingsApiTest {
             body = """{"type":"about:blank","title":"Not Found","status":404}""",
             contentType = PROBLEM,
         )
-        assertEquals(ApiResult.NotFound, blocking { building("C-99") })
+        assertEquals(ApiResult.NotFound, blocking { building("C-99") }, "brak budynku na serwerze")
     }
 
     @Test
     fun malformed_json() {
         enqueue(HTTP_OK, "{")
-        val error = assertInstanceOf(ApiResult.ServerError::class.java, blocking { listBuildings() })
-        assertEquals(HTTP_OK, error.code)
-        assertInstanceOf(IllegalArgumentException::class.java, error.cause)
+        val failed = blocking { listBuildings() }
+        val error = assertInstanceOf(ApiResult.ServerError::class.java, failed, "błąd serwera dla złego JSON")
+        assertEquals(HTTP_OK, error.code, "kod błędu złego JSON")
+        assertInstanceOf(IllegalArgumentException::class.java, error.cause, "przyczyna złego JSON")
     }
 
     @Test
     fun us1_outline_not_polygon() {
         val line = """{"type":"LineString","coordinates":[[17,51],[18,51]]}"""
         enqueue(HTTP_OK, BUILDING_LIST_JSON.replace(oldValue = BUILDING_OUTLINE_JSON, newValue = line))
-        val error = assertInstanceOf(ApiResult.ServerError::class.java, blocking { listBuildings() })
-        assertEquals(HTTP_OK, error.code)
-        assertInstanceOf(IllegalArgumentException::class.java, error.cause)
+        val failed = blocking { listBuildings() }
+        val error = assertInstanceOf(ApiResult.ServerError::class.java, failed, "błąd serwera dla obrysu")
+        assertEquals(HTTP_OK, error.code, "kod błędu obrysu")
+        assertInstanceOf(IllegalArgumentException::class.java, error.cause, "przyczyna błędu obrysu")
     }
 
     @Test
     fun connection_dropped() {
         server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START))
-        assertInstanceOf(ApiResult.NetworkError::class.java, blocking { listBuildings() })
+        assertInstanceOf(
+            ApiResult.NetworkError::class.java,
+            blocking { listBuildings() },
+            "błąd sieci po zerwaniu połączenia",
+        )
     }
 
     @Test
     fun server_error() {
         enqueue(HTTP_INTERNAL_ERROR, """{"status":500}""")
         val failed = blocking { locate(latitude = 51.0, longitude = 17.0) }
-        val error = assertInstanceOf(ApiResult.ServerError::class.java, failed)
-        assertEquals(HTTP_INTERNAL_ERROR, error.code)
-        assertNull(error.cause)
+        val error = assertInstanceOf(ApiResult.ServerError::class.java, failed, "błąd serwera dla kodu 500")
+        assertEquals(HTTP_INTERNAL_ERROR, error.code, "kod odpowiedzi serwera")
+        assertNull(error.cause, "brak przyczyny błędu serwera")
     }
 
     private fun api(): BuildingsApi =
