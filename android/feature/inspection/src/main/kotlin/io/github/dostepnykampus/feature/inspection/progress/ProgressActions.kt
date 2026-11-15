@@ -9,6 +9,7 @@ package io.github.dostepnykampus.feature.inspection.progress
  * Czynności ekranu K1.
  *
  * Wymagania: US11.3
+ * TODO(#1843): trasa C5 Koordynatora, do której prowadzi „Otwórz”.
  *
  * @property onBack „Wstecz” i „Wróć do mapy”
  * @property onOpen „Otwórz” przy budynku: C5 Koordynatora; argument to symbol budynku

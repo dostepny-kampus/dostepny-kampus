@@ -2,6 +2,15 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pl">
     <string name="postep_naglowek">Postęp inwentaryzacji</string>
     <string name="postep_wczytujemy">Wczytujemy postęp…</string>
+    <string name="postep_stan_z">Stan z %1$s</string>
+    <string name="postep_odswiez">Odśwież</string>
+    <string name="postep_pietra">%1$d z %2$d pięter, %3$d%%</string>
+    <string name="postep_obejrzany">Obejrzany</string>
+    <string name="postep_nieobejrzany">Nieobejrzany</string>
+    <string name="postep_czeka">Czeka na sprawdzenie: %1$d</string>
+    <string name="postep_przyjete">Przyjęte: %1$d</string>
+    <string name="postep_wejscia">Wejścia sprawdzone na miejscu: %1$d z %2$d</string>
+    <string name="postep_otworz">Otwórz</string>
     <string name="postep_bez_internetu">Bez internetu</string>
     <string name="postep_wymaga_internetu">Ta czynność wymaga internetu. Połącz się z internetem i spróbuj ponownie.</string>
     <string name="postep_blad_serwera">Serwer chwilowo nie odpowiada. Spróbuj ponownie za kilka minut.</string>

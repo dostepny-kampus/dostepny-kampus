@@ -8,11 +8,14 @@ package io.github.dostepnykampus.feature.inspection.progress
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -47,8 +50,7 @@ fun ProgressScreen(
 }
 
 /**
- * Widok K1 bez modelu widoku: wczytywanie, bez internetu, błąd serwera i brak uprawnień.
- * TODO(#2121): lista budynków dla stanu [ProgressUiState.Ready].
+ * Widok K1 bez modelu widoku: lista budynków, wczytywanie, bez internetu, błąd serwera i brak uprawnień.
  *
  * Wymagania: US11.1, US11.2, NFR-50
  *
@@ -68,7 +70,7 @@ fun ProgressContent(
         BackHeader(title = stringResource(R.string.postep_naglowek), onBack = actions.onBack)
         when (state) {
             ProgressUiState.Loading -> Loading()
-            is ProgressUiState.Ready -> Unit
+            is ProgressUiState.Ready -> BuildingList(state = state, onOpen = actions.onOpen, onRefresh = onRefresh)
             ProgressUiState.Offline -> Failure(Problem.OFFLINE, onRefresh)
             ProgressUiState.ServerError -> Failure(Problem.SERVER, onRefresh)
             ProgressUiState.Forbidden -> Failure(Problem.FORBIDDEN, actions.onBack)
@@ -100,5 +102,15 @@ private fun Failure(problem: Problem, onAction: () -> Unit) {
         problem.headline?.let { Text(stringResource(it), style = MaterialTheme.typography.titleMedium) }
         Text(stringResource(problem.message), style = MaterialTheme.typography.bodyLarge)
         Button(onClick = onAction) { Text(stringResource(problem.action)) }
+    }
+}
+
+@Composable
+private fun BuildingList(state: ProgressUiState.Ready, onOpen: (String) -> Unit, onRefresh: () -> Unit) {
+    LazyColumn(contentPadding = PaddingValues(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.m)) {
+        item { ReadLine(readAt = state.readAt, isRefreshing = state.isRefreshing, onRefresh = onRefresh) }
+        items(state.buildings, key = { it.buildingSymbol }) { building ->
+            BuildingCard(building = building, onOpen = { onOpen(building.buildingSymbol) })
+        }
     }
 }
