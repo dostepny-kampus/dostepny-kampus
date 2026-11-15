@@ -217,15 +217,14 @@ final class SubmissionsReadHttpIT {
                 "Próg przy wejściu", row.photo()
             )
         );
-        context.getBean(JdbcClient.class)
-            .sql(
-                """
-                UPDATE submissions SET created_at = CAST(:created AS TIMESTAMPTZ),
-                    verified_at = CASE WHEN status = 'ACCEPTED'
-                        THEN CAST(:verified AS TIMESTAMPTZ) END
-                WHERE id = :id
-                """
-            ).param("created", SubmissionsReadHttpIT.CREATED)
+        context.getBean(JdbcClient.class).sql(
+            """
+            UPDATE submissions SET created_at = CAST(:created AS TIMESTAMPTZ),
+                verified_at = CASE WHEN status = 'ACCEPTED'
+                    THEN CAST(:verified AS TIMESTAMPTZ) END
+            WHERE id = :id
+            """
+        ).param("created", SubmissionsReadHttpIT.CREATED)
             .param("verified", SubmissionsReadHttpIT.VERIFIED).param("id", row.id()).update();
         return row;
     }
