@@ -49,7 +49,7 @@ class MapMotion {
      * Przesuwa [value] do [target] razem z pierwszym ruchem mapy po ruchu numer [after] (wartość [moves] z chwili,
      * gdy element zaczął się zmieniać): w czasie tego ruchu i po [Easing]. Bez ruchu w ciągu [MOVE_WAIT_MILLIS]
      * zegara klatek przesuwa po [fallback]. Czas ruchu ma już skalę animacji systemu, więc nie jest skalowany
-     * drugi raz.
+     * drugi raz; ruch bez czasu stawia [value] od razu w [target].
      */
     suspend fun slide(
         value: Animatable<Float, AnimationVector1D>,
@@ -57,15 +57,18 @@ class MapMotion {
         after: Int,
         fallback: AnimationSpec<Float>,
     ) {
-        if (!awaitMove(after)) {
-            value.animateTo(targetValue = target, animationSpec = fallback)
-        } else {
-            val spec = tween<Float>(durationMillis = durationMillis.toInt(), easing = Easing)
-            withContext(MoveTimeScale) { value.animateTo(targetValue = target, animationSpec = spec) }
+        when {
+            !awaitMove(after) -> value.animateTo(targetValue = target, animationSpec = fallback)
+            durationMillis == 0L -> value.snapTo(target)
+            else -> {
+                val spec = tween<Float>(durationMillis = durationMillis.toInt(), easing = Easing)
+                withContext(MoveTimeScale) { value.animateTo(targetValue = target, animationSpec = spec) }
+            }
         }
     }
 
     private suspend fun awaitMove(after: Int): Boolean {
+        if (moves > after) return true
         val start = withFrameMillis { it }
         while (moves <= after) {
             if (withFrameMillis { it } - start >= MOVE_WAIT_MILLIS) return false
