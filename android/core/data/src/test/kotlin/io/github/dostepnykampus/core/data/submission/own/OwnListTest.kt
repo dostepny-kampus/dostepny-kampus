@@ -52,10 +52,10 @@ class OwnListTest {
             val list = ownSubmissionsOf(history, store).observe().first()
 
             val item = list.single()
-            assertEquals(PRECISE_ID, item.id)
-            assertEquals("TB-13", item.barrierType)
-            assertEquals("C-13", item.buildingSymbol)
-            assertEquals(listOf(QUICK_ID), store.created)
+            assertEquals(PRECISE_ID, item.id, "lista pokazuje zgłoszenie dokładne")
+            assertEquals("TB-13", item.barrierType, "typ bariery z zapisu")
+            assertEquals("C-13", item.buildingSymbol, "symbol budynku z zapisu")
+            assertEquals(listOf(QUICK_ID), store.created, "szybkie zgłoszenie idzie do wysyłki")
         }
 
     /**
@@ -73,8 +73,8 @@ class OwnListTest {
 
             val item = ownSubmissionsOf(history, store).observe().first().single()
 
-            assertEquals(SendState.SENT, item.state)
-            assertTrue(item.isChangeWaiting)
+            assertEquals(SendState.SENT, item.state, "wysłane zgłoszenie pokazuje stan Wysłane")
+            assertTrue(item.isChangeWaiting, "poprawka bez sieci czeka na wysyłkę")
         }
 
     @Test
@@ -85,7 +85,7 @@ class OwnListTest {
             queue.sendAll()
 
             val listed = ownSubmissionsOf(history, store).observe().first()
-            assertFalse(listed.single().isChangeWaiting)
+            assertFalse(listed.single().isChangeWaiting, "bez poprawki nic nie czeka")
         }
 
     private fun queue(): SubmissionQueue =

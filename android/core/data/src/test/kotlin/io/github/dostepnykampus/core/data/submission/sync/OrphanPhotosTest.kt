@@ -48,7 +48,7 @@ class OrphanPhotosTest {
 
             queue.deleteOrphanPhotos(dir = tempDir, kept = emptySet())
 
-            assertTrue(file.exists())
+            assertTrue(file.exists(), "zdjęcie oczekujące w kolejce zostaje")
         }
 
     @Test
@@ -58,7 +58,7 @@ class OrphanPhotosTest {
 
             queue.deleteOrphanPhotos(dir = tempDir, kept = setOf(file.path))
 
-            assertTrue(file.exists())
+            assertTrue(file.exists(), "zdjęcie odtworzonego szkicu zostaje")
         }
 
     @Test
@@ -68,7 +68,7 @@ class OrphanPhotosTest {
 
             queue.deleteOrphanPhotos(dir = tempDir, kept = emptySet())
 
-            assertFalse(file.exists())
+            assertFalse(file.exists(), "zdjęcie bez właściciela jest usunięte")
         }
 
     @Test
@@ -79,7 +79,7 @@ class OrphanPhotosTest {
 
             queue.deleteOrphanPhotos(dir = tempDir, kept = emptySet())
 
-            assertTrue(file.exists())
+            assertTrue(file.exists(), "świeże zdjęcie zostaje")
         }
 
     private fun oldPhoto(id: String): File =

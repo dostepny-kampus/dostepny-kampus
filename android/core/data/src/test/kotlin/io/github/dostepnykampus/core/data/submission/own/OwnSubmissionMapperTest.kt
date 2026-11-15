@@ -30,7 +30,7 @@ class OwnSubmissionMapperTest {
                 ServerReply.Offline,
             ).map { refusalCodeOf(it) }
 
-        assertEquals(listOf(422, 404, 409, null, null), codes)
+        assertEquals(listOf(422, 404, 409, null, null), codes, "kody odmowy z odpowiedzi serwera")
     }
 
     /** 403 to brak uprawnień, 409 konflikt wersji, inne kody to nieprzyjęte, brak kodu to nieodczytane. */
@@ -40,8 +40,8 @@ class OwnSubmissionMapperTest {
 
         val others = List(4) { RefusalReason.NOT_ACCEPTED }
         val expected = listOf(RefusalReason.NO_PERMISSION, RefusalReason.CHANGED_ON_SERVER) + others
-        assertEquals(expected + RefusalReason.UNREADABLE, reasons)
-        assertEquals(null, refusalReasonOf(OwnSubmissionState.SENT, 403))
+        assertEquals(expected + RefusalReason.UNREADABLE, reasons, "powód odmowy zależy od kodu")
+        assertEquals(null, refusalReasonOf(OwnSubmissionState.SENT, 403), "wysłane zgłoszenie nie ma powodu odmowy")
     }
 
     @Test
@@ -54,7 +54,7 @@ class OwnSubmissionMapperTest {
                 ServerReply.Missing,
             ).map { versionOf(it) }
 
-        assertEquals(listOf(7, 7, null, null), versions)
+        assertEquals(listOf(7, 7, null, null), versions, "wersja tylko z przyjętych odpowiedzi")
     }
 }
 

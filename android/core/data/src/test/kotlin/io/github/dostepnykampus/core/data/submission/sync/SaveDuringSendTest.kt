@@ -49,10 +49,10 @@ class SaveDuringSendTest {
             queue.save(precise("p1"), photo(tempDir, "p1"))
             saveDuringSend = { queue.save(precise("p2"), photo(tempDir, "p2")) }
 
-            assertTrue(queue.sendAll())
+            assertTrue(queue.sendAll(), "przebieg wysyłki kończy się powodzeniem")
 
-            assertEquals(listOf(FIRST, SECOND), created)
-            assertEquals(emptyList<Any>(), store.rows)
+            assertEquals(listOf(FIRST, SECOND), created, "oba zgłoszenia idą w jednym przebiegu")
+            assertEquals(emptyList<Any>(), store.rows, "kolejka po wysyłce jest pusta")
         }
 
     private companion object {

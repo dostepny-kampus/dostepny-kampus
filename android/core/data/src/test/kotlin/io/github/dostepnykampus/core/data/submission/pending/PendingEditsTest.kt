@@ -48,7 +48,11 @@ class PendingEditsTest {
 
             val edit = edits.load(ID)
 
-            assertEquals(PendingEdit(EditedSubmission(ID, baseVersion = null), precise(), photos()), edit)
+            assertEquals(
+                PendingEdit(EditedSubmission(ID, baseVersion = null), precise(), photos()),
+                edit,
+                "poprawka wczytana z kolejki to zapisane zgłoszenie",
+            )
         }
 
     @Test
@@ -56,7 +60,11 @@ class PendingEditsTest {
         runBlocking {
             queue.saveEdit(EditedSubmission(ID, baseVersion = 4), precise(), photos())
 
-            assertEquals(EditedSubmission(ID, baseVersion = 4), checkNotNull(edits.load(ID)).edited)
+            assertEquals(
+                EditedSubmission(ID, baseVersion = 4),
+                checkNotNull(edits.load(ID)).edited,
+                "wersja bazowa zostaje z zapisu",
+            )
         }
 
     @Test
@@ -65,13 +73,13 @@ class PendingEditsTest {
             queue.save(precise(), photos())
             store.markRefused(ID)
 
-            assertEquals(precise(), edits.load(ID)?.content)
+            assertEquals(precise(), edits.load(ID)?.content, "odrzucone zgłoszenie można poprawić")
         }
 
     @Test
     fun givesNullWhenNotOnPhone() =
         runBlocking {
-            assertNull(edits.load(ID))
+            assertNull(edits.load(ID), "nie ma poprawki dla zgłoszenia spoza telefonu")
         }
 
     private fun photos(): List<PendingPhotoDraft> =

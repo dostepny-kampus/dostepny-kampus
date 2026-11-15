@@ -42,7 +42,7 @@ class QueueTransactionTest {
 
             assertThrows<IllegalStateException> { runBlocking { queue().save(precise(PHOTO), photo(tempDir, PHOTO)) } }
 
-            assertEquals(emptyList<Any>(), store.rows)
+            assertEquals(emptyList<Any>(), store.rows, "nieudany zapis nie zostawia wiersza")
         }
 
     @Test
@@ -54,7 +54,7 @@ class QueueTransactionTest {
             assertThrows<IllegalStateException> { runBlocking { queue().sendAll() } }
 
             val row = store.rows.single()
-            assertFalse(row.submission.isCreatedOnServer)
+            assertFalse(row.submission.isCreatedOnServer, "bez zapisanej wersji zgłoszenie nie jest utworzone")
         }
 
     @Test
@@ -66,8 +66,8 @@ class QueueTransactionTest {
             assertThrows<IllegalStateException> { runBlocking { queue().sendAll() } }
 
             val row = store.rows.single()
-            assertEquals(ID, row.submission.id)
-            assertEquals(OwnSubmissionState.LOCAL, history.rows.getValue(ID).state)
+            assertEquals(ID, row.submission.id, "wiersz zostaje w kolejce")
+            assertEquals(OwnSubmissionState.LOCAL, history.rows.getValue(ID).state, "historia zostaje lokalna")
         }
 
     private fun queue(): SubmissionQueue =

@@ -60,9 +60,9 @@ class ConflictEditTest {
             queue.sendAll()
 
             val row = history.rows.getValue(ID)
-            assertEquals(OwnSubmissionState.REFUSED, row.state)
-            assertEquals(409, row.refusalCode)
-            assertEquals(7, row.serverVersion)
+            assertEquals(OwnSubmissionState.REFUSED, row.state, "konflikt oznacza zgłoszenie jako odrzucone")
+            assertEquals(409, row.refusalCode, "kod odmowy to 409")
+            assertEquals(7, row.serverVersion, "telefon pamięta wersję z serwera")
 
             val dao =
                 object : PendingEditDao {
@@ -70,12 +70,16 @@ class ConflictEditTest {
                         store.rows.find { it.submission.id == id }
                 }
             val reopened = checkNotNull(pendingEditsOf(dao).load(ID))
-            assertEquals(7, reopened.edited.baseVersion)
+            assertEquals(7, reopened.edited.baseVersion, "ponowna poprawka idzie od wersji z serwera")
             queue.saveEdit(reopened.edited, reopened.content.copy(severity = 1), reopened.photos)
             queue.sendAll()
 
-            assertEquals(listOf(4, 7), versions)
-            assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state)
+            assertEquals(listOf(4, 7), versions, "wersje bazowe kolejnych edycji")
+            assertEquals(
+                OwnSubmissionState.SENT,
+                history.rows.getValue(ID).state,
+                "poprawka po konflikcie jest wysłana",
+            )
         }
 
     private companion object {
