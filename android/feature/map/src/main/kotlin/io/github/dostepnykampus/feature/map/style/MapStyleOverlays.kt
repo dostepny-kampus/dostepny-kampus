@@ -23,7 +23,7 @@ import org.maplibre.spatialk.geojson.Point
 import org.maplibre.spatialk.geojson.Polygon
 import org.maplibre.spatialk.geojson.Position
 
-/** Źródło stylu z geometrią terenu: przyciemnienie i linia granicy. Wymagania: US1.7, BR-G5 */
+/** Źródło stylu z geometrią terenu: obszar poza granicą i linia granicy. Wymagania: US1.7, BR-G5 */
 internal const val AREA_SOURCE = "teren"
 
 /** Źródło stylu z punktem zaznaczonego wejścia. Wymagania: US3.3 */
@@ -31,10 +31,7 @@ internal const val CHOSEN_SOURCE = "wejscie"
 
 private const val CAPTION_OFFSET_DP = ENTRANCE_MARK_DP / 2 + 2
 private const val EDGE_WIDTH = 2.0
-private const val DAY_DIM = "#3B4950"
-private const val DAY_DIM_OPACITY = 0.5
-private const val NIGHT_DIM = "#000000"
-private const val NIGHT_DIM_OPACITY = 0.6
+private const val HALO_WIDTH = 1.5
 private val WORLD_RING = listOf(-180.0 to -85.0, 180.0 to -85.0, 180.0 to 85.0, -180.0 to 85.0, -180.0 to -85.0)
 
 /**
@@ -58,20 +55,34 @@ internal fun areaFeatures(boundary: GeoArea?, bounds: CampusBounds): List<Featur
     return listOf(Feature(outside, null)) + holes + lines
 }
 
-/** Warstwy terenu: przyciemnienie poza granicą, osobne dla motywu ciemnego, i linia granicy. Wymagania: US1.7, BR-G5 */
+/**
+ * Warstwy terenu: kolor [MapStyleColors.outside] poza granicą, a na granicy linia z obwódką pod spodem.
+ *
+ * Wymagania: US1.7, BR-G5, NFR-16
+ */
 internal fun areaLayers(colors: MapStyleColors): List<JsonObject> {
     val shape = expression("geometry-type")
     val outside =
         styleLayer(id = OUTSIDE_LAYER, type = "fill", source = AREA_SOURCE) {
             put(key = "filter", element = expression("==", shape, JsonPrimitive("Polygon")))
             paint(
-                "fill-color" to JsonPrimitive(if (colors.isNight) NIGHT_DIM else DAY_DIM),
-                "fill-opacity" to JsonPrimitive(if (colors.isNight) NIGHT_DIM_OPACITY else DAY_DIM_OPACITY),
+                "fill-color" to JsonPrimitive(colors.outside),
+                "fill-opacity" to JsonPrimitive(colors.outsideOpacity),
             )
         }
     val line = expression("==", shape, JsonPrimitive("LineString"))
-    val edge = lineLayer(id = EDGE_LAYER, source = AREA_SOURCE, color = colors.ink, width = EDGE_WIDTH, filter = line)
-    return listOf(outside, edge)
+    val haloWidth = EDGE_WIDTH + 2 * HALO_WIDTH
+    return listOf(
+        outside,
+        lineLayer(
+            id = EDGE_HALO_LAYER,
+            source = AREA_SOURCE,
+            color = colors.edgeHalo,
+            width = haloWidth,
+            filter = line,
+        ),
+        lineLayer(id = EDGE_LAYER, source = AREA_SOURCE, color = colors.edge, width = EDGE_WIDTH, filter = line),
+    )
 }
 
 /** Punkt zaznaczonego wejścia [chosen] z nazwą i obrazem podpisu. Wymagania: US3.3 */

@@ -38,10 +38,10 @@ class CampusMapStyleTest {
     @Test
     fun drawsOutlinesOverBasemap() {
         val layers = style.array("layers").map { it.jsonObject }
-        val below = listOf("lad", "osm", BUILDINGS_LAYER, "kontury") + PLAN + listOf(SELECTED_LAYER, ENTRANCES_LAYER)
-        val barriers = listOf(BARRIER_WORDS_LAYER, BARRIERS_LAYER)
-        val above = listOf("podpisy", CHOSEN_BARRIER_LAYER, OUTSIDE_LAYER, EDGE_LAYER)
-        val expected = below + barriers + above + listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
+        val below = listOf("lad", "osm", BUILDINGS_LAYER, "kontury") + PLAN + listOf(SELECTED_LAYER)
+        val area = listOf(OUTSIDE_LAYER, EDGE_HALO_LAYER, EDGE_LAYER)
+        val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)
+        val expected = below + area + marks + listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
         assertEquals(expected, layers.map { it.text("id") })
         assertEquals("#E8EDEE", layers.first().obj("paint").text("background-color"))
     }
@@ -80,30 +80,37 @@ class CampusMapStyleTest {
     }
 
     /**
-     * Wiersz: V1, obszar poza terenem jest przyciemniony, a granicę pokazuje linia: wielokąt
-     * przyciemnienia ma otwór o brzegach terenu, a linia biegnie po tych samych brzegach.
+     * Wiersz: V1, poza terenem na mapę pada kolor tła z kryciem z tokenów, a granicę pokazuje linia z obwódką pod
+     * spodem: wielokąt poza terenem ma otwór o brzegach terenu, a obie linie biegną po tych samych brzegach. Bez
+     * granicy z pliku brzegiem jest prostokąt terenu.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Mapa nie wychodzi poza wybrany teren
+     * Scenariusz: przegladanie-mapy.feature: Poza granicą terenu podkład jest wyblakły, a granicę pokazuje linia
      *
-     * Wymagania: US1.7, BR-G5
+     * Wymagania: US1.7, BR-G5, NFR-16
      */
     @Test
-    fun dimsOutsideWithEdgeLine() {
+    fun fadesOutsideWithEdgeLine() {
         val bounds = CampusBounds(west = 16.9, south = 59.9, east = 17.1, north = 60.1)
-        val json = styled(MapSelection(bounds = bounds), colors.copy(ink = "#111111"))
-        val styled = Json.parseToJsonElement(json).jsonObject
+        val look = colors.copy(edge = "#111111", edgeHalo = "#FFFFFF", outside = "#FAFAFA", outsideOpacity = 0.75)
+        val styled = Json.parseToJsonElement(styled(MapSelection(bounds = bounds), look)).jsonObject
         val area = styled.obj("sources").obj("teren")
-        val listed = area.obj("data").array("features")
-        val features = listed.map { it.jsonObject }
-        val outside = features.first().obj("geometry")
-        val hole = outside.array("coordinates")[1].jsonArray
-        val line = features.last().obj("geometry")
-        val edge = line.array("coordinates")
+        val features = area.obj("data").array("features").map { it.jsonObject }
+        val outsideShape = features.first().obj("geometry")
+        val hole = outsideShape.array("coordinates")[1].jsonArray
+        val edge = features.last().obj("geometry").array("coordinates")
         val corners = setOf(listOf(16.9, 59.9), listOf(17.1, 59.9), listOf(17.1, 60.1), listOf(16.9, 60.1))
         assertEquals(corners, hole.map { point -> point.jsonArray.map { it.jsonPrimitive.double } }.toSet())
-        assertEquals(hole.reversed(), edge.toList())
-        val layers = styled.array("layers").map { it.jsonObject }
-        assertEquals(0.5, layers.single { it.text("id") == OUTSIDE_LAYER }.obj("paint").number("fill-opacity"))
-        assertEquals("#111111", layers.single { it.text("id") == EDGE_LAYER }.obj("paint").text("line-color"))
+        assertEquals(hole.reversed(), edge.toList(), "Linia biegnie po brzegu otworu")
+        val paints = styled.array("layers").map { it.jsonObject }.associate { it.text("id") to it["paint"] }
+        val outside = requireNotNull(paints[OUTSIDE_LAYER]).jsonObject
+        assertEquals("#FAFAFA", outside.text("fill-color"), "Poza terenem pada kolor tła")
+        assertEquals(0.75, outside.number("fill-opacity"), "Krycie z tokenu teren_poza")
+        val halo = requireNotNull(paints[EDGE_HALO_LAYER]).jsonObject
+        assertEquals("#FFFFFF", halo.text("line-color"), "Obwódka w barwie granica_terenu_obwodka")
+        assertEquals(5.0, halo.number("line-width"), "Obwódka 1,5 dp z każdej strony linii 2 dp")
+        val line = requireNotNull(paints[EDGE_LAYER]).jsonObject
+        assertEquals("#111111", line.text("line-color"), "Linia w barwie granica_terenu")
+        assertEquals(2.0, line.number("line-width"), "Linia granicy ma 2 dp")
     }
 
     /**
@@ -181,7 +188,7 @@ class CampusMapStyleTest {
         assertEquals(sources, bare.jsonObject.obj("sources").keys)
         val entrance = SelectedEntrance(id = "w1", location = STYLE_ORIGIN, label = "Główne", buildingSymbol = "C-13")
         val full = Json.parseToJsonElement(styled(data.selection(building = "C-13", entrance = entrance)))
-        val expected = base + SELECTED_LAYER + marks + listOf(OUTSIDE_LAYER, EDGE_LAYER) + pin
+        val expected = base + SELECTED_LAYER + listOf(OUTSIDE_LAYER, EDGE_HALO_LAYER, EDGE_LAYER) + marks + pin
         assertEquals(expected, full.jsonObject.array("layers").map { it.jsonObject.text("id") })
     }
 

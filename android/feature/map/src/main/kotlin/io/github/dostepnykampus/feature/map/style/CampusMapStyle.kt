@@ -40,8 +40,11 @@ internal const val ENTRANCE_PIN_IMAGE = "wejscie_pinezka"
 /** Wysokość i szerokość znaku wejścia w dp. Wymagania: US2.1, NFR-21 */
 internal const val ENTRANCE_MARK_DP = 28
 
-/** Warstwa przyciemnienia obszaru poza terenem. Wymagania: US1.7, BR-G5 */
+/** Warstwa wyblaknięcia mapy poza granicą terenu. Wymagania: US1.7, BR-G5 */
 internal const val OUTSIDE_LAYER = "teren-poza"
+
+/** Warstwa obwódki pod linią granicy terenu: linia ma kontrast na jasnym i ciemnym podkładzie. Wymagania: NFR-16 */
+internal const val EDGE_HALO_LAYER = "teren-granica-obwodka"
 
 /** Warstwa linii granicy terenu. Wymagania: US1.7, BR-G5 */
 internal const val EDGE_LAYER = "teren-granica"
@@ -76,7 +79,10 @@ internal const val OSM_TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
  * @property buildingOutline kontur budynków PWr (`pwr_kontur`)
  * @property selectedOutline obrys zaznaczonego budynku (`pwr_wybrany`), grubszy niż kontur
  * @property isNight motyw ciemny: podkład jest wtedy odwrócony, żeby mapa nie raziła na ciemnym ekranie
- * @property ink linia granicy terenu (`tusz`)
+ * @property edge linia granicy terenu (`granica_terenu`)
+ * @property edgeHalo obwódka linii granicy terenu (`granica_terenu_obwodka`)
+ * @property outside kolor kładziony na mapę poza granicą terenu (`background` motywu)
+ * @property outsideOpacity krycie koloru [outside] (`mapa.krycie.teren_poza`); 0 zostawia mapę bez wyblaknięcia
  * @property dimmed wypełnienie budynków obok zaznaczonego (`budynek`)
  * @property dimmedOutline kontur budynków obok zaznaczonego (`budynek_kontur`)
  * @property plan kolory planu piętra; bez nich plan ma barwy budynków
@@ -87,7 +93,10 @@ data class MapStyleColors(
     val buildingOutline: String,
     val selectedOutline: String,
     val isNight: Boolean = false,
-    val ink: String = buildingOutline,
+    val edge: String = buildingOutline,
+    val edgeHalo: String = land,
+    val outside: String = land,
+    val outsideOpacity: Double = 0.0,
     val dimmed: String = building,
     val dimmedOutline: String = buildingOutline,
     val plan: PlanColors =
@@ -104,10 +113,10 @@ data class MapStyleColors(
 /**
  * Styl mapy V1 (ADR-0005) jako tekst JSON: kontury i podpisy ze źródła w aplikacji zawsze, podkład OSM tylko online,
  * tylko w obszarze kampusu i przygaszony. Zaznaczony budynek [MapSelection.building] ma grubszy obrys i jako jedyny
- * znaki wejść; wejście [MapSelection.entrance] ma pinezkę z podpisem. Obszar poza granicą terenu
- * [MapSelection.boundary] (bez niej poza prostokątem [MapSelection.bounds]) jest przyciemniony, a bariery mają znak
- * uciążliwości. Warstwy zaznaczenia są w stylu zawsze, więc style dla różnych zaznaczeń różnią się tylko polami
- * [SelectionLook] z [selectionLook].
+ * znaki wejść; wejście [MapSelection.entrance] ma pinezkę z podpisem. Poza granicą terenu [MapSelection.boundary]
+ * (bez niej poza prostokątem [MapSelection.bounds]) mapa jest wyblakła, a bariery mają znak uciążliwości. Warstwy
+ * zaznaczenia są w stylu zawsze, więc style dla różnych zaznaczeń różnią się tylko polami [SelectionLook]
+ * z [selectionLook].
  *
  * Wymagania: NFR-10, NFR-39, US1.1, US1.4, US2.8, US2.1, NFR-21, US3.3, NFR-16, US1.7, BR-G5, US1.3
  */
@@ -169,11 +178,11 @@ private fun layers(look: SelectionLook, isBounded: Boolean, colors: MapStyleColo
         )
         planLayers(colors.plan).forEach { add(it) }
         add(selectedLayer(look.selectedFilter, colors))
+        if (isBounded) areaLayers(colors).forEach { add(it) }
         add(marksLayer(look.entrancesFilter, look.entrancesMinZoom))
         barrierLayers().forEach { add(it) }
         add(symbolLayer(id = LABELS, source = LABELS, image = property(LABEL)))
         add(chosenBarrierLayer(look.chosenBarrierFilter))
-        if (isBounded) areaLayers(colors).forEach { add(it) }
         chosenLayers().forEach { add(it) }
     }
 

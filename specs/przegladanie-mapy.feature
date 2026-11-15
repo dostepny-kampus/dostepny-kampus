@@ -286,8 +286,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli przesunie mapę do granicy terenu w stronę terenu „Wittigowo”
     Wtedy mapa dalej się nie przesuwa
 
-  # wygląd granicy terenu: #2087
-  @US1.7 @BR-G5 @NFR-16 @aplikacja @do-zrobienia
+  @US1.7 @BR-G5 @NFR-16 @aplikacja
   Scenariusz: Poza granicą terenu podkład jest wyblakły, a granicę pokazuje linia
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Kampus główny”
     Jeżeli przesunie mapę do granicy terenu
