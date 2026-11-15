@@ -8,6 +8,7 @@ package io.github.dostepnykampus.identity.web;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ import tools.jackson.databind.json.JsonMapper;
  * Zabezpieczenia API: zabronione wszystko, czego kontrakt {@code api/openapi.yaml} nie
  * dopuszcza (ADR-0003). Serwer zasobów OAuth 2.0 bez własnego logowania; role są
  * w {@code realm_access.roles} tokenu. Operacje publiczne nie wymagają tokenu, lista
- * własnych zgłoszeń (mine=true) wymaga roli Zbierającego. Pozostałe bez ważnego tokenu
+ * własnych zgłoszeń (parametr mine inny niż false) wymaga roli Zbierającego. Pozostałe bez ważnego tokenu
  * dają 401, bez roli 403, jako {@code application/problem+json}; inna ścieżka jest odrzucana.
  *
  * <p>Wymagania: NFR-33, US14.1, US8.1</p>
@@ -115,7 +116,8 @@ public final class ApiSecurity {
     private static boolean ownSubmissions(final HttpServletRequest request) {
         return HttpMethod.GET.matches(request.getMethod())
             && request.getContextPath().concat("/submissions").equals(request.getRequestURI())
-            && Boolean.parseBoolean(request.getParameter("mine"));
+            && request.getParameterValues("mine") != null
+            && !Arrays.stream(request.getParameterValues("mine")).allMatch("false"::equals);
     }
 
     private static Collection<GrantedAuthority> authorities(final Jwt token) {

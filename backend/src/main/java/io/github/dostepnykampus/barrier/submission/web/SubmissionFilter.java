@@ -22,19 +22,26 @@ import org.jspecify.annotations.Nullable;
  * @param buildingSymbol Symbol budynku albo null, gdy bez filtra
  * @param floorId Identyfikator piętra albo null, gdy bez filtra
  * @param status Szukane statusy albo null, gdy nie podano
- * @param mine Tylko własne zgłoszenia, null znaczy fałsz
+ * @param mine Tylko własne zgłoszenia: {@code true} albo {@code false}, null znaczy fałsz
  * @since 0.1.0
  */
 record SubmissionFilter(
     @Nullable String buildingSymbol, @Nullable String floorId,
-    @Nullable List<SubmissionStatus> status, Boolean mine
+    @Nullable List<SubmissionStatus> status, @Nullable String mine
 ) {
 
     /**
-     * Filtr, w którym nieobecny parametr mine oznacza fałsz (domyślna wartość z OpenAPI).
+     * Czy filtr dotyczy tylko własnych zgłoszeń; brak parametru znaczy fałsz (domyślna
+     * wartość z OpenAPI). Wartość inna niż {@code true} albo {@code false} kończy się
+     * wyjątkiem {@link InvalidInput}.
+     *
+     * @return Prawda dla mine=true
      */
-    SubmissionFilter {
-        mine = Boolean.TRUE.equals(mine);
+    boolean own() {
+        if (this.mine != null && !"true".equals(this.mine) && !"false".equals(this.mine)) {
+            throw new InvalidInput("Parametr mine przyjmuje true albo false");
+        }
+        return "true".equals(this.mine);
     }
 
     /**
@@ -48,7 +55,7 @@ record SubmissionFilter(
             throw new InvalidInput("Parametr status nie może być pusty");
         }
         final Set<SubmissionStatus> statuses = this.statuses();
-        if (!this.mine && !statuses.stream().allMatch(SubmissionStatus::publiclyVisible)) {
+        if (!this.own() && !statuses.stream().allMatch(SubmissionStatus::publiclyVisible)) {
             throw new InvalidInput("Bez mine=true dozwolony jest tylko status ACCEPTED");
         }
         return new SubmissionQuery(statuses, this.buildingSymbol, this.floorId);
@@ -58,7 +65,7 @@ record SubmissionFilter(
         final Set<SubmissionStatus> result;
         if (this.status == null) {
             result = Stream.of(SubmissionStatus.values())
-                .filter(value -> this.mine || value.publiclyVisible())
+                .filter(value -> this.own() || value.publiclyVisible())
                 .collect(Collectors.toCollection(() -> EnumSet.noneOf(SubmissionStatus.class)));
         } else {
             result = Set.copyOf(this.status);
