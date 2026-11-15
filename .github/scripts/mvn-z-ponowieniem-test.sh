@@ -13,11 +13,12 @@ printf '#!/usr/bin/env bash\nexit 0\n' > bin/sleep
 cat > mvnw <<'SH'
 #!/usr/bin/env bash
 printf '%s\n' "$*" >> attempts
-if [[ $CASE == transient && $(wc -l < attempts | tr -d " ") == 2 || $CASE == success ]]; then
+if [[ $CASE == transient* && $(wc -l < attempts | tr -d " ") == 2 || $CASE == success ]]; then
   exit 0
 fi
 case "$CASE" in
   compile) echo '[ERROR] Compilation failure' ;;
+  transient-wrapper) echo 'wget: Failed to fetch https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.10.0/apache-maven-3.10.0-bin.zip' ;;
   *) echo '[FATAL] Could not find artifact org.example:parent:pom:1.0 in central (https://repo.maven.apache.org/maven2)' ;;
 esac
 exit 17
@@ -44,5 +45,6 @@ run_case() {
 
 run_case success 0 1
 run_case transient 0 2
+run_case transient-wrapper 0 2
 run_case persistent 17 2
 run_case compile 17 1
