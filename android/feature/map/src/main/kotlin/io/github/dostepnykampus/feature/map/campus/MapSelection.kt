@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.campus
 
+import io.github.dostepnykampus.core.model.GeoArea
 import io.github.dostepnykampus.feature.map.area.areaOf
 
 /**
@@ -20,12 +21,14 @@ import io.github.dostepnykampus.feature.map.area.areaOf
  *   budynku, a bez niego teren startowy z [CampusMapData.bounds]; `null` bez budynków
  * @property barrier identyfikator bariery z otwartym arkuszem; jej znak jest na mapie większy i w obwódce;
  * `null` bez wybranej bariery
+ * @property boundary wielokąt granicy terenu pokazanego na mapie; `null`, gdy granicą jest prostokąt [bounds]
  */
 data class MapSelection(
     val building: String? = null,
     val entrance: SelectedEntrance? = null,
     val bounds: CampusBounds? = null,
     val barrier: String? = null,
+    val boundary: GeoArea? = null,
 )
 
 /**
@@ -39,9 +42,7 @@ fun CampusMapData.selection(
     building: String? = null,
     entrance: SelectedEntrance? = null,
     area: String? = null,
-): MapSelection =
-    MapSelection(
-        building = building,
-        entrance = entrance,
-        bounds = areaOf(chosen = area, symbol = building ?: entrance?.buildingSymbol)?.bounds,
-    )
+): MapSelection {
+    val shown = areaOf(chosen = area, symbol = building ?: entrance?.buildingSymbol)
+    return MapSelection(building = building, entrance = entrance, bounds = shown?.bounds, boundary = shown?.boundary)
+}

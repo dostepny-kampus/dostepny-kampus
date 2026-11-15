@@ -75,17 +75,18 @@ class MapStyleRememberTest {
         }
     }
 
-    /** Zmiana danych, terenu i motywu daje za każdym razem nowy styl. */
+    /** Zmiana danych, prostokąta i granicy terenu oraz motywu daje za każdym razem nowy styl. Wymagania: BR-G5 */
     @Test
     fun rebuildsStyleOnChange() {
         show()
         val area = CampusBounds(west = 0.0, south = 0.0, east = 1.0, north = 1.0)
         compose.runOnIdle { data = dataOf(building, other) }
         compose.runOnIdle { selection = MapSelection(bounds = area) }
+        compose.runOnIdle { selection = selection.copy(boundary = outline) }
         compose.runOnIdle { colors = day.copy(isNight = true) }
         compose.runOnIdle {
-            assertEquals(4, builds.size)
-            assertEquals(4, builds.toSet().size)
+            assertEquals(5, builds.size)
+            assertEquals(5, builds.toSet().size)
             assertEquals(builds.last(), styles.last())
         }
     }
@@ -94,8 +95,8 @@ class MapStyleRememberTest {
         compose.setContent {
             val seen = camera
             val style =
-                rememberMapStyle(data = data, bounds = selection.bounds, colors = colors) { mapData, area, palette ->
-                    campusMapStyle(mapData, MapSelection(bounds = area), palette).also(builds::add)
+                rememberMapStyle(data = data, selection = selection, colors = colors) { mapData, area, palette ->
+                    campusMapStyle(mapData, area, palette).also(builds::add)
                 }
             SideEffect {
                 cameras += seen

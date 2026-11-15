@@ -5,6 +5,9 @@
  */
 package io.github.dostepnykampus.feature.map.style
 
+import io.github.dostepnykampus.core.model.GeoMultiPolygon
+import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
@@ -21,6 +24,9 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.maplibre.spatialk.geojson.LineString
+import org.maplibre.spatialk.geojson.Polygon
+import org.maplibre.spatialk.geojson.Position
 
 /** Styl mapy V1 z jednym konturem „Budynek testowy” (nie dane PWr). Wymagania: US1, US1.1, NFR-10 */
 class CampusMapStyleTest {
@@ -101,6 +107,30 @@ class CampusMapStyleTest {
     }
 
     /**
+     * Wiersz: V1, granica z pliku to wielokąt, także z kilku części i z otworem: każda część wycina otwór
+     * w obszarze poza terenem (pierścień przeciwny do pierścienia świata, inaczej MapLibre nie robi otworu), otwór
+     * w granicy też leży poza terenem, a linia biegnie po każdym pierścieniu.
+     *
+     * Wymagania: US1.7, BR-G5
+     */
+    @Test
+    fun cutsEveryBoundaryPart() {
+        val bounds = CampusBounds(west = 16.0, south = 59.0, east = 18.0, north = 61.0)
+        val outer = square(west = 16.0, south = 59.0, size = 1.0)
+        val inner = square(west = 16.4, south = 59.4, size = 0.2)
+        val second = square(west = 17.5, south = 60.5, size = 0.5).reversed()
+        val boundary = GeoMultiPolygon(listOf(GeoPolygon(listOf(outer, inner)), GeoPolygon(listOf(second))))
+        val features = areaFeatures(boundary = boundary, bounds = bounds).map { it.geometry }
+        val outside = features.first() as Polygon
+        assertEquals(3, outside.coordinates.size, "Świat i otwory obu części")
+        assertTrue(outside.coordinates.drop(1).all { signedArea(it) < 0 }, "Otwory biegną zgodnie z zegarem")
+        assertTrue(signedArea(outside.coordinates.first()) > 0, "Pierścień świata biegnie przeciwnie do zegara")
+        val rest = features.drop(1)
+        assertEquals(1, rest.filterIsInstance<Polygon>().size, "Otwór granicy jest osobnym obszarem poza terenem")
+        assertEquals(3, rest.filterIsInstance<LineString>().size, "Linia po każdym pierścieniu granicy")
+    }
+
+    /**
      * Wiersz: V1, mapa zostaje na obszarze kampusu; podkładu spoza tego prostokąta aplikacja nie pobiera.
      *
      * Wymagania: NFR-39
@@ -165,4 +195,11 @@ class CampusMapStyleTest {
     private fun JsonObject.number(key: String): Double = getValue(key).jsonPrimitive.double
 
     private fun JsonObject.text(key: String): String = getValue(key).jsonPrimitive.content
+
+    private fun square(west: Double, south: Double, size: Double): List<GeoPoint> =
+        listOf(west to south, west + size to south, west + size to south + size, west to south + size, west to south)
+            .map { (longitude, latitude) -> GeoPoint(longitude = longitude, latitude = latitude) }
+
+    private fun signedArea(ring: List<Position>): Double =
+        ring.zipWithNext().sumOf { (from, to) -> from.longitude * to.latitude - to.longitude * from.latitude }
 }
