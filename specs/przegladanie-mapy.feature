@@ -280,8 +280,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi mapę terenu „Wittigowo” z budynkiem T-15
     Oraz na mapie widzi nazwę terenu „Wittigowo”
 
-  # brzeg widoku na brzegu prostokąta terenu: #2626
-  @US1.7 @BR-G5 @NFR-39 @aplikacja @do-zrobienia
+  @US1.7 @BR-G5 @NFR-39 @aplikacja
   Scenariusz: Mapa nie wychodzi poza wybrany teren
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Kampus główny”
     Jeżeli przesunie mapę do brzegu terenu w stronę terenu „Wittigowo”
