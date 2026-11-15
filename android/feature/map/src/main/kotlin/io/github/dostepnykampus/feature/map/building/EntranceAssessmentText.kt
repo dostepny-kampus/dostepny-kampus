@@ -9,10 +9,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import io.github.dostepnykampus.core.designsystem.campusDay
 import io.github.dostepnykampus.core.model.building.AssessmentSource
 import io.github.dostepnykampus.core.model.building.EntranceAssessment
 import io.github.dostepnykampus.feature.map.R
-import io.github.dostepnykampus.feature.map.campus.DAY_FORMAT
 
 /**
  * Wspólne oznaczenie wejść [entrances]: dzień i źródło, gdy każde wejście ma te same.
@@ -27,7 +27,7 @@ internal fun commonAssessment(entrances: List<OrderedEntrance>): EntranceAssessm
 /** Napis o dniu i źródle oznaczenia (PW-3). Wymagania: US17.3, BR-24 */
 @Composable
 internal fun AssessmentLine(assessment: EntranceAssessment) {
-    val day = DAY_FORMAT.format(assessment.date)
+    val day = campusDay(assessment.date)
     val text =
         when (assessment.source) {
             AssessmentSource.IMPORT -> stringResource(R.string.karta_ocena_import, day)

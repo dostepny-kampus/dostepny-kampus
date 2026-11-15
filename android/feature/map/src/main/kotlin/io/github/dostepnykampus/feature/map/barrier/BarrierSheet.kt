@@ -32,14 +32,13 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
+import io.github.dostepnykampus.core.designsystem.campusDay
 import io.github.dostepnykampus.core.designsystem.marking.SeverityIcon
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.R
-import io.github.dostepnykampus.feature.map.campus.CampusZone
-import io.github.dostepnykampus.feature.map.campus.DAY_FORMAT
 
 /**
  * Arkusz bariery na dole mapy V1 po dotknięciu znaku: plakietka uciążliwości ze znakiem i słowem,
@@ -145,7 +144,7 @@ internal fun BarrierFacts(chosen: ChosenBarrier) {
             style = MaterialTheme.typography.bodyLarge,
         )
         barrier.verifiedAt?.let { verified ->
-            val day = DAY_FORMAT.format(verified.atZone(CampusZone).toLocalDate())
+            val day = campusDay(verified)
             Text(
                 text = stringResource(R.string.mapa_bariera_sprawdzone, day),
                 style = MaterialTheme.typography.bodyLarge,

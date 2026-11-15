@@ -32,25 +32,12 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
+import io.github.dostepnykampus.core.designsystem.campusDay
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.feature.capture.R
-import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
 import io.github.dostepnykampus.feature.capture.report.form.PhotoSection
-import java.time.ZoneId
-
-// TODO(#2226): strefa kampusu i format dnia przenieść do core
-private val CAMPUS_ZONE = ZoneId.of("Europe/Warsaw")
-
-/**
- * Czynności C7.
- *
- * @property camera aparat „Zrób zdjęcie”
- * @property onSend „Wyślij do sprawdzenia” i „Spróbuj ponownie”
- * @property onBack „Wstecz”
- */
-data class RemovedActions(val camera: PhotoCamera, val onSend: () -> Unit, val onBack: () -> Unit)
 
 /**
  * Treść C7 „Usunięcie bariery” dla stanu [state], bez ViewModelu: dane zgłoszenia przyjętego bez edycji, nowe
@@ -101,8 +88,7 @@ private fun Accepted(barrier: AcceptedBarrier) {
         // TODO(#2227): nazwy budynku i wejścia z katalogu budynków w core:data
         Text(barrierPlace(symbol = barrier.buildingSymbol, name = null, entrance = null, floor = barrier.floor))
         barrier.verifiedAt?.let { verified ->
-            val day = verified.atZone(CAMPUS_ZONE).toLocalDate()
-            val text = stringResource(R.string.usuniecie_sprawdzone, "${day.dayOfMonth}.${day.monthValue}.${day.year}")
+            val text = stringResource(R.string.usuniecie_sprawdzone, campusDay(verified))
             Text(text, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         // TODO(#2299): zdjęcie zgłoszenia przyjętego z BarrierPhoto przeniesionego do wspólnego modułu

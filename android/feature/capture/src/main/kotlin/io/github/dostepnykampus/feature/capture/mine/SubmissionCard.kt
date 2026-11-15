@@ -26,13 +26,10 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.data.submission.own.RefusalReason
 import io.github.dostepnykampus.core.data.submission.own.SendState
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.campusDay
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.feature.capture.R
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.Locale
-
-private val DAY_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.ROOT)
 
 /**
  * Pozycja listy C3: status słowem z ikoną na początku, więc TalkBack czyta go przed typem bariery,
@@ -57,7 +54,7 @@ internal fun SubmissionCard(item: OwnSubmissionItem, onOpen: (() -> Unit)?, modi
                 if (item.isChangeWaiting) Text(stringResource(R.string.moje_zmiana_czeka))
                 Text(text = typeText(item), style = MaterialTheme.typography.titleMedium)
                 Text(placeText(item))
-                Text(DAY_FORMAT.format(item.savedAt.atZone(ZoneId.systemDefault())))
+                Text(campusDay(item.savedAt.atZone(ZoneId.systemDefault()).toLocalDate()))
                 item.refusal?.let { reason -> Text(stringResource(reason.textRes())) }
                 item.rejectionReason?.takeIf { status == ShownStatus.REJECTED }?.let { reason ->
                     Text(stringResource(R.string.moje_powod_odrzucenia, reason))
