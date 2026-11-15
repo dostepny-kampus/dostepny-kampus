@@ -22,7 +22,11 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Kopia planu budynku: pobranie całości, odczyt bez sieci, stara kopia przy błędzie. Wymagania: US16.1, NFR-10 */
+/**
+ * Kopia planu budynku: pobranie całości z piętrami windy, odczyt bez sieci, stara kopia przy błędzie.
+ *
+ * Wymagania: US16.1, NFR-10
+ */
 class FloorPlanCopyTest {
     @Test
     fun readsCopyWithoutNetwork() =
@@ -79,7 +83,10 @@ class FloorPlanCopyTest {
             source = SOURCE,
             floorOutline = AREA,
             rooms =
-                listOf(room("$floor.1", RoomCategory.ELEVATOR, "101"), room("$floor.2", RoomCategory.CORRIDOR, null)),
+                listOf(
+                    room("$floor.1", RoomCategory.ELEVATOR, "101").copy(liftId = "w1", liftFloors = listOf("P0", "P1")),
+                    room("$floor.2", RoomCategory.CORRIDOR, null),
+                ),
         )
 
     private fun room(id: String, category: RoomCategory, number: String?): Room =
