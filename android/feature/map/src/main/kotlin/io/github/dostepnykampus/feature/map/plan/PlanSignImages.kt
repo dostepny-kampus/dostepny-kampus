@@ -75,7 +75,13 @@ private fun DrawScope.drawSign(category: RoomCategory, colors: MapColors) {
     val square = Size(FRAME_SIDE, FRAME_SIDE)
     drawRoundRect(color = back, topLeft = frame, size = square, cornerRadius = corner)
     if (isStairs) {
-        drawRoundRect(color = front, topLeft = frame, size = square, cornerRadius = corner, style = Stroke(FRAME_STROKE))
+        drawRoundRect(
+            color = front,
+            topLeft = frame,
+            size = square,
+            cornerRadius = corner,
+            style = Stroke(FRAME_STROKE),
+        )
         drawLine(path = STAIRS, color = front)
     } else if (category == RoomCategory.ELEVATOR) {
         drawPath(path = PathParser().parsePathString(LIFT_ARROWS).toPath(), color = front)
