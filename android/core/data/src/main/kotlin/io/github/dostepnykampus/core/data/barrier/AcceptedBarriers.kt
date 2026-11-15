@@ -28,6 +28,8 @@ import java.time.Instant
  * @property entranceId wejście, przy którym jest bariera; `null`, gdy zgłoszenie go nie wskazuje
  * @property floor piętro bariery; `null`, gdy zgłoszenie go nie wskazuje
  * @property photoIds zdjęcia zgłoszenia do arkusza bariery
+ * @property photoUrl adres pierwszego ze zdjęć [photoIds]; `null`, gdy zgłoszenie nie ma zdjęć albo adres nie jest
+ *   nadany
  */
 public data class AcceptedBarrier(
     val id: String,
@@ -39,6 +41,7 @@ public data class AcceptedBarrier(
     val entranceId: String? = null,
     val floor: SubmissionFloor? = null,
     val photoIds: List<String> = emptyList(),
+    val photoUrl: String? = null,
 )
 
 /** Bariery ze zgłoszeń przyjętych dla mapy. Wymagania: US1.3, BR-6 */
