@@ -32,12 +32,13 @@ import java.time.Instant
 @OptIn(ExperimentalCoroutinesApi::class)
 class MarkersViewModelTest {
     /**
+     * Potwierdzenie cofa znacznik na serwerze i zmniejsza postęp budynku.
      * Scenariusz: postep-inwentaryzacji.feature: Koordynator cofa znacznik dowolnego Zbierającego po potwierdzeniu
      *
      * Wymagania: US11.3
      */
     @Test
-    fun confirmRevokesAndShrinksProgress() =
+    fun confirmRevokesShrinksProgress() =
         viewModelTest { viewModel, revoked ->
             viewModel.ask(MARKER_ID)
             assertEquals(MARKER_ID, (viewModel.state.value as MarkersUiState.Ready).asking, "pytanie o potwierdzenie")
@@ -51,6 +52,7 @@ class MarkersViewModelTest {
         }
 
     /**
+     * „Zostaw znacznik” niczego nie zmienia i nie wysyła cofnięcia.
      * Scenariusz: postep-inwentaryzacji.feature: Bez potwierdzenia znacznik zostaje
      *
      * Wymagania: US11.3
@@ -65,11 +67,7 @@ class MarkersViewModelTest {
             assertEquals(emptyList<String>(), revoked, "serwer nic nie dostał")
         }
 
-    /**
-     * Brak internetu przy cofnięciu: znacznik zostaje, a ekran mówi dlaczego.
-     *
-     * Wymagania: US11.3, NFR-50
-     */
+    /** Brak internetu przy cofnięciu: znacznik zostaje, a ekran mówi dlaczego. Wymagania: US11.3, NFR-50 */
     @Test
     fun offlineKeepsMarker() =
         viewModelTest(revokeReply = ServerReply.Offline) { viewModel, _ ->
@@ -80,11 +78,7 @@ class MarkersViewModelTest {
             assertEquals(expected, viewModel.state.value, "znacznik zostaje, bez internetu")
         }
 
-    /**
-     * Odmowa serwera przy cofnięciu: znacznik zostaje.
-     *
-     * Wymagania: US11.3
-     */
+    /** Odmowa serwera przy cofnięciu: znacznik zostaje. Wymagania: US11.3 */
     @Test
     fun serverFaultKeepsMarker() =
         viewModelTest(revokeReply = ServerReply.Fault(FORBIDDEN)) { viewModel, _ ->
@@ -95,11 +89,7 @@ class MarkersViewModelTest {
             assertEquals(expected, viewModel.state.value, "znacznik zostaje, błąd serwera")
         }
 
-    /**
-     * Budynek bez postępu na serwerze: błąd zamiast pustego ekranu.
-     *
-     * Wymagania: US11.3
-     */
+    /** Budynek bez postępu na serwerze: błąd zamiast pustego ekranu. Wymagania: US11.3 */
     @Test
     fun unknownBuildingIsError() =
         viewModelTest(symbol = "Z-9") { viewModel, _ ->

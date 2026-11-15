@@ -61,7 +61,10 @@ sealed interface MarkersUiState {
 @HiltViewModel(assistedFactory = MarkersViewModel.Factory::class)
 class MarkersViewModel
     @AssistedInject
-    constructor(@Assisted private val symbol: String, private val progress: InspectionProgress) : ViewModel() {
+    constructor(
+        @Assisted private val symbol: String,
+        private val progress: InspectionProgress,
+    ) : ViewModel() {
         private val current = MutableStateFlow<MarkersUiState>(MarkersUiState.Loading)
 
         /** Stan ekranu. */
@@ -90,7 +93,7 @@ class MarkersViewModel
 
         private suspend fun opened(): MarkersUiState {
             val reply = progress.buildings()
-            val building = (reply as? ServerReply.Ok)?.value?.firstOrNull { it.buildingSymbol == symbol }
+            val building = (reply as? ServerReply.Ok)?.run { value.firstOrNull { it.buildingSymbol == symbol } }
             return when {
                 building != null -> MarkersUiState.Ready(building)
                 reply == ServerReply.Offline -> MarkersUiState.Offline
@@ -99,7 +102,7 @@ class MarkersViewModel
         }
 
         private suspend fun revoked(shown: MarkersUiState.Ready, markerId: String): MarkersUiState =
-            when (val reply = progress.revoke(markerId)) {
+            when (progress.revoke(markerId)) {
                 is ServerReply.Ok -> MarkersUiState.Ready(without(shown.building, markerId))
                 ServerReply.Offline -> shown.copy(asking = null, failure = RevokeFailure.OFFLINE)
                 else -> shown.copy(asking = null, failure = RevokeFailure.SERVER)
@@ -110,7 +113,7 @@ class MarkersViewModel
         }
 
         private fun without(building: BuildingProgress, markerId: String): BuildingProgress {
-            val removed = building.markers.firstOrNull { it.marker.id == markerId }?.marker?.place
+            val removed = building.markers.firstOrNull { it.marker.id == markerId }?.run { marker.place }
             return building.copy(
                 markers = building.markers.filterNot { it.marker.id == markerId },
                 coverage = coverageWithout(building.coverage, removed),
