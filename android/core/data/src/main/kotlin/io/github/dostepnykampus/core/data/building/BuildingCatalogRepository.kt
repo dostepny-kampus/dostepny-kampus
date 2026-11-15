@@ -18,7 +18,6 @@ import io.github.dostepnykampus.core.network.building.DetailLevel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.completeWith
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.channelFlow
@@ -39,8 +38,7 @@ public const val BUILDINGS_ASSET: String = "pwr-buildings.geojson"
  * wcześniej pobrano katalog z serwera albo jego kopię w [buildingCache]. Budynki są sortowane naturalnie po symbolu
  * (A-2 przed A-10), bez wejść `emergency`, `exit` i `garage`. Trwające pobranie jest wspólne dla [catalogUpdates],
  * [catalog] i [refresh]; [catalogUpdates] oddaje najpierw katalog bez czekania, potem katalog z serwera. Błąd
- * prowadzącego pobranie dostają też czekający, bez ponownego odczytu i zapytania, a jego anulowanie każe pozostałym
- * pytać od nowa. [syncedAt] to chwila pobrania z serwera, którą widzi katalog.
+ * prowadzącego dostają też czekający, bez ponownego odczytu, a jego anulowanie każe im pytać od nowa.
  *
  * Wymagania: US1, US1.2, US17.3, BR-25, NFR-11, NFR-10
  *
@@ -58,7 +56,7 @@ public class BuildingCatalogRepository internal constructor(
     private val readGeoJson: () -> String,
 ) {
     private val lock = Any()
-    private var inflight: CompletableDeferred<BuildingCatalog>? = null
+    private var inflight: CompletableDeferred<Result<BuildingCatalog>>? = null
     private val downloaded = MutableStateFlow<Downloaded?>(null)
     private val copy = buildingCache?.let { dao -> BuildingListCopy(dao, ioContext) }
 
@@ -132,7 +130,7 @@ public class BuildingCatalogRepository internal constructor(
     private suspend fun fetched(isFresh: Boolean): BuildingCatalog {
         val ready = if (isFresh) null else cached
         if (ready != null) return ready
-        val mine = CompletableDeferred<BuildingCatalog>()
+        val mine = CompletableDeferred<Result<BuildingCatalog>>()
         val running =
             synchronized(lock) {
                 val current = inflight
@@ -142,20 +140,28 @@ public class BuildingCatalogRepository internal constructor(
         return if (running == null) lead(mine, isFresh) else follow(running, isFresh)
     }
 
-    private suspend fun follow(running: CompletableDeferred<BuildingCatalog>, isFresh: Boolean): BuildingCatalog {
+    private suspend fun follow(
+        running: CompletableDeferred<Result<BuildingCatalog>>,
+        isFresh: Boolean,
+    ): BuildingCatalog {
         running.join()
-        return try {
-            running.await()
-        } catch (_: CancellationException) {
-            fetched(isFresh)
-        }
+        return if (running.isCancelled) fetched(isFresh) else running.await().getOrThrow()
     }
 
-    /** Wynik albo błąd prowadzącego trafia do czekających przez [mine]; anulowanie [mine] to ponowienie. */
-    private suspend fun lead(mine: CompletableDeferred<BuildingCatalog>, isFresh: Boolean): BuildingCatalog {
+    @Suppress("TooGenericExceptionCaught")
+    private suspend fun lead(
+        mine: CompletableDeferred<Result<BuildingCatalog>>,
+        isFresh: Boolean,
+    ): BuildingCatalog {
         try {
-            mine.completeWith(runCatching { load(isFresh) })
-            return mine.await()
+            val result = load(isFresh)
+            mine.complete(Result.success(result))
+            return result
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (failure: Exception) {
+            mine.complete(Result.failure(failure))
+            throw failure
         } finally {
             synchronized(lock) { inflight = null }
             mine.cancel()
