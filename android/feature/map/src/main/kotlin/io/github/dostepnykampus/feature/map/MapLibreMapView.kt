@@ -269,24 +269,6 @@ object MapLibreMapView : CampusMapView {
         }
     }
 
-    private fun MapLibreMap.limitTo(limits: MapLimits?) {
-        if (limits == null) {
-            setLatLngBoundsForCameraTarget(null)
-            setMinZoomPreference(MapLibreConstants.MINIMUM_ZOOM.toDouble())
-            return
-        }
-        val bounds = limits.bounds
-        val target =
-            LatLngBounds.from(
-                latNorth = bounds.north,
-                lonEast = bounds.east,
-                latSouth = bounds.south,
-                lonWest = bounds.west,
-            )
-        setLatLngBoundsForCameraTarget(target)
-        setMinZoomPreference(limits.minZoom)
-    }
-
     /**
      * Ruchy kamery mapy [map] po jednym. Ruch niesie dopełnienie z chwili startu; dopełnienie zmienione
      * w trakcie ruchu czeka na jego koniec, bo przerwałoby ruch, a samo przesuwa mapę płynnie w 300 ms. Gest osoby
@@ -295,9 +277,27 @@ object MapLibreMapView : CampusMapView {
     private class CameraDriver(private val map: MapLibreMap) {
         private var inset = MapInset()
         private var running: Run? = null
-        private val limits = FlightLimits { map.limitTo(it) }
+        private val limits = FlightLimits { limitTo(it) }
 
         fun limit(next: MapLimits?) = limits.limit(next)
+
+        private fun limitTo(area: MapLimits?) {
+            if (area == null) {
+                map.setLatLngBoundsForCameraTarget(null)
+                map.setMinZoomPreference(MapLibreConstants.MINIMUM_ZOOM.toDouble())
+                return
+            }
+            val bounds = area.bounds
+            val target =
+                LatLngBounds.from(
+                    latNorth = bounds.north,
+                    lonEast = bounds.east,
+                    latSouth = bounds.south,
+                    lonWest = bounds.west,
+                )
+            map.setLatLngBoundsForCameraTarget(target)
+            map.setMinZoomPreference(area.minZoom)
+        }
 
         fun pad(next: MapInset) {
             inset = next

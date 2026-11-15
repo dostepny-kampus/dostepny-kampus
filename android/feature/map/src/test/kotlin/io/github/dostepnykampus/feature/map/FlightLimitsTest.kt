@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test
 
 /** Granice kamery na czas przelotu na inny teren na prostokątach testowych (nie dane PWr). */
 class FlightLimitsTest {
-    private val main = MapLimits(CampusBounds(west = 0.0, south = 0.0, east = 0.01, north = 0.01), 400.0, 800.0)
-    private val other = MapLimits(CampusBounds(west = 0.03, south = 0.0, east = 0.04, north = 0.01), 400.0, 800.0)
+    private val main = limitsOf(CampusBounds(west = 0.0, south = 0.0, east = 0.01, north = 0.01))
+    private val other = limitsOf(CampusBounds(west = 0.03, south = 0.0, east = 0.04, north = 0.01))
     private val applied = mutableListOf<MapLimits?>()
     private val limits = FlightLimits { applied += it }
 
@@ -52,4 +52,6 @@ class FlightLimitsTest {
         limits.endFlight()
         assertEquals(listOf(main, null, main), applied, "granice wracają raz")
     }
+
+    private fun limitsOf(bounds: CampusBounds) = MapLimits(bounds = bounds, widthDp = 400.0, heightDp = 800.0)
 }
