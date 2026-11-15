@@ -58,6 +58,7 @@ class CampusMapSelectionStyleTest {
             dimmedOutline = "#C2C9CC",
         )
     private val data = campusMapData(catalog)
+    private val levelFill = """["case",["==",["get","detailed"],true],"#BFE0EC","#BFE0EC"]"""
 
     /** Wiersz: V2, „Mapa nad małą kartą”: zaznaczony budynek ma barwę PWr, sąsiednie są przygaszone. */
     @Test
@@ -74,7 +75,7 @@ class CampusMapSelectionStyleTest {
     fun keepsColoursOnSelection() {
         val state = """["boolean",["feature-state","$DIMMED_STATE"],false]"""
         listOf(style(), style(building = "A-1")).forEach { style ->
-            assertEquals("""["case",$state,"#D6DBDD","#BFE0EC"]""", style.layer(BUILDINGS_LAYER).paint("fill-color"))
+            assertEquals("""["case",$state,"#D6DBDD",$levelFill]""", style.layer(BUILDINGS_LAYER).paint("fill-color"))
             assertEquals("""["case",$state,"#C2C9CC","#004E5E"]""", style.layer("kontury").paint("line-color"))
         }
     }

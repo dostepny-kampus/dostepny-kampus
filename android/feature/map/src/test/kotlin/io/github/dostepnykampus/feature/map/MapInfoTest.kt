@@ -68,10 +68,11 @@ class MapInfoTest {
     }
 
     /**
-     * Arkusz „Legenda” objaśnia każdy znak mapy słowem, także znaki barier; znaki wejść i barier różnią się
-     * kształtem. Na końcu są „Źródła danych” z licencją i dniem stanu danych, a „Zamknij” zamyka arkusz.
+     * Arkusz „Legenda” objaśnia każdy znak mapy słowem, także oba poziomy budynków i znaki barier; znaki wejść
+     * i barier różnią się kształtem. Na końcu są „Źródła danych” z licencją i dniem stanu danych, a „Zamknij”
+     * zamyka arkusz.
      *
-     * Wymagania: US1.4, NFR-21, NFR-37, NFR-40, NFR-53, US1.3
+     * Wymagania: US1.4, US16.1, NFR-21, NFR-37, NFR-40, NFR-53, US1.3
      */
     @Test
     fun showsLegendWithSources() {
@@ -186,7 +187,8 @@ class MapInfoTest {
         const val EDGE_TOLERANCE_DP = 0.5f
         val SIGNS =
             listOf(
-                "Budynek Politechniki",
+                "Budynek z planem pięter",
+                "Budynek bez planu",
                 "Wejście dostępne",
                 "Wejście niedostępne",
                 "Wejście bez danych",
