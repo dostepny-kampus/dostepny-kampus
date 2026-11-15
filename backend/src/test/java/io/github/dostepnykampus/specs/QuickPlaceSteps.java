@@ -9,8 +9,6 @@ import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.github.dostepnykampus.CampusBoundary;
-import io.github.dostepnykampus.CampusPoint;
 import java.util.Map;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
@@ -119,17 +117,6 @@ public final class QuickPlaceSteps {
     }
 
     /**
-     * Osoba przygotowała zdjęcie i grupę barier; wysyłka idzie z kroku o pozycji.
-     */
-    @Given("zrobił zdjęcie bariery i wybrał grupę barier „komunikacja pozioma”")
-    public void preparesQuick() {
-        MatcherAssert.assertThat(
-            "Zgłoszenie przygotowuje zalogowana osoba",
-            this.token, Matchers.not(Matchers.emptyString())
-        );
-    }
-
-    /**
      * Osoba stoi w konturze budynku.
      *
      * @param symbol Symbol budynku
@@ -173,38 +160,6 @@ public final class QuickPlaceSteps {
      */
     @When("wyśle zgłoszenie szybkie z grupą barier „inne”")
     public void sendsQuick() throws Exception {
-        this.send(QuickPlaceSteps.OTHER);
-    }
-
-    /**
-     * Zgłoszenie przychodzi z miejsca za granicą terenów PWr.
-     *
-     * @param meters Odległość od granicy w metrach
-     * @throws Exception Gdy MockMvc nie wykona żądania
-     */
-    @When("^aplikacja wyśle zgłoszenie z miejscem (\\d+) m za granicą terenu PWr$")
-    public void sendsFromAfar(final int meters) throws Exception {
-        this.place = new CampusBoundary(this.jdbc).beyond(meters).json();
-        this.send(QuickPlaceSteps.OTHER);
-    }
-
-    /**
-     * Osoba ustala pozycję w jednym z miejsc szablonu granicy terenu i wysyła zgłoszenie.
-     *
-     * @param spot Miejsce słowami scenariusza
-     * @throws Exception Gdy MockMvc nie wykona żądania
-     */
-    @When("^telefon ustali pozycję (w przerwie 60 m .+|20 m za .+)$")
-    public void sendsFromSpot(final String spot) throws Exception {
-        final CampusPoint point;
-        if (spot.startsWith("w przerwie")) {
-            point = CampusPoint.GAP;
-        } else if (spot.startsWith("20 m za obszarem")) {
-            point = CampusPoint.MARGIN;
-        } else {
-            point = new CampusBoundary(this.jdbc).beyond(20);
-        }
-        this.place = point.json();
         this.send(QuickPlaceSteps.OTHER);
     }
 
@@ -295,6 +250,26 @@ public final class QuickPlaceSteps {
         ).andReturn().getResponse();
         this.status = response.getStatus();
         this.answer = response.getContentAsString();
+    }
+
+    /**
+     * Wysyła zgłoszenie szybkie z grupą „inne” z podanego miejsca.
+     *
+     * @param point Miejsce osoby
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    void sendFrom(final String point) throws Exception {
+        this.place = point;
+        this.send(QuickPlaceSteps.OTHER);
+    }
+
+    /**
+     * Mówi, czy osoba ma rolę.
+     *
+     * @return Prawda po kroku o zalogowaniu z rolą
+     */
+    boolean loggedIn() {
+        return !this.token.isEmpty();
     }
 
     /**

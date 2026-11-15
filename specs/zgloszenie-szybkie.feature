@@ -204,7 +204,8 @@ Funkcja: Zgłoszenie szybkie
       | 20 m za obszarem uczelni, w zapasie terenu                | może wysłać zgłoszenie, które jest „poza budynkiem”                |
       | 20 m za granicą terenu PWr                                | widzi napis „Jesteś poza terenem PWr” i nie może wysłać zgłoszenia |
 
-  @US4.9 @BR-G5 @aplikacja @serwer
+  # granica terenu w aplikacji: #2087
+  @US4.9 @BR-G5 @aplikacja @serwer @do-zrobienia
   Scenariusz: Serwer odrzuca zgłoszenie spoza terenu PWr
     Zakładając, że Zbierający jest zalogowany z rolą Zbierającego
     Jeżeli aplikacja wyśle zgłoszenie z miejscem 20 m za granicą terenu PWr
