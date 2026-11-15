@@ -8,6 +8,7 @@ package io.github.dostepnykampus.building.room.json;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import io.github.dostepnykampus.building.room.PlanEntrance;
 import io.github.dostepnykampus.building.room.PlanFloor;
 import io.github.dostepnykampus.building.room.PlanRoom;
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
@@ -133,6 +135,29 @@ final class ArcgisPlansTest {
     }
 
     @Test
+    void readsEntranceFloorAndPointOnly() throws IOException {
+        final String point = "{\"type\":\"Point\",\"coordinates\":[17.1,51.1]}";
+        MatcherAssert.assertThat(
+            "Wejście nie ma piętra i punktu albo zostało wejście bez piętra lub punktu",
+            ArcgisPlansTest.served(
+                exchange -> ArcgisPlansTest.send(
+                    exchange,
+                    String.join(
+                        "",
+                        "{\"features\":[{\"geometry\":", point,
+                        ",\"properties\":{\"Pietro\":\" T.X.P0 \",\"Budynek\":\"X\"}},",
+                        "{\"geometry\":", point, ",\"properties\":{\"Budynek\":\"X\"}},",
+                        "{\"geometry\":null,\"properties\":{\"PIETRO\":\"T.X.P1\"}}]}"
+                    )
+                ),
+                new CountDownLatch(0),
+                url -> new ArcgisPlans(JsonMapper.builder().build()).entrances(url, 2)
+            ),
+            Matchers.contains(new PlanEntrance("T.X.P0", point))
+        );
+    }
+
+    @Test
     void rejectsErrorOfService() {
         Assertions.assertThrows(
             IllegalStateException.class,
@@ -235,13 +260,19 @@ final class ArcgisPlansTest {
     private static List<PlanRoom> read(
         final ArcgisPlans plans, final HttpHandler handler, final CountDownLatch release
     ) throws IOException {
+        return ArcgisPlansTest.served(handler, release, url -> plans.rooms(url, 2));
+    }
+
+    private static <T> List<T> served(
+        final HttpHandler handler, final CountDownLatch release,
+        final Function<String, List<T>> call
+    ) throws IOException {
         final HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
         server.createContext(ArcgisPlansTest.QUERY, handler);
         server.start();
         try {
-            return plans.rooms(
-                String.format("http://localhost:%d/FeatureServer", server.getAddress().getPort()),
-                2
+            return call.apply(
+                String.format("http://localhost:%d/FeatureServer", server.getAddress().getPort())
             );
         } finally {
             release.countDown();
