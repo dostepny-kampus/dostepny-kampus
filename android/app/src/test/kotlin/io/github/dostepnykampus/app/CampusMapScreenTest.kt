@@ -57,6 +57,7 @@ import io.github.dostepnykampus.feature.map.camera.CameraMotion
 import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.overlay.MAP_STATUS_BAR_TAG
@@ -158,7 +159,7 @@ class CampusMapScreenTest {
     private val viewModel by lazy { inlineMapViewModel(repository, { online }, choice) }
 
     @Composable
-    private fun Screen(fontScale: Float = 1f, focus: String? = null, sheet: Dp = 0.dp) {
+    private fun Screen(fontScale: Float = 1f, focus: String? = null, sheet: Dp = 0.dp, motion: MapMotion? = null) {
         DostepnyKampusTheme {
             val density = Density(density = LocalDensity.current.density, fontScale = fontScale)
             CompositionLocalProvider(LocalDensity provides density) {
@@ -168,6 +169,7 @@ class CampusMapScreenTest {
                     contentPadding = PaddingValues(bottom = sheet),
                     onEmptyMapClick = { emptyTaps++ },
                     mapView = fakeMap,
+                    motion = motion,
                     viewModel = viewModel,
                 )
             }
@@ -485,7 +487,8 @@ class CampusMapScreenTest {
     @Config(qualifiers = "w360dp-h800dp")
     fun movesOncePerPick() {
         var sheet by mutableStateOf(0.dp)
-        compose.setContent { Screen(focus = "C-14", sheet = sheet) }
+        val motion = MapMotion()
+        compose.setContent { Screen(focus = "C-14", sheet = sheet, motion = motion) }
         compose.waitForIdle()
         sheet = 400.dp
         compose.waitForIdle()
@@ -496,6 +499,8 @@ class CampusMapScreenTest {
             assertEquals(pick, moves.last())
         }
         assertEquals(true, pick.motion != CameraMotion.NONE)
+        assertEquals("jeden zapis ruchu dla karty", 1, motion.moves)
+        assertEquals("karta dostaje czas ruchu mapy", pick.durationMillis, motion.durationMillis)
     }
 
     /**
