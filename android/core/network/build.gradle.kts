@@ -41,7 +41,7 @@ val generateContractModels =
         modelFilesConstrainedTo =
             listOf(
                 "BuildingList", "BuildingDetails", "LocateResult", "FloorList", "RoomList",
-                "SubmissionContent", "Submission", "VersionConflictProblem",
+                "SubmissionContent", "Submission", "VersionConflictProblem", "BuildingProgress",
             )
         generateRecursiveDependentModels = true
         generateModelDocumentation = false

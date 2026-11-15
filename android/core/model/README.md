@@ -2,7 +2,7 @@
 
 ## Zadanie
 
-Typy domeny wspólne dla całej aplikacji: budynek, wejście, bariera, zgłoszenie, konto, punkt i obszar.
+Typy domeny wspólne dla całej aplikacji: budynek, wejście, bariera, zgłoszenie, konto, punkt, obszar i postęp inwentaryzacji.
 
 ## API
 
