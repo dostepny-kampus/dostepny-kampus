@@ -48,7 +48,7 @@ class MapStyleRememberTest {
     private val cameras = mutableListOf<MapCamera>()
     private val builds = mutableListOf<String>()
     private val styles = mutableListOf<String?>()
-    private var tiles by mutableStateOf<CampusBounds?>(null)
+    private var basemap by mutableStateOf<Basemap?>(null)
 
     /** Sam ruch kamery rekomponuje widok, ale stylu nie buduje drugi raz. */
     @Test
@@ -76,7 +76,10 @@ class MapStyleRememberTest {
         }
     }
 
-    /** Zmiana danych, prostokąta i granicy terenu oraz motywu daje za każdym razem nowy styl. Wymagania: BR-G5 */
+    /**
+     * Zmiana danych, prostokąta i granicy terenu, motywu oraz podkładu daje za każdym razem nowy styl.
+     * Wymagania: BR-G5, NFR-39
+     */
     @Test
     fun rebuildsStyleOnChange() {
         show()
@@ -84,11 +87,11 @@ class MapStyleRememberTest {
         compose.runOnIdle { data = dataOf(building, other) }
         compose.runOnIdle {
             selection = MapSelection(bounds = area)
-            tiles = area
+            basemap = Basemap(bounds = area)
         }
         compose.runOnIdle { selection = selection.copy(boundary = outline) }
         compose.runOnIdle { colors = day.copy(isNight = true) }
-        compose.runOnIdle { tiles = area.copy(west = -1.0) }
+        compose.runOnIdle { basemap = Basemap(bounds = area, minZoom = 12.0) }
         compose.runOnIdle {
             assertEquals(6, builds.size)
             assertEquals(6, builds.toSet().size)
@@ -105,7 +108,7 @@ class MapStyleRememberTest {
             assertEquals("bez rozmiaru mapy styl nie powstaje", 0, builds.size)
             assertEquals("bez rozmiaru mapy brak stylu", null, styles.last())
         }
-        compose.runOnIdle { tiles = selection.bounds }
+        compose.runOnIdle { basemap = selection.bounds?.let { Basemap(bounds = it) } }
         compose.runOnIdle {
             assertEquals("po pomiarze jeden styl", 1, builds.size)
             assertEquals("po pomiarze styl gotowy", builds.single(), styles.last())
@@ -120,9 +123,9 @@ class MapStyleRememberTest {
                     data = data,
                     selection = selection,
                     colors = colors,
-                    tiles = tiles,
+                    basemap = basemap,
                 ) { mapData, area, palette, box ->
-                    campusMapStyle(data = mapData, selection = area, colors = palette, tiles = box).also(builds::add)
+                    campusMapStyle(data = mapData, selection = area, colors = palette, basemap = box).also(builds::add)
                 }
             SideEffect {
                 cameras += seen

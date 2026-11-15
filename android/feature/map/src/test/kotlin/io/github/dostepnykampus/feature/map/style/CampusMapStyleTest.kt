@@ -138,8 +138,8 @@ class CampusMapStyleTest {
     }
 
     /**
-     * Wiersz: V1, podkładu spoza prostokąta terenu powiększonego o pół widoku mapy aplikacja nie pobiera; bez
-     * podanego prostokąta podkładu jest nim prostokąt terenu.
+     * Wiersz: V1, podkładu spoza prostokąta terenu powiększonego o pół widoku mapy ani poniżej najmniejszego
+     * powiększenia podkładu aplikacja nie pobiera; bez podanego podkładu jest nim prostokąt terenu od powiększenia 0.
      *
      * Wymagania: NFR-39
      */
@@ -148,11 +148,14 @@ class CampusMapStyleTest {
         val bounds = CampusBounds(west = 16.9, south = 59.9, east = 17.1, north = 60.1)
         val tiles = CampusBounds(west = 16.8, south = 59.8, east = 17.2, north = 60.2)
         val area = MapSelection(bounds = bounds)
-        val style = campusMapStyle(data = data, selection = area, colors = colors, tiles = tiles)
-        val wider = Json.parseToJsonElement(style).jsonObject.obj("sources")
-        val plain = Json.parseToJsonElement(styled(area)).jsonObject.obj("sources")
-        assertEquals(listOf(16.8, 59.8, 17.2, 60.2), wider.obj("osm").boundsDegrees(), "w prostokącie podkładu")
-        assertEquals(listOf(16.9, 59.9, 17.1, 60.1), plain.obj("osm").boundsDegrees(), "bez niego w terenie")
+        val basemap = Basemap(bounds = tiles, minZoom = 12.5)
+        val text = campusMapStyle(data = data, selection = area, colors = colors, basemap = basemap)
+        val style = Json.parseToJsonElement(text).jsonObject
+        val plain = Json.parseToJsonElement(styled(area)).jsonObject
+        assertEquals(listOf(16.8, 59.8, 17.2, 60.2), style.basemapSource().boundsDegrees(), "w prostokącie podkładu")
+        assertEquals(12.5, style.basemapLayer().number("minzoom"), "podkład od najmniejszego powiększenia")
+        assertEquals(listOf(16.9, 59.9, 17.1, 60.1), plain.basemapSource().boundsDegrees(), "bez niego w terenie")
+        assertEquals(0.0, plain.basemapLayer().number("minzoom"), "bez niego od powiększenia 0")
     }
 
     @Test
@@ -201,6 +204,11 @@ class CampusMapStyleTest {
         campusMapStyle(data = data, selection = selection, colors = colors)
 
     private fun JsonObject.obj(key: String): JsonObject = getValue(key).jsonObject
+
+    private fun JsonObject.basemapSource(): JsonObject = obj("sources").obj("osm")
+
+    private fun JsonObject.basemapLayer(): JsonObject =
+        array("layers").map { it.jsonObject }.single { it.text("id") == "osm" }
 
     private fun JsonObject.boundsDegrees(): List<Double> = array("bounds").map { it.jsonPrimitive.double }
 
