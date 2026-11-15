@@ -57,9 +57,11 @@ class BarriersOnPlanTest {
         val barriers = campusMapData(styleCatalog()).withBarriers(BARRIERS).barriers
         val features = barriers.jsonObject.getValue("features").jsonArray
         return features
+            .asSequence()
             .map { it.jsonObject.getValue("properties").jsonObject }
-            .filter { evaluate(filter, it).jsonPrimitive.boolean }
+            .filter { evaluate(expression = filter, properties = it).jsonPrimitive.boolean }
             .map { it.getValue("id").jsonPrimitive.content }
+            .toList()
     }
 
     private fun evaluate(expression: JsonElement, properties: JsonObject): JsonElement {
@@ -67,7 +69,7 @@ class BarriersOnPlanTest {
         val name = expression.first().jsonPrimitive.content
         val arguments = expression.drop(1)
 
-        fun value(index: Int) = evaluate(arguments[index], properties)
+        fun value(index: Int) = evaluate(expression = arguments[index], properties = properties)
 
         return when (name) {
             "get" -> properties[arguments[0].jsonPrimitive.content] ?: JsonNull
