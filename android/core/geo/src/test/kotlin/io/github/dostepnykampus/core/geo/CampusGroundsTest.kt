@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.geo
 
+import io.github.dostepnykampus.core.geo.building.parseBuildingCatalog
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import org.junit.jupiter.api.Assertions.assertFalse
