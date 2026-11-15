@@ -7,14 +7,12 @@ package io.github.dostepnykampus.feature.map
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -23,6 +21,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -32,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -172,26 +172,13 @@ fun CampusMapScreen(
     val isList = state.isListSaved ?: (LocalDensity.current.fontScale >= LARGE_FONT_SCALE)
     val states = rememberSaveableStateHolder()
     val areas = rememberMapAreas(state.mapData, focus)
-    Column(modifier.fillMaxSize()) {
-        if (!isCovered) {
-            states.SaveableStateProvider(TOP_STATE) {
-                CampusSearch(
-                    catalog = catalog,
-                    search = state.search,
-                    onSearch = onSearch,
-                    isOnline = state.isOnline,
-                    syncedAt = state.syncedAt,
-                    isList = isList,
-                    areas = areas.order,
-                    onListChange = onListChange,
-                    onBuildingClick = if (isList) onListBuildingClick else onBuildingClick,
-                    modifier = if (isList) Modifier.weight(1f) else Modifier,
-                )
-            }
-        }
+    val barExit = rememberTopBarExit(isCovered = isCovered, motion = motion)
+    var barHeight by remember { mutableIntStateOf(0) }
+    val barTop = with(LocalDensity.current) { barHeight.toDp() }
+    Box(modifier.fillMaxSize()) {
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
-                Box(Modifier.weight(1f).fillMaxWidth()) {
+                Box(Modifier.fillMaxSize()) {
                     val shown = ShownBarriers(state.barriers.takeUnless { isCovered }.orEmpty())
                     CampusMap(
                         catalog = catalog,
@@ -199,6 +186,7 @@ fun CampusMapScreen(
                         barriers = shown,
                         focus = focus,
                         areas = areas,
+                        top = mapTop(isCovered = isCovered, bar = barTop),
                         contentPadding = contentPadding,
                         mapView = mapView,
                         motion = motion,
@@ -213,6 +201,25 @@ fun CampusMapScreen(
                 }
             }
         }
+        if (barExit.isBarShown(isCovered = isCovered, isList = isList)) {
+            states.SaveableStateProvider(TOP_STATE) {
+                CampusSearch(
+                    catalog = catalog,
+                    search = state.search,
+                    onSearch = onSearch,
+                    isOnline = state.isOnline,
+                    syncedAt = state.syncedAt,
+                    isList = isList,
+                    areas = areas.order,
+                    onListChange = onListChange,
+                    onBuildingClick = if (isList) onListBuildingClick else onBuildingClick,
+                    modifier =
+                        (if (isList) Modifier.fillMaxSize() else Modifier)
+                            .slideUp(barExit)
+                            .onSizeChanged { barHeight = it.height },
+                )
+            }
+        }
     }
 }
 
@@ -223,6 +230,7 @@ private fun CampusMap(
     barriers: ShownBarriers,
     focus: MapFocus?,
     areas: MapAreas,
+    top: Dp,
     contentPadding: PaddingValues,
     mapView: CampusMapView,
     motion: MapMotion?,
@@ -246,13 +254,13 @@ private fun CampusMap(
             area = areas.chosenName,
             cover = cover,
             size = size,
+            top = top,
             motion = motion,
         )
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
         val scene = state.scene
         val move = state.move
         if (scene != null && move != null && state.limits != null) {
-            val camera = move.camera
             mapView.Show(
                 data = scene.data,
                 selection = scene.selection.copy(barrier = barrierId, plan = plan),
@@ -264,12 +272,12 @@ private fun CampusMap(
                 modifier = Modifier.fillMaxSize(),
             )
             scene.selection.entrance?.let { EntranceDescription(it) }
-            AreaEdgeAnnouncement(camera = camera, bounds = state.limits.bounds, area = areas.current?.name)
+            AreaEdgeAnnouncement(camera = move.camera, bounds = state.limits.bounds, area = areas.current?.name)
             MapStatusBar(topInset, isShown = state.isCovered)
-            val underBar = if (state.isCovered) topInset.asPaddingValues() else PaddingValues()
+            val underBar = if (state.isCovered) topInset.asPaddingValues() else PaddingValues(top = top)
             val aboveSheet = Modifier.padding(underBar).padding(contentPadding)
             MapOverlay(
-                camera = camera,
+                camera = move.camera,
                 hasControls = state.hasControls && !isKeyboardOpen,
                 dataDay = catalog?.dataDay(),
                 onCameraChange = state::move,

@@ -33,6 +33,7 @@ import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
+import io.github.dostepnykampus.feature.map.camera.belowTop
 import io.github.dostepnykampus.feature.map.camera.byControl
 import io.github.dostepnykampus.feature.map.camera.cameraTransition
 import io.github.dostepnykampus.feature.map.camera.mapLimits
@@ -139,6 +140,7 @@ internal fun rememberMapSceneState(
     area: String?,
     cover: Dp,
     size: IntSize,
+    top: Dp = 0.dp,
     motion: MapMotion? = null,
 ): MapSceneState {
     val scene = rememberMapScene(layers = layers, catalog = catalog, focus = focus, area = area)
@@ -148,10 +150,11 @@ internal fun rememberMapSceneState(
     val isCovered = cover > 0.dp
     val density = LocalDensity.current
     val own = view.camera ?: selection?.entrance?.let { MapCamera(center = it.location, zoom = ENTRANCE_ZOOM) }
-    val limits = density.mapLimits(selection?.bounds, size)
+    val topInset = with(density) { top.toPx() }.toDouble()
+    val limits = density.mapLimits(selection?.bounds, size.belowTop(topInset))
     val start = layers?.start?.let { MapCamera(center = it, zoom = START_ZOOM) }
     val uncovered = (own ?: start)?.let { limits?.clamp(it) ?: it }
-    val inset = with(density) { cover.toPx() }.toDouble()
+    val bottomInset = with(density) { cover.toPx() }.toDouble()
     val free = density.freeMap(size, cover)
     val outline = layers?.run { outlinesBySymbol[selection?.building] }.takeIf { isCovered }
     val last = remember { ShownCamera() }
@@ -165,9 +168,10 @@ internal fun rememberMapSceneState(
     val above = card.move?.takeIf { isCovered }
     val move = above ?: uncovered?.byControl()
     SideEffect { last.keep(move?.camera) }
+    val inset = sheetOrBarInset(isAbove = above != null, top = topInset, bottom = bottomInset)
     return MapSceneState(
         scene = scene,
-        shown = move?.let { SceneCamera(it, inset = MapInset(bottom = if (above == null) 0.0 else inset)) },
+        shown = move?.let { SceneCamera(it, inset) },
         limits = limits,
         cover = mapCover(isCovered, hasControls = free.hasRoomForControls),
         choices = choices,
@@ -184,6 +188,9 @@ internal fun rememberMapSceneState(
  * @property inset zasłonięte krawędzie mapy: dół zasłonięty arkuszem V2, gdy [move] stawia budynek nad arkuszem
  */
 internal data class SceneCamera(val move: CameraTransition, val inset: MapInset = MapInset())
+
+private fun sheetOrBarInset(isAbove: Boolean, top: Double, bottom: Double): MapInset =
+    if (isAbove) MapInset(bottom = bottom) else MapInset(top = top)
 
 /**
  * Zasłonięcie mapy V1 przez arkusz V2. Nad arkuszem przyciski mapy stoją tylko przy co najmniej 300 dp wolnej mapy.
