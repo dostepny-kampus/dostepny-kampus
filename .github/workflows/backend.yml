@@ -31,29 +31,29 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  porownanie:
+  zmiany:
+    # Nieudane `zmiany` uruchamia kontrole w pełni. Równe drzewo grupy (pomin) je pomija.
     if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     permissions:
       actions: read
       contents: read
-    uses: ./.github/workflows/drzewo-grupy.yml
-    with:
-      workflow: backend.yml
-
-  zmiany:
-    needs: porownanie
-    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (github.event_name == 'pull_request' || github.event_name == 'merge_group') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
+      pomin: ${{ steps.drzewo.outputs.pomin }}
       serwer: ${{ steps.diff.outputs.serwer }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 2
           persist-credentials: false
+      - id: drzewo
+        uses: ./.github/actions/drzewo-grupy
+        with:
+          workflow: backend.yml
       - name: Sprawdź, czy PR albo grupa w kolejce zmienia serwer albo pliki, które czytają jego testy
         id: diff
+        if: steps.drzewo.outputs.pomin != 'true'
         env:
           EVENT: ${{ github.event_name }}
           GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
@@ -64,8 +64,8 @@ jobs:
           .github/actions/java-serwera
 
   serwer:
-    needs: [porownanie, zmiany]
-    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.serwer == 'true') }}
+    needs: zmiany
+    if: ${{ !cancelled() && needs.zmiany.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.serwer == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     defaults:
@@ -109,8 +109,8 @@ jobs:
         run: ./mvnw -B -DskipTests test-compile
 
   jakosc:
-    needs: [porownanie, zmiany]
-    if: &warunek-jakosc ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && github.event_name != 'push' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.serwer == 'true') }}
+    needs: zmiany
+    if: &warunek-jakosc ${{ !cancelled() && needs.zmiany.outputs.pomin != 'true' && github.event_name != 'push' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.serwer == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -127,7 +127,7 @@ jobs:
   spojnosc:
     # Raport spójności klas (jpeek) jako artefakt; próg dla klas ustalimy po sprincie (#1698).
     # Gdy raport nie powstał, zadanie jest czerwone.
-    needs: [porownanie, zmiany]
+    needs: zmiany
     if: *warunek-jakosc
     runs-on: ubuntu-latest
     timeout-minutes: 15

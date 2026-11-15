@@ -1,0 +1,39 @@
+# Dostępny Kampus
+# Author: Vladyslav Yevkov
+# Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+
+name: Drzewo grupy
+description: Na PR zapisuje drzewo commitu scalenia jako artefakt, w grupie kolejki porównuje je z drzewem sprawdzonym na PR (pomin). Wymaga checkoutu z .github/scripts i uprawnienia actions read.
+
+inputs:
+  workflow:
+    description: Plik workflow, którego zielony przebieg na PR pozwala pominąć kontrole w grupie kolejki.
+    required: true
+
+outputs:
+  pomin:
+    description: „true”, gdy drzewo grupy jest równe drzewu sprawdzonemu w pełni zielonym przebiegiem na PR.
+    value: ${{ steps.porownanie.outputs.pomin }}
+
+runs:
+  using: composite
+  steps:
+    - id: porownanie
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GH_REPO: ${{ github.repository }}
+        GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
+        GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
+        GROUP_HEAD_REF: ${{ github.event.merge_group.head_ref }}
+        DRZEWO_KATALOG: ${{ runner.temp }}/drzewo
+        DRZEWO_WORKFLOW: ${{ inputs.workflow }}
+        TRYB: ${{ github.event_name == 'merge_group' && 'porownaj' || 'zapisz' }}
+      run: bash .github/scripts/drzewo-grupy.sh "$TRYB"
+    - if: github.event_name == 'pull_request'
+      uses: actions/upload-artifact@v7.0.2
+      with:
+        name: drzewo-scalenia
+        path: ${{ runner.temp }}/drzewo/drzewo.txt
+        if-no-files-found: ignore
+        retention-days: 7
