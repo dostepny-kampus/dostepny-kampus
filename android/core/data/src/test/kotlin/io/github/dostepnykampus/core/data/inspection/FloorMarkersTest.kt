@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.inspection
@@ -37,7 +37,7 @@ class FloorMarkersTest {
             val markerId = markers.mark(buildingSymbol = "A-1", floorId = "p4")
             val waiting =
                 PendingMarkerChange(markerId = markerId, buildingSymbol = "A-1", floorId = "p4", isRevoke = false)
-            assertEquals(listOf(waiting), markers.pending().first())
+            assertEquals(listOf(waiting), markers.pending().first(), "zmiana czeka w kolejce")
         }
 
     /**
@@ -51,7 +51,7 @@ class FloorMarkersTest {
             markers.revoke(markerId = "na-serwerze", buildingSymbol = "A-1", floorId = "p2")
             val waiting =
                 PendingMarkerChange(markerId = "na-serwerze", buildingSymbol = "A-1", floorId = "p2", isRevoke = true)
-            assertEquals(listOf(waiting), markers.pending().first())
+            assertEquals(listOf(waiting), markers.pending().first(), "zmiana czeka w kolejce")
         }
 
     @Test
@@ -59,7 +59,7 @@ class FloorMarkersTest {
         runBlocking {
             val markerId = markers.mark(buildingSymbol = "B-8", floorId = null)
             markers.revoke(markerId = markerId, buildingSymbol = "B-8", floorId = null)
-            assertEquals(emptyList<PendingMarkerChange>(), markers.pending().first())
+            assertEquals(emptyList<PendingMarkerChange>(), markers.pending().first(), "brak oczekujących zmian")
         }
 
     @Test
@@ -67,7 +67,7 @@ class FloorMarkersTest {
         runBlocking {
             markers.mark(buildingSymbol = "A-1", floorId = "p4")
             markers.revoke(markerId = "na-serwerze", buildingSymbol = "A-1", floorId = "p2")
-            assertEquals(2, queue.rows.keys.size)
+            assertEquals(2, queue.rows.keys.size, "liczba wierszy kolejki")
         }
 }
 

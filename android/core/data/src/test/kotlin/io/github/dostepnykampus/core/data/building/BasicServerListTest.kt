@@ -31,22 +31,31 @@ class BasicServerListTest {
         assertEquals(
             direct(ServerReply.Ok(BuildingList(SOURCE, listOf(ApiBuilding(SERVER, DetailLevel.BASIC))))),
             fixture(ServerReply.Ok(ServerBuildings(SOURCE, listOf(SERVER)))),
+            "odpowiedź z listą jak z bezpośredniego klienta",
         )
     }
 
     @Test
     fun mapsOfflineToOffline() {
-        assertEquals(direct(ServerReply.Offline), fixture(ServerReply.Offline))
+        assertEquals(direct(ServerReply.Offline), fixture(ServerReply.Offline), "offline jak z bezpośredniego klienta")
     }
 
     @Test
     fun mapsFaultToFault() {
-        assertEquals(direct(ServerReply.Fault(SERVER_ERROR)), fixture(ServerReply.Fault(SERVER_ERROR)))
+        assertEquals(
+            direct(ServerReply.Fault(SERVER_ERROR)),
+            fixture(ServerReply.Fault(SERVER_ERROR)),
+            "błąd serwera jak z bezpośredniego klienta",
+        )
     }
 
     @Test
     fun mapsMissingToMissing() {
-        assertEquals(direct(ServerReply.Missing), fixture(ServerReply.Missing))
+        assertEquals(
+            direct(ServerReply.Missing),
+            fixture(ServerReply.Missing),
+            "brak zasobu jak z bezpośredniego klienta",
+        )
     }
 
     private fun direct(result: ServerReply<BuildingList>): BuildingCatalog =

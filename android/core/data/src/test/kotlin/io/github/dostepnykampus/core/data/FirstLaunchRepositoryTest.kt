@@ -37,7 +37,7 @@ class FirstLaunchRepositoryTest {
                 beforeMark + repository.isFirstLaunch()
             }
 
-        assertEquals(listOf(true, true, false), launches)
+        assertEquals(listOf(true, true, false), launches, "kolejne uruchomienia: dwa pierwsze, potem nie")
     }
 
     /**
@@ -49,13 +49,16 @@ class FirstLaunchRepositoryTest {
     fun keepsUnmarkedAfterRestart() {
         withRepository { it.isFirstLaunch() }
 
-        assertTrue(withRepository { it.isFirstLaunch() })
+        assertTrue(withRepository { it.isFirstLaunch() }, "pierwsze uruchomienie przy pustych ustawieniach")
     }
 
     /** Błąd odczytu pliku ustawień nie zamyka aplikacji i nie otwiera instrukcji od nowa. */
     @Test
     fun skipsHelpOnReadError() {
-        assertFalse(runBlocking { FirstLaunchRepository(UnreadableSettings()).isFirstLaunch() })
+        assertFalse(
+            runBlocking { FirstLaunchRepository(UnreadableSettings()).isFirstLaunch() },
+            "nieczytelne ustawienia nie są pierwszym uruchomieniem",
+        )
     }
 
     /** Błąd zapisu pliku ustawień zostaje w repozytorium. */
@@ -69,7 +72,7 @@ class FirstLaunchRepositoryTest {
     fun skipsHelpOnSecondLaunch() {
         withRepository { it.markHelpSeen() }
 
-        assertFalse(withRepository { it.isFirstLaunch() })
+        assertFalse(withRepository { it.isFirstLaunch() }, "po zapisie to już nie pierwsze uruchomienie")
     }
 
     private fun <T> withRepository(block: suspend (FirstLaunchRepository) -> T): T =

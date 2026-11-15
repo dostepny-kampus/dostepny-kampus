@@ -27,7 +27,11 @@ class AcceptedBarriersTest {
             val submissions = Severity.entries.map { submission(id = it.name, content = precise(it.value)) }
             val barriers = ServerAcceptedBarriers { ServerReply.Ok(submissions) }.barriers()
 
-            assertEquals(Severity.entries, barriers.map(AcceptedBarrier::severity))
+            assertEquals(
+                Severity.entries,
+                barriers.map(AcceptedBarrier::severity),
+                "poziomy ważności zachowują kolejność",
+            )
             val first =
                 AcceptedBarrier(
                     id = Severity.HINDRANCE.name,
@@ -38,7 +42,7 @@ class AcceptedBarriersTest {
                     verifiedAt = VERIFIED,
                     photoIds = listOf("p1"),
                 )
-            assertEquals(first, barriers.first())
+            assertEquals(first, barriers.first(), "powtórne pobranie daje to samo zgłoszenie")
         }
 
     @Test
@@ -54,7 +58,7 @@ class AcceptedBarriersTest {
             val submissions = contents.mapIndexed { index, content -> submission(id = "z$index", content = content) }
             val barriers = ServerAcceptedBarriers { ServerReply.Ok(submissions) }.barriers()
 
-            assertEquals(listOf("z3"), barriers.map(AcceptedBarrier::id))
+            assertEquals(listOf("z3"), barriers.map(AcceptedBarrier::id), "tylko zgłoszenia z listy serwera")
         }
 
     @Test
@@ -63,7 +67,7 @@ class AcceptedBarriersTest {
             val answers = listOf(ServerReply.Offline, ServerReply.Fault(code = 500))
             val lists = answers.map { answer -> ServerAcceptedBarriers { answer }.barriers() }
 
-            assertEquals(listOf(emptyList(), emptyList<AcceptedBarrier>()), lists)
+            assertEquals(listOf(emptyList(), emptyList<AcceptedBarrier>()), lists, "puste listy zostają puste")
         }
 
     @Test
@@ -73,8 +77,8 @@ class AcceptedBarriersTest {
             val answers = ArrayDeque(listOf(ServerReply.Ok(one), ServerReply.Ok(emptyList())))
             val source = ServerAcceptedBarriers { answers.removeFirst() }
 
-            assertEquals(listOf("z1"), source.barriers().map(AcceptedBarrier::id))
-            assertEquals(emptyList<AcceptedBarrier>(), source.barriers())
+            assertEquals(listOf("z1"), source.barriers().map(AcceptedBarrier::id), "identyfikatory zgłoszeń z serwera")
+            assertEquals(emptyList<AcceptedBarrier>(), source.barriers(), "offline bez kopii daje pustą listę")
         }
 
     private fun precise(severity: Int?) =

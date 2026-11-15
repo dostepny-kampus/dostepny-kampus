@@ -19,6 +19,6 @@ class RoleProviderTest {
      */
     @Test
     fun treatsEveryoneAsGuest() {
-        assertEquals(Account.Guest, GuestRoleProvider.account.value)
+        assertEquals(Account.Guest, GuestRoleProvider.account.value, "rola domyślna to gość")
     }
 }

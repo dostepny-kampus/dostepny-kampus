@@ -21,22 +21,30 @@ import java.time.Instant
 class ApiRepliesTest {
     @Test
     fun mapsSuccessToOk() {
-        assertEquals(ServerReply.Ok(TEXT.length), reply(ApiResult.Success(TEXT)))
+        assertEquals(ServerReply.Ok(TEXT.length), reply(ApiResult.Success(TEXT)), "sukces daje odpowiedź z treścią")
     }
 
     @Test
     fun mapsNotFoundToMissing() {
-        assertEquals(ServerReply.Missing, reply(ApiResult.NotFound))
+        assertEquals(ServerReply.Missing, reply(ApiResult.NotFound), "nie znaleziono daje brak zasobu")
     }
 
     @Test
     fun mapsNetworkErrorToOffline() {
-        assertEquals(ServerReply.Offline, reply(ApiResult.NetworkError(IOException("brak sieci"))))
+        assertEquals(
+            ServerReply.Offline,
+            reply(ApiResult.NetworkError(IOException("brak sieci"))),
+            "błąd sieci daje offline",
+        )
     }
 
     @Test
     fun mapsServerErrorToFault() {
-        assertEquals(ServerReply.Fault(SERVER_ERROR), reply(ApiResult.ServerError(SERVER_ERROR)))
+        assertEquals(
+            ServerReply.Fault(SERVER_ERROR),
+            reply(ApiResult.ServerError(SERVER_ERROR)),
+            "błąd serwera daje usterkę",
+        )
     }
 
     @Test
@@ -44,6 +52,7 @@ class ApiRepliesTest {
         assertEquals(
             listOf(ServerEdit.Saved(SUBMISSION), ServerEdit.Conflict(SUBMISSION)),
             listOf(SubmissionEdit.Saved(SUBMISSION), SubmissionEdit.Conflict(SUBMISSION)).map { it.toServerEdit() },
+            "zapis i konflikt przekładane na odpowiedzi serwera",
         )
     }
 
