@@ -190,7 +190,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                 .param("reviewer", decision.reviewer())
                 .param("status", decision.outcome().name())
                 .param("reason", decision.reason())
-                .query(this.rows).optional(),
+                .query(this.rows).optional().orElse(null),
             decision.id()
         );
     }
