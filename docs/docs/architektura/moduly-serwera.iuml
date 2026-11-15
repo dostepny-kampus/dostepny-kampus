@@ -28,6 +28,7 @@ System_Boundary("DostepnyKampusApplication_boundary", "DostepnyKampusApplication
 Rel(DostepnyKampusApplication.DostepnyKampusApplication.Building, DostepnyKampusApplication.DostepnyKampusApplication.Shared, "depends on", $techn="", $tags="", $link="")
 Rel(DostepnyKampusApplication.DostepnyKampusApplication.Barrier, DostepnyKampusApplication.DostepnyKampusApplication.Shared, "depends on", $techn="", $tags="", $link="")
 Rel(DostepnyKampusApplication.DostepnyKampusApplication.Barrier, DostepnyKampusApplication.DostepnyKampusApplication.Building, "uses", $techn="", $tags="", $link="")
+Rel(DostepnyKampusApplication.DostepnyKampusApplication.Inspection, DostepnyKampusApplication.DostepnyKampusApplication.Shared, "depends on", $techn="", $tags="", $link="")
 Rel(DostepnyKampusApplication.DostepnyKampusApplication.Inspection, DostepnyKampusApplication.DostepnyKampusApplication.Building, "uses", $techn="", $tags="", $link="")
 
 SHOW_LEGEND(true)
