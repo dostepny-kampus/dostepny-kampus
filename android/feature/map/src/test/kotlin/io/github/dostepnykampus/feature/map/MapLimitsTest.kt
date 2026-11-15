@@ -7,6 +7,8 @@ package io.github.dostepnykampus.feature.map
 
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
+import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
@@ -48,22 +50,44 @@ class MapLimitsTest {
     }
 
     /**
-     * Wiersz: V1, podkład sięga poza prostokąt terenu o pół widoku mapy przy najmniejszym powiększeniu,
-     * więc przy brzegu terenu nie ma pustych pasów: na pionowym telefonie 400 × 800 dp i na poziomym 1024 × 768 dp.
+     * Wiersz: V1, prostokąt widoku to prostokąt terenu rozszerzony do proporcji mapy, ze środkiem w środku terenu,
+     * więc przy najmniejszym powiększeniu wypełnia mapę; podkład jest tylko w nim. Na równiku pas szeroki na
+     * `span` i wysoki na `span / 4` na mapie 400 × 800 dp rośnie w pionie do `2 * span`.
      *
-     * Wymagania: NFR-39
+     * Wymagania: US1.7, NFR-39
      */
     @Test
-    fun extendsTilesByHalfView() {
+    fun widensAreaToView() {
         val wide = CampusBounds(west = 0.0, south = -span / 8, east = span, north = span / 8)
-        val tall = CampusBounds(west = 0.0, south = -span / 2, east = span / 8, north = span / 2)
-        val portrait = MapLimits(wide, widthDp = 400.0, heightDp = 800.0).tileBounds
-        val landscape = MapLimits(tall, widthDp = 1024.0, heightDp = 768.0).tileBounds
-        assertEquals(-span / 2, portrait.west, DEGREE_DELTA, "pionowy: zachód o pół szerokości widoku")
-        assertEquals(1.5 * span, portrait.east, DEGREE_DELTA, "pionowy: wschód o pół szerokości widoku")
-        assertEquals(span / 8 + span, portrait.north, DEGREE_DELTA, "pionowy: północ o pół wysokości widoku")
-        assertEquals(span / 8 + 2 * span / 3, landscape.east, DEGREE_DELTA, "poziomy: wschód o pół szerokości")
-        assertEquals(span, landscape.north, DEGREE_DELTA, "poziomy: północ o pół wysokości widoku")
+        val limits = MapLimits(wide, widthDp = 400.0, heightDp = 800.0)
+        val area = limits.area
+        assertEquals(0.0, area.west, DEGREE_DELTA, "zachód bez zmian")
+        assertEquals(span, area.east, DEGREE_DELTA, "wschód bez zmian")
+        assertEquals(span, area.north, MERCATOR_DELTA, "północ do proporcji 1 : 2")
+        assertEquals(-span, area.south, MERCATOR_DELTA, "południe do proporcji 1 : 2")
+        assertEquals(area, limits.tileBounds, "kafelki tylko w prostokącie widoku")
+    }
+
+    /**
+     * Wiersz: V1, cały widok mapy zostaje w prostokącie terenu: środek leży najwyżej pół widoku od brzegu prostokąta,
+     * więc brzeg mapy staje na brzegu prostokąta. Przy najmniejszym powiększeniu środek to środek prostokąta.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Mapa nie wychodzi poza wybrany teren
+     *
+     * Wymagania: US1.7, NFR-39, NFR-53
+     */
+    @Test
+    fun keepsWholeViewInArea() {
+        val square = CampusBounds(west = 0.0, south = -span / 2, east = span, north = span / 2)
+        val limits = MapLimits(square, widthDp = 512.0, heightDp = 512.0)
+        val far = MapCamera(center = GeoPoint(longitude = 1.0, latitude = 1.0), zoom = 15.0)
+        val corner = limits.clamp(far)
+        assertEquals(span * 3 / 4, corner.center.longitude, DEGREE_DELTA, "brzeg widoku na wschodnim brzegu")
+        assertEquals(span / 4, corner.center.latitude, MERCATOR_DELTA, "brzeg widoku na północnym brzegu")
+        val widest = limits.clamp(far.copy(zoom = 3.0))
+        assertEquals(14.0, widest.zoom, ZOOM_DELTA, "najmniejsze powiększenie: prostokąt wypełnia widok")
+        assertEquals(span / 2, widest.center.longitude, DEGREE_DELTA, "środek prostokąta")
+        val small = limits.clamp(far, viewWidthDp = 256.0, viewHeightDp = 256.0)
+        assertEquals(span * 7 / 8, small.center.longitude, DEGREE_DELTA, "mniejsza odkryta część sięga dalej")
     }
 
     /**
@@ -77,11 +101,12 @@ class MapLimitsTest {
         val area = CampusBounds(west = 0.0, south = 0.0, east = span, north = span)
         val limits = MapLimits(area, widthDp = 400.0, heightDp = 800.0)
         assertEquals(limits.minZoom - 0.5, limits.basemap.minZoom, ZOOM_DELTA, "podkład od pół poziomu niżej")
-        assertEquals(limits.tileBounds, limits.basemap.bounds, "kafelki podkładu w prostokącie z pół widoku")
+        assertEquals(limits.tileBounds, limits.basemap.bounds, "kafelki podkładu w prostokącie widoku")
     }
 
     private companion object {
         const val ZOOM_DELTA = 1e-3
         const val DEGREE_DELTA = 1e-9
+        const val MERCATOR_DELTA = 1e-6
     }
 }

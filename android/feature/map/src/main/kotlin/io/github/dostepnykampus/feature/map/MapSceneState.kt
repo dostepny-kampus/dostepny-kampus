@@ -279,7 +279,8 @@ private fun pickMove(
 ): CameraTransition? {
     if (outline == null || from == null) return null
     val move = cameraTransition(from = from, outline = outline, free = free, animationScale = scale)
-    return limits?.let { move.copy(camera = it.clamp(move.camera)) } ?: move
+    val clamped = limits?.clamp(move.camera, viewWidthDp = free.widthDp, viewHeightDp = free.heightDp)
+    return clamped?.let { move.copy(camera = it) } ?: move
 }
 
 @Composable
