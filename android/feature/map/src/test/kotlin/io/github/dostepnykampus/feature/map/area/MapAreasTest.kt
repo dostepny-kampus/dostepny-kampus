@@ -56,8 +56,7 @@ class MapAreasTest {
             chosen = chosen,
             seen = seen,
             followed = followed,
-            announced = announced,
-            onScreen = onScreen,
+            noticeMemory = NoticeMemory(announced = announced, onScreen = onScreen),
         )
 
     /**

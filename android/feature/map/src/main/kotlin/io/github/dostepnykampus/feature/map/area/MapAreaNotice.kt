@@ -29,21 +29,16 @@ import io.github.dostepnykampus.feature.map.overlay.mapControlBorder
  * Napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód” nad podpisem mapy według makiety hi-fi: mapa
  * zmieniła teren na [shift], bo zaznaczony budynek leży na tym terenie. Odległość i kierunek mówią, gdzie jest nowy
  * teren, bez patrzenia na ruch mapy. Napis jest komunikatem stanu tylko przy pierwszym pokazaniu ([isNew]).
- * Wejście na ekran i zejście z niego oddaje [onShown]. Zostaje bez limitu czasu (NFR-23).
+ * Wejście na ekran i zejście z niego oddaje [onShow]. Zostaje bez limitu czasu.
  *
  * Wymagania: US1.8, NFR-18, NFR-23, NFR-56
  */
 @Composable
-internal fun AreaNotice(
-    shift: AreaShift,
-    isNew: Boolean,
-    onShown: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-) {
+internal fun AreaNotice(shift: AreaShift, isNew: Boolean, onShow: (Boolean) -> Unit, modifier: Modifier = Modifier) {
     val direction = stringResource(shift.direction.label)
     val description = stringResource(R.string.mapa_teren_pokazuje_opis, shift.name, shift.kilometers, direction)
     val isLive = remember { isNew }
-    val shown by rememberUpdatedState(onShown)
+    val shown by rememberUpdatedState(onShow)
     DisposableEffect(Unit) {
         shown(true)
         onDispose { shown(false) }

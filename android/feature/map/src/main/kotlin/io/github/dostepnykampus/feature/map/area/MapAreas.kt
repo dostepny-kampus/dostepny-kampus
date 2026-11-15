@@ -44,8 +44,7 @@ internal fun AreaOrder.otherAreaOf(symbol: String): String? =
  * @param seen zapisywana nazwa terenu, o którym osoba już wie: wybrała go albo ruszyła na nim mapę; `null`, dopóki
  *   widziała tylko teren startowy
  * @param followed zapisywany symbol budynku, którego teren mapa już pokazała; `null` bez zaznaczenia
- * @param announced zapisywana nazwa terenu, którego napis był już pokazany; `null` przed pierwszym napisem
- * @param onScreen czy napis o zmianie terenu jest teraz na ekranie
+ * @param noticeMemory co wiadomo o pokazywaniu napisu o zmianie terenu
  */
 internal class MapAreas(
     private val data: CampusMapData?,
@@ -53,8 +52,7 @@ internal class MapAreas(
     private val chosen: MutableState<String?>,
     private val seen: MutableState<String?>,
     private val followed: MutableState<String?>,
-    private val announced: MutableState<String?> = mutableStateOf(null),
-    private val onScreen: MutableState<Boolean> = mutableStateOf(false),
+    private val noticeMemory: NoticeMemory = NoticeMemory(),
 ) {
     /** Nazwa terenu ustawionego przez osobę albo wyborem budynku; `null`, gdy mapa stoi na terenie startowym. */
     val chosenName: String? get() = chosen.value
@@ -97,7 +95,7 @@ internal class MapAreas(
      *
      * Wymagania: US1.8, NFR-18
      */
-    val isNoticeNew: Boolean get() = notice != null && announced.value != current?.name
+    val isNoticeNew: Boolean get() = notice != null && noticeMemory.announced.value != current?.name
 
     /**
      * Napis o zmianie terenu wszedł na ekran ([isShown]) albo z niego zszedł. Pokazany napis jest już przeczytany.
@@ -105,8 +103,8 @@ internal class MapAreas(
      * Wymagania: US1.8, NFR-18
      */
     fun noticeShown(isShown: Boolean) {
-        onScreen.value = isShown
-        if (isShown) announced.value = current?.name
+        noticeMemory.onScreen.value = isShown
+        if (isShown) noticeMemory.announced.value = current?.name
     }
 
     /**
@@ -116,7 +114,7 @@ internal class MapAreas(
      * Wymagania: US1.8, NFR-23
      */
     fun acknowledge() {
-        if (onScreen.value) current?.let { seen.value = it.name }
+        if (noticeMemory.onScreen.value) current?.let { seen.value = it.name }
     }
 
     /**
@@ -153,6 +151,19 @@ internal class MapAreas(
 }
 
 /**
+ * Pamięć napisu o zmianie terenu.
+ *
+ * Wymagania: US1.8, NFR-18, NFR-23
+ *
+ * @property announced zapisywana nazwa terenu, którego napis był już pokazany; `null` przed pierwszym napisem
+ * @property onScreen czy napis o zmianie terenu jest teraz na ekranie
+ */
+internal class NoticeMemory(
+    val announced: MutableState<String?> = mutableStateOf(null),
+    val onScreen: MutableState<Boolean> = mutableStateOf(false),
+)
+
+/**
  * Tereny mapy z danych [layers] i zaznaczenia [focus] z trasy. Teren jest zapisywany, więc wraca po obrocie
  * ekranu i po „Wstecz” z V2. Wybór budynku z innego terenu, np. z wyszukiwania, ustawia teren raz; potem zmienia go
  * tylko osoba, a zamknięcie karty i zniknięcie zaznaczenia go zostawiają.
@@ -172,6 +183,7 @@ internal fun rememberMapAreas(layers: CampusMapData?, focus: MapFocus?): MapArea
     val seen = rememberSaveable { mutableStateOf<String?>(null) }
     val announced = rememberSaveable { mutableStateOf<String?>(null) }
     val onScreen = remember { mutableStateOf(false) }
+    val noticeMemory = remember { NoticeMemory(announced = announced, onScreen = onScreen) }
     val areas =
         remember(layers, symbol, chosen) {
             MapAreas(
@@ -180,8 +192,7 @@ internal fun rememberMapAreas(layers: CampusMapData?, focus: MapFocus?): MapArea
                 chosen = chosen,
                 seen = seen,
                 followed = followed,
-                announced = announced,
-                onScreen = onScreen,
+                noticeMemory = noticeMemory,
             )
         }
     SideEffect { areas.followSelection() }

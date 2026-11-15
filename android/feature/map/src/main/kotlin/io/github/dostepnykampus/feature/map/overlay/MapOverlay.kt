@@ -108,7 +108,7 @@ internal fun MapOverlay(
         }
         Column(Modifier.align(Alignment.BottomStart)) {
             areas.notice?.takeIf { hasNotice && open == null }?.let {
-                AreaNotice(shift = it, isNew = areas.isNoticeNew, onShown = areas::noticeShown)
+                AreaNotice(shift = it, isNew = areas.isNoticeNew, onShow = areas::noticeShown)
             }
             OsmAttribution()
         }
