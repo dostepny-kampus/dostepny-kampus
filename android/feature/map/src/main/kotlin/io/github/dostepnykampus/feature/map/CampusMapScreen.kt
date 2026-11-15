@@ -252,10 +252,7 @@ private fun CampusMap(
                 selection = scene.selection.copy(barrier = barrierId, plan = plan),
                 move = move,
                 inset = state.inset,
-                onCameraIdle = { view ->
-                    state.keep(view)
-                    onCamera(view)
-                },
+                onCameraIdle = { view -> onCamera(view.also { state.keep(it) }) },
                 onBuildingsTouch = { state.touch(it, onBuildingClick, onEmptyMapClick).also { barrierId = null } },
                 onBarrierTouch = { barrierId = it.also { state.dismiss() } },
                 modifier = Modifier.fillMaxSize(),
