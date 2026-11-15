@@ -125,6 +125,14 @@ powód zapisz w opisie PR.
 Po zmianie interfejsu obejrzyj prawdziwy zrzut ekranu wyniku, nie tylko wynik testu.
 Po scaleniu sprawdź CI gałęzi `sprint/N`.
 
+Kolejka i kontrola sprintu (co sprawdza która, opisuje [CONTRIBUTING.md](CONTRIBUTING.md)):
+
+- PR, który wypadł z kolejki, wraca do niej dopiero po przeniesieniu na aktualny `sprint/N` i zielonym CI
+  na nowym commicie. Ponowne wstawienie bez poprawki przewraca grupy stojące za nim.
+- Czerwona kontrola sprintu nie zatrzymuje pracy. Issue z etykietą `sprint-czerwony` bierze pierwsza wolna
+  osoba i przypisuje się; jej PR wchodzi do kolejki na początek (`jump`).
+- Sprint trafia do `main` tylko z zieloną kontrolą sprintu na swojej głowie.
+
 ## 9. Kontroli nie wolno osłabiać
 
 - Nie dodawaj wyciszeń analizy, wyjątków od reguł ani niższych progów, żeby zmiana przeszła.
