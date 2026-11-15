@@ -30,5 +30,4 @@ public fun interface RoomSearch {
  *
  * @param api klient HTTP budynków i sal
  */
-internal fun roomSearchOf(api: BuildingsApi): RoomSearch =
-    RoomSearch { query -> api.searchRooms(query).toReply { it } }
+internal fun roomSearchOf(api: BuildingsApi): RoomSearch = RoomSearch { query -> api.searchRooms(query).toReply { it } }
