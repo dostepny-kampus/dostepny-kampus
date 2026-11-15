@@ -32,11 +32,11 @@ Czynność główna: wpisanie symbolu budynku w pole na górze ekranu.
 | Pole „Wpisz symbol budynku, np. C-13” na pełną szerokość, pierwsze pod nagłówkiem | US1.1, PW-8 |
 | Przełącznik „Mapa” i „Lista budynków”; wybraną pozycję widać po kształcie pola | NFR-19, NFR-21 |
 | Przycisk terenu nad „Legendą” z nazwą wybranego terenu, np. „Kampus główny”; otwiera panel „Teren na mapie” | US1.6, US1.7, NFR-17, NFR-18 |
-| „Legenda” nad mapą: znaki mapy i planu z napisami | NFR-21, decyzja 48 |
+| „ⓘ” przy podpisie otwiera arkusz „Legenda”: znaki mapy i planu z napisami, na końcu źródła | US1.4, NFR-21, decyzja 48 |
 | Zastępnik mapy: mapa ulic, kontury budynków, bariery ze zgłoszeń przyjętych | US1, US1.3, US10.6, NFR-11 |
 | Bariera na mapie: znak uciążliwości, a słowo, np. „Blokada”, gdy mieści się bez nakładania | US1.3, NFR-20, NFR-21, PW-13 |
 | Na mapie „Powiększ”, „Pomniejsz” i strzałki przesuwania w krzyżu, każda z nazwą dla TalkBack „Przesuń mapę w górę” itd. | NFR-15 (WCAG 2.5.1, 2.5.7), NFR-18, PW-8, PW-11 |
-| „© OpenStreetMap contributors” w jednym wierszu jako odnośnik, w ramce mapy; obok „ⓘ” ze źródłami mapy | NFR-37, NFR-40 |
+| „© OpenStreetMap contributors” w jednym wierszu jako odnośnik, w ramce mapy; obok „ⓘ” | NFR-37, NFR-40 |
 | Pasek dolny z „Konto” | US1, US4, US5.1, US14 |
 
 | Stan bez osobnej makiety | Co się zmienia |
@@ -214,7 +214,7 @@ Czynność główna: wybranie terenu z listy, które pokazuje mapę tego terenu.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| Przycisk terenu z nazwą wybranego terenu otwiera panel pod sobą; panel i „Legenda” nie są otwarte razem | US1.6, US1.7 |
+| Przycisk terenu z nazwą wybranego terenu otwiera panel pod sobą; panel i arkusz „Legenda” nie są otwarte razem | US1.6, US1.7 |
 | Nagłówek „Teren na mapie” z „Zamknij”; po otwarciu fokus TalkBack stoi na nagłówku, po zamknięciu wraca na przycisk terenu | US1.7, NFR-18, NFR-20 |
 | Teren na liście: nazwa, liczba budynków i odległość od wybranego terenu; wybrany ma znak „✓” i napis „wybrany” | US1.7, NFR-21 |
 | Wybranie terenu zamyka panel i pokazuje mapę tego terenu | US1.7, BR-G5 |

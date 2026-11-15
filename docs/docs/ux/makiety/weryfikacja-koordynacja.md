@@ -43,7 +43,7 @@ Czynność główna: „Weź do sprawdzenia” przy wybranym zgłoszeniu. Przyci
 | --- | --- |
 | Mapa z punktami zgłoszeń, zastępnik | UC14 |
 | „© OpenStreetMap contributors” na mapie, podkreślony jako odnośnik do strony praw autorskich | NFR-37 |
-| „ⓘ” przy podpisie: źródła i pełna licencja jak na V1 | NFR-37, NFR-40, decyzja 93 |
+| „ⓘ” przy podpisie: legenda znaków zgłoszeń, źródła i pełna licencja jak na V1 | NFR-37, NFR-40, decyzja 93 |
 | Na mapie „Powiększ”, „Pomniejsz” i strzałki przesuwania w krzyżu z nazwami dla TalkBack, jak na V1 | NFR-15 (WCAG 2.5.1, 2.5.7), PW-8, PW-11; wymagania wspólne |
 | Pod mapą zgłoszenie z wybranego punktu, z tymi samymi danymi co na liście | NFR-19, US10.4 |
 
