@@ -47,8 +47,11 @@ final class JpegLayout {
     }
 
     private boolean segment(final int position) {
-        return position + 3 < this.jpeg.length
-            && (this.jpeg[position] & 0xFF) == 0xFF
-            && (this.jpeg[position + 1] & 0xFF) != 0xDA;
+        boolean marker = false;
+        if (position + 3 < this.jpeg.length) {
+            marker = this.jpeg[position] == (byte) 0xFF
+                && this.jpeg[position + 1] != (byte) 0xDA;
+        }
+        return marker;
     }
 }
