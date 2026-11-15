@@ -190,7 +190,7 @@ Wymagania: [V1 Mapa kampusu](../wymagania-ekranow.md#v1-mapa-kampusu).
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Mapa terenu Wittigowo po wybraniu budynku T-15: przycisk terenu „Wittigowo”, budynki T-15, T-16, T-17, T-22, P-20, P-22 i P-23, nad podpisem mapy napis „Pokazuję teren: Wittigowo”](obrazy/m-v1-mapa-teren-zmiana-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-zmiana-jasny.webp) | [![Ta sama mapa terenu Wittigowo w motywie ciemnym](obrazy/m-v1-mapa-teren-zmiana-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-zmiana-ciemny.webp) | [![Ta sama mapa terenu Wittigowo przy czcionce 200%: napis „Pokazuję teren: Wittigowo” w dwóch wierszach](obrazy/m-v1-mapa-teren-zmiana-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-zmiana-jasny-200.webp) |
+| [![Mapa terenu Wittigowo po wybraniu budynku T-15: przycisk terenu „Wittigowo”, budynki T-15, T-16, T-17, T-22, P-20, P-22 i P-23, nad podpisem mapy napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód” w wyglądzie przycisków mapy](obrazy/m-v1-mapa-teren-zmiana-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-zmiana-jasny.webp) | [![Ta sama mapa terenu Wittigowo w motywie ciemnym](obrazy/m-v1-mapa-teren-zmiana-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-zmiana-ciemny.webp) | [![Ta sama mapa terenu Wittigowo przy czcionce 200%: napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód” w trzech wierszach](obrazy/m-v1-mapa-teren-zmiana-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-zmiana-jasny-200.webp) |
 
 ### V1: lista budynków według terenów
 
@@ -214,7 +214,7 @@ Wymagania: [V2 Karta budynku](../wymagania-ekranow.md#v2-karta-budynku).
 | --- | --- | --- |
 | [![Cały opis budynku A-1 Gmach Główny po rozwinięciu małej karty, bez mapy: u góry Wstecz, nazwa, wiersz Wejście dostępne, przycisk Sprawdź, którędy wejść w treści, chipy Winda i Toaleta dostosowana, cztery wejścia z wejściem zalecanym na górze, bariery z rysunkami, grupa Winda i toaleta oraz piętra od piwnicy z rozwiniętym parterem; bez przypiętego pasa przycisków](obrazy/m-v2-karta-budynku-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-jasny.webp) | [![Ten sam opis budynku A-1 w motywie ciemnym](obrazy/m-v2-karta-budynku-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-ciemny.webp) | [![Ten sam opis budynku A-1 przy czcionce 200%, otwarty od razu na pełnym ekranie: pod nazwą i wierszem o wejściach przyciski Sprawdź, którędy wejść i Pokaż budynek na mapie, potem chipy, wejścia, bariery, winda i toaleta oraz piętra](obrazy/m-v2-karta-budynku-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-jasny-200.webp) |
 
-### V2: mała karta nad mapą
+### V2: mała karta nad mapą {#v2-mala-karta}
 
 `m-v2-karta-budynku-mala`. Ta sama karta co [V1: mała karta budynku A-1 nad mapą](#v1-mala-karta): mapa otwiera V2 jako małą kartę o wysokości treści. Nie ma na niej chipów ani listy wejść. Uchwyt, przewinięcie albo przeciągnięcie w górę otwiera pełny ekran.
 
@@ -223,6 +223,20 @@ Nad kartą zostają przyciski mapy, a zaznaczony budynek mieści się w części
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
 | [![Mała karta budynku A-1 nad mapą z wyróżnionym konturem, podpisami sąsiednich budynków i przyciskami mapy: uchwyt, symbol A-1, nazwa Gmach Główny, wiersz Wejście dostępne i przyciski Sprawdź, którędy wejść oraz Zamknij](obrazy/m-v2-karta-budynku-mala-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-jasny.webp) | [![Ta sama mała karta w motywie ciemnym](obrazy/m-v2-karta-budynku-mala-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-ciemny.webp) | [![Ten sam budynek przy czcionce 200%: zamiast małej karty od razu pełny ekran bez mapy, z przyciskami Sprawdź, którędy wejść i Pokaż budynek na mapie](obrazy/m-v2-karta-budynku-mala-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-jasny-200.webp) |
+
+### V2: mała karta po zmianie terenu
+
+`m-v2-karta-budynku-mala-teren` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.8, NFR-56
+
+Budynek T-15 wybrany z wyszukiwania na terenie Kampus główny: mapa przeleciała na teren Wittigowo. Budynek mieści się w części mapy nad napisem o zmianie terenu. Napis:
+
+- stoi tuż nad małą kartą i podpisem OpenStreetMap, gdzie patrzy osoba, i nie zasłania budynku ani przycisków mapy;
+- ma wygląd przycisków mapy, więc w ciemnym motywie nie jest jasną plamą;
+- TalkBack czyta go raz, po nagłówku karty.
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Mała karta budynku T-15 Dom Studencki Hades nad mapą terenu Wittigowo: wyróżniony kontur T-15, przyciski mapy, nad podpisem OpenStreetMap napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód” w wyglądzie przycisków mapy; na karcie wiersz Brak danych o wejściach i przyciski Sprawdź, którędy wejść oraz Zamknij](obrazy/m-v2-karta-budynku-mala-teren-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-teren-jasny.webp) | [![Ta sama mała karta po zmianie terenu w motywie ciemnym: napis na ciemnym tle przycisków mapy](obrazy/m-v2-karta-budynku-mala-teren-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-teren-ciemny.webp) | Małej karty nie ma, V2 otwiera się od razu na pełnym ekranie jak w [V2: mała karta nad mapą](#v2-mala-karta). Napis czeka na mapę: pojawia się po „Pokaż budynek na mapie”. |
 
 ### V2: budynek bez planu pięter (H-4)
 

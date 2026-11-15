@@ -48,7 +48,7 @@ kolory:
   surfaceContainerLowest:
     jasny: "#FFFFFF"   # białe kontenery na szarym arkuszu zastępują linie podziału
     ciemny: "#343C41"  # najjaśniejsza warstwa: kontener grupy leży na arkuszu
-    uzycie: kontenery grup („Wejścia”, „Winda i toaleta”, „Piętra”, stan pusty barier), pływające kontrolki mapy, legenda, chipy
+    uzycie: kontenery grup („Wejścia”, „Winda i toaleta”, „Piętra”, stan pusty barier), pływające kontrolki mapy, legenda, napis o zmianie terenu, chipy
     zrodlo: NFR-16, styl „Karta miejsca”
   surfaceContainerLow:
     jasny: "#EFF4F6"
@@ -405,7 +405,7 @@ wysokosci:
   kontrolki_mapy:
     dp: 3              # Material 3, poziom 2
     obwodka_ciemny: "#454E53"
-    uzycie: pływające kontrolki mapy („Powiększ”, „Pomniejsz”, strzałki przesuwania, „ⓘ”, przełącznik pięter, legenda, „Wstecz”), nagłówek z polem wyszukiwania (V1)
+    uzycie: pływające kontrolki mapy („Powiększ”, „Pomniejsz”, strzałki przesuwania, „ⓘ”, przełącznik pięter, legenda, „Wstecz”), napis o zmianie terenu, nagłówek z polem wyszukiwania (V1)
     zrodlo: styl „Karta miejsca”
   pasek_czynnosci:
     dp: 6              # Material 3, poziom 3; cień pada w górę
