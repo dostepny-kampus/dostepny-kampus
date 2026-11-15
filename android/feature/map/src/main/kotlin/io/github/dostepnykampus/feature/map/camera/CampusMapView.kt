@@ -28,18 +28,21 @@ private const val NIGHT_LAND_LUMINANCE = 0.5f
 /** Widok mapy za interfejsem: ekran i jego testy nie zależą od natywnej biblioteki mapy. */
 fun interface CampusMapView {
     /**
-     * Mapa [data] z zaznaczeniem [selection] w widoku [camera]. Po geście widok zgłasza nowy widok przez
+     * Mapa [data] z zaznaczeniem [selection] po ruchu [move], z dołem zasłoniętym na [bottomInset] pikseli: cel
+     * ruchu stoi w środku części odkrytej. Każdy ruch wykonuje raz; zmiana [bottomInset] zmienia tylko dopełnienie
+     * mapy i nie przerywa trwającego ruchu. Po geście widok zgłasza nowy widok przez
      * [onCameraIdle], a po dotknięciu konturu albo miejsca obok niego symbole trafionych budynków przez
      * [onBuildingsTouch], a po dotknięciu pustej mapy pustą listę. Dotknięcie znaku bariery zgłasza identyfikator
      * jej zgłoszenia przez [onBarrierTouch] i nie zgłasza konturu pod znakiem.
      *
-     * Wymagania: US1.5
+     * Wymagania: US1.5, NFR-56
      */
     @Composable
     fun Show(
         data: CampusMapData,
         selection: MapSelection,
-        camera: MapCamera,
+        move: CameraTransition,
+        bottomInset: Double,
         onCameraIdle: (MapCamera) -> Unit,
         onBuildingsTouch: (List<String>) -> Unit,
         onBarrierTouch: (String) -> Unit,
@@ -73,7 +76,7 @@ internal fun MapColors.styleColors(): MapStyleColors =
 
 internal fun Color.hex(): String = "#%06X".format(Locale.ROOT, toArgb() and RGB_MASK)
 
-internal fun MapCamera.toPosition(): CameraPosition =
+internal fun MapCamera.toPosition(bottomInset: Double = 0.0): CameraPosition =
     CameraPosition
         .Builder()
         .target(LatLng(latitude = center.latitude, longitude = center.longitude))
@@ -85,5 +88,4 @@ internal fun CameraPosition.toCamera(): MapCamera =
     MapCamera(
         center = GeoPoint(longitude = target?.longitude ?: 0.0, latitude = target?.latitude ?: 0.0),
         zoom = zoom,
-        bottomInset = padding?.lastOrNull() ?: 0.0,
     )

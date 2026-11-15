@@ -24,13 +24,14 @@ private const val FLIGHT_MILLIS_PER_PATH = 250.0
 private const val WORLD_DP_AT_ZOOM_0 = 512.0
 private const val FULL_TURN_DEGREES = 360.0
 private const val SAME_PLACE_DP = 1e-6
+private const val CONTROL_MILLIS = 300L
 
 /**
  * Rodzaj ruchu mapy do wybranego budynku.
  *
  * Wymagania: US2.8, NFR-56
  */
-internal enum class CameraMotion {
+enum class CameraMotion {
     /** Bez ruchu: systemowe „Usuń animacje”, od razu stan końcowy. */
     NONE,
 
@@ -42,12 +43,16 @@ internal enum class CameraMotion {
 }
 
 /**
- * Ruch mapy do budynku: widok docelowy [camera] dla wolnej części mapy (dopełnienie arkusza ustawia wołający),
- * rodzaj ruchu [motion] i jego czas [durationMillis].
+ * Ruch mapy: widok docelowy [camera] dla wolnej części mapy (dopełnienie arkusza ustawia wołający), rodzaj ruchu
+ * [motion] i jego czas [durationMillis]. Widok mapy wykonuje każdy ruch raz.
  *
  * Wymagania: US2.8, NFR-56
  */
-internal data class CameraTransition(val camera: MapCamera, val motion: CameraMotion, val durationMillis: Long)
+data class CameraTransition(val camera: MapCamera, val motion: CameraMotion, val durationMillis: Long)
+
+/** Ruch do widoku po przycisku mapy, odtworzeniu widoku albo zmianie terenu: przelot w 300 ms. Wymagania: NFR-53 */
+internal fun MapCamera.byControl(): CameraTransition =
+    CameraTransition(camera = this, motion = CameraMotion.FLIGHT, durationMillis = CONTROL_MILLIS)
 
 /**
  * Ruch mapy z widoku [from] do budynku o prostokącie [outline] w wolnej części mapy [free] przy systemowej

@@ -30,6 +30,8 @@ import io.github.dostepnykampus.feature.map.barrier.BARRIER_ID
 import io.github.dostepnykampus.feature.map.barrier.barrierImages
 import io.github.dostepnykampus.feature.map.building.entranceCaption
 import io.github.dostepnykampus.feature.map.building.entranceImages
+import io.github.dostepnykampus.feature.map.camera.CameraMotion
+import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
@@ -81,22 +83,24 @@ import org.maplibre.android.style.sources.GeoJsonSource
 private const val LABEL_TEXT_SP = 14f
 private const val LABEL_MAX_FONT_SCALE = 1.4f
 private const val TOUCH_TOLERANCE_DP = 24f
+private const val PADDING_MILLIS = 300
 
 /**
  * Widok MapLibre Android bez kluczy i kont (ADR-0005); logo i podpis biblioteki zastępuje podpis ekranu. Podpis konturu
  * rośnie z czcionką najwyżej 1,4 raza, a dotknięcie do 24 dp od konturu trafia w kontur. Pobiera tylko widoczne
- * kafelki. Widok kamery zgłasza tylko po geście osoby; zmiana rozmiaru mapy przerywa ruch kamery i wraca do zleconej
- * kamery. Natywny widok powstaje i zwalnia pamięć raz, z ekranem; zmiana cyklu życia sceny tylko zatrzymuje i wznawia
- * mapę.
+ * kafelki. Widok kamery zgłasza tylko po geście osoby. Każdy ruch kamery wykonuje raz; zasłonięcie dołu mapy zmienia
+ * dopełnienie dopiero po końcu trwającego ruchu. Natywny widok powstaje i zwalnia pamięć raz, z ekranem; zmiana cyklu
+ * życia sceny tylko zatrzymuje i wznawia mapę.
  *
- * Wymagania: NFR-39
+ * Wymagania: NFR-39, NFR-56
  */
 object MapLibreMapView : CampusMapView {
     @Composable
     override fun Show(
         data: CampusMapData,
         selection: MapSelection,
-        camera: MapCamera,
+        move: CameraTransition,
+        bottomInset: Double,
         onCameraIdle: (MapCamera) -> Unit,
         onBuildingsTouch: (List<String>) -> Unit,
         onBarrierTouch: (String) -> Unit,
@@ -123,7 +127,8 @@ object MapLibreMapView : CampusMapView {
         var map by remember { mutableStateOf<MapLibreMap?>(null) }
         var size by remember { mutableStateOf(IntSize.Zero) }
         val limits = remember(selection.bounds, size, density) { density.mapLimits(selection.bounds, size) }
-        val currentCamera by rememberUpdatedState(camera)
+        val currentMove by rememberUpdatedState(move)
+        val currentInset by rememberUpdatedState(bottomInset)
         val currentData by rememberUpdatedState(data)
         val cameraIdle by rememberUpdatedState(onCameraIdle)
         val buildingsTouch by rememberUpdatedState(onBuildingsTouch)
@@ -131,7 +136,7 @@ object MapLibreMapView : CampusMapView {
         DisposableEffect(mapView) {
             mapView.getMapAsync { ready ->
                 ready.prefetchZoomDelta = 0
-                ready.cameraPosition = currentCamera.toPosition()
+                ready.cameraPosition = currentMove.camera.toPosition(currentInset)
                 ready.onPersonIdle { cameraIdle(it) }
                 ready.onSignOrOutlinesTouch(tolerance, onBarrier = { barrierTouch(it) }) { numbers ->
                     currentData.symbolsAt(numbers).also { buildingsTouch(it) }.isNotEmpty()
@@ -151,14 +156,22 @@ object MapLibreMapView : CampusMapView {
             if (size != IntSize.Zero) limits?.let { map?.limitTo(it) }
             onDispose {}
         }
-        DisposableEffect(map, camera, limits) {
-            val ready = map
-            if (ready != null && ready.cameraPosition.toCamera() != camera) {
-                ready.animateCamera(CameraUpdateFactory.newCameraPosition(camera.toPosition()))
-            }
+        map.FollowEachMoveOnce(move = move, bottomInset = bottomInset)
+        AndroidView(factory = { mapView }, modifier = modifier.onSizeChanged { size = it })
+    }
+
+    @Composable
+    private fun MapLibreMap?.FollowEachMoveOnce(move: CameraTransition, bottomInset: Double) {
+        val driver = remember(this) { this?.let(::CameraDriver) }
+        val currentInset by rememberUpdatedState(bottomInset)
+        DisposableEffect(driver, move) {
+            driver?.follow(move, currentInset)
             onDispose {}
         }
-        AndroidView(factory = { mapView }, modifier = modifier.onSizeChanged { size = it })
+        DisposableEffect(driver, bottomInset) {
+            driver?.pad(bottomInset)
+            onDispose {}
+        }
     }
 
     @Composable
@@ -256,6 +269,50 @@ object MapLibreMapView : CampusMapView {
             )
         setLatLngBoundsForCameraTarget(target)
         setMinZoomPreference(limits.minZoom)
+    }
+
+    /**
+     * Ruchy kamery mapy [map] po jednym. Ruch niesie dopełnienie dołu z chwili startu; dopełnienie zmienione
+     * w trakcie ruchu czeka na jego koniec, bo przerwałoby ruch, a samo przesuwa mapę płynnie w 300 ms. Gest osoby
+     * przerywa ruch sam (MapLibre).
+     */
+    private class CameraDriver(private val map: MapLibreMap) {
+        private var inset = map.cameraPosition.padding?.lastOrNull() ?: 0.0
+        private var running: Run? = null
+
+        fun pad(bottom: Double) {
+            inset = bottom
+            if (running == null && map.cameraPosition.padding?.lastOrNull() != bottom) {
+                map.easeCamera(CameraUpdateFactory.paddingTo(doubleArrayOf(0.0, 0.0, 0.0, bottom)), PADDING_MILLIS)
+            }
+        }
+
+        fun follow(move: CameraTransition, bottom: Double) {
+            inset = bottom
+            val update = CameraUpdateFactory.newCameraPosition(move.camera.toPosition(inset))
+            val millis = move.durationMillis.toInt()
+            running = null
+            when (move.motion) {
+                CameraMotion.NONE -> map.moveCamera(update)
+                CameraMotion.EASE -> map.easeCamera(update, millis, start())
+                CameraMotion.FLIGHT -> map.animateCamera(update, millis, start())
+            }
+        }
+
+        private fun start(): Run = Run().also { running = it }
+
+        /** Jeden ruch; koniec ruchu wcześniejszego, przerwanego przez nowy, niczego nie zmienia. */
+        private inner class Run : MapLibreMap.CancelableCallback {
+            override fun onCancel() = settle()
+
+            override fun onFinish() = settle()
+
+            private fun settle() {
+                if (running !== this) return
+                running = null
+                pad(inset)
+            }
+        }
     }
 
     private fun isNativeMapAvailable(): Boolean = runCatching { System.loadLibrary("maplibre") }.isSuccess

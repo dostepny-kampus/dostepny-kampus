@@ -26,9 +26,8 @@ class MapSceneStateTest {
     private fun state(isCovered: Boolean = false, limits: MapLimits? = null) =
         MapSceneState(
             scene = null,
-            camera = start,
+            shown = SceneCamera(start),
             limits = limits,
-            bottomInset = 0.0,
             cover = mapCover(isCovered, hasControls = true),
             choices = choices,
             onCamera = cameraKeeper(isCovered, onMap = { cameras += it }, onCard = { cardCameras += it }),
