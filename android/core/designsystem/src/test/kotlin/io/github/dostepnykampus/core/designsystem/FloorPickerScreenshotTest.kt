@@ -21,9 +21,9 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 /**
- * Zrzuty wspólnego wyboru piętra: chipy (C2) i lista (V4), jasny, ciemny i czcionka 200 %.
+ * Zrzuty wspólnego wyboru piętra: chipy (C2), lista (V4) i kolumna (V1), jasny, ciemny i czcionka 200 %.
  *
- * Wymagania: NFR-16, NFR-20
+ * Wymagania: NFR-16, NFR-20, US16.1
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -49,6 +49,7 @@ class FloorPickerScreenshotTest {
     private fun capture() {
         val labels = listOf("Nie wiem", "Piwnica", "Parter", "1 piętro", "2 piętro")
         val options = FloorOptions(labels.map { FloorOption(key = it, label = it) })
+        val column = listOf("2" to "2 piętro", "1" to "1 piętro", "0" to "Parter", "-1" to "Piwnica")
         captureRoboImage {
             DostepnyKampusTheme {
                 Column(
@@ -66,6 +67,12 @@ class FloorPickerScreenshotTest {
                         layout = FloorPickerLayout.CHIPS,
                     )
                     FloorPicker(options = options, selectedKey = null, onSelect = {}, layout = FloorPickerLayout.LIST)
+                    FloorPicker(
+                        options = FloorOptions(column.map { (short, label) -> FloorOption(label, label, short) }),
+                        selectedKey = "Parter",
+                        onSelect = {},
+                        layout = FloorPickerLayout.COLUMN,
+                    )
                 }
             }
         }

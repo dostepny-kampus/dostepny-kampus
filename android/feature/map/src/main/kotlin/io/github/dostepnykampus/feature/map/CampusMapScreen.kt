@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -56,6 +57,7 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.overlay.MapOverlay
 import io.github.dostepnykampus.feature.map.overlay.MapStatusBar
 import io.github.dostepnykampus.feature.map.overlay.dataDay
+import io.github.dostepnykampus.feature.map.plan.FloorColumn
 import io.github.dostepnykampus.feature.map.plan.ShownPlan
 
 private const val TOP_STATE = "top"
@@ -146,6 +148,7 @@ fun CampusMapScreen(
  * @param motion zapis ruchów mapy do budynku nad kartą V2
  * @param plan plan piętra budynku przy środku mapy; `null`, gdy planu nie widać
  * @param onCamera widok mapy po ruchu kamery
+ * @param onFloorChoose piętro wybrane w kolumnie pięter: symbol budynku i identyfikator piętra
  */
 @Composable
 fun CampusMapScreen(
@@ -162,6 +165,7 @@ fun CampusMapScreen(
     motion: MapMotion? = null,
     plan: ShownPlan? = null,
     onCamera: (MapCamera) -> Unit = {},
+    onFloorChoose: (String, String) -> Unit = { _, _ -> },
 ) {
     val catalog = state.catalog
     val isCovered = contentPadding.calculateBottomPadding() > 0.dp
@@ -200,6 +204,7 @@ fun CampusMapScreen(
                         motion = motion,
                         plan = plan,
                         onCamera = onCamera,
+                        onFloorChoose = onFloorChoose,
                         onBuildingClick = onBuildingClick,
                         onEmptyMapClick = onEmptyMapClick,
                         modifier = Modifier.fillMaxSize(),
@@ -223,6 +228,7 @@ private fun CampusMap(
     motion: MapMotion?,
     plan: ShownPlan?,
     onCamera: (MapCamera) -> Unit,
+    onFloorChoose: (String, String) -> Unit,
     onBuildingClick: (String) -> Unit,
     onEmptyMapClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -271,20 +277,35 @@ private fun CampusMap(
                 onAreaShow = state::keep,
                 modifier = Modifier.fillMaxSize().safeDrawingPadding().then(aboveSheet),
                 hasPanels = !state.isCovered && !isKeyboardOpen,
+                side = { FloorColumn(plan = plan, onChoose = onFloorChoose) },
             ) {
-                val sheetModifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
-                ChosenBarrierSheet(
-                    id = barrierId,
-                    barriers = barriers,
-                    catalog = catalog,
-                    onClose = { barrierId = null },
-                    onBuildingClick = onBuildingClick,
-                    modifier = sheetModifier,
-                )
-                BuildingChoices(catalog = catalog, state = state, onChoose = onBuildingClick, modifier = sheetModifier)
+                val barrier = ChosenBarrier(id = barrierId, barriers = barriers, onClose = { barrierId = null })
+                MapSheets(barrier = barrier, catalog = catalog, state = state, onBuildingClick = onBuildingClick)
             }
         }
     }
+}
+
+/** Zaznaczona przeszkoda [id] spośród [barriers] i zamknięcie jej karty [onClose]. */
+private data class ChosenBarrier(val id: String?, val barriers: ShownBarriers, val onClose: () -> Unit)
+
+@Composable
+private fun BoxScope.MapSheets(
+    barrier: ChosenBarrier,
+    catalog: BuildingCatalog?,
+    state: MapSceneState,
+    onBuildingClick: (String) -> Unit,
+) {
+    val modifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
+    ChosenBarrierSheet(
+        id = barrier.id,
+        barriers = barrier.barriers,
+        catalog = catalog,
+        onClose = barrier.onClose,
+        onBuildingClick = onBuildingClick,
+        modifier = modifier,
+    )
+    BuildingChoices(catalog = catalog, state = state, onChoose = onBuildingClick, modifier = modifier)
 }
 
 @Composable
