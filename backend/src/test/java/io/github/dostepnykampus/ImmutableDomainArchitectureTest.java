@@ -32,12 +32,6 @@ final class ImmutableDomainArchitectureTest {
      */
     private static final String SAMPLES = "io.github.dostepnykampus.archsamples.immutable";
 
-    /**
-     * Katalog na źródła i klasy przykładu, nowy w każdym teście.
-     */
-    @TempDir
-    private Path dir;
-
     @Test
     void keepsDomainAndApiFieldsFinal() {
         Assertions.assertEquals(
@@ -53,8 +47,8 @@ final class ImmutableDomainArchitectureTest {
     }
 
     @Test
-    void rejectsMutableDomainAndApiFieldsOnly() throws IOException {
-        final ArchSamples samples = new ArchSamples(this.dir);
+    void rejectsMutableDomainAndApiFieldsOnly(@TempDir final Path dir) throws IOException {
+        final ArchSamples samples = new ArchSamples(dir);
         for (final String[] sample : new String[][] {
             {"submission", "Model", "int count;"},
             {"api", "Event", "String name;"},

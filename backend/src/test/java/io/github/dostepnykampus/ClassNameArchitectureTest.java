@@ -30,12 +30,6 @@ final class ClassNameArchitectureTest {
      */
     private static final String SAMPLES = "io.github.dostepnykampus.archsamples.name";
 
-    /**
-     * Katalog na źródła i klasy przykładu, nowy w każdym teście.
-     */
-    @TempDir
-    private Path dir;
-
     @Test
     void avoidsCatchAllNamesInProductionClasses() {
         Assertions.assertEquals(
@@ -51,8 +45,8 @@ final class ClassNameArchitectureTest {
     }
 
     @Test
-    void rejectsCatchAllNamesAndAcceptsRoles() throws IOException {
-        final ArchSamples samples = new ArchSamples(this.dir);
+    void rejectsCatchAllNamesAndAcceptsRoles(@TempDir final Path dir) throws IOException {
+        final ArchSamples samples = new ArchSamples(dir);
         for (final String name : new String[] {"DateUtils", "JsonHelper", "PhotoManager"}) {
             samples.write(
                 ClassNameArchitectureTest.SAMPLES, name,

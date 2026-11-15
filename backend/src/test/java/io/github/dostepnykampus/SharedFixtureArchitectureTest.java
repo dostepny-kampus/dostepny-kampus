@@ -35,16 +35,7 @@ final class SharedFixtureArchitectureTest {
      * bez wspólnego początku pakietu.
      */
     private static final Map<String, Integer> KNOWN = Stream.of(
-        "ClassNameArchitectureTest",
-        "ImmutableDomainArchitectureTest",
         "LayerDirectionArchitectureTest",
-        "MockFreeArchitectureTest",
-        "ModularityTest",
-        "ModuleRootArchitectureTest",
-        "NullabilityArchitectureTest",
-        "PackageCycleArchitectureTest",
-        "PackageDescriptionArchitectureTest",
-        "PackageSizeArchitectureTest",
         "TechnologyArchitectureTest",
         "barrier.BarrierModuleTest",
         "building.BuildingReadContractIT",

@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus;
@@ -31,12 +31,6 @@ final class MockFreeArchitectureTest {
      */
     private static final String SAMPLES = "io.github.dostepnykampus.archsamples.mocks";
 
-    /**
-     * Katalog na źródła i klasy przykładu, nowy w każdym teście.
-     */
-    @TempDir
-    private Path dir;
-
     @Test
     void forbidsMockitoApi() {
         Assertions.assertEquals(
@@ -52,20 +46,23 @@ final class MockFreeArchitectureTest {
     }
 
     @Test
-    void rejectsMockCreatedByMockito() throws IOException {
+    void rejectsMockCreatedByMockito(@TempDir final Path dir) throws IOException {
         Assertions.assertTrue(
             MockFreeArchitectureTest.rule().evaluate(
-                this.compiled("Object field = org.mockito.Mockito.mock(Object.class);")
+                MockFreeArchitectureTest.compiled(
+                    dir, "Object field = org.mockito.Mockito.mock(Object.class);"
+                )
             ).hasViolation(),
             "Reguła przepuściła test tworzący mock przez Mockito"
         );
     }
 
     @Test
-    void acceptsMockitoBeanAnnotation() throws IOException {
+    void acceptsMockitoBeanAnnotation(@TempDir final Path dir) throws IOException {
         Assertions.assertFalse(
             MockFreeArchitectureTest.rule().evaluate(
-                this.compiled(
+                MockFreeArchitectureTest.compiled(
+                    dir,
                     String.join(
                         ".", "@org.springframework.test.context.bean.override.mockito",
                         "MockitoBean Object field;"
@@ -82,8 +79,8 @@ final class MockFreeArchitectureTest {
             .allowEmptyShould(false);
     }
 
-    private JavaClasses compiled(final String member) throws IOException {
-        final ArchSamples samples = new ArchSamples(this.dir);
+    private static JavaClasses compiled(final Path dir, final String member) throws IOException {
+        final ArchSamples samples = new ArchSamples(dir);
         samples.write(
             MockFreeArchitectureTest.SAMPLES, "Sample",
             String.format(

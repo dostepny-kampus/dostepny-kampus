@@ -31,12 +31,6 @@ final class PackageDescriptionArchitectureTest {
         "/\\*\\*\\s*\\*\\s*([^@<\\s][^.]*\\.)", Pattern.DOTALL
     );
 
-    /**
-     * Katalog na przykłady, nowy w każdym teście.
-     */
-    @TempDir
-    private Path dir;
-
     @Test
     void describesEveryProductionPackage() throws IOException {
         Assertions.assertEquals(
@@ -47,28 +41,36 @@ final class PackageDescriptionArchitectureTest {
     }
 
     @Test
-    void rejectsPackageWithoutInfoAndWithEmptyDescription() throws IOException {
-        this.file("a.bare", "Model.java", "package a.bare;", "final class Model { }");
-        this.file("a.empty", "Model.java", "package a.empty;", "final class Model { }");
-        this.file(
-            "a.empty", "package-info.java", "/**", " * @since 0.1.0", " */", "package a.empty;"
+    void rejectsPackageWithoutInfoAndWithEmptyDescription(@TempDir final Path dir)
+        throws IOException {
+        PackageDescriptionArchitectureTest.file(
+            dir, "a.bare", "Model.java", "package a.bare;", "final class Model { }"
         );
-        this.file("a.good", "Model.java", "package a.good;", "final class Model { }");
-        this.file(
-            "a.good", "package-info.java",
+        PackageDescriptionArchitectureTest.file(
+            dir, "a.empty", "Model.java", "package a.empty;", "final class Model { }"
+        );
+        PackageDescriptionArchitectureTest.file(
+            dir, "a.empty", "package-info.java", "/**", " * @since 0.1.0", " */", "package a.empty;"
+        );
+        PackageDescriptionArchitectureTest.file(
+            dir, "a.good", "Model.java", "package a.good;", "final class Model { }"
+        );
+        PackageDescriptionArchitectureTest.file(
+            dir, "a.good", "package-info.java",
             "/**", " * Zgłoszenie bariery.", " *", " * @since 0.1.0", " */", "package a.good;"
         );
         Assertions.assertEquals(
             List.of("a/bare", "a/empty"),
-            PackageDescriptionArchitectureTest.undescribed(this.dir),
+            PackageDescriptionArchitectureTest.undescribed(dir),
             "Reguła przepuściła pakiet bez opisu albo odrzuciła pakiet z opisem"
         );
     }
 
-    private void file(final String pack, final String name, final String... lines)
-        throws IOException {
+    private static void file(
+        final Path dir, final String pack, final String name, final String... lines
+    ) throws IOException {
         Files.writeString(
-            Files.createDirectories(this.dir.resolve(pack.replace('.', '/'))).resolve(name),
+            Files.createDirectories(dir.resolve(pack.replace('.', '/'))).resolve(name),
             String.join(System.lineSeparator(), lines)
         );
     }

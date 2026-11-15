@@ -52,12 +52,6 @@ final class ModuleRootArchitectureTest {
      */
     private static final String INFO = "package-info";
 
-    /**
-     * Katalog na źródła i klasy przykładu, nowy w każdym teście.
-     */
-    @TempDir
-    private Path dir;
-
     @Test
     void holdsOnlyPackageInfoInModuleRoots() {
         Assertions.assertEquals(
@@ -98,34 +92,45 @@ final class ModuleRootArchitectureTest {
     }
 
     @Test
-    void rejectsClassInModuleRoot() throws IOException {
+    void rejectsClassInModuleRoot(@TempDir final Path dir) throws IOException {
         final String alpha = ModuleRootArchitectureTest.sample("alpha");
-        this.source(alpha, "Hidden", "public final class Hidden { }");
-        this.source(String.format("%s.api", alpha), "Event", "public record Event(String id) { }");
+        ModuleRootArchitectureTest.source(
+            dir, alpha, "Hidden", "public final class Hidden { }"
+        );
+        ModuleRootArchitectureTest.source(
+            dir, String.format("%s.api", alpha), "Event", "public record Event(String id) { }"
+        );
         Assertions.assertEquals(
             Set.of(String.format("%s.Hidden", alpha)),
-            ModuleRootArchitectureTest.rooted(this.compiled(), List.of(alpha)),
+            ModuleRootArchitectureTest.rooted(
+                ModuleRootArchitectureTest.compiled(dir), List.of(alpha)
+            ),
             "Reguła przepuściła klasę w korzeniu modułu"
         );
     }
 
     @Test
-    void rejectsApiTypeUsingModuleInterior() throws IOException {
+    void rejectsApiTypeUsingModuleInterior(@TempDir final Path dir)
+        throws IOException {
         final String alpha = ModuleRootArchitectureTest.sample("alpha");
         final String beta = ModuleRootArchitectureTest.sample("beta");
-        this.source(String.format("%s.domain", alpha), "Model", "public final class Model { }");
-        this.source(String.format("%s.api", beta), "Area", "public record Area(String id) { }");
-        this.source(
-            String.format("%s.api", alpha), "Good",
+        ModuleRootArchitectureTest.source(
+            dir, String.format("%s.domain", alpha), "Model", "public final class Model { }"
+        );
+        ModuleRootArchitectureTest.source(
+            dir, String.format("%s.api", beta), "Area", "public record Area(String id) { }"
+        );
+        ModuleRootArchitectureTest.source(
+            dir, String.format("%s.api", alpha), "Good",
             String.format("public record Good(java.util.List<%s.api.Area> areas) { }", beta)
         );
-        this.source(
-            String.format("%s.api", alpha), "Bad",
+        ModuleRootArchitectureTest.source(
+            dir, String.format("%s.api", alpha), "Bad",
             String.format("public record Bad(%s.domain.Model model) { }", alpha)
         );
         final List<String> details = ModuleRootArchitectureTest.api(
             ModuleRootArchitectureTest.SAMPLES
-        ).evaluate(this.compiled()).getFailureReport().getDetails();
+        ).evaluate(ModuleRootArchitectureTest.compiled(dir)).getFailureReport().getDetails();
         Assertions.assertTrue(
             !details.isEmpty() && details.stream().allMatch(line -> line.contains("api.Bad")),
             "Reguła przepuściła typ api zależny od wnętrza modułu albo odrzuciła typ api sąsiada"
@@ -219,12 +224,13 @@ final class ModuleRootArchitectureTest {
         return String.format("%s.%s", ModuleRootArchitectureTest.SAMPLES, name);
     }
 
-    private JavaClasses compiled() throws IOException {
-        return new ArchSamples(this.dir).compiled(ModuleRootArchitectureTest.SAMPLES);
+    private static JavaClasses compiled(final Path dir) throws IOException {
+        return new ArchSamples(dir).compiled(ModuleRootArchitectureTest.SAMPLES);
     }
 
-    private void source(final String pack, final String name, final String body)
-        throws IOException {
-        new ArchSamples(this.dir).write(pack, name, String.format("package %s;%n%s%n", pack, body));
+    private static void source(
+        final Path dir, final String pack, final String name, final String body
+    ) throws IOException {
+        new ArchSamples(dir).write(pack, name, String.format("package %s;%n%s%n", pack, body));
     }
 }

@@ -52,12 +52,6 @@ final class PackageSizeArchitectureTest {
      */
     private static final String SAMPLES = "io.github.dostepnykampus.archsamples.size";
 
-    /**
-     * Katalog na źródła i klasy przykładu, nowy w każdym teście.
-     */
-    @TempDir
-    private Path dir;
-
     @ArchTest
     void packagesFitLimitOutsideExceptionList(final JavaClasses classes) {
         final Map<String, Long> found = PackageSizeArchitectureTest.oversized(classes);
@@ -84,19 +78,24 @@ final class PackageSizeArchitectureTest {
     }
 
     @Test
-    void rejectsPackageWithSixteenClasses() throws IOException {
+    void rejectsPackageWithSixteenClasses(@TempDir final Path dir) throws IOException {
         Assertions.assertEquals(
             Map.of(PackageSizeArchitectureTest.SAMPLES, 16L),
-            PackageSizeArchitectureTest.oversized(this.compiled(16)),
+            PackageSizeArchitectureTest.oversized(
+                PackageSizeArchitectureTest.compiled(dir, 16)
+            ),
             "Reguła przepuściła pakiet z szesnastoma klasami"
         );
     }
 
     @Test
-    void acceptsFifteenClassesWithNestedClassesAndDescription() throws IOException {
+    void acceptsFifteenClassesWithNestedClassesAndDescription(@TempDir final Path dir)
+        throws IOException {
         Assertions.assertEquals(
             Map.of(),
-            PackageSizeArchitectureTest.oversized(this.compiled(15)),
+            PackageSizeArchitectureTest.oversized(
+                PackageSizeArchitectureTest.compiled(dir, 15)
+            ),
             "Reguła policzyła klasy zagnieżdżone albo package-info"
         );
     }
@@ -111,8 +110,8 @@ final class PackageSizeArchitectureTest {
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private JavaClasses compiled(final int count) throws IOException {
-        final ArchSamples samples = new ArchSamples(this.dir);
+    private static JavaClasses compiled(final Path dir, final int count) throws IOException {
+        final ArchSamples samples = new ArchSamples(dir);
         final String pack = PackageSizeArchitectureTest.SAMPLES;
         samples.write(pack, "package-info", String.format("package %s;%n", pack));
         for (final int index : IntStream.rangeClosed(1, count).toArray()) {
