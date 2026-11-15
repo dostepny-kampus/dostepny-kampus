@@ -21,13 +21,13 @@ import org.springframework.jdbc.core.simple.JdbcClient;
  * @since 0.1.0
  */
 @IntegrationTest
-final class SubmissionsMigrationTest {
+final class SubmissionsMigrationIT {
 
     @Test
     void keysSubmissionsByPhoneId(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Kluczem tabeli zgłoszeń nie jest identyfikator UUID z telefonu",
-            SubmissionsMigrationTest.column(context, "id", "data_type"),
+            SubmissionsMigrationIT.column(context, "id", "data_type"),
             Matchers.equalTo("uuid")
         );
     }
@@ -36,7 +36,7 @@ final class SubmissionsMigrationTest {
     void startsAtFirstVersion(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Nowe zgłoszenie nie zaczyna od wersji 1",
-            SubmissionsMigrationTest.column(context, "version", "column_default"),
+            SubmissionsMigrationIT.column(context, "version", "column_default"),
             Matchers.equalTo("1")
         );
     }

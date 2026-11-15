@@ -31,7 +31,7 @@ import tools.jackson.databind.ObjectMapper;
  * @since 0.1.0
  */
 @IntegrationTest
-final class SubmissionsEditHttpTest {
+final class SubmissionsEditHttpIT {
 
     /**
      * Wiersz zarezerwowany dla sekwencyjnych scenariuszy tej klasy, usuwany po każdym teście.
@@ -41,7 +41,7 @@ final class SubmissionsEditHttpTest {
     @AfterEach
     void clean(final WebApplicationContext context) {
         context.getBean(JdbcClient.class).sql("DELETE FROM submissions WHERE id = :id")
-            .param("id", SubmissionsEditHttpTest.ID).update();
+            .param("id", SubmissionsEditHttpIT.ID).update();
     }
 
     @Test
@@ -49,7 +49,7 @@ final class SubmissionsEditHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Edycja wersji 1 nie daje wersji 2",
-            SubmissionsEditHttpTest.field(context, "SENT", 1, "/version"),
+            SubmissionsEditHttpIT.field(context, "SENT", 1, "/version"),
             Matchers.equalTo("2")
         );
     }
@@ -59,7 +59,7 @@ final class SubmissionsEditHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Poprawka odrzuconego zgłoszenia nie wraca do statusu „wysłane”",
-            SubmissionsEditHttpTest.field(context, "REJECTED", 1, "/status"),
+            SubmissionsEditHttpIT.field(context, "REJECTED", 1, "/status"),
             Matchers.equalTo("SENT")
         );
     }
@@ -69,7 +69,7 @@ final class SubmissionsEditHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Konflikt wersji nie zwraca wersji 2 z serwera",
-            SubmissionsEditHttpTest.field(context, "SENT", 2, "/serverSubmission/version"),
+            SubmissionsEditHttpIT.field(context, "SENT", 2, "/serverSubmission/version"),
             Matchers.equalTo("2")
         );
     }
@@ -78,7 +78,7 @@ final class SubmissionsEditHttpTest {
     void rejectsStaleVersion(final WebApplicationContext context) throws Exception {
         MatcherAssert.assertThat(
             "Edycja starej wersji nie daje 409",
-            SubmissionsEditHttpTest.edit(context, "SENT", 2, "1").getStatus(),
+            SubmissionsEditHttpIT.edit(context, "SENT", 2, "1").getStatus(),
             Matchers.equalTo(409)
         );
     }
@@ -88,7 +88,7 @@ final class SubmissionsEditHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Edycja zgłoszenia przyjętego nie daje 409",
-            SubmissionsEditHttpTest.edit(context, "ACCEPTED", 1, "1").getStatus(),
+            SubmissionsEditHttpIT.edit(context, "ACCEPTED", 1, "1").getStatus(),
             Matchers.equalTo(409)
         );
     }
@@ -98,7 +98,7 @@ final class SubmissionsEditHttpTest {
         throws Exception {
         MatcherAssert.assertThat(
             "Edycja nieistniejącego zgłoszenia nie daje 404",
-            SubmissionsEditHttpTest.put(context, SubmissionsEditHttpTest.ID, "1").getStatus(),
+            SubmissionsEditHttpIT.put(context, SubmissionsEditHttpIT.ID, "1").getStatus(),
             Matchers.equalTo(404)
         );
     }
@@ -108,7 +108,7 @@ final class SubmissionsEditHttpTest {
         final String pointer
     ) throws Exception {
         return context.getBean(ObjectMapper.class).readTree(
-            SubmissionsEditHttpTest.edit(context, status, version, "1")
+            SubmissionsEditHttpIT.edit(context, status, version, "1")
                 .getContentAsString(StandardCharsets.UTF_8)
         ).at(pointer).asString();
     }
@@ -119,11 +119,11 @@ final class SubmissionsEditHttpTest {
     ) throws Exception {
         final SampleSubmissions samples = new SampleSubmissions(context);
         samples.add(
-            SubmissionsEditHttpTest.ID, status,
+            SubmissionsEditHttpIT.ID, status,
             SampleSubmissions.quick(UUID.fromString("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d"))
         );
-        samples.version(SubmissionsEditHttpTest.ID, version);
-        return SubmissionsEditHttpTest.put(context, SubmissionsEditHttpTest.ID, base);
+        samples.version(SubmissionsEditHttpIT.ID, version);
+        return SubmissionsEditHttpIT.put(context, SubmissionsEditHttpIT.ID, base);
     }
 
     private static MockHttpServletResponse put(
@@ -132,7 +132,7 @@ final class SubmissionsEditHttpTest {
         return context.getBean(MockMvc.class).perform(
             MockMvcRequestBuilders.put("/submissions/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(SubmissionsEditHttpTest.body(base))
+                .content(SubmissionsEditHttpIT.body(base))
                 .with(new AsCollector())
         ).andReturn().getResponse();
     }

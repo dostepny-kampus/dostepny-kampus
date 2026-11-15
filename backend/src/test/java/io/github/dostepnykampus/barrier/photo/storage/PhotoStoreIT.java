@@ -24,16 +24,16 @@ import org.springframework.context.ApplicationContext;
  * @since 0.1.0
  */
 @IntegrationTest
-final class PhotoStoreTest {
+final class PhotoStoreIT {
 
     @Test
     void readsSavedPhoto(final ApplicationContext context) {
         final PhotoStore store = context.getBean(PhotoStore.class);
         final UUID submission = UUID.randomUUID();
-        store.put(submission, submission, PhotoStoreTest.bytes("zdjęcie"));
+        store.put(submission, submission, PhotoStoreIT.bytes("zdjęcie"));
         MatcherAssert.assertThat(
             "Odczytane zdjęcie różni się od zapisanego",
-            store.get(submission, submission).map(PhotoStoreTest::text),
+            store.get(submission, submission).map(PhotoStoreIT::text),
             Matchers.equalTo(Optional.of("zdjęcie"))
         );
     }
@@ -42,11 +42,11 @@ final class PhotoStoreTest {
     void replacesPhotoSentAgain(final ApplicationContext context) {
         final PhotoStore store = context.getBean(PhotoStore.class);
         final UUID submission = UUID.randomUUID();
-        store.put(submission, submission, PhotoStoreTest.bytes("pierwsze"));
-        store.put(submission, submission, PhotoStoreTest.bytes("drugie"));
+        store.put(submission, submission, PhotoStoreIT.bytes("pierwsze"));
+        store.put(submission, submission, PhotoStoreIT.bytes("drugie"));
         MatcherAssert.assertThat(
             "Ponowny zapis zdjęcia nie zastąpił poprzedniego",
-            store.get(submission, submission).map(PhotoStoreTest::text),
+            store.get(submission, submission).map(PhotoStoreIT::text),
             Matchers.equalTo(Optional.of("drugie"))
         );
     }

@@ -48,7 +48,7 @@ import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
  * @since 0.1.0
  */
 @IntegrationTest
-final class SubmissionPhotosPruneTest {
+final class SubmissionPhotosPruneIT {
 
     @Test
     void removesPhotoDroppedByEdit(final ApplicationContext context) {
@@ -58,7 +58,7 @@ final class SubmissionPhotosPruneTest {
         store.put(submission, kept, new byte[] {1});
         store.put(submission, UUID.randomUUID(), new byte[] {2});
         context.getBean(SubmissionPhotos.class)
-            .prune(SubmissionPhotosPruneTest.saved(submission, kept));
+            .prune(SubmissionPhotosPruneIT.saved(submission, kept));
         MatcherAssert.assertThat(
             "Zdjęcie spoza nowej listy photoIds zostało w magazynie",
             store.stored(submission),
@@ -75,13 +75,13 @@ final class SubmissionPhotosPruneTest {
         final UUID dropped = UUID.randomUUID();
         service.create(
             new NewSubmission(
-                submission, SubmissionPhotosPruneTest.content(kept, dropped), "konto"
+                submission, SubmissionPhotosPruneIT.content(kept, dropped), "konto"
             )
         );
         store.put(submission, kept, new byte[] {1});
         store.put(submission, dropped, new byte[] {2});
         service.update(
-            new SubmissionEdit(submission, 1, SubmissionPhotosPruneTest.content(kept))
+            new SubmissionEdit(submission, 1, SubmissionPhotosPruneIT.content(kept))
         );
         final List<UUID> left = store.stored(submission);
         context.getBean(JdbcClient.class)
@@ -100,14 +100,14 @@ final class SubmissionPhotosPruneTest {
         final SubmissionPhotos photos = new SubmissionPhotos(
             context.getBean(SubmissionFinder.class),
             new S3PhotoStore(
-                new SubmissionPhotosPruneTest.NoBucket(),
+                new SubmissionPhotosPruneIT.NoBucket(),
                 new PhotoSettings(URI.create("http://magazyn"), "brak-kubelka", "", "")
             ),
             context.getBean(SubmissionService.class)
         );
         final UUID submission = UUID.randomUUID();
         Assertions.assertDoesNotThrow(
-            () -> photos.prune(SubmissionPhotosPruneTest.saved(submission, submission)),
+            () -> photos.prune(SubmissionPhotosPruneIT.saved(submission, submission)),
             "Błąd magazynu przy usuwaniu zdjęć wyszedł poza zapisaną edycję"
         );
     }
@@ -116,7 +116,7 @@ final class SubmissionPhotosPruneTest {
         return new EditResult.Saved(
             new Submission(
                 submission, 2, SubmissionStatus.SENT, Instant.EPOCH,
-                SubmissionPhotosPruneTest.content(photo)
+                SubmissionPhotosPruneIT.content(photo)
             )
         );
     }

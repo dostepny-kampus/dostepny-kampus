@@ -35,7 +35,7 @@ import org.springframework.context.ApplicationContext;
  * @since 0.1.0
  */
 @IntegrationTest
-final class JdbcRaceTest {
+final class JdbcRaceIT {
 
     @Test
     void conflictsOnSameVersionRace(final ApplicationContext context) throws Exception {
@@ -52,12 +52,12 @@ final class JdbcRaceTest {
                 select.execute(
                     String.format("SELECT 1 FROM submissions WHERE id = '%s' FOR UPDATE", id)
                 );
-                holder = JdbcRaceTest.session(select);
+                holder = JdbcRaceIT.session(select);
             }
             final List<Future<EditResult>> edits = List.of(
                 pool.submit(this.edit(data, id, "a")), pool.submit(this.edit(data, id, "b"))
             );
-            JdbcRaceTest.awaitBlocked(data, holder);
+            JdbcRaceIT.awaitBlocked(data, holder);
             lock.commit();
             for (final Future<EditResult> edit : edits) {
                 results.add(edit.get(20, TimeUnit.SECONDS));

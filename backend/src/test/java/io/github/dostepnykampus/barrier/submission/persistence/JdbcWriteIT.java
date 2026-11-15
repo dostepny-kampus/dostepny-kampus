@@ -31,7 +31,7 @@ import org.springframework.context.ApplicationContext;
  * @since 0.1.0
  */
 @IntegrationTest
-final class JdbcWriteTest {
+final class JdbcWriteIT {
 
     @AfterEach
     void clean(final ApplicationContext context) {
