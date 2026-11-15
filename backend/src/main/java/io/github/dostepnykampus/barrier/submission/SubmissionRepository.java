@@ -50,4 +50,15 @@ public interface SubmissionRepository {
      * @return Zgłoszenie w weryfikacji, bieżący stan przy konflikcie albo brak zgłoszenia
      */
     EditResult claim(UUID id, String reviewer);
+
+    /**
+     * Zapisuje decyzję, gdy zgłoszenie jest w weryfikacji u tego Weryfikatora
+     * i ma oczekiwaną wersję.
+     *
+     * <p>Wymagania: BR-3, BR-11, BR-16</p>
+     *
+     * @param decision Decyzja Weryfikatora
+     * @return Zgłoszenie po decyzji, bieżący stan przy konflikcie albo brak zgłoszenia
+     */
+    EditResult decide(ReviewDecision decision);
 }

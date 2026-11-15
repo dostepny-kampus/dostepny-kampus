@@ -9,6 +9,7 @@ import io.github.dostepnykampus.barrier.submission.CreateResult;
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.NewSubmission;
 import io.github.dostepnykampus.barrier.submission.Reader;
+import io.github.dostepnykampus.barrier.submission.ReviewDecision;
 import io.github.dostepnykampus.barrier.submission.SimilarSubmission;
 import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.SubmissionEdit;
@@ -84,6 +85,19 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
         """
             UPDATE submissions SET status = 'IN_REVIEW', reviewer = :reviewer
             WHERE id = :id AND (status = 'SENT' OR (status = 'IN_REVIEW' AND reviewer = :reviewer))
+            RETURNING %s
+        """,
+        JdbcSubmissions.COLUMNS
+    );
+
+    /**
+     * Decyzja o zgłoszeniu wziętym przez Weryfikatora, w oczekiwanej wersji.
+     */
+    private static final String DECIDE = String.format(
+        """
+            UPDATE submissions SET status = :status, rejection_reason = :reason
+            WHERE id = :id AND version = :version AND status = 'IN_REVIEW'
+                AND reviewer = :reviewer
             RETURNING %s
         """,
         JdbcSubmissions.COLUMNS
@@ -168,6 +182,20 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     }
 
     @Override
+    public EditResult decide(final ReviewDecision decision) {
+        return this.written(
+            this.jdbc.sql(JdbcSubmissions.DECIDE)
+                .param("id", decision.id())
+                .param("version", decision.expectedVersion())
+                .param("reviewer", decision.reviewer())
+                .param("status", decision.outcome().name())
+                .param("reason", decision.reason())
+                .query(this.rows).optional(),
+            decision.id()
+        );
+    }
+
+    @Override
     public Optional<Submission> find(final UUID id) {
         return this.jdbc.sql(
             String.format("SELECT %s FROM submissions WHERE id = :id", JdbcSubmissions.COLUMNS)
@@ -190,6 +218,13 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                 SELECT 1 FROM submissions WHERE id = :id AND author IS DISTINCT FROM :account
             )
             """
+        ).param("id", id).param("account", account).query(Boolean.class).single();
+    }
+
+    @Override
+    public boolean claimedBy(final UUID id, final String account) {
+        return this.jdbc.sql(
+            "SELECT EXISTS (SELECT 1 FROM submissions WHERE id = :id AND reviewer = :account)"
         ).param("id", id).param("account", account).query(Boolean.class).single();
     }
 

@@ -15,13 +15,14 @@ import java.security.Principal;
 import java.util.UUID;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Weryfikacja zgłoszeń: wzięcie zgłoszenia do weryfikacji.
- * Własnego zgłoszenia Weryfikator nie bierze.
+ * Weryfikacja zgłoszeń: wzięcie zgłoszenia do weryfikacji i decyzja Weryfikatora.
+ * Własnego zgłoszenia Weryfikator nie bierze ani nie rozstrzyga.
  *
- * <p>Wymagania: US10.4, BR-4, BR-11</p>
+ * <p>Wymagania: US10, US10.4, BR-4, BR-11, BR-3, BR-16</p>
  *
  * @since 0.1.0
  */
@@ -61,12 +62,38 @@ public final class ReviewController {
         return ReviewController.saved(this.service.claim(id, account.getName()));
     }
 
+    /**
+     * Zapisuje decyzję Weryfikatora o zgłoszeniu, które wziął. Własne zgłoszenie
+     * i wzięte przez innego Weryfikatora albo przez nikogo dają 403, inna wersja
+     * niż aktualna albo status po decyzji 409 z wersją serwera.
+     *
+     * <p>Wymagania: US10, BR-4, BR-11, BR-3, BR-16</p>
+     *
+     * @param id Identyfikator zgłoszenia
+     * @param body Decyzja według schematu ReviewDecision
+     * @param account Zalogowany Weryfikator
+     * @return Zgłoszenie po decyzji
+     */
+    @PostMapping("/submissions/{submissionId}/review")
+    SubmissionResponse reviewSubmission(
+        @PathVariable("submissionId") final UUID id,
+        @RequestBody final ReviewRequest body, final Principal account
+    ) {
+        this.checkNotOwn(id, account);
+        if (!this.finder.claimedBy(id, account.getName())) {
+            throw new ForbiddenChange("Zgłoszenie nie jest wzięte przez tego Weryfikatora");
+        }
+        return ReviewController.saved(
+            this.service.decide(body.toDecision(id, account.getName()))
+        );
+    }
+
     private void checkNotOwn(final UUID id, final Principal account) {
         if (this.finder.find(id).isEmpty()) {
             throw new MissingResource(ReviewController.MISSING);
         }
         if (!this.finder.foreign(id, account.getName())) {
-            throw new ForbiddenChange("Własnego zgłoszenia nie bierze jego autor");
+            throw new ForbiddenChange("Własnego zgłoszenia nie weryfikuje jego autor");
         }
     }
 
@@ -74,12 +101,12 @@ public final class ReviewController {
         return switch (result) {
             case EditResult.Saved saved -> new SubmissionResponse(saved.submission());
             case EditResult.Conflict conflict -> throw new ConflictingState(
-                "Zgłoszenie wzięło już inne konto albo jego status nie pozwala na wzięcie",
+                "Na serwerze jest inna wersja zgłoszenia albo jego status nie pozwala na decyzję",
                 "serverSubmission",
                 new SubmissionResponse(conflict.current())
             );
             case EditResult.Missing _ -> throw new MissingResource(ReviewController.MISSING);
-            case null -> throw new IllegalStateException("Brak wyniku wzięcia zgłoszenia");
+            case null -> throw new IllegalStateException("Brak wyniku decyzji o zgłoszeniu");
         };
     }
 }
