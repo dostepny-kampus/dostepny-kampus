@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map.campus
 import io.github.dostepnykampus.core.geo.allRings
 import io.github.dostepnykampus.core.geo.campusAreas
 import io.github.dostepnykampus.core.geo.labelPoint
+import io.github.dostepnykampus.core.geo.parseAreaBoundaries
 import io.github.dostepnykampus.core.geo.toGeometry
 import io.github.dostepnykampus.core.geo.toPosition
 import io.github.dostepnykampus.core.model.GeoArea
@@ -41,7 +42,9 @@ const val OUTLINE_NUMBER = "outline"
 
 private const val LABEL_SEPARATOR = "/"
 
-private val CAMPUS_MARGIN = 500.meters
+private val CAMPUS_MARGIN = 50.meters
+
+private val PwrAreaBoundaries: Map<String, GeoArea> by lazy { parseAreaBoundaries(AREAS_GEOJSON) }
 
 /**
  * Dane warstw mapy V1 z katalogu budynków jako kolekcje GeoJSON w elementach JSON dla źródeł mapy, bez sieci.
@@ -60,9 +63,8 @@ private val CAMPUS_MARGIN = 500.meters
  *   budynków, do których prowadzi
  * @property start środek pierwszego widoku: środek budynku [START_BUILDING], a bez niego
  *   środek wszystkich konturów; `null` bez budynków
- * @property bounds teren startowy mapy: najmniejszy prostokąt z konturami budynków terenu, na którym stoi
- *   [START_BUILDING], powiększony o 500 m z każdej strony. Bez tego budynku to pierwszy teren
- *   katalogu; `null` bez budynków
+ * @property bounds teren startowy mapy: prostokąt opisany na granicy terenu, na którym stoi [START_BUILDING],
+ *   powiększony o 50 m z każdej strony. Bez tego budynku to pierwszy teren katalogu; `null` bez budynków
  * @property areas tereny PWr z katalogu, każdy z prostokątem jak [bounds]
  * @property labelPointsBySymbol punkt podpisu konturu każdego symbolu, ten sam co w [labelPoints]; symbole konturu
  *   wspólnego mają jeden punkt. Kamera bierze punkt stąd i nie liczy go drugi raz na wątku interfejsu
@@ -114,7 +116,8 @@ fun CampusMapData.boundsOf(symbol: String?): CampusBounds? =
  *
  * @property name nazwa terenu, np. „Kampus główny”
  * @property symbols symbole budynków terenu
- * @property bounds prostokąt konturów budynków terenu powiększony o 500 m z każdej strony
+ * @property bounds prostokąt opisany na granicy terenu, powiększony o 50 m z każdej strony; granica jest z pliku
+ *   granic terenów, a teren spoza pliku albo z budynkiem poza prostokątem granicy ma za granicę kontury budynków
  */
 data class MapArea(val name: String, val symbols: List<String>, val bounds: CampusBounds)
 
@@ -161,11 +164,13 @@ data class CampusBounds(val west: Double, val south: Double, val east: Double, v
 /**
  * Dane warstw mapy z [catalog]. Katalog z repozytorium nie ma już wejść `emergency`, `exit` i `garage`,
  * więc mapa ich nie rysuje. Liczenie można przerwać przerwaniem wątku: sprawdza je przed każdym
- * punktem podpisu, najcięższym krokiem, i rzuca [InterruptedException].
+ * punktem podpisu, najcięższym krokiem, i rzuca [InterruptedException]. Prostokąt terenu liczy się z jego granicy
+ * w [boundaries] (po nazwie terenu, domyślnie z pliku granic terenów PWr), gdy prostokąt granicy obejmuje kontury
+ * budynków terenu; inaczej, np. przy budynku spoza pliku, z konturów, żeby kamera dochodziła do każdego budynku.
  *
- * Wymagania: BR-25, NFR-11
+ * Wymagania: BR-25, NFR-11, BR-G5, NFR-39
  */
-fun campusMapData(catalog: BuildingCatalog): CampusMapData {
+fun campusMapData(catalog: BuildingCatalog, boundaries: Map<String, GeoArea> = PwrAreaBoundaries): CampusMapData {
     val outlines = catalog.buildings.groupBy(keySelector = Building::outline, valueTransform = Building::symbol)
     val buildings =
         outlines.entries.mapIndexed { number, (outline, symbols) ->
@@ -202,7 +207,9 @@ fun campusMapData(catalog: BuildingCatalog): CampusMapData {
     val startBuildings = catalog.buildings.filter { it.symbol == START_BUILDING }.ifEmpty { catalog.buildings }
     val areas =
         campusAreas(catalog.buildings).mapNotNull { area ->
-            campusBounds(area.buildings.flatMap { it.outline.points() })?.let { MapArea(area.name, area.symbols, it) }
+            val outlines = area.buildings.flatMap { it.outline.points() }
+            areaBounds(boundary = boundaries[area.name]?.points(), outlines = outlines)
+                ?.let { MapArea(area.name, area.symbols, it) }
         }
     val startArea = areas.firstOrNull { START_BUILDING in it.symbols } ?: areas.firstOrNull()
     return CampusMapData(
@@ -231,8 +238,15 @@ private fun Building.outlineBounds(): Pair<String, CampusBounds>? =
         symbol to CampusBounds(west = box.west, south = box.south, east = box.east, north = box.north)
     }
 
-private fun campusBounds(points: List<GeoPoint>): CampusBounds? =
-    points.takeIf { it.isNotEmpty() }?.let { all -> computeBbox(all.map(GeoPoint::toPosition)).withCampusMargin() }
+private fun areaBounds(boundary: List<GeoPoint>?, outlines: List<GeoPoint>): CampusBounds? {
+    val box = boundary?.let { computeBbox(it.map(GeoPoint::toPosition)) }
+    val isEnclosing =
+        box != null && outlines.all { it.longitude in box.west..box.east && it.latitude in box.south..box.north }
+    val points = boundary?.takeIf { isEnclosing } ?: outlines
+    return points
+        .takeIf { it.isNotEmpty() }
+        ?.let { all -> computeBbox(all.map(GeoPoint::toPosition)).withCampusMargin() }
+}
 
 private fun BoundingBox.withCampusMargin(): CampusBounds {
     val middleLatitude = (south + north) / 2
