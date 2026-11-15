@@ -109,6 +109,7 @@ class DebugSignIn(
                 DebugRole.VISITOR to ("odwiedzajacy.test" to "haslo-testowe-odwiedzajacy"),
                 DebugRole.COLLECTOR to ("zbierajacy.test" to "haslo-testowe-zbierajacy"),
                 DebugRole.VERIFIER to ("weryfikator.test" to "haslo-testowe-weryfikator"),
+                DebugRole.COORDINATOR to ("koordynator.test" to "haslo-testowe-koordynator"),
             )
     }
 }

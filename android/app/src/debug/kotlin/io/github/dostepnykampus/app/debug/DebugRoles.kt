@@ -44,7 +44,7 @@ class DebugRoles
     }
 
 /**
- * Rola do wyboru w przełączniku: Gość, Odwiedzający i dwie role pracownicze.
+ * Rola do wyboru w przełączniku: Gość, Odwiedzający i trzy role pracownicze.
  *
  * Wymagania: BR-1
  *
@@ -66,6 +66,9 @@ enum class DebugRole(
 
     /** Weryfikator. Wymagania: RO-WER */
     VERIFIER(R.string.debug_rola_weryfikator, Account.SignedIn(setOf(StaffRole.VERIFIER))),
+
+    /** Koordynator. Wymagania: RO-KOO */
+    COORDINATOR(R.string.debug_rola_koordynator, Account.SignedIn(setOf(StaffRole.COORDINATOR))),
 }
 
 /** Role w wersji debug: dostawca z przełącznikiem zamiast stałego Gościa. */
