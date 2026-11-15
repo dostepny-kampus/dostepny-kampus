@@ -73,7 +73,7 @@ class InspectionProgressTest {
     }
 
     @Test
-    fun us11_3_no_connection_is_offline() {
+    fun us11_3_offline_revoke() {
         val offline =
             MockWebServer().use { server ->
                 server.start()
