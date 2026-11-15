@@ -5,9 +5,6 @@
  */
 package io.github.dostepnykampus.feature.map.style
 
-import io.github.dostepnykampus.core.model.GeoMultiPolygon
-import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
@@ -24,9 +21,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.maplibre.spatialk.geojson.LineString
-import org.maplibre.spatialk.geojson.Polygon
-import org.maplibre.spatialk.geojson.Position
 
 /** Styl mapy V1 z jednym konturem „Budynek testowy” (nie dane PWr). Wymagania: US1, US1.1, NFR-10 */
 class CampusMapStyleTest {
@@ -39,9 +33,8 @@ class CampusMapStyleTest {
     fun drawsOutlinesOverBasemap() {
         val layers = style.array("layers").map { it.jsonObject }
         val below = listOf("lad", "osm", BUILDINGS_LAYER, "kontury") + PLAN + listOf(SELECTED_LAYER)
-        val area = listOf(OUTSIDE_LAYER, EDGE_HALO_LAYER, EDGE_LAYER)
         val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)
-        val expected = below + area + marks + listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
+        val expected = below + marks + listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
         assertEquals(expected, layers.map { it.text("id") })
         assertEquals("#E8EDEE", layers.first().obj("paint").text("background-color"))
     }
@@ -80,64 +73,7 @@ class CampusMapStyleTest {
     }
 
     /**
-     * Wiersz: V1, poza terenem na mapę pada kolor tła z kryciem z tokenów, a granicę pokazuje linia z obwódką pod
-     * spodem: wielokąt poza terenem ma otwór o brzegach terenu, a obie linie biegną po tych samych brzegach. Bez
-     * granicy z pliku brzegiem jest prostokąt terenu.
-     * Scenariusz (częściowo): przegladanie-mapy.feature: Mapa nie wychodzi poza wybrany teren
-     *
-     * Wymagania: US1.7, BR-G5, NFR-16
-     */
-    @Test
-    fun fadesOutsideWithEdgeLine() {
-        val bounds = CampusBounds(west = 16.9, south = 59.9, east = 17.1, north = 60.1)
-        val look = colors.copy(edge = "#111111", edgeHalo = "#FFFFFF", outside = "#FAFAFA", outsideOpacity = 0.75)
-        val styled = Json.parseToJsonElement(styled(MapSelection(bounds = bounds), look)).jsonObject
-        val area = styled.obj("sources").obj("teren")
-        val features = area.obj("data").array("features").map { it.jsonObject }
-        val outsideShape = features.first().obj("geometry")
-        val hole = outsideShape.array("coordinates")[1].jsonArray
-        val edge = features.last().obj("geometry").array("coordinates")
-        val corners = setOf(listOf(16.9, 59.9), listOf(17.1, 59.9), listOf(17.1, 60.1), listOf(16.9, 60.1))
-        assertEquals(corners, hole.map { point -> point.jsonArray.map { it.jsonPrimitive.double } }.toSet())
-        assertEquals(hole.reversed(), edge.toList(), "Linia biegnie po brzegu otworu")
-        val paints = styled.array("layers").map { it.jsonObject }.associate { it.text("id") to it["paint"] }
-        val outside = requireNotNull(paints[OUTSIDE_LAYER]).jsonObject
-        assertEquals("#FAFAFA", outside.text("fill-color"), "Poza terenem pada kolor tła")
-        assertEquals(0.75, outside.number("fill-opacity"), "Krycie z tokenu teren_poza")
-        val halo = requireNotNull(paints[EDGE_HALO_LAYER]).jsonObject
-        assertEquals("#FFFFFF", halo.text("line-color"), "Obwódka w barwie granica_terenu_obwodka")
-        assertEquals(5.0, halo.number("line-width"), "Obwódka 1,5 dp z każdej strony linii 2 dp")
-        val line = requireNotNull(paints[EDGE_LAYER]).jsonObject
-        assertEquals("#111111", line.text("line-color"), "Linia w barwie granica_terenu")
-        assertEquals(2.0, line.number("line-width"), "Linia granicy ma 2 dp")
-    }
-
-    /**
-     * Wiersz: V1, granica z pliku to wielokąt, także z kilku części i z otworem: każda część wycina otwór
-     * w obszarze poza terenem (pierścień przeciwny do pierścienia świata, inaczej MapLibre nie robi otworu), otwór
-     * w granicy też leży poza terenem, a linia biegnie po każdym pierścieniu.
-     *
-     * Wymagania: US1.7, BR-G5
-     */
-    @Test
-    fun cutsEveryBoundaryPart() {
-        val bounds = CampusBounds(west = 16.0, south = 59.0, east = 18.0, north = 61.0)
-        val outer = square(west = 16.0, south = 59.0, size = 1.0)
-        val inner = square(west = 16.4, south = 59.4, size = 0.2)
-        val second = square(west = 17.5, south = 60.5, size = 0.5).reversed()
-        val boundary = GeoMultiPolygon(listOf(GeoPolygon(listOf(outer, inner)), GeoPolygon(listOf(second))))
-        val features = areaFeatures(boundary = boundary, bounds = bounds).map { it.geometry }
-        val outside = features.first() as Polygon
-        assertEquals(3, outside.coordinates.size, "Świat i otwory obu części")
-        assertTrue(outside.coordinates.drop(1).all { signedArea(it) < 0 }, "Otwory biegną zgodnie z zegarem")
-        assertTrue(signedArea(outside.coordinates.first()) > 0, "Pierścień świata biegnie przeciwnie do zegara")
-        val rest = features.drop(1)
-        assertEquals(1, rest.filterIsInstance<Polygon>().size, "Otwór granicy jest osobnym obszarem poza terenem")
-        assertEquals(3, rest.filterIsInstance<LineString>().size, "Linia po każdym pierścieniu granicy")
-    }
-
-    /**
-     * Wiersz: V1, podkładu spoza prostokąta terenu powiększonego o pół widoku mapy ani poniżej najmniejszego
+     * Wiersz: V1, podkładu spoza prostokąta widoku terenu ani poniżej najmniejszego
      * powiększenia podkładu aplikacja nie pobiera; bez podanego podkładu jest nim prostokąt terenu od powiększenia 0.
      *
      * Wymagania: NFR-39
@@ -180,8 +116,12 @@ class CampusMapStyleTest {
     }
 
     /**
-     * Warstwy stoją w stałej kolejności. Warstwy zaznaczenia i terenu są zawsze; bez granic źródło terenu jest
-     * puste, więc zmiana terenu nie wymaga nowego stylu. Wymagania: US1.7, US3.3, BR-G5
+     * Warstwy stoją w stałej kolejności, a warstwy zaznaczenia są zawsze, więc zmiana zaznaczenia nie wymaga nowego
+     * stylu. Mapa nie ma warstw granicy terenu ani wyblaknięcia poza nią.
+     * Scenariusz (częściowo): przegladanie-mapy.feature:
+     *   Przy najmniejszym powiększeniu teren wypełnia mapę w krótszym wymiarze
+     *
+     * Wymagania: US1.7, US3.3
      */
     @Test
     fun ordersOptionalLayers() {
@@ -189,18 +129,13 @@ class CampusMapStyleTest {
         val base = listOf("lad", "osm", BUILDINGS_LAYER, "kontury") + PLAN
         val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)
         val pin = listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
-        val area = listOf(OUTSIDE_LAYER, EDGE_HALO_LAYER, EDGE_LAYER)
         val bareIds = bare.jsonObject.array("layers").map { it.jsonObject.text("id") }
-        assertEquals(base + SELECTED_LAYER + area + marks + pin, bareIds)
-        val sources =
-            setOf("osm", "budynki", "podpisy", "wejscia", "bariery", AREA_SOURCE, CHOSEN_SOURCE, PLAN_SOURCE)
-        val bareSources = bare.jsonObject.obj("sources")
-        assertEquals(sources, bareSources.keys)
-        val empty = bareSources.obj(AREA_SOURCE).obj("data").array("features")
-        assertEquals(0, empty.size, "bez granic teren jest pusty")
+        assertEquals(base + SELECTED_LAYER + marks + pin, bareIds)
+        val sources = setOf("osm", "budynki", "podpisy", "wejscia", "bariery", CHOSEN_SOURCE, PLAN_SOURCE)
+        assertEquals(sources, bare.jsonObject.obj("sources").keys)
         val entrance = SelectedEntrance(id = "w1", location = STYLE_ORIGIN, label = "Główne", buildingSymbol = "C-13")
         val full = Json.parseToJsonElement(styled(data.selection(building = "C-13", entrance = entrance)))
-        val expected = base + SELECTED_LAYER + area + marks + pin
+        val expected = base + SELECTED_LAYER + marks + pin
         assertEquals(expected, full.jsonObject.array("layers").map { it.jsonObject.text("id") })
     }
 
@@ -221,13 +156,6 @@ class CampusMapStyleTest {
     private fun JsonObject.number(key: String): Double = getValue(key).jsonPrimitive.double
 
     private fun JsonObject.text(key: String): String = getValue(key).jsonPrimitive.content
-
-    private fun square(west: Double, south: Double, size: Double): List<GeoPoint> =
-        listOf(west to south, west + size to south, west + size to south + size, west to south + size, west to south)
-            .map { (longitude, latitude) -> GeoPoint(longitude = longitude, latitude = latitude) }
-
-    private fun signedArea(ring: List<Position>): Double =
-        ring.zipWithNext().sumOf { (from, to) -> from.longitude * to.latitude - to.longitude * from.latitude }
 }
 
 private val PLAN =

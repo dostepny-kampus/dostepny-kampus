@@ -43,15 +43,6 @@ internal const val ENTRANCE_PIN_IMAGE = "wejscie_pinezka"
 /** Wysokość i szerokość znaku wejścia w dp, z tokenu `ikony.znak_mapy`. Wymagania: US2.1, NFR-21 */
 internal val ENTRANCE_MARK_DP: Int = Ikony.znakMapy.value.toInt()
 
-/** Warstwa wyblaknięcia mapy poza granicą terenu. Wymagania: US1.7, BR-G5 */
-internal const val OUTSIDE_LAYER = "teren-poza"
-
-/** Warstwa obwódki pod linią granicy terenu: linia ma kontrast na jasnym i ciemnym podkładzie. Wymagania: NFR-16 */
-internal const val EDGE_HALO_LAYER = "teren-granica-obwodka"
-
-/** Warstwa linii granicy terenu. Wymagania: US1.7, BR-G5 */
-internal const val EDGE_LAYER = "teren-granica"
-
 /** Warstwa konturów wszystkich budynków. */
 internal const val OUTLINES_LAYER = "kontury"
 
@@ -85,10 +76,10 @@ internal const val OSM_TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
  * @property buildingOutline kontur budynków PWr (`pwr_kontur`)
  * @property selectedOutline obrys zaznaczonego budynku (`pwr_wybrany`), grubszy niż kontur
  * @property isNight motyw ciemny: podkład jest wtedy odwrócony, żeby mapa nie raziła na ciemnym ekranie
- * @property edge linia granicy terenu (`granica_terenu`)
- * @property edgeHalo obwódka linii granicy terenu (`granica_terenu_obwodka`)
- * @property outside kolor kładziony na mapę poza granicą terenu (`background` motywu)
- * @property outsideOpacity krycie koloru [outside] (`mapa.krycie.teren_poza`); 0 zostawia mapę bez wyblaknięcia
+ * @property edge nieużywane: mapa nie rysuje granicy terenu
+ * @property edgeHalo nieużywane: mapa nie rysuje granicy terenu
+ * @property outside nieużywane: mapa nie ma wyblaknięcia poza terenem
+ * @property outsideOpacity nieużywane: mapa nie ma wyblaknięcia poza terenem
  * @property dimmed wypełnienie budynków obok zaznaczonego (`budynek`)
  * @property dimmedOutline kontur budynków obok zaznaczonego (`budynek_kontur`)
  * @property plan kolory planu piętra; bez nich plan ma barwy budynków
@@ -99,6 +90,7 @@ data class MapStyleColors(
     val buildingOutline: String,
     val selectedOutline: String,
     val isNight: Boolean = false,
+    // TODO(#2632): usunąć pola granicy terenu razem z jej tokenami.
     val edge: String = buildingOutline,
     val edgeHalo: String = land,
     val outside: String = land,
@@ -130,12 +122,11 @@ data class Basemap(val bounds: CampusBounds, val minZoom: Double = 0.0)
 /**
  * Styl mapy V1 (ADR-0005) jako tekst JSON: kontury i podpisy ze źródła w aplikacji zawsze, podkład OSM tylko online,
  * tylko w obszarze [basemap] i przygaszony. Zaznaczony budynek [MapSelection.building] ma grubszy obrys i jako jedyny
- * znaki wejść; wejście [MapSelection.entrance] ma pinezkę z podpisem. Poza granicą terenu [MapSelection.boundary]
- * (bez niej poza prostokątem [MapSelection.bounds]) mapa jest wyblakła, a bariery mają znak uciążliwości. Warstwy
+ * znaki wejść; wejście [MapSelection.entrance] ma pinezkę z podpisem, a bariery mają znak uciążliwości. Warstwy
  * zaznaczenia są w stylu zawsze, więc style dla różnych zaznaczeń różnią się tylko polami [SelectionLook]
  * z [selectionLook].
  *
- * Wymagania: NFR-10, NFR-39, US1.1, US1.4, US2.8, US2.1, NFR-21, US3.3, NFR-16, US1.7, BR-G5, US1.3
+ * Wymagania: NFR-10, NFR-39, US1.1, US1.4, US2.8, US2.1, NFR-21, US3.3, NFR-16, US1.3
  */
 fun campusMapStyle(
     data: CampusMapData,
@@ -147,7 +138,7 @@ fun campusMapStyle(
     val style =
         buildJsonObject {
             put(key = "version", value = STYLE_VERSION)
-            val all = sources(data = data, selection = selection, look = look, basemap = basemap)
+            val all = sources(data = data, look = look, basemap = basemap)
             put(key = "sources", element = all)
             val list = layers(look = look, colors = colors, basemap = basemap)
             put(key = "layers", element = list)
@@ -167,14 +158,13 @@ internal fun entranceMarkImage(marking: EntranceMarking): String = "wejscie_${ma
 /** Nazwa obrazu podpisu zaznaczonego wejścia o nazwie [label]; przedrostek odróżnia go od podpisów budynków. */
 internal fun entranceCaptionImage(label: String): String = "wejscie: $label"
 
-private fun sources(data: CampusMapData, selection: MapSelection, look: SelectionLook, basemap: Basemap?): JsonObject =
+private fun sources(data: CampusMapData, look: SelectionLook, basemap: Basemap?): JsonObject =
     buildJsonObject {
         put(key = BASEMAP, element = basemapSource(basemap?.bounds))
         put(key = BUILDINGS_SOURCE, element = geoJsonSource(data.buildings))
         put(key = LABELS, element = geoJsonSource(data.labelPoints))
         put(key = ENTRANCES_SOURCE, element = geoJsonSource(data.entrances))
         put(key = BARRIERS_SOURCE, element = geoJsonSource(data.barriers))
-        put(key = AREA_SOURCE, element = geoJsonSource(areaOf(selection)))
         put(key = CHOSEN_SOURCE, element = geoJsonSource(look.chosenEntrance))
         put(key = PLAN_SOURCE, element = geoJsonSource(look.plan))
     }
@@ -200,7 +190,6 @@ private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap
         )
         planLayers(colors.plan, look.planFloor).forEach { add(it) }
         add(selectedLayer(look.selectedFilter, colors))
-        areaLayers(colors).forEach { add(it) }
         add(marksLayer(look.entrancesFilter, look.entrancesMinZoom))
         barrierLayers(look.barriersFilter).forEach { add(it) }
         add(symbolLayer(id = LABELS, source = LABELS, image = property(LABEL)))

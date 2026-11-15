@@ -73,7 +73,7 @@ import io.github.dostepnykampus.feature.map.style.rememberMapImages
 import io.github.dostepnykampus.feature.map.style.roomNumberBitmap
 import io.github.dostepnykampus.feature.map.style.roomNumberImage
 import io.github.dostepnykampus.feature.map.style.selectionLook
-import io.github.dostepnykampus.feature.map.style.showArea
+import io.github.dostepnykampus.feature.map.style.showBasemap
 import io.github.dostepnykampus.feature.map.style.showSelection
 import io.github.dostepnykampus.feature.map.style.styleBuilder
 import kotlinx.serialization.json.JsonArray
@@ -237,7 +237,7 @@ object MapLibreMapView : CampusMapView {
         }
         DisposableEffect(loaded, area) {
             loaded?.takeIf { area != shown }?.let { ready ->
-                StyleTarget(ready).showArea(area = area.area, basemap = area.basemap)
+                StyleTarget(ready).showBasemap(basemap = area.basemap)
                 shown = area
             }
             onDispose {}
@@ -473,8 +473,8 @@ internal fun northUpOptions(context: Context): MapLibreMapOptions =
 
 /**
  * Styl mapy jako napis JSON bez zaznaczenia budynku, wejścia i bariery: z [selection] bierze tylko prostokąt
- * i granicę terenu, a podkład ogranicza do obszaru [basemap]. Powstaje od nowa tylko po zmianie danych [data]
- * albo barw [colors]; zmiana terenu i podkładu idzie do wczytanego stylu przez `showArea`, a zaznaczenie i ruch
+ * terenu, a podkład ogranicza do obszaru [basemap]. Powstaje od nowa tylko po zmianie danych [data]
+ * albo barw [colors]; zmiana terenu i podkładu idzie do wczytanego stylu przez `showBasemap`, a zaznaczenie i ruch
  * kamery stylu nie budują. Z terenem, a bez [basemap] (mapa jeszcze bez rozmiaru) stylu nie ma. Funkcja [build]
  * składa styl.
  */

@@ -295,8 +295,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy mapa dalej się nie przesuwa
     Oraz brzeg mapy leży na brzegu prostokąta terenu
 
-  # bez granicy i wyblaknięcia: #2627
-  @US1.7 @BR-G5 @NFR-39 @aplikacja @do-zrobienia
+  @US1.7 @BR-G5 @NFR-39 @aplikacja
   Scenariusz: Przy najmniejszym powiększeniu teren wypełnia mapę w krótszym wymiarze
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Wittigowo”
     Jeżeli pomniejszy mapę do końca
