@@ -78,7 +78,7 @@ final class JpegImageTest {
 
     private static int scan(final byte[] jpeg) {
         final int sos = JpegImageTest.marker(jpeg, 0xDA);
-        return sos + 2 + ((jpeg[sos + 2] & 0xFF) << 8 | jpeg[sos + 3] & 0xFF);
+        return sos + 2 + (((jpeg[sos + 2] & 0xFF) << 8) | (jpeg[sos + 3] & 0xFF));
     }
 
     private static int marker(final byte[] jpeg, final int code) {
