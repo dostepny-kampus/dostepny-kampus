@@ -54,7 +54,6 @@ sealed interface MarkersUiState {
 /**
  * Znaczniki budynku [symbol] z autorami i „Cofnij znacznik” z potwierdzeniem. Cofnięcie dociera do serwera
  * dopiero po potwierdzeniu; „Zostaw znacznik” niczego nie zmienia.
- * TODO(#1843): ekran C5 i wejście z K1.
  *
  * Wymagania: US11.3, BR-20
  */
