@@ -48,7 +48,8 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
      * Kolumny zgłoszenia czytane do modelu.
      */
     private static final String COLUMNS =
-        "id, version, status, created_at, verified_at, content::text AS content";
+        "id, version, status, created_at, verified_at, content::text AS content, "
+            + "rejection_reason, duplicate_of";
 
     /**
      * Wstawienie nowego zgłoszenia; istniejący identyfikator niczego nie zmienia.
@@ -69,6 +70,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     private static final String UPDATE = String.format(
         """
             UPDATE submissions SET version = version + 1, status = edited.new_status,
+                rejection_reason = NULL, duplicate_of = NULL,
                 content = CAST(:content AS JSONB)
             FROM unnest(CAST(:from AS TEXT[]), CAST(:to AS TEXT[]))
                 AS edited (old_status, new_status)
@@ -96,6 +98,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     private static final String DECIDE = String.format(
         """
             UPDATE submissions SET status = :status, rejection_reason = :reason,
+                duplicate_of = CAST(:duplicate AS UUID),
                 content = CASE WHEN CAST(:type AS TEXT) IS NULL THEN content
                     ELSE content || JSONB_BUILD_OBJECT(
                         'barrierType', CAST(:type AS TEXT), 'severity', CAST(:severity AS INT)
@@ -194,6 +197,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                 .param("reviewer", decision.reviewer())
                 .param("status", decision.outcome().name())
                 .param("reason", JdbcSubmissions.reason(decision))
+                .param("duplicate", JdbcSubmissions.duplicate(decision))
                 .param("type", JdbcSubmissions.type(decision))
                 .param("severity", JdbcSubmissions.severity(decision))
                 .query(this.rows).optional().orElse(null),
@@ -291,6 +295,16 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
         final String result;
         if (decision instanceof ReviewDecision.Rejected rejected) {
             result = rejected.reason();
+        } else {
+            result = null;
+        }
+        return result;
+    }
+
+    private static @Nullable UUID duplicate(final ReviewDecision decision) {
+        final UUID result;
+        if (decision instanceof ReviewDecision.Rejected rejected) {
+            result = rejected.duplicateOf();
         } else {
             result = null;
         }

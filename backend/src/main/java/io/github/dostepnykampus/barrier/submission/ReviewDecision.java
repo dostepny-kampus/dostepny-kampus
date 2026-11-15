@@ -10,6 +10,7 @@ import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
 import java.util.Objects;
 import java.util.UUID;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Decyzja Weryfikatora o zgłoszeniu, które wziął do weryfikacji: przyjęcie albo
@@ -156,11 +157,26 @@ public sealed interface ReviewDecision
      * @param expectedVersion Wersja, którą ocenił Weryfikator
      * @param reviewer Identyfikator konta Weryfikatora
      * @param reason Niepusty powód odrzucenia
+     * @param duplicateOf Wcześniejsze zgłoszenie przy duplikacie albo {@code null}
      * @since 0.1.0
      */
     record Rejected(
-        UUID id, int expectedVersion, String reviewer, String reason
+        UUID id, int expectedVersion, String reviewer, String reason, @Nullable UUID duplicateOf
     ) implements ReviewDecision {
+
+        /**
+         * Odrzucenie bez wskazania duplikatu.
+         *
+         * @param id Identyfikator zgłoszenia
+         * @param expectedVersion Wersja, którą ocenił Weryfikator
+         * @param reviewer Identyfikator konta Weryfikatora
+         * @param reason Niepusty powód odrzucenia
+         */
+        public Rejected(
+            final UUID id, final int expectedVersion, final String reviewer, final String reason
+        ) {
+            this(id, expectedVersion, reviewer, reason, null);
+        }
 
         /**
          * Odrzucenie bez braków; brak identyfikatora, konta albo powodu kończy się wyjątkiem
@@ -170,6 +186,7 @@ public sealed interface ReviewDecision
          * @param expectedVersion Wersja, którą ocenił Weryfikator
          * @param reviewer Identyfikator konta Weryfikatora
          * @param reason Niepusty powód odrzucenia
+         * @param duplicateOf Wcześniejsze zgłoszenie przy duplikacie albo {@code null}
          */
         public Rejected {
             Objects.requireNonNull(id, "id");
