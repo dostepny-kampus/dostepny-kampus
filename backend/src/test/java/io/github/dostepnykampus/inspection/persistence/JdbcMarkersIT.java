@@ -25,7 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @IntegrationTest
 @Transactional
-final class JdbcMarkersTest {
+final class JdbcMarkersIT {
 
     @Test
     void savesRepeatedMarkerOnce(final WebApplicationContext context) {

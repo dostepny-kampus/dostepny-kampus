@@ -386,7 +386,7 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
         <version>${pitest.version}</version>
         <configuration>
           <!-- Mutowany jest kod sprawdzany szybkimi testami. Testy z kontekstem Springa, bazą albo kontenerami
-               mają znacznik kontekst-springa (pilnuje go SpringTestTagArchitectureTest) i nie biorą udziału. -->
+               mają znacznik kontekst-springa (pilnuje go SpringTestTagArchitectureIT) i nie biorą udziału. -->
           <targetClasses>
             <param>io.github.dostepnykampus.*.domain.*</param>
             <param>io.github.dostepnykampus.barrier.submission.CreateResult*</param>
