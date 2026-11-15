@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.model.inspection.BuildingProgress
 import io.github.dostepnykampus.core.model.inspection.InspectionCoverage
 import io.github.dostepnykampus.core.model.inspection.InspectionMarker
 import io.github.dostepnykampus.core.model.inspection.MarkerPlace
+import io.github.dostepnykampus.core.model.inspection.ProgressMarker
 import io.github.dostepnykampus.core.network.decodeContract
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
@@ -17,7 +18,7 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeParseException
 import io.github.dostepnykampus.core.network.json.BuildingProgress as BuildingProgressJson
 import io.github.dostepnykampus.core.network.json.DetailLevel as DetailLevelJson
-import io.github.dostepnykampus.core.network.json.InspectionMarker as InspectionMarkerJson
+import io.github.dostepnykampus.core.network.json.ProgressMarker as ProgressMarkerJson
 
 /**
  * Postęp budynków z tekstu odpowiedzi [body] (`BuildingProgress[]`).
@@ -56,14 +57,18 @@ private fun BuildingProgressJson.coverage(): InspectionCoverage =
         }
     }
 
-private fun InspectionMarkerJson.toMarker(): InspectionMarker =
-    InspectionMarker(
-        id = id,
-        buildingSymbol = buildingSymbol,
-        place = floorId?.let { MarkerPlace.Floor(it) } ?: MarkerPlace.WholeBuilding,
-        createdAt = receivedAt(createdAt),
-        isRevoked = revoked,
-        isMine = mine,
+private fun ProgressMarkerJson.toMarker(): ProgressMarker =
+    ProgressMarker(
+        marker =
+            InspectionMarker(
+                id = id,
+                buildingSymbol = buildingSymbol,
+                place = floorId?.let { MarkerPlace.Floor(it) } ?: MarkerPlace.WholeBuilding,
+                createdAt = receivedAt(createdAt),
+                isRevoked = revoked,
+                isMine = mine,
+            ),
+        authorPseudonym = authorPseudonym,
     )
 
 private fun receivedAt(text: String): Instant =

@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.model.inspection.BuildingProgress
 import io.github.dostepnykampus.core.model.inspection.InspectionCoverage
 import io.github.dostepnykampus.core.model.inspection.InspectionMarker
 import io.github.dostepnykampus.core.model.inspection.MarkerPlace
+import io.github.dostepnykampus.core.model.inspection.ProgressMarker
 import io.github.dostepnykampus.core.network.inspection.decodeProgress
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -45,7 +46,7 @@ class ProgressJsonTest {
                 acceptedSubmissions = 7,
                 entrancesTotal = 4,
                 entrancesCheckedOnSite = 1,
-                markers = listOf(marker),
+                markers = listOf(ProgressMarker(marker = marker, authorPseudonym = "Autor 14")),
             )
         val basic =
             BuildingProgress(
@@ -90,13 +91,14 @@ class ProgressJsonTest {
         const val BAD_DATE =
             """[{"buildingSymbol":"B-4","detailLevel":"BASIC","inspected":true,"pendingSubmissions":0,
                 "acceptedSubmissions":0,"entrancesTotal":0,"entrancesCheckedOnSite":0,"markers":[
-                {"id":"$MARKER","buildingSymbol":"B-4","createdAt":"wczoraj","revoked":false,"mine":true}]}]"""
+                {"id":"$MARKER","buildingSymbol":"B-4","createdAt":"wczoraj","revoked":false,"mine":true,
+                 "authorPseudonym":"Autor 3"}]}]"""
         const val PROGRESS =
             """[
                 {"buildingSymbol":"A-1","detailLevel":"DETAILED","floorsTotal":5,"floorsInspected":3,
                  "pendingSubmissions":2,"acceptedSubmissions":7,"entrancesTotal":4,"entrancesCheckedOnSite":1,
                  "markers":[{"id":"$MARKER","buildingSymbol":"A-1","floorId":"A-1-2",
-                  "createdAt":"2026-11-10T09:30:00Z","revoked":false,"mine":false}]},
+                  "createdAt":"2026-11-10T09:30:00Z","revoked":false,"mine":false,"authorPseudonym":"Autor 14"}]},
                 {"buildingSymbol":"B-4","detailLevel":"BASIC","inspected":true,
                  "pendingSubmissions":0,"acceptedSubmissions":1,"entrancesTotal":2,"entrancesCheckedOnSite":2,
                  "markers":[]}

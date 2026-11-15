@@ -18,7 +18,7 @@ import java.time.Instant
  * @property acceptedSubmissions zgłoszenia przyjęte, bez archiwalnych
  * @property entrancesTotal wszystkie wejścia budynku
  * @property entrancesCheckedOnSite wejścia ze źródłem oznaczenia „obchód”
- * @property markers aktywne znaczniki do cofnięcia przez Koordynatora
+ * @property markers aktywne znaczniki z autorem do cofnięcia przez Koordynatora
  */
 public data class BuildingProgress(
     val buildingSymbol: String,
@@ -27,7 +27,7 @@ public data class BuildingProgress(
     val acceptedSubmissions: Int,
     val entrancesTotal: Int,
     val entrancesCheckedOnSite: Int,
-    val markers: List<InspectionMarker>,
+    val markers: List<ProgressMarker>,
 )
 
 /** Co zostało obejrzane w budynku. Wymagania: US11.1, BR-21 */
@@ -68,6 +68,16 @@ public data class InspectionMarker(
     val isRevoked: Boolean,
     val isMine: Boolean,
 )
+
+/**
+ * Znacznik w postępie inwentaryzacji widziany przez Koordynatora (`ProgressMarker` z kontraktu API).
+ *
+ * Wymagania: US11.3, BR-5
+ *
+ * @property marker znacznik zapisany na serwerze
+ * @property authorPseudonym pseudonim autora bez danych osobowych, np. „Autor 14”
+ */
+public data class ProgressMarker(val marker: InspectionMarker, val authorPseudonym: String)
 
 /** Czego dotyczy znacznik. Wymagania: US15.1, BR-20 */
 public sealed interface MarkerPlace {
