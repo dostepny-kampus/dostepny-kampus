@@ -25,6 +25,7 @@ class FloorPlanDaoTest {
             val rooms = listOf(room("2"), room("1"), room(id = "3", floor = "P1"))
             dao.replace("C-13", listOf(plan("P1"), plan("P0")), rooms)
             assertEquals(
+                "piętra po kolei i sale piętra P0",
                 listOf(listOf(plan("P0"), plan("P1")), listOf(room("1"), room("2"))),
                 listOf(dao.floors("C-13"), dao.roomsOf("P0")),
             )
@@ -38,6 +39,7 @@ class FloorPlanDaoTest {
             dao.replace("C-13", listOf(plan("P0")), listOf(room("4")))
 
             assertEquals(
+                "plan budynku zastąpiony w całości, inny budynek bez zmian",
                 listOf(null, emptyList<FloorRoomEntity>(), listOf(room("4")), plan(floor = "P1", building = "A-1")),
                 listOf(dao.planOf("P1"), dao.roomsOf("P1"), dao.roomsOf("P0"), dao.planOf("P1", building = "A-1")),
             )
