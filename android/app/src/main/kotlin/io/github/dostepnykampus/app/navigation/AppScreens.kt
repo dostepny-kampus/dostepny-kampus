@@ -6,35 +6,20 @@
 package io.github.dostepnykampus.app.navigation
 
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.LocalSheetPadding
-import io.github.dostepnykampus.app.R
 import io.github.dostepnykampus.app.SheetState
 import io.github.dostepnykampus.app.cardMode
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
-import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
-import io.github.dostepnykampus.core.model.hasStaffRole
-import io.github.dostepnykampus.core.model.isSignedIn
 import io.github.dostepnykampus.feature.capture.measure.MeasureScreen
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
@@ -58,8 +43,6 @@ import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlin.math.roundToInt
-import io.github.dostepnykampus.feature.capture.R as CaptureR
-import io.github.dostepnykampus.feature.inspection.R as InspectionR
 
 /** Szerokość okna w dp, od której pasek nawigacji stoi z boku, a V2 otwiera się od razu na pełnym ekranie. */
 internal const val WIDE_WINDOW_DP = 600
@@ -110,11 +93,6 @@ internal fun AppNavigator.sheetCard(): SheetCard {
     val back = checkNotNull(LocalOnBackPressedDispatcherOwner.current).onBackPressedDispatcher
     return SheetCard(mode, onBack = back::onBackPressed, onClose = { back() })
 }
-
-private typealias Action = Pair<String, () -> Unit>
-
-private val Account.isCoordinator: Boolean
-    get() = this is Account.SignedIn && StaffRole.COORDINATOR in staffRoles
 
 /**
  * Ekran trasy [route] z czynnościami podpiętymi do nawigatora. V1 to mapa z `feature:map` ze stanem w ViewModel
@@ -214,44 +192,4 @@ private fun AppNavigator.QuickReport(route: ReportRoute) {
             onBackToMap = { backToMap() },
         )
     QuickReportScreen(route = route, actions = actions)
-}
-
-@Composable
-@NonRestartableComposable
-private fun AppNavigator.Account(route: NavKey) {
-    val current by account.collectAsStateWithLifecycle()
-    val isWork = current.hasStaffRole && route == AccountRoute
-    val title = stringResource(if (isWork) R.string.nav_konto_i_praca else R.string.nav_konto)
-    when {
-        route is SignInRoute -> {
-            val isNowSignedIn = current.isSignedIn
-            SideEffect { if (isNowSignedIn) signedIn() }
-            Stub(title, stringResource(R.string.nie_teraz) to { backToMap() })
-        }
-
-        isWork -> {
-            val progress = stringResource(InspectionR.string.postep_naglowek) to { inspectionProgress() }
-            Stub(
-                title,
-                stringResource(R.string.zmierz_i_zglos) to { measure() },
-                stringResource(CaptureR.string.moje_naglowek) to { mySubmissions() },
-                *listOfNotNull(progress.takeIf { current.isCoordinator }).toTypedArray(),
-            )
-        }
-
-        else -> {
-            Stub(title)
-        }
-    }
-}
-
-@Composable
-@NonRestartableComposable
-private fun AppNavigator.Stub(title: String, vararg actions: Action) {
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            BackHeader(title = title, onBack = { back() })
-            actions.forEach { (label, onClick) -> TextButton(onClick = onClick) { Text(text = label) } }
-        }
-    }
 }
