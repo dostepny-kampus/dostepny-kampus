@@ -60,5 +60,6 @@ internal fun AppNavigator.MapScreen(
         onEmptyMapClick = { closeCardOnEmptyMap() },
         onListBuildingClick = { openBuildingFromList(it, accessibility.isTouchExplorationEnabled) },
         mapView = mapView,
+        motion = mapMotion,
     )
 }

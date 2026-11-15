@@ -14,6 +14,7 @@ import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.capture.report.ReportDraft
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
+import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
@@ -151,6 +152,9 @@ class AppNavigator(
     private val onChooseMap: () -> Unit = {},
     internal val reportDraft: ReportDraft = ReportDraft(),
 ) : NavigationHistory(backStack, onFirstHelpLeft, restarts) {
+    /** Ruchy mapy V1 do budynku, z których karta V2 bierze czas wjazdu. Wymagania: NFR-56 */
+    internal val mapMotion: MapMotion = MapMotion()
+
     /** Konto osoby do obserwowania przez ekrany; zmienia się po zalogowaniu i wylogowaniu. */
     internal val account: StateFlow<Account>
         get() = roles.account

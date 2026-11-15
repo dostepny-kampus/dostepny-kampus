@@ -48,6 +48,7 @@ import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
 import io.github.dostepnykampus.feature.map.building.BuildingChoice
 import io.github.dostepnykampus.feature.map.building.BuildingChoiceSheet
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
+import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
@@ -85,6 +86,7 @@ private const val MAP_STATE = "map"
  * @param onListBuildingClick symbol budynku dotkniętego na liście „Lista budynków”; aplikacja wybiera nim tryb
  *   karty V2 dla wejścia z listy
  * @param mapView widok mapy; testy ekranu podają widok bez natywnej biblioteki
+ * @param motion zapis ruchów mapy do budynku nad kartą V2, z których karta bierze czas; `null` bez zapisu
  * @param viewModel stan ekranu i zapis wyboru w przełączniku; w aplikacji z grafu Hilt, w testach z podróbkami źródeł
  */
 @Composable
@@ -96,6 +98,7 @@ fun CampusMapScreen(
     onEmptyMapClick: () -> Unit = {},
     onListBuildingClick: (String) -> Unit = onBuildingClick,
     mapView: CampusMapView = MapLibreMapView,
+    motion: MapMotion? = null,
     viewModel: CampusMapViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -110,6 +113,7 @@ fun CampusMapScreen(
         onEmptyMapClick = onEmptyMapClick,
         onListBuildingClick = onListBuildingClick,
         mapView = mapView,
+        motion = motion,
     )
 }
 
@@ -137,6 +141,7 @@ fun CampusMapScreen(
  * @param onEmptyMapClick dotknięcie mapy poza konturami
  * @param onListBuildingClick budynek dotknięty na liście
  * @param mapView widok mapy
+ * @param motion zapis ruchów mapy do budynku nad kartą V2
  */
 @Composable
 fun CampusMapScreen(
@@ -150,6 +155,7 @@ fun CampusMapScreen(
     onEmptyMapClick: () -> Unit = {},
     onListBuildingClick: (String) -> Unit = onBuildingClick,
     mapView: CampusMapView = MapLibreMapView,
+    motion: MapMotion? = null,
 ) {
     val catalog = state.catalog
     val isCovered = contentPadding.calculateBottomPadding() > 0.dp
@@ -185,6 +191,7 @@ fun CampusMapScreen(
                         areas = areas,
                         contentPadding = contentPadding,
                         mapView = mapView,
+                        motion = motion,
                         onBuildingClick = onBuildingClick,
                         onEmptyMapClick = onEmptyMapClick,
                         modifier = Modifier.fillMaxSize(),
@@ -205,6 +212,7 @@ private fun CampusMap(
     areas: MapAreas,
     contentPadding: PaddingValues,
     mapView: CampusMapView,
+    motion: MapMotion?,
     onBuildingClick: (String) -> Unit,
     onEmptyMapClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -222,6 +230,7 @@ private fun CampusMap(
             area = areas.chosenName,
             cover = cover,
             size = size,
+            motion = motion,
         )
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
         val scene = state.scene

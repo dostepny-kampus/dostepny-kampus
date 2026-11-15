@@ -11,6 +11,7 @@ plugins {
 }
 
 dependencies {
+    api(libs.androidx.compose.animation.core)
     api(libs.androidx.compose.foundation.layout)
     api(libs.coil.compose.core)
     api(libs.androidx.compose.runtime)
