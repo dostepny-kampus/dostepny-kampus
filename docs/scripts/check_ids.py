@@ -139,7 +139,8 @@ class Corpus:
     """Zebrane definicje, odwołania, powiązania (nieskierowane), scenariusze i wiersze przykładów szablonów
     (`examples`: klucz to plik i nazwa scenariusza, wartość to komórki kolejnych wierszy bez nagłówków tabel).
     `bodies` to treść scenariusza: jego kroki i tabele bez tagów, komentarzy i odstępów na brzegach; `planned` to
-    scenariusze z tagiem PLANNED_TAG; `suites` to zestawy Cucumber serwera, które wykonują dany plik .feature."""
+    scenariusze z tagiem PLANNED_TAG; `deferred` to wiersze przykładów odłożone tagiem PLANNED_TAG nad ich tabelą
+    (klucz jak w `examples`); `suites` to zestawy Cucumber serwera, które wykonują dany plik .feature."""
 
     definitions: dict[str, list[Location]] = field(default_factory=lambda: defaultdict(list))
     references: list[tuple[str, Location]] = field(default_factory=list)
@@ -154,6 +155,7 @@ class Corpus:
     examples: dict[tuple[str, str], list[tuple[str, ...]]] = field(default_factory=lambda: defaultdict(list))
     bodies: dict[tuple[str, str], list[str]] = field(default_factory=lambda: defaultdict(list))
     planned: set[tuple[str, str]] = field(default_factory=set)
+    deferred: dict[tuple[str, str], set[tuple[str, ...]]] = field(default_factory=lambda: defaultdict(set))
     manual: set[tuple[str, str]] = field(default_factory=set)
     suites: dict[str, list[str]] = field(default_factory=lambda: defaultdict(list))
     bad_markers: list[Location] = field(default_factory=list)
@@ -344,7 +346,7 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
     Wiersze tabel pod „Przykłady:” (bez nagłówka każdej tabeli) trafiają do `corpus.examples` scenariusza;
     tabela danych przy kroku nie jest tabelą przykładów. Kroki i tabele scenariusza trafiają do `corpus.bodies`,
     a scenariusz z tagiem PLANNED_TAG albo MANUAL_TAG (własnym, funkcji albo reguły) do `corpus.planned` albo
-    `corpus.manual`.
+    `corpus.manual`. Wiersze tabeli „Przykłady:” z tagiem PLANNED_TAG tuż nad nią trafiają do `corpus.deferred`.
     Wyjątki: OSError/UnicodeDecodeError przy błędzie odczytu.
     """
     rel = relative(path)
@@ -356,6 +358,8 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
     pending: list[tuple[str, Location]] = []
     layers: dict[str, set[str]] = {"feature": set(), "rule": set(), "pending": set()}
     rows: list[tuple[str, ...]] = []
+    held: set[tuple[str, ...]] = set()
+    table_deferred = False
     header: bool | None = None
     body: list[str] = []
     for number, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
@@ -369,7 +373,10 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
         if line.startswith("|"):
             body.append(" ".join(line.split()))
             if header:
-                rows.append(tuple(cell.strip() for cell in line.strip("|").split("|")))
+                cells = tuple(cell.strip() for cell in line.strip("|").split("|"))
+                rows.append(cells)
+                if table_deferred:
+                    held.add(cells)
             header = header if header is None else True
             continue
         header = False if keyword_of(line, EXAMPLES_KEYWORDS) is not None else None
@@ -387,6 +394,7 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
             scenario = Scenario(name or "(bez nazwy)", Location(rel, number), feature, ordered)
             corpus.all_scenarios.append(scenario)
             rows = corpus.examples[(feature, scenario.name)]
+            held, table_deferred = corpus.deferred[(feature, scenario.name)], False
             body = corpus.bodies[(feature, scenario.name)]
             if PLANNED_TAG in found:
                 corpus.planned.add((feature, scenario.name))
@@ -395,6 +403,7 @@ def scan_feature(path: Path, corpus: Corpus, feature: str = "") -> None:
             for tag in dict.fromkeys(feature_tags + rule_tags + tags):
                 corpus.scenarios[tag].append(scenario)
         else:
+            table_deferred = keyword_of(line, EXAMPLES_KEYWORDS) is not None and PLANNED_TAG in own
             body.append(" ".join(line.split()))
 
 
@@ -779,29 +788,37 @@ def example_row(corpus: Corpus, marker: Marker) -> tuple[str, ...] | None:
     return found[0] if len(set(found)) == 1 else None
 
 
-def layer_states(corpus: Corpus, scenario: Scenario, markers: list[Marker]) -> dict[str, str]:
+def layer_states(corpus: Corpus, scenario: Scenario, markers: list[Marker], skip_deferred: bool = False) -> dict[str, str]:
     """Zwraca stan pokrycia scenariusza w każdej jego warstwie: „pełny”, „częściowo” albo „brak”.
 
     Gwarantuje: warstwę aplikacji pokrywają znaczniki testów Androida (`markers`); stan „pełny”, gdy choć jeden
     znacznik całego scenariusza nie jest „częściowo” albo gdy każdy wiersz przykładów szablonu ma własny znacznik,
     który nie jest „częściowo”. Warstwę serwera pokrywa zestaw Cucumber, który wykonuje plik scenariusza
-    (server_suites): stan „pełny” albo „brak”. Scenariusz bez tagu warstwy jest liczony jak scenariusz aplikacji.
+    (server_suites): stan „pełny”, „brak” albo „częściowo”, gdy tag PLANNED_TAG odkłada część wierszy przykładów.
+    Scenariusz bez tagu warstwy jest liczony jak scenariusz aplikacji. Przy `skip_deferred` wiersze odłożone tagiem
+    nad tabelą nie są liczone jako niepokryte w żadnej warstwie (kontrola nowych scenariuszy: mają tag zadania).
     """
     rows = set(corpus.examples.get((scenario.feature, scenario.name), []))
+    held = corpus.deferred.get((scenario.feature, scenario.name), set())
+    if skip_deferred:
+        rows -= held
     whole = any(not m.partial and not m.example for m in markers)
     by_rows = bool(rows) and rows <= {example_row(corpus, m) for m in markers if m.example and not m.partial}
     app = "brak" if not markers else "pełny" if whole or by_rows else "częściowo"
-    server = "pełny" if server_suites(corpus, scenario) else "brak"
+    server = "brak" if not server_suites(corpus, scenario) else "częściowo" if held and not skip_deferred else "pełny"
     return {layer: app if layer == "aplikacja" else server for layer in scenario.layers or ("aplikacja",)}
 
 
 def server_suites(corpus: Corpus, scenario: Scenario) -> list[str]:
     """Zwraca zestawy Cucumber serwera, które wykonują scenariusz.
 
-    Gwarantuje: zestaw wykonuje scenariusze `@serwer` swojego pliku bez tagu PLANNED_TAG; krok bez definicji
+    Gwarantuje: zestaw wykonuje scenariusze `@serwer` swojego pliku bez tagu PLANNED_TAG, a w szablonie wiersze
+    z tabel bez tego tagu (szablon, w którym każdy wiersz jest odłożony, nie jest wykonywany); krok bez definicji
     zatrzymuje zestaw błędem, więc wykonywany scenariusz ma wszystkie kroki.
     """
-    planned = (scenario.feature, scenario.name) in corpus.planned
+    key = (scenario.feature, scenario.name)
+    rows = set(corpus.examples.get(key, []))
+    planned = key in corpus.planned or bool(rows) and rows <= corpus.deferred.get(key, set())
     return [] if planned or "serwer" not in scenario.layers else corpus.suites.get(scenario.feature, [])
 
 
@@ -881,14 +898,17 @@ def coverage_drops(corpus: Corpus, baseline: Corpus) -> list[Finding]:
 
 def unplanned_scenarios(corpus: Corpus, baseline: Corpus) -> list[Finding]:
     """Zwraca „BŁĄD” dla każdego scenariusza, którego nie ma w `baseline` albo który ma tam inną treść (kroki, tabele),
-    a który nie ma pełnego testu ani tagu PLANNED_TAG albo MANUAL_TAG.
+    a który nie ma pełnego testu ani tagu PLANNED_TAG albo MANUAL_TAG. Szablon, w którym każdy wiersz bez testu leży
+    w tabeli z tagiem PLANNED_TAG, ma pełny test w pozostałych wierszach.
 
     Gwarantuje: scenariusz o treści takiej jak w `baseline` nie daje wyniku; zmiana samych tagów nie jest zmianą treści.
     """
     findings = []
-    for scenario, (_, state) in coverage_states(corpus).items():
+    for scenario, (markers, state) in coverage_states(corpus).items():
         key = (scenario.feature, scenario.name)
         same = key in baseline.bodies and baseline.bodies[key] == corpus.bodies[key]
+        if state != "pełny" and corpus.deferred.get(key):
+            state = "pełny" if set(layer_states(corpus, scenario, markers, True).values()) == {"pełny"} else state
         if not same and state != "pełny" and key not in corpus.planned | corpus.manual:
             message = f"nowy albo zmieniony scenariusz bez pełnego testu i bez tagu @{PLANNED_TAG} z numerem zadania: {scenario.name}"
             findings.append(Finding("BŁĄD", str(scenario.location), message))

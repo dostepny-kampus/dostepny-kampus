@@ -277,17 +277,29 @@ LAYERED = (
 )
 
 
-def layered(tests: str, suite: str = "") -> check_ids.Corpus:
-    """Zwraca korpus z plikiem `warstwy.feature` (LAYERED), testami Androida o treści `tests` i zestawem Cucumber
-    serwera o treści `suite` (pusty: serwer bez zestawu)."""
+def layered(tests: str, suite: str = "", feature: str = LAYERED) -> check_ids.Corpus:
+    """Zwraca korpus z plikiem `warstwy.feature` o treści `feature` (domyślnie LAYERED), testami Androida o treści
+    `tests` i zestawem Cucumber serwera o treści `suite` (pusty: serwer bez zestawu)."""
     with tempfile.TemporaryDirectory() as root:
         (Path(root) / "backend" / "src" / "test" / "java").mkdir(parents=True)
         (Path(root) / "backend" / "src" / "test" / "java" / "ServerSpecs.java").write_text(suite, encoding="utf-8")
         (Path(root) / "specs").mkdir()
-        (Path(root) / "specs" / "warstwy.feature").write_text(LAYERED, encoding="utf-8")
+        (Path(root) / "specs" / "warstwy.feature").write_text(feature, encoding="utf-8")
         (Path(root) / "android" / "src" / "test").mkdir(parents=True)
         (Path(root) / "android" / "src" / "test" / "WarstwyTest.kt").write_text(tests, encoding="utf-8")
         return check_ids.collect(DATA / "brak", Path(root) / "specs", Path(root) / "android", Path(root) / "backend")
+
+
+TEMPLATE = (
+    "Funkcja: Warstwy\n\n  @serwer\n  Szablon scenariusza: Na serwerze\n    Wtedy <x>\n\n    Przykłady:\n      | x |\n      | 1 |\n\n"
+    "    {second}\n    Przykłady:\n      | x |\n      | 2 |\n"
+)
+
+
+def server_state(feature: str) -> str:
+    """Zwraca stan pokrycia szablonu z `feature` w warstwie serwera, gdy zestaw Cucumber wykonuje jego plik."""
+    corpus = layered("", SUITE, feature)
+    return check_ids.coverage_states(corpus)[corpus.all_scenarios[0]][1]
 
 
 SUITE = '@Suite\n@SelectFile("../specs/warstwy.feature")\npublic final class ServerSpecs {\n}\n'
@@ -335,6 +347,24 @@ class LayersTest(unittest.TestCase):
             corpus = check_ids.collect(DATA / "brak", Path(root) / "specs", DATA / "brak", Path(root))
         rows = table_rows(check_ids.render_coverage(corpus))
         self.assertEqual({r[1]: r[5] for r in rows[2:]}["Na serwerze"], "brak")
+
+    def test_template_with_deferred_table_is_partial_on_server(self) -> None:
+        self.assertEqual(server_state(TEMPLATE.format(second="@do-zrobienia")), "częściowo")
+
+    def test_template_without_deferred_table_is_full_on_server(self) -> None:
+        self.assertEqual(server_state(TEMPLATE.format(second="# bez tagu")), "pełny")
+
+    def test_template_with_all_tables_deferred_is_missing_on_server(self) -> None:
+        text = TEMPLATE.format(second="@do-zrobienia").replace("    Przykłady:\n      | x |\n      | 1 |", "    @do-zrobienia\n    Przykłady:\n      | x |\n      | 1 |", 1)
+        self.assertEqual(server_state(text), "brak")
+
+    def test_new_template_with_deferred_table_passes_when_other_rows_run(self) -> None:
+        corpus = layered("", SUITE, TEMPLATE.format(second="@do-zrobienia"))
+        self.assertEqual(check_ids.unplanned_scenarios(corpus, layered("", SUITE, "Funkcja: Warstwy\n")), [])
+
+    def test_new_template_with_deferred_table_still_needs_suite(self) -> None:
+        corpus = layered("", "", TEMPLATE.format(second="@do-zrobienia"))
+        self.assertEqual(len(check_ids.unplanned_scenarios(corpus, layered("", "", "Funkcja: Warstwy\n"))), 1)
 
     def test_demo_scenario_without_test_is_manual_not_missing(self) -> None:
         with tempfile.TemporaryDirectory() as root:
