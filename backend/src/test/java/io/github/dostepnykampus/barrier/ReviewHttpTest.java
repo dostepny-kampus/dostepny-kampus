@@ -120,7 +120,8 @@ final class ReviewHttpTest {
         MatcherAssert.assertThat(
             "Decyzja o innej wersji niż aktualna nie dała 409",
             ReviewHttpTest.review(
-                context, id, "{\"decision\":\"ACCEPT\",\"version\":2}"
+                context, id,
+                "{\"decision\":\"ACCEPT\",\"version\":2,\"barrierType\":\"TB-3\",\"severity\":2}"
             ),
             Matchers.equalTo(409)
         );
