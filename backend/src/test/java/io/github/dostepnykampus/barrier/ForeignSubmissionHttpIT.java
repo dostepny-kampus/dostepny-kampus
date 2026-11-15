@@ -60,19 +60,10 @@ final class ForeignSubmissionHttpIT {
     @Test
     void refusesResendOfForeignSubmissionId(final WebApplicationContext context)
         throws Exception {
-        final UUID id = ForeignSubmissionHttpIT.foreign(context);
         final MockHttpServletResponse response = context.getBean(MockMvc.class).perform(
             MockMvcRequestBuilders.post("/submissions")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(
-                    String.join(
-                        "",
-                        "{\"id\":\"", id.toString(), "\",\"kind\":\"QUICK\",",
-                        "\"barrierGroup\":\"OTHER\",\"location\":{\"type\":\"Point\",",
-                        "\"coordinates\":[17.06209,51.10785]},\"photoIds\":[\"",
-                        ForeignSubmissionHttpIT.PHOTO.toString(), "\"]}"
-                    )
-                )
+                .content(ForeignSubmissionHttpIT.quick(ForeignSubmissionHttpIT.foreign(context)))
                 .with(new AsCollector())
         ).andReturn().getResponse();
         MatcherAssert.assertThat(
@@ -97,6 +88,16 @@ final class ForeignSubmissionHttpIT {
                     .with(new AsCollector())
             ).andReturn().getResponse().getStatus(),
             Matchers.equalTo(403)
+        );
+    }
+
+    private static String quick(final UUID id) {
+        return String.join(
+            "",
+            "{\"id\":\"", id.toString(), "\",\"kind\":\"QUICK\",",
+            "\"barrierGroup\":\"OTHER\",\"location\":{\"type\":\"Point\",",
+            "\"coordinates\":[17.06209,51.10785]},\"photoIds\":[\"",
+            ForeignSubmissionHttpIT.PHOTO.toString(), "\"]}"
         );
     }
 

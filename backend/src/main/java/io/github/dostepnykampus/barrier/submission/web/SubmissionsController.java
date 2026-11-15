@@ -164,10 +164,6 @@ public final class SubmissionsController {
             throw new ForbiddenChange("Zwykłą zmianę tego zgłoszenia składa tylko jego autor");
         }
         final CreateResult result = this.service.create(body.toCommand(account.getName()));
-        if (result instanceof CreateResult.Existing
-            && this.finder.foreign(result.submission().id(), account.getName())) {
-            throw new ForbiddenChange("Zgłoszenie o tym identyfikatorze złożyła inna osoba");
-        }
         final HttpStatus status;
         if (result instanceof CreateResult.Created) {
             status = HttpStatus.CREATED;
