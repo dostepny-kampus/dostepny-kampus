@@ -7,7 +7,7 @@ package io.github.dostepnykampus.feature.map
 
 import android.provider.Settings
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -244,7 +244,10 @@ private class ShownCamera {
 @Composable
 private fun MapMotion?.RecordPick(pick: CameraTransition?) {
     val motion = this
-    LaunchedEffect(motion, pick) { if (motion != null && pick != null) motion.record(pick) }
+    DisposableEffect(motion, pick) {
+        if (motion != null && pick != null) motion.record(pick)
+        onDispose {}
+    }
 }
 
 private fun pickMove(
