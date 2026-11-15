@@ -64,9 +64,11 @@ class CampusAreaEdgeDeviceTest {
 
     /**
      * Sprawdza na emulatorze, że przesuwanie mapy palcem w stronę sąsiedniego terenu zatrzymuje
-     * kamerę na granicy „Kampusu głównego” i pokazuje przyciemnienie poza nim.
+     * kamerę na granicy „Kampusu głównego”, a poza granicą mapa jest wyblakła i granicę pokazuje linia z obwódką.
      *
      * Scenariusz: przegladanie-mapy.feature: Mapa nie wychodzi poza wybrany teren
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Poza granicą terenu podkład jest wyblakły, a granicę
+     * pokazuje linia
      *
      * Wymagania: US1.7, BR-G5, NFR-39, NFR-41
      */
@@ -97,7 +99,7 @@ class CampusAreaEdgeDeviceTest {
                 "Kamera wyszła poza krawędź: edge=$edgeTarget, after=$afterExtra",
                 abs(afterExtra.longitude - edgeTarget.longitude) <= EDGE_TOLERANCE_DEGREES,
             )
-            assertOutsideAreaDimmed(mapView, map)
+            assertOutsideAreaFaded(mapView, map)
         } finally {
             composeRule.runOnUiThread { tracker.detach(map) }
         }
@@ -183,21 +185,21 @@ class CampusAreaEdgeDeviceTest {
         )
     }
 
-    private fun assertOutsideAreaDimmed(mapView: MapView, map: MapLibreMap) {
+    private fun assertOutsideAreaFaded(mapView: MapView, map: MapLibreMap) {
         var state = "styl niewczytany"
-        val isDimmed =
+        val isFaded =
             runCatching {
                 composeRule.waitUntil(READY_TIMEOUT_MS) {
                     composeRule.runOnUiThread {
                         val style = map.style
                         val outside = style?.getLayer(OUTSIDE_LAYER) as? FillLayer
-                        val edge = style?.getLayer(EDGE_LAYER) as? LineLayer
+                        val lines = listOf(EDGE_HALO_LAYER, EDGE_LAYER).mapNotNull { style?.getLayer(it) as? LineLayer }
                         val areLayersVisible =
                             outside != null &&
-                                edge != null &&
+                                lines.size == 2 &&
                                 outside.visibility.value != Property.NONE &&
                                 outside.fillOpacity.value?.takeIf { it > 0f } != null &&
-                                edge.visibility.value != Property.NONE
+                                lines.all { it.visibility.value != Property.NONE }
                         val point = PointF(mapView.width * OUTSIDE_X_FRACTION, mapView.height * CENTER_FRACTION)
                         val outsideHits = map.queryRenderedFeatures(point, OUTSIDE_LAYER)
                         state = "warstwy widoczne: $areLayersVisible, trafienia poza granicą: ${outsideHits.size}"
@@ -205,7 +207,7 @@ class CampusAreaEdgeDeviceTest {
                     }
                 }
             }.isSuccess
-        assertTrue("Poza granicą terenu brak przyciemnienia ($state)", isDimmed)
+        assertTrue("Poza granicą terenu brak wyblakłej mapy ($state)", isFaded)
     }
 
     private fun awaitUiPause(delayMillis: Long) {
@@ -263,6 +265,7 @@ class CampusAreaEdgeDeviceTest {
         const val SKIP_HELP_TEXT = "Pomiń instrukcję"
         const val MAIN_AREA_BUTTON_DESCRIPTION = "Teren: Kampus główny. Zmień teren"
         const val OUTSIDE_LAYER = "teren-poza"
+        const val EDGE_HALO_LAYER = "teren-granica-obwodka"
         const val EDGE_LAYER = "teren-granica"
         const val EDGE_TOLERANCE_DEGREES = 1e-5
         const val MIN_READY_ZOOM = 10.0
