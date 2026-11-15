@@ -46,6 +46,10 @@ run_case "job wymagany tylko w jednym zestawie" 0 '' $'rozmiar main sprint\nbudo
 ruleset sprint rozmiar sekrety
 run_case "job z listy bez workflow: błąd" 1 'job `sekrety` z listy wymaganych kontroli nie istnieje w żadnym workflow' \
   $'rozmiar main sprint\nsekrety sprint'
+mkdir -p "$workdir/scripts"
+printf 'gh api -X POST repos/o/r/statuses/1 -f context=kontrola-sprintu\n' >"$workdir/scripts/status.sh"
+ruleset main rozmiar kontrola-sprintu
+run_case "status commita ustawiany skryptem jest kontrolą" 0 '' $'rozmiar main\nkontrola-sprintu main'
 rm "$workdir/api/sprint.json"
 run_case "brak zestawu reguł: błąd" 1 'zestaw reguł `sprint` nie istnieje' 'rozmiar main sprint'
 
