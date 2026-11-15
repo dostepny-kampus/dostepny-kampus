@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -29,6 +31,9 @@ import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
+import io.github.dostepnykampus.feature.map.PHOTO_URL
+import io.github.dostepnykampus.feature.map.photoAvailable
+import io.github.dostepnykampus.feature.map.usePhotoLoader
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -50,19 +55,22 @@ class BarrierSheetTest {
     private val clicks = mutableListOf<String>()
 
     /**
-     * Wiersz: arkusz bariery, typ, uciążliwość, miejsce, data sprawdzenia i przyciski (PW-5). Zdjęcia w arkuszu
-     * jeszcze nie ma.
-     * Scenariusz (częściowo): przegladanie-mapy.feature: Dotknięcie znaku bariery pokazuje jej opis z miejscem
+     * Wiersz: arkusz bariery, typ, uciążliwość, miejsce, data sprawdzenia, zdjęcie z opisem i przyciski (PW-5).
+     * Scenariusz: przegladanie-mapy.feature: Dotknięcie znaku bariery pokazuje jej opis z miejscem
      *
-     * Wymagania: US1.5
+     * Wymagania: US1.5, NFR-18
      */
     @Test
     fun showsBarrierInBuilding() {
-        compose.setContent { Sheet(inBuilding()) }
+        usePhotoLoader(compose.activity, photoAvailable())
+        val chosen = inBuilding()
+        compose.setContent { Sheet(chosen.copy(barrier = chosen.barrier.copy(photoUrl = PHOTO_URL))) }
 
         val place = "A-1 Gmach Główny · Wejście Cesarskie, parter"
         val texts = listOf("Blokada", "Schody przy wejściu", place, "Sprawdzone 14.10.2026")
         texts.forEach { compose.onNodeWithText(it).assertExists() }
+        compose.waitUntil(WAIT_MS) { photoShown() }
+        compose.onNodeWithContentDescription("Zdjęcie bariery: Schody przy wejściu").assertExists()
         compose.onNodeWithText("Zamknij").assertHeightIsAtLeast(48.dp).performClick()
         compose.onNodeWithText("Pokaż opis budynku").performClick()
         assertEquals(listOf("zamknij", "A-1"), clicks)
@@ -118,6 +126,12 @@ class BarrierSheetTest {
         }
     }
 
+    private fun photoShown() =
+        compose
+            .onAllNodesWithContentDescription("Zdjęcie bariery: Schody przy wejściu")
+            .fetchSemanticsNodes()
+            .isNotEmpty()
+
     private fun inBuilding(): ChosenBarrier {
         val ground = SubmissionFloor(number = 0)
         val barrier = barrier(type = BarrierType.STAIRS_AT_ENTRANCE, symbol = "A-1", floor = ground)
@@ -137,6 +151,7 @@ class BarrierSheetTest {
         )
 
     private companion object {
+        const val WAIT_MS = 5_000L
         val MapGround = Color(0xFFBEE3F2)
         val CORNERS = listOf(0.0 to 0.0, 1.0 to 0.0, 1.0 to 1.0, 0.0 to 0.0)
         val OUTLINE = GeoPolygon(listOf(CORNERS.map { (lon, lat) -> GeoPoint(longitude = lon, latitude = lat) }))
