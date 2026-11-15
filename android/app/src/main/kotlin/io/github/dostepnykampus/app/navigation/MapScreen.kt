@@ -7,6 +7,7 @@ package io.github.dostepnykampus.app.navigation
 
 import android.view.accessibility.AccessibilityManager
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -24,7 +25,8 @@ import io.github.dostepnykampus.feature.map.plan.MapPlanViewModel
 import io.github.dostepnykampus.feature.map.plan.ShownPlan
 
 /**
- * V1 ze stanem [viewModel] i planem piętra [planViewModel] z grafu Hilt oraz zaznaczeniem [focus] z trasy.
+ * V1 ze stanem [viewModel] i planem piętra [planViewModel] z grafu Hilt oraz zaznaczeniem [focus] z trasy; piętro
+ * z zaznaczenia budynku staje się wybranym piętrem jego planu.
  *
  * Wymagania: US1, US3.3, NFR-19, US16.1
  */
@@ -36,6 +38,10 @@ internal fun AppNavigator.HiltMapScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val plan by planViewModel.shown.collectAsStateWithLifecycle()
+    LaunchedEffect(focus) {
+        val building = focus as? MapFocus.Building
+        building?.floor?.let { planViewModel.chooseFloor(building = building.symbol, floor = it) }
+    }
     MapScreen(
         focus = focus,
         state = state,
