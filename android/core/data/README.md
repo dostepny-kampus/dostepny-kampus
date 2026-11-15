@@ -15,6 +15,7 @@ Repozytoria: łączą sieć i bazę w dane dla ekranów, prowadzą kolejki wysy�
 - `core.data.map` — zapamiętany wybór między mapą a listą budynków.
 - `core.data.network` — stan połączenia z siecią.
 - `core.data.photo` — wykonanie zdjęcia zgłoszenia i jego wynik.
+- `core.data.room` — plany pięter budynków z serwera z kopią w telefonie.
 - `core.data.server` — wynik żądania do serwera bez typów klienta HTTP.
 - `core.data.start` — pierwsze uruchomienie aplikacji.
 - `core.data.submission.own` — własne zgłoszenia w telefonie i ich statusy.
