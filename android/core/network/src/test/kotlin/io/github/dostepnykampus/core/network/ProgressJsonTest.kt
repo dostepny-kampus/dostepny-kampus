@@ -26,7 +26,7 @@ import java.time.Instant
  */
 class ProgressJsonTest {
     @Test
-    fun us11_1_both_detail_levels() {
+    fun readsBothDetailLevels() {
         val marker =
             InspectionMarker(
                 id = MARKER,
@@ -60,7 +60,7 @@ class ProgressJsonTest {
     }
 
     @Test
-    fun us11_1_empty_list() {
+    fun readsEmptyList() {
         assertEquals(emptyList<BuildingProgress>(), NetworkModule.json().decodeProgress("[]"), "brak budynków")
     }
 

@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test
 /** Moduł Hilt składa klienta HTTP, parser i [BuildingsApi] bez uruchamiania serwera. */
 class NetworkModuleTest {
     @Test
-    fun client_from_module() {
+    fun buildsClientFromModule() {
         val http = NetworkModule.okHttp(AccessTokens())
         val json = NetworkModule.json()
         val api = NetworkModule.buildingsApi(http = http, json = json)

@@ -41,7 +41,7 @@ class SubmissionPhotoReadTest {
 
     /** Nawet bajty spoza UTF-8 wracają bez zmiany, a żądanie wskazuje zdjęcie z listy zgłoszenia. */
     @Test
-    fun us2_2_reads_jpeg_bytes() {
+    fun readsJpegBytes() {
         Buffer().write(jpeg).use { body ->
             server.enqueue(
                 MockResponse()
@@ -59,7 +59,7 @@ class SubmissionPhotoReadTest {
 
     /** 404 nie zwraca treści błędu jako zdjęcia. */
     @Test
-    fun us2_2_photo_not_found() {
+    fun reportsMissingPhoto() {
         server.enqueue(MockResponse().setResponseCode(404).setBody("nie ma zdjęcia"))
         assertEquals(ApiResult.NotFound, read(), "brak zdjęcia na serwerze")
     }
@@ -74,7 +74,7 @@ class SubmissionPhotoReadTest {
 
     /** Zerwane połączenie zostawia decyzję o ponowieniu wywołującemu. */
     @Test
-    fun us2_2_photo_network_error() {
+    fun reportsPhotoNetworkError() {
         server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START))
         assertInstanceOf(ApiResult.NetworkError::class.java, read(), "błąd sieci po zerwaniu połączenia")
     }

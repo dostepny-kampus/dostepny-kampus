@@ -25,6 +25,8 @@ import org.junit.jupiter.api.Test
 /**
  * Pola logiczne zgłoszenia z serwera: brak pola to `false`, jak w kontrakcie (`default: false`), więc oba dają ten
  * sam model; `false` nie trafia do wysyłki, `true` wraca jako `true`.
+ *
+ * Wymagania: US6.3, US8.4, US7.2
  */
 class SubmissionFlagsTest {
     private val server = SubmissionServer()
@@ -40,17 +42,17 @@ class SubmissionFlagsTest {
     }
 
     @Test
-    fun us6_3_correction_absent_false() {
+    fun readsAbsentCorrectionAsFalse() {
         assertAbsentMeansFalse(name = "manualCorrection") { bare(flag = """"manualCorrection":$it,""") }
     }
 
     @Test
-    fun us8_4_removed_absent_false() {
+    fun readsAbsentRemovedAsFalse() {
         assertAbsentMeansFalse(name = "barrierRemoved") { bare(flag = """"barrierRemoved":$it,""") }
     }
 
     @Test
-    fun us7_2_mezzanine_absent_false() {
+    fun readsAbsentMezzanineAsFalse() {
         assertAbsentMeansFalse(name = "mezzanine", scope = { it.getValue("floor").jsonObject }) {
             bare(floor = ""","mezzanine":$it""")
         }

@@ -29,6 +29,8 @@ import java.time.Instant
  * Ciała `NewSubmission` i `SubmissionUpdate`, odczyt `Submission` i konflikt `VersionConflictProblem` z kontraktu.
  * Wartość wyliczenia spoza kontraktu to błąd treści: [ApiResult.ServerError] z przyczyną, bez wyjątku
  * i bez wartości zastępczej.
+ *
+ * Wymagania: BR-9, BR-10, US8.1, US9.3
  */
 class SubmissionsContractTest {
     private val server = SubmissionServer()
@@ -44,21 +46,21 @@ class SubmissionsContractTest {
     }
 
     @Test
-    fun br9_post_contract_fields() {
+    fun postsContractFields() {
         server.enqueue(code = 201, body = submission(REJECTED))
         server.blocking { create(ID, precise) }
         assertEquals(server.parse("""{"id":"$ID",$PRECISE}"""), server.sentBody(), "ciało żądania tworzenia")
     }
 
     @Test
-    fun br10_put_contract_fields() {
+    fun putsContractFields() {
         server.enqueue(code = 200, body = submission(REJECTED))
         server.blocking { update(id = ID, version = 2, content = precise) }
         assertEquals(server.parse("""{"version":2,$PRECISE}"""), server.sentBody(), "ciało żądania aktualizacji")
     }
 
     @Test
-    fun br9_absent_not_sent() {
+    fun skipsAbsentFields() {
         server.enqueue(code = 201, body = submission(REJECTED))
         server.enqueue(code = 200, body = submission(REJECTED))
         server.blocking { create(ID, quick) }
@@ -68,7 +70,7 @@ class SubmissionsContractTest {
     }
 
     @Test
-    fun us8_1_rejected_read() {
+    fun readsRejected() {
         server.enqueue(code = 200, body = submission(REJECTED))
         assertEquals(
             ApiResult.Success(rejected),
@@ -78,7 +80,7 @@ class SubmissionsContractTest {
     }
 
     @Test
-    fun us8_1_accepted_read() {
+    fun readsAccepted() {
         server.enqueue(code = 200, body = "[${submission(ACCEPTED)}]")
         val verified = Instant.parse("2026-11-04T09:30:00Z")
         val accepted = rejected.copy(status = SubmissionStatus.ACCEPTED, rejectionReason = null, verifiedAt = verified)
@@ -90,14 +92,14 @@ class SubmissionsContractTest {
     }
 
     @Test
-    fun us9_3_conflict_server() {
+    fun readsConflictWithServer() {
         server.enqueue(code = 409, body = """{$PROBLEM,"serverSubmission":${submission(REJECTED)}}""")
         val result = server.blocking { update(id = ID, version = 1, content = precise) }
         assertEquals(ApiResult.Success(SubmissionEdit.Conflict(rejected)), result, "konflikt z wersją serwera")
     }
 
     @Test
-    fun us9_3_conflict_no_server() {
+    fun readsConflictWithoutServer() {
         listOf("{$PROBLEM}", """{$PROBLEM,"serverSubmission":null}""", "").forEach { body ->
             server.enqueue(code = 409, body = body)
             val result = assertDoesNotThrow(body) { server.blocking { update(id = ID, version = 1, content = quick) } }
@@ -106,7 +108,7 @@ class SubmissionsContractTest {
     }
 
     @Test
-    fun us8_1_unknown_enum_error() {
+    fun rejectsUnknownEnum() {
         UNKNOWN_VALUES.forEach { (known, unknown) ->
             server.enqueue(code = 201, body = submission(REJECTED).replace(oldValue = known, newValue = unknown))
             assertContentError(201, assertDoesNotThrow(unknown) { server.blocking { create(ID, precise) } })
@@ -114,7 +116,7 @@ class SubmissionsContractTest {
     }
 
     @Test
-    fun us8_1_unknown_status_all_reads() {
+    fun rejectsUnknownStatusInReads() {
         val body = submission(REJECTED).replace(oldValue = """"REJECTED"""", newValue = """"WITHDRAWN"""")
         server.enqueue(code = 200, body = body)
         server.enqueue(code = 409, body = """{$PROBLEM,"serverSubmission":$body}""")

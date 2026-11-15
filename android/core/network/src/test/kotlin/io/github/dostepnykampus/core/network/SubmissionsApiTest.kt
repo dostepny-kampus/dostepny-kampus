@@ -27,7 +27,11 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-/** Zgłoszenia na MockWebServer: wysłanie, ponowienie, edycja z konfliktem wersji, zdjęcie i lista przyjętych. */
+/**
+ * Zgłoszenia na MockWebServer: wysłanie, ponowienie, edycja z konfliktem wersji, zdjęcie i lista przyjętych.
+ *
+ * Wymagania: BR-9, BR-10, BR-7, NFR-26, US9.2
+ */
 class SubmissionsApiTest {
     private val server = MockWebServer()
     private val json = Json { ignoreUnknownKeys = true }
@@ -50,7 +54,7 @@ class SubmissionsApiTest {
     }
 
     @Test
-    fun br9_create_and_retry() {
+    fun createsAndRetries() {
         enqueue(code = 201, body = submission(version = 1))
         enqueue(code = 200, body = submission(version = 1))
         assertEquals(
@@ -65,7 +69,7 @@ class SubmissionsApiTest {
     }
 
     @Test
-    fun br10_update_saved() {
+    fun savesUpdate() {
         enqueue(code = 200, body = submission(version = 2))
         val saved = blocking { update(id = ID, version = 1, content = quick) }
         val edit = assertInstanceOf(ApiResult.Success::class.java, saved, "Zapis kończy się sukcesem").value
@@ -77,7 +81,7 @@ class SubmissionsApiTest {
     }
 
     @Test
-    fun br10_update_conflict() {
+    fun reportsUpdateConflict() {
         val problem = """{"title":"Konflikt wersji","status":409"""
         enqueue(code = 409, body = """$problem,"serverSubmission":${submission(version = 3)}}""")
         val result = blocking { update(id = ID, version = 1, content = quick) }
@@ -87,7 +91,7 @@ class SubmissionsApiTest {
     }
 
     @Test
-    fun br10_conflict_without_server() {
+    fun reportsConflictWithoutServer() {
         enqueue(code = 409, body = """{"status":409}""")
         val result = blocking { update(id = ID, version = 1, content = quick) }
         val error = assertInstanceOf(ApiResult.ServerError::class.java, result, "Konflikt bez zgłoszenia to błąd")
@@ -95,7 +99,7 @@ class SubmissionsApiTest {
     }
 
     @Test
-    fun br7_rules_and_missing() {
+    fun reportsRulesAndMissing() {
         enqueue(code = 400, body = """{"status":400}""")
         assertEquals(ApiResult.ServerError(400), blocking { create(ID, quick) }, "Odrzucenie reguł to błąd 400")
         enqueue(code = 404, body = """{"status":404}""")
@@ -104,7 +108,7 @@ class SubmissionsApiTest {
     }
 
     @Test
-    fun nfr26_photo_upload() {
+    fun uploadsPhoto() {
         server.enqueue(MockResponse().setResponseCode(204))
         val jpeg = byteArrayOf(-1, -40)
         val result = blocking { putPhoto(submissionId = ID, photoId = PHOTO, jpeg = jpeg) }
@@ -116,7 +120,7 @@ class SubmissionsApiTest {
 
     /** Wiersz: arkusz bariery, zdjęcie zgłoszenia przyjętego jako JPEG. Wymagania: US1.5, US2.2 */
     @Test
-    fun us1_5_photo_download() {
+    fun downloadsPhoto() {
         val content = "zdjecie-jpeg"
         val response = MockResponse().setResponseCode(200).setHeader(name = "Content-Type", value = "image/jpeg")
         server.enqueue(response.setBody(content))
@@ -131,14 +135,14 @@ class SubmissionsApiTest {
 
     /** Wiersz: arkusz bariery, zdjęcia nie ma na serwerze → brak zdjęcia, nie błąd. Wymagania: US1.5 */
     @Test
-    fun us1_5_photo_missing() {
+    fun reportsMissingPhoto() {
         enqueue(code = 404, body = """{"status":404}""")
         val result = blocking { photo(submissionId = ID, photoId = PHOTO) }
         assertEquals(ApiResult.NotFound, result, "Brak zdjęcia to NotFound")
     }
 
     @Test
-    fun us2_2_accepted_list() {
+    fun fetchesAcceptedList() {
         enqueue(code = 200, body = "[${submission(version = 1)}]")
         val result = blocking { accepted("A-1") }
         assertEquals(ApiResult.Success::class, result::class, "Lista przyjętych kończy się sukcesem")
@@ -152,7 +156,7 @@ class SubmissionsApiTest {
 
     /** Wiersz: C3 → własne zgłoszenia z serwera w każdym statusie. Wymagania: US8.1, US8.2 */
     @Test
-    fun us8_1_mine_list() {
+    fun fetchesOwnList() {
         enqueue(code = 200, body = "[${submission(version = 2)}]")
         val result = blocking { mine() }
         assertEquals(2, (result as ApiResult.Success).value.single().version, "Własne zgłoszenie ma wersję 2")
@@ -161,13 +165,13 @@ class SubmissionsApiTest {
 
     /** Wiersz: C3 bez roli Zbierającego → błąd z kodem, nie lista. Wymagania: US8.1 */
     @Test
-    fun us8_1_mine_forbidden() {
+    fun reportsOwnListForbidden() {
         enqueue(code = 403, body = "")
         assertEquals(ApiResult.ServerError(403), blocking { mine() }, "Brak roli to błąd 403")
     }
 
     @Test
-    fun us9_2_no_network() {
+    fun reportsNoNetwork() {
         server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START))
         val result = blocking { create(ID, quick) }
         assertInstanceOf(ApiResult.NetworkError::class.java, result, "Brak sieci to NetworkError")

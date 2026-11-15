@@ -26,7 +26,7 @@ import org.junit.jupiter.params.provider.ValueSource
  */
 class InspectionProgressApiTest {
     @Test
-    fun us11_1_progress_is_get() {
+    fun readsProgressWithGet() {
         val (result, sent) = served(code = 200, body = PROGRESS) { it.progress() }
         val expected =
             BuildingProgress(
@@ -43,7 +43,7 @@ class InspectionProgressApiTest {
     }
 
     @Test
-    fun us11_1_basic_building() {
+    fun readsBasicBuilding() {
         val expected =
             BuildingProgress(
                 buildingSymbol = "B-4",
@@ -59,7 +59,7 @@ class InspectionProgressApiTest {
     }
 
     @Test
-    fun us11_3_revoke_is_delete() {
+    fun revokesMarkerWithDelete() {
         val (result, sent) = served(code = 204, body = "") { it.revoke(MARKER) }
         assertEquals(ApiResult.Success(Unit), result, "wynik cofnięcia")
         val line = listOf(sent.method, sent.path)
@@ -67,7 +67,7 @@ class InspectionProgressApiTest {
     }
 
     @Test
-    fun us11_3_unknown_marker_404() {
+    fun reportsUnknownMarkerAs404() {
         val result = served(code = 404, body = """{"type":"about:blank"}""") { it.revoke(MARKER) }.first
         assertEquals(ApiResult.NotFound, result, "znacznika nie ma na serwerze")
     }
@@ -87,7 +87,7 @@ class InspectionProgressApiTest {
     }
 
     @Test
-    fun us11_1_bad_body_server_error() {
+    fun treatsBadBodyAsServerError() {
         val result = served(code = 200, body = "to nie JSON") { it.progress() }.first
         val error = assertInstanceOf(ApiResult.ServerError::class.java, result, "zła treść jako błąd serwera")
         assertEquals(200, error.code, "kod odpowiedzi ze złą treścią")

@@ -49,7 +49,7 @@ class AccessTokenInterceptorTest {
     }
 
     @Test
-    fun create_carries_token() {
+    fun carriesTokenOnCreate() {
         tokens.signIn(TOKEN)
         server.enqueue(MockResponse().setResponseCode(CREATED))
         runBlocking { SubmissionsApi(http, json, base).create(ID, QUICK) }
@@ -57,7 +57,7 @@ class AccessTokenInterceptorTest {
     }
 
     @Test
-    fun buildings_without_token() {
+    fun skipsTokenForBuildings() {
         tokens.signIn(TOKEN)
         server.enqueue(MockResponse().setBody("""{"source":"x","buildings":[]}"""))
         runBlocking { BuildingsApi(http, json, base).listBuildings() }
@@ -67,7 +67,7 @@ class AccessTokenInterceptorTest {
     }
 
     @Test
-    fun other_address_without_token() {
+    fun skipsTokenForOtherAddress() {
         tokens.signIn(TOKEN)
         server.enqueue(MockResponse())
         http.newCall(Request.Builder().url(server.url("/kafelki/1/2/3.png")).build()).execute().close()
@@ -75,7 +75,7 @@ class AccessTokenInterceptorTest {
     }
 
     @Test
-    fun signed_out_401_rejected() {
+    fun rejectsWhenSignedOut() {
         tokens.signIn(TOKEN)
         tokens.signOut()
         server.enqueue(MockResponse().setResponseCode(UNAUTHORIZED))
@@ -89,7 +89,7 @@ class AccessTokenInterceptorTest {
     }
 
     @Test
-    fun token_not_in_to_string() {
+    fun hidesTokenInToString() {
         tokens.signIn(TOKEN)
         assertEquals("AccessTokens(signedIn=true)", tokens.toString(), "tekst bez tokenu")
     }
