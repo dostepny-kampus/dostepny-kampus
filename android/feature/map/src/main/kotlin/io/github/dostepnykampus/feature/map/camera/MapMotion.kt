@@ -16,11 +16,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.MotionDurationScale
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
 
 /** Najdłuższe czekanie elementu nad mapą na ruch mapy, zanim ruszy sam. */
 const val MOVE_WAIT_MILLIS: Long = 150L
@@ -50,7 +48,8 @@ class MapMotion {
     /**
      * Przesuwa [value] do [target] razem z pierwszym ruchem mapy po ruchu numer [after] (wartość [moves] z chwili,
      * gdy element zaczął się zmieniać): w czasie tego ruchu i po [Easing]. Bez ruchu w ciągu [MOVE_WAIT_MILLIS]
-     * przesuwa po [fallback]. Czas ruchu ma już skalę animacji systemu, więc nie jest skalowany drugi raz.
+     * zegara klatek przesuwa po [fallback]. Czas ruchu ma już skalę animacji systemu, więc nie jest skalowany
+     * drugi raz; ruch bez czasu stawia [value] od razu w [target].
      */
     suspend fun slide(
         value: Animatable<Float, AnimationVector1D>,
@@ -58,13 +57,23 @@ class MapMotion {
         after: Int,
         fallback: AnimationSpec<Float>,
     ) {
-        val moved = withTimeoutOrNull(MOVE_WAIT_MILLIS) { snapshotFlow { moves }.first { it > after } }
-        if (moved == null) {
+        val isMoving = moves > after || awaitMove(after)
+        if (!isMoving) {
             value.animateTo(targetValue = target, animationSpec = fallback)
+        } else if (durationMillis == 0L) {
+            value.snapTo(target)
         } else {
             val spec = tween<Float>(durationMillis = durationMillis.toInt(), easing = Easing)
             withContext(MoveTimeScale) { value.animateTo(targetValue = target, animationSpec = spec) }
         }
+    }
+
+    private suspend fun awaitMove(after: Int): Boolean {
+        val start = withFrameMillis { it }
+        while (moves <= after) {
+            if (withFrameMillis { it } - start >= MOVE_WAIT_MILLIS) return false
+        }
+        return true
     }
 
     /** Krzywa przesunięcia mapy. */

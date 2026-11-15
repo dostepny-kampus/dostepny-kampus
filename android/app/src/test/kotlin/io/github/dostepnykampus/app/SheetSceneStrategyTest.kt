@@ -9,6 +9,7 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategyScope
+import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
@@ -21,7 +22,7 @@ class SheetSceneStrategyTest {
         NavEntry(key = route, metadata = SheetSceneStrategy.metadata(route)) {}
 
     private fun scene(vararg routes: NavKey): Scene<NavKey>? =
-        with(SheetSceneStrategy) { SceneStrategyScope<NavKey>().calculateScene(routes.map(::entry)) }
+        with(SheetSceneStrategy(MapMotion())) { SceneStrategyScope<NavKey>().calculateScene(routes.map(::entry)) }
 
     /**
      * Wiersz: V2, „Sprawdź, którędy wejść” → V3 na cały ekran; inne układy historii rysuje scena z jednym ekranem.

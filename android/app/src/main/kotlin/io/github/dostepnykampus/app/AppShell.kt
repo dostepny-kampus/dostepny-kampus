@@ -132,7 +132,7 @@ fun AppShell(
                 NavDisplay(
                     entries = entries,
                     modifier = Modifier.consumeWindowInsets(barInsets),
-                    sceneStrategies = currentCardWindow().sceneStrategies(),
+                    sceneStrategies = currentCardWindow().sceneStrategies(navigator.rememberSheetStrategy()),
                     onBack = { navigator.back() },
                 )
             },
@@ -179,3 +179,6 @@ private fun RoleProvider.hasWork(): Boolean {
     val account by account.collectAsStateWithLifecycle()
     return account.hasStaffRole
 }
+
+@Composable
+private fun AppNavigator.rememberSheetStrategy(): SheetSceneStrategy = remember(this) { SheetSceneStrategy(mapMotion) }
