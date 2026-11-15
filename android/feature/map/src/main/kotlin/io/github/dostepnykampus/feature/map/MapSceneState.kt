@@ -29,6 +29,7 @@ import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.ENTRANCE_ZOOM
 import io.github.dostepnykampus.feature.map.camera.FreeMap
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
@@ -74,8 +75,8 @@ internal class MapSceneState(
     /** Widok do pokazania, cel [move]. */
     val camera: MapCamera? get() = move?.camera
 
-    /** Zasłonięty dół mapy w pikselach, zob. [SceneCamera.bottomInset]. */
-    val bottomInset: Double get() = shown?.bottomInset ?: 0.0
+    /** Zasłonięte krawędzie mapy, zob. [SceneCamera.inset]. */
+    val inset: MapInset get() = shown?.inset ?: MapInset()
 
     /** Arkusz V2 zasłania dół mapy. */
     val isCovered: Boolean get() = cover != MapCover.NONE
@@ -166,7 +167,7 @@ internal fun rememberMapSceneState(
     SideEffect { last.keep(move?.camera) }
     return MapSceneState(
         scene = scene,
-        shown = move?.let { SceneCamera(it, bottomInset = if (above == null) 0.0 else inset) },
+        shown = move?.let { SceneCamera(it, inset = MapInset(bottom = if (above == null) 0.0 else inset)) },
         limits = limits,
         cover = mapCover(isCovered, hasControls = free.hasRoomForControls),
         choices = choices,
@@ -180,10 +181,9 @@ internal fun rememberMapSceneState(
  * @property move ruch kamery do widoku: nad arkuszem V2 do zaznaczonego budynku według [cameraTransition], liczony raz
  *   na wybór, dopóki osoba nie ruszy mapy; poza tym przelot przycisków ([byControl]) do widoku zapisanego, na
  *   zaznaczonym wejściu albo startowego
- * @property bottomInset zasłonięty arkuszem V2 dół mapy w pikselach, gdy [move] stawia budynek nad arkuszem; 0 bez
- *   tego
+ * @property inset zasłonięte krawędzie mapy: dół zasłonięty arkuszem V2, gdy [move] stawia budynek nad arkuszem
  */
-internal data class SceneCamera(val move: CameraTransition, val bottomInset: Double = 0.0)
+internal data class SceneCamera(val move: CameraTransition, val inset: MapInset = MapInset())
 
 /**
  * Zasłonięcie mapy V1 przez arkusz V2. Nad arkuszem przyciski mapy stoją tylko przy co najmniej 300 dp wolnej mapy.

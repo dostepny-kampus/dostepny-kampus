@@ -29,8 +29,8 @@ private const val NIGHT_LAND_LUMINANCE = 0.5f
 /** Widok mapy za interfejsem: ekran i jego testy nie zależą od natywnej biblioteki mapy. */
 fun interface CampusMapView {
     /**
-     * Mapa [data] z zaznaczeniem [selection] po ruchu [move], z dołem zasłoniętym na [bottomInset] pikseli: cel
-     * ruchu stoi w środku części odkrytej. Każdy ruch wykonuje raz; zmiana [bottomInset] zmienia tylko dopełnienie
+     * Mapa [data] z zaznaczeniem [selection] po ruchu [move], z krawędziami zasłoniętymi według [inset]: cel
+     * ruchu stoi w środku części odkrytej. Każdy ruch wykonuje raz; zmiana [inset] zmienia tylko dopełnienie
      * mapy i nie przerywa trwającego ruchu. Po geście widok zgłasza nowy widok przez
      * [onCameraIdle], a po dotknięciu konturu albo miejsca obok niego symbole trafionych budynków przez
      * [onBuildingsTouch], a po dotknięciu pustej mapy pustą listę. Dotknięcie znaku bariery zgłasza identyfikator
@@ -43,7 +43,7 @@ fun interface CampusMapView {
         data: CampusMapData,
         selection: MapSelection,
         move: CameraTransition,
-        bottomInset: Double,
+        inset: MapInset,
         onCameraIdle: (MapCamera) -> Unit,
         onBuildingsTouch: (List<String>) -> Unit,
         onBarrierTouch: (String) -> Unit,
@@ -86,12 +86,23 @@ internal fun MapColors.styleColors(): MapStyleColors =
 
 internal fun Color.hex(): String = "#%06X".format(Locale.ROOT, toArgb() and RGB_MASK)
 
-internal fun MapCamera.toPosition(bottomInset: Double = 0.0): CameraPosition =
+/**
+ * Krawędzie mapy zasłonięte w pikselach: [top] przez górny pasek, [bottom] przez arkusz V2. Kamera stawia cel
+ * w środku części odkrytej.
+ *
+ * Wymagania: US2.8, NFR-56
+ */
+data class MapInset(val top: Double = 0.0, val bottom: Double = 0.0)
+
+/** Dopełnienie kamery MapLibre: lewo, góra, prawo, dół. */
+internal fun MapInset.padding(): DoubleArray = doubleArrayOf(0.0, top, 0.0, bottom)
+
+internal fun MapCamera.toPosition(inset: MapInset = MapInset()): CameraPosition =
     CameraPosition
         .Builder()
         .target(LatLng(latitude = center.latitude, longitude = center.longitude))
         .zoom(zoom)
-        .padding(doubleArrayOf(0.0, 0.0, 0.0, bottomInset))
+        .padding(inset.padding())
         .build()
 
 internal fun CameraPosition.toCamera(): MapCamera =

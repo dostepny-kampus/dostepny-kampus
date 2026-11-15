@@ -34,8 +34,10 @@ import io.github.dostepnykampus.feature.map.camera.CameraMotion
 import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.mapLimits
+import io.github.dostepnykampus.feature.map.camera.padding
 import io.github.dostepnykampus.feature.map.camera.styleColors
 import io.github.dostepnykampus.feature.map.camera.toCamera
 import io.github.dostepnykampus.feature.map.camera.toPosition
@@ -99,7 +101,7 @@ object MapLibreMapView : CampusMapView {
         data: CampusMapData,
         selection: MapSelection,
         move: CameraTransition,
-        bottomInset: Double,
+        inset: MapInset,
         onCameraIdle: (MapCamera) -> Unit,
         onBuildingsTouch: (List<String>) -> Unit,
         onBarrierTouch: (String) -> Unit,
@@ -127,7 +129,7 @@ object MapLibreMapView : CampusMapView {
         var size by remember { mutableStateOf(IntSize.Zero) }
         val limits = remember(selection.bounds, size, density) { density.mapLimits(selection.bounds, size) }
         val currentMove by rememberUpdatedState(move)
-        val currentInset by rememberUpdatedState(bottomInset)
+        val currentInset by rememberUpdatedState(inset)
         val currentData by rememberUpdatedState(data)
         val cameraIdle by rememberUpdatedState(onCameraIdle)
         val buildingsTouch by rememberUpdatedState(onBuildingsTouch)
@@ -155,20 +157,20 @@ object MapLibreMapView : CampusMapView {
             if (size != IntSize.Zero) limits?.let { map?.limitTo(it) }
             onDispose {}
         }
-        map.FollowEachMoveOnce(move = move, bottomInset = bottomInset)
+        map.FollowEachMoveOnce(move = move, inset = inset)
         AndroidView(factory = { mapView }, modifier = modifier.onSizeChanged { size = it })
     }
 
     @Composable
-    private fun MapLibreMap?.FollowEachMoveOnce(move: CameraTransition, bottomInset: Double) {
+    private fun MapLibreMap?.FollowEachMoveOnce(move: CameraTransition, inset: MapInset) {
         val driver = remember(this) { this?.let(::CameraDriver) }
-        val currentInset by rememberUpdatedState(bottomInset)
+        val currentInset by rememberUpdatedState(inset)
         DisposableEffect(driver, move) {
             driver?.follow(move, currentInset)
             onDispose {}
         }
-        DisposableEffect(driver, bottomInset) {
-            driver?.pad(bottomInset)
+        DisposableEffect(driver, inset) {
+            driver?.pad(inset)
             onDispose {}
         }
     }
@@ -271,23 +273,24 @@ object MapLibreMapView : CampusMapView {
     }
 
     /**
-     * Ruchy kamery mapy [map] po jednym. Ruch niesie dopełnienie dołu z chwili startu; dopełnienie zmienione
+     * Ruchy kamery mapy [map] po jednym. Ruch niesie dopełnienie z chwili startu; dopełnienie zmienione
      * w trakcie ruchu czeka na jego koniec, bo przerwałoby ruch, a samo przesuwa mapę płynnie w 300 ms. Gest osoby
      * przerywa ruch sam (MapLibre).
      */
     private class CameraDriver(private val map: MapLibreMap) {
-        private var inset = map.cameraPosition.padding?.lastOrNull() ?: 0.0
+        private var inset = MapInset()
         private var running: Run? = null
 
-        fun pad(bottom: Double) {
-            inset = bottom
-            if (running == null && map.cameraPosition.padding?.lastOrNull() != bottom) {
-                map.easeCamera(CameraUpdateFactory.paddingTo(doubleArrayOf(0.0, 0.0, 0.0, bottom)), PADDING_MILLIS)
+        fun pad(next: MapInset) {
+            inset = next
+            val padding = next.padding()
+            if (running == null && !padding.contentEquals(map.cameraPosition.padding)) {
+                map.easeCamera(CameraUpdateFactory.paddingTo(padding), PADDING_MILLIS)
             }
         }
 
-        fun follow(move: CameraTransition, bottom: Double) {
-            inset = bottom
+        fun follow(move: CameraTransition, next: MapInset) {
+            inset = next
             val update = CameraUpdateFactory.newCameraPosition(move.camera.toPosition(inset))
             val millis = move.durationMillis.toInt()
             running = null

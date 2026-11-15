@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map
 import androidx.compose.ui.graphics.Color
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.camera.hex
 import io.github.dostepnykampus.feature.map.camera.toCamera
@@ -21,9 +22,9 @@ class MapLibreConversionTest {
     fun nfr53_camera_survives_maplibre() {
         val camera = MapCamera(center = GeoPoint(longitude = 17.0, latitude = 60.0), zoom = START_ZOOM)
         assertEquals(camera, camera.toPosition().toCamera())
-        val aboveSheet = camera.toPosition(bottomInset = 600.0)
+        val aboveSheet = camera.toPosition(MapInset(top = 180.0, bottom = 600.0))
         assertEquals(camera, aboveSheet.toCamera())
-        assertEquals(600.0, aboveSheet.padding?.last())
+        assertEquals(listOf(0.0, 180.0, 0.0, 600.0), aboveSheet.padding?.toList())
     }
 
     @Test

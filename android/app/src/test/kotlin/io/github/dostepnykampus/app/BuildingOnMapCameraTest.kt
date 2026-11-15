@@ -113,7 +113,7 @@ class BuildingOnMapCameraTest {
     private val fakeMap =
         CampusMapView { data: CampusMapData, _, move, inset, onCameraIdle, onBuildingsTouch, _, modifier: Modifier ->
             shown += data to move.camera
-            bottomInset = inset
+            bottomInset = inset.bottom
             touch = onBuildingsTouch
             density = LocalDensity.current.density
             SideEffect { if (isIdleReported) onCameraIdle(move.camera) }
