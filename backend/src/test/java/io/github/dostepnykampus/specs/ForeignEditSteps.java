@@ -60,17 +60,21 @@ public final class ForeignEditSteps {
     /**
      * Status odpowiedzi na próbę zmiany.
      */
-    private int refused;
+    private final AttemptOutcome outcome;
 
     /**
      * Kroki na kontekście aplikacji.
      *
      * @param http Klient żądań HTTP do aplikacji
      * @param jdbc Baza aplikacji
+     * @param outcome Status odpowiedzi na próbę, wspólny z innymi krokami
      */
-    public ForeignEditSteps(final MockMvc http, final JdbcClient jdbc) {
+    public ForeignEditSteps(
+        final MockMvc http, final JdbcClient jdbc, final AttemptOutcome outcome
+    ) {
         this.http = http;
         this.jdbc = jdbc;
+        this.outcome = outcome;
     }
 
     /**
@@ -98,10 +102,12 @@ public final class ForeignEditSteps {
         "inny Zbierający spróbuje zmienić uciążliwość w tym zgłoszeniu z pominięciem aplikacji"
     )
     public void otherCollectorEdits() throws Exception {
-        this.refused = this.send(
-            MockMvcRequestBuilders.put("/submissions/{id}", ForeignEditSteps.SUBMISSION),
-            "\"version\":1",
-            3
+        this.outcome.record(
+            this.send(
+                MockMvcRequestBuilders.put("/submissions/{id}", ForeignEditSteps.SUBMISSION),
+                "\"version\":1",
+                3
+            )
         );
     }
 
@@ -126,7 +132,7 @@ public final class ForeignEditSteps {
      */
     @When("Zbierający spróbuje zmienić jego uciążliwość z pominięciem aplikacji")
     public void collectorReplaces() throws Exception {
-        this.refused = this.change();
+        this.outcome.record(this.change());
     }
 
     /**
@@ -178,7 +184,7 @@ public final class ForeignEditSteps {
     @Then("próba jest odrzucona")
     public void attemptRefused() {
         MatcherAssert.assertThat(
-            "Zmiana cudzego zgłoszenia nie dała 403", this.refused, Matchers.equalTo(403)
+            "Próba nie dała 403", this.outcome.status(), Matchers.equalTo(403)
         );
     }
 

@@ -73,6 +73,61 @@ final class ReviewHttpTest {
     }
 
     @Test
+    void reportsMissingSubmissionOnClaim(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Wzięcie nieistniejącego zgłoszenia nie dało 404",
+            ReviewHttpTest.claim(context, UUID.randomUUID()), Matchers.equalTo(404)
+        );
+    }
+
+    @Test
+    void conflictsOnReviewOfStaleVersion(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = ReviewHttpTest.sent(context, "inne-konto");
+        ReviewHttpTest.claim(context, id);
+        MatcherAssert.assertThat(
+            "Decyzja o innej wersji niż aktualna nie dała 409",
+            ReviewHttpTest.review(
+                context, id, "{\"decision\":\"ACCEPT\",\"version\":2}"
+            ),
+            Matchers.equalTo(409)
+        );
+    }
+
+    @Test
+    void refusesRejectionWithoutReason(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = ReviewHttpTest.sent(context, "inne-konto");
+        ReviewHttpTest.claim(context, id);
+        MatcherAssert.assertThat(
+            "Odrzucenie bez powodu nie dało 400",
+            ReviewHttpTest.review(
+                context, id, "{\"decision\":\"REJECT\",\"version\":1}"
+            ),
+            Matchers.equalTo(400)
+        );
+    }
+
+    @Test
+    void rejectsClaimedSubmissionWithReason(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = ReviewHttpTest.sent(context, "inne-konto");
+        ReviewHttpTest.claim(context, id);
+        MatcherAssert.assertThat(
+            "Odrzucenie z powodem nie dało 200 i statusu „odrzucone”",
+            List.of(
+                ReviewHttpTest.review(
+                    context, id,
+                    "{\"decision\":\"REJECT\",\"version\":1,\"rejectionReason\":\"Nieczytelne\"}"
+                ),
+                ReviewHttpTest.status(context, id)
+            ),
+            Matchers.contains(200, "REJECTED")
+        );
+    }
+
+    @Test
     void refusesClaimOfOwnSubmission(final WebApplicationContext context)
         throws Exception {
         final UUID id = ReviewHttpTest.sent(context, "konto-testowe");
@@ -135,10 +190,16 @@ final class ReviewHttpTest {
 
     private static int review(final WebApplicationContext context, final UUID id)
         throws Exception {
+        return ReviewHttpTest.review(context, id, "{\"decision\":\"ACCEPT\",\"version\":1}");
+    }
+
+    private static int review(
+        final WebApplicationContext context, final UUID id, final String body
+    ) throws Exception {
         return context.getBean(MockMvc.class).perform(
             MockMvcRequestBuilders.post("/submissions/{id}/review", id)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"decision\":\"ACCEPT\",\"version\":1}")
+                .content(body)
                 .with(new AsVerifier())
         ).andReturn().getResponse().getStatus();
     }
