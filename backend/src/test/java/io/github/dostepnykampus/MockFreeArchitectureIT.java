@@ -19,12 +19,12 @@ import org.junit.jupiter.api.io.TempDir;
 /**
  * Testy serwera nie wywołują API Mockito: dziedzinę i moduły testuje się przez fejki. Reguła
  * patrzy na wywołania i dostęp, nie na adnotacje: {@code @MockitoBean} i {@code @MockitoSpyBean}
- * sąsiednich modułów pilnuje {@link TestSetupArchitectureTest}, a ich składowa {@code answers}
+ * sąsiednich modułów pilnuje {@link TestSetupArchitectureIT}, a ich składowa {@code answers}
  * ma typ z pakietu Mockito.
  *
  * @since 0.1.0
  */
-final class MockFreeArchitectureTest {
+final class MockFreeArchitectureIT {
 
     /**
      * Pakiet przykładów kompilowanych przez test.
@@ -45,7 +45,7 @@ final class MockFreeArchitectureTest {
                 new ClassFileImporter()
                     .withImportOption(ImportOption.Predefined.ONLY_INCLUDE_TESTS)
                     .importPackages("io.github.dostepnykampus"),
-                MockFreeArchitectureTest.rule()
+                MockFreeArchitectureIT.rule()
             ),
             "Testy używają API Mockito"
         );
@@ -54,7 +54,7 @@ final class MockFreeArchitectureTest {
     @Test
     void rejectsMockCreatedByMockito() throws IOException {
         Assertions.assertTrue(
-            MockFreeArchitectureTest.rule().evaluate(
+            MockFreeArchitectureIT.rule().evaluate(
                 this.compiled("Object field = org.mockito.Mockito.mock(Object.class);")
             ).hasViolation(),
             "Reguła przepuściła test tworzący mock przez Mockito"
@@ -64,7 +64,7 @@ final class MockFreeArchitectureTest {
     @Test
     void acceptsMockitoBeanAnnotation() throws IOException {
         Assertions.assertFalse(
-            MockFreeArchitectureTest.rule().evaluate(
+            MockFreeArchitectureIT.rule().evaluate(
                 this.compiled(
                     String.join(
                         ".", "@org.springframework.test.context.bean.override.mockito",
@@ -72,7 +72,7 @@ final class MockFreeArchitectureTest {
                     )
                 )
             ).hasViolation(),
-            "Reguła odrzuciła adnotację @MockitoBean pilnowaną przez TestSetupArchitectureTest"
+            "Reguła odrzuciła adnotację @MockitoBean pilnowaną przez TestSetupArchitectureIT"
         );
     }
 
@@ -85,11 +85,11 @@ final class MockFreeArchitectureTest {
     private JavaClasses compiled(final String member) throws IOException {
         final ArchSamples samples = new ArchSamples(this.dir);
         samples.write(
-            MockFreeArchitectureTest.SAMPLES, "Sample",
+            MockFreeArchitectureIT.SAMPLES, "Sample",
             String.format(
-                "package %s;%nfinal class Sample { %s }%n", MockFreeArchitectureTest.SAMPLES, member
+                "package %s;%nfinal class Sample { %s }%n", MockFreeArchitectureIT.SAMPLES, member
             )
         );
-        return samples.compiled(MockFreeArchitectureTest.SAMPLES);
+        return samples.compiled(MockFreeArchitectureIT.SAMPLES);
     }
 }

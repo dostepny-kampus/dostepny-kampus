@@ -195,6 +195,13 @@ architecture_drop_rule() { sed -i '6,8d' "$test_dir/ArchitectureTest.java"; }
 modularity_delete() { git rm --quiet "$test_dir/ModularityTest.java"; }
 architecture_rename() { git mv "$test_dir/ArchitectureTest.java" "$test_dir/Layers.java"; }
 konsist_edit() { sed -i 's/"..ui.."/"..ui..", "..map.."/' "$android_test/ArchitectureTest.kt"; }
+architecture_new_it() {
+  printf 'package kampus.building;
+
+final class BuildingArchitectureIT {
+}
+'     >"$test_dir/building/BuildingArchitectureIT.java"
+}
 architecture_new_backend() {
   printf 'package kampus.building;\n\nfinal class BuildingArchitectureTest {\n}\n' \
     >"$test_dir/building/BuildingArchitectureTest.java"
@@ -309,6 +316,7 @@ run_case "S3: usunięty ModularityTest.java" "$removed" modularity_delete
 run_case "S3: przeniesiony ArchitectureTest.java" "$changed" architecture_rename
 run_case "S3: zmieniony ArchitectureTest.kt w Androidzie" "$changed" konsist_edit
 run_case "S3: nowy plik reguł w backendzie" "$changed" architecture_new_backend
+run_case "S3: nowy plik reguł uruchamiany przez failsafe" "$changed" architecture_new_it
 run_case "S3: nowy plik reguł w module Androida" "$changed" architecture_new_android
 run_case "S3: nowa konfiguracja wykrywania kopii" "$changed" jscpd_config_new
 run_case "S3, S6: klasa pomocnicza o podobnej nazwie" "" architecture_support
