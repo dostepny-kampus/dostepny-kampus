@@ -15,10 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -68,7 +70,7 @@ class FloorsGroupTest {
     @Test
     fun matchesLightMockup() {
         compose.setContent { Group(FACTS) }
-        compose.onNodeWithText("Parter").performClick()
+        compose.onNodeWithText("Parter").performTouchInput { click() }
         compose.mainClock.advanceTimeBy(RIPPLE_END_MS)
         compose.onRoot().captureRoboImage()
     }
@@ -78,7 +80,7 @@ class FloorsGroupTest {
     @Config(qualifiers = "+night")
     fun matchesDarkMockup() {
         compose.setContent { Group(FACTS) }
-        compose.onNodeWithText("Parter").performClick()
+        compose.onNodeWithText("Parter").performTouchInput { click() }
         compose.mainClock.advanceTimeBy(RIPPLE_END_MS)
         compose.onRoot().captureRoboImage()
     }
@@ -105,7 +107,7 @@ class FloorsGroupTest {
     }
 
     private companion object {
-        /** Czas, po którym fala dotknięcia i rozwinięcie opisu na pewno się kończą. */
+        /** Czas, po którym fala dotknięcia i rozwinięcie opisu na pewno się kończą; dotyk nie zostawia fokusu na zrzucie. */
         const val RIPPLE_END_MS = 2_000L
 
         val FACTS =
