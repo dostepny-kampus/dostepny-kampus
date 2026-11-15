@@ -102,7 +102,7 @@ Wymagania: [V1 Mapa kampusu](../wymagania-ekranow.md#v1-mapa-kampusu).
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Legenda otwarta nad planem parteru, przewinięta do barier i planu: Utrudnienie, Tylko z pomocą, Blokada, Bariera bez podanego piętra ze znakiem zapytania, Sala, Korytarz, Schody, Toaleta, Winda, Toaleta dla osób z niepełnosprawnością, Szukana sala](obrazy/m-v1-mapa-plan-legenda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-jasny.webp) | [![Ta sama legenda przy planie w motywie ciemnym](obrazy/m-v1-mapa-plan-legenda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-ciemny.webp) | [![Ta sama legenda przy czcionce 200%: pozycje w kilku wierszach, legenda przewija się](obrazy/m-v1-mapa-plan-legenda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-jasny-200.webp) |
+| [![Legenda otwarta nad planem parteru, przewinięta do barier: Utrudnienie, Tylko z pomocą, Blokada, Bariera bez podanego piętra ze znakiem zapytania, niżej początek części Plan piętra z pozycją Sala; kolumna pięter chowa się na czas legendy](obrazy/m-v1-mapa-plan-legenda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-jasny.webp) | [![Ta sama legenda przy planie w motywie ciemnym](obrazy/m-v1-mapa-plan-legenda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-ciemny.webp) | [![Ta sama legenda przy czcionce 200%: pozycje w kilku wierszach, legenda przewija się](obrazy/m-v1-mapa-plan-legenda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-jasny-200.webp) |
 
 ### V1: bariery na planie
 
