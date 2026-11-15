@@ -113,7 +113,7 @@ class BuildingCardViewModel
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), true)
 
         init {
-            viewModelScope.launch { floors.value = plannedFloors(plans, symbol) }
+            viewModelScope.launch { floors.value = floorFactsOrNull(plans, symbol) }
             viewModelScope.launch { fromServer.value = serverEntrances.entrances(symbol) }
             viewModelScope.launch {
                 val accepted = acceptedBarriers.barriers()
@@ -153,8 +153,7 @@ class BuildingCardViewModel
         }
     }
 
-/** Fakty o piętrach budynku [symbol] z planu w [plans]; `null`, gdy budynek nie ma planu ani jego kopii. */
-private suspend fun plannedFloors(plans: FloorPlans, symbol: String): FloorFacts? {
+private suspend fun floorFactsOrNull(plans: FloorPlans, symbol: String): FloorFacts? {
     plans.download(symbol)
     val floors = plans.floors(symbol)?.floors.orEmpty()
     val rooms = floors.mapNotNull { floor -> plans.rooms(symbol, floor.id)?.let { floor.id to it } }.toMap()
