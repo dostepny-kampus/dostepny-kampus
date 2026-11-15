@@ -36,7 +36,7 @@ import tools.jackson.databind.ObjectMapper;
  * nie jest repozytorium Springa, bo proxy tłumaczące wyjątki nie powstaje
  * dla klasy finalnej, a JdbcClient tłumaczy wyjątki sam.
  *
- * <p>Wymagania: BR-9, BR-10, BR-18</p>
+ * <p>Wymagania: BR-9, BR-10, BR-18, BR-11</p>
  *
  * @since 0.1.0
  */
@@ -72,6 +72,18 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
             FROM unnest(CAST(:from AS TEXT[]), CAST(:to AS TEXT[]))
                 AS edited (old_status, new_status)
             WHERE id = :id AND version = :version AND status = edited.old_status
+            RETURNING %s
+        """,
+        JdbcSubmissions.COLUMNS
+    );
+
+    /**
+     * Wzięcie zgłoszenia do weryfikacji; wzięte już przez tego Weryfikatora zostaje.
+     */
+    private static final String CLAIM = String.format(
+        """
+            UPDATE submissions SET status = 'IN_REVIEW', reviewer = :reviewer
+            WHERE id = :id AND (status = 'SENT' OR (status = 'IN_REVIEW' AND reviewer = :reviewer))
             RETURNING %s
         """,
         JdbcSubmissions.COLUMNS
@@ -133,22 +145,26 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
 
     @Override
     public EditResult update(final SubmissionEdit edit) {
-        final Optional<Submission> saved = this.write(
-            this.jdbc.sql(JdbcSubmissions.UPDATE)
-                .param("version", edit.expectedVersion())
-                .param("from", JdbcSubmissions.editable(Function.identity()))
-                .param("to", JdbcSubmissions.editable(SubmissionStatus::afterEdit)),
-            edit.id(),
-            edit.content()
+        return this.written(
+            this.write(
+                this.jdbc.sql(JdbcSubmissions.UPDATE)
+                    .param("version", edit.expectedVersion())
+                    .param("from", JdbcSubmissions.editable(Function.identity()))
+                    .param("to", JdbcSubmissions.editable(SubmissionStatus::afterEdit)),
+                edit.id(),
+                edit.content()
+            ).orElse(null),
+            edit.id()
         );
-        final EditResult result;
-        if (saved.isPresent()) {
-            result = new EditResult.Saved(saved.get());
-        } else {
-            result = this.find(edit.id()).<EditResult>map(EditResult.Conflict::new)
-                .orElseGet(() -> new EditResult.Missing(edit.id()));
-        }
-        return result;
+    }
+
+    @Override
+    public EditResult claim(final UUID id, final String reviewer) {
+        return this.written(
+            this.jdbc.sql(JdbcSubmissions.CLAIM).param("id", id).param("reviewer", reviewer)
+                .query(this.rows).optional().orElse(null),
+            id
+        );
     }
 
     @Override
@@ -228,6 +244,17 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                     )
                 )
             );
+    }
+
+    private EditResult written(@Nullable final Submission saved, final UUID id) {
+        final EditResult result;
+        if (saved != null) {
+            result = new EditResult.Saved(saved);
+        } else {
+            result = this.find(id).<EditResult>map(EditResult.Conflict::new)
+                .orElseGet(() -> new EditResult.Missing(id));
+        }
+        return result;
     }
 
     private boolean wrote(final UUID id, final String account) {
