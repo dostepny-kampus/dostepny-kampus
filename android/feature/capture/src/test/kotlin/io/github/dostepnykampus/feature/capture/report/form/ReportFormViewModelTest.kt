@@ -59,7 +59,7 @@ class ReportFormViewModelTest {
     }
 
     @Test
-    fun `braki dopiero po zapisz`() {
+    fun showsMissingAfterSave() {
         viewModel.edit(ReportEdit.Type(BarrierType.THRESHOLD))
         assertEquals(emptyList<ReportFormError>(), state().errors)
 
@@ -74,7 +74,7 @@ class ReportFormViewModelTest {
     }
 
     @Test
-    fun `zapisz włącza braki na stałe`() {
+    fun keepsMissingAfterSave() {
         viewModel.save()
         fill()
         assertEquals(emptyList<ReportFormError>(), state().errors)
@@ -85,7 +85,7 @@ class ReportFormViewModelTest {
     }
 
     @Test
-    fun `zapis trafia do kolejki`() =
+    fun queuesSave() =
         runTest(dispatcher) {
             fill()
             viewModel.save()
@@ -104,7 +104,7 @@ class ReportFormViewModelTest {
      * Scenariusz (częściowo): pomiar-precyzyjny.feature: Typ TB-29 „inna bariera” z opisem zapisuje się
      */
     @Test
-    fun `tb29 opis trafia do zapisu`() =
+    fun savesOtherDescription() =
         runTest(dispatcher) {
             fill()
             val description = "Na długim korytarzu nie ma gdzie usiąść i odpocząć"
@@ -127,7 +127,7 @@ class ReportFormViewModelTest {
      * Scenariusz (częściowo): pomiar-precyzyjny.feature: Typ TB-29 „inna bariera” wymaga opisu
      */
     @Test
-    fun `tb29 bez opisu nie zapisuje`() =
+    fun blocksOtherWithoutDescription() =
         runTest(dispatcher) {
             fill()
             viewModel.edit(ReportEdit.Type(BarrierType.OTHER_BARRIER))
@@ -141,7 +141,7 @@ class ReportFormViewModelTest {
         }
 
     @Test
-    fun `poprawka zapisuje to samo`() =
+    fun savesCorrectionInPlace() =
         runTest(dispatcher) {
             val edited = EditedSubmission(id = "s1", baseVersion = 2)
             opened = ReportForm(place = A1, editedSubmission = edited)
@@ -153,7 +153,7 @@ class ReportFormViewModelTest {
         }
 
     @Test
-    fun `drugie zapisz nie dubluje`() =
+    fun savesOnceOnDoubleTap() =
         runTest(dispatcher) {
             fill()
             viewModel.save()
@@ -165,7 +165,7 @@ class ReportFormViewModelTest {
         }
 
     @Test
-    fun `wstecz nie odblokowuje zapisz`() =
+    fun keepsSaveLockedOnBack() =
         runTest(dispatcher) {
             fill()
             viewModel.save()
@@ -183,7 +183,7 @@ class ReportFormViewModelTest {
         }
 
     @Test
-    fun `za mało miejsca`() =
+    fun reportsLowStorage() =
         runTest(dispatcher) {
             failure = IOException("brak miejsca")
             fill()
@@ -201,7 +201,7 @@ class ReportFormViewModelTest {
 
     /** Kolejka odrzuca wpis: błąd zapisu bez awarii, a wpisane pola zostają. Wymagania: NFR-7, NFR-50 */
     @Test
-    fun `odrzucony wpis zostaje`() =
+    fun keepsRejectedEntry() =
         runTest(dispatcher) {
             failure = SaveRefusedException(SaveRefusal.PHOTOS_MISMATCH, "zdjęcia nie pasują do treści")
             fill()
@@ -216,7 +216,7 @@ class ReportFormViewModelTest {
 
     /** Nieznana wersja poprawki nie prosi o nowe zdjęcie, bo zdjęcie nic by nie zmieniło. Wymagania: BR-10, NFR-50 */
     @Test
-    fun `nieznana wersja bez zdjecia`() =
+    fun skipsPhotoForUnknownVersion() =
         runTest(dispatcher) {
             failure = SaveRefusedException(SaveRefusal.UNKNOWN_VERSION, "wersja nieznana")
             fill()
@@ -229,7 +229,7 @@ class ReportFormViewModelTest {
 
     /** Anulowanie zapisu nie zmienia stanu i nie jest błędem zapisu. */
     @Test
-    fun `anulowanie bez zmiany`() =
+    fun cancelsWithoutChange() =
         runTest(dispatcher) {
             failure = CancellationException("ekran zamknięty")
             fill()
@@ -239,14 +239,14 @@ class ReportFormViewModelTest {
         }
 
     @Test
-    fun `wstecz bez zmian wychodzi`() {
+    fun leavesOnBackWithoutChanges() {
         viewModel.back()
 
         assertEquals(ReportStage.LEFT, state().stage)
     }
 
     @Test
-    fun `wstecz ze zmianami pyta`() {
+    fun asksOnBackWithChanges() {
         viewModel.edit(ReportEdit.Description("Próg"))
         viewModel.back()
         assertEquals(ReportStage.EXIT_ASKED, state().stage)
@@ -268,7 +268,7 @@ class ReportFormViewModelTest {
      * Wymagania: US7.4
      */
     @Test
-    fun `wyjście z wybranym typem`() =
+    fun asksOnExitWithType() =
         runTest(dispatcher) {
             viewModel.edit(ReportEdit.Type(BarrierType.STAIRS_AT_ENTRANCE))
             viewModel.back()
@@ -286,7 +286,7 @@ class ReportFormViewModelTest {
         }
 
     @Test
-    fun `drugie otwarcie nie kasuje`() {
+    fun keepsFormOnReopen() {
         viewModel.edit(ReportEdit.Description("Próg"))
         viewModel.open(ReportForm(place = A1))
 

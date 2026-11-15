@@ -74,7 +74,7 @@ class RemovedViewModelTest {
      * Wymagania: US8.4, BR-19
      */
     @Test
-    fun `us8_4 bez zdjęcia nie wychodzi`() =
+    fun blocksSendWithoutPhoto() =
         runTest(dispatcher) {
             open()
             viewModel.send()
@@ -91,7 +91,7 @@ class RemovedViewModelTest {
      * Wymagania: US8.4, BR-19, BR-7
      */
     @Test
-    fun `us8_4 zapis bez uciążliwości`() =
+    fun savesWithoutSeverity() =
         runTest(dispatcher) {
             open()
             viewModel.takePhoto(photo)
@@ -115,7 +115,7 @@ class RemovedViewModelTest {
 
     /** Brak miejsca w telefonie zostawia zdjęcie i pozwala wysłać ponownie. Wymagania: NFR-7 */
     @Test
-    fun `nfr7 brak miejsca i ponowienie`() =
+    fun retriesAfterStorageFailure() =
         runTest(dispatcher) {
             open()
             viewModel.takePhoto(photo)

@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
-/** „Zmień miejsce” na C2: powrót do C1 z nowym miejscem zostawia wpisane pola. Wymagania: US7.4 */
+/** „Zmień miejsce” na C2: powrót do C1 z nowym miejscem zostawia wpisane pola. Wymagania: US7.4, NFR-5, NFR-7 */
 class ReportDraftTest {
     private val draft = ReportDraft()
     private val floor = ReportFloor.Planned("A-1-0")
@@ -38,7 +38,7 @@ class ReportDraftTest {
      * Wymagania: US7.4
      */
     @Test
-    fun us7_4_change_place_keeps_form() {
+    fun keepsFormOnPlaceChange() {
         val first = filled()
         first.changePlace()
         assertEquals(ReportStage.PLACE_CHANGED, first.uiState.value?.stage)
@@ -57,7 +57,7 @@ class ReportDraftTest {
 
     /** Wiersz: C2 „Zmień miejsce” do innego budynku albo na ulicę → piętro znika. Wymagania: US7.4 */
     @Test
-    fun us7_4_floor_same_building() {
+    fun keepsFloorInSameBuilding() {
         filled().changePlace()
         assertNull(reopened(A1.copy(buildingSymbol = "C-13")).form.floor)
         filled().changePlace()
@@ -65,7 +65,7 @@ class ReportDraftTest {
     }
 
     @Test
-    fun nfr7_editing_survives_restore() {
+    fun restoresEditing() {
         val viewModel = filled()
         val recreated = restored(draft)
         assertEquals(viewModel.uiState.value, reopened(A1, draft = recreated))
@@ -75,14 +75,14 @@ class ReportDraftTest {
     }
 
     @Test
-    fun us7_4_discard_clears_draft() {
+    fun clearsDraftOnDiscard() {
         filled().confirmExit()
         assertEquals(ReportForm(place = A1), reopened(A1).form)
     }
 
     /** Wiersz: proces zabity na C2 → sprzątanie przy starcie zna plik zdjęcia odtworzonego szkicu. */
     @Test
-    fun nfr5_restored_draft_photo() {
+    fun restoresDraftPhoto() {
         filled()
         assertEquals(listOf(photo.path), restored(draft).photoPaths())
         draft.clear()

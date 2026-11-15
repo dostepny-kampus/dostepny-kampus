@@ -39,7 +39,7 @@ class RemovedContentTest {
 
     /** Wiersz: zgłoszenie przyjęte bez edycji, nowe zdjęcie i napis o mapie. Wymagania: US8.4, BR-19 */
     @Test
-    fun us8_4_accepted_and_new_photo() {
+    fun showsAcceptedAndNewPhoto() {
         var sends = 0
         show(RemovedUiState(previous = LIFT, stage = RemovedStage.EDITING)) { sends++ }
 
@@ -54,7 +54,7 @@ class RemovedContentTest {
 
     /** Wiersz: wysłanie bez zdjęcia pokazuje błąd walidacji. Wymagania: BR-19 */
     @Test
-    fun br19_validation_error() {
+    fun showsValidationError() {
         show(RemovedUiState(previous = LIFT, isPhotoMissing = true, stage = RemovedStage.EDITING))
 
         compose.onNodeWithText("Dodaj zdjęcie miejsca, aby wysłać zgłoszenie.").assertIsDisplayed()
@@ -62,7 +62,7 @@ class RemovedContentTest {
 
     /** Wiersz: za mało miejsca w telefonie, „Spróbuj ponownie” wysyła jeszcze raz. Wymagania: NFR-7 */
     @Test
-    fun nfr7_save_error_retry() {
+    fun offersRetryAfterSaveError() {
         var sends = 0
         show(RemovedUiState(previous = LIFT, stage = RemovedStage.SAVE_FAILED)) { sends++ }
 
