@@ -8,8 +8,10 @@ package io.github.dostepnykampus.core.network.submission
 import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.network.ApiResult
+import io.github.dostepnykampus.core.network.decodedResult
 import io.github.dostepnykampus.core.network.exchange
 import io.github.dostepnykampus.core.network.exchangeBody
+import io.github.dostepnykampus.core.network.unexpectedResult
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -21,7 +23,6 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.HttpURLConnection.HTTP_CONFLICT
 import java.net.HttpURLConnection.HTTP_CREATED
-import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import java.net.HttpURLConnection.HTTP_NO_CONTENT
 import java.net.HttpURLConnection.HTTP_OK
 import java.util.concurrent.TimeUnit
@@ -54,7 +55,11 @@ public class SubmissionsApi(private val http: OkHttpClient, private val json: Js
      */
     public suspend fun create(id: String, content: SubmissionContent): ApiResult<Submission> =
         http.exchange(request(path(), JSON.body(json.encodeNewSubmission(id, content)), POST)) { code, body ->
-            if (code == HTTP_OK || code == HTTP_CREATED) success(code) { json.decodeSubmission(body) } else other(code)
+            if (code == HTTP_OK || code == HTTP_CREATED) {
+                decodedResult(code) { json.decodeSubmission(body) }
+            } else {
+                unexpectedResult(code)
+            }
         }
 
     /**
@@ -70,9 +75,9 @@ public class SubmissionsApi(private val http: OkHttpClient, private val json: Js
     public suspend fun update(id: String, version: Int, content: SubmissionContent): ApiResult<SubmissionEdit> =
         http.exchange(request(path(id), JSON.body(json.encodeSubmissionUpdate(version, content)), PUT)) { code, body ->
             when (code) {
-                HTTP_OK -> success(code) { SubmissionEdit.Saved(json.decodeSubmission(body)) }
-                HTTP_CONFLICT -> success(code) { SubmissionEdit.Conflict(json.decodeConflict(body)) }
-                else -> other(code)
+                HTTP_OK -> decodedResult(code) { SubmissionEdit.Saved(json.decodeSubmission(body)) }
+                HTTP_CONFLICT -> decodedResult(code) { SubmissionEdit.Conflict(json.decodeConflict(body)) }
+                else -> unexpectedResult(code)
             }
         }
 
@@ -87,7 +92,7 @@ public class SubmissionsApi(private val http: OkHttpClient, private val json: Js
      */
     public suspend fun putPhoto(submissionId: String, photoId: String, jpeg: ByteArray): ApiResult<Unit> =
         photoHttp.exchange(request(path(submissionId, PHOTOS, photoId), JPEG.body(jpeg), PUT)) { code, _ ->
-            if (code == HTTP_NO_CONTENT) ApiResult.Success(Unit) else other(code)
+            if (code == HTTP_NO_CONTENT) ApiResult.Success(Unit) else unexpectedResult(code)
         }
 
     /**
@@ -103,7 +108,7 @@ public class SubmissionsApi(private val http: OkHttpClient, private val json: Js
         val photoRequest =
             request(target = path(submissionId, PHOTOS, photoId), body = null, method = GET, accept = PHOTO_TYPES)
         return photoHttp.exchangeBody(photoRequest) { code, body ->
-            if (code == HTTP_OK) ApiResult.Success(body.bytes()) else other(code)
+            if (code == HTTP_OK) ApiResult.Success(body.bytes()) else unexpectedResult(code)
         }
     }
 
@@ -130,9 +135,9 @@ public class SubmissionsApi(private val http: OkHttpClient, private val json: Js
         buildingSymbol?.let { builder.addQueryParameter(name = "buildingSymbol", value = it) }
         return http.exchange(request(builder.build(), body = null, method = GET)) { code, body ->
             if (code == HTTP_OK) {
-                success(code) { json.decodeSubmissions(body) }
+                decodedResult(code) { json.decodeSubmissions(body) }
             } else {
-                other(code)
+                unexpectedResult(code)
             }
         }
     }
@@ -146,7 +151,7 @@ public class SubmissionsApi(private val http: OkHttpClient, private val json: Js
     public suspend fun mine(): ApiResult<List<Submission>> {
         val target = path().newBuilder().addQueryParameter(name = "mine", value = "true").build()
         return http.exchange(request(target, body = null, method = GET)) { code, body ->
-            if (code == HTTP_OK) success(code) { json.decodeSubmissions(body) } else other(code)
+            if (code == HTTP_OK) decodedResult(code) { json.decodeSubmissions(body) } else unexpectedResult(code)
         }
     }
 
@@ -182,16 +187,6 @@ public class SubmissionsApi(private val http: OkHttpClient, private val json: Js
         fun MediaType.body(text: String): RequestBody = text.toRequestBody(this)
 
         fun MediaType.body(bytes: ByteArray): RequestBody = bytes.toRequestBody(this)
-
-        fun <T> success(code: Int, decode: () -> T): ApiResult<T> =
-            try {
-                ApiResult.Success(decode())
-            } catch (error: IllegalArgumentException) {
-                ApiResult.ServerError(code = code, cause = error)
-            }
-
-        fun other(code: Int): ApiResult<Nothing> =
-            if (code == HTTP_NOT_FOUND) ApiResult.NotFound else ApiResult.ServerError(code)
     }
 }
 
