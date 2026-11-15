@@ -49,7 +49,7 @@ class RemovedContentTest {
         compose.onNodeWithText("Sprawdzone 7.10.2026").assertIsDisplayed()
         compose.onNodeWithText("Bariera zostanie na mapie", substring = true).assertIsDisplayed()
         compose.onNodeWithText("Wyślij do sprawdzenia").performClick()
-        assertEquals(1, sends)
+        assertEquals("„Wyślij do sprawdzenia” wysyła raz", 1, sends)
     }
 
     /** Wiersz: wysłanie bez zdjęcia pokazuje błąd walidacji. Wymagania: BR-19 */
@@ -68,7 +68,7 @@ class RemovedContentTest {
 
         compose.onNodeWithText("Za mało miejsca w telefonie. Zwolnij miejsce i spróbuj ponownie.").assertIsDisplayed()
         compose.onNodeWithText("Spróbuj ponownie").performClick()
-        assertEquals(1, sends)
+        assertEquals("„Spróbuj ponownie” wysyła jeszcze raz", 1, sends)
     }
 
     private companion object {
