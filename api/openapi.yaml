@@ -63,6 +63,7 @@ paths:
       tags: [building]
       security: []
       responses:
+        '429': {$ref: '#/components/responses/TooManyRequests'}
         '200':
           description: Budynki posortowane według symbolu budynku.
           content:
@@ -79,6 +80,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/BuildingSymbol'
       responses:
+        '429': {$ref: '#/components/responses/TooManyRequests'}
         '200':
           description: Dane karty budynku.
           content:
@@ -106,6 +108,7 @@ paths:
           description: Długość geograficzna punktu w stopniach WGS84.
           schema: {type: number, format: double, minimum: -180, maximum: 180, description: "Długość geograficzna."}
       responses:
+        '429': {$ref: '#/components/responses/TooManyRequests'}
         '200':
           description: Wynik podpowiedzi budynku.
           content:
@@ -124,6 +127,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/BuildingSymbol'
       responses:
+        '429': {$ref: '#/components/responses/TooManyRequests'}
         '200':
           description: Piętra budynku i źródło danych.
           content:
@@ -147,6 +151,7 @@ paths:
           description: Identyfikator piętra z listy pięter budynku.
           schema: {type: string, description: "Identyfikator piętra."}
       responses:
+        '429': {$ref: '#/components/responses/TooManyRequests'}
         '200':
           description: Pomieszczenia piętra i źródło danych.
           content:
@@ -169,6 +174,7 @@ paths:
           description: Numer sali, opcjonalnie poprzedzony symbolem budynku, np. `A-1 135`.
           schema: {type: string, minLength: 1, maxLength: 50, description: "Tekst wyszukiwania."}
       responses:
+        '429': {$ref: '#/components/responses/TooManyRequests'}
         '200':
           description: Pasujące sale; pusta lista, gdy nic nie pasuje.
           content:
@@ -194,6 +200,7 @@ paths:
           schema: {type: array, description: "Statusy zgłoszenia.", items: {$ref: '#/components/schemas/SubmissionStatus'}}
         - {name: mine, in: query, description: "Tylko własne zgłoszenia; wymaga roli `COLLECTOR`.", schema: {type: boolean, default: false, description: "Czy tylko własne."}}
       responses:
+        '429': {$ref: '#/components/responses/TooManyRequests'}
         '200':
           description: Zgłoszenia według filtrów.
           content:
@@ -244,6 +251,7 @@ paths:
       tags: [barrier]
       security: [{}, {keycloak: []}]
       responses:
+        '429': {$ref: '#/components/responses/TooManyRequests'}
         '200':
           description: Zgłoszenie.
           content:
@@ -284,6 +292,7 @@ paths:
       tags: [barrier]
       security: [{}, {keycloak: []}]
       responses:
+        '429': {$ref: '#/components/responses/TooManyRequests'}
         '200':
           description: Zdjęcie.
           content:
@@ -613,6 +622,17 @@ components:
           schema: {$ref: '#/components/schemas/Problem'}
     PayloadTooLarge:
       description: Ciało JSON przekracza 1 000 000 bajtów, także bez nagłówka Content-Length (NFR-34).
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    TooManyRequests:
+      description: >-
+        Limit żądań bez logowania z jednego adresu wyczerpany (60 na minutę, NFR-34); nagłówek `Retry-After` podaje
+        liczbę sekund do ponowienia.
+      headers:
+        Retry-After:
+          description: Liczba sekund do ponowienia.
+          schema: {type: integer, minimum: 1, description: "Sekundy do ponowienia."}
       content:
         application/problem+json:
           schema: {$ref: '#/components/schemas/Problem'}

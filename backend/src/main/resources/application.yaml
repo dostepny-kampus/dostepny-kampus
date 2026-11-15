@@ -4,6 +4,9 @@ dk:
     bucket: ${DK_PHOTOS_BUCKET:zdjecia}
     endpoint: http://${DK_PHOTOS_HOST:127.0.0.1}:${DK_PHOTOS_PORT:9000}
     secret-key: ${DK_PHOTOS_SECRET_KEY:}
+  rate-limit:
+    public-per-minute: ${DK_PUBLIC_RATE_LIMIT:60}
+    exempt: ${DK_RATE_LIMIT_UNLIMITED:}
 spring:
   application:
     name: dostepny-kampus
