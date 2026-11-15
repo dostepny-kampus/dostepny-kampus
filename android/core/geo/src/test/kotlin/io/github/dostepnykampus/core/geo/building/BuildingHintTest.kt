@@ -52,8 +52,12 @@ class BuildingHintTest {
     fun placesInsideOutline() {
         val point = GeoPoint(longitude = LON + SIDE / 2, latitude = LAT + SIDE / 2)
         val hint = buildingHints(point, listOf(building())).suggested
-        assertEquals(BuildingHint(building(), distanceMeters = 0.0, isInside = true), hint)
-        assertTrue(hint?.isInside == true)
+        assertEquals(
+            BuildingHint(building(), distanceMeters = 0.0, isInside = true),
+            hint,
+            "podpowiedź wewnątrz obrysu opisuje budynek i odległość zero",
+        )
+        assertTrue(hint?.isInside == true, "punkt w obrysie jest oznaczony jako wewnątrz")
     }
 
     /**
@@ -64,27 +68,27 @@ class BuildingHintTest {
     @Test
     fun keepsEdgeHintOutside() {
         val hint = checkNotNull(buildingHints(gridPoint(x = 8.0, y = 4.0), listOf(gridBuilding())).suggested)
-        assertEquals(gridBuilding(), hint.building)
-        assertEquals(0.0, hint.distanceMeters, EXACT)
-        assertFalse(hint.isInside)
+        assertEquals(gridBuilding(), hint.building, "podpowiedź przy krawędzi wskazuje budynek")
+        assertEquals(0.0, hint.distanceMeters, EXACT, "podpowiedź przy krawędzi ma odległość zero")
+        assertFalse(hint.isInside, "punkt na krawędzi jest poza obrysem")
     }
 
     /** Wiersz: G2 — to samo dla krawędzi dziedzińca. Wymagania: BR-G2 */
     @Test
     fun keepsCourtyardHintOutside() {
         val hint = checkNotNull(buildingHints(gridPoint(x = 3.0, y = 4.0), listOf(gridBuilding())).suggested)
-        assertEquals(gridBuilding(), hint.building)
-        assertEquals(0.0, hint.distanceMeters, EXACT)
-        assertFalse(hint.isInside)
+        assertEquals(gridBuilding(), hint.building, "podpowiedź na krawędzi dziedzińca wskazuje budynek")
+        assertEquals(0.0, hint.distanceMeters, EXACT, "podpowiedź na krawędzi dziedzińca ma odległość zero")
+        assertFalse(hint.isInside, "punkt na krawędzi dziedzińca jest poza obrysem")
     }
 
     /** Wiersz: G3 — punkt ściśle w konturze tuż przy krawędzi: ten budynek, 0 m, w konturze. Wymagania: US6.2 */
     @Test
     fun hintsInsideNearEdge() {
         val hint = checkNotNull(buildingHints(gridPoint(x = 7.9375, y = 4.0), listOf(gridBuilding())).suggested)
-        assertEquals(gridBuilding(), hint.building)
-        assertEquals(0.0, hint.distanceMeters, EXACT)
-        assertTrue(hint.isInside)
+        assertEquals(gridBuilding(), hint.building, "podpowiedź tuż przy krawędzi wskazuje budynek")
+        assertEquals(0.0, hint.distanceMeters, EXACT, "podpowiedź tuż przy krawędzi ma odległość zero")
+        assertTrue(hint.isInside, "punkt tuż przy krawędzi jest wewnątrz obrysu")
     }
 
     /**
@@ -96,19 +100,22 @@ class BuildingHintTest {
     fun hintsWithin50M() {
         listOf(30.0, 49.0).forEach { meters ->
             val hint = checkNotNull(buildingHints(north(meters), listOf(building())).suggested)
-            assertEquals(meters, hint.distanceMeters, METER)
+            assertEquals(meters, hint.distanceMeters, METER, "odległość podpowiedzi do 50 m zgodna z odsunięciem")
         }
     }
 
     /** Wiersz: 60 m od konturu → bez podpowiedzi, zgłoszenie „poza budynkiem”. */
     @Test
     fun skipsHintBeyond50M() {
-        assertNull(buildingHints(north(meters = 60.0), listOf(building())).suggested)
+        assertNull(
+            buildingHints(north(meters = 60.0), listOf(building())).suggested,
+            "podpowiedź dalej niż 50 m nie jest proponowana",
+        )
     }
 
     @Test
     fun skipsHintWithoutBuildings() {
-        assertNull(buildingHints(north(meters = 1.0), emptyList()).suggested)
+        assertNull(buildingHints(north(meters = 1.0), emptyList()).suggested, "bez budynków nie ma podpowiedzi")
     }
 
     private fun gridSquare(origin: Int, size: Int): List<GeoPoint> =

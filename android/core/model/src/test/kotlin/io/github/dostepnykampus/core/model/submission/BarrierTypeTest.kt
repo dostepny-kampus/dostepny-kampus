@@ -13,7 +13,11 @@ import org.junit.jupiter.api.Test
 class BarrierTypeTest {
     @Test
     fun ordersCodesTb1ToTb29() {
-        assertEquals((1..29).map { "TB-$it" }, BarrierType.entries.map { it.code })
+        assertEquals(
+            (1..29).map { "TB-$it" },
+            BarrierType.entries.map { it.code },
+            "kody typów barier od TB-1 do TB-29 w kolejności",
+        )
     }
 
     @Test
@@ -26,26 +30,34 @@ class BarrierTypeTest {
                 (21..25).associate { "TB-$it" to BarrierGroup.ORIENTATION_AND_INFORMATION } +
                 (26..29).associate { "TB-$it" to BarrierGroup.OTHER }
 
-        assertEquals(expected, BarrierType.entries.associate { it.code to it.group })
+        assertEquals(
+            expected,
+            BarrierType.entries.associate { it.code to it.group },
+            "grupa każdego typu bariery ze słownika",
+        )
     }
 
     @Test
     fun needsDescriptionOnlyForTb29() {
-        assertEquals(listOf("TB-29"), BarrierType.entries.filter { it.isDescriptionRequired }.map { it.code })
+        assertEquals(
+            listOf("TB-29"),
+            BarrierType.entries.filter { it.isDescriptionRequired }.map { it.code },
+            "opis wymagany tylko dla TB-29",
+        )
     }
 
     @Test
     fun parsesOnlyContractCodes() {
-        assertEquals(BarrierType.THRESHOLD, BarrierType.fromCode("TB-13"))
-        assertNull(BarrierType.fromCode("TB-30"))
-        assertNull(BarrierType.fromCode("tb-13"))
+        assertEquals(BarrierType.THRESHOLD, BarrierType.fromCode("TB-13"), "kod TB-13 daje próg")
+        assertNull(BarrierType.fromCode("TB-30"), "kod TB-30 spoza kontraktu nie jest typem")
+        assertNull(BarrierType.fromCode("tb-13"), "kod małymi literami nie jest typem")
     }
 
     @Test
     fun limitsSeverityToOneToThree() {
-        assertEquals(listOf(1, 2, 3), Severity.entries.map { it.value })
-        assertEquals(Severity.BLOCKING, Severity.fromValue(3))
-        assertNull(Severity.fromValue(0))
-        assertNull(Severity.fromValue(4))
+        assertEquals(listOf(1, 2, 3), Severity.entries.map { it.value }, "uciążliwość ma wartości 1 do 3")
+        assertEquals(Severity.BLOCKING, Severity.fromValue(3), "wartość 3 daje uciążliwość blokującą")
+        assertNull(Severity.fromValue(0), "wartość 0 nie jest uciążliwością")
+        assertNull(Severity.fromValue(4), "wartość 4 nie jest uciążliwością")
     }
 }

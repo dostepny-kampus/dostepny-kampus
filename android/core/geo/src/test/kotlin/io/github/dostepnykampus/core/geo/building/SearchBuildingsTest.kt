@@ -24,38 +24,42 @@ class SearchBuildingsTest {
     @ParameterizedTest
     @ValueSource(strings = ["C13", "c-13", "C-13"])
     fun us1_1_spelling_finds_c13(query: String) {
-        assertEquals(listOf("C-13"), symbols(query))
+        assertEquals(listOf("C-13"), symbols(query), "pisownia $query znajduje C-13")
     }
 
     @ParameterizedTest
     @ValueSource(strings = [" c 13 ", "C–13", "c−13"])
     fun us1_1_spaces_dashes_find(query: String) {
-        assertEquals(listOf("C-13"), symbols(query))
+        assertEquals(listOf("C-13"), symbols(query), "zapis $query ze spacją lub myślnikiem znajduje C-13")
     }
 
     @ParameterizedTest
     @ValueSource(strings = ["c1", "C-1"])
     fun us1_1_whole_symbol_match(query: String) {
-        assertEquals(listOf("C-1"), symbols(query))
+        assertEquals(listOf("C-1"), symbols(query), "zapytanie $query pasuje do całego symbolu C-1")
     }
 
     @ParameterizedTest
     @ValueSource(strings = ["d8A", "D-8a"])
     fun us1_1_suffix_any_case(query: String) {
-        assertEquals(listOf("D-8a"), symbols(query))
+        assertEquals(listOf("D-8a"), symbols(query), "zapytanie $query znajduje D-8a niezależnie od wielkości liter")
     }
 
     @ParameterizedTest
     @ValueSource(strings = ["", "C", "13", "C-13x", "C--13", "A-1 329", "Z-99", "C-0013"])
     fun us1_1_no_match_is_empty(query: String) {
-        assertEquals(emptyList<String>(), symbols(query))
+        assertEquals(emptyList<String>(), symbols(query), "zapytanie $query nic nie znajduje")
     }
 
     /** Scenariusz (częściowo): przegladanie-mapy.feature: Mapa i wyszukiwanie działają bez logowania. */
     @Test
     fun findsA1InRealFile() {
         val real = parseBuildingCatalog(File(System.getProperty("dostepnykampus.buildings")).readText())
-        assertEquals(listOf("A-1"), searchBuildings("A-1", real.buildings).map { it.symbol })
+        assertEquals(
+            listOf("A-1"),
+            searchBuildings("A-1", real.buildings).map { it.symbol },
+            "prawdziwy plik zawiera A-1",
+        )
     }
 
     private fun symbols(query: String): List<String> = searchBuildings(query, buildings()).map { it.symbol }

@@ -22,8 +22,8 @@ class LabelPointTest {
     @Test
     fun placesSquareLabelNearCenter() {
         val point = labelPoint(GeoPolygon(listOf(square())))
-        assertEquals(2.0, point.longitude, CELL)
-        assertEquals(2.0, point.latitude, CELL)
+        assertEquals(2.0, point.longitude, CELL, "etykieta kwadratu ma długość geograficzną przy środku")
+        assertEquals(2.0, point.latitude, CELL, "etykieta kwadratu ma szerokość geograficzną przy środku")
     }
 
     @Test
@@ -31,21 +31,24 @@ class LabelPointTest {
         val courtyard = ring(1.0 to 1.0, 3.0 to 1.0, 3.0 to 3.0, 1.0 to 3.0)
         val point = labelPoint(GeoPolygon(listOf(square(), courtyard)))
         val isInCourtyard = point.longitude in 1.0..3.0 && point.latitude in 1.0..3.0
-        assertTrue(!isInCourtyard && point.longitude in 0.0..4.0 && point.latitude in 0.0..4.0)
+        assertTrue(
+            !isInCourtyard && point.longitude in 0.0..4.0 && point.latitude in 0.0..4.0,
+            "etykieta budynku z dziedzińcem leży w obrysie, poza dziedzińcem",
+        )
     }
 
     @Test
     fun placesLShapeLabelInside() {
         val shape = ring(0.0 to 0.0, 4.0 to 0.0, 4.0 to 1.0, 1.0 to 1.0, 1.0 to 4.0, 0.0 to 4.0)
         val point = labelPoint(GeoPolygon(listOf(shape)))
-        assertTrue(point.longitude < 1.0 || point.latitude < 1.0)
+        assertTrue(point.longitude < 1.0 || point.latitude < 1.0, "etykieta budynku L leży wewnątrz")
     }
 
     @Test
     fun usesLargestPart() {
         val small = ring(10.0 to 0.0, 11.0 to 0.0, 11.0 to 1.0, 10.0 to 1.0)
         val point = labelPoint(GeoMultiPolygon(listOf(GeoPolygon(listOf(small)), GeoPolygon(listOf(square())))))
-        assertTrue(point.longitude < 4.0)
+        assertTrue(point.longitude < 4.0, "etykieta leży w największej części budynku")
     }
 
     /** Punkt podpisu każdego konturu z repozytorium leży w tym konturze według [locateBuilding]. Wymagania: US1 */
@@ -56,7 +59,11 @@ class LabelPointTest {
             real.buildings.filter { building ->
                 locateBuilding(labelPoint(building.outline), listOf(building)) !is LocateResult.InsideOutline
             }
-        assertEquals(emptyList<String>(), outside.map(Building::symbol))
+        assertEquals(
+            emptyList<String>(),
+            outside.map(Building::symbol),
+            "żaden prawdziwy budynek nie ma etykiety poza obrysem",
+        )
     }
 
     private fun square(): List<GeoPoint> = ring(0.0 to 0.0, 4.0 to 0.0, 4.0 to 4.0, 0.0 to 4.0)

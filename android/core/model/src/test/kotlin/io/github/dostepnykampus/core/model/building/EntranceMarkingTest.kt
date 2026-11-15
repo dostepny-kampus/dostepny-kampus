@@ -13,17 +13,29 @@ import org.junit.jupiter.api.Test
 class EntranceMarkingTest {
     @Test
     fun matchesContractNames() {
-        assertEquals(CONTRACT_VALUES, EntranceMarking.entries.map(EntranceMarking::name))
+        assertEquals(
+            CONTRACT_VALUES,
+            EntranceMarking.entries.map(EntranceMarking::name),
+            "nazwy oznaczeń zgodne z kontraktem",
+        )
     }
 
     @Test
     fun parsesContractValue() {
-        assertEquals(EntranceMarking.entries, CONTRACT_VALUES.map(EntranceMarking::valueOf))
+        assertEquals(
+            EntranceMarking.entries,
+            CONTRACT_VALUES.map(EntranceMarking::valueOf),
+            "wartości kontraktu parsują się na oznaczenia",
+        )
     }
 
     @Test
     fun keepsNoDataDistinct() {
-        assertNotEquals(EntranceMarking.INACCESSIBLE, EntranceMarking.valueOf("NO_DATA"))
+        assertNotEquals(
+            EntranceMarking.INACCESSIBLE,
+            EntranceMarking.valueOf("NO_DATA"),
+            "brak danych różni się od niedostępnego",
+        )
     }
 
     private companion object {

@@ -28,9 +28,13 @@ class CampusAreasTest {
         val sizes = areas.associate { it.name to it.symbols.size }
         val expected =
             mapOf("Kampus główny" to 78, "Wittigowo" to 9, "Bartoszowice" to 3, "Długa" to 4, "T-9 Atol" to 1)
-        assertEquals(expected, sizes)
-        assertEquals(real.buildings.size, areas.sumOf { it.buildings.size })
-        assertEquals("Wittigowo", areas.single { "T-15" in it.symbols }.name)
+        assertEquals(expected, sizes, "pięć terenów o oczekiwanych nazwach i liczbie budynków")
+        assertEquals(
+            real.buildings.size,
+            areas.sumOf { it.buildings.size },
+            "każdy budynek trafia do dokładnie jednego terenu",
+        )
+        assertEquals("Wittigowo", areas.single { "T-15" in it.symbols }.name, "T-15 należy do terenu Wittigowo")
     }
 
     /**
@@ -46,15 +50,27 @@ class CampusAreasTest {
         val third = square(symbol = "T-2", south = LAT + 2 * SIDE + meters(value = 1_180.0))
         val alone = square(symbol = "T-3", south = LAT + 3 * SIDE + meters(value = 1_790.0))
         val areas = campusAreas(listOf(alone, third, first, second))
-        assertEquals(listOf(listOf("T-3"), listOf("T-2", "A-1", "T-1")), areas.map(CampusArea::symbols))
-        assertEquals(listOf("T-3", "Kampus główny"), areas.map(CampusArea::name))
+        assertEquals(
+            listOf(listOf("T-3"), listOf("T-2", "A-1", "T-1")),
+            areas.map(CampusArea::symbols),
+            "budynki w zasięgu 600 m łączą się w jeden teren, także przez pośredni",
+        )
+        assertEquals(
+            listOf("T-3", "Kampus główny"),
+            areas.map(CampusArea::name),
+            "nazwy terenów: osobny T-3 i Kampus główny",
+        )
     }
 
     /** Liczba budynków terenu to liczba symboli; dwa kontury jednego symbolu liczą się raz. Wymagania: US1.7 */
     @Test
     fun countsSymbolsOnce() {
         val outlines = listOf(square(symbol = "H-14", south = LAT), square(symbol = "H-14", south = LAT + 2 * SIDE))
-        assertEquals(listOf(listOf("H-14")), campusAreas(outlines).map(CampusArea::symbols))
+        assertEquals(
+            listOf(listOf("H-14")),
+            campusAreas(outlines).map(CampusArea::symbols),
+            "symbol budynku liczy się w terenie raz",
+        )
     }
 
     private fun meters(value: Double): Double = value / METERS_PER_DEGREE

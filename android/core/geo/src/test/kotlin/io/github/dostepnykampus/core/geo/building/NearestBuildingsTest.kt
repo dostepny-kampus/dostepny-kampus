@@ -21,10 +21,24 @@ class NearestBuildingsTest {
         val point = GeoPoint(longitude = LON + SIDE / 2, latitude = LAT - SIDE / 10)
         val hints = buildingHints(point, listOf(farthest(), far(), near(), middle())).nearby
 
-        assertEquals(listOf("A-1", "A-2", "A-3"), hints.map { it.building.symbol })
-        assertEquals(SIDE / 10 * METERS_PER_DEGREE, hints.first().distanceMeters, METER)
-        assertEquals((2 + 1.0 / 10) * SIDE * METERS_PER_DEGREE, hints[1].distanceMeters, METER)
-        assertFalse(hints.any { it.isInside })
+        assertEquals(
+            listOf("A-1", "A-2", "A-3"),
+            hints.map { it.building.symbol },
+            "budynki posortowane rosnąco według odległości",
+        )
+        assertEquals(
+            SIDE / 10 * METERS_PER_DEGREE,
+            hints.first().distanceMeters,
+            METER,
+            "odległość pierwszego budynku zgadza się z odsunięciem",
+        )
+        assertEquals(
+            (2 + 1.0 / 10) * SIDE * METERS_PER_DEGREE,
+            hints[1].distanceMeters,
+            METER,
+            "odległość drugiego budynku zgadza się z odsunięciem",
+        )
+        assertFalse(hints.any { it.isInside }, "żaden budynek nie zawiera punktu")
     }
 
     /** Punkt w konturze: ten budynek pierwszy, 0 m i w konturze; pozostałe dalej z odległością. */
@@ -33,9 +47,9 @@ class NearestBuildingsTest {
         val point = GeoPoint(longitude = LON + SIDE / 2, latitude = LAT + 2.4 * SIDE)
         val hints = buildingHints(point, listOf(near(), middle(), far()), limit = 2).nearby
 
-        assertEquals(listOf("A-2", "A-1"), hints.map { it.building.symbol })
-        assertEquals(0.0, hints.first().distanceMeters)
-        assertTrue(hints.first().isInside)
+        assertEquals(listOf("A-2", "A-1"), hints.map { it.building.symbol }, "budynek zawierający punkt jest pierwszy")
+        assertEquals(0.0, hints.first().distanceMeters, "odległość do budynku zawierającego punkt wynosi zero")
+        assertTrue(hints.first().isInside, "pierwsza podpowiedź jest wewnątrz")
     }
 
     private fun near(): Building = square(symbol = "A-1", south = LAT)

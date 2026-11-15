@@ -21,13 +21,13 @@ class EntranceDistanceTest {
 
         val result = requireNotNull(nearestEntrance(point(), listOf(far, near)))
 
-        assertEquals("near", result.entrance.id)
-        assertEquals(3.0, result.meters, TOLERANCE_METERS)
+        assertEquals("near", result.entrance.id, "wybrane bliższe z dwóch wejść")
+        assertEquals(3.0, result.meters, TOLERANCE_METERS, "odległość do wejścia w granicach tolerancji")
     }
 
     @Test
     fun givesNothingWithoutEntrances() {
-        assertNull(nearestEntrance(point(), emptyList()))
+        assertNull(nearestEntrance(point(), emptyList()), "bez wejść nie ma najbliższego")
     }
 
     private fun point(): GeoPoint = GeoPoint(longitude = LON, latitude = LAT)

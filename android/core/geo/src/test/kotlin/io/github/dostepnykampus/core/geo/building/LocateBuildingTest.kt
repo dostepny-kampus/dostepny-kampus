@@ -66,12 +66,20 @@ class LocateBuildingTest {
 
     @Test
     fun findsPointInsideOutline() {
-        assertEquals(LocateResult.InsideOutline(courtyardBuilding()), locateBuilding(point(x = 1, y = 1), buildings()))
+        assertEquals(
+            LocateResult.InsideOutline(courtyardBuilding()),
+            locateBuilding(point(x = 1, y = 1), buildings()),
+            "punkt w obrysie leży wewnątrz budynku",
+        )
     }
 
     @Test
     fun findsPointInMultipolygonPart() {
-        assertEquals(LocateResult.InsideOutline(twoPartBuilding()), locateBuilding(point(x = 13, y = 7), buildings()))
+        assertEquals(
+            LocateResult.InsideOutline(twoPartBuilding()),
+            locateBuilding(point(x = 13, y = 7), buildings()),
+            "punkt w części wielokąta złożonego leży wewnątrz",
+        )
     }
 
     /** Wiersz: G1 — punkt na zewnętrznej krawędzi jest poza budynkiem, z jego propozycją. Wymagania: US6.2, BR-G2 */
@@ -80,6 +88,7 @@ class LocateBuildingTest {
         assertEquals(
             LocateResult.OutsideBuilding(courtyardBuilding()),
             locateBuilding(point(x = 8, y = 4), buildings()),
+            "punkt na krawędzi obrysu leży na zewnątrz",
         )
     }
 
@@ -89,6 +98,7 @@ class LocateBuildingTest {
         assertEquals(
             LocateResult.OutsideBuilding(courtyardBuilding()),
             locateBuilding(point(x = 3, y = 4), buildings()),
+            "punkt na krawędzi dziedzińca leży na zewnątrz",
         )
     }
 
@@ -100,6 +110,7 @@ class LocateBuildingTest {
                 LocateResult.OutsideBuilding(courtyardBuilding()),
                 locateBuilding(point(x = x, y = y), buildings()),
                 "punkt ($x, $y) na konturze",
+                "punkt w rogu leży na zewnątrz",
             )
         }
     }
@@ -114,6 +125,7 @@ class LocateBuildingTest {
         assertEquals(
             LocateResult.OutsideBuilding(compoundCourtyardBuilding()),
             locateBuilding(point(x = 23, y = 10), listOf(compoundCourtyardBuilding())),
+            "punkt na krawędzi otworu złożonego obrysu leży na zewnątrz",
         )
     }
 
@@ -123,8 +135,12 @@ class LocateBuildingTest {
         val compound = listOf(compoundCourtyardBuilding())
         val outside = LocateResult.OutsideBuilding(compoundCourtyardBuilding())
         val inside = LocateResult.InsideOutline(compoundCourtyardBuilding())
-        assertEquals(outside, locateBuilding(point(x = 28, y = 10), compound))
-        assertEquals(inside, locateBuilding(point(x = 21, y = 7), compound))
+        assertEquals(
+            outside,
+            locateBuilding(point(x = 28, y = 10), compound),
+            "krawędź złożonego obrysu leży na zewnątrz",
+        )
+        assertEquals(inside, locateBuilding(point(x = 21, y = 7), compound), "wnętrze złożonego obrysu: wewnątrz")
     }
 
     /**
@@ -139,6 +155,7 @@ class LocateBuildingTest {
                 LocateResult.InsideOutline(courtyardBuilding()),
                 locateBuilding(point(x = x, y = y), buildings()),
                 "punkt ($x, $y) w konturze",
+                "punkt blisko krawędzi leży wewnątrz",
             )
         }
     }
@@ -153,6 +170,7 @@ class LocateBuildingTest {
         assertEquals(
             LocateResult.OutsideBuilding(triangleBuilding()),
             locateBuilding(point(x = 34, y = 4), listOf(triangleBuilding())),
+            "punkt na ukośnej krawędzi leży na zewnątrz",
         )
     }
 
@@ -162,6 +180,7 @@ class LocateBuildingTest {
         assertEquals(
             LocateResult.InsideOutline(triangleBuilding()),
             locateBuilding(point(x = 32, y = 2), listOf(triangleBuilding())),
+            "punkt w ukośnym pudełku leży wewnątrz",
         )
     }
 
@@ -171,14 +190,22 @@ class LocateBuildingTest {
      */
     @Test
     fun findsPointOnEdgeExtension() {
-        assertEquals(LocateResult.InsideOutline(courtyardBuilding()), locateBuilding(point(x = 2, y = 3), buildings()))
+        assertEquals(
+            LocateResult.InsideOutline(courtyardBuilding()),
+            locateBuilding(point(x = 2, y = 3), buildings()),
+            "punkt na przedłużeniu krawędzi leży wewnątrz",
+        )
     }
 
     /** Wiersz: G3, O5 — punkt około 4 mm w głąb od krawędzi (1/4096 kroku siatki) jest w budynku. */
     @Test
     fun findsPointFourMmInside() {
         val almostOnEdge = point(x = 8.0 - 1.0 / 4096, y = 4.0)
-        assertEquals(LocateResult.InsideOutline(courtyardBuilding()), locateBuilding(almostOnEdge, buildings()))
+        assertEquals(
+            LocateResult.InsideOutline(courtyardBuilding()),
+            locateBuilding(almostOnEdge, buildings()),
+            "punkt cztery milimetry od krawędzi leży wewnątrz",
+        )
     }
 
     @Test
@@ -186,17 +213,26 @@ class LocateBuildingTest {
         assertEquals(
             LocateResult.OutsideBuilding(courtyardBuilding()),
             locateBuilding(point(x = 4, y = 4), buildings()),
+            "punkt w dziedzińcu leży na zewnątrz",
         )
     }
 
     @Test
     fun givesNearestBuildingOutside() {
-        assertEquals(LocateResult.OutsideBuilding(twoPartBuilding()), locateBuilding(point(x = 11, y = 7), buildings()))
+        assertEquals(
+            LocateResult.OutsideBuilding(twoPartBuilding()),
+            locateBuilding(point(x = 11, y = 7), buildings()),
+            "punkt poza budynkami wskazuje najbliższy budynek",
+        )
     }
 
     @Test
     fun staysOutsideWithoutBuildings() {
-        assertEquals(LocateResult.OutsideBuilding(null), locateBuilding(point(x = 1, y = 1), emptyList()))
+        assertEquals(
+            LocateResult.OutsideBuilding(null),
+            locateBuilding(point(x = 1, y = 1), emptyList()),
+            "bez budynków punkt leży poza każdym budynkiem",
+        )
     }
 
     private fun square(x: Int, y: Int, size: Int): List<GeoPoint> =

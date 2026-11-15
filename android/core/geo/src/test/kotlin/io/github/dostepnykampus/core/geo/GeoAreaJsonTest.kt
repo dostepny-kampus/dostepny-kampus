@@ -23,14 +23,18 @@ class GeoAreaJsonTest {
     @Test
     fun readsPolygonFromField() {
         val area = Json.decodeFromString(GeoAreaJson, """{"type":"Polygon","coordinates":[$SQUARE]}""")
-        assertEquals(GeoPolygon(listOf(square())), area)
+        assertEquals(GeoPolygon(listOf(square())), area, "wielokąt odczytany z pola konturu")
     }
 
     @Test
     fun roundTripsMultipolygon() {
         val area: GeoArea = GeoMultiPolygon(listOf(GeoPolygon(listOf(square())), GeoPolygon(listOf(square()))))
         val text = Json.encodeToString(GeoAreaJson, area)
-        assertEquals(area, Json.decodeFromString(GeoAreaJson, text))
+        assertEquals(
+            area,
+            Json.decodeFromString(GeoAreaJson, text),
+            "wielowielokąt po zapisie i odczycie jest taki sam",
+        )
     }
 
     @Test
