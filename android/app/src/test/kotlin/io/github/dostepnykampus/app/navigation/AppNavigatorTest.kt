@@ -13,6 +13,7 @@ import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
+import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
@@ -534,6 +535,18 @@ class AppNavigatorTest {
             reportSaved()
         }
         assertEquals(stackOf(AccountRoute, MySubmissionsRoute), stack)
+    }
+
+    /** Wiersz: V2 „Zgłoś, że bariery nie ma” → C7, „Wyślij do sprawdzenia” → C3 bez C7. Wymagania: US8.4, NFR-54 */
+    @Test
+    fun removedSavedOpensSameC3() {
+        stack += BuildingRoute("A-1")
+        navigator(collector).run {
+            openRemoved("tb9")
+            assertEquals(RemovedRoute("tb9"), current, "V2 otwiera C7")
+            reportSaved()
+        }
+        assertEquals(stackOf(BuildingRoute("A-1"), MySubmissionsRoute), stack, "C7 znika z historii, C3 po V2")
     }
 
     /** Wiersz: „Otwórz” i „Zmień miejsce” poza C3 i poprawką nic nie robią. Wymagania: US8.3 */
