@@ -97,6 +97,20 @@ class MarkersViewModelTest {
             assertEquals(MarkersUiState.ServerError, viewModel.state.value, "nieznany budynek")
         }
 
+    /**
+     * „Spróbuj ponownie” po błędzie odczytu czyta budynek od nowa.
+     *
+     * Wymagania: US11.3, NFR-50
+     */
+    @Test
+    fun retryReadsAgain() =
+        viewModelTest(symbol = "Z-9") { viewModel, _ ->
+            viewModel.retry()
+            assertEquals(MarkersUiState.Loading, viewModel.state.value, "w trakcie odczytu")
+            runCurrent()
+            assertEquals(MarkersUiState.ServerError, viewModel.state.value, "budynku nadal nie ma")
+        }
+
     private fun viewModelTest(
         symbol: String = "A-1",
         revokeReply: ServerReply<Unit> = ServerReply.Ok(Unit),

@@ -57,7 +57,12 @@ fun MarkersScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val actions =
-        MarkerActions(onAsk = viewModel::ask, onKeep = viewModel::keep, onConfirm = viewModel::confirm)
+        MarkerActions(
+            onAsk = viewModel::ask,
+            onKeep = viewModel::keep,
+            onConfirm = viewModel::confirm,
+            onRetry = viewModel::retry,
+        )
     MarkersContent(state = state, actions = actions, onBack = onBack, modifier = modifier)
 }
 
@@ -69,14 +74,19 @@ fun MarkersScreen(
  * @property onAsk „Cofnij znacznik”: identyfikator znacznika
  * @property onKeep „Zostaw znacznik”
  * @property onConfirm „Cofnij znacznik” w potwierdzeniu
+ * @property onRetry „Spróbuj ponownie” po błędzie odczytu
  */
-data class MarkerActions(val onAsk: (markerId: String) -> Unit, val onKeep: () -> Unit, val onConfirm: () -> Unit)
+data class MarkerActions(
+    val onAsk: (markerId: String) -> Unit,
+    val onKeep: () -> Unit,
+    val onConfirm: () -> Unit,
+    val onRetry: () -> Unit,
+)
 
 /**
  * Widok C5 Koordynatora bez modelu widoku: znaczniki z autorami, potwierdzenie cofnięcia i stany wspólne.
  *
- * Wymagania: US11.3, BR-20
- * TODO(#2455): stany Bez internetu i Błąd serwera.
+ * Wymagania: US11.3, BR-20, NFR-50
  * TODO(#2453): etykieta piętra z danych PWr zamiast `floorId`.
  *
  * @param state stan ekranu
@@ -90,7 +100,8 @@ fun MarkersContent(state: MarkersUiState, actions: MarkerActions, onBack: () -> 
         BackHeader(title = stringResource(R.string.znaczniki_naglowek), onBack = onBack)
         when (state) {
             MarkersUiState.Loading -> Loading()
-            MarkersUiState.Offline, MarkersUiState.ServerError -> Unit
+            MarkersUiState.Offline -> Failure(Problem.OFFLINE, actions.onRetry)
+            MarkersUiState.ServerError -> Failure(Problem.SERVER, actions.onRetry)
             is MarkersUiState.Ready -> MarkerList(state, actions)
         }
     }
@@ -102,6 +113,7 @@ private fun MarkerList(state: MarkersUiState.Ready, actions: MarkerActions) {
         item {
             Text(state.building.buildingSymbol, style = MaterialTheme.typography.titleMedium)
             Text(coverageLine(state.building.coverage))
+            state.failure?.let { Text(stringResource(it.message)) }
         }
         items(state.building.markers, key = { it.marker.id }) { marker ->
             MarkerCard(marker, isAsking = state.asking == marker.marker.id, actions = actions)
@@ -156,3 +168,6 @@ private fun coverageLine(coverage: InspectionCoverage): String =
             stringResource(if (coverage.isInspected) R.string.znaczniki_obejrzany else R.string.znaczniki_nieobejrzany)
         }
     }
+
+private val RevokeFailure.message: Int
+    get() = if (this == RevokeFailure.OFFLINE) R.string.postep_wymaga_internetu else R.string.postep_blad_serwera
