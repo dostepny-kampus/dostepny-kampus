@@ -25,6 +25,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 /**
@@ -111,6 +112,23 @@ final class JpegCleanerTest {
                 )
             ),
             "Pozostał prywatny segment JPEG"
+        );
+    }
+
+    @ParameterizedTest
+    @CsvSource({"E0, JFXX", "E2, MPF", "E2, FPXR"})
+    void removesThumbnailAndOtherAppTwo(final String marker, final String name)
+        throws Exception {
+        final byte[] plain = JpegCleanerTest.image(false);
+        Assertions.assertArrayEquals(
+            plain,
+            new JpegCleaner().strip(
+                JpegCleanerTest.insert(
+                    plain, Integer.parseInt(marker, 16),
+                    name.concat("\0miniatura").getBytes(StandardCharsets.US_ASCII)
+                )
+            ),
+            String.format("Pozostał segment %s %s", marker, name)
         );
     }
 
