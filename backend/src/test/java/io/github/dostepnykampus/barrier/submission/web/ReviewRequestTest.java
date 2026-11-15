@@ -14,9 +14,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Ciało decyzji Weryfikatora: przyjęcie niesie typ bariery i uciążliwość razem albo wcale.
+ * Ciało decyzji Weryfikatora: przyjęcie niesie typ bariery i uciążliwość razem albo wcale,
+ * a powód odrzucenia ma najwyżej 500 znaków.
  *
- * <p>Wymagania: US10.3, BR-14</p>
+ * <p>Wymagania: US10.3, BR-14, BR-16</p>
  *
  * @since 0.1.0
  */
@@ -60,6 +61,26 @@ final class ReviewRequestTest {
                     "Przyjęcie z jednym z pól typu i uciążliwości zostało przyjęte"
                 )
             )
+        );
+    }
+
+    @Test
+    void acceptsRejectionReasonOfFiveHundredCharacters() {
+        Assertions.assertEquals(
+            new ReviewDecision.Rejected(ReviewRequestTest.ID, 1, "konto", "a".repeat(500)),
+            new ReviewRequest("REJECT", 1, "a".repeat(500), null, null, null)
+                .toDecision(ReviewRequestTest.ID, "konto"),
+            "Powód odrzucenia o 500 znakach nie przeszedł"
+        );
+    }
+
+    @Test
+    void refusesRejectionReasonLongerThanFiveHundredCharacters() {
+        Assertions.assertThrows(
+            InvalidSubmission.class,
+            () -> new ReviewRequest("REJECT", 1, "a".repeat(501), null, null, null)
+                .toDecision(ReviewRequestTest.ID, "konto"),
+            "Powód odrzucenia o 501 znakach został przyjęty"
         );
     }
 }
