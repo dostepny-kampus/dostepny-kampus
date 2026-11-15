@@ -5,7 +5,9 @@
  */
 package io.github.dostepnykampus.barrier.submission.content;
 
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
@@ -14,9 +16,10 @@ import org.junit.jupiter.api.function.Executable;
 
 /**
  * Reguły rodzaju zgłoszenia w treści:
- * które pola są wymagane zależnie od rodzaju i jaki opis niesie odmowa.
+ * które pola są wymagane zależnie od rodzaju i jaki opis niesie odmowa;
+ * budynek z konturu tylko w zgłoszeniu szybkim.
  *
- * <p>Wymagania: BR-7, BR-8, BR-19, BR-24, US7.3</p>
+ * <p>Wymagania: BR-7, BR-8, BR-14, BR-19, BR-24, US7.3</p>
  *
  * @since 0.1.0
  */
@@ -235,6 +238,20 @@ final class SubmissionKindRulesTest {
             () -> SubmissionKindRulesTest.rejected(
                 "Uciążliwość spoza zakresu 1–3", "Uciążliwość 4 przeszła",
                 () -> new BarrierDetails(null, null, 4, null, false)
+            )
+        );
+    }
+
+    @Test
+    void takesBuildingFromOutlineOnlyForQuick() {
+        final Set<SubmissionKind> outlined = EnumSet.of(SubmissionKind.QUICK);
+        Assertions.assertAll(
+            Stream.of(SubmissionKind.values()).map(
+                kind -> () -> Assertions.assertEquals(
+                    outlined.contains(kind),
+                    kind.buildingFromOutline(),
+                    String.format("Budynek z konturu dla rodzaju %s niezgodny z BR-14", kind)
+                )
             )
         );
     }

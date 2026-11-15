@@ -17,11 +17,14 @@ import tools.jackson.databind.exc.MismatchedInputException;
 /**
  * Ciała POST i PUT zgłoszenia (W4-1, W4-2, W4-3): identyfikator albo wersja
  * i treść płasko w jednym obiekcie, ścisłe wiązanie także przez podwójne
- * rozpakowanie treści.
+ * rozpakowanie treści. Identyfikator, który nie jest UUID, i ciało, które nie jest obiektem,
+ * kończą wiązanie błędem.
+ *
+ * <p>Wymagania: US4, BR-9</p>
  *
  * @since 0.1.0
  */
-final class RequestsJsonTest {
+final class NewSubmissionRequestTest {
 
     @Test
     void givesCommandWithIdAndContentForNewRequest() {
@@ -129,6 +132,30 @@ final class RequestsJsonTest {
                     String.format("Wiązanie PUT przyjęło %s", head)
                 )
             )
+        );
+    }
+
+    @Test
+    void usFourRejectsSubmissionIdThatIsNoUuid() {
+        Assertions.assertAll(
+            Stream.of("'abc'", "''", "42").map(
+                id -> () -> Assertions.assertThrows(
+                    MismatchedInputException.class,
+                    () -> WebBodies.MAPPER.readValue(
+                        WebBodies.body(String.format("'id':%s", id)), NewSubmissionRequest.class
+                    ),
+                    String.format("Zgłoszenie z id %s przeszło", id)
+                )
+            )
+        );
+    }
+
+    @Test
+    void usFourRejectsBodyThatIsNoObject() {
+        Assertions.assertThrows(
+            MismatchedInputException.class,
+            () -> WebBodies.MAPPER.readValue("[]", NewSubmissionRequest.class),
+            "Tablica JSON przeszła jako zgłoszenie"
         );
     }
 }

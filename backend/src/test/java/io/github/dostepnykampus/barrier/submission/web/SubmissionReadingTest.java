@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
  *
  * @since 0.1.0
  */
-final class ReplacedSubmissionCheckTest {
+final class SubmissionReadingTest {
 
     /**
      * Składający zmianę.
@@ -42,9 +42,9 @@ final class ReplacedSubmissionCheckTest {
     @Test
     void skipsCheckForSubmissionWithoutReplaces() {
         Assertions.assertDoesNotThrow(
-            () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, null).checkReplaced(
-                ReplacedSubmissionCheckTest.reading(null, null),
-                ReplacedSubmissionCheckTest.READER
+            () -> SubmissionReadingTest.request(WebBodies.ID, null).checkReplaced(
+                SubmissionReadingTest.reading(null, null),
+                SubmissionReadingTest.READER
             ),
             "Zgłoszenie bez wskazania zastępowanego pomija sprawdzenie"
         );
@@ -53,12 +53,12 @@ final class ReplacedSubmissionCheckTest {
     @Test
     void skipsCheckForSavedChange() {
         Assertions.assertDoesNotThrow(
-            () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, WebBodies.PATH).checkReplaced(
-                ReplacedSubmissionCheckTest.reading(
-                    ReplacedSubmissionCheckTest.stored(SubmissionStatus.SENT),
+            () -> SubmissionReadingTest.request(WebBodies.ID, WebBodies.PATH).checkReplaced(
+                SubmissionReadingTest.reading(
+                    SubmissionReadingTest.stored(SubmissionStatus.SENT),
                     null
                 ),
-                ReplacedSubmissionCheckTest.READER
+                SubmissionReadingTest.READER
             ),
             "Zmiana ze zgłoszeniem już zapisanym pomija sprawdzenie"
         );
@@ -67,12 +67,12 @@ final class ReplacedSubmissionCheckTest {
     @Test
     void passesChangeOfAccepted() {
         Assertions.assertDoesNotThrow(
-            () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, WebBodies.PATH).checkReplaced(
-                ReplacedSubmissionCheckTest.reading(
+            () -> SubmissionReadingTest.request(WebBodies.ID, WebBodies.PATH).checkReplaced(
+                SubmissionReadingTest.reading(
                     null,
-                    ReplacedSubmissionCheckTest.stored(SubmissionStatus.ACCEPTED)
+                    SubmissionReadingTest.stored(SubmissionStatus.ACCEPTED)
                 ),
-                ReplacedSubmissionCheckTest.READER
+                SubmissionReadingTest.READER
             ),
             "Zmiana przyjętego zgłoszenia przechodzi sprawdzenie"
         );
@@ -82,12 +82,12 @@ final class ReplacedSubmissionCheckTest {
     void checksReplacedForChangeWithoutId() {
         Assertions.assertThrows(
             ConflictingState.class,
-            () -> ReplacedSubmissionCheckTest.request(null, WebBodies.PATH).checkReplaced(
-                ReplacedSubmissionCheckTest.reading(
+            () -> SubmissionReadingTest.request(null, WebBodies.PATH).checkReplaced(
+                SubmissionReadingTest.reading(
                     null,
-                    ReplacedSubmissionCheckTest.stored(SubmissionStatus.SENT)
+                    SubmissionReadingTest.stored(SubmissionStatus.SENT)
                 ),
-                ReplacedSubmissionCheckTest.READER
+                SubmissionReadingTest.READER
             ),
             "Zmiana bez identyfikatora sprawdza zastępowane zgłoszenie i daje konflikt"
         );
@@ -96,14 +96,14 @@ final class ReplacedSubmissionCheckTest {
     @Test
     void givesNotFoundForChangeOfMissing() {
         final NewSubmissionRequest request =
-            ReplacedSubmissionCheckTest.request(WebBodies.ID, WebBodies.PATH);
+            SubmissionReadingTest.request(WebBodies.ID, WebBodies.PATH);
         Assertions.assertEquals(
             "Nie ma zastępowanego zgłoszenia",
             Assertions.assertThrows(
                 MissingResource.class,
                 () -> request.checkReplaced(
-                    ReplacedSubmissionCheckTest.reading(null, null),
-                    ReplacedSubmissionCheckTest.READER
+                    SubmissionReadingTest.reading(null, null),
+                    SubmissionReadingTest.READER
                 ),
                 "Zmiana brakującego zgłoszenia kończy się brakiem zasobu"
             ).getMessage(),
@@ -115,12 +115,12 @@ final class ReplacedSubmissionCheckTest {
     void givesConflictForChangeOfUnaccepted() {
         Assertions.assertThrows(
             ConflictingState.class,
-            () -> ReplacedSubmissionCheckTest.request(WebBodies.ID, WebBodies.PATH).checkReplaced(
-                ReplacedSubmissionCheckTest.reading(
+            () -> SubmissionReadingTest.request(WebBodies.ID, WebBodies.PATH).checkReplaced(
+                SubmissionReadingTest.reading(
                     null,
-                    ReplacedSubmissionCheckTest.stored(SubmissionStatus.IN_REVIEW)
+                    SubmissionReadingTest.stored(SubmissionStatus.IN_REVIEW)
                 ),
-                ReplacedSubmissionCheckTest.READER
+                SubmissionReadingTest.READER
             ),
             "Zmiana nieprzyjętego zgłoszenia daje konflikt"
         );
@@ -172,7 +172,7 @@ final class ReplacedSubmissionCheckTest {
         public Optional<Submission> visible(final UUID id, final Reader reader) {
             return Optional.ofNullable(this.visible).filter(
                 found -> WebBodies.PATH.equals(id)
-                    && reader.equals(ReplacedSubmissionCheckTest.READER)
+                    && reader.equals(SubmissionReadingTest.READER)
             );
         }
 
