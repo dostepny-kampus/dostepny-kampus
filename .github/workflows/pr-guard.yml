@@ -39,20 +39,26 @@ jobs:
     with:
       workflow: pr-guard.yml
 
-  rozmiar:
+  # Lekkie kontrole w jednym zadaniu, żeby przebieg zajmował jedną maszynę. Każdy krok biegnie także po porażce
+  # wcześniejszego (`!cancelled()`), więc przebieg pokazuje naraz wszystkie czerwone kontrole.
+  # Kontrole danych PR (rozmiar, tytuł, zależności) przeszły na PR i w kolejce scalania nie są powtarzane.
+  # Kontrole kodu pomija grupa kolejki z drzewem i tytułem równym w pełni zielonemu przebiegowi na PR (#726).
+  pr-guard:
+    needs: porownanie
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      issues: read
     steps:
-      - name: Sprawdzone na PR
-        if: github.event_name == 'merge_group'
-        run: echo "Ta kontrola dotyczy danych PR (tytuł, opis, rozmiar, zależności) i przeszła na PR; w kolejce scalania nie jest powtarzana."
       - uses: actions/checkout@v7.0.1
-        if: github.event_name != 'merge_group'
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Policz zmienione linie
-        if: github.event_name != 'merge_group'
+
+      - name: "rozmiar: policz zmienione linie"
+        if: ${{ !cancelled() && github.event_name != 'merge_group' }}
         env:
           BASE_REF: ${{ github.base_ref }}
           HEAD_REF: ${{ github.head_ref }}
@@ -64,27 +70,20 @@ jobs:
           fi
           bash .github/scripts/rozmiar-pr.sh "$BASE_SHA" "$HEAD_SHA" 300
 
-  commity:
-    # W kolejce scalania sprawdzamy commity grupy (base_sha..head_sha): komunikat commitu squash bierze tytuł PR,
-    # który można zmienić jeszcze w kolejce. Grupę z drzewem i tytułem równym w pełni zielonemu przebiegowi na PR
-    # (który sprawdził nagłówek squasha) job pomija, jak pozostałe kontrole (#726).
-    needs: porownanie
-    if: ${{ !cancelled() && github.event.pull_request.user.login != 'dependabot[bot]' && needs.porownanie.outputs.pomin != 'true' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
       - uses: actions/setup-node@v7.1.0
+        if: &kod ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' }}
         with:
           node-version: 24
           package-manager-cache: false
-      - name: Zainstaluj commitlint z pliku lock
+
+      # W kolejce scalania sprawdzamy commity grupy (base_sha..head_sha): komunikat commitu squash bierze tytuł PR,
+      # który można zmienić jeszcze w kolejce.
+      - name: "commity: zainstaluj commitlint z pliku lock"
+        if: &commity ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && github.event.pull_request.user.login != 'dependabot[bot]' }}
         working-directory: .github/commitlint
         run: npm ci --no-audit --no-fund
-      - name: Sprawdź komunikaty commitów
+      - name: "commity: sprawdź komunikaty commitów"
+        if: *commity
         working-directory: .github/commitlint
         env:
           BASE_REF: ${{ github.base_ref }}
@@ -101,8 +100,8 @@ jobs:
             from=$COMMITLINT_START
           fi
           npx --no-install commitlint --from "$from" --to "$HEAD_SHA" --verbose
-      - name: Sprawdź tytuł PR z numerem dopisywanym przez squash
-        if: github.event_name != 'merge_group'
+      - name: "commity: sprawdź tytuł PR z numerem dopisywanym przez squash"
+        if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && github.event_name != 'merge_group' && github.event.pull_request.user.login != 'dependabot[bot]' }}
         working-directory: .github/commitlint
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
@@ -118,17 +117,8 @@ jobs:
           bash ../scripts/naglowek-squasha.sh "$PR_TITLE" "$PR_NUMBER" "$commit"
           printf '%s (#%s)\n' "${commit:-$PR_TITLE}" "$PR_NUMBER" | npx --no-install commitlint --verbose
 
-  zakazane-slowa:
-    needs: porownanie
-    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - name: Sprawdź gałąź, tytuł, opis, commity i dodane linie plików
+      - name: "zakazane-slowa: sprawdź gałąź, tytuł, opis, commity i dodane linie plików"
+        if: *kod
         env:
           FORBIDDEN_PATTERNS: ${{ secrets.FORBIDDEN_PATTERNS }}
           PR_BRANCH: ${{ github.head_ref }}
@@ -137,39 +127,9 @@ jobs:
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: bash .github/scripts/zakazane-slowa.sh "$BASE_SHA" "$HEAD_SHA"
 
-  sekrety:
-    needs: porownanie
-    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - name: Pobierz gitleaks
-        working-directory: ${{ runner.temp }}
-        run: |
-          archive="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
-          url="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"
-          curl -sSfLO "${url}/${archive}"
-          echo "${GITLEAKS_SHA256}  ${archive}" | sha256sum --check --strict
-          tar -xzf "${archive}" gitleaks
-      - name: Skanuj commity PR
-        run: |
-          rm -f .gitleaks.toml .gitleaksignore
-          "${RUNNER_TEMP}/gitleaks" git --no-banner --redact --verbose \
-            --ignore-gitleaks-allow --log-opts="${BASE_SHA}..${HEAD_SHA}" .
-
-  zaleznosci:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Sprawdzone na PR
-        if: github.event_name == 'merge_group'
-        run: echo "Ta kontrola dotyczy danych PR (tytuł, opis, rozmiar, zależności) i przeszła na PR; w kolejce scalania nie jest powtarzana."
-      - uses: actions/dependency-review-action@v5.0.0
-        if: github.event_name != 'merge_group'
+      - name: "zaleznosci: licencje i podatności nowych zależności"
+        uses: actions/dependency-review-action@v5.0.0
+        if: ${{ !cancelled() && github.event_name != 'merge_group' }}
         with:
           fail-on-severity: high
           fail-on-scopes: runtime, development, unknown
@@ -178,28 +138,12 @@ jobs:
             0BSD, PSF-2.0, Python-2.0
           allow-dependencies-licenses: pkg:pypi/language-tool-python, pkg:npm/bpmn-js, pkg:maven/org.junit.jupiter/junit-jupiter-api, pkg:maven/org.junit.jupiter/junit-jupiter-params, pkg:maven/org.junit.platform/junit-platform-suite, pkg:maven/org.junit.platform/junit-platform-suite-api, pkg:maven/org.springframework.modulith/spring-modulith-core, pkg:maven/org.springframework.modulith/spring-modulith-docs, pkg:maven/com.tngtech.archunit/archunit
 
-  naglowki:
-    needs: porownanie
-    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-      - name: Sprawdź nagłówek autorski w plikach z kodem
+      - name: "naglowki: sprawdź nagłówek autorski w plikach z kodem"
+        if: *kod
         run: bash .github/scripts/naglowki.sh
 
-  literowki:
-    needs: porownanie
-    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-      - name: Pobierz typos
+      - name: "literowki: pobierz typos"
+        if: *kod
         working-directory: ${{ runner.temp }}
         run: |
           archive="typos-v${TYPOS_VERSION}-x86_64-unknown-linux-musl.tar.gz"
@@ -207,42 +151,24 @@ jobs:
           curl -sSfLO "${url}/${archive}"
           echo "${TYPOS_SHA256}  ${archive}" | sha256sum --check --strict
           tar -xzf "${archive}"
-      - name: Szukaj literówek w kodzie, skryptach, konfiguracji i Markdown poza docs/
+      - name: "literowki: szukaj literówek w kodzie, skryptach, konfiguracji i Markdown poza docs/"
+        if: *kod
         run: |
           if ! "${RUNNER_TEMP}/typos" --config .github/typos.toml --format brief; then
             echo "::error::Literówka wyżej: popraw ją albo dodaj wyjątek z powodem w .github/typos.toml."
             exit 1
           fi
 
-  testy-skryptow:
-    needs: porownanie
-    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-      - name: Uruchom wszystkie testy skryptów z .github/scripts
+      - name: "testy-skryptow: uruchom wszystkie testy skryptów z .github/scripts"
+        if: *kod
         run: bash .github/scripts/testy-skryptow.sh
 
-  kopie:
-    needs: porownanie
-    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v7.1.0
-        with:
-          node-version: 24
-          package-manager-cache: false
-      - name: Zainstaluj jscpd z pliku lock
+      - name: "kopie: zainstaluj jscpd z pliku lock"
+        if: *kod
         working-directory: .github/jscpd
         run: npm ci --no-audit --no-fund
-      - name: Szukaj skopiowanych fragmentów kodu, konfiguracji i skryptów
+      - name: "kopie: szukaj skopiowanych fragmentów kodu, konfiguracji i skryptów"
+        if: *kod
         run: |
           ignore="$(grep -v '^#' .github/jscpd/wyjatki.txt | cut -f1 | paste -sd, -)"
           if ! .github/jscpd/node_modules/.bin/jscpd --config .github/jscpd/jscpd.json --ignore "$ignore" .; then
@@ -250,15 +176,8 @@ jobs:
             exit 1
           fi
 
-  baza-sprintu:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - name: Sprawdź bazę gałęzi sprintu
+      - name: "baza-sprintu: sprawdź bazę gałęzi sprintu"
+        if: ${{ !cancelled() }}
         env:
           BASE_REF: ${{ github.base_ref }}
           HEAD_REF: ${{ github.head_ref }}
@@ -278,19 +197,27 @@ jobs:
           fi
           bash .github/scripts/baza-sprintu.sh "$branch"
 
-  znaczniki-todo:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      contents: read
-      issues: read
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-      - name: Sprawdź, czy każdy znacznik zadania wskazuje otwarte issue
+      - name: "znaczniki-todo: każdy znacznik zadania wskazuje otwarte issue"
+        if: ${{ !cancelled() }}
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           PR_BODY: ${{ github.event.pull_request.body }}
         run: bash .github/scripts/todo-issue.sh
+
+      # Ostatni, bo usuwa z drzewa roboczego konfigurację gitleaks dodaną w PR.
+      - name: "sekrety: pobierz gitleaks"
+        if: *kod
+        working-directory: ${{ runner.temp }}
+        run: |
+          archive="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          url="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"
+          curl -sSfLO "${url}/${archive}"
+          echo "${GITLEAKS_SHA256}  ${archive}" | sha256sum --check --strict
+          tar -xzf "${archive}" gitleaks
+      - name: "sekrety: skanuj commity PR"
+        if: *kod
+        run: |
+          rm -f .gitleaks.toml .gitleaksignore
+          "${RUNNER_TEMP}/gitleaks" git --no-banner --redact --verbose \
+            --ignore-gitleaks-allow --log-opts="${BASE_SHA}..${HEAD_SHA}" .
