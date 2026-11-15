@@ -12,6 +12,7 @@ plugins {
 
 dependencies {
     api(libs.androidx.compose.foundation.layout)
+    api(libs.coil.compose.core)
     api(libs.androidx.compose.runtime)
     api(libs.androidx.compose.ui)
     api(libs.androidx.lifecycle.viewmodel)
