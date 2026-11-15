@@ -86,6 +86,14 @@
     <string name="karta_pokaz">Pokaż budynek na mapie</string>
     <string name="karta_brak_w_telefonie">Tego budynku nie ma jeszcze w telefonie. Połącz się z internetem, aby zobaczyć opis budynku.</string>
     <string name="karta_sprobuj">Spróbuj ponownie</string>
+    <string name="karta_winda_toaleta">Winda i toaleta</string>
+    <string name="karta_winda">Winda</string>
+    <string name="karta_toaleta">Toaleta dostosowana</string>
+    <string name="karta_toaleta_dla">Dla osób z niepełnosprawnością.</string>
+    <string name="karta_na_pietrach">Na piętrach: %1$s.</string>
+    <string name="karta_kazde_pietro">Na każdym piętrze: %1$s – %2$s.</string>
+    <string name="karta_nie_ma_na_pietrach">Nie ma na piętrach: %1$s.</string>
+    <string name="karta_i">i</string>
     <string name="wizyta_naglowek">Którędy wejść do %1$s</string>
     <string name="wizyta_brak_danych">Nie mamy jeszcze danych o wejściach do budynku %1$s.</string>
     <string name="wizyta_dostepne">Budynek %1$s ma wejście dostępne: »%2$s«.</string>
