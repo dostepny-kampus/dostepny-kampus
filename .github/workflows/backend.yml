@@ -17,6 +17,7 @@ on:
       - "infra/**"
       - ".github/workflows/backend.yml"
       - ".github/scripts/wynik-pit.sh"
+      - ".github/scripts/mvn-z-ponowieniem.sh"
       - ".github/scripts/zmiany-obszaru.sh"
       - ".github/actions/java-serwera/**"
   merge_group:
@@ -68,7 +69,8 @@ jobs:
           GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
         run: >-
           .github/scripts/zmiany-obszaru.sh serwer backend data api/openapi.yaml specs infra
-          .github/workflows/backend.yml .github/scripts/wynik-pit.sh .github/scripts/zmiany-obszaru.sh
+          .github/workflows/backend.yml .github/scripts/wynik-pit.sh .github/scripts/mvn-z-ponowieniem.sh
+          .github/scripts/zmiany-obszaru.sh
           .github/actions/java-serwera
 
   serwer:
@@ -94,7 +96,7 @@ jobs:
         run: python3 -X utf8 -m unittest discover -s tests -v
       - name: Zbuduj, przetestuj i sprawdź qulice
         if: ${{ github.event_name != 'push' }}
-        run: ./mvnw -B verify
+        run: bash ../.github/scripts/mvn-z-ponowieniem.sh -B verify
       - name: Testy mutacyjne PIT dziedziny serwera
         # Na PR; w grupie kolejki PIT nie padał, więc po scaleniu biegnie w kontroli sprintu (zadanie `mutacje`).
         if: ${{ github.event_name == 'pull_request' }}
@@ -156,7 +158,7 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/java-serwera
       - name: Sprawdź qulice niezależnie od wyniku testów
-        run: ./mvnw -B -DskipTests test-compile qulice:check
+        run: bash ../.github/scripts/mvn-z-ponowieniem.sh -B -DskipTests test-compile qulice:check
 
   spojnosc:
     # Raport spójności klas (jpeek) jako artefakt; próg dla klas ustalimy po sprincie (#1698).
@@ -180,7 +182,7 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/java-serwera
       - name: Skompiluj kod serwera
-        run: ./mvnw -B -DskipTests -Dqulice.skip=true compile
+        run: bash ../.github/scripts/mvn-z-ponowieniem.sh -B -DskipTests -Dqulice.skip=true compile
       - name: Pobierz jpeek i ASM
         working-directory: ${{ runner.temp }}
         run: |
