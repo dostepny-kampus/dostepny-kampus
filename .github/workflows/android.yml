@@ -24,6 +24,10 @@ on:
   merge_group:
     types:
       - checks_requested
+  schedule:
+    # Nocne pełne przejście testu systemowego na domyślnej gałęzi (sprint/N): łapie też zmiany samego serwera i infra/,
+    # których push do gałęzi sprintu (filtr paths wyżej) nie uruchamia.
+    - cron: '43 2 * * *'
 
 permissions:
   contents: read
@@ -93,7 +97,8 @@ jobs:
 
   emulator:
     needs: [zmiany, apk]
-    if: ${{ !cancelled() && github.event_name != 'push' && needs.apk.result == 'success' }}
+    # Push do gałęzi sprintu i harmonogram uruchamiają tylko pełny test systemowy; push do main nie uruchamia nic.
+    if: ${{ !cancelled() && (github.event_name != 'push' || startsWith(github.ref, 'refs/heads/sprint/')) && needs.apk.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
@@ -101,8 +106,9 @@ jobs:
       matrix:
         # Testy aplikacji na wersji minimalnej i docelowej z NFR-41 oraz test systemowy (moduł `systemtest`)
         # z serwerem i bazą uruchomionymi na runnerze; porażka każdego wariantu czerwieni `budowanie`.
-        # PR albo grupa ze zmianą samego serwera albo infra/ uruchamia tylko test systemowy.
-        include: ${{ fromJSON(needs.zmiany.outputs.android == 'false' && '[{"api":36,"zestaw":"system"}]' || '[{"api":26,"zestaw":"aplikacja"},{"api":36,"zestaw":"aplikacja"},{"api":36,"zestaw":"system"}]') }}
+        # PR albo grupa ze zmianą samego serwera albo infra/ uruchamia tylko test systemowy, a w PR i w grupie kolejki
+        # jest to wersja dymna (krok „Testy na emulatorze”); pełny zestaw idzie po pushu do sprint/* i nocą (schedule).
+        include: ${{ fromJSON((github.event_name == 'push' || github.event_name == 'schedule' || needs.zmiany.outputs.android == 'false') && '[{"api":36,"zestaw":"system"}]' || '[{"api":26,"zestaw":"aplikacja"},{"api":36,"zestaw":"aplikacja"},{"api":36,"zestaw":"system"}]') }}
     env:
       IMAGE: system-images;android-${{ matrix.api }};default;x86_64
     steps:
@@ -188,6 +194,11 @@ jobs:
           adb install -r -t "$(find "$RUNNER_TEMP/apk" -name "$testy" | head -n 1)"
       - name: Testy na emulatorze
         timeout-minutes: 15
+        env:
+          ZESTAW: ${{ matrix.zestaw }}
+          # Pełny test systemowy tylko po pushu do sprint/* i nocą; w PR i w grupie kolejki wersja dymna.
+          PELNY: ${{ github.event_name == 'push' || github.event_name == 'schedule' }}
+          DYMNY: io.github.dostepnykampus.systemtest.BuildingCardFromServerTest#
         run: |
           # Uruchamiacz testów (np. własny runner Hilt) odczytujemy z zainstalowanego APK testów, nie z konfiguracji workflow.
           uruchamiacz="$(adb shell pm list instrumentation | tr -d '\r' | sed -n 's/^instrumentation:\([^ ]*\) (target=io.github.dostepnykampus)$/\1/p' | head -n 1)"
@@ -203,6 +214,13 @@ jobs:
             awk -F= '/^INSTRUMENTATION_STATUS: class=/ { klasa = $2 } /^INSTRUMENTATION_STATUS: test=/ { test = $2 }
               /^INSTRUMENTATION_STATUS_CODE:/ { if (klasa != "" && test != "") print klasa "#" test; klasa = ""; test = "" }' |
             sort -u > "$RUNNER_TEMP/lista-testow.txt"
+          # Wersja dymna: aplikacja z prawdziwym serwerem od ekranu do odpowiedzi (karta budynku z serwera), bez pozostałych
+          # testów systemowych. Gdy klasa zniknie, lista jest pusta i krok kończy się błędem, więc dym nie wyparuje po cichu.
+          if [[ $ZESTAW == system && $PELNY != true ]]; then
+            grep -F "$DYMNY" "$RUNNER_TEMP/lista-testow.txt" > "$RUNNER_TEMP/lista-dymna.txt" || true
+            mv "$RUNNER_TEMP/lista-dymna.txt" "$RUNNER_TEMP/lista-testow.txt"
+            echo "Wersja dymna testu systemowego (pełny zestaw po pushu do sprint/* i nocą)."
+          fi
           wszystkie="$(wc -l < "$RUNNER_TEMP/lista-testow.txt")"
           echo "Testy w APK: ${wszystkie}"
           cat "$RUNNER_TEMP/lista-testow.txt"
@@ -247,7 +265,8 @@ jobs:
 
   apk:
     needs: [porownanie, zmiany]
-    if: ${{ !cancelled() && github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true' || needs.zmiany.outputs.system == 'true') }}
+    # Push do sprint/* i harmonogram budują APK tylko dla pełnego testu systemowego (zmiany i porownanie są wtedy pominięte).
+    if: ${{ !cancelled() && (github.event_name == 'schedule' || github.event_name == 'push' && startsWith(github.ref, 'refs/heads/sprint/') || github.event_name != 'push' && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true' || needs.zmiany.outputs.system == 'true')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
