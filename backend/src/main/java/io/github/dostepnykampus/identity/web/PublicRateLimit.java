@@ -110,8 +110,9 @@ final class PublicRateLimit implements Filter {
 
     private Bucket bucket() {
         final int limit = this.settings.publicPerMinute();
-        final Bandwidth bandwidth = Bandwidth.builder().capacity(limit)
-            .refillIntervally(limit, Duration.ofMinutes(1)).build();
-        return Bucket.builder().addLimit(bandwidth).build();
+        return Bucket.builder().addLimit(
+            Bandwidth.builder().capacity(limit)
+                .refillIntervally(limit, Duration.ofMinutes(1)).build()
+        ).build();
     }
 }
