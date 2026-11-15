@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.core.network.building
 
 import io.github.dostepnykampus.core.model.building.FloorList
+import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.exchange
 import kotlinx.serialization.json.Json
@@ -56,6 +57,13 @@ public class BuildingsApi(private val http: OkHttpClient, private val json: Json
         fetch(endpoint(listOf(BUILDINGS, symbol, FLOORS))) { json.decodeFloorList(it) }
 
     /**
+     * Pomieszczenia piętra [floorId] budynku [symbol] (`listFloorRooms`); nieznany budynek albo piętro daje
+     * [ApiResult.NotFound]. Wymagania: US16.1
+     */
+    public suspend fun rooms(symbol: String, floorId: String): ApiResult<RoomList> =
+        fetch(endpoint(listOf(BUILDINGS, symbol, FLOORS, floorId, ROOMS))) { json.decodeRoomList(it) }
+
+    /**
      * Podpowiedź budynku dla punktu WGS84.
      *
      * @param latitude szerokość geograficzna w stopniach
@@ -103,5 +111,6 @@ public class BuildingsApi(private val http: OkHttpClient, private val json: Json
         const val BUILDINGS = "buildings"
         const val LOCATE = "locate"
         const val FLOORS = "floors"
+        const val ROOMS = "rooms"
     }
 }
