@@ -159,13 +159,15 @@ class QuickSendViewModel
                 .fixes()
                 .filter { it.hasAccuracy }
                 .take(1)
-                .map<PositionFix, QuickLookup> { fix ->
-                    if (buildingLookup.isOnGrounds(fix.point)) QuickLookup.Found(located(fix)) else QuickLookup.Outside
-                }.onStart { emit(QuickLookup.Locating) }
+                .map { fix -> lookupAt(fix) }
+                .onStart { emit(QuickLookup.Locating) }
                 .catch { cause ->
                     if (cause !is SecurityException && cause !is IllegalArgumentException) throw cause
                     emit(QuickLookup.Lost)
                 }
+
+        private suspend fun lookupAt(fix: PositionFix): QuickLookup =
+            if (buildingLookup.isOnGrounds(fix.point)) QuickLookup.Found(located(fix)) else QuickLookup.Outside
 
         private suspend fun floorsOf(symbol: String?): List<Floor> =
             if (symbol == null) emptyList() else buildingFloors.floors(symbol)?.floors.orEmpty()
