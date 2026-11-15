@@ -176,7 +176,7 @@ class SharedFixtureArchitectureTest {
                 |BuildingListTest BuildingOnMapCameraTest BuildingsApiTest CampusAreaEdgeDeviceTest CampusAreasPwrTest
                 |CampusBoundsTest CampusMapBarriersStyleTest CampusMapDataTest CampusMapEntrancesStyleTest
                 |CampusMapGeometryTest CampusMapScreenTest CampusMapSelectionStyleTest CampusMapStyleTest
-                |CampusMapViewModelTest CampusPathDeviceTest CancellationTest CardBarriersViewModelTest
+                |CampusMapViewModelTest CampusPathDeviceTest CancellationTest
                 |CardServerEntrancesTest CollectorReachTest ConflictEditTest DebugRolesTest DebugSignInTest
                 |DeviceStepsTest DtoContractTest EditBaseVersionTest EditDuringSendTest EntranceAssessmentTest
                 |EntranceDistanceTest EntranceHiltTest EntranceOnMapTest EntranceTest FirstLaunchRepositoryTest
