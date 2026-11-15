@@ -110,6 +110,15 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     );
 
     /**
+     * Archiwizacja przyjętego zgłoszenia, które przyjęta zmiana zastępuje (BR-18).
+     */
+    private static final String ARCHIVE = """
+        UPDATE submissions SET status = 'ARCHIVED'
+        WHERE status = 'ACCEPTED'
+            AND id = (SELECT replaces_submission_id FROM submissions WHERE id = :id)
+    """;
+
+    /**
      * Dostęp do tabeli submissions.
      */
     private final JdbcClient jdbc;
@@ -189,7 +198,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
 
     @Override
     public EditResult decide(final ReviewDecision decision) {
-        return this.written(
+        final EditResult result = this.written(
             this.jdbc.sql(JdbcSubmissions.DECIDE)
                 .param("id", decision.id())
                 .param("version", decision.expectedVersion())
@@ -202,6 +211,10 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                 .query(this.rows).optional().orElse(null),
             decision.id()
         );
+        if (result instanceof EditResult.Saved && decision.outcome() == SubmissionStatus.ACCEPTED) {
+            this.jdbc.sql(JdbcSubmissions.ARCHIVE).param("id", decision.id()).update();
+        }
+        return result;
     }
 
     @Override
