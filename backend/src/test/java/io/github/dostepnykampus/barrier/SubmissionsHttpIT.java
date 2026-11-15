@@ -48,7 +48,7 @@ final class SubmissionsHttpIT {
     }
 
     @Test
-    void usFourSavesSubmissionAsSent(final WebApplicationContext context)
+    void savesSubmissionAsSent(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Nowe zgłoszenie nie ma statusu „wysłane”",
@@ -113,7 +113,7 @@ final class SubmissionsHttpIT {
     }
 
     @Test
-    void usSevenRejectsUnknownBuilding(final WebApplicationContext context)
+    void rejectsUnknownBuilding(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Pomiar precyzyjny w nieznanym budynku nie daje 400 albo zostaje zapisany",

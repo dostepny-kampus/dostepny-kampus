@@ -45,7 +45,7 @@ final class SubmissionsEditHttpIT {
     }
 
     @Test
-    void usEightSavesEditAsNextVersion(final WebApplicationContext context)
+    void savesEditAsNextVersion(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Edycja wersji 1 nie daje wersji 2",
@@ -55,7 +55,7 @@ final class SubmissionsEditHttpIT {
     }
 
     @Test
-    void usEightReturnsRejectedToSent(final WebApplicationContext context)
+    void returnsRejectedToSent(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Poprawka odrzuconego zgłoszenia nie wraca do statusu „wysłane”",
@@ -94,7 +94,7 @@ final class SubmissionsEditHttpIT {
     }
 
     @Test
-    void usEightFindsNoUnknownSubmission(final WebApplicationContext context)
+    void findsNoUnknownSubmission(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Edycja nieistniejącego zgłoszenia nie daje 404",

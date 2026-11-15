@@ -70,7 +70,7 @@ final class SubmissionContentJsonTest {
     }
 
     @Test
-    void usFourRejectsUnknownKind() {
+    void rejectsUnknownKind() {
         Assertions.assertThrows(
             MismatchedInputException.class,
             () -> JsonBodies.bind(JsonBodies.with(node -> node.put("kind", "FAST"))),
@@ -79,7 +79,7 @@ final class SubmissionContentJsonTest {
     }
 
     @Test
-    void usFourRejectsPhotoIdThatIsNoUuid() {
+    void rejectsPhotoIdThatIsNoUuid() {
         Assertions.assertThrows(
             MismatchedInputException.class,
             () -> JsonBodies.bind(
@@ -90,7 +90,7 @@ final class SubmissionContentJsonTest {
     }
 
     @Test
-    void usSevenRejectsNumericBuildingSymbol() {
+    void rejectsNumericBuildingSymbol() {
         Assertions.assertThrows(
             MismatchedInputException.class,
             () -> JsonBodies.bind(JsonBodies.with(node -> node.put("buildingSymbol", 13))),
@@ -99,7 +99,7 @@ final class SubmissionContentJsonTest {
     }
 
     @Test
-    void usFourRejectsBodyThatIsNoObject() {
+    void rejectsBodyThatIsNoObject() {
         Assertions.assertThrows(
             MismatchedInputException.class,
             () -> JsonBodies.bind(JsonBodies.json("[]")),

@@ -23,7 +23,7 @@ import tools.jackson.databind.node.ObjectNode;
 /**
  * Wartości enumów serializowanych przez serwer odpowiadają schematom OpenAPI.
  *
- * <p>Wymagania: BR-7, BR-24</p>
+ * <p>Wymagania: BR-7, BR-24, US8, US4</p>
  *
  * @since 0.1.0
  */
@@ -31,7 +31,7 @@ import tools.jackson.databind.node.ObjectNode;
 final class ApiEnumsIT {
 
     @Test
-    void usEightStatusesMatchSpec(final ApplicationContext context) {
+    void matchesStatusesOfSpec(final ApplicationContext context) {
         Assertions.assertEquals(
             new OpenApiContract().enumValues("SubmissionStatus"),
             ApiEnumsIT.json(context, Stream.of(SubmissionStatus.values())),
@@ -49,7 +49,7 @@ final class ApiEnumsIT {
     }
 
     @Test
-    void usFourGroupsMatchSpec(final ApplicationContext context) {
+    void matchesGroupsOfSpec(final ApplicationContext context) {
         Assertions.assertEquals(
             new OpenApiContract().enumValues("SubmissionContent/properties/barrierGroup"),
             ApiEnumsIT.json(context, Stream.of(BarrierGroup.values()).map(GroupJson::of)),
