@@ -28,19 +28,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public final class ReviewController {
 
-    /**
-     * Opis braku zgłoszenia w odpowiedzi 404.
-     */
+    /** Opis braku zgłoszenia w odpowiedzi 404. */
     private static final String MISSING = "Nie ma takiego zgłoszenia";
 
-    /**
-     * Zapis zgłoszeń.
-     */
+    /** Zapis zgłoszeń. */
     private final SubmissionService service;
 
-    /**
-     * Odczyt zgłoszeń.
-     */
+    /** Odczyt zgłoszeń. */
     private final SubmissionReading finder;
 
     ReviewController(final SubmissionService service, final SubmissionReading finder) {
