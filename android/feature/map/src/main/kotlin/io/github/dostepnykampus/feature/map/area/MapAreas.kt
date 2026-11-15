@@ -12,7 +12,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
@@ -110,13 +109,6 @@ internal class MapAreas(
             followed.value = selected
         }
     }
-
-    /**
-     * Sąsiedni teren dla środka widoku [view] na granicy pokazanego terenu; `null` z dala od granicy.
-     *
-     * Wymagania: US1.7
-     */
-    fun neighbor(view: GeoPoint): AreaNeighbor? = current?.let { data?.areaNeighbor(it, view) }
 
     /**
      * Wybiera teren [name] i zwraca jego widok startowy: środek terenu w powiększeniu startowym.

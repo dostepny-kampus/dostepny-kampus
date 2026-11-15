@@ -32,7 +32,6 @@ import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.area.AreaList
 import io.github.dostepnykampus.feature.map.area.AreaNotice
-import io.github.dostepnykampus.feature.map.area.MapAreaNeighbor
 import io.github.dostepnykampus.feature.map.area.MapAreaSwitch
 import io.github.dostepnykampus.feature.map.area.MapAreas
 import io.github.dostepnykampus.feature.map.camera.MapCamera
@@ -44,10 +43,10 @@ private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
 private enum class MapPanel { Area, Legend, Info }
 
 /**
- * Nakładka mapy V1: przyciski powiększania i przesuwania, przycisk terenu nad „Legendą”, przy granicy terenu przycisk
- * sąsiedniego terenu, „ⓘ”, podpis OSM, po zmianie terenu napis „Pokazuję teren: …” i nad nimi [content]. Otwarty panel
- * zasłania przyciski, które by na nim leżały; dotknięcie mapy obok panelu terenu zamyka go. Otwarty panel jest stanem
- * zapisywanym. Nad małą kartą V2 zostają tylko przyciski powiększania i przesuwania oraz podpis OSM.
+ * Nakładka mapy V1: przyciski powiększania i przesuwania, przycisk terenu nad „Legendą”, „ⓘ”, podpis OSM, po zmianie
+ * terenu napis „Pokazuję teren: …” i nad nimi [content]. Otwarty panel zasłania przyciski, które by na nim leżały;
+ * dotknięcie mapy obok panelu terenu zamyka go. Otwarty panel jest stanem zapisywanym. Nad małą kartą V2 zostają
+ * tylko przyciski powiększania i przesuwania oraz podpis OSM.
  *
  * Wymagania: NFR-53, US1.6, US1.7, NFR-37, US1.8, US2.8
  *
@@ -59,8 +58,7 @@ private enum class MapPanel { Area, Legend, Info }
  * @param areas tereny mapy: lista do panelu „Teren na mapie” i wybór terenu
  * @param onAreaShow widok startowy terenu wybranego w panelu
  * @param modifier wymiary nakładki, zwykle cała mapa bez części zasłoniętej
- * @param hasPanels czy mapa ma przycisk terenu, „Legendę”, „ⓘ” i przycisk sąsiedniego terenu; nie ma ich nad
- *   arkuszem V2
+ * @param hasPanels czy mapa ma przycisk terenu, „Legendę” i „ⓘ”; nie ma ich nad arkuszem V2
  * @param content elementy nad nakładką
  */
 @Composable
@@ -79,16 +77,14 @@ internal fun MapOverlay(
     val open = saved.takeIf { hasPanels }
     Box(modifier) {
         if (hasControls && open == null) {
-            Column(Modifier.align(Alignment.TopEnd), horizontalAlignment = Alignment.End) {
-                MapControls(
-                    camera = camera,
-                    onCameraChange = { moved ->
-                        areas.acknowledge()
-                        onCameraChange(moved)
-                    },
-                )
-                if (hasPanels) MapAreaNeighbor(areas = areas, camera = camera, isAtStart = false, onShow = onAreaShow)
-            }
+            MapControls(
+                camera = camera,
+                onCameraChange = { moved ->
+                    areas.acknowledge()
+                    onCameraChange(moved)
+                },
+                modifier = Modifier.align(Alignment.TopEnd),
+            )
         }
         if (open == MapPanel.Area) {
             Box(Modifier.matchParentSize().pointerInput(Unit) { detectTapGestures { saved = null } })
@@ -97,7 +93,6 @@ internal fun MapOverlay(
             val above = Modifier.align(Alignment.TopStart).padding(bottom = MapControlTouchSize + Odstepy.s)
             AreaAndLegendColumn(
                 areas = areas,
-                camera = camera,
                 open = open,
                 onOpenChange = { saved = it },
                 onAreaShow = onAreaShow,
@@ -123,7 +118,6 @@ internal fun MapOverlay(
 @Composable
 private fun AreaAndLegendColumn(
     areas: MapAreas,
-    camera: MapCamera,
     open: MapPanel?,
     onOpenChange: (MapPanel?) -> Unit,
     onAreaShow: (MapCamera) -> Unit,
@@ -149,7 +143,6 @@ private fun AreaAndLegendColumn(
                 onOpenChange = { onOpenChange(MapPanel.Legend.takeIf { _ -> it }) },
             )
         }
-        if (open == null) MapAreaNeighbor(areas = areas, camera = camera, isAtStart = true, onShow = onAreaShow)
     }
 }
 
