@@ -16,14 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Wysyłka zmian z telefonu: serwer zapisuje znaczniki piętra obejrzanego, a pozostałe
+ * Wysyłka zmian z telefonu: serwer zapisuje i cofa znaczniki piętra obejrzanego, a pozostałe
  * rodzaje zmian odrzuca jako jeszcze nieobsługiwane.
  *
  * <p>TODO(#2139): przyjmować operacje CREATE_SUBMISSION i UPDATE_SUBMISSION.</p>
  *
- * <p>TODO(#2141): przyjmować operację REVOKE_INSPECTION_MARKER.</p>
- *
- * <p>Wymagania: US15.1, US15.3, BR-9, BR-20</p>
+ * <p>Wymagania: US15.1, US15.2, US15.3, BR-9, BR-20</p>
  *
  * @since 0.1.0
  */
@@ -41,8 +39,9 @@ public final class SyncPushController {
 
     /**
      * Zapisuje znaczniki z paczki w jednej transakcji; wynik każdej operacji jest osobny, a
-     * znacznik o zapisanym już identyfikatorze nie powstaje drugi raz. Błąd w ciele którejkolwiek
-     * operacji daje 400 przed zapisem.
+     * znacznik o zapisanym już identyfikatorze nie powstaje drugi raz. Cofnięcia wykonują się
+     * po zapisach: cofnięcie własnego znacznika, także powtórzone, jest udane, a cudzego albo
+     * nieistniejącego odrzucone. Błąd w ciele którejkolwiek operacji daje 400 przed zapisem.
      *
      * <p>Wymagania: US15.1, US15.3, BR-9, BR-20</p>
      *
@@ -59,14 +58,21 @@ public final class SyncPushController {
             operations.stream().filter(SyncOperationJson::placesMarker)
                 .map(operation -> operation.toMarker(author)).toList()
         );
+        final Set<UUID> missing = this.service.revoke(
+            operations.stream().filter(SyncOperationJson::revokesMarker)
+                .map(SyncOperationJson::revoked).toList(),
+            author
+        );
         return new SyncPushResponse(
-            operations.stream()
-                .map(operation -> SyncPushController.result(operation, author, unknown)).toList()
+            operations.stream().map(
+                operation -> SyncPushController.result(operation, author, unknown, missing)
+            ).toList()
         );
     }
 
     private static SyncResultResponse result(
-        final SyncOperationJson operation, final String author, final Set<UUID> unknown
+        final SyncOperationJson operation, final String author, final Set<UUID> unknown,
+        final Set<UUID> missing
     ) {
         final UUID id = operation.operation();
         SyncResultResponse result = SyncResultResponse.rejected(
@@ -75,6 +81,12 @@ public final class SyncPushController {
         if (operation.placesMarker() && unknown.contains(operation.toMarker(author).id())) {
             result = SyncResultResponse.rejected(id, HttpStatus.BAD_REQUEST, "Nieznany budynek");
         } else if (operation.placesMarker()) {
+            result = SyncResultResponse.applied(id);
+        } else if (operation.revokesMarker() && missing.contains(operation.revoked())) {
+            result = SyncResultResponse.rejected(
+                id, HttpStatus.NOT_FOUND, "Nie ma Twojego znacznika o tym identyfikatorze"
+            );
+        } else if (operation.revokesMarker()) {
             result = SyncResultResponse.applied(id);
         }
         return result;
