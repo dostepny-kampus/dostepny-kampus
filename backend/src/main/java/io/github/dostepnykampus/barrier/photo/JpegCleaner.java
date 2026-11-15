@@ -15,7 +15,8 @@ import org.apache.commons.imaging.formats.jpeg.xmp.JpegRewriter;
 /**
  * Usuwa metadane ze zdjęcia JPEG przed zapisem, bez ponownego kodowania obrazu:
  * segmenty APP1 (EXIF, XMP), APP3–APP15 (m.in. IPTC) i COM przed pierwszym SOS.
- * Zostają APP0 (JFIF) i APP2 z profilem ICC; dane od pierwszego SOS nie są analizowane.
+ * Zostają APP0 (JFIF) i APP2 z profilem ICC. Wynik musi dać się zdekodować jako obraz
+ * najwyżej 4096 × 4096 pikseli ({@link JpegImage}).
  * Z EXIF znika orientacja, więc zdjęcie ma przyjść już obrócone. Obce bajty pomiędzy
  * segmentami są odrzucane, także gdy parser biblioteki umie je pominąć.
  *
@@ -37,14 +38,18 @@ public final class JpegCleaner extends JpegRewriter {
      *
      * @param jpeg Plik JPEG z telefonu
      * @return Plik JPEG bez EXIF, XMP, IPTC i komentarzy
-     * @throws IOException Gdy nagłówek nie jest poprawnym JPEG
+     * @throws IOException Gdy nagłówek nie jest poprawnym JPEG, obraz jest za duży albo
+     *  jego dane są uszkodzone
      */
     public byte[] strip(final byte[] jpeg) throws IOException {
+        final byte[] clean;
         try {
-            return this.rewrite(jpeg);
+            clean = this.rewrite(jpeg);
         } catch (final ImagingException ex) {
             throw new IOException("Uszkodzony nagłówek JPEG", ex);
         }
+        new JpegImage(clean).verify();
+        return clean;
     }
 
     private byte[] rewrite(final byte[] jpeg) throws ImagingException, IOException {

@@ -306,6 +306,8 @@ paths:
         wysyła zdjęcie już obrócone.
         Maksymalny rozmiar pliku to 5 000 000 bajtów (5 MB, NFR-34); przekroczenie daje 413,
         także bez nagłówka Content-Length.
+        Plik, którego danych obrazu nie da się zdekodować (także bez znacznika końca), albo obraz większy
+        niż 4096 × 4096 pikseli daje 400.
       tags: [barrier]
       security: [{keycloak: []}]
       requestBody:
