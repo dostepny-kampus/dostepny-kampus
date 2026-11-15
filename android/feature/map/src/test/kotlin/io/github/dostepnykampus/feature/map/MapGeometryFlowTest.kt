@@ -77,7 +77,7 @@ class MapGeometryFlowTest {
      * Wymagania: NFR-10, NFR-11
      */
     @Test
-    fun nfr11_geometry_per_catalog() =
+    fun computesGeometryPerCatalog() =
         runTest {
             val answer = CompletableDeferred<ServerReply<ServerBuildings>>()
             val fileRunning = CompletableDeferred<Unit>()
@@ -109,7 +109,7 @@ class MapGeometryFlowTest {
 
     /** Wiersz: zamknięcie ekranu w trakcie pobierania z serwera → wywołanie przerwane, bez działającej pracy. */
     @Test
-    fun closing_map_cancels_call() =
+    fun cancelsCallOnClose() =
         runTest {
             val started = CompletableDeferred<Unit>()
             val cancelled = CompletableDeferred<Unit>()
@@ -135,7 +135,7 @@ class MapGeometryFlowTest {
      * Wiersz: zamknięcie ekranu w trakcie liczenia geometrii → liczenie czekające w kolejce nie rusza po zamknięciu.
      */
     @Test
-    fun closing_map_cancels_compute() =
+    fun cancelsComputeOnClose() =
         runTest {
             val queued = ArrayDeque<Runnable>()
             val compute =
@@ -159,7 +159,7 @@ class MapGeometryFlowTest {
      * Wymagania: NFR-11
      */
     @Test
-    fun closing_map_stops_running() =
+    fun stopsRunningOnClose() =
         runTest {
             val started = CompletableDeferred<Unit>()
             val release = CountDownLatch(1)
@@ -197,7 +197,7 @@ class MapGeometryFlowTest {
      * Wymagania: NFR-11
      */
     @Test
-    fun server_compute_starts_early() =
+    fun startsServerComputeEarly() =
         runTest {
             val answer = CompletableDeferred<ServerReply<ServerBuildings>>()
             val fileRunning = CompletableDeferred<Unit>()

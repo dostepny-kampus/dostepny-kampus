@@ -68,7 +68,7 @@ class MapControlsTest {
      * Wymagania: NFR-17, NFR-18
      */
     @Test
-    fun nfr17_nfr18_named_48dp_buttons() {
+    fun namesLargeButtons() {
         compose.setContent { Controls {} }
         names.forEach { name ->
             compose
@@ -86,7 +86,7 @@ class MapControlsTest {
      * Wymagania: NFR-53
      */
     @Test
-    fun nfr53_buttons_change_camera() {
+    fun changesCameraWithButtons() {
         val seen = mutableListOf<MapCamera>()
         compose.setContent { Controls(seen::add) }
         compose.onNodeWithContentDescription("Powiększ").performClick()
@@ -96,14 +96,14 @@ class MapControlsTest {
 
     /** Zrzut do porównania z makietą hi-fi V1, motyw jasny: białe koła z cieniem i szewronami. */
     @Test
-    fun nfr53_hifi_motyw_jasny() {
+    fun matchesLightMockup() {
         compose.setContent { Controls {} }
         compose.onRoot().captureRoboImage()
     }
 
     /** Zrzut do porównania z makietą hi-fi V1, motyw ciemny: koła z obwódką zamiast cienia. */
     @Test
-    fun nfr53_hifi_motyw_ciemny() {
+    fun matchesDarkMockup() {
         RuntimeEnvironment.setQualifiers("+night")
         compose.setContent { Controls {} }
         compose.onRoot().captureRoboImage()

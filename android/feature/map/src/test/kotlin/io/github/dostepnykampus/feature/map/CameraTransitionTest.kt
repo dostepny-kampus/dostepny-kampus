@@ -31,7 +31,7 @@ private val middle = GeoPoint(longitude = 17.06, latitude = 51.11)
 class CameraTransitionTest {
     /** Wiersz: V1, cały kontur widoczny — przesunięcie na środek w 300 ms bez zmiany powiększenia. */
     @Test
-    fun us2_8_visible_shift() {
+    fun shiftsVisibleBuildingToCenter() {
         val move = toBuilding(from = MapCamera(center = viewByDp(-60.0), zoom = START_ZOOM))
         assertEquals(CameraMotion.EASE, move.motion, "widoczny budynek: przesunięcie")
         assertEquals(300L, move.durationMillis, "widoczny budynek: 300 ms")
@@ -41,7 +41,7 @@ class CameraTransitionTest {
 
     /** Wiersz: V1, środek budynku najwyżej szerokość wolnej mapy od środka widoku — przesunięcie w 400 ms. */
     @Test
-    fun us2_8_near_shift() {
+    fun shiftsToNearBuilding() {
         val move = toBuilding(from = MapCamera(center = viewByDp(-330.0), zoom = START_ZOOM))
         assertEquals(CameraMotion.EASE, move.motion, "budynek blisko: przesunięcie")
         assertEquals(400L, move.durationMillis, "budynek blisko: 400 ms")
@@ -49,7 +49,7 @@ class CameraTransitionTest {
 
     /** Wiersz: V1, dalej na tym samym terenie — przelot, krótszy niż 1,5 s. */
     @Test
-    fun us2_8_far_flight() {
+    fun fliesToFarBuilding() {
         val move = toBuilding(from = MapCamera(center = viewByMeters(-1000.0), zoom = START_ZOOM))
         assertEquals(CameraMotion.FLIGHT, move.motion, "budynek 1 km dalej: przelot")
         assertTrue(move.durationMillis in 600L..1100L, "przelot 1 km: ${move.durationMillis} ms")
@@ -57,7 +57,7 @@ class CameraTransitionTest {
 
     /** Wiersz: V1, inny teren 2 km dalej — przelot ok. 1 s. */
     @Test
-    fun us1_8_flight_2km() {
+    fun fliesToOtherArea() {
         val move = toBuilding(from = MapCamera(center = viewByMeters(-2000.0), zoom = START_ZOOM))
         assertEquals(CameraMotion.FLIGHT, move.motion, "teren 2 km dalej: przelot")
         assertTrue(move.durationMillis in 900L..1200L, "przelot 2 km: ${move.durationMillis} ms")
@@ -65,7 +65,7 @@ class CameraTransitionTest {
 
     /** Wiersz: V1, dalszy cel przyspiesza przelot, a nie zamienia go na skok — najwyżej 1,5 s. */
     @Test
-    fun nfr56_flight_capped() {
+    fun capsFlightDuration() {
         val move = toBuilding(from = MapCamera(center = viewByMeters(-7000.0), zoom = START_ZOOM))
         assertEquals(CameraMotion.FLIGHT, move.motion, "teren 7 km dalej: przelot, nie skok")
         assertEquals(1500L, move.durationMillis, "przelot najwyżej 1,5 s")
@@ -73,21 +73,21 @@ class CameraTransitionTest {
 
     /** Wiersz: V1, powiększenie mniejsze niż 17 rośnie do 17, żeby budynek dało się rozróżnić. */
     @Test
-    fun us2_8_zoom_raised() {
+    fun raisesSmallZoom() {
         val move = toBuilding(from = MapCamera(center = viewByMeters(-500.0), zoom = 15.0))
         assertEquals(START_ZOOM, move.camera.zoom, "przybliżenie do 17")
     }
 
     /** Wiersz: V1, powiększenie wybrane przez osobę zostaje, gdy budynek się mieści. */
     @Test
-    fun us2_8_zoom_kept() {
+    fun keepsChosenZoom() {
         val move = toBuilding(from = MapCamera(center = viewByDp(-200.0), zoom = 19.0))
         assertEquals(19.0, move.camera.zoom, "powiększenie osoby zostaje")
     }
 
     /** Wiersz: V1, budynek, który się nie mieści, oddala mapę tylko tyle, żeby kontur zmieścił się w mapie. */
     @Test
-    fun us2_8_zoom_fits_building() {
+    fun zoomsOutToFitBuilding() {
         val wide = CampusBounds(west = 17.058, south = 51.1095, east = 17.062, north = 51.1105)
         val from = MapCamera(center = middle, zoom = 19.0)
         val move = cameraTransition(from = from, outline = wide, free = free, animationScale = 1f)
@@ -98,7 +98,7 @@ class CameraTransitionTest {
 
     /** Wiersz: V1, przy systemowym „Usuń animacje” mapa od razu pokazuje stan końcowy. */
     @Test
-    fun nfr56_no_animations() {
+    fun jumpsWithoutAnimations() {
         val from = MapCamera(center = viewByMeters(-2000.0), zoom = START_ZOOM)
         val still = toBuilding(from = from, scale = 0f)
         assertEquals(CameraMotion.NONE, still.motion, "bez animacji: bez ruchu")
@@ -108,14 +108,14 @@ class CameraTransitionTest {
 
     /** Wiersz: V1, skala animacji systemu mnoży czas ruchu. */
     @Test
-    fun nfr56_scale_halves() {
+    fun scalesDurationBySystemSetting() {
         val move = toBuilding(from = MapCamera(center = viewByDp(-330.0), zoom = START_ZOOM), scale = 0.5f)
         assertEquals(200L, move.durationMillis, "skala 0,5: połowa z 400 ms")
     }
 
     /** Wiersz: V1, budynek kończy na środku wolnej części mapy, na lewo od pasa przycisków. */
     @Test
-    fun us2_8_center_by_controls() {
+    fun centersLeftOfControls() {
         val controls = free.copy(endDp = 160.0)
         val from = MapCamera(center = middle, zoom = START_ZOOM)
         val move = cameraTransition(from = from, outline = outline, free = controls, animationScale = 1f)

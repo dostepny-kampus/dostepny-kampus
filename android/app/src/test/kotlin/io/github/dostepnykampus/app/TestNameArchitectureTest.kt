@@ -79,7 +79,6 @@ class TestNameArchitectureTest {
                 "app" to "#2028",
                 "core/network" to "#2089",
                 "feature/capture" to "#2031",
-                "feature/map" to "#2032",
             )
     }
 }

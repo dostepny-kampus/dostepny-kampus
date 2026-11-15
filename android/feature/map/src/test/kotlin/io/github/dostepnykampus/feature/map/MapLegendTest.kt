@@ -54,7 +54,7 @@ class MapLegendTest {
      * Wymagania: NFR-17, NFR-18, US1.4, NFR-21, NFR-40, NFR-53
      */
     @Test
-    fun us1_4_legend_lists_map_signs() {
+    fun listsMapSigns() {
         compose.setContent { Legend(isOpenAtStart = false) }
         val words = listOf("Budynek Politechniki", "Wejście dostępne", "Wejście niedostępne", "Wejście bez danych")
         compose.onNodeWithText(words.first()).assertDoesNotExist()
@@ -67,13 +67,13 @@ class MapLegendTest {
     }
 
     @Test
-    fun us1_4_hifi_motyw_jasny() {
+    fun matchesLightMockup() {
         compose.setContent { Legend(isOpenAtStart = true) }
         compose.onRoot().captureRoboImage()
     }
 
     @Test
-    fun us1_4_hifi_motyw_ciemny() {
+    fun matchesDarkMockup() {
         RuntimeEnvironment.setQualifiers("+night")
         compose.setContent { Legend(isOpenAtStart = true) }
         compose.onRoot().captureRoboImage()

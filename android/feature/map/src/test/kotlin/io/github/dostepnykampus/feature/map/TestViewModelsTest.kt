@@ -40,7 +40,7 @@ class TestViewModelsTest {
     }
 
     @Test
-    fun `zamknięcie czeka na finally`() =
+    fun waitsForFinallyOnClose() =
         runTest {
             val viewModel = models.keep(object : ViewModel() {})
             val started = CompletableDeferred<Unit>()
