@@ -233,14 +233,6 @@ class ModuleReadmeArchitectureTest {
 
         val UNDESCRIBED = emptyMap<String, Int>()
 
-        val NO_PACKAGES =
-            mapOf(
-                ":app" to 1830,
-                ":feature:map" to 1830,
-                ":feature:capture" to 1830,
-                ":feature:help" to 1830,
-                ":detekt-rules" to 1830,
-                ":systemtest" to 1830,
-            )
+        val NO_PACKAGES = emptyMap<String, Int>()
     }
 }

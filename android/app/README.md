@@ -4,6 +4,12 @@
 
 Aplikacja: start, nawigacja między ekranami funkcji, powłoka z paskiem nawigacji i wysyłka zgłoszeń po starcie.
 
+## Pakiety
+
+- `app` — aktywność, powłoka aplikacji z arkuszem, start wysyłki zgłoszeń i ekran wygasłego logowania.
+- `app.di` — wiązania Hilt aplikacji: nagłówek klienta mapy i ładowanie obrazów.
+- `app.navigation` — nawigacja między ekranami mapy, zgłoszeń i logowania.
+
 ## API
 
 Brak API dla innych modułów; to moduł końcowy, który składa graf Hilt i ekrany z `feature/*`.

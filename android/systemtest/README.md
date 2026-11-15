@@ -5,6 +5,10 @@
 Testy systemowe: APK testów na urządzeniu sprawdza klienta sieci i ekrany aplikacji na uruchomionym serwerze z bazą
 i logowaniem.
 
+## Pakiety
+
+- `systemtest` — testy klienta sieci na uruchomionym serwerze: budynki, karta budynku i wysyłka zgłoszenia.
+
 ## API
 
 Brak API; moduł zawiera tylko testy.
