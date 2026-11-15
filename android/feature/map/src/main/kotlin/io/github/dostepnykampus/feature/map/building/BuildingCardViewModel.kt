@@ -16,8 +16,11 @@ import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.network.NetworkStatus
+import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.FloorList
+import io.github.dostepnykampus.core.model.room.RoomList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -46,12 +49,15 @@ sealed interface BuildingCardUiState {
      * @property entrances wejścia odwiedzających, zalecane pierwsze
      * @property barriers zgłoszenia przyjęte tego budynku; pusta lista, gdy dane o barierach są, a budynek nie ma
      *   zgłoszeń; `null`, gdy telefon nie ma danych o barierach
+     * @property floors fakty o piętrach z planów PWr; `null`, gdy budynek nie ma planu w telefonie.
+     *   TODO(#1480): grupa „Winda i toaleta” na karcie.
      */
     data class Ready(
         val symbol: String,
         val name: String?,
         val entrances: List<OrderedEntrance>,
         val barriers: List<AcceptedBarrier>? = null,
+        val floors: FloorFacts? = null,
     ) : BuildingCardUiState
 }
 
@@ -62,9 +68,9 @@ sealed interface BuildingCardUiState {
  * Tekst karty i wejścia z pliku pokazują się bez czekania na sieć, a z katalogu, który telefon już ma, od pierwszej
  * klatki. Równolegle karta pyta `serverEntrances` o wejścia z dniem i źródłem oznaczenia; niepusta lista zastępuje
  * wejścia z pliku, a pusta (brak sieci, błąd serwera) zostawia je bez komunikatu błędu. Zgłoszenia przyjęte budynku
- * pobiera tak samo. Zamknięcie karty przerywa pobieranie.
+ * pobiera tak samo, a plan pięter pobiera raz i czyta z kopii w telefonie. Zamknięcie karty przerywa pobieranie.
  *
- * Wymagania: US2, BR-25, NFR-12, US17.3, NFR-10, US2.2, US2.4, US2.7, NFR-56
+ * Wymagania: US2, BR-25, NFR-12, US17.3, NFR-10, US2.2, US2.4, US2.7, NFR-56, US16.3
  */
 @HiltViewModel(assistedFactory = BuildingCardViewModel.Factory::class)
 class BuildingCardViewModel
@@ -75,12 +81,15 @@ class BuildingCardViewModel
         networkStatus: NetworkStatus,
         serverEntrances: ServerEntrances = ServerEntrances { emptyList() },
         acceptedBarriers: AcceptedBarriers = AcceptedBarriers { emptyList() },
+        plans: FloorPlans = NoFloorPlans,
     ) : ViewModel() {
         private val attempts = MutableStateFlow(0)
 
         private val fromServer = MutableStateFlow(emptyList<Entrance>())
 
         private val barriers = MutableStateFlow<List<AcceptedBarrier>?>(null)
+
+        private val floors = MutableStateFlow<FloorFacts?>(null)
 
         private val first = repository.current()?.let { buildingCard(it, symbol) } ?: BuildingCardUiState.Loading
 
@@ -90,6 +99,7 @@ class BuildingCardViewModel
                 .map { attempt -> buildingCard(catalogFor(repository, attempt), symbol) }
                 .combine(fromServer, ::withServerEntrances)
                 .combine(barriers, ::withBarriers)
+                .combine(floors, ::withFloors)
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
@@ -103,6 +113,7 @@ class BuildingCardViewModel
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), true)
 
         init {
+            viewModelScope.launch { floors.value = plannedFloors(plans, symbol) }
             viewModelScope.launch { fromServer.value = serverEntrances.entrances(symbol) }
             viewModelScope.launch {
                 val accepted = acceptedBarriers.barriers()
@@ -128,6 +139,9 @@ class BuildingCardViewModel
         private fun withBarriers(card: BuildingCardUiState, accepted: List<AcceptedBarrier>?): BuildingCardUiState =
             if (card is BuildingCardUiState.Ready) card.copy(barriers = accepted) else card
 
+        private fun withFloors(card: BuildingCardUiState, facts: FloorFacts?): BuildingCardUiState =
+            if (card is BuildingCardUiState.Ready) card.copy(floors = facts) else card
+
         private suspend fun catalogFor(repository: BuildingCatalogRepository, attempt: Int): BuildingCatalog =
             if (attempt == 0) repository.catalog() else repository.refresh()
 
@@ -138,3 +152,20 @@ class BuildingCardViewModel
             fun create(symbol: String): BuildingCardViewModel
         }
     }
+
+/** Fakty o piętrach budynku [symbol] z planu w [plans]; `null`, gdy budynek nie ma planu ani jego kopii. */
+private suspend fun plannedFloors(plans: FloorPlans, symbol: String): FloorFacts? {
+    plans.download(symbol)
+    val floors = plans.floors(symbol)?.floors.orEmpty()
+    val rooms = floors.mapNotNull { floor -> plans.rooms(symbol, floor.id)?.let { floor.id to it } }.toMap()
+    return floorFacts(floors, rooms).takeIf { floors.isNotEmpty() }
+}
+
+/** Plany pięter budynku bez planu: nic nie pobiera i nic nie ma. */
+private object NoFloorPlans : FloorPlans {
+    override suspend fun download(symbol: String): Boolean = false
+
+    override suspend fun floors(symbol: String): FloorList? = null
+
+    override suspend fun rooms(symbol: String, floor: String): RoomList? = null
+}
