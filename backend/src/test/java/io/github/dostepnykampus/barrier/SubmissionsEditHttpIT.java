@@ -126,16 +126,17 @@ final class SubmissionsEditHttpIT {
     @Test
     void keepsReplacedSubmissionUnchanged(final WebApplicationContext context)
         throws Exception {
-        final UUID other = new SampleSubmissions(context).add(
-            "ACCEPTED", SampleSubmissions.quick(UUID.randomUUID())
-        );
-        final int status = SubmissionsEditHttpIT.edit(
-            context, "SENT", 1, "1,\"replacesSubmissionId\":\"%s\"".formatted(other)
-        ).getStatus();
         MatcherAssert.assertThat(
             "Edycja ustawiła pole replacesSubmissionId albo nie dała 400",
             "%d %s".formatted(
-                status,
+                SubmissionsEditHttpIT.edit(
+                    context, "SENT", 1,
+                    "1,\"replacesSubmissionId\":\"%s\"".formatted(
+                        new SampleSubmissions(context).add(
+                            "ACCEPTED", SampleSubmissions.quick(UUID.randomUUID())
+                        )
+                    )
+                ).getStatus(),
                 context.getBean(JdbcClient.class).sql(
                     String.join(
                         "", "SELECT coalesce(content ->> 'replacesSubmissionId', 'brak')",
