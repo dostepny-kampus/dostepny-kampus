@@ -6,6 +6,8 @@
 package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.feature.map.barrier.BARRIER_BUILDING
+import io.github.dostepnykampus.feature.map.barrier.BARRIER_FLOOR
 import io.github.dostepnykampus.feature.map.barrier.BARRIER_ID
 import io.github.dostepnykampus.feature.map.barrier.BARRIER_SEVERITY
 import kotlinx.serialization.json.JsonArray
@@ -50,11 +52,11 @@ internal fun barrierWordImage(severity: Severity): String = "bariera_slowo_${sev
  * od uciążliwości, więc znaczenie niesie kształt, nie barwa. Słowo jest obrazem, bo napisy z czcionek
  * stylu wymagają sieci. Pojawia się od powiększenia [BARRIER_WORD_ZOOM], nie przy krawędzi mapy i tylko wtedy,
  * gdy mieści się bez nakładania. Warstwy stoją pod podpisami budynków, więc przy kolizji zostaje podpis budynku
- * (wiersz o znakach barier w wymaganiach V1).
+ * (wiersz o znakach barier w wymaganiach V1). Filtr [filter] z [barriersOnPlan] zostawia bariery piętra planu.
  *
  * Wymagania: US1.3, NFR-21, NFR-20
  */
-internal fun barrierLayers(): List<JsonObject> {
+internal fun barrierLayers(filter: JsonElement = barriersOnPlan(building = null, floor = null)): List<JsonObject> {
     val words =
         symbolLayer(
             id = BARRIER_WORDS_LAYER,
@@ -66,8 +68,26 @@ internal fun barrierLayers(): List<JsonObject> {
         )
     val signs =
         symbolLayer(id = BARRIERS_LAYER, source = BARRIERS_SOURCE, image = bySeverity(::barrierSignImage), OVERLAP)
-    return listOf(JsonObject(words + ("minzoom" to JsonPrimitive(BARRIER_WORD_ZOOM))), signs)
+    return listOf(
+        JsonObject(words + ("minzoom" to JsonPrimitive(BARRIER_WORD_ZOOM)) + ("filter" to filter)),
+        JsonObject(signs + ("filter" to filter)),
+    )
 }
+
+/**
+ * Filtr warstw barier przy planie piętra [floor] budynku [building]: bariery tego budynku z innego piętra znikają,
+ * a bariery bez piętra i spoza budynku zostają. Bez planu (`null`) przepuszcza wszystkie.
+ *
+ * Wymagania: US16.1, BR-14
+ */
+internal fun barriersOnPlan(building: String?, floor: String?): JsonElement =
+    expression(
+        "any",
+        expression("!=", property(BARRIER_BUILDING), JsonPrimitive(building.orEmpty())),
+        expression("!", expression("has", JsonPrimitive(BARRIER_FLOOR))),
+        expression("==", property(BARRIER_FLOOR), JsonPrimitive(floor.orEmpty())),
+        JsonPrimitive(building == null),
+    )
 
 /**
  * Warstwa wybranej bariery z filtrem [filter] z [SelectionLook.chosenBarrierFilter]: jej znak jest większy
