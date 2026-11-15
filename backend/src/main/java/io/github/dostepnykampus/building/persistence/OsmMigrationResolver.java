@@ -16,19 +16,25 @@ import org.flywaydb.core.api.resolver.ResolvedMigration;
 import org.springframework.boot.flyway.autoconfigure.FlywayConfigurationCustomizer;
 
 /**
- * Udostępnia migrację OSM tylko lokalizacji wspólnych migracji aplikacji.
+ * Udostępnia migrację importu tylko wskazanej lokalizacji migracji.
  *
  * @since 0.1.0
  */
 final class OsmMigrationResolver implements FlywayConfigurationCustomizer, MigrationResolver {
 
     /**
-     * Powtarzalna migracja budynków i wejść.
+     * Powtarzalna migracja importu.
      */
-    private final OsmBuildings migration;
+    private final JavaMigration migration;
 
-    OsmMigrationResolver(final OsmBuildings migration) {
+    /**
+     * Ścieżka lokalizacji migracji, której historia wykonuje import.
+     */
+    private final String location;
+
+    OsmMigrationResolver(final JavaMigration migration, final String location) {
         this.migration = migration;
+        this.location = location;
     }
 
     @Override
@@ -50,7 +56,7 @@ final class OsmMigrationResolver implements FlywayConfigurationCustomizer, Migra
     ) {
         final List<ResolvedMigration> found = new ArrayList<>(1);
         if (Arrays.stream(context.configuration.getLocations())
-            .anyMatch(location -> "db/migration/__root".equals(location.getPath()))) {
+            .anyMatch(item -> this.location.equals(item.getPath()))) {
             found.add(
                 this.migration.getResolvedMigration(
                     context.configuration, context.statementInterceptor
