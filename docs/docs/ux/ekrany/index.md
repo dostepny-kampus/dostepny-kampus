@@ -122,11 +122,11 @@ Wymagania: [V1 Mapa kampusu](../wymagania-ekranow.md#v1-mapa-kampusu).
 
 ### V1: granica terenu
 
-`m-v1-mapa-teren-granica` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.7, BR-G5
+`m-v1-mapa-teren-granica` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.7, BR-G5, NFR-16
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Mapa przy wschodniej granicy terenu Kampus główny: obszar poza terenem przyciemniony, granicę pokazuje linia, przy prawej krawędzi przycisk „Wittigowo 2 km” ze strzałką](obrazy/m-v1-mapa-teren-granica-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-granica-jasny.webp) | [![Ta sama granica terenu w motywie ciemnym](obrazy/m-v1-mapa-teren-granica-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-granica-ciemny.webp) | [![Ta sama granica terenu przy czcionce 200%: przycisk „Wittigowo 2 km” pod przyciskami mapy](obrazy/m-v1-mapa-teren-granica-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-granica-jasny-200.webp) |
+| [![Cały teren Kampus główny przy najmniejszym powiększeniu. Granica ma kilka części: dużą wokół budynków nad Odrą i mniejsze, np. wokół T-2 i L-2. Poza granicą podkład jest wyblakły, a granicę pokazuje czarna linia z białą obwódką](obrazy/m-v1-mapa-teren-granica-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-granica-jasny.webp) | [![Ta sama granica w motywie ciemnym: poza granicą podkład przygaszony kolorem tła, linia jasna z ciemną obwódką](obrazy/m-v1-mapa-teren-granica-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-granica-ciemny.webp) | [![Ta sama granica przy czcionce 200%: cały teren mieści się na mapie pod większymi przyciskami](obrazy/m-v1-mapa-teren-granica-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-granica-jasny-200.webp) |
 
 ### V1: wynik z innego terenu
 
