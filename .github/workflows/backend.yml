@@ -72,7 +72,8 @@ jobs:
           .github/actions/java-serwera
 
   serwer:
-    needs: zmiany
+    # `mutacje` w needs: jego porażka w kontroli sprintu przechodzi przez wymagany job (na PR jest pominięty).
+    needs: [zmiany, mutacje]
     if: ${{ !cancelled() && !inputs.sha && needs.zmiany.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.serwer == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -97,6 +98,8 @@ jobs:
       - name: Testy mutacyjne PIT dziedziny serwera
         # Na PR; w grupie kolejki PIT nie padał, więc po scaleniu biegnie w kontroli sprintu (zadanie `mutacje`).
         if: ${{ github.event_name == 'pull_request' }}
+        # Bez zestawów scenariuszy PIT trwa około minuty; kilka razy dłuższy przebieg to błąd do zbadania, nie czekanie.
+        timeout-minutes: 8
         run: &pit |
           status=0
           ./mvnw -B -Dqulice.skip=true -Djacoco.skip=true test-compile org.pitest:pitest-maven:mutationCoverage || status=$?
@@ -131,6 +134,7 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/java-serwera
       - name: Testy mutacyjne PIT dziedziny serwera
+        timeout-minutes: 8
         run: *pit
       - name: Raport PIT
         if: ${{ !cancelled() }}

@@ -66,7 +66,7 @@ jobs:
 
   serwer:
     needs: cel
-    if: needs.cel.outputs.jest == 'true'
+    if: ${{ !cancelled() && (needs.cel.result != 'success' || !cancelled() && (needs.cel.outputs.jest == 'true')) }}
     # Jak przy Androidzie: uprawnienia muszą pokryć każde zadanie backend.yml, także pominięte (`zmiany`).
     permissions:
       actions: read
