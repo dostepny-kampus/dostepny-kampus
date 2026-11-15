@@ -476,6 +476,29 @@ class CampusMapScreenTest {
     }
 
     /**
+     * Wiersz: wybór budynku nad małą kartą V2 daje jeden ruch mapy; osiadanie arkusza (trzy wysokości) nie zmienia
+     * celu, rodzaju ani czasu ruchu, tylko zasłonięty dół mapy.
+     *
+     * Wymagania: US2.8, NFR-56
+     */
+    @Test
+    @Config(qualifiers = "w360dp-h800dp")
+    fun movesOncePerPick() {
+        var sheet by mutableStateOf(0.dp)
+        compose.setContent { Screen(focus = "C-14", sheet = sheet) }
+        compose.waitForIdle()
+        sheet = 400.dp
+        compose.waitForIdle()
+        val pick = moves.last()
+        listOf(300.dp, 350.dp, 320.dp).forEach { height ->
+            sheet = height
+            compose.waitForIdle()
+            assertEquals(pick, moves.last())
+        }
+        assertEquals(true, pick.motion != CameraMotion.NONE)
+    }
+
+    /**
      * Zapis „C13” w polu symbolu daje wynik „Budynek C-13”.
      * Scenariusz (przykład: C13): przegladanie-mapy.feature: Wyszukanie budynku po symbolu w różnym zapisie
      *
