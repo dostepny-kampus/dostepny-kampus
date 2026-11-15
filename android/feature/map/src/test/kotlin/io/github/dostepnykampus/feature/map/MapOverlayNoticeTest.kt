@@ -61,7 +61,7 @@ class MapOverlayNoticeTest {
      * Wymagania: US1.8, NFR-18
      */
     @Test
-    fun us1_8_notice_above_attribution() {
+    fun showsNoticeAboveAttribution() {
         compose.setContent { Overlay() }
         val notice = compose.onNodeWithText("Pokazuję teren: Wittigowo")
         notice.assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.LiveRegion))
@@ -75,14 +75,14 @@ class MapOverlayNoticeTest {
      * Wymagania: US1.8, NFR-23
      */
     @Test
-    fun us1_8_notice_gone_after_move() {
+    fun hidesNoticeAfterMove() {
         compose.setContent { Overlay() }
         compose.onNodeWithContentDescription("Przesuń mapę w górę").performClick()
         compose.onNodeWithText("Pokazuję teren: Wittigowo").assertDoesNotExist()
     }
 
     @Test
-    fun us1_8_hifi_motyw_jasny() {
+    fun matchesLightMockup() {
         compose.setContent { Overlay() }
         compose.onRoot().captureRoboImage()
     }

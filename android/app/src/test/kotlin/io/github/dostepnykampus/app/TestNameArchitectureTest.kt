@@ -14,21 +14,14 @@ import java.io.File
 
 /**
  * Nazwa funkcji z adnotacją `@Test` w każdym module Androida to camelCase od małej litery, bez podkreśleń,
- * spacji i słowa `test`. Moduły z naruszeniami są na liście wyjątków z numerem issue, a lista może tylko maleć.
+ * spacji i słowa `test`.
  */
 class TestNameArchitectureTest {
-    /** Testy spoza modułów z listy wyjątków mają nazwy zgodne z regułą. */
+    /** Testy wszystkich modułów mają nazwy zgodne z regułą. */
     @Test
     fun infraNamesFollowRule() {
         val found = violations(Konsist.scopeFromTest().functions(includeNested = true))
-        assertEquals(emptyMap<String, List<String>>(), found - EXCEPTIONS.keys, HINT)
-    }
-
-    /** Wpis listy wyjątków dla modułu bez naruszeń albo nieistniejącego czerwieni test. */
-    @Test
-    fun infraExceptionsShrink() {
-        val found = violations(Konsist.scopeFromTest().functions(includeNested = true))
-        assertEquals(emptySet<String>(), EXCEPTIONS.keys - found.keys, "Moduł spełnia regułę: usuń jego wpis")
+        assertEquals(emptyMap<String, List<String>>(), found, HINT)
     }
 
     /** Podkreślenie i słowo `test` łamią regułę; camelCase i „latest” nie. */
@@ -73,10 +66,5 @@ class TestNameArchitectureTest {
 
         const val HINT =
             "Nazwa testu: zdanie o zachowaniu w camelCase, bez podkreśleń i słowa „test”"
-
-        val EXCEPTIONS =
-            mapOf(
-                "feature/map" to "#2032",
-            )
     }
 }

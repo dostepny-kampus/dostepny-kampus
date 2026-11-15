@@ -40,7 +40,7 @@ class CampusBoundsTest {
      * Wymagania: US1.7, BR-G5, NFR-39
      */
     @Test
-    fun nfr39_area_plus_50_m() {
+    fun addsMarginAroundArea() {
         val start = rectangle(west = 17.0, south = 60.0, east = 17.01, north = 60.004)
         val near = GeoMultiPolygon(listOf(rectangle(west = 17.012, south = 60.006, east = 17.02, north = 60.01)))
         val expected = listOf(17.0 - 2 * LAT_50_M, 60.0 - LAT_50_M, 17.02 + 2 * LAT_50_M, 60.01 + LAT_50_M)
@@ -54,7 +54,7 @@ class CampusBoundsTest {
      * Wymagania: BR-G5, NFR-39
      */
     @Test
-    fun br_g5_bounds_from_boundary() {
+    fun takesBoundsFromBoundary() {
         val start = rectangle(west = 17.0, south = 60.0, east = 17.01, north = 60.004)
         val boundary = rectangle(west = 16.99, south = 59.99, east = 17.02, north = 60.01)
         val wider = listOf(16.99 - 2 * LAT_50_M, 59.99 - LAT_50_M, 17.02 + 2 * LAT_50_M, 60.01 + LAT_50_M)
@@ -76,7 +76,7 @@ class CampusBoundsTest {
      * Wymagania: BR-G5, NFR-39
      */
     @Test
-    fun nfr39_atol_from_pwr_boundary() {
+    fun readsAtolFromPwrBoundary() {
         val points = PwrAreaBoundaries.getValue("T-9 Atol").allRings().flatten()
         val (west, east) = points.minOf { it.longitude } to points.maxOf { it.longitude }
         val (south, north) = points.minOf { it.latitude } to points.maxOf { it.latitude }
@@ -93,7 +93,7 @@ class CampusBoundsTest {
      * Wymagania: US1.8, BR-G5, NFR-39
      */
     @Test
-    fun br_g5_other_area_left_out() {
+    fun leavesOtherAreaOut() {
         val start = rectangle(west = 17.0, south = 60.0, east = 17.01, north = 60.004)
         val far = rectangle(west = 17.05, south = 60.03, east = 17.06, north = 60.04)
         val expected = listOf(17.0 - 2 * LAT_50_M, 60.0 - LAT_50_M, 17.01 + 2 * LAT_50_M, 60.004 + LAT_50_M)
@@ -110,7 +110,7 @@ class CampusBoundsTest {
      * Wymagania: NFR-39
      */
     @Test
-    fun nfr39_bounds_from_data() {
+    fun takesBoundsFromData() {
         val outline = rectangle(west = -0.01, south = -0.02, east = 0.0, north = 0.0)
         val expected = listOf(-0.01 - LAT_50_M, -0.02 - LAT_50_M, LAT_50_M, LAT_50_M)
         assertBounds(expected, campusMapData(catalog("T-0" to outline)).bounds)
@@ -124,7 +124,7 @@ class CampusBoundsTest {
      * Wymagania: NFR-53, NFR-39
      */
     @Test
-    fun nfr53_arrows_stop_at_edge() {
+    fun stopsArrowsAtEdge() {
         val start = MapCamera(center = GeoPoint(longitude = 17.02, latitude = 60.01), zoom = 15.0)
         val edges =
             mapOf(
@@ -146,7 +146,7 @@ class CampusBoundsTest {
      * Wymagania: NFR-39
      */
     @Test
-    fun nfr39_min_zoom_whole_campus() {
+    fun fitsCampusAtMinZoom() {
         val span = 360.0 / 16_384
         val wide = CampusBounds(west = 0.0, south = -span / 8, east = span, north = span / 8)
         val tall = CampusBounds(west = 0.0, south = -span / 2, east = span / 8, north = span / 2)

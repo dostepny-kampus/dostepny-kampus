@@ -51,7 +51,7 @@ class MapBarriersLoadTest {
 
     /** Wiersz: V1, bariery ze zgłoszeń przyjętych jako znaki na mapie. Wymagania: US1.3, BR-6 */
     @Test
-    fun us1_3_barriers_in_map_data() =
+    fun putsBarriersInMapData() =
         runTest(UnconfinedTestDispatcher()) {
             answers += Severity.entries.map(::barrier)
 
@@ -60,7 +60,7 @@ class MapBarriersLoadTest {
 
     /** Wiersz: brak sieci, bariery z telefonu; po powrocie sieci mapa pyta źródło ponownie. Wymagania: NFR-10 */
     @Test
-    fun nfr10_offline_then_online() =
+    fun reloadsWhenOnline() =
         runTest(UnconfinedTestDispatcher()) {
             online.value = false
             answers += listOf(barrier(Severity.BLOCKING))
@@ -74,7 +74,7 @@ class MapBarriersLoadTest {
 
     /** Wiersz: zgłoszenie, które przestało być przyjęte, znika z mapy po kolejnym pobraniu. Wymagania: US1.3 */
     @Test
-    fun us1_3_no_longer_accepted_gone() =
+    fun dropsNoLongerAccepted() =
         runTest(UnconfinedTestDispatcher()) {
             answers += listOf(barrier(Severity.BLOCKING))
             answers += listOf(barrier(Severity.BLOCKING))

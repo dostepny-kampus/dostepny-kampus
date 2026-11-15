@@ -50,7 +50,7 @@ class MapInfoTest {
 
     /** „ⓘ” jest przyciskiem o celu dotyku 48 dp z nazwą „Informacje o mapie” dla TalkBack. Wymagania: NFR-17, NFR-18 */
     @Test
-    fun nfr17_nfr18_info_button() {
+    fun namesInfoButton() {
         compose.setContent { Info(isOpenAtStart = false) }
         val button = compose.onNodeWithContentDescription("Informacje o mapie", useUnmergedTree = true)
         button.assertExists()
@@ -64,7 +64,7 @@ class MapInfoTest {
 
     /** Panel podaje źródła, licencję i dzień stanu danych, a „Zamknij” go zamyka. Wymagania: NFR-37, NFR-40, NFR-53 */
     @Test
-    fun nfr37_nfr40_sources_panel() {
+    fun showsSourcesPanel() {
         compose.setContent { Info(isOpenAtStart = false) }
         compose.onNodeWithContentDescription("Informacje o mapie").performClick()
         compose.onNodeWithText("Źródła danych").assertExists()
@@ -78,14 +78,14 @@ class MapInfoTest {
 
     /** Bez dnia w danych panel podaje samo źródło. Wymagania: NFR-40 */
     @Test
-    fun nfr40_sources_without_day() {
+    fun showsSourcesWithoutDay() {
         compose.setContent { Info(isOpenAtStart = true, day = null) }
         compose.onNodeWithText("Wejścia i plany pięter: Źródło: Politechnika Wrocławska.").assertExists()
     }
 
     /** Zrzut do porównania z makietą hi-fi V1 „źródła danych”, motyw jasny. */
     @Test
-    fun nfr37_hifi_motyw_jasny() {
+    fun matchesLightMockup() {
         compose.setContent { Info(isOpenAtStart = true) }
         compose.onRoot().captureRoboImage()
     }
@@ -93,7 +93,7 @@ class MapInfoTest {
     /** Zrzut do porównania z makietą hi-fi V1 „źródła danych”, motyw ciemny. */
     @Test
     @Config(qualifiers = "+night")
-    fun nfr37_hifi_motyw_ciemny() {
+    fun matchesDarkMockup() {
         compose.setContent { Info(isOpenAtStart = true) }
         compose.onRoot().captureRoboImage()
     }

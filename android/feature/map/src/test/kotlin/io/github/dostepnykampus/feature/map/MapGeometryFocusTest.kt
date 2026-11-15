@@ -91,7 +91,7 @@ class MapGeometryFocusTest {
      * Wymagania: NFR-11, US1.1
      */
     @Test
-    fun nfr11_focus_keeps_geometry() {
+    fun keepsGeometryOnFocus() {
         compose.setContent {
             DostepnyKampusTheme {
                 CampusMapScreen(onBuildingClick = {}, focus = focus, mapView = fakeMap, viewModel = viewModel)
@@ -113,7 +113,7 @@ class MapGeometryFocusTest {
      * Wymagania: NFR-11
      */
     @Test
-    fun nfr11_sheet_camera_from_data() {
+    fun placesCameraFromData() {
         compose.setContent {
             DostepnyKampusTheme {
                 CampusMapScreen(

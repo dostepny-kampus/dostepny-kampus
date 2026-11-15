@@ -58,7 +58,7 @@ class MapCatalogFromFileTest {
 
     /** Wiersz: W1, serwer jeszcze nie odpowiedział → stan mapy ma kontury z pliku. Wymagania: NFR-11 */
     @Test
-    fun nfr11_file_without_server() {
+    fun usesFileWithoutServer() {
         val screen = openScreen { CompletableDeferred<ServerReply<ServerBuildings>>().await() }
         assertEquals(fileCatalog, screen.settled(), "mapa czeka na serwer")
     }
@@ -69,7 +69,7 @@ class MapCatalogFromFileTest {
      * Wymagania: NFR-10, US1
      */
     @Test
-    fun nfr10_server_replaces_file() {
+    fun replacesFileWithServer() {
         val answer = CompletableDeferred<ServerReply<ServerBuildings>>()
         val screen = openScreen { answer.await() }
         assertEquals(fileCatalog, screen.settled(), "mapa czeka na serwer")
@@ -85,14 +85,14 @@ class MapCatalogFromFileTest {
      * Wymagania: NFR-10
      */
     @Test
-    fun nfr10_failure_keeps_file() {
+    fun keepsFileOnFailure() {
         listOf(ServerReply.Offline, ServerReply.Fault(SERVER_ERROR))
             .forEach { failure -> assertKeepsFile(failure) }
     }
 
     /** Wiersz: W2, serwer odpowiada pustą listą → zostają kontury z pliku, bez pustego katalogu. Wymagania: NFR-10 */
     @Test
-    fun nfr10_empty_list_keeps_file() {
+    fun keepsFileOnEmptyList() {
         assertKeepsFile(ServerReply.Ok(ServerBuildings(source = "Serwer", buildings = emptyList())))
     }
 
@@ -113,7 +113,7 @@ class MapCatalogFromFileTest {
      * Wymagania: NFR-10
      */
     @Test
-    fun nfr10_late_file_keeps_server() {
+    fun keepsServerOnLateFile() {
         val screen = openScreen { ServerReply.Ok(SERVER_LIST) }
         assertTrue(screen.seen.all { it == null }, "plik wczytany, zanim odczyt ruszył")
         screen.settled()
