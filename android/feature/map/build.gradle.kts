@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.spatialk.units)
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.coil.core)
+    testImplementation(libs.coil.singleton)
     testImplementation(libs.coil.test)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit4)
