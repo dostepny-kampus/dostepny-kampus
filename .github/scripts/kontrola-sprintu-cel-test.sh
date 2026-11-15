@@ -55,7 +55,7 @@ git clone -q "file://$origin" "$clone"
 # przypadek <nazwa> <statusy „sha stan czas”, \n> <oczekiwane wyjście> <oczekiwane statusy „sha stan”, \n> [GALAZ]
 przypadek() {
   local name="$1" status=0 out
-  printf '%b' "$2" | sed '/^$/d' >"$workdir/statusy"
+  printf '%b\n' "$2" | sed '/^$/d' >"$workdir/statusy"
   : >"$workdir/output"
   : >"$workdir/log"
   out="$(cd "$clone" && GITHUB_REPOSITORY=org/repo GITHUB_OUTPUT="$workdir/output" GALAZ="${5:-}" \
