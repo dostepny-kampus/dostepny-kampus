@@ -168,14 +168,14 @@ public sealed interface ReviewDecision
          * Odrzucenie bez wskazania duplikatu.
          *
          * @param id Identyfikator zgłoszenia
-         * @param expectedVersion Wersja, którą ocenił Weryfikator
+         * @param version Wersja, którą ocenił Weryfikator
          * @param reviewer Identyfikator konta Weryfikatora
          * @param reason Niepusty powód odrzucenia
          */
         public Rejected(
-            final UUID id, final int expectedVersion, final String reviewer, final String reason
+            final UUID id, final int version, final String reviewer, final String reason
         ) {
-            this(id, expectedVersion, reviewer, reason, null);
+            this(id, version, reviewer, reason, null);
         }
 
         /**

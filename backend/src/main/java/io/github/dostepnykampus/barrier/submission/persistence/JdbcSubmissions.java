@@ -48,8 +48,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
      * Kolumny zgłoszenia czytane do modelu.
      */
     private static final String COLUMNS =
-        "id, version, status, created_at, verified_at, content::text AS content, "
-            + "rejection_reason, duplicate_of";
+        "id, version, status, created_at, verified_at, content::text AS content, rejection_reason, duplicate_of";
 
     /**
      * Wstawienie nowego zgłoszenia; istniejący identyfikator niczego nie zmienia.

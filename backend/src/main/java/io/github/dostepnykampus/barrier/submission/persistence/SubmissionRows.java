@@ -67,17 +67,6 @@ final class SubmissionRows implements RowMapper<Submission> {
         }
     }
 
-    private static @Nullable Rejection rejection(final ResultSet rows) throws SQLException {
-        final String reason = rows.getString("rejection_reason");
-        final Rejection result;
-        if (reason == null) {
-            result = null;
-        } else {
-            result = new Rejection(reason, rows.getObject("duplicate_of", UUID.class));
-        }
-        return result;
-    }
-
     static <T> ResultSetExtractor<List<T>> readable(final RowMapper<T> mapping) {
         return rows -> {
             final List<T> results = new ArrayList<>(16);
@@ -92,5 +81,16 @@ final class SubmissionRows implements RowMapper<Submission> {
             }
             return results;
         };
+    }
+
+    private static @Nullable Rejection rejection(final ResultSet rows) throws SQLException {
+        final String reason = rows.getString("rejection_reason");
+        final Rejection result;
+        if (reason == null) {
+            result = null;
+        } else {
+            result = new Rejection(reason, rows.getObject("duplicate_of", UUID.class));
+        }
+        return result;
     }
 }
