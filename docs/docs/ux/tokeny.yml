@@ -18,15 +18,21 @@ wersja: 1
 # Kolory — nazwy ról Material 3. Wartości ze stylu „Karta miejsca” (decyzja projektu
 # nr 48). Tylko role, których potrzebują ekrany.
 # Zasady (NFR-21, wymagania wspólne fazy B, decyzja 48 pkt 3):
-#   * Kolor nie niesie znaczenia. Oznaczenie wejścia (Dostępne / Niedostępne /
-#     Brak danych) ma zawsze kształt ikony i słowo ze słownika użytkownika.
-#     Może stać w spokojnym, lekko zabarwionym kontenerze, ale znaczenie niosą kształt
-#     i słowo, a nie barwa kontenera.
-#   * Uciążliwość (Utrudnienie / Tylko z pomocą / Blokada) i status zgłoszenia nie mają
-#     własnego kontenera: tekst i ikona w kolorze zwykłego tekstu.
-#   * Bez „sygnalizacji świetlnej”: w palecie interfejsu nie ma zielonego ani żółtego,
-#     więc nie ma pary zielony/czerwony. Kontenery statusów różnią się odcieniem
-#     (morski, szaroróżowy, szary), a jasność mają prawie równą: w odcieniach szarości
+#   * Kształt i słowo niosą znaczenie, barwa najwyżej je powtarza. Oznaczenie wejścia
+#     (Dostępne / Niedostępne / Brak danych) ma zawsze kształt ikony i słowo ze słownika
+#     użytkownika. Może stać w spokojnym, lekko zabarwionym kontenerze, ale znaczenie niosą
+#     kształt i słowo, a nie barwa kontenera.
+#   * Na mapie i w legendzie barwa jest drugim nośnikiem znaczenia znaków wejść i barier
+#     (`mapa.kolory.znak_…`). Wejście „Dostępne” jest zielononiebieskie, „Niedostępne” i „Brak
+#     danych” mają kolor tekstu mapy. Uciążliwość: żółty, pomarańczowy, ciemna czerwień;
+#     jasność maleje z uciążliwością, więc kolejność widać też w odcieniach szarości.
+#     Czerwień ma tylko „Blokada”. Każdy znak ma obwódkę `mapa.kolory.papier` i kontur
+#     `mapa.kolory.tusz`, żeby nie zlewał się z budynkiem ani z podkładem.
+#   * Poza znakami mapy i legendą uciążliwość (Utrudnienie / Tylko z pomocą / Blokada)
+#     i status zgłoszenia nie mają własnego kontenera: tekst i ikona w kolorze zwykłego tekstu.
+#   * Bez „sygnalizacji świetlnej” w interfejsie: poza znakami mapy i legendą paleta nie ma
+#     zielonego ani żółtego, więc nie ma pary zielony/czerwony. Kontenery statusów różnią
+#     się odcieniem (morski, szaroróżowy, szary), a jasność mają prawie równą: w odcieniach szarości
 #     odróżnia je tylko kształt i słowo.
 #   * Jedna barwa akcentu: ciemny morski (petrol). Daltonizm czerwono-zielony
 #     (protanopia, deuteranopia) nie zmienia odbioru tej osi; skrypt sprawdza kontrast
@@ -176,15 +182,14 @@ kolory:
     # mówi, co się stało i co zrobić (wymagania wspólne fazy B); ta sama rola barwi ramkę
     # pola bez wartości (decyzja 94). Ta sama rola barwi komunikat ostrzegawczy „Ważne” przed
     # czynnością, np. w kroku 1 V4: ramkę, obrysowane koło ze znakiem „!” i słowo „Ważne”;
-    # treść komunikatu jest w onSurface. Roli „ostrzeżenie” celowo nie ma, bo paleta nie ma
-    # żółtego. Błąd serwera, zapisu, logowania i brak internetu to zwykły komunikat: onSurface
+    # treść komunikatu jest w onSurface. Roli „ostrzeżenie” celowo nie ma, bo paleta poza
+    # znakami mapy nie ma żółtego. Błąd serwera, zapisu, logowania i brak internetu to zwykły komunikat: onSurface
     # na surfaceVariant, bez czerwieni. Styl „Karta miejsca” nie ma formularzy, więc wartość
     # zostaje z poprzedniej wersji pliku.
     jasny: "#8A0F18"
     ciemny: "#FFCAC4"  # jasny łososiowy; na ciemnym tle ≥ 7:1
     uzycie: tekst błędu walidacji przy polu i nad formularzem, koło „!” przy nim, ramka pola z błędem; ramka, koło „!” i słowo „Ważne” w ostrzeżeniu; nigdy dla oznaczenia wejścia, statusu ani uciążliwości
     zrodlo: NFR-15 (WCAG 3.3.1), NFR-21
-
 # ---------------------------------------------------------------------------
 # Kontrast — pary sprawdzane przez scripts/kontrast.py dla obu motywów,
 # także po symulacji protanopii i deuteranopii.
@@ -452,8 +457,20 @@ mapa:
     napis_woda: {jasny: "#2B454D", ciemny: "#A3B8C0", uzycie: nazwa rzeki}
     obwodka: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: obwódka napisów}
     sciezka: {jasny: "#004E5E", ciemny: "#6A818A", uzycie: ścieżka dostosowana}
-    tusz: {jasny: "#181C1D", ciemny: "#D5DADC", uzycie: "znaczniki wejść, ikony pochylni i planu"}
-    papier: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: wnętrze znaczników}
+    tusz: {jasny: "#181C1D", ciemny: "#D5DADC", uzycie: "kontur znaków wejść i barier, znak „Niedostępne”, ikony pochylni i planu"}
+    papier: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: "obwódka znaków wejść i barier, wnętrze znaczników"}
+    # Znaki wejść i barier na mapie i w legendzie. Barwa powtarza kształt i słowo, których nie zastępuje (NFR-21).
+    # Odcienie z palety bezpiecznej przy daltonizmie (Okabe i Ito), jasność maleje z uciążliwością.
+    # „Blokada”: zaokrąglona tablica z jedną poziomą belką, jak znak zakazu wjazdu; poza mapą i legendą tablica
+    # ma kolor tekstu, a belka kolor tła.
+    znak_dostepne: {jasny: "#00795C", ciemny: "#35C79B", uzycie: "wnętrze koła znaku wejścia „Dostępne”"}
+    znak_dostepne_symbol: {jasny: "#FFFFFF", ciemny: "#101314", uzycie: "ptaszek w znaku wejścia „Dostępne”"}
+    znak_utrudnienie: {jasny: "#F5CB14", ciemny: "#F7D442", uzycie: "wnętrze trójkąta znaku „Utrudnienie”"}
+    znak_utrudnienie_symbol: {jasny: "#181C1D", ciemny: "#101314", uzycie: "„!” w trójkącie „Utrudnienie”"}
+    znak_tylko_z_pomoca: {jasny: "#E87A00", ciemny: "#F28C28", uzycie: "wnętrze tarczy znaku „Tylko z pomocą”"}
+    znak_tylko_z_pomoca_symbol: {jasny: "#181C1D", ciemny: "#101314", uzycie: "dwie osoby w tarczy „Tylko z pomocą”"}
+    znak_blokada: {jasny: "#A3180A", ciemny: "#D92D1A", uzycie: "tablica znaku „Blokada”"}
+    znak_blokada_symbol: {jasny: "#FFFFFF", ciemny: "#FFFFFF", uzycie: "pozioma belka na tablicy „Blokada”"}
     # Granica terenu (BR-G5): ciągła linia z obwódką w kolorze przeciwnym, żeby była widoczna na każdym podkładzie.
     granica_terenu: {jasny: "#181C1D", ciemny: "#D5DADC", uzycie: "linia granicy terenu, 2 dp"}
     granica_terenu_obwodka: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: "obwódka linii granicy terenu, 1,5 dp z każdej strony"}
@@ -487,6 +504,10 @@ mapa:
     - {kolor: tusz, tlo: pwr, rodzaj: komponent, gdzie: znacznik wejścia na budynku PWr}
     - {kolor: tusz, tlo: pwr_podstawowy, rodzaj: komponent, gdzie: znacznik wejścia na budynku podstawowym}
     - {kolor: papier, tlo: tusz, rodzaj: komponent, gdzie: znak wewnątrz znacznika}
+    - {kolor: znak_dostepne_symbol, tlo: znak_dostepne, rodzaj: komponent, gdzie: "ptaszek w znaku „Dostępne”"}
+    - {kolor: znak_utrudnienie_symbol, tlo: znak_utrudnienie, rodzaj: komponent, gdzie: "„!” w znaku „Utrudnienie”"}
+    - {kolor: znak_tylko_z_pomoca_symbol, tlo: znak_tylko_z_pomoca, rodzaj: komponent, gdzie: "dwie osoby w znaku „Tylko z pomocą”"}
+    - {kolor: znak_blokada_symbol, tlo: znak_blokada, rodzaj: komponent, gdzie: "belka w znaku „Blokada”"}
     - {kolor: tusz, tlo: p_korytarz, rodzaj: komponent, gdzie: ikona planu na korytarzu}
     - {kolor: tusz, tlo: p_winda, rodzaj: komponent, gdzie: ikona windy}
     - {kolor: tusz, tlo: p_sala, rodzaj: komponent, gdzie: "znak windy, toalety i bariery na sali"}
