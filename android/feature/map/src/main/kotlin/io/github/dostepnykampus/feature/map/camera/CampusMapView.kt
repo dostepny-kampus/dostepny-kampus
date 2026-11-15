@@ -18,6 +18,7 @@ import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.style.MapStyleColors
+import io.github.dostepnykampus.feature.map.style.PlanColors
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
 import java.util.Locale
@@ -72,6 +73,15 @@ internal fun MapColors.styleColors(): MapStyleColors =
         ink = tusz.hex(),
         dimmed = budynek.hex(),
         dimmedOutline = budynekKontur.hex(),
+        plan =
+            PlanColors(
+                classroom = pSala.hex(),
+                corridor = pKorytarz.hex(),
+                other = pInne.hex(),
+                elevator = pWinda.hex(),
+                toilet = pWc.hex(),
+                wall = pKontur.hex(),
+            ),
     )
 
 internal fun Color.hex(): String = "#%06X".format(Locale.ROOT, toArgb() and RGB_MASK)
