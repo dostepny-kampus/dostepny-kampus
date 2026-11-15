@@ -85,7 +85,7 @@ class MapPlanTest {
         }
 
     @Test
-    fun startsOnFloorOfRecommendedEntrance() =
+    fun startsOnEntranceFloor() =
         runTest(UnconfinedTestDispatcher()) {
             val plan = MapPlan(Plans(), entrances(floor = "P1"))
             val shown = collected(plan)
@@ -94,7 +94,7 @@ class MapPlanTest {
         }
 
     @Test
-    fun startsOnGroundFloorForUnknownEntranceFloor() =
+    fun startsOnGroundForUnknownFloor() =
         runTest(UnconfinedTestDispatcher()) {
             val plan = MapPlan(Plans(), entrances(floor = "P7"))
             val shown = collected(plan)

@@ -86,9 +86,10 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
         if (symbol !in downloaded && plans.download(symbol)) downloaded += symbol
         val floors = plans.floors(symbol)?.floors.orEmpty()
         val rooms = floors.mapNotNull { floor -> plans.rooms(symbol, floor.id)?.let { floor.id to it } }.toMap()
-        val entrance = orderedEntrances(entrances.entrances(symbol)).firstOrNull { it.isRecommended }
+        val recommended = orderedEntrances(entrances.entrances(symbol)).firstOrNull { it.isRecommended }
+        val entranceFloor = recommended?.let { it.entrance.floorId }
         val start =
-            floors.firstOrNull { it.id == entrance?.entrance?.floorId }
+            floors.firstOrNull { it.id == entranceFloor }
                 ?: floors.firstOrNull { it.order == 0 }
                 ?: floors.firstOrNull()
         return start?.let { ShownPlan(building = symbol, floors = floors, floor = it.id, rooms = rooms) }
