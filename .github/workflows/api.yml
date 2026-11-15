@@ -21,30 +21,29 @@ env:
   OASDIFF_SHA256: 75775f65b0adebd26a8e013af51a799342dfdc6262d89efa9e3b7bdf89657d90
 
 jobs:
-  porownanie:
+  zmiany:
+    # Nieudane `zmiany` uruchamia kontrole w pełni. Równe drzewo grupy (pomin) je pomija.
     if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     permissions:
       actions: read
       contents: read
-    uses: ./.github/workflows/drzewo-grupy.yml
-    with:
-      workflow: api.yml
-
-  zmiany:
-    needs: porownanie
-    # Nieudane `zmiany` uruchamia kontrakt i zmiany-lamiace. Równe drzewo grupy dalej je pomija.
-    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
+      pomin: ${{ steps.drzewo.outputs.pomin }}
       api: ${{ steps.diff.outputs.api }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 2
           persist-credentials: false
+      - id: drzewo
+        uses: ./.github/actions/drzewo-grupy
+        with:
+          workflow: api.yml
       - name: Sprawdź, czy PR albo grupa w kolejce zmienia kontrakt API
         id: diff
+        if: steps.drzewo.outputs.pomin != 'true'
         env:
           EVENT: ${{ github.event_name }}
           GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
@@ -53,8 +52,8 @@ jobs:
           .github/scripts/zmiany-obszaru.sh api api .github/workflows/api.yml .github/scripts/zmiany-obszaru.sh
 
   kontrakt:
-    needs: [porownanie, zmiany]
-    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.api == 'true') }}
+    needs: zmiany
+    if: ${{ !cancelled() && needs.zmiany.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.api == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -73,8 +72,8 @@ jobs:
         run: npx --no-install redocly lint --format=github-actions openapi.yaml
 
   zmiany-lamiace:
-    needs: [porownanie, zmiany]
-    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.api == 'true') }}
+    needs: zmiany
+    if: ${{ !cancelled() && needs.zmiany.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.api == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:

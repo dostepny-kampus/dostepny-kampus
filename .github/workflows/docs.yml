@@ -42,30 +42,29 @@ env:
   NO_MKDOCS_2_WARNING: "1"
 
 jobs:
-  porownanie:
+  zmiany:
+    # Nieudane `zmiany` uruchamia kontrole w pełni. Równe drzewo grupy (pomin) je pomija.
     if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     permissions:
       actions: read
       contents: read
-    uses: ./.github/workflows/drzewo-grupy.yml
-    with:
-      workflow: docs.yml
-
-  zmiany:
-    needs: porownanie
-    # Nieudane `zmiany` uruchamia kontrolę. Równe drzewo grupy dalej ją pomija.
-    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (github.event_name == 'pull_request' || github.event_name == 'merge_group') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
+      pomin: ${{ steps.drzewo.outputs.pomin }}
       dokumentacja: ${{ steps.diff.outputs.dokumentacja }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 2
           persist-credentials: false
+      - id: drzewo
+        uses: ./.github/actions/drzewo-grupy
+        with:
+          workflow: docs.yml
       - name: Sprawdź, czy PR albo grupa w kolejce zmienia dokumentację, scenariusze, testy Androida albo zestawy scenariuszy serwera
         id: diff
+        if: steps.drzewo.outputs.pomin != 'true'
         env:
           EVENT: ${{ github.event_name }}
           GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
@@ -76,8 +75,8 @@ jobs:
           .github/scripts/zmiany-obszaru.sh .github/actions/narzedzia-dokumentacji
 
   kontrola:
-    needs: [porownanie, zmiany]
-    if: ${{ !cancelled() && needs.porownanie.outputs.pomin != 'true' && (github.event_name == 'pull_request' || github.event_name == 'merge_group') && (needs.zmiany.result != 'success' || needs.zmiany.outputs.dokumentacja == 'true') }}
+    needs: zmiany
+    if: ${{ !cancelled() && needs.zmiany.outputs.pomin != 'true' && (github.event_name == 'pull_request' || github.event_name == 'merge_group') && (needs.zmiany.result != 'success' || needs.zmiany.outputs.dokumentacja == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
