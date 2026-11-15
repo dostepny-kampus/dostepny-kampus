@@ -3,8 +3,8 @@
 # Author: Vladyslav Yevkov
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 # Podstawione `gh` dla testów zamykania issue (zamknij-issue-test.sh, zamknij-nadrzedne-test.sh): `gh pr view` zwraca
-# opis PR z pliku, `gh issue close` dopisuje numer i komentarz do dziennika, a `gh api graphql` odpowiada
-# z FAKE_PARENTS (wiersz: issue nadrzędne stan sub:STAN,sub:STAN…).
+# opis PR z pliku, `gh issue close` i `gh issue comment` dopisują numer i komentarz do dziennika,
+# a `gh api graphql` odpowiada z FAKE_PARENTS (wiersz: issue nadrzędne stan sub:STAN,sub:STAN…).
 set -euo pipefail
 case "$1 $2" in
   'pr view') cat "$FAKE_BODY_FILE" ;;
@@ -16,6 +16,7 @@ case "$1 $2" in
   'issue close')
     if [[ " ${FAKE_FAIL:-} " == *" $3 "* ]]; then echo "gh: błąd zamykania #$3" >&2; exit 1; fi
     printf '%s|%s\n' "$3" "$5" >>"$FAKE_LOG" ;;
+  'issue comment') printf '%s|komentarz: %s\n' "$3" "$5" >>"$FAKE_LOG" ;;
   'api graphql')
     for arg in "$@"; do [[ $arg == number=* ]] && child="${arg#number=}"; done
     if [[ " ${FAKE_PARENT_FAIL:-} " == *" $child "* ]]; then echo "gh: błąd odczytu nadrzędnego #$child" >&2; exit 1; fi
