@@ -34,14 +34,9 @@ final class SyncPushHttpIT {
     @Test
     void savesMarkerFromCollector(final WebApplicationContext context)
         throws Exception {
-        final UUID id = UUID.randomUUID();
         Assertions.assertEquals(
             "200 APPLIED, zapisanych 1",
-            String.format(
-                "%s, zapisanych %d",
-                SyncPushHttpIT.push(context, "COLLECTOR", id, "C-13"),
-                SyncPushHttpIT.saved(context, id)
-            ),
+            SyncPushHttpIT.pushed(context, UUID.randomUUID(), "C-13"),
             "Zbierający nie zapisał znacznika piętra"
         );
     }
@@ -52,11 +47,7 @@ final class SyncPushHttpIT {
         SyncPushHttpIT.push(context, "COLLECTOR", id, "C-13");
         Assertions.assertEquals(
             "200 APPLIED, zapisanych 1",
-            String.format(
-                "%s, zapisanych %d",
-                SyncPushHttpIT.push(context, "COLLECTOR", id, "C-13"),
-                SyncPushHttpIT.saved(context, id)
-            ),
+            SyncPushHttpIT.pushed(context, id, "C-13"),
             "Ponowne wysłanie znacznika zapisało go drugi raz albo nie zwróciło wyniku"
         );
     }
@@ -64,14 +55,9 @@ final class SyncPushHttpIT {
     @Test
     void rejectsMarkerOfUnknownBuilding(final WebApplicationContext context)
         throws Exception {
-        final UUID id = UUID.randomUUID();
         Assertions.assertEquals(
             "200 REJECTED, zapisanych 0",
-            String.format(
-                "%s, zapisanych %d",
-                SyncPushHttpIT.push(context, "COLLECTOR", id, "Z-99"),
-                SyncPushHttpIT.saved(context, id)
-            ),
+            SyncPushHttpIT.pushed(context, UUID.randomUUID(), "Z-99"),
             "Serwer zapisał znacznik w budynku, którego nie zna"
         );
     }
@@ -128,6 +114,16 @@ final class SyncPushHttpIT {
         return context.getBean(JdbcClient.class).sql(
             "SELECT revoked FROM inspection_markers WHERE id = :id"
         ).param("id", id).query(Boolean.class).single();
+    }
+
+    private static String pushed(
+        final WebApplicationContext context, final UUID id, final String building
+    ) throws Exception {
+        return String.format(
+            "%s, zapisanych %d",
+            SyncPushHttpIT.push(context, "COLLECTOR", id, building),
+            SyncPushHttpIT.saved(context, id)
+        );
     }
 
     private static String push(

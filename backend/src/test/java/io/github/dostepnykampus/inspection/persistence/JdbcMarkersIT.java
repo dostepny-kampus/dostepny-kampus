@@ -50,12 +50,11 @@ final class JdbcMarkersIT {
         markers.place(new NewMarker(id, new MarkerPlace.Floor("C-13", "0"), "konto-a"));
         final boolean foreign = markers.revoke(id, "konto-b");
         final boolean unknown = markers.revoke(UUID.randomUUID(), "konto-a");
-        final boolean own = markers.revoke(id, "konto-a");
         Assertions.assertEquals(
             "cudzy: false, nieistniejący: false, własny: true, cofnięty: true",
             String.format(
                 "cudzy: %b, nieistniejący: %b, własny: %b, cofnięty: %b",
-                foreign, unknown, own,
+                foreign, unknown, markers.revoke(id, "konto-a"),
                 context.getBean(JdbcClient.class)
                     .sql("SELECT revoked FROM inspection_markers WHERE id = :id")
                     .param("id", id).query(Boolean.class).single()
