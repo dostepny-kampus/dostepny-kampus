@@ -14,7 +14,7 @@ Próg pokrycia nie widzi testu, który wykonuje linię, ale nie sprawdza jej wyn
 
 ## Decyzja
 
-- PIT 1.30.2 z `pitest-junit5-plugin` 1.2.3 działa w jobie `serwer` przepływu `backend.yml`, po `verify`, w PR i w grupie kolejki scalania. Do 13 listopada 2026 roku działał w osobnym jobie po wypchnięciu na `sprint/*`; pomiar pokazał około 20 sekund analizy, więc powód kosztu odpadł (#1308).
+- PIT 1.30.2 z `pitest-junit5-plugin` 1.2.3 działa w jobie `serwer` przepływu `backend.yml`, po `verify`, w PR oraz w jobie `mutacje` kontroli sprintu po scaleniu. Do 13 listopada 2026 roku działał w osobnym jobie po wypchnięciu na `sprint/*`; pomiar pokazał około 20 sekund analizy, więc powód kosztu odpadł (#1308). Od 15 listopada nie działa w grupie kolejki (#2414). Zajmował tam 4,5–5,5 minuty z około 10 minut joba, a od 13 listopada nie padł ani razu.
 - Zakres: kod sprawdzany szybkimi testami, bez kontekstu Springa, bazy i kontenerów. Testy z kontekstem Springa mają znacznik JUnit `kontekst-springa`, który PIT wyklucza; znacznik na każdej klasie z `@SpringBootTest` i na zestawie scenariuszy wymusza `SpringTestTagArchitectureIT`. Zakres klas rośnie po dopisaniu testów dla mutacji bez pokrycia (pomiar w #1311).
 - Próg zabitych mutacji to dzisiejszy wynik, 100% (70 z 70), i może tylko rosnąć. Zmianę `pitest`, `mutationThreshold` albo `excludedClasses` w `pom.xml` zgłasza strażnik jakości.
 - Wyjątek od ADR-0004: ostatnie wydanie `pitest-junit5-plugin` jest z 20 maja 2025 roku, starsze niż 12 miesięcy. Innej wtyczki PIT dla JUnit nie ma, a Arcmutate nie ma wolnej licencji. Wtyczka działa z Javą 25 i JUnit 6.0.3 projektu. Wyjątek przyjęty 12 listopada 2026 roku w #900.

@@ -22,6 +22,7 @@ opisy w kodzie), mówi [AGENTS.md](AGENTS.md).
    Android w grupie kolejki uruchamia tylko `testy` (kompilacja, lint, detekt, testy jednostkowe i architektury, Roborazzi);
    `buildHealth` biegnie na PR i w kontroli sprintu (punkt 7), APK i emulatory tylko w kontroli sprintu albo po ręcznym
    uruchomieniu `android.yml` z commitem (`gh workflow run android.yml -f sha=<commit>`); push po scaleniu tylko przekłada cache.
+   Serwer w grupie kolejki uruchamia `mvn verify` bez testów mutacyjnych PIT; PIT biegnie na PR i w kontroli sprintu.
    Aby dodać PR do kolejki, użyj przycisku „Merge when ready” lub polecenia `gh pr merge N` po zalogowaniu
    na konto z prawem scalania w repozytorium.
    Gdy grupa ma to samo drzewo plików, co zielony przebieg na PR, i nie zmienia `.github/` względem bazy, ciężkie joby są
@@ -33,7 +34,8 @@ opisy w kodzie), mówi [AGENTS.md](AGENTS.md).
    [`kontrola-sprintu-cel.sh`](.github/scripts/kontrola-sprintu-cel.sh)) po każdym wypchnięciu na `sprint/N` (i co godzinę
    z harmonogramu GitHub jako zapas) bierze głowę gałęzi `sprint/N` z najwyższym N,
    której nie ma jeszcze w `main`, uruchamia na niej pełny przebieg [`android.yml`](.github/workflows/android.yml) (APK,
-   emulatory, pełny test systemowy, `buildHealth`; bez `testy`, które głowa przeszła w kolejce) i zapisuje wynik
+   emulatory, pełny test systemowy, `buildHealth`; bez `testy`, które głowa przeszła w kolejce) oraz testy mutacyjne PIT
+   serwera ([`backend.yml`](.github/workflows/backend.yml), zadanie `mutacje`) i zapisuje wspólny wynik
    jako status commita `kontrola-sprintu`. Głowę z tym statusem pomija; gdy od ostatniego sprawdzonego commita
    nie zmienił się Android, serwer, `infra/` ani dane budynków, stawia zielony status bez budowy. Ręczne uruchomienie
    z nazwą gałęzi sprawdza ją zawsze. Naraz biegnie jeden przebieg i czeka najwyżej jeden: przebieg kończy się na
