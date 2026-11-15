@@ -444,6 +444,9 @@ mapa:
     sciezka: {jasny: "#004E5E", ciemny: "#6A818A", uzycie: ścieżka dostosowana}
     tusz: {jasny: "#181C1D", ciemny: "#D5DADC", uzycie: "znaczniki wejść, ikony pochylni i planu"}
     papier: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: wnętrze znaczników}
+    # Granica terenu (BR-G5): ciągła linia z obwódką w kolorze przeciwnym, żeby była widoczna na każdym podkładzie.
+    granica_terenu: {jasny: "#181C1D", ciemny: "#D5DADC", uzycie: "linia granicy terenu, 2 dp"}
+    granica_terenu_obwodka: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: "obwódka linii granicy terenu, 1,5 dp z każdej strony"}
     p_korytarz: {jasny: "#FFFFFF", ciemny: "#2C3236", uzycie: korytarz na planie piętra}
     p_sala: {jasny: "#D2EAF3", ciemny: "#2C3C44", uzycie: sala na planie piętra}
     p_inne: {jasny: "#E1E6E8", ciemny: "#23282B", uzycie: inne pomieszczenia i klatki schodowe}
@@ -453,6 +456,10 @@ mapa:
     p_kontur: {jasny: "#6A7579", ciemny: "#828E94", uzycie: ściany na planie piętra}
     p_wybrana: {jasny: "#8FD3EA", ciemny: "#2F5A68", uzycie: szukana sala}
     p_wybrana_kontur: {jasny: "#001F27", ciemny: "#D9E6EB", uzycie: kontur szukanej sali}
+  # Krycie koloru tła motywu (`kolory.background`) nałożonego na podkład poza granicą terenu (BR-G5).
+  # W jasnym motywie podkład blednie, w ciemnym gaśnie; teren od otoczenia odróżnia jasność.
+  krycie:
+    teren_poza: {jasny: 0.75, ciemny: 0.65, uzycie: "kolor `background` na podkładzie poza granicą terenu"}
   pary:
     - {kolor: napis_pwr, tlo: obwodka, rodzaj: tekst, gdzie: "symbol budynku, nazwy na planie"}
     - {kolor: napis_ulica, tlo: obwodka, rodzaj: tekst, gdzie: "nazwy ulic, numery sal"}
@@ -477,3 +484,6 @@ mapa:
     - {kolor: p_wybrana_kontur, tlo: p_wybrana, rodzaj: komponent, gdzie: kontur szukanej sali do wypełnienia}
     - {kolor: p_wybrana_kontur, tlo: p_korytarz, rodzaj: komponent, gdzie: kontur szukanej sali do korytarza}
     - {kolor: p_wybrana_kontur, tlo: p_sala, rodzaj: komponent, gdzie: kontur szukanej sali do sąsiedniej sali}
+    - {kolor: granica_terenu, tlo: granica_terenu_obwodka, rodzaj: komponent, gdzie: linia granicy terenu do obwódki}
+    - {kolor: granica_terenu, tlo: lad, rodzaj: komponent, gdzie: linia granicy terenu na lądzie}
+    - {kolor: granica_terenu, tlo: woda, rodzaj: komponent, gdzie: linia granicy terenu na rzece}
