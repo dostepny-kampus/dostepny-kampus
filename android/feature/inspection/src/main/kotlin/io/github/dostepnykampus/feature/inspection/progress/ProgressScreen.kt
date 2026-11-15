@@ -86,7 +86,7 @@ internal fun Loading() {
     }
 }
 
-private enum class Problem(
+internal enum class Problem(
     @param:StringRes val message: Int,
     @param:StringRes val action: Int,
     @param:StringRes val headline: Int? = null,
@@ -97,7 +97,7 @@ private enum class Problem(
 }
 
 @Composable
-private fun Failure(problem: Problem, onAction: () -> Unit) {
+internal fun Failure(problem: Problem, onAction: () -> Unit) {
     Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         problem.headline?.let { Text(stringResource(it), style = MaterialTheme.typography.titleMedium) }
         Text(stringResource(problem.message), style = MaterialTheme.typography.bodyLarge)

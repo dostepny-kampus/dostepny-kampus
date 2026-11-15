@@ -74,6 +74,12 @@ class MarkersViewModel
             viewModelScope.launch { current.value = opened() }
         }
 
+        /** „Spróbuj ponownie” po błędzie odczytu: czyta budynek od nowa. */
+        fun retry() {
+            current.value = MarkersUiState.Loading
+            viewModelScope.launch { current.value = opened() }
+        }
+
         /** „Cofnij znacznik”: pyta o potwierdzenie, nic jeszcze nie zmienia. */
         fun ask(markerId: String) {
             update { it.copy(asking = markerId, failure = null) }

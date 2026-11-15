@@ -43,7 +43,7 @@ class MarkersScreenTest {
     @Test
     fun showsMarkerWithAuthor() {
         show(MarkersUiState.Ready(BUILDING))
-        compose.onNodeWithText("Piętro 2").assertIsDisplayed()
+        compose.onNodeWithText(FLOOR).assertIsDisplayed()
         compose.onNodeWithText("Znacznik: Zbierający, Autor 14").assertIsDisplayed()
         compose.onNodeWithText("Obejrzane piętra: 4 z 5").assertIsDisplayed()
     }
@@ -92,14 +92,44 @@ class MarkersScreenTest {
         assertEquals("kolejność czynności", listOf(KEEP, REVOKE), calls)
     }
 
-    private fun actions(onAsk: (String) -> Unit = {}, onKeep: () -> Unit = {}, onConfirm: () -> Unit = {}) =
-        MarkerActions(onAsk = onAsk, onKeep = onKeep, onConfirm = onConfirm)
+    /**
+     * Błąd cofnięcia bez internetu: komunikat o internecie, znacznik zostaje na liście.
+     *
+     * Wymagania: US11.3, NFR-50
+     */
+    @Test
+    fun offlineRevokeShowsMessage() {
+        show(MarkersUiState.Ready(BUILDING, failure = RevokeFailure.OFFLINE))
+        compose.onNodeWithText("Ta czynność wymaga internetu", substring = true).assertIsDisplayed()
+        compose.onNodeWithText(FLOOR).assertIsDisplayed()
+    }
+
+    /**
+     * Błąd serwera przy odczycie: komunikat i „Spróbuj ponownie”.
+     *
+     * Wymagania: US11.3, NFR-50
+     */
+    @Test
+    fun serverErrorOffersRetry() {
+        var retries = 0
+        show(MarkersUiState.ServerError, actions(onRetry = { retries++ }))
+        compose.onNodeWithText("Spróbuj ponownie").performClick()
+        assertEquals("liczba ponowień", 1, retries)
+    }
+
+    private fun actions(
+        onAsk: (String) -> Unit = {},
+        onKeep: () -> Unit = {},
+        onConfirm: () -> Unit = {},
+        onRetry: () -> Unit = {},
+    ) = MarkerActions(onAsk = onAsk, onKeep = onKeep, onConfirm = onConfirm, onRetry = onRetry)
 
     private fun show(state: MarkersUiState, actions: MarkerActions = actions()) {
         compose.setContent { DostepnyKampusTheme { MarkersContent(state = state, actions = actions, onBack = {}) } }
     }
 
     private companion object {
+        const val FLOOR = "Piętro 2"
         const val SYMBOL = "A-1"
         const val KEEP = "Zostaw znacznik"
         const val REVOKE = "Cofnij znacznik"
