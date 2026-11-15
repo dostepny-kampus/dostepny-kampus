@@ -43,8 +43,8 @@ Funkcja: Logowanie, role i zaproszenia
     Wtedy próba jest odrzucona
     Oraz zgłoszenie ma nadal uciążliwość nadaną przez autora
 
-  # kroki serwera: #1992
-  @US14.3 @BR-1 @BR-2 @aplikacja @serwer @do-zrobienia
+  # test aplikacji: #708
+  @US14.3 @BR-1 @BR-2 @aplikacja @serwer @usluga-logowania
   Scenariusz: Samodzielna rejestracja daje tylko uprawnienia Odwiedzającego
     Zakładając, że osoba bez konta korzysta z aplikacji jako Gość niezalogowany
     Jeżeli założy konto przez samodzielną rejestrację i zaloguje się

@@ -59,6 +59,8 @@ Realm jest deweloperski. Ma cztery role z kontraktu, klienta publicznego `dostep
 | `VERIFIER` | `weryfikator.test` | `haslo-testowe-weryfikator` |
 | `COORDINATOR` | `koordynator.test` | `haslo-testowe-koordynator` |
 
+Realm pozwala założyć konto samemu (`registrationAllowed`). Nowe konto trafia do grupy domyślnej `odwiedzajacy` i dostaje z niej tylko rolę `VISITOR` (US14.3); role pracownicze nadaje Koordynator.
+
 Hasła są jawne, bo konta istnieją tylko w lokalnym realmie i nie mają danych osób. Na serwerze docelowym tego pliku się nie wczytuje.
 
 Klient ma w tym realmie włączone logowanie bezpośrednie nazwą i hasłem (`directAccessGrantsEnabled`). To wyjątek dla dewelopera: z niego korzysta przełącznik ról w aplikacji debug. Konfiguracja docelowa go nie włącza, a aplikacja loguje się kodem autoryzacji z PKCE (NFR-31).

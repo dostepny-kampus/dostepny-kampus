@@ -83,6 +83,12 @@ final class TestSetupArchitectureIT {
             " ",
             "sprawdza token z prawdziwego Keycloaka domyślnym dekoderem,",
             "więc potrzebuje kontekstu bez tożsamości testowej"
+        ),
+        "io.github.dostepnykampus.loginspecs.SelfRegistrationSteps",
+        String.join(
+            " ",
+            "kroki scenariuszy zakładają konto w prawdziwym Keycloaku,",
+            "więc potrzebują kontekstu bez tożsamości testowej"
         )
     );
 
