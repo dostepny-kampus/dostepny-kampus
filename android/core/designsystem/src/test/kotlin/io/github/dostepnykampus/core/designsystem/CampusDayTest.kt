@@ -14,16 +14,16 @@ import java.time.LocalDate
 class CampusDayTest {
     @Test
     fun writesDayWithoutLeadingZeros() {
-        assertEquals("7.3.2026", campusDay(LocalDate.of(2026, 3, 7)))
+        assertEquals("Dzień bez zer wiodących", "7.3.2026", campusDay(LocalDate.of(2026, 3, 7)))
     }
 
     @Test
     fun countsMomentInCampusZoneNotUtc() {
-        assertEquals("7.3.2026", campusDay(Instant.parse("2026-03-06T23:30:00Z")))
+        assertEquals("Zimą kampus ma UTC+1", "7.3.2026", campusDay(Instant.parse("2026-03-06T23:30:00Z")))
     }
 
     @Test
     fun countsSummerMomentWithOffset() {
-        assertEquals("1.8.2026", campusDay(Instant.parse("2026-07-31T22:30:00Z")))
+        assertEquals("Latem kampus ma UTC+2", "1.8.2026", campusDay(Instant.parse("2026-07-31T22:30:00Z")))
     }
 }
