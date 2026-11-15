@@ -35,8 +35,8 @@ class FloorPickerScreenshotTest {
     }
 
     @Test
+    @Config(qualifiers = "+night")
     fun drawsDarkFloors() {
-        RuntimeEnvironment.setQualifiers("+night")
         capture()
     }
 

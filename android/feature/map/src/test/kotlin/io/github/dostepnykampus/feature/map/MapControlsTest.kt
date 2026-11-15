@@ -38,7 +38,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
@@ -103,8 +102,8 @@ class MapControlsTest {
 
     /** Zrzut do porównania z makietą hi-fi V1, motyw ciemny: koła z obwódką zamiast cienia. */
     @Test
+    @Config(qualifiers = "+night")
     fun nfr53_hifi_motyw_ciemny() {
-        RuntimeEnvironment.setQualifiers("+night")
         compose.setContent { Controls {} }
         compose.onRoot().captureRoboImage()
     }
