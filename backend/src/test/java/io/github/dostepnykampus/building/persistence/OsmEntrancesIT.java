@@ -45,7 +45,7 @@ final class OsmEntrancesIT {
     }
 
     @Test
-    void usSeventeenStoresEntranceRef(final WebApplicationContext context) {
+    void storesEntranceRef(final WebApplicationContext context) {
         MatcherAssert.assertThat(
             "Wejścia P-23 nie mają opisu W-1 z tagu ref",
             context.getBean(JdbcClient.class).sql(
@@ -56,7 +56,7 @@ final class OsmEntrancesIT {
     }
 
     @Test
-    void usSeventeenSharesEntrance(final WebApplicationContext context) {
+    void sharesEntrance(final WebApplicationContext context) {
         MatcherAssert.assertThat(
             "Wejście wspólne C-1, C-3 i C-4 nie ma wiersza dla każdego budynku",
             context.getBean(JdbcClient.class).sql(
@@ -71,7 +71,7 @@ final class OsmEntrancesIT {
     }
 
     @Test
-    void usSeventeenKeepsWalkthrough(final WebApplicationContext context)
+    void keepsWalkthrough(final WebApplicationContext context)
         throws Exception {
         final JdbcClient jdbc = context.getBean(JdbcClient.class);
         jdbc.sql(

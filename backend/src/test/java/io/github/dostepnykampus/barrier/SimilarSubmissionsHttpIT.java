@@ -62,7 +62,7 @@ final class SimilarSubmissionsHttpIT {
     }
 
     @Test
-    void usTenOneSortsFromNearestWithDistanceFromAnyFloor(final WebApplicationContext context)
+    void sortsFromNearestWithDistanceFromAnyFloor(final WebApplicationContext context)
         throws Exception {
         final SimilarSubmissionsHttpIT.Place place =
             new SimilarSubmissionsHttpIT.Place(context);
@@ -100,7 +100,7 @@ final class SimilarSubmissionsHttpIT {
     }
 
     @Test
-    void usTenOneAnswersNotFoundForMissingSubmission(final WebApplicationContext context)
+    void answersNotFoundForMissingSubmission(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Podobne zgłoszenia nieistniejącego zgłoszenia nie dają 404",

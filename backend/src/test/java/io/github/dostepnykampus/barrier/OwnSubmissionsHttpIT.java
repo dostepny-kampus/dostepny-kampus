@@ -40,7 +40,7 @@ final class OwnSubmissionsHttpIT {
     private static final String OWN = "/submissions?mine=true";
 
     @Test
-    void usEightListsOnlyOwnInAnyStatus(final WebApplicationContext context) throws Exception {
+    void listsOnlyOwnInAnyStatus(final WebApplicationContext context) throws Exception {
         final UUID own = OwnSubmissionsHttpIT.add(context, "REJECTED");
         final UUID foreign = OwnSubmissionsHttpIT.add(context, "SENT");
         context.getBean(JdbcClient.class)
@@ -59,7 +59,7 @@ final class OwnSubmissionsHttpIT {
     }
 
     @Test
-    void usEightRefusesOwnListWithoutCollectorRole(final WebApplicationContext context)
+    void refusesOwnListWithoutCollectorRole(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Własne zgłoszenia bez roli Zbierającego nie dają 403",

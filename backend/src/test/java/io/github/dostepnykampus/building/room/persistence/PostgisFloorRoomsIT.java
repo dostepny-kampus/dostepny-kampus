@@ -26,7 +26,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 final class PostgisFloorRoomsIT {
 
     @Test
-    void usSixteenReadsRoomsOfFloorWithOutline(final ApplicationContext context) {
+    void readsRoomsOfFloorWithOutline(final ApplicationContext context) {
         PostgisFloorRoomsIT.plan(context, "G-951");
         final RoomList list = context.getBean(FloorRooms.class).rooms("G-951", "P0").orElseThrow();
         MatcherAssert.assertThat(
@@ -54,7 +54,7 @@ final class PostgisFloorRoomsIT {
     }
 
     @Test
-    void usSixteenGivesEmptyOutlineForFloorWithoutRooms(final ApplicationContext context) {
+    void givesEmptyOutlineForFloorWithoutRooms(final ApplicationContext context) {
         PostgisFloorRoomsIT.plan(context, "G-952");
         MatcherAssert.assertThat(
             "Piętro bez pomieszczeń nie ma pustego obrysu i pustej listy",
@@ -66,7 +66,7 @@ final class PostgisFloorRoomsIT {
     }
 
     @Test
-    void usSixteenGivesNothingForUnknownBuildingOrFloor(final ApplicationContext context) {
+    void givesNothingForUnknownBuildingOrFloor(final ApplicationContext context) {
         PostgisFloorRoomsIT.plan(context, "G-953");
         final FloorRooms rooms = context.getBean(FloorRooms.class);
         MatcherAssert.assertThat(

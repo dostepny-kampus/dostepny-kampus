@@ -28,7 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
 final class JdbcMarkersTest {
 
     @Test
-    void brNineSavesRepeatedMarkerOnce(final WebApplicationContext context) {
+    void savesRepeatedMarkerOnce(final WebApplicationContext context) {
         final UUID id = UUID.randomUUID();
         final MarkerRepository markers = context.getBean(MarkerRepository.class);
         markers.place(new NewMarker(id, new MarkerPlace.Floor("C-13", "0"), "konto-a"));
@@ -43,7 +43,7 @@ final class JdbcMarkersTest {
     }
 
     @Test
-    void usFifteenOneSavesMarkerWithoutFloor(final WebApplicationContext context) {
+    void savesMarkerWithoutFloor(final WebApplicationContext context) {
         final UUID id = UUID.randomUUID();
         context.getBean(MarkerRepository.class).place(
             new NewMarker(id, new MarkerPlace.Building("C-13"), "konto-a")

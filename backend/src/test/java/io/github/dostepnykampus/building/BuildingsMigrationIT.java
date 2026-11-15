@@ -25,7 +25,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 final class BuildingsMigrationIT {
 
     @Test
-    void usOneAppliesBuildingsMigration(final ApplicationContext context) {
+    void appliesBuildingsMigration(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Flyway nie wykonał migracji V1 z budynkami",
             context.getBean(JdbcClient.class).sql(
@@ -53,7 +53,7 @@ final class BuildingsMigrationIT {
     }
 
     @Test
-    void usOneStoresOutlineAsGeographicMultiPolygon(final ApplicationContext context) {
+    void storesOutlineAsGeographicMultiPolygon(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Kontur budynku nie jest wielokątem złożonym w EPSG:4326",
             context.getBean(JdbcClient.class).sql(
@@ -67,7 +67,7 @@ final class BuildingsMigrationIT {
     }
 
     @Test
-    void usOneAllowsBuildingWithoutName(final ApplicationContext context) {
+    void allowsBuildingWithoutName(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Kolumna nazwy budynku nie dopuszcza braku nazwy (NULL)",
             context.getBean(JdbcClient.class).sql(
@@ -81,7 +81,7 @@ final class BuildingsMigrationIT {
     }
 
     @Test
-    void usOneIndexesOutlinesWithGist(final ApplicationContext context) {
+    void indexesOutlinesWithGist(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Kontury budynków nie mają indeksu przestrzennego GiST",
             context.getBean(JdbcClient.class).sql(
@@ -92,7 +92,7 @@ final class BuildingsMigrationIT {
     }
 
     @Test
-    void usOneSavesAndReadsBuildingOutline(final ApplicationContext context) {
+    void savesAndReadsBuildingOutline(final ApplicationContext context) {
         final String outline = String.join(
             "",
             "{\"type\":\"MultiPolygon\",\"coordinates\":[[[",

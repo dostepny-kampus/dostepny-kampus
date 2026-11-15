@@ -28,7 +28,7 @@ import tools.jackson.databind.json.JsonMapper;
 final class CurrentUserHttpIT {
 
     @Test
-    void usFourteenOneReturnsAccountWithEveryRoleFromToken(final WebApplicationContext context)
+    void returnsAccountWithEveryRoleFromToken(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Profil nie ma identyfikatora konta albo obu ról z tokenu obok roli Odwiedzającego",
@@ -52,7 +52,7 @@ final class CurrentUserHttpIT {
     }
 
     @Test
-    void usFourteenOneRefusesProfileWithoutToken(final WebApplicationContext context)
+    void refusesProfileWithoutToken(final WebApplicationContext context)
         throws Exception {
         final MockHttpServletResponse reply = context.getBean(MockMvc.class)
             .perform(MockMvcRequestBuilders.get("/me")).andReturn().getResponse();

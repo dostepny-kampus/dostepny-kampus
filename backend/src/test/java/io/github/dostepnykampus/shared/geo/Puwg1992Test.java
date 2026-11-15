@@ -27,7 +27,7 @@ final class Puwg1992Test {
     private static final double MILLIMETRE = 0.001;
 
     @Test
-    void usThirteenTwoMatchesProjOnCampus() {
+    void matchesProjOnCampus() {
         Assertions.assertArrayEquals(
             new double[] {364_229.179_6, 362_054.214_1},
             Puwg1992Test.point(17.059_89, 51.109_16),
@@ -37,7 +37,7 @@ final class Puwg1992Test {
     }
 
     @Test
-    void usThirteenTwoMatchesProjAcrossPoland() {
+    void matchesProjAcrossPoland() {
         Assertions.assertAll(
             Stream.of(
                 new double[] {23.16, 53.13, 778_187.892_6, 593_050.718_3},
@@ -56,7 +56,7 @@ final class Puwg1992Test {
     }
 
     @Test
-    void usThirteenTwoCentralMeridianHasFalseEasting() {
+    void centralMeridianHasFalseEasting() {
         Assertions.assertArrayEquals(
             new double[] {500_000.0, 459_309.209_4},
             Puwg1992Test.point(19.0, 52.0),

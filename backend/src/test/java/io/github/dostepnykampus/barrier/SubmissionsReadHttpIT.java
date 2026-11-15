@@ -76,7 +76,7 @@ final class SubmissionsReadHttpIT {
     }
 
     @Test
-    void usTwoListsOnlyAcceptedOfBuilding(final WebApplicationContext context)
+    void listsOnlyAcceptedOfBuilding(final WebApplicationContext context)
         throws Exception {
         final Row accepted = SubmissionsReadHttpIT.add(
             context, "ACCEPTED", SubmissionsReadHttpIT.FLOOR
@@ -125,7 +125,7 @@ final class SubmissionsReadHttpIT {
     }
 
     @Test
-    void usTwoListsOnlyRequestedFloor(final WebApplicationContext context) throws Exception {
+    void listsOnlyRequestedFloor(final WebApplicationContext context) throws Exception {
         final Row floor = SubmissionsReadHttpIT.add(
             context, "ACCEPTED", SubmissionsReadHttpIT.FLOOR
         );
@@ -140,7 +140,7 @@ final class SubmissionsReadHttpIT {
     }
 
     @Test
-    void usTwoSkipsOtherBuilding(final WebApplicationContext context) throws Exception {
+    void skipsOtherBuilding(final WebApplicationContext context) throws Exception {
         MatcherAssert.assertThat(
             "Lista zgłoszeń C-13 ma zgłoszenie z A-1",
             SubmissionsReadHttpIT.listed(
@@ -156,7 +156,7 @@ final class SubmissionsReadHttpIT {
     }
 
     @Test
-    void usEightAllowsOnlyAcceptedStatus(final WebApplicationContext context)
+    void allowsOnlyAcceptedStatus(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
             "Status SENT bez logowania nie daje 400",
@@ -166,7 +166,7 @@ final class SubmissionsReadHttpIT {
     }
 
     @Test
-    void usEightNeedsLoginForOwn(final WebApplicationContext context) throws Exception {
+    void needsLoginForOwn(final WebApplicationContext context) throws Exception {
         MatcherAssert.assertThat(
             "Własne zgłoszenia bez logowania nie dają 401",
             SubmissionsReadHttpIT.get(context, "/submissions?mine=true").getStatus(),
