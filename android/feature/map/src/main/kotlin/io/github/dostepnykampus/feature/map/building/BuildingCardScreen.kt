@@ -245,6 +245,7 @@ private fun BuildingFacts(
     }
     BarriersGroup(card, onReportRemoval)
     card.floors?.let { LiftToiletGroup(it) }
+    FloorsGroup(card.floors)
 }
 
 @Composable
