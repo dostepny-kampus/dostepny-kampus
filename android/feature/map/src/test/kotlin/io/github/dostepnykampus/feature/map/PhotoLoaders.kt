@@ -30,6 +30,7 @@ internal fun usePhotoLoader(context: Context, vararg interceptors: Interceptor) 
 /** Odpowiedź z gotowym obrazem dla [PHOTO_URL]. */
 internal fun photoAvailable(): Interceptor =
     FakeImageLoaderEngine.Builder().intercept(PHOTO_URL, ColorImage(PHOTO_COLOR, width = 64, height = 48)).build()
+
 /** Odpowiedź z błędem pobrania każdego obrazu. */
 internal fun photoFailing(): Interceptor =
     Interceptor { chain ->
