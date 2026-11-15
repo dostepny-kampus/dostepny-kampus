@@ -45,7 +45,15 @@ class InspectionProgressApiTest {
     @Test
     fun us11_1_basic_building() {
         val expected =
-            BuildingProgress("B-4", InspectionCoverage.Whole(isInspected = true), 0, 1, 2, 2, emptyList())
+            BuildingProgress(
+                buildingSymbol = "B-4",
+                coverage = InspectionCoverage.Whole(isInspected = true),
+                pendingSubmissions = 0,
+                acceptedSubmissions = 1,
+                entrancesTotal = 2,
+                entrancesCheckedOnSite = 2,
+                markers = emptyList(),
+            )
         val result = served(code = 200, body = BASIC) { it.progress() }.first
         assertEquals(ApiResult.Success(listOf(expected)), result, "postęp budynku podstawowego")
     }
