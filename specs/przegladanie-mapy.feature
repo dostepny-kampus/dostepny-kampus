@@ -285,14 +285,21 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Kampus główny”
     Jeżeli przesunie mapę do granicy terenu w stronę terenu „Wittigowo”
     Wtedy mapa dalej się nie przesuwa
-    Oraz obszar poza terenem jest przyciemniony
-    Oraz przy krawędzi mapy widzi przycisk terenu „Wittigowo” z odległością
 
-  @US1.7 @aplikacja
-  Scenariusz: Przycisk przy krawędzi mapy przechodzi do sąsiedniego terenu
-    Zakładając, że Gość niezalogowany widzi przy krawędzi mapy przycisk terenu „Wittigowo”
-    Jeżeli wybierze ten przycisk
-    Wtedy widzi mapę terenu „Wittigowo”
+  # wygląd granicy terenu: #2087
+  @US1.7 @BR-G5 @NFR-16 @aplikacja @do-zrobienia
+  Scenariusz: Poza granicą terenu podkład jest wyblakły, a granicę pokazuje linia
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Kampus główny”
+    Jeżeli przesunie mapę do granicy terenu
+    Wtedy poza granicą terenu widzi wyblakły podkład
+    Oraz granicę terenu pokazuje linia z obwódką
+
+  # komunikat przy granicy terenu: #2114
+  @US1.7 @aplikacja @do-zrobienia
+  Scenariusz: Przy granicy terenu TalkBack mówi, jak zmienić teren
+    Zakładając, że Gość niezalogowany z włączonym TalkBack ma otwartą mapę kampusu na terenie „Kampus główny”
+    Jeżeli przesunie mapę przyciskami do granicy terenu
+    Wtedy TalkBack raz mówi „Tu kończy się teren Kampus główny. Inny teren wybierzesz przyciskiem «Zmień teren» u góry mapy.”
 
   @US1.8 @BR-G5 @aplikacja
   Scenariusz: Wyszukanie budynku z innego terenu zmienia teren

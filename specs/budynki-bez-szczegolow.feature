@@ -120,9 +120,10 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
   @BR-G4
   Reguła: Dalej niż 50 m od budynków PWr zgłoszenie zapisuje się jako „poza budynkiem”
 
-    @US6.2 @aplikacja
+    # punkt na terenie PWr po zmianie BR-G5: #2087
+    @US6.2 @aplikacja @do-zrobienia
     Szablon scenariusza: Propozycja budynku po pomiarze zależy od odległości od konturu
-      Zakładając, że Zbierający stoi poza konturem, <odległość> od konturu budynku A-1, a dalej od innych budynków PWr
+      Zakładając, że Zbierający stoi na terenie PWr poza konturem, <odległość> od konturu budynku A-1, a dalej od innych budynków PWr
       Jeżeli skończy uśrednianie pozycji
       Wtedy <propozycja>
       Ale aplikacja nie pokazuje komunikatu o błędzie
@@ -133,10 +134,11 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
         | 50 m      | aplikacja podpowiada budynek A-1 do potwierdzenia                                                     |
         | 60 m      | aplikacja nie podpowiada żadnego budynku, a po zapisaniu zgłoszenie jest „poza budynkiem”, bez piętra |
 
-    @aplikacja
+    # punkt na terenie PWr po zmianie BR-G5: #2087
+    @aplikacja @do-zrobienia
     Scenariusz: Mapa działa daleko od budynków PWr
       Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
-      Oraz stoi przy kampusie 60 m od konturu najbliższego budynku PWr
+      Oraz stoi na terenie „Kampus główny” 60 m od konturu najbliższego budynku PWr
       Jeżeli otworzy mapę kampusu
       Wtedy widzi mapę z konturami budynków PWr
       Oraz może złożyć zgłoszenie szybkie
