@@ -5,9 +5,6 @@ kodzie. Moduły dzielimy według dziedziny (bariery, budynki, konta), wnętrze m
 a warstwy leżą w temacie. Uzasadnienie: [ADR-0011](decyzje/0011-modularny-monolit.md). Reguł pilnują
 testy architektury i kompilator.
 
-Strona opisuje stan docelowy. Kod dochodzi do niego w epikach #1335 i #1660; odstępstwa, które jeszcze
-istnieją, są w części „Stan dziś” razem z issue, które je usuwa.
-
 ## Zasady pakietów
 
 1. **Jeden temat na pakiet.** Temat to agregat, zdolność albo ścieżka użytkownika. Opis pakietu to
@@ -122,12 +119,6 @@ rezygnacją albo powodem błędu. Implementacja aparatu należy do warstwy skła
   ma własne dane albo własną ścieżkę użytkownika; jego API to kilka typów. Pustych modułów nie ma.
   Moduł poniżej trzech plików z jednym odbiorcą łączymy z odbiorcą.
 - Lista wyjątków reguły struktury może tylko maleć, a każdy wpis ma otwarte issue.
-
-## Stan dziś
-
-| Odstępstwo | Issue |
-| --- | --- |
-| pakiety Androida w liczbie mnogiej i z kilkoma tematami | #1680–#1691 |
 
 ## Co pilnuje zasady
 
