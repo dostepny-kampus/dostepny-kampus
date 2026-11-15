@@ -13,8 +13,6 @@ import java.util.Optional;
  * Funkcja pomieszczenia z planu PWr. Pasuje do grupy dokładną nazwą albo początkiem nazwy, bez
  * względu na wielkość liter i spacje na brzegach; funkcja spoza tabeli należy do grupy OTHER.
  *
- * <p>TODO(#1918): zapisywać grupę przy imporcie planu.</p>
- *
  * <p>Wymagania: US16.1, US18.1</p>
  *
  * @since 0.1.0
