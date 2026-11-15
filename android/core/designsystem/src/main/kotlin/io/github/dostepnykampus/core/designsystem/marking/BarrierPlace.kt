@@ -25,12 +25,7 @@ import io.github.dostepnykampus.core.model.submission.SubmissionFloor
  */
 @Composable
 @ReadOnlyComposable
-public fun barrierPlace(
-    symbol: String?,
-    name: String?,
-    entrance: String?,
-    floor: SubmissionFloor?,
-): String {
+public fun barrierPlace(symbol: String?, name: String?, entrance: String?, floor: SubmissionFloor?): String {
     val where =
         when {
             symbol == null -> stringResource(R.string.miejsce_poza)
