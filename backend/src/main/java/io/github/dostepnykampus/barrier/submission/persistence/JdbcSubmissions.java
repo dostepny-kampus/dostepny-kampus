@@ -95,7 +95,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
      */
     private static final String DECIDE = String.format(
         """
-            UPDATE submissions SET status = :status, rejection_reason = NULLIF(:reason, '')
+            UPDATE submissions SET status = :status, rejection_reason = :reason
             WHERE id = :id AND version = :version AND status = 'IN_REVIEW'
                 AND reviewer = :reviewer
             RETURNING %s
@@ -189,7 +189,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                 .param("version", decision.expectedVersion())
                 .param("reviewer", decision.reviewer())
                 .param("status", decision.outcome().name())
-                .param("reason", decision.reason())
+                .param("reason", JdbcSubmissions.reason(decision))
                 .query(this.rows).optional().orElse(null),
             decision.id()
         );
@@ -279,6 +279,16 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                     )
                 )
             );
+    }
+
+    private static @Nullable String reason(final ReviewDecision decision) {
+        final String result;
+        if (decision instanceof ReviewDecision.Rejected rejected) {
+            result = rejected.reason();
+        } else {
+            result = null;
+        }
+        return result;
     }
 
     private EditResult written(@Nullable final Submission saved, final UUID id) {
