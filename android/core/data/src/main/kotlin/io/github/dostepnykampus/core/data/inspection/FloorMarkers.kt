@@ -63,11 +63,13 @@ public interface FloorMarkers {
  * @param queue kolejka zmian znaczników
  * @param newId źródło identyfikatorów UUID znacznika i operacji
  * @param nowMillis zegar w milisekundach od epoki Unix
+ * @param onSaved wywołanie po każdym zapisie zmiany, np. zaplanowanie wysyłki
  */
 internal fun floorMarkersOf(
     queue: PendingMarkerChangeDao,
     newId: () -> String = { UUID.randomUUID().toString() },
     nowMillis: () -> Long = System::currentTimeMillis,
+    onSaved: () -> Unit = {},
 ): FloorMarkers =
     object : FloorMarkers {
         override fun pending(): Flow<List<PendingMarkerChange>> =
@@ -76,11 +78,13 @@ internal fun floorMarkersOf(
         override suspend fun mark(buildingSymbol: String, floorId: String?): String {
             val markerId = newId()
             queue.save(Marker(markerId, buildingSymbol, floorId).change(PendingMarkerChangeType.SET))
+            onSaved()
             return markerId
         }
 
         override suspend fun revoke(markerId: String, buildingSymbol: String, floorId: String?) {
             queue.saveRevoke(Marker(markerId, buildingSymbol, floorId).change(PendingMarkerChangeType.REVOKE))
+            onSaved()
         }
 
         private fun Marker.change(type: PendingMarkerChangeType): PendingMarkerChangeEntity =

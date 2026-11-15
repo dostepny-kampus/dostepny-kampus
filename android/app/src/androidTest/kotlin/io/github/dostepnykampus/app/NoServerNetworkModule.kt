@@ -12,6 +12,7 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import io.github.dostepnykampus.core.network.NetworkModule
 import io.github.dostepnykampus.core.network.building.BuildingsApi
+import io.github.dostepnykampus.core.network.inspection.MarkerChangesApi
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
@@ -82,6 +83,11 @@ object NoServerNetworkModule {
     @Provides
     @Singleton
     fun submissionsApi(http: OkHttpClient, json: Json): SubmissionsApi = NetworkModule.submissionsApi(http, json)
+
+    /** Znaczniki piętra obejrzanego na kliencie bez serwera. */
+    @Provides
+    @Singleton
+    fun markerChangesApi(http: OkHttpClient, json: Json): MarkerChangesApi = NetworkModule.markerChangesApi(http, json)
 
     /** Jedna odpowiedź ma własny strumień PNG; odbiorca zamyka go razem z [response], jak odpowiedź sieciową. */
     private class LocalTileResponse(request: Request, tile: ByteArray) {

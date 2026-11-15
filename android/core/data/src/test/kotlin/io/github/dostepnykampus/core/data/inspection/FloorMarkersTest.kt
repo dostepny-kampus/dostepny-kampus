@@ -72,7 +72,7 @@ class FloorMarkersTest {
 }
 
 /** Kolejka zmian znaczników w pamięci, z regułą cofnięcia z prawdziwego DAO. */
-private class FakeMarkerQueue : PendingMarkerChangeDao {
+internal class FakeMarkerQueue : PendingMarkerChangeDao {
     val rows = linkedMapOf<String, PendingMarkerChangeEntity>()
 
     override fun observe(): Flow<List<PendingMarkerChangeEntity>> =
