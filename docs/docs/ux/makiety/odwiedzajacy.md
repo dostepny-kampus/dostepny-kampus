@@ -121,7 +121,7 @@ Czynność główna: „Pokaż opis budynku”, która otwiera V2.
 | Element | AC/BR/NFR |
 | --- | --- |
 | W polu „A-1 329”: symbol budynku i numer sali | decyzja 44 |
-| Kolumna pięter po prawej na górze mapy, bo arkusz zajmuje dół; wybrane piętro sali | US16.1, NFR-21 |
+| Kolumna pięter po lewej pod przyciskiem terenu, nad arkuszem; wybrane piętro sali | US16.1, NFR-21 |
 | Plan piętra z wyróżnioną salą i krótkimi podpisami; pod mapą „Źródło: Politechnika Wrocławska” | US16.1, NFR-40 |
 | Nagłówek arkusza „A-1: Sala 329”, funkcja sali jako zastępnik i piętro z danych PWr | decyzja 44, NFR-40 |
 | Kroki tekstem od wejścia zalecanego, bez linii trasy | BR-25, decyzja 44, decyzja 48 |
@@ -144,7 +144,7 @@ Czynność główna: wybór piętra w kolumnie pięter.
 | --- | --- |
 | Plan pojawia się sam przy powiększeniu co najmniej 17 dla budynku szczegółowego na środku mapy; inne budynki przygaszone z podpisami | US16.1, NFR-11 |
 | Na start piętro wejścia zalecanego; gdy dane go nie podają, parter | US16.1, BR-25 |
-| Kolumna pięter pod przyciskami mapy: „Piętro”, najwyższe u góry, wybrane w kółku, numery zamiast etykiet; TalkBack czyta pełną etykietę | US16.1, NFR-17, NFR-18, NFR-21 |
+| Kolumna pięter po lewej pod przyciskiem terenu: „Piętro”, najwyższe u góry, wybrane w kółku, numery zamiast etykiet; TalkBack czyta pełną etykietę | US16.1, NFR-17, NFR-18, NFR-21 |
 | Pod mapą „Źródło: Politechnika Wrocławska” | NFR-40 |
 
 ### V1: budynek bez planu
