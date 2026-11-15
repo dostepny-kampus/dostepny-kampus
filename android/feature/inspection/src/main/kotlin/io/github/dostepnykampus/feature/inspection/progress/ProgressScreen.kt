@@ -28,16 +28,6 @@ import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.feature.inspection.R
 
 /**
- * Czynności ekranu K1.
- *
- * Wymagania: US11.3
- *
- * @property onBack „Wstecz” i „Wróć do mapy”
- * @property onOpen „Otwórz” przy budynku: C5 Koordynatora; argument to symbol budynku
- */
-data class ProgressActions(val onBack: () -> Unit, val onOpen: (buildingSymbol: String) -> Unit)
-
-/**
  * K1 „Postęp inwentaryzacji” ze stanem z modelu widoku.
  *
  * Wymagania: US11.1, US11.2
