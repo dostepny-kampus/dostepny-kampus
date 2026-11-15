@@ -29,6 +29,7 @@ import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotFocused
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.getBoundsInRoot
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasContentDescription
@@ -131,6 +132,7 @@ class CampusMapScreenTest {
     private val cameras = mutableListOf<MapCamera>()
     private val moves = mutableListOf<CameraTransition>()
     private val insets = mutableListOf<Double>()
+    private val tops = mutableListOf<Double>()
     private val focuses = mutableListOf<String?>()
     private val opened = mutableListOf<String>()
     private var emptyTaps = 0
@@ -140,6 +142,7 @@ class CampusMapScreenTest {
             cameras += move.camera
             moves += move
             insets += inset.bottom
+            tops += inset.top
             focuses += selection.building
             touch = onBuildingsTouch
         }
@@ -475,6 +478,41 @@ class CampusMapScreenTest {
                 insets.last()
             }
         assertEquals(3, shownInsets.distinct().size)
+    }
+
+    /**
+     * Wiersz: górny pasek leży nad mapą i odjeżdża w górę razem z ruchem mapy do budynku nad małą kartą: w połowie
+     * ruchu jest w drodze, po ruchu go nie ma. Bez karty kamera ma zasłoniętą górę pod paskiem, z kartą nie.
+     *
+     * Wymagania: US2.8, NFR-56
+     */
+    @Test
+    @Config(qualifiers = "w360dp-h800dp")
+    fun slidesBarWithMapMove() {
+        var sheet by mutableStateOf(0.dp)
+        val motion = MapMotion()
+        compose.setContent { Screen(focus = "C-14", sheet = sheet, motion = motion) }
+        compose.waitForIdle()
+        assertTrue("kamera bez karty pod paskiem: ${tops.last()}", tops.last() > 0.0)
+        val rest = barTop()
+        compose.mainClock.autoAdvance = false
+        sheet = 400.dp
+        compose.mainClock.advanceTimeByFrame()
+        compose.mainClock.advanceTimeByFrame()
+        val pick = moves.last()
+        compose.mainClock.advanceTimeBy(pick.durationMillis / 2)
+        val midway = barTop()
+        assertTrue("w połowie ruchu pasek odjeżdża: $midway < $rest", midway < rest)
+        compose.mainClock.advanceTimeBy(pick.durationMillis)
+        compose.mainClock.autoAdvance = true
+        compose.waitForIdle()
+        compose.onNodeWithText("Mapa kampusu").assertDoesNotExist()
+        assertEquals("z kartą góra mapy odkryta", 0.0, tops.last(), 0.0)
+    }
+
+    private fun barTop(): Float {
+        val bar = compose.onNodeWithText("Mapa kampusu").getUnclippedBoundsInRoot()
+        return bar.top.value
     }
 
     /**
