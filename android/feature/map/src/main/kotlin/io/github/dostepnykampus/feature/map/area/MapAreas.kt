@@ -73,17 +73,18 @@ internal class MapAreas(
         }
 
     /**
-     * Nazwa terenu do napisu „Pokazuję teren: Wittigowo”: mapa zmieniła teren sama, bo zaznaczony budynek, np.
-     * z wyszukiwania albo z listy, leży na innym terenie niż ten, o którym osoba wie. `null`, gdy teren
-     * wybrała osoba albo już o nim wie.
+     * Zmiana terenu do napisu „Pokazuję teren: Wittigowo · 2 km na południowy wschód”: mapa zmieniła teren sama,
+     * bo zaznaczony budynek, np. z wyszukiwania albo z listy, leży na innym terenie niż ten, o którym osoba wie.
+     * Odległość i kierunek liczą się od terenu, o którym osoba wiedziała. `null`, gdy teren wybrała osoba albo już
+     * o nim wie.
      *
-     * Wymagania: US1.8
+     * Wymagania: US1.8, NFR-56
      */
-    val notice: String?
+    val notice: AreaShift?
         get() {
-            val known = seen.value ?: data?.areaOf(chosen = null, symbol = null)?.name
-            val shown = current?.name
-            return shown.takeIf { it != known }
+            val known = data?.areaOf(chosen = seen.value, symbol = null)
+            val shown = current
+            return if (known == null || shown == null || shown == known) null else known.shiftTo(shown)
         }
 
     /** Osoba wie o pokazanym terenie, np. ruszyła mapę przyciskiem: napis o zmianie terenu znika. Wymagania: US1.8 */

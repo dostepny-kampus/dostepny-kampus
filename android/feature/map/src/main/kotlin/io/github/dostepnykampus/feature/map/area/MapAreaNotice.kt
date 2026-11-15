@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
@@ -20,14 +21,17 @@ import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.feature.map.R
 
 /**
- * Napis „Pokazuję teren: Wittigowo” nad podpisem mapy według makiety hi-fi: mapa zmieniła teren, bo zaznaczony
- * budynek leży na terenie [area]. TalkBack czyta go sam, raz. Zostaje bez limitu czasu, dopóki
- * osoba nie ruszy mapy przyciskiem albo nie wybierze terenu.
+ * Napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód” nad podpisem mapy według makiety hi-fi: mapa
+ * zmieniła teren na [shift], bo zaznaczony budynek leży na tym terenie. Odległość i kierunek mówią, gdzie jest nowy
+ * teren, bez patrzenia na ruch mapy. TalkBack czyta go sam, raz. Zostaje bez limitu czasu, dopóki osoba nie ruszy
+ * mapy przyciskiem albo nie wybierze terenu.
  *
- * Wymagania: US1.8, NFR-18, NFR-23
+ * Wymagania: US1.8, NFR-18, NFR-23, NFR-56
  */
 @Composable
-internal fun AreaNotice(area: String, modifier: Modifier = Modifier) {
+internal fun AreaNotice(shift: AreaShift, modifier: Modifier = Modifier) {
+    val direction = stringResource(shift.direction.label)
+    val description = stringResource(R.string.mapa_teren_pokazuje_opis, shift.name, shift.kilometers, direction)
     Surface(
         modifier = modifier.padding(Odstepy.s),
         shape = MaterialTheme.shapes.medium,
@@ -36,9 +40,26 @@ internal fun AreaNotice(area: String, modifier: Modifier = Modifier) {
         shadowElevation = Wysokosci.kontrolkiMapy,
     ) {
         Text(
-            text = stringResource(R.string.mapa_teren_pokazuje, area),
-            modifier = Modifier.padding(Odstepy.m).semantics { liveRegion = LiveRegionMode.Polite },
+            text = stringResource(R.string.mapa_teren_pokazuje, shift.name, shift.kilometers, direction),
+            modifier =
+                Modifier.padding(Odstepy.m).semantics {
+                    contentDescription = description
+                    liveRegion = LiveRegionMode.Polite
+                },
             style = MaterialTheme.typography.bodyLarge,
         )
     }
 }
+
+private val CompassDirection.label: Int
+    get() =
+        when (this) {
+            CompassDirection.North -> R.string.mapa_kierunek_polnoc
+            CompassDirection.NorthEast -> R.string.mapa_kierunek_polnocny_wschod
+            CompassDirection.East -> R.string.mapa_kierunek_wschod
+            CompassDirection.SouthEast -> R.string.mapa_kierunek_poludniowy_wschod
+            CompassDirection.South -> R.string.mapa_kierunek_poludnie
+            CompassDirection.SouthWest -> R.string.mapa_kierunek_poludniowy_zachod
+            CompassDirection.West -> R.string.mapa_kierunek_zachod
+            CompassDirection.NorthWest -> R.string.mapa_kierunek_polnocny_zachod
+        }
