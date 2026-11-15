@@ -22,9 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 public final class JdbcMarkers implements MarkerRepository {
 
-    /**
-     * Dostęp do tabeli inspection_markers.
-     */
+    /** Dostęp do tabeli inspection_markers. */
     private final JdbcClient jdbc;
 
     /**
@@ -38,10 +36,6 @@ public final class JdbcMarkers implements MarkerRepository {
 
     @Override
     public void place(final NewMarker marker) {
-        final @Nullable String floor = switch (marker.place()) {
-            case MarkerPlace.Floor on -> on.floor();
-            case MarkerPlace.Building _ -> null;
-        };
         this.jdbc.sql(
             """
             INSERT INTO inspection_markers (id, building_symbol, floor_id, author)
@@ -49,6 +43,15 @@ public final class JdbcMarkers implements MarkerRepository {
             ON CONFLICT (id) DO NOTHING
             """
         ).param("id", marker.id()).param("building", marker.place().building())
-            .param("floor", floor).param("author", marker.author()).update();
+            .param("floor", JdbcMarkers.floor(marker.place())).param("author", marker.author())
+            .update();
+    }
+
+    private static @Nullable String floor(final MarkerPlace place) {
+        return switch (place) {
+            case MarkerPlace.Floor on -> on.floor();
+            case MarkerPlace.Building _ -> null;
+            case null -> throw new IllegalStateException("Brak miejsca znacznika");
+        };
     }
 }

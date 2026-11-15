@@ -17,8 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * Zapis znaczników piętra: znacznik zapisuje się raz, także po powtórzeniu, a w budynku
- * podstawowym bez piętra.
+ * Zapis znaczników: raz, także po powtórzeniu, i w budynku podstawowym bez piętra.
  *
  * <p>Wymagania: US15.1, BR-9, BR-20</p>
  *
@@ -46,8 +45,9 @@ final class JdbcMarkersTest {
     @Test
     void usFifteenOneSavesMarkerWithoutFloor(final WebApplicationContext context) {
         final UUID id = UUID.randomUUID();
-        final MarkerPlace place = new MarkerPlace.Building("C-13");
-        context.getBean(MarkerRepository.class).place(new NewMarker(id, place, "konto-a"));
+        context.getBean(MarkerRepository.class).place(
+            new NewMarker(id, new MarkerPlace.Building("C-13"), "konto-a")
+        );
         Assertions.assertEquals(
             "C-13, bez piętra, konto-a, false",
             context.getBean(JdbcClient.class).sql(
