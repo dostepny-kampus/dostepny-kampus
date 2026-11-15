@@ -9,8 +9,11 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -98,10 +101,13 @@ class FloorsGroupTest {
     private fun one(name: String) = Counted(name = name, count = 1)
 
     @Composable
+    @OptIn(ExperimentalMaterial3Api::class)
     private fun Group(facts: FloorFacts?) {
         DostepnyKampusTheme {
-            Column(Modifier.background(MaterialTheme.colorScheme.surface).padding(16.dp)) {
-                FloorsGroup(facts)
+            CompositionLocalProvider(LocalRippleConfiguration provides null) {
+                Column(Modifier.background(MaterialTheme.colorScheme.surface).padding(16.dp)) {
+                    FloorsGroup(facts)
+                }
             }
         }
     }
