@@ -57,18 +57,18 @@ class MapMotion {
         after: Int,
         fallback: AnimationSpec<Float>,
     ) {
-        when {
-            !awaitMove(after) -> value.animateTo(targetValue = target, animationSpec = fallback)
-            durationMillis == 0L -> value.snapTo(target)
-            else -> {
-                val spec = tween<Float>(durationMillis = durationMillis.toInt(), easing = Easing)
-                withContext(MoveTimeScale) { value.animateTo(targetValue = target, animationSpec = spec) }
-            }
+        val isMoving = moves > after || awaitMove(after)
+        if (!isMoving) {
+            value.animateTo(targetValue = target, animationSpec = fallback)
+        } else if (durationMillis == 0L) {
+            value.snapTo(target)
+        } else {
+            val spec = tween<Float>(durationMillis = durationMillis.toInt(), easing = Easing)
+            withContext(MoveTimeScale) { value.animateTo(targetValue = target, animationSpec = spec) }
         }
     }
 
     private suspend fun awaitMove(after: Int): Boolean {
-        if (moves > after) return true
         val start = withFrameMillis { it }
         while (moves <= after) {
             if (withFrameMillis { it } - start >= MOVE_WAIT_MILLIS) return false
