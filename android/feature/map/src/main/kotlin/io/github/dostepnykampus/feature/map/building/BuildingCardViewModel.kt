@@ -59,12 +59,12 @@ sealed interface BuildingCardUiState {
  * Karta budynku [symbol] z katalogu w telefonie. Katalog jest czytany, gdy ekran jest widoczny,
  * i jeszcze 5 s po zniknięciu, więc obrót ekranu nie czyta go od nowa. [retry] pyta serwer i czyta plik od nowa.
  *
- * Tekst karty i wejścia z pliku pokazują się od razu, bez czekania na sieć. Równolegle, w zasięgu
- * ViewModelu, karta pyta `serverEntrances` o wejścia z dniem i źródłem oznaczenia; niepusta lista
- * zastępuje wejścia z pliku. Pusta lista (brak sieci, błąd serwera, nic pobranego wcześniej) zostawia wejścia
- * z pliku bez komunikatu błędu. Zgłoszenia przyjęte budynku pobiera tak samo. Zamknięcie karty przerywa pobieranie.
+ * Tekst karty i wejścia z pliku pokazują się bez czekania na sieć, a z katalogu, który telefon już ma, od pierwszej
+ * klatki. Równolegle karta pyta `serverEntrances` o wejścia z dniem i źródłem oznaczenia; niepusta lista zastępuje
+ * wejścia z pliku, a pusta (brak sieci, błąd serwera) zostawia je bez komunikatu błędu. Zgłoszenia przyjęte budynku
+ * pobiera tak samo. Zamknięcie karty przerywa pobieranie.
  *
- * Wymagania: US2, BR-25, NFR-12, US17.3, NFR-10, US2.2, US2.4, US2.7
+ * Wymagania: US2, BR-25, NFR-12, US17.3, NFR-10, US2.2, US2.4, US2.7, NFR-56
  */
 @HiltViewModel(assistedFactory = BuildingCardViewModel.Factory::class)
 class BuildingCardViewModel
@@ -82,13 +82,19 @@ class BuildingCardViewModel
 
         private val barriers = MutableStateFlow<List<AcceptedBarrier>?>(null)
 
+        private val first = repository.current()?.let { buildingCard(it, symbol) } ?: BuildingCardUiState.Loading
+
         /** Bieżący stan karty. */
         val uiState: StateFlow<BuildingCardUiState> =
             attempts
                 .map { attempt -> buildingCard(catalogFor(repository, attempt), symbol) }
                 .combine(fromServer, ::withServerEntrances)
                 .combine(barriers, ::withBarriers)
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), BuildingCardUiState.Loading)
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
+                    initialValue = first,
+                )
 
         /** Czy jest internet; na start prawda, żeby linia „Bez internetu” nie mignęła. Wymagania: NFR-10, US2.8 */
         val online: StateFlow<Boolean> =

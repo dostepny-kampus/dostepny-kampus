@@ -113,6 +113,12 @@ public class BuildingCatalogRepository internal constructor(
     public suspend fun refresh(): BuildingCatalog = fetched(isFresh = true)
 
     /**
+     * Katalog, który telefon już ma, bez czekania: pobrany z serwera albo z pliku; `null` przed pierwszym odczytem
+     * przez [catalog], [catalogUpdates] albo [refresh].
+     */
+    public fun current(): BuildingCatalog? = cached ?: downloaded.value?.catalog ?: bundled
+
+    /**
      * Chwila ostatniego, udanego pobrania listy budynków z serwera, które widzi katalog; `null`, gdy katalog
      * jest z pliku.
      *

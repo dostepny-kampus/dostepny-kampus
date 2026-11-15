@@ -21,9 +21,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -122,9 +124,8 @@ fun BuildingCardContent(
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
         ) {
             if (!isOnline) OfflinePill()
-            if (card is BuildingCardUiState.Ready) {
-                SymbolOverName(symbol = symbol, name = card.name)
-                EntranceSummaryRow(entranceSummary(card.entrances))
+            HeaderOrSpace(symbol = symbol, card = card, isFullScreen = isFullScreen)
+            if (card is BuildingCardUiState.Ready || card.isWaiting(isFullScreen)) {
                 CardActions(
                     mode = mode,
                     onCheckEntrances = onCheckEntrances,
@@ -163,6 +164,30 @@ private fun FactsOrMissing(
     }
     if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = onRetry)
 }
+
+@Composable
+private fun HeaderOrSpace(symbol: String, card: BuildingCardUiState, isFullScreen: Boolean) {
+    val ready = card as? BuildingCardUiState.Ready
+    if (ready == null && !card.isWaiting(isFullScreen)) return
+    Column(
+        modifier = if (ready == null) Modifier.alpha(0f).clearAndSetSemantics {} else Modifier,
+        verticalArrangement = Arrangement.spacedBy(Odstepy.s),
+    ) {
+        if (ready != null) {
+            SymbolOverName(symbol = symbol, name = ready.name)
+            EntranceSummaryRow(entranceSummary(ready.entrances))
+        } else {
+            Column {
+                Text(text = symbol, style = MaterialTheme.typography.displayLarge)
+                Text(text = " ", style = MaterialTheme.typography.headlineMedium)
+            }
+            EntranceSummaryRow(EntranceSummary.NoData)
+        }
+    }
+}
+
+private fun BuildingCardUiState.isWaiting(isFullScreen: Boolean): Boolean =
+    this == BuildingCardUiState.Loading && !isFullScreen
 
 @Composable
 private fun SymbolOverName(symbol: String, name: String?) {
