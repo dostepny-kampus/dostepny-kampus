@@ -35,7 +35,7 @@ final class FloorRoomsContractIT {
         throws Exception {
         final ObjectMapper mapper = context.getBean(ObjectMapper.class);
         MatcherAssert.assertThat(
-            "Odpowiedź pomieszczeń piętra nie zgadza się ze schematem RoomList",
+            "Odpowiedź pomieszczeń piętra z windą nie zgadza się ze schematem RoomList",
             mapper.readTree(
                 FloorRoomsContractIT.reply(context, "/buildings/G-960/floors/P0/rooms")
                     .getContentAsString(StandardCharsets.UTF_8)
@@ -45,7 +45,8 @@ final class FloorRoomsContractIT {
                     """
                     {"source":"Politechnika Wrocławska","floorOutline":%1$s,
                     "rooms":[{"id":"1","number":"101","function":"Winda","category":"ELEVATOR",
-                    "geometry":%1$s,"labelPoint":%2$s,"labelled":true},
+                    "geometry":%1$s,"labelPoint":%2$s,"labelled":true,
+                    "liftId":"P0/1","liftFloors":["P0","P1"]},
                     {"id":"2","function":"Korytarz","category":"CORRIDOR","geometry":%1$s,
                     "labelPoint":%2$s,"labelled":false}]}
                     """.formatted(
@@ -91,17 +92,21 @@ final class FloorRoomsContractIT {
         jdbc.sql(
             """
             INSERT INTO floors (building_symbol, id, label, sort_order, outline) VALUES
-                ('G-960', 'P0', 'Parter', 0, 'SRID=4326;MULTIPOLYGON(((0 0,1 0,1 1,0 0)))');
+                ('G-960', 'P0', 'Parter', 0, 'SRID=4326;MULTIPOLYGON(((0 0,1 0,1 1,0 0)))'),
+                ('G-960', 'P1', '1 piętro', 1, NULL);
             INSERT INTO rooms (
                 building_symbol, floor_id, id, number, function, category, outline,
-                label_point, labelled
+                label_point, labelled, lift_id
             ) VALUES
+                ('G-960', 'P1', '9', NULL, 'Winda', 'ELEVATOR',
+                    'SRID=4326;MULTIPOLYGON(((0 0,1 0,1 1,0 0)))', 'SRID=4326;POINT(0.5 0.25)',
+                    FALSE, 'P0/1'),
                 ('G-960', 'P0', '1', '101', 'Winda', 'ELEVATOR',
                     'SRID=4326;MULTIPOLYGON(((0 0,1 0,1 1,0 0)))', 'SRID=4326;POINT(0.5 0.25)',
-                    TRUE),
+                    TRUE, 'P0/1'),
                 ('G-960', 'P0', '2', NULL, 'Korytarz', 'CORRIDOR',
                     'SRID=4326;MULTIPOLYGON(((0 0,1 0,1 1,0 0)))', 'SRID=4326;POINT(0.5 0.25)',
-                    FALSE)
+                    FALSE, NULL)
             """
         ).update();
     }

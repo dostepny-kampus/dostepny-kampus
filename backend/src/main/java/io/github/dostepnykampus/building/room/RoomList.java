@@ -31,11 +31,40 @@ public record RoomList(String source, String outline, List<RoomList.Room> rooms)
      * @param outline Kontur jako GeoJSON
      * @param label Punkt podpisu jako GeoJSON Point
      * @param labelled Czy numer jest podpisany na planie
+     * @param lift Winda łącząca piętra albo null poza windami
      * @since 0.1.0
      */
     public record Room(
         String id, @Nullable String number, String function, String category, String outline,
-        String label, boolean labelled
+        String label, boolean labelled, @Nullable Lift lift
     ) {
+
+        /**
+         * Pomieszczenie bez windy.
+         *
+         * @param id Identyfikator pomieszczenia
+         * @param number Numer pomieszczenia albo null, gdy plan go nie podaje
+         * @param function Funkcja pomieszczenia z planu PWr
+         * @param category Grupa funkcji z kontraktu API
+         * @param outline Kontur jako GeoJSON
+         * @param label Punkt podpisu jako GeoJSON Point
+         * @param labelled Czy numer jest podpisany na planie
+         */
+        public Room(
+            final String id, final @Nullable String number, final String function,
+            final String category, final String outline, final String label, final boolean labelled
+        ) {
+            this(id, number, function, category, outline, label, labelled, null);
+        }
+    }
+
+    /**
+     * Winda łącząca piętra.
+     *
+     * @param id Identyfikator windy z pomieszczenia na najniższym piętrze szybu
+     * @param floors Piętra windy od najniższego
+     * @since 0.1.0
+     */
+    public record Lift(String id, List<String> floors) {
     }
 }
