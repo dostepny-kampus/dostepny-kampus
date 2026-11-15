@@ -48,7 +48,6 @@ import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
 import io.github.dostepnykampus.feature.map.building.BuildingChoice
 import io.github.dostepnykampus.feature.map.building.BuildingChoiceSheet
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
-import io.github.dostepnykampus.feature.map.camera.byControl
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
@@ -226,12 +225,13 @@ private fun CampusMap(
         )
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
         val scene = state.scene
-        val camera = state.camera
-        if (scene != null && camera != null && state.limits != null) {
+        val move = state.move
+        if (scene != null && move != null && state.limits != null) {
+            val camera = move.camera
             mapView.Show(
                 data = scene.data,
                 selection = scene.selection.copy(barrier = barrierId),
-                move = camera.byControl(),
+                move = move,
                 bottomInset = state.bottomInset,
                 onCameraIdle = state::keep,
                 onBuildingsTouch = { state.touch(it, onBuildingClick, onEmptyMapClick).also { barrierId = null } },

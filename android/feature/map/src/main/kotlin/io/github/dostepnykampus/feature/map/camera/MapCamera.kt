@@ -21,7 +21,6 @@ internal const val START_ZOOM = 17.0
 internal const val ENTRANCE_ZOOM = 19.0
 
 private const val MAX_ZOOM = 20.0
-private const val FIT_MAX_ZOOM = 18.0
 private const val QUARTER_VIEW_DEGREES_AT_ZOOM_0 = 70.0
 private const val WORLD_DP_AT_ZOOM_0 = 512.0
 private const val FULL_TURN_DEGREES = 360.0
@@ -47,28 +46,6 @@ data class MapCamera(val center: GeoPoint, val zoom: Double)
 internal data class FreeMap(val widthDp: Double, val heightDp: Double, val endDp: Double, val marginDp: Double) {
     /** Czy w wolnej części stoją przyciski mapy: mają tam zarezerwowany pas [endDp]. Wymagania: NFR-53 */
     val hasRoomForControls: Boolean get() = endDp > 0
-}
-
-/**
- * Widok, w którym prostokąt [outline] budynku mieści się cały w wolnej części mapy [free], obok przycisków mapy.
- * Mały budynek nie jest powiększany ponad [FIT_MAX_ZOOM], więc sąsiednie zostają
- * widoczne. Środek widoku liczy się dla części nad arkuszem; dopełnienie arkusza ustawia wołający.
- *
- * Wymagania: US1.4, US2.8
- */
-internal fun fitted(outline: CampusBounds, free: FreeMap): MapCamera {
-    val width = (free.widthDp - free.endDp - 2 * free.marginDp).coerceAtLeast(minimumValue = 1.0)
-    val height = (free.heightDp - 2 * free.marginDp).coerceAtLeast(minimumValue = 1.0)
-    val across = fitZoom(viewDp = width, worldShare = (outline.east - outline.west) / FULL_TURN_DEGREES)
-    val along = fitZoom(viewDp = height, worldShare = (mercatorY(outline.north) - mercatorY(outline.south)) / (2 * PI))
-    val zoom = minOf(a = across, b = along, c = FIT_MAX_ZOOM)
-    val behindControls = free.endDp / 2 * FULL_TURN_DEGREES / (WORLD_DP_AT_ZOOM_0 * 2.0.pow(zoom))
-    val center =
-        GeoPoint(
-            longitude = (outline.west + outline.east) / 2 + behindControls,
-            latitude = (outline.south + outline.north) / 2,
-        )
-    return MapCamera(center = center, zoom = zoom)
 }
 
 /** Widok po „Powiększ”: o jeden poziom, najwyżej do powiększenia planu budynku. */
