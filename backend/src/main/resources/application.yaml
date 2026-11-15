@@ -23,4 +23,5 @@ spring:
     oauth2:
       resourceserver:
         jwt:
+          audiences: ${DK_AUTH_AUDIENCE:dostepny-kampus-api}
           issuer-uri: ${DK_AUTH_ISSUER:http://localhost:8180/realms/dostepny-kampus}

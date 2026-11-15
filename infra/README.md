@@ -33,6 +33,7 @@ Compose czyta zmienne z `infra/.env`, którego nie ma w repozytorium. Serwer czy
 | `DK_AUTH_ADMIN_PASSWORD` | hasło administratora usługi logowania | brak |
 | `DK_AUTH_PORT` | port usługi logowania na `127.0.0.1` | `8180` |
 | `DK_AUTH_ISSUER` | adres realmu, którego tokeny przyjmuje serwer | `http://localhost:8180/realms/dostepny-kampus` |
+| `DK_AUTH_AUDIENCE` | odbiorca w `aud`, bez którego serwer odrzuca token | `dostepny-kampus-api` |
 
 ## Import planów pięter PWr
 
