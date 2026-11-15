@@ -19,14 +19,14 @@ class MapGesturesTest {
 
     /** Gest dwoma palcami nie obraca ani nie pochyla mapy, więc strzałki i granica terenu zgadzają się z ekranem. */
     @Test
-    fun no_rotate_no_tilt_gesture() {
+    fun blocksRotateAndTilt() {
         assertFalse(options.rotateGesturesEnabled)
         assertFalse(options.tiltGesturesEnabled)
     }
 
     /** Przesuwanie i powiększanie gestem zostają włączone. */
     @Test
-    fun scroll_and_zoom_gestures_stay() {
+    fun keepsScrollAndZoom() {
         assertTrue(options.scrollGesturesEnabled)
         assertTrue(options.zoomGesturesEnabled)
     }

@@ -61,7 +61,7 @@ class SearchOtherAreaTest {
      * Wymagania: US1.8, NFR-18
      */
     @Test
-    fun us1_8_result_other_area_note() {
+    fun notesOtherArea() {
         compose.setContent { Search() }
         compose.onNode(hasSetTextAction()).performTextInput("t15")
         compose.onNodeWithContentDescription("T-15, Budynek testowy, teren Wittigowo, inny teren").assertExists()
@@ -70,14 +70,14 @@ class SearchOtherAreaTest {
 
     /** Wiersz: V1, wynik budynku z terenu pokazanego na mapie nie ma dopisku o terenie. Wymagania: US1.8 */
     @Test
-    fun us1_8_result_shown_area_plain() {
+    fun keepsShownAreaPlain() {
         compose.setContent { Search() }
         compose.onNode(hasSetTextAction()).performTextInput("a1")
         compose.onNodeWithContentDescription("A-1, Budynek testowy").assertExists()
     }
 
     @Test
-    fun us1_8_hifi_motyw_jasny() {
+    fun matchesLightMockup() {
         compose.setContent { Search() }
         compose.onNode(hasSetTextAction()).performTextInput("t15")
         compose.onRoot().captureRoboImage()

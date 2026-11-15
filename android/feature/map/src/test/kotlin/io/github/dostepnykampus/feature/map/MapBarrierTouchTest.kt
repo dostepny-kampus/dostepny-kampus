@@ -59,7 +59,7 @@ class MapBarrierTouchTest {
 
     /** Wiersz: V1, dotknięcie znaku bariery otwiera arkusz bariery; „Zamknij” wraca do samej mapy. Wymagania: US1.5 */
     @Test
-    fun us1_5_touch_opens_sheet() {
+    fun opensSheetOnTouch() {
         start()
         compose.runOnIdle { touchBarrier("z1") }
 
@@ -75,7 +75,7 @@ class MapBarrierTouchTest {
      * Wymagania: US1.5
      */
     @Test
-    fun us1_5_back_closes_sheet() {
+    fun closesSheetOnBack() {
         start()
         compose.runOnIdle { touchBarrier("z1") }
         compose.onNodeWithText("Próg").assertExists()
@@ -92,7 +92,7 @@ class MapBarrierTouchTest {
      * Wymagania: US1.5
      */
     @Test
-    fun us1_5_sheet_opens_building() {
+    fun opensBuildingFromSheet() {
         start()
         compose.runOnIdle { touchBarrier("z1") }
         compose.onNodeWithText("Pokaż opis budynku").performClick()
@@ -103,7 +103,7 @@ class MapBarrierTouchTest {
 
     /** Wiersz: arkusz bariery i arkusz „Który budynek?” nie są otwarte jednocześnie. Wymagania: US1.5 */
     @Test
-    fun us1_5_one_sheet_at_a_time() {
+    fun opensOneSheetAtATime() {
         start()
         compose.runOnIdle { touchBuildings(listOf("C-13", "C-14")) }
         compose.onNodeWithText("Który budynek?").assertExists()
