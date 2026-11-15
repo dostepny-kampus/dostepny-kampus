@@ -5,9 +5,9 @@
 set -euo pipefail
 
 # Wymagany check `budowanie`: zielony tylko, gdy każde zadanie z WYNIKI zakończyło się sukcesem.
-# Wejście ze zmiennych środowiskowych: ZMIANY, WYNIKI (w grupie kolejki testy; poza nią apk, emulator, przy zmianie
-# aplikacji także testy i analiza-zaleznosci). Po scaleniu (push) check nie działa: zadanie tylko przekłada cache.
-echo "zmiany: ${ZMIANY}; testy, apk, emulator, analiza zależności: ${WYNIKI}"
+# Wejście ze zmiennych środowiskowych: ZMIANY, WYNIKI (w grupie kolejki testy; na PR testy, apk i analiza-zaleznosci;
+# na wskazanym commicie apk, emulator i analiza-zaleznosci). Po scaleniu (push) check nie działa: tylko cache.
+echo "zmiany: ${ZMIANY}; wyniki zadań: ${WYNIKI}"
 if [[ $ZMIANY != success && $ZMIANY != skipped ]]; then
   echo "::error title=Android::Zadanie zmiany zakończyło się wynikiem ${ZMIANY}."
   exit 1
