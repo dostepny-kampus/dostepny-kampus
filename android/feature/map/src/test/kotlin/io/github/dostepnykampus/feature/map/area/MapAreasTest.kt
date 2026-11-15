@@ -158,7 +158,10 @@ class MapAreasTest {
         assertEquals("Wittigowo", chosen.value)
         areas().followSelection()
         assertEquals("Wittigowo", areas().current?.name)
-        assertEquals("Wittigowo", areas().notice)
+        assertEquals(
+            AreaShift(name = "Wittigowo", kilometers = 2, direction = CompassDirection.North),
+            areas().notice,
+        )
         assertNull(followed.value)
     }
 
