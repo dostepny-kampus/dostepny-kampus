@@ -9,6 +9,8 @@ import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.github.dostepnykampus.CampusBoundary;
+import io.github.dostepnykampus.CampusPoint;
 import java.util.Map;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
@@ -117,6 +119,17 @@ public final class QuickPlaceSteps {
     }
 
     /**
+     * Osoba przygotowała zdjęcie i grupę barier; wysyłka idzie z kroku o pozycji.
+     */
+    @Given("zrobił zdjęcie bariery i wybrał grupę barier „komunikacja pozioma”")
+    public void preparesQuick() {
+        MatcherAssert.assertThat(
+            "Zgłoszenie przygotowuje zalogowana osoba",
+            this.token, Matchers.not(Matchers.emptyString())
+        );
+    }
+
+    /**
      * Osoba stoi w konturze budynku.
      *
      * @param symbol Symbol budynku
@@ -164,22 +177,34 @@ public final class QuickPlaceSteps {
     }
 
     /**
-     * Zgłoszenie przychodzi z miejsca oddalonego od każdego budynku PWr.
+     * Zgłoszenie przychodzi z miejsca za granicą terenów PWr.
      *
-     * @param meters Odległość od najbliższego konturu w metrach
+     * @param meters Odległość od granicy w metrach
      * @throws Exception Gdy MockMvc nie wykona żądania
      */
-    @When("^aplikacja wyśle zgłoszenie z miejscem (\\d+) m od konturu najbliższego budynku PWr$")
+    @When("^aplikacja wyśle zgłoszenie z miejscem (\d+) m za granicą terenu PWr$")
     public void sendsFromAfar(final int meters) throws Exception {
-        this.place = this.jdbc.sql(
-            String.join(
-                " ",
-                "SELECT '[' || ST_X(p) || ',' || ST_Y(p) || ']' FROM (",
-                "SELECT ST_Project(v::geography, :meters, radians(270))::geometry AS p FROM (",
-                "SELECT (ST_DumpPoints(outline)).geom AS v FROM buildings) AS vertices",
-                "ORDER BY ST_X(v) LIMIT 1) AS west"
-            )
-        ).param("meters", meters).query(String.class).single();
+        this.place = new CampusBoundary(this.jdbc).beyond(meters).json();
+        this.send(QuickPlaceSteps.OTHER);
+    }
+
+    /**
+     * Osoba ustala pozycję w jednym z miejsc szablonu granicy terenu i wysyła zgłoszenie.
+     *
+     * @param spot Miejsce słowami scenariusza
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    @When("^telefon ustali pozycję (w przerwie 60 m .+|20 m za .+)$")
+    public void sendsFromSpot(final String spot) throws Exception {
+        final CampusPoint point;
+        if (spot.startsWith("w przerwie")) {
+            point = CampusPoint.GAP;
+        } else if (spot.startsWith("20 m za obszarem")) {
+            point = CampusPoint.MARGIN;
+        } else {
+            point = new CampusBoundary(this.jdbc).beyond(20);
+        }
+        this.place = point.json();
         this.send(QuickPlaceSteps.OTHER);
     }
 
@@ -205,7 +230,9 @@ public final class QuickPlaceSteps {
      *
      * @param lack Czego zgłoszenie nie ma, słowami scenariusza
      */
-    @Then("^zgłoszenie (jest „poza budynkiem”|nie ma piętra)$")
+    @Then(
+        "^(?:zgłoszenie|może wysłać zgłoszenie, które) (jest „poza budynkiem”|nie ma piętra)$"
+    )
     public void lacks(final String lack) {
         MatcherAssert.assertThat(
             String.format("Serwer zapisał zgłoszenie inaczej, niż „%s”", lack),
@@ -221,6 +248,7 @@ public final class QuickPlaceSteps {
      * Serwer odmawia zapisu poza terenem PWr.
      */
     @Then("serwer odrzuca zgłoszenie")
+    @Then("widzi napis „Jesteś poza terenem PWr” i nie może wysłać zgłoszenia")
     public void refused() {
         MatcherAssert.assertThat(
             "Serwer przyjął zgłoszenie spoza terenu PWr",
