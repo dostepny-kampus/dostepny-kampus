@@ -802,6 +802,11 @@ components:
         geometry: {$ref: '#/components/schemas/GeoArea', description: "Kształt pomieszczenia na planie piętra."}
         labelPoint: {$ref: '#/components/schemas/GeoPoint', description: "Punkt wewnątrz pomieszczenia na podpis numeru i znacznik wyniku."}
         labelled: {type: boolean, description: "Czy numer pomieszczenia jest podpisany na planie: jeden numer na grupę pomieszczeń piętra z tym samym numerem, bez pomieszczeń mniejszych niż 20 m² i bez numeru (US16.1)."}
+        liftId: {type: string, description: "Winda łącząca piętra, wspólna dla pomieszczeń windy jednego szybu; tylko dla pomieszczeń windy."}
+        liftFloors:
+          type: array
+          description: Piętra windy od najniższego; tylko dla pomieszczeń windy.
+          items: {type: string, description: "Identyfikator piętra z listy pięter budynku."}
     RoomCategory:
       type: string
       description: >-
