@@ -66,6 +66,7 @@ class BarriersOnPlanTest {
         if (expression !is JsonArray) return expression
         val name = expression.first().jsonPrimitive.content
         val arguments = expression.drop(1)
+
         fun value(index: Int) = evaluate(arguments[index], properties)
 
         return when (name) {
