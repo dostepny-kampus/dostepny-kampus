@@ -6,9 +6,9 @@
 package io.github.dostepnykampus.building.api;
 
 /**
- * Teren PWr dla innych modułów: wszystko do 500 m od konturu któregokolwiek
- * budynku PWr, w metrach na ziemi. Poza nim serwer nie przyjmuje
- * zgłoszenia.
+ * Teren PWr dla innych modułów: suma pięciu terenów uczelni, każdy ograniczony
+ * zamkniętą granicą z zapasem wokół budynków i obszarów uczelni. Punkt na linii
+ * granicy należy do terenu. Poza terenem serwer nie przyjmuje zgłoszenia.
  *
  * <p>Wymagania: BR-G5, US4.9</p>
  *
@@ -18,18 +18,11 @@ package io.github.dostepnykampus.building.api;
 public interface CampusArea {
 
     /**
-     * Najdalsza odległość od konturu budynku PWr w metrach.
-     *
-     * <p>Wymagania: BR-G5</p>
-     */
-    double RADIUS_METERS = 500.0;
-
-    /**
      * Mówi, czy punkt leży na terenie PWr.
      *
      * @param lat Szerokość geograficzna w stopniach WGS84
      * @param lon Długość geograficzna w stopniach WGS84
-     * @return Prawda, gdy punkt leży najwyżej 500 m od konturu budynku PWr
+     * @return Prawda, gdy punkt leży wewnątrz granicy któregoś terenu PWr albo na niej
      */
     boolean covers(double lat, double lon);
 }

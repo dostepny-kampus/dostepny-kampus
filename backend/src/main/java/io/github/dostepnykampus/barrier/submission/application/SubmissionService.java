@@ -76,8 +76,8 @@ public class SubmissionService {
 
     /**
      * Zapisuje nowe zgłoszenie albo zwraca zapisane wcześniej.
-     * Miejsce dalej niż 500 m od każdego budynku PWr daje {@link OutsideCampus};
-     * odległość od budynków liczy baza. Nieznany budynek podany przez klienta daje
+     * Miejsce poza granicą każdego terenu PWr daje {@link OutsideCampus};
+     * przynależność do terenu rozstrzyga baza. Nieznany budynek podany przez klienta daje
      * {@link InvalidSubmission} bez zapisu.
      *
      * <p>Wymagania: BR-9, BR-14, BR-G5</p>

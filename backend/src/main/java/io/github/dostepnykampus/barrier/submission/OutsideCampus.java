@@ -9,8 +9,8 @@ import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.net.URI;
 
 /**
- * Zgłoszenie spoza terenu PWr: punkt leży dalej niż 500 m od konturu każdego
- * budynku PWr. Odpowiedź 400 ma rodzaj {@link #TYPE}, po
+ * Zgłoszenie spoza terenu PWr: punkt leży poza granicą każdego z pięciu
+ * terenów PWr. Odpowiedź 400 ma rodzaj {@link #TYPE}, po
  * którym aplikacja pokazuje stan „Poza terenem PWr”.
  *
  * <p>Wymagania: BR-G5, US4.9</p>
@@ -34,7 +34,7 @@ public final class OutsideCampus extends InvalidInput {
      */
     public OutsideCampus() {
         super(
-            "Miejsce zgłoszenia leży dalej niż 500 m od każdego budynku PWr (BR-G5)",
+            "Miejsce zgłoszenia leży poza terenem PWr (BR-G5)",
             OutsideCampus.TYPE
         );
     }

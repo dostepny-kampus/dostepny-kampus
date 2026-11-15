@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier;
 
+import io.github.dostepnykampus.CampusPoint;
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.barrier.submission.OutsideCampus;
 import java.nio.charset.StandardCharsets;
@@ -20,10 +21,11 @@ import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Zgłoszenie tylko na terenie PWr: do 500 m od konturu budynku.
+ * Zgłoszenie tylko na terenie PWr: wewnątrz granicy terenu.
  *
- * <p>Punkty są te same co w {@code CampusAreaIT}, który sprawdza ich
- * odległość od budynków w bazie.</p>
+ * <p>Punkt wewnątrz to przerwa między budynkami jednego terenu, a punkt spoza terenu
+ * leży daleko na zachód od kampusu głównego; {@code CampusAreaIT} sprawdza
+ * punkty przy samej granicy.</p>
  *
  * <p>Wymagania: BR-G5, US4.9</p>
  *
@@ -34,23 +36,18 @@ import tools.jackson.databind.ObjectMapper;
 final class SubmissionCampusHttpIT {
 
     /**
-     * Punkt około 400 m od budynku H-4.
+     * Punkt poza granicą każdego terenu, około 600 m od najbliższego budynku.
      */
-    private static final double[] NEAR = {17.048_7, 51.108};
-
-    /**
-     * Punkt około 600 m od najbliższego budynku L-2.
-     */
-    private static final double[] FAR = {17.045_3, 51.108};
+    private static final CampusPoint FAR = new CampusPoint(51.108, 17.045_3);
 
     @Test
-    void acceptsPointFourHundredMetresFromBuilding(final WebApplicationContext context)
+    void acceptsPointInGapBetweenBuildings(final WebApplicationContext context)
         throws Exception {
         final UUID id = UUID.randomUUID();
         MatcherAssert.assertThat(
-            "Zgłoszenie 400 m od budynku nie zostało przyjęte",
+            "Zgłoszenie z przerwy między budynkami terenu nie zostało przyjęte",
             List.of(
-                SubmissionCampusHttpIT.post(context, id, SubmissionCampusHttpIT.NEAR)
+                SubmissionCampusHttpIT.post(context, id, CampusPoint.GAP)
                     .getStatus(),
                 SubmissionCampusHttpIT.saved(context, id)
             ),
@@ -59,14 +56,14 @@ final class SubmissionCampusHttpIT {
     }
 
     @Test
-    void rejectsPointSixHundredMetresFromEveryBuilding(
+    void rejectsPointOutsideEveryArea(
         final WebApplicationContext context
     ) throws Exception {
         final UUID id = UUID.randomUUID();
         final MockHttpServletResponse response =
             SubmissionCampusHttpIT.post(context, id, SubmissionCampusHttpIT.FAR);
         MatcherAssert.assertThat(
-            "Zgłoszenie 600 m od budynków nie dostało odmowy z rodzajem błędu",
+            "Zgłoszenie spoza terenu nie dostało odmowy z rodzajem błędu",
             List.of(
                 response.getStatus(),
                 context.getBean(ObjectMapper.class)
@@ -79,15 +76,15 @@ final class SubmissionCampusHttpIT {
     }
 
     private static MockHttpServletResponse post(
-        final WebApplicationContext context, final UUID id, final double... point
+        final WebApplicationContext context, final UUID id, final CampusPoint point
     ) throws Exception {
         return new SubmissionRequests(context).post(
             String.format(
                 """
                 {"id":"%s","kind":"QUICK","barrierGroup":"OTHER",
-                "location":{"type":"Point","coordinates":[%s,%s]},
+                "location":{"type":"Point","coordinates":%s},
                 "photoIds":["5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d"]}
-                """, id, point[0], point[1]
+                """, id, point.json()
             )
         );
     }

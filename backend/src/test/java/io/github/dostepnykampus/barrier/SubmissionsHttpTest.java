@@ -119,7 +119,7 @@ final class SubmissionsHttpTest {
             "Pomiar precyzyjny w nieznanym budynku nie daje 400 albo zostaje zapisany",
             List.of(
                 new SubmissionRequests(context).post(
-                    SubmissionsHttpTest.body("PRECISE", "17.05,51.108")
+                    SubmissionsHttpTest.body("PRECISE", SubmissionsHttpTest.IN_A1)
                 ).getStatus(),
                 context.getBean(JdbcClient.class)
                     .sql("SELECT count(*) FROM submissions WHERE id = :id")
