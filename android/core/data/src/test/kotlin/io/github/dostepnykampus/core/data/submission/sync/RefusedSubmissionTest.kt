@@ -14,7 +14,6 @@ import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
-import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -153,7 +152,7 @@ class RefusedSubmissionTest {
     fun keepsRefusedOutsideGrounds() =
         runBlocking {
             val floor = SubmissionFloor(floorId = "A-1/1", number = 1)
-            val quick = precise(PHOTO).copy(kind = SubmissionKind.QUICK, location = BEYOND_GROUNDS, floor = floor)
+            val quick = precise(PHOTO).copy(location = BEYOND_GROUNDS, floor = floor)
             queue.save(quick, photo(tempDir, PHOTO))
             store.createResults.addLast(ServerReply.Fault(code = 400))
 
