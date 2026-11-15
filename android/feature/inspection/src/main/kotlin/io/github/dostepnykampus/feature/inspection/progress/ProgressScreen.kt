@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -66,14 +67,16 @@ fun ProgressContent(
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
-        BackHeader(title = stringResource(R.string.postep_naglowek), onBack = actions.onBack)
-        when (state) {
-            ProgressUiState.Loading -> Loading()
-            is ProgressUiState.Ready -> BuildingList(state = state, onOpen = actions.onOpen, onRefresh = onRefresh)
-            ProgressUiState.Offline -> Failure(Problem.OFFLINE, onRefresh)
-            ProgressUiState.ServerError -> Failure(Problem.SERVER, onRefresh)
-            ProgressUiState.Forbidden -> Failure(Problem.FORBIDDEN, actions.onBack)
+    Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
+        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
+            BackHeader(title = stringResource(R.string.postep_naglowek), onBack = actions.onBack)
+            when (state) {
+                ProgressUiState.Loading -> Loading()
+                is ProgressUiState.Ready -> BuildingList(state = state, onOpen = actions.onOpen, onRefresh = onRefresh)
+                ProgressUiState.Offline -> Failure(Problem.OFFLINE, onRefresh)
+                ProgressUiState.ServerError -> Failure(Problem.SERVER, onRefresh)
+                ProgressUiState.Forbidden -> Failure(Problem.FORBIDDEN, actions.onBack)
+            }
         }
     }
 }

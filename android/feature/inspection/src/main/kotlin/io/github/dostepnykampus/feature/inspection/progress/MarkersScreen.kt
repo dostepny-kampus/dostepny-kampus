@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -19,6 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -96,13 +98,15 @@ data class MarkerActions(
  */
 @Composable
 fun MarkersContent(state: MarkersUiState, actions: MarkerActions, onBack: () -> Unit, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
-        BackHeader(title = stringResource(R.string.znaczniki_naglowek), onBack = onBack)
-        when (state) {
-            MarkersUiState.Loading -> Loading()
-            MarkersUiState.Offline -> Failure(Problem.OFFLINE, actions.onRetry)
-            MarkersUiState.ServerError -> Failure(Problem.SERVER, actions.onRetry)
-            is MarkersUiState.Ready -> MarkerList(state, actions)
+    Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
+        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
+            BackHeader(title = stringResource(R.string.znaczniki_naglowek), onBack = onBack)
+            when (state) {
+                MarkersUiState.Loading -> Loading()
+                MarkersUiState.Offline -> Failure(Problem.OFFLINE, actions.onRetry)
+                MarkersUiState.ServerError -> Failure(Problem.SERVER, actions.onRetry)
+                is MarkersUiState.Ready -> MarkerList(state, actions)
+            }
         }
     }
 }
@@ -123,7 +127,7 @@ private fun MarkerList(state: MarkersUiState.Ready, actions: MarkerActions) {
 
 @Composable
 private fun MarkerCard(marker: ProgressMarker, isAsking: Boolean, actions: MarkerActions) {
-    OutlinedCard {
+    OutlinedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
             Text(placeText(marker.marker.place), style = MaterialTheme.typography.titleMedium)
             Text(stringResource(R.string.znaczniki_autor, marker.authorPseudonym))
