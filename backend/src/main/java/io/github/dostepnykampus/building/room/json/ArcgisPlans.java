@@ -11,6 +11,7 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -89,22 +90,31 @@ final class ArcgisPlans {
      * Pomieszczenia z warstwy pomieszczeń.
      *
      * @param service Adres usługi FeatureServer bez końcowego ukośnika
-     * @param layer Numer warstwy pomieszczeń: Pietro, NUMER, FUNKCJA
+     * @param layer Numer warstwy pomieszczeń z polami piętra, numeru i funkcji; wielkość liter
+     *  nazw pól jest dowolna, a funkcja nazywa się Funkcja, Funkcje albo d_funkcja
      * @return Pomieszczenia z konturem w kolejności usługi
      */
     List<PlanRoom> rooms(final String service, final int layer) {
-        return this.features(service, layer, "Pietro,NUMER,FUNKCJA", true).stream().flatMap(
+        return this.features(service, layer, "*", true).stream().flatMap(
             feature -> this.outline(feature.path("geometry")).map(
                 outline -> new PlanRoom(
                     feature.path("id").asString(""),
-                    feature.path("properties").path("Pietro").asString(""),
-                    feature.path("properties").path("NUMER").asString("").strip(),
-                    Optional.of(feature.path("properties").path("FUNKCJA").asString("").strip())
+                    ArcgisPlans.field(feature, "pietro"),
+                    ArcgisPlans.field(feature, "numer"),
+                    Optional.of(ArcgisPlans.field(feature, "funkcja", "funkcje", "d_funkcja"))
                         .filter(function -> !function.isEmpty()).orElse("Inne"),
                     outline
                 )
             ).stream()
         ).toList();
+    }
+
+    private static String field(final JsonNode feature, final String... names) {
+        final List<String> wanted = List.of(names);
+        return feature.path("properties").properties().stream()
+            .filter(entry -> wanted.contains(entry.getKey().toLowerCase(Locale.ROOT)))
+            .map(entry -> entry.getValue().asString("").strip())
+            .filter(value -> !value.isEmpty()).findFirst().orElse("");
     }
 
     private List<JsonNode> features(
