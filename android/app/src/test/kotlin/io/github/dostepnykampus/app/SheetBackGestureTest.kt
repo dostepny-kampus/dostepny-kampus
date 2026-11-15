@@ -44,6 +44,7 @@ import androidx.navigationevent.NavigationEvent
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
+import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Assert.assertArrayEquals
@@ -366,7 +367,7 @@ class SheetBackGestureTest {
             NavDisplay(
                 backStack = listOf<NavKey>(MapRoute(), BuildingRoute(symbol = "A-1")),
                 onBack = { backs++ },
-                sceneStrategies = listOf(SheetSceneStrategy),
+                sceneStrategies = listOf(SheetSceneStrategy(MapMotion())),
             ) { route: NavKey ->
                 NavEntry(key = route, metadata = SheetSceneStrategy.metadata(route)) { Text(text = "$route") }
             }
