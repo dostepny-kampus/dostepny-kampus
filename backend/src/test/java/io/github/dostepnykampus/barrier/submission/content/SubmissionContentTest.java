@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
  * Treść zgłoszenia: zdjęcia, pola obowiązkowe i kopie
  * z innym budynkiem.
  *
- * <p>Wymagania: US4, US7, BR-G2</p>
+ * <p>Wymagania: US4, US7, BR-G2, NFR-34</p>
  *
  * @since 0.1.0
  */
@@ -36,6 +36,37 @@ final class SubmissionContentTest {
                 "Zgłoszenie bez zdjęcia przeszło"
             ).getMessage(),
             "Zły opis błędu braku zdjęcia"
+        );
+    }
+
+    @Test
+    void acceptsTenPhotosAndRejectsEleven() {
+        Assertions.assertAll(
+            () -> Assertions.assertEquals(
+                10,
+                SubmissionContentTest.content(SubmissionContentTest.photos(10)).photoIds().size(),
+                "Zgłoszenie z 10 zdjęciami nie przeszło"
+            ),
+            () -> Assertions.assertThrows(
+                InvalidSubmission.class,
+                () -> SubmissionContentTest.content(SubmissionContentTest.photos(11)),
+                "Zgłoszenie z 11 zdjęciami przeszło"
+            )
+        );
+    }
+
+    @Test
+    void rejectsEntranceIdLongerThanSixtyFourCharacters() {
+        final SubmissionContent valid = SubmissionContentTest.content(
+            List.of(SubmissionContentTest.PHOTO)
+        );
+        Assertions.assertThrows(
+            InvalidSubmission.class,
+            () -> new SubmissionContent(
+                valid.kind(), valid.place(), valid.barrier(), "n".repeat(65),
+                valid.entranceMarking(), valid.replaces(), valid.photoIds()
+            ),
+            "Wejście o 65 znakach przeszło"
         );
     }
 
@@ -138,6 +169,14 @@ final class SubmissionContentTest {
             origin.kind(), place, origin.barrier(), origin.entranceId(),
             origin.entranceMarking(), origin.replaces(), origin.photoIds()
         );
+    }
+
+    private static List<UUID> photos(final int count) {
+        final List<UUID> result = new ArrayList<>(count);
+        for (int idx = 0; idx < count; idx += 1) {
+            result.add(new UUID(1L, idx));
+        }
+        return result;
     }
 
     private static SubmissionContent content(final List<UUID> photos) {

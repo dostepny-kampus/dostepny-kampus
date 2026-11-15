@@ -68,6 +68,21 @@ final class SubmissionPlaceTest {
     }
 
     @Test
+    void rejectsBuildingSymbolLongerThanSixteenCharacters() {
+        Assertions.assertAll(
+            () -> Assertions.assertDoesNotThrow(
+                () -> SubmissionPlaceTest.place(1.0, "B".repeat(16)),
+                "Budynek o 16 znakach został odrzucony"
+            ),
+            () -> Assertions.assertThrows(
+                InvalidSubmission.class,
+                () -> SubmissionPlaceTest.place(1.0, "B".repeat(17)),
+                "Budynek o 17 znakach przeszedł"
+            )
+        );
+    }
+
+    @Test
     void acceptsAccuracyOfTenKilometres() {
         Assertions.assertEquals(
             10_000.0,
