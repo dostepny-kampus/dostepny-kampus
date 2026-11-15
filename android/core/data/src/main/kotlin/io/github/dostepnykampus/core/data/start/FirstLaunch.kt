@@ -8,21 +8,26 @@ package io.github.dostepnykampus.core.data.start
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
-import androidx.datastore.preferences.preferencesDataStore
+import androidx.datastore.preferences.preferencesDataStoreFile
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 
-/** Plik ustawień startu aplikacji; jeden DataStore na proces, bo tak wymaga DataStore dla jednego pliku. */
-internal val Context.startDataStore by preferencesDataStore(
-    name = "start",
-    corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
-)
+/**
+ * Plik ustawień startu aplikacji. DataStore wymaga jednej instancji na plik, więc wołający trzyma wynik jako
+ * jedyny w swoim grafie; nowy graf (inny proces, inny test) dostaje nową instancję.
+ */
+internal fun startDataStore(context: Context): DataStore<Preferences> =
+    PreferenceDataStoreFactory.create(
+        corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
+        produceFile = { context.preferencesDataStoreFile("start") },
+    )
 
 /** Czy to pierwsze uruchomienie aplikacji: wtedy instrukcja V5 otwiera się sama, a potem już nie. Wymagania: US5.1 */
 public interface FirstLaunch {

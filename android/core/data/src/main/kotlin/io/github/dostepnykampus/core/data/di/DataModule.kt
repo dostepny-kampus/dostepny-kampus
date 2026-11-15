@@ -84,7 +84,7 @@ public object DataModule {
     /** Wybór „Mapa” albo „Lista budynków” w pliku ustawień mapy. Wymagania: NFR-19 */
     @Provides
     @Singleton
-    public fun mapListChoice(app: Application): MapListChoice = MapListChoiceRepository(app.mapDataStore)
+    public fun mapListChoice(app: Application): MapListChoice = MapListChoiceRepository(mapDataStore(app))
 
     /** Stan internetu z usługi systemowej telefonu. Wymagania: US9.1 */
     @Provides
@@ -95,7 +95,7 @@ public object DataModule {
     /** Pierwsze uruchomienie w pliku ustawień startu. Wymagania: US5.1 */
     @Provides
     @Singleton
-    public fun firstLaunch(app: Application): FirstLaunch = FirstLaunchRepository(app.startDataStore)
+    public fun firstLaunch(app: Application): FirstLaunch = FirstLaunchRepository(startDataStore(app))
 
     /** Planowanie wysyłki kolejki po powrocie sieci; start aplikacji zwołuje je osobno. Wymagania: NFR-6 */
     @Provides
