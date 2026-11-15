@@ -10,6 +10,7 @@ import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +28,7 @@ final class SubmissionFilterTest {
     void asksForPublicWithBuildingAndFloorWithoutStatus() {
         Assertions.assertEquals(
             new SubmissionQuery(Set.of(SubmissionStatus.ACCEPTED), "B1", "p2"),
-            new SubmissionFilter("B1", "p2", null, false).toQuery(),
+            new SubmissionFilter("B1", "p2", null, "false").toQuery(),
             "Brak statusu nie dał publicznych zgłoszeń z budynkiem i piętrem"
         );
     }
@@ -43,7 +44,7 @@ final class SubmissionFilterTest {
                     "Bez mine=true dozwolony jest tylko status ACCEPTED",
                     Assertions.assertThrows(
                         InvalidInput.class,
-                        new SubmissionFilter(null, null, status, false)::toQuery,
+                        new SubmissionFilter(null, null, status, "false")::toQuery,
                         String.format("Status niepubliczny bez mine przeszedł: %s", status)
                     ).getMessage(),
                     "Zły komunikat błędu"
@@ -58,16 +59,39 @@ final class SubmissionFilterTest {
             () -> Assertions.assertEquals(
                 new SubmissionQuery(Set.of(SubmissionStatus.IN_REVIEW), null, null),
                 new SubmissionFilter(
-                    null, null, List.of(SubmissionStatus.IN_REVIEW), true
+                    null, null, List.of(SubmissionStatus.IN_REVIEW), "true"
                 ).toQuery(),
                 "Własne zgłoszenia w przeglądzie nie przeszły"
             ),
             () -> Assertions.assertEquals(
                 new SubmissionQuery(Set.of(SubmissionStatus.ACCEPTED), null, null),
                 new SubmissionFilter(
-                    null, null, List.of(SubmissionStatus.ACCEPTED), false
+                    null, null, List.of(SubmissionStatus.ACCEPTED), "false"
                 ).toQuery(),
                 "Przyjęte bez mine nie przeszły"
+            )
+        );
+    }
+
+    @Test
+    void readsOnlyTrueAndFalseAsMine() {
+        Assertions.assertAll(
+            () -> Assertions.assertTrue(
+                new SubmissionFilter(null, null, null, "true").own(),
+                "mine=true nie dało własnych"
+            ),
+            () -> Assertions.assertFalse(
+                new SubmissionFilter(null, null, null, null).own(),
+                "Brak mine dał własne"
+            ),
+            () -> Assertions.assertAll(
+                Stream.of("yes", "on", "1", "TRUE", "").map(
+                    mine -> () -> Assertions.assertThrows(
+                        InvalidInput.class,
+                        () -> new SubmissionFilter(null, null, null, mine).own(),
+                        String.format("mine=%s przeszło", mine)
+                    )
+                )
             )
         );
     }
