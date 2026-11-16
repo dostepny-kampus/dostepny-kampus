@@ -130,12 +130,7 @@ private fun MarkerList(state: MarkersUiState.Ready, actions: MarkerActions) {
 }
 
 @Composable
-private fun MarkerCard(
-    marker: ProgressMarker,
-    floorName: String?,
-    isAsking: Boolean,
-    actions: MarkerActions,
-) {
+private fun MarkerCard(marker: ProgressMarker, floorName: String?, isAsking: Boolean, actions: MarkerActions) {
     OutlinedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
             Text(placeText(marker.marker.place, floorName), style = MaterialTheme.typography.titleMedium)
