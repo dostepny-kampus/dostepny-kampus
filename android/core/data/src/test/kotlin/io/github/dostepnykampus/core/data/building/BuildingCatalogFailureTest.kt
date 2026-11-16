@@ -24,6 +24,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.yield
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.concurrent.atomic.AtomicInteger
@@ -88,7 +89,10 @@ class BuildingCatalogFailureTest {
             runBlocking {
                 supervisorScope {
                     val results = parallel { shared.catalog() }
-                    while (held.isNotEmpty()) held.removeFirst().run()
+                    while (results.any { it.isActive }) {
+                        yield()
+                        held.removeFirstOrNull()?.run()
+                    }
                     results.joinAll()
                     results.map { it.getCompletionExceptionOrNull()?.javaClass }
                 }
