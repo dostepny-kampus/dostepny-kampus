@@ -44,6 +44,19 @@ internal suspend fun <T> OkHttpClient.exchange(request: Request, read: (Int, Str
 internal suspend fun <T> OkHttpClient.exchangeBody(
     request: Request,
     read: (Int, ResponseBody) -> ApiResult<T>,
+): ApiResult<T> = exchangeResponse(request) { read(it.code, it.body) }
+
+/**
+ * To samo co [exchange], ale [read] dostaje całą odpowiedź, np. do odczytu nagłówka `Link`.
+ *
+ * @param T typ odczytanych danych
+ * @param request żądanie
+ * @param read wynik z odpowiedzi HTTP
+ * @return wynik [read] albo [ApiResult.NetworkError], gdy połączenie nie doszło do skutku lub zostało zerwane
+ */
+internal suspend fun <T> OkHttpClient.exchangeResponse(
+    request: Request,
+    read: (Response) -> ApiResult<T>,
 ): ApiResult<T> {
     val started = System.nanoTime()
     return awaitExchange(request, read).also { result ->
@@ -51,10 +64,7 @@ internal suspend fun <T> OkHttpClient.exchangeBody(
     }
 }
 
-private suspend fun <T> OkHttpClient.awaitExchange(
-    request: Request,
-    read: (Int, ResponseBody) -> ApiResult<T>,
-): ApiResult<T> =
+private suspend fun <T> OkHttpClient.awaitExchange(request: Request, read: (Response) -> ApiResult<T>): ApiResult<T> =
     suspendCancellableCoroutine { continuation ->
         val call = newCall(request)
         continuation.invokeOnCancellation { call.cancel() }
@@ -67,7 +77,7 @@ private suspend fun <T> OkHttpClient.awaitExchange(
                 override fun onResponse(call: Call, response: Response) {
                     val result =
                         try {
-                            response.use { read(it.code, it.body) }
+                            response.use(read)
                         } catch (error: IOException) {
                             ApiResult.NetworkError(error)
                         }
