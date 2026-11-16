@@ -39,10 +39,10 @@ import io.github.dostepnykampus.feature.map.camera.CameraMotion
 import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.FlightArea
-import io.github.dostepnykampus.feature.map.camera.FlightLimits
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
+import io.github.dostepnykampus.feature.map.camera.MoveLimits
 import io.github.dostepnykampus.feature.map.camera.StyleArea
 import io.github.dostepnykampus.feature.map.camera.belowTop
 import io.github.dostepnykampus.feature.map.camera.isSameView
@@ -321,19 +321,18 @@ object MapLibreMapView : CampusMapView {
     }
 
     /**
-     * Ruchy kamery mapy [map] po jednym. Ruch niesie dopełnienie z chwili startu; dopełnienie zmienione
-     * w trakcie ruchu czeka na jego koniec, bo przerwałoby ruch, a samo przesuwa mapę płynnie w 300 ms. Gest osoby
-     * przerywa ruch sam (MapLibre). Na czas przelotu granice kamery są zdjęte ([FlightLimits]), a teren i podkład
-     * starego terenu zostają do zejścia poniżej powiększenia podkładu ([areas]). Brzeg odkrytej części mapy nie
-     * wychodzi poza prostokąt terenu: MapLibre ogranicza tylko środek kamery, więc granica środka przy bieżącym
-     * powiększeniu i dopełnieniu idzie do mapy na nowo przy każdym ruchu.
+     * Ruchy kamery mapy [map] po jednym. Ruch niesie dopełnienie z chwili startu; zmienione w trakcie czeka na jego
+     * koniec, a samo przesuwa mapę płynnie w 300 ms. Gest osoby przerywa ruch sam (MapLibre). Na czas ruchu granice
+     * kamery są zdjęte ([MoveLimits]), bo każda ich zmiana zatrzymuje ruch; przy przelocie stary teren i podkład
+     * zostają do zejścia poniżej powiększenia podkładu ([areas]). Poza ruchem granica środka przy bieżącym
+     * powiększeniu i dopełnieniu idzie do mapy przy każdym ruchu gestem, więc odkryta część nie wychodzi poza teren.
      */
     private class CameraDriver(private val map: MapLibreMap, private val areas: FlightArea, private val view: View) {
         private var inset = MapInset()
         private var running: Run? = null
         private var area: MapLimits? = null
         private var centerBox: CampusBounds? = null
-        private val limits = FlightLimits { limitTo(it) }
+        private val limits = MoveLimits { limitTo(it) }
 
         init {
             map.addOnCameraMoveListener {
@@ -396,7 +395,8 @@ object MapLibreMapView : CampusMapView {
             val update = CameraUpdateFactory.newCameraPosition(move.camera.toPosition(inset))
             val millis = move.durationMillis.toInt()
             running = null
-            if (move.motion == CameraMotion.FLIGHT) startFlight() else endFlight()
+            val isFlight = move.motion == CameraMotion.FLIGHT
+            if (move.motion == CameraMotion.NONE) endMove() else startMove(isFlight)
             when (move.motion) {
                 CameraMotion.NONE -> map.moveCamera(update)
                 CameraMotion.EASE -> map.easeCamera(update, millis, start())
@@ -406,13 +406,13 @@ object MapLibreMapView : CampusMapView {
 
         private fun start(): Run = Run().also { running = it }
 
-        fun startFlight() {
-            limits.startFlight()
-            areas.startFlight()
+        fun startMove(isFlight: Boolean) {
+            limits.startMove()
+            if (isFlight) areas.startFlight() else areas.endFlight()
         }
 
-        fun endFlight() {
-            limits.endFlight()
+        fun endMove() {
+            limits.endMove()
             areas.endFlight()
         }
 
@@ -425,7 +425,7 @@ object MapLibreMapView : CampusMapView {
             private fun settle() {
                 if (running !== this) return
                 running = null
-                endFlight()
+                endMove()
                 pad(inset)
             }
         }
