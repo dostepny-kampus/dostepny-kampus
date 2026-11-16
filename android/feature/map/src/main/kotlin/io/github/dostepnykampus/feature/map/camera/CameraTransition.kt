@@ -134,6 +134,20 @@ private fun centered(outline: CampusBounds, zoom: Double, free: FreeMap): MapCam
     return MapCamera(center = center, zoom = zoom)
 }
 
+/**
+ * Ten widok przesunięty w poziomie tak, że prostokąt [outline] stoi na środku części mapy szerokiej na [widthDp]
+ * obok pasa szerokiego na [startDp] przy lewym brzegu; prostokąt szerszy niż ta część zaczyna się tuż za pasem.
+ * Powiększenie i szerokość geograficzna środka zostają.
+ *
+ * Wymagania: US16.1, US1.3, US1.4, NFR-17
+ */
+internal fun MapCamera.besideStart(outline: CampusBounds, widthDp: Double, startDp: Double): MapCamera {
+    val perDegree = dpPerDegree(zoom)
+    val spare = widthDp - startDp - (outline.east - outline.west) * perDegree
+    val westDp = startDp + (spare / 2).coerceAtLeast(minimumValue = 0.0)
+    return copy(center = center.copy(longitude = outline.west + (widthDp / 2 - westDp) / perDegree))
+}
+
 private fun isVisible(outline: CampusBounds, view: MapCamera, free: FreeMap): Boolean {
     val perDegree = dpPerDegree(view.zoom)
     val perRadian = WORLD_DP_AT_ZOOM_0 * 2.0.pow(view.zoom) / (2 * PI)
