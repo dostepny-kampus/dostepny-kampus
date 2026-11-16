@@ -29,6 +29,7 @@ import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotFocused
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasAnyAncestor
@@ -595,7 +596,7 @@ class CampusMapScreenTest {
         compose.onNodeWithText("Budynek C-14", useUnmergedTree = true).assertExists()
         compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
         assertEquals(listOf("C-14"), opened)
-        compose.onNodeWithContentDescription("Wyczyść pole").assertDoesNotExist()
+        compose.onNode(hasSetTextAction()).assertTextEquals("c14", includeEditableText = true)
     }
 
     /**
