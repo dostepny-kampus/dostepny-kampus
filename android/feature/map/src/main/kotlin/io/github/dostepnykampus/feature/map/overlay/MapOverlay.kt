@@ -134,13 +134,13 @@ private fun AreaColumn(
 ) {
     Column(modifier) {
         val isOpen = open == MapPanel.Area
-        areas?.let {
+        if (areas != null) {
             MapAreaSwitch(
-                areas = AreaList(it.choices),
+                areas = AreaList(areas.choices),
                 isOpen = isOpen,
                 onOpenChange = { isOpening -> onOpenChange(MapPanel.Area.takeIf { isOpening }) },
                 onChoose = { name ->
-                    it.show(name)?.let(onAreaShow)
+                    areas.show(name)?.let(onAreaShow)
                     onOpenChange(null)
                 },
                 modifier =
