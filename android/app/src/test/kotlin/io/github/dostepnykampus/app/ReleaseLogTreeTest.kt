@@ -6,50 +6,28 @@
 package io.github.dostepnykampus.app
 
 import android.util.Log
-import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.shadows.ShadowLog
-import timber.log.Timber
 
 /**
  * Wersja release zapisuje do logcat tylko ostrzeżenia i błędy.
  *
  * Wymagania: NFR-57
  */
-@RunWith(RobolectricTestRunner::class)
 class ReleaseLogTreeTest {
-    @Before
-    fun plant() {
-        ShadowLog.clear()
-        Timber.plant(ReleaseLogTree())
-    }
-
-    @After
-    fun uproot() {
-        Timber.uprootAll()
-    }
+    private val tree = ReleaseLogTree()
 
     @Test
-    fun skipsDebugAndInfoMessages() {
-        Timber.d("szczegół")
-        Timber.i("informacja")
+    fun skipsMessagesBelowWarning() {
+        val logged = listOf(Log.VERBOSE, Log.DEBUG, Log.INFO).map { priority -> tree.isLoggable(null, priority) }
 
-        assertEquals("Komunikaty DEBUG i INFO nie powinny trafić do logcat", 0, ShadowLog.getLogs().size)
+        assertEquals("Komunikaty poniżej WARN nie powinny trafić do logcat", listOf(false, false, false), logged)
     }
 
     @Test
     fun keepsWarningsAndErrors() {
-        Timber.w("ostrzeżenie")
-        Timber.e("błąd")
+        val logged = listOf(Log.WARN, Log.ERROR, Log.ASSERT).map { priority -> tree.isLoggable(null, priority) }
 
-        assertEquals(
-            "Ostrzeżenie i błąd powinny trafić do logcat",
-            listOf(Log.WARN, Log.ERROR),
-            ShadowLog.getLogs().map { entry -> entry.type },
-        )
+        assertEquals("Ostrzeżenia i błędy powinny trafić do logcat", listOf(true, true, true), logged)
     }
 }

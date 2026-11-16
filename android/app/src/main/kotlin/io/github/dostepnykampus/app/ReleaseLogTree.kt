@@ -14,5 +14,5 @@ import timber.log.Timber
  * Wymagania: NFR-57
  */
 internal class ReleaseLogTree : Timber.DebugTree() {
-    override fun isLoggable(tag: String?, priority: Int): Boolean = priority >= Log.WARN
+    public override fun isLoggable(tag: String?, priority: Int): Boolean = priority >= Log.WARN
 }
