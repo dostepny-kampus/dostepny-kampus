@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -111,25 +112,19 @@ public final class SubmissionReading {
     }
 
     /**
-     * Wyszukuje zgłoszenia według zapytania.
+     * Przyjęte zgłoszenia istniejących barier, czytane stronami po 500 w miarę odbioru.
      *
-     * @param query Statusy oraz opcjonalny budynek i piętro
-     * @return Zgłoszenia
-     */
-    public List<Submission> list(final SubmissionQuery query) {
-        return this.finder.list(query);
-    }
-
-    /**
-     * Przyjęte zgłoszenia istniejących barier.
+     * <p>Wymagania: US13.2, NFR-34</p>
      *
-     * @return Zgłoszenia w kolejności utworzenia
+     * @return Leniwy strumień zgłoszeń w kolejności identyfikatorów
      */
-    public List<Submission> exportable() {
-        return this.finder.list(new SubmissionQuery(Set.of(SubmissionStatus.ACCEPTED), null, null))
-            .stream().filter(item -> !item.content().barrier().removed())
-            .filter(item -> item.content().kind() != SubmissionKind.ENTRANCE_MARKING)
-            .toList();
+    public Stream<Submission> exportable() {
+        final SubmissionQuery accepted = new SubmissionQuery(
+            Set.of(SubmissionStatus.ACCEPTED), null, null
+        );
+        return new SubmissionPages(after -> this.finder.page(accepted, after, 500)).stream()
+            .filter(item -> !item.content().barrier().removed())
+            .filter(item -> item.content().kind() != SubmissionKind.ENTRANCE_MARKING);
     }
 
     /**

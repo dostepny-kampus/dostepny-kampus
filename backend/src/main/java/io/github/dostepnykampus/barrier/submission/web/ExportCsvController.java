@@ -15,14 +15,15 @@ import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
 import io.github.dostepnykampus.shared.geo.Puwg1992;
 import io.github.dostepnykampus.shared.geo.Puwg1992Point;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
-import java.util.StringJoiner;
+import java.util.stream.Stream;
 import org.apache.commons.csv.CSVFormat;
 import org.jspecify.annotations.Nullable;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -51,15 +52,16 @@ public final class ExportCsvController {
     }
 
     @GetMapping(value = "/export.csv", produces = "text/csv;charset=UTF-8")
-    ResponseEntity<String> csv() {
+    void csv(final HttpServletResponse response) throws IOException {
+        response.setContentType("text/csv;charset=UTF-8");
         final String separator = CSVFormat.RFC4180.getRecordSeparator();
-        final StringJoiner csv = new StringJoiner(separator, "", separator).add(
+        final PrintWriter out = response.getWriter();
+        out.append(
             "submissionId,x,y,barrierType,barrierGroup,severity,buildingSymbol,floor,description,verifiedAt"
-        );
-        this.submissions.exportable().stream().map(this::row).forEach(csv::add);
-        return ResponseEntity.ok()
-            .contentType(MediaType.parseMediaType("text/csv;charset=UTF-8"))
-            .body(csv.toString());
+        ).append(separator);
+        try (Stream<Submission> rows = this.submissions.exportable()) {
+            rows.map(this::row).forEach(line -> out.append(line).append(separator));
+        }
     }
 
     private String row(final Submission submission) {

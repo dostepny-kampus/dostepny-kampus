@@ -261,11 +261,6 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     }
 
     @Override
-    public List<Submission> list(final SubmissionQuery query) {
-        return this.select(query);
-    }
-
-    @Override
     public SubmissionFinder.Page page(
         final SubmissionQuery query, final UUID after, final int limit
     ) {
@@ -390,23 +385,6 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
 
     private boolean wrote(final UUID id, final String account) {
         return !account.isEmpty() && !this.foreign(id, account);
-    }
-
-    private List<Submission> select(final SubmissionQuery query) {
-        return this.jdbc.sql(
-            String.format(
-                """
-                SELECT %s FROM submissions WHERE status IN (:statuses)
-                    AND (CAST(:building AS TEXT) IS NULL OR building_symbol = :building)
-                    AND (CAST(:floor AS TEXT) IS NULL OR floor_id = :floor)
-                ORDER BY created_at, id
-                """,
-                JdbcSubmissions.COLUMNS
-            )
-        ).param("statuses", query.statuses().stream().map(Enum::name).toList())
-            .param("building", query.buildingSymbol())
-            .param("floor", query.floorId())
-            .query(SubmissionRows.readable(this.rows));
     }
 
     private Optional<Submission> write(

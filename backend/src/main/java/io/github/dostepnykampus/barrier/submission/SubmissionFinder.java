@@ -99,14 +99,6 @@ public interface SubmissionFinder {
     boolean authorOnly(UUID id, String account);
 
     /**
-     * Wyszukuje zgłoszenia według zapytania.
-     *
-     * @param query Statusy oraz opcjonalny budynek i piętro
-     * @return Zgłoszenia posortowane po chwili utworzenia, potem po identyfikatorze
-     */
-    List<Submission> list(SubmissionQuery query);
-
-    /**
      * Wyszukuje stronę zgłoszeń według zapytania, w kolejności identyfikatorów.
      *
      * <p>Wymagania: NFR-34, US1.3</p>
