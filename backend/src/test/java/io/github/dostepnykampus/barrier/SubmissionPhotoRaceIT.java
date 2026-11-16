@@ -31,6 +31,8 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
 import software.amazon.awssdk.services.s3.model.CopyObjectResponse;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
@@ -161,6 +163,11 @@ final class SubmissionPhotoRaceIT {
                 "Wysyłka pliku do magazynu zajmuje transakcję z blokadą zgłoszenia"
             );
             return this.client.putObject(request, body);
+        }
+
+        @Override
+        public DeleteObjectResponse deleteObject(final DeleteObjectRequest request) {
+            return this.client.deleteObject(request);
         }
 
         @Override
