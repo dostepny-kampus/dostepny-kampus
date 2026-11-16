@@ -24,6 +24,8 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
+import software.amazon.awssdk.services.s3.model.HeadBucketResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
@@ -296,6 +298,14 @@ final class S3PhotoStoreTest {
         public CreateBucketResponse createBucket(final CreateBucketRequest request) {
             this.created.add(request.bucket());
             return CreateBucketResponse.builder().build();
+        }
+
+        @Override
+        public HeadBucketResponse headBucket(final HeadBucketRequest request) {
+            if (this.created.isEmpty()) {
+                throw NoSuchBucketException.builder().message(request.bucket()).build();
+            }
+            return HeadBucketResponse.builder().build();
         }
 
         @Override
