@@ -24,6 +24,7 @@ import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertWidthIsAtLeast
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -116,6 +117,33 @@ class MapInfoTest {
         compose.onNodeWithText("Wejścia i plany pięter: Źródło: Politechnika Wrocławska.").assertExists()
     }
 
+    /**
+     * „Zamknij” mieści się w arkuszu z takim samym odstępem od prawej krawędzi jak tytuł „Legenda” od lewej.
+     *
+     * Wymagania: NFR-17, NFR-53
+     */
+    @Test
+    fun keepsCloseInsideSheet() {
+        compose.setContent { Info(isOpenAtStart = true) }
+        assertCloseMirrorsTitle()
+    }
+
+    /** Przy czcionce 200% „Zamknij” też mieści się w arkuszu z odstępem tytułu. Wymagania: NFR-20, NFR-17 */
+    @Test
+    @Config(fontScale = 2f)
+    fun keepsCloseInsideLargeFont() {
+        compose.setContent { Info(isOpenAtStart = true) }
+        assertCloseMirrorsTitle()
+    }
+
+    /** Zrzut arkusza „Legenda” przy czcionce 200%: cały przycisk „Zamknij” w arkuszu. Wymagania: NFR-20 */
+    @Test
+    @Config(fontScale = 2f)
+    fun matchesLargeFontMockup() {
+        compose.setContent { Info(isOpenAtStart = true) }
+        compose.onRoot().captureRoboImage()
+    }
+
     /** Zrzut do porównania z makietą hi-fi V1 „legenda”, motyw jasny. */
     @Test
     fun matchesLightMockup() {
@@ -129,6 +157,15 @@ class MapInfoTest {
     fun matchesDarkMockup() {
         compose.setContent { Info(isOpenAtStart = true) }
         compose.onRoot().captureRoboImage()
+    }
+
+    private fun assertCloseMirrorsTitle() {
+        val root = compose.onRoot().getUnclippedBoundsInRoot()
+        val title = compose.onNodeWithText("Legenda").getUnclippedBoundsInRoot()
+        val close = compose.onNodeWithText("Zamknij").getUnclippedBoundsInRoot()
+        val start = title.left - root.left
+        val end = root.right - close.right
+        assertEquals("odstęp „Zamknij” od prawej krawędzi w dp", start.value, end.value, EDGE_TOLERANCE_DP)
     }
 
     @Composable
@@ -146,6 +183,7 @@ class MapInfoTest {
         val MapGround = Color(0xFFBEE3F2)
         val DAY: LocalDate = LocalDate.of(2023, 12, 18)
         const val NAME = "Legenda i źródła mapy"
+        const val EDGE_TOLERANCE_DP = 0.5f
         val SIGNS = listOf("Budynek Politechniki", "Wejście dostępne", "Wejście niedostępne", "Wejście bez danych")
     }
 }
