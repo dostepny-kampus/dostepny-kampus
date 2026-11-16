@@ -430,40 +430,39 @@ wysokosci:
 # Jasny podkład to wariant „żywy”: wyraźna zieleń i woda, budynki spoza PWr od powiększenia 13,
 # nazwy dzielnic wielkimi literami, budynki PWr najbardziej nasycone na mapie.
 # Nie są to role Material 3: aplikacja wstawia je do stylu mapy, a nie do motywu.
-# W jasnym motywie kontur PWr i ścieżka mają barwę `primary`. Ciemny to mapa nocna:
-# grafitowy ląd, szaroniebieskie kontury bez jasnego morskiego. Napisy: Noto Sans z obwódką.
+# W jasnym motywie kontur PWr i ścieżka mają barwę `primary`. Ciemny to wariant „żywy ciemny”: łupkowe tło
+# (nie czarne), drogi jaśniejsze od tła, wyraźna woda i zieleń, budynki PWr najjaśniejsze na mapie. Napisy: Noto Sans z obwódką.
 # Skrypt strony jeszcze nie sprawdza tej sekcji; pary niżej mają ten sam zapis
 # co `kontrast.pary`, a progi są te same (tekst 7:1, nietekst 3:1).
 # ---------------------------------------------------------------------------
 mapa:
   napisy_sp: 16
   kolory:
-    lad: {jasny: "#EEF1F0", ciemny: "#15181A", uzycie: tło lądu}
-    zielen: {jasny: "#CBE2C6", ciemny: "#1A221E", uzycie: parki i trawniki}
-    woda: {jasny: "#A7CADD", ciemny: "#132129", uzycie: rzeka i kanały}
-    droga: {jasny: "#FFFFFF", ciemny: "#2B3034", uzycie: wypełnienie ulic}
-    droga_kontur: {jasny: "#C3CBCE", ciemny: "#1D2124", uzycie: obrzeże ulic}
-    tory: {jasny: "#A3ACAF", ciemny: "#3A4044", uzycie: tory}
-    chodnik: {jasny: "#F7F9FA", ciemny: "#22272A", uzycie: chodniki i place}
-    budynek: {jasny: "#DADFE0", ciemny: "#23282B", uzycie: "budynki spoza PWr, od powiększenia 13"}
-    budynek_kontur: {jasny: "#C6CDCF", ciemny: "#2C3236", uzycie: kontur budynków spoza PWr}
-    pwr: {jasny: "#9BD3E6", ciemny: "#2A3640", uzycie: "wypełnienie budynków szczegółowych (z planem pięter)"}
+    lad: {jasny: "#EEF1F0", ciemny: "#20272B", uzycie: tło lądu}
+    zielen: {jasny: "#CBE2C6", ciemny: "#24352C", uzycie: parki i trawniki}
+    woda: {jasny: "#A7CADD", ciemny: "#1B3344", uzycie: rzeka i kanały}
+    droga: {jasny: "#FFFFFF", ciemny: "#3A4449", uzycie: wypełnienie ulic}
+    droga_kontur: {jasny: "#C3CBCE", ciemny: "#1A2023", uzycie: obrzeże ulic}
+    tory: {jasny: "#A3ACAF", ciemny: "#4A5357", uzycie: tory}
+    chodnik: {jasny: "#F7F9FA", ciemny: "#2C3438", uzycie: chodniki i place}
+    budynek: {jasny: "#DADFE0", ciemny: "#2B3337", uzycie: "budynki spoza PWr, od powiększenia 13"}
+    budynek_kontur: {jasny: "#C6CDCF", ciemny: "#343D42", uzycie: kontur budynków spoza PWr}
+    pwr: {jasny: "#9BD3E6", ciemny: "#3D6B7A", uzycie: "wypełnienie budynków szczegółowych (z planem pięter)"}
     # Budynek podstawowy: jaśniejsze tło niż szczegółowy, ale wyraźnie niebieskie; od szczegółowego odróżnia go
     # jasność tła i cienki kontur.
-    pwr_podstawowy: {jasny: "#C4E5F0", ciemny: "#222B31", uzycie: "wypełnienie budynków podstawowych (bez planu pięter)"}
+    pwr_podstawowy: {jasny: "#C4E5F0", ciemny: "#2F4E59", uzycie: "wypełnienie budynków podstawowych (bez planu pięter)"}
     # Ciemny kontur PWr: najciemniejszy ton, który do wypełnienia ma ≥ 3:1 także po symulacji daltonizmu.
-    pwr_kontur: {jasny: "#004E5E", ciemny: "#68848F", uzycie: "kontur budynków PWr (jasny = primary): gruby przy szczegółowym, cienki ciągły przy podstawowym"}
+    pwr_kontur: {jasny: "#004E5E", ciemny: "#A6D6E5", uzycie: "kontur budynków PWr (jasny = primary): gruby przy szczegółowym, cienki ciągły przy podstawowym"}
     # Obrys wybranego budynku jest grubszy niż kontur; wybór pokazuje też arkusz z nazwą (NFR-21).
-    pwr_wybrany: {jasny: "#001F27", ciemny: "#7AA6B5", uzycie: obrys wybranego budynku}
-    napis_pwr: {jasny: "#00303B", ciemny: "#D9DFE2", uzycie: "symbol budynku, „Sala 329”, „Winda”, „Toaleta”"}
-    napis_ulica: {jasny: "#3A4549", ciemny: "#A9B2B6", uzycie: nazwy ulic i numery sal}
-    napis_woda: {jasny: "#2B454D", ciemny: "#A3B8C0", uzycie: nazwa rzeki}
-    # Ciemny odcień do czasu ciemnej palety podkładu (#2679).
+    pwr_wybrany: {jasny: "#001F27", ciemny: "#E6F4F8", uzycie: obrys wybranego budynku}
+    napis_pwr: {jasny: "#00303B", ciemny: "#F0F6F8", uzycie: "symbol budynku, „Sala 329”, „Winda”, „Toaleta”"}
+    napis_ulica: {jasny: "#3A4549", ciemny: "#A9B4B8", uzycie: nazwy ulic i numery sal}
+    napis_woda: {jasny: "#2B454D", ciemny: "#96B9CC", uzycie: nazwa rzeki}
     napis_dzielnica: {jasny: "#4E5A5E", ciemny: "#A9B2B6", uzycie: "nazwy dzielnic wielkimi literami, z odstępem liter"}
-    obwodka: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: obwódka napisów}
-    sciezka: {jasny: "#004E5E", ciemny: "#6A818A", uzycie: ścieżka dostosowana}
+    obwodka: {jasny: "#FFFFFF", ciemny: "#20272B", uzycie: obwódka napisów}
+    sciezka: {jasny: "#004E5E", ciemny: "#8AA7B2", uzycie: ścieżka dostosowana}
     tusz: {jasny: "#181C1D", ciemny: "#D5DADC", uzycie: "kontur znaków wejść i barier, znak „Niedostępne”, ikony pochylni i planu"}
-    papier: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: "obwódka znaków wejść i barier, wnętrze znaczników"}
+    papier: {jasny: "#FFFFFF", ciemny: "#20272B", uzycie: "obwódka znaków wejść i barier, wnętrze znaczników"}
     # Znaki wejść i barier na mapie i w legendzie. Barwa powtarza kształt i słowo, których nie zastępuje (NFR-21).
     # Odcienie z palety bezpiecznej przy daltonizmie (Okabe i Ito), jasność maleje z uciążliwością.
     # „Blokada”: zaokrąglona tablica z jedną poziomą belką, jak znak zakazu wjazdu; poza mapą i legendą tablica
@@ -478,7 +477,7 @@ mapa:
     znak_blokada_symbol: {jasny: "#FFFFFF", ciemny: "#FFFFFF", uzycie: "pozioma belka na tablicy „Blokada”"}
     # Granica terenu (BR-G5): ciągła linia z obwódką w kolorze przeciwnym, żeby była widoczna na każdym podkładzie.
     granica_terenu: {jasny: "#181C1D", ciemny: "#D5DADC", uzycie: "linia granicy terenu, 2 dp"}
-    granica_terenu_obwodka: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: "obwódka linii granicy terenu, 1,5 dp z każdej strony"}
+    granica_terenu_obwodka: {jasny: "#FFFFFF", ciemny: "#20272B", uzycie: "obwódka linii granicy terenu, 1,5 dp z każdej strony"}
     p_korytarz: {jasny: "#FFFFFF", ciemny: "#2C3236", uzycie: korytarz na planie piętra}
     p_sala: {jasny: "#D2EAF3", ciemny: "#2C3C44", uzycie: sala na planie piętra}
     p_inne: {jasny: "#E1E6E8", ciemny: "#23282B", uzycie: inne pomieszczenia i klatki schodowe}
