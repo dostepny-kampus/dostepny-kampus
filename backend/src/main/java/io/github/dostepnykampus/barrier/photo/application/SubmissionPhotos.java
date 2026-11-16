@@ -13,6 +13,7 @@ import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.Reader;
 import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
+import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionService;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import io.github.dostepnykampus.shared.error.InvalidInput;
@@ -86,9 +87,9 @@ public final class SubmissionPhotos {
 
     /**
      * Zapisuje zdjęcie bez metadanych; ponowne wysłanie tego samego
-     * zdjęcia je zastępuje.
+     * zdjęcia je zastępuje, ale w weryfikacji zapisanego zdjęcia autor nie zastępuje.
      *
-     * <p>Wymagania: NFR-26, BR-9</p>
+     * <p>Wymagania: NFR-26, BR-9, NFR-25</p>
      *
      * @param submission Identyfikator zgłoszenia
      * @param photo Identyfikator zdjęcia z listy photoIds
@@ -102,7 +103,7 @@ public final class SubmissionPhotos {
         final byte[] jpeg = SubmissionPhotos.clean(upload.read());
         this.service.locked(
             submission, () -> {
-                this.editable(submission, photo);
+                this.replaceable(submission, photo);
                 this.photos.put(submission, photo, jpeg);
             }
         );
@@ -162,9 +163,20 @@ public final class SubmissionPhotos {
             .orElseThrow(() -> new MissingResource("Nie ma takiego zdjęcia zgłoszenia"));
     }
 
-    private void editable(final UUID submission, final UUID photo) {
-        if (!this.find(submission, photo).status().editable()) {
+    private SubmissionStatus editable(final UUID submission, final UUID photo) {
+        final SubmissionStatus status = this.find(submission, photo).status();
+        if (!status.editable()) {
             throw new ForbiddenChange("Zdjęcie zgłoszenia przyjętego zmienia tylko Weryfikator");
+        }
+        return status;
+    }
+
+    private void replaceable(final UUID submission, final UUID photo) {
+        if (this.editable(submission, photo) == SubmissionStatus.IN_REVIEW
+            && this.photos.stored(submission).contains(photo)) {
+            throw new ForbiddenChange(
+                "Zapisanego zdjęcia zgłoszenia w weryfikacji autor nie zmienia"
+            );
         }
     }
 }
