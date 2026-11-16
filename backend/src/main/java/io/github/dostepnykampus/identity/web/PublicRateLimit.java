@@ -5,10 +5,6 @@
  */
 package io.github.dostepnykampus.identity.web;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import io.github.bucket4j.Bandwidth;
-import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -18,19 +14,12 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.Duration;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Limit żądań bez nagłówka Authorization z jednego adresu klienta w oknie jednej minuty
- * (Bucket4j, kubełek tokenów odnawiany co minutę). Żądanie ponad limit dostaje 429
- * {@code application/problem+json} z nagłówkiem Retry-After w sekundach i nie idzie dalej.
- * Kubełki adresów nieaktywnych dłużej niż dwie minuty znikają z pamięci (Caffeine).
+ * Limit żądań bez nagłówka Authorization z jednego adresu klienta w oknie jednej minuty.
+ * Żądanie ponad limit dostaje 429 z nagłówkiem Retry-After i nie idzie dalej.
  *
  * <p>Wymagania: NFR-34</p>
  *
@@ -39,35 +28,31 @@ import tools.jackson.databind.json.JsonMapper;
 final class PublicRateLimit implements Filter {
 
     /**
-     * Ustawienia limitu.
+     * Ustawienia limitu z adresami bez limitu.
      */
     private final RateLimitSettings settings;
 
     /**
-     * Zapis odpowiedzi 429.
-     */
-    private final JsonMapper mapper;
-
-    /**
      * Kubełki według adresu klienta.
      */
-    private final Cache<String, Bucket> buckets;
+    private final MinuteBuckets buckets;
+
+    /**
+     * Odpowiedź 429.
+     */
+    private final TooManyRequests refusal;
 
     PublicRateLimit(final RateLimitSettings settings, final JsonMapper mapper) {
-        this(
-            settings, mapper,
-            Caffeine.newBuilder().expireAfterAccess(Duration.ofMinutes(2))
-                .maximumSize(100_000).build()
-        );
+        this(settings, new MinuteBuckets(settings.publicPerMinute()), new TooManyRequests(mapper));
     }
 
     private PublicRateLimit(
-        final RateLimitSettings settings, final JsonMapper mapper,
-        final Cache<String, Bucket> buckets
+        final RateLimitSettings settings, final MinuteBuckets buckets,
+        final TooManyRequests refusal
     ) {
         this.settings = settings;
-        this.mapper = mapper;
         this.buckets = buckets;
+        this.refusal = refusal;
     }
 
     @Override
@@ -79,40 +64,15 @@ final class PublicRateLimit implements Filter {
             || this.settings.exempt().contains(http.getRemoteAddr())) {
             chain.doFilter(request, response);
         } else {
-            final ConsumptionProbe probe = this.buckets
-                .get(http.getRemoteAddr(), address -> this.bucket())
-                .tryConsumeAndReturnRemaining(1);
+            final ConsumptionProbe probe = this.buckets.take(http.getRemoteAddr());
             if (probe.isConsumed()) {
                 chain.doFilter(request, response);
             } else {
-                this.refuse((HttpServletResponse) response, probe);
+                this.refusal.send(
+                    (HttpServletResponse) response, probe,
+                    "Limit żądań bez logowania z tego adresu na minutę wyczerpany"
+                );
             }
         }
-    }
-
-    private void refuse(final HttpServletResponse response, final ConsumptionProbe probe)
-        throws IOException {
-        response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-        response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
-        response.setHeader(
-            HttpHeaders.RETRY_AFTER,
-            Long.toString(TimeUnit.NANOSECONDS.toSeconds(probe.getNanosToWaitForRefill()) + 1)
-        );
-        this.mapper.writeValue(
-            response.getOutputStream(),
-            Map.of(
-                "title", HttpStatus.TOO_MANY_REQUESTS.getReasonPhrase(),
-                "status", HttpStatus.TOO_MANY_REQUESTS.value(),
-                "detail", "Limit żądań bez logowania z tego adresu na minutę wyczerpany"
-            )
-        );
-    }
-
-    private Bucket bucket() {
-        final int limit = this.settings.publicPerMinute();
-        return Bucket.builder().addLimit(
-            Bandwidth.builder().capacity(limit)
-                .refillIntervally(limit, Duration.ofMinutes(1)).build()
-        ).build();
     }
 }
