@@ -20,6 +20,7 @@ import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.flow.StateFlow
+import timber.log.Timber
 
 /** Pozycja paska dolnego (wymagania wspólne). */
 enum class TopLevel {
@@ -112,13 +113,16 @@ sealed class NavigationHistory(
     }
 
     /**
-     * Jedyna droga zmiany historii: pilnuje wyjścia z instrukcji i liczników powrotów. Widoczna
+     * Jedyna droga zmiany historii: pilnuje wyjścia z instrukcji i liczników powrotów, a zmianę ekranu na wierzchu
+     * zapisuje w logu (DEBUG) z nazwą typu trasy, bez jej argumentów. Widoczna
      * w module `app` dla przejść nawigatora rozbitych na pliki, np. pomiaru i formularza w `CaptureTransitions.kt`.
      */
     internal fun leaving(change: MutableList<NavKey>.() -> Unit) {
-        val isOnFirstHelp = current == FirstHelp
+        val before = current
+        val isOnFirstHelp = before == FirstHelp
         backStack.change()
         while (restarts.size > backStack.size) restarts.removeAt(restarts.lastIndex)
+        if (current != before) Timber.d("Ekran: %s", current::class.simpleName)
         if (isOnFirstHelp && current != FirstHelp) onFirstHelpLeft()
     }
 
