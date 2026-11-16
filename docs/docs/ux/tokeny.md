@@ -148,6 +148,8 @@ Paleta mapy jest w sekcji `mapa` pliku: podkład, budynki PWr i plan piętra w o
 
 Budynek szczegółowy ma pełne tło `pwr` i gruby kontur. Budynek podstawowy ma blade tło `pwr_podstawowy` i cienki ciągły kontur. Różni je jasność tła i grubość konturu, a nie sam odcień (NFR-21).
 
+Przy widocznym planie piętra tło i kontur budynku z OpenStreetMap są ukryte. Ściana piętra z planu PWr jest jedną linią `pwr_kontur`, szczeliny między pomieszczeniami mają barwę `p_korytarz`, a ściany pomieszczeń `p_kontur` grubieją z powiększeniem. Grubości linii planu i rozmiar znaków planu według powiększenia są w `mapa.plan`.
+
 Barwy znaków wejść i barier (`znak_…`) też są w sekcji `mapa`. Aplikacja rysuje te znaki jako obrazy mapy i legendy, a nie przez motyw Material 3. Para każdej barwy z jej symbolem ma co najmniej 3:1 w obu motywach.
 
 Te pary mają te same progi (napisy 7:1, kontury i znaczniki 3:1) i spełniają je także po symulacji daltonizmu. Skrypt strony jeszcze ich nie sprawdza ani nie pokazuje w tabelach. Mapę nieba na C1 rysuje aplikacja, więc używa tylko ról z pliku, a system satelity rozróżnia kształt i podpis (US6.5).
