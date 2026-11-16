@@ -7,7 +7,7 @@ Klient HTTP serwera: budynki, zgłoszenia, zmiany znaczników piętra obejrzaneg
 ## Pakiety
 
 - `core.network` — wspólna wymiana HTTP z wynikiem `ApiResult`, parser kontraktu i wiązania Hilt.
-- `core.network.auth` — token dostępu dołączany do żądań serwera.
+- `core.network.auth` — token dostępu dołączany do żądań serwera i role realmu odczytane z tokenu.
 - `core.network.building` — klient listy budynków, karty budynku i podpowiedzi punktu.
 - `core.network.inspection` — klienty znaczników piętra obejrzanego i wysyłki ich zmian.
 - `core.network.submission` — klient zgłoszeń i zdjęć.
