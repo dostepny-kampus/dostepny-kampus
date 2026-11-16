@@ -7,3 +7,4 @@
 {"sha": "d21c5445f80140a22b7458474c43505b4d2526ce", "data": "2026-11-16", "start_ms": {"p50": 361.47, "p90": 386.41, "proby": 10}, "klatka_ms": {"p50": null, "p90": null, "p99": null, "probki": 0}, "wolne_proc": null}
 {"sha": "54f4489eb80ac7f24594856e95d95547898269f9", "data": "2026-11-16", "start_ms": {"p50": 342.37, "p90": 371.11, "proby": 10}, "klatka_ms": {"p50": null, "p90": null, "p99": null, "probki": 0}, "wolne_proc": null}
 {"sha": "c8e5086c9ceb1001a9bfee14c6ad0af4feb45f4d", "data": "2026-11-16", "start_ms": {"p50": 499.05, "p90": 539.53, "proby": 10}, "klatka_ms": {"p50": null, "p90": null, "p99": null, "probki": 0}, "wolne_proc": null}
+{"sha": "dd90a9f21530079ba1ae5f86cd0263da8b09a073", "data": "2026-11-16", "start_ms": {"p50": 331.06, "p90": 351.9, "proby": 10}, "klatka_ms": {"p50": null, "p90": null, "p99": null, "probki": 0}, "wolne_proc": null}
