@@ -9,8 +9,10 @@ import android.graphics.Bitmap
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import io.github.dostepnykampus.core.designsystem.marking.mapMarkingImage
+import io.github.dostepnykampus.core.designsystem.marking.mapPlanSignImage
 import io.github.dostepnykampus.core.designsystem.marking.mapSeverityImage
 import io.github.dostepnykampus.core.model.building.EntranceMarking
+import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.submission.Severity
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -19,10 +21,10 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.GraphicsMode
 
 /**
- * Barwy znaków wejść i barier na mapie z tokenów `mapa.kolory` w obu motywach: wnętrze kształtu, symbol w nim,
- * kontur `tusz` i obwódka `papier`. Punkty leżą na siatce znaku 24 × 24.
+ * Barwy znaków wejść, barier i planu na mapie z tokenów `mapa.kolory` w obu motywach: wnętrze kształtu, symbol
+ * w nim, kontur `tusz` i obwódka `papier`. Punkty leżą na siatce znaku 24 × 24.
  *
- * Wymagania: NFR-21, NFR-16, US1.3, US2.1
+ * Wymagania: NFR-21, NFR-16, US1.3, US2.1, US16.1
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -52,6 +54,25 @@ class MapSignColorsTest {
             }
         }
     }
+
+    @Test
+    fun colorsPlanSignsFromTokens() {
+        themes.forEach { (theme, colors) ->
+            PLAN_POINTS.forEach { (category, points) ->
+                val image = mapPlanSignImage(category = category, sizePx = SIZE, colors = colors)
+                val seen = points.map { (x, y) -> image.pixelOnSignGrid(x, y) }
+                val expected = planTones(category, colors) + listOf(colors.tusz, colors.papier)
+                assertEquals("$theme $category: wnętrze, symbol, kontur, obwódka", expected.map { it.toArgb() }, seen)
+            }
+        }
+    }
+
+    private fun planTones(category: RoomCategory, colors: MapColors): List<Color> =
+        if (category == RoomCategory.STAIRCASE) {
+            listOf(colors.papier, colors.tusz)
+        } else {
+            listOf(colors.tusz, colors.papier)
+        }
 
     private fun severityTones(severity: Severity, colors: MapColors): List<Color> =
         when (severity) {
@@ -95,6 +116,14 @@ class MapSignColorsTest {
                 EntranceMarking.ACCESSIBLE to listOf(12f to 4f, 10.3f to 15.7f, 12f to 1f, 12f to -0.4f),
                 EntranceMarking.INACCESSIBLE to listOf(12f to 4f, 12f to 12f, 12f to 1.28f, 12f to -0.12f),
                 EntranceMarking.NO_DATA to listOf(12f to 19f, 12f to 16.6f, 6.75f to 6.75f, 5.76f to 5.76f),
+            )
+
+        /** Punkty wnętrza, symbolu, konturu i obwódki znaków windy, toalety dostosowanej i schodów na planie. */
+        val PLAN_POINTS =
+            mapOf(
+                RoomCategory.ELEVATOR to listOf(4f to 12f, 12f to 7.6f, 12f to 1f, 12f to -0.4f),
+                RoomCategory.ACCESSIBLE_TOILET to listOf(4f to 12f, 10.5f to 6.1f, 12f to 1f, 12f to -0.4f),
+                RoomCategory.STAIRCASE to listOf(4f to 12f, 7.2f to 17.9f, 12f to 1f, 12f to -0.4f),
             )
     }
 }

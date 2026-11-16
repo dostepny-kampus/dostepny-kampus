@@ -41,8 +41,17 @@ internal const val PLAN_NUMBERS_LAYER = "plan_numery"
 /** Warstwa znaków windy, toalety dostosowanej i schodów na planie. Wymagania: US16.1 */
 internal const val PLAN_SIGNS_LAYER = "plan_znaki"
 
-/** Bok obrazu znaku na planie w dp. */
+/** Bok obrazu znaku na planie w dp: największy rozmiar znaku, od powiększenia 19 (token `mapa.plan.znak_dp`). */
 internal const val PLAN_SIGN_DP = 28
+
+private const val SIGN_DP_AT_17 = 16.0
+private const val SIGN_DP_AT_18 = 21.0
+private const val SIGN_ZOOM_17 = 17.0
+private const val SIGN_ZOOM_18 = 18.0
+private const val SIGN_ZOOM_19 = 19.0
+
+private val PLAN_SIGN_SIZES =
+    listOf(SIGN_ZOOM_17 to SIGN_DP_AT_17, SIGN_ZOOM_18 to SIGN_DP_AT_18, SIGN_ZOOM_19 to PLAN_SIGN_DP.toDouble())
 
 /** Grupy funkcji, które mają na planie znak zamiast samego koloru. Wymagania: US16.1 */
 internal val PLAN_SIGN_CATEGORIES =
@@ -112,10 +121,10 @@ internal fun planFeatures(floors: Map<String, RoomList>): JsonElement =
 /**
  * Warstwy planu w kolorach [colors]: pomieszczenia piętra [floor] według grupy funkcji, ich ściany, grubsza ściana
  * piętra, znaki windy, toalety dostosowanej i schodów oraz numery sal od powiększenia 19; numer albo znak, który
- * zachodzi na inny, znika. Bez piętra filtry nie przepuszczają
- * niczego.
+ * zachodzi na inny, znika. Znak rośnie z powiększeniem, a winda i toaleta mają pierwszeństwo przed schodami. Bez
+ * piętra filtry nie przepuszczają niczego.
  *
- * Wymagania: US16.1, NFR-16
+ * Wymagania: US16.1, NFR-16, NFR-21
  */
 internal fun planLayers(colors: PlanColors, floor: String? = null): List<JsonObject> {
     val none = planFilter(floor = floor, kind = ROOM)
@@ -135,7 +144,13 @@ internal fun planLayers(colors: PlanColors, floor: String? = null): List<JsonObj
             filter = planFilter(floor = floor, kind = OUTLINE),
         ),
         JsonObject(
-            symbolLayer(id = PLAN_SIGNS_LAYER, source = PLAN_SOURCE, image = property(IMAGE)) +
+            symbolLayer(
+                id = PLAN_SIGNS_LAYER,
+                source = PLAN_SOURCE,
+                image = property(IMAGE),
+                "icon-size" to signSize(),
+                "symbol-sort-key" to signOrder(),
+            ) +
                 (FILTER to planFilter(floor = floor, kind = SIGN)),
         ),
         JsonObject(
@@ -145,6 +160,19 @@ internal fun planLayers(colors: PlanColors, floor: String? = null): List<JsonObj
         ),
     )
 }
+
+private fun signSize(): JsonElement {
+    val stops = PLAN_SIGN_SIZES.flatMap { (zoom, dp) -> listOf(JsonPrimitive(zoom), JsonPrimitive(dp / PLAN_SIGN_DP)) }
+    return JsonArray(listOf(JsonPrimitive("interpolate"), expression("linear"), expression("zoom")) + stops)
+}
+
+private fun signOrder(): JsonElement =
+    expression(
+        "case",
+        expression("==", property(IMAGE), JsonPrimitive(planSignImage(RoomCategory.STAIRCASE))),
+        JsonPrimitive(1),
+        JsonPrimitive(0),
+    )
 
 /** Nazwa obrazu numeru sali [number]; przedrostek odróżnia go od podpisów budynków. Wymagania: US16.1 */
 internal fun roomNumberImage(number: String): String = "sala: $number"
