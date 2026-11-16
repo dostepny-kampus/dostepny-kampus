@@ -90,10 +90,9 @@ internal data class SelectionLook(
  * i znaki wejść ma tylko on, przy każdym powiększeniu. Bez zaznaczenia filtry obrysu i bariery niczego nie
  * przepuszczają, filtr wejść przepuszcza wszystkie od powiększenia 17, a źródło wejścia jest puste. Plan
  * [MapSelection.plan] pokazuje wybrane piętro i bariery tego piętra; dane planu idą osobno przez [showPlanData].
- * Bariery widać według [barriersByZoom], a bariery zaznaczonego budynku przy każdym powiększeniu. Wypełnienie
- * budynku zależy od jego poziomu, a przygaszenie sąsiadów działa tak samo dla obu poziomów.
+ * Bariery widać według [barriersByZoom], a bariery zaznaczonego budynku przy każdym powiększeniu.
  *
- * Wymagania: US1.1, US1.4, US2.8, US2.1, NFR-15, US1.3, US16.1
+ * Wymagania: US1.1, US1.4, US2.8, US2.1, NFR-15, US1.3
  */
 internal fun selectionLook(data: CampusMapData, selection: MapSelection): SelectionLook {
     val chosen = data.outlineOf(selection.building)
