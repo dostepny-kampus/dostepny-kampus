@@ -50,6 +50,20 @@ docker compose -f infra/docker-compose.yml up -d
 docker compose -f infra/docker-compose.yml exec postgis bash /docker-entrypoint-initdb.d/konto-serwera.sh
 ```
 
+## Przechowywanie danych (NFR-29)
+
+Serwer codziennie o 3:30 usuwa zgłoszenia odrzucone ponad 90 dni temu razem z ich zdjęciami w magazynie. Dni liczą się od ostatniego odrzucenia; zgłoszenie poprawione i wysłane ponownie nie jest usuwane.
+
+Żądanie usunięcia danych osobowych administrator wykonuje ręcznie w ciągu miesiąca. Identyfikator konta (`sub`) odczytuje w konsoli usługi logowania, a potem usuwa tam konto. Zgłoszenia zostają bez autora, a znaczniki pięter konta znikają:
+
+```sh
+docker compose -f infra/docker-compose.yml exec -T postgis \
+  psql -U "$DK_DB_USER" -d "$DK_DB_NAME" -v sub="<identyfikator konta>" <<'SQL'
+UPDATE submissions SET author = NULL WHERE author = :'sub';
+DELETE FROM inspection_markers WHERE author = :'sub';
+SQL
+```
+
 ## Import planów pięter PWr
 
 Plany pięter importuje się ręcznie ([ADR-0012](../docs/docs/architektura/decyzje/0012-import-planow-pieter.md)). Polecenie czyta warstwy z `backend/src/main/resources/pwr-plans.yaml` i pobiera piętra i pomieszczenia z usługi ArcGIS PWr. Zapisuje je w bazie z sekcji „Uruchomienie” i kończy się bez serwera HTTP.
