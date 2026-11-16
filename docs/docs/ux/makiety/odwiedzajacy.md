@@ -44,7 +44,7 @@ Czynność główna: wpisanie symbolu budynku w pole na górze ekranu.
 | Ładowanie | w miejscu mapy napis „Wczytujemy mapę kampusu…”; kontury pojawiają się przed mapą ulic (NFR-11) |
 | Błąd: brak mapy ulic | w miejscu mapy ulic napis „Mapa ulic chwilowo się nie wczytuje. Budynki i bariery nadal możesz oglądać.” (NFR-50) |
 | Pierwsze uruchomienie | przed mapą otwiera się instrukcja V5 (US5.1) |
-| Wybór budynku | dotknięcie konturu wspólnego, np. „C-3/C-4”, albo dotknięcie w zasięgu dwóch konturów otwiera arkusz „Który budynek?”. W arkuszu są przyciski „Budynek C-3”, „Budynek C-4” i „Zamknij”, a przycisk budynku otwiera V2 (US2, decyzja 85) |
+| Wybór budynku | dotknięcie konturu wspólnego, np. „C-3/C-4”, albo dotknięcie obok dwóch konturów, poza nimi, otwiera arkusz „Który budynek?”. W arkuszu są przyciski „Budynek C-3”, „Budynek C-4” i „Zamknij”, a przycisk budynku otwiera V2 (US2, decyzja 85) |
 | Duża czcionka | przy skali czcionki co najmniej 1,5 ekran startuje na liście budynków (NFR-19, NFR-20) |
 
 ### V1: wyszukiwanie
