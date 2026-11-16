@@ -13,6 +13,7 @@ package io.github.dostepnykampus.barrier.submission;
  *
  * @since 0.1.0
  */
+@FunctionalInterface
 public interface StoredPhotos {
 
     /**
