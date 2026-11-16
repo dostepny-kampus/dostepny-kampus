@@ -28,9 +28,3 @@ public fun interface AccountSignIn {
      */
     public suspend fun open(entry: SignInEntry): Boolean
 }
-
-/** Logowanie na czas przed AppAuth: Usługa logowania jeszcze się nie otwiera, więc każda próba kończy się błędem. */
-@TymczasoweRole
-public object UnavailableSignIn : AccountSignIn {
-    override suspend fun open(entry: SignInEntry): Boolean = false
-}

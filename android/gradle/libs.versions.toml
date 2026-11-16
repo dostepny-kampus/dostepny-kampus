@@ -7,6 +7,7 @@ moduleGraphAssert = "2.9.1"
 dependencyAnalysis = "3.20.2"
 composeBom = "2026.09.00"
 activityCompose = "1.13.0"
+appauth = "0.11.1"
 lifecycle = "2.11.0"
 konsist = "0.18.1"
 guava = "33.6.0-jre"
@@ -74,6 +75,7 @@ androidMinSdk = "26"
 jvmTarget = "17"
 
 [libraries]
+appauth = { module = "net.openid:appauth", version.ref = "appauth" }
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 compose-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
