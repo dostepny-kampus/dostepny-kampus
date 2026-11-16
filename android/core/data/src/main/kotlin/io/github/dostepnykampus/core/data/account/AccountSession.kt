@@ -26,7 +26,7 @@ import javax.inject.Singleton
 @Singleton
 public class AccountSession
     @Inject
-    constructor(private val tokens: AccessTokens) : RoleProvider {
+    internal constructor(private val tokens: AccessTokens) : RoleProvider {
         private val state = MutableStateFlow<Account>(Account.Guest)
 
         override val account: StateFlow<Account> = state.asStateFlow()
