@@ -103,3 +103,17 @@ Data sprawdzenia: 16 listopada 2026. Decyzja: Timber w wersji `5.0.1` w aplikacj
 | Aktualność | Wydanie z 13.08.2021, poza oknem 12 miesięcy. Maven Central nie ma nowszej wersji; biblioteka ma jedno zadanie (drzewa logów) i stabilny interfejs. |
 | Potrzeba | Poziomy logów wybierane według typu budowy i tag z nazwy klasy bez własnej nakładki na `android.util.Log`. |
 | Znane podatności | Zapytanie do [OSV](https://google.github.io/osv.dev/post-v1-query/) dla ekosystemu `Maven` i wersji `5.0.1` zwróciło 0 wpisów. [GitHub Advisory Database](https://api.github.com/advisories?ecosystem=maven&affects=com.jakewharton.timber%3Atimber%405.0.1) zwróciła pustą listę. |
+
+## Macrobenchmark 1.5.0 i UI Automator 2.4.1
+
+Zadanie: [#2668](https://github.com/dostepny-kampus/dostepny-kampus/issues/2668).
+
+Data sprawdzenia: 16 listopada 2026. Decyzja: `benchmark-macro-junit4` `1.5.0` i `uiautomator` `2.4.1` tylko w module `:macrobenchmark`.
+
+| Kryterium | Wynik |
+| --- | --- |
+| Dokładna wersja | `benchmark = "1.5.0"` i `uiautomator = "2.4.1"` w katalogu wersji Androida. |
+| Licencja | Apache-2.0, dozwolona przez ADR-0004; potwierdzają ją metadane Maven Google obu pakietów. |
+| Aktualność | Macrobenchmark `1.5.0` z 09.09.2026, UI Automator `2.4.1` z 04.11.2026, obie w ostatnich 12 miesiącach. |
+| Potrzeba | Pomiar zimnego startu i czasu klatek na emulatorze w kontroli sprintu; moduł nie wchodzi do APK aplikacji. |
+| Znane podatności | Zapytania do [OSV](https://google.github.io/osv.dev/post-v1-query/) dla ekosystemu `Maven` i podanych wersji zwróciły 0 wpisów. |

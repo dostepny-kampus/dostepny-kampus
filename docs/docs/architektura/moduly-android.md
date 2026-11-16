@@ -29,3 +29,5 @@ Opisy poniżej pochodzą z plików `README.md` modułów; zmienia się je przy k
 --8<-- "android/detekt-rules/README.md"
 
 --8<-- "android/systemtest/README.md"
+
+--8<-- "android/macrobenchmark/README.md"
