@@ -108,6 +108,6 @@ private fun BuildingSample() {
 private fun SignSample(sign: Any, draw: (MapColors, Float) -> Bitmap) {
     val colors = DostepnyKampusTheme.mapColors
     val density = LocalDensity.current.density
-    val image = remember(sign, colors, density) { draw(colors, density) }
+    val image = remember(key1 = sign, key2 = colors, key3 = density) { draw(colors, density) }
     Image(bitmap = image.asImageBitmap(), contentDescription = null, modifier = Modifier.width(SampleWidth))
 }
