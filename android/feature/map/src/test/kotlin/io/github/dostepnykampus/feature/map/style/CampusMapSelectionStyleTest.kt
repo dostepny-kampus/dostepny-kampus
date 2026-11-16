@@ -140,6 +140,7 @@ class CampusMapSelectionStyleTest {
                 data.selection(building = "A-2", entrance = chosen),
                 data.selection().copy(barrier = "b1"),
                 data.selection().copy(plan = plan()),
+                data.selection(building = "A-1").copy(plan = plan()),
             )
         selections.forEach { selection ->
             val shown = MapSelection(bounds = selection.bounds, plan = selection.plan?.copy(floor = "P9"))
@@ -148,6 +149,7 @@ class CampusMapSelectionStyleTest {
             ready.showSelection(look)
             assertEquals(Json.parseToJsonElement(campusMapStyle(data, selection, colors)), ready.json, "$selection")
             assertEquals(look.dimmed, data.outlines.indices.map { ready.dimmed[it] }, "$selection")
+            assertEquals(look.underPlan, data.outlines.indices.map { ready.underPlan[it] }, "$selection")
         }
     }
 
@@ -221,6 +223,7 @@ class CampusMapSelectionStyleTest {
 private class JsonStyle(style: String) : MapStyleTarget {
     var json: JsonObject = Json.parseToJsonElement(style).jsonObject
     val dimmed = mutableMapOf<Int, Boolean>()
+    val underPlan = mutableMapOf<Int, Boolean>()
 
     override fun filter(layer: String, filter: JsonElement) = edit(layer) { it + ("filter" to filter) }
 
@@ -232,6 +235,7 @@ private class JsonStyle(style: String) : MapStyleTarget {
 
     override fun state(source: String, feature: Int, key: String, value: Boolean) {
         if (source == BUILDINGS_SOURCE && key == DIMMED_STATE) dimmed[feature] = value
+        if (source == BUILDINGS_SOURCE && key == UNDER_PLAN_STATE) underPlan[feature] = value
     }
 
     override fun minZoom(layer: String, zoom: Double) = edit(layer) { it + ("minzoom" to JsonPrimitive(zoom)) }
