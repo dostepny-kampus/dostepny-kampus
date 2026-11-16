@@ -55,7 +55,7 @@ class CollectorMarkersScreenTest {
         show(CollectorMarkersUiState.Ready(ROWS)) { marked += it }
         compose.onNodeWithText("Nieobejrzane").assertIsDisplayed()
         compose.onNodeWithText("Oznacz jako obejrzane").performClick()
-        assertEquals(listOf<MarkerPlace>(MarkerPlace.Floor("p1")), marked)
+        assertEquals("oznaczone piętro", listOf<MarkerPlace>(MarkerPlace.Floor("p1")), marked)
     }
 
     /** Budynek bez pięter ma jeden wiersz „Cały budynek”. Wymagania: US15.1, BR-G3 */
@@ -76,7 +76,7 @@ class CollectorMarkersScreenTest {
         show(CollectorMarkersUiState.Ready(ROWS, unsaved = MarkerPlace.Floor("p1"))) { marked += it }
         compose.onNodeWithText("Nie udało się zapisać znacznika w telefonie.", substring = true).assertIsDisplayed()
         compose.onNodeWithText("Spróbuj ponownie").performClick()
-        assertEquals(listOf<MarkerPlace>(MarkerPlace.Floor("p1")), marked)
+        assertEquals("oznaczone piętro", listOf<MarkerPlace>(MarkerPlace.Floor("p1")), marked)
     }
 
     /** Zrzut do porównania z makietą hi-fi C5 Zbierającego, motyw jasny. */
@@ -105,7 +105,7 @@ class CollectorMarkersScreenTest {
     private companion object {
         val ROWS =
             listOf(
-                FloorRow(MarkerPlace.Floor("p0"), label = "Parter", markerId = "m-1", isPending = true),
+                FloorRow(place = MarkerPlace.Floor("p0"), label = "Parter", markerId = "m-1", isPending = true),
                 FloorRow(MarkerPlace.Floor("p1"), label = "1 piętro"),
             )
     }

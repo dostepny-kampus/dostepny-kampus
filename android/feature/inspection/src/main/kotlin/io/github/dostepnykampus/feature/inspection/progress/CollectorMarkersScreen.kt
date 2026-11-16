@@ -149,10 +149,12 @@ private fun FloorCard(row: FloorRow, isUnsaved: Boolean, onMark: () -> Unit) {
 
 @Composable
 private fun Inspected(isPending: Boolean) {
-    Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
-        Icon(InspectedIcon, contentDescription = null)
-        Text(stringResource(R.string.zbierajacy_obejrzane), style = MaterialTheme.typography.titleMedium)
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
+            Icon(InspectedIcon, contentDescription = null)
+            Text(stringResource(R.string.zbierajacy_obejrzane), style = MaterialTheme.typography.titleMedium)
+        }
+        Text(stringResource(R.string.zbierajacy_twoj_znacznik))
+        if (isPending) Text(stringResource(R.string.zbierajacy_czeka), fontWeight = FontWeight.Bold)
     }
-    Text(stringResource(R.string.zbierajacy_twoj_znacznik))
-    if (isPending) Text(stringResource(R.string.zbierajacy_czeka), fontWeight = FontWeight.Bold)
 }
