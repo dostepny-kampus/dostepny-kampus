@@ -319,13 +319,11 @@ object MapLibreMapView : CampusMapView {
     }
 
     /**
-     * Ruchy kamery mapy [map] po jednym. Ruch niesie dopełnienie z chwili startu; dopełnienie zmienione
-     * w trakcie ruchu czeka na jego koniec, bo przerwałoby ruch, a samo przesuwa mapę płynnie w 300 ms. Gest osoby
-     * przerywa ruch sam (MapLibre). Na czas przesunięcia i przelotu granice kamery są zdjęte ([MoveLimits]), bo
-     * każda ich zmiana zatrzymuje ruch; przy przelocie teren i podkład starego terenu zostają do zejścia poniżej
-     * powiększenia podkładu ([areas]). Poza ruchem brzeg odkrytej części mapy nie wychodzi poza prostokąt terenu:
-     * MapLibre ogranicza tylko środek kamery, więc granica środka przy bieżącym powiększeniu i dopełnieniu idzie
-     * do mapy na nowo przy każdym ruchu gestem.
+     * Ruchy kamery mapy [map] po jednym. Ruch niesie dopełnienie z chwili startu; zmienione w trakcie czeka na jego
+     * koniec, a samo przesuwa mapę płynnie w 300 ms. Gest osoby przerywa ruch sam (MapLibre). Na czas ruchu granice
+     * kamery są zdjęte ([MoveLimits]), bo każda ich zmiana zatrzymuje ruch; przy przelocie stary teren i podkład
+     * zostają do zejścia poniżej powiększenia podkładu ([areas]). Poza ruchem granica środka przy bieżącym
+     * powiększeniu i dopełnieniu idzie do mapy przy każdym ruchu gestem, więc odkryta część nie wychodzi poza teren.
      */
     private class CameraDriver(private val map: MapLibreMap, private val areas: FlightArea, private val view: View) {
         private var inset = MapInset()
