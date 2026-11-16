@@ -93,6 +93,7 @@ import io.github.dostepnykampus.feature.map.building.CardMode
 import io.github.dostepnykampus.feature.map.camera.MOVE_WAIT_MILLIS
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.launch
@@ -116,12 +117,16 @@ private val SheetStateSaver =
     )
 
 /**
- * Część V1 zasłonięta przez arkusz [cover] i rozwinięcie arkusza [isExpanded] dla trybu karty w nim.
+ * Część V1 zasłonięta przez arkusz [cover] i rozwinięcie arkusza [isExpanded] dla trybu karty w nim. [isPending]:
+ * nowy arkusz nie ma jeszcze pomiaru, a [cover] to zasłonięcie sprzed niego.
  *
- * Wymagania: US2.8
+ * Wymagania: US2.8, NFR-56
  */
-internal data class SheetLayout(val cover: Dp = 0.dp, val isExpanded: Boolean = false) :
-    PaddingValues by PaddingValues(bottom = cover)
+internal data class SheetLayout(
+    val cover: Dp = 0.dp,
+    val isExpanded: Boolean = false,
+    val isPending: Boolean = false,
+) : PaddingValues by PaddingValues(bottom = cover)
 
 /**
  * Część V1 zasłonięta przez arkusz V2, jako dopełnienie od dołu; bez arkusza zero. Mapa rysuje się dalej pod
@@ -168,11 +173,14 @@ internal class SheetSceneStrategy(private val motion: MapMotion) : SceneStrategy
 
         /** Metadane wpisu [route]: V1 to mapa, V2 arkusz nad V1, chyba że [BuildingRoute.isDirect], inne trasy bez. */
         fun metadata(route: NavKey): Map<String, Any> =
-            when (route) {
-                is MapRoute -> map
-                is BuildingRoute -> if (route.isDirect) emptyMap() else sheet
+            when {
+                route is MapRoute -> map
+                isSheet(route) -> sheet
                 else -> emptyMap()
             }
+
+        /** [route] to V2 rysowane jako arkusz nad V1. */
+        fun isSheet(route: NavKey): Boolean = route is BuildingRoute && !route.isDirect
     }
 }
 
@@ -195,10 +203,11 @@ private data class SheetScene(
         val scope = rememberCoroutineScope()
         val picture = rememberGraphicsLayer()
         val exit = rememberSheetExit(isShown = sheet != null)
+        val isPending = sheet != null && height == 0.dp
+        val cover = rememberHeldWhile(isHeld = isPending, value = if (sheet == null) 0.dp else height)
         Box(modifier = Modifier.fillMaxSize()) {
-            val cover = if (sheet == null) 0.dp else height
             val silentUnderSheet = Modifier.semantics { if (sheet != null) hideFromAccessibility() }
-            CompositionLocalProvider(LocalSheetPadding provides SheetLayout(cover = cover)) {
+            CompositionLocalProvider(LocalSheetPadding provides SheetLayout(cover = cover, isPending = isPending)) {
                 Box(modifier = silentUnderSheet) { map.Content() }
             }
             if (sheet != null) {
@@ -244,6 +253,35 @@ private data class SheetScene(
                 ClosingSheet(exit = exit, picture = picture, modifier = Modifier.align(Alignment.BottomCenter))
             }
         }
+    }
+}
+
+/**
+ * Zaznaczenie [focus] z trasy V1 do pokazania na mapie. Gdy nad V1 jest arkusz ([isSheetAbove]) bez pomiaru, mapa
+ * dostaje poprzednie zaznaczenie, więc zaznaczenie i wysokość karty docierają do niej w tej samej klatce.
+ *
+ * Wymagania: NFR-56, US2.8
+ */
+@Composable
+internal fun shownFocus(focus: MapFocus?, isSheetAbove: Boolean): MapFocus? {
+    val sheet = LocalSheetPadding.current
+    return rememberHeldWhile(isHeld = isSheetAbove && (sheet.isPending || sheet.cover == 0.dp), value = focus)
+}
+
+/** [value] albo, gdy [isHeld], wartość pokazana w poprzedniej kompozycji. */
+@Composable
+internal fun <T> rememberHeldWhile(isHeld: Boolean, value: T): T {
+    val last = remember { HeldValue(value) }
+    val shown = last.shown(isHeld = isHeld, current = value)
+    SideEffect { last.keep(shown) }
+    return shown
+}
+
+private class HeldValue<T>(private var last: T) {
+    fun shown(isHeld: Boolean, current: T): T = if (isHeld) last else current
+
+    fun keep(shown: T) {
+        last = shown
     }
 }
 
