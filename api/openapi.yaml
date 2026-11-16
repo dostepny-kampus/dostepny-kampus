@@ -400,7 +400,7 @@ paths:
         '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
-        '409': {$ref: '#/components/responses/VersionConflict'}
+        '409': {$ref: '#/components/responses/ReviewConflict'}
         '429': {$ref: '#/components/responses/TooManyRequests'}
   /submissions/{submissionId}/similar:
     get:
@@ -666,6 +666,13 @@ components:
           schema: {$ref: '#/components/schemas/Problem'}
     VersionConflict:
       description: Konflikt wersji albo zgłoszenie w statusie, który nie pozwala na zmianę; w odpowiedzi wersja z serwera.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/VersionConflictProblem'}
+    ReviewConflict:
+      description: >-
+        Decyzja nie może zapaść przy tym stanie zgłoszenia: inna wersja niż aktualna, zgłoszenie już rozstrzygnięte albo
+        brak zdjęcia z `photoIds` w magazynie; w odpowiedzi wersja z serwera.
       content:
         application/problem+json:
           schema: {$ref: '#/components/schemas/VersionConflictProblem'}
