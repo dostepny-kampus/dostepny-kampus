@@ -28,6 +28,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import dagger.hilt.android.EntryPointAccessors
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.feature.map.barrier.BARRIER_ID
 import io.github.dostepnykampus.feature.map.barrier.barrierImages
 import io.github.dostepnykampus.feature.map.building.entranceCaption
@@ -96,7 +97,6 @@ import org.maplibre.android.style.layers.PaintPropertyValue
 import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.sources.GeoJsonSource
 
-private const val LABEL_TEXT_SP = 14f
 private const val LABEL_MAX_FONT_SCALE = 1.4f
 private const val TOUCH_TOLERANCE_DP = 24f
 private const val PADDING_MILLIS = 300
@@ -128,7 +128,8 @@ object MapLibreMapView : CampusMapView {
         val colors = DostepnyKampusTheme.mapColors
         val styleColors = colors.styleColors()
         val look = remember(data, selection, styleColors) { selectionLook(data, selection, styleColors) }
-        val labelSize = LABEL_TEXT_SP * density.density * density.fontScale.coerceAtMost(LABEL_MAX_FONT_SCALE)
+        val fontScale = density.fontScale.coerceAtMost(LABEL_MAX_FONT_SCALE)
+        val labelSize = Typografia.napisyMapy.value * density.density * fontScale
         val tolerance = TOUCH_TOLERANCE_DP * density.density
         val images = rememberMapImages(colors = colors, density = density.density, labelSize = labelSize)
         val mapView = rememberMapView(context)
