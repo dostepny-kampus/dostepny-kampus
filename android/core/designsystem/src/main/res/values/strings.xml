@@ -52,4 +52,5 @@
     <string name="miejsce_parter">parter</string>
     <string name="miejsce_pietro">piętro %1$d</string>
     <string name="miejsce_polpietro">półpiętro</string>
+    <string name="bez_internetu">Bez internetu</string>
 </resources>
