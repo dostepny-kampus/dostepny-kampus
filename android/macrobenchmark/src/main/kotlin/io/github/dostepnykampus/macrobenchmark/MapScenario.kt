@@ -15,6 +15,8 @@ internal const val TARGET_PACKAGE: String = "io.github.dostepnykampus"
 private const val MAP_TIMEOUT_MILLIS = 15_000L
 private const val SWIPES = 4
 private const val SWIPE_STEPS = 30
+private const val LEFT_FRACTION = 4
+private const val RIGHT_NUMERATOR = 3
 
 /**
  * Czeka, aż mapa pokaże przycisk zmiany terenu, czyli aż widać ekran mapy kampusu.
@@ -35,13 +37,9 @@ internal fun MacrobenchmarkScope.panMap() {
     val height = device.displayHeight
     repeat(SWIPES) { index ->
         val fromLeft = index % 2 == 0
-        device.swipe(
-            if (fromLeft) width / 4 else width * 3 / 4,
-            height / 2,
-            if (fromLeft) width * 3 / 4 else width / 4,
-            height / 2,
-            SWIPE_STEPS,
-        )
+        val near = width / LEFT_FRACTION
+        val far = width * RIGHT_NUMERATOR / LEFT_FRACTION
+        device.swipe(if (fromLeft) near else far, height / 2, if (fromLeft) far else near, height / 2, SWIPE_STEPS)
         device.waitForIdle()
     }
 }

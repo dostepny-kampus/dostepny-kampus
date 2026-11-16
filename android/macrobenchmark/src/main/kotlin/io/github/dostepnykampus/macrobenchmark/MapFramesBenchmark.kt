@@ -21,9 +21,11 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class MapFramesBenchmark {
+    /** Reguła pomiaru. */
     @get:Rule
     val rule = MacrobenchmarkRule()
 
+    /** Uruchamia pomiar scenariusza. */
     @Test
     fun measuresPanAndAreaSwitch() =
         rule.measureRepeated(
