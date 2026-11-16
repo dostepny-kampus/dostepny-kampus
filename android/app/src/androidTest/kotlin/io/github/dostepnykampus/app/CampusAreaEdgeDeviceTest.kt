@@ -243,7 +243,7 @@ class CampusAreaEdgeDeviceTest {
         const val MAIN_AREA_NAME = "Kampus główny"
         const val SKIP_HELP_TEXT = "Pomiń instrukcję"
         const val MAIN_AREA_BUTTON_DESCRIPTION = "Teren: Kampus główny. Zmień teren"
-        const val BASEMAP_LAYER = "osm"
+        const val BASEMAP_LAYER = "ulice"
         const val AREA_LAYER_PREFIX = "teren"
         const val EDGE_TOLERANCE_DEGREES = 1e-5
         const val MIN_READY_ZOOM = 10.0
