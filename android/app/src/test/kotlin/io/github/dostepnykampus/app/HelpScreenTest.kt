@@ -3,8 +3,6 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app
 
 import androidx.activity.ComponentActivity
@@ -17,8 +15,6 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import io.github.dostepnykampus.core.data.account.GuestRoleProvider
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.help.HelpScreen
 import org.junit.Assert.assertEquals
@@ -49,7 +45,7 @@ class HelpScreenTest {
         val mapViewModel = compose.activity.appMapViewModel()
         compose.setContent {
             DostepnyKampusTheme {
-                AppShell(firstLaunch, GuestRoleProvider, onFirstHelpLeft = { calls += "pokazana" }) {
+                AppShell(firstLaunch, TestRoles(), onFirstHelpLeft = { calls += "pokazana" }) {
                     TestAppScreen(it, mapViewModel)
                 }
             }
