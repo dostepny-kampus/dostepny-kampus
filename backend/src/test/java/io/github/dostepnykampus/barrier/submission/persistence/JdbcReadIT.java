@@ -122,8 +122,10 @@ final class JdbcReadIT {
         Assertions.assertEquals(
             List.of(List.of(own), List.of(foreign)),
             List.of(
-                data.repo().own(SubmissionData.AUTHOR, all).stream().map(Submission::id).toList(),
-                data.repo().own("inne-konto", all).stream().map(Submission::id).toList()
+                data.repo().page(all, SubmissionData.AUTHOR, null, 500).items().stream()
+                    .map(Submission::id).toList(),
+                data.repo().page(all, "inne-konto", null, 500).items().stream()
+                    .map(Submission::id).toList()
             ),
             "Lista własnych zgłoszeń ma cudze albo gubi własne"
         );

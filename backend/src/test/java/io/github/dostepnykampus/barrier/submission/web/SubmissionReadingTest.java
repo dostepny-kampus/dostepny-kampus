@@ -197,8 +197,11 @@ final class SubmissionReadingTest {
         }
 
         @Override
-        public List<Submission> own(final String author, final SubmissionQuery query) {
-            throw new UnsupportedOperationException("Sprawdzenie nie czyta własnych");
+        public SubmissionFinder.Page page(
+            final SubmissionQuery query, final @Nullable String author, final @Nullable UUID after,
+            final int limit
+        ) {
+            throw new UnsupportedOperationException("Sprawdzenie nie czyta stron listy");
         }
 
         @Override
