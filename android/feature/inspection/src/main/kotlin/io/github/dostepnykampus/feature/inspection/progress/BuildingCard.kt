@@ -54,8 +54,8 @@ internal fun ReadLine(readAt: Instant, isRefreshing: Boolean, onRefresh: () -> U
 }
 
 /**
- * Karta budynku K1: symbol, pod nim nazwa z katalogu, postęp słowem, liczby zgłoszeń, wejścia sprawdzone na miejscu i „Otwórz”.
- * Budynek szczegółowy pokazuje piętra z procentem, podstawowy „Obejrzany” albo „Nieobejrzany”.
+ * Karta budynku K1: symbol, pod nim nazwa z katalogu, postęp słowem, liczby zgłoszeń, wejścia sprawdzone na miejscu
+ * i „Otwórz”. Budynek szczegółowy pokazuje piętra z procentem, podstawowy „Obejrzany” albo „Nieobejrzany”.
  *
  * Wymagania: US11.1, US11.3, US11.4, BR-21, NFR-21
  *

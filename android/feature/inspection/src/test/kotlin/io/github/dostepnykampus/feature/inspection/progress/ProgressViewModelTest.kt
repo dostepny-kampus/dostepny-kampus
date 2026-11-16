@@ -77,9 +77,11 @@ class ProgressViewModelTest {
             runCurrent()
             viewModel.refresh()
             val state = viewModel.state
-            assertEquals(ProgressUiState.Ready(listOf(DETAILED), READ_AT, true, NAMES), state.value, "stara lista w trakcie")
+            val busy = ProgressUiState.Ready(listOf(DETAILED), READ_AT, true, NAMES)
+            assertEquals(busy, state.value, "stara lista w trakcie")
             runCurrent()
-            assertEquals(ProgressUiState.Ready(listOf(BASIC), READ_AT, names = NAMES), state.value, "nowa lista po odświeżeniu")
+            val fresh = ProgressUiState.Ready(listOf(BASIC), READ_AT, names = NAMES)
+            assertEquals(fresh, state.value, "nowa lista po odświeżeniu")
         }
 
     @Test
