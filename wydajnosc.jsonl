@@ -8,3 +8,4 @@
 {"sha": "54f4489eb80ac7f24594856e95d95547898269f9", "data": "2026-11-16", "start_ms": {"p50": 342.37, "p90": 371.11, "proby": 10}, "klatka_ms": {"p50": null, "p90": null, "p99": null, "probki": 0}, "wolne_proc": null}
 {"sha": "c8e5086c9ceb1001a9bfee14c6ad0af4feb45f4d", "data": "2026-11-16", "start_ms": {"p50": 499.05, "p90": 539.53, "proby": 10}, "klatka_ms": {"p50": null, "p90": null, "p99": null, "probki": 0}, "wolne_proc": null}
 {"sha": "dd90a9f21530079ba1ae5f86cd0263da8b09a073", "data": "2026-11-16", "start_ms": {"p50": 331.06, "p90": 351.9, "proby": 10}, "klatka_ms": {"p50": null, "p90": null, "p99": null, "probki": 0}, "wolne_proc": null}
+{"sha": "7707311241548bb1dbcf05ba3a39d3be0788483c", "data": "2026-11-16", "start_ms": {"p50": 343.3, "p90": 350.4, "proby": 10}, "klatka_ms": {"p50": 7.01, "p90": 11.2, "p99": 20.37, "probki": 1601}, "wolne_proc": 1.75}
