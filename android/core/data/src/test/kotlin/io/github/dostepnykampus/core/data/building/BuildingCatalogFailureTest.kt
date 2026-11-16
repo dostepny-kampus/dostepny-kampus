@@ -19,9 +19,11 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.supervisorScope
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.concurrent.atomic.AtomicInteger
@@ -33,6 +35,7 @@ import kotlin.coroutines.EmptyCoroutineContext
  *
  * Wymagania: NFR-10
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class BuildingCatalogFailureTest {
     private val reads = AtomicInteger()
 
@@ -59,9 +62,12 @@ class BuildingCatalogFailureTest {
             ) { FILE_JSON }
         val messages =
             runBlocking {
-                val results = parallel { repository.catalog() }
-                gate.complete(Unit)
-                results.awaitAll().map { it.exceptionOrNull()?.message }
+                supervisorScope {
+                    val results = parallel { repository.catalog() }
+                    gate.complete(Unit)
+                    results.joinAll()
+                    results.map { it.getCompletionExceptionOrNull()?.message }
+                }
             }
         assertEquals(List(WAITERS) { "disk full" }, messages, "wywołujący nie dostali tego samego błędu")
         assertEquals(1, calls.get(), "liczba zapytań do serwera")
@@ -80,17 +86,20 @@ class BuildingCatalogFailureTest {
         val shared = BuildingCatalogRepository(io) { "{".also { reads.incrementAndGet() } }
         val failures =
             runBlocking {
-                val results = parallel { shared.catalog() }
-                while (held.isNotEmpty()) held.removeFirst().run()
-                results.awaitAll().map { it.exceptionOrNull()?.javaClass }
+                supervisorScope {
+                    val results = parallel { shared.catalog() }
+                    while (held.isNotEmpty()) held.removeFirst().run()
+                    results.joinAll()
+                    results.map { it.getCompletionExceptionOrNull()?.javaClass }
+                }
             }
         val expected = List(WAITERS) { IllegalArgumentException::class.java }
         assertEquals(expected, failures, "wywołujący nie dostali tego samego błędu")
         assertEquals(1, reads.get(), "plik czytany raz")
     }
 
-    private fun CoroutineScope.parallel(call: suspend () -> Any): List<Deferred<Result<Any>>> =
-        List(WAITERS) { async(start = CoroutineStart.UNDISPATCHED) { runCatching { call() } } }
+    private fun CoroutineScope.parallel(call: suspend () -> Any): List<Deferred<Any>> =
+        List(WAITERS) { async(start = CoroutineStart.UNDISPATCHED) { call() } }
 
     private fun serverList(): ServerReply<BuildingList> {
         val outline = parseGeoArea("""{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}""") as GeoPolygon
