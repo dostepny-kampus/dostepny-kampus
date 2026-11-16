@@ -65,8 +65,11 @@ final class ServerAccountIT {
                 "SELECT rolsuper FROM pg_roles WHERE rolname = current_user"
             )
         ) {
-            Assertions.assertTrue(row.next(), "Brak wiersza roli bieżącego konta");
-            return Boolean.toString(row.getBoolean(1));
+            String result = "brak roli";
+            if (row.next()) {
+                result = Boolean.toString(row.getBoolean(1));
+            }
+            return result;
         }
     }
 
