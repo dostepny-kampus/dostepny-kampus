@@ -146,7 +146,9 @@ Wzór pochodzi z WCAG: współczynnik to `(L1 + 0,05) / (L2 + 0,05)`. L1 to lumi
 
 Paleta mapy jest w sekcji `mapa` pliku: podkład, budynki PWr i plan piętra w obu motywach, z listą par kontrastu w tym samym zapisie. Mapa nie rysuje granicy terenu; widok zostaje w prostokącie terenu (BR-G5). Znacznik wejścia ma ten sam kształt co oznaczenie na karcie (NFR-21).
 
-Budynek szczegółowy ma pełne tło `pwr` i gruby kontur. Budynek podstawowy ma blade tło `pwr_podstawowy` i cienki ciągły kontur. Różni je jasność tła i grubość konturu, a nie sam odcień (NFR-21). Pod widocznym planem piętra budynek szczegółowy ma tło `pwr_podstawowy`, ściana zewnętrzna planu jest jedną linią `pwr_kontur`, a ściany pomieszczeń `p_kontur` grubieją z powiększeniem. Grubości linii planu i rozmiar znaków planu według powiększenia są w `mapa.plan`.
+Budynek szczegółowy ma pełne tło `pwr` i gruby kontur. Budynek podstawowy ma blade tło `pwr_podstawowy` i cienki ciągły kontur. Różni je jasność tła i grubość konturu, a nie sam odcień (NFR-21).
+
+Pod widocznym planem piętra budynek szczegółowy ma tło `pwr_podstawowy`, ściana zewnętrzna planu jest jedną linią `pwr_kontur`, a ściany pomieszczeń `p_kontur` grubieją z powiększeniem. Grubości linii planu i rozmiar znaków planu według powiększenia są w `mapa.plan`.
 
 Barwy znaków wejść i barier (`znak_…`) też są w sekcji `mapa`. Aplikacja rysuje te znaki jako obrazy mapy i legendy, a nie przez motyw Material 3. Para każdej barwy z jej symbolem ma co najmniej 3:1 w obu motywach.
 
