@@ -11,6 +11,7 @@ import android.graphics.RectF
 import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -66,14 +67,14 @@ import io.github.dostepnykampus.feature.map.style.MapStyleTarget
 import io.github.dostepnykampus.feature.map.style.MapTileHttpEntryPoint
 import io.github.dostepnykampus.feature.map.style.SelectionLook
 import io.github.dostepnykampus.feature.map.style.asStyleText
-import io.github.dostepnykampus.feature.map.style.campusMapStyle
-import io.github.dostepnykampus.feature.map.style.labelImage
+import io.github.dostepnykampus.feature.map.style.campusMapShell
 import io.github.dostepnykampus.feature.map.style.numbers
 import io.github.dostepnykampus.feature.map.style.rememberMapImages
 import io.github.dostepnykampus.feature.map.style.roomNumberBitmap
 import io.github.dostepnykampus.feature.map.style.roomNumberImage
 import io.github.dostepnykampus.feature.map.style.selectionLook
 import io.github.dostepnykampus.feature.map.style.showBasemap
+import io.github.dostepnykampus.feature.map.style.showData
 import io.github.dostepnykampus.feature.map.style.showSelection
 import io.github.dostepnykampus.feature.map.style.styleBuilder
 import kotlinx.serialization.json.JsonArray
@@ -211,9 +212,8 @@ object MapLibreMapView : CampusMapView {
         area: StyleArea,
     ) {
         val map = this
-        val style = rememberMapStyle(data = data, selection = area.area, colors = colors, basemap = area.basemap)
+        val style = rememberMapStyle(selection = area.area, colors = colors, basemap = area.basemap)
         var loaded by remember { mutableStateOf<Style?>(null) }
-        val currentData by rememberUpdatedState(data)
         val currentLook by rememberUpdatedState(look)
         val currentSelection by rememberUpdatedState(selection)
         val currentArea by rememberUpdatedState(area)
@@ -223,13 +223,17 @@ object MapLibreMapView : CampusMapView {
             val built = currentArea
             style?.let { json ->
                 map?.setStyle(styleBuilder(json)) { ready ->
-                    ready.addMapImages(labels = currentData.labels, images = images)
+                    ready.addMapImages(images = images)
                     StyleTarget(ready).showSelection(currentLook, selectionImages(currentSelection, images))
                     shown = built
                     loaded = ready
                 }
             }
             onDispose {}
+        }
+        val labelled = remember(loaded) { mutableSetOf<String>() }
+        LaunchedEffect(loaded, data) {
+            loaded?.let { StyleTarget(it).showData(data, images, labelled) }
         }
         DisposableEffect(loaded, look) {
             loaded?.let { StyleTarget(it).showSelection(look, selectionImages(currentSelection, images)) }
@@ -465,33 +469,31 @@ internal fun northUpOptions(context: Context, background: Int): MapLibreMapOptio
         .foregroundLoadColor(background)
 
 /**
- * Styl mapy jako napis JSON bez zaznaczenia budynku, wejścia i bariery: z [selection] bierze tylko prostokąt
- * terenu, a podkład ogranicza do obszaru [basemap]. Powstaje od nowa tylko po zmianie danych [data]
- * albo barw [colors]; zmiana terenu i podkładu idzie do wczytanego stylu przez `showBasemap`, a zaznaczenie i ruch
- * kamery stylu nie budują. Z terenem, a bez [basemap] (mapa jeszcze bez rozmiaru) stylu nie ma. Funkcja [build]
- * składa styl.
+ * Styl mapy z pustymi źródłami danych ([campusMapShell]) jako napis JSON bez zaznaczenia budynku, wejścia
+ * i bariery: z [selection] bierze tylko prostokąt terenu, a podkład ogranicza do obszaru [basemap]. Powstaje od nowa
+ * tylko po zmianie barw [colors]; dane katalogu i barier, teren i podkład idą do wczytanego stylu, a zaznaczenie
+ * i ruch kamery stylu nie budują. Z terenem, a bez [basemap] (mapa jeszcze bez rozmiaru) stylu nie ma. Funkcja
+ * [build] składa styl.
  */
 @Composable
 internal fun rememberMapStyle(
-    data: CampusMapData,
     selection: MapSelection,
     colors: MapStyleColors,
     basemap: Basemap?,
-    build: (CampusMapData, MapSelection, MapStyleColors, Basemap?) -> String = ::campusMapStyle,
+    build: (MapSelection, MapStyleColors, Basemap?) -> String = ::campusMapShell,
 ): String? =
     (selection.bounds == null || basemap != null).let { isMeasured ->
-        remember(data, colors, isMeasured) {
+        remember(colors, isMeasured) {
             val area = MapSelection(bounds = selection.bounds, boundary = selection.boundary)
-            if (isMeasured) build(data, area, colors, basemap) else null
+            if (isMeasured) build(area, colors, basemap) else null
         }
     }
 
 /**
- * Dodaje do stylu obrazy niezależne od zaznaczenia: podpisy konturów [labels], znaki wejść, pinezkę oraz znaki
- * i słowa uciążliwości barier oraz znaki planu, bo napisy ze stylu wymagają sieci.
+ * Dodaje do stylu obrazy niezależne od zaznaczenia i danych: znaki wejść, pinezkę oraz znaki i słowa uciążliwości
+ * barier oraz znaki planu, bo napisy ze stylu wymagają sieci. Podpisy konturów dodaje `showData`.
  */
-internal fun Style.addMapImages(labels: List<String>, images: MapImages) {
-    labels.forEach { label -> addImage(label, labelImage(label, images.colors, images.labelSize)) }
+internal fun Style.addMapImages(images: MapImages) {
     entranceImages(colors = images.colors, density = images.density).forEach { (name, image) -> addImage(name, image) }
     barrierImages(images).forEach { (name, image) -> addImage(name, image) }
     val signs = planSignImages(colors = images.colors, density = images.density)
