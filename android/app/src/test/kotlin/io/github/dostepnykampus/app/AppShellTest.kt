@@ -71,10 +71,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
 import com.github.takahirom.roborazzi.captureRoboImage
+import io.github.dostepnykampus.app.navigation.Account
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.AppScreen
 import io.github.dostepnykampus.app.navigation.BuildingCard
 import io.github.dostepnykampus.app.navigation.MapScreen
+import io.github.dostepnykampus.app.navigation.SignInRoute
 import io.github.dostepnykampus.app.navigation.sheetCard
 import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.RoleProvider
@@ -88,6 +90,7 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
+import io.github.dostepnykampus.feature.auth.SignInViewModel
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.MapLibreMapView
 import io.github.dostepnykampus.feature.map.building.BuildingCardViewModel
@@ -100,6 +103,7 @@ import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -206,9 +210,18 @@ internal fun AppNavigator.TestAppScreen(
         TestBuildingCard(route.symbol)
     } else if (route is EntrancesRoute) {
         TestEntrances(route.symbol)
+    } else if (route is SignInRoute) {
+        TestSignIn(route)
     } else {
         AppScreen(route)
     }
+}
+
+/** L1 jak w aplikacji, ale ze stanem spoza grafu Hilt: sieć jest, a logowanie kończy się błędem. */
+@Composable
+internal fun AppNavigator.TestSignIn(route: SignInRoute) {
+    val model = remember { SignInViewModel(network = { flowOf(true) }, signIn = { false }) }
+    Account(route = route, signIn = model)
 }
 
 /** ViewModel z licznikiem dotknięć: pokazuje, czy ekran dostał ten sam ViewModel, czy nowy. */

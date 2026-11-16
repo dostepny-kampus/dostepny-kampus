@@ -19,6 +19,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.R
@@ -27,6 +28,9 @@ import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.core.model.isSignedIn
+import io.github.dostepnykampus.feature.auth.SignInActions
+import io.github.dostepnykampus.feature.auth.SignInScreen
+import io.github.dostepnykampus.feature.auth.SignInViewModel
 import io.github.dostepnykampus.feature.capture.R as CaptureR
 import io.github.dostepnykampus.feature.inspection.R as InspectionR
 
@@ -36,14 +40,18 @@ private val Account.isCoordinator: Boolean
     get() = this is Account.SignedIn && StaffRole.COORDINATOR in staffRoles
 
 /**
- * Ekran konta: logowanie albo L2 „Konto i praca” jako zaślepka z czynnościami roli. „Postęp inwentaryzacji”
- * widzi tylko Koordynator. Zaślepki nie zapamiętują stanu, więc nie muszą się odświeżać osobno od nawigatora.
+ * Ekran konta: L1 „Prośba o logowanie” albo L2 „Konto i praca” jako zaślepka z czynnościami roli.
+ * „Postęp inwentaryzacji” widzi tylko Koordynator. Zaślepki nie zapamiętują stanu, więc nie muszą się odświeżać
+ * osobno od nawigatora.
  *
  * Wymagania: US14.2, US11.1
+ *
+ * @param route L1 albo L2
+ * @param signIn stan L1; `null` bierze go z grafu Hilt
  */
 @Composable
 @NonRestartableComposable
-internal fun AppNavigator.Account(route: NavKey) {
+internal fun AppNavigator.Account(route: NavKey, signIn: SignInViewModel? = null) {
     val current by account.collectAsStateWithLifecycle()
     val isWork = current.hasStaffRole && route == AccountRoute
     val title = stringResource(if (isWork) R.string.nav_konto_i_praca else R.string.nav_konto)
@@ -51,7 +59,8 @@ internal fun AppNavigator.Account(route: NavKey) {
         route is SignInRoute -> {
             val isNowSignedIn = current.isSignedIn
             SideEffect { if (isNowSignedIn) signedIn() }
-            Stub(title, stringResource(R.string.nie_teraz) to { backToMap() })
+            val actions = SignInActions(onBack = { back() }, onLeave = { backToMap() })
+            SignInScreen(isForReport = route.isForReport, actions = actions, viewModel = signIn ?: hiltViewModel())
         }
 
         isWork -> {

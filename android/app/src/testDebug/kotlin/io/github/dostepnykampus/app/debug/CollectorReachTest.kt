@@ -23,8 +23,10 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.AppShell
+import io.github.dostepnykampus.app.TestSignIn
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.AppScreen
+import io.github.dostepnykampus.app.navigation.SignInRoute
 import io.github.dostepnykampus.app.navigation.openReportForm
 import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -122,6 +124,10 @@ class CollectorReachTest {
 
             is ReportFormRoute -> {
                 DraftForm(route)
+            }
+
+            is SignInRoute -> {
+                TestSignIn(route)
             }
 
             else -> {
