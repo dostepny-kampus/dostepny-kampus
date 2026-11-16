@@ -50,7 +50,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     /**
      * Kolumny zgłoszenia czytane do modelu.
      */
-    private static final String COLUMNS =
+    static final String COLUMNS =
         "id, version, status, created_at, verified_at, content::text AS content, rejection_reason, duplicate_of";
 
     /**
@@ -357,22 +357,15 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     }
 
     private List<Submission> select(final SubmissionQuery query, @Nullable final String author) {
-        return this.jdbc.sql(
-            String.format(
-                """
-                SELECT %s FROM submissions WHERE status IN (:statuses)
-                    AND (CAST(:building AS TEXT) IS NULL OR building_symbol = :building)
-                    AND (CAST(:floor AS TEXT) IS NULL OR floor_id = :floor)
-                    AND (CAST(:author AS TEXT) IS NULL OR author = :author)
-                ORDER BY created_at, id
-                """,
-                JdbcSubmissions.COLUMNS
-            )
-        ).param("statuses", query.statuses().stream().map(Enum::name).toList())
-            .param("building", query.buildingSymbol())
-            .param("floor", query.floorId())
-            .param("author", author)
-            .query(SubmissionRows.readable(this.rows));
+        return SubmissionSelection.bind(
+            this.jdbc.sql(
+                String.format(
+                    "SELECT %s FROM submissions WHERE %s ORDER BY created_at, id",
+                    JdbcSubmissions.COLUMNS, SubmissionSelection.WHERE
+                )
+            ),
+            query, author
+        ).query(SubmissionRows.readable(this.rows));
     }
 
     private Optional<Submission> write(

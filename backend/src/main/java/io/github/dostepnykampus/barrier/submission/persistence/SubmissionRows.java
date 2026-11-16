@@ -7,6 +7,7 @@ package io.github.dostepnykampus.barrier.submission.persistence;
 
 import io.github.dostepnykampus.barrier.submission.Rejection;
 import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.json.SubmissionContentJson;
@@ -16,6 +17,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
@@ -70,17 +72,41 @@ final class SubmissionRows implements RowMapper<Submission> {
     static <T> ResultSetExtractor<List<T>> readable(final RowMapper<T> mapping) {
         return rows -> {
             final List<T> results = new ArrayList<>(16);
-            int number = 0;
-            while (rows.next()) {
-                try {
-                    results.add(mapping.mapRow(rows, number));
-                } catch (final UnreadableSubmission ex) {
-                    SubmissionRows.LOG.error("Pominięto nieczytelne zgłoszenie {}", ex.id());
-                }
-                ++number;
-            }
+            SubmissionRows.fill(rows, mapping, Integer.MAX_VALUE, results);
             return results;
         };
+    }
+
+    static ResultSetExtractor<SubmissionFinder.Page> page(
+        final RowMapper<Submission> mapping, final SubmissionFinder.Window window
+    ) {
+        return rows -> {
+            final List<Submission> items = new ArrayList<>(16);
+            return new SubmissionFinder.Page(
+                items,
+                Objects.requireNonNullElse(
+                    SubmissionRows.fill(rows, mapping, window.limit(), items), window.after()
+                ),
+                rows.next()
+            );
+        };
+    }
+
+    private static <T> @Nullable UUID fill(
+        final ResultSet rows, final RowMapper<T> mapping, final int limit, final List<T> into
+    ) throws SQLException {
+        @Nullable UUID last = null;
+        int number = 0;
+        while (number < limit && rows.next()) {
+            last = rows.getObject("id", UUID.class);
+            try {
+                into.add(mapping.mapRow(rows, number));
+            } catch (final UnreadableSubmission ex) {
+                SubmissionRows.LOG.error("Pominięto nieczytelne zgłoszenie {}", ex.id());
+            }
+            ++number;
+        }
+        return last;
     }
 
     private static @Nullable Rejection rejection(final ResultSet rows) throws SQLException {
