@@ -51,6 +51,23 @@ class SeveritySignTest {
         }
     }
 
+    /**
+     * „Blokada” to tablica z jedną poziomą belką: środkowy wiersz znaku ma belkę w barwie znaku na całej jej
+     * szerokości, a nad belką, pod nią i po jej bokach jest tablica. Punkty na siatce znaku 24 × 24.
+     *
+     * Wymagania: NFR-21, US1.3
+     */
+    @Test
+    fun drawsBlockingAsPlateWithBar() {
+        val image = severityImage(severity = Severity.BLOCKING, sizePx = SIZE, shapeColor = INK, markColor = PAPER)
+        val bar = listOf(6f, 9f, 12f, 15f, 18f).map { image.pixelOnSignGrid(x = it, y = 12f) }
+        val around = listOf(12f to 5f, 12f to 19f, 3.5f to 12f, 20.5f to 12f)
+        val plate = around.map { (x, y) -> image.pixelOnSignGrid(x = x, y = y) }
+
+        assertEquals("belka „Blokady” nie jest pozioma na całej szerokości", List(bar.size) { PAPER.toArgb() }, bar)
+        assertEquals("tablica „Blokady” nie otacza belki", List(plate.size) { INK.toArgb() }, plate)
+    }
+
     @Test
     fun drawsLightHifi() {
         captureRoboImage { Signs() }
@@ -81,6 +98,11 @@ class SeveritySignTest {
         }
     }
 
+    private fun Bitmap.pixelOnSignGrid(x: Float, y: Float): Int {
+        val scale = width / (GRID + 2 * HALO)
+        return getPixel(((x + HALO) * scale).toInt(), ((y + HALO) * scale).toInt())
+    }
+
     private fun Bitmap.pixels(): List<Int> {
         val pixels = IntArray(width * height)
         getPixels(pixels, 0, width, 0, 0, width, height)
@@ -89,6 +111,13 @@ class SeveritySignTest {
 
     private companion object {
         const val SIZE = 96
+
+        /** Bok siatki, na której leżą kształty znaku. */
+        const val GRID = 24f
+
+        /** Margines obwódki wokół siatki w obrazie z [severityImage]. */
+        const val HALO = 1f
+
         val INK = Color(color = 0xFF10242C)
         val PAPER = Color(color = 0xFFFFFFFF)
     }
