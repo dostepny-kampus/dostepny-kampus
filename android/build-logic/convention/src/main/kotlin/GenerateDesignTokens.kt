@@ -6,7 +6,6 @@
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FLOAT
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
@@ -35,7 +34,6 @@ private const val UNIT = "androidx.compose.ui.unit"
 private const val FONT = "androidx.compose.ui.text.font"
 private val COLOR = ClassName("androidx.compose.ui.graphics", "Color")
 private const val COLORS_DOC = "Kolory spoza ról Material 3 z pliku tokenów, osobno dla motywu jasnego i ciemnego."
-private const val OPACITY_DOC = "Krycie warstw mapy z pliku tokenów, osobno dla motywu jasnego i ciemnego."
 private val TEXT_STYLE = ClassName("androidx.compose.ui.text", "TextStyle")
 private val FONT_WEIGHT = ClassName(FONT, "FontWeight")
 private val ROUNDED = ClassName("androidx.compose.foundation.shape", "RoundedCornerShape")
@@ -49,9 +47,9 @@ private val M3_SHAPES =
 
 /**
  * Generuje `DesignTokens.kt` w [packageName] z pliku tokenów wizualnych: schematy kolorów Material 3 jasny i
- * ciemny (`kolory`), klasy `StatusColors` (`kolory.status…`), `MapColors` (`mapa.kolory`) i `MapOpacity`
- * (`mapa.krycie`, liczby 0–1) z wartościami dla obu motywów, funkcję `typography` (`typografia.style`, rozmiary w sp), obiekt `Typografia`, kształty
- * `AppShapes` i obiekt stałych w dp dla każdej sekcji wymiarów (`odstepy`, `cele_dotyku`, …). Nazwy przechodzą
+ * ciemny (`kolory`), klasy `StatusColors` (`kolory.status…`) i `MapColors` (`mapa.kolory`) z wartościami dla obu
+ * motywów, funkcję `typography` (`typografia.style`, rozmiary w sp), obiekt `Typografia`, kształty `AppShapes`
+ * i obiekt stałych w dp dla każdej sekcji wymiarów (`odstepy`, `cele_dotyku`, …). Nazwy przechodzą
  * na camelCase (`droga_kontur` → `drogaKontur`), pole `uzycie` staje się KDoc. Zmiana [tokensFile] unieważnia
  * wynik; brak wymaganej sekcji albo wartości przerywa budowanie.
  */
@@ -86,12 +84,6 @@ abstract class GenerateDesignTokens : DefaultTask() {
         }
         palette(file, ClassName(packageName.get(), "StatusColors"), status.toMap())
         palette(file, ClassName(packageName.get(), "MapColors"), tokens.sub("mapa").sub("kolory"))
-        palette(
-            file,
-            ClassName(packageName.get(), "MapOpacity"),
-            tokens.sub("mapa").sub("krycie"),
-            Themed(FLOAT, OPACITY_DOC, ::opacity),
-        )
         typography(file, tokens.sub("typografia"))
         tokens.filterValues { section -> section is Map<*, *> && section.values.all { it is Map<*, *> && "dp" in it } }
             .forEach { (name, section) -> dimensions(file, name, section.asMap()) }
@@ -101,30 +93,25 @@ abstract class GenerateDesignTokens : DefaultTask() {
         file.build().writeTo(outputDirectory.get().asFile.apply { deleteRecursively() })
     }
 
-    private fun palette(
-        file: FileSpec.Builder,
-        type: ClassName,
-        colors: Map<String, Any?>,
-        themed: Themed = Themed(COLOR, COLORS_DOC, ::color),
-    ) {
+    private fun palette(file: FileSpec.Builder, type: ClassName, colors: Map<String, Any?>) {
         val constructor =
-            FunSpec.constructorBuilder().addParameters(colors.keys.map { ParameterSpec(camel(it), themed.type) })
+            FunSpec.constructorBuilder().addParameters(colors.keys.map { ParameterSpec(camel(it), COLOR) })
         val properties = colors.map { (key, value) ->
             PropertySpec
-                .builder(camel(key), themed.type)
+                .builder(camel(key), COLOR)
                 .initializer(camel(key))
                 .addKdoc("%L", value.asMap().require("uzycie"))
                 .build()
         }
         file.addType(
             TypeSpec.classBuilder(type)
-                .addKdoc("%L", themed.doc)
+                .addKdoc("%L", COLORS_DOC)
                 .primaryConstructor(constructor.build())
                 .addProperties(properties)
                 .build(),
         )
         THEMES.forEach { (theme, prefix) ->
-            val values = colors(colors, theme, themed.value)
+            val values = colors(colors, theme)
             file.addProperty(internal(prefix + type.simpleName, type, "%T%L", type, values))
         }
     }
@@ -177,19 +164,10 @@ abstract class GenerateDesignTokens : DefaultTask() {
     private fun constant(name: String, type: TypeName, value: CodeBlock, doc: String) =
         PropertySpec.builder(name, type).initializer(value).addKdoc("%L", doc).build()
 
-    private fun colors(colors: Map<String, Any?>, theme: String, value: (Any?) -> CodeBlock = ::color) =
-        colors.map { (key, entry) -> CodeBlock.of("%N = %L", camel(key), value(entry.asMap().require(theme))) }.args()
+    private fun colors(colors: Map<String, Any?>, theme: String) =
+        colors.map { (key, entry) -> CodeBlock.of("%N = %L", camel(key), color(entry.asMap().require(theme))) }.args()
 
     private fun color(hex: Any?) = CodeBlock.of("%T(0xFF%L)", COLOR, hex.toString().removePrefix("#").uppercase())
-
-    private fun opacity(number: Any?): CodeBlock {
-        val opacity = number.toString().toDouble()
-        check(opacity in 0.0..1.0) { "Krycie w pliku tokenów spoza 0–1: $opacity" }
-        return CodeBlock.of("%Lf", opacity)
-    }
-
-    /** Klasa wartości z dwóch motywów: typ pola [type], KDoc klasy [doc] i kod wartości z pliku tokenów [value]. */
-    private class Themed(val type: TypeName, val doc: String, val value: (Any?) -> CodeBlock)
 
     private fun List<CodeBlock>.args() = joinToCode(",\n", "(\n⇥", ",\n⇤)")
 

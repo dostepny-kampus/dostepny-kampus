@@ -52,18 +52,6 @@ class TokensTest {
         }
     }
 
-    /** Krycie warstw mapy z sekcji `mapa.krycie`, w obu motywach; każde w zakresie 0–1. Wymagania: US1.7 */
-    @Test
-    fun takesMapOpacityFromTokens() {
-        listOf("jasny" to LightMapOpacity, "ciemny" to DarkMapOpacity).forEach { (name, opacity) ->
-            tokens.sub("mapa").sub("krycie").forEach { (key, value) ->
-                val expected = (value.asMap().getValue(name) as Number).toFloat()
-                assertTrue("$name krycie $key w 0–1", expected in 0f..1f)
-                assertEquals("$name krycie $key", expected, opacity.property(camel(key)))
-            }
-        }
-    }
-
     @Test
     fun takesTypographyFromTokens() {
         val typography = typography(FontFamily.Default)
