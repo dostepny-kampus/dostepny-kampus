@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import io.github.dostepnykampus.core.designsystem.MapColors
+import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
@@ -63,10 +64,12 @@ internal fun Density.mapLimits(bounds: CampusBounds?, size: IntSize): MapLimits?
         MapLimits(area, widthDp = width.toDouble(), heightDp = height.toDouble())
     }
 
-/** Kolory stylu mapy z palety mapy motywu. Wymagania: NFR-16 */
+/**
+ * Wygląd stylu mapy z palety mapy motywu, z napisami podkładu powiększonymi o [fontScale]. Wymagania: NFR-16, US1.4
+ */
 @Composable
 @ReadOnlyComposable
-internal fun MapColors.styleColors(): MapStyleColors =
+internal fun MapColors.styleColors(fontScale: Float = 1f): MapStyleColors =
     MapStyleColors(
         land = lad.hex(),
         building = pwr.hex(),
@@ -93,7 +96,12 @@ internal fun MapColors.styleColors(): MapStyleColors =
                 path = chodnik.hex(),
                 building = budynek.hex(),
                 buildingOutline = budynekKontur.hex(),
+                streetName = napisUlica.hex(),
+                waterName = napisWoda.hex(),
+                districtName = napisDzielnica.hex(),
+                halo = obwodka.hex(),
             ),
+        labelSize = (Typografia.napisyMapy.value * fontScale).toDouble(),
     )
 
 internal fun Color.hex(): String = "#%06X".format(Locale.ROOT, toArgb() and RGB_MASK)

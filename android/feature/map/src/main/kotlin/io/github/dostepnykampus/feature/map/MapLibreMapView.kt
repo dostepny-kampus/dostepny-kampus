@@ -125,9 +125,9 @@ object MapLibreMapView : CampusMapView {
         val context = LocalContext.current
         val density = LocalDensity.current
         val colors = DostepnyKampusTheme.mapColors
-        val styleColors = colors.styleColors()
-        val look = remember(data, selection, styleColors) { selectionLook(data, selection, styleColors) }
         val fontScale = density.fontScale.coerceAtMost(LABEL_MAX_FONT_SCALE)
+        val styleColors = colors.styleColors(fontScale)
+        val look = remember(data, selection, styleColors) { selectionLook(data, selection, styleColors) }
         val labelSize = Typografia.napisyMapy.value * density.density * fontScale
         val tolerance = TOUCH_TOLERANCE_DP * density.density
         val images = rememberMapImages(colors = colors, density = density.density, labelSize = labelSize)
