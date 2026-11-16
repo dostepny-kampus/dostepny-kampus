@@ -50,6 +50,7 @@ dependencies {
     implementation(libs.spatialk.geojson)
     implementation(libs.spatialk.turf)
     implementation(libs.spatialk.units)
+    implementation(libs.timber)
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.coil.core)
     testImplementation(libs.coil.singleton)

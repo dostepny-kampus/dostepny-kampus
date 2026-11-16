@@ -13,6 +13,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -39,6 +40,7 @@ import io.github.dostepnykampus.feature.map.camera.byControl
 import io.github.dostepnykampus.feature.map.camera.cameraTransition
 import io.github.dostepnykampus.feature.map.camera.fitted
 import io.github.dostepnykampus.feature.map.camera.mapLimits
+import io.github.dostepnykampus.feature.map.camera.pickLine
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
 import io.github.dostepnykampus.feature.map.camera.within
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
@@ -46,6 +48,7 @@ import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.overlay.MapControlTouchSize
+import timber.log.Timber
 
 private const val CONTROLS_COLUMNS = 3
 private const val FIT_MARGIN_DP = 24.0
@@ -188,7 +191,9 @@ internal fun rememberMapSceneState(
             pickMove(from = from, outline = outline, free = fit, scale = scale, keepsZoom = isCoveredBefore)
                 ?.within(limits, free = fit)
         }
-    motion.RecordPick(pick)
+    motion.RecordPick(pick) {
+        pickLine(building = selection?.building, area = area, limits = limits, free = fit, move = it)
+    }
     val card = rememberCardMove(building = selection?.building, pick = pick)
     val above = card.move?.takeIf { isCovered }
     val move = above ?: uncovered?.byControl()
@@ -284,9 +289,11 @@ private class ShownCamera {
 }
 
 @Composable
-private fun MapMotion?.RecordPick(pick: CameraTransition?) {
+private fun MapMotion?.RecordPick(pick: CameraTransition?, line: (CameraTransition) -> String) {
     val motion = this
+    val currentLine by rememberUpdatedState(line)
     DisposableEffect(motion, pick) {
+        if (pick != null) Timber.d(currentLine(pick))
         if (motion != null && pick != null) motion.record(pick)
         onDispose {}
     }
