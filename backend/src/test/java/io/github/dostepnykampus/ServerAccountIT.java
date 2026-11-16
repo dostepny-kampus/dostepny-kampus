@@ -34,13 +34,18 @@ final class ServerAccountIT {
     void limitsServerAccountToRows() throws Exception {
         try (PostgreSQLContainer postgis = ServerAccountIT.postgis()) {
             postgis.start();
-            try (Connection owner = postgis.createConnection("");
-                Statement ddl = owner.createStatement()) {
+            try (
+                Connection owner = postgis.createConnection("");
+                Statement ddl = owner.createStatement()
+            ) {
                 ddl.execute("CREATE TABLE pozniejsza (id int)");
             }
-            try (Connection server = DriverManager.getConnection(
-                postgis.getJdbcUrl(), "konto_serwera", "haslo-serwera"
-            ); Statement sql = server.createStatement()) {
+            try (
+                Connection server = DriverManager.getConnection(
+                    postgis.getJdbcUrl(), "konto_serwera", "haslo-serwera"
+                );
+                Statement sql = server.createStatement()
+            ) {
                 Assertions.assertEquals(
                     "false 1 odmowa",
                     String.format(
@@ -55,9 +60,11 @@ final class ServerAccountIT {
     }
 
     private static String superuser(final Statement sql) throws SQLException {
-        try (ResultSet row = sql.executeQuery(
-            "SELECT rolsuper FROM pg_roles WHERE rolname = current_user"
-        )) {
+        try (
+            ResultSet row = sql.executeQuery(
+                "SELECT rolsuper FROM pg_roles WHERE rolname = current_user"
+            )
+        ) {
             row.next();
             return Boolean.toString(row.getBoolean(1));
         }
