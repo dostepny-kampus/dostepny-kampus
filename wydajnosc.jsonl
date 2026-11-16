@@ -1,2 +1,3 @@
 {"sha":"851ff2d1d2e0b1cef4368902e6f9faf436e1359f","data":"2026-11-16","start_ms":{},"klatka_ms":{},"wolne_proc":null}
 {"sha":"ac773d3a3192234da1b3af7494a06e67cd607419","data":"2026-11-16","start_ms":{},"klatka_ms":{},"wolne_proc":null}
+{"sha": "35a2c2ced6bbd6ef8707fc8e15850751edac48ce", "data": "2026-11-16", "start_ms": {"p50": 548.27, "p90": 599.31, "proby": 10}, "klatka_ms": {"p50": null, "p90": null, "p99": null, "probki": 0}, "wolne_proc": null}
