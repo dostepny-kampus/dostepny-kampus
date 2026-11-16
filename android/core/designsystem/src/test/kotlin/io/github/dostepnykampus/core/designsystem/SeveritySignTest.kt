@@ -20,8 +20,8 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.marking.SeverityIcon
-import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.designsystem.marking.mapSeverityImage
+import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.submission.Severity
 import org.junit.Assert.assertEquals
 import org.junit.Test

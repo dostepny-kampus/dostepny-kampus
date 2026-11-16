@@ -42,8 +42,6 @@ private const val MARK_STROKE = 2.6f
  * @property mark kreski w kształcie: ptaszek, krzyżyk albo znak zapytania
  * @property container barwa kształtu w treści
  * @property content barwa kresek w treści
- * @property mapFill barwa kształtu na mapie i w legendzie
- * @property mapSymbol barwa kresek na mapie i w legendzie
  */
 internal enum class MarkingLook(
     @param:StringRes val word: Int,
@@ -51,8 +49,6 @@ internal enum class MarkingLook(
     val mark: String,
     val container: (StatusColors) -> Color,
     val content: (StatusColors) -> Color,
-    val mapFill: (MapColors) -> Color,
-    val mapSymbol: (MapColors) -> Color,
 ) {
     ACCESSIBLE(
         R.string.oznaczenie_dostepne,
@@ -60,8 +56,6 @@ internal enum class MarkingLook(
         "M7 12.4l3.3 3.3L17 9",
         StatusColors::statusDostepneContainer,
         StatusColors::onStatusDostepneContainer,
-        MapColors::znakDostepne,
-        MapColors::znakDostepneSymbol,
     ),
     INACCESSIBLE(
         R.string.oznaczenie_niedostepne,
@@ -69,8 +63,6 @@ internal enum class MarkingLook(
         "M8.6 8.6l6.8 6.8M15.4 8.6l-6.8 6.8",
         StatusColors::statusNiedostepneContainer,
         StatusColors::onStatusNiedostepneContainer,
-        MapColors::tusz,
-        MapColors::papier,
     ),
     NO_DATA(
         R.string.oznaczenie_brak_danych,
@@ -78,8 +70,6 @@ internal enum class MarkingLook(
         "M9.6 9.6a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .8-1 1.5v.4M12 16.6v.01",
         StatusColors::statusBrakDanychContainer,
         StatusColors::onStatusBrakDanychContainer,
-        MapColors::papier,
-        MapColors::tusz,
     ),
 }
 
@@ -115,10 +105,18 @@ public fun mapMarkingImage(marking: EntranceMarking, sizePx: Int, colors: MapCol
     val look = marking.look()
     val shape = PathParser().parsePathString(look.shape).toPath()
     val mark = PathParser().parsePathString(look.mark).toPath()
-    return mapSignBitmap(sizePx = sizePx, shape = shape, fill = look.mapFill(colors), colors = colors) {
-        drawMarkingMark(mark = mark, color = look.mapSymbol(colors))
+    val (fill, symbol) = marking.mapTones(colors)
+    return mapSignBitmap(sizePx = sizePx, shape = shape, fill = fill, colors = colors) {
+        drawMarkingMark(mark = mark, color = symbol)
     }
 }
+
+private fun EntranceMarking.mapTones(colors: MapColors): Pair<Color, Color> =
+    when (this) {
+        EntranceMarking.ACCESSIBLE -> colors.znakDostepne to colors.znakDostepneSymbol
+        EntranceMarking.INACCESSIBLE -> colors.tusz to colors.papier
+        EntranceMarking.NO_DATA -> colors.papier to colors.tusz
+    }
 
 /** Obraz [sizePx] × [sizePx] ze znakiem narysowanym przez [draw], dla warstw mapy. */
 internal fun signBitmap(sizePx: Int, draw: DrawScope.() -> Unit): Bitmap {
