@@ -17,6 +17,7 @@ import io.github.dostepnykampus.core.network.building.BuildingList
 import io.github.dostepnykampus.core.network.building.DetailLevel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -156,7 +157,7 @@ public class BuildingCatalogRepository internal constructor(
     private suspend fun lead(mine: Running, isFresh: Boolean): BuildingCatalog =
         try {
             supervisorScope {
-                val work = async { load(isFresh).also { mine.complete(Result.success(it)) } }
+                val work = async(start = CoroutineStart.UNDISPATCHED) { load(isFresh).also { mine.complete(Result.success(it)) } }
                 work.invokeOnCompletion { cause ->
                     when {
                         cause is CancellationException -> mine.cancel()
