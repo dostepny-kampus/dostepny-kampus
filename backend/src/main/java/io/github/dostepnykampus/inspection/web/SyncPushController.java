@@ -6,6 +6,10 @@
 package io.github.dostepnykampus.inspection.web;
 
 import io.github.dostepnykampus.inspection.application.MarkerService;
+import io.github.dostepnykampus.inspection.json.ReadOperation;
+import io.github.dostepnykampus.inspection.json.SyncOperationJson;
+import io.github.dostepnykampus.inspection.json.SyncOperationReader;
+import io.github.dostepnykampus.inspection.json.SyncPushRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;

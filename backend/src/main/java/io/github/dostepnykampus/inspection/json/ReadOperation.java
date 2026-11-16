@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.inspection.web;
+package io.github.dostepnykampus.inspection.json;
 
 import java.util.UUID;
 
@@ -14,7 +14,7 @@ import java.util.UUID;
  *
  * @since 0.1.0
  */
-sealed interface ReadOperation permits ReadOperation.Valid, ReadOperation.Broken {
+public sealed interface ReadOperation permits ReadOperation.Valid, ReadOperation.Broken {
 
     /**
      * Operacja z poprawnymi danymi.

@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.inspection.web;
+package io.github.dostepnykampus.inspection.json;
 
 import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.util.Objects;
@@ -23,7 +23,7 @@ import tools.jackson.databind.json.JsonMapper;
  * @since 0.1.0
  */
 @Component
-final class SyncOperationReader {
+public final class SyncOperationReader {
 
     /**
      * Opis błędu danych operacji bez szczegółów wewnętrznych.
@@ -35,7 +35,12 @@ final class SyncOperationReader {
      */
     private final JsonMapper mapper;
 
-    SyncOperationReader(final JsonMapper mapper) {
+    /**
+     * Tworzy odczyt operacji.
+     *
+     * @param mapper Wiązanie JSON z tymi samymi kontrolami co ciało żądania
+     */
+    public SyncOperationReader(final JsonMapper mapper) {
         this.mapper = mapper;
     }
 
@@ -46,7 +51,7 @@ final class SyncOperationReader {
      * @param author Identyfikator konta z tokenu
      * @return Operacja poprawna albo z opisem błędu
      */
-    ReadOperation read(final JsonNode node, final String author) {
+    public ReadOperation read(final JsonNode node, final String author) {
         final UUID id = SyncOperationReader.id(node);
         ReadOperation result;
         try {

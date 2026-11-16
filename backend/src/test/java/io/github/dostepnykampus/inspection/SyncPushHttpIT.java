@@ -26,7 +26,7 @@ import tools.jackson.databind.ObjectMapper;
 /**
  * Znacznik piętra obejrzanego serwer zapisuje, a ponowne wysłanie tego samego znacznika nie
  * zapisuje go drugi raz; znacznik piętra spoza budynku jest odrzucony, a błąd danych jednej
- * operacji nie zatrzymuje pozostałych. Cofnięcie własnego znacznika jest udane, także
+ * operacji (znak NUL) nie zatrzymuje pozostałych. Cofnięcie własnego znacznika jest udane, także
  * powtórzone, a cudzego odrzucone.
  *
  * <p>Wymagania: US15.1, US15.2, US15.3, BR-9, BR-20, BR-21, US9.2</p>
@@ -130,9 +130,8 @@ final class SyncPushHttpIT {
     @ParameterizedTest
     @ValueSource(
         strings = {
-            "\"type\":\"SET_INSPECTION_MARKER\",\"marker\":{\"id\":\"%s\"}",
-            "\"type\":\"SET_INSPECTION_MARKER\",\"marker\":{\"id\":\"%s\",\"buildingSymbol\":7}",
-            "\"type\":\"REVOKE_INSPECTION_MARKER\",\"markerId\":\"nie-%s\""
+            "{\"id\":\"%s\",\"buildingSymbol\":\"C-13%s\"}",
+            "{\"id\":\"%s\",\"buildingSymbol\":\"C-13\",\"floorId\":\"f%s\"}"
         }
     )
     void rejectsOnlyBrokenOperationInBatch(
@@ -148,7 +147,8 @@ final class SyncPushHttpIT {
                         "",
                         "{\"operations\":[{\"clientOperationId\":\"",
                         UUID.randomUUID().toString(), "\",",
-                        broken.formatted(UUID.randomUUID()), "},",
+                        "\"type\":\"SET_INSPECTION_MARKER\",\"marker\":",
+                        broken.formatted(UUID.randomUUID(), String.join("", "\\", "u0000")), "},",
                         SyncPushHttpIT.body(good, "C-13").substring(15)
                     )
                 )
