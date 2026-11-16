@@ -80,14 +80,15 @@ jobs:
           adb install -r "$RUNNER_TEMP/aplikacja.apk"
           adb install -r -t "$RUNNER_TEMP/pomiary.apk"
           # Self-instrumenting: celem instrumentacji jest pakiet modułu pomiarów, nie aplikacji.
-          adb shell pm list instrumentation | tr -d '' | tee "$RUNNER_TEMP/instrumentacje.txt"
+          adb shell pm list instrumentation | tr -d '\r' | tee "$RUNNER_TEMP/instrumentacje.txt"
           uruchamiacz="$(sed -n 's/^instrumentation:\([^ ]*\) .*/\1/p' "$RUNNER_TEMP/instrumentacje.txt" | grep macrobenchmark | head -n 1 || true)"
           echo "Uruchamiacz pomiarów: ${uruchamiacz}"
           # Pomiar bez wyniku nie czerwieni zadania: wpis bez metryk nie trafia do historii.
           if [[ -z $uruchamiacz ]]; then
             echo "::warning title=Wydajność::Brak instrumentacji modułu pomiarów na emulatorze."
           else
-            adb shell am instrument -w -e additionalTestOutputDir /sdcard/Download/pomiary               -e androidx.benchmark.suppressErrors EMULATOR,LOW-BATTERY "$uruchamiacz" | tee "$RUNNER_TEMP/instrument.log" ||
+            adb shell am instrument -w -e additionalTestOutputDir /sdcard/Download/pomiary \
+              -e androidx.benchmark.suppressErrors EMULATOR,LOW-BATTERY "$uruchamiacz" | tee "$RUNNER_TEMP/instrument.log" ||
               echo "::warning title=Wydajność::Uruchomienie pomiarów zakończyło się błędem."
           fi
           mkdir -p "$RUNNER_TEMP/wyniki"
