@@ -39,6 +39,16 @@ else
   failures=$((failures + 1))
 fi
 
+echo '{"sha":"d","start_ms":{},"klatka_ms":{},"wolne_proc":null}' >"$WPIS"
+bash "$script" >/dev/null
+linii="$(git -C "$workdir/zdalne.git" show dane-wydajnosci:wydajnosc.jsonl | wc -l | tr -d ' ')"
+if [[ $linii == 2 ]]; then
+  echo "OK: wpis bez metryk nie trafia do historii"
+else
+  echo "NIEUDANY wpis bez metryk został dopisany (wpisów: ${linii})"
+  failures=$((failures + 1))
+fi
+
 if ((failures > 0)); then
   exit 1
 fi

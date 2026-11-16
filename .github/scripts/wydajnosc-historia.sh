@@ -63,6 +63,10 @@ print("\nPomiar na emulatorze bez GPU: szum rzędu 10-20%, więc liczy się tren
 PY
 }
 
+if ! grep -qE '"p50(_ms)?": ?[0-9]' "$WPIS"; then
+  echo "::warning title=Historia wydajności::Wpis bez metryk nie został dopisany do ${galaz}."
+  exit 0
+fi
 zapisano=0
 for proba in 1 2 3; do
   if git -C "$katalog" fetch -q --depth 50 dane "$galaz" 2>/dev/null; then
