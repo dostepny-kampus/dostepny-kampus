@@ -112,6 +112,14 @@ class CampusMapDataTest {
         assertEquals(emptyList<String>(), data.symbolsAt(listOf(2)))
     }
 
+    /** Obiekt budynku ma identyfikator GeoJSON równy numerowi konturu; po nim styl ustawia stan obiektu. */
+    @Test
+    fun idsBuildingsByOutlineNumber() {
+        val features = parse(data.buildings)
+        assertEquals(listOf("0", "1"), features.map { it.id?.content })
+        assertEquals(features.map { it.properties.text(OUTLINE_NUMBER) }, features.map { it.id?.content })
+    }
+
     @Test
     fun findsBuildingOutline() {
         assertEquals(listOf("C-3", "C-4"), data.outlineOf("C-4"))

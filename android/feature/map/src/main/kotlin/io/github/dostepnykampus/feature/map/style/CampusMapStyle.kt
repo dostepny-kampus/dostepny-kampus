@@ -10,7 +10,6 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
-import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -156,7 +155,7 @@ internal fun entranceCaptionImage(label: String): String = "wejscie: $label"
 private fun sources(data: CampusMapData, look: SelectionLook, plan: JsonElement): JsonObject =
     buildJsonObject {
         put(key = BASEMAP, element = basemapSource())
-        put(key = BUILDINGS_SOURCE, element = geoJsonSource(data.buildings, promoteId = OUTLINE_NUMBER))
+        put(key = BUILDINGS_SOURCE, element = geoJsonSource(data.buildings))
         put(key = LABELS_SOURCE, element = geoJsonSource(data.labelPoints))
         put(key = ENTRANCES_SOURCE, element = geoJsonSource(data.entrances))
         put(key = BARRIERS_SOURCE, element = geoJsonSource(data.barriers))
