@@ -48,7 +48,7 @@ class SearchFieldTest {
         field.performTextInput("c13")
         compose.onNodeWithContentDescription(RESULT).performClick()
 
-        assertEquals(listOf("C-13"), opened)
+        assertEquals("otwarty budynek", listOf("C-13"), opened)
         field.assertTextEquals("c13", includeEditableText = true)
         compose.onNodeWithContentDescription(RESULT).assertDoesNotExist()
         field.performClick()
