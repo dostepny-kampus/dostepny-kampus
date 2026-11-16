@@ -56,12 +56,12 @@ class CameraTransitionTest {
         assertTrue(move.durationMillis in 600L..1100L, "przelot 1 km: ${move.durationMillis} ms")
     }
 
-    /** Wiersz: V1, inny teren 2 km dalej — przelot ok. 1 s. */
+    /** Wiersz: V1, inny teren 2 km dalej — przelot z przybliżeniem do budynku, najwyżej 1,5 s. */
     @Test
     fun fliesTwoKilometres() {
         val move = toBuilding(from = MapCamera(center = viewByMeters(-2000.0), zoom = START_ZOOM))
         assertEquals(CameraMotion.FLIGHT, move.motion, "teren 2 km dalej: przelot")
-        assertTrue(move.durationMillis in 900L..1200L, "przelot 2 km: ${move.durationMillis} ms")
+        assertTrue(move.durationMillis in 1100L..1499L, "przelot 2 km: ${move.durationMillis} ms")
     }
 
     /** Wiersz: V1, dalszy cel przyspiesza przelot, a nie zamienia go na skok — najwyżej 1,5 s. */
