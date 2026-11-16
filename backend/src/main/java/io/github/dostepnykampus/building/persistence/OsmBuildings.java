@@ -8,14 +8,18 @@ package io.github.dostepnykampus.building.persistence;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.jackson.databind.ObjectMapper;
 
 /**
  * Budynki i wejścia z pliku konturów OpenStreetMap w tabelach buildings i entrances
  * (ADR-0008), zapisywane przez {@link FileMigration}. Treść pliku czyta {@link OsmFile}.
  * Istniejący budynek dostaje nowy kontur, nazwę i atrybucję, a poziom szczegółowości zostaje.
+ * Po zapisie dziennik INFO podaje liczbę budynków i wejść.
  *
- * <p>Wymagania: US1, US17.1, US2</p>
+ * <p>Wymagania: US1, US17.1, US2, NFR-57</p>
  *
  * @since 0.1.0
  */
@@ -39,6 +43,11 @@ final class OsmBuildings implements FileImport {
     static final int FORMAT = 5;
 
     /**
+     * Dziennik importu.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(OsmBuildings.class);
+
+    /**
      * Parser pliku GeoJSON.
      */
     private final ObjectMapper mapper;
@@ -50,8 +59,13 @@ final class OsmBuildings implements FileImport {
     @Override
     public void save(final Connection connection, final byte[] content) throws SQLException {
         final OsmFile osm = new OsmFile(this.mapper, this.mapper.readTree(content));
-        OsmBuildings.upsert(connection, osm.buildings(), osm.attribution());
-        new OsmEntrances(osm.entrances()).save(connection);
+        final List<ImportedBuilding> buildings = osm.buildings();
+        final List<ImportedEntrance> entrances = osm.entrances();
+        OsmBuildings.upsert(connection, buildings, osm.attribution());
+        new OsmEntrances(entrances).save(connection);
+        OsmBuildings.LOG.info(
+            "Import budynków z pliku: {} budynków, {} wejść", buildings.size(), entrances.size()
+        );
     }
 
     private static void upsert(
