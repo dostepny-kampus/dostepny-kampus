@@ -37,6 +37,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -234,8 +235,9 @@ private fun ResultPanel(content: @Composable ColumnScope.() -> Unit) {
 @Composable
 private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: () -> Unit) {
     val interactions = remember { MutableInteractionSource() }
+    val tap by rememberUpdatedState(onTap)
     LaunchedEffect(interactions) {
-        interactions.interactions.collect { if (it is PressInteraction.Release) onTap() }
+        interactions.interactions.collect { if (it is PressInteraction.Release) tap() }
     }
     OutlinedTextField(
         value = query,
