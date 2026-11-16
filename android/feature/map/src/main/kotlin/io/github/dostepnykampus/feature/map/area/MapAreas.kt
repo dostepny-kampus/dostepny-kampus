@@ -156,14 +156,15 @@ internal class MapAreas(
      *
      * Wymagania: US1.7, BR-G5
      */
-    fun show(name: String): CampusBounds? =
-        data?.let { campus ->
-            campus.areas.firstOrNull { it.name == name }?.let { area ->
-                chosen.value = name
-                seen.value = name
-                campus.boundsOfAllBuildings(area)
-            }
+    fun show(name: String): CampusBounds? {
+        val campus = data ?: return null
+        val area = campus.areas.firstOrNull { it.name == name }
+        if (area != null) {
+            chosen.value = name
+            seen.value = name
         }
+        return area?.let(campus::boundsOfAllBuildings)
+    }
 }
 
 /**

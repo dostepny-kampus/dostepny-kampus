@@ -152,7 +152,8 @@ class CameraTransitionTest {
      */
     @Test
     fun landsNoCloserThanStartZoom() {
-        assertEquals(START_ZOOM, fitted(outline = outline, free = free, maxZoom = START_ZOOM).zoom)
+        val view = fitted(outline = outline, free = free, maxZoom = START_ZOOM)
+        assertEquals(START_ZOOM, view.zoom, "mały teren: powiększenie startowe")
     }
 
     private fun toBuilding(from: MapCamera, scale: Float = 1f): CameraTransition =

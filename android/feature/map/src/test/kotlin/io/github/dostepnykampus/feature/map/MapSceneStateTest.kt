@@ -49,8 +49,8 @@ class MapSceneStateTest {
     fun landsOnChosenArea() {
         val building = CampusBounds(west = 17.0599, south = 51.1099, east = 17.0601, north = 51.1101)
         state().land(building)
-        assertEquals(START_ZOOM, cameras.single().zoom)
-        assertEquals(51.11, cameras.single().center.latitude, 1e-9)
+        assertEquals(START_ZOOM, cameras.single().zoom, "budynek mały: powiększenie startowe")
+        assertEquals(51.11, cameras.single().center.latitude, 1e-9, "budynek na środku w pionie")
     }
 
     private fun touch(vararg symbols: String) =

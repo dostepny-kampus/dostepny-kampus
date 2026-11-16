@@ -179,7 +179,7 @@ class MapAreasTest {
         val area = data.areas.single { it.name == "Wittigowo" }
         assertEquals("Wittigowo", areas().current?.name)
         assertEquals(area.bounds, data.selection(area = areas().chosenName).bounds)
-        assertEquals(60.0205, (buildings.south + buildings.north) / 2, DEGREE_DELTA)
+        assertEquals(60.0205, (buildings.south + buildings.north) / 2, DEGREE_DELTA, "budynek T-15")
     }
 
     /**
@@ -193,8 +193,8 @@ class MapAreasTest {
         val start = data.areas.single { START_BUILDING in it.symbols }
         val buildings = requireNotNull(areas().show(start.name))
         val expected = CampusBounds(west = WEST, south = 60.0, east = EAST, north = 60.002 + SIDE)
-        assertEquals(setOf(START_BUILDING, "A-2"), start.symbols.toSet())
-        assertEquals(expected, buildings)
+        assertEquals(setOf(START_BUILDING, "A-2"), start.symbols.toSet(), "dwa budynki terenu startowego")
+        assertEquals(expected, buildings, "prostokąt obu budynków")
     }
 
     /** Wiersz: V1, teren spoza danych nie zmienia wyboru. Wymagania: US1.7 */
