@@ -34,6 +34,7 @@ import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.camera.belowTop
+import io.github.dostepnykampus.feature.map.camera.besideStart
 import io.github.dostepnykampus.feature.map.camera.byControl
 import io.github.dostepnykampus.feature.map.camera.cameraTransition
 import io.github.dostepnykampus.feature.map.camera.fitted
@@ -49,6 +50,7 @@ import io.github.dostepnykampus.feature.map.overlay.MapControlTouchSize
 private const val CONTROLS_COLUMNS = 3
 private const val FIT_MARGIN_DP = 24.0
 private val ControlsMinFreeMap = 300.dp
+private val FloorColumnReserve = 80.dp
 
 private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore = { it })
 
@@ -163,7 +165,11 @@ internal fun rememberMapSceneState(
     val choices = rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }
     val isCovered = cover > 0.dp
     val density = LocalDensity.current
-    val own = view.camera ?: selection?.entrance?.let { MapCamera(center = it.location, zoom = ENTRANCE_ZOOM) }
+    val shown =
+        view.camera?.let {
+            density.besideFloorColumn(camera = it, symbol = view.shown, catalog = catalog, layers = layers, size = size)
+        }
+    val own = shown ?: selection?.entrance?.let { MapCamera(center = it.location, zoom = ENTRANCE_ZOOM) }
     val topInset = with(density) { top.toPx() }.toDouble()
     val limits = density.mapLimits(selection?.bounds, size.belowTop(topInset))
     val start = layers?.start?.let { MapCamera(center = it, zoom = START_ZOOM) }
@@ -301,6 +307,29 @@ private fun pickMove(
 private fun rememberAnimatorScale(): Float {
     val resolver = LocalContext.current.contentResolver
     return remember(resolver) { Settings.Global.getFloat(resolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) }
+}
+
+/**
+ * Widok [camera] po poleceniu „Pokaż budynek na mapie” dla budynku [symbol]: budynek szczegółowy z katalogu
+ * [catalog] stoi obok pasa kolumny pięter przy lewym brzegu mapy o rozmiarze [size] w pikselach, z konturem
+ * z [layers]. Budynek podstawowy, nieznany albo mapa bez rozmiaru zostawiają [camera].
+ *
+ * Wymagania: US16.1, US1.3, US1.4, NFR-17
+ */
+internal fun Density.besideFloorColumn(
+    camera: MapCamera,
+    symbol: String?,
+    catalog: BuildingCatalog?,
+    layers: CampusMapData?,
+    size: IntSize,
+): MapCamera {
+    val outline = layers?.outlinesBySymbol.orEmpty()[symbol].takeIf { symbol in catalog?.detailed.orEmpty() }
+    val width = size.width.toDp()
+    val widthDp = width.value.toDouble()
+    val reserve = FloorColumnReserve * fontScale.coerceAtLeast(minimumValue = 1f)
+    val startDp = reserve.value.toDouble()
+    if (outline == null || widthDp <= startDp) return camera
+    return camera.besideStart(outline = outline, widthDp = widthDp, startDp = startDp)
 }
 
 /** Wolna część mapy o rozmiarze [size] w pikselach nad arkuszem V2 wysokim na [cover]. */
