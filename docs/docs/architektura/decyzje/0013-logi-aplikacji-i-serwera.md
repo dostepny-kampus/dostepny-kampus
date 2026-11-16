@@ -17,39 +17,57 @@ Logi mają pomagać w rozwoju i diagnozie, a nie zalewać: mało linii, każda m
 
 ## Decyzja
 
-**Aplikacja** używa Timber (licencja Apache-2.0). Wersja debug zapisuje wszystko od poziomu DEBUG, wersja release tylko WARN i ERROR do logcat. Aplikacja nie wysyła logów nigdzie poza telefon.
+**Aplikacja** używa Timber (licencja Apache-2.0).
 
-Timber 5.0.1 jest wyjątkiem od kryterium ADR-0004 „wydanie z ostatnich 12 miesięcy”: ostatnie wydanie pochodzi z sierpnia 2021. Biblioteka jest mała i stabilna, nie ma znanych podatności ani nowszej wersji, a własna nakładka na `android.util.Log` byłaby własnym rozwiązaniem problemu ogólnego, które ADR-0004 wyklucza. Ocena jest w [ocenach zależności](../oceny-zaleznosci.md#timber-501).
+- Wersja debug zapisuje wszystko od poziomu DEBUG.
+- Wersja release zapisuje tylko WARN i ERROR do logcat.
+- Aplikacja nie wysyła logów nigdzie poza telefon.
 
-**Serwer** używa SLF4J z Logback ze Spring Boot. Filtr żądań działa przed łańcuchem zabezpieczeń, więc odpowiedzi 401, 403 i 429 też mają identyfikator. Filtr bierze identyfikator z nagłówka `X-Request-Id`, jeśli jest poprawny (do 64 znaków: litery, cyfry, `-`, `_`), a w przeciwnym razie tworzy nowy. Identyfikator trafia do MDC pod kluczem `requestId`, do wzorca linii logu i do nagłówka `X-Request-Id` odpowiedzi. Poziom pakietu ustawia `logging.level` w `application.yaml`, a zmienna `DK_LOG_LEVEL` zmienia go bez przebudowy.
+Timber 5.0.1 jest wyjątkiem od kryterium ADR-0004 „wydanie z ostatnich 12 miesięcy”. Ostatnie wydanie jest z sierpnia 2021, a biblioteka jest mała, stabilna i bez znanych podatności. Własna nakładka na `android.util.Log` byłaby własnym rozwiązaniem problemu ogólnego, które ADR-0004 wyklucza. Ocena jest w [ocenach zależności](../oceny-zaleznosci.md#timber-501).
 
-Co logujemy: tylko granice i zdarzenia, nigdy pętle, klatki ani obsługę ruchu kamery.
+**Serwer** używa SLF4J z Logback ze Spring Boot.
+
+- Filtr żądań działa przed łańcuchem zabezpieczeń, więc odpowiedzi 401, 403 i 429 też mają identyfikator.
+- Identyfikator pochodzi z nagłówka `X-Request-Id`, jeśli jest poprawny: do 64 znaków, litery, cyfry, `-` i `_`. W przeciwnym razie filtr tworzy nowy.
+- Identyfikator trafia do MDC pod kluczem `requestId`, do wzorca linii logu i do nagłówka `X-Request-Id` odpowiedzi.
+- Poziom pakietu ustawia `logging.level` w `application.yaml`. Zmienna `DK_LOG_LEVEL` zmienia go bez przebudowy.
+
+Logujemy tylko granice i zdarzenia. Pętli, klatek i obsługi ruchu kamery nie logujemy.
 
 | Gdzie | Zdarzenie | Poziom |
 | --- | --- | --- |
 | aplikacja | start z wersją | INFO |
-| aplikacja | wynik żądania sieciowego: metoda, ścieżka ze znacznikiem `{id}`, kod albo klasa błędu, czas | DEBUG, błąd sieci i 5xx WARN, 4xx INFO |
+| aplikacja | wynik żądania sieciowego: metoda, ścieżka ze znacznikiem `{id}`, kod albo klasa błędu, czas | DEBUG; błąd sieci i kod 5xx WARN; kod 4xx INFO |
 | aplikacja | źródło i rozmiar katalogu budynków, wynik przebiegu wysyłki zgłoszeń | INFO |
 | aplikacja | wejście na ekran: nazwa ekranu bez argumentów | DEBUG |
 | aplikacja | złapany wyjątek w ViewModelu albo repozytorium: klasa wyjątku bez komunikatu | WARN |
-| serwer | jedna linia na koniec żądania: metoda, wzorzec ścieżki, status, czas | 5xx i wolne (≥ 1 s) WARN, 4xx INFO, reszta DEBUG |
+| serwer | jedna linia na koniec żądania: metoda, wzorzec ścieżki, status, czas | DEBUG; kod 4xx INFO; kod 5xx i żądanie od 1 s WARN |
 | serwer | błąd 5xx ze stosem, raz, w obsłudze błędów | ERROR |
 | serwer | import danych: liczba rekordów | INFO |
 | serwer | operacje na magazynie zdjęć: wynik bez nazwy pliku osoby | WARN przy błędzie |
 
-Start serwera z wersją i profilem zapisuje sam Spring Boot, więc osobnej linii nie dodajemy.
+Start serwera z wersją i profilem zapisuje sam Spring Boot. Osobnej linii nie dodajemy.
 
-Czego nie logujemy nigdy: identyfikatorów kont, nazw, e-maili, tokenów i nagłówka `Authorization`, dokładnych współrzędnych osoby, treści zgłoszeń, nazw i treści zdjęć, parametrów zapytania i komunikatów wyjątków, które mogą zawierać wartości z żądania. Ścieżka w logu to wzorzec (`/submissions/{id}`), nie adres z identyfikatorem.
+Nigdy nie logujemy:
 
-Raportów awarii w osobnej usłudze nie dodajemy. Narzędzie zewnętrzne łamie NFR-28, a rozwiązanie bez usługi chmurowej wymaga osobnej decyzji właściciela.
+- identyfikatorów kont, nazw, e-maili, tokenów i nagłówka `Authorization`,
+- dokładnych współrzędnych osoby,
+- treści zgłoszeń oraz nazw i treści zdjęć,
+- parametrów zapytania,
+- komunikatów wyjątków, bo mogą zawierać wartości z żądania.
+
+Ścieżka w logu to wzorzec, np. `/submissions/{id}`, a nie adres z identyfikatorem.
+
+Raportów awarii w osobnej usłudze nie dodajemy. Narzędzie zewnętrzne łamie NFR-28. Rozwiązanie bez usługi chmurowej wymaga osobnej decyzji właściciela.
 
 ## Konsekwencje
 
-- Dobrze: błąd w telefonie i na serwerze zostawia jedną linię z powodem; żądanie z linii logu serwera da się znaleźć po identyfikatorze, który klient widzi w nagłówku odpowiedzi.
-- Dobrze: wersja release nie zapisuje w logcat nic poniżej WARN, więc nie ujawnia przebiegu użycia.
-- Dobrze: logi żądań są na poziomie DEBUG, więc domyślnie serwer nie zapisuje linii na każde udane żądanie.
+- Dobrze: błąd w telefonie i na serwerze zostawia jedną linię z powodem.
+- Dobrze: żądanie znajdziemy w logu serwera po identyfikatorze z nagłówka odpowiedzi.
+- Dobrze: wersja release nie zapisuje nic poniżej WARN, więc nie ujawnia przebiegu użycia.
+- Dobrze: domyślnie serwer nie zapisuje linii na każde udane żądanie.
 - Gorzej: nowa zależność Timber w modułach, które logują, bez wydania od 2021 roku.
-- Gorzej: wersja release nie pokazuje przebiegu przed błędem; żeby go zobaczyć, trzeba uruchomić wersję debug.
+- Gorzej: wersja release nie pokazuje przebiegu przed błędem. Trzeba uruchomić wersję debug.
 
 ## Źródła
 
