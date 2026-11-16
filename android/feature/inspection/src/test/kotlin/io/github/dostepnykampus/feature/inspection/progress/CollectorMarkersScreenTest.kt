@@ -26,7 +26,7 @@ import org.robolectric.annotation.GraphicsMode
  * C5 „Obejrzane piętra” Zbierającego: piętra w kontenerach, znacznik w telefonie, „Oznacz jako obejrzane”
  * i błąd zapisu.
  *
- * Wymagania: US15.1, US15.3, PW-11, NFR-7
+ * Wymagania: US15.1, US15.3, NFR-7
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
