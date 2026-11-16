@@ -146,7 +146,9 @@ public class BuildingCatalogRepository internal constructor(
 
     private suspend fun follow(running: Running, isFresh: Boolean): BuildingCatalog {
         running.join()
-        return if (running.isCancelled) fetched(isFresh) else running.await().getOrThrow()
+        if (!running.isCancelled) return running.await().getOrThrow()
+        synchronized(lock) { if (inflight === running) inflight = null }
+        return fetched(isFresh)
     }
 
     private suspend fun lead(mine: Running, isFresh: Boolean): BuildingCatalog =
