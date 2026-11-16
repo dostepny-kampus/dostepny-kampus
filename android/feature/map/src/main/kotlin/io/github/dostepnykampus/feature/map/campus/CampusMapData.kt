@@ -51,8 +51,9 @@ private val CAMPUS_MARGIN = 100.meters
  * Wymagania: US1, US1.4, NFR-10, US1.2, BR-G5, NFR-39, NFR-11, US2.8, US1.1, US1.3, US16.1
  *
  * @property buildings kontury budynków; obiekt ma właściwość `label`, czyli podpis konturu na mapie, listę
- *   `symbols`, numer `outline` konturu w [outlines] i `detailed` z [BuildingCatalog.detailed]. Kontur wspólny
- *   kilku symboli to jeden obiekt z podpisem „C-3/C-4”, szczegółowy, gdy plan pięter ma któryś z jego budynków
+ *   `symbols`, numer `outline` konturu w [outlines] (też identyfikator obiektu GeoJSON) i `detailed` z
+ *   [BuildingCatalog.detailed]. Kontur wspólny kilku symboli to jeden obiekt z podpisem „C-3/C-4”, szczegółowy, gdy
+ *   plan pięter ma któryś z jego budynków
  * @property labels podpisy konturów, każdy raz, w kolejności katalogu; widok mapy rysuje z nich obrazy podpisów
  * @property labelPoints punkty podpisów, jeden na kontur, wewnątrz konturu, z właściwością `label`. Podpis przy
  *   konturze dzielonym na kafelki pojawiałby się w każdym kawałku albo w żadnym (reguła 4 wymagań wspólnych)
