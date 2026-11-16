@@ -438,8 +438,8 @@ wysokosci:
 mapa:
   napisy_sp: 16
   # Plan piętra na mapie V1: grubości linii i rozmiar znaków planu według powiększenia, liniowo między progami.
-  # Pod planem budynek ma tło `pwr_podstawowy`. Ściana zewnętrzna to jedna linia `pwr_kontur`, bez drugiej linii
-  # konturu budynku obok. Winda, toaleta dostosowana i schody mają ten sam rozmiar; ważność niesie jasność
+  # Przy widocznym planie tło i kontur budynku z OpenStreetMap są ukryte. Ściana piętra z planu PWr to jedna linia
+  # `pwr_kontur` (obrys wybranego budynku też idzie po niej), a pod pomieszczeniami w jej obrysie leży `p_korytarz`. Winda, toaleta dostosowana i schody mają ten sam rozmiar; ważność niesie jasność
   # i kolejność rysowania (winda i toaleta nad schodami). Znak ma obwódkę `papier` i kontur `tusz` jak znaki
   # wejść i barier, a obszar dotyku co najmniej `cele_dotyku.minimum` przy każdym rozmiarze obrazu.
   plan:
@@ -465,7 +465,7 @@ mapa:
     pwr: {jasny: "#9BD3E6", ciemny: "#3D6B7A", uzycie: "wypełnienie budynków szczegółowych (z planem pięter)"}
     # Budynek podstawowy: jaśniejsze tło niż szczegółowy, ale wyraźnie niebieskie; od szczegółowego odróżnia go
     # jasność tła i cienki kontur.
-    pwr_podstawowy: {jasny: "#C4E5F0", ciemny: "#2F4E59", uzycie: "wypełnienie budynków podstawowych (bez planu pięter) i tło budynku pod planem piętra"}
+    pwr_podstawowy: {jasny: "#C4E5F0", ciemny: "#2F4E59", uzycie: "wypełnienie budynków podstawowych (bez planu pięter)"}
     # Ciemny kontur PWr: najciemniejszy ton, który do wypełnienia ma ≥ 3:1 także po symulacji daltonizmu.
     pwr_kontur: {jasny: "#004E5E", ciemny: "#A6D6E5", uzycie: "kontur budynków PWr (jasny = primary): gruby przy szczegółowym, cienki ciągły przy podstawowym, ściana zewnętrzna planu piętra"}
     # Obrys wybranego budynku jest grubszy niż kontur; wybór pokazuje też arkusz z nazwą (NFR-21).
@@ -490,7 +490,7 @@ mapa:
     znak_tylko_z_pomoca_symbol: {jasny: "#181C1D", ciemny: "#101314", uzycie: "dwie osoby w tarczy „Tylko z pomocą”"}
     znak_blokada: {jasny: "#A3180A", ciemny: "#D92D1A", uzycie: "tablica znaku „Blokada”"}
     znak_blokada_symbol: {jasny: "#FFFFFF", ciemny: "#FFFFFF", uzycie: "pozioma belka na tablicy „Blokada”"}
-    p_korytarz: {jasny: "#FFFFFF", ciemny: "#2C3236", uzycie: korytarz na planie piętra}
+    p_korytarz: {jasny: "#FFFFFF", ciemny: "#2C3236", uzycie: "korytarz na planie piętra i tło w obrysie piętra pod pomieszczeniami"}
     p_sala: {jasny: "#D2EAF3", ciemny: "#2C3C44", uzycie: sala na planie piętra}
     p_inne: {jasny: "#E1E6E8", ciemny: "#23282B", uzycie: inne pomieszczenia i klatki schodowe}
     p_winda: {jasny: "#A7C0C9", ciemny: "#3B4D55", uzycie: winda}
@@ -534,6 +534,8 @@ mapa:
     - {kolor: pwr_kontur, tlo: p_inne, rodzaj: komponent, gdzie: ściana zewnętrzna planu przy innym pomieszczeniu}
     - {kolor: pwr_kontur, tlo: p_wc, rodzaj: komponent, gdzie: ściana zewnętrzna planu przy toalecie}
     - {kolor: pwr_kontur, tlo: p_winda, rodzaj: komponent, gdzie: ściana zewnętrzna planu przy windzie}
+    - {kolor: pwr_wybrany, tlo: p_korytarz, rodzaj: komponent, gdzie: obrys wybranego budynku po ścianie piętra przy korytarzu}
+    - {kolor: pwr_wybrany, tlo: p_sala, rodzaj: komponent, gdzie: obrys wybranego budynku po ścianie piętra przy sali}
     - {kolor: tusz, tlo: papier, rodzaj: komponent, gdzie: kontur znaku planu do jego obwódki}
     - {kolor: papier, tlo: p_kontur, rodzaj: komponent, gdzie: obwódka znaku planu do ściany pomieszczenia}
     - {kolor: p_wzor, tlo: p_inne, rodzaj: komponent, gdzie: kreskowanie klatek schodowych}

@@ -148,7 +148,7 @@ Paleta mapy jest w sekcji `mapa` pliku: podkład, budynki PWr i plan piętra w o
 
 Budynek szczegółowy ma pełne tło `pwr` i gruby kontur. Budynek podstawowy ma blade tło `pwr_podstawowy` i cienki ciągły kontur. Różni je jasność tła i grubość konturu, a nie sam odcień (NFR-21).
 
-Pod widocznym planem piętra budynek szczegółowy ma tło `pwr_podstawowy`, ściana zewnętrzna planu jest jedną linią `pwr_kontur`, a ściany pomieszczeń `p_kontur` grubieją z powiększeniem. Grubości linii planu i rozmiar znaków planu według powiększenia są w `mapa.plan`.
+Przy widocznym planie piętra tło i kontur budynku z OpenStreetMap są ukryte. Ściana piętra z planu PWr jest jedną linią `pwr_kontur`, szczeliny między pomieszczeniami mają barwę `p_korytarz`, a ściany pomieszczeń `p_kontur` grubieją z powiększeniem. Grubości linii planu i rozmiar znaków planu według powiększenia są w `mapa.plan`.
 
 Barwy znaków wejść i barier (`znak_…`) też są w sekcji `mapa`. Aplikacja rysuje te znaki jako obrazy mapy i legendy, a nie przez motyw Material 3. Para każdej barwy z jej symbolem ma co najmniej 3:1 w obu motywach.
 
