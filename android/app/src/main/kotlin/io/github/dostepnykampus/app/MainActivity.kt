@@ -74,7 +74,7 @@ class MainActivity : ComponentActivity() {
 }
 
 internal suspend fun MainActivity.deleteOrphanPhotos(queue: SubmissionQueue, kept: Set<String>) {
-    queue.deleteOrphanPhotos(dir = photoDir(filesDir), kept = kept)
+    queue.deleteOrphanPhotos(dir = { photoDir(filesDir) }, kept = kept)
 }
 
 /**
