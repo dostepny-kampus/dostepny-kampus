@@ -50,11 +50,6 @@ final class RequestLog implements Filter {
     private static final Pattern VALID = Pattern.compile("[A-Za-z0-9_-]{1,64}");
 
     /**
-     * Czas w milisekundach, od którego żądanie jest wolne.
-     */
-    private static final long SLOW = 1_000L;
-
-    /**
      * Dziennik żądań.
      */
     private static final Logger LOG = LoggerFactory.getLogger(RequestLog.class);
@@ -87,15 +82,18 @@ final class RequestLog implements Filter {
     /**
      * Treść linii logu żądania.
      *
-     * @param request Żądanie po obsłudze
+     * @param request Obsłużone żądanie
      * @param status Status odpowiedzi
      * @param millis Czas obsługi w milisekundach
      * @return Metoda, wzorzec ścieżki albo myślnik, status i czas
      */
-    static String describe(final HttpServletRequest request, final int status, final long millis) {
+    static String describe(
+        final HttpServletRequest request, final int status, final long millis
+    ) {
         String pattern = "-";
-        if (request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE) instanceof String found) {
-            pattern = found;
+        final Object found = request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+        if (found instanceof String text) {
+            pattern = text;
         }
         return "%s %s %d %d ms".formatted(request.getMethod(), pattern, status, millis);
     }
@@ -104,7 +102,7 @@ final class RequestLog implements Filter {
         final HttpServletRequest request, final int status, final long millis
     ) {
         final String line = RequestLog.describe(request, status, millis);
-        if (status >= 500 || millis >= RequestLog.SLOW) {
+        if (status >= 500 || millis >= 1_000L) {
             RequestLog.LOG.warn(line);
         } else if (status >= 400) {
             RequestLog.LOG.info(line);
