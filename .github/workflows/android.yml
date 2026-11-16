@@ -75,10 +75,6 @@ jobs:
       - name: Sprawdź, czy PR albo grupa w kolejce zmienia aplikację Android, jej dane, tokeny albo własne kroki CI
         id: diff
         if: steps.drzewo.outputs.pomin != 'true'
-        env:
-          EVENT: ${{ github.event_name }}
-          GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
-          GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
         run: >-
           .github/scripts/zmiany-obszaru.sh android android data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml
           .github/workflows/android.yml .github/actions/android-gradle .github/scripts/cache-budowania-sprintu.sh
