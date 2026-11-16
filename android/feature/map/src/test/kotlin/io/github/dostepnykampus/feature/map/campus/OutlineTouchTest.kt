@@ -28,19 +28,22 @@ class OutlineTouchTest {
     /** Wiersz: V1, dotknięcie wewnątrz konturu B-2 obok konturu B-1 otwiera B-2 bez arkusza wyboru. */
     @Test
     fun opensOutlineUnderFinger() {
-        assertEquals(listOf("B-2"), data.touchedSymbols(hit = listOf(1)) { listOf(0, 1) })
+        val symbols = data.touchedSymbols(hit = listOf(1)) { listOf(0, 1) }
+        assertEquals(listOf("B-2"), symbols, "kontur pod palcem")
     }
 
     /** Wiersz: V1, dotknięcie obok dwóch konturów daje oba budynki do arkusza „Który budynek?”. */
     @Test
     fun choosesBetweenNearOutlines() {
-        assertEquals(listOf("B-1", "B-2"), data.touchedSymbols(hit = emptyList()) { listOf(0, 1) })
+        val symbols = data.touchedSymbols(hit = emptyList()) { listOf(0, 1) }
+        assertEquals(listOf("B-1", "B-2"), symbols, "kontury w zasięgu")
     }
 
     /** Wiersz: V1, dotknięcie wewnątrz konturu wspólnego daje jego symbole do arkusza. */
     @Test
     fun choosesWithinSharedOutline() {
-        assertEquals(listOf("C-3", "C-4"), data.touchedSymbols(hit = listOf(2)) { listOf(1, 2) })
+        val symbols = data.touchedSymbols(hit = listOf(2)) { listOf(1, 2) }
+        assertEquals(listOf("C-3", "C-4"), symbols, "symbole konturu wspólnego")
     }
 
     /** Trafienie w kontur nie pyta o kontury w zasięgu dotknięcia. */
