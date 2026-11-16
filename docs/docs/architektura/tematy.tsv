@@ -29,6 +29,7 @@ progress	ścieżka	postęp inwentaryzacji	Lista budynków z postępem inwentaryz
 quick	ścieżka	szybkie zgłoszenie	Zgłoszenie wejścia w kilku krokach.
 removed	ścieżka	bariera usunięta	Zgłoszenie, że bariery ze zgłoszenia przyjętego już nie ma (C7).
 report	ścieżka	pełne zgłoszenie	Formularz i edycja pełnego zgłoszenia.
+retention	temat	przechowywanie danych	Usuwanie zgłoszeń i zdjęć po terminie przechowywania (NFR-29).
 room	temat	pomieszczenie	Pomieszczenie piętra: numer sali, funkcja, kontur.
 server	temat	odpowiedź serwera	Wynik żądania do serwera bez typów klienta HTTP.
 start	temat	pierwsze uruchomienie	Pierwsze uruchomienie aplikacji i instrukcja otwierana wtedy sama.
