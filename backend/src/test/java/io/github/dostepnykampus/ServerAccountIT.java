@@ -65,7 +65,7 @@ final class ServerAccountIT {
                 "SELECT rolsuper FROM pg_roles WHERE rolname = current_user"
             )
         ) {
-            row.next();
+            Assertions.assertTrue(row.next(), "Brak wiersza roli bieżącego konta");
             return Boolean.toString(row.getBoolean(1));
         }
     }
@@ -85,9 +85,8 @@ final class ServerAccountIT {
             PostgisTestConfiguration.image()
         );
         postgis.withEnv("DK_DB_APP_USER", "konto_serwera")
-            .withEnv("DK_DB_APP_PASSWORD", "haslo-serwera")
-            .withCopyFileToContainer(
-                MountableFile.forHostPath(Path.of("../infra/postgis/konto-serwera.sh"), 0755),
+            .withEnv("DK_DB_APP_PASSWORD", "haslo-serwera").withCopyFileToContainer(
+                MountableFile.forHostPath(Path.of("../infra/postgis/konto-serwera.sh")),
                 "/docker-entrypoint-initdb.d/konto-serwera.sh"
             );
         return postgis;
