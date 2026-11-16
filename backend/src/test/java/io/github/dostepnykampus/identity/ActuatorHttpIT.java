@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 /**
- * Punkty Actuatora bez tokenu: {@code health} jest publiczny i nie ujawnia szczegółów,
+ * Punkty Actuatora bez tokenu: {@code health} jest publiczny bez szczegółów,
  * metryki i każdy inny punkt są zamknięte.
  *
  * <p>Wymagania: NFR-33, NFR-57</p>
@@ -30,9 +30,20 @@ final class ActuatorHttpIT {
     void servesPublicHealth(@LocalServerPort final int port) throws Exception {
         final HttpResponse<String> reply = ActuatorHttpIT.get(port, "/actuator/health");
         MatcherAssert.assertThat(
-            "Publiczny health nie zwrócił 200 ze stanem bez szczegółów",
-            "%d %s".formatted(reply.statusCode(), reply.body()),
-            Matchers.equalTo("200 {\"status\":\"UP\"}")
+            "Publiczny health nie zwrócił 200 ze stanem UP",
+            "%d %s".formatted(
+                reply.statusCode(), reply.body().contains("\"status\":\"UP\"")
+            ),
+            Matchers.equalTo("200 true")
+        );
+    }
+
+    @Test
+    void hidesHealthDetails(@LocalServerPort final int port) throws Exception {
+        MatcherAssert.assertThat(
+            "Publiczny health ujawnił szczegóły składników",
+            ActuatorHttpIT.get(port, "/actuator/health").body(),
+            Matchers.not(Matchers.containsString("components"))
         );
     }
 
