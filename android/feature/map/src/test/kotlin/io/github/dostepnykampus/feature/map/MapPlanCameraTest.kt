@@ -10,7 +10,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
@@ -24,7 +23,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Ekran V1 z widokiem zastępczym, który nigdy nie zgłasza końca gestu: plan piętra dostaje widok kamery także po ruchu
@@ -44,12 +42,7 @@ class MapPlanCameraTest {
         CampusMapView { _: CampusMapData, _, move, _, _, _, _, _: Modifier ->
             moves += move.camera
         }
-    private val repository =
-        BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
-            """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
-                """{"type":"Feature","properties":{"kind":"building","symbols":["C-13"],"osm_id":"way/1"},""" +
-                """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
-        }
+    private val repository = unitSquareCatalog("C-13")
     private val viewModel by lazy {
         CampusMapViewModel(
             repository = repository,

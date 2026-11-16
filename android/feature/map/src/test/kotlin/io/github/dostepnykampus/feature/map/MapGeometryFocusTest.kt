@@ -13,7 +13,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.unit.dp
-import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.area.center
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
@@ -33,7 +32,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.coroutines.EmptyCoroutineContext
 
 private const val DELTA = 1e-9
 
@@ -63,12 +61,7 @@ class MapGeometryFocusTest {
             focuses += selection.building
             cameras += move.camera
         }
-    private val repository =
-        BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
-            """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
-                """{"type":"Feature","properties":{"kind":"building","symbols":["C-13"],"osm_id":"way/1"},""" +
-                """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
-        }
+    private val repository = unitSquareCatalog("C-13")
     private val viewModel by lazy {
         CampusMapViewModel(
             repository = repository,
