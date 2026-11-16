@@ -135,7 +135,7 @@ class RemovedViewModelTest {
 
     /** Błąd zapisu zostawia jedną linię z klasą wyjątku, bez jego komunikatu. Wymagania: NFR-57 */
     @Test
-    fun logsStorageFailureWithoutMessage() =
+    fun logsStorageFailureClass() =
         runTest(dispatcher) {
             val lines = mutableListOf<String>()
             val tree =
