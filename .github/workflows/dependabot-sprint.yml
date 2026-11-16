@@ -1,23 +1,22 @@
 name: dependabot-sprint
 
-# pull_request_target: PR Dependabota dostaje tylko token do odczytu, a ten workflow musi zmienić bazę
-# i kamień milowy. Wykonuje się kod z gałęzi domyślnej; kodu PR nie pobieramy ani nie uruchamiamy.
+# Co godzinę i na żądanie: otwarte PR Dependabota bez kamienia milowego dostają bazę na bieżący sprint i kamień
+# milowy. Zdarzenia PR nie wystarczą: PR Dependabota dostaje token tylko do odczytu, a GitHub wyłącza domyślnie
+# pull_request_target w repozytoriach publicznych (#2757). Kodu PR nie pobieramy ani nie uruchamiamy.
 on:
-  pull_request_target:
-    types:
-      - opened
-      - reopened
+  schedule:
+    - cron: '47 * * * *'
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: dependabot-sprint-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  group: dependabot-sprint
+  cancel-in-progress: false
 
 jobs:
   baza-i-kamien:
-    if: github.event.pull_request.user.login == 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -31,6 +30,10 @@ jobs:
       - name: Przestaw bazę na bieżący sprint i ustaw kamień milowy
         env:
           GH_TOKEN: ${{ github.token }}
-          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: bash .github/scripts/dependabot-sprint.sh "$PR_NUMBER"
+          PR_AUTHOR: dependabot[bot]
+        run: |
+          prs="$(gh pr list --repo "$GITHUB_REPOSITORY" --app dependabot --state open --limit 100 \
+            --json number,milestone --jq '.[] | select(.milestone == null) | .number')"
+          for pr in $prs; do
+            bash .github/scripts/dependabot-sprint.sh "$pr"
+          done
