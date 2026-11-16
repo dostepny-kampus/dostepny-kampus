@@ -61,7 +61,7 @@ fun RemovedContent(state: RemovedUiState, actions: RemovedActions, modifier: Mod
                 verticalArrangement = Arrangement.spacedBy(Odstepy.m),
             ) {
                 SaveFailure(state, actions.onSend)
-                state.previous?.let { Accepted(barrier = it, buildingName = state.buildingName, entranceName = state.entranceName) }
+                state.previous?.let { Accepted(barrier = it, state = state) }
                 PhotoSection(
                     photos = PhotoPaths(listOfNotNull(state.photo?.path)),
                     camera = actions.camera,
@@ -78,7 +78,7 @@ fun RemovedContent(state: RemovedUiState, actions: RemovedActions, modifier: Mod
 }
 
 @Composable
-private fun Accepted(barrier: AcceptedBarrier, buildingName: String?, entranceName: String?) {
+private fun Accepted(barrier: AcceptedBarrier, state: RemovedUiState) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(
             text = stringResource(barrier.type?.nameRes() ?: R.string.moje_typ_nieznany),
@@ -89,8 +89,8 @@ private fun Accepted(barrier: AcceptedBarrier, buildingName: String?, entranceNa
         val place =
             barrierPlace(
                 symbol = barrier.buildingSymbol,
-                name = buildingName,
-                entrance = entranceName,
+                name = state.buildingName,
+                entrance = state.entranceName,
                 floor = barrier.floor,
             )
         Text(place)
