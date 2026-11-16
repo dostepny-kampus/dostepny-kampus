@@ -32,10 +32,10 @@ fun interface CampusMapView {
     /**
      * Mapa [data] z zaznaczeniem [selection] po ruchu [move], z krawędziami zasłoniętymi według [inset]: cel
      * ruchu stoi w środku części odkrytej. Każdy ruch wykonuje raz; zmiana [inset] zmienia tylko dopełnienie
-     * mapy i nie przerywa trwającego ruchu. Po geście widok zgłasza nowy widok przez
-     * [onCameraIdle], a po dotknięciu konturu albo miejsca obok niego symbole trafionych budynków przez
-     * [onBuildingsTouch], a po dotknięciu pustej mapy pustą listę. Dotknięcie znaku bariery zgłasza identyfikator
-     * jej zgłoszenia przez [onBarrierTouch] i nie zgłasza konturu pod znakiem.
+     * mapy i nie przerywa trwającego ruchu. Po geście widok zgłasza nowy widok przez [onCameraIdle].
+     * Dotknięcie wewnątrz konturu zgłasza przez [onBuildingsTouch] symbole tego konturu, dotknięcie obok konturów
+     * symbole konturów w zasięgu dotknięcia, a dotknięcie pustej mapy pustą listę. Dotknięcie znaku bariery
+     * zgłasza identyfikator jej zgłoszenia przez [onBarrierTouch] i nie zgłasza konturu pod znakiem.
      *
      * Wymagania: US1.5, NFR-56
      */
