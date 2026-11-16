@@ -26,8 +26,10 @@ Compose czyta zmienne z `infra/.env`, którego nie ma w repozytorium. Serwer czy
 | `DK_DB_APP_PASSWORD` | hasło konta serwera | brak |
 | `DK_DB_PORT` | port bazy na `127.0.0.1` | `5432` |
 | `DK_DB_HOST` | host bazy, tylko serwer | `127.0.0.1` |
-| `DK_PHOTOS_ACCESS_KEY` | klucz dostępu do magazynu zdjęć | brak |
-| `DK_PHOTOS_SECRET_KEY` | sekret magazynu zdjęć | brak |
+| `DK_PHOTOS_ROOT_ACCESS_KEY` | klucz główny magazynu, tylko compose | brak |
+| `DK_PHOTOS_ROOT_SECRET_KEY` | sekret klucza głównego | brak |
+| `DK_PHOTOS_ACCESS_KEY` | klucz serwera: tylko kubełek zdjęć | brak |
+| `DK_PHOTOS_SECRET_KEY` | sekret klucza serwera | brak |
 | `DK_PHOTOS_PORT` | port S3 magazynu na `127.0.0.1` | `9000` |
 | `DK_PHOTOS_HOST` | host magazynu, tylko serwer | `127.0.0.1` |
 | `DK_PHOTOS_BUCKET` | kubełek ze zdjęciami, tylko serwer | `zdjecia` |
@@ -53,6 +55,12 @@ docker compose -f infra/docker-compose.yml exec postgis bash /docker-entrypoint-
 ## Przechowywanie danych (NFR-29)
 
 Serwer codziennie o 3:30 usuwa zgłoszenia odrzucone ponad 90 dni temu razem z ich zdjęciami w magazynie. Dni liczą się od ostatniego odrzucenia; zgłoszenie poprawione i wysłane ponownie nie jest usuwane.
+
+## Klucze magazynu
+
+Klucz główny RustFS (`DK_PHOTOS_ROOT_ACCESS_KEY`) służy tylko do administracji i serwer go nie dostaje. Usługa `zdjecia-konto` przy każdym `up` uruchamia `rustfs/konto-serwera.sh` i kończy pracę. Skrypt zakłada kubełek zdjęć i klucz serwera `DK_PHOTOS_ACCESS_KEY` z polityką: lista, odczyt, zapis i usuwanie obiektów tylko w tym kubełku.
+
+Plik `infra/.env` sprzed tej zmiany ma w `DK_PHOTOS_ACCESS_KEY` klucz główny. Ten klucz przechodzi do `DK_PHOTOS_ROOT_ACCESS_KEY`, a `DK_PHOTOS_ACCESS_KEY` dostaje nową wartość dla serwera; to samo dotyczy sekretów.
 
 ## Import planów pięter PWr
 
