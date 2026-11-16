@@ -21,7 +21,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -55,6 +55,7 @@ import io.github.dostepnykampus.feature.map.building.BuildingChoice
 import io.github.dostepnykampus.feature.map.building.BuildingChoiceSheet
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
@@ -282,9 +283,8 @@ private fun CampusMap(
                 onBarrierTouch = { barrierId = it.also { state.dismiss() } },
                 modifier = Modifier.fillMaxSize(),
             )
-            ReportAppMove(camera = move.camera, onCamera = onCamera)
             scene.selection.entrance?.let { EntranceDescription(it) }
-            AreaEdgeAnnouncement(camera = move.camera, limits = state.limits, area = areas.current?.name)
+            FollowCameraTarget(camera = move.camera, limits = state.limits, area = areas.current?.name, onCamera)
             MapStatusBar(topInset, isShown = state.isCovered)
             val underBar = if (state.isCovered) topInset.asPaddingValues() else PaddingValues(top = top)
             val aboveSheet = Modifier.padding(underBar).padding(contentPadding)
@@ -311,9 +311,13 @@ private fun CampusMap(
 private data class ChosenBarrier(val id: String?, val barriers: ShownBarriers, val onClose: () -> Unit)
 
 @Composable
-private fun ReportAppMove(camera: MapCamera, onCamera: (MapCamera) -> Unit) {
+private fun FollowCameraTarget(camera: MapCamera, limits: MapLimits, area: String?, onCamera: (MapCamera) -> Unit) {
     val report by rememberUpdatedState(onCamera)
-    LaunchedEffect(camera) { report(camera) }
+    DisposableEffect(camera) {
+        report(camera)
+        onDispose {}
+    }
+    AreaEdgeAnnouncement(camera = camera, limits = limits, area = area)
 }
 
 @Composable

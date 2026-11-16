@@ -14,6 +14,7 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
+import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -49,6 +50,7 @@ class MapPlanCameraTest {
             networkStatus = { flowOf(true) },
             mapListChoice = TestMapListChoice(),
             computeContext = UnconfinedTestDispatcher(),
+            geometry = ::campusMapData,
         )
     }
 
