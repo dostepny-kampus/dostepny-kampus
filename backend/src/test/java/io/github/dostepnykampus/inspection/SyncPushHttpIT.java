@@ -10,6 +10,8 @@ import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -18,13 +20,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Znacznik piętra obejrzanego serwer zapisuje, a ponowne wysłanie tego samego znacznika nie
- * zapisuje go drugi raz; znacznik piętra spoza budynku jest odrzucony. Cofnięcie własnego
- * znacznika jest udane, także powtórzone, a cudzego odrzucone.
+ * zapisuje go drugi raz; znacznik piętra spoza budynku jest odrzucony, a błąd danych jednej
+ * operacji nie zatrzymuje pozostałych. Cofnięcie własnego znacznika jest udane, także
+ * powtórzone, a cudzego odrzucone.
  *
- * <p>Wymagania: US15.1, US15.2, US15.3, BR-9, BR-20, BR-21</p>
+ * <p>Wymagania: US15.1, US15.2, US15.3, BR-9, BR-20, BR-21, US9.2</p>
  *
  * @since 0.1.0
  */
@@ -119,6 +124,46 @@ final class SyncPushHttpIT {
                 SyncPushHttpIT.saved(context, id)
             ),
             "Serwer nie zapisał znacznika piętra, które jest w budynku"
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
+            "\"type\":\"SET_INSPECTION_MARKER\",\"marker\":{\"id\":\"%s\"}",
+            "\"type\":\"SET_INSPECTION_MARKER\",\"marker\":{\"id\":\"%s\",\"buildingSymbol\":7}",
+            "\"type\":\"REVOKE_INSPECTION_MARKER\",\"markerId\":\"nie-%s\""
+        }
+    )
+    void rejectsOnlyBrokenOperationInBatch(
+        final String broken, final WebApplicationContext context
+    ) throws Exception {
+        final UUID good = UUID.randomUUID();
+        final MockHttpServletResponse response = context.getBean(MockMvc.class).perform(
+            MockMvcRequestBuilders.post("/sync/push")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer COLLECTOR")
+                .content(
+                    String.join(
+                        "",
+                        "{\"operations\":[{\"clientOperationId\":\"",
+                        UUID.randomUUID().toString(), "\",",
+                        broken.formatted(UUID.randomUUID()), "},",
+                        SyncPushHttpIT.body(good, "C-13").substring(15)
+                    )
+                )
+        ).andReturn().getResponse();
+        final JsonNode results = context.getBean(ObjectMapper.class)
+            .readTree(response.getContentAsString()).path("results");
+        Assertions.assertEquals(
+            "200 REJECTED 400 APPLIED, zapisanych 1",
+            String.format(
+                "%d %s %d %s, zapisanych %d", response.getStatus(),
+                results.path(0).path("outcome").asString(),
+                results.path(0).path("reason").path("status").asInt(),
+                results.path(1).path("outcome").asString(), SyncPushHttpIT.saved(context, good)
+            ),
+            "Błąd jednej operacji zatrzymał pozostałe albo nie dał jej wyniku REJECTED 400"
         );
     }
 
