@@ -30,6 +30,30 @@ public interface PhotoStore {
     void put(UUID submission, UUID photo, byte[] jpeg);
 
     /**
+     * Zapisuje plik poza zdjęciami zgłoszeń, zanim wiadomo, czy wolno go dodać.
+     *
+     * @param upload Identyfikator wysyłki
+     * @param jpeg Plik JPEG
+     */
+    void stage(UUID upload, byte[] jpeg);
+
+    /**
+     * Przenosi plik wysyłki pod zdjęcie zgłoszenia; zastępuje zapisane zdjęcie.
+     *
+     * @param upload Identyfikator wysyłki
+     * @param submission Identyfikator zgłoszenia
+     * @param photo Identyfikator zdjęcia
+     */
+    void promote(UUID upload, UUID submission, UUID photo);
+
+    /**
+     * Usuwa plik wysyłki; brak pliku nie jest błędem.
+     *
+     * @param upload Identyfikator wysyłki
+     */
+    void discard(UUID upload);
+
+    /**
      * Czyta zdjęcie.
      *
      * @param submission Identyfikator zgłoszenia

@@ -16,13 +16,18 @@ import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
+import software.amazon.awssdk.services.s3.model.CopyObjectResponse;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.CreateBucketResponse;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import software.amazon.awssdk.services.s3.model.S3Object;
@@ -61,6 +66,34 @@ final class S3PhotoStoreTest {
             ),
             client.keys,
             "Zdjęcie trafia do kubełka pod kluczem zgłoszenia"
+        );
+    }
+
+    @Test
+    void movesStagedPhotoUnderSubmissionKey() {
+        final S3PhotoStoreTest.Bucket client = new S3PhotoStoreTest.Bucket();
+        final PhotoStore store = S3PhotoStoreTest.store(client);
+        final UUID upload = UUID.randomUUID();
+        store.stage(upload, new byte[] {1});
+        store.promote(upload, S3PhotoStoreTest.SUBMISSION, S3PhotoStoreTest.PHOTO);
+        store.discard(upload);
+        Assertions.assertEquals(
+            List.of(
+                String.format("%s/%s.jpg", S3PhotoStoreTest.SUBMISSION, S3PhotoStoreTest.PHOTO)
+            ),
+            client.keys,
+            "Przeniesione zdjęcie nie zostało tylko pod kluczem zgłoszenia"
+        );
+    }
+
+    @Test
+    void keepsStagedPhotoOutsideSubmissionList() {
+        final PhotoStore store = S3PhotoStoreTest.store(new S3PhotoStoreTest.Bucket());
+        store.stage(UUID.randomUUID(), new byte[] {1});
+        Assertions.assertEquals(
+            List.of(),
+            store.stored(S3PhotoStoreTest.SUBMISSION),
+            "Plik wysłany przed kontrolą statusu trafił na listę zdjęć zgłoszenia"
         );
     }
 
@@ -157,6 +190,21 @@ final class S3PhotoStoreTest {
         public PutObjectResponse putObject(final PutObjectRequest request, final RequestBody body) {
             this.keys.add(request.key());
             return PutObjectResponse.builder().build();
+        }
+
+        @Override
+        public CopyObjectResponse copyObject(final CopyObjectRequest request) {
+            if (!this.keys.contains(request.sourceKey())) {
+                throw NoSuchKeyException.builder().message(request.sourceKey()).build();
+            }
+            this.keys.add(request.destinationKey());
+            return CopyObjectResponse.builder().build();
+        }
+
+        @Override
+        public DeleteObjectResponse deleteObject(final DeleteObjectRequest request) {
+            this.keys.remove(request.key());
+            return DeleteObjectResponse.builder().build();
         }
 
         @Override
