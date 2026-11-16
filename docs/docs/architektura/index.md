@@ -26,6 +26,7 @@ Ta część pokazuje, z czego składa się system i dlaczego wybraliśmy takie r
 | [ADR-0011](decyzje/0011-modularny-monolit.md) | modularny monolit: pakiety według tematów, wejście do modułu przez pakiet `api`, słownik tematów | — |
 | [ADR-0012](decyzje/0012-import-planow-pieter.md) | plany pięter PWr importowane ręcznie poleceniem serwera, budynki z pliku automatycznie przy starcie | nr 17 |
 | [ADR-0013](decyzje/0013-logi-aplikacji-i-serwera.md) | Timber w aplikacji, SLF4J z identyfikatorem żądania na serwerze, logi tylko na granicach i bez danych osobowych | — |
+| [ADR-0014](decyzje/0014-podklad-wektorowy.md) | podkład mapy z kafelków wektorowych OpenFreeMap w kolorach tokenów zamiast rastra OSM, zastępuje część ADR-0005 | — |
 
 ADR nie zmieniamy po przyjęciu. Nową decyzję zapisujemy kolejnym numerem ze statusem „zastępuje ADR-…”.
 

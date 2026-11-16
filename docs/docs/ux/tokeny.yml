@@ -426,7 +426,9 @@ wysokosci:
     zrodlo: styl „Karta miejsca”; cień arkusza z makiety hi-fi V2
 
 # ---------------------------------------------------------------------------
-# Paleta mapy: podkład, budynki PWr, plan piętra (styl mapy wektorowej, decyzja 44).
+# Paleta mapy: podkład, budynki PWr, plan piętra (styl mapy wektorowej, decyzja 44, ADR-0014).
+# Jasny podkład to wariant „żywy”: wyraźna zieleń i woda, budynki spoza PWr od powiększenia 13,
+# nazwy dzielnic wielkimi literami, budynki PWr najbardziej nasycone na mapie.
 # Nie są to role Material 3: aplikacja wstawia je do stylu mapy, a nie do motywu.
 # W jasnym motywie kontur PWr i ścieżka mają barwę `primary`. Ciemny to mapa nocna:
 # grafitowy ląd, szaroniebieskie kontury bez jasnego morskiego. Napisy: Noto Sans z obwódką.
@@ -436,18 +438,19 @@ wysokosci:
 mapa:
   napisy_sp: 16
   kolory:
-    lad: {jasny: "#E8EDEE", ciemny: "#15181A", uzycie: tło lądu}
-    zielen: {jasny: "#D4DFD5", ciemny: "#1A221E", uzycie: parki i trawniki}
-    woda: {jasny: "#BFD0D8", ciemny: "#132129", uzycie: rzeka i kanały}
+    lad: {jasny: "#EEF1F0", ciemny: "#15181A", uzycie: tło lądu}
+    zielen: {jasny: "#CBE2C6", ciemny: "#1A221E", uzycie: parki i trawniki}
+    woda: {jasny: "#A7CADD", ciemny: "#132129", uzycie: rzeka i kanały}
     droga: {jasny: "#FFFFFF", ciemny: "#2B3034", uzycie: wypełnienie ulic}
-    droga_kontur: {jasny: "#C5CDD0", ciemny: "#1D2124", uzycie: obrzeże ulic}
+    droga_kontur: {jasny: "#C3CBCE", ciemny: "#1D2124", uzycie: obrzeże ulic}
     tory: {jasny: "#A3ACAF", ciemny: "#3A4044", uzycie: tory}
     chodnik: {jasny: "#F7F9FA", ciemny: "#22272A", uzycie: chodniki i place}
-    budynek: {jasny: "#D6DBDD", ciemny: "#23282B", uzycie: budynki spoza PWr}
-    budynek_kontur: {jasny: "#C2C9CC", ciemny: "#2C3236", uzycie: kontur budynków spoza PWr}
-    pwr: {jasny: "#BFE0EC", ciemny: "#2A3640", uzycie: "wypełnienie budynków szczegółowych (z planem pięter)"}
-    # Budynek podstawowy: blade tło, tuż nad lądem; od szczegółowego odróżnia go jasność tła i cienki kontur.
-    pwr_podstawowy: {jasny: "#DDECF1", ciemny: "#222B31", uzycie: "wypełnienie budynków podstawowych (bez planu pięter)"}
+    budynek: {jasny: "#DADFE0", ciemny: "#23282B", uzycie: "budynki spoza PWr, od powiększenia 13"}
+    budynek_kontur: {jasny: "#C6CDCF", ciemny: "#2C3236", uzycie: kontur budynków spoza PWr}
+    pwr: {jasny: "#9BD3E6", ciemny: "#2A3640", uzycie: "wypełnienie budynków szczegółowych (z planem pięter)"}
+    # Budynek podstawowy: jaśniejsze tło niż szczegółowy, ale wyraźnie niebieskie; od szczegółowego odróżnia go
+    # jasność tła i cienki kontur.
+    pwr_podstawowy: {jasny: "#C4E5F0", ciemny: "#222B31", uzycie: "wypełnienie budynków podstawowych (bez planu pięter)"}
     # Ciemny kontur PWr: najciemniejszy ton, który do wypełnienia ma ≥ 3:1 także po symulacji daltonizmu.
     pwr_kontur: {jasny: "#004E5E", ciemny: "#68848F", uzycie: "kontur budynków PWr (jasny = primary): gruby przy szczegółowym, cienki ciągły przy podstawowym"}
     # Obrys wybranego budynku jest grubszy niż kontur; wybór pokazuje też arkusz z nazwą (NFR-21).
@@ -455,6 +458,8 @@ mapa:
     napis_pwr: {jasny: "#00303B", ciemny: "#D9DFE2", uzycie: "symbol budynku, „Sala 329”, „Winda”, „Toaleta”"}
     napis_ulica: {jasny: "#3A4549", ciemny: "#A9B2B6", uzycie: nazwy ulic i numery sal}
     napis_woda: {jasny: "#2B454D", ciemny: "#A3B8C0", uzycie: nazwa rzeki}
+    # Ciemny odcień do czasu ciemnej palety podkładu (#2679).
+    napis_dzielnica: {jasny: "#4E5A5E", ciemny: "#A9B2B6", uzycie: "nazwy dzielnic wielkimi literami, z odstępem liter"}
     obwodka: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: obwódka napisów}
     sciezka: {jasny: "#004E5E", ciemny: "#6A818A", uzycie: ścieżka dostosowana}
     tusz: {jasny: "#181C1D", ciemny: "#D5DADC", uzycie: "kontur znaków wejść i barier, znak „Niedostępne”, ikony pochylni i planu"}
@@ -491,6 +496,7 @@ mapa:
     - {kolor: napis_pwr, tlo: obwodka, rodzaj: tekst, gdzie: "symbol budynku, nazwy na planie"}
     - {kolor: napis_ulica, tlo: obwodka, rodzaj: tekst, gdzie: "nazwy ulic, numery sal"}
     - {kolor: napis_woda, tlo: obwodka, rodzaj: tekst, gdzie: nazwa rzeki}
+    - {kolor: napis_dzielnica, tlo: obwodka, rodzaj: tekst, gdzie: nazwy dzielnic}
     - {kolor: pwr_kontur, tlo: lad, rodzaj: komponent, gdzie: kontur budynku PWr na podkładzie}
     - {kolor: pwr_kontur, tlo: pwr, rodzaj: komponent, gdzie: kontur budynku szczegółowego do wypełnienia}
     - {kolor: pwr_kontur, tlo: pwr_podstawowy, rodzaj: komponent, gdzie: kontur budynku podstawowego do wypełnienia}

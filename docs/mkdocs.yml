@@ -117,6 +117,7 @@ nav:
           - ADR-0011 Modularny monolit: architektura/decyzje/0011-modularny-monolit.md
           - ADR-0012 Import planów pięter: architektura/decyzje/0012-import-planow-pieter.md
           - ADR-0013 Logi aplikacji i serwera: architektura/decyzje/0013-logi-aplikacji-i-serwera.md
+          - ADR-0014 Podkład mapy wektorowy: architektura/decyzje/0014-podklad-wektorowy.md
   - Raporty:
       - Tydzień 2: raporty/tydzien-2.md
       - Sprint 1: raporty/sprint-1.md
