@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map.style
 import android.graphics.Bitmap
 import io.github.dostepnykampus.feature.map.campus.BUILDING_DETAILED
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
+import io.github.dostepnykampus.feature.map.campus.LABEL_SEPARATOR
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.featureCollection
 import io.github.dostepnykampus.feature.map.campus.outlineOf
@@ -27,6 +28,26 @@ private val NO_FEATURES = expression("!", JsonPrimitive(true))
 
 /** Stan obiektu konturu budynku w źródle [BUILDINGS_SOURCE]: kontur przygaszony obok zaznaczonego budynku. */
 internal const val DIMMED_STATE = "przygaszony"
+
+/** Stan obiektu konturu budynku w źródle [BUILDINGS_SOURCE]: budynek pod widocznym planem piętra. */
+internal const val UNDER_PLAN_STATE = "pod planem"
+
+/** Warstwa grubszego obrysu `pwr_wybrany` po ścianie piętra wybranego budynku z widocznym planem. */
+internal const val SELECTED_PLAN_LAYER = "zaznaczenie_plan"
+
+/**
+ * Krycie tła i konturu budynku ze stanu obiektu: budynek ze stanem [UNDER_PLAN_STATE] jest niewidoczny, bo jego
+ * miejsce zajmuje plan piętra. Wyrażenie jest stałe, jak barwa z [tone].
+ *
+ * Wymagania: US16.1
+ */
+internal fun opacityUnderPlan(): JsonElement =
+    expression(
+        "case",
+        expression("boolean", expression("feature-state", JsonPrimitive(UNDER_PLAN_STATE)), JsonPrimitive(false)),
+        JsonPrimitive(0.0),
+        JsonPrimitive(1.0),
+    )
 
 /**
  * Barwa konturów ze stanu obiektu: [dimmed] dla konturów ze stanem [DIMMED_STATE], [own] dla pozostałych. Wyrażenie
@@ -61,11 +82,26 @@ internal fun selectedLayer(filter: JsonElement, colors: MapStyleColors): JsonObj
         filter = filter,
     )
 
+/** Warstwa [SELECTED_PLAN_LAYER] z filtrem [filter] z [SelectionLook.selectedPlanFilter]. Wymagania: US1.1, US16.1 */
+internal fun selectedPlanLayer(filter: JsonElement, colors: MapStyleColors): JsonObject =
+    lineLayer(
+        id = SELECTED_PLAN_LAYER,
+        source = PLAN_SOURCE,
+        color = colors.selectedOutline,
+        width = SELECTED_WIDTH,
+        filter = filter,
+    )
+
 /**
  * Pola stylu, które zależą od zaznaczenia budynku, wejścia i bariery; reszta stylu od nich nie zależy.
  *
- * @property dimmed stan [DIMMED_STATE] konturów źródła [BUILDINGS_SOURCE] po numerze konturu
- * @property selectedFilter filtr warstwy [SELECTED_LAYER]
+ * @property dimmed stan [DIMMED_STATE] konturów źródła [BUILDINGS_SOURCE] po numerze konturu: wszystkie poza
+ *   zaznaczonym budynkiem bez wejścia i budynkiem z widocznym planem, gdy któryś z nich jest
+ * @property underPlan stan [UNDER_PLAN_STATE] konturów po numerze konturu: tylko budynek z widocznym planem
+ * @property selectedFilter filtr warstwy [SELECTED_LAYER]; nie przepuszcza budynku z widocznym planem
+ * @property selectedPlanFilter filtr warstwy [SELECTED_PLAN_LAYER]: ściana piętra, gdy zaznaczony budynek ma
+ *   widoczny plan
+ * @property labelsFilter filtr warstwy [LABELS_LAYER]: bez symbolu budynku z widocznym planem
  * @property entrancesFilter filtr warstwy [ENTRANCES_LAYER]
  * @property entrancesMinZoom najmniejsze powiększenie, przy którym rysuje się warstwa [ENTRANCES_LAYER]
  * @property chosenBarrierFilter filtr warstwy [CHOSEN_BARRIER_LAYER]
@@ -75,7 +111,10 @@ internal fun selectedLayer(filter: JsonElement, colors: MapStyleColors): JsonObj
  */
 internal data class SelectionLook(
     val dimmed: List<Boolean>,
+    val underPlan: List<Boolean>,
     val selectedFilter: JsonElement,
+    val selectedPlanFilter: JsonElement,
+    val labelsFilter: JsonElement,
     val entrancesFilter: JsonElement,
     val entrancesMinZoom: Double,
     val chosenBarrierFilter: JsonElement,
@@ -85,21 +124,26 @@ internal data class SelectionLook(
 )
 
 /**
- * Pola stylu dla zaznaczenia [selection] na mapie z danymi [data]. Kontur budynku
- * [MapSelection.building] ma obrys, a przy zaznaczonym budynku bez wejścia pozostałe budynki są przygaszone
- * i znaki wejść ma tylko on, przy każdym powiększeniu. Bez zaznaczenia filtry obrysu i bariery niczego nie
- * przepuszczają, filtr wejść przepuszcza wszystkie od powiększenia 17, a źródło wejścia jest puste. Plan
- * [MapSelection.plan] pokazuje wybrane piętro i bariery tego piętra; dane planu idą osobno przez [showPlanData].
- * Bariery widać według [barriersByZoom], a bariery zaznaczonego budynku przy każdym powiększeniu.
+ * Pola stylu dla zaznaczenia [selection] na mapie z danymi [data]. Budynek [MapSelection.building] ma obrys,
+ * a bez wejścia jako jedyny znaki wejść przy każdym powiększeniu; bez zaznaczenia znaki są od powiększenia 17. Plan
+ * [MapSelection.plan] pokazuje wybrane piętro i bariery tego piętra zamiast budynku z OpenStreetMap; dane planu
+ * idą osobno przez [showPlanData]. Przygaszenie i obrysy opisuje [SelectionLook]. Bariery widać według
+ * [barriersByZoom], a bariery zaznaczonego budynku przy każdym powiększeniu.
  *
- * Wymagania: US1.1, US1.4, US2.8, US2.1, NFR-15, US1.3
+ * Wymagania: US1.1, US1.4, US2.8, US2.1, NFR-15, US1.3, US16.1
  */
 internal fun selectionLook(data: CampusMapData, selection: MapSelection): SelectionLook {
     val chosen = data.outlineOf(selection.building)
     val alone = chosen.takeIf { selection.entrance == null }
+    val planned = selection.plan?.let { data.outlineOf(it.building) }
+    val kept = listOfNotNull(alone, planned)
     return SelectionLook(
-        dimmed = data.outlines.map { alone != null && it != alone },
-        selectedFilter = chosen?.let(::ofBuildings) ?: NO_FEATURES,
+        dimmed = data.outlines.map { kept.isNotEmpty() && it !in kept },
+        underPlan = data.outlines.map { it == planned },
+        selectedFilter = chosen?.takeIf { it != planned }?.let(::ofBuildings) ?: NO_FEATURES,
+        selectedPlanFilter =
+            if (chosen != null && chosen == planned) planOutlineFilter(selection.plan?.floor) else NO_FEATURES,
+        labelsFilter = planned?.let(::withoutLabel) ?: ALL_FEATURES,
         entrancesFilter = alone?.let(::ofBuildings) ?: ALL_FEATURES,
         entrancesMinZoom = if (alone == null) MARKS_MIN_ZOOM else ANY_ZOOM,
         chosenBarrierFilter = selection.barrier?.let(::ofBarrier) ?: NO_FEATURES,
@@ -144,7 +188,12 @@ internal fun MapStyleTarget.showSelection(look: SelectionLook, images: Map<Strin
     look.dimmed.forEachIndexed { outline, isDimmed ->
         state(source = BUILDINGS_SOURCE, feature = outline, key = DIMMED_STATE, value = isDimmed)
     }
+    look.underPlan.forEachIndexed { outline, isUnder ->
+        state(source = BUILDINGS_SOURCE, feature = outline, key = UNDER_PLAN_STATE, value = isUnder)
+    }
     filter(layer = SELECTED_LAYER, filter = look.selectedFilter)
+    filter(layer = SELECTED_PLAN_LAYER, filter = look.selectedPlanFilter)
+    filter(layer = LABELS_LAYER, filter = look.labelsFilter)
     filter(layer = ENTRANCES_LAYER, filter = look.entrancesFilter)
     minZoom(layer = ENTRANCES_LAYER, zoom = look.entrancesMinZoom)
     filter(layer = CHOSEN_BARRIER_LAYER, filter = look.chosenBarrierFilter)
@@ -175,6 +224,11 @@ internal fun MapStyleTarget.showBasemap(basemap: Basemap?) {
  */
 internal fun ofBuildings(symbols: List<String>): JsonElement =
     expression("case", anyOf(symbols), JsonPrimitive(true), JsonPrimitive(false))
+
+private fun withoutLabel(symbols: List<String>): JsonElement =
+    expression("!=", property(LABEL), JsonPrimitive(symbols.joinToString(separator = LABEL_SEPARATOR)))
+
+private fun planOutlineFilter(floor: String?): JsonElement = planFilter(floor = floor, kind = "outline")
 
 private fun anyOf(symbols: List<String>): JsonElement =
     JsonArray(listOf(JsonPrimitive("any")) + symbols.map { expression("in", JsonPrimitive(it), property(SYMBOLS)) })
