@@ -241,6 +241,7 @@ paths:
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
         '409': {$ref: '#/components/responses/VersionConflict'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
   /submissions/{submissionId}:
     parameters:
       - $ref: '#/components/parameters/SubmissionId'
@@ -281,6 +282,7 @@ paths:
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
         '409': {$ref: '#/components/responses/VersionConflict'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
   /submissions/{submissionId}/photos/{photoId}:
     parameters:
       - $ref: '#/components/parameters/SubmissionId'
@@ -335,6 +337,7 @@ paths:
         '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
   /review/queue:
     get:
       operationId: listReviewQueue
@@ -370,6 +373,7 @@ paths:
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
         '409': {$ref: '#/components/responses/Conflict'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
   /submissions/{submissionId}/review:
     post:
       operationId: reviewSubmission
@@ -397,6 +401,7 @@ paths:
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
         '409': {$ref: '#/components/responses/VersionConflict'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
   /submissions/{submissionId}/similar:
     get:
       operationId: listSimilarSubmissions
@@ -458,6 +463,7 @@ paths:
                   results: {type: array, description: "Wyniki operacji.", items: {$ref: '#/components/schemas/SyncOperationResult'}}
         '400': {$ref: '#/components/responses/BadRequest'}
         '401': {$ref: '#/components/responses/Unauthorized'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
   /sync/pull:
     get:
       operationId: pullChanges
@@ -496,6 +502,7 @@ paths:
         '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
   /progress:
     get:
       operationId: getInventoryProgress
@@ -590,6 +597,7 @@ paths:
         '400': {$ref: '#/components/responses/BadRequest'}
         '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
 
 components:
   securitySchemes:
@@ -627,8 +635,8 @@ components:
           schema: {$ref: '#/components/schemas/Problem'}
     TooManyRequests:
       description: >-
-        Limit żądań bez logowania z jednego adresu wyczerpany (60 na minutę, NFR-34); nagłówek `Retry-After` podaje
-        liczbę sekund do ponowienia.
+        Limit żądań wyczerpany (NFR-34): bez logowania 60 na minutę z jednego adresu, zapisy zalogowanego konta
+        120 na minutę; nagłówek `Retry-After` podaje liczbę sekund do ponowienia.
       headers:
         Retry-After:
           description: Liczba sekund do ponowienia.

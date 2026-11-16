@@ -30,6 +30,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.session.DisableEncodeUrlFilter;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -60,7 +61,7 @@ public final class ApiSecurity {
      *
      * @param http Budowa zabezpieczeń żądań
      * @param mapper Zapis odpowiedzi odmowy
-     * @param limit Limit żądań bez logowania
+     * @param limit Limity żądań bez logowania i zapisów konta
      * @return Zbudowany łańcuch dla wszystkich żądań
      * @throws Exception Gdy konfiguracji nie da się zbudować
      */
@@ -77,6 +78,9 @@ public final class ApiSecurity {
         http.addFilterBefore(new RequestLog(), DisableEncodeUrlFilter.class);
         http.addFilterBefore(
             new PublicRateLimit(limit, mapper), BearerTokenAuthenticationFilter.class
+        );
+        http.addFilterAfter(
+            new AccountRateLimit(limit.writesPerMinute(), mapper), AuthorizationFilter.class
         );
         http.authorizeHttpRequests(ApiSecurity::rules);
         http.oauth2ResourceServer(
