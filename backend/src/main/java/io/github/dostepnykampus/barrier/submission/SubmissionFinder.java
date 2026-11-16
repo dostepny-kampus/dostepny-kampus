@@ -8,6 +8,7 @@ package io.github.dostepnykampus.barrier.submission;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Port odczytu zgłoszeń; z niego korzystają kontrolery.
@@ -17,6 +18,23 @@ import java.util.UUID;
  * @since 0.1.0
  */
 public interface SubmissionFinder {
+
+    /**
+     * Strona listy zgłoszeń. Nieczytelne zgłoszenie nie trafia na stronę, ale przesuwa kursor.
+     *
+     * @param items Czytelne zgłoszenia strony
+     * @param next Kursor następnej strony; brak na ostatniej
+     * @since 0.1.0
+     */
+    record Page(List<Submission> items, @Nullable UUID next) {
+
+        /**
+         * Strona z niemodyfikowalną kopią zgłoszeń.
+         */
+        public Page {
+            items = List.copyOf(items);
+        }
+    }
 
     /**
      * Szuka zgłoszenia o danym identyfikatorze, w dowolnym statusie.
@@ -84,15 +102,17 @@ public interface SubmissionFinder {
     List<Submission> list(SubmissionQuery query);
 
     /**
-     * Wyszukuje zgłoszenia jednego autora według zapytania.
+     * Wyszukuje stronę zgłoszeń według zapytania, w kolejności identyfikatorów.
      *
-     * <p>Wymagania: US8.1</p>
+     * <p>Wymagania: NFR-34, US1.3, US8.1</p>
      *
-     * @param author Identyfikator konta autora
      * @param query Statusy oraz opcjonalny budynek i piętro
-     * @return Zgłoszenia autora posortowane po chwili utworzenia, potem po identyfikatorze
+     * @param author Identyfikator konta autora; brak dla wszystkich autorów
+     * @param after Identyfikator, po którym zaczyna się strona; brak dla pierwszej
+     * @param limit Najwięcej zgłoszeń na stronie
+     * @return Czytelne zgłoszenia strony i kursor następnej
      */
-    List<Submission> own(String author, SubmissionQuery query);
+    Page page(SubmissionQuery query, @Nullable String author, @Nullable UUID after, int limit);
 
     /**
      * Wyszukuje zgłoszenia podobne do danego, bez niego samego.

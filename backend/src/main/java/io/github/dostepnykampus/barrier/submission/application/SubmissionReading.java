@@ -144,16 +144,21 @@ public final class SubmissionReading {
     }
 
     /**
-     * Wyszukuje zgłoszenia jednego autora.
+     * Wyszukuje stronę zgłoszeń, a z autorem tylko jego zgłoszenia.
      *
-     * <p>Wymagania: US8.1</p>
+     * <p>Wymagania: NFR-34, US1.3, US8.1</p>
      *
-     * @param author Identyfikator konta autora
      * @param query Statusy oraz opcjonalny budynek i piętro
-     * @return Zgłoszenia autora
+     * @param author Identyfikator konta autora; brak dla wszystkich autorów
+     * @param after Identyfikator, po którym zaczyna się strona; brak dla pierwszej
+     * @param limit Najwięcej zgłoszeń na stronie
+     * @return Czytelne zgłoszenia strony i kursor następnej
      */
-    public List<Submission> own(final String author, final SubmissionQuery query) {
-        return this.finder.own(author, query);
+    public SubmissionFinder.Page page(
+        final SubmissionQuery query, final @Nullable String author, final @Nullable UUID after,
+        final int limit
+    ) {
+        return this.finder.page(query, author, after, limit);
     }
 
     /**
