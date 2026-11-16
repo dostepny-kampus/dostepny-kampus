@@ -54,21 +54,21 @@ check() {
 }
 
 new_repo
-change src/a.txt 300
+change src/a.txt 400
 commit_all
-check "300 linii przy domyślnym limicie 300 przechodzi" 0 "Rozmiar PR: 300 zmienionych linii, limit 300."
+check "400 linii przy domyślnym limicie 400 przechodzi" 0 "Rozmiar PR: 400 dodanych linii, limit 400."
 
 new_repo
-change src/a.txt 301
+change src/a.txt 401
 commit_all
-check "301 linii przy domyślnym limicie 300 nie przechodzi" 1 "301 zmienionych linii, limit 300"
+check "401 linii przy domyślnym limicie 400 nie przechodzi" 1 "401 dodanych linii, limit 400"
 check "komunikat wskazuje największy plik" 1 "src/a.txt"
 
 new_repo
 change src/a.txt 50
 commit_all
 check "limit z trzeciego argumentu: równy wynikowi przechodzi" 0 "limit 50" 50
-check "limit z trzeciego argumentu: o jeden mniejszy nie przechodzi" 1 "50 zmienionych linii, limit 49" 49
+check "limit z trzeciego argumentu: o jeden mniejszy nie przechodzi" 1 "50 dodanych linii, limit 49" 49
 
 new_repo
 change src/a.txt 200
@@ -77,7 +77,16 @@ git commit --quiet -m dodanie
 base="$(git rev-parse HEAD)"
 seq 201 400 >src/a.txt
 commit_all
-check "liczą się linie dodane i usunięte razem" 1 "400 zmienionych linii"
+check "liczą się tylko linie dodane, usunięte nie" 0 "Rozmiar PR: 200 dodanych linii"
+
+new_repo
+change src/a.txt 1000
+git add -A
+git commit --quiet -m dodanie
+base="$(git rev-parse HEAD)"
+git rm --quiet src/a.txt
+commit_all
+check "PR usuwający więcej linii niż limit przechodzi" 0 "Rozmiar PR: 0 dodanych linii"
 
 new_repo
 change src/a.txt 10
@@ -91,16 +100,16 @@ change backend/deps.lock 1000
 change android/gradlew 1000
 change android/gradle/wrapper/gradle-wrapper.properties 1000
 commit_all
-check "dane, pliki lock i kod generowany nie liczą się do limitu" 0 "Rozmiar PR: 10 zmienionych linii"
+check "dane, pliki lock i kod generowany nie liczą się do limitu" 0 "Rozmiar PR: 10 dodanych linii"
 
 new_repo
 change src/a.txt 5
 printf '\0\0\0\0' >src/obraz.bin
 commit_all
-check "plik binarny liczy się jako zero linii" 0 "Rozmiar PR: 5 zmienionych linii"
+check "plik binarny liczy się jako zero linii" 0 "Rozmiar PR: 5 dodanych linii"
 
 new_repo
 commit_all
-check "zmiana bez żadnych linii daje zero" 0 "Rozmiar PR: 0 zmienionych linii"
+check "zmiana bez żadnych linii daje zero" 0 "Rozmiar PR: 0 dodanych linii"
 
 exit "$((failures > 0 ? 1 : 0))"
