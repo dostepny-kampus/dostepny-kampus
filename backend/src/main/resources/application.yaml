@@ -27,9 +27,12 @@ spring:
   config:
     import: classpath:pwr-plans.yaml
   datasource:
-    password: ${DK_DB_PASSWORD:}
+    password: ${DK_DB_APP_PASSWORD:}
     url: jdbc:postgresql://${DK_DB_HOST:127.0.0.1}:${DK_DB_PORT:5432}/${DK_DB_NAME:dostepny_kampus}
-    username: ${DK_DB_USER:dostepny_kampus}
+    username: ${DK_DB_APP_USER:dostepny_kampus_serwer}
+  flyway:
+    password: ${DK_DB_PASSWORD:}
+    user: ${DK_DB_USER:dostepny_kampus}
   modulith:
     runtime:
       flyway-enabled: true

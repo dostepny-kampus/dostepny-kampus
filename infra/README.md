@@ -20,8 +20,10 @@ Compose czyta zmienne z `infra/.env`, którego nie ma w repozytorium. Serwer czy
 | Zmienna | Znaczenie | Domyślnie w serwerze |
 | --- | --- | --- |
 | `DK_DB_NAME` | nazwa bazy | `dostepny_kampus` |
-| `DK_DB_USER` | użytkownik bazy | `dostepny_kampus` |
-| `DK_DB_PASSWORD` | hasło użytkownika bazy | brak |
+| `DK_DB_USER` | właściciel bazy; na nim idą migracje | `dostepny_kampus` |
+| `DK_DB_PASSWORD` | hasło właściciela bazy | brak |
+| `DK_DB_APP_USER` | konto serwera: tylko odczyt i zapis wierszy | `dostepny_kampus_serwer` |
+| `DK_DB_APP_PASSWORD` | hasło konta serwera | brak |
 | `DK_DB_PORT` | port bazy na `127.0.0.1` | `5432` |
 | `DK_DB_HOST` | host bazy, tylko serwer | `127.0.0.1` |
 | `DK_PHOTOS_ACCESS_KEY` | klucz dostępu do magazynu zdjęć | brak |
@@ -36,6 +38,17 @@ Compose czyta zmienne z `infra/.env`, którego nie ma w repozytorium. Serwer czy
 | `DK_PUBLIC_RATE_LIMIT` | żądania bez logowania z jednego adresu na minutę (NFR-34) | `60` |
 | `DK_RATE_LIMIT_UNLIMITED` | adresy bez limitu, po przecinku | puste |
 | `DK_AUTH_AUDIENCE` | odbiorca w `aud`, bez którego serwer odrzuca token | `dostepny-kampus-api` |
+
+## Konta bazy
+
+Migracje Flyway zakładają tabele na koncie właściciela `DK_DB_USER`. Żądania serwer obsługuje na koncie `DK_DB_APP_USER`, które nie jest superużytkownikiem i nie tworzy tabel; ma tylko odczyt i zapis wierszy, także w tabelach z późniejszych migracji. Konto zakłada skrypt `postgis/konto-serwera.sh` przy pierwszym starcie pustej bazy.
+
+Baza założona przed tą zmianą nie ma konta serwera. Po dopisaniu zmiennych do `infra/.env` zakłada się je jednym poleceniem:
+
+```sh
+docker compose -f infra/docker-compose.yml up -d
+docker compose -f infra/docker-compose.yml exec postgis bash /docker-entrypoint-initdb.d/konto-serwera.sh
+```
 
 ## Import planów pięter PWr
 
