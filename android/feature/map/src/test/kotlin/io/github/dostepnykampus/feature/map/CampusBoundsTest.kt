@@ -144,7 +144,8 @@ class CampusBoundsTest {
      * bardziej oddalić mapy się nie da. Na równiku pas 360/2^14 stopnia ma przy powiększeniu 14 dokładnie 512 dp:
      * pas 512 × 128 dp wypełnia 1024 dp wysokości przy powiększeniu 17, a pas 64 × 512 dp — 1024 dp szerokości
      * przy 18.
-     * Scenariusz (częściowo): przegladanie-mapy.feature: Przy najmniejszym powiększeniu teren wypełnia mapę w krótszym wymiarze
+     * Scenariusz (częściowo): przegladanie-mapy.feature:
+     *   Przy najmniejszym powiększeniu teren wypełnia mapę w krótszym wymiarze
      *
      * Wymagania: NFR-39
      */

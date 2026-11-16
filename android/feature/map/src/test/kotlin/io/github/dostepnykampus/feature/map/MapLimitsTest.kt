@@ -57,7 +57,8 @@ class MapLimitsTest {
      * Wiersz: V1, prostokąt widoku to sam prostokąt terenu, bez rozszerzania do proporcji mapy; podkład jest tylko
      * w nim. Przy najmniejszym powiększeniu pas szeroki na `span` i wysoki na `span / 4` wypełnia mapę 400 × 800 dp
      * w pionie, więc w pionie mapa stoi, a w poziomie da się ją przesuwać.
-     * Scenariusz (częściowo): przegladanie-mapy.feature: Przy najmniejszym powiększeniu teren wypełnia mapę w krótszym wymiarze
+     * Scenariusz (częściowo): przegladanie-mapy.feature:
+     *   Przy najmniejszym powiększeniu teren wypełnia mapę w krótszym wymiarze
      *
      * Wymagania: US1.7, NFR-39
      */

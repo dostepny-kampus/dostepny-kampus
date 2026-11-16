@@ -17,6 +17,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 
 private const val EDGE_TOLERANCE_DEGREES = 1e-6
@@ -45,19 +46,14 @@ internal fun areaEdgeName(area: String?, atEdge: Boolean): String? = area.takeIf
 
 /**
  * Niewidoczne ogłoszenie dla TalkBack: „Tu kończy się teren Kampus główny. Inny teren wybierzesz przyciskiem
- * «Zmień teren» u góry mapy.” Nic nie rysuje; ogłasza przy dojściu widoku [camera] do brzegu [bounds] terenu
- * [area], zob. [areaEdgeName].
+ * «Zmień teren» u góry mapy.” Nic nie rysuje; ogłasza, gdy brzeg widoku [camera] dochodzi do brzegu terenu [area]
+ * w granicach [limits], zob. [areaEdgeName].
  *
  * Wymagania: US1.7, NFR-19
  */
 @Composable
-internal fun AreaEdgeAnnouncement(
-    camera: MapCamera,
-    bounds: CampusBounds,
-    area: String?,
-    modifier: Modifier = Modifier,
-) {
-    val name = areaEdgeName(area, atEdge = camera.isAtEdgeOf(bounds))
+internal fun AreaEdgeAnnouncement(camera: MapCamera, limits: MapLimits, area: String?, modifier: Modifier = Modifier) {
+    val name = areaEdgeName(area, atEdge = camera.isAtEdgeOf(limits.centerBounds(zoom = camera.zoom)))
     val text = name?.let { stringResource(R.string.mapa_teren_granica, it) }.orEmpty()
     Box(
         modifier.size(1.dp).semantics {
