@@ -217,7 +217,7 @@ private fun ViewButton(isList: Boolean, hasIcon: Boolean, onListChange: (Boolean
             Spacer(Modifier.width(Odstepy.s))
         }
         Text(
-            text = stringResource(if (isList) R.string.mapa_pokaz_mape else R.string.mapa_pokaz_liste),
+            text = stringResource(if (isList) R.string.mapa_pokaz_widok_mapy else R.string.mapa_pokaz_liste),
             style = MaterialTheme.typography.labelLarge,
             fontWeight = Typografia.wyroznienieWaga,
         )
