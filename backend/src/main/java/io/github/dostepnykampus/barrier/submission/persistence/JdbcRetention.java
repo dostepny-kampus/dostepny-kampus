@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 /**
  * Usuwanie zgłoszeń odrzuconych w PostgreSQL według kolumny rejected_at.
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
  *
  * @since 0.1.0
  */
-@Repository
+@Component
 public final class JdbcRetention implements SubmissionRetention {
 
     /**
