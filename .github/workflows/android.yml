@@ -94,11 +94,12 @@ jobs:
       fail-fast: false
       matrix:
         # Testy aplikacji na wersji minimalnej i docelowej z NFR-41 oraz pełny test systemowy (moduł `systemtest`)
-        # z serwerem i bazą uruchomionymi na runnerze; porażka każdego wariantu czerwieni `budowanie`.
+        # z serwerem i bazą uruchomionymi na runnerze, na API równym `targetSdk`; porażka każdego wariantu czerwieni
+        # `budowanie`.
         include:
           - { api: 26, zestaw: aplikacja }
           - { api: 36, zestaw: aplikacja }
-          - { api: 36, zestaw: system }
+          - { api: '37.0', zestaw: system }
     env:
       IMAGE: system-images;android-${{ matrix.api }};default;x86_64
     steps:
@@ -223,6 +224,10 @@ jobs:
           while read -r test; do
             czekaj_na_emulator "$test" < /dev/null
             adb shell pm clear io.github.dostepnykampus < /dev/null
+            # Od API 37 serwer na runnerze (10.0.2.2) to sieć lokalna: bez uprawnienia każde żądanie kończy się błędem.
+            if [[ $ZESTAW == system ]]; then
+              adb shell pm grant io.github.dostepnykampus android.permission.ACCESS_LOCAL_NETWORK < /dev/null
+            fi
             adb shell am instrument -w -e class "$test" "$uruchamiacz" < /dev/null | tr -d '\r' | tee -a "$RUNNER_TEMP/instrumentacja.txt" > "$RUNNER_TEMP/wynik.txt"
             cat "$RUNNER_TEMP/wynik.txt"
             # `am instrument` kończy się kodem 0 także przy porażce testu, więc wynik czytamy z wyjścia.
