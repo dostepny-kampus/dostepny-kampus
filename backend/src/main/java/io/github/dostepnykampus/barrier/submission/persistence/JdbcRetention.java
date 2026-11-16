@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.submission.persistence;
 
-import io.github.dostepnykampus.barrier.submission.SubmissionRetention;
+import io.github.dostepnykampus.barrier.submission.retention.SubmissionRetention;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;

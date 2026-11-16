@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.barrier.submission.application;
 
-import io.github.dostepnykampus.barrier.submission.SubmissionRetention;
-import io.github.dostepnykampus.barrier.submission.SubmissionsPurged;
+import io.github.dostepnykampus.barrier.submission.retention.SubmissionRetention;
+import io.github.dostepnykampus.barrier.submission.retention.SubmissionsPurged;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.context.ApplicationEventPublisher;

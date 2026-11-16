@@ -7,7 +7,7 @@ package io.github.dostepnykampus.barrier.photo.application;
 
 import io.github.dostepnykampus.barrier.photo.PhotoStorageException;
 import io.github.dostepnykampus.barrier.photo.PhotoStore;
-import io.github.dostepnykampus.barrier.submission.SubmissionsPurged;
+import io.github.dostepnykampus.barrier.submission.retention.SubmissionsPurged;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
