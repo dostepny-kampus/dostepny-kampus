@@ -147,11 +147,11 @@ class CampusMapSelectionStyleTest {
         val areas =
             listOf(
                 MapSelection() to null,
-                MapSelection(bounds = main) to Basemap(bounds = main),
+                MapSelection(bounds = main) to Basemap(),
                 MapSelection(bounds = other, boundary = building("A-1", name = "").outline) to
-                    Basemap(bounds = other, minZoom = 12.0),
+                    Basemap(minZoom = 12.0),
             )
-        val ready = JsonStyle(styleOf(area = MapSelection(bounds = main), basemap = Basemap(bounds = main)))
+        val ready = JsonStyle(styleOf(area = MapSelection(bounds = main), basemap = Basemap()))
         areas.forEach { (area, basemap) ->
             ready.showBasemap(basemap = basemap)
             assertEquals(Json.parseToJsonElement(styleOf(area = area, basemap = basemap)), ready.json, "$area")
@@ -223,11 +223,6 @@ private class JsonStyle(style: String) : MapStyleTarget {
     }
 
     override fun image(name: String, image: Bitmap) = Unit
-
-    override fun basemapBounds(bounds: CampusBounds?) {
-        val sources = json.getValue("sources").jsonObject + (BASEMAP to basemapSource(bounds))
-        json = JsonObject(json + ("sources" to JsonObject(sources)))
-    }
 
     private fun edit(layer: String, change: (JsonObject) -> Map<String, JsonElement>) {
         val layers =

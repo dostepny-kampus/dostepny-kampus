@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
@@ -18,6 +17,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
+import io.github.dostepnykampus.feature.map.style.BasemapColors
 import io.github.dostepnykampus.feature.map.style.MapStyleColors
 import io.github.dostepnykampus.feature.map.style.PlanColors
 import org.maplibre.android.camera.CameraPosition
@@ -25,7 +25,6 @@ import org.maplibre.android.geometry.LatLng
 import java.util.Locale
 
 private const val RGB_MASK = 0xFFFFFF
-private const val NIGHT_LAND_LUMINANCE = 0.5f
 
 /** Widok mapy za interfejsem: ekran i jego testy nie zależą od natywnej biblioteki mapy. */
 fun interface CampusMapView {
@@ -73,7 +72,6 @@ internal fun MapColors.styleColors(): MapStyleColors =
         building = pwr.hex(),
         buildingOutline = pwrKontur.hex(),
         selectedOutline = pwrWybrany.hex(),
-        isNight = lad.luminance() < NIGHT_LAND_LUMINANCE,
         dimmed = budynek.hex(),
         dimmedOutline = budynekKontur.hex(),
         plan =
@@ -84,6 +82,17 @@ internal fun MapColors.styleColors(): MapStyleColors =
                 elevator = pWinda.hex(),
                 toilet = pWc.hex(),
                 wall = pKontur.hex(),
+            ),
+        basemap =
+            BasemapColors(
+                green = zielen.hex(),
+                water = woda.hex(),
+                road = droga.hex(),
+                roadCasing = drogaKontur.hex(),
+                rail = tory.hex(),
+                path = chodnik.hex(),
+                building = budynek.hex(),
+                buildingOutline = budynekKontur.hex(),
             ),
     )
 

@@ -56,7 +56,6 @@ import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.campus.symbolsAt
 import io.github.dostepnykampus.feature.map.plan.planSignImages
 import io.github.dostepnykampus.feature.map.style.BARRIERS_LAYER
-import io.github.dostepnykampus.feature.map.style.BASEMAP
 import io.github.dostepnykampus.feature.map.style.BUILDINGS_LAYER
 import io.github.dostepnykampus.feature.map.style.Basemap
 import io.github.dostepnykampus.feature.map.style.MapImages
@@ -65,7 +64,6 @@ import io.github.dostepnykampus.feature.map.style.MapStyleTarget
 import io.github.dostepnykampus.feature.map.style.MapTileHttpEntryPoint
 import io.github.dostepnykampus.feature.map.style.SelectionLook
 import io.github.dostepnykampus.feature.map.style.asStyleText
-import io.github.dostepnykampus.feature.map.style.basemapTiles
 import io.github.dostepnykampus.feature.map.style.campusMapStyle
 import io.github.dostepnykampus.feature.map.style.labelImage
 import io.github.dostepnykampus.feature.map.style.numbers
@@ -444,14 +442,6 @@ object MapLibreMapView : CampusMapView {
         }
 
         override fun image(name: String, image: Bitmap) = style.addImage(name, image)
-
-        override fun basemapBounds(bounds: CampusBounds?) {
-            val layer = style.getLayer(BASEMAP) ?: return
-            style.removeLayer(layer)
-            style.removeSource(BASEMAP)
-            style.addSource(basemapTiles(bounds))
-            style.addLayerBelow(layer, BUILDINGS_LAYER)
-        }
 
         private fun expressionOf(value: JsonElement): Expression = Expression.Converter.convert(value.asStyleText())
     }

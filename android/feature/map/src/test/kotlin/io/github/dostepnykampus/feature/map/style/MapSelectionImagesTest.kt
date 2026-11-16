@@ -18,7 +18,6 @@ import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.room.Room
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.room.RoomList
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
@@ -127,8 +126,6 @@ class MapSelectionImagesTest {
         override fun image(name: String, image: Bitmap) {
             images += name
         }
-
-        override fun basemapBounds(bounds: CampusBounds?) = Unit
     }
 
     private companion object {

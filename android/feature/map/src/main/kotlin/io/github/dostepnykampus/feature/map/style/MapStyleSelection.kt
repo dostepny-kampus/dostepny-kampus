@@ -6,7 +6,6 @@
 package io.github.dostepnykampus.feature.map.style
 
 import android.graphics.Bitmap
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.featureCollection
@@ -113,9 +112,6 @@ internal interface MapStyleTarget {
 
     /** Dodaje albo zastępuje obraz [name]. */
     fun image(name: String, image: Bitmap)
-
-    /** Zastępuje źródło podkładu [BASEMAP] źródłem z kafelkami tylko w prostokącie [bounds]; `null`: cały świat. */
-    fun basemapBounds(bounds: CampusBounds?)
 }
 
 /**
@@ -143,8 +139,8 @@ internal fun MapStyleTarget.showSelection(look: SelectionLook, images: Map<Strin
  * Wymagania: US1.7, NFR-39
  */
 internal fun MapStyleTarget.showBasemap(basemap: Basemap?) {
-    basemapBounds(bounds = basemap?.bounds)
-    minZoom(layer = BASEMAP, zoom = basemap?.minZoom ?: 0.0)
+    val area = basemap?.minZoom ?: 0.0
+    BASEMAP_LAYERS.forEach { minZoom(layer = it, zoom = basemapMinZoom(layer = it, area = area)) }
 }
 
 /**
