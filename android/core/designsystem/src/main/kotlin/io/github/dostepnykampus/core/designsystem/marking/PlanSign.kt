@@ -21,12 +21,10 @@ import androidx.compose.ui.graphics.vector.PathParser
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.model.room.RoomCategory
 
-/** Kwadrat znaku planu na siatce znaku 24 × 24: początek, bok i promień rogu. */
 private const val SQUARE_START = 1f
 private const val SQUARE_SIDE = 22f
 private const val SQUARE_RADIUS = 5f
 
-/** Piktogramy leżą w kwadracie o boku [PICTOGRAM_SIDE] od punktu [PICTOGRAM_START] na własnej siatce. */
 private const val PICTOGRAM_START = 2f
 private const val PICTOGRAM_SIDE = 30f
 private const val LINE_STROKE = 2.4f

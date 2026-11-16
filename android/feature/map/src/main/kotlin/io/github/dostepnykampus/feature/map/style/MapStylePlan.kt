@@ -44,14 +44,12 @@ internal const val PLAN_SIGNS_LAYER = "plan_znaki"
 /** Bok obrazu znaku na planie w dp: największy rozmiar znaku, od powiększenia 19 (token `mapa.plan.znak_dp`). */
 internal const val PLAN_SIGN_DP = 28
 
-/** Rozmiar znaku planu w dp przy powiększeniu 17 i 18; od 19 [PLAN_SIGN_DP] (token `mapa.plan.znak_dp`). */
 private const val SIGN_DP_AT_17 = 16.0
 private const val SIGN_DP_AT_18 = 21.0
 private const val SIGN_ZOOM_17 = 17.0
 private const val SIGN_ZOOM_18 = 18.0
 private const val SIGN_ZOOM_19 = 19.0
 
-/** Rozmiar znaku planu w dp według powiększenia, liniowo między progami. */
 private val PLAN_SIGN_SIZES =
     listOf(SIGN_ZOOM_17 to SIGN_DP_AT_17, SIGN_ZOOM_18 to SIGN_DP_AT_18, SIGN_ZOOM_19 to PLAN_SIGN_DP.toDouble())
 
