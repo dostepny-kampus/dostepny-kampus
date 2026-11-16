@@ -404,12 +404,12 @@ object MapLibreMapView : CampusMapView {
 
         private fun start(): Run = Run().also { running = it }
 
-        private fun startMove(isFlight: Boolean) {
+        fun startMove(isFlight: Boolean) {
             limits.startMove()
             if (isFlight) areas.startFlight() else areas.endFlight()
         }
 
-        private fun endMove() {
+        fun endMove() {
             limits.endMove()
             areas.endFlight()
         }
