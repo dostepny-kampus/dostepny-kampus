@@ -7,7 +7,7 @@
 plugins {
     id("dostepnykampus.android.feature")
     id("dostepnykampus.android.hilt")
-    id("dostepnykampus.android.robolectric")
+    id("dostepnykampus.android.roborazzi")
 }
 
 dependencies {
@@ -38,6 +38,8 @@ dependencies {
     testImplementation(libs.androidx.compose.ui.test.junit4)
     testImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.robolectric.annotations)
+    testImplementation(libs.robolectric.shadows.framework)
+    testImplementation(libs.roborazzi.core)
     testRuntimeOnly(libs.androidx.compose.ui.test.manifest)
     constraints {
         /* Starsze espresso-core z zależności testów Compose nie działa z Robolectric na bieżącym SDK. */

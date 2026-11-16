@@ -26,6 +26,7 @@ tasks.withType<Test>().configureEach {
 }
 
 dependencies {
+    implementation(project(":feature:auth"))
     implementation(project(":feature:map"))
     implementation(project(":feature:capture"))
     implementation(project(":feature:help"))
