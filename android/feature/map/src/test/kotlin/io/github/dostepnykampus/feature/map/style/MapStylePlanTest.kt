@@ -69,6 +69,24 @@ class MapStylePlanTest {
         assertEquals(planFilter(floor = null, kind = "sign"), layer.getValue("filter"), "Znaki planu widać bez piętra")
     }
 
+    /** Znak planu rośnie z powiększeniem: 16 dp przy 17, 21 dp przy 18, 28 dp od 19, liniowo między progami. */
+    @Test
+    fun growsSignsWithZoom() {
+        val layout = layers().getValue(PLAN_SIGNS_LAYER).part("layout")
+        val size = """["interpolate",["linear"],["zoom"],17.0,${16.0 / 28},18.0,${21.0 / 28},19.0,1.0]"""
+        assertEquals(size, layout.getValue("icon-size").toString(), "Rozmiar znaku planu nie zależy od powiększenia")
+        assertEquals(28, PLAN_SIGN_DP, "Obraz znaku planu nie ma największego rozmiaru")
+    }
+
+    /** Winda i toaleta dostosowana mają pierwszeństwo przed schodami: niższy klucz kolejności. */
+    @Test
+    fun putsLiftAndToiletAboveStairs() {
+        val layout = layers().getValue(PLAN_SIGNS_LAYER).part("layout")
+        val stairs = planSignImage(RoomCategory.STAIRCASE)
+        val order = """["case",["==",["get","image"],"$stairs"],1,0]"""
+        assertEquals(order, layout.getValue("symbol-sort-key").toString(), "Schody nie ustępują windzie i toalecie")
+    }
+
     @Test
     fun colorsRoomsByCategory() {
         val layers = layers()
