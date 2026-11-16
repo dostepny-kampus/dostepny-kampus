@@ -10,10 +10,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Dane mapy liczone raz na proces dla tych samych budynków i wejść: nowy model widoku po „Wstecz” i ten sam katalog
- * z innego źródła dostają ostatni wynik od razu. Pamięta jeden, ostatni katalog.
+ * Dane mapy liczone raz na proces dla tych samych budynków, wejść i budynków z planem pięter: nowy model widoku
+ * po „Wstecz” i ten sam katalog z innego źródła dostają ostatni wynik od razu. Pamięta jeden, ostatni katalog.
  *
- * Wymagania: NFR-11, US1
+ * Wymagania: NFR-11, US1, US16.1
  *
  * @param compute liczenie danych mapy z katalogu; w aplikacji [campusMapData]
  */
@@ -25,9 +25,9 @@ class CampusMapDataCache internal constructor(private val compute: (BuildingCata
     @Inject
     constructor() : this(::campusMapData)
 
-    /** Dane mapy [catalog]: zapamiętane dla tych samych budynków i wejść, inaczej liczone od nowa. */
+    /** Dane mapy [catalog]: zapamiętane dla tych samych budynków, wejść i planów pięter, inaczej liczone od nowa. */
     fun dataFor(catalog: BuildingCatalog): CampusMapData {
-        val key = catalog.buildings to catalog.entrances
+        val key = Triple(catalog.buildings, catalog.entrances, catalog.detailed)
         return last?.takeIf { it.first == key }?.second ?: compute(catalog).also { last = key to it }
     }
 }

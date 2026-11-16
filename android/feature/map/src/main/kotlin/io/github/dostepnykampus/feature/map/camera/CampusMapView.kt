@@ -86,6 +86,7 @@ internal fun MapColors.styleColors(fontScale: Float = 1f): MapStyleColors =
                 toilet = pWc.hex(),
                 wall = pKontur.hex(),
             ),
+        basicBuilding = pwrPodstawowy.hex(),
         basemap =
             BasemapColors(
                 green = zielen.hex(),
