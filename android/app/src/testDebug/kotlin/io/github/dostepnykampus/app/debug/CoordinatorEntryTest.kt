@@ -3,8 +3,6 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app.debug
 
 import androidx.activity.ComponentActivity
@@ -16,9 +14,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.AppShell
+import io.github.dostepnykampus.app.TestRoles
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.AppScreen
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
@@ -76,7 +74,7 @@ class CoordinatorEntryTest {
     }
 
     private fun show(role: StaffRole) {
-        val roles = DebugRoles().apply { switchTo(Account.SignedIn(setOf(role))) }
+        val roles = TestRoles(Account.SignedIn(setOf(role)))
         compose.setContent {
             DostepnyKampusTheme {
                 AppShell(firstLaunch = false, roles = roles, onFirstHelpLeft = {}) { route -> Screen(route) }
