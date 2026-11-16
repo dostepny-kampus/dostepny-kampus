@@ -30,8 +30,8 @@ import org.springframework.transaction.event.TransactionalEventListener;
  * Zdjęcia zgłoszeń: zapis zdjęcia z listy photoIds i odczyt
  * zdjęcia zgłoszenia przyjętego.
  *
- * <p>Kontrola statusu i zapis do S3 utrzymują blokadę wiersza zgłoszenia,
- * więc przyjęcie lub edycja treści czekają na zakończenie zapisu zdjęcia.</p>
+ * <p>Plik trafia do magazynu poza transakcją; pod blokadą wiersza zgłoszenia
+ * zostają tylko kontrola statusu i przeniesienie pliku pod zdjęcie.</p>
  *
  * <p>Po zatwierdzonej edycji zdjęcia spoza nowej listy photoIds znikają z
  * magazynu, więc nie zostają dane, których nikt nie może usunąć.</p>
@@ -102,13 +102,18 @@ public final class SubmissionPhotos {
     public void put(final UUID submission, final UUID photo, final PhotoUpload upload)
         throws IOException {
         this.editable(submission, photo);
-        final byte[] jpeg = SubmissionPhotos.clean(upload.read());
-        this.service.locked(
-            submission, () -> {
-                this.replaceable(submission, photo);
-                this.photos.put(submission, photo, jpeg);
-            }
-        );
+        final UUID staged = UUID.randomUUID();
+        this.photos.stage(staged, SubmissionPhotos.clean(upload.read()));
+        try {
+            this.service.locked(
+                submission, () -> {
+                    this.replaceable(submission, photo);
+                    this.photos.promote(staged, submission, photo);
+                }
+            );
+        } finally {
+            this.discard(staged);
+        }
     }
 
     /**
@@ -148,6 +153,14 @@ public final class SubmissionPhotos {
             SubmissionPhotos.LOG.warn(
                 String.format("Nie usunięto starych zdjęć zgłoszenia %s", submission.id()), ex
             );
+        }
+    }
+
+    private void discard(final UUID staged) {
+        try {
+            this.photos.discard(staged);
+        } catch (final PhotoStorageException ex) {
+            SubmissionPhotos.LOG.warn(String.format("Nie usunięto wysyłki %s", staged), ex);
         }
     }
 

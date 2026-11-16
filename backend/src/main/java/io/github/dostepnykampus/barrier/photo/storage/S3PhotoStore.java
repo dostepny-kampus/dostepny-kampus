@@ -34,6 +34,11 @@ public final class S3PhotoStore implements PhotoStore {
     private static final String JPEG = ".jpg";
 
     /**
+     * Przedrostek kluczy plików wysłanych przed kontrolą statusu zgłoszenia.
+     */
+    private static final String STAGED = "wysylki/";
+
+    /**
      * Klient magazynu zdjęć.
      */
     private final S3Client client;
@@ -65,6 +70,46 @@ public final class S3PhotoStore implements PhotoStore {
             );
         } catch (final SdkException ex) {
             throw new PhotoStorageException("Nie zapisano zdjęcia", ex);
+        }
+    }
+
+    @Override
+    public void stage(final UUID upload, final byte[] jpeg) {
+        try {
+            this.client.putObject(
+                request -> request.bucket(this.settings.bucket())
+                    .key(S3PhotoStore.staged(upload))
+                    .contentType("image/jpeg"),
+                RequestBody.fromBytes(jpeg)
+            );
+        } catch (final SdkException ex) {
+            throw new PhotoStorageException("Nie wysłano zdjęcia", ex);
+        }
+    }
+
+    @Override
+    public void promote(final UUID upload, final UUID submission, final UUID photo) {
+        try {
+            this.client.copyObject(
+                request -> request.sourceBucket(this.settings.bucket())
+                    .sourceKey(S3PhotoStore.staged(upload))
+                    .destinationBucket(this.settings.bucket())
+                    .destinationKey(S3PhotoStore.key(submission, photo))
+            );
+        } catch (final SdkException ex) {
+            throw new PhotoStorageException("Nie przeniesiono zdjęcia", ex);
+        }
+    }
+
+    @Override
+    public void discard(final UUID upload) {
+        try {
+            this.client.deleteObject(
+                request -> request.bucket(this.settings.bucket())
+                    .key(S3PhotoStore.staged(upload))
+            );
+        } catch (final SdkException ex) {
+            throw new PhotoStorageException("Nie usunięto wysłanego pliku", ex);
         }
     }
 
@@ -115,6 +160,10 @@ public final class S3PhotoStore implements PhotoStore {
 
     private static String key(final UUID submission, final UUID photo) {
         return String.format("%s/%s%s", submission, photo, S3PhotoStore.JPEG);
+    }
+
+    private static String staged(final UUID upload) {
+        return String.format("%s%s%s", S3PhotoStore.STAGED, upload, S3PhotoStore.JPEG);
     }
 
     private static UUID photo(final String key) {
