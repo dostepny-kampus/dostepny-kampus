@@ -199,7 +199,7 @@ internal fun assetRepository(
         buildingCache = buildingCache,
     )
 
-private fun elapsedMillis(startedNanos: Long): Long = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startedNanos)
+internal fun elapsedMillis(startedNanos: Long): Long = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startedNanos)
 
 private fun basicList(list: suspend () -> ServerReply<ServerBuildings>): suspend () -> ServerReply<BuildingList> =
     { list().map { found -> BuildingList(found.source, found.buildings.map { ApiBuilding(it, DetailLevel.BASIC) }) } }
