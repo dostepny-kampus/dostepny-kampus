@@ -44,6 +44,12 @@ import java.time.LocalDate
 /** Strona praw autorskich OpenStreetMap, cel odnośnika w podpisie mapy i w panelu „Źródła danych”. Wymagania: NFR-37 */
 internal const val OSM_COPYRIGHT = "https://www.openstreetmap.org/copyright"
 
+/** Strona projektu OpenFreeMap, dostawcy kafelków podkładu (ADR-0014). */
+internal const val OPENFREEMAP_SITE = "https://openfreemap.org/"
+
+/** Strona schematu i licencji OpenMapTiles, w którym są kafelki podkładu (ADR-0014). */
+internal const val OPENMAPTILES_SITE = "https://openmaptiles.org/"
+
 /** Dzień stanu danych z importu: najpóźniejszy dzień oznaczenia wejść ze źródła PWr; `null`, gdy takich nie ma. */
 internal fun BuildingCatalog.dataDay(): LocalDate? {
     val imported = entrances.mapNotNull { it.assessment }.filter { it.source == AssessmentSource.IMPORT }
@@ -102,6 +108,7 @@ private fun InfoPanel(dataDay: LocalDate?, onClose: () -> Unit, modifier: Modifi
                     style = MaterialTheme.typography.titleSmall,
                 )
                 StreetSource()
+                BasemapSource()
                 val day = dataDay?.let { campusDay(it) }
                 val campus =
                     if (day == null) {
@@ -128,6 +135,23 @@ private fun InfoHeader(onClose: () -> Unit) {
             Text(stringResource(R.string.mapa_zamknij))
         }
     }
+}
+
+@Composable
+private fun BasemapSource() {
+    val link = SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline)
+    val provider = stringResource(R.string.mapa_openfreemap)
+    val schema = stringResource(R.string.mapa_openmaptiles)
+    val line = stringResource(R.string.mapa_zrodla_podklad, provider, schema)
+    val text =
+        buildAnnotatedString {
+            append(line)
+            listOf(provider to OPENFREEMAP_SITE, schema to OPENMAPTILES_SITE).forEach { (name, site) ->
+                val start = line.indexOf(name)
+                addLink(LinkAnnotation.Url(site, TextLinkStyles(link)), start = start, end = start + name.length)
+            }
+        }
+    Text(text = text, style = MaterialTheme.typography.bodyLarge)
 }
 
 @Composable
