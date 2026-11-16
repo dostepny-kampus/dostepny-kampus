@@ -63,10 +63,6 @@ jobs:
       - name: Sprawdź, czy PR albo grupa w kolejce zmienia serwer albo pliki, które czytają jego testy
         id: diff
         if: steps.drzewo.outputs.pomin != 'true'
-        env:
-          EVENT: ${{ github.event_name }}
-          GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
-          GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
         run: >-
           .github/scripts/zmiany-obszaru.sh serwer backend data api/openapi.yaml specs infra
           .github/workflows/backend.yml .github/scripts/wynik-pit.sh .github/scripts/mvn-z-ponowieniem.sh
