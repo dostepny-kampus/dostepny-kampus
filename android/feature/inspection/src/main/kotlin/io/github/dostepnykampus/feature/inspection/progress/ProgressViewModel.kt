@@ -101,7 +101,11 @@ class ProgressViewModel
             }
 
         private suspend fun names(): Map<String, String> =
-            catalog.catalog().buildings.mapNotNull { building -> building.name?.let { building.symbol to it } }.toMap()
+            catalog
+                .catalog()
+                .buildings
+                .mapNotNull { building -> building.name?.let { building.symbol to it } }
+                .toMap()
 
         private fun faultState(code: Int): ProgressUiState =
             if (code == FORBIDDEN) ProgressUiState.Forbidden else ProgressUiState.ServerError
