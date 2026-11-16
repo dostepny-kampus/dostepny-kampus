@@ -289,7 +289,7 @@ private fun CampusMap(
                 dataDay = catalog?.dataDay(),
                 onCameraChange = state::move,
                 areas = areas,
-                onAreaShow = state::keep,
+                onAreaShow = state::land,
                 modifier = Modifier.fillMaxSize().safeDrawingPadding().then(aboveSheet),
                 hasPanels = !state.isCovered && !isKeyboardOpen,
                 hasNotice = !isKeyboardOpen,

@@ -12,6 +12,7 @@ import io.github.dostepnykampus.feature.map.camera.FreeMap
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.camera.cameraTransition
+import io.github.dostepnykampus.feature.map.camera.fitted
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -122,6 +123,36 @@ class CameraTransitionTest {
         val shift = (move.camera.center.longitude - middle.longitude) * dpPerDegree(move.camera.zoom)
         assertEquals(80.0, shift, DP, "środek przesunięty o pół pasa przycisków")
         assertEquals(middle.latitude, move.camera.center.latitude, DEGREES, "środek w pionie")
+    }
+
+    /**
+     * Wiersz: V1, po wyborze terenu wszystkie jego budynki mieszczą się z marginesem w części mapy, której nie
+     * zasłaniają przyciski mapy.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Po wyborze terenu widać wszystkie jego budynki
+     *
+     * Wymagania: US1.7, BR-G5
+     */
+    @Test
+    fun landsOnAllBuildings() {
+        val controls = free.copy(endDp = 160.0)
+        val parts = CampusBounds(west = 17.05, south = 51.105, east = 17.07, north = 51.115)
+        val view = fitted(outline = parts, free = controls, maxZoom = START_ZOOM)
+        val width = (parts.east - parts.west) * dpPerDegree(view.zoom)
+        assertEquals(controls.widthDp - controls.endDp - 2 * controls.marginDp, width, DP, "szerokość wolnej mapy")
+        assertTrue(view.zoom < START_ZOOM, "teren większy niż widok: powiększenie ${view.zoom}")
+        val shift = (view.center.longitude - (parts.west + parts.east) / 2) * dpPerDegree(view.zoom)
+        assertEquals(80.0, shift, DP, "środek przesunięty o pół pasa przycisków")
+    }
+
+    /**
+     * Wiersz: V1, mały teren nie przybliża mapy ponad powiększenie, przy którym symbole budynków są czytelne.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Po wyborze terenu widać wszystkie jego budynki
+     *
+     * Wymagania: US1.7, BR-G5
+     */
+    @Test
+    fun landsNoCloserThanStartZoom() {
+        assertEquals(START_ZOOM, fitted(outline = outline, free = free, maxZoom = START_ZOOM).zoom)
     }
 
     private fun toBuilding(from: MapCamera, scale: Float = 1f): CameraTransition =

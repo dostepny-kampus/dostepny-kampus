@@ -36,6 +36,7 @@ import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.camera.belowTop
 import io.github.dostepnykampus.feature.map.camera.byControl
 import io.github.dostepnykampus.feature.map.camera.cameraTransition
+import io.github.dostepnykampus.feature.map.camera.fitted
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
@@ -59,6 +60,7 @@ private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore
  * @property shown ruch kamery do pokazania z zasłoniętym dołem mapy; `null` bez danych
  * @property limits granice kamery dla terenu i rozmiaru mapy; `null` przed pomiarem mapy
  * @property cover czy arkusz V2 zasłania dół mapy i czy nad nim mieszczą się przyciski mapy
+ * @param landing wolna część mapy, w której staje widok po wyborze terenu
  * @param choices zapisywana lista budynków do wyboru
  * @param onCamera zapis widoku kamery po ruchu osoby, zob. [cameraKeeper]
  */
@@ -67,6 +69,7 @@ internal class MapSceneState(
     val shown: SceneCamera?,
     val limits: MapLimits?,
     val cover: MapCover,
+    private val landing: FreeMap,
     private val choices: MutableState<List<String>>,
     private val onCamera: (MapCamera) -> Unit,
 ) {
@@ -91,6 +94,16 @@ internal class MapSceneState(
     /** Zapisuje widok [idle] po geście osoby. */
     fun keep(idle: MapCamera) {
         onCamera(idle)
+    }
+
+    /**
+     * Pokazuje teren wybrany z listy: wszystkie jego budynki [buildings] w wolnej części mapy, w powiększeniu
+     * najwyżej startowym, przy którym symbole budynków są czytelne.
+     *
+     * Wymagania: US1.7, BR-G5
+     */
+    fun land(buildings: CampusBounds) {
+        keep(fitted(outline = buildings, free = landing, maxZoom = START_ZOOM))
     }
 
     /** Przesuwa kamerę przyciskiem na [next], w granicach terenu, także nad arkuszem V2. Wymagania: NFR-53, BR-G5 */
@@ -178,6 +191,7 @@ internal fun rememberMapSceneState(
         shown = move?.let { SceneCamera(it, inset) },
         limits = limits,
         cover = mapCover(isCovered, hasControls = free.hasRoomForControls),
+        landing = fit,
         choices = choices,
         onCamera = cameraKeeper(isCovered, onMap = view.keep, onCard = card.keep),
     )
