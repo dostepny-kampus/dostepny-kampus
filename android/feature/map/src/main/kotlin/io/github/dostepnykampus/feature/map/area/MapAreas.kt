@@ -12,8 +12,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import io.github.dostepnykampus.feature.map.camera.MapCamera
-import io.github.dostepnykampus.feature.map.camera.START_ZOOM
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapArea
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
@@ -152,17 +151,20 @@ internal class MapAreas(
     }
 
     /**
-     * Wybiera teren [name] i zwraca jego widok startowy: środek terenu w powiększeniu startowym.
+     * Wybiera teren [name] i zwraca prostokąt wszystkich jego budynków, który mapa pokazuje po wyborze.
      * `null` i brak zmiany, gdy dane nie mają takiego terenu.
      *
      * Wymagania: US1.7, BR-G5
      */
-    fun show(name: String): MapCamera? =
-        data?.areas?.firstOrNull { it.name == name }?.let { area ->
+    fun show(name: String): CampusBounds? {
+        val campus = data ?: return null
+        val area = campus.areas.firstOrNull { it.name == name }
+        if (area != null) {
             chosen.value = name
             seen.value = name
-            MapCamera(center = area.bounds.center, zoom = START_ZOOM)
         }
+        return area?.let(campus::boundsOfAllBuildings)
+    }
 }
 
 /**
@@ -212,4 +214,15 @@ internal fun rememberMapAreas(layers: CampusMapData?, focus: MapFocus?): MapArea
         }
     SideEffect { areas.followSelection() }
     return areas
+}
+
+private fun CampusMapData.boundsOfAllBuildings(area: MapArea): CampusBounds {
+    val shapes = area.symbols.mapNotNull(outlinesBySymbol::get)
+    if (shapes.isEmpty()) return area.bounds
+    return CampusBounds(
+        west = shapes.minOf { it.west },
+        south = shapes.minOf { it.south },
+        east = shapes.maxOf { it.east },
+        north = shapes.maxOf { it.north },
+    )
 }

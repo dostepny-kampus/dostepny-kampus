@@ -36,6 +36,7 @@ import io.github.dostepnykampus.feature.map.area.AreaNotice
 import io.github.dostepnykampus.feature.map.area.MapAreaSwitch
 import io.github.dostepnykampus.feature.map.area.MapAreas
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import java.time.LocalDate
 
 private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
@@ -57,7 +58,7 @@ private enum class MapPanel { Area, Info }
  * @param dataDay dzień danych pokazany w legendzie pod „ⓘ”
  * @param onCameraChange widok kamery po dotknięciu przycisku mapy
  * @param areas tereny mapy: lista do panelu „Teren na mapie” i wybór terenu
- * @param onAreaShow widok startowy terenu wybranego w panelu
+ * @param onAreaShow prostokąt budynków terenu wybranego w panelu
  * @param modifier wymiary nakładki, zwykle cała mapa bez części zasłoniętej
  * @param hasPanels czy mapa ma przycisk terenu i „ⓘ”; nie ma ich nad arkuszem V2
  * @param hasNotice czy mapa może pokazać napis o zmianie terenu; nie przy otwartej klawiaturze
@@ -71,7 +72,7 @@ internal fun MapOverlay(
     dataDay: LocalDate?,
     onCameraChange: (MapCamera) -> Unit,
     areas: MapAreas,
-    onAreaShow: (MapCamera) -> Unit,
+    onAreaShow: (CampusBounds) -> Unit,
     modifier: Modifier = Modifier,
     hasPanels: Boolean = hasControls,
     hasNotice: Boolean = hasPanels,
@@ -129,7 +130,7 @@ private fun AreaColumn(
     areas: MapAreas,
     open: MapPanel?,
     onOpenChange: (MapPanel?) -> Unit,
-    onAreaShow: (MapCamera) -> Unit,
+    onAreaShow: (CampusBounds) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {

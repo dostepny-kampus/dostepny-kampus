@@ -36,6 +36,7 @@ import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.camera.belowTop
 import io.github.dostepnykampus.feature.map.camera.byControl
 import io.github.dostepnykampus.feature.map.camera.cameraTransition
+import io.github.dostepnykampus.feature.map.camera.fitted
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
@@ -91,6 +92,16 @@ internal class MapSceneState(
     /** Zapisuje widok [idle] po geście osoby. */
     fun keep(idle: MapCamera) {
         onCamera(idle)
+    }
+
+    /**
+     * Pokazuje teren wybrany z listy: wszystkie jego budynki [buildings] w wolnej części mapy, w powiększeniu
+     * najwyżej startowym, przy którym symbole budynków są czytelne.
+     *
+     * Wymagania: US1.7, BR-G5
+     */
+    fun land(buildings: CampusBounds) {
+        shown?.let { keep(fitted(outline = buildings, free = it.landing, maxZoom = START_ZOOM)) }
     }
 
     /** Przesuwa kamerę przyciskiem na [next], w granicach terenu, także nad arkuszem V2. Wymagania: NFR-53, BR-G5 */
@@ -175,7 +186,7 @@ internal fun rememberMapSceneState(
     val inset = sheetOrBarInset(isAbove = above != null, top = topInset, bottom = bottomInset)
     return MapSceneState(
         scene = scene,
-        shown = move?.let { SceneCamera(it, inset) },
+        shown = move?.let { SceneCamera(move = it, inset = inset, landing = fit) },
         limits = limits,
         cover = mapCover(isCovered, hasControls = free.hasRoomForControls),
         choices = choices,
@@ -190,8 +201,9 @@ internal fun rememberMapSceneState(
  *   na wybór, dopóki osoba nie ruszy mapy; poza tym przelot przycisków ([byControl]) do widoku zapisanego, na
  *   zaznaczonym wejściu albo startowego
  * @property inset zasłonięte krawędzie mapy: dół zasłonięty arkuszem V2, gdy [move] stawia budynek nad arkuszem
+ * @property landing wolna część mapy, w której staje widok po wyborze terenu
  */
-internal data class SceneCamera(val move: CameraTransition, val inset: MapInset = MapInset())
+internal data class SceneCamera(val move: CameraTransition, val inset: MapInset, val landing: FreeMap)
 
 private fun sheetOrBarInset(isAbove: Boolean, top: Double, bottom: Double): MapInset =
     if (isAbove) MapInset(bottom = bottom) else MapInset(top = top)

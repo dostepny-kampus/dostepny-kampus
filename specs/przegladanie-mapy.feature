@@ -280,8 +280,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi mapę terenu „Wittigowo” z budynkiem T-15
     Oraz na mapie widzi nazwę terenu „Wittigowo”
 
-  # widok wszystkich budynków terenu: #2676
-  @US1.7 @BR-G5 @aplikacja @do-zrobienia
+  @US1.7 @BR-G5 @aplikacja
   Scenariusz: Po wyborze terenu widać wszystkie jego budynki
     Zakładając, że Gość niezalogowany ma otwartą listę terenów
     Jeżeli wybierze teren „Wittigowo”

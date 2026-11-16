@@ -10,7 +10,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
-import io.github.dostepnykampus.feature.map.camera.START_ZOOM
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.START_BUILDING
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
@@ -168,19 +168,33 @@ class MapAreasTest {
     }
 
     /**
-     * Wiersz: V1, wybranie terenu przenosi granicę mapy na ten teren i daje jego widok startowy.
+     * Wiersz: V1, wybranie terenu przenosi granicę mapy na ten teren i daje prostokąt jego budynków.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Wybór terenu z listy pokazuje jego mapę
      *
      * Wymagania: US1.7, BR-G5
      */
     @Test
     fun movesToArea() {
-        val camera = requireNotNull(areas().show("Wittigowo"))
+        val buildings = requireNotNull(areas().show("Wittigowo"))
         val area = data.areas.single { it.name == "Wittigowo" }
         assertEquals("Wittigowo", areas().current?.name)
         assertEquals(area.bounds, data.selection(area = areas().chosenName).bounds)
-        assertEquals(START_ZOOM, camera.zoom)
-        assertEquals(60.0205, camera.center.latitude, DEGREE_DELTA)
+        assertEquals(60.0205, (buildings.south + buildings.north) / 2, DEGREE_DELTA, "budynek T-15")
+    }
+
+    /**
+     * Wiersz: V1, po wyborze terenu mapa pokazuje wszystkie budynki terenu, a nie środek jego prostokąta.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Po wyborze terenu widać wszystkie jego budynki
+     *
+     * Wymagania: US1.7, BR-G5
+     */
+    @Test
+    fun showsAllBuildingsOfArea() {
+        val start = data.areas.single { START_BUILDING in it.symbols }
+        val buildings = requireNotNull(areas().show(start.name))
+        val expected = CampusBounds(west = WEST, south = 60.0, east = EAST, north = 60.002 + SIDE)
+        assertEquals(setOf(START_BUILDING, "A-2"), start.symbols.toSet(), "dwa budynki terenu startowego")
+        assertEquals(expected, buildings, "prostokąt obu budynków")
     }
 
     /** Wiersz: V1, teren spoza danych nie zmienia wyboru. Wymagania: US1.7 */
