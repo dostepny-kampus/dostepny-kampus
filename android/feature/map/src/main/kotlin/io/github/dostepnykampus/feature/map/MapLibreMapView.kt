@@ -28,6 +28,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.google.gson.JsonObject
 import dagger.hilt.android.EntryPointAccessors
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Typografia
@@ -128,7 +129,7 @@ object MapLibreMapView : CampusMapView {
         val colors = DostepnyKampusTheme.mapColors
         val fontScale = density.fontScale.coerceAtMost(LABEL_MAX_FONT_SCALE)
         val styleColors = colors.styleColors(fontScale)
-        val look = remember(data, selection, styleColors) { selectionLook(data, selection, styleColors) }
+        val look = remember(data, selection) { selectionLook(data, selection) }
         val labelSize = Typografia.napisyMapy.value * density.density * fontScale
         val tolerance = TOUCH_TOLERANCE_DP * density.density
         val images = rememberMapImages(colors = colors, density = density.density, labelSize = labelSize)
@@ -446,6 +447,11 @@ object MapLibreMapView : CampusMapView {
         override fun paint(layer: String, property: String, value: JsonElement) {
             val styled: Any = if (value is JsonArray) expressionOf(value) else value.jsonPrimitive.content
             style.getLayer(layer)?.setProperties(PaintPropertyValue(property, styled))
+        }
+
+        override fun state(source: String, feature: Int, key: String, value: Boolean) {
+            val state = JsonObject().apply { addProperty(key, value) }
+            style.getSourceAs<GeoJsonSource>(source)?.setFeatureState(feature.toString(), state)
         }
 
         override fun minZoom(layer: String, zoom: Double) {

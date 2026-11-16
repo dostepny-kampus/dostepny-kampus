@@ -62,12 +62,21 @@ class CampusMapSelectionStyleTest {
     /** Wiersz: V2, „Mapa nad małą kartą”: zaznaczony budynek ma barwę PWr, sąsiednie są przygaszone. */
     @Test
     fun dimsNeighbours() {
-        val style = style(building = "A-1")
-        val own = """["any",["in","A-1",["get","symbols"]]]"""
-        val fill = style.layer(BUILDINGS_LAYER).paint("fill-color")
-        val line = style.layer("kontury").paint("line-color")
-        assertEquals("""["case",$own,"#BFE0EC","#D6DBDD"]""", fill)
-        assertEquals("""["case",$own,"#004E5E","#C2C9CC"]""", line)
+        val look = selectionLook(data, data.selection(building = "A-1"))
+        assertEquals(listOf(false, true), look.dimmed, "przygaszony tylko kontur A-2")
+    }
+
+    /**
+     * Barwy budynków to to samo wyrażenie stanu obiektu przy każdym zaznaczeniu, więc zaznaczenie nie wymaga
+     * nowego układu kafelków: budynki nie są przez chwilę czarne ani szare. Wymagania: US2.8, NFR-56
+     */
+    @Test
+    fun keepsColoursOnSelection() {
+        val state = """["boolean",["feature-state","$DIMMED_STATE"],false]"""
+        listOf(style(), style(building = "A-1")).forEach { style ->
+            assertEquals("""["case",$state,"#D6DBDD","#BFE0EC"]""", style.layer(BUILDINGS_LAYER).paint("fill-color"))
+            assertEquals("""["case",$state,"#C2C9CC","#004E5E"]""", style.layer("kontury").paint("line-color"))
+        }
     }
 
     /** Wiersz: V2, „Mapa nad małą kartą”: sąsiednie budynki zachowują podpisy symboli, więc da się je wybrać. */
@@ -89,13 +98,14 @@ class CampusMapSelectionStyleTest {
         assertEquals(expected, symbols)
     }
 
-    /** Wiersz: V1, bez zaznaczonego budynku wszystkie budynki mają barwę PWr i wszystkie wejścia mają znak. */
+    /**
+     * Wiersz: V1, bez zaznaczonego budynku, także po zamknięciu karty, żaden budynek nie jest przygaszony
+     * i wszystkie wejścia mają znak.
+     */
     @Test
     fun marksAllWithoutSelection() {
-        val style = style()
-        assertEquals(JsonPrimitive("#BFE0EC").toString(), style.layer(BUILDINGS_LAYER).paint("fill-color"))
-        assertEquals(JsonPrimitive("#004E5E").toString(), style.layer("kontury").paint("line-color"))
-        assertEquals("""["!",false]""", style.layer(ENTRANCES_LAYER).getValue("filter").toString())
+        assertEquals(listOf(false, false), selectionLook(data, data.selection()).dimmed)
+        assertEquals("""["!",false]""", style().layer(ENTRANCES_LAYER).getValue("filter").toString())
     }
 
     /** Wiersz: V1, bez zaznaczonego budynku znaki wejść od powiększenia 17, a zaznaczony budynek ma je zawsze. */
@@ -111,7 +121,7 @@ class CampusMapSelectionStyleTest {
         val pin = SelectedEntrance(id = "w1", location = at, label = "Wejście dostosowane", buildingSymbol = "A-1")
         val style = style(building = "A-1", entrance = pin)
         assertEquals("""["!",false]""", style.layer(ENTRANCES_LAYER).getValue("filter").toString())
-        assertEquals(JsonPrimitive("#BFE0EC").toString(), style.layer(BUILDINGS_LAYER).paint("fill-color"))
+        assertEquals(listOf(false, false), selectionLook(data, data.selection("A-1", pin)).dimmed)
     }
 
     /**
@@ -133,8 +143,10 @@ class CampusMapSelectionStyleTest {
         selections.forEach { selection ->
             val shown = MapSelection(bounds = selection.bounds, plan = selection.plan?.copy(floor = "P9"))
             val ready = JsonStyle(campusMapStyle(data, shown, colors))
-            ready.showSelection(selectionLook(data, selection, colors))
+            val look = selectionLook(data, selection)
+            ready.showSelection(look)
             assertEquals(Json.parseToJsonElement(campusMapStyle(data, selection, colors)), ready.json, "$selection")
+            assertEquals(look.dimmed, data.outlines.indices.map { ready.dimmed[it] }, "$selection")
         }
     }
 
@@ -207,6 +219,7 @@ class CampusMapSelectionStyleTest {
 /** Styl jako JSON, w którym [MapStyleTarget] zmienia pola tak jak widok mapy w stylu MapLibre. */
 private class JsonStyle(style: String) : MapStyleTarget {
     var json: JsonObject = Json.parseToJsonElement(style).jsonObject
+    val dimmed = mutableMapOf<Int, Boolean>()
 
     override fun filter(layer: String, filter: JsonElement) = edit(layer) { it + ("filter" to filter) }
 
@@ -215,6 +228,10 @@ private class JsonStyle(style: String) : MapStyleTarget {
             val paint = found.getValue("paint").jsonObject + (property to value)
             found + ("paint" to JsonObject(paint))
         }
+
+    override fun state(source: String, feature: Int, key: String, value: Boolean) {
+        if (source == BUILDINGS_SOURCE && key == DIMMED_STATE) dimmed[feature] = value
+    }
 
     override fun minZoom(layer: String, zoom: Double) = edit(layer) { it + ("minzoom" to JsonPrimitive(zoom)) }
 

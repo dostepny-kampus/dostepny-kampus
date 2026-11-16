@@ -70,8 +70,9 @@ internal fun property(name: String): JsonArray = expression("get", JsonPrimitive
 internal fun numbers(vararg values: Double): JsonArray = JsonArray(values.map { JsonPrimitive(it) })
 
 /** Źródło GeoJSON stylu z danymi [data]. */
-internal fun geoJsonSource(data: JsonElement): JsonObject =
+internal fun geoJsonSource(data: JsonElement, promoteId: String? = null): JsonObject =
     buildJsonObject {
         put(key = "type", value = "geojson")
         put(key = "data", element = data)
+        promoteId?.let { put(key = "promoteId", value = it) }
     }

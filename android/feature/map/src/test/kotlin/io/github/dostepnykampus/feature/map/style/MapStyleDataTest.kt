@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.feature.map.style
 
-import android.graphics.Bitmap
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -57,19 +56,19 @@ class MapStyleDataTest {
     fun showsSameDataAsFullStyle() {
         val data = dataOf("C-13")
         val full = sourcesOf(fullStyle(data))
-        val target = RecordingTarget()
+        val target = RecordingStyleTarget()
         val images = images()
         runBlocking { target.showData(data = data, images = images, labelled = mutableSetOf(), worker = worker) }
-        target.sources.forEach { (source, text) ->
+        target.data.forEach { (source, text) ->
             assertEquals("dane źródła $source", full.getValue(source).jsonObject["data"], Json.parseToJsonElement(text))
         }
-        assertEquals("źródła z danymi", data.sourceTexts().keys, target.sources.keys)
+        assertEquals("źródła z danymi", data.sourceTexts().keys, target.data.keys)
     }
 
     /** Obraz podpisu powstaje raz: kolejny katalog dodaje tylko nowe podpisy. Wymagania: NFR-11 */
     @Test
     fun addsOnlyNewLabelImages() {
-        val target = RecordingTarget()
+        val target = RecordingStyleTarget()
         val labelled = mutableSetOf<String>()
         val images = images()
         runBlocking {
@@ -108,23 +107,4 @@ class MapStyleDataTest {
 
     private fun fullStyle(data: CampusMapData): String =
         campusMapStyle(data = data, selection = MapSelection(), colors = colors, basemap = null)
-
-    private class RecordingTarget : MapStyleTarget {
-        val sources = mutableMapOf<String, String>()
-        val images = mutableListOf<String>()
-
-        override fun filter(layer: String, filter: JsonElement) = Unit
-
-        override fun paint(layer: String, property: String, value: JsonElement) = Unit
-
-        override fun minZoom(layer: String, zoom: Double) = Unit
-
-        override fun data(source: String, geoJson: String) {
-            sources[source] = geoJson
-        }
-
-        override fun image(name: String, image: Bitmap) {
-            images += name
-        }
-    }
 }

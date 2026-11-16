@@ -10,6 +10,7 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
+import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -116,7 +117,7 @@ fun campusMapStyle(
     colors: MapStyleColors,
     basemap: Basemap? = selection.bounds?.let { Basemap() },
 ): String {
-    val look = selectionLook(data, selection, colors)
+    val look = selectionLook(data, selection)
     val style =
         buildJsonObject {
             put(key = "version", value = STYLE_VERSION)
@@ -144,7 +145,7 @@ internal fun entranceCaptionImage(label: String): String = "wejscie: $label"
 private fun sources(data: CampusMapData, look: SelectionLook, plan: JsonElement): JsonObject =
     buildJsonObject {
         put(key = BASEMAP, element = basemapSource())
-        put(key = BUILDINGS_SOURCE, element = geoJsonSource(data.buildings))
+        put(key = BUILDINGS_SOURCE, element = geoJsonSource(data.buildings, promoteId = OUTLINE_NUMBER))
         put(key = LABELS_SOURCE, element = geoJsonSource(data.labelPoints))
         put(key = ENTRANCES_SOURCE, element = geoJsonSource(data.entrances))
         put(key = BARRIERS_SOURCE, element = geoJsonSource(data.barriers))
@@ -161,12 +162,13 @@ private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap
         }
         add(
             styleLayer(id = BUILDINGS_LAYER, type = "fill", source = BUILDINGS_SOURCE) {
-                paint(BUILDINGS_FILL to look.buildingsFill)
+                paint(BUILDINGS_FILL to tone(own = colors.building, dimmed = colors.dimmed))
             },
         )
         add(
             styleLayer(id = OUTLINES_LAYER, type = "line", source = BUILDINGS_SOURCE) {
-                paint(OUTLINES_COLOR to look.outlinesColor, "line-width" to JsonPrimitive(OUTLINE_WIDTH))
+                val color = tone(own = colors.buildingOutline, dimmed = colors.dimmedOutline)
+                paint(OUTLINES_COLOR to color, "line-width" to JsonPrimitive(OUTLINE_WIDTH))
             },
         )
         planLayers(colors.plan, look.planFloor).forEach { add(it) }
