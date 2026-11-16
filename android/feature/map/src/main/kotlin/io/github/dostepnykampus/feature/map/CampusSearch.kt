@@ -36,6 +36,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -90,7 +91,8 @@ private val ClearIcon =
  * @param areas tereny w kolejności nagłówków listy budynków
  * @param onListChange wybór w przełączniku albo „Lista budynków” w karcie brak wyniku
  * @param onBuildingClick symbol wybranego wyniku albo budynku z listy; ekran otwiera V2 i zaznacza budynek. Wybór
- *   zdejmuje fokus z pola i chowa klawiaturę ekranową, a pierwsze „Wstecz” zamyka V2
+ *   zdejmuje fokus z pola, chowa klawiaturę ekranową i wyniki, a tekst w polu zostaje; wyniki wracają po dotknięciu
+ *   pola albo zmianie tekstu. Pierwsze „Wstecz” zamyka V2
  * @param modifier położenie nad mapą; przy liście cała wysokość nad paskiem dolnym
  */
 @Composable
@@ -107,11 +109,12 @@ internal fun CampusSearch(
     modifier: Modifier = Modifier,
 ) {
     var query by rememberSaveable { mutableStateOf("") }
+    var isChosen by rememberSaveable { mutableStateOf(false) }
     SideEffect { onSearch(query) }
     val found = search.foundFor(query)
     val results = found.orEmpty()
     val isNoResult = query.isNotBlank() && found?.isEmpty() == true
-    val shown = results.takeUnless { isList }.orEmpty()
+    val shown = results.takeUnless { isList || isChosen }.orEmpty()
     val focus = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
     val showList = {
@@ -119,13 +122,23 @@ internal fun CampusSearch(
         onListChange(true)
     }
     val choose = { symbol: String ->
-        query = ""
+        isChosen = true
         focus.clearFocus(force = true)
         keyboard?.hide()
         onBuildingClick(symbol)
     }
     Column(modifier.fillMaxWidth()) {
-        SearchHeader(query = query, onQueryChange = { query = it }, isList = isList, onListChange = onListChange)
+        val onQueryChange = { text: String ->
+            query = text
+            isChosen = false
+        }
+        SearchHeader(
+            query = query,
+            onQueryChange = onQueryChange,
+            onFieldFocus = { isChosen = false },
+            isList = isList,
+            onListChange = onListChange,
+        )
         if (!isOnline) OfflineLine(syncedAt)
         if (isNoResult || shown.isNotEmpty()) {
             ResultPanel {
@@ -152,6 +165,7 @@ internal fun CampusSearch(
 private fun SearchHeader(
     query: String,
     onQueryChange: (String) -> Unit,
+    onFieldFocus: () -> Unit,
     isList: Boolean,
     onListChange: (Boolean) -> Unit,
 ) {
@@ -166,7 +180,7 @@ private fun SearchHeader(
                 modifier = Modifier.semantics { heading() },
                 style = MaterialTheme.typography.titleLarge,
             )
-            SymbolField(query, onQueryChange)
+            SymbolField(query, onQueryChange, onFieldFocus)
             ViewToggle(isList, onListChange)
         }
     }
@@ -215,11 +229,11 @@ private fun ResultPanel(content: @Composable ColumnScope.() -> Unit) {
 }
 
 @Composable
-private fun SymbolField(query: String, onQueryChange: (String) -> Unit) {
+private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onFocus: () -> Unit) {
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().onFocusChanged { if (it.isFocused) onFocus() },
         placeholder = { Text(stringResource(R.string.mapa_szukaj_podpowiedz)) },
         leadingIcon = { Icon(SearchIcon, contentDescription = null) },
         trailingIcon = {
