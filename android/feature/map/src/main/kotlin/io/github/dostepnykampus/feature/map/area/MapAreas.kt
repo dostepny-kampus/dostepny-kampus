@@ -15,7 +15,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapArea
-import io.github.dostepnykampus.feature.map.campus.buildingsOf
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
 /**
@@ -157,13 +156,14 @@ internal class MapAreas(
      *
      * Wymagania: US1.7, BR-G5
      */
-    fun show(name: String): CampusBounds? {
-        val campus = data ?: return null
-        val area = campus.areas.firstOrNull { it.name == name } ?: return null
-        chosen.value = name
-        seen.value = name
-        return campus.buildingsOf(area)
-    }
+    fun show(name: String): CampusBounds? =
+        data?.let { campus ->
+            campus.areas.firstOrNull { it.name == name }?.let { area ->
+                chosen.value = name
+                seen.value = name
+                campus.boundsOfAllBuildings(area)
+            }
+        }
 }
 
 /**
@@ -213,4 +213,15 @@ internal fun rememberMapAreas(layers: CampusMapData?, focus: MapFocus?): MapArea
         }
     SideEffect { areas.followSelection() }
     return areas
+}
+
+private fun CampusMapData.boundsOfAllBuildings(area: MapArea): CampusBounds {
+    val shapes = area.symbols.mapNotNull(outlinesBySymbol::get)
+    if (shapes.isEmpty()) return area.bounds
+    return CampusBounds(
+        west = shapes.minOf { it.west },
+        south = shapes.minOf { it.south },
+        east = shapes.maxOf { it.east },
+        north = shapes.maxOf { it.north },
+    )
 }

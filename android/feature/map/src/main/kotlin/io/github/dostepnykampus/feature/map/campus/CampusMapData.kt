@@ -108,22 +108,6 @@ fun CampusMapData.boundsOf(symbol: String?): CampusBounds? =
     areas.firstOrNull { symbol in it.symbols }?.bounds ?: bounds
 
 /**
- * Najmniejszy prostokąt z konturami wszystkich budynków terenu [area]. Bez konturów w danych to prostokąt terenu.
- *
- * Wymagania: US1.7, BR-G5
- */
-fun CampusMapData.buildingsOf(area: MapArea): CampusBounds {
-    val shapes = area.symbols.mapNotNull(outlinesBySymbol::get)
-    if (shapes.isEmpty()) return area.bounds
-    return CampusBounds(
-        west = shapes.minOf { it.west },
-        south = shapes.minOf { it.south },
-        east = shapes.maxOf { it.east },
-        north = shapes.maxOf { it.north },
-    )
-}
-
-/**
  * Teren PWr na mapie.
  *
  * Wymagania: BR-G5, NFR-39

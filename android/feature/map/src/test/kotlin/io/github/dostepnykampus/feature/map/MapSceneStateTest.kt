@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.camera.FreeMap
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.camera.byControl
@@ -25,14 +26,14 @@ class MapSceneStateTest {
     private val opened = mutableListOf<String>()
     private val choices = mutableStateOf(listOf("stary wybór"))
     private var emptyTaps = 0
+    private val landing = FreeMap(widthDp = 411.0, heightDp = 600.0, endDp = 160.0, marginDp = 24.0)
 
     private fun state(isCovered: Boolean = false, limits: MapLimits? = null) =
         MapSceneState(
             scene = null,
-            shown = SceneCamera(start.byControl()),
+            shown = SceneCamera(move = start.byControl(), inset = MapInset(), landing = landing),
             limits = limits,
             cover = mapCover(isCovered, hasControls = true),
-            landing = FreeMap(widthDp = 411.0, heightDp = 600.0, endDp = 160.0, marginDp = 24.0),
             choices = choices,
             onCamera = cameraKeeper(isCovered, onMap = { cameras += it }, onCard = { cardCameras += it }),
         )
