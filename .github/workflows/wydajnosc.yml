@@ -81,7 +81,7 @@ jobs:
           adb install -r -t "$RUNNER_TEMP/pomiary.apk"
           # Self-instrumenting: celem instrumentacji jest pakiet modułu pomiarów, nie aplikacji.
           adb shell pm list instrumentation | tr -d '' | tee "$RUNNER_TEMP/instrumentacje.txt"
-          uruchamiacz="$(sed -n 's/^instrumentation:\([^ ]*\) .*//p' "$RUNNER_TEMP/instrumentacje.txt" | grep macrobenchmark | head -n 1 || true)"
+          uruchamiacz="$(sed -n 's/^instrumentation:\([^ ]*\) .*/\1/p' "$RUNNER_TEMP/instrumentacje.txt" | grep macrobenchmark | head -n 1 || true)"
           echo "Uruchamiacz pomiarów: ${uruchamiacz}"
           # Pomiar bez wyniku nie czerwieni zadania: wpis bez metryk nie trafia do historii.
           if [[ -z $uruchamiacz ]]; then
