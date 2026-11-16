@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.spatialk.geojson)
     implementation(libs.spatialk.turf)
     implementation(libs.spatialk.units)
+    implementation(libs.jts.core)
 
     testImplementation(libs.junit.jupiter.params)
 }
