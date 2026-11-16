@@ -14,7 +14,7 @@ Konwencje opisuje strona [Makiety](index.md). Stan, który różni się jednym n
 | L1 Prośba o logowanie | zwykły, brak sieci | wejście z „Konto”, błąd |
 | L2 Konto | Odwiedzający, rola pracownicza, klauzula, wycofanie zgody | brak sieci |
 
-Pole tekstowe, przełącznik „Mapa” i „Lista budynków”, mapa z podpisem OpenStreetMap i przyciski mapy pochodzą z `_wspolne.iuml`, tak jak na C1 i R1. W pliku `_odwiedzajacy.iuml` są numer kroku V4 i V5 oraz części karty budynku V2: góra karty, wejście, grupy z planów PWr i dół karty. Każdy przycisk na pełną szerokość ma tę samą szerokość na wszystkich ekranach.
+Pole tekstowe, mapa z podpisem OpenStreetMap i przyciski mapy pochodzą z `_wspolne.iuml`, tak jak na C1 i R1. W pliku `_odwiedzajacy.iuml` są numer kroku V4 i V5 oraz części karty budynku V2: góra karty, wejście, grupy z planów PWr i dół karty. Każdy przycisk na pełną szerokość ma tę samą szerokość na wszystkich ekranach.
 
 ## V1 Mapa kampusu
 
@@ -22,7 +22,7 @@ Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V1 są [makiety hi-fi](../e
 
 ### V1: stan zwykły
 
-![Makieta V1: nagłówek Mapa kampusu, pole symbolu budynku, przełącznik Mapa i Lista budynków, zastępnik mapy z oznaczeniami barier, na mapie Powiększ, Pomniejsz i cztery strzałki w krzyżu, przycisk informacji przy podpisie OpenStreetMap i pasek dolny](../../_generated/m-v1-mapa.svg)
+![Makieta V1: nagłówek Mapa kampusu z przyciskiem Pokaż listę, pole symbolu budynku, przycisk terenu, zastępnik mapy z oznaczeniami barier, na mapie Powiększ, Pomniejsz i cztery strzałki w krzyżu, przycisk informacji przy podpisie OpenStreetMap i pasek dolny](../../_generated/m-v1-mapa.svg)
 
 Czynność główna: wpisanie symbolu budynku w pole na górze ekranu.
 
@@ -30,13 +30,13 @@ Czynność główna: wpisanie symbolu budynku w pole na górze ekranu.
 | --- | --- |
 | Nagłówek „Mapa kampusu” bez „Wstecz”, bo to ekran startowy | wymagania wspólne, NFR-15 |
 | Pole „Wpisz symbol budynku, np. C-13” na pełną szerokość, pierwsze pod nagłówkiem | US1.1, PW-8 |
-| Przełącznik „Mapa” i „Lista budynków”; wybraną pozycję widać po kształcie pola | NFR-19, NFR-21 |
+| „Pokaż listę” w wierszu tytułu; na liście „Pokaż mapę” | NFR-19 |
 | Przycisk terenu nad „Legendą” z nazwą wybranego terenu, np. „Kampus główny”; otwiera panel „Teren na mapie” | US1.6, US1.7, NFR-17, NFR-18 |
-| „Legenda” nad mapą: znaki mapy i planu z napisami | NFR-21, decyzja 48 |
+| „ⓘ” przy podpisie otwiera arkusz „Legenda”: znaki mapy i planu z napisami, na końcu źródła | US1.4, NFR-21, decyzja 48 |
 | Zastępnik mapy: mapa ulic, kontury budynków, bariery ze zgłoszeń przyjętych | US1, US1.3, US10.6, NFR-11 |
 | Bariera na mapie: znak uciążliwości, a słowo, np. „Blokada”, gdy mieści się bez nakładania | US1.3, NFR-20, NFR-21, PW-13 |
 | Na mapie „Powiększ”, „Pomniejsz” i strzałki przesuwania w krzyżu, każda z nazwą dla TalkBack „Przesuń mapę w górę” itd. | NFR-15 (WCAG 2.5.1, 2.5.7), NFR-18, PW-8, PW-11 |
-| „© OpenStreetMap contributors” w jednym wierszu jako odnośnik, w ramce mapy; obok „ⓘ” ze źródłami mapy | NFR-37, NFR-40 |
+| „© OpenStreetMap contributors” w jednym wierszu jako odnośnik, w ramce mapy; obok „ⓘ” | NFR-37, NFR-40 |
 | Pasek dolny z „Konto” | US1, US4, US5.1, US14 |
 
 | Stan bez osobnej makiety | Co się zmienia |
@@ -67,7 +67,7 @@ Czynność główna: dotknięcie budynku na liście, które otwiera V2.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Lista budynków” wybrana w przełączniku | NFR-19 |
+| Lista otwarta przyciskiem „Pokaż listę”; w wierszu tytułu „Pokaż mapę” | NFR-19 |
 | Pozycja: „Budynek A-1”, nazwa z danych, bariery z uciążliwością tekstem i ikoną; cała ramka pozycji to jeden cel dotyku | NFR-19, US1.3, NFR-21, NFR-17 |
 | Bariery A-1 jak we wzorcu V2: schody przy wejściu głównym [1], pozostałe jako zastępnik | US1.3, BR-7 |
 | Lista daje tę samą informację co mapa, więc jest drogą dla TalkBack | NFR-19, NFR-18 |
@@ -80,12 +80,12 @@ Czynność główna: dotknięcie budynku na liście, które otwiera V2.
 
 ![Makieta V1 w stanie pustym: komunikat Nie znaleźliśmy budynku z przyciskiem Lista budynków pod polem symbolu](../../_generated/m-v1-mapa-pusty.svg)
 
-Czynność główna: „Lista budynków” w komunikacie, gdy wyszukiwanie nic nie dało.
+Czynność główna: „Pokaż listę” w komunikacie, gdy wyszukiwanie nic nie dało.
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | Komunikat z katalogu; wpisany tekst jako zastępnik | UC1 3a, NFR-50, PW-9 |
-| Przycisk „Lista budynków” przełącza widok na listę | UC1 3a, NFR-19 |
+| Przycisk „Pokaż listę” przełącza widok na listę | UC1 3a, NFR-19 |
 | Komunikat stoi zaraz pod polem, więc osoba widzi go tam, gdzie pisała | NFR-15 (WCAG 3.3.1) |
 
 ### V1: brak sieci
@@ -101,7 +101,7 @@ Czynność główna: wpisanie symbolu budynku, jak w stanie zwykłym.
 
 ### V1: pierwsze otwarcie bez internetu
 
-![Makieta V1 przy pierwszym otwarciu bez internetu: pole symbolu, przełącznik Mapa i Lista budynków, wskaźnik Brak internetu bez daty, mapa bez mapy ulic z konturami budynków i wejściami z danych aplikacji](../../_generated/m-v1-mapa-pierwsze-otwarcie.svg)
+![Makieta V1 przy pierwszym otwarciu bez internetu: nagłówek z przyciskiem Pokaż listę, pole symbolu, wskaźnik Brak internetu bez daty, mapa bez mapy ulic z konturami budynków i wejściami z danych aplikacji](../../_generated/m-v1-mapa-pierwsze-otwarcie.svg)
 
 Czynność główna: wpisanie symbolu budynku, jak w stanie zwykłym.
 
@@ -114,14 +114,14 @@ Czynność główna: wpisanie symbolu budynku, jak w stanie zwykłym.
 
 ### V1: znaleziona sala
 
-![Makieta V1 po wyszukaniu A-1 329: wybór piętra z zaznaczonym piętrem, legenda, plan piętra z podpisem źródła, przyciski mapy i arkusz sali z czterema krokami, Pokaż opis budynku i Zamknij](../../_generated/m-v1-mapa-sala.svg)
+![Makieta V1 po wyszukaniu A-1 329: pole z numerem sali, przycisk terenu, plan piętra z kolumną pięter po lewej z podpisem źródła, przyciski mapy i arkusz sali z czterema krokami, Pokaż opis budynku i Zamknij](../../_generated/m-v1-mapa-sala.svg)
 
 Czynność główna: „Pokaż opis budynku”, która otwiera V2.
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | W polu „A-1 329”: symbol budynku i numer sali | decyzja 44 |
-| Kolumna pięter po prawej na górze mapy, bo arkusz zajmuje dół; wybrane piętro sali | US16.1, NFR-21 |
+| Kolumna pięter po lewej pod przyciskiem terenu, nad arkuszem; wybrane piętro sali | US16.1, NFR-21 |
 | Plan piętra z wyróżnioną salą i krótkimi podpisami; pod mapą „Źródło: Politechnika Wrocławska” | US16.1, NFR-40 |
 | Nagłówek arkusza „A-1: Sala 329”, funkcja sali jako zastępnik i piętro z danych PWr | decyzja 44, NFR-40 |
 | Kroki tekstem od wejścia zalecanego, bez linii trasy | BR-25, decyzja 44, decyzja 48 |
@@ -136,7 +136,7 @@ Czynność główna: „Pokaż opis budynku”, która otwiera V2.
 
 ### V1: plan piętra
 
-![Makieta V1 po przybliżeniu budynku szczegółowego: plan parteru A-1 w kolorach grup z numerami sal, przygaszone sąsiednie budynki, przyciski mapy, kolumna pięter z napisem Piętro i wybranym parterem w kółku, podpis źródła](../../_generated/m-v1-mapa-plan.svg)
+![Makieta V1 po przybliżeniu budynku szczegółowego: plan parteru A-1 w kolorach grup z numerami sal, przygaszone sąsiednie budynki, przyciski mapy, kolumna pięter po lewej z napisem Piętro i wybranym parterem w kółku, podpis źródła](../../_generated/m-v1-mapa-plan.svg)
 
 Czynność główna: wybór piętra w kolumnie pięter.
 
@@ -144,7 +144,7 @@ Czynność główna: wybór piętra w kolumnie pięter.
 | --- | --- |
 | Plan pojawia się sam przy powiększeniu co najmniej 17 dla budynku szczegółowego na środku mapy; inne budynki przygaszone z podpisami | US16.1, NFR-11 |
 | Na start piętro wejścia zalecanego; gdy dane go nie podają, parter | US16.1, BR-25 |
-| Kolumna pięter pod przyciskami mapy: „Piętro”, najwyższe u góry, wybrane w kółku, numery zamiast etykiet; TalkBack czyta pełną etykietę | US16.1, NFR-17, NFR-18, NFR-21 |
+| Kolumna pięter po lewej pod przyciskiem terenu: „Piętro”, najwyższe u góry, wybrane w kółku, numery zamiast etykiet; TalkBack czyta pełną etykietę | US16.1, NFR-17, NFR-18, NFR-21 |
 | Pod mapą „Źródło: Politechnika Wrocławska” | NFR-40 |
 
 ### V1: budynek bez planu
@@ -172,7 +172,7 @@ Czynność główna: przeczytanie, na które piętra jedzie winda.
 
 ### V1: legenda przy planie
 
-![Makieta V1 z otwartą legendą nad planem: nagłówek Legenda z Zamknij, znaki wejść i bariery, kolory sali, korytarza i klatki schodowej, znaki windy i toalety dostosowanej, znak zgłoszenia bez piętra, podpis źródła i Przewiń w dół](../../_generated/m-v1-mapa-plan-legenda.svg)
+![Makieta V1 z arkuszem Legenda otwartym przyciskiem informacji pod planem: nagłówek Legenda z Zamknij, znaki wejść i bariery, kolory sali, korytarza i klatki schodowej, znaki windy i toalety dostosowanej, znak zgłoszenia bez piętra, na końcu Źródła danych i Przewiń w dół](../../_generated/m-v1-mapa-plan-legenda.svg)
 
 Czynność główna: odczytanie znaków planu.
 
@@ -214,20 +214,20 @@ Czynność główna: wybranie terenu z listy, które pokazuje mapę tego terenu.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| Przycisk terenu z nazwą wybranego terenu otwiera panel pod sobą; panel i „Legenda” nie są otwarte razem | US1.6, US1.7 |
+| Przycisk terenu z nazwą wybranego terenu otwiera panel pod sobą; panel i arkusz „Legenda” nie są otwarte razem | US1.6, US1.7 |
 | Nagłówek „Teren na mapie” z „Zamknij”; po otwarciu fokus TalkBack stoi na nagłówku, po zamknięciu wraca na przycisk terenu | US1.7, NFR-18, NFR-20 |
 | Teren na liście: nazwa, liczba budynków i odległość od wybranego terenu; wybrany ma znak „✓” i napis „wybrany” | US1.7, NFR-21 |
 | Wybranie terenu zamyka panel i pokazuje mapę tego terenu | US1.7, BR-G5 |
 
-### V1: granica terenu
+### V1: brzeg terenu
 
-![Makieta V1 przy granicy terenu Kampus główny: poza terenem wyblakły podkład, granicę pokazuje linia z obwódką, u góry przycisk terenu](../../_generated/m-v1-mapa-teren-granica.svg)
+![Makieta V1 przy wschodnim brzegu terenu Kampus główny: mapa kończy się na brzegu prostokąta terenu, bez linii granicy, u góry przycisk terenu](../../_generated/m-v1-mapa-teren-granica.svg)
 
 Czynność główna: przycisk terenu, który otwiera listę terenów.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| Mapa nie wychodzi poza prostokąt wokół wybranego terenu; poza granicą terenu podkład jest wyblakły, a granicę pokazuje linia z obwódką | US1.7, BR-G5, NFR-16, NFR-39 |
+| Cały widok mapy zostaje w prostokącie wokół wybranego terenu; mapa nie rysuje granicy terenu i nie wybiela otoczenia | US1.7, BR-G5, NFR-39 |
 | Przy dojściu do granicy TalkBack ogłasza raz: „Tu kończy się teren Kampus główny. Inny teren wybierzesz przyciskiem «Zmień teren» u góry mapy.” | US1.7, NFR-18 |
 
 ### V1: wynik z innego terenu
@@ -268,7 +268,7 @@ Czynność główna: „Sprawdź, którędy wejść”.
 | Element | AC/BR/NFR |
 | --- | --- |
 | Mapa z konturem budynku na środku, wyróżnionym; mapa pod kartą bez nazw dla TalkBack | US2.8, NFR-19 |
-| Przyciski mapy nad kartą: „Powiększ”, „Pomniejsz” i strzałki; bez nagłówka, pola symbolu i przełącznika | NFR-53, decyzja 151 |
+| Przyciski mapy nad kartą: „Powiększ”, „Pomniejsz” i strzałki; bez wiersza tytułu i pola symbolu | NFR-53, decyzja 151 |
 | Uchwyt: przycisk „Rozwiń opis budynku” ze stanem; otwiera pełny ekran | US2.8, NFR-18, NFR-53 |
 | Wiersz o wejściach zamiast chipów; inne napisy: „Brak wejścia dostępnego”, „Brak danych o wejściach” | US2.8, US3.1, NFR-21 |
 | „Sprawdź, którędy wejść” wypełniony i obrysowany „Zamknij”; bez „Pokaż budynek na mapie” | US2.8, US3.2, NFR-53 |

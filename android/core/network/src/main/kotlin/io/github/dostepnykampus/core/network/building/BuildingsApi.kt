@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.core.network.building
 
 import io.github.dostepnykampus.core.model.building.FloorList
+import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.exchange
@@ -18,7 +19,7 @@ import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import java.net.HttpURLConnection.HTTP_OK
 
 /**
- * Klient HTTP listy budynków, karty, pięter i podpowiedzi punktu (`GET /buildings`).
+ * Klient HTTP listy budynków, karty, pięter, wyszukiwania sali i podpowiedzi punktu (`GET /buildings`, `/rooms`).
  *
  * Wynik to [ApiResult]: błąd sieci i zła treść nie wychodzą jako wyjątek. Anulowanie korutyny wywołującej
  * każdą funkcję `suspend` przerywa jej żądanie HTTP, także w trakcie czytania odpowiedzi, i kończy się
@@ -62,6 +63,13 @@ public class BuildingsApi(private val http: OkHttpClient, private val json: Json
      */
     public suspend fun rooms(symbol: String, floorId: String): ApiResult<RoomList> =
         fetch(endpoint(listOf(BUILDINGS, symbol, FLOORS, floorId, ROOMS))) { json.decodeRoomList(it) }
+
+    /**
+     * Sale pasujące do tekstu [query], np. „A-1 329” albo „329” (`searchRooms`): najpierw dokładne dopasowania
+     * numeru; pusta lista, gdy nic nie pasuje. Wymagania: US18.1
+     */
+    public suspend fun searchRooms(query: String): ApiResult<List<FoundRoom>> =
+        fetch(endpoint(segments = listOf(ROOMS), query = mapOf("q" to query))) { json.decodeRoomSearch(it) }
 
     /**
      * Podpowiedź budynku dla punktu WGS84.

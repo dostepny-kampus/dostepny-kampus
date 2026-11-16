@@ -20,9 +20,9 @@ import org.junit.jupiter.api.Test;
 final class SubmissionPlaceTest {
 
     /**
-     * Opis błędu ujemnej dokładności.
+     * Opis błędu dokładności spoza zakresu.
      */
-    private static final String NEGATIVE = "Dokładność pozycji jest ujemna";
+    private static final String NEGATIVE = "Dokładność pozycji spoza zakresu 0–10000 m";
 
     @Test
     void rejectsNegativeAccuracy() {
@@ -51,6 +51,43 @@ final class SubmissionPlaceTest {
                 "Dokładność NaN została przyjęta"
             ).getMessage(),
             "Zły opis błędu dokładności NaN"
+        );
+    }
+
+    @Test
+    void rejectsInfiniteAndTooLargeAccuracy() {
+        Assertions.assertAll(
+            Stream.of(Double.POSITIVE_INFINITY, 10_000.001, Double.MAX_VALUE).map(
+                accuracy -> () -> Assertions.assertThrows(
+                    InvalidSubmission.class,
+                    () -> SubmissionPlaceTest.place(accuracy, "B1"),
+                    String.format("Dokładność %s została przyjęta", accuracy)
+                )
+            )
+        );
+    }
+
+    @Test
+    void rejectsBuildingSymbolLongerThanSixteenCharacters() {
+        Assertions.assertAll(
+            () -> Assertions.assertDoesNotThrow(
+                () -> SubmissionPlaceTest.place(1.0, "B".repeat(16)),
+                "Budynek o 16 znakach został odrzucony"
+            ),
+            () -> Assertions.assertThrows(
+                InvalidSubmission.class,
+                () -> SubmissionPlaceTest.place(1.0, "B".repeat(17)),
+                "Budynek o 17 znakach przeszedł"
+            )
+        );
+    }
+
+    @Test
+    void acceptsAccuracyOfTenKilometres() {
+        Assertions.assertEquals(
+            10_000.0,
+            SubmissionPlaceTest.place(10_000.0, "B1").accuracyMeters(),
+            "Dokładność 10000 m nie została przyjęta"
         );
     }
 

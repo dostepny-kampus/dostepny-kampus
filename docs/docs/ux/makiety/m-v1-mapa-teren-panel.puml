@@ -3,9 +3,8 @@
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
-$naglowek_startowy("Mapa kampusu")
+$naglowek_mapy("Pokaż listę")
 $pole_tekstowe("Wpisz symbol budynku, np. C-13")
-$przelacznik("Mapa", "Lista budynków", 1)
 $przycisk("Kampus główny ▴")
 $ramka()
 <b>Teren na mapie</b>

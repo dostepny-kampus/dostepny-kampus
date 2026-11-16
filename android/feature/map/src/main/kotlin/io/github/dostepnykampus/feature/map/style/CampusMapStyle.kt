@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.style
 
+import io.github.dostepnykampus.core.designsystem.Ikony
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
@@ -39,8 +40,8 @@ internal const val ENTRANCE_CAPTION_LAYER = "wejscie_podpis"
 /** Obraz pinezki zaznaczonego wejścia, której czubek stoi w punkcie wejścia. Wymagania: US3.3 */
 internal const val ENTRANCE_PIN_IMAGE = "wejscie_pinezka"
 
-/** Wysokość i szerokość znaku wejścia w dp. Wymagania: US2.1, NFR-21 */
-internal const val ENTRANCE_MARK_DP = 28
+/** Wysokość i szerokość znaku wejścia w dp, z tokenu `ikony.znak_mapy`. Wymagania: US2.1, NFR-21 */
+internal val ENTRANCE_MARK_DP: Int = Ikony.znakMapy.value.toInt()
 
 /** Warstwa wyblaknięcia mapy poza granicą terenu. Wymagania: US1.7, BR-G5 */
 internal const val OUTSIDE_LAYER = "teren-poza"

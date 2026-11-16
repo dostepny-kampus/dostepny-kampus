@@ -24,8 +24,8 @@ Androida. Zanim zmienisz moduł, przeczytaj jego opis.
 
 1. Znajdź albo załóż issue. Przypisz się w chwili, gdy zaczynasz, nie wcześniej.
 2. Gałąź `N-krotki-opis` od aktualnej gałęzi `sprint/N`.
-3. Jedno issue to jeden PR, możliwie najmniejszy. 300 linii to sufit, nie cel.
-   Wyjątek: zmiana mechaniczna jednego rodzaju (zmiany nazw, przeniesienia) idzie paczkami blisko 300 linii,
+3. Jedno issue to jeden PR, możliwie najmniejszy. 400 dodanych linii to sufit, nie cel; usunięte linie się nie liczą.
+   Wyjątek: zmiana mechaniczna jednego rodzaju (zmiany nazw, przeniesienia) idzie paczkami blisko 400 dodanych linii,
    a PR zamyka kilka issue (`Closes #a`, `Closes #b`); np. nazwy testów trzech pakietów to jeden PR, nie trzy.
    Każdy PR to pełny przebieg CI.
 4. Testy są pierwsze: najpierw test, który nie przechodzi, potem kod.

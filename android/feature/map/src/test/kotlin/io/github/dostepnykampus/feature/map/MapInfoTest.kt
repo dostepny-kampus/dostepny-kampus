@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertWidthIsAtLeast
@@ -40,7 +41,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import java.time.LocalDate
 
-/** Przycisk „ⓘ” mapy V1 i panel „Źródła danych”. Wymagania: NFR-17, NFR-18, NFR-37, NFR-40 */
+/** Przycisk „ⓘ” mapy V1 i arkusz „Legenda” ze źródłami. Wymagania: US1.4, NFR-17, NFR-18, NFR-37, NFR-40 */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h800dp-xhdpi")
@@ -48,32 +49,40 @@ class MapInfoTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    /** „ⓘ” jest przyciskiem o celu dotyku 48 dp z nazwą „Informacje o mapie” dla TalkBack. Wymagania: NFR-17, NFR-18 */
+    /** „ⓘ” jest przyciskiem o celu dotyku 48 dp z nazwą dla TalkBack. Wymagania: NFR-17, NFR-18 */
     @Test
     fun namesInfoButton() {
         compose.setContent { Info(isOpenAtStart = false) }
-        val button = compose.onNodeWithContentDescription("Informacje o mapie", useUnmergedTree = true)
+        val button = compose.onNodeWithContentDescription(NAME, useUnmergedTree = true)
         button.assertExists()
         compose
             .onNode(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button))
             .assertHasClickAction()
             .assertHeightIsAtLeast(48.dp)
             .assertWidthIsAtLeast(48.dp)
-        compose.onNodeWithText("Źródła danych").assertDoesNotExist()
+        compose.onNodeWithText("Legenda").assertDoesNotExist()
     }
 
-    /** Panel podaje źródła, licencję i dzień stanu danych, a „Zamknij” go zamyka. Wymagania: NFR-37, NFR-40, NFR-53 */
+    /**
+     * Arkusz „Legenda” objaśnia każdy znak mapy słowem; znaki wejść różnią się kształtem. Na końcu są „Źródła
+     * danych” z licencją i dniem stanu danych, a „Zamknij” zamyka arkusz.
+     *
+     * Wymagania: US1.4, NFR-21, NFR-37, NFR-40, NFR-53
+     */
     @Test
-    fun showsSourcesPanel() {
+    fun showsLegendWithSources() {
         compose.setContent { Info(isOpenAtStart = false) }
-        compose.onNodeWithContentDescription("Informacje o mapie").performClick()
+        compose.onNodeWithContentDescription(NAME).performClick()
+        compose.onNodeWithText("Legenda").assertExists()
+        SIGNS.forEach { compose.onNodeWithText(it).assertExists() }
         compose.onNodeWithText("Źródła danych").assertExists()
         val street = "Mapa ulic i kontury budynków: © OpenStreetMap contributors, dane na otwartej licencji ODbL."
         compose.onNodeWithText(street).assertExists()
         val campus = "Wejścia i plany pięter: Źródło: Politechnika Wrocławska, stan z 18.12.2023."
         compose.onNodeWithText(campus).assertExists()
-        compose.onNodeWithText("Zamknij").assertHasClickAction().performClick()
-        compose.onNodeWithText("Źródła danych").assertDoesNotExist()
+        val close = compose.onNodeWithText("Zamknij").assertHasClickAction()
+        close.assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button)).performClick()
+        compose.onNodeWithText("Legenda").assertDoesNotExist()
     }
 
     /** Bez dnia w danych panel podaje samo źródło. Wymagania: NFR-40 */
@@ -83,14 +92,14 @@ class MapInfoTest {
         compose.onNodeWithText("Wejścia i plany pięter: Źródło: Politechnika Wrocławska.").assertExists()
     }
 
-    /** Zrzut do porównania z makietą hi-fi V1 „źródła danych”, motyw jasny. */
+    /** Zrzut do porównania z makietą hi-fi V1 „legenda”, motyw jasny. */
     @Test
     fun matchesLightMockup() {
         compose.setContent { Info(isOpenAtStart = true) }
         compose.onRoot().captureRoboImage()
     }
 
-    /** Zrzut do porównania z makietą hi-fi V1 „źródła danych”, motyw ciemny. */
+    /** Zrzut do porównania z makietą hi-fi V1 „legenda”, motyw ciemny. */
     @Test
     @Config(qualifiers = "+night")
     fun matchesDarkMockup() {
@@ -112,5 +121,7 @@ class MapInfoTest {
     private companion object {
         val MapGround = Color(0xFFBEE3F2)
         val DAY: LocalDate = LocalDate.of(2023, 12, 18)
+        const val NAME = "Legenda i źródła mapy"
+        val SIGNS = listOf("Budynek Politechniki", "Wejście dostępne", "Wejście niedostępne", "Wejście bez danych")
     }
 }

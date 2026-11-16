@@ -33,9 +33,10 @@ record ReviewRequest(
 ) {
 
     /**
-     * Przenosi ciało żądania do decyzji domeny; brak wersji, nieznany rodzaj decyzji
-     * i odrzucenie bez powodu kończą się wyjątkiem {@link InvalidSubmission}; tak samo
-     * przyjęcie z samym typem bariery albo samą uciążliwością.
+     * Przenosi ciało żądania do decyzji domeny; brak wersji, nieznany rodzaj decyzji,
+     * odrzucenie bez powodu i powód dłuższy niż 500 znaków kończą się wyjątkiem
+     * {@link InvalidSubmission}; tak samo przyjęcie z samym typem bariery albo samą
+     * uciążliwością.
      *
      * @param path Identyfikator zgłoszenia z adresu
      * @param reviewer Identyfikator konta Weryfikatora
@@ -51,6 +52,9 @@ record ReviewRequest(
         } else if ("REJECT".equals(this.decision)) {
             if (this.rejectionReason == null || this.rejectionReason.isBlank()) {
                 throw new InvalidSubmission("Odrzucenie wymaga powodu w polu rejectionReason");
+            }
+            if (this.rejectionReason.length() > 500) {
+                throw new InvalidSubmission("Powód odrzucenia ma najwyżej 500 znaków");
             }
             result = new ReviewDecision.Rejected(
                 path, this.version, reviewer, this.rejectionReason, this.duplicateOf

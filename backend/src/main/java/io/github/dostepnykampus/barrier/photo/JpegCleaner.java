@@ -7,15 +7,17 @@ package io.github.dostepnykampus.barrier.photo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import org.apache.commons.imaging.ImagingException;
 import org.apache.commons.imaging.bytesource.ByteSource;
 import org.apache.commons.imaging.formats.jpeg.JpegConstants;
 import org.apache.commons.imaging.formats.jpeg.xmp.JpegRewriter;
 
 /**
- * Usuwa metadane ze zdjęcia JPEG przed zapisem, bez ponownego kodowania obrazu:
- * segmenty APP1 (EXIF, XMP), APP3–APP15 (m.in. IPTC) i COM przed pierwszym SOS.
- * Zostają APP0 (JFIF) i APP2 z profilem ICC; dane od pierwszego SOS nie są analizowane.
+ * Usuwa metadane JPEG bez ponownego kodowania: APP1 (EXIF, XMP), APP3–APP15 i COM przed SOS.
+ * Zostają tylko APP0 JFIF i APP2 ICC_PROFILE; miniatura JFXX i inne APP2 (MPF, FPXR) znikają.
+ * Wynik musi dać się zdekodować jako obraz najwyżej 4096 × 4096 pikseli ({@link JpegImage}).
  * Z EXIF znika orientacja, więc zdjęcie ma przyjść już obrócone. Obce bajty pomiędzy
  * segmentami są odrzucane, także gdy parser biblioteki umie je pominąć.
  *
@@ -37,14 +39,19 @@ public final class JpegCleaner extends JpegRewriter {
      *
      * @param jpeg Plik JPEG z telefonu
      * @return Plik JPEG bez EXIF, XMP, IPTC i komentarzy
-     * @throws IOException Gdy nagłówek nie jest poprawnym JPEG
+     * @throws IOException Gdy nagłówek nie jest poprawnym JPEG, ma ponad 64 segmenty, obraz
+     *  jest za duży albo jego dane są uszkodzone
      */
     public byte[] strip(final byte[] jpeg) throws IOException {
+        new JpegLayout(jpeg).verify();
+        final byte[] clean;
         try {
-            return this.rewrite(jpeg);
+            clean = this.rewrite(jpeg);
         } catch (final ImagingException ex) {
             throw new IOException("Uszkodzony nagłówek JPEG", ex);
         }
+        new JpegImage(clean).verify();
+        return clean;
     }
 
     private byte[] rewrite(final byte[] jpeg) throws ImagingException, IOException {
@@ -62,15 +69,30 @@ public final class JpegCleaner extends JpegRewriter {
         return output.toByteArray();
     }
 
+    private static boolean starts(final JFIFPieceSegment segment, final String name) {
+        final byte[] prefix = name.getBytes(StandardCharsets.US_ASCII);
+        final byte[] data = segment.getSegmentData();
+        return data.length >= prefix.length
+            && Arrays.equals(data, 0, prefix.length, prefix, 0, prefix.length);
+    }
+
     private static boolean keep(final JFIFPiece piece) {
         boolean allowed = true;
         if (piece instanceof JFIFPieceSegment segment) {
             allowed = segment.marker != JpegConstants.COM_MARKER;
             if (segment.isAppSegment()) {
-                allowed = segment.marker == JpegConstants.JPEG_APP0_MARKER
-                    || segment.marker == JpegConstants.JPEG_APP2_MARKER;
+                allowed = JpegCleaner.marked(segment, JpegConstants.JPEG_APP0_MARKER, "JFIF\0")
+                    || JpegCleaner.marked(
+                        segment, JpegConstants.JPEG_APP2_MARKER, "ICC_PROFILE\0"
+                    );
             }
         }
         return allowed;
+    }
+
+    private static boolean marked(
+        final JFIFPieceSegment segment, final int marker, final String id
+    ) {
+        return segment.marker == marker && JpegCleaner.starts(segment, id);
     }
 }

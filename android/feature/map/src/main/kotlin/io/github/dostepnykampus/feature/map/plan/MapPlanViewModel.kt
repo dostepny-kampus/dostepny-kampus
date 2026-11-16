@@ -12,6 +12,7 @@ import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -53,5 +54,10 @@ class MapPlanViewModel
         /** Pokazuje piętro [floor] budynku [building] i zapamiętuje je. */
         fun chooseFloor(building: String, floor: String) {
             plan.choose(building, floor)
+        }
+
+        /** Pokazuje piętro z zaznaczenia budynku [focus] raz na zaznaczenie; zaznaczenie bez piętra nic nie zmienia. */
+        fun show(focus: MapFocus?) {
+            plan.show(focus)
         }
     }

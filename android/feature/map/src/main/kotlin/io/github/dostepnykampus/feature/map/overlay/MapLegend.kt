@@ -7,23 +7,14 @@ package io.github.dostepnykampus.feature.map.overlay
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -35,16 +26,9 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.Typografia
-import io.github.dostepnykampus.core.designsystem.Wysokosci
-import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.marking.markingImage
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.R
@@ -62,85 +46,18 @@ private val ENTRANCE_WORDS =
         EntranceMarking.NO_DATA to R.string.mapa_legenda_wejscie_bez_danych,
     )
 
-/**
- * „Legenda” mapy V1 według makiety hi-fi: przycisk w lewym górnym rogu mapy, a pod nim, gdy [isOpen], panel ze
- * znakami mapy. Przycisk ma cel dotyku 48 dp i słowo „Legenda”, które czyta TalkBack.
- *
- * Wymagania: US1.4, NFR-17, NFR-18
- *
- * @param isOpen czy panel legendy jest rozwinięty
- * @param onOpenChange dotknięcie przycisku albo „Zamknij” w panelu
- * @param modifier położenie na mapie
- */
+/** Znaki mapy V1, każdy z napisem, do arkusza legendy. Wymagania: US1.4, NFR-21 */
 @Composable
-internal fun MapLegend(isOpen: Boolean, onOpenChange: (Boolean) -> Unit, modifier: Modifier = Modifier) {
-    Column(modifier.padding(Odstepy.s), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        val toggle = Modifier.clickable(role = Role.Button) { onOpenChange(!isOpen) }
-        val row = Modifier.padding(start = Odstepy.m, end = Odstepy.l)
-        MapTogglePill(isOpen = isOpen, modifier = toggle, rowModifier = row) {
-            Icon(imageVector = MapControlIcons.Legend, contentDescription = null)
-            Text(
-                text = stringResource(R.string.mapa_legenda),
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = Typografia.wyroznienieWaga,
-            )
-        }
-        val panel = Modifier.weight(weight = 1f, fill = false)
-        if (isOpen) LegendPanel(onClose = { onOpenChange(false) }, modifier = panel)
+internal fun LegendSigns() {
+    LegendRow(stringResource(R.string.mapa_legenda_budynek)) { BuildingSample() }
+    ENTRANCE_WORDS.forEach { (marking, word) ->
+        LegendRow(stringResource(word)) { EntranceSample(marking) }
     }
 }
 
+/** Napis „przewiń” pod treścią arkusza, która się nie mieści. Wymagania: NFR-20 */
 @Composable
-private fun LegendPanel(onClose: () -> Unit, modifier: Modifier = Modifier) {
-    val scroll = rememberScrollState()
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(Zaokraglenia.duze),
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-        shadowElevation = Wysokosci.kontrolkiMapy,
-        border = mapControlBorder(),
-    ) {
-        Column {
-            LegendHeader(onClose)
-            HorizontalDivider()
-            LegendSigns(Modifier.weight(weight = 1f, fill = false).verticalScroll(scroll).padding(Odstepy.m))
-            if (scroll.canScrollForward) ScrollHint()
-        }
-    }
-}
-
-@Composable
-private fun LegendHeader(onClose: () -> Unit) {
-    Row(Modifier.padding(start = Odstepy.m, end = Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            text = stringResource(R.string.mapa_legenda),
-            modifier = Modifier.weight(1f).semantics { heading() },
-            style = MaterialTheme.typography.titleMedium,
-        )
-        OutlinedButton(onClick = onClose, modifier = Modifier.heightIn(min = CeleDotyku.minimum)) {
-            Text(stringResource(R.string.mapa_zamknij))
-        }
-    }
-}
-
-@Composable
-private fun LegendSigns(modifier: Modifier = Modifier) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        LegendRow(stringResource(R.string.mapa_legenda_budynek)) { BuildingSample() }
-        ENTRANCE_WORDS.forEach { (marking, word) ->
-            LegendRow(stringResource(word)) { EntranceSample(marking) }
-        }
-        HorizontalDivider()
-        Text(
-            text = stringResource(R.string.mapa_legenda_zrodla),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
-}
-
-@Composable
-private fun ScrollHint() {
+internal fun ScrollHint() {
     Column {
         HorizontalDivider()
         Text(

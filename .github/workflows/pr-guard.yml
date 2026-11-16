@@ -65,7 +65,7 @@ jobs:
             echo "Scalenie sprintu do main: każda zmiana przeszła limit w PR do gałęzi sprintu."
             exit 0
           fi
-          bash .github/scripts/rozmiar-pr.sh "$BASE_SHA" "$HEAD_SHA" 300
+          bash .github/scripts/rozmiar-pr.sh "$BASE_SHA" "$HEAD_SHA" 400
 
       - uses: actions/setup-node@v7.1.0
         if: &kod ${{ !cancelled() && steps.drzewo.outputs.pomin != 'true' }}

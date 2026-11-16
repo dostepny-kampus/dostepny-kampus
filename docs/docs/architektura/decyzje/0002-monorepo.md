@@ -4,7 +4,7 @@ Status: przyjęta. Data: 2026-10-28. Źródło: decyzje projektu nr 4, 5 i 40.
 
 ## Kontekst i problem
 
-Kontrakt API, serwer, aplikacja, dane budynków, scenariusze akceptacyjne i dokumentacja zmieniają się razem. Zespół ma trzy osoby, a PR zadania ma najwyżej 300 zmienionych linii (NFR-46).
+Kontrakt API, serwer, aplikacja, dane budynków, scenariusze akceptacyjne i dokumentacja zmieniają się razem. Zespół ma trzy osoby, a PR zadania ma najwyżej 400 dodanych linii (NFR-46).
 
 ## Rozważone opcje
 

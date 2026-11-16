@@ -12,6 +12,7 @@ import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.feature.map.building.orderedEntrances
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,6 +56,7 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
     private val cameras = MutableStateFlow<MapCamera?>(null)
     private val chosen = MutableStateFlow<Map<String, String>>(emptyMap())
     private val downloaded = mutableSetOf<String>()
+    private var shownFocus: MapFocus? = null
 
     /** Zapisuje widok mapy [view] po ruchu kamery. */
     fun camera(view: MapCamera) {
@@ -64,6 +66,17 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
     /** Zapamiętuje piętro [floor] budynku [building]. */
     fun choose(building: String, floor: String) {
         chosen.update { it + (building to floor) }
+    }
+
+    /**
+     * Zapamiętuje piętro z zaznaczenia budynku [focus] raz na zaznaczenie; ponowne podanie tego samego zaznaczenia
+     * nie cofa piętra wybranego później. Zaznaczenie bez piętra nic nie zmienia.
+     */
+    fun show(focus: MapFocus?) {
+        if (focus == shownFocus) return
+        shownFocus = focus
+        val building = focus as? MapFocus.Building
+        building?.floor?.let { choose(building = building.symbol, floor = it) }
     }
 
     /** Plan przy widoku mapy dla katalogów [catalogs]; `null`, gdy planu nie widać. */

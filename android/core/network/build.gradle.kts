@@ -40,7 +40,7 @@ val generateContractModels =
         cleanupOutput = true
         modelFilesConstrainedTo =
             listOf(
-                "BuildingList", "BuildingDetails", "LocateResult", "FloorList", "RoomList",
+                "BuildingList", "BuildingDetails", "LocateResult", "FloorList", "RoomList", "RoomSearchResults",
                 "SubmissionContent", "Submission", "VersionConflictProblem", "BuildingProgress",
             )
         generateRecursiveDependentModels = true
@@ -78,6 +78,7 @@ dependencies {
     implementation(project(":core:geo"))
     implementation(libs.hilt.core)
     implementation(libs.okhttp)
+    implementation(libs.timber)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.junit.jupiter.params)

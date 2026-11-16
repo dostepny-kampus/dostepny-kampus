@@ -7,8 +7,11 @@ package io.github.dostepnykampus.feature.map
 
 import androidx.compose.runtime.mutableStateOf
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.feature.map.camera.FreeMap
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
+import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.camera.byControl
 import io.github.dostepnykampus.feature.map.camera.zoomedOut
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
@@ -23,16 +26,32 @@ class MapSceneStateTest {
     private val opened = mutableListOf<String>()
     private val choices = mutableStateOf(listOf("stary wybór"))
     private var emptyTaps = 0
+    private val landing = FreeMap(widthDp = 411.0, heightDp = 600.0, endDp = 160.0, marginDp = 24.0)
 
     private fun state(isCovered: Boolean = false, limits: MapLimits? = null) =
         MapSceneState(
             scene = null,
-            shown = SceneCamera(start.byControl()),
+            shown = SceneCamera(move = start.byControl(), inset = MapInset(), landing = landing),
             limits = limits,
             cover = mapCover(isCovered, hasControls = true),
             choices = choices,
             onCamera = cameraKeeper(isCovered, onMap = { cameras += it }, onCard = { cardCameras += it }),
         )
+
+    /**
+     * Wiersz: V1, wybór terenu z listy zapisuje widok na wszystkie budynki terenu, nie bliżej niż powiększenie
+     * startowe.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Po wyborze terenu widać wszystkie jego budynki
+     *
+     * Wymagania: US1.7, BR-G5
+     */
+    @Test
+    fun landsOnChosenArea() {
+        val building = CampusBounds(west = 17.0599, south = 51.1099, east = 17.0601, north = 51.1101)
+        state().land(building)
+        assertEquals(START_ZOOM, cameras.single().zoom, "budynek mały: powiększenie startowe")
+        assertEquals(51.11, cameras.single().center.latitude, 1e-9, "budynek na środku w pionie")
+    }
 
     private fun touch(vararg symbols: String) =
         state().touch(symbols = symbols.toList(), onBuilding = { opened += it }, onEmpty = { emptyTaps++ })

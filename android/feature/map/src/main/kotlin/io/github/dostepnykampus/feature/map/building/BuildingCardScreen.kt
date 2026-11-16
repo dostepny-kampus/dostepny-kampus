@@ -99,7 +99,10 @@ fun BuildingCardScreen(
     )
 }
 
-/** V2 dla gotowego stanu [card] i [isOnline]; „Spróbuj ponownie” to [onRetry], reszta jak w [BuildingCardScreen]. */
+/**
+ * V2 dla gotowego stanu [card] i [isOnline]; „Spróbuj ponownie” to [onRetry], „Pokaż na planie” to [onShowPlan]
+ * z identyfikatorem piętra, reszta jak w [BuildingCardScreen].
+ */
 @Composable
 fun BuildingCardContent(
     symbol: String,
@@ -115,6 +118,7 @@ fun BuildingCardContent(
     modifier: Modifier = Modifier,
     onShowEntrance: (String) -> Unit = {},
     onReportRemoval: ((String) -> Unit)? = null,
+    onShowPlan: (String) -> Unit = {},
 ) {
     val isFullScreen = mode != CardMode.Compact
     Column(if (isFullScreen) modifier.fillMaxSize() else modifier) {
@@ -140,6 +144,7 @@ fun BuildingCardContent(
                 onShowEntrance = onShowEntrance,
                 onReportRemoval = onReportRemoval,
                 onRetry = onRetry,
+                onShowPlan = onShowPlan,
             )
         }
     }
@@ -153,6 +158,7 @@ private fun FactsOrMissing(
     onShowEntrance: (String) -> Unit,
     onReportRemoval: ((String) -> Unit)?,
     onRetry: () -> Unit,
+    onShowPlan: (String) -> Unit,
 ) {
     if (card is BuildingCardUiState.Ready && isFullScreen) {
         BuildingFacts(
@@ -160,6 +166,7 @@ private fun FactsOrMissing(
             onReportEntrance = onReportEntrance,
             onShowEntrance = onShowEntrance,
             onReportRemoval = onReportRemoval,
+            onShowPlan = onShowPlan,
         )
     }
     if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = onRetry)
@@ -230,6 +237,7 @@ private fun BuildingFacts(
     onReportEntrance: (String) -> Unit,
     onShowEntrance: (String) -> Unit,
     onReportRemoval: ((String) -> Unit)?,
+    onShowPlan: (String) -> Unit,
 ) {
     val common = commonAssessment(card.entrances)
     common?.let { AssessmentLine(it) }
@@ -245,7 +253,7 @@ private fun BuildingFacts(
     }
     BarriersGroup(card, onReportRemoval)
     card.floors?.let { LiftToiletGroup(it) }
-    FloorsGroup(card.floors)
+    FloorsGroup(facts = card.floors, onShowPlan = onShowPlan)
 }
 
 @Composable

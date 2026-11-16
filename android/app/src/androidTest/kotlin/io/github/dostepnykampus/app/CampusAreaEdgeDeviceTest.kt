@@ -63,12 +63,10 @@ class CampusAreaEdgeDeviceTest {
     }
 
     /**
-     * Sprawdza na emulatorze, że przesuwanie mapy palcem w stronę sąsiedniego terenu zatrzymuje
-     * kamerę na granicy „Kampusu głównego”, a poza granicą mapa jest wyblakła i granicę pokazuje linia z obwódką.
+     * Sprawdza na emulatorze, że przesuwanie mapy palcem w stronę sąsiedniego terenu zatrzymuje wschodni brzeg
+     * widoku na brzegu prostokąta „Kampusu głównego”, a poza granicą mapa jest wyblakła i granicę pokazuje linia.
      *
      * Scenariusz: przegladanie-mapy.feature: Mapa nie wychodzi poza wybrany teren
-     * Scenariusz (częściowo): przegladanie-mapy.feature: Poza granicą terenu podkład jest wyblakły, a granicę
-     *   pokazuje linia
      *
      * Wymagania: US1.7, BR-G5, NFR-39, NFR-41
      */
@@ -85,16 +83,16 @@ class CampusAreaEdgeDeviceTest {
             composeRule.waitUntil(SWIPE_SETTLE_TIMEOUT_MS) { !tracker.isMoving.get() }
             composeRule.waitForIdle()
             val swipeLine = eastSwipeLine(mapView)
-            panEastUntilEdge(swipeLine, tracker) { longitudeOf(map) >= mainBounds.east - EDGE_TOLERANCE_DEGREES }
+            panEastUntilEdge(swipeLine, tracker) { visibleEastOf(map) >= mainBounds.east - EDGE_TOLERANCE_DEGREES }
             val edgeTarget = composeRule.runOnUiThread { requireNotNull(map.cameraPosition.target) }
-            assertAtEastEdgeWithinBounds(edgeTarget, mainBounds)
+            assertAtEastEdgeWithinBounds(edgeTarget, visibleEastOf(map), mainBounds)
             repeat(EXTRA_SWIPES_AT_EDGE) {
                 performEastSwipe(swipeLine, tracker)
                 awaitUiPause(EXTRA_SETTLE_PAUSE_MS)
                 composeRule.waitForIdle()
             }
             val afterExtra = composeRule.runOnUiThread { requireNotNull(map.cameraPosition.target) }
-            assertAtEastEdgeWithinBounds(afterExtra, mainBounds)
+            assertAtEastEdgeWithinBounds(afterExtra, visibleEastOf(map), mainBounds)
             assertTrue(
                 "Kamera wyszła poza krawędź: edge=$edgeTarget, after=$afterExtra",
                 abs(afterExtra.longitude - edgeTarget.longitude) <= EDGE_TOLERANCE_DEGREES,
@@ -158,8 +156,8 @@ class CampusAreaEdgeDeviceTest {
         }
     }
 
-    private fun longitudeOf(map: MapLibreMap): Double =
-        composeRule.runOnUiThread { requireNotNull(map.cameraPosition.target) }.longitude
+    private fun visibleEastOf(map: MapLibreMap): Double =
+        composeRule.runOnUiThread { map.projection.visibleRegion.latLngBounds.longitudeEast }
 
     private fun performEastSwipe(swipeLine: Pair<Offset, Offset>, tracker: MotionTracker) {
         val idleBefore = tracker.idleCount.get()
@@ -177,11 +175,11 @@ class CampusAreaEdgeDeviceTest {
         }
     }
 
-    private fun assertAtEastEdgeWithinBounds(target: LatLng, bounds: CampusBounds) {
+    private fun assertAtEastEdgeWithinBounds(target: LatLng, visibleEast: Double, bounds: CampusBounds) {
         assertTrue("Środek mapy wyszedł poza teren: target=$target, bounds=$bounds", isInsideBounds(target, bounds))
         assertTrue(
-            "Kamera nie osiągnęła wschodniej granicy: lon=${target.longitude}, east=${bounds.east}",
-            target.longitude >= bounds.east - EDGE_TOLERANCE_DEGREES,
+            "Wschodni brzeg widoku nie doszedł do brzegu terenu: visible=$visibleEast, east=${bounds.east}",
+            visibleEast >= bounds.east - EDGE_TOLERANCE_DEGREES,
         )
     }
 

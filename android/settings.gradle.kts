@@ -39,4 +39,5 @@ include(
     ":feature:inspection",
     ":detekt-rules",
     ":systemtest",
+    ":macrobenchmark",
 )

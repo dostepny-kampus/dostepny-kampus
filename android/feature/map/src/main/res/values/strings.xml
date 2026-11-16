@@ -10,9 +10,8 @@
     <string name="mapa_legenda_budynek">Budynek Politechniki</string>
     <string name="mapa_legenda_wejscie_niedostepne">Wejście niedostępne</string>
     <string name="mapa_legenda_wejscie_bez_danych">Wejście bez danych</string>
-    <string name="mapa_legenda_zrodla">Mapa ulic i kontury budynków: © OpenStreetMap contributors. Wejścia: Źródło: Politechnika Wrocławska.</string>
     <string name="mapa_legenda_przewin">Przewiń w dół ↓</string>
-    <string name="mapa_informacje">Informacje o mapie</string>
+    <string name="mapa_informacje">Legenda i źródła mapy</string>
     <string name="mapa_zrodla">Źródła danych</string>
     <string name="mapa_zrodla_osm_przed">"Mapa ulic i kontury budynków: "</string>
     <string name="mapa_zrodla_osm_po">, dane na otwartej licencji ODbL.</string>
@@ -98,6 +97,8 @@
     <string name="karta_bez_planu">Nie mamy planu pięter tego budynku.</string>
     <string name="karta_zwiniete">zwinięte</string>
     <string name="karta_rozwiniete">rozwinięte</string>
+    <string name="karta_pokaz_na_planie">Pokaż na planie</string>
+    <string name="karta_pokaz_na_planie_czytaj">Pokaż na planie: %1$s</string>
     <string name="wizyta_naglowek">Którędy wejść do %1$s</string>
     <string name="wizyta_brak_danych">Nie mamy jeszcze danych o wejściach do budynku %1$s.</string>
     <string name="wizyta_dostepne">Budynek %1$s ma wejście dostępne: »%2$s«.</string>

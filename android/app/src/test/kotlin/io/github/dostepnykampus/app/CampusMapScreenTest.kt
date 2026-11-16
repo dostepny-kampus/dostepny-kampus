@@ -214,8 +214,9 @@ class CampusMapScreenTest {
     }
 
     /**
-     * Wiersz: V1, strzałki przesuwania zatrzymują się na brzegu prostokąta terenu, czyli konturów (teren spoza
-     * pliku granic) powiększonych o 50 m z każdej strony, bez komunikatu.
+     * Wiersz: V1, strzałki przesuwania zatrzymują się bez komunikatu, gdy brzeg widoku dojdzie do brzegu prostokąta
+     * terenu, czyli konturów (teren spoza pliku granic) powiększonych o 100 m: środek zostaje wewnątrz prostokąta,
+     * a następna strzałka już nie przesuwa mapy.
      *
      * Wymagania: NFR-39, NFR-53
      */
@@ -225,7 +226,11 @@ class CampusMapScreenTest {
         repeat(times = 5) { compose.onNodeWithContentDescription("Pomniejsz").performClick() }
         repeat(times = 40) { compose.onNodeWithContentDescription("Przesuń mapę w prawo").performClick() }
         compose.waitForIdle()
-        assertEquals(1.0 + 50.0 / 111_195.0, cameras.last().center.longitude, 5e-5)
+        val edge = cameras.last()
+        assertTrue("środek ${edge.center} w prostokącie", edge.center.longitude in 0.5..1.0 + 100.0 / 111_195.0)
+        compose.onNodeWithContentDescription("Przesuń mapę w prawo").performClick()
+        compose.waitForIdle()
+        assertEquals("następna strzałka nie przesuwa mapy", edge, cameras.last())
     }
 
     /**
@@ -350,8 +355,7 @@ class CampusMapScreenTest {
         assertEquals(true, down.bottom <= bottom - 400.dp)
         compose.onNodeWithContentDescription("Przesuń mapę w górę").assertExists()
         compose.onNodeWithText("Mapa kampusu").assertDoesNotExist()
-        compose.onNodeWithText("Legenda").assertDoesNotExist()
-        compose.onNodeWithContentDescription("O danych mapy").assertDoesNotExist()
+        compose.onNodeWithContentDescription("Legenda i źródła mapy").assertDoesNotExist()
     }
 
     /**

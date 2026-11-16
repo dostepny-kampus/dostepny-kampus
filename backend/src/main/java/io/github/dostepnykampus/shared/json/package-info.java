@@ -5,7 +5,8 @@
  */
 
 /**
- * Wiązanie JSON bez null, nieznanych pól i niekanonicznych UUID.
+ * Wiązanie JSON bez null, nieznanych pól, niekanonicznych UUID i znaku NUL w napisach;
+ * wiązanie parametrów zapytania i ścieżki bez znaku NUL.
  *
  * @since 0.1.0
  */

@@ -22,13 +22,13 @@ Każda zasada wynika z wymagań albo z person. Grupa docelowa kursu to osoby sta
 
 | Zasada | Skutek w tokenach | Źródło |
 | --- | --- | --- |
-| Kolor nie niesie znaczenia. | Oznaczenie wejścia ma kształt ikony i słowo ze [słownika użytkownika](slownik-uzytkownika.md#metafory-i-ikony): koło ze znakiem ✓ „Dostępne”, ośmiokąt ze znakiem ✕ „Niedostępne”, romb ze znakiem ? „Brak danych”. Może stać w spokojnym kontenerze, a jego kolor tylko wzmacnia. Status zgłoszenia i uciążliwość nie mają kontenera: tekst i ikona w kolorze `onSurface`. | NFR-21, WCAG 1.4.1 [1], decyzja 48 |
-| Bez „sygnalizacji świetlnej”. | W palecie interfejsu nie ma zielonego ani żółtego, więc nie ma pary zielony/czerwony. Kontener „Dostępne” jest morski, „Niedostępne” przygaszony szaroróżowy, a „Brak danych” szary. W odcieniach szarości odróżnia je kształt ikony i słowo. | NFR-21, wymagania wspólne fazy B, decyzja 48 |
+| Kształt i słowo niosą znaczenie, barwa je powtarza. | Oznaczenie wejścia ma kształt ikony i słowo ze [słownika użytkownika](slownik-uzytkownika.md#metafory-i-ikony): koło ze znakiem ✓ „Dostępne”, ośmiokąt ze znakiem ✕ „Niedostępne”, romb ze znakiem ? „Brak danych”. Może stać w spokojnym kontenerze, a jego kolor tylko wzmacnia. Na mapie i w legendzie znaki wejść i barier mają barwę z `mapa.kolory.znak_…`: zielononiebieskie „Dostępne”, żółte „Utrudnienie”, pomarańczowe „Tylko z pomocą” i ciemnoczerwona „Blokada”. „Niedostępne” i „Brak danych” mają kolor tekstu mapy. Jasność maleje z uciążliwością, więc kolejność widać też w odcieniach szarości. Każdy znak ma obwódkę w kolorze tła mapy i kontur w kolorze tekstu mapy. Poza mapą i legendą status zgłoszenia i uciążliwość nie mają kontenera: tekst i ikona w kolorze `onSurface`. | NFR-21, WCAG 1.4.1 [1], decyzja 48 |
+| Bez „sygnalizacji świetlnej” poza mapą. | Poza znakami mapy i legendą paleta interfejsu nie ma zielonego ani żółtego, więc nie ma pary zielony/czerwony. Kontener „Dostępne” jest morski, „Niedostępne” przygaszony szaroróżowy, a „Brak danych” szary. W odcieniach szarości odróżnia je kształt ikony i słowo. | NFR-21, wymagania wspólne fazy B, decyzja 48 |
 | Jedna barwa akcentu: ciemny morski. | `primary` wyróżnia symbol budynku, jedyny przycisk wypełniony na ekranie, przyciski tekstowe i fokus. `primaryContainer` oznacza to, co wybrane, np. piętro, a w ciemnym motywie także tło przycisku wypełnionego. Czynność główną wyróżnia też położenie i rozmiar. | [wymagania wspólne](wymagania-ekranow.md#wymagania-wspolne), Material 3 [5] |
-| Daltonizm nie odbiera czytelności. | Protanopia i deuteranopia zacierają różnicę między czerwonym a zielonym, a oś morska zostaje czytelna. Skrypt liczy kontrast każdej pary także po symulacji obu typów [4]. | NFR-16, NFR-21 |
+| Daltonizm nie odbiera czytelności. | Protanopia i deuteranopia zacierają różnicę między czerwonym a zielonym, a oś morska zostaje czytelna. Barwy znaków mapy pochodzą z palety bezpiecznej przy daltonizmie (Okabe i Ito), a kolejność uciążliwości niesie jasność. Skrypt liczy kontrast każdej pary także po symulacji obu typów [4]. | NFR-16, NFR-21 |
 | Tekst ma kontrast co najmniej 7:1, a nie 4,5:1. | Próg poziomu AAA dla każdego tekstu, także drugorzędnego i błędu. Skrypt odrzuca próg niższy niż w NFR-16. | WCAG 1.4.6 [1], [2]; PE-1, PE-2, PE-3 |
 | Ramki, linie podziału, ikony i fokus mają kontrast co najmniej 3:1. | `outline` i `primary` są widoczną granicą pola, ramki i przycisku. Granicę wyznacza kontrast, a nie grubość obramowania. | NFR-16, WCAG 1.4.11 [1] |
-| Błąd przy polu nie jest statusem. | Ciemna czerwień `error` służy błędowi walidacji: obrysowanemu kołu ze znakiem „!” i tekstowi przy polu i nad formularzem oraz ramce pola bez wartości. Pogrubiony tekst mówi, co się stało i co zrobić. Ta sama rola barwi ramkę, obrysowane koło ze znakiem „!” i słowo „Ważne” w komunikacie ostrzegawczym przed czynnością, np. w kroku 1 V4. Znaczenie niesie kształt i słowo, a roli „ostrzeżenie” nie ma, bo paleta nie ma żółtego. Czerwień nigdy nie oznacza statusu, oznaczenia wejścia ani uciążliwości. Błąd serwera, zapisu i brak internetu to zwykły komunikat, bez czerwieni. | NFR-15 (WCAG 3.3.1), NFR-21, wymagania wspólne fazy B, decyzja 94 |
+| Błąd przy polu nie jest statusem. | Ciemna czerwień `error` służy błędowi walidacji: obrysowanemu kołu ze znakiem „!” i tekstowi przy polu i nad formularzem oraz ramce pola bez wartości. Pogrubiony tekst mówi, co się stało i co zrobić. Ta sama rola barwi ramkę, obrysowane koło ze znakiem „!” i słowo „Ważne” w komunikacie ostrzegawczym przed czynnością, np. w kroku 1 V4. Znaczenie niesie kształt i słowo, a roli „ostrzeżenie” nie ma, bo paleta poza znakami mapy nie ma żółtego. Rola `error` nigdy nie oznacza statusu, oznaczenia wejścia ani uciążliwości; „Blokada” na mapie ma własną barwę mapy `znak_blokada`. Błąd serwera, zapisu i brak internetu to zwykły komunikat, bez czerwieni. | NFR-15 (WCAG 3.3.1), NFR-21, wymagania wspólne fazy B, decyzja 94 |
 | Ciemny motyw dobieramy osobno. | Tło jest ciemnoszare zamiast czarnego, tekst jasnoszary zamiast białego, a akcent przygaszony. Warstwa wyżej jest jaśniejsza. Każda para ma w ciemnym motywie własny wynik kontrastu. Szczegóły w sekcji [Ciemny motyw](#ciemny-motyw). | Material, motyw ciemny [6] |
 | Kolory systemowe z tapety są wyłączone. | Aplikacja nie przejmuje barw z tapety telefonu (Android 12+), bo nie znamy ich kontrastu [8]. | NFR-16 |
 
@@ -40,7 +40,7 @@ Ciemny motyw nie jest negatywem jasnego. Warstwa leżąca wyżej jest jaśniejsz
 
 Akcent jest przygaszony. Rola `primary` służy tylko tekstowi, symbolowi budynku i ramkom, bo jako duże tło świeci na ciemnym ekranie. Przycisk wypełniony ma więc tło `primaryContainer`, napis `onPrimaryContainer` i ramkę 2 dp `primary`. Przycisk tonalny jest szary, mniej nasycony i bez ramki, więc czynność główną odróżnia nie tylko odcień, ale też gruba ramka.
 
-Mapa ma barwy nocne: grafitowy ląd, budynki PWr jako ciemny szaroniebieski blok i szaroniebieskie kontury zamiast jasnego morskiego. Obrys wybranego budynku (`pwr_wybrany`) jest jaśniejszy i grubszy niż kontur. Znaki barier i znaczniki wejść zostają wyraźne (co najmniej 3:1 do tła).
+Mapa ma barwy nocne: grafitowy ląd, budynki szczegółowe jako ciemny szaroniebieski blok, budynki podstawowe tuż jaśniejsze od lądu i szaroniebieskie kontury zamiast jasnego morskiego. Obrys wybranego budynku (`pwr_wybrany`) jest jaśniejszy i grubszy niż kontur. Znaki barier i znaczniki wejść zostają wyraźne (co najmniej 3:1 do tła).
 
 Rysunki, takie jak ilustracje barier, też nie są negatywem. Mają te same kształty i tę samą kolejność jasności co w dzień, tylko w ciemnych średnich tonach. Krawędzie i szczegóły rysunku mają kontrast co najmniej 3:1 do tła (NFR-16).
 
@@ -146,6 +146,10 @@ Wzór pochodzi z WCAG: współczynnik to `(L1 + 0,05) / (L2 + 0,05)`. L1 to lumi
 
 Paleta mapy jest w sekcji `mapa` pliku: podkład, budynki PWr i plan piętra w obu motywach, z listą par kontrastu w tym samym zapisie. Granicę terenu pokazuje linia `granica_terenu` z obwódką `granica_terenu_obwodka`. Poza granicą na podkład pada kolor `background` z kryciem z `mapa.krycie.teren_poza` (BR-G5). Znacznik wejścia ma ten sam kształt co oznaczenie na karcie (NFR-21).
 
+Budynek szczegółowy ma pełne tło `pwr` i gruby kontur. Budynek podstawowy ma blade tło `pwr_podstawowy` i cienki ciągły kontur. Różni je jasność tła i grubość konturu, a nie sam odcień (NFR-21).
+
+Barwy znaków wejść i barier (`znak_…`) też są w sekcji `mapa`. Aplikacja rysuje te znaki jako obrazy mapy i legendy, a nie przez motyw Material 3. Para każdej barwy z jej symbolem ma co najmniej 3:1 w obu motywach.
+
 Te pary mają te same progi (napisy 7:1, kontury i znaczniki 3:1) i spełniają je także po symulacji daltonizmu. Skrypt strony jeszcze ich nie sprawdza ani nie pokazuje w tabelach. Mapę nieba na C1 rysuje aplikacja, więc używa tylko ról z pliku, a system satelity rozróżnia kształt i podpis (US6.5).
 
 ## Typografia
@@ -210,6 +214,8 @@ Odstępy leżą na siatce 4 dp [5], a skrypt sprawdza wielokrotność. Cel dotyk
 | Zaokrąglenia | `zaokraglenia.kapsula`        | 24 dp   | kontrolki 48 dp, np. „Wstecz” na mapie, przyciski +/−, piętra w przełączniku, segmenty, małe przyciski                      | styl „Karta miejsca”                                     |
 | Zaokrąglenia | `zaokraglenia.bardzo_duze`    | 28 dp   | przyciski 56 dp i przypięte, pole wyszukiwania, przełącznik pięter, górne rogi arkusza                                      | styl „Karta miejsca” (Material 3, kształt bardzo duży)   |
 | Ikony        | `ikony.rozmiar`               | 24 dp   | ikona oznaczenia wejścia, chipu, przycisku i paska dolnego, zawsze z napisem obok                                           | NFR-21, słownik użytkownika (Metafory i ikony)           |
+| Ikony        | `ikony.znak_mapy`             | 28 dp   | znak wejścia „Dostępne” i „Niedostępne” na mapie V1                                                                         | US1.4, US2.1, NFR-21                                     |
+| Ikony        | `ikony.znak_mapy_brak_danych` | 20 dp   | znak wejścia „Brak danych” na mapie V1; w legendzie i na kartach ma rozmiar zwykłego znaku                                  | US1.4, US2.1, NFR-16, NFR-21                             |
 
 <!-- vale on -->
 <!-- wymiary:end -->
@@ -221,6 +227,8 @@ Między sąsiednimi przyciskami jest 16 dp, bo PE-1 ma lekkie drżenie dłoni. C
 Kontenery, karty, dzielniki i przyciski obrysowane mają ramkę 1 dp. Pola tekstowe, ramki opcji do wyboru i segmenty mają ramkę 2 dp, bo dotyka się ich w terenie, w słońcu (PE-1, PE-2).
 
 Wysokości elementów (cień) są w sekcji `wysokosci` pliku, w poziomach Material 3 [11]. Pływające kontrolki mapy mają 3 dp, a przypięty pasek czynności i mała karta V2 nad mapą 6 dp. W ciemnym motywie cień słabo widać, więc element pływający ma też obwódkę 1 dp. Skrypt strony jeszcze nie pokazuje tej sekcji w tabelach.
+
+Nagłówek V1 z polem wyszukiwania nie pływa nad mapą, więc nie ma cienia. Od mapy oddziela go linia 1 dp `outlineVariant`, a pole jest białe (`surfaceContainerLowest`). Ramka pola zostaje 2 dp, bo pole dotyka się w słońcu (PE-1).
 
 ## Jak faza C używa pliku
 

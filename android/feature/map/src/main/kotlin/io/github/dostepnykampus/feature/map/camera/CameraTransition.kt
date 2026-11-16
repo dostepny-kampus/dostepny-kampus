@@ -100,6 +100,15 @@ private fun flightMillis(from: MapCamera, to: MapCamera, free: FreeMap, distance
     return millis.coerceIn(minimumValue = FLIGHT_MIN_MILLIS, maximumValue = FLIGHT_MAX_MILLIS)
 }
 
+/**
+ * Widok, w którym prostokąt [outline] mieści się w wolnej części mapy [free] z marginesem, poza pasem przycisków
+ * mapy, w powiększeniu najwyżej [maxZoom].
+ *
+ * Wymagania: US1.7, BR-G5
+ */
+internal fun fitted(outline: CampusBounds, free: FreeMap, maxZoom: Double): MapCamera =
+    centered(outline = outline, zoom = fittingZoom(outline, free).coerceAtMost(maximumValue = maxZoom), free = free)
+
 private fun fittingZoom(outline: CampusBounds, free: FreeMap): Double {
     val width = (free.widthDp - free.endDp - 2 * free.marginDp).coerceAtLeast(minimumValue = 1.0)
     val height = (free.heightDp - 2 * free.marginDp).coerceAtLeast(minimumValue = 1.0)

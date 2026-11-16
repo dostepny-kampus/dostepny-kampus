@@ -43,6 +43,7 @@ import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.area.AreaEdgeAnnouncement
 import io.github.dostepnykampus.feature.map.area.MapAreas
 import io.github.dostepnykampus.feature.map.area.rememberMapAreas
+import io.github.dostepnykampus.feature.map.area.rememberNoticeHeight
 import io.github.dostepnykampus.feature.map.barrier.BarrierDescriptions
 import io.github.dostepnykampus.feature.map.barrier.ChosenBarrierSheet
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
@@ -246,6 +247,8 @@ private fun CampusMap(
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
     var barrierId by rememberSaveable { mutableStateOf<String?>(null) }
+    val width = with(LocalDensity.current) { size.width.toDp() }
+    val notice = rememberNoticeHeight(shift = areas.selectionNotice, width = width)
     val state =
         rememberMapSceneState(
             layers = layers,
@@ -256,6 +259,7 @@ private fun CampusMap(
             size = size,
             top = top,
             motion = motion,
+            notice = notice,
         )
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
         val scene = state.scene
@@ -266,13 +270,16 @@ private fun CampusMap(
                 selection = scene.selection.copy(barrier = barrierId, plan = plan),
                 move = move,
                 inset = state.inset,
-                onCameraIdle = { view -> onCamera(view.also { state.keep(it) }) },
+                onCameraIdle = { view ->
+                    areas.acknowledge()
+                    onCamera(view.also { state.keep(it) })
+                },
                 onBuildingsTouch = { state.touch(it, onBuildingClick, onEmptyMapClick).also { barrierId = null } },
                 onBarrierTouch = { barrierId = it.also { state.dismiss() } },
                 modifier = Modifier.fillMaxSize(),
             )
             scene.selection.entrance?.let { EntranceDescription(it) }
-            AreaEdgeAnnouncement(camera = move.camera, bounds = state.limits.bounds, area = areas.current?.name)
+            AreaEdgeAnnouncement(camera = move.camera, limits = state.limits, area = areas.current?.name)
             MapStatusBar(topInset, isShown = state.isCovered)
             val underBar = if (state.isCovered) topInset.asPaddingValues() else PaddingValues(top = top)
             val aboveSheet = Modifier.padding(underBar).padding(contentPadding)
@@ -282,9 +289,10 @@ private fun CampusMap(
                 dataDay = catalog?.dataDay(),
                 onCameraChange = state::move,
                 areas = areas,
-                onAreaShow = state::keep,
+                onAreaShow = state::land,
                 modifier = Modifier.fillMaxSize().safeDrawingPadding().then(aboveSheet),
                 hasPanels = !state.isCovered && !isKeyboardOpen,
+                hasNotice = !isKeyboardOpen,
                 side = { FloorColumn(plan = plan, onChoose = onFloorChoose) },
             ) {
                 val barrier = ChosenBarrier(id = barrierId, barriers = barriers, onClose = { barrierId = null })

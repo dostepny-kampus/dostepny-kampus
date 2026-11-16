@@ -20,6 +20,7 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -64,6 +65,14 @@ class FloorsGroupTest {
     }
 
     @Test
+    fun showsPlanOfFloor() {
+        val shown = mutableListOf<String>()
+        compose.setContent { Group(FACTS, onShowPlan = { shown += it }) }
+        compose.onNodeWithContentDescription("Pokaż na planie: Piwnica").performClick()
+        assertEquals("„Pokaż na planie” nie dał piętra wiersza", listOf("P-1"), shown)
+    }
+
+    @Test
     fun saysBuildingHasNoPlan() {
         compose.setContent { Group(null) }
         compose.onNodeWithText("Nie mamy planu pięter tego budynku.").assertExists()
@@ -102,11 +111,11 @@ class FloorsGroupTest {
 
     @Composable
     @OptIn(ExperimentalMaterial3Api::class)
-    private fun Group(facts: FloorFacts?) {
+    private fun Group(facts: FloorFacts?, onShowPlan: (String) -> Unit = {}) {
         DostepnyKampusTheme {
             CompositionLocalProvider(LocalRippleConfiguration provides null) {
                 Column(Modifier.background(MaterialTheme.colorScheme.surface).padding(16.dp)) {
-                    FloorsGroup(facts)
+                    FloorsGroup(facts = facts, onShowPlan = onShowPlan)
                 }
             }
         }

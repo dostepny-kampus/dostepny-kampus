@@ -35,7 +35,7 @@ Czynność główna: „Dalej” — zatwierdzenie miejsca i przejście do C2.
 | „Czy to budynek A-1?” i „Potwierdź”, „Wybierz inny”, „Poza budynkiem” | US6.2, BR-G2 |
 | „Przesuń mapę, aby punkt stał na miejscu bariery.” i punkt bariery na środku mapy | US6.4, NFR-3, decyzja 93 |
 | „Powiększ”, „Pomniejsz” i strzałki w krzyżu zamiast przeciągania; te same na V1 i R1 | US6.4, NFR-3, NFR-15, NFR-53 |
-| „ⓘ” przy „© OpenStreetMap contributors”: źródła i pełna licencja jak na V1 | NFR-37, NFR-40 |
+| „ⓘ” przy „© OpenStreetMap contributors”: legenda znaków tej mapy, źródła i pełna licencja jak na V1 | NFR-37, NFR-40 |
 | „Dalej” pogrubione, na pełną szerokość | US6, NFR-21 |
 
 ### Wybór innego budynku

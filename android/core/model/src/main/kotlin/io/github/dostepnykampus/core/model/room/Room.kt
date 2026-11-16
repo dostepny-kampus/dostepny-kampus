@@ -7,6 +7,7 @@ package io.github.dostepnykampus.core.model.room
 
 import io.github.dostepnykampus.core.model.GeoArea
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.building.Floor
 
 /**
  * Grupa funkcji pomieszczenia wyznaczona przez serwer z funkcji PWr (`RoomCategory` z kontraktu API).
@@ -68,6 +69,17 @@ public data class Room(
     val liftId: String? = null,
     val liftFloors: List<String> = emptyList(),
 )
+
+/**
+ * Sala znaleziona w wyszukiwaniu (pozycja `RoomSearchResults`): do pokazania na planie piętra.
+ *
+ * Wymagania: US18.1
+ *
+ * @property building symbol budynku z salą
+ * @property floor piętro z salą
+ * @property room sala do wyróżnienia na planie
+ */
+public data class FoundRoom(val building: String, val floor: Floor, val room: Room)
 
 /**
  * Pomieszczenia piętra ze źródłem danych (`RoomList`).

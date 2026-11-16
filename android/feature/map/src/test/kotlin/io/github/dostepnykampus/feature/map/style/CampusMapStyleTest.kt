@@ -84,7 +84,6 @@ class CampusMapStyleTest {
      * spodem: wielokąt poza terenem ma otwór o brzegach terenu, a obie linie biegną po tych samych brzegach. Bez
      * granicy z pliku brzegiem jest prostokąt terenu.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Mapa nie wychodzi poza wybrany teren
-     * Scenariusz: przegladanie-mapy.feature: Poza granicą terenu podkład jest wyblakły, a granicę pokazuje linia
      *
      * Wymagania: US1.7, BR-G5, NFR-16
      */

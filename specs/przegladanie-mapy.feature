@@ -280,43 +280,50 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi mapę terenu „Wittigowo” z budynkiem T-15
     Oraz na mapie widzi nazwę terenu „Wittigowo”
 
+  @US1.7 @BR-G5 @aplikacja
+  Scenariusz: Po wyborze terenu widać wszystkie jego budynki
+    Zakładając, że Gość niezalogowany ma otwartą listę terenów
+    Jeżeli wybierze teren „Wittigowo”
+    Wtedy na mapie widzi budynki T-15 i P-23
+    Oraz powiększenie mapy jest nie większe niż 17
+
   @US1.7 @BR-G5 @NFR-39 @aplikacja
   Scenariusz: Mapa nie wychodzi poza wybrany teren
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Kampus główny”
-    Jeżeli przesunie mapę do granicy terenu w stronę terenu „Wittigowo”
+    Jeżeli przesunie mapę do brzegu terenu w stronę terenu „Wittigowo”
     Wtedy mapa dalej się nie przesuwa
+    Oraz brzeg mapy leży na brzegu prostokąta terenu
 
-  @US1.7 @BR-G5 @NFR-16 @aplikacja
-  Scenariusz: Poza granicą terenu podkład jest wyblakły, a granicę pokazuje linia
-    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Kampus główny”
-    Jeżeli przesunie mapę do granicy terenu
-    Wtedy poza granicą terenu widzi wyblakły podkład
-    Oraz granicę terenu pokazuje linia z obwódką
+  # bez granicy i wyblaknięcia: #2627
+  @US1.7 @BR-G5 @NFR-39 @aplikacja @do-zrobienia
+  Scenariusz: Przy najmniejszym powiększeniu teren wypełnia mapę w krótszym wymiarze
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Wittigowo”
+    Jeżeli pomniejszy mapę do końca
+    Wtedy prostokąt terenu wypełnia mapę w krótszym wymiarze
+    Oraz wzdłuż dłuższego wymiaru mapę da się przesunąć tylko do brzegu prostokąta
+    Oraz mapa nie pokazuje granicy terenu ani wyblakłego podkładu
 
   @US1.7 @aplikacja
   Scenariusz: Przy granicy terenu TalkBack mówi, jak zmienić teren
     Zakładając, że Gość niezalogowany z włączonym TalkBack ma otwartą mapę kampusu na terenie „Kampus główny”
-    Jeżeli przesunie mapę przyciskami do granicy terenu
+    Jeżeli przesunie mapę przyciskami do brzegu terenu
     Wtedy TalkBack raz mówi „Tu kończy się teren Kampus główny. Inny teren wybierzesz przyciskiem «Zmień teren» u góry mapy.”
 
-  # napis przy otwartej małej karcie: #2459
-  @US1.8 @BR-G5 @aplikacja @do-zrobienia
+  @US1.8 @BR-G5 @aplikacja
   Scenariusz: Wyszukanie budynku z innego terenu zmienia teren
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Kampus główny”
     Jeżeli wyszuka „T-15” i wybierze wynik
     Wtedy widzi mapę terenu „Wittigowo” z zaznaczonym budynkiem T-15
     Oraz widzi napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód”
 
-  # napis przy otwartej małej karcie: #2459
-  @US1.8 @NFR-56 @aplikacja @do-zrobienia
+  @US1.8 @NFR-56 @aplikacja
   Scenariusz: TalkBack czyta napis o zmianie terenu raz, po nagłówku karty
     Zakładając, że Gość niezalogowany z włączonym TalkBack ma otwartą mapę kampusu na terenie „Kampus główny”
     Jeżeli wyszuka „T-15” i wybierze wynik
     Wtedy TalkBack czyta nagłówek karty budynku T-15
     Oraz potem raz czyta „Pokazuję teren: Wittigowo · 2 km na południowy wschód”
 
-  # napis przy otwartej małej karcie: #2459
-  @US1.8 @NFR-23 @aplikacja @do-zrobienia
+  @US1.8 @NFR-23 @aplikacja
   Scenariusz: Ruch mapy gasi widoczny napis o zmianie terenu
     Zakładając, że Gość niezalogowany wyszukał „T-15”, wybrał wynik i widzi napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód”
     Jeżeli przesunie mapę gestem

@@ -32,7 +32,7 @@ internal const val AREA_SOURCE = "teren"
 /** Źródło stylu z punktem zaznaczonego wejścia. Wymagania: US3.3 */
 internal const val CHOSEN_SOURCE = "wejscie"
 
-private const val CAPTION_OFFSET_DP = ENTRANCE_MARK_DP / 2 + 2
+private val CAPTION_OFFSET_DP = ENTRANCE_MARK_DP / 2 + 2
 private const val EDGE_WIDTH = 2.0
 private const val HALO_WIDTH = 1.5
 private val WORLD_RING = listOf(-180.0 to -85.0, 180.0 to -85.0, 180.0 to 85.0, -180.0 to 85.0, -180.0 to -85.0)

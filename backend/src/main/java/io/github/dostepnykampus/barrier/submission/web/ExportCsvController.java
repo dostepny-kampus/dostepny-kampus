@@ -17,6 +17,7 @@ import io.github.dostepnykampus.shared.geo.Puwg1992;
 import io.github.dostepnykampus.shared.geo.Puwg1992Point;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import org.apache.commons.csv.CSVFormat;
 import org.jspecify.annotations.Nullable;
@@ -26,7 +27,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Nagłówek i wiersze eksportu ze współrzędnymi w EPSG:2180.
+ * Nagłówek i wiersze eksportu ze współrzędnymi w EPSG:2180. Opis zaczynający się od
+ * {@code =}, {@code +}, {@code -}, {@code @}, tabulatora albo powrotu karetki dostaje na
+ * początku apostrof, więc arkusz kalkulacyjny pokazuje go jako tekst, nie formułę.
  *
  * <p>Wymagania: US13.2, US13.3</p>
  *
@@ -34,6 +37,11 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public final class ExportCsvController {
+
+    /**
+     * Pierwsze znaki, od których arkusz kalkulacyjny zaczyna formułę.
+     */
+    private static final Set<Character> FORMULA = Set.of('=', '+', '-', '@', '\t', '\r');
 
     /** Przyjęte zgłoszenia. */
     private final SubmissionReading submissions;
@@ -67,10 +75,18 @@ public final class ExportCsvController {
             Optional.ofNullable(place.buildingSymbol()).orElse(""),
             Optional.ofNullable(place.floor())
                 .map(floor -> this.floor(place.buildingSymbol(), floor)).orElse(""),
-            Optional.ofNullable(barrier.description()).orElse(""),
+            Optional.ofNullable(barrier.description()).map(ExportCsvController::text).orElse(""),
             Optional.of(submission.verification()).filter(time -> !Instant.MIN.equals(time))
                 .map(Instant::toString).orElse("")
         );
+    }
+
+    private static String text(final String value) {
+        String result = value;
+        if (!value.isEmpty() && ExportCsvController.FORMULA.contains(value.charAt(0))) {
+            result = "'".concat(value);
+        }
+        return result;
     }
 
     private static String group(final BarrierGroup group) {
