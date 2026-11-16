@@ -1,11 +1,13 @@
 name: straznik-jakosci
 
-# Przepływ i skrypt pochodzą z gałęzi docelowej (pull_request_target), więc PR nie może ich podmienić.
-# Kod z PR nie jest uruchamiany: commity PR są tylko danymi dla `git diff`.
+# Zdarzenie pull_request: GitHub wyłącza domyślnie pull_request_target w repozytoriach publicznych (#2757).
+# Przepływ pochodzi z PR, a skrypt strażnika z gałęzi docelowej; commity PR są tylko danymi dla `git diff`.
+# Zmiana tego pliku w PR to zmiana reguł jakości: wymaga etykiety zatwierdzenia od właściciela reguł.
+# PR z gałęzi tego repozytorium ma token z zapisem etykiet; PR z forków i PR Dependabota tylko do odczytu.
 # W kolejce scalania (merge_group) job tylko zalicza grupę: każdy jej PR przeszedł strażnika na PR, a bez wyniku
 # w grupie kontroli nie dałoby się ustawić jako wymaganej (#881).
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - main
       - "sprint/**"
