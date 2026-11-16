@@ -5,14 +5,16 @@
  */
 package io.github.dostepnykampus.barrier.photo;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
  * Plik JPEG z więcej niż 64 segmentami przed danymi obrazu jest odrzucany przed rozkładem
- * na segmenty, a 64 segmenty przechodzą.
+ * na segmenty, także poprawny obraz w czyszczeniu, a 64 segmenty przechodzą.
  *
  * <p>Wymagania: NFR-34</p>
  *
@@ -38,16 +40,25 @@ final class JpegLayoutTest {
     }
 
     @Test
-    void rejectsMillionEmptySegmentsThroughCleaner() {
+    void rejectsImageWithSixtyFiveCommentsInCleaner() throws IOException {
+        final ByteArrayOutputStream image = new ByteArrayOutputStream();
+        ImageIO.write(new BufferedImage(8, 8, BufferedImage.TYPE_INT_RGB), "jpg", image);
+        final byte[] plain = image.toByteArray();
+        final ByteArrayOutputStream marked = new ByteArrayOutputStream();
+        marked.write(plain, 0, 2);
+        for (int idx = 0; idx < 65; idx += 1) {
+            marked.writeBytes(new byte[] {(byte) 0xFF, (byte) 0xFE, 0, 2});
+        }
+        marked.write(plain, 2, plain.length - 2);
         Assertions.assertThrows(
             IOException.class,
-            () -> new JpegCleaner().strip(JpegLayoutTest.comments(1_000_000)),
-            "Plik z milionem pustych segmentów przeszedł"
+            () -> new JpegCleaner().strip(marked.toByteArray()),
+            "Poprawny obraz z 65 komentarzami przeszedł przez czyszczenie"
         );
     }
 
     private static byte[] comments(final int count) {
-        final ByteArrayOutputStream bytes = new ByteArrayOutputStream((count * 4) + 8);
+        final ByteArrayOutputStream bytes = new ByteArrayOutputStream(count * 4);
         bytes.writeBytes(new byte[] {(byte) 0xFF, (byte) 0xD8});
         for (int idx = 0; idx < count; idx += 1) {
             bytes.writeBytes(new byte[] {(byte) 0xFF, (byte) 0xFE, 0, 2});
