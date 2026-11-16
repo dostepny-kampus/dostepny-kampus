@@ -103,7 +103,7 @@ internal fun MapOverlay(
             onOpenChange = { saved = it },
             onAreaShow = onAreaShow,
             modifier = above,
-            start = start,
+            content = start,
         )
         Column(Modifier.align(Alignment.BottomStart)) {
             areas.notice?.takeIf { hasNotice && open == null }?.let {
@@ -130,7 +130,7 @@ private fun AreaColumn(
     onOpenChange: (MapPanel?) -> Unit,
     onAreaShow: (CampusBounds) -> Unit,
     modifier: Modifier = Modifier,
-    start: @Composable ColumnScope.() -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     Column(modifier) {
         val isOpen = open == MapPanel.Area
@@ -149,7 +149,7 @@ private fun AreaColumn(
                         .padding(start = Odstepy.s, top = Odstepy.s, end = Odstepy.s),
             )
         }
-        if (!isOpen) start()
+        if (!isOpen) content()
     }
 }
 
