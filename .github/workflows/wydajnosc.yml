@@ -1,0 +1,131 @@
+name: wydajnosc
+
+# Pomiary wydajności aplikacji (Macrobenchmark) na emulatorze, dla commita gałęzi sprintu. Wywołuje je tylko kontrola
+# sprintu po scaleniu (albo ręcznie), nigdy PR ani kolejka: zajmuje emulator i kilkanaście minut. Wynik to artefakty
+# (liczby i ślady Perfetto), podsumowanie z trendem i wpis na gałęzi danych `dane-wydajnosci`. Porażka pomiaru nie
+# zmienia statusu kontroli sprintu: nie jest w jego `needs`, a emulator bez GPU daje szum rzędu 10-20%.
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: Commit do zmierzenia
+        required: true
+        type: string
+  workflow_call:
+    inputs:
+      sha:
+        description: Commit gałęzi sprintu do zmierzenia
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  pomiar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: read
+    env:
+      IMAGE: system-images;android-36;default;x86_64
+      ANDROID_AVD_HOME: ${{ github.workspace }}/../avd
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ inputs.sha }}
+          persist-credentials: false
+      - name: Przygotuj JDK i cache Gradle
+        uses: ./.github/actions/android-gradle
+      - name: Zbuduj aplikację (release) i pomiary
+        working-directory: android
+        run: ./gradlew :app:assembleRelease :macrobenchmark:assembleBenchmark --console=plain
+      - name: Podpisz aplikację kluczem pomiarów
+        # Instrumentacja wymaga tego samego podpisu aplikacji i pakietu pomiarów (klucz debug tworzy Gradle).
+        run: |
+          narzedzie="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n 1)/apksigner"
+          nieprzypisany="$(find android/app/build/outputs/apk/release -name '*.apk' | head -n 1)"
+          "$narzedzie" sign --ks "$HOME/.android/debug.keystore" --ks-pass pass:android --key-pass pass:android \
+            --out "$RUNNER_TEMP/aplikacja.apk" "$nieprzypisany"
+          cp "$(find android/macrobenchmark/build/outputs/apk -name '*.apk' | head -n 1)" "$RUNNER_TEMP/pomiary.apk"
+      - name: Włącz KVM dla emulatora
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' |
+            sudo tee /etc/udev/rules.d/99-kvm.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Uruchom emulator API 36
+        timeout-minutes: 15
+        run: |
+          sdk="$ANDROID_HOME/cmdline-tools/latest/bin"
+          (yes || true) | "$sdk/sdkmanager" --licenses > /dev/null
+          "$sdk/sdkmanager" emulator platform-tools "$IMAGE" > /dev/null
+          export PATH="$ANDROID_HOME/platform-tools:$PATH"
+          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
+          mkdir -p "$ANDROID_AVD_HOME"
+          echo no | "$sdk/avdmanager" create avd --force -n kampus -k "$IMAGE"
+          nohup "$ANDROID_HOME/emulator/emulator" -avd kampus -no-window -no-audio -no-boot-anim \
+            -no-snapshot -gpu swiftshader_indirect -camera-back none > "$RUNNER_TEMP/emulator.log" 2>&1 &
+          if ! timeout 600 bash -c 'adb wait-for-device && until [[ "$(adb shell getprop sys.boot_completed | tr -d "\r")" == 1 ]]; do sleep 5; done'; then
+            echo "::error title=Emulator::Emulator nie uruchomił się w 10 minut."
+            cat "$RUNNER_TEMP/emulator.log"
+            exit 1
+          fi
+          for scale in window_animation_scale transition_animation_scale animator_duration_scale; do
+            adb shell settings put global "$scale" 0
+          done
+      - name: Zainstaluj i uruchom pomiary
+        timeout-minutes: 20
+        run: |
+          adb install -r "$RUNNER_TEMP/aplikacja.apk"
+          adb install -r -t "$RUNNER_TEMP/pomiary.apk"
+          uruchamiacz="$(adb shell pm list instrumentation | tr -d '\r' | sed -n 's/^instrumentation:\([^ ]*\) (target=io.github.dostepnykampus)$/\1/p' | head -n 1)"
+          echo "Uruchamiacz pomiarów: ${uruchamiacz}"
+          # Pomiar bez wyniku nie czerwieni zadania: statystyki pokażą dziurę (null) w historii.
+          adb shell am instrument -w -e additionalTestOutputDir /sdcard/Download/pomiary \
+            -e androidx.benchmark.suppressErrors EMULATOR,LOW-BATTERY "$uruchamiacz" | tee "$RUNNER_TEMP/instrument.log" ||
+            echo "::warning title=Wydajność::Uruchomienie pomiarów zakończyło się błędem."
+          mkdir -p "$RUNNER_TEMP/wyniki"
+          adb pull /sdcard/Download/pomiary/. "$RUNNER_TEMP/wyniki" || echo "::warning title=Wydajność::Brak plików wyników."
+      - name: Policz statystyki
+        env:
+          SHA: ${{ inputs.sha }}
+        run: |
+          mkdir -p wyniki
+          cp "$RUNNER_TEMP"/wyniki/*.perfetto-trace "$RUNNER_TEMP"/wyniki/*.json wyniki/ 2>/dev/null || true
+          DATA="$(date -u +%F)" bash .github/scripts/wydajnosc-statystyki.sh wyniki/*benchmarkData.json > wyniki/wyniki-wydajnosci.json ||
+            echo '{"sha":"'"$SHA"'","data":"'"$(date -u +%F)"'","start_ms":{},"klatka_ms":{},"wolne_proc":null}' > wyniki/wyniki-wydajnosci.json
+          cat wyniki/wyniki-wydajnosci.json
+      - name: Udostępnij wyniki i ślady Perfetto
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7.0.2
+        # Raport diagnostyczny: błąd zapisu artefaktu nie zmienia wyniku zadania (#1028).
+        continue-on-error: true
+        with:
+          name: wyniki-wydajnosci
+          path: wyniki/
+          if-no-files-found: warn
+          retention-days: 30
+
+  historia:
+    needs: pomiar
+    if: ${{ !cancelled() && needs.pomiar.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      # Jedyne zadanie z zapisem: dopisuje linię do gałęzi danych, bez dostępu do kodu sprintu.
+      contents: write
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+      - uses: actions/download-artifact@v8.0.2
+        with:
+          name: wyniki-wydajnosci
+          path: ${{ runner.temp }}/wyniki
+      - name: Dopisz wpis do historii i pokaż trend
+        env:
+          WPIS: ${{ runner.temp }}/wyniki/wyniki-wydajnosci.json
+          ZDALNE: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+        run: bash .github/scripts/wydajnosc-historia.sh | tee -a "$GITHUB_STEP_SUMMARY"
