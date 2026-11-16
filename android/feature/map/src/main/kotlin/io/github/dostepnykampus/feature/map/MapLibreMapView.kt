@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -131,7 +132,7 @@ object MapLibreMapView : CampusMapView {
         val labelSize = LABEL_TEXT_SP * density.density * density.fontScale.coerceAtMost(LABEL_MAX_FONT_SCALE)
         val tolerance = TOUCH_TOLERANCE_DP * density.density
         val images = rememberMapImages(colors = colors, density = density.density, labelSize = labelSize)
-        val mapView = rememberMapView(context)
+        val mapView = rememberMapView(context, background = colors.lad.toArgb())
         FollowScreenLifecycle(mapView)
         var map by remember { mutableStateOf<MapLibreMap?>(null) }
         var size by remember { mutableStateOf(IntSize.Zero) }
@@ -245,12 +246,12 @@ object MapLibreMapView : CampusMapView {
     }
 
     @Composable
-    private fun rememberMapView(context: Context): MapView =
+    private fun rememberMapView(context: Context, background: Int): MapView =
         remember {
             MapLibre.getInstance(context)
             val tiles = EntryPointAccessors.fromApplication<MapTileHttpEntryPoint>(context.applicationContext)
             HttpRequestUtil.setOkHttpClient(tiles.mapTileHttp().calls)
-            MapView(context, northUpOptions(context))
+            MapView(context, northUpOptions(context, background))
         }
 
     @Composable
@@ -460,9 +461,9 @@ object MapLibreMapView : CampusMapView {
 /**
  * Ustawienia widoku mapy V1: bez logo i podpisu biblioteki, bez gestu obrotu i pochylenia. Północ jest zawsze
  * u góry, bo tak liczą strzałki przesuwania i granica terenu, a [MapCamera] nie zna obrotu. Przesuwanie
- * i powiększanie gestem zostają.
+ * i powiększanie gestem zostają. Do pierwszej klatki widok ma barwę [background] (ARGB).
  */
-internal fun northUpOptions(context: Context): MapLibreMapOptions =
+internal fun northUpOptions(context: Context, background: Int): MapLibreMapOptions =
     MapLibreMapOptions
         .createFromAttributes(context)
         .textureMode(true)
@@ -470,6 +471,7 @@ internal fun northUpOptions(context: Context): MapLibreMapOptions =
         .attributionEnabled(false)
         .rotateGesturesEnabled(false)
         .tiltGesturesEnabled(false)
+        .foregroundLoadColor(background)
 
 /**
  * Styl mapy jako napis JSON bez zaznaczenia budynku, wejścia i bariery: z [selection] bierze tylko prostokąt
