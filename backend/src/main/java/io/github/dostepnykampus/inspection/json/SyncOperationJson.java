@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.inspection.web;
+package io.github.dostepnykampus.inspection.json;
 
 import io.github.dostepnykampus.inspection.domain.MarkerPlace;
 import io.github.dostepnykampus.inspection.domain.NewMarker;
@@ -20,7 +20,7 @@ import org.jspecify.annotations.Nullable;
  * @param markerId Cofany znacznik przy rodzaju REVOKE_INSPECTION_MARKER albo null
  * @since 0.1.0
  */
-record SyncOperationJson(
+public record SyncOperationJson(
     @Nullable UUID clientOperationId, @Nullable String type, @Nullable Marker marker,
     @Nullable UUID markerId
 ) {
@@ -30,7 +30,7 @@ record SyncOperationJson(
      *
      * @return Identyfikator z pola clientOperationId
      */
-    UUID operation() {
+    public UUID operation() {
         if (this.clientOperationId == null) {
             throw new InvalidInput("Brak identyfikatora operacji w polu clientOperationId");
         }
@@ -42,7 +42,7 @@ record SyncOperationJson(
      *
      * @return Prawda dla rodzaju SET_INSPECTION_MARKER
      */
-    boolean placesMarker() {
+    public boolean placesMarker() {
         return "SET_INSPECTION_MARKER".equals(this.type);
     }
 
@@ -51,7 +51,7 @@ record SyncOperationJson(
      *
      * @return Prawda dla rodzaju REVOKE_INSPECTION_MARKER
      */
-    boolean revokesMarker() {
+    public boolean revokesMarker() {
         return "REVOKE_INSPECTION_MARKER".equals(this.type);
     }
 
@@ -60,7 +60,7 @@ record SyncOperationJson(
      *
      * @return Identyfikator z pola markerId
      */
-    UUID revoked() {
+    public UUID revoked() {
         if (this.markerId == null) {
             throw new InvalidInput("Brak identyfikatora znacznika w polu markerId");
         }
@@ -73,7 +73,7 @@ record SyncOperationJson(
      * @param author Identyfikator konta z tokenu
      * @return Znacznik z pola marker
      */
-    NewMarker toMarker(final String author) {
+    public NewMarker toMarker(final String author) {
         if (this.marker == null) {
             throw new InvalidInput("Brak znacznika w polu marker");
         }
@@ -86,7 +86,7 @@ record SyncOperationJson(
      *
      * @param author Identyfikator konta z tokenu
      */
-    void check(final String author) {
+    public void check(final String author) {
         this.operation();
         if (this.placesMarker()) {
             this.toMarker(author);
@@ -104,7 +104,7 @@ record SyncOperationJson(
      * @param floorId Piętro obejrzane albo null w budynku podstawowym
      * @since 0.1.0
      */
-    record Marker(
+    public record Marker(
         @Nullable UUID id, @Nullable String buildingSymbol, @Nullable String floorId
     ) {
 
@@ -114,7 +114,7 @@ record SyncOperationJson(
          * @param author Identyfikator konta z tokenu
          * @return Znacznik do zapisu
          */
-        NewMarker toCommand(final String author) {
+        public NewMarker toCommand(final String author) {
             if (this.id == null || this.buildingSymbol == null || this.buildingSymbol.isBlank()) {
                 throw new InvalidInput("Znacznik wymaga pól marker.id i marker.buildingSymbol");
             }
