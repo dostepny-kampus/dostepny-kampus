@@ -56,7 +56,7 @@ class CollectorMarkersViewModelTest {
         viewModelTest(FakePlans(stored = null, downloaded = null)) { viewModel, markers ->
             viewModel.mark(MarkerPlace.WholeBuilding)
             runCurrent()
-            val row = FloorRow(MarkerPlace.WholeBuilding, label = null, markerId = "m-1", isPending = true)
+            val row = FloorRow(place = MarkerPlace.WholeBuilding, label = null, markerId = "m-1", isPending = true)
             assertEquals(CollectorMarkersUiState.Ready(listOf(row)), viewModel.state.value, "cały budynek")
             assertEquals(listOf("A-1" to null), markers.saved, "znacznik bez piętra")
         }
@@ -99,7 +99,15 @@ class CollectorMarkersViewModelTest {
     }
 
     private companion object {
-        val A1_FLOORS = FloorList(source = "PWr", floors = listOf(Floor("p1", "Piętro 1", 1), Floor("p0", "Parter", 0)))
+        val A1_FLOORS =
+            FloorList(
+                source = "PWr",
+                floors =
+                    listOf(
+                        Floor(id = "p1", label = "Piętro 1", order = 1),
+                        Floor(id = "p0", label = "Parter", order = 0),
+                    ),
+            )
         val GROUND = FloorRow(MarkerPlace.Floor("p0"), label = "Parter")
         val FIRST = FloorRow(MarkerPlace.Floor("p1"), label = "Piętro 1")
     }
@@ -128,11 +136,23 @@ private class FakeMarkers(private var failures: Int = 0) : FloorMarkers {
         if (failures-- > 0) throw IOException("brak miejsca")
         val markerId = "m-${saved.size + 1}"
         saved += buildingSymbol to floorId
-        queue.value += PendingMarkerChange(markerId, buildingSymbol, floorId, isRevoke = false)
+        queue.value +=
+            PendingMarkerChange(
+                markerId = markerId,
+                buildingSymbol = buildingSymbol,
+                floorId = floorId,
+                isRevoke = false,
+            )
         return markerId
     }
 
     override suspend fun revoke(markerId: String, buildingSymbol: String, floorId: String?) {
-        queue.value += PendingMarkerChange(markerId, buildingSymbol, floorId, isRevoke = true)
+        queue.value +=
+            PendingMarkerChange(
+                markerId = markerId,
+                buildingSymbol = buildingSymbol,
+                floorId = floorId,
+                isRevoke = true,
+            )
     }
 }
