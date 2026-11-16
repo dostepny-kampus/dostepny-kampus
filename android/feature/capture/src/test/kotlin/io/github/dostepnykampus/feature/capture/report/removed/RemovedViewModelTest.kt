@@ -83,7 +83,7 @@ class RemovedViewModelTest {
         runTest(dispatcher) {
             val without = viewModel(NAMED)
             without.open("tb9")
-            val with = viewModel(NAMED, lift.copy(entranceId = "n/1"))
+            val with = viewModel(file = NAMED, barrier = lift.copy(entranceId = "n/1"))
             with.open("tb9")
             runCurrent()
             assertEquals("Gmach C" to null, without.uiState.value.names(), "zgłoszenie bez wejścia")

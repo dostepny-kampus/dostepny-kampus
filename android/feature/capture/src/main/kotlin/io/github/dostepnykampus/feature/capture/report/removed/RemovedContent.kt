@@ -61,7 +61,7 @@ fun RemovedContent(state: RemovedUiState, actions: RemovedActions, modifier: Mod
                 verticalArrangement = Arrangement.spacedBy(Odstepy.m),
             ) {
                 SaveFailure(state, actions.onSend)
-                state.previous?.let { Accepted(it, state.buildingName, state.entranceName) }
+                state.previous?.let { Accepted(barrier = it, buildingName = state.buildingName, entranceName = state.entranceName) }
                 PhotoSection(
                     photos = PhotoPaths(listOfNotNull(state.photo?.path)),
                     camera = actions.camera,
@@ -86,7 +86,14 @@ private fun Accepted(barrier: AcceptedBarrier, buildingName: String?, entranceNa
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = Typografia.wyroznienieWaga,
         )
-        Text(barrierPlace(barrier.buildingSymbol, buildingName, entranceName, barrier.floor))
+        val place =
+            barrierPlace(
+                symbol = barrier.buildingSymbol,
+                name = buildingName,
+                entrance = entranceName,
+                floor = barrier.floor,
+            )
+        Text(place)
         barrier.verifiedAt?.let { verified ->
             val text = stringResource(R.string.usuniecie_sprawdzone, campusDay(verified))
             Text(text, color = MaterialTheme.colorScheme.onSurfaceVariant)
