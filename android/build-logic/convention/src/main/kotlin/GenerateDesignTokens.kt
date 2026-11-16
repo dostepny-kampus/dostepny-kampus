@@ -34,11 +34,13 @@ private const val UNIT = "androidx.compose.ui.unit"
 private const val FONT = "androidx.compose.ui.text.font"
 private val COLOR = ClassName("androidx.compose.ui.graphics", "Color")
 private const val COLORS_DOC = "Kolory spoza ról Material 3 z pliku tokenów, osobno dla motywu jasnego i ciemnego."
+private const val MAP_LABELS_DOC = "Rozmiar napisów na mapie: podpisów budynków i napisów podkładu."
 private val TEXT_STYLE = ClassName("androidx.compose.ui.text", "TextStyle")
 private val FONT_WEIGHT = ClassName(FONT, "FontWeight")
 private val ROUNDED = ClassName("androidx.compose.foundation.shape", "RoundedCornerShape")
 private val DP = MemberName(UNIT, "dp", isExtension = true)
 private val SP = MemberName(UNIT, "sp", isExtension = true)
+private val TEXT_UNIT = ClassName(UNIT, "TextUnit")
 private val THEMES = listOf("jasny" to "Light", "ciemny" to "Dark")
 
 /** Zaokrąglenia z tokenów, które mają miejsce w skali kształtów Material 3 (komentarze w pliku tokenów). */
@@ -48,10 +50,10 @@ private val M3_SHAPES =
 /**
  * Generuje `DesignTokens.kt` w [packageName] z pliku tokenów wizualnych: schematy kolorów Material 3 jasny i
  * ciemny (`kolory`), klasy `StatusColors` (`kolory.status…`) i `MapColors` (`mapa.kolory`) z wartościami dla obu
- * motywów, funkcję `typography` (`typografia.style`, rozmiary w sp), obiekt `Typografia`, kształty `AppShapes`
- * i obiekt stałych w dp dla każdej sekcji wymiarów (`odstepy`, `cele_dotyku`, …). Nazwy przechodzą
- * na camelCase (`droga_kontur` → `drogaKontur`), pole `uzycie` staje się KDoc. Zmiana [tokensFile] unieważnia
- * wynik; brak wymaganej sekcji albo wartości przerywa budowanie.
+ * motywów, funkcję `typography` (`typografia.style`, rozmiary w sp), obiekt `Typografia` z rozmiarem napisów mapy
+ * (`mapa.napisy_sp`), kształty `AppShapes` i obiekt stałych w dp dla każdej sekcji wymiarów (`odstepy`, …). Nazwy
+ * przechodzą na camelCase (`droga_kontur` → `drogaKontur`), pole `uzycie` staje się KDoc. Zmiana [tokensFile]
+ * unieważnia wynik; brak wymaganej sekcji albo wartości przerywa budowanie.
  */
 @CacheableTask
 abstract class GenerateDesignTokens : DefaultTask() {
@@ -84,7 +86,7 @@ abstract class GenerateDesignTokens : DefaultTask() {
         }
         palette(file, ClassName(packageName.get(), "StatusColors"), status.toMap())
         palette(file, ClassName(packageName.get(), "MapColors"), tokens.sub("mapa").sub("kolory"))
-        typography(file, tokens.sub("typografia"))
+        typography(file, tokens.sub("typografia"), mapLabels = tokens.sub("mapa").require("napisy_sp"))
         tokens.filterValues { section -> section is Map<*, *> && section.values.all { it is Map<*, *> && "dp" in it } }
             .forEach { (name, section) -> dimensions(file, name, section.asMap()) }
         val shapes =
@@ -116,7 +118,7 @@ abstract class GenerateDesignTokens : DefaultTask() {
         }
     }
 
-    private fun typography(file: FileSpec.Builder, section: Map<String, Any?>) {
+    private fun typography(file: FileSpec.Builder, section: Map<String, Any?>, mapLabels: Any) {
         val styles = section.sub("style").map { (name, value) ->
             val style = value.asMap()
             CodeBlock.of(
@@ -139,6 +141,7 @@ abstract class GenerateDesignTokens : DefaultTask() {
             TypeSpec.objectBuilder("Typografia")
                 .addKdoc("Stałe typografii z pliku tokenów.")
                 .addProperty(constant("wyroznienieWaga", FONT_WEIGHT, emphasis, emphasisDoc))
+                .addProperty(constant("napisyMapy", TEXT_UNIT, CodeBlock.of("%L.%M", mapLabels, SP), MAP_LABELS_DOC))
                 .build(),
         )
     }

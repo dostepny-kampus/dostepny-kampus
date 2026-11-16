@@ -67,6 +67,13 @@ class TokensTest {
         assertEquals(FontWeight(section.getValue("wyroznienie_waga").int()), Typografia.wyroznienieWaga)
     }
 
+    /** Rozmiar napisów na mapie z `mapa.napisy_sp`. Wymagania: NFR-16 */
+    @Test
+    fun takesMapLabelSizeFromTokens() {
+        val expected = tokens.sub("mapa").getValue("napisy_sp")
+        assertEquals("napisy mapy", expected.int().sp, Typografia.napisyMapy)
+    }
+
     @Test
     fun takesSizesFromTokens() {
         val generated =
