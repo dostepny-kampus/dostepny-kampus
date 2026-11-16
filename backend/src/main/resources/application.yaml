@@ -13,6 +13,14 @@ logging:
     io.github.dostepnykampus: ${DK_LOG_LEVEL:INFO}
   pattern:
     correlation: "[%X{requestId:-}] "
+management:
+  endpoint:
+    health:
+      show-details: never
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics
 spring:
   application:
     name: dostepny-kampus
