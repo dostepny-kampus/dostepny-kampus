@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.RectF
+import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -167,7 +168,7 @@ object MapLibreMapView : CampusMapView {
             colors = styleColors,
             area = areas.shown,
         )
-        map.FollowEachMoveOnce(move = move, inset = inset, limits = limits, area = area, areas = areas)
+        map.FollowEachMoveOnce(move = move, inset = inset, limits = limits, area = area, areas = areas, view = mapView)
         AndroidView(factory = { mapView }, modifier = modifier.onSizeChanged { size = it })
     }
 
@@ -178,8 +179,9 @@ object MapLibreMapView : CampusMapView {
         limits: MapLimits?,
         area: StyleArea,
         areas: FlightArea,
+        view: View,
     ) {
-        val driver = remember(this) { this?.let { CameraDriver(map = it, areas = areas) } }
+        val driver = remember(this) { this?.let { CameraDriver(map = it, areas = areas, view = view) } }
         val currentInset by rememberUpdatedState(inset)
         DisposableEffect(driver, move) {
             driver?.follow(move, currentInset)
@@ -311,35 +313,59 @@ object MapLibreMapView : CampusMapView {
      * Ruchy kamery mapy [map] po jednym. Ruch niesie dopełnienie z chwili startu; dopełnienie zmienione
      * w trakcie ruchu czeka na jego koniec, bo przerwałoby ruch, a samo przesuwa mapę płynnie w 300 ms. Gest osoby
      * przerywa ruch sam (MapLibre). Na czas przelotu granice kamery są zdjęte ([FlightLimits]), a teren i podkład
-     * starego terenu zostają do zejścia poniżej powiększenia podkładu ([areas]).
+     * starego terenu zostają do zejścia poniżej powiększenia podkładu ([areas]). Brzeg odkrytej części mapy nie
+     * wychodzi poza prostokąt terenu: MapLibre ogranicza tylko środek kamery, więc granica środka przy bieżącym
+     * powiększeniu i dopełnieniu idzie do mapy na nowo przy każdym ruchu.
      */
-    private class CameraDriver(private val map: MapLibreMap, private val areas: FlightArea) {
+    private class CameraDriver(private val map: MapLibreMap, private val areas: FlightArea, private val view: View) {
         private var inset = MapInset()
         private var running: Run? = null
+        private var area: MapLimits? = null
+        private var centerBox: CampusBounds? = null
         private val limits = FlightLimits { limitTo(it) }
 
         init {
-            map.addOnCameraMoveListener { areas.zoom(map.cameraPosition.zoom) }
+            map.addOnCameraMoveListener {
+                areas.zoom(map.cameraPosition.zoom)
+                limitCenterToArea()
+            }
         }
 
         fun limit(next: MapLimits?) = limits.limit(next)
 
-        private fun limitTo(area: MapLimits?) {
-            if (area == null) {
+        private fun limitTo(next: MapLimits?) {
+            area = next
+            centerBox = null
+            if (next == null) {
                 map.setLatLngBoundsForCameraTarget(null)
                 map.setMinZoomPreference(MapLibreConstants.MINIMUM_ZOOM.toDouble())
                 return
             }
-            val bounds = area.bounds
-            val target =
-                LatLngBounds.from(
-                    latNorth = bounds.north,
-                    lonEast = bounds.east,
-                    latSouth = bounds.south,
-                    lonWest = bounds.west,
-                )
-            map.setLatLngBoundsForCameraTarget(target)
-            map.setMinZoomPreference(area.minZoom)
+            map.setMinZoomPreference(next.minZoom)
+            limitCenterToArea()
+        }
+
+        private fun limitCenterToArea() {
+            val limits = area ?: return
+            val padding = map.cameraPosition.padding ?: DoubleArray(size = 4)
+            val density = view.resources.displayMetrics.density
+            val width = (view.width - padding[0] - padding[2]) / density
+            val height = (view.height - padding[1] - padding[3]) / density
+            val box =
+                limits
+                    .centerBounds(zoom = map.cameraPosition.zoom, viewWidthDp = width, viewHeightDp = height)
+                    .takeIf { width > 0 && height > 0 && it != centerBox }
+            if (box != null) {
+                centerBox = box
+                val bounds =
+                    LatLngBounds.from(
+                        latNorth = box.north,
+                        lonEast = box.east,
+                        latSouth = box.south,
+                        lonWest = box.west,
+                    )
+                map.setLatLngBoundsForCameraTarget(bounds)
+            }
         }
 
         fun pad(next: MapInset) {
