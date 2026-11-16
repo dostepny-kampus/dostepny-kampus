@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.building
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -53,7 +54,7 @@ import io.github.dostepnykampus.feature.map.R
  *
  * Wymagania: US2, NFR-17, NFR-18, NFR-20, NFR-53
  *
- * @param onClose „Zamknij” zostawia samą mapę
+ * @param onClose „Zamknij” i „Wstecz” zamykają arkusz
  * @param modifier położenie arkusza na mapie
  * @param content przyciski [BuildingChoice] budynków trafionych dotknięciem, w kolejności podpisu konturu
  */
@@ -63,6 +64,7 @@ internal fun BuildingChoiceSheet(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    BackHandler(onBack = onClose)
     Surface(modifier.fillMaxWidth(), shape = RoundedCornerShape(Zaokraglenia.duze), shadowElevation = Odstepy.s) {
         Column(
             Modifier.verticalScroll(rememberScrollState()).padding(Odstepy.m),
