@@ -77,3 +77,15 @@ curl -s http://localhost:8180/realms/dostepny-kampus/protocol/openid-connect/tok
 ```
 
 Rola jest w tokenie w polu `realm_access.roles`.
+
+## Usunięcie danych konta (NFR-29)
+
+Żądanie usunięcia danych osobowych administrator wykonuje ręcznie w ciągu miesiąca. Identyfikator konta (`sub`) odczytuje w konsoli usługi logowania, a potem usuwa tam konto. Zgłoszenia zostają bez autora, a znaczniki pięter konta znikają:
+
+```sh
+docker compose -f infra/docker-compose.yml exec -T postgis \
+  psql -U "$DK_DB_USER" -d "$DK_DB_NAME" -v sub="<identyfikator konta>" <<'SQL'
+UPDATE submissions SET author = NULL WHERE author = :'sub';
+DELETE FROM inspection_markers WHERE author = :'sub';
+SQL
+```
