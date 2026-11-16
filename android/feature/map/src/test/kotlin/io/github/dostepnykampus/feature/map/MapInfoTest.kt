@@ -23,6 +23,7 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertHeightIsAtLeast
+import androidx.compose.ui.test.assertTouchHeightIsEqualTo
 import androidx.compose.ui.test.assertWidthIsAtLeast
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -129,14 +130,14 @@ class MapInfoTest {
         assertCloseMirrorsTitle()
     }
 
-    /** „Zamknij” w arkuszu ma cel dotyku co najmniej 48 × 48 dp. Wymagania: NFR-17 */
+    /** „Zamknij” w arkuszu ma cel dotyku 48 dp wysokości i co najmniej 48 dp szerokości. Wymagania: NFR-17 */
     @Test
     fun keepsCloseTouchTarget() {
         compose.setContent { Info(isOpenAtStart = true) }
         compose
             .onNodeWithText("Zamknij")
             .assertHasClickAction()
-            .assertHeightIsAtLeast(48.dp)
+            .assertTouchHeightIsEqualTo(48.dp)
             .assertWidthIsAtLeast(48.dp)
     }
 
