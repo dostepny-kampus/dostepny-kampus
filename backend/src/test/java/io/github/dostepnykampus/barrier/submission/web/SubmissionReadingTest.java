@@ -192,11 +192,6 @@ final class SubmissionReadingTest {
         }
 
         @Override
-        public List<Submission> list(final SubmissionQuery query) {
-            throw new UnsupportedOperationException("Sprawdzenie zmiany nie czyta listy");
-        }
-
-        @Override
         public SubmissionFinder.Page page(
             final SubmissionQuery query, final UUID after, final int limit
         ) {

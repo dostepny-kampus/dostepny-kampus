@@ -49,7 +49,7 @@ final class JdbcReadIT {
     }
 
     @Test
-    void filtersAndOrdersListByCreation(final ApplicationContext context) {
+    void filtersAndOrdersListById(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         final String home = SubmissionData.BUILDING;
         final SubmissionStatus sent = SubmissionStatus.SENT;
@@ -69,8 +69,8 @@ final class JdbcReadIT {
         );
         Assertions.assertEquals(
             List.of(
-                List.of(first, rejected, upper),
-                List.of(first, rejected, accepted),
+                List.of(upper, rejected, first),
+                List.of(rejected, first, accepted),
                 List.of(other)
             ),
             List.of(
@@ -89,7 +89,7 @@ final class JdbcReadIT {
     }
 
     @Test
-    void ordersListByCreationThenId(final ApplicationContext context) {
+    void ordersListByIdNotCreation(final ApplicationContext context) {
         final SubmissionData data = SubmissionData.of(context);
         final SubmissionContent content = SubmissionData.content("o");
         final SubmissionStatus sent = SubmissionStatus.SENT;
@@ -99,13 +99,13 @@ final class JdbcReadIT {
         JdbcReadIT.created(data, data.seed(4, content, sent), 0);
         Assertions.assertEquals(
             List.of(
-                SubmissionData.id(4), SubmissionData.id(2), SubmissionData.id(3),
-                SubmissionData.id(1)
+                SubmissionData.id(1), SubmissionData.id(2), SubmissionData.id(3),
+                SubmissionData.id(4)
             ),
             JdbcReadIT.ids(
                 data, new SubmissionQuery(Set.of(sent), SubmissionData.BUILDING, null)
             ),
-            "Lista nie jest posortowana po chwili utworzenia, a przy równych chwilach po id"
+            "Lista nie jest posortowana po id niezależnie od chwili utworzenia"
         );
     }
 
@@ -140,6 +140,7 @@ final class JdbcReadIT {
     }
 
     private static List<UUID> ids(final SubmissionData data, final SubmissionQuery query) {
-        return data.repo().list(query).stream().map(Submission::id).toList();
+        return data.repo().page(query, SubmissionFinder.Page.START, 500).items().stream()
+            .map(Submission::id).toList();
     }
 }
