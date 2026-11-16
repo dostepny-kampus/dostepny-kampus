@@ -143,6 +143,7 @@ class CampusBoundsTest {
     /**
      * Wiersz: V1, najmniejsze powiększenie to takie, przy którym cały prostokąt mieści się w widoku; bardziej
      * oddalić mapy się nie da. Na równiku pas 360/2^14 stopnia ma przy powiększeniu 14 dokładnie 512 dp.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Przy najmniejszym powiększeniu widać cały teren
      *
      * Wymagania: NFR-39
      */
