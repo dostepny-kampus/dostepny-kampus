@@ -24,6 +24,8 @@ class StartupBenchmark {
     @get:Rule
     val rule = MacrobenchmarkRule()
 
+    private var isPrepared = false
+
     /** Uruchamia pomiar scenariusza. */
     @Test
     fun measuresColdStart() =
@@ -32,7 +34,13 @@ class StartupBenchmark {
             metrics = listOf(StartupTimingMetric()),
             iterations = ITERATIONS,
             startupMode = StartupMode.COLD,
-            setupBlock = { pressHome() },
+            setupBlock = {
+                if (!isPrepared) {
+                    skipInstruction()
+                    isPrepared = true
+                }
+                pressHome()
+            },
         ) {
             startActivityAndWait()
             waitForMap()

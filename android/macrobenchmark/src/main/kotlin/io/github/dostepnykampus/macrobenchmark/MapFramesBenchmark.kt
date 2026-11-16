@@ -25,6 +25,8 @@ class MapFramesBenchmark {
     @get:Rule
     val rule = MacrobenchmarkRule()
 
+    private var isPrepared = false
+
     /** Uruchamia pomiar scenariusza. */
     @Test
     fun measuresPanAndAreaSwitch() =
@@ -35,6 +37,10 @@ class MapFramesBenchmark {
             iterations = ITERATIONS,
             startupMode = StartupMode.WARM,
             setupBlock = {
+                if (!isPrepared) {
+                    skipInstruction()
+                    isPrepared = true
+                }
                 pressHome()
                 startActivityAndWait()
                 waitForMap()
