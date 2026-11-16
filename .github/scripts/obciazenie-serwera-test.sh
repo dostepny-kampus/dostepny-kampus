@@ -4,7 +4,7 @@
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 set -euo pipefail
 
-# Test obciazenie-serwera.sh z własnym `curl`: co czwarte żądanie kończy się statusem 500, reszta zwraca 10 ms.
+# Test obciazenie-serwera.sh z własnym `curl`: najpierw każde żądanie trwa 10 ms ze statusem 200, potem wszystkie dają 503.
 script="$(cd "$(dirname "$0")" && pwd)/obciazenie-serwera.sh"
 workdir="$(mktemp -d)"
 trap 'rm -rf "$workdir"' EXIT
@@ -12,7 +12,7 @@ failures=0
 mkdir "$workdir/bin"
 cat >"$workdir/bin/curl" <<'SH'
 #!/usr/bin/env bash
-if (( RANDOM % 4 == 99 )); then echo "0.500 500"; else echo "0.010 200"; fi
+echo "0.010 200"
 SH
 chmod +x "$workdir/bin/curl"
 
