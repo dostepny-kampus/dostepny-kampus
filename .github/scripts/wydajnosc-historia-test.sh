@@ -22,18 +22,23 @@ linii="$(git -C "$workdir/zdalne.git" show dane-wydajnosci:wydajnosc.jsonl | wc 
 if [[ $linii != 2 ]]; then
   echo "NIEUDANY liczba wpisów: oczekiwano 2, jest ${linii}"
   failures=$((failures + 1))
+else
+  echo "OK: dwa zapisy dają dwa wpisy na gałęzi danych"
 fi
 if ! grep -q 'Start p50 (ms) | 150.0 | 100.0 | +50%' <<<"$podsumowanie"; then
   echo "NIEUDANY trend: $podsumowanie"
   failures=$((failures + 1))
+else
+  echo "OK: trend względem poprzedniego wpisu"
 fi
 
-ZDALNE="$workdir/brak.git" bash "$script" | grep -q 'Historia wydajności' || {
+if ZDALNE="$workdir/brak.git" bash "$script" | grep -q 'Historia wydajności'; then
+  echo "OK: niedostępne zdalne repozytorium daje ostrzeżenie"
+else
   echo "NIEUDANY brak ostrzeżenia przy niedostępnym zdalnym repozytorium"
   failures=$((failures + 1))
-}
+fi
 
 if ((failures > 0)); then
   exit 1
 fi
-echo "wydajnosc-historia-test: wszystkie przypadki zaliczone"

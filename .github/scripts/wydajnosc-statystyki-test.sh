@@ -32,6 +32,8 @@ sprawdz() {
   if [[ $wynik != "$oczekiwane" ]]; then
     echo "NIEUDANY ${nazwa}: oczekiwano ${oczekiwane}, jest ${wynik}"
     failures=$((failures + 1))
+  else
+    echo "OK: ${nazwa}"
   fi
 }
 
@@ -47,4 +49,3 @@ sprawdz "pusty wolne" None "d['wolne_proc']" pusty.json
 if ((failures > 0)); then
   exit 1
 fi
-echo "wydajnosc-statystyki-test: wszystkie przypadki zaliczone"
