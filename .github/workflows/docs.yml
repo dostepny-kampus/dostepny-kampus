@@ -65,10 +65,6 @@ jobs:
       - name: Sprawdź, czy PR albo grupa w kolejce zmienia dokumentację, scenariusze, testy Androida albo zestawy scenariuszy serwera
         id: diff
         if: steps.drzewo.outputs.pomin != 'true'
-        env:
-          EVENT: ${{ github.event_name }}
-          GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
-          GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
         run: >-
           .github/scripts/zmiany-obszaru.sh dokumentacja docs specs .github/workflows/docs.yml backend/src/test/java
           ':(glob)android/**/src/test*/**' ':(glob)android/**/src/*Test*/**' android/systemtest/src/main

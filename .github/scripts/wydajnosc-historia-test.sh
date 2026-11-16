@@ -32,6 +32,14 @@ else
   echo "OK: trend względem poprzedniego wpisu"
 fi
 
+echo '{"sha":"c","p50_ms":5.0}' >"$WPIS"
+if [[ -z "$(PLIK=obciazenie.jsonl BEZ_PODSUMOWANIA=1 bash "$script")" ]]   && git -C "$workdir/zdalne.git" show dane-wydajnosci:obciazenie.jsonl | grep -q '"sha":"c"'; then
+  echo "OK: osobny plik historii bez tabeli trendu"
+else
+  echo "NIEUDANY zapis do osobnego pliku historii"
+  failures=$((failures + 1))
+fi
+
 if ZDALNE="$workdir/brak.git" bash "$script" | grep -q 'Historia wydajności'; then
   echo "OK: niedostępne zdalne repozytorium daje ostrzeżenie"
 else

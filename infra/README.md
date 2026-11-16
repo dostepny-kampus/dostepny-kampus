@@ -50,6 +50,10 @@ docker compose -f infra/docker-compose.yml up -d
 docker compose -f infra/docker-compose.yml exec postgis bash /docker-entrypoint-initdb.d/konto-serwera.sh
 ```
 
+## Przechowywanie danych (NFR-29)
+
+Serwer codziennie o 3:30 usuwa zgłoszenia odrzucone ponad 90 dni temu razem z ich zdjęciami w magazynie. Dni liczą się od ostatniego odrzucenia; zgłoszenie poprawione i wysłane ponownie nie jest usuwane.
+
 ## Import planów pięter PWr
 
 Plany pięter importuje się ręcznie ([ADR-0012](../docs/docs/architektura/decyzje/0012-import-planow-pieter.md)). Polecenie czyta warstwy z `backend/src/main/resources/pwr-plans.yaml` i pobiera piętra i pomieszczenia z usługi ArcGIS PWr. Zapisuje je w bazie z sekcji „Uruchomienie” i kończy się bez serwera HTTP.

@@ -5,21 +5,19 @@
  */
 package io.github.dostepnykampus.feature.map.camera
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
-import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
+import io.github.dostepnykampus.feature.map.style.BasemapColors
 import io.github.dostepnykampus.feature.map.style.MapStyleColors
 import io.github.dostepnykampus.feature.map.style.PlanColors
 import org.maplibre.android.camera.CameraPosition
@@ -27,7 +25,6 @@ import org.maplibre.android.geometry.LatLng
 import java.util.Locale
 
 private const val RGB_MASK = 0xFFFFFF
-private const val NIGHT_LAND_LUMINANCE = 0.5f
 
 /** Widok mapy za interfejsem: ekran i jego testy nie zależą od natywnej biblioteki mapy. */
 fun interface CampusMapView {
@@ -66,12 +63,7 @@ internal fun Density.mapLimits(bounds: CampusBounds?, size: IntSize): MapLimits?
         MapLimits(area, widthDp = width.toDouble(), heightDp = height.toDouble())
     }
 
-/**
- * Kolory stylu mapy z palety mapy motywu; poza granicą terenu na mapę pada `background` motywu z kryciem
- * `mapa.krycie.teren_poza`.
- *
- * Wymagania: NFR-16, BR-G5
- */
+/** Kolory stylu mapy z palety mapy motywu. Wymagania: NFR-16 */
 @Composable
 @ReadOnlyComposable
 internal fun MapColors.styleColors(): MapStyleColors =
@@ -80,11 +72,6 @@ internal fun MapColors.styleColors(): MapStyleColors =
         building = pwr.hex(),
         buildingOutline = pwrKontur.hex(),
         selectedOutline = pwrWybrany.hex(),
-        isNight = lad.luminance() < NIGHT_LAND_LUMINANCE,
-        edge = granicaTerenu.hex(),
-        edgeHalo = granicaTerenuObwodka.hex(),
-        outside = MaterialTheme.colorScheme.background.hex(),
-        outsideOpacity = DostepnyKampusTheme.mapOpacity.terenPoza.toExactDouble(),
         dimmed = budynek.hex(),
         dimmedOutline = budynekKontur.hex(),
         plan =
@@ -95,6 +82,17 @@ internal fun MapColors.styleColors(): MapStyleColors =
                 elevator = pWinda.hex(),
                 toilet = pWc.hex(),
                 wall = pKontur.hex(),
+            ),
+        basemap =
+            BasemapColors(
+                green = zielen.hex(),
+                water = woda.hex(),
+                road = droga.hex(),
+                roadCasing = drogaKontur.hex(),
+                rail = tory.hex(),
+                path = chodnik.hex(),
+                building = budynek.hex(),
+                buildingOutline = budynekKontur.hex(),
             ),
     )
 
@@ -127,5 +125,3 @@ internal fun CameraPosition.toCamera(): MapCamera =
         center = GeoPoint(longitude = target?.longitude ?: 0.0, latitude = target?.latitude ?: 0.0),
         zoom = zoom,
     )
-
-private fun Float.toExactDouble(): Double = toString().toDouble()

@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -28,6 +29,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import dagger.hilt.android.EntryPointAccessors
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.feature.map.barrier.BARRIER_ID
 import io.github.dostepnykampus.feature.map.barrier.barrierImages
 import io.github.dostepnykampus.feature.map.building.entranceCaption
@@ -56,7 +58,6 @@ import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.campus.symbolsAt
 import io.github.dostepnykampus.feature.map.plan.planSignImages
 import io.github.dostepnykampus.feature.map.style.BARRIERS_LAYER
-import io.github.dostepnykampus.feature.map.style.BASEMAP
 import io.github.dostepnykampus.feature.map.style.BUILDINGS_LAYER
 import io.github.dostepnykampus.feature.map.style.Basemap
 import io.github.dostepnykampus.feature.map.style.MapImages
@@ -65,7 +66,6 @@ import io.github.dostepnykampus.feature.map.style.MapStyleTarget
 import io.github.dostepnykampus.feature.map.style.MapTileHttpEntryPoint
 import io.github.dostepnykampus.feature.map.style.SelectionLook
 import io.github.dostepnykampus.feature.map.style.asStyleText
-import io.github.dostepnykampus.feature.map.style.basemapTiles
 import io.github.dostepnykampus.feature.map.style.campusMapStyle
 import io.github.dostepnykampus.feature.map.style.labelImage
 import io.github.dostepnykampus.feature.map.style.numbers
@@ -73,7 +73,7 @@ import io.github.dostepnykampus.feature.map.style.rememberMapImages
 import io.github.dostepnykampus.feature.map.style.roomNumberBitmap
 import io.github.dostepnykampus.feature.map.style.roomNumberImage
 import io.github.dostepnykampus.feature.map.style.selectionLook
-import io.github.dostepnykampus.feature.map.style.showArea
+import io.github.dostepnykampus.feature.map.style.showBasemap
 import io.github.dostepnykampus.feature.map.style.showSelection
 import io.github.dostepnykampus.feature.map.style.styleBuilder
 import kotlinx.serialization.json.JsonArray
@@ -96,7 +96,6 @@ import org.maplibre.android.style.layers.PaintPropertyValue
 import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.sources.GeoJsonSource
 
-private const val LABEL_TEXT_SP = 14f
 private const val LABEL_MAX_FONT_SCALE = 1.4f
 private const val TOUCH_TOLERANCE_DP = 24f
 private const val PADDING_MILLIS = 300
@@ -128,10 +127,11 @@ object MapLibreMapView : CampusMapView {
         val colors = DostepnyKampusTheme.mapColors
         val styleColors = colors.styleColors()
         val look = remember(data, selection, styleColors) { selectionLook(data, selection, styleColors) }
-        val labelSize = LABEL_TEXT_SP * density.density * density.fontScale.coerceAtMost(LABEL_MAX_FONT_SCALE)
+        val fontScale = density.fontScale.coerceAtMost(LABEL_MAX_FONT_SCALE)
+        val labelSize = Typografia.napisyMapy.value * density.density * fontScale
         val tolerance = TOUCH_TOLERANCE_DP * density.density
         val images = rememberMapImages(colors = colors, density = density.density, labelSize = labelSize)
-        val mapView = rememberMapView(context)
+        val mapView = rememberMapView(context, background = colors.lad.toArgb())
         FollowScreenLifecycle(mapView)
         var map by remember { mutableStateOf<MapLibreMap?>(null) }
         var size by remember { mutableStateOf(IntSize.Zero) }
@@ -237,7 +237,7 @@ object MapLibreMapView : CampusMapView {
         }
         DisposableEffect(loaded, area) {
             loaded?.takeIf { area != shown }?.let { ready ->
-                StyleTarget(ready).showArea(area = area.area, basemap = area.basemap)
+                StyleTarget(ready).showBasemap(basemap = area.basemap)
                 shown = area
             }
             onDispose {}
@@ -245,12 +245,12 @@ object MapLibreMapView : CampusMapView {
     }
 
     @Composable
-    private fun rememberMapView(context: Context): MapView =
+    private fun rememberMapView(context: Context, background: Int): MapView =
         remember {
             MapLibre.getInstance(context)
             val tiles = EntryPointAccessors.fromApplication<MapTileHttpEntryPoint>(context.applicationContext)
             HttpRequestUtil.setOkHttpClient(tiles.mapTileHttp().calls)
-            MapView(context, northUpOptions(context))
+            MapView(context, northUpOptions(context, background))
         }
 
     @Composable
@@ -445,14 +445,6 @@ object MapLibreMapView : CampusMapView {
 
         override fun image(name: String, image: Bitmap) = style.addImage(name, image)
 
-        override fun basemapBounds(bounds: CampusBounds?) {
-            val layer = style.getLayer(BASEMAP) ?: return
-            style.removeLayer(layer)
-            style.removeSource(BASEMAP)
-            style.addSource(basemapTiles(bounds))
-            style.addLayerBelow(layer, BUILDINGS_LAYER)
-        }
-
         private fun expressionOf(value: JsonElement): Expression = Expression.Converter.convert(value.asStyleText())
     }
 }
@@ -460,9 +452,9 @@ object MapLibreMapView : CampusMapView {
 /**
  * Ustawienia widoku mapy V1: bez logo i podpisu biblioteki, bez gestu obrotu i pochylenia. Północ jest zawsze
  * u góry, bo tak liczą strzałki przesuwania i granica terenu, a [MapCamera] nie zna obrotu. Przesuwanie
- * i powiększanie gestem zostają.
+ * i powiększanie gestem zostają. Do pierwszej klatki widok ma barwę [background] (ARGB).
  */
-internal fun northUpOptions(context: Context): MapLibreMapOptions =
+internal fun northUpOptions(context: Context, background: Int): MapLibreMapOptions =
     MapLibreMapOptions
         .createFromAttributes(context)
         .textureMode(true)
@@ -470,11 +462,12 @@ internal fun northUpOptions(context: Context): MapLibreMapOptions =
         .attributionEnabled(false)
         .rotateGesturesEnabled(false)
         .tiltGesturesEnabled(false)
+        .foregroundLoadColor(background)
 
 /**
  * Styl mapy jako napis JSON bez zaznaczenia budynku, wejścia i bariery: z [selection] bierze tylko prostokąt
- * i granicę terenu, a podkład ogranicza do obszaru [basemap]. Powstaje od nowa tylko po zmianie danych [data]
- * albo barw [colors]; zmiana terenu i podkładu idzie do wczytanego stylu przez `showArea`, a zaznaczenie i ruch
+ * terenu, a podkład ogranicza do obszaru [basemap]. Powstaje od nowa tylko po zmianie danych [data]
+ * albo barw [colors]; zmiana terenu i podkładu idzie do wczytanego stylu przez `showBasemap`, a zaznaczenie i ruch
  * kamery stylu nie budują. Z terenem, a bez [basemap] (mapa jeszcze bez rozmiaru) stylu nie ma. Funkcja [build]
  * składa styl.
  */

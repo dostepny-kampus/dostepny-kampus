@@ -18,6 +18,7 @@ on:
       - ".github/actions/android-gradle/**"
       - ".github/scripts/cache-budowania-sprintu.sh"
       - ".github/scripts/cache-z-kolejki.sh"
+      - ".github/scripts/przytnij-cache-budowania.sh"
       - ".github/scripts/czysc-cache.sh"
       - ".github/scripts/wyniki-androida.sh"
       - ".github/scripts/zmiany-obszaru.sh"
@@ -75,14 +76,11 @@ jobs:
       - name: Sprawdź, czy PR albo grupa w kolejce zmienia aplikację Android, jej dane, tokeny albo własne kroki CI
         id: diff
         if: steps.drzewo.outputs.pomin != 'true'
-        env:
-          EVENT: ${{ github.event_name }}
-          GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
-          GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
         run: >-
           .github/scripts/zmiany-obszaru.sh android android data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml
           .github/workflows/android.yml .github/actions/android-gradle .github/scripts/cache-budowania-sprintu.sh
-          .github/scripts/cache-z-kolejki.sh .github/scripts/czysc-cache.sh .github/scripts/wyniki-androida.sh
+          .github/scripts/cache-z-kolejki.sh .github/scripts/czysc-cache.sh .github/scripts/przytnij-cache-budowania.sh
+          .github/scripts/wyniki-androida.sh
           .github/scripts/zmiany-obszaru.sh
 
   emulator:
@@ -387,6 +385,10 @@ jobs:
             android/**/build/reports/
             android/**/build/outputs/roborazzi/
           if-no-files-found: ignore
+      - name: Przytnij cache budowania do wpisów tego buildu
+        # Bez tego artefakt rósł o wyniki starych commitów (5,85 GB, 11 min pobierania i wysyłania na grupę).
+        if: ${{ success() && github.event_name == 'merge_group' }}
+        run: bash ../.github/scripts/przytnij-cache-budowania.sh przytnij "$HOME/.gradle/caches/build-cache-1"
       - name: Udostępnij cache budowania zadaniu po scaleniu i następnym grupom kolejki
         # Cache zapisany w grupie kolejki należy do jej tymczasowej gałęzi, której inne przebiegi nie widzą; artefakt widzą.
         if: ${{ success() && github.event_name == 'merge_group' }}

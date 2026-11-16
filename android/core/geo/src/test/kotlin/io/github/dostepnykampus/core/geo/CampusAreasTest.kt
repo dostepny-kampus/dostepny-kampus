@@ -12,6 +12,7 @@ import io.github.dostepnykampus.core.model.building.Building
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.File
+import kotlin.math.cos
 
 /** Tereny PWr z budynków katalogu; kontury „Budynek testowy” nie są danymi PWr. Wymagania: BR-G5 */
 class CampusAreasTest {
@@ -50,6 +51,15 @@ class CampusAreasTest {
         assertEquals(listOf("T-3", "Kampus główny"), areas.map(CampusArea::name))
     }
 
+    /** Budynki 580 m od siebie po skosie (410 m na wschód i 410 m na północ) są jednym terenem. Wymagania: BR-G5 */
+    @Test
+    fun linksDiagonalNeighbours() {
+        val first = square(symbol = "A-1", south = LAT)
+        val east = meters(value = 410.0) / cos(Math.toRadians(LAT))
+        val second = square(symbol = "T-1", south = LAT + SIDE + meters(value = 410.0), west = LON + SIDE + east)
+        assertEquals(listOf(listOf("A-1", "T-1")), campusAreas(listOf(first, second)).map(CampusArea::symbols))
+    }
+
     /** Liczba budynków terenu to liczba symboli; dwa kontury jednego symbolu liczą się raz. Wymagania: US1.7 */
     @Test
     fun countsSymbolsOnce() {
@@ -59,8 +69,8 @@ class CampusAreasTest {
 
     private fun meters(value: Double): Double = value / METERS_PER_DEGREE
 
-    private fun square(symbol: String, south: Double): Building {
-        val corners = listOf(LON to south, LON + SIDE to south, LON + SIDE to south + SIDE, LON to south + SIDE)
+    private fun square(symbol: String, south: Double, west: Double = LON): Building {
+        val corners = listOf(west to south, west + SIDE to south, west + SIDE to south + SIDE, west to south + SIDE)
         val ring = (corners + corners.first()).map { (lon, lat) -> GeoPoint(longitude = lon, latitude = lat) }
         return Building(symbol = symbol, name = "Budynek testowy", outline = GeoPolygon(listOf(ring)))
     }

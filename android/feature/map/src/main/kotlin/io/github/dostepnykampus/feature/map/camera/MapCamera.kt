@@ -102,12 +102,12 @@ internal class MapLimits(val bounds: CampusBounds, val widthDp: Double, val heig
     val tileBounds: CampusBounds get() = area
 
     /**
-     * Podkład terenu: kafelki w [tileBounds] od pół poziomu poniżej [minZoom]. Przelot na inny teren oddala mapę
+     * Podkład terenu od pół poziomu poniżej [minZoom]. Przelot na inny teren oddala mapę
      * bardziej, więc w jego środku podkładu nie ma, a przy zejściu do celu wraca.
      *
      * Wymagania: NFR-39
      */
-    val basemap: Basemap get() = Basemap(bounds = tileBounds, minZoom = minZoom - BASEMAP_ZOOM_MARGIN)
+    val basemap: Basemap get() = Basemap(minZoom = minZoom - BASEMAP_ZOOM_MARGIN)
 
     /**
      * Prostokąt, w którym leży środek odkrytej części mapy o rozmiarze [viewWidthDp] × [viewHeightDp] dp przy

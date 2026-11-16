@@ -103,4 +103,74 @@ public interface SubmissionFinder {
      * @return Podobne zgłoszenia od najbliższego; puste, gdy zgłoszenia nie ma
      */
     List<SimilarSubmission> similar(UUID id);
+
+    /**
+     * Port stron listy zgłoszeń: strona po kursorze, w kolejności identyfikatorów.
+     *
+     * <p>Wymagania: NFR-34</p>
+     *
+     * @since 0.1.0
+     */
+    interface Pages {
+
+        /**
+         * Wyszukuje stronę zgłoszeń według zapytania.
+         *
+         * <p>Wymagania: NFR-34, US1.3</p>
+         *
+         * @param query Statusy oraz opcjonalny budynek i piętro
+         * @param window Kursor i rozmiar strony
+         * @return Czytelne zgłoszenia strony i kursor następnej
+         */
+        Page page(SubmissionQuery query, Window window);
+
+        /**
+         * Wyszukuje stronę zgłoszeń jednego autora.
+         *
+         * <p>Wymagania: NFR-34, US8.1</p>
+         *
+         * @param author Identyfikator konta autora
+         * @param query Statusy oraz opcjonalny budynek i piętro
+         * @param window Kursor i rozmiar strony
+         * @return Czytelne zgłoszenia strony autora i kursor następnej
+         */
+        Page own(String author, SubmissionQuery query, Window window);
+    }
+
+    /**
+     * Okno strony: kursor, po którym strona się zaczyna, i najwięcej zgłoszeń na stronie.
+     *
+     * @param after Kursor; {@link Page#START} dla pierwszej strony
+     * @param limit Najwięcej zgłoszeń na stronie
+     * @since 0.1.0
+     */
+    record Window(UUID after, int limit) {
+    }
+
+    /**
+     * Strona listy zgłoszeń. Nieczytelne zgłoszenie nie trafia na stronę, ale przesuwa kursor.
+     *
+     * @param items Czytelne zgłoszenia strony
+     * @param last Kursor: identyfikator ostatniego zgłoszenia strony albo kursor wejściowy
+     * @param more Czy po kursorze są dalsze zgłoszenia
+     * @since 0.1.0
+     */
+    record Page(List<Submission> items, UUID last, boolean more) {
+
+        /**
+         * Kursor pierwszej strony: mniejszy od identyfikatora każdego zgłoszenia.
+         */
+        public static final UUID START = new UUID(0L, 0L);
+
+        /**
+         * Strona z niemodyfikowalną kopią zgłoszeń.
+         *
+         * @param items Czytelne zgłoszenia strony
+         * @param last Kursor ostatniego zgłoszenia strony albo kursor wejściowy
+         * @param more Czy po kursorze są dalsze zgłoszenia
+         */
+        public Page {
+            items = List.copyOf(items);
+        }
+    }
 }

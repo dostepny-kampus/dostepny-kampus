@@ -107,7 +107,6 @@ class MapLimitsTest {
         val area = CampusBounds(west = 0.0, south = 0.0, east = span, north = span)
         val limits = MapLimits(area, widthDp = 400.0, heightDp = 800.0)
         assertEquals(limits.minZoom - 0.5, limits.basemap.minZoom, ZOOM_DELTA, "podkład od pół poziomu niżej")
-        assertEquals(limits.tileBounds, limits.basemap.bounds, "kafelki podkładu w prostokącie widoku")
     }
 
     private companion object {
