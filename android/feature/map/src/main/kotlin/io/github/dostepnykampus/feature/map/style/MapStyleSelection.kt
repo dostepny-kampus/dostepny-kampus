@@ -54,7 +54,6 @@ internal fun selectedLayer(filter: JsonElement, colors: MapStyleColors): JsonObj
  * @property chosenBarrierFilter filtr warstwy [CHOSEN_BARRIER_LAYER]
  * @property chosenEntrance dane GeoJSON źródła [CHOSEN_SOURCE]
  * @property planFloor piętro planu w warstwach planu; `null` bez planu
- * @property plan dane GeoJSON źródła [PLAN_SOURCE]
  * @property barriersFilter filtr warstw [BARRIERS_LAYER] i [BARRIER_WORDS_LAYER]
  */
 internal data class SelectionLook(
@@ -66,7 +65,6 @@ internal data class SelectionLook(
     val chosenBarrierFilter: JsonElement,
     val chosenEntrance: JsonElement,
     val planFloor: String?,
-    val plan: JsonElement,
     val barriersFilter: JsonElement,
 )
 
@@ -75,7 +73,7 @@ internal data class SelectionLook(
  * [MapSelection.building] ma obrys, a przy zaznaczonym budynku bez wejścia pozostałe budynki są przygaszone
  * i znaki wejść ma tylko on, przy każdym powiększeniu. Bez zaznaczenia filtry obrysu i bariery niczego nie
  * przepuszczają, filtr wejść przepuszcza wszystkie od powiększenia 17, a źródło wejścia jest puste. Plan
- * [MapSelection.plan] pokazuje wybrane piętro i bariery tego piętra.
+ * [MapSelection.plan] pokazuje wybrane piętro i bariery tego piętra; dane planu idą osobno przez [showPlanData].
  *
  * Wymagania: US1.1, US1.4, US2.8, US2.1, NFR-15
  */
@@ -91,7 +89,6 @@ internal fun selectionLook(data: CampusMapData, selection: MapSelection, colors:
         chosenBarrierFilter = selection.barrier?.let(::ofBarrier) ?: NO_FEATURES,
         chosenEntrance = featureCollection(selection.entrance?.let(::chosenFeatures).orEmpty()),
         planFloor = selection.plan?.floor,
-        plan = planFeatures(selection.plan?.rooms.orEmpty()),
         barriersFilter = barriersOnPlan(building = selection.plan?.building, floor = selection.plan?.floor),
     )
 }
@@ -127,7 +124,7 @@ internal fun MapStyleTarget.showSelection(look: SelectionLook, images: Map<Strin
     minZoom(layer = ENTRANCES_LAYER, zoom = look.entrancesMinZoom)
     filter(layer = CHOSEN_BARRIER_LAYER, filter = look.chosenBarrierFilter)
     data(source = CHOSEN_SOURCE, geoJson = look.chosenEntrance.asStyleText())
-    showPlan(floor = look.planFloor, features = look.plan)
+    showPlanFloor(floor = look.planFloor)
     filter(layer = BARRIERS_LAYER, filter = look.barriersFilter)
     filter(layer = BARRIER_WORDS_LAYER, filter = look.barriersFilter)
 }

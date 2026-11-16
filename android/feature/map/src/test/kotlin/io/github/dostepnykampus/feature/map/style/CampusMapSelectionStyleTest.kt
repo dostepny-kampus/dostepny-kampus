@@ -116,7 +116,8 @@ class CampusMapSelectionStyleTest {
 
     /**
      * Zaznaczenie pokazane w gotowym stylu daje ten sam styl co styl zbudowany z zaznaczeniem, więc zmiana
-     * budynku, wejścia albo bariery nie wymaga nowego stylu, a mapa wygląda tak samo. Wymagania: US1.1, US1.5, US3.3
+     * budynku, wejścia, bariery albo piętra planu nie wymaga nowego stylu, a mapa wygląda tak samo. Dane planu są
+     * już w gotowym stylu z innym piętrem. Wymagania: US1.1, US1.5, US3.3, US16.1
      */
     @Test
     fun selectsOnReadyStyle() {
@@ -130,7 +131,8 @@ class CampusMapSelectionStyleTest {
                 data.selection().copy(plan = plan()),
             )
         selections.forEach { selection ->
-            val ready = JsonStyle(campusMapStyle(data, MapSelection(bounds = selection.bounds), colors))
+            val shown = MapSelection(bounds = selection.bounds, plan = selection.plan?.copy(floor = "P9"))
+            val ready = JsonStyle(campusMapStyle(data, shown, colors))
             ready.showSelection(selectionLook(data, selection, colors))
             assertEquals(Json.parseToJsonElement(campusMapStyle(data, selection, colors)), ready.json, "$selection")
         }
