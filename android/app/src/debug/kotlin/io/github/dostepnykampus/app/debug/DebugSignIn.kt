@@ -10,8 +10,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.account.TymczasoweRole
+import io.github.dostepnykampus.core.data.account.accountOf
 import io.github.dostepnykampus.core.model.Account
-import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.network.auth.AccessTokens
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +22,6 @@ import okhttp3.Request
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-import java.util.Base64
 
 /**
  * Logowanie użytkownikiem testowym roli wybranej w przełączniku debug. Token z realmu
@@ -111,25 +110,6 @@ class DebugSignIn(
                 DebugRole.VERIFIER to ("weryfikator.test" to "haslo-testowe-weryfikator"),
                 DebugRole.COORDINATOR to ("koordynator.test" to "haslo-testowe-koordynator"),
             )
-    }
-}
-
-/**
- * Konto z ról realmu w tokenie (`realm_access.roles`) albo `null`, gdy tokenu nie da się odczytać.
- *
- * @param token token JWT z Keycloak
- */
-internal fun accountOf(token: String): Account? {
-    val payload = token.split('.').getOrNull(1) ?: return null
-    return try {
-        val claims = JSONObject(String(Base64.getUrlDecoder().decode(payload), Charsets.UTF_8))
-        val granted = claims.optJSONObject("realm_access")?.optJSONArray("roles")
-        val names = granted?.let { array -> List(array.length()) { array.optString(it) } }.orEmpty()
-        Account.SignedIn(StaffRole.entries.filter { it.name in names }.toSet())
-    } catch (_: IllegalArgumentException) {
-        null
-    } catch (_: JSONException) {
-        null
     }
 }
 
