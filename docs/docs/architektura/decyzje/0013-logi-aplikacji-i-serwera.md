@@ -23,7 +23,12 @@ Logi mają pomagać w rozwoju i diagnozie, a nie zalewać: mało linii, każda m
 - Wersja release zapisuje tylko WARN i ERROR do logcat.
 - Aplikacja nie wysyła logów nigdzie poza telefon.
 
-Timber 5.0.1 jest wyjątkiem od kryterium ADR-0004 „wydanie z ostatnich 12 miesięcy”. Ostatnie wydanie jest z sierpnia 2021, a biblioteka jest mała, stabilna i bez znanych podatności. Własna nakładka na `android.util.Log` byłaby własnym rozwiązaniem problemu ogólnego, które ADR-0004 wyklucza. Ocena jest w [ocenach zależności](../oceny-zaleznosci.md#timber-501).
+Timber jest wyjątkiem od kryterium ADR-0004 „wydanie z ostatnich 12 miesięcy”:
+
+- ostatnie wydanie jest z sierpnia 2021,
+- biblioteka jest mała, stabilna i bez znanych podatności,
+- własna nakładka na `android.util.Log` byłaby własnym rozwiązaniem problemu ogólnego, które ADR-0004 wyklucza,
+- ocena jest w [ocenach zależności](../oceny-zaleznosci.md#timber-501).
 
 **Serwer** używa SLF4J z Logback ze Spring Boot.
 
