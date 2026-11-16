@@ -74,8 +74,9 @@ internal data class SelectionLook(
  * i znaki wejść ma tylko on, przy każdym powiększeniu. Bez zaznaczenia filtry obrysu i bariery niczego nie
  * przepuszczają, filtr wejść przepuszcza wszystkie od powiększenia 17, a źródło wejścia jest puste. Plan
  * [MapSelection.plan] pokazuje wybrane piętro i bariery tego piętra; dane planu idą osobno przez [showPlanData].
+ * Bariery widać według [barriersByZoom], a bariery zaznaczonego budynku przy każdym powiększeniu.
  *
- * Wymagania: US1.1, US1.4, US2.8, US2.1, NFR-15
+ * Wymagania: US1.1, US1.4, US2.8, US2.1, NFR-15, US1.3
  */
 internal fun selectionLook(data: CampusMapData, selection: MapSelection, colors: MapStyleColors): SelectionLook {
     val chosen = data.outlineOf(selection.building)
@@ -89,7 +90,12 @@ internal fun selectionLook(data: CampusMapData, selection: MapSelection, colors:
         chosenBarrierFilter = selection.barrier?.let(::ofBarrier) ?: NO_FEATURES,
         chosenEntrance = featureCollection(selection.entrance?.let(::chosenFeatures).orEmpty()),
         planFloor = selection.plan?.floor,
-        barriersFilter = barriersOnPlan(building = selection.plan?.building, floor = selection.plan?.floor),
+        barriersFilter =
+            expression(
+                "all",
+                barriersOnPlan(building = selection.plan?.building, floor = selection.plan?.floor),
+                barriersByZoom(chosen),
+            ),
     )
 }
 
