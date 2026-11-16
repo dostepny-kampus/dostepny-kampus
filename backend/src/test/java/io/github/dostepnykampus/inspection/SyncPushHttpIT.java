@@ -138,19 +138,11 @@ final class SyncPushHttpIT {
         final String broken, final WebApplicationContext context
     ) throws Exception {
         final UUID good = UUID.randomUUID();
-        final String batch = String.join(
-            "",
-            "{\"operations\":[{\"clientOperationId\":\"",
-            UUID.randomUUID().toString(), "\",",
-            "\"type\":\"SET_INSPECTION_MARKER\",\"marker\":",
-            broken.formatted(UUID.randomUUID(), String.join("", "\\", "u0000")), "},",
-            SyncPushHttpIT.body(good, "C-13").substring(15)
-        );
         final MockHttpServletResponse response = context.getBean(MockMvc.class).perform(
             MockMvcRequestBuilders.post("/sync/push")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer COLLECTOR")
-                .content(batch)
+                .content(SyncPushHttpIT.batch(broken, good))
         ).andReturn().getResponse();
         final JsonNode results = context.getBean(ObjectMapper.class)
             .readTree(response.getContentAsString()).path("results");
@@ -198,6 +190,17 @@ final class SyncPushHttpIT {
                 SyncPushHttpIT.revoked(context, foreign)
             ),
             "Cofnięcie cudzego albo nieistniejącego znacznika nie zostało odrzucone"
+        );
+    }
+
+    private static String batch(final String broken, final UUID good) {
+        return String.join(
+            "",
+            "{\"operations\":[{\"clientOperationId\":\"",
+            UUID.randomUUID().toString(), "\",",
+            "\"type\":\"SET_INSPECTION_MARKER\",\"marker\":",
+            broken.formatted(UUID.randomUUID(), String.join("", "\\", "u0000")), "},",
+            SyncPushHttpIT.body(good, "C-13").substring(15)
         );
     }
 
