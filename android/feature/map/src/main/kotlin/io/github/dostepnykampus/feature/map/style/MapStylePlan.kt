@@ -177,8 +177,14 @@ internal suspend fun MapStyleTarget.showPlanData(
 ) {
     val (text, bitmaps) =
         withContext(worker) {
-            val numbers = floors.values.flatMap { it.rooms }.filter { it.isLabelled }.mapNotNull { it.number }
-            val fresh = numbers.toSet().filterNot(numbered::contains)
+            val fresh =
+                floors.values
+                    .asSequence()
+                    .flatMap { it.rooms }
+                    .filter { it.isLabelled }
+                    .mapNotNull { it.number }
+                    .filterNot(numbered::contains)
+                    .toSet()
             planFeatures(floors).asStyleText() to
                 fresh.associateWith { roomNumberBitmap(it, images.colors, images.labelSize) }
         }
