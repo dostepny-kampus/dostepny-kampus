@@ -437,6 +437,21 @@ wysokosci:
 # ---------------------------------------------------------------------------
 mapa:
   napisy_sp: 16
+  # Plan piętra na mapie V1: grubości linii i rozmiar znaków planu według powiększenia, liniowo między progami.
+  # Pod planem budynek ma tło `pwr_podstawowy`. Ściana zewnętrzna to jedna linia `pwr_kontur`, bez drugiej linii
+  # konturu budynku obok. Winda, toaleta dostosowana i schody mają ten sam rozmiar; ważność niesie jasność
+  # i kolejność rysowania (winda i toaleta nad schodami). Znak ma obwódkę `papier` i kontur `tusz` jak znaki
+  # wejść i barier, a obszar dotyku co najmniej `cele_dotyku.minimum` przy każdym rozmiarze obrazu.
+  plan:
+    obrys_dp: 2.4
+    sciany_dp:
+      - {powiekszenie: 17, dp: 0.75}
+      - {powiekszenie: 20, dp: 1.5}
+    znak_dp:
+      - {powiekszenie: 17, dp: 16}
+      - {powiekszenie: 18, dp: 21}
+      - {powiekszenie: 19, dp: 28}
+    zrodlo: US16.1, NFR-16, NFR-17, NFR-21
   kolory:
     lad: {jasny: "#EEF1F0", ciemny: "#20272B", uzycie: tło lądu}
     zielen: {jasny: "#CBE2C6", ciemny: "#24352C", uzycie: parki i trawniki}
@@ -450,9 +465,9 @@ mapa:
     pwr: {jasny: "#9BD3E6", ciemny: "#3D6B7A", uzycie: "wypełnienie budynków szczegółowych (z planem pięter)"}
     # Budynek podstawowy: jaśniejsze tło niż szczegółowy, ale wyraźnie niebieskie; od szczegółowego odróżnia go
     # jasność tła i cienki kontur.
-    pwr_podstawowy: {jasny: "#C4E5F0", ciemny: "#2F4E59", uzycie: "wypełnienie budynków podstawowych (bez planu pięter)"}
+    pwr_podstawowy: {jasny: "#C4E5F0", ciemny: "#2F4E59", uzycie: "wypełnienie budynków podstawowych (bez planu pięter) i tło budynku pod planem piętra"}
     # Ciemny kontur PWr: najciemniejszy ton, który do wypełnienia ma ≥ 3:1 także po symulacji daltonizmu.
-    pwr_kontur: {jasny: "#004E5E", ciemny: "#A6D6E5", uzycie: "kontur budynków PWr (jasny = primary): gruby przy szczegółowym, cienki ciągły przy podstawowym"}
+    pwr_kontur: {jasny: "#004E5E", ciemny: "#A6D6E5", uzycie: "kontur budynków PWr (jasny = primary): gruby przy szczegółowym, cienki ciągły przy podstawowym, ściana zewnętrzna planu piętra"}
     # Obrys wybranego budynku jest grubszy niż kontur; wybór pokazuje też arkusz z nazwą (NFR-21).
     pwr_wybrany: {jasny: "#001F27", ciemny: "#E6F4F8", uzycie: obrys wybranego budynku}
     napis_pwr: {jasny: "#00303B", ciemny: "#F0F6F8", uzycie: "symbol budynku, „Sala 329”, „Winda”, „Toaleta”"}
@@ -481,7 +496,7 @@ mapa:
     p_winda: {jasny: "#A7C0C9", ciemny: "#3B4D55", uzycie: winda}
     p_wzor: {jasny: "#4A5559", ciemny: "#8D979B", uzycie: kreskowanie klatek schodowych i kropki toalet}
     p_wc: {jasny: "#F2F5F6", ciemny: "#272C30", uzycie: toaleta}
-    p_kontur: {jasny: "#6A7579", ciemny: "#828E94", uzycie: ściany na planie piętra}
+    p_kontur: {jasny: "#6A7579", ciemny: "#828E94", uzycie: ściany pomieszczeń na planie piętra}
     p_wybrana: {jasny: "#8FD3EA", ciemny: "#2F5A68", uzycie: szukana sala}
     p_wybrana_kontur: {jasny: "#001F27", ciemny: "#D9E6EB", uzycie: kontur szukanej sali}
   pary:
@@ -514,6 +529,13 @@ mapa:
     - {kolor: p_kontur, tlo: p_sala, rodzaj: komponent, gdzie: ściany sali}
     - {kolor: p_kontur, tlo: p_korytarz, rodzaj: komponent, gdzie: ściany korytarza}
     - {kolor: p_kontur, tlo: p_inne, rodzaj: komponent, gdzie: ściany innych pomieszczeń}
+    - {kolor: pwr_kontur, tlo: p_korytarz, rodzaj: komponent, gdzie: ściana zewnętrzna planu przy korytarzu}
+    - {kolor: pwr_kontur, tlo: p_sala, rodzaj: komponent, gdzie: ściana zewnętrzna planu przy sali}
+    - {kolor: pwr_kontur, tlo: p_inne, rodzaj: komponent, gdzie: ściana zewnętrzna planu przy innym pomieszczeniu}
+    - {kolor: pwr_kontur, tlo: p_wc, rodzaj: komponent, gdzie: ściana zewnętrzna planu przy toalecie}
+    - {kolor: pwr_kontur, tlo: p_winda, rodzaj: komponent, gdzie: ściana zewnętrzna planu przy windzie}
+    - {kolor: tusz, tlo: papier, rodzaj: komponent, gdzie: kontur znaku planu do jego obwódki}
+    - {kolor: papier, tlo: p_kontur, rodzaj: komponent, gdzie: obwódka znaku planu do ściany pomieszczenia}
     - {kolor: p_wzor, tlo: p_inne, rodzaj: komponent, gdzie: kreskowanie klatek schodowych}
     - {kolor: p_wzor, tlo: p_wc, rodzaj: komponent, gdzie: kropki toalet}
     - {kolor: p_wybrana_kontur, tlo: p_wybrana, rodzaj: komponent, gdzie: kontur szukanej sali do wypełnienia}
