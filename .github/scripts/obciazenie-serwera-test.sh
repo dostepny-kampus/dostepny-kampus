@@ -35,9 +35,11 @@ sprawdz "p50" 10.0 "d['p50_ms']"
 sprawdz "p99" 10.0 "d['p99_ms']"
 sprawdz "sha" abc "d['sha']"
 
-PATH="$workdir/bin:$PATH" ADRES=http://x ZADANIA=10 ROWNOLEGLE=2 bash -c '
-  printf "#!/usr/bin/env bash\necho \"0.001 503\"\n" > "'"$workdir"'/bin/curl"
-  "'"$script"'"' >"$workdir/blad.json"
+printf '#!/usr/bin/env bash
+echo "0.001 503"
+' >"$workdir/bin/curl"
+chmod +x "$workdir/bin/curl"
+PATH="$workdir/bin:$PATH" ADRES=http://x ZADANIA=10 ROWNOLEGLE=2 bash "$script" >"$workdir/blad.json"
 if grep -q '"bledy": 10' "$workdir/blad.json"; then
   echo "OK: status 503 liczy się jako błąd"
 else
