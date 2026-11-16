@@ -43,8 +43,6 @@ data class SignInUiState(val isOnline: Boolean = true, val stage: SignInStage = 
  * L1 „Prośba o logowanie”: „Zaloguj się” i „Załóż konto” otwierają Usługę logowania, a po błędzie
  * „Spróbuj ponownie” powtarza ostatnią próbę. Po zalogowaniu konto zmienia się w sesji konta.
  *
- * TODO(#877): podłączyć w aplikacji razem z logowaniem AppAuth.
- *
  * Wymagania: US14.2, US14.3, NFR-50
  *
  * @param network stan sieci

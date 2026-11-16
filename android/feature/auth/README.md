@@ -6,15 +6,16 @@ Konto osoby: prośba o logowanie (L1).
 
 ## Pakiety
 
-- `feature.auth` — stan i ViewModel prośby o logowanie.
+- `feature.auth` — ekran L1, jego stan i ViewModel.
 
 ## API
 
-ViewModel prośby o logowanie w pakiecie `feature.auth`.
+`SignInScreen` z `SignInActions` (wejście ze „Zgłoś barierę” albo z „Konto”) i `SignInContent` bez modelu widoku.
 
 ## Zależności
 
 - `:core:data`
+- `:core:designsystem`
 
 ## Czego moduł nie robi
 
