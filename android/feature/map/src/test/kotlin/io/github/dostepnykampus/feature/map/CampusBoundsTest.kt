@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import kotlin.math.cos
-import kotlin.math.log2
 
 /** Teren mapy V1 i granice widoku na konturach testowych „Budynek testowy” (nie dane PWr). */
 class CampusBoundsTest {
@@ -141,19 +140,21 @@ class CampusBoundsTest {
     }
 
     /**
-     * Wiersz: V1, najmniejsze powiększenie to takie, przy którym cały prostokąt mieści się w widoku; bardziej
-     * oddalić mapy się nie da. Na równiku pas 360/2^14 stopnia ma przy powiększeniu 14 dokładnie 512 dp.
-     * Scenariusz (częściowo): przegladanie-mapy.feature: Przy najmniejszym powiększeniu widać cały teren
+     * Wiersz: V1, najmniejsze powiększenie to takie, przy którym prostokąt wypełnia widok w krótszym wymiarze;
+     * bardziej oddalić mapy się nie da. Na równiku pas 360/2^14 stopnia ma przy powiększeniu 14 dokładnie 512 dp:
+     * pas 512 × 128 dp wypełnia 1024 dp wysokości przy powiększeniu 17, a pas 64 × 512 dp — 1024 dp szerokości
+     * przy 18.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Przy najmniejszym powiększeniu teren wypełnia mapę w krótszym wymiarze
      *
      * Wymagania: NFR-39
      */
     @Test
-    fun fitsCampusAtMinZoom() {
+    fun fillsShorterSideAtMinZoom() {
         val span = 360.0 / 16_384
         val wide = CampusBounds(west = 0.0, south = -span / 8, east = span, north = span / 8)
         val tall = CampusBounds(west = 0.0, south = -span / 2, east = span / 8, north = span / 2)
-        assertEquals(14.0 + log2(1.5), MapLimits(wide, widthDp = 768.0, heightDp = 1024.0).minZoom, ZOOM_DELTA)
-        assertEquals(14.0 + log2(1.5), MapLimits(tall, widthDp = 1024.0, heightDp = 768.0).minZoom, ZOOM_DELTA)
+        assertEquals(17.0, MapLimits(wide, widthDp = 768.0, heightDp = 1024.0).minZoom, ZOOM_DELTA)
+        assertEquals(18.0, MapLimits(tall, widthDp = 1024.0, heightDp = 768.0).minZoom, ZOOM_DELTA)
         val farthest = limits.clamp(MapCamera(center = GeoPoint(longitude = 17.02, latitude = 60.01), zoom = 3.0))
         assertEquals(limits.minZoom, farthest.zoom)
     }

@@ -21,8 +21,10 @@ class MapLimitsTest {
     private val span = 360.0 / 16_384
 
     /**
-     * Wiersz: V1, najmniejsze powiększenie pokazuje cały obszar kampusu także na telefonie, na którym dp to kilka
-     * pikseli; przy gęstości 3 widok 1200 × 2400 pikseli ma 400 × 800 dp, a 3072 × 2304 ma 1024 × 768 dp.
+     * Wiersz: V1, najmniejsze powiększenie wypełnia mapę prostokątem terenu w krótszym wymiarze także na telefonie,
+     * na którym dp to kilka pikseli; przy gęstości 3 widok 1200 × 2400 pikseli ma 400 × 800 dp, a 3072 × 2304 ma
+     * 1024 × 768 dp. Pas 512 × 128 dp przy powiększeniu 14 wypełnia 800 dp wysokości, a pas 64 × 512 dp — 1024 dp
+     * szerokości.
      *
      * Wymagania: NFR-39
      */
@@ -33,39 +35,40 @@ class MapLimitsTest {
         val tall = CampusBounds(west = 0.0, south = -span / 2, east = span / 8, north = span / 2)
         val portrait = density.mapLimits(wide, IntSize(width = 1200, height = 2400))
         val landscape = density.mapLimits(tall, IntSize(width = 3072, height = 2304))
-        assertEquals(14.0 + log2(400.0 / 512), portrait?.minZoom ?: 0.0, ZOOM_DELTA)
-        assertEquals(14.0 + log2(768.0 / 512), landscape?.minZoom ?: 0.0, ZOOM_DELTA)
+        assertEquals(14.0 + log2(800.0 / 128), portrait?.minZoom ?: 0.0, ZOOM_DELTA)
+        assertEquals(18.0, landscape?.minZoom ?: 0.0, ZOOM_DELTA)
     }
 
     /**
      * Wiersz: V1, na 60° szerokości obszar w rzucie mapy jest dwa razy wyższy niż w stopniach, więc najmniejsze
-     * powiększenie obszaru ograniczonego wysokością jest o jeden poziom niższe niż na równiku.
+     * powiększenie obszaru ograniczonego wysokością jest o jeden poziom niższe niż na równiku: 512 dp zamiast
+     * 256 dp wysokości przy powiększeniu 14 wypełnia 1024 dp przy powiększeniu 15, a nie 16.
      *
      * Wymagania: NFR-39
      */
     @Test
     fun computesMinZoomAt60Degrees() {
-        val tall = CampusBounds(west = 17.0, south = 60.0 - span / 4, east = 17.0 + span / 8, north = 60.0 + span / 4)
-        assertEquals(14.0 + log2(1.5), MapLimits(tall, widthDp = 1024.0, heightDp = 768.0).minZoom, ZOOM_DELTA)
+        val tall = CampusBounds(west = 17.0, south = 60.0 - span / 4, east = 17.0 + span, north = 60.0 + span / 4)
+        assertEquals(15.0, MapLimits(tall, widthDp = 512.0, heightDp = 1024.0).minZoom, ZOOM_DELTA)
     }
 
     /**
-     * Wiersz: V1, prostokąt widoku to prostokąt terenu rozszerzony do proporcji mapy, ze środkiem w środku terenu,
-     * więc przy najmniejszym powiększeniu wypełnia mapę; podkład jest tylko w nim. Na równiku pas szeroki na
-     * `span` i wysoki na `span / 4` na mapie 400 × 800 dp rośnie w pionie do `2 * span`.
+     * Wiersz: V1, prostokąt widoku to sam prostokąt terenu, bez rozszerzania do proporcji mapy; podkład jest tylko
+     * w nim. Przy najmniejszym powiększeniu pas szeroki na `span` i wysoki na `span / 4` wypełnia mapę 400 × 800 dp
+     * w pionie, więc w pionie mapa stoi, a w poziomie da się ją przesuwać.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Przy najmniejszym powiększeniu teren wypełnia mapę w krótszym wymiarze
      *
      * Wymagania: US1.7, NFR-39
      */
     @Test
-    fun widensAreaToView() {
+    fun keepsAreaWithoutWidening() {
         val wide = CampusBounds(west = 0.0, south = -span / 8, east = span, north = span / 8)
         val limits = MapLimits(wide, widthDp = 400.0, heightDp = 800.0)
-        val area = limits.area
-        assertEquals(0.0, area.west, DEGREE_DELTA, "zachód bez zmian")
-        assertEquals(span, area.east, DEGREE_DELTA, "wschód bez zmian")
-        assertEquals(span, area.north, MERCATOR_DELTA, "północ do proporcji 1 : 2")
-        assertEquals(-span, area.south, MERCATOR_DELTA, "południe do proporcji 1 : 2")
-        assertEquals(area, limits.tileBounds, "kafelki tylko w prostokącie widoku")
+        assertEquals(wide, limits.area, "prostokąt terenu bez rozszerzania")
+        assertEquals(wide, limits.tileBounds, "kafelki tylko w prostokącie terenu")
+        val center = limits.centerBounds(zoom = limits.minZoom)
+        assertEquals(center.south, center.north, MERCATOR_DELTA, "w pionie prostokąt wypełnia mapę")
+        assertEquals(true, center.east - center.west > span / 2, "w poziomie mapa się przesuwa")
     }
 
     /**

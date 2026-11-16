@@ -85,12 +85,15 @@ internal fun MapCamera.moved(direction: PanDirection): MapCamera {
  * @property heightDp wysokość widoku mapy w dp
  */
 internal class MapLimits(val bounds: CampusBounds, val widthDp: Double, val heightDp: Double) {
-    /** Prostokąt widoku: [bounds] rozszerzony w rzucie mapy do proporcji widoku, ze środkiem w środku [bounds]. */
-    val area: CampusBounds = bounds.widenedToRatio(widthDp / heightDp)
+    /** Prostokąt widoku: sam [bounds], bez rozszerzania do proporcji widoku. */
+    val area: CampusBounds get() = bounds
 
-    /** Najmniejsze powiększenie: [area] wypełnia widok, cały teren jest widoczny i bardziej oddalić mapy się nie da. */
+    /**
+     * Najmniejsze powiększenie: [area] wypełnia widok w krótszym wymiarze, więc widok nie wychodzi poza [area],
+     * a wzdłuż dłuższego wymiaru mapę się przesuwa.
+     */
     val minZoom: Double =
-        minOf(
+        maxOf(
             a = fitZoom(viewDp = widthDp, worldShare = (area.east - area.west) / FULL_TURN_DEGREES),
             b = fitZoom(viewDp = heightDp, worldShare = (mercatorY(area.north) - mercatorY(area.south)) / (2 * PI)),
         )
@@ -133,22 +136,6 @@ internal class MapLimits(val bounds: CampusBounds, val widthDp: Double, val heig
         val longitude = camera.center.longitude.coerceIn(minimumValue = box.west, maximumValue = box.east)
         val latitude = camera.center.latitude.coerceIn(minimumValue = box.south, maximumValue = box.north)
         return MapCamera(center = GeoPoint(longitude = longitude, latitude = latitude), zoom = zoom)
-    }
-}
-
-private fun CampusBounds.widenedToRatio(ratio: Double): CampusBounds {
-    val width = Math.toRadians(east - west)
-    val bottom = mercatorY(south)
-    val top = mercatorY(north)
-    val height = top - bottom
-    return if (width / height < ratio) {
-        val half = Math.toDegrees(height * ratio) / 2
-        val middle = (west + east) / 2
-        copy(west = middle - half, east = middle + half)
-    } else {
-        val half = width / ratio / 2
-        val middle = (bottom + top) / 2
-        copy(south = latitudeOf(middle - half), north = latitudeOf(middle + half))
     }
 }
 
