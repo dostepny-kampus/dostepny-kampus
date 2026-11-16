@@ -40,12 +40,16 @@ enum class RemovedStage {
  * Wymagania: US8.4, BR-19
  *
  * @property previous zgłoszenie przyjęte, którego dotyczy zmiana; `null` przed wczytaniem albo gdy go nie ma
+ * @property buildingName nazwa budynku bariery z katalogu; `null`, gdy budynek jej nie ma albo nie ma go w katalogu
+ * @property entranceName nazwa wejścia przy barierze z katalogu; `null`, gdy zgłoszenie go nie wskazuje
  * @property photo nowe zdjęcie miejsca albo `null`
  * @property isPhotoMissing czy wysłanie bez zdjęcia zostało już odrzucone; znika po zrobieniu zdjęcia
  * @property stage etap ekranu
  */
 data class RemovedUiState(
     val previous: AcceptedBarrier? = null,
+    val buildingName: String? = null,
+    val entranceName: String? = null,
     val photo: PendingPhotoDraft? = null,
     val isPhotoMissing: Boolean = false,
     val stage: RemovedStage = RemovedStage.LOADING,

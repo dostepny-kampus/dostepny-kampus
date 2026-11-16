@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.capture.report.removed
 
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierType
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import timber.log.Timber
 import java.io.IOException
+import kotlin.coroutines.EmptyCoroutineContext
 
 /** Ekran C7: zdjęcie obowiązkowe, uciążliwości nie ma, zapis jak w C2. Wymagania: US8.4, BR-19, BR-7, NFR-7 */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -44,9 +46,12 @@ class RemovedViewModelTest {
             verifiedAt = null,
             floor = SubmissionFloor(number = 2, isMezzanine = false),
         )
-    private val viewModel =
+    private val viewModel = viewModel(PLAIN)
+
+    private fun viewModel(file: String, barrier: AcceptedBarrier = lift) =
         RemovedViewModel(
-            barriers = { listOf(lift) },
+            barriers = { listOf(barrier) },
+            catalog = BuildingCatalogRepository(EmptyCoroutineContext) { file },
             saver = { content, photos, _ ->
                 failure?.let { throw it }
                 saved.add(content to photos)
@@ -67,6 +72,23 @@ class RemovedViewModelTest {
         viewModel.open("tb9")
         dispatcher.scheduler.runCurrent()
     }
+
+    /**
+     * Nazwy budynku i wejścia z katalogu trafiają do stanu ekranu; zgłoszenie bez wejścia nie ma jego nazwy.
+     *
+     * Wymagania: US8.4, US1.5
+     */
+    @Test
+    fun carriesNamesFromCatalog() =
+        runTest(dispatcher) {
+            val without = viewModel(NAMED)
+            without.open("tb9")
+            val with = viewModel(NAMED, lift.copy(entranceId = "n/1"))
+            with.open("tb9")
+            runCurrent()
+            assertEquals("Gmach C" to null, without.uiState.value.names(), "zgłoszenie bez wejścia")
+            assertEquals("Gmach C" to "Wejście A", with.uiState.value.names(), "zgłoszenie z wejściem")
+        }
 
     /**
      * Wysłanie bez zdjęcia kończy się błędem walidacji i niczego nie zapisuje.
@@ -161,4 +183,19 @@ class RemovedViewModelTest {
                 "linia logu z klasą wyjątku bez komunikatu",
             )
         }
+
+    private fun RemovedUiState.names() = buildingName to entranceName
+
+    private companion object {
+        const val PLAIN =
+            """{"type":"FeatureCollection","attribution":"© plik","features":[""" +
+                """{"type":"Feature","properties":{"kind":"building","symbols":["C-13"],"osm_id":"way/1"},""" +
+                """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
+        const val NAMED =
+            """{"type":"FeatureCollection","attribution":"© plik","features":[""" +
+                """{"type":"Feature","properties":{"kind":"building","symbols":["C-13"],"display_name":"Gmach C",""" +
+                """"osm_id":"way/1"},"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}},""" +
+                """{"type":"Feature","properties":{"kind":"entrance","symbols":["C-13"],"osm_id":"n/1",""" +
+                """"ref":"Wejście A"},"geometry":{"type":"Point","coordinates":[0,0]}}]}"""
+    }
 }

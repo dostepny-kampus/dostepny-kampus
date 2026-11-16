@@ -61,7 +61,7 @@ fun RemovedContent(state: RemovedUiState, actions: RemovedActions, modifier: Mod
                 verticalArrangement = Arrangement.spacedBy(Odstepy.m),
             ) {
                 SaveFailure(state, actions.onSend)
-                state.previous?.let { Accepted(it) }
+                state.previous?.let { Accepted(it, state.buildingName, state.entranceName) }
                 PhotoSection(
                     photos = PhotoPaths(listOfNotNull(state.photo?.path)),
                     camera = actions.camera,
@@ -78,7 +78,7 @@ fun RemovedContent(state: RemovedUiState, actions: RemovedActions, modifier: Mod
 }
 
 @Composable
-private fun Accepted(barrier: AcceptedBarrier) {
+private fun Accepted(barrier: AcceptedBarrier, buildingName: String?, entranceName: String?) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(
             text = stringResource(barrier.type?.nameRes() ?: R.string.moje_typ_nieznany),
@@ -86,8 +86,7 @@ private fun Accepted(barrier: AcceptedBarrier) {
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = Typografia.wyroznienieWaga,
         )
-        // TODO(#2227): nazwy budynku i wejścia z katalogu budynków w core:data
-        Text(barrierPlace(symbol = barrier.buildingSymbol, name = null, entrance = null, floor = barrier.floor))
+        Text(barrierPlace(barrier.buildingSymbol, buildingName, entranceName, barrier.floor))
         barrier.verifiedAt?.let { verified ->
             val text = stringResource(R.string.usuniecie_sprawdzone, campusDay(verified))
             Text(text, color = MaterialTheme.colorScheme.onSurfaceVariant)
