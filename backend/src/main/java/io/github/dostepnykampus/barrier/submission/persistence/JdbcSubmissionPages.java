@@ -19,6 +19,8 @@ import tools.jackson.databind.ObjectMapper;
  *
  * <p>Wymagania: NFR-34</p>
  *
+ * <p>TODO(#2706): podłączyć do listy zgłoszeń w API zamiast listy bez stron.</p>
+ *
  * @since 0.1.0
  */
 @Component
@@ -60,23 +62,19 @@ public final class JdbcSubmissionPages implements SubmissionFinder.Pages {
         final SubmissionFinder.Window window
     ) {
         return Objects.requireNonNull(
-            this.jdbc.sql(
-                String.format(
-                    """
-                    SELECT %s FROM submissions WHERE status IN (:statuses)
-                        AND (CAST(:building AS TEXT) IS NULL OR building_symbol = :building)
-                        AND (CAST(:floor AS TEXT) IS NULL OR floor_id = :floor)
-                        AND (CAST(:author AS TEXT) IS NULL OR author = :author)
-                        AND id > :after
-                    ORDER BY id LIMIT :fetch
-                    """,
-                    JdbcSubmissions.COLUMNS
-                )
-            ).param("statuses", query.statuses().stream().map(Enum::name).toList())
-                .param("building", query.buildingSymbol())
-                .param("floor", query.floorId())
-                .param("author", author)
-                .param("after", window.after())
+            SubmissionSelection.bind(
+                this.jdbc.sql(
+                    String.format(
+                        """
+                        SELECT %s FROM submissions WHERE %s
+                            AND id > :after
+                        ORDER BY id LIMIT :fetch
+                        """,
+                        JdbcSubmissions.COLUMNS, SubmissionSelection.WHERE
+                    )
+                ),
+                query, author
+            ).param("after", window.after())
                 .param("fetch", window.limit() + 1)
                 .query(SubmissionRows.page(this.rows, window))
         );
