@@ -86,7 +86,7 @@ internal fun MapCamera.moved(direction: PanDirection): MapCamera {
  */
 internal class MapLimits(val bounds: CampusBounds, val widthDp: Double, val heightDp: Double) {
     /** Prostokąt widoku: [bounds] rozszerzony w rzucie mapy do proporcji widoku, ze środkiem w środku [bounds]. */
-    val area: CampusBounds = bounds.widenedAroundMiddleToWidthPerHeight(widthDp / heightDp)
+    val area: CampusBounds = bounds.widenedToRatio(widthDp / heightDp)
 
     /** Najmniejsze powiększenie: [area] wypełnia widok, cały teren jest widoczny i bardziej oddalić mapy się nie da. */
     val minZoom: Double =
@@ -136,7 +136,7 @@ internal class MapLimits(val bounds: CampusBounds, val widthDp: Double, val heig
     }
 }
 
-private fun CampusBounds.widenedAroundMiddleToWidthPerHeight(ratio: Double): CampusBounds {
+private fun CampusBounds.widenedToRatio(ratio: Double): CampusBounds {
     val width = Math.toRadians(east - west)
     val bottom = mercatorY(south)
     val top = mercatorY(north)

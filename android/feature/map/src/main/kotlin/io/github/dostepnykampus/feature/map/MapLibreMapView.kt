@@ -357,7 +357,13 @@ object MapLibreMapView : CampusMapView {
                     .takeIf { width > 0 && height > 0 && it != centerBox }
             if (box != null) {
                 centerBox = box
-                val bounds = LatLngBounds.from(box.north, box.east, box.south, box.west)
+                val bounds =
+                    LatLngBounds.from(
+                        latNorth = box.north,
+                        lonEast = box.east,
+                        latSouth = box.south,
+                        lonWest = box.west,
+                    )
                 map.setLatLngBoundsForCameraTarget(bounds)
             }
         }
