@@ -23,12 +23,13 @@ import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.rememberMapStyle
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-/** Styl mapy V1 w kompozycji: buduje go zmiana danych, terenu albo barw, a nie zaznaczenie ani ruch kamery. */
+/** Styl mapy V1 w kompozycji: buduje go zmiana barw, a nie dane, teren, zaznaczenie ani ruch kamery. */
 @RunWith(RobolectricTestRunner::class)
 class MapStyleRememberTest {
     @get:Rule
@@ -48,6 +49,7 @@ class MapStyleRememberTest {
     private val cameras = mutableListOf<MapCamera>()
     private val builds = mutableListOf<String>()
     private val styles = mutableListOf<String?>()
+    private val catalogs = mutableListOf<CampusMapData>()
     private var basemap by mutableStateOf<Basemap?>(null)
 
     /** Sam ruch kamery rekomponuje widok, ale stylu nie buduje drugi raz. */
@@ -76,16 +78,29 @@ class MapStyleRememberTest {
         }
     }
 
-    /** Zmiana danych i motywu daje za każdym razem nowy styl. Wymagania: NFR-10 */
+    /** Zmiana motywu daje nowy styl. Wymagania: NFR-10 */
     @Test
-    fun rebuildsStyleOnChange() {
+    fun rebuildsStyleOnColors() {
         show()
-        compose.runOnIdle { data = dataOf(building, other) }
         compose.runOnIdle { colors = day.copy(land = "#20272B") }
         compose.runOnIdle {
-            assertEquals(3, builds.size)
-            assertEquals(3, builds.toSet().size)
-            assertEquals(builds.last(), styles.last())
+            assertEquals("styl po zmianie barw", 2, builds.toSet().size)
+            assertEquals("pokazany styl z nowymi barwami", builds.last(), styles.last())
+        }
+    }
+
+    /**
+     * Nowy katalog i bariery nie budują stylu drugi raz, a styl nie niesie danych katalogu: dane idą do wczytanego
+     * stylu. Wymagania: NFR-11
+     */
+    @Test
+    fun keepsStyleWithoutData() {
+        show()
+        compose.runOnIdle { data = dataOf(building, other) }
+        compose.runOnIdle {
+            assertEquals("kompozycja nie widziała nowych danych", 2, catalogs.distinct().size)
+            assertEquals("styl zbudowany raz", 1, builds.size)
+            assertFalse("styl z danymi katalogu", "C-13" in builds.single())
         }
     }
 
@@ -127,17 +142,14 @@ class MapStyleRememberTest {
     private fun show() {
         compose.setContent {
             val seen = camera
+            val catalog = data
             val style =
-                rememberMapStyle(
-                    data = data,
-                    selection = selection,
-                    colors = colors,
-                    basemap = basemap,
-                ) { mapData, area, palette, box ->
-                    campusMapStyle(data = mapData, selection = area, colors = palette, basemap = box).also(builds::add)
+                rememberMapStyle(selection = selection, colors = colors, basemap = basemap) { area, palette, box ->
+                    campusMapShell(selection = area, colors = palette, basemap = box).also(builds::add)
                 }
             SideEffect {
                 cameras += seen
+                catalogs += catalog
                 styles += style
             }
         }

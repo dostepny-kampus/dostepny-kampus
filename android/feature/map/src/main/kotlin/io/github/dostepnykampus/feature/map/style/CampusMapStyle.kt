@@ -49,9 +49,10 @@ internal const val BUILDINGS_FILL = "fill-color"
 internal const val OUTLINES_COLOR = "line-color"
 
 internal const val BUILDINGS_SOURCE = BUILDINGS_LAYER
-private const val ENTRANCES_SOURCE = ENTRANCES_LAYER
+internal const val ENTRANCES_SOURCE = ENTRANCES_LAYER
 
 private const val LABELS = "podpisy"
+internal const val LABELS_SOURCE = LABELS
 internal const val LABEL = "label"
 private const val STYLE_VERSION = 8
 private const val OUTLINE_WIDTH = 1.5
@@ -140,7 +141,7 @@ private fun sources(data: CampusMapData, look: SelectionLook): JsonObject =
     buildJsonObject {
         put(key = BASEMAP, element = basemapSource())
         put(key = BUILDINGS_SOURCE, element = geoJsonSource(data.buildings))
-        put(key = LABELS, element = geoJsonSource(data.labelPoints))
+        put(key = LABELS_SOURCE, element = geoJsonSource(data.labelPoints))
         put(key = ENTRANCES_SOURCE, element = geoJsonSource(data.entrances))
         put(key = BARRIERS_SOURCE, element = geoJsonSource(data.barriers))
         put(key = CHOSEN_SOURCE, element = geoJsonSource(look.chosenEntrance))
@@ -165,7 +166,7 @@ private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap
         add(selectedLayer(look.selectedFilter, colors))
         add(marksLayer(look.entrancesFilter, look.entrancesMinZoom))
         barrierLayers(look.barriersFilter).forEach { add(it) }
-        add(symbolLayer(id = LABELS, source = LABELS, image = property(LABEL)))
+        add(symbolLayer(id = LABELS, source = LABELS_SOURCE, image = property(LABEL)))
         add(chosenBarrierLayer(look.chosenBarrierFilter))
         chosenLayers().forEach { add(it) }
     }
