@@ -280,6 +280,14 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi mapę terenu „Wittigowo” z budynkiem T-15
     Oraz na mapie widzi nazwę terenu „Wittigowo”
 
+  # widok wszystkich budynków terenu: #2676
+  @US1.7 @BR-G5 @aplikacja @do-zrobienia
+  Scenariusz: Po wyborze terenu widać wszystkie jego budynki
+    Zakładając, że Gość niezalogowany ma otwartą listę terenów
+    Jeżeli wybierze teren „Wittigowo”
+    Wtedy na mapie widzi budynki T-15 i P-23
+    Oraz powiększenie mapy jest nie większe niż 17
+
   @US1.7 @BR-G5 @NFR-39 @aplikacja
   Scenariusz: Mapa nie wychodzi poza wybrany teren
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Kampus główny”
@@ -289,10 +297,11 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
 
   # cały widok w prostokącie terenu: #2626, bez granicy i wyblaknięcia: #2627
   @US1.7 @BR-G5 @NFR-39 @aplikacja @do-zrobienia
-  Scenariusz: Przy najmniejszym powiększeniu widać cały teren
+  Scenariusz: Przy najmniejszym powiększeniu teren wypełnia mapę w krótszym wymiarze
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Wittigowo”
     Jeżeli pomniejszy mapę do końca
-    Wtedy prostokąt terenu wypełnia mapę
+    Wtedy prostokąt terenu wypełnia mapę w krótszym wymiarze
+    Oraz wzdłuż dłuższego wymiaru mapę da się przesunąć tylko do brzegu prostokąta
     Oraz mapa nie pokazuje granicy terenu ani wyblakłego podkładu
 
   @US1.7 @aplikacja
