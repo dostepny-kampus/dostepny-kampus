@@ -101,7 +101,16 @@ class MapSelectionImagesTest {
         val target = Recorded()
         val numbered = mutableSetOf<String>()
 
-        repeat(2) { runBlocking { target.showPlanData(floors, images, numbered, EmptyCoroutineContext) } }
+        repeat(2) {
+            runBlocking {
+                target.showPlanData(
+                    floors = floors,
+                    images = images,
+                    numbered = numbered,
+                    worker = EmptyCoroutineContext,
+                )
+            }
+        }
 
         val expected = listOf(roomNumberImage("329"), roomNumberImage("101"))
         assertEquals("Plan nie dodał numerów sal raz", expected, target.images)
