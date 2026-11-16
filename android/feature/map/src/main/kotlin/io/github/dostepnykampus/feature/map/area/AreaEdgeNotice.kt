@@ -22,7 +22,8 @@ import io.github.dostepnykampus.feature.map.campus.CampusBounds
 private const val EDGE_TOLERANCE_DEGREES = 1e-6
 
 /**
- * Czy środek widoku leży na brzegu prostokąta terenu [bounds]: tam strzałka albo gest nie przesuwają mapy dalej.
+ * Czy środek widoku leży na brzegu prostokąta [bounds], w którym może leżeć środek widoku: tam strzałka albo gest
+ * nie przesuwają mapy dalej, bo brzeg mapy stoi na brzegu terenu.
  *
  * Wymagania: US1.7, NFR-53
  */

@@ -279,7 +279,11 @@ private fun CampusMap(
                 modifier = Modifier.fillMaxSize(),
             )
             scene.selection.entrance?.let { EntranceDescription(it) }
-            AreaEdgeAnnouncement(camera = move.camera, bounds = state.limits.bounds, area = areas.current?.name)
+            AreaEdgeAnnouncement(
+                camera = move.camera,
+                bounds = state.limits.centerBounds(zoom = move.camera.zoom),
+                area = areas.current?.name,
+            )
             MapStatusBar(topInset, isShown = state.isCovered)
             val underBar = if (state.isCovered) topInset.asPaddingValues() else PaddingValues(top = top)
             val aboveSheet = Modifier.padding(underBar).padding(contentPadding)

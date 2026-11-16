@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.feature.map.area.isAtEdgeOf
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.mapLimits
@@ -86,6 +87,7 @@ class MapLimitsTest {
         val corner = limits.clamp(far)
         assertEquals(span * 3 / 4, corner.center.longitude, DEGREE_DELTA, "brzeg widoku na wschodnim brzegu")
         assertEquals(span / 4, corner.center.latitude, MERCATOR_DELTA, "brzeg widoku na północnym brzegu")
+        assertEquals(true, corner.isAtEdgeOf(limits.centerBounds(zoom = corner.zoom)), "komunikat o końcu terenu")
         val widest = limits.clamp(far.copy(zoom = 3.0))
         assertEquals(14.0, widest.zoom, ZOOM_DELTA, "najmniejsze powiększenie: prostokąt wypełnia widok")
         assertEquals(span / 2, widest.center.longitude, DEGREE_DELTA, "środek prostokąta")
