@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
@@ -140,9 +141,11 @@ class QuickSendViewModel
                     try {
                         saver.save(report.content(current), listOf(report.photo), null)
                         if (networkStatus.isOnline().first()) QuickSendStage.SENT else QuickSendStage.SAVED_OFFLINE
-                    } catch (_: IOException) {
+                    } catch (error: IOException) {
+                        Timber.w("Zapis zgłoszenia szybkiego nieudany: %s", error.javaClass.simpleName)
                         QuickSendStage.FAILED
-                    } catch (_: SQLiteException) {
+                    } catch (error: SQLiteException) {
+                        Timber.w("Zapis zgłoszenia szybkiego nieudany: %s", error.javaClass.simpleName)
                         QuickSendStage.FAILED
                     }
             }

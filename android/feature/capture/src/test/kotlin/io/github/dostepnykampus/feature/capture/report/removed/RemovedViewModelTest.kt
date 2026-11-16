@@ -24,6 +24,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import timber.log.Timber
 import java.io.IOException
 
 /** Ekran C7: zdjęcie obowiązkowe, uciążliwości nie ma, zapis jak w C2. Wymagania: US8.4, BR-19, BR-7, NFR-7 */
@@ -130,5 +131,34 @@ class RemovedViewModelTest {
             runCurrent()
 
             assertEquals(RemovedStage.SAVED, viewModel.uiState.value.stage, "etap po ponownym zapisie")
+        }
+
+    /** Błąd zapisu zostawia jedną linię z klasą wyjątku, bez jego komunikatu. Wymagania: NFR-57 */
+    @Test
+    fun logsStorageFailureWithoutMessage() =
+        runTest(dispatcher) {
+            val lines = mutableListOf<String>()
+            val tree =
+                object : Timber.Tree() {
+                    override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+                        lines += message
+                    }
+                }
+            Timber.plant(tree)
+            try {
+                open()
+                viewModel.takePhoto(photo)
+                failure = IOException("brak miejsca")
+                viewModel.send()
+                runCurrent()
+            } finally {
+                Timber.uproot(tree)
+            }
+
+            assertEquals(
+                listOf("Zapis zgłoszenia usuniętej bariery nieudany: IOException"),
+                lines,
+                "linia logu z klasą wyjątku bez komunikatu",
+            )
         }
 }
