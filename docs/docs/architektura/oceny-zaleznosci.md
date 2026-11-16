@@ -89,3 +89,17 @@ także zwróciła pustą listę dla `coil-compose@3.6.3` i `coil-network-okhttp@
 Nie znaleziono publicznego wpisu obejmującego sprawdzone wersje w tych bazach na dzień oceny.
 Aktualizacje i nowe zgłoszenia podatności nadal sprawdza Dependabot.
 Zapytanie OSV powtarza się jak dla OkHttp, zmieniając `name` i `version`.
+
+## Timber 5.0.1
+
+Zadanie: [#2643](https://github.com/dostepny-kampus/dostepny-kampus/issues/2643).
+
+Data sprawdzenia: 16 listopada 2026. Decyzja: Timber w wersji `5.0.1` w aplikacji, z wyjątkiem od kryterium aktualności z ADR-0004 (ADR-0013).
+
+| Kryterium | Wynik |
+| --- | --- |
+| Dokładna wersja | `timber = "5.0.1"` w katalogu wersji Androida. |
+| Licencja | Apache-2.0, dozwolona przez ADR-0004. Potwierdzają ją [licencja](https://github.com/JakeWharton/timber/blob/trunk/LICENSE.txt) i [metadane Maven Central](https://repo1.maven.org/maven2/com/jakewharton/timber/timber/5.0.1/timber-5.0.1.pom). |
+| Aktualność | Wydanie z 13.08.2021, poza oknem 12 miesięcy. Maven Central nie ma nowszej wersji; biblioteka ma jedno zadanie (drzewa logów) i stabilny interfejs. |
+| Potrzeba | Poziomy logów wybierane według typu budowy i tag z nazwy klasy bez własnej nakładki na `android.util.Log`. |
+| Znane podatności | Zapytanie do [OSV](https://google.github.io/osv.dev/post-v1-query/) dla ekosystemu `Maven` i wersji `5.0.1` zwróciło 0 wpisów. [GitHub Advisory Database](https://api.github.com/advisories?ecosystem=maven&affects=com.jakewharton.timber%3Atimber%405.0.1) zwróciła pustą listę. |

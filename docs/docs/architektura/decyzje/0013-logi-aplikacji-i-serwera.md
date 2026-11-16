@@ -19,6 +19,8 @@ Logi mają pomagać w rozwoju i diagnozie, a nie zalewać: mało linii, każda m
 
 **Aplikacja** używa Timber (licencja Apache-2.0). Wersja debug zapisuje wszystko od poziomu DEBUG, wersja release tylko WARN i ERROR do logcat. Aplikacja nie wysyła logów nigdzie poza telefon.
 
+Timber 5.0.1 jest wyjątkiem od kryterium ADR-0004 „wydanie z ostatnich 12 miesięcy”: ostatnie wydanie pochodzi z sierpnia 2021. Biblioteka jest mała i stabilna, nie ma znanych podatności ani nowszej wersji, a własna nakładka na `android.util.Log` byłaby własnym rozwiązaniem problemu ogólnego, które ADR-0004 wyklucza. Ocena jest w [ocenach zależności](../oceny-zaleznosci.md#timber-501).
+
 **Serwer** używa SLF4J z Logback ze Spring Boot. Filtr żądań działa przed łańcuchem zabezpieczeń, więc odpowiedzi 401, 403 i 429 też mają identyfikator. Filtr bierze identyfikator z nagłówka `X-Request-Id`, jeśli jest poprawny (do 64 znaków: litery, cyfry, `-`, `_`), a w przeciwnym razie tworzy nowy. Identyfikator trafia do MDC pod kluczem `requestId`, do wzorca linii logu i do nagłówka `X-Request-Id` odpowiedzi. Poziom pakietu ustawia `logging.level` w `application.yaml`, a zmienna `DK_LOG_LEVEL` zmienia go bez przebudowy.
 
 Co logujemy: tylko granice i zdarzenia, nigdy pętle, klatki ani obsługę ruchu kamery.
@@ -46,7 +48,7 @@ Raportów awarii w osobnej usłudze nie dodajemy. Narzędzie zewnętrzne łamie 
 - Dobrze: błąd w telefonie i na serwerze zostawia jedną linię z powodem; żądanie z linii logu serwera da się znaleźć po identyfikatorze, który klient widzi w nagłówku odpowiedzi.
 - Dobrze: wersja release nie zapisuje w logcat nic poniżej WARN, więc nie ujawnia przebiegu użycia.
 - Dobrze: logi żądań są na poziomie DEBUG, więc domyślnie serwer nie zapisuje linii na każde udane żądanie.
-- Gorzej: nowa zależność Timber w modułach, które logują.
+- Gorzej: nowa zależność Timber w modułach, które logują, bez wydania od 2021 roku.
 - Gorzej: wersja release nie pokazuje przebiegu przed błędem; żeby go zobaczyć, trzeba uruchomić wersję debug.
 
 ## Źródła
@@ -54,3 +56,4 @@ Raportów awarii w osobnej usłudze nie dodajemy. Narzędzie zewnętrzne łamie 
 1. [ADR-0004: Gotowe reguły i biblioteki](0004-gotowe-reguly-i-biblioteki.md)
 2. [Timber](https://github.com/JakeWharton/timber), licencja Apache-2.0
 3. [Wymagania niefunkcjonalne: RODO](../../wymagania/niefunkcjonalne.md#rodo)
+4. [Oceny zależności: Timber 5.0.1](../oceny-zaleznosci.md#timber-501)
