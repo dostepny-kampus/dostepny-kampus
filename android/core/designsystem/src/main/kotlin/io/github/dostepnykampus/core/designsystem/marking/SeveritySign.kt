@@ -29,11 +29,11 @@ private const val SIGN_VIEWPORT = 24f
 private const val HALO = 1f
 
 /**
- * Kształty znaku uciążliwości na siatce 24 × 24, jak w makiecie hi-fi V1.
+ * Kształty znaku uciążliwości na siatce 24 × 24, jak w zatwierdzonym zestawie znaków mapy.
  *
  * Wymagania: NFR-21
  *
- * @property shape wypełniony kształt: trójkąt, tarcza albo zaokrąglona kwadratowa tablica
+ * @property shape wypełniony kształt: trójkąt, zaokrąglona tarcza albo zaokrąglona kwadratowa tablica
  * @property mark kreski w kształcie: wykrzyknik albo ramiona osób; pusty napis, gdy ich brak
  * @property stroke grubość kresek; 0 bez kresek
  * @property fills wypełnione części w kolorze kresek: kropka wykrzyknika, głowy osób albo pozioma belka; pusty
@@ -41,16 +41,18 @@ private const val HALO = 1f
  */
 internal enum class SeverityLook(val shape: String, val mark: String, val stroke: Float, val fills: String) {
     HINDRANCE(
-        shape = "M12 1.8L23 21.2H1z",
-        mark = "M12 8.6v6",
-        stroke = 2.4f,
-        fills = "M12 16.2a1.4 1.4 0 1 0 0 2.8a1.4 1.4 0 1 0 0-2.8z",
+        shape = "M12 2.4l10.2 18.2H1.8z",
+        mark = "M12 9.2v5.2",
+        stroke = 2.3f,
+        fills = "M12 16.25a1.25 1.25 0 1 0 0 2.5a1.25 1.25 0 1 0 0-2.5z",
     ),
     ONLY_WITH_HELP(
-        shape = "M2.5 2.5h19v10L12 22.5 2.5 12.5z",
-        mark = "M5.6 14.4c0-2.2 1.3-3.6 3-3.6s3 1.4 3 3.6M12.4 14.4c0-2.2 1.3-3.6 3-3.6s3 1.4 3 3.6",
-        stroke = 2f,
-        fills = "M8.6 5.6a2 2 0 1 0 0 4a2 2 0 1 0 0-4zM15.4 5.6a2 2 0 1 0 0 4a2 2 0 1 0 0-4z",
+        shape = "M12 1.8l8.8 3.1v6.3c0 5.1-3.5 9.1-8.8 11-5.3-1.9-8.8-5.9-8.8-11V4.9z",
+        mark = "M6.6 15.6c0-2 1-3.2 2.4-3.2s2.4 1.2 2.4 3.2M12.6 15.6c0-2 1-3.2 2.4-3.2s2.4 1.2 2.4 3.2",
+        stroke = 1.9f,
+        fills =
+            "M9 7.05a1.75 1.75 0 1 0 0 3.5a1.75 1.75 0 1 0 0-3.5z" +
+                "M15 7.05a1.75 1.75 0 1 0 0 3.5a1.75 1.75 0 1 0 0-3.5z",
     ),
     BLOCKING(
         shape =
