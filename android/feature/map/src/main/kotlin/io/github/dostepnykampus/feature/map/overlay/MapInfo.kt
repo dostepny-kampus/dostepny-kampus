@@ -127,7 +127,11 @@ private fun InfoPanel(dataDay: LocalDate?, onClose: () -> Unit, modifier: Modifi
 
 @Composable
 private fun InfoHeader(onClose: () -> Unit) {
-    Row(Modifier.padding(start = Odstepy.m, end = Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier.padding(horizontal = Odstepy.m, vertical = Odstepy.s),
+        horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Text(
             text = stringResource(R.string.mapa_legenda),
             modifier = Modifier.weight(1f).semantics { heading() },
