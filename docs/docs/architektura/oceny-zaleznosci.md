@@ -117,3 +117,32 @@ Data sprawdzenia: 16 listopada 2026. Decyzja: `benchmark-macro-junit4` `1.5.0` i
 | Aktualność | Macrobenchmark `1.5.0` z 09.09.2026, UI Automator `2.4.1` z 04.11.2026, obie w ostatnich 12 miesiącach. |
 | Potrzeba | Pomiar zimnego startu i czasu klatek na emulatorze w kontroli sprintu; moduł nie wchodzi do APK aplikacji. |
 | Znane podatności | Zapytania do [OSV](https://google.github.io/osv.dev/post-v1-query/) dla ekosystemu `Maven` i podanych wersji zwróciły 0 wpisów. |
+
+## JankStats 1.0.0
+
+Zadanie: [#2666](https://github.com/dostepny-kampus/dostepny-kampus/issues/2666).
+
+Data sprawdzenia: 16 listopada 2026. Decyzja: JankStats `1.0.0` tylko w wersji debug.
+
+| Kryterium | Wynik |
+| --- | --- |
+| Dokładna wersja | `jankstats = "1.0.0"` w katalogu wersji Androida, zależność `debugImplementation`. |
+| Licencja | Apache-2.0, dozwolona przez ADR-0004; potwierdzają ją [metadane Maven Google](https://dl.google.com/android/maven2/androidx/metrics/metrics-performance/1.0.0/metrics-performance-1.0.0.pom). |
+| Aktualność | Wydanie z 08.10.2025, w ostatnich 12 miesiącach. |
+| Potrzeba | Wolne klatki z etykietami stanu (ekran, działanie na mapie) w logcat obok logów aplikacji. |
+| Znane podatności | Zapytanie do [OSV](https://google.github.io/osv.dev/post-v1-query/) dla ekosystemu `Maven` i wersji `1.0.0` zwróciło 0 wpisów. |
+
+## LeakCanary 3.0-alpha-9
+
+Zadanie: [#2666](https://github.com/dostepny-kampus/dostepny-kampus/issues/2666).
+
+Data sprawdzenia: 16 listopada 2026. Decyzja: LeakCanary `3.0-alpha-9` tylko w wersji debug.
+
+| Kryterium | Wynik |
+| --- | --- |
+| Dokładna wersja | `leakcanary = "3.0-alpha-9"` w katalogu wersji Androida, zależność `debugImplementation`. |
+| Licencja | Apache-2.0, dozwolona przez ADR-0004; potwierdza ją [licencja](https://github.com/square/leakcanary/blob/main/LICENSE.txt). |
+| Aktualność | Wydanie z 24.06.2026, w ostatnich 12 miesiącach. Wersja stabilna `2.14` jest z kwietnia 2024, poza oknem 12 miesięcy. |
+| Potrzeba | Wykrycie wycieków pamięci w wersji debug bez wysyłania danych poza telefon (NFR-28). |
+| Ryzyko wersji alfa | Narzędzie działa tylko w wersji debug i nie trafia do APK release. |
+| Znane podatności | Zapytanie do [OSV](https://google.github.io/osv.dev/post-v1-query/) dla ekosystemu `Maven` i wersji `3.0-alpha-9` zwróciło 0 wpisów. |
