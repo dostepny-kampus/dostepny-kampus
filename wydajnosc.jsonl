@@ -2,3 +2,4 @@
 {"sha":"ac773d3a3192234da1b3af7494a06e67cd607419","data":"2026-11-16","start_ms":{},"klatka_ms":{},"wolne_proc":null}
 {"sha": "35a2c2ced6bbd6ef8707fc8e15850751edac48ce", "data": "2026-11-16", "start_ms": {"p50": 548.27, "p90": 599.31, "proby": 10}, "klatka_ms": {"p50": null, "p90": null, "p99": null, "probki": 0}, "wolne_proc": null}
 {"sha": "1589d5484e16c41094081395ffbc63d135b820fa", "data": "2026-11-16", "start_ms": {"p50": 516.14, "p90": 543.6, "proby": 10}, "klatka_ms": {"p50": null, "p90": null, "p99": null, "probki": 0}, "wolne_proc": null}
+{"sha": "a262859e2bb024b3eaf67302559acdc25e3ce365", "data": "2026-11-16", "start_ms": {"p50": 815.98, "p90": 850.84, "proby": 10}, "klatka_ms": {"p50": null, "p90": null, "p99": null, "probki": 0}, "wolne_proc": null}
