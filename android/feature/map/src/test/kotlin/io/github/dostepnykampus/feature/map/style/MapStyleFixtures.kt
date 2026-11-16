@@ -36,5 +36,9 @@ internal fun styleColors(): MapStyleColors =
                 path = "#F7F9FA",
                 building = "#DADFE0",
                 buildingOutline = "#C6CDCF",
+                streetName = "#3A4549",
+                waterName = "#2B454D",
+                districtName = "#4E5A5E",
+                halo = "#FFFFFF",
             ),
     )

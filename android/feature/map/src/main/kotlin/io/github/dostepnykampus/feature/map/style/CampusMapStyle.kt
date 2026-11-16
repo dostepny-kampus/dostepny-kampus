@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.designsystem.Ikony
+import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
@@ -58,7 +59,7 @@ private const val STYLE_VERSION = 8
 private const val OUTLINE_WIDTH = 1.5
 
 /**
- * Kolory stylu mapy z tokenów `mapa.kolory` jako `#RRGGBB`.
+ * Wygląd stylu mapy: kolory z tokenów `mapa.kolory` jako `#RRGGBB` i rozmiar napisów podkładu.
  *
  * @property land tło lądu (`lad`)
  * @property building wypełnienie budynków PWr (`pwr`)
@@ -68,6 +69,7 @@ private const val OUTLINE_WIDTH = 1.5
  * @property dimmedOutline kontur budynków obok zaznaczonego (`budynek_kontur`)
  * @property plan kolory planu piętra; bez nich plan ma barwy budynków
  * @property basemap kolory podkładu wektorowego; bez nich mapa nie ma podkładu, tylko tło [land]
+ * @property labelSize wysokość napisów podkładu w dp mapy, z tokenu `mapa.napisy_sp` i skali czcionki
  */
 data class MapStyleColors(
     val land: String,
@@ -86,6 +88,7 @@ data class MapStyleColors(
             wall = buildingOutline,
         ),
     val basemap: BasemapColors? = null,
+    val labelSize: Double = Typografia.napisyMapy.value.toDouble(),
 )
 
 /**
@@ -117,6 +120,7 @@ fun campusMapStyle(
     val style =
         buildJsonObject {
             put(key = "version", value = STYLE_VERSION)
+            if (colors.basemap != null) put(key = "glyphs", value = BASEMAP_GLYPHS)
             val all = sources(data = data, look = look)
             put(key = "sources", element = all)
             val list = layers(look = look, colors = colors, basemap = basemap)
@@ -151,7 +155,10 @@ private fun sources(data: CampusMapData, look: SelectionLook): JsonObject =
 private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap?): JsonArray =
     buildJsonArray {
         add(styleLayer(id = "lad", type = "background") { paint("background-color" to JsonPrimitive(colors.land)) })
-        colors.basemap?.let { basemapLayers(colors = it, minZoom = basemap?.minZoom ?: 0.0).forEach(::add) }
+        colors.basemap?.let { palette ->
+            val minZoom = basemap?.minZoom ?: 0.0
+            basemapLayers(colors = palette, minZoom = minZoom, textSize = colors.labelSize).forEach(::add)
+        }
         add(
             styleLayer(id = BUILDINGS_LAYER, type = "fill", source = BUILDINGS_SOURCE) {
                 paint(BUILDINGS_FILL to look.buildingsFill)

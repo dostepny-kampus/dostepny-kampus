@@ -456,7 +456,7 @@ mapa:
     # Obrys wybranego budynku jest grubszy niż kontur; wybór pokazuje też arkusz z nazwą (NFR-21).
     pwr_wybrany: {jasny: "#001F27", ciemny: "#E6F4F8", uzycie: obrys wybranego budynku}
     napis_pwr: {jasny: "#00303B", ciemny: "#F0F6F8", uzycie: "symbol budynku, „Sala 329”, „Winda”, „Toaleta”"}
-    napis_ulica: {jasny: "#3A4549", ciemny: "#A9B4B8", uzycie: nazwy ulic i numery sal}
+    napis_ulica: {jasny: "#3A4549", ciemny: "#A9B4B8", uzycie: "nazwy ulic od powiększenia 15 i numery sal"}
     napis_woda: {jasny: "#2B454D", ciemny: "#96B9CC", uzycie: nazwa rzeki}
     napis_dzielnica: {jasny: "#4E5A5E", ciemny: "#A9B2B6", uzycie: "nazwy dzielnic wielkimi literami, z odstępem liter"}
     obwodka: {jasny: "#FFFFFF", ciemny: "#20272B", uzycie: obwódka napisów}

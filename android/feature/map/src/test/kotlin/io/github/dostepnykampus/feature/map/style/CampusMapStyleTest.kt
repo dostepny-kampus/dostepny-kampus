@@ -70,6 +70,8 @@ class CampusMapStyleTest {
                 "waterway",
                 "transportation",
                 "building",
+                "transportation_name",
+                "place",
             )
         assertEquals(allowed, used.toSet(), "bez punktów usług i numerów domów")
     }
@@ -91,6 +93,26 @@ class CampusMapStyleTest {
         assertEquals(15.0, zooms.getValue("chodniki"), "chodniki od własnego progu")
         assertEquals(0.0, plain.getValue("woda"), "bez podkładu terenu od powiększenia 0")
         assertEquals(13.0, plain.getValue("budynki_miasta"), "budynki miasta od własnego progu")
+    }
+
+    /**
+     * Napisy podkładu: glify z OpenFreeMap, nazwy ulic od powiększenia 15, rzeka kursywą, dzielnice wielkimi
+     * literami; kolory z tokenów, a wysokość tekstu z rozmiaru napisów mapy, który rośnie ze skalą czcionki.
+     *
+     * Wymagania: NFR-16, US1.4
+     */
+    @Test
+    fun namesStreetsRiverAndDistricts() {
+        val large = Json.parseToJsonElement(styled(colors = colors.copy(labelSize = 22.4))).jsonObject
+        val layers = large.array("layers").map { it.jsonObject }.associateBy { it.text("id") }
+        val names = listOf("nazwy_rzek", "nazwy_ulic", "dzielnice").map(layers::getValue)
+        assertEquals(BASEMAP_GLYPHS, large.text("glyphs"), "glify OpenFreeMap")
+        assertEquals(listOf(22.4, 22.4, 22.4), names.map { it.obj("layout").number("text-size") }, "rozmiar napisów")
+        val paints = names.map { it.obj("paint").text("text-color") }
+        assertEquals(listOf("#2B454D", "#3A4549", "#4E5A5E"), paints, "kolory napisów z tokenów")
+        assertEquals("#FFFFFF", names.first().obj("paint").text("text-halo-color"), "obwódka z tokenu")
+        assertEquals(15.0, layers.getValue("nazwy_ulic").number("minzoom"), "nazwy ulic od powiększenia 15")
+        assertEquals("uppercase", layers.getValue("dzielnice").obj("layout").text("text-transform"), "dzielnice")
     }
 
     @Test
