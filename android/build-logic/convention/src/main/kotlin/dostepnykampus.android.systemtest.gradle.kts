@@ -22,7 +22,7 @@ extensions.configure<TestExtension> {
     defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     compileOptions.sourceCompatibility = JavaVersion.toVersion(libs.versionInt("jvmTarget"))
     compileOptions.targetCompatibility = JavaVersion.toVersion(libs.versionInt("jvmTarget"))
-    lint.configureStrict()
+    lint.configureStrict(exceptions = rootDir.resolve("lint.xml"))
 }
 
 tasks.withType<KotlinCompilationTask<*>>().configureEach {

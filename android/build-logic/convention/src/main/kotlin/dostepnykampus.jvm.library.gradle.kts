@@ -31,5 +31,5 @@ kotlin {
 }
 
 lint {
-    configureStrict()
+    configureStrict(exceptions = rootDir.resolve("lint.xml"))
 }

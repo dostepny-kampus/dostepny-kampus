@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Wyjątki Lint wszystkich modułów Androida (lintConfig w build-logic). Lista może tylko maleć; każdy wyjątek ma własne issue.
+  InvalidPackage w jts-core (#2758): pakiety org.locationtech.jts.awt (java.awt) i org.locationtech.jts.io.kml
+  (javax.xml.stream) są w archiwum, ale aplikacja ich nie używa, a R8 je usuwa. Wyjątek dotyczy tylko tego archiwum.
+-->
+<lint>
+    <issue id="InvalidPackage">
+        <ignore path="**/jts-core-*.jar" />
+    </issue>
+</lint>
