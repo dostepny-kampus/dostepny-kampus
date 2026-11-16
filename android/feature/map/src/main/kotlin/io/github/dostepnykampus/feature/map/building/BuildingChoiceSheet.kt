@@ -51,7 +51,6 @@ import io.github.dostepnykampus.feature.map.R
  * „otwiera opis budynku”. Przy dużej czcionce arkusz się przewija.
  * Nagłówek „Który budynek?” ma obok obrysowany przycisk „Zamknij”. Przy każdym budynku stoi
  * symbol na plakietce w kolorze wybranej pozycji przełącznika, jak w hi-fi listy budynków.
- * Systemowe „Wstecz” zamyka arkusz jak „Zamknij”.
  *
  * Wymagania: US2, NFR-17, NFR-18, NFR-20, NFR-53
  *
