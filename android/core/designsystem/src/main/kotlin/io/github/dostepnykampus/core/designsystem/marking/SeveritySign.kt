@@ -33,31 +33,32 @@ private const val HALO = 1f
  *
  * Wymagania: NFR-21
  *
- * @property shape wypełniony kształt: trójkąt, tarcza albo prostokąt
- * @property mark kreski w kształcie: wykrzyknik, ramiona osób albo ukośne pasy
- * @property stroke grubość kresek
- * @property dots wypełnione punkty w kolorze kresek: kropka wykrzyknika albo głowy osób; pusty napis, gdy ich brak
+ * @property shape wypełniony kształt: trójkąt, tarcza albo zaokrąglona kwadratowa tablica
+ * @property mark kreski w kształcie: wykrzyknik albo ramiona osób; pusty napis, gdy ich brak
+ * @property stroke grubość kresek; 0 bez kresek
+ * @property fills wypełnione części w kolorze kresek: kropka wykrzyknika, głowy osób albo pozioma belka; pusty
+ *   napis, gdy ich brak
  */
-internal enum class SeverityLook(val shape: String, val mark: String, val stroke: Float, val dots: String) {
+internal enum class SeverityLook(val shape: String, val mark: String, val stroke: Float, val fills: String) {
     HINDRANCE(
         shape = "M12 1.8L23 21.2H1z",
         mark = "M12 8.6v6",
         stroke = 2.4f,
-        dots = "M12 16.2a1.4 1.4 0 1 0 0 2.8a1.4 1.4 0 1 0 0-2.8z",
+        fills = "M12 16.2a1.4 1.4 0 1 0 0 2.8a1.4 1.4 0 1 0 0-2.8z",
     ),
     ONLY_WITH_HELP(
         shape = "M2.5 2.5h19v10L12 22.5 2.5 12.5z",
         mark = "M5.6 14.4c0-2.2 1.3-3.6 3-3.6s3 1.4 3 3.6M12.4 14.4c0-2.2 1.3-3.6 3-3.6s3 1.4 3 3.6",
         stroke = 2f,
-        dots = "M8.6 5.6a2 2 0 1 0 0 4a2 2 0 1 0 0-4zM15.4 5.6a2 2 0 1 0 0 4a2 2 0 1 0 0-4z",
+        fills = "M8.6 5.6a2 2 0 1 0 0 4a2 2 0 1 0 0-4zM15.4 5.6a2 2 0 1 0 0 4a2 2 0 1 0 0-4z",
     ),
     BLOCKING(
         shape =
-            "M2.4 5.5h19.2a1.6 1.6 0 0 1 1.6 1.6v9.8a1.6 1.6 0 0 1-1.6 1.6H2.4" +
-                "a1.6 1.6 0 0 1-1.6-1.6V7.1a1.6 1.6 0 0 1 1.6-1.6z",
-        mark = "M5.2 17l4.6-10M11.2 17l4.6-10M17.2 17l3.2-7",
-        stroke = 2.6f,
-        dots = "",
+            "M5.3 2h13.4a3.3 3.3 0 0 1 3.3 3.3v13.4a3.3 3.3 0 0 1-3.3 3.3H5.3" +
+                "a3.3 3.3 0 0 1-3.3-3.3V5.3a3.3 3.3 0 0 1 3.3-3.3z",
+        mark = "",
+        stroke = 0f,
+        fills = "M6.4 9.7h11.2a1 1 0 0 1 1 1v2.6a1 1 0 0 1-1 1H6.4a1 1 0 0 1-1-1v-2.6a1 1 0 0 1 1-1z",
     ),
 }
 
@@ -72,12 +73,12 @@ internal fun Severity.look(): SeverityLook =
 internal class SeverityPaths(look: SeverityLook) {
     val shape: Path = PathParser().parsePathString(look.shape).toPath()
     val mark: Path = PathParser().parsePathString(look.mark).toPath()
-    val dots: Path = PathParser().parsePathString(look.dots).toPath()
+    val fills: Path = PathParser().parsePathString(look.fills).toPath()
     val stroke: Stroke = Stroke(width = look.stroke, cap = StrokeCap.Round, join = StrokeJoin.Round)
 }
 
 /**
- * Znak uciążliwości na cały krótszy bok [DrawScope]: kształt w [shapeColor], kreski i punkty w [markColor].
+ * Znak uciążliwości na cały krótszy bok [DrawScope]: kształt w [shapeColor], kreski i wypełnienia w [markColor].
  * Z [hasHalo] kształt dostaje obwódkę w [markColor], żeby odcinał się od podkładu mapy.
  */
 internal fun DrawScope.drawSeverity(paths: SeverityPaths, shapeColor: Color, markColor: Color, hasHalo: Boolean) {
@@ -89,7 +90,7 @@ internal fun DrawScope.drawSeverity(paths: SeverityPaths, shapeColor: Color, mar
             }
             drawPath(path = paths.shape, color = shapeColor)
             drawPath(path = paths.mark, color = markColor, style = paths.stroke)
-            drawPath(path = paths.dots, color = markColor)
+            drawPath(path = paths.fills, color = markColor)
         }
     }
 }
@@ -109,7 +110,7 @@ public fun severityImage(severity: Severity, sizePx: Int, shapeColor: Color, mar
 
 /**
  * Znak uciążliwości obok napisu: trójkąt ze znakiem „!” dla „Utrudnienie”, tarcza z dwiema osobami dla „Tylko
- * z pomocą”, prostokąt z ukośnymi pasami dla „Blokada”. Znaczenie niesie kształt, nie barwa.
+ * z pomocą”, zaokrąglona tablica z jedną poziomą belką dla „Blokada”. Znaczenie niesie kształt, nie barwa.
  *
  * Kształt ma kolor `onSurface`, znak w nim `surface`; rozmiar
  * [io.github.dostepnykampus.core.designsystem.Ikony.rozmiar] skalowany jak tekst w sp. Ikona jest ozdobna:
