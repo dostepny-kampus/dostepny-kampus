@@ -39,6 +39,7 @@ dependencies {
     implementation(libs.hilt.core)
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.timber)
     api(libs.kotlinx.coroutines.core)
     testImplementation(libs.junit.jupiter.params)
     testImplementation(libs.okhttp)

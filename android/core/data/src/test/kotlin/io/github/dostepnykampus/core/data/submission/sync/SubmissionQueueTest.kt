@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.submission.sync
 
+import io.github.dostepnykampus.core.data.CapturedLogs
 import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -44,6 +45,19 @@ class SubmissionQueueTest {
 
             assertEquals(listOf(SENT_ID to "p1", SENT_ID to "p2"), store.photos)
             assertTrue(store.rows.isEmpty())
+        }
+
+    @Test
+    fun logsSummaryOfSendPass() =
+        runBlocking {
+            saveTwoPhotos()
+            val lines = CapturedLogs.capture { runBlocking { queue().sendAll() } }
+
+            assertEquals(
+                listOf("Przebieg wysyłki zgłoszeń: {SENT=1}, zatrzymanie: null"),
+                lines,
+                "linia logu z wynikami przebiegu",
+            )
         }
 
     @Test
