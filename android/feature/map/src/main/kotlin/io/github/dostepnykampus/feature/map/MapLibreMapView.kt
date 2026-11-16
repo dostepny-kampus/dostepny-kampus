@@ -69,7 +69,6 @@ import io.github.dostepnykampus.feature.map.style.MapTileHttpEntryPoint
 import io.github.dostepnykampus.feature.map.style.SelectionLook
 import io.github.dostepnykampus.feature.map.style.asStyleText
 import io.github.dostepnykampus.feature.map.style.campusMapShell
-import io.github.dostepnykampus.feature.map.style.numbers
 import io.github.dostepnykampus.feature.map.style.rememberMapImages
 import io.github.dostepnykampus.feature.map.style.selectionLook
 import io.github.dostepnykampus.feature.map.style.showBasemap
