@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -43,6 +44,7 @@ import io.github.dostepnykampus.feature.map.camera.FlightArea
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
+import io.github.dostepnykampus.feature.map.camera.MapTrace
 import io.github.dostepnykampus.feature.map.camera.MoveLimits
 import io.github.dostepnykampus.feature.map.camera.StyleArea
 import io.github.dostepnykampus.feature.map.camera.belowTop
@@ -199,7 +201,7 @@ object MapLibreMapView : CampusMapView {
             onDispose {}
         }
         DisposableEffect(area) {
-            areas.area(area)
+            MapTrace.areaChange { areas.area(area) }
             onDispose {}
         }
         DisposableEffect(driver, inset) {
@@ -224,11 +226,16 @@ object MapLibreMapView : CampusMapView {
         val currentSelection by rememberUpdatedState(selection)
         val currentArea by rememberUpdatedState(area)
         var shown by remember { mutableStateOf<StyleArea?>(null) }
+        var styleLoads by remember { mutableIntStateOf(0) }
         DisposableEffect(map, style, images) {
             loaded = null
             val built = currentArea
             style?.let { json ->
+                styleLoads += 1
+                val load = styleLoads
+                MapTrace.startStyle(load)
                 map?.setStyle(styleBuilder(json)) { ready ->
+                    MapTrace.endStyle(load)
                     ready.addMapImages(images = images)
                     StyleTarget(ready).showSelection(currentLook, selectionImages(currentSelection, images))
                     shown = built
@@ -338,13 +345,18 @@ object MapLibreMapView : CampusMapView {
     private class CameraDriver(private val map: MapLibreMap, private val areas: FlightArea, private val view: View) {
         private var inset = MapInset()
         private var running: Run? = null
+        private var moves = 0
         private var area: MapLimits? = null
         private var centerBox: CampusBounds? = null
         private val limits = MoveLimits { limitTo(it) }
 
         init {
             map.addOnCameraMoveListener {
-                areas.zoom(map.cameraPosition.zoom)
+                val position = map.cameraPosition
+                areas.zoom(position.zoom)
+                position.target?.let { at ->
+                    MapTrace.frame(zoom = position.zoom, latitude = at.latitude, longitude = at.longitude)
+                }
                 limitCenterToArea()
             }
         }
@@ -410,12 +422,16 @@ object MapLibreMapView : CampusMapView {
             if (move.motion == CameraMotion.NONE) endMove() else startMove(isFlight)
             when (move.motion) {
                 CameraMotion.NONE -> map.moveCamera(update)
-                CameraMotion.EASE -> map.easeCamera(update, millis, start())
-                CameraMotion.FLIGHT -> map.animateCamera(update, millis, start())
+                CameraMotion.EASE -> map.easeCamera(update, millis, start(move.motion))
+                CameraMotion.FLIGHT -> map.animateCamera(update, millis, start(move.motion))
             }
         }
 
-        private fun start(): Run = Run().also { running = it }
+        private fun start(motion: CameraMotion): Run {
+            moves += 1
+            MapTrace.startMove(motion, moves)
+            return Run(motion, moves).also { running = it }
+        }
 
         fun startMove(isFlight: Boolean) {
             limits.startMove()
@@ -428,12 +444,13 @@ object MapLibreMapView : CampusMapView {
         }
 
         /** Jeden ruch; koniec ruchu wcześniejszego, przerwanego przez nowy, niczego nie zmienia. */
-        private inner class Run : MapLibreMap.CancelableCallback {
+        private inner class Run(val motion: CameraMotion, val number: Int) : MapLibreMap.CancelableCallback {
             override fun onCancel() = settle(isDone = false)
 
             override fun onFinish() = settle(isDone = true)
 
             private fun settle(isDone: Boolean) {
+                MapTrace.endMove(motion, number)
                 Timber.d(endLine(isDone = isDone, isCurrent = running === this, at = map.cameraPosition.toCamera()))
                 if (running !== this) return
                 running = null
