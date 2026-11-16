@@ -360,7 +360,8 @@ paths:
       summary: Wzięcie zgłoszenia do weryfikacji
       description: >-
         Zgłoszenie „wysłane” dostaje status „w weryfikacji” i znika z kolejki innych Weryfikatorów (US10.4, US8.2, BR-11).
-        Własne zgłoszenie daje 403 (BR-4), zgłoszenie wzięte przez innego Weryfikatora daje 409.
+        Własne zgłoszenie daje 403 (BR-4), zgłoszenie wzięte przez innego Weryfikatora daje 409. Zgłoszenie, któremu
+        brakuje w magazynie zdjęcia z `photoIds`, też daje 409 (BR-7, BR-8).
       tags: [review]
       security: [{keycloak: [VERIFIER]}]
       parameters:
@@ -380,7 +381,8 @@ paths:
         powodu odrzucenia (US10.2, BR-16). Przyjęcie zgłoszenia szybkiego wymaga typu bariery i uciążliwości (US10.3, BR-14).
         Przyjęcie zmiany archiwizuje zastąpione zgłoszenie (BR-18), a „bariera usunięta” i zmiana oznaczenia wejścia
         same stają się archiwalne (US10.6, BR-19, BR-24). Decyzja o innej wersji niż aktualna daje 409 (BR-3),
-        a o zgłoszeniu wziętym przez innego Weryfikatora — 403 (BR-11).
+        a o zgłoszeniu wziętym przez innego Weryfikatora — 403 (BR-11). Brak w magazynie zdjęcia z `photoIds` daje 409
+        (BR-7, BR-8).
       tags: [review]
       security: [{keycloak: [VERIFIER]}]
       parameters:

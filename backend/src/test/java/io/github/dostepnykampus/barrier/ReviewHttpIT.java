@@ -7,6 +7,8 @@ package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.AsVerifier;
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.barrier.photo.PhotoStore;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
@@ -23,9 +25,10 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Weryfikator bierze cudze zgłoszenie do weryfikacji i rozstrzyga je, ale nie własne.
+ * Weryfikator bierze cudze zgłoszenie do weryfikacji i rozstrzyga je, ale nie własne
+ * ani takie, któremu brakuje zdjęcia w magazynie.
  *
- * <p>Wymagania: US10.3, BR-4, BR-11, BR-3, BR-14, BR-16</p>
+ * <p>Wymagania: US10.3, BR-4, BR-11, BR-3, BR-14, BR-16, BR-7, BR-8</p>
  *
  * @since 0.1.0
  */
@@ -246,6 +249,29 @@ final class ReviewHttpIT {
         );
     }
 
+    @Test
+    void conflictsOnClaimWithoutPhoto(final WebApplicationContext context) throws Exception {
+        final UUID id = ReviewHttpIT.withoutPhoto(context, "inne-konto");
+        MatcherAssert.assertThat(
+            "Wzięcie zgłoszenia bez zdjęcia w magazynie nie dało 409 albo zmieniło status",
+            List.of(ReviewHttpIT.claim(context, id), ReviewHttpIT.status(context, id)),
+            Matchers.contains(409, "SENT")
+        );
+    }
+
+    @Test
+    void conflictsOnDecisionWithoutPhoto(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = ReviewHttpIT.sent(context, "inne-konto");
+        ReviewHttpIT.claim(context, id);
+        context.getBean(PhotoStore.class).delete(id, ReviewHttpIT.PHOTO);
+        MatcherAssert.assertThat(
+            "Decyzja o zgłoszeniu bez zdjęcia w magazynie nie dała 409 albo zmieniła status",
+            List.of(ReviewHttpIT.review(context, id), ReviewHttpIT.status(context, id)),
+            Matchers.contains(409, "IN_REVIEW")
+        );
+    }
+
     private static List<Object> refused(final WebApplicationContext context, final String body)
         throws Exception {
         final UUID id = ReviewHttpIT.sent(context, "inne-konto");
@@ -264,7 +290,14 @@ final class ReviewHttpIT {
         );
     }
 
-    private static UUID sent(final WebApplicationContext context, final String author) {
+    private static UUID sent(final WebApplicationContext context, final String author)
+        throws IOException {
+        final UUID id = ReviewHttpIT.withoutPhoto(context, author);
+        context.getBean(PhotoStore.class).put(id, ReviewHttpIT.PHOTO, JpegCleanerTest.photo());
+        return id;
+    }
+
+    private static UUID withoutPhoto(final WebApplicationContext context, final String author) {
         final UUID id = new SampleSubmissions(context)
             .add("SENT", SampleSubmissions.quick(ReviewHttpIT.PHOTO));
         context.getBean(JdbcClient.class)

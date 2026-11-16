@@ -11,6 +11,8 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.github.dostepnykampus.AsCollector;
 import io.github.dostepnykampus.AsVerifier;
+import io.github.dostepnykampus.barrier.photo.PhotoStore;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -41,6 +43,12 @@ public final class ReviewStatusSteps {
         UUID.fromString("9b2c3d4e-5f60-4a71-8b92-0c1d2e3f4a5b");
 
     /**
+     * Jedyne zdjęcie zgłoszenia scenariusza.
+     */
+    private static final UUID PHOTO =
+        UUID.fromString("1c2d3e4f-5a6b-4c7d-8e9f-0a1b2c3d4e5f");
+
+    /**
      * Klient żądań HTTP do aplikacji.
      */
     private final MockMvc http;
@@ -51,14 +59,21 @@ public final class ReviewStatusSteps {
     private final JdbcClient jdbc;
 
     /**
+     * Magazyn zdjęć zgłoszeń.
+     */
+    private final PhotoStore photos;
+
+    /**
      * Kroki na kontekście aplikacji.
      *
      * @param http Klient żądań HTTP do aplikacji
      * @param jdbc Baza aplikacji
+     * @param photos Magazyn zdjęć zgłoszeń
      */
-    public ReviewStatusSteps(final MockMvc http, final JdbcClient jdbc) {
+    public ReviewStatusSteps(final MockMvc http, final JdbcClient jdbc, final PhotoStore photos) {
         this.http = http;
         this.jdbc = jdbc;
+        this.photos = photos;
     }
 
     /**
@@ -77,6 +92,10 @@ public final class ReviewStatusSteps {
                     .content(ReviewStatusSteps.quick())
             ).andReturn().getResponse().getStatus(),
             Matchers.equalTo(201)
+        );
+        this.photos.put(
+            ReviewStatusSteps.SUBMISSION, ReviewStatusSteps.PHOTO,
+            "zdjęcie".getBytes(StandardCharsets.UTF_8)
         );
         this.author("autor-zgloszenia");
     }
@@ -140,7 +159,7 @@ public final class ReviewStatusSteps {
             "{\"id\":\"", ReviewStatusSteps.SUBMISSION.toString(), "\",",
             "\"kind\":\"QUICK\",\"barrierGroup\":\"OTHER\",",
             "\"location\":{\"type\":\"Point\",\"coordinates\":[17.06209,51.10785]},",
-            "\"photoIds\":[\"", UUID.randomUUID().toString(), "\"]}"
+            "\"photoIds\":[\"", ReviewStatusSteps.PHOTO.toString(), "\"]}"
         );
     }
 }
