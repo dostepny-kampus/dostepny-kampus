@@ -24,14 +24,22 @@ private const val ANY_ZOOM = 0.0
 private val ALL_FEATURES = expression("!", JsonPrimitive(false))
 private val NO_FEATURES = expression("!", JsonPrimitive(true))
 
+/** Stan obiektu konturu budynku w źródle [BUILDINGS_SOURCE]: kontur przygaszony obok zaznaczonego budynku. */
+internal const val DIMMED_STATE = "przygaszony"
+
 /**
- * Barwa konturów przy zaznaczonym konturze budynków [outline]: [own] dla niego, [other] dla pozostałych, więc
- * sąsiednie budynki są przygaszone. Bez zaznaczenia wszystkie kontury mają barwę [own].
+ * Barwa konturów ze stanu obiektu: [dimmed] dla konturów ze stanem [DIMMED_STATE], [own] dla pozostałych. Wyrażenie
+ * jest stałe, więc zaznaczenie zmienia tylko stan obiektów, bez nowego układu kafelków źródła.
  *
- * Wymagania: US2.8
+ * Wymagania: US2.8, NFR-56
  */
-internal fun tone(outline: List<String>?, own: String, other: String): JsonElement =
-    outline?.let { expression("case", anyOf(it), JsonPrimitive(own), JsonPrimitive(other)) } ?: JsonPrimitive(own)
+internal fun tone(own: String, dimmed: String): JsonElement =
+    expression(
+        "case",
+        expression("boolean", expression("feature-state", JsonPrimitive(DIMMED_STATE)), JsonPrimitive(false)),
+        JsonPrimitive(dimmed),
+        JsonPrimitive(own),
+    )
 
 /** Warstwa grubszego obrysu `pwr_wybrany` z filtrem [filter] z [SelectionLook.selectedFilter]. Wymagania: US1.1 */
 internal fun selectedLayer(filter: JsonElement, colors: MapStyleColors): JsonObject =
@@ -46,8 +54,7 @@ internal fun selectedLayer(filter: JsonElement, colors: MapStyleColors): JsonObj
 /**
  * Pola stylu, które zależą od zaznaczenia budynku, wejścia i bariery; reszta stylu od nich nie zależy.
  *
- * @property buildingsFill barwa wypełnienia warstwy [BUILDINGS_LAYER]
- * @property outlinesColor barwa linii warstwy [OUTLINES_LAYER]
+ * @property dimmed stan [DIMMED_STATE] konturów źródła [BUILDINGS_SOURCE] po numerze konturu
  * @property selectedFilter filtr warstwy [SELECTED_LAYER]
  * @property entrancesFilter filtr warstwy [ENTRANCES_LAYER]
  * @property entrancesMinZoom najmniejsze powiększenie, przy którym rysuje się warstwa [ENTRANCES_LAYER]
@@ -57,8 +64,7 @@ internal fun selectedLayer(filter: JsonElement, colors: MapStyleColors): JsonObj
  * @property barriersFilter filtr warstw [BARRIERS_LAYER] i [BARRIER_WORDS_LAYER]
  */
 internal data class SelectionLook(
-    val buildingsFill: JsonElement,
-    val outlinesColor: JsonElement,
+    val dimmed: List<Boolean>,
     val selectedFilter: JsonElement,
     val entrancesFilter: JsonElement,
     val entrancesMinZoom: Double,
@@ -69,7 +75,7 @@ internal data class SelectionLook(
 )
 
 /**
- * Pola stylu dla zaznaczenia [selection] na mapie z danymi [data] i barwami [colors]. Kontur budynku
+ * Pola stylu dla zaznaczenia [selection] na mapie z danymi [data]. Kontur budynku
  * [MapSelection.building] ma obrys, a przy zaznaczonym budynku bez wejścia pozostałe budynki są przygaszone
  * i znaki wejść ma tylko on, przy każdym powiększeniu. Bez zaznaczenia filtry obrysu i bariery niczego nie
  * przepuszczają, filtr wejść przepuszcza wszystkie od powiększenia 17, a źródło wejścia jest puste. Plan
@@ -78,12 +84,11 @@ internal data class SelectionLook(
  *
  * Wymagania: US1.1, US1.4, US2.8, US2.1, NFR-15, US1.3
  */
-internal fun selectionLook(data: CampusMapData, selection: MapSelection, colors: MapStyleColors): SelectionLook {
+internal fun selectionLook(data: CampusMapData, selection: MapSelection): SelectionLook {
     val chosen = data.outlineOf(selection.building)
     val alone = chosen.takeIf { selection.entrance == null }
     return SelectionLook(
-        buildingsFill = tone(alone, own = colors.building, other = colors.dimmed),
-        outlinesColor = tone(alone, own = colors.buildingOutline, other = colors.dimmedOutline),
+        dimmed = data.outlines.map { alone != null && it != alone },
         selectedFilter = chosen?.let(::ofBuildings) ?: NO_FEATURES,
         entrancesFilter = alone?.let(::ofBuildings) ?: ALL_FEATURES,
         entrancesMinZoom = if (alone == null) MARKS_MIN_ZOOM else ANY_ZOOM,
@@ -107,6 +112,9 @@ internal interface MapStyleTarget {
     /** Ustawia pole [property] rysowania warstwy [layer] na [value]: wyrażenie stylu albo stałą. */
     fun paint(layer: String, property: String, value: JsonElement)
 
+    /** Ustawia stan [key] obiektu o identyfikatorze [feature] w źródle [source] na [value]. */
+    fun state(source: String, feature: Int, key: String, value: Boolean)
+
     /** Ustawia najmniejsze powiększenie [zoom], przy którym rysuje się warstwa [layer]. */
     fun minZoom(layer: String, zoom: Double)
 
@@ -123,8 +131,9 @@ internal interface MapStyleTarget {
  */
 internal fun MapStyleTarget.showSelection(look: SelectionLook, images: Map<String, Bitmap> = emptyMap()) {
     images.forEach { (name, image) -> image(name, image) }
-    paint(layer = BUILDINGS_LAYER, property = BUILDINGS_FILL, value = look.buildingsFill)
-    paint(layer = OUTLINES_LAYER, property = OUTLINES_COLOR, value = look.outlinesColor)
+    look.dimmed.forEachIndexed { outline, isDimmed ->
+        state(source = BUILDINGS_SOURCE, feature = outline, key = DIMMED_STATE, value = isDimmed)
+    }
     filter(layer = SELECTED_LAYER, filter = look.selectedFilter)
     filter(layer = ENTRANCES_LAYER, filter = look.entrancesFilter)
     minZoom(layer = ENTRANCES_LAYER, zoom = look.entrancesMinZoom)

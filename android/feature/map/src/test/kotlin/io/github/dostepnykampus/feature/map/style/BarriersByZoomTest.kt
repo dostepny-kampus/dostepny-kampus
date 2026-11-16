@@ -67,7 +67,7 @@ class BarriersByZoomTest {
 
     private fun shown(building: String?, zoom: Double): List<String> {
         val selection = data.selection(building = building)
-        val filter = selectionLook(data = data, selection = selection, colors = styleColors()).barriersFilter
+        val filter = selectionLook(data = data, selection = selection).barriersFilter
         val features = data.barriers.jsonObject.getValue("features")
         return features.jsonArray.mapNotNull { feature ->
             val properties = feature.jsonObject.getValue("properties").jsonObject
