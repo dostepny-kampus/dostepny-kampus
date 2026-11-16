@@ -25,6 +25,7 @@ private const val WORLD_DP_AT_ZOOM_0 = 512.0
 private const val FULL_TURN_DEGREES = 360.0
 private const val SAME_PLACE_DP = 1e-6
 private const val CONTROL_MILLIS = 300L
+private const val APPROACH_MAX_ZOOM = 19.0
 
 /**
  * Rodzaj ruchu mapy do wybranego budynku.
@@ -50,17 +51,19 @@ enum class CameraMotion {
  */
 data class CameraTransition(val camera: MapCamera, val motion: CameraMotion, val durationMillis: Long)
 
+/** Ten sam ruch z widokiem w granicy terenu [limits] dla wolnej części mapy [free]. Wymagania: US1.7, US2.8 */
+internal fun CameraTransition.within(limits: MapLimits?, free: FreeMap): CameraTransition =
+    limits?.let { copy(camera = it.clamp(camera, viewWidthDp = free.widthDp, viewHeightDp = free.heightDp)) } ?: this
+
 /** Ruch do widoku po przycisku mapy, odtworzeniu widoku albo zmianie terenu: przelot w 300 ms. Wymagania: NFR-53 */
 internal fun MapCamera.byControl(): CameraTransition =
     CameraTransition(camera = this, motion = CameraMotion.FLIGHT, durationMillis = CONTROL_MILLIS)
 
 /**
- * Ruch mapy z widoku [from] do budynku o prostokącie [outline] w wolnej części mapy [free] przy systemowej
- * skali animacji [animationScale]. Rodzaj zależy tylko od położenia budynku względem widoku: cały kontur
- * widoczny — przesunięcie 300 ms; środek budynku najwyżej szerokość wolnej mapy od środka widoku —
- * przesunięcie 400 ms; dalej — przelot, którego czas rośnie z drogą od 400 ms do najwyżej 1,5 s.
- * Powiększenie [from] zostaje: mniejsze niż [START_ZOOM] rośnie do niego, a takie, przy którym kontur się
- * nie mieści, maleje, aż się zmieści. Skala 0 daje ruch [CameraMotion.NONE], inna mnoży czas.
+ * Ruch mapy z widoku [from] do budynku o prostokącie [outline] w wolnej części mapy [free]: rodzaj i czas według
+ * położenia budynku względem widoku, czas mnożony przez skalę animacji [animationScale] (0 daje
+ * [CameraMotion.NONE]). Kontur kończy na połowie wolnej mapy, najwyżej przy powiększeniu 19; większe powiększenie
+ * [from], a przy [keepsZoom] każde, zostaje. Kontur, który się nie mieści, oddala mapę do zmieszczenia.
  *
  * Wymagania: US2.8, US3.2, NFR-56
  */
@@ -69,8 +72,11 @@ internal fun cameraTransition(
     outline: CampusBounds,
     free: FreeMap,
     animationScale: Float,
+    keepsZoom: Boolean = false,
 ): CameraTransition {
-    val zoom = maxOf(a = from.zoom, b = START_ZOOM).coerceAtMost(fittingZoom(outline, free))
+    val fits = fittingZoom(outline, free)
+    val approach = (fits - 1).coerceAtMost(maximumValue = APPROACH_MAX_ZOOM)
+    val zoom = (if (keepsZoom) from.zoom else maxOf(a = from.zoom, b = approach)).coerceAtMost(fits)
     val camera = centered(outline, zoom, free)
     val distance = distanceDp(from = from, to = camera)
     val (motion, millis) =

@@ -39,6 +39,7 @@ import io.github.dostepnykampus.feature.map.camera.cameraTransition
 import io.github.dostepnykampus.feature.map.camera.fitted
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
+import io.github.dostepnykampus.feature.map.camera.within
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
@@ -173,10 +174,13 @@ internal fun rememberMapSceneState(
     val fit = free.copy(heightDp = free.heightDp - reserve.value)
     val outline = layers?.run { outlinesBySymbol[selection?.building] }.takeIf { isCovered }
     val last = remember { ShownCamera() }
+    val isCoveredBefore = rememberPrevious(isCovered)
     val scale = rememberAnimatorScale()
     val pick =
         remember(selection?.building, outline != null) {
-            pickMove(from = last.startOr(uncovered), outline = outline, free = fit, scale = scale, limits = limits)
+            val from = last.startOr(uncovered)
+            pickMove(from = from, outline = outline, free = fit, scale = scale, keepsZoom = isCoveredBefore)
+                ?.within(limits, free = fit)
         }
     motion.RecordPick(pick)
     val card = rememberCardMove(building = selection?.building, pick = pick)
@@ -287,12 +291,10 @@ private fun pickMove(
     outline: CampusBounds?,
     free: FreeMap,
     scale: Float,
-    limits: MapLimits?,
+    keepsZoom: Boolean,
 ): CameraTransition? {
     if (outline == null || from == null) return null
-    val move = cameraTransition(from = from, outline = outline, free = free, animationScale = scale)
-    val clamped = limits?.clamp(move.camera, viewWidthDp = free.widthDp, viewHeightDp = free.heightDp)
-    return clamped?.let { move.copy(camera = it) } ?: move
+    return cameraTransition(from = from, outline = outline, free = free, animationScale = scale, keepsZoom = keepsZoom)
 }
 
 @Composable
