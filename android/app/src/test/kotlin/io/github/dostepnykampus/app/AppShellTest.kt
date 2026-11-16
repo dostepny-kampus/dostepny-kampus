@@ -3,8 +3,6 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app
 
 import android.content.Context
@@ -78,9 +76,7 @@ import io.github.dostepnykampus.app.navigation.BuildingCard
 import io.github.dostepnykampus.app.navigation.MapScreen
 import io.github.dostepnykampus.app.navigation.SignInRoute
 import io.github.dostepnykampus.app.navigation.sheetCard
-import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.RoleProvider
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.data.building.BUILDINGS_ASSET
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
@@ -266,7 +262,7 @@ class AppShellTest {
         mapViewModel = compose.activity.appMapViewModel()
     }
 
-    private fun show(firstLaunch: Boolean = false, roles: RoleProvider = GuestRoleProvider) {
+    private fun show(firstLaunch: Boolean = false, roles: RoleProvider = TestRoles()) {
         compose.setContent { Shell(firstLaunch = firstLaunch, roles = roles) }
     }
 
@@ -281,7 +277,7 @@ class AppShellTest {
 
     @Composable
     private fun CardShell(other: @Composable AppNavigator.(NavKey) -> Unit = {}) {
-        AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+        AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
             if (route is MapRoute) {
                 Text(route.focus?.toString() ?: "V1", Modifier.clickable { openBuilding(symbol = "A-1") })
             } else if (route is BuildingRoute) {
@@ -429,7 +425,7 @@ class AppShellTest {
     @Test
     fun keepsMapStateOnCardBack() {
         compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
                     Column {
                         var taps by remember { mutableIntStateOf(0) }
@@ -458,7 +454,7 @@ class AppShellTest {
     @Test
     fun keepsMapModelOnEntranceBack() {
         compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
                     val model = viewModel { TapsModel() }
                     Column {
@@ -497,7 +493,7 @@ class AppShellTest {
     fun expandsAfterCompact() {
         var cover = 1.dp
         compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
                     cover = LocalSheetPadding.current.calculateBottomPadding()
                     Box(modifier = Modifier.fillMaxSize().testTag("V1")) {
@@ -537,7 +533,7 @@ class AppShellTest {
     @Test
     fun startsNewCardCompact() {
         compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
                     Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
                 }
@@ -580,7 +576,7 @@ class AppShellTest {
     @Test
     fun showsOtherCardOverMap() {
         compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
                     Column {
                         Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
@@ -600,7 +596,7 @@ class AppShellTest {
     @Test
     fun keepsHistoryAfterRestore() {
         val restoration = StateRestorationTester(compose)
-        restoration.setContent { Shell(firstLaunch = false, roles = GuestRoleProvider) }
+        restoration.setContent { Shell(firstLaunch = false, roles = TestRoles()) }
         compose.onNodeWithText("Pomoc").performClick()
         restoration.emulateSavedInstanceStateRestore()
         compose.onNodeWithText("Pomoc").assertIsSelected()
@@ -657,7 +653,7 @@ class AppShellTest {
     @Test
     fun insetsContentAfterBar() {
         compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) {
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) {
                 var consumed by remember { mutableStateOf(WindowInsets(0)) }
                 val rest = WindowInsets.safeDrawing.exclude(consumed)
                 val text = "${rest.getTop(LocalDensity.current)}:${rest.getBottom(LocalDensity.current)}"

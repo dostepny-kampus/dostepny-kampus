@@ -3,8 +3,6 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app
 
 import androidx.activity.ComponentActivity
@@ -25,8 +23,6 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.BuildingCard
-import io.github.dostepnykampus.core.data.account.GuestRoleProvider
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.feature.map.building.BuildingCardViewModel
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
@@ -63,7 +59,7 @@ class ShowEntranceTest {
     @Test
     fun opensMapAtEntrance() {
         compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
                 navigator = this
                 if (route is MapRoute) {
                     Text(text = "V1", modifier = Modifier.clickable { openBuilding("A-1", isDirect = true) })
