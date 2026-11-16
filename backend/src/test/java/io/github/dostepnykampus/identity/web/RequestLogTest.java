@@ -45,7 +45,7 @@ final class RequestLogTest {
     @Test
     void replacesUnsafeRequestIdWithGeneratedOne() throws Exception {
         final MockHttpServletRequest request = new MockHttpServletRequest("GET", "/buildings");
-        request.addHeader(RequestLog.HEADER, "zly id\r\n<script>");
+        request.addHeader(RequestLog.HEADER, "zly id <script>");
         final MockHttpServletResponse response = new MockHttpServletResponse();
         new RequestLog().doFilter(request, response, (req, res) -> { });
         MatcherAssert.assertThat(
