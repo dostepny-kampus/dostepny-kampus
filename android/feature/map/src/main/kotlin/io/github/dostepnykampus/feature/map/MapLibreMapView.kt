@@ -44,6 +44,7 @@ import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.StyleArea
 import io.github.dostepnykampus.feature.map.camera.belowTop
+import io.github.dostepnykampus.feature.map.camera.isSameView
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.padding
 import io.github.dostepnykampus.feature.map.camera.styleAreaOf
@@ -377,6 +378,10 @@ object MapLibreMapView : CampusMapView {
         }
 
         fun follow(move: CameraTransition, next: MapInset) {
+            if (running == null && move.camera.isSameView(map.cameraPosition.toCamera())) {
+                pad(next)
+                return
+            }
             inset = next
             val update = CameraUpdateFactory.newCameraPosition(move.camera.toPosition(inset))
             val millis = move.durationMillis.toInt()

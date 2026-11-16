@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.style.Basemap
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.asinh
 import kotlin.math.atan
 import kotlin.math.cos
@@ -28,6 +29,8 @@ private const val QUARTER_VIEW_DEGREES_AT_ZOOM_0 = 70.0
 private const val WORLD_DP_AT_ZOOM_0 = 512.0
 private const val FULL_TURN_DEGREES = 360.0
 private const val BASEMAP_ZOOM_MARGIN = 0.5
+private const val SAME_VIEW_DEGREES = 1e-7
+private const val SAME_VIEW_ZOOM = 1e-6
 
 /**
  * Widok mapy V1. Przyciski „Powiększ”, „Pomniejsz” i cztery strzałki zmieniają go bez gestów (WCAG 2.5.1, WCAG 2.5.7).
@@ -38,6 +41,15 @@ private const val BASEMAP_ZOOM_MARGIN = 0.5
  * @property zoom powiększenie mapy; pod arkuszem V2 [center] stoi w środku części odkrytej
  */
 data class MapCamera(val center: GeoPoint, val zoom: Double)
+
+/**
+ * Czy [other] to ten sam widok: środki różnią się najwyżej o ok. 1 cm, a powiększenia o rachunek zmiennoprzecinkowy.
+ * Widok zgłoszony po geście i zapisany wraca jako cel ruchu, a mapa już w nim stoi. Wymagania: NFR-56
+ */
+internal fun MapCamera.isSameView(other: MapCamera): Boolean =
+    abs(center.longitude - other.center.longitude) <= SAME_VIEW_DEGREES &&
+        abs(center.latitude - other.center.latitude) <= SAME_VIEW_DEGREES &&
+        abs(zoom - other.zoom) <= SAME_VIEW_ZOOM
 
 /**
  * Wolna część mapy nad arkuszem V2, w dp.
