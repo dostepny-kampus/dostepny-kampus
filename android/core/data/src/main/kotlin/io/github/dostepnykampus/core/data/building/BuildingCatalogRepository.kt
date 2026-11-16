@@ -40,7 +40,6 @@ public const val BUILDINGS_ASSET: String = "pwr-buildings.geojson"
  * (A-2 przed A-10), bez wejść `emergency`, `exit` i `garage`. Trwające pobranie jest wspólne dla [catalogUpdates],
  * [catalog] i [refresh]; [catalogUpdates] oddaje najpierw katalog bez czekania, potem katalog z serwera. Anulowanie
  * prowadzącego pobranie każe pozostałym pytać od nowa. [syncedAt] to chwila pobrania z serwera, którą widzi katalog.
- * Każde pobranie zostawia jedną linię logu ze źródłem katalogu, liczbą budynków i czasem.
  *
  * Wymagania: US1, US1.2, US17.3, BR-25, NFR-11, NFR-10
  *
