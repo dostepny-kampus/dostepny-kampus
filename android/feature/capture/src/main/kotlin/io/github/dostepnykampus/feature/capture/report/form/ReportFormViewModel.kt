@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
@@ -166,9 +167,11 @@ class ReportFormViewModel
                         saver.save(content, current.photos, current.form.editedSubmission)
                         draft.clear()
                         ReportStage.SAVED
-                    } catch (_: IOException) {
+                    } catch (error: IOException) {
+                        Timber.w("Zapis zgłoszenia nieudany: %s", error.javaClass.simpleName)
                         ReportStage.SAVE_FAILED
-                    } catch (_: SQLiteException) {
+                    } catch (error: SQLiteException) {
+                        Timber.w("Zapis zgłoszenia nieudany: %s", error.javaClass.simpleName)
                         ReportStage.SAVE_FAILED
                     } catch (refused: SaveRefusedException) {
                         refused.reason.toStage()
