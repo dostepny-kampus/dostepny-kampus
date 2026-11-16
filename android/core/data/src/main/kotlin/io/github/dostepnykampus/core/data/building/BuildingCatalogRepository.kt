@@ -18,6 +18,7 @@ import io.github.dostepnykampus.core.network.building.DetailLevel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.channelFlow
@@ -25,9 +26,12 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import java.time.Instant
 import kotlin.coroutines.CoroutineContext
+
+private typealias Running = CompletableDeferred<Result<BuildingCatalog>>
 
 /** Plik konturów OSM w zasobach aplikacji; przy budowie kopiuje go z `data/buildings` zadanie `copyBuildingsAsset`. */
 public const val BUILDINGS_ASSET: String = "pwr-buildings.geojson"
@@ -56,7 +60,7 @@ public class BuildingCatalogRepository internal constructor(
     private val readGeoJson: () -> String,
 ) {
     private val lock = Any()
-    private var inflight: CompletableDeferred<Result<BuildingCatalog>>? = null
+    private var inflight: Running? = null
     private val downloaded = MutableStateFlow<Downloaded?>(null)
     private val copy = buildingCache?.let { dao -> BuildingListCopy(dao, ioContext) }
 
@@ -140,33 +144,27 @@ public class BuildingCatalogRepository internal constructor(
         return if (running == null) lead(mine, isFresh) else follow(running, isFresh)
     }
 
-    private suspend fun follow(
-        running: CompletableDeferred<Result<BuildingCatalog>>,
-        isFresh: Boolean,
-    ): BuildingCatalog {
+    private suspend fun follow(running: Running, isFresh: Boolean): BuildingCatalog {
         running.join()
         return if (running.isCancelled) fetched(isFresh) else running.await().getOrThrow()
     }
 
-    @Suppress("TooGenericExceptionCaught")
-    private suspend fun lead(
-        mine: CompletableDeferred<Result<BuildingCatalog>>,
-        isFresh: Boolean,
-    ): BuildingCatalog {
+    private suspend fun lead(mine: Running, isFresh: Boolean): BuildingCatalog =
         try {
-            val result = load(isFresh)
-            mine.complete(Result.success(result))
-            return result
-        } catch (cancelled: CancellationException) {
-            throw cancelled
-        } catch (failure: Exception) {
-            mine.complete(Result.failure(failure))
-            throw failure
+            supervisorScope {
+                val work = async { load(isFresh).also { mine.complete(Result.success(it)) } }
+                work.invokeOnCompletion { cause ->
+                    when {
+                        cause is CancellationException -> mine.cancel()
+                        cause != null -> mine.complete(Result.failure(cause))
+                    }
+                }
+                work.await()
+            }
         } finally {
             synchronized(lock) { inflight = null }
             mine.cancel()
         }
-    }
 
     private suspend fun load(isFresh: Boolean): BuildingCatalog {
         val file = readBundled(isFresh)
