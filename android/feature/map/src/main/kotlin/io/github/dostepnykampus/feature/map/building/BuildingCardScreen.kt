@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -101,7 +103,8 @@ fun BuildingCardScreen(
 
 /**
  * V2 dla gotowego stanu [card] i [isOnline]; „Spróbuj ponownie” to [onRetry], „Pokaż na planie” to [onShowPlan]
- * z identyfikatorem piętra, reszta jak w [BuildingCardScreen].
+ * z identyfikatorem piętra, „Oznacz obejrzane piętra” pod grupą „Piętra” to [onMarkFloors] (`null` ukrywa przycisk),
+ * reszta jak w [BuildingCardScreen].
  */
 @Composable
 fun BuildingCardContent(
@@ -119,6 +122,7 @@ fun BuildingCardContent(
     onShowEntrance: (String) -> Unit = {},
     onReportRemoval: ((String) -> Unit)? = null,
     onShowPlan: (String) -> Unit = {},
+    onMarkFloors: (() -> Unit)? = null,
 ) {
     val isFullScreen = mode != CardMode.Compact
     Column(if (isFullScreen) modifier.fillMaxSize() else modifier) {
@@ -145,6 +149,7 @@ fun BuildingCardContent(
                 onReportRemoval = onReportRemoval,
                 onRetry = onRetry,
                 onShowPlan = onShowPlan,
+                onMarkFloors = onMarkFloors,
             )
         }
     }
@@ -159,6 +164,7 @@ private fun FactsOrMissing(
     onReportRemoval: ((String) -> Unit)?,
     onRetry: () -> Unit,
     onShowPlan: (String) -> Unit,
+    onMarkFloors: (() -> Unit)?,
 ) {
     if (card is BuildingCardUiState.Ready && isFullScreen) {
         BuildingFacts(
@@ -167,6 +173,7 @@ private fun FactsOrMissing(
             onShowEntrance = onShowEntrance,
             onReportRemoval = onReportRemoval,
             onShowPlan = onShowPlan,
+            onMarkFloors = onMarkFloors,
         )
     }
     if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = onRetry)
@@ -238,6 +245,7 @@ private fun BuildingFacts(
     onShowEntrance: (String) -> Unit,
     onReportRemoval: ((String) -> Unit)?,
     onShowPlan: (String) -> Unit,
+    onMarkFloors: (() -> Unit)?,
 ) {
     val common = commonAssessment(card.entrances)
     common?.let { AssessmentLine(it) }
@@ -254,6 +262,11 @@ private fun BuildingFacts(
     BarriersGroup(card, onReportRemoval)
     card.floors?.let { LiftToiletGroup(it) }
     FloorsGroup(facts = card.floors, onShowPlan = onShowPlan)
+    onMarkFloors?.let { onMark ->
+        OutlinedButton(onClick = onMark, modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.minimum)) {
+            Text(stringResource(R.string.karta_oznacz_pietra))
+        }
+    }
 }
 
 @Composable

@@ -97,6 +97,7 @@
     <string name="karta_nie_ma_na_pietrach">Nie ma na piętrach: %1$s.</string>
     <string name="karta_i">i</string>
     <string name="karta_pietra">Piętra</string>
+    <string name="karta_oznacz_pietra">Oznacz obejrzane piętra</string>
     <string name="karta_bez_planu">Nie mamy planu pięter tego budynku.</string>
     <string name="karta_zwiniete">zwinięte</string>
     <string name="karta_rozwiniete">rozwinięte</string>
