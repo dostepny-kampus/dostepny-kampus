@@ -173,13 +173,14 @@ internal fun rememberMapSceneState(
     val fit = free.copy(heightDp = free.heightDp - reserve.value)
     val outline = layers?.run { outlinesBySymbol[selection?.building] }.takeIf { isCovered }
     val last = remember { ShownCamera() }
-    val wasCovered = rememberPrevious(isCovered)
+    val isCoveredBefore = rememberPrevious(isCovered)
     val scale = rememberAnimatorScale()
     val pick =
         remember(selection?.building, outline != null) {
             val from = last.startOr(uncovered)
-            pickMove(from = from, outline = outline, free = fit, scale = scale, keepsZoom = wasCovered)
-                ?.clampedTo(limits, free = fit)
+            val move = pickMove(from = from, outline = outline, free = fit, scale = scale, keepsZoom = isCoveredBefore)
+            val clamped = move?.let { limits?.clamp(it.camera, viewWidthDp = fit.widthDp, viewHeightDp = fit.heightDp) }
+            clamped?.let { move?.copy(camera = it) } ?: move
         }
     motion.RecordPick(pick)
     val card = rememberCardMove(building = selection?.building, pick = pick)
@@ -294,28 +295,6 @@ private fun pickMove(
 ): CameraTransition? {
     if (outline == null || from == null) return null
     return cameraTransition(from = from, outline = outline, free = free, animationScale = scale, keepsZoom = keepsZoom)
-}
-
-private fun CameraTransition.clampedTo(limits: MapLimits?, free: FreeMap): CameraTransition {
-    val clamped = limits?.clamp(camera, viewWidthDp = free.widthDp, viewHeightDp = free.heightDp)
-    return clamped?.let { copy(camera = it) } ?: this
-}
-
-@Composable
-private fun rememberPrevious(value: Boolean): Boolean {
-    val previous = remember { PreviousValue(value) }
-    val before = previous.value
-    SideEffect { previous.keep(value) }
-    return before
-}
-
-private class PreviousValue(initial: Boolean) {
-    var value: Boolean = initial
-        private set
-
-    fun keep(current: Boolean) {
-        value = current
-    }
 }
 
 @Composable

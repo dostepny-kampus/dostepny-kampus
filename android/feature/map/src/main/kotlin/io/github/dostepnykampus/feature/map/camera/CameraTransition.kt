@@ -56,14 +56,10 @@ internal fun MapCamera.byControl(): CameraTransition =
     CameraTransition(camera = this, motion = CameraMotion.FLIGHT, durationMillis = CONTROL_MILLIS)
 
 /**
- * Ruch mapy z widoku [from] do budynku o prostokącie [outline] w wolnej części mapy [free] przy systemowej
- * skali animacji [animationScale]. Rodzaj zależy tylko od położenia budynku względem widoku: cały kontur
- * widoczny — przesunięcie 300 ms; środek budynku najwyżej szerokość wolnej mapy od środka widoku —
- * przesunięcie 400 ms; dalej — przelot, którego czas rośnie z drogą od 400 ms do najwyżej 1,5 s.
- * Po ruchu kontur zajmuje połowę szerokości albo wysokości wolnej mapy, najwyżej przy powiększeniu 19; większe
- * powiększenie [from] zostaje. Przy [keepsZoom] (kolejny budynek przy otwartej karcie) powiększenie [from] zostaje
- * zawsze. Kontur, który się nie mieści, oddala mapę do zmieszczenia. Skala 0 daje ruch [CameraMotion.NONE], inna
- * mnoży czas.
+ * Ruch mapy z widoku [from] do budynku o prostokącie [outline] w wolnej części mapy [free]: rodzaj i czas według
+ * położenia budynku względem widoku, czas mnożony przez skalę animacji [animationScale] (0 daje
+ * [CameraMotion.NONE]). Kontur kończy na połowie wolnej mapy, najwyżej przy powiększeniu 19; większe powiększenie
+ * [from], a przy [keepsZoom] każde, zostaje. Kontur, który się nie mieści, oddala mapę do zmieszczenia.
  *
  * Wymagania: US2.8, US3.2, NFR-56
  */
