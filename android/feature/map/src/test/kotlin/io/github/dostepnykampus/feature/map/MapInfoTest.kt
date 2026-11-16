@@ -35,6 +35,7 @@ import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.overlay.MapInfo
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -85,6 +86,16 @@ class MapInfoTest {
         val close = compose.onNodeWithText("Zamknij").assertHasClickAction()
         close.assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button)).performClick()
         compose.onNodeWithText("Legenda").assertDoesNotExist()
+    }
+
+    /** „Wstecz” przy otwartym arkuszu „Legenda” zamyka arkusz, a mapa zostaje. Wymagania: US1.4, NFR-15 */
+    @Test
+    fun closesLegendOnBack() {
+        compose.setContent { Info(isOpenAtStart = true) }
+        compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
+        compose.onNodeWithText("Legenda").assertDoesNotExist()
+        compose.onNodeWithContentDescription(NAME).assertExists()
+        compose.runOnIdle { assertFalse("aktywność trwa", compose.activity.isFinishing) }
     }
 
     /** Źródło podkładu: OpenFreeMap i OpenMapTiles z odnośnikami do stron projektów. Wymagania: NFR-37 */

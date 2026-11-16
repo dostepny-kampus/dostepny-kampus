@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.overlay
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -58,7 +59,7 @@ internal fun BuildingCatalog.dataDay(): LocalDate? {
 
 /**
  * Przycisk „ⓘ” mapy V1, a nad nim, gdy [isOpen], arkusz legendy: znaki mapy, a po nich źródła danych z dniem
- * stanu danych PWr.
+ * stanu danych PWr. Systemowe „Wstecz” przy otwartym arkuszu zamyka go i zostawia mapę.
  *
  * Wymagania: US1.4, NFR-21, NFR-37, NFR-40, NFR-17, NFR-18
  *
@@ -74,6 +75,7 @@ internal fun MapInfo(
     onOpenChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    BackHandler(enabled = isOpen) { onOpenChange(false) }
     Column(modifier.padding(horizontal = Odstepy.s), horizontalAlignment = Alignment.End) {
         if (isOpen) {
             val panel = Modifier.weight(weight = 1f, fill = false).padding(bottom = Odstepy.s)
