@@ -11,6 +11,7 @@ import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.decodedResult
 import io.github.dostepnykampus.core.network.exchange
 import io.github.dostepnykampus.core.network.exchangeBody
+import io.github.dostepnykampus.core.network.exchangeResponse
 import io.github.dostepnykampus.core.network.unexpectedResult
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
@@ -133,13 +134,7 @@ public class SubmissionsApi(private val http: OkHttpClient, private val json: Js
     public suspend fun accepted(buildingSymbol: String? = null): ApiResult<List<Submission>> {
         val builder = path().newBuilder().addQueryParameter(name = "status", value = "ACCEPTED")
         buildingSymbol?.let { builder.addQueryParameter(name = "buildingSymbol", value = it) }
-        return http.exchange(request(builder.build(), body = null, method = GET)) { code, body ->
-            if (code == HTTP_OK) {
-                decodedResult(code) { json.decodeSubmissions(body) }
-            } else {
-                unexpectedResult(code)
-            }
-        }
+        return allPages(builder.build(), emptyList(), ::page)
     }
 
     /**
@@ -148,12 +143,11 @@ public class SubmissionsApi(private val http: OkHttpClient, private val json: Js
      *
      * Wymagania: US8.1, US8.2
      */
-    public suspend fun mine(): ApiResult<List<Submission>> {
-        val target = path().newBuilder().addQueryParameter(name = "mine", value = "true").build()
-        return http.exchange(request(target, body = null, method = GET)) { code, body ->
-            if (code == HTTP_OK) decodedResult(code) { json.decodeSubmissions(body) } else unexpectedResult(code)
-        }
-    }
+    public suspend fun mine(): ApiResult<List<Submission>> =
+        allPages(path().newBuilder().addQueryParameter(name = "mine", value = "true").build(), emptyList(), ::page)
+
+    private suspend fun page(target: HttpUrl): ApiResult<SubmissionPage> =
+        http.exchangeResponse(request(target, body = null, method = GET)) { it.submissionPage(target, json) }
 
     private fun request(
         target: HttpUrl,
