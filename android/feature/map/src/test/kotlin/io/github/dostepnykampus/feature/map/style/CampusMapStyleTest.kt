@@ -180,4 +180,11 @@ class CampusMapStyleTest {
 }
 
 private val PLAN =
-    listOf(PLAN_ROOMS_LAYER, PLAN_WALLS_LAYER, PLAN_OUTLINE_LAYER, PLAN_SIGNS_LAYER, PLAN_NUMBERS_LAYER)
+    listOf(
+        PLAN_FLOOR_LAYER,
+        PLAN_ROOMS_LAYER,
+        PLAN_WALLS_LAYER,
+        PLAN_OUTLINE_LAYER,
+        PLAN_SIGNS_LAYER,
+        PLAN_NUMBERS_LAYER,
+    )
