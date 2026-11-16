@@ -19,7 +19,7 @@ import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.barrier.withBarriers
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
-import io.github.dostepnykampus.feature.map.campus.campusMapData
+import io.github.dostepnykampus.feature.map.campus.CampusMapDataCache
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -86,7 +86,7 @@ data class CampusMapUiState(
  * @param networkStatus stan internetu
  * @param mapListChoice zapamiętany wybór „Mapa” albo „Lista budynków”
  * @property computeContext kontekst obliczeń geometrii; w aplikacji `Dispatchers.Default` z grafu Hilt
- * @property geometry funkcja licząca dane mapy z katalogu, przerywalna przerwaniem wątku; w aplikacji `campusMapData`
+ * @property geometry dane mapy z katalogu, przerywalne przerwaniem wątku; w aplikacji pamięć `CampusMapDataCache`
  * @param barriers bariery ze zgłoszeń przyjętych; w testach bez barier
  */
 @HiltViewModel
@@ -139,7 +139,8 @@ class CampusMapViewModel(
         mapListChoice: MapListChoice,
         barriers: AcceptedBarriers,
         @ComputeContext computeContext: CoroutineContext,
-    ) : this(repository, networkStatus, mapListChoice, computeContext, ::campusMapData, barriers)
+        cache: CampusMapDataCache,
+    ) : this(repository, networkStatus, mapListChoice, computeContext, cache::dataFor, barriers)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun Flow<Boolean>.onNetworkChange(barriers: AcceptedBarriers): Flow<FetchedBarriers> =
