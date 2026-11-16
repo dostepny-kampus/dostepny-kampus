@@ -287,15 +287,13 @@ final class ReviewHttpIT {
 
     private static UUID replacing(final WebApplicationContext context, final UUID replaced) {
         final UUID id = ReviewHttpIT.sent(context, "inne-konto");
-        context.getBean(JdbcClient.class)
-            .sql(
-                """
-                UPDATE submissions SET content = content
-                    || JSONB_BUILD_OBJECT('replacesSubmissionId', CAST(:replaced AS TEXT))
-                WHERE id = :id
-                """
-            )
-            .param("replaced", replaced).param("id", id).update();
+        context.getBean(JdbcClient.class).sql(
+            """
+            UPDATE submissions SET content = content
+                || JSONB_BUILD_OBJECT('replacesSubmissionId', CAST(:replaced AS TEXT))
+            WHERE id = :id
+            """
+        ).param("replaced", replaced).param("id", id).update();
         return id;
     }
 
