@@ -12,6 +12,8 @@ Opisy poniżej pochodzą z plików `README.md` modułów; zmienia się je przy k
 
 --8<-- "android/feature/inspection/README.md"
 
+--8<-- "android/feature/auth/README.md"
+
 --8<-- "android/core/data/README.md"
 
 --8<-- "android/core/database/README.md"
