@@ -39,8 +39,7 @@ import tools.jackson.databind.json.JsonMapper;
  * w {@code realm_access.roles} tokenu. Operacje publiczne nie wymagają tokenu, lista
  * własnych zgłoszeń (parametr mine inny niż false) wymaga roli Zbierającego. Pozostałe
  * bez ważnego tokenu dają 401, bez roli 403, jako {@code application/problem+json}; inna
- * ścieżka jest odrzucana. Pierwszy filtr łańcucha nadaje identyfikator żądania i zapisuje
- * linię logu, więc odmowy też go mają.
+ * ścieżka jest odrzucana.
  *
  * <p>Wymagania: NFR-33, NFR-57, US14.1, US8.1</p>
  *
