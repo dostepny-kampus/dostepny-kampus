@@ -144,7 +144,7 @@ Czynność główna: wybór piętra w kolumnie pięter.
 | --- | --- |
 | Plan pojawia się sam przy powiększeniu co najmniej 17 dla budynku szczegółowego na środku mapy; inne budynki przygaszone z podpisami | US16.1, NFR-11 |
 | Na start piętro wejścia zalecanego; gdy dane go nie podają, parter | US16.1, BR-25 |
-| Kolumna pięter po lewej pod przyciskiem terenu: „Piętro”, najwyższe u góry, wybrane w kółku, numery zamiast etykiet; TalkBack czyta pełną etykietę | US16.1, NFR-17, NFR-18, NFR-21 |
+| Kolumna pięter po lewej pod przyciskiem terenu: „Piętro”, najwyższe u góry, wybrane w kółku, numery zamiast etykiet; TalkBack czyta pełną etykietę. Po „Pokaż na planie” budynek stoi obok kolumny, nie pod nią | US16.1, US1.3, US1.4, NFR-17, NFR-18, NFR-21 |
 | Pod mapą „Źródło: Politechnika Wrocławska” | NFR-40 |
 
 ### V1: budynek bez planu
