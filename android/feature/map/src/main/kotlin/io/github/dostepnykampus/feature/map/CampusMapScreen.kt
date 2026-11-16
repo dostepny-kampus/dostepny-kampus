@@ -21,10 +21,12 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
@@ -53,6 +55,7 @@ import io.github.dostepnykampus.feature.map.building.BuildingChoice
 import io.github.dostepnykampus.feature.map.building.BuildingChoiceSheet
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
@@ -150,7 +153,7 @@ fun CampusMapScreen(
  * @param mapView widok mapy
  * @param motion zapis ruchów mapy do budynku nad kartą V2
  * @param plan plan piętra budynku przy środku mapy; `null`, gdy planu nie widać
- * @param onCamera widok mapy po ruchu kamery
+ * @param onCamera widok mapy po geście osoby i widok, do którego zmierza ruch kamery wykonany przez aplikację
  * @param onFloorChoose piętro wybrane w kolumnie pięter: symbol budynku i identyfikator piętra
  */
 @Composable
@@ -281,7 +284,7 @@ private fun CampusMap(
                 modifier = Modifier.fillMaxSize(),
             )
             scene.selection.entrance?.let { EntranceDescription(it) }
-            AreaEdgeAnnouncement(camera = move.camera, limits = state.limits, area = areas.current?.name)
+            FollowCamera(camera = move.camera, limits = state.limits, area = areas.current?.name, onCamera = onCamera)
             MapStatusBar(topInset, isShown = state.isCovered)
             val underBar = if (state.isCovered) topInset.asPaddingValues() else PaddingValues(top = top)
             val aboveSheet = Modifier.padding(underBar).padding(contentPadding)
@@ -306,6 +309,16 @@ private fun CampusMap(
 
 /** Zaznaczona przeszkoda [id] spośród [barriers] i zamknięcie jej karty [onClose]. */
 private data class ChosenBarrier(val id: String?, val barriers: ShownBarriers, val onClose: () -> Unit)
+
+@Composable
+private fun FollowCamera(camera: MapCamera, limits: MapLimits, area: String?, onCamera: (MapCamera) -> Unit) {
+    val report by rememberUpdatedState(onCamera)
+    DisposableEffect(camera) {
+        report(camera)
+        onDispose {}
+    }
+    AreaEdgeAnnouncement(camera = camera, limits = limits, area = area)
+}
 
 @Composable
 private fun BoxScope.MapSheets(
