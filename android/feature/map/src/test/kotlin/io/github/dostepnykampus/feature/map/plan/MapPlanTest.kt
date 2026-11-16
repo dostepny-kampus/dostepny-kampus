@@ -18,6 +18,7 @@ import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -57,6 +58,24 @@ class MapPlanTest {
             plan.camera(MapCamera(center = INSIDE_A, zoom = 15.0))
             plan.camera(MapCamera(center = INSIDE_A, zoom = 18.0))
             assertEquals("P1", shown.value?.floor, "Powrót do budynku nie pokazał ostatnio wybranego piętra")
+        }
+
+    @Test
+    fun showsFloorOfFocusOnce() =
+        runTest(UnconfinedTestDispatcher()) {
+            val plan = MapPlan(Plans(), entrances())
+            val shown = collected(plan)
+            val focus = MapFocus.Building(symbol = "A", command = 1L, floor = "P-1")
+            plan.show(focus)
+            plan.camera(MapCamera(center = INSIDE_A, zoom = 18.0))
+            val fromFocus = shown.value?.floor
+            plan.choose(building = "A", floor = "P1")
+            plan.show(focus)
+            assertEquals(
+                listOf("P-1", "P1"),
+                listOf(fromFocus, shown.value?.floor),
+                "„Pokaż na planie” nie pokazał piętra albo to samo zaznaczenie cofnęło wybrane piętro",
+            )
         }
 
     @Test

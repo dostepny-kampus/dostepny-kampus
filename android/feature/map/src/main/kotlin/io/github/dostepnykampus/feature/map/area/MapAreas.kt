@@ -12,8 +12,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import io.github.dostepnykampus.feature.map.camera.MapCamera
-import io.github.dostepnykampus.feature.map.camera.START_ZOOM
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapArea
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
@@ -44,6 +43,7 @@ internal fun AreaOrder.otherAreaOf(symbol: String): String? =
  * @param seen zapisywana nazwa terenu, o którym osoba już wie: wybrała go albo ruszyła na nim mapę; `null`, dopóki
  *   widziała tylko teren startowy
  * @param followed zapisywany symbol budynku, którego teren mapa już pokazała; `null` bez zaznaczenia
+ * @param noticeMemory co wiadomo o pokazywaniu napisu o zmianie terenu
  */
 internal class MapAreas(
     private val data: CampusMapData?,
@@ -51,6 +51,7 @@ internal class MapAreas(
     private val chosen: MutableState<String?>,
     private val seen: MutableState<String?>,
     private val followed: MutableState<String?>,
+    private val noticeMemory: NoticeMemory = NoticeMemory(),
 ) {
     /** Nazwa terenu ustawionego przez osobę albo wyborem budynku; `null`, gdy mapa stoi na terenie startowym. */
     val chosenName: String? get() = chosen.value
@@ -87,9 +88,47 @@ internal class MapAreas(
             return if (known == null || shown == null || shown == known) null else known.shiftTo(shown)
         }
 
-    /** Osoba wie o pokazanym terenie, np. ruszyła mapę przyciskiem: napis o zmianie terenu znika. Wymagania: US1.8 */
+    /**
+     * Napis o zmianie terenu, który da zaznaczony budynek: [notice], a zanim mapa przejdzie na teren budynku,
+     * zmiana z terenu znanego osobie na teren budynku. `null` bez zaznaczenia albo bez zmiany terenu.
+     *
+     * Wymagania: US1.8, US2.8
+     */
+    val selectionNotice: AreaShift?
+        get() {
+            val selected = symbol ?: return null
+            if (followed.value == selected) return notice
+            val known = data?.areaOf(chosen = seen.value, symbol = null)
+            val target = data?.areaOf(chosen = null, symbol = selected)
+            return if (known == null || target == null || known == target) null else known.shiftTo(target)
+        }
+
+    /**
+     * Czy napis [notice] jest pokazywany pierwszy raz. Ten sam napis pokazany znów, np. po zamknięciu panelu,
+     * nie jest nowy.
+     *
+     * Wymagania: US1.8, NFR-18
+     */
+    val isNoticeNew: Boolean get() = notice != null && noticeMemory.announced.value != current?.name
+
+    /**
+     * Napis o zmianie terenu wszedł na ekran ([isShown]) albo z niego zszedł. Pokazany napis jest już przeczytany.
+     *
+     * Wymagania: US1.8, NFR-18
+     */
+    fun noticeShown(isShown: Boolean) {
+        noticeMemory.onScreen.value = isShown
+        if (isShown) noticeMemory.announced.value = current?.name
+    }
+
+    /**
+     * Osoba ruszyła mapę przyciskiem albo gestem. Gdy napis o zmianie terenu był wtedy na ekranie, osoba wie
+     * o pokazanym terenie i napis znika; ruch przy zasłoniętym napisie go nie gasi.
+     *
+     * Wymagania: US1.8, NFR-23
+     */
     fun acknowledge() {
-        current?.let { seen.value = it.name }
+        if (noticeMemory.onScreen.value) current?.let { seen.value = it.name }
     }
 
     /**
@@ -112,18 +151,34 @@ internal class MapAreas(
     }
 
     /**
-     * Wybiera teren [name] i zwraca jego widok startowy: środek terenu w powiększeniu startowym.
+     * Wybiera teren [name] i zwraca prostokąt wszystkich jego budynków, który mapa pokazuje po wyborze.
      * `null` i brak zmiany, gdy dane nie mają takiego terenu.
      *
      * Wymagania: US1.7, BR-G5
      */
-    fun show(name: String): MapCamera? =
-        data?.areas?.firstOrNull { it.name == name }?.let { area ->
+    fun show(name: String): CampusBounds? {
+        val campus = data ?: return null
+        val area = campus.areas.firstOrNull { it.name == name }
+        if (area != null) {
             chosen.value = name
             seen.value = name
-            MapCamera(center = area.bounds.center, zoom = START_ZOOM)
         }
+        return area?.let(campus::boundsOfAllBuildings)
+    }
 }
+
+/**
+ * Pamięć napisu o zmianie terenu.
+ *
+ * Wymagania: US1.8, NFR-18, NFR-23
+ *
+ * @property announced zapisywana nazwa terenu, którego napis był już pokazany; `null` przed pierwszym napisem
+ * @property onScreen czy napis o zmianie terenu jest teraz na ekranie
+ */
+internal data class NoticeMemory(
+    val announced: MutableState<String?> = mutableStateOf(null),
+    val onScreen: MutableState<Boolean> = mutableStateOf(false),
+)
 
 /**
  * Tereny mapy z danych [layers] i zaznaczenia [focus] z trasy. Teren jest zapisywany, więc wraca po obrocie
@@ -143,10 +198,31 @@ internal fun rememberMapAreas(layers: CampusMapData?, focus: MapFocus?): MapArea
             null -> null
         }
     val seen = rememberSaveable { mutableStateOf<String?>(null) }
+    val announced = rememberSaveable { mutableStateOf<String?>(null) }
+    val onScreen = remember { mutableStateOf(false) }
+    val noticeMemory = remember { NoticeMemory(announced = announced, onScreen = onScreen) }
     val areas =
         remember(layers, symbol, chosen) {
-            MapAreas(data = layers, symbol = symbol, chosen = chosen, seen = seen, followed = followed)
+            MapAreas(
+                data = layers,
+                symbol = symbol,
+                chosen = chosen,
+                seen = seen,
+                followed = followed,
+                noticeMemory = noticeMemory,
+            )
         }
     SideEffect { areas.followSelection() }
     return areas
+}
+
+private fun CampusMapData.boundsOfAllBuildings(area: MapArea): CampusBounds {
+    val shapes = area.symbols.mapNotNull(outlinesBySymbol::get)
+    if (shapes.isEmpty()) return area.bounds
+    return CampusBounds(
+        west = shapes.minOf { it.west },
+        south = shapes.minOf { it.south },
+        east = shapes.maxOf { it.east },
+        north = shapes.maxOf { it.north },
+    )
 }

@@ -5,29 +5,25 @@
  */
 package io.github.dostepnykampus.building.persistence;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import org.flywaydb.core.api.MigrationVersion;
-import org.flywaydb.core.api.migration.Context;
-import org.flywaydb.core.api.migration.JavaMigration;
-import org.jspecify.annotations.Nullable;
-import org.springframework.core.io.Resource;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.jackson.databind.ObjectMapper;
 
 /**
  * Budynki i wejścia z pliku konturów OpenStreetMap w tabelach buildings i entrances
- * (ADR-0008). Migracja powtarzalna: działa przy pierwszym starcie i po zmianie pliku albo
- * wersji importu. Treść pliku czyta {@link OsmFile}. Istniejący budynek dostaje nowy kontur,
- * nazwę i atrybucję, a poziom szczegółowości zostaje.
+ * (ADR-0008), zapisywane przez {@link FileMigration}. Treść pliku czyta {@link OsmFile}.
+ * Istniejący budynek dostaje nowy kontur, nazwę i atrybucję, a poziom szczegółowości zostaje.
+ * Po zapisie dziennik INFO podaje liczbę budynków i wejść.
  *
- * <p>Wymagania: US1, US17.1, US2</p>
+ * <p>Wymagania: US1, US17.1, US2, NFR-57</p>
  *
  * @since 0.1.0
  */
-final class OsmBuildings implements JavaMigration {
+final class OsmBuildings implements FileImport {
 
     /**
      * Zapis budynku: nowy symbol dodaje wiersz, znany symbol zmienia kontur,
@@ -47,48 +43,32 @@ final class OsmBuildings implements JavaMigration {
     static final int FORMAT = 5;
 
     /**
+     * Dziennik importu.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(OsmBuildings.class);
+
+    /**
      * Parser pliku GeoJSON.
      */
     private final ObjectMapper mapper;
 
-    /**
-     * Plik konturów kopiowany przez Maven z data/buildings.
-     */
-    private final Resource file;
-
-    OsmBuildings(final ObjectMapper mapper, final Resource file) {
+    OsmBuildings(final ObjectMapper mapper) {
         this.mapper = mapper;
-        this.file = file;
     }
 
     @Override
-    public @Nullable MigrationVersion getVersion() {
-        return null;
+    public void save(final Connection connection, final byte[] content) throws SQLException {
+        final OsmFile osm = new OsmFile(this.mapper, this.mapper.readTree(content));
+        final List<ImportedBuilding> buildings = osm.buildings();
+        final List<ImportedEntrance> entrances = osm.entrances();
+        OsmBuildings.upsert(connection, buildings, osm.attribution());
+        new OsmEntrances(entrances).save(connection);
+        OsmBuildings.LOG.info(
+            "Import budynków z pliku: {} budynków, {} wejść", buildings.size(), entrances.size()
+        );
     }
 
-    @Override
-    public String getDescription() {
-        return "budynki z OpenStreetMap";
-    }
-
-    @Override
-    public Integer getChecksum() {
-        return OsmFile.checksum(this.content(), OsmBuildings.FORMAT);
-    }
-
-    @Override
-    public boolean canExecuteInTransaction() {
-        return true;
-    }
-
-    @Override
-    public void migrate(final Context context) throws SQLException {
-        final OsmFile osm = new OsmFile(this.mapper, this.mapper.readTree(this.content()));
-        OsmBuildings.save(context.getConnection(), osm.buildings(), osm.attribution());
-        new OsmEntrances(osm.entrances()).save(context.getConnection());
-    }
-
-    private static void save(
+    private static void upsert(
         final Connection connection,
         final Iterable<ImportedBuilding> buildings,
         final String source
@@ -102,14 +82,6 @@ final class OsmBuildings implements JavaMigration {
                 insert.addBatch();
             }
             insert.executeBatch();
-        }
-    }
-
-    private byte[] content() {
-        try {
-            return this.file.getContentAsByteArray();
-        } catch (final IOException ex) {
-            throw new UncheckedIOException(ex);
         }
     }
 }

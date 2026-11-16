@@ -49,8 +49,7 @@ sealed interface BuildingCardUiState {
      * @property entrances wejścia odwiedzających, zalecane pierwsze
      * @property barriers zgłoszenia przyjęte tego budynku; pusta lista, gdy dane o barierach są, a budynek nie ma
      *   zgłoszeń; `null`, gdy telefon nie ma danych o barierach
-     * @property floors fakty o piętrach z planów PWr; `null`, gdy budynek nie ma planu w telefonie.
-     *   TODO(#1480): grupa „Winda i toaleta” na karcie.
+     * @property floors fakty o piętrach z planów PWr; `null`, gdy budynek nie ma planu w telefonie
      */
     data class Ready(
         val symbol: String,

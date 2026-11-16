@@ -28,7 +28,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.time.Instant
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
 
 private typealias Running = CompletableDeferred<Result<BuildingCatalog>>
@@ -169,8 +171,10 @@ public class BuildingCatalogRepository internal constructor(
         }
 
     private suspend fun load(isFresh: Boolean): BuildingCatalog {
+        val started = System.nanoTime()
         val file = readBundled(isFresh)
         val server = nonEmptyServerList()
+        var source = if (server != null) "serwer" else "poprzedni odczyt"
         if (server != null) {
             val synced = SyncedBuildingList(list = server, syncedAtMillis = nowMillis())
             downloaded.value = Downloaded(file.withServerList(server), synced.syncedAtMillis)
@@ -178,8 +182,10 @@ public class BuildingCatalogRepository internal constructor(
         } else if (downloaded.value == null) {
             val restored = copy?.restore()
             downloaded.value = restored?.let { Downloaded(file.withServerList(it.list), it.syncedAtMillis) }
+            source = if (restored != null) "kopia z bazy" else "plik"
         }
         val result = downloaded.value?.catalog ?: file
+        Timber.i("Katalog budynków: %s, %d budynków, %d ms", source, result.buildings.size, elapsedMillis(started))
         cached = result
         return result
     }
@@ -210,6 +216,8 @@ internal fun assetRepository(
         readGeoJson = { assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() } },
         buildingCache = buildingCache,
     )
+
+internal fun elapsedMillis(startedNanos: Long): Long = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startedNanos)
 
 private fun basicList(list: suspend () -> ServerReply<ServerBuildings>): suspend () -> ServerReply<BuildingList> =
     { list().map { found -> BuildingList(found.source, found.buildings.map { ApiBuilding(it, DetailLevel.BASIC) }) } }

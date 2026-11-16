@@ -59,16 +59,18 @@ final class NullabilityArchitectureIT {
      * {@code SubmissionContent.replaces} w specyfikacji nazywa się
      * {@code replacesSubmissionId}.
      */
-    private static final Map<String, Set<String>> LISTED = Map.of(
-        "SubmissionFloor", Set.of("floorId", "number"),
-        "SubmissionPlace", Set.of("accuracyMeters", "buildingSymbol", "floor"),
-        "BarrierDetails", Set.of("group", "type", "severity", "description"),
-        "SubmissionContent",
-        Set.of("entranceId", "entranceMarking", "replaces"),
-        "SubmissionQuery", Set.of("buildingSymbol", "floorId"),
-        "Building", Set.of("name"),
-        "BuildingCard", Set.of("name"),
-        "Entrance", Set.of("name", "type", "floorId")
+    private static final Map<String, Set<String>> LISTED = Map.ofEntries(
+        Map.entry("SubmissionFloor", Set.of("floorId", "number")),
+        Map.entry("SubmissionPlace", Set.of("accuracyMeters", "buildingSymbol", "floor")),
+        Map.entry("BarrierDetails", Set.of("group", "type", "severity", "description")),
+        Map.entry("SubmissionContent", Set.of("entranceId", "entranceMarking", "replaces")),
+        Map.entry("SubmissionQuery", Set.of("buildingSymbol", "floorId")),
+        Map.entry("Building", Set.of("name")),
+        Map.entry("BuildingCard", Set.of("name")),
+        Map.entry("Entrance", Set.of("name", "type", "floorId")),
+        Map.entry("Submission", Set.of("rejection")),
+        Map.entry("Rejection", Set.of("duplicateOf")),
+        Map.entry("Rejected", Set.of("duplicateOf"))
     );
 
     /**

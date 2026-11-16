@@ -84,7 +84,6 @@ class CampusMapStyleTest {
      * spodem: wielokąt poza terenem ma otwór o brzegach terenu, a obie linie biegną po tych samych brzegach. Bez
      * granicy z pliku brzegiem jest prostokąt terenu.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Mapa nie wychodzi poza wybrany teren
-     * Scenariusz: przegladanie-mapy.feature: Poza granicą terenu podkład jest wyblakły, a granicę pokazuje linia
      *
      * Wymagania: US1.7, BR-G5, NFR-16
      */
@@ -231,4 +230,5 @@ class CampusMapStyleTest {
         ring.zipWithNext().sumOf { (from, to) -> from.longitude * to.latitude - to.longitude * from.latitude }
 }
 
-private val PLAN = listOf(PLAN_ROOMS_LAYER, PLAN_WALLS_LAYER, PLAN_OUTLINE_LAYER, PLAN_NUMBERS_LAYER)
+private val PLAN =
+    listOf(PLAN_ROOMS_LAYER, PLAN_WALLS_LAYER, PLAN_OUTLINE_LAYER, PLAN_SIGNS_LAYER, PLAN_NUMBERS_LAYER)

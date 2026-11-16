@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.building.persistence;
 
-import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.jspecify.annotations.Nullable;
@@ -15,8 +14,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Plik konturów OpenStreetMap daje budynki z połączonymi konturami i pierwszą nazwą
- * symbolu, wejścia z wierszem na budynek i oznaczeniem z tagu wheelchair, a suma kontrolna
- * zależy od treści pliku i wersji importu (ADR-0008).
+ * symbolu, wejścia z wierszem na budynek i oznaczeniem z tagu wheelchair (ADR-0008).
  *
  * <p>Wymagania: US1, US2, US17.1, BR-24</p>
  *
@@ -66,27 +64,6 @@ final class OsmFileTest {
             "Atrybucja nie pochodzi z pliku",
             OsmFileTest.file().attribution(),
             Matchers.equalTo("Dane testowe")
-        );
-    }
-
-    @Test
-    void changesChecksumWhenImportFormatChanges() {
-        final byte[] content = "{}".getBytes(StandardCharsets.UTF_8);
-        MatcherAssert.assertThat(
-            "Zmiana wersji importu nie zmienia sumy kontrolnej",
-            OsmFile.checksum(content, OsmBuildings.FORMAT),
-            Matchers.not(OsmFile.checksum(content, OsmBuildings.FORMAT + 1))
-        );
-    }
-
-    @Test
-    void changesChecksumWhenFileChanges() {
-        MatcherAssert.assertThat(
-            "Zmiana treści pliku nie zmienia sumy kontrolnej",
-            OsmFile.checksum("{}".getBytes(StandardCharsets.UTF_8), OsmBuildings.FORMAT),
-            Matchers.not(
-                OsmFile.checksum("[]".getBytes(StandardCharsets.UTF_8), OsmBuildings.FORMAT)
-            )
         );
     }
 

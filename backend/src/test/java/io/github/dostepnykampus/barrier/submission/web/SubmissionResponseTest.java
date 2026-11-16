@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.submission.web;
 
+import io.github.dostepnykampus.barrier.submission.Rejection;
 import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.BarrierDetails;
@@ -16,13 +17,16 @@ import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Odpowiedź ze zgłoszeniem (W4-4): treść płasko obok identyfikatora, wersji,
  * statusu i chwili utworzenia jako napisu ISO-8601, bez pól pustych i flag
- * fałszywych; data weryfikacji tylko przy zgłoszeniu przyjętym.
+ * fałszywych; data weryfikacji tylko przy zgłoszeniu przyjętym, a powód odrzucenia i duplikat
+ * tylko przy odrzuconym.
  *
  * @since 0.1.0
  */
@@ -69,6 +73,29 @@ final class SubmissionResponseTest {
                 )
             ).path("verifiedAt").asString(),
             "Odpowiedź przyjętego zgłoszenia nie ma daty weryfikacji"
+        );
+    }
+
+    @Test
+    void writesRejectionReasonAndDuplicate() {
+        final UUID earlier = UUID.fromString("0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d");
+        final JsonNode body = WebBodies.MAPPER.valueToTree(
+            new SubmissionResponse(
+                new Submission(
+                    WebBodies.ID, 1, SubmissionStatus.REJECTED,
+                    Instant.parse("2026-03-01T10:00:00Z"),
+                    SubmissionResponseTest.content(), Instant.MIN,
+                    new Rejection("Duplikat", earlier)
+                )
+            )
+        );
+        Assertions.assertEquals(
+            List.of("Duplikat", earlier.toString()),
+            List.of(
+                body.path("rejectionReason").asString(),
+                body.path("duplicateOfSubmissionId").asString()
+            ),
+            "Odpowiedź odrzuconego zgłoszenia nie ma powodu i duplikatu"
         );
     }
 

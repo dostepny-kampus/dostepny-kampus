@@ -263,13 +263,18 @@ class BuildingOnMapCameraTest {
     }
 
     /**
-     * Wiersz: K6, to samo „Pokaż budynek na mapie” po przesunięciu mapy strzałkami → kamera znów na budynku.
+     * Wiersz: K6, to samo „Pokaż budynek na mapie” po przesunięciu mapy strzałkami → kamera znów na budynku. Teren T-9
+     * jest mały, więc mapa najpierw się przybliża, żeby strzałki miały dokąd ją przesunąć.
      *
      * Wymagania: US2.9
      */
     @Test
     fun showsSameAgain() {
         showOnMap("T-9")
+        repeat(2) {
+            compose.onNodeWithContentDescription("Powiększ").performClick()
+            compose.waitForIdle()
+        }
         pan("prawo", times = 4)
         showOnMap("T-9")
         assertShown("T-9")

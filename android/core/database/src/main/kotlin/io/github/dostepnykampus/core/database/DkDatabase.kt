@@ -40,7 +40,7 @@ import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
         FloorPlanEntity::class,
         FloorRoomEntity::class,
     ],
-    version = 8,
+    version = 9,
     exportSchema = true,
 )
 internal abstract class DkDatabase : RoomDatabase() {

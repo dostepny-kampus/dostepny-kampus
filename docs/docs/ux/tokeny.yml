@@ -18,15 +18,21 @@ wersja: 1
 # Kolory — nazwy ról Material 3. Wartości ze stylu „Karta miejsca” (decyzja projektu
 # nr 48). Tylko role, których potrzebują ekrany.
 # Zasady (NFR-21, wymagania wspólne fazy B, decyzja 48 pkt 3):
-#   * Kolor nie niesie znaczenia. Oznaczenie wejścia (Dostępne / Niedostępne /
-#     Brak danych) ma zawsze kształt ikony i słowo ze słownika użytkownika.
-#     Może stać w spokojnym, lekko zabarwionym kontenerze, ale znaczenie niosą kształt
-#     i słowo, a nie barwa kontenera.
-#   * Uciążliwość (Utrudnienie / Tylko z pomocą / Blokada) i status zgłoszenia nie mają
-#     własnego kontenera: tekst i ikona w kolorze zwykłego tekstu.
-#   * Bez „sygnalizacji świetlnej”: w palecie interfejsu nie ma zielonego ani żółtego,
-#     więc nie ma pary zielony/czerwony. Kontenery statusów różnią się odcieniem
-#     (morski, szaroróżowy, szary), a jasność mają prawie równą: w odcieniach szarości
+#   * Kształt i słowo niosą znaczenie, barwa najwyżej je powtarza. Oznaczenie wejścia
+#     (Dostępne / Niedostępne / Brak danych) ma zawsze kształt ikony i słowo ze słownika
+#     użytkownika. Może stać w spokojnym, lekko zabarwionym kontenerze, ale znaczenie niosą
+#     kształt i słowo, a nie barwa kontenera.
+#   * Na mapie i w legendzie barwa jest drugim nośnikiem znaczenia znaków wejść i barier
+#     (`mapa.kolory.znak_…`). Wejście „Dostępne” jest zielononiebieskie, „Niedostępne” i „Brak
+#     danych” mają kolor tekstu mapy. Uciążliwość: żółty, pomarańczowy, ciemna czerwień;
+#     jasność maleje z uciążliwością, więc kolejność widać też w odcieniach szarości.
+#     Czerwień ma tylko „Blokada”. Każdy znak ma obwódkę `mapa.kolory.papier` i kontur
+#     `mapa.kolory.tusz`, żeby nie zlewał się z budynkiem ani z podkładem.
+#   * Poza znakami mapy i legendą uciążliwość (Utrudnienie / Tylko z pomocą / Blokada)
+#     i status zgłoszenia nie mają własnego kontenera: tekst i ikona w kolorze zwykłego tekstu.
+#   * Bez „sygnalizacji świetlnej” w interfejsie: poza znakami mapy i legendą paleta nie ma
+#     zielonego ani żółtego, więc nie ma pary zielony/czerwony. Kontenery statusów różnią
+#     się odcieniem (morski, szaroróżowy, szary), a jasność mają prawie równą: w odcieniach szarości
 #     odróżnia je tylko kształt i słowo.
 #   * Jedna barwa akcentu: ciemny morski (petrol). Daltonizm czerwono-zielony
 #     (protanopia, deuteranopia) nie zmienia odbioru tej osi; skrypt sprawdza kontrast
@@ -48,7 +54,7 @@ kolory:
   surfaceContainerLowest:
     jasny: "#FFFFFF"   # białe kontenery na szarym arkuszu zastępują linie podziału
     ciemny: "#343C41"  # najjaśniejsza warstwa: kontener grupy leży na arkuszu
-    uzycie: kontenery grup („Wejścia”, „Winda i toaleta”, „Piętra”, stan pusty barier), pływające kontrolki mapy, legenda, chipy
+    uzycie: kontenery grup („Wejścia”, „Winda i toaleta”, „Piętra”, stan pusty barier), pływające kontrolki mapy, legenda, napis o zmianie terenu, chipy
     zrodlo: NFR-16, styl „Karta miejsca”
   surfaceContainerLow:
     jasny: "#EFF4F6"
@@ -176,15 +182,14 @@ kolory:
     # mówi, co się stało i co zrobić (wymagania wspólne fazy B); ta sama rola barwi ramkę
     # pola bez wartości (decyzja 94). Ta sama rola barwi komunikat ostrzegawczy „Ważne” przed
     # czynnością, np. w kroku 1 V4: ramkę, obrysowane koło ze znakiem „!” i słowo „Ważne”;
-    # treść komunikatu jest w onSurface. Roli „ostrzeżenie” celowo nie ma, bo paleta nie ma
-    # żółtego. Błąd serwera, zapisu, logowania i brak internetu to zwykły komunikat: onSurface
+    # treść komunikatu jest w onSurface. Roli „ostrzeżenie” celowo nie ma, bo paleta poza
+    # znakami mapy nie ma żółtego. Błąd serwera, zapisu, logowania i brak internetu to zwykły komunikat: onSurface
     # na surfaceVariant, bez czerwieni. Styl „Karta miejsca” nie ma formularzy, więc wartość
     # zostaje z poprzedniej wersji pliku.
     jasny: "#8A0F18"
     ciemny: "#FFCAC4"  # jasny łososiowy; na ciemnym tle ≥ 7:1
     uzycie: tekst błędu walidacji przy polu i nad formularzem, koło „!” przy nim, ramka pola z błędem; ramka, koło „!” i słowo „Ważne” w ostrzeżeniu; nigdy dla oznaczenia wejścia, statusu ani uciążliwości
     zrodlo: NFR-15 (WCAG 3.3.1), NFR-21
-
 # ---------------------------------------------------------------------------
 # Kontrast — pary sprawdzane przez scripts/kontrast.py dla obu motywów,
 # także po symulacji protanopii i deuteranopii.
@@ -395,6 +400,14 @@ ikony:
     dp: 24             # ikona oznaczenia wejścia i chipu rośnie z tekstem: 1,33 wysokości napisu
     uzycie: ikona oznaczenia wejścia, chipu, przycisku i paska dolnego, zawsze z napisem obok
     zrodlo: NFR-21, słownik użytkownika (Metafory i ikony)
+  znak_mapy:
+    dp: 28
+    uzycie: znak wejścia „Dostępne” i „Niedostępne” na mapie V1
+    zrodlo: US1.4, US2.1, NFR-21
+  znak_mapy_brak_danych:
+    dp: 20             # cichy znak: mniej informacji, mniejsza waga; pusty romb, wnętrze `papier`, kontur i ? `tusz`
+    uzycie: znak wejścia „Brak danych” na mapie V1; w legendzie i na kartach ma rozmiar zwykłego znaku
+    zrodlo: US1.4, US2.1, NFR-16, NFR-21
 
 # ---------------------------------------------------------------------------
 # Wysokości (cień) w dp, poziomy Material 3. Skrypt strony jeszcze ich nie sprawdza.
@@ -405,7 +418,7 @@ wysokosci:
   kontrolki_mapy:
     dp: 3              # Material 3, poziom 2
     obwodka_ciemny: "#454E53"
-    uzycie: pływające kontrolki mapy („Powiększ”, „Pomniejsz”, strzałki przesuwania, „ⓘ”, przełącznik pięter, legenda, „Wstecz”), nagłówek z polem wyszukiwania (V1)
+    uzycie: pływające kontrolki mapy („Powiększ”, „Pomniejsz”, strzałki przesuwania, „ⓘ”, przełącznik pięter, legenda, „Wstecz”), napis o zmianie terenu
     zrodlo: styl „Karta miejsca”
   pasek_czynnosci:
     dp: 6              # Material 3, poziom 3; cień pada w górę
@@ -413,40 +426,58 @@ wysokosci:
     zrodlo: styl „Karta miejsca”; cień arkusza z makiety hi-fi V2
 
 # ---------------------------------------------------------------------------
-# Paleta mapy: podkład, budynki PWr, plan piętra (styl mapy wektorowej, decyzja 44).
+# Paleta mapy: podkład, budynki PWr, plan piętra (styl mapy wektorowej, decyzja 44, ADR-0014).
+# Jasny podkład to wariant „żywy”: wyraźna zieleń i woda, budynki spoza PWr od powiększenia 13,
+# nazwy dzielnic wielkimi literami, budynki PWr najbardziej nasycone na mapie.
 # Nie są to role Material 3: aplikacja wstawia je do stylu mapy, a nie do motywu.
-# W jasnym motywie kontur PWr i ścieżka mają barwę `primary`. Ciemny to mapa nocna:
-# grafitowy ląd, szaroniebieskie kontury bez jasnego morskiego. Napisy: Noto Sans z obwódką.
+# W jasnym motywie kontur PWr i ścieżka mają barwę `primary`. Ciemny to wariant „żywy ciemny”: łupkowe tło
+# (nie czarne), drogi jaśniejsze od tła, wyraźna woda i zieleń, budynki PWr najjaśniejsze na mapie. Napisy: Noto Sans z obwódką.
 # Skrypt strony jeszcze nie sprawdza tej sekcji; pary niżej mają ten sam zapis
 # co `kontrast.pary`, a progi są te same (tekst 7:1, nietekst 3:1).
 # ---------------------------------------------------------------------------
 mapa:
   napisy_sp: 16
   kolory:
-    lad: {jasny: "#E8EDEE", ciemny: "#15181A", uzycie: tło lądu}
-    zielen: {jasny: "#D4DFD5", ciemny: "#1A221E", uzycie: parki i trawniki}
-    woda: {jasny: "#BFD0D8", ciemny: "#132129", uzycie: rzeka i kanały}
-    droga: {jasny: "#FFFFFF", ciemny: "#2B3034", uzycie: wypełnienie ulic}
-    droga_kontur: {jasny: "#C5CDD0", ciemny: "#1D2124", uzycie: obrzeże ulic}
-    tory: {jasny: "#A3ACAF", ciemny: "#3A4044", uzycie: tory}
-    chodnik: {jasny: "#F7F9FA", ciemny: "#22272A", uzycie: chodniki i place}
-    budynek: {jasny: "#D6DBDD", ciemny: "#23282B", uzycie: budynki spoza PWr}
-    budynek_kontur: {jasny: "#C2C9CC", ciemny: "#2C3236", uzycie: kontur budynków spoza PWr}
-    pwr: {jasny: "#BFE0EC", ciemny: "#2A3640", uzycie: wypełnienie budynków PWr}
+    lad: {jasny: "#EEF1F0", ciemny: "#20272B", uzycie: tło lądu}
+    zielen: {jasny: "#CBE2C6", ciemny: "#24352C", uzycie: parki i trawniki}
+    woda: {jasny: "#A7CADD", ciemny: "#1B3344", uzycie: rzeka i kanały}
+    droga: {jasny: "#FFFFFF", ciemny: "#3A4449", uzycie: wypełnienie ulic}
+    droga_kontur: {jasny: "#C3CBCE", ciemny: "#1A2023", uzycie: obrzeże ulic}
+    tory: {jasny: "#A3ACAF", ciemny: "#4A5357", uzycie: tory}
+    chodnik: {jasny: "#F7F9FA", ciemny: "#2C3438", uzycie: chodniki i place}
+    budynek: {jasny: "#DADFE0", ciemny: "#2B3337", uzycie: "budynki spoza PWr, od powiększenia 13"}
+    budynek_kontur: {jasny: "#C6CDCF", ciemny: "#343D42", uzycie: kontur budynków spoza PWr}
+    pwr: {jasny: "#9BD3E6", ciemny: "#3D6B7A", uzycie: "wypełnienie budynków szczegółowych (z planem pięter)"}
+    # Budynek podstawowy: jaśniejsze tło niż szczegółowy, ale wyraźnie niebieskie; od szczegółowego odróżnia go
+    # jasność tła i cienki kontur.
+    pwr_podstawowy: {jasny: "#C4E5F0", ciemny: "#2F4E59", uzycie: "wypełnienie budynków podstawowych (bez planu pięter)"}
     # Ciemny kontur PWr: najciemniejszy ton, który do wypełnienia ma ≥ 3:1 także po symulacji daltonizmu.
-    pwr_kontur: {jasny: "#004E5E", ciemny: "#68848F", uzycie: "kontur budynków PWr (jasny = primary)"}
+    pwr_kontur: {jasny: "#004E5E", ciemny: "#A6D6E5", uzycie: "kontur budynków PWr (jasny = primary): gruby przy szczegółowym, cienki ciągły przy podstawowym"}
     # Obrys wybranego budynku jest grubszy niż kontur; wybór pokazuje też arkusz z nazwą (NFR-21).
-    pwr_wybrany: {jasny: "#001F27", ciemny: "#7AA6B5", uzycie: obrys wybranego budynku}
-    napis_pwr: {jasny: "#00303B", ciemny: "#D9DFE2", uzycie: "symbol budynku, „Sala 329”, „Winda”, „Toaleta”"}
-    napis_ulica: {jasny: "#3A4549", ciemny: "#A9B2B6", uzycie: nazwy ulic i numery sal}
-    napis_woda: {jasny: "#2B454D", ciemny: "#A3B8C0", uzycie: nazwa rzeki}
-    obwodka: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: obwódka napisów}
-    sciezka: {jasny: "#004E5E", ciemny: "#6A818A", uzycie: ścieżka dostosowana}
-    tusz: {jasny: "#181C1D", ciemny: "#D5DADC", uzycie: "znaczniki wejść, ikony pochylni i planu"}
-    papier: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: wnętrze znaczników}
+    pwr_wybrany: {jasny: "#001F27", ciemny: "#E6F4F8", uzycie: obrys wybranego budynku}
+    napis_pwr: {jasny: "#00303B", ciemny: "#F0F6F8", uzycie: "symbol budynku, „Sala 329”, „Winda”, „Toaleta”"}
+    napis_ulica: {jasny: "#3A4549", ciemny: "#A9B4B8", uzycie: nazwy ulic i numery sal}
+    napis_woda: {jasny: "#2B454D", ciemny: "#96B9CC", uzycie: nazwa rzeki}
+    napis_dzielnica: {jasny: "#4E5A5E", ciemny: "#A9B2B6", uzycie: "nazwy dzielnic wielkimi literami, z odstępem liter"}
+    obwodka: {jasny: "#FFFFFF", ciemny: "#20272B", uzycie: obwódka napisów}
+    sciezka: {jasny: "#004E5E", ciemny: "#8AA7B2", uzycie: ścieżka dostosowana}
+    tusz: {jasny: "#181C1D", ciemny: "#D5DADC", uzycie: "kontur znaków wejść i barier, znak „Niedostępne”, ikony pochylni i planu"}
+    papier: {jasny: "#FFFFFF", ciemny: "#20272B", uzycie: "obwódka znaków wejść i barier, wnętrze znaczników"}
+    # Znaki wejść i barier na mapie i w legendzie. Barwa powtarza kształt i słowo, których nie zastępuje (NFR-21).
+    # Odcienie z palety bezpiecznej przy daltonizmie (Okabe i Ito), jasność maleje z uciążliwością.
+    # „Blokada”: zaokrąglona tablica z jedną poziomą belką, jak znak zakazu wjazdu; poza mapą i legendą tablica
+    # ma kolor tekstu, a belka kolor tła.
+    znak_dostepne: {jasny: "#00795C", ciemny: "#35C79B", uzycie: "wnętrze koła znaku wejścia „Dostępne”"}
+    znak_dostepne_symbol: {jasny: "#FFFFFF", ciemny: "#101314", uzycie: "ptaszek w znaku wejścia „Dostępne”"}
+    znak_utrudnienie: {jasny: "#F5CB14", ciemny: "#F7D442", uzycie: "wnętrze trójkąta znaku „Utrudnienie”"}
+    znak_utrudnienie_symbol: {jasny: "#181C1D", ciemny: "#101314", uzycie: "„!” w trójkącie „Utrudnienie”"}
+    znak_tylko_z_pomoca: {jasny: "#E87A00", ciemny: "#F28C28", uzycie: "wnętrze tarczy znaku „Tylko z pomocą”"}
+    znak_tylko_z_pomoca_symbol: {jasny: "#181C1D", ciemny: "#101314", uzycie: "dwie osoby w tarczy „Tylko z pomocą”"}
+    znak_blokada: {jasny: "#A3180A", ciemny: "#D92D1A", uzycie: "tablica znaku „Blokada”"}
+    znak_blokada_symbol: {jasny: "#FFFFFF", ciemny: "#FFFFFF", uzycie: "pozioma belka na tablicy „Blokada”"}
     # Granica terenu (BR-G5): ciągła linia z obwódką w kolorze przeciwnym, żeby była widoczna na każdym podkładzie.
     granica_terenu: {jasny: "#181C1D", ciemny: "#D5DADC", uzycie: "linia granicy terenu, 2 dp"}
-    granica_terenu_obwodka: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: "obwódka linii granicy terenu, 1,5 dp z każdej strony"}
+    granica_terenu_obwodka: {jasny: "#FFFFFF", ciemny: "#20272B", uzycie: "obwódka linii granicy terenu, 1,5 dp z każdej strony"}
     p_korytarz: {jasny: "#FFFFFF", ciemny: "#2C3236", uzycie: korytarz na planie piętra}
     p_sala: {jasny: "#D2EAF3", ciemny: "#2C3C44", uzycie: sala na planie piętra}
     p_inne: {jasny: "#E1E6E8", ciemny: "#23282B", uzycie: inne pomieszczenia i klatki schodowe}
@@ -464,18 +495,29 @@ mapa:
     - {kolor: napis_pwr, tlo: obwodka, rodzaj: tekst, gdzie: "symbol budynku, nazwy na planie"}
     - {kolor: napis_ulica, tlo: obwodka, rodzaj: tekst, gdzie: "nazwy ulic, numery sal"}
     - {kolor: napis_woda, tlo: obwodka, rodzaj: tekst, gdzie: nazwa rzeki}
+    - {kolor: napis_dzielnica, tlo: obwodka, rodzaj: tekst, gdzie: nazwy dzielnic}
     - {kolor: pwr_kontur, tlo: lad, rodzaj: komponent, gdzie: kontur budynku PWr na podkładzie}
-    - {kolor: pwr_kontur, tlo: pwr, rodzaj: komponent, gdzie: kontur budynku PWr do wypełnienia}
+    - {kolor: pwr_kontur, tlo: pwr, rodzaj: komponent, gdzie: kontur budynku szczegółowego do wypełnienia}
+    - {kolor: pwr_kontur, tlo: pwr_podstawowy, rodzaj: komponent, gdzie: kontur budynku podstawowego do wypełnienia}
     - {kolor: pwr_kontur, tlo: budynek, rodzaj: komponent, gdzie: kontur PWr przy budynku spoza PWr}
     - {kolor: pwr_wybrany, tlo: pwr, rodzaj: komponent, gdzie: obrys wybranego budynku do wypełnienia}
+    - {kolor: pwr_wybrany, tlo: pwr_podstawowy, rodzaj: komponent, gdzie: obrys wybranego budynku podstawowego do wypełnienia}
     - {kolor: pwr_wybrany, tlo: lad, rodzaj: komponent, gdzie: obrys wybranego budynku na podkładzie}
     - {kolor: sciezka, tlo: lad, rodzaj: komponent, gdzie: ścieżka dostosowana na podkładzie}
     - {kolor: sciezka, tlo: droga, rodzaj: komponent, gdzie: ścieżka dostosowana na ulicy}
     - {kolor: tusz, tlo: lad, rodzaj: komponent, gdzie: "znacznik wejścia, ikona pochylni"}
     - {kolor: tusz, tlo: pwr, rodzaj: komponent, gdzie: znacznik wejścia na budynku PWr}
+    - {kolor: tusz, tlo: pwr_podstawowy, rodzaj: komponent, gdzie: znacznik wejścia na budynku podstawowym}
     - {kolor: papier, tlo: tusz, rodzaj: komponent, gdzie: znak wewnątrz znacznika}
+    - {kolor: znak_dostepne_symbol, tlo: znak_dostepne, rodzaj: komponent, gdzie: "ptaszek w znaku „Dostępne”"}
+    - {kolor: znak_utrudnienie_symbol, tlo: znak_utrudnienie, rodzaj: komponent, gdzie: "„!” w znaku „Utrudnienie”"}
+    - {kolor: znak_tylko_z_pomoca_symbol, tlo: znak_tylko_z_pomoca, rodzaj: komponent, gdzie: "dwie osoby w znaku „Tylko z pomocą”"}
+    - {kolor: znak_blokada_symbol, tlo: znak_blokada, rodzaj: komponent, gdzie: "belka w znaku „Blokada”"}
     - {kolor: tusz, tlo: p_korytarz, rodzaj: komponent, gdzie: ikona planu na korytarzu}
     - {kolor: tusz, tlo: p_winda, rodzaj: komponent, gdzie: ikona windy}
+    - {kolor: tusz, tlo: p_sala, rodzaj: komponent, gdzie: "znak windy, toalety i bariery na sali"}
+    - {kolor: tusz, tlo: p_inne, rodzaj: komponent, gdzie: ikona schodów na klatce schodowej}
+    - {kolor: tusz, tlo: p_wc, rodzaj: komponent, gdzie: "napis WC na toalecie"}
     - {kolor: p_kontur, tlo: p_sala, rodzaj: komponent, gdzie: ściany sali}
     - {kolor: p_kontur, tlo: p_korytarz, rodzaj: komponent, gdzie: ściany korytarza}
     - {kolor: p_kontur, tlo: p_inne, rodzaj: komponent, gdzie: ściany innych pomieszczeń}

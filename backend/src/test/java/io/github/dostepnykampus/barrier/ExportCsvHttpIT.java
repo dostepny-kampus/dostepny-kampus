@@ -10,8 +10,13 @@ import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionFloor;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -69,6 +74,42 @@ final class ExportCsvHttpIT {
                     ",OTHER,,A-1,0 półpiętro,\"Schody, \"\"próg\"\" i żółta poręcz\",.+Z"
                 ),
                 Matchers.is("2")
+            )
+        );
+    }
+
+    @Test
+    void prefixesFormulaLikeDescriptionWithApostrophe(final WebApplicationContext context)
+        throws Exception {
+        final SampleSubmissions samples = new SampleSubmissions(context);
+        final List<String> starts = Stream.of('=', '+', '-', '@', '\t', '\r')
+            .map(String::valueOf).toList();
+        for (final String start : starts) {
+            samples.add(
+                "ACCEPTED",
+                SampleSubmissions.quick(
+                    new SubmissionPlace(
+                        new SubmissionPoint(17.059_89, 51.109_16), null, false, "A-1", null
+                    ),
+                    start.concat("1+1"), UUID.randomUUID()
+                )
+            );
+        }
+        final String csv = context.getBean(MockMvc.class).perform(
+            MockMvcRequestBuilders.get("/export.csv")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer COORDINATOR")
+        ).andReturn().getResponse().getContentAsString();
+        final List<String> descriptions = new ArrayList<>(starts.size());
+        final CSVFormat format = CSVFormat.RFC4180.builder().setHeader()
+            .setSkipHeaderRecord(true).get();
+        try (CSVParser parser = format.parse(new StringReader(csv))) {
+            parser.forEach(record -> descriptions.add(record.get("description")));
+        }
+        MatcherAssert.assertThat(
+            "Opis zaczynający się od znaku formuły nie ma apostrofu na początku",
+            descriptions,
+            Matchers.containsInAnyOrder(
+                starts.stream().map(start -> "'".concat(start).concat("1+1")).toArray()
             )
         );
     }

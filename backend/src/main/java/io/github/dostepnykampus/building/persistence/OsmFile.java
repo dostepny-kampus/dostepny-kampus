@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.CRC32;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -48,20 +47,6 @@ final class OsmFile {
     OsmFile(final ObjectMapper mapper, final JsonNode root) {
         this.mapper = mapper;
         this.root = root;
-    }
-
-    /**
-     * Suma kontrolna importu: zmienia się ze zmianą treści pliku albo wersji importu.
-     *
-     * @param content Bajty pliku
-     * @param format Wersja importu
-     * @return Suma CRC32 obu wartości
-     */
-    static int checksum(final byte[] content, final int format) {
-        final CRC32 crc = new CRC32();
-        crc.update(content);
-        crc.update(format);
-        return (int) crc.getValue();
     }
 
     /**

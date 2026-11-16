@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.submission.persistence;
 
+import io.github.dostepnykampus.barrier.submission.Rejection;
 import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -55,7 +57,8 @@ final class SubmissionRows implements RowMapper<Submission> {
                 ).orElseThrow(() -> new InvalidSubmission("Brak zapisanej treści zgłoszenia"))
                     .toContent(),
                 Optional.ofNullable(rows.getObject("verified_at", OffsetDateTime.class))
-                    .map(OffsetDateTime::toInstant).orElse(Instant.MIN)
+                    .map(OffsetDateTime::toInstant).orElse(Instant.MIN),
+                SubmissionRows.rejection(rows)
             );
         } catch (final JacksonException | InvalidSubmission ex) {
             throw new UnreadableSubmission(
@@ -78,5 +81,16 @@ final class SubmissionRows implements RowMapper<Submission> {
             }
             return results;
         };
+    }
+
+    private static @Nullable Rejection rejection(final ResultSet rows) throws SQLException {
+        final String reason = rows.getString("rejection_reason");
+        final Rejection result;
+        if (reason == null) {
+            result = null;
+        } else {
+            result = new Rejection(reason, rows.getObject("duplicate_of", UUID.class));
+        }
+        return result;
     }
 }

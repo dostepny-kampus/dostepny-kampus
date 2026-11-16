@@ -8,10 +8,12 @@ package io.github.dostepnykampus.identity.web;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -26,20 +28,25 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.security.web.session.DisableEncodeUrlFilter;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Zabezpieczenia API: zabronione wszystko, czego kontrakt {@code api/openapi.yaml} nie
  * dopuszcza (ADR-0003). Serwer zasobów OAuth 2.0 bez własnego logowania; role są
  * w {@code realm_access.roles} tokenu. Operacje publiczne nie wymagają tokenu, lista
- * własnych zgłoszeń (mine=true) wymaga roli Zbierającego. Pozostałe bez ważnego tokenu
- * dają 401, bez roli 403, jako {@code application/problem+json}; inna ścieżka jest odrzucana.
+ * własnych zgłoszeń (parametr mine inny niż false) wymaga roli Zbierającego. Pozostałe
+ * bez ważnego tokenu dają 401, bez roli 403, jako {@code application/problem+json}; inna
+ * ścieżka jest odrzucana.
  *
- * <p>Wymagania: NFR-33, US14.1, US8.1</p>
+ * <p>Wymagania: NFR-33, NFR-57, US14.1, US8.1</p>
  *
  * @since 0.1.0
  */
+@EnableConfigurationProperties(RateLimitSettings.class)
 @Configuration(proxyBeanMethods = false)
 public final class ApiSecurity {
 
@@ -54,18 +61,26 @@ public final class ApiSecurity {
      *
      * @param http Budowa zabezpieczeń żądań
      * @param mapper Zapis odpowiedzi odmowy
+     * @param limit Limity żądań bez logowania i zapisów konta
      * @return Zbudowany łańcuch dla wszystkich żądań
      * @throws Exception Gdy konfiguracji nie da się zbudować
      */
     @Bean
     static SecurityFilterChain api(
-        final HttpSecurity http, final JsonMapper mapper
+        final HttpSecurity http, final JsonMapper mapper, final RateLimitSettings limit
     ) throws Exception {
         final JwtAuthenticationConverter roles = new JwtAuthenticationConverter();
         roles.setJwtGrantedAuthoritiesConverter(ApiSecurity::authorities);
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(
             sessions -> sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        );
+        http.addFilterBefore(new RequestLog(), DisableEncodeUrlFilter.class);
+        http.addFilterBefore(
+            new PublicRateLimit(limit, mapper), BearerTokenAuthenticationFilter.class
+        );
+        http.addFilterAfter(
+            new AccountRateLimit(limit.writesPerMinute(), mapper), AuthorizationFilter.class
         );
         http.authorizeHttpRequests(ApiSecurity::rules);
         http.oauth2ResourceServer(
@@ -95,6 +110,9 @@ public final class ApiSecurity {
             "/rooms", "/submissions", "/submissions/{id}",
             "/submissions/{id}/photos/{photo}"
         ).permitAll();
+        rules.requestMatchers(HttpMethod.GET, "/actuator/health").permitAll();
+        rules.requestMatchers(HttpMethod.GET, "/actuator/metrics", "/actuator/metrics/**")
+            .hasRole("COORDINATOR");
         rules.requestMatchers(HttpMethod.PUT, "/submissions/{id}").hasRole("COLLECTOR");
         rules.requestMatchers(HttpMethod.GET, "/review/queue", "/submissions/{id}/similar")
             .hasRole("VERIFIER");
@@ -115,7 +133,8 @@ public final class ApiSecurity {
     private static boolean ownSubmissions(final HttpServletRequest request) {
         return HttpMethod.GET.matches(request.getMethod())
             && request.getContextPath().concat("/submissions").equals(request.getRequestURI())
-            && Boolean.parseBoolean(request.getParameter("mine"));
+            && request.getParameterValues("mine") != null
+            && !Arrays.stream(request.getParameterValues("mine")).allMatch("false"::equals);
     }
 
     private static Collection<GrantedAuthority> authorities(final Jwt token) {

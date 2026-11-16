@@ -36,6 +36,7 @@ import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.camera.belowTop
 import io.github.dostepnykampus.feature.map.camera.byControl
 import io.github.dostepnykampus.feature.map.camera.cameraTransition
+import io.github.dostepnykampus.feature.map.camera.fitted
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
@@ -93,6 +94,16 @@ internal class MapSceneState(
         onCamera(idle)
     }
 
+    /**
+     * Pokazuje teren wybrany z listy: wszystkie jego budynki [buildings] w wolnej części mapy, w powiększeniu
+     * najwyżej startowym, przy którym symbole budynków są czytelne.
+     *
+     * Wymagania: US1.7, BR-G5
+     */
+    fun land(buildings: CampusBounds) {
+        shown?.let { keep(fitted(outline = buildings, free = it.landing, maxZoom = START_ZOOM)) }
+    }
+
     /** Przesuwa kamerę przyciskiem na [next], w granicach terenu, także nad arkuszem V2. Wymagania: NFR-53, BR-G5 */
     fun move(next: MapCamera) {
         limits?.run { keep(clamp(next)) }
@@ -127,10 +138,11 @@ internal class MapSceneState(
 /**
  * Stan sceny mapy z danych [layers], katalogu [catalog], zaznaczenia [focus] z trasy i nazwy terenu [area]
  * wybranego przez osobę, dla mapy o rozmiarze [size] zasłoniętej od dołu arkuszem V2 na wysokość
- * [cover]. Widok kamery i lista budynków do wyboru są zapisywane,
- * więc wracają po „Wstecz” z V2 i po obrocie ekranu. Każdy ruch nad kartą do nowego budynku trafia do [motion].
+ * [cover]. Nad arkuszem budynek mieści się też nad napisem o zmianie terenu wysokim na [notice]. Widok kamery
+ * i lista budynków do wyboru są zapisywane, więc wracają po „Wstecz” z V2 i po obrocie ekranu. Każdy ruch nad kartą
+ * do nowego budynku trafia do [motion].
  *
- * Wymagania: US1.7, NFR-22, NFR-56
+ * Wymagania: US1.7, US1.8, NFR-22, NFR-56
  */
 @Composable
 internal fun rememberMapSceneState(
@@ -142,6 +154,7 @@ internal fun rememberMapSceneState(
     size: IntSize,
     top: Dp = 0.dp,
     motion: MapMotion? = null,
+    notice: Dp = 0.dp,
 ): MapSceneState {
     val scene = rememberMapScene(layers = layers, catalog = catalog, focus = focus, area = area)
     val selection = scene?.selection
@@ -154,14 +167,16 @@ internal fun rememberMapSceneState(
     val limits = density.mapLimits(selection?.bounds, size.belowTop(topInset))
     val start = layers?.start?.let { MapCamera(center = it, zoom = START_ZOOM) }
     val uncovered = (own ?: start)?.let { limits?.clamp(it) ?: it }
-    val bottomInset = with(density) { cover.toPx() }.toDouble()
+    val reserve = rememberNoticeReserve(building = selection?.building, notice = notice)
+    val bottomInset = with(density) { (cover + reserve).toPx() }.toDouble()
     val free = density.freeMap(size, cover)
+    val fit = free.copy(heightDp = free.heightDp - reserve.value)
     val outline = layers?.run { outlinesBySymbol[selection?.building] }.takeIf { isCovered }
     val last = remember { ShownCamera() }
     val scale = rememberAnimatorScale()
     val pick =
         remember(selection?.building, outline != null) {
-            pickMove(from = last.startOr(uncovered), outline = outline, free = free, scale = scale, limits = limits)
+            pickMove(from = last.startOr(uncovered), outline = outline, free = fit, scale = scale, limits = limits)
         }
     motion.RecordPick(pick)
     val card = rememberCardMove(building = selection?.building, pick = pick)
@@ -171,7 +186,7 @@ internal fun rememberMapSceneState(
     val inset = sheetOrBarInset(isAbove = above != null, top = topInset, bottom = bottomInset)
     return MapSceneState(
         scene = scene,
-        shown = move?.let { SceneCamera(it, inset) },
+        shown = move?.let { SceneCamera(move = it, inset = inset, landing = fit) },
         limits = limits,
         cover = mapCover(isCovered, hasControls = free.hasRoomForControls),
         choices = choices,
@@ -186,8 +201,9 @@ internal fun rememberMapSceneState(
  *   na wybór, dopóki osoba nie ruszy mapy; poza tym przelot przycisków ([byControl]) do widoku zapisanego, na
  *   zaznaczonym wejściu albo startowego
  * @property inset zasłonięte krawędzie mapy: dół zasłonięty arkuszem V2, gdy [move] stawia budynek nad arkuszem
+ * @property landing wolna część mapy, w której staje widok po wyborze terenu
  */
-internal data class SceneCamera(val move: CameraTransition, val inset: MapInset = MapInset())
+internal data class SceneCamera(val move: CameraTransition, val inset: MapInset, val landing: FreeMap)
 
 private fun sheetOrBarInset(isAbove: Boolean, top: Double, bottom: Double): MapInset =
     if (isAbove) MapInset(bottom = bottom) else MapInset(top = top)
@@ -234,6 +250,15 @@ internal fun rememberCardMove(building: String?, pick: CameraTransition?): CardM
     return CardMove(move = moved?.byControl() ?: pick, keep = { moved = it })
 }
 
+/**
+ * Wysokość napisu o zmianie terenu [notice] z chwili wyboru budynku [building]. Zostaje do wyboru innego budynku,
+ * więc zgaszenie napisu nie zmienia ruchu ani dopełnienia kamery.
+ *
+ * Wymagania: US1.8, US2.8, NFR-53
+ */
+@Composable
+internal fun rememberNoticeReserve(building: String?, notice: Dp): Dp = remember(building) { notice }
+
 /** Ruch mapy nad arkuszem V2 [move] i zapis widoku po ruchu osoby [keep]. */
 internal data class CardMove(val move: CameraTransition?, val keep: (MapCamera) -> Unit)
 
@@ -266,7 +291,8 @@ private fun pickMove(
 ): CameraTransition? {
     if (outline == null || from == null) return null
     val move = cameraTransition(from = from, outline = outline, free = free, animationScale = scale)
-    return limits?.let { move.copy(camera = it.clamp(move.camera)) } ?: move
+    val clamped = limits?.clamp(move.camera, viewWidthDp = free.widthDp, viewHeightDp = free.heightDp)
+    return clamped?.let { move.copy(camera = it) } ?: move
 }
 
 @Composable

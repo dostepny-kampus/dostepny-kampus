@@ -7,6 +7,8 @@ package io.github.dostepnykampus.barrier.submission.web;
 
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.ReviewDecision;
+import io.github.dostepnykampus.barrier.submission.StoredPhotos;
+import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionService;
 import io.github.dostepnykampus.shared.error.ConflictingState;
@@ -23,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Weryfikacja zgłoszeń: wzięcie zgłoszenia do weryfikacji i decyzja Weryfikatora.
  * Własnego zgłoszenia Weryfikator nie bierze ani nie rozstrzyga.
  *
- * <p>Wymagania: US10, US10.4, BR-4, BR-11, BR-3, BR-16</p>
+ * <p>Wymagania: US10, US10.4, BR-4, BR-11, BR-3, BR-16, BR-7, BR-8</p>
  *
  * @since 0.1.0
  */
@@ -39,17 +41,23 @@ public final class ReviewController {
     /** Odczyt zgłoszeń. */
     private final SubmissionReading finder;
 
-    ReviewController(final SubmissionService service, final SubmissionReading finder) {
+    /** Kontrola kompletu zdjęć przed wzięciem i decyzją. */
+    private final StoredPhotos photos;
+
+    ReviewController(
+        final SubmissionService service, final SubmissionReading finder, final StoredPhotos photos
+    ) {
         this.service = service;
         this.finder = finder;
+        this.photos = photos;
     }
 
     /**
      * Bierze zgłoszenie „wysłane” do weryfikacji; wzięte już przez tego Weryfikatora
      * zostaje bez zmiany. Własne zgłoszenie daje 403, wzięte przez innego
-     * Weryfikatora albo rozstrzygnięte 409.
+     * Weryfikatora, rozstrzygnięte albo bez wszystkich zdjęć w magazynie 409.
      *
-     * <p>Wymagania: US10.4, BR-4, BR-11</p>
+     * <p>Wymagania: US10.4, BR-4, BR-11, BR-7</p>
      *
      * @param id Identyfikator zgłoszenia
      * @param account Zalogowany Weryfikator
@@ -60,15 +68,17 @@ public final class ReviewController {
         @PathVariable("submissionId") final UUID id, final Principal account
     ) {
         this.checkNotOwn(id, account);
+        this.checkPhotos(id);
         return ReviewController.saved(this.service.claim(id, account.getName()));
     }
 
     /**
      * Przyjmuje albo odrzuca zgłoszenie wzięte przez Weryfikatora. Własne zgłoszenie
      * i wzięte przez innego Weryfikatora albo przez nikogo dają 403, inna wersja
-     * niż aktualna albo status po rozstrzygnięciu 409 z wersją serwera.
+     * niż aktualna, status po rozstrzygnięciu albo brak zdjęcia w magazynie 409 z wersją
+     * serwera.
      *
-     * <p>Wymagania: US10, US10.3, BR-4, BR-11, BR-3, BR-14, BR-16</p>
+     * <p>Wymagania: US10, US10.3, BR-4, BR-11, BR-3, BR-14, BR-16, BR-7</p>
      *
      * @param id Identyfikator zgłoszenia
      * @param body Decyzja według schematu ReviewDecision
@@ -84,6 +94,7 @@ public final class ReviewController {
         if (!this.finder.claimedBy(id, account.getName())) {
             throw new ForbiddenChange("Zgłoszenie nie jest wzięte przez tego Weryfikatora");
         }
+        this.checkPhotos(id);
         final ReviewDecision decision = body.toDecision(id, account.getName());
         decision.admit(this.finder.find(id).orElseThrow().content().kind());
         return ReviewController.saved(this.service.decide(decision));
@@ -95,6 +106,16 @@ public final class ReviewController {
         }
         if (!this.finder.foreign(id, account.getName())) {
             throw new ForbiddenChange("Własnego zgłoszenia nie weryfikuje jego autor");
+        }
+    }
+
+    private void checkPhotos(final UUID id) {
+        final Submission current = this.finder.find(id).orElseThrow();
+        if (!this.photos.complete(current)) {
+            throw new ConflictingState(
+                "Serwer nie ma jeszcze wszystkich zdjęć zgłoszenia",
+                "serverSubmission", new SubmissionResponse(current)
+            );
         }
     }
 

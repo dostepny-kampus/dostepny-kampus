@@ -1,0 +1,30 @@
+@startsalt
+' V1 Mapa kampusu, arkusz „Legenda” spod „ⓘ” przy widocznym planie (US1.4, NFR-21, NFR-37):
+' znaki mapy i pozycje planu z napisami, na końcu źródła danych.
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_mapy("Pokaż listę")
+$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$przycisk("Kampus główny ▾")
+$mapa("plan parteru A-1 nad arkuszem legendy", "", "info")
+$ramka()
+{ <b>Legenda</b> | [Zamknij] }
+$dostepne() wejście
+$niedostepne() wejście
+$brak_danych() wejście
+$blokada() bariera z uciążliwością
+<i>[kolor]</i> sala
+<i>[kolor]</i> korytarz
+<i>[kolor]</i> klatka schodowa
+<i>[znak]</i> winda
+<i>[znak]</i> toaleta dostosowana
+(?) zgłoszenie bez piętra
+<b>Źródła danych</b>
+© OpenStreetMap contributors, ODbL
+Źródło: Politechnika Wrocławska
+Przewiń w dół ↓
+}
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

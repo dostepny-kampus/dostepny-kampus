@@ -6,24 +6,29 @@
 package io.github.dostepnykampus.inspection.web;
 
 import io.github.dostepnykampus.inspection.application.MarkerService;
+import io.github.dostepnykampus.inspection.json.ReadOperation;
+import io.github.dostepnykampus.inspection.json.SyncOperationJson;
+import io.github.dostepnykampus.inspection.json.SyncOperationReader;
+import io.github.dostepnykampus.inspection.json.SyncPushRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Wysyłka zmian z telefonu: serwer zapisuje znaczniki piętra obejrzanego, a pozostałe
+ * Wysyłka zmian z telefonu: serwer zapisuje i cofa znaczniki piętra obejrzanego, a pozostałe
  * rodzaje zmian odrzuca jako jeszcze nieobsługiwane.
  *
  * <p>TODO(#2139): przyjmować operacje CREATE_SUBMISSION i UPDATE_SUBMISSION.</p>
  *
- * <p>TODO(#2141): przyjmować operację REVOKE_INSPECTION_MARKER.</p>
- *
- * <p>Wymagania: US15.1, US15.3, BR-9, BR-20</p>
+ * <p>Wymagania: US15.1, US15.2, US15.3, BR-9, BR-20</p>
  *
  * @since 0.1.0
  */
@@ -35,46 +40,109 @@ public final class SyncPushController {
      */
     private final MarkerService service;
 
-    SyncPushController(final MarkerService service) {
+    /**
+     * Odczyt każdej operacji osobno.
+     */
+    private final SyncOperationReader reader;
+
+    SyncPushController(final MarkerService service, final SyncOperationReader reader) {
         this.service = service;
+        this.reader = reader;
     }
 
     /**
-     * Zapisuje znaczniki z paczki w jednej transakcji; wynik każdej operacji jest osobny, a
-     * znacznik o zapisanym już identyfikatorze nie powstaje drugi raz. Błąd w ciele którejkolwiek
-     * operacji daje 400 przed zapisem.
+     * Zapisuje znaczniki z paczki w jednej transakcji, raz na identyfikator; wynik każdej
+     * operacji jest osobny, a błąd danych jednej daje jej REJECTED 400. Cofnięcia idą po
+     * zapisach: własny znacznik, także powtórnie, jest cofnięty, cudzy albo nieistniejący
+     * odrzucony. Znacznik od konta bez roli Zbierającego dostaje 403. 400 dla całej paczki
+     * daje tylko zła liczba operacji albo brak clientOperationId.
      *
-     * <p>Wymagania: US15.1, US15.3, BR-9, BR-20</p>
+     * <p>Wymagania: US15.1, US15.3, BR-9, BR-20, US9.2</p>
      *
      * @param body Paczka według schematu z żądania
      * @param account Zalogowane konto; jego nazwa to identyfikator z tokenu
+     * @param request Bieżące żądanie HTTP; z niego pochodzi rola konta
      * @return Wyniki operacji w kolejności żądania
      */
     @PostMapping("/sync/push")
-    SyncPushResponse push(@RequestBody final SyncPushRequest body, final Principal account) {
+    SyncPushResponse push(
+        @RequestBody final SyncPushRequest body, final Principal account,
+        final HttpServletRequest request
+    ) {
         final String author = account.getName();
-        final List<SyncOperationJson> operations = body.checked();
-        operations.forEach(operation -> operation.check(author));
+        final boolean collector = request.isUserInRole("COLLECTOR");
+        final List<ReadOperation> read = body.checked().stream()
+            .map(node -> this.reader.read(node, author)).toList();
+        final List<SyncOperationJson> operations = read.stream()
+            .flatMap(SyncPushController::valid).toList();
         final Set<UUID> unknown = this.service.place(
-            operations.stream().filter(SyncOperationJson::placesMarker)
+            operations.stream().filter(operation -> collector && operation.placesMarker())
                 .map(operation -> operation.toMarker(author)).toList()
         );
+        final Set<UUID> missing = this.service.revoke(
+            operations.stream().filter(SyncOperationJson::revokesMarker)
+                .map(SyncOperationJson::revoked).toList(),
+            author
+        );
         return new SyncPushResponse(
-            operations.stream()
-                .map(operation -> SyncPushController.result(operation, author, unknown)).toList()
+            read.stream().map(
+                operation -> switch (operation) {
+                    case ReadOperation.Broken broken -> SyncResultResponse.rejected(
+                        broken.id(), HttpStatus.BAD_REQUEST, broken.detail()
+                    );
+                    case ReadOperation.Valid valid -> SyncPushController.allowed(
+                        valid.operation(), collector
+                    ).orElseGet(
+                        () -> SyncPushController.result(valid.operation(), author, unknown, missing)
+                    );
+                    case null -> throw new IllegalStateException("Brak odczytanej operacji");
+                }
+            ).toList()
         );
     }
 
+    private static Stream<SyncOperationJson> valid(final ReadOperation operation) {
+        Stream<SyncOperationJson> result = Stream.empty();
+        if (operation instanceof ReadOperation.Valid valid) {
+            result = Stream.of(valid.operation());
+        }
+        return result;
+    }
+
+    private static Optional<SyncResultResponse> allowed(
+        final SyncOperationJson operation, final boolean collector
+    ) {
+        Optional<SyncResultResponse> result = Optional.empty();
+        if (operation.placesMarker() && !collector) {
+            result = Optional.of(
+                SyncResultResponse.rejected(
+                    operation.operation(), HttpStatus.FORBIDDEN,
+                    "Znacznik obejrzanego wymaga roli Zbierającego"
+                )
+            );
+        }
+        return result;
+    }
+
     private static SyncResultResponse result(
-        final SyncOperationJson operation, final String author, final Set<UUID> unknown
+        final SyncOperationJson operation, final String author, final Set<UUID> unknown,
+        final Set<UUID> missing
     ) {
         final UUID id = operation.operation();
         SyncResultResponse result = SyncResultResponse.rejected(
             id, HttpStatus.NOT_IMPLEMENTED, "Serwer nie przyjmuje jeszcze tej zmiany"
         );
         if (operation.placesMarker() && unknown.contains(operation.toMarker(author).id())) {
-            result = SyncResultResponse.rejected(id, HttpStatus.BAD_REQUEST, "Nieznany budynek");
+            result = SyncResultResponse.rejected(
+                id, HttpStatus.BAD_REQUEST, "Nieznany budynek albo piętro"
+            );
         } else if (operation.placesMarker()) {
+            result = SyncResultResponse.applied(id);
+        } else if (operation.revokesMarker() && missing.contains(operation.revoked())) {
+            result = SyncResultResponse.rejected(
+                id, HttpStatus.NOT_FOUND, "Nie ma Twojego znacznika o tym identyfikatorze"
+            );
+        } else if (operation.revokesMarker()) {
             result = SyncResultResponse.applied(id);
         }
         return result;

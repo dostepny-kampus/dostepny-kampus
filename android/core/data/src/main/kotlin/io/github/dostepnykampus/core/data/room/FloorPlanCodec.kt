@@ -15,6 +15,10 @@ import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.room.Room
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.room.RoomList
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.serializer
+
+private val LIFT_FLOORS = ListSerializer(String.serializer())
 
 /** Wiersz `floor_plans` z piętra [floor] i jego planu z serwera. Wymagania: US16.1, NFR-10 */
 internal fun RoomList.toPlanEntity(building: String, floor: Floor, syncedAt: Long): FloorPlanEntity =
@@ -41,6 +45,8 @@ internal fun Room.toEntity(building: String, floor: String): FloorRoomEntity =
         labelLongitude = labelPoint.longitude,
         labelLatitude = labelPoint.latitude,
         isLabelled = isLabelled,
+        liftId = liftId,
+        liftFloorsJson = liftFloors.takeIf { it.isNotEmpty() }?.let { encodeCache(LIFT_FLOORS, it) },
     )
 
 /** Plan piętra z kopii; `null` dla zepsutego GeoJSON albo nieznanej grupy funkcji. Wymagania: US16.1, NFR-10 */
@@ -59,6 +65,8 @@ internal fun FloorPlanEntity.toRoomList(rooms: List<FloorRoomEntity>): RoomList?
                         geometry = decodeCache(GeoAreaJson, row.geometryJson),
                         labelPoint = GeoPoint(longitude = row.labelLongitude, latitude = row.labelLatitude),
                         isLabelled = row.isLabelled,
+                        liftId = row.liftId,
+                        liftFloors = row.liftFloorsJson?.let { decodeCache(LIFT_FLOORS, it) }.orEmpty(),
                     )
                 },
         )

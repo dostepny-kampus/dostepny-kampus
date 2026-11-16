@@ -26,7 +26,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Serwer z domyślnym dekoderem ocenia token z prawdziwego Keycloaka
- * (ADR-0003): podpis i wystawcę realmu oraz role z
+ * (ADR-0003): podpis, wystawcę realmu, odbiorcę serwera w {@code aud} oraz role z
  * {@code realm_access.roles}.
  *
  * <p>Ma własny kontekst bez tożsamości testowej, bo sprawdza drogę używaną
@@ -76,17 +76,19 @@ final class KeycloakTokenIT {
                 KeycloakTokenIT.token(
                     client, mapper, realm.replace("dostepny-kampus", "master"), "admin-cli",
                     KeycloakTestConfiguration.ADMIN
-                )
+                ),
+                KeycloakTokenIT.token(client, mapper, realm, "admin-cli", "zbierajacy.test")
             );
             final List<Integer> statuses = new ArrayList<>(tokens.size());
             for (final String token : tokens) {
                 statuses.add(KeycloakTokenIT.edit(client, operation, token));
             }
             MatcherAssert.assertThat(
-                "Token Zbierającego nie przechodzi, inna rola nie daje 403 albo obcy realm 401",
+                "Zbierający nie przechodzi, inna rola nie ma 403 albo obcy token nie ma 401",
                 statuses,
                 Matchers.contains(
-                    Matchers.not(Matchers.oneOf(401, 403)), Matchers.is(403), Matchers.is(401)
+                    Matchers.not(Matchers.oneOf(401, 403)), Matchers.is(403), Matchers.is(401),
+                    Matchers.is(401)
                 )
             );
         }

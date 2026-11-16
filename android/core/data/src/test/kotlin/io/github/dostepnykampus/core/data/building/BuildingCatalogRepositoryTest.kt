@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.building
 
+import io.github.dostepnykampus.core.data.CapturedLogs
 import io.github.dostepnykampus.core.data.di.DataModule
 import io.github.dostepnykampus.core.model.building.AssessmentSource.WALKTHROUGH
 import io.github.dostepnykampus.core.model.building.EntranceAssessment
@@ -20,6 +21,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.time.LocalDate
@@ -51,6 +53,16 @@ class BuildingCatalogRepositoryTest {
     fun keepsVisitorEntrancesOnly() {
         val types = runBlocking { repository.catalog() }.entrances.map { it.type }
         assertEquals(listOf("main", "service", "staircase", "yes"), types, "typy wejść w kolejności")
+    }
+
+    @Test
+    fun logsSourceAndCountOfCatalog() {
+        val lines = CapturedLogs.capture { runBlocking { repository.catalog() } }
+
+        assertTrue(
+            lines.single().startsWith("Katalog budynków: plik, 5 budynków, "),
+            "linia logu ze źródłem i liczbą budynków: $lines",
+        )
     }
 
     @Test

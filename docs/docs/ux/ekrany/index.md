@@ -18,19 +18,21 @@ Wymagania: [V1 Mapa kampusu](../wymagania-ekranow.md#v1-mapa-kampusu).
 
 ### V1: mapa ze znakami barier
 
-`m-v1-mapa` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-stan-zwyky)
+`m-v1-mapa` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-stan-zwyky) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.6
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Mapa kampusu: pole „Wpisz symbol budynku, np. C-13”, przełącznik Mapa i Lista budynków, mapa z budynkami Politechniki i znakami barier, przycisk Legenda, strzałki przesuwania mapy w krzyżu, plus i minus, podpis OpenStreetMap, przycisk informacji i pasek dolny](obrazy/m-v1-mapa-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-jasny.webp) | [![Ta sama mapa w motywie ciemnym: grafitowa mapa nocna, jasne kontury budynków i białe znaki barier](obrazy/m-v1-mapa-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-ciemny.webp) | [![Ta sama mapa przy czcionce 200%: pole symbolu w dwóch wierszach, przełącznik Mapa i Lista, mapa jak w wariancie jasnym z większymi napisami budynków, podpis „© OpenStreetMap”](obrazy/m-v1-mapa-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-jasny-200.webp) |
+| [![Mapa kampusu: pole „Wpisz symbol budynku, np. C-13”, przełącznik Mapa i Lista budynków, przycisk terenu „Kampus główny” w lewym górnym rogu nad przyciskiem Legenda, mapa z budynkami Politechniki i znakami barier, strzałki przesuwania mapy w krzyżu, plus i minus, podpis OpenStreetMap, przycisk informacji i pasek dolny](obrazy/m-v1-mapa-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-jasny.webp) | [![Ta sama mapa z przyciskiem terenu w motywie ciemnym](obrazy/m-v1-mapa-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-ciemny.webp) | [![Ta sama mapa przy czcionce 200%: przycisk terenu w osobnym wierszu, Legenda i przyciski mapy pod nim](obrazy/m-v1-mapa-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-jasny-200.webp) |
 
 ### V1: lista budynków
 
-`m-v1-mapa-lista` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-lista-budynkow)
+`m-v1-mapa-lista` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-lista-budynkow) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.8, NFR-19
+
+Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista ma wszystkie budynki.
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Lista budynków wybrana przełącznikiem: każdy budynek to jedna karta z symbolem, nazwą i barierami, na przykład A-1 Gmach Główny z barierami Blokada, Tylko z pomocą i Utrudnienie, albo napis Brak zgłoszonych barier](obrazy/m-v1-mapa-lista-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-jasny.webp) | [![Ta sama lista budynków w motywie ciemnym](obrazy/m-v1-mapa-lista-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-ciemny.webp) | [![Lista budynków przy czcionce 200%, od której zaczyna się V1 przy dużej czcionce: karty na całą szerokość, bariery w kilku wierszach pod nazwą budynku](obrazy/m-v1-mapa-lista-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-jasny-200.webp) |
+| [![Lista budynków z nagłówkami terenów: „Kampus główny · 78”, „Wittigowo · 9”, „Długa · 4”, „T-9 Atol · 1”, „Bartoszowice · 3”; pod każdym nagłówkiem karty budynków](obrazy/m-v1-mapa-lista-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-jasny.webp) | [![Ta sama lista z nagłówkami terenów w motywie ciemnym](obrazy/m-v1-mapa-lista-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-ciemny.webp) | [![Ta sama lista z nagłówkami terenów przy czcionce 200%](obrazy/m-v1-mapa-lista-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-jasny-200.webp) |
 
 ### V1: wyszukiwanie `c13`
 
@@ -48,14 +50,6 @@ Wymagania: [V1 Mapa kampusu](../wymagania-ekranow.md#v1-mapa-kampusu).
 | --- | --- | --- |
 | [![Brak wyniku: komunikat „Nie znaleźliśmy budynku »C-31«.”, podpowiedź, by sprawdzić symbol albo wybrać budynek z listy, i przycisk Lista budynków nad mapą](obrazy/m-v1-mapa-pusty-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pusty-jasny.webp) | [![Ten sam komunikat o braku wyniku w motywie ciemnym](obrazy/m-v1-mapa-pusty-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pusty-ciemny.webp) | [![Ten sam komunikat przy czcionce 200%: tekst w kilku wierszach, przycisk Lista budynków pod nim, mapa niżej](obrazy/m-v1-mapa-pusty-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pusty-jasny-200.webp) |
 
-### V1: mała karta budynku A-1 nad mapą {#v1-mala-karta}
-
-`m-v1-mapa-budynek`. Po dotknięciu budynku mapa zostaje nad kartą o wysokości treści. „Zamknij” i „Wstecz” wracają do mapy bez zaznaczenia. Przy czcionce 200% opis otwiera się od razu na pełnym ekranie.
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Po dotknięciu budynku: u góry mapa z wyróżnionym konturem A-1 i jego wejściami, przygaszonymi sąsiednimi budynkami z podpisami oraz strzałkami przesuwania, plusem i minusem, niżej mała karta z uchwytem, symbolem A-1, nazwą Gmach Główny, wierszem Wejście dostępne i przyciskami Sprawdź, którędy wejść oraz Zamknij, na dole pasek dolny](obrazy/m-v1-mapa-budynek-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-budynek-jasny.webp) | [![Ta sama mała karta w motywie ciemnym nad nocną mapą](obrazy/m-v1-mapa-budynek-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-budynek-ciemny.webp) | [![Opis budynku A-1 przy czcionce 200% od razu na cały ekran, bez mapy: nazwa, wiersz Wejście dostępne, przyciski Sprawdź, którędy wejść i Pokaż budynek na mapie, potem chipy, wejścia, bariery, winda i toaleta oraz piętra](obrazy/m-v1-mapa-budynek-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-budynek-jasny-200.webp) |
-
 ### V1: arkusz bariery po dotknięciu znaku
 
 `m-v1-mapa-bariera` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-bariera-na-mapie)
@@ -70,7 +64,55 @@ Wymagania: [V1 Mapa kampusu](../wymagania-ekranow.md#v1-mapa-kampusu).
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Znaleziona sala: w polu A-1 329, nad mapą „Piętro:” z wyborem Piwnica, Parter, 1, 2, 3 i zaznaczonym 2, plan piętra z oznaczoną salą 329 i piktogramami z podpisami Toaleta i Winda, a w arkuszu cztery kroki: Wejście dostosowane, parter, Winda przy klatkach C i D, 2 piętro, Sala 329 przy klatkach A i B, ok. 85 m od windy, i przycisk Pokaż opis budynku](obrazy/m-v1-mapa-sala-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-jasny.webp) | [![Ta sama sala w motywie ciemnym z ciemnym planem piętra](obrazy/m-v1-mapa-sala-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-ciemny.webp) | [![Kroki do sali przy czcionce 200% na cały ekran: u góry tylko Wstecz, potem Sala 329, cztery kroki oraz przyciski Pokaż opis budynku i Pokaż na mapie](obrazy/m-v1-mapa-sala-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-jasny-200.webp) |
+| [![Znaleziona sala: w polu A-1 329, plan 2 piętra A-1, po prawej kolumna Piętro z zaznaczonym 2, na planie sala 329 z numerem kroku 4 i winda z numerem kroku 2, a w arkuszu cztery kroki: Wejście dostosowane, parter, Winda przy klatkach C i D, 2 piętro, Sala 329 przy klatkach A i B, ok. 85 m od windy, i przycisk Pokaż opis budynku](obrazy/m-v1-mapa-sala-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-jasny.webp) | [![Ta sama sala w motywie ciemnym z ciemnym planem piętra](obrazy/m-v1-mapa-sala-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-ciemny.webp) | [![Kroki do sali przy czcionce 200% na cały ekran: u góry tylko Wstecz, potem Sala 329, cztery kroki oraz przyciski Pokaż opis budynku i Pokaż na mapie](obrazy/m-v1-mapa-sala-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-jasny-200.webp) |
+
+### V1: plan piętra
+
+`m-v1-mapa-plan` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-plan-pietra) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.1, NFR-40
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Plan parteru A-1 po przybliżeniu: sale, korytarze, klatki schodowe w kreski i toalety w kolorach grup, znaki windy i toalety dostosowanej, sąsiednie budynki przygaszone, po prawej pod przyciskami mapy kolumna Piętro z piętrami od 3 do -1 i zaznaczonym 0, na dole podpis Źródło: Politechnika Wrocławska](obrazy/m-v1-mapa-plan-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-jasny.webp) | [![Ten sam plan parteru w motywie ciemnym: te same grupy kolorów, przyciemnione](obrazy/m-v1-mapa-plan-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-ciemny.webp) | [![Ten sam plan przy czcionce 200%: kolumna pięter przewija się, zaznaczone piętro jest widoczne](obrazy/m-v1-mapa-plan-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-jasny-200.webp) |
+
+### V1: budynek bez planu
+
+`m-v1-mapa-plan-podstawowy` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-budynek-bez-planu) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.2, BR-G1
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Przybliżony budynek podstawowy A-4: nad mapą zdanie Nie mamy planu pięter tego budynku, budynek zalany bez planu i bez kolumny pięter](obrazy/m-v1-mapa-plan-podstawowy-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-podstawowy-jasny.webp) | [![To samo zdanie i budynek bez planu w motywie ciemnym](obrazy/m-v1-mapa-plan-podstawowy-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-podstawowy-ciemny.webp) | [![To samo zdanie przy czcionce 200% w dwóch wierszach, przyciski mapy schodzą pod nie](obrazy/m-v1-mapa-plan-podstawowy-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-podstawowy-jasny-200.webp) |
+
+### V1: winda na planie
+
+`m-v1-mapa-plan-winda` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-winda-na-planie) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.1, US18.2
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Plan 2 piętra A-1 przesunięty do windy, pod nim arkusz: A-1, Winda przy klatkach C i D, przycisk Zamknij i zdanie Jedzie na: piwnica, parter, 1, 2 (tutaj jesteś) i 3 piętro](obrazy/m-v1-mapa-plan-winda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-jasny.webp) | [![Ten sam arkusz windy w motywie ciemnym](obrazy/m-v1-mapa-plan-winda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-ciemny.webp) | [![Arkusz windy przy czcionce 200% na cały ekran: u góry Wstecz, niżej Winda, piętra i przycisk Pokaż na mapie](obrazy/m-v1-mapa-plan-winda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-jasny-200.webp) |
+
+### V1: legenda przy planie
+
+`m-v1-mapa-plan-legenda` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-legenda-przy-planie) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.1, US2.1
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Legenda otwarta nad planem parteru, przewinięta do barier: Utrudnienie, Tylko z pomocą, Blokada, Bariera bez podanego piętra ze znakiem zapytania, niżej początek części Plan piętra z pozycją Sala; kolumna pięter chowa się na czas legendy](obrazy/m-v1-mapa-plan-legenda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-jasny.webp) | [![Ta sama legenda przy planie w motywie ciemnym](obrazy/m-v1-mapa-plan-legenda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-ciemny.webp) | [![Ta sama legenda przy czcionce 200%: pozycje w kilku wierszach, legenda przewija się](obrazy/m-v1-mapa-plan-legenda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-jasny-200.webp) |
+
+### V1: bariery na planie
+
+`m-v1-mapa-plan-bariery` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-bariery-na-planie) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.1, BR-14, NFR-18
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Plan 2 piętra A-1: znak bariery Tylko z pomocą z tego piętra oraz znak bariery bez podanego piętra ze znakiem zapytania w kółku; bariery parteru nie widać](obrazy/m-v1-mapa-plan-bariery-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-bariery-jasny.webp) | [![Te same bariery na planie w motywie ciemnym](obrazy/m-v1-mapa-plan-bariery-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-bariery-ciemny.webp) | [![Te same bariery na planie przy czcionce 200%](obrazy/m-v1-mapa-plan-bariery-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-bariery-jasny-200.webp) |
+
+### V1: numery sal na planie
+
+`m-v1-mapa-plan-numery` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.1, NFR-16
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Plan 2 piętra A-1 bardzo blisko przy sali 329: jeden numer na grupę pomieszczeń, bez numerów małych pomieszczeń](obrazy/m-v1-mapa-plan-numery-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-numery-jasny.webp) | [![Te same numery sal w motywie ciemnym](obrazy/m-v1-mapa-plan-numery-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-numery-ciemny.webp) | [![Te same numery sal przy czcionce 200%](obrazy/m-v1-mapa-plan-numery-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-numery-jasny-200.webp) |
 
 ### V1: legenda
 
@@ -104,14 +146,6 @@ Wymagania: [V1 Mapa kampusu](../wymagania-ekranow.md#v1-mapa-kampusu).
 | --- | --- | --- |
 | [![Pierwsze otwarcie bez internetu: pole symbolu, przełącznik Mapa i Lista budynków, pod nim pasek „Bez internetu” bez daty, mapa bez mapy ulic i bez znaków barier, tylko kontury budynków z symbolami](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny.webp) | [![Ta sama mapa przy pierwszym otwarciu w motywie ciemnym](obrazy/m-v1-mapa-pierwsze-otwarcie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-ciemny.webp) | [![Ta sama mapa przy pierwszym otwarciu przy czcionce 200%: pole symbolu w dwóch wierszach, przełącznik Mapa i Lista, pasek Bez internetu](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny-200.webp) |
 
-### V1: przycisk terenu
-
-`m-v1-mapa-teren` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.6
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Mapa kampusu z przyciskiem terenu „Kampus główny” w lewym górnym rogu, nad przyciskiem Legenda; obok strzałki przesuwania mapy, plus i minus](obrazy/m-v1-mapa-teren-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-jasny.webp) | [![Ta sama mapa z przyciskiem terenu w motywie ciemnym](obrazy/m-v1-mapa-teren-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-ciemny.webp) | [![Ta sama mapa przy czcionce 200%: przycisk terenu w osobnym wierszu, Legenda i przyciski mapy pod nim](obrazy/m-v1-mapa-teren-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-jasny-200.webp) |
-
 ### V1: panel „Teren na mapie”
 
 `m-v1-mapa-teren-panel` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.7
@@ -142,17 +176,7 @@ Wymagania: [V1 Mapa kampusu](../wymagania-ekranow.md#v1-mapa-kampusu).
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Mapa terenu Wittigowo po wybraniu budynku T-15: przycisk terenu „Wittigowo”, budynki T-15, T-16, T-17, T-22, P-20, P-22 i P-23, nad podpisem mapy napis „Pokazuję teren: Wittigowo”](obrazy/m-v1-mapa-teren-zmiana-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-zmiana-jasny.webp) | [![Ta sama mapa terenu Wittigowo w motywie ciemnym](obrazy/m-v1-mapa-teren-zmiana-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-zmiana-ciemny.webp) | [![Ta sama mapa terenu Wittigowo przy czcionce 200%: napis „Pokazuję teren: Wittigowo” w dwóch wierszach](obrazy/m-v1-mapa-teren-zmiana-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-zmiana-jasny-200.webp) |
-
-### V1: lista budynków według terenów
-
-`m-v1-mapa-teren-lista` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.8, NFR-19
-
-Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista ma wszystkie budynki.
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Lista budynków z nagłówkami terenów: „Kampus główny · 78”, „Wittigowo · 9”, „Długa · 4”, „T-9 Atol · 1”, „Bartoszowice · 3”; pod każdym nagłówkiem karty budynków](obrazy/m-v1-mapa-teren-lista-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-lista-jasny.webp) | [![Ta sama lista z nagłówkami terenów w motywie ciemnym](obrazy/m-v1-mapa-teren-lista-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-lista-ciemny.webp) | [![Ta sama lista z nagłówkami terenów przy czcionce 200%](obrazy/m-v1-mapa-teren-lista-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-lista-jasny-200.webp) |
+| [![Mapa terenu Wittigowo po wybraniu budynku T-15: przycisk terenu „Wittigowo”, budynki T-15, T-16, T-17, T-22, P-20, P-22 i P-23, nad podpisem mapy napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód” w wyglądzie przycisków mapy](obrazy/m-v1-mapa-teren-zmiana-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-zmiana-jasny.webp) | [![Ta sama mapa terenu Wittigowo w motywie ciemnym](obrazy/m-v1-mapa-teren-zmiana-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-zmiana-ciemny.webp) | [![Ta sama mapa terenu Wittigowo przy czcionce 200%: napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód” w trzech wierszach](obrazy/m-v1-mapa-teren-zmiana-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-zmiana-jasny-200.webp) |
 
 ## V2 Karta budynku
 
@@ -166,15 +190,29 @@ Wymagania: [V2 Karta budynku](../wymagania-ekranow.md#v2-karta-budynku).
 | --- | --- | --- |
 | [![Cały opis budynku A-1 Gmach Główny po rozwinięciu małej karty, bez mapy: u góry Wstecz, nazwa, wiersz Wejście dostępne, przycisk Sprawdź, którędy wejść w treści, chipy Winda i Toaleta dostosowana, cztery wejścia z wejściem zalecanym na górze, bariery z rysunkami, grupa Winda i toaleta oraz piętra od piwnicy z rozwiniętym parterem; bez przypiętego pasa przycisków](obrazy/m-v2-karta-budynku-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-jasny.webp) | [![Ten sam opis budynku A-1 w motywie ciemnym](obrazy/m-v2-karta-budynku-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-ciemny.webp) | [![Ten sam opis budynku A-1 przy czcionce 200%, otwarty od razu na pełnym ekranie: pod nazwą i wierszem o wejściach przyciski Sprawdź, którędy wejść i Pokaż budynek na mapie, potem chipy, wejścia, bariery, winda i toaleta oraz piętra](obrazy/m-v2-karta-budynku-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-jasny-200.webp) |
 
-### V2: mała karta nad mapą
+### V2: mała karta nad mapą {#v2-mala-karta}
 
-`m-v2-karta-budynku-mala`. Ta sama karta co [V1: mała karta budynku A-1 nad mapą](#v1-mala-karta): mapa otwiera V2 jako małą kartę o wysokości treści. Nie ma na niej chipów ani listy wejść. Uchwyt, przewinięcie albo przeciągnięcie w górę otwiera pełny ekran.
+`m-v2-karta-budynku-mala`. Po dotknięciu budynku na V1 mapa otwiera V2 jako małą kartę o wysokości treści. Nie ma na niej chipów ani listy wejść. Uchwyt, przewinięcie albo przeciągnięcie w górę otwiera pełny ekran.
 
-Nad kartą zostają przyciski mapy, a zaznaczony budynek mieści się w części mapy obok nich (NFR-53).
+Nad kartą zostają przyciski mapy, a zaznaczony budynek mieści się w części mapy obok nich (NFR-53). „Zamknij” i „Wstecz” wracają do mapy bez zaznaczenia.
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
 | [![Mała karta budynku A-1 nad mapą z wyróżnionym konturem, podpisami sąsiednich budynków i przyciskami mapy: uchwyt, symbol A-1, nazwa Gmach Główny, wiersz Wejście dostępne i przyciski Sprawdź, którędy wejść oraz Zamknij](obrazy/m-v2-karta-budynku-mala-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-jasny.webp) | [![Ta sama mała karta w motywie ciemnym](obrazy/m-v2-karta-budynku-mala-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-ciemny.webp) | [![Ten sam budynek przy czcionce 200%: zamiast małej karty od razu pełny ekran bez mapy, z przyciskami Sprawdź, którędy wejść i Pokaż budynek na mapie](obrazy/m-v2-karta-budynku-mala-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-jasny-200.webp) |
+
+### V2: mała karta po zmianie terenu
+
+`m-v2-karta-budynku-mala-teren` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.8, NFR-56
+
+Budynek T-15 wybrany z wyszukiwania na terenie Kampus główny: mapa przeleciała na teren Wittigowo. Budynek mieści się w części mapy nad napisem o zmianie terenu. Napis:
+
+- stoi tuż nad małą kartą i podpisem OpenStreetMap, gdzie patrzy osoba, i nie zasłania budynku ani przycisków mapy;
+- ma wygląd przycisków mapy, więc w ciemnym motywie nie jest jasną plamą;
+- TalkBack czyta go raz, po nagłówku karty.
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Mała karta budynku T-15 Dom Studencki Hades nad mapą terenu Wittigowo: wyróżniony kontur T-15, przyciski mapy, nad podpisem OpenStreetMap napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód” w wyglądzie przycisków mapy; na karcie wiersz Brak danych o wejściach i przyciski Sprawdź, którędy wejść oraz Zamknij](obrazy/m-v2-karta-budynku-mala-teren-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-teren-jasny.webp) | [![Ta sama mała karta po zmianie terenu w motywie ciemnym: napis na ciemnym tle przycisków mapy](obrazy/m-v2-karta-budynku-mala-teren-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-teren-ciemny.webp) | Małej karty nie ma, V2 otwiera się od razu na pełnym ekranie jak w [V2: mała karta nad mapą](#v2-mala-karta). Napis czeka na mapę: pojawia się po „Pokaż budynek na mapie”. |
 
 ### V2: budynek bez planu pięter (H-4)
 

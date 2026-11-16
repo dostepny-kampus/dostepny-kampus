@@ -16,7 +16,7 @@ Nie mamy jednej wspólnej bazy. Każda osoba z zespołu uruchamia bazę u siebie
 
 ## Decyzja
 
-Wybieramy migrację Java `OsmBuildings` w module `building`.
+Wybieramy migrację Java w module `building`: powtarzalną migrację z pliku `FileMigration` z zapisem `OsmBuildings`.
 
 - Maven kopiuje plik z `data/buildings` do zasobów serwera. Plik zostaje jedynym źródłem konturów dla aplikacji i serwera.
 - Migracja jest powtarzalna. Suma CRC32 obejmuje treść pliku i wersję importu (`FORMAT`). Flyway wykonuje migrację przy pierwszym starcie oraz po zmianie sumy [2].

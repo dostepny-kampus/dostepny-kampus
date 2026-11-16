@@ -151,7 +151,8 @@ private fun AppNavigator.HiltBuildingCard(
 /**
  * V2 ze stanem [state] i czynnościami podpiętymi do nawigatora; „Zgłoś barierę przy wejściu” prowadzi do V4
  * z wybranym wejściem, a Gościa najpierw do L1. „Pokaż wejście na mapie” prowadzi do V1
- * z zaznaczonym wejściem tego budynku. „Zgłoś, że bariery nie ma” widzi tylko Zbierający i prowadzi do C7.
+ * z zaznaczonym wejściem tego budynku, a „Pokaż na planie” do V1 z planem tego piętra. „Zgłoś, że bariery nie ma”
+ * widzi tylko Zbierający i prowadzi do C7.
  * [onRetry] to „Spróbuj ponownie”.
  *
  * Wymagania: US4.6, US14.2, US3.3, US2.1, US8.4
@@ -179,6 +180,7 @@ internal fun AppNavigator.BuildingCard(
         onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = symbol)) },
         onReportRemoval = this::openRemoved.takeIf { isCollector },
         onRetry = onRetry,
+        onShowPlan = { showOnMap(MapFocus.Building(symbol, command = System.nanoTime(), floor = it)) },
     )
 }
 

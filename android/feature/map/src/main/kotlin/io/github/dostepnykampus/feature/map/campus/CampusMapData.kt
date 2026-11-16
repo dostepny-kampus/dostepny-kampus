@@ -42,7 +42,7 @@ const val OUTLINE_NUMBER = "outline"
 
 private const val LABEL_SEPARATOR = "/"
 
-private val CAMPUS_MARGIN = 50.meters
+private val CAMPUS_MARGIN = 100.meters
 
 /**
  * Dane warstw mapy V1 z katalogu budynków jako kolekcje GeoJSON w elementach JSON dla źródeł mapy, bez sieci.
@@ -62,7 +62,7 @@ private val CAMPUS_MARGIN = 50.meters
  * @property start środek pierwszego widoku: środek budynku [START_BUILDING], a bez niego
  *   środek wszystkich konturów; `null` bez budynków
  * @property bounds teren startowy mapy: prostokąt opisany na granicy terenu, na którym stoi [START_BUILDING],
- *   powiększony o 50 m z każdej strony. Bez tego budynku to pierwszy teren katalogu; `null` bez budynków
+ *   powiększony o 100 m z każdej strony. Bez tego budynku to pierwszy teren katalogu; `null` bez budynków
  * @property areas tereny PWr z katalogu, każdy z prostokątem jak [bounds]
  * @property labelPointsBySymbol punkt podpisu konturu każdego symbolu, ten sam co w [labelPoints]; symbole konturu
  *   wspólnego mają jeden punkt. Kamera bierze punkt stąd i nie liczy go drugi raz na wątku interfejsu
@@ -114,7 +114,7 @@ fun CampusMapData.boundsOf(symbol: String?): CampusBounds? =
  *
  * @property name nazwa terenu, np. „Kampus główny”
  * @property symbols symbole budynków terenu
- * @property bounds prostokąt opisany na granicy terenu, powiększony o 50 m z każdej strony; granica jest z pliku
+ * @property bounds prostokąt opisany na granicy terenu, powiększony o 100 m z każdej strony; granica jest z pliku
  *   granic terenów, a teren spoza pliku albo z budynkiem poza prostokątem granicy ma za granicę kontury budynków
  * @property boundary wielokąt granicy terenu z pliku granic terenów; `null`, gdy granicą są kontury budynków
  */

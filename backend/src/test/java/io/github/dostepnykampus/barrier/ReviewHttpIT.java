@@ -7,6 +7,9 @@ package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.AsVerifier;
 import io.github.dostepnykampus.IntegrationTest;
+import io.github.dostepnykampus.barrier.photo.PhotoStore;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
@@ -18,11 +21,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
- * Weryfikator bierze cudze zgłoszenie do weryfikacji i rozstrzyga je, ale nie własne.
+ * Weryfikator bierze cudze zgłoszenie do weryfikacji i rozstrzyga je, ale nie własne
+ * ani takie, któremu brakuje zdjęcia w magazynie.
  *
- * <p>Wymagania: US10.3, BR-4, BR-11, BR-3, BR-14, BR-16</p>
+ * <p>Wymagania: US10.3, BR-4, BR-11, BR-3, BR-14, BR-16, BR-7, BR-8</p>
  *
  * @since 0.1.0
  */
@@ -168,6 +174,43 @@ final class ReviewHttpIT {
     }
 
     @Test
+    void returnsRejectionReasonAndDuplicateInResponse(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = ReviewHttpIT.sent(context, "inne-konto");
+        final UUID earlier = UUID.fromString("0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d");
+        ReviewHttpIT.claim(context, id);
+        ReviewHttpIT.review(
+            context, id,
+            String.format(
+                "{\"decision\":\"REJECT\",\"version\":1,\"rejectionReason\":\"Duplikat\",\"duplicateOfSubmissionId\":\"%s\"}",
+                earlier
+            )
+        );
+        final JsonNode body = ReviewHttpIT.fetched(context, id);
+        MatcherAssert.assertThat(
+            "Odpowiedź odrzuconego zgłoszenia nie ma powodu i duplikatu",
+            List.of(
+                body.path("rejectionReason").asString(),
+                body.path("duplicateOfSubmissionId").asString()
+            ),
+            Matchers.contains("Duplikat", earlier.toString())
+        );
+    }
+
+    @Test
+    void omitsRejectionFieldsOfSubmissionNotRejected(final WebApplicationContext context)
+        throws Exception {
+        final JsonNode body = ReviewHttpIT.fetched(
+            context, ReviewHttpIT.sent(context, "inne-konto")
+        );
+        MatcherAssert.assertThat(
+            "Odpowiedź zgłoszenia nieodrzuconego ma pola odrzucenia",
+            List.of(body.has("rejectionReason"), body.has("duplicateOfSubmissionId")),
+            Matchers.contains(false, false)
+        );
+    }
+
+    @Test
     void refusesClaimOfOwnSubmission(final WebApplicationContext context)
         throws Exception {
         final UUID id = ReviewHttpIT.sent(context, "konto-testowe");
@@ -206,6 +249,29 @@ final class ReviewHttpIT {
         );
     }
 
+    @Test
+    void conflictsOnClaimWithoutPhoto(final WebApplicationContext context) throws Exception {
+        final UUID id = ReviewHttpIT.withoutPhoto(context, "inne-konto");
+        MatcherAssert.assertThat(
+            "Wzięcie zgłoszenia bez zdjęcia w magazynie nie dało 409 albo zmieniło status",
+            List.of(ReviewHttpIT.claim(context, id), ReviewHttpIT.status(context, id)),
+            Matchers.contains(409, "SENT")
+        );
+    }
+
+    @Test
+    void conflictsOnDecisionWithoutPhoto(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = ReviewHttpIT.sent(context, "inne-konto");
+        ReviewHttpIT.claim(context, id);
+        context.getBean(PhotoStore.class).delete(id, ReviewHttpIT.PHOTO);
+        MatcherAssert.assertThat(
+            "Decyzja o zgłoszeniu bez zdjęcia w magazynie nie dała 409 albo zmieniła status",
+            List.of(ReviewHttpIT.review(context, id), ReviewHttpIT.status(context, id)),
+            Matchers.contains(409, "IN_REVIEW")
+        );
+    }
+
     private static List<Object> refused(final WebApplicationContext context, final String body)
         throws Exception {
         final UUID id = ReviewHttpIT.sent(context, "inne-konto");
@@ -215,7 +281,23 @@ final class ReviewHttpIT {
         );
     }
 
-    private static UUID sent(final WebApplicationContext context, final String author) {
+    private static JsonNode fetched(final WebApplicationContext context, final UUID id)
+        throws Exception {
+        return context.getBean(ObjectMapper.class).readTree(
+            context.getBean(MockMvc.class).perform(
+                MockMvcRequestBuilders.get("/submissions/{id}", id).with(new AsVerifier())
+            ).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8)
+        );
+    }
+
+    private static UUID sent(final WebApplicationContext context, final String author)
+        throws IOException {
+        final UUID id = ReviewHttpIT.withoutPhoto(context, author);
+        context.getBean(PhotoStore.class).put(id, ReviewHttpIT.PHOTO, JpegCleanerTest.photo());
+        return id;
+    }
+
+    private static UUID withoutPhoto(final WebApplicationContext context, final String author) {
         final UUID id = new SampleSubmissions(context)
             .add("SENT", SampleSubmissions.quick(ReviewHttpIT.PHOTO));
         context.getBean(JdbcClient.class)

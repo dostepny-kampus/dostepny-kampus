@@ -20,7 +20,7 @@ import org.jspecify.annotations.Nullable;
  * @param decision Rodzaj decyzji: ACCEPT albo REJECT
  * @param version Wersja zgłoszenia, którą ocenił Weryfikator
  * @param rejectionReason Powód odrzucenia, wymagany przy REJECT
- * @param duplicateOf Wcześniejsze zgłoszenie przy duplikacie; jeszcze nie zapisywane
+ * @param duplicateOf Wcześniejsze zgłoszenie przy duplikacie, zapisywane przy REJECT
  * @param barrierType Typ bariery ustalony przy przyjęciu
  * @param severity Uciążliwość ustalona przy przyjęciu
  * @since 0.1.0
@@ -33,9 +33,10 @@ record ReviewRequest(
 ) {
 
     /**
-     * Przenosi ciało żądania do decyzji domeny; brak wersji, nieznany rodzaj decyzji
-     * i odrzucenie bez powodu kończą się wyjątkiem {@link InvalidSubmission}; tak samo
-     * przyjęcie z samym typem bariery albo samą uciążliwością.
+     * Przenosi ciało żądania do decyzji domeny; brak wersji, nieznany rodzaj decyzji,
+     * odrzucenie bez powodu i powód dłuższy niż 500 znaków kończą się wyjątkiem
+     * {@link InvalidSubmission}; tak samo przyjęcie z samym typem bariery albo samą
+     * uciążliwością.
      *
      * @param path Identyfikator zgłoszenia z adresu
      * @param reviewer Identyfikator konta Weryfikatora
@@ -52,8 +53,11 @@ record ReviewRequest(
             if (this.rejectionReason == null || this.rejectionReason.isBlank()) {
                 throw new InvalidSubmission("Odrzucenie wymaga powodu w polu rejectionReason");
             }
+            if (this.rejectionReason.length() > 500) {
+                throw new InvalidSubmission("Powód odrzucenia ma najwyżej 500 znaków");
+            }
             result = new ReviewDecision.Rejected(
-                path, this.version, reviewer, this.rejectionReason
+                path, this.version, reviewer, this.rejectionReason, this.duplicateOf
             );
         } else {
             throw new InvalidSubmission("Pole decision przyjmuje ACCEPT albo REJECT");

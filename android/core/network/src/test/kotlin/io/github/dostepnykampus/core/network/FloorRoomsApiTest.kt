@@ -11,19 +11,13 @@ import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.room.Room
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.room.RoomList
-import io.github.dostepnykampus.core.network.building.BuildingsApi
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
-import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.SocketPolicy
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Test
 import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import java.net.HttpURLConnection.HTTP_OK
-import java.util.concurrent.TimeUnit
 
 /**
  * Pomieszczenia piętra (`listFloorRooms`) na MockWebServer: odpowiedź bez zmian, pusty obrys, 404,
@@ -40,12 +34,13 @@ class FloorRoomsApiTest {
                 floorOutline = SQUARE_AREA,
                 rooms =
                     listOf(
-                        room(id = "1", number = "101", function = "Winda", category = RoomCategory.ELEVATOR),
+                        room(id = "1", number = "101", function = "Winda", category = RoomCategory.ELEVATOR)
+                            .copy(liftId = "w1", liftFloors = listOf("K1.C13.P0", "K1.C13.P2")),
                         room(id = "2", number = null, function = "Korytarz", category = RoomCategory.CORRIDOR),
                     ),
             )
         val (result, path) = served(json(HTTP_OK, ROOMS)) { rooms(symbol = "C-13", floorId = "K1.C13.P0") }
-        assertEquals(ApiResult.Success(expected), result, "pomieszczenia piętra bez zmian")
+        assertEquals(ApiResult.Success(expected), result, "pomieszczenia piętra i piętra windy bez zmian")
         assertEquals("/buildings/C-13/floors/K1.C13.P0/rooms", path, "adres pomieszczeń piętra")
     }
 
@@ -94,14 +89,6 @@ class FloorRoomsApiTest {
             isLabelled = number != null,
         )
 
-    private fun <T> served(response: MockResponse, call: suspend BuildingsApi.() -> T): Pair<T, String?> =
-        MockWebServer().use { server ->
-            server.enqueue(response)
-            server.start()
-            val api = BuildingsApi(http = OkHttpClient(), json = Json, baseUrl = server.url("/").toString())
-            runBlocking { api.call() } to server.takeRequest(timeout = 1, unit = TimeUnit.SECONDS)?.path
-        }
-
     private fun json(code: Int, body: String): MockResponse =
         MockResponse().setResponseCode(code).setHeader(name = "Content-Type", value = "application/json").setBody(body)
 
@@ -124,7 +111,8 @@ class FloorRoomsApiTest {
         const val ROOMS =
             """{"source":"Politechnika Wrocławska","floorOutline":$SQUARE,"rooms":[""" +
                 """{"id":"1","number":"101","function":"Winda","category":"ELEVATOR",""" +
-                """"geometry":$SQUARE,"labelPoint":$POINT,"labelled":true},""" +
+                """"geometry":$SQUARE,"labelPoint":$POINT,"labelled":true,""" +
+                """"liftId":"w1","liftFloors":["K1.C13.P0","K1.C13.P2"]},""" +
                 """{"id":"2","function":"Korytarz","category":"CORRIDOR",""" +
                 """"geometry":$SQUARE,"labelPoint":$POINT,"labelled":false}]}"""
     }

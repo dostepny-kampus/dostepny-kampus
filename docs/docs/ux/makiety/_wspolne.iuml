@@ -160,6 +160,13 @@ $podtytul
 --
 !endprocedure
 
+' Nagłówek mapy V1: tytuł i po prawej przejście między mapą a listą,
+' „Pokaż listę” albo „Pokaż mapę” (NFR-19). Przy dużej czcionce przycisk stoi pod tytułem.
+!procedure $naglowek_mapy($czynnosc)
+{ <b>Mapa kampusu</b>$dk_spacje(4) | [$czynnosc] }
+--
+!endprocedure
+
 ' ---------- Wskaźnik braku internetu ----------
 
 ' Pod nagłówkiem jedna linia „Bez internetu · dane z 12.11.2026” (decyzja 54, PW-4).

@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.building.persistence;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.flyway.autoconfigure.FlywayConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -32,11 +33,11 @@ public final class OsmMigrationConfiguration {
      * @return Powtarzalna migracja
      */
     @Bean
-    static OsmBuildings osmBuildings(
+    static FileMigration osmBuildings(
         final ObjectMapper mapper,
         @Value("classpath:data/pwr-buildings.geojson") final Resource file
     ) {
-        return new OsmBuildings(mapper, file);
+        return OsmMigrationConfiguration.buildings(mapper, file);
     }
 
     /**
@@ -46,7 +47,9 @@ public final class OsmMigrationConfiguration {
      * @return Konfiguracja rejestracji migracji
      */
     @Bean
-    static FlywayConfigurationCustomizer osmMigration(final OsmBuildings migration) {
+    static FlywayConfigurationCustomizer osmMigration(
+        @Qualifier("osmBuildings") final FileMigration migration
+    ) {
         return new OsmMigrationResolver(migration, "db/migration/__root");
     }
 
@@ -58,11 +61,11 @@ public final class OsmMigrationConfiguration {
      * @return Powtarzalna migracja
      */
     @Bean
-    static OsmAreas osmAreas(
+    static FileMigration osmAreas(
         final ObjectMapper mapper,
         @Value("classpath:data/pwr-areas.geojson") final Resource file
     ) {
-        return new OsmAreas(mapper, file);
+        return new FileMigration("tereny PWr", file, OsmAreas.FORMAT, new OsmAreas(mapper));
     }
 
     /**
@@ -72,7 +75,22 @@ public final class OsmMigrationConfiguration {
      * @return Konfiguracja rejestracji migracji
      */
     @Bean
-    static FlywayConfigurationCustomizer areasMigration(final OsmAreas migration) {
+    static FlywayConfigurationCustomizer areasMigration(
+        @Qualifier("osmAreas") final FileMigration migration
+    ) {
         return new OsmMigrationResolver(migration, "db/migration/building");
+    }
+
+    /**
+     * Import konturów i wejść z pliku OSM.
+     *
+     * @param mapper Odczyt GeoJSON
+     * @param file Plik konturów i wejść
+     * @return Powtarzalna migracja
+     */
+    static FileMigration buildings(final ObjectMapper mapper, final Resource file) {
+        return new FileMigration(
+            "budynki z OpenStreetMap", file, OsmBuildings.FORMAT, new OsmBuildings(mapper)
+        );
     }
 }

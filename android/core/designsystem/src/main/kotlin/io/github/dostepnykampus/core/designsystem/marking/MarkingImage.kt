@@ -31,6 +31,8 @@ private const val ICON_VIEWPORT = 24f
 
 private const val MARK_STROKE = 2.6f
 
+private const val OUTLINE_STROKE = 1.7f
+
 internal enum class MarkingLook(
     @param:StringRes val word: Int,
     val shape: String,
@@ -92,6 +94,24 @@ public fun markingImage(marking: EntranceMarking, sizePx: Int, shapeColor: Color
     val mark = PathParser().parsePathString(look.mark).toPath()
     return signBitmap(sizePx) {
         drawMarking(shape = shape, mark = mark, shapeColor = shapeColor, markColor = markColor)
+    }
+}
+
+/**
+ * Cichy znak oznaczenia jako obraz [sizePx] × [sizePx] dla warstw mapy: ten sam kształt i znak co
+ * [markingImage], ale pusty w środku. Wnętrze ma barwę [fillColor], a kontur kształtu i znak barwę [lineColor].
+ *
+ * Wymagania: US1.4, US2.1, NFR-21
+ */
+public fun outlinedMarkingImage(marking: EntranceMarking, sizePx: Int, lineColor: Color, fillColor: Color): Bitmap {
+    val look = marking.look()
+    val shape = PathParser().parsePathString(look.shape).toPath()
+    val mark = PathParser().parsePathString(look.mark).toPath()
+    return signBitmap(sizePx) {
+        drawMarking(shape = shape, mark = mark, shapeColor = fillColor, markColor = lineColor)
+        scale(scale = size.minDimension / ICON_VIEWPORT, pivot = Offset.Zero) {
+            drawPath(path = shape, color = lineColor, style = Stroke(width = OUTLINE_STROKE, join = StrokeJoin.Round))
+        }
     }
 }
 
