@@ -16,6 +16,7 @@ import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapArea
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import timber.log.Timber
 
 /**
  * Tereny w kolejności nagłówków listy budynków: pokazany na mapie pierwszy, pozostałe od najbliższego.
@@ -145,6 +146,7 @@ internal class MapAreas(
         }
         val area = data?.areaOf(chosen = null, symbol = selected) ?: return
         if (followed.value != selected) {
+            if (chosen.value != area.name) Timber.i("Mapa: teren %s po wyborze budynku %s", area.name, selected)
             chosen.value = area.name
             followed.value = selected
         }
@@ -160,6 +162,7 @@ internal class MapAreas(
         val campus = data ?: return null
         val area = campus.areas.firstOrNull { it.name == name }
         if (area != null) {
+            Timber.i("Mapa: teren %s wybrany przez osobę", name)
             chosen.value = name
             seen.value = name
         }

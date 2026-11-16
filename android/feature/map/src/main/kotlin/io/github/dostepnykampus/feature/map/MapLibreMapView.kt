@@ -45,9 +45,13 @@ import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MoveLimits
 import io.github.dostepnykampus.feature.map.camera.StyleArea
 import io.github.dostepnykampus.feature.map.camera.belowTop
+import io.github.dostepnykampus.feature.map.camera.endLine
 import io.github.dostepnykampus.feature.map.camera.isSameView
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.padding
+import io.github.dostepnykampus.feature.map.camera.paddingLine
+import io.github.dostepnykampus.feature.map.camera.startLine
+import io.github.dostepnykampus.feature.map.camera.stayLine
 import io.github.dostepnykampus.feature.map.camera.styleAreaOf
 import io.github.dostepnykampus.feature.map.camera.styleColors
 import io.github.dostepnykampus.feature.map.camera.toCamera
@@ -96,6 +100,7 @@ import org.maplibre.android.style.layers.PaintPropertyValue
 import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.sources.GeoJsonSource
 import org.maplibre.geojson.Feature
+import timber.log.Timber
 
 private const val LABEL_MAX_FONT_SCALE = 1.4f
 private const val TOUCH_TOLERANCE_DP = 24f
@@ -259,7 +264,9 @@ object MapLibreMapView : CampusMapView {
             MapLibre.getInstance(context)
             val tiles = EntryPointAccessors.fromApplication<MapTileHttpEntryPoint>(context.applicationContext)
             HttpRequestUtil.setOkHttpClient(tiles.mapTileHttp().calls)
-            MapView(context, northUpOptions(context, background))
+            MapView(context, northUpOptions(context, background)).apply {
+                addOnDidFailLoadingMapListener { Timber.w("Mapa: błąd stylu: %s", it) }
+            }
         }
 
     @Composable
@@ -382,16 +389,19 @@ object MapLibreMapView : CampusMapView {
             inset = next
             val padding = next.padding()
             if (running == null && !padding.contentEquals(map.cameraPosition.padding)) {
+                Timber.d(paddingLine(next))
                 map.easeCamera(CameraUpdateFactory.paddingTo(padding), PADDING_MILLIS)
             }
         }
 
         fun follow(move: CameraTransition, next: MapInset) {
             if (running == null && move.camera.isSameView(map.cameraPosition.toCamera())) {
+                Timber.d(stayLine(move.camera))
                 pad(next)
                 return
             }
             inset = next
+            Timber.d(startLine(move, next))
             val update = CameraUpdateFactory.newCameraPosition(move.camera.toPosition(inset))
             val millis = move.durationMillis.toInt()
             running = null
@@ -418,11 +428,12 @@ object MapLibreMapView : CampusMapView {
 
         /** Jeden ruch; koniec ruchu wcześniejszego, przerwanego przez nowy, niczego nie zmienia. */
         private inner class Run : MapLibreMap.CancelableCallback {
-            override fun onCancel() = settle()
+            override fun onCancel() = settle(isDone = false)
 
-            override fun onFinish() = settle()
+            override fun onFinish() = settle(isDone = true)
 
-            private fun settle() {
+            private fun settle(isDone: Boolean) {
+                Timber.d(endLine(isDone = isDone, isCurrent = running === this, at = map.cameraPosition.toCamera()))
                 if (running !== this) return
                 running = null
                 endMove()
