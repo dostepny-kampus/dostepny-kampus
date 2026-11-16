@@ -160,6 +160,7 @@ class RemovedViewModelTest {
     fun logsStorageFailureClass() =
         runTest(dispatcher) {
             val lines = mutableListOf<String>()
+            open()
             val tree =
                 object : Timber.Tree() {
                     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
@@ -168,7 +169,6 @@ class RemovedViewModelTest {
                 }
             Timber.plant(tree)
             try {
-                open()
                 viewModel.takePhoto(photo)
                 failure = IOException("brak miejsca")
                 viewModel.send()
