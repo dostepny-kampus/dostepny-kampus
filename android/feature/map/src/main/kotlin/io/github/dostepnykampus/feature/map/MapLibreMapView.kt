@@ -57,7 +57,7 @@ import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
 import io.github.dostepnykampus.feature.map.campus.selection
-import io.github.dostepnykampus.feature.map.campus.symbolsAt
+import io.github.dostepnykampus.feature.map.campus.touchedSymbols
 import io.github.dostepnykampus.feature.map.plan.planSignImages
 import io.github.dostepnykampus.feature.map.style.BARRIERS_LAYER
 import io.github.dostepnykampus.feature.map.style.BUILDINGS_LAYER
@@ -96,6 +96,7 @@ import org.maplibre.android.style.layers.LineLayer
 import org.maplibre.android.style.layers.PaintPropertyValue
 import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.sources.GeoJsonSource
+import org.maplibre.geojson.Feature
 
 private const val LABEL_MAX_FONT_SCALE = 1.4f
 private const val TOUCH_TOLERANCE_DP = 24f
@@ -154,8 +155,8 @@ object MapLibreMapView : CampusMapView {
                 ready.prefetchZoomDelta = 0
                 ready.cameraPosition = currentMove.camera.toPosition(currentInset)
                 ready.onPersonIdle { cameraIdle(it) }
-                ready.onSignOrOutlinesTouch(tolerance, onBarrier = { barrierTouch(it) }) { numbers ->
-                    currentData.symbolsAt(numbers).also { buildingsTouch(it) }.isNotEmpty()
+                ready.onSignOrOutlinesTouch(tolerance, onBarrier = { barrierTouch(it) }) { hit, near ->
+                    currentData.touchedSymbols(hit, near).also { buildingsTouch(it) }.isNotEmpty()
                 }
                 map = ready
             }
@@ -292,7 +293,7 @@ object MapLibreMapView : CampusMapView {
     private fun MapLibreMap.onSignOrOutlinesTouch(
         tolerance: Float,
         onBarrier: (String) -> Unit,
-        isTaken: (List<Int>) -> Boolean,
+        isTaken: (hit: List<Int>, near: () -> List<Int>) -> Boolean,
     ) {
         addOnMapClickListener { point ->
             val at = projection.toScreenLocation(point)
@@ -300,8 +301,10 @@ object MapLibreMapView : CampusMapView {
             val signs = queryRenderedFeatures(area, BARRIERS_LAYER)
             val barrier = signs.firstNotNullOfOrNull { it.getStringProperty(BARRIER_ID) }
             if (barrier == null) {
-                val outlines = queryRenderedFeatures(area, BUILDINGS_LAYER)
-                isTaken(outlines.mapNotNull { it.getNumberProperty(OUTLINE_NUMBER)?.toInt() })
+                val hit = queryRenderedFeatures(at, BUILDINGS_LAYER)
+                val near = { queryRenderedFeatures(area, BUILDINGS_LAYER) }
+                val number = { feature: Feature -> feature.getNumberProperty(OUTLINE_NUMBER)?.toInt() }
+                isTaken(hit.mapNotNull(number)) { near().mapNotNull(number) }
             } else {
                 onBarrier(barrier)
                 true
