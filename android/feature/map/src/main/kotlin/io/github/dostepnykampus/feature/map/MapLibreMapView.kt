@@ -37,7 +37,9 @@ import io.github.dostepnykampus.feature.map.barrier.BARRIER_ID
 import io.github.dostepnykampus.feature.map.barrier.barrierImages
 import io.github.dostepnykampus.feature.map.building.entranceCaption
 import io.github.dostepnykampus.feature.map.building.entranceImages
+import io.github.dostepnykampus.feature.map.camera.CameraController
 import io.github.dostepnykampus.feature.map.camera.CameraMotion
+import io.github.dostepnykampus.feature.map.camera.CameraPort
 import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.FlightArea
@@ -45,16 +47,9 @@ import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapTrace
-import io.github.dostepnykampus.feature.map.camera.MoveLimits
 import io.github.dostepnykampus.feature.map.camera.StyleArea
 import io.github.dostepnykampus.feature.map.camera.belowTop
-import io.github.dostepnykampus.feature.map.camera.endLine
-import io.github.dostepnykampus.feature.map.camera.isSameView
 import io.github.dostepnykampus.feature.map.camera.mapLimits
-import io.github.dostepnykampus.feature.map.camera.padding
-import io.github.dostepnykampus.feature.map.camera.paddingLine
-import io.github.dostepnykampus.feature.map.camera.startLine
-import io.github.dostepnykampus.feature.map.camera.stayLine
 import io.github.dostepnykampus.feature.map.camera.styleAreaOf
 import io.github.dostepnykampus.feature.map.camera.styleColors
 import io.github.dostepnykampus.feature.map.camera.toCamera
@@ -107,14 +102,12 @@ import timber.log.Timber
 
 private const val LABEL_MAX_FONT_SCALE = 1.4f
 private const val TOUCH_TOLERANCE_DP = 24f
-private const val PADDING_MILLIS = 300
 
 /**
  * Widok MapLibre Android bez kluczy i kont (ADR-0005); logo i podpis biblioteki zastępuje podpis ekranu. Podpis konturu
  * rośnie z czcionką najwyżej 1,4 raza, a dotknięcie do 24 dp od konturu trafia w kontur. Pobiera tylko widoczne
- * kafelki. Widok kamery zgłasza tylko po geście osoby. Każdy ruch kamery wykonuje raz; zasłonięcie dołu mapy zmienia
- * dopełnienie dopiero po końcu trwającego ruchu. Natywny widok powstaje i zwalnia pamięć raz, z ekranem; zmiana cyklu
- * życia sceny tylko zatrzymuje i wznawia mapę.
+ * kafelki. Widok kamery zgłasza tylko po geście osoby. Kamerę zmienia tylko [CameraController] (ADR-0015). Natywny
+ * widok powstaje i zwalnia pamięć raz, z ekranem; zmiana cyklu życia sceny tylko zatrzymuje i wznawia mapę.
  *
  * Wymagania: NFR-39, NFR-56
  */
@@ -190,22 +183,32 @@ object MapLibreMapView : CampusMapView {
         areas: FlightArea,
         view: View,
     ) {
-        val driver = remember(this) { this?.let { CameraDriver(map = it, areas = areas, view = view) } }
+        val map = this
+        val controller =
+            remember(map) { map?.let { CameraController(MapLibreCamera(map = it, areas = areas, view = view)) } }
         val currentInset by rememberUpdatedState(inset)
-        DisposableEffect(driver, move) {
-            driver?.follow(move, currentInset)
+        DisposableEffect(map, controller) {
+            val gesture =
+                MapLibreMap.OnCameraMoveStartedListener { reason ->
+                    if (reason == REASON_API_GESTURE) controller?.byPerson()
+                }
+            map?.addOnCameraMoveStartedListener(gesture)
+            onDispose { map?.removeOnCameraMoveStartedListener(gesture) }
+        }
+        DisposableEffect(controller, move) {
+            controller?.move(move, currentInset)
             onDispose {}
         }
-        DisposableEffect(driver, limits) {
-            driver?.limit(limits)
+        DisposableEffect(controller, limits) {
+            controller?.limit(limits)
             onDispose {}
         }
         DisposableEffect(area) {
             MapTrace.areaChange { areas.area(area) }
             onDispose {}
         }
-        DisposableEffect(driver, inset) {
-            driver?.pad(inset)
+        DisposableEffect(controller, inset) {
+            controller?.pad(inset)
             onDispose {}
         }
     }
@@ -336,19 +339,15 @@ object MapLibreMapView : CampusMapView {
     }
 
     /**
-     * Ruchy kamery mapy [map] po jednym. Ruch niesie dopełnienie z chwili startu; zmienione w trakcie czeka na jego
-     * koniec, a samo przesuwa mapę płynnie w 300 ms. Gest osoby przerywa ruch sam (MapLibre). Na czas ruchu granice
-     * kamery są zdjęte ([MoveLimits]), bo każda ich zmiana zatrzymuje ruch; przy przelocie stary teren i podkład
-     * zostają do zejścia poniżej powiększenia podkładu ([areas]). Poza ruchem granica środka przy bieżącym
-     * powiększeniu i dopełnieniu idzie do mapy przy każdym ruchu gestem, więc odkryta część nie wychodzi poza teren.
+     * Kamera MapLibre [map] dla [CameraController]. Granica środka przy bieżącym powiększeniu i dopełnieniu idzie do
+     * mapy przy każdym ruchu gestem, więc odkryta część nie wychodzi poza teren. Przy przelocie stary teren
+     * i podkład zostają do zejścia poniżej powiększenia podkładu ([areas]).
      */
-    private class CameraDriver(private val map: MapLibreMap, private val areas: FlightArea, private val view: View) {
-        private var inset = MapInset()
-        private var running: Run? = null
-        private var moves = 0
+    private class MapLibreCamera(private val map: MapLibreMap, private val areas: FlightArea, private val view: View) :
+        CameraPort {
         private var area: MapLimits? = null
         private var centerBox: CampusBounds? = null
-        private val limits = MoveLimits { limitTo(it) }
+        private var moves = 0
 
         init {
             map.addOnCameraMoveListener {
@@ -361,7 +360,44 @@ object MapLibreMapView : CampusMapView {
             }
         }
 
-        fun limit(next: MapLimits?) = limits.limit(next)
+        override val camera: MapCamera get() = map.cameraPosition.toCamera()
+
+        override val inset: MapInset
+            get() = map.cameraPosition.padding?.let { MapInset(top = it[1], bottom = it[3]) } ?: MapInset()
+
+        override fun lift() = limitTo(null)
+
+        override fun move(camera: MapCamera, inset: MapInset, motion: CameraMotion, millis: Long, end: () -> Unit) {
+            val update = CameraUpdateFactory.newCameraPosition(camera.toPosition(inset))
+            val number = ++moves
+            MapTrace.startMove(motion, number)
+            val callback =
+                object : MapLibreMap.CancelableCallback {
+                    override fun onCancel() = done()
+
+                    override fun onFinish() = done()
+
+                    private fun done() {
+                        MapTrace.endMove(motion, number)
+                        end()
+                    }
+                }
+            if (motion == CameraMotion.FLIGHT) areas.startFlight() else areas.endFlight()
+            when (motion) {
+                CameraMotion.NONE -> map.moveCamera(update, callback)
+                CameraMotion.EASE -> map.easeCamera(update, millis.toInt(), callback)
+                CameraMotion.FLIGHT -> map.animateCamera(update, millis.toInt(), callback)
+            }
+        }
+
+        override fun rest(limits: MapLimits?) {
+            areas.endFlight()
+            limitTo(limits)
+        }
+
+        override fun post(block: () -> Unit) {
+            view.post(block)
+        }
 
         private fun limitTo(next: MapLimits?) {
             area = next
@@ -395,67 +431,6 @@ object MapLibreMapView : CampusMapView {
                         lonWest = box.west,
                     )
                 map.setLatLngBoundsForCameraTarget(bounds)
-            }
-        }
-
-        fun pad(next: MapInset) {
-            inset = next
-            val padding = next.padding()
-            if (running == null && !padding.contentEquals(map.cameraPosition.padding)) {
-                Timber.d(paddingLine(next))
-                map.easeCamera(CameraUpdateFactory.paddingTo(padding), PADDING_MILLIS)
-            }
-        }
-
-        fun follow(move: CameraTransition, next: MapInset) {
-            if (running == null && move.camera.isSameView(map.cameraPosition.toCamera())) {
-                Timber.d(stayLine(move.camera))
-                pad(next)
-                return
-            }
-            inset = next
-            Timber.d(startLine(move, next))
-            val update = CameraUpdateFactory.newCameraPosition(move.camera.toPosition(inset))
-            val millis = move.durationMillis.toInt()
-            running = null
-            val isFlight = move.motion == CameraMotion.FLIGHT
-            if (move.motion == CameraMotion.NONE) endMove() else startMove(isFlight)
-            when (move.motion) {
-                CameraMotion.NONE -> map.moveCamera(update)
-                CameraMotion.EASE -> map.easeCamera(update, millis, start(move.motion))
-                CameraMotion.FLIGHT -> map.animateCamera(update, millis, start(move.motion))
-            }
-        }
-
-        private fun start(motion: CameraMotion): Run {
-            moves += 1
-            MapTrace.startMove(motion, moves)
-            return Run(motion, moves).also { running = it }
-        }
-
-        fun startMove(isFlight: Boolean) {
-            limits.startMove()
-            if (isFlight) areas.startFlight() else areas.endFlight()
-        }
-
-        fun endMove() {
-            limits.endMove()
-            areas.endFlight()
-        }
-
-        /** Jeden ruch; koniec ruchu wcześniejszego, przerwanego przez nowy, niczego nie zmienia. */
-        private inner class Run(val motion: CameraMotion, val number: Int) : MapLibreMap.CancelableCallback {
-            override fun onCancel() = settle(isDone = false)
-
-            override fun onFinish() = settle(isDone = true)
-
-            private fun settle(isDone: Boolean) {
-                MapTrace.endMove(motion, number)
-                Timber.d(endLine(isDone = isDone, isCurrent = running === this, at = map.cameraPosition.toCamera()))
-                if (running !== this) return
-                running = null
-                endMove()
-                pad(inset)
             }
         }
     }
