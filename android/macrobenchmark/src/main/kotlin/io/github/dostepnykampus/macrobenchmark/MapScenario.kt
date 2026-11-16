@@ -36,10 +36,10 @@ internal fun MacrobenchmarkScope.panMap() {
     val width = device.displayWidth
     val height = device.displayHeight
     repeat(SWIPES) { index ->
-        val fromLeft = index % 2 == 0
+        val isFromLeft = index % 2 == 0
         val near = width / LEFT_FRACTION
         val far = width * RIGHT_NUMERATOR / LEFT_FRACTION
-        device.swipe(if (fromLeft) near else far, height / 2, if (fromLeft) far else near, height / 2, SWIPE_STEPS)
+        device.swipe(if (isFromLeft) near else far, height / 2, if (isFromLeft) far else near, height / 2, SWIPE_STEPS)
         device.waitForIdle()
     }
 }
