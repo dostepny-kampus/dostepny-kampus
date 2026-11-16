@@ -30,6 +30,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.session.DisableEncodeUrlFilter;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
@@ -40,7 +41,7 @@ import tools.jackson.databind.json.JsonMapper;
  * bez ważnego tokenu dają 401, bez roli 403, jako {@code application/problem+json}; inna
  * ścieżka jest odrzucana.
  *
- * <p>Wymagania: NFR-33, US14.1, US8.1</p>
+ * <p>Wymagania: NFR-33, NFR-57, US14.1, US8.1</p>
  *
  * @since 0.1.0
  */
@@ -73,6 +74,7 @@ public final class ApiSecurity {
         http.sessionManagement(
             sessions -> sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
+        http.addFilterBefore(new RequestLog(), DisableEncodeUrlFilter.class);
         http.addFilterBefore(
             new PublicRateLimit(limit, mapper), BearerTokenAuthenticationFilter.class
         );
