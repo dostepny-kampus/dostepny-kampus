@@ -181,7 +181,11 @@ class CampusAreaEdgeDeviceTest {
     }
 
     private fun assertNoAreaLayers(map: MapLibreMap) {
-        val ids = composeRule.runOnUiThread { map.style?.layers?.map { it.id }.orEmpty() }
+        val ids =
+            composeRule.runOnUiThread {
+                val style = map.style
+                if (style == null) emptyList() else style.layers.map { it.id }
+            }
         assertTrue("Mapa ma warstwę granicy terenu: $ids", ids.none { it.startsWith(AREA_LAYER_PREFIX) })
     }
 
