@@ -10,7 +10,7 @@
 | Bezpieczeństwo | bezpieczeństwo (security) | NFR-31…NFR-36 |
 | Licencje danych | poza modelem: zgodność z licencjami | NFR-37…NFR-40 |
 | Przenośność | elastyczność (flexibility), zgodność (compatibility) | NFR-41…NFR-43 |
-| Utrzymywalność | utrzymywalność (maintainability) | NFR-44…NFR-47 |
+| Utrzymywalność | utrzymywalność (maintainability) | NFR-44…NFR-47, NFR-57 |
 | Odporność | niezawodność (reliability), bezpieczeństwo użytkowania (safety) | NFR-48…NFR-50, NFR-55 |
 
 Każde wymaganie ma miarę i sposób sprawdzenia. Dopisek „(próg zespołu)” oznacza wartość ustaloną przez zespół bez normy ani przepisu; potwierdzamy ją w testach. Numery w nawiasach kwadratowych odsyłają do sekcji „Źródła”.
@@ -117,6 +117,7 @@ Rozporządzenie RODO [14] zalicza dane o lokalizacji do danych osobowych (art. 4
 | NFR-45 | Utrzymywalność | Każde kryterium AC i każda reguła BR ma wykonywalny scenariusz akceptacyjny po polsku. | 100% AC i BR pokryte co najmniej 1 scenariuszem. | Skrypt spójności identyfikatorów w CI. | produkt §8, decyzje 16 i 24 |
 | NFR-46 | Utrzymywalność | Każdy PR przechodzi budowanie, testy i analizę statyczną. | Czerwony wynik blokuje scalenie. Każdy PR ma najwyżej 300 zmienionych linii bez danych, plików lock, kodu generowanego i plików binarnych. Wyjątkiem jest scalenie gałęzi sprintu do `main`. | Reguły gałęzi w repozytorium. | produkt §9, decyzje 5 i 8 |
 | NFR-47 | Utrzymywalność | Lista budynków szczegółowych jest konfiguracją, nie kodem. | Dodanie budynku: 1 wpis w konfiguracji, 0 zmian w kodzie. | Próbne dodanie budynku C-6. | produkt §6a |
+| NFR-57 | Utrzymywalność | Logi aplikacji i serwera nie zawierają danych osobowych ani treści zgłoszeń. Wersja release aplikacji zapisuje w logcat tylko poziomy WARN i ERROR. | 0 identyfikatorów kont, nazw, e-maili, tokenów, nagłówków Authorization, dokładnych współrzędnych osoby, treści zgłoszeń i nazw plików zdjęć w liniach logu. Linia logu żądania serwera niesie identyfikator żądania. | Testy linii logu serwera i klienta, przegląd miejsc logowania w PR, ADR-0013. | RODO art. 5 ust. 1 lit. c, art. 25 [14], NFR-28 |
 
 ## Odporność
 
