@@ -30,13 +30,13 @@ private val middle = GeoPoint(longitude = 17.06, latitude = 51.11)
  * Wymagania: US2.8, NFR-56, US1.8
  */
 class CameraTransitionTest {
-    /** Wiersz: V1, cały kontur widoczny — przesunięcie na środek w 300 ms bez zmiany powiększenia. */
+    /** Wiersz: V1, cały kontur widoczny — przesunięcie na środek w 300 ms, z przybliżeniem do budynku. */
     @Test
     fun shiftsVisibleCamera() {
         val move = toBuilding(from = MapCamera(center = viewByDp(-60.0), zoom = START_ZOOM))
         assertEquals(CameraMotion.EASE, move.motion, "widoczny budynek: przesunięcie")
         assertEquals(300L, move.durationMillis, "widoczny budynek: 300 ms")
-        assertEquals(START_ZOOM, move.camera.zoom, "powiększenie bez zmian")
+        assertTrue(move.camera.zoom > START_ZOOM, "przybliżenie do budynku: ${move.camera.zoom}")
         assertEquals(middle.longitude, move.camera.center.longitude, DEGREES, "budynek na środku")
     }
 
@@ -72,14 +72,32 @@ class CameraTransitionTest {
         assertEquals(1500L, move.durationMillis, "przelot najwyżej 1,5 s")
     }
 
-    /** Wiersz: V1, powiększenie mniejsze niż 17 rośnie do 17, żeby budynek dało się rozróżnić. */
+    /** Wiersz: V1, po ruchu kontur zajmuje połowę szerokości albo wysokości wolnej części mapy. */
     @Test
-    fun raisesZoom() {
+    fun approachesBuilding() {
         val move = toBuilding(from = MapCamera(center = viewByMeters(-500.0), zoom = 15.0))
-        assertEquals(START_ZOOM, move.camera.zoom, "przybliżenie do 17")
+        val width = (outline.east - outline.west) * dpPerDegree(move.camera.zoom)
+        assertEquals((free.widthDp - 2 * free.marginDp) / 2, width, DP, "kontur na pół szerokości wolnej mapy")
     }
 
-    /** Wiersz: V1, powiększenie wybrane przez osobę zostaje, gdy budynek się mieści. */
+    /** Wiersz: V1, przybliżenie do budynku najwyżej przy powiększeniu 19. */
+    @Test
+    fun capsApproachAtNineteen() {
+        val kiosk = CampusBounds(west = 17.05999, south = 51.10999, east = 17.06001, north = 51.11001)
+        val from = MapCamera(center = middle, zoom = 15.0)
+        val move = cameraTransition(from = from, outline = kiosk, free = free, animationScale = 1f)
+        assertEquals(19.0, move.camera.zoom, "mały kontur: powiększenie 19")
+    }
+
+    /** Wiersz: V1, kolejny budynek przy otwartej karcie — samo przesunięcie, bez zmiany powiększenia. */
+    @Test
+    fun keepsZoomForNextBuilding() {
+        val from = MapCamera(center = viewByDp(-200.0), zoom = START_ZOOM)
+        val move = cameraTransition(from = from, outline = outline, free = free, animationScale = 1f, keepsZoom = true)
+        assertEquals(START_ZOOM, move.camera.zoom, "powiększenie przy otwartej karcie zostaje")
+    }
+
+    /** Wiersz: V1, większe powiększenie osoby zostaje, gdy kontur się mieści. */
     @Test
     fun keepsZoom() {
         val move = toBuilding(from = MapCamera(center = viewByDp(-200.0), zoom = 19.0))
