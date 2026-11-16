@@ -21,10 +21,12 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
@@ -150,7 +152,7 @@ fun CampusMapScreen(
  * @param mapView widok mapy
  * @param motion zapis ruchów mapy do budynku nad kartą V2
  * @param plan plan piętra budynku przy środku mapy; `null`, gdy planu nie widać
- * @param onCamera widok mapy po ruchu kamery
+ * @param onCamera widok mapy po geście osoby i widok, do którego zmierza ruch kamery wykonany przez aplikację
  * @param onFloorChoose piętro wybrane w kolumnie pięter: symbol budynku i identyfikator piętra
  */
 @Composable
@@ -280,6 +282,7 @@ private fun CampusMap(
                 onBarrierTouch = { barrierId = it.also { state.dismiss() } },
                 modifier = Modifier.fillMaxSize(),
             )
+            ReportAppMove(camera = move.camera, onCamera = onCamera)
             scene.selection.entrance?.let { EntranceDescription(it) }
             AreaEdgeAnnouncement(camera = move.camera, limits = state.limits, area = areas.current?.name)
             MapStatusBar(topInset, isShown = state.isCovered)
@@ -306,6 +309,12 @@ private fun CampusMap(
 
 /** Zaznaczona przeszkoda [id] spośród [barriers] i zamknięcie jej karty [onClose]. */
 private data class ChosenBarrier(val id: String?, val barriers: ShownBarriers, val onClose: () -> Unit)
+
+@Composable
+private fun ReportAppMove(camera: MapCamera, onCamera: (MapCamera) -> Unit) {
+    val report by rememberUpdatedState(onCamera)
+    LaunchedEffect(camera) { report(camera) }
+}
 
 @Composable
 private fun BoxScope.MapSheets(
