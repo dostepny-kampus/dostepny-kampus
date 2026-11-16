@@ -68,10 +68,10 @@ class MapInfoTest {
     }
 
     /**
-     * Arkusz „Legenda” objaśnia każdy znak mapy słowem; znaki wejść różnią się kształtem. Na końcu są „Źródła
-     * danych” z licencją i dniem stanu danych, a „Zamknij” zamyka arkusz.
+     * Arkusz „Legenda” objaśnia każdy znak mapy słowem, także znaki barier; znaki wejść i barier różnią się
+     * kształtem. Na końcu są „Źródła danych” z licencją i dniem stanu danych, a „Zamknij” zamyka arkusz.
      *
-     * Wymagania: US1.4, NFR-21, NFR-37, NFR-40, NFR-53
+     * Wymagania: US1.4, NFR-21, NFR-37, NFR-40, NFR-53, US1.3
      */
     @Test
     fun showsLegendWithSources() {
@@ -184,6 +184,15 @@ class MapInfoTest {
         val DAY: LocalDate = LocalDate.of(2023, 12, 18)
         const val NAME = "Legenda i źródła mapy"
         const val EDGE_TOLERANCE_DP = 0.5f
-        val SIGNS = listOf("Budynek Politechniki", "Wejście dostępne", "Wejście niedostępne", "Wejście bez danych")
+        val SIGNS =
+            listOf(
+                "Budynek Politechniki",
+                "Wejście dostępne",
+                "Wejście niedostępne",
+                "Wejście bez danych",
+                "Utrudnienie",
+                "Tylko z pomocą",
+                "Blokada",
+            )
     }
 }

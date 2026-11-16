@@ -20,20 +20,19 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.scale
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.PathParser
+import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.designsystem.iconSizeLikeText
 import io.github.dostepnykampus.core.model.submission.Severity
 
 private const val SIGN_VIEWPORT = 24f
-private const val HALO = 1f
 
 /**
- * Kształty znaku uciążliwości na siatce 24 × 24, jak w makiecie hi-fi V1.
+ * Kształty znaku uciążliwości na siatce 24 × 24, jak w zatwierdzonym zestawie znaków mapy.
  *
  * Wymagania: NFR-21
  *
- * @property shape wypełniony kształt: trójkąt, tarcza albo zaokrąglona kwadratowa tablica
+ * @property shape wypełniony kształt: trójkąt, zaokrąglona tarcza albo zaokrąglona kwadratowa tablica
  * @property mark kreski w kształcie: wykrzyknik albo ramiona osób; pusty napis, gdy ich brak
  * @property stroke grubość kresek; 0 bez kresek
  * @property fills wypełnione części w kolorze kresek: kropka wykrzyknika, głowy osób albo pozioma belka; pusty
@@ -41,16 +40,18 @@ private const val HALO = 1f
  */
 internal enum class SeverityLook(val shape: String, val mark: String, val stroke: Float, val fills: String) {
     HINDRANCE(
-        shape = "M12 1.8L23 21.2H1z",
-        mark = "M12 8.6v6",
-        stroke = 2.4f,
-        fills = "M12 16.2a1.4 1.4 0 1 0 0 2.8a1.4 1.4 0 1 0 0-2.8z",
+        shape = "M12 2.4l10.2 18.2H1.8z",
+        mark = "M12 9.2v5.2",
+        stroke = 2.3f,
+        fills = "M12 16.25a1.25 1.25 0 1 0 0 2.5a1.25 1.25 0 1 0 0-2.5z",
     ),
     ONLY_WITH_HELP(
-        shape = "M2.5 2.5h19v10L12 22.5 2.5 12.5z",
-        mark = "M5.6 14.4c0-2.2 1.3-3.6 3-3.6s3 1.4 3 3.6M12.4 14.4c0-2.2 1.3-3.6 3-3.6s3 1.4 3 3.6",
-        stroke = 2f,
-        fills = "M8.6 5.6a2 2 0 1 0 0 4a2 2 0 1 0 0-4zM15.4 5.6a2 2 0 1 0 0 4a2 2 0 1 0 0-4z",
+        shape = "M12 1.8l8.8 3.1v6.3c0 5.1-3.5 9.1-8.8 11-5.3-1.9-8.8-5.9-8.8-11V4.9z",
+        mark = "M6.6 15.6c0-2 1-3.2 2.4-3.2s2.4 1.2 2.4 3.2M12.6 15.6c0-2 1-3.2 2.4-3.2s2.4 1.2 2.4 3.2",
+        stroke = 1.9f,
+        fills =
+            "M9 7.05a1.75 1.75 0 1 0 0 3.5a1.75 1.75 0 1 0 0-3.5z" +
+                "M15 7.05a1.75 1.75 0 1 0 0 3.5a1.75 1.75 0 1 0 0-3.5z",
     ),
     BLOCKING(
         shape =
@@ -77,36 +78,40 @@ internal class SeverityPaths(look: SeverityLook) {
     val stroke: Stroke = Stroke(width = look.stroke, cap = StrokeCap.Round, join = StrokeJoin.Round)
 }
 
-/**
- * Znak uciążliwości na cały krótszy bok [DrawScope]: kształt w [shapeColor], kreski i wypełnienia w [markColor].
- * Z [hasHalo] kształt dostaje obwódkę w [markColor], żeby odcinał się od podkładu mapy.
- */
-internal fun DrawScope.drawSeverity(paths: SeverityPaths, shapeColor: Color, markColor: Color, hasHalo: Boolean) {
-    val margin = if (hasHalo) HALO else 0f
-    scale(scale = size.minDimension / (SIGN_VIEWPORT + 2 * margin), pivot = Offset.Zero) {
-        translate(left = margin, top = margin) {
-            if (hasHalo) {
-                drawPath(path = paths.shape, color = markColor, style = Stroke(2 * margin, join = StrokeJoin.Round))
-            }
-            drawPath(path = paths.shape, color = shapeColor)
-            drawPath(path = paths.mark, color = markColor, style = paths.stroke)
-            drawPath(path = paths.fills, color = markColor)
-        }
+/** Kreski i wypełnienia znaku [paths] w barwie [color], na siatce 24 × 24. */
+internal fun DrawScope.drawSeverityMark(paths: SeverityPaths, color: Color) {
+    drawPath(path = paths.mark, color = color, style = paths.stroke)
+    drawPath(path = paths.fills, color = color)
+}
+
+/** Znak uciążliwości na cały krótszy bok [DrawScope]: kształt w [shapeColor], kreski i wypełnienia w [markColor]. */
+internal fun DrawScope.drawSeverity(paths: SeverityPaths, shapeColor: Color, markColor: Color) {
+    scale(scale = size.minDimension / SIGN_VIEWPORT, pivot = Offset.Zero) {
+        drawPath(path = paths.shape, color = shapeColor)
+        drawSeverityMark(paths = paths, color = markColor)
     }
 }
 
 /**
- * Znak uciążliwości [severity] jako obraz [sizePx] × [sizePx] dla warstwy mapy, z tych samych
- * kształtów co [SeverityIcon]: [shapeColor] to kształt, [markColor] znak w nim i obwódka wokół kształtu.
+ * Znak uciążliwości [severity] jako obraz [sizePx] × [sizePx] dla mapy i jej legendy, z tych samych kształtów co
+ * [SeverityIcon], w barwach znaku uciążliwości z [colors] (`znak_*`, `znak_*_symbol`), w konturze i obwódce.
  *
- * Wymagania: US1.3, NFR-21
+ * Wymagania: US1.3, NFR-21, NFR-16
  */
-public fun severityImage(severity: Severity, sizePx: Int, shapeColor: Color, markColor: Color): Bitmap {
+public fun mapSeverityImage(severity: Severity, sizePx: Int, colors: MapColors): Bitmap {
     val paths = SeverityPaths(severity.look())
-    return signBitmap(sizePx) {
-        drawSeverity(paths = paths, shapeColor = shapeColor, markColor = markColor, hasHalo = true)
+    val (fill, symbol) = severity.mapTones(colors)
+    return mapSignBitmap(sizePx = sizePx, shape = paths.shape, fill = fill, colors = colors) {
+        drawSeverityMark(paths = paths, color = symbol)
     }
 }
+
+private fun Severity.mapTones(colors: MapColors): Pair<Color, Color> =
+    when (this) {
+        Severity.HINDRANCE -> colors.znakUtrudnienie to colors.znakUtrudnienieSymbol
+        Severity.ONLY_WITH_HELP -> colors.znakTylkoZPomoca to colors.znakTylkoZPomocaSymbol
+        Severity.BLOCKING -> colors.znakBlokada to colors.znakBlokadaSymbol
+    }
 
 /**
  * Znak uciążliwości obok napisu: trójkąt ze znakiem „!” dla „Utrudnienie”, tarcza z dwiema osobami dla „Tylko
@@ -127,6 +132,6 @@ public fun SeverityIcon(severity: Severity, modifier: Modifier = Modifier) {
     val shapeColor = MaterialTheme.colorScheme.onSurface
     val markColor = MaterialTheme.colorScheme.surface
     Canvas(modifier = modifier.size(iconSizeLikeText())) {
-        drawSeverity(paths = paths, shapeColor = shapeColor, markColor = markColor, hasHalo = false)
+        drawSeverity(paths = paths, shapeColor = shapeColor, markColor = markColor)
     }
 }

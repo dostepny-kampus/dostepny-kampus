@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
+import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.designsystem.R
 import io.github.dostepnykampus.core.designsystem.StatusColors
 import io.github.dostepnykampus.core.model.building.EntranceMarking
@@ -31,8 +32,17 @@ private const val ICON_VIEWPORT = 24f
 
 private const val MARK_STROKE = 2.6f
 
-private const val OUTLINE_STROKE = 1.7f
-
+/**
+ * Kształty i barwy znaku oznaczenia wejścia na siatce 24 × 24.
+ *
+ * Wymagania: NFR-21, US2.1
+ *
+ * @property word słowo oznaczenia
+ * @property shape wypełniony kształt: koło, ośmiokąt albo romb
+ * @property mark kreski w kształcie: ptaszek, krzyżyk albo znak zapytania
+ * @property container barwa kształtu w treści
+ * @property content barwa kresek w treści
+ */
 internal enum class MarkingLook(
     @param:StringRes val word: Int,
     val shape: String,
@@ -74,46 +84,39 @@ internal fun EntranceMarking.look(): MarkingLook =
 internal fun DrawScope.drawMarking(shape: Path, mark: Path, shapeColor: Color, markColor: Color) {
     scale(scale = size.minDimension / ICON_VIEWPORT, pivot = Offset.Zero) {
         drawPath(path = shape, color = shapeColor)
-        drawPath(
-            path = mark,
-            color = markColor,
-            style = Stroke(width = MARK_STROKE, cap = StrokeCap.Round, join = StrokeJoin.Round),
-        )
+        drawMarkingMark(mark = mark, color = markColor)
     }
 }
 
-/**
- * Znak oznaczenia jako obraz [sizePx] × [sizePx] dla warstw mapy, z tych samych kształtów co
- * [MarkingChip]: [shapeColor] to kształt, [markColor] znak w nim.
- *
- * Wymagania: US2.1, NFR-21
- */
-public fun markingImage(marking: EntranceMarking, sizePx: Int, shapeColor: Color, markColor: Color): Bitmap {
-    val look = marking.look()
-    val shape = PathParser().parsePathString(look.shape).toPath()
-    val mark = PathParser().parsePathString(look.mark).toPath()
-    return signBitmap(sizePx) {
-        drawMarking(shape = shape, mark = mark, shapeColor = shapeColor, markColor = markColor)
-    }
+private fun DrawScope.drawMarkingMark(mark: Path, color: Color) {
+    val line = Stroke(width = MARK_STROKE, cap = StrokeCap.Round, join = StrokeJoin.Round)
+    drawPath(path = mark, color = color, style = line)
 }
 
 /**
- * Cichy znak oznaczenia jako obraz [sizePx] × [sizePx] dla warstw mapy: ten sam kształt i znak co
- * [markingImage], ale pusty w środku. Wnętrze ma barwę [fillColor], a kontur kształtu i znak barwę [lineColor].
+ * Znak oznaczenia [marking] jako obraz [sizePx] × [sizePx] dla mapy i jej legendy, z tych samych kształtów co
+ * [MarkingChip], w konturze `tusz` i obwódce `papier` z [colors]. „Dostępne” ma barwy `znak_dostepne`,
+ * „Niedostępne” kształt `tusz` ze znakiem `papier`, a „Brak danych” jest cichym znakiem: wnętrze `papier`,
+ * znak `tusz`.
  *
- * Wymagania: US1.4, US2.1, NFR-21
+ * Wymagania: US2.1, US1.4, NFR-21, NFR-16
  */
-public fun outlinedMarkingImage(marking: EntranceMarking, sizePx: Int, lineColor: Color, fillColor: Color): Bitmap {
+public fun mapMarkingImage(marking: EntranceMarking, sizePx: Int, colors: MapColors): Bitmap {
     val look = marking.look()
     val shape = PathParser().parsePathString(look.shape).toPath()
     val mark = PathParser().parsePathString(look.mark).toPath()
-    return signBitmap(sizePx) {
-        drawMarking(shape = shape, mark = mark, shapeColor = fillColor, markColor = lineColor)
-        scale(scale = size.minDimension / ICON_VIEWPORT, pivot = Offset.Zero) {
-            drawPath(path = shape, color = lineColor, style = Stroke(width = OUTLINE_STROKE, join = StrokeJoin.Round))
-        }
+    val (fill, symbol) = marking.mapTones(colors)
+    return mapSignBitmap(sizePx = sizePx, shape = shape, fill = fill, colors = colors) {
+        drawMarkingMark(mark = mark, color = symbol)
     }
 }
+
+private fun EntranceMarking.mapTones(colors: MapColors): Pair<Color, Color> =
+    when (this) {
+        EntranceMarking.ACCESSIBLE -> colors.znakDostepne to colors.znakDostepneSymbol
+        EntranceMarking.INACCESSIBLE -> colors.tusz to colors.papier
+        EntranceMarking.NO_DATA -> colors.papier to colors.tusz
+    }
 
 /** Obraz [sizePx] × [sizePx] ze znakiem narysowanym przez [draw], dla warstw mapy. */
 internal fun signBitmap(sizePx: Int, draw: DrawScope.() -> Unit): Bitmap {

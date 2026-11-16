@@ -54,7 +54,7 @@ internal fun barrierWordImage(severity: Severity): String = "bariera_slowo_${sev
 
 /**
  * Warstwy barier: słowo uciążliwości obok znaku i sam znak. Znak rysuje się zawsze, a jego kształt zależy
- * od uciążliwości, więc znaczenie niesie kształt, nie barwa. Słowo jest obrazem, bo napisy z czcionek
+ * od uciążliwości, więc znaczenie niesie kształt, a barwa je powtarza. Słowo jest obrazem, bo napisy z czcionek
  * stylu wymagają sieci. Pojawia się od powiększenia [BARRIER_WORD_ZOOM], nie przy krawędzi mapy i tylko wtedy,
  * gdy mieści się bez nakładania. Warstwy stoją pod podpisami budynków, więc przy kolizji zostaje podpis budynku
  * (wiersz o znakach barier w wymaganiach V1). Filtr [filter] z [SelectionLook.barriersFilter] zostawia bariery
