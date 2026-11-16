@@ -71,11 +71,10 @@ import io.github.dostepnykampus.feature.map.style.asStyleText
 import io.github.dostepnykampus.feature.map.style.campusMapShell
 import io.github.dostepnykampus.feature.map.style.numbers
 import io.github.dostepnykampus.feature.map.style.rememberMapImages
-import io.github.dostepnykampus.feature.map.style.roomNumberBitmap
-import io.github.dostepnykampus.feature.map.style.roomNumberImage
 import io.github.dostepnykampus.feature.map.style.selectionLook
 import io.github.dostepnykampus.feature.map.style.showBasemap
 import io.github.dostepnykampus.feature.map.style.showData
+import io.github.dostepnykampus.feature.map.style.showPlanData
 import io.github.dostepnykampus.feature.map.style.showSelection
 import io.github.dostepnykampus.feature.map.style.styleBuilder
 import kotlinx.serialization.json.JsonArray
@@ -235,6 +234,11 @@ object MapLibreMapView : CampusMapView {
         val labelled = remember(loaded) { mutableSetOf<String>() }
         LaunchedEffect(loaded, data) {
             loaded?.let { StyleTarget(it).showData(data, images, labelled) }
+        }
+        val numbered = remember(loaded) { mutableSetOf<String>() }
+        val floors = selection.plan?.rooms.orEmpty()
+        LaunchedEffect(loaded, floors) {
+            loaded?.let { StyleTarget(it).showPlanData(floors, images, numbered) }
         }
         DisposableEffect(loaded, look) {
             loaded?.let { StyleTarget(it).showSelection(look, selectionImages(currentSelection, images)) }
@@ -504,21 +508,11 @@ internal fun Style.addMapImages(images: MapImages) {
 }
 
 /**
- * Obrazy zależne od zaznaczenia [selection]: podpis zaznaczonego wejścia z jego nazwą i numery sal wybranego piętra
- * planu. Wymagania: US3.3, US16.1
+ * Obrazy zależne od zaznaczenia [selection]: podpis zaznaczonego wejścia z jego nazwą. Numery sal planu dodaje
+ * `showPlanData`. Wymagania: US3.3
  */
-internal fun selectionImages(selection: MapSelection, images: MapImages): Map<String, Bitmap> {
-    val floor = selection.plan?.let { it.rooms[it.floor] }
-    val rooms = floor?.rooms.orEmpty()
-    val numbers =
-        rooms
-            .asSequence()
-            .filter { it.isLabelled }
-            .mapNotNull { it.number }
-            .toSet()
-    val caption = entranceCaption(selected = selection.entrance, colors = images.colors, labelSize = images.labelSize)
-    return caption + numbers.associate { roomNumberImage(it) to roomNumberBitmap(it, images.colors, images.labelSize) }
-}
+internal fun selectionImages(selection: MapSelection, images: MapImages): Map<String, Bitmap> =
+    entranceCaption(selected = selection.entrance, colors = images.colors, labelSize = images.labelSize)
 
 private fun Density.basemapOf(bounds: CampusBounds?, size: IntSize): Basemap? =
     mapLimits(bounds, size).takeIf { size != IntSize.Zero }?.basemap

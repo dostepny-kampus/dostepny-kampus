@@ -121,7 +121,7 @@ fun campusMapStyle(
         buildJsonObject {
             put(key = "version", value = STYLE_VERSION)
             if (colors.basemap != null) put(key = "glyphs", value = BASEMAP_GLYPHS)
-            val all = sources(data = data, look = look)
+            val all = sources(data = data, look = look, plan = planFeatures(selection.plan?.rooms.orEmpty()))
             put(key = "sources", element = all)
             val list = layers(look = look, colors = colors, basemap = basemap)
             put(key = "layers", element = list)
@@ -141,7 +141,7 @@ internal fun entranceMarkImage(marking: EntranceMarking): String = "wejscie_${ma
 /** Nazwa obrazu podpisu zaznaczonego wejścia o nazwie [label]; przedrostek odróżnia go od podpisów budynków. */
 internal fun entranceCaptionImage(label: String): String = "wejscie: $label"
 
-private fun sources(data: CampusMapData, look: SelectionLook): JsonObject =
+private fun sources(data: CampusMapData, look: SelectionLook, plan: JsonElement): JsonObject =
     buildJsonObject {
         put(key = BASEMAP, element = basemapSource())
         put(key = BUILDINGS_SOURCE, element = geoJsonSource(data.buildings))
@@ -149,7 +149,7 @@ private fun sources(data: CampusMapData, look: SelectionLook): JsonObject =
         put(key = ENTRANCES_SOURCE, element = geoJsonSource(data.entrances))
         put(key = BARRIERS_SOURCE, element = geoJsonSource(data.barriers))
         put(key = CHOSEN_SOURCE, element = geoJsonSource(look.chosenEntrance))
-        put(key = PLAN_SOURCE, element = geoJsonSource(look.plan))
+        put(key = PLAN_SOURCE, element = geoJsonSource(plan))
     }
 
 private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap?): JsonArray =

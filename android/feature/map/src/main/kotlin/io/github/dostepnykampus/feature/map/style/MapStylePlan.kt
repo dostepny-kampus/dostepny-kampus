@@ -11,6 +11,8 @@ import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.feature.map.campus.featureCollection
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -19,6 +21,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.maplibre.spatialk.geojson.Feature
 import org.maplibre.spatialk.geojson.Point
+import kotlin.coroutines.CoroutineContext
 
 /** Źródło stylu z pomieszczeniami i ścianami wszystkich pięter budynku z planem. Wymagania: US16.1 */
 internal const val PLAN_SOURCE = "plan"
@@ -150,16 +153,38 @@ internal fun roomNumberImage(number: String): String = "sala: $number"
 internal fun planSignImage(category: RoomCategory): String = "znak planu: ${category.name}"
 
 /**
- * Pokazuje w stylu z [planLayers] obiekty planu [features] z [planFeatures] i piętro [floor]; bez piętra plan
- * znika. Wymagania: US16.1
+ * Pokazuje w stylu z [planLayers] piętro [floor] planu już podanego przez [showPlanData]; bez piętra plan znika.
+ * Zmienia tylko filtry warstw, więc zmiana piętra nie przelicza danych planu. Wymagania: US16.1, NFR-10
  */
-internal fun MapStyleTarget.showPlan(floor: String?, features: JsonElement) {
-    data(source = PLAN_SOURCE, geoJson = features.asStyleText())
+internal fun MapStyleTarget.showPlanFloor(floor: String?) {
     filter(layer = PLAN_ROOMS_LAYER, filter = planFilter(floor = floor, kind = ROOM))
     filter(layer = PLAN_WALLS_LAYER, filter = planFilter(floor = floor, kind = ROOM))
     filter(layer = PLAN_OUTLINE_LAYER, filter = planFilter(floor = floor, kind = OUTLINE))
     filter(layer = PLAN_SIGNS_LAYER, filter = planFilter(floor = floor, kind = SIGN))
     filter(layer = PLAN_NUMBERS_LAYER, filter = planFilter(floor = floor, kind = NUMBER))
+}
+
+/**
+ * Podaje stylowi z [planLayers] obiekty wszystkich pięter planu [floors] z [planFeatures] i dodaje obrazy numerów
+ * sal spoza [numbered], ze wszystkich pięter naraz. Tekst danych i obrazy powstają w [worker], poza wątkiem głównym,
+ * a piętro wybiera potem samo [showPlanFloor]. Wymagania: US16.1, NFR-10
+ */
+internal suspend fun MapStyleTarget.showPlanData(
+    floors: Map<String, RoomList>,
+    images: MapImages,
+    numbered: MutableSet<String>,
+    worker: CoroutineContext = Dispatchers.Default,
+) {
+    val (text, bitmaps) =
+        withContext(worker) {
+            val numbers = floors.values.flatMap { it.rooms }.filter { it.isLabelled }.mapNotNull { it.number }
+            val fresh = numbers.toSet().filterNot(numbered::contains)
+            planFeatures(floors).asStyleText() to
+                fresh.associateWith { roomNumberBitmap(it, images.colors, images.labelSize) }
+        }
+    bitmaps.forEach { (number, bitmap) -> image(roomNumberImage(number), bitmap) }
+    numbered += bitmaps.keys
+    data(source = PLAN_SOURCE, geoJson = text)
 }
 
 /** Filtr obiektów rodzaju [kind] piętra [floor]; bez piętra nie przepuszcza niczego. */
