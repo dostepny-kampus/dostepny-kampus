@@ -226,8 +226,8 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Aktor | Gość niezalogowany. |
 | Warunki wstępne | Brak; logowanie nie jest potrzebne (US1.2). |
 | Wyzwalacz | Osoba zna symbol budynku z planu zajęć albo zaproszenia. |
-| Przepływ główny | 1. Osoba otwiera mapę kampusu. <br> 2. Wpisuje symbol budynku, np. „c13”. <br> 3. System znajduje C-13 niezależnie od zapisu (US1.1). <br> 4. System pokazuje budynek na mapie z barierami ze zgłoszeń przyjętych (US1.3). |
-| Alternatywy i wyjątki | 1a. Brak sieci: dane z ostatniej synchronizacji z datą (NFR-10). <br> 2a. Czytnik ekranu: osoba wybiera budynek z listy (NFR-19). <br> 3a. Brak wyniku: system mówi to zdaniem z przykładem symbolu i proponuje listę budynków (NFR-19). <br> 3b. Budynek leży na innym terenie: system zmienia teren, mówi o tym napisem, a teren zostaje po zamknięciu karty (US1.8, BR-G5). |
+| Przepływ główny | 1. Osoba otwiera mapę kampusu. <br> 2. Wpisuje symbol budynku, np. „c13”. <br> 3. Od pierwszego znaku system podpowiada budynki, których symbol zaczyna się od wpisanego tekstu, niezależnie od zapisu; osoba wybiera C-13 (US1.1). <br> 4. System pokazuje budynek na mapie z barierami ze zgłoszeń przyjętych (US1.3). |
+| Alternatywy i wyjątki | 1a. Brak sieci: dane z ostatniej synchronizacji z datą (NFR-10). <br> 2a. Czytnik ekranu: osoba wybiera budynek z listy (NFR-19). <br> 3a. Żaden symbol nie zaczyna się od wpisanego tekstu: system mówi to zdaniem z przykładem symbolu i proponuje listę budynków (NFR-19). <br> 3b. Budynek leży na innym terenie: system zmienia teren, mówi o tym napisem, a teren zostaje po zamknięciu karty (US1.8, BR-G5). |
 | Warunki końcowe | Budynek jest zaznaczony na mapie; dalej można otworzyć UC2. |
 | Odwołania | US1.1…US1.8, BR-6, BR-G5, NFR-11, NFR-19, NFR-37, T20 |
 
