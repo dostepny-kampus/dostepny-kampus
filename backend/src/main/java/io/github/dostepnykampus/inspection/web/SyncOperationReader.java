@@ -8,6 +8,7 @@ package io.github.dostepnykampus.inspection.web;
 import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.util.Objects;
 import java.util.UUID;
+import org.springframework.stereotype.Component;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
@@ -21,6 +22,7 @@ import tools.jackson.databind.json.JsonMapper;
  *
  * @since 0.1.0
  */
+@Component
 final class SyncOperationReader {
 
     /**

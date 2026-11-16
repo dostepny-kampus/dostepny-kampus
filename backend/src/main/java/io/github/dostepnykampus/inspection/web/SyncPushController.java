@@ -17,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Wysyłka zmian z telefonu: serwer zapisuje i cofa znaczniki piętra obejrzanego, a pozostałe
@@ -42,11 +41,7 @@ public final class SyncPushController {
      */
     private final SyncOperationReader reader;
 
-    SyncPushController(final MarkerService service, final JsonMapper mapper) {
-        this(service, new SyncOperationReader(mapper));
-    }
-
-    private SyncPushController(final MarkerService service, final SyncOperationReader reader) {
+    SyncPushController(final MarkerService service, final SyncOperationReader reader) {
         this.service = service;
         this.reader = reader;
     }
