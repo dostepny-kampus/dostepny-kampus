@@ -129,6 +129,17 @@ class MapInfoTest {
         assertCloseMirrorsTitle()
     }
 
+    /** „Zamknij” w arkuszu ma cel dotyku co najmniej 48 × 48 dp. Wymagania: NFR-17 */
+    @Test
+    fun keepsCloseTouchTarget() {
+        compose.setContent { Info(isOpenAtStart = true) }
+        compose
+            .onNodeWithText("Zamknij")
+            .assertHasClickAction()
+            .assertHeightIsAtLeast(48.dp)
+            .assertWidthIsAtLeast(48.dp)
+    }
+
     /** Przy czcionce 200% „Zamknij” też mieści się w arkuszu z odstępem tytułu. Wymagania: NFR-20, NFR-17 */
     @Test
     @Config(fontScale = 2f)
