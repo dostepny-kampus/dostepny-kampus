@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.app
 
-import android.graphics.PointF
 import android.os.Handler
 import android.os.Looper
 import android.os.ParcelFileDescriptor
@@ -33,9 +32,6 @@ import org.junit.runner.RunWith
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapView
-import org.maplibre.android.style.layers.FillLayer
-import org.maplibre.android.style.layers.LineLayer
-import org.maplibre.android.style.layers.Property
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -64,9 +60,11 @@ class CampusAreaEdgeDeviceTest {
 
     /**
      * Sprawdza na emulatorze, że przesuwanie mapy palcem w stronę sąsiedniego terenu zatrzymuje wschodni brzeg
-     * widoku na brzegu prostokąta „Kampusu głównego”, a poza granicą mapa jest wyblakła i granicę pokazuje linia.
+     * widoku na brzegu prostokąta „Kampusu głównego”, a mapa nie ma warstw granicy terenu ani wyblaknięcia.
      *
      * Scenariusz: przegladanie-mapy.feature: Mapa nie wychodzi poza wybrany teren
+     * Scenariusz (częściowo): przegladanie-mapy.feature:
+     *   Przy najmniejszym powiększeniu teren wypełnia mapę w krótszym wymiarze
      *
      * Wymagania: US1.7, BR-G5, NFR-39, NFR-41
      */
@@ -97,7 +95,7 @@ class CampusAreaEdgeDeviceTest {
                 "Kamera wyszła poza krawędź: edge=$edgeTarget, after=$afterExtra",
                 abs(afterExtra.longitude - edgeTarget.longitude) <= EDGE_TOLERANCE_DEGREES,
             )
-            assertOutsideAreaFaded(mapView, map)
+            assertNoAreaLayers(map)
         } finally {
             composeRule.runOnUiThread { tracker.detach(map) }
         }
@@ -134,9 +132,8 @@ class CampusAreaEdgeDeviceTest {
 
     private fun isMapInitialized(map: MapLibreMap, bounds: CampusBounds): Boolean {
         val style = map.style?.takeIf { it.isFullyLoaded } ?: return false
-        val hasLayers = style.getLayer(OUTSIDE_LAYER) != null && style.getLayer(EDGE_LAYER) != null
         val target = map.cameraPosition.target?.takeIf { map.cameraPosition.zoom >= MIN_READY_ZOOM }
-        return hasLayers && target != null && isInsideBounds(target, bounds)
+        return style.getLayer(BASEMAP_LAYER) != null && target != null && isInsideBounds(target, bounds)
     }
 
     private fun eastSwipeLine(mapView: MapView): Pair<Offset, Offset> {
@@ -183,29 +180,13 @@ class CampusAreaEdgeDeviceTest {
         )
     }
 
-    private fun assertOutsideAreaFaded(mapView: MapView, map: MapLibreMap) {
-        var state = "styl niewczytany"
-        val isFaded =
-            runCatching {
-                composeRule.waitUntil(READY_TIMEOUT_MS) {
-                    composeRule.runOnUiThread {
-                        val style = map.style
-                        val outside = style?.getLayer(OUTSIDE_LAYER) as? FillLayer
-                        val lines = listOf(EDGE_HALO_LAYER, EDGE_LAYER).mapNotNull { style?.getLayer(it) as? LineLayer }
-                        val areLayersVisible =
-                            outside != null &&
-                                lines.size == 2 &&
-                                outside.visibility.value != Property.NONE &&
-                                outside.fillOpacity.value?.takeIf { it > 0f } != null &&
-                                lines.all { it.visibility.value != Property.NONE }
-                        val point = PointF(mapView.width * OUTSIDE_X_FRACTION, mapView.height * CENTER_FRACTION)
-                        val outsideHits = map.queryRenderedFeatures(point, OUTSIDE_LAYER)
-                        state = "warstwy widoczne: $areLayersVisible, trafienia poza granicą: ${outsideHits.size}"
-                        areLayersVisible && outsideHits.isNotEmpty()
-                    }
-                }
-            }.isSuccess
-        assertTrue("Poza granicą terenu brak wyblakłej mapy ($state)", isFaded)
+    private fun assertNoAreaLayers(map: MapLibreMap) {
+        val ids =
+            composeRule.runOnUiThread {
+                val style = map.style
+                if (style == null) emptyList() else style.layers.map { it.id }
+            }
+        assertTrue("Mapa ma warstwę granicy terenu: $ids", ids.none { it.startsWith(AREA_LAYER_PREFIX) })
     }
 
     private fun awaitUiPause(delayMillis: Long) {
@@ -262,9 +243,8 @@ class CampusAreaEdgeDeviceTest {
         const val MAIN_AREA_NAME = "Kampus główny"
         const val SKIP_HELP_TEXT = "Pomiń instrukcję"
         const val MAIN_AREA_BUTTON_DESCRIPTION = "Teren: Kampus główny. Zmień teren"
-        const val OUTSIDE_LAYER = "teren-poza"
-        const val EDGE_HALO_LAYER = "teren-granica-obwodka"
-        const val EDGE_LAYER = "teren-granica"
+        const val BASEMAP_LAYER = "osm"
+        const val AREA_LAYER_PREFIX = "teren"
         const val EDGE_TOLERANCE_DEGREES = 1e-5
         const val MIN_READY_ZOOM = 10.0
         const val READY_TIMEOUT_MS = 30_000L
@@ -285,7 +265,5 @@ class CampusAreaEdgeDeviceTest {
         const val SWIPE_Y_FRACTION = 0.82f
         const val SWIPE_START_X_FRACTION = 0.78f
         const val SWIPE_END_X_FRACTION = 0.22f
-        const val CENTER_FRACTION = 0.50f
-        const val OUTSIDE_X_FRACTION = 0.85f
     }
 }

@@ -137,8 +137,8 @@ class CampusMapSelectionStyleTest {
     }
 
     /**
-     * Teren i podkład pokazane w gotowym stylu dają ten sam styl co styl zbudowany z nimi, więc zmiana terenu
-     * nie wczytuje stylu od nowa, a mapa wygląda tak samo. Wymagania: US1.7, BR-G5, NFR-39
+     * Podkład terenu pokazany w gotowym stylu daje ten sam styl co styl zbudowany z nim, więc zmiana terenu
+     * nie wczytuje stylu od nowa, a mapa wygląda tak samo. Wymagania: US1.7, NFR-39
      */
     @Test
     fun showsAreaOnReadyStyle() {
@@ -153,7 +153,7 @@ class CampusMapSelectionStyleTest {
             )
         val ready = JsonStyle(styleOf(area = MapSelection(bounds = main), basemap = Basemap(bounds = main)))
         areas.forEach { (area, basemap) ->
-            ready.showArea(area = area, basemap = basemap)
+            ready.showBasemap(basemap = basemap)
             assertEquals(Json.parseToJsonElement(styleOf(area = area, basemap = basemap)), ready.json, "$area")
         }
     }

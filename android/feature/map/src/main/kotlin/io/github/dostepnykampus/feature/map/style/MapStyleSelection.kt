@@ -137,14 +137,12 @@ internal fun MapStyleTarget.showSelection(look: SelectionLook, images: Map<Strin
 }
 
 /**
- * Pokazuje teren z [area] (prostokąt i granica, bez zaznaczenia) i podkład [basemap] w stylu z [campusMapStyle]. Po
- * wywołaniu styl rysuje to samo co styl z [campusMapStyle] dla tego terenu i podkładu, więc zmiana terenu nie
- * wymaga nowego stylu.
+ * Pokazuje podkład terenu [basemap] w stylu z [campusMapStyle]. Po wywołaniu styl rysuje to samo co styl
+ * z [campusMapStyle] z tym podkładem, więc zmiana terenu nie wymaga nowego stylu.
  *
- * Wymagania: US1.7, BR-G5, NFR-39
+ * Wymagania: US1.7, NFR-39
  */
-internal fun MapStyleTarget.showArea(area: MapSelection, basemap: Basemap?) {
-    data(source = AREA_SOURCE, geoJson = areaOf(area).asStyleText())
+internal fun MapStyleTarget.showBasemap(basemap: Basemap?) {
     basemapBounds(bounds = basemap?.bounds)
     minZoom(layer = BASEMAP, zoom = basemap?.minZoom ?: 0.0)
 }

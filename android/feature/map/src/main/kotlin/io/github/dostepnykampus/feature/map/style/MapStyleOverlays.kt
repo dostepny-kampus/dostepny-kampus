@@ -6,91 +6,19 @@
 package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.geo.toPosition
-import io.github.dostepnykampus.core.model.GeoArea
-import io.github.dostepnykampus.core.model.GeoMultiPolygon
-import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.GeoPolygon
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
-import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
-import io.github.dostepnykampus.feature.map.campus.featureCollection
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.maplibre.spatialk.geojson.Feature
 import org.maplibre.spatialk.geojson.Geometry
-import org.maplibre.spatialk.geojson.LineString
 import org.maplibre.spatialk.geojson.Point
-import org.maplibre.spatialk.geojson.Polygon
-import org.maplibre.spatialk.geojson.Position
-
-/** Źródło stylu z geometrią terenu: obszar poza granicą i linia granicy. Wymagania: US1.7, BR-G5 */
-internal const val AREA_SOURCE = "teren"
 
 /** Źródło stylu z punktem zaznaczonego wejścia. Wymagania: US3.3 */
 internal const val CHOSEN_SOURCE = "wejscie"
 
 private val CAPTION_OFFSET_DP = ENTRANCE_MARK_DP / 2 + 2
-private const val EDGE_WIDTH = 2.0
-private const val HALO_WIDTH = 1.5
-private val WORLD_RING = listOf(-180.0 to -85.0, 180.0 to -85.0, 180.0 to 85.0, -180.0 to 85.0, -180.0 to -85.0)
-
-/**
- * Geometria terenu: wielokąt świata z otworem w każdej części granicy [boundary], wielokąty otworów samej granicy
- * (one też leżą poza terenem) i linia po każdym pierścieniu granicy. Bez [boundary] granicą jest prostokąt [bounds].
- *
- * Wymagania: US1.7, BR-G5
- */
-internal fun areaFeatures(boundary: GeoArea?, bounds: CampusBounds): List<Feature<Geometry, JsonObject?>> {
-    val polygons =
-        when (boundary) {
-            is GeoPolygon -> listOf(boundary.rings)
-            is GeoMultiPolygon -> boundary.polygons.map(GeoPolygon::rings)
-            null -> listOf(listOf(bounds.ring()))
-        }
-    val parts = polygons.map { rings -> rings.map { ring -> ring.map(GeoPoint::toPosition) } }
-    val world = WORLD_RING.map { (longitude, latitude) -> Position(longitude = longitude, latitude = latitude) }
-    val outside = Polygon(listOf(world) + parts.map { it.first().clockwise() })
-    val holes = parts.flatMap { it.drop(1) }.map { Feature(Polygon(listOf(it)), null) }
-    val lines = parts.flatten().map { Feature(LineString(it), null) }
-    return listOf(Feature(outside, null)) + holes + lines
-}
-
-/** Dane źródła [AREA_SOURCE] dla terenu z [selection]; bez prostokąta terenu źródło jest puste. */
-internal fun areaOf(selection: MapSelection): JsonElement =
-    featureCollection(selection.bounds?.let { areaFeatures(boundary = selection.boundary, bounds = it) }.orEmpty())
-
-/**
- * Warstwy terenu: kolor [MapStyleColors.outside] poza granicą, a na granicy linia z obwódką pod spodem.
- *
- * Wymagania: US1.7, BR-G5, NFR-16
- */
-internal fun areaLayers(colors: MapStyleColors): List<JsonObject> {
-    val shape = expression("geometry-type")
-    val outside =
-        styleLayer(id = OUTSIDE_LAYER, type = "fill", source = AREA_SOURCE) {
-            put(key = "filter", element = expression("==", shape, JsonPrimitive("Polygon")))
-            paint(
-                "fill-color" to JsonPrimitive(colors.outside),
-                "fill-opacity" to JsonPrimitive(colors.outsideOpacity),
-            )
-        }
-    val line = expression("==", shape, JsonPrimitive("LineString"))
-    val haloWidth = EDGE_WIDTH + 2 * HALO_WIDTH
-    return listOf(
-        outside,
-        lineLayer(
-            id = EDGE_HALO_LAYER,
-            source = AREA_SOURCE,
-            color = colors.edgeHalo,
-            width = haloWidth,
-            filter = line,
-        ),
-        lineLayer(id = EDGE_LAYER, source = AREA_SOURCE, color = colors.edge, width = EDGE_WIDTH, filter = line),
-    )
-}
 
 /** Punkt zaznaczonego wejścia [chosen] z nazwą i obrazem podpisu. Wymagania: US3.3 */
 internal fun chosenFeatures(chosen: SelectedEntrance): List<Feature<Geometry, JsonObject?>> {
@@ -114,13 +42,4 @@ internal fun chosenLayers(): List<JsonObject> {
         symbolLayer(id = ENTRANCE_PIN_LAYER, source = CHOSEN_SOURCE, image = pin, below, OVERLAP),
         symbolLayer(id = ENTRANCE_CAPTION_LAYER, source = CHOSEN_SOURCE, image = caption, above, offset, OVERLAP),
     )
-}
-
-private fun CampusBounds.ring(): List<GeoPoint> =
-    listOf(west to south, east to south, east to north, west to north, west to south)
-        .map { (longitude, latitude) -> GeoPoint(longitude = longitude, latitude = latitude) }
-
-private fun List<Position>.clockwise(): List<Position> {
-    val area = zipWithNext().sumOf { (from, to) -> from.longitude * to.latitude - to.longitude * from.latitude }
-    return if (area > 0) reversed() else this
 }
