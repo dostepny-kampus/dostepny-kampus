@@ -136,7 +136,6 @@ private fun InfoHeader(onClose: () -> Unit) {
             modifier = Modifier.weight(1f).semantics { heading() },
             style = MaterialTheme.typography.titleMedium,
         )
-        // Wizualnie niższy od tytułu arkusza; cel dotyku 48 dp zapewnia sam przycisk Material.
         val padding = PaddingValues(horizontal = Odstepy.m, vertical = Odstepy.s)
         OutlinedButton(onClick = onClose, contentPadding = padding) {
             Text(stringResource(R.string.mapa_zamknij))
