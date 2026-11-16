@@ -8,9 +8,9 @@ package io.github.dostepnykampus.feature.map.overlay
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,7 +32,6 @@ import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
-import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
@@ -137,7 +136,9 @@ private fun InfoHeader(onClose: () -> Unit) {
             modifier = Modifier.weight(1f).semantics { heading() },
             style = MaterialTheme.typography.titleMedium,
         )
-        OutlinedButton(onClick = onClose, modifier = Modifier.heightIn(min = CeleDotyku.minimum)) {
+        // Wizualnie niższy od tytułu arkusza; cel dotyku 48 dp zapewnia sam przycisk Material.
+        val padding = PaddingValues(horizontal = Odstepy.m, vertical = Odstepy.s)
+        OutlinedButton(onClick = onClose, contentPadding = padding) {
             Text(stringResource(R.string.mapa_zamknij))
         }
     }
