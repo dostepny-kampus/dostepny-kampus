@@ -116,4 +116,3 @@ internal fun CameraPosition.toCamera(): MapCamera =
         center = GeoPoint(longitude = target?.longitude ?: 0.0, latitude = target?.latitude ?: 0.0),
         zoom = zoom,
     )
-
