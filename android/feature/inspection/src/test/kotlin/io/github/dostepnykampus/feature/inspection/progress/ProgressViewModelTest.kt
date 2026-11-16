@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.Clock
 import java.time.Instant
+import java.time.ZoneId
 import java.time.ZoneOffset
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -72,6 +73,29 @@ class ProgressViewModelTest {
             assertEquals(ProgressUiState.Ready(listOf(BASIC), READ_AT), state.value, "nowa lista po odświeżeniu")
         }
 
+    /**
+     * Przykład: Koordynator otworzył postęp 28.10.2026 o 10:15, a potem na serwer dotarł znacznik czwartego piętra A-1.
+     * Scenariusz: postep-inwentaryzacji.feature: Postęp podaje datę i godzinę odczytu i daje się odświeżyć
+     */
+    @Test
+    fun showsNewReadAfterRefresh() {
+        val before = DETAILED.copy(coverage = InspectionCoverage.Floors(floorsTotal = 5, floorsInspected = 3))
+        val replies = listOf(ServerReply.Ok(listOf(before)), ServerReply.Ok(listOf(DETAILED))).iterator()
+        val source =
+            object : InspectionProgress {
+                override suspend fun buildings(): ServerReply<List<BuildingProgress>> = replies.next()
+
+                override suspend fun revoke(markerId: String): ServerReply<Unit> = ServerReply.Missing
+            }
+        runViewModelTest(source, StepClock(OPENED_AT, READ_AT)) { viewModel ->
+            runCurrent()
+            assertEquals(ProgressUiState.Ready(listOf(before), OPENED_AT), viewModel.state.value, "po otwarciu")
+            viewModel.refresh()
+            runCurrent()
+            assertEquals(ProgressUiState.Ready(listOf(DETAILED), READ_AT), viewModel.state.value, "po odświeżeniu")
+        }
+    }
+
     @Test
     fun noSecondReadWhileBusy() {
         val reads = AtomicInteger()
@@ -103,14 +127,18 @@ class ProgressViewModelTest {
 
                 override suspend fun revoke(markerId: String): ServerReply<Unit> = ServerReply.Missing
             }
-        runViewModelTest(source, block)
+        runViewModelTest(source = source, block = block)
     }
 
-    private fun runViewModelTest(source: InspectionProgress, block: suspend TestScope.(ProgressViewModel) -> Unit) {
+    private fun runViewModelTest(
+        source: InspectionProgress,
+        clock: Clock = Clock.fixed(READ_AT, ZoneOffset.UTC),
+        block: suspend TestScope.(ProgressViewModel) -> Unit,
+    ) {
         val dispatcher = StandardTestDispatcher()
         Dispatchers.setMain(dispatcher)
         try {
-            runTest(dispatcher) { block(ProgressViewModel(source, Clock.fixed(READ_AT, ZoneOffset.UTC))) }
+            runTest(dispatcher) { block(ProgressViewModel(source, clock)) }
         } finally {
             Dispatchers.resetMain()
         }
@@ -119,6 +147,7 @@ class ProgressViewModelTest {
     private companion object {
         const val SERVER_ERROR = 500
         const val FORBIDDEN = 403
+        val OPENED_AT: Instant = Instant.parse("2026-10-28T09:15:00Z")
         val READ_AT: Instant = Instant.parse("2026-11-12T10:42:00Z")
         val DETAILED =
             BuildingProgress(
@@ -141,4 +170,15 @@ class ProgressViewModelTest {
                 markers = emptyList(),
             )
     }
+}
+
+/** Zegar, który przy każdym odczycie podaje kolejną chwilę z listy. */
+private class StepClock(vararg instants: Instant) : Clock() {
+    private val next = instants.iterator()
+
+    override fun instant(): Instant = next.next()
+
+    override fun getZone(): ZoneId = ZoneOffset.UTC
+
+    override fun withZone(zone: ZoneId): Clock = this
 }
