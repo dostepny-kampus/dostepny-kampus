@@ -75,6 +75,17 @@ jobs:
     with:
       sha: ${{ needs.cel.outputs.sha }}
 
+  wydajnosc:
+    needs: cel
+    if: needs.cel.outputs.jest == 'true'
+    # Pomiary nie wchodzą do `wynik`: ich porażka albo szum emulatora nie czerwieni sprintu. Zapis historii na gałąź
+    # danych wymaga `contents: write`, a uprawnienia wywołującego muszą pokryć wszystkie zadania wywoływanego workflow.
+    permissions:
+      contents: write
+    uses: ./.github/workflows/wydajnosc.yml
+    with:
+      sha: ${{ needs.cel.outputs.sha }}
+
   wynik:
     needs: [cel, android, serwer]
     # always(): status trzeba zapisać także po porażce albo anulowaniu przebiegu Androida albo PIT serwera.
