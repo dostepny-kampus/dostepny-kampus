@@ -11,7 +11,11 @@ import org.junit.jupiter.api.Test
 import java.io.IOException
 import java.net.SocketTimeoutException
 
-/** Linia logu wymiany z serwerem ma metodę, ścieżkę bez identyfikatorów, wynik i czas, bez zapytania. Wymagania: NFR-57 */
+/**
+ * Linia logu wymiany ma metodę, ścieżkę bez identyfikatorów, wynik i czas, bez zapytania.
+ *
+ * Wymagania: NFR-57
+ */
 class ExchangeLogTest {
     private fun get(url: String): Request = Request.Builder().url(url).build()
 
@@ -21,11 +25,15 @@ class ExchangeLogTest {
 
         val line = exchangeLine(request, ApiResult.Success(Unit), millis = 42)
 
-        assertEquals("GET /submissions/{id} -> ok, 42 ms", line, "Linia ma {id} zamiast identyfikatora i nie ma zapytania")
+        assertEquals(
+            "GET /submissions/{id} -> ok, 42 ms",
+            line,
+            "Linia ma {id} zamiast identyfikatora i nie ma zapytania",
+        )
     }
 
     @Test
-    fun namesNetworkErrorClassWithoutMessage() {
+    fun namesNetworkErrorClass() {
         val failure: IOException = SocketTimeoutException("tajny adres 10.0.0.7")
 
         val line = exchangeLine(get("http://serwer/buildings"), ApiResult.NetworkError(failure), millis = 3000)

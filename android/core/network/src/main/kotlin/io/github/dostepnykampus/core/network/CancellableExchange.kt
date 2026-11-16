@@ -51,7 +51,6 @@ internal suspend fun <T> OkHttpClient.exchangeBody(
     }
 }
 
-/** Wysyła [request] i czeka na wynik [read] albo błąd sieci; anulowanie korutyny przerywa żądanie. */
 private suspend fun <T> OkHttpClient.awaitExchange(
     request: Request,
     read: (Int, ResponseBody) -> ApiResult<T>,
