@@ -150,7 +150,8 @@ internal fun planLayers(colors: PlanColors, floor: String? = null): List<JsonObj
                 image = property(IMAGE),
                 "icon-size" to signSize(),
                 "symbol-sort-key" to signOrder(),
-            ) + (FILTER to planFilter(floor = floor, kind = SIGN)),
+            ) +
+                (FILTER to planFilter(floor = floor, kind = SIGN)),
         ),
         JsonObject(
             symbolLayer(id = PLAN_NUMBERS_LAYER, source = PLAN_SOURCE, image = property(IMAGE)) +
@@ -162,7 +163,7 @@ internal fun planLayers(colors: PlanColors, floor: String? = null): List<JsonObj
 
 private fun signSize(): JsonElement {
     val stops = PLAN_SIGN_SIZES.flatMap { (zoom, dp) -> listOf(JsonPrimitive(zoom), JsonPrimitive(dp / PLAN_SIGN_DP)) }
-    return expression("interpolate", expression("linear"), expression("zoom"), *stops.toTypedArray())
+    return JsonArray(listOf(JsonPrimitive("interpolate"), expression("linear"), expression("zoom")) + stops)
 }
 
 private fun signOrder(): JsonElement =
