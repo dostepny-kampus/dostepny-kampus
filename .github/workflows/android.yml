@@ -125,7 +125,8 @@ jobs:
         timeout-minutes: 15
         run: |
           cp infra/.env.example infra/.env
-          docker compose -f infra/docker-compose.yml up -d --wait
+          docker compose -f infra/docker-compose.yml up -d --wait postgis zdjecia logowanie
+          docker compose -f infra/docker-compose.yml run --rm zdjecia-konto
           set -a
           . infra/.env
           set +a

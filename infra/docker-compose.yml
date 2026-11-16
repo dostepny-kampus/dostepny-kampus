@@ -24,9 +24,8 @@ services:
   zdjecia:
     image: rustfs/rustfs:1.0.4
     environment:
-      # TODO(#2696): serwer dostanie własny klucz ograniczony do kubełka zdjęć.
-      RUSTFS_ACCESS_KEY: ${DK_PHOTOS_ACCESS_KEY:?ustaw DK_PHOTOS_ACCESS_KEY w infra/.env}
-      RUSTFS_SECRET_KEY: ${DK_PHOTOS_SECRET_KEY:?ustaw DK_PHOTOS_SECRET_KEY w infra/.env}
+      RUSTFS_ACCESS_KEY: ${DK_PHOTOS_ROOT_ACCESS_KEY:?ustaw DK_PHOTOS_ROOT_ACCESS_KEY w infra/.env}
+      RUSTFS_SECRET_KEY: ${DK_PHOTOS_ROOT_SECRET_KEY:?ustaw DK_PHOTOS_ROOT_SECRET_KEY w infra/.env}
     ports:
       - "127.0.0.1:${DK_PHOTOS_PORT:-9000}:9000"
     volumes:
@@ -38,6 +37,22 @@ services:
       retries: 12
       start_period: 10s
     restart: unless-stopped
+  zdjecia-konto:
+    image: rustfs/rc:v0.1.37
+    entrypoint: ["sh", "/konto-serwera.sh"]
+    environment:
+      DK_PHOTOS_ENDPOINT: http://zdjecia:9000
+      DK_PHOTOS_ROOT_ACCESS_KEY: ${DK_PHOTOS_ROOT_ACCESS_KEY:?ustaw DK_PHOTOS_ROOT_ACCESS_KEY w infra/.env}
+      DK_PHOTOS_ROOT_SECRET_KEY: ${DK_PHOTOS_ROOT_SECRET_KEY:?ustaw DK_PHOTOS_ROOT_SECRET_KEY w infra/.env}
+      DK_PHOTOS_BUCKET: ${DK_PHOTOS_BUCKET:-zdjecia}
+      DK_PHOTOS_ACCESS_KEY: ${DK_PHOTOS_ACCESS_KEY:?ustaw DK_PHOTOS_ACCESS_KEY w infra/.env}
+      DK_PHOTOS_SECRET_KEY: ${DK_PHOTOS_SECRET_KEY:?ustaw DK_PHOTOS_SECRET_KEY w infra/.env}
+    volumes:
+      - ./rustfs/konto-serwera.sh:/konto-serwera.sh:ro
+    depends_on:
+      zdjecia:
+        condition: service_healthy
+    restart: "no"
   logowanie:
     image: quay.io/keycloak/keycloak:26.4
     command: ["start-dev", "--import-realm", "--http-port=8180", "--health-enabled=true"]
