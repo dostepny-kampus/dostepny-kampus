@@ -94,10 +94,10 @@ class BuildingCatalogFailureTest {
                         held.removeFirstOrNull()?.run()
                     }
                     results.joinAll()
-                    results.map { it.getCompletionExceptionOrNull()?.javaClass }
+                    results.map { it.getCompletionExceptionOrNull() is IllegalArgumentException }
                 }
             }
-        val expected = List(WAITERS) { IllegalArgumentException::class.java }
+        val expected = List(WAITERS) { true }
         assertEquals(expected, failures, "wywołujący nie dostali tego samego błędu")
         assertEquals(1, reads.get(), "plik czytany raz")
     }
