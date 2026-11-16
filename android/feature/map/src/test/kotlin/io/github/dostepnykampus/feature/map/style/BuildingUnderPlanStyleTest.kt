@@ -79,7 +79,7 @@ class BuildingUnderPlanStyleTest {
 
     /** Obrys wybranego budynku z widocznym planem idzie po ścianie piętra, a nie po konturze z OpenStreetMap. */
     @Test
-    fun drawsSelectedOutlineAlongFloorWall() {
+    fun outlinesSelectedAlongWall() {
         val look = look(building = "A-1")
         assertEquals("""["!",true]""", look.selectedFilter.toString(), "Obrys wybranego idzie po konturze OSM")
         assertEquals(planFilter(floor = "P0", kind = "outline"), look.selectedPlanFilter, "Obrys nie idzie po ścianie")

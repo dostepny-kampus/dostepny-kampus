@@ -8,7 +8,6 @@ package io.github.dostepnykampus.feature.map.style
 import android.graphics.Bitmap
 import io.github.dostepnykampus.feature.map.campus.BUILDING_DETAILED
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
-import io.github.dostepnykampus.feature.map.campus.LABEL_SEPARATOR
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.featureCollection
 import io.github.dostepnykampus.feature.map.campus.outlineOf
@@ -17,7 +16,8 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
-private const val SELECTED_WIDTH = 4.0
+/** Grubość obrysu wybranego budynku w dp, większa niż kontur. Wymagania: US1.1 */
+internal const val SELECTED_WIDTH = 4.0
 private const val SYMBOLS = "symbols"
 
 private const val MARKS_MIN_ZOOM = 17.0
@@ -28,26 +28,6 @@ private val NO_FEATURES = expression("!", JsonPrimitive(true))
 
 /** Stan obiektu konturu budynku w źródle [BUILDINGS_SOURCE]: kontur przygaszony obok zaznaczonego budynku. */
 internal const val DIMMED_STATE = "przygaszony"
-
-/** Stan obiektu konturu budynku w źródle [BUILDINGS_SOURCE]: budynek pod widocznym planem piętra. */
-internal const val UNDER_PLAN_STATE = "pod planem"
-
-/** Warstwa grubszego obrysu `pwr_wybrany` po ścianie piętra wybranego budynku z widocznym planem. */
-internal const val SELECTED_PLAN_LAYER = "zaznaczenie_plan"
-
-/**
- * Krycie tła i konturu budynku ze stanu obiektu: budynek ze stanem [UNDER_PLAN_STATE] jest niewidoczny, bo jego
- * miejsce zajmuje plan piętra. Wyrażenie jest stałe, jak barwa z [tone].
- *
- * Wymagania: US16.1
- */
-internal fun opacityUnderPlan(): JsonElement =
-    expression(
-        "case",
-        expression("boolean", expression("feature-state", JsonPrimitive(UNDER_PLAN_STATE)), JsonPrimitive(false)),
-        JsonPrimitive(0.0),
-        JsonPrimitive(1.0),
-    )
 
 /**
  * Barwa konturów ze stanu obiektu: [dimmed] dla konturów ze stanem [DIMMED_STATE], [own] dla pozostałych. Wyrażenie
@@ -77,16 +57,6 @@ internal fun selectedLayer(filter: JsonElement, colors: MapStyleColors): JsonObj
     lineLayer(
         id = SELECTED_LAYER,
         source = BUILDINGS_SOURCE,
-        color = colors.selectedOutline,
-        width = SELECTED_WIDTH,
-        filter = filter,
-    )
-
-/** Warstwa [SELECTED_PLAN_LAYER] z filtrem [filter] z [SelectionLook.selectedPlanFilter]. Wymagania: US1.1, US16.1 */
-internal fun selectedPlanLayer(filter: JsonElement, colors: MapStyleColors): JsonObject =
-    lineLayer(
-        id = SELECTED_PLAN_LAYER,
-        source = PLAN_SOURCE,
         color = colors.selectedOutline,
         width = SELECTED_WIDTH,
         filter = filter,
@@ -225,11 +195,6 @@ internal fun MapStyleTarget.showBasemap(basemap: Basemap?) {
  */
 internal fun ofBuildings(symbols: List<String>): JsonElement =
     expression("case", anyOf(symbols), JsonPrimitive(true), JsonPrimitive(false))
-
-private fun withoutLabel(symbols: List<String>): JsonElement =
-    expression("!=", property(LABEL), JsonPrimitive(symbols.joinToString(separator = LABEL_SEPARATOR)))
-
-private fun planOutlineFilter(floor: String?): JsonElement = planFilter(floor = floor, kind = "outline")
 
 private fun anyOf(symbols: List<String>): JsonElement =
     JsonArray(listOf(JsonPrimitive("any")) + symbols.map { expression("in", JsonPrimitive(it), property(SYMBOLS)) })
