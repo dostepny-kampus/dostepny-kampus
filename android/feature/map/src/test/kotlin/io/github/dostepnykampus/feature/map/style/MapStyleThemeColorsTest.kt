@@ -39,7 +39,7 @@ class MapStyleThemeColorsTest {
     fun takesDarkEdgeFromTokens() {
         val colors = themed(isDark = true)
         assertEquals("Linia granicy w motywie ciemnym", "#D5DADC", colors.edge)
-        assertEquals("Obwódka linii w motywie ciemnym", "#15181A", colors.edgeHalo)
+        assertEquals("Obwódka linii w motywie ciemnym", "#20272B", colors.edgeHalo)
         assertEquals("Tło motywu ciemnego poza terenem", "#252B2F", colors.outside)
         assertEquals("Krycie poza terenem w motywie ciemnym", 0.65, colors.outsideOpacity, 0.0)
     }
