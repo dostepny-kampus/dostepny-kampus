@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -30,13 +32,14 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -135,7 +138,7 @@ internal fun CampusSearch(
         SearchHeader(
             query = query,
             onQueryChange = onQueryChange,
-            onFieldFocus = { isChosen = false },
+            onFieldTap = { isChosen = false },
             isList = isList,
             onListChange = onListChange,
         )
@@ -165,7 +168,7 @@ internal fun CampusSearch(
 private fun SearchHeader(
     query: String,
     onQueryChange: (String) -> Unit,
-    onFieldFocus: () -> Unit,
+    onFieldTap: () -> Unit,
     isList: Boolean,
     onListChange: (Boolean) -> Unit,
 ) {
@@ -180,7 +183,7 @@ private fun SearchHeader(
                 modifier = Modifier.semantics { heading() },
                 style = MaterialTheme.typography.titleLarge,
             )
-            SymbolField(query, onQueryChange, onFieldFocus)
+            SymbolField(query, onQueryChange, onFieldTap)
             ViewToggle(isList, onListChange)
         }
     }
@@ -229,11 +232,16 @@ private fun ResultPanel(content: @Composable ColumnScope.() -> Unit) {
 }
 
 @Composable
-private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onFocus: () -> Unit) {
+private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: () -> Unit) {
+    val interactions = remember { MutableInteractionSource() }
+    LaunchedEffect(interactions) {
+        interactions.interactions.collect { if (it is PressInteraction.Release) onTap() }
+    }
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
-        modifier = Modifier.fillMaxWidth().onFocusChanged { if (it.isFocused) onFocus() },
+        modifier = Modifier.fillMaxWidth(),
+        interactionSource = interactions,
         placeholder = { Text(stringResource(R.string.mapa_szukaj_podpowiedz)) },
         leadingIcon = { Icon(SearchIcon, contentDescription = null) },
         trailingIcon = {
