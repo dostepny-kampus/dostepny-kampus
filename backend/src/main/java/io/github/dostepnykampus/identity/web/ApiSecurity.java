@@ -106,6 +106,9 @@ public final class ApiSecurity {
             "/rooms", "/submissions", "/submissions/{id}",
             "/submissions/{id}/photos/{photo}"
         ).permitAll();
+        rules.requestMatchers(HttpMethod.GET, "/actuator/health").permitAll();
+        rules.requestMatchers(HttpMethod.GET, "/actuator/metrics", "/actuator/metrics/**")
+            .hasRole("COORDINATOR");
         rules.requestMatchers(HttpMethod.PUT, "/submissions/{id}").hasRole("COLLECTOR");
         rules.requestMatchers(HttpMethod.GET, "/review/queue", "/submissions/{id}/similar")
             .hasRole("VERIFIER");
