@@ -7,11 +7,12 @@ set -euo pipefail
 # Dopisuje wpis historii wydajności (jedna linia JSON z wydajnosc-statystyki.sh) do pliku wydajnosc.jsonl na gałęzi
 # danych i wypisuje podsumowanie (Markdown) z trendem względem poprzedniego wpisu. Gałąź danych nie zawiera kodu i nie
 # jest związana z historią sprintu; powstaje przy pierwszym zapisie. Zapis bez force-push, do 3 prób po wyścigu.
-# Środowisko: WPIS (plik z jednym wpisem), ZDALNE (adres lub nazwa zdalnego repozytorium, domyślnie origin),
+# Środowisko: WPIS (plik z jednym wpisem), PLIK (plik historii, domyślnie wydajnosc.jsonl), BEZ_PODSUMOWANIA (niepuste:
+# tylko zapis, bez tabeli trendu), ZDALNE (adres lub nazwa zdalnego repozytorium, domyślnie origin),
 # GALAZ_DANYCH (domyślnie dane-wydajnosci). Błąd zapisu nie zmienia kodu wyjścia, bo historia nie może czerwienić sprintu.
 zdalne="${ZDALNE:-origin}"
 galaz="${GALAZ_DANYCH:-dane-wydajnosci}"
-plik=wydajnosc.jsonl
+plik="${PLIK:-wydajnosc.jsonl}"
 katalog="$(mktemp -d)"
 trap 'rm -rf "$katalog"' EXIT
 git init -q "$katalog"
@@ -74,7 +75,7 @@ for proba in 1 2 3; do
   elif ! git -C "$katalog" rev-parse -q --verify "$galaz" >/dev/null; then
     git -C "$katalog" checkout -q --orphan "$galaz"
   fi
-  if ((proba == 1)); then
+  if ((proba == 1)) && [[ -z ${BEZ_PODSUMOWANIA:-} ]]; then
     podsumowanie
   fi
   cat "$WPIS" >>"$katalog/$plik"
