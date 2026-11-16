@@ -29,10 +29,12 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.overlay.MapInfo
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -83,6 +85,17 @@ class MapInfoTest {
         val close = compose.onNodeWithText("Zamknij").assertHasClickAction()
         close.assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button)).performClick()
         compose.onNodeWithText("Legenda").assertDoesNotExist()
+    }
+
+    /** Źródło podkładu: OpenFreeMap i OpenMapTiles z odnośnikami do stron projektów. Wymagania: NFR-37 */
+    @Test
+    fun namesBasemapSource() {
+        compose.setContent { Info(isOpenAtStart = true) }
+        val node = compose.onNodeWithText("Podkład mapy: OpenFreeMap © OpenMapTiles.").fetchSemanticsNode()
+        val text = node.config[SemanticsProperties.Text].single()
+        val links = text.getLinkAnnotations(start = 0, end = text.length)
+        val urls = links.map { (it.item as LinkAnnotation.Url).url }
+        assertEquals("odnośniki podkładu", listOf("https://openfreemap.org/", "https://openmaptiles.org/"), urls)
     }
 
     /** Bez dnia w danych panel podaje samo źródło. Wymagania: NFR-40 */

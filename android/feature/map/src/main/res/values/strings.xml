@@ -15,6 +15,9 @@
     <string name="mapa_zrodla">Źródła danych</string>
     <string name="mapa_zrodla_osm_przed">"Mapa ulic i kontury budynków: "</string>
     <string name="mapa_zrodla_osm_po">, dane na otwartej licencji ODbL.</string>
+    <string name="mapa_zrodla_podklad">Podkład mapy: %1$s © %2$s.</string>
+    <string name="mapa_openfreemap">OpenFreeMap</string>
+    <string name="mapa_openmaptiles">OpenMapTiles</string>
     <string name="mapa_zrodla_pwr">Wejścia i plany pięter: Źródło: Politechnika Wrocławska.</string>
     <string name="mapa_zrodla_pwr_stan">Wejścia i plany pięter: Źródło: Politechnika Wrocławska, stan z %1$s.</string>
     <string name="mapa_osm">© OpenStreetMap contributors</string>
