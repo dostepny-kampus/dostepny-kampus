@@ -7,6 +7,11 @@ dk:
   rate-limit:
     public-per-minute: ${DK_PUBLIC_RATE_LIMIT:60}
     exempt: ${DK_RATE_LIMIT_UNLIMITED:}
+logging:
+  level:
+    io.github.dostepnykampus: ${DK_LOG_LEVEL:INFO}
+  pattern:
+    correlation: "[%X{requestId:-}] "
 spring:
   application:
     name: dostepny-kampus
