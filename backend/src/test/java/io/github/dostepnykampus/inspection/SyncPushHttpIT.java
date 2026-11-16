@@ -160,7 +160,7 @@ final class SyncPushHttpIT {
             String.format(
                 "%d %s %d %s, zapisanych %d", response.getStatus(),
                 results.path(0).path("outcome").asString(),
-                results.path(0).path("reason").path("status").asInt(),
+                results.path(0).path("problem").path("status").asInt(),
                 results.path(1).path("outcome").asString(), SyncPushHttpIT.saved(context, good)
             ),
             "Błąd jednej operacji zatrzymał pozostałe albo nie dał jej wyniku REJECTED 400"
