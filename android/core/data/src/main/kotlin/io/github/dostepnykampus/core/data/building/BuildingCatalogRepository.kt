@@ -157,7 +157,10 @@ public class BuildingCatalogRepository internal constructor(
     private suspend fun lead(mine: Running, isFresh: Boolean): BuildingCatalog =
         try {
             supervisorScope {
-                val work = async(start = CoroutineStart.UNDISPATCHED) { load(isFresh).also { mine.complete(Result.success(it)) } }
+                val work =
+                    async(start = CoroutineStart.UNDISPATCHED) {
+                        load(isFresh).also { mine.complete(Result.success(it)) }
+                    }
                 work.invokeOnCompletion { cause ->
                     when {
                         cause is CancellationException -> mine.cancel()
