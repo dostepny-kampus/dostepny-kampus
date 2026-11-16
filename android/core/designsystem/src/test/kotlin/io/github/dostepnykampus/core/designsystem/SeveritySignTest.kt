@@ -60,8 +60,8 @@ class SeveritySignTest {
     @Test
     fun drawsBlockingAsPlateWithBar() {
         val image = severityImage(severity = Severity.BLOCKING, sizePx = SIZE, shapeColor = INK, markColor = PAPER)
-        val bar = listOf(6f, 9f, 12f, 15f, 18f).map { image.at(x = it, y = 12f) }
-        val plate = listOf(12f to 5f, 12f to 19f, 3.5f to 12f, 20.5f to 12f).map { (x, y) -> image.at(x = x, y = y) }
+        val bar = listOf(6f, 9f, 12f, 15f, 18f).map { image.pixelOnSignGrid(x = it, y = 12f) }
+        val plate = listOf(12f to 5f, 12f to 19f, 3.5f to 12f, 20.5f to 12f).map { (x, y) -> image.pixelOnSignGrid(x = x, y = y) }
 
         assertEquals("belka „Blokady” nie jest pozioma na całej szerokości", List(bar.size) { PAPER.toArgb() }, bar)
         assertEquals("tablica „Blokady” nie otacza belki", List(plate.size) { INK.toArgb() }, plate)
@@ -97,8 +97,7 @@ class SeveritySignTest {
         }
     }
 
-    /** Piksel obrazu znaku w punkcie ([x], [y]) siatki 24 × 24, z marginesem obwódki 1 jak w [severityImage]. */
-    private fun Bitmap.at(x: Float, y: Float): Int {
+    private fun Bitmap.pixelOnSignGrid(x: Float, y: Float): Int {
         val scale = width / (GRID + 2 * HALO)
         return getPixel(((x + HALO) * scale).toInt(), ((y + HALO) * scale).toInt())
     }
@@ -111,8 +110,8 @@ class SeveritySignTest {
 
     private companion object {
         const val SIZE = 96
-        const val GRID = 24f
-        const val HALO = 1f
+        const val GRID = 24f // siatka znaku 24 × 24
+        const val HALO = 1f // margines obwódki w severityImage
         val INK = Color(color = 0xFF10242C)
         val PAPER = Color(color = 0xFFFFFFFF)
     }
