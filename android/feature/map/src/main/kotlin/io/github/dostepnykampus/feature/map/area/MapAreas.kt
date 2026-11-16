@@ -54,11 +54,14 @@ internal class MapAreas(
     private val followed: MutableState<String?>,
     private val noticeMemory: NoticeMemory = NoticeMemory(),
 ) {
-    /** Nazwa terenu ustawionego przez osobę albo wyborem budynku; `null`, gdy mapa stoi na terenie startowym. */
-    val chosenName: String? get() = chosen.value
+    /**
+     * Nazwa terenu ustawionego przez osobę albo wyborem budynku; `null`, gdy mapa stoi na terenie startowym. Nowy
+     * budynek z innego terenu daje swój teren już w klatce wyboru, zanim [followSelection] go zapisze.
+     */
+    val chosenName: String? get() = arriving()?.name ?: chosen.value
 
     /** Teren pokazany na mapie; `null` bez danych mapy. */
-    val current: MapArea? get() = data?.areaOf(chosen.value, symbol)
+    val current: MapArea? get() = data?.areaOf(chosenName, symbol)
 
     /**
      * Lista terenów: pokazany pierwszy, pozostałe od najbliższego, z liczbą budynków i odległością.
@@ -151,6 +154,9 @@ internal class MapAreas(
             followed.value = selected
         }
     }
+
+    private fun arriving(): MapArea? =
+        symbol?.takeIf { it != followed.value }?.let { data?.areaOf(chosen = null, symbol = it) }
 
     /**
      * Wybiera teren [name] i zwraca prostokąt wszystkich jego budynków, który mapa pokazuje po wyborze.
