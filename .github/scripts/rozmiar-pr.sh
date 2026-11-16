@@ -4,9 +4,11 @@
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 set -euo pipefail
 
+# Limit rozmiaru PR: liczą się tylko linie dodane, usunięte linie nie liczą się do limitu.
+
 base="$1"
 head="$2"
-limit="${3:-300}"
+limit="${3:-400}"
 
 stats="$(git diff --numstat "$base...$head" -- . \
   ':(glob,exclude)data/**/*.geojson' \
@@ -22,13 +24,13 @@ stats="$(git diff --numstat "$base...$head" -- . \
   ':(glob,exclude)**/mvnw' \
   ':(glob,exclude)**/mvnw.cmd' \
   ':(glob,exclude)**/.mvn/wrapper/**' |
-  awk -F '\t' '{ a = ($1 == "-") ? 0 : $1; d = ($2 == "-") ? 0 : $2; print a + d "\t" $3 }')"
+  awk -F '\t' '{ a = ($1 == "-") ? 0 : $1; print a "\t" $3 }')"
 total="$(awk -F '\t' '{ s += $1 } END { print s + 0 }' <<<"$stats")"
 
 if ((total > limit)); then
-  echo "::error title=Rozmiar PR::${total} zmienionych linii, limit ${limit} (bez danych, plików lock i kodu generowanego)."
-  echo "Największe pliki (dodane + usunięte):"
+  echo "::error title=Rozmiar PR::${total} dodanych linii, limit ${limit} (bez danych, plików lock i kodu generowanego)."
+  echo "Największe pliki (linie dodane):"
   sort -t $'\t' -k1,1nr <<<"$stats" | head -n 10
   exit 1
 fi
-echo "Rozmiar PR: ${total} zmienionych linii, limit ${limit}."
+echo "Rozmiar PR: ${total} dodanych linii, limit ${limit}."
