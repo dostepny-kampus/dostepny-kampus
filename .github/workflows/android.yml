@@ -208,8 +208,22 @@ jobs:
           echo "Testy w APK: ${wszystkie}"
           cat "$RUNNER_TEMP/lista-testow.txt"
           : > "$RUNNER_TEMP/instrumentacja.txt"
+          # Emulator potrafi zniknąć między testami bez śladu w swoim logu: przed każdym testem czekamy na niego do 2 min,
+          # a gdy nie wróci, krok kończy się z nazwą testu, stanem procesu emulatora i śladami braku pamięci.
+          czekaj_na_emulator() {
+            if ! timeout 120 bash -c 'adb wait-for-device && until [[ "$(adb shell getprop sys.boot_completed | tr -d "\r")" == 1 ]]; do sleep 5; done'; then
+              proces="$(pgrep -f qemu-system > /dev/null && echo działa || echo 'nie działa')"
+              echo "::error title=Emulator::Emulator odłączył się przed testem $1 (proces emulatora: ${proces})."
+              adb devices
+              free -m
+              sudo dmesg | grep -iE 'out of memory|killed process' | tail -n 5 || true
+              tail -n 20 "$RUNNER_TEMP/emulator.log"
+              exit 1
+            fi
+          }
           zaliczone=0
           while read -r test; do
+            czekaj_na_emulator "$test"
             adb shell pm clear io.github.dostepnykampus < /dev/null
             adb shell am instrument -w -e class "$test" "$uruchamiacz" < /dev/null | tr -d '\r' | tee -a "$RUNNER_TEMP/instrumentacja.txt" > "$RUNNER_TEMP/wynik.txt"
             cat "$RUNNER_TEMP/wynik.txt"
