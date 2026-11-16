@@ -89,6 +89,8 @@ public final class SubmissionPhotos {
      * Zapisuje zdjęcie bez metadanych; ponowne wysłanie tego samego
      * zdjęcia je zastępuje, ale w weryfikacji zapisanego zdjęcia autor nie zastępuje.
      *
+     * <p>TODO(#2686): wysyłka do magazynu poza transakcją z blokadą wiersza.</p>
+     *
      * <p>Wymagania: NFR-26, BR-9, NFR-25</p>
      *
      * @param submission Identyfikator zgłoszenia
