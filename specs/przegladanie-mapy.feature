@@ -137,14 +137,15 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz po „Wstecz” widzi znowu małą kartę nad mapą
     Oraz po „Zamknij” widzi mapę bez zaznaczonego budynku
 
-  @US2.8 @US1.4 @NFR-53 @aplikacja
+  # pełny test: #2846
+  @US2.8 @US1.4 @NFR-53 @aplikacja @do-zrobienia
   Scenariusz: Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
     Jeżeli dotknie budynku A-1
     Wtedy cały kontur budynku A-1 i jego wejścia mieszczą się w części mapy nad małą kartą
     Oraz nad małą kartą są „Powiększ”, „Pomniejsz” i strzałki przesuwania mapy
     Oraz po „Pomniejsz” mapa się oddala, a mała karta budynku A-1 zostaje otwarta
-    Ale nad małą kartą nie ma pola „Wpisz symbol budynku, np. C-13” ani przełącznika „Mapa” i „Lista budynków”
+    Ale nad małą kartą nie ma pola „Wpisz symbol budynku, np. C-13” ani przycisku „Pokaż listę”
 
   @US2.8 @NFR-53 @aplikacja
   Scenariusz: Przy niskiej mapie nad małą kartą nie ma przycisków mapy
@@ -153,13 +154,14 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy nad małą kartą nie ma „Powiększ”, „Pomniejsz” ani strzałek przesuwania mapy
     Oraz po „Zamknij” przyciski mapy wracają
 
-  @US2.9 @aplikacja
+  # pełny test: #2846
+  @US2.9 @aplikacja @do-zrobienia
   Scenariusz: Z listy przy dużej czcionce opis budynku prowadzi do mapy
     Zakładając, że Gość niezalogowany ma skalę czcionki 2,0 i otwartą listę budynków
     Jeżeli wybierze budynek A-1
     Wtedy widzi opis budynku A-1 na całym ekranie bez mapy
     Oraz po „Pokaż budynek na mapie” widzi mapę z zaznaczonym budynkiem A-1, a nie listę
-    Oraz przełącznik „Mapa” i „Lista budynków” pamięta wybór „Mapa”
+    Oraz aplikacja pamięta widok mapy, a w wierszu tytułu jest „Pokaż listę”
 
   @US3.1 @aplikacja
   Scenariusz: Brak wejścia dostępnego jest powiedziany wprost

@@ -81,7 +81,7 @@ public object DataModule {
     public fun buildingFloors(api: BuildingsApi): BuildingFloors =
         ServerFloorsRepository { symbol -> api.floors(symbol).toReply { it } }
 
-    /** Wybór „Mapa” albo „Lista budynków” w pliku ustawień mapy. Wymagania: NFR-19 */
+    /** Widok V1, mapa albo lista, w pliku ustawień mapy. Wymagania: NFR-19 */
     @Provides
     @Singleton
     public fun mapListChoice(app: Application): MapListChoice = MapListChoiceRepository(mapDataStore(app))

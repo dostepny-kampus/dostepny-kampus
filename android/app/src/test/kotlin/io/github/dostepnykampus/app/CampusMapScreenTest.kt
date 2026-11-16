@@ -28,16 +28,14 @@ import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotFocused
-import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasAnyDescendant
-import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.isSelectable
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -150,7 +148,8 @@ class CampusMapScreenTest {
         }
     private val online = MutableStateFlow(true)
     private val choice = TestMapListChoice()
-    private val listToggle = hasText("Lista budynków") and isSelectable()
+    private val showList = hasText("Pokaż listę") and hasClickAction()
+    private val showMap = hasText("Pokaż mapę") and hasClickAction()
     private var ring = "[[0,0],[1,0],[1,1],[0,0]]"
     private val repository =
         BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
@@ -254,22 +253,22 @@ class CampusMapScreenTest {
     }
 
     /**
-     * Wiersz: czcionka 1,5 → start na liście, „Lista” czytane jako „Lista budynków”; wybór „Mapa”
-     * zostaje zapisany, a mapa ma krótki podpis „© OpenStreetMap”.
+     * Wiersz: czcionka 1,5 → start na liście z „Pokaż mapę” pod tytułem; wybór mapy zostaje zapisany, a mapa ma
+     * krótki podpis „© OpenStreetMap”.
      *
      * Wymagania: NFR-19, NFR-20, NFR-37
      */
     @Test
     fun shortensOsmOnList() {
         compose.setContent { Screen(fontScale = 1.5f) }
-        compose.onNode(hasText("Lista") and hasContentDescription("Lista budynków")).assertIsSelected()
-        compose.onNode(hasText("Mapa") and isSelectable()).performClick()
+        compose.onNode(showMap).performClick()
+        compose.onNode(showList).assertExists()
         compose.onNodeWithText("© OpenStreetMap").assertExists()
         assertEquals(false, choice.savedChoice.value)
     }
 
     /**
-     * Wiersz: zapisany wybór „Lista budynków” → V1 startuje na liście także przy zwykłej czcionce.
+     * Wiersz: zapisany widok listy → V1 startuje na liście także przy zwykłej czcionce.
      *
      * Wymagania: NFR-19
      */
@@ -277,7 +276,7 @@ class CampusMapScreenTest {
     fun keepsListChoice() {
         choice.savedChoice.value = true
         compose.setContent { Screen() }
-        compose.onNode(listToggle).assertIsSelected()
+        compose.onNode(showMap).assertExists()
         compose.onNodeWithContentDescription("Powiększ").assertDoesNotExist()
     }
 
@@ -631,7 +630,7 @@ class CampusMapScreenTest {
     }
 
     /**
-     * Wiersz: V1, „Lista budynków” → lista z katalogu bez mapy; budynek z listy → V2 jako arkusz na mapie,
+     * Wiersz: V1, „Pokaż listę” → lista z katalogu bez mapy; budynek z listy → V2 jako arkusz na mapie,
      * a po „Wstecz” znów lista.
      *
      * Wymagania: NFR-19, US2.5
@@ -640,16 +639,17 @@ class CampusMapScreenTest {
     fun opensCardFromList() {
         var sheet by mutableStateOf(0.dp)
         compose.setContent { Screen(sheet = sheet) }
-        compose.onNode(listToggle).performClick().assertIsSelected()
+        compose.onNode(showList).performClick()
+        compose.onNode(showMap).assertExists()
         compose.onNodeWithContentDescription("Powiększ").assertDoesNotExist()
         compose.onNodeWithContentDescription("C-13, Budynek testowy").assertExists()
         compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
         assertEquals(listOf("C-14"), opened)
         sheet = 400.dp
         compose.onNodeWithText("© OpenStreetMap contributors").assertExists()
-        compose.onNode(listToggle).assertDoesNotExist()
+        compose.onNode(showMap).assertDoesNotExist()
         sheet = 0.dp
-        compose.onNode(listToggle).assertIsSelected()
+        compose.onNode(showMap).assertExists()
         compose.onNodeWithText("© OpenStreetMap contributors").assertDoesNotExist()
     }
 
@@ -657,20 +657,20 @@ class CampusMapScreenTest {
     @Test
     fun narrowsListBySymbol() {
         compose.setContent { Screen() }
-        compose.onNode(listToggle).performClick()
+        compose.onNode(showList).performClick()
         compose.onNode(hasSetTextAction()).performTextInput("c14")
         compose.onNodeWithContentDescription("C-14, Budynek testowy").assertExists()
         compose.onNodeWithContentDescription("C-13, Budynek testowy").assertDoesNotExist()
     }
 
-    /** Wiersz: V1, brak wyniku → „Lista budynków” w karcie czyści pole i pokazuje całą listę (PW-9). Wymagania: UC1 */
+    /** Wiersz: V1, brak wyniku → „Pokaż listę” w karcie czyści pole i pokazuje całą listę (PW-9). Wymagania: UC1 */
     @Test
     fun opensListOnNoResult() {
         compose.setContent { Screen() }
         compose.onNode(hasSetTextAction()).performTextInput("C-31")
         val inCard = hasAnyAncestor(SemanticsMatcher.keyIsDefined(SemanticsProperties.LiveRegion))
-        compose.onNode(hasText("Lista budynków") and inCard).performClick()
-        compose.onNode(listToggle).assertIsSelected()
+        compose.onNode(hasText("Pokaż listę") and inCard).performClick()
+        compose.onNode(showMap).assertExists()
         compose.onNodeWithText("Nie znaleźliśmy", substring = true).assertDoesNotExist()
         compose.onNodeWithContentDescription("C-13, Budynek testowy").assertExists()
     }

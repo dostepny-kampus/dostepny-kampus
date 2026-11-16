@@ -8,11 +8,8 @@ package io.github.dostepnykampus.app
 import android.view.accessibility.AccessibilityManager
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
-import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.isSelectable
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -91,7 +88,7 @@ class ListEntryTest {
 
     /**
      * Wiersze: V1 bez TalkBack, dotknięcie budynku na liście przy zwykłej czcionce → V1 w widoku mapy z małą kartą
-     * V2; „Wstecz” → lista, zapamiętany wybór „Lista budynków” bez zmian, także po odtworzeniu aktywności.
+     * V2; „Wstecz” → lista, zapamiętany widok listy bez zmian, także po odtworzeniu aktywności.
      *
      * Wymagania: US2.8, NFR-19, NFR-22
      */
@@ -106,7 +103,7 @@ class ListEntryTest {
         compose.onNodeWithText(OSM).assertExists("mapa pod małą kartą")
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
         compose.waitForIdle()
-        compose.onNode(hasText("Lista budynków") and isSelectable()).assertIsSelected()
+        compose.onNodeWithText("Pokaż mapę").assertExists()
         assertEquals(true, choice.savedChoice.value)
     }
 

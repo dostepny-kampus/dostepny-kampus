@@ -70,7 +70,7 @@ private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"
 
 /**
- * Ekran V1 „Mapa kampusu”: nagłówek z polem symbolu i przełącznikiem „Mapa” i „Lista budynków”, bez sieci linia „Bez
+ * Ekran V1 „Mapa kampusu”: nagłówek z przejściem między mapą a listą i polem symbolu, bez sieci linia „Bez
  * internetu”, a pod nimi lista albo mapa z konturami z pliku, przyciskami mapy i podpisem OSM. Widok kamery jest stanem
  * zapisywanym; pod arkuszem V2 budynek z [focus] stoi nad arkuszem w punkcie podpisu. Jeden trafiony budynek otwiera
  * V2, kilka czeka na wybór w arkuszu „Który budynek?”. Przyciski mapy są bez arkusza V2 i klawiatury, każdy z polem 48
@@ -97,7 +97,7 @@ private const val MAP_STATE = "map"
  *   karty V2 dla wejścia z listy
  * @param mapView widok mapy; testy ekranu podają widok bez natywnej biblioteki
  * @param motion zapis ruchów mapy do budynku nad kartą V2, z których karta bierze czas; `null` bez zapisu
- * @param viewModel stan ekranu i zapis wyboru w przełączniku; w aplikacji z grafu Hilt, w testach z podróbkami źródeł
+ * @param viewModel stan ekranu i zapis ostatniego widoku; w aplikacji z grafu Hilt, w testach z podróbkami źródeł
  */
 @Composable
 fun CampusMapScreen(
@@ -139,9 +139,9 @@ fun CampusMapScreen(
  * Wymagania: US9.1, NFR-10, NFR-19, NFR-20, US2, US1.1, US2.9, US3.3, US2.8
  *
  * @param state katalog, gotowa geometria mapy, internet (bez niego pod polem symbolu stoi linia „Bez internetu”)
- *  i ostatni wybór w przełączniku; bez wyboru „Mapa”, a przy skali czcionki co najmniej 1,5
+ *  i ostatni widok; bez wyboru mapa, a przy skali czcionki co najmniej 1,5
  *   „Lista budynków”
- * @param onListChange wybór w przełączniku: prawda dla „Lista budynków”
+ * @param onListChange wybór widoku: prawda dla listy, fałsz dla mapy
  * @param onSearch zapytanie z pola symbolu do policzenia w modelu widoku; wynik wraca w [CampusMapUiState.search]
  * @param onBuildingClick budynek dotknięty na mapie, wybrany w arkuszu albo na liście
  * @param modifier wymiary ekranu nadane przez aplikację

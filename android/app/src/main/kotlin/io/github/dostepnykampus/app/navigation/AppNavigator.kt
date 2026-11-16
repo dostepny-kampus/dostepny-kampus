@@ -143,7 +143,7 @@ internal val openBuildingFromList: AppNavigator.(String, Boolean) -> Unit = AppN
 /**
  * Przejścia między ekranami (mapa nawigacji: tabele „start, pasek dolny i »Wstecz«”, „Gość i Odwiedzający” oraz
  * „logowanie i konto”). Konto z [roles] wybiera cel: Gość trafia do L1 zamiast V4 i L2.
- * [onChooseMap] zapisuje wybór „Mapa” w przełączniku V1 po „Pokaż budynek na mapie” i po
+ * [onChooseMap] zapisuje widok mapy na V1 po „Pokaż budynek na mapie” i po
  * „Pokaż wejście na mapie”.
  *
  * Wymagania: US14, US14.2, US2.9, US2.1
@@ -215,7 +215,7 @@ class AppNavigator(
 
     /**
      * V1 z zaznaczonym [focus] i wyczyszczoną historią: „Pokaż na mapie”, „Pokaż wejście na mapie”.
-     * Budynek i wejście wybierają też widok „Mapa” w przełączniku V1.
+     * Budynek i wejście wybierają też widok mapy na V1.
      *
      * Wymagania: US2.1, BR-25
      */

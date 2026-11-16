@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsActions.OnClick
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
-import androidx.compose.ui.test.isSelectable
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -118,7 +118,7 @@ class AppShellScreenshotTest {
             }
         }
         compose.waitForIdle()
-        val list = compose.onNode(hasContentDescription("Lista budynków") and isSelectable())
+        val list = compose.onNode(hasText("Pokaż listę"))
         if (isList) list.performSemanticsAction(OnClick)
         val isFromList = compose.onAllNodes(hasContentDescription("C-13")).fetchSemanticsNodes().isNotEmpty()
         if (isSheetOpen && isFromList) compose.onNodeWithContentDescription("C-13").performSemanticsAction(OnClick)
