@@ -114,7 +114,11 @@ class MarkersViewModel
         }
 
         private suspend fun labels(): Map<String, String> =
-            floors.floors(symbol)?.floors.orEmpty().associate { floor -> floor.id to floor.label }
+            floors
+                .floors(symbol)
+                ?.floors
+                .orEmpty()
+                .associate { floor -> floor.id to floor.label }
 
         private suspend fun revoked(shown: MarkersUiState.Ready, markerId: String): MarkersUiState =
             when (progress.revoke(markerId)) {

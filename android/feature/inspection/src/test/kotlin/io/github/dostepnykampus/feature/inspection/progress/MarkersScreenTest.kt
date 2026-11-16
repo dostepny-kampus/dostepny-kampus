@@ -62,11 +62,6 @@ class MarkersScreenTest {
         compose.onNodeWithText(KEEP).assertIsDisplayed()
     }
 
-    /**
-     * „Cofnij znacznik” przy znaczniku przekazuje jego identyfikator.
-     *
-     * Wymagania: US11.3
-     */
     /** Wiersz: znacznik piętra pokazuje etykietę z danych PWr, a pytanie o cofnięcie też. Wymagania: US11.3 */
     @Test
     fun showsFloorLabelNotId() {
@@ -75,6 +70,11 @@ class MarkersScreenTest {
         compose.onNodeWithText("Cofnąć znacznik piętra Parter?", substring = true).assertIsDisplayed()
     }
 
+    /**
+     * „Cofnij znacznik” przy znaczniku przekazuje jego identyfikator.
+     *
+     * Wymagania: US11.3
+     */
     @Test
     fun askPassesMarkerId() {
         val asked = mutableListOf<String>()

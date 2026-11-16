@@ -119,7 +119,12 @@ private fun MarkerList(state: MarkersUiState.Ready, actions: MarkerActions) {
             state.failure?.let { Text(stringResource(it.message)) }
         }
         items(state.building.markers, key = { it.marker.id }) { marker ->
-            MarkerCard(marker, state.floorLabels, isAsking = state.asking == marker.marker.id, actions = actions)
+            MarkerCard(
+                marker = marker,
+                floorName = marker.floorName(state.floorLabels),
+                isAsking = state.asking == marker.marker.id,
+                actions = actions,
+            )
         }
     }
 }
@@ -127,16 +132,16 @@ private fun MarkerList(state: MarkersUiState.Ready, actions: MarkerActions) {
 @Composable
 private fun MarkerCard(
     marker: ProgressMarker,
-    floorLabels: Map<String, String>,
+    floorName: String?,
     isAsking: Boolean,
     actions: MarkerActions,
 ) {
     OutlinedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-            Text(placeText(marker.marker.place, floorLabels), style = MaterialTheme.typography.titleMedium)
+            Text(placeText(marker.marker.place, floorName), style = MaterialTheme.typography.titleMedium)
             Text(stringResource(R.string.znaczniki_autor, marker.authorPseudonym))
             if (isAsking) {
-                Text(questionText(marker.marker.place, floorLabels))
+                Text(questionText(marker.marker.place, floorName))
                 Button(onClick = actions.onConfirm) { Text(stringResource(R.string.znaczniki_cofnij)) }
                 OutlinedButton(onClick = actions.onKeep) { Text(stringResource(R.string.znaczniki_zostaw)) }
             } else {
@@ -150,17 +155,17 @@ private fun MarkerCard(
 
 @Composable
 @ReadOnlyComposable
-private fun placeText(place: MarkerPlace, floorLabels: Map<String, String>): String =
+private fun placeText(place: MarkerPlace, floorName: String?): String =
     when (place) {
-        is MarkerPlace.Floor -> stringResource(R.string.znaczniki_pietro, place.labelIn(floorLabels))
+        is MarkerPlace.Floor -> stringResource(R.string.znaczniki_pietro, floorName ?: place.floorId)
         MarkerPlace.WholeBuilding -> stringResource(R.string.znaczniki_caly_budynek)
     }
 
 @Composable
 @ReadOnlyComposable
-private fun questionText(place: MarkerPlace, floorLabels: Map<String, String>): String =
+private fun questionText(place: MarkerPlace, floorName: String?): String =
     when (place) {
-        is MarkerPlace.Floor -> stringResource(R.string.znaczniki_pytanie_pietra, place.labelIn(floorLabels))
+        is MarkerPlace.Floor -> stringResource(R.string.znaczniki_pytanie_pietra, floorName ?: place.floorId)
         MarkerPlace.WholeBuilding -> stringResource(R.string.znaczniki_pytanie_budynku)
     }
 
@@ -177,7 +182,8 @@ private fun coverageLine(coverage: InspectionCoverage): String =
         }
     }
 
-private fun MarkerPlace.Floor.labelIn(floorLabels: Map<String, String>): String = floorLabels[floorId] ?: floorId
+private fun ProgressMarker.floorName(floorLabels: Map<String, String>): String? =
+    (marker.place as? MarkerPlace.Floor)?.let { floorLabels[it.floorId] ?: it.floorId }
 
 private val RevokeFailure.message: Int
     get() = if (this == RevokeFailure.OFFLINE) R.string.postep_wymaga_internetu else R.string.postep_blad_serwera
