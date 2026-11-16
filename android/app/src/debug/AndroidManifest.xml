@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <!-- Debug: serwer na komputerze gospodarza (10.0.2.2) to sieć lokalna, od Androida 17 tylko z tym uprawnieniem. -->
+    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
     <!-- Debug: czysty HTTP tylko do komputera gospodarza z emulatora i do localhost. -->
     <application android:networkSecurityConfig="@xml/network_security_config">
         <!-- Narzędzia diagnostyczne (JankStats, StrictMode) uruchamiane z androidx.startup, tylko w debug. -->
