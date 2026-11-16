@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.submission.web;
 
+import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
@@ -57,8 +58,8 @@ final class SubmissionWindowTest {
 
     @Test
     void startsFromBeginningWithoutCursor() {
-        Assertions.assertNull(
-            new SubmissionWindow(null, null).cursor(),
+        Assertions.assertEquals(
+            SubmissionFinder.Page.START, new SubmissionWindow(null, null).cursor(),
             "Brak parametru after nie zaczął od początku listy"
         );
     }

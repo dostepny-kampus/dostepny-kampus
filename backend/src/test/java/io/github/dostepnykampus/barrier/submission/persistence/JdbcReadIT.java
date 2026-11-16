@@ -7,6 +7,7 @@ package io.github.dostepnykampus.barrier.submission.persistence;
 
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
 import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
@@ -122,10 +123,10 @@ final class JdbcReadIT {
         Assertions.assertEquals(
             List.of(List.of(own), List.of(foreign)),
             List.of(
-                data.repo().page(all, SubmissionData.AUTHOR, null, 500).items().stream()
-                    .map(Submission::id).toList(),
-                data.repo().page(all, "inne-konto", null, 500).items().stream()
-                    .map(Submission::id).toList()
+                data.repo().own(SubmissionData.AUTHOR, all, SubmissionFinder.Page.START, 500)
+                    .items().stream().map(Submission::id).toList(),
+                data.repo().own("inne-konto", all, SubmissionFinder.Page.START, 500)
+                    .items().stream().map(Submission::id).toList()
             ),
             "Lista własnych zgłoszeń ma cudze albo gubi własne"
         );
