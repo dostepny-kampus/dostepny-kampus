@@ -165,9 +165,10 @@ internal fun MapStyleTarget.showPlanFloor(floor: String?) {
 }
 
 /**
- * Podaje stylowi z [planLayers] obiekty wszystkich pięter planu [floors] z [planFeatures] i dodaje obrazy numerów
- * sal spoza [numbered], ze wszystkich pięter naraz. Tekst danych i obrazy powstają w [worker], poza wątkiem głównym,
- * a piętro wybiera potem samo [showPlanFloor]. Wymagania: US16.1, NFR-10
+ * Podaje stylowi z [planLayers] obiekty wszystkich pięter planu [floors] z [planFeatures], a potem dodaje obrazy
+ * numerów sal spoza [numbered], ze wszystkich pięter naraz. Tekst danych i obrazy powstają w [worker], poza wątkiem
+ * głównym; dane trafiają do stylu przed obrazami, a piętro wybiera potem samo [showPlanFloor].
+ * Wymagania: US16.1, NFR-10
  */
 internal suspend fun MapStyleTarget.showPlanData(
     floors: Map<String, RoomList>,
@@ -175,22 +176,20 @@ internal suspend fun MapStyleTarget.showPlanData(
     numbered: MutableSet<String>,
     worker: CoroutineContext = Dispatchers.Default,
 ) {
-    val (text, bitmaps) =
+    data(source = PLAN_SOURCE, geoJson = withContext(worker) { planFeatures(floors).asStyleText() })
+    val bitmaps =
         withContext(worker) {
-            val fresh =
-                floors.values
-                    .asSequence()
-                    .flatMap { it.rooms }
-                    .filter { it.isLabelled }
-                    .mapNotNull { it.number }
-                    .filterNot(numbered::contains)
-                    .toSet()
-            planFeatures(floors).asStyleText() to
-                fresh.associateWith { roomNumberBitmap(it, images.colors, images.labelSize) }
+            floors.values
+                .asSequence()
+                .flatMap { it.rooms }
+                .filter { it.isLabelled }
+                .mapNotNull { it.number }
+                .filterNot(numbered::contains)
+                .toSet()
+                .associateWith { roomNumberBitmap(it, images.colors, images.labelSize) }
         }
     bitmaps.forEach { (number, bitmap) -> image(roomNumberImage(number), bitmap) }
     numbered += bitmaps.keys
-    data(source = PLAN_SOURCE, geoJson = text)
 }
 
 /** Filtr obiektów rodzaju [kind] piętra [floor]; bez piętra nie przepuszcza niczego. */

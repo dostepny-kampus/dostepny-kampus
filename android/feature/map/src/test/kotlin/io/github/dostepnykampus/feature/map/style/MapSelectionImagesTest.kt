@@ -117,6 +117,24 @@ class MapSelectionImagesTest {
         assertEquals("Plan nie dostał danych", listOf(PLAN_SOURCE, PLAN_SOURCE), target.sources)
     }
 
+    /** Dane planu trafiają do stylu przed obrazami numerów sal. Wymagania: US16.1, NFR-10 */
+    @Test
+    fun givesPlanDataBeforeNumbers() {
+        val images = images()
+        val target = Recorded()
+
+        runBlocking {
+            target.showPlanData(
+                floors = floors,
+                images = images,
+                numbered = mutableSetOf(),
+                worker = EmptyCoroutineContext,
+            )
+        }
+
+        assertEquals("Plan czekał na obrazy numerów", PLAN_SOURCE, target.calls.first())
+    }
+
     /** Zmiana piętra planu zmienia filtry, bez nowych danych planu i bez obrazów. Wymagania: US16.1, NFR-10 */
     @Test
     fun keepsPlanDataOnFloor() {
@@ -157,6 +175,7 @@ class MapSelectionImagesTest {
     private class Recorded : MapStyleTarget {
         val images = mutableListOf<String>()
         val sources = mutableListOf<String>()
+        val calls = mutableListOf<String>()
 
         override fun filter(layer: String, filter: JsonElement) = Unit
 
@@ -166,10 +185,12 @@ class MapSelectionImagesTest {
 
         override fun data(source: String, geoJson: String) {
             sources += source
+            calls += source
         }
 
         override fun image(name: String, image: Bitmap) {
             images += name
+            calls += name
         }
     }
 
