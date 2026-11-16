@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.overlay
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -28,11 +29,14 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.marking.markingImage
+import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.building.EntranceMarking
+import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.R
-import io.github.dostepnykampus.feature.map.style.ENTRANCE_MARK_DP
+import io.github.dostepnykampus.feature.map.style.barrierSign
+import io.github.dostepnykampus.feature.map.style.entranceSign
 
 private val SampleWidth = 34.dp
 private val SampleHeight = 26.dp
@@ -46,12 +50,23 @@ private val ENTRANCE_WORDS =
         EntranceMarking.NO_DATA to R.string.mapa_legenda_wejscie_bez_danych,
     )
 
-/** Znaki mapy V1, każdy z napisem, do arkusza legendy. Wymagania: US1.4, NFR-21 */
+/**
+ * Znaki mapy V1, każdy z napisem, do arkusza legendy. Znaki wejść i barier to te same obrazy co na mapie.
+ *
+ * Wymagania: US1.4, NFR-21, US1.3
+ */
 @Composable
 internal fun LegendSigns() {
     LegendRow(stringResource(R.string.mapa_legenda_budynek)) { BuildingSample() }
     ENTRANCE_WORDS.forEach { (marking, word) ->
-        LegendRow(stringResource(word)) { EntranceSample(marking) }
+        LegendRow(stringResource(word)) {
+            SignSample(marking) { colors, density -> entranceSign(marking, colors, density) }
+        }
+    }
+    Severity.entries.forEach { severity ->
+        LegendRow(stringResource(severity.nameRes())) {
+            SignSample(severity) { colors, density -> barrierSign(severity, colors, density) }
+        }
     }
 }
 
@@ -90,10 +105,9 @@ private fun BuildingSample() {
 }
 
 @Composable
-private fun EntranceSample(marking: EntranceMarking) {
+private fun SignSample(sign: Any, draw: (MapColors, Float) -> Bitmap) {
     val colors = DostepnyKampusTheme.mapColors
-    val sizePx = with(LocalDensity.current) { ENTRANCE_MARK_DP.dp.roundToPx() }
-    val draw = { markingImage(marking = marking, sizePx = sizePx, shapeColor = colors.tusz, markColor = colors.papier) }
-    val image = remember(marking, colors, sizePx) { draw() }
+    val density = LocalDensity.current.density
+    val image = remember(sign, colors, density) { draw(colors, density) }
     Image(bitmap = image.asImageBitmap(), contentDescription = null, modifier = Modifier.width(SampleWidth))
 }
