@@ -180,7 +180,7 @@ internal fun rememberMapSceneState(
             val from = last.startOr(uncovered)
             val move = pickMove(from = from, outline = outline, free = fit, scale = scale, keepsZoom = isCoveredBefore)
             val clamped = move?.let { limits?.clamp(it.camera, viewWidthDp = fit.widthDp, viewHeightDp = fit.heightDp) }
-            clamped?.let { move?.copy(camera = it) } ?: move
+            clamped?.let { move.copy(camera = it) } ?: move
         }
     motion.RecordPick(pick)
     val card = rememberCardMove(building = selection?.building, pick = pick)
