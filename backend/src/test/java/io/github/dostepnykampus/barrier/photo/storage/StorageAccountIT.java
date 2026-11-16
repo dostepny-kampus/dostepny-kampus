@@ -61,7 +61,9 @@ final class StorageAccountIT {
             );
             try (
                 S3Client root = PhotoStorage.photoClient(
-                    new PhotoSettings(endpoint, "inny", StorageAccountIT.ROOT, StorageAccountIT.ROOT)
+                    new PhotoSettings(
+                        endpoint, "inny", StorageAccountIT.ROOT, StorageAccountIT.ROOT
+                    )
                 );
                 S3Client server = PhotoStorage.photoClient(
                     new PhotoSettings(endpoint, "zdjecia", "klucz-serwera", "sekret-serwera")
@@ -110,13 +112,11 @@ final class StorageAccountIT {
             .withEnv("DK_PHOTOS_ROOT_SECRET_KEY", StorageAccountIT.ROOT)
             .withEnv("DK_PHOTOS_BUCKET", "zdjecia")
             .withEnv("DK_PHOTOS_ACCESS_KEY", "klucz-serwera")
-            .withEnv("DK_PHOTOS_SECRET_KEY", "sekret-serwera")
-            .withCopyFileToContainer(
+            .withEnv("DK_PHOTOS_SECRET_KEY", "sekret-serwera").withCopyFileToContainer(
                 MountableFile.forHostPath(Path.of("../infra/rustfs/konto-serwera.sh")),
                 "/konto-serwera.sh"
             ).withCreateContainerCmdModifier(command -> command.withEntrypoint("sh"))
-            .withCommand("/konto-serwera.sh")
-            .withStartupCheckStrategy(
+            .withCommand("/konto-serwera.sh").withStartupCheckStrategy(
                 new OneShotStartupCheckStrategy().withTimeout(Duration.ofSeconds(60))
             );
     }
