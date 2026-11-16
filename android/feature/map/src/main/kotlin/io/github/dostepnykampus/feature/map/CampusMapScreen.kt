@@ -284,7 +284,7 @@ private fun CampusMap(
                 modifier = Modifier.fillMaxSize(),
             )
             scene.selection.entrance?.let { EntranceDescription(it) }
-            FollowCameraTarget(camera = move.camera, limits = state.limits, area = areas.current?.name, onCamera)
+            FollowCamera(camera = move.camera, limits = state.limits, area = areas.current?.name, onCamera = onCamera)
             MapStatusBar(topInset, isShown = state.isCovered)
             val underBar = if (state.isCovered) topInset.asPaddingValues() else PaddingValues(top = top)
             val aboveSheet = Modifier.padding(underBar).padding(contentPadding)
@@ -311,7 +311,7 @@ private fun CampusMap(
 private data class ChosenBarrier(val id: String?, val barriers: ShownBarriers, val onClose: () -> Unit)
 
 @Composable
-private fun FollowCameraTarget(camera: MapCamera, limits: MapLimits, area: String?, onCamera: (MapCamera) -> Unit) {
+private fun FollowCamera(camera: MapCamera, limits: MapLimits, area: String?, onCamera: (MapCamera) -> Unit) {
     val report by rememberUpdatedState(onCamera)
     DisposableEffect(camera) {
         report(camera)
