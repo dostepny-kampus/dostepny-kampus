@@ -34,11 +34,6 @@ public final class S3PhotoStore implements PhotoStore {
     private static final String JPEG = ".jpg";
 
     /**
-     * Przedrostek kluczy plików wysłanych przed kontrolą statusu zgłoszenia.
-     */
-    private static final String STAGED = "wysylki/";
-
-    /**
      * Klient magazynu zdjęć.
      */
     private final S3Client client;
@@ -163,7 +158,7 @@ public final class S3PhotoStore implements PhotoStore {
     }
 
     private static String staged(final UUID upload) {
-        return String.format("%s%s%s", S3PhotoStore.STAGED, upload, S3PhotoStore.JPEG);
+        return String.format("wysylki/%s%s", upload, S3PhotoStore.JPEG);
     }
 
     private static UUID photo(final String key) {

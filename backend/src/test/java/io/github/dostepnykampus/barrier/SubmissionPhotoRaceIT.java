@@ -74,7 +74,8 @@ final class SubmissionPhotoRaceIT {
     }
 
     @Test
-    void uploadsOutsideTransactionAndPromotesUnderLock(final ApplicationContext context) throws Exception {
+    void uploadsOutsideTransactionAndPromotesUnderLock(final ApplicationContext context)
+        throws Exception {
         final UUID photo = UUID.randomUUID();
         final UUID id = new SampleSubmissions(context).add("SENT", SampleSubmissions.quick(photo));
         final byte[] jpeg = JpegCleanerTest.photo();

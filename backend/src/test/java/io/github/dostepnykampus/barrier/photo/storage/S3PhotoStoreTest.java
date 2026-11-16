@@ -88,8 +88,7 @@ final class S3PhotoStoreTest {
 
     @Test
     void keepsStagedPhotoOutsideSubmissionList() {
-        final S3PhotoStoreTest.Bucket client = new S3PhotoStoreTest.Bucket();
-        final PhotoStore store = S3PhotoStoreTest.store(client);
+        final PhotoStore store = S3PhotoStoreTest.store(new S3PhotoStoreTest.Bucket());
         store.stage(UUID.randomUUID(), new byte[] {1});
         Assertions.assertEquals(
             List.of(),
