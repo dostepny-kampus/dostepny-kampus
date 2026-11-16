@@ -24,3 +24,4 @@
 {"sha": "0be74cf4d3cefe4209b88bf6de7299e7af7f1d57", "data": "2026-11-16", "zadania": 6000, "bledy": 5942, "p50_ms": 39.4, "p90_ms": 69.7, "p99_ms": 130.4}
 {"sha": "cabe19234b88ccda650a0ef9d9ff79eed26bd88a", "data": "2026-11-16", "zadania": 6000, "bledy": 5942, "p50_ms": 23.8, "p90_ms": 36.3, "p99_ms": 51.2}
 {"sha": "5cd3f1b5b84e81539c39b66d736f844f7edeec87", "data": "2026-11-16", "zadania": 6000, "bledy": 5942, "p50_ms": 21.2, "p90_ms": 37.4, "p99_ms": 56.7}
+{"sha": "3feff954b81a671a79424c22a362f9f811667654", "data": "2026-11-16", "zadania": 6000, "bledy": 5942, "p50_ms": 24.3, "p90_ms": 42.8, "p99_ms": 71.3}
