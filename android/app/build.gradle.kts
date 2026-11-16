@@ -114,6 +114,8 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    debugImplementation(libs.androidx.metrics.performance)
+    debugImplementation(libs.leakcanary.android)
     debugImplementation(project(":core:network"))
     debugImplementation(libs.okhttp)
     testDebugImplementation(libs.okhttp.mockwebserver)

@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.app
 
 import android.os.Bundle
+import android.os.Trace
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -38,8 +39,17 @@ class MainActivity : ComponentActivity() {
     private val firstLaunch: FirstLaunchViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        Trace.beginSection("MainActivity.onCreate")
+        try {
+            super.onCreate(savedInstanceState)
+            enableEdgeToEdge()
+            setShell()
+        } finally {
+            Trace.endSection()
+        }
+    }
+
+    private fun setShell() {
         val graph = EntryPointAccessors.fromActivity<MainActivityEntryPoint>(this)
         val onChooseMap: () -> Unit = { lifecycleScope.launch { graph.mapListChoice().choose(isList = false) } }
         setContent {

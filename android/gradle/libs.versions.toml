@@ -42,6 +42,10 @@ timber = "5.0.1"
 # Ocena wersji: docs/docs/architektura/oceny-zaleznosci.md#macrobenchmark-150-i-ui-automator-241 (#2668).
 benchmark = "1.5.0"
 uiautomator = "2.4.1"
+# Ocena wersji: docs/docs/architektura/oceny-zaleznosci.md#jankstats-100 (#2666).
+jankstats = "1.0.0"
+# Ocena wersji: docs/docs/architektura/oceny-zaleznosci.md#leakcanary-30-alpha-9 (#2666).
+leakcanary = "3.0-alpha-9"
 jsonSchemaValidator = "3.0.9"
 jacksonDatabind = "3.1.8"
 opentest4j = "1.3.0"
@@ -141,6 +145,8 @@ okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 androidx-benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
 androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
+androidx-metrics-performance = { module = "androidx.metrics:metrics-performance", version.ref = "jankstats" }
+leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 androidx-datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "datastore" }

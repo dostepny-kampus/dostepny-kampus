@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.app
 
 import android.app.Application
+import android.os.Trace
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
@@ -17,7 +18,7 @@ import timber.log.Timber
 /**
  * Aplikacja z grafem zależności Hilt na cały proces: repozytoria `core:data` i dostawca ról. Domyślny
  * [ImageLoader] obrazów w całej aplikacji to ten z grafu. Przy starcie sadzi drzewo logów: w wersji debug zapisuje
- * wszystko od DEBUG, w wersji release tylko WARN i ERROR ([ReleaseLogTree]).
+ * wszystko od DEBUG, w wersji release tylko WARN i ERROR ([ReleaseLogTree]). Start ma sekcję śladu systemowego.
  *
  * Wymagania: NFR-57
  */
@@ -26,9 +27,14 @@ class DostepnyKampusApp :
     Application(),
     SingletonImageLoader.Factory {
     override fun onCreate() {
-        super.onCreate()
-        Timber.plant(if (BuildConfig.DEBUG) Timber.DebugTree() else ReleaseLogTree())
-        Timber.i("Start aplikacji, wersja %s (%d)", BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
+        Trace.beginSection("DostepnyKampusApp.onCreate")
+        try {
+            super.onCreate()
+            Timber.plant(if (BuildConfig.DEBUG) Timber.DebugTree() else ReleaseLogTree())
+            Timber.i("Start aplikacji, wersja %s (%d)", BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
+        } finally {
+            Trace.endSection()
+        }
     }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader =
