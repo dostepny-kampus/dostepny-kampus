@@ -223,7 +223,7 @@ jobs:
           }
           zaliczone=0
           while read -r test; do
-            czekaj_na_emulator "$test"
+            czekaj_na_emulator "$test" < /dev/null
             adb shell pm clear io.github.dostepnykampus < /dev/null
             adb shell am instrument -w -e class "$test" "$uruchamiacz" < /dev/null | tr -d '\r' | tee -a "$RUNNER_TEMP/instrumentacja.txt" > "$RUNNER_TEMP/wynik.txt"
             cat "$RUNNER_TEMP/wynik.txt"
