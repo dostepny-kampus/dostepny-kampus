@@ -295,7 +295,7 @@ private fun CampusMap(
                 modifier = Modifier.fillMaxSize().safeDrawingPadding().then(aboveSheet),
                 hasPanels = !state.isCovered && !isKeyboardOpen,
                 hasNotice = !isKeyboardOpen,
-                side = { FloorColumn(plan = plan, onChoose = onFloorChoose) },
+                start = { FloorColumn(plan = plan, onChoose = onFloorChoose) },
             ) {
                 val barrier = ChosenBarrier(id = barrierId, barriers = barriers, onClose = { barrierId = null })
                 MapSheets(barrier = barrier, catalog = catalog, state = state, onBuildingClick = onBuildingClick)
