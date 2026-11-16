@@ -26,8 +26,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
+import software.amazon.awssdk.services.s3.model.CopyObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
@@ -69,7 +72,7 @@ final class SubmissionPhotoRaceIT {
     }
 
     @Test
-    void waitsForObjectWriteBeforeAcceptance(final ApplicationContext context) throws Exception {
+    void uploadsOutsideTransactionAndPromotesUnderLock(final ApplicationContext context) throws Exception {
         final UUID photo = UUID.randomUUID();
         final UUID id = new SampleSubmissions(context).add("SENT", SampleSubmissions.quick(photo));
         final byte[] jpeg = JpegCleanerTest.photo();
@@ -89,7 +92,7 @@ final class SubmissionPhotoRaceIT {
             Assertions.assertArrayEquals(
                 new JpegCleaner().strip(jpeg),
                 context.getBean(PhotoStore.class).get(id, photo).orElseThrow(),
-                "Przyjęte zgłoszenie nie zachowało zdjęcia zapisanego przed przyjęciem"
+                "Przyjęte zgłoszenie nie zachowało zdjęcia przeniesionego przed przyjęciem"
             );
         } finally {
             SubmissionPhotoRaceIT.clean(context, id, photo);
@@ -130,7 +133,8 @@ final class SubmissionPhotoRaceIT {
     }
 
     /**
-     * Próbuje przyjąć zgłoszenie na osobnym połączeniu tuż przed zapisem obiektu do S3.
+     * Wysyła obiekt tylko poza transakcją i próbuje przyjąć zgłoszenie na osobnym połączeniu
+     * tuż przed przeniesieniem obiektu pod klucz zgłoszenia.
      *
      * @param client Własny klient magazynu zamykany razem z adapterem
      * @param source Dostęp do osobnego połączenia z bazą
@@ -152,6 +156,15 @@ final class SubmissionPhotoRaceIT {
 
         @Override
         public PutObjectResponse putObject(final PutObjectRequest request, final RequestBody body) {
+            Assertions.assertFalse(
+                TransactionSynchronizationManager.isActualTransactionActive(),
+                "Wysyłka pliku do magazynu zajmuje transakcję z blokadą zgłoszenia"
+            );
+            return this.client.putObject(request, body);
+        }
+
+        @Override
+        public CopyObjectResponse copyObject(final CopyObjectRequest request) {
             try (
                 Connection connection = this.source.getConnection();
                 Statement statement = connection.createStatement()
@@ -166,12 +179,12 @@ final class SubmissionPhotoRaceIT {
                             "UPDATE submissions SET status = 'ACCEPTED' WHERE id = '%s'"
                                 .formatted(this.id)
                         ),
-                        "Przyjęcie zgłoszenia wyprzedziło zapis zdjęcia do S3"
+                        "Przyjęcie zgłoszenia wyprzedziło przeniesienie zdjęcia"
                     ).getSQLState(),
                     "Odmowa nie wynikała z blokady wiersza"
                 );
                 connection.rollback();
-                return this.client.putObject(request, body);
+                return this.client.copyObject(request);
             } catch (final SQLException ex) {
                 throw new IllegalStateException("Nie udało się sprawdzić blokady zgłoszenia", ex);
             }
