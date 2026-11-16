@@ -46,6 +46,7 @@ class BuildingLevelsStyleTest {
         )
     private val data = campusMapData(catalog)
     private val level = """["==",["get","detailed"],true]"""
+    private val state = """["boolean",["feature-state","$DIMMED_STATE"],false]"""
 
     @Test
     fun takesLevelFromCatalog() {
@@ -61,7 +62,11 @@ class BuildingLevelsStyleTest {
     @Test
     fun fillsByLevel() {
         val fill = style().layer(BUILDINGS_LAYER).paint(BUILDINGS_FILL)
-        assertEquals("""["case",$level,"#BFE0EC","#DDECF1"]""", fill, "Budynek podstawowy nie ma bladego tła")
+        assertEquals(
+            """["case",$state,"#D6DBDD",["case",$level,"#BFE0EC","#DDECF1"]]""",
+            fill,
+            "Budynek podstawowy nie ma bladego tła",
+        )
     }
 
     @Test
@@ -77,7 +82,6 @@ class BuildingLevelsStyleTest {
 
     @Test
     fun dimsNeighboursOfBothLevels() {
-        val state = """["boolean",["feature-state","$DIMMED_STATE"],false]"""
         val fill = style(building = "A-2").layer(BUILDINGS_LAYER).paint(BUILDINGS_FILL)
         assertEquals(
             """["case",$state,"#D6DBDD",["case",$level,"#BFE0EC","#DDECF1"]]""",
