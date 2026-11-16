@@ -51,6 +51,10 @@ enum class CameraMotion {
  */
 data class CameraTransition(val camera: MapCamera, val motion: CameraMotion, val durationMillis: Long)
 
+/** Ten sam ruch z widokiem w granicy terenu [limits] dla wolnej części mapy [free]. Wymagania: US1.7, US2.8 */
+internal fun CameraTransition.within(limits: MapLimits?, free: FreeMap): CameraTransition =
+    limits?.let { copy(camera = it.clamp(camera, viewWidthDp = free.widthDp, viewHeightDp = free.heightDp)) } ?: this
+
 /** Ruch do widoku po przycisku mapy, odtworzeniu widoku albo zmianie terenu: przelot w 300 ms. Wymagania: NFR-53 */
 internal fun MapCamera.byControl(): CameraTransition =
     CameraTransition(camera = this, motion = CameraMotion.FLIGHT, durationMillis = CONTROL_MILLIS)

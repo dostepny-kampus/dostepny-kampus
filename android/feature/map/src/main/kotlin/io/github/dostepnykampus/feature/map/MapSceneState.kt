@@ -39,6 +39,7 @@ import io.github.dostepnykampus.feature.map.camera.cameraTransition
 import io.github.dostepnykampus.feature.map.camera.fitted
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
+import io.github.dostepnykampus.feature.map.camera.within
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
@@ -178,9 +179,8 @@ internal fun rememberMapSceneState(
     val pick =
         remember(selection?.building, outline != null) {
             val from = last.startOr(uncovered)
-            val move = pickMove(from = from, outline = outline, free = fit, scale = scale, keepsZoom = isCoveredBefore)
-            val clamped = move?.let { limits?.clamp(it.camera, viewWidthDp = fit.widthDp, viewHeightDp = fit.heightDp) }
-            clamped?.let { move.copy(camera = it) } ?: move
+            pickMove(from = from, outline = outline, free = fit, scale = scale, keepsZoom = isCoveredBefore)
+                ?.within(limits, free = fit)
         }
     motion.RecordPick(pick)
     val card = rememberCardMove(building = selection?.building, pick = pick)
