@@ -57,7 +57,8 @@ final class ActuatorHttpIT {
     private static HttpResponse<String> get(final int port, final String path) throws Exception {
         try (HttpClient client = HttpClient.newHttpClient()) {
             return client.send(
-                HttpRequest.newBuilder(URI.create("http://localhost:%d%s".formatted(port, path))).build(),
+                HttpRequest.newBuilder(URI.create("http://localhost:%d%s".formatted(port, path)))
+                    .build(),
                 HttpResponse.BodyHandlers.ofString()
             );
         }
