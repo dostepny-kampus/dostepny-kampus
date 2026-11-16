@@ -219,10 +219,10 @@ public class SubmissionQueue internal constructor(
      *
      * Wymagania: NFR-5
      *
-     * @param dir katalog zdjęć zgłoszeń
+     * @param dir katalog zdjęć zgłoszeń; odczytany poza wątkiem głównym
      * @param kept pliki zdjęć odtworzonych szkiców
      */
-    public suspend fun deleteOrphanPhotos(dir: File, kept: Set<String>) {
+    public suspend fun deleteOrphanPhotos(dir: () -> File, kept: Set<String>) {
         deleteOrphanPhotos(store = store, dir = dir, kept = kept, nowMillis = stamps.nowMillis(), ioContext = ioContext)
     }
 

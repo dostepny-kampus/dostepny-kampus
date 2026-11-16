@@ -123,7 +123,7 @@ object MapLibreMapView : CampusMapView {
         onBarrierTouch: (String) -> Unit,
         modifier: Modifier,
     ) {
-        if (!remember { isNativeMapAvailable() }) return
+        if (!rememberNativeMap()) return
         val context = LocalContext.current
         val density = LocalDensity.current
         val colors = DostepnyKampusTheme.mapColors
@@ -424,8 +424,6 @@ object MapLibreMapView : CampusMapView {
             }
         }
     }
-
-    private fun isNativeMapAvailable(): Boolean = runCatching { System.loadLibrary("maplibre") }.isSuccess
 
     /** Wczytany styl MapLibre [style]; zmiany warstw, źródeł i obrazów nie wczytują stylu od nowa. */
     private class StyleTarget(private val style: Style) : MapStyleTarget {
