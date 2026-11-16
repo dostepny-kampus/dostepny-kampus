@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
@@ -77,16 +78,14 @@ final class SubmissionRows implements RowMapper<Submission> {
     }
 
     static ResultSetExtractor<SubmissionFinder.Page> page(
-        final RowMapper<Submission> mapping, final int limit
+        final RowMapper<Submission> mapping, final UUID after, final int limit
     ) {
         return rows -> {
             final List<Submission> items = new ArrayList<>(16);
-            final @Nullable UUID last = SubmissionRows.fill(rows, mapping, limit, items);
-            @Nullable UUID next = null;
-            if (rows.next()) {
-                next = last;
-            }
-            return new SubmissionFinder.Page(items, next);
+            final UUID last = Objects.requireNonNullElse(
+                SubmissionRows.fill(rows, mapping, limit, items), after
+            );
+            return new SubmissionFinder.Page(items, last, rows.next());
         };
     }
 

@@ -267,7 +267,20 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
 
     @Override
     public SubmissionFinder.Page page(
-        final SubmissionQuery query, final @Nullable String author, final @Nullable UUID after,
+        final SubmissionQuery query, final UUID after, final int limit
+    ) {
+        return this.slice(query, null, after, limit);
+    }
+
+    @Override
+    public SubmissionFinder.Page own(
+        final String author, final SubmissionQuery query, final UUID after, final int limit
+    ) {
+        return this.slice(query, author, after, limit);
+    }
+
+    private SubmissionFinder.Page slice(
+        final SubmissionQuery query, final @Nullable String author, final UUID after,
         final int limit
     ) {
         return Objects.requireNonNull(
@@ -278,7 +291,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                         AND (CAST(:building AS TEXT) IS NULL OR building_symbol = :building)
                         AND (CAST(:floor AS TEXT) IS NULL OR floor_id = :floor)
                         AND (CAST(:author AS TEXT) IS NULL OR author = :author)
-                        AND (CAST(:after AS UUID) IS NULL OR id > :after)
+                        AND id > :after
                     ORDER BY id LIMIT :fetch
                     """,
                     JdbcSubmissions.COLUMNS
@@ -289,7 +302,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                 .param("author", author)
                 .param("after", after)
                 .param("fetch", limit + 1)
-                .query(SubmissionRows.page(this.rows, limit))
+                .query(SubmissionRows.page(this.rows, after, limit))
         );
     }
 

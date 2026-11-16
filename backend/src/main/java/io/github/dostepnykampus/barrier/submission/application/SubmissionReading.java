@@ -144,21 +144,36 @@ public final class SubmissionReading {
     }
 
     /**
-     * Wyszukuje stronę zgłoszeń, a z autorem tylko jego zgłoszenia.
+     * Wyszukuje stronę zgłoszeń.
      *
-     * <p>Wymagania: NFR-34, US1.3, US8.1</p>
+     * <p>Wymagania: NFR-34, US1.3</p>
      *
      * @param query Statusy oraz opcjonalny budynek i piętro
-     * @param author Identyfikator konta autora; brak dla wszystkich autorów
-     * @param after Identyfikator, po którym zaczyna się strona; brak dla pierwszej
+     * @param after Kursor: strona zaczyna się po nim
      * @param limit Najwięcej zgłoszeń na stronie
      * @return Czytelne zgłoszenia strony i kursor następnej
      */
     public SubmissionFinder.Page page(
-        final SubmissionQuery query, final @Nullable String author, final @Nullable UUID after,
-        final int limit
+        final SubmissionQuery query, final UUID after, final int limit
     ) {
-        return this.finder.page(query, author, after, limit);
+        return this.finder.page(query, after, limit);
+    }
+
+    /**
+     * Wyszukuje stronę zgłoszeń jednego autora.
+     *
+     * <p>Wymagania: NFR-34, US8.1</p>
+     *
+     * @param author Identyfikator konta autora
+     * @param query Statusy oraz opcjonalny budynek i piętro
+     * @param after Kursor: strona zaczyna się po nim
+     * @param limit Najwięcej zgłoszeń na stronie
+     * @return Czytelne zgłoszenia strony autora i kursor następnej
+     */
+    public SubmissionFinder.Page own(
+        final String author, final SubmissionQuery query, final UUID after, final int limit
+    ) {
+        return this.finder.own(author, query, after, limit);
     }
 
     /**

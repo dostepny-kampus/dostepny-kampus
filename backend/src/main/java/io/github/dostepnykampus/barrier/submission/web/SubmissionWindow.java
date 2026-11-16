@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.submission.web;
 
+import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
@@ -48,10 +49,10 @@ record SubmissionWindow(@Nullable String after, @Nullable String limit) {
     /**
      * Kursor strony; zły identyfikator kończy się wyjątkiem {@link InvalidInput}.
      *
-     * @return Identyfikator, po którym zaczyna się strona; brak dla pierwszej strony
+     * @return Identyfikator, po którym zaczyna się strona; bez parametru kursor pierwszej strony
      */
-    @Nullable UUID cursor() {
-        @Nullable UUID cursor = null;
+    UUID cursor() {
+        UUID cursor = SubmissionFinder.Page.START;
         if (this.after != null) {
             try {
                 cursor = UUID.fromString(this.after);

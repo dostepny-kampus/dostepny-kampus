@@ -8,7 +8,6 @@ package io.github.dostepnykampus.barrier.submission.web;
 import io.github.dostepnykampus.barrier.submission.CreateResult;
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.Reader;
-import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
@@ -84,21 +83,22 @@ public final class SubmissionsController {
         @Nullable final Principal account
     ) {
         final SubmissionQuery query = filter.toQuery();
-        @Nullable String author = null;
+        final SubmissionFinder.Page page;
         if (filter.own()) {
-            author = SubmissionsController.name(account);
+            page = this.finder.own(
+                SubmissionsController.name(account), query, window.cursor(), window.size()
+            );
+        } else {
+            page = this.finder.page(query, window.cursor(), window.size());
         }
-        final SubmissionFinder.Page page = this.finder.page(
-            query, author, window.cursor(), window.size()
-        );
         final ResponseEntity.BodyBuilder response = ResponseEntity.ok();
-        if (page.next() != null) {
+        if (page.more()) {
             response.header(
                 HttpHeaders.LINK,
                 String.format(
                     "<%s>; rel=\"next\"",
                     ServletUriComponentsBuilder.fromCurrentRequest()
-                        .replaceQueryParam("after", page.next()).build().toUriString()
+                        .replaceQueryParam("after", page.last()).build().toUriString()
                 )
             );
         }
