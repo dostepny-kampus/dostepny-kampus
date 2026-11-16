@@ -142,7 +142,8 @@ internal fun selectionLook(data: CampusMapData, selection: MapSelection): Select
         underPlan = data.outlines.map { it == planned },
         selectedFilter = chosen?.takeIf { it != planned }?.let(::ofBuildings) ?: NO_FEATURES,
         selectedPlanFilter =
-            if (chosen != null && chosen == planned) planOutlineFilter(selection.plan?.floor) else NO_FEATURES,
+            selection.plan?.takeIf { chosen != null && chosen == planned }?.let { planOutlineFilter(it.floor) }
+                ?: NO_FEATURES,
         labelsFilter = planned?.let(::withoutLabel) ?: ALL_FEATURES,
         entrancesFilter = alone?.let(::ofBuildings) ?: ALL_FEATURES,
         entrancesMinZoom = if (alone == null) MARKS_MIN_ZOOM else ANY_ZOOM,
