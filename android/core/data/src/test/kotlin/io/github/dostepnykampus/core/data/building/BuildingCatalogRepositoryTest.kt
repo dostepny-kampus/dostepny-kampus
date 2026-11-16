@@ -16,7 +16,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.yield
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -81,13 +83,7 @@ class BuildingCatalogRepositoryTest {
     @Test
     fun readsOnceForParallelCalls() {
         val held = ArrayDeque<Runnable>()
-        val io =
-            object : CoroutineDispatcher() {
-                override fun dispatch(context: CoroutineContext, block: Runnable) {
-                    held.addLast(block)
-                }
-            }
-        val shared = BuildingCatalogRepository(io) { json.also { reads.incrementAndGet() } }
+        val shared = BuildingCatalogRepository(holding(held)) { json.also { reads.incrementAndGet() } }
         runBlocking {
             val calls = List(2) { async(start = CoroutineStart.UNDISPATCHED) { shared.catalog() } }
             val pendingReads = held.size
@@ -96,6 +92,28 @@ class BuildingCatalogRepositoryTest {
             val (first, second) = calls.awaitAll()
             assertEquals(1 to false, pendingReads to isAnyDone, "wywołania nie trwały naraz albo każde czyta plik")
             assertSame(first, second, "drugie wywołanie dostaje ten sam katalog")
+            assertEquals(1, reads.get(), "plik czytany raz")
+        }
+    }
+
+    /**
+     * Dwa strumienie mapy naraz przy pustym repozytorium: drugi rusza, zanim pierwszy przeczyta plik → jeden odczyt
+     *   pliku i ten sam pierwszy katalog dla obu.
+     *
+     * Wymagania: US1, NFR-11
+     */
+    @Test
+    fun readsOnceForParallelUpdates() {
+        val held = ArrayDeque<Runnable>()
+        val shared = BuildingCatalogRepository(holding(held)) { json.also { reads.incrementAndGet() } }
+        runBlocking {
+            val calls = List(2) { async(start = CoroutineStart.UNDISPATCHED) { shared.catalogUpdates().first() } }
+            while (calls.any { !it.isCompleted }) {
+                yield()
+                while (held.isNotEmpty()) held.removeFirst().run()
+            }
+            val (first, second) = calls.awaitAll()
+            assertSame(first, second, "drugi strumień dostaje ten sam katalog")
             assertEquals(1, reads.get(), "plik czytany raz")
         }
     }
@@ -131,6 +149,13 @@ class BuildingCatalogRepositoryTest {
             "ocena wejścia z katalogu",
         )
     }
+
+    private fun holding(held: ArrayDeque<Runnable>): CoroutineDispatcher =
+        object : CoroutineDispatcher() {
+            override fun dispatch(context: CoroutineContext, block: Runnable) {
+                held.addLast(block)
+            }
+        }
 
     private fun collection(features: List<String>): String =
         """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors",""" +
