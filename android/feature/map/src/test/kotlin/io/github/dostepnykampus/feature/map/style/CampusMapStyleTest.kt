@@ -13,13 +13,12 @@ import io.github.dostepnykampus.feature.map.campus.selection
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /** Styl mapy V1 z jednym konturem „Budynek testowy” (nie dane PWr). Wymagania: US1, US1.1, NFR-10 */
@@ -32,7 +31,7 @@ class CampusMapStyleTest {
     @Test
     fun drawsOutlinesOverBasemap() {
         val layers = style.array("layers").map { it.jsonObject }
-        val below = listOf("lad", "osm", BUILDINGS_LAYER, "kontury") + PLAN + listOf(SELECTED_LAYER)
+        val below = listOf("lad") + BASEMAP_LAYERS + listOf(BUILDINGS_LAYER, "kontury") + PLAN + listOf(SELECTED_LAYER)
         val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)
         val expected = below + marks + listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
         assertEquals(expected, layers.map { it.text("id") })
@@ -42,55 +41,56 @@ class CampusMapStyleTest {
     @Test
     fun readsOutlinesOffline() {
         val sources = style.obj("sources")
-        val tiles = sources.obj("osm").array("tiles")
-        assertEquals(OSM_TILES, tiles.single().jsonPrimitive.content)
+        assertEquals(BASEMAP_TILES, sources.obj(BASEMAP).text("url"), "podkład wektorowy OpenFreeMap")
+        assertEquals("vector", sources.obj(BASEMAP).text("type"), "kafelki wektorowe")
         val buildings = sources.obj("budynki").obj("data").array("features")
         val properties = buildings.single().jsonObject.obj("properties")
         assertEquals("C-13", properties.text("label"))
     }
 
     /**
-     * Podkład jest przygaszony i prześwituje przez niego tło lądu, więc budynki PWr są najwyraźniejsze; zieleń, woda
-     * i ulice zostają rozpoznawalne, bo barwy nie znikają całkiem (makieta hi-fi V1).
+     * Podkład ma barwy tokenów: zieleń, woda i budynki miasta, a budynki miasta są dopiero od powiększenia 13. Mapa nie
+     * ma punktów usług ani numerów domów, więc nic nie zasłania budynków PWr (ADR-0014).
      *
-     * Wymagania: NFR-16
+     * Wymagania: NFR-16, US1.4
      */
     @Test
-    fun mutesBasemapWithoutGrey() {
-        val paint = style.array("layers")[1].jsonObject.obj("paint")
-        assertEquals(-0.4, paint.number("raster-saturation"))
-        assertEquals(0.72, paint.number("raster-opacity"))
-        assertNull(paint["raster-brightness-min"])
-    }
-
-    /** W motywie ciemnym jasność kafelków jest odwrócona: najjaśniejsze miejsca kafelka wychodzą najciemniej. */
-    @Test
-    fun invertsNightBasemap() {
-        val night = styled(colors = colors.copy(isNight = true))
-        val layers = Json.parseToJsonElement(night).jsonObject.array("layers")
-        val paint = layers[1].jsonObject.obj("paint")
-        assertTrue(paint.number("raster-brightness-min") > paint.number("raster-brightness-max"))
+    fun colorsBasemapFromTokens() {
+        val layers = style.array("layers").map { it.jsonObject }.associateBy { it.text("id") }
+        assertEquals("#CBE2C6", layers.getValue("zielen").obj("paint").text("fill-color"), "zieleń z tokenu")
+        assertEquals("#A7CADD", layers.getValue("woda").obj("paint").text("fill-color"), "woda z tokenu")
+        assertEquals(13.0, layers.getValue("budynki_miasta").number("minzoom"), "budynki miasta od powiększenia 13")
+        val basemap = layers.values.filter { it["source"] == JsonPrimitive(BASEMAP) }
+        val used = basemap.map { it.text("source-layer") }
+        val allowed =
+            setOf(
+                "landcover",
+                "park",
+                "water",
+                "waterway",
+                "transportation",
+                "building",
+            )
+        assertEquals(allowed, used.toSet(), "bez punktów usług i numerów domów")
     }
 
     /**
-     * Wiersz: V1, podkładu spoza prostokąta widoku terenu ani poniżej najmniejszego
-     * powiększenia podkładu aplikacja nie pobiera; bez podanego podkładu jest nim prostokąt terenu od powiększenia 0.
+     * Wiersz: V1, podkładu poniżej najmniejszego powiększenia podkładu terenu aplikacja nie rysuje ani nie pobiera;
+     * warstwy z własnym progiem, np. budynki miasta, zostają przy nim. Bez podanego podkładu warstwy są od progu
+     * własnego albo od powiększenia 0.
      *
      * Wymagania: NFR-39
      */
     @Test
-    fun limitsBasemapToTiles() {
-        val bounds = CampusBounds(west = 16.9, south = 59.9, east = 17.1, north = 60.1)
-        val tiles = CampusBounds(west = 16.8, south = 59.8, east = 17.2, north = 60.2)
-        val area = MapSelection(bounds = bounds)
-        val basemap = Basemap(bounds = tiles, minZoom = 12.5)
-        val text = campusMapStyle(data = data, selection = area, colors = colors, basemap = basemap)
-        val style = Json.parseToJsonElement(text).jsonObject
-        val plain = Json.parseToJsonElement(styled(area)).jsonObject
-        assertEquals(listOf(16.8, 59.8, 17.2, 60.2), style.basemapSource().boundsDegrees(), "w prostokącie podkładu")
-        assertEquals(12.5, style.basemapLayer().number("minzoom"), "podkład od najmniejszego powiększenia")
-        assertEquals(listOf(16.9, 59.9, 17.1, 60.1), plain.basemapSource().boundsDegrees(), "bez niego w terenie")
-        assertEquals(0.0, plain.basemapLayer().number("minzoom"), "bez niego od powiększenia 0")
+    fun hidesBasemapBelowArea() {
+        val area = MapSelection(bounds = CampusBounds(west = 16.9, south = 59.9, east = 17.1, north = 60.1))
+        val text = campusMapStyle(data = data, selection = area, colors = colors, basemap = Basemap(minZoom = 14.5))
+        val zooms = Json.parseToJsonElement(text).jsonObject.basemapZooms()
+        val plain = Json.parseToJsonElement(styled(area)).jsonObject.basemapZooms()
+        assertEquals(14.5, zooms.getValue("woda"), "woda od powiększenia terenu")
+        assertEquals(15.0, zooms.getValue("chodniki"), "chodniki od własnego progu")
+        assertEquals(0.0, plain.getValue("woda"), "bez podkładu terenu od powiększenia 0")
+        assertEquals(13.0, plain.getValue("budynki_miasta"), "budynki miasta od własnego progu")
     }
 
     @Test
@@ -126,12 +126,12 @@ class CampusMapStyleTest {
     @Test
     fun ordersOptionalLayers() {
         val bare = Json.parseToJsonElement(styled(MapSelection()))
-        val base = listOf("lad", "osm", BUILDINGS_LAYER, "kontury") + PLAN
+        val base = listOf("lad") + BASEMAP_LAYERS + listOf(BUILDINGS_LAYER, "kontury") + PLAN
         val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)
         val pin = listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
         val bareIds = bare.jsonObject.array("layers").map { it.jsonObject.text("id") }
         assertEquals(base + SELECTED_LAYER + marks + pin, bareIds)
-        val sources = setOf("osm", "budynki", "podpisy", "wejscia", "bariery", CHOSEN_SOURCE, PLAN_SOURCE)
+        val sources = setOf(BASEMAP, "budynki", "podpisy", "wejscia", "bariery", CHOSEN_SOURCE, PLAN_SOURCE)
         assertEquals(sources, bare.jsonObject.obj("sources").keys)
         val entrance = SelectedEntrance(id = "w1", location = STYLE_ORIGIN, label = "Główne", buildingSymbol = "C-13")
         val full = Json.parseToJsonElement(styled(data.selection(building = "C-13", entrance = entrance)))
@@ -144,12 +144,11 @@ class CampusMapStyleTest {
 
     private fun JsonObject.obj(key: String): JsonObject = getValue(key).jsonObject
 
-    private fun JsonObject.basemapSource(): JsonObject = obj("sources").obj("osm")
-
-    private fun JsonObject.basemapLayer(): JsonObject =
-        array("layers").map { it.jsonObject }.single { it.text("id") == "osm" }
-
-    private fun JsonObject.boundsDegrees(): List<Double> = array("bounds").map { it.jsonPrimitive.double }
+    private fun JsonObject.basemapZooms(): Map<String, Double> =
+        array("layers")
+            .map { it.jsonObject }
+            .filter { it.text("id") in BASEMAP_LAYERS }
+            .associate { it.text("id") to it.number("minzoom") }
 
     private fun JsonObject.array(key: String): JsonArray = getValue(key).jsonArray
 

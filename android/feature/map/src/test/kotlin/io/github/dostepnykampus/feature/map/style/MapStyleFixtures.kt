@@ -21,4 +21,20 @@ internal fun styleCatalog(): BuildingCatalog {
 }
 
 internal fun styleColors(): MapStyleColors =
-    MapStyleColors(land = "#E8EDEE", building = "#BFE0EC", buildingOutline = "#004E5E", selectedOutline = "#001F27")
+    MapStyleColors(
+        land = "#E8EDEE",
+        building = "#BFE0EC",
+        buildingOutline = "#004E5E",
+        selectedOutline = "#001F27",
+        basemap =
+            BasemapColors(
+                green = "#CBE2C6",
+                water = "#A7CADD",
+                road = "#FFFFFF",
+                roadCasing = "#C3CBCE",
+                rail = "#A3ACAF",
+                path = "#F7F9FA",
+                building = "#DADFE0",
+                buildingOutline = "#C6CDCF",
+            ),
+    )

@@ -81,7 +81,7 @@ class MapStyleRememberTest {
     fun rebuildsStyleOnChange() {
         show()
         compose.runOnIdle { data = dataOf(building, other) }
-        compose.runOnIdle { colors = day.copy(isNight = true) }
+        compose.runOnIdle { colors = day.copy(land = "#20272B") }
         compose.runOnIdle {
             assertEquals(3, builds.size)
             assertEquals(3, builds.toSet().size)
@@ -97,10 +97,10 @@ class MapStyleRememberTest {
     fun keepsStyleOnAreaChange() {
         val area = CampusBounds(west = 0.0, south = 0.0, east = 1.0, north = 1.0)
         selection = MapSelection(bounds = area)
-        basemap = Basemap(bounds = area)
+        basemap = Basemap()
         show()
         compose.runOnIdle { selection = selection.copy(boundary = outline) }
-        compose.runOnIdle { basemap = Basemap(bounds = area, minZoom = 12.0) }
+        compose.runOnIdle { basemap = Basemap(minZoom = 12.0) }
         compose.runOnIdle { selection = MapSelection(bounds = area.copy(west = 2.0, east = 3.0)) }
         compose.runOnIdle {
             assertEquals(1, builds.size)
@@ -117,7 +117,7 @@ class MapStyleRememberTest {
             assertEquals("bez rozmiaru mapy styl nie powstaje", 0, builds.size)
             assertEquals("bez rozmiaru mapy brak stylu", null, styles.last())
         }
-        compose.runOnIdle { basemap = selection.bounds?.let { Basemap(bounds = it) } }
+        compose.runOnIdle { basemap = selection.bounds?.let { Basemap() } }
         compose.runOnIdle {
             assertEquals("po pomiarze jeden styl", 1, builds.size)
             assertEquals("po pomiarze styl gotowy", builds.single(), styles.last())
