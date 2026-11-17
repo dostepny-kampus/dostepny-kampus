@@ -230,7 +230,11 @@ private class SheetScrollConnection(
                 object : ScrollScope {
                     override fun scrollBy(pixels: Float): Float {
                         val before = state.offset
-                        val after = (before + pixels).coerceIn(anchors.minPosition(), anchors.maxPosition())
+                        val after =
+                            (before + pixels).coerceIn(
+                                minimumValue = anchors.minPosition(),
+                                maximumValue = anchors.maxPosition(),
+                            )
                         dragTo(newOffset = after)
                         return after - before
                     }
