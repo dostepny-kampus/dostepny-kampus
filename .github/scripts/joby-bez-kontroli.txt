@@ -3,6 +3,7 @@
 android.yml/cache tylko po scaleniu: zapis cache budowania gałęzi
 android.yml/czyszczenie-cache tylko po scaleniu: usuwa stare wpisy cache
 backend.yml/jakosc szybszy sygnał qulice; tę samą kontrolę wykonuje wymagane zadanie serwer (mvnw verify)
+backend.yml/pamiec-jpeek tylko po scaleniu: zapis pamięci podręcznej jpeek i ASM (#3098)
 docs.yml/pamiec tylko po scaleniu: zapis pamięci podręcznej dokumentacji
 docs.yml/strona tylko po scaleniu: budowa strony dokumentacji
 docs.yml/publikacja tylko po scaleniu: publikacja strony dokumentacji
