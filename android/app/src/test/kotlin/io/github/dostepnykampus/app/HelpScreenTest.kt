@@ -116,7 +116,7 @@ class HelpScreenTest {
     fun readsExampleAloud() {
         show()
         compose.onNodeWithContentDescription("Przykład z mapy kampusu", substring = true).assertExists()
-        compose.onAllNodesWithText("Wpisz symbol budynku, np. C-13").assertCountEquals(0)
+        compose.onAllNodesWithText("Szukaj budynku, np. C-13").assertCountEquals(0)
         compose.onNodeWithText("Dalej").performClick()
         compose.onNodeWithContentDescription("Przykład z opisu budynku A-1", substring = true).assertExists()
         compose.onAllNodesWithText("Wejście dostosowane").assertCountEquals(0)

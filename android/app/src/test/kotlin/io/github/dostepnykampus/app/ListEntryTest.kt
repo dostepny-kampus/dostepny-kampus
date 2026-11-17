@@ -108,7 +108,7 @@ class ListEntryTest {
     }
 
     /**
-     * Wiersz: V1, wybór wyniku w polu „Wpisz symbol budynku, np. C-13” → V2, mała karta także przy TalkBack.
+     * Wiersz: V1, wybór wyniku w polu „Szukaj budynku, np. C-13” → V2, mała karta także przy TalkBack.
      *
      * Wymagania: US1.1, US2.8
      */

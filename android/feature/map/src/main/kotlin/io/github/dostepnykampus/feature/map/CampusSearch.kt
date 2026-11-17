@@ -47,6 +47,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -54,6 +55,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
@@ -61,6 +63,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Obramowania
@@ -267,11 +270,12 @@ private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: (
             unfocusedContainerColor = scheme.surfaceContainerLowest,
             unfocusedBorderColor = scheme.outline,
         )
+    val textStyle = LocalTextStyle.current.merge(TextStyle(color = scheme.onSurface))
     BasicTextField(
         value = query,
         onValueChange = onQueryChange,
         modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = OutlinedTextFieldDefaults.MinHeight),
-        textStyle = LocalTextStyle.current.merge(TextStyle(color = scheme.onSurface)),
+        textStyle = textStyle,
         keyboardOptions =
             KeyboardOptions(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Search),
         singleLine = true,
@@ -280,12 +284,11 @@ private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: (
     ) { field ->
         OutlinedTextFieldDefaults.DecorationBox(
             value = query,
-            innerTextField = field,
+            innerTextField = { FieldWithHint(isEmpty = query.isEmpty(), style = textStyle, content = field) },
             enabled = true,
             singleLine = true,
             visualTransformation = VisualTransformation.None,
             interactionSource = interactions,
-            placeholder = { Text(stringResource(R.string.mapa_szukaj_podpowiedz)) },
             leadingIcon = { Icon(SearchIcon, contentDescription = null) },
             trailingIcon = { if (query.isNotEmpty()) ClearButton { onQueryChange("") } },
             colors = colors,
@@ -301,6 +304,22 @@ private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: (
                 )
             },
         )
+    }
+}
+
+@Composable
+private fun FieldWithHint(isEmpty: Boolean, style: TextStyle, content: @Composable () -> Unit) {
+    val isWrapped = isEmpty && LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+    Box(contentAlignment = Alignment.CenterStart, propagateMinConstraints = true) {
+        Text(
+            text = stringResource(R.string.mapa_szukaj_podpowiedz),
+            modifier = if (isEmpty) Modifier else Modifier.alpha(0f).clearAndSetSemantics {},
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = if (isWrapped) Int.MAX_VALUE else 1,
+            overflow = TextOverflow.Ellipsis,
+            style = style,
+        )
+        content()
     }
 }
 
