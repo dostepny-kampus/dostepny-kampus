@@ -12,9 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,14 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
-import io.github.dostepnykampus.feature.map.R
 
 /**
  * Nagłówek arkusza na mapie: treść [content], np. znak, przed tytułem [title] i obrysowany „Zamknij”, który wywołuje
@@ -52,7 +47,7 @@ internal fun MapSheetHeader(title: String, onClose: () -> Unit, content: @Compos
     LaunchedEffect(header) { withFrameMillis { header.requestFocus() } }
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         if (isLarge) {
-            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) { CloseButton(onClose) }
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) { SheetCloseButton(onClose) }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
             content()
@@ -67,14 +62,7 @@ internal fun MapSheetHeader(title: String, onClose: () -> Unit, content: @Compos
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = Typografia.wyroznienieWaga,
             )
-            if (!isLarge) CloseButton(onClose)
+            if (!isLarge) SheetCloseButton(onClose)
         }
-    }
-}
-
-@Composable
-private fun CloseButton(onClose: () -> Unit) {
-    OutlinedButton(onClick = onClose, modifier = Modifier.heightIn(min = CeleDotyku.minimum)) {
-        Text(stringResource(R.string.mapa_zamknij))
     }
 }
