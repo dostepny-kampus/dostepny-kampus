@@ -12,6 +12,7 @@ Mapa kampusu: budynki, wejścia i bariery na mapie, wyszukiwanie budynku, karta 
 - `feature.map.building` — karta budynku, lista i wyszukiwanie budynków, wejścia i grupa barier.
 - `feature.map.camera` — położenie i ruch kamery mapy; kamerę zmienia jeden sterownik (ADR-0015).
 - `feature.map.campus` — dane mapy kampusu i zaznaczenie.
+- `feature.map.entrance` — arkusz wejścia po dotknięciu jego znaku na mapie.
 - `feature.map.navigation` — trasa ekranu mapy.
 - `feature.map.overlay` — nakładki mapy: sterowanie, legenda, informacja i stan sieci.
 - `feature.map.plan` — plan piętra budynku po przybliżeniu mapy.

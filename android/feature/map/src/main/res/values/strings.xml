@@ -57,6 +57,9 @@
     <string name="mapa_bariera_opis_budynku">Pokaż opis budynku</string>
     <string name="mapa_bariera_sprawdzone">Sprawdzone %1$s</string>
     <string name="mapa_bariera_zdjecie">Zdjęcie bariery: %1$s</string>
+    <string name="mapa_wejscie_naglowek">Wejście, budynek %1$s</string>
+    <string name="mapa_wejscie_glowne">%1$s, wejście główne</string>
+    <string name="mapa_wejscie_niesprawdzone">Nikt jeszcze nie sprawdził tego wejścia.</string>
     <string name="mapa_zdjecie_wczytujemy">Wczytujemy zdjęcie…</string>
     <string name="mapa_zdjecie_blad">Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.</string>
     <string name="mapa_otwiera_opis_budynku">otwiera opis budynku</string>
