@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map
 
 import io.github.dostepnykampus.feature.map.camera.TouchSign
+import kotlin.math.abs
 
 /**
  * Zapytania o numery konturów budynków przy dotknięciu: [hit] pod palcem, [near] w zasięgu dotknięcia.
@@ -37,3 +38,20 @@ internal fun chooseTouch(signsNear: (TouchSign) -> List<String>, outlines: Outli
     TouchSign.entries.firstNotNullOfOrNull { sign ->
         signsNear(sign).firstOrNull()?.let { id -> MapTouch.Sign(sign = sign, id = id) }
     } ?: MapTouch.Outlines(hit = outlines.hit(), near = outlines.near)
+
+/**
+ * Znak [id], którego punkt leży [dx] w poziomie i [dy] w pionie od palca, w pikselach ekranu.
+ *
+ * Wymagania: NFR-17
+ */
+internal data class SignPoint(val id: String, val dx: Float, val dy: Float)
+
+/**
+ * Identyfikatory znaków w zasięgu dotknięcia: najpierw obrazy pod palcem [under], potem znaki z [near], których
+ * punkt leży najwyżej [reach] od palca w poziomie i w pionie. Obszar dotyku znaku to więc kwadrat o boku dwa razy
+ * [reach] wokół jego punktu, a przy większym obrazie sam obraz.
+ *
+ * Wymagania: US1.5, US2.1, US16.1, NFR-17
+ */
+internal fun signsInReach(under: List<String>, near: List<SignPoint>, reach: Float): List<String> =
+    (under + near.filter { abs(it.dx) <= reach && abs(it.dy) <= reach }.map { it.id }).distinct()

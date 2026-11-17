@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.map
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.PointF
 import android.graphics.RectF
 import android.view.View
 import androidx.compose.runtime.Composable
@@ -86,6 +87,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.constants.MapLibreConstants
+import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE
@@ -102,6 +104,7 @@ import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.layers.TransitionOptions
 import org.maplibre.android.style.sources.GeoJsonSource
 import org.maplibre.geojson.Feature
+import org.maplibre.geojson.Point
 import timber.log.Timber
 import kotlin.math.roundToLong
 
@@ -355,7 +358,9 @@ object MapLibreMapView : CampusMapView {
                     near = { queryRenderedFeatures(area, BUILDINGS_LAYER).mapNotNull(number) },
                 )
             val signsNear = { sign: TouchSign ->
-                queryRenderedFeatures(area, sign.layer).mapNotNull { it.getStringProperty(sign.idKey) }
+                val under = queryRenderedFeatures(at, sign.layer).mapNotNull { it.getStringProperty(sign.idKey) }
+                val near = queryRenderedFeatures(area, sign.layer).mapNotNull { signPoint(it, sign.idKey, at) }
+                signsInReach(under = under, near = near, reach = tolerance)
             }
             when (val touch = chooseTouch(signsNear = signsNear, outlines = outlines)) {
                 is MapTouch.Sign -> {
@@ -368,6 +373,14 @@ object MapLibreMapView : CampusMapView {
                 }
             }
         }
+    }
+
+    private fun MapLibreMap.signPoint(feature: Feature, idKey: String, at: PointF): SignPoint? {
+        val id = feature.getStringProperty(idKey)
+        val point = feature.geometry() as? Point
+        val screen = point?.let { projection.toScreenLocation(LatLng(it.latitude(), it.longitude())) }
+        if (id == null || screen == null) return null
+        return SignPoint(id = id, dx = screen.x - at.x, dy = screen.y - at.y)
     }
 
     private fun MapLibreMap.onPersonIdle(report: (MapCamera) -> Unit) {
