@@ -41,7 +41,7 @@ class RefusedSubmissionTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
+                submissionServer(
                     create = { id, content ->
                         creates++
                         store.createResults.removeFirstOrNull() ?: ServerReply.Ok(server(id, content, version = 2))

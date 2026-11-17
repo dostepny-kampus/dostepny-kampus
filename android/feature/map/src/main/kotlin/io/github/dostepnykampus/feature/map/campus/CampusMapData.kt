@@ -39,6 +39,9 @@ const val START_BUILDING = "A-1"
 /** Właściwość obiektu konturu z jego numerem w [CampusMapData.outlines]; czyta ją dotknięcie mapy. */
 const val OUTLINE_NUMBER = "outline"
 
+/** Właściwość obiektu wejścia z jego identyfikatorem z katalogu; czyta ją dotknięcie mapy. */
+internal const val ENTRANCE_ID = "id"
+
 /** Znak między symbolami w podpisie konturu wspólnego, np. „C-3/C-4”. */
 internal const val LABEL_SEPARATOR = "/"
 
@@ -193,7 +196,7 @@ fun campusMapData(catalog: BuildingCatalog, boundaries: Map<String, GeoArea> = P
             val entrance = shared.first()
             val properties =
                 buildJsonObject {
-                    put(key = "id", value = entrance.id)
+                    put(key = ENTRANCE_ID, value = entrance.id)
                     put(key = "marking", value = entrance.marking.name)
                     put(key = "main", value = entrance.isMain)
                     put(key = "symbols", element = JsonArray(shared.map { JsonPrimitive(it.buildingSymbol) }))

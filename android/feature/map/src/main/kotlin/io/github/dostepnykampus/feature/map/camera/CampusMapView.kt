@@ -34,10 +34,10 @@ fun interface CampusMapView {
      * ruchu stoi w środku części odkrytej. Każdy ruch wykonuje raz; zmiana [inset] zmienia tylko dopełnienie
      * mapy i nie przerywa trwającego ruchu. Po geście widok zgłasza nowy widok przez [onCameraIdle].
      * Dotknięcie wewnątrz konturu zgłasza przez [onBuildingsTouch] symbole tego konturu, dotknięcie obok konturów
-     * symbole konturów w zasięgu dotknięcia, a dotknięcie pustej mapy pustą listę. Dotknięcie znaku bariery
-     * zgłasza identyfikator jej zgłoszenia przez [onBarrierTouch] i nie zgłasza konturu pod znakiem.
+     * symbole konturów w zasięgu dotknięcia, a dotknięcie pustej mapy pustą listę. Dotknięcie znaku zgłasza
+     * przez [onSignTouch] rodzaj znaku i identyfikator jego obiektu i nie zgłasza konturu pod znakiem.
      *
-     * Wymagania: US1.5, NFR-56
+     * Wymagania: US1.5, US2.1, NFR-56
      */
     @Composable
     fun Show(
@@ -47,7 +47,7 @@ fun interface CampusMapView {
         inset: MapInset,
         onCameraIdle: (MapCamera) -> Unit,
         onBuildingsTouch: (List<String>) -> Unit,
-        onBarrierTouch: (String) -> Unit,
+        onSignTouch: (TouchSign, String) -> Unit,
         modifier: Modifier,
     )
 }

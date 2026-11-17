@@ -72,7 +72,7 @@ class RefusedResaveTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
+                submissionServer(
                     create = { id, content ->
                         sent += content
                         store.createResults.removeFirstOrNull() ?: ServerReply.Ok(server(id, content))

@@ -22,8 +22,8 @@ Każda zasada wynika z wymagań albo z person. Grupa docelowa kursu to osoby sta
 
 | Zasada | Skutek w tokenach | Źródło |
 | --- | --- | --- |
-| Kształt i słowo niosą znaczenie, barwa je powtarza. | Oznaczenie wejścia ma kształt ikony i słowo ze [słownika użytkownika](slownik-uzytkownika.md#metafory-i-ikony): koło ze znakiem ✓ „Dostępne”, ośmiokąt ze znakiem ✕ „Niedostępne”, romb ze znakiem ? „Brak danych”. Może stać w spokojnym kontenerze, a jego kolor tylko wzmacnia. Na mapie i w legendzie znaki wejść i barier mają barwę z `mapa.kolory.znak_…`: zielononiebieskie „Dostępne”, żółte „Utrudnienie”, pomarańczowe „Tylko z pomocą” i ciemnoczerwona „Blokada”. „Niedostępne” i „Brak danych” mają kolor tekstu mapy. Jasność maleje z uciążliwością, więc kolejność widać też w odcieniach szarości. Każdy znak ma obwódkę w kolorze tła mapy i kontur w kolorze tekstu mapy. Poza mapą i legendą status zgłoszenia i uciążliwość nie mają kontenera: tekst i ikona w kolorze `onSurface`. | NFR-21, WCAG 1.4.1 [1], decyzja 48 |
-| Bez „sygnalizacji świetlnej” poza mapą. | Poza znakami mapy i legendą paleta interfejsu nie ma zielonego ani żółtego, więc nie ma pary zielony/czerwony. Kontener „Dostępne” jest morski, „Niedostępne” przygaszony szaroróżowy, a „Brak danych” szary. W odcieniach szarości odróżnia je kształt ikony i słowo. | NFR-21, wymagania wspólne fazy B, decyzja 48 |
+| Kształt i słowo niosą znaczenie, barwa je powtarza. | Oznaczenie wejścia ma kształt ikony i słowo ze [słownika użytkownika](slownik-uzytkownika.md#metafory-i-ikony): koło ze znakiem ✓ „Dostępne”, ośmiokąt ze znakiem ✕ „Niedostępne”, romb ze znakiem ? „Brak danych”. Poza mapą oznaczenie to ten sam znak w rozmiarze `ikony.rozmiar` i słowo zwykłym tekstem, bez kontenera. Na mapie i w legendzie znaki wejść i barier mają barwę z `mapa.kolory.znak_…`: zielononiebieskie „Dostępne”, żółte „Utrudnienie”, pomarańczowe „Tylko z pomocą” i ciemnoczerwona „Blokada”. „Niedostępne” i „Brak danych” mają kolor tekstu mapy. Jasność maleje z uciążliwością, więc kolejność widać też w odcieniach szarości. Każdy znak ma obwódkę w kolorze tła mapy i kontur w kolorze tekstu mapy. Poza mapą i legendą status zgłoszenia i uciążliwość nie mają kontenera: tekst i ikona w kolorze `onSurface`. | NFR-21, WCAG 1.4.1 [1], decyzja 48 |
+| Bez „sygnalizacji świetlnej” poza mapą. | Poza znakami mapy i legendą paleta interfejsu nie ma zielonego ani żółtego, więc nie ma pary zielony/czerwony. Oznaczenie wejścia poza mapą nie ma tła, a w odcieniach szarości odróżnia je kształt znaku i słowo. | NFR-21, wymagania wspólne fazy B, decyzja 48 |
 | Jedna barwa akcentu: ciemny morski. | `primary` wyróżnia symbol budynku, jedyny przycisk wypełniony na ekranie, przyciski tekstowe i fokus. `primaryContainer` oznacza to, co wybrane, np. piętro, a w ciemnym motywie także tło przycisku wypełnionego. Czynność główną wyróżnia też położenie i rozmiar. | [wymagania wspólne](wymagania-ekranow.md#wymagania-wspolne), Material 3 [5] |
 | Daltonizm nie odbiera czytelności. | Protanopia i deuteranopia zacierają różnicę między czerwonym a zielonym, a oś morska zostaje czytelna. Barwy znaków mapy pochodzą z palety bezpiecznej przy daltonizmie (Okabe i Ito), a kolejność uciążliwości niesie jasność. Skrypt liczy kontrast każdej pary także po symulacji obu typów [4]. | NFR-16, NFR-21 |
 | Tekst ma kontrast co najmniej 7:1, a nie 4,5:1. | Próg poziomu AAA dla każdego tekstu, także drugorzędnego i błędu. Skrypt odrzuca próg niższy niż w NFR-16. | WCAG 1.4.6 [1], [2]; PE-1, PE-2, PE-3 |
@@ -46,7 +46,7 @@ Rysunki, takie jak ilustracje barier, też nie są negatywem. Mają te same kszt
 
 ## Kolory
 
-Nazwy ról pochodzą z Material 3 [5]. Plik zawiera tylko role, których potrzebują ekrany. Kontenery oznaczeń wejścia (`status…Container`) to role dodatkowe stylu „Karta miejsca”, nazwane jak role kontenerów Material 3. Kwadrat obok wartości to próbka koloru.
+Nazwy ról pochodzą z Material 3 [5]. Plik zawiera tylko role, których potrzebują ekrany. Kontenery oznaczeń wejścia (`status…Container`) to role dodatkowe stylu „Karta miejsca”, których wymagania już nie używają; znikają razem z plakietką w kodzie. Kwadrat obok wartości to próbka koloru.
 
 Plik nie ma koloru stanu nieaktywnego. Na makietach każdy przycisk działa zawsze, a brakujące dane wyjaśnia błąd przy polu (C2, C6).
 
@@ -173,16 +173,17 @@ Napisy paska dolnego mają 18 sp i mogą zawinąć się do dwóch wierszy pod ik
 <!-- typografia:start -->
 <!-- vale off -->
 
-| Styl             | Rozmiar | Waga | Interlinia | Zastosowanie                                                                    | Źródło                                                       |
-| ---------------- | ------- | ---- | ---------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `displayLarge`   | 57 sp   | 800  | 57 sp      | symbol budynku na karcie, np. „A-1”                                             | styl „Karta miejsca”                                         |
-| `headlineMedium` | 28 sp   | 700  | 36 sp      | nazwa miejsca, np. „Gmach Główny”, „Sala 329”                                   | styl „Karta miejsca”, NFR-16 (duży tekst ≥ 24 sp)            |
-| `titleLarge`     | 22 sp   | 600  | 28 sp      | nagłówek grupy, np. „Wejścia”, „Bariery w budynku”                              | styl „Karta miejsca”, NFR-16 (duży tekst ≥ 19 sp pogrubiony) |
-| `titleMedium`    | 20 sp   | 700  | 26 sp      | nazwa wejścia, udogodnienia albo piętra w kontenerze grupy                      | styl „Karta miejsca”, NFR-16 (duży tekst ≥ 19 sp pogrubiony) |
-| `bodyLarge`      | 18 sp   | 400  | 28 sp      | tekst podstawowy, np. „Drzwi 120 cm”, opis piętra, kroki do sali                | konwencje makiet, NFR-20, PE-1                               |
-| `labelLarge`     | 18 sp   | 600  | 24 sp      | napis przycisku i chipu; przyciski i oznaczenia wejścia mają wagę wyróżnienia   | styl „Karta miejsca”, NFR-17                                 |
-| `bodyMedium`     | 18 sp   | 500  | 28 sp      | podpis, np. źródło i data oceny wejść, napisy „Zalecane”, podpisy OpenStreetMap | styl „Karta miejsca”, US17.3, NFR-37, NFR-40                 |
-| `labelMedium`    | 18 sp   | 500  | 20 sp      | napisy pod ikonami paska dolnego, w razie potrzeby w dwóch wierszach            | styl „Karta miejsca”, wymagania wspólne (pasek dolny)        |
+| Styl             | Rozmiar | Waga | Interlinia | Zastosowanie                                                                                              | Źródło                                                                                                |
+| ---------------- | ------- | ---- | ---------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `displayLarge`   | 57 sp   | 800  | 57 sp      | dawny symbol budynku na karcie; nagłówek karty budynku ma symbol stylem headlineLarge                     | styl „Karta miejsca”                                                                                  |
+| `headlineLarge`  | 36 sp   | 800  | 40 sp      | symbol budynku w nagłówku karty budynku na każdej wysokości, np. „A-1”, w kolorze primary                 | styl „Karta miejsca”, wybór właściciela po porównaniu z prototypem karty, NFR-16 (duży tekst ≥ 24 sp) |
+| `headlineMedium` | 28 sp   | 700  | 36 sp      | nazwa miejsca, np. „Gmach Główny”, „Sala 329”                                                             | styl „Karta miejsca”, NFR-16 (duży tekst ≥ 24 sp)                                                     |
+| `titleLarge`     | 22 sp   | 600  | 28 sp      | nagłówek grupy, np. „Wejścia”, „Bariery w budynku”, i nazwa budynku pod symbolem w nagłówku karty budynku | styl „Karta miejsca”, NFR-16 (duży tekst ≥ 19 sp pogrubiony)                                          |
+| `titleMedium`    | 20 sp   | 700  | 26 sp      | nazwa wejścia, udogodnienia albo piętra w kontenerze grupy                                                | styl „Karta miejsca”, NFR-16 (duży tekst ≥ 19 sp pogrubiony)                                          |
+| `bodyLarge`      | 18 sp   | 400  | 28 sp      | tekst podstawowy, np. „Drzwi 120 cm”, opis piętra, kroki do sali                                          | konwencje makiet, NFR-20, PE-1                                                                        |
+| `labelLarge`     | 18 sp   | 600  | 24 sp      | napis przycisku i chipu; przyciski i oznaczenia wejścia mają wagę wyróżnienia                             | styl „Karta miejsca”, NFR-17                                                                          |
+| `bodyMedium`     | 18 sp   | 500  | 28 sp      | podpis, np. źródło i data oceny wejść, napisy „Zalecane”, podpisy OpenStreetMap                           | styl „Karta miejsca”, US17.3, NFR-37, NFR-40                                                          |
+| `labelMedium`    | 18 sp   | 500  | 20 sp      | napisy pod ikonami paska dolnego, w razie potrzeby w dwóch wierszach                                      | styl „Karta miejsca”, wymagania wspólne (pasek dolny)                                                 |
 
 <!-- vale on -->
 <!-- typografia:end -->
@@ -215,9 +216,9 @@ Odstępy leżą na siatce 4 dp [5], a skrypt sprawdza wielokrotność. Cel dotyk
 | Zaokrąglenia | `zaokraglenia.duze`           | 16 dp   | kontenery grup, legenda, kroki do sali, plakietka „A-1” na arkuszu                                                          | styl „Karta miejsca” (Material 3, kształt duży)          |
 | Zaokrąglenia | `zaokraglenia.kapsula`        | 24 dp   | kontrolki 48 dp, np. „Wstecz” na mapie, przyciski +/−, piętra w przełączniku, segmenty, małe przyciski                      | styl „Karta miejsca”                                     |
 | Zaokrąglenia | `zaokraglenia.bardzo_duze`    | 28 dp   | przyciski 56 dp i przypięte, pole wyszukiwania, przełącznik pięter, górne rogi arkusza                                      | styl „Karta miejsca” (Material 3, kształt bardzo duży)   |
-| Ikony        | `ikony.rozmiar`               | 24 dp   | ikona oznaczenia wejścia, chipu, przycisku i paska dolnego, zawsze z napisem obok                                           | NFR-21, słownik użytkownika (Metafory i ikony)           |
+| Ikony        | `ikony.rozmiar`               | 24 dp   | znak oznaczenia wejścia w tekście (ten sam co na mapie), ikona chipu, przycisku i paska dolnego, zawsze z napisem obok      | NFR-21, słownik użytkownika (Metafory i ikony)           |
 | Ikony        | `ikony.znak_mapy`             | 28 dp   | znak wejścia „Dostępne” i „Niedostępne” na mapie V1                                                                         | US1.4, US2.1, NFR-21                                     |
-| Ikony        | `ikony.znak_mapy_brak_danych` | 20 dp   | znak wejścia „Brak danych” na mapie V1; w legendzie i na kartach ma rozmiar zwykłego znaku                                  | US1.4, US2.1, NFR-16, NFR-21                             |
+| Ikony        | `ikony.znak_mapy_brak_danych` | 20 dp   | znak wejścia „Brak danych” na mapie V1; w legendzie ma rozmiar zwykłego znaku, a w tekście `ikony.rozmiar`                  | US1.4, US2.1, NFR-16, NFR-21                             |
 
 <!-- vale on -->
 <!-- wymiary:end -->
@@ -228,7 +229,7 @@ Między sąsiednimi przyciskami jest 16 dp, bo PE-1 ma lekkie drżenie dłoni. C
 
 Kontenery, karty, dzielniki i przyciski obrysowane mają ramkę 1 dp. Pola tekstowe, ramki opcji do wyboru i segmenty mają ramkę 2 dp, bo dotyka się ich w terenie, w słońcu (PE-1, PE-2).
 
-Wysokości elementów (cień) są w sekcji `wysokosci` pliku, w poziomach Material 3 [11]. Pływające kontrolki mapy mają 3 dp, a przypięty pasek czynności i mała karta V2 nad mapą 6 dp. W ciemnym motywie cień słabo widać, więc element pływający ma też obwódkę 1 dp. Skrypt strony jeszcze nie pokazuje tej sekcji w tabelach.
+Wysokości elementów (cień) są w sekcji `wysokosci` pliku, w poziomach Material 3 [11]. Pływające kontrolki mapy mają 3 dp, a przypięty pasek czynności i karta V2 nad mapą 6 dp. W ciemnym motywie cień słabo widać, więc element pływający ma też obwódkę 1 dp. Skrypt strony jeszcze nie pokazuje tej sekcji w tabelach.
 
 Nagłówek V1 z polem wyszukiwania nie pływa nad mapą, więc nie ma cienia. Od mapy oddziela go linia 1 dp `outlineVariant`, a pole jest białe (`surfaceContainerLowest`). Ramka pola zostaje 2 dp, bo pole dotyka się w słońcu (PE-1).
 

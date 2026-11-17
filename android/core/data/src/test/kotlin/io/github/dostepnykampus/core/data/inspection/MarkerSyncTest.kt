@@ -10,6 +10,7 @@ import io.github.dostepnykampus.core.network.ApiResult
 import io.github.dostepnykampus.core.network.inspection.MarkerChange
 import io.github.dostepnykampus.core.network.inspection.MarkerChangeResult
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -116,9 +117,15 @@ class MarkerSyncTest {
 private class MarkerPhone {
     val queue = FakeMarkerQueue()
     private val ids = generateSequence(1) { it + 1 }.map { "id-$it" }.iterator()
-    val markers = floorMarkersOf(queue = queue, newId = { ids.next() }, nowMillis = { queue.rows.size + 1L })
+    val markers =
+        floorMarkersOf(
+            queue = queue,
+            subjects = flowOf("konto-testowe"),
+            newId = { ids.next() },
+            nowMillis = { queue.rows.size + 1L },
+        )
     val server = MarkerServer(marked = mutableSetOf("m1", "m2", "m3"))
-    val sync = MarkerSync(queue = queue, push = server::push)
+    val sync = MarkerSync(queue, { "konto-testowe" }) { _, changes -> server.push(changes) }
 }
 
 /** Serwer znaczników w pamięci: zbiór znaczników, które nie są cofnięte, i odpowiedź `POST /sync/push`. */

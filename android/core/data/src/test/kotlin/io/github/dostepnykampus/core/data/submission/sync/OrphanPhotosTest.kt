@@ -89,7 +89,7 @@ class OrphanPhotosTest {
             store = store,
             ioContext = ioContext,
             server =
-                SubmissionServer(
+                submissionServer(
                     create = { _, _ -> ServerReply.Offline },
                     putPhoto = { _, _, _ -> ServerReply.Offline },
                     update = { _, _, _ -> ServerReply.Offline },

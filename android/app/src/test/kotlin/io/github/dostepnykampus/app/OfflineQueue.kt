@@ -20,12 +20,13 @@ internal fun offlineQueue(store: SubmissionStore, onSend: () -> Unit): Submissio
         ioContext = EmptyCoroutineContext,
         server =
             SubmissionServer(
-                create = { _, _ ->
+                subject = { "konto-testowe" },
+                create = { _, _, _ ->
                     onSend()
                     ServerReply.Offline
                 },
-                putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                update = { _, _, _ -> ServerReply.Missing },
+                putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
+                update = { _, _, _, _ -> ServerReply.Missing },
             ),
     )
 

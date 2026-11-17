@@ -53,6 +53,15 @@ Funkcja: Tryb offline i synchronizacja
     Wtedy zgłoszenie ma status „wysłane”
     Ale Zbierający nie musiał niczego wysyłać
 
+  @US9.2 @US14.4 @BR-9 @BR-26 @NFR-33 @aplikacja
+  Scenariusz: Kolejki czekają na zalogowanie właściciela
+    Zakładając, że osoba A zapisała bez sieci zgłoszenie i zmianę znacznika piętra obejrzanego
+    Oraz zalogowanie osoby A wygasło
+    Jeżeli na tym samym telefonie zaloguje się osoba B
+    Wtedy zgłoszenie i zmiana znacznika osoby A nadal czekają w telefonie
+    Jeżeli osoba A zaloguje się ponownie
+    Wtedy aplikacja sama wysyła jej zgłoszenie i zmianę znacznika na jej koncie
+
   @US9.5 @US14.1 @BR-26 @aplikacja
   Scenariusz: Odebrana rola zostawia zgłoszenie w telefonie ze statusem „Nie wysłano”
     Zakładając, że Zbierający ma zgłoszenie ze statusem „lokalne”

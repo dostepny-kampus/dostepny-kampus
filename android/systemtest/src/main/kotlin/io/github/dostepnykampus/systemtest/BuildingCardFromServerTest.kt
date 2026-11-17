@@ -19,7 +19,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 private const val WAIT_MS = 30_000L
-private const val EXPAND = "Rozwiń opis budynku"
+private const val CARD_HEIGHT_HANDLE = "Wysokość karty"
 private const val SERVER_ASSESSMENT = "Z map i opisów, stan z "
 
 /**
@@ -56,7 +56,9 @@ class BuildingCardFromServerTest {
     @Test
     fun cardA1FromServer() {
         steps.openCard("A-1")
-        compose.onNode(hasContentDescription(EXPAND)).performClick()
+        val handle = hasContentDescription(CARD_HEIGHT_HANDLE)
+        steps.waitFor(handle)
+        compose.onNode(handle).performClick()
         val assessment = hasText(SERVER_ASSESSMENT, substring = true)
         steps.waitFor(assessment)
         compose.onAllNodes(assessment).assertCountEquals(1)

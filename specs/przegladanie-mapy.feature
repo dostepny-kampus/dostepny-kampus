@@ -59,10 +59,11 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | Odwiedzający       | przyjęte      | jest widoczne       |
 
   @US2.1 @aplikacja
-  Scenariusz: Wejście ma oznaczenie tekstem i ikoną, nie tylko kolorem
+  Scenariusz: Wejście ma oznaczenie znakiem z mapy i słowem, nie tylko kolorem
     Zakładając, że Gość niezalogowany otworzył kartę budynku A-1
     Jeżeli przejrzy listę wejść
-    Wtedy każde z 6 wejść ma napis „dostępne” albo „niedostępne” i ikonę
+    Wtedy każde z 6 wejść ma słowo „dostępne” albo „niedostępne” i znak tego wejścia z mapy
+    Oraz oznaczenie nie ma barwnego tła
     Oraz wejście główne ma napis „niedostępne”
     Oraz oznaczenia wejść da się odróżnić w odcieniach szarości
 
@@ -121,12 +122,12 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz od mapy wykonał najwyżej 3 dotknięcia
 
   @US2.8 @aplikacja
-  Szablon scenariusza: Mała karta nad mapą mówi słowami o wejściach
+  Szablon scenariusza: Niska karta nad mapą mówi słowami o wejściach
     Zakładając, że w danych testowych <dane>
     Oraz Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
     Jeżeli dotknie budynku <budynek>
-    Wtedy nad mapą widzi małą kartę budynku <budynek> z napisem „<napis>”
-    Oraz na karcie są „Sprawdź, którędy wejść” i „Zamknij”
+    Wtedy nad mapą widzi kartę budynku <budynek> na niskiej wysokości z napisem „<napis>”
+    Oraz na karcie jest „Sprawdź, którędy wejść”, a w nagłówku „Zamknij”
     Ale na karcie nie ma „Pokaż budynek na mapie”
 
     Przykłady:
@@ -136,28 +137,46 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | C-13    | wszystkie wejścia C-13 mają oznaczenie „brak danych” | Brak danych o wejściach |
       | A-2     | budynek A-2 nie ma wejść w danych                    | Brak danych o wejściach |
 
-  @US2.8 @aplikacja
-  Scenariusz: Z małej karty osoba rozwija opis albo wraca do mapy
+  @US2.8 @NFR-53 @aplikacja
+  Scenariusz: Uchwyt zmienia wysokość karty bez przeciągania
     Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
-    Jeżeli wybierze „Rozwiń opis budynku”
-    Wtedy widzi opis budynku A-1 na całym ekranie bez mapy
-    Oraz po „Wstecz” widzi znowu małą kartę nad mapą
-    Oraz po „Zamknij” widzi mapę bez zaznaczonego budynku
+    Jeżeli dotknie uchwytu karty
+    Wtedy karta stoi na połowie ekranu, a nad nią widać mapę
+    Oraz pod kreską karty zaczyna się pełny opis budynku A-1
+    Jeżeli znowu dotknie uchwytu karty
+    Wtedy opis budynku A-1 zajmuje cały ekran
+    Jeżeli znowu dotknie uchwytu karty
+    Wtedy karta wraca na niską wysokość nad mapą
+
+  # @do-zrobienia #2996: na połowie ekranu karta nie ma jeszcze „Zamknij” w nagłówku.
+  @US2.8 @NFR-53 @aplikacja @do-zrobienia
+  Szablon scenariusza: Karta budynku zamyka się na każdej wysokości
+    Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
+    Oraz karta stoi na wysokości „<wysokość>”
+    Jeżeli <czynność>
+    Wtedy widzi mapę bez zaznaczonego budynku
+
+    Przykłady:
+      | wysokość      | czynność                                      |
+      | niska         | przeciągnie kartę w dół                       |
+      | niska         | dotknie pustej mapy                           |
+      | połowa ekranu | wybierze „Zamknij”                            |
+      | cały ekran    | wybierze „Wstecz” telefonu                    |
 
   @US2.8 @US1.4 @NFR-53 @aplikacja
-  Scenariusz: Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski
+  Scenariusz: Przy karcie budynek jest cały widoczny, a mapą sterują przyciski
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
     Jeżeli dotknie budynku A-1
-    Wtedy cały kontur budynku A-1 i jego wejścia mieszczą się w części mapy nad małą kartą
-    Oraz nad małą kartą są „Powiększ”, „Pomniejsz” i strzałki przesuwania mapy
-    Oraz po „Pomniejsz” mapa się oddala, a mała karta budynku A-1 zostaje otwarta
-    Ale nad małą kartą nie ma pola „Wpisz symbol budynku, np. C-13” ani przycisku „Pokaż listę”
+    Wtedy cały kontur budynku A-1 i jego wejścia mieszczą się w części mapy nad kartą
+    Oraz nad kartą są „Powiększ”, „Pomniejsz” i strzałki przesuwania mapy
+    Oraz po „Pomniejsz” mapa się oddala, a karta budynku A-1 zostaje otwarta
+    Ale nad kartą nie ma pola „Wpisz symbol budynku, np. C-13” ani przycisku „Pokaż listę”
 
   @US2.8 @NFR-53 @aplikacja
-  Scenariusz: Przy niskiej mapie nad małą kartą nie ma przycisków mapy
+  Scenariusz: Przy niskiej mapie nad kartą nie ma przycisków mapy
     Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
-    Oraz nad małą kartą zostaje mniej niż 300 dp mapy
-    Wtedy nad małą kartą nie ma „Powiększ”, „Pomniejsz” ani strzałek przesuwania mapy
+    Oraz nad kartą zostaje mniej niż 300 dp mapy
+    Wtedy nad kartą nie ma „Powiększ”, „Pomniejsz” ani strzałek przesuwania mapy
     Oraz po „Zamknij” przyciski mapy wracają
 
   @US2.9 @aplikacja
@@ -345,7 +364,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
 
   @US1.8 @aplikacja
   Scenariusz: Zamknięcie karty budynku z innego terenu zostawia ten teren
-    Zakładając, że Gość niezalogowany wyszukał „T-15”, wybrał wynik i widzi małą kartę budynku
+    Zakładając, że Gość niezalogowany wyszukał „T-15”, wybrał wynik i widzi kartę budynku
     Jeżeli zamknie kartę przyciskiem „Wstecz”
     Wtedy mapa dalej pokazuje teren „Wittigowo”
     Oraz zaznaczenie budynku zniknęło

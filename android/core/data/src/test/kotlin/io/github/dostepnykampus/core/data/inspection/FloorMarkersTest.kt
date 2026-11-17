@@ -11,6 +11,7 @@ import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -24,7 +25,13 @@ import org.junit.jupiter.api.Test
 class FloorMarkersTest {
     private val queue = FakeMarkerQueue()
     private val ids = generateSequence(1) { it + 1 }.map { "id-$it" }.iterator()
-    private val markers = floorMarkersOf(queue = queue, newId = { ids.next() }, nowMillis = { queue.rows.size + 1L })
+    private val markers =
+        floorMarkersOf(
+            queue = queue,
+            subjects = flowOf("konto-testowe"),
+            newId = { ids.next() },
+            nowMillis = { queue.rows.size + 1L },
+        )
 
     /**
      * Przykład „oznaczy kolejne piętro jako obejrzane”.
@@ -82,8 +89,11 @@ internal class FakeMarkerQueue : PendingMarkerChangeDao {
         rows[change.operationId] = change
     }
 
-    override suspend fun deleteSet(markerId: String): Int {
-        val waiting = rows.values.filter { it.markerId == markerId && it.type == PendingMarkerChangeType.SET }
+    override suspend fun deleteSet(markerId: String, owner: String?): Int {
+        val waiting =
+            rows.values.filter {
+                it.markerId == markerId && it.type == PendingMarkerChangeType.SET && it.ownerSub == owner
+            }
         waiting.forEach { rows.remove(it.operationId) }
         return waiting.size
     }

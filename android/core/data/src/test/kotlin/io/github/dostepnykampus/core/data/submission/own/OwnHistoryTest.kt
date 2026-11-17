@@ -15,8 +15,8 @@ import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.pho
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.precise
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.server
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
-import io.github.dostepnykampus.core.data.submission.sync.SubmissionServer
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStamps
+import io.github.dostepnykampus.core.data.submission.sync.submissionServer
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import io.github.dostepnykampus.core.model.submission.Submission
@@ -292,7 +292,7 @@ class OwnHistoryTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
+                submissionServer(
                     create = create,
                     putPhoto = { _, _, _ ->
                         photoAttempts++

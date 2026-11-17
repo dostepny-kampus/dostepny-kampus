@@ -113,7 +113,7 @@ class EditBaseVersionTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
+                submissionServer(
                     create = { id, content ->
                         creates.add(id)
                         ServerReply.Ok(server(id, content, SERVER_VERSION))

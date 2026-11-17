@@ -118,7 +118,8 @@ private fun flightMillis(from: MapCamera, to: MapCamera, free: FreeMap, distance
 internal fun fitted(outline: CampusBounds, free: FreeMap, maxZoom: Double): MapCamera =
     centered(outline = outline, zoom = fittingZoom(outline, free).coerceAtMost(maximumValue = maxZoom), free = free)
 
-private fun fittingZoom(outline: CampusBounds, free: FreeMap): Double {
+/** Powiększenie, przy którym [outline] mieści się w wolnej części [free] z marginesem, poza pasem przycisków. */
+internal fun fittingZoom(outline: CampusBounds, free: FreeMap): Double {
     val width = (free.widthDp - free.endDp - 2 * free.marginDp).coerceAtLeast(minimumValue = 1.0)
     val height = (free.heightDp - 2 * free.marginDp).coerceAtLeast(minimumValue = 1.0)
     return minOf(
@@ -127,7 +128,8 @@ private fun fittingZoom(outline: CampusBounds, free: FreeMap): Double {
     )
 }
 
-private fun centered(outline: CampusBounds, zoom: Double, free: FreeMap): MapCamera {
+/** Widok w powiększeniu [zoom] z [outline] na środku wolnej części [free], obok pasa przycisków. */
+internal fun centered(outline: CampusBounds, zoom: Double, free: FreeMap): MapCamera {
     val behindControls = free.endDp / 2 / dpPerDegree(zoom)
     val center =
         GeoPoint(
@@ -171,4 +173,5 @@ private fun distanceDp(from: MapCamera, to: MapCamera): Double {
     return hypot(x = east, y = south)
 }
 
-private fun dpPerDegree(zoom: Double): Double = WORLD_DP_AT_ZOOM_0 * 2.0.pow(zoom) / FULL_TURN_DEGREES
+/** Dp na stopień długości geograficznej przy powiększeniu [zoom]. */
+internal fun dpPerDegree(zoom: Double): Double = WORLD_DP_AT_ZOOM_0 * 2.0.pow(zoom) / FULL_TURN_DEGREES

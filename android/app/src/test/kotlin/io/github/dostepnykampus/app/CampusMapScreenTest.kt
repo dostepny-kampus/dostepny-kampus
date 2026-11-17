@@ -275,7 +275,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
     }
 
     /**
-     * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: podpis OSM i przyciski
+     * Scenariusz „Przy karcie budynek jest cały widoczny, a mapą sterują przyciski”: podpis OSM i przyciski
      * mapy stoją nad arkuszem V2, a nagłówka, „Legendy” i „ⓘ” nad nim nie ma.
      *
      * Wymagania: US2.8, NFR-37, NFR-53
@@ -298,7 +298,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
      * Mała karta V2 nad V1 przy zwykłej czcionce: cały kontur budynku i jego wejście mieszczą się w części mapy nad
      * kartą, nad kartą są „Powiększ”, „Pomniejsz” i strzałki przesuwania, „Pomniejsz” oddala mapę bez zamykania
      * karty, a pola symbolu i „Pokaż listę” nad kartą nie ma.
-     * Scenariusz: przegladanie-mapy.feature: Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski
+     * Scenariusz: przegladanie-mapy.feature: Przy karcie budynek jest cały widoczny, a mapą sterują przyciski
      *
      * Wymagania: US2.8, US1.4, NFR-53
      */
@@ -339,7 +339,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
     }
 
     /**
-     * Scenariusz „Przy niskiej mapie nad małą kartą nie ma przycisków mapy”: poniżej 300 dp wolnej mapy przycisków
+     * Scenariusz „Przy niskiej mapie nad kartą nie ma przycisków mapy”: poniżej 300 dp wolnej mapy przycisków
      * nie ma, a po zamknięciu karty wracają.
      *
      * Wymagania: US2.8, NFR-53
@@ -376,7 +376,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
     }
 
     /**
-     * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: mapa pod arkuszem sięga
+     * Scenariusz „Przy karcie budynek jest cały widoczny, a mapą sterują przyciski”: mapa pod arkuszem sięga
      * pod pasek stanu, ale przyciski mapy stoją pod jego tłem.
      *
      * Wymagania: US2.8, NFR-16, NFR-53
@@ -409,7 +409,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
     }
 
     /**
-     * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: V1 → V2 z budynkiem
+     * Scenariusz „Przy karcie budynek jest cały widoczny, a mapą sterują przyciski”: V1 → V2 z budynkiem
      * nad arkuszem, „Wstecz” bez ruszania mapy → widok sprzed otwarcia V2; po „Powiększ” nad kartą zostaje
      * widok osoby (151 i 153).
      *
@@ -592,6 +592,30 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
         assertEquals(true, pick.motion != CameraMotion.NONE)
         assertEquals("jeden zapis ruchu dla karty", 1, motion.moves)
         assertEquals("karta dostaje czas ruchu mapy", pick.durationMillis, motion.durationMillis)
+    }
+
+    /**
+     * Wiersz: dotknięcie konturu na mapie → mała karta, a mapa nie przybliża się do budynku; rusza się najwyżej tyle,
+     * żeby zasłonięty kontur był widoczny.
+     *
+     * Wymagania: US2.8, US3.2, NFR-56
+     */
+    @Test
+    @Config(qualifiers = "w360dp-h800dp")
+    fun tapsWithoutZoom() {
+        ring = "[[0,0],[0.0003,0],[0.0003,0.0003],[0,0.0003],[0,0]]"
+        entrances = FAR_BUILDINGS_AROUND_C14
+        var sheet by mutableStateOf(0.dp)
+        var focus by mutableStateOf<String?>(null)
+        compose.setContent { Screen(focus = focus, sheet = sheet, motion = MapMotion()) }
+        compose.waitForIdle()
+        val start = cameras.last()
+        compose.runOnUiThread { touch(listOf("C-14")) }
+        focus = "C-14"
+        sheet = 400.dp
+        compose.waitForIdle()
+        assertEquals("dotknięty budynek otwiera kartę", listOf("C-14"), opened)
+        assertEquals("powiększenie bez zmian: $moves", start.zoom, moves.last().camera.zoom, 0.0)
     }
 
     /**

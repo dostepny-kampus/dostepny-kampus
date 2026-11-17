@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.feature.map.building
 
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,18 +17,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
@@ -39,16 +29,16 @@ import io.github.dostepnykampus.core.designsystem.OfflinePill
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
-import io.github.dostepnykampus.core.designsystem.marking.MarkingChip
+import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.R
 
 /**
  * V2 Karta budynku: nagłówek z symbolem i nazwą z danych (budynek bez nazwy ma sam symbol), który TalkBack czyta jako
- * jeden, np. „Budynek A-1, Gmach Główny”, z fokusem po otwarciu. Pod nim wiersz o wejściach i wejścia z oznaczeniem
- * tekstem i ikoną, zalecane pierwsze. Czynności stoją w przewijanej treści: „Sprawdź, którędy wejść” zawsze, „Zamknij”
- * w [CardMode.Compact], „Pokaż budynek na mapie” w [CardMode.Direct]; pasek „Wstecz” oraz grupy „Wejścia”
- * i „Bariery w budynku” ma pełny ekran.
+ * jeden, np. „Budynek A-1, Gmach Główny”, z fokusem po otwarciu; w [CardMode.Compact] obok niego „Zamknij”. Pod
+ * nim wiersz o wejściach, a bez danych o wejściach cichy napis, i wejścia z oznaczeniem, zalecane pierwsze. Czynności
+ * stoją w przewijanej treści: „Sprawdź, którędy wejść” zawsze, „Pokaż budynek na mapie” w [CardMode.Direct]; pasek
+ * „Wstecz” oraz grupy „Wejścia” i „Bariery w budynku” ma pełny ekran.
  * Nieznany symbol: „budynku nie ma w telefonie”. Bez internetu nad nagłówkiem stoi [OfflinePill] bez daty.
  *
  * Wymagania: US2, BR-25, US2.8, NFR-18, US2.7, NFR-10
@@ -58,7 +48,7 @@ import io.github.dostepnykampus.feature.map.R
  * @param onCheckEntrances „Sprawdź, którędy wejść” otwiera V3
  * @param onShowOnMap „Pokaż budynek na mapie” zaznacza budynek na V1
  * @param onBack „Wstecz”
- * @param onClose „Zamknij” małej karty
+ * @param onClose „Zamknij” w nagłówku małej karty
  * @param modifier wymiary nadane przez arkusz; mała karta ma wysokość treści, pełny ekran wypełnia całe miejsce
  * @param onReportEntrance „Zgłoś barierę przy wejściu” dla identyfikatora wejścia
  * @param onShowEntrance „Pokaż wejście na mapie” dla identyfikatora wejścia zalecanego
@@ -132,14 +122,9 @@ fun BuildingCardContent(
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
         ) {
             if (!isOnline) OfflinePill()
-            HeaderOrSpace(symbol = symbol, card = card, isFullScreen = isFullScreen)
+            CardHeader(symbol = symbol, card = card, mode = mode, onClose = onClose)
             if (card is BuildingCardUiState.Ready || card.isWaiting(isFullScreen)) {
-                CardActions(
-                    mode = mode,
-                    onCheckEntrances = onCheckEntrances,
-                    onShowOnMap = onShowOnMap,
-                    onClose = onClose,
-                )
+                CardActions(mode = mode, onCheckEntrances = onCheckEntrances, onShowOnMap = onShowOnMap)
             }
             FactsOrMissing(
                 card = card,
@@ -179,51 +164,8 @@ private fun FactsOrMissing(
     if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = onRetry)
 }
 
-@Composable
-private fun HeaderOrSpace(symbol: String, card: BuildingCardUiState, isFullScreen: Boolean) {
-    val ready = card as? BuildingCardUiState.Ready
-    if (ready == null && !card.isWaiting(isFullScreen)) return
-    Column(
-        modifier = if (ready == null) Modifier.alpha(0f).clearAndSetSemantics {} else Modifier,
-        verticalArrangement = Arrangement.spacedBy(Odstepy.s),
-    ) {
-        if (ready != null) {
-            SymbolOverName(symbol = symbol, name = ready.name)
-            EntranceSummaryRow(entranceSummary(ready.entrances))
-        } else {
-            Column {
-                Text(text = symbol, style = MaterialTheme.typography.displayLarge)
-                Text(text = " ", style = MaterialTheme.typography.headlineMedium)
-            }
-            EntranceSummaryRow(EntranceSummary.NoData)
-        }
-    }
-}
-
-private fun BuildingCardUiState.isWaiting(isFullScreen: Boolean): Boolean =
-    this == BuildingCardUiState.Loading && !isFullScreen
-
-@Composable
-private fun SymbolOverName(symbol: String, name: String?) {
-    val spoken =
-        name?.let { stringResource(R.string.karta_czytaj, symbol, it) } ?: stringResource(R.string.mapa_budynek, symbol)
-    val focus = remember { FocusRequester() }
-    Column(
-        modifier =
-            Modifier
-                .semantics(mergeDescendants = true) { contentDescription = spoken }
-                .focusRequester(focus)
-                .focusable(),
-    ) {
-        Text(text = symbol, style = MaterialTheme.typography.displayLarge, color = MaterialTheme.colorScheme.primary)
-        name?.let { Text(text = it, style = MaterialTheme.typography.headlineMedium) }
-    }
-    LaunchedEffect(focus) { withFrameMillis { focus.requestFocus() } }
-}
-
 /**
- * Wiersz o wejściach pod nagłówkiem: słowo i ikona oznaczenia jak w [MarkingChip] (kształt, nie
- * para zielony/czerwony).
+ * Wiersz o wejściach pod nagłówkiem: znak oznaczenia z mapy i słowo o wejściach budynku.
  *
  * Wymagania: US2.8, NFR-21
  */
@@ -235,7 +177,7 @@ internal fun EntranceSummaryRow(summary: EntranceSummary) {
             EntranceSummary.NoAccessible -> EntranceMarking.INACCESSIBLE to R.string.karta_wiersz_niedostepne
             EntranceSummary.NoData -> EntranceMarking.NO_DATA to R.string.karta_wiersz_brak_danych
         }
-    MarkingChip(marking = marking, label = stringResource(word))
+    MarkingSign(marking = marking, label = stringResource(word))
 }
 
 @Composable
@@ -285,13 +227,11 @@ internal fun MissingBuilding(onRetry: () -> Unit) {
 }
 
 @Composable
-private fun CardActions(mode: CardMode, onCheckEntrances: () -> Unit, onShowOnMap: () -> Unit, onClose: () -> Unit) {
+private fun CardActions(mode: CardMode, onCheckEntrances: () -> Unit, onShowOnMap: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(CeleDotyku.odstep)) {
         CardButton(text = stringResource(R.string.karta_sprawdz), onClick = onCheckEntrances)
-        when (mode) {
-            CardMode.Compact -> CardButton(stringResource(R.string.mapa_zamknij), onClose, outlined = true)
-            CardMode.Expanded -> Unit
-            CardMode.Direct -> CardButton(stringResource(R.string.karta_pokaz), onShowOnMap, outlined = true)
+        if (mode == CardMode.Direct) {
+            CardButton(stringResource(R.string.karta_pokaz), onShowOnMap, outlined = true)
         }
     }
 }
@@ -300,4 +240,21 @@ private fun CardActions(mode: CardMode, onCheckEntrances: () -> Unit, onShowOnMa
 private fun CardButton(text: String, onClick: () -> Unit, outlined: Boolean = false) {
     val kind = if (outlined) PinnedButtonKind.Outlined else PinnedButtonKind.Filled
     PinnedButton(text = text, onClick = onClick, modifier = Modifier.fillMaxWidth(), kind = kind)
+}
+
+/** Tryb treści V2 Karta budynku. Wymagania: US2.8, US2.9 */
+enum class CardMode {
+    /** Mała karta nad mapą: nagłówek z „Zamknij”, wiersz o wejściach i „Sprawdź, którędy wejść”. */
+    Compact,
+
+    /** Pełny ekran rozwinięty z małej karty: górny pasek „Wstecz” i cały opis budynku. */
+    Expanded,
+
+    /**
+     * Pełny ekran otwarty od razu, bez małej karty: duża czcionka, szerokie okno, poziomo albo wybór z listy przy
+     * TalkBack. Tylko tu jest „Pokaż budynek na mapie”.
+     *
+     * Wymagania: NFR-19, NFR-20
+     */
+    Direct,
 }

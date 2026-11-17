@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.Base64
 
 /** Token konta w żądaniach do serwera aplikacji; operacje publiczne i inne adresy bez tokenu. Wymagania: NFR-35 */
 class AccessTokenInterceptorTest {
@@ -54,6 +55,20 @@ class AccessTokenInterceptorTest {
         server.enqueue(MockResponse().setResponseCode(CREATED))
         runBlocking { SubmissionsApi(http, json, base).create(ID, QUICK) }
         assertEquals("Bearer $TOKEN", server.takeRequest().getHeader(AUTHORIZATION), "nagłówek z tokenem konta")
+    }
+
+    @Test
+    fun blocksOtherAccounts() {
+        val claims = """{"sub":"b"}""".toByteArray()
+        val payload = Base64.getUrlEncoder().withoutPadding().encodeToString(claims)
+        tokens.signIn("a.$payload.c")
+        server.enqueue(MockResponse().setResponseCode(CREATED))
+        val api = SubmissionsApi(http, json, base)
+
+        val result = runBlocking { api.create(ID, QUICK, owner = "a") }
+
+        assertEquals(ApiResult.ServerError(UNAUTHORIZED), result, "token innego konta nie pasuje do żądania")
+        assertEquals(0, server.requestCount, "żądanie obcego konta nie opuszcza telefonu")
     }
 
     @Test

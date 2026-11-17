@@ -8,6 +8,7 @@ package io.github.dostepnykampus.core.data.account
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.network.auth.AccessTokens
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
@@ -34,7 +35,7 @@ class AccountSessionTest {
         val tokens = AccessTokens()
         val session = sessionOf(tokens)
         val token = jwtOf("""{"realm_access":{"roles":["COLLECTOR","VERIFIER","offline_access"]}}""")
-        assertTrue(session.signIn(token), "zalogowanie")
+        assertTrue(runBlocking { session.signIn(token) }, "zalogowanie")
         val expected = Account.SignedIn(setOf(StaffRole.COLLECTOR, StaffRole.VERIFIER))
         assertEquals(expected, session.account.value, "role konta z tokenu")
         assertEquals(token, tokens.token, "token do żądań")
@@ -44,7 +45,7 @@ class AccountSessionTest {
     @ValueSource(strings = ["""{"realm_access":{"roles":["offline_access"]}}""", """{"sub":"u-1"}"""])
     fun signsInVisitorWithoutRoles(claims: String) {
         val session = sessionOf()
-        assertTrue(session.signIn(jwtOf(claims)), "zalogowanie")
+        assertTrue(runBlocking { session.signIn(jwtOf(claims)) }, "zalogowanie")
         assertEquals(Account.SignedIn(), session.account.value, "Odwiedzający")
     }
 
@@ -52,7 +53,7 @@ class AccountSessionTest {
     fun signsOutToGuest() {
         val tokens = AccessTokens()
         val session = sessionOf(tokens)
-        session.signIn(jwtOf("""{"realm_access":{"roles":["COORDINATOR"]}}"""))
+        runBlocking { session.signIn(jwtOf("""{"realm_access":{"roles":["COORDINATOR"]}}""")) }
         session.signOut()
         assertEquals(Account.Guest, session.account.value, "konto po wylogowaniu")
         assertNull(tokens.token, "token po wylogowaniu")
@@ -66,8 +67,8 @@ class AccountSessionTest {
         val tokens = AccessTokens()
         val session = sessionOf(tokens)
         val before = jwtOf("""{"realm_access":{"roles":["VERIFIER"]}}""")
-        session.signIn(before)
-        assertFalse(session.signIn(token), "token nie do odczytania")
+        runBlocking { session.signIn(before) }
+        assertFalse(runBlocking { session.signIn(token) }, "token nie do odczytania")
         assertEquals(Account.SignedIn(setOf(StaffRole.VERIFIER)), session.account.value, "konto bez zmian")
         assertEquals(before, tokens.token, "token bez zmian")
     }

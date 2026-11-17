@@ -120,12 +120,13 @@ class RevokedRoleTest {
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
-                    create = { _, _ ->
+                    subject = { "konto-testowe" },
+                    create = { _, _, _ ->
                         creates++
                         ServerReply.Fault(code = FORBIDDEN)
                     },
-                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { _, _, _ -> ServerReply.Missing },
+                    putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
+                    update = { _, _, _, _ -> ServerReply.Missing },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
         )

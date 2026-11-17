@@ -39,6 +39,7 @@ import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionServer
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionSyncScheduler
+import io.github.dostepnykampus.core.network.auth.AccessTokens
 import io.github.dostepnykampus.core.network.building.BuildingsApi
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 import javax.inject.Singleton
@@ -109,6 +110,7 @@ public object DataModule {
         api: SubmissionsApi,
         store: SubmissionStore,
         sync: SubmissionSyncScheduler,
+        tokens: AccessTokens,
         @IoContext ioContext: CoroutineContext,
     ): SubmissionQueue =
         SubmissionQueue(
@@ -116,12 +118,14 @@ public object DataModule {
             ioContext = ioContext,
             server =
                 SubmissionServer(
-                    create = { id, content -> api.create(id, content).toReply { it } },
-                    putPhoto = { id, photo, jpeg ->
-                        api.putPhoto(submissionId = id, photoId = photo, jpeg = jpeg).toReply {}
+                    subject = tokens::subject,
+                    create = { owner, id, content -> api.create(id, content, owner).toReply { it } },
+                    putPhoto = { owner, id, photo, jpeg ->
+                        api.putPhoto(submissionId = id, photoId = photo, jpeg = jpeg, owner = owner).toReply {}
                     },
-                    update = { id, version, content ->
-                        api.update(id = id, version = version, content = content).toReply { it.toServerEdit() }
+                    update = { owner, id, version, content ->
+                        val result = api.update(id = id, version = version, content = content, owner = owner)
+                        result.toReply { it.toServerEdit() }
                     },
                 ),
             onSaved = sync::scheduleAfterSave,
@@ -133,7 +137,8 @@ public object DataModule {
 
     /** Zgłoszenia z kolejki telefonu do poprawki w C2. Wymagania: US8.3 */
     @Provides
-    public fun pendingEdits(store: SubmissionStore): PendingEdits = pendingEditsOf(store.edits)
+    public fun pendingEdits(store: SubmissionStore, tokens: AccessTokens): PendingEdits =
+        pendingEditsOf(store.edits, tokens::subject)
 
     /** Odświeżenie statusów listy C3 z serwera. Wymagania: US8.2 */
     @Provides

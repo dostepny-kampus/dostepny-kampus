@@ -12,16 +12,11 @@ import android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED
 import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.exclude
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -49,13 +43,10 @@ import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.swipeUp
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
@@ -75,14 +66,12 @@ import io.github.dostepnykampus.app.navigation.AppScreen
 import io.github.dostepnykampus.app.navigation.BuildingCard
 import io.github.dostepnykampus.app.navigation.MapScreen
 import io.github.dostepnykampus.app.navigation.SignInRoute
-import io.github.dostepnykampus.app.navigation.sheetCard
 import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.data.building.BUILDINGS_ASSET
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.ConnectivityNetworkStatus
 import io.github.dostepnykampus.core.data.network.NetworkStatus
-import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
@@ -90,7 +79,6 @@ import io.github.dostepnykampus.feature.auth.SignInViewModel
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.MapLibreMapView
 import io.github.dostepnykampus.feature.map.building.BuildingCardViewModel
-import io.github.dostepnykampus.feature.map.building.CardMode
 import io.github.dostepnykampus.feature.map.building.EntrancesScreen
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.campus.campusMapData
@@ -117,12 +105,20 @@ import kotlin.coroutines.EmptyCoroutineContext
 /** Pozycja „Mapa” paska dolnego; V1 ma też „Mapa” w przełączniku „Mapa” i „Lista budynków”. Wymagania: NFR-19 */
 internal val MapTab = hasText("Mapa") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
 
-/** Opis uchwytu arkusza V2 dla TalkBack, ten sam na małej karcie i na pełnym ekranie. Wymagania: US2.8, NFR-18 */
-internal const val EXPAND_HANDLE = "Rozwiń opis budynku"
+/** Opis uchwytu arkusza V2 dla TalkBack, ten sam na każdej wysokości. Wymagania: US2.8, NFR-18 */
+internal const val EXPAND_HANDLE = "Wysokość karty"
 
-/** Uchwyt arkusza V2: przycisk [EXPAND_HANDLE] ze stanem „rozwinięte” albo „zwinięte”. Wymagania: US2.8, NFR-18 */
+/**
+ * Uchwyt arkusza V2: przycisk [EXPAND_HANDLE] ze stanem „niska” albo, gdy [isExpanded], „połowa ekranu” albo „cały
+ * ekran”. Wymagania: US2.8, NFR-18
+ */
 internal fun sheetHandle(isExpanded: Boolean): SemanticsMatcher =
-    hasContentDescription(EXPAND_HANDLE) and hasStateDescription(if (isExpanded) "rozwinięte" else "zwinięte")
+    hasContentDescription(EXPAND_HANDLE) and
+        if (isExpanded) {
+            hasStateDescription("połowa ekranu") or hasStateDescription("cały ekran")
+        } else {
+            hasStateDescription("niska")
+        }
 
 /** Karta V2 na katalogu z zasobów, bez grafu Hilt (aktywność testu go nie ma). */
 internal fun Context.buildingCardViewModel(symbol: String): BuildingCardViewModel =
@@ -482,53 +478,6 @@ class AppShellTest {
         compose.onNodeWithText("vm=0").assertExists()
     }
 
-    /**
-     * Wiersz: V1, dotknięcie konturu → V2, mała karta o wysokości treści nad mapą, a V1 dostaje zasłoniętą część
-     * jako dopełnienie od dołu; uchwyt, przewinięcie treści albo przeciągnięcie w górę
-     * rozwija ją na całe okno z kartą w trybie pełnego ekranu.
-     *
-     * Wymagania: US2.8, NFR-53
-     */
-    @Test
-    fun expandsAfterCompact() {
-        var cover = 1.dp
-        compose.setContent {
-            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
-                if (route is MapRoute) {
-                    cover = LocalSheetPadding.current.calculateBottomPadding()
-                    Box(modifier = Modifier.fillMaxSize().testTag("V1")) {
-                        Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
-                    }
-                } else {
-                    val mode = sheetCard().mode
-                    val height = if (mode == CardMode.Compact) 120.dp else 2000.dp
-                    val scroll = Modifier.verticalScroll(rememberScrollState())
-                    Column(modifier = scroll) { Text(text = "$mode", modifier = Modifier.requiredHeight(height)) }
-                }
-            }
-        }
-        assertEquals(0.dp, cover)
-        compose.onNodeWithText("A-1").performClick()
-        val handleTop = { label: String -> compose.onNodeWithContentDescription(label).getUnclippedBoundsInRoot().top }
-        val map = compose.onNodeWithTag("V1").getUnclippedBoundsInRoot().height
-        compose.onNodeWithText("Compact").assertExists("mała karta po dotknięciu konturu")
-        val compact = handleTop(EXPAND_HANDLE)
-        assertEquals("uchwyt i treść małej karty", (map - CeleDotyku.minimum - 120.dp).value, compact.value, 1f)
-        assertEquals("dopełnienie V1 pod małą kartą", (map - compact).value, cover.value, 1f)
-        val handle = { compose.onNodeWithContentDescription(EXPAND_HANDLE) }
-        listOf<Pair<String, () -> Unit>>(
-            "uchwyt" to { handle().performClick() },
-            "przewinięcie treści" to { compose.onNodeWithText("Compact").performTouchInput { swipeUp() } },
-            "przeciągnięcie w górę" to { handle().performTouchInput { swipeUp() } },
-        ).forEach { (way, expand) ->
-            expand()
-            assertEquals("góra pełnego ekranu: $way", 0f, handleTop(EXPAND_HANDLE).value, 1f)
-            compose.onNodeWithText("Expanded").assertExists("pełny ekran: $way")
-            assertEquals("dopełnienie V1 pod pełnym ekranem: $way", map.value, cover.value, 1f)
-            compose.onNode(sheetHandle(isExpanded = true)).performClick()
-        }
-    }
-
     /** Wiersz: V2 rozwinięte, „Wstecz” → V1, dotknięcie konturu → nowe V2 znów jako mała karta. Wymagania: US2.8 */
     @Test
     fun startsNewCardCompact() {
@@ -550,7 +499,6 @@ class AppShellTest {
      * Wiersz: pełny ekran po małej karcie, „Wstecz” w górnym pasku karty → znowu mała karta; „Zamknij”
      * małej karty → V1 bez zaznaczenia budynku. Nad małą kartą zostaje co najmniej 300 dp
      * mapy, czyli miejsce na przyciski mapy.
-     * Scenariusz (częściowo): przegladanie-mapy.feature: Z małej karty osoba rozwija opis albo wraca do mapy
      *
      * Wymagania: NFR-53, NFR-15, US2.8
      */
