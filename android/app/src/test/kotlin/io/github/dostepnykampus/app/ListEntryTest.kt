@@ -38,8 +38,7 @@ internal val ListedA1 = hasContentDescription("A-1, ", substring = true)
 
 private const val OSM = "© OpenStreetMap contributors"
 
-/** Początek podpisu OSM, wspólny dla wersji pełnej i krótkiej przy dużej czcionce. */
-private const val OSM_SHORT = "© OpenStreetMap"
+private const val OSM_START = "© OpenStreetMap"
 
 /** Budynek z listy V1, z wyszukiwania albo z mapy: tryb karty V2 przy TalkBack i bez niego. Wymagania: NFR-19 */
 @RunWith(RobolectricTestRunner::class)
@@ -128,16 +127,16 @@ class ListEntryTest {
      */
     @Test
     @Config(fontScale = 2f)
-    fun showsListBuildingOnMapAtLargeFont() {
+    fun opensMapFromListAtLargeFont() {
         shadowOf(compose.activity.getSystemService(AccessibilityManager::class.java)).setTouchExplorationEnabled(false)
         showApp()
         pickA1()
         compose.onNodeWithText(BUILDING_ON_MAP).assertExists("pełny opis budynku od razu")
         compose.onNode(sheetHandle(isExpanded = false)).assertDoesNotExist()
-        compose.onNodeWithText(OSM_SHORT, substring = true).assertDoesNotExist()
+        compose.onNodeWithText(OSM_START, substring = true).assertDoesNotExist()
         compose.onNodeWithText(BUILDING_ON_MAP).performScrollTo().performClick()
         compose.waitForIdle()
-        compose.onNodeWithText(OSM_SHORT, substring = true).assertExists("mapa po „Pokaż budynek na mapie”")
+        compose.onNodeWithText(OSM_START, substring = true).assertExists("mapa po „Pokaż budynek na mapie”")
         compose.onNode(ListedA1).assertDoesNotExist()
         assertEquals("zaznaczony budynek", "A-1", selected)
         assertEquals("zapamiętany widok mapy", false, choice.savedChoice.value)

@@ -126,8 +126,7 @@ internal fun dispatchStatusBar(activity: ComponentActivity) {
 private const val WORLD_DP_AT_ZOOM_0 = 512.0
 private const val FULL_TURN_DEGREES = 360.0
 
-/** Rogi konturu budynku C-13 i C-14 w teście małej karty. */
-private val OUTLINE_CORNERS =
+private val SMALL_OUTLINE_CORNERS =
     listOf(
         GeoPoint(longitude = 0.0, latitude = 0.0),
         GeoPoint(longitude = 0.001, latitude = 0.0),
@@ -135,13 +134,11 @@ private val OUTLINE_CORNERS =
         GeoPoint(longitude = 0.0, latitude = 0.001),
     )
 
-/** Wejście budynku C-14 na wschodniej krawędzi konturu z [OUTLINE_CORNERS]. */
-private const val ENTRANCE_ON_EDGE =
+private const val C14_ENTRANCE_ON_EAST_EDGE =
     """,{"type":"Feature","properties":{"kind":"entrance","symbols":["C-14"],"osm_id":"node/5","entrance":"yes"},""" +
         """"geometry":{"type":"Point","coordinates":[0.001,0.0005]}}"""
 
-/** Przyciski mapy, które stoją nad małą kartą. */
-private val MAP_BUTTONS =
+private val MAP_BUTTONS_ABOVE_CARD =
     listOf(
         "Powiększ",
         "Pomniejsz",
@@ -407,7 +404,7 @@ class CampusMapScreenTest {
     @Config(qualifiers = "w360dp-h800dp")
     fun showsWholeBuildingAboveCard() {
         ring = "[[0,0],[0.001,0],[0.001,0.001],[0,0.001],[0,0]]"
-        entrances = ENTRANCE_ON_EDGE
+        entrances = C14_ENTRANCE_ON_EAST_EDGE
         compose.setContent { Screen(focus = "C-14", sheet = 400.dp) }
         compose.waitForIdle()
         val root = compose.onRoot().getBoundsInRoot()
@@ -415,9 +412,9 @@ class CampusMapScreenTest {
         val above = cameras.last()
         val covered = with(compose.density) { (insets.last() + tops.last()).toFloat().toDp() }
         val visible = (root.bottom - root.top - covered).value
-        val points = OUTLINE_CORNERS + GeoPoint(longitude = 0.001, latitude = 0.0005)
+        val points = SMALL_OUTLINE_CORNERS + GeoPoint(longitude = 0.001, latitude = 0.0005)
         points.forEach { assertTrue("$it nad kartą, kamera $above", above.shows(it, root.right.value, visible)) }
-        MAP_BUTTONS.forEach {
+        MAP_BUTTONS_ABOVE_CARD.forEach {
             val button = compose.onNodeWithContentDescription(it).getBoundsInRoot()
             assertTrue("$it nad kartą", button.bottom <= cardTop)
         }
