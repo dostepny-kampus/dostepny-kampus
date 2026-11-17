@@ -16,8 +16,6 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.ScrollScope
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.animateTo
-import androidx.compose.foundation.gestures.snapping.SnapLayoutInfoProvider
-import androidx.compose.foundation.gestures.snapping.snapFlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -103,19 +101,13 @@ internal fun Sheet(
     )
     val isFull = state.currentValue == SheetHeight.Full
     val corner = if (isFull) 0.dp else Zaokraglenia.bardzoDuze
-    val density = LocalDensity.current
-    val fling =
-        remember(state, density) {
-            val step = with(density) { HEIGHT_STEP_DRAG.toPx() }
-            val flick = with(density) { FLICK_VELOCITY.toPx() }
-            val snap =
-                snapFlingBehavior(
-                    snapLayoutInfoProvider = SheetSnap(state = state, step = step, flick = flick),
-                    decayAnimationSpec = AnchoredDraggableDefaults.DecayAnimationSpec,
-                    snapAnimationSpec = AnchoredDraggableDefaults.SnapAnimationSpec,
-                )
-            SettlingFling(base = snap, state = state)
-        }
+    val step = with(LocalDensity.current) { HEIGHT_STEP_DRAG.toPx() }
+    val snap =
+        AnchoredDraggableDefaults.flingBehavior(
+            state = state,
+            positionalThreshold = { distance -> minOf(a = distance / 2, b = step) },
+        )
+    val fling = remember(state, snap) { SettlingFling(base = snap, state = state) }
     val scroll = remember(state, fling) { SheetScrollConnection(state = state, fling = fling) }
     Surface(
         modifier =
@@ -149,8 +141,6 @@ internal fun Sheet(
 private const val PROVISIONAL_LOW_SHARE = 3
 
 private val HEIGHT_STEP_DRAG = 48.dp
-
-private val FLICK_VELOCITY = 125.dp
 
 /** Zmierzona wysokość okna [window] i niskiej karty [low] w px; zero, dopóki nie zmierzono. */
 private class SheetMeasure {
@@ -323,38 +313,6 @@ private class SheetScrollConnection(
 }
 
 private const val ANCHOR_TOLERANCE_PX = 0.5f
-
-/**
- * Cel arkusza [state] po puszczeniu: przy prędkości od [flick] px/s sąsiednia wysokość w stronę rzutu, przy
- * przesunięciu o co najmniej [step] px od wysokości sprzed gestu sąsiednia w stronę przesunięcia, inaczej powrót.
- *
- * Wymagania: US2.8, NFR-53
- */
-private class SheetSnap(
-    private val state: AnchoredDraggableState<SheetHeight>,
-    private val step: Float,
-    private val flick: Float,
-) : SnapLayoutInfoProvider {
-    override fun calculateApproachOffset(velocity: Float, decayOffset: Float): Float = 0f
-
-    override fun calculateSnapOffset(velocity: Float): Float {
-        val offset = state.requireOffset()
-        return state.anchors.positionOf(target(offset = offset, velocity = velocity)) - offset
-    }
-
-    private fun target(offset: Float, velocity: Float): SheetHeight {
-        val anchors = state.anchors
-        val settled = state.settledValue
-        val shift = offset - anchors.positionOf(settled)
-        val towards =
-            when {
-                abs(velocity) >= flick -> anchors.closestAnchor(offset, velocity > 0f)
-                abs(shift) >= step -> anchors.closestAnchor(offset, shift > 0f)
-                else -> null
-            }
-        return towards ?: settled.takeIf(anchors::hasPositionFor) ?: anchors.closestAnchor(offset) ?: settled
-    }
-}
 
 /** Rzut [base], po którym arkusz [state] stoi dokładnie na najbliższej kotwicy, więc jego wysokość się ustala. */
 private class SettlingFling(private val base: FlingBehavior, private val state: AnchoredDraggableState<SheetHeight>) :
