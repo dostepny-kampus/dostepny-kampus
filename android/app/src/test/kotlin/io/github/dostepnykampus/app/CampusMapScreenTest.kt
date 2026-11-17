@@ -754,6 +754,26 @@ class CampusMapScreenTest {
     }
 
     /**
+     * Wiersz: wpisanie zapytania z wynikami i wybór wyniku nie zmieniają górnego zasłonięcia mapy, bo lista wyników
+     * leży nad mapą.
+     *
+     * Wymagania: US1.1, NFR-56
+     */
+    @Test
+    fun keepsMapTopWhileTyping() {
+        compose.setContent { Screen() }
+        compose.waitForIdle()
+        val bar = tops.last()
+        val before = tops.size
+        compose.onNode(hasSetTextAction()).performTextInput("c14")
+        compose.onNodeWithText("Budynek C-14", useUnmergedTree = true).assertExists()
+        compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
+        compose.waitForIdle()
+        val shown = tops.subList(fromIndex = before, toIndex = tops.size).toSet()
+        assertTrue("góra mapy przy wpisywaniu i po wyborze: $shown, pasek $bar", shown.all { it == bar })
+    }
+
+    /**
      * Wiersz: po wyborze wyniku klawiatura ekranowa się chowa, więc pierwsze „Wstecz” na V2 zamyka V2, a nie tylko
      * klawiaturę. Klawiaturę podaje atrapa kontrolera, bo Robolectric nie ma okna z klawiaturą,
      * a o skutku decyduje fokus pola: po wyborze pole go nie ma. Okno jest w trybie dotyku jak na telefonie; poza nim
