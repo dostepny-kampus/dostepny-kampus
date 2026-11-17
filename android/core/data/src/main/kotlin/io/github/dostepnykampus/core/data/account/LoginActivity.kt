@@ -14,6 +14,7 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 
@@ -49,13 +50,13 @@ internal class LoginActivity : ComponentActivity() {
             done(null)
         } else {
             service.performTokenRequest(response.createTokenExchangeRequest()) { tokens, _ ->
-                done(tokens?.accessToken)
+                done(tokens?.let { AuthState(response, it, null) })
             }
         }
     }
 
-    private fun done(token: String?) {
-        signIn.finish(token)
+    private fun done(login: AuthState?) {
+        signIn.finish(login)
         finish()
     }
 

@@ -6,7 +6,7 @@ Repozytoria: łączą sieć i bazę w dane dla ekranów, prowadzą kolejki wysy�
 
 ## Pakiety
 
-- `core.data.account` — rola zalogowanej osoby, sesja konta i logowanie w przeglądarce (AppAuth).
+- `core.data.account` — rola zalogowanej osoby, sesja konta, logowanie w przeglądarce (AppAuth) i zalogowanie zapisane w pliku szyfrowanym kluczem z Android Keystore.
 - `core.data.barrier` — przyjęte bariery z serwera z kopią w telefonie.
 - `core.data.building` — katalog budynków, wejścia i piętra z serwera z kopią w telefonie.
 - `core.data.cache` — wspólny zapis JSON kopii danych.

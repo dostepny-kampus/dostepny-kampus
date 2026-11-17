@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import java.util.Base64
 
 /**
  * Sesja konta: rola konta z tokenu, wylogowanie do Gościa i token, którego nie da się odczytać.
@@ -26,15 +25,15 @@ class AccountSessionTest {
     @Test
     fun startsAsGuest() {
         val tokens = AccessTokens()
-        assertEquals(Account.Guest, AccountSession(tokens).account.value, "konto na starcie")
+        assertEquals(Account.Guest, sessionOf(tokens).account.value, "konto na starcie")
         assertNull(tokens.token, "token na starcie")
     }
 
     @Test
     fun signsInWithRolesFromToken() {
         val tokens = AccessTokens()
-        val session = AccountSession(tokens)
-        val token = jwt("""{"realm_access":{"roles":["COLLECTOR","VERIFIER","offline_access"]}}""")
+        val session = sessionOf(tokens)
+        val token = jwtOf("""{"realm_access":{"roles":["COLLECTOR","VERIFIER","offline_access"]}}""")
         assertTrue(session.signIn(token), "zalogowanie")
         val expected = Account.SignedIn(setOf(StaffRole.COLLECTOR, StaffRole.VERIFIER))
         assertEquals(expected, session.account.value, "role konta z tokenu")
@@ -44,16 +43,16 @@ class AccountSessionTest {
     @ParameterizedTest
     @ValueSource(strings = ["""{"realm_access":{"roles":["offline_access"]}}""", """{"sub":"u-1"}"""])
     fun signsInVisitorWithoutRoles(claims: String) {
-        val session = AccountSession(AccessTokens())
-        assertTrue(session.signIn(jwt(claims)), "zalogowanie")
+        val session = sessionOf()
+        assertTrue(session.signIn(jwtOf(claims)), "zalogowanie")
         assertEquals(Account.SignedIn(), session.account.value, "Odwiedzający")
     }
 
     @Test
     fun signsOutToGuest() {
         val tokens = AccessTokens()
-        val session = AccountSession(tokens)
-        session.signIn(jwt("""{"realm_access":{"roles":["COORDINATOR"]}}"""))
+        val session = sessionOf(tokens)
+        session.signIn(jwtOf("""{"realm_access":{"roles":["COORDINATOR"]}}"""))
         session.signOut()
         assertEquals(Account.Guest, session.account.value, "konto po wylogowaniu")
         assertNull(tokens.token, "token po wylogowaniu")
@@ -65,17 +64,11 @@ class AccountSessionTest {
     )
     fun rejectsUnreadableToken(token: String) {
         val tokens = AccessTokens()
-        val session = AccountSession(tokens)
-        val before = jwt("""{"realm_access":{"roles":["VERIFIER"]}}""")
+        val session = sessionOf(tokens)
+        val before = jwtOf("""{"realm_access":{"roles":["VERIFIER"]}}""")
         session.signIn(before)
         assertFalse(session.signIn(token), "token nie do odczytania")
         assertEquals(Account.SignedIn(setOf(StaffRole.VERIFIER)), session.account.value, "konto bez zmian")
         assertEquals(before, tokens.token, "token bez zmian")
-    }
-
-    private fun jwt(claims: String): String {
-        val encoder = Base64.getUrlEncoder().withoutPadding()
-        val parts = listOf("""{"alg":"RS256"}""", claims).map { encoder.encodeToString(it.toByteArray()) }
-        return (parts + "podpis").joinToString(separator = ".")
     }
 }
