@@ -3,6 +3,8 @@
   "displayName": "Dostępny Kampus (realm deweloperski)",
   "enabled": true,
   "sslRequired": "external",
+  "revokeRefreshToken": true,
+  "refreshTokenMaxReuse": 0,
   "registrationAllowed": true,
   "groups": [{ "name": "odwiedzajacy", "realmRoles": ["VISITOR"] }],
   "defaultGroups": ["/odwiedzajacy"],
