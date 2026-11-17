@@ -278,10 +278,8 @@ private class SheetScrollConnection(
 private const val ANCHOR_TOLERANCE_PX = 0.5f
 
 /** Rzut [base], po którym arkusz [state] stoi dokładnie na najbliższej kotwicy, więc jego wysokość się ustala. */
-private class SettlingFling(
-    private val base: FlingBehavior,
-    private val state: AnchoredDraggableState<SheetHeight>,
-) : FlingBehavior {
+private class SettlingFling(private val base: FlingBehavior, private val state: AnchoredDraggableState<SheetHeight>) :
+    FlingBehavior {
     override suspend fun ScrollScope.performFling(initialVelocity: Float): Float {
         val left = with(base) { performFling(initialVelocity = initialVelocity) }
         val nearest = state.anchors.closestAnchor(state.offset)
