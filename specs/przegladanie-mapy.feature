@@ -116,6 +116,15 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy w grupie „Wejścia” widzi zdanie „Nie mamy jeszcze danych o wejściach do tego budynku.”
     Ale karta nie mówi, że budynek jest niedostępny
 
+  # @do-zrobienia #3096: wiersza kilku wejść bez danych jeszcze nie ma w aplikacji.
+  @US2.1 @US17.1 @aplikacja @do-zrobienia
+  Scenariusz: Kilka wejść bez oznaczenia i bez nazwy stoi jako jeden wiersz
+    Zakładając, że budynek C-7 ma w danych 3 wejścia bez oznaczenia i bez nazwy
+    Jeżeli Gość niezalogowany otworzy kartę budynku C-7 na całym ekranie
+    Wtedy w grupie „Wejścia” widzi jeden wiersz „3 wejścia bez nazw w danych” ze znakiem „Brak danych”
+    Oraz pod nim zdanie „Nikt jeszcze nie sprawdził tych wejść.” i jeden odnośnik „Zgłoś barierę przy wejściu”
+    Ale nie widzi trzech jednakowych bloków „Wejście bez nazwy w danych”
+
   @US2.2 @BR-17 @aplikacja
   Scenariusz: Zgłoszenie przyjęte na karcie budynku ma zdjęcie i datę weryfikacji
     Zakładając, że Weryfikator przyjął 12.11.2026 zgłoszenie TB-1 „schody przy wejściu” przy wejściu głównym A-1

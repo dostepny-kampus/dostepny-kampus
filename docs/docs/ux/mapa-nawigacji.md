@@ -134,6 +134,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V2, niska wysokość | dotknięcie wystającego nagłówka „Wejścia” | V2 na połowie ekranu | wszystkie | US2.8, NFR-53 |
 | V2 | „Zgłoś barierę przy wejściu” | V4, krok 1, wejście wybrane | zalogowani | US4, decyzja 48 |
 | V2 | „Zgłoś barierę przy wejściu” | L1, potem V4 z wybranym wejściem | RO-GOS | US14.2, decyzja 48 |
+| V2, wiersz kilku wejść bez danych | „Zgłoś barierę przy wejściu” | V4, krok 1, bez wybranego wejścia; Gość: L1, potem V4 | wszystkie | US4.6, US14.2 |
 | V2, stan „brak zgłoszeń przyjętych” | „Zgłoś barierę” | V4; Gość: L1 | wszystkie | US4, US14.2 |
 | V2, pełny ekran otwarty od razu | „Wstecz” | ekran sprzed V2, np. lista V1 | wszystkie | NFR-15, US2.9 |
 | V2, stan „budynku nie ma w telefonie” | „Spróbuj ponownie” | V2 | wszystkie | NFR-10 |
