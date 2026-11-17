@@ -98,6 +98,13 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy żadne wejście nie ma napisu „Zalecane”
     Oraz lista zaczyna się od wejść z oznaczeniem „niedostępne”
 
+  @US3.1 @US17.1 @aplikacja
+  Scenariusz: Karta budynku bez wejść w danych mówi o braku danych zamiast pustej grupy
+    Zakładając, że budynek A-2 nie ma wejść w danych
+    Jeżeli Gość niezalogowany otworzy kartę budynku A-2
+    Wtedy w grupie „Wejścia” widzi zdanie „Nie mamy jeszcze danych o wejściach do tego budynku.”
+    Ale karta nie mówi, że budynek jest niedostępny
+
   @US2.2 @BR-17 @aplikacja
   Scenariusz: Zgłoszenie przyjęte na karcie budynku ma zdjęcie i datę weryfikacji
     Zakładając, że Weryfikator przyjął 12.11.2026 zgłoszenie TB-1 „schody przy wejściu” przy wejściu głównym A-1
