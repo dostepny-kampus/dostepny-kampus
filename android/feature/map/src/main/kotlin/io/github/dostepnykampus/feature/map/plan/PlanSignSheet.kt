@@ -36,7 +36,7 @@ internal fun ChosenPlanSheet(id: String?, plan: ShownPlan?, onClose: () -> Unit,
         MapSheet(modifier) {
             MapSheetHeader(title = stringResource(sign.title), onClose = onClose)
             Text(
-                text = stringResource(R.string.mapa_plan_miejsce, sign.building, sign.floor.lowercaseFirst()),
+                text = stringResource(R.string.karta_czytaj, sign.building, sign.floor.lowercaseFirst()),
                 style = MaterialTheme.typography.bodyLarge,
             )
         }
