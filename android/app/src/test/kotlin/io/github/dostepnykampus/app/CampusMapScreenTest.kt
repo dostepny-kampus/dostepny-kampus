@@ -595,6 +595,30 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
     }
 
     /**
+     * Wiersz: dotknięcie konturu na mapie → mała karta, a mapa nie przybliża się do budynku; rusza się najwyżej tyle,
+     * żeby zasłonięty kontur był widoczny.
+     *
+     * Wymagania: US2.8, US3.2, NFR-56
+     */
+    @Test
+    @Config(qualifiers = "w360dp-h800dp")
+    fun tapsWithoutZoom() {
+        ring = "[[0,0],[0.0003,0],[0.0003,0.0003],[0,0.0003],[0,0]]"
+        entrances = FAR_BUILDINGS_AROUND_C14
+        var sheet by mutableStateOf(0.dp)
+        var focus by mutableStateOf<String?>(null)
+        compose.setContent { Screen(focus = focus, sheet = sheet, motion = MapMotion()) }
+        compose.waitForIdle()
+        val start = cameras.last()
+        compose.runOnUiThread { touch(listOf("C-14")) }
+        focus = "C-14"
+        sheet = 400.dp
+        compose.waitForIdle()
+        assertEquals("dotknięty budynek otwiera kartę", listOf("C-14"), opened)
+        assertEquals("powiększenie bez zmian: $moves", start.zoom, moves.last().camera.zoom, 0.0)
+    }
+
+    /**
      * Wiersz: budynek wybrany na liście budynków → mapa powstaje razem z małą kartą i od razu stoi na budynku, bez
      * ruchu kamery i bez awarii przed pomiarem mapy; karta wjeżdża w 300 ms.
      *

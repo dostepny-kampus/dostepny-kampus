@@ -285,8 +285,8 @@ private fun CampusMap(
                     areas.acknowledge()
                     plan.onView(view.also { state.keep(it) })
                 },
-                onBuildingsTouch = { state.touch(it, onBuildingClick, onEmptyMapClick).also { signs.close() } },
-                onSignTouch = { touched, id -> if (cover == 0.dp) signs.open(touched, id).also { state.dismiss() } },
+                onBuildingsTouch = { state.taps.touch(it, onBuildingClick, onEmptyMapClick).also { signs.close() } },
+                onSignTouch = { sign, id -> if (cover == 0.dp) signs.open(sign, id).also { state.taps.dismiss() } },
                 modifier = Modifier.fillMaxSize(),
             )
             scene.selection.entrance?.let { EntranceDescription(it) }
@@ -371,11 +371,11 @@ private fun BuildingChoices(
     onChoose: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val chosen = catalog?.buildingsOf(state.choice).orEmpty()
+    val chosen = catalog?.buildingsOf(state.taps.choice).orEmpty()
     if (chosen.isNotEmpty()) {
-        BuildingChoiceSheet(onClose = state::dismiss, modifier = modifier) {
+        BuildingChoiceSheet(onClose = state.taps::dismiss, modifier = modifier) {
             chosen.forEach { building ->
-                BuildingChoice(building) { state.choose(building.symbol, onChoose) }
+                BuildingChoice(building) { state.taps.choose(building.symbol, onChoose) }
             }
         }
     }
