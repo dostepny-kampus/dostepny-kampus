@@ -121,13 +121,15 @@ class SheetDirectTest {
         val path =
             List(size = 60) {
                 compose.mainClock.advanceTimeByFrame()
-                compose.onAllNodesWithContentDescription(EXPAND_HANDLE).fetchSemanticsNodes().map { it.boundsInRoot.top }
+                val shown = compose.onAllNodesWithContentDescription(EXPAND_HANDLE).fetchSemanticsNodes()
+                shown.map { it.boundsInRoot.top }
             }
         compose.mainClock.autoAdvance = true
         compose.waitForIdle()
         val handles = compose.onAllNodesWithContentDescription(EXPAND_HANDLE).fetchSemanticsNodes()
         val tops = handles.map { it.boundsInRoot.top }
-        assertEquals("karta zamknięta po przeciągnięciu w dół, uchwyt na $tops px, droga $path", emptyList<Float>(), tops)
+        val message = "karta zamknięta po przeciągnięciu w dół, uchwyt na $tops px, droga $path"
+        assertEquals(message, emptyList<Float>(), tops)
         compose.onNodeWithText(SHOW_ON_MAP).assertDoesNotExist()
         compose.onNodeWithText("V1").assertExists("mapa V1 po zamknięciu")
     }
