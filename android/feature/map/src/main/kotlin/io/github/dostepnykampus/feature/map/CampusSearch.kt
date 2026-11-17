@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
@@ -23,12 +24,15 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -43,6 +47,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -51,10 +56,13 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.VisualTransformation
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
+import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
@@ -177,12 +185,15 @@ private fun SearchHeader(
 ) {
     val insets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
     Surface(Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.surface) {
-        Column(
-            Modifier.windowInsetsPadding(insets).padding(horizontal = Odstepy.m, vertical = Odstepy.s),
-            verticalArrangement = Arrangement.spacedBy(Odstepy.s),
-        ) {
-            TitleRow(isList, onListChange)
-            SymbolField(query, onQueryChange, onFieldTap)
+        Column {
+            Column(
+                Modifier.windowInsetsPadding(insets).padding(horizontal = Odstepy.m, vertical = Odstepy.s),
+                verticalArrangement = Arrangement.spacedBy(Odstepy.s),
+            ) {
+                TitleRow(isList, onListChange)
+                SymbolField(query, onQueryChange, onFieldTap)
+            }
+            HorizontalDivider(thickness = Obramowania.ramka, color = MaterialTheme.colorScheme.outlineVariant)
         }
     }
 }
@@ -243,25 +254,55 @@ private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: (
     LaunchedEffect(interactions) {
         interactions.interactions.collect { if (it is PressInteraction.Release) tap() }
     }
-    OutlinedTextField(
+    val scheme = MaterialTheme.colorScheme
+    val colors =
+        OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = scheme.surfaceContainerLowest,
+            unfocusedContainerColor = scheme.surfaceContainerLowest,
+            unfocusedBorderColor = scheme.outline,
+        )
+    BasicTextField(
         value = query,
         onValueChange = onQueryChange,
-        modifier = Modifier.fillMaxWidth(),
-        interactionSource = interactions,
-        placeholder = { Text(stringResource(R.string.mapa_szukaj_podpowiedz)) },
-        leadingIcon = { Icon(SearchIcon, contentDescription = null) },
-        trailingIcon = {
-            if (query.isNotEmpty()) {
-                IconButton(onClick = { onQueryChange("") }) {
-                    Icon(ClearIcon, contentDescription = stringResource(R.string.mapa_wyczysc_pole))
-                }
-            }
-        },
+        modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = OutlinedTextFieldDefaults.MinHeight),
+        textStyle = LocalTextStyle.current.merge(TextStyle(color = scheme.onSurface)),
         keyboardOptions =
             KeyboardOptions(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Search),
         singleLine = true,
-        shape = RoundedCornerShape(Zaokraglenia.kapsula),
-    )
+        interactionSource = interactions,
+        cursorBrush = SolidColor(scheme.primary),
+    ) { field ->
+        OutlinedTextFieldDefaults.DecorationBox(
+            value = query,
+            innerTextField = field,
+            enabled = true,
+            singleLine = true,
+            visualTransformation = VisualTransformation.None,
+            interactionSource = interactions,
+            placeholder = { Text(stringResource(R.string.mapa_szukaj_podpowiedz)) },
+            leadingIcon = { Icon(SearchIcon, contentDescription = null) },
+            trailingIcon = { if (query.isNotEmpty()) ClearButton { onQueryChange("") } },
+            colors = colors,
+            container = {
+                OutlinedTextFieldDefaults.Container(
+                    enabled = true,
+                    isError = false,
+                    interactionSource = interactions,
+                    colors = colors,
+                    shape = RoundedCornerShape(Zaokraglenia.kapsula),
+                    focusedBorderThickness = Obramowania.pole,
+                    unfocusedBorderThickness = Obramowania.pole,
+                )
+            },
+        )
+    }
+}
+
+@Composable
+private fun ClearButton(onClick: () -> Unit) {
+    IconButton(onClick = onClick) {
+        Icon(ClearIcon, contentDescription = stringResource(R.string.mapa_wyczysc_pole))
+    }
 }
 
 @Composable
