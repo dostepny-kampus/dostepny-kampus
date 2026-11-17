@@ -63,7 +63,7 @@ internal fun rememberCameraView(focus: MapFocus?, layers: CampusMapData?): Camer
             show?.command?.let { applied = it }
         },
         shown = if (isPending) show?.symbol else null,
-        hasTarget = isPending || entranceId != null && camera == null,
+        hasTarget = isPending || (entranceId != null && camera == null),
     )
 }
 
