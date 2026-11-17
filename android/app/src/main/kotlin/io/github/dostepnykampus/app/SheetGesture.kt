@@ -60,18 +60,37 @@ internal fun SheetHeight.lower(): SheetHeight? =
 internal fun SheetHeight.next(): SheetHeight = higher() ?: SheetHeight.Low
 
 /**
- * Kotwice arkusza w oknie wysokim na [window] px: odległość góry arkusza od góry okna dla każdej wysokości, gdy niska
- * karta ma [low] px. Połowa okna nie stoi niżej niż niska karta.
+ * Wysokości osiągalne jednym gestem z tej: ona sama i sąsiednie, z niskiej także zamknięcie.
+ *
+ * Wymagania: US2.8, NFR-53
+ */
+internal fun SheetHeight.reach(): Set<SheetHeight> =
+    when (this) {
+        SheetHeight.Closed, SheetHeight.Low -> setOf(SheetHeight.Closed, SheetHeight.Low, SheetHeight.Half)
+        SheetHeight.Half -> setOf(SheetHeight.Low, SheetHeight.Half, SheetHeight.Full)
+        SheetHeight.Full -> setOf(SheetHeight.Half, SheetHeight.Full)
+    }
+
+/**
+ * Kotwice arkusza w oknie wysokim na [window] px: odległość góry arkusza od góry okna dla wysokości z [reach], gdy
+ * niska karta ma [low] px. Połowa okna nie stoi niżej niż niska karta.
  *
  * Wymagania: US2, US2.8
  */
-internal fun sheetAnchors(window: Float, low: Float): DraggableAnchors<SheetHeight> =
-    DraggableAnchors {
-        SheetHeight.Full at 0f
-        SheetHeight.Half at minOf(a = window / 2, b = window - low)
-        SheetHeight.Low at window - low
-        SheetHeight.Closed at window
-    }
+internal fun sheetAnchors(
+    window: Float,
+    low: Float,
+    reach: Set<SheetHeight> = SheetHeight.entries.toSet(),
+): DraggableAnchors<SheetHeight> {
+    val positions =
+        mapOf(
+            SheetHeight.Full to 0f,
+            SheetHeight.Half to minOf(a = window / 2, b = window - low),
+            SheetHeight.Low to window - low,
+            SheetHeight.Closed to window,
+        )
+    return DraggableAnchors { positions.filterKeys { it in reach }.forEach { (height, top) -> height at top } }
+}
 
 /** Kotwice arkusza tylko z całym oknem i zamknięciem w oknie wysokim na [window] px. Wymagania: US2.9, NFR-20 */
 internal fun fullOnlyAnchors(window: Float): DraggableAnchors<SheetHeight> =

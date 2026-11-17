@@ -36,6 +36,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -62,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -85,10 +87,13 @@ internal fun Sheet(
 ) {
     val state = remember { AnchoredDraggableState(startHeight(isExpanded = isExpanded, isFullOnly = isFullOnly)) }
     val measure = remember { SheetMeasure() }
+    val jump = remember { SheetJump() }
+    val scope = rememberCoroutineScope()
     val currentOnLowHeight by rememberUpdatedState(onLowHeight)
     FollowHeights(
         state = state,
         measure = measure,
+        jump = jump,
         isExpanded = isExpanded,
         isFullOnly = isFullOnly,
         onExpandedChange = onExpandedChange,
@@ -123,7 +128,11 @@ internal fun Sheet(
     ) {
         val statusBar = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
         Column(modifier = Modifier.belowStatusBarWhenFull(statusBar, isFull)) {
-            Handle(state = state, isFullOnly = isFullOnly)
+            Handle(
+                state = state,
+                onHeightChoose = { scope.launch { jump.move(state = state, height = it) } },
+                isFullOnly = isFullOnly,
+            )
             Box(Modifier.weight(1f, fill = false).fillMaxWidth()) { content() }
         }
     }
@@ -154,11 +163,27 @@ private class SheetMeasure {
             else -> null
         }
 
-    /** Kotwice dla zmierzonego okna; przed pomiarem niskiej karty jej wysokość to część okna. */
-    fun anchors(isFullOnly: Boolean): DraggableAnchors<SheetHeight> {
+    /** Kotwice wysokości [reach] dla zmierzonego okna; przed pomiarem niskiej karty jej wysokość to część okna. */
+    fun anchors(isFullOnly: Boolean, reach: Set<SheetHeight>): DraggableAnchors<SheetHeight> {
         if (isFullOnly) return fullOnlyAnchors(window = window.toFloat())
         val known = low.takeIf { it > 0 } ?: (window / PROVISIONAL_LOW_SHARE)
-        return sheetAnchors(window = window.toFloat(), low = known.toFloat())
+        return sheetAnchors(window = window.toFloat(), low = known.toFloat(), reach = reach)
+    }
+}
+
+/** Wysokość [target], do której arkusz jedzie poza gestem, więc jej kotwica jest dostępna; `null` bez takiego ruchu. */
+private class SheetJump {
+    var target: SheetHeight? by mutableStateOf(null)
+
+    /** Przenosi arkusz [state] na wysokość [height] także dalszą niż o stopień: najpierw dodaje jej kotwicę. */
+    suspend fun move(state: AnchoredDraggableState<SheetHeight>, height: SheetHeight) {
+        target = height
+        try {
+            snapshotFlow { state.anchors.hasPositionFor(height) }.first { it }
+            state.animateTo(height)
+        } finally {
+            if (target == height) target = null
+        }
     }
 }
 
@@ -166,6 +191,7 @@ private class SheetMeasure {
 private fun FollowHeights(
     state: AnchoredDraggableState<SheetHeight>,
     measure: SheetMeasure,
+    jump: SheetJump,
     isExpanded: Boolean,
     isFullOnly: Boolean,
     onExpandedChange: (Boolean) -> Unit,
@@ -174,9 +200,10 @@ private fun FollowHeights(
     val currentOnExpandedChange by rememberUpdatedState(onExpandedChange)
     val currentOnClose by rememberUpdatedState(onClose)
     val isFullOnlyNow by rememberUpdatedState(isFullOnly)
+    val reach = state.settledValue.reach() + setOfNotNull(jump.target)
     val anchors =
-        remember(key1 = measure.window, key2 = measure.low, key3 = isFullOnly) {
-            measure.anchors(isFullOnly = isFullOnly).takeIf { measure.window > 0 }
+        remember(measure.window, measure.low, isFullOnly, reach) {
+            measure.anchors(isFullOnly = isFullOnly, reach = reach).takeIf { measure.window > 0 }
         }
     SideEffect { anchors?.let { state.updateAnchors(newAnchors = it, newTarget = it.keeping(state.targetValue)) } }
     LaunchedEffect(state) {
@@ -188,7 +215,9 @@ private fun FollowHeights(
         }
     }
     LaunchedEffect(isExpanded) {
-        if (!isExpanded && !isFullOnly && state.settledValue.isExpanded) state.animateTo(SheetHeight.Low)
+        if (!isExpanded && !isFullOnly && state.settledValue.isExpanded) {
+            jump.move(state = state, height = SheetHeight.Low)
+        }
     }
 }
 
@@ -308,13 +337,15 @@ private fun Modifier.belowStatusBarWhenFull(statusBar: WindowInsets, isFull: Boo
     if (isFull) windowInsetsPadding(statusBar) else consumeWindowInsets(statusBar)
 
 @Composable
-private fun Handle(state: AnchoredDraggableState<SheetHeight>, isFullOnly: Boolean) {
-    val scope = rememberCoroutineScope()
+private fun Handle(
+    state: AnchoredDraggableState<SheetHeight>,
+    onHeightChoose: (SheetHeight) -> Unit,
+    isFullOnly: Boolean,
+) {
     val label = stringResource(R.string.wysokosc_karty)
     val stateWord = stringResource(state.currentValue.word())
     val expand = stringResource(R.string.rozwin)
     val collapse = stringResource(R.string.zwin)
-    val goTo = { target: SheetHeight -> scope.launch { state.animateTo(target) } }
     val steps =
         if (isFullOnly) {
             emptyList()
@@ -322,13 +353,13 @@ private fun Handle(state: AnchoredDraggableState<SheetHeight>, isFullOnly: Boole
             listOfNotNull(
                 state.currentValue.higher()?.let { up ->
                     CustomAccessibilityAction(expand) {
-                        goTo(up)
+                        onHeightChoose(up)
                         true
                     }
                 },
                 state.currentValue.lower()?.let { down ->
                     CustomAccessibilityAction(collapse) {
-                        goTo(down)
+                        onHeightChoose(down)
                         true
                     }
                 },
@@ -338,7 +369,7 @@ private fun Handle(state: AnchoredDraggableState<SheetHeight>, isFullOnly: Boole
         if (isFullOnly) {
             Modifier
         } else {
-            Modifier.clickable(role = Role.Button, onClick = { goTo(state.currentValue.next()) })
+            Modifier.clickable(role = Role.Button, onClick = { onHeightChoose(state.currentValue.next()) })
         }
     Box(
         modifier =
