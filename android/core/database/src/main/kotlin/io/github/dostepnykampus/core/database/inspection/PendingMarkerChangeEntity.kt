@@ -28,8 +28,8 @@ public enum class PendingMarkerChangeType {
  * @property markerId identyfikator UUID znacznika: stawianego albo cofanego
  * @property buildingSymbol budynek znacznika
  * @property floorId piętro budynku szczegółowego; `null` to znacznik całego budynku podstawowego
- * @property ownerSub identyfikator konta; `null` przed przypisaniem po migracji
  * @property savedAtMillis chwila zapisu w telefonie w milisekundach od epoki Unix
+ * @property ownerSub identyfikator konta; `null` przed przypisaniem po migracji
  */
 @Entity(tableName = "pending_marker_changes")
 public data class PendingMarkerChangeEntity(

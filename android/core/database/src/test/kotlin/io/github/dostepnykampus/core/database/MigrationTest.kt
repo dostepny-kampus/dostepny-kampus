@@ -208,8 +208,10 @@ class MigrationTest {
             runBlocking {
                 database.queueOwnership().adopt("pierwsze")
                 database.queueOwnership().adopt("drugie")
-                val submission = database.pendingSubmissions().all().single().submission
-                val marker = database.pendingMarkerChanges().observe().first().single()
+                val submissions = database.pendingSubmissions()
+                val markers = database.pendingMarkerChanges()
+                val submission = submissions.all().single().submission
+                val marker = markers.observe().first().single()
                 assertEquals("zgłoszenie należy do pierwszego konta", "pierwsze", submission.ownerSub)
                 assertEquals("zmiana znacznika należy do pierwszego konta", "pierwsze", marker.ownerSub)
             }
