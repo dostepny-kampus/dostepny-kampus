@@ -140,5 +140,6 @@ internal class CameraController(private val port: CameraPort) {
     }
 }
 
-private fun MapInset.isSameInset(other: MapInset): Boolean =
+/** Czy [other] to to samo dopełnienie: krawędzie różnią się o mniej niż piksel. Wymagania: NFR-56 */
+internal fun MapInset.isSameInset(other: MapInset): Boolean =
     abs(top - other.top) < SAME_INSET_PX && abs(bottom - other.bottom) < SAME_INSET_PX
