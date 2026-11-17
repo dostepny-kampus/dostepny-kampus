@@ -36,9 +36,10 @@ internal fun ShownPlan.signOf(id: String): PlanSign? {
     val title = PLAN_SIGN_TITLES[room.category]
     val label = floors.firstOrNull { it.id == floor }?.label
     val stops = room.liftFloors.mapNotNull { stop -> floors.firstOrNull { it.id == stop }?.label }
-    return when {
-        title == null || label == null -> null
-        else -> PlanSign(title = title, building = building, floor = label, liftFloors = stops)
+    return if (title == null || label == null) {
+        null
+    } else {
+        PlanSign(title = title, building = building, floor = label, liftFloors = stops)
     }
 }
 
