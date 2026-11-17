@@ -12,14 +12,12 @@ import io.github.dostepnykampus.barrier.submission.application.SubmissionReading
 import io.github.dostepnykampus.barrier.submission.application.SubmissionService;
 import io.github.dostepnykampus.shared.error.ConflictingState;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
-import io.github.dostepnykampus.shared.error.MissingLogin;
 import io.github.dostepnykampus.shared.error.MissingResource;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,8 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Zgłoszenia barier: wysłanie nowego zgłoszenia, edycja
- * z kontrolą wersji, odczyt zgłoszeń przyjętych,
- * odczyt zgłoszenia nieprzyjętego przez autora i Weryfikatora
+ * z kontrolą wersji, odczyt zgłoszenia nieprzyjętego przez autora i Weryfikatora
  * i podobne zgłoszenia dla Weryfikatora.
  *
  * <p>Wymagania: US4, US7, BR-9, US8.3, BR-10, BR-6, BR-5, US10.1, BR-13</p>
@@ -60,31 +57,6 @@ public final class SubmissionsController {
     SubmissionsController(final SubmissionService service, final SubmissionReading finder) {
         this.service = service;
         this.finder = finder;
-    }
-
-    /**
-     * Zwraca stronę zgłoszeń przyjętych według filtrów, a z mine=true własnych zgłoszeń
-     * zalogowanej osoby w każdym statusie. Dalszy ciąg wskazuje nagłówek Link z rel="next".
-     *
-     * <p>Wymagania: US1.3, US2.2, BR-6, US8.1, NFR-34</p>
-     *
-     * @param filter Filtry z parametrów zapytania
-     * @param window Rozmiar strony i kursor
-     * @param account Zalogowane konto albo null bez logowania
-     * @return Zgłoszenia strony w kolejności identyfikatorów
-     */
-    @GetMapping("/submissions")
-    ResponseEntity<List<SubmissionResponse>> listSubmissions(
-        final SubmissionFilter filter, final SubmissionWindow window,
-        @Nullable final Principal account
-    ) {
-        @Nullable String author = null;
-        if (filter.own()) {
-            author = SubmissionsController.name(account);
-        }
-        return new SubmissionPageResponse(
-            this.finder.page(filter.toQuery(), author, window.window())
-        ).entity();
     }
 
     /**
@@ -202,12 +174,5 @@ public final class SubmissionsController {
             case EditResult.Missing _ -> throw new MissingResource(SubmissionsController.MISSING);
             case null -> throw new IllegalStateException("Brak wyniku edycji zgłoszenia");
         };
-    }
-
-    private static String name(@Nullable final Principal account) {
-        if (account == null) {
-            throw new MissingLogin("Własne zgłoszenia wymagają logowania");
-        }
-        return account.getName();
     }
 }
