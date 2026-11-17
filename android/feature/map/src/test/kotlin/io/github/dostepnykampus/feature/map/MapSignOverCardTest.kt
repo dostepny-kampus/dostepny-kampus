@@ -37,7 +37,8 @@ import org.robolectric.annotation.GraphicsMode
 private const val CARD_HEIGHT = 300
 
 /**
- * Arkusz znaku otwarty przy karcie budynku i powrót do karty nie ruszają kamery ani zaznaczenia budynku.
+ * Arkusz znaku otwarty przy karcie budynku i powrót do karty nie ruszają kamery ani zaznaczenia budynku. Ekran
+ * dostaje trasę jak w aplikacji: zamknięcie karty zdejmuje budynek z trasy mapy, a otwarcie karty go przywraca.
  *
  * Wymagania: US2.1, US2.8, US16.1, NFR-17
  */
@@ -50,6 +51,7 @@ class MapSignOverCardTest {
 
     private val map = TouchableMap()
     private var cover by mutableStateOf(CARD_HEIGHT.dp)
+    private var focus by mutableStateOf<MapFocus?>(MapFocus.Building("C-13"))
 
     /** Wiersz: V1, arkusz wejścia przy karcie i powrót do karty nie ruszają kamery. Wymagania: US2.1 */
     @Test
@@ -97,10 +99,16 @@ class MapSignOverCardTest {
                     state = state,
                     onListChange = {},
                     onSearch = {},
-                    onBuildingClick = { cover = CARD_HEIGHT.dp },
-                    focus = MapFocus.Building("C-13"),
+                    onBuildingClick = {
+                        focus = MapFocus.Building(it)
+                        cover = CARD_HEIGHT.dp
+                    },
+                    focus = focus,
                     contentPadding = PaddingValues(bottom = cover),
-                    onEmptyMapClick = { cover = 0.dp },
+                    onEmptyMapClick = {
+                        focus = null
+                        cover = 0.dp
+                    },
                     mapView = map.view,
                     plan = SIGN_PLAN,
                 )
