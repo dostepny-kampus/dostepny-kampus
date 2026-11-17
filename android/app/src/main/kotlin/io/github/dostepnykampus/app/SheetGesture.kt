@@ -36,8 +36,6 @@ internal enum class SheetHeight {
     Full,
 }
 
-// TODO(#2996): połowa okna z nagłówkiem niskiej karty i bez przewijania, zamiast treści pełnego ekranu
-
 /** Czy na tej wysokości karta pokazuje pełny opis. Wymagania: US2.8 */
 internal val SheetHeight.isExpanded: Boolean
     get() = this == SheetHeight.Half || this == SheetHeight.Full
