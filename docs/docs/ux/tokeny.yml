@@ -257,12 +257,6 @@ typografia:
   # Pogrubienie przycisków, oznaczeń wejścia i błędu przy polu.
   wyroznienie_waga: 700
   style:
-    displayLarge:
-      sp: 57
-      waga: 800
-      interlinia_sp: 57   # symbol ma jeden krótki wiersz, np. „A-1”
-      uzycie: dawny symbol budynku na karcie; nagłówek karty budynku ma symbol stylem headlineLarge
-      zrodlo: styl „Karta miejsca”
     headlineLarge:
       sp: 36
       waga: 800

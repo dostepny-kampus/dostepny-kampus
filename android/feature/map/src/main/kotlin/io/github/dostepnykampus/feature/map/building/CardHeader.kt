@@ -57,8 +57,8 @@ private fun HeaderOrSpace(symbol: String, card: BuildingCardUiState, isFullScree
             EntranceSummaryLine(entranceSummary(ready.entrances))
         } else {
             Column {
-                Text(text = symbol, style = MaterialTheme.typography.displayLarge)
-                Text(text = " ", style = MaterialTheme.typography.headlineMedium)
+                Text(text = symbol, style = MaterialTheme.typography.headlineLarge)
+                Text(text = " ", style = MaterialTheme.typography.titleLarge)
             }
             EntranceSummaryLine(EntranceSummary.NoData)
         }
@@ -93,8 +93,8 @@ private fun SymbolOverName(symbol: String, name: String?) {
                 .focusRequester(focus)
                 .focusable(),
     ) {
-        Text(text = symbol, style = MaterialTheme.typography.displayLarge, color = MaterialTheme.colorScheme.primary)
-        name?.let { Text(text = it, style = MaterialTheme.typography.headlineMedium) }
+        Text(text = symbol, style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.primary)
+        name?.let { Text(text = it, style = MaterialTheme.typography.titleLarge) }
     }
     LaunchedEffect(focus) { withFrameMillis { focus.requestFocus() } }
 }
