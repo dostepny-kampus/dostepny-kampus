@@ -452,6 +452,24 @@ mapa:
       - {powiekszenie: 18, dp: 24}
       - {powiekszenie: 19, dp: 28}
     zrodlo: US16.1, NFR-16, NFR-17, NFR-21
+  # Przygaszony budynek PWr (inne budynki przy zaznaczonym budynku i przy planie piętra) zostaje w swojej barwie,
+  # bledszy: tło `pwr` albo `pwr_podstawowy` z kryciem `tlo_krycie`, kontur `pwr_kontur` z kryciem `kontur_krycie`,
+  # grubość konturu i podpis symbolu bez zmian. Barw `budynek` i `budynek_kontur` przygaszony budynek PWr nie dostaje.
+  # Na `lad` daje to tło #CDE5EC (szczegółowy) i #DDECF0 (podstawowy) oraz kontur #477F8A w motywie jasnym, a w ciemnym
+  # tło #2C424B i #26373D oraz kontur #7EA1AD. Pary niżej liczą kontur nałożony na `lad` do lądu i do przygaszonego
+  # tła; `min_symulacja` to najniższy wynik po symulacji widzenia barw. Krycie konturu 60% daje w jasnym motywie
+  # 2,72 do tła, dlatego 70%.
+  przygaszenie:
+    tlo_krycie: 0.4
+    kontur_krycie: 0.7
+    pary:
+      - {kolor: "#477F8A", tlo: "#EEF1F0", motyw: jasny, kontrast: 3.95, min_symulacja: 3.71, gdzie: kontur przygaszonego budynku do lądu}
+      - {kolor: "#477F8A", tlo: "#CDE5EC", motyw: jasny, kontrast: 3.42, min_symulacja: 3.28, gdzie: kontur do przygaszonego tła budynku szczegółowego}
+      - {kolor: "#477F8A", tlo: "#DDECF0", motyw: jasny, kontrast: 3.71, min_symulacja: 3.52, gdzie: kontur do przygaszonego tła budynku podstawowego}
+      - {kolor: "#7EA1AD", tlo: "#20272B", motyw: ciemny, kontrast: 5.47, min_symulacja: 5.35, gdzie: kontur przygaszonego budynku do lądu}
+      - {kolor: "#7EA1AD", tlo: "#2C424B", motyw: ciemny, kontrast: 3.81, min_symulacja: 3.79, gdzie: kontur do przygaszonego tła budynku szczegółowego}
+      - {kolor: "#7EA1AD", tlo: "#26373D", motyw: ciemny, kontrast: 4.47, min_symulacja: 4.41, gdzie: kontur do przygaszonego tła budynku podstawowego}
+    zrodlo: US2.8, US16.1, NFR-16, NFR-21
   kolory:
     lad: {jasny: "#EEF1F0", ciemny: "#20272B", uzycie: tło lądu}
     zielen: {jasny: "#CBE2C6", ciemny: "#24352C", uzycie: parki i trawniki}
