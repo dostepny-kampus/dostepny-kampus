@@ -20,11 +20,12 @@ import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.entrance.ChosenEntranceSheet
 
 /**
- * Znak [sign] obiektu o identyfikatorze [id] dotknięty na mapie V1, z otwartym arkuszem.
+ * Znak [sign] obiektu o identyfikatorze [id] dotknięty na mapie V1, z otwartym arkuszem; [card] to symbol budynku,
+ * którego kartę arkusz zastąpił, a `null` bez karty.
  *
  * Wymagania: US1.5, US2.1
  */
-internal data class ChosenSign(val sign: TouchSign, val id: String)
+internal data class ChosenSign(val sign: TouchSign, val id: String, val card: String? = null)
 
 /**
  * Arkusz znaku na mapie V1: który znak ma otwarty arkusz.
@@ -43,21 +44,30 @@ internal class SignSheetState(initial: ChosenSign?) {
     val barrierId: String?
         get() = chosen?.takeIf { it.sign == TouchSign.BARRIER }?.id
 
-    /** Otwiera arkusz znaku [sign] obiektu [id] w miejsce poprzedniego. */
-    fun open(sign: TouchSign, id: String) {
-        chosen = ChosenSign(sign = sign, id = id)
+    /** Otwiera arkusz znaku [sign] obiektu [id] w miejsce poprzedniego albo karty budynku [card]. */
+    fun open(sign: TouchSign, id: String, card: String? = null) {
+        chosen = ChosenSign(sign = sign, id = id, card = card)
     }
 
     /** Zamyka arkusz. */
     fun close() {
         chosen = null
     }
+
+    /** Zamyka arkusz i przekazuje [onCard] symbol budynku, którego kartę arkusz zastąpił. */
+    fun back(onCard: (String) -> Unit) {
+        val card = chosen?.card
+        close()
+        card?.let(onCard)
+    }
 }
 
 private val signSheetSaver: Saver<SignSheetState, List<String>> =
     Saver(
-        save = { state -> state.chosen?.run { listOf(sign.name, id) } },
-        restore = { (sign, id) -> SignSheetState(ChosenSign(sign = TouchSign.valueOf(sign), id = id)) },
+        save = { state -> state.chosen?.run { listOfNotNull(sign.name, id, card) } },
+        restore = { saved ->
+            SignSheetState(ChosenSign(sign = TouchSign.valueOf(saved[0]), id = saved[1], card = saved.getOrNull(2)))
+        },
     )
 
 /** Stan arkusza znaku zachowany przy zmianie konfiguracji; na początku bez arkusza. */
@@ -70,10 +80,10 @@ internal fun rememberSignSheetState(): SignSheetState =
  *
  * Wymagania: US1.5, US2.1, US3.3
  *
- * @param signs znak z otwartym arkuszem; zamknięcie arkusza go zdejmuje
+ * @param signs znak z otwartym arkuszem; zamknięcie arkusza go zdejmuje i wraca do karty, którą arkusz zastąpił
  * @param barriers bariery pokazane na mapie
  * @param catalog katalog budynków i wejść; `null` przed jego wczytaniem
- * @param onBuildingClick V2 budynku o podanym symbolu
+ * @param onBuildingClick V2 budynku o podanym symbolu, także powrót do karty
  * @param onEntrancesClick V3 budynku o podanym symbolu
  * @param modifier położenie arkusza na mapie
  */
@@ -93,7 +103,7 @@ internal fun ChosenSignSheet(
                 id = id,
                 barriers = barriers,
                 catalog = catalog,
-                onClose = signs::close,
+                onClose = { signs.back(onBuildingClick) },
                 onBuildingClick = onBuildingClick,
                 modifier = modifier,
             )
@@ -103,7 +113,7 @@ internal fun ChosenSignSheet(
             ChosenEntranceSheet(
                 id = id,
                 catalog = catalog,
-                onClose = signs::close,
+                onClose = { signs.back(onBuildingClick) },
                 onEntrancesClick = onEntrancesClick,
                 modifier = modifier,
             )

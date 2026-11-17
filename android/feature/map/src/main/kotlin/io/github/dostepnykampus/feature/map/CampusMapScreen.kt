@@ -286,7 +286,7 @@ private fun CampusMap(
                     plan.onView(view.also { state.keep(it) })
                 },
                 onBuildingsTouch = { state.taps.touch(it, onBuildingClick, onEmptyMapClick).also { signs.close() } },
-                onSignTouch = { sign, id -> if (cover == 0.dp) signs.open(sign, id).also { state.taps.dismiss() } },
+                onSignTouch = { sign, id -> signs.open(sign, id).also { state.taps.dismiss() } },
                 modifier = Modifier.fillMaxSize(),
             )
             scene.selection.entrance?.let { EntranceDescription(it) }
