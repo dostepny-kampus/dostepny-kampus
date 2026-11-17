@@ -14,6 +14,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
 import io.github.dostepnykampus.core.database.cache.BuildingCacheDao
+import io.github.dostepnykampus.core.database.inspection.InspectionMarkerDao
 import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeDao
 import io.github.dostepnykampus.core.database.room.FloorPlanDao
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
@@ -69,4 +70,8 @@ internal object DatabaseModule {
     /** Kopie planów pięter i pomieszczeń z [database]. Wymagania: US16.1, NFR-10 */
     @Provides
     fun floorPlans(database: DkDatabase): FloorPlanDao = database.floorPlans()
+
+    /** Kopia znaczników piętra obejrzanego z serwera z [database]. Wymagania: US15.1, US15.2 */
+    @Provides
+    fun inspectionMarkers(database: DkDatabase): InspectionMarkerDao = database.inspectionMarkers()
 }
