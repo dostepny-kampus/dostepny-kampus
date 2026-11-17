@@ -7,7 +7,7 @@
 dependencyResolutionManagement {
     repositories {
         google()
-        // Lustro Maven Central od Google przed samym Central: chwilowe 429 z repo.maven.apache.org nie psuje CI (#2797).
+        /* Lustro Maven Central od Google przed samym Central: chwilowe 429 z repo.maven.apache.org nie psuje CI. */
         maven("https://maven-central.storage-download.googleapis.com/maven2/")
         mavenCentral()
         gradlePluginPortal()
