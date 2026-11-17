@@ -265,6 +265,7 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | V2, brak barier | nagłówek „Brak zgłoszonych barier”, zdanie „Bariera pojawi się tutaj, gdy ktoś ją zgłosi i zostanie sprawdzona.” | „Zgłoś barierę” | PW-6; decyzja 48 |
 | V2, brak wejść w danych | „Nie mamy jeszcze danych o wejściach do tego budynku.” | — | US3.1, US17.1; to samo zdanie co na V3, bez symbolu, bo podaje go nagłówek karty. Brak danych nie potwierdza niedostępności. |
 | V2, brak planu (budynek podstawowy) | „Nie mamy planu pięter tego budynku.” | — | PW-6; lista barier stoi nad napisem (decyzja 54) |
+| V2, plan jeszcze nieznany (bez danych z serwera) | „Plan pięter sprawdzimy, gdy telefon połączy się z internetem.” | — | PW-6; mówi, że plan nie jest jeszcze sprawdzony i kiedy będzie, zamiast twierdzić, że go nie ma |
 | V2, zdjęcie bez internetu | „Zdjęcie zobaczysz po połączeniu z internetem.” | — | PW-6 |
 | V2, budynku nie ma w telefonie | „Tego budynku nie ma jeszcze w telefonie. Połącz się z internetem, aby zobaczyć opis budynku.” | „Spróbuj ponownie” | PW-4 |
 | V2, błąd zdjęcia | „Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.” | „Spróbuj ponownie” | PW-10 |

@@ -16,6 +16,14 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
       Oraz w miejscu planu piętra widzi napis „Nie mamy planu pięter tego budynku.”
       Oraz widzi wejścia budynku B-8 i jego zgłoszenia przyjęte
 
+    # @do-zrobienia #3069: karta jeszcze nie odróżnia nieznanego planu od budynku podstawowego.
+    @US16.2 @NFR-10 @aplikacja @do-zrobienia
+    Scenariusz: Bez danych z serwera karta nie twierdzi, że budynek nie ma planu
+      Zakładając, że Gość niezalogowany pierwszy raz otwiera aplikację bez internetu
+      Jeżeli otworzy kartę budynku A-1
+      Wtedy w grupie „Piętra” widzi napis „Plan pięter sprawdzimy, gdy telefon połączy się z internetem.”
+      Ale nie widzi napisu „Nie mamy planu pięter tego budynku.”
+
     @US7.2 @aplikacja
     Szablon scenariusza: Piętro w budynku podstawowym wpisuje się jako liczbę całkowitą
       Zakładając, że Zbierający wypełnia formularz zgłoszenia w budynku B-8
