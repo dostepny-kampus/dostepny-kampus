@@ -119,7 +119,7 @@ kolory:
   onPrimary:
     jasny: "#FFFFFF"
     ciemny: "#00303B"  # ciemny morski na jasnym akcencie; biel dawałaby za mały kontrast
-    uzycie: napis i ikona na przycisku wypełnionym w jasnym motywie, np. „Sprawdź, którędy wejść”
+    uzycie: napis i ikona na przycisku wypełnionym w jasnym motywie, np. „Pokaż wejście na mapie”
     zrodlo: NFR-16
   primaryContainer:
     jasny: "#C3E9F6"   # tylko to, co wybrane: osoba widzi, gdzie jest
@@ -344,7 +344,7 @@ cele_dotyku:
     zrodlo: styl „Karta miejsca”, NFR-17
   odstep:
     dp: 16             # PE-1 ma lekkie drżenie dłoni: między sąsiednimi przyciskami zostaje pas, w który trudno trafić przypadkiem
-    uzycie: odstęp między sąsiednimi przyciskami, np. „Sprawdź, którędy wejść” i „Zamknij” na małej karcie V2 i w potwierdzeniach
+    uzycie: odstęp między sąsiednimi przyciskami, np. „Pokaż wejście na mapie” i „Zamknij” na małej karcie V2 i w potwierdzeniach
     zrodlo: NFR-17, PE-1, decyzja 50
   odstep_w_grupie:
     dp: 8

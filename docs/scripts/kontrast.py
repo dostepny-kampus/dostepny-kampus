@@ -298,7 +298,7 @@ def preview(tokens: dict[str, Any], theme: str, title: str) -> str:
         if theme == "ciemny"
         else f'background:{c["primary"]};color:{c["onPrimary"]}'
     )
-    primary = f'<div style="{btn};{filled};font-weight:{bold}">Sprawdź, którędy wejść</div>'
+    primary = f'<div style="{btn};{filled};font-weight:{bold}">Pokaż wejście na mapie</div>'
     secondary = (
         f'<div style="{btn};border:{border}px solid {c["outline"]};color:{c["primary"]};'
         f'font-weight:{label["waga"]}">Zmień oznaczenie</div>'

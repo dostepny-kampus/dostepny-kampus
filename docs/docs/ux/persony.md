@@ -49,7 +49,7 @@ Persona łączy wywiady z 6 osobami w wieku 61–75 lat (etap 2 kursu PDU) z wcz
 
 | Potrzeba | Historyjki | Ekrany |
 | --- | --- | --- |
-| wejście bez barier (N1) | US1, US2, US3, US16, US17 | V1, V2, V3 |
+| wejście bez barier (N1) | US1, US2, US3, US16, US17 | V1, V2 |
 | zaufanie do informacji (N2) | US2.2, US17.3 | V2 |
 | obsługa przy słabym wzroku i niepewnych dłoniach (N4) | US5, US4.3; NFR-17, NFR-19, NFR-20, NFR-23 | V5, wszystkie |
 | orientacja w budynku: sala, winda, toaleta (nowa potrzeba z wywiadów) | US16, US18 | V1, V2 |
@@ -164,7 +164,7 @@ Persona powstała z analizy źródeł o osobach na wózku (etap 2 kursu PDU). Ni
 
 | Potrzeba | Historyjki | Ekrany |
 | --- | --- | --- |
-| wejście i droga do sali bez schodów (N1) | US2, US3, US17, US18 | V2, V3 |
+| wejście i droga do sali bez schodów (N1) | US2, US3, US17, US18 | V2, V1 |
 | zaufanie do informacji: data, zdjęcie, sprawdzone awarie wind (N2) | US2.2, US17.3, US10 | V2 |
 | szybkie zgłoszenie bariery zdjęciem (N3) | US4 | V4 |
 

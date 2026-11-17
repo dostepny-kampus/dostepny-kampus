@@ -17,7 +17,7 @@ Każdy diagram pokazuje jedno zadanie osoby i czyta się go z góry na dół. Ws
 
 „Wstecz” jest na każdym ekranie poza V1 i wraca do poprzedniego ekranu (wymagania wspólne, NFR-15). Wysłany formularz znika z historii „Wstecz” (P2). Diagramy pokazują „Wstecz” tylko tam, gdzie cel nie jest oczywisty. „Zalogowani” w tabelach to RO-ODW i role pracownicze (BR-1).
 
-Pasek dolny jest na ekranach V1, V2, V3, V5 i L2. Prowadzi do mapy, zgłoszenia szybkiego, pomocy i konta. Czwarta pozycja to „Konto”, a osoby z rolą pracowniczą widzą na niej „Konto i praca” ([słownik użytkownika](slownik-uzytkownika.md#nazwa-wejscia)). Obie prowadzą do L2 (P1).
+Pasek dolny jest na ekranach V1, V2, V5 i L2. Prowadzi do mapy, zgłoszenia szybkiego, pomocy i konta. Czwarta pozycja to „Konto”, a osoby z rolą pracowniczą widzą na niej „Konto i praca” ([słownik użytkownika](slownik-uzytkownika.md#nazwa-wejscia)). Obie prowadzą do L2 (P1).
 
 ## Gość i Odwiedzający
 
@@ -25,7 +25,9 @@ Pasek dolny jest na ekranach V1, V2, V3, V5 i L2. Prowadzi do mapy, zgłoszenia 
 
 ![Diagram: od uruchomienia przez V1 do V2, V3, planu piętra jako stanu V1, arkusza windy i zgłoszenia szybkiego](../_generated/nawigacja-gosc-mapa.svg)
 
-Główna droga to V1, V2, V3 i z powrotem na mapę z zaznaczonym wejściem. Z V2 osoba otwiera też plan piętra na V1 albo zgłasza barierę przy wejściu. Mapa ma jeszcze listę terenów oraz przybliżenie budynku szczegółowego na plan piętra.
+Główna droga to V1 i karta V2, która od razu odpowiada, którym wejściem wejść. Dalej „Pokaż wejście na mapie” prowadzi do V1 z zaznaczonym wejściem i jego arkuszem. Z V2 osoba otwiera też plan piętra na V1 albo zgłasza barierę przy wejściu. Mapa ma jeszcze listę terenów oraz przybliżenie budynku szczegółowego na plan piętra.
+
+Diagram pokazuje jeszcze dawny ekran V3 „Którędy wejść”; zmieni się razem z makietami low-fi.
 
 Wynik wyszukiwania z salą, na przykład „A-1 329”, otwiera plan piętra od razu bez V2. Na planie piętra można dotknąć windy, otwierając arkusz windy, albo oddalić mapę. Plan piętra i arkusz windy to stany V1, a nie osobne ekrany.
 
@@ -77,7 +79,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | --- | --- | --- | --- | --- |
 | start aplikacji, pierwsze uruchomienie | otwiera się samo | V5 | wszystkie | US5.1 |
 | start aplikacji, kolejne uruchomienie | otwiera się samo | V1 | wszystkie | US1.2 |
-| pasek dolny (V1, V2, V3, V5, L2) | „Mapa” | V1 | wszystkie | US1 |
+| pasek dolny (V1, V2, V5, L2) | „Mapa” | V1 | wszystkie | US1 |
 | pasek dolny | „Zgłoś barierę” | V4 | zalogowani | US4 |
 | pasek dolny | „Zgłoś barierę” | L1 | RO-GOS | US14.2 |
 | pasek dolny | „Pomoc” | V5 | wszystkie | US5.1 |
@@ -106,7 +108,9 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1 | dotknięcie znaku bariery | V1, arkusz bariery | wszystkie | US1.3, US10.6 |
 | V1, arkusz bariery | „Pokaż opis budynku”; „Zamknij” | V2 budynku bariery; V1 | wszystkie | US2 |
 | V1 | dotknięcie znaku wejścia | V1, arkusz wejścia | wszystkie | US2.1, US3.3 |
-| V1, arkusz wejścia | „Sprawdź, którędy wejść”; „Zamknij”, „Wstecz” albo dotknięcie pustej mapy | V3 budynku wejścia; V1 | wszystkie | US3.3, NFR-53 |
+| V1, arkusz wejścia | „Zamknij”, „Wstecz” albo dotknięcie pustej mapy | V1; otwarty przy karcie budynku: ta karta | wszystkie | NFR-53 |
+| V1, arkusz wejścia zalecanego | „Pokaż to wejście na mapie” przy innym wejściu dostępnym | V1 z zaznaczonym tym wejściem i jego arkuszem | wszystkie | US3.3 |
+| V1, arkusz wejścia | „Zgłoś barierę przy wejściu” | V4, krok 1, wejście wybrane; Gość: L1, potem V4 z wybranym wejściem | wszystkie | US4.6, US14.2 |
 | V1, plan piętra | dotknięcie znaku toalety dostosowanej albo schodów | V1, arkusz toalety albo schodów | wszystkie | US16.1 |
 | V1, arkusz toalety albo schodów | „Zamknij”, „Wstecz” albo dotknięcie pustej mapy | V1 | wszystkie | NFR-53 |
 | V1 | napis „© OpenStreetMap contributors” | strona praw autorskich OSM | wszystkie | NFR-37 |
@@ -126,18 +130,14 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1, stan „znaleziona sala” | „Zamknij” | V1 | wszystkie | decyzja 48 |
 | V2 | „Pokaż na planie” przy piętrze | V1, plan tego piętra, bez zaznaczonego budynku | wszystkie | US16.1, decyzja 44 |
 | V2, pełny ekran otwarty od razu | „Pokaż budynek na mapie” | V1 w widoku mapy z zaznaczonym budynkiem, bez karty; zapamiętany wybór „Mapa” | wszystkie | US2.9, NFR-19, decyzja 116 |
-| V2 | „Pokaż wejście na mapie” przy wejściu zalecanym | V1 z zaznaczonym wejściem | wszystkie | US2.1, BR-25 |
+| V2 | „Pokaż wejście na mapie” pod wierszem o wejściach albo przy wejściu zalecanym | V1 z zaznaczonym wejściem zalecanym i jego arkuszem; przy dużej czcionce arkusz na cały ekran | wszystkie | US2.1, US3.3, BR-25 |
+| V2, niska wysokość | dotknięcie wystającego nagłówka „Wejścia” | V2 na połowie ekranu | wszystkie | US2.8, NFR-53 |
 | V2 | „Zgłoś barierę przy wejściu” | V4, krok 1, wejście wybrane | zalogowani | US4, decyzja 48 |
 | V2 | „Zgłoś barierę przy wejściu” | L1, potem V4 z wybranym wejściem | RO-GOS | US14.2, decyzja 48 |
 | V2, stan „brak zgłoszeń przyjętych” | „Zgłoś barierę” | V4; Gość: L1 | wszystkie | US4, US14.2 |
-| V2 | „Sprawdź, którędy wejść” | V3 | wszystkie | US3, US3.2 |
 | V2, pełny ekran otwarty od razu | „Wstecz” | ekran sprzed V2, np. lista V1 | wszystkie | NFR-15, US2.9 |
 | V2, stan „budynku nie ma w telefonie” | „Spróbuj ponownie” | V2 | wszystkie | NFR-10 |
 | V2, stan „błąd zdjęcia” | „Spróbuj ponownie” | V2 | wszystkie | NFR-50 |
-| V3 | „Wstecz” | V2 | wszystkie | US3 |
-| V3 | „Pokaż wejście na mapie” przy wejściu dostępnym | V1 z zaznaczonym wejściem | wszystkie | US2.1, US3 |
-| V3 | „Zgłoś barierę przy wejściu” | V4, krok 1, wejście wybrane | zalogowani | US4, decyzja 54 |
-| V3 | „Zgłoś barierę przy wejściu” | L1, potem V4 z wybranym wejściem | RO-GOS | US14.2, decyzja 54 |
 | V4 | wejście na ekran | L1 zamiast aparatu | RO-GOS | US14.2 |
 | V4, stan „brak zgody na lokalizację” | „Pozwól na lokalizację” | V4, krok 1 | zalogowani | UC7 2a, NFR-27 |
 | V4, stan „brak zgody na lokalizację” | „Wróć do mapy” | V1 | zalogowani | UC7 2a |
@@ -269,8 +269,8 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 
 | Kontrola | Wynik | Uwagi |
 | --- | --- | --- |
-| Najwyżej 3 dotknięcia od mapy do wejścia dostępnego (US3.2) | spełnione | najkrótsza droga: 1 dotknięcie do karty V2, 2 do V3; od otwarcia aplikacji przy pierwszym uruchomieniu do 4 |
-| Ekran osiągalny dla roli z uprawnieniem | spełnione | 19 z 19 ekranów |
+| Najwyżej 3 dotknięcia od mapy do wejścia dostępnego (US3.2) | spełnione | najkrótsza droga: 1 dotknięcie do karty V2, która podaje odpowiedź; od otwarcia aplikacji przy pierwszym uruchomieniu do 3 |
+| Ekran osiągalny dla roli z uprawnieniem | spełnione | 18 z 18 ekranów |
 | Ekran nieosiągalny dla roli bez uprawnienia | spełnione | brak przejścia z ekranu innej roli |
 | Powrót do punktu startu z każdego ekranu | spełnione | najwyżej 3 dotknięcia; po wysłaniu formularza dzięki P2. Wyjątek: kroki 2 i 3 V4 po zdjęciu, do 5 dotknięć, bo rezygnacja ze zdjęcia wymaga potwierdzenia |
 | Brak ślepych zaułków | spełnione | każdy przycisk ma cel; rozbieżności 2–4 rozstrzygnięte |
@@ -279,24 +279,25 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 
 Liczymy dotknięcie, które uruchamia element; przy TalkBack to podwójne dotknięcie. Nie liczymy pisania liter, przesuwania mapy i listy ani ruchu fokusu TalkBack.
 
-Wejście jest wskazane już na V2, bo karta podaje oznaczenie każdego wejścia (US2.1). V3 podaje odpowiedź pełnym zdaniem (US3.1).
+Wejście jest wskazane już na niskiej karcie V2: wiersz o wejściach podaje odpowiedź pełnym zdaniem z wejściem zalecanym (US3.1, BR-25). Szczegóły wejścia i jego miejsce na mapie daje jeszcze jedno dotknięcie, „Pokaż wejście na mapie” (US3.3), ale kryterium liczy dotknięcia do wskazania wejścia.
 
-„Sprawdź, którędy wejść” stoi na karcie V2 na każdej wysokości, więc niska karta nie dodaje dotknięcia (US2.8).
+Wiersz o wejściach stoi na karcie na każdej wysokości, także na karcie otwartej od razu na cały ekran, więc żadna wysokość nie dodaje dotknięcia (US2.8).
 
-| Ścieżka | Dotknięcia do V2 | Dotknięcia do V3 | Wynik |
+| Ścieżka | Dotknięcia do odpowiedzi na V2 | Dotknięcia do arkusza wejścia | Wynik |
 | --- | --- | --- | --- |
-| A. V1: kontur budynku, na małej karcie „Sprawdź, którędy wejść” | 1 | 2 | spełnione |
-| B. V1: bariera na mapie, „Sprawdź, którędy wejść” | 1 | 2 | spełnione |
-| C. V1: pole symbolu budynku, litery, wynik, na małej karcie „Sprawdź, którędy wejść” | 2 | 3 | spełnione, na progu |
-| D. V1 z TalkBack: „Pokaż listę”, budynek, od razu V2 na cały ekran, „Sprawdź, którędy wejść” | 2 | 3 | spełnione, na progu |
+| A. V1: kontur budynku, niska karta z odpowiedzią | 1 | 2 | spełnione |
+| B. V1: bariera na mapie, „Pokaż opis budynku” | 2 | 3 | spełnione |
+| C. V1: pole symbolu budynku, litery, wynik, niska karta z odpowiedzią | 2 | 3 | spełnione |
+| D. V1 z TalkBack: „Pokaż listę”, budynek, od razu V2 na cały ekran z odpowiedzią | 2 | 3 | spełnione |
 | E. Pierwsze uruchomienie: V5 „Pomiń instrukcję”, potem A | 2 | 3 | spełnione |
-| F. Pierwsze uruchomienie: V5 „Pomiń instrukcję”, potem C albo D | 3 | 4 | do V3 ponad próg |
-| G. Brak wyniku: pole, litery, „Pokaż listę”, budynek, mapa z kartą V2, „Sprawdź, którędy wejść” | 3 | 4 | droga po błędzie, ponad próg |
-| H. V1: kontur wspólny, np. „C-3/C-4”, budynek w „Który budynek?”, „Sprawdź, którędy wejść” | 2 | 3 | spełnione, na progu |
+| F. Pierwsze uruchomienie: V5 „Pomiń instrukcję”, potem C albo D | 3 | 4 | spełnione, na progu |
+| G. Brak wyniku: pole, litery, „Pokaż listę”, budynek, mapa z kartą V2 | 3 | 4 | droga po błędzie, na progu |
+| H. V1: kontur wspólny, np. „C-3/C-4”, budynek w „Który budynek?” | 2 | 3 | spełnione |
+| I. V1: znak wejścia na mapie, arkusz wejścia | — | 1 | spełnione; arkusz podaje oznaczenie, a przy wejściu zalecanym szczegóły |
 
-Kryterium liczy dotknięcia od mapy, więc ścieżki E i F się w nim mieszczą. Jeśli liczyć od otwarcia aplikacji, ścieżka F przekracza próg tylko przy pierwszym uruchomieniu i tylko do V3.
+Kryterium liczy dotknięcia od mapy, więc ścieżki E i F się w nim mieszczą. Także licząc od otwarcia aplikacji, odpowiedź przychodzi najwyżej po 3 dotknięciach poza drogą po błędzie.
 
-Osoba z TalkBack ma zawsze drogę D, czyli dokładnie 3 dotknięcia. Test miary M-4 z [wizji](../biznes/wizja.md) zaczyna się na otwartej mapie, bo US3.2 liczy dotknięcia od mapy.
+Osoba z TalkBack ma zawsze drogę D, czyli 2 dotknięcia do odpowiedzi. Test miary M-4 z [wizji](../biznes/wizja.md) zaczyna się na otwartej mapie, bo US3.2 liczy dotknięcia od mapy.
 
 ### Dostęp ról do ekranów
 
@@ -306,7 +307,6 @@ Osoba z TalkBack ma zawsze drogę D, czyli dokładnie 3 dotknięcia. Test miary 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | V1 | ✔ | ✔ | ✔ | ✔ | ✔ | start (0) | tak |
 | V2 | ✔ | ✔ | ✔ | ✔ | ✔ | budynek (1) | tak |
-| V3 | ✔ | ✔ | ✔ | ✔ | ✔ | budynek, „Sprawdź, którędy wejść” (2) | tak |
 | V4 | ✖ | ✔ | ✔ | ✔ | ✔ | „Zgłoś barierę” (1); Gość trafia do L1 | tak, przypis 2 |
 | V5 | ✔ | ✔ | ✔ | ✔ | ✔ | „Pomoc” (1) | tak |
 | L1 | ✔ | ✖ | ✖ | ✖ | ✖ | „Konto” albo „Zgłoś barierę” (1) | tak, US14.2 |
@@ -330,12 +330,11 @@ Jedyny wyjątek, K1 do C5, należy do RO-KOO, który ma prawo cofania znacznikó
 
 ### Powrót do punktu startu
 
-Punkt startu każdej roli to V1, bo od niej zaczyna się aplikacja. Pasek dolny daje powrót jednym dotknięciem z V1, V2, V3, V5 i L2. Na pozostałych ekranach wraca się przez „Wstecz”.
+Punkt startu każdej roli to V1, bo od niej zaczyna się aplikacja. Pasek dolny daje powrót jednym dotknięciem z V1, V2, V5 i L2. Na pozostałych ekranach wraca się przez „Wstecz”.
 
 | Ekran | Droga do V1 | Dotknięcia |
 | --- | --- | --- |
 | V2, V5, L2 | „Mapa” albo „Wstecz” | 1 |
-| V3 | „Mapa” | 1 |
 | V4, stany zgody | „Wróć do mapy” | 1 |
 | V4, krok 1 | „Wstecz” do ekranu wyjścia (po zdjęciu z „Tak, zrezygnuj”), potem „Mapa”, jeśli to nie V1 | 1–3 |
 | V4, kroki 2 i 3 | „Wstecz” do kroku 1, potem jak z kroku 1 | 3–5 |
@@ -355,7 +354,7 @@ Punkt startu każdej roli to V1, bo od niej zaczyna się aplikacja. Pasek dolny 
 
 | Miejsce | Ocena |
 | --- | --- |
-| V3 | celowy koniec drogi US3: odpowiedź na pytanie, dalej „Wstecz”, przyciski przy wejściach i pasek dolny |
+| V1, arkusz wejścia | celowy koniec drogi US3: odpowiedź i szczegóły wejścia na mapie, dalej „Zamknij”, przyciski w arkuszu i pasek dolny |
 | V4, potwierdzenie | celowy koniec zgłoszenia szybkiego (US4.4); wyjście „Wróć do mapy” |
 | V1, stan „brak sieci przy pierwszym uruchomieniu” | nie zaułek: kontury, wejścia, wyszukiwanie i pasek działają; bariery i plany wczytają się same po powrocie sieci (NFR-10) |
 | K2 i K3 po sukcesie | celowy koniec czynności; potwierdzenie na tym samym ekranie, dalej „Wstecz” |

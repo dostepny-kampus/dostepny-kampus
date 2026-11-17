@@ -124,29 +124,31 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi to zgłoszenie ze zdjęciem
     Oraz przy zgłoszeniu widnieje data weryfikacji 12.11.2026
 
-  @US3.2 @aplikacja
+  # @do-zrobienia #3075: odpowiedzi o wejściu na niskiej karcie jeszcze nie ma w aplikacji.
+  @US3.2 @aplikacja @do-zrobienia
   Scenariusz: Wejście dostępne najwyżej 3 dotknięcia od mapy
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
     Jeżeli dotknie budynku A-1
-    Oraz wybierze „Sprawdź, którędy wejść”
-    Wtedy widzi wejście dostępne budynku A-1
-    Oraz od mapy wykonał najwyżej 3 dotknięcia
+    Wtedy na karcie budynku A-1 widzi „Wejście dostępne” i zdanie z wejściem zalecanym
+    Oraz od mapy wykonał 1 dotknięcie, czyli nie więcej niż 3
 
-  @US2.8 @aplikacja
+  # @do-zrobienia #3075, #3076: zdania, „Pokaż wejście na mapie” i wystającego nagłówka „Wejścia” jeszcze nie ma w aplikacji.
+  @US2.8 @aplikacja @do-zrobienia
   Szablon scenariusza: Niska karta nad mapą mówi słowami o wejściach
     Zakładając, że w danych testowych <dane>
     Oraz Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
     Jeżeli dotknie budynku <budynek>
     Wtedy nad mapą widzi kartę budynku <budynek> na niskiej wysokości z napisem „<napis>”
-    Oraz na karcie jest „Sprawdź, którędy wejść”, a w nagłówku „Zamknij”
-    Ale na karcie nie ma „Pokaż budynek na mapie”
+    Oraz <pod napisem>
+    Oraz w nagłówku karty jest „Zamknij”, a pod kreską wystaje nagłówek „Wejścia”
+    Ale na karcie nie ma „Pokaż budynek na mapie” ani „Sprawdź, którędy wejść”
 
     Przykłady:
-      | budynek | dane                                                 | napis                   |
-      | A-1     | budynek A-1 ma wejście z oznaczeniem „dostępne”      | Wejście dostępne        |
-      | B-8     | wszystkie wejścia B-8 mają oznaczenie „niedostępne”  | Brak wejścia dostępnego |
-      | C-13    | wszystkie wejścia C-13 mają oznaczenie „brak danych” | Brak danych o wejściach |
-      | A-2     | budynek A-2 nie ma wejść w danych                    | Brak danych o wejściach |
+      | budynek | dane                                                 | napis                   | pod napisem                                                                             |
+      | A-1     | budynek A-1 ma wejście z oznaczeniem „dostępne”      | Wejście dostępne        | pod napisem stoi zdanie z wejściem zalecanym i przycisk „Pokaż wejście na mapie”        |
+      | B-8     | wszystkie wejścia B-8 mają oznaczenie „niedostępne”  | Brak wejścia dostępnego | pod napisem stoi zdanie, że żadne wejście nie jest dostępne, bez przycisku wypełnionego |
+      | C-13    | wszystkie wejścia C-13 mają oznaczenie „brak danych” | Brak danych o wejściach | na karcie nie ma zdania ani przycisku wypełnionego                                      |
+      | A-2     | budynek A-2 nie ma wejść w danych                    | Brak danych o wejściach | na karcie nie ma zdania ani przycisku wypełnionego                                      |
 
   @US2.8 @NFR-53 @aplikacja
   Scenariusz: Uchwyt zmienia wysokość karty bez przeciągania
@@ -197,13 +199,13 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz po „Pokaż budynek na mapie” widzi mapę z zaznaczonym budynkiem A-1, a nie listę
     Oraz aplikacja pamięta widok mapy, a w wierszu tytułu jest „Pokaż listę”
 
-  @US3.1 @aplikacja
+  # @do-zrobienia #3075: zdania o braku wejścia dostępnego na karcie jeszcze nie ma w aplikacji.
+  @US3.1 @aplikacja @do-zrobienia
   Scenariusz: Brak wejścia dostępnego jest powiedziany wprost
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
     Jeżeli dotknie budynku B-8
-    Oraz wybierze „Sprawdź, którędy wejść”
-    Wtedy widzi zdanie, że budynek B-8 nie ma wejścia dostępnego
-    Ale ekran nie jest pusty i nie pokazuje samego braku wyniku
+    Wtedy na karcie budynku B-8 widzi „Brak wejścia dostępnego” i zdanie, że żadne wejście nie jest dostępne
+    Ale karta nie jest pusta i nie pokazuje samego braku wyniku
 
   @US1.4 @aplikacja
   Scenariusz: Mapa pokazuje wejścia i ścieżki, a legenda objaśnia znaki słowem
@@ -258,12 +260,14 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi liczbę wyjść ewakuacyjnych 2
     Oraz po wybraniu „Pokaż wyjścia ewakuacyjne (2)” widzi listę obu wyjść
 
-  @US3.3 @BR-25 @aplikacja
+  # @do-zrobienia #3077: treści wejścia zalecanego w arkuszu wejścia jeszcze nie ma w aplikacji.
+  @US3.3 @BR-25 @aplikacja @do-zrobienia
   Scenariusz: Opis wejścia zalecanego podaje dojście, drzwi i najbliższą windę
-    Zakładając, że Gość niezalogowany otworzył ekran „Którędy wejść” budynku A-1
-    Jeżeli przejrzy opis wejścia zalecanego
-    Wtedy widzi dojście do drzwi, szerokość drzwi i najbliższą windę z przybliżoną odległością od wejścia
-    Oraz przy każdym wejściu dostępnym jest „Pokaż wejście na mapie”
+    Zakładając, że Gość niezalogowany otworzył kartę budynku A-1
+    Jeżeli wybierze „Pokaż wejście na mapie”
+    Wtedy widzi mapę z zaznaczonym wejściem zalecanym i arkusz tego wejścia
+    Oraz arkusz podaje dojście do drzwi, szerokość drzwi i najbliższą windę z przybliżoną odległością od wejścia
+    Oraz każde inne wejście dostępne ma w arkuszu „Pokaż to wejście na mapie”
 
   @US16.3 @aplikacja
   Scenariusz: Karta budynku szczegółowego opisuje piętra tekstem
