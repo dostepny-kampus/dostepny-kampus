@@ -51,9 +51,10 @@ private const val FAST_SWIPE_MILLIS = 60L
 private const val PARTIAL_SWIPE_MILLIS = 200L
 private const val SWIPE_PAIRS = 3
 private val SHORT_SWIPE = 60.dp
+private const val LONG_SWIPE_MILLIS = 300L
 
 /**
- * Arkusz V2 z trzema wysokościami: niska, połowa ekranu i cały ekran; idzie za palcem, staje na najbliższej wysokości,
+ * Arkusz V2 z trzema wysokościami: niska, połowa ekranu i cały ekran; idzie za palcem, staje najwyżej o stopień dalej,
  * z niskiej w dół się zamyka, a uchwyt i czynności TalkBack zmieniają wysokość bez przeciągania.
  *
  * Wymagania: US2, US2.8, NFR-17, NFR-18, NFR-53
@@ -198,6 +199,39 @@ class SheetHeightsTest {
         }
         compose.waitForIdle()
         assertAt(map() / 2, "połowa ekranu po puszczeniu")
+    }
+
+    /** Wiersz: długie szybkie przeciągnięcie uchwytu w górę z niskiej → karta staje na połowie, nie wyżej. */
+    @Test
+    fun stopsAtHalfOnLongSwipeUp() {
+        open()
+        val toTop = handleTop()
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).performTouchInput {
+            swipe(
+                start = center,
+                end = Offset(x = center.x, y = center.y - toTop.toPx()),
+                durationMillis = LONG_SWIPE_MILLIS,
+            )
+        }
+        compose.waitForIdle()
+        assertAt(map() / 2, "połowa ekranu po jednym geście z niskiej")
+    }
+
+    /** Wiersz: długie szybkie przeciągnięcie uchwytu w dół z całego ekranu → karta staje na połowie, nie niżej. */
+    @Test
+    fun stopsAtHalfOnLongSwipeDown() {
+        open()
+        repeat(2) { compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick() }
+        assertAt(0.dp, "cały ekran przed gestem")
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).performTouchInput {
+            swipe(
+                start = center,
+                end = Offset(x = center.x, y = center.y + map().toPx()),
+                durationMillis = LONG_SWIPE_MILLIS,
+            )
+        }
+        compose.waitForIdle()
+        assertAt(map() / 2, "połowa ekranu po jednym geście z całego ekranu")
     }
 
     /** Wiersz: przeciągnięcie w dół z niskiej wysokości → karta się zamyka i zostaje sama mapa. */
