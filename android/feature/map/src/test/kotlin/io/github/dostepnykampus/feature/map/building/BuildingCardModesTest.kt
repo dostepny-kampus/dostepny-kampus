@@ -167,6 +167,21 @@ class BuildingCardModesTest {
     }
 
     /**
+     * Wiersz: V2 przy skali czcionki co najmniej 1,5: w nagłówku „Zamknij”, bez paska „Wstecz”, a pod nazwą
+     *   „Sprawdź, którędy wejść” i „Pokaż budynek na mapie”.
+     *
+     * Wymagania: NFR-20, US2.9
+     */
+    @Test
+    fun keepsHeaderCloseAtLargeFont() {
+        card(CardMode.Large)
+        compose.onNodeWithText(BACK).assertDoesNotExist()
+        compose.onAllNodes(hasText(CLOSE)).assertCountEquals(1)
+        compose.onAllNodes(hasText("A-1"), useUnmergedTree = true).assertCountEquals(1)
+        assertOrder(NAME, CHECK, SHOW)
+    }
+
+    /**
      * Wiersz: V2, „Zamknij” → onClose, „Wstecz” → onBack, „Sprawdź…” → onCheckEntrances, „Pokaż budynek na
      *   mapie” → onShowOnMap.
      *

@@ -76,6 +76,8 @@ class SheetDirectTest {
 
     private fun checkFullSheet(moment: String) {
         compose.onNodeWithText(SHOW_ON_MAP).assertExists("„$SHOW_ON_MAP” na karcie na cały ekran: $moment")
+        compose.onNodeWithText("Wstecz").assertDoesNotExist()
+        compose.onNodeWithText("Zamknij").assertExists("„Zamknij” w nagłówku karty na cały ekran: $moment")
         val handle = compose.onNode(hasContentDescription(EXPAND_HANDLE) and hasStateDescription("cały ekran"))
         handle.assertExists("uchwyt karty na cały ekran: $moment")
         val actions = handle.fetchSemanticsNode().config.getOrElse(SemanticsActions.CustomActions) { emptyList() }
@@ -121,13 +123,13 @@ class SheetDirectTest {
     }
 
     /**
-     * Wiersz: V2, pełny ekran otwarty od razu, „Wstecz” w górnym pasku albo telefonu → ekran sprzed V2
+     * Wiersz: V2, pełny ekran otwarty od razu poziomo, „Wstecz” w górnym pasku albo telefonu → ekran sprzed V2
      * jednym krokiem.
      *
-     * Wymagania: NFR-15, US2.9
+     * Wymagania: NFR-15, NFR-51
      */
     @Test
-    @Config(fontScale = 2f)
+    @Config(qualifiers = "w800dp-h360dp")
     fun goesBackOneStepFromDirect() {
         show()
         compose.onNodeWithText("Wstecz").performClick()
