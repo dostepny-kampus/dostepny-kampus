@@ -123,7 +123,7 @@ class SheetDirectTest {
             List(size = 60) {
                 compose.mainClock.advanceTimeByFrame()
                 val shown = compose.onAllNodesWithContentDescription(EXPAND_HANDLE).fetchSemanticsNodes()
-                shown.map { it.boundsInRoot.top }
+                shown.map { node -> node.boundsInRoot.top }
             }
         compose.mainClock.autoAdvance = true
         compose.waitForIdle()
