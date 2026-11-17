@@ -5,11 +5,8 @@
  */
 package io.github.dostepnykampus.feature.map.building
 
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -20,18 +17,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
@@ -44,7 +32,6 @@ import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
 import io.github.dostepnykampus.core.designsystem.marking.MarkingChip
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.R
-import io.github.dostepnykampus.feature.map.overlay.SheetCloseButton
 
 /**
  * V2 Karta budynku: nagłówek z symbolem i nazwą z danych (budynek bez nazwy ma sam symbol), który TalkBack czyta jako
@@ -135,7 +122,7 @@ fun BuildingCardContent(
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
         ) {
             if (!isOnline) OfflinePill()
-            HeaderRow(symbol = symbol, card = card, mode = mode, onClose = onClose)
+            CardHeader(symbol = symbol, card = card, mode = mode, onClose = onClose)
             if (card is BuildingCardUiState.Ready || card.isWaiting(isFullScreen)) {
                 CardActions(mode = mode, onCheckEntrances = onCheckEntrances, onShowOnMap = onShowOnMap)
             }
@@ -175,71 +162,6 @@ private fun FactsOrMissing(
         )
     }
     if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = onRetry)
-}
-
-@Composable
-private fun HeaderRow(symbol: String, card: BuildingCardUiState, mode: CardMode, onClose: () -> Unit) {
-    val isCompact = mode == CardMode.Compact
-    if (!isCompact && card !is BuildingCardUiState.Ready) return
-    Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        Box(Modifier.weight(1f)) { HeaderOrSpace(symbol = symbol, card = card, isFullScreen = !isCompact) }
-        if (isCompact) SheetCloseButton(onClose = onClose)
-    }
-}
-
-@Composable
-private fun HeaderOrSpace(symbol: String, card: BuildingCardUiState, isFullScreen: Boolean) {
-    val ready = card as? BuildingCardUiState.Ready
-    if (ready == null && !card.isWaiting(isFullScreen)) return
-    Column(
-        modifier = if (ready == null) Modifier.alpha(0f).clearAndSetSemantics {} else Modifier,
-        verticalArrangement = Arrangement.spacedBy(Odstepy.s),
-    ) {
-        if (ready != null) {
-            SymbolOverName(symbol = symbol, name = ready.name)
-            EntranceSummaryLine(entranceSummary(ready.entrances))
-        } else {
-            Column {
-                Text(text = symbol, style = MaterialTheme.typography.displayLarge)
-                Text(text = " ", style = MaterialTheme.typography.headlineMedium)
-            }
-            EntranceSummaryLine(EntranceSummary.NoData)
-        }
-    }
-}
-
-@Composable
-private fun EntranceSummaryLine(summary: EntranceSummary) {
-    if (summary == EntranceSummary.NoData) {
-        Text(
-            text = stringResource(R.string.karta_wiersz_brak_danych),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    } else {
-        EntranceSummaryRow(summary)
-    }
-}
-
-private fun BuildingCardUiState.isWaiting(isFullScreen: Boolean): Boolean =
-    this == BuildingCardUiState.Loading && !isFullScreen
-
-@Composable
-private fun SymbolOverName(symbol: String, name: String?) {
-    val spoken =
-        name?.let { stringResource(R.string.karta_czytaj, symbol, it) } ?: stringResource(R.string.mapa_budynek, symbol)
-    val focus = remember { FocusRequester() }
-    Column(
-        modifier =
-            Modifier
-                .semantics(mergeDescendants = true) { contentDescription = spoken }
-                .focusRequester(focus)
-                .focusable(),
-    ) {
-        Text(text = symbol, style = MaterialTheme.typography.displayLarge, color = MaterialTheme.colorScheme.primary)
-        name?.let { Text(text = it, style = MaterialTheme.typography.headlineMedium) }
-    }
-    LaunchedEffect(focus) { withFrameMillis { focus.requestFocus() } }
 }
 
 /**
