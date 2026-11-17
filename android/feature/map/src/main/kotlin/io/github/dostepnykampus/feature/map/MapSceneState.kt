@@ -152,14 +152,14 @@ internal fun rememberMapSceneState(
     val fit = free.copy(heightDp = free.heightDp - reserve.value)
     val outline = layers?.run { outlinesBySymbol[selection?.building] }.takeIf { isCovered }
     val last = remember { ShownCamera() }
-    val isCoveredBefore = rememberPrevious(isCovered)
+    val (isCoveredBefore, topBefore) = rememberPrevious(isCovered to top)
     val scale = rememberAnimatorScale()
     val origin = remember { PickOrigin(isUnderCard = isCovered) }
     SideEffect { origin.follow(selection?.building) }
     val pick =
         remember(key1 = selection?.building, key2 = outline != null, key3 = size != IntSize.Zero) {
             val from = last.startOr(uncovered)
-            val below = shiftUnderBar(isCoveredBefore = isCoveredBefore, free = free, fit = fit, covered = cover + top)
+            val below = shiftUnderBar(isCoveredBefore = isCoveredBefore, covered = cover + topBefore + reserve)
             pickView(from = from, outline = outline, free = fit, limits = limits, scale = scale)?.let { view ->
                 origin.move(building = selection?.building, view = view, keepsZoom = isCoveredBefore, belowDp = below)
             }
@@ -272,8 +272,8 @@ private fun MapMotion?.RecordPick(pick: CameraTransition?, line: (CameraTransiti
     }
 }
 
-private fun shiftUnderBar(isCoveredBefore: Boolean, free: FreeMap, fit: FreeMap, covered: Dp): Double =
-    if (isCoveredBefore) 0.0 else (free.heightDp + covered.value - fit.heightDp) / 2
+private fun shiftUnderBar(isCoveredBefore: Boolean, covered: Dp): Double =
+    if (isCoveredBefore) 0.0 else covered.value / 2.0
 
 /** Skala animacji systemu („Skala długości animacji”); 0 przy „Usuń animacje”. Wymagania: NFR-56 */
 @Composable
