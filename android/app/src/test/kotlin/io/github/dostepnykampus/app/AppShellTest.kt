@@ -496,21 +496,19 @@ class AppShellTest {
     }
 
     /**
-     * Wiersz: pełny ekran po małej karcie, „Wstecz” w górnym pasku karty → znowu mała karta; „Zamknij”
-     * małej karty → V1 bez zaznaczenia budynku. Nad małą kartą zostaje co najmniej 300 dp
-     * mapy, czyli miejsce na przyciski mapy.
+     * Wiersz: karta rozwinięta z małej karty nie ma paska „Wstecz”; „Zamknij” w nagłówku → V1 bez zaznaczenia
+     * budynku. Nad małą kartą zostaje co najmniej 300 dp mapy, czyli miejsce na przyciski mapy.
      *
      * Wymagania: NFR-53, NFR-15, US2.8
      */
     @Test
-    fun closesCardAfterBack() {
+    fun closesExpandedCard() {
         compose.setContent { CardShell() }
         compose.onNodeWithText("V1").performClick()
         val compact = compose.onNodeWithContentDescription(EXPAND_HANDLE).getUnclippedBoundsInRoot().top
         assertTrue("nad małą kartą zostaje mapa z miejscem na przyciski mapy: uchwyt $compact", compact >= 300.dp)
         compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
-        compose.onNodeWithText("Wstecz").performClick()
-        compose.onNodeWithContentDescription(EXPAND_HANDLE).assertExists("mała karta po „Wstecz” w górnym pasku")
+        compose.onNodeWithText("Wstecz").assertDoesNotExist()
         compose.onNodeWithText("Zamknij").performClick()
         compose.onNodeWithText("V1").assertExists("V1 bez zaznaczenia budynku po „Zamknij”")
     }

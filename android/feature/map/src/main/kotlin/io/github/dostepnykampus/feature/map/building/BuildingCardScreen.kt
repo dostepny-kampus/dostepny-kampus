@@ -35,10 +35,10 @@ import io.github.dostepnykampus.feature.map.R
 
 /**
  * V2 Karta budynku: nagłówek z symbolem i nazwą z danych (budynek bez nazwy ma sam symbol), który TalkBack czyta jako
- * jeden, np. „Budynek A-1, Gmach Główny”, z fokusem po otwarciu; w [CardMode.Compact] obok niego „Zamknij”. Pod
+ * jeden, np. „Budynek A-1, Gmach Główny”, z fokusem po otwarciu; poza [CardMode.Direct] obok niego „Zamknij”. Pod
  * nim wiersz o wejściach, a bez danych o wejściach cichy napis, i wejścia z oznaczeniem, zalecane pierwsze. Czynności
- * stoją w przewijanej treści: „Sprawdź, którędy wejść” zawsze, „Pokaż budynek na mapie” w [CardMode.Direct]; pasek
- * „Wstecz” oraz grupy „Wejścia” i „Bariery w budynku” ma pełny ekran.
+ * stoją w przewijanej treści: „Sprawdź, którędy wejść” zawsze, „Pokaż budynek na mapie” w [CardMode.Direct]; grupy
+ * „Wejścia” i „Bariery w budynku” ma pełny opis, a pasek „Wstecz” tylko [CardMode.Direct].
  * Nieznany symbol: „budynku nie ma w telefonie”. Bez internetu nad nagłówkiem stoi [OfflinePill] bez daty.
  *
  * Wymagania: US2, BR-25, US2.8, NFR-18, US2.7, NFR-10
@@ -47,8 +47,8 @@ import io.github.dostepnykampus.feature.map.R
  * @param mode mała karta nad mapą, pełny ekran rozwinięty z niej albo pełny ekran otwarty od razu
  * @param onCheckEntrances „Sprawdź, którędy wejść” otwiera V3
  * @param onShowOnMap „Pokaż budynek na mapie” zaznacza budynek na V1
- * @param onBack „Wstecz”
- * @param onClose „Zamknij” w nagłówku małej karty
+ * @param onBack „Wstecz” w [CardMode.Direct]
+ * @param onClose „Zamknij” w nagłówku karty nad mapą
  * @param modifier wymiary nadane przez arkusz; mała karta ma wysokość treści, pełny ekran wypełnia całe miejsce
  * @param onReportEntrance „Zgłoś barierę przy wejściu” dla identyfikatora wejścia
  * @param onShowEntrance „Pokaż wejście na mapie” dla identyfikatora wejścia zalecanego
@@ -116,7 +116,7 @@ fun BuildingCardContent(
 ) {
     val isFullScreen = mode != CardMode.Compact
     Column(if (isFullScreen) modifier.fillMaxSize() else modifier) {
-        if (isFullScreen) BackHeader(title = symbol, onBack = onBack)
+        if (mode == CardMode.Direct) BackHeader(title = symbol, onBack = onBack)
         Column(
             modifier = Modifier.weight(1f, isFullScreen).verticalScroll(rememberScrollState()).padding(Odstepy.m),
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
@@ -247,7 +247,7 @@ enum class CardMode {
     /** Mała karta nad mapą: nagłówek z „Zamknij”, wiersz o wejściach i „Sprawdź, którędy wejść”. */
     Compact,
 
-    /** Pełny ekran rozwinięty z małej karty: górny pasek „Wstecz” i cały opis budynku. */
+    /** Karta rozwinięta nad mapą: nagłówek z „Zamknij” i pod nim cały opis budynku. */
     Expanded,
 
     /**

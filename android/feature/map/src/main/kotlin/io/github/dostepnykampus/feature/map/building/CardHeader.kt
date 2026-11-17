@@ -30,7 +30,7 @@ import io.github.dostepnykampus.feature.map.overlay.SheetCloseButton
 
 /**
  * Nagłówek karty V2 w trybie [mode]: symbol i nazwa z [card] albo miejsce na nie w trakcie wczytywania, pod nimi
- * wiersz o wejściach; w [CardMode.Compact] obok „Zamknij”, które wywołuje [onClose].
+ * wiersz o wejściach; poza [CardMode.Direct] obok „Zamknij”, które wywołuje [onClose].
  *
  * Wymagania: US2, US2.8, NFR-17, NFR-18, NFR-53
  */
@@ -40,7 +40,7 @@ internal fun CardHeader(symbol: String, card: BuildingCardUiState, mode: CardMod
     if (!isCompact && card !is BuildingCardUiState.Ready) return
     Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Box(Modifier.weight(1f)) { HeaderOrSpace(symbol = symbol, card = card, isFullScreen = !isCompact) }
-        if (isCompact) SheetCloseButton(onClose = onClose)
+        if (mode != CardMode.Direct) SheetCloseButton(onClose = onClose)
     }
 }
 

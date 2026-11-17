@@ -74,7 +74,7 @@ internal fun currentCardWindow(): CardWindow {
 }
 
 /**
- * Karta V2 w arkuszu: tryb [mode], „Wstecz” w górnym pasku [onBack] i „Zamknij” małej karty [onClose].
+ * Karta V2 w arkuszu: tryb [mode], „Wstecz” w górnym pasku pełnego ekranu [onBack] i „Zamknij” w nagłówku [onClose].
  *
  * Wymagania: US2.8
  */
