@@ -7,17 +7,10 @@ package io.github.dostepnykampus.app
 
 import android.view.ViewGroup
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -26,52 +19,35 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertHeightIsAtLeast
-import androidx.compose.ui.test.assertIsFocused
-import androidx.compose.ui.test.assertIsNotFocused
-import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
-import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasAnyDescendant
-import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.StateRestorationTester
-import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
-import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.camera.CameraMotion
 import io.github.dostepnykampus.feature.map.camera.CameraTransition
-import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapMotion
-import io.github.dostepnykampus.feature.map.campus.CampusMapData
-import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.overlay.MAP_STATUS_BAR_TAG
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.asinh
@@ -85,17 +61,6 @@ internal class TestMapListChoice : MapListChoice {
     override suspend fun choose(isList: Boolean) {
         savedChoice.value = isList
     }
-}
-
-/** Kontroler klawiatury, który liczy wywołania [hide]. */
-private class HidingKeyboard : SoftwareKeyboardController {
-    var hidden = 0
-
-    override fun hide() {
-        hidden++
-    }
-
-    override fun show() = Unit
 }
 
 internal const val KEYBOARD_HEIGHT = 600
@@ -161,85 +126,12 @@ private val MAP_BUTTONS_ABOVE_CARD =
 private fun mercator(latitude: Double): Double = asinh(tan(Math.toRadians(latitude)))
 
 /**
- * Ekran V1 z widokiem zastępczym zamiast MapLibre i katalogiem „Budynek testowy” (nie dane PWr).
- *
- * `KEYBOARD_HEIGHT`: Wysokość klawiatury w pikselach: przy gęstości zrzutów 2× to 300 dp, jak na telefonie.
+ * Ekran V1: mapa, karta, przyciski i pasek nad mapą; przygotowanie w [CampusMapScreenFixture].
  *
  * Wymagania: US2, US1
  */
 @RunWith(RobolectricTestRunner::class)
-class CampusMapScreenTest {
-    @get:Rule
-    val compose = createAndroidComposeRule<ComponentActivity>()
-
-    private val cameras = mutableListOf<MapCamera>()
-    private val moves = mutableListOf<CameraTransition>()
-    private val insets = mutableListOf<Double>()
-    private val tops = mutableListOf<Double>()
-    private val focuses = mutableListOf<String?>()
-    private val opened = mutableListOf<String>()
-    private var emptyTaps = 0
-    private var touch: (List<String>) -> Unit = {}
-    private val fakeMap =
-        CampusMapView { _: CampusMapData, selection, move, inset, _, onBuildingsTouch, _, _: Modifier ->
-            cameras += move.camera
-            moves += move
-            insets += inset.bottom
-            tops += inset.top
-            focuses += selection.building
-            touch = onBuildingsTouch
-        }
-    private val online = MutableStateFlow(true)
-    private val choice = TestMapListChoice()
-    private val showList = hasText("Pokaż listę") and hasClickAction()
-    private val showMap = hasText("Pokaż mapę") and hasClickAction()
-    private var ring = "[[0,0],[1,0],[1,1],[0,0]]"
-    private var entrances = ""
-    private val repository =
-        BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
-            """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
-                """{"type":"Feature","properties":{"kind":"building","symbols":["C-13","C-14"],""" +
-                """"display_name":"Budynek testowy",""" +
-                """"osm_id":"way/1"},""" +
-                """"geometry":{"type":"Polygon","coordinates":[$ring]}}$entrances]}"""
-        }
-
-    private val viewModel by lazy { inlineMapViewModel(repository, { online }, choice) }
-
-    @Composable
-    private fun Screen(fontScale: Float = 1f, focus: String? = null, sheet: Dp = 0.dp, motion: MapMotion? = null) {
-        DostepnyKampusTheme {
-            val density = Density(density = LocalDensity.current.density, fontScale = fontScale)
-            CompositionLocalProvider(LocalDensity provides density) {
-                CampusMapScreen(
-                    onBuildingClick = { opened += it },
-                    focus = focus?.let { MapFocus.Building(it) },
-                    contentPadding = PaddingValues(bottom = sheet),
-                    onEmptyMapClick = { emptyTaps++ },
-                    mapView = fakeMap,
-                    motion = motion,
-                    viewModel = viewModel,
-                )
-            }
-        }
-    }
-
-    private fun enterTouchMode() {
-        compose.runOnIdle {
-            val view = compose.activity.window.decorView
-            val root = view.javaClass.getMethod("getViewRootImpl").invoke(view)
-            root?.javaClass?.getDeclaredMethod("ensureTouchMode", Boolean::class.javaPrimitiveType)?.run {
-                isAccessible = true
-                invoke(root, true)
-            }
-        }
-    }
-
-    private fun keyboard(isOpen: Boolean) {
-        compose.runOnUiThread { dispatchKeyboard(compose.activity, isOpen) }
-        compose.waitForIdle()
-    }
-
+class CampusMapScreenTest : CampusMapScreenFixture() {
     /** Plakietka jest niska jak w hi-fi, ale odnośnik ma cel dotyku 48 dp. Wymagania: NFR-17 */
     @Test
     fun showsButtonsAndOsm() {
@@ -725,111 +617,6 @@ class CampusMapScreenTest {
     }
 
     /**
-     * Zapis „C13” w polu symbolu daje wynik „Budynek C-13”.
-     * Scenariusz (przykład: C13): przegladanie-mapy.feature: Wyszukanie budynku po symbolu w różnym zapisie
-     *
-     * Wymagania: US1.1
-     */
-    @Test
-    fun findsC13WithoutDash() {
-        assertFindsC13("C13")
-    }
-
-    /**
-     * Zapis „c-13” w polu symbolu daje wynik „Budynek C-13”.
-     * Scenariusz (przykład: c-13): przegladanie-mapy.feature: Wyszukanie budynku po symbolu w różnym zapisie
-     *
-     * Wymagania: US1.1
-     */
-    @Test
-    fun findsC13InLowercase() {
-        assertFindsC13("c-13")
-    }
-
-    /**
-     * Zapis „C-13” w polu symbolu daje wynik „Budynek C-13”.
-     * Scenariusz (przykład: C-13): przegladanie-mapy.feature: Wyszukanie budynku po symbolu w różnym zapisie
-     *
-     * Wymagania: US1.1
-     */
-    @Test
-    fun findsC13Exactly() {
-        assertFindsC13("C-13")
-    }
-
-    private fun assertFindsC13(query: String) {
-        compose.setContent { Screen() }
-        compose.onNode(hasSetTextAction()).performTextInput(query)
-        compose.onNodeWithText("Budynek C-13", useUnmergedTree = true).assertExists()
-        compose.onNodeWithText("Budynek C-14", useUnmergedTree = true).assertDoesNotExist()
-    }
-
-    /** Wiersz: pole symbolu „c14” → wynik „Budynek C-14” → V2 z obrysem. Wymagania: US1.1 */
-    @Test
-    fun opensCardFromResult() {
-        compose.setContent { Screen() }
-        compose.onNode(hasSetTextAction()).performTextInput("c14")
-        compose.onNodeWithText("Budynek C-14", useUnmergedTree = true).assertExists()
-        compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
-        assertEquals(listOf("C-14"), opened)
-        compose.onNode(hasSetTextAction()).assertTextEquals("c14", includeEditableText = true)
-    }
-
-    /**
-     * Wiersz: wpisanie zapytania z wynikami i wybór wyniku nie zmieniają górnego zasłonięcia mapy, bo lista wyników
-     * leży nad mapą. Sprawdza stan po wpisaniu; TODO(#2951): pierwsza klatka po pierwszym znaku ma pole niższe o 8 dp.
-     *
-     * Wymagania: US1.1, NFR-56
-     */
-    @Test
-    fun keepsMapTopWhileTyping() {
-        compose.setContent { Screen() }
-        compose.waitForIdle()
-        val bar = tops.last()
-        compose.onNode(hasSetTextAction()).performTextInput("c14")
-        compose.onNodeWithText("Budynek C-14", useUnmergedTree = true).assertExists()
-        compose.waitForIdle()
-        val typed = tops.size
-        val typing = tops.last()
-        compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
-        compose.waitForIdle()
-        val picked = tops.subList(fromIndex = typed, toIndex = tops.size)
-        val message = "góra mapy: z wynikami $typing, po wyborze $picked, pasek $bar"
-        assertTrue(message, (picked + typing).all { it == bar })
-    }
-
-    /**
-     * Wiersz: po wyborze wyniku klawiatura ekranowa się chowa, więc pierwsze „Wstecz” na V2 zamyka V2, a nie tylko
-     * klawiaturę. Klawiaturę podaje atrapa kontrolera, bo Robolectric nie ma okna z klawiaturą,
-     * a o skutku decyduje fokus pola: po wyborze pole go nie ma. Okno jest w trybie dotyku jak na telefonie; poza nim
-     * Robolectric po `clearFocus` oddaje fokus pierwszemu polu, więc fokus nigdy by nie zszedł.
-     *
-     * Wymagania: US1.1, NFR-15
-     */
-    @Test
-    fun hidesKeyboardOnResult() {
-        val keyboard = HidingKeyboard()
-        compose.setContent { CompositionLocalProvider(LocalSoftwareKeyboardController provides keyboard) { Screen() } }
-        enterTouchMode()
-        compose.onNode(hasSetTextAction()).performTextInput("c14")
-        compose.onNode(hasSetTextAction()).assertIsFocused()
-        compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
-        assertEquals(1, keyboard.hidden)
-        compose.onNode(hasSetTextAction()).assertIsNotFocused()
-    }
-
-    /** Wiersz: „A-1 329” → stan „brak wyniku”; „×” „Wyczyść pole” → pole puste. */
-    @Test
-    fun clearsNoResult() {
-        compose.setContent { Screen() }
-        compose.onNode(hasSetTextAction()).performTextInput("A-1 329")
-        compose.onNodeWithText("Nie znaleźliśmy budynku „A-1 329”.").assertExists()
-        compose.onNodeWithContentDescription("Wyczyść pole").performClick()
-        compose.onNodeWithText("Nie znaleźliśmy", substring = true).assertDoesNotExist()
-        assertEquals(emptyList<String>(), opened)
-    }
-
-    /**
      * Wiersz: V1, „Pokaż listę” → lista z katalogu bez mapy; budynek z listy → V2 jako arkusz na mapie,
      * a po „Wstecz” znów lista.
      *
@@ -851,28 +638,6 @@ class CampusMapScreenTest {
         sheet = 0.dp
         compose.onNode(showMap).assertExists()
         compose.onNodeWithText("© OpenStreetMap contributors").assertDoesNotExist()
-    }
-
-    /** Wiersz: V1, lista i pole symbolu → lista zawężona do wpisanego budynku. Wymagania: NFR-19, US1.1 */
-    @Test
-    fun narrowsListBySymbol() {
-        compose.setContent { Screen() }
-        compose.onNode(showList).performClick()
-        compose.onNode(hasSetTextAction()).performTextInput("c14")
-        compose.onNodeWithContentDescription("C-14, Budynek testowy").assertExists()
-        compose.onNodeWithContentDescription("C-13, Budynek testowy").assertDoesNotExist()
-    }
-
-    /** Wiersz: V1, brak wyniku → „Pokaż listę” w karcie czyści pole i pokazuje całą listę (PW-9). Wymagania: UC1 */
-    @Test
-    fun opensListOnNoResult() {
-        compose.setContent { Screen() }
-        compose.onNode(hasSetTextAction()).performTextInput("C-31")
-        val inCard = hasAnyAncestor(SemanticsMatcher.keyIsDefined(SemanticsProperties.LiveRegion))
-        compose.onNode(hasText("Pokaż listę") and inCard).performClick()
-        compose.onNode(showMap).assertExists()
-        compose.onNodeWithText("Nie znaleźliśmy", substring = true).assertDoesNotExist()
-        compose.onNodeWithContentDescription("C-13, Budynek testowy").assertExists()
     }
 
     /**
