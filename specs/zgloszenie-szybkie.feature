@@ -26,7 +26,7 @@ Funkcja: Zgłoszenie szybkie
     Przykłady:
       | ekran                   |
       | kartę                   |
-      | ekran „Którędy wejść” |
+      | arkusz wejścia na mapie |
 
   @US4.3 @aplikacja
   Scenariusz: Wybór jednej z 6 grup barier dużymi przyciskami
