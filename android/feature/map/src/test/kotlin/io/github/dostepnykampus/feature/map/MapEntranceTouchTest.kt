@@ -6,14 +6,11 @@
 package io.github.dostepnykampus.feature.map
 
 import androidx.activity.ComponentActivity
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.TouchSign
-import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -40,15 +37,7 @@ class MapEntranceTouchTest {
 
     private val opened = mutableListOf<String>()
     private val entrances = mutableListOf<String>()
-    private var touchSign: (TouchSign, String) -> Unit = { _, _ -> }
-    private var touchBuildings: (List<String>) -> Unit = {}
-    private var selected: String? = null
-    private val fakeMap =
-        CampusMapView { _: CampusMapData, selection, _, _, _, onBuildingsTouch, onSignTouch, _: Modifier ->
-            selected = selection.building
-            touchBuildings = onBuildingsTouch
-            touchSign = onSignTouch
-        }
+    private val map = TouchableMap()
     private val repository =
         unitSquareCatalog(
             symbol = "C-13",
@@ -59,19 +48,19 @@ class MapEntranceTouchTest {
     @Test
     fun opensSheetWithoutSelectingBuilding() {
         start()
-        compose.runOnIdle { touchSign(TouchSign.ENTRANCE, "node/1") }
+        compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
 
         compose.onNodeWithText("Wejście, budynek C-13").assertExists()
         compose.onNodeWithText("Dostępne, wejście główne").assertExists()
         compose.runOnIdle { assertEquals("bez V2", emptyList<String>(), opened) }
-        compose.runOnIdle { assertEquals("bez zaznaczenia budynku", null, selected) }
+        compose.runOnIdle { assertEquals("bez zaznaczenia budynku", null, map.selected) }
     }
 
     /** Wiersz: V1, „Zamknij” zamyka arkusz wejścia. Wymagania: NFR-53 */
     @Test
     fun closesSheetOnClose() {
         start()
-        compose.runOnIdle { touchSign(TouchSign.ENTRANCE, "node/1") }
+        compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
         compose.onNodeWithText("Zamknij").performClick()
 
         compose.onNodeWithText("Wejście, budynek C-13").assertDoesNotExist()
@@ -81,9 +70,9 @@ class MapEntranceTouchTest {
     @Test
     fun closesSheetOnEmptyMap() {
         start()
-        compose.runOnIdle { touchSign(TouchSign.ENTRANCE, "node/1") }
+        compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
         compose.onNodeWithText("Wejście, budynek C-13").assertExists()
-        compose.runOnIdle { touchBuildings(emptyList()) }
+        compose.runOnIdle { map.touchBuildings(emptyList()) }
 
         compose.onNodeWithText("Wejście, budynek C-13").assertDoesNotExist()
     }
@@ -92,7 +81,7 @@ class MapEntranceTouchTest {
     @Test
     fun closesSheetOnBack() {
         start()
-        compose.runOnIdle { touchSign(TouchSign.ENTRANCE, "node/1") }
+        compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
         compose.onNodeWithText("Wejście, budynek C-13").assertExists()
         compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
 
@@ -104,7 +93,7 @@ class MapEntranceTouchTest {
     @Test
     fun opensEntrancesFromSheet() {
         start()
-        compose.runOnIdle { touchSign(TouchSign.ENTRANCE, "node/1") }
+        compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
         compose.onNodeWithText("Sprawdź, którędy wejść").performClick()
 
         assertEquals("V3 budynku wejścia", listOf("C-13"), entrances)
@@ -126,7 +115,7 @@ class MapEntranceTouchTest {
                 CampusMapScreen(
                     onBuildingClick = { opened += it },
                     onEntrancesClick = { entrances += it },
-                    mapView = fakeMap,
+                    mapView = map.view,
                     viewModel = viewModel,
                 )
             }

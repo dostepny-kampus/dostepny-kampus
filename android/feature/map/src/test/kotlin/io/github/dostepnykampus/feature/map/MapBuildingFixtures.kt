@@ -5,10 +5,14 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import androidx.compose.ui.Modifier
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.building.Building
+import io.github.dostepnykampus.feature.map.camera.CampusMapView
+import io.github.dostepnykampus.feature.map.camera.TouchSign
+import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import kotlin.coroutines.EmptyCoroutineContext
 
 internal fun unitSquareBuilding(symbol: String): Building {
@@ -30,3 +34,22 @@ internal fun unitSquareCatalog(symbol: String, entrances: List<String> = emptyLi
 internal fun entranceFeature(symbol: String, id: String, tags: String): String =
     """{"type":"Feature","properties":{"kind":"entrance","symbols":["$symbol"],"osm_id":"$id",$tags},""" +
         """"geometry":{"type":"Point","coordinates":[0,0]}}"""
+
+/**
+ * Widok zastępczy mapy [view] bez natywnej biblioteki: zapamiętuje zaznaczony budynek [selected] i daje testom
+ * dotknięcie konturów [touchBuildings] oraz znaku [touchSign].
+ */
+internal class TouchableMap {
+    var selected: String? = null
+        private set
+    var touchSign: (TouchSign, String) -> Unit = { _, _ -> }
+        private set
+    var touchBuildings: (List<String>) -> Unit = {}
+        private set
+    val view =
+        CampusMapView { _: CampusMapData, selection, _, _, _, onBuildingsTouch, onSignTouch, _: Modifier ->
+            selected = selection.building
+            touchBuildings = onBuildingsTouch
+            touchSign = onSignTouch
+        }
+}
