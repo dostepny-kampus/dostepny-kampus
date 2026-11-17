@@ -164,7 +164,7 @@ private fun FollowHeights(
 ) {
     val currentOnExpandedChange by rememberUpdatedState(onExpandedChange)
     val currentOnClose by rememberUpdatedState(onClose)
-    val currentIsFullOnly by rememberUpdatedState(isFullOnly)
+    val isFullOnlyNow by rememberUpdatedState(isFullOnly)
     val anchors =
         remember(key1 = measure.window, key2 = measure.low, key3 = isFullOnly) {
             measure.anchors(isFullOnly = isFullOnly).takeIf { measure.window > 0 }
@@ -174,7 +174,7 @@ private fun FollowHeights(
         snapshotFlow { state.settledValue }.collect { height ->
             when {
                 height == SheetHeight.Closed -> currentOnClose()
-                !currentIsFullOnly -> currentOnExpandedChange(height.isExpanded)
+                !isFullOnlyNow -> currentOnExpandedChange(height.isExpanded)
             }
         }
     }
