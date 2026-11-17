@@ -32,7 +32,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Lista budynków z nagłówkami terenów: „Kampus główny · 78”, „Wittigowo · 9”, „Długa · 4”, „T-9 Atol · 1”, „Bartoszowice · 3”; pod każdym nagłówkiem karty budynków](obrazy/m-v1-mapa-lista-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-jasny.webp) | [![Ta sama lista z nagłówkami terenów w motywie ciemnym](obrazy/m-v1-mapa-lista-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-ciemny.webp) | [![Ta sama lista z nagłówkami terenów przy czcionce 200%](obrazy/m-v1-mapa-lista-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-jasny-200.webp) |
+| [![Lista budynków: w wierszu tytułu przycisk „Pokaż mapę”, pod nim pole symbolu, niżej nagłówki terenów: „Kampus główny · 78”, „Wittigowo · 9”, „Długa · 4”, „T-9 Atol · 1”, „Bartoszowice · 3”; pod każdym nagłówkiem karty budynków](obrazy/m-v1-mapa-lista-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-jasny.webp) | [![Ta sama lista z nagłówkami terenów w motywie ciemnym](obrazy/m-v1-mapa-lista-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-ciemny.webp) | [![Ta sama lista z nagłówkami terenów przy czcionce 200%](obrazy/m-v1-mapa-lista-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-jasny-200.webp) |
 
 ### V1: wyszukiwanie `c13`
 
@@ -152,7 +152,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Cały teren Kampus główny przy najmniejszym powiększeniu. Granica ma kilka części: dużą wokół budynków nad Odrą i mniejsze, np. wokół T-2 i L-2. Poza granicą podkład jest wyblakły, a granicę pokazuje czarna linia z białą obwódką](obrazy/m-v1-mapa-teren-granica-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-granica-jasny.webp) | [![Ta sama granica w motywie ciemnym: poza granicą podkład przygaszony kolorem tła, linia jasna z ciemną obwódką](obrazy/m-v1-mapa-teren-granica-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-granica-ciemny.webp) | [![Ta sama granica przy czcionce 200%: cały teren mieści się na mapie pod większymi przyciskami](obrazy/m-v1-mapa-teren-granica-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-granica-jasny-200.webp) |
+| [![Cały teren Kampus główny przy najmniejszym powiększeniu, od E-1 i F-6 na północy po L-2 i L-3 na południu; widok kończy się na brzegu prostokąta terenu, bez linii granicy i bez wyblakłego otoczenia; znak bariery Blokada przy A-1](obrazy/m-v1-mapa-teren-granica-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-granica-jasny.webp) | [![Ta sama granica w motywie ciemnym: poza granicą podkład przygaszony kolorem tła, linia jasna z ciemną obwódką](obrazy/m-v1-mapa-teren-granica-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-granica-ciemny.webp) | [![Ta sama granica przy czcionce 200%: cały teren mieści się na mapie pod większymi przyciskami](obrazy/m-v1-mapa-teren-granica-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-granica-jasny-200.webp) |
 
 ### V1: wynik z innego terenu
 
