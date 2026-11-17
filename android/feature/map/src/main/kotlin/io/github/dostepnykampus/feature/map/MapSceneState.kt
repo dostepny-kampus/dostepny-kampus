@@ -41,6 +41,7 @@ import io.github.dostepnykampus.feature.map.camera.cameraTransition
 import io.github.dostepnykampus.feature.map.camera.fitted
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.pickLine
+import io.github.dostepnykampus.feature.map.camera.placed
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
 import io.github.dostepnykampus.feature.map.camera.within
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
@@ -185,11 +186,13 @@ internal fun rememberMapSceneState(
     val last = remember { ShownCamera() }
     val isCoveredBefore = rememberPrevious(isCovered)
     val scale = rememberAnimatorScale()
+    val placing = remember { PlacedPick(isPending = isCovered) }
     val pick =
         remember(key1 = selection?.building, key2 = outline != null, key3 = size != IntSize.Zero) {
             val from = last.startOr(uncovered)
             pickMove(from = from, outline = outline, free = fit, scale = scale, keepsZoom = isCoveredBefore)
                 ?.within(limits, free = fit)
+                ?.let { placing.take(move = it, scale = scale) }
         }
     motion.RecordPick(pick) {
         pickLine(building = selection?.building, area = area, limits = limits, free = fit, move = it)
@@ -276,6 +279,18 @@ internal fun rememberNoticeReserve(building: String?, notice: Dp): Dp = remember
 
 /** Ruch mapy nad arkuszem V2 [move] i zapis widoku po ruchu osoby [keep]. */
 internal data class CardMove(val move: CameraTransition?, val keep: (MapCamera) -> Unit)
+
+/**
+ * Pierwszy wybór na mapie, która powstała już pod kartą, czyli po wyborze z listy budynków: widok od razu, bez ruchu
+ * kamery ([placed]). Następne wybory przy otwartej karcie ruszają mapę zwykle.
+ */
+private class PlacedPick(private var isPending: Boolean) {
+    fun take(move: CameraTransition, scale: Float): CameraTransition {
+        val taken = if (isPending) move.placed(animationScale = scale) else move
+        isPending = false
+        return taken
+    }
+}
 
 /** Ostatni widok podany mapie: początek ruchu do następnego wybranego budynku. Nie jest stanem kompozycji. */
 private class ShownCamera {
