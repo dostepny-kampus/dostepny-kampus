@@ -29,22 +29,19 @@ class QueueAccountTest {
     fun waitsForSameOwnerAfterLogin() =
         runBlocking {
             val tokens = AccessTokens()
-            val session = sessionOf(tokens)
             val sent = mutableListOf<String>()
+            var scheduled = 0
             val submissions =
                 SubmissionQueue(
                     store = FakeStore(),
+                    onSaved = { scheduled++ },
                     server =
-                        SubmissionServer(
-                            subject = tokens::subject,
-                            create = { owner, id, content ->
-                                sent += owner
-                                ServerReply.Ok(SubmissionFixtures.server(id, content))
-                            },
-                            putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
-                            update = { _, _, _, _ -> ServerReply.Missing },
-                        ),
+                        SubmissionFixtures.acceptingServer(subject = tokens::subject) { id, content ->
+                            sent += checkNotNull(tokens.subject)
+                            ServerReply.Ok(SubmissionFixtures.server(id, content))
+                        },
                 )
+            val session = sessionOf(tokens, onLogin = submissions::onLoggedIn)
             val pending = FakeMarkerQueue()
             val markers = floorMarkersOf(queue = pending, subjects = tokens.subjects)
             val sync =
@@ -57,16 +54,14 @@ class QueueAccountTest {
             markers.mark("A-1", "p2")
             session.signOut()
             session.signIn(jwtOf("""{"sub":"b"}"""))
-            submissions.onLoggedIn()
             submissions.sendAll()
             sync.sendAll()
             assertEquals(emptyList<String>(), sent, "drugie konto nie wysyła oczekujących zapisów")
 
-            session.signOut()
             session.signIn(jwtOf("""{"sub":"a"}"""))
-            submissions.onLoggedIn()
             submissions.sendAll()
             sync.sendAll()
             assertEquals(listOf("a", "a"), sent, "właściciel wznawia wysyłkę obu kolejek")
+            assertEquals(4, scheduled, "zapis i każde wejście na konto wznawiają pracę")
         }
 }

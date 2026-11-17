@@ -174,14 +174,13 @@ class SubmissionQueueTest {
                     store = store,
                     ioContext = EmptyCoroutineContext,
                     server =
-                        SubmissionServer(
-                            subject = { "konto-testowe" },
-                            create = { _, id, content ->
+                        submissionServer(
+                            create = { id, content ->
                                 sent.add(id)
                                 serverSubmission(content)
                             },
-                            putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
-                            update = { _, _, _, _ -> ServerReply.Missing },
+                            putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
+                            update = { _, _, _ -> ServerReply.Missing },
                         ),
                     stamps = SubmissionStamps(newId = { ids.removeFirst() }, nowMillis = { SAME_MILLIS }),
                 )
@@ -197,14 +196,13 @@ class SubmissionQueueTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
-                    subject = { "konto-testowe" },
-                    create = { _, _, content ->
+                submissionServer(
+                    create = { _, content ->
                         creates++
                         store.createResults.removeFirstOrNull() ?: serverSubmission(content)
                     },
-                    putPhoto = { _, _, _, _ -> store.photoResults.removeFirstOrNull() ?: ServerReply.Ok(Unit) },
-                    update = { _, id, version, content ->
+                    putPhoto = { _, _, _ -> store.photoResults.removeFirstOrNull() ?: ServerReply.Ok(Unit) },
+                    update = { id, version, content ->
                         edits.add(id to version)
                         editResults.removeFirstOrNull() ?: ServerReply.Ok(ServerEdit.Saved(edited(id, content)))
                     },

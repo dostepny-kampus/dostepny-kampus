@@ -35,11 +35,10 @@ class ConflictEditTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
-                    subject = { "konto-testowe" },
-                    create = { _, id, content -> ServerReply.Ok(server(id, content, version = 1)) },
-                    putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { _, id, version, content ->
+                submissionServer(
+                    create = { id, content -> ServerReply.Ok(server(id, content, version = 1)) },
+                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
+                    update = { id, version, content ->
                         versions += version
                         ServerReply.Ok(edits.removeFirstOrNull() ?: ServerEdit.Saved(server(id, content, 8)))
                     },

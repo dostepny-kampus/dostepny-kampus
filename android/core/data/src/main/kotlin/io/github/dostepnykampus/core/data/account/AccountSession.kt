@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.core.data.account
 
 import io.github.dostepnykampus.core.data.di.IoContext
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
 import io.github.dostepnykampus.core.database.QueueOwnershipDao
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
@@ -47,6 +48,7 @@ public class AccountSession
         private val refresher: LoginRefresh,
         private val work: CoroutineContext,
         private val adoptLegacyQueue: suspend (String) -> Unit = {},
+        private val onLogin: () -> Unit = {},
     ) : RoleProvider {
         @Inject
         internal constructor(
@@ -55,7 +57,8 @@ public class AccountSession
             refresher: LoginRefresh,
             @IoContext work: CoroutineContext,
             owners: QueueOwnershipDao,
-        ) : this(tokens, vault, refresher, work, owners::adopt)
+            queue: SubmissionQueue,
+        ) : this(tokens, vault, refresher, work, owners::adopt, queue::onLoggedIn)
 
         private val state = MutableStateFlow<Account>(Account.Guest)
         private val scope = CoroutineScope(SupervisorJob() + work)
@@ -78,6 +81,7 @@ public class AccountSession
         internal suspend fun signIn(login: AuthState): Boolean {
             if (!keep(login)) return false
             withContext(work) { vault.write(login) }
+            onLogin()
             return true
         }
 
@@ -87,7 +91,9 @@ public class AccountSession
          * @param token token JWT z Usługi logowania
          * @return `true`, gdy konto jest zalogowane tym tokenem
          */
-        public suspend fun signIn(token: String): Boolean {
+        public suspend fun signIn(token: String): Boolean = activate(token).also { if (it) onLogin() }
+
+        private suspend fun activate(token: String): Boolean {
             val signedIn = accountOf(token) ?: return false
             val subject = subjectOf(token)
             if (subject != null && subject != tokens.subject) {
@@ -108,7 +114,7 @@ public class AccountSession
 
         private suspend fun keep(login: AuthState): Boolean {
             val token = login.accessToken
-            if (token == null || !signIn(token)) return false
+            if (token == null || !activate(token)) return false
             val job = scope.launch(start = CoroutineStart.LAZY) { renew(login) }
             renewal.getAndSet(job)?.cancel()
             job.start()

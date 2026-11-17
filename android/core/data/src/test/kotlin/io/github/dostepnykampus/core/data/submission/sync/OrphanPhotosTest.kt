@@ -89,11 +89,10 @@ class OrphanPhotosTest {
             store = store,
             ioContext = ioContext,
             server =
-                SubmissionServer(
-                    subject = { "konto-testowe" },
-                    create = { _, _, _ -> ServerReply.Offline },
-                    putPhoto = { _, _, _, _ -> ServerReply.Offline },
-                    update = { _, _, _, _ -> ServerReply.Offline },
+                submissionServer(
+                    create = { _, _ -> ServerReply.Offline },
+                    putPhoto = { _, _, _ -> ServerReply.Offline },
+                    update = { _, _, _ -> ServerReply.Offline },
                 ),
             stamps = SubmissionStamps(newId = { "s-sprzatanie" }, nowMillis = { NOW }),
         )

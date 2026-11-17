@@ -35,16 +35,15 @@ class EditDuringSendTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
-                    subject = { "konto-testowe" },
-                    create = { _, id, content ->
+                submissionServer(
+                    create = { id, content ->
                         calls += "create ${checkNotNull(content.severity)}"
                         entered.complete(Unit)
                         reply.await()
                         ServerReply.Ok(server(id, content))
                     },
-                    putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { _, id, version, content ->
+                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
+                    update = { id, version, content ->
                         calls += "update $version ${checkNotNull(content.severity)}"
                         ServerReply.Ok(ServerEdit.Saved(server(id, content)))
                     },

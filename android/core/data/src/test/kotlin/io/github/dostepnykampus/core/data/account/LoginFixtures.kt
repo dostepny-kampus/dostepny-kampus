@@ -67,7 +67,14 @@ internal fun sessionOf(
     file: File = File.createTempFile("logowanie", null).apply { delete() },
     refresher: LoginRefresh = LoginRefresh { Renewal.Rejected },
     work: CoroutineContext = Dispatchers.Unconfined,
+    onLogin: () -> Unit = {},
 ): AccountSession =
-    AccountSession(tokens = tokens, vault = LoginVault(file, ReversingCipher), refresher = refresher, work = work)
+    AccountSession(
+        tokens = tokens,
+        vault = LoginVault(file, ReversingCipher),
+        refresher = refresher,
+        work = work,
+        onLogin = onLogin,
+    )
 
 internal const val REFRESH_TOKEN = "odswiezenie"

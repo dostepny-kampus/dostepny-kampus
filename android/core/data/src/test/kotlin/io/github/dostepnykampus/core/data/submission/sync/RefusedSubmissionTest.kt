@@ -41,16 +41,13 @@ class RefusedSubmissionTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
-                    subject = { "konto-testowe" },
-                    create = { _, id, content ->
+                submissionServer(
+                    create = { id, content ->
                         creates++
                         store.createResults.removeFirstOrNull() ?: ServerReply.Ok(server(id, content, version = 2))
                     },
-                    putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { _, id, _, content ->
-                        ServerReply.Ok(ServerEdit.Saved(server(id, content, version = 2)))
-                    },
+                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
+                    update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content, version = 2))) },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
             history = history,

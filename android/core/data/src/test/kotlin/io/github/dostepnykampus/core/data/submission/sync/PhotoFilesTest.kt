@@ -37,13 +37,12 @@ class PhotoFilesTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
-                    subject = { "konto-testowe" },
-                    create = { _, id, content ->
+                submissionServer(
+                    create = { id, content ->
                         if (isOnline) ServerReply.Ok(server(id, content)) else ServerReply.Offline
                     },
-                    putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { _, id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content))) },
+                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
+                    update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content))) },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
         )

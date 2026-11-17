@@ -125,6 +125,7 @@ public class SubmissionQueue internal constructor(
     private val sending = Mutex()
     private val results = SentResults(store = store, history = history, ioContext = ioContext)
     private val lastSavedAt = AtomicLong(Long.MIN_VALUE)
+    private val logins = AtomicLong()
     private val expired = MutableStateFlow(false)
 
     /** `true` po odpowiedzi 401 aż do [onLoggedIn]: aplikacja prosi o ponowne zalogowanie. Wymagania: BR-26 */
@@ -266,20 +267,29 @@ public class SubmissionQueue internal constructor(
      */
     public suspend fun sendAll(): Boolean =
         sending.withLock {
+            val login = logins.get()
             val owner = server.subject()
-            if (owner == null) {
-                if (store.all().isNotEmpty() && server.subject() == null) expired.value = true
-                return@withLock true
+            val stop =
+                when {
+                    owner == null -> Outcome.LOGIN_EXPIRED.takeIf { store.all().isNotEmpty() }
+                    expired.value -> Outcome.LOGIN_EXPIRED
+                    else -> sendUntilStop(owner)
+                }
+            synchronized(logins) {
+                val current = server.subject()
+                if (login == logins.get() && stop == Outcome.LOGIN_EXPIRED && (current == owner || current == null)) {
+                    expired.value = true
+                }
             }
-            val stop = if (expired.value) Outcome.LOGIN_EXPIRED else sendUntilStop(owner)
-            val current = server.subject()
-            if (stop == Outcome.LOGIN_EXPIRED && (current == owner || current == null)) expired.value = true
             stop != Outcome.LATER
         }
 
     /** Po ponownym zalogowaniu wysyłka rusza sama, bez działania Zbierającego. Wymagania: BR-26, US14.4 */
-    public fun onLoggedIn() {
-        expired.value = false
+    internal fun onLoggedIn() {
+        synchronized(logins) {
+            logins.incrementAndGet()
+            expired.value = false
+        }
         runCatching(onSaved)
     }
 

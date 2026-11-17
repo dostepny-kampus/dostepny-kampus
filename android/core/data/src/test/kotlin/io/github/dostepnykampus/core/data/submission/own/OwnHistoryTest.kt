@@ -15,8 +15,8 @@ import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.pho
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.precise
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.server
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
-import io.github.dostepnykampus.core.data.submission.sync.SubmissionServer
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStamps
+import io.github.dostepnykampus.core.data.submission.sync.submissionServer
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import io.github.dostepnykampus.core.model.submission.Submission
@@ -292,16 +292,13 @@ class OwnHistoryTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
-                    subject = { "konto-testowe" },
-                    create = { _, id, content -> create(id, content) },
-                    putPhoto = { _, _, _, _ ->
+                submissionServer(
+                    create = create,
+                    putPhoto = { _, _, _ ->
                         photoAttempts++
                         store.photoResults.removeFirstOrNull() ?: ServerReply.Ok(Unit)
                     },
-                    update = { _, id, _, content ->
-                        ServerReply.Ok(ServerEdit.Saved(server(id, content, version = 3)))
-                    },
+                    update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content, version = 3))) },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
             history = history,

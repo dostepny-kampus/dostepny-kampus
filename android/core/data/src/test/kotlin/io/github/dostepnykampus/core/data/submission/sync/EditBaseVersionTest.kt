@@ -113,14 +113,13 @@ class EditBaseVersionTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
-                    subject = { "konto-testowe" },
-                    create = { _, id, content ->
+                submissionServer(
+                    create = { id, content ->
                         creates.add(id)
                         ServerReply.Ok(server(id, content, SERVER_VERSION))
                     },
-                    putPhoto = { _, _, _, _ -> store.photoResults.removeFirstOrNull() ?: ServerReply.Ok(Unit) },
-                    update = { _, id, version, content ->
+                    putPhoto = { _, _, _ -> store.photoResults.removeFirstOrNull() ?: ServerReply.Ok(Unit) },
+                    update = { id, version, content ->
                         edits.add(id to version)
                         ServerReply.Ok(ServerEdit.Saved(server(id, content, SERVER_VERSION)))
                     },

@@ -29,13 +29,14 @@ internal object SubmissionFixtures {
 
     /** Serwer, który tworzy zgłoszenie przez [create], a zdjęcia i edycje przyjmuje bez błędu. */
     fun acceptingServer(
+        subject: () -> String? = { "konto-testowe" },
         create: suspend (id: String, content: SubmissionContent) -> ServerReply<Submission>,
     ): SubmissionServer =
-        SubmissionServer(
-            subject = { "konto-testowe" },
-            create = { _, id, content -> create(id, content) },
-            putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
-            update = { _, id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content))) },
+        submissionServer(
+            create = create,
+            putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
+            update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content))) },
+            subject = subject,
         )
 
     /** Jedno zdjęcie [id] zapisane jako plik w katalogu [dir]. */
@@ -55,3 +56,17 @@ internal object SubmissionFixtures {
             severity = severity,
         )
 }
+
+/** Serwer testowy z ustaloną tożsamością, chyba że test dostarczy bieżącą sesję. */
+internal fun submissionServer(
+    create: suspend (String, SubmissionContent) -> ServerReply<Submission>,
+    putPhoto: suspend (String, String, ByteArray) -> ServerReply<Unit>,
+    update: suspend (String, Int, SubmissionContent) -> ServerReply<ServerEdit>,
+    subject: () -> String? = { "konto-testowe" },
+): SubmissionServer =
+    SubmissionServer(
+        subject = subject,
+        create = { _, id, content -> create(id, content) },
+        putPhoto = { _, id, photo, jpeg -> putPhoto(id, photo, jpeg) },
+        update = { _, id, version, content -> update(id, version, content) },
+    )

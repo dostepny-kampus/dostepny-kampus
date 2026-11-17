@@ -72,14 +72,13 @@ class RefusedResaveTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
-                    subject = { "konto-testowe" },
-                    create = { _, id, content ->
+                submissionServer(
+                    create = { id, content ->
                         sent += content
                         store.createResults.removeFirstOrNull() ?: ServerReply.Ok(server(id, content))
                     },
-                    putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { _, _, _, _ -> ServerReply.Missing },
+                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
+                    update = { _, _, _ -> ServerReply.Missing },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
             onSaved = { scheduled++ },
