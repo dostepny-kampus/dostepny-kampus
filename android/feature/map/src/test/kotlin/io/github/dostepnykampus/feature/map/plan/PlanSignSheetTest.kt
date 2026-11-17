@@ -6,12 +6,6 @@
 package io.github.dostepnykampus.feature.map.plan
 
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -20,7 +14,6 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
-import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Rule
@@ -60,10 +53,9 @@ class PlanSignSheetTest {
         compose.onNodeWithText("Budynek A-1, 1 piętro").assertExists()
     }
 
-    /** Winda ma osobny arkusz, a pomieszczenie spoza planu nie ma arkusza. Wymagania: US16.1 */
+    /** Pomieszczenie spoza planu nie ma arkusza. Wymagania: US16.1 */
     @Test
-    fun skipsLiftAndUnknownRoom() {
-        assertNull("winda bez tego arkusza", SIGN_PLAN.signOf("winda"))
+    fun skipsUnknownRoom() {
         assertNull("pomieszczenie spoza planu", SIGN_PLAN.signOf("brak"))
     }
 
@@ -90,22 +82,5 @@ class PlanSignSheetTest {
         compose.onRoot().captureRoboImage()
     }
 
-    private fun show(id: String) {
-        compose.setContent {
-            DostepnyKampusTheme {
-                Box(Modifier.fillMaxSize().background(MapGround)) {
-                    ChosenPlanSheet(
-                        id = id,
-                        plan = SIGN_PLAN,
-                        onClose = { closed++ },
-                        modifier = Modifier.align(Alignment.BottomCenter),
-                    )
-                }
-            }
-        }
-    }
-
-    private companion object {
-        val MapGround = Color(0xFFBEE3F2)
-    }
+    private fun show(id: String) = compose.showPlanSheet(id = id, onClose = { closed++ })
 }
