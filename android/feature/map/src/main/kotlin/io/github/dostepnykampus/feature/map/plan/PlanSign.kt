@@ -30,14 +30,16 @@ internal data class PlanSign(
  * Wymagania: US16.1, US18.2
  */
 internal fun ShownPlan.signOf(id: String): PlanSign? {
-    val found =
+    val (floor, room) =
         rooms.firstNotNullOfOrNull { (floor, list) -> list.rooms.firstOrNull { it.id == id }?.let { floor to it } }
-    val title = found?.let { PLAN_SIGN_TITLES[it.second.category] }
-    val label = found?.let { (floor, _) -> floors.firstOrNull { it.id == floor }?.label }
-    val lift = found?.let { it.second.liftFloors }.orEmpty()
-    val stops = lift.mapNotNull { stop -> floors.firstOrNull { it.id == stop } }
-    if (title == null || label == null) return null
-    return PlanSign(title = title, building = building, floor = label, liftFloors = stops.map { it.label })
+            ?: return null
+    val title = PLAN_SIGN_TITLES[room.category]
+    val label = floors.firstOrNull { it.id == floor }?.label
+    val stops = room.liftFloors.mapNotNull { stop -> floors.firstOrNull { it.id == stop }?.label }
+    return when {
+        title == null || label == null -> null
+        else -> PlanSign(title = title, building = building, floor = label, liftFloors = stops)
+    }
 }
 
 private val PLAN_SIGN_TITLES =
