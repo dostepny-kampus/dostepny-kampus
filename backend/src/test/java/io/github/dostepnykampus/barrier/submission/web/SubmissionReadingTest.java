@@ -199,6 +199,11 @@ final class SubmissionReadingTest {
         }
 
         @Override
+        public List<Submission> own(final String author, final SubmissionQuery query) {
+            throw new UnsupportedOperationException("Sprawdzenie nie czyta własnych bez stron");
+        }
+
+        @Override
         public SubmissionFinder.Page page(
             final SubmissionQuery query, final SubmissionFinder.Window window
         ) {

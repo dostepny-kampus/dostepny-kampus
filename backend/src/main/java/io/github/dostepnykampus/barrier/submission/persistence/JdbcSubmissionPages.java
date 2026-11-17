@@ -19,8 +19,6 @@ import tools.jackson.databind.ObjectMapper;
  *
  * <p>Wymagania: NFR-34</p>
  *
- * <p>TODO(#2706): podłączyć do listy zgłoszeń w API zamiast listy bez stron.</p>
- *
  * @since 0.1.0
  */
 @Component
