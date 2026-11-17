@@ -703,6 +703,28 @@ class CampusMapScreenTest {
     }
 
     /**
+     * Wiersz: budynek wybrany na liście budynków → mapa powstaje razem z małą kartą i jednym ruchem pokazuje budynek,
+     * bez awarii przed pomiarem mapy.
+     *
+     * Wymagania: US2.8, NFR-19, NFR-56
+     */
+    @Test
+    @Config(qualifiers = "w360dp-h800dp")
+    fun movesToListPick() {
+        choice.savedChoice.value = true
+        var sheet by mutableStateOf(0.dp)
+        var focus by mutableStateOf<String?>(null)
+        val motion = MapMotion()
+        compose.setContent { Screen(focus = focus, sheet = sheet, motion = motion) }
+        compose.waitForIdle()
+        focus = "C-14"
+        sheet = 400.dp
+        compose.waitForIdle()
+        assertEquals("jeden ruch do budynku z listy", 1, motion.moves)
+        assertEquals("ruch mapy do budynku: $moves", true, moves.last().motion != CameraMotion.NONE)
+    }
+
+    /**
      * Zapis „C13” w polu symbolu daje wynik „Budynek C-13”.
      * Scenariusz (przykład: C13): przegladanie-mapy.feature: Wyszukanie budynku po symbolu w różnym zapisie
      *
