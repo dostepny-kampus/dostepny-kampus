@@ -38,6 +38,9 @@ import io.github.dostepnykampus.core.designsystem.R as DesignR
  *
  * Wymagania: US2.1, US3.3, NFR-53
  *
+ * @param id identyfikator wejścia dotkniętego znaku; `null` bez wybranego wejścia
+ * @param catalog katalog budynków i wejść; `null` przed jego wczytaniem
+ * @param onClose zamyka arkusz
  * @param onEntrancesClick zamyka arkusz i otwiera V3 budynku wejścia o podanym symbolu
  * @param modifier położenie arkusza na mapie
  */

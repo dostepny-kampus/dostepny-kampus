@@ -36,6 +36,9 @@ internal val chosenSignSaver: Saver<ChosenSign?, Any> =
  *
  * Wymagania: US1.5, US2.1, US3.3
  *
+ * @param chosen dotknięty znak; `null` bez arkusza
+ * @param barriers bariery pokazane na mapie
+ * @param catalog katalog budynków i wejść; `null` przed jego wczytaniem
  * @param onClose zamyka arkusz
  * @param onBuildingClick V2 budynku o podanym symbolu
  * @param onEntrancesClick V3 budynku o podanym symbolu
