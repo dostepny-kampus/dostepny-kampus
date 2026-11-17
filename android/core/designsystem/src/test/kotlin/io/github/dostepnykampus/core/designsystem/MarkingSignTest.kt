@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.core.designsystem
 
 import android.graphics.Bitmap
+import android.graphics.Color
 import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -27,6 +28,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import kotlin.math.abs
 
 private const val OPAQUE = 0xFF
 
@@ -108,14 +110,17 @@ class MarkingSignTest {
         }
     }
 
+    /** Piksele wnętrza znaku (kryjące razem z sąsiadami) jak na mapie; wygładzona krawędź zależy od tła. */
     private fun assertSameOpaquePixels(marking: EntranceMarking, expected: Bitmap, seen: Bitmap) {
         assertEquals("$marking: wysokość znaku", expected.height, seen.height)
         var compared = 0
-        for (y in 0 until expected.height) {
-            for (x in 0 until expected.width) {
-                val pixel = expected.getPixel(x, y)
-                if (pixel ushr 24 == OPAQUE) {
-                    assertEquals("$marking: piksel ($x, $y) jak na mapie", pixel, seen.getPixel(x, y))
+        for (y in 1 until expected.height - 1) {
+            for (x in 1 until expected.width - 1) {
+                if (expected.isInside(x, y)) {
+                    val pixel = expected.getPixel(x, y)
+                    val actual = seen.getPixel(x, y)
+                    val message = "$marking: piksel ($x, $y) jak na mapie: ${hex(pixel)}, jest ${hex(actual)}"
+                    assertTrue(message, sameColor(pixel, actual))
                     compared++
                 }
             }
@@ -123,3 +128,15 @@ class MarkingSignTest {
         assertTrue("$marking: znak ma kryjące piksele", compared > 0)
     }
 }
+
+private const val CHANNEL_TOLERANCE = 8
+
+private fun Bitmap.isInside(x: Int, y: Int): Boolean =
+    (-1..1).all { dy -> (-1..1).all { dx -> getPixel(x + dx, y + dy) ushr 24 == OPAQUE } }
+
+private val CHANNELS: List<(Int) -> Int> = listOf(Color::alpha, Color::red, Color::green, Color::blue)
+
+private fun sameColor(a: Int, b: Int): Boolean =
+    CHANNELS.all { channel -> abs(channel(a) - channel(b)) <= CHANNEL_TOLERANCE }
+
+private fun hex(pixel: Int): String = "%08X".format(pixel)
