@@ -295,7 +295,7 @@ private fun CampusMap(
                 onCameraChange = state::move,
                 areas = areas,
                 onAreaShow = state::land,
-                modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(underBar).padding(contentPadding),
+                modifier = Modifier.overlayArea(underBar = underBar, sheet = contentPadding),
                 hasPanels = !state.isCovered && !isKeyboardOpen,
                 hasNotice = !isKeyboardOpen,
                 motion = motion,
@@ -307,6 +307,12 @@ private fun CampusMap(
         }
     }
 }
+
+private fun Modifier.overlayArea(underBar: PaddingValues, sheet: PaddingValues): Modifier =
+    fillMaxSize()
+        .safeDrawingPadding()
+        .padding(underBar)
+        .padding(sheet)
 
 /** Zaznaczona przeszkoda [id] spośród [barriers] i zamknięcie jej karty [onClose]. */
 private data class ChosenBarrier(val id: String?, val barriers: ShownBarriers, val onClose: () -> Unit)
