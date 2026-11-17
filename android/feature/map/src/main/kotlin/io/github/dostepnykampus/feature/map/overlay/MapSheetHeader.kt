@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.MaterialTheme
@@ -34,7 +35,7 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.feature.map.R
 
 /**
- * Nagłówek arkusza na mapie: znak [sign] przed tytułem [title] i obrysowany „Zamknij”, który wywołuje
+ * Nagłówek arkusza na mapie: treść [content], np. znak, przed tytułem [title] i obrysowany „Zamknij”, który wywołuje
  * [onClose]. Tytuł dostaje fokus po otwarciu arkusza. Przy dużej czcionce „Zamknij” stoi nad tytułem, żeby
  * tytuł miał całą szerokość arkusza.
  *
@@ -42,10 +43,10 @@ import io.github.dostepnykampus.feature.map.R
  *
  * @param title tytuł arkusza, nagłówek dla TalkBack
  * @param onClose zamyka arkusz
- * @param sign znak przed tytułem; `null` bez znaku
+ * @param content treść przed tytułem, np. znak; domyślnie pusta
  */
 @Composable
-internal fun MapSheetHeader(title: String, onClose: () -> Unit, sign: (@Composable () -> Unit)? = null) {
+internal fun MapSheetHeader(title: String, onClose: () -> Unit, content: @Composable RowScope.() -> Unit = {}) {
     val header = remember { FocusRequester() }
     val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     LaunchedEffect(header) { withFrameMillis { header.requestFocus() } }
@@ -54,7 +55,7 @@ internal fun MapSheetHeader(title: String, onClose: () -> Unit, sign: (@Composab
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) { CloseButton(onClose) }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
-            sign?.invoke()
+            content()
             Text(
                 text = title,
                 modifier =

@@ -54,8 +54,7 @@ internal fun EntranceSheet(
         MapSheetHeader(
             title = stringResource(R.string.mapa_wejscie_naglowek, entrance.buildingSymbol),
             onClose = onClose,
-            sign = { MarkingSign(entrance.marking) },
-        )
+        ) { MarkingSign(entrance.marking) }
         Text(
             text = markingLine(entrance),
             style = MaterialTheme.typography.titleMedium,
