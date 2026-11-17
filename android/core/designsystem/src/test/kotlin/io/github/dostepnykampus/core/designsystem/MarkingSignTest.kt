@@ -7,15 +7,26 @@ package io.github.dostepnykampus.core.designsystem
 
 import android.graphics.Bitmap
 import android.graphics.Color
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import io.github.dostepnykampus.core.designsystem.marking.MARKING_SIGN_TAG
 import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.designsystem.marking.mapMarkingImage
@@ -28,9 +39,8 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import java.util.Locale
 import kotlin.math.abs
-
-private const val OPAQUE = 0xFF
 
 private val WORDS =
     mapOf(
@@ -51,12 +61,9 @@ class MarkingSignTest {
     @get:Rule
     val compose = createComposeRule()
 
-    private var colors: MapColors = LightMapColors
-
     private fun showAll() {
         compose.setContent {
             DostepnyKampusTheme {
-                colors = DostepnyKampusTheme.mapColors
                 Column { EntranceMarking.entries.forEach { MarkingSign(marking = it) } }
             }
         }
@@ -99,43 +106,60 @@ class MarkingSignTest {
     }
 
     private fun assertSignsAndWords() {
-        showAll()
+        compose.setContent { DostepnyKampusTheme { SignsBesideMapImages() } }
         val signs = compose.onAllNodesWithTag(MARKING_SIGN_TAG, useUnmergedTree = true)
         signs.assertCountEquals(EntranceMarking.entries.size)
+        val screen = compose.onRoot().captureToImage().asAndroidBitmap()
         EntranceMarking.entries.forEachIndexed { index, marking ->
             compose.onNodeWithText(WORDS.getValue(marking)).assertExists()
-            val seen = signs[index].captureToImage().asAndroidBitmap()
-            val expected = mapMarkingImage(marking = marking, sizePx = seen.width, colors = colors)
-            assertSignInsideLikeMap(marking, expected, seen)
+            val sign = signs[index].fetchSemanticsNode().boundsInRoot
+            val map = compose.onNodeWithTag(REFERENCE_TAG + marking.name).fetchSemanticsNode().boundsInRoot
+            assertEquals("$marking: wielkość znaku jak na mapie", map.size, sign.size)
+            assertSameImage(marking = marking, screen = screen, sign = sign, map = map)
         }
     }
 
-    private fun assertSignInsideLikeMap(marking: EntranceMarking, expected: Bitmap, seen: Bitmap) {
-        assertEquals("$marking: wysokość znaku", expected.height, seen.height)
-        var compared = 0
-        for (y in 1 until expected.height - 1) {
-            for (x in 1 until expected.width - 1) {
-                if (expected.isInside(x, y)) {
-                    val pixel = expected.getPixel(x, y)
-                    val actual = seen.getPixel(x, y)
-                    val message = "$marking: piksel ($x, $y) jak na mapie: ${hex(pixel)}, jest ${hex(actual)}"
-                    assertTrue(message, sameColor(pixel, actual))
-                    compared++
-                }
+    private fun assertSameImage(marking: EntranceMarking, screen: Bitmap, sign: Rect, map: Rect) {
+        for (y in 0 until sign.height.toInt()) {
+            for (x in 0 until sign.width.toInt()) {
+                val expected = screen.getPixel(map.left.toInt() + x, map.top.toInt() + y)
+                val actual = screen.getPixel(sign.left.toInt() + x, sign.top.toInt() + y)
+                val message = "$marking: piksel ($x, $y) jak na mapie: ${hex(expected)}, jest ${hex(actual)}"
+                assertTrue(message, sameColor(expected = expected, actual = actual))
             }
         }
-        assertTrue("$marking: znak ma kryjące piksele", compared > 0)
     }
 }
 
-private const val CHANNEL_TOLERANCE = 8
+@Composable
+private fun SignsBesideMapImages() {
+    val colors = DostepnyKampusTheme.mapColors
+    val px = with(LocalDensity.current) { iconSizeLikeText().roundToPx() }
+    Column {
+        EntranceMarking.entries.forEach { marking ->
+            Row {
+                MarkingSign(marking = marking)
+                val map =
+                    remember(key1 = marking, key2 = px, key3 = colors) {
+                        mapMarkingImage(marking = marking, sizePx = px, colors = colors)
+                    }
+                Image(
+                    bitmap = map.asImageBitmap(),
+                    contentDescription = null,
+                    modifier = Modifier.testTag(REFERENCE_TAG + marking.name),
+                )
+            }
+        }
+    }
+}
 
-private fun Bitmap.isInside(x: Int, y: Int): Boolean =
-    (-1..1).all { dy -> (-1..1).all { dx -> getPixel(x + dx, y + dy) ushr 24 == OPAQUE } }
+private const val REFERENCE_TAG = "wzor-"
+
+private const val CHANNEL_TOLERANCE = 8
 
 private val CHANNELS: List<(Int) -> Int> = listOf(Color::alpha, Color::red, Color::green, Color::blue)
 
-private fun sameColor(a: Int, b: Int): Boolean =
-    CHANNELS.all { channel -> abs(channel(a) - channel(b)) <= CHANNEL_TOLERANCE }
+private fun sameColor(expected: Int, actual: Int): Boolean =
+    CHANNELS.all { channel -> abs(channel(expected) - channel(actual)) <= CHANNEL_TOLERANCE }
 
-private fun hex(pixel: Int): String = "%08X".format(pixel)
+private fun hex(pixel: Int): String = String.format(Locale.ROOT, "%08X", pixel)
