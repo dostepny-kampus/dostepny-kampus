@@ -220,10 +220,8 @@ fun CampusMapScreen(
                     areas = areas.order,
                     onListChange = onListChange,
                     onBuildingClick = if (isList) onListBuildingClick else onBuildingClick,
-                    modifier =
-                        (if (isList) Modifier.fillMaxSize() else Modifier)
-                            .slideUp(barExit)
-                            .onSizeChanged { barHeight = it.height },
+                    onBarHeight = { barHeight = it },
+                    modifier = (if (isList) Modifier.fillMaxSize() else Modifier).slideUp(barExit),
                 )
             }
         }
