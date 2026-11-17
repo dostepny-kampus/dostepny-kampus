@@ -114,8 +114,8 @@ class MapStylePlanTest {
     @Test
     fun drawsOneFloorWall() {
         val paint = layers().paint(PLAN_OUTLINE_LAYER)
-        val width = paint.getValue("line-width").jsonPrimitive.double
-        assertEquals(2.4, width, "Ściana piętra nie ma 2,4 dp")
+        val width = paint.getValue("line-width").jsonPrimitive
+        assertEquals(2.4, width.double, "Ściana piętra nie ma 2,4 dp")
     }
 
     /** Ściany pomieszczeń mają 0,75 dp przy powiększeniu 17 i rosną liniowo do 1,5 dp przy 20. Wymagania: US16.1 */
