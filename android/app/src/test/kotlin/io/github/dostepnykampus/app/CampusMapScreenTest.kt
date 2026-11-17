@@ -767,10 +767,15 @@ class CampusMapScreenTest {
         val before = tops.size
         compose.onNode(hasSetTextAction()).performTextInput("c14")
         compose.onNodeWithText("Budynek C-14", useUnmergedTree = true).assertExists()
+        val typed = tops.size
+        val header = barTop()
         compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
         compose.waitForIdle()
-        val shown = tops.subList(fromIndex = before, toIndex = tops.size)
-        assertTrue("góra mapy przy wpisywaniu i po wyborze: $shown, pasek $bar", shown.all { it == bar })
+        val typing = tops.subList(fromIndex = before, toIndex = typed)
+        val picked = tops.subList(fromIndex = typed, toIndex = tops.size)
+        val shown = typing + picked
+        val message = "góra mapy: wpisywanie $typing, wybór $picked, pasek $bar, tytuł od $header"
+        assertTrue(message, shown.all { it == bar })
     }
 
     /**
