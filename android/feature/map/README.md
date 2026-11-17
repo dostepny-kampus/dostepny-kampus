@@ -16,7 +16,7 @@ Mapa kampusu: budynki, wejścia i bariery na mapie, wyszukiwanie budynku, karta 
 - `feature.map.entrance` — arkusz wejścia po dotknięciu jego znaku na mapie.
 - `feature.map.navigation` — trasa ekranu mapy.
 - `feature.map.overlay` — nakładki mapy: sterowanie, legenda, informacja, stan sieci i ramka arkuszy.
-- `feature.map.plan` — plan piętra budynku po przybliżeniu mapy.
+- `feature.map.plan` — plan piętra budynku po przybliżeniu mapy i arkusz znaku planu.
 - `feature.map.style` — styl mapy: warstwy, obrazy i kafle.
 
 ## API

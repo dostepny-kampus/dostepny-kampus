@@ -48,8 +48,9 @@ internal fun ShownPlan.signOf(id: String): PlanSign? {
 }
 
 /**
- * Arkusz znaku planu w pomieszczeniu [id] z [plan] po dotknięciu znaku na mapie V1: nazwa znaku z „Zamknij”, a pod
- * nią budynek i piętro. Bez arkusza, gdy [signOf] nie zwraca znaku. Systemowe „Wstecz” zamyka arkusz jak [onClose].
+ * Arkusz znaku planu w pomieszczeniu [id] z [plan] po dotknięciu znaku na mapie V1: nazwa znaku z „Zamknij”,
+ * a pod nią budynek i piętro. Bez arkusza, gdy [signOf] nie zwraca znaku. Systemowe „Wstecz” zamyka arkusz
+ * jak [onClose].
  *
  * Wymagania: US16.1, NFR-18, NFR-20, NFR-53
  *
