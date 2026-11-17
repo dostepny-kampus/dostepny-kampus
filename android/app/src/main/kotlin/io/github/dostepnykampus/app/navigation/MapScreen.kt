@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.app.LocalSheetPadding
+import io.github.dostepnykampus.app.SheetLayout
 import io.github.dostepnykampus.app.SheetSceneStrategy
 import io.github.dostepnykampus.app.closeCardOnEmptyMap
 import io.github.dostepnykampus.app.shownFocus
@@ -53,12 +54,11 @@ internal fun AppNavigator.HiltMapScreen(
 }
 
 /**
- * V1 ze stanem [state] i zaznaczeniem [focus] z trasy, np. po „Wstecz” z V2 albo „Pokaż na mapie”,
- * z czynnościami podpiętymi do nawigatora; [onListChange] zapisuje widok, mapę albo listę,
- * a [onSearch] liczy wyszukiwanie w modelu widoku. Budynek z listy przy TalkBack otwiera V2
- * od razu na pełnym ekranie. Przyciski i podpis OSM stoją nad arkuszem V2.
- * [mapView] w aplikacji to MapLibre, testy podają podróbkę. [plan] to plan piętra przy środku mapy, a [onCamera]
- * dostaje widok mapy po ruchu kamery, a [onFloorChoose] piętro wybrane w kolumnie pięter.
+ * V1 ze stanem [state] i zaznaczeniem [focus] z trasy (np. po „Wstecz” z V2 albo „Pokaż na mapie”); [onListChange]
+ * zapisuje widok, mapę albo listę, [onSearch] liczy wyszukiwanie. Budynek z listy przy TalkBack otwiera V2 od razu
+ * na pełnym ekranie. Przyciski i podpis OSM stoją nad arkuszem V2; bez arkusza nad V1, także gdy jeszcze zjeżdża,
+ * mapa liczy widok bez niego. [mapView] to MapLibre albo podróbka w testach, [plan] to plan piętra przy środku mapy,
+ * [onCamera] dostaje widok po ruchu kamery, a [onFloorChoose] piętro wybrane w kolumnie pięter.
  *
  * Wymagania: US1.1, US2.1, NFR-19
  */
@@ -74,13 +74,14 @@ internal fun AppNavigator.MapScreen(
     onFloorChoose: (String, String) -> Unit = { _, _ -> },
 ) {
     val accessibility = checkNotNull(LocalContext.current.getSystemService(AccessibilityManager::class.java))
+    val isSheetAbove = SheetSceneStrategy.isSheet(current)
     CampusMapScreen(
         state = state,
         onListChange = onListChange,
         onSearch = onSearch,
         onBuildingClick = { openBuilding(it) },
-        focus = shownFocus(focus, isSheetAbove = SheetSceneStrategy.isSheet(current)),
-        contentPadding = LocalSheetPadding.current,
+        focus = shownFocus(focus, isSheetAbove = isSheetAbove),
+        contentPadding = if (isSheetAbove) LocalSheetPadding.current else SheetLayout(),
         onEmptyMapClick = { closeCardOnEmptyMap() },
         onListBuildingClick = { openBuildingFromList(it, accessibility.isTouchExplorationEnabled) },
         mapView = mapView,
