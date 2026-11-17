@@ -109,6 +109,22 @@ class CameraControllerTest {
         assertEquals(calls, map.calls.size, "bez ruchu")
     }
 
+    /**
+     * Wiersz: V1, mapa oddaje dopełnienie po przeliczeniu z błędem zaokrąglenia, a kamera w spoczynku nie rusza
+     * ponownie.
+     *
+     * Wymagania: NFR-56
+     */
+    @Test
+    fun restsWithRoundedPadding() {
+        val rounding = FakeCamera(start, drift = 1e-9)
+        val rounded = CameraController(rounding)
+        rounded.pad(bar)
+        rounding.end(reached = true)
+        assertEquals(1, rounding.calls.count { it.startsWith("EASE") }, "jedno dosunięcie")
+        assertEquals(CameraMoveState.Idle, rounded.state, "kamera stoi")
+    }
+
     private fun view(longitude: Double) =
         MapCamera(center = GeoPoint(longitude = longitude, latitude = 51.005), zoom = 17.0)
 
@@ -124,7 +140,7 @@ class CameraControllerTest {
 
     private fun ease(to: MapCamera) = CameraTransition(camera = to, motion = CameraMotion.EASE, durationMillis = 400L)
 
-    private inner class FakeCamera(override var camera: MapCamera) : CameraPort {
+    private inner class FakeCamera(override var camera: MapCamera, private val drift: Double = 0.0) : CameraPort {
         override var inset = MapInset()
         val calls = mutableListOf<String>()
         private val running = mutableListOf<Pair<MapCamera, () -> Unit>>()
@@ -137,7 +153,7 @@ class CameraControllerTest {
         override fun move(camera: MapCamera, inset: MapInset, motion: CameraMotion, millis: Long, end: () -> Unit) {
             val padding = if (camera == this.camera) " z $inset" else ""
             calls += "$motion do $camera$padding"
-            this.inset = inset
+            this.inset = inset.copy(top = inset.top + drift)
             running += camera to end
         }
 
