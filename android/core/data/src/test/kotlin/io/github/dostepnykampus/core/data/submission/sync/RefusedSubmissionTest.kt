@@ -39,10 +39,10 @@ class RefusedSubmissionTest {
     private val queue by lazy {
         SubmissionQueue(
             store = store,
-            subject = { "konto-testowe" },
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
+                    subject = { "konto-testowe" },
                     create = { _, id, content ->
                         creates++
                         store.createResults.removeFirstOrNull() ?: ServerReply.Ok(server(id, content, version = 2))

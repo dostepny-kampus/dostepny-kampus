@@ -34,9 +34,9 @@ class QueueAccountTest {
             val submissions =
                 SubmissionQueue(
                     store = FakeStore(),
-                    subject = tokens::subject,
                     server =
                         SubmissionServer(
+                            subject = tokens::subject,
                             create = { owner, id, content ->
                                 sent += owner
                                 ServerReply.Ok(SubmissionFixtures.server(id, content))

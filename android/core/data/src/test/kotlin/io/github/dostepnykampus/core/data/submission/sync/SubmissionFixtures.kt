@@ -32,6 +32,7 @@ internal object SubmissionFixtures {
         create: suspend (id: String, content: SubmissionContent) -> ServerReply<Submission>,
     ): SubmissionServer =
         SubmissionServer(
+            subject = { "konto-testowe" },
             create = { _, id, content -> create(id, content) },
             putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
             update = { _, id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content))) },

@@ -117,10 +117,10 @@ class RevokedRoleTest {
     private fun queue(): SubmissionQueue =
         SubmissionQueue(
             store = store,
-            subject = { "konto-testowe" },
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
+                    subject = { "konto-testowe" },
                     create = { _, _, _ ->
                         creates++
                         ServerReply.Fault(code = FORBIDDEN)

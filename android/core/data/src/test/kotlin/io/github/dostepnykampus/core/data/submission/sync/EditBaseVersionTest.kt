@@ -111,10 +111,10 @@ class EditBaseVersionTest {
     private fun queue(history: FakeHistory?): SubmissionQueue =
         SubmissionQueue(
             store = store,
-            subject = { "konto-testowe" },
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
+                    subject = { "konto-testowe" },
                     create = { _, id, content ->
                         creates.add(id)
                         ServerReply.Ok(server(id, content, SERVER_VERSION))

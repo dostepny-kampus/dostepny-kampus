@@ -35,10 +35,10 @@ class PhotoFilesTest {
     private val queue by lazy {
         SubmissionQueue(
             store = store,
-            subject = { "konto-testowe" },
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
+                    subject = { "konto-testowe" },
                     create = { _, id, content ->
                         if (isOnline) ServerReply.Ok(server(id, content)) else ServerReply.Offline
                     },

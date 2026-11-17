@@ -39,7 +39,6 @@ class UnreadableSubmissionTest {
     private val queue by lazy {
         SubmissionQueue(
             store = store,
-            subject = { "konto-testowe" },
             ioContext = EmptyCoroutineContext,
             server =
                 acceptingServer { id, content ->

@@ -33,10 +33,10 @@ class ConflictEditTest {
     private val queue by lazy {
         SubmissionQueue(
             store = store,
-            subject = { "konto-testowe" },
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
+                    subject = { "konto-testowe" },
                     create = { _, id, content -> ServerReply.Ok(server(id, content, version = 1)) },
                     putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
                     update = { _, id, version, content ->

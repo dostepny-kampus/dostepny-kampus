@@ -17,10 +17,10 @@ import kotlin.coroutines.EmptyCoroutineContext
 internal fun offlineQueue(store: SubmissionStore, onSend: () -> Unit): SubmissionQueue =
     SubmissionQueue(
         store = store,
-        subject = { "konto-testowe" },
         ioContext = EmptyCoroutineContext,
         server =
             SubmissionServer(
+                subject = { "konto-testowe" },
                 create = { _, _, _ ->
                     onSend()
                     ServerReply.Offline

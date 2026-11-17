@@ -73,10 +73,10 @@ class QueueTransactionTest {
     private fun queue(): SubmissionQueue =
         SubmissionQueue(
             store = store,
-            subject = { "konto-testowe" },
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
+                    subject = { "konto-testowe" },
                     create = { _, id, content -> ServerReply.Ok(server(id, content)) },
                     putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
                     update = { _, id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content))) },

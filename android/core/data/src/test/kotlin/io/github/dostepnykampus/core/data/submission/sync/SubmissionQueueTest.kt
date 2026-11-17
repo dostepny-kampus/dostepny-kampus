@@ -172,10 +172,10 @@ class SubmissionQueueTest {
             val target =
                 SubmissionQueue(
                     store = store,
-                    subject = { "konto-testowe" },
                     ioContext = EmptyCoroutineContext,
                     server =
                         SubmissionServer(
+                            subject = { "konto-testowe" },
                             create = { _, id, content ->
                                 sent.add(id)
                                 serverSubmission(content)
@@ -195,10 +195,10 @@ class SubmissionQueueTest {
     private fun queue(onSaved: () -> Unit = {}): SubmissionQueue =
         SubmissionQueue(
             store = store,
-            subject = { "konto-testowe" },
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
+                    subject = { "konto-testowe" },
                     create = { _, _, content ->
                         creates++
                         store.createResults.removeFirstOrNull() ?: serverSubmission(content)

@@ -115,10 +115,10 @@ public object DataModule {
     ): SubmissionQueue =
         SubmissionQueue(
             store = store,
-            subject = tokens::subject,
             ioContext = ioContext,
             server =
                 SubmissionServer(
+                    subject = tokens::subject,
                     create = { owner, id, content -> api.create(id, content, owner).toReply { it } },
                     putPhoto = { owner, id, photo, jpeg ->
                         api.putPhoto(submissionId = id, photoId = photo, jpeg = jpeg, owner = owner).toReply {}
