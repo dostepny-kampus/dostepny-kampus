@@ -98,4 +98,3 @@ private fun SymbolOverName(symbol: String, name: String?) {
     }
     LaunchedEffect(focus) { withFrameMillis { focus.requestFocus() } }
 }
-
