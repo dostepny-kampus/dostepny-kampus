@@ -19,7 +19,7 @@ import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import org.junit.Assert.assertEquals
-import org.junit.Assert.fail
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -81,10 +81,9 @@ class ListAtLargeFontTest {
         compose.onNode(sheetHandle(isExpanded = false)).assertDoesNotExist()
         compose.onNodeWithText(OSM_START, substring = true).assertDoesNotExist()
         compose.onNodeWithText(BUILDING_ON_MAP).performScrollTo().performClick()
-        runCatching { compose.waitUntil(timeoutMillis = 5_000) { selected.lastOrNull() == "A-1" } }.onFailure {
-            fail("mapa bez A-1, zaznaczenia $selected, ekran:
-" + compose.onRoot().printToString(maxDepth = 30))
-        }
+        val isSelected = runCatching { compose.waitUntil(timeoutMillis = 5_000) { selected.lastOrNull() == "A-1" } }
+        val screen = compose.onRoot().printToString(maxDepth = 30)
+        assertTrue("mapa bez A-1, zaznaczenia $selected, ekran: $screen", isSelected.isSuccess)
         compose.onNodeWithText(OSM_START, substring = true).assertExists("mapa po „Pokaż budynek na mapie”")
         compose.onNode(ListedA1).assertDoesNotExist()
         assertEquals("zapamiętany widok mapy", false, choice.savedChoice.value)
