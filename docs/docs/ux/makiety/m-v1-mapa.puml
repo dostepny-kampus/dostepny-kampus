@@ -4,7 +4,7 @@
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek_mapy("Pokaż listę")
-$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$pole_tekstowe("Symbol budynku, np. C-13")
 $przycisk("Kampus główny ▾")
 $mapa("mapa ulic OpenStreetMap, kontury budynków z symbolami, bariery", $blokada() + $dk_spacje(6) + $utrudnienie(), "info")
 $pasek_dolny_konto()

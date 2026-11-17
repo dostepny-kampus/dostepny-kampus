@@ -5,7 +5,7 @@
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek_mapy("Pokaż listę")
-$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$pole_tekstowe("Symbol budynku, np. C-13")
 $przycisk("Kampus główny ▾")
 $mapa("plan 1 piętra A-1; przy toalecie znak bariery z piętrem 1; przy klatce B znak bariery (?) bez piętra", $tylko_z_pomoca() + " toaleta, 1 piętro; (?) piętro nieznane", "info")
 Źródło: Politechnika Wrocławska

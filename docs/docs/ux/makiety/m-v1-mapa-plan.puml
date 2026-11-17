@@ -5,7 +5,7 @@
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek_mapy("Pokaż listę")
-$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$pole_tekstowe("Symbol budynku, np. C-13")
 $przycisk("Kampus główny ▾")
 $ramka()
 .

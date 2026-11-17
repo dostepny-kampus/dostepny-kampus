@@ -169,7 +169,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy cały kontur budynku A-1 i jego wejścia mieszczą się w części mapy nad kartą
     Oraz nad kartą są „Powiększ”, „Pomniejsz” i strzałki przesuwania mapy
     Oraz po „Pomniejsz” mapa się oddala, a karta budynku A-1 zostaje otwarta
-    Ale nad kartą nie ma pola „Wpisz symbol budynku, np. C-13” ani przycisku „Pokaż listę”
+    Ale nad kartą nie ma pola „Symbol budynku, np. C-13” ani przycisku „Pokaż listę”
 
   @US2.8 @NFR-53 @aplikacja
   Scenariusz: Przy niskiej mapie nad kartą nie ma przycisków mapy
