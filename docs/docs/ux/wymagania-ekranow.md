@@ -264,9 +264,10 @@ Dostępność i osoby starsze: lista budynków daje tę samą informację co map
 | Rząd chipów z ikoną i napisem: „Winda”, „Toaleta dostosowana”, tylko w pełnym opisie pod kreską, przed grupą „Wejścia”. Chipa „Wejście dostępne” nie ma, bo ten fakt podaje wiersz o wejściach. Chip jest tylko wtedy, gdy dane to potwierdzają; dotknięcie przewija do grupy | czynność | US2.3, US2.8, NFR-17, NFR-21 | grupa na tym ekranie |
 | Nad grupą „Wejścia” jeden wiersz z datą i źródłem, np. „Z map i opisów, stan z 1.10.2026”, gdy wszystkie wejścia mają to samo źródło i datę. Inaczej data i źródło stoją przy każdym wejściu | dane | US17.3, BR-24, PW-3, decyzja 48 | — |
 | Grupa „Wejścia”: najpierw wejście zalecane z napisem „Zalecane” bez piętra: etykieta jest krótka, a piętro podają kroki do sali i opis wejścia | dane | BR-25, US3, decyzja 48, decyzja 53 | — |
+| Wejścia stoją w jednym białym bloku pod nagłówkiem grupy jako lista. Między wejściami jest cienka linia z równymi odstępami nad nią i pod nią. Znaki oznaczenia stoją w jednej kolumnie przy lewej krawędzi, więc oznaczenia czyta się jednym spojrzeniem w dół | dane | US2.1, NFR-21 | — |
 | Każde wejście: oznaczenie „Dostępne”, „Niedostępne” albo „Brak danych” znakiem z mapy i słowem (wymagania wspólne), nazwa, opis i szerokość drzwi z danych. Wejście bez nazwy: „Wejście bez nazwy w danych” | dane | US2.1, US17.1, NFR-21, decyzja 44 | — |
-| Przy wejściu zalecanym „Pokaż wejście na mapie”; TalkBack czyta „Pokaż wejście na mapie: »nazwa wejścia«”. Inne słowa niż „Pokaż budynek na mapie”, bo cel jest inny | czynność | US3.3, NFR-18, WCAG 2.4.6 [1] | V1 z zaznaczonym wejściem i jego arkuszem |
-| Przy każdym wejściu „Zgłoś barierę przy wejściu”; TalkBack czyta „Zgłoś barierę przy wejściu: »nazwa wejścia«” | czynność | US4.6, US14.2, NFR-18, WCAG 2.5.3 [1] | V4 z wybranym wejściem; Gość: L1 |
+| Wiersz wejścia na liście jest dotykalny w całości, ze strzałką po prawej. Dotknięcie pokazuje to wejście na mapie V1 i otwiera jego arkusz. Cel dotyku to cały wiersz, co najmniej 48 dp wysokości. TalkBack czyta wiersz jako jeden tekst z czynnością „Pokaż wejście na mapie”. Czynności przy wejściu, w tym „Zgłoś barierę przy wejściu”, są w arkuszu wejścia, więc lista zostaje krótka | czynność | US3.3, US4.6, NFR-17, NFR-18, WCAG 2.5.3 [1] | V1 z zaznaczonym wejściem i jego arkuszem |
+| Dwa lub więcej wejść bez oznaczenia i bez nazwy w danych stoją jako jeden wiersz, gdy żadne wejście budynku nie ma oznaczenia ani nazwy. Wiersz ma znak „Brak danych” i napis „3 wejścia bez nazw w danych”: 2–4 „wejścia”, 5 i więcej „wejść”. Pod nim stoi „Nikt jeszcze nie sprawdził tych wejść.” i jeden odnośnik „Zgłoś barierę przy wejściu”, bo nie ma jednego wejścia do otwarcia. Jednakowe bloki czytałyby się jak błąd. Jedno takie wejście to zwykły wiersz, a gdy choć jedno wejście ma oznaczenie albo nazwę, lista jest zwykła | dane, czynność | US2.1, US17.1, US4.6, NFR-21 | V4 budynku bez wybranego wejścia; Gość: L1 |
 | Wyjścia ewakuacyjne pod przyciskiem „Pokaż wyjścia ewakuacyjne (2)”; liczba z danych | czynność | US2.6 | lista na tym ekranie |
 | Zgłoszenia przyjęte pod nagłówkiem „Bariery w budynku”, zaraz po wejściach: typ bariery, uciążliwość, miejsce, zdjęcie, data weryfikacji jako „Sprawdzone 12.11.2026” | dane | US2.2, US2.3, US2.5, BR-17, NFR-21, PW-3 | — |
 | Typ bariery nazwą z klasyfikacji, np. „niesprawna winda”. Gość i Odwiedzający widzą prostsze napisy trzech typów. TB-20: „toaleta zamknięta, zastawiona lub trudna do dojścia”. TB-22: „brak planu dotykowego lub głosowego”. TB-28: „brak obniżonej lady lub miejsca dla wózka”. Te same napisy są na V1 i w arkuszu wejścia. | dane | BR-7, słownik użytkownika | — |
@@ -295,11 +296,11 @@ Kolejność od góry: nazwa budynku, wiersz o wejściach, czynności, chipy, „
 
 Na całym ekranie nagłówek karty z „Zamknij” stoi u góry, a treść przewija się pod nim. Pasek dolny nie zasłania elementu z fokusem: treść przewija się tak, by był widoczny (WCAG 2.4.11 [7]).
 
-„Zgłoś barierę przy wejściu” otwiera krok 1 V4 („Zgłoś barierę”) z napisem „Wejście: »nazwa wejścia«”. Wybrane wejście dołącza się do zgłoszenia jako wskazówka dla Weryfikatora, a miejsce i budynek nadal pochodzą z bieżącej pozycji (US4.6, BR-8, BR-14).
+„Zgłoś barierę przy wejściu” w arkuszu wejścia otwiera krok 1 V4 („Zgłoś barierę”) z napisem „Wejście: »nazwa wejścia«”. Wybrane wejście dołącza się do zgłoszenia jako wskazówka dla Weryfikatora, a miejsce i budynek nadal pochodzą z bieżącej pozycji (US4.6, BR-8, BR-14).
 
 Gość przechodzi najpierw do L1, a po zalogowaniu wraca do V4 z tym samym wejściem (US14.2).
 
-Przycisk „Zgłoś barierę przy wejściu” w arkuszu wejścia na V1 działa tak samo.
+Odnośnik „Zgłoś barierę przy wejściu” w wierszu kilku wejść bez danych otwiera krok 1 V4 bez wybranego wejścia.
 
 Mapa nad kartą i plany pięter pokazują to, co już jest na liście, więc TalkBack ich nie potrzebuje (NFR-19). Gość i Odwiedzający nie widzą przycisków Zbierającego, więc ich karta jest krótka.
 
@@ -350,7 +351,7 @@ Dojście, drzwi, windę za drzwiami, bariery przy wejściu i inne wejście dost�
 | Krok 1: komunikat ostrzegawczy (wymagania wspólne) nad „Zrób zdjęcie”: „Ważne”, wymaganie „Nie fotografuj twarzy ani tablic rejestracyjnych.” i zdanie „Zdjęcie zobaczą inni użytkownicy.” Ten sam komunikat jest w kroku 1 po powrocie z kroku 2 | dane | NFR-25, NFR-21, BR-17, decyzja 54 | — |
 | Krok 1: „Zrób zdjęcie” i „Zrób nowe zdjęcie” | czynność | US4.1, BR-8, PW-8 | aparat, potem krok 2 |
 | Krok 1 po powrocie z kroku 2: miniatura zdjęcia i „Dalej” nad „Zrób nowe zdjęcie”. Przy skali czcionki co najmniej 1,5 „Dalej” zostaje przypięte na dole, a „Zrób nowe zdjęcie” stoi na końcu treści | czynność główna | US4.8, NFR-52 | krok 2; zdjęcie i grupa zostają |
-| Krok 1 po „Zgłoś barierę przy wejściu” na V2 albo w arkuszu wejścia: napis „Wejście: »nazwa wejścia«” nad „Zrób zdjęcie” | dane | US4.6; znaczenie wejścia: V2 | — |
+| Krok 1 po „Zgłoś barierę przy wejściu” w arkuszu wejścia: napis „Wejście: »nazwa wejścia«” nad „Zrób zdjęcie” | dane | US4.6; znaczenie wejścia: V2 | — |
 | Krok 2: pytanie „Czego dotyczy bariera?” i 6 przycisków grup barier na całą szerokość ekranu, każdy co najmniej 48 dp wysokości. Napisy bez ikon: „Wejście i drzwi”, „Schody i windy”, „Przejścia i chodniki”, „Toalety”, „Napisy i oznaczenia”, „Coś innego” | czynność | US4.3, NFR-17, PW-7 | krok 3 albo pytanie o piętro |
 | Krok 2, pytanie o piętro: wybrana grupa, pytanie „Na którym piętrze?”. Pod nim przyciski na całą szerokość ekranu: „Nie wiem” i piętra od najniższego. W budynku szczegółowym etykiety z danych PWr, w podstawowym numery od -1 do 10 z „Parter” zamiast 0 | czynność | US4.5, BR-14, NFR-17 | krok 3 |
 | Krok 3: miniatura zdjęcia, wybrana grupa oraz piętro albo „Nie wiem”, jeśli było pytanie | dane | US4.1, US4.5 | — |
