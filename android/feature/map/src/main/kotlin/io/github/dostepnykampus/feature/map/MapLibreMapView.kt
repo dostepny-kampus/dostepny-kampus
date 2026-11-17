@@ -33,7 +33,6 @@ import com.google.gson.JsonObject
 import dagger.hilt.android.EntryPointAccessors
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Typografia
-import io.github.dostepnykampus.feature.map.barrier.BARRIER_ID
 import io.github.dostepnykampus.feature.map.barrier.barrierImages
 import io.github.dostepnykampus.feature.map.building.entranceCaption
 import io.github.dostepnykampus.feature.map.building.entranceImages
@@ -61,7 +60,6 @@ import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.campus.touchedSymbols
 import io.github.dostepnykampus.feature.map.plan.planSignImages
-import io.github.dostepnykampus.feature.map.style.BARRIERS_LAYER
 import io.github.dostepnykampus.feature.map.style.BUILDINGS_LAYER
 import io.github.dostepnykampus.feature.map.style.Basemap
 import io.github.dostepnykampus.feature.map.style.MapImages
@@ -155,7 +153,12 @@ object MapLibreMapView : CampusMapView {
                 ready.prefetchZoomDelta = 0
                 ready.cameraPosition = currentMove.camera.toPosition(currentInset)
                 ready.onPersonIdle { cameraIdle(it) }
-                ready.onSignOrOutlinesTouch(tolerance, onBarrier = { barrierTouch(it) }) { hit, near ->
+                val signTouch = { touched: MapTouch.Sign ->
+                    when (touched.sign) {
+                        TouchSign.BARRIER -> barrierTouch(touched.id)
+                    }
+                }
+                ready.onTouch(tolerance, onSign = signTouch) { hit, near ->
                     currentData.touchedSymbols(hit, near).also { buildingsTouch(it) }.isNotEmpty()
                 }
                 map = ready
@@ -307,24 +310,32 @@ object MapLibreMapView : CampusMapView {
         }
     }
 
-    private fun MapLibreMap.onSignOrOutlinesTouch(
+    private fun MapLibreMap.onTouch(
         tolerance: Float,
-        onBarrier: (String) -> Unit,
+        onSign: (MapTouch.Sign) -> Unit,
         isTaken: (hit: List<Int>, near: () -> List<Int>) -> Boolean,
     ) {
         addOnMapClickListener { point ->
             val at = projection.toScreenLocation(point)
             val area = RectF(at.x - tolerance, at.y - tolerance, at.x + tolerance, at.y + tolerance)
-            val signs = queryRenderedFeatures(area, BARRIERS_LAYER)
-            val barrier = signs.firstNotNullOfOrNull { it.getStringProperty(BARRIER_ID) }
-            if (barrier == null) {
-                val hit = queryRenderedFeatures(at, BUILDINGS_LAYER)
-                val near = { queryRenderedFeatures(area, BUILDINGS_LAYER) }
-                val number = { feature: Feature -> feature.getNumberProperty(OUTLINE_NUMBER)?.toInt() }
-                isTaken(hit.mapNotNull(number)) { near().mapNotNull(number) }
-            } else {
-                onBarrier(barrier)
-                true
+            val number = { feature: Feature -> feature.getNumberProperty(OUTLINE_NUMBER)?.toInt() }
+            val outlines =
+                OutlinesQuery(
+                    hit = { queryRenderedFeatures(at, BUILDINGS_LAYER).mapNotNull(number) },
+                    near = { queryRenderedFeatures(area, BUILDINGS_LAYER).mapNotNull(number) },
+                )
+            val signsNear = { sign: TouchSign ->
+                queryRenderedFeatures(area, sign.layer).mapNotNull { it.getStringProperty(sign.idKey) }
+            }
+            when (val touch = chooseTouch(signsNear = signsNear, outlines = outlines)) {
+                is MapTouch.Sign -> {
+                    onSign(touch)
+                    true
+                }
+
+                is MapTouch.Outlines -> {
+                    isTaken(touch.hit, touch.near)
+                }
             }
         }
     }
