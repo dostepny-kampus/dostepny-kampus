@@ -154,7 +154,7 @@ private fun FollowHeights(
     val currentOnClose by rememberUpdatedState(onClose)
     val anchors =
         remember(key1 = measure.window, key2 = measure.low) { measure.anchors().takeIf { measure.window > 0 } }
-    SideEffect { anchors?.let(state::updateAnchors) }
+    SideEffect { anchors?.let { state.updateAnchors(newAnchors = it, newTarget = state.targetValue) } }
     LaunchedEffect(state) {
         snapshotFlow { state.settledValue }.collect { height ->
             if (height == SheetHeight.Closed) currentOnClose() else currentOnExpandedChange(height.isExpanded)
