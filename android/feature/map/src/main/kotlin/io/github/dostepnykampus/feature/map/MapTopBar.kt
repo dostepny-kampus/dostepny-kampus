@@ -11,6 +11,8 @@ import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
@@ -45,10 +47,14 @@ internal fun rememberTopBarExit(isCovered: Boolean, motion: MapMotion?): Animata
     return hidden
 }
 
-/** Pasek widać bez arkusza V2 i w trakcie odjazdu nad mapą; nad listą budynków znika od razu. */
+/**
+ * Pasek widać bez arkusza V2, a nad arkuszem do odjazdu w całości, także w czasie czekania na ruch mapy; nad listą
+ * budynków znika od razu. Zmiana pozycji paska przelicza wynik tylko przy zmianie widoczności.
+ */
+@Composable
 internal fun Animatable<Float, AnimationVector1D>.isBarShown(isCovered: Boolean, isList: Boolean): Boolean {
-    val isLeavingMap = isRunning && !isList
-    return !isCovered || isLeavingMap
+    val isOnScreen by remember(this) { derivedStateOf { value < 1f } }
+    return !isCovered || (isOnScreen && !isList)
 }
 
 /** Góra mapy zasłonięta paskiem wysokim na [bar]; z arkuszem V2 pasek odjechał, więc nic. */

@@ -516,6 +516,30 @@ class CampusMapScreenTest {
         assertEquals("z kartą góra mapy odkryta", 0.0, tops.last(), 0.0)
     }
 
+    /**
+     * Wiersz: karta V2 zasłoniła mapę, a mapa jeszcze nie ruszyła: górny pasek stoi na miejscu i znika dopiero po
+     * odjeździe w całości.
+     *
+     * Wymagania: US2.8, NFR-56
+     */
+    @Test
+    @Config(qualifiers = "w360dp-h800dp")
+    fun keepsBarUntilItLeaves() {
+        var sheet by mutableStateOf(0.dp)
+        compose.setContent { Screen(sheet = sheet, motion = MapMotion()) }
+        compose.waitForIdle()
+        val rest = barTop()
+        compose.mainClock.autoAdvance = false
+        sheet = 400.dp
+        Snapshot.sendApplyNotifications()
+        compose.mainClock.advanceTimeByFrame()
+        compose.mainClock.advanceTimeByFrame()
+        assertEquals("pasek czeka na ruch mapy", rest, barTop(), 0.5f)
+        compose.mainClock.autoAdvance = true
+        compose.waitForIdle()
+        compose.onNodeWithText("Mapa kampusu").assertDoesNotExist()
+    }
+
     private fun barTop(): Float {
         val bar = compose.onNodeWithText("Mapa kampusu").getUnclippedBoundsInRoot()
         return bar.top.value
