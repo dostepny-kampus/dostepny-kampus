@@ -5,7 +5,8 @@
 set -euo pipefail
 
 # Test czyszczenia cache (czysc-cache.sh). Zamiast sieci test podstawia własne `gh`: `gh cache list`
-# zwraca identyfikatory (najnowszy pierwszy) z zmiennej FAKE_<n>, a `gh cache delete` dopisuje numer do dziennika.
+# zwraca identyfikatory (najnowszy pierwszy) z zmiennej FAKE_<n>, a `gh cache delete` dopisuje numer do dziennika;
+# numer 404 udaje wpis usunięty już przez inny przebieg, 500 inny błąd API.
 script="$(cd "$(dirname "$0")" && pwd)/czysc-cache.sh"
 workdir="$(mktemp -d)"
 trap 'rm -rf "$workdir"' EXIT
@@ -23,7 +24,12 @@ case "$1 $2" in
       zaleznosci-) printf '%b' "${FAKE_ZALEZNOSCI:-}" ;;
       *) echo "nieoczekiwany prefiks: $key" >&2; exit 2 ;;
     esac ;;
-  'cache delete') echo "$3" >>"$FAKE_LOG" ;;
+  'cache delete')
+    case "$3" in
+      404) echo "X Could not find a cache matching 404 in o/r" >&2; exit 1 ;;
+      500) echo "HTTP 500: Server Error" >&2; exit 1 ;;
+    esac
+    echo "$3" >>"$FAKE_LOG" ;;
   *) echo "nieoczekiwane wywołanie gh: $*" >&2; exit 2 ;;
 esac
 SH
@@ -52,5 +58,17 @@ run_case "brak wpisów: nic nie usunięte" '' '' '' budowanie-
 run_case "zależności: usunięte starsze, najnowszy zostaje" '' '5\n4\n3\n2\n1\n' '4\n3\n2\n1' zaleznosci-
 run_case "oba prefiksy niezależnie" '30\n20\n' '7\n6\n' '20\n6'
 run_case "brak podanego prefiksu: nic nie robi" '30\n20\n' '7\n6\n' '' ' '
+
+run_case "wpis usunięty już przez inny przebieg: dalej bez błędu" '30\n404\n10\n' '' '10' budowanie-
+
+status=0
+PATH="$workdir/bin:$PATH" GITHUB_REF=refs/heads/sprint/4 FAKE_LOG="$workdir/log.txt" FAKE_BUDOWANIE='30\n500\n' \
+  bash "$script" budowanie- >/dev/null 2>&1 || status=$?
+if ((status == 1)); then
+  echo "OK: inny błąd usuwania przerywa skrypt"
+else
+  echo "BŁĄD: inny błąd usuwania: kod ${status}, oczekiwano 1"
+  failures=$((failures + 1))
+fi
 
 exit "$((failures > 0 ? 1 : 0))"
