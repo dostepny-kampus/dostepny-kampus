@@ -296,7 +296,7 @@ object MapLibreMapView : CampusMapView {
             val listener =
                 MapView.OnDidFinishRenderingFrameListener { isFull, _, _ ->
                     val style: Style? = map?.style
-                    val zoom = map?.cameraPosition?.zoom ?: 0.0
+                    val zoom = map?.run { cameraPosition.zoom } ?: 0.0
                     val isDue = reveal.frame(isFull = isFull, zoom = zoom, minZoom = currentArea.hiddenBelow)
                     val isLoaded = style != null && style.isFullyLoaded
                     if (isLoaded && isDue) StyleTarget(style).revealBasemap(millis = fadeMillis)
