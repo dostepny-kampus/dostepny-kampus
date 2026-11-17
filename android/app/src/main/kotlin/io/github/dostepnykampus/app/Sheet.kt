@@ -66,14 +66,11 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 /**
- * Arkusz V2 z wysokościami [SheetHeight]: idzie za palcem po uchwycie i po treści, a po puszczeniu staje na wysokości
- * według położenia i prędkości. Startuje rozwinięty na połowę okna, gdy [isExpanded], inaczej niski; zmianę
- * rozwinięcia zgłasza [onExpandedChange], a [isExpanded] równe `false` zwija go do niskiej. Przeciągnięcie w dół z
- * niskiej wywołuje [onClose]. Wysokość niskiej karty w px, liczoną z treści, dostaje [onLowHeight]. Dotknięcie uchwytu
- * przechodzi na następną wysokość, a czytnik ekranu ma czynności rozwinięcia i zwinięcia, więc przeciąganie nie jest
- * jedyną drogą (WCAG 2.5.7).
+ * Arkusz V2 z wysokościami [SheetHeight], który idzie za palcem i staje według położenia i prędkości. Startuje na
+ * połowie okna, gdy [isExpanded], inaczej niski, a gdy [isFullOnly], na całym oknie z samym zamknięciem. Rozwinięcie
+ * zgłasza [onExpandedChange], przeciągnięcie w dół do końca [onClose], zasłoniętą część okna w px [onLowHeight].
  *
- * Wymagania: US2, US2.8, NFR-17, NFR-18, NFR-53
+ * Wymagania: US2, US2.8, US2.9, NFR-17, NFR-18, NFR-20, NFR-53
  */
 @Composable
 internal fun Sheet(
@@ -82,29 +79,32 @@ internal fun Sheet(
     onClose: () -> Unit,
     onLowHeight: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    isFullOnly: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    val state = remember { AnchoredDraggableState(if (isExpanded) SheetHeight.Half else SheetHeight.Low) }
+    val state = remember { AnchoredDraggableState(startHeight(isExpanded = isExpanded, isFullOnly = isFullOnly)) }
     val measure = remember { SheetMeasure() }
     val currentOnLowHeight by rememberUpdatedState(onLowHeight)
     FollowHeights(
         state = state,
         measure = measure,
         isExpanded = isExpanded,
+        isFullOnly = isFullOnly,
         onExpandedChange = onExpandedChange,
         onClose = onClose,
     )
     val isFull = state.currentValue == SheetHeight.Full
     val corner = if (isFull) 0.dp else Zaokraglenia.bardzoDuze
-    val fling = AnchoredDraggableDefaults.flingBehavior(state)
+    val snap = AnchoredDraggableDefaults.flingBehavior(state)
+    val fling = remember(state, snap) { SettlingFling(base = snap, state = state) }
     val scroll = remember(state, fling) { SheetScrollConnection(state = state, fling = fling) }
     Surface(
         modifier =
             modifier
                 .fillMaxWidth()
-                .followHeight(state = state, isCompact = !isExpanded) { maxHeight, restingLow ->
+                .followHeight(state = state, isCompact = !isExpanded && !isFullOnly) { maxHeight, restingLow ->
                     measure.window = maxHeight
-                    if (measure.keepLow(restingLow)) currentOnLowHeight(measure.low)
+                    measure.coverOf(restingLow = restingLow, isFullOnly = isFullOnly)?.let(currentOnLowHeight)
                 }.nestedScroll(scroll)
                 .anchoredDraggable(
                     state = state,
@@ -117,7 +117,7 @@ internal fun Sheet(
     ) {
         val statusBar = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
         Column(modifier = Modifier.belowStatusBarWhenFull(statusBar, isFull)) {
-            Handle(state = state)
+            Handle(state = state, isFullOnly = isFullOnly)
             Box(Modifier.weight(1f, fill = false).fillMaxWidth()) { content() }
         }
     }
@@ -138,8 +138,17 @@ private class SheetMeasure {
         return true
     }
 
+    /** Zasłonięta część okna do zgłoszenia: całe okno, gdy [isFullOnly], inaczej nowa niska karta [restingLow]. */
+    fun coverOf(restingLow: Int?, isFullOnly: Boolean): Int? =
+        when {
+            isFullOnly -> window
+            keepLow(restingLow) -> low
+            else -> null
+        }
+
     /** Kotwice dla zmierzonego okna; przed pomiarem niskiej karty jej wysokość to część okna. */
-    fun anchors(): DraggableAnchors<SheetHeight> {
+    fun anchors(isFullOnly: Boolean): DraggableAnchors<SheetHeight> {
+        if (isFullOnly) return fullOnlyAnchors(window = window.toFloat())
         val known = low.takeIf { it > 0 } ?: (window / PROVISIONAL_LOW_SHARE)
         return sheetAnchors(window = window.toFloat(), low = known.toFloat())
     }
@@ -150,23 +159,40 @@ private fun FollowHeights(
     state: AnchoredDraggableState<SheetHeight>,
     measure: SheetMeasure,
     isExpanded: Boolean,
+    isFullOnly: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     onClose: () -> Unit,
 ) {
     val currentOnExpandedChange by rememberUpdatedState(onExpandedChange)
     val currentOnClose by rememberUpdatedState(onClose)
+    val isFullOnlyNow by rememberUpdatedState(isFullOnly)
     val anchors =
-        remember(key1 = measure.window, key2 = measure.low) { measure.anchors().takeIf { measure.window > 0 } }
-    SideEffect { anchors?.let { state.updateAnchors(newAnchors = it, newTarget = state.targetValue) } }
+        remember(key1 = measure.window, key2 = measure.low, key3 = isFullOnly) {
+            measure.anchors(isFullOnly = isFullOnly).takeIf { measure.window > 0 }
+        }
+    SideEffect { anchors?.let { state.updateAnchors(newAnchors = it, newTarget = it.keeping(state.targetValue)) } }
     LaunchedEffect(state) {
         snapshotFlow { state.settledValue }.collect { height ->
-            if (height == SheetHeight.Closed) currentOnClose() else currentOnExpandedChange(height.isExpanded)
+            when {
+                height == SheetHeight.Closed -> currentOnClose()
+                !isFullOnlyNow -> currentOnExpandedChange(height.isExpanded)
+            }
         }
     }
     LaunchedEffect(isExpanded) {
-        if (!isExpanded && state.settledValue.isExpanded) state.animateTo(SheetHeight.Low)
+        if (!isExpanded && !isFullOnly && state.settledValue.isExpanded) state.animateTo(SheetHeight.Low)
     }
 }
+
+private fun startHeight(isExpanded: Boolean, isFullOnly: Boolean): SheetHeight =
+    when {
+        isFullOnly -> SheetHeight.Full
+        isExpanded -> SheetHeight.Half
+        else -> SheetHeight.Low
+    }
+
+private fun DraggableAnchors<SheetHeight>.keeping(height: SheetHeight): SheetHeight =
+    if (hasPositionFor(height)) height else SheetHeight.Full
 
 private fun Modifier.followHeight(
     state: AnchoredDraggableState<SheetHeight>,
@@ -251,6 +277,17 @@ private class SheetScrollConnection(
 
 private const val ANCHOR_TOLERANCE_PX = 0.5f
 
+/** Rzut [base], po którym arkusz [state] stoi dokładnie na najbliższej kotwicy, więc jego wysokość się ustala. */
+private class SettlingFling(private val base: FlingBehavior, private val state: AnchoredDraggableState<SheetHeight>) :
+    FlingBehavior {
+    override suspend fun ScrollScope.performFling(initialVelocity: Float): Float {
+        val left = with(base) { performFling(initialVelocity = initialVelocity) }
+        val nearest = state.anchors.closestAnchor(state.offset)
+        if (nearest != null) scrollBy(pixels = state.anchors.positionOf(nearest) - state.offset)
+        return left
+    }
+}
+
 @StringRes
 private fun SheetHeight.word(): Int =
     when (this) {
@@ -263,37 +300,48 @@ private fun Modifier.belowStatusBarWhenFull(statusBar: WindowInsets, isFull: Boo
     if (isFull) windowInsetsPadding(statusBar) else consumeWindowInsets(statusBar)
 
 @Composable
-private fun Handle(state: AnchoredDraggableState<SheetHeight>) {
+private fun Handle(state: AnchoredDraggableState<SheetHeight>, isFullOnly: Boolean) {
     val scope = rememberCoroutineScope()
     val label = stringResource(R.string.wysokosc_karty)
     val stateWord = stringResource(state.currentValue.word())
     val expand = stringResource(R.string.rozwin)
     val collapse = stringResource(R.string.zwin)
     val goTo = { target: SheetHeight -> scope.launch { state.animateTo(target) } }
+    val steps =
+        if (isFullOnly) {
+            emptyList()
+        } else {
+            listOfNotNull(
+                state.currentValue.higher()?.let { up ->
+                    CustomAccessibilityAction(expand) {
+                        goTo(up)
+                        true
+                    }
+                },
+                state.currentValue.lower()?.let { down ->
+                    CustomAccessibilityAction(collapse) {
+                        goTo(down)
+                        true
+                    }
+                },
+            )
+        }
+    val tap =
+        if (isFullOnly) {
+            Modifier
+        } else {
+            Modifier.clickable(role = Role.Button, onClick = { goTo(state.currentValue.next()) })
+        }
     Box(
         modifier =
             Modifier
                 .fillMaxWidth()
                 .heightIn(min = CeleDotyku.minimum)
-                .clickable(role = Role.Button, onClick = { goTo(state.currentValue.next()) })
+                .then(tap)
                 .semantics {
                     contentDescription = label
                     stateDescription = stateWord
-                    customActions =
-                        listOfNotNull(
-                            state.currentValue.higher()?.let { up ->
-                                CustomAccessibilityAction(expand) {
-                                    goTo(up)
-                                    true
-                                }
-                            },
-                            state.currentValue.lower()?.let { down ->
-                                CustomAccessibilityAction(collapse) {
-                                    goTo(down)
-                                    true
-                                }
-                            },
-                        )
+                    customActions = steps
                 },
         contentAlignment = Alignment.Center,
     ) {

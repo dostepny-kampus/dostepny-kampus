@@ -49,9 +49,9 @@ import kotlin.math.roundToInt
 /** Szerokość okna w dp, od której pasek nawigacji stoi z boku, a V2 otwiera się od razu na pełnym ekranie. */
 internal const val WIDE_WINDOW_DP = 600
 
-/** Tryb karty z trasy: `Direct` od skali czcionki 1,5, inaczej `Expanded`. Wymagania: US2.9, NFR-20 */
+/** Tryb karty z trasy: `Large` od skali czcionki 1,5, inaczej `Expanded`. Wymagania: US2.9, NFR-20 */
 internal fun cardModeFor(fontScale: Float): CardMode =
-    if (fontScale >= LARGE_FONT_SCALE) CardMode.Direct else CardMode.Expanded
+    if (fontScale >= LARGE_FONT_SCALE) CardMode.Large else CardMode.Expanded
 
 /** Bieżące okno aplikacji dla trybu karty V2: skala czcionki [fontScale], szerokość [widthDp] i [isLandscape]. */
 internal data class CardWindow(val fontScale: Float, val widthDp: Int, val isLandscape: Boolean)
@@ -61,8 +61,11 @@ internal data class CardWindow(val fontScale: Float, val widthDp: Int, val isLan
  *
  * Wymagania: NFR-51, NFR-22
  */
-internal fun CardWindow.cardMode(): CardMode =
-    if (widthDp >= WIDE_WINDOW_DP || isLandscape) CardMode.Direct else cardModeFor(fontScale)
+internal fun CardWindow.cardMode(): CardMode = if (isWideOrLandscape) CardMode.Direct else cardModeFor(fontScale)
+
+/** Czy okno ma od 600 dp szerokości albo leży poziomo. Wymagania: NFR-51, NFR-22 */
+internal val CardWindow.isWideOrLandscape: Boolean
+    get() = widthDp >= WIDE_WINDOW_DP || isLandscape
 
 /** Bieżące okno z kompozycji, więc tryb karty idzie za obrotem i zmianą czcionki w trakcie (UI-05). */
 @Composable

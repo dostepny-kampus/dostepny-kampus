@@ -75,14 +75,14 @@ class SheetGestureTest {
     }
 
     /**
-     * Wiersz: V2 przy skali czcionki co najmniej 1,5 → pełny ekran od razu, także w zwiniętym arkuszu.
+     * Wiersz: V2 przy skali czcionki co najmniej 1,5 → karta na cały ekran nad mapą, także w zwiniętym arkuszu.
      *
      * Wymagania: US2.9, NFR-20
      */
     @Test
-    fun opensDirectForLargeFont() {
-        assertEquals(CardMode.Direct, SheetState().cardMode(fontScale = 2f))
-        assertEquals(CardMode.Direct, SheetState(isExpanded = true).cardMode(fontScale = 2f))
+    fun opensLargeForLargeFont() {
+        assertEquals(CardMode.Large, SheetState().cardMode(fontScale = 2f))
+        assertEquals(CardMode.Large, SheetState(isExpanded = true).cardMode(fontScale = 2f))
     }
 
     /**

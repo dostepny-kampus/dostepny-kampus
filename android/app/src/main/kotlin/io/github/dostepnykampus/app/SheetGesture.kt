@@ -73,16 +73,24 @@ internal fun sheetAnchors(window: Float, low: Float): DraggableAnchors<SheetHeig
         SheetHeight.Closed at window
     }
 
-// TODO(#2997): przy dużej czcionce arkusz z całym oknem i zamknięciem zamiast osobnego ekranu
+/** Kotwice arkusza tylko z całym oknem i zamknięciem w oknie wysokim na [window] px. Wymagania: US2.9, NFR-20 */
+internal fun fullOnlyAnchors(window: Float): DraggableAnchors<SheetHeight> =
+    DraggableAnchors {
+        SheetHeight.Full at 0f
+        SheetHeight.Closed at window
+    }
+
+/** Czy arkusz przy skali czcionki [fontScale] ma tylko cały ekran i zamknięcie. Wymagania: NFR-20, US2.9 */
+internal fun isFullOnlySheet(fontScale: Float): Boolean = cardModeFor(fontScale) == CardMode.Large
 
 /**
- * Tryb karty V2 w arkuszu przy skali [fontScale]: `Direct` od 1,5, inaczej z rozwinięcia.
+ * Tryb karty V2 w arkuszu przy skali [fontScale]: `Large` od 1,5, inaczej z rozwinięcia.
  *
  * Wymagania: US2.8, US2.9, NFR-20
  */
 internal fun SheetState.cardMode(fontScale: Float): CardMode {
     val fullScreen = cardModeFor(fontScale)
-    return if (isExpanded || fullScreen == CardMode.Direct) fullScreen else CardMode.Compact
+    return if (isExpanded || fullScreen == CardMode.Large) fullScreen else CardMode.Compact
 }
 
 /**
