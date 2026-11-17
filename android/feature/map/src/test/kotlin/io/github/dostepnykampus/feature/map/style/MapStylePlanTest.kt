@@ -113,7 +113,8 @@ class MapStylePlanTest {
     /** Ściana piętra to jedna linia 2,4 dp. Wymagania: US16.1, NFR-21 */
     @Test
     fun drawsOneFloorWall() {
-        val width = layers().paint(PLAN_OUTLINE_LAYER).getValue("line-width").jsonPrimitive.double
+        val paint = layers().paint(PLAN_OUTLINE_LAYER)
+        val width = paint.getValue("line-width").jsonPrimitive.double
         assertEquals(2.4, width, "Ściana piętra nie ma 2,4 dp")
     }
 
