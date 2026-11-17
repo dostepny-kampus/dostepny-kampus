@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Dostępny Kampus
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
@@ -28,9 +28,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;`r`nimport org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 import org.springframework.security.web.session.DisableEncodeUrlFilter;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -76,8 +75,8 @@ public final class ApiSecurity {
             sessions -> sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
         http.addFilterBefore(new RequestLog(), DisableEncodeUrlFilter.class);
-        http.addFilterBefore(
-            new PublicRateLimit(limit, mapper), BearerTokenAuthenticationFilter.class
+        http.addFilterAfter(
+            new PublicRateLimit(limit, mapper), SecurityContextHolderAwareRequestFilter.class
         );
         http.addFilterAfter(
             new AccountRateLimit(limit.writesPerMinute(), mapper), AuthorizationFilter.class
@@ -164,3 +163,4 @@ public final class ApiSecurity {
         );
     }
 }
+

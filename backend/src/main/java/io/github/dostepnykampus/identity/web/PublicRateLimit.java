@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Dostępny Kampus
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
@@ -14,11 +14,10 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import org.springframework.http.HttpHeaders;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Limit żądań bez nagłówka Authorization z jednego adresu klienta w oknie jednej minuty.
+ * Limit żądań bez logowania z jednego adresu klienta w oknie jednej minuty.
  * Żądanie ponad limit dostaje 429 z nagłówkiem Retry-After i nie idzie dalej.
  *
  * <p>Wymagania: NFR-34</p>
@@ -60,7 +59,7 @@ final class PublicRateLimit implements Filter {
         final ServletRequest request, final ServletResponse response, final FilterChain chain
     ) throws IOException, ServletException {
         final HttpServletRequest http = (HttpServletRequest) request;
-        if (http.getHeader(HttpHeaders.AUTHORIZATION) != null
+        if (http.getUserPrincipal() != null
             || this.settings.exempt().contains(http.getRemoteAddr())) {
             chain.doFilter(request, response);
         } else {
@@ -76,3 +75,4 @@ final class PublicRateLimit implements Filter {
         }
     }
 }
+
