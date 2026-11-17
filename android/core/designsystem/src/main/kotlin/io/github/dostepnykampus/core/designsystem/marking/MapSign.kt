@@ -33,14 +33,16 @@ internal fun mapSignBitmap(
     fill: Color,
     colors: MapColors,
     symbol: DrawScope.() -> Unit,
-): Bitmap =
-    signBitmap(sizePx) {
-        scale(scale = size.minDimension / (SIGN_GRID + HALO_WIDTH), pivot = Offset.Zero) {
-            translate(left = HALO_WIDTH / 2, top = HALO_WIDTH / 2) {
-                drawPath(path = shape, color = colors.papier, style = Stroke(HALO_WIDTH, join = StrokeJoin.Round))
-                drawPath(path = shape, color = fill)
-                drawPath(path = shape, color = colors.tusz, style = Stroke(OUTLINE_WIDTH, join = StrokeJoin.Round))
-                symbol()
-            }
+): Bitmap = signBitmap(sizePx) { drawMapSign(shape = shape, fill = fill, colors = colors, symbol = symbol) }
+
+/** Znak mapy jak w [mapSignBitmap], narysowany na krótszym boku [DrawScope]. Wymagania: NFR-21, NFR-16 */
+internal fun DrawScope.drawMapSign(shape: Path, fill: Color, colors: MapColors, symbol: DrawScope.() -> Unit) {
+    scale(scale = size.minDimension / (SIGN_GRID + HALO_WIDTH), pivot = Offset.Zero) {
+        translate(left = HALO_WIDTH / 2, top = HALO_WIDTH / 2) {
+            drawPath(path = shape, color = colors.papier, style = Stroke(HALO_WIDTH, join = StrokeJoin.Round))
+            drawPath(path = shape, color = fill)
+            drawPath(path = shape, color = colors.tusz, style = Stroke(OUTLINE_WIDTH, join = StrokeJoin.Round))
+            symbol()
         }
     }
+}
