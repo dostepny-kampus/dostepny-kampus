@@ -135,10 +135,6 @@ private class SheetMeasure {
     }
 }
 
-/**
- * Kotwice [state] z pomiarów [measure], zgłoszenie rozwinięcia przez [onExpandedChange] albo zamknięcia przez
- * [onClose] po staniu na wysokości i zwinięcie do niskiej, gdy [isExpanded] spada na `false`.
- */
 @Composable
 private fun FollowHeights(
     state: AnchoredDraggableState<SheetHeight>,
@@ -162,11 +158,6 @@ private fun FollowHeights(
     }
 }
 
-/**
- * Wysokość arkusza ze stanu [state]: na niskiej wysokości z małą kartą ([isCompact]) i przed pierwszym pomiarem
- * wysokość treści, inaczej część okna pod górą arkusza. [onMeasure] dostaje wysokość okna i wysokość niskiej karty
- * w px albo `null`, gdy tej nie da się zmierzyć.
- */
 private fun Modifier.followHeight(
     state: AnchoredDraggableState<SheetHeight>,
     isCompact: Boolean,

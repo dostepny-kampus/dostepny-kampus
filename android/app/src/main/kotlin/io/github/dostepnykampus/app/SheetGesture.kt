@@ -37,6 +37,7 @@ internal enum class SheetHeight {
 }
 
 // TODO(#2996): połowa okna z nagłówkiem niskiej karty i bez przewijania, zamiast treści pełnego ekranu
+
 /** Czy na tej wysokości karta pokazuje pełny opis. Wymagania: US2.8 */
 internal val SheetHeight.isExpanded: Boolean
     get() = this == SheetHeight.Half || this == SheetHeight.Full
@@ -75,6 +76,7 @@ internal fun sheetAnchors(window: Float, low: Float): DraggableAnchors<SheetHeig
     }
 
 // TODO(#2997): przy dużej czcionce arkusz z całym oknem i zamknięciem zamiast osobnego ekranu
+
 /**
  * Tryb karty V2 w arkuszu przy skali [fontScale]: `Direct` od 1,5, inaczej z rozwinięcia.
  *
