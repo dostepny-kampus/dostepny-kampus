@@ -21,8 +21,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | c-13  |
       | C-13  |
 
-  # @do-zrobienia #2827: podpowiedzi od pierwszego znaku jeszcze nie ma w aplikacji.
-  @US1.1 @aplikacja @do-zrobienia
+  @US1.1 @aplikacja
   Scenariusz: Podpowiedzi budynków od pierwszego znaku symbolu
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
     Jeżeli wpisze w pole wyszukiwania „A”
