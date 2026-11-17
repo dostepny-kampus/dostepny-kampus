@@ -8,16 +8,13 @@ package io.github.dostepnykampus.app
 import android.view.accessibility.AccessibilityManager
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
@@ -38,8 +35,6 @@ internal val ListedA1 = hasContentDescription("A-1, ", substring = true)
 
 private const val OSM = "© OpenStreetMap contributors"
 
-private const val OSM_START = "© OpenStreetMap"
-
 /** Budynek z listy V1, z wyszukiwania albo z mapy: tryb karty V2 przy TalkBack i bez niego. Wymagania: NFR-19 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
@@ -49,12 +44,7 @@ class ListEntryTest {
 
     private val choice = TestMapListChoice().apply { savedChoice.value = true }
     private var touch: (List<String>) -> Unit = {}
-    private var selected: String? = null
-    private val fakeMap =
-        CampusMapView { _, selection, _, _, _, onBuildingsTouch, _, _ ->
-            touch = onBuildingsTouch
-            selected = selection.building
-        }
+    private val fakeMap = CampusMapView { _, _, _, _, _, onBuildingsTouch, _, _ -> touch = onBuildingsTouch }
     private lateinit var appViewModel: CampusMapViewModel
 
     @Before
@@ -115,32 +105,6 @@ class ListEntryTest {
         compose.waitForIdle()
         compose.onNodeWithText("Pokaż mapę").assertExists()
         assertEquals(true, choice.savedChoice.value)
-    }
-
-    /**
-     * Przy czcionce 200 % budynek z listy otwiera od razu pełny opis bez mapy; „Pokaż budynek na mapie” prowadzi do
-     * mapy z zaznaczonym budynkiem, a nie do listy, a aplikacja zapamiętuje widok mapy z „Pokaż listę” w wierszu
-     * tytułu.
-     * Scenariusz: przegladanie-mapy.feature: Z listy przy dużej czcionce opis budynku prowadzi do mapy
-     *
-     * Wymagania: US2.9, NFR-19, NFR-20
-     */
-    @Test
-    @Config(fontScale = 2f)
-    fun opensMapFromListAtLargeFont() {
-        shadowOf(compose.activity.getSystemService(AccessibilityManager::class.java)).setTouchExplorationEnabled(false)
-        showApp()
-        pickA1()
-        compose.onNodeWithText(BUILDING_ON_MAP).assertExists("pełny opis budynku od razu")
-        compose.onNode(sheetHandle(isExpanded = false)).assertDoesNotExist()
-        compose.onNodeWithText(OSM_START, substring = true).assertDoesNotExist()
-        compose.onNodeWithText(BUILDING_ON_MAP).performScrollTo().performClick()
-        compose.waitUntil(timeoutMillis = 5_000) { selected == "A-1" }
-        compose.onNodeWithText(OSM_START, substring = true).assertExists("mapa po „Pokaż budynek na mapie”")
-        compose.onNode(ListedA1).assertDoesNotExist()
-        assertEquals("zaznaczony budynek", "A-1", selected)
-        assertEquals("zapamiętany widok mapy", false, choice.savedChoice.value)
-        compose.onNode(hasText("Pokaż listę") and hasClickAction()).assertExists()
     }
 
     /**

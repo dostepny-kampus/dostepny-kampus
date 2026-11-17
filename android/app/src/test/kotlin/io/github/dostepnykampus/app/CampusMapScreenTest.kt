@@ -145,8 +145,8 @@ private fun squareBuilding(symbol: String, osmId: Int, from: Double, to: Double)
 }
 
 private val FAR_BUILDINGS_AROUND_C14 =
-    squareBuilding(symbol = "X-1", osmId = 2, from = -0.011, to = -0.01) +
-        squareBuilding(symbol = "X-2", osmId = 3, from = 0.011, to = 0.012)
+    squareBuilding(symbol = "X-1", osmId = 2, from = -0.004, to = -0.0035) +
+        squareBuilding(symbol = "X-2", osmId = 3, from = 0.0045, to = 0.005)
 
 private val MAP_BUTTONS_ABOVE_CARD =
     listOf(
