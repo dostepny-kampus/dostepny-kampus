@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map.entrance
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -32,6 +33,7 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Ikony
+import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
@@ -89,7 +91,11 @@ internal fun EntranceSheet(
 @Composable
 private fun SheetTop(entrance: Entrance, onClose: () -> Unit) {
     val header = remember { FocusRequester() }
+    val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     LaunchedEffect(header) { withFrameMillis { header.requestFocus() } }
+    if (isLarge) {
+        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) { CloseButton(onClose) }
+    }
     Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
         MarkingSign(entrance.marking)
         Text(
@@ -103,9 +109,14 @@ private fun SheetTop(entrance: Entrance, onClose: () -> Unit) {
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = Typografia.wyroznienieWaga,
         )
-        OutlinedButton(onClick = onClose, modifier = Modifier.heightIn(min = CeleDotyku.minimum)) {
-            Text(stringResource(R.string.mapa_zamknij))
-        }
+        if (!isLarge) CloseButton(onClose)
+    }
+}
+
+@Composable
+private fun CloseButton(onClose: () -> Unit) {
+    OutlinedButton(onClick = onClose, modifier = Modifier.heightIn(min = CeleDotyku.minimum)) {
+        Text(stringResource(R.string.mapa_zamknij))
     }
 }
 
