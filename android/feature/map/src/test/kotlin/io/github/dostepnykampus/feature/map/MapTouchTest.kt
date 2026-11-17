@@ -53,6 +53,18 @@ class MapTouchTest {
         assertEquals(MapTouch.Sign(TouchSign.ENTRANCE, "node/1"), entrance, "wejście przed konturem")
     }
 
+    /** Wiersz: V1, wejście w zasięgu wygrywa ze znakiem planu. Wymagania: US16.1 */
+    @Test
+    fun entranceBeforePlanSign() {
+        val touch =
+            chooseTouch(
+                signsNear = { sign -> if (sign == TouchSign.BARRIER) emptyList() else listOf(sign.name) },
+                outlines = outlinesAt(hit = emptyList()),
+            )
+
+        assertEquals(MapTouch.Sign(TouchSign.ENTRANCE, "ENTRANCE"), touch, "wejście przed znakiem planu")
+    }
+
     /** Wiersz: V1, bez znaku w zasięgu wygrywa kontur pod palcem; kontury obok są liczone na żądanie. */
     @Test
     fun outlineWithoutSign() {
