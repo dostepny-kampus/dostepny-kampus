@@ -11,7 +11,6 @@ import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.cardModeFor
 import io.github.dostepnykampus.feature.map.building.CardMode
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
-import kotlin.math.abs
 
 /**
  * Przesunięcie w dół góry arkusza V2 o wysokości [height] przy przewidywanym geście „Wstecz” o postępie
@@ -71,30 +70,6 @@ internal fun SheetHeight.reach(): Set<SheetHeight> =
         SheetHeight.Half -> setOf(SheetHeight.Low, SheetHeight.Half, SheetHeight.Full)
         SheetHeight.Full -> setOf(SheetHeight.Half, SheetHeight.Full)
     }
-
-/**
- * Wysokość, na której staje arkusz puszczony w położeniu [offset] px z prędkością [velocity] px/s, gdy przed gestem
- * stał na [settled]: przy prędkości od [flick] px/s sąsiednia w stronę rzutu, przy przesunięciu od [settled] o co
- * najmniej [step] px sąsiednia w stronę przesunięcia, inaczej [settled]. Kotwice to wysokości osiągalne jednym gestem.
- *
- * Wymagania: US2.8, NFR-53
- */
-internal fun DraggableAnchors<SheetHeight>.settleTarget(
-    settled: SheetHeight,
-    offset: Float,
-    velocity: Float,
-    step: Float,
-    flick: Float,
-): SheetHeight {
-    val shift = offset - positionOf(settled)
-    val towards =
-        when {
-            abs(velocity) >= flick -> closestAnchor(offset, velocity > 0f)
-            abs(shift) >= step -> closestAnchor(offset, shift > 0f)
-            else -> null
-        }
-    return towards ?: settled.takeIf(::hasPositionFor) ?: closestAnchor(offset) ?: settled
-}
 
 /**
  * Kotwice arkusza w oknie wysokim na [window] px: odległość góry arkusza od góry okna dla wysokości z [reach], gdy

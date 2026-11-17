@@ -325,8 +325,10 @@ private class SheetScrollConnection(
 private const val ANCHOR_TOLERANCE_PX = 0.5f
 
 /**
- * Cel arkusza [state] po puszczeniu według [settleTarget]: przesunięcie o [step] px albo rzut od [flick] px/s
- * prowadzi na sąsiednią wysokość.
+ * Cel arkusza [state] po puszczeniu: przy prędkości od [flick] px/s sąsiednia wysokość w stronę rzutu, przy
+ * przesunięciu o co najmniej [step] px od wysokości sprzed gestu sąsiednia w stronę przesunięcia, inaczej powrót.
+ *
+ * Wymagania: US2.8, NFR-53
  */
 private class SheetSnap(
     private val state: AnchoredDraggableState<SheetHeight>,
@@ -337,16 +339,20 @@ private class SheetSnap(
 
     override fun calculateSnapOffset(velocity: Float): Float {
         val offset = state.requireOffset()
+        return state.anchors.positionOf(target(offset = offset, velocity = velocity)) - offset
+    }
+
+    private fun target(offset: Float, velocity: Float): SheetHeight {
         val anchors = state.anchors
-        val target =
-            anchors.settleTarget(
-                settled = state.settledValue,
-                offset = offset,
-                velocity = velocity,
-                step = step,
-                flick = flick,
-            )
-        return anchors.positionOf(target) - offset
+        val settled = state.settledValue
+        val shift = offset - anchors.positionOf(settled)
+        val towards =
+            when {
+                abs(velocity) >= flick -> anchors.closestAnchor(offset, velocity > 0f)
+                abs(shift) >= step -> anchors.closestAnchor(offset, shift > 0f)
+                else -> null
+            }
+        return towards ?: settled.takeIf(anchors::hasPositionFor) ?: anchors.closestAnchor(offset) ?: settled
     }
 }
 
