@@ -15,10 +15,13 @@ package io.github.dostepnykampus.core.model.building
  * @property attribution atrybucja źródła danych do podpisu na mapie, np. „© OpenStreetMap contributors”
  * @property detailed symbole budynków szczegółowych, które mają plan pięter PWr; zna je tylko lista serwera, więc
  *   katalog z pliku konturów ma zbiór pusty
+ * @property hasServerList czy katalog powstał z listy serwera; bez niej [detailed] jest pusty, bo nie wiadomo,
+ *   które budynki mają plan
  */
 public data class BuildingCatalog(
     val buildings: List<Building>,
     val entrances: List<Entrance>,
     val attribution: String,
     val detailed: Set<String> = emptySet(),
+    val hasServerList: Boolean = false,
 )

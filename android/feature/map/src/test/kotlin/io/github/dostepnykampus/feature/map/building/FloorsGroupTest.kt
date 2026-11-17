@@ -74,8 +74,22 @@ class FloorsGroupTest {
 
     @Test
     fun saysBuildingHasNoPlan() {
-        compose.setContent { Group(null) }
+        compose.setContent { Group(null, isBasic = true) }
         compose.onNodeWithText("Nie mamy planu pięter tego budynku.").assertExists()
+    }
+
+    /**
+     * Bez danych z serwera grupa mówi, kiedy sprawdzimy plan, zamiast twierdzić, że go nie ma.
+     *
+     * Scenariusz: budynki-bez-szczegolow.feature: Bez danych z serwera karta nie twierdzi, że budynek nie ma planu
+     *
+     * Wymagania: US16.2, NFR-10
+     */
+    @Test
+    fun saysPlanIsNotChecked() {
+        compose.setContent { Group(null) }
+        compose.onNodeWithText("Plan pięter sprawdzimy, gdy telefon połączy się z internetem.").assertExists()
+        compose.onNodeWithText("Nie mamy planu pięter tego budynku.").assertDoesNotExist()
     }
 
     /** Zrzut do porównania z makietą hi-fi „m-v2-karta-budynku”, parter rozwinięty, motyw jasny. */
@@ -111,11 +125,11 @@ class FloorsGroupTest {
 
     @Composable
     @OptIn(ExperimentalMaterial3Api::class)
-    private fun Group(facts: FloorFacts?, onShowPlan: (String) -> Unit = {}) {
+    private fun Group(facts: FloorFacts?, isBasic: Boolean = false, onShowPlan: (String) -> Unit = {}) {
         DostepnyKampusTheme {
             CompositionLocalProvider(LocalRippleConfiguration provides null) {
                 Column(Modifier.background(MaterialTheme.colorScheme.surface).padding(16.dp)) {
-                    FloorsGroup(facts = facts, onShowPlan = onShowPlan)
+                    FloorsGroup(facts = facts, isBasic = isBasic, onShowPlan = onShowPlan)
                 }
             }
         }

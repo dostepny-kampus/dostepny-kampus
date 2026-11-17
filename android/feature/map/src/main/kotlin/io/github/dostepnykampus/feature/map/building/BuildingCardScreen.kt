@@ -206,7 +206,7 @@ private fun BuildingFacts(
     }
     BarriersGroup(card, onReportRemoval)
     card.floors?.let { LiftToiletGroup(it) }
-    FloorsGroup(facts = card.floors, onShowPlan = onShowPlan)
+    FloorsGroup(facts = card.floors, isBasic = card.isBasic, onShowPlan = onShowPlan)
     onMarkFloors?.let { onMark ->
         OutlinedButton(onClick = onMark, modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.minimum)) {
             Text(stringResource(R.string.karta_oznacz_pietra))
