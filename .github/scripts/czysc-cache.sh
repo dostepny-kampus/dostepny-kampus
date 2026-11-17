@@ -13,7 +13,14 @@ for prefiks in "$@"; do
   # Pierwszy wiersz to najnowszy wpis, zostaje.
   while read -r id; do
     [[ -n $id ]] || continue
-    gh cache delete "$id"
+    if ! gh cache delete "$id"; then
+      # Równoległy przebieg tej gałęzi mógł usunąć ten sam wpis; błąd tylko wtedy, gdy wpis dalej jest.
+      if gh cache list --ref "$GITHUB_REF" --key "$prefiks" --limit 100 --json id --jq '.[].id' | grep -qx "$id"; then
+        exit 1
+      fi
+      echo "Wpis cache ${id} (${prefiks}) usunął już inny przebieg."
+      continue
+    fi
     echo "Usunięto poprzedni wpis cache ${id} (${prefiks})."
   done < <(printf '%s\n' "$ids" | tail -n +2)
 done
