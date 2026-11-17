@@ -35,10 +35,7 @@ internal fun entranceFeature(symbol: String, id: String, tags: String): String =
     """{"type":"Feature","properties":{"kind":"entrance","symbols":["$symbol"],"osm_id":"$id",$tags},""" +
         """"geometry":{"type":"Point","coordinates":[0,0]}}"""
 
-/**
- * Widok zastępczy mapy [view] bez natywnej biblioteki: zapamiętuje zaznaczony budynek [selected] i daje testom
- * dotknięcie konturów [touchBuildings] oraz znaku [touchSign].
- */
+/** Widok zastępczy mapy [view]: zaznaczony budynek [selected] i dotknięcia [touchBuildings], [touchSign]. */
 internal class TouchableMap {
     var selected: String? = null
         private set

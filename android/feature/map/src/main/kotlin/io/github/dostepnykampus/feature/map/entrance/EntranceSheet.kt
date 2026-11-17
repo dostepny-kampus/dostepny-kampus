@@ -52,7 +52,7 @@ internal fun ChosenEntranceSheet(
     onEntrancesClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val entrance = id?.let { chosen -> catalog?.run { entrances.firstOrNull { it.id == chosen } } }
+    val entrance = catalog?.entrances.orEmpty().firstOrNull { it.id == id }
     BackHandler(enabled = entrance != null, onBack = onClose)
     if (entrance != null) {
         EntranceSheet(

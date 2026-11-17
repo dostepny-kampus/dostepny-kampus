@@ -320,7 +320,7 @@ private fun Modifier.overlayArea(underBar: PaddingValues, sheet: PaddingValues):
         .padding(sheet)
 
 /** Arkusz znaku [signs] z barierami [barriers] na mapie i katalogiem [catalog]. */
-private class OpenSign(val signs: SignSheetState, val barriers: ShownBarriers, val catalog: BuildingCatalog?)
+private data class OpenSign(val signs: SignSheetState, val barriers: ShownBarriers, val catalog: BuildingCatalog?)
 
 /**
  * Plan piętra [shown] przy mapie: [onView] dostaje widok kamery, [onFloor] piętro z kolumny, a [onHide] zejście

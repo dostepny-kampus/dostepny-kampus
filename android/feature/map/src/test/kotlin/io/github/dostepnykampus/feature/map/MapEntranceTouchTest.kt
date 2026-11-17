@@ -21,6 +21,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.GraphicsMode
 
 private const val MAIN_ACCESSIBLE = """"entrance":"main","wheelchair":"yes","ref":"Główne""""
 
@@ -31,6 +32,7 @@ private const val MAIN_ACCESSIBLE = """"entrance":"main","wheelchair":"yes","ref
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 class MapEntranceTouchTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
