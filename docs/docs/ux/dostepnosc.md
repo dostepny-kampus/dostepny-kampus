@@ -4,7 +4,7 @@ Strona pokazuje w jednym miejscu, jak aplikacja pomaga osobom starszym, z ograni
 
 | Trudność | Co robi aplikacja | Wiążące reguły |
 | --- | --- | --- |
-| Ograniczona mobilność: schody i długa droga do sali (PE-1) | Opis budynku wskazuje wejście bez schodów z datą sprawdzenia, a kroki do sali prowadzą od niego windą. | [V3](wymagania-ekranow.md#v3-zaplanuj-wizyte), [V2](wymagania-ekranow.md#v2-karta-budynku), [kroki do sali na V1](wymagania-ekranow.md#v1-mapa-kampusu), US3, US17, BR-25 |
+| Ograniczona mobilność: schody i długa droga do sali (PE-1) | Opis budynku wskazuje wejście bez schodów z datą sprawdzenia, a kroki do sali prowadzą od niego windą. | [V2](wymagania-ekranow.md#v2-karta-budynku), [kroki do sali na V1](wymagania-ekranow.md#v1-mapa-kampusu), US3, US17, BR-25 |
 | Drżenie rąk: trudno trafić w mały przycisk (PE-1) | Przyciski są duże i stoją w odstępach, więc łatwo nie trafić w sąsiedni. | [NFR-17](../wymagania/niefunkcjonalne.md#nfr-17), [cele dotyku i odstępy](tokeny.md#wymiary) |
 | Drżenie rąk: przeciąganie mapy palcem | Mapę można przesuwać strzałkami i powiększać przyciskami, bez przeciągania palcem. | [przyciski mapy na V1](wymagania-ekranow.md#v1-mapa-kampusu) (WCAG 2.5.7), [wymagania wspólne](wymagania-ekranow.md#wymagania-wspolne) |
 | Drżenie rąk: mały znak bariery na mapie | Znak bariery łatwo trafić palcem, a jego dotknięcie otwiera opis bariery na dole ekranu. | [arkusz bariery na V1](wymagania-ekranow.md#v1-mapa-kampusu), [NFR-17](../wymagania/niefunkcjonalne.md#nfr-17) |
