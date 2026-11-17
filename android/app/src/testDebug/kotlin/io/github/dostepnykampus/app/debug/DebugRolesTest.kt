@@ -3,8 +3,6 @@
  * Author: Myroslav Hryniuka
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app.debug
 
 import androidx.activity.ComponentActivity
@@ -14,7 +12,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.dostepnykampus.app.AppShell
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
+import io.github.dostepnykampus.app.TestRoles
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
 import org.junit.Assert.assertEquals
@@ -32,7 +30,7 @@ class DebugRolesTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private val roles = DebugRoles()
+    private val roles = TestRoles()
 
     /** Pasek dolny: rola pracownicza daje „Konto i praca”, Gość „Konto”. Wymagania: US14.1 */
     @Test
@@ -44,10 +42,10 @@ class DebugRolesTest {
         }
         compose.onNodeWithText("Konto").assertIsDisplayed()
 
-        roles.switchTo(DebugRole.COLLECTOR.account)
+        roles.account.value = DebugRole.COLLECTOR.account
         compose.onNodeWithText("Konto i praca").assertIsDisplayed()
 
-        roles.switchTo(DebugRole.GUEST.account)
+        roles.account.value = DebugRole.GUEST.account
         compose.onNodeWithText("Konto").assertIsDisplayed()
     }
 

@@ -3,8 +3,6 @@
  * Author: Myroslav Hryniuka
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app.debug
 
 import androidx.activity.ComponentActivity
@@ -18,11 +16,11 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.AppShell
+import io.github.dostepnykampus.app.TestRoles
 import io.github.dostepnykampus.app.TestSignIn
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.AppScreen
 import io.github.dostepnykampus.app.navigation.SignInRoute
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
@@ -45,7 +43,7 @@ class GuestSignInTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private val roles = DebugRoles()
+    private val roles = TestRoles()
 
     /** „Zgłoś barierę” → L1 → konto Odwiedzającego → V4, krok 1. */
     @Test
@@ -53,7 +51,7 @@ class GuestSignInTest {
         show()
         compose.onNodeWithText("Zgłoś barierę").performClick()
         compose.onNodeWithText(NOT_NOW).assertIsDisplayed()
-        roles.switchTo(DebugRole.VISITOR.account)
+        roles.account.value = DebugRole.VISITOR.account
         compose.onNodeWithText("V4 krok 1, wejście: brak").assertIsDisplayed()
     }
 
@@ -62,7 +60,7 @@ class GuestSignInTest {
     fun guestEntranceKeptAfterSignIn() {
         show()
         compose.onNodeWithText(AT_ENTRANCE).performClick()
-        roles.switchTo(DebugRole.COLLECTOR.account)
+        roles.account.value = DebugRole.COLLECTOR.account
         compose.onNodeWithText("V4 krok 1, wejście: A-1-w1").assertIsDisplayed()
     }
 
@@ -74,7 +72,7 @@ class GuestSignInTest {
         compose.onNodeWithText(NOT_NOW).performClick()
         compose.onNodeWithText(MAP).assertIsDisplayed()
         compose.onNodeWithText(ACCOUNT).performClick()
-        roles.switchTo(DebugRole.VISITOR.account)
+        roles.account.value = DebugRole.VISITOR.account
         compose.onNodeWithText(NOT_NOW).assertDoesNotExist()
     }
 

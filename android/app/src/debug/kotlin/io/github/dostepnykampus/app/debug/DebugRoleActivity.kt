@@ -3,8 +3,6 @@
  * Author: Myroslav Hryniuka
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app.debug
 
 import android.os.Bundle
@@ -39,7 +37,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.app.R
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
+import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Odstepy
@@ -77,12 +75,12 @@ class DebugRoleActivity : ComponentActivity() {
     }
 }
 
-/** [DebugRoles] z grafu Hilt dla [DebugRoleActivity]. */
+/** Konto i logowanie z grafu Hilt dla [DebugRoleActivity]. */
 @EntryPoint
 @InstallIn(SingletonComponent::class)
 interface DebugRolesEntryPoint {
-    /** Rola wybrana w przełączniku. */
-    fun roles(): DebugRoles
+    /** Konto aplikacji. */
+    fun roles(): RoleProvider
 
     /** Logowanie użytkownikiem testowym wybranej roli. */
     fun signIn(): DebugSignIn
