@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.app
 
+import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.ui.unit.Dp
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.cardModeFor
@@ -18,11 +19,62 @@ import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 internal fun sheetBackOffset(progress: Float, height: Dp): Dp = height * progress
 
 /**
- * Arkusz V2: rozwinięty na całe okno albo mała karta o wysokości treści ([isExpanded]) i postęp gestu „Wstecz” w toku
- * ([progress]).
+ * Arkusz V2: rozwinięty na połowę albo całe okno albo mała karta o wysokości treści ([isExpanded]) i postęp gestu
+ * „Wstecz” w toku ([progress]).
  */
 internal data class SheetState(val isExpanded: Boolean = false, val progress: Float = 0f)
 
+/**
+ * Wysokość arkusza V2: zamknięty, niski z małą kartą, połowa okna i całe okno.
+ *
+ * Wymagania: US2, US2.8
+ */
+internal enum class SheetHeight {
+    Closed,
+    Low,
+    Half,
+    Full,
+}
+
+// TODO(#2996): połowa okna z nagłówkiem niskiej karty i bez przewijania, zamiast treści pełnego ekranu
+/** Czy na tej wysokości karta pokazuje pełny opis. Wymagania: US2.8 */
+internal val SheetHeight.isExpanded: Boolean
+    get() = this == SheetHeight.Half || this == SheetHeight.Full
+
+/** Wysokość o stopień wyżej; `null` na całym oknie. Wymagania: US2.8, NFR-18 */
+internal fun SheetHeight.higher(): SheetHeight? =
+    when (this) {
+        SheetHeight.Closed, SheetHeight.Low -> SheetHeight.Half
+        SheetHeight.Half -> SheetHeight.Full
+        SheetHeight.Full -> null
+    }
+
+/** Wysokość o stopień niżej, bez zamknięcia; `null` na niskiej. Wymagania: US2.8, NFR-18 */
+internal fun SheetHeight.lower(): SheetHeight? =
+    when (this) {
+        SheetHeight.Full -> SheetHeight.Half
+        SheetHeight.Half -> SheetHeight.Low
+        SheetHeight.Low, SheetHeight.Closed -> null
+    }
+
+/** Wysokość po dotknięciu uchwytu: następna wyższa, a z całego okna znowu niska. Wymagania: US2.8, NFR-53 */
+internal fun SheetHeight.next(): SheetHeight = higher() ?: SheetHeight.Low
+
+/**
+ * Kotwice arkusza w oknie wysokim na [window] px: odległość góry arkusza od góry okna dla każdej wysokości, gdy niska
+ * karta ma [low] px. Połowa okna nie stoi niżej niż niska karta.
+ *
+ * Wymagania: US2, US2.8
+ */
+internal fun sheetAnchors(window: Float, low: Float): DraggableAnchors<SheetHeight> =
+    DraggableAnchors {
+        SheetHeight.Full at 0f
+        SheetHeight.Half at minOf(window / 2, window - low)
+        SheetHeight.Low at window - low
+        SheetHeight.Closed at window
+    }
+
+// TODO(#2997): przy dużej czcionce arkusz z całym oknem i zamknięciem zamiast osobnego ekranu
 /**
  * Tryb karty V2 w arkuszu przy skali [fontScale]: `Direct` od 1,5, inaczej z rozwinięcia.
  *

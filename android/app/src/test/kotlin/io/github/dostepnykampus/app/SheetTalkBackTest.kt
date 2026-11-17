@@ -60,8 +60,8 @@ class SheetTalkBackTest {
         matcher and !isHiddenFromAccessibility() and !hasAnyAncestor(isHiddenFromAccessibility())
 
     /**
-     * Wiersz: uchwyt małej karty → przycisk „Rozwiń opis budynku” ze stanem „zwinięte”, a po rozwinięciu ten sam
-     * przycisk ze stanem „rozwinięte”.
+     * Wiersz: uchwyt niskiej karty → przycisk „Wysokość karty” ze stanem „niska”, a po dotknięciu ten sam
+     * przycisk ze stanem „połowa ekranu”.
      *
      * Wymagania: US2.8, NFR-18
      */
