@@ -240,6 +240,8 @@ private class JsonStyle(style: String) : MapStyleTarget {
 
     override fun minZoom(layer: String, zoom: Double) = edit(layer) { it + ("minzoom" to JsonPrimitive(zoom)) }
 
+    override fun fade(layer: String, opacity: Float, millis: Long) = Unit
+
     override fun data(source: String, geoJson: String) {
         val sources = json.getValue("sources").jsonObject
         val changed = sources.getValue(source).jsonObject + ("data" to Json.parseToJsonElement(geoJson))

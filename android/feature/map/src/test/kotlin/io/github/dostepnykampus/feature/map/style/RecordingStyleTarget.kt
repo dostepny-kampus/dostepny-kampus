@@ -30,6 +30,8 @@ internal class RecordingStyleTarget : MapStyleTarget {
 
     override fun minZoom(layer: String, zoom: Double) = Unit
 
+    override fun fade(layer: String, opacity: Float, millis: Long) = Unit
+
     override fun data(source: String, geoJson: String) {
         data[source] = geoJson
         sources += source
