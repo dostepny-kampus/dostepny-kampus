@@ -99,8 +99,8 @@ class MapSignOverCardTest {
                     state = state,
                     onListChange = {},
                     onSearch = {},
-                    onBuildingClick = {
-                        focus = MapFocus.Building(it)
+                    onBuildingClick = { symbol ->
+                        focus = MapFocus.Building(symbol)
                         cover = CARD_HEIGHT.dp
                     },
                     focus = focus,
