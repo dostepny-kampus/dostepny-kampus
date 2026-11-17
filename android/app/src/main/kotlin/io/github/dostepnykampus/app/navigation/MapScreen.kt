@@ -87,6 +87,7 @@ internal fun AppNavigator.MapScreen(
         contentPadding = if (isSheetAbove) LocalSheetPadding.current else SheetLayout(),
         onEmptyMapClick = { closeCardOnEmptyMap() },
         onListBuildingClick = { openBuildingFromList(it, accessibility.isTouchExplorationEnabled) },
+        onEntrancesClick = { openEntrances(it) },
         mapView = mapView,
         motion = mapMotion,
         plan = plan,

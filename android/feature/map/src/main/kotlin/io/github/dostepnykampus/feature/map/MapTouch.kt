@@ -5,19 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map
 
-import io.github.dostepnykampus.feature.map.barrier.BARRIER_ID
-import io.github.dostepnykampus.feature.map.style.BARRIERS_LAYER
-
-/**
- * Znak mapy V1, który reaguje na dotknięcie, z warstwą [layer] i właściwością [idKey] z identyfikatorem obiektu.
- * Kolejność wpisów to pierwszeństwo przy kilku znakach w zasięgu dotknięcia.
- *
- * Wymagania: US1.5, NFR-17
- */
-internal enum class TouchSign(val layer: String, val idKey: String) {
-    /** Znak bariery ze zgłoszenia przyjętego. */
-    BARRIER(layer = BARRIERS_LAYER, idKey = BARRIER_ID),
-}
+import io.github.dostepnykampus.feature.map.camera.TouchSign
 
 /**
  * Zapytania o numery konturów budynków przy dotknięciu: [hit] pod palcem, [near] w zasięgu dotknięcia.
