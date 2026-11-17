@@ -249,7 +249,7 @@ private fun CampusMap(
     modifier: Modifier = Modifier,
 ) {
     val cover = contentPadding.calculateBottomPadding()
-    val isKeyboardOpen = rememberKeyboardOpenIgnoringHeight()
+    val isKeyboardOpen = rememberKeyboardOpenFlag()
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
     var barrierId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -361,7 +361,7 @@ private fun BuildingCatalog.buildingsOf(symbols: List<String>): List<Building> =
     symbols.mapNotNull { symbol -> buildings.firstOrNull { it.symbol == symbol } }
 
 @Composable
-private fun rememberKeyboardOpenIgnoringHeight(): Boolean {
+private fun rememberKeyboardOpenFlag(): Boolean {
     val ime = WindowInsets.ime
     val density = LocalDensity.current
     val isOpen by remember(ime, density) { derivedStateOf { ime.getBottom(density) > 0 } }
