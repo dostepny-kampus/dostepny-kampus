@@ -10,10 +10,16 @@ $przycisk("Kampus główny ▾")
 $mapa("plan parteru A-1 nad arkuszem legendy", "", "info")
 $ramka()
 { <b>Legenda</b> | [Zamknij] }
-$dostepne() wejście
-$niedostepne() wejście
-$brak_danych() wejście
-$blokada() bariera z uciążliwością
+<i>[gruby kontur]</i> Budynek z planem pięter
+<i>[cienki kontur]</i> Budynek bez planu
+$dostepne() Wejście dostępne
+$niedostepne() Wejście niedostępne
+$brak_danych() Wejście bez danych
+<i>[kreski]</i> Ścieżka dostosowana
+<i>[klin]</i> Pochylnia
+$utrudnienie() Utrudnienie
+$tylko_z_pomoca() Tylko z pomocą
+$blokada() Blokada
 <i>[kolor]</i> sala
 <i>[kolor]</i> korytarz
 <i>[kolor]</i> klatka schodowa
