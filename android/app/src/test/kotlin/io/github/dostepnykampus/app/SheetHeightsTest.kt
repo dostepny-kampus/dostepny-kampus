@@ -185,7 +185,7 @@ class SheetHeightsTest {
 
     /** Wiersz: szybkie krótkie przeciągnięcie treści w dół z niskiej wysokości → karta się zamyka. */
     @Test
-    fun closesOnFastContentSwipeFromLow() {
+    fun closesOnFastContentSwipe() {
         open()
         compose.onNodeWithText("Compact").performTouchInput {
             swipe(
@@ -201,7 +201,7 @@ class SheetHeightsTest {
 
     /** Wiersz: seria szybkich częściowych przeciągnięć treści w górę i w dół → karta stoi na jednej z wysokości. */
     @Test
-    fun restsAtHeightAfterContentSwipes() {
+    fun restsAtHeightAfterSwipes() {
         open()
         val bottom = map()
         compose.onRoot().performTouchInput {
