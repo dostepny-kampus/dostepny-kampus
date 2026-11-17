@@ -22,6 +22,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipe
@@ -40,9 +41,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlin.math.abs
 
 private val CompactHeight = 120.dp
 private const val SLOW_SWIPE_MILLIS = 2000L
+private const val FAST_SWIPE_MILLIS = 60L
+private const val PARTIAL_SWIPE_MILLIS = 200L
+private const val SWIPE_PAIRS = 3
+private val SHORT_SWIPE = 60.dp
 
 /**
  * Arkusz V2 z trzema wysokościami: niska, połowa ekranu i cały ekran; idzie za palcem, staje na najbliższej wysokości,
@@ -175,6 +181,40 @@ class SheetHeightsTest {
         compose.waitForIdle()
         assertTrue("karta wyżej niż niska: ${handleTop()}", handleTop() < low() - 1.dp)
         compose.onNodeWithText("Expanded").assertExists()
+    }
+
+    /** Wiersz: szybkie krótkie przeciągnięcie treści w dół z niskiej wysokości → karta się zamyka. */
+    @Test
+    fun closesOnFastContentSwipeFromLow() {
+        open()
+        compose.onNodeWithText("Compact").performTouchInput {
+            swipe(
+                start = center,
+                end = Offset(x = center.x, y = center.y + SHORT_SWIPE.toPx()),
+                durationMillis = FAST_SWIPE_MILLIS,
+            )
+        }
+        compose.waitForIdle()
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).assertDoesNotExist()
+        assertEquals("mapa bez zasłonięcia", 0f, cover.value, 1f)
+    }
+
+    /** Wiersz: seria szybkich częściowych przeciągnięć treści w górę i w dół → karta stoi na jednej z wysokości. */
+    @Test
+    fun restsAtHeightAfterContentSwipes() {
+        open()
+        val bottom = map()
+        compose.onRoot().performTouchInput {
+            fun at(fromBottom: Dp) = Offset(x = center.x, y = (bottom - fromBottom).toPx())
+            repeat(SWIPE_PAIRS) {
+                swipe(start = at(40.dp), end = at(190.dp), durationMillis = PARTIAL_SWIPE_MILLIS)
+                swipe(start = at(150.dp), end = at(60.dp), durationMillis = PARTIAL_SWIPE_MILLIS)
+            }
+        }
+        compose.waitForIdle()
+        val top = handleTop()
+        val heights = listOf(0.dp, map() / 2, low())
+        assertTrue("karta na jednej z wysokości $heights: $top", heights.any { abs(it.value - top.value) <= 1f })
     }
 
     /** Wiersz: TalkBack ma na uchwycie czynności „Rozwiń” i „Zwiń”, gdy jest dokąd. */
