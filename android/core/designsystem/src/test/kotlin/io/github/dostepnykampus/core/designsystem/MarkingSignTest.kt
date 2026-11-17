@@ -106,12 +106,11 @@ class MarkingSignTest {
             compose.onNodeWithText(WORDS.getValue(marking)).assertExists()
             val seen = signs[index].captureToImage().asAndroidBitmap()
             val expected = mapMarkingImage(marking = marking, sizePx = seen.width, colors = colors)
-            assertSameOpaquePixels(marking, expected, seen)
+            assertSignInsideLikeMap(marking, expected, seen)
         }
     }
 
-    /** Piksele wnętrza znaku (kryjące razem z sąsiadami) jak na mapie; wygładzona krawędź zależy od tła. */
-    private fun assertSameOpaquePixels(marking: EntranceMarking, expected: Bitmap, seen: Bitmap) {
+    private fun assertSignInsideLikeMap(marking: EntranceMarking, expected: Bitmap, seen: Bitmap) {
         assertEquals("$marking: wysokość znaku", expected.height, seen.height)
         var compared = 0
         for (y in 1 until expected.height - 1) {
