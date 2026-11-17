@@ -70,7 +70,7 @@ internal fun SheetHeight.next(): SheetHeight = higher() ?: SheetHeight.Low
 internal fun sheetAnchors(window: Float, low: Float): DraggableAnchors<SheetHeight> =
     DraggableAnchors {
         SheetHeight.Full at 0f
-        SheetHeight.Half at minOf(window / 2, window - low)
+        SheetHeight.Half at minOf(a = window / 2, b = window - low)
         SheetHeight.Low at window - low
         SheetHeight.Closed at window
     }

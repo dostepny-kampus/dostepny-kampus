@@ -32,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -84,7 +85,13 @@ internal fun Sheet(
     val state = remember { AnchoredDraggableState(if (isExpanded) SheetHeight.Half else SheetHeight.Low) }
     val measure = remember { SheetMeasure() }
     val currentOnLowHeight by rememberUpdatedState(onLowHeight)
-    FollowHeights(state, measure, isExpanded, onExpandedChange, onClose)
+    FollowHeights(
+        state = state,
+        measure = measure,
+        isExpanded = isExpanded,
+        onExpandedChange = onExpandedChange,
+        onClose = onClose,
+    )
     val isFull = state.currentValue == SheetHeight.Full
     val corner = if (isFull) 0.dp else Zaokraglenia.bardzoDuze
     val scroll = remember(state) { SheetScrollConnection(state) }
@@ -131,7 +138,7 @@ private class SheetMeasure {
     /** Kotwice dla zmierzonego okna; przed pomiarem niskiej karty jej wysokość to część okna. */
     fun anchors(): DraggableAnchors<SheetHeight> {
         val known = low.takeIf { it > 0 } ?: (window / PROVISIONAL_LOW_SHARE)
-        return sheetAnchors(window.toFloat(), known.toFloat())
+        return sheetAnchors(window = window.toFloat(), low = known.toFloat())
     }
 }
 
@@ -145,9 +152,9 @@ private fun FollowHeights(
 ) {
     val currentOnExpandedChange by rememberUpdatedState(onExpandedChange)
     val currentOnClose by rememberUpdatedState(onClose)
-    LaunchedEffect(measure.window, measure.low) {
-        if (measure.window > 0) state.updateAnchors(measure.anchors())
-    }
+    val anchors =
+        remember(key1 = measure.window, key2 = measure.low) { measure.anchors().takeIf { measure.window > 0 } }
+    SideEffect { anchors?.let(state::updateAnchors) }
     LaunchedEffect(state) {
         snapshotFlow { state.settledValue }.collect { height ->
             if (height == SheetHeight.Closed) currentOnClose() else currentOnExpandedChange(height.isExpanded)
@@ -168,12 +175,12 @@ private fun Modifier.followHeight(
         val isLow =
             state.anchors.hasPositionFor(SheetHeight.Low) && state.anchors.positionOf(SheetHeight.Low) == offset
         val isResting = offset.isNaN() || (isCompact && isLow)
-        val shown = (constraints.maxHeight - offset.roundToIntOrZero()).coerceIn(0, constraints.maxHeight)
+        val shown = (constraints.maxHeight - offset.roundToIntOrZero()).coerceIn(minimumValue = 0, maximumValue = constraints.maxHeight)
         val fixed =
             if (isResting) constraints.copy(minHeight = 0) else constraints.copy(minHeight = shown, maxHeight = shown)
         val placeable = measurable.measure(fixed)
         onMeasure(constraints.maxHeight, placeable.height.takeIf { isResting && isCompact })
-        layout(placeable.width, placeable.height) { placeable.place(0, 0) }
+        layout(width = placeable.width, height = placeable.height) { placeable.place(x = 0, y = 0) }
     }
 
 private fun Float.roundToIntOrZero(): Int = if (isNaN()) 0 else roundToInt()
