@@ -49,6 +49,21 @@ class MapPlanTest {
         }
 
     @Test
+    fun hidesPlanWithMap() =
+        runTest(UnconfinedTestDispatcher()) {
+            val plan = MapPlan(Plans(), entrances())
+            val shown = collected(plan)
+            plan.camera(MapCamera(center = INSIDE_A, zoom = 18.0))
+            val before = shown.value?.building
+            plan.hide()
+            assertEquals(
+                listOf("A", null),
+                listOf(before, shown.value?.building),
+                "Plan budynku został po zejściu mapy z ekranu",
+            )
+        }
+
+    @Test
     fun remembersChosenFloor() =
         runTest(UnconfinedTestDispatcher()) {
             val plan = MapPlan(Plans(), entrances())

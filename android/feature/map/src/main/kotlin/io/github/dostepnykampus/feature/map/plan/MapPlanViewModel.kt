@@ -51,6 +51,11 @@ class MapPlanViewModel
             plan.camera(view)
         }
 
+        /** Zapomina widok mapy, gdy mapa schodzi z ekranu; do następnego widoku planu nie ma. */
+        fun hide() {
+            plan.hide()
+        }
+
         /** Pokazuje piętro [floor] budynku [building] i zapamiętuje je. */
         fun chooseFloor(building: String, floor: String) {
             plan.choose(building, floor)

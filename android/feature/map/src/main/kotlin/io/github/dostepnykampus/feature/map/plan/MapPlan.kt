@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.update
@@ -45,7 +44,7 @@ data class ShownPlan(
  * Plan budynku pobiera się z serwera raz na udane pobranie, a bez sieci pochodzi z kopii [plans]. Na start jest
  * piętro wejścia zalecanego z [entrances], a gdy dane go nie podają albo plan nie ma tego piętra — parter albo
  * najniższe piętro (R5); wybrane piętro budynku zostaje zapamiętane na czas życia obiektu (R6). Budynek bez kopii
- * planu nie ma planu.
+ * planu nie ma planu. Bez mapy na ekranie ([hide]) planu nie ma do następnego widoku kamery.
  *
  * Wymagania: US16.1, US16.2, BR-G1, BR-25, NFR-10
  *
@@ -61,6 +60,11 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
     /** Zapisuje widok mapy [view] po ruchu kamery. */
     fun camera(view: MapCamera) {
         cameras.value = view
+    }
+
+    /** Zapomina widok mapy, gdy mapa schodzi z ekranu; do następnego widoku planu nie ma. */
+    fun hide() {
+        cameras.value = null
     }
 
     /** Zapamiętuje piętro [floor] budynku [building]. */
@@ -82,11 +86,11 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
     /** Plan przy widoku mapy dla katalogów [catalogs]; `null`, gdy planu nie widać. */
     @OptIn(ExperimentalCoroutinesApi::class)
     fun shown(catalogs: Flow<BuildingCatalog?>): Flow<ShownPlan?> {
-        val views = combine(flow = cameras.filterNotNull(), flow2 = catalogs) { view, catalog -> view to catalog }
+        val views = combine(flow = cameras, flow2 = catalogs) { view, catalog -> view to catalog }
         val focus =
-            views.scan<Pair<MapCamera, BuildingCatalog?>, String?>(null) { shown, (view, catalog) ->
+            views.scan<Pair<MapCamera?, BuildingCatalog?>, String?>(null) { shown, (view, catalog) ->
                 val detailed = catalog?.run { buildings.filter { it.symbol in detailed } }.orEmpty()
-                planFocus(center = view.center, zoom = view.zoom, detailed = detailed, shown = shown)
+                view?.let { planFocus(center = it.center, zoom = it.zoom, detailed = detailed, shown = shown) }
             }
         val distinct = focus.distinctUntilChanged()
         val loaded = distinct.mapLatest { symbol -> symbol?.let { load(it) } }
