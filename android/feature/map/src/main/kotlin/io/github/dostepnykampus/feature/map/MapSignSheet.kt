@@ -7,7 +7,6 @@ package io.github.dostepnykampus.feature.map
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -168,11 +167,11 @@ internal fun screenSheet(focus: MapFocus?, padding: PaddingValues, onCardClose: 
     val cover = padding.calculateBottomPadding()
     val signs = rememberSignSheetState(focus = focus, cover = cover, onCardClose = onCardClose)
     val entrance = (focus as? MapFocus.Entrance)?.id
-    var opened by rememberSaveable(entrance) { mutableStateOf(false) }
-    LaunchedEffect(entrance) {
-        if (entrance != null && !opened) {
+    var isOpened by rememberSaveable(entrance) { mutableStateOf(false) }
+    SideEffect {
+        if (entrance != null && !isOpened) {
             signs.open(TouchSign.ENTRANCE, entrance)
-            opened = true
+            isOpened = true
         }
     }
     val layout = signs.cardLayout(CardLayout(padding = padding, focus = focus))

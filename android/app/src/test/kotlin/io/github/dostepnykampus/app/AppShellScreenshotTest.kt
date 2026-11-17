@@ -23,7 +23,6 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performSemanticsAction
@@ -140,8 +139,8 @@ class AppShellScreenshotTest {
         if (isSheetOpen && !isFromList) compose.runOnUiThread { touch(listOf("C-13")) }
         query?.let { compose.onNode(hasSetTextAction()).performTextInput(it) }
         if (isKeyboardOpen) compose.runOnUiThread { dispatchKeyboard(compose.activity, isOpen = true) }
-        val check = "Zamknij"
-        if (isSheetOpen) compose.waitUntil { compose.onAllNodesWithText(check).fetchSemanticsNodes().isNotEmpty() }
+        val card = hasContentDescription("Budynek C-13", substring = true)
+        if (isSheetOpen) compose.waitUntil { compose.onAllNodes(card).fetchSemanticsNodes().isNotEmpty() }
         compose.onRoot().captureRoboImage()
     }
 

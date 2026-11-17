@@ -354,7 +354,14 @@ class BuildingCardModesTest {
     }
 
     private fun assertOrder(vararg texts: String) {
-        val tops = texts.map { compose.onAllNodesWithText(it).onFirst().getUnclippedBoundsInRoot().top }
+        val tops =
+            texts.map { text ->
+                compose
+                    .onAllNodesWithText(text)
+                    .onFirst()
+                    .getUnclippedBoundsInRoot()
+                    .top
+            }
         assertTrue("${texts.toList()} od góry, a są na $tops", tops.zipWithNext().all { (up, down) -> up < down })
     }
 

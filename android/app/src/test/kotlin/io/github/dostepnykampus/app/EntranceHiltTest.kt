@@ -44,6 +44,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 import javax.inject.Singleton
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -64,6 +65,7 @@ private const val CATALOG =
 @HiltAndroidTest
 @UninstallModules(DataModule::class)
 @RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(application = HiltTestApplication::class, qualifiers = "w360dp-h800dp")
 class EntranceHiltTest {
     /** Źródła danych z pamięci zamiast `DataModule`; katalog „Budynek testowy” nie jest danymi PWr. */

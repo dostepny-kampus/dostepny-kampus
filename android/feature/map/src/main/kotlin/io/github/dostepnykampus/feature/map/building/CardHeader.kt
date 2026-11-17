@@ -55,7 +55,7 @@ private fun HeaderOrSpace(symbol: String, card: BuildingCardUiState, isFullScree
     ) {
         if (ready != null) {
             SymbolOverName(symbol = symbol, name = ready.name)
-            EntranceLines(ready.entrances)
+            EntranceLines(summary = entranceSummary(ready.entrances), answer = visitAnswer(ready.entrances))
         } else {
             Column {
                 Text(text = symbol, style = MaterialTheme.typography.headlineLarge)
@@ -67,11 +67,11 @@ private fun HeaderOrSpace(symbol: String, card: BuildingCardUiState, isFullScree
 }
 
 @Composable
-private fun EntranceLines(entrances: List<OrderedEntrance>) {
-    val answer = answerLine(visitAnswer(entrances))
+private fun EntranceLines(summary: EntranceSummary, answer: VisitAnswer) {
+    val line = answerLine(answer)
     Column(Modifier.semantics(mergeDescendants = true) {}) {
-        EntranceSummaryLine(entranceSummary(entrances))
-        answer?.let { sentence ->
+        EntranceSummaryLine(summary)
+        line?.let { sentence ->
             Text(
                 text = sentence,
                 style = MaterialTheme.typography.bodyMedium,
@@ -90,17 +90,21 @@ private fun EntranceLines(entrances: List<OrderedEntrance>) {
 @ReadOnlyComposable
 internal fun answerLine(answer: VisitAnswer): String? =
     when (answer) {
-        is VisitAnswer.Accessible ->
+        is VisitAnswer.Accessible -> {
             stringResource(R.string.karta_odpowiedz_zalecane, answer.name ?: stringResource(R.string.karta_bez_nazwy))
+        }
 
-        is VisitAnswer.NoAccessible ->
+        is VisitAnswer.NoAccessible -> {
             if (answer.total == 1) {
                 stringResource(R.string.karta_odpowiedz_jedyne)
             } else {
                 stringResource(R.string.karta_odpowiedz_zadne, answer.total)
             }
+        }
 
-        VisitAnswer.NoData, is VisitAnswer.Unknown -> null
+        VisitAnswer.NoData, is VisitAnswer.Unknown -> {
+            null
+        }
     }
 
 @Composable

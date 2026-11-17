@@ -75,7 +75,8 @@ sealed interface VisitAnswer {
 fun visitAnswer(entrances: List<OrderedEntrance>): VisitAnswer {
     if (entrances.isEmpty()) return VisitAnswer.NoData
     val recommended = entrances.firstOrNull { it.isRecommended }
-    return recommended?.let { VisitAnswer.Accessible(it.entrance.id, it.entrance.name) } ?: missingOrNone(entrances)
+    val answer = recommended?.let { VisitAnswer.Accessible(id = it.entrance.id, name = it.entrance.name) }
+    return answer ?: missingOrNone(entrances)
 }
 
 private fun missingOrNone(entrances: List<OrderedEntrance>): VisitAnswer {
@@ -89,10 +90,7 @@ private fun missingOrNone(entrances: List<OrderedEntrance>): VisitAnswer {
  * Wymagania: BR-25
  */
 internal fun BuildingCardUiState.recommendedEntrance(): OrderedEntrance? =
-    when (this) {
-        is BuildingCardUiState.Ready -> entrances.firstOrNull { it.isRecommended }
-        else -> null
-    }
+    (this as? BuildingCardUiState.Ready)?.entrances?.firstOrNull { it.isRecommended }
 
 /** Wiersz o wejściach pod nagłówkiem karty budynku. Wymagania: US2.8, US2.1, US3.1 */
 enum class EntranceSummary {

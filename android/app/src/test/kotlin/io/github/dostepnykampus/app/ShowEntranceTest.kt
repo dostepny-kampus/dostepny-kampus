@@ -70,8 +70,8 @@ class ShowEntranceTest {
         }
         compose.onNodeWithText("V1").performClick()
         compose.waitUntil { compose.onAllNodesWithText("Wejścia").fetchSemanticsNodes().isNotEmpty() }
-        compose.onAllNodes(hasContentDescription(SHOW_ENTRANCE, substring = true)).assertCountEquals(1)
-        compose.onNode(ShowButton).performScrollTo().performClick()
+        compose.onAllNodes(hasContentDescription(SHOW_ENTRANCE, substring = true)).assertCountEquals(2)
+        compose.onAllNodes(ShowButton)[1].performScrollTo().performClick()
         assertEquals(MapRoute(MapFocus.Entrance(id = "node/2", buildingSymbol = "A-1")), navigator.current)
     }
 

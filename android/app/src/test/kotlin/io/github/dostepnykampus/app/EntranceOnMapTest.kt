@@ -37,6 +37,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 import kotlin.coroutines.EmptyCoroutineContext
 
 private const val BUILDING =
@@ -75,6 +76,7 @@ private val OTHERS =
  * Wymagania: US3.3, US2.1, NFR-18, NFR-15
  */
 @RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h800dp")
 class EntranceOnMapTest {
     @get:Rule
