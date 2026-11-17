@@ -31,14 +31,17 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.feature.map.building.CardMode
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlin.math.abs
 
 private val CardHeight = 120.dp
 private val StepDrag = 80.dp
+private val HeightStep = 48.dp
 private const val MOVE_MILLIS = 10L
 private const val SLOW_DP_PER_SECOND = 100
 private const val QUICK_DP_PER_SECOND = 200
@@ -122,9 +125,18 @@ internal class SheetStepDragTest(
         val step = pace.dpPerSecond.dp * (MOVE_MILLIS / MILLIS_PER_SECOND)
         val steps = (StepDrag / step).toInt()
         val sign = if (isUp) -1f else 1f
-        compose.onNodeWithContentDescription(EXPAND_HANDLE).performTouchInput {
+        val handle = compose.onNodeWithContentDescription(EXPAND_HANDLE)
+        val start = handle.getUnclippedBoundsInRoot().top
+        handle.performTouchInput {
             down(center)
             repeat(steps) { moveBy(delta = Offset(x = 0f, y = sign * step.toPx()), delayMillis = MOVE_MILLIS) }
+        }
+        if (pace.holdMillis > 0L) {
+            compose.waitForIdle()
+            val moved = abs((handle.getUnclippedBoundsInRoot().top - start).value)
+            assertTrue("karta za palcem przed puszczeniem: $moved dp", moved >= HeightStep.value)
+        }
+        handle.performTouchInput {
             advanceEventTime(pace.holdMillis)
             up()
         }
