@@ -9,6 +9,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -93,23 +94,25 @@ private fun SheetTop(entrance: Entrance, onClose: () -> Unit) {
     val header = remember { FocusRequester() }
     val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     LaunchedEffect(header) { withFrameMillis { header.requestFocus() } }
-    if (isLarge) {
-        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) { CloseButton(onClose) }
-    }
-    Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
-        MarkingSign(entrance.marking)
-        Text(
-            text = stringResource(R.string.mapa_wejscie_naglowek, entrance.buildingSymbol),
-            modifier =
-                Modifier
-                    .weight(1f)
-                    .focusRequester(header)
-                    .focusable()
-                    .semantics { heading() },
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = Typografia.wyroznienieWaga,
-        )
-        if (!isLarge) CloseButton(onClose)
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        if (isLarge) {
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) { CloseButton(onClose) }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
+            MarkingSign(entrance.marking)
+            Text(
+                text = stringResource(R.string.mapa_wejscie_naglowek, entrance.buildingSymbol),
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .focusRequester(header)
+                        .focusable()
+                        .semantics { heading() },
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = Typografia.wyroznienieWaga,
+            )
+            if (!isLarge) CloseButton(onClose)
+        }
     }
 }
 
