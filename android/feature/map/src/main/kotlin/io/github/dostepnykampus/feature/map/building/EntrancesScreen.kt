@@ -116,7 +116,7 @@ private fun answerSentence(symbol: String, answer: VisitAnswer): String {
     return when (answer) {
         VisitAnswer.NoData -> stringResource(R.string.wizyta_brak_danych, symbol)
         is VisitAnswer.Accessible -> stringResource(R.string.wizyta_dostepne, symbol, answer.name ?: unnamed)
-        VisitAnswer.NoAccessible -> stringResource(R.string.wizyta_brak, symbol)
+        is VisitAnswer.NoAccessible -> stringResource(R.string.wizyta_brak, symbol)
         is VisitAnswer.Unknown -> stringResource(R.string.wizyta_nie_wiemy, symbol, answer.missing, answer.total)
     }
 }

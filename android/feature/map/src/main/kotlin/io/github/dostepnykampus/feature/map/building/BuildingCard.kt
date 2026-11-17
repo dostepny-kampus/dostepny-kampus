@@ -40,7 +40,7 @@ fun orderedEntrances(entrances: List<Entrance>): List<OrderedEntrance> {
 }
 
 /**
- * Odpowiedź V3 „Którędy wejść”.
+ * Odpowiedź o wejściu do budynku.
  *
  * Wymagania: US3.1, BR-25
  */
@@ -48,11 +48,11 @@ sealed interface VisitAnswer {
     /** Brak wejść odwiedzających w danych nie potwierdza niedostępności budynku. Wymagania: US17.1 */
     data object NoData : VisitAnswer
 
-    /** Jest wejście zalecane; [name] to jego nazwa, `null`, gdy danych nazwy nie ma. */
-    data class Accessible(val name: String?) : VisitAnswer
+    /** Jest wejście zalecane o identyfikatorze [id]; [name] to jego nazwa, `null`, gdy danych nazwy nie ma. */
+    data class Accessible(val id: String, val name: String?) : VisitAnswer
 
-    /** Żadne wejście odwiedzających nie jest „dostępne” i żadne nie ma „brak danych”. */
-    data object NoAccessible : VisitAnswer
+    /** Żadne z [total] wejść odwiedzających nie jest „dostępne” i żadne nie ma „brak danych”. */
+    data class NoAccessible(val total: Int) : VisitAnswer
 
     /**
      * Nie ma wejścia „dostępne”, a o części nie ma danych.
@@ -64,7 +64,7 @@ sealed interface VisitAnswer {
 }
 
 /**
- * Zdanie V3 z listy [entrances] ułożonej przez [orderedEntrances].
+ * Odpowiedź z listy [entrances] ułożonej przez [orderedEntrances].
  *
  * Wejście zalecane jest w zdaniu „ma wejście dostępne”. Bez niego, gdy choć jedno wejście ma „brak danych”,
  * zdanie podaje, o ilu z ilu wejść brak danych — także wtedy, gdy danych brak o wszystkich. Inaczej budynek
@@ -75,13 +75,22 @@ sealed interface VisitAnswer {
 fun visitAnswer(entrances: List<OrderedEntrance>): VisitAnswer {
     if (entrances.isEmpty()) return VisitAnswer.NoData
     val recommended = entrances.firstOrNull { it.isRecommended }
-    return recommended?.let { VisitAnswer.Accessible(it.entrance.name) } ?: missingOrNone(entrances)
+    val answer = recommended?.let { VisitAnswer.Accessible(id = it.entrance.id, name = it.entrance.name) }
+    return answer ?: missingOrNone(entrances)
 }
 
 private fun missingOrNone(entrances: List<OrderedEntrance>): VisitAnswer {
     val missing = entrances.count { it.entrance.marking == EntranceMarking.NO_DATA }
-    return if (missing == 0) VisitAnswer.NoAccessible else VisitAnswer.Unknown(missing, entrances.size)
+    return if (missing == 0) VisitAnswer.NoAccessible(entrances.size) else VisitAnswer.Unknown(missing, entrances.size)
 }
+
+/**
+ * Wejście zalecane gotowej karty; `null` w trakcie wczytywania, bez budynku i bez wejścia zalecanego.
+ *
+ * Wymagania: BR-25
+ */
+internal fun BuildingCardUiState.recommendedEntrance(): OrderedEntrance? =
+    (this as? BuildingCardUiState.Ready)?.run { entrances.firstOrNull { it.isRecommended } }
 
 /** Wiersz o wejściach pod nagłówkiem karty budynku. Wymagania: US2.8, US2.1, US3.1 */
 enum class EntranceSummary {
@@ -99,7 +108,7 @@ enum class EntranceSummary {
 fun entranceSummary(entrances: List<OrderedEntrance>): EntranceSummary =
     when (visitAnswer(entrances)) {
         is VisitAnswer.Accessible -> EntranceSummary.Accessible
-        VisitAnswer.NoAccessible -> EntranceSummary.NoAccessible
+        is VisitAnswer.NoAccessible -> EntranceSummary.NoAccessible
         VisitAnswer.NoData, is VisitAnswer.Unknown -> EntranceSummary.NoData
     }
 

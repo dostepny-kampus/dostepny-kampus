@@ -208,7 +208,7 @@ class AppNavigator(
         }
     }
 
-    /** V2 → V3 budynku [symbol]: „Sprawdź, którędy wejść”. Wymagania: US3, US3.2 */
+    /** Arkusz wejścia na V1 → V3 budynku [symbol]: „Sprawdź, którędy wejść”. Wymagania: US3, US3.3 */
     fun openEntrances(symbol: String) {
         leaving { add(EntrancesRoute(symbol)) }
     }

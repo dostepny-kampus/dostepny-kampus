@@ -31,11 +31,13 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 import kotlin.coroutines.EmptyCoroutineContext
 
 private const val BUILDING =
@@ -64,16 +66,17 @@ private val OTHERS =
     )
 
 /**
- * „Pokaż wejście na mapie” na V3 przez prawdziwy ekran V1 do tego, co dostaje widok mapy (podróbka): zaznaczone
- * wejście, pinezka z podpisem, kamera i nazwa dla TalkBack. Katalog
+ * „Pokaż wejście na mapie” na karcie V2 przez prawdziwy ekran V1 do tego, co dostaje widok mapy (podróbka):
+ * zaznaczone wejście, pinezka z podpisem, kamera, arkusz wejścia i nazwa dla TalkBack. Katalog
  * „Budynek testowy” jest syntetyczny (nie dane PWr).
  *
- * `showEntranceOnMap`: Od dotknięcia budynku na V1 przez V2 i V3 do „Pokaż wejście na mapie”; zwraca to, co dostała
+ * `showEntranceOnMap`: Od dotknięcia budynku na V1 przez V2 do „Pokaż wejście na mapie”; zwraca to, co dostała
  * mapa po tym.
  *
  * Wymagania: US3.3, US2.1, NFR-18, NFR-15
  */
 @RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h800dp")
 class EntranceOnMapTest {
     @get:Rule
@@ -139,22 +142,62 @@ class EntranceOnMapTest {
         show(json)
         compose.waitUntil { shown.isNotEmpty() }
         compose.runOnUiThread { touch(listOf("A-1")) }
-        click("Sprawdź, którędy wejść")
         click(SHOW_ENTRANCE)
-        val v3 = hasText("Którędy wejść", substring = true)
-        compose.waitUntil { compose.onAllNodes(v3).fetchSemanticsNodes().isEmpty() }
         return shown.last()
     }
 
     private fun namedCatalog(): String =
         catalog(entrance(10, NAMED_AT, """"entrance":"yes","ref":"$NAMED","wheelchair":"yes""""), *OTHERS)
 
-    /** Wiersz E2 (O1, O2, O4): V3 → V1; mapa dostaje wybrane wejście z punktem i podpisem z nazwą. */
+    /** Wiersz E2 (O1, O2, O4): V2 → V1; mapa dostaje wybrane wejście z punktem i podpisem z nazwą. */
     @Test
     fun passesEntranceToMap() {
         showEntranceOnMap(namedCatalog())
         val expected = SelectedEntrance(id = NAMED_ID, location = NAMED_AT, label = NAMED, buildingSymbol = "A-1")
         assertEquals(expected, selections.last().entrance)
+    }
+
+    /**
+     * Wiersz: V1, dotknięcie budynku → niska karta V2 z „Wejście dostępne” i zdaniem o wejściu zalecanym, czytanymi
+     *   razem; to 1 dotknięcie od mapy.
+     * Scenariusz: przegladanie-mapy.feature: Wejście dostępne najwyżej 3 dotknięcia od mapy
+     *
+     * Wymagania: US3.2, US3.1, BR-25
+     */
+    @Test
+    fun answersAfterOneTap() {
+        show(namedCatalog())
+        compose.waitUntil { shown.isNotEmpty() }
+        compose.runOnUiThread { touch(listOf("A-1")) }
+        val answer = hasText("Wejście dostępne") and hasText("Zalecane: „$NAMED”.")
+        compose.waitUntil { compose.onAllNodes(answer).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNode(hasText(SHOW_ENTRANCE)).assertExists("„Pokaż wejście na mapie” pod zdaniem")
+    }
+
+    /**
+     * Wiersz: V1, dotknięcie budynku bez wejścia dostępnego → karta z „Brak wejścia dostępnego” i zdaniem, ile wejść
+     *   nie jest dostępnych; bez „Pokaż wejście na mapie”.
+     * Scenariusz: przegladanie-mapy.feature: Brak wejścia dostępnego jest powiedziany wprost
+     *
+     * Wymagania: US3.1, BR-25
+     */
+    @Test
+    fun saysNoAccessibleAfterTap() {
+        show(catalog(entrance(10, NAMED_AT, """"entrance":"yes","ref":"$NAMED","wheelchair":"no""""), OTHERS[0]))
+        compose.waitUntil { shown.isNotEmpty() }
+        compose.runOnUiThread { touch(listOf("A-1")) }
+        val answer = hasText("Brak wejścia dostępnego") and hasText("Żadne z 2 wejść nie jest dostępne.")
+        compose.waitUntil { compose.onAllNodes(answer).fetchSemanticsNodes().isNotEmpty() }
+        val buttons = compose.onAllNodes(hasText(SHOW_ENTRANCE)).fetchSemanticsNodes()
+        assertTrue("bez „Pokaż wejście na mapie”, a jest ${buttons.size}", buttons.isEmpty())
+    }
+
+    /** Wiersz: „Pokaż wejście na mapie” na V2 → V1 z otwartym arkuszem tego wejścia. Wymagania: US3.3, US3.2 */
+    @Test
+    fun opensEntranceSheet() {
+        showEntranceOnMap(namedCatalog())
+        val sheet = hasText("Wejście, budynek A-1")
+        compose.waitUntil { compose.onAllNodes(sheet).fetchSemanticsNodes().isNotEmpty() }
     }
 
     /** Wiersz E2, E4: wejście bez nazwy w danych dostaje podpis zastępczy, także dla TalkBack. */

@@ -12,7 +12,6 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onFirst
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import dagger.Module
 import dagger.Provides
@@ -45,6 +44,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 import javax.inject.Singleton
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -65,6 +65,7 @@ private const val CATALOG =
 @HiltAndroidTest
 @UninstallModules(DataModule::class)
 @RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(application = HiltTestApplication::class, qualifiers = "w360dp-h800dp")
 class EntranceHiltTest {
     /** Źródła danych z pamięci zamiast `DataModule`; katalog „Budynek testowy” nie jest danymi PWr. */
@@ -141,13 +142,11 @@ class EntranceHiltTest {
         compose.onAllNodes(matcher).onFirst().assertExists()
     }
 
-    /** Wiersz: V1 lista, budynek → V2 → V3 → „Pokaż wejście na mapie” → V1, TalkBack czyta wejście i budynek. */
+    /** Wiersz: V1 lista, budynek → V2 → „Pokaż wejście na mapie” → V1, TalkBack czyta wejście i budynek. */
     @Test
     fun selectsEntranceThroughHilt() {
         waitFor(ListedA1)
         compose.onNode(ListedA1).performClick()
-        waitFor(hasText("Sprawdź, którędy wejść"))
-        compose.onNodeWithText("Sprawdź, którędy wejść").performClick()
         waitFor(hasText("Pokaż wejście na mapie"))
         compose.onAllNodes(hasText("Pokaż wejście na mapie")).onFirst().performClick()
         waitFor(hasContentDescription("Zaznaczone wejście: »Wejście dostosowane«, budynek A-1"))

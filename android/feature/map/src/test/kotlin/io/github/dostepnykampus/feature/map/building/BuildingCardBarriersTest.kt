@@ -135,7 +135,6 @@ class BuildingCardBarriersTest {
                             barriers = barriers,
                         ),
                     isOnline = true,
-                    onCheckEntrances = {},
                     onShowOnMap = {},
                     onBack = {},
                     onClose = {},

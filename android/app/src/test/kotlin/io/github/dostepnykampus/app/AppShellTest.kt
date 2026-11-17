@@ -55,7 +55,6 @@ import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
@@ -214,12 +213,6 @@ internal fun AppNavigator.TestAppScreen(
 internal fun AppNavigator.TestSignIn(route: SignInRoute) {
     val model = remember { SignInViewModel(network = { flowOf(true) }, signIn = { false }) }
     Account(route = route, signIn = model)
-}
-
-/** ViewModel z licznikiem dotknięć: pokazuje, czy ekran dostał ten sam ViewModel, czy nowy. */
-private class TapsModel : ViewModel() {
-    /** Liczba dotknięć. */
-    var taps by mutableIntStateOf(0)
 }
 
 /**
@@ -441,43 +434,6 @@ class AppShellTest {
         compose.onNodeWithText("v=0").assertExists()
     }
 
-    /**
-     * Wiersz: V3, „Wstecz” → V2 → V1 w poprzednim stanie: ViewModel V1 żyje tyle, co wpis V1
-     * w historii, także gdy V1 nie jest rysowane pod V3; ponowne „Mapa” → nowy ViewModel.
-     *
-     * Wymagania: US1.1
-     */
-    @Test
-    fun keepsMapModelOnEntranceBack() {
-        compose.setContent {
-            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
-                if (route is MapRoute) {
-                    val model = viewModel { TapsModel() }
-                    Column {
-                        Text(text = "vm=${model.taps}", modifier = Modifier.clickable { model.taps++ })
-                        Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
-                    }
-                } else if (route is BuildingRoute) {
-                    TestBuildingCard(route.symbol)
-                } else if (route is EntrancesRoute) {
-                    TestEntrances(route.symbol)
-                } else {
-                    AppScreen(route)
-                }
-            }
-        }
-        compose.onNodeWithText("vm=0").performClick()
-        compose.onNodeWithText("A-1").performClick()
-        compose.onNodeWithText("vm=1").assertIsDisplayed()
-        compose.onNodeWithText("Sprawdź, którędy wejść").performClick()
-        compose.onAllNodesWithText("vm=1").assertCountEquals(0)
-        pressBack()
-        pressBack()
-        compose.onNodeWithText("vm=1").assertExists()
-        compose.onNode(MapTab).performClick()
-        compose.onNodeWithText("vm=0").assertExists()
-    }
-
     /** Wiersz: V2 rozwinięte, „Wstecz” → V1, dotknięcie konturu → nowe V2 znów jako mała karta. Wymagania: US2.8 */
     @Test
     fun startsNewCardCompact() {
@@ -561,38 +517,6 @@ class AppShellTest {
         compose.onNodeWithText("Krok 1 z 3").assertExists()
         pressBack()
         compose.onNode(MapTab).assertIsSelected()
-    }
-
-    /**
-     * Wiersz: V2 → „Sprawdź, którędy wejść” → V3, „Wstecz” → V2 → V1 bez zaznaczenia budynku; historia
-     * z parametrami tras przetrwa odtworzenie aktywności.
-     *
-     * Wymagania: US3, US1.1, NFR-22
-     */
-    @Test
-    fun keepsParamsAfterRestore() {
-        val restoration = StateRestorationTester(compose)
-        restoration.setContent {
-            CardShell { route ->
-                if (route is EntrancesRoute) {
-                    TestEntrances(route.symbol)
-                } else {
-                    AppScreen(route)
-                }
-            }
-        }
-        compose.onNodeWithText("V1").performClick()
-        compose.onNodeWithText("Sprawdź, którędy wejść").performClick()
-        restoration.emulateSavedInstanceStateRestore()
-        compose.onNodeWithText("Którędy wejść do A-1").assertExists()
-        compose.waitUntil {
-            val nodes = compose.onAllNodesWithText("brak danych o 1 z 1 wejść", substring = true)
-            nodes.fetchSemanticsNodes().isNotEmpty()
-        }
-        pressBack()
-        compose.onNodeWithText("Sprawdź, którędy wejść").assertExists()
-        pressBack()
-        compose.onNodeWithText("V1").assertExists("V1 bez zaznaczenia budynku po zamknięciu małej karty")
     }
 
     /** Wiersz: wymagania wspólne, pasek dolny na V1, bez niego na L1: treść nie wchodzi pod paski. Wymagania: NFR-52 */

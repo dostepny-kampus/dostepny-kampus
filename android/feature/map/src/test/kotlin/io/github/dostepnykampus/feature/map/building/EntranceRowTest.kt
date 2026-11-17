@@ -53,7 +53,6 @@ class EntranceRowTest {
                 BuildingCardScreen(
                     symbol = symbol,
                     mode = CardMode.Expanded,
-                    onCheckEntrances = {},
                     onShowOnMap = {},
                     onBack = {},
                     onClose = {},
