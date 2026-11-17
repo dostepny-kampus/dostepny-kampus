@@ -116,11 +116,18 @@ class SheetDirectTest {
     @Config(fontScale = 2f)
     fun closesOnDragDownAtLargeFont() {
         show()
+        compose.mainClock.autoAdvance = false
         compose.onNodeWithContentDescription(EXPAND_HANDLE).performTouchInput { swipeDown() }
+        val path =
+            List(size = 60) {
+                compose.mainClock.advanceTimeByFrame()
+                compose.onAllNodesWithContentDescription(EXPAND_HANDLE).fetchSemanticsNodes().map { it.boundsInRoot.top }
+            }
+        compose.mainClock.autoAdvance = true
         compose.waitForIdle()
         val handles = compose.onAllNodesWithContentDescription(EXPAND_HANDLE).fetchSemanticsNodes()
         val tops = handles.map { it.boundsInRoot.top }
-        assertEquals("karta zamknięta po przeciągnięciu w dół, uchwyt na $tops px", emptyList<Float>(), tops)
+        assertEquals("karta zamknięta po przeciągnięciu w dół, uchwyt na $tops px, droga $path", emptyList<Float>(), tops)
         compose.onNodeWithText(SHOW_ON_MAP).assertDoesNotExist()
         compose.onNodeWithText("V1").assertExists("mapa V1 po zamknięciu")
     }
