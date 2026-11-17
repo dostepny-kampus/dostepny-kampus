@@ -116,11 +116,11 @@ jobs:
           mkdir -p narzedzia
           cd narzedzia
           vale_archive="vale_${VALE_VERSION}_Linux_64-bit.tar.gz"
-          curl -sSfLO "https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}/${vale_archive}"
+          curl -sSfLO --retry 5 --retry-all-errors --retry-delay 10 "https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}/${vale_archive}"
           echo "${VALE_SHA256}  ${vale_archive}" | sha256sum --check --strict
           tar -xzf "${vale_archive}" vale
           plantuml_jar="plantuml-${PLANTUML_VERSION}.jar"
-          curl -sSfLO "https://github.com/plantuml/plantuml/releases/download/v${PLANTUML_VERSION}/${plantuml_jar}"
+          curl -sSfLO --retry 5 --retry-all-errors --retry-delay 10 "https://github.com/plantuml/plantuml/releases/download/v${PLANTUML_VERSION}/${plantuml_jar}"
           echo "${PLANTUML_SHA256}  ${plantuml_jar}" | sha256sum --check --strict
           mv "${plantuml_jar}" plantuml.jar
       - name: Testy skryptów dokumentacji

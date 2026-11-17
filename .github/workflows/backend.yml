@@ -183,11 +183,11 @@ jobs:
         working-directory: ${{ runner.temp }}
         run: |
           jar="jpeek-${JPEEK_VERSION}-jar-with-dependencies.jar"
-          curl -sSfLO "https://repo1.maven.org/maven2/org/jpeek/jpeek/${JPEEK_VERSION}/${jar}"
+          curl -sSfLO --retry 5 --retry-all-errors --retry-delay 10 "https://repo1.maven.org/maven2/org/jpeek/jpeek/${JPEEK_VERSION}/${jar}"
           echo "${JPEEK_SHA256}  ${jar}" | sha256sum --check --strict
           mv "${jar}" jpeek.jar
           asm="asm-${ASM_VERSION}.jar"
-          curl -sSfLO "https://repo1.maven.org/maven2/org/ow2/asm/asm/${ASM_VERSION}/${asm}"
+          curl -sSfLO --retry 5 --retry-all-errors --retry-delay 10 "https://repo1.maven.org/maven2/org/ow2/asm/asm/${ASM_VERSION}/${asm}"
           echo "${ASM_SHA256}  ${asm}" | sha256sum --check --strict
           mv "${asm}" asm.jar
       - name: Policz spójność klas
