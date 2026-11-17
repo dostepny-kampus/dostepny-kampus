@@ -6,10 +6,13 @@
 package io.github.dostepnykampus.core.data.account
 
 import io.github.dostepnykampus.core.data.di.IoContext
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
+import io.github.dostepnykampus.core.database.QueueOwnershipDao
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.network.auth.AccessTokens
 import io.github.dostepnykampus.core.network.auth.realmRolesOf
+import io.github.dostepnykampus.core.network.auth.subjectOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
@@ -36,15 +39,18 @@ import kotlin.coroutines.CoroutineContext
  * @param vault zalogowanie zapisane do następnego uruchomienia
  * @param refresher odświeżenie tokenu dostępu
  * @param work wątek zapisu i odświeżania
+ * @param adoptLegacyQueue przypisanie wpisów bez właściciela
+ * @param onLogin wywołanie po zalogowaniu konta
  */
 @Singleton
 public class AccountSession
-    @Inject
     internal constructor(
         private val tokens: AccessTokens,
         private val vault: LoginVault,
         private val refresher: LoginRefresh,
-        @param:IoContext private val work: CoroutineContext,
+        private val work: CoroutineContext,
+        private val adoptLegacyQueue: suspend (String) -> Unit = {},
+        private val onLogin: () -> Unit = {},
     ) : RoleProvider {
         private val state = MutableStateFlow<Account>(Account.Guest)
         private val scope = CoroutineScope(SupervisorJob() + work)
@@ -52,9 +58,19 @@ public class AccountSession
 
         override val account: StateFlow<Account> = state.asStateFlow()
 
-        init {
-            scope.launch { vault.read()?.takeIf { state.value == Account.Guest }?.let(::keep) }
-        }
+        private val restored = scope.launch { vault.read()?.takeIf { state.value == Account.Guest }?.let { keep(it) } }
+
+        @Inject
+        internal constructor(
+            tokens: AccessTokens,
+            vault: LoginVault,
+            refresher: LoginRefresh,
+            @IoContext work: CoroutineContext,
+            owners: QueueOwnershipDao,
+            queue: SubmissionQueue,
+        ) : this(tokens, vault, refresher, work, owners::adopt, queue::onLoggedIn)
+
+        internal suspend fun awaitRestore() = restored.join()
 
         /**
          * Loguje konto stanem logowania z Usługi logowania i zapisuje go do następnego uruchomienia.
@@ -64,6 +80,7 @@ public class AccountSession
         internal suspend fun signIn(login: AuthState): Boolean {
             if (!keep(login)) return false
             withContext(work) { vault.write(login) }
+            onLogin()
             return true
         }
 
@@ -73,8 +90,14 @@ public class AccountSession
          * @param token token JWT z Usługi logowania
          * @return `true`, gdy konto jest zalogowane tym tokenem
          */
-        public fun signIn(token: String): Boolean {
+        public suspend fun signIn(token: String): Boolean = activate(token).also { if (it) onLogin() }
+
+        private suspend fun activate(token: String): Boolean {
             val signedIn = accountOf(token) ?: return false
+            val subject = subjectOf(token)
+            if (subject != null && subject != tokens.subject) {
+                withContext(work) { adoptLegacyQueue(subject) }
+            }
             tokens.signIn(token)
             state.value = signedIn
             return true
@@ -88,9 +111,9 @@ public class AccountSession
             scope.launch { vault.clear() }
         }
 
-        private fun keep(login: AuthState): Boolean {
+        private suspend fun keep(login: AuthState): Boolean {
             val token = login.accessToken
-            if (token == null || !signIn(token)) return false
+            if (token == null || !activate(token)) return false
             val job = scope.launch(start = CoroutineStart.LAZY) { renew(login) }
             renewal.getAndSet(job)?.cancel()
             job.start()

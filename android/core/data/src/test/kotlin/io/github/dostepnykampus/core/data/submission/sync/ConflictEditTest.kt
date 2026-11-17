@@ -35,7 +35,7 @@ class ConflictEditTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
+                submissionServer(
                     create = { id, content -> ServerReply.Ok(server(id, content, version = 1)) },
                     putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                     update = { id, version, content ->
@@ -69,7 +69,7 @@ class ConflictEditTest {
                     override suspend fun find(id: String): PendingSubmissionWithPhotos? =
                         store.rows.find { it.submission.id == id }
                 }
-            val reopened = checkNotNull(pendingEditsOf(dao).load(ID))
+            val reopened = checkNotNull(pendingEditsOf(dao) { "konto-testowe" }.load(ID))
             assertEquals(7, reopened.edited.baseVersion, "ponowna poprawka idzie od wersji z serwera")
             queue.saveEdit(reopened.edited, reopened.content.copy(severity = 1), reopened.photos)
             queue.sendAll()

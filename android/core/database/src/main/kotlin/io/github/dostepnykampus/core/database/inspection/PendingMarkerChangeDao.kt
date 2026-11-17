@@ -31,17 +31,18 @@ public interface PendingMarkerChangeDao {
      */
     @Transaction
     public suspend fun saveRevoke(revoke: PendingMarkerChangeEntity) {
-        if (deleteSet(revoke.markerId) == 0) save(revoke)
+        if (deleteSet(markerId = revoke.markerId, owner = revoke.ownerSub) == 0) save(revoke)
     }
 
     /**
      * Usuwa z kolejki postawienie znacznika.
      *
      * @param markerId identyfikator znacznika
+     * @param owner właściciel wpisu albo `null` przed przypisaniem po migracji
      * @return liczba usuniętych wierszy: 1, gdy postawienie czekało, inaczej 0
      */
-    @Query("DELETE FROM pending_marker_changes WHERE marker_id = :markerId AND type = 'SET'")
-    public suspend fun deleteSet(markerId: String): Int
+    @Query("DELETE FROM pending_marker_changes WHERE marker_id = :markerId AND type = 'SET' AND owner_sub IS :owner")
+    public suspend fun deleteSet(markerId: String, owner: String?): Int
 
     /** Usuwa zmianę [operationId] po odbiorze przez serwer. */
     @Query("DELETE FROM pending_marker_changes WHERE operation_id = :operationId")

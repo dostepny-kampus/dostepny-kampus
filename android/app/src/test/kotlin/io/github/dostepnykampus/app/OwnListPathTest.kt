@@ -136,9 +136,10 @@ class OwnListPathTest {
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
-                    create = { id, content -> if (isServerReachable) accepted(id, content) else noAnswer() },
-                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { _, _, _ -> ServerReply.Missing },
+                    subject = { "konto-testowe" },
+                    create = { _, id, content -> if (isServerReachable) accepted(id, content) else noAnswer() },
+                    putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
+                    update = { _, _, _, _ -> ServerReply.Missing },
                 ),
             stamps =
                 SubmissionStamps(

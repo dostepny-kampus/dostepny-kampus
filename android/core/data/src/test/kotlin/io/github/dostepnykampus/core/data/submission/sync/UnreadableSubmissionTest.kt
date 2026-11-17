@@ -81,7 +81,8 @@ class UnreadableSubmissionTest {
                     override suspend fun find(id: String): PendingSubmissionWithPhotos? =
                         store.rows.find { it.submission.id == id }
                 }
-            assertNull(pendingEditsOf(dao).load(FIRST), "nieczytelnego zgłoszenia nie da się poprawić")
+            val edited = pendingEditsOf(dao) { "konto-testowe" }.load(FIRST)
+            assertNull(edited, "nieczytelnego zgłoszenia nie da się poprawić")
         }
 
     private fun assertUnreadable() {

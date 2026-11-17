@@ -6,8 +6,11 @@
 package io.github.dostepnykampus.core.database
 
 import android.database.Cursor
+import androidx.room.Room
 import androidx.room.testing.MigrationTestHelper
 import androidx.test.platform.app.InstrumentationRegistry
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -184,6 +187,37 @@ class MigrationTest {
 
                 assertEquals(listOf(true, true), lift)
             }
+    }
+
+    @Test
+    fun keepsBothQueuesFrom9To10() {
+        helper.createDatabase(DB_NAME, 9).use { ninth ->
+            ninth.execSQL(
+                "INSERT INTO pending_submissions (id, saved_at, created_on_server, kind, longitude, latitude)" +
+                    " VALUES ('a', 7, 0, 'PRECISE', 17.0, 51.0)",
+            )
+            ninth.execSQL(
+                "INSERT INTO pending_marker_changes (operation_id, type, marker_id, building_symbol, saved_at)" +
+                    " VALUES ('b', 'SET', 'm', 'A-1', 8)",
+            )
+        }
+
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val database = Room.databaseBuilder(context, DkDatabase::class.java, DB_NAME).build()
+        try {
+            runBlocking {
+                database.queueOwnership().adopt("pierwsze")
+                database.queueOwnership().adopt("drugie")
+                val submissions = database.pendingSubmissions()
+                val markers = database.pendingMarkerChanges()
+                val submission = submissions.all().single().submission
+                val marker = markers.observe().first().single()
+                assertEquals("zgłoszenie należy do pierwszego konta", "pierwsze", submission.ownerSub)
+                assertEquals("zmiana znacznika należy do pierwszego konta", "pierwsze", marker.ownerSub)
+            }
+        } finally {
+            database.close()
+        }
     }
 }
 

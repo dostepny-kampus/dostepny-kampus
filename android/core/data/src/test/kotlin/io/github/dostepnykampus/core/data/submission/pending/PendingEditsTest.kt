@@ -9,7 +9,9 @@ import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
 import io.github.dostepnykampus.core.data.submission.sync.FakeStore
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionStamps
 import io.github.dostepnykampus.core.database.submission.PendingEditDao
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionWithPhotos
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -31,14 +33,14 @@ class PendingEditsTest {
                 override suspend fun find(id: String): PendingSubmissionWithPhotos? =
                     store.rows.find { it.submission.id == id }
             },
+            subject = { "konto-testowe" },
         )
     private val queue =
         SubmissionQueue(
             store = store,
             ioContext = EmptyCoroutineContext,
-            create = { _, _ -> ServerReply.Offline },
-            putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-            newId = { ID },
+            server = SubmissionFixtures.acceptingServer { _, _ -> ServerReply.Offline },
+            stamps = SubmissionStamps(newId = { ID }),
         )
 
     @Test

@@ -38,8 +38,12 @@ public fun interface PendingEdits {
 }
 
 /** Poprawki z kolejki w bazie Room [store]. */
-internal fun pendingEditsOf(store: PendingEditDao): PendingEdits =
-    PendingEdits { id -> store.find(id)?.toPendingEdit() }
+internal fun pendingEditsOf(store: PendingEditDao, subject: () -> String?): PendingEdits =
+    PendingEdits { id ->
+        subject()?.let { owner ->
+            store.find(id)?.takeIf { it.submission.ownerSub == owner && subject() == owner }?.toPendingEdit()
+        }
+    }
 
 /** Poprawka z wiersza albo `null`, gdy telefon nie odczyta treści; C2 wraca wtedy do listy jak bez zgłoszenia. */
 internal fun PendingSubmissionWithPhotos.toPendingEdit(): PendingEdit? =

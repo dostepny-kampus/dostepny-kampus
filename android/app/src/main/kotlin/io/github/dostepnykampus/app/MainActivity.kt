@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
                 val isFirst by firstLaunch.firstLaunchState.collectAsStateWithLifecycle()
                 val queue = graph.submissionQueue()
                 val isLoginExpired by queue.loginExpired.collectAsStateWithLifecycle()
-                LoginExpiredGate(isExpired = isLoginExpired, roles = graph.roles(), onLoggedIn = queue::onLoggedIn) {
+                LoginExpiredGate(isExpired = isLoginExpired) {
                     isFirst?.let { first ->
                         AppShell(
                             firstLaunch = first,

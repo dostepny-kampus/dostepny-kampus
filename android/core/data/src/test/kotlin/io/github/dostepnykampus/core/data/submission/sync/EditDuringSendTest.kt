@@ -35,7 +35,7 @@ class EditDuringSendTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
+                submissionServer(
                     create = { id, content ->
                         calls += "create ${checkNotNull(content.severity)}"
                         entered.complete(Unit)

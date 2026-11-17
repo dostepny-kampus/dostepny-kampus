@@ -3,6 +3,7 @@
 ## Zadanie
 
 Repozytoria: łączą sieć i bazę w dane dla ekranów, prowadzą kolejki wysyłki zgłoszeń i znaczników piętra obejrzanego.
+Wysyłka obejmuje wpisy bieżącego konta. Pierwsze zalogowanie po migracji przypisuje starsze wpisy obu kolejek.
 
 ## Pakiety
 

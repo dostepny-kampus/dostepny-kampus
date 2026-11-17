@@ -12,8 +12,8 @@ import io.github.dostepnykampus.core.data.submission.sync.FakeStore
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.photo
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.server
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
-import io.github.dostepnykampus.core.data.submission.sync.SubmissionServer
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStamps
+import io.github.dostepnykampus.core.data.submission.sync.submissionServer
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
@@ -93,7 +93,7 @@ class OwnListTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
+                submissionServer(
                     create = { id, content -> ServerReply.Ok(server(id, content)) },
                     putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                     update = { _, _, _ -> ServerReply.Missing },

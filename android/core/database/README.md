@@ -14,7 +14,7 @@ Lokalna baza Room: kopie budynków, barier i planów pięter, zgłoszenia własn
 
 ## API
 
-DAO i encje. `DkDatabase`, migracje i wiązania Hilt (`DatabaseModule`) są `internal`. Moduły funkcji nie używają bazy bezpośrednio, tylko przez `:core:data`.
+DAO i encje. Kolejki zapisują właściciela jako `sub`. Wiersze z migracji przypisuje atomowo `QueueOwnershipDao`. `DkDatabase`, migracje i wiązania Hilt (`DatabaseModule`) są `internal`. Moduły funkcji nie używają bazy bezpośrednio, tylko przez `:core:data`.
 
 ## Zależności
 

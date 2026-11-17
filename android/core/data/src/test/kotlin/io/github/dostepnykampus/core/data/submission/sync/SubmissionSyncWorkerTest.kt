@@ -127,12 +127,12 @@ class SubmissionSyncWorkerTest {
         SubmissionQueue(
             store = store,
             ioContext = EmptyCoroutineContext,
-            create = { id, content ->
-                sends++
-                store.createResults.removeFirstOrNull() ?: accepted(id, content)
-            },
-            putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-            newId = { SENT_ID },
+            server =
+                SubmissionFixtures.acceptingServer { id, content ->
+                    sends++
+                    store.createResults.removeFirstOrNull() ?: accepted(id, content)
+                },
+            stamps = SubmissionStamps(newId = { SENT_ID }),
             onSaved = { schedules++ },
         )
 

@@ -14,8 +14,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import io.github.dostepnykampus.core.model.Account
-import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,7 +21,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
- * Po 401 aplikacja prosi o ponowne zalogowanie, a zalogowanie wznawia kolejkę bez dotykania ekranu.
+ * Aplikacja pokazuje prośbę o ponowne zalogowanie, gdy kolejka czeka po wygaśnięciu sesji.
  *
  * Wymagania: BR-26
  */
@@ -33,13 +31,11 @@ class LoginExpiredGateTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private val roles = TestRoles()
     private var isExpired by mutableStateOf(false)
-    private var resumes = 0
 
     /** Scenariusz (częściowo): synchronizacja.feature: Wygasłe zalogowanie czeka na ponowne zalogowanie. */
     @Test
-    fun resumesAfterExpiry() {
+    fun showsBannerWhileExpired() {
         show()
         compose.onNodeWithText(EXPIRED).assertDoesNotExist()
 
@@ -47,27 +43,14 @@ class LoginExpiredGateTest {
         compose.onNodeWithText(EXPIRED).assertIsDisplayed()
         compose.onNodeWithText("Aplikacja").assertIsDisplayed()
 
-        roles.account.value = Account.SignedIn()
-        compose.waitForIdle()
-        assertEquals(1, resumes)
-
         isExpired = false
         compose.onNodeWithText(EXPIRED).assertDoesNotExist()
-    }
-
-    @Test
-    fun waitsWithoutAccountChange() {
-        roles.account.value = Account.SignedIn()
-        isExpired = true
-        show()
-        compose.onNodeWithText(EXPIRED).assertIsDisplayed()
-        assertEquals(0, resumes)
     }
 
     private fun show() {
         compose.setContent {
             DostepnyKampusTheme {
-                LoginExpiredGate(isExpired = isExpired, roles = roles, onLoggedIn = { resumes++ }) {
+                LoginExpiredGate(isExpired = isExpired) {
                     Text("Aplikacja")
                 }
             }

@@ -58,6 +58,10 @@ internal object DatabaseModule {
     @Provides
     fun barrierCache(database: DkDatabase): BarrierCacheDao = database.barrierCache()
 
+    /** Przypisanie właściciela wierszom kolejek utworzonym przed migracją. */
+    @Provides
+    fun queueOwnership(database: DkDatabase): QueueOwnershipDao = database.queueOwnership()
+
     /** Kolejka zmian znaczników piętra obejrzanego z [database]. Wymagania: US15.3 */
     @Provides
     fun pendingMarkerChanges(database: DkDatabase): PendingMarkerChangeDao = database.pendingMarkerChanges()

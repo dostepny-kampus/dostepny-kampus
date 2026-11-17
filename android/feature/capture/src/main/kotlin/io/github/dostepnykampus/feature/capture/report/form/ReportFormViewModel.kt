@@ -201,7 +201,7 @@ internal fun FloorList.toPlanFloors(): PlanFloors? =
 /** Etap formularza po odmowie zapisu: inny komunikat dla zdjęć, inny dla nieznanej wersji. Wymagania: NFR-50, BR-10 */
 internal fun SaveRefusal.toStage(): ReportStage =
     when (this) {
-        SaveRefusal.PHOTOS_MISMATCH -> ReportStage.SAVE_REJECTED
+        SaveRefusal.PHOTOS_MISMATCH, SaveRefusal.ACCOUNT_CHANGED -> ReportStage.SAVE_REJECTED
         SaveRefusal.UNKNOWN_VERSION -> ReportStage.VERSION_UNKNOWN
     }
 
