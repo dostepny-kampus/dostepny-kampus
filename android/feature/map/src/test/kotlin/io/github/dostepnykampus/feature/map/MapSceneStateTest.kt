@@ -34,7 +34,7 @@ class MapSceneStateTest {
             shown = SceneCamera(move = start.byControl(), inset = MapInset(), landing = landing),
             limits = limits,
             cover = mapCover(isCovered, hasControls = true),
-            choices = choices,
+            taps = MapPicking(choices = choices),
             onCamera = cameraKeeper(isCovered, onMap = { cameras += it }, onCard = { cardCameras += it }),
         )
 
@@ -54,7 +54,7 @@ class MapSceneStateTest {
     }
 
     private fun touch(vararg symbols: String) =
-        state().touch(symbols = symbols.toList(), onBuilding = { opened += it }, onEmpty = { emptyTaps++ })
+        state().taps.touch(symbols = symbols.toList(), onBuilding = { opened += it }, onEmpty = { emptyTaps++ })
 
     /**
      * Scenariusz „Przy niskiej mapie nad kartą nie ma przycisków mapy”: bez arkusza przyciski są zawsze,
@@ -100,7 +100,7 @@ class MapSceneStateTest {
     /** Wiersz: budynek wybrany w arkuszu „Który budynek?” → otwarty, arkusz zamknięty. */
     @Test
     fun opensChosenBuilding() {
-        state().choose(symbol = "C-4", onBuilding = { opened += it })
+        state().taps.choose(symbol = "C-4", onBuilding = { opened += it })
         assertEquals(listOf("C-4"), opened)
         assertEquals(emptyList<String>(), choices.value)
     }
@@ -125,7 +125,7 @@ class MapSceneStateTest {
      */
     @Test
     fun returnsUntouchedView() {
-        state(isCovered = true).touch(symbols = listOf("C-13"), onBuilding = {}, onEmpty = {})
+        state(isCovered = true).taps.touch(symbols = listOf("C-13"), onBuilding = {}, onEmpty = {})
         assertEquals(emptyList<MapCamera>(), cameras + cardCameras)
         state().keep(start)
         assertEquals(listOf(start), cameras)

@@ -8,7 +8,6 @@ package io.github.dostepnykampus.feature.map
 import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,13 +36,10 @@ import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.camera.belowTop
 import io.github.dostepnykampus.feature.map.camera.besideStart
 import io.github.dostepnykampus.feature.map.camera.byControl
-import io.github.dostepnykampus.feature.map.camera.cameraTransition
 import io.github.dostepnykampus.feature.map.camera.fitted
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.pickLine
-import io.github.dostepnykampus.feature.map.camera.placed
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
-import io.github.dostepnykampus.feature.map.camera.within
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
@@ -67,7 +63,7 @@ private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore
  * @property shown ruch kamery do pokazania z zasłoniętym dołem mapy; `null` bez danych
  * @property limits granice kamery dla terenu i rozmiaru mapy; `null` przed pomiarem mapy
  * @property cover czy arkusz V2 zasłania dół mapy i czy nad nim mieszczą się przyciski mapy
- * @param choices zapisywana lista budynków do wyboru
+ * @property taps wybór budynku dotykiem i arkusz „Który budynek?”
  * @param onCamera zapis widoku kamery po ruchu osoby, zob. [cameraKeeper]
  */
 internal class MapSceneState(
@@ -75,7 +71,7 @@ internal class MapSceneState(
     val shown: SceneCamera?,
     val limits: MapLimits?,
     val cover: MapCover,
-    private val choices: MutableState<List<String>>,
+    val taps: MapPicking,
     private val onCamera: (MapCamera) -> Unit,
 ) {
     /** Ruch kamery do pokazania, zob. [SceneCamera.move]; `null` bez danych. */
@@ -92,9 +88,6 @@ internal class MapSceneState(
 
     /** Mapa ma miejsce na przyciski powiększania i przesuwania. Wymagania: NFR-53 */
     val hasControls: Boolean get() = cover != MapCover.SHEET_WITHOUT_CONTROLS
-
-    /** Symbole budynków czekających na wybór w arkuszu „Który budynek?”. */
-    val choice: List<String> get() = choices.value
 
     /** Zapisuje widok [idle] po geście osoby. */
     fun keep(idle: MapCamera) {
@@ -114,31 +107,6 @@ internal class MapSceneState(
     /** Przesuwa kamerę przyciskiem na [next], w granicach terenu, także nad arkuszem V2. Wymagania: NFR-53, BR-G5 */
     fun move(next: MapCamera) {
         limits?.run { keep(clamp(next)) }
-    }
-
-    /**
-     * Dotknięcie konturów [symbols]: jeden budynek otwiera [onBuilding], kilka czeka na wybór w arkuszu, a puste
-     * miejsce zgłasza [onEmpty].
-     *
-     * Wymagania: US2.8
-     */
-    fun touch(symbols: List<String>, onBuilding: (String) -> Unit, onEmpty: () -> Unit) {
-        when (symbols.size) {
-            0 -> onEmpty()
-            1 -> choose(symbols.single(), onBuilding)
-            else -> choices.value = symbols
-        }
-    }
-
-    /** Budynek [symbol] wybrany w arkuszu albo jedynym dotknięciem: zamyka wybór i otwiera [onBuilding]. */
-    fun choose(symbol: String, onBuilding: (String) -> Unit) {
-        dismiss()
-        onBuilding(symbol)
-    }
-
-    /** Zamyka arkusz „Który budynek?” bez wyboru. */
-    fun dismiss() {
-        choices.value = emptyList()
     }
 }
 
@@ -186,12 +154,15 @@ internal fun rememberMapSceneState(
     val last = remember { ShownCamera() }
     val isCoveredBefore = rememberPrevious(isCovered)
     val scale = rememberAnimatorScale()
-    val placing = remember { PlacedPick(isPending = isCovered) }
+    val origin = remember { PickOrigin(isUnderCard = isCovered) }
+    SideEffect { origin.follow(selection?.building) }
     val pick =
         remember(key1 = selection?.building, key2 = outline != null, key3 = size != IntSize.Zero) {
             val from = last.startOr(uncovered)
-            pickMove(from = from, outline = outline, free = fit, scale = scale, keepsZoom = isCoveredBefore)
-                ?.run { placing.take(move = within(limits, free = fit), scale = scale) }
+            val below = shiftUnderBar(isCoveredBefore = isCoveredBefore, free = free, fit = fit, covered = cover + top)
+            pickView(from = from, outline = outline, free = fit, limits = limits, scale = scale)?.let { view ->
+                origin.move(building = selection?.building, view = view, keepsZoom = isCoveredBefore, belowDp = below)
+            }
         }
     motion.RecordPick(pick) {
         pickLine(building = selection?.building, area = area, limits = limits, free = fit, move = it)
@@ -206,7 +177,7 @@ internal fun rememberMapSceneState(
         shown = move?.let { SceneCamera(move = it, inset = inset, landing = fit) },
         limits = limits,
         cover = mapCover(isCovered, hasControls = free.hasRoomForControls),
-        choices = choices,
+        taps = MapPicking(choices = choices, onTap = origin::tap),
         onCamera = cameraKeeper(isCovered, onMap = view.keep, onCard = card.keep),
     )
 }
@@ -279,18 +250,6 @@ internal fun rememberNoticeReserve(building: String?, notice: Dp): Dp = remember
 /** Ruch mapy nad arkuszem V2 [move] i zapis widoku po ruchu osoby [keep]. */
 internal data class CardMove(val move: CameraTransition?, val keep: (MapCamera) -> Unit)
 
-/**
- * Pierwszy wybór na mapie, która powstała już pod kartą, czyli po wyborze z listy budynków: widok od razu, bez ruchu
- * kamery ([placed]). Następne wybory przy otwartej karcie ruszają mapę zwykle.
- */
-private class PlacedPick(private var isPending: Boolean) {
-    fun take(move: CameraTransition, scale: Float): CameraTransition {
-        val taken = if (isPending) move.placed(animationScale = scale) else move
-        isPending = false
-        return taken
-    }
-}
-
 /** Ostatni widok podany mapie: początek ruchu do następnego wybranego budynku. Nie jest stanem kompozycji. */
 private class ShownCamera {
     private var camera: MapCamera? = null
@@ -313,16 +272,8 @@ private fun MapMotion?.RecordPick(pick: CameraTransition?, line: (CameraTransiti
     }
 }
 
-private fun pickMove(
-    from: MapCamera?,
-    outline: CampusBounds?,
-    free: FreeMap,
-    scale: Float,
-    keepsZoom: Boolean,
-): CameraTransition? {
-    if (outline == null || from == null || !free.isMeasured) return null
-    return cameraTransition(from = from, outline = outline, free = free, animationScale = scale, keepsZoom = keepsZoom)
-}
+private fun shiftUnderBar(isCoveredBefore: Boolean, free: FreeMap, fit: FreeMap, covered: Dp): Double =
+    if (isCoveredBefore) 0.0 else (free.heightDp + covered.value - fit.heightDp) / 2
 
 /** Skala animacji systemu („Skala długości animacji”); 0 przy „Usuń animacje”. Wymagania: NFR-56 */
 @Composable
