@@ -6,50 +6,15 @@
 package io.github.dostepnykampus.feature.map.plan
 
 import androidx.activity.compose.BackHandler
-import androidx.annotation.StringRes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.overlay.MapSheet
 import io.github.dostepnykampus.feature.map.overlay.MapSheetHeader
 import java.util.Locale
-
-/**
- * Znak planu w arkuszu: nazwa [title], symbol budynku [building] i etykieta piętra [floor] z danych PWr.
- *
- * Wymagania: US16.1
- */
-@Immutable
-internal data class PlanSign(
-    @param:StringRes val title: Int,
-    val building: String,
-    val floor: String,
-)
-
-/**
- * Znak toalety dostosowanej albo schodów w pomieszczeniu [id] tego planu; `null` dla pomieszczenia spoza planu
- * i dla innych grup. TODO(#2541): arkusz windy.
- *
- * Wymagania: US16.1
- */
-internal fun ShownPlan.signOf(id: String): PlanSign? {
-    val found =
-        rooms.firstNotNullOfOrNull { (floor, list) -> list.rooms.firstOrNull { it.id == id }?.let { floor to it } }
-    val title = found?.let { PLAN_SIGN_TITLES[it.second.category] }
-    val label = found?.let { (floor, _) -> floors.firstOrNull { it.id == floor }?.label }
-    return if (title != null && label != null) PlanSign(title = title, building = building, floor = label) else null
-}
-
-private val PLAN_SIGN_TITLES =
-    mapOf(
-        RoomCategory.ACCESSIBLE_TOILET to R.string.mapa_plan_toaleta,
-        RoomCategory.STAIRCASE to R.string.mapa_plan_schody,
-    )
 
 /**
  * Arkusz znaku planu w pomieszczeniu [id] z [plan] po dotknięciu znaku na mapie V1: nazwa znaku z „Zamknij”,

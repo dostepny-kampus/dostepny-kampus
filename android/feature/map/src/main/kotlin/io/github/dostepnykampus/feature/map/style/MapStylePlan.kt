@@ -125,7 +125,8 @@ internal fun planFeatures(floors: Map<String, RoomList>): JsonElement =
             val signs =
                 plan.rooms.filter { it.category in PLAN_SIGN_CATEGORIES }.map { room ->
                     val image = planSignImage(room.category)
-                    Feature(Point(room.labelPoint.toPosition()), part(floor = floor, kind = SIGN, image = image, room = room.id))
+                    val properties = part(floor = floor, kind = SIGN, image = image, room = room.id)
+                    Feature(Point(room.labelPoint.toPosition()), properties)
                 }
             outline + rooms + signs + numbers
         },
