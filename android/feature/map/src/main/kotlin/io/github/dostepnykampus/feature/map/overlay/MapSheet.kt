@@ -25,6 +25,7 @@ import io.github.dostepnykampus.core.designsystem.Zaokraglenia
  * Wymagania: NFR-20
  *
  * @param modifier położenie arkusza na mapie
+ * @param content treść arkusza
  */
 @Composable
 internal fun MapSheet(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {

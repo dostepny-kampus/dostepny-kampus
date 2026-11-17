@@ -17,6 +17,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Alignment
@@ -50,6 +51,7 @@ import io.github.dostepnykampus.core.designsystem.R as DesignR
  *
  * Wymagania: US2.1, US3.3, US17.1, NFR-18, NFR-20, NFR-21, NFR-53
  *
+ * @param entrance wejście z katalogu
  * @param onClose „Zamknij” zostawia samą mapę
  * @param onEntrancesClick V3 budynku wejścia o podanym symbolu
  * @param modifier położenie arkusza na mapie
@@ -120,6 +122,7 @@ private fun MarkingSign(marking: EntranceMarking) {
 }
 
 @Composable
+@ReadOnlyComposable
 private fun markingLine(entrance: Entrance): String {
     val word =
         stringResource(
