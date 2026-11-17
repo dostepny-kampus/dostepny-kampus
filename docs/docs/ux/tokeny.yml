@@ -448,8 +448,8 @@ mapa:
       - {powiekszenie: 17, dp: 0.75}
       - {powiekszenie: 20, dp: 1.5}
     znak_dp:
-      - {powiekszenie: 17, dp: 16}
-      - {powiekszenie: 18, dp: 21}
+      - {powiekszenie: 17, dp: 20}
+      - {powiekszenie: 18, dp: 24}
       - {powiekszenie: 19, dp: 28}
     zrodlo: US16.1, NFR-16, NFR-17, NFR-21
   kolory:
