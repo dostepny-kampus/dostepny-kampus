@@ -10,16 +10,19 @@ import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.network.auth.AccessTokens
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.File
 
 /**
- * Zalogowanie pamiętane po zamknięciu aplikacji: zapis, powrót z zapisu i wylogowanie.
+ * Zalogowanie pamiętane po zamknięciu aplikacji: zapis, powrót z zapisu i odświeżenie tokenu.
  *
  * Wymagania: US14.4, NFR-35
  */
@@ -44,6 +47,45 @@ class SavedLoginTest {
         }
 
     @Test
+    fun forgetsRejectedLogin() =
+        runTest {
+            val work = UnconfinedTestDispatcher(testScheduler)
+            LoginVault(file, ReversingCipher).write(loginWith(jwt("COLLECTOR"), expiresAt = 0L))
+            val tokens = AccessTokens()
+            val session = sessionOf(tokens = tokens, file = file, refresher = { Renewal.Rejected }, work = work)
+            runCurrent()
+            assertEquals("konto po odrzuconym odświeżeniu", Account.Guest, session.account.value)
+            assertNull("token po odrzuconym odświeżeniu", tokens.token)
+            assertFalse("zapis po odrzuconym odświeżeniu", file.exists())
+        }
+
+    @Test
+    fun refreshesBeforeExpiry() =
+        runTest {
+            val work = UnconfinedTestDispatcher(testScheduler)
+            val fresh = jwt("VERIFIER")
+            sessionOf(file = file, work = work).signIn(loginWith(jwt("COLLECTOR"), expiresAt = 0L))
+            val session = sessionOf(file = file, refresher = { Renewal.Fresh(loginWith(fresh)) }, work = work)
+            runCurrent()
+            assertEquals("konto po odświeżeniu", Account.SignedIn(setOf(StaffRole.VERIFIER)), session.account.value)
+            assertEquals("zapis po odświeżeniu", fresh, LoginVault(file, ReversingCipher).read()?.accessToken)
+        }
+
+    @Test
+    fun retriesWhenServiceUnreachable() =
+        runTest {
+            val work = UnconfinedTestDispatcher(testScheduler)
+            val answers = ArrayDeque(listOf(Renewal.Unreachable, Renewal.Rejected))
+            LoginVault(file, ReversingCipher).write(loginWith(jwt("COLLECTOR"), expiresAt = 0L))
+            val session = sessionOf(file = file, refresher = { answers.removeFirst() }, work = work)
+            runCurrent()
+            assertEquals("konto, gdy usługa nieosiągalna", collector, session.account.value)
+            advanceTimeBy(RETRY_MS)
+            runCurrent()
+            assertEquals("konto po ponowieniu", Account.Guest, session.account.value)
+        }
+
+    @Test
     fun forgetsLoginAfterSignOut() =
         runTest {
             val work = UnconfinedTestDispatcher(testScheduler)
@@ -56,5 +98,6 @@ class SavedLoginTest {
 
     private companion object {
         const val HOUR_MS = 3_600_000L
+        const val RETRY_MS = 30_000L
     }
 }
