@@ -26,7 +26,7 @@ for apk in "$@"; do
     exit 1
   fi
   podpis="$(printf '%s\n' "$wynik" | tr -d '\r' |
-    awk 'tolower($0) ~ /^signer.*certificate sha-256 digest:/ { sub(/.*[Dd]igest:[[:space:]]*/, ""); print; exit }' |
+    awk 'tolower($0) ~ /signer.*certificate sha-256 digest:/ { sub(/.*[Dd]igest:[[:space:]]*/, ""); print; exit }' |
     tr -d ': ' | tr 'A-F' 'a-f')"
   if [[ $podpis != "$klucz" ]]; then
     echo "::error title=Podpis apk-debug::${apk} ma certyfikat '${podpis}', a klucz debug z repozytorium '${klucz}'."
