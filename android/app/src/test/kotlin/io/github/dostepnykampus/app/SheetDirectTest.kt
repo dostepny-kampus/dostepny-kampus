@@ -116,6 +116,7 @@ class SheetDirectTest {
     @Config(fontScale = 2f)
     fun closesOnDragDownAtLargeFont() {
         show()
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).assertExists("uchwyt przed gestem")
         compose.mainClock.autoAdvance = false
         compose.onNodeWithContentDescription(EXPAND_HANDLE).performTouchInput { swipeDown() }
         val path =
