@@ -11,4 +11,6 @@
     <string name="rozwin_opis">Rozwiń opis budynku</string>
     <string name="stan_zwiniete">zwinięte</string>
     <string name="stan_rozwiniete">rozwinięte</string>
+    <string name="rozwin">Rozwiń</string>
+    <string name="zwin">Zwiń</string>
 </resources>

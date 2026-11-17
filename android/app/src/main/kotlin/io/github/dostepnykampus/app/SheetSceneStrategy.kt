@@ -10,31 +10,13 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -53,24 +35,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -86,9 +58,6 @@ import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import io.github.dostepnykampus.app.navigation.CardWindow
 import io.github.dostepnykampus.app.navigation.cardMode
-import io.github.dostepnykampus.core.designsystem.CeleDotyku
-import io.github.dostepnykampus.core.designsystem.Wysokosci
-import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.feature.map.building.CardMode
 import io.github.dostepnykampus.feature.map.camera.MOVE_WAIT_MILLIS
 import io.github.dostepnykampus.feature.map.camera.MapMotion
@@ -229,10 +198,11 @@ private data class SheetScene(
                 Sheet(
                     isExpanded = state.isExpanded,
                     onExpandedChange = { state = state.copy(isExpanded = it) },
+                    onClose = onBack,
+                    onLowHeight = { height = with(density) { it.toDp() } },
                     modifier =
                         Modifier
                             .align(Alignment.BottomCenter)
-                            .onSizeChanged { height = with(density) { it.height.toDp() } }
                             .layout { measurable, constraints ->
                                 val placeable = measurable.measure(constraints)
                                 layout(width = placeable.width, height = placeable.height) {
@@ -380,74 +350,5 @@ internal fun SheetBackHandler(isEnabled: Boolean, onGesture: (BackGesture) -> Un
     DisposableEffect(handler) {
         dispatcher.addHandler(handler)
         onDispose { handler.remove() }
-    }
-}
-
-/**
- * Arkusz V2 o wysokości treści albo rozwinięty na całe okno ([isExpanded]); zmianę rozwinięcia zgłasza
- * [onExpandedChange]. Dotknięcie uchwytu, przewinięcie treści albo przeciągnięcie w górę rozwija go, więc przeciąganie
- * nie jest jedyną drogą (wymagania V2). Tło `surfaceContainer`, górne rogi `Zaokraglenia.bardzoDuze`, cień
- * `Wysokosci.pasekCzynnosci` padający w górę, jak w makiecie hi-fi V2.
- */
-@Composable
-internal fun Sheet(
-    isExpanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
-    val isCurrentlyExpanded by rememberUpdatedState(isExpanded)
-    val currentOnExpandedChange by rememberUpdatedState(onExpandedChange)
-    val expandOnScroll =
-        remember {
-            object : NestedScrollConnection {
-                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                    if (isCurrentlyExpanded || available.y >= 0f) return Offset.Zero
-                    currentOnExpandedChange(true)
-                    return available
-                }
-            }
-        }
-    val corner = if (isExpanded) 0.dp else Zaokraglenia.bardzoDuze
-    Surface(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .then(if (isExpanded) Modifier.fillMaxHeight() else Modifier)
-                .nestedScroll(expandOnScroll),
-        shape = if (isExpanded) RectangleShape else RoundedCornerShape(topStart = corner, topEnd = corner),
-        color = MaterialTheme.colorScheme.surfaceContainer,
-        shadowElevation = Wysokosci.pasekCzynnosci,
-    ) {
-        val statusBar = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
-        Column(modifier = Modifier.belowStatusBarWhenExpanded(statusBar, isExpanded)) {
-            Handle(isExpanded = isExpanded, onClick = { onExpandedChange(!isExpanded) })
-            Box(Modifier.weight(1f, fill = false).fillMaxWidth()) { content() }
-        }
-    }
-}
-
-private fun Modifier.belowStatusBarWhenExpanded(statusBar: WindowInsets, isExpanded: Boolean): Modifier =
-    if (isExpanded) windowInsetsPadding(statusBar) else consumeWindowInsets(statusBar)
-
-@Composable
-private fun Handle(isExpanded: Boolean, onClick: () -> Unit) {
-    val label = stringResource(R.string.rozwin_opis)
-    val state = stringResource(if (isExpanded) R.string.stan_rozwiniete else R.string.stan_zwiniete)
-    Box(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .heightIn(min = CeleDotyku.minimum)
-                .clickable(role = Role.Button, onClick = onClick)
-                .scrollable(rememberScrollableState { 0f }, Orientation.Vertical)
-                .semantics {
-                    contentDescription = label
-                    stateDescription = state
-                },
-        contentAlignment = Alignment.Center,
-    ) {
-        val grip = Modifier.size(width = 32.dp, height = 4.dp)
-        Box(modifier = grip.background(color = MaterialTheme.colorScheme.outline, shape = CircleShape))
     }
 }
