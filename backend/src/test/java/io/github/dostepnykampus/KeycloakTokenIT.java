@@ -112,18 +112,16 @@ final class KeycloakTokenIT {
                 .formatted(KeycloakTokenIT.APP, refresh);
             final HttpResponse<String> renewed = KeycloakTokenIT.exchange(client, realm, form);
             final String next = mapper.readTree(renewed.body()).path("refresh_token").asString();
-            final Rotation rotation = new Rotation(
-                renewed.statusCode(), !refresh.isBlank() && !next.isBlank() && !next.equals(refresh),
-                KeycloakTokenIT.exchange(client, realm, form).statusCode()
-            );
             MatcherAssert.assertThat(
                 "Pierwsze odświeżenie wymienia token, ponowne użycie wycofanego daje 400",
-                rotation, Matchers.is(new Rotation(200, true, 400))
+                new Rotation(
+                    renewed.statusCode(),
+                    !refresh.isBlank() && !next.isBlank() && !next.equals(refresh),
+                    KeycloakTokenIT.exchange(client, realm, form).statusCode()
+                ),
+                Matchers.is(new Rotation(200, true, 400))
             );
         }
-    }
-
-    private record Rotation(int refreshStatus, boolean replaced, int retiredStatus) {
     }
 
     private static int edit(
@@ -181,5 +179,8 @@ final class KeycloakTokenIT {
             }
         }
         return found;
+    }
+
+    private record Rotation(int refreshStatus, boolean replaced, int retiredStatus) {
     }
 }
