@@ -91,16 +91,17 @@ final class PublicRateLimitHttpIT {
     private static MockHttpServletResponse get(
         final WebApplicationContext context, final String address, final String authorization
     ) throws Exception {
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/buildings")
-            .with(
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/buildings");
+        if (!authorization.isEmpty()) {
+            request.header(HttpHeaders.AUTHORIZATION, authorization);
+        }
+        return context.getBean(MockMvc.class).perform(
+            request.with(
                 servlet -> {
                     servlet.setRemoteAddr(address);
                     return servlet;
                 }
-            );
-        if (!authorization.isEmpty()) {
-            request.header(HttpHeaders.AUTHORIZATION, authorization);
-        }
-        return context.getBean(MockMvc.class).perform(request).andReturn().getResponse();
+            )
+        ).andReturn().getResponse();
     }
 }
