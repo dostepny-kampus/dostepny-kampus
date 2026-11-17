@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import io.github.dostepnykampus.feature.map.camera.TouchSign
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Test
@@ -36,6 +37,20 @@ class MapTouchTest {
 
         assertEquals(MapTouch.Sign(TouchSign.BARRIER, "z1"), touch, "bariera w zasięgu wygrywa")
         assertEquals(emptyList<String>(), asked, "przy trafionym znaku kontury nie są sprawdzane")
+    }
+
+    /** Wiersz: V1, bariera i wejście w zasięgu: wygrywa bariera; samo wejście wygrywa z konturem. */
+    @Test
+    fun entranceAfterBarrierBeforeOutline() {
+        val both = chooseTouch(signsNear = { sign -> listOf(sign.name) }, outlines = outlinesAt(hit = listOf(3)))
+        val entrance =
+            chooseTouch(
+                signsNear = { sign -> if (sign == TouchSign.ENTRANCE) listOf("node/1") else emptyList() },
+                outlines = outlinesAt(hit = listOf(3)),
+            )
+
+        assertEquals(MapTouch.Sign(TouchSign.BARRIER, "BARRIER"), both, "bariera przed wejściem")
+        assertEquals(MapTouch.Sign(TouchSign.ENTRANCE, "node/1"), entrance, "wejście przed konturem")
     }
 
     /** Wiersz: V1, bez znaku w zasięgu wygrywa kontur pod palcem; kontury obok są liczone na żądanie. */
