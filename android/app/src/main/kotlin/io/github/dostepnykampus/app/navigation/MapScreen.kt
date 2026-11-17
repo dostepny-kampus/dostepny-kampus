@@ -54,13 +54,11 @@ internal fun AppNavigator.HiltMapScreen(
 }
 
 /**
- * V1 ze stanem [state] i zaznaczeniem [focus] z trasy, np. po „Wstecz” z V2 albo „Pokaż na mapie”,
- * z czynnościami podpiętymi do nawigatora; [onListChange] zapisuje widok, mapę albo listę,
- * a [onSearch] liczy wyszukiwanie w modelu widoku. Budynek z listy przy TalkBack otwiera V2
- * od razu na pełnym ekranie. Przyciski i podpis OSM stoją nad arkuszem V2; po zamknięciu karty mapa od razu liczy
- * widok bez arkusza, choć arkusz jeszcze zjeżdża, więc kamera dostaje jeden cel pod górnym paskiem.
- * [mapView] w aplikacji to MapLibre, testy podają podróbkę. [plan] to plan piętra przy środku mapy, a [onCamera]
- * dostaje widok mapy po ruchu kamery, a [onFloorChoose] piętro wybrane w kolumnie pięter.
+ * V1 ze stanem [state] i zaznaczeniem [focus] z trasy (np. po „Wstecz” z V2 albo „Pokaż na mapie”); [onListChange]
+ * zapisuje widok, mapę albo listę, [onSearch] liczy wyszukiwanie. Budynek z listy przy TalkBack otwiera V2 od razu
+ * na pełnym ekranie. Przyciski i podpis OSM stoją nad arkuszem V2; bez arkusza nad V1, także gdy jeszcze zjeżdża,
+ * mapa liczy widok bez niego. [mapView] to MapLibre albo podróbka w testach, [plan] to plan piętra przy środku mapy,
+ * [onCamera] dostaje widok po ruchu kamery, a [onFloorChoose] piętro wybrane w kolumnie pięter.
  *
  * Wymagania: US1.1, US2.1, NFR-19
  */
