@@ -619,6 +619,36 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
     }
 
     /**
+     * Wiersz: V1, dotknięty budynek cały widoczny nad kartą → mapa stoi na ekranie, choć pasek nad mapą chowa się
+     * razem z otwarciem karty: środek widoku idzie wyżej o połowę paska i karty.
+     *
+     * Wymagania: US2.8, NFR-56
+     */
+    @Test
+    @Config(qualifiers = "w360dp-h800dp")
+    fun keepsTappedBuildingOnScreen() {
+        ring = "[[0,0],[0.0003,0],[0.0003,0.0003],[0,0.0003],[0,0]]"
+        entrances = FAR_BUILDINGS_AROUND_C14 + squareBuilding(symbol = "X-3", osmId = 4, from = 0.0025, to = 0.003)
+        var sheet by mutableStateOf(0.dp)
+        var focus by mutableStateOf<String?>(null)
+        compose.setContent { Screen(focus = focus, sheet = sheet, motion = MapMotion()) }
+        compose.waitForIdle()
+        val start = cameras.last()
+        val bar = tops.last()
+        compose.runOnUiThread { touch(listOf("C-14")) }
+        focus = "C-14"
+        compose.waitForIdle()
+        sheet = 200.dp
+        compose.waitForIdle()
+        val end = moves.last()
+        val pixelsPerRadian = WORLD_DP_AT_ZOOM_0 * 2.0.pow(start.zoom) / (2 * PI) * compose.density.density
+        val shift = (mercator(end.camera.center.latitude) - mercator(start.center.latitude)) * pixelsPerRadian
+        assertTrue("pasek nad mapą przed dotknięciem: $tops", bar > 0)
+        assertEquals("widoczny budynek: mapa bez ruchu, $moves", CameraMotion.NONE, end.motion)
+        assertEquals("ekran stoi: środek wyżej o pół paska i karty", (bar + insets.last()) / 2, shift, 1.0)
+    }
+
+    /**
      * Wiersz: budynek wybrany na liście budynków → mapa powstaje razem z małą kartą i od razu stoi na budynku, bez
      * ruchu kamery i bez awarii przed pomiarem mapy; karta wjeżdża w 300 ms.
      *
