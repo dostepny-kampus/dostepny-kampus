@@ -67,6 +67,26 @@ final class SyncPushHttpIT {
     }
 
     @Test
+    void rejectsRevokeWithoutCollectorRole(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = UUID.randomUUID();
+        SyncPushHttpIT.push(context, "COLLECTOR", id, "C-13");
+        Assertions.assertAll(
+            Stream.of("VISITOR", "VERIFIER", "COORDINATOR", "VERIFIER+COORDINATOR").map(
+                role -> () -> Assertions.assertEquals(
+                    "200 REJECTED 403, cofnięty false",
+                    String.format(
+                        "%s, cofnięty %b",
+                        SyncPushHttpIT.send(context, role, SyncPushHttpIT.revocation(id)),
+                        SyncPushHttpIT.revoked(context, id)
+                    ),
+                    String.format("Rola %s cofnęła znacznik piętra", role)
+                )
+            )
+        );
+    }
+
+    @Test
     void savesRepeatedMarkerOnce(final WebApplicationContext context) throws Exception {
         final UUID id = UUID.randomUUID();
         SyncPushHttpIT.push(context, "COLLECTOR", id, "C-13");
@@ -206,14 +226,15 @@ final class SyncPushHttpIT {
 
     private static String revoke(final WebApplicationContext context, final UUID id)
         throws Exception {
-        return SyncPushHttpIT.send(
-            context, "COLLECTOR",
-            String.join(
-                "",
-                "{\"operations\":[{\"clientOperationId\":\"", UUID.randomUUID().toString(),
-                "\",\"type\":\"REVOKE_INSPECTION_MARKER\",\"markerId\":\"", id.toString(),
-                "\"}]}"
-            )
+        return SyncPushHttpIT.send(context, "COLLECTOR", SyncPushHttpIT.revocation(id));
+    }
+
+    private static String revocation(final UUID id) {
+        return String.join(
+            "",
+            "{\"operations\":[{\"clientOperationId\":\"", UUID.randomUUID().toString(),
+            "\",\"type\":\"REVOKE_INSPECTION_MARKER\",\"markerId\":\"", id.toString(),
+            "\"}]}"
         );
     }
 

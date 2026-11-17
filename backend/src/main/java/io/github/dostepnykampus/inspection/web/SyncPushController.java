@@ -54,10 +54,10 @@ public final class SyncPushController {
      * Zapisuje znaczniki z paczki w jednej transakcji, raz na identyfikator; wynik każdej
      * operacji jest osobny, a błąd danych jednej daje jej REJECTED 400. Cofnięcia idą po
      * zapisach: własny znacznik, także powtórnie, jest cofnięty, cudzy albo nieistniejący
-     * odrzucony. Znacznik od konta bez roli Zbierającego dostaje 403. 400 dla całej paczki
-     * daje tylko zła liczba operacji albo brak clientOperationId.
+     * odrzucony. Znacznik i jego cofnięcie od konta bez roli Zbierającego dostają 403. 400 dla
+     * całej paczki daje tylko zła liczba operacji albo brak clientOperationId.
      *
-     * <p>Wymagania: US15.1, US15.3, BR-9, BR-20, US9.2</p>
+     * <p>Wymagania: US15.1, US15.2, US15.3, BR-9, BR-20, US9.2</p>
      *
      * @param body Paczka według schematu z żądania
      * @param account Zalogowane konto; jego nazwa to identyfikator z tokenu
@@ -80,7 +80,7 @@ public final class SyncPushController {
                 .map(operation -> operation.toMarker(author)).toList()
         );
         final Set<UUID> missing = this.service.revoke(
-            operations.stream().filter(SyncOperationJson::revokesMarker)
+            operations.stream().filter(operation -> collector && operation.revokesMarker())
                 .map(SyncOperationJson::revoked).toList(),
             author
         );
@@ -113,7 +113,7 @@ public final class SyncPushController {
         final SyncOperationJson operation, final boolean collector
     ) {
         Optional<SyncResultResponse> result = Optional.empty();
-        if (operation.placesMarker() && !collector) {
+        if ((operation.placesMarker() || operation.revokesMarker()) && !collector) {
             result = Optional.of(
                 SyncResultResponse.rejected(
                     operation.operation(), HttpStatus.FORBIDDEN,
