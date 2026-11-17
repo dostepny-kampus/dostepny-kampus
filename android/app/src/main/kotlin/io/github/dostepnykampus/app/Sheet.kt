@@ -96,7 +96,7 @@ internal fun Sheet(
     )
     val isFull = state.currentValue == SheetHeight.Full
     val corner = if (isFull) 0.dp else Zaokraglenia.bardzoDuze
-    val step = with(LocalDensity.current) { HEIGHT_STEP.toPx() }
+    val step = with(LocalDensity.current) { HEIGHT_STEP_DRAG.toPx() }
     val snap =
         AnchoredDraggableDefaults.flingBehavior(
             state = state,
@@ -131,8 +131,7 @@ internal fun Sheet(
 
 private const val PROVISIONAL_LOW_SHARE = 3
 
-/** Droga palca, po której arkusz przechodzi na sąsiednią wysokość także wolnym ruchem. Wymagania: US2.8, NFR-53 */
-private val HEIGHT_STEP = 48.dp
+private val HEIGHT_STEP_DRAG = 48.dp
 
 /** Zmierzona wysokość okna [window] i niskiej karty [low] w px; zero, dopóki nie zmierzono. */
 private class SheetMeasure {
