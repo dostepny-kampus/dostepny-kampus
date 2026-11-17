@@ -59,6 +59,31 @@ class SearchBuildingsTest {
         assertEquals(emptyList<String>(), symbols(query))
     }
 
+    /** Scenariusz: przegladanie-mapy.feature: Wyszukanie budynku po nazwie. */
+    @ParameterizedTest
+    @ValueSource(strings = ["glow", "GŁÓW", "główny", "budynek gł"])
+    fun us1_1_name_word_finds(query: String) {
+        assertEquals(listOf("A-1"), symbols(query))
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["atol", "dom stud", "STUDENCKI"])
+    fun us1_1_name_any_word(query: String) {
+        assertEquals(listOf("T-9"), symbols(query))
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["gl", "ow", "ówny", "dent"])
+    fun us1_1_name_needs_word_start(query: String) {
+        assertEquals(emptyList<String>(), symbols(query))
+    }
+
+    @Test
+    fun us1SymbolBeforeName() {
+        val near = listOf(building("C-3", name = "Przy T-1"), building("T-1"), building("T-10"))
+        assertEquals(listOf("T-1", "T-10", "C-3"), searchBuildings("t-1", near).map { it.symbol })
+    }
+
     /** Scenariusz (częściowo): przegladanie-mapy.feature: Mapa i wyszukiwanie działają bez logowania. */
     @Test
     fun findsA1InRealFile() {
@@ -70,9 +95,16 @@ class SearchBuildingsTest {
 
     private fun symbols(query: String): List<String> = searchBuildings(query, buildings()).map { it.symbol }
 
-    private fun buildings(): List<Building> {
+    private fun buildings(): List<Building> =
+        listOf("A-1", "A-2", "A-10", "C-1", "C-13", "C-3", "D-8a").map { building(symbol = it, name = NAMES[it]) } +
+            building(symbol = "T-9", name = "Dom Studencki \"Atol\"")
+
+    private fun building(symbol: String, name: String? = null): Building {
         val outline = GeoPolygon(listOf(List(4) { GeoPoint(longitude = 0.0, latitude = 0.0) }))
-        return listOf("A-1", "A-2", "A-10", "C-1", "C-13", "C-3", "D-8a")
-            .map { Building(symbol = it, name = null, outline = outline) }
+        return Building(symbol = symbol, name = name, outline = outline)
+    }
+
+    private companion object {
+        val NAMES = mapOf("A-1" to "Budynek główny")
     }
 }

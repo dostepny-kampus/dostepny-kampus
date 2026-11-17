@@ -77,6 +77,27 @@ class SearchFieldTest {
         compose.onNodeWithText("Nie znaleźliśmy budynku", substring = true).assertDoesNotExist()
     }
 
+    /**
+     * Wynik dopasowany po nazwie otwiera budynek tak samo jak wynik po symbolu.
+     *
+     * Scenariusz: przegladanie-mapy.feature: Wyszukanie budynku po nazwie
+     *
+     * Wymagania: US1.1, UC1
+     */
+    @Test
+    fun opensBuildingFoundByName() {
+        val opened = mutableListOf<String>()
+        val main = unitSquareBuilding("A-1").copy(name = "Budynek główny")
+        val buildings = listOf(main, unitSquareBuilding("C-13"))
+        val catalog = BuildingCatalog(buildings, entrances = emptyList(), attribution = "")
+        compose.setContent { Search(onBuildingClick = { opened += it }, catalog = catalog) }
+        compose.onNode(hasSetTextAction()).performTextInput("glow")
+        compose.onNodeWithContentDescription(RESULT).assertDoesNotExist()
+        compose.onNodeWithContentDescription("A-1, Budynek główny").performClick()
+
+        assertEquals("otwarty budynek", listOf("A-1"), opened)
+    }
+
     @Composable
     private fun Search(onBuildingClick: (String) -> Unit, catalog: BuildingCatalog = catalogOf("C-13")) {
         var search by remember { mutableStateOf(BuildingSearch()) }
