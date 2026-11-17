@@ -19,7 +19,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
-import java.util.Base64
 
 /**
  * Logowanie w przeglądarce: token z Usługi logowania ustawia konto, przerwanie zostawia Gościa.
@@ -31,7 +30,7 @@ import java.util.Base64
 class BrowserSignInTest {
     private val app: Application = RuntimeEnvironment.getApplication()
     private val tokens = AccessTokens()
-    private val session = AccountSession(tokens)
+    private val session = sessionOf(tokens)
     private val signIn = BrowserSignIn(app, session)
 
     @Test
@@ -41,7 +40,7 @@ class BrowserSignInTest {
             runCurrent()
             val started = shadowOf(app).nextStartedActivity.component?.className
             assertEquals("aktywność logowania", LoginActivity::class.java.name, started)
-            signIn.finish(COLLECTOR_TOKEN)
+            signIn.finish(loginWith(COLLECTOR_TOKEN))
             assertEquals("wynik", true, result.await())
             assertEquals("konto", Account.SignedIn(setOf(StaffRole.COLLECTOR)), session.account.value)
             assertEquals("token", COLLECTOR_TOKEN, tokens.token)
@@ -65,15 +64,11 @@ class BrowserSignInTest {
             val second = async { signIn.open(SignInEntry.SIGN_IN) }
             runCurrent()
             assertEquals("pierwsza próba", false, first.await())
-            signIn.finish(COLLECTOR_TOKEN)
+            signIn.finish(loginWith(COLLECTOR_TOKEN))
             assertEquals("druga próba", true, second.await())
         }
 
     private companion object {
-        val COLLECTOR_TOKEN: String =
-            Base64.getUrlEncoder().withoutPadding().let { encoder ->
-                val claims = """{"realm_access":{"roles":["COLLECTOR"]}}"""
-                listOf("{}", claims, "podpis").joinToString(".") { encoder.encodeToString(it.toByteArray()) }
-            }
+        val COLLECTOR_TOKEN = jwt("COLLECTOR")
     }
 }
