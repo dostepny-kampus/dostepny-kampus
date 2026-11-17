@@ -29,6 +29,9 @@ internal const val PLAN_SOURCE = "plan"
 /** Warstwa wypełnienia pomieszczeń wybranego piętra kolorem grupy funkcji. Wymagania: US16.1 */
 internal const val PLAN_ROOMS_LAYER = "plan_pomieszczenia"
 
+/** Warstwa tła wybranego piętra pod pomieszczeniami, w barwie korytarza. Wymagania: US16.1 */
+internal const val PLAN_FLOOR_LAYER = "plan_tlo"
+
 /** Warstwa ścian pomieszczeń wybranego piętra. Wymagania: US16.1 */
 internal const val PLAN_WALLS_LAYER = "plan_sciany"
 
@@ -67,8 +70,12 @@ private const val SIGN = "sign"
 private const val FILTER = "filter"
 private const val IMAGE = "image"
 private const val NUMBERS_MIN_ZOOM = 19.0
-private const val WALL_WIDTH = 1.0
-private const val OUTLINE_WIDTH = 3.0
+private const val WALL_ZOOM_FROM = 17.0
+private const val WALL_ZOOM_TO = 20.0
+private const val WALL_WIDTH_FROM = 0.75
+private const val WALL_WIDTH_TO = 1.5
+private val WALL_WIDTHS = listOf(WALL_ZOOM_FROM to WALL_WIDTH_FROM, WALL_ZOOM_TO to WALL_WIDTH_TO)
+private const val OUTLINE_WIDTH = 2.4
 
 /**
  * Kolory planu piętra z tokenów `mapa.kolory` jako `#RRGGBB`.
@@ -78,7 +85,8 @@ private const val OUTLINE_WIDTH = 3.0
  * @property other klatka schodowa, biuro i reszta (`p_inne`)
  * @property elevator winda (`p_winda`)
  * @property toilet toaleta (`p_wc`)
- * @property wall ściany pomieszczeń i piętra (`p_kontur`)
+ * @property wall ściany pomieszczeń (`p_kontur`)
+ * @property floorWall ściana piętra, czyli obrys budynku z planem (`pwr_kontur`)
  */
 data class PlanColors(
     val classroom: String,
@@ -87,6 +95,7 @@ data class PlanColors(
     val elevator: String,
     val toilet: String,
     val wall: String,
+    val floorWall: String,
 )
 
 /**
@@ -119,10 +128,10 @@ internal fun planFeatures(floors: Map<String, RoomList>): JsonElement =
     )
 
 /**
- * Warstwy planu w kolorach [colors]: pomieszczenia piętra [floor] według grupy funkcji, ich ściany, grubsza ściana
- * piętra, znaki windy, toalety dostosowanej i schodów oraz numery sal od powiększenia 19; numer albo znak, który
- * zachodzi na inny, znika. Znak rośnie z powiększeniem, a winda i toaleta mają pierwszeństwo przed schodami. Bez
- * piętra filtry nie przepuszczają niczego.
+ * Warstwy planu w kolorach [colors]: tło piętra [floor] w barwie korytarza, pomieszczenia według grupy funkcji, ich
+ * ściany grubiejące z powiększeniem, jedna ściana piętra, znaki windy, toalety dostosowanej i schodów oraz numery sal
+ * od powiększenia 19; numer albo znak, który zachodzi na inny, znika. Znak rośnie z powiększeniem, a winda i toaleta
+ * mają pierwszeństwo przed schodami. Bez piętra filtry nie przepuszczają niczego.
  *
  * Wymagania: US16.1, NFR-16, NFR-21
  */
@@ -133,22 +142,34 @@ internal fun planLayers(colors: PlanColors, floor: String? = null): List<JsonObj
             put(key = FILTER, element = none)
             paint("fill-color" to categoryColor(colors))
         }
+    val outline = planFilter(floor = floor, kind = OUTLINE)
+    val ground =
+        styleLayer(id = PLAN_FLOOR_LAYER, type = "fill", source = PLAN_SOURCE) {
+            put(key = FILTER, element = outline)
+            paint("fill-color" to JsonPrimitive(colors.corridor))
+        }
+    val walls =
+        styleLayer(id = PLAN_WALLS_LAYER, type = "line", source = PLAN_SOURCE) {
+            put(key = FILTER, element = none)
+            paint("line-color" to JsonPrimitive(colors.wall), "line-width" to byZoom(WALL_WIDTHS))
+        }
     return listOf(
+        ground,
         fill,
-        lineLayer(id = PLAN_WALLS_LAYER, source = PLAN_SOURCE, color = colors.wall, width = WALL_WIDTH, filter = none),
+        walls,
         lineLayer(
             id = PLAN_OUTLINE_LAYER,
             source = PLAN_SOURCE,
-            color = colors.wall,
+            color = colors.floorWall,
             width = OUTLINE_WIDTH,
-            filter = planFilter(floor = floor, kind = OUTLINE),
+            filter = outline,
         ),
         JsonObject(
             symbolLayer(
                 id = PLAN_SIGNS_LAYER,
                 source = PLAN_SOURCE,
                 image = property(IMAGE),
-                "icon-size" to signSize(),
+                "icon-size" to byZoom(PLAN_SIGN_SIZES.map { (zoom, dp) -> zoom to dp / PLAN_SIGN_DP }),
                 "symbol-sort-key" to signOrder(),
             ) +
                 (FILTER to planFilter(floor = floor, kind = SIGN)),
@@ -161,9 +182,9 @@ internal fun planLayers(colors: PlanColors, floor: String? = null): List<JsonObj
     )
 }
 
-private fun signSize(): JsonElement {
-    val stops = PLAN_SIGN_SIZES.flatMap { (zoom, dp) -> listOf(JsonPrimitive(zoom), JsonPrimitive(dp / PLAN_SIGN_DP)) }
-    return JsonArray(listOf(JsonPrimitive("interpolate"), expression("linear"), expression("zoom")) + stops)
+private fun byZoom(stops: List<Pair<Double, Double>>): JsonElement {
+    val values = stops.flatMap { (zoom, value) -> listOf(JsonPrimitive(zoom), JsonPrimitive(value)) }
+    return JsonArray(listOf(JsonPrimitive("interpolate"), expression("linear"), expression("zoom")) + values)
 }
 
 private fun signOrder(): JsonElement =
@@ -185,6 +206,7 @@ internal fun planSignImage(category: RoomCategory): String = "znak planu: ${cate
  * Zmienia tylko filtry warstw, więc zmiana piętra nie przelicza danych planu. Wymagania: US16.1, NFR-10
  */
 internal fun MapStyleTarget.showPlanFloor(floor: String?) {
+    filter(layer = PLAN_FLOOR_LAYER, filter = planFilter(floor = floor, kind = OUTLINE))
     filter(layer = PLAN_ROOMS_LAYER, filter = planFilter(floor = floor, kind = ROOM))
     filter(layer = PLAN_WALLS_LAYER, filter = planFilter(floor = floor, kind = ROOM))
     filter(layer = PLAN_OUTLINE_LAYER, filter = planFilter(floor = floor, kind = OUTLINE))

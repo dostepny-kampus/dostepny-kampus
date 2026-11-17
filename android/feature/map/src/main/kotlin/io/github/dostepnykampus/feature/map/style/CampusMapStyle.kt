@@ -96,6 +96,7 @@ data class MapStyleColors(
             elevator = building,
             toilet = land,
             wall = buildingOutline,
+            floorWall = buildingOutline,
         ),
     val basemap: BasemapColors? = null,
     val labelSize: Double = Typografia.napisyMapy.value.toDouble(),
