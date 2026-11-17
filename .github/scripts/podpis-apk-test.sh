@@ -44,6 +44,10 @@ printf 'Signer #1 certificate DN: CN=Android Debug\nSigner #1 certificate SHA-25
 printf 'WARNING: native access\nSigner #1 certificate SHA-256 digest: %s\r\n' "$klucz" >"$workdir/crlf.apk"
 printf 'Signer (minSdkVersion=26, maxSdkVersion=2147483647) certificate SHA-256 digest: %s\n' "$klucz" \
   >"$workdir/przedrostek.apk"
+printf 'Verifies
+V2 Signer: certificate DN: CN=Android Debug
+V2 Signer: certificate SHA-256 digest: %s
+' "$klucz"   >"$workdir/v2.apk"
 wielkie="$(printf '%s' "$klucz" | tr 'a-f' 'A-F' | sed 's/../&:/g; s/:$//')"
 printf 'Signer #1 certificate SHA-256 digest: %s\n' "$wielkie" >"$workdir/wielkie.apk"
 printf 'Signer #1 certificate SHA-256 digest: %s\n' "$inny" >"$workdir/inny.apk"
@@ -53,6 +57,7 @@ printf 'Verifies\n' >"$workdir/bez-certyfikatu.apk"
 run_case "certyfikat klucza z repozytorium" 0 "$klucz" "$workdir/ten.apk"
 run_case "koniec wiersza CRLF i ostrzeżenia Javy" 0 "$klucz" "$workdir/crlf.apk"
 run_case "inny przedrostek wiersza podpisującego" 0 "$klucz" "$workdir/przedrostek.apk"
+run_case "wiersz schematu V2 z apksigner 37" 0 "$klucz" "$workdir/v2.apk"
 run_case "wielkie litery i dwukropki w skrócie" 0 "$klucz" "$workdir/wielkie.apk"
 run_case "trzy apk z tym samym kluczem" 0 "$klucz" "$workdir/ten.apk" "$workdir/crlf.apk" "$workdir/wielkie.apk"
 run_case "inny certyfikat" 1 "$klucz" "$workdir/inny.apk"
