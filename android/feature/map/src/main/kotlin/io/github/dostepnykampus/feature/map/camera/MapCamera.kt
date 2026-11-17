@@ -62,6 +62,9 @@ internal fun MapCamera.isSameView(other: MapCamera): Boolean =
 internal data class FreeMap(val widthDp: Double, val heightDp: Double, val endDp: Double, val marginDp: Double) {
     /** Czy w wolnej części stoją przyciski mapy: mają tam zarezerwowany pas [endDp]. Wymagania: NFR-53 */
     val hasRoomForControls: Boolean get() = endDp > 0
+
+    /** Czy mapa jest już zmierzona: przed pierwszym pomiarem wolna część nie ma rozmiaru. Wymagania: US2.8 */
+    val isMeasured: Boolean get() = widthDp > 0 && heightDp > 0
 }
 
 /** Widok po „Powiększ”: o jeden poziom, najwyżej do powiększenia planu budynku. */
