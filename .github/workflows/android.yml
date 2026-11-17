@@ -528,7 +528,8 @@ jobs:
       - name: Przygotuj JDK i cache Gradle
         uses: ./.github/actions/android-gradle
       - name: Sprawdź, czy każdy moduł deklaruje biblioteki, których używa
-        run: ./gradlew buildHealth --console=plain
+        # Bez configuration cache: zadania abiAnalysis wtyczki analizy zależności niestabilnie nie dają się w nim zapisać.
+        run: ./gradlew buildHealth --no-configuration-cache --console=plain
       - name: Zapisz raport analizy zależności
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7.0.2
