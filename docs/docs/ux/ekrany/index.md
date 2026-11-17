@@ -22,7 +22,7 @@ Wymagania: [V1 Mapa kampusu](../wymagania-ekranow.md#v1-mapa-kampusu).
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Mapa kampusu: pole „Wpisz symbol budynku, np. C-13”, przełącznik Mapa i Lista budynków, przycisk terenu „Kampus główny” w lewym górnym rogu nad przyciskiem Legenda, mapa z budynkami Politechniki i znakami barier, strzałki przesuwania mapy w krzyżu, plus i minus, podpis OpenStreetMap, przycisk informacji i pasek dolny](obrazy/m-v1-mapa-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-jasny.webp) | [![Ta sama mapa z przyciskiem terenu w motywie ciemnym](obrazy/m-v1-mapa-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-ciemny.webp) | [![Ta sama mapa przy czcionce 200%: przycisk terenu w osobnym wierszu, Legenda i przyciski mapy pod nim](obrazy/m-v1-mapa-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-jasny-200.webp) |
+| [![Mapa kampusu: w wierszu tytułu przycisk „Pokaż listę”, pod nim białe pole „Wpisz symbol budynku, np. C-13” i linia oddzielająca nagłówek od mapy, przycisk terenu „Kampus główny” w lewym górnym rogu mapy, mapa z budynkami Politechniki i znakami barier, strzałki przesuwania mapy w krzyżu, plus i minus, podpis OpenStreetMap, przycisk informacji i pasek dolny](obrazy/m-v1-mapa-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-jasny.webp) | [![Ta sama mapa z przyciskiem terenu w motywie ciemnym](obrazy/m-v1-mapa-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-ciemny.webp) | [![Ta sama mapa przy czcionce 200%: „Pokaż listę” w osobnym wierszu pod tytułem, przycisk terenu na całą szerokość, przyciski mapy pod nim](obrazy/m-v1-mapa-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-jasny-200.webp) |
 
 ### V1: lista budynków
 
@@ -48,7 +48,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Brak wyniku: komunikat „Nie znaleźliśmy budynku »C-31«.”, podpowiedź, by sprawdzić symbol albo wybrać budynek z listy, i przycisk Lista budynków nad mapą](obrazy/m-v1-mapa-pusty-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pusty-jasny.webp) | [![Ten sam komunikat o braku wyniku w motywie ciemnym](obrazy/m-v1-mapa-pusty-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pusty-ciemny.webp) | [![Ten sam komunikat przy czcionce 200%: tekst w kilku wierszach, przycisk Lista budynków pod nim, mapa niżej](obrazy/m-v1-mapa-pusty-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pusty-jasny-200.webp) |
+| [![Brak wyniku: komunikat „Nie znaleźliśmy budynku »C-31«.”, podpowiedź, by sprawdzić symbol albo wybrać budynek z listy, i przycisk Pokaż listę nad mapą](obrazy/m-v1-mapa-pusty-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pusty-jasny.webp) | [![Ten sam komunikat o braku wyniku w motywie ciemnym](obrazy/m-v1-mapa-pusty-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pusty-ciemny.webp) | [![Ten sam komunikat przy czcionce 200%: tekst w kilku wierszach, przycisk Pokaż listę pod nim, mapa niżej](obrazy/m-v1-mapa-pusty-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pusty-jasny-200.webp) |
 
 ### V1: arkusz bariery po dotknięciu znaku
 
@@ -120,15 +120,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Otwarta legenda nad mapą z przyciskiem Zamknij: w części Na mapie Budynek Politechniki, Wejście dostępne, Wejście niedostępne, Wejście bez danych, Zalecane wejście, Ścieżka dostosowana i Pochylnia, niżej początek części Bariery, na dole Przewiń w dół](obrazy/m-v1-mapa-legenda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-legenda-jasny.webp) | [![Ta sama legenda w motywie ciemnym](obrazy/m-v1-mapa-legenda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-legenda-ciemny.webp) | [![Ta sama legenda przy czcionce 200%: nagłówek z przyciskiem Zamknij, pięć pierwszych pozycji części Na mapie, na dole Przewiń w dół](obrazy/m-v1-mapa-legenda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-legenda-jasny-200.webp) |
-
-### V1: źródła danych
-
-`m-v1-mapa-info`
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Panel Źródła danych z przyciskiem Zamknij po dotknięciu przycisku informacji: mapa ulic i kontury budynków © OpenStreetMap contributors na otwartej licencji ODbL, wejścia i plany pięter ze źródła Politechnika Wrocławska, stan z 18.12.2023](obrazy/m-v1-mapa-info-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-info-jasny.webp) | [![Ten sam panel źródeł danych w motywie ciemnym](obrazy/m-v1-mapa-info-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-info-ciemny.webp) | [![Ten sam panel źródeł danych przy czcionce 200%: tekst w wielu wierszach nad mapą](obrazy/m-v1-mapa-info-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-info-jasny-200.webp) |
+| [![Legenda otwarta przyciskiem informacji, nad nim, z niskim przyciskiem Zamknij: w części Na mapie Budynek Politechniki, Wejście dostępne, Wejście niedostępne, Wejście bez danych, Zalecane wejście, Ścieżka dostosowana i Pochylnia, niżej początek części Bariery, na dole Przewiń w dół](obrazy/m-v1-mapa-legenda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-legenda-jasny.webp) | [![Ta sama legenda w motywie ciemnym](obrazy/m-v1-mapa-legenda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-legenda-ciemny.webp) | [![Ta sama legenda przy czcionce 200%: nagłówek z przyciskiem Zamknij, pięć pierwszych pozycji części Na mapie, na dole Przewiń w dół](obrazy/m-v1-mapa-legenda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-legenda-jasny-200.webp) |
 
 ### V1: bez internetu
 
@@ -136,7 +128,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Mapa bez internetu: pod przełącznikiem pasek „Bez internetu · dane z 27.10.2026”, mapa bez mapy ulic, tylko kontury budynków, ścieżki i znaki barier zapisane w telefonie](obrazy/m-v1-mapa-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-brak-sieci-jasny.webp) | [![Ta sama mapa bez internetu w motywie ciemnym](obrazy/m-v1-mapa-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-brak-sieci-ciemny.webp) | [![Ta sama mapa bez internetu przy czcionce 200%: pasek Bez internetu w dwóch wierszach](obrazy/m-v1-mapa-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-brak-sieci-jasny-200.webp) |
+| [![Mapa bez internetu: pod polem symbolu pasek „Bez internetu · dane z 27.10.2026”, mapa bez mapy ulic, tylko kontury budynków, ścieżki i znaki barier zapisane w telefonie](obrazy/m-v1-mapa-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-brak-sieci-jasny.webp) | [![Ta sama mapa bez internetu w motywie ciemnym](obrazy/m-v1-mapa-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-brak-sieci-ciemny.webp) | [![Ta sama mapa bez internetu przy czcionce 200%: pasek Bez internetu w dwóch wierszach, data w drugim](obrazy/m-v1-mapa-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-brak-sieci-jasny-200.webp) |
 
 ### V1: pierwsze otwarcie bez internetu
 
@@ -144,7 +136,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Pierwsze otwarcie bez internetu: pole symbolu, przełącznik Mapa i Lista budynków, pod nim pasek „Bez internetu” bez daty, mapa bez mapy ulic i bez znaków barier, tylko kontury budynków z symbolami](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny.webp) | [![Ta sama mapa przy pierwszym otwarciu w motywie ciemnym](obrazy/m-v1-mapa-pierwsze-otwarcie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-ciemny.webp) | [![Ta sama mapa przy pierwszym otwarciu przy czcionce 200%: pole symbolu w dwóch wierszach, przełącznik Mapa i Lista, pasek Bez internetu](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny-200.webp) |
+| [![Pierwsze otwarcie bez internetu: przycisk Pokaż listę w wierszu tytułu, pole symbolu, pod nim pasek „Bez internetu” bez daty, mapa bez mapy ulic i bez znaków barier, tylko kontury budynków z symbolami](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny.webp) | [![Ta sama mapa przy pierwszym otwarciu w motywie ciemnym](obrazy/m-v1-mapa-pierwsze-otwarcie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-ciemny.webp) | [![Ta sama mapa przy pierwszym otwarciu przy czcionce 200%: pole symbolu w dwóch wierszach, pasek Bez internetu](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny-200.webp) |
 
 ### V1: panel „Teren na mapie”
 
