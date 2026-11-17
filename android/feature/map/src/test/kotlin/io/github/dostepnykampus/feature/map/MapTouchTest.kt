@@ -90,4 +90,20 @@ class MapTouchTest {
         assertInstanceOf(MapTouch.Outlines::class.java, touch, "bez znaku wygrywa kontur")
         assertEquals(TouchSign.entries.map { it.name } + "hit", asked, "znaki po kolei, potem kontur")
     }
+
+    /** Wiersz: V1, znak 20 dp trafiony 24 dp od swojego punktu, a 30 dp już nie. Wymagania: NFR-17 */
+    @Test
+    fun reachIsSquareAroundSignPoint() {
+        val near = listOf(SignPoint(id = "w1", dx = 24f, dy = -24f), SignPoint(id = "w2", dx = 30f, dy = 0f))
+
+        assertEquals(listOf("w1"), signsInReach(under = emptyList(), near = near, reach = 24f), "tylko 48 dp")
+    }
+
+    /** Wiersz: V1, obraz znaku większy niż 48 dp jest trafiony w całości. Wymagania: NFR-17 */
+    @Test
+    fun imageUnderFingerIsHit() {
+        val near = listOf(SignPoint(id = "w1", dx = 40f, dy = 0f))
+
+        assertEquals(listOf("w1"), signsInReach(under = listOf("w1"), near = near, reach = 24f), "obraz pod palcem")
+    }
 }
