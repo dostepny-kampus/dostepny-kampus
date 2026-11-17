@@ -13,9 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -39,6 +37,7 @@ import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.overlay.MapSheet
 
 /**
  * Arkusz bariery na dole mapy V1 po dotknięciu znaku: plakietka uciążliwości ze znakiem i słowem,
@@ -62,20 +61,15 @@ internal fun BarrierSheet(
     onBuildingClick: (Building) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(modifier.fillMaxWidth(), shape = RoundedCornerShape(Zaokraglenia.duze), shadowElevation = Odstepy.s) {
-        Column(
-            Modifier.verticalScroll(rememberScrollState()).padding(Odstepy.m),
-            verticalArrangement = Arrangement.spacedBy(Odstepy.s),
-        ) {
-            SheetTop(chosen.barrier.severity, onClose)
-            BarrierFacts(chosen)
-            chosen.building?.let { building ->
-                PinnedButton(
-                    text = stringResource(R.string.mapa_bariera_opis_budynku),
-                    onClick = { onBuildingClick(building) },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
+    MapSheet(modifier) {
+        SheetTop(chosen.barrier.severity, onClose)
+        BarrierFacts(chosen)
+        chosen.building?.let { building ->
+            PinnedButton(
+                text = stringResource(R.string.mapa_bariera_opis_budynku),
+                onClick = { onBuildingClick(building) },
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
     }
 }

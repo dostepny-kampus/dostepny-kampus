@@ -10,6 +10,7 @@ camera	temat	kamera mapy	Położenie i ruch widoku mapy.
 campus	temat	kampus na mapie	Wspólne dane mapy kampusu: budynki, tereny, zaznaczenie i dzień danych.
 content	temat	treść zgłoszenia	Typ, grupa, miejsce i piętro bariery w zgłoszeniu.
 edit	ścieżka	edycja zgłoszenia	Zmiana wysłanego zgłoszenia.
+entrance	temat	wejście	Wejście do budynku wybrane na mapie i jego arkusz.
 error	temat	błąd	Błędy wspólne dla modułów i ich odpowiedź HTTP.
 form	ścieżka	formularz zgłoszenia	Pełny formularz nowego zgłoszenia.
 geo	temat	geometria	Punkty, obszary i układy współrzędnych.
