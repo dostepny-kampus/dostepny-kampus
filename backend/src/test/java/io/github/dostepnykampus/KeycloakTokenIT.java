@@ -94,6 +94,38 @@ final class KeycloakTokenIT {
         }
     }
 
+    @Test
+    void rotatesRefreshTokenAndRejectsRetiredToken(
+        final WebApplicationContext context
+    ) throws Exception {
+        final JsonMapper mapper = context.getBean(JsonMapper.class);
+        final String realm = context.getEnvironment().getRequiredProperty(
+            "spring.security.oauth2.resourceserver.jwt.issuer-uri"
+        );
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            final String user = "zbierajacy.test";
+            final String refresh = mapper.readTree(
+                KeycloakTokenIT.login(client, mapper, realm, KeycloakTokenIT.APP, user).body()
+            ).path("refresh_token").asString();
+            MatcherAssert.assertThat(
+                "Zalogowanie zwraca token odświeżania", refresh.isBlank(), Matchers.is(false)
+            );
+            final String form = "grant_type=refresh_token&client_id=%s&refresh_token=%s"
+                .formatted(KeycloakTokenIT.APP, refresh);
+            final HttpResponse<String> renewed = KeycloakTokenIT.exchange(client, realm, form);
+            MatcherAssert.assertThat("Odświeżenie powiodło się", renewed.statusCode(), Matchers.is(200));
+            final String next = mapper.readTree(renewed.body()).path("refresh_token").asString();
+            MatcherAssert.assertThat(
+                "Odświeżenie zwraca nowy token", !next.isBlank() && !next.equals(refresh),
+                Matchers.is(true)
+            );
+            MatcherAssert.assertThat(
+                "Realm odrzuca wycofany token odświeżania",
+                KeycloakTokenIT.exchange(client, realm, form).statusCode(), Matchers.is(400)
+            );
+        }
+    }
+
     private static int edit(
         final HttpClient client, final String operation, final String token
     ) throws Exception {
@@ -111,20 +143,33 @@ final class KeycloakTokenIT {
         final HttpClient client, final JsonMapper mapper, final String realm,
         final String app, final String user
     ) throws Exception {
-        final HttpRequest.Builder request = HttpRequest.newBuilder(
-            URI.create("%s/protocol/openid-connect/token".formatted(realm))
-        );
-        request.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
-        request.POST(
-            HttpRequest.BodyPublishers.ofString(
-                "grant_type=password&client_id=%s&username=%s&password=%s".formatted(
-                    app, user, KeycloakTokenIT.password(mapper, user)
-                )
+        return mapper.readTree(
+            KeycloakTokenIT.login(client, mapper, realm, app, user).body()
+        ).path("access_token").asString();
+    }
+
+    private static HttpResponse<String> login(
+        final HttpClient client, final JsonMapper mapper, final String realm,
+        final String app, final String user
+    ) throws Exception {
+        return KeycloakTokenIT.exchange(
+            client, realm,
+            "grant_type=password&client_id=%s&username=%s&password=%s".formatted(
+                app, user, KeycloakTokenIT.password(mapper, user)
             )
         );
-        return mapper.readTree(
-            client.send(request.build(), HttpResponse.BodyHandlers.ofString()).body()
-        ).path("access_token").asString();
+    }
+
+    private static HttpResponse<String> exchange(
+        final HttpClient client, final String realm, final String form
+    ) throws Exception {
+        return client.send(
+            HttpRequest.newBuilder(URI.create("%s/protocol/openid-connect/token".formatted(realm)))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                .POST(HttpRequest.BodyPublishers.ofString(form))
+                .build(),
+            HttpResponse.BodyHandlers.ofString()
+        );
     }
 
     private static String password(final JsonMapper mapper, final String user) {
