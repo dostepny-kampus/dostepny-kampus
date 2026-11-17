@@ -71,7 +71,7 @@ Czynność główna: dotknięcie budynku na liście, które otwiera V2.
 | Pozycja: „Budynek A-1”, nazwa z danych, bariery z uciążliwością tekstem i ikoną; cała ramka pozycji to jeden cel dotyku | NFR-19, US1.3, NFR-21, NFR-17 |
 | Bariery A-1 jak we wzorcu V2: schody przy wejściu głównym [1], pozostałe jako zastępnik | US1.3, BR-7 |
 | Lista daje tę samą informację co mapa, więc jest drogą dla TalkBack | NFR-19, NFR-18 |
-| Dotknięcie pozycji: mapa z zaznaczonym budynkiem i małą kartą V2. Przy TalkBack, dużej czcionce albo szerokim oknie od razu pełny ekran V2. Zamknięcie małej karty wraca do listy | US2.8, NFR-19 |
+| Dotknięcie pozycji: mapa z zaznaczonym budynkiem i kartą V2 na niskiej wysokości. Przy TalkBack, dużej czcionce albo szerokim oknie karta V2 od razu na cały ekran. Zamknięcie karty wraca do listy | US2.8, NFR-19 |
 | Przy dużej czcionce lista jest widokiem startowym | NFR-20 |
 | Lista jest podzielona nagłówkami terenów z liczbą budynków, np. „Wittigowo · 9”; wybranie budynku z innego terenu zmienia teren | US1.8, NFR-18, NFR-19 |
 | Bez przycisków mapy i podpisu OpenStreetMap, bo lista nie pokazuje mapy | decyzja 16 |
@@ -276,7 +276,7 @@ Czynność główna: „Sprawdź, którędy wejść”.
 | Stan bez osobnej makiety | Co się zmienia |
 | --- | --- |
 | Brak sieci | nad przyciskami linia „Bez internetu” (NFR-10) |
-| Pełny ekran od razu | duża czcionka, okno co najmniej 600 dp, poziomo albo lista przy TalkBack. Bez małej karty, a pod „Sprawdź, którędy wejść” stoi obrysowany „Pokaż budynek na mapie” (US2.9) |
+| Cały ekran od razu | duża czcionka, okno co najmniej 600 dp, poziomo albo lista przy TalkBack. Karta od razu na cały ekran, a pod „Sprawdź, którędy wejść” stoi obrysowany „Pokaż budynek na mapie” (US2.9) |
 
 ### V2: budynek podstawowy
 

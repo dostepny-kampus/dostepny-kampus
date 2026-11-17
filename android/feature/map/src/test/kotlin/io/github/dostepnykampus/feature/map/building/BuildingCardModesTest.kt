@@ -65,7 +65,7 @@ class BuildingCardModesTest {
     /**
      * Wiersz: V2, mała karta: nagłówek, potem „Sprawdź, którędy wejść” jako pierwsza czynność i „Zamknij”; bez
      *   „Wejścia”, „Wstecz” i „Pokaż budynek na mapie”.
-     * Scenariusz (częściowo): przegladanie-mapy.feature: Mała karta nad mapą mówi słowami o wejściach
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Niska karta nad mapą mówi słowami o wejściach
      *
      * Wymagania: US2.8, US3.2
      */

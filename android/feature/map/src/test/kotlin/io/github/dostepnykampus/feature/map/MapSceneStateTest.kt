@@ -57,7 +57,7 @@ class MapSceneStateTest {
         state().touch(symbols = symbols.toList(), onBuilding = { opened += it }, onEmpty = { emptyTaps++ })
 
     /**
-     * Scenariusz „Przy niskiej mapie nad małą kartą nie ma przycisków mapy”: bez arkusza przyciski są zawsze,
+     * Scenariusz „Przy niskiej mapie nad kartą nie ma przycisków mapy”: bez arkusza przyciski są zawsze,
      * nad arkuszem tylko wtedy, gdy się mieszczą.
      *
      * Wymagania: US2.8, NFR-53
@@ -133,7 +133,7 @@ class MapSceneStateTest {
     }
 
     /**
-     * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: przycisk nad małą kartą
+     * Scenariusz „Przy karcie budynek jest cały widoczny, a mapą sterują przyciski”: przycisk nad małą kartą
      * zmienia widok karty w granicach terenu i zostaje po zamknięciu karty.
      *
      * Wymagania: US2.8, NFR-53

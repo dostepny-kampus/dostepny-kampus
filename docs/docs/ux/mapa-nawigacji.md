@@ -93,7 +93,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 
 | Z ekranu | Czynność | Do ekranu | Rola | AC/BR |
 | --- | --- | --- | --- | --- |
-| V1 | wybór wyniku w polu „Wpisz symbol budynku, np. C-13” | V2, mała karta nad mapą; duża czcionka: pełny ekran | wszystkie | US1.1, US2.8 |
+| V1 | wybór wyniku w polu „Wpisz symbol budynku, np. C-13” | V2 na niskiej wysokości; duża czcionka: V2 na cały ekran | wszystkie | US1.1, US2.8 |
 | V1 | dotknięcie konturu budynku | V2, mała karta nad mapą o wysokości treści | wszystkie | US2.8, US3.2, decyzja 115 |
 | V1 z małą kartą V2 | dotknięcie konturu innego budynku | V2 tego budynku zamiast poprzedniego; „Wstecz” wraca do V1 | wszystkie | US2.8, decyzja 115 |
 | V1 z małą kartą V2 | dotknięcie pustej mapy; „Zamknij”; „Wstecz” | V1 bez zaznaczenia w widoku sprzed karty: mapa albo lista; po otwarciu z listy wraca lista, a zapamiętany widok listy się nie zmienia. Tekst wyszukiwania bez zmian. Położenie i przybliżenie mapy wracają do widoku sprzed karty. Gdy osoba sama przesunęła albo powiększyła mapę przy otwartej karcie, zostaje jej widok | wszystkie | US2.8, NFR-19, NFR-53, decyzje 83, 116, 118, 153 |
@@ -102,7 +102,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1 | dotknięcie konturu wspólnego, np. „C-3/C-4”, albo dotknięcie obok dwóch konturów, poza nimi | V1, arkusz „Który budynek?” | wszystkie | US2, US3.2, decyzja 85 |
 | V1, arkusz „Który budynek?” | przycisk budynku, np. „Budynek C-3”; „Zamknij” | V2 tego budynku; V1 | wszystkie | US2, NFR-53 |
 | V1 | „Pokaż listę”; na liście „Pokaż mapę” | V1, lista; z listy V1, mapa | wszystkie | NFR-19 |
-| V1 | dotknięcie budynku na liście | zwykła czcionka: V1 w widoku mapy z małą kartą V2, chwilowo, bez zmiany zapamiętanego widoku listy. Mapa od razu stoi na budynku. Duża czcionka albo TalkBack: V2, pełny ekran | wszystkie | US2.8, US3.2, NFR-19, decyzje 115, 118 |
+| V1 | dotknięcie budynku na liście | zwykła czcionka: V1 w widoku mapy z kartą V2 na niskiej wysokości, chwilowo, bez zmiany zapamiętanego widoku listy. Mapa od razu stoi na budynku. Duża czcionka albo TalkBack: V2 na cały ekran | wszystkie | US2.8, US3.2, NFR-19, decyzje 115, 118 |
 | V1 | dotknięcie znaku bariery | V1, arkusz bariery | wszystkie | US1.3, US10.6 |
 | V1, arkusz bariery | „Pokaż opis budynku”; „Zamknij” | V2 budynku bariery; V1 | wszystkie | US2 |
 | V1 | dotknięcie znaku wejścia | V1, arkusz wejścia | wszystkie | US2.1, US3.3 |
@@ -269,7 +269,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 
 | Kontrola | Wynik | Uwagi |
 | --- | --- | --- |
-| Najwyżej 3 dotknięcia od mapy do wejścia dostępnego (US3.2) | spełnione | najkrótsza droga: 1 dotknięcie do małej karty V2, 2 do V3; od otwarcia aplikacji przy pierwszym uruchomieniu do 4 |
+| Najwyżej 3 dotknięcia od mapy do wejścia dostępnego (US3.2) | spełnione | najkrótsza droga: 1 dotknięcie do karty V2, 2 do V3; od otwarcia aplikacji przy pierwszym uruchomieniu do 4 |
 | Ekran osiągalny dla roli z uprawnieniem | spełnione | 19 z 19 ekranów |
 | Ekran nieosiągalny dla roli bez uprawnienia | spełnione | brak przejścia z ekranu innej roli |
 | Powrót do punktu startu z każdego ekranu | spełnione | najwyżej 3 dotknięcia; po wysłaniu formularza dzięki P2. Wyjątek: kroki 2 i 3 V4 po zdjęciu, do 5 dotknięć, bo rezygnacja ze zdjęcia wymaga potwierdzenia |
@@ -281,17 +281,17 @@ Liczymy dotknięcie, które uruchamia element; przy TalkBack to podwójne dotkni
 
 Wejście jest wskazane już na V2, bo karta podaje oznaczenie każdego wejścia (US2.1). V3 podaje odpowiedź pełnym zdaniem (US3.1).
 
-„Sprawdź, którędy wejść” stoi i na małej karcie, i na pełnym ekranie, więc mała karta nie dodaje dotknięcia (US2.8).
+„Sprawdź, którędy wejść” stoi na karcie V2 na każdej wysokości, więc niska karta nie dodaje dotknięcia (US2.8).
 
 | Ścieżka | Dotknięcia do V2 | Dotknięcia do V3 | Wynik |
 | --- | --- | --- | --- |
 | A. V1: kontur budynku, na małej karcie „Sprawdź, którędy wejść” | 1 | 2 | spełnione |
 | B. V1: bariera na mapie, „Sprawdź, którędy wejść” | 1 | 2 | spełnione |
 | C. V1: pole symbolu budynku, litery, wynik, na małej karcie „Sprawdź, którędy wejść” | 2 | 3 | spełnione, na progu |
-| D. V1 z TalkBack: „Pokaż listę”, budynek, od razu pełny ekran, „Sprawdź, którędy wejść” | 2 | 3 | spełnione, na progu |
+| D. V1 z TalkBack: „Pokaż listę”, budynek, od razu V2 na cały ekran, „Sprawdź, którędy wejść” | 2 | 3 | spełnione, na progu |
 | E. Pierwsze uruchomienie: V5 „Pomiń instrukcję”, potem A | 2 | 3 | spełnione |
 | F. Pierwsze uruchomienie: V5 „Pomiń instrukcję”, potem C albo D | 3 | 4 | do V3 ponad próg |
-| G. Brak wyniku: pole, litery, „Pokaż listę”, budynek, mapa z małą kartą, „Sprawdź, którędy wejść” | 3 | 4 | droga po błędzie, ponad próg |
+| G. Brak wyniku: pole, litery, „Pokaż listę”, budynek, mapa z kartą V2, „Sprawdź, którędy wejść” | 3 | 4 | droga po błędzie, ponad próg |
 | H. V1: kontur wspólny, np. „C-3/C-4”, budynek w „Który budynek?”, „Sprawdź, którędy wejść” | 2 | 3 | spełnione, na progu |
 
 Kryterium liczy dotknięcia od mapy, więc ścieżki E i F się w nim mieszczą. Jeśli liczyć od otwarcia aplikacji, ścieżka F przekracza próg tylko przy pierwszym uruchomieniu i tylko do V3.

@@ -275,7 +275,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
     }
 
     /**
-     * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: podpis OSM i przyciski
+     * Scenariusz „Przy karcie budynek jest cały widoczny, a mapą sterują przyciski”: podpis OSM i przyciski
      * mapy stoją nad arkuszem V2, a nagłówka, „Legendy” i „ⓘ” nad nim nie ma.
      *
      * Wymagania: US2.8, NFR-37, NFR-53
@@ -298,7 +298,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
      * Mała karta V2 nad V1 przy zwykłej czcionce: cały kontur budynku i jego wejście mieszczą się w części mapy nad
      * kartą, nad kartą są „Powiększ”, „Pomniejsz” i strzałki przesuwania, „Pomniejsz” oddala mapę bez zamykania
      * karty, a pola symbolu i „Pokaż listę” nad kartą nie ma.
-     * Scenariusz: przegladanie-mapy.feature: Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski
+     * Scenariusz: przegladanie-mapy.feature: Przy karcie budynek jest cały widoczny, a mapą sterują przyciski
      *
      * Wymagania: US2.8, US1.4, NFR-53
      */
@@ -339,7 +339,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
     }
 
     /**
-     * Scenariusz „Przy niskiej mapie nad małą kartą nie ma przycisków mapy”: poniżej 300 dp wolnej mapy przycisków
+     * Scenariusz „Przy niskiej mapie nad kartą nie ma przycisków mapy”: poniżej 300 dp wolnej mapy przycisków
      * nie ma, a po zamknięciu karty wracają.
      *
      * Wymagania: US2.8, NFR-53
@@ -376,7 +376,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
     }
 
     /**
-     * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: mapa pod arkuszem sięga
+     * Scenariusz „Przy karcie budynek jest cały widoczny, a mapą sterują przyciski”: mapa pod arkuszem sięga
      * pod pasek stanu, ale przyciski mapy stoją pod jego tłem.
      *
      * Wymagania: US2.8, NFR-16, NFR-53
@@ -409,7 +409,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
     }
 
     /**
-     * Scenariusz „Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski”: V1 → V2 z budynkiem
+     * Scenariusz „Przy karcie budynek jest cały widoczny, a mapą sterują przyciski”: V1 → V2 z budynkiem
      * nad arkuszem, „Wstecz” bez ruszania mapy → widok sprzed otwarcia V2; po „Powiększ” nad kartą zostaje
      * widok osoby (151 i 153).
      *
