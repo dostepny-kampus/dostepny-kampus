@@ -32,7 +32,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Lista budynków z nagłówkami terenów: „Kampus główny · 78”, „Wittigowo · 9”, „Długa · 4”, „T-9 Atol · 1”, „Bartoszowice · 3”; pod każdym nagłówkiem karty budynków](obrazy/m-v1-mapa-lista-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-jasny.webp) | [![Ta sama lista z nagłówkami terenów w motywie ciemnym](obrazy/m-v1-mapa-lista-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-ciemny.webp) | [![Ta sama lista z nagłówkami terenów przy czcionce 200%](obrazy/m-v1-mapa-lista-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-jasny-200.webp) |
+| [![Lista budynków: w wierszu tytułu przycisk „Pokaż mapę”, pod nim pole symbolu, niżej nagłówki terenów: „Kampus główny · 78”, „Wittigowo · 9”, „Długa · 4”, „T-9 Atol · 1”, „Bartoszowice · 3”; pod każdym nagłówkiem karty budynków](obrazy/m-v1-mapa-lista-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-jasny.webp) | [![Ta sama lista z nagłówkami terenów w motywie ciemnym](obrazy/m-v1-mapa-lista-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-ciemny.webp) | [![Ta sama lista z nagłówkami terenów przy czcionce 200%](obrazy/m-v1-mapa-lista-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-jasny-200.webp) |
 
 ### V1: wyszukiwanie `c13`
 
