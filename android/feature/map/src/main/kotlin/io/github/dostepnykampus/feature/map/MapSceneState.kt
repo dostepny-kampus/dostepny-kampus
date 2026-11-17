@@ -191,8 +191,7 @@ internal fun rememberMapSceneState(
         remember(key1 = selection?.building, key2 = outline != null, key3 = size != IntSize.Zero) {
             val from = last.startOr(uncovered)
             pickMove(from = from, outline = outline, free = fit, scale = scale, keepsZoom = isCoveredBefore)
-                ?.within(limits, free = fit)
-                ?.let { placing.take(move = it, scale = scale) }
+                ?.run { placing.take(move = within(limits, free = fit), scale = scale) }
         }
     motion.RecordPick(pick) {
         pickLine(building = selection?.building, area = area, limits = limits, free = fit, move = it)

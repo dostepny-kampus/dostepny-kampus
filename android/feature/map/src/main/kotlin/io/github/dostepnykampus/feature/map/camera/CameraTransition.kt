@@ -26,7 +26,6 @@ private const val FULL_TURN_DEGREES = 360.0
 private const val SAME_PLACE_DP = 1e-6
 private const val CONTROL_MILLIS = 300L
 private const val APPROACH_MAX_ZOOM = 19.0
-private const val PLACE_MILLIS = 300.0
 
 /**
  * Rodzaj ruchu mapy do wybranego budynku.
@@ -58,15 +57,6 @@ data class CameraTransition(val camera: MapCamera, val motion: CameraMotion, val
 /** Ten sam ruch z widokiem w granicy terenu [limits] dla wolnej części mapy [free]. Wymagania: US1.7, US2.8 */
 internal fun CameraTransition.within(limits: MapLimits?, free: FreeMap): CameraTransition =
     limits?.let { copy(camera = it.clamp(camera, viewWidthDp = free.widthDp, viewHeightDp = free.heightDp)) } ?: this
-
-/**
- * Ten sam widok bez ruchu kamery: mapa, której przed chwilą nie było na ekranie (wybór z listy budynków), staje od
- * razu w widoku końcowym, a karta wjeżdża w 300 ms mnożone przez skalę animacji [animationScale].
- *
- * Wymagania: US2.8, NFR-19, NFR-56
- */
-internal fun CameraTransition.placed(animationScale: Float): CameraTransition =
-    copy(motion = CameraMotion.NONE, durationMillis = (PLACE_MILLIS * animationScale).roundToLong())
 
 /** Ruch do widoku po przycisku mapy, odtworzeniu widoku albo zmianie terenu: przelot w 300 ms. Wymagania: NFR-53 */
 internal fun MapCamera.byControl(): CameraTransition =
