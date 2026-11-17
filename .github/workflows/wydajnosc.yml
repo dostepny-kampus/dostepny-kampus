@@ -42,11 +42,11 @@ jobs:
         working-directory: android
         run: ./gradlew :app:assembleRelease :macrobenchmark:assembleBenchmark --console=plain
       - name: Podpisz aplikację kluczem pomiarów
-        # Instrumentacja wymaga tego samego podpisu aplikacji i pakietu pomiarów (klucz debug tworzy Gradle).
+        # Instrumentacja wymaga tego samego podpisu aplikacji i pakietu pomiarów (klucz debug z repozytorium).
         run: |
           narzedzie="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n 1)/apksigner"
           nieprzypisany="$(find android/app/build/outputs/apk/release -name '*.apk' | head -n 1)"
-          "$narzedzie" sign --ks "$HOME/.android/debug.keystore" --ks-pass pass:android --key-pass pass:android \
+          "$narzedzie" sign --ks android/debug.keystore --ks-pass pass:android --key-pass pass:android \
             --out "$RUNNER_TEMP/aplikacja.apk" "$nieprzypisany"
           cp "$(find android/macrobenchmark/build/outputs/apk -name '*.apk' | head -n 1)" "$RUNNER_TEMP/pomiary.apk"
       - name: Włącz KVM dla emulatora

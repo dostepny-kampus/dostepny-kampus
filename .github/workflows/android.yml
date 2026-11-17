@@ -309,6 +309,21 @@ jobs:
         run: |
           ls -l app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
             systemtest/build/outputs/apk/debug/systemtest-debug.apk
+      - name: Sprawdź podpis kluczem debug z repozytorium
+        # Ten sam certyfikat w każdym przebiegu: apk-debug instaluje się na poprzedni bez kasowania danych (#2865).
+        run: |
+          narzedzie="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n 1)/apksigner"
+          klucz="$(keytool -list -v -keystore debug.keystore -storepass android -alias androiddebugkey |
+            sed -n 's/^[[:space:]]*SHA256: //p' | tr -d ':' | tr 'A-F' 'a-f')"
+          for apk in app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+            systemtest/build/outputs/apk/debug/systemtest-debug.apk; do
+            podpis="$("$narzedzie" verify --print-certs "$apk" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p')"
+            if [ -z "$klucz" ] || [ "$podpis" != "$klucz" ]; then
+              echo "::error title=Podpis apk-debug::$apk ma certyfikat '$podpis', a klucz debug z repozytorium '$klucz'."
+              exit 1
+            fi
+          done
+          echo "Podpis apk-debug: $klucz"
       - name: Udostępnij APK aplikacji i testów
         uses: actions/upload-artifact@v7.0.2
         with:

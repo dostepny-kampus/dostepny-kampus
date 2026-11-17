@@ -38,3 +38,5 @@ Thumbs.db
 !.env.example
 *.jks
 *.keystore
+# Klucz tylko do debug, bez wartości tajnych: ten sam podpis apk-debug w każdym przebiegu CI.
+!android/debug.keystore

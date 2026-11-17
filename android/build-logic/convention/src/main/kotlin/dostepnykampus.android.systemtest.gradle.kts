@@ -23,6 +23,7 @@ extensions.configure<TestExtension> {
     compileOptions.sourceCompatibility = JavaVersion.toVersion(libs.versionInt("jvmTarget"))
     compileOptions.targetCompatibility = JavaVersion.toVersion(libs.versionInt("jvmTarget"))
     lint.configureStrict(exceptions = rootDir.resolve("lint.xml"))
+    signingConfigs.getByName("debug").useRepositoryDebugKey(rootDir.resolve("debug.keystore"))
 }
 
 tasks.withType<KotlinCompilationTask<*>>().configureEach {

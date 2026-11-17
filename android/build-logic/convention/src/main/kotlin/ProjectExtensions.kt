@@ -4,6 +4,7 @@
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 
+import com.android.build.api.dsl.ApkSigningConfig
 import com.android.build.api.dsl.Lint
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
@@ -26,4 +27,15 @@ internal fun Lint.configureStrict(exceptions: File) {
     warningsAsErrors = true
     abortOnError = true
     disable += setOf("AndroidGradlePluginVersion", "GradleDependency", "NewerVersionAvailable")
+}
+
+/**
+ * Podpis debug stałym kluczem [keystore] z repozytorium zamiast klucza tworzonego na każdej maszynie, więc `apk-debug`
+ * z kolejnych przebiegów CI instaluje się na poprzedni bez kasowania danych. Klucz służy tylko do debug.
+ */
+internal fun ApkSigningConfig.useRepositoryDebugKey(keystore: File) {
+    storeFile = keystore
+    storePassword = "android"
+    keyAlias = "androiddebugkey"
+    keyPassword = "android"
 }
