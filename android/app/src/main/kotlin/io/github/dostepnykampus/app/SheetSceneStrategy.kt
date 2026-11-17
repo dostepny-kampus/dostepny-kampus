@@ -56,8 +56,8 @@ import androidx.navigationevent.NavigationEventHandler
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import io.github.dostepnykampus.app.navigation.CardWindow
-import io.github.dostepnykampus.app.navigation.cardMode
-import io.github.dostepnykampus.feature.map.building.CardMode
+import io.github.dostepnykampus.app.navigation.isWideOrLandscape
+import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.feature.map.camera.MOVE_WAIT_MILLIS
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
@@ -106,12 +106,12 @@ internal data class SheetLayout(
 internal val LocalSheetPadding = compositionLocalOf { SheetLayout() }
 
 /**
- * Strategie sceny w oknie: bez arkusza, gdy karta V2 jest od razu na pełnym ekranie.
+ * Strategie sceny w oknie: bez arkusza w oknie szerokim albo poziomym, gdzie karta V2 zastępuje mapę.
  *
  * Wymagania: US2.9, NFR-20, NFR-51
  */
 internal fun CardWindow.sceneStrategies(sheet: SheetSceneStrategy): List<SceneStrategy<NavKey>> =
-    if (cardMode() == CardMode.Direct) emptyList() else listOf(sheet)
+    if (isWideOrLandscape) emptyList() else listOf(sheet)
 
 /**
  * Strategia sceny dla V2: wpis z metadanymi arkusza ([metadata]) nad samym V1 rysuje się jako arkusz od dołu nad żywym
@@ -199,6 +199,7 @@ private data class SheetScene(
                     onExpandedChange = { state = state.copy(isExpanded = it) },
                     onClose = onBack,
                     onLowHeight = { height = with(density) { it.toDp() } },
+                    isFullOnly = density.fontScale >= LARGE_FONT_SCALE,
                     modifier =
                         Modifier
                             .align(Alignment.BottomCenter)

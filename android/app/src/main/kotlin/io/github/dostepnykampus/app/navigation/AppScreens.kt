@@ -61,8 +61,11 @@ internal data class CardWindow(val fontScale: Float, val widthDp: Int, val isLan
  *
  * Wymagania: NFR-51, NFR-22
  */
-internal fun CardWindow.cardMode(): CardMode =
-    if (widthDp >= WIDE_WINDOW_DP || isLandscape) CardMode.Direct else cardModeFor(fontScale)
+internal fun CardWindow.cardMode(): CardMode = if (isWideOrLandscape) CardMode.Direct else cardModeFor(fontScale)
+
+/** Czy okno ma od 600 dp szerokości albo leży poziomo. Wymagania: NFR-51, NFR-22 */
+internal val CardWindow.isWideOrLandscape: Boolean
+    get() = widthDp >= WIDE_WINDOW_DP || isLandscape
 
 /** Bieżące okno z kompozycji, więc tryb karty idzie za obrotem i zmianą czcionki w trakcie (UI-05). */
 @Composable
