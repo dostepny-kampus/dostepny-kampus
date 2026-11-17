@@ -101,6 +101,7 @@ class BuildingOnMapCameraTest {
     private var touch: (List<String>) -> Unit = {}
     private var mapSize = IntSize.Zero
     private var bottomInset = 0.0
+    private var topInset = 0.0
     private var density = 1f
     private var isIdleReported = false
     private val choice = TestMapListChoice()
@@ -109,6 +110,7 @@ class BuildingOnMapCameraTest {
         CampusMapView { data: CampusMapData, _, move, inset, onCameraIdle, onBuildingsTouch, _, modifier: Modifier ->
             shown += data to move.camera
             bottomInset = inset.bottom
+            topInset = inset.top
             touch = onBuildingsTouch
             density = LocalDensity.current.density
             SideEffect { if (isIdleReported) onCameraIdle(move.camera) }
@@ -214,16 +216,27 @@ class BuildingOnMapCameraTest {
         assertShown("U-1")
     }
 
-    /** Wiersz: K3 (strażnik), mała karta V2 i „Wstecz” → kamera sprzed karty. */
+    /** Wiersz: K3 (strażnik), mała karta V2 i „Wstecz” → mapa stoi na ekranie. Wymagania: US2.8, NFR-56 */
     @Test
     fun keepsViewOnBack() {
         pan("prawo", times = 2)
-        val before = shown.last().second
         compose.runOnUiThread { touch(listOf("A-1")) }
         compose.waitForIdle()
+        val above = shown.last().second
+        val under = bottomInset
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
         compose.waitForIdle()
-        assertEquals(before, shown.last().second)
+        assertStays(above = above, under = under)
+    }
+
+    private fun assertStays(above: MapCamera, under: Double) {
+        val after = shown.last().second
+        val perRadian = WORLD_DP_AT_ZOOM_0 * 2.0.pow(above.zoom) / (2 * PI) * density
+        val shift = (mercatorY(above.center.latitude) - mercatorY(after.center.latitude)) * perRadian
+        assertEquals("bez arkusza", 0.0, bottomInset, 0.0)
+        assertEquals("powiększenie zostaje", above.zoom, after.zoom, 0.0)
+        assertEquals("bez ruchu w poziomie", above.center.longitude, after.center.longitude, 1e-9)
+        assertEquals("ekran stoi: środek niżej o pół paska i karty", (topInset + under) / 2, shift, 1.0)
     }
 
     /** Wiersz: K4, po „Pokaż budynek na mapie” strzałka przesuwa mapę i fokus jej nie cofa. Wymagania: US2.9, NFR-53 */
@@ -276,22 +289,24 @@ class BuildingOnMapCameraTest {
     }
 
     /**
-     * Wiersz: K3, po „Pokaż” i geście osoby na V1 mała karta budynku i „Wstecz” bez ruszania mapy
-     * → widok jak przed kartą. Widok mapy zgłasza kamerę tylko po geście osoby, więc przy
-     * otwartej karcie atrapa nic nie zgłasza.
+     * Wiersz: K3, po „Pokaż” i geście osoby na V1 mała karta budynku i „Wstecz” → mapa stoi na ekranie, budynek
+     * dalej widać. Widok mapy zgłasza kamerę tylko po geście osoby, więc przy otwartej karcie atrapa nic nie zgłasza.
+     *
+     * Wymagania: US2.8, NFR-56
      */
     @Test
     fun goesBackAfterShow() {
         isIdleReported = true
         showOnMap("T-9")
         compose.waitForIdle()
-        val before = shown.last().second
         isIdleReported = false
         compose.runOnUiThread { touch(listOf("T-9")) }
         compose.waitForIdle()
+        val above = shown.last().second
+        val under = bottomInset
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
         compose.waitForIdle()
         assertShown("T-9")
-        assertEquals(before, shown.last().second)
+        assertStays(above = above, under = under)
     }
 }
