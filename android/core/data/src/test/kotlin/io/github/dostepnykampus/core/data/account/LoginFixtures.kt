@@ -61,11 +61,13 @@ internal object ReversingCipher : LoginCipher {
     override fun open(sealed: ByteArray): ByteArray = sealed.reversedArray()
 }
 
-/** Sesja z zapisem w [file]. */
+/** Sesja z zapisem w [file] i odświeżeniem [refresher]. */
 internal fun sessionOf(
     tokens: AccessTokens = AccessTokens(),
     file: File = File.createTempFile("logowanie", null).apply { delete() },
+    refresher: LoginRefresh = LoginRefresh { Renewal.Rejected },
     work: CoroutineContext = Dispatchers.Unconfined,
-): AccountSession = AccountSession(tokens, LoginVault(file, ReversingCipher), work)
+): AccountSession =
+    AccountSession(tokens = tokens, vault = LoginVault(file, ReversingCipher), refresher = refresher, work = work)
 
 internal const val REFRESH_TOKEN = "odswiezenie"

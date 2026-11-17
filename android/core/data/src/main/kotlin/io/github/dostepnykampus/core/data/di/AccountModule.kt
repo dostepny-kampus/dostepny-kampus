@@ -14,9 +14,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.account.AccountSession
 import io.github.dostepnykampus.core.data.account.AccountSignIn
+import io.github.dostepnykampus.core.data.account.AppAuthRefresh
 import io.github.dostepnykampus.core.data.account.BrowserSignIn
 import io.github.dostepnykampus.core.data.account.KeystoreCipher
 import io.github.dostepnykampus.core.data.account.LoginCipher
+import io.github.dostepnykampus.core.data.account.LoginRefresh
 import io.github.dostepnykampus.core.data.account.LoginVault
 import io.github.dostepnykampus.core.data.account.RoleProvider
 import java.io.File
@@ -36,6 +38,10 @@ internal interface AccountModule {
     /** Klucz zapisu logowania z Android Keystore. Wymagania: NFR-35 */
     @Binds
     fun cipher(keystore: KeystoreCipher): LoginCipher
+
+    /** Token dostępu odświeża Usługa logowania. Wymagania: US14.4 */
+    @Binds
+    fun refresh(appAuth: AppAuthRefresh): LoginRefresh
 
     companion object {
         /** Zapis logowania w katalogu bez kopii zapasowej. Wymagania: US14.4, NFR-35 */

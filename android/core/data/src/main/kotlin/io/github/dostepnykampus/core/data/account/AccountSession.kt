@@ -11,26 +11,31 @@ import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.network.auth.AccessTokens
 import io.github.dostepnykampus.core.network.auth.realmRolesOf
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
+import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 
 /**
  * Sesja konta: konto wynika z ról w tokenie Usługi logowania, a token trafia do [AccessTokens]. Na starcie Gość,
- * dopóki nie wróci logowanie zapisane do następnego uruchomienia.
+ * dopóki nie wróci zapisane logowanie; jego token dostępu odświeża się przed wygaśnięciem.
  *
  * Wymagania: US14.1, US14.4, BR-1, NFR-35
  *
  * @param tokens token dołączany do żądań do serwera
  * @param vault zalogowanie zapisane do następnego uruchomienia
- * @param work wątek odczytu i zapisu
+ * @param refresher odświeżenie tokenu dostępu
+ * @param work wątek zapisu i odświeżania
  */
 @Singleton
 public class AccountSession
@@ -38,10 +43,12 @@ public class AccountSession
     internal constructor(
         private val tokens: AccessTokens,
         private val vault: LoginVault,
+        private val refresher: LoginRefresh,
         @param:IoContext private val work: CoroutineContext,
     ) : RoleProvider {
         private val state = MutableStateFlow<Account>(Account.Guest)
         private val scope = CoroutineScope(SupervisorJob() + work)
+        private val renewal = AtomicReference<Job?>(null)
 
         override val account: StateFlow<Account> = state.asStateFlow()
 
@@ -75,6 +82,7 @@ public class AccountSession
 
         /** Wylogowuje: usuwa token i zapisane logowanie, wraca do Gościa. */
         public fun signOut() {
+            renewal.getAndSet(null)?.cancel()
             tokens.signOut()
             state.value = Account.Guest
             scope.launch { vault.clear() }
@@ -82,7 +90,27 @@ public class AccountSession
 
         private fun keep(login: AuthState): Boolean {
             val token = login.accessToken
-            return token != null && signIn(token)
+            if (token == null || !signIn(token)) return false
+            val job = scope.launch(start = CoroutineStart.LAZY) { renew(login) }
+            renewal.getAndSet(job)?.cancel()
+            job.start()
+            return true
+        }
+
+        private suspend fun renew(login: AuthState) {
+            val expiry = login.accessTokenExpirationTime ?: return
+            delay(expiry - System.currentTimeMillis() - EARLY_MS)
+            var next = refresher.refresh(login)
+            while (next == Renewal.Unreachable) {
+                delay(RETRY_MS)
+                next = refresher.refresh(login)
+            }
+            if (next is Renewal.Fresh && keep(next.login)) vault.write(next.login) else signOut()
+        }
+
+        private companion object {
+            const val EARLY_MS = 60_000L
+            const val RETRY_MS = 30_000L
         }
     }
 
