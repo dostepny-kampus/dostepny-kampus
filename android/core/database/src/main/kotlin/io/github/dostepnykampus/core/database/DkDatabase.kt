@@ -11,6 +11,8 @@ import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
 import io.github.dostepnykampus.core.database.cache.BarrierCacheEntity
 import io.github.dostepnykampus.core.database.cache.BuildingCacheDao
 import io.github.dostepnykampus.core.database.cache.BuildingCacheEntity
+import io.github.dostepnykampus.core.database.inspection.InspectionMarkerDao
+import io.github.dostepnykampus.core.database.inspection.InspectionMarkerEntity
 import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeDao
 import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeEntity
 import io.github.dostepnykampus.core.database.room.FloorPlanDao
@@ -39,8 +41,9 @@ import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
         PendingMarkerChangeEntity::class,
         FloorPlanEntity::class,
         FloorRoomEntity::class,
+        InspectionMarkerEntity::class,
     ],
-    version = 9,
+    version = 10,
     exportSchema = true,
 )
 internal abstract class DkDatabase : RoomDatabase() {
@@ -64,4 +67,7 @@ internal abstract class DkDatabase : RoomDatabase() {
 
     /** Kopie planów pięter i pomieszczeń. */
     abstract fun floorPlans(): FloorPlanDao
+
+    /** Kopia znaczników piętra obejrzanego z serwera. */
+    abstract fun inspectionMarkers(): InspectionMarkerDao
 }

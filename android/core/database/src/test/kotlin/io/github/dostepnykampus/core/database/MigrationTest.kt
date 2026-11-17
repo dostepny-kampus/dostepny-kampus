@@ -185,6 +185,25 @@ class MigrationTest {
                 assertEquals(listOf(true, true), lift)
             }
     }
+
+    @Test
+    fun keepsRoomsFrom9To10() {
+        helper.createDatabase(DB_NAME, 9).use { ninth ->
+            ninth.execSQL(
+                "INSERT INTO pending_marker_changes (operation_id, type, marker_id, building_symbol, floor_id," +
+                    " saved_at) VALUES ('o', 'SET', 'm', 'A-1', 'P0', 7)",
+            )
+        }
+
+        helper
+            .runMigrationsAndValidate(DB_NAME, 10, true, MIGRATION_9_10)
+            .use { tenth ->
+                val changes = tenth.query("SELECT COUNT(*) FROM pending_marker_changes").use { row -> readCount(row) }
+                val markers = tenth.query("SELECT COUNT(*) FROM inspection_markers").use { row -> readCount(row) }
+
+                assertEquals("kolejka zmian i pusta kopia znaczników", listOf(1, 0), listOf(changes, markers))
+            }
+    }
 }
 
 private fun readCount(cursor: Cursor): Int {
