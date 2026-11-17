@@ -68,3 +68,4 @@
 {"sha": "36d87de780f03aa7c198d4183a03966f5ff96c2a", "data": "2026-11-17", "zadania": 6000, "bledy": 5942, "p50_ms": 21.0, "p90_ms": 37.5, "p99_ms": 52.9}
 {"sha": "52fad29ba025eeed68e51a39bb8a956ce08b36fc", "data": "2026-11-17", "zadania": 6000, "bledy": 5942, "p50_ms": 31.0, "p90_ms": 46.8, "p99_ms": 69.5}
 {"sha": "484622e3afc33cf508beb071039e91ca4327422d", "data": "2026-11-17", "zadania": 6000, "bledy": 5942, "p50_ms": 23.5, "p90_ms": 44.8, "p99_ms": 63.5}
+{"sha": "daf1db7983826d78c1d581997e248e2cb8eda511", "data": "2026-11-17", "zadania": 6000, "bledy": 5942, "p50_ms": 31.0, "p90_ms": 59.3, "p99_ms": 85.4}
