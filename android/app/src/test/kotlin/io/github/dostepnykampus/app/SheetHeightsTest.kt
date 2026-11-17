@@ -35,7 +35,6 @@ import io.github.dostepnykampus.feature.map.building.CardMode
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -51,7 +50,6 @@ private const val SLOW_SWIPE_MILLIS = 2000L
  *
  * Wymagania: US2, US2.8, NFR-17, NFR-18, NFR-53
  */
-@Ignore("Arkusz nie ma jeszcze trzech wysokości: #2978")
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class SheetHeightsTest {
@@ -92,7 +90,10 @@ class SheetHeightsTest {
         assertEquals("góra uchwytu: $what", expected.value, handleTop().value, 1f)
     }
 
-    /** Wiersz: dotknięcie uchwytu → następna wysokość: niska, połowa ekranu, cały ekran, znowu niska. */
+    /**
+     * Wiersz: dotknięcie uchwytu → następna wysokość: niska, połowa ekranu, cały ekran, znowu niska.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Uchwyt zmienia wysokość karty bez przeciągania
+     */
     @Test
     fun tapsHandleThroughHeights() {
         open()
