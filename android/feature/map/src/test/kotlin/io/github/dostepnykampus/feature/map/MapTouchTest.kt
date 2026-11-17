@@ -34,8 +34,8 @@ class MapTouchTest {
     fun barrierWinsOverOutline() {
         val touch = chooseTouch(signsNear = { listOf("z1") }, outlines = outlinesAt(hit = listOf(3)))
 
-        assertEquals(MapTouch.Sign(TouchSign.BARRIER, "z1"), touch)
-        assertEquals(emptyList<String>(), asked)
+        assertEquals(MapTouch.Sign(TouchSign.BARRIER, "z1"), touch, "bariera w zasięgu wygrywa")
+        assertEquals(emptyList<String>(), asked, "przy trafionym znaku kontury nie są sprawdzane")
     }
 
     /** Wiersz: V1, bez znaku w zasięgu wygrywa kontur pod palcem; kontury obok są liczone na żądanie. */
@@ -44,10 +44,10 @@ class MapTouchTest {
         val outlines = outlinesAt(hit = listOf(3), near = listOf(3, 4))
         val touch = chooseTouch(signsNear = { emptyList() }, outlines = outlines)
 
-        val chosen = assertInstanceOf(MapTouch.Outlines::class.java, touch)
-        assertEquals(listOf(3), chosen.hit)
-        assertEquals(listOf("hit"), asked)
-        assertEquals(listOf(3, 4), chosen.near())
+        val chosen = assertInstanceOf(MapTouch.Outlines::class.java, touch, "bez znaku wygrywa kontur")
+        assertEquals(listOf(3), chosen.hit, "kontur pod palcem")
+        assertEquals(listOf("hit"), asked, "kontury obok nie są liczone przed żądaniem")
+        assertEquals(listOf(3, 4), chosen.near(), "kontury w zasięgu na żądanie")
     }
 
     /** Wiersz: V1, dotknięcie pustej mapy nie ma znaku ani konturu. */
@@ -55,9 +55,9 @@ class MapTouchTest {
     fun emptyMapHasNoTarget() {
         val touch = chooseTouch(signsNear = { emptyList() }, outlines = outlinesAt(hit = emptyList()))
 
-        val outlines = assertInstanceOf(MapTouch.Outlines::class.java, touch)
-        assertEquals(emptyList<Int>(), outlines.hit)
-        assertEquals(emptyList<Int>(), outlines.near())
+        val outlines = assertInstanceOf(MapTouch.Outlines::class.java, touch, "pusta mapa daje puste kontury")
+        assertEquals(emptyList<Int>(), outlines.hit, "brak konturu pod palcem")
+        assertEquals(emptyList<Int>(), outlines.near(), "brak konturu w zasięgu")
     }
 
     /** Wiersz: V1, znaki są sprawdzane w kolejności pierwszeństwa i tylko do pierwszego trafienia. */
@@ -72,7 +72,7 @@ class MapTouchTest {
                 outlines = outlinesAt(hit = emptyList()),
             )
 
-        assertInstanceOf(MapTouch.Outlines::class.java, touch)
-        assertEquals(TouchSign.entries.map { it.name } + "hit", asked)
+        assertInstanceOf(MapTouch.Outlines::class.java, touch, "bez znaku wygrywa kontur")
+        assertEquals(TouchSign.entries.map { it.name } + "hit", asked, "znaki po kolei, potem kontur")
     }
 }
