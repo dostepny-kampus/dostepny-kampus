@@ -160,7 +160,7 @@ internal fun rememberMapSceneState(
     val pick =
         remember(key1 = selection?.building, key2 = outline != null, key3 = size != IntSize.Zero) {
             val from = last.startOr(uncovered)
-            val sight = tapSight(isCoveredBefore, bar = topBefore, under = cover + reserve, free = fit)
+            val sight = tapSight(wasCovered = isCoveredBefore, bar = topBefore, under = cover + reserve, free = fit)
             pickView(from = from, outline = outline, free = fit, limits = limits, scale = scale)?.let { view ->
                 origin.move(building = selection?.building, view = view, keepsZoom = isCoveredBefore, sight = sight)
             }
@@ -273,14 +273,9 @@ private fun MapMotion?.RecordPick(pick: CameraTransition?, line: (CameraTransiti
     }
 }
 
-/**
- * Mapa widziana w chwili dotknięcia nad wolną częścią [free], pod którą arkusz i napis zajmują [under]. Przed kartą
- * ([isCoveredBefore] fałszywe) widok stał pod paskiem wysokim na [bar], więc jego środek leży niżej o połowę paska
- * i zasłoniętego dołu, a pasek zasłaniał górę mapy.
- */
-private fun tapSight(isCoveredBefore: Boolean, bar: Dp, under: Dp, free: FreeMap): TapSight {
+private fun tapSight(wasCovered: Boolean, bar: Dp, under: Dp, free: FreeMap): TapSight {
     val bottom = free.heightDp + under.value
-    return if (isCoveredBefore) {
+    return if (wasCovered) {
         TapSight(belowDp = 0.0, topDp = 0.0, bottomDp = bottom)
     } else {
         TapSight(belowDp = (bar + under).value / 2.0, topDp = bar.value.toDouble(), bottomDp = bottom)
