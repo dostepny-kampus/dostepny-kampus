@@ -168,7 +168,6 @@ class EntranceAssessmentTextTest {
             BuildingCardScreen(
                 symbol = SYMBOL,
                 mode = CardMode.Expanded,
-                onCheckEntrances = {},
                 onShowOnMap = {},
                 onBack = {},
                 onClose = {},

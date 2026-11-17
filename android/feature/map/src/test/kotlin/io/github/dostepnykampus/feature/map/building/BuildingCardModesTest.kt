@@ -19,6 +19,7 @@ import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -39,7 +40,8 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 private const val NAME = "Gmach Główny"
 private const val WIDE_PILL_SHARE = 0.75f
-private const val CHECK = "Sprawdź, którędy wejść"
+private const val CHECK = "Pokaż wejście na mapie"
+private const val ANSWER = "Zalecane: „Główne”."
 private const val SHOW = "Pokaż budynek na mapie"
 private const val CLOSE = "Zamknij"
 private val TOUCH_TARGET = 48.dp
@@ -65,8 +67,9 @@ class BuildingCardModesTest {
     private val online = MutableStateFlow(true)
 
     /**
-     * Wiersz: V2, niska karta: nagłówek z obrysowanym „Zamknij” po prawej, wiersz o wejściach i „Sprawdź, którędy
-     *   wejść” jako pierwsza czynność treści; bez dolnego „Zamknij”, „Wejścia”, „Wstecz” i „Pokaż budynek na mapie”.
+     * Wiersz: V2, niska karta: nagłówek z obrysowanym „Zamknij” po prawej, wiersz o wejściach z odpowiedzią czytany
+     *   jako jeden tekst i „Pokaż wejście na mapie” jako pierwsza czynność treści; bez dolnego „Zamknij”, listy
+     *   „Wejścia”, „Wstecz” i „Pokaż budynek na mapie”.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Niska karta nad mapą mówi słowami o wejściach
      *
      * Wymagania: US2.8, US3.2, NFR-53
@@ -83,7 +86,8 @@ class BuildingCardModesTest {
         val check = compose.onNodeWithText(CHECK).getUnclippedBoundsInRoot()
         assertTrue("„Zamknij” w nagłówku obok symbolu: $close, symbol $symbol", close.top < symbol.bottom)
         assertTrue("„Zamknij” po prawej od symbolu: $close, symbol $symbol", close.left > symbol.right)
-        assertTrue("„Zamknij” nad „Sprawdź…”: $close, $check", close.bottom < check.top)
+        assertTrue("„Zamknij” nad „Pokaż wejście…”: $close, $check", close.bottom < check.top)
+        compose.onNode(hasText(ROW) and hasText(ANSWER)).assertExists("wiersz i odpowiedź jako jeden tekst")
         compose.onAllNodes(hasClickAction() and !hasText(CLOSE)).onFirst().assert(hasText(CHECK))
         assertOrder(NAME, ROW, CHECK)
     }
@@ -122,7 +126,7 @@ class BuildingCardModesTest {
     }
 
     /**
-     * Wiersz: V2, pełny ekran: „Sprawdź, którędy wejść” w treści pod nagłówkiem, pierwsza czynność, bez
+     * Wiersz: V2, pełny ekran: „Pokaż wejście na mapie” w treści pod nagłówkiem, pierwsza czynność, bez
      *   przypiętego pasa, potem grupa „Wejścia” jak dziś; „Pokaż budynek na mapie” tylko od razu.
      *
      * Wymagania: US3.2, US2.9
@@ -132,7 +136,7 @@ class BuildingCardModesTest {
         card(CardMode.Direct)
         listOf(CardMode.Direct, CardMode.Expanded).forEach { fullScreen ->
             show(fullScreen)
-            compose.onNodeWithText(CHECK).assert(inScroll)
+            compose.onAllNodesWithText(CHECK).onFirst().assert(inScroll)
             assertOrder(NAME, CHECK, "Wejścia", "Główne", "Schody")
             val actions = hasClickAction() and !hasText(BACK) and !hasText(CLOSE)
             compose.onAllNodes(actions).onFirst().assert(hasText(CHECK))
@@ -168,7 +172,7 @@ class BuildingCardModesTest {
 
     /**
      * Wiersz: V2 przy skali czcionki co najmniej 1,5: w nagłówku „Zamknij”, bez paska „Wstecz”, a pod nazwą
-     *   „Sprawdź, którędy wejść” i „Pokaż budynek na mapie”.
+     *   „Pokaż wejście na mapie” i „Pokaż budynek na mapie”.
      *
      * Wymagania: NFR-20, US2.9
      */
@@ -182,8 +186,8 @@ class BuildingCardModesTest {
     }
 
     /**
-     * Wiersz: V2, „Zamknij” → onClose, „Wstecz” → onBack, „Sprawdź…” → onCheckEntrances, „Pokaż budynek na
-     *   mapie” → onShowOnMap.
+     * Wiersz: V2, „Zamknij” → onClose, „Wstecz” → onBack, „Pokaż wejście na mapie” → onShowEntrance z wejściem
+     *   zalecanym, „Pokaż budynek na mapie” → onShowOnMap.
      *
      * Wymagania: NFR-15, US2.8
      */
@@ -195,7 +199,7 @@ class BuildingCardModesTest {
         show(CardMode.Direct)
         compose.onNodeWithText(BACK).performClick()
         compose.onNodeWithText(SHOW).performClick()
-        assertEquals(listOf("close", "check", "back", "map"), calls)
+        assertEquals(listOf("close", "show node/1", "back", "map"), calls)
     }
 
     /**
@@ -208,7 +212,7 @@ class BuildingCardModesTest {
     @Config(fontScale = 2f)
     fun scrollsAllAtLargeFont() {
         card(CardMode.Direct)
-        listOf(NAME, CHECK, SHOW, "Wejścia").forEach { compose.onNodeWithText(it).assert(inScroll) }
+        listOf(NAME, CHECK, SHOW, "Wejścia").forEach { compose.onAllNodesWithText(it).onFirst().assert(inScroll) }
         assertOrder(CHECK, SHOW, "Wejścia")
         compose.onAllNodes(hasClickAction() and !hasText(BACK) and !inScroll).assertCountEquals(0)
     }
@@ -267,9 +271,9 @@ class BuildingCardModesTest {
     }
 
     /**
-     * Wiersz: V2 pełny ekran: „Pokaż wejście na mapie” tylko przy wejściu zalecanym, pod jego opisem, w przewijanej
-     *   treści; TalkBack czyta „Pokaż wejście na mapie: »nazwa wejścia«”; dotknięcie → onShowEntrance z id tego
-     *   wejścia.
+     * Wiersz: V2 pełny ekran: w grupie „Wejścia” „Pokaż wejście na mapie” tylko przy wejściu zalecanym, pod jego
+     *   opisem, w przewijanej treści; TalkBack czyta „Pokaż wejście na mapie: »nazwa wejścia«”; dotknięcie
+     *   → onShowEntrance z id tego wejścia.
      *
      * Wymagania: US3.3, US2.1, BR-25, NFR-18
      */
@@ -278,43 +282,46 @@ class BuildingCardModesTest {
         card(CardMode.Direct)
         listOf(CardMode.Direct, CardMode.Expanded).forEach { fullScreen ->
             show(fullScreen)
-            compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(1)
-            val shown = compose.onNode(hasClickAction() and hasContentDescription("$SHOW_ENTRANCE: »Główne«"))
+            compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(2)
+            val shown = compose.onAllNodes(hasClickAction() and hasContentDescription("$SHOW_ENTRANCE: »Główne«"))[1]
             shown.assert(hasText(SHOW_ENTRANCE) and inScroll)
             val tops = listOf(compose.onNodeWithText("Główne"), shown, compose.onNodeWithText("Schody"))
             val ys = tops.map { it.getUnclippedBoundsInRoot().top }
             assertTrue("„Główne”, czynność, „Schody” od góry, a są na $ys", ys.zipWithNext().all { (a, b) -> a < b })
         }
-        compose.onNode(hasContentDescription("$SHOW_ENTRANCE: »Główne«")).performClick()
+        compose.onAllNodes(hasContentDescription("$SHOW_ENTRANCE: »Główne«"))[1].performClick()
         assertEquals(listOf("show node/1"), calls)
     }
 
     /**
-     * Wiersz: V2 pełny ekran budynku bez wejścia zalecanego (każde „Niedostępne”) → bez „Pokaż wejście na mapie”.
+     * Wiersz: V2 pełny ekran budynku bez wejścia zalecanego (każde „Niedostępne”) → bez „Pokaż wejście na mapie”,
+     *   a pod wierszem o wejściach zdanie „Jedyne wejście nie jest dostępne.”.
      *
-     * Wymagania: US3.3, BR-25
+     * Wymagania: US3.3, US3.1, BR-25
      */
     @Test
     fun hidesShowWithoutRecommended() {
         card(CardMode.Direct)
-        compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(1)
+        compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(2)
         symbol.value = "B-4"
         compose.waitUntil { compose.onAllNodes(hasText("Zamknięte")).fetchSemanticsNodes().isNotEmpty() }
         compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(0)
+        compose.onNodeWithText("Jedyne wejście nie jest dostępne.").assertExists("zdanie o jedynym wejściu")
     }
 
     /**
-     * Wiersz: V2, mała karta nie ma listy wejść, więc nie ma „Pokaż wejście na mapie”; pełny ekran ma.
+     * Wiersz: V2, mała karta ma jedno „Pokaż wejście na mapie” pod wierszem o wejściach; pełny ekran ma też drugie
+     *   przy wejściu zalecanym w grupie „Wejścia”.
      *
      * Wymagania: US3.3
      */
     @Test
     fun hidesShowOnCompact() {
         card(CardMode.Direct)
-        compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(1)
+        compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(2)
         show(CardMode.Compact)
-        compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(0)
-        compose.onAllNodes(hasContentDescription(SHOW_ENTRANCE, substring = true)).assertCountEquals(0)
+        compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(1)
+        compose.onAllNodes(hasContentDescription("$SHOW_ENTRANCE: »Główne«")).assertCountEquals(1)
     }
 
     private fun card(start: CardMode) {
@@ -329,7 +336,6 @@ class BuildingCardModesTest {
                 BuildingCardScreen(
                     symbol = shown,
                     mode = mode.value,
-                    onCheckEntrances = { calls += "check" },
                     onShowOnMap = { calls += "map" },
                     onBack = { calls += "back" },
                     onClose = { calls += "close" },
@@ -348,7 +354,7 @@ class BuildingCardModesTest {
     }
 
     private fun assertOrder(vararg texts: String) {
-        val tops = texts.map { compose.onNodeWithText(it).getUnclippedBoundsInRoot().top }
+        val tops = texts.map { compose.onAllNodesWithText(it).onFirst().getUnclippedBoundsInRoot().top }
         assertTrue("${texts.toList()} od góry, a są na $tops", tops.zipWithNext().all { (up, down) -> up < down })
     }
 

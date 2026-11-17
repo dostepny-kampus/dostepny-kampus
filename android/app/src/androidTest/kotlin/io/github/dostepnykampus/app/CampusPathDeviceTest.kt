@@ -62,21 +62,14 @@ class CampusPathDeviceTest {
     }
 
     /**
-     * Wiersze: V1, wpisanie symbolu i wybór wyniku → V2; „Sprawdź, którędy wejść” → V3; „Wstecz” → V2.
+     * Wiersz: V1, wpisanie symbolu i wybór wyniku → V2 z odpowiedzią o wejściu zalecanym.
      *
-     * Symbol jest wpisany akcją semantyki, bez fokusu pola, więc klawiatura ekranowa się nie otwiera. Otwarta
-     * klawiatura pochłania „Wstecz” (chowa się zamiast cofnąć V3), a chwila jej otwarcia i zamknięcia zależy od
-     * emulatora, więc wynik testu zależałby od czasu.
-     *
-     * Wymagania: US1.1, US2, US3
+     * Wymagania: US1.1, US2, US3.1
      */
     @Test
     fun goesFromSearchToEntrances() {
         steps.openCard("A-1")
-        compose.onNode(hasText(CHECK_ENTRANCES)).performClick()
-        steps.waitFor(hasText("Którędy wejść do A-1"))
-        Espresso.pressBack()
-        steps.waitFor(hasText(CHECK_ENTRANCES))
+        steps.waitFor(hasText("Zalecane:", substring = true))
     }
 
     /**

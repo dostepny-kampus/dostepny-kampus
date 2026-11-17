@@ -106,7 +106,6 @@ class AppShellScreenshotTest {
                 BuildingCardScreen(
                     symbol = route.symbol,
                     mode = sheet.mode,
-                    onCheckEntrances = { openEntrances(route.symbol) },
                     onShowOnMap = { showOnMap(MapFocus.Building(route.symbol)) },
                     onBack = sheet.onBack,
                     onClose = sheet.onClose,
@@ -141,7 +140,7 @@ class AppShellScreenshotTest {
         if (isSheetOpen && !isFromList) compose.runOnUiThread { touch(listOf("C-13")) }
         query?.let { compose.onNode(hasSetTextAction()).performTextInput(it) }
         if (isKeyboardOpen) compose.runOnUiThread { dispatchKeyboard(compose.activity, isOpen = true) }
-        val check = "Sprawdź, którędy wejść"
+        val check = "Zamknij"
         if (isSheetOpen) compose.waitUntil { compose.onAllNodesWithText(check).fetchSemanticsNodes().isNotEmpty() }
         compose.onRoot().captureRoboImage()
     }

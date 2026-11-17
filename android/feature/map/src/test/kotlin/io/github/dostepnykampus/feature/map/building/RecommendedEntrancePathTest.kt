@@ -114,7 +114,6 @@ class RecommendedEntrancePathTest {
                 BuildingCardScreen(
                     symbol = symbol,
                     mode = CardMode.Expanded,
-                    onCheckEntrances = {},
                     onShowOnMap = {},
                     onBack = {},
                     onClose = {},

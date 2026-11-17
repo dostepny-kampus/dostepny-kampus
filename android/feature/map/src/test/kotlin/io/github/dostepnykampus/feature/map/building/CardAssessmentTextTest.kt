@@ -57,7 +57,6 @@ class CardAssessmentTextTest {
                 BuildingCardScreen(
                     symbol = "A-1",
                     mode = CardMode.Expanded,
-                    onCheckEntrances = {},
                     onShowOnMap = {},
                     onBack = {},
                     onClose = {},

@@ -141,13 +141,11 @@ class EntranceHiltTest {
         compose.onAllNodes(matcher).onFirst().assertExists()
     }
 
-    /** Wiersz: V1 lista, budynek → V2 → V3 → „Pokaż wejście na mapie” → V1, TalkBack czyta wejście i budynek. */
+    /** Wiersz: V1 lista, budynek → V2 → „Pokaż wejście na mapie” → V1, TalkBack czyta wejście i budynek. */
     @Test
     fun selectsEntranceThroughHilt() {
         waitFor(ListedA1)
         compose.onNode(ListedA1).performClick()
-        waitFor(hasText("Sprawdź, którędy wejść"))
-        compose.onNodeWithText("Sprawdź, którędy wejść").performClick()
         waitFor(hasText("Pokaż wejście na mapie"))
         compose.onAllNodes(hasText("Pokaż wejście na mapie")).onFirst().performClick()
         waitFor(hasContentDescription("Zaznaczone wejście: »Wejście dostosowane«, budynek A-1"))

@@ -123,15 +123,14 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi to zgłoszenie ze zdjęciem
     Oraz przy zgłoszeniu widnieje data weryfikacji 12.11.2026
 
-  # @do-zrobienia #3075: odpowiedzi o wejściu na niskiej karcie jeszcze nie ma w aplikacji.
-  @US3.2 @aplikacja @do-zrobienia
+  @US3.2 @aplikacja
   Scenariusz: Wejście dostępne najwyżej 3 dotknięcia od mapy
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
     Jeżeli dotknie budynku A-1
     Wtedy na karcie budynku A-1 widzi „Wejście dostępne” i zdanie z wejściem zalecanym
     Oraz od mapy wykonał 1 dotknięcie, czyli nie więcej niż 3
 
-  # @do-zrobienia #3075, #3076: zdania, „Pokaż wejście na mapie” i wystającego nagłówka „Wejścia” jeszcze nie ma w aplikacji.
+  # @do-zrobienia #3076: wystającego nagłówka „Wejścia” jeszcze nie ma w aplikacji.
   @US2.8 @aplikacja @do-zrobienia
   Szablon scenariusza: Niska karta nad mapą mówi słowami o wejściach
     Zakładając, że w danych testowych <dane>
@@ -198,8 +197,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz po „Pokaż budynek na mapie” widzi mapę z zaznaczonym budynkiem A-1, a nie listę
     Oraz aplikacja pamięta widok mapy, a w wierszu tytułu jest „Pokaż listę”
 
-  # @do-zrobienia #3075: zdania o braku wejścia dostępnego na karcie jeszcze nie ma w aplikacji.
-  @US3.1 @aplikacja @do-zrobienia
+  @US3.1 @aplikacja
   Scenariusz: Brak wejścia dostępnego jest powiedziany wprost
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
     Jeżeli dotknie budynku B-8

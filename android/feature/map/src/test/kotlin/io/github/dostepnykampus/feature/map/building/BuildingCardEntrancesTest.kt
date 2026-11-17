@@ -40,7 +40,6 @@ class BuildingCardEntrancesTest {
                     mode = CardMode.Expanded,
                     card = BuildingCardUiState.Ready(symbol = "A-2", name = null, entrances = emptyList()),
                     isOnline = true,
-                    onCheckEntrances = {},
                     onShowOnMap = {},
                     onBack = {},
                     onClose = {},

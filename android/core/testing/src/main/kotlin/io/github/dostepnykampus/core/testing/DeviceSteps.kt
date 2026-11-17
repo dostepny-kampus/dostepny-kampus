@@ -18,7 +18,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.test.espresso.Espresso
 
 /** Napis przycisku na karcie budynku, który prowadzi do wejść. */
-public const val CHECK_ENTRANCES: String = "Sprawdź, którędy wejść"
+public const val CHECK_ENTRANCES: String = "Pokaż wejście na mapie"
 
 /**
  * Wiersz budynku [symbol] w wynikach wyszukiwania i na liście budynków.

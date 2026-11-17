@@ -61,7 +61,6 @@ class CardMarkFloorsTest {
                     mode = CardMode.Expanded,
                     card = card,
                     isOnline = true,
-                    onCheckEntrances = {},
                     onShowOnMap = {},
                     onBack = {},
                     onClose = {},

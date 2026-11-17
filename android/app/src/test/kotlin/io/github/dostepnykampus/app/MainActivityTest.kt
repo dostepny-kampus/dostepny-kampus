@@ -93,7 +93,7 @@ class MainActivityTest {
         compose.onNode(ListedA1).performClick()
         compose.activityRule.scenario.recreate()
         compose.waitUntil(timeoutMillis = 5_000) {
-            compose.onAllNodesWithText("Sprawdź, którędy wejść").fetchSemanticsNodes().isNotEmpty()
+            compose.onAllNodesWithText(BUILDING_ON_MAP).fetchSemanticsNodes().isNotEmpty()
         }
         compose.onNodeWithText(BUILDING_ON_MAP).assertExists("pełny ekran od razu po odtworzeniu aktywności")
         compose.onNodeWithContentDescription(EXPAND_HANDLE).assertDoesNotExist()

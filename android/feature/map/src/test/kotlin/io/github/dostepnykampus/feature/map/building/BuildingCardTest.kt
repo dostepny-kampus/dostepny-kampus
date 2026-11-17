@@ -109,13 +109,13 @@ class BuildingCardTest {
                     entrance(id = "glowne", marking = EntranceMarking.ACCESSIBLE, isMain = true),
                 ),
             )
-        assertEquals(VisitAnswer.Accessible("glowne"), visitAnswer(ordered))
+        assertEquals(VisitAnswer.Accessible(id = "glowne", name = "glowne"), visitAnswer(ordered))
     }
 
     @Test
     fun answersWhenNone() {
         val stairs = orderedEntrances(listOf(entrance(id = "schody", marking = EntranceMarking.INACCESSIBLE)))
-        assertEquals(VisitAnswer.NoAccessible, visitAnswer(stairs))
+        assertEquals(VisitAnswer.NoAccessible(total = 1), visitAnswer(stairs))
         assertEquals(VisitAnswer.NoData, visitAnswer(emptyList()))
     }
 
@@ -155,7 +155,7 @@ class BuildingCardTest {
     @Test
     fun handlesUnnamedAndService() {
         val unnamed = entrance(id = "boczne", marking = EntranceMarking.ACCESSIBLE).copy(name = null)
-        assertEquals(VisitAnswer.Accessible(null), visitAnswer(orderedEntrances(listOf(unnamed))))
+        assertEquals(VisitAnswer.Accessible(id = "boczne", name = null), visitAnswer(orderedEntrances(listOf(unnamed))))
         val service =
             orderedEntrances(
                 listOf(
