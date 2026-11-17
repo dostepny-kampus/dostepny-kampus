@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -248,7 +249,7 @@ private fun CampusMap(
     modifier: Modifier = Modifier,
 ) {
     val cover = contentPadding.calculateBottomPadding()
-    val isKeyboardOpen = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    val isKeyboardOpen = rememberKeyboardOpenFlag()
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
     var barrierId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -358,3 +359,11 @@ private fun BuildingChoices(
 
 private fun BuildingCatalog.buildingsOf(symbols: List<String>): List<Building> =
     symbols.mapNotNull { symbol -> buildings.firstOrNull { it.symbol == symbol } }
+
+@Composable
+private fun rememberKeyboardOpenFlag(): Boolean {
+    val ime = WindowInsets.ime
+    val density = LocalDensity.current
+    val isOpen by remember(ime, density) { derivedStateOf { ime.getBottom(density) > 0 } }
+    return isOpen
+}

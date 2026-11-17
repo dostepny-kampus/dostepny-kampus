@@ -94,13 +94,13 @@ private class HidingKeyboard : SoftwareKeyboardController {
 
 private const val KEYBOARD_HEIGHT = 600
 
-/** Podaje ekranowi [activity] klawiaturę otwartą albo zamkniętą tak, jak system: w odstępach okna. */
-internal fun dispatchKeyboard(activity: ComponentActivity, isOpen: Boolean) {
+/** Podaje ekranowi [activity] klawiaturę otwartą na [height] pikseli albo zamkniętą, jak system: w odstępach okna. */
+internal fun dispatchKeyboard(activity: ComponentActivity, isOpen: Boolean, height: Int = KEYBOARD_HEIGHT) {
     val ime = WindowInsetsCompat.Type.ime()
     val insets =
         WindowInsetsCompat
             .Builder()
-            .setInsets(ime, Insets.of(0, 0, 0, if (isOpen) KEYBOARD_HEIGHT else 0))
+            .setInsets(ime, Insets.of(0, 0, 0, if (isOpen) height else 0))
             .setVisible(ime, isOpen)
             .build()
     val content = activity.findViewById<ViewGroup>(android.R.id.content)
@@ -538,6 +538,24 @@ class CampusMapScreenTest {
         compose.mainClock.autoAdvance = true
         compose.waitForIdle()
         compose.onNodeWithText("Mapa kampusu").assertDoesNotExist()
+    }
+
+    /**
+     * Wiersz: klawiatura otwiera się albo zamyka w animacji; kolejne wysokości otwartej klawiatury nie przeliczają
+     * mapy.
+     *
+     * Wymagania: NFR-56
+     */
+    @Test
+    fun keepsMapWhileKeyboardMoves() {
+        compose.setContent { Screen() }
+        keyboard(isOpen = true)
+        val shown = moves.size
+        listOf(500, 400, 300).forEach { height ->
+            compose.runOnUiThread { dispatchKeyboard(compose.activity, isOpen = true, height = height) }
+            compose.waitForIdle()
+        }
+        assertEquals("mapa bez przeliczenia w trakcie animacji klawiatury", shown, moves.size)
     }
 
     private fun barTop(): Float {
