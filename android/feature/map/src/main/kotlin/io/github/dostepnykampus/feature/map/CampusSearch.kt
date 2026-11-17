@@ -48,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -108,6 +109,8 @@ private val ClearIcon =
  *   zdejmuje fokus z pola, chowa klawiaturę ekranową i wyniki, a tekst w polu zostaje; wyniki wracają po dotknięciu
  *   pola albo zmianie tekstu. Pierwsze „Wstecz” zamyka V2
  * @param modifier położenie nad mapą; przy liście cała wysokość nad paskiem dolnym
+ * @param onBarHeight wysokość w pikselach wiersza tytułu, pola i wiersza bez internetu, bez wyników: tę część
+ *   mapy kamera traktuje jako zasłoniętą, więc wpisywanie nie przesuwa mapy
  */
 @Composable
 internal fun CampusSearch(
@@ -121,6 +124,7 @@ internal fun CampusSearch(
     onListChange: (Boolean) -> Unit,
     onBuildingClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    onBarHeight: (Int) -> Unit = {},
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var isChosen by rememberSaveable { mutableStateOf(false) }
@@ -146,14 +150,16 @@ internal fun CampusSearch(
             query = text
             isChosen = false
         }
-        SearchHeader(
-            query = query,
-            onQueryChange = onQueryChange,
-            onFieldTap = { isChosen = false },
-            isList = isList,
-            onListChange = onListChange,
-        )
-        if (!isOnline) OfflineLine(syncedAt)
+        Column(Modifier.onSizeChanged { onBarHeight(it.height) }) {
+            SearchHeader(
+                query = query,
+                onQueryChange = onQueryChange,
+                onFieldTap = { isChosen = false },
+                isList = isList,
+                onListChange = onListChange,
+            )
+            if (!isOnline) OfflineLine(syncedAt)
+        }
         if (isNoResult || shown.isNotEmpty()) {
             ResultPanel {
                 shown.forEach { building ->
