@@ -35,6 +35,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -308,5 +309,27 @@ class BuildingOnMapCameraTest {
         compose.waitForIdle()
         assertShown("T-9")
         assertEquals("powiększenie zostaje", above.zoom, shown.last().second.zoom, 0.0)
+    }
+
+    /**
+     * Wiersz: K3, po „Pokaż” i geście osoby na V1 mała karta budynku i „Wstecz” → obraz mapy stoi dokładnie:
+     * środek widoku niżej o połowę paska i zasłoniętego dołu.
+     *
+     * Wymagania: US2.8, NFR-56
+     */
+    @Ignore("Po „Pokaż budynek na mapie” zamknięcie karty przesuwa obraz o ok. 48 px; przyczyna: #3108")
+    @Test
+    fun keepsScreenAfterShowAndBack() {
+        isIdleReported = true
+        showOnMap("T-9")
+        compose.waitForIdle()
+        isIdleReported = false
+        compose.runOnUiThread { touch(listOf("T-9")) }
+        compose.waitForIdle()
+        val above = shown.last().second
+        val under = bottomInset
+        compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
+        compose.waitForIdle()
+        assertStays(above = above, under = under)
     }
 }
