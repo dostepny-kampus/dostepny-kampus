@@ -44,6 +44,9 @@ internal const val PLAN_NUMBERS_LAYER = "plan_numery"
 /** Warstwa znaków windy, toalety dostosowanej i schodów na planie. Wymagania: US16.1 */
 internal const val PLAN_SIGNS_LAYER = "plan_znaki"
 
+/** Właściwość znaku planu z identyfikatorem jego pomieszczenia; czyta ją dotknięcie mapy. */
+internal const val PLAN_ROOM_ID = "room_id"
+
 /** Bok obrazu znaku na planie w dp: największy rozmiar znaku, od powiększenia 19 (token `mapa.plan.znak_dp`). */
 internal const val PLAN_SIGN_DP = 28
 
@@ -102,7 +105,8 @@ data class PlanColors(
  * Obiekty planu pięter [floors] (identyfikator piętra → jego plan): pomieszczenie z właściwościami `floor`, `kind`
  * = `room` i `category`, ściana piętra z `floor` i `kind` = `outline`; piętro bez pomieszczeń nie ma ściany. Punkt
  * podpisu pomieszczenia z `labelled` ma `kind` = `number` i nazwę obrazu numeru `image` z [roomNumberImage]. Punkt
- * podpisu windy, toalety dostosowanej i klatki schodowej ma `kind` = `sign` i obraz znaku z [planSignImage].
+ * podpisu windy, toalety dostosowanej i klatki schodowej ma `kind` = `sign`, obraz znaku z [planSignImage]
+ * i identyfikator pomieszczenia [PLAN_ROOM_ID].
  *
  * Wymagania: US16.1
  */
@@ -121,7 +125,8 @@ internal fun planFeatures(floors: Map<String, RoomList>): JsonElement =
             val signs =
                 plan.rooms.filter { it.category in PLAN_SIGN_CATEGORIES }.map { room ->
                     val image = planSignImage(room.category)
-                    Feature(Point(room.labelPoint.toPosition()), part(floor, SIGN, image = image))
+                    val properties = part(floor = floor, kind = SIGN, image = image, room = room.id)
+                    Feature(Point(room.labelPoint.toPosition()), properties)
                 }
             outline + rooms + signs + numbers
         },
@@ -268,10 +273,17 @@ private fun categoryColor(colors: PlanColors): JsonElement {
     return JsonArray(listOf(JsonPrimitive("match"), property(CATEGORY)) + cases + JsonPrimitive(colors.other))
 }
 
-private fun part(floor: String, kind: String, category: RoomCategory? = null, image: String? = null): JsonObject =
+private fun part(
+    floor: String,
+    kind: String,
+    category: RoomCategory? = null,
+    image: String? = null,
+    room: String? = null,
+): JsonObject =
     buildJsonObject {
         put(key = FLOOR, value = floor)
         put(key = KIND, value = kind)
         category?.let { put(key = CATEGORY, value = it.name) }
         image?.let { put(key = IMAGE, value = it) }
+        room?.let { put(key = PLAN_ROOM_ID, value = it) }
     }
