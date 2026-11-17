@@ -49,6 +49,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.Role
@@ -95,7 +96,12 @@ internal fun Sheet(
     )
     val isFull = state.currentValue == SheetHeight.Full
     val corner = if (isFull) 0.dp else Zaokraglenia.bardzoDuze
-    val snap = AnchoredDraggableDefaults.flingBehavior(state)
+    val step = with(LocalDensity.current) { HEIGHT_STEP_DRAG.toPx() }
+    val snap =
+        AnchoredDraggableDefaults.flingBehavior(
+            state = state,
+            positionalThreshold = { distance -> minOf(a = distance / 2, b = step) },
+        )
     val fling = remember(state, snap) { SettlingFling(base = snap, state = state) }
     val scroll = remember(state, fling) { SheetScrollConnection(state = state, fling = fling) }
     Surface(
@@ -124,6 +130,8 @@ internal fun Sheet(
 }
 
 private const val PROVISIONAL_LOW_SHARE = 3
+
+private val HEIGHT_STEP_DRAG = 48.dp
 
 /** Zmierzona wysokość okna [window] i niskiej karty [low] w px; zero, dopóki nie zmierzono. */
 private class SheetMeasure {
