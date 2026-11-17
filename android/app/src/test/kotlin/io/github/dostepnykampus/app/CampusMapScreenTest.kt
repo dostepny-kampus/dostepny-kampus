@@ -547,7 +547,7 @@ class CampusMapScreenTest {
      * Wymagania: NFR-56
      */
     @Test
-    fun keepsMapDuringKeyboardAnimation() {
+    fun keepsMapWhileKeyboardMoves() {
         compose.setContent { Screen() }
         keyboard(isOpen = true)
         val shown = moves.size
