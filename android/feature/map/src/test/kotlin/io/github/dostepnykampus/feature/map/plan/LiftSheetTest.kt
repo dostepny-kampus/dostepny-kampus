@@ -45,9 +45,9 @@ class LiftSheetTest {
     @Config(fontScale = 2f)
     fun fillsScreenAtLargeFont() {
         show()
-        val top = compose.onNodeWithText("Winda").getBoundsInRoot().top
+        val top = compose.onNodeWithText("Zamknij").getBoundsInRoot().top
 
-        assertTrue("nagłówek przy górze ekranu: $top", top < 80.dp)
+        assertTrue("góra arkusza przy górze ekranu: $top", top < 48.dp)
     }
 
     /** Zrzut arkusza windy przy czcionce 200%. */
