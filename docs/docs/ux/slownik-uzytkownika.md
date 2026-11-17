@@ -74,6 +74,8 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | oznaczenie wejścia „brak danych” | „Brak danych” | wszystkie | Mówi uczciwie, że nie wiemy, i różni się od „Niedostępne” (US17.1). | 4.3, 4.4 |
 | wejście zalecane (V2, V3, BR-25) | „Zalecane” | wszystkie | Jedno słowo obok oznaczenia mówi, którym wejściem wejść (decyzja 48). Napis nie podaje piętra, żeby etykieta była krótka; piętro podają kroki do sali i opis wejścia (decyzje 53 i 64). | 4.1 |
 | wejście bez nazwy w danych | „Wejście bez nazwy w danych” | wszystkie | Mówi, skąd brak nazwy, zamiast zmyślać nazwę. | 4.4 |
+| arkusz wejścia na mapie (V1) | nagłówek „Wejście, budynek A-1”; przy wejściu głównym dopisek „wejście główne”; „Szerokość drzwi: 90 cm”, gdy szerokość jest w danych | wszystkie | Nagłówek mówi, do którego budynku prowadzi wejście, bez szukania konturu. | 4.1 |
+| arkusz znaku planu (V1) | nagłówek „Toaleta dostosowana” albo „Schody”, pod nim „Budynek A-1, parter” z etykietą piętra z danych PWr | wszystkie | Te same słowa co chip na V2 i etykiety pięter jak w kolumnie pięter. | 4.2 |
 | chipy na V2 (pełny ekran) | „Winda”, „Toaleta dostosowana” | wszystkie | Chip stoi tylko przy fakcie z danych, nigdy przy braku (decyzja 48). Wejście dostępne podaje wiersz o wejściach, więc chipa nie powtarzamy (US2.8). | 4.1, 4.2 |
 | zgłoszenie szybkie przy wejściu (V2, V3) | „Zgłoś barierę przy wejściu”; nazwa dla TalkBack „Zgłoś barierę przy wejściu: »nazwa wejścia«”; na kroku 1 V4 „Wejście: »nazwa wejścia«” | wszystkie; Gość przechodzi do L1 | Zaczyna się nazwą ekranu V4, a koniec odróżnia ten przycisk od pozycji „Zgłoś barierę” w pasku dolnym: wejście będzie już wybrane (WCAG 2.4.6, 2.5.3). | 4.6 |
 | wybór budynku przy konturze wspólnym (V1) | nagłówek „Który budynek?”; przycisk na każdy symbol, np. „Budynek C-3” i „Budynek C-4”, z nazwą z danych, gdy jest; „Zamknij” | wszystkie | Pytanie mówi, co wybrać. Przycisk ma ten sam wzór co wynik wyszukiwania (decyzja 85). | 1.3 |
@@ -258,6 +260,7 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | V1, brak mapy ulic | „Mapa ulic chwilowo się nie wczytuje. Budynki i bariery nadal możesz oglądać.” | — | — |
 | V1, brak sali | „Nie znaleźliśmy sali »X« w budynku A-1. Sprawdź numer albo otwórz opis budynku.” | „Pokaż opis budynku” | decyzja 44 |
 | V1, sala bez drogi | „Nie znaleźliśmy w danych wejścia i windy, którymi dotrzesz do tej sali bez schodów.” | „Pokaż opis budynku” | decyzja 48 |
+| V1, arkusz wejścia z oznaczeniem „Brak danych” | „Nikt jeszcze nie sprawdził tego wejścia.” | „Sprawdź, którędy wejść” | — |
 | V2, ładowanie zdjęcia | „Wczytujemy zdjęcie…” | — | PW-9 |
 | V2, brak barier | nagłówek „Brak zgłoszonych barier”, zdanie „Bariera pojawi się tutaj, gdy ktoś ją zgłosi i zostanie sprawdzona.” | „Zgłoś barierę” | PW-6; decyzja 48 |
 | V2, brak wejść w danych | „Nie mamy jeszcze danych o wejściach do tego budynku.” | — | US3.1, US17.1; to samo zdanie co na V3, bez symbolu, bo podaje go nagłówek karty. Brak danych nie potwierdza niedostępności. |
