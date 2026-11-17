@@ -7,9 +7,12 @@ package io.github.dostepnykampus.feature.inspection.progress
 
 import io.github.dostepnykampus.core.data.inspection.FloorMarkers
 import io.github.dostepnykampus.core.data.inspection.PendingMarkerChange
+import io.github.dostepnykampus.core.data.inspection.ServerMarkers
 import io.github.dostepnykampus.core.data.room.FloorPlans
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.building.FloorList
+import io.github.dostepnykampus.core.model.inspection.InspectionMarker
 import io.github.dostepnykampus.core.model.inspection.MarkerPlace
 import io.github.dostepnykampus.core.model.room.RoomList
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +28,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.IOException
+import java.time.Instant
 
 /**
  * C5 Zbierającego: piętra budynku od najniższego, cały budynek bez planu, znacznik w kolejce telefonu i błąd zapisu.
@@ -80,16 +84,41 @@ class CollectorMarkersViewModelTest {
             assertEquals(CollectorMarkersUiState.Ready(listOf(marked, FIRST)), viewModel.state.value, "po ponowieniu")
         }
 
+    /** Przykład „znacznik innej osoby”: znaczniki z serwera pobrane przy otwarciu ekranu, własny i cudzy. */
+    @Test
+    fun showsServerMarkers() {
+        val mine = serverMarker(id = "s-1", floor = "p0", isMine = true)
+        val server = FakeServer(mine, serverMarker(id = "s-2", floor = "p1"))
+        viewModelTest(FakePlans(stored = A1_FLOORS), server = server) { viewModel, _ ->
+            val rows = listOf(GROUND.copy(markerId = "s-1"), FIRST.copy(markerId = "s-2", isMine = false))
+            assertEquals(CollectorMarkersUiState.Ready(rows), viewModel.state.value, "znaczniki z serwera")
+            assertEquals(1, server.refreshes, "pobranie przy otwarciu")
+        }
+    }
+
+    /** Cofnięcie czekające w telefonie ukrywa znacznik z serwera. */
+    @Test
+    fun hidesRevokedServerMarker() {
+        val server = FakeServer(serverMarker(id = "s-1", floor = "p0", isMine = true))
+        viewModelTest(FakePlans(stored = A1_FLOORS), server = server) { viewModel, markers ->
+            markers.revoke(markerId = "s-1", buildingSymbol = "A-1", floorId = "p0")
+            runCurrent()
+            assertEquals(CollectorMarkersUiState.Ready(listOf(GROUND, FIRST)), viewModel.state.value, "po cofnięciu")
+        }
+    }
+
     private fun viewModelTest(
         plans: FloorPlans,
         markers: FakeMarkers = FakeMarkers(),
+        server: FakeServer = FakeServer(),
         block: suspend TestScope.(CollectorMarkersViewModel, FakeMarkers) -> Unit,
     ) {
         val dispatcher = StandardTestDispatcher()
         Dispatchers.setMain(dispatcher)
         try {
             runTest(dispatcher) {
-                val viewModel = CollectorMarkersViewModel(symbol = "A-1", plans = plans, markers = markers)
+                val viewModel =
+                    CollectorMarkersViewModel(symbol = "A-1", plans = plans, markers = markers, server = server)
                 runCurrent()
                 block(viewModel, markers)
             }
@@ -110,6 +139,16 @@ class CollectorMarkersViewModelTest {
             )
         val GROUND = FloorRow(MarkerPlace.Floor("p0"), label = "Parter")
         val FIRST = FloorRow(MarkerPlace.Floor("p1"), label = "Piętro 1")
+
+        fun serverMarker(id: String, floor: String, isMine: Boolean = false): InspectionMarker =
+            InspectionMarker(
+                id = id,
+                buildingSymbol = "A-1",
+                place = MarkerPlace.Floor(floor),
+                createdAt = Instant.parse("2026-11-17T10:00:00Z"),
+                isRevoked = false,
+                isMine = isMine,
+            )
     }
 }
 
@@ -154,5 +193,17 @@ private class FakeMarkers(private var failures: Int = 0) : FloorMarkers {
                 floorId = floorId,
                 isRevoke = true,
             )
+    }
+}
+
+private class FakeServer(vararg saved: InspectionMarker) : ServerMarkers {
+    private val markers = MutableStateFlow(saved.toList())
+    var refreshes = 0
+
+    override fun building(buildingSymbol: String): Flow<List<InspectionMarker>> = markers
+
+    override suspend fun refresh(): ServerReply<Unit> {
+        refreshes++
+        return ServerReply.Ok(Unit)
     }
 }

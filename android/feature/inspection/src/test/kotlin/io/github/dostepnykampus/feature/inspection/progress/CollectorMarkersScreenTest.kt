@@ -48,6 +48,16 @@ class CollectorMarkersScreenTest {
         compose.onNodeWithText("Czeka na wysłanie").assertIsDisplayed()
     }
 
+    /** Wiersz: C5, znacznik innej osoby z serwera to „Obejrzane” i „Znacznik innej osoby”. Wymagania: US15.2 */
+    @Test
+    fun showsOthersMarker() {
+        val row = FloorRow(place = MarkerPlace.Floor("p0"), label = "Parter", markerId = "s-2", isMine = false)
+        show(CollectorMarkersUiState.Ready(listOf(row))) {}
+        compose.onNodeWithText("Obejrzane").assertIsDisplayed()
+        compose.onNodeWithText("Znacznik innej osoby").assertIsDisplayed()
+        compose.onNodeWithText("Twój znacznik").assertDoesNotExist()
+    }
+
     /** Wiersz: C5, „Oznacz jako obejrzane” przy nieobejrzanym piętrze oznacza to piętro. Wymagania: US15.1 */
     @Test
     fun marksUninspectedFloor() {

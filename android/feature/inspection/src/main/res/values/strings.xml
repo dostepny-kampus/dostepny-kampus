@@ -32,6 +32,7 @@
     <string name="zbierajacy_obejrzane">Obejrzane</string>
     <string name="zbierajacy_nieobejrzane">Nieobejrzane</string>
     <string name="zbierajacy_twoj_znacznik">Twój znacznik</string>
+    <string name="zbierajacy_znacznik_innej_osoby">Znacznik innej osoby</string>
     <string name="zbierajacy_czeka">Czeka na wysłanie</string>
     <string name="zbierajacy_oznacz">Oznacz jako obejrzane</string>
     <string name="zbierajacy_blad_zapisu">Nie udało się zapisać znacznika w telefonie. Spróbuj ponownie, a jeśli to nie pomoże, zwolnij miejsce.</string>

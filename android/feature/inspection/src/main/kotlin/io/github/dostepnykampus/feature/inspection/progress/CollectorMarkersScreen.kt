@@ -131,7 +131,7 @@ private fun FloorCard(row: FloorRow, isUnsaved: Boolean, onMark: () -> Unit) {
             val name = row.label ?: stringResource(R.string.znaczniki_caly_budynek)
             Text(name, style = MaterialTheme.typography.titleMedium)
             if (row.markerId != null) {
-                Inspected(isPending = row.isPending)
+                Inspected(isPending = row.isPending, isMine = row.isMine)
             } else {
                 Text(stringResource(R.string.zbierajacy_nieobejrzane), style = MaterialTheme.typography.titleMedium)
                 if (isUnsaved) Text(stringResource(R.string.zbierajacy_blad_zapisu))
@@ -148,13 +148,14 @@ private fun FloorCard(row: FloorRow, isUnsaved: Boolean, onMark: () -> Unit) {
 }
 
 @Composable
-private fun Inspected(isPending: Boolean) {
+private fun Inspected(isPending: Boolean, isMine: Boolean) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
             Icon(InspectedIcon, contentDescription = null)
             Text(stringResource(R.string.zbierajacy_obejrzane), style = MaterialTheme.typography.titleMedium)
         }
-        Text(stringResource(R.string.zbierajacy_twoj_znacznik))
+        val author = if (isMine) R.string.zbierajacy_twoj_znacznik else R.string.zbierajacy_znacznik_innej_osoby
+        Text(stringResource(author))
         if (isPending) Text(stringResource(R.string.zbierajacy_czeka), fontWeight = FontWeight.Bold)
     }
 }

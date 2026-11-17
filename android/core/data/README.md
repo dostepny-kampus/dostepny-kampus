@@ -12,7 +12,7 @@ Wysyłka obejmuje wpisy bieżącego konta. Pierwsze zalogowanie po migracji przy
 - `core.data.building` — katalog budynków, wejścia i piętra z serwera z kopią w telefonie.
 - `core.data.cache` — wspólny zapis JSON kopii danych.
 - `core.data.di` — wiązania Hilt modułu.
-- `core.data.inspection` — znaczniki piętra obejrzanego czekające w kolejce telefonu.
+- `core.data.inspection` — znaczniki piętra obejrzanego czekające w kolejce telefonu i znaczniki z serwera (`GET /sync/pull`) z kopią w bazie telefonu.
 - `core.data.map` — zapamiętany wybór między mapą a listą budynków.
 - `core.data.network` — stan połączenia z siecią.
 - `core.data.photo` — wykonanie zdjęcia zgłoszenia i jego wynik.

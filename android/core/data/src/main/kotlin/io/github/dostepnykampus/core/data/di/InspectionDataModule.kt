@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.di
 
+import android.app.Application
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,13 +13,19 @@ import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.inspection.FloorMarkers
 import io.github.dostepnykampus.core.data.inspection.InspectionProgress
 import io.github.dostepnykampus.core.data.inspection.MarkerSync
+import io.github.dostepnykampus.core.data.inspection.ServerMarkers
+import io.github.dostepnykampus.core.data.inspection.SyncedMarkers
 import io.github.dostepnykampus.core.data.inspection.floorMarkersOf
 import io.github.dostepnykampus.core.data.inspection.inspectionProgressOf
+import io.github.dostepnykampus.core.data.inspection.syncDataStore
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionSyncScheduler
+import io.github.dostepnykampus.core.database.inspection.InspectionMarkerDao
 import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeDao
 import io.github.dostepnykampus.core.network.auth.AccessTokens
 import io.github.dostepnykampus.core.network.inspection.InspectionProgressApi
 import io.github.dostepnykampus.core.network.inspection.MarkerChangesApi
+import io.github.dostepnykampus.core.network.sync.SyncPullApi
+import javax.inject.Singleton
 
 /** Wiązania Hilt znaczników piętra obejrzanego i postępu inwentaryzacji. */
 @Module
@@ -37,4 +44,10 @@ internal object InspectionDataModule {
     /** Postęp inwentaryzacji z serwera. Wymagania: US11.1, US11.3, BR-21 */
     @Provides
     fun inspectionProgress(api: InspectionProgressApi): InspectionProgress = inspectionProgressOf(api)
+
+    /** Znaczniki pięter z serwera z kopią w bazie telefonu. Wymagania: US15.1, US15.2, BR-20 */
+    @Provides
+    @Singleton
+    fun serverMarkers(app: Application, markers: InspectionMarkerDao, api: SyncPullApi): ServerMarkers =
+        SyncedMarkers(markers = markers, state = syncDataStore(app), pull = api::pull)
 }
