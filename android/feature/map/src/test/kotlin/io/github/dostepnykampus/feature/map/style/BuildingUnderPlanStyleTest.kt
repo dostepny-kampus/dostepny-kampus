@@ -69,10 +69,10 @@ class BuildingUnderPlanStyleTest {
     @Test
     fun hidesLabelOfPlanBuilding() {
         val filter = look(building = null).labelsFilter
-        assertFalse(passes(filter, label("A-1")), "Symbol A-1 leży na jego planie")
-        assertTrue(passes(filter, label("A-2")), "Symbol sąsiada zniknął")
+        assertFalse(passes(filter = filter, properties = label("A-1")), "Symbol A-1 leży na jego planie")
+        assertTrue(passes(filter = filter, properties = label("A-2")), "Symbol sąsiada zniknął")
         val all = selectionLook(data, data.selection()).labelsFilter
-        assertTrue(passes(all, label("A-1")), "Bez planu symbol zniknął")
+        assertTrue(passes(filter = all, properties = label("A-1")), "Bez planu symbol zniknął")
         val layer = style(building = null).layerById(LABELS_LAYER)
         assertEquals(filter, layer.getValue("filter"), "Warstwa symboli nie ma filtra planu")
     }

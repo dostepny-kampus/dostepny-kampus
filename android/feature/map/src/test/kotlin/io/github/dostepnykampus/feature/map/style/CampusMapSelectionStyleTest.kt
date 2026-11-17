@@ -83,9 +83,10 @@ class CampusMapSelectionStyleTest {
     /** Wiersz: V2, „Mapa nad małą kartą”: sąsiednie budynki zachowują podpisy symboli, więc da się je wybrać. */
     @Test
     fun keepsNeighbourLabels() {
-        val labels = style(building = "A-1").layer("podpisy")
-        assertNull(labels["filter"])
-        assertEquals(listOf("A-1", "A-2"), data.labels)
+        val filter = style(building = "A-1").layer("podpisy").getValue("filter")
+        val shown =
+            data.labels.filter { passes(filter = filter, properties = JsonObject(mapOf(LABEL to JsonPrimitive(it)))) }
+        assertEquals(listOf("A-1", "A-2"), shown)
     }
 
     /** Wiersz: V2, „Mapa nad małą kartą”: znaki wejść ma tylko zaznaczony budynek, także wejście wspólne. */
