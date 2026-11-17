@@ -35,7 +35,7 @@ class MapStylePlanTest {
                 """{"floor":"P0","kind":"outline"}""",
                 """{"floor":"P0","kind":"room","category":"ELEVATOR"}""",
                 """{"floor":"P0","kind":"room","category":"CORRIDOR"}""",
-                """{"floor":"P0","kind":"sign","image":"znak planu: ELEVATOR"}""",
+                """{"floor":"P0","kind":"sign","image":"znak planu: ELEVATOR","room_id":"0"}""",
             )
         assertEquals(expected, parts.map(JsonElement::toString), "Obiekty planu nie mają piętra i rodzaju")
     }
