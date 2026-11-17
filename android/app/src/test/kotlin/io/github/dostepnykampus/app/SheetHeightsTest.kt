@@ -45,6 +45,8 @@ import kotlin.math.abs
 
 private val CompactHeight = 120.dp
 private const val SLOW_SWIPE_MILLIS = 2000L
+private val STEP_DRAG = 80.dp
+private val TINY_DRAG = 30.dp
 private const val FAST_SWIPE_MILLIS = 60L
 private const val PARTIAL_SWIPE_MILLIS = 200L
 private const val SWIPE_PAIRS = 3
@@ -138,6 +140,48 @@ class SheetHeightsTest {
         compose.waitForIdle()
         assertAt(map() / 2, "połowa ekranu po wyborze innego budynku")
         compose.onNode(sheetHandle(isExpanded = true)).assertExists("uchwyt na połowie ekranu")
+    }
+
+    /** Wiersz: wolne przeciągnięcie uchwytu w dół o 80 dp z niskiej wysokości → karta się zamyka. */
+    @Test
+    fun closesOnShortDragFromLow() {
+        open()
+        dragHandle(by = STEP_DRAG)
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).assertDoesNotExist()
+    }
+
+    /** Wiersz: wolne przeciągnięcie uchwytu o 30 dp → karta wraca na swoją wysokość. */
+    @Test
+    fun returnsOnTinyDrag() {
+        open()
+        dragHandle(by = -TINY_DRAG)
+        assertAt(low(), "niska po krótkim przeciągnięciu w górę")
+    }
+
+    /** Wiersz: wolne przeciągnięcie uchwytu w górę o 80 dp z połowy ekranu → cały ekran. */
+    @Test
+    fun raisesToFullOnShortDrag() {
+        open()
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
+        dragHandle(by = -STEP_DRAG)
+        assertAt(0.dp, "cały ekran po przeciągnięciu z połowy")
+    }
+
+    /** Wiersz: wolne przeciągnięcie uchwytu w dół o 80 dp z całego ekranu → połowa ekranu. */
+    @Test
+    fun lowersToHalfOnShortDrag() {
+        open()
+        repeat(2) { compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick() }
+        dragHandle(by = STEP_DRAG)
+        assertAt(map() / 2, "połowa ekranu po przeciągnięciu z całego ekranu")
+    }
+
+    private fun dragHandle(by: Dp) {
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).performTouchInput {
+            val end = Offset(x = center.x, y = center.y + by.toPx())
+            swipe(start = center, end = end, durationMillis = SLOW_SWIPE_MILLIS)
+        }
+        compose.waitForIdle()
     }
 
     /** Wiersz: przeciągnięcie uchwytu w górę blisko połowy ekranu i puszczenie → karta staje na połowie. */
