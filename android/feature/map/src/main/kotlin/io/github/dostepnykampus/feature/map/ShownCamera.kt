@@ -6,7 +6,7 @@
 package io.github.dostepnykampus.feature.map
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,21 +38,22 @@ internal class ShownCamera {
     }
 
     /**
-     * Ten sam obraz mapy po zniknięciu arkusza ([wasCovered], ale nie [isCovered]) dla mapy pod paskiem wysokim na
-     * [bar]: ostatni widok ze środkiem niżej o połowę paska i zasłoniętego dołu. Ten widok raz trafia do [view],
-     * potem wynik to `null`; `null` także poza zamknięciem arkusza i wtedy, gdy zaznaczenie samo wyznacza widok
-     * ([CameraView.hasTarget]).
+     * Widok mapy do pokazania bez arkusza: zapisany w [view], a w chwili zniknięcia arkusza ([wasCovered], ale nie
+     * [isCovered]) ten sam obraz mapy pod paskiem wysokim na [bar], czyli ostatni widok ze środkiem niżej o połowę
+     * paska i zasłoniętego dołu. Ten widok raz trafia do [view]. Gdy zaznaczenie samo wyznacza widok
+     * ([CameraView.hasTarget]), zostaje widok z [view].
      */
     @Composable
-    fun rememberLeft(isCovered: Boolean, wasCovered: Boolean, bar: Dp, view: CameraView): MapCamera? {
+    fun rememberView(isCovered: Boolean, wasCovered: Boolean, bar: Dp, view: CameraView): MapCamera? {
         val isClosed = wasCovered && !isCovered && !view.hasTarget
         val left = remember(isCovered) { camera?.shiftedNorth(-(bar + covered).value / 2.0).takeIf { isClosed } }
         val keep by rememberUpdatedState(view.keep)
         var isKept by remember(isCovered) { mutableStateOf(false) }
-        LaunchedEffect(left) {
+        DisposableEffect(left) {
             left?.let(keep)
             isKept = true
+            onDispose {}
         }
-        return left.takeUnless { isKept }
+        return left.takeUnless { isKept } ?: view.camera
     }
 }

@@ -140,9 +140,9 @@ internal fun rememberMapSceneState(
     val density = LocalDensity.current
     val last = remember { ShownCamera() }
     val (isCoveredBefore, topBefore) = rememberPrevious(isCovered to top)
-    val left = last.rememberLeft(isCovered = isCovered, wasCovered = isCoveredBefore, bar = top, view = view)
+    val seen = last.rememberView(isCovered = isCovered, wasCovered = isCoveredBefore, bar = top, view = view)
     val shown =
-        (left ?: view.camera)?.let {
+        seen?.let {
             density.besideFloorColumn(camera = it, symbol = view.shown, catalog = catalog, layers = layers, size = size)
         }
     val own = shown ?: selection?.entrance?.let { MapCamera(center = it.location, zoom = ENTRANCE_ZOOM) }
