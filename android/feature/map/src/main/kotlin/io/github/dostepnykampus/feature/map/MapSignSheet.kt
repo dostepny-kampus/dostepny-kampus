@@ -18,6 +18,8 @@ import io.github.dostepnykampus.feature.map.barrier.ChosenBarrierSheet
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
 import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.entrance.ChosenEntranceSheet
+import io.github.dostepnykampus.feature.map.plan.ChosenPlanSheet
+import io.github.dostepnykampus.feature.map.plan.ShownPlan
 
 /**
  * Znak [sign] obiektu o identyfikatorze [id] dotknięty na mapie V1, z otwartym arkuszem.
@@ -66,13 +68,15 @@ internal fun rememberSignSheetState(): SignSheetState =
     rememberSaveable(saver = signSheetSaver) { SignSheetState(null) }
 
 /**
- * Arkusz znaku z [signs]: bariera spośród [barriers] albo wejście z [catalog]; bez znaku arkusza nie ma.
+ * Arkusz znaku z [signs]: bariera spośród [barriers], wejście z [catalog] albo znak [plan]; bez znaku arkusza
+ * nie ma.
  *
- * Wymagania: US1.5, US2.1, US3.3
+ * Wymagania: US1.5, US2.1, US3.3, US16.1
  *
  * @param signs znak z otwartym arkuszem; zamknięcie arkusza go zdejmuje
  * @param barriers bariery pokazane na mapie
  * @param catalog katalog budynków i wejść; `null` przed jego wczytaniem
+ * @param plan plan piętra na mapie; `null`, gdy planu nie widać
  * @param onBuildingClick V2 budynku o podanym symbolu
  * @param onEntrancesClick V3 budynku o podanym symbolu
  * @param modifier położenie arkusza na mapie
@@ -82,6 +86,7 @@ internal fun ChosenSignSheet(
     signs: SignSheetState,
     barriers: ShownBarriers,
     catalog: BuildingCatalog?,
+    plan: ShownPlan?,
     onBuildingClick: (String) -> Unit,
     onEntrancesClick: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -107,6 +112,10 @@ internal fun ChosenSignSheet(
                 onEntrancesClick = onEntrancesClick,
                 modifier = modifier,
             )
+        }
+
+        TouchSign.PLAN -> {
+            ChosenPlanSheet(id = id, plan = plan, onClose = signs::close, modifier = modifier)
         }
 
         null -> {}

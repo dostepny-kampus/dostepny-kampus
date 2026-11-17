@@ -306,7 +306,7 @@ private fun CampusMap(
                 motion = motion,
                 start = { FloorColumn(plan = plan.shown, onChoose = plan.onFloor) },
             ) {
-                val open = OpenSign(signs = signs, barriers = barriers, catalog = ui.catalog)
+                val open = OpenSign(signs = signs, barriers = barriers, catalog = ui.catalog, plan = plan)
                 MapSheets(open = open, state = state, onBuilding = onBuildingClick, onEntrances = onEntrancesClick)
             }
         }
@@ -319,8 +319,13 @@ private fun Modifier.overlayArea(underBar: PaddingValues, sheet: PaddingValues):
         .padding(underBar)
         .padding(sheet)
 
-/** Arkusz znaku [signs] z barierami [barriers] na mapie i katalogiem [catalog]. */
-private data class OpenSign(val signs: SignSheetState, val barriers: ShownBarriers, val catalog: BuildingCatalog?)
+/** Arkusz znaku [signs] z barierami [barriers], katalogiem [catalog] i planem [plan] na mapie. */
+private data class OpenSign(
+    val signs: SignSheetState,
+    val barriers: ShownBarriers,
+    val catalog: BuildingCatalog?,
+    val plan: ShownPlan?,
+)
 
 /**
  * Plan piętra [shown] przy mapie: [onView] dostaje widok kamery, [onFloor] piętro z kolumny, a [onHide] zejście
@@ -357,6 +362,7 @@ private fun BoxScope.MapSheets(
         signs = open.signs,
         barriers = open.barriers,
         catalog = open.catalog,
+        plan = open.plan,
         onBuildingClick = onBuilding,
         onEntrancesClick = onEntrances,
         modifier = modifier,
