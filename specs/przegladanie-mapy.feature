@@ -122,8 +122,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi wejście dostępne budynku A-1
     Oraz od mapy wykonał najwyżej 3 dotknięcia
 
-  # @do-zrobienia #2977: „Zamknij” stoi jeszcze na dole karty, a nie w nagłówku.
-  @US2.8 @aplikacja @do-zrobienia
+  @US2.8 @aplikacja
   Szablon scenariusza: Niska karta nad mapą mówi słowami o wejściach
     Zakładając, że w danych testowych <dane>
     Oraz Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
