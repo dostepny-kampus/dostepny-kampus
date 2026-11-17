@@ -445,7 +445,7 @@ class SheetBackGestureTest {
     }
 
     /**
-     * Wiersz: pasek stanu 24 px → uchwyt rozwiniętego V2 pod paskiem stanu, zwiniętego przy górze arkusza.
+     * Wiersz: pasek stanu 24 px → uchwyt karty na całym ekranie pod paskiem stanu, niskiej przy górze arkusza.
      *
      * Wymagania: NFR-52
      */
@@ -459,10 +459,10 @@ class SheetBackGestureTest {
         openSheet(isExpanded = false)
         val card = compose.onNodeWithText("karta").getUnclippedBoundsInRoot()
         val compact = mapBottom() - CeleDotyku.minimum - (card.bottom - card.top)
-        assertEquals("uchwyt małej karty przy górze arkusza", compact.value, sheetTop("zwinięte").value, 1f)
+        assertEquals("uchwyt małej karty przy górze arkusza", compact.value, sheetTop("niska").value, 1f)
         compose.mainClock.autoAdvance = true
-        compose.onNode(sheetHandle(isExpanded = false)).performClick()
+        repeat(2) { compose.onNode(hasContentDescription(EXPAND_HANDLE)).performClick() }
         val belowStatusBar = top + with(compose.density) { 24.toDp() }
-        assertEquals("uchwyt rozwiniętego V2 pod paskiem stanu", belowStatusBar.value, sheetTop("rozwinięte").value, 1f)
+        assertEquals("uchwyt rozwiniętego V2 pod paskiem stanu", belowStatusBar.value, sheetTop("cały ekran").value, 1f)
     }
 }
