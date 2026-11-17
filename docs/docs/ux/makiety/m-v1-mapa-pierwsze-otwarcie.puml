@@ -4,7 +4,7 @@
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek_mapy("Pokaż listę")
-$pole_tekstowe("Symbol budynku, np. C-13")
+$pole_tekstowe("Szukaj budynku, np. C-13")
 $brak_internetu()
 $przycisk("Kampus główny ▾")
 $mapa("kontury budynków z symbolami i wejścia z danych aplikacji, bez mapy ulic i barier", $dostepne() + $dk_spacje(6) + $brak_danych(), "info")
