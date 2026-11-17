@@ -103,27 +103,27 @@ final class KeycloakTokenIT {
             "spring.security.oauth2.resourceserver.jwt.issuer-uri"
         );
         try (HttpClient client = HttpClient.newHttpClient()) {
-            final String user = "zbierajacy.test";
             final String refresh = mapper.readTree(
-                KeycloakTokenIT.login(client, mapper, realm, KeycloakTokenIT.APP, user).body()
+                KeycloakTokenIT.login(
+                    client, mapper, realm, KeycloakTokenIT.APP, "zbierajacy.test"
+                ).body()
             ).path("refresh_token").asString();
-            MatcherAssert.assertThat(
-                "Zalogowanie zwraca token odświeżania", refresh.isBlank(), Matchers.is(false)
-            );
             final String form = "grant_type=refresh_token&client_id=%s&refresh_token=%s"
                 .formatted(KeycloakTokenIT.APP, refresh);
             final HttpResponse<String> renewed = KeycloakTokenIT.exchange(client, realm, form);
-            MatcherAssert.assertThat("Odświeżenie powiodło się", renewed.statusCode(), Matchers.is(200));
             final String next = mapper.readTree(renewed.body()).path("refresh_token").asString();
-            MatcherAssert.assertThat(
-                "Odświeżenie zwraca nowy token", !next.isBlank() && !next.equals(refresh),
-                Matchers.is(true)
+            final Rotation rotation = new Rotation(
+                renewed.statusCode(), !refresh.isBlank() && !next.isBlank() && !next.equals(refresh),
+                KeycloakTokenIT.exchange(client, realm, form).statusCode()
             );
             MatcherAssert.assertThat(
-                "Realm odrzuca wycofany token odświeżania",
-                KeycloakTokenIT.exchange(client, realm, form).statusCode(), Matchers.is(400)
+                "Pierwsze odświeżenie wymienia token, ponowne użycie wycofanego daje 400",
+                rotation, Matchers.is(new Rotation(200, true, 400))
             );
         }
+    }
+
+    private record Rotation(int refreshStatus, boolean replaced, int retiredStatus) {
     }
 
     private static int edit(
