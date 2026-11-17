@@ -17,12 +17,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
@@ -35,7 +38,9 @@ import io.github.dostepnykampus.feature.map.area.AreaList
 import io.github.dostepnykampus.feature.map.area.AreaNotice
 import io.github.dostepnykampus.feature.map.area.MapAreaSwitch
 import io.github.dostepnykampus.feature.map.area.MapAreas
+import io.github.dostepnykampus.feature.map.area.rememberNoticeAlpha
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import java.time.LocalDate
 
@@ -43,6 +48,28 @@ private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
 
 /** Panel otwarty na mapie V1. Naraz otwarty jest najwyżej jeden, więc stanem nakładki jest jedna wartość. */
 private enum class MapPanel { Area, Info }
+
+@Composable
+private fun NoticeAndAttribution(
+    areas: MapAreas,
+    motion: MapMotion?,
+    hasNotice: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val noticeAlpha = rememberNoticeAlpha(shift = areas.notice, motion = motion)
+    val isNoticeReady by remember(noticeAlpha) { derivedStateOf { noticeAlpha.value > 0f } }
+    Column(modifier) {
+        areas.notice?.takeIf { hasNotice && isNoticeReady }?.let { shift ->
+            AreaNotice(
+                shift = shift,
+                isNew = areas.isNoticeNew,
+                onShow = areas::noticeShown,
+                modifier = Modifier.graphicsLayer { alpha = noticeAlpha.value },
+            )
+        }
+        OsmAttribution()
+    }
+}
 
 /**
  * Nakładka mapy V1: przyciski powiększania i przesuwania, przycisk terenu, „ⓘ” z legendą, podpis OSM, po zmianie
@@ -62,6 +89,7 @@ private enum class MapPanel { Area, Info }
  * @param modifier wymiary nakładki, zwykle cała mapa bez części zasłoniętej
  * @param hasPanels czy mapa ma przycisk terenu i „ⓘ”; nie ma ich nad arkuszem V2
  * @param hasNotice czy mapa może pokazać napis o zmianie terenu; nie przy otwartej klawiaturze
+ * @param motion ruchy mapy do budynku; nowy napis o zmianie terenu czeka do końca przelotu
  * @param start elementy przy lewej krawędzi pod przyciskiem terenu, np. kolumna pięter; nie ma ich przy otwartym
  *  panelu terenu
  * @param content elementy nad nakładką
@@ -77,6 +105,7 @@ internal fun MapOverlay(
     modifier: Modifier = Modifier,
     hasPanels: Boolean = hasControls,
     hasNotice: Boolean = hasPanels,
+    motion: MapMotion? = null,
     start: @Composable ColumnScope.() -> Unit = {},
     content: @Composable BoxScope.() -> Unit,
 ) {
@@ -105,12 +134,12 @@ internal fun MapOverlay(
             modifier = above,
             content = start,
         )
-        Column(Modifier.align(Alignment.BottomStart)) {
-            areas.notice?.takeIf { hasNotice && open == null }?.let {
-                AreaNotice(shift = it, isNew = areas.isNoticeNew, onShow = areas::noticeShown)
-            }
-            OsmAttribution()
-        }
+        NoticeAndAttribution(
+            areas = areas,
+            motion = motion,
+            hasNotice = hasNotice && open == null,
+            modifier = Modifier.align(Alignment.BottomStart),
+        )
         if (hasPanels) {
             MapInfo(
                 isOpen = open == MapPanel.Info,
