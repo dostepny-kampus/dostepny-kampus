@@ -180,10 +180,10 @@ fun CampusMapScreen(
 ) {
     val catalog = state.catalog
     val sheet = screenSheet(focus = focus, padding = contentPadding, onCardClose = onEmptyMapClick)
-    val isCovered = sheet.layout.calculateBottomPadding() > 0.dp
+    val isCovered = sheet.layout.padding.calculateBottomPadding() > 0.dp
     val isList = state.isListSaved ?: (LocalDensity.current.fontScale >= LARGE_FONT_SCALE)
     val states = rememberSaveableStateHolder()
-    val areas = rememberMapAreas(state.mapData, focus)
+    val areas = rememberMapAreas(state.mapData, sheet.layout.focus)
     val barExit = rememberTopBarExit(isCovered = isCovered, motion = motion)
     var barHeight by remember { mutableIntStateOf(0) }
     var headerHeight by remember { mutableIntStateOf(0) }
@@ -197,7 +197,7 @@ fun CampusMapScreen(
                     CampusMap(
                         ui = state,
                         barriers = shown,
-                        focus = focus,
+                        focus = sheet.layout.focus,
                         areas = areas,
                         top = mapTop(isCovered = isCovered, bar = barTop),
                         cameraTop = mapTop(isCovered = isCovered, bar = headerTop),
@@ -254,7 +254,7 @@ private fun CampusMap(
     onEntrancesClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val cover = sheet.layout.calculateBottomPadding()
+    val cover = sheet.layout.padding.calculateBottomPadding()
     val isKeyboardOpen = rememberKeyboardOpenFlag()
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }

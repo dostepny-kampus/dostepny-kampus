@@ -62,10 +62,13 @@ internal class SignSheetState(initial: ChosenSign?) {
     var isReturning by mutableStateOf(false)
         private set
 
-    /** Otwiera arkusz znaku [sign] obiektu [id] w miejsce poprzedniego albo karty budynku [card], zamykając ją. */
+    /**
+     * Otwiera arkusz znaku [sign] obiektu [id] w miejsce karty budynku [card], zamykając ją, albo w miejsce
+     * poprzedniego arkusza; arkusz po arkuszu, który zastąpił kartę, wraca do tej samej karty.
+     */
     fun open(sign: TouchSign, id: String) {
         val under = card
-        chosen = ChosenSign(sign = sign, id = id, card = under)
+        chosen = ChosenSign(sign = sign, id = id, card = under ?: chosen?.card)
         if (under != null) onCardClose()
     }
 
@@ -116,31 +119,38 @@ internal fun rememberSignSheetState(focus: MapFocus?, cover: Dp, onCardClose: ()
 }
 
 /**
- * Zasłonięcie mapy przez kartę budynku dla kamery i układu ekranu: przy arkuszu, który zastąpił kartę, i do powrotu
- * karty zostaje zasłonięcie karty sprzed arkusza, a poza tym [padding].
+ * Zasłonięcie mapy przez kartę budynku [padding] i zaznaczenie z trasy [focus].
+ *
+ * Wymagania: US2.1, US2.8
+ */
+internal data class CardLayout(val padding: PaddingValues, val focus: MapFocus?)
+
+/**
+ * Układ karty budynku dla kamery i ekranu: przy arkuszu, który zastąpił kartę, i do powrotu karty zostaje układ
+ * karty sprzed arkusza, czyli jej zasłonięcie i zaznaczony budynek; poza tym [now].
  *
  * Wymagania: US2.1, US2.8, NFR-17
  */
 @Composable
-internal fun SignSheetState.layoutCover(padding: PaddingValues): PaddingValues {
-    val isHeld = chosen?.card != null || (isReturning && padding.calculateBottomPadding() == 0.dp)
-    var last by remember { mutableStateOf(padding) }
+internal fun SignSheetState.cardLayout(now: CardLayout): CardLayout {
+    val isHeld = chosen?.card != null || (isReturning && now.padding.calculateBottomPadding() == 0.dp)
+    var last by remember { mutableStateOf(now) }
     SideEffect {
         if (!isHeld) {
-            last = padding
+            last = now
             cardShown()
         }
     }
-    return if (isHeld) last else padding
+    return if (isHeld) last else now
 }
 
 /**
- * Arkusz znaku [signs] nad mapą i zasłonięcie ekranu przez kartę budynku: [padding] rzeczywiste, a [layout] dla
- * kamery i układu ekranu według [layoutCover].
+ * Arkusz znaku [signs] nad mapą i zasłonięcie ekranu przez kartę budynku: [padding] rzeczywiste, a [layout]
+ * z zasłonięciem i zaznaczeniem dla kamery i układu ekranu według [cardLayout].
  *
  * Wymagania: US2.1, US2.8
  */
-internal data class ScreenSheet(val signs: SignSheetState, val layout: PaddingValues, val padding: PaddingValues) {
+internal data class ScreenSheet(val signs: SignSheetState, val layout: CardLayout, val padding: PaddingValues) {
     /** Karta budynku zasłania teraz mapę. */
     val isCardOpen: Boolean
         get() = padding.calculateBottomPadding() > 0.dp
@@ -156,7 +166,8 @@ internal data class ScreenSheet(val signs: SignSheetState, val layout: PaddingVa
 internal fun screenSheet(focus: MapFocus?, padding: PaddingValues, onCardClose: () -> Unit): ScreenSheet {
     val cover = padding.calculateBottomPadding()
     val signs = rememberSignSheetState(focus = focus, cover = cover, onCardClose = onCardClose)
-    return ScreenSheet(signs = signs, layout = signs.layoutCover(padding), padding = padding)
+    val layout = signs.cardLayout(CardLayout(padding = padding, focus = focus))
+    return ScreenSheet(signs = signs, layout = layout, padding = padding)
 }
 
 /**
