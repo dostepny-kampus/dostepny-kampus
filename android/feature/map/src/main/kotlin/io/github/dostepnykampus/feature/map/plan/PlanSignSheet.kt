@@ -25,7 +25,11 @@ import java.util.Locale
  * Wymagania: US16.1
  */
 @Immutable
-internal data class PlanSign(@param:StringRes val title: Int, val building: String, val floor: String)
+internal data class PlanSign(
+    @param:StringRes val title: Int,
+    val building: String,
+    val floor: String,
+)
 
 /**
  * Znak toalety dostosowanej albo schodów w pomieszczeniu [id] tego planu; `null` dla pomieszczenia spoza planu
