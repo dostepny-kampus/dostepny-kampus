@@ -124,14 +124,16 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi to zgłoszenie ze zdjęciem
     Oraz przy zgłoszeniu widnieje data weryfikacji 12.11.2026
 
-  @US3.2 @aplikacja
+  # @do-zrobienia #3075: odpowiedzi o wejściu na niskiej karcie jeszcze nie ma w aplikacji.
+  @US3.2 @aplikacja @do-zrobienia
   Scenariusz: Wejście dostępne najwyżej 3 dotknięcia od mapy
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
     Jeżeli dotknie budynku A-1
     Wtedy na karcie budynku A-1 widzi „Wejście dostępne” i zdanie z wejściem zalecanym
     Oraz od mapy wykonał 1 dotknięcie, czyli nie więcej niż 3
 
-  @US2.8 @aplikacja
+  # @do-zrobienia #3075, #3076: zdania, „Pokaż wejście na mapie” i wystającego nagłówka „Wejścia” jeszcze nie ma w aplikacji.
+  @US2.8 @aplikacja @do-zrobienia
   Szablon scenariusza: Niska karta nad mapą mówi słowami o wejściach
     Zakładając, że w danych testowych <dane>
     Oraz Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
@@ -197,7 +199,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz po „Pokaż budynek na mapie” widzi mapę z zaznaczonym budynkiem A-1, a nie listę
     Oraz aplikacja pamięta widok mapy, a w wierszu tytułu jest „Pokaż listę”
 
-  @US3.1 @aplikacja
+  # @do-zrobienia #3075: zdania o braku wejścia dostępnego na karcie jeszcze nie ma w aplikacji.
+  @US3.1 @aplikacja @do-zrobienia
   Scenariusz: Brak wejścia dostępnego jest powiedziany wprost
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
     Jeżeli dotknie budynku B-8
@@ -257,7 +260,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi liczbę wyjść ewakuacyjnych 2
     Oraz po wybraniu „Pokaż wyjścia ewakuacyjne (2)” widzi listę obu wyjść
 
-  @US3.3 @BR-25 @aplikacja
+  # @do-zrobienia #3077: treści wejścia zalecanego w arkuszu wejścia jeszcze nie ma w aplikacji.
+  @US3.3 @BR-25 @aplikacja @do-zrobienia
   Scenariusz: Opis wejścia zalecanego podaje dojście, drzwi i najbliższą windę
     Zakładając, że Gość niezalogowany otworzył kartę budynku A-1
     Jeżeli wybierze „Pokaż wejście na mapie”

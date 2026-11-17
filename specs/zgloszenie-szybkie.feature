@@ -24,8 +24,13 @@ Funkcja: Zgłoszenie szybkie
     Ale miejsce zgłoszenia pochodzi z bieżącej pozycji telefonu, a nie z wybranego wejścia
 
     Przykłady:
+      | ekran |
+      | kartę |
+
+    # @do-zrobienia #3077: „Zgłoś barierę przy wejściu” w arkuszu wejścia jeszcze nie ma w aplikacji.
+    @do-zrobienia
+    Przykłady:
       | ekran                   |
-      | kartę                   |
       | arkusz wejścia na mapie |
 
   @US4.3 @aplikacja
