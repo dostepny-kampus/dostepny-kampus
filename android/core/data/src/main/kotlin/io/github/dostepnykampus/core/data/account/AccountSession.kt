@@ -70,7 +70,7 @@ public class AccountSession
             queue: SubmissionQueue,
         ) : this(tokens, vault, refresher, work, owners::adopt, queue::onLoggedIn)
 
-        internal suspend fun awaitRestore(): Unit = restored.join()
+        internal suspend fun awaitRestore() = restored.join()
 
         /**
          * Loguje konto stanem logowania z Usługi logowania i zapisuje go do następnego uruchomienia.

@@ -222,7 +222,7 @@ class SubmissionQueueTest {
 
             session.signIn(jwtOf("""{"sub":"a","realm_access":{"roles":["COLLECTOR"]}}"""))
             submissions.save(fullContent(), drafts())
-            markers.mark("A-1", "p2")
+            markers.mark(buildingSymbol = "A-1", floorId = "p2")
             store.createResults.add(ServerReply.Fault(401))
             submissions.sendAll()
             assertTrue(submissions.loginExpired.value, "odmowa serwera wstrzymuje wysyłkę")
