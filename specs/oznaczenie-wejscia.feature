@@ -44,6 +44,19 @@ Funkcja: Oznaczenie wejścia
       Oraz data oznaczenia tego wejścia to 3.11.2026, a źródło to „import”
       Oraz oznaczenia „dostępne”, „niedostępne” i „brak danych” da się odróżnić w odcieniach szarości
 
+    # @do-zrobienia #3102: import nie czyta jeszcze pól Czy_dostos, Szerokosc i Uwagi z warstwy wejść PWr.
+    @BR-27 @US17.1 @US2.6 @serwer @do-zrobienia
+    Szablon scenariusza: Import bierze oznaczenie, nazwę i opis wejścia z warstwy wejść PWr
+      Zakładając, że w danych testowych warstwa wejść PWr ma przy A-1 wpis z polami <pola>
+      Jeżeli zakończy się import budynków
+      Wtedy A-1 ma <wynik>
+
+      Przykłady:
+        | pola                                                                         | wynik                                                                        |
+        | Czy_dostos „Tak”, Szerokosc 120, Uwagi „Wejście Cesarskie. Od ul. Wybrzeże.” | wejście „Wejście Cesarskie”, „dostępne”, drzwi 120 cm, opis „Od ul. Wybrzeże.” |
+        | Czy_dostos „Nie”, Szerokosc 0, puste Uwagi                                   | wejście „Wejście”, „niedostępne”, bez szerokości drzwi                       |
+        | Czy_dostos „Tak”, Szerokosc 0, Uwagi „Wyjście ewakuacyjne z pomieszczenia 41” | wyjście ewakuacyjne, a nie wejście                                           |
+
   Reguła: Wspólną datę i źródło ekran podaje raz, a różne przy każdym wejściu
 
     @US17.3 @aplikacja
