@@ -216,12 +216,6 @@ internal fun AppNavigator.TestSignIn(route: SignInRoute) {
     Account(route = route, signIn = model)
 }
 
-/** ViewModel z licznikiem dotknięć: pokazuje, czy ekran dostał ten sam ViewModel, czy nowy. */
-private class TapsModel : ViewModel() {
-    /** Liczba dotknięć. */
-    var taps by mutableIntStateOf(0)
-}
-
 /**
  * Oboczka w Robolectric: historia, pasek dolny w wąskim oknie, pasek z boku w szerokim i role.
  *
