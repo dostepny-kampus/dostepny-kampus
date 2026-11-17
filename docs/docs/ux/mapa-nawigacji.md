@@ -25,7 +25,9 @@ Pasek dolny jest na ekranach V1, V2, V5 i L2. Prowadzi do mapy, zgłoszenia szyb
 
 ![Diagram: od uruchomienia przez V1 do V2, V3, planu piętra jako stanu V1, arkusza windy i zgłoszenia szybkiego](../_generated/nawigacja-gosc-mapa.svg)
 
-Główna droga to V1 i karta V2, która od razu odpowiada, którym wejściem wejść, a potem „Pokaż wejście na mapie”: V1 z zaznaczonym wejściem i jego arkuszem. Ekranu V3 „Którędy wejść” nie ma; diagram jeszcze go pokazuje i zmieni się razem z makietami. Z V2 osoba otwiera też plan piętra na V1 albo zgłasza barierę przy wejściu. Mapa ma jeszcze listę terenów oraz przybliżenie budynku szczegółowego na plan piętra.
+Główna droga to V1 i karta V2, która od razu odpowiada, którym wejściem wejść. Dalej „Pokaż wejście na mapie” prowadzi do V1 z zaznaczonym wejściem i jego arkuszem. Z V2 osoba otwiera też plan piętra na V1 albo zgłasza barierę przy wejściu. Mapa ma jeszcze listę terenów oraz przybliżenie budynku szczegółowego na plan piętra.
+
+Diagram pokazuje jeszcze dawny ekran V3 „Którędy wejść”; zmieni się razem z makietami low-fi.
 
 Wynik wyszukiwania z salą, na przykład „A-1 329”, otwiera plan piętra od razu bez V2. Na planie piętra można dotknąć windy, otwierając arkusz windy, albo oddalić mapę. Plan piętra i arkusz windy to stany V1, a nie osobne ekrany.
 
