@@ -31,29 +31,30 @@ class QueueAccountTest {
             val tokens = AccessTokens()
             val session = sessionOf(tokens)
             val sent = mutableListOf<String>()
-            val submissions = SubmissionQueue(
-                store = FakeStore(),
-                subject = tokens::subject,
-                server =
-                    SubmissionServer(
-                        create = { owner, id, content ->
-                            sent += owner
-                            ServerReply.Ok(SubmissionFixtures.server(id, content))
-                        },
-                        putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
-                        update = { _, _, _, _ -> ServerReply.Missing },
-                    ),
-            )
+            val submissions =
+                SubmissionQueue(
+                    store = FakeStore(),
+                    subject = tokens::subject,
+                    server =
+                        SubmissionServer(
+                            create = { owner, id, content ->
+                                sent += owner
+                                ServerReply.Ok(SubmissionFixtures.server(id, content))
+                            },
+                            putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
+                            update = { _, _, _, _ -> ServerReply.Missing },
+                        ),
+                )
             val pending = FakeMarkerQueue()
             val markers = floorMarkersOf(queue = pending, subjects = tokens.subjects)
-            val sync = MarkerSync(pending, tokens::subject) { owner, changes ->
-                sent += owner
-                ApiResult.Success(changes.map { MarkerChangeResult(it.operationId, isApplied = true) })
-            }
+            val sync =
+                MarkerSync(pending, tokens::subject) { owner, changes ->
+                    sent += owner
+                    ApiResult.Success(changes.map { MarkerChangeResult(it.operationId, isApplied = true) })
+                }
             session.signIn(jwtOf("""{"sub":"a"}"""))
             submissions.save(SubmissionFixtures.precise("p"), SubmissionFixtures.photo(photos, "p"))
             markers.mark("A-1", "p2")
-
             session.signOut()
             session.signIn(jwtOf("""{"sub":"b"}"""))
             submissions.onLoggedIn()

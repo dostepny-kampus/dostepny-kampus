@@ -32,9 +32,9 @@ internal object SubmissionFixtures {
         create: suspend (id: String, content: SubmissionContent) -> ServerReply<Submission>,
     ): SubmissionServer =
         SubmissionServer(
-            create = create,
-            putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-            update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content))) },
+            create = { _, id, content -> create(id, content) },
+            putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
+            update = { _, id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content))) },
         )
 
     /** Jedno zdjęcie [id] zapisane jako plik w katalogu [dir]. */

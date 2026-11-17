@@ -33,12 +33,13 @@ class ConflictEditTest {
     private val queue by lazy {
         SubmissionQueue(
             store = store,
+            subject = { "konto-testowe" },
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
-                    create = { id, content -> ServerReply.Ok(server(id, content, version = 1)) },
-                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { id, version, content ->
+                    create = { _, id, content -> ServerReply.Ok(server(id, content, version = 1)) },
+                    putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
+                    update = { _, id, version, content ->
                         versions += version
                         ServerReply.Ok(edits.removeFirstOrNull() ?: ServerEdit.Saved(server(id, content, 8)))
                     },
@@ -69,7 +70,7 @@ class ConflictEditTest {
                     override suspend fun find(id: String): PendingSubmissionWithPhotos? =
                         store.rows.find { it.submission.id == id }
                 }
-            val reopened = checkNotNull(pendingEditsOf(dao).load(ID))
+            val reopened = checkNotNull(pendingEditsOf(dao) { "konto-testowe" }.load(ID))
             assertEquals(7, reopened.edited.baseVersion, "ponowna poprawka idzie od wersji z serwera")
             queue.saveEdit(reopened.edited, reopened.content.copy(severity = 1), reopened.photos)
             queue.sendAll()

@@ -25,7 +25,8 @@ import java.net.HttpURLConnection.HTTP_INTERNAL_ERROR
  */
 internal class MarkerSync(
     private val queue: PendingMarkerChangeDao,
-    private val push: suspend (List<MarkerChange>) -> ApiResult<List<MarkerChangeResult>>,
+    private val subject: () -> String?,
+    private val push: suspend (String, List<MarkerChange>) -> ApiResult<List<MarkerChangeResult>>,
 ) {
     /**
      * Wysyła zmiany od najstarszej, po [PUSH_LIMIT] w paczce. Zmianę przyjętą przez serwer usuwa z kolejki,
@@ -35,12 +36,13 @@ internal class MarkerSync(
      * @return `false`, gdy trzeba spróbować później
      */
     suspend fun sendAll(): Boolean {
-        val changes = queue.observe().first()
-        return changes.chunked(PUSH_LIMIT).all { send(it) }
+        val owner = subject() ?: return true
+        val changes = queue.observe().first().filter { it.ownerSub == owner }
+        return changes.chunked(PUSH_LIMIT).all { subject() != owner || send(owner, it) }
     }
 
-    private suspend fun send(changes: List<PendingMarkerChangeEntity>): Boolean {
-        val result = push(changes.map { it.toOperation() })
+    private suspend fun send(owner: String, changes: List<PendingMarkerChangeEntity>): Boolean {
+        val result = push(owner, changes.map { it.toOperation() })
         if (result is ApiResult.Success) {
             result.value
                 .filter { it.isApplied }

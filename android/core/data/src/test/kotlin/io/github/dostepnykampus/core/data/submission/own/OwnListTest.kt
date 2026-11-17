@@ -91,12 +91,13 @@ class OwnListTest {
     private fun queue(): SubmissionQueue =
         SubmissionQueue(
             store = store,
+            subject = { "konto-testowe" },
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
-                    create = { id, content -> ServerReply.Ok(server(id, content)) },
-                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { _, _, _ -> ServerReply.Missing },
+                    create = { _, id, content -> ServerReply.Ok(server(id, content)) },
+                    putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
+                    update = { _, _, _, _ -> ServerReply.Missing },
                 ),
             stamps = SubmissionStamps(newId = { ids.removeFirst() }),
             history = history,

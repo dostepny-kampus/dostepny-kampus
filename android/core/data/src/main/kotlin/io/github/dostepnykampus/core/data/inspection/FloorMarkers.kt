@@ -9,7 +9,9 @@ import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeDao
 import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeEntity
 import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeType
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import java.io.IOException
 import java.util.UUID
 
 /**
@@ -61,19 +63,23 @@ public interface FloorMarkers {
  * Znaczniki z kolejką [queue] w bazie telefonu.
  *
  * @param queue kolejka zmian znaczników
+ * @param subjects identyfikator zalogowanego konta
  * @param newId źródło identyfikatorów UUID znacznika i operacji
  * @param nowMillis zegar w milisekundach od epoki Unix
  * @param onSaved wywołanie po każdym zapisie zmiany, np. zaplanowanie wysyłki
  */
 internal fun floorMarkersOf(
     queue: PendingMarkerChangeDao,
+    subjects: Flow<String?>,
     newId: () -> String = { UUID.randomUUID().toString() },
     nowMillis: () -> Long = System::currentTimeMillis,
     onSaved: () -> Unit = {},
 ): FloorMarkers =
     object : FloorMarkers {
         override fun pending(): Flow<List<PendingMarkerChange>> =
-            queue.observe().map { rows -> rows.map { it.toPendingMarkerChange() } }
+            combine(queue.observe(), subjects) { rows, owner ->
+                rows.filter { owner != null && it.ownerSub == owner }.map { it.toPendingMarkerChange() }
+            }
 
         override suspend fun mark(buildingSymbol: String, floorId: String?): String {
             val markerId = newId()
@@ -87,8 +93,9 @@ internal fun floorMarkersOf(
             onSaved()
         }
 
-        private fun Marker.change(type: PendingMarkerChangeType): PendingMarkerChangeEntity =
+        private suspend fun Marker.change(type: PendingMarkerChangeType): PendingMarkerChangeEntity =
             PendingMarkerChangeEntity(
+                ownerSub = subjects.first() ?: throw IOException("Brak zalogowanego konta"),
                 operationId = newId(),
                 type = type,
                 markerId = markerId,

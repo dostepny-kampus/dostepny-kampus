@@ -6,8 +6,11 @@
 package io.github.dostepnykampus.core.database
 
 import android.database.Cursor
+import androidx.room.Room
 import androidx.room.testing.MigrationTestHelper
 import androidx.test.platform.app.InstrumentationRegistry
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -199,11 +202,19 @@ class MigrationTest {
             )
         }
 
-        helper.runMigrationsAndValidate(DB_NAME, 10, true, MIGRATION_9_10).use { tenth ->
-            val submissions = tenth.query("SELECT COUNT(*) FROM pending_submissions WHERE owner_sub IS NULL")
-            val markers = tenth.query("SELECT COUNT(*) FROM pending_marker_changes WHERE owner_sub IS NULL")
-            assertEquals(1, submissions.use(::readCount), "zgłoszenie czeka na przypisanie właściciela")
-            assertEquals(1, markers.use(::readCount), "zmiana znacznika czeka na przypisanie właściciela")
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val database = Room.databaseBuilder(context, DkDatabase::class.java, DB_NAME).build()
+        try {
+            runBlocking {
+                database.queueOwnership().adopt("pierwsze")
+                database.queueOwnership().adopt("drugie")
+                val submission = database.pendingSubmissions().all().single().submission
+                val marker = database.pendingMarkerChanges().observe().first().single()
+                assertEquals("zgłoszenie należy do pierwszego konta", "pierwsze", submission.ownerSub)
+                assertEquals("zmiana znacznika należy do pierwszego konta", "pierwsze", marker.ownerSub)
+            }
+        } finally {
+            database.close()
         }
     }
 }

@@ -126,6 +126,7 @@ class SubmissionSyncWorkerTest {
     private fun queue(): SubmissionQueue =
         SubmissionQueue(
             store = store,
+            subject = { "konto-testowe" },
             ioContext = EmptyCoroutineContext,
             create = { id, content ->
                 sends++

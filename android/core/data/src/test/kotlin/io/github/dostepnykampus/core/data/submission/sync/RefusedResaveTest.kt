@@ -70,15 +70,16 @@ class RefusedResaveTest {
     private fun queue(): SubmissionQueue =
         SubmissionQueue(
             store = store,
+            subject = { "konto-testowe" },
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
-                    create = { id, content ->
+                    create = { _, id, content ->
                         sent += content
                         store.createResults.removeFirstOrNull() ?: ServerReply.Ok(server(id, content))
                     },
-                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { _, _, _ -> ServerReply.Missing },
+                    putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
+                    update = { _, _, _, _ -> ServerReply.Missing },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
             onSaved = { scheduled++ },

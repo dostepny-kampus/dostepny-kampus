@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.database
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
@@ -40,7 +41,8 @@ import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
         FloorPlanEntity::class,
         FloorRoomEntity::class,
     ],
-    version = 9,
+    version = 10,
+    autoMigrations = [AutoMigration(from = 9, to = 10)],
     exportSchema = true,
 )
 internal abstract class DkDatabase : RoomDatabase() {
@@ -58,6 +60,9 @@ internal abstract class DkDatabase : RoomDatabase() {
 
     /** Kopia barier ze zgłoszeń przyjętych. */
     abstract fun barrierCache(): BarrierCacheDao
+
+    /** Przypisanie właściciela wierszom obu kolejek po migracji. */
+    abstract fun queueOwnership(): QueueOwnershipDao
 
     /** Kolejka zmian znaczników piętra obejrzanego. */
     abstract fun pendingMarkerChanges(): PendingMarkerChangeDao

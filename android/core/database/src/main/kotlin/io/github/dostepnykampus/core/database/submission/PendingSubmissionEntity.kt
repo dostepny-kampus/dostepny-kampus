@@ -20,6 +20,7 @@ import androidx.room.PrimaryKey
  *
  * @property id identyfikator UUID nadany w telefonie; ten sam przy każdej próbie wysłania
  * @property baseVersion wersja z serwera, od której zaczęto edycję; `null` dla nowego zgłoszenia
+ * @property ownerSub identyfikator konta; `null` przed przypisaniem po migracji
  * @property savedAtMillis chwila zapisu w telefonie w milisekundach od epoki Unix
  * @property isCreatedOnServer czy serwer ma już zgłoszenie, a czekają tylko zdjęcia
  * @property kind rodzaj zgłoszenia: `PRECISE`, `QUICK` albo `ENTRANCE_MARKING`
@@ -47,6 +48,7 @@ public data class PendingSubmissionEntity(
     @PrimaryKey val id: String,
     @ColumnInfo(name = "base_version") val baseVersion: Int?,
     @ColumnInfo(name = "saved_at") val savedAtMillis: Long,
+    @ColumnInfo(name = "owner_sub") val ownerSub: String? = null,
     @ColumnInfo(name = "created_on_server") val isCreatedOnServer: Boolean,
     val kind: String,
     val longitude: Double,

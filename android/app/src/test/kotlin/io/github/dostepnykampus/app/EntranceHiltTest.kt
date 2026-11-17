@@ -117,6 +117,7 @@ class EntranceHiltTest {
         fun queue(store: SubmissionStore, sync: SubmissionSyncScheduler): SubmissionQueue =
             SubmissionQueue(
                 store = store,
+                subject = { "konto-testowe" },
                 create = { _, _ -> ServerReply.Offline },
                 putPhoto = { _, _, _ -> ServerReply.Offline },
                 onSaved = sync::schedule,

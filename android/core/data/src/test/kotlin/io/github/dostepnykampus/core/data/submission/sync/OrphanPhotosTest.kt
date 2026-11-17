@@ -87,12 +87,13 @@ class OrphanPhotosTest {
     private fun queueOn(ioContext: CoroutineContext): SubmissionQueue =
         SubmissionQueue(
             store = store,
+            subject = { "konto-testowe" },
             ioContext = ioContext,
             server =
                 SubmissionServer(
-                    create = { _, _ -> ServerReply.Offline },
-                    putPhoto = { _, _, _ -> ServerReply.Offline },
-                    update = { _, _, _ -> ServerReply.Offline },
+                    create = { _, _, _ -> ServerReply.Offline },
+                    putPhoto = { _, _, _, _ -> ServerReply.Offline },
+                    update = { _, _, _, _ -> ServerReply.Offline },
                 ),
             stamps = SubmissionStamps(newId = { "s-sprzatanie" }, nowMillis = { NOW }),
         )

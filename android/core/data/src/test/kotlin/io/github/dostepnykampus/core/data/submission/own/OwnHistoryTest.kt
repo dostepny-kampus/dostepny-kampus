@@ -290,15 +290,18 @@ class OwnHistoryTest {
     ): SubmissionQueue =
         SubmissionQueue(
             store = store,
+            subject = { "konto-testowe" },
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
-                    create = create,
-                    putPhoto = { _, _, _ ->
+                    create = { _, id, content -> create(id, content) },
+                    putPhoto = { _, _, _, _ ->
                         photoAttempts++
                         store.photoResults.removeFirstOrNull() ?: ServerReply.Ok(Unit)
                     },
-                    update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content, version = 3))) },
+                    update = { _, id, _, content ->
+                        ServerReply.Ok(ServerEdit.Saved(server(id, content, version = 3)))
+                    },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
             history = history,

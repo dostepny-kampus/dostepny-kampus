@@ -30,6 +30,7 @@ class SaveDuringSendTest {
     private val queue: SubmissionQueue by lazy {
         SubmissionQueue(
             store = store,
+            subject = { "konto-testowe" },
             ioContext = EmptyCoroutineContext,
             server =
                 acceptingServer { id, content ->

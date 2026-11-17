@@ -13,6 +13,7 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import io.github.dostepnykampus.core.data.account.AccountSession
 import io.github.dostepnykampus.core.data.inspection.MarkerSync
 import io.github.dostepnykampus.core.data.inspection.syncResult
 
@@ -23,6 +24,8 @@ internal interface SubmissionSyncEntryPoint {
     fun submissionQueue(): SubmissionQueue
 
     fun markerSync(): MarkerSync
+
+    fun accountSession(): AccountSession
 }
 
 /**
@@ -37,6 +40,7 @@ internal class SubmissionSyncWorker(appContext: Context, params: WorkerParameter
     override suspend fun doWork(): Result {
         val entryPoint =
             EntryPointAccessors.fromApplication(applicationContext, SubmissionSyncEntryPoint::class.java)
+        entryPoint.accountSession().awaitRestore()
         val submissions = entryPoint.submissionQueue().syncResult()
         val markers = entryPoint.markerSync().syncResult()
         return if (Result.retry() in listOf(submissions, markers)) Result.retry() else Result.success()

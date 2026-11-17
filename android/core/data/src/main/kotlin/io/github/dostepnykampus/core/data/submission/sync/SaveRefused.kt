@@ -12,6 +12,9 @@ public enum class SaveRefusal {
 
     /** Serwer ma już zgłoszenie, a telefon nie zna jego wersji. Wymagania: BR-10 */
     UNKNOWN_VERSION,
+
+    /** Brak bieżącego konta dla zapisu albo zgłoszenie należy do innego konta. Wymagania: NFR-33 */
+    ACCOUNT_CHANGED,
 }
 
 /**
@@ -23,3 +26,7 @@ public enum class SaveRefusal {
  * @param message opis dla programisty, bez danych osoby
  */
 public class SaveRefusedException(public val reason: SaveRefusal, message: String) : Exception(message)
+
+/** Odmowa zapisu po zmianie konta. */
+internal fun queueOwnerChanged(): SaveRefusedException =
+    SaveRefusedException(SaveRefusal.ACCOUNT_CHANGED, "Konto nie jest właścicielem zapisu")

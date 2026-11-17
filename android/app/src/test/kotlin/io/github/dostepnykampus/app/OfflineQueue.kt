@@ -17,15 +17,16 @@ import kotlin.coroutines.EmptyCoroutineContext
 internal fun offlineQueue(store: SubmissionStore, onSend: () -> Unit): SubmissionQueue =
     SubmissionQueue(
         store = store,
+        subject = { "konto-testowe" },
         ioContext = EmptyCoroutineContext,
         server =
             SubmissionServer(
-                create = { _, _ ->
+                create = { _, _, _ ->
                     onSend()
                     ServerReply.Offline
                 },
-                putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                update = { _, _, _ -> ServerReply.Missing },
+                putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
+                update = { _, _, _, _ -> ServerReply.Missing },
             ),
     )
 

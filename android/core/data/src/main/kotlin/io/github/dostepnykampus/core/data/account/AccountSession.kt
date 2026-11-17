@@ -6,10 +6,12 @@
 package io.github.dostepnykampus.core.data.account
 
 import io.github.dostepnykampus.core.data.di.IoContext
+import io.github.dostepnykampus.core.database.QueueOwnershipDao
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.network.auth.AccessTokens
 import io.github.dostepnykampus.core.network.auth.realmRolesOf
+import io.github.dostepnykampus.core.network.auth.subjectOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
@@ -39,21 +41,33 @@ import kotlin.coroutines.CoroutineContext
  */
 @Singleton
 public class AccountSession
-    @Inject
     internal constructor(
         private val tokens: AccessTokens,
         private val vault: LoginVault,
         private val refresher: LoginRefresh,
-        @param:IoContext private val work: CoroutineContext,
+        private val work: CoroutineContext,
+        private val adoptLegacyQueue: suspend (String) -> Unit = {},
     ) : RoleProvider {
+        @Inject
+        internal constructor(
+            tokens: AccessTokens,
+            vault: LoginVault,
+            refresher: LoginRefresh,
+            @IoContext work: CoroutineContext,
+            owners: QueueOwnershipDao,
+        ) : this(tokens, vault, refresher, work, owners::adopt)
+
         private val state = MutableStateFlow<Account>(Account.Guest)
         private val scope = CoroutineScope(SupervisorJob() + work)
         private val renewal = AtomicReference<Job?>(null)
 
         override val account: StateFlow<Account> = state.asStateFlow()
 
-        init {
-            scope.launch { vault.read()?.takeIf { state.value == Account.Guest }?.let(::keep) }
+        private val restored = scope.launch { vault.read()?.takeIf { state.value == Account.Guest }?.let { keep(it) } }
+
+        /** Czeka na gotowość sesji z zapisanym logowaniem. */
+        internal suspend fun awaitRestore() {
+            restored.join()
         }
 
         /**
@@ -73,8 +87,12 @@ public class AccountSession
          * @param token token JWT z Usługi logowania
          * @return `true`, gdy konto jest zalogowane tym tokenem
          */
-        public fun signIn(token: String): Boolean {
+        public suspend fun signIn(token: String): Boolean {
             val signedIn = accountOf(token) ?: return false
+            val subject = subjectOf(token)
+            if (subject != null && subject != tokens.subject) {
+                withContext(work) { adoptLegacyQueue(subject) }
+            }
             tokens.signIn(token)
             state.value = signedIn
             return true
@@ -88,7 +106,7 @@ public class AccountSession
             scope.launch { vault.clear() }
         }
 
-        private fun keep(login: AuthState): Boolean {
+        private suspend fun keep(login: AuthState): Boolean {
             val token = login.accessToken
             if (token == null || !signIn(token)) return false
             val job = scope.launch(start = CoroutineStart.LAZY) { renew(login) }

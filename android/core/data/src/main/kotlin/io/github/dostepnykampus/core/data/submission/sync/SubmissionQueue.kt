@@ -85,9 +85,9 @@ private const val FIRST_SERVER_FAULT_CODE = 500
  * @property update edycja z wersją bazową (`PUT /submissions/{id}`)
  */
 public data class SubmissionServer(
-    val create: suspend (id: String, content: SubmissionContent) -> ServerReply<Submission>,
-    val putPhoto: suspend (submissionId: String, photoId: String, jpeg: ByteArray) -> ServerReply<Unit>,
-    val update: suspend (id: String, version: Int, content: SubmissionContent) -> ServerReply<ServerEdit>,
+    val create: suspend (owner: String, id: String, content: SubmissionContent) -> ServerReply<Submission>,
+    val putPhoto: suspend (owner: String, id: String, photo: String, jpeg: ByteArray) -> ServerReply<Unit>,
+    val update: suspend (sub: String, id: String, version: Int, content: SubmissionContent) -> ServerReply<ServerEdit>,
 )
 
 /**
@@ -114,6 +114,7 @@ public data class SubmissionStamps(
  */
 public class SubmissionQueue internal constructor(
     private val store: PendingSubmissionDao,
+    private val subject: () -> String?,
     private val ioContext: CoroutineContext = Dispatchers.IO,
     private val server: SubmissionServer,
     private val stamps: SubmissionStamps = SubmissionStamps(),
@@ -134,6 +135,7 @@ public class SubmissionQueue internal constructor(
      * @param store zgłoszenia zapisane w telefonie
      * @param ioContext kontekst zapisu i odczytu bazy
      * @param server wywołania serwera zgłoszeń
+     * @param subject identyfikator bieżącego konta
      * @param stamps identyfikator i chwila zapisu nowego zgłoszenia
      * @param onSaved planowanie wysyłki po zapisie
      */
@@ -141,12 +143,14 @@ public class SubmissionQueue internal constructor(
         store: SubmissionStore,
         ioContext: CoroutineContext = Dispatchers.IO,
         server: SubmissionServer,
+        subject: () -> String?,
         stamps: SubmissionStamps = SubmissionStamps(),
         onSaved: () -> Unit = {},
     ) : this(
         store = store.pending,
         ioContext = ioContext,
         server = server,
+        subject = subject,
         stamps = stamps,
         onSaved = onSaved,
         history = store.history,
@@ -157,6 +161,7 @@ public class SubmissionQueue internal constructor(
      *
      * @param store zgłoszenia zapisane w telefonie; historia Zbierającego zostaje nieużyta
      * @param ioContext kontekst zapisu i odczytu bazy
+     * @param subject identyfikator bieżącego konta
      * @param create utworzenie zgłoszenia na serwerze
      * @param putPhoto wysłanie zdjęcia zgłoszenia
      * @param onSaved planowanie wysyłki po zapisie
@@ -164,12 +169,14 @@ public class SubmissionQueue internal constructor(
     public constructor(
         store: SubmissionStore,
         ioContext: CoroutineContext = Dispatchers.IO,
+        subject: () -> String?,
         create: suspend (id: String, content: SubmissionContent) -> ServerReply<Submission>,
         putPhoto: suspend (submissionId: String, photoId: String, jpeg: ByteArray) -> ServerReply<Unit>,
         onSaved: () -> Unit = {},
     ) : this(
         store = store.pending,
         ioContext = ioContext,
+        subject = subject,
         create = create,
         putPhoto = putPhoto,
         onSaved = onSaved,
@@ -179,6 +186,7 @@ public class SubmissionQueue internal constructor(
     internal constructor(
         store: PendingSubmissionDao,
         ioContext: CoroutineContext = Dispatchers.IO,
+        subject: () -> String?,
         create: suspend (id: String, content: SubmissionContent) -> ServerReply<Submission>,
         putPhoto: suspend (submissionId: String, photoId: String, jpeg: ByteArray) -> ServerReply<Unit>,
         newId: () -> String = { UUID.randomUUID().toString() },
@@ -186,7 +194,13 @@ public class SubmissionQueue internal constructor(
     ) : this(
         store = store,
         ioContext = ioContext,
-        server = SubmissionServer(create = create, putPhoto = putPhoto, update = { _, _, _ -> ServerReply.Missing }),
+        subject = subject,
+        server =
+            SubmissionServer(
+                create = { _, id, content -> create(id, content) },
+                putPhoto = { _, id, photo, jpeg -> putPhoto(id, photo, jpeg) },
+                update = { _, _, _, _ -> ServerReply.Missing },
+            ),
         stamps = SubmissionStamps(newId = newId),
         onSaved = onSaved,
     )
@@ -203,9 +217,10 @@ public class SubmissionQueue internal constructor(
      */
     public suspend fun save(content: SubmissionContent, photos: List<PendingPhotoDraft>): SavedSubmission {
         requireMatchingPhotos(content, photos)
+        val owner = subject() ?: throw queueOwnerChanged()
         val id = stamps.newId()
         val savedAt = lastSavedAt.nextAfter(stamps.nowMillis())
-        val entity = content.toPendingSubmissionEntity(id = id, savedAtMillis = savedAt)
+        val entity = content.toPendingSubmissionEntity(id = id, savedAtMillis = savedAt).copy(ownerSub = owner)
         store.together {
             store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = id) })
             remember(entity)
@@ -239,14 +254,16 @@ public class SubmissionQueue internal constructor(
      */
     public suspend fun saveEdit(edited: EditedSubmission, content: SubmissionContent, photos: List<PendingPhotoDraft>) {
         requireMatchingPhotos(content, photos)
+        val owner = subject() ?: throw queueOwnerChanged()
         val replaced =
             results.locked {
                 val savedAt = lastSavedAt.nextAfter(stamps.nowMillis())
-                val baseVersion = baseVersionOf(edited = edited, store = store, history = history)
                 val fresh = content.toPendingSubmissionEntity(id = edited.id, savedAtMillis = savedAt)
-                val entity = fresh.copy(baseVersion = baseVersion)
                 var paths = emptyList<String>()
                 store.together {
+                    if (store.belongsToAnotherAccount(edited.id, owner)) throw queueOwnerChanged()
+                    val version = baseVersionOf(edited = edited, store = store, history = history)
+                    val entity = fresh.copy(baseVersion = version, ownerSub = owner)
                     paths = store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) })
                     remember(entity)
                 }
@@ -270,8 +287,10 @@ public class SubmissionQueue internal constructor(
      */
     public suspend fun sendAll(): Boolean =
         sending.withLock {
-            val stop = if (expired.value) Outcome.LOGIN_EXPIRED else sendUntilStop()
-            if (stop == Outcome.LOGIN_EXPIRED) expired.value = true
+            val owner = subject() ?: return@withLock waitForLogin()
+            val stop = if (expired.value) Outcome.LOGIN_EXPIRED else sendUntilStop(owner)
+            val current = subject()
+            if (stop == Outcome.LOGIN_EXPIRED && (current == owner || current == null)) expired.value = true
             stop != Outcome.LATER
         }
 
@@ -281,22 +300,27 @@ public class SubmissionQueue internal constructor(
         runCatching(onSaved)
     }
 
+    private suspend fun waitForLogin(): Boolean {
+        if (store.all().isNotEmpty() && subject() == null) expired.value = true
+        return true
+    }
+
     private suspend fun remember(entity: PendingSubmissionEntity) {
         val own = history ?: return
         if (entity.isOwnHistory()) own.save(entity.toOwnSubmissionEntity().keepingServerState(own.find(entity.id)))
     }
 
-    private suspend fun sendUntilStop(): Outcome? {
+    private suspend fun sendUntilStop(owner: String): Outcome? {
         val tried = mutableSetOf<String>()
         val outcomes = mutableListOf<Outcome>()
         var stop: Outcome? = null
-        var next = store.all().firstOrNull()
-        while (next != null && stop == null) {
-            val outcome = sendOne(next)
+        var next = nextFor(owner, tried)
+        while (next != null && stop == null && subject() == owner) {
+            val outcome = sendOne(next, owner)
             outcomes += outcome
             if (outcome != Outcome.REPLACED) tried += next.submission.id
             stop = outcome.takeIf { it == Outcome.LATER || it == Outcome.LOGIN_EXPIRED }
-            next = store.all().firstOrNull { it.submission.id !in tried }
+            next = nextFor(owner, tried)
         }
         if (outcomes.isNotEmpty()) {
             Timber.i("Przebieg wysyłki zgłoszeń: %s, zatrzymanie: %s", outcomes.groupingBy { it }.eachCount(), stop)
@@ -304,34 +328,37 @@ public class SubmissionQueue internal constructor(
         return stop
     }
 
-    private suspend fun sendOne(item: PendingSubmissionWithPhotos): Outcome =
+    private suspend fun nextFor(owner: String, tried: Set<String>): PendingSubmissionWithPhotos? =
+        store.all().firstOrNull { it.submission.ownerSub == owner && it.submission.id !in tried }
+
+    private suspend fun sendOne(item: PendingSubmissionWithPhotos, owner: String): Outcome =
         if (item.submission.isCreatedOnServer) {
-            sendRemaining(item)
+            sendRemaining(item, owner)
         } else {
-            val status = sendContent(item)
-            if (status == Outcome.SENT) sendRemaining(item) else status
+            val status = sendContent(item, owner)
+            if (status == Outcome.SENT) sendRemaining(item, owner) else status
         }
 
-    private suspend fun sendContent(item: PendingSubmissionWithPhotos): Outcome {
+    private suspend fun sendContent(item: PendingSubmissionWithPhotos, owner: String): Outcome {
         val version = item.submission.baseVersion
         val content = item.toSubmissionContentOrNull() ?: return results.unreadable(item)
         val result: ServerReply<*>
         val outcome =
             if (version == null) {
-                result = server.create(item.submission.id, content)
+                result = server.create(owner, item.submission.id, content)
                 outcomeOf(result)
             } else {
-                val edit = server.update(item.submission.id, version, content)
+                val edit = server.update(owner, item.submission.id, version, content)
                 result = edit
                 editOutcome(edit)
             }
         return results.content(item, result, outcome)
     }
 
-    private suspend fun sendRemaining(item: PendingSubmissionWithPhotos): Outcome {
+    private suspend fun sendRemaining(item: PendingSubmissionWithPhotos, owner: String): Outcome {
         for (photo in item.photos.filterNot { it.isUploaded }) {
             val jpeg = jpeg(photo.path, ioContext)
-            val result = jpeg?.let { server.putPhoto(item.submission.id, photo.photoId, it) }
+            val result = jpeg?.let { server.putPhoto(owner, item.submission.id, photo.photoId, it) }
             val outcome = results.photo(item, photo.photoId, result)
             if (outcome != Outcome.SENT) return outcome
         }

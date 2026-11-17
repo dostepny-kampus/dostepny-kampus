@@ -31,10 +31,12 @@ class PendingEditsTest {
                 override suspend fun find(id: String): PendingSubmissionWithPhotos? =
                     store.rows.find { it.submission.id == id }
             },
+            subject = { "konto-testowe" },
         )
     private val queue =
         SubmissionQueue(
             store = store,
+            subject = { "konto-testowe" },
             ioContext = EmptyCoroutineContext,
             create = { _, _ -> ServerReply.Offline },
             putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },

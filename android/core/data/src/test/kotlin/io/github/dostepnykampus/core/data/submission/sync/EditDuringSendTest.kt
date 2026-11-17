@@ -33,17 +33,18 @@ class EditDuringSendTest {
     private val queue by lazy {
         SubmissionQueue(
             store = store,
+            subject = { "konto-testowe" },
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
-                    create = { id, content ->
+                    create = { _, id, content ->
                         calls += "create ${checkNotNull(content.severity)}"
                         entered.complete(Unit)
                         reply.await()
                         ServerReply.Ok(server(id, content))
                     },
-                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { id, version, content ->
+                    putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
+                    update = { _, id, version, content ->
                         calls += "update $version ${checkNotNull(content.severity)}"
                         ServerReply.Ok(ServerEdit.Saved(server(id, content)))
                     },
