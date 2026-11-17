@@ -190,7 +190,7 @@ Arkusz toalety i arkusz schodów na dole mapy otwiera dotknięcie znaku na plani
 
 Arkusze wejścia, toalety i schodów mają obrysowany „Zamknij” w nagłówku, jak arkusz bariery. Po otwarciu fokus TalkBack stoi na nagłówku, a przy skali czcionki 200% treść arkusza się przewija. Arkusz zamykają „Zamknij”, „Wstecz” telefonu i dotknięcie pustej mapy (NFR-18, NFR-20, NFR-53).
 
-Znak bariery, wejścia, toalety albo schodów dotknięty przy otwartej karcie budynku otwiera swój arkusz w miejsce karty. Dwa arkusze naraz zasłoniłyby mapę. „Zamknij” i „Wstecz” arkusza wracają wtedy do karty tego budynku. Dotknięcie pustej mapy zamyka arkusz bez karty (US2.1, NFR-15, NFR-53).
+Znak bariery, wejścia, toalety albo schodów dotknięty przy otwartej karcie budynku otwiera swój arkusz w miejsce karty. „Zamknij” i „Wstecz” arkusza wracają wtedy do karty tego budynku. Dotknięcie pustej mapy zamyka arkusz bez karty (US2.1, NFR-15, NFR-53).
 
 Arkusz „Który budynek?” na dole mapy otwiera dotknięcie konturu wspólnego albo dotknięcie obok dwóch konturów, poza nimi (decyzja 85):
 
