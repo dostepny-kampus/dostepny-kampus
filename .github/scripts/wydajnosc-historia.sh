@@ -80,7 +80,8 @@ for proba in 1 2 3; do
   fi
   cat "$WPIS" >>"$katalog/$plik"
   git -C "$katalog" add "$plik"
-  if git -C "$katalog" -c user.name="Dostępny Kampus CI" -c user.email="ci@users.noreply.github.com" \
+  if git -C "$katalog" -c user.name="github-actions[bot]" \
+    -c user.email="41898283+github-actions[bot]@users.noreply.github.com" \
     commit -q -m "dane: wpis wydajności $(date -u +%F)" && git -C "$katalog" push -q dane "$galaz" 2>/dev/null; then
     zapisano=1
     break
