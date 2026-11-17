@@ -9,12 +9,13 @@ import androidx.compose.runtime.Immutable
 import io.github.dostepnykampus.core.model.building.Building
 
 /**
- * Wynik wyszukiwania budynku po symbolu.
+ * Podpowiedzi budynków po początku symbolu.
  *
  * Wymagania: US1.3
  *
  * @property query zapytanie, dla którego policzono wynik; ekran pokazuje wynik tylko dla zapytania z pola
- * @property buildings budynki o tym symbolu w kolejności katalogu; `null`, dopóki katalog się wczytuje
+ * @property buildings budynki o symbolu zaczynającym się od [query] w kolejności katalogu; `null`, dopóki katalog
+ *   się wczytuje
  */
 @Immutable
 data class BuildingSearch(val query: String = "", val buildings: List<Building>? = null)

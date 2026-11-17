@@ -15,7 +15,8 @@ import org.junit.jupiter.params.provider.ValueSource
 import java.io.File
 
 /**
- * Wyszukanie budynku po symbolu na budynkach testowych o podobnych symbolach i w prawdziwym pliku konturów.
+ * Podpowiedzi budynków po początku symbolu na budynkach testowych o podobnych symbolach i w prawdziwym pliku
+ * konturów.
  *
  * Wymagania: US1.1, US1.2
  */
@@ -33,20 +34,27 @@ class SearchBuildingsTest {
         assertEquals(listOf("C-13"), symbols(query))
     }
 
+    /** Scenariusz: przegladanie-mapy.feature: Podpowiedzi budynków od pierwszego znaku symbolu. */
     @ParameterizedTest
-    @ValueSource(strings = ["c1", "C-1"])
-    fun us1_1_whole_symbol_match(query: String) {
-        assertEquals(listOf("C-1"), symbols(query))
+    @ValueSource(strings = ["A", "a", "A-", "a –"])
+    fun us1_1_first_letter_suggests(query: String) {
+        assertEquals(listOf("A-1", "A-2", "A-10"), symbols(query))
     }
 
     @ParameterizedTest
-    @ValueSource(strings = ["d8A", "D-8a"])
+    @ValueSource(strings = ["c1", "C-1", "C 1"])
+    fun us1_1_symbol_start_suggests(query: String) {
+        assertEquals(listOf("C-1", "C-13"), symbols(query))
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["d8", "d8A", "D-8a"])
     fun us1_1_suffix_any_case(query: String) {
         assertEquals(listOf("D-8a"), symbols(query))
     }
 
     @ParameterizedTest
-    @ValueSource(strings = ["", "C", "13", "C-13x", "C--13", "A-1 329", "Z-99", "C-0013"])
+    @ValueSource(strings = ["", " ", "13", "C-13x", "C--13", "A-1 329", "Z-99", "C-0013", "AB"])
     fun us1_1_no_match_is_empty(query: String) {
         assertEquals(emptyList<String>(), symbols(query))
     }
@@ -55,13 +63,16 @@ class SearchBuildingsTest {
     @Test
     fun findsA1InRealFile() {
         val real = parseBuildingCatalog(File(System.getProperty("dostepnykampus.buildings")).readText())
-        assertEquals(listOf("A-1"), searchBuildings("A-1", real.buildings).map { it.symbol })
+        val found = searchBuildings("A-1", real.buildings).map { it.symbol }
+        assertEquals("A-1", found.firstOrNull { it == "A-1" }, "A-1 wśród podpowiedzi: $found")
+        assertEquals(emptyList<String>(), found.filterNot { it.startsWith("A-1") }, "tylko symbole od A-1: $found")
     }
 
     private fun symbols(query: String): List<String> = searchBuildings(query, buildings()).map { it.symbol }
 
     private fun buildings(): List<Building> {
         val outline = GeoPolygon(listOf(List(4) { GeoPoint(longitude = 0.0, latitude = 0.0) }))
-        return listOf("C-1", "C-13", "C-3", "D-8a").map { Building(symbol = it, name = null, outline = outline) }
+        return listOf("A-1", "A-2", "A-10", "C-1", "C-13", "C-3", "D-8a")
+            .map { Building(symbol = it, name = null, outline = outline) }
     }
 }

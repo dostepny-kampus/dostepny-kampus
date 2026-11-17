@@ -11,10 +11,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -55,9 +58,27 @@ class SearchFieldTest {
         compose.onNodeWithContentDescription(RESULT).assertExists()
     }
 
+    /**
+     * Pierwsza litera pokazuje budynki w kolejności katalogu, bez komunikatu o braku wyniku.
+     *
+     * Scenariusz: przegladanie-mapy.feature: Podpowiedzi budynków od pierwszego znaku symbolu
+     *
+     * Wymagania: US1.1
+     */
+    @Test
+    fun suggestsFromFirstLetter() {
+        compose.setContent { Search(onBuildingClick = {}, catalog = catalogOf("A-1", "A-2", "A-10", "C-13")) }
+        compose.onNode(hasSetTextAction()).performTextInput("A")
+        val shown =
+            compose.onAllNodes(hasContentDescription("Budynek testowy", substring = true)).fetchSemanticsNodes().map {
+                it.config[SemanticsProperties.ContentDescription].single()
+            }
+        assertEquals("podpowiedzi", listOf("A-1", "A-2", "A-10").map { "$it, Budynek testowy" }, shown)
+        compose.onNodeWithText("Nie znaleźliśmy budynku", substring = true).assertDoesNotExist()
+    }
+
     @Composable
-    private fun Search(onBuildingClick: (String) -> Unit) {
-        val catalog = BuildingCatalog(listOf(unitSquareBuilding("C-13")), entrances = emptyList(), attribution = "")
+    private fun Search(onBuildingClick: (String) -> Unit, catalog: BuildingCatalog = catalogOf("C-13")) {
         var search by remember { mutableStateOf(BuildingSearch()) }
         DostepnyKampusTheme {
             CampusSearch(
@@ -73,6 +94,9 @@ class SearchFieldTest {
             )
         }
     }
+
+    private fun catalogOf(vararg symbols: String): BuildingCatalog =
+        BuildingCatalog(symbols.map(::unitSquareBuilding), entrances = emptyList(), attribution = "")
 
     private companion object {
         const val RESULT = "C-13, Budynek testowy"
