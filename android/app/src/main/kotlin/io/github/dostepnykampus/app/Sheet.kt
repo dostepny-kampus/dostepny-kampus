@@ -6,13 +6,14 @@
 package io.github.dostepnykampus.app
 
 import androidx.annotation.StringRes
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.AnchoredDraggableDefaults
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.ScrollScope
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.Box
@@ -61,13 +62,14 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 /**
- * Arkusz V2 z wysokościami [SheetHeight]: idzie za palcem po uchwycie i po treści, a po puszczeniu staje na
- * najbliższej wysokości. Startuje rozwinięty na połowę okna, gdy [isExpanded], inaczej niski; zmianę rozwinięcia
- * zgłasza [onExpandedChange], a [isExpanded] równe `false` zwija go do niskiej. Przeciągnięcie w dół z niskiej
- * wywołuje [onClose]. Wysokość niskiej karty w px, liczoną z treści, dostaje [onLowHeight]. Dotknięcie uchwytu
+ * Arkusz V2 z wysokościami [SheetHeight]: idzie za palcem po uchwycie i po treści, a po puszczeniu staje na wysokości
+ * według położenia i prędkości. Startuje rozwinięty na połowę okna, gdy [isExpanded], inaczej niski; zmianę
+ * rozwinięcia zgłasza [onExpandedChange], a [isExpanded] równe `false` zwija go do niskiej. Przeciągnięcie w dół z
+ * niskiej wywołuje [onClose]. Wysokość niskiej karty w px, liczoną z treści, dostaje [onLowHeight]. Dotknięcie uchwytu
  * przechodzi na następną wysokość, a czytnik ekranu ma czynności rozwinięcia i zwinięcia, więc przeciąganie nie jest
  * jedyną drogą (WCAG 2.5.7).
  *
@@ -94,7 +96,8 @@ internal fun Sheet(
     )
     val isFull = state.currentValue == SheetHeight.Full
     val corner = if (isFull) 0.dp else Zaokraglenia.bardzoDuze
-    val scroll = remember(state) { SheetScrollConnection(state) }
+    val fling = AnchoredDraggableDefaults.flingBehavior(state)
+    val scroll = remember(state, fling) { SheetScrollConnection(state = state, fling = fling) }
     Surface(
         modifier =
             modifier
@@ -106,7 +109,7 @@ internal fun Sheet(
                 .anchoredDraggable(
                     state = state,
                     orientation = Orientation.Vertical,
-                    flingBehavior = AnchoredDraggableDefaults.flingBehavior(state),
+                    flingBehavior = fling,
                 ),
         shape = if (isFull) RectangleShape else RoundedCornerShape(topStart = corner, topEnd = corner),
         color = MaterialTheme.colorScheme.surfaceContainer,
@@ -186,8 +189,15 @@ private fun Modifier.followHeight(
 
 private fun Float.roundToIntOrZero(): Int = if (isNaN()) 0 else roundToInt()
 
-/** Przewijanie treści przesuwa najpierw arkusz w górę, a resztę przewinięcia w dół oddaje arkuszowi. */
-private class SheetScrollConnection(private val state: AnchoredDraggableState<SheetHeight>) : NestedScrollConnection {
+/**
+ * Przewijanie treści przesuwa najpierw arkusz w górę, a resztę przewinięcia w dół oddaje arkuszowi. Arkusz
+ * przesunięty gestem na treści staje po puszczeniu według prędkości rzutu zachowaniem [fling], tak jak po geście
+ * na uchwycie.
+ */
+private class SheetScrollConnection(
+    private val state: AnchoredDraggableState<SheetHeight>,
+    private val fling: FlingBehavior,
+) : NestedScrollConnection {
     override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset =
         if (available.y < 0f && source == NestedScrollSource.UserInput) {
             Offset(x = 0f, y = state.dispatchRawDelta(available.y))
@@ -204,15 +214,42 @@ private class SheetScrollConnection(private val state: AnchoredDraggableState<Sh
 
     override suspend fun onPreFling(available: Velocity): Velocity {
         if (available.y >= 0f || state.offset <= state.anchors.minPosition()) return Velocity.Zero
-        state.settle(spring())
+        settle(velocity = available.y)
         return available
     }
 
     override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
-        state.settle(spring())
+        if (isOnAnchor()) return Velocity.Zero
+        settle(velocity = available.y)
         return available
     }
+
+    private fun isOnAnchor(): Boolean {
+        val nearest = state.anchors.closestAnchor(state.offset) ?: return true
+        return abs(state.anchors.positionOf(nearest) - state.offset) <= ANCHOR_TOLERANCE_PX
+    }
+
+    private suspend fun settle(velocity: Float) {
+        state.anchoredDrag { anchors ->
+            val follow =
+                object : ScrollScope {
+                    override fun scrollBy(pixels: Float): Float {
+                        val before = state.offset
+                        val after =
+                            (before + pixels).coerceIn(
+                                minimumValue = anchors.minPosition(),
+                                maximumValue = anchors.maxPosition(),
+                            )
+                        dragTo(newOffset = after)
+                        return after - before
+                    }
+                }
+            with(fling) { follow.performFling(initialVelocity = velocity) }
+        }
+    }
 }
+
+private const val ANCHOR_TOLERANCE_PX = 0.5f
 
 @StringRes
 private fun SheetHeight.word(): Int =
