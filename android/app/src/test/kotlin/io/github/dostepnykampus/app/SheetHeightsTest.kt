@@ -140,7 +140,11 @@ class SheetHeightsTest {
         open()
         val up = handleTop() - (map() / 2 + 40.dp)
         compose.onNodeWithContentDescription(EXPAND_HANDLE).performTouchInput {
-            swipe(center, Offset(center.x, center.y - up.toPx()), SLOW_SWIPE_MILLIS)
+            swipe(
+                start = center,
+                end = Offset(x = center.x, y = center.y - up.toPx()),
+                durationMillis = SLOW_SWIPE_MILLIS,
+            )
         }
         compose.waitForIdle()
         assertAt(map() / 2, "połowa ekranu po puszczeniu")
@@ -151,7 +155,11 @@ class SheetHeightsTest {
     fun closesOnDragDownFromLow() {
         open()
         compose.onNodeWithContentDescription(EXPAND_HANDLE).performTouchInput {
-            swipe(center, Offset(center.x, center.y + map().toPx()), SLOW_SWIPE_MILLIS)
+            swipe(
+                start = center,
+                end = Offset(x = center.x, y = center.y + map().toPx()),
+                durationMillis = SLOW_SWIPE_MILLIS,
+            )
         }
         compose.waitForIdle()
         compose.onNodeWithText("Compact").assertDoesNotExist()
@@ -173,13 +181,13 @@ class SheetHeightsTest {
     @Test
     fun offersExpandAndCollapseActions() {
         open()
-        assertEquals(listOf("Rozwiń"), actions())
+        assertEquals("czynności na niskiej", listOf("Rozwiń"), actions())
         perform("Rozwiń")
         assertAt(map() / 2, "połowa po „Rozwiń”")
-        assertEquals(listOf("Rozwiń", "Zwiń"), actions())
+        assertEquals("czynności na połowie ekranu", listOf("Rozwiń", "Zwiń"), actions())
         perform("Rozwiń")
         assertAt(0.dp, "cały ekran po „Rozwiń”")
-        assertEquals(listOf("Zwiń"), actions())
+        assertEquals("czynności na całym ekranie", listOf("Zwiń"), actions())
         perform("Zwiń")
         perform("Zwiń")
         assertAt(low(), "niska po dwóch „Zwiń”")
