@@ -54,7 +54,7 @@ private val SHORT_SWIPE = 60.dp
 private const val LONG_SWIPE_MILLIS = 300L
 
 /**
- * Arkusz V2 z trzema wysokościami: niska, połowa ekranu i cały ekran; idzie za palcem, staje na najbliższej wysokości,
+ * Arkusz V2 z trzema wysokościami: niska, połowa ekranu i cały ekran; idzie za palcem, staje najwyżej o stopień dalej,
  * z niskiej w dół się zamyka, a uchwyt i czynności TalkBack zmieniają wysokość bez przeciągania.
  *
  * Wymagania: US2, US2.8, NFR-17, NFR-18, NFR-53

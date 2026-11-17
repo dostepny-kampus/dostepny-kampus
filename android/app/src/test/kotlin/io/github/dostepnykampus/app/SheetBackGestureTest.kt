@@ -264,7 +264,7 @@ class SheetBackGestureTest {
     }
 
     /**
-     * Wiersz: mała karta, przeciągnięcie uchwytu w górę poza uchwyt → pełny ekran na całe okno.
+     * Wiersz: mała karta, przeciągnięcie uchwytu w górę poza uchwyt → rozwinięta karta, jeden gest o jeden stopień.
      *
      * Wymagania: US2.8, NFR-53
      */
@@ -277,8 +277,9 @@ class SheetBackGestureTest {
             repeat(times = 10) { moveBy(Offset(x = 0f, y = -60f)) }
             up()
         }
-        assertEquals("góra pełnego ekranu po przeciągnięciu", 0f, sheetTop("po przeciągnięciu").value, 1f)
-        compose.onNode(sheetHandle(isExpanded = true)).assertExists("pełny ekran po przeciągnięciu")
+        compose.onNode(sheetHandle(isExpanded = true)).assertExists("rozwinięta karta po przeciągnięciu")
+        val top = sheetTop("po przeciągnięciu")
+        assertTrue("połowa ekranu, nie cały ekran: góra na $top", top.value > 1f)
     }
 
     private fun checkSlideBack(isExpanded: Boolean) {
