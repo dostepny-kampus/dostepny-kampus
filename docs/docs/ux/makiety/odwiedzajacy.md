@@ -114,7 +114,7 @@ Czynność główna: wpisanie symbolu budynku, jak w stanie zwykłym.
 
 ### V1: znaleziona sala
 
-![Makieta V1 po wyszukaniu A-1 329: pole z numerem sali, przycisk terenu, plan piętra z kolumną pięter po lewej z podpisem źródła, przyciski mapy i arkusz sali z czterema krokami, Pokaż opis budynku i Zamknij](../../_generated/m-v1-mapa-sala.svg)
+![Makieta V1 po wyszukaniu A-1 329: pole z numerem sali, przycisk terenu, plan piętra z numerami kroków 2 przy windzie i 4 przy sali, kolumna pięter po lewej, podpis źródła, przyciski mapy i arkusz sali z czterema krokami, Pokaż opis budynku i Zamknij](../../_generated/m-v1-mapa-sala.svg)
 
 Czynność główna: „Pokaż opis budynku”, która otwiera V2.
 
@@ -172,7 +172,7 @@ Czynność główna: przeczytanie, na które piętra jedzie winda.
 
 ### V1: legenda przy planie
 
-![Makieta V1 z arkuszem Legenda otwartym przyciskiem informacji pod planem: nagłówek Legenda z Zamknij, znaki wejść i bariery, kolory sali, korytarza i klatki schodowej, znaki windy i toalety dostosowanej, znak zgłoszenia bez piętra, na końcu Źródła danych i Przewiń w dół](../../_generated/m-v1-mapa-plan-legenda.svg)
+![Makieta V1 z arkuszem Legenda otwartym przyciskiem informacji pod planem: nagłówek Legenda z Zamknij, budynek z planem pięter i bez planu, trzy znaki wejść, ścieżka dostosowana, pochylnia i trzy znaki barier, kolory sali, korytarza i klatki schodowej, znaki windy i toalety dostosowanej, znak zgłoszenia bez piętra, na końcu Źródła danych i Przewiń w dół](../../_generated/m-v1-mapa-plan-legenda.svg)
 
 Czynność główna: odczytanie znaków planu.
 

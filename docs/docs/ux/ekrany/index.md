@@ -64,7 +64,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Znaleziona sala: w polu A-1 329, plan 2 piętra A-1, po prawej kolumna Piętro z zaznaczonym 2, na planie sala 329 z numerem kroku 4 i winda z numerem kroku 2, a w arkuszu cztery kroki: Wejście dostosowane, parter, Winda przy klatkach C i D, 2 piętro, Sala 329 przy klatkach A i B, ok. 85 m od windy, i przycisk Pokaż opis budynku](obrazy/m-v1-mapa-sala-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-jasny.webp) | [![Ta sama sala w motywie ciemnym z ciemnym planem piętra](obrazy/m-v1-mapa-sala-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-ciemny.webp) | [![Kroki do sali przy czcionce 200% na cały ekran: u góry tylko Wstecz, potem Sala 329, cztery kroki oraz przyciski Pokaż opis budynku i Pokaż na mapie](obrazy/m-v1-mapa-sala-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-jasny-200.webp) |
+| [![Znaleziona sala: w polu A-1 329, plan 2 piętra A-1, po lewej pod przyciskiem terenu kolumna Piętro z zaznaczonym 2, na planie sala 329 z numerem kroku 4 i winda z numerem kroku 2, a w arkuszu cztery kroki: Wejście dostosowane, parter, Winda przy klatkach C i D, 2 piętro, Sala 329 przy klatkach A i B, ok. 85 m od windy, i przycisk Pokaż opis budynku](obrazy/m-v1-mapa-sala-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-jasny.webp) | [![Ta sama sala w motywie ciemnym z ciemnym planem piętra](obrazy/m-v1-mapa-sala-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-ciemny.webp) | [![Kroki do sali przy czcionce 200% na cały ekran: u góry tylko Wstecz, potem Sala 329, cztery kroki oraz przyciski Pokaż opis budynku i Pokaż na mapie](obrazy/m-v1-mapa-sala-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-jasny-200.webp) |
 
 ### V1: plan piętra
 
@@ -72,7 +72,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Plan parteru A-1 po przybliżeniu: sale, korytarze, klatki schodowe w kreski i toalety w kolorach grup, znaki windy i toalety dostosowanej, sąsiednie budynki przygaszone, po prawej pod przyciskami mapy kolumna Piętro z piętrami od 3 do -1 i zaznaczonym 0, na dole podpis Źródło: Politechnika Wrocławska](obrazy/m-v1-mapa-plan-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-jasny.webp) | [![Ten sam plan parteru w motywie ciemnym: te same grupy kolorów, przyciemnione](obrazy/m-v1-mapa-plan-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-ciemny.webp) | [![Ten sam plan przy czcionce 200%: kolumna pięter przewija się, zaznaczone piętro jest widoczne](obrazy/m-v1-mapa-plan-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-jasny-200.webp) |
+| [![Plan parteru A-1 po przybliżeniu: sale, korytarze, klatki schodowe w kreski, toaleta dostosowana w kropki, znaki windy i schodów w zaokrąglonych kwadratach ze słowami Winda i Schody, znaki wejść i znak bariery Utrudnienie z parteru, sąsiednie budynki przygaszone, po lewej pod przyciskiem terenu kolumna Piętro z piętrami od 3 do -1 i zaznaczonym 0, na dole podpis Źródło: Politechnika Wrocławska](obrazy/m-v1-mapa-plan-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-jasny.webp) | [![Ten sam plan parteru w motywie ciemnym: te same grupy kolorów, przyciemnione](obrazy/m-v1-mapa-plan-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-ciemny.webp) | [![Ten sam plan przy czcionce 200%: kolumna pięter po lewej, przyciski mapy pod przyciskiem terenu, na dole podpis OpenStreetMap i Źródło: Politechnika Wrocławska w trzech wierszach](obrazy/m-v1-mapa-plan-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-jasny-200.webp) |
 
 ### V1: budynek bez planu
 
@@ -80,7 +80,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Przybliżony budynek podstawowy A-4: nad mapą zdanie Nie mamy planu pięter tego budynku, budynek zalany bez planu i bez kolumny pięter](obrazy/m-v1-mapa-plan-podstawowy-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-podstawowy-jasny.webp) | [![To samo zdanie i budynek bez planu w motywie ciemnym](obrazy/m-v1-mapa-plan-podstawowy-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-podstawowy-ciemny.webp) | [![To samo zdanie przy czcionce 200% w dwóch wierszach, przyciski mapy schodzą pod nie](obrazy/m-v1-mapa-plan-podstawowy-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-podstawowy-jasny-200.webp) |
+| [![Przybliżony budynek podstawowy A-4: pod przyciskiem terenu zdanie Nie mamy planu pięter tego budynku, budynek zalany bez planu i bez kolumny pięter](obrazy/m-v1-mapa-plan-podstawowy-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-podstawowy-jasny.webp) | [![To samo zdanie i budynek bez planu w motywie ciemnym](obrazy/m-v1-mapa-plan-podstawowy-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-podstawowy-ciemny.webp) | [![To samo zdanie przy czcionce 200% w dwóch wierszach, przyciski mapy schodzą pod nie, na dole podpis Źródło: Politechnika Wrocławska](obrazy/m-v1-mapa-plan-podstawowy-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-podstawowy-jasny-200.webp) |
 
 ### V1: winda na planie
 
@@ -96,7 +96,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Legenda otwarta nad planem parteru, przewinięta do barier: Utrudnienie, Tylko z pomocą, Blokada, Bariera bez podanego piętra ze znakiem zapytania, niżej początek części Plan piętra z pozycją Sala; kolumna pięter chowa się na czas legendy](obrazy/m-v1-mapa-plan-legenda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-jasny.webp) | [![Ta sama legenda przy planie w motywie ciemnym](obrazy/m-v1-mapa-plan-legenda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-ciemny.webp) | [![Ta sama legenda przy czcionce 200%: pozycje w kilku wierszach, legenda przewija się](obrazy/m-v1-mapa-plan-legenda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-jasny-200.webp) |
+| [![Legenda otwarta nad planem parteru, przewinięta do barier: Utrudnienie, Tylko z pomocą, Blokada, niżej pozycje planu: Sala, Korytarz, Klatka schodowa, Winda, Toaleta dostosowana i Zgłoszenie bez piętra ze znakiem zapytania, na końcu początek Źródeł danych; kolumna pięter chowa się na czas legendy](obrazy/m-v1-mapa-plan-legenda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-jasny.webp) | [![Ta sama legenda przy planie w motywie ciemnym](obrazy/m-v1-mapa-plan-legenda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-ciemny.webp) | [![Ta sama legenda przy czcionce 200%: pozycje w kilku wierszach, legenda przewija się i stoi nad podpisem Źródło: Politechnika Wrocławska](obrazy/m-v1-mapa-plan-legenda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-jasny-200.webp) |
 
 ### V1: bariery na planie
 
@@ -104,7 +104,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Plan 2 piętra A-1: znak bariery Tylko z pomocą z tego piętra oraz znak bariery bez podanego piętra ze znakiem zapytania w kółku; bariery parteru nie widać](obrazy/m-v1-mapa-plan-bariery-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-bariery-jasny.webp) | [![Te same bariery na planie w motywie ciemnym](obrazy/m-v1-mapa-plan-bariery-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-bariery-ciemny.webp) | [![Te same bariery na planie przy czcionce 200%](obrazy/m-v1-mapa-plan-bariery-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-bariery-jasny-200.webp) |
+| [![Plan 2 piętra A-1: znak bariery Tylko z pomocą z tego piętra oraz znak bariery bez podanego piętra ze znakiem zapytania w kółku; bariery parteru nie widać](obrazy/m-v1-mapa-plan-bariery-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-bariery-jasny.webp) | [![Te same bariery na planie w motywie ciemnym](obrazy/m-v1-mapa-plan-bariery-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-bariery-ciemny.webp) | [![Te same bariery na planie przy czcionce 200%, z podpisem Źródło: Politechnika Wrocławska](obrazy/m-v1-mapa-plan-bariery-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-bariery-jasny-200.webp) |
 
 ### V1: numery sal na planie
 
@@ -112,7 +112,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Plan 2 piętra A-1 bardzo blisko przy sali 329: jeden numer na grupę pomieszczeń, bez numerów małych pomieszczeń](obrazy/m-v1-mapa-plan-numery-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-numery-jasny.webp) | [![Te same numery sal w motywie ciemnym](obrazy/m-v1-mapa-plan-numery-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-numery-ciemny.webp) | [![Te same numery sal przy czcionce 200%](obrazy/m-v1-mapa-plan-numery-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-numery-jasny-200.webp) |
+| [![Plan 2 piętra A-1 bardzo blisko przy sali 329: jeden numer na grupę pomieszczeń, bez numerów małych pomieszczeń](obrazy/m-v1-mapa-plan-numery-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-numery-jasny.webp) | [![Te same numery sal w motywie ciemnym](obrazy/m-v1-mapa-plan-numery-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-numery-ciemny.webp) | [![Te same numery sal przy czcionce 200%, z podpisem Źródło: Politechnika Wrocławska](obrazy/m-v1-mapa-plan-numery-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-numery-jasny-200.webp) |
 
 ### V1: legenda
 
