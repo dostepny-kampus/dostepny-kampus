@@ -577,10 +577,10 @@ class CampusMapScreenTest {
         focus = null
         sheet = 0.dp
         compose.waitForIdle()
-        val targets = moves.drop(before).map { it.camera }.distinct()
-        val shownTops = tops.drop(before).distinct()
+        val targets = moves.subList(before, moves.size).map { it.camera }.toSet()
+        val shownTops = tops.subList(before, tops.size).toSet()
         assertEquals("jeden cel po zamknięciu: $targets, góra $shownTops, pasek $bar", 1, targets.size)
-        assertEquals("góra pod paskiem od pierwszej klatki: $shownTops", listOf(bar), shownTops)
+        assertEquals("góra pod paskiem od pierwszej klatki: $shownTops", setOf(bar), shownTops)
     }
 
     private fun barTop(): Float {
