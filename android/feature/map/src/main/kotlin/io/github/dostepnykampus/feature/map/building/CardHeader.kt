@@ -30,38 +30,44 @@ import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.overlay.SheetCloseButton
 
 /**
- * Nagłówek karty V2 w trybie [mode]: symbol i nazwa z [card] albo miejsce na nie w trakcie wczytywania, pod nimi
- * wiersz o wejściach; poza [CardMode.Direct] obok „Zamknij”, które wywołuje [onClose].
+ * Nagłówek karty V2 w trybie [mode]: symbol i nazwa z [card] albo miejsce na nie w trakcie wczytywania; poza
+ * [CardMode.Direct] obok „Zamknij”, które wywołuje [onClose]. Pod nimi na całą szerokość wiersz o wejściach
+ * z odpowiedzią.
  *
- * Wymagania: US2, US2.8, NFR-17, NFR-18, NFR-53
+ * Wymagania: US2, US2.8, US3.1, NFR-17, NFR-18, NFR-53
  */
 @Composable
 internal fun CardHeader(symbol: String, card: BuildingCardUiState, mode: CardMode, onClose: () -> Unit) {
     val isCompact = mode == CardMode.Compact
     if (!isCompact && card !is BuildingCardUiState.Ready) return
-    Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        Box(Modifier.weight(1f)) { HeaderOrSpace(symbol = symbol, card = card, isFullScreen = !isCompact) }
-        if (mode != CardMode.Direct) SheetCloseButton(onClose = onClose)
+    val ready = card as? BuildingCardUiState.Ready
+    val isShown = ready != null || card.isWaiting(!isCompact)
+    val space = if (ready == null) Modifier.alpha(0f).clearAndSetSemantics {} else Modifier
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+            Box(Modifier.weight(1f).then(space)) { if (isShown) NameOrSpace(symbol = symbol, ready = ready) }
+            if (mode != CardMode.Direct) SheetCloseButton(onClose = onClose)
+        }
+        if (isShown) {
+            Box(space) {
+                if (ready == null) {
+                    EntranceSummaryLine(EntranceSummary.NoData)
+                } else {
+                    EntranceLines(summary = entranceSummary(ready.entrances), answer = visitAnswer(ready.entrances))
+                }
+            }
+        }
     }
 }
 
 @Composable
-private fun HeaderOrSpace(symbol: String, card: BuildingCardUiState, isFullScreen: Boolean) {
-    val ready = card as? BuildingCardUiState.Ready
-    if (ready == null && !card.isWaiting(isFullScreen)) return
-    Column(
-        modifier = if (ready == null) Modifier.alpha(0f).clearAndSetSemantics {} else Modifier,
-        verticalArrangement = Arrangement.spacedBy(Odstepy.s),
-    ) {
-        if (ready != null) {
-            SymbolOverName(symbol = symbol, name = ready.name)
-            EntranceLines(summary = entranceSummary(ready.entrances), answer = visitAnswer(ready.entrances))
-        } else {
-            Column {
-                Text(text = symbol, style = MaterialTheme.typography.headlineLarge)
-                Text(text = " ", style = MaterialTheme.typography.titleLarge)
-            }
-            EntranceSummaryLine(EntranceSummary.NoData)
+private fun NameOrSpace(symbol: String, ready: BuildingCardUiState.Ready?) {
+    if (ready != null) {
+        SymbolOverName(symbol = symbol, name = ready.name)
+    } else {
+        Column {
+            Text(text = symbol, style = MaterialTheme.typography.headlineLarge)
+            Text(text = " ", style = MaterialTheme.typography.titleLarge)
         }
     }
 }
