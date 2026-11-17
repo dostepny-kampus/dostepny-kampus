@@ -277,7 +277,8 @@ public class SubmissionQueue internal constructor(
                 }
             synchronized(logins) {
                 val current = server.subject()
-                if (login == logins.get() && stop == Outcome.LOGIN_EXPIRED && (current == owner || current == null)) {
+                val sameAccount = current == owner || current == null
+                if (login == logins.get() && stop == Outcome.LOGIN_EXPIRED && sameAccount) {
                     expired.value = true
                 }
             }
