@@ -134,12 +134,36 @@ class BuildingCardModesTest {
             show(fullScreen)
             compose.onNodeWithText(CHECK).assert(inScroll)
             assertOrder(NAME, CHECK, "Wejścia", "Główne", "Schody")
-            compose.onAllNodes(hasClickAction() and !hasText(BACK)).onFirst().assert(hasText(CHECK))
-            compose.onNodeWithText(BACK).assertIsDisplayed()
+            val actions = hasClickAction() and !hasText(BACK) and !hasText(CLOSE)
+            compose.onAllNodes(actions).onFirst().assert(hasText(CHECK))
             compose.onNodeWithText("Wejście bez nazwy w danych").assertExists()
             assertOrder(NAME, ROW, CHECK)
         }
         compose.onNodeWithText(SHOW).assertDoesNotExist()
+    }
+
+    /**
+     * Wiersz: V2, połowa ekranu i cały ekran: nagłówek niskiej karty z „Zamknij” po prawej, pod nim cały opis
+     *   budynku; bez paska „Wstecz”. Pełny ekran otwarty od razu ma pasek „Wstecz” bez „Zamknij”.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Karta budynku zamyka się na każdej wysokości
+     *
+     * Wymagania: US2.8, NFR-53
+     */
+    @Test
+    fun keepsHeaderCloseWhenExpanded() {
+        card(CardMode.Expanded)
+        compose.onNodeWithText(BACK).assertDoesNotExist()
+        compose.onAllNodes(hasText(CLOSE)).assertCountEquals(1)
+        val close = compose.onNodeWithText(CLOSE).getUnclippedBoundsInRoot()
+        val symbol = compose.onNodeWithText("A-1", useUnmergedTree = true).getUnclippedBoundsInRoot()
+        assertTrue("„Zamknij” w nagłówku obok symbolu: $close, symbol $symbol", close.top < symbol.bottom)
+        assertTrue("„Zamknij” po prawej od symbolu: $close, symbol $symbol", close.left > symbol.right)
+        assertOrder(NAME, CHECK, "Wejścia")
+        compose.onNodeWithText(CLOSE).performClick()
+        assertEquals(listOf("close"), calls)
+        show(CardMode.Direct)
+        compose.onNodeWithText(BACK).assertIsDisplayed()
+        compose.onNodeWithText(CLOSE).assertDoesNotExist()
     }
 
     /**
