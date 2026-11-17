@@ -41,11 +41,10 @@ class BuildingUnderPlanStyleTest {
             building = "#BFE0EC",
             buildingOutline = "#004E5E",
             selectedOutline = "#001F27",
-            dimmed = "#D6DBDD",
-            dimmedOutline = "#C2C9CC",
         )
     private val data = campusMapData(catalog)
-    private val underPlan = """["case",["boolean",["feature-state","$UNDER_PLAN_STATE"],false],0.0,1.0]"""
+    private val underPlan = """["boolean",["feature-state","$UNDER_PLAN_STATE"],false]"""
+    private val dimmed = """["boolean",["feature-state","$DIMMED_STATE"],false]"""
 
     /** Tło i kontur budynku z OpenStreetMap znikają pod jego planem; inne budynki zostają. */
     @Test
@@ -54,8 +53,9 @@ class BuildingUnderPlanStyleTest {
         assertEquals(listOf(false, false), selectionLook(data, data.selection()).underPlan, "Bez planu coś zniknęło")
         val style = style(building = null)
         val fill = style.layerById(BUILDINGS_LAYER).paintText("fill-opacity")
-        assertEquals(underPlan, fill, "Tło budynku nie znika pod planem")
-        assertEquals(underPlan, style.layerById(OUTLINES_LAYER).paintText("line-opacity"), "Kontur nie znika")
+        assertEquals("""["case",$underPlan,0.0,$dimmed,0.4,1.0]""", fill, "Tło budynku nie znika pod planem")
+        val outline = style.layerById(OUTLINES_LAYER).paintText("line-opacity")
+        assertEquals("""["case",$underPlan,0.0,$dimmed,0.7,1.0]""", outline, "Kontur nie znika pod planem")
     }
 
     /** Przy widocznym planie pozostałe budynki są przygaszone tym samym stanem co przy wybranym budynku. */
