@@ -50,7 +50,7 @@ import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind.Outlined
-import io.github.dostepnykampus.core.designsystem.marking.MarkingChip
+import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 
 /**
@@ -172,7 +172,7 @@ private fun SearchFieldExample(modifier: Modifier = Modifier) {
 private fun EntranceExample(modifier: Modifier = Modifier) {
     val frame = modifier.border(Obramowania.ramka, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
     Column(modifier = frame.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        MarkingChip(marking = EntranceMarking.ACCESSIBLE)
+        MarkingSign(marking = EntranceMarking.ACCESSIBLE)
         Text(text = stringResource(R.string.pomoc_dostepne_wejscie), style = MaterialTheme.typography.titleMedium)
         Text(text = stringResource(R.string.pomoc_dostepne_drzwi), style = MaterialTheme.typography.bodyLarge)
     }

@@ -29,7 +29,7 @@ import io.github.dostepnykampus.core.designsystem.OfflinePill
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
-import io.github.dostepnykampus.core.designsystem.marking.MarkingChip
+import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.R
 
@@ -165,8 +165,7 @@ private fun FactsOrMissing(
 }
 
 /**
- * Wiersz o wejściach pod nagłówkiem: słowo i ikona oznaczenia jak w [MarkingChip] (kształt, nie
- * para zielony/czerwony).
+ * Wiersz o wejściach pod nagłówkiem: znak oznaczenia z mapy i słowo o wejściach budynku.
  *
  * Wymagania: US2.8, NFR-21
  */
@@ -178,7 +177,7 @@ internal fun EntranceSummaryRow(summary: EntranceSummary) {
             EntranceSummary.NoAccessible -> EntranceMarking.INACCESSIBLE to R.string.karta_wiersz_niedostepne
             EntranceSummary.NoData -> EntranceMarking.NO_DATA to R.string.karta_wiersz_brak_danych
         }
-    MarkingChip(marking = marking, label = stringResource(word))
+    MarkingSign(marking = marking, label = stringResource(word))
 }
 
 @Composable
