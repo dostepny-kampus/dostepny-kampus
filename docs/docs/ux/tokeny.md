@@ -46,7 +46,7 @@ Rysunki, takie jak ilustracje barier, też nie są negatywem. Mają te same kszt
 
 ## Kolory
 
-Nazwy ról pochodzą z Material 3 [5]. Plik zawiera tylko role, których potrzebują ekrany. Kontenery oznaczeń wejścia (`status…Container`) to role dodatkowe stylu „Karta miejsca”, nazwane jak role kontenerów Material 3. Wymagania już ich nie używają: oznaczenie wejścia nie ma tła, a role znikają razem z plakietką w kodzie. Kwadrat obok wartości to próbka koloru.
+Nazwy ról pochodzą z Material 3 [5]. Plik zawiera tylko role, których potrzebują ekrany. Kontenery oznaczeń wejścia (`status…Container`) to role dodatkowe stylu „Karta miejsca”, których wymagania już nie używają; znikają razem z plakietką w kodzie. Kwadrat obok wartości to próbka koloru.
 
 Plik nie ma koloru stanu nieaktywnego. Na makietach każdy przycisk działa zawsze, a brakujące dane wyjaśnia błąd przy polu (C2, C6).
 

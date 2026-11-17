@@ -276,9 +276,9 @@ Dostępność i osoby starsze: lista budynków daje tę samą informację co map
 | Zbierający: „Oznacz obejrzane piętra” dla całego budynku | czynność | US15.1, PW-12 | C5 |
 | Pasek dolny | czynność | wymagania wspólne | V1, V4, V5, L1 / L2 |
 
-V2 wysuwa się z dołu jako karta nad mapą V1 i ma trzy wysokości: niską, połowę ekranu i cały ekran (decyzja 115). Osobnego pełnego ekranu za kartą nie ma. Uchwyt zmienia wysokość bez przeciągania, więc przeciąganie nie jest jedyną drogą (NFR-53). Karta na niskiej wysokości to już V2, a nie dodatkowy ekran przed nim. Droga do wejścia ma więc tyle samo dotknięć (US3.2).
+V2 to jedna karta nad mapą V1, bez osobnego pełnego ekranu, z trzema wysokościami: niską, połową ekranu i całym ekranem (decyzja 115). Uchwyt zmienia wysokość bez przeciągania (NFR-53). Karta na niskiej wysokości to już V2, więc droga do wejścia ma tyle samo dotknięć (US3.2).
 
-Przy skali czcionki co najmniej 1,5 albo w oknie co najmniej 600 dp karta V2 otwiera się od razu na cały ekran (NFR-20, NFR-51). Ma wtedy dwie wysokości: cały ekran i zamknięta. Tak samo jest w poziomie i po wyborze budynku z listy przy TalkBack (NFR-19, NFR-22). Tylko wtedy jest „Pokaż budynek na mapie” (US2.9).
+Karta V2 otwiera się od razu na cały ekran przy skali czcionki co najmniej 1,5 i w oknie co najmniej 600 dp (NFR-20, NFR-51). Tak samo jest w poziomie i po wyborze budynku z listy przy TalkBack (NFR-19, NFR-22). Ma wtedy dwie wysokości, cały ekran i zamknięta, i tylko wtedy „Pokaż budynek na mapie” (US2.9).
 
 Kolejność od góry: nazwa budynku, wiersz o wejściach, czynności, chipy, „Wejścia”, „Bariery w budynku”, „Winda i toaleta”, „Piętra”. Bariery stoją zaraz po wejściach, bo to najważniejsza informacja karty, a zwinięte opisy pięter skracają kartę przy dużej czcionce (US2.3, US16.3).
 
