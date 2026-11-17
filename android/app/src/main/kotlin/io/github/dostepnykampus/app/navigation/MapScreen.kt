@@ -50,6 +50,7 @@ internal fun AppNavigator.HiltMapScreen(
         plan = plan,
         onCamera = planViewModel::camera,
         onFloorChoose = planViewModel::chooseFloor,
+        onMapHide = planViewModel::hide,
     )
 }
 
@@ -58,7 +59,8 @@ internal fun AppNavigator.HiltMapScreen(
  * zapisuje widok, mapę albo listę, [onSearch] liczy wyszukiwanie. Budynek z listy przy TalkBack otwiera V2 od razu
  * na pełnym ekranie. Przyciski i podpis OSM stoją nad arkuszem V2; bez arkusza nad V1, także gdy jeszcze zjeżdża,
  * mapa liczy widok bez niego. [mapView] to MapLibre albo podróbka w testach, [plan] to plan piętra przy środku mapy,
- * [onCamera] dostaje widok po ruchu kamery, a [onFloorChoose] piętro wybrane w kolumnie pięter.
+ * [onCamera] dostaje widok po ruchu kamery, [onFloorChoose] piętro wybrane w kolumnie pięter, a [onMapHide] zejście
+ * mapy z ekranu.
  *
  * Wymagania: US1.1, US2.1, NFR-19
  */
@@ -72,6 +74,7 @@ internal fun AppNavigator.MapScreen(
     plan: ShownPlan? = null,
     onCamera: (MapCamera) -> Unit = {},
     onFloorChoose: (String, String) -> Unit = { _, _ -> },
+    onMapHide: () -> Unit = {},
 ) {
     val accessibility = checkNotNull(LocalContext.current.getSystemService(AccessibilityManager::class.java))
     val isSheetAbove = SheetSceneStrategy.isSheet(current)
@@ -89,5 +92,6 @@ internal fun AppNavigator.MapScreen(
         plan = plan,
         onCamera = onCamera,
         onFloorChoose = onFloorChoose,
+        onMapHide = onMapHide,
     )
 }

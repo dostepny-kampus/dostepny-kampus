@@ -156,6 +156,7 @@ fun CampusMapScreen(
  * @param plan plan piętra budynku przy środku mapy; `null`, gdy planu nie widać
  * @param onCamera widok mapy po geście osoby i widok, do którego zmierza ruch kamery wykonany przez aplikację
  * @param onFloorChoose piętro wybrane w kolumnie pięter: symbol budynku i identyfikator piętra
+ * @param onMapHide mapa zeszła z ekranu, np. pod listę budynków; jej plan piętra przestaje obowiązywać
  */
 @Composable
 fun CampusMapScreen(
@@ -173,6 +174,7 @@ fun CampusMapScreen(
     plan: ShownPlan? = null,
     onCamera: (MapCamera) -> Unit = {},
     onFloorChoose: (String, String) -> Unit = { _, _ -> },
+    onMapHide: () -> Unit = {},
 ) {
     val catalog = state.catalog
     val isCovered = contentPadding.calculateBottomPadding() > 0.dp
@@ -200,9 +202,7 @@ fun CampusMapScreen(
                         contentPadding = contentPadding,
                         mapView = mapView,
                         motion = motion,
-                        plan = plan,
-                        onCamera = onCamera,
-                        onFloorChoose = onFloorChoose,
+                        plan = PlanLink(shown = plan, onView = onCamera, onFloor = onFloorChoose, onHide = onMapHide),
                         onBuildingClick = onBuildingClick,
                         onEmptyMapClick = onEmptyMapClick,
                         modifier = Modifier.fillMaxSize().background(DostepnyKampusTheme.mapColors.lad),
@@ -246,9 +246,7 @@ private fun CampusMap(
     contentPadding: PaddingValues,
     mapView: CampusMapView,
     motion: MapMotion?,
-    plan: ShownPlan?,
-    onCamera: (MapCamera) -> Unit,
-    onFloorChoose: (String, String) -> Unit,
+    plan: PlanLink,
     onBuildingClick: (String) -> Unit,
     onEmptyMapClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -278,19 +276,19 @@ private fun CampusMap(
         if (scene != null && move != null && state.limits != null) {
             mapView.Show(
                 data = scene.data,
-                selection = scene.selection.copy(barrier = barrierId, plan = plan),
+                selection = scene.selection.copy(barrier = barrierId, plan = plan.shown),
                 move = move,
                 inset = state.inset,
                 onCameraIdle = { view ->
                     areas.acknowledge()
-                    onCamera(view.also { state.keep(it) })
+                    plan.onView(view.also { state.keep(it) })
                 },
                 onBuildingsTouch = { state.touch(it, onBuildingClick, onEmptyMapClick).also { barrierId = null } },
                 onBarrierTouch = { barrierId = it.also { state.dismiss() } },
                 modifier = Modifier.fillMaxSize(),
             )
             scene.selection.entrance?.let { EntranceDescription(it) }
-            FollowCamera(camera = move.camera, limits = state.limits, area = areas.current?.name, onCamera = onCamera)
+            FollowCamera(camera = move.camera, limits = state.limits, area = areas.current?.name, plan = plan)
             MapStatusBar(topInset, isShown = state.isCovered)
             val underBar = if (state.isCovered) topInset.asPaddingValues() else PaddingValues(top = top)
             MapOverlay(
@@ -304,7 +302,7 @@ private fun CampusMap(
                 hasPanels = !state.isCovered && !isKeyboardOpen,
                 hasNotice = !isKeyboardOpen,
                 motion = motion,
-                start = { FloorColumn(plan = plan, onChoose = onFloorChoose) },
+                start = { FloorColumn(plan = plan.shown, onChoose = plan.onFloor) },
             ) {
                 val barrier = ChosenBarrier(id = barrierId, barriers = barriers, onClose = { barrierId = null })
                 MapSheets(barrier = barrier, catalog = catalog, state = state, onBuildingClick = onBuildingClick)
@@ -322,13 +320,26 @@ private fun Modifier.overlayArea(underBar: PaddingValues, sheet: PaddingValues):
 /** Zaznaczona przeszkoda [id] spośród [barriers] i zamknięcie jej karty [onClose]. */
 private data class ChosenBarrier(val id: String?, val barriers: ShownBarriers, val onClose: () -> Unit)
 
+/**
+ * Plan piętra [shown] przy mapie: [onView] dostaje widok kamery, [onFloor] piętro z kolumny, a [onHide] zejście
+ * mapy z ekranu.
+ */
+private data class PlanLink(
+    val shown: ShownPlan?,
+    val onView: (MapCamera) -> Unit,
+    val onFloor: (String, String) -> Unit,
+    val onHide: () -> Unit,
+)
+
 @Composable
-private fun FollowCamera(camera: MapCamera, limits: MapLimits, area: String?, onCamera: (MapCamera) -> Unit) {
-    val report by rememberUpdatedState(onCamera)
+private fun FollowCamera(camera: MapCamera, limits: MapLimits, area: String?, plan: PlanLink) {
+    val report by rememberUpdatedState(plan.onView)
+    val hide by rememberUpdatedState(plan.onHide)
     DisposableEffect(camera) {
         report(camera)
         onDispose {}
     }
+    DisposableEffect(Unit) { onDispose { hide() } }
     AreaEdgeAnnouncement(camera = camera, limits = limits, area = area)
 }
 
