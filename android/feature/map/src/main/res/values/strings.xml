@@ -60,7 +60,6 @@
     <string name="mapa_wejscie_naglowek">Wejście, budynek %1$s</string>
     <string name="mapa_wejscie_glowne">%1$s, wejście główne</string>
     <string name="mapa_wejscie_niesprawdzone">Nikt jeszcze nie sprawdził tego wejścia.</string>
-    <string name="mapa_plan_toaleta">Toaleta dostosowana</string>
     <string name="mapa_plan_schody">Schody</string>
     <string name="mapa_plan_miejsce">Budynek %1$s, %2$s</string>
     <string name="mapa_zdjecie_wczytujemy">Wczytujemy zdjęcie…</string>

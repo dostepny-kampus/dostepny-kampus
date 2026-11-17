@@ -33,6 +33,6 @@ internal fun ShownPlan.signOf(id: String): PlanSign? {
 
 private val PLAN_SIGN_TITLES =
     mapOf(
-        RoomCategory.ACCESSIBLE_TOILET to R.string.mapa_plan_toaleta,
+        RoomCategory.ACCESSIBLE_TOILET to R.string.karta_toaleta,
         RoomCategory.STAIRCASE to R.string.mapa_plan_schody,
     )
