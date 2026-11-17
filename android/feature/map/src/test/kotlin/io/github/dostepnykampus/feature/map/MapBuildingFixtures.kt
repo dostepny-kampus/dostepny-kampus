@@ -10,7 +10,9 @@ import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.building.Building
+import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
+import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import kotlin.coroutines.EmptyCoroutineContext
@@ -35,17 +37,20 @@ internal fun entranceFeature(symbol: String, id: String, tags: String): String =
     """{"type":"Feature","properties":{"kind":"entrance","symbols":["$symbol"],"osm_id":"$id",$tags},""" +
         """"geometry":{"type":"Point","coordinates":[0,0]}}"""
 
-/** Widok zastępczy mapy [view]: zaznaczony budynek [selected] i dotknięcia [touchBuildings], [touchSign]. */
+/** Widok zastępczy mapy [view]: budynek [selected], ruch [camera] i dotknięcia [touchBuildings], [touchSign]. */
 internal class TouchableMap {
     var selected: String? = null
+        private set
+    var camera: Pair<CameraTransition, MapInset>? = null
         private set
     var touchSign: (TouchSign, String) -> Unit = { _, _ -> }
         private set
     var touchBuildings: (List<String>) -> Unit = {}
         private set
     val view =
-        CampusMapView { _: CampusMapData, selection, _, _, _, onBuildingsTouch, onSignTouch, _: Modifier ->
+        CampusMapView { _: CampusMapData, selection, move, inset, _, onBuildingsTouch, onSignTouch, _: Modifier ->
             selected = selection.building
+            camera = move to inset
             touchBuildings = onBuildingsTouch
             touchSign = onSignTouch
         }
