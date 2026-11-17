@@ -6,12 +6,15 @@
 package io.github.dostepnykampus.feature.map
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.campus.campusMapData
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -22,6 +25,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.GraphicsMode
+
+private const val CARD_HEIGHT = 200
 
 private const val MAIN_ACCESSIBLE = """"entrance":"main","wheelchair":"yes","ref":"Główne""""
 
@@ -38,6 +43,7 @@ class MapEntranceTouchTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val opened = mutableListOf<String>()
+    private var closedCards = 0
     private val entrances = mutableListOf<String>()
     private val map = TouchableMap()
     private val repository =
@@ -102,7 +108,50 @@ class MapEntranceTouchTest {
         compose.onNodeWithText("Wejście, budynek C-13").assertDoesNotExist()
     }
 
-    private fun start() {
+    /** Wiersz: V1, znak wejścia przy otwartej karcie budynku otwiera arkusz w miejsce karty. Wymagania: US2.1 */
+    @Test
+    fun replacesBuildingCard() {
+        start(isCardOpen = true)
+        compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
+
+        compose.onNodeWithText("Wejście, budynek C-13").assertExists()
+        compose.runOnIdle { assertEquals("karta zamknięta", 1, closedCards) }
+    }
+
+    /** Wiersz: arkusz otwarty przy karcie budynku, „Zamknij” wraca do karty. Wymagania: NFR-53 */
+    @Test
+    fun closeReturnsToCard() {
+        start(isCardOpen = true)
+        compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
+        compose.onNodeWithText("Zamknij").performClick()
+
+        compose.onNodeWithText("Wejście, budynek C-13").assertDoesNotExist()
+        compose.runOnIdle { assertEquals("karta budynku", listOf("C-13"), opened) }
+    }
+
+    /** Wiersz: arkusz otwarty przy karcie budynku, „Wstecz” wraca do karty. Wymagania: NFR-15 */
+    @Test
+    fun backReturnsToCard() {
+        start(isCardOpen = true)
+        compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
+        compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
+
+        compose.onNodeWithText("Wejście, budynek C-13").assertDoesNotExist()
+        compose.runOnIdle { assertEquals("karta budynku", listOf("C-13"), opened) }
+    }
+
+    /** Wiersz: arkusz otwarty przy karcie budynku, pusta mapa zamyka arkusz bez karty. Wymagania: NFR-53 */
+    @Test
+    fun emptyMapClosesWithoutCard() {
+        start(isCardOpen = true)
+        compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
+        compose.runOnIdle { map.touchBuildings(emptyList()) }
+
+        compose.onNodeWithText("Wejście, budynek C-13").assertDoesNotExist()
+        compose.runOnIdle { assertEquals("bez karty", emptyList<String>(), opened) }
+    }
+
+    private fun start(isCardOpen: Boolean = false) {
         val viewModel =
             CampusMapViewModel(
                 repository = repository,
@@ -116,6 +165,9 @@ class MapEntranceTouchTest {
             DostepnyKampusTheme {
                 CampusMapScreen(
                     onBuildingClick = { opened += it },
+                    focus = if (isCardOpen) MapFocus.Building("C-13") else null,
+                    contentPadding = PaddingValues(bottom = if (isCardOpen) CARD_HEIGHT.dp else 0.dp),
+                    onEmptyMapClick = { closedCards++ },
                     onEntrancesClick = { entrances += it },
                     mapView = map.view,
                     viewModel = viewModel,
