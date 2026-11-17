@@ -306,7 +306,7 @@ private fun CampusMap(
                 motion = motion,
                 start = { FloorColumn(plan = plan.shown, onChoose = plan.onFloor) },
             ) {
-                val open = OpenSign(signs = signs, barriers = barriers, catalog = ui.catalog, plan = plan)
+                val open = OpenSign(signs = signs, barriers = barriers, catalog = ui.catalog, plan = plan.shown)
                 MapSheets(open = open, state = state, onBuilding = onBuildingClick, onEntrances = onEntrancesClick)
             }
         }
