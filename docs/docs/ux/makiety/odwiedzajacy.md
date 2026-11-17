@@ -31,7 +31,7 @@ Czynność główna: wpisanie symbolu budynku w pole na górze ekranu.
 | Nagłówek „Mapa kampusu” bez „Wstecz”, bo to ekran startowy | wymagania wspólne, NFR-15 |
 | Pole „Wpisz symbol budynku, np. C-13” na pełną szerokość, pierwsze pod nagłówkiem | US1.1, PW-8 |
 | „Pokaż listę” w wierszu tytułu; na liście „Pokaż mapę” | NFR-19 |
-| Przycisk terenu nad „Legendą” z nazwą wybranego terenu, np. „Kampus główny”; otwiera panel „Teren na mapie” | US1.6, US1.7, NFR-17, NFR-18 |
+| Przycisk terenu w lewym górnym rogu mapy z nazwą wybranego terenu, np. „Kampus główny”; otwiera panel „Teren na mapie” | US1.6, US1.7, NFR-17, NFR-18 |
 | „ⓘ” przy podpisie otwiera arkusz „Legenda”: znaki mapy i planu z napisami, na końcu źródła | US1.4, NFR-21, decyzja 48 |
 | Zastępnik mapy: mapa ulic, kontury budynków, bariery ze zgłoszeń przyjętych | US1, US1.3, US10.6, NFR-11 |
 | Bariera na mapie: znak uciążliwości, a słowo, np. „Blokada”, gdy mieści się bez nakładania | US1.3, NFR-20, NFR-21, PW-13 |
@@ -78,7 +78,7 @@ Czynność główna: dotknięcie budynku na liście, które otwiera V2.
 
 ### V1: brak wyniku
 
-![Makieta V1 w stanie pustym: komunikat Nie znaleźliśmy budynku z przyciskiem Lista budynków pod polem symbolu](../../_generated/m-v1-mapa-pusty.svg)
+![Makieta V1 w stanie pustym: komunikat Nie znaleźliśmy budynku z przyciskiem Pokaż listę pod polem symbolu](../../_generated/m-v1-mapa-pusty.svg)
 
 Czynność główna: „Pokaż listę” w komunikacie, gdy wyszukiwanie nic nie dało.
 
