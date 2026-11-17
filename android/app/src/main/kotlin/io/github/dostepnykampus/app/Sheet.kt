@@ -219,9 +219,14 @@ private class SheetScrollConnection(
     }
 
     override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
-        if (state.isOnAnchor()) return Velocity.Zero
+        if (isOnAnchor()) return Velocity.Zero
         settle(velocity = available.y)
         return available
+    }
+
+    private fun isOnAnchor(): Boolean {
+        val nearest = state.anchors.closestAnchor(state.offset) ?: return true
+        return abs(state.anchors.positionOf(nearest) - state.offset) <= ANCHOR_TOLERANCE_PX
     }
 
     private suspend fun settle(velocity: Float) {
@@ -245,11 +250,6 @@ private class SheetScrollConnection(
 }
 
 private const val ANCHOR_TOLERANCE_PX = 0.5f
-
-private fun AnchoredDraggableState<SheetHeight>.isOnAnchor(): Boolean {
-    val nearest = anchors.closestAnchor(offset) ?: return true
-    return abs(anchors.positionOf(nearest) - offset) <= ANCHOR_TOLERANCE_PX
-}
 
 @StringRes
 private fun SheetHeight.word(): Int =
