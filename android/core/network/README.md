@@ -11,10 +11,11 @@ Klient HTTP serwera: budynki, zgłoszenia, zmiany znaczników piętra obejrzaneg
 - `core.network.building` — klient listy budynków, karty budynku i podpowiedzi punktu.
 - `core.network.inspection` — klienty znaczników piętra obejrzanego i wysyłki ich zmian.
 - `core.network.submission` — klient zgłoszeń i zdjęć.
+- `core.network.sync` — klient pobrania zmian z serwera (`GET /sync/pull`), na razie ze znacznikami pięter.
 
 ## API
 
-Interfejsy API (`BuildingsApi`, `SubmissionsApi`, `MarkerChangesApi`, `InspectionProgressApi`), modele JSON i wiązania Hilt (`NetworkModule`). Moduły funkcji nie używają sieci bezpośrednio, tylko przez `:core:data`.
+Interfejsy API (`BuildingsApi`, `SubmissionsApi`, `MarkerChangesApi`, `InspectionProgressApi`, `SyncPullApi`), modele JSON i wiązania Hilt (`NetworkModule`). Moduły funkcji nie używają sieci bezpośrednio, tylko przez `:core:data`.
 
 Modele JSON z pakietu `json` generuje przy budowie openapi-generator z `api/openapi.yaml`; zmiana kontraktu
 zmienia je bez edycji kodu.

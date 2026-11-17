@@ -18,6 +18,7 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeParseException
 import io.github.dostepnykampus.core.network.json.BuildingProgress as BuildingProgressJson
 import io.github.dostepnykampus.core.network.json.DetailLevel as DetailLevelJson
+import io.github.dostepnykampus.core.network.json.InspectionMarker as InspectionMarkerJson
 import io.github.dostepnykampus.core.network.json.ProgressMarker as ProgressMarkerJson
 
 /**
@@ -69,6 +70,25 @@ private fun ProgressMarkerJson.toMarker(): ProgressMarker =
                 isMine = mine,
             ),
         authorPseudonym = authorPseudonym,
+    )
+
+/**
+ * Znacznik piętra obejrzanego z odpowiedzi serwera.
+ *
+ * Zła chwila odbioru to błąd treści.
+ *
+ * Wymagania: US15.1, US15.2
+ *
+ * @throws IllegalArgumentException gdy treść nie pasuje do kontraktu
+ */
+internal fun InspectionMarkerJson.toMarker(): InspectionMarker =
+    InspectionMarker(
+        id = id,
+        buildingSymbol = buildingSymbol,
+        place = floorId?.let { MarkerPlace.Floor(it) } ?: MarkerPlace.WholeBuilding,
+        createdAt = receivedAt(createdAt),
+        isRevoked = revoked,
+        isMine = mine,
     )
 
 private fun receivedAt(text: String): Instant =
