@@ -66,15 +66,11 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 /**
- * Arkusz V2 z wysokościami [SheetHeight]: idzie za palcem po uchwycie i po treści, a po puszczeniu staje na wysokości
- * według położenia i prędkości. Startuje rozwinięty na połowę okna, gdy [isExpanded], inaczej niski; zmianę
- * rozwinięcia zgłasza [onExpandedChange], a [isExpanded] równe `false` zwija go do niskiej. Przeciągnięcie w dół z
- * niskiej wywołuje [onClose]. Wysokość niskiej karty w px, liczoną z treści, dostaje [onLowHeight]. Dotknięcie uchwytu
- * przechodzi na następną wysokość, a czytnik ekranu ma czynności rozwinięcia i zwinięcia, więc przeciąganie nie jest
- * jedyną drogą (WCAG 2.5.7). Gdy [isFullOnly], arkusz ma tylko całe okno i zamknięcie: startuje na całym oknie,
- * przeciągnięcie w dół wywołuje [onClose], uchwyt nie zmienia wysokości, a [onLowHeight] dostaje wysokość okna.
+ * Arkusz V2 z wysokościami [SheetHeight], który idzie za palcem i staje według położenia i prędkości. Startuje na połowie okna, gdy
+ * [isExpanded], inaczej niski, a gdy [isFullOnly], na całym oknie z samym zamknięciem. Rozwinięcie zgłasza
+ * [onExpandedChange], przeciągnięcie w dół do końca [onClose], zasłoniętą część okna w px [onLowHeight].
  *
- * Wymagania: US2, US2.8, NFR-17, NFR-18, NFR-53
+ * Wymagania: US2, US2.8, US2.9, NFR-17, NFR-18, NFR-20, NFR-53
  */
 @Composable
 internal fun Sheet(
