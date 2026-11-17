@@ -43,7 +43,7 @@ class MapEntranceTouchTest {
     private val repository =
         unitSquareCatalog(
             symbol = "C-13",
-            entrances = listOf(entranceFeature("C-13", "node/1", tags = MAIN_ACCESSIBLE)),
+            entrances = listOf(entranceFeature(symbol = "C-13", id = "node/1", tags = MAIN_ACCESSIBLE)),
         )
 
     /** Wiersz: V1, dotknięcie znaku wejścia otwiera arkusz, nie zaznacza budynku i nie otwiera V2. */
