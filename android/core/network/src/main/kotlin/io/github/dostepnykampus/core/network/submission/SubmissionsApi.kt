@@ -8,6 +8,7 @@ package io.github.dostepnykampus.core.network.submission
 import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.network.ApiResult
+import io.github.dostepnykampus.core.network.auth.QueueOwner
 import io.github.dostepnykampus.core.network.decodedResult
 import io.github.dostepnykampus.core.network.exchange
 import io.github.dostepnykampus.core.network.exchangeBody
@@ -53,15 +54,19 @@ public class SubmissionsApi(private val http: OkHttpClient, private val json: Js
      *
      * @param id identyfikator UUID nadany w telefonie
      * @param content treść zgłoszenia
+     * @param owner konto zapisujące wpis w kolejce; `null` wysyła na bieżącym koncie
      */
-    public suspend fun create(id: String, content: SubmissionContent): ApiResult<Submission> =
-        http.exchange(request(path(), JSON.body(json.encodeNewSubmission(id, content)), POST)) { code, body ->
+    public suspend fun create(id: String, content: SubmissionContent, owner: String? = null): ApiResult<Submission> {
+        val body = JSON.body(json.encodeNewSubmission(id, content))
+        val request = request(target = path(), body = body, method = POST, owner = owner)
+        return http.exchange(request) { code, body ->
             if (code == HTTP_OK || code == HTTP_CREATED) {
                 decodedResult(code) { json.decodeSubmission(body) }
             } else {
                 unexpectedResult(code)
             }
         }
+    }
 
     /**
      * Wysyła edycję zaczętą od wersji [version]. Inna wersja na serwerze daje [SubmissionEdit.Conflict]
@@ -72,15 +77,24 @@ public class SubmissionsApi(private val http: OkHttpClient, private val json: Js
      * @param id identyfikator zgłoszenia
      * @param version wersja, od której zaczęto edycję w telefonie
      * @param content treść po edycji
+     * @param owner konto zapisujące wpis w kolejce; `null` wysyła na bieżącym koncie
      */
-    public suspend fun update(id: String, version: Int, content: SubmissionContent): ApiResult<SubmissionEdit> =
-        http.exchange(request(path(id), JSON.body(json.encodeSubmissionUpdate(version, content)), PUT)) { code, body ->
+    public suspend fun update(
+        id: String,
+        version: Int,
+        content: SubmissionContent,
+        owner: String? = null,
+    ): ApiResult<SubmissionEdit> {
+        val body = JSON.body(json.encodeSubmissionUpdate(version, content))
+        val request = request(target = path(id), body = body, method = PUT, owner = owner)
+        return http.exchange(request) { code, body ->
             when (code) {
                 HTTP_OK -> decodedResult(code) { SubmissionEdit.Saved(json.decodeSubmission(body)) }
                 HTTP_CONFLICT -> decodedResult(code) { SubmissionEdit.Conflict(json.decodeConflict(body)) }
                 else -> unexpectedResult(code)
             }
         }
+    }
 
     /**
      * Wysyła zdjęcie z listy `photoIds` zgłoszenia; ponowne wysłanie je zastępuje.
@@ -90,11 +104,20 @@ public class SubmissionsApi(private val http: OkHttpClient, private val json: Js
      * @param submissionId identyfikator zgłoszenia
      * @param photoId identyfikator zdjęcia nadany w telefonie
      * @param jpeg plik JPEG już obrócony, bo serwer usuwa EXIF z orientacją
+     * @param owner konto zapisujące wpis w kolejce; `null` wysyła na bieżącym koncie
      */
-    public suspend fun putPhoto(submissionId: String, photoId: String, jpeg: ByteArray): ApiResult<Unit> =
-        photoHttp.exchange(request(path(submissionId, PHOTOS, photoId), JPEG.body(jpeg), PUT)) { code, _ ->
+    public suspend fun putPhoto(
+        submissionId: String,
+        photoId: String,
+        jpeg: ByteArray,
+        owner: String? = null,
+    ): ApiResult<Unit> {
+        val target = path(submissionId, PHOTOS, photoId)
+        val request = request(target = target, body = JPEG.body(jpeg), method = PUT, owner = owner)
+        return photoHttp.exchange(request) { code, _ ->
             if (code == HTTP_NO_CONTENT) ApiResult.Success(Unit) else unexpectedResult(code)
         }
+    }
 
     /**
      * Zdjęcie zgłoszenia przyjętego jako JPEG do arkusza bariery i karty budynku. Zdjęcie,
@@ -154,9 +177,10 @@ public class SubmissionsApi(private val http: OkHttpClient, private val json: Js
         body: RequestBody?,
         method: String,
         accept: String = ACCEPTED_TYPES,
+        owner: String? = null,
     ): Request {
         val builder = Request.Builder().url(target).header(name = ACCEPT, value = accept)
-        return builder.method(method, body).build()
+        return builder.tag(QueueOwner::class.java, owner?.let(::QueueOwner)).method(method, body).build()
     }
 
     private fun path(vararg segments: String): HttpUrl {
