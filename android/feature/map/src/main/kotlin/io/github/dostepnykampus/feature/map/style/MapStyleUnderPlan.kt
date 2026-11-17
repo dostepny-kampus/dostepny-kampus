@@ -16,20 +16,6 @@ internal const val UNDER_PLAN_STATE = "pod planem"
 /** Warstwa grubszego obrysu `pwr_wybrany` po ścianie piętra wybranego budynku z widocznym planem. */
 internal const val SELECTED_PLAN_LAYER = "zaznaczenie_plan"
 
-/**
- * Krycie tła i konturu budynku ze stanu obiektu: budynek ze stanem [UNDER_PLAN_STATE] jest niewidoczny, bo jego
- * miejsce zajmuje plan piętra. Wyrażenie jest stałe, jak barwa z [tone].
- *
- * Wymagania: US16.1
- */
-internal fun opacityUnderPlan(): JsonElement =
-    expression(
-        "case",
-        expression("boolean", expression("feature-state", JsonPrimitive(UNDER_PLAN_STATE)), JsonPrimitive(false)),
-        JsonPrimitive(0.0),
-        JsonPrimitive(1.0),
-    )
-
 /** Warstwa [SELECTED_PLAN_LAYER] z filtrem [filter] z [SelectionLook.selectedPlanFilter]. Wymagania: US1.1, US16.1 */
 internal fun selectedPlanLayer(filter: JsonElement, colors: MapStyleColors): JsonObject =
     lineLayer(

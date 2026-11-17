@@ -26,22 +26,34 @@ private const val ANY_ZOOM = 0.0
 private val ALL_FEATURES = expression("!", JsonPrimitive(false))
 private val NO_FEATURES = expression("!", JsonPrimitive(true))
 
-/** Stan obiektu konturu budynku w źródle [BUILDINGS_SOURCE]: kontur przygaszony obok zaznaczonego budynku. */
+/** Stan obiektu konturu budynku w źródle [BUILDINGS_SOURCE]: budynek przygaszony obok zaznaczonego albo planu. */
 internal const val DIMMED_STATE = "przygaszony"
 
+/** Krycie tła przygaszonego budynku z tokenu `mapa.przygaszenie.tlo_krycie`. Wymagania: US2.8, NFR-16 */
+internal const val DIMMED_FILL_OPACITY = 0.4
+
+/** Krycie konturu przygaszonego budynku z tokenu `mapa.przygaszenie.kontur_krycie`. Wymagania: US2.8, NFR-16 */
+internal const val DIMMED_OUTLINE_OPACITY = 0.7
+
 /**
- * Barwa konturów ze stanu obiektu: [dimmed] dla konturów ze stanem [DIMMED_STATE], [own] dla pozostałych. Wyrażenie
- * jest stałe, więc zaznaczenie zmienia tylko stan obiektów, bez nowego układu kafelków źródła.
+ * Krycie tła albo konturu budynku ze stanu obiektu: 0 dla budynku ze stanem [UNDER_PLAN_STATE], bo jego miejsce
+ * zajmuje plan piętra; [dimmed] dla budynku ze stanem [DIMMED_STATE]; 1 dla pozostałych. Barwa budynku od stanu nie
+ * zależy. Wyrażenie jest stałe, więc zaznaczenie zmienia tylko stan obiektów, bez nowego układu kafelków źródła.
  *
- * Wymagania: US2.8, NFR-56
+ * Wymagania: US2.8, US16.1, NFR-16, NFR-56
  */
-internal fun tone(own: JsonElement, dimmed: String): JsonElement =
+internal fun buildingOpacity(dimmed: Double): JsonElement =
     expression(
         "case",
-        expression("boolean", expression("feature-state", JsonPrimitive(DIMMED_STATE)), JsonPrimitive(false)),
+        featureState(UNDER_PLAN_STATE),
+        JsonPrimitive(0.0),
+        featureState(DIMMED_STATE),
         JsonPrimitive(dimmed),
-        own,
+        JsonPrimitive(1.0),
     )
+
+private fun featureState(key: String): JsonElement =
+    expression("boolean", expression("feature-state", JsonPrimitive(key)), JsonPrimitive(false))
 
 /**
  * Wartość pola stylu według poziomu budynku: [detailed] dla budynku szczegółowego (z planem pięter), [basic] dla

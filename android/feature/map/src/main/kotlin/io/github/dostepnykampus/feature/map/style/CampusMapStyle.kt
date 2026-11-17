@@ -76,8 +76,6 @@ private val OUTLINE_WIDTH =
  * @property building wypełnienie budynków szczegółowych, z planem pięter (`pwr`)
  * @property buildingOutline kontur budynków PWr (`pwr_kontur`)
  * @property selectedOutline obrys zaznaczonego budynku (`pwr_wybrany`), grubszy niż kontur
- * @property dimmed wypełnienie budynków obok zaznaczonego (`budynek`)
- * @property dimmedOutline kontur budynków obok zaznaczonego (`budynek_kontur`)
  * @property plan kolory planu piętra; bez nich plan ma barwy budynków
  * @property basemap kolory podkładu wektorowego; bez nich mapa nie ma podkładu, tylko tło [land]
  * @property labelSize wysokość napisów podkładu w dp mapy, z tokenu `mapa.napisy_sp` i skali czcionki
@@ -89,13 +87,11 @@ data class MapStyleColors(
     val building: String,
     val buildingOutline: String,
     val selectedOutline: String,
-    val dimmed: String = building,
-    val dimmedOutline: String = buildingOutline,
     val plan: PlanColors =
         PlanColors(
             classroom = building,
             corridor = land,
-            other = dimmed,
+            other = building,
             elevator = building,
             toilet = land,
             wall = buildingOutline,
@@ -178,13 +174,14 @@ private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap
             styleLayer(id = BUILDINGS_LAYER, type = "fill", source = BUILDINGS_SOURCE) {
                 val fill =
                     byLevel(detailed = JsonPrimitive(colors.building), basic = JsonPrimitive(colors.basicBuilding))
-                paint(BUILDINGS_FILL to tone(own = fill, dimmed = colors.dimmed), "fill-opacity" to opacityUnderPlan())
+                paint(BUILDINGS_FILL to fill, "fill-opacity" to buildingOpacity(dimmed = DIMMED_FILL_OPACITY))
             },
         )
         add(
             styleLayer(id = OUTLINES_LAYER, type = "line", source = BUILDINGS_SOURCE) {
-                val color = tone(own = JsonPrimitive(colors.buildingOutline), dimmed = colors.dimmedOutline)
-                paint(OUTLINES_COLOR to color, "line-width" to OUTLINE_WIDTH, "line-opacity" to opacityUnderPlan())
+                val opacity = buildingOpacity(dimmed = DIMMED_OUTLINE_OPACITY)
+                val color = JsonPrimitive(colors.buildingOutline)
+                paint(OUTLINES_COLOR to color, "line-width" to OUTLINE_WIDTH, "line-opacity" to opacity)
             },
         )
         planLayers(colors.plan, look.planFloor).forEach { add(it) }

@@ -75,8 +75,6 @@ internal fun MapColors.styleColors(fontScale: Float = 1f): MapStyleColors =
         building = pwr.hex(),
         buildingOutline = pwrKontur.hex(),
         selectedOutline = pwrWybrany.hex(),
-        dimmed = budynek.hex(),
-        dimmedOutline = budynekKontur.hex(),
         plan =
             PlanColors(
                 classroom = pSala.hex(),
