@@ -98,7 +98,7 @@ private class HidingKeyboard : SoftwareKeyboardController {
     override fun show() = Unit
 }
 
-private const val KEYBOARD_HEIGHT = 600
+internal const val KEYBOARD_HEIGHT = 600
 
 /** Podaje ekranowi [activity] klawiaturę otwartą na [height] pikseli albo zamkniętą, jak system: w odstępach okna. */
 internal fun dispatchKeyboard(activity: ComponentActivity, isOpen: Boolean, height: Int = KEYBOARD_HEIGHT) {
