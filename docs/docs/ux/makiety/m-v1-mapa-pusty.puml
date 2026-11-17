@@ -5,7 +5,7 @@
 $ekran_poczatek()
 $naglowek_mapy("Pokaż listę")
 $pole_tekstowe("[wpisany tekst]")
-$komunikat("Nie znaleźliśmy budynku »<i>[tekst]</i>«. Sprawdź symbol, np. C-13, albo wybierz budynek z listy.", "Pokaż listę")
+$komunikat("Nie znaleźliśmy budynku »<i>[tekst]</i>«. Sprawdź zapis, np. C-13, albo wybierz budynek z listy.", "Pokaż listę")
 $przycisk("Kampus główny ▾")
 $mapa("mapa ulic OpenStreetMap, kontury budynków z symbolami, bariery", $blokada() + $dk_spacje(6) + $utrudnienie(), "info")
 $pasek_dolny_konto()
