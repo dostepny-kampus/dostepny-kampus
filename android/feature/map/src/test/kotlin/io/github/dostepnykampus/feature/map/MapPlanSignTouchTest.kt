@@ -8,13 +8,10 @@ package io.github.dostepnykampus.feature.map
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.TouchSign
-import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.plan.SIGN_PLAN
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -38,26 +35,18 @@ class MapPlanSignTouchTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val opened = mutableListOf<String>()
-    private var touchSign: (TouchSign, String) -> Unit = { _, _ -> }
-    private var touchBuildings: (List<String>) -> Unit = {}
-    private var selected: String? = null
-    private val fakeMap =
-        CampusMapView { _: CampusMapData, selection, _, _, _, onBuildingsTouch, onSignTouch, _: Modifier ->
-            selected = selection.building
-            touchBuildings = onBuildingsTouch
-            touchSign = onSignTouch
-        }
+    private val map = TouchableMap()
 
     /** Wiersz: V1, dotknięcie toalety na planie otwiera arkusz bez zaznaczenia budynku; pusta mapa go zamyka. */
     @Test
     fun opensSheetAndClosesOnEmptyMap() {
         start()
-        compose.runOnIdle { touchSign(TouchSign.PLAN, "wc") }
+        compose.runOnIdle { map.touchSign(TouchSign.PLAN, "wc") }
 
         compose.onNodeWithText("Toaleta dostosowana").assertExists()
         val untouched = null to emptyList<String>()
-        compose.runOnIdle { assertEquals("bez zaznaczenia budynku i V2", untouched, selected to opened.toList()) }
-        compose.runOnIdle { touchBuildings(emptyList()) }
+        compose.runOnIdle { assertEquals("bez zaznaczenia budynku i V2", untouched, map.selected to opened.toList()) }
+        compose.runOnIdle { map.touchBuildings(emptyList()) }
         compose.onNodeWithText("Toaleta dostosowana").assertDoesNotExist()
     }
 
@@ -65,7 +54,7 @@ class MapPlanSignTouchTest {
     @Test
     fun closesSheetOnBack() {
         start()
-        compose.runOnIdle { touchSign(TouchSign.PLAN, "wc") }
+        compose.runOnIdle { map.touchSign(TouchSign.PLAN, "wc") }
         compose.onNodeWithText("Toaleta dostosowana").assertExists()
         compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
 
@@ -89,7 +78,7 @@ class MapPlanSignTouchTest {
                     onListChange = {},
                     onSearch = {},
                     onBuildingClick = { opened += it },
-                    mapView = fakeMap,
+                    mapView = map.view,
                     plan = SIGN_PLAN,
                 )
             }
