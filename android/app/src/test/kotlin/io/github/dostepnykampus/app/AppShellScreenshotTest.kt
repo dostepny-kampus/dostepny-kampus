@@ -87,6 +87,37 @@ class AppShellScreenshotTest {
                 """"geometry":{"type":"Point","coordinates":[1,0]}}]}"""
         }
 
+    @Composable
+    private fun ShellWithMap(isOnline: Boolean) {
+        AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
+            if (route is MapRoute) {
+                CampusMapScreen(
+                    onBuildingClick = { openBuilding(it) },
+                    contentPadding = LocalSheetPadding.current,
+                    mapView = landOnly,
+                    viewModel = remember { inlineMapViewModel(repository, { flowOf(isOnline) }, choice) },
+                )
+            } else if (route is BuildingRoute) {
+                val card =
+                    remember(route.symbol) {
+                        BuildingCardViewModel(route.symbol, repository, { flowOf(isOnline) })
+                    }
+                val sheet = sheetCard()
+                BuildingCardScreen(
+                    symbol = route.symbol,
+                    mode = sheet.mode,
+                    onCheckEntrances = { openEntrances(route.symbol) },
+                    onShowOnMap = { showOnMap(MapFocus.Building(route.symbol)) },
+                    onBack = sheet.onBack,
+                    onClose = sheet.onClose,
+                    viewModel = card,
+                )
+            } else {
+                AppScreen(route)
+            }
+        }
+    }
+
     private fun capture(
         isSheetOpen: Boolean = true,
         query: String? = null,
@@ -97,34 +128,8 @@ class AppShellScreenshotTest {
         compose.setContent {
             DostepnyKampusTheme {
                 Box {
-                    AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
-                        if (route is MapRoute) {
-                            CampusMapScreen(
-                                onBuildingClick = { openBuilding(it) },
-                                contentPadding = LocalSheetPadding.current,
-                                mapView = landOnly,
-                                viewModel = remember { inlineMapViewModel(repository, { flowOf(isOnline) }, choice) },
-                            )
-                        } else if (route is BuildingRoute) {
-                            val card =
-                                remember(route.symbol) {
-                                    BuildingCardViewModel(route.symbol, repository, { flowOf(isOnline) })
-                                }
-                            val sheet = sheetCard()
-                            BuildingCardScreen(
-                                symbol = route.symbol,
-                                mode = sheet.mode,
-                                onCheckEntrances = { openEntrances(route.symbol) },
-                                onShowOnMap = { showOnMap(MapFocus.Building(route.symbol)) },
-                                onBack = sheet.onBack,
-                                onClose = sheet.onClose,
-                                viewModel = card,
-                            )
-                        } else {
-                            AppScreen(route)
-                        }
-                    }
-                    if (isKeyboardOpen) KeyboardStandIn(Modifier.align(Alignment.BottomCenter))
+                    ShellWithMap(isOnline)
+                    if (isKeyboardOpen) KeyboardPlaceholder(Modifier.align(Alignment.BottomCenter))
                 }
             }
         }
@@ -217,9 +222,8 @@ class AppShellScreenshotTest {
     }
 }
 
-/** Prostokąt w miejscu klawiatury, której Robolectric nie rysuje, o wysokości wcięcia [KEYBOARD_HEIGHT]. */
 @Composable
-private fun KeyboardStandIn(modifier: Modifier = Modifier) {
+private fun KeyboardPlaceholder(modifier: Modifier = Modifier) {
     val height = with(LocalDensity.current) { KEYBOARD_HEIGHT.toDp() }
     Box(
         modifier = modifier.fillMaxWidth().height(height).background(MaterialTheme.colorScheme.inverseSurface),
