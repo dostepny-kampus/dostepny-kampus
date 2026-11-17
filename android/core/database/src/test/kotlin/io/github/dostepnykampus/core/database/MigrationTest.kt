@@ -185,6 +185,27 @@ class MigrationTest {
                 assertEquals(listOf(true, true), lift)
             }
     }
+
+    @Test
+    fun keepsBothQueuesFrom9To10() {
+        helper.createDatabase(DB_NAME, 9).use { ninth ->
+            ninth.execSQL(
+                "INSERT INTO pending_submissions (id, saved_at, created_on_server, kind, longitude, latitude)" +
+                    " VALUES ('a', 7, 0, 'PRECISE', 17.0, 51.0)",
+            )
+            ninth.execSQL(
+                "INSERT INTO pending_marker_changes (operation_id, type, marker_id, building_symbol, saved_at)" +
+                    " VALUES ('b', 'SET', 'm', 'A-1', 8)",
+            )
+        }
+
+        helper.runMigrationsAndValidate(DB_NAME, 10, true, MIGRATION_9_10).use { tenth ->
+            val submissions = tenth.query("SELECT COUNT(*) FROM pending_submissions WHERE owner_sub IS NULL")
+            val markers = tenth.query("SELECT COUNT(*) FROM pending_marker_changes WHERE owner_sub IS NULL")
+            assertEquals(1, submissions.use(::readCount), "zgłoszenie czeka na przypisanie właściciela")
+            assertEquals(1, markers.use(::readCount), "zmiana znacznika czeka na przypisanie właściciela")
+        }
+    }
 }
 
 private fun readCount(cursor: Cursor): Int {
