@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -51,7 +50,6 @@ final class SubmissionPagesHttpIT {
     private static final Pattern NEXT = Pattern.compile("<([^>]+)>; *rel=\"next\"");
 
     @Test
-    @Disabled("Lista zgłoszeń nie ma jeszcze stron #2706")
     void walksAllPagesWithinLimit(final WebApplicationContext context) throws Exception {
         final String floor = "strona-".concat(UUID.randomUUID().toString());
         final List<UUID> readable = Stream.generate(

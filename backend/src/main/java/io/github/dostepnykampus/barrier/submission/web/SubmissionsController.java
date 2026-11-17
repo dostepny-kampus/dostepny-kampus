@@ -8,8 +8,6 @@ package io.github.dostepnykampus.barrier.submission.web;
 import io.github.dostepnykampus.barrier.submission.CreateResult;
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.Reader;
-import io.github.dostepnykampus.barrier.submission.Submission;
-import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionService;
 import io.github.dostepnykampus.shared.error.ConflictingState;
@@ -65,27 +63,28 @@ public final class SubmissionsController {
     }
 
     /**
-     * Zwraca zgłoszenia przyjęte według filtrów, a z
-     * mine=true własne zgłoszenia zalogowanej osoby w każdym statusie.
+     * Zwraca stronę zgłoszeń przyjętych według filtrów, a z mine=true własnych zgłoszeń
+     * zalogowanej osoby w każdym statusie. Dalszy ciąg wskazuje nagłówek Link z rel="next".
      *
-     * <p>Wymagania: US1.3, US2.2, BR-6, US8.1</p>
+     * <p>Wymagania: US1.3, US2.2, BR-6, US8.1, NFR-34</p>
      *
      * @param filter Filtry z parametrów zapytania
+     * @param window Rozmiar strony i kursor
      * @param account Zalogowane konto albo null bez logowania
-     * @return Zgłoszenia od najstarszego
+     * @return Zgłoszenia strony w kolejności identyfikatorów
      */
     @GetMapping("/submissions")
-    List<SubmissionResponse> listSubmissions(
-        final SubmissionFilter filter, @Nullable final Principal account
+    ResponseEntity<List<SubmissionResponse>> listSubmissions(
+        final SubmissionFilter filter, final SubmissionWindow window,
+        @Nullable final Principal account
     ) {
-        final SubmissionQuery query = filter.toQuery();
-        final List<Submission> found;
+        @Nullable String author = null;
         if (filter.own()) {
-            found = this.finder.own(SubmissionsController.name(account), query);
-        } else {
-            found = this.finder.list(query);
+            author = SubmissionsController.name(account);
         }
-        return found.stream().map(SubmissionResponse::new).toList();
+        return new SubmissionPageResponse(
+            this.finder.page(filter.toQuery(), author, window.window())
+        ).entity();
     }
 
     /**

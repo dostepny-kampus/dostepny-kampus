@@ -189,6 +189,8 @@ paths:
         Bez tokenu i dla Odwiedzającego tylko zgłoszenia przyjęte do mapy i karty budynku (US1.3, US2.2, BR-6).
         Zbierający z `mine=true` dostaje własne zgłoszenia w każdym statusie, odrzucone z powodem odrzucenia (US8.1).
         Zgłoszenie z nieczytelną zapisaną treścią jest pomijane na liście.
+        Lista ma strony w kolejności `id`: odpowiedź ma najwyżej `limit` zgłoszeń, a dalszy ciąg wskazuje nagłówek
+        `Link` z `rel="next"` (RFC 8288); jego brak oznacza ostatnią stronę (NFR-34).
       tags: [barrier]
       security: [{}, {keycloak: []}]
       parameters:
@@ -199,10 +201,16 @@ paths:
           description: Tylko zgłoszenia w tych statusach; bez `mine=true` dozwolone jest tylko `ACCEPTED`.
           schema: {type: array, description: "Statusy zgłoszenia.", items: {$ref: '#/components/schemas/SubmissionStatus'}}
         - {name: mine, in: query, description: "Tylko własne zgłoszenia; wymaga roli `COLLECTOR`.", schema: {type: boolean, default: false, description: "Czy tylko własne."}}
+        - {name: limit, in: query, description: "Najwięcej zgłoszeń na stronie.", schema: {type: integer, minimum: 1, maximum: 500, default: 500, description: "Rozmiar strony."}}
+        - {name: after, in: query, description: "Kursor z adresu w nagłówku `Link`; lista zaczyna się po nim.", schema: {type: string, format: uuid, description: "Kursor strony."}}
       responses:
         '429': {$ref: '#/components/responses/TooManyRequests'}
         '200':
           description: Zgłoszenia według filtrów.
+          headers:
+            Link:
+              description: Adres następnej strony z `rel="next"`; brak na ostatniej stronie.
+              schema: {type: string, description: "Nagłówek Link według RFC 8288."}
           content:
             application/json:
               schema: {type: array, description: "Zgłoszenia.", items: {$ref: '#/components/schemas/Submission'}}
