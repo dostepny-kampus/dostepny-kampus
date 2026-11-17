@@ -28,7 +28,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -57,8 +56,6 @@ import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
-import io.github.dostepnykampus.feature.map.camera.TouchSign
-import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.overlay.MapOverlay
@@ -197,8 +194,7 @@ fun CampusMapScreen(
                 Box(Modifier.fillMaxSize()) {
                     val shown = ShownBarriers(state.barriers.takeUnless { isCovered }.orEmpty())
                     CampusMap(
-                        catalog = catalog,
-                        layers = state.mapData,
+                        ui = state,
                         barriers = shown,
                         focus = focus,
                         areas = areas,
@@ -242,8 +238,7 @@ fun CampusMapScreen(
 
 @Composable
 private fun CampusMap(
-    catalog: BuildingCatalog?,
-    layers: CampusMapData?,
+    ui: CampusMapUiState,
     barriers: ShownBarriers,
     focus: MapFocus?,
     areas: MapAreas,
@@ -262,13 +257,13 @@ private fun CampusMap(
     val isKeyboardOpen = rememberKeyboardOpenFlag()
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
-    var sign by rememberSaveable(stateSaver = chosenSignSaver) { mutableStateOf<ChosenSign?>(null) }
+    val signs = rememberSignSheetState()
     val width = with(LocalDensity.current) { size.width.toDp() }
     val notice = rememberNoticeHeight(shift = areas.selectionNotice, width = width)
     val state =
         rememberMapSceneState(
-            layers = layers,
-            catalog = catalog,
+            layers = ui.mapData,
+            catalog = ui.catalog,
             focus = focus,
             area = areas.chosenName,
             cover = cover,
@@ -280,21 +275,18 @@ private fun CampusMap(
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
         val scene = state.scene
         val move = state.move
-        val barrierId = sign?.takeIf { it.sign == TouchSign.BARRIER }?.id
         if (scene != null && move != null && state.limits != null) {
             mapView.Show(
                 data = scene.data,
-                selection = scene.selection.copy(barrier = barrierId, plan = plan.shown),
+                selection = scene.selection.copy(barrier = signs.barrierId, plan = plan.shown),
                 move = move,
                 inset = state.inset,
                 onCameraIdle = { view ->
                     areas.acknowledge()
                     plan.onView(view.also { state.keep(it) })
                 },
-                onBuildingsTouch = { state.touch(it, onBuildingClick, onEmptyMapClick).also { sign = null } },
-                onSignTouch = { touched, id ->
-                    if (cover == 0.dp) sign = ChosenSign(sign = touched, id = id).also { state.dismiss() }
-                },
+                onBuildingsTouch = { state.touch(it, onBuildingClick, onEmptyMapClick).also { signs.close() } },
+                onSignTouch = { touched, id -> if (cover == 0.dp) signs.open(touched, id).also { state.dismiss() } },
                 modifier = Modifier.fillMaxSize(),
             )
             scene.selection.entrance?.let { EntranceDescription(it) }
@@ -304,7 +296,7 @@ private fun CampusMap(
             MapOverlay(
                 camera = move.camera,
                 hasControls = state.hasControls && !isKeyboardOpen,
-                dataDay = catalog?.dataDay(),
+                dataDay = ui.catalog?.dataDay(),
                 onCameraChange = state::move,
                 areas = areas,
                 onAreaShow = state::land,
@@ -314,8 +306,8 @@ private fun CampusMap(
                 motion = motion,
                 start = { FloorColumn(plan = plan.shown, onChoose = plan.onFloor) },
             ) {
-                val open = OpenSign(chosen = sign, barriers = barriers, onClose = { sign = null })
-                MapSheets(open, catalog, state, onBuildingClick = onBuildingClick, onEntrancesClick = onEntrancesClick)
+                val open = OpenSign(signs = signs, barriers = barriers, catalog = ui.catalog)
+                MapSheets(open = open, state = state, onBuilding = onBuildingClick, onEntrances = onEntrancesClick)
             }
         }
     }
@@ -327,8 +319,8 @@ private fun Modifier.overlayArea(underBar: PaddingValues, sheet: PaddingValues):
         .padding(underBar)
         .padding(sheet)
 
-/** Dotknięty znak [chosen] z barierami [barriers] na mapie i zamknięcie jego arkusza [onClose]. */
-private data class OpenSign(val chosen: ChosenSign?, val barriers: ShownBarriers, val onClose: () -> Unit)
+/** Arkusz znaku [signs] z barierami [barriers] na mapie i katalogiem [catalog]. */
+private class OpenSign(val signs: SignSheetState, val barriers: ShownBarriers, val catalog: BuildingCatalog?)
 
 /**
  * Plan piętra [shown] przy mapie: [onView] dostaje widok kamery, [onFloor] piętro z kolumny, a [onHide] zejście
@@ -356,22 +348,20 @@ private fun FollowCamera(camera: MapCamera, limits: MapLimits, area: String?, pl
 @Composable
 private fun BoxScope.MapSheets(
     open: OpenSign,
-    catalog: BuildingCatalog?,
     state: MapSceneState,
-    onBuildingClick: (String) -> Unit,
-    onEntrancesClick: (String) -> Unit,
+    onBuilding: (String) -> Unit,
+    onEntrances: (String) -> Unit,
 ) {
     val modifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
     ChosenSignSheet(
-        chosen = open.chosen,
+        signs = open.signs,
         barriers = open.barriers,
-        catalog = catalog,
-        onClose = open.onClose,
-        onBuildingClick = onBuildingClick,
-        onEntrancesClick = onEntrancesClick,
+        catalog = open.catalog,
+        onBuildingClick = onBuilding,
+        onEntrancesClick = onEntrances,
         modifier = modifier,
     )
-    BuildingChoices(catalog = catalog, state = state, onChoose = onBuildingClick, modifier = modifier)
+    BuildingChoices(catalog = open.catalog, state = state, onChoose = onBuilding, modifier = modifier)
 }
 
 @Composable

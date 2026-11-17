@@ -41,7 +41,7 @@ class MapTouchTest {
 
     /** Wiersz: V1, bariera i wejście w zasięgu: wygrywa bariera; samo wejście wygrywa z konturem. */
     @Test
-    fun entranceAfterBarrierBeforeOutline() {
+    fun entranceBetweenBarrierAndShape() {
         val both = chooseTouch(signsNear = { sign -> listOf(sign.name) }, outlines = outlinesAt(hit = listOf(3)))
         val entrance =
             chooseTouch(

@@ -46,7 +46,7 @@ class MapEntranceTouchTest {
 
     /** Wiersz: V1, dotknięcie znaku wejścia otwiera arkusz, nie zaznacza budynku i nie otwiera V2. */
     @Test
-    fun opensSheetWithoutSelectingBuilding() {
+    fun opensSheetWithoutSelection() {
         start()
         compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
 
