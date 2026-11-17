@@ -9,6 +9,10 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 internal val STYLE_ORIGIN = GeoPoint(longitude = 0.0, latitude = 0.0)
 
@@ -42,3 +46,18 @@ internal fun styleColors(): MapStyleColors =
                 halo = "#FFFFFF",
             ),
     )
+
+/** Budynek testowy [symbol] z konturem przesuniętym o ostatnią cyfrę symbolu w długości, nie dane PWr. */
+internal fun shiftedBuilding(symbol: String): Building {
+    val shift = symbol.last().digitToInt().toDouble()
+    val corner = GeoPoint(longitude = shift, latitude = 0.0)
+    val ring = listOf(corner, corner.copy(longitude = shift + 0.5), corner.copy(latitude = 0.5), corner)
+    return Building(symbol = symbol, name = "Budynek testowy $symbol", outline = GeoPolygon(listOf(ring)))
+}
+
+/** Warstwa [id] stylu JSON. */
+internal fun JsonObject.layerById(id: String): JsonObject =
+    getValue("layers").jsonArray.map { it.jsonObject }.single { it.getValue("id").jsonPrimitive.content == id }
+
+/** Pole rysowania [key] warstwy jako tekst JSON. */
+internal fun JsonObject.paintText(key: String): String = getValue("paint").jsonObject.getValue(key).toString()

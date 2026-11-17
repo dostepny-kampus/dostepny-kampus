@@ -5,9 +5,6 @@
  */
 package io.github.dostepnykampus.feature.map.style
 
-import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.GeoPolygon
-import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
@@ -29,7 +26,7 @@ import org.junit.jupiter.api.Test
 class BuildingLevelsStyleTest {
     private val catalog =
         BuildingCatalog(
-            buildings = listOf(building("A-1"), building("A-2")),
+            buildings = listOf(shiftedBuilding("A-1"), shiftedBuilding("A-2")),
             entrances = emptyList(),
             attribution = "",
             detailed = setOf("A-1"),
@@ -61,7 +58,7 @@ class BuildingLevelsStyleTest {
 
     @Test
     fun fillsByLevel() {
-        val fill = style().layer(BUILDINGS_LAYER).paint(BUILDINGS_FILL)
+        val fill = style().layerById(BUILDINGS_LAYER).paintText(BUILDINGS_FILL)
         assertEquals(
             """["case",$state,"#D6DBDD",["case",$level,"#BFE0EC","#DDECF1"]]""",
             fill,
@@ -71,7 +68,7 @@ class BuildingLevelsStyleTest {
 
     @Test
     fun drawsThinOutlineOfBasic() {
-        val width = style().layer(OUTLINES_LAYER).paint("line-width")
+        val width = style().layerById(OUTLINES_LAYER).paintText("line-width")
         assertEquals(
             """["case",$level,$DETAILED_OUTLINE_DP,$BASIC_OUTLINE_DP]""",
             width,
@@ -82,7 +79,7 @@ class BuildingLevelsStyleTest {
 
     @Test
     fun dimsNeighboursOfBothLevels() {
-        val fill = style(building = "A-2").layer(BUILDINGS_LAYER).paint(BUILDINGS_FILL)
+        val fill = style(building = "A-2").layerById(BUILDINGS_LAYER).paintText(BUILDINGS_FILL)
         assertEquals(
             """["case",$state,"#D6DBDD",["case",$level,"#BFE0EC","#DDECF1"]]""",
             fill,
@@ -94,16 +91,4 @@ class BuildingLevelsStyleTest {
 
     private fun style(building: String? = null): JsonObject =
         Json.parseToJsonElement(campusMapStyle(data, data.selection(building = building), colors)).jsonObject
-
-    private fun JsonObject.layer(id: String): JsonObject =
-        getValue("layers").jsonArray.map { it.jsonObject }.single { it.getValue("id").jsonPrimitive.content == id }
-
-    private fun JsonObject.paint(key: String): String = getValue("paint").jsonObject.getValue(key).toString()
-
-    private fun building(symbol: String): Building {
-        val shift = symbol.last().digitToInt().toDouble()
-        val corner = GeoPoint(longitude = shift, latitude = 0.0)
-        val ring = listOf(corner, corner.copy(longitude = shift + 0.5), corner.copy(latitude = 0.5), corner)
-        return Building(symbol = symbol, name = "Budynek testowy $symbol", outline = GeoPolygon(listOf(ring)))
-    }
 }

@@ -54,6 +54,9 @@ internal const val ENTRANCES_SOURCE = ENTRANCES_LAYER
 
 private const val LABELS = "podpisy"
 internal const val LABELS_SOURCE = LABELS
+
+/** Warstwa symboli budynków. Wymagania: US1, US16.1 */
+internal const val LABELS_LAYER = LABELS
 internal const val LABEL = "label"
 private const val STYLE_VERSION = 8
 
@@ -175,20 +178,22 @@ private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap
             styleLayer(id = BUILDINGS_LAYER, type = "fill", source = BUILDINGS_SOURCE) {
                 val fill =
                     byLevel(detailed = JsonPrimitive(colors.building), basic = JsonPrimitive(colors.basicBuilding))
-                paint(BUILDINGS_FILL to tone(own = fill, dimmed = colors.dimmed))
+                paint(BUILDINGS_FILL to tone(own = fill, dimmed = colors.dimmed), "fill-opacity" to opacityUnderPlan())
             },
         )
         add(
             styleLayer(id = OUTLINES_LAYER, type = "line", source = BUILDINGS_SOURCE) {
                 val color = tone(own = JsonPrimitive(colors.buildingOutline), dimmed = colors.dimmedOutline)
-                paint(OUTLINES_COLOR to color, "line-width" to OUTLINE_WIDTH)
+                paint(OUTLINES_COLOR to color, "line-width" to OUTLINE_WIDTH, "line-opacity" to opacityUnderPlan())
             },
         )
         planLayers(colors.plan, look.planFloor).forEach { add(it) }
         add(selectedLayer(look.selectedFilter, colors))
+        add(selectedPlanLayer(look.selectedPlanFilter, colors))
         add(marksLayer(look.entrancesFilter, look.entrancesMinZoom))
         barrierLayers(look.barriersFilter).forEach { add(it) }
-        add(symbolLayer(id = LABELS, source = LABELS_SOURCE, image = property(LABEL)))
+        val labels = symbolLayer(id = LABELS_LAYER, source = LABELS_SOURCE, image = property(LABEL))
+        add(JsonObject(labels + ("filter" to look.labelsFilter)))
         add(chosenBarrierLayer(look.chosenBarrierFilter))
         chosenLayers().forEach { add(it) }
     }
