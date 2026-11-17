@@ -73,13 +73,12 @@ internal fun AreaNotice(shift: AreaShift, isNew: Boolean, onShow: (Boolean) -> U
     }
 }
 
-/** Czas przenikania napisu o zmianie terenu po przelocie: `short4` Material 3. */
 private const val NOTICE_FADE_MILLIS = 200
 
 /**
  * Krycie napisu o zmianie terenu [shift]: nowy napis czeka do końca ruchu mapy z [motion], który zaczął się razem
- * z nim, i przenika w 200 ms; bez [motion] albo przy ruchu bez czasu (wyłączone animacje) pojawia się od razu.
- * Ten sam napis pokazany znów, np. po zamknięciu panelu, nie czeka.
+ * z nim, i przenika w 200 ms (`short4` Material 3); bez [motion] albo przy ruchu bez czasu (wyłączone animacje)
+ * pojawia się od razu. Ten sam napis pokazany znów, np. po zamknięciu panelu, nie czeka.
  *
  * Wymagania: US1.8, NFR-56
  */

@@ -59,9 +59,9 @@ private fun NoticeAndAttribution(
     val noticeAlpha = rememberNoticeAlpha(shift = areas.notice, motion = motion)
     val isNoticeReady by remember(noticeAlpha) { derivedStateOf { noticeAlpha.value > 0f } }
     Column(modifier) {
-        areas.notice?.takeIf { hasNotice && isNoticeReady }?.let {
+        areas.notice?.takeIf { hasNotice && isNoticeReady }?.let { shift ->
             AreaNotice(
-                shift = it,
+                shift = shift,
                 isNew = areas.isNoticeNew,
                 onShow = areas::noticeShown,
                 modifier = Modifier.graphicsLayer { alpha = noticeAlpha.value },

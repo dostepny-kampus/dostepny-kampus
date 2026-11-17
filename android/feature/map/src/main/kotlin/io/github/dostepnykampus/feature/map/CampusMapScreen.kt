@@ -288,7 +288,6 @@ private fun CampusMap(
             FollowCamera(camera = move.camera, limits = state.limits, area = areas.current?.name, onCamera = onCamera)
             MapStatusBar(topInset, isShown = state.isCovered)
             val underBar = if (state.isCovered) topInset.asPaddingValues() else PaddingValues(top = top)
-            val aboveSheet = Modifier.padding(underBar).padding(contentPadding)
             MapOverlay(
                 camera = move.camera,
                 hasControls = state.hasControls && !isKeyboardOpen,
@@ -296,7 +295,7 @@ private fun CampusMap(
                 onCameraChange = state::move,
                 areas = areas,
                 onAreaShow = state::land,
-                modifier = Modifier.fillMaxSize().safeDrawingPadding().then(aboveSheet),
+                modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(underBar).padding(contentPadding),
                 hasPanels = !state.isCovered && !isKeyboardOpen,
                 hasNotice = !isKeyboardOpen,
                 motion = motion,
