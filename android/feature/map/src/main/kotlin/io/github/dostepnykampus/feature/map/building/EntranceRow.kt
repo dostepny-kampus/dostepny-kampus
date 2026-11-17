@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.map.building
@@ -20,7 +20,7 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
-import io.github.dostepnykampus.core.designsystem.marking.MarkingChip
+import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.feature.map.R
 
 /**
@@ -49,7 +49,7 @@ internal fun EntranceRow(
             horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
             verticalArrangement = Arrangement.spacedBy(Odstepy.xs),
         ) {
-            MarkingChip(marking = listed.entrance.marking)
+            MarkingSign(marking = listed.entrance.marking)
             if (listed.isRecommended) {
                 Text(
                     text = stringResource(R.string.karta_zalecane),
