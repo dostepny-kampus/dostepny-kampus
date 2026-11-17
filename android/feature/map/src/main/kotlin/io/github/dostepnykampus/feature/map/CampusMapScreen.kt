@@ -249,9 +249,7 @@ private fun CampusMap(
     modifier: Modifier = Modifier,
 ) {
     val cover = contentPadding.calculateBottomPadding()
-    val ime = WindowInsets.ime
-    val density = LocalDensity.current
-    val isKeyboardOpen by remember(ime, density) { derivedStateOf { ime.getBottom(density) > 0 } }
+    val isKeyboardOpen = rememberKeyboardOpen()
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
     var barrierId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -361,3 +359,12 @@ private fun BuildingChoices(
 
 private fun BuildingCatalog.buildingsOf(symbols: List<String>): List<Building> =
     symbols.mapNotNull { symbol -> buildings.firstOrNull { it.symbol == symbol } }
+
+/** Klawiatura otwarta; zmiana jej wysokości w trakcie animacji nie przelicza wywołującego. Wymagania: NFR-56 */
+@Composable
+private fun rememberKeyboardOpen(): Boolean {
+    val ime = WindowInsets.ime
+    val density = LocalDensity.current
+    val isOpen by remember(ime, density) { derivedStateOf { ime.getBottom(density) > 0 } }
+    return isOpen
+}
