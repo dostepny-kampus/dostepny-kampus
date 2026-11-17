@@ -290,7 +290,8 @@ class BuildingOnMapCameraTest {
 
     /**
      * Wiersz: K3, po „Pokaż” i geście osoby na V1 mała karta budynku i „Wstecz” → mapa nie wraca, budynek
-     * dalej widać, powiększenie zostaje. Widok mapy zgłasza kamerę tylko po geście osoby, więc przy otwartej karcie atrapa nic nie zgłasza.
+     * dalej widać, powiększenie zostaje. Widok mapy zgłasza kamerę tylko po geście osoby, więc przy otwartej karcie
+     * atrapa nic nie zgłasza.
      *
      * Wymagania: US2.8, NFR-56
      */
