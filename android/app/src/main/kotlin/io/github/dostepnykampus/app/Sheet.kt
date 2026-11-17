@@ -175,7 +175,8 @@ private fun Modifier.followHeight(
         val isLow =
             state.anchors.hasPositionFor(SheetHeight.Low) && state.anchors.positionOf(SheetHeight.Low) == offset
         val isResting = offset.isNaN() || (isCompact && isLow)
-        val shown = (constraints.maxHeight - offset.roundToIntOrZero()).coerceIn(minimumValue = 0, maximumValue = constraints.maxHeight)
+        val top = offset.roundToIntOrZero().coerceIn(minimumValue = 0, maximumValue = constraints.maxHeight)
+        val shown = constraints.maxHeight - top
         val fixed =
             if (isResting) constraints.copy(minHeight = 0) else constraints.copy(minHeight = shown, maxHeight = shown)
         val placeable = measurable.measure(fixed)
