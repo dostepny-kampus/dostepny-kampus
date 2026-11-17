@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.TouchSign
@@ -25,7 +24,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.coroutines.EmptyCoroutineContext
+
+private const val MAIN_ACCESSIBLE = """"entrance":"main","wheelchair":"yes","ref":"Główne""""
 
 /**
  * Dotknięcie znaku wejścia na mapie V1 otwiera arkusz wejścia, na widoku zastępczym mapy.
@@ -50,14 +50,10 @@ class MapEntranceTouchTest {
             touchSign = onSignTouch
         }
     private val repository =
-        BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
-            """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
-                """{"type":"Feature","properties":{"kind":"building","symbols":["C-13"],"osm_id":"way/1"},""" +
-                """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}},""" +
-                """{"type":"Feature","properties":{"kind":"entrance","symbols":["C-13"],"osm_id":"node/1",""" +
-                """"entrance":"main","wheelchair":"yes","ref":"Główne"},""" +
-                """"geometry":{"type":"Point","coordinates":[0,0]}}]}"""
-        }
+        unitSquareCatalog(
+            symbol = "C-13",
+            entrances = listOf(entranceFeature("C-13", "node/1", tags = MAIN_ACCESSIBLE)),
+        )
 
     /** Wiersz: V1, dotknięcie znaku wejścia otwiera arkusz, nie zaznacza budynku i nie otwiera V2. */
     @Test

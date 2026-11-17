@@ -17,9 +17,16 @@ internal fun unitSquareBuilding(symbol: String): Building {
     return Building(symbol = symbol, name = "Budynek testowy", outline = outline)
 }
 
-internal fun unitSquareCatalog(symbol: String): BuildingCatalogRepository =
+internal fun unitSquareCatalog(symbol: String, entrances: List<String> = emptyList()): BuildingCatalogRepository =
     BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
-        """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
+        val building =
             """{"type":"Feature","properties":{"kind":"building","symbols":["$symbol"],"osm_id":"way/1"},""" +
-            """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
+                """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}"""
+        val features = (listOf(building) + entrances).joinToString(separator = ",")
+        """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[$features]}"""
     }
+
+/** Obiekt GeoJSON wejścia [id] budynku [symbol] w punkcie (0, 0) z polami OpenStreetMap [tags]. */
+internal fun entranceFeature(symbol: String, id: String, tags: String): String =
+    """{"type":"Feature","properties":{"kind":"entrance","symbols":["$symbol"],"osm_id":"$id",$tags},""" +
+        """"geometry":{"type":"Point","coordinates":[0,0]}}"""

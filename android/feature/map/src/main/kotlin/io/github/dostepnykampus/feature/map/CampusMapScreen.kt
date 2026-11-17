@@ -96,9 +96,9 @@ private const val MAP_STATE = "map"
  *   małą kartę V2
  * @param onListBuildingClick symbol budynku dotkniętego na liście „Lista budynków”; aplikacja wybiera nim tryb
  *   karty V2 dla wejścia z listy
- * @param onEntrancesClick symbol budynku, którego V3 otwiera arkusz wejścia
  * @param mapView widok mapy; testy ekranu podają widok bez natywnej biblioteki
  * @param motion zapis ruchów mapy do budynku nad kartą V2, z których karta bierze czas; `null` bez zapisu
+ * @param onEntrancesClick symbol budynku, którego V3 otwiera arkusz wejścia
  * @param viewModel stan ekranu i zapis ostatniego widoku; w aplikacji z grafu Hilt, w testach z podróbkami źródeł
  */
 @Composable
@@ -109,9 +109,9 @@ fun CampusMapScreen(
     contentPadding: PaddingValues = PaddingValues(),
     onEmptyMapClick: () -> Unit = {},
     onListBuildingClick: (String) -> Unit = onBuildingClick,
-    onEntrancesClick: (String) -> Unit = {},
     mapView: CampusMapView = MapLibreMapView,
     motion: MapMotion? = null,
+    onEntrancesClick: (String) -> Unit = {},
     viewModel: CampusMapViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
