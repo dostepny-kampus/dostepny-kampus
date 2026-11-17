@@ -17,9 +17,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -43,6 +41,7 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.overlay.MapSheet
 
 /**
  * Arkusz „Który budynek?” na dole mapy po dotknięciu konturu wspólnego albo dwóch konturów w zasięgu 24 dp.
@@ -65,14 +64,9 @@ internal fun BuildingChoiceSheet(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     BackHandler(onBack = onClose)
-    Surface(modifier.fillMaxWidth(), shape = RoundedCornerShape(Zaokraglenia.duze), shadowElevation = Odstepy.s) {
-        Column(
-            Modifier.verticalScroll(rememberScrollState()).padding(Odstepy.m),
-            verticalArrangement = Arrangement.spacedBy(Odstepy.s),
-        ) {
-            SheetHeader(onClose)
-            content()
-        }
+    MapSheet(modifier) {
+        SheetHeader(onClose)
+        content()
     }
 }
 

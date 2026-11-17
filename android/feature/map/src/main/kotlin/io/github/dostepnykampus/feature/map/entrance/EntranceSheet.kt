@@ -8,18 +8,12 @@ package io.github.dostepnykampus.feature.map.entrance
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,12 +33,12 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Ikony
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
-import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.marking.mapMarkingImage
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.overlay.MapSheet
 import kotlin.math.ceil
 import io.github.dostepnykampus.core.designsystem.R as DesignR
 
@@ -67,31 +61,26 @@ internal fun EntranceSheet(
     onEntrancesClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(modifier.fillMaxWidth(), shape = RoundedCornerShape(Zaokraglenia.duze), shadowElevation = Odstepy.s) {
-        Column(
-            Modifier.verticalScroll(rememberScrollState()).padding(Odstepy.m),
-            verticalArrangement = Arrangement.spacedBy(Odstepy.s),
-        ) {
-            SheetTop(entrance, onClose)
+    MapSheet(modifier) {
+        SheetTop(entrance, onClose)
+        Text(
+            text = markingLine(entrance),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = Typografia.wyroznienieWaga,
+        )
+        entrance.name?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
+        if (entrance.marking == EntranceMarking.NO_DATA) {
             Text(
-                text = markingLine(entrance),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = Typografia.wyroznienieWaga,
-            )
-            entrance.name?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
-            if (entrance.marking == EntranceMarking.NO_DATA) {
-                Text(
-                    text = stringResource(R.string.mapa_wejscie_niesprawdzone),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            PinnedButton(
-                text = stringResource(R.string.karta_sprawdz),
-                onClick = { onEntrancesClick(entrance.buildingSymbol) },
-                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.mapa_wejscie_niesprawdzone),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        PinnedButton(
+            text = stringResource(R.string.karta_sprawdz),
+            onClick = { onEntrancesClick(entrance.buildingSymbol) },
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
