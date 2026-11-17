@@ -107,10 +107,12 @@ class ProgressViewModelTest {
             }
         runViewModelTest(source, StepClock(OPENED_AT, READ_AT)) { viewModel ->
             runCurrent()
-            assertEquals(ProgressUiState.Ready(listOf(before), OPENED_AT), viewModel.state.value, "po otwarciu")
+            val opened = ProgressUiState.Ready(listOf(before), OPENED_AT, names = NAMES)
+            assertEquals(opened, viewModel.state.value, "po otwarciu")
             viewModel.refresh()
             runCurrent()
-            assertEquals(ProgressUiState.Ready(listOf(DETAILED), READ_AT), viewModel.state.value, "po odświeżeniu")
+            val refreshed = ProgressUiState.Ready(listOf(DETAILED), READ_AT, names = NAMES)
+            assertEquals(refreshed, viewModel.state.value, "po odświeżeniu")
         }
     }
 
