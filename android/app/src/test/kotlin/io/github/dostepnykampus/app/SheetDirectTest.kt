@@ -22,6 +22,7 @@ import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasStateDescription
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -117,8 +118,10 @@ class SheetDirectTest {
         show()
         compose.onNodeWithContentDescription(EXPAND_HANDLE).performTouchInput { swipeDown() }
         compose.waitForIdle()
+        val handles = compose.onAllNodesWithContentDescription(EXPAND_HANDLE).fetchSemanticsNodes()
+        val tops = handles.map { it.boundsInRoot.top }
+        assertEquals("karta zamknięta po przeciągnięciu w dół, uchwyt na $tops px", emptyList<Float>(), tops)
         compose.onNodeWithText(SHOW_ON_MAP).assertDoesNotExist()
-        compose.onNodeWithContentDescription(EXPAND_HANDLE).assertDoesNotExist()
         compose.onNodeWithText("V1").assertExists("mapa V1 po zamknięciu")
     }
 
