@@ -144,8 +144,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz po „Wstecz” widzi znowu małą kartę nad mapą
     Oraz po „Zamknij” widzi mapę bez zaznaczonego budynku
 
-  # pełny test: #2846
-  @US2.8 @US1.4 @NFR-53 @aplikacja @do-zrobienia
+  @US2.8 @US1.4 @NFR-53 @aplikacja
   Scenariusz: Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
     Jeżeli dotknie budynku A-1
@@ -161,8 +160,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy nad małą kartą nie ma „Powiększ”, „Pomniejsz” ani strzałek przesuwania mapy
     Oraz po „Zamknij” przyciski mapy wracają
 
-  # pełny test: #2846
-  @US2.9 @aplikacja @do-zrobienia
+  @US2.9 @aplikacja
   Scenariusz: Z listy przy dużej czcionce opis budynku prowadzi do mapy
     Zakładając, że Gość niezalogowany ma skalę czcionki 2,0 i otwartą listę budynków
     Jeżeli wybierze budynek A-1
