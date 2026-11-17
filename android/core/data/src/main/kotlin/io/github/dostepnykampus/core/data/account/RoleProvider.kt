@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Dostawca konta i ról osoby; od niego zależą ekrany i pozycje paska dolnego. Konto zmienia się po
- * zalogowaniu i wylogowaniu, więc ekrany i wznowienie wysyłki je obserwują, a nie czytają raz.
+ * zalogowaniu i wylogowaniu, a ekrany obserwują te zmiany.
  *
  * Wymagania: US14.1
  */

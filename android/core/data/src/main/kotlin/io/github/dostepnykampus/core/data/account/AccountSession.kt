@@ -68,10 +68,7 @@ public class AccountSession
 
         private val restored = scope.launch { vault.read()?.takeIf { state.value == Account.Guest }?.let { keep(it) } }
 
-        /** Czeka na gotowość sesji z zapisanym logowaniem. */
-        internal suspend fun awaitRestore() {
-            restored.join()
-        }
+        internal suspend fun awaitRestore(): Unit = restored.join()
 
         /**
          * Loguje konto stanem logowania z Usługi logowania i zapisuje go do następnego uruchomienia.
