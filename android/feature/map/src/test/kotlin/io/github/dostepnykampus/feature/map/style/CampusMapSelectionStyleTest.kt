@@ -53,8 +53,6 @@ class CampusMapSelectionStyleTest {
             building = "#BFE0EC",
             buildingOutline = "#004E5E",
             selectedOutline = "#001F27",
-            dimmed = "#D6DBDD",
-            dimmedOutline = "#C2C9CC",
         )
     private val data = campusMapData(catalog)
     private val levelFill = """["case",["==",["get","detailed"],true],"#BFE0EC","#BFE0EC"]"""
@@ -67,15 +65,21 @@ class CampusMapSelectionStyleTest {
     }
 
     /**
-     * Barwy budynków to to samo wyrażenie stanu obiektu przy każdym zaznaczeniu, więc zaznaczenie nie wymaga
-     * nowego układu kafelków: budynki nie są przez chwilę czarne ani szare. Wymagania: US2.8, NFR-56
+     * Przygaszony budynek zostaje w swojej barwie: barwa tła i konturu nie zależy od stanu obiektu, a krycie to to
+     * samo wyrażenie stanu przy każdym zaznaczeniu. Zaznaczenie nie wymaga więc nowego układu kafelków i budynki nie
+     * są przez chwilę czarne ani szare. Wymagania: US2.8, NFR-16, NFR-56
      */
     @Test
     fun keepsColoursOnSelection() {
+        val plan = """["boolean",["feature-state","$UNDER_PLAN_STATE"],false]"""
         val state = """["boolean",["feature-state","$DIMMED_STATE"],false]"""
         listOf(style(), style(building = "A-1")).forEach { style ->
-            assertEquals("""["case",$state,"#D6DBDD",$levelFill]""", style.layer(BUILDINGS_LAYER).paint("fill-color"))
-            assertEquals("""["case",$state,"#C2C9CC","#004E5E"]""", style.layer("kontury").paint("line-color"))
+            val fill = style.layer(BUILDINGS_LAYER)
+            assertEquals(levelFill, fill.paint("fill-color"), "Barwa tła zależy od przygaszenia")
+            assertEquals("""["case",$plan,0.0,$state,0.4,1.0]""", fill.paint("fill-opacity"), "Krycie tła")
+            val outline = style.layer("kontury")
+            assertEquals("\"#004E5E\"", outline.paint("line-color"), "Barwa konturu zależy od przygaszenia")
+            assertEquals("""["case",$plan,0.0,$state,0.7,1.0]""", outline.paint("line-opacity"), "Krycie konturu")
         }
     }
 

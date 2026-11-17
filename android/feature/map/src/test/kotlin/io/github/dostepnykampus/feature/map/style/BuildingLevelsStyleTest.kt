@@ -38,12 +38,9 @@ class BuildingLevelsStyleTest {
             basicBuilding = "#DDECF1",
             buildingOutline = "#004E5E",
             selectedOutline = "#001F27",
-            dimmed = "#D6DBDD",
-            dimmedOutline = "#C2C9CC",
         )
     private val data = campusMapData(catalog)
     private val level = """["==",["get","detailed"],true]"""
-    private val state = """["boolean",["feature-state","$DIMMED_STATE"],false]"""
 
     @Test
     fun takesLevelFromCatalog() {
@@ -59,11 +56,7 @@ class BuildingLevelsStyleTest {
     @Test
     fun fillsByLevel() {
         val fill = style().layerById(BUILDINGS_LAYER).paintText(BUILDINGS_FILL)
-        assertEquals(
-            """["case",$state,"#D6DBDD",["case",$level,"#BFE0EC","#DDECF1"]]""",
-            fill,
-            "Budynek podstawowy nie ma bladego tła",
-        )
+        assertEquals("""["case",$level,"#BFE0EC","#DDECF1"]""", fill, "Budynek podstawowy nie ma bladego tła")
     }
 
     @Test
@@ -81,9 +74,9 @@ class BuildingLevelsStyleTest {
     fun dimsNeighboursOfBothLevels() {
         val fill = style(building = "A-2").layerById(BUILDINGS_LAYER).paintText(BUILDINGS_FILL)
         assertEquals(
-            """["case",$state,"#D6DBDD",["case",$level,"#BFE0EC","#DDECF1"]]""",
+            """["case",$level,"#BFE0EC","#DDECF1"]""",
             fill,
-            "Przygaszenie sąsiadów nie obejmuje obu poziomów albo budynki straciły poziom",
+            "Przygaszony budynek stracił barwę swojego poziomu",
         )
         val dimmed = selectionLook(data, data.selection(building = "A-2")).dimmed
         assertEquals(listOf(true, false), dimmed, "Przy zaznaczonym budynku podstawowym A-1 nie jest przygaszony")
