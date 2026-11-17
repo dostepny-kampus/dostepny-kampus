@@ -18,7 +18,7 @@ $przycisk("Zamknij")
 <i>1 budynek · 4 km</i>
 $tekst("[pozostałe tereny z danych: nazwa, liczba budynków, odległość]", "i")
 }
-$mapa("mapa terenu Kampus główny pod panelem; bez przycisków mapy i „Legendy”, dopóki panel jest otwarty")
+$mapa("mapa terenu Kampus główny pod panelem; bez przycisków mapy, dopóki panel jest otwarty")
 $pasek_dolny_konto()
 $ekran_koniec()
 @endsalt
