@@ -417,6 +417,8 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
     @Test
     @Config(qualifiers = "w360dp-h800dp")
     fun keepsFocusAboveSheet() {
+        ring = "[[0,0],[0.0003,0],[0.0003,0.0003],[0,0.0003],[0,0]]"
+        entrances = FAR_BUILDINGS_AROUND_C14
         var sheet by mutableStateOf(0.dp)
         compose.setContent { Screen(focus = "C-14", sheet = sheet) }
         compose.waitForIdle()

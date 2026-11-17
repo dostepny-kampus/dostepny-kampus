@@ -289,8 +289,8 @@ class BuildingOnMapCameraTest {
     }
 
     /**
-     * Wiersz: K3, po „Pokaż” i geście osoby na V1 mała karta budynku i „Wstecz” → mapa stoi na ekranie, budynek
-     * dalej widać. Widok mapy zgłasza kamerę tylko po geście osoby, więc przy otwartej karcie atrapa nic nie zgłasza.
+     * Wiersz: K3, po „Pokaż” i geście osoby na V1 mała karta budynku i „Wstecz” → mapa nie wraca, budynek
+     * dalej widać, powiększenie zostaje. Widok mapy zgłasza kamerę tylko po geście osoby, więc przy otwartej karcie atrapa nic nie zgłasza.
      *
      * Wymagania: US2.8, NFR-56
      */
@@ -303,10 +303,9 @@ class BuildingOnMapCameraTest {
         compose.runOnUiThread { touch(listOf("T-9")) }
         compose.waitForIdle()
         val above = shown.last().second
-        val under = bottomInset
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
         compose.waitForIdle()
         assertShown("T-9")
-        assertStays(above = above, under = under)
+        assertEquals("powiększenie zostaje", above.zoom, shown.last().second.zoom, 0.0)
     }
 }

@@ -6,12 +6,14 @@
 package io.github.dostepnykampus.feature.map
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.github.dostepnykampus.feature.map.camera.CameraMotion
-import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.CameraView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.shiftedNorth
@@ -36,21 +38,21 @@ internal class ShownCamera {
     }
 
     /**
-     * Ruch nad arkuszem [above], a gdy arkusz właśnie zniknął ([wasCovered], ale nie [isCovered]), ten sam obraz
-     * mapy pod paskiem wysokim na [bar]: środek niżej o połowę paska i zasłoniętego dołu, bez ruchu kamery. Ten
-     * widok trafia do [view]; gdy [view] już go ma albo arkusza nie było, wynik to `null`.
+     * Ten sam obraz mapy po zniknięciu arkusza ([wasCovered], ale nie [isCovered]) dla mapy pod paskiem wysokim na
+     * [bar]: ostatni widok ze środkiem niżej o połowę paska i zasłoniętego dołu. Ten widok raz trafia do [view],
+     * potem wynik to `null`; `null` także poza zamknięciem arkusza i wtedy, gdy zaznaczenie samo wyznacza widok
+     * ([CameraView.hasTarget]).
      */
     @Composable
-    fun rememberHeld(
-        above: CameraTransition?,
-        isCovered: Boolean,
-        wasCovered: Boolean,
-        bar: Dp,
-        view: CameraView,
-    ): CameraTransition? {
-        val left = remember(isCovered) { camera?.shiftedNorth(-(bar + covered).value / 2.0).takeIf { wasCovered } }
-        SideEffect { if (!isCovered) left?.let(view.keep) }
-        val still = left?.takeIf { !isCovered && it != view.camera }
-        return above ?: still?.let { CameraTransition(camera = it, motion = CameraMotion.NONE, durationMillis = 0) }
+    fun rememberLeft(isCovered: Boolean, wasCovered: Boolean, bar: Dp, view: CameraView): MapCamera? {
+        val isClosed = wasCovered && !isCovered && !view.hasTarget
+        val left = remember(isCovered) { camera?.shiftedNorth(-(bar + covered).value / 2.0).takeIf { isClosed } }
+        val keep by rememberUpdatedState(view.keep)
+        var isKept by remember(isCovered) { mutableStateOf(false) }
+        LaunchedEffect(left) {
+            left?.let(keep)
+            isKept = true
+        }
+        return left.takeUnless { isKept }
     }
 }

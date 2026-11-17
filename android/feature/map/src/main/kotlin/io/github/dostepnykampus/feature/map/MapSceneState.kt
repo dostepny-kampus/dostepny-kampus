@@ -138,8 +138,11 @@ internal fun rememberMapSceneState(
     val choices = rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }
     val isCovered = cover > 0.dp
     val density = LocalDensity.current
+    val last = remember { ShownCamera() }
+    val (isCoveredBefore, topBefore) = rememberPrevious(isCovered to top)
+    val left = last.rememberLeft(isCovered = isCovered, wasCovered = isCoveredBefore, bar = top, view = view)
     val shown =
-        view.camera?.let {
+        (left ?: view.camera)?.let {
             density.besideFloorColumn(camera = it, symbol = view.shown, catalog = catalog, layers = layers, size = size)
         }
     val own = shown ?: selection?.entrance?.let { MapCamera(center = it.location, zoom = ENTRANCE_ZOOM) }
@@ -152,8 +155,6 @@ internal fun rememberMapSceneState(
     val free = density.freeMap(size, cover)
     val fit = free.copy(heightDp = free.heightDp - reserve.value)
     val outline = layers?.run { outlinesBySymbol[selection?.building] }.takeIf { isCovered }
-    val last = remember { ShownCamera() }
-    val (isCoveredBefore, topBefore) = rememberPrevious(isCovered to top)
     val scale = rememberAnimatorScale()
     val origin = remember { PickOrigin(isUnderCard = isCovered) }
     SideEffect { origin.follow(selection?.building) }
@@ -170,9 +171,7 @@ internal fun rememberMapSceneState(
     }
     val card = rememberCardMove(building = selection?.building, pick = pick)
     val above = card.move?.takeIf { isCovered }
-    val held =
-        last.rememberHeld(above = above, isCovered = isCovered, wasCovered = isCoveredBefore, bar = top, view = view)
-    val move = held ?: uncovered?.byControl()
+    val move = above ?: uncovered?.byControl()
     SideEffect { last.keep(shown = move?.camera, covered = cover + reserve, isAbove = above != null) }
     val inset = sheetOrBarInset(isAbove = above != null, top = topInset, bottom = bottomInset)
     return MapSceneState(
