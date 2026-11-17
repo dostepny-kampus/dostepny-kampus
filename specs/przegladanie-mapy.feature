@@ -58,8 +58,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | Odwiedzający       | archiwalne    | nie jest widoczne   |
       | Odwiedzający       | przyjęte      | jest widoczne       |
 
-  # @do-zrobienia #2976: oznaczenie wejścia ma jeszcze plakietkę zamiast znaku z mapy.
-  @US2.1 @aplikacja @do-zrobienia
+  @US2.1 @aplikacja
   Scenariusz: Wejście ma oznaczenie znakiem z mapy i słowem, nie tylko kolorem
     Zakładając, że Gość niezalogowany otworzył kartę budynku A-1
     Jeżeli przejrzy listę wejść
