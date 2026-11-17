@@ -310,8 +310,9 @@ private fun pickMove(
     return cameraTransition(from = from, outline = outline, free = free, animationScale = scale, keepsZoom = keepsZoom)
 }
 
+/** Skala animacji systemu („Skala długości animacji”); 0 przy „Usuń animacje”. Wymagania: NFR-56 */
 @Composable
-private fun rememberAnimatorScale(): Float {
+internal fun rememberAnimatorScale(): Float {
     val resolver = LocalContext.current.contentResolver
     return remember(resolver) { Settings.Global.getFloat(resolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) }
 }

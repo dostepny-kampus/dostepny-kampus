@@ -148,6 +148,9 @@ internal interface MapStyleTarget {
 
     /** Dodaje albo zastępuje obraz [name]. */
     fun image(name: String, image: Bitmap)
+
+    /** Zmienia krycie warstwy [layer] na [opacity] w ciągu [millis] ms; 0 ms od razu. */
+    fun fade(layer: String, opacity: Float, millis: Long)
 }
 
 /**
@@ -183,6 +186,16 @@ internal fun MapStyleTarget.showSelection(look: SelectionLook, images: Map<Strin
 internal fun MapStyleTarget.showBasemap(basemap: Basemap?) {
     val area = basemap?.minZoom ?: 0.0
     BASEMAP_LAYERS.forEach { minZoom(layer = it, zoom = basemapMinZoom(layer = it, area = area)) }
+}
+
+/** Ukrywa podkład do wczytania jego kafelków; odsłania go [revealBasemap]. Wymagania: US1.8, NFR-56 */
+internal fun MapStyleTarget.hideBasemap() {
+    BASEMAP_LAYERS.forEach { fade(layer = it, opacity = 0f, millis = 0L) }
+}
+
+/** Odsłania podkład ukryty przez [hideBasemap], przenikaniem w [millis] ms. Wymagania: US1.8, NFR-56 */
+internal fun MapStyleTarget.revealBasemap(millis: Long) {
+    BASEMAP_LAYERS.forEach { fade(layer = it, opacity = 1f, millis = millis) }
 }
 
 /**

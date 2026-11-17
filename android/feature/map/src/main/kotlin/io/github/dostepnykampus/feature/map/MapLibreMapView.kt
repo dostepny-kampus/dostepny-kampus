@@ -36,6 +36,7 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.feature.map.barrier.barrierImages
 import io.github.dostepnykampus.feature.map.building.entranceCaption
 import io.github.dostepnykampus.feature.map.building.entranceImages
+import io.github.dostepnykampus.feature.map.camera.BasemapReveal
 import io.github.dostepnykampus.feature.map.camera.CameraController
 import io.github.dostepnykampus.feature.map.camera.CameraMotion
 import io.github.dostepnykampus.feature.map.camera.CameraPort
@@ -69,7 +70,9 @@ import io.github.dostepnykampus.feature.map.style.MapTileHttpEntryPoint
 import io.github.dostepnykampus.feature.map.style.SelectionLook
 import io.github.dostepnykampus.feature.map.style.asStyleText
 import io.github.dostepnykampus.feature.map.style.campusMapShell
+import io.github.dostepnykampus.feature.map.style.hideBasemap
 import io.github.dostepnykampus.feature.map.style.rememberMapImages
+import io.github.dostepnykampus.feature.map.style.revealBasemap
 import io.github.dostepnykampus.feature.map.style.selectionLook
 import io.github.dostepnykampus.feature.map.style.showBasemap
 import io.github.dostepnykampus.feature.map.style.showData
@@ -93,13 +96,17 @@ import org.maplibre.android.style.expressions.Expression
 import org.maplibre.android.style.layers.FillLayer
 import org.maplibre.android.style.layers.LineLayer
 import org.maplibre.android.style.layers.PaintPropertyValue
+import org.maplibre.android.style.layers.PropertyFactory
 import org.maplibre.android.style.layers.SymbolLayer
+import org.maplibre.android.style.layers.TransitionOptions
 import org.maplibre.android.style.sources.GeoJsonSource
 import org.maplibre.geojson.Feature
 import timber.log.Timber
+import kotlin.math.roundToLong
 
 private const val LABEL_MAX_FONT_SCALE = 1.4f
 private const val TOUCH_TOLERANCE_DP = 24f
+private const val BASEMAP_FADE_MILLIS = 200f
 
 /**
  * Widok MapLibre Android bez kluczy i kont (ADR-0005); logo i podpis biblioteki zastępuje podpis ekranu. Podpis konturu
@@ -142,6 +149,7 @@ object MapLibreMapView : CampusMapView {
         val basemap = remember(selection.bounds, size, density) { density.basemapOf(selection.bounds, size) }
         val area = styleAreaOf(selection = selection, basemap = basemap)
         val areas = remember { FlightArea(area) }
+        val reveal = remember { BasemapReveal() }
         val currentMove by rememberUpdatedState(move)
         val currentInset by rememberUpdatedState(inset)
         val currentData by rememberUpdatedState(data)
@@ -172,7 +180,9 @@ object MapLibreMapView : CampusMapView {
             images = images,
             colors = styleColors,
             area = areas.shown,
+            reveal = reveal,
         )
+        map.FollowBasemapReveal(mapView = mapView, reveal = reveal, area = areas.shown)
         map.FollowEachMoveOnce(move = move, inset = inset, limits = limits, area = area, areas = areas, view = mapView)
         AndroidView(factory = { mapView }, modifier = modifier.onSizeChanged { size = it })
     }
@@ -224,6 +234,7 @@ object MapLibreMapView : CampusMapView {
         images: MapImages,
         colors: MapStyleColors,
         area: StyleArea,
+        reveal: BasemapReveal,
     ) {
         val map = this
         val style = rememberMapStyle(selection = area.area, colors = colors, basemap = area.basemap)
@@ -244,6 +255,8 @@ object MapLibreMapView : CampusMapView {
                     MapTrace.endStyle(load)
                     ready.addMapImages(images = images)
                     StyleTarget(ready).showSelection(currentLook, selectionImages(currentSelection, images))
+                    StyleTarget(ready).hideBasemap()
+                    reveal.hide()
                     shown = built
                     loaded = ready
                 }
@@ -266,9 +279,30 @@ object MapLibreMapView : CampusMapView {
         DisposableEffect(loaded, area) {
             loaded?.takeIf { area != shown }?.let { ready ->
                 StyleTarget(ready).showBasemap(basemap = area.basemap)
+                StyleTarget(ready).hideBasemap()
+                reveal.hide()
                 shown = area
             }
             onDispose {}
+        }
+    }
+
+    @Composable
+    private fun MapLibreMap?.FollowBasemapReveal(mapView: MapView, reveal: BasemapReveal, area: StyleArea) {
+        val map = this
+        val fadeMillis = (BASEMAP_FADE_MILLIS * rememberAnimatorScale()).roundToLong()
+        val currentArea by rememberUpdatedState(area)
+        DisposableEffect(mapView, map) {
+            val listener =
+                MapView.OnDidFinishRenderingFrameListener { isFull, _, _ ->
+                    val style: Style? = map?.style
+                    val zoom = map?.run { cameraPosition.zoom } ?: 0.0
+                    val isDue = reveal.frame(isFull = isFull, zoom = zoom, minZoom = currentArea.hiddenBelow)
+                    val isLoaded = style != null && style.isFullyLoaded
+                    if (isLoaded && isDue) StyleTarget(style).revealBasemap(millis = fadeMillis)
+                }
+            mapView.addOnDidFinishRenderingFrameListener(listener)
+            onDispose { mapView.removeOnDidFinishRenderingFrameListener(listener) }
         }
     }
 
@@ -477,6 +511,29 @@ object MapLibreMapView : CampusMapView {
         }
 
         override fun image(name: String, image: Bitmap) = style.addImage(name, image)
+
+        override fun fade(layer: String, opacity: Float, millis: Long) {
+            val transition = TransitionOptions(millis, 0L)
+            when (val found = style.getLayer(layer)) {
+                is FillLayer -> {
+                    found.setFillOpacityTransition(transition)
+                    found.setProperties(PropertyFactory.fillOpacity(opacity))
+                }
+
+                is LineLayer -> {
+                    found.setLineOpacityTransition(transition)
+                    found.setProperties(PropertyFactory.lineOpacity(opacity))
+                }
+
+                is SymbolLayer -> {
+                    found.setTextOpacityTransition(transition)
+                    found.setIconOpacityTransition(transition)
+                    found.setProperties(PropertyFactory.textOpacity(opacity), PropertyFactory.iconOpacity(opacity))
+                }
+
+                else -> {}
+            }
+        }
 
         private fun expressionOf(value: JsonElement): Expression = Expression.Converter.convert(value.asStyleText())
     }
