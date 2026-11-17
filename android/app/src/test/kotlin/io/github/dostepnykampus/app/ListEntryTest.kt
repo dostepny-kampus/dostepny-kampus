@@ -135,7 +135,7 @@ class ListEntryTest {
         compose.onNode(sheetHandle(isExpanded = false)).assertDoesNotExist()
         compose.onNodeWithText(OSM_START, substring = true).assertDoesNotExist()
         compose.onNodeWithText(BUILDING_ON_MAP).performScrollTo().performClick()
-        compose.waitForIdle()
+        compose.waitUntil(timeoutMillis = 5_000) { selected == "A-1" }
         compose.onNodeWithText(OSM_START, substring = true).assertExists("mapa po „Pokaż budynek na mapie”")
         compose.onNode(ListedA1).assertDoesNotExist()
         assertEquals("zaznaczony budynek", "A-1", selected)

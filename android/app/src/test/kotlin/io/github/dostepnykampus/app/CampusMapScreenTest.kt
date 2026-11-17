@@ -138,6 +138,16 @@ private const val C14_ENTRANCE_ON_EAST_EDGE =
     """,{"type":"Feature","properties":{"kind":"entrance","symbols":["C-14"],"osm_id":"node/5","entrance":"yes"},""" +
         """"geometry":{"type":"Point","coordinates":[0.001,0.0005]}}"""
 
+private fun squareBuilding(symbol: String, osmId: Int, from: Double, to: Double): String {
+    val ring = "[[$from,$from],[$to,$from],[$to,$to],[$from,$to],[$from,$from]]"
+    return """,{"type":"Feature","properties":{"kind":"building","symbols":["$symbol"],"osm_id":"way/$osmId"},""" +
+        """"geometry":{"type":"Polygon","coordinates":[$ring]}}"""
+}
+
+private val FAR_BUILDINGS_AROUND_C14 =
+    squareBuilding(symbol = "X-1", osmId = 2, from = -0.011, to = -0.01) +
+        squareBuilding(symbol = "X-2", osmId = 3, from = 0.011, to = 0.012)
+
 private val MAP_BUTTONS_ABOVE_CARD =
     listOf(
         "Powiększ",
@@ -404,7 +414,7 @@ class CampusMapScreenTest {
     @Config(qualifiers = "w360dp-h800dp")
     fun showsWholeBuildingAboveCard() {
         ring = "[[0,0],[0.001,0],[0.001,0.001],[0,0.001],[0,0]]"
-        entrances = C14_ENTRANCE_ON_EAST_EDGE
+        entrances = C14_ENTRANCE_ON_EAST_EDGE + FAR_BUILDINGS_AROUND_C14
         compose.setContent { Screen(focus = "C-14", sheet = 400.dp) }
         compose.waitForIdle()
         val root = compose.onRoot().getBoundsInRoot()
@@ -413,10 +423,13 @@ class CampusMapScreenTest {
         val covered = with(compose.density) { (insets.last() + tops.last()).toFloat().toDp() }
         val visible = (root.bottom - root.top - covered).value
         val points = SMALL_OUTLINE_CORNERS + GeoPoint(longitude = 0.001, latitude = 0.0005)
-        points.forEach { assertTrue("$it nad kartą, kamera $above", above.shows(it, root.right.value, visible)) }
-        MAP_BUTTONS_ABOVE_CARD.forEach {
-            val button = compose.onNodeWithContentDescription(it).getBoundsInRoot()
-            assertTrue("$it nad kartą", button.bottom <= cardTop)
+        points.forEach { point ->
+            val isShown = above.shows(point = point, widthDp = root.right.value, heightDp = visible)
+            assertTrue("$point nad kartą, kamera $above", isShown)
+        }
+        MAP_BUTTONS_ABOVE_CARD.forEach { name ->
+            val button = compose.onNodeWithContentDescription(name).getBoundsInRoot()
+            assertTrue("$name nad kartą", button.bottom <= cardTop)
         }
         compose.onNodeWithContentDescription("Pomniejsz").performClick()
         compose.waitForIdle()
