@@ -68,6 +68,19 @@ class MapMotion {
         }
     }
 
+    /**
+     * Czeka do końca pierwszego ruchu mapy po ruchu numer [after] (wartość [moves] z chwili, gdy element czeka);
+     * bez ruchu w ciągu [MOVE_WAIT_MILLIS] zegara klatek kończy od razu.
+     */
+    suspend fun awaitEnd(after: Int) {
+        if (moves > after || awaitMove(after)) {
+            val end = withFrameMillis { it } + durationMillis
+            do {
+                val now = withFrameMillis { it }
+            } while (now < end)
+        }
+    }
+
     private suspend fun awaitMove(after: Int): Boolean {
         val start = withFrameMillis { it }
         while (moves <= after) {
