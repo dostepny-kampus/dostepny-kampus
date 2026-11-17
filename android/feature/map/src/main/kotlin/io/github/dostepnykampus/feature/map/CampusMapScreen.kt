@@ -257,7 +257,7 @@ private fun CampusMap(
     val isKeyboardOpen = rememberKeyboardOpenFlag()
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
-    val signs = rememberSignSheetState()
+    val signs = rememberSignSheetState(focus = focus, cover = cover, onCardClose = onEmptyMapClick)
     val width = with(LocalDensity.current) { size.width.toDp() }
     val notice = rememberNoticeHeight(shift = areas.selectionNotice, width = width)
     val state =
