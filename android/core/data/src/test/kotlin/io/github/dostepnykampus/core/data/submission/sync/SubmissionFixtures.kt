@@ -29,14 +29,12 @@ internal object SubmissionFixtures {
 
     /** Serwer, który tworzy zgłoszenie przez [create], a zdjęcia i edycje przyjmuje bez błędu. */
     fun acceptingServer(
-        subject: () -> String? = { "konto-testowe" },
         create: suspend (id: String, content: SubmissionContent) -> ServerReply<Submission>,
     ): SubmissionServer =
         submissionServer(
             create = create,
             putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
             update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content))) },
-            subject = subject,
         )
 
     /** Jedno zdjęcie [id] zapisane jako plik w katalogu [dir]. */

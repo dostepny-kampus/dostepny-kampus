@@ -6,6 +6,11 @@
 package io.github.dostepnykampus.core.data.submission.sync
 
 import io.github.dostepnykampus.core.data.CapturedLogs
+import io.github.dostepnykampus.core.data.account.jwtOf
+import io.github.dostepnykampus.core.data.account.sessionOf
+import io.github.dostepnykampus.core.data.inspection.FakeMarkerQueue
+import io.github.dostepnykampus.core.data.inspection.MarkerSync
+import io.github.dostepnykampus.core.data.inspection.floorMarkersOf
 import io.github.dostepnykampus.core.data.server.ServerEdit
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -13,6 +18,9 @@ import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
+import io.github.dostepnykampus.core.network.ApiResult
+import io.github.dostepnykampus.core.network.auth.AccessTokens
+import io.github.dostepnykampus.core.network.inspection.MarkerChangeResult
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -191,12 +199,51 @@ class SubmissionQueueTest {
             assertEquals(listOf("z-pierwsze", "a-drugie"), sent)
         }
 
-    private fun queue(onSaved: () -> Unit = {}): SubmissionQueue =
+    /** Scenariusz: synchronizacja.feature: Kolejki czekają na zalogowanie właściciela */
+    @Test
+    fun waitsForSameOwnerAfterLogin() =
+        runBlocking {
+            val tokens = AccessTokens()
+            var scheduled = 0
+            val submissions = queue(subject = tokens::subject, onSaved = { scheduled++ })
+            val session = sessionOf(tokens, onLogin = submissions::onLoggedIn)
+            val markerOwners = mutableListOf<String>()
+            val pending = FakeMarkerQueue()
+            val markers = floorMarkersOf(queue = pending, subjects = tokens.subjects)
+            val sync =
+                MarkerSync(pending, tokens::subject) { owner, changes ->
+                    markerOwners += owner
+                    ApiResult.Success(changes.map { MarkerChangeResult(it.operationId, isApplied = true) })
+                }
+
+            session.signIn(jwtOf("""{"sub":"a","realm_access":{"roles":["COLLECTOR"]}}"""))
+            submissions.save(fullContent(), drafts())
+            markers.mark("A-1", "p2")
+            store.createResults.add(ServerReply.Fault(401))
+            submissions.sendAll()
+            assertTrue(submissions.loginExpired.value, "odmowa serwera wstrzymuje wysyłkę")
+
+            session.signIn(jwtOf("""{"sub":"b","realm_access":{"roles":["COLLECTOR"]}}"""))
+            submissions.sendAll()
+            sync.sendAll()
+            assertEquals(1, creates, "drugie konto nie próbuje wysłać zgłoszenia")
+            assertTrue(markerOwners.isEmpty(), "drugie konto nie próbuje wysłać znacznika")
+
+            session.signIn(jwtOf("""{"sub":"a","realm_access":{"roles":["COLLECTOR"]}}"""))
+            submissions.sendAll()
+            sync.sendAll()
+            assertEquals(listOf(SENT_ID), store.created, "zgłoszenie wysłane po powrocie właściciela")
+            assertEquals(listOf("a"), markerOwners, "znacznik wysłany przez właściciela")
+            assertEquals(4, scheduled, "zapis i każde logowanie planują wysyłkę")
+        }
+
+    private fun queue(subject: () -> String? = { "konto-testowe" }, onSaved: () -> Unit = {}): SubmissionQueue =
         SubmissionQueue(
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
                 submissionServer(
+                    subject = subject,
                     create = { _, content ->
                         creates++
                         store.createResults.removeFirstOrNull() ?: serverSubmission(content)

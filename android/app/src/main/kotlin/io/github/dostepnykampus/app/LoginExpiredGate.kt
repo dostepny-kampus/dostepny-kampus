@@ -37,11 +37,7 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
  * @param content aplikacja pod napisem
  */
 @Composable
-fun LoginExpiredGate(
-    isExpired: Boolean,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
+fun LoginExpiredGate(isExpired: Boolean, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     val top = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
     Column(modifier = modifier) {
         if (isExpired) {
