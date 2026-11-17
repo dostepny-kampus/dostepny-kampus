@@ -9,9 +9,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import timber.log.Timber
+import kotlin.math.abs
 
 private const val PADDING_MILLIS = 300L
 private const val RESUME_MILLIS = 300L
+private const val SAME_INSET_PX = 1.0
 
 /**
  * Kamera mapy, którą zmienia tylko [CameraController]: MapLibre w aplikacji, udawana mapa w teście.
@@ -79,7 +81,7 @@ internal class CameraController(private val port: CameraPort) {
     fun move(move: CameraTransition, inset: MapInset) {
         isByPerson = false
         isResumed = false
-        if (state == CameraMoveState.Idle && move.camera.isSameView(port.camera) && inset == port.inset) {
+        if (state == CameraMoveState.Idle && move.camera.isSameView(port.camera) && inset.isSameInset(port.inset)) {
             Timber.d(stayLine(port.camera))
             return
         }
@@ -89,7 +91,7 @@ internal class CameraController(private val port: CameraPort) {
     /** Nowe dopełnienie [next]: w spoczynku dosuwa kamerę, w trakcie ruchu czeka na jego koniec. */
     fun pad(next: MapInset) {
         goalInset = next
-        if (state == CameraMoveState.Idle && next != port.inset) padNow(next)
+        if (state == CameraMoveState.Idle && !next.isSameInset(port.inset)) padNow(next)
     }
 
     /** Nowe granice terenu [next] (`null` bez granic); w trakcie ruchu czekają na jego koniec. */
@@ -129,7 +131,7 @@ internal class CameraController(private val port: CameraPort) {
         }
         state = CameraMoveState.Idle
         port.rest(limits)
-        if (goalInset != port.inset) padNow(goalInset)
+        if (!goalInset.isSameInset(port.inset)) padNow(goalInset)
     }
 
     private fun padNow(next: MapInset) {
@@ -137,3 +139,6 @@ internal class CameraController(private val port: CameraPort) {
         start(move = CameraTransition(port.camera, CameraMotion.EASE, PADDING_MILLIS), inset = next)
     }
 }
+
+private fun MapInset.isSameInset(other: MapInset): Boolean =
+    abs(top - other.top) < SAME_INSET_PX && abs(bottom - other.bottom) < SAME_INSET_PX
