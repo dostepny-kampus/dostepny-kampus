@@ -38,18 +38,18 @@ internal data class PlanSign(
  * Wymagania: US16.1
  */
 internal fun ShownPlan.signOf(id: String): PlanSign? {
-    val (floor, room) =
+    val found =
         rooms.firstNotNullOfOrNull { (floor, list) -> list.rooms.firstOrNull { it.id == id }?.let { floor to it } }
-            ?: return null
-    val title =
-        when (room.category) {
-            RoomCategory.ACCESSIBLE_TOILET -> R.string.mapa_plan_toaleta
-            RoomCategory.STAIRCASE -> R.string.mapa_plan_schody
-            else -> return null
-        }
-    val label = floors.firstOrNull { it.id == floor }?.label ?: return null
-    return PlanSign(title = title, building = building, floor = label)
+    val title = found?.let { PLAN_SIGN_TITLES[it.second.category] }
+    val label = found?.let { (floor, _) -> floors.firstOrNull { it.id == floor }?.label }
+    return if (title != null && label != null) PlanSign(title = title, building = building, floor = label) else null
 }
+
+private val PLAN_SIGN_TITLES =
+    mapOf(
+        RoomCategory.ACCESSIBLE_TOILET to R.string.mapa_plan_toaleta,
+        RoomCategory.STAIRCASE to R.string.mapa_plan_schody,
+    )
 
 /**
  * Arkusz znaku planu w pomieszczeniu [id] z [plan] po dotknięciu znaku na mapie V1: nazwa znaku z „Zamknij”,
