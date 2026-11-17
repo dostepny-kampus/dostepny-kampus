@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.DeviceConfigurationOverride
 import androidx.compose.ui.test.FontScale
 import androidx.compose.ui.test.WindowSize
@@ -25,6 +26,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeDown
@@ -123,13 +125,17 @@ class SheetDirectTest {
             List(size = 60) {
                 compose.mainClock.advanceTimeByFrame()
                 val shown = compose.onAllNodesWithContentDescription(EXPAND_HANDLE).fetchSemanticsNodes()
-                shown.map { node -> node.boundsInRoot.top }
+                shown.map { node ->
+                    val word = node.config.getOrNull(SemanticsProperties.StateDescription)
+                    "${node.boundsInRoot.top} $word"
+                }
             }
         compose.mainClock.autoAdvance = true
         compose.waitForIdle()
         val handles = compose.onAllNodesWithContentDescription(EXPAND_HANDLE).fetchSemanticsNodes()
         val tops = handles.map { it.boundsInRoot.top }
-        val message = "karta zamknięta po przeciągnięciu w dół, uchwyt na $tops px, droga $path"
+        val root = compose.onRoot().fetchSemanticsNode().boundsInRoot
+        val message = "karta zamknięta po przeciągnięciu w dół, uchwyt na $tops px, okno $root, droga $path"
         assertEquals(message, emptyList<Float>(), tops)
         compose.onNodeWithText(SHOW_ON_MAP).assertDoesNotExist()
         compose.onNodeWithText("V1").assertExists("mapa V1 po zamknięciu")
