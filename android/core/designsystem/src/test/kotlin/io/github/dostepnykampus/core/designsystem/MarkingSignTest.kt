@@ -60,7 +60,11 @@ class MarkingSignTest {
         }
     }
 
-    /** Każde oznaczenie ma słowo ze słownika i ten sam obraz znaku co na mapie, w obu motywach. */
+    /**
+     * Każde oznaczenie ma słowo ze słownika i ten sam obraz znaku co na mapie, w obu motywach, bez barwnego tła.
+     * Scenariusz (częściowo): przegladanie-mapy.feature:
+     *   Wejście ma oznaczenie znakiem z mapy i słowem, nie tylko kolorem
+     */
     @Test
     fun drawsMapSignAndWord() {
         assertSignsAndWords()

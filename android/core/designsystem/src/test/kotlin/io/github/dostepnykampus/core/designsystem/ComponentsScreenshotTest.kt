@@ -22,7 +22,7 @@ import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
-import io.github.dostepnykampus.core.designsystem.marking.MarkingChip
+import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -78,7 +78,7 @@ class ComponentsScreenshotTest {
                 GroupContainer(title = "Wejścia", modifier = Modifier.padding(horizontal = Odstepy.m)) {
                     Text(text = "Wejście dostosowane", style = MaterialTheme.typography.titleMedium)
                     EntranceMarking.entries.forEach {
-                        MarkingChip(marking = it, modifier = Modifier.padding(vertical = Odstepy.xs))
+                        MarkingSign(marking = it, modifier = Modifier.padding(vertical = Odstepy.xs))
                     }
                 }
                 PinnedActionBar(modifier = Modifier.padding(top = Odstepy.l)) {
