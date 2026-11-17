@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,11 +14,14 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.barrier.ChosenBarrierSheet
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
 import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.entrance.ChosenEntranceSheet
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
 /**
  * Znak [sign] obiektu o identyfikatorze [id] dotknięty na mapie V1, z otwartym arkuszem; [card] to symbol budynku,
@@ -44,9 +48,17 @@ internal class SignSheetState(initial: ChosenSign?) {
     val barrierId: String?
         get() = chosen?.takeIf { it.sign == TouchSign.BARRIER }?.id
 
-    /** Otwiera arkusz znaku [sign] obiektu [id] w miejsce poprzedniego albo karty budynku [card]. */
-    fun open(sign: TouchSign, id: String, card: String? = null) {
-        chosen = ChosenSign(sign = sign, id = id, card = card)
+    /** Symbol budynku z otwartą kartą pod mapą; `null` bez karty. */
+    var card: String? = null
+
+    /** Zamyka kartę budynku [card]. */
+    var onCardClose: () -> Unit = {}
+
+    /** Otwiera arkusz znaku [sign] obiektu [id] w miejsce poprzedniego albo karty budynku [card], zamykając ją. */
+    fun open(sign: TouchSign, id: String) {
+        val under = card
+        chosen = ChosenSign(sign = sign, id = id, card = under)
+        if (under != null) onCardClose()
     }
 
     /** Zamyka arkusz. */
@@ -70,10 +82,23 @@ private val signSheetSaver: Saver<SignSheetState, List<String>> =
         },
     )
 
-/** Stan arkusza znaku zachowany przy zmianie konfiguracji; na początku bez arkusza. */
+/**
+ * Stan arkusza znaku zachowany przy zmianie konfiguracji; na początku bez arkusza.
+ *
+ * @param focus zaznaczenie z trasy; budynek z niego ma kartę, gdy [cover] jest większe od zera
+ * @param cover wysokość karty budynku zasłaniającej mapę od dołu
+ * @param onCardClose zamyka kartę budynku
+ */
 @Composable
-internal fun rememberSignSheetState(): SignSheetState =
-    rememberSaveable(saver = signSheetSaver) { SignSheetState(null) }
+internal fun rememberSignSheetState(focus: MapFocus?, cover: Dp, onCardClose: () -> Unit): SignSheetState {
+    val state = rememberSaveable(saver = signSheetSaver) { SignSheetState(null) }
+    val card = (focus as? MapFocus.Building)?.symbol.takeIf { cover > 0.dp }
+    SideEffect {
+        state.card = card
+        state.onCardClose = onCardClose
+    }
+    return state
+}
 
 /**
  * Arkusz znaku z [signs]: bariera spośród [barriers] albo wejście z [catalog]; bez znaku arkusza nie ma.

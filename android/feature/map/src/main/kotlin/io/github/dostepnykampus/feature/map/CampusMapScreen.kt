@@ -257,7 +257,7 @@ private fun CampusMap(
     val isKeyboardOpen = rememberKeyboardOpenFlag()
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
-    val signs = rememberSignSheetState()
+    val signs = rememberSignSheetState(focus = focus, cover = cover, onCardClose = onEmptyMapClick)
     val width = with(LocalDensity.current) { size.width.toDp() }
     val notice = rememberNoticeHeight(shift = areas.selectionNotice, width = width)
     val state =
@@ -286,12 +286,7 @@ private fun CampusMap(
                     plan.onView(view.also { state.keep(it) })
                 },
                 onBuildingsTouch = { state.touch(it, onBuildingClick, onEmptyMapClick).also { signs.close() } },
-                onSignTouch = { touched, id ->
-                    val card = (focus as? MapFocus.Building)?.symbol?.takeIf { cover > 0.dp }
-                    signs.open(sign = touched, id = id, card = card)
-                    if (cover > 0.dp) onEmptyMapClick()
-                    state.dismiss()
-                },
+                onSignTouch = { touched, id -> signs.open(touched, id).also { state.dismiss() } },
                 modifier = Modifier.fillMaxSize(),
             )
             scene.selection.entrance?.let { EntranceDescription(it) }
