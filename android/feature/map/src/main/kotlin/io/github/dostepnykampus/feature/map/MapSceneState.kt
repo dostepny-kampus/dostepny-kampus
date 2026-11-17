@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
-import io.github.dostepnykampus.feature.map.camera.CameraMotion
 import io.github.dostepnykampus.feature.map.camera.CameraSaver
 import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.ENTRANCE_ZOOM
@@ -42,7 +41,6 @@ import io.github.dostepnykampus.feature.map.camera.fitted
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.pickLine
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
-import io.github.dostepnykampus.feature.map.camera.shiftedNorth
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
@@ -172,11 +170,9 @@ internal fun rememberMapSceneState(
     }
     val card = rememberCardMove(building = selection?.building, pick = pick)
     val above = card.move?.takeIf { isCovered }
-    val left = remember(isCovered) { last.leftUnder(bar = top).takeIf { isCoveredBefore && !isCovered } }
-    SideEffect { left?.let(view.keep) }
-    val stays = left?.takeIf { it != view.camera }?.still()
-    val move = above ?: stays ?: uncovered?.byControl()
-    SideEffect { last.keep(shown = move?.camera, covered = if (above != null) cover + reserve else 0.dp) }
+    val held = last.rememberHeld(above, isCovered, wasCovered = isCoveredBefore, bar = top, view = view)
+    val move = held ?: uncovered?.byControl()
+    SideEffect { last.keep(shown = move?.camera, covered = cover + reserve, isAbove = above != null) }
     val inset = sheetOrBarInset(isAbove = above != null, top = topInset, bottom = bottomInset)
     return MapSceneState(
         scene = scene,
@@ -198,9 +194,6 @@ internal fun rememberMapSceneState(
  * @property landing wolna część mapy, w której staje widok po wyborze terenu
  */
 internal data class SceneCamera(val move: CameraTransition, val inset: MapInset, val landing: FreeMap)
-
-private fun MapCamera.still(): CameraTransition =
-    CameraTransition(camera = this, motion = CameraMotion.NONE, durationMillis = 0)
 
 private fun sheetOrBarInset(isAbove: Boolean, top: Double, bottom: Double): MapInset =
     if (isAbove) MapInset(bottom = bottom) else MapInset(top = top)
@@ -257,28 +250,6 @@ internal fun rememberNoticeReserve(building: String?, notice: Dp): Dp = remember
 
 /** Ruch mapy nad arkuszem V2 [move] i zapis widoku po ruchu osoby [keep]. */
 internal data class CardMove(val move: CameraTransition?, val keep: (MapCamera) -> Unit)
-
-/**
- * Ostatni widok podany mapie i zasłonięty wtedy dół mapy: początek ruchu do następnego wybranego budynku i widok po
- * zamknięciu karty. Nie jest stanem kompozycji.
- */
-private class ShownCamera {
-    private var camera: MapCamera? = null
-    private var covered = 0.dp
-
-    fun startOr(fallback: MapCamera?): MapCamera? = camera ?: fallback
-
-    /**
-     * Ten sam obraz mapy po zdjęciu arkusza: widok liczony dla mapy pod paskiem wysokim na [bar], ze środkiem
-     * niżej o połowę paska i zasłoniętego wcześniej dołu; `null` bez ostatniego widoku.
-     */
-    fun leftUnder(bar: Dp): MapCamera? = camera?.shiftedNorth(-(bar + covered).value / 2.0)
-
-    fun keep(shown: MapCamera?, covered: Dp) {
-        camera = shown
-        this.covered = covered
-    }
-}
 
 @Composable
 private fun MapMotion?.RecordPick(pick: CameraTransition?, line: (CameraTransition) -> String) {
