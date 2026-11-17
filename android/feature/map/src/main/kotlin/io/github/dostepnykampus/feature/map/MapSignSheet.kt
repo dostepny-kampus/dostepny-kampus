@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,18 +14,22 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.barrier.ChosenBarrierSheet
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
 import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.entrance.ChosenEntranceSheet
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
 /**
- * Znak [sign] obiektu o identyfikatorze [id] dotknięty na mapie V1, z otwartym arkuszem.
+ * Znak [sign] obiektu o identyfikatorze [id] dotknięty na mapie V1, z otwartym arkuszem; [card] to symbol budynku,
+ * którego kartę arkusz zastąpił, a `null` bez karty.
  *
  * Wymagania: US1.5, US2.1
  */
-internal data class ChosenSign(val sign: TouchSign, val id: String)
+internal data class ChosenSign(val sign: TouchSign, val id: String, val card: String? = null)
 
 /**
  * Arkusz znaku na mapie V1: który znak ma otwarty arkusz.
@@ -43,37 +48,67 @@ internal class SignSheetState(initial: ChosenSign?) {
     val barrierId: String?
         get() = chosen?.takeIf { it.sign == TouchSign.BARRIER }?.id
 
-    /** Otwiera arkusz znaku [sign] obiektu [id] w miejsce poprzedniego. */
+    /** Symbol budynku z otwartą kartą pod mapą; `null` bez karty. */
+    var card: String? = null
+
+    /** Zamyka kartę budynku [card]. */
+    var onCardClose: () -> Unit = {}
+
+    /** Otwiera arkusz znaku [sign] obiektu [id] w miejsce poprzedniego albo karty budynku [card], zamykając ją. */
     fun open(sign: TouchSign, id: String) {
-        chosen = ChosenSign(sign = sign, id = id)
+        val under = card
+        chosen = ChosenSign(sign = sign, id = id, card = under)
+        if (under != null) onCardClose()
     }
 
     /** Zamyka arkusz. */
     fun close() {
         chosen = null
     }
+
+    /** Zamyka arkusz i przekazuje [onCard] symbol budynku, którego kartę arkusz zastąpił. */
+    fun back(onCard: (String) -> Unit) {
+        val card = chosen?.card
+        close()
+        card?.let(onCard)
+    }
 }
 
 private val signSheetSaver: Saver<SignSheetState, List<String>> =
     Saver(
-        save = { state -> state.chosen?.run { listOf(sign.name, id) } },
-        restore = { (sign, id) -> SignSheetState(ChosenSign(sign = TouchSign.valueOf(sign), id = id)) },
+        save = { state -> state.chosen?.run { listOfNotNull(sign.name, id, card) } },
+        restore = { saved ->
+            SignSheetState(ChosenSign(sign = TouchSign.valueOf(saved[0]), id = saved[1], card = saved.getOrNull(2)))
+        },
     )
 
-/** Stan arkusza znaku zachowany przy zmianie konfiguracji; na początku bez arkusza. */
+/**
+ * Stan arkusza znaku zachowany przy zmianie konfiguracji; na początku bez arkusza.
+ *
+ * @param focus zaznaczenie z trasy; budynek z niego ma kartę, gdy [cover] jest większe od zera
+ * @param cover wysokość karty budynku zasłaniającej mapę od dołu
+ * @param onCardClose zamyka kartę budynku
+ */
 @Composable
-internal fun rememberSignSheetState(): SignSheetState =
-    rememberSaveable(saver = signSheetSaver) { SignSheetState(null) }
+internal fun rememberSignSheetState(focus: MapFocus?, cover: Dp, onCardClose: () -> Unit): SignSheetState {
+    val state = rememberSaveable(saver = signSheetSaver) { SignSheetState(null) }
+    val card = (focus as? MapFocus.Building)?.symbol.takeIf { cover > 0.dp }
+    SideEffect {
+        state.card = card
+        state.onCardClose = onCardClose
+    }
+    return state
+}
 
 /**
  * Arkusz znaku z [signs]: bariera spośród [barriers] albo wejście z [catalog]; bez znaku arkusza nie ma.
  *
  * Wymagania: US1.5, US2.1, US3.3
  *
- * @param signs znak z otwartym arkuszem; zamknięcie arkusza go zdejmuje
+ * @param signs znak z otwartym arkuszem; zamknięcie arkusza go zdejmuje i wraca do karty, którą arkusz zastąpił
  * @param barriers bariery pokazane na mapie
  * @param catalog katalog budynków i wejść; `null` przed jego wczytaniem
- * @param onBuildingClick V2 budynku o podanym symbolu
+ * @param onBuildingClick V2 budynku o podanym symbolu, także powrót do karty
  * @param onEntrancesClick V3 budynku o podanym symbolu
  * @param modifier położenie arkusza na mapie
  */
@@ -93,7 +128,7 @@ internal fun ChosenSignSheet(
                 id = id,
                 barriers = barriers,
                 catalog = catalog,
-                onClose = signs::close,
+                onClose = { signs.back(onBuildingClick) },
                 onBuildingClick = onBuildingClick,
                 modifier = modifier,
             )
@@ -103,7 +138,7 @@ internal fun ChosenSignSheet(
             ChosenEntranceSheet(
                 id = id,
                 catalog = catalog,
-                onClose = signs::close,
+                onClose = { signs.back(onBuildingClick) },
                 onEntrancesClick = onEntrancesClick,
                 modifier = modifier,
             )
