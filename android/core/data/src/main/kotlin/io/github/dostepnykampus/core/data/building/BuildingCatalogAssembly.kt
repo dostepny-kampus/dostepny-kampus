@@ -39,6 +39,7 @@ internal fun BuildingCatalog.withServerList(server: BuildingList): BuildingCatal
             entrances = entrances.filter { entrance -> entrance.buildingSymbol in symbols },
             attribution = server.source,
             detailed = detailed.toSet(),
+            hasServerList = true,
         )
     return outlines.forVisitors()
 }

@@ -50,6 +50,8 @@ sealed interface BuildingCardUiState {
      * @property barriers zgłoszenia przyjęte tego budynku; pusta lista, gdy dane o barierach są, a budynek nie ma
      *   zgłoszeń; `null`, gdy telefon nie ma danych o barierach
      * @property floors fakty o piętrach z planów PWr; `null`, gdy budynek nie ma planu w telefonie
+     * @property isBasic czy serwer podał budynek jako podstawowy, bez planu pięter; fałsz także wtedy, gdy telefon
+     *   nie ma jeszcze listy budynków z serwera
      */
     data class Ready(
         val symbol: String,
@@ -57,6 +59,7 @@ sealed interface BuildingCardUiState {
         val entrances: List<OrderedEntrance>,
         val barriers: List<AcceptedBarrier>? = null,
         val floors: FloorFacts? = null,
+        val isBasic: Boolean = false,
     ) : BuildingCardUiState
 }
 

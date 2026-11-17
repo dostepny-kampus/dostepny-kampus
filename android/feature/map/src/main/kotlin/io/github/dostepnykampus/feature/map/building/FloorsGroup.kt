@@ -48,15 +48,17 @@ internal fun floorDescriptionText(functions: List<Counted>): String =
 /**
  * Grupa „Piętra” z faktów [facts]: piętra od najniższego, opis piętra rozwijany etykietą, na start zwinięty;
  * piętro bez opisu ma samą etykietę. Pod etykietą „Pokaż na planie” daje [onShowPlan] identyfikator piętra.
- * Bez faktów o piętrach grupa ma napis o braku planu.
+ * Bez faktów o piętrach grupa ma napis o braku planu, gdy budynek jest podstawowy ([isBasic]), a inaczej napis,
+ * że plan sprawdzimy po połączeniu z internetem.
  *
- * Wymagania: US16.3, US16.2, NFR-17, NFR-18, NFR-19
+ * Wymagania: US16.3, US16.2, NFR-10, NFR-17, NFR-18, NFR-19
  */
 @Composable
-internal fun FloorsGroup(facts: FloorFacts?, onShowPlan: (String) -> Unit = {}) {
+internal fun FloorsGroup(facts: FloorFacts?, isBasic: Boolean, onShowPlan: (String) -> Unit = {}) {
     GroupContainer(title = stringResource(R.string.karta_pietra)) {
         if (facts == null) {
-            Text(text = stringResource(R.string.karta_bez_planu), style = MaterialTheme.typography.bodyLarge)
+            val text = if (isBasic) R.string.karta_bez_planu else R.string.karta_plan_nieznany
+            Text(text = stringResource(text), style = MaterialTheme.typography.bodyLarge)
         } else {
             facts.floors.forEachIndexed { index, described ->
                 if (index > 0) HorizontalDivider()

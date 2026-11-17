@@ -106,6 +106,7 @@
     <string name="karta_pietra">Piętra</string>
     <string name="karta_oznacz_pietra">Oznacz obejrzane piętra</string>
     <string name="karta_bez_planu">Nie mamy planu pięter tego budynku.</string>
+    <string name="karta_plan_nieznany">Plan pięter sprawdzimy, gdy telefon połączy się z internetem.</string>
     <string name="karta_zwiniete">zwinięte</string>
     <string name="karta_rozwiniete">rozwinięte</string>
     <string name="karta_pokaz_na_planie">Pokaż na planie</string>

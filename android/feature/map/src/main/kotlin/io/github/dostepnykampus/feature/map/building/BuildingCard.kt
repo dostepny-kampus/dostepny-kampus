@@ -118,6 +118,7 @@ fun buildingCard(catalog: BuildingCatalog, symbol: String): BuildingCardUiState 
             symbol = building.symbol,
             name = building.name,
             entrances = orderedEntrances(entrances),
+            isBasic = catalog.hasServerList && symbol !in catalog.detailed,
         )
     }
 }

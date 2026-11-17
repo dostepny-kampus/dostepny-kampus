@@ -182,6 +182,22 @@ class BuildingCardTest {
         assertEquals(BuildingCardUiState.Missing, buildingCard(catalog, "Z-9"))
     }
 
+    /** Budynek podstawowy zna tylko lista serwera; z samego pliku konturów plan jest nieznany. Wymagania: US16.2 */
+    @Test
+    fun marksBasicOnlyFromServerList() {
+        val outline = GeoPolygon(emptyList())
+        val file =
+            BuildingCatalog(
+                buildings = listOf("A-1", "A-4").map { Building(symbol = it, name = null, outline = outline) },
+                entrances = emptyList(),
+                attribution = "©",
+            )
+        val server = file.copy(detailed = setOf("A-1"), hasServerList = true)
+        assertEquals(false, isBasic(file, "A-4"), "katalog z pliku: plan nieznany, nie budynek podstawowy")
+        assertEquals(true, isBasic(server, "A-4"), "lista serwera bez A-4 wśród szczegółowych: budynek podstawowy")
+        assertEquals(false, isBasic(server, "A-1"), "A-1 szczegółowy według listy serwera")
+    }
+
     @Test
     fun loadsCatalog() =
         runTest(UnconfinedTestDispatcher()) {
@@ -238,6 +254,9 @@ class BuildingCardTest {
             backgroundScope.launch { viewModel.uiState.collect {} }
             assertEquals(BuildingCardUiState.Loading, viewModel.uiState.value)
         }
+
+    private fun isBasic(catalog: BuildingCatalog, symbol: String): Boolean =
+        (buildingCard(catalog, symbol) as BuildingCardUiState.Ready).isBasic
 
     private fun entrance(id: String, marking: EntranceMarking, isMain: Boolean = false, type: String? = "yes") =
         Entrance(
