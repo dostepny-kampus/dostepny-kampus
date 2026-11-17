@@ -378,7 +378,7 @@ object MapLibreMapView : CampusMapView {
     private fun MapLibreMap.signPoint(feature: Feature, idKey: String, at: PointF): SignPoint? {
         val id = feature.getStringProperty(idKey)
         val point = feature.geometry() as? Point
-        val screen = point?.let { projection.toScreenLocation(LatLng(it.latitude(), it.longitude())) }
+        val screen = point?.let { projection.toScreenLocation(LatLng(latitude = it.latitude(), longitude = it.longitude())) }
         if (id == null || screen == null) return null
         return SignPoint(id = id, dx = screen.x - at.x, dy = screen.y - at.y)
     }
