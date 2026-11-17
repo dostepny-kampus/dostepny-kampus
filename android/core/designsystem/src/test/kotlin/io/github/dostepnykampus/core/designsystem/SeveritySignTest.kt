@@ -33,7 +33,8 @@ import org.robolectric.annotation.GraphicsMode
 /** Znak uciążliwości bariery: trzy kształty, na mapie w obwódce i konturze. Wymagania: US1.3, NFR-21 */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(qualifiers = "w360dp-h240dp-xhdpi")
+// TODO(#2911): wspólne SDK testów zrzutów zamiast SDK 36 tylko tutaj
+@Config(qualifiers = "w360dp-h240dp-xhdpi", sdk = [36])
 class SeveritySignTest {
     /**
      * Wiersz: V1, bariery jako znak uciążliwości: znaczenie niesie kształt, więc kontury trzech znaków na mapie się
