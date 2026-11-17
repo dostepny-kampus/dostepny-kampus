@@ -186,7 +186,7 @@ internal fun rememberMapSceneState(
     val isCoveredBefore = rememberPrevious(isCovered)
     val scale = rememberAnimatorScale()
     val pick =
-        remember(selection?.building, outline != null) {
+        remember(selection?.building, outline != null, size != IntSize.Zero) {
             val from = last.startOr(uncovered)
             pickMove(from = from, outline = outline, free = fit, scale = scale, keepsZoom = isCoveredBefore)
                 ?.within(limits, free = fit)
@@ -306,7 +306,7 @@ private fun pickMove(
     scale: Float,
     keepsZoom: Boolean,
 ): CameraTransition? {
-    if (outline == null || from == null) return null
+    if (outline == null || from == null || free.widthDp <= 0.0 || free.heightDp <= 0.0) return null
     return cameraTransition(from = from, outline = outline, free = free, animationScale = scale, keepsZoom = keepsZoom)
 }
 
