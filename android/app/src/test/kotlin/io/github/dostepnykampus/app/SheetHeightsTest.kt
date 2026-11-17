@@ -201,7 +201,7 @@ class SheetHeightsTest {
         assertAt(map() / 2, "połowa ekranu po puszczeniu")
     }
 
-    /** Wiersz: długie szybkie przeciągnięcie uchwytu w górę z niskiej → karta staje na połowie, nie na całym ekranie. */
+    /** Wiersz: długie szybkie przeciągnięcie uchwytu w górę z niskiej → karta staje na połowie, nie wyżej. */
     @Test
     fun stopsAtHalfOnLongSwipeUp() {
         open()
