@@ -126,7 +126,7 @@ class SheetDirectTest {
                 compose.mainClock.advanceTimeByFrame()
                 val shown = compose.onAllNodesWithContentDescription(EXPAND_HANDLE).fetchSemanticsNodes()
                 shown.map { node ->
-                    val word = node.config.getOrNull(SemanticsProperties.StateDescription)
+                    val word = node.config.getOrElse(SemanticsProperties.StateDescription) { "" }
                     "${node.boundsInRoot.top} $word"
                 }
             }
