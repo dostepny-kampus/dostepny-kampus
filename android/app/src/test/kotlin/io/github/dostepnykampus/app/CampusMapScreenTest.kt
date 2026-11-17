@@ -558,6 +558,31 @@ class CampusMapScreenTest {
         assertEquals("mapa bez przeliczenia w trakcie animacji klawiatury", shown, moves.size)
     }
 
+    /**
+     * Wiersz: „Zamknij” na karcie V2 nad mapą daje jeden cel ruchu mapy, od razu pod górnym paskiem.
+     *
+     * Wymagania: US2.8, NFR-56
+     */
+    @Test
+    @Config(qualifiers = "w360dp-h800dp")
+    fun closesCardWithOneMove() {
+        var sheet by mutableStateOf(0.dp)
+        var focus by mutableStateOf<String?>("C-14")
+        compose.setContent { Screen(focus = focus, sheet = sheet, motion = MapMotion()) }
+        compose.waitForIdle()
+        val bar = tops.last()
+        sheet = 400.dp
+        compose.waitForIdle()
+        val before = moves.size
+        focus = null
+        sheet = 0.dp
+        compose.waitForIdle()
+        val targets = moves.drop(before).map { it.camera }.distinct()
+        val shownTops = tops.drop(before).distinct()
+        assertEquals("jeden cel po zamknięciu: $targets, góra $shownTops, pasek $bar", 1, targets.size)
+        assertEquals("góra pod paskiem od pierwszej klatki: $shownTops", listOf(bar), shownTops)
+    }
+
     private fun barTop(): Float {
         val bar = compose.onNodeWithText("Mapa kampusu").getUnclippedBoundsInRoot()
         return bar.top.value
