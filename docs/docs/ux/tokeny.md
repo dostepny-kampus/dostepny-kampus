@@ -173,16 +173,17 @@ Napisy paska dolnego mają 18 sp i mogą zawinąć się do dwóch wierszy pod ik
 <!-- typografia:start -->
 <!-- vale off -->
 
-| Styl             | Rozmiar | Waga | Interlinia | Zastosowanie                                                                    | Źródło                                                       |
-| ---------------- | ------- | ---- | ---------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `displayLarge`   | 57 sp   | 800  | 57 sp      | symbol budynku na karcie, np. „A-1”                                             | styl „Karta miejsca”                                         |
-| `headlineMedium` | 28 sp   | 700  | 36 sp      | nazwa miejsca, np. „Gmach Główny”, „Sala 329”                                   | styl „Karta miejsca”, NFR-16 (duży tekst ≥ 24 sp)            |
-| `titleLarge`     | 22 sp   | 600  | 28 sp      | nagłówek grupy, np. „Wejścia”, „Bariery w budynku”                              | styl „Karta miejsca”, NFR-16 (duży tekst ≥ 19 sp pogrubiony) |
-| `titleMedium`    | 20 sp   | 700  | 26 sp      | nazwa wejścia, udogodnienia albo piętra w kontenerze grupy                      | styl „Karta miejsca”, NFR-16 (duży tekst ≥ 19 sp pogrubiony) |
-| `bodyLarge`      | 18 sp   | 400  | 28 sp      | tekst podstawowy, np. „Drzwi 120 cm”, opis piętra, kroki do sali                | konwencje makiet, NFR-20, PE-1                               |
-| `labelLarge`     | 18 sp   | 600  | 24 sp      | napis przycisku i chipu; przyciski i oznaczenia wejścia mają wagę wyróżnienia   | styl „Karta miejsca”, NFR-17                                 |
-| `bodyMedium`     | 18 sp   | 500  | 28 sp      | podpis, np. źródło i data oceny wejść, napisy „Zalecane”, podpisy OpenStreetMap | styl „Karta miejsca”, US17.3, NFR-37, NFR-40                 |
-| `labelMedium`    | 18 sp   | 500  | 20 sp      | napisy pod ikonami paska dolnego, w razie potrzeby w dwóch wierszach            | styl „Karta miejsca”, wymagania wspólne (pasek dolny)        |
+| Styl             | Rozmiar | Waga | Interlinia | Zastosowanie                                                                                              | Źródło                                                                                                |
+| ---------------- | ------- | ---- | ---------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `displayLarge`   | 57 sp   | 800  | 57 sp      | dawny symbol budynku na karcie; nagłówek karty budynku ma symbol stylem headlineLarge                     | styl „Karta miejsca”                                                                                  |
+| `headlineLarge`  | 36 sp   | 800  | 40 sp      | symbol budynku w nagłówku karty budynku na każdej wysokości, np. „A-1”, w kolorze primary                 | styl „Karta miejsca”, wybór właściciela po porównaniu z prototypem karty, NFR-16 (duży tekst ≥ 24 sp) |
+| `headlineMedium` | 28 sp   | 700  | 36 sp      | nazwa miejsca, np. „Gmach Główny”, „Sala 329”                                                             | styl „Karta miejsca”, NFR-16 (duży tekst ≥ 24 sp)                                                     |
+| `titleLarge`     | 22 sp   | 600  | 28 sp      | nagłówek grupy, np. „Wejścia”, „Bariery w budynku”, i nazwa budynku pod symbolem w nagłówku karty budynku | styl „Karta miejsca”, NFR-16 (duży tekst ≥ 19 sp pogrubiony)                                          |
+| `titleMedium`    | 20 sp   | 700  | 26 sp      | nazwa wejścia, udogodnienia albo piętra w kontenerze grupy                                                | styl „Karta miejsca”, NFR-16 (duży tekst ≥ 19 sp pogrubiony)                                          |
+| `bodyLarge`      | 18 sp   | 400  | 28 sp      | tekst podstawowy, np. „Drzwi 120 cm”, opis piętra, kroki do sali                                          | konwencje makiet, NFR-20, PE-1                                                                        |
+| `labelLarge`     | 18 sp   | 600  | 24 sp      | napis przycisku i chipu; przyciski i oznaczenia wejścia mają wagę wyróżnienia                             | styl „Karta miejsca”, NFR-17                                                                          |
+| `bodyMedium`     | 18 sp   | 500  | 28 sp      | podpis, np. źródło i data oceny wejść, napisy „Zalecane”, podpisy OpenStreetMap                           | styl „Karta miejsca”, US17.3, NFR-37, NFR-40                                                          |
+| `labelMedium`    | 18 sp   | 500  | 20 sp      | napisy pod ikonami paska dolnego, w razie potrzeby w dwóch wierszach                                      | styl „Karta miejsca”, wymagania wspólne (pasek dolny)                                                 |
 
 <!-- vale on -->
 <!-- typografia:end -->
