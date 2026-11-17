@@ -24,7 +24,7 @@ internal enum class TouchSign(val layer: String, val idKey: String) {
  *
  * Wymagania: US2, NFR-17
  */
-internal class OutlinesQuery(val hit: () -> List<Int>, val near: () -> List<Int>)
+internal data class OutlinesQuery(val hit: () -> List<Int>, val near: () -> List<Int>)
 
 /**
  * Obiekt wybrany dotknięciem mapy V1.
@@ -36,7 +36,7 @@ internal sealed interface MapTouch {
     data class Sign(val sign: TouchSign, val id: String) : MapTouch
 
     /** Numery konturów [hit] pod palcem; [near] zwraca numery konturów w zasięgu dotknięcia przy wywołaniu. */
-    class Outlines(val hit: List<Int>, val near: () -> List<Int>) : MapTouch
+    data class Outlines(val hit: List<Int>, val near: () -> List<Int>) : MapTouch
 }
 
 /**

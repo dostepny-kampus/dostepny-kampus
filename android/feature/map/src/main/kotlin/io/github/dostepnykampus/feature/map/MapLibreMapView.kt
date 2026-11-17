@@ -332,7 +332,10 @@ object MapLibreMapView : CampusMapView {
                     onSign(touch)
                     true
                 }
-                is MapTouch.Outlines -> isTaken(touch.hit, touch.near)
+
+                is MapTouch.Outlines -> {
+                    isTaken(touch.hit, touch.near)
+                }
             }
         }
     }
