@@ -53,6 +53,7 @@ import androidx.core.view.WindowInsetsCompat
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.camera.CameraMotion
 import io.github.dostepnykampus.feature.map.camera.CameraTransition
@@ -71,8 +72,13 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.asinh
+import kotlin.math.pow
+import kotlin.math.tan
 
-/** Wybór w przełączniku „Mapa” i „Lista budynków” w pamięci testu; na start osoba nic nie wybrała. */
+/** Widok mapy albo listy wybrany przez osobę, w pamięci testu; na start osoba nic nie wybrała. */
 internal class TestMapListChoice : MapListChoice {
     override val savedChoice = MutableStateFlow<Boolean?>(null)
 
@@ -117,6 +123,36 @@ internal fun dispatchStatusBar(activity: ComponentActivity) {
     ViewCompat.dispatchApplyWindowInsets(content.getChildAt(0), insets)
 }
 
+private const val WORLD_DP_AT_ZOOM_0 = 512.0
+private const val FULL_TURN_DEGREES = 360.0
+
+/** Rogi konturu budynku C-13 i C-14 w teście małej karty. */
+private val OUTLINE_CORNERS =
+    listOf(
+        GeoPoint(longitude = 0.0, latitude = 0.0),
+        GeoPoint(longitude = 0.001, latitude = 0.0),
+        GeoPoint(longitude = 0.001, latitude = 0.001),
+        GeoPoint(longitude = 0.0, latitude = 0.001),
+    )
+
+/** Wejście budynku C-14 na wschodniej krawędzi konturu z [OUTLINE_CORNERS]. */
+private const val ENTRANCE_ON_EDGE =
+    """,{"type":"Feature","properties":{"kind":"entrance","symbols":["C-14"],"osm_id":"node/5","entrance":"yes"},""" +
+        """"geometry":{"type":"Point","coordinates":[0.001,0.0005]}}"""
+
+/** Przyciski mapy, które stoją nad małą kartą. */
+private val MAP_BUTTONS =
+    listOf(
+        "Powiększ",
+        "Pomniejsz",
+        "Przesuń mapę w górę",
+        "Przesuń mapę w dół",
+        "Przesuń mapę w lewo",
+        "Przesuń mapę w prawo",
+    )
+
+private fun mercator(latitude: Double): Double = asinh(tan(Math.toRadians(latitude)))
+
 /**
  * Ekran V1 z widokiem zastępczym zamiast MapLibre i katalogiem „Budynek testowy” (nie dane PWr).
  *
@@ -151,13 +187,14 @@ class CampusMapScreenTest {
     private val showList = hasText("Pokaż listę") and hasClickAction()
     private val showMap = hasText("Pokaż mapę") and hasClickAction()
     private var ring = "[[0,0],[1,0],[1,1],[0,0]]"
+    private var entrances = ""
     private val repository =
         BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
                 """{"type":"Feature","properties":{"kind":"building","symbols":["C-13","C-14"],""" +
                 """"display_name":"Budynek testowy",""" +
                 """"osm_id":"way/1"},""" +
-                """"geometry":{"type":"Polygon","coordinates":[$ring]}}]}"""
+                """"geometry":{"type":"Polygon","coordinates":[$ring]}}$entrances]}"""
         }
 
     private val viewModel by lazy { inlineMapViewModel(repository, { online }, choice) }
@@ -356,6 +393,47 @@ class CampusMapScreenTest {
         compose.onNodeWithContentDescription("Przesuń mapę w górę").assertExists()
         compose.onNodeWithText("Mapa kampusu").assertDoesNotExist()
         compose.onNodeWithContentDescription("Legenda i źródła mapy").assertDoesNotExist()
+    }
+
+    /**
+     * Mała karta V2 nad V1 przy zwykłej czcionce: cały kontur budynku i jego wejście mieszczą się w części mapy nad
+     * kartą, nad kartą są „Powiększ”, „Pomniejsz” i strzałki przesuwania, „Pomniejsz” oddala mapę bez zamykania
+     * karty, a pola symbolu i „Pokaż listę” nad kartą nie ma.
+     * Scenariusz: przegladanie-mapy.feature: Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski
+     *
+     * Wymagania: US2.8, US1.4, NFR-53
+     */
+    @Test
+    @Config(qualifiers = "w360dp-h800dp")
+    fun showsWholeBuildingAboveCard() {
+        ring = "[[0,0],[0.001,0],[0.001,0.001],[0,0.001],[0,0]]"
+        entrances = ENTRANCE_ON_EDGE
+        compose.setContent { Screen(focus = "C-14", sheet = 400.dp) }
+        compose.waitForIdle()
+        val root = compose.onRoot().getBoundsInRoot()
+        val cardTop = root.bottom - 400.dp
+        val above = cameras.last()
+        val covered = with(compose.density) { (insets.last() + tops.last()).toFloat().toDp() }
+        val visible = (root.bottom - root.top - covered).value
+        val points = OUTLINE_CORNERS + GeoPoint(longitude = 0.001, latitude = 0.0005)
+        points.forEach { assertTrue("$it nad kartą, kamera $above", above.shows(it, root.right.value, visible)) }
+        MAP_BUTTONS.forEach {
+            val button = compose.onNodeWithContentDescription(it).getBoundsInRoot()
+            assertTrue("$it nad kartą", button.bottom <= cardTop)
+        }
+        compose.onNodeWithContentDescription("Pomniejsz").performClick()
+        compose.waitForIdle()
+        assertTrue("mapa się oddala: ${cameras.last()}", cameras.last().zoom < above.zoom)
+        assertEquals("mała karta zostaje otwarta", "C-14" to 0, focuses.last() to emptyTaps)
+        compose.onNodeWithText("Wpisz symbol budynku, np. C-13").assertDoesNotExist()
+        compose.onNode(showList).assertDoesNotExist()
+    }
+
+    private fun MapCamera.shows(point: GeoPoint, widthDp: Float, heightDp: Float): Boolean {
+        val world = WORLD_DP_AT_ZOOM_0 * 2.0.pow(zoom)
+        val dx = (point.longitude - center.longitude) / FULL_TURN_DEGREES * world
+        val dy = (mercator(point.latitude) - mercator(center.latitude)) / (2 * PI) * world
+        return abs(dx) <= widthDp / 2 && abs(dy) <= heightDp / 2
     }
 
     /**
