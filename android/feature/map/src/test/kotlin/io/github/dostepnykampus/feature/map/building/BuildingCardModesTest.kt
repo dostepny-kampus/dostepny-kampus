@@ -24,6 +24,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,6 +42,7 @@ private const val WIDE_PILL_SHARE = 0.75f
 private const val CHECK = "Sprawdź, którędy wejść"
 private const val SHOW = "Pokaż budynek na mapie"
 private const val CLOSE = "Zamknij"
+private val TOUCH_TARGET = 48.dp
 private const val BACK = "Wstecz"
 private const val ROW = "Wejście dostępne"
 private const val REPORT = "Zgłoś barierę przy wejściu"
@@ -63,11 +65,11 @@ class BuildingCardModesTest {
     private val online = MutableStateFlow(true)
 
     /**
-     * Wiersz: V2, mała karta: nagłówek, potem „Sprawdź, którędy wejść” jako pierwsza czynność i „Zamknij”; bez
-     *   „Wejścia”, „Wstecz” i „Pokaż budynek na mapie”.
+     * Wiersz: V2, niska karta: nagłówek z obrysowanym „Zamknij” po prawej, wiersz o wejściach i „Sprawdź, którędy
+     *   wejść” jako pierwsza czynność treści; bez dolnego „Zamknij”, „Wejścia”, „Wstecz” i „Pokaż budynek na mapie”.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Mała karta nad mapą mówi słowami o wejściach
      *
-     * Wymagania: US2.8, US3.2
+     * Wymagania: US2.8, US3.2, NFR-53
      */
     @Test
     fun showsCompactCard() {
@@ -75,9 +77,28 @@ class BuildingCardModesTest {
         listOf("Wejścia", "Schody", BACK, SHOW, "Pokaż na mapie").forEach {
             compose.onNodeWithText(it).assertDoesNotExist()
         }
-        assertOrder(NAME, CHECK, CLOSE)
-        compose.onAllNodes(hasClickAction()).onFirst().assert(hasText(CHECK))
+        compose.onAllNodes(hasText(CLOSE)).assertCountEquals(1)
+        val close = compose.onNodeWithText(CLOSE).getUnclippedBoundsInRoot()
+        val symbol = compose.onNodeWithText("A-1", useUnmergedTree = true).getUnclippedBoundsInRoot()
+        val check = compose.onNodeWithText(CHECK).getUnclippedBoundsInRoot()
+        assertTrue("„Zamknij” w nagłówku obok symbolu: $close, symbol $symbol", close.top < symbol.bottom)
+        assertTrue("„Zamknij” po prawej od symbolu: $close, symbol $symbol", close.left > symbol.right)
+        assertTrue("„Zamknij” nad „Sprawdź…”: $close, $check", close.bottom < check.top)
+        compose.onAllNodes(hasClickAction() and !hasText(CLOSE)).onFirst().assert(hasText(CHECK))
         assertOrder(NAME, ROW, CHECK)
+    }
+
+    /**
+     * Wiersz: V2, „Zamknij” w nagłówku niskiej karty ma cel dotyku co najmniej 48 × 48 dp.
+     *
+     * Wymagania: NFR-17, US2.8
+     */
+    @Test
+    fun givesCloseTouchTarget() {
+        card(CardMode.Compact)
+        val close = compose.onNode(hasText(CLOSE) and hasClickAction()).getUnclippedBoundsInRoot()
+        assertTrue("„Zamknij” wysokie na 48 dp, a jest $close", close.bottom - close.top >= TOUCH_TARGET)
+        assertTrue("„Zamknij” szerokie na 48 dp, a jest $close", close.right - close.left >= TOUCH_TARGET)
     }
 
     /**
