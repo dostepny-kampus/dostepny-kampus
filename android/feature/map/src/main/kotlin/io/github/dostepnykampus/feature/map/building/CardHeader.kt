@@ -48,15 +48,16 @@ internal fun CardHeader(symbol: String, card: BuildingCardUiState, mode: CardMod
             Box(Modifier.weight(1f).then(space)) { if (isShown) NameOrSpace(symbol = symbol, ready = ready) }
             if (mode != CardMode.Direct) SheetCloseButton(onClose = onClose)
         }
-        if (isShown) {
-            Box(space) {
-                if (ready == null) {
-                    EntranceSummaryLine(EntranceSummary.NoData)
-                } else {
-                    EntranceLines(summary = entranceSummary(ready.entrances), answer = visitAnswer(ready.entrances))
-                }
-            }
-        }
+        if (isShown) Box(space) { EntrancesOrSpace(ready) }
+    }
+}
+
+@Composable
+private fun EntrancesOrSpace(ready: BuildingCardUiState.Ready?) {
+    if (ready == null) {
+        EntranceSummaryLine(EntranceSummary.NoData)
+    } else {
+        EntranceLines(summary = entranceSummary(ready.entrances), answer = visitAnswer(ready.entrances))
     }
 }
 

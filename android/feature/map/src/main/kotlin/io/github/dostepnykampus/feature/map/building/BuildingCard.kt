@@ -90,7 +90,7 @@ private fun missingOrNone(entrances: List<OrderedEntrance>): VisitAnswer {
  * Wymagania: BR-25
  */
 internal fun BuildingCardUiState.recommendedEntrance(): OrderedEntrance? =
-    (this as? BuildingCardUiState.Ready)?.entrances?.firstOrNull { it.isRecommended }
+    (this as? BuildingCardUiState.Ready)?.run { entrances.firstOrNull { it.isRecommended } }
 
 /** Wiersz o wejściach pod nagłówkiem karty budynku. Wymagania: US2.8, US2.1, US3.1 */
 enum class EntranceSummary {
