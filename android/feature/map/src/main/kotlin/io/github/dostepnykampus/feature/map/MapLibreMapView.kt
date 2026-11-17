@@ -79,7 +79,6 @@ import io.github.dostepnykampus.feature.map.style.showData
 import io.github.dostepnykampus.feature.map.style.showPlanData
 import io.github.dostepnykampus.feature.map.style.showSelection
 import io.github.dostepnykampus.feature.map.style.styleBuilder
-import kotlin.math.roundToLong
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonPrimitive
@@ -103,6 +102,7 @@ import org.maplibre.android.style.layers.TransitionOptions
 import org.maplibre.android.style.sources.GeoJsonSource
 import org.maplibre.geojson.Feature
 import timber.log.Timber
+import kotlin.math.roundToLong
 
 private const val LABEL_MAX_FONT_SCALE = 1.4f
 private const val TOUCH_TOLERANCE_DP = 24f
@@ -295,10 +295,11 @@ object MapLibreMapView : CampusMapView {
         DisposableEffect(mapView, map) {
             val listener =
                 MapView.OnDidFinishRenderingFrameListener { isFull, _, _ ->
-                    val style = map?.style?.takeIf { it.isFullyLoaded }
+                    val style: Style? = map?.style
                     val zoom = map?.cameraPosition?.zoom ?: 0.0
                     val isDue = reveal.frame(isFull = isFull, zoom = zoom, minZoom = currentArea.hiddenBelow)
-                    if (style != null && isDue) StyleTarget(style).revealBasemap(millis = fadeMillis)
+                    val isLoaded = style != null && style.isFullyLoaded
+                    if (isLoaded && isDue) StyleTarget(style).revealBasemap(millis = fadeMillis)
                 }
             mapView.addOnDidFinishRenderingFrameListener(listener)
             onDispose { mapView.removeOnDidFinishRenderingFrameListener(listener) }
@@ -530,7 +531,7 @@ object MapLibreMapView : CampusMapView {
                     found.setProperties(PropertyFactory.textOpacity(opacity), PropertyFactory.iconOpacity(opacity))
                 }
 
-                else -> Unit
+                else -> {}
             }
         }
 
