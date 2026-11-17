@@ -121,7 +121,7 @@ private fun MarkerList(state: MarkersUiState.Ready, actions: MarkerActions) {
         items(state.building.markers, key = { it.marker.id }) { marker ->
             MarkerCard(
                 marker = marker,
-                floorName = marker.floorName(state.floorLabels),
+                floorLabel = marker.floorLabel(state.floorLabels),
                 isAsking = state.asking == marker.marker.id,
                 actions = actions,
             )
@@ -130,13 +130,13 @@ private fun MarkerList(state: MarkersUiState.Ready, actions: MarkerActions) {
 }
 
 @Composable
-private fun MarkerCard(marker: ProgressMarker, floorName: String?, isAsking: Boolean, actions: MarkerActions) {
+private fun MarkerCard(marker: ProgressMarker, floorLabel: String?, isAsking: Boolean, actions: MarkerActions) {
     OutlinedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-            Text(placeText(marker.marker.place, floorName), style = MaterialTheme.typography.titleMedium)
+            Text(placeText(marker.marker.place, floorLabel), style = MaterialTheme.typography.titleMedium)
             Text(stringResource(R.string.znaczniki_autor, marker.authorPseudonym))
             if (isAsking) {
-                Text(questionText(marker.marker.place, floorName))
+                Text(questionText(marker.marker.place, floorLabel))
                 Button(onClick = actions.onConfirm) { Text(stringResource(R.string.znaczniki_cofnij)) }
                 OutlinedButton(onClick = actions.onKeep) { Text(stringResource(R.string.znaczniki_zostaw)) }
             } else {
@@ -150,17 +150,17 @@ private fun MarkerCard(marker: ProgressMarker, floorName: String?, isAsking: Boo
 
 @Composable
 @ReadOnlyComposable
-private fun placeText(place: MarkerPlace, floorName: String?): String =
+private fun placeText(place: MarkerPlace, floorLabel: String?): String =
     when (place) {
-        is MarkerPlace.Floor -> stringResource(R.string.znaczniki_pietro, floorName ?: place.floorId)
+        is MarkerPlace.Floor -> floorLabel ?: stringResource(R.string.znaczniki_pietro, place.floorId)
         MarkerPlace.WholeBuilding -> stringResource(R.string.znaczniki_caly_budynek)
     }
 
 @Composable
 @ReadOnlyComposable
-private fun questionText(place: MarkerPlace, floorName: String?): String =
+private fun questionText(place: MarkerPlace, floorLabel: String?): String =
     when (place) {
-        is MarkerPlace.Floor -> stringResource(R.string.znaczniki_pytanie_pietra, floorName ?: place.floorId)
+        is MarkerPlace.Floor -> floorQuestion(place, floorLabel)
         MarkerPlace.WholeBuilding -> stringResource(R.string.znaczniki_pytanie_budynku)
     }
 
@@ -177,8 +177,17 @@ private fun coverageLine(coverage: InspectionCoverage): String =
         }
     }
 
-private fun ProgressMarker.floorName(floorLabels: Map<String, String>): String? =
-    (marker.place as? MarkerPlace.Floor)?.let { floorLabels[it.floorId] ?: it.floorId }
+@Composable
+@ReadOnlyComposable
+private fun floorQuestion(place: MarkerPlace.Floor, floorLabel: String?): String =
+    if (floorLabel == null) {
+        stringResource(R.string.znaczniki_pytanie_pietra, place.floorId)
+    } else {
+        stringResource(R.string.znaczniki_pytanie_pietra_z_etykieta, floorLabel)
+    }
+
+private fun ProgressMarker.floorLabel(floorLabels: Map<String, String>): String? =
+    (marker.place as? MarkerPlace.Floor)?.let { floorLabels[it.floorId] }
 
 private val RevokeFailure.message: Int
     get() = if (this == RevokeFailure.OFFLINE) R.string.postep_wymaga_internetu else R.string.postep_blad_serwera
