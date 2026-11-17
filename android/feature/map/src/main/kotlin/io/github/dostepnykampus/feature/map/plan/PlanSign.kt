@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.feature.map.plan
 
-import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.feature.map.R
@@ -17,7 +16,7 @@ import io.github.dostepnykampus.feature.map.R
  */
 @Immutable
 internal data class PlanSign(
-    @param:StringRes val title: Int,
+    val title: Int,
     val building: String,
     val floor: String,
 )
