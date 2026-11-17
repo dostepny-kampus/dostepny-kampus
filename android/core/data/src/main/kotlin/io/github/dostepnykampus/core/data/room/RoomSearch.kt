@@ -14,6 +14,8 @@ import io.github.dostepnykampus.core.network.building.BuildingsApi
  * Wyszukiwanie sali na serwerze. Wymaga sieci: bez niej wynik to [ServerReply.Offline], a nie pusta lista, żeby ekran
  * odróżnił brak sali od braku połączenia.
  *
+ * TODO(#2547): model mapy jeszcze nie pyta tego portu, gdy wpisany tekst nie jest symbolem budynku.
+ *
  * Wymagania: US18.1
  */
 public fun interface RoomSearch {

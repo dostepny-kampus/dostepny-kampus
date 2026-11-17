@@ -25,7 +25,11 @@ class RoomSearchTest {
 
         assertInstanceOf(ServerReply.Ok::class.java, reply, "Wynik serwera nie dał odpowiedzi Ok")
         val rooms = (reply as ServerReply.Ok<List<FoundRoom>>).value
-        assertEquals(listOf("A-1 329 K1.A1.P2"), rooms.map { "${it.building} ${it.room.number} ${it.floor.id}" })
+        assertEquals(
+            listOf("A-1 329 K1.A1.P2"),
+            rooms.map { "${it.building} ${it.room.number.orEmpty()} ${it.floor.id}" },
+            "Sala z odpowiedzi serwera",
+        )
     }
 
     @Test
