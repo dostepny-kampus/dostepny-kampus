@@ -31,7 +31,7 @@ QGIS nie jest aktorem. Koordynator otwiera w nim plik eksportu poza systemem, a 
 | UC1 | Wyszukanie budynku | Gość niezalogowany | US1 | V1 | Musi być |
 | UC2 | Przegląd karty budynku | Gość niezalogowany | US2, US17.1, US17.3 | V2 | Musi być |
 | UC3 | Przegląd planu piętra | Gość niezalogowany | US16 | V2 | Powinno być |
-| UC4 | Wyszukanie wejścia dostępnego | Gość niezalogowany | US3 | V3 | Musi być |
+| UC4 | Wyszukanie wejścia dostępnego | Gość niezalogowany | US3 | V2, V1 | Musi być |
 | UC5 | Instrukcja i pomoc | Gość niezalogowany | US5 | V5 | Powinno być |
 | UC6 | Logowanie i rejestracja | Gość niezalogowany | US14 | L1, L2 | Musi być |
 | UC7 | Zgłoszenie szybkie | Odwiedzający | US4 | V4 | Musi być |
@@ -77,11 +77,12 @@ Kolumna „US” podaje całą historyjkę albo, gdy przypadek pokrywa jej czę�
 
 1. Gość niezalogowany otwiera aplikację; mapa kampusu pokazuje kontury budynków.
 2. Gość niezalogowany wybiera budynek A-1 na mapie albo wyszukuje go po symbolu budynku (jak w UC1).
-3. Gość niezalogowany wybiera „Sprawdź, którędy wejść”.
-4. System pokazuje wejście dostępne i zgłoszenia przyjęte przy tym wejściu. Oznaczenie ma tekst i ikonę, nie tylko kolor (US2.1). Przy wejściu widać datę i źródło oznaczenia (US17.3). Przy wejściu zalecanym system opisuje dojście, drzwi i najbliższą windę (US3.3).
-5. W A-1 Gość niezalogowany czyta, że wejście główne ma schody, a wejście dostępne to inne wejście [1], [2].
+3. System otwiera kartę budynku A-1 nad mapą.
+4. Karta mówi zdaniem, czy budynek ma wejście dostępne, i podaje wejście zalecane z szerokością drzwi i windą za drzwiami (US3.1, BR-25). Oznaczenie ma tekst i znak, nie tylko kolor (US2.1).
+5. Gość niezalogowany wybiera „Pokaż wejście na mapie”. System zaznacza wejście na mapie i otwiera jego opis: datę i źródło oznaczenia (US17.3), dojście, drzwi, najbliższą windę (US3.3) i zgłoszenia przyjęte przy tym wejściu.
+6. W A-1 Gość niezalogowany czyta, że wejście główne ma schody, a wejście dostępne to inne wejście [1], [2].
 
-Od mapy do wskazania wejścia są najwyżej 3 dotknięcia (US3.2). System nie prowadzi trasą do wejścia, bo nawigacja jest poza zakresem.
+Od mapy do wskazania wejścia są najwyżej 3 dotknięcia; odpowiedź na karcie wymaga jednego (US3.2). System nie prowadzi trasą do wejścia, bo nawigacja jest poza zakresem.
 
 #### Przepływy alternatywne i wyjątki UC4
 
@@ -89,9 +90,9 @@ Od mapy do wskazania wejścia są najwyżej 3 dotknięcia (US3.2). System nie pr
 | --- | --- | --- |
 | 1a | Brak sieci | Aplikacja pokazuje ostatnio pobrane budynki i bariery z datą synchronizacji. Nowego podkładu OpenStreetMap bez sieci nie pobiera; fragmenty obejrzane wcześniej mogą się pokazać z pamięci telefonu (NFR-10, NFR-39, decyzja 84). |
 | 2a | Gość niezalogowany korzysta z czytnika ekranu | Wybiera budynek z listy zamiast z mapy (NFR-18, NFR-19). |
-| 4a | Każde wejście ma oznaczenie „niedostępne” | Ekran mówi wprost zdaniem, że budynek nie ma wejścia dostępnego, a nie pokazuje pustego wyniku (US3.1). |
-| 4b | Żadne wejście nie ma oznaczenia „dostępne”, a co najmniej jedno ma „brak danych”, np. w budynku podstawowym | Ekran mówi, że o tych wejściach danych brak, a nie że wejścia dostępnego nie ma (US2.1, US17.1). Treść zdania podaje [ekran V3](../ux/wymagania-ekranow.md#v3-zaplanuj-wizyte). |
-| 4c | Przy wejściu dostępnym jest bariera ze zgłoszenia przyjętego, np. niesprawny podnośnik | Ekran pokazuje ją przy wejściu ze zdjęciem i datą weryfikacji (US2.2). |
+| 4a | Każde wejście ma oznaczenie „niedostępne” | Karta mówi wprost zdaniem, że budynek nie ma wejścia dostępnego, a nie pokazuje pustego wyniku (US3.1). Kroku 5 nie ma. |
+| 4b | Żadne wejście nie ma oznaczenia „dostępne”, a co najmniej jedno ma „brak danych”, np. w budynku podstawowym | Karta mówi, że o wejściach danych brak, a nie że wejścia dostępnego nie ma (US2.1, US17.1). Kroku 5 nie ma. Treść napisu podaje [karta V2](../ux/wymagania-ekranow.md#v2-karta-budynku). |
+| 5a | Przy wejściu dostępnym jest bariera ze zgłoszenia przyjętego, np. niesprawny podnośnik | Opis wejścia pokazuje ją przy wejściu ze zdjęciem i datą weryfikacji (US2.2). |
 
 ### Zgłoszenie szybkie (UC7)
 
@@ -123,7 +124,7 @@ Aplikacja nie pyta o typ bariery ani uciążliwość; ustala je Weryfikator w UC
 | --- | --- | --- |
 | 1a | Gość niezalogowany wybiera zgłoszenie szybkie | Przed zdjęciem aplikacja prosi o logowanie albo rejestrację (US14.2, UC6). Po zalogowaniu wraca do kroku 2. |
 | 1b | Gość rezygnuje z logowania | Zgłoszenie nie powstaje, a aplikacja wraca do mapy. |
-| 1c | Zgłoszenie zaczęte przy wejściu na karcie budynku albo na ekranie „Którędy wejść” | Krok 1 pokazuje nazwę wejścia, a zgłoszenie dostaje ją jako wskazówkę. Miejsce nadal pochodzi z bieżącej pozycji (US4.6, BR-8, BR-14). |
+| 1c | Zgłoszenie zaczęte przy wejściu na karcie budynku albo w arkuszu wejścia na mapie | Krok 1 pokazuje nazwę wejścia, a zgłoszenie dostaje ją jako wskazówkę. Miejsce nadal pochodzi z bieżącej pozycji (US4.6, BR-8, BR-14). |
 | 2a | Brak zgody na lokalizację | Bez pozycji zgłoszenia nie da się wysłać (BR-8, NFR-27). Aplikacja prosi o zgodę przed aparatem. Po odmowie mówi, że bez lokalizacji zgłoszenia nie wyśle, i proponuje ustawienia telefonu. Aparat się nie otwiera, więc Odwiedzający nie robi zdjęcia na próżno. Przy zgodzie tylko na przybliżoną lokalizację aplikacja prosi o dokładną, bo przybliżona nie wskaże budynku (BR-14). |
 | 4a | Pozycja poza konturem budynku | Zgłoszenie zapisuje się z pozycją, bez komunikatu o błędzie (BR-G2, BR-G4, NFR-49). |
 | 4b | Budynek podstawowy | Zgłoszenie działa tak samo, jak w budynku szczegółowym (BR-G1). |

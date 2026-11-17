@@ -27,7 +27,7 @@ Wywiady wskazały jeszcze jedną potrzebę: pomoc człowieka na miejscu, bo w k�
 | --- | --- | --- | --- | --- |
 | US1 | V1 | N1 | Musi być | Jako Gość niezalogowany lub Odwiedzający, chcę znaleźć budynek na mapie po symbolu budynku, aby wiedzieć, gdzie jest. |
 | US2 | V2 | N1, N2 | Musi być | Jako Gość niezalogowany lub Odwiedzający, chcę otworzyć kartę budynku, aby zobaczyć wejścia dostępne i bariery. |
-| US3 | V3 | N1 | Musi być | Jako Gość niezalogowany lub Odwiedzający, chcę wybrać budynek i dostać pasujące wejście, aby zaplanować wizytę. |
+| US3 | V2, V1 | N1 | Musi być | Jako Gość niezalogowany lub Odwiedzający, chcę wybrać budynek i dostać pasujące wejście, aby zaplanować wizytę. |
 | US4 | V4 | N3, N4 | Musi być | Jako Odwiedzający, chcę zgłosić barierę zdjęciem i bieżącą pozycją, aby po weryfikacji inni o niej wiedzieli. |
 | US5 | V5 | N4 | Powinno być | Jako Gość niezalogowany, który pierwszy raz otwiera aplikację, chcę krótką instrukcję, aby się nie zgubić. |
 | US6 | C1 | N5 | Musi być | Jako Zbierający, chcę uśrednić pozycję i wskazać budynek, aby miejsce bariery było dokładne. |
@@ -41,7 +41,7 @@ Wywiady wskazały jeszcze jedną potrzebę: pomoc człowieka na miejscu, bo w k�
 | US14 | L1, L2 | N2, N8 | Musi być | Jako Odwiedzający lub osoba z rolą pracowniczą, chcę się zalogować, aby korzystać z czynności mojej roli. |
 | US15 | C5 (z V2 i K1) | N6, N9 | Musi być | Jako Zbierający, chcę oznaczyć piętro obejrzane, aby postęp inwentaryzacji odpowiadał stanowi obchodu. |
 | US16 | V1, V2 | N1, N10 | Powinno być | Jako Gość niezalogowany lub Odwiedzający, chcę wybrać piętro budynku szczegółowego, aby zobaczyć na planie piętra windy, toalety i bariery. |
-| US17 | V2, V3; zmiana: C6 | N1, N2 | Musi być | Jako Gość niezalogowany lub Odwiedzający, chcę widzieć przy każdym wejściu aktualne oznaczenie z datą i źródłem, aby wiedzieć, czy mogę mu ufać. |
+| US17 | V2, V1; zmiana: C6 | N1, N2 | Musi być | Jako Gość niezalogowany lub Odwiedzający, chcę widzieć przy każdym wejściu aktualne oznaczenie z datą i źródłem, aby wiedzieć, czy mogę mu ufać. |
 | US18 | V1 | N1, N10 | Powinno być | Jako Gość niezalogowany lub Odwiedzający, chcę znaleźć salę po numerze, aby wiedzieć, na którym jest piętrze i jak dojdę do niej bez schodów. |
 
 Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. Historyjki „Musi być” tworzą MVP. Priorytet wynika z ważności historyjki według reguły na stronie [QFD](../ux/qfd.md).
@@ -70,17 +70,17 @@ Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. 
 | US2.5 | Każda bariera na karcie budynku, na liście budynków i w opisie bariery na mapie podaje miejsce: wejście albo piętro, jeśli zgłoszenie je ma. | BR-14 |
 | US2.6 | W budynku z danymi PWr karta podaje liczbę wyjść ewakuacyjnych, a na żądanie pokazuje ich listę. | decyzja 44 |
 | US2.7 | Gdy telefon nie ma jeszcze danych o barierach budynku, karta i lista budynków nic o barierach nie mówią, także nie „Brak zgłoszonych barier”. | US2.4, NFR-10 |
-| US2.8 | Dotknięcie budynku na mapie otwiera nad mapą niską kartę z nazwą budynku. Karta mówi słowami, czy budynek ma wejście dostępne, nie ma go albo brak o tym danych. Z karty jednym dotknięciem osoba przechodzi do „Którędy wejść”, podnosi kartę do pełnego opisu budynku albo zamyka kartę. | US2.1, US3.1, US3.2, NFR-53 |
+| US2.8 | Dotknięcie budynku na mapie otwiera nad mapą niską kartę z nazwą budynku. Karta mówi słowami, czy budynek ma wejście dostępne, nie ma go albo brak o tym danych. Gdy wejście dostępne jest, karta podaje zdaniem wejście zalecane i jednym dotknięciem pokazuje je na mapie. Z karty jednym dotknięciem osoba podnosi ją do pełnego opisu budynku albo zamyka kartę. | US2.1, US3.1, US3.2, NFR-53 |
 | US2.9 | Opis budynku otwarty od razu na całym ekranie bez mapy ma przejście do mapy z zaznaczonym budynkiem, także gdy osoba przyszła z listy budynków. | NFR-19, NFR-20 |
 | US3.1 | Gdy budynek nie ma wejścia dostępnego, ekran mówi to wprost zdaniem, a nie samym brakiem wyniku. | — |
 | US3.2 | Od mapy z widocznym budynkiem albo od wyniku wyszukiwania do wskazania wejścia dostępnego są najwyżej 3 dotknięcia. | M-4 |
-| US3.3 | Przy wejściu zalecanym ekran podaje dojście do drzwi, szerokość drzwi i najbliższą windę z przybliżoną odległością od wejścia, z danych PWr. Każde wejście dostępne można pokazać na mapie. | BR-25, decyzja 44 |
+| US3.3 | Przy wejściu zalecanym aplikacja podaje dojście do drzwi, szerokość drzwi i najbliższą windę z przybliżoną odległością od wejścia, z danych PWr. Każde wejście dostępne można pokazać na mapie. | BR-25, decyzja 44 |
 | US4.1 | Zgłoszenie szybkie to najwyżej 3 kroki: zdjęcie, grupa barier, wysłanie. Bieżąca pozycja dołącza się sama. | NFR-27 |
 | US4.2 | Bez sieci zgłoszenie zapisuje się w telefonie i wysyła się samo po powrocie sieci. | NFR-5, NFR-6 |
 | US4.3 | Odwiedzający wybiera jedną z 6 grup barier dużymi przyciskami. Aplikacja nie pyta o typ bariery ani uciążliwość. | NFR-17, US10.3 |
 | US4.4 | Odwiedzający po wysłaniu widzi potwierdzenie, że zgłoszenie trafi do weryfikacji. Dalszego statusu zgłoszenia aplikacja mu nie pokazuje. | decyzja 32 |
 | US4.5 | Gdy pozycja leży w konturze budynku, a wybrana grupa barier wymaga piętra (każda poza „inne”), aplikacja w kroku 2 pyta o piętro dużymi przyciskami. Przyciski to etykiety pięter z danych PWr albo numery w budynku podstawowym i zawsze „Nie wiem”, które zostawia piętro puste. | BR-14, NFR-17, decyzja 43 |
-| US4.6 | Zgłoszenie zaczęte przy wejściu na karcie budynku albo na ekranie „Którędy wejść” pokazuje w kroku 1 nazwę tego wejścia i dołącza ją jako wskazówkę. Miejsce zgłoszenia nadal pochodzi z bieżącej pozycji. | BR-8, BR-14 |
+| US4.6 | Zgłoszenie zaczęte przy wejściu na karcie budynku albo w arkuszu wejścia na mapie pokazuje w kroku 1 nazwę tego wejścia i dołącza ją jako wskazówkę. Miejsce zgłoszenia nadal pochodzi z bieżącej pozycji. | BR-8, BR-14 |
 | US4.7 | Po wysłaniu „Wstecz” z potwierdzenia wraca do ekranu, z którego zaczęto zgłoszenie. Kroków zgłoszenia nie da się otworzyć ponownie ani wysłać zdjęcia drugi raz. | NFR-8 |
 | US4.8 | Powrót między krokami nie usuwa zdjęcia ani wybranej grupy. Zdjęcie znika tylko wtedy, gdy Odwiedzający potwierdzi rezygnację. | NFR-23 |
 | US4.9 | Zgłoszenie można złożyć tylko na terenie PWr. Gdy bieżąca pozycja leży poza granicami wszystkich terenów PWr, aplikacja mówi „Jesteś poza terenem PWr” i nie wysyła zgłoszenia. Zdjęcie i grupa zostają do ponownej próby. Serwer odrzuca zgłoszenie z takim miejscem. | BR-G5, NFR-23 |
