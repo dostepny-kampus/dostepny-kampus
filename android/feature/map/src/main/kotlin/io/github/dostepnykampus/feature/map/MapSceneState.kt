@@ -170,7 +170,8 @@ internal fun rememberMapSceneState(
     }
     val card = rememberCardMove(building = selection?.building, pick = pick)
     val above = card.move?.takeIf { isCovered }
-    val held = last.rememberHeld(above, isCovered, wasCovered = isCoveredBefore, bar = top, view = view)
+    val held =
+        last.rememberHeld(above = above, isCovered = isCovered, wasCovered = isCoveredBefore, bar = top, view = view)
     val move = held ?: uncovered?.byControl()
     SideEffect { last.keep(shown = move?.camera, covered = cover + reserve, isAbove = above != null) }
     val inset = sheetOrBarInset(isAbove = above != null, top = topInset, bottom = bottomInset)
