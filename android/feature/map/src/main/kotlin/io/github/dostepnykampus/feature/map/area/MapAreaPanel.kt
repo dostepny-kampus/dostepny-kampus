@@ -8,7 +8,9 @@ package io.github.dostepnykampus.feature.map.area
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -39,7 +41,6 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
@@ -104,7 +105,11 @@ internal fun AreaPanel(
 private fun AreaPanelHeader(onClose: () -> Unit) {
     val header = remember { FocusRequester() }
     LaunchedEffect(header) { withFrameMillis { header.requestFocus() } }
-    Row(Modifier.padding(start = Odstepy.m, end = Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier.padding(horizontal = Odstepy.m, vertical = Odstepy.s),
+        horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Text(
             text = stringResource(R.string.mapa_teren_panel),
             modifier =
@@ -115,7 +120,8 @@ private fun AreaPanelHeader(onClose: () -> Unit) {
                     .semantics { heading() },
             style = MaterialTheme.typography.titleMedium,
         )
-        OutlinedButton(onClick = onClose, modifier = Modifier.heightIn(min = CeleDotyku.minimum)) {
+        val padding = PaddingValues(horizontal = Odstepy.m, vertical = Odstepy.s)
+        OutlinedButton(onClick = onClose, contentPadding = padding) {
             Text(stringResource(R.string.mapa_zamknij))
         }
     }
