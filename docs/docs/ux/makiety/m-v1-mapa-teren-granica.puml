@@ -4,7 +4,7 @@
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek_mapy("Pokaż listę")
-$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$pole_tekstowe("Symbol budynku, np. C-13")
 $przycisk("Kampus główny ▾")
 $mapa("mapa przy wschodnim brzegu terenu Kampus główny: brzeg ekranu to brzeg prostokąta terenu, bez linii granicy", "", "info")
 $pasek_dolny_konto()

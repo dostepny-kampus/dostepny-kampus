@@ -29,7 +29,7 @@ Czynność główna: wpisanie symbolu budynku w pole na górze ekranu.
 | Element | AC/BR/NFR |
 | --- | --- |
 | Nagłówek „Mapa kampusu” bez „Wstecz”, bo to ekran startowy | wymagania wspólne, NFR-15 |
-| Pole „Wpisz symbol budynku, np. C-13” na pełną szerokość, pierwsze pod nagłówkiem | US1.1, PW-8 |
+| Pole „Symbol budynku, np. C-13” na pełną szerokość, pierwsze pod nagłówkiem | US1.1, PW-8 |
 | „Pokaż listę” w wierszu tytułu; na liście „Pokaż mapę” | NFR-19 |
 | Przycisk terenu w lewym górnym rogu mapy z nazwą wybranego terenu, np. „Kampus główny”; otwiera panel „Teren na mapie” | US1.6, US1.7, NFR-17, NFR-18 |
 | „ⓘ” przy podpisie otwiera arkusz „Legenda”: znaki mapy i planu z napisami, na końcu źródła | US1.4, NFR-21, decyzja 48 |

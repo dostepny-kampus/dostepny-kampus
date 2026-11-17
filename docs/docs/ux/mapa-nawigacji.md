@@ -93,7 +93,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 
 | Z ekranu | Czynność | Do ekranu | Rola | AC/BR |
 | --- | --- | --- | --- | --- |
-| V1 | wybór wyniku w polu „Wpisz symbol budynku, np. C-13” | V2 na niskiej wysokości; duża czcionka: V2 na cały ekran | wszystkie | US1.1, US2.8 |
+| V1 | wybór wyniku w polu „Symbol budynku, np. C-13” | V2 na niskiej wysokości; duża czcionka: V2 na cały ekran | wszystkie | US1.1, US2.8 |
 | V1 | dotknięcie konturu budynku | V2, mała karta nad mapą o wysokości treści | wszystkie | US2.8, US3.2, decyzja 115 |
 | V1 z małą kartą V2 | dotknięcie konturu innego budynku | V2 tego budynku zamiast poprzedniego; „Wstecz” wraca do V1 | wszystkie | US2.8, decyzja 115 |
 | V1 z małą kartą V2 | dotknięcie pustej mapy; „Zamknij”; „Wstecz” | V1 bez zaznaczenia w widoku sprzed karty: mapa albo lista; po otwarciu z listy wraca lista, a zapamiętany widok listy się nie zmienia. Tekst wyszukiwania bez zmian. Położenie i przybliżenie mapy wracają do widoku sprzed karty. Gdy osoba sama przesunęła albo powiększyła mapę przy otwartej karcie, zostaje jej widok | wszystkie | US2.8, NFR-19, NFR-53, decyzje 83, 116, 118, 153 |
