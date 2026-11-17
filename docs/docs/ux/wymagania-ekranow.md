@@ -328,7 +328,11 @@ Dostępność i osoby starsze: oznaczenie wejścia jest pierwsze przy wejściu (
 
 ### V3 Którędy wejść (wycofany) {#v3-zaplanuj-wizyte}
 
-Ekranu V3 nie ma, a jego identyfikator nie wraca do innego ekranu. Odpowiedź, którym wejściem wejść, podaje wiersz o wejściach na [karcie V2](#v2-karta-budynku) (US3.1, US3.2). Dojście, drzwi, windę za drzwiami, bariery przy wejściu i inne wejście dostępne pokazuje arkusz wejścia na [V1](#v1-mapa-kampusu), otwierany przez „Pokaż wejście na mapie” (US3.3).
+Ekranu V3 nie ma, a jego identyfikator nie wraca do innego ekranu.
+
+Odpowiedź, którym wejściem wejść, podaje wiersz o wejściach na [karcie V2](#v2-karta-budynku) (US3.1, US3.2).
+
+Dojście, drzwi, windę za drzwiami, bariery przy wejściu i inne wejście dostępne pokazuje arkusz wejścia na [V1](#v1-mapa-kampusu), otwierany przez „Pokaż wejście na mapie” (US3.3).
 
 ### V4 Zgłoszenie szybkie
 
