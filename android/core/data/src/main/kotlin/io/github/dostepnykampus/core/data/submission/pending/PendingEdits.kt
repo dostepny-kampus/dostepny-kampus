@@ -40,8 +40,9 @@ public fun interface PendingEdits {
 /** Poprawki z kolejki w bazie Room [store]. */
 internal fun pendingEditsOf(store: PendingEditDao, subject: () -> String?): PendingEdits =
     PendingEdits { id ->
-        val owner = subject() ?: return@PendingEdits null
-        store.find(id)?.takeIf { it.submission.ownerSub == owner && subject() == owner }?.toPendingEdit()
+        subject()?.let { owner ->
+            store.find(id)?.takeIf { it.submission.ownerSub == owner && subject() == owner }?.toPendingEdit()
+        }
     }
 
 /** Poprawka z wiersza albo `null`, gdy telefon nie odczyta treści; C2 wraca wtedy do listy jak bez zgłoszenia. */

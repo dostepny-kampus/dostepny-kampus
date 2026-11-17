@@ -199,7 +199,11 @@ class SubmissionQueueTest {
             assertEquals(listOf("z-pierwsze", "a-drugie"), sent)
         }
 
-    /** Scenariusz: synchronizacja.feature: Kolejki czekają na zalogowanie właściciela */
+    /**
+     * Wpisy zgłoszenia i znacznika czekają na konto właściciela.
+     *
+     * Scenariusz: synchronizacja.feature: Kolejki czekają na zalogowanie właściciela
+     */
     @Test
     fun waitsForSameOwnerAfterLogin() =
         runBlocking {

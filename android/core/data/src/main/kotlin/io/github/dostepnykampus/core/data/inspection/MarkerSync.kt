@@ -21,6 +21,7 @@ import java.net.HttpURLConnection.HTTP_INTERNAL_ERROR
  * Wymagania: US15.3, BR-9, BR-20, NFR-6
  *
  * @param queue kolejka zmian w bazie telefonu
+ * @param subject identyfikator bieżącego konta
  * @param push wysłanie paczki operacji na serwer
  */
 internal class MarkerSync(

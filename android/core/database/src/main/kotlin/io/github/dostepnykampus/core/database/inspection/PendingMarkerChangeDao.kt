@@ -38,6 +38,7 @@ public interface PendingMarkerChangeDao {
      * Usuwa z kolejki postawienie znacznika.
      *
      * @param markerId identyfikator znacznika
+     * @param owner właściciel wpisu albo `null` przed przypisaniem po migracji
      * @return liczba usuniętych wierszy: 1, gdy postawienie czekało, inaczej 0
      */
     @Query("DELETE FROM pending_marker_changes WHERE marker_id = :markerId AND type = 'SET' AND owner_sub IS :owner")

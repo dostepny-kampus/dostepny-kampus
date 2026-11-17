@@ -39,6 +39,8 @@ import kotlin.coroutines.CoroutineContext
  * @param vault zalogowanie zapisane do następnego uruchomienia
  * @param refresher odświeżenie tokenu dostępu
  * @param work wątek zapisu i odświeżania
+ * @param adoptLegacyQueue przypisanie wpisów bez właściciela
+ * @param onLogin wywołanie po zalogowaniu konta
  */
 @Singleton
 public class AccountSession
@@ -50,6 +52,14 @@ public class AccountSession
         private val adoptLegacyQueue: suspend (String) -> Unit = {},
         private val onLogin: () -> Unit = {},
     ) : RoleProvider {
+        private val state = MutableStateFlow<Account>(Account.Guest)
+        private val scope = CoroutineScope(SupervisorJob() + work)
+        private val renewal = AtomicReference<Job?>(null)
+
+        override val account: StateFlow<Account> = state.asStateFlow()
+
+        private val restored = scope.launch { vault.read()?.takeIf { state.value == Account.Guest }?.let { keep(it) } }
+
         @Inject
         internal constructor(
             tokens: AccessTokens,
@@ -59,14 +69,6 @@ public class AccountSession
             owners: QueueOwnershipDao,
             queue: SubmissionQueue,
         ) : this(tokens, vault, refresher, work, owners::adopt, queue::onLoggedIn)
-
-        private val state = MutableStateFlow<Account>(Account.Guest)
-        private val scope = CoroutineScope(SupervisorJob() + work)
-        private val renewal = AtomicReference<Job?>(null)
-
-        override val account: StateFlow<Account> = state.asStateFlow()
-
-        private val restored = scope.launch { vault.read()?.takeIf { state.value == Account.Guest }?.let { keep(it) } }
 
         internal suspend fun awaitRestore(): Unit = restored.join()
 
