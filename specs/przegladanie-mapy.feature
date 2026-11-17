@@ -29,6 +29,18 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi w wynikach wyszukiwania budynki A-1, A-2 i A-10 w tej kolejności
     Ale nie widzi komunikatu „Nie znaleźliśmy budynku”
 
+  # @do-zrobienia #3058: wyszukiwania po nazwie jeszcze nie ma w aplikacji.
+  @US1.1 @aplikacja @do-zrobienia
+  Szablon scenariusza: Wyszukanie budynku po nazwie
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
+    Jeżeli wpisze w pole wyszukiwania „<tekst>”
+    Wtedy widzi budynek A-1 „Budynek główny” w wynikach wyszukiwania
+
+    Przykłady:
+      | tekst  |
+      | glow   |
+      | GŁÓWNY |
+
   @US1.2 @aplikacja
   Scenariusz: Mapa i wyszukiwanie działają bez logowania
     Zakładając, że Gość niezalogowany pierwszy raz otwiera aplikację i pomija instrukcję
