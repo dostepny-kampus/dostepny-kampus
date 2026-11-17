@@ -138,8 +138,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | C-13    | wszystkie wejścia C-13 mają oznaczenie „brak danych” | Brak danych o wejściach |
       | A-2     | budynek A-2 nie ma wejść w danych                    | Brak danych o wejściach |
 
-  # @do-zrobienia #2978: karta nie ma jeszcze trzech wysokości.
-  @US2.8 @NFR-53 @aplikacja @do-zrobienia
+  @US2.8 @NFR-53 @aplikacja
   Scenariusz: Uchwyt zmienia wysokość karty bez przeciągania
     Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
     Jeżeli dotknie uchwytu karty
@@ -150,7 +149,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli znowu dotknie uchwytu karty
     Wtedy karta wraca na niską wysokość nad mapą
 
-  # @do-zrobienia #2978: karta nie ma jeszcze trzech wysokości.
+  # @do-zrobienia #2996: na połowie ekranu karta nie ma jeszcze „Zamknij” w nagłówku.
   @US2.8 @NFR-53 @aplikacja @do-zrobienia
   Szablon scenariusza: Karta budynku zamyka się na każdej wysokości
     Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
@@ -174,8 +173,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz po „Pomniejsz” mapa się oddala, a karta budynku A-1 zostaje otwarta
     Ale nad kartą nie ma pola „Wpisz symbol budynku, np. C-13” ani przycisku „Pokaż listę”
 
-  # @do-zrobienia #2978: test sprawdza jeszcze kartę bez trzech wysokości.
-  @US2.8 @NFR-53 @aplikacja @do-zrobienia
+  @US2.8 @NFR-53 @aplikacja
   Scenariusz: Przy niskiej mapie nad kartą nie ma przycisków mapy
     Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
     Oraz nad kartą zostaje mniej niż 300 dp mapy
