@@ -1,6 +1,6 @@
 # language: pl
 Funkcja: Budynki podstawowe i miejsca poza budynkiem
-  Plany pięter PWr ma 25 budynków szczegółowych. W pozostałych budynkach i poza nimi
+  Plany pięter PWr ma 24 budynki szczegółowe. W pozostałych budynkach i poza nimi
   aplikacja działa w prostszej formie, ale nic się nie psuje (N1, N3).
 
   Założenia:

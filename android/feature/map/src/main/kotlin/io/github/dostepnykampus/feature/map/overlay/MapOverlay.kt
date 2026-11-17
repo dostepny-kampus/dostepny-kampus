@@ -36,6 +36,7 @@ import io.github.dostepnykampus.feature.map.area.AreaNotice
 import io.github.dostepnykampus.feature.map.area.MapAreaSwitch
 import io.github.dostepnykampus.feature.map.area.MapAreas
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import java.time.LocalDate
 
 private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
@@ -57,11 +58,12 @@ private enum class MapPanel { Area, Info }
  * @param dataDay dzień danych pokazany w legendzie pod „ⓘ”
  * @param onCameraChange widok kamery po dotknięciu przycisku mapy
  * @param areas tereny mapy: lista do panelu „Teren na mapie” i wybór terenu
- * @param onAreaShow widok startowy terenu wybranego w panelu
+ * @param onAreaShow prostokąt budynków terenu wybranego w panelu
  * @param modifier wymiary nakładki, zwykle cała mapa bez części zasłoniętej
  * @param hasPanels czy mapa ma przycisk terenu i „ⓘ”; nie ma ich nad arkuszem V2
  * @param hasNotice czy mapa może pokazać napis o zmianie terenu; nie przy otwartej klawiaturze
- * @param side elementy przy prawej krawędzi pod przyciskami mapy, a bez przycisków u góry, np. kolumna pięter
+ * @param start elementy przy lewej krawędzi pod przyciskiem terenu, np. kolumna pięter; nie ma ich przy otwartym
+ *  panelu terenu
  * @param content elementy nad nakładką
  */
 @Composable
@@ -71,41 +73,38 @@ internal fun MapOverlay(
     dataDay: LocalDate?,
     onCameraChange: (MapCamera) -> Unit,
     areas: MapAreas,
-    onAreaShow: (MapCamera) -> Unit,
+    onAreaShow: (CampusBounds) -> Unit,
     modifier: Modifier = Modifier,
     hasPanels: Boolean = hasControls,
     hasNotice: Boolean = hasPanels,
-    side: @Composable ColumnScope.() -> Unit = {},
+    start: @Composable ColumnScope.() -> Unit = {},
     content: @Composable BoxScope.() -> Unit,
 ) {
     var saved by rememberSaveable { mutableStateOf<MapPanel?>(null) }
     val open = saved.takeIf { hasPanels }
     Box(modifier) {
-        Column(modifier = Modifier.align(Alignment.TopEnd), horizontalAlignment = Alignment.End) {
-            if (hasControls && open == null) {
-                MapControls(
-                    camera = camera,
-                    onCameraChange = { moved ->
-                        areas.acknowledge()
-                        onCameraChange(moved)
-                    },
-                )
-            }
-            side()
+        if (hasControls && open == null) {
+            MapControls(
+                camera = camera,
+                onCameraChange = { moved ->
+                    areas.acknowledge()
+                    onCameraChange(moved)
+                },
+                modifier = Modifier.align(Alignment.TopEnd),
+            )
         }
         if (open == MapPanel.Area) {
             Box(Modifier.matchParentSize().pointerInput(Unit) { detectTapGestures { saved = null } })
         }
-        if (hasPanels && open != MapPanel.Info) {
-            val above = Modifier.align(Alignment.TopStart).padding(bottom = MapControlTouchSize + Odstepy.s)
-            AreaColumn(
-                areas = areas,
-                open = open,
-                onOpenChange = { saved = it },
-                onAreaShow = onAreaShow,
-                modifier = above,
-            )
-        }
+        val above = Modifier.align(Alignment.TopStart).padding(bottom = MapControlTouchSize + Odstepy.s)
+        AreaColumn(
+            areas = areas.takeIf { hasPanels && open != MapPanel.Info },
+            open = open,
+            onOpenChange = { saved = it },
+            onAreaShow = onAreaShow,
+            modifier = above,
+            content = start,
+        )
         Column(Modifier.align(Alignment.BottomStart)) {
             areas.notice?.takeIf { hasNotice && open == null }?.let {
                 AreaNotice(shift = it, isNew = areas.isNoticeNew, onShow = areas::noticeShown)
@@ -126,26 +125,31 @@ internal fun MapOverlay(
 
 @Composable
 private fun AreaColumn(
-    areas: MapAreas,
+    areas: MapAreas?,
     open: MapPanel?,
     onOpenChange: (MapPanel?) -> Unit,
-    onAreaShow: (MapCamera) -> Unit,
+    onAreaShow: (CampusBounds) -> Unit,
     modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     Column(modifier) {
-        MapAreaSwitch(
-            areas = AreaList(areas.choices),
-            isOpen = open == MapPanel.Area,
-            onOpenChange = { onOpenChange(MapPanel.Area.takeIf { _ -> it }) },
-            onChoose = { name ->
-                areas.show(name)?.let(onAreaShow)
-                onOpenChange(null)
-            },
-            modifier =
-                Modifier
-                    .weight(weight = 1f, fill = false)
-                    .padding(start = Odstepy.s, top = Odstepy.s, end = Odstepy.s),
-        )
+        val isOpen = open == MapPanel.Area
+        if (areas != null) {
+            MapAreaSwitch(
+                areas = AreaList(areas.choices),
+                isOpen = isOpen,
+                onOpenChange = { isOpening -> onOpenChange(MapPanel.Area.takeIf { isOpening }) },
+                onChoose = { name ->
+                    areas.show(name)?.let(onAreaShow)
+                    onOpenChange(null)
+                },
+                modifier =
+                    Modifier
+                        .then(if (isOpen) Modifier.weight(weight = 1f, fill = false) else Modifier)
+                        .padding(start = Odstepy.s, top = Odstepy.s, end = Odstepy.s),
+            )
+        }
+        if (!isOpen) content()
     }
 }
 

@@ -52,18 +52,6 @@ class TokensTest {
         }
     }
 
-    /** Krycie warstw mapy z sekcji `mapa.krycie`, w obu motywach; każde w zakresie 0–1. Wymagania: US1.7 */
-    @Test
-    fun takesMapOpacityFromTokens() {
-        listOf("jasny" to LightMapOpacity, "ciemny" to DarkMapOpacity).forEach { (name, opacity) ->
-            tokens.sub("mapa").sub("krycie").forEach { (key, value) ->
-                val expected = (value.asMap().getValue(name) as Number).toFloat()
-                assertTrue("$name krycie $key w 0–1", expected in 0f..1f)
-                assertEquals("$name krycie $key", expected, opacity.property(camel(key)))
-            }
-        }
-    }
-
     @Test
     fun takesTypographyFromTokens() {
         val typography = typography(FontFamily.Default)
@@ -77,6 +65,13 @@ class TokensTest {
             assertTrue("$key minimum_sp", style.fontSize.value >= section.getValue("minimum_sp").int())
         }
         assertEquals(FontWeight(section.getValue("wyroznienie_waga").int()), Typografia.wyroznienieWaga)
+    }
+
+    /** Rozmiar napisów na mapie z `mapa.napisy_sp`. Wymagania: NFR-16 */
+    @Test
+    fun takesMapLabelSizeFromTokens() {
+        val expected = tokens.sub("mapa").getValue("napisy_sp")
+        assertEquals("napisy mapy", expected.int().sp, Typografia.napisyMapy)
     }
 
     @Test

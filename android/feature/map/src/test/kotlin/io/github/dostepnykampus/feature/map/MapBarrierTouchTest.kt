@@ -24,6 +24,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -113,6 +114,18 @@ class MapBarrierTouchTest {
         compose.runOnIdle { touchBuildings(emptyList()) }
 
         compose.onNodeWithText("Próg").assertDoesNotExist()
+    }
+
+    /** „Wstecz” przy otwartym arkuszu „Który budynek?” zamyka arkusz, a mapa zostaje. Wymagania: US2, NFR-15 */
+    @Test
+    fun closesChoiceOnBack() {
+        start()
+        compose.runOnIdle { touchBuildings(listOf("C-13", "C-14")) }
+        compose.onNodeWithText("Który budynek?").assertExists()
+        compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
+
+        compose.onNodeWithText("Który budynek?").assertDoesNotExist()
+        compose.runOnIdle { assertFalse(compose.activity.isFinishing) }
     }
 
     private fun start() {

@@ -10,11 +10,11 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.createBitmap
-import io.github.dostepnykampus.core.designsystem.marking.severityImage
+import io.github.dostepnykampus.core.designsystem.marking.mapSeverityImage
 import io.github.dostepnykampus.core.model.submission.Severity
-import io.github.dostepnykampus.feature.map.style.BARRIER_SIGN_DP
 import io.github.dostepnykampus.feature.map.style.CHOSEN_BARRIER_DP
 import io.github.dostepnykampus.feature.map.style.MapImages
+import io.github.dostepnykampus.feature.map.style.barrierSign
 import io.github.dostepnykampus.feature.map.style.barrierSignImage
 import io.github.dostepnykampus.feature.map.style.barrierWordImage
 import io.github.dostepnykampus.feature.map.style.chosenBarrierImage
@@ -22,26 +22,14 @@ import io.github.dostepnykampus.feature.map.style.labelImage
 import kotlin.math.ceil
 
 /**
- * Obrazy barier: znak każdej uciążliwości i jej słowo z [MapImages.words]. Znak ma kształt
- * według uciążliwości w barwach `tusz` i `papier`, jak znaki wejść; słowo wygląda jak podpis budynku. Bez słów
- * są same znaki. Każda uciążliwość ma też znak wybranej bariery: większy znak na kole `papier` w obwódce
- * `tusz`.
+ * Obrazy barier: znak każdej uciążliwości z [barrierSign] i jej słowo z [MapImages.words]; słowo wygląda jak
+ * podpis budynku. Bez słów są same znaki. Każda uciążliwość ma też znak wybranej bariery: większy znak na kole
+ * `papier` w obwódce `tusz`.
  *
  * Wymagania: US1.3, NFR-21, US1.5
  */
 internal fun barrierImages(images: MapImages): Map<String, Bitmap> {
-    val size = ceil(BARRIER_SIGN_DP * images.density).toInt()
-    val signs =
-        Severity.entries.associate { severity ->
-            val sign =
-                severityImage(
-                    severity = severity,
-                    sizePx = size,
-                    shapeColor = images.colors.tusz,
-                    markColor = images.colors.papier,
-                )
-            barrierSignImage(severity) to sign
-        }
+    val signs = Severity.entries.associate { barrierSignImage(it) to barrierSign(it, images.colors, images.density) }
     val words =
         Severity.entries.zip(images.words).associate { (severity, word) ->
             barrierWordImage(severity) to labelImage(word, images.colors, images.labelSize)
@@ -57,13 +45,7 @@ private fun chosenSign(severity: Severity, images: MapImages): Bitmap {
     val size = ceil(CHOSEN_BARRIER_DP * images.density).toInt()
     val signSize = ceil(CHOSEN_SIGN_DP * images.density).toInt()
     val ring = CHOSEN_RING_DP * images.density
-    val sign =
-        severityImage(
-            severity = severity,
-            sizePx = signSize,
-            shapeColor = images.colors.tusz,
-            markColor = images.colors.papier,
-        )
+    val sign = mapSeverityImage(severity = severity, sizePx = signSize, colors = images.colors)
     val image = createBitmap(size, size)
     val canvas = Canvas(image)
     val center = size / 2f

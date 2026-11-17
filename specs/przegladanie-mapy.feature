@@ -21,6 +21,14 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | c-13  |
       | C-13  |
 
+  # @do-zrobienia #2827: podpowiedzi od pierwszego znaku jeszcze nie ma w aplikacji.
+  @US1.1 @aplikacja @do-zrobienia
+  Scenariusz: Podpowiedzi budynków od pierwszego znaku symbolu
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
+    Jeżeli wpisze w pole wyszukiwania „A”
+    Wtedy widzi w wynikach wyszukiwania budynki A-1, A-2 i A-10 w tej kolejności
+    Ale nie widzi komunikatu „Nie znaleźliśmy budynku”
+
   @US1.2 @aplikacja
   Scenariusz: Mapa i wyszukiwanie działają bez logowania
     Zakładając, że Gość niezalogowany pierwszy raz otwiera aplikację i pomija instrukcję
@@ -90,6 +98,13 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy żadne wejście nie ma napisu „Zalecane”
     Oraz lista zaczyna się od wejść z oznaczeniem „niedostępne”
 
+  @US3.1 @US17.1 @aplikacja
+  Scenariusz: Karta budynku bez wejść w danych mówi o braku danych zamiast pustej grupy
+    Zakładając, że budynek A-2 nie ma wejść w danych
+    Jeżeli Gość niezalogowany otworzy kartę budynku A-2
+    Wtedy w grupie „Wejścia” widzi zdanie „Nie mamy jeszcze danych o wejściach do tego budynku.”
+    Ale karta nie mówi, że budynek jest niedostępny
+
   @US2.2 @BR-17 @aplikacja
   Scenariusz: Zgłoszenie przyjęte na karcie budynku ma zdjęcie i datę weryfikacji
     Zakładając, że Weryfikator przyjął 12.11.2026 zgłoszenie TB-1 „schody przy wejściu” przy wejściu głównym A-1
@@ -129,14 +144,15 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz po „Wstecz” widzi znowu małą kartę nad mapą
     Oraz po „Zamknij” widzi mapę bez zaznaczonego budynku
 
-  @US2.8 @US1.4 @NFR-53 @aplikacja
+  # pełny test: #2846
+  @US2.8 @US1.4 @NFR-53 @aplikacja @do-zrobienia
   Scenariusz: Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
     Jeżeli dotknie budynku A-1
     Wtedy cały kontur budynku A-1 i jego wejścia mieszczą się w części mapy nad małą kartą
     Oraz nad małą kartą są „Powiększ”, „Pomniejsz” i strzałki przesuwania mapy
     Oraz po „Pomniejsz” mapa się oddala, a mała karta budynku A-1 zostaje otwarta
-    Ale nad małą kartą nie ma pola „Wpisz symbol budynku, np. C-13” ani przełącznika „Mapa” i „Lista budynków”
+    Ale nad małą kartą nie ma pola „Wpisz symbol budynku, np. C-13” ani przycisku „Pokaż listę”
 
   @US2.8 @NFR-53 @aplikacja
   Scenariusz: Przy niskiej mapie nad małą kartą nie ma przycisków mapy
@@ -145,13 +161,14 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy nad małą kartą nie ma „Powiększ”, „Pomniejsz” ani strzałek przesuwania mapy
     Oraz po „Zamknij” przyciski mapy wracają
 
-  @US2.9 @aplikacja
+  # pełny test: #2846
+  @US2.9 @aplikacja @do-zrobienia
   Scenariusz: Z listy przy dużej czcionce opis budynku prowadzi do mapy
     Zakładając, że Gość niezalogowany ma skalę czcionki 2,0 i otwartą listę budynków
     Jeżeli wybierze budynek A-1
     Wtedy widzi opis budynku A-1 na całym ekranie bez mapy
     Oraz po „Pokaż budynek na mapie” widzi mapę z zaznaczonym budynkiem A-1, a nie listę
-    Oraz przełącznik „Mapa” i „Lista budynków” pamięta wybór „Mapa”
+    Oraz aplikacja pamięta widok mapy, a w wierszu tytułu jest „Pokaż listę”
 
   @US3.1 @aplikacja
   Scenariusz: Brak wejścia dostępnego jest powiedziany wprost
@@ -280,6 +297,13 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi mapę terenu „Wittigowo” z budynkiem T-15
     Oraz na mapie widzi nazwę terenu „Wittigowo”
 
+  @US1.7 @BR-G5 @aplikacja
+  Scenariusz: Po wyborze terenu widać wszystkie jego budynki
+    Zakładając, że Gość niezalogowany ma otwartą listę terenów
+    Jeżeli wybierze teren „Wittigowo”
+    Wtedy na mapie widzi budynki T-15 i P-23
+    Oraz powiększenie mapy jest nie większe niż 17
+
   @US1.7 @BR-G5 @NFR-39 @aplikacja
   Scenariusz: Mapa nie wychodzi poza wybrany teren
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Kampus główny”
@@ -287,12 +311,12 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy mapa dalej się nie przesuwa
     Oraz brzeg mapy leży na brzegu prostokąta terenu
 
-  # cały widok w prostokącie terenu: #2626, bez granicy i wyblaknięcia: #2627
-  @US1.7 @BR-G5 @NFR-39 @aplikacja @do-zrobienia
-  Scenariusz: Przy najmniejszym powiększeniu widać cały teren
+  @US1.7 @BR-G5 @NFR-39 @aplikacja
+  Scenariusz: Przy najmniejszym powiększeniu teren wypełnia mapę w krótszym wymiarze
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Wittigowo”
     Jeżeli pomniejszy mapę do końca
-    Wtedy prostokąt terenu wypełnia mapę
+    Wtedy prostokąt terenu wypełnia mapę w krótszym wymiarze
+    Oraz wzdłuż dłuższego wymiaru mapę da się przesunąć tylko do brzegu prostokąta
     Oraz mapa nie pokazuje granicy terenu ani wyblakłego podkładu
 
   @US1.7 @aplikacja

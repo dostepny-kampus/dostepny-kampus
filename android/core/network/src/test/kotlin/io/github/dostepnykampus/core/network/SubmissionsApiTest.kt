@@ -154,6 +154,44 @@ class SubmissionsApiTest {
         )
     }
 
+    /** Lista przyjętych z serwera stronami: klient idzie za `Link` z `rel="next"`. Wymagania: NFR-34, US1.3 */
+    @Test
+    fun followsNextPageLinks() {
+        val next = server.url("/submissions?status=ACCEPTED&after=$ID")
+        server.enqueue(
+            MockResponse()
+                .setResponseCode(200)
+                .setHeader(name = "Link", value = "<$next>; rel=\"next\"")
+                .setBody("[${submission(version = 1)}]"),
+        )
+        enqueue(code = 200, body = "[${submission(version = 2)}]")
+        val result = blocking { accepted() }
+        assertEquals(
+            listOf(1, 2),
+            (result as ApiResult.Success).value.map { it.version },
+            "Lista nie złożyła obu stron w kolejności",
+        )
+        server.takeRequest()
+        assertEquals(
+            "/submissions?status=ACCEPTED&after=$ID",
+            server.takeRequest().path,
+            "Druga strona nie poszła pod adres z nagłówka Link",
+        )
+    }
+
+    /** Błąd dalszej strony to błąd całej listy; kopia w telefonie zostaje bez zmian. Wymagania: NFR-34 */
+    @Test
+    fun laterPageErrorFailsList() {
+        server.enqueue(
+            MockResponse()
+                .setResponseCode(200)
+                .setHeader(name = "Link", value = "</submissions?mine=true&after=$ID>; rel=\"next\"")
+                .setBody("[${submission(version = 1)}]"),
+        )
+        enqueue(code = 500, body = "")
+        assertEquals(ApiResult.ServerError(500), blocking { mine() }, "Błąd drugiej strony nie zatrzymał listy")
+    }
+
     /** Wiersz: C3 → własne zgłoszenia z serwera w każdym statusie. Wymagania: US8.1, US8.2 */
     @Test
     fun fetchesOwnList() {

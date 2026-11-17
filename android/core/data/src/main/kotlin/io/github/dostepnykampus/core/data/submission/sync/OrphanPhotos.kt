@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submission.sync
@@ -22,21 +22,21 @@ private val UNTOUCHED_FOR_MILLIS = 1.hours.inWholeMilliseconds
  * Wymagania: NFR-5
  *
  * @param store kolejka zgłoszeń w bazie telefonu
- * @param dir katalog zdjęć zgłoszeń
+ * @param dir katalog zdjęć zgłoszeń; odczytany w [ioContext], bo `filesDir` czyta dysk
  * @param kept pliki odtworzonych szkiców: C2 i zgłoszenia szybkiego
  * @param nowMillis chwila sprzątania
  * @param ioContext kontekst operacji na plikach
  */
 internal suspend fun deleteOrphanPhotos(
     store: PendingSubmissionDao,
-    dir: File,
+    dir: () -> File,
     kept: Set<String>,
     nowMillis: Long,
     ioContext: CoroutineContext,
 ) {
     val used = (store.allPhotoPaths() + kept).map { File(it).absolutePath }.toSet()
     withContext(ioContext) {
-        dir
+        dir()
             .listFiles()
             .orEmpty()
             .filter { it.isFile && it.absolutePath !in used && nowMillis - it.lastModified() >= UNTOUCHED_FOR_MILLIS }

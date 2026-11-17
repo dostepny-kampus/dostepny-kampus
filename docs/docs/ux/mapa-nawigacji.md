@@ -99,7 +99,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1 z małą kartą V2 | dotknięcie pustej mapy; „Zamknij”; „Wstecz” | V1 bez zaznaczenia w widoku sprzed karty: mapa albo lista; po otwarciu z listy wraca lista, a zapamiętany widok listy się nie zmienia. Tekst wyszukiwania bez zmian. Położenie i przybliżenie mapy wracają do widoku sprzed karty. Gdy osoba sama przesunęła albo powiększyła mapę przy otwartej karcie, zostaje jej widok | wszystkie | US2.8, NFR-19, NFR-53, decyzje 83, 116, 118, 153 |
 | V2, mała karta | uchwyt „Rozwiń opis budynku”, przewinięcie albo przeciągnięcie w górę | V2, pełny ekran bez mapy | wszystkie | US2.8, NFR-53 |
 | V2, pełny ekran po małej karcie | „Wstecz” | V2, mała karta | wszystkie | NFR-15, decyzja 115 |
-| V1 | dotknięcie konturu wspólnego, np. „C-3/C-4”, albo dotknięcie w zasięgu dwóch konturów | V1, arkusz „Który budynek?” | wszystkie | US2, US3.2, decyzja 85 |
+| V1 | dotknięcie konturu wspólnego, np. „C-3/C-4”, albo dotknięcie obok dwóch konturów, poza nimi | V1, arkusz „Który budynek?” | wszystkie | US2, US3.2, decyzja 85 |
 | V1, arkusz „Który budynek?” | przycisk budynku, np. „Budynek C-3”; „Zamknij” | V2 tego budynku; V1 | wszystkie | US2, NFR-53 |
 | V1 | „Pokaż listę”; na liście „Pokaż mapę” | V1, lista; z listy V1, mapa | wszystkie | NFR-19 |
 | V1 | dotknięcie budynku na liście | zwykła czcionka: V1 w widoku mapy z małą kartą V2, chwilowo, bez zmiany zapamiętanego widoku listy; duża czcionka albo TalkBack: V2, pełny ekran | wszystkie | US2.8, US3.2, NFR-19, decyzje 115, 118 |
@@ -120,7 +120,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1, stan „arkusz windy” | „Zamknij” | V1, stan „plan piętra” | wszystkie | NFR-53 |
 | V1, stan „znaleziona sala”, „sala bez drogi” albo „brak sali” | „Pokaż opis budynku” | V2 | wszystkie | US2 |
 | V1, stan „znaleziona sala” | „Zamknij” | V1 | wszystkie | decyzja 48 |
-| V2 | „Pokaż na planie” przy piętrze | V1, plan tego piętra | wszystkie | US16.1, decyzja 44 |
+| V2 | „Pokaż na planie” przy piętrze | V1, plan tego piętra, bez zaznaczonego budynku | wszystkie | US16.1, decyzja 44 |
 | V2, pełny ekran otwarty od razu | „Pokaż budynek na mapie” | V1 w widoku mapy z zaznaczonym budynkiem, bez karty; zapamiętany wybór „Mapa” | wszystkie | US2.9, NFR-19, decyzja 116 |
 | V2 | „Pokaż wejście na mapie” przy wejściu zalecanym | V1 z zaznaczonym wejściem | wszystkie | US2.1, BR-25 |
 | V2 | „Zgłoś barierę przy wejściu” | V4, krok 1, wejście wybrane | zalogowani | US4, decyzja 48 |

@@ -80,13 +80,13 @@ class CampusPathDeviceTest {
     }
 
     /**
-     * Wiersz: V1, „Lista budynków” → budynek → mała karta V2 nad mapą, z pliku bez serwera.
+     * Wiersz: V1, „Pokaż listę” → budynek → mała karta V2 nad mapą, z pliku bez serwera.
      *
      * Wymagania: US2.8, NFR-11, NFR-19
      */
     @Test
     fun opensCardFromList() {
-        compose.onAllNodes(hasText("Lista budynków") or hasText("Lista")).onFirst().performClick()
+        compose.onNode(hasText("Pokaż listę")).performClick()
         steps.waitFor(BuildingA1InCatalog)
         compose.onAllNodes(BuildingA1InCatalog).onFirst().performClick()
         steps.waitFor(hasText(CHECK_ENTRANCES))

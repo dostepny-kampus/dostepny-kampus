@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
@@ -76,9 +77,11 @@ class RemovedViewModel
                     try {
                         saver.save(previous.removalContent(photo), listOf(photo), null)
                         RemovedStage.SAVED
-                    } catch (_: IOException) {
+                    } catch (error: IOException) {
+                        Timber.w("Zapis zgłoszenia usuniętej bariery nieudany: %s", error.javaClass.simpleName)
                         RemovedStage.SAVE_FAILED
-                    } catch (_: SQLiteException) {
+                    } catch (error: SQLiteException) {
+                        Timber.w("Zapis zgłoszenia usuniętej bariery nieudany: %s", error.javaClass.simpleName)
                         RemovedStage.SAVE_FAILED
                     } catch (_: SaveRefusedException) {
                         RemovedStage.SAVE_REJECTED

@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,10 +21,13 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
@@ -36,6 +40,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.building.Building
@@ -51,6 +56,7 @@ import io.github.dostepnykampus.feature.map.building.BuildingChoice
 import io.github.dostepnykampus.feature.map.building.BuildingChoiceSheet
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
@@ -65,7 +71,7 @@ private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"
 
 /**
- * Ekran V1 „Mapa kampusu”: nagłówek z polem symbolu i przełącznikiem „Mapa” i „Lista budynków”, bez sieci linia „Bez
+ * Ekran V1 „Mapa kampusu”: nagłówek z przejściem między mapą a listą i polem symbolu, bez sieci linia „Bez
  * internetu”, a pod nimi lista albo mapa z konturami z pliku, przyciskami mapy i podpisem OSM. Widok kamery jest stanem
  * zapisywanym; pod arkuszem V2 budynek z [focus] stoi nad arkuszem w punkcie podpisu. Jeden trafiony budynek otwiera
  * V2, kilka czeka na wybór w arkuszu „Który budynek?”. Przyciski mapy są bez arkusza V2 i klawiatury, każdy z polem 48
@@ -92,7 +98,7 @@ private const val MAP_STATE = "map"
  *   karty V2 dla wejścia z listy
  * @param mapView widok mapy; testy ekranu podają widok bez natywnej biblioteki
  * @param motion zapis ruchów mapy do budynku nad kartą V2, z których karta bierze czas; `null` bez zapisu
- * @param viewModel stan ekranu i zapis wyboru w przełączniku; w aplikacji z grafu Hilt, w testach z podróbkami źródeł
+ * @param viewModel stan ekranu i zapis ostatniego widoku; w aplikacji z grafu Hilt, w testach z podróbkami źródeł
  */
 @Composable
 fun CampusMapScreen(
@@ -134,9 +140,9 @@ fun CampusMapScreen(
  * Wymagania: US9.1, NFR-10, NFR-19, NFR-20, US2, US1.1, US2.9, US3.3, US2.8
  *
  * @param state katalog, gotowa geometria mapy, internet (bez niego pod polem symbolu stoi linia „Bez internetu”)
- *  i ostatni wybór w przełączniku; bez wyboru „Mapa”, a przy skali czcionki co najmniej 1,5
+ *  i ostatni widok; bez wyboru mapa, a przy skali czcionki co najmniej 1,5
  *   „Lista budynków”
- * @param onListChange wybór w przełączniku: prawda dla „Lista budynków”
+ * @param onListChange wybór widoku: prawda dla listy, fałsz dla mapy
  * @param onSearch zapytanie z pola symbolu do policzenia w modelu widoku; wynik wraca w [CampusMapUiState.search]
  * @param onBuildingClick budynek dotknięty na mapie, wybrany w arkuszu albo na liście
  * @param modifier wymiary ekranu nadane przez aplikację
@@ -148,7 +154,7 @@ fun CampusMapScreen(
  * @param mapView widok mapy
  * @param motion zapis ruchów mapy do budynku nad kartą V2
  * @param plan plan piętra budynku przy środku mapy; `null`, gdy planu nie widać
- * @param onCamera widok mapy po ruchu kamery
+ * @param onCamera widok mapy po geście osoby i widok, do którego zmierza ruch kamery wykonany przez aplikację
  * @param onFloorChoose piętro wybrane w kolumnie pięter: symbol budynku i identyfikator piętra
  */
 @Composable
@@ -196,7 +202,7 @@ fun CampusMapScreen(
                         onFloorChoose = onFloorChoose,
                         onBuildingClick = onBuildingClick,
                         onEmptyMapClick = onEmptyMapClick,
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize().background(DostepnyKampusTheme.mapColors.lad),
                     )
                     BarrierDescriptions(shown)
                 }
@@ -243,7 +249,7 @@ private fun CampusMap(
     modifier: Modifier = Modifier,
 ) {
     val cover = contentPadding.calculateBottomPadding()
-    val isKeyboardOpen = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    val isKeyboardOpen = rememberKeyboardOpenFlag()
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
     var barrierId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -279,7 +285,7 @@ private fun CampusMap(
                 modifier = Modifier.fillMaxSize(),
             )
             scene.selection.entrance?.let { EntranceDescription(it) }
-            AreaEdgeAnnouncement(camera = move.camera, bounds = state.limits.bounds, area = areas.current?.name)
+            FollowCamera(camera = move.camera, limits = state.limits, area = areas.current?.name, onCamera = onCamera)
             MapStatusBar(topInset, isShown = state.isCovered)
             val underBar = if (state.isCovered) topInset.asPaddingValues() else PaddingValues(top = top)
             val aboveSheet = Modifier.padding(underBar).padding(contentPadding)
@@ -289,11 +295,11 @@ private fun CampusMap(
                 dataDay = catalog?.dataDay(),
                 onCameraChange = state::move,
                 areas = areas,
-                onAreaShow = state::keep,
+                onAreaShow = state::land,
                 modifier = Modifier.fillMaxSize().safeDrawingPadding().then(aboveSheet),
                 hasPanels = !state.isCovered && !isKeyboardOpen,
                 hasNotice = !isKeyboardOpen,
-                side = { FloorColumn(plan = plan, onChoose = onFloorChoose) },
+                start = { FloorColumn(plan = plan, onChoose = onFloorChoose) },
             ) {
                 val barrier = ChosenBarrier(id = barrierId, barriers = barriers, onClose = { barrierId = null })
                 MapSheets(barrier = barrier, catalog = catalog, state = state, onBuildingClick = onBuildingClick)
@@ -304,6 +310,16 @@ private fun CampusMap(
 
 /** Zaznaczona przeszkoda [id] spośród [barriers] i zamknięcie jej karty [onClose]. */
 private data class ChosenBarrier(val id: String?, val barriers: ShownBarriers, val onClose: () -> Unit)
+
+@Composable
+private fun FollowCamera(camera: MapCamera, limits: MapLimits, area: String?, onCamera: (MapCamera) -> Unit) {
+    val report by rememberUpdatedState(onCamera)
+    DisposableEffect(camera) {
+        report(camera)
+        onDispose {}
+    }
+    AreaEdgeAnnouncement(camera = camera, limits = limits, area = area)
+}
 
 @Composable
 private fun BoxScope.MapSheets(
@@ -343,3 +359,11 @@ private fun BuildingChoices(
 
 private fun BuildingCatalog.buildingsOf(symbols: List<String>): List<Building> =
     symbols.mapNotNull { symbol -> buildings.firstOrNull { it.symbol == symbol } }
+
+@Composable
+private fun rememberKeyboardOpenFlag(): Boolean {
+    val ime = WindowInsets.ime
+    val density = LocalDensity.current
+    val isOpen by remember(ime, density) { derivedStateOf { ime.getBottom(density) > 0 } }
+    return isOpen
+}

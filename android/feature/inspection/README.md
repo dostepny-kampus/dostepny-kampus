@@ -2,12 +2,12 @@
 
 ## Zadanie
 
-Postęp inwentaryzacji dla Koordynatora: lista budynków z postępem (K1) i znaczniki budynku do cofnięcia (C5).
+Postęp inwentaryzacji: lista budynków z postępem dla Koordynatora (K1), znaczniki budynku do cofnięcia (C5 Koordynatora) i piętra do oznaczenia jako obejrzane (C5 Zbierającego).
 
 ## Pakiety
 
 - `feature.inspection.navigation` — trasa ekranu postępu.
-- `feature.inspection.progress` — ekran, stan i ViewModel listy postępu budynków.
+- `feature.inspection.progress` — ekrany, stan i ViewModele postępu budynków i znaczników pięter.
 
 ## API
 
@@ -21,7 +21,7 @@ Trasa ekranu w pakiecie `navigation`; ekran i jego ViewModel w pakiecie `progres
 
 ## Czego moduł nie robi
 
-Nie pobiera danych z serwera sam; odczyt postępu i cofnięcie znacznika są w `:core:data`.
+Nie pobiera danych z serwera sam; odczyt postępu, piętra budynku, kolejka znaczników i cofnięcie znacznika są w `:core:data`.
 
 ## Kiedy dodawać tutaj
 

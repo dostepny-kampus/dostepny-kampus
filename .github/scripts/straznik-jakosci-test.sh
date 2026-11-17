@@ -399,11 +399,4 @@ run_case "npm: niespójne wersje manifestu i pliku lock" "$changed" npm_bump_wit
 run_case "npm: zmiana źródła pakietu nadal zmienia reguły" "$changed" npm_change_source npm_fixture "$bot"
 run_case "npm: autor inny niż Dependabot podaje powód" "$changed" npm_bump_commitlint npm_fixture vlladevk
 
-guard_workflow_base() { mkdir -p .github/workflows && echo 'name: straznik-jakosci' >.github/workflows/straznik-jakosci.yml; }
-guard_workflow_edit() { echo 'on: pull_request_target' >>.github/workflows/straznik-jakosci.yml; }
-export BASE_REF=sprint/4
-run_case "przepływ strażnika: zmiana w sprincie działa dopiero z main" "dopiero po przeniesieniu pliku do main" \
-  guard_workflow_edit guard_workflow_base
-unset BASE_REF
-
 exit "$((failures > 0 ? 1 : 0))"

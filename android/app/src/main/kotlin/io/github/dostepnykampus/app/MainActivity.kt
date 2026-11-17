@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.app
 
 import android.os.Bundle
+import android.os.Trace
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -38,8 +39,17 @@ class MainActivity : ComponentActivity() {
     private val firstLaunch: FirstLaunchViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        Trace.beginSection("MainActivity.onCreate")
+        try {
+            super.onCreate(savedInstanceState)
+            enableEdgeToEdge()
+            setShell()
+        } finally {
+            Trace.endSection()
+        }
+    }
+
+    private fun setShell() {
         val graph = EntryPointAccessors.fromActivity<MainActivityEntryPoint>(this)
         val onChooseMap: () -> Unit = { lifecycleScope.launch { graph.mapListChoice().choose(isList = false) } }
         setContent {
@@ -64,7 +74,7 @@ class MainActivity : ComponentActivity() {
 }
 
 internal suspend fun MainActivity.deleteOrphanPhotos(queue: SubmissionQueue, kept: Set<String>) {
-    queue.deleteOrphanPhotos(dir = photoDir(filesDir), kept = kept)
+    queue.deleteOrphanPhotos(dir = { photoDir(filesDir) }, kept = kept)
 }
 
 /**
@@ -77,7 +87,7 @@ interface MainActivityEntryPoint {
     /** Konto i role osoby. Wymagania: US14.1 */
     fun roles(): RoleProvider
 
-    /** Wybór „Mapa” albo „Lista budynków” w V1. Wymagania: NFR-19 */
+    /** Widok V1, mapa albo lista. Wymagania: NFR-19 */
     fun mapListChoice(): MapListChoice
 
     /** Kolejka zgłoszeń: prośba o logowanie po 401 i wznowienie po zalogowaniu. Wymagania: BR-26 */

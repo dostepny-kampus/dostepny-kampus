@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.designsystem.Ikony
+import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.model.building.EntranceMarking
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import kotlinx.serialization.json.JsonArray
@@ -17,10 +17,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.Style
-import org.maplibre.android.style.sources.RasterSource
-import org.maplibre.android.style.sources.TileSet
 
 /** Warstwa wypełnienia konturów; widok mapy szuka w niej dotkniętego budynku. */
 internal const val BUILDINGS_LAYER = "budynki"
@@ -43,15 +40,6 @@ internal const val ENTRANCE_PIN_IMAGE = "wejscie_pinezka"
 /** Wysokość i szerokość znaku wejścia w dp, z tokenu `ikony.znak_mapy`. Wymagania: US2.1, NFR-21 */
 internal val ENTRANCE_MARK_DP: Int = Ikony.znakMapy.value.toInt()
 
-/** Warstwa wyblaknięcia mapy poza granicą terenu. Wymagania: US1.7, BR-G5 */
-internal const val OUTSIDE_LAYER = "teren-poza"
-
-/** Warstwa obwódki pod linią granicy terenu: linia ma kontrast na jasnym i ciemnym podkładzie. Wymagania: NFR-16 */
-internal const val EDGE_HALO_LAYER = "teren-granica-obwodka"
-
-/** Warstwa linii granicy terenu. Wymagania: US1.7, BR-G5 */
-internal const val EDGE_LAYER = "teren-granica"
-
 /** Warstwa konturów wszystkich budynków. */
 internal const val OUTLINES_LAYER = "kontury"
 
@@ -62,47 +50,45 @@ internal const val BUILDINGS_FILL = "fill-color"
 internal const val OUTLINES_COLOR = "line-color"
 
 internal const val BUILDINGS_SOURCE = BUILDINGS_LAYER
-private const val ENTRANCES_SOURCE = ENTRANCES_LAYER
+internal const val ENTRANCES_SOURCE = ENTRANCES_LAYER
 
-/** Warstwa i źródło podkładu OSM. Wymagania: NFR-39 */
-internal const val BASEMAP = "osm"
 private const val LABELS = "podpisy"
+internal const val LABELS_SOURCE = LABELS
+
+/** Warstwa symboli budynków. Wymagania: US1, US16.1 */
+internal const val LABELS_LAYER = LABELS
 internal const val LABEL = "label"
 private const val STYLE_VERSION = 8
-private const val TILE_SIZE = 256
-private const val TILE_MAX_ZOOM = 19
-private const val TILE_JSON = "2.2.0"
-private const val OUTLINE_WIDTH = 1.5
 
-/** Kafelki podkładu z serwerów OSM, pobierane tylko online i bez zapisu do użytku offline (ADR-0005). */
-internal const val OSM_TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+/** Grubość konturu budynku szczegółowego (z planem pięter) w dp: gruby kontur. Wymagania: US16.1, NFR-21 */
+internal const val DETAILED_OUTLINE_DP = 2.4
+
+/** Grubość konturu budynku podstawowego (bez planu pięter) w dp: cienki ciągły kontur. Wymagania: US16.1, NFR-21 */
+internal const val BASIC_OUTLINE_DP = 1.0
+
+private val OUTLINE_WIDTH =
+    byLevel(detailed = JsonPrimitive(DETAILED_OUTLINE_DP), basic = JsonPrimitive(BASIC_OUTLINE_DP))
 
 /**
- * Kolory stylu mapy z tokenów `mapa.kolory` jako `#RRGGBB`.
+ * Wygląd stylu mapy: kolory z tokenów `mapa.kolory` jako `#RRGGBB` i rozmiar napisów podkładu.
  *
  * @property land tło lądu (`lad`)
- * @property building wypełnienie budynków PWr (`pwr`)
+ * @property building wypełnienie budynków szczegółowych, z planem pięter (`pwr`)
  * @property buildingOutline kontur budynków PWr (`pwr_kontur`)
  * @property selectedOutline obrys zaznaczonego budynku (`pwr_wybrany`), grubszy niż kontur
- * @property isNight motyw ciemny: podkład jest wtedy odwrócony, żeby mapa nie raziła na ciemnym ekranie
- * @property edge linia granicy terenu (`granica_terenu`)
- * @property edgeHalo obwódka linii granicy terenu (`granica_terenu_obwodka`)
- * @property outside kolor kładziony na mapę poza granicą terenu (`background` motywu)
- * @property outsideOpacity krycie koloru [outside] (`mapa.krycie.teren_poza`); 0 zostawia mapę bez wyblaknięcia
  * @property dimmed wypełnienie budynków obok zaznaczonego (`budynek`)
  * @property dimmedOutline kontur budynków obok zaznaczonego (`budynek_kontur`)
  * @property plan kolory planu piętra; bez nich plan ma barwy budynków
+ * @property basemap kolory podkładu wektorowego; bez nich mapa nie ma podkładu, tylko tło [land]
+ * @property labelSize wysokość napisów podkładu w dp mapy, z tokenu `mapa.napisy_sp` i skali czcionki
+ * @property basicBuilding wypełnienie budynków podstawowych, bez planu pięter (`pwr_podstawowy`); bez niego budynki
+ *   obu poziomów mają barwę [building]
  */
 data class MapStyleColors(
     val land: String,
     val building: String,
     val buildingOutline: String,
     val selectedOutline: String,
-    val isNight: Boolean = false,
-    val edge: String = buildingOutline,
-    val edgeHalo: String = land,
-    val outside: String = land,
-    val outsideOpacity: Double = 0.0,
     val dimmed: String = building,
     val dimmedOutline: String = buildingOutline,
     val plan: PlanColors =
@@ -113,41 +99,44 @@ data class MapStyleColors(
             elevator = building,
             toilet = land,
             wall = buildingOutline,
+            floorWall = buildingOutline,
         ),
+    val basemap: BasemapColors? = null,
+    val labelSize: Double = Typografia.napisyMapy.value.toDouble(),
+    val basicBuilding: String = building,
 )
 
 /**
- * Podkład OSM mapy: przy powiększeniu mniejszym niż [minZoom], np. w środku przelotu na inny teren, MapLibre go
- * nie rysuje ani nie pobiera.
+ * Podkład mapy terenu: przy powiększeniu mniejszym niż [minZoom], np. w środku przelotu na inny teren, MapLibre go
+ * nie rysuje ani nie pobiera. Kafelki dalej niż prostokąt terenu nie są potrzebne, bo widok z niego nie wychodzi.
  *
  * Wymagania: NFR-39
  *
- * @property bounds prostokąt, w którym są kafelki podkładu
  * @property minZoom najmniejsze powiększenie, przy którym podkład jest rysowany
  */
-data class Basemap(val bounds: CampusBounds, val minZoom: Double = 0.0)
+data class Basemap(val minZoom: Double = 0.0)
 
 /**
- * Styl mapy V1 (ADR-0005) jako tekst JSON: kontury i podpisy ze źródła w aplikacji zawsze, podkład OSM tylko online,
- * tylko w obszarze [basemap] i przygaszony. Zaznaczony budynek [MapSelection.building] ma grubszy obrys i jako jedyny
- * znaki wejść; wejście [MapSelection.entrance] ma pinezkę z podpisem. Poza granicą terenu [MapSelection.boundary]
- * (bez niej poza prostokątem [MapSelection.bounds]) mapa jest wyblakła, a bariery mają znak uciążliwości. Warstwy
- * zaznaczenia są w stylu zawsze, więc style dla różnych zaznaczeń różnią się tylko polami [SelectionLook]
- * z [selectionLook].
+ * Styl mapy V1 (ADR-0005, ADR-0014) jako tekst JSON: kontury i podpisy ze źródła w aplikacji zawsze, podkład
+ * wektorowy w kolorach tokenów tylko online i od powiększenia [basemap]. Zaznaczony budynek [MapSelection.building]
+ * ma grubszy obrys i jako jedyny znaki wejść; wejście [MapSelection.entrance] ma pinezkę z podpisem, a bariery mają
+ * znak uciążliwości. Warstwy zaznaczenia są w stylu zawsze, więc style dla różnych zaznaczeń różnią się tylko polami
+ * [SelectionLook] z [selectionLook].
  *
- * Wymagania: NFR-10, NFR-39, US1.1, US1.4, US2.8, US2.1, NFR-21, US3.3, NFR-16, US1.7, BR-G5, US1.3
+ * Wymagania: NFR-10, NFR-39, US1.1, US1.4, US2.8, US2.1, NFR-21, US3.3, NFR-16, US1.3
  */
 fun campusMapStyle(
     data: CampusMapData,
     selection: MapSelection,
     colors: MapStyleColors,
-    basemap: Basemap? = selection.bounds?.let { Basemap(bounds = it) },
+    basemap: Basemap? = selection.bounds?.let { Basemap() },
 ): String {
-    val look = selectionLook(data, selection, colors)
+    val look = selectionLook(data, selection)
     val style =
         buildJsonObject {
             put(key = "version", value = STYLE_VERSION)
-            val all = sources(data = data, selection = selection, look = look, basemap = basemap)
+            if (colors.basemap != null) put(key = "glyphs", value = BASEMAP_GLYPHS)
+            val all = sources(data = data, look = look, plan = planFeatures(selection.plan?.rooms.orEmpty()))
             put(key = "sources", element = all)
             val list = layers(look = look, colors = colors, basemap = basemap)
             put(key = "layers", element = list)
@@ -167,84 +156,46 @@ internal fun entranceMarkImage(marking: EntranceMarking): String = "wejscie_${ma
 /** Nazwa obrazu podpisu zaznaczonego wejścia o nazwie [label]; przedrostek odróżnia go od podpisów budynków. */
 internal fun entranceCaptionImage(label: String): String = "wejscie: $label"
 
-private fun sources(data: CampusMapData, selection: MapSelection, look: SelectionLook, basemap: Basemap?): JsonObject =
+private fun sources(data: CampusMapData, look: SelectionLook, plan: JsonElement): JsonObject =
     buildJsonObject {
-        put(key = BASEMAP, element = basemapSource(basemap?.bounds))
+        put(key = BASEMAP, element = basemapSource())
         put(key = BUILDINGS_SOURCE, element = geoJsonSource(data.buildings))
-        put(key = LABELS, element = geoJsonSource(data.labelPoints))
+        put(key = LABELS_SOURCE, element = geoJsonSource(data.labelPoints))
         put(key = ENTRANCES_SOURCE, element = geoJsonSource(data.entrances))
         put(key = BARRIERS_SOURCE, element = geoJsonSource(data.barriers))
-        put(key = AREA_SOURCE, element = geoJsonSource(areaOf(selection)))
         put(key = CHOSEN_SOURCE, element = geoJsonSource(look.chosenEntrance))
-        put(key = PLAN_SOURCE, element = geoJsonSource(look.plan))
+        put(key = PLAN_SOURCE, element = geoJsonSource(plan))
     }
 
 private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap?): JsonArray =
     buildJsonArray {
         add(styleLayer(id = "lad", type = "background") { paint("background-color" to JsonPrimitive(colors.land)) })
-        add(
-            styleLayer(id = BASEMAP, type = "raster", source = BASEMAP) {
-                put(key = "minzoom", value = basemap?.minZoom ?: 0.0)
-                put(key = "paint", element = basemapPaint(colors))
-            },
-        )
+        colors.basemap?.let { palette ->
+            val minZoom = basemap?.minZoom ?: 0.0
+            basemapLayers(colors = palette, minZoom = minZoom, textSize = colors.labelSize).forEach(::add)
+        }
         add(
             styleLayer(id = BUILDINGS_LAYER, type = "fill", source = BUILDINGS_SOURCE) {
-                paint(BUILDINGS_FILL to look.buildingsFill)
+                val fill =
+                    byLevel(detailed = JsonPrimitive(colors.building), basic = JsonPrimitive(colors.basicBuilding))
+                paint(BUILDINGS_FILL to tone(own = fill, dimmed = colors.dimmed), "fill-opacity" to opacityUnderPlan())
             },
         )
         add(
             styleLayer(id = OUTLINES_LAYER, type = "line", source = BUILDINGS_SOURCE) {
-                paint(OUTLINES_COLOR to look.outlinesColor, "line-width" to JsonPrimitive(OUTLINE_WIDTH))
+                val color = tone(own = JsonPrimitive(colors.buildingOutline), dimmed = colors.dimmedOutline)
+                paint(OUTLINES_COLOR to color, "line-width" to OUTLINE_WIDTH, "line-opacity" to opacityUnderPlan())
             },
         )
         planLayers(colors.plan, look.planFloor).forEach { add(it) }
         add(selectedLayer(look.selectedFilter, colors))
-        areaLayers(colors).forEach { add(it) }
+        add(selectedPlanLayer(look.selectedPlanFilter, colors))
         add(marksLayer(look.entrancesFilter, look.entrancesMinZoom))
         barrierLayers(look.barriersFilter).forEach { add(it) }
-        add(symbolLayer(id = LABELS, source = LABELS, image = property(LABEL)))
+        val labels = symbolLayer(id = LABELS_LAYER, source = LABELS_SOURCE, image = property(LABEL))
+        add(JsonObject(labels + ("filter" to look.labelsFilter)))
         add(chosenBarrierLayer(look.chosenBarrierFilter))
         chosenLayers().forEach { add(it) }
-    }
-
-/**
- * Źródło kafelków podkładu takie jak w [campusMapStyle], z kafelkami tylko w prostokącie [bounds] (bez niego
- * z całego świata), do wymiany źródła w wczytanym stylu. Wymagania: NFR-39
- */
-internal fun basemapTiles(bounds: CampusBounds?): RasterSource {
-    val tiles = TileSet(TILE_JSON, OSM_TILES)
-    tiles.setMaxZoom(TILE_MAX_ZOOM.toFloat())
-    bounds?.let { area ->
-        tiles.setBounds(
-            LatLngBounds.from(latNorth = area.north, lonEast = area.east, latSouth = area.south, lonWest = area.west),
-        )
-    }
-    return RasterSource(BASEMAP, tiles, TILE_SIZE)
-}
-
-/** Źródło kafelków podkładu w stylu JSON, z kafelkami tylko w prostokącie [bounds]; `null`: cały świat. */
-internal fun basemapSource(bounds: CampusBounds?): JsonObject =
-    buildJsonObject {
-        put(key = "type", value = "raster")
-        put(key = "tiles", element = JsonArray(listOf(JsonPrimitive(OSM_TILES))))
-        put(key = "tileSize", value = TILE_SIZE)
-        put(key = "maxzoom", value = TILE_MAX_ZOOM)
-        bounds?.let { put(key = "bounds", element = numbers(it.west, it.south, it.east, it.north)) }
-    }
-
-private fun basemapPaint(colors: MapStyleColors): JsonObject =
-    buildJsonObject {
-        if (colors.isNight) {
-            put(key = "raster-opacity", value = 0.75)
-            put(key = "raster-saturation", value = -0.6)
-            put(key = "raster-brightness-min", value = 0.3)
-            put(key = "raster-brightness-max", value = 0.06)
-        } else {
-            put(key = "raster-opacity", value = 0.72)
-            put(key = "raster-saturation", value = -0.4)
-            put(key = "raster-contrast", value = -0.05)
-        }
     }
 
 private fun marksLayer(filter: JsonElement, minZoom: Double): JsonObject {

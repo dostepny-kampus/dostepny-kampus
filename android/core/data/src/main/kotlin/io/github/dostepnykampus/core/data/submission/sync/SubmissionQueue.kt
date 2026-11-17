@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import java.util.UUID
@@ -218,10 +219,10 @@ public class SubmissionQueue internal constructor(
      *
      * Wymagania: NFR-5
      *
-     * @param dir katalog zdjęć zgłoszeń
+     * @param dir katalog zdjęć zgłoszeń; odczytany poza wątkiem głównym
      * @param kept pliki zdjęć odtworzonych szkiców
      */
-    public suspend fun deleteOrphanPhotos(dir: File, kept: Set<String>) {
+    public suspend fun deleteOrphanPhotos(dir: () -> File, kept: Set<String>) {
         deleteOrphanPhotos(store = store, dir = dir, kept = kept, nowMillis = stamps.nowMillis(), ioContext = ioContext)
     }
 
@@ -287,13 +288,18 @@ public class SubmissionQueue internal constructor(
 
     private suspend fun sendUntilStop(): Outcome? {
         val tried = mutableSetOf<String>()
+        val outcomes = mutableListOf<Outcome>()
         var stop: Outcome? = null
         var next = store.all().firstOrNull()
         while (next != null && stop == null) {
             val outcome = sendOne(next)
+            outcomes += outcome
             if (outcome != Outcome.REPLACED) tried += next.submission.id
             stop = outcome.takeIf { it == Outcome.LATER || it == Outcome.LOGIN_EXPIRED }
             next = store.all().firstOrNull { it.submission.id !in tried }
+        }
+        if (outcomes.isNotEmpty()) {
+            Timber.i("Przebieg wysyłki zgłoszeń: %s, zatrzymanie: %s", outcomes.groupingBy { it }.eachCount(), stop)
         }
         return stop
     }

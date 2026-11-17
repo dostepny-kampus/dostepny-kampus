@@ -241,6 +241,7 @@ paths:
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
         '409': {$ref: '#/components/responses/VersionConflict'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
   /submissions/{submissionId}:
     parameters:
       - $ref: '#/components/parameters/SubmissionId'
@@ -281,6 +282,7 @@ paths:
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
         '409': {$ref: '#/components/responses/VersionConflict'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
   /submissions/{submissionId}/photos/{photoId}:
     parameters:
       - $ref: '#/components/parameters/SubmissionId'
@@ -309,7 +311,8 @@ paths:
       summary: Dodanie zdjęcia do zgłoszenia
       description: >-
         Autor dodaje zdjęcie z listy `photoIds` własnego zgłoszenia (BR-7, BR-8). Identyfikator z telefonu sprawia, że ponowne
-        wysłanie po zerwanym połączeniu nie tworzy drugiego zdjęcia (BR-9). Weryfikator, który wziął zgłoszenie, zastępuje
+        wysłanie po zerwanym połączeniu nie tworzy drugiego zdjęcia (BR-9). Gdy zgłoszenie jest w weryfikacji, autor
+        tylko dosyła brakujące zdjęcie; zastąpienie zapisanego daje 403 (NFR-25). Weryfikator, który wziął zgłoszenie, zastępuje
         zdjęcie wersją z zasłoniętymi twarzami i tablicami; nie tworzy to nowej wersji zgłoszenia (NFR-25, BR-15).
         Serwer usuwa z pliku metadane EXIF, XMP i IPTC oraz komentarze, w tym znacznik orientacji (NFR-26), więc telefon
         wysyła zdjęcie już obrócone.
@@ -335,6 +338,7 @@ paths:
         '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
   /review/queue:
     get:
       operationId: listReviewQueue
@@ -359,7 +363,8 @@ paths:
       summary: Wzięcie zgłoszenia do weryfikacji
       description: >-
         Zgłoszenie „wysłane” dostaje status „w weryfikacji” i znika z kolejki innych Weryfikatorów (US10.4, US8.2, BR-11).
-        Własne zgłoszenie daje 403 (BR-4), zgłoszenie wzięte przez innego Weryfikatora daje 409.
+        Własne zgłoszenie daje 403 (BR-4), zgłoszenie wzięte przez innego Weryfikatora daje 409. Zgłoszenie, któremu
+        brakuje w magazynie zdjęcia z `photoIds`, też daje 409 (BR-7, BR-8).
       tags: [review]
       security: [{keycloak: [VERIFIER]}]
       parameters:
@@ -370,6 +375,7 @@ paths:
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
         '409': {$ref: '#/components/responses/Conflict'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
   /submissions/{submissionId}/review:
     post:
       operationId: reviewSubmission
@@ -379,7 +385,8 @@ paths:
         powodu odrzucenia (US10.2, BR-16). Przyjęcie zgłoszenia szybkiego wymaga typu bariery i uciążliwości (US10.3, BR-14).
         Przyjęcie zmiany archiwizuje zastąpione zgłoszenie (BR-18), a „bariera usunięta” i zmiana oznaczenia wejścia
         same stają się archiwalne (US10.6, BR-19, BR-24). Decyzja o innej wersji niż aktualna daje 409 (BR-3),
-        a o zgłoszeniu wziętym przez innego Weryfikatora — 403 (BR-11).
+        a o zgłoszeniu wziętym przez innego Weryfikatora — 403 (BR-11). Brak w magazynie zdjęcia z `photoIds` daje 409
+        (BR-7, BR-8).
       tags: [review]
       security: [{keycloak: [VERIFIER]}]
       parameters:
@@ -396,7 +403,8 @@ paths:
         '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
-        '409': {$ref: '#/components/responses/VersionConflict'}
+        '409': {$ref: '#/components/responses/ReviewConflict'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
   /submissions/{submissionId}/similar:
     get:
       operationId: listSimilarSubmissions
@@ -458,6 +466,7 @@ paths:
                   results: {type: array, description: "Wyniki operacji.", items: {$ref: '#/components/schemas/SyncOperationResult'}}
         '400': {$ref: '#/components/responses/BadRequest'}
         '401': {$ref: '#/components/responses/Unauthorized'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
   /sync/pull:
     get:
       operationId: pullChanges
@@ -496,6 +505,7 @@ paths:
         '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
         '404': {$ref: '#/components/responses/NotFound'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
   /progress:
     get:
       operationId: getInventoryProgress
@@ -590,6 +600,7 @@ paths:
         '400': {$ref: '#/components/responses/BadRequest'}
         '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
 
 components:
   securitySchemes:
@@ -627,8 +638,8 @@ components:
           schema: {$ref: '#/components/schemas/Problem'}
     TooManyRequests:
       description: >-
-        Limit żądań bez logowania z jednego adresu wyczerpany (60 na minutę, NFR-34); nagłówek `Retry-After` podaje
-        liczbę sekund do ponowienia.
+        Limit żądań wyczerpany (NFR-34): bez logowania 60 na minutę z jednego adresu, zapisy zalogowanego konta
+        120 na minutę; nagłówek `Retry-After` podaje liczbę sekund do ponowienia.
       headers:
         Retry-After:
           description: Liczba sekund do ponowienia.
@@ -658,6 +669,13 @@ components:
           schema: {$ref: '#/components/schemas/Problem'}
     VersionConflict:
       description: Konflikt wersji albo zgłoszenie w statusie, który nie pozwala na zmianę; w odpowiedzi wersja z serwera.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/VersionConflictProblem'}
+    ReviewConflict:
+      description: >-
+        Decyzja nie może zapaść przy tym stanie zgłoszenia: inna wersja niż aktualna, zgłoszenie już rozstrzygnięte albo
+        brak zdjęcia z `photoIds` w magazynie; w odpowiedzi wersja z serwera.
       content:
         application/problem+json:
           schema: {$ref: '#/components/schemas/VersionConflictProblem'}

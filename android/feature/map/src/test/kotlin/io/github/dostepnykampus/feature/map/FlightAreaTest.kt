@@ -57,5 +57,5 @@ class FlightAreaTest {
     }
 
     private fun areaOf(bounds: CampusBounds, minZoom: Double) =
-        StyleArea(area = MapSelection(bounds = bounds), basemap = Basemap(bounds = bounds, minZoom = minZoom))
+        StyleArea(area = MapSelection(bounds = bounds), basemap = Basemap(minZoom = minZoom))
 }

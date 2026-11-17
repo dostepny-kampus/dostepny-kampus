@@ -3,8 +3,6 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app
 
 import android.content.Context
@@ -71,14 +69,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
 import com.github.takahirom.roborazzi.captureRoboImage
+import io.github.dostepnykampus.app.navigation.Account
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.AppScreen
 import io.github.dostepnykampus.app.navigation.BuildingCard
 import io.github.dostepnykampus.app.navigation.MapScreen
+import io.github.dostepnykampus.app.navigation.SignInRoute
 import io.github.dostepnykampus.app.navigation.sheetCard
-import io.github.dostepnykampus.core.data.account.GuestRoleProvider
 import io.github.dostepnykampus.core.data.account.RoleProvider
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.data.building.BUILDINGS_ASSET
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
@@ -88,6 +86,7 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
+import io.github.dostepnykampus.feature.auth.SignInViewModel
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.MapLibreMapView
 import io.github.dostepnykampus.feature.map.building.BuildingCardViewModel
@@ -100,6 +99,7 @@ import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -206,9 +206,18 @@ internal fun AppNavigator.TestAppScreen(
         TestBuildingCard(route.symbol)
     } else if (route is EntrancesRoute) {
         TestEntrances(route.symbol)
+    } else if (route is SignInRoute) {
+        TestSignIn(route)
     } else {
         AppScreen(route)
     }
+}
+
+/** L1 jak w aplikacji, ale ze stanem spoza grafu Hilt: sieć jest, a logowanie kończy się błędem. */
+@Composable
+internal fun AppNavigator.TestSignIn(route: SignInRoute) {
+    val model = remember { SignInViewModel(network = { flowOf(true) }, signIn = { false }) }
+    Account(route = route, signIn = model)
 }
 
 /** ViewModel z licznikiem dotknięć: pokazuje, czy ekran dostał ten sam ViewModel, czy nowy. */
@@ -253,7 +262,7 @@ class AppShellTest {
         mapViewModel = compose.activity.appMapViewModel()
     }
 
-    private fun show(firstLaunch: Boolean = false, roles: RoleProvider = GuestRoleProvider) {
+    private fun show(firstLaunch: Boolean = false, roles: RoleProvider = TestRoles()) {
         compose.setContent { Shell(firstLaunch = firstLaunch, roles = roles) }
     }
 
@@ -268,7 +277,7 @@ class AppShellTest {
 
     @Composable
     private fun CardShell(other: @Composable AppNavigator.(NavKey) -> Unit = {}) {
-        AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+        AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
             if (route is MapRoute) {
                 Text(route.focus?.toString() ?: "V1", Modifier.clickable { openBuilding(symbol = "A-1") })
             } else if (route is BuildingRoute) {
@@ -416,7 +425,7 @@ class AppShellTest {
     @Test
     fun keepsMapStateOnCardBack() {
         compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
                     Column {
                         var taps by remember { mutableIntStateOf(0) }
@@ -445,7 +454,7 @@ class AppShellTest {
     @Test
     fun keepsMapModelOnEntranceBack() {
         compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
                     val model = viewModel { TapsModel() }
                     Column {
@@ -484,7 +493,7 @@ class AppShellTest {
     fun expandsAfterCompact() {
         var cover = 1.dp
         compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
                     cover = LocalSheetPadding.current.calculateBottomPadding()
                     Box(modifier = Modifier.fillMaxSize().testTag("V1")) {
@@ -524,7 +533,7 @@ class AppShellTest {
     @Test
     fun startsNewCardCompact() {
         compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
                     Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
                 }
@@ -567,7 +576,7 @@ class AppShellTest {
     @Test
     fun showsOtherCardOverMap() {
         compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
                     Column {
                         Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
@@ -587,7 +596,7 @@ class AppShellTest {
     @Test
     fun keepsHistoryAfterRestore() {
         val restoration = StateRestorationTester(compose)
-        restoration.setContent { Shell(firstLaunch = false, roles = GuestRoleProvider) }
+        restoration.setContent { Shell(firstLaunch = false, roles = TestRoles()) }
         compose.onNodeWithText("Pomoc").performClick()
         restoration.emulateSavedInstanceStateRestore()
         compose.onNodeWithText("Pomoc").assertIsSelected()
@@ -644,7 +653,7 @@ class AppShellTest {
     @Test
     fun insetsContentAfterBar() {
         compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) {
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) {
                 var consumed by remember { mutableStateOf(WindowInsets(0)) }
                 val rest = WindowInsets.safeDrawing.exclude(consumed)
                 val text = "${rest.getTop(LocalDensity.current)}:${rest.getBottom(LocalDensity.current)}"

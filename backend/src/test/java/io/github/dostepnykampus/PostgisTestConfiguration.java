@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -21,7 +22,7 @@ import org.testcontainers.utility.DockerImageName;
  * <p>Obraz jest czytany z {@code infra/docker-compose.yml}, więc test i compose
  * mają jedną wersję, którą podbija Dependabot. Spring łączy źródło danych
  * z kontenerem przez {@link ServiceConnection}, a Flyway wykonuje migracje
- * przy starcie kontekstu.</p>
+ * przy starcie kontekstu na koncie z kontenera.</p>
  *
  * @since 0.1.0
  */
@@ -43,12 +44,35 @@ public final class PostgisTestConfiguration {
     @Bean
     @ServiceConnection
     static PostgreSQLContainer postgis() throws IOException {
-        return new PostgreSQLContainer(
-            DockerImageName.parse(
-                Pattern.compile("image: (postgis/postgis:\\S+)")
-                    .matcher(Files.readString(Path.of("../infra/docker-compose.yml")))
-                    .results().findFirst().orElseThrow().group(1)
-            ).asCompatibleSubstituteFor("postgres")
-        );
+        return new PostgreSQLContainer(PostgisTestConfiguration.image());
+    }
+
+    /**
+     * Obraz PostGIS z {@code infra/docker-compose.yml}.
+     *
+     * @return Obraz zgodny z kontenerem PostgreSQL
+     * @throws IOException Gdy nie da się przeczytać pliku compose
+     */
+    static DockerImageName image() throws IOException {
+        return DockerImageName.parse(
+            Pattern.compile("image: (postgis/postgis:\\S+)")
+                .matcher(Files.readString(Path.of("../infra/docker-compose.yml")))
+                .results().findFirst().orElseThrow().group(1)
+        ).asCompatibleSubstituteFor("postgres");
+    }
+
+    /**
+     * Migracje idą na koncie z kontenera, bo konto właściciela z ustawień serwera
+     * w kontenerze testowym nie istnieje.
+     *
+     * @param postgis Uruchomiony kontener bazy
+     * @return Ustawienia konta migracji
+     */
+    @Bean
+    static DynamicPropertyRegistrar migrationAccount(final PostgreSQLContainer postgis) {
+        return registry -> {
+            registry.add("spring.flyway.user", postgis::getUsername);
+            registry.add("spring.flyway.password", postgis::getPassword);
+        };
     }
 }

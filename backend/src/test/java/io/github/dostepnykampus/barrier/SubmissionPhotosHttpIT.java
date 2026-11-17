@@ -35,9 +35,10 @@ import software.amazon.awssdk.services.s3.S3Client;
 
 /**
  * Zdjęcie z listy photoIds trafia do magazynu
- * bez metadanych, a odczyt zdjęcia działa dla zgłoszenia przyjętego.
+ * bez metadanych, a odczyt zdjęcia działa dla zgłoszenia przyjętego. W weryfikacji autor
+ * dosyła brakujące zdjęcie, ale nie zastępuje zapisanego.
  *
- * <p>Wymagania: BR-7, US2.2, NFR-26, BR-15, BR-6</p>
+ * <p>Wymagania: BR-7, US2.2, NFR-26, BR-15, BR-6, NFR-25, BR-9</p>
  *
  * @since 0.1.0
  */
@@ -73,6 +74,35 @@ final class SubmissionPhotosHttpIT {
                 context, SubmissionPhotosHttpIT.add(context, "SENT"), UUID.randomUUID()
             ).getStatus(),
             Matchers.equalTo(404)
+        );
+    }
+
+    @Test
+    void keepsStoredPhotoInReview(final WebApplicationContext context) throws Exception {
+        final UUID id = SubmissionPhotosHttpIT.add(context, "IN_REVIEW");
+        MatcherAssert.assertThat(
+            "W weryfikacji brakujące zdjęcie nie daje 204 albo zapisane daje się zastąpić",
+            String.format(
+                "%d %d",
+                SubmissionPhotosHttpIT.put(context, id, SubmissionPhotosHttpIT.PHOTO).getStatus(),
+                SubmissionPhotosHttpIT.put(context, id, SubmissionPhotosHttpIT.PHOTO).getStatus()
+            ),
+            Matchers.equalTo("204 403")
+        );
+    }
+
+    @Test
+    void acceptsRepeatedPhotoBeforeReview(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = SubmissionPhotosHttpIT.add(context, "SENT");
+        MatcherAssert.assertThat(
+            "Ponowne wysłanie zdjęcia przed weryfikacją nie daje 204",
+            String.format(
+                "%d %d",
+                SubmissionPhotosHttpIT.put(context, id, SubmissionPhotosHttpIT.PHOTO).getStatus(),
+                SubmissionPhotosHttpIT.put(context, id, SubmissionPhotosHttpIT.PHOTO).getStatus()
+            ),
+            Matchers.equalTo("204 204")
         );
     }
 

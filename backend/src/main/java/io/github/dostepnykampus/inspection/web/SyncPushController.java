@@ -6,12 +6,17 @@
 package io.github.dostepnykampus.inspection.web;
 
 import io.github.dostepnykampus.inspection.application.MarkerService;
+import io.github.dostepnykampus.inspection.json.ReadOperation;
+import io.github.dostepnykampus.inspection.json.SyncOperationJson;
+import io.github.dostepnykampus.inspection.json.SyncOperationReader;
+import io.github.dostepnykampus.inspection.json.SyncPushRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,18 +40,24 @@ public final class SyncPushController {
      */
     private final MarkerService service;
 
-    SyncPushController(final MarkerService service) {
+    /**
+     * Odczyt każdej operacji osobno.
+     */
+    private final SyncOperationReader reader;
+
+    SyncPushController(final MarkerService service, final SyncOperationReader reader) {
         this.service = service;
+        this.reader = reader;
     }
 
     /**
-     * Zapisuje znaczniki z paczki w jednej transakcji; wynik każdej operacji jest osobny, a
-     * znacznik o zapisanym już identyfikatorze nie powstaje drugi raz. Cofnięcia wykonują się
-     * po zapisach: cofnięcie własnego znacznika, także powtórzone, jest udane, a cudzego albo
-     * nieistniejącego odrzucone. Znacznik od konta bez roli Zbierającego jest odrzucony z 403
-     * i niezapisany. Błąd w ciele którejkolwiek operacji daje 400 przed zapisem.
+     * Zapisuje znaczniki z paczki w jednej transakcji, raz na identyfikator; wynik każdej
+     * operacji jest osobny, a błąd danych jednej daje jej REJECTED 400. Cofnięcia idą po
+     * zapisach: własny znacznik, także powtórnie, jest cofnięty, cudzy albo nieistniejący
+     * odrzucony. Znacznik od konta bez roli Zbierającego dostaje 403. 400 dla całej paczki
+     * daje tylko zła liczba operacji albo brak clientOperationId.
      *
-     * <p>Wymagania: US15.1, US15.3, BR-9, BR-20</p>
+     * <p>Wymagania: US15.1, US15.3, BR-9, BR-20, US9.2</p>
      *
      * @param body Paczka według schematu z żądania
      * @param account Zalogowane konto; jego nazwa to identyfikator z tokenu
@@ -60,8 +71,10 @@ public final class SyncPushController {
     ) {
         final String author = account.getName();
         final boolean collector = request.isUserInRole("COLLECTOR");
-        final List<SyncOperationJson> operations = body.checked();
-        operations.forEach(operation -> operation.check(author));
+        final List<ReadOperation> read = body.checked().stream()
+            .map(node -> this.reader.read(node, author)).toList();
+        final List<SyncOperationJson> operations = read.stream()
+            .flatMap(SyncPushController::valid).toList();
         final Set<UUID> unknown = this.service.place(
             operations.stream().filter(operation -> collector && operation.placesMarker())
                 .map(operation -> operation.toMarker(author)).toList()
@@ -72,12 +85,28 @@ public final class SyncPushController {
             author
         );
         return new SyncPushResponse(
-            operations.stream().map(
-                operation -> SyncPushController.allowed(operation, collector).orElseGet(
-                    () -> SyncPushController.result(operation, author, unknown, missing)
-                )
+            read.stream().map(
+                operation -> switch (operation) {
+                    case ReadOperation.Broken broken -> SyncResultResponse.rejected(
+                        broken.id(), HttpStatus.BAD_REQUEST, broken.detail()
+                    );
+                    case ReadOperation.Valid valid -> SyncPushController.allowed(
+                        valid.operation(), collector
+                    ).orElseGet(
+                        () -> SyncPushController.result(valid.operation(), author, unknown, missing)
+                    );
+                    case null -> throw new IllegalStateException("Brak odczytanej operacji");
+                }
             ).toList()
         );
+    }
+
+    private static Stream<SyncOperationJson> valid(final ReadOperation operation) {
+        Stream<SyncOperationJson> result = Stream.empty();
+        if (operation instanceof ReadOperation.Valid valid) {
+            result = Stream.of(valid.operation());
+        }
+        return result;
     }
 
     private static Optional<SyncResultResponse> allowed(

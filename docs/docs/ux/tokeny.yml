@@ -426,39 +426,58 @@ wysokosci:
     zrodlo: styl „Karta miejsca”; cień arkusza z makiety hi-fi V2
 
 # ---------------------------------------------------------------------------
-# Paleta mapy: podkład, budynki PWr, plan piętra (styl mapy wektorowej, decyzja 44).
+# Paleta mapy: podkład, budynki PWr, plan piętra (styl mapy wektorowej, decyzja 44, ADR-0014).
+# Jasny podkład to wariant „żywy”: wyraźna zieleń i woda, budynki spoza PWr od powiększenia 13,
+# nazwy dzielnic wielkimi literami, budynki PWr najbardziej nasycone na mapie.
 # Nie są to role Material 3: aplikacja wstawia je do stylu mapy, a nie do motywu.
-# W jasnym motywie kontur PWr i ścieżka mają barwę `primary`. Ciemny to mapa nocna:
-# grafitowy ląd, szaroniebieskie kontury bez jasnego morskiego. Napisy: Noto Sans z obwódką.
+# W jasnym motywie kontur PWr i ścieżka mają barwę `primary`. Ciemny to wariant „żywy ciemny”: łupkowe tło
+# (nie czarne), drogi jaśniejsze od tła, wyraźna woda i zieleń, budynki PWr najjaśniejsze na mapie. Napisy: Noto Sans z obwódką.
 # Skrypt strony jeszcze nie sprawdza tej sekcji; pary niżej mają ten sam zapis
 # co `kontrast.pary`, a progi są te same (tekst 7:1, nietekst 3:1).
 # ---------------------------------------------------------------------------
 mapa:
   napisy_sp: 16
+  # Plan piętra na mapie V1: grubości linii i rozmiar znaków planu według powiększenia, liniowo między progami.
+  # Przy widocznym planie tło i kontur budynku z OpenStreetMap są ukryte. Ściana piętra z planu PWr to jedna linia
+  # `pwr_kontur` (obrys wybranego budynku też idzie po niej), a pod pomieszczeniami w jej obrysie leży `p_korytarz`. Winda, toaleta dostosowana i schody mają ten sam rozmiar; ważność niesie jasność
+  # i kolejność rysowania (winda i toaleta nad schodami). Znak ma obwódkę `papier` i kontur `tusz` jak znaki
+  # wejść i barier, a obszar dotyku co najmniej `cele_dotyku.minimum` przy każdym rozmiarze obrazu.
+  plan:
+    obrys_dp: 2.4
+    sciany_dp:
+      - {powiekszenie: 17, dp: 0.75}
+      - {powiekszenie: 20, dp: 1.5}
+    znak_dp:
+      - {powiekszenie: 17, dp: 20}
+      - {powiekszenie: 18, dp: 24}
+      - {powiekszenie: 19, dp: 28}
+    zrodlo: US16.1, NFR-16, NFR-17, NFR-21
   kolory:
-    lad: {jasny: "#E8EDEE", ciemny: "#15181A", uzycie: tło lądu}
-    zielen: {jasny: "#D4DFD5", ciemny: "#1A221E", uzycie: parki i trawniki}
-    woda: {jasny: "#BFD0D8", ciemny: "#132129", uzycie: rzeka i kanały}
-    droga: {jasny: "#FFFFFF", ciemny: "#2B3034", uzycie: wypełnienie ulic}
-    droga_kontur: {jasny: "#C5CDD0", ciemny: "#1D2124", uzycie: obrzeże ulic}
-    tory: {jasny: "#A3ACAF", ciemny: "#3A4044", uzycie: tory}
-    chodnik: {jasny: "#F7F9FA", ciemny: "#22272A", uzycie: chodniki i place}
-    budynek: {jasny: "#D6DBDD", ciemny: "#23282B", uzycie: budynki spoza PWr}
-    budynek_kontur: {jasny: "#C2C9CC", ciemny: "#2C3236", uzycie: kontur budynków spoza PWr}
-    pwr: {jasny: "#BFE0EC", ciemny: "#2A3640", uzycie: "wypełnienie budynków szczegółowych (z planem pięter)"}
-    # Budynek podstawowy: blade tło, tuż nad lądem; od szczegółowego odróżnia go jasność tła i cienki kontur.
-    pwr_podstawowy: {jasny: "#DDECF1", ciemny: "#222B31", uzycie: "wypełnienie budynków podstawowych (bez planu pięter)"}
+    lad: {jasny: "#EEF1F0", ciemny: "#20272B", uzycie: tło lądu}
+    zielen: {jasny: "#CBE2C6", ciemny: "#24352C", uzycie: parki i trawniki}
+    woda: {jasny: "#A7CADD", ciemny: "#1B3344", uzycie: rzeka i kanały}
+    droga: {jasny: "#FFFFFF", ciemny: "#3A4449", uzycie: wypełnienie ulic}
+    droga_kontur: {jasny: "#C3CBCE", ciemny: "#1A2023", uzycie: obrzeże ulic}
+    tory: {jasny: "#A3ACAF", ciemny: "#4A5357", uzycie: tory}
+    chodnik: {jasny: "#F7F9FA", ciemny: "#2C3438", uzycie: chodniki i place}
+    budynek: {jasny: "#DADFE0", ciemny: "#2B3337", uzycie: "budynki spoza PWr, od powiększenia 13"}
+    budynek_kontur: {jasny: "#C6CDCF", ciemny: "#343D42", uzycie: kontur budynków spoza PWr}
+    pwr: {jasny: "#9BD3E6", ciemny: "#3D6B7A", uzycie: "wypełnienie budynków szczegółowych (z planem pięter)"}
+    # Budynek podstawowy: jaśniejsze tło niż szczegółowy, ale wyraźnie niebieskie; od szczegółowego odróżnia go
+    # jasność tła i cienki kontur.
+    pwr_podstawowy: {jasny: "#C4E5F0", ciemny: "#2F4E59", uzycie: "wypełnienie budynków podstawowych (bez planu pięter)"}
     # Ciemny kontur PWr: najciemniejszy ton, który do wypełnienia ma ≥ 3:1 także po symulacji daltonizmu.
-    pwr_kontur: {jasny: "#004E5E", ciemny: "#68848F", uzycie: "kontur budynków PWr (jasny = primary): gruby przy szczegółowym, cienki ciągły przy podstawowym"}
+    pwr_kontur: {jasny: "#004E5E", ciemny: "#A6D6E5", uzycie: "kontur budynków PWr (jasny = primary): gruby przy szczegółowym, cienki ciągły przy podstawowym, ściana zewnętrzna planu piętra"}
     # Obrys wybranego budynku jest grubszy niż kontur; wybór pokazuje też arkusz z nazwą (NFR-21).
-    pwr_wybrany: {jasny: "#001F27", ciemny: "#7AA6B5", uzycie: obrys wybranego budynku}
-    napis_pwr: {jasny: "#00303B", ciemny: "#D9DFE2", uzycie: "symbol budynku, „Sala 329”, „Winda”, „Toaleta”"}
-    napis_ulica: {jasny: "#3A4549", ciemny: "#A9B2B6", uzycie: nazwy ulic i numery sal}
-    napis_woda: {jasny: "#2B454D", ciemny: "#A3B8C0", uzycie: nazwa rzeki}
-    obwodka: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: obwódka napisów}
-    sciezka: {jasny: "#004E5E", ciemny: "#6A818A", uzycie: ścieżka dostosowana}
+    pwr_wybrany: {jasny: "#001F27", ciemny: "#E6F4F8", uzycie: obrys wybranego budynku}
+    napis_pwr: {jasny: "#00303B", ciemny: "#F0F6F8", uzycie: "symbol budynku, „Sala 329”, „Winda”, „Toaleta”"}
+    napis_ulica: {jasny: "#3A4549", ciemny: "#A9B4B8", uzycie: "nazwy ulic od powiększenia 15 i numery sal"}
+    napis_woda: {jasny: "#2B454D", ciemny: "#96B9CC", uzycie: nazwa rzeki}
+    napis_dzielnica: {jasny: "#4E5A5E", ciemny: "#A9B2B6", uzycie: "nazwy dzielnic wielkimi literami, z odstępem liter"}
+    obwodka: {jasny: "#FFFFFF", ciemny: "#20272B", uzycie: obwódka napisów}
+    sciezka: {jasny: "#004E5E", ciemny: "#8AA7B2", uzycie: ścieżka dostosowana}
     tusz: {jasny: "#181C1D", ciemny: "#D5DADC", uzycie: "kontur znaków wejść i barier, znak „Niedostępne”, ikony pochylni i planu"}
-    papier: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: "obwódka znaków wejść i barier, wnętrze znaczników"}
+    papier: {jasny: "#FFFFFF", ciemny: "#20272B", uzycie: "obwódka znaków wejść i barier, wnętrze znaczników"}
     # Znaki wejść i barier na mapie i w legendzie. Barwa powtarza kształt i słowo, których nie zastępuje (NFR-21).
     # Odcienie z palety bezpiecznej przy daltonizmie (Okabe i Ito), jasność maleje z uciążliwością.
     # „Blokada”: zaokrąglona tablica z jedną poziomą belką, jak znak zakazu wjazdu; poza mapą i legendą tablica
@@ -471,26 +490,20 @@ mapa:
     znak_tylko_z_pomoca_symbol: {jasny: "#181C1D", ciemny: "#101314", uzycie: "dwie osoby w tarczy „Tylko z pomocą”"}
     znak_blokada: {jasny: "#A3180A", ciemny: "#D92D1A", uzycie: "tablica znaku „Blokada”"}
     znak_blokada_symbol: {jasny: "#FFFFFF", ciemny: "#FFFFFF", uzycie: "pozioma belka na tablicy „Blokada”"}
-    # Granica terenu (BR-G5): ciągła linia z obwódką w kolorze przeciwnym, żeby była widoczna na każdym podkładzie.
-    granica_terenu: {jasny: "#181C1D", ciemny: "#D5DADC", uzycie: "linia granicy terenu, 2 dp"}
-    granica_terenu_obwodka: {jasny: "#FFFFFF", ciemny: "#15181A", uzycie: "obwódka linii granicy terenu, 1,5 dp z każdej strony"}
-    p_korytarz: {jasny: "#FFFFFF", ciemny: "#2C3236", uzycie: korytarz na planie piętra}
+    p_korytarz: {jasny: "#FFFFFF", ciemny: "#2C3236", uzycie: "korytarz na planie piętra i tło w obrysie piętra pod pomieszczeniami"}
     p_sala: {jasny: "#D2EAF3", ciemny: "#2C3C44", uzycie: sala na planie piętra}
     p_inne: {jasny: "#E1E6E8", ciemny: "#23282B", uzycie: inne pomieszczenia i klatki schodowe}
     p_winda: {jasny: "#A7C0C9", ciemny: "#3B4D55", uzycie: winda}
     p_wzor: {jasny: "#4A5559", ciemny: "#8D979B", uzycie: kreskowanie klatek schodowych i kropki toalet}
     p_wc: {jasny: "#F2F5F6", ciemny: "#272C30", uzycie: toaleta}
-    p_kontur: {jasny: "#6A7579", ciemny: "#828E94", uzycie: ściany na planie piętra}
+    p_kontur: {jasny: "#6A7579", ciemny: "#828E94", uzycie: ściany pomieszczeń na planie piętra}
     p_wybrana: {jasny: "#8FD3EA", ciemny: "#2F5A68", uzycie: szukana sala}
     p_wybrana_kontur: {jasny: "#001F27", ciemny: "#D9E6EB", uzycie: kontur szukanej sali}
-  # Krycie koloru tła motywu (`kolory.background`) nałożonego na podkład poza granicą terenu (BR-G5).
-  # W jasnym motywie podkład blednie, w ciemnym gaśnie; teren od otoczenia odróżnia jasność.
-  krycie:
-    teren_poza: {jasny: 0.75, ciemny: 0.65, uzycie: "kolor `background` na podkładzie poza granicą terenu"}
   pary:
     - {kolor: napis_pwr, tlo: obwodka, rodzaj: tekst, gdzie: "symbol budynku, nazwy na planie"}
     - {kolor: napis_ulica, tlo: obwodka, rodzaj: tekst, gdzie: "nazwy ulic, numery sal"}
     - {kolor: napis_woda, tlo: obwodka, rodzaj: tekst, gdzie: nazwa rzeki}
+    - {kolor: napis_dzielnica, tlo: obwodka, rodzaj: tekst, gdzie: nazwy dzielnic}
     - {kolor: pwr_kontur, tlo: lad, rodzaj: komponent, gdzie: kontur budynku PWr na podkładzie}
     - {kolor: pwr_kontur, tlo: pwr, rodzaj: komponent, gdzie: kontur budynku szczegółowego do wypełnienia}
     - {kolor: pwr_kontur, tlo: pwr_podstawowy, rodzaj: komponent, gdzie: kontur budynku podstawowego do wypełnienia}
@@ -516,11 +529,17 @@ mapa:
     - {kolor: p_kontur, tlo: p_sala, rodzaj: komponent, gdzie: ściany sali}
     - {kolor: p_kontur, tlo: p_korytarz, rodzaj: komponent, gdzie: ściany korytarza}
     - {kolor: p_kontur, tlo: p_inne, rodzaj: komponent, gdzie: ściany innych pomieszczeń}
+    - {kolor: pwr_kontur, tlo: p_korytarz, rodzaj: komponent, gdzie: ściana zewnętrzna planu przy korytarzu}
+    - {kolor: pwr_kontur, tlo: p_sala, rodzaj: komponent, gdzie: ściana zewnętrzna planu przy sali}
+    - {kolor: pwr_kontur, tlo: p_inne, rodzaj: komponent, gdzie: ściana zewnętrzna planu przy innym pomieszczeniu}
+    - {kolor: pwr_kontur, tlo: p_wc, rodzaj: komponent, gdzie: ściana zewnętrzna planu przy toalecie}
+    - {kolor: pwr_kontur, tlo: p_winda, rodzaj: komponent, gdzie: ściana zewnętrzna planu przy windzie}
+    - {kolor: pwr_wybrany, tlo: p_korytarz, rodzaj: komponent, gdzie: obrys wybranego budynku po ścianie piętra przy korytarzu}
+    - {kolor: pwr_wybrany, tlo: p_sala, rodzaj: komponent, gdzie: obrys wybranego budynku po ścianie piętra przy sali}
+    - {kolor: tusz, tlo: papier, rodzaj: komponent, gdzie: kontur znaku planu do jego obwódki}
+    - {kolor: papier, tlo: p_kontur, rodzaj: komponent, gdzie: obwódka znaku planu do ściany pomieszczenia}
     - {kolor: p_wzor, tlo: p_inne, rodzaj: komponent, gdzie: kreskowanie klatek schodowych}
     - {kolor: p_wzor, tlo: p_wc, rodzaj: komponent, gdzie: kropki toalet}
     - {kolor: p_wybrana_kontur, tlo: p_wybrana, rodzaj: komponent, gdzie: kontur szukanej sali do wypełnienia}
     - {kolor: p_wybrana_kontur, tlo: p_korytarz, rodzaj: komponent, gdzie: kontur szukanej sali do korytarza}
     - {kolor: p_wybrana_kontur, tlo: p_sala, rodzaj: komponent, gdzie: kontur szukanej sali do sąsiedniej sali}
-    - {kolor: granica_terenu, tlo: granica_terenu_obwodka, rodzaj: komponent, gdzie: linia granicy terenu do obwódki}
-    - {kolor: granica_terenu, tlo: lad, rodzaj: komponent, gdzie: linia granicy terenu na lądzie}
-    - {kolor: granica_terenu, tlo: woda, rodzaj: komponent, gdzie: linia granicy terenu na rzece}

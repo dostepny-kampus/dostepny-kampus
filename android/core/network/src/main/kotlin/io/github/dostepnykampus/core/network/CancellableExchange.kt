@@ -13,6 +13,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 
 /**
@@ -20,7 +21,7 @@ import kotlin.coroutines.resume
  *
  * Anulowanie korutyny przerywa żądanie HTTP, także w trakcie czytania ciała, i kończy się
  * [kotlinx.coroutines.CancellationException], nie [ApiResult.NetworkError]. Odpowiedź jest zamykana
- * zawsze, także gdy przyszła już po anulowaniu.
+ * zawsze, także gdy przyszła już po anulowaniu. Wynik zostawia jedną linię logu ([logExchange]).
  *
  * Wymagania: NFR-55
  *
@@ -43,7 +44,27 @@ internal suspend fun <T> OkHttpClient.exchange(request: Request, read: (Int, Str
 internal suspend fun <T> OkHttpClient.exchangeBody(
     request: Request,
     read: (Int, ResponseBody) -> ApiResult<T>,
-): ApiResult<T> =
+): ApiResult<T> = exchangeResponse(request) { read(it.code, it.body) }
+
+/**
+ * To samo co [exchange], ale [read] dostaje całą odpowiedź, np. do odczytu nagłówka `Link`.
+ *
+ * @param T typ odczytanych danych
+ * @param request żądanie
+ * @param read wynik z odpowiedzi HTTP
+ * @return wynik [read] albo [ApiResult.NetworkError], gdy połączenie nie doszło do skutku lub zostało zerwane
+ */
+internal suspend fun <T> OkHttpClient.exchangeResponse(
+    request: Request,
+    read: (Response) -> ApiResult<T>,
+): ApiResult<T> {
+    val started = System.nanoTime()
+    return awaitExchange(request, read).also { result ->
+        logExchange(request, result, TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started))
+    }
+}
+
+private suspend fun <T> OkHttpClient.awaitExchange(request: Request, read: (Response) -> ApiResult<T>): ApiResult<T> =
     suspendCancellableCoroutine { continuation ->
         val call = newCall(request)
         continuation.invokeOnCancellation { call.cancel() }
@@ -56,7 +77,7 @@ internal suspend fun <T> OkHttpClient.exchangeBody(
                 override fun onResponse(call: Call, response: Response) {
                     val result =
                         try {
-                            response.use { read(it.code, it.body) }
+                            response.use(read)
                         } catch (error: IOException) {
                             ApiResult.NetworkError(error)
                         }

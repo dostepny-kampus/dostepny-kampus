@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pl">
+    <string name="logowanie_naglowek">Konto</string>
+    <string name="logowanie_potrzebne_konto">Aby zgłosić barierę, potrzebne jest konto.</string>
+    <string name="logowanie_konto_chroni">Konto chroni mapę przed fałszywymi informacjami.</string>
+    <string name="logowanie_trzy_kroki">Po zalogowaniu od razu zrobisz zdjęcie. Całość to 3 krótkie kroki.</string>
+    <string name="logowanie_zaloguj">Zaloguj się</string>
+    <string name="logowanie_zaloz_konto">Załóż konto</string>
+    <string name="logowanie_nie_teraz">Nie teraz</string>
+    <string name="logowanie_wymaga_internetu">Logowanie wymaga internetu.</string>
+    <string name="logowanie_mapa_bez_internetu">Mapa i opisy budynków działają bez niego.</string>
+    <string name="logowanie_wroc_do_mapy">Wróć do mapy</string>
+    <string name="logowanie_nie_udalo">Logowanie się nie udało albo zostało przerwane.</string>
+    <string name="logowanie_sprawdz_internet">Sprawdź internet i spróbuj ponownie.</string>
+    <string name="logowanie_sprobuj_ponownie">Spróbuj ponownie</string>
+</resources>

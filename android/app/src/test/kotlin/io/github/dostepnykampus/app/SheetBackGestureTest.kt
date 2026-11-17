@@ -3,8 +3,6 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app
 
 import android.view.ViewGroup
@@ -41,8 +39,6 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigationevent.DirectNavigationEventInput
 import androidx.navigationevent.NavigationEvent
-import io.github.dostepnykampus.core.data.account.GuestRoleProvider
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
@@ -75,7 +71,7 @@ class SheetBackGestureTest {
 
     @Composable
     private fun Shell() {
-        AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+        AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
             if (route is MapRoute) {
                 models += viewModel { MapModel() }
                 val map = Modifier.fillMaxSize().background(Brush.linearGradient(listOf(Color.Green, Color.Blue)))

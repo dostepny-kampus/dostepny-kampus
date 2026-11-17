@@ -28,4 +28,11 @@
     <string name="znaczniki_zostaw">Zostaw znacznik</string>
     <string name="znaczniki_pytanie_pietra">Cofnąć znacznik piętra %1$s? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.</string>
     <string name="znaczniki_pytanie_budynku">Cofnąć znacznik całego budynku? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.</string>
+    <string name="zbierajacy_budynek">Budynek %1$s</string>
+    <string name="zbierajacy_obejrzane">Obejrzane</string>
+    <string name="zbierajacy_nieobejrzane">Nieobejrzane</string>
+    <string name="zbierajacy_twoj_znacznik">Twój znacznik</string>
+    <string name="zbierajacy_czeka">Czeka na wysłanie</string>
+    <string name="zbierajacy_oznacz">Oznacz jako obejrzane</string>
+    <string name="zbierajacy_blad_zapisu">Nie udało się zapisać znacznika w telefonie. Spróbuj ponownie, a jeśli to nie pomoże, zwolnij miejsce.</string>
 </resources>

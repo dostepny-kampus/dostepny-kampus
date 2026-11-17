@@ -9,10 +9,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
-import io.github.dostepnykampus.core.model.Account
-import io.github.dostepnykampus.core.model.StaffRole
-import io.github.dostepnykampus.core.network.auth.AccessTokens
+import io.github.dostepnykampus.core.data.account.AccountSession
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -22,25 +19,21 @@ import okhttp3.Request
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-import java.util.Base64
 
 /**
  * Logowanie użytkownikiem testowym roli wybranej w przełączniku debug. Token z realmu
- * deweloperskiego trafia tylko do [AccessTokens] w pamięci procesu, a rola konta wynika z ról zapisanych w tokenie.
+ * deweloperskiego trafia tylko do [AccountSession] w pamięci procesu, a rola konta wynika z ról zapisanych w tokenie.
  * Ani token, ani hasło użytkownika testowego (`infra/keycloak/realm.json`) nie trafiają do logów.
  *
  * Wymagania: US14.1, BR-1, NFR-35
  *
- * @param roles konto pokazywane przez aplikację
- * @param tokens token dołączany do żądań do serwera
+ * @param session sesja konta pokazywana przez aplikację
  * @param http klient HTTP
  * @param tokenUrl adres wydawania tokenów realmu, np. z emulatora `http://10.0.2.2:8180/realms/…/token`
  * @param io wątki do żądania HTTP
  */
-@TymczasoweRole
 class DebugSignIn(
-    private val roles: DebugRoles,
-    private val tokens: AccessTokens,
+    private val session: AccountSession,
     private val http: OkHttpClient,
     private val tokenUrl: String,
     private val io: CoroutineDispatcher = Dispatchers.IO,
@@ -51,20 +44,13 @@ class DebugSignIn(
      * @return `true`, gdy konto pasuje już do wybranej roli
      */
     suspend fun choose(role: DebugRole): Boolean {
-        val user = USERS[role] ?: return signOut()
-        val token = withContext(io) { fetch(login = user.first, password = user.second) }
-        val account = token?.let(::accountOf)
-        if (token != null && account != null) {
-            tokens.signIn(token)
-            roles.switchTo(account)
+        val user = USERS[role]
+        if (user == null) {
+            session.signOut()
+            return true
         }
-        return account != null
-    }
-
-    private fun signOut(): Boolean {
-        tokens.signOut()
-        roles.switchTo(Account.Guest)
-        return true
+        val token = withContext(io) { fetch(login = user.first, password = user.second) }
+        return token != null && session.signIn(token)
     }
 
     private fun fetch(login: String, password: String): String? {
@@ -114,34 +100,14 @@ class DebugSignIn(
     }
 }
 
-/**
- * Konto z ról realmu w tokenie (`realm_access.roles`) albo `null`, gdy tokenu nie da się odczytać.
- *
- * @param token token JWT z Keycloak
- */
-internal fun accountOf(token: String): Account? {
-    val payload = token.split('.').getOrNull(1) ?: return null
-    return try {
-        val claims = JSONObject(String(Base64.getUrlDecoder().decode(payload), Charsets.UTF_8))
-        val granted = claims.optJSONObject("realm_access")?.optJSONArray("roles")
-        val names = granted?.let { array -> List(array.length()) { array.optString(it) } }.orEmpty()
-        Account.SignedIn(StaffRole.entries.filter { it.name in names }.toSet())
-    } catch (_: IllegalArgumentException) {
-        null
-    } catch (_: JSONException) {
-        null
-    }
-}
-
 /** Logowanie debug w grafie Hilt, z adresem realmu deweloperskiego z `infra/` widzianym z emulatora. */
 @Module
 @InstallIn(SingletonComponent::class)
 object DebugSignInModule {
     private const val TOKEN_URL = "http://10.0.2.2:8180/realms/dostepny-kampus/protocol/openid-connect/token"
 
-    /** Logowanie z tym samym [DebugRoles] i [AccessTokens] co reszta aplikacji. */
-    @OptIn(TymczasoweRole::class)
+    /** Logowanie z tą samą [AccountSession] co reszta aplikacji. */
     @Provides
-    fun signIn(roles: DebugRoles, tokens: AccessTokens, http: OkHttpClient): DebugSignIn =
-        DebugSignIn(roles = roles, tokens = tokens, http = http, tokenUrl = TOKEN_URL)
+    fun signIn(session: AccountSession, http: OkHttpClient): DebugSignIn =
+        DebugSignIn(session = session, http = http, tokenUrl = TOKEN_URL)
 }

@@ -3,8 +3,6 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app
 
 import android.view.accessibility.AccessibilityManager
@@ -19,7 +17,6 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.isSelectable
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -28,8 +25,6 @@ import androidx.compose.ui.unit.IntSize
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.AppScreen
-import io.github.dostepnykampus.core.data.account.GuestRoleProvider
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -127,7 +122,7 @@ class BuildingOnMapCameraTest {
             DostepnyKampusTheme {
                 AppShell(
                     firstLaunch = false,
-                    roles = GuestRoleProvider,
+                    roles = TestRoles(),
                     onFirstHelpLeft = {},
                     onChooseMap = { choice.savedChoice.value = false },
                 ) {
@@ -177,7 +172,7 @@ class BuildingOnMapCameraTest {
         val (data, before) = shown.last()
         assertFalse("$symbol widać już przed poleceniem", before.shows(data.labelPointOf(symbol)))
         val count = shown.size
-        click(hasText("Lista budynków") and isSelectable())
+        click(hasText("Pokaż listę"))
         click(hasContentDescription("$symbol, ", substring = true) and hasClickAction())
         click(hasText(BUILDING_ON_MAP))
         compose.waitUntil { shown.size > count }
@@ -263,13 +258,18 @@ class BuildingOnMapCameraTest {
     }
 
     /**
-     * Wiersz: K6, to samo „Pokaż budynek na mapie” po przesunięciu mapy strzałkami → kamera znów na budynku.
+     * Wiersz: K6, to samo „Pokaż budynek na mapie” po przesunięciu mapy strzałkami → kamera znów na budynku. Teren T-9
+     * jest mały, więc mapa najpierw się przybliża, żeby strzałki miały dokąd ją przesunąć.
      *
      * Wymagania: US2.9
      */
     @Test
     fun showsSameAgain() {
         showOnMap("T-9")
+        repeat(2) {
+            compose.onNodeWithContentDescription("Powiększ").performClick()
+            compose.waitForIdle()
+        }
         pan("prawo", times = 4)
         showOnMap("T-9")
         assertShown("T-9")

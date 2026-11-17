@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.style.Basemap
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.asinh
 import kotlin.math.atan
 import kotlin.math.cos
@@ -28,6 +29,8 @@ private const val QUARTER_VIEW_DEGREES_AT_ZOOM_0 = 70.0
 private const val WORLD_DP_AT_ZOOM_0 = 512.0
 private const val FULL_TURN_DEGREES = 360.0
 private const val BASEMAP_ZOOM_MARGIN = 0.5
+private const val SAME_VIEW_DEGREES = 1e-7
+private const val SAME_VIEW_ZOOM = 1e-6
 
 /**
  * Widok mapy V1. Przyciski „Powiększ”, „Pomniejsz” i cztery strzałki zmieniają go bez gestów (WCAG 2.5.1, WCAG 2.5.7).
@@ -38,6 +41,15 @@ private const val BASEMAP_ZOOM_MARGIN = 0.5
  * @property zoom powiększenie mapy; pod arkuszem V2 [center] stoi w środku części odkrytej
  */
 data class MapCamera(val center: GeoPoint, val zoom: Double)
+
+/**
+ * Czy [other] to ten sam widok: środki różnią się najwyżej o ok. 1 cm, a powiększenia o rachunek zmiennoprzecinkowy.
+ * Widok zgłoszony po geście i zapisany wraca jako cel ruchu, a mapa już w nim stoi. Wymagania: NFR-56
+ */
+internal fun MapCamera.isSameView(other: MapCamera): Boolean =
+    abs(center.longitude - other.center.longitude) <= SAME_VIEW_DEGREES &&
+        abs(center.latitude - other.center.latitude) <= SAME_VIEW_DEGREES &&
+        abs(zoom - other.zoom) <= SAME_VIEW_ZOOM
 
 /**
  * Wolna część mapy nad arkuszem V2, w dp.
@@ -75,59 +87,67 @@ internal fun MapCamera.moved(direction: PanDirection): MapCamera {
 }
 
 /**
- * Granice widoku V1 na mapie o rozmiarze [widthDp] × [heightDp] dp. Te same wartości dostaje
- * MapLibre dla gestów.
+ * Granice widoku V1 na mapie o rozmiarze [widthDp] × [heightDp] dp: cały widok, nie tylko jego środek, leży
+ * w prostokącie [area]. Te same wartości dostaje MapLibre dla gestów.
  *
- * Wymagania: NFR-39, NFR-53
+ * Wymagania: US1.7, NFR-39, NFR-53
  *
- * @property bounds obszar kampusu, poza który środek widoku nie wychodzi
+ * @property bounds prostokąt terenu (granica terenu z zapasem)
  * @property widthDp szerokość widoku mapy w dp
  * @property heightDp wysokość widoku mapy w dp
  */
 internal class MapLimits(val bounds: CampusBounds, val widthDp: Double, val heightDp: Double) {
-    /** Najmniejsze powiększenie: cały [bounds] mieści się w widoku, a bardziej oddalić mapy się nie da. */
+    /** Prostokąt widoku: sam [bounds], bez rozszerzania do proporcji widoku. */
+    val area: CampusBounds get() = bounds
+
+    /**
+     * Najmniejsze powiększenie: [area] wypełnia widok w krótszym wymiarze, więc widok nie wychodzi poza [area],
+     * a wzdłuż dłuższego wymiaru mapę się przesuwa.
+     */
     val minZoom: Double =
-        minOf(
-            a = fitZoom(viewDp = widthDp, worldShare = (bounds.east - bounds.west) / FULL_TURN_DEGREES),
-            b = fitZoom(viewDp = heightDp, worldShare = (mercatorY(bounds.north) - mercatorY(bounds.south)) / (2 * PI)),
+        maxOf(
+            a = fitZoom(viewDp = widthDp, worldShare = (area.east - area.west) / FULL_TURN_DEGREES),
+            b = fitZoom(viewDp = heightDp, worldShare = (mercatorY(area.north) - mercatorY(area.south)) / (2 * PI)),
         )
 
-    /**
-     * Prostokąt podkładu: [bounds] powiększony o pół szerokości i pół wysokości widoku przy [minZoom],
-     * żeby przy brzegu terenu nie było pustych pasów bez podkładu.
-     *
-     * Wymagania: NFR-39
-     */
-    val tileBounds: CampusBounds
-        get() {
-            val world = WORLD_DP_AT_ZOOM_0 * 2.0.pow(minZoom)
-            val halfLongitude = widthDp / 2 / world * FULL_TURN_DEGREES
-            val halfY = heightDp / 2 / world * (2 * PI)
-            return CampusBounds(
-                west = bounds.west - halfLongitude,
-                south = latitudeOf(mercatorY(bounds.south) - halfY),
-                east = bounds.east + halfLongitude,
-                north = latitudeOf(mercatorY(bounds.north) + halfY),
-            )
-        }
+    /** Prostokąt podkładu: [area], bo widok z niego nie wychodzi. Wymagania: NFR-39 */
+    val tileBounds: CampusBounds get() = area
 
     /**
-     * Podkład terenu: kafelki w [tileBounds] od pół poziomu poniżej [minZoom]. Przelot na inny teren oddala mapę
+     * Podkład terenu od pół poziomu poniżej [minZoom]. Przelot na inny teren oddala mapę
      * bardziej, więc w jego środku podkładu nie ma, a przy zejściu do celu wraca.
      *
      * Wymagania: NFR-39
      */
-    val basemap: Basemap get() = Basemap(bounds = tileBounds, minZoom = minZoom - BASEMAP_ZOOM_MARGIN)
+    val basemap: Basemap get() = Basemap(minZoom = minZoom - BASEMAP_ZOOM_MARGIN)
 
     /**
-     * Widok [camera] w granicach: środek w [bounds], powiększenie co najmniej [minZoom]. Strzałki i „Pomniejsz”
-     * zatrzymują się na granicy bez komunikatu.
+     * Prostokąt, w którym leży środek odkrytej części mapy o rozmiarze [viewWidthDp] × [viewHeightDp] dp przy
+     * powiększeniu [zoom]: [area] pomniejszony o pół tej części. Część większa niż [area] daje sam środek [area].
      */
-    fun clamp(camera: MapCamera): MapCamera {
-        val longitude = camera.center.longitude.coerceIn(minimumValue = bounds.west, maximumValue = bounds.east)
-        val latitude = camera.center.latitude.coerceIn(minimumValue = bounds.south, maximumValue = bounds.north)
-        val center = GeoPoint(longitude = longitude, latitude = latitude)
-        return camera.copy(center = center, zoom = camera.zoom.coerceAtLeast(minZoom))
+    fun centerBounds(zoom: Double, viewWidthDp: Double = widthDp, viewHeightDp: Double = heightDp): CampusBounds {
+        val world = WORLD_DP_AT_ZOOM_0 * 2.0.pow(zoom)
+        val halfLongitude = viewWidthDp / 2 / world * FULL_TURN_DEGREES
+        val halfY = viewHeightDp / 2 / world * (2 * PI)
+        val middleLongitude = (area.west + area.east) / 2
+        val middleY = (mercatorY(area.south) + mercatorY(area.north)) / 2
+        val west = minOf(a = area.west + halfLongitude, b = middleLongitude)
+        val east = maxOf(a = area.east - halfLongitude, b = middleLongitude)
+        val south = minOf(a = mercatorY(area.south) + halfY, b = middleY)
+        val north = maxOf(a = mercatorY(area.north) - halfY, b = middleY)
+        return CampusBounds(west = west, south = latitudeOf(south), east = east, north = latitudeOf(north))
+    }
+
+    /**
+     * Widok [camera] w granicach dla odkrytej części mapy [viewWidthDp] × [viewHeightDp] dp: powiększenie co najmniej
+     * [minZoom], środek w [centerBounds]. Strzałki i „Pomniejsz” zatrzymują się na brzegu bez komunikatu.
+     */
+    fun clamp(camera: MapCamera, viewWidthDp: Double = widthDp, viewHeightDp: Double = heightDp): MapCamera {
+        val zoom = camera.zoom.coerceAtLeast(minZoom)
+        val box = centerBounds(zoom = zoom, viewWidthDp = viewWidthDp, viewHeightDp = viewHeightDp)
+        val longitude = camera.center.longitude.coerceIn(minimumValue = box.west, maximumValue = box.east)
+        val latitude = camera.center.latitude.coerceIn(minimumValue = box.south, maximumValue = box.north)
+        return MapCamera(center = GeoPoint(longitude = longitude, latitude = latitude), zoom = zoom)
     }
 }
 

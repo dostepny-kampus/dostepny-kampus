@@ -19,7 +19,7 @@ import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.barrier.withBarriers
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
-import io.github.dostepnykampus.feature.map.campus.campusMapData
+import io.github.dostepnykampus.feature.map.campus.CampusMapDataCache
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,7 +52,7 @@ private const val STOP_TIMEOUT_MS = 5_000L
  *   odpowie niepustą listą, katalog z serwera
  * @property isOnline czy jest internet; na start prawda, żeby linia „Bez internetu” nie mignęła, zanim przyjdzie stan
  *   bieżący
- * @property isListSaved ostatni wybór w przełączniku: prawda dla „Lista budynków”, fałsz dla „Mapa”, `null`, gdy osoba
+ * @property isListSaved ostatni widok: prawda dla listy, fałsz dla mapy, `null`, gdy osoba
  *   jeszcze nie wybierała
  * @property mapData gotowe dane warstw mapy, policzone poza wątkiem interfejsu raz na katalog; `null`, dopóki pierwsza
  *   geometria nie jest gotowa, a po zmianie katalogu poprzednie dane, aż policzy się nowa. Dane mają
@@ -86,7 +86,7 @@ data class CampusMapUiState(
  * @param networkStatus stan internetu
  * @param mapListChoice zapamiętany wybór „Mapa” albo „Lista budynków”
  * @property computeContext kontekst obliczeń geometrii; w aplikacji `Dispatchers.Default` z grafu Hilt
- * @property geometry funkcja licząca dane mapy z katalogu, przerywalna przerwaniem wątku; w aplikacji `campusMapData`
+ * @property geometry dane mapy z katalogu, przerywalne przerwaniem wątku; w aplikacji pamięć `CampusMapDataCache`
  * @param barriers bariery ze zgłoszeń przyjętych; w testach bez barier
  */
 @HiltViewModel
@@ -139,7 +139,8 @@ class CampusMapViewModel(
         mapListChoice: MapListChoice,
         barriers: AcceptedBarriers,
         @ComputeContext computeContext: CoroutineContext,
-    ) : this(repository, networkStatus, mapListChoice, computeContext, ::campusMapData, barriers)
+        cache: CampusMapDataCache,
+    ) : this(repository, networkStatus, mapListChoice, computeContext, cache::dataFor, barriers)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun Flow<Boolean>.onNetworkChange(barriers: AcceptedBarriers): Flow<FetchedBarriers> =
@@ -183,7 +184,7 @@ class CampusMapViewModel(
     /** Bariery z jednego pytania źródła razem z chwilą ich pobrania z serwera. */
     private data class FetchedBarriers(val barriers: List<AcceptedBarrier>, val syncedAt: Instant?)
 
-    /** Zapamiętuje wybór w przełączniku: „Lista budynków” przy [isList], inaczej „Mapa”. Wymagania: NFR-19 */
+    /** Zapamiętuje widok: listę przy [isList], inaczej mapę. Wymagania: NFR-19 */
     fun chooseList(isList: Boolean) {
         viewModelScope.launch { mapListChoice.choose(isList) }
     }

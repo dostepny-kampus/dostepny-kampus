@@ -5,10 +5,14 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +20,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -24,24 +29,25 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
@@ -52,6 +58,7 @@ import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
+import io.github.dostepnykampus.core.designsystem.bar.NavigationIcons
 import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.area.AreaOrder
@@ -69,28 +76,29 @@ private val SearchIcon =
             "c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 " +
             "9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z",
     )
+private val ListIcon =
+    pathIcon("M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z")
 private val ClearIcon =
     pathIcon("M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z")
 
 /**
- * Góra V1: nagłówek „Mapa kampusu”, pole symbolu budynku, przełącznik „Mapa” i „Lista budynków” i wynik pod nimi. Pole
- * przyjmuje zapis „c13” i szuka bez sieci; wynik to przycisk jak w arkuszu „Który budynek?”, a tekst, który nie jest
- * symbolem, daje pod polem kartę „brak wyniku” z radą i przyciskiem „Lista budynków”, którą TalkBack czyta sam. Przy
- * liście pole zawęża listę, a karta „brak wyniku” nie ma przycisku. Przełącznik pokazuje wybór tłem i ptaszkiem, przy
- * dużej czcionce jako „Lista”. Pole ma kształt kapsuły z lupą, a po wpisaniu „×” z nazwą „Wyczyść pole”.
+ * Góra V1: wiersz tytułu z przejściem między mapą a listą, pole symbolu budynku i wynik pod nimi. Pole przyjmuje
+ * zapis „c13” i szuka bez sieci; tekst, który nie jest symbolem, daje kartę „brak wyniku”, która przy mapie
+ * prowadzi do listy. Przy liście pole zawęża listę.
  *
  * Wymagania: NFR-19, US1.1, UC1, NFR-21, NFR-20, NFR-53, NFR-18, US2.5, NFR-11, US1.8, NFR-15
  *
  * @param catalog katalog budynków; `null`, dopóki się wczytuje
  * @param search wynik wyszukiwania z modelu widoku; ekran pokazuje go tylko dla zapytania z pola
  * @param onSearch nowe zapytanie z pola, do policzenia w modelu widoku
- * @param isOnline czy jest internet; bez niego pod przełącznikiem stoi [OfflineLine]
+ * @param isOnline czy jest internet; bez niego pod polem stoi [OfflineLine]
  * @param syncedAt chwila pobrania najstarszych danych z serwera do daty w [OfflineLine]
- * @param isList czy przełącznik stoi na „Lista budynków”; wtedy pod górą jest lista budynków
+ * @param isList czy widok to lista; wtedy pod górą jest lista budynków
  * @param areas tereny w kolejności nagłówków listy budynków
- * @param onListChange wybór w przełączniku albo „Lista budynków” w karcie brak wyniku
+ * @param onListChange wybór widoku w wierszu tytułu albo przejście do listy z karty „brak wyniku”
  * @param onBuildingClick symbol wybranego wyniku albo budynku z listy; ekran otwiera V2 i zaznacza budynek. Wybór
- *   zdejmuje fokus z pola i chowa klawiaturę ekranową, a pierwsze „Wstecz” zamyka V2
+ *   zdejmuje fokus z pola, chowa klawiaturę ekranową i wyniki, a tekst w polu zostaje; wyniki wracają po dotknięciu
+ *   pola albo zmianie tekstu. Pierwsze „Wstecz” zamyka V2
  * @param modifier położenie nad mapą; przy liście cała wysokość nad paskiem dolnym
  */
 @Composable
@@ -107,11 +115,12 @@ internal fun CampusSearch(
     modifier: Modifier = Modifier,
 ) {
     var query by rememberSaveable { mutableStateOf("") }
+    var isChosen by rememberSaveable { mutableStateOf(false) }
     SideEffect { onSearch(query) }
     val found = search.foundFor(query)
     val results = found.orEmpty()
     val isNoResult = query.isNotBlank() && found?.isEmpty() == true
-    val shown = results.takeUnless { isList }.orEmpty()
+    val shown = results.takeUnless { isList || isChosen }.orEmpty()
     val focus = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
     val showList = {
@@ -119,13 +128,23 @@ internal fun CampusSearch(
         onListChange(true)
     }
     val choose = { symbol: String ->
-        query = ""
+        isChosen = true
         focus.clearFocus(force = true)
         keyboard?.hide()
         onBuildingClick(symbol)
     }
     Column(modifier.fillMaxWidth()) {
-        SearchHeader(query = query, onQueryChange = { query = it }, isList = isList, onListChange = onListChange)
+        val onQueryChange = { text: String ->
+            query = text
+            isChosen = false
+        }
+        SearchHeader(
+            query = query,
+            onQueryChange = onQueryChange,
+            onFieldTap = { isChosen = false },
+            isList = isList,
+            onListChange = onListChange,
+        )
         if (!isOnline) OfflineLine(syncedAt)
         if (isNoResult || shown.isNotEmpty()) {
             ResultPanel {
@@ -152,6 +171,7 @@ internal fun CampusSearch(
 private fun SearchHeader(
     query: String,
     onQueryChange: (String) -> Unit,
+    onFieldTap: () -> Unit,
     isList: Boolean,
     onListChange: (Boolean) -> Unit,
 ) {
@@ -161,44 +181,46 @@ private fun SearchHeader(
             Modifier.windowInsetsPadding(insets).padding(horizontal = Odstepy.m, vertical = Odstepy.s),
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
         ) {
-            Text(
-                text = stringResource(R.string.mapa_kampusu),
-                modifier = Modifier.semantics { heading() },
-                style = MaterialTheme.typography.titleLarge,
-            )
-            SymbolField(query, onQueryChange)
-            ViewToggle(isList, onListChange)
+            TitleRow(isList, onListChange)
+            SymbolField(query, onQueryChange, onFieldTap)
         }
     }
 }
 
 @Composable
-private fun ViewToggle(isList: Boolean, onListChange: (Boolean) -> Unit) {
-    val isShort = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
-    val colors =
-        SegmentedButtonDefaults.colors(
-            activeContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            inactiveContainerColor = MaterialTheme.colorScheme.surface,
+private fun TitleRow(isList: Boolean, onListChange: (Boolean) -> Unit) {
+    val title: @Composable () -> Unit = {
+        Text(
+            text = stringResource(R.string.mapa_kampusu),
+            modifier = Modifier.semantics { heading() },
+            style = MaterialTheme.typography.titleLarge,
         )
-    SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-        listOf(false, true).forEachIndexed { index, list ->
-            SegmentedButton(
-                selected = isList == list,
-                onClick = { onListChange(list) },
-                shape = SegmentedButtonDefaults.itemShape(index = index, count = 2),
-                modifier = Modifier.heightIn(min = CeleDotyku.minimum),
-                colors = colors,
-                contentPadding = PaddingValues(horizontal = Odstepy.xs),
-            ) {
-                val name = stringResource(if (list) R.string.mapa_widok_lista else R.string.mapa_widok_mapa)
-                Text(
-                    text = if (list && isShort) stringResource(R.string.mapa_widok_lista_krotko) else name,
-                    modifier = Modifier.semantics { contentDescription = name },
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = Typografia.wyroznienieWaga.takeIf { isList == list },
-                )
-            }
+    }
+    if (LocalDensity.current.fontScale >= LARGE_FONT_SCALE) {
+        Column {
+            title()
+            ViewButton(isList = isList, hasIcon = false, onListChange = onListChange)
         }
+    } else {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.weight(1f)) { title() }
+            ViewButton(isList = isList, hasIcon = true, onListChange = onListChange)
+        }
+    }
+}
+
+@Composable
+private fun ViewButton(isList: Boolean, hasIcon: Boolean, onListChange: (Boolean) -> Unit) {
+    TextButton(onClick = { onListChange(!isList) }, modifier = Modifier.heightIn(min = CeleDotyku.minimum)) {
+        if (hasIcon) {
+            Icon(imageVector = if (isList) NavigationIcons.Map else ListIcon, contentDescription = null)
+            Spacer(Modifier.width(Odstepy.s))
+        }
+        Text(
+            text = stringResource(if (isList) R.string.mapa_pokaz_widok_mapy else R.string.mapa_pokaz_liste),
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = Typografia.wyroznienieWaga,
+        )
     }
 }
 
@@ -215,11 +237,17 @@ private fun ResultPanel(content: @Composable ColumnScope.() -> Unit) {
 }
 
 @Composable
-private fun SymbolField(query: String, onQueryChange: (String) -> Unit) {
+private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: () -> Unit) {
+    val interactions = remember { MutableInteractionSource() }
+    val tap by rememberUpdatedState(onTap)
+    LaunchedEffect(interactions) {
+        interactions.interactions.collect { if (it is PressInteraction.Release) tap() }
+    }
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
         modifier = Modifier.fillMaxWidth(),
+        interactionSource = interactions,
         placeholder = { Text(stringResource(R.string.mapa_szukaj_podpowiedz)) },
         leadingIcon = { Icon(SearchIcon, contentDescription = null) },
         trailingIcon = {
@@ -252,7 +280,7 @@ private fun NoResult(query: String, onShowList: (() -> Unit)?) {
             onShowList?.let { showList ->
                 val buttonModifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk)
                 FilledTonalButton(onClick = showList, modifier = buttonModifier) {
-                    Text(text = stringResource(R.string.mapa_widok_lista), style = MaterialTheme.typography.bodyLarge)
+                    Text(text = stringResource(R.string.mapa_pokaz_liste), style = MaterialTheme.typography.bodyLarge)
                 }
             }
         }

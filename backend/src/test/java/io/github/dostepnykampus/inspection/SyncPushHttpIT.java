@@ -10,6 +10,8 @@ import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -18,13 +20,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Znacznik piętra obejrzanego serwer zapisuje, a ponowne wysłanie tego samego znacznika nie
- * zapisuje go drugi raz; znacznik piętra spoza budynku jest odrzucony. Cofnięcie własnego
- * znacznika jest udane, także powtórzone, a cudzego odrzucone.
+ * zapisuje go drugi raz; znacznik piętra spoza budynku jest odrzucony, a błąd danych jednej
+ * operacji (znak NUL) nie zatrzymuje pozostałych. Cofnięcie własnego znacznika jest udane, także
+ * powtórzone, a cudzego odrzucone.
  *
- * <p>Wymagania: US15.1, US15.2, US15.3, BR-9, BR-20, BR-21</p>
+ * <p>Wymagania: US15.1, US15.2, US15.3, BR-9, BR-20, BR-21, US9.2</p>
  *
  * @since 0.1.0
  */
@@ -122,6 +127,37 @@ final class SyncPushHttpIT {
         );
     }
 
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
+            "{\"id\":\"%s\",\"buildingSymbol\":\"C-13%s\"}",
+            "{\"id\":\"%s\",\"buildingSymbol\":\"C-13\",\"floorId\":\"f%s\"}"
+        }
+    )
+    void rejectsOnlyBrokenOperationInBatch(
+        final String broken, final WebApplicationContext context
+    ) throws Exception {
+        final UUID good = UUID.randomUUID();
+        final MockHttpServletResponse response = context.getBean(MockMvc.class).perform(
+            MockMvcRequestBuilders.post("/sync/push")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer COLLECTOR")
+                .content(SyncPushHttpIT.batch(broken, good))
+        ).andReturn().getResponse();
+        final JsonNode results = context.getBean(ObjectMapper.class)
+            .readTree(response.getContentAsString()).path("results");
+        Assertions.assertEquals(
+            "200 REJECTED 400 APPLIED, zapisanych 1",
+            String.format(
+                "%d %s %d %s, zapisanych %d", response.getStatus(),
+                results.path(0).path("outcome").asString(),
+                results.path(0).path("problem").path("status").asInt(),
+                results.path(1).path("outcome").asString(), SyncPushHttpIT.saved(context, good)
+            ),
+            "Błąd jednej operacji zatrzymał pozostałe albo nie dał jej wyniku REJECTED 400"
+        );
+    }
+
     @Test
     void revokesOwnMarkerAlsoWhenRepeated(final WebApplicationContext context)
         throws Exception {
@@ -154,6 +190,17 @@ final class SyncPushHttpIT {
                 SyncPushHttpIT.revoked(context, foreign)
             ),
             "Cofnięcie cudzego albo nieistniejącego znacznika nie zostało odrzucone"
+        );
+    }
+
+    private static String batch(final String broken, final UUID good) {
+        return String.join(
+            "",
+            "{\"operations\":[{\"clientOperationId\":\"",
+            UUID.randomUUID().toString(), "\",",
+            "\"type\":\"SET_INSPECTION_MARKER\",\"marker\":",
+            broken.formatted(UUID.randomUUID(), String.join("", "\\", "u0000")), "},",
+            SyncPushHttpIT.body(good, "C-13").substring(15)
         );
     }
 

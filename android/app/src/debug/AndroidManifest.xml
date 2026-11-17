@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- Debug: serwer na komputerze gospodarza (10.0.2.2) to sieć lokalna, od Androida 17 tylko z tym uprawnieniem. -->
+    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
     <!-- Debug: czysty HTTP tylko do komputera gospodarza z emulatora i do localhost. -->
     <application android:networkSecurityConfig="@xml/network_security_config">
+        <!-- Narzędzia diagnostyczne (JankStats, StrictMode) uruchamiane z androidx.startup, tylko w debug. -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="io.github.dostepnykampus.app.debug.DebugToolsInitializer"
+                android:value="androidx.startup" />
+        </provider>
         <!-- Przełącznik ról z osobną ikoną w launcherze, tylko w debug (US14.1). -->
         <activity
             android:name=".debug.DebugRoleActivity"

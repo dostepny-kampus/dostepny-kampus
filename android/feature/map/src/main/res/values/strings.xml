@@ -7,7 +7,8 @@
     <string name="mapa_przesun_w_lewo">Przesuń mapę w lewo</string>
     <string name="mapa_przesun_w_prawo">Przesuń mapę w prawo</string>
     <string name="mapa_legenda">Legenda</string>
-    <string name="mapa_legenda_budynek">Budynek Politechniki</string>
+    <string name="mapa_legenda_budynek_szczegolowy">Budynek z planem pięter</string>
+    <string name="mapa_legenda_budynek_podstawowy">Budynek bez planu</string>
     <string name="mapa_legenda_wejscie_niedostepne">Wejście niedostępne</string>
     <string name="mapa_legenda_wejscie_bez_danych">Wejście bez danych</string>
     <string name="mapa_legenda_przewin">Przewiń w dół ↓</string>
@@ -15,6 +16,9 @@
     <string name="mapa_zrodla">Źródła danych</string>
     <string name="mapa_zrodla_osm_przed">"Mapa ulic i kontury budynków: "</string>
     <string name="mapa_zrodla_osm_po">, dane na otwartej licencji ODbL.</string>
+    <string name="mapa_zrodla_podklad">Podkład mapy: %1$s © %2$s.</string>
+    <string name="mapa_openfreemap">OpenFreeMap</string>
+    <string name="mapa_openmaptiles">OpenMapTiles</string>
     <string name="mapa_zrodla_pwr">Wejścia i plany pięter: Źródło: Politechnika Wrocławska.</string>
     <string name="mapa_zrodla_pwr_stan">Wejścia i plany pięter: Źródło: Politechnika Wrocławska, stan z %1$s.</string>
     <string name="mapa_osm">© OpenStreetMap contributors</string>
@@ -63,14 +67,14 @@
     <string name="mapa_brak_wyniku_rada">Sprawdź symbol, np. C-13, albo wybierz budynek z listy.</string>
     <string name="mapa_bez_internetu">Bez internetu</string>
     <string name="mapa_bez_internetu_dane_z">Bez internetu · dane z %1$s</string>
-    <string name="mapa_widok_mapa">Mapa</string>
-    <string name="mapa_widok_lista">Lista budynków</string>
-    <string name="mapa_widok_lista_krotko">Lista</string>
+    <string name="mapa_pokaz_liste">Pokaż listę</string>
+    <string name="mapa_pokaz_widok_mapy">Pokaż mapę</string>
     <string name="karta_czytaj">Budynek %1$s, %2$s</string>
     <string name="karta_wiersz_dostepne">Wejście dostępne</string>
     <string name="karta_wiersz_niedostepne">Brak wejścia dostępnego</string>
     <string name="karta_wiersz_brak_danych">Brak danych o wejściach</string>
     <string name="karta_wejscia">Wejścia</string>
+    <string name="karta_wejscia_brak">Nie mamy jeszcze danych o wejściach do tego budynku.</string>
     <string name="karta_bariery">Bariery w budynku</string>
     <string name="karta_bariery_brak">Brak zgłoszonych barier</string>
     <string name="karta_bariery_brak_opis">Bariera pojawi się tutaj, gdy ktoś ją zgłosi i zostanie sprawdzona.</string>
@@ -94,6 +98,7 @@
     <string name="karta_nie_ma_na_pietrach">Nie ma na piętrach: %1$s.</string>
     <string name="karta_i">i</string>
     <string name="karta_pietra">Piętra</string>
+    <string name="karta_oznacz_pietra">Oznacz obejrzane piętra</string>
     <string name="karta_bez_planu">Nie mamy planu pięter tego budynku.</string>
     <string name="karta_zwiniete">zwinięte</string>
     <string name="karta_rozwiniete">rozwinięte</string>

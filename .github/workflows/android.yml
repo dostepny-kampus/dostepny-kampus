@@ -18,6 +18,7 @@ on:
       - ".github/actions/android-gradle/**"
       - ".github/scripts/cache-budowania-sprintu.sh"
       - ".github/scripts/cache-z-kolejki.sh"
+      - ".github/scripts/przytnij-cache-budowania.sh"
       - ".github/scripts/czysc-cache.sh"
       - ".github/scripts/wyniki-androida.sh"
       - ".github/scripts/zmiany-obszaru.sh"
@@ -75,14 +76,11 @@ jobs:
       - name: Sprawdź, czy PR albo grupa w kolejce zmienia aplikację Android, jej dane, tokeny albo własne kroki CI
         id: diff
         if: steps.drzewo.outputs.pomin != 'true'
-        env:
-          EVENT: ${{ github.event_name }}
-          GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
-          GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
         run: >-
           .github/scripts/zmiany-obszaru.sh android android data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml
           .github/workflows/android.yml .github/actions/android-gradle .github/scripts/cache-budowania-sprintu.sh
-          .github/scripts/cache-z-kolejki.sh .github/scripts/czysc-cache.sh .github/scripts/wyniki-androida.sh
+          .github/scripts/cache-z-kolejki.sh .github/scripts/czysc-cache.sh .github/scripts/przytnij-cache-budowania.sh
+          .github/scripts/wyniki-androida.sh
           .github/scripts/zmiany-obszaru.sh
 
   emulator:
@@ -96,11 +94,12 @@ jobs:
       fail-fast: false
       matrix:
         # Testy aplikacji na wersji minimalnej i docelowej z NFR-41 oraz pełny test systemowy (moduł `systemtest`)
-        # z serwerem i bazą uruchomionymi na runnerze; porażka każdego wariantu czerwieni `budowanie`.
+        # z serwerem i bazą uruchomionymi na runnerze, na API równym `targetSdk`; porażka każdego wariantu czerwieni
+        # `budowanie`.
         include:
           - { api: 26, zestaw: aplikacja }
           - { api: 36, zestaw: aplikacja }
-          - { api: 36, zestaw: system }
+          - { api: '37.0', zestaw: system }
     env:
       IMAGE: system-images;android-${{ matrix.api }};default;x86_64
     steps:
@@ -225,6 +224,10 @@ jobs:
           while read -r test; do
             czekaj_na_emulator "$test" < /dev/null
             adb shell pm clear io.github.dostepnykampus < /dev/null
+            # Od API 37 serwer na runnerze (10.0.2.2) to sieć lokalna: bez uprawnienia każde żądanie kończy się błędem.
+            if [[ $ZESTAW == system ]]; then
+              adb shell pm grant io.github.dostepnykampus android.permission.ACCESS_LOCAL_NETWORK < /dev/null
+            fi
             adb shell am instrument -w -e class "$test" "$uruchamiacz" < /dev/null | tr -d '\r' | tee -a "$RUNNER_TEMP/instrumentacja.txt" > "$RUNNER_TEMP/wynik.txt"
             cat "$RUNNER_TEMP/wynik.txt"
             # `am instrument` kończy się kodem 0 także przy porażce testu, więc wynik czytamy z wyjścia.
@@ -306,6 +309,14 @@ jobs:
         run: |
           ls -l app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
             systemtest/build/outputs/apk/debug/systemtest-debug.apk
+      - name: Sprawdź podpis kluczem debug z repozytorium
+        # Ten sam certyfikat w każdym przebiegu: apk-debug instaluje się na poprzedni bez kasowania danych (#2865).
+        run: |
+          narzedzie="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n 1)/apksigner"
+          klucz="$(keytool -list -v -keystore debug.keystore -storepass android -alias androiddebugkey |
+            sed -n 's/^[[:space:]]*SHA256: //p' | tr -d ':' | tr 'A-F' 'a-f')"
+          APKSIGNER="$narzedzie" bash ../.github/scripts/podpis-apk.sh "$klucz" app/build/outputs/apk/debug/app-debug.apk \
+            app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk systemtest/build/outputs/apk/debug/systemtest-debug.apk
       - name: Udostępnij APK aplikacji i testów
         uses: actions/upload-artifact@v7.0.2
         with:
@@ -387,6 +398,10 @@ jobs:
             android/**/build/reports/
             android/**/build/outputs/roborazzi/
           if-no-files-found: ignore
+      - name: Przytnij cache budowania do wpisów tego buildu
+        # Bez tego artefakt rósł o wyniki starych commitów (5,85 GB, 11 min pobierania i wysyłania na grupę).
+        if: ${{ success() && github.event_name == 'merge_group' }}
+        run: bash ../.github/scripts/przytnij-cache-budowania.sh przytnij "$HOME/.gradle/caches/build-cache-1"
       - name: Udostępnij cache budowania zadaniu po scaleniu i następnym grupom kolejki
         # Cache zapisany w grupie kolejki należy do jej tymczasowej gałęzi, której inne przebiegi nie widzą; artefakt widzą.
         if: ${{ success() && github.event_name == 'merge_group' }}
@@ -521,7 +536,8 @@ jobs:
       - name: Przygotuj JDK i cache Gradle
         uses: ./.github/actions/android-gradle
       - name: Sprawdź, czy każdy moduł deklaruje biblioteki, których używa
-        run: ./gradlew buildHealth --console=plain
+        # Bez configuration cache: zadania abiAnalysis wtyczki analizy zależności niestabilnie nie dają się w nim zapisać.
+        run: ./gradlew buildHealth --no-configuration-cache --console=plain
       - name: Zapisz raport analizy zależności
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7.0.2

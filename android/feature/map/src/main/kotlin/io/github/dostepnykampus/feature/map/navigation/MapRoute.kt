@@ -24,7 +24,7 @@ sealed interface MapFocus {
      * Budynek o symbolu [symbol], np. `C-13`. [command] to tożsamość polecenia „Pokaż budynek na mapie”, po którym
      * kamera staje na budynku; każde dotknięcie przycisku dostaje inną. Bez niego (`null`) budynek jest tylko
      * zaznaczony, a widok zostaje, np. po „Wstecz” z V2. [floor] to piętro planu do pokazania po „Pokaż na planie”;
-     * `null` zostawia piętro wybrane przez plan.
+     * budynek z piętrem nie jest zaznaczony. `null` zostawia piętro wybrane przez plan i zaznaczenie.
      *
      * Wymagania: US2.9, US16.1
      */

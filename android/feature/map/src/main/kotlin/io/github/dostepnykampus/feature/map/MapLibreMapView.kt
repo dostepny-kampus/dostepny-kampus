@@ -8,14 +8,18 @@ package io.github.dostepnykampus.feature.map
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.RectF
+import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -25,24 +29,27 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.google.gson.JsonObject
 import dagger.hilt.android.EntryPointAccessors
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.feature.map.barrier.BARRIER_ID
 import io.github.dostepnykampus.feature.map.barrier.barrierImages
 import io.github.dostepnykampus.feature.map.building.entranceCaption
 import io.github.dostepnykampus.feature.map.building.entranceImages
+import io.github.dostepnykampus.feature.map.camera.CameraController
 import io.github.dostepnykampus.feature.map.camera.CameraMotion
+import io.github.dostepnykampus.feature.map.camera.CameraPort
 import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.FlightArea
-import io.github.dostepnykampus.feature.map.camera.FlightLimits
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
+import io.github.dostepnykampus.feature.map.camera.MapTrace
 import io.github.dostepnykampus.feature.map.camera.StyleArea
 import io.github.dostepnykampus.feature.map.camera.belowTop
 import io.github.dostepnykampus.feature.map.camera.mapLimits
-import io.github.dostepnykampus.feature.map.camera.padding
 import io.github.dostepnykampus.feature.map.camera.styleAreaOf
 import io.github.dostepnykampus.feature.map.camera.styleColors
 import io.github.dostepnykampus.feature.map.camera.toCamera
@@ -52,10 +59,9 @@ import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
 import io.github.dostepnykampus.feature.map.campus.selection
-import io.github.dostepnykampus.feature.map.campus.symbolsAt
+import io.github.dostepnykampus.feature.map.campus.touchedSymbols
 import io.github.dostepnykampus.feature.map.plan.planSignImages
 import io.github.dostepnykampus.feature.map.style.BARRIERS_LAYER
-import io.github.dostepnykampus.feature.map.style.BASEMAP
 import io.github.dostepnykampus.feature.map.style.BUILDINGS_LAYER
 import io.github.dostepnykampus.feature.map.style.Basemap
 import io.github.dostepnykampus.feature.map.style.MapImages
@@ -64,15 +70,12 @@ import io.github.dostepnykampus.feature.map.style.MapStyleTarget
 import io.github.dostepnykampus.feature.map.style.MapTileHttpEntryPoint
 import io.github.dostepnykampus.feature.map.style.SelectionLook
 import io.github.dostepnykampus.feature.map.style.asStyleText
-import io.github.dostepnykampus.feature.map.style.basemapTiles
-import io.github.dostepnykampus.feature.map.style.campusMapStyle
-import io.github.dostepnykampus.feature.map.style.labelImage
-import io.github.dostepnykampus.feature.map.style.numbers
+import io.github.dostepnykampus.feature.map.style.campusMapShell
 import io.github.dostepnykampus.feature.map.style.rememberMapImages
-import io.github.dostepnykampus.feature.map.style.roomNumberBitmap
-import io.github.dostepnykampus.feature.map.style.roomNumberImage
 import io.github.dostepnykampus.feature.map.style.selectionLook
-import io.github.dostepnykampus.feature.map.style.showArea
+import io.github.dostepnykampus.feature.map.style.showBasemap
+import io.github.dostepnykampus.feature.map.style.showData
+import io.github.dostepnykampus.feature.map.style.showPlanData
 import io.github.dostepnykampus.feature.map.style.showSelection
 import io.github.dostepnykampus.feature.map.style.styleBuilder
 import kotlinx.serialization.json.JsonArray
@@ -94,18 +97,17 @@ import org.maplibre.android.style.layers.LineLayer
 import org.maplibre.android.style.layers.PaintPropertyValue
 import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.sources.GeoJsonSource
+import org.maplibre.geojson.Feature
+import timber.log.Timber
 
-private const val LABEL_TEXT_SP = 14f
 private const val LABEL_MAX_FONT_SCALE = 1.4f
 private const val TOUCH_TOLERANCE_DP = 24f
-private const val PADDING_MILLIS = 300
 
 /**
  * Widok MapLibre Android bez kluczy i kont (ADR-0005); logo i podpis biblioteki zastępuje podpis ekranu. Podpis konturu
  * rośnie z czcionką najwyżej 1,4 raza, a dotknięcie do 24 dp od konturu trafia w kontur. Pobiera tylko widoczne
- * kafelki. Widok kamery zgłasza tylko po geście osoby. Każdy ruch kamery wykonuje raz; zasłonięcie dołu mapy zmienia
- * dopełnienie dopiero po końcu trwającego ruchu. Natywny widok powstaje i zwalnia pamięć raz, z ekranem; zmiana cyklu
- * życia sceny tylko zatrzymuje i wznawia mapę.
+ * kafelki. Widok kamery zgłasza tylko po geście osoby. Kamerę zmienia tylko [CameraController] (ADR-0015). Natywny
+ * widok powstaje i zwalnia pamięć raz, z ekranem; zmiana cyklu życia sceny tylko zatrzymuje i wznawia mapę.
  *
  * Wymagania: NFR-39, NFR-56
  */
@@ -121,16 +123,17 @@ object MapLibreMapView : CampusMapView {
         onBarrierTouch: (String) -> Unit,
         modifier: Modifier,
     ) {
-        if (!remember { isNativeMapAvailable() }) return
+        if (!rememberNativeMap()) return
         val context = LocalContext.current
         val density = LocalDensity.current
         val colors = DostepnyKampusTheme.mapColors
-        val styleColors = colors.styleColors()
-        val look = remember(data, selection, styleColors) { selectionLook(data, selection, styleColors) }
-        val labelSize = LABEL_TEXT_SP * density.density * density.fontScale.coerceAtMost(LABEL_MAX_FONT_SCALE)
+        val fontScale = density.fontScale.coerceAtMost(LABEL_MAX_FONT_SCALE)
+        val styleColors = colors.styleColors(fontScale)
+        val look = remember(data, selection) { selectionLook(data, selection) }
+        val labelSize = Typografia.napisyMapy.value * density.density * fontScale
         val tolerance = TOUCH_TOLERANCE_DP * density.density
         val images = rememberMapImages(colors = colors, density = density.density, labelSize = labelSize)
-        val mapView = rememberMapView(context)
+        val mapView = rememberMapView(context, background = colors.lad.toArgb())
         FollowScreenLifecycle(mapView)
         var map by remember { mutableStateOf<MapLibreMap?>(null) }
         var size by remember { mutableStateOf(IntSize.Zero) }
@@ -152,8 +155,8 @@ object MapLibreMapView : CampusMapView {
                 ready.prefetchZoomDelta = 0
                 ready.cameraPosition = currentMove.camera.toPosition(currentInset)
                 ready.onPersonIdle { cameraIdle(it) }
-                ready.onSignOrOutlinesTouch(tolerance, onBarrier = { barrierTouch(it) }) { numbers ->
-                    currentData.symbolsAt(numbers).also { buildingsTouch(it) }.isNotEmpty()
+                ready.onSignOrOutlinesTouch(tolerance, onBarrier = { barrierTouch(it) }) { hit, near ->
+                    currentData.touchedSymbols(hit, near).also { buildingsTouch(it) }.isNotEmpty()
                 }
                 map = ready
             }
@@ -167,7 +170,7 @@ object MapLibreMapView : CampusMapView {
             colors = styleColors,
             area = areas.shown,
         )
-        map.FollowEachMoveOnce(move = move, inset = inset, limits = limits, area = area, areas = areas)
+        map.FollowEachMoveOnce(move = move, inset = inset, limits = limits, area = area, areas = areas, view = mapView)
         AndroidView(factory = { mapView }, modifier = modifier.onSizeChanged { size = it })
     }
 
@@ -178,23 +181,34 @@ object MapLibreMapView : CampusMapView {
         limits: MapLimits?,
         area: StyleArea,
         areas: FlightArea,
+        view: View,
     ) {
-        val driver = remember(this) { this?.let { CameraDriver(map = it, areas = areas) } }
+        val map = this
+        val controller =
+            remember(map) { map?.let { CameraController(MapLibreCamera(map = it, areas = areas, view = view)) } }
         val currentInset by rememberUpdatedState(inset)
-        DisposableEffect(driver, move) {
-            driver?.follow(move, currentInset)
+        DisposableEffect(map, controller) {
+            val gesture =
+                MapLibreMap.OnCameraMoveStartedListener { reason ->
+                    if (reason == REASON_API_GESTURE) controller?.byPerson()
+                }
+            map?.addOnCameraMoveStartedListener(gesture)
+            onDispose { map?.removeOnCameraMoveStartedListener(gesture) }
+        }
+        DisposableEffect(controller, move) {
+            controller?.move(move, currentInset)
             onDispose {}
         }
-        DisposableEffect(driver, limits) {
-            driver?.limit(limits)
+        DisposableEffect(controller, limits) {
+            controller?.limit(limits)
             onDispose {}
         }
         DisposableEffect(area) {
-            areas.area(area)
+            MapTrace.areaChange { areas.area(area) }
             onDispose {}
         }
-        DisposableEffect(driver, inset) {
-            driver?.pad(inset)
+        DisposableEffect(controller, inset) {
+            controller?.pad(inset)
             onDispose {}
         }
     }
@@ -209,19 +223,23 @@ object MapLibreMapView : CampusMapView {
         area: StyleArea,
     ) {
         val map = this
-        val style = rememberMapStyle(data = data, selection = area.area, colors = colors, basemap = area.basemap)
+        val style = rememberMapStyle(selection = area.area, colors = colors, basemap = area.basemap)
         var loaded by remember { mutableStateOf<Style?>(null) }
-        val currentData by rememberUpdatedState(data)
         val currentLook by rememberUpdatedState(look)
         val currentSelection by rememberUpdatedState(selection)
         val currentArea by rememberUpdatedState(area)
         var shown by remember { mutableStateOf<StyleArea?>(null) }
+        var styleLoads by remember { mutableIntStateOf(0) }
         DisposableEffect(map, style, images) {
             loaded = null
             val built = currentArea
             style?.let { json ->
+                styleLoads += 1
+                val load = styleLoads
+                MapTrace.startStyle(load)
                 map?.setStyle(styleBuilder(json)) { ready ->
-                    ready.addMapImages(labels = currentData.labels, images = images)
+                    MapTrace.endStyle(load)
+                    ready.addMapImages(images = images)
                     StyleTarget(ready).showSelection(currentLook, selectionImages(currentSelection, images))
                     shown = built
                     loaded = ready
@@ -229,13 +247,22 @@ object MapLibreMapView : CampusMapView {
             }
             onDispose {}
         }
+        val labelled = remember(loaded) { mutableSetOf<String>() }
+        LaunchedEffect(loaded, data) {
+            loaded?.let { StyleTarget(it).showData(data, images, labelled) }
+        }
+        val numbered = remember(loaded) { mutableSetOf<String>() }
+        val floors = selection.plan?.rooms.orEmpty()
+        LaunchedEffect(loaded, floors) {
+            loaded?.let { StyleTarget(it).showPlanData(floors, images, numbered) }
+        }
         DisposableEffect(loaded, look) {
             loaded?.let { StyleTarget(it).showSelection(look, selectionImages(currentSelection, images)) }
             onDispose {}
         }
         DisposableEffect(loaded, area) {
             loaded?.takeIf { area != shown }?.let { ready ->
-                StyleTarget(ready).showArea(area = area.area, basemap = area.basemap)
+                StyleTarget(ready).showBasemap(basemap = area.basemap)
                 shown = area
             }
             onDispose {}
@@ -243,12 +270,14 @@ object MapLibreMapView : CampusMapView {
     }
 
     @Composable
-    private fun rememberMapView(context: Context): MapView =
+    private fun rememberMapView(context: Context, background: Int): MapView =
         remember {
             MapLibre.getInstance(context)
             val tiles = EntryPointAccessors.fromApplication<MapTileHttpEntryPoint>(context.applicationContext)
             HttpRequestUtil.setOkHttpClient(tiles.mapTileHttp().calls)
-            MapView(context, northUpOptions(context))
+            MapView(context, northUpOptions(context, background)).apply {
+                addOnDidFailLoadingMapListener { Timber.w("Mapa: błąd stylu: %s", it) }
+            }
         }
 
     @Composable
@@ -281,7 +310,7 @@ object MapLibreMapView : CampusMapView {
     private fun MapLibreMap.onSignOrOutlinesTouch(
         tolerance: Float,
         onBarrier: (String) -> Unit,
-        isTaken: (List<Int>) -> Boolean,
+        isTaken: (hit: List<Int>, near: () -> List<Int>) -> Boolean,
     ) {
         addOnMapClickListener { point ->
             val at = projection.toScreenLocation(point)
@@ -289,8 +318,10 @@ object MapLibreMapView : CampusMapView {
             val signs = queryRenderedFeatures(area, BARRIERS_LAYER)
             val barrier = signs.firstNotNullOfOrNull { it.getStringProperty(BARRIER_ID) }
             if (barrier == null) {
-                val outlines = queryRenderedFeatures(area, BUILDINGS_LAYER)
-                isTaken(outlines.mapNotNull { it.getNumberProperty(OUTLINE_NUMBER)?.toInt() })
+                val hit = queryRenderedFeatures(at, BUILDINGS_LAYER)
+                val near = { queryRenderedFeatures(area, BUILDINGS_LAYER) }
+                val number = { feature: Feature -> feature.getNumberProperty(OUTLINE_NUMBER)?.toInt() }
+                isTaken(hit.mapNotNull(number)) { near().mapNotNull(number) }
             } else {
                 onBarrier(barrier)
                 true
@@ -308,89 +339,101 @@ object MapLibreMapView : CampusMapView {
     }
 
     /**
-     * Ruchy kamery mapy [map] po jednym. Ruch niesie dopełnienie z chwili startu; dopełnienie zmienione
-     * w trakcie ruchu czeka na jego koniec, bo przerwałoby ruch, a samo przesuwa mapę płynnie w 300 ms. Gest osoby
-     * przerywa ruch sam (MapLibre). Na czas przelotu granice kamery są zdjęte ([FlightLimits]), a teren i podkład
-     * starego terenu zostają do zejścia poniżej powiększenia podkładu ([areas]).
+     * Kamera MapLibre [map] dla [CameraController]. Granica środka przy bieżącym powiększeniu i dopełnieniu idzie do
+     * mapy przy każdym ruchu gestem, więc odkryta część nie wychodzi poza teren. Przy przelocie stary teren
+     * i podkład zostają do zejścia poniżej powiększenia podkładu ([areas]).
      */
-    private class CameraDriver(private val map: MapLibreMap, private val areas: FlightArea) {
-        private var inset = MapInset()
-        private var running: Run? = null
-        private val limits = FlightLimits { limitTo(it) }
+    private class MapLibreCamera(private val map: MapLibreMap, private val areas: FlightArea, private val view: View) :
+        CameraPort {
+        private var area: MapLimits? = null
+        private var centerBox: CampusBounds? = null
+        private var moves = 0
 
         init {
-            map.addOnCameraMoveListener { areas.zoom(map.cameraPosition.zoom) }
+            map.addOnCameraMoveListener {
+                val position = map.cameraPosition
+                areas.zoom(position.zoom)
+                position.target?.let { at ->
+                    MapTrace.frame(zoom = position.zoom, latitude = at.latitude, longitude = at.longitude)
+                }
+                limitCenterToArea()
+            }
         }
 
-        fun limit(next: MapLimits?) = limits.limit(next)
+        override val camera: MapCamera get() = map.cameraPosition.toCamera()
 
-        private fun limitTo(area: MapLimits?) {
-            if (area == null) {
+        override val inset: MapInset
+            get() = map.cameraPosition.padding?.let { MapInset(top = it[1], bottom = it[3]) } ?: MapInset()
+
+        override fun lift() = limitTo(null)
+
+        override fun move(camera: MapCamera, inset: MapInset, motion: CameraMotion, millis: Long, end: () -> Unit) {
+            val update = CameraUpdateFactory.newCameraPosition(camera.toPosition(inset))
+            val number = ++moves
+            MapTrace.startMove(motion, number)
+            val callback =
+                object : MapLibreMap.CancelableCallback {
+                    override fun onCancel() = done()
+
+                    override fun onFinish() = done()
+
+                    private fun done() {
+                        MapTrace.endMove(motion, number)
+                        end()
+                    }
+                }
+            if (motion == CameraMotion.FLIGHT) areas.startFlight() else areas.endFlight()
+            when (motion) {
+                CameraMotion.NONE -> map.moveCamera(update, callback)
+                CameraMotion.EASE -> map.easeCamera(update, millis.toInt(), callback)
+                CameraMotion.FLIGHT -> map.animateCamera(update, millis.toInt(), callback)
+            }
+        }
+
+        override fun rest(limits: MapLimits?) {
+            areas.endFlight()
+            limitTo(limits)
+        }
+
+        override fun post(block: () -> Unit) {
+            view.post(block)
+        }
+
+        private fun limitTo(next: MapLimits?) {
+            area = next
+            centerBox = null
+            if (next == null) {
                 map.setLatLngBoundsForCameraTarget(null)
                 map.setMinZoomPreference(MapLibreConstants.MINIMUM_ZOOM.toDouble())
                 return
             }
-            val bounds = area.bounds
-            val target =
-                LatLngBounds.from(
-                    latNorth = bounds.north,
-                    lonEast = bounds.east,
-                    latSouth = bounds.south,
-                    lonWest = bounds.west,
-                )
-            map.setLatLngBoundsForCameraTarget(target)
-            map.setMinZoomPreference(area.minZoom)
+            map.setMinZoomPreference(next.minZoom)
+            limitCenterToArea()
         }
 
-        fun pad(next: MapInset) {
-            inset = next
-            val padding = next.padding()
-            if (running == null && !padding.contentEquals(map.cameraPosition.padding)) {
-                map.easeCamera(CameraUpdateFactory.paddingTo(padding), PADDING_MILLIS)
-            }
-        }
-
-        fun follow(move: CameraTransition, next: MapInset) {
-            inset = next
-            val update = CameraUpdateFactory.newCameraPosition(move.camera.toPosition(inset))
-            val millis = move.durationMillis.toInt()
-            running = null
-            if (move.motion == CameraMotion.FLIGHT) startFlight() else endFlight()
-            when (move.motion) {
-                CameraMotion.NONE -> map.moveCamera(update)
-                CameraMotion.EASE -> map.easeCamera(update, millis, start())
-                CameraMotion.FLIGHT -> map.animateCamera(update, millis, start())
-            }
-        }
-
-        private fun start(): Run = Run().also { running = it }
-
-        fun startFlight() {
-            limits.startFlight()
-            areas.startFlight()
-        }
-
-        fun endFlight() {
-            limits.endFlight()
-            areas.endFlight()
-        }
-
-        /** Jeden ruch; koniec ruchu wcześniejszego, przerwanego przez nowy, niczego nie zmienia. */
-        private inner class Run : MapLibreMap.CancelableCallback {
-            override fun onCancel() = settle()
-
-            override fun onFinish() = settle()
-
-            private fun settle() {
-                if (running !== this) return
-                running = null
-                endFlight()
-                pad(inset)
+        private fun limitCenterToArea() {
+            val limits = area ?: return
+            val padding = map.cameraPosition.padding ?: DoubleArray(size = 4)
+            val density = view.resources.displayMetrics.density
+            val width = (view.width - padding[0] - padding[2]) / density
+            val height = (view.height - padding[1] - padding[3]) / density
+            val box =
+                limits
+                    .centerBounds(zoom = map.cameraPosition.zoom, viewWidthDp = width, viewHeightDp = height)
+                    .takeIf { width > 0 && height > 0 && it != centerBox }
+            if (box != null) {
+                centerBox = box
+                val bounds =
+                    LatLngBounds.from(
+                        latNorth = box.north,
+                        lonEast = box.east,
+                        latSouth = box.south,
+                        lonWest = box.west,
+                    )
+                map.setLatLngBoundsForCameraTarget(bounds)
             }
         }
     }
-
-    private fun isNativeMapAvailable(): Boolean = runCatching { System.loadLibrary("maplibre") }.isSuccess
 
     /** Wczytany styl MapLibre [style]; zmiany warstw, źródeł i obrazów nie wczytują stylu od nowa. */
     private class StyleTarget(private val style: Style) : MapStyleTarget {
@@ -409,6 +452,11 @@ object MapLibreMapView : CampusMapView {
             style.getLayer(layer)?.setProperties(PaintPropertyValue(property, styled))
         }
 
+        override fun state(source: String, feature: Int, key: String, value: Boolean) {
+            val state = JsonObject().apply { addProperty(key, value) }
+            style.getSourceAs<GeoJsonSource>(source)?.setFeatureState(feature.toString(), state)
+        }
+
         override fun minZoom(layer: String, zoom: Double) {
             style.getLayer(layer)?.minZoom = zoom.toFloat()
         }
@@ -419,14 +467,6 @@ object MapLibreMapView : CampusMapView {
 
         override fun image(name: String, image: Bitmap) = style.addImage(name, image)
 
-        override fun basemapBounds(bounds: CampusBounds?) {
-            val layer = style.getLayer(BASEMAP) ?: return
-            style.removeLayer(layer)
-            style.removeSource(BASEMAP)
-            style.addSource(basemapTiles(bounds))
-            style.addLayerBelow(layer, BUILDINGS_LAYER)
-        }
-
         private fun expressionOf(value: JsonElement): Expression = Expression.Converter.convert(value.asStyleText())
     }
 }
@@ -434,9 +474,9 @@ object MapLibreMapView : CampusMapView {
 /**
  * Ustawienia widoku mapy V1: bez logo i podpisu biblioteki, bez gestu obrotu i pochylenia. Północ jest zawsze
  * u góry, bo tak liczą strzałki przesuwania i granica terenu, a [MapCamera] nie zna obrotu. Przesuwanie
- * i powiększanie gestem zostają.
+ * i powiększanie gestem zostają. Do pierwszej klatki widok ma barwę [background] (ARGB).
  */
-internal fun northUpOptions(context: Context): MapLibreMapOptions =
+internal fun northUpOptions(context: Context, background: Int): MapLibreMapOptions =
     MapLibreMapOptions
         .createFromAttributes(context)
         .textureMode(true)
@@ -444,35 +484,34 @@ internal fun northUpOptions(context: Context): MapLibreMapOptions =
         .attributionEnabled(false)
         .rotateGesturesEnabled(false)
         .tiltGesturesEnabled(false)
+        .foregroundLoadColor(background)
 
 /**
- * Styl mapy jako napis JSON bez zaznaczenia budynku, wejścia i bariery: z [selection] bierze tylko prostokąt
- * i granicę terenu, a podkład ogranicza do obszaru [basemap]. Powstaje od nowa tylko po zmianie danych [data]
- * albo barw [colors]; zmiana terenu i podkładu idzie do wczytanego stylu przez `showArea`, a zaznaczenie i ruch
- * kamery stylu nie budują. Z terenem, a bez [basemap] (mapa jeszcze bez rozmiaru) stylu nie ma. Funkcja [build]
- * składa styl.
+ * Styl mapy z pustymi źródłami danych ([campusMapShell]) jako napis JSON bez zaznaczenia budynku, wejścia
+ * i bariery: z [selection] bierze tylko prostokąt terenu, a podkład ogranicza do obszaru [basemap]. Powstaje od nowa
+ * tylko po zmianie barw [colors]; dane katalogu i barier, teren i podkład idą do wczytanego stylu, a zaznaczenie
+ * i ruch kamery stylu nie budują. Z terenem, a bez [basemap] (mapa jeszcze bez rozmiaru) stylu nie ma. Funkcja
+ * [build] składa styl.
  */
 @Composable
 internal fun rememberMapStyle(
-    data: CampusMapData,
     selection: MapSelection,
     colors: MapStyleColors,
     basemap: Basemap?,
-    build: (CampusMapData, MapSelection, MapStyleColors, Basemap?) -> String = ::campusMapStyle,
+    build: (MapSelection, MapStyleColors, Basemap?) -> String = ::campusMapShell,
 ): String? =
     (selection.bounds == null || basemap != null).let { isMeasured ->
-        remember(data, colors, isMeasured) {
+        remember(colors, isMeasured) {
             val area = MapSelection(bounds = selection.bounds, boundary = selection.boundary)
-            if (isMeasured) build(data, area, colors, basemap) else null
+            if (isMeasured) build(area, colors, basemap) else null
         }
     }
 
 /**
- * Dodaje do stylu obrazy niezależne od zaznaczenia: podpisy konturów [labels], znaki wejść, pinezkę oraz znaki
- * i słowa uciążliwości barier oraz znaki planu, bo napisy ze stylu wymagają sieci.
+ * Dodaje do stylu obrazy niezależne od zaznaczenia i danych: znaki wejść, pinezkę oraz znaki i słowa uciążliwości
+ * barier oraz znaki planu, bo napisy ze stylu wymagają sieci. Podpisy konturów dodaje `showData`.
  */
-internal fun Style.addMapImages(labels: List<String>, images: MapImages) {
-    labels.forEach { label -> addImage(label, labelImage(label, images.colors, images.labelSize)) }
+internal fun Style.addMapImages(images: MapImages) {
     entranceImages(colors = images.colors, density = images.density).forEach { (name, image) -> addImage(name, image) }
     barrierImages(images).forEach { (name, image) -> addImage(name, image) }
     val signs = planSignImages(colors = images.colors, density = images.density)
@@ -480,21 +519,11 @@ internal fun Style.addMapImages(labels: List<String>, images: MapImages) {
 }
 
 /**
- * Obrazy zależne od zaznaczenia [selection]: podpis zaznaczonego wejścia z jego nazwą i numery sal wybranego piętra
- * planu. Wymagania: US3.3, US16.1
+ * Obrazy zależne od zaznaczenia [selection]: podpis zaznaczonego wejścia z jego nazwą. Numery sal planu dodaje
+ * `showPlanData`. Wymagania: US3.3
  */
-internal fun selectionImages(selection: MapSelection, images: MapImages): Map<String, Bitmap> {
-    val floor = selection.plan?.let { it.rooms[it.floor] }
-    val rooms = floor?.rooms.orEmpty()
-    val numbers =
-        rooms
-            .asSequence()
-            .filter { it.isLabelled }
-            .mapNotNull { it.number }
-            .toSet()
-    val caption = entranceCaption(selected = selection.entrance, colors = images.colors, labelSize = images.labelSize)
-    return caption + numbers.associate { roomNumberImage(it) to roomNumberBitmap(it, images.colors, images.labelSize) }
-}
+internal fun selectionImages(selection: MapSelection, images: MapImages): Map<String, Bitmap> =
+    entranceCaption(selected = selection.entrance, colors = images.colors, labelSize = images.labelSize)
 
 private fun Density.basemapOf(bounds: CampusBounds?, size: IntSize): Basemap? =
     mapLimits(bounds, size).takeIf { size != IntSize.Zero }?.basemap

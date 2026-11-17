@@ -24,7 +24,9 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -39,6 +41,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,14 +52,19 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -64,6 +72,7 @@ import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -84,13 +93,18 @@ import io.github.dostepnykampus.feature.map.building.CardMode
 import io.github.dostepnykampus.feature.map.camera.MOVE_WAIT_MILLIS
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 private const val SHEET_KEY = "arkusz"
 private const val MAP_KEY = "mapa"
 private const val MATERIAL_DURATION_MEDIUM2_MILLIS = 300
+
+/** Znacznik testowy obrazu zamkniętej karty, która zjeżdża w dół. */
+internal const val CLOSING_SHEET_TAG = "zamykana_karta"
 
 private val MaterialStandardEasing = CubicBezierEasing(a = 0.2f, b = 0f, c = 0f, d = 1f)
 private val MaterialStandardMediumSlide =
@@ -103,12 +117,16 @@ private val SheetStateSaver =
     )
 
 /**
- * Część V1 zasłonięta przez arkusz [cover] i rozwinięcie arkusza [isExpanded] dla trybu karty w nim.
+ * Część V1 zasłonięta przez arkusz [cover] i rozwinięcie arkusza [isExpanded] dla trybu karty w nim. [isPending]:
+ * nowy arkusz nie ma jeszcze pomiaru, a [cover] to zasłonięcie sprzed niego.
  *
- * Wymagania: US2.8
+ * Wymagania: US2.8, NFR-56
  */
-internal data class SheetLayout(val cover: Dp = 0.dp, val isExpanded: Boolean = false) :
-    PaddingValues by PaddingValues(bottom = cover)
+internal data class SheetLayout(
+    val cover: Dp = 0.dp,
+    val isExpanded: Boolean = false,
+    val isPending: Boolean = false,
+) : PaddingValues by PaddingValues(bottom = cover)
 
 /**
  * Część V1 zasłonięta przez arkusz V2, jako dopełnienie od dołu; bez arkusza zero. Mapa rysuje się dalej pod
@@ -155,11 +173,14 @@ internal class SheetSceneStrategy(private val motion: MapMotion) : SceneStrategy
 
         /** Metadane wpisu [route]: V1 to mapa, V2 arkusz nad V1, chyba że [BuildingRoute.isDirect], inne trasy bez. */
         fun metadata(route: NavKey): Map<String, Any> =
-            when (route) {
-                is MapRoute -> map
-                is BuildingRoute -> if (route.isDirect) emptyMap() else sheet
+            when {
+                route is MapRoute -> map
+                isSheet(route) -> sheet
                 else -> emptyMap()
             }
+
+        /** [route] to V2 rysowane jako arkusz nad V1. */
+        fun isSheet(route: NavKey): Boolean = route is BuildingRoute && !route.isDirect
     }
 }
 
@@ -180,10 +201,13 @@ private data class SheetScene(
         val hidden = rememberSheetEntrance(sheet = sheet?.contentKey, motion = motion)
         val density = LocalDensity.current
         val scope = rememberCoroutineScope()
+        val picture = rememberGraphicsLayer()
+        val exit = rememberSheetExit(isShown = sheet != null)
+        val isPending = sheet != null && height == 0.dp
+        val cover = rememberHeldWhile(isHeld = isPending, value = if (sheet == null) 0.dp else height)
         Box(modifier = Modifier.fillMaxSize()) {
-            val cover = if (sheet == null) 0.dp else height
             val silentUnderSheet = Modifier.semantics { if (sheet != null) hideFromAccessibility() }
-            CompositionLocalProvider(LocalSheetPadding provides SheetLayout(cover = cover)) {
+            CompositionLocalProvider(LocalSheetPadding provides SheetLayout(cover = cover, isPending = isPending)) {
                 Box(modifier = silentUnderSheet) { map.Content() }
             }
             if (sheet != null) {
@@ -213,16 +237,101 @@ private data class SheetScene(
                                 val placeable = measurable.measure(constraints)
                                 layout(width = placeable.width, height = placeable.height) {
                                     val down = sheetBackOffset(shift.value + hidden.value, placeable.height.toDp())
+                                    exit.keep(height = placeable.height, offset = shift.value + hidden.value)
                                     placeable.place(x = 0, y = down.roundToPx())
                                 }
+                            }.drawWithContent {
+                                val sheetContent = this
+                                picture.record { sheetContent.drawContent() }
+                                drawLayer(picture)
                             },
                 ) {
                     val layout = SheetLayout(isExpanded = state.isExpanded)
                     CompositionLocalProvider(LocalSheetPadding provides layout) { sheet.Content() }
                 }
+            } else if (exit.isLeaving) {
+                ClosingSheet(exit = exit, picture = picture, modifier = Modifier.align(Alignment.BottomCenter))
             }
         }
     }
+}
+
+/**
+ * Zaznaczenie [focus] z trasy V1 do pokazania na mapie. Gdy nad V1 jest arkusz ([isSheetAbove]) bez pomiaru, mapa
+ * dostaje poprzednie zaznaczenie, więc zaznaczenie i wysokość karty docierają do niej w tej samej klatce.
+ *
+ * Wymagania: NFR-56, US2.8
+ */
+@Composable
+internal fun shownFocus(focus: MapFocus?, isSheetAbove: Boolean): MapFocus? {
+    val sheet = LocalSheetPadding.current
+    return rememberHeldWhile(isHeld = isSheetAbove && (sheet.isPending || sheet.cover == 0.dp), value = focus)
+}
+
+/** [value] albo, gdy [isHeld], wartość pokazana w poprzedniej kompozycji. */
+@Composable
+internal fun <T> rememberHeldWhile(isHeld: Boolean, value: T): T {
+    val last = remember { HeldValue(value) }
+    val shown = last.shown(isHeld = isHeld, current = value)
+    SideEffect { last.keep(shown) }
+    return shown
+}
+
+private class HeldValue<T>(private var last: T) {
+    fun shown(isHeld: Boolean, current: T): T = if (isHeld) last else current
+
+    fun keep(shown: T) {
+        last = shown
+    }
+}
+
+/**
+ * Zjazd zamkniętej karty: ostatni obraz arkusza o wysokości [height] w px, schowany pod dolną krawędzią w części
+ * [gone]. Karta zamknięta przez „Zamknij”, dotknięcie mapy albo „Wstecz” zjeżdża z miejsca, w którym stała, w czasie
+ * `medium2`, jak przelot mapy do widoku sprzed karty; karta już schowana gestem „Wstecz” nie zjeżdża drugi raz.
+ * Skala animacji 0 kończy zjazd od razu. Wymagania: NFR-56, US2.8
+ */
+internal class SheetExit {
+    var height: Int = 0
+        private set
+    private var offset = 0f
+    val gone = Animatable(1f)
+    val isLeaving: Boolean by derivedStateOf { gone.value < 1f }
+
+    fun keep(height: Int, offset: Float) {
+        this.height = height
+        this.offset = offset
+    }
+
+    suspend fun leave() {
+        if (height == 0 || offset >= 1f) return
+        gone.snapTo(offset)
+        gone.animateTo(targetValue = 1f, animationSpec = MaterialStandardMediumSlide)
+    }
+
+    suspend fun show() = gone.snapTo(1f)
+}
+
+@Composable
+internal fun rememberSheetExit(isShown: Boolean): SheetExit {
+    val exit = remember { SheetExit() }
+    LaunchedEffect(isShown) { if (isShown) exit.show() else exit.leave() }
+    return exit
+}
+
+@Composable
+internal fun ClosingSheet(exit: SheetExit, picture: GraphicsLayer, modifier: Modifier = Modifier) {
+    val height = with(LocalDensity.current) { exit.height.toDp() }
+    Box(
+        modifier =
+            modifier
+                .offset { IntOffset(x = 0, y = (exit.gone.value * exit.height).roundToInt()) }
+                .fillMaxWidth()
+                .height(height)
+                .testTag(CLOSING_SHEET_TAG)
+                .semantics { hideFromAccessibility() }
+                .drawWithContent { drawLayer(picture) },
+    )
 }
 
 /**

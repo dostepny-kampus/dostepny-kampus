@@ -28,15 +28,14 @@ import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotFocused
-import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasAnyDescendant
-import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.isSelectable
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -95,13 +94,13 @@ private class HidingKeyboard : SoftwareKeyboardController {
 
 private const val KEYBOARD_HEIGHT = 600
 
-/** Podaje ekranowi [activity] klawiaturę otwartą albo zamkniętą tak, jak system: w odstępach okna. */
-internal fun dispatchKeyboard(activity: ComponentActivity, isOpen: Boolean) {
+/** Podaje ekranowi [activity] klawiaturę otwartą na [height] pikseli albo zamkniętą, jak system: w odstępach okna. */
+internal fun dispatchKeyboard(activity: ComponentActivity, isOpen: Boolean, height: Int = KEYBOARD_HEIGHT) {
     val ime = WindowInsetsCompat.Type.ime()
     val insets =
         WindowInsetsCompat
             .Builder()
-            .setInsets(ime, Insets.of(0, 0, 0, if (isOpen) KEYBOARD_HEIGHT else 0))
+            .setInsets(ime, Insets.of(0, 0, 0, if (isOpen) height else 0))
             .setVisible(ime, isOpen)
             .build()
     val content = activity.findViewById<ViewGroup>(android.R.id.content)
@@ -149,7 +148,8 @@ class CampusMapScreenTest {
         }
     private val online = MutableStateFlow(true)
     private val choice = TestMapListChoice()
-    private val listToggle = hasText("Lista budynków") and isSelectable()
+    private val showList = hasText("Pokaż listę") and hasClickAction()
+    private val showMap = hasText("Pokaż mapę") and hasClickAction()
     private var ring = "[[0,0],[1,0],[1,1],[0,0]]"
     private val repository =
         BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
@@ -214,8 +214,9 @@ class CampusMapScreenTest {
     }
 
     /**
-     * Wiersz: V1, strzałki przesuwania zatrzymują się na brzegu prostokąta terenu, czyli konturów (teren spoza
-     * pliku granic) powiększonych o 50 m z każdej strony, bez komunikatu.
+     * Wiersz: V1, strzałki przesuwania zatrzymują się bez komunikatu, gdy brzeg widoku dojdzie do brzegu prostokąta
+     * terenu, czyli konturów (teren spoza pliku granic) powiększonych o 100 m: środek zostaje wewnątrz prostokąta,
+     * a następna strzałka już nie przesuwa mapy.
      *
      * Wymagania: NFR-39, NFR-53
      */
@@ -225,7 +226,11 @@ class CampusMapScreenTest {
         repeat(times = 5) { compose.onNodeWithContentDescription("Pomniejsz").performClick() }
         repeat(times = 40) { compose.onNodeWithContentDescription("Przesuń mapę w prawo").performClick() }
         compose.waitForIdle()
-        assertEquals(1.0 + 50.0 / 111_195.0, cameras.last().center.longitude, 5e-5)
+        val edge = cameras.last()
+        assertTrue("środek ${edge.center} w prostokącie", edge.center.longitude in 0.5..1.0 + 100.0 / 111_195.0)
+        compose.onNodeWithContentDescription("Przesuń mapę w prawo").performClick()
+        compose.waitForIdle()
+        assertEquals("następna strzałka nie przesuwa mapy", edge, cameras.last())
     }
 
     /**
@@ -248,22 +253,22 @@ class CampusMapScreenTest {
     }
 
     /**
-     * Wiersz: czcionka 1,5 → start na liście, „Lista” czytane jako „Lista budynków”; wybór „Mapa”
-     * zostaje zapisany, a mapa ma krótki podpis „© OpenStreetMap”.
+     * Wiersz: czcionka 1,5 → start na liście z „Pokaż mapę” pod tytułem; wybór mapy zostaje zapisany, a mapa ma
+     * krótki podpis „© OpenStreetMap”.
      *
      * Wymagania: NFR-19, NFR-20, NFR-37
      */
     @Test
     fun shortensOsmOnList() {
         compose.setContent { Screen(fontScale = 1.5f) }
-        compose.onNode(hasText("Lista") and hasContentDescription("Lista budynków")).assertIsSelected()
-        compose.onNode(hasText("Mapa") and isSelectable()).performClick()
+        compose.onNode(showMap).performClick()
+        compose.onNode(showList).assertExists()
         compose.onNodeWithText("© OpenStreetMap").assertExists()
         assertEquals(false, choice.savedChoice.value)
     }
 
     /**
-     * Wiersz: zapisany wybór „Lista budynków” → V1 startuje na liście także przy zwykłej czcionce.
+     * Wiersz: zapisany widok listy → V1 startuje na liście także przy zwykłej czcionce.
      *
      * Wymagania: NFR-19
      */
@@ -271,7 +276,7 @@ class CampusMapScreenTest {
     fun keepsListChoice() {
         choice.savedChoice.value = true
         compose.setContent { Screen() }
-        compose.onNode(listToggle).assertIsSelected()
+        compose.onNode(showMap).assertExists()
         compose.onNodeWithContentDescription("Powiększ").assertDoesNotExist()
     }
 
@@ -511,6 +516,48 @@ class CampusMapScreenTest {
         assertEquals("z kartą góra mapy odkryta", 0.0, tops.last(), 0.0)
     }
 
+    /**
+     * Wiersz: karta V2 zasłoniła mapę, a mapa jeszcze nie ruszyła: górny pasek stoi na miejscu i znika dopiero po
+     * odjeździe w całości.
+     *
+     * Wymagania: US2.8, NFR-56
+     */
+    @Test
+    @Config(qualifiers = "w360dp-h800dp")
+    fun keepsBarUntilItLeaves() {
+        var sheet by mutableStateOf(0.dp)
+        compose.setContent { Screen(sheet = sheet, motion = MapMotion()) }
+        compose.waitForIdle()
+        val rest = barTop()
+        compose.mainClock.autoAdvance = false
+        sheet = 400.dp
+        Snapshot.sendApplyNotifications()
+        compose.mainClock.advanceTimeByFrame()
+        compose.mainClock.advanceTimeByFrame()
+        assertEquals("pasek czeka na ruch mapy", rest, barTop(), 0.5f)
+        compose.mainClock.autoAdvance = true
+        compose.waitForIdle()
+        compose.onNodeWithText("Mapa kampusu").assertDoesNotExist()
+    }
+
+    /**
+     * Wiersz: klawiatura otwiera się albo zamyka w animacji; kolejne wysokości otwartej klawiatury nie przeliczają
+     * mapy.
+     *
+     * Wymagania: NFR-56
+     */
+    @Test
+    fun keepsMapWhileKeyboardMoves() {
+        compose.setContent { Screen() }
+        keyboard(isOpen = true)
+        val shown = moves.size
+        listOf(500, 400, 300).forEach { height ->
+            compose.runOnUiThread { dispatchKeyboard(compose.activity, isOpen = true, height = height) }
+            compose.waitForIdle()
+        }
+        assertEquals("mapa bez przeliczenia w trakcie animacji klawiatury", shown, moves.size)
+    }
+
     private fun barTop(): Float {
         val bar = compose.onNodeWithText("Mapa kampusu").getUnclippedBoundsInRoot()
         return bar.top.value
@@ -590,7 +637,7 @@ class CampusMapScreenTest {
         compose.onNodeWithText("Budynek C-14", useUnmergedTree = true).assertExists()
         compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
         assertEquals(listOf("C-14"), opened)
-        compose.onNodeWithContentDescription("Wyczyść pole").assertDoesNotExist()
+        compose.onNode(hasSetTextAction()).assertTextEquals("c14", includeEditableText = true)
     }
 
     /**
@@ -625,7 +672,7 @@ class CampusMapScreenTest {
     }
 
     /**
-     * Wiersz: V1, „Lista budynków” → lista z katalogu bez mapy; budynek z listy → V2 jako arkusz na mapie,
+     * Wiersz: V1, „Pokaż listę” → lista z katalogu bez mapy; budynek z listy → V2 jako arkusz na mapie,
      * a po „Wstecz” znów lista.
      *
      * Wymagania: NFR-19, US2.5
@@ -634,16 +681,17 @@ class CampusMapScreenTest {
     fun opensCardFromList() {
         var sheet by mutableStateOf(0.dp)
         compose.setContent { Screen(sheet = sheet) }
-        compose.onNode(listToggle).performClick().assertIsSelected()
+        compose.onNode(showList).performClick()
+        compose.onNode(showMap).assertExists()
         compose.onNodeWithContentDescription("Powiększ").assertDoesNotExist()
         compose.onNodeWithContentDescription("C-13, Budynek testowy").assertExists()
         compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
         assertEquals(listOf("C-14"), opened)
         sheet = 400.dp
         compose.onNodeWithText("© OpenStreetMap contributors").assertExists()
-        compose.onNode(listToggle).assertDoesNotExist()
+        compose.onNode(showMap).assertDoesNotExist()
         sheet = 0.dp
-        compose.onNode(listToggle).assertIsSelected()
+        compose.onNode(showMap).assertExists()
         compose.onNodeWithText("© OpenStreetMap contributors").assertDoesNotExist()
     }
 
@@ -651,20 +699,20 @@ class CampusMapScreenTest {
     @Test
     fun narrowsListBySymbol() {
         compose.setContent { Screen() }
-        compose.onNode(listToggle).performClick()
+        compose.onNode(showList).performClick()
         compose.onNode(hasSetTextAction()).performTextInput("c14")
         compose.onNodeWithContentDescription("C-14, Budynek testowy").assertExists()
         compose.onNodeWithContentDescription("C-13, Budynek testowy").assertDoesNotExist()
     }
 
-    /** Wiersz: V1, brak wyniku → „Lista budynków” w karcie czyści pole i pokazuje całą listę (PW-9). Wymagania: UC1 */
+    /** Wiersz: V1, brak wyniku → „Pokaż listę” w karcie czyści pole i pokazuje całą listę (PW-9). Wymagania: UC1 */
     @Test
     fun opensListOnNoResult() {
         compose.setContent { Screen() }
         compose.onNode(hasSetTextAction()).performTextInput("C-31")
         val inCard = hasAnyAncestor(SemanticsMatcher.keyIsDefined(SemanticsProperties.LiveRegion))
-        compose.onNode(hasText("Lista budynków") and inCard).performClick()
-        compose.onNode(listToggle).assertIsSelected()
+        compose.onNode(hasText("Pokaż listę") and inCard).performClick()
+        compose.onNode(showMap).assertExists()
         compose.onNodeWithText("Nie znaleźliśmy", substring = true).assertDoesNotExist()
         compose.onNodeWithContentDescription("C-13, Budynek testowy").assertExists()
     }

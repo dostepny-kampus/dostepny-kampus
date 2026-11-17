@@ -38,6 +38,9 @@ internal const val CHOSEN_BARRIER_DP = 64
 /** Powiększenie, od którego obok znaku bariery stoi słowo uciążliwości. */
 internal const val BARRIER_WORD_ZOOM = 17
 
+/** Powiększenie, od którego widać „Utrudnienie” i „Tylko z pomocą”; „Blokadę” widać przy każdym. */
+internal const val MINOR_BARRIER_ZOOM = 16
+
 private const val WORD_OFFSET_DP = BARRIER_SIGN_DP / 2 + 4
 
 /** Nazwa obrazu znaku bariery o uciążliwości [severity]. Wymagania: NFR-21 */
@@ -51,14 +54,15 @@ internal fun barrierWordImage(severity: Severity): String = "bariera_slowo_${sev
 
 /**
  * Warstwy barier: słowo uciążliwości obok znaku i sam znak. Znak rysuje się zawsze, a jego kształt zależy
- * od uciążliwości, więc znaczenie niesie kształt, nie barwa. Słowo jest obrazem, bo napisy z czcionek
+ * od uciążliwości, więc znaczenie niesie kształt, a barwa je powtarza. Słowo jest obrazem, bo napisy z czcionek
  * stylu wymagają sieci. Pojawia się od powiększenia [BARRIER_WORD_ZOOM], nie przy krawędzi mapy i tylko wtedy,
  * gdy mieści się bez nakładania. Warstwy stoją pod podpisami budynków, więc przy kolizji zostaje podpis budynku
- * (wiersz o znakach barier w wymaganiach V1). Filtr [filter] z [barriersOnPlan] zostawia bariery piętra planu.
+ * (wiersz o znakach barier w wymaganiach V1). Filtr [filter] z [SelectionLook.barriersFilter] zostawia bariery
+ * piętra planu i bariery widoczne przy bieżącym powiększeniu.
  *
  * Wymagania: US1.3, NFR-21, NFR-20
  */
-internal fun barrierLayers(filter: JsonElement = barriersOnPlan(building = null, floor = null)): List<JsonObject> {
+internal fun barrierLayers(filter: JsonElement): List<JsonObject> {
     val words =
         symbolLayer(
             id = BARRIER_WORDS_LAYER,
@@ -90,6 +94,20 @@ internal fun barriersOnPlan(building: String?, floor: String?): JsonElement =
         expression("==", property(BARRIER_FLOOR), JsonPrimitive(floor.orEmpty())),
         JsonPrimitive(building == null),
     )
+
+/**
+ * Filtr warstw barier według powiększenia: „Blokada” przy każdym, pozostałe uciążliwości od [MINOR_BARRIER_ZOOM].
+ * Bariery budynków [buildings] (konturu zaznaczonego budynku) przechodzą przy każdym powiększeniu; `null` bez
+ * zaznaczenia.
+ *
+ * Wymagania: US1.3, US10.6, NFR-19
+ */
+internal fun barriersByZoom(buildings: List<String>?): JsonElement {
+    val blocking = expression("==", property(BARRIER_SEVERITY), JsonPrimitive(Severity.BLOCKING.name))
+    val zoomed = expression(">=", expression("zoom"), JsonPrimitive(MINOR_BARRIER_ZOOM))
+    val selected = buildings.orEmpty().map { expression("==", property(BARRIER_BUILDING), JsonPrimitive(it)) }
+    return JsonArray(listOf(JsonPrimitive("any"), blocking, zoomed) + selected)
+}
 
 /**
  * Warstwa wybranej bariery z filtrem [filter] z [SelectionLook.chosenBarrierFilter]: jej znak jest większy

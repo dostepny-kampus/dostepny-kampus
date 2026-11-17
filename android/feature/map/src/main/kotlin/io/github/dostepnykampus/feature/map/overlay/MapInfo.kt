@@ -5,11 +5,12 @@
  */
 package io.github.dostepnykampus.feature.map.overlay
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,7 +32,6 @@ import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
-import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
@@ -44,6 +44,12 @@ import java.time.LocalDate
 /** Strona praw autorskich OpenStreetMap, cel odnośnika w podpisie mapy i w panelu „Źródła danych”. Wymagania: NFR-37 */
 internal const val OSM_COPYRIGHT = "https://www.openstreetmap.org/copyright"
 
+/** Strona projektu OpenFreeMap, dostawcy kafelków podkładu (ADR-0014). */
+internal const val OPENFREEMAP_SITE = "https://openfreemap.org/"
+
+/** Strona schematu i licencji OpenMapTiles, w którym są kafelki podkładu (ADR-0014). */
+internal const val OPENMAPTILES_SITE = "https://openmaptiles.org/"
+
 /** Dzień stanu danych z importu: najpóźniejszy dzień oznaczenia wejść ze źródła PWr; `null`, gdy takich nie ma. */
 internal fun BuildingCatalog.dataDay(): LocalDate? {
     val imported = entrances.mapNotNull { it.assessment }.filter { it.source == AssessmentSource.IMPORT }
@@ -52,7 +58,7 @@ internal fun BuildingCatalog.dataDay(): LocalDate? {
 
 /**
  * Przycisk „ⓘ” mapy V1, a nad nim, gdy [isOpen], arkusz legendy: znaki mapy, a po nich źródła danych z dniem
- * stanu danych PWr.
+ * stanu danych PWr. Systemowe „Wstecz” przy otwartym arkuszu zamyka go i zostawia mapę.
  *
  * Wymagania: US1.4, NFR-21, NFR-37, NFR-40, NFR-17, NFR-18
  *
@@ -68,6 +74,7 @@ internal fun MapInfo(
     onOpenChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    BackHandler(enabled = isOpen) { onOpenChange(false) }
     Column(modifier.padding(horizontal = Odstepy.s), horizontalAlignment = Alignment.End) {
         if (isOpen) {
             val panel = Modifier.weight(weight = 1f, fill = false).padding(bottom = Odstepy.s)
@@ -102,6 +109,7 @@ private fun InfoPanel(dataDay: LocalDate?, onClose: () -> Unit, modifier: Modifi
                     style = MaterialTheme.typography.titleSmall,
                 )
                 StreetSource()
+                BasemapSource()
                 val day = dataDay?.let { campusDay(it) }
                 val campus =
                     if (day == null) {
@@ -118,16 +126,38 @@ private fun InfoPanel(dataDay: LocalDate?, onClose: () -> Unit, modifier: Modifi
 
 @Composable
 private fun InfoHeader(onClose: () -> Unit) {
-    Row(Modifier.padding(start = Odstepy.m, end = Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier.padding(horizontal = Odstepy.m, vertical = Odstepy.s),
+        horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Text(
             text = stringResource(R.string.mapa_legenda),
             modifier = Modifier.weight(1f).semantics { heading() },
             style = MaterialTheme.typography.titleMedium,
         )
-        OutlinedButton(onClick = onClose, modifier = Modifier.heightIn(min = CeleDotyku.minimum)) {
+        val padding = PaddingValues(horizontal = Odstepy.m, vertical = Odstepy.s)
+        OutlinedButton(onClick = onClose, contentPadding = padding) {
             Text(stringResource(R.string.mapa_zamknij))
         }
     }
+}
+
+@Composable
+private fun BasemapSource() {
+    val link = SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline)
+    val provider = stringResource(R.string.mapa_openfreemap)
+    val schema = stringResource(R.string.mapa_openmaptiles)
+    val line = stringResource(R.string.mapa_zrodla_podklad, provider, schema)
+    val text =
+        buildAnnotatedString {
+            append(line)
+            listOf(provider to OPENFREEMAP_SITE, schema to OPENMAPTILES_SITE).forEach { (name, site) ->
+                val start = line.indexOf(name)
+                addLink(LinkAnnotation.Url(site, TextLinkStyles(link)), start = start, end = start + name.length)
+            }
+        }
+    Text(text = text, style = MaterialTheme.typography.bodyLarge)
 }
 
 @Composable

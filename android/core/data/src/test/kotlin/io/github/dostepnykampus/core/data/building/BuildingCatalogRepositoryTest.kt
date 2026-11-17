@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.building
 
+import io.github.dostepnykampus.core.data.CapturedLogs
 import io.github.dostepnykampus.core.data.di.DataModule
 import io.github.dostepnykampus.core.model.building.AssessmentSource.WALKTHROUGH
 import io.github.dostepnykampus.core.model.building.EntranceAssessment
@@ -15,11 +16,14 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.yield
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.time.LocalDate
@@ -54,6 +58,16 @@ class BuildingCatalogRepositoryTest {
     }
 
     @Test
+    fun logsSourceAndCountOfCatalog() {
+        val lines = CapturedLogs.capture { runBlocking { repository.catalog() } }
+
+        assertTrue(
+            lines.single().startsWith("Katalog budynków: plik, 5 budynków, "),
+            "linia logu ze źródłem i liczbą budynków: $lines",
+        )
+    }
+
+    @Test
     fun readsFileOnce() {
         val first = runBlocking { repository.catalog() }
         assertSame(first, runBlocking { repository.catalog() }, "drugie pobranie daje ten sam katalog")
@@ -69,13 +83,7 @@ class BuildingCatalogRepositoryTest {
     @Test
     fun readsOnceForParallelCalls() {
         val held = ArrayDeque<Runnable>()
-        val io =
-            object : CoroutineDispatcher() {
-                override fun dispatch(context: CoroutineContext, block: Runnable) {
-                    held.addLast(block)
-                }
-            }
-        val shared = BuildingCatalogRepository(io) { json.also { reads.incrementAndGet() } }
+        val shared = BuildingCatalogRepository(holding(held)) { json.also { reads.incrementAndGet() } }
         runBlocking {
             val calls = List(2) { async(start = CoroutineStart.UNDISPATCHED) { shared.catalog() } }
             val pendingReads = held.size
@@ -84,6 +92,28 @@ class BuildingCatalogRepositoryTest {
             val (first, second) = calls.awaitAll()
             assertEquals(1 to false, pendingReads to isAnyDone, "wywołania nie trwały naraz albo każde czyta plik")
             assertSame(first, second, "drugie wywołanie dostaje ten sam katalog")
+            assertEquals(1, reads.get(), "plik czytany raz")
+        }
+    }
+
+    /**
+     * Dwa strumienie mapy naraz przy pustym repozytorium: drugi rusza, zanim pierwszy przeczyta plik → jeden odczyt
+     *   pliku i ten sam pierwszy katalog dla obu.
+     *
+     * Wymagania: US1, NFR-11
+     */
+    @Test
+    fun readsOnceForParallelUpdates() {
+        val held = ArrayDeque<Runnable>()
+        val shared = BuildingCatalogRepository(holding(held)) { json.also { reads.incrementAndGet() } }
+        runBlocking {
+            val calls = List(2) { async(start = CoroutineStart.UNDISPATCHED) { shared.catalogUpdates().first() } }
+            while (calls.any { !it.isCompleted }) {
+                yield()
+                while (held.isNotEmpty()) held.removeFirst().run()
+            }
+            val (first, second) = calls.awaitAll()
+            assertSame(first, second, "drugi strumień dostaje ten sam katalog")
             assertEquals(1, reads.get(), "plik czytany raz")
         }
     }
@@ -119,6 +149,13 @@ class BuildingCatalogRepositoryTest {
             "ocena wejścia z katalogu",
         )
     }
+
+    private fun holding(held: ArrayDeque<Runnable>): CoroutineDispatcher =
+        object : CoroutineDispatcher() {
+            override fun dispatch(context: CoroutineContext, block: Runnable) {
+                held.addLast(block)
+            }
+        }
 
     private fun collection(features: List<String>): String =
         """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors",""" +

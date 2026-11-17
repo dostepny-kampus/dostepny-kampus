@@ -55,7 +55,7 @@ Priorytet to metoda MoSCoW: Musi być, Powinno być, Może być, Nie tym razem. 
 
 | AC | Kryterium | Odwołania |
 | --- | --- | --- |
-| US1.1 | Wyszukanie „C13”, „c-13” i „C-13” znajduje budynek C-13. | — |
+| US1.1 | Wyszukanie „C13”, „c-13” i „C-13” znajduje budynek C-13. Już od pierwszego znaku aplikacja podpowiada budynki, których symbol zaczyna się od wpisanego tekstu: „A” podpowiada A-1, A-2 i dalsze. | — |
 | US1.2 | Mapa kampusu i wyszukiwanie działają bez logowania. | RO-GOS |
 | US1.3 | Na mapie są tylko zgłoszenia przyjęte. | BR-6 |
 | US1.4 | Na mapie widać wejścia budynków ze znakiem oznaczenia oraz ścieżki dostosowane i pochylnie z danych PWr albo OpenStreetMap. Legenda objaśnia słowem każdy znak mapy i planu, także „brak danych”. | NFR-21, US2.1 |

@@ -120,15 +120,20 @@ final class PhotoSettingsTest {
     void readsDatabaseEnvironmentVariables() {
         PhotoSettingsTest.runner().withPropertyValues(
             "DK_DB_HOST=baza", "DK_DB_PORT=5433", "DK_DB_NAME=kampus",
-            "DK_DB_USER=uzytkownik", "DK_DB_PASSWORD=haslo"
+            "DK_DB_USER=wlasciciel", "DK_DB_PASSWORD=haslo",
+            "DK_DB_APP_USER=serwer", "DK_DB_APP_PASSWORD=haslo-serwera"
         ).run(
             context -> Assertions.assertEquals(
-                List.of("jdbc:postgresql://baza:5433/kampus", "uzytkownik", "haslo"),
+                List.of(
+                    "jdbc:postgresql://baza:5433/kampus", "serwer", "haslo-serwera",
+                    "wlasciciel", "haslo"
+                ),
                 PhotoSettingsTest.properties(
                     context, "spring.datasource.url",
-                    "spring.datasource.username", "spring.datasource.password"
+                    "spring.datasource.username", "spring.datasource.password",
+                    "spring.flyway.user", "spring.flyway.password"
                 ),
-                "Adres, użytkownik albo hasło bazy nie wzięły zmiennych DK_DB_*"
+                "Serwer nie łączy się kontem DK_DB_APP_* albo migracje kontem DK_DB_*"
             )
         );
     }

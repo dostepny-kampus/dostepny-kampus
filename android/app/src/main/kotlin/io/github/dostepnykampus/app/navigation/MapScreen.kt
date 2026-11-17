@@ -13,7 +13,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.app.LocalSheetPadding
+import io.github.dostepnykampus.app.SheetSceneStrategy
 import io.github.dostepnykampus.app.closeCardOnEmptyMap
+import io.github.dostepnykampus.app.shownFocus
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapUiState
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
@@ -52,7 +54,7 @@ internal fun AppNavigator.HiltMapScreen(
 
 /**
  * V1 ze stanem [state] i zaznaczeniem [focus] z trasy, np. po „Wstecz” z V2 albo „Pokaż na mapie”,
- * z czynnościami podpiętymi do nawigatora; [onListChange] zapisuje wybór w przełączniku „Mapa” i „Lista budynków”,
+ * z czynnościami podpiętymi do nawigatora; [onListChange] zapisuje widok, mapę albo listę,
  * a [onSearch] liczy wyszukiwanie w modelu widoku. Budynek z listy przy TalkBack otwiera V2
  * od razu na pełnym ekranie. Przyciski i podpis OSM stoją nad arkuszem V2.
  * [mapView] w aplikacji to MapLibre, testy podają podróbkę. [plan] to plan piętra przy środku mapy, a [onCamera]
@@ -77,7 +79,7 @@ internal fun AppNavigator.MapScreen(
         onListChange = onListChange,
         onSearch = onSearch,
         onBuildingClick = { openBuilding(it) },
-        focus = focus,
+        focus = shownFocus(focus, isSheetAbove = SheetSceneStrategy.isSheet(current)),
         contentPadding = LocalSheetPadding.current,
         onEmptyMapClick = { closeCardOnEmptyMap() },
         onListBuildingClick = { openBuildingFromList(it, accessibility.isTouchExplorationEnabled) },

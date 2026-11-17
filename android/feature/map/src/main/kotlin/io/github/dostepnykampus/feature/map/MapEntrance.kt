@@ -61,11 +61,23 @@ internal fun rememberMapScene(
     focus: MapFocus?,
     area: String?,
 ): MapScene? {
-    val building = (focus as? MapFocus.Building)?.symbol
+    val building = focus as? MapFocus.Building
     val chosen = rememberChosenEntrance(catalog, focus as? MapFocus.Entrance)
-    return remember(layers, building, chosen, area) {
-        layers?.let { MapScene(it, it.selection(building, chosen, area)) }
+    return remember(layers, building?.symbol, building?.floor != null, chosen, area) {
+        layers?.let { MapScene(it, it.focusSelection(building, chosen, area)) }
     }
+}
+
+/**
+ * Zaznaczenie z polecenia trasy [focus], wejścia [chosen] i terenu [area]. Budynek z „Pokaż na planie” (z piętrem)
+ * nie jest zaznaczony, bo karta jest już zamknięta, ale jego teren dalej wyznacza granicę mapy.
+ *
+ * Wymagania: US16.1, US2.9
+ */
+internal fun CampusMapData.focusSelection(focus: MapFocus?, chosen: SelectedEntrance?, area: String?): MapSelection {
+    val building = focus as? MapFocus.Building
+    val shown = selection(building?.symbol, chosen, area)
+    return if (building?.floor != null) shown.copy(building = null) else shown
 }
 
 /**
