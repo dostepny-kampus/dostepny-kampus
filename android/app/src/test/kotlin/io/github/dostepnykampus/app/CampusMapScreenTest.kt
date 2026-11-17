@@ -47,6 +47,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.height
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -99,6 +100,7 @@ private class HidingKeyboard : SoftwareKeyboardController {
 }
 
 internal const val KEYBOARD_HEIGHT = 600
+private const val FRAMES_AFTER_INPUT = 6
 
 /** Podaje ekranowi [activity] klawiaturę otwartą na [height] pikseli albo zamkniętą, jak system: w odstępach okna. */
 internal fun dispatchKeyboard(activity: ComponentActivity, isOpen: Boolean, height: Int = KEYBOARD_HEIGHT) {
@@ -765,16 +767,24 @@ class CampusMapScreenTest {
         compose.waitForIdle()
         val bar = tops.last()
         val before = tops.size
+        val empty = compose.onNode(hasSetTextAction()).getBoundsInRoot().height
+        compose.mainClock.autoAdvance = false
         compose.onNode(hasSetTextAction()).performTextInput("c14")
+        val frames =
+            (1..FRAMES_AFTER_INPUT).map { _ ->
+                compose.mainClock.advanceTimeByFrame()
+                "${compose.onNode(hasSetTextAction()).getBoundsInRoot().height}/${tops.last()}"
+            }
+        compose.mainClock.autoAdvance = true
         compose.onNodeWithText("Budynek C-14", useUnmergedTree = true).assertExists()
         val typed = tops.size
-        val header = barTop()
+        val header = "pole puste $empty, klatki pole/góra $frames"
         compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
         compose.waitForIdle()
         val typing = tops.subList(fromIndex = before, toIndex = typed)
         val picked = tops.subList(fromIndex = typed, toIndex = tops.size)
         val shown = typing + picked
-        val message = "góra mapy: wpisywanie $typing, wybór $picked, pasek $bar, tytuł od $header"
+        val message = "góra mapy: wpisywanie $typing, wybór $picked, pasek $bar, $header"
         assertTrue(message, shown.all { it == bar })
     }
 
