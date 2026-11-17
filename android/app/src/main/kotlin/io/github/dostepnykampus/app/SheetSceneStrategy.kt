@@ -57,7 +57,6 @@ import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import io.github.dostepnykampus.app.navigation.CardWindow
 import io.github.dostepnykampus.app.navigation.isWideOrLandscape
-import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.feature.map.camera.MOVE_WAIT_MILLIS
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
@@ -199,7 +198,7 @@ private data class SheetScene(
                     onExpandedChange = { state = state.copy(isExpanded = it) },
                     onClose = onBack,
                     onLowHeight = { height = with(density) { it.toDp() } },
-                    isFullOnly = density.fontScale >= LARGE_FONT_SCALE,
+                    isFullOnly = isFullOnlySheet(density.fontScale),
                     modifier =
                         Modifier
                             .align(Alignment.BottomCenter)

@@ -37,14 +37,14 @@ import io.github.dostepnykampus.feature.map.R
  * V2 Karta budynku: nagłówek z symbolem i nazwą z danych (budynek bez nazwy ma sam symbol), który TalkBack czyta jako
  * jeden, np. „Budynek A-1, Gmach Główny”, z fokusem po otwarciu; poza [CardMode.Direct] obok niego „Zamknij”. Pod
  * nim wiersz o wejściach, a bez danych o wejściach cichy napis, i wejścia z oznaczeniem, zalecane pierwsze. Czynności
- * stoją w przewijanej treści: „Sprawdź, którędy wejść” zawsze, „Pokaż budynek na mapie” w [CardMode.Direct]; grupy
+ * stoją w przewijanej treści: „Sprawdź, którędy wejść” zawsze, „Pokaż budynek na mapie” w [CardMode.isWhole]; grupy
  * „Wejścia” i „Bariery w budynku” ma pełny opis, a pasek „Wstecz” tylko [CardMode.Direct].
  * Nieznany symbol: „budynku nie ma w telefonie”. Bez internetu nad nagłówkiem stoi [OfflinePill] bez daty.
  *
  * Wymagania: US2, BR-25, US2.8, NFR-18, US2.7, NFR-10
  *
  * @param symbol symbol z trasy, widoczny w nagłówku także w trakcie wczytywania
- * @param mode mała karta nad mapą, pełny ekran rozwinięty z niej albo pełny ekran otwarty od razu
+ * @param mode mała karta nad mapą, karta rozwinięta z niej, karta na cały ekran nad mapą albo pełny ekran od razu
  * @param onCheckEntrances „Sprawdź, którędy wejść” otwiera V3
  * @param onShowOnMap „Pokaż budynek na mapie” zaznacza budynek na V1
  * @param onBack „Wstecz” w [CardMode.Direct]
@@ -230,7 +230,7 @@ internal fun MissingBuilding(onRetry: () -> Unit) {
 private fun CardActions(mode: CardMode, onCheckEntrances: () -> Unit, onShowOnMap: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(CeleDotyku.odstep)) {
         CardButton(text = stringResource(R.string.karta_sprawdz), onClick = onCheckEntrances)
-        if (mode == CardMode.Direct) {
+        if (mode.isWhole) {
             CardButton(stringResource(R.string.karta_pokaz), onShowOnMap, outlined = true)
         }
     }
@@ -251,10 +251,16 @@ enum class CardMode {
     Expanded,
 
     /**
-     * Pełny ekran otwarty od razu, bez małej karty: duża czcionka, szerokie okno, poziomo albo wybór z listy przy
-     * TalkBack. Tylko tu jest „Pokaż budynek na mapie”.
+     * Pełny ekran otwarty od razu, bez małej karty: szerokie okno, poziomo albo wybór z listy przy TalkBack.
      *
-     * Wymagania: NFR-19, NFR-20
+     * Wymagania: NFR-19, NFR-51
      */
     Direct,
+
+    /** Karta przy dużej czcionce na cały ekran nad mapą: nagłówek z „Zamknij” i cały opis. Wymagania: NFR-20, US2.9 */
+    Large,
 }
+
+/** Czy karta stoi od razu na całym ekranie, bez małej karty po drodze. Wymagania: NFR-19, NFR-20, US2.9 */
+val CardMode.isWhole: Boolean
+    get() = this == CardMode.Direct || this == CardMode.Large
