@@ -48,6 +48,7 @@ import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapTrace
 import io.github.dostepnykampus.feature.map.camera.StyleArea
+import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.camera.belowTop
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.styleAreaOf
@@ -125,7 +126,7 @@ object MapLibreMapView : CampusMapView {
         inset: MapInset,
         onCameraIdle: (MapCamera) -> Unit,
         onBuildingsTouch: (List<String>) -> Unit,
-        onBarrierTouch: (String) -> Unit,
+        onSignTouch: (TouchSign, String) -> Unit,
         modifier: Modifier,
     ) {
         if (!rememberNativeMap()) return
@@ -155,18 +156,13 @@ object MapLibreMapView : CampusMapView {
         val currentData by rememberUpdatedState(data)
         val cameraIdle by rememberUpdatedState(onCameraIdle)
         val buildingsTouch by rememberUpdatedState(onBuildingsTouch)
-        val barrierTouch by rememberUpdatedState(onBarrierTouch)
+        val signTouch by rememberUpdatedState(onSignTouch)
         DisposableEffect(mapView) {
             mapView.getMapAsync { ready ->
                 ready.prefetchZoomDelta = 0
                 ready.cameraPosition = currentMove.camera.toPosition(currentInset)
                 ready.onPersonIdle { cameraIdle(it) }
-                val signTouch = { touched: MapTouch.Sign ->
-                    when (touched.sign) {
-                        TouchSign.BARRIER -> barrierTouch(touched.id)
-                    }
-                }
-                ready.onTouch(tolerance, onSign = signTouch) { hit, near ->
+                ready.onTouch(tolerance, onSign = { signTouch(it.sign, it.id) }) { hit, near ->
                     currentData.touchedSymbols(hit, near).also { buildingsTouch(it) }.isNotEmpty()
                 }
                 map = ready

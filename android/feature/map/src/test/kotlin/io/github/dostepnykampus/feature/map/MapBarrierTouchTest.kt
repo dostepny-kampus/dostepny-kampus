@@ -17,6 +17,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
+import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
@@ -43,10 +44,10 @@ class MapBarrierTouchTest {
     private var touchBuildings: (List<String>) -> Unit = {}
     private var marked: String? = null
     private val fakeMap =
-        CampusMapView { _: CampusMapData, selection, _, _, _, onBuildingsTouch, onBarrierTouch, _: Modifier ->
+        CampusMapView { _: CampusMapData, selection, _, _, _, onBuildingsTouch, onSignTouch, _: Modifier ->
             marked = selection.barrier
             touchBuildings = onBuildingsTouch
-            touchBarrier = onBarrierTouch
+            touchBarrier = { onSignTouch(TouchSign.BARRIER, it) }
         }
     private val repository =
         BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
