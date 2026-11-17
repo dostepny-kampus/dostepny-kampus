@@ -21,7 +21,7 @@ import androidx.room.PrimaryKey
  * @property id identyfikator UUID nadany w telefonie; ten sam przy każdej próbie wysłania
  * @property baseVersion wersja z serwera, od której zaczęto edycję; `null` dla nowego zgłoszenia
  * @property savedAtMillis chwila zapisu w telefonie w milisekundach od epoki Unix
- * @property ownerSub identyfikator konta; `null` przed przypisaniem po migracji
+ * @property ownerSub identyfikator konta albo `null` przed przypisaniem po migracji
  * @property isCreatedOnServer czy serwer ma już zgłoszenie, a czekają tylko zdjęcia
  * @property kind rodzaj zgłoszenia: `PRECISE`, `QUICK` albo `ENTRANCE_MARKING`
  * @property longitude długość geograficzna miejsca w WGS84

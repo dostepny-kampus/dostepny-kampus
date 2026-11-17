@@ -31,7 +31,7 @@ public interface PendingMarkerChangeDao {
      */
     @Transaction
     public suspend fun saveRevoke(revoke: PendingMarkerChangeEntity) {
-        if (deleteSet(revoke.markerId, revoke.ownerSub) == 0) save(revoke)
+        if (deleteSet(markerId = revoke.markerId, owner = revoke.ownerSub) == 0) save(revoke)
     }
 
     /**
