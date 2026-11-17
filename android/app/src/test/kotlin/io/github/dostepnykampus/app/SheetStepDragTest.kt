@@ -42,7 +42,7 @@ import kotlin.math.abs
 private val CardHeight = 120.dp
 private val StepDrag = 80.dp
 private val HeightStep = 48.dp
-private const val MOVE_MILLIS = 10L
+private const val MOVE_MILLIS = 16L
 private const val SLOW_DP_PER_SECOND = 100
 private const val QUICK_DP_PER_SECOND = 200
 private const val HOLD_MILLIS = 100L
