@@ -6,11 +6,16 @@
 package io.github.dostepnykampus.barrier;
 
 import io.github.dostepnykampus.IntegrationTest;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -50,6 +55,26 @@ final class OwnSubmissionsParameterHttpIT {
     }
 
     @Test
+    void refusesEncodedPathWithoutCollectorRole(@LocalServerPort final int port)
+        throws Exception {
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            MatcherAssert.assertThat(
+                "Zakodowana ścieżka oddała listę własnych bez roli Zbierającego",
+                List.of(
+                    OwnSubmissionsParameterHttpIT.send(
+                        client, port, "/%73ubmissions?mine=true", "VISITOR"
+                    ),
+                    OwnSubmissionsParameterHttpIT.send(
+                        client, port, "/%73ubmissions?mine=true", "COLLECTOR"
+                    ),
+                    OwnSubmissionsParameterHttpIT.send(client, port, "/%73ubmissions", "")
+                ),
+                Matchers.contains(403, 200, 200)
+            );
+        }
+    }
+
+    @Test
     void keepsTrueForCollectorAndFalseForEveryone(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(
@@ -79,5 +104,19 @@ final class OwnSubmissionsParameterHttpIT {
             MockMvcRequestBuilders.get("/submissions").param("mine", mine)
                 .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", role))
         ).andReturn().getResponse().getStatus();
+    }
+
+    private static int send(
+        final HttpClient client, final int port, final String path, final String role
+    ) throws Exception {
+        final HttpRequest.Builder request = HttpRequest.newBuilder(
+            URI.create("http://localhost:%d%s".formatted(port, path))
+        );
+        if (!role.isEmpty()) {
+            request.header(HttpHeaders.AUTHORIZATION, "Bearer %s".formatted(role));
+        }
+        return client.send(
+            request.build(), HttpResponse.BodyHandlers.discarding()
+        ).statusCode();
     }
 }
