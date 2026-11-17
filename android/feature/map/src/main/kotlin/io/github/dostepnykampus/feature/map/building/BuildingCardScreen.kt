@@ -250,6 +250,9 @@ private fun BuildingFacts(
     val common = commonAssessment(card.entrances)
     common?.let { AssessmentLine(it) }
     GroupContainer(title = stringResource(R.string.karta_wejscia)) {
+        if (card.entrances.isEmpty()) {
+            Text(text = stringResource(R.string.karta_wejscia_brak), style = MaterialTheme.typography.bodyLarge)
+        }
         card.entrances.forEach { entrance ->
             EntranceRow(
                 listed = entrance,
