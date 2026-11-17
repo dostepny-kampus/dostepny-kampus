@@ -13,6 +13,7 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotFocused
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
@@ -20,11 +21,14 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.unit.height
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+
+private const val FRAMES_AFTER_TYPING = 20
 
 /** Kontroler klawiatury, który liczy wywołania [hide]. */
 private class HidingKeyboard : SoftwareKeyboardController {
@@ -98,7 +102,7 @@ class CampusSearchScreenTest : CampusMapScreenFixture() {
 
     /**
      * Wiersz: wpisanie zapytania z wynikami i wybór wyniku nie zmieniają górnego zasłonięcia mapy, bo lista wyników
-     * leży nad mapą. Sprawdza stan po wpisaniu; TODO(#2951): pierwsza klatka po pierwszym znaku ma pole niższe o 8 dp.
+     * leży nad mapą. Pole symbolu ma w każdej klatce po wpisaniu tę samą wysokość co puste.
      *
      * Wymagania: US1.1, NFR-56
      */
@@ -107,16 +111,26 @@ class CampusSearchScreenTest : CampusMapScreenFixture() {
         compose.setContent { Screen() }
         compose.waitForIdle()
         val bar = tops.last()
-        compose.onNode(hasSetTextAction()).performTextInput("c14")
+        val start = tops.size
+        val field = compose.onNode(hasSetTextAction())
+        val empty = field.getBoundsInRoot().height
+        compose.mainClock.autoAdvance = false
+        field.performTextInput("c14")
+        val heights =
+            List(FRAMES_AFTER_TYPING) {
+                compose.mainClock.advanceTimeByFrame()
+                field.getBoundsInRoot().height
+            }
+        compose.mainClock.autoAdvance = true
         compose.onNodeWithText("Budynek C-14", useUnmergedTree = true).assertExists()
         compose.waitForIdle()
-        val typed = tops.size
-        val typing = tops.last()
+        assertTrue("pole: puste $empty, klatki $heights", heights.all { it == empty })
+        val typed = tops.subList(fromIndex = start, toIndex = tops.size).toList()
         compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
         compose.waitForIdle()
-        val picked = tops.subList(fromIndex = typed, toIndex = tops.size)
-        val message = "góra mapy: z wynikami $typing, po wyborze $picked, pasek $bar"
-        assertTrue(message, (picked + typing).all { it == bar })
+        val picked = tops.subList(fromIndex = start + typed.size, toIndex = tops.size)
+        val message = "góra mapy: przy wpisywaniu $typed, po wyborze $picked, pasek $bar"
+        assertTrue(message, (picked + typed).all { it == bar })
     }
 
     /**

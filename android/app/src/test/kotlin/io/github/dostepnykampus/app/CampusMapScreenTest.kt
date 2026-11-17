@@ -327,7 +327,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
         compose.waitForIdle()
         assertTrue("mapa się oddala: ${cameras.last()}", cameras.last().zoom < above.zoom)
         assertEquals("mała karta zostaje otwarta", "C-14" to 0, focuses.last() to emptyTaps)
-        compose.onNodeWithText("Wpisz symbol budynku, np. C-13").assertDoesNotExist()
+        compose.onNodeWithText("Szukaj budynku, np. C-13").assertDoesNotExist()
         compose.onNode(showList).assertDoesNotExist()
     }
 
