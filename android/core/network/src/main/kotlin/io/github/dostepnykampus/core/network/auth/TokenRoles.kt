@@ -8,10 +8,26 @@ package io.github.dostepnykampus.core.network.auth
 import io.github.dostepnykampus.core.network.decodeContract
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import java.util.Base64
+
+/** Identyfikator konta (`sub`) z tokenu JWT, albo `null`, gdy go nie ma. */
+public fun subjectOf(token: String): String? =
+    (claimsOf(token)?.get("sub") as? JsonPrimitive)?.takeIf { it.isString }?.contentOrNull?.takeIf { it.isNotBlank() }
+
+private fun claimsOf(token: String): JsonObject? {
+    val payload = token.split('.').takeIf { it.size == JWT_PARTS }?.get(1) ?: return null
+    return try {
+        val text = String(Base64.getUrlDecoder().decode(payload), Charsets.UTF_8)
+        Json.decodeContract(JsonObject.serializer(), text)
+    } catch (_: IllegalArgumentException) {
+        null
+    }
+}
 
 private const val JWT_PARTS = 3
 
@@ -25,10 +41,9 @@ private const val JWT_PARTS = 3
  * @return role realmu, pusta lista dla tokenu bez ról, albo `null`, gdy tokenu nie da się odczytać
  */
 public fun realmRolesOf(token: String): List<String>? {
-    val payload = token.split('.').takeIf { it.size == JWT_PARTS }?.get(1) ?: return null
+    val claims = claimsOf(token) ?: return null
     return try {
-        val text = String(Base64.getUrlDecoder().decode(payload), Charsets.UTF_8)
-        val access = Json.decodeContract(JsonObject.serializer(), text)["realm_access"]?.jsonObject
+        val access = claims["realm_access"]?.jsonObject
         val roles = access?.get("roles")?.jsonArray
         roles?.map { it.jsonPrimitive.content }.orEmpty()
     } catch (_: IllegalArgumentException) {

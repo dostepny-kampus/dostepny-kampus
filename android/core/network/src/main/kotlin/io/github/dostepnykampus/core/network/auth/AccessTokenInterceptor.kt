@@ -9,6 +9,7 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Interceptor
 import okhttp3.Response
+import java.io.IOException
 import java.net.HttpURLConnection.HTTP_UNAUTHORIZED
 
 /**
@@ -26,6 +27,8 @@ internal class AccessTokenInterceptor(serverUrl: String, private val tokens: Acc
         val request = chain.request()
         val isServer = request.url.isOnServer()
         val token = tokens.token?.takeIf { isServer && !request.url.isPublic() }
+        val owner = request.tag(QueueOwner::class.java)
+        if (owner != null && token?.let(::subjectOf) != owner.subject) throw QueueOwnerMismatch()
         val sent =
             if (token == null) {
                 request
@@ -48,3 +51,9 @@ internal class AccessTokenInterceptor(serverUrl: String, private val tokens: Acc
         val PUBLIC = setOf("buildings", "rooms")
     }
 }
+
+/** Właściciel wpisu kolejki, z którego powstało żądanie. */
+internal data class QueueOwner(val subject: String)
+
+/** Lokalna odmowa przed wysłaniem wpisu kolejki. */
+internal class QueueOwnerMismatch : IOException("Brak tokenu właściciela wpisu kolejki")
