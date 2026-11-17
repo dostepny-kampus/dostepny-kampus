@@ -219,6 +219,22 @@ class MigrationTest {
             database.close()
         }
     }
+
+    @Test
+    fun addsMarkersFrom10To11() {
+        helper.createDatabase(DB_NAME, 10).use { tenth ->
+            tenth.execSQL("INSERT INTO building_cache (id, list_json, synced_at) VALUES (1, '{}', 7)")
+        }
+
+        helper
+            .runMigrationsAndValidate(DB_NAME, 11, true)
+            .use { eleventh ->
+                val buildings = eleventh.query("SELECT COUNT(*) FROM building_cache").use { row -> readCount(row) }
+                val markers = eleventh.query("SELECT COUNT(*) FROM inspection_markers").use { row -> readCount(row) }
+
+                assertEquals("kopia budynków i pusta tabela znaczników", listOf(1, 0), listOf(buildings, markers))
+            }
+    }
 }
 
 private fun readCount(cursor: Cursor): Int {

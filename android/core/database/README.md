@@ -8,7 +8,7 @@ Lokalna baza Room: kopie budynków, barier i planów pięter, zgłoszenia własn
 
 - `core.database` — baza Room, jej migracje i wiązania Hilt.
 - `core.database.cache` — kopia budynków i przyjętych barier z serwera.
-- `core.database.inspection` — zmiany znaczników piętra obejrzanego czekające na wysłanie.
+- `core.database.inspection` — zmiany znaczników piętra obejrzanego czekające na wysłanie i kopia znaczników pobranych z serwera.
 - `core.database.room` — kopia planów pięter i ich pomieszczeń.
 - `core.database.submission` — własne zgłoszenia oraz zgłoszenia i edycje czekające na wysłanie.
 
