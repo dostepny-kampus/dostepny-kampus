@@ -92,3 +92,4 @@
 {"sha": "001571ef017b2fc01c31caf2c044ea627efb0251", "data": "2026-11-17", "zadania": 6000, "bledy": 5942, "p50_ms": 36.7, "p90_ms": 54.0, "p99_ms": 71.7}
 {"sha": "ba0c6f8a97056a6c102fffbe51f3e4d85f49d7ee", "data": "2026-11-17", "zadania": 6000, "bledy": 5942, "p50_ms": 22.4, "p90_ms": 50.0, "p99_ms": 56.0}
 {"sha": "a02ecd46a969492629ce3d173c2748a3e33117ef", "data": "2026-11-17", "zadania": 6000, "bledy": 5942, "p50_ms": 24.6, "p90_ms": 40.3, "p99_ms": 49.8}
+{"sha": "d240c501eabd5e38712555729b7fde1865b32d7c", "data": "2026-11-17", "zadania": 6000, "bledy": 5942, "p50_ms": 26.2, "p90_ms": 46.9, "p99_ms": 64.9}
