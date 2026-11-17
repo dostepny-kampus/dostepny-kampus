@@ -550,7 +550,6 @@ class AppShellTest {
      * Wiersz: pełny ekran po małej karcie, „Wstecz” w górnym pasku karty → znowu mała karta; „Zamknij”
      * małej karty → V1 bez zaznaczenia budynku. Nad małą kartą zostaje co najmniej 300 dp
      * mapy, czyli miejsce na przyciski mapy.
-     * Scenariusz (częściowo): przegladanie-mapy.feature: Z małej karty osoba rozwija opis albo wraca do mapy
      *
      * Wymagania: NFR-53, NFR-15, US2.8
      */

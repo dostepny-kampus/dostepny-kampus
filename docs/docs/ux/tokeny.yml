@@ -141,8 +141,8 @@ kolory:
     ciemny: "#E1EEF2"
     uzycie: napis i ikona przycisku tonalnego
     zrodlo: NFR-16
-  # Kontenery oznaczeń wejścia (decyzja 48 pkt 3). Znaczenie niesie kształt ikony i słowo;
-  # ten sam kształt mają znaczniki wejść na mapie. Kształt rysuje kolor `on…Container`.
+  # Kontenery oznaczeń wejścia (decyzja 48 pkt 3). Wymagania ich już nie używają: oznaczenie wejścia to znak
+  # z mapy i słowo, bez tła. Role zostają, dopóki kod rysuje plakietkę, i znikają razem z nią.
   statusDostepneContainer:
     # Kształt: koło ze znakiem ✓, słowo „Dostępne”.
     jasny: "#CDE8F0"   # spokojny morski
@@ -397,8 +397,8 @@ zaokraglenia:
 
 ikony:
   rozmiar:
-    dp: 24             # ikona oznaczenia wejścia i chipu rośnie z tekstem: 1,33 wysokości napisu
-    uzycie: ikona oznaczenia wejścia, chipu, przycisku i paska dolnego, zawsze z napisem obok
+    dp: 24             # znak oznaczenia wejścia i ikona chipu rosną z tekstem: 1,33 wysokości napisu
+    uzycie: znak oznaczenia wejścia w tekście (ten sam co na mapie), ikona chipu, przycisku i paska dolnego, zawsze z napisem obok
     zrodlo: NFR-21, słownik użytkownika (Metafory i ikony)
   znak_mapy:
     dp: 28
@@ -406,7 +406,7 @@ ikony:
     zrodlo: US1.4, US2.1, NFR-21
   znak_mapy_brak_danych:
     dp: 20             # cichy znak: mniej informacji, mniejsza waga; pusty romb, wnętrze `papier`, kontur i ? `tusz`
-    uzycie: znak wejścia „Brak danych” na mapie V1; w legendzie i na kartach ma rozmiar zwykłego znaku
+    uzycie: znak wejścia „Brak danych” na mapie V1; w legendzie ma rozmiar zwykłego znaku, a w tekście `ikony.rozmiar`
     zrodlo: US1.4, US2.1, NFR-16, NFR-21
 
 # ---------------------------------------------------------------------------
@@ -422,8 +422,18 @@ wysokosci:
     zrodlo: styl „Karta miejsca”
   pasek_czynnosci:
     dp: 6              # Material 3, poziom 3; cień pada w górę
-    uzycie: przypięty pasek czynności (V4, ekrany zespołu), arkusz na mapie (V1), mała karta V2 nad mapą
+    uzycie: przypięty pasek czynności (V4, ekrany zespołu), arkusz na mapie (V1), karta V2 nad mapą na każdej wysokości
     zrodlo: styl „Karta miejsca”; cień arkusza z makiety hi-fi V2
+
+# ---------------------------------------------------------------------------
+# Wysokości karty budynku V2 nad mapą. Niska ma wysokość treści, cały ekran to wysokość okna.
+# Połowa ekranu to ułamek wysokości okna nad paskiem dolnym; przy skali czcionki co najmniej 1,5 jej nie ma.
+# ---------------------------------------------------------------------------
+karta_budynku:
+  polowa_ekranu:
+    ulamek: 0.5
+    uzycie: środkowa wysokość karty V2, z mapą nad kartą i początkiem pełnego opisu
+    zrodlo: US2.8, NFR-53
 
 # ---------------------------------------------------------------------------
 # Paleta mapy: podkład, budynki PWr, plan piętra (styl mapy wektorowej, decyzja 44, ADR-0014).
