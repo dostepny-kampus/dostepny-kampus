@@ -10,12 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.app.LocalSheetPadding
 import io.github.dostepnykampus.app.SheetLayout
 import io.github.dostepnykampus.app.SheetSceneStrategy
 import io.github.dostepnykampus.app.closeCardOnEmptyMap
+import io.github.dostepnykampus.app.isFullOnlySheet
 import io.github.dostepnykampus.app.shownFocus
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapUiState
@@ -55,12 +57,11 @@ internal fun AppNavigator.HiltMapScreen(
 }
 
 /**
- * V1 ze stanem [state] i zaznaczeniem [focus] z trasy (np. po „Wstecz” z V2 albo „Pokaż na mapie”); [onListChange]
- * zapisuje widok, mapę albo listę, [onSearch] liczy wyszukiwanie. Budynek z listy przy TalkBack otwiera V2 od razu
- * na pełnym ekranie. Przyciski i podpis OSM stoją nad arkuszem V2; bez arkusza nad V1, także gdy jeszcze zjeżdża,
- * mapa liczy widok bez niego. [mapView] to MapLibre albo podróbka w testach, [plan] to plan piętra przy środku mapy,
- * [onCamera] dostaje widok po ruchu kamery, [onFloorChoose] piętro wybrane w kolumnie pięter, a [onMapHide] zejście
- * mapy z ekranu.
+ * V1 ze stanem [state] i zaznaczeniem [focus] z trasy; [onListChange] zapisuje widok, mapę albo listę, [onSearch]
+ * liczy wyszukiwanie. Budynek z listy przy TalkBack otwiera V2 od razu na pełnym ekranie. Przyciski i podpis OSM stoją
+ * nad arkuszem V2; bez arkusza i pod arkuszem na cały ekran przy dużej czcionce V1 liczy widok bez arkusza.
+ * [mapView] to MapLibre albo podróbka w testach, [plan] to plan piętra przy środku mapy, [onCamera] dostaje widok po
+ * ruchu kamery, [onFloorChoose] piętro wybrane w kolumnie pięter, a [onMapHide] zejście mapy z ekranu.
  *
  * Wymagania: US1.1, US2.1, NFR-19
  */
@@ -77,7 +78,7 @@ internal fun AppNavigator.MapScreen(
     onMapHide: () -> Unit = {},
 ) {
     val accessibility = checkNotNull(LocalContext.current.getSystemService(AccessibilityManager::class.java))
-    val isSheetAbove = SheetSceneStrategy.isSheet(current)
+    val isSheetAbove = SheetSceneStrategy.isSheet(current) && !isFullOnlySheet(LocalDensity.current.fontScale)
     CampusMapScreen(
         state = state,
         onListChange = onListChange,
