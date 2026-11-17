@@ -15,6 +15,7 @@ import io.github.dostepnykampus.core.network.building.BuildingsApi
 import io.github.dostepnykampus.core.network.inspection.InspectionProgressApi
 import io.github.dostepnykampus.core.network.inspection.MarkerChangesApi
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi
+import io.github.dostepnykampus.core.network.sync.SyncPullApi
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
@@ -23,7 +24,7 @@ import javax.inject.Singleton
 /**
  * Klient HTTP `core:network` w grafie Hilt aplikacji.
  *
- * Jedna instancja klienta, parsera, [BuildingsApi], [SubmissionsApi] i [MarkerChangesApi] na proces.
+ * Jedna instancja klienta, parsera, [BuildingsApi], [SubmissionsApi], [MarkerChangesApi] i [SyncPullApi] na proces.
  */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -81,4 +82,10 @@ public object NetworkModule {
     @Singleton
     public fun inspectionProgressApi(http: OkHttpClient, json: Json): InspectionProgressApi =
         InspectionProgressApi(http = http, json = json, baseUrl = BuildConfig.API_BASE_URL)
+
+    /** Pobranie zmian z serwera, w tym znaczników pięter; ten sam adres co [buildingsApi]. */
+    @Provides
+    @Singleton
+    public fun syncPullApi(http: OkHttpClient, json: Json): SyncPullApi =
+        SyncPullApi(http = http, json = json, baseUrl = BuildConfig.API_BASE_URL)
 }
