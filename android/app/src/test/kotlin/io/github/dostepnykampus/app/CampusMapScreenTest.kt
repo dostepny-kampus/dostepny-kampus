@@ -409,11 +409,10 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
     }
 
     /**
-     * Scenariusz „Przy karcie budynek jest cały widoczny, a mapą sterują przyciski”: V1 → V2 z budynkiem
-     * nad arkuszem, „Wstecz” bez ruszania mapy → widok sprzed otwarcia V2; po „Powiększ” nad kartą zostaje
-     * widok osoby (151 i 153).
+     * Wybór z wyszukiwania: V1 → V2 z budynkiem nad arkuszem, zamknięcie → mapa stoi na ekranie w widoku z chwili
+     * zamknięcia, a nie wraca do widoku sprzed karty; po „Powiększ” nad kartą i zamknięciu zostaje widok osoby.
      *
-     * Wymagania: US2.8, NFR-53
+     * Wymagania: US2.8, NFR-53, NFR-56
      */
     @Test
     @Config(qualifiers = "w360dp-h800dp")
@@ -425,11 +424,12 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
         sheet = 400.dp
         compose.waitForIdle()
         val aboveSheet = cameras.last()
-        assertEquals(true, insets.last() > 0)
+        val under = insets.last()
+        assertEquals(true, under > 0)
         assertEquals(true, aboveSheet != start)
         sheet = 0.dp
         compose.waitForIdle()
-        assertEquals(start to 0.0, cameras.last() to insets.last())
+        assertStays(above = aboveSheet, under = under)
         sheet = 400.dp
         compose.onNodeWithContentDescription("Powiększ").performClick()
         compose.waitForIdle()
@@ -437,7 +437,48 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
         assertEquals(CameraTransition(closer, CameraMotion.FLIGHT, durationMillis = 300), moves.last())
         sheet = 0.dp
         compose.waitForIdle()
-        assertEquals(closer to 0.0, cameras.last() to insets.last())
+        assertStays(above = closer, under = under)
+    }
+
+    /**
+     * Dotknięcie konturu, strzałka nad kartą, potem zamknięcie karty → mapa stoi na ekranie: środek widoku niżej
+     * o pół paska i zasłoniętego dołu, to samo powiększenie, bez powrotu do widoku sprzed karty.
+     * Scenariusz: przegladanie-mapy.feature: Karta budynku zamyka się na każdej wysokości
+     *
+     * Wymagania: US2.8, NFR-56
+     */
+    @Test
+    @Config(qualifiers = "w360dp-h800dp")
+    fun keepsScreenAfterClose() {
+        ring = "[[0,0],[0.0003,0],[0.0003,0.0003],[0,0.0003],[0,0]]"
+        entrances = FAR_BUILDINGS_AROUND_C14
+        var sheet by mutableStateOf(0.dp)
+        var focus by mutableStateOf<String?>(null)
+        compose.setContent { Screen(focus = focus, sheet = sheet, motion = MapMotion()) }
+        compose.waitForIdle()
+        compose.runOnUiThread { touch(listOf("C-14")) }
+        focus = "C-14"
+        sheet = 200.dp
+        compose.waitForIdle()
+        compose.onNodeWithContentDescription("Przesuń mapę w górę").performClick()
+        compose.waitForIdle()
+        val above = cameras.last()
+        val under = insets.last()
+        focus = null
+        sheet = 0.dp
+        compose.waitForIdle()
+        assertTrue("zaznaczenie znika: $focuses", focuses.last() == null)
+        assertStays(above = above, under = under)
+    }
+
+    private fun assertStays(above: MapCamera, under: Double) {
+        val after = cameras.last()
+        val perRadian = WORLD_DP_AT_ZOOM_0 * 2.0.pow(above.zoom) / (2 * PI) * compose.density.density
+        val shift = (mercator(above.center.latitude) - mercator(after.center.latitude)) * perRadian
+        assertEquals("bez arkusza: $insets", 0.0, insets.last(), 0.0)
+        assertEquals("powiększenie zostaje: $moves", above.zoom, after.zoom, 0.0)
+        assertEquals("bez ruchu w poziomie: $moves", above.center.longitude, after.center.longitude, 1e-9)
+        assertEquals("ekran stoi: środek niżej o pół paska i karty, $moves", (tops.last() + under) / 2, shift, 1.0)
     }
 
     /**
