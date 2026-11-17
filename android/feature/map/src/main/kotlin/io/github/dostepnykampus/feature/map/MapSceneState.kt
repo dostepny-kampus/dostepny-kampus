@@ -33,6 +33,7 @@ import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
+import io.github.dostepnykampus.feature.map.camera.TapSight
 import io.github.dostepnykampus.feature.map.camera.belowTop
 import io.github.dostepnykampus.feature.map.camera.besideStart
 import io.github.dostepnykampus.feature.map.camera.byControl
@@ -159,9 +160,9 @@ internal fun rememberMapSceneState(
     val pick =
         remember(key1 = selection?.building, key2 = outline != null, key3 = size != IntSize.Zero) {
             val from = last.startOr(uncovered)
-            val below = shiftUnderBar(isCoveredBefore = isCoveredBefore, covered = cover + topBefore + reserve)
+            val sight = tapSight(wasCovered = isCoveredBefore, bar = topBefore, under = cover + reserve, free = fit)
             pickView(from = from, outline = outline, free = fit, limits = limits, scale = scale)?.let { view ->
-                origin.move(building = selection?.building, view = view, keepsZoom = isCoveredBefore, belowDp = below)
+                origin.move(building = selection?.building, view = view, keepsZoom = isCoveredBefore, sight = sight)
             }
         }
     motion.RecordPick(pick) {
@@ -272,8 +273,14 @@ private fun MapMotion?.RecordPick(pick: CameraTransition?, line: (CameraTransiti
     }
 }
 
-private fun shiftUnderBar(isCoveredBefore: Boolean, covered: Dp): Double =
-    if (isCoveredBefore) 0.0 else covered.value / 2.0
+private fun tapSight(wasCovered: Boolean, bar: Dp, under: Dp, free: FreeMap): TapSight {
+    val bottom = free.heightDp + under.value
+    return if (wasCovered) {
+        TapSight(belowDp = 0.0, topDp = 0.0, bottomDp = bottom)
+    } else {
+        TapSight(belowDp = (bar + under).value / 2.0, topDp = bar.value.toDouble(), bottomDp = bottom)
+    }
+}
 
 /** Skala animacji systemu („Skala długości animacji”); 0 przy „Usuń animacje”. Wymagania: NFR-56 */
 @Composable

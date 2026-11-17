@@ -9,6 +9,7 @@ import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.FreeMap
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
+import io.github.dostepnykampus.feature.map.camera.TapSight
 import io.github.dostepnykampus.feature.map.camera.cameraTransition
 import io.github.dostepnykampus.feature.map.camera.placed
 import io.github.dostepnykampus.feature.map.camera.tapTransition
@@ -44,18 +45,18 @@ internal class PickOrigin(isUnderCard: Boolean) {
 
     /**
      * Ruch do budynku [building] w kadrze [view]. Wyszukiwanie przy otwartej karcie trzyma powiększenie
-     * ([keepsZoom]); dotknięcie liczy się od widoku przesuniętego o [belowDp], zob. [tapTransition].
+     * ([keepsZoom]); dotknięcie liczy się od mapy widzianej jak [sight], zob. [tapTransition].
      */
-    fun move(building: String?, view: PickView, keepsZoom: Boolean, belowDp: Double): CameraTransition {
-        val move = if (building != null && building == tapped) view.tapped(belowDp) else view.searched(keepsZoom)
+    fun move(building: String?, view: PickView, keepsZoom: Boolean, sight: TapSight): CameraTransition {
+        val move = if (building != null && building == tapped) view.tapped(sight) else view.searched(keepsZoom)
         val bounded = move.within(view.limits, free = view.free)
         val taken = if (isPlacing) bounded.placed(animationScale = view.scale) else bounded
         isPlacing = false
         return taken
     }
 
-    private fun PickView.tapped(belowDp: Double) =
-        tapTransition(from = from, outline = outline, free = free, belowDp = belowDp, animationScale = scale)
+    private fun PickView.tapped(sight: TapSight) =
+        tapTransition(from = from, outline = outline, free = free, sight = sight, animationScale = scale)
 
     private fun PickView.searched(keepsZoom: Boolean) =
         cameraTransition(from = from, outline = outline, free = free, animationScale = scale, keepsZoom = keepsZoom)
