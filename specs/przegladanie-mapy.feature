@@ -167,6 +167,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz karta stoi na wysokości „<wysokość>”
     Jeżeli <czynność>
     Wtedy widzi mapę bez zaznaczonego budynku
+    Oraz położenie i powiększenie mapy są takie jak w chwili zamknięcia karty
 
     Przykłady:
       | wysokość      | czynność                                      |
@@ -178,8 +179,10 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
   @US2.8 @US1.4 @NFR-53 @aplikacja
   Scenariusz: Przy karcie budynek jest cały widoczny, a mapą sterują przyciski
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
+    Oraz cały kontur budynku A-1 jest widoczny na mapie
     Jeżeli dotknie budynku A-1
-    Wtedy cały kontur budynku A-1 i jego wejścia mieszczą się w części mapy nad kartą
+    Wtedy cały kontur budynku A-1 mieści się w części mapy nad kartą
+    Oraz powiększenie mapy jest takie jak przed dotknięciem
     Oraz nad kartą są „Powiększ”, „Pomniejsz” i strzałki przesuwania mapy
     Oraz po „Pomniejsz” mapa się oddala, a karta budynku A-1 zostaje otwarta
     Ale nad kartą nie ma pola „Szukaj budynku, np. C-13” ani przycisku „Pokaż listę”
