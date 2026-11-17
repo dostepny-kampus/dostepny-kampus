@@ -14,7 +14,8 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie powstaje po 3 krokach
     Oraz ma dołączoną bieżącą pozycję telefonu, o którą aplikacja nie pytała
 
-  @US4.6 @aplikacja
+  # @do-zrobienia #3077: „Zgłoś barierę przy wejściu” w arkuszu wejścia jeszcze nie ma w aplikacji.
+  @US4.6 @aplikacja @do-zrobienia
   Szablon scenariusza: Zgłoszenie przy wejściu podpowiada wejście, a miejsce bierze z bieżącej pozycji
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz otworzył <ekran> budynku A-1
@@ -24,13 +25,8 @@ Funkcja: Zgłoszenie szybkie
     Ale miejsce zgłoszenia pochodzi z bieżącej pozycji telefonu, a nie z wybranego wejścia
 
     Przykłady:
-      | ekran |
-      | kartę |
-
-    # @do-zrobienia #3077: „Zgłoś barierę przy wejściu” w arkuszu wejścia jeszcze nie ma w aplikacji.
-    @do-zrobienia
-    Przykłady:
       | ekran                   |
+      | kartę                   |
       | arkusz wejścia na mapie |
 
   @US4.3 @aplikacja
