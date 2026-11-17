@@ -7,7 +7,9 @@ package io.github.dostepnykampus.feature.map.building
 
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -42,13 +44,14 @@ import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
 import io.github.dostepnykampus.core.designsystem.marking.MarkingChip
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.overlay.SheetCloseButton
 
 /**
  * V2 Karta budynku: nagłówek z symbolem i nazwą z danych (budynek bez nazwy ma sam symbol), który TalkBack czyta jako
- * jeden, np. „Budynek A-1, Gmach Główny”, z fokusem po otwarciu. Pod nim wiersz o wejściach i wejścia z oznaczeniem
- * tekstem i ikoną, zalecane pierwsze. Czynności stoją w przewijanej treści: „Sprawdź, którędy wejść” zawsze, „Zamknij”
- * w [CardMode.Compact], „Pokaż budynek na mapie” w [CardMode.Direct]; pasek „Wstecz” oraz grupy „Wejścia”
- * i „Bariery w budynku” ma pełny ekran.
+ * jeden, np. „Budynek A-1, Gmach Główny”, z fokusem po otwarciu; w [CardMode.Compact] obok niego „Zamknij”. Pod
+ * nim wiersz o wejściach, a bez danych o wejściach cichy napis, i wejścia z oznaczeniem, zalecane pierwsze. Czynności
+ * stoją w przewijanej treści: „Sprawdź, którędy wejść” zawsze, „Pokaż budynek na mapie” w [CardMode.Direct]; pasek
+ * „Wstecz” oraz grupy „Wejścia” i „Bariery w budynku” ma pełny ekran.
  * Nieznany symbol: „budynku nie ma w telefonie”. Bez internetu nad nagłówkiem stoi [OfflinePill] bez daty.
  *
  * Wymagania: US2, BR-25, US2.8, NFR-18, US2.7, NFR-10
@@ -58,7 +61,7 @@ import io.github.dostepnykampus.feature.map.R
  * @param onCheckEntrances „Sprawdź, którędy wejść” otwiera V3
  * @param onShowOnMap „Pokaż budynek na mapie” zaznacza budynek na V1
  * @param onBack „Wstecz”
- * @param onClose „Zamknij” małej karty
+ * @param onClose „Zamknij” w nagłówku małej karty
  * @param modifier wymiary nadane przez arkusz; mała karta ma wysokość treści, pełny ekran wypełnia całe miejsce
  * @param onReportEntrance „Zgłoś barierę przy wejściu” dla identyfikatora wejścia
  * @param onShowEntrance „Pokaż wejście na mapie” dla identyfikatora wejścia zalecanego
@@ -132,14 +135,9 @@ fun BuildingCardContent(
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
         ) {
             if (!isOnline) OfflinePill()
-            HeaderOrSpace(symbol = symbol, card = card, isFullScreen = isFullScreen)
+            HeaderRow(symbol = symbol, card = card, mode = mode, onClose = onClose)
             if (card is BuildingCardUiState.Ready || card.isWaiting(isFullScreen)) {
-                CardActions(
-                    mode = mode,
-                    onCheckEntrances = onCheckEntrances,
-                    onShowOnMap = onShowOnMap,
-                    onClose = onClose,
-                )
+                CardActions(mode = mode, onCheckEntrances = onCheckEntrances, onShowOnMap = onShowOnMap)
             }
             FactsOrMissing(
                 card = card,
@@ -180,6 +178,16 @@ private fun FactsOrMissing(
 }
 
 @Composable
+private fun HeaderRow(symbol: String, card: BuildingCardUiState, mode: CardMode, onClose: () -> Unit) {
+    val isCompact = mode == CardMode.Compact
+    if (!isCompact && card !is BuildingCardUiState.Ready) return
+    Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        Box(Modifier.weight(1f)) { HeaderOrSpace(symbol = symbol, card = card, isFullScreen = !isCompact) }
+        if (isCompact) SheetCloseButton(onClose = onClose)
+    }
+}
+
+@Composable
 private fun HeaderOrSpace(symbol: String, card: BuildingCardUiState, isFullScreen: Boolean) {
     val ready = card as? BuildingCardUiState.Ready
     if (ready == null && !card.isWaiting(isFullScreen)) return
@@ -189,14 +197,27 @@ private fun HeaderOrSpace(symbol: String, card: BuildingCardUiState, isFullScree
     ) {
         if (ready != null) {
             SymbolOverName(symbol = symbol, name = ready.name)
-            EntranceSummaryRow(entranceSummary(ready.entrances))
+            EntranceSummaryLine(entranceSummary(ready.entrances))
         } else {
             Column {
                 Text(text = symbol, style = MaterialTheme.typography.displayLarge)
                 Text(text = " ", style = MaterialTheme.typography.headlineMedium)
             }
-            EntranceSummaryRow(EntranceSummary.NoData)
+            EntranceSummaryLine(EntranceSummary.NoData)
         }
+    }
+}
+
+@Composable
+private fun EntranceSummaryLine(summary: EntranceSummary) {
+    if (summary == EntranceSummary.NoData) {
+        Text(
+            text = stringResource(R.string.karta_wiersz_brak_danych),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    } else {
+        EntranceSummaryRow(summary)
     }
 }
 
@@ -285,13 +306,11 @@ internal fun MissingBuilding(onRetry: () -> Unit) {
 }
 
 @Composable
-private fun CardActions(mode: CardMode, onCheckEntrances: () -> Unit, onShowOnMap: () -> Unit, onClose: () -> Unit) {
+private fun CardActions(mode: CardMode, onCheckEntrances: () -> Unit, onShowOnMap: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(CeleDotyku.odstep)) {
         CardButton(text = stringResource(R.string.karta_sprawdz), onClick = onCheckEntrances)
-        when (mode) {
-            CardMode.Compact -> CardButton(stringResource(R.string.mapa_zamknij), onClose, outlined = true)
-            CardMode.Expanded -> Unit
-            CardMode.Direct -> CardButton(stringResource(R.string.karta_pokaz), onShowOnMap, outlined = true)
+        if (mode == CardMode.Direct) {
+            CardButton(stringResource(R.string.karta_pokaz), onShowOnMap, outlined = true)
         }
     }
 }
