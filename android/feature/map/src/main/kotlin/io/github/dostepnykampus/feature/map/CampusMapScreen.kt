@@ -87,8 +87,8 @@ private const val MAP_STATE = "map"
  *   mapie”; TalkBack czyta jego nazwę i budynek ekranu
  * @param contentPadding część ekranu zasłonięta z zewnątrz przez arkusz V2. Podpis OSM stoi nad nią,
  *   a mapa dalej wypełnia cały ekran. Pod arkuszem nie ma przycisków mapy, bo wymagania V2 ich nie mają;
- *   wracają po „Wstecz”. Budynek z [focus] staje w środku części nad arkuszem, a po „Wstecz” wraca widok
- *   sprzed otwarcia V2
+ *   wracają po „Wstecz”. Budynek z [focus] staje w środku części nad arkuszem, a po zamknięciu arkusza mapa
+ *   stoi na ekranie w widoku z chwili zamknięcia
  * @param onEmptyMapClick dotknięcie mapy, które nie trafiło żadnego konturu ani miejsca obok; aplikacja zamyka nim
  *   małą kartę V2
  * @param onListBuildingClick symbol budynku dotkniętego na liście „Lista budynków”; aplikacja wybiera nim tryb
@@ -133,8 +133,8 @@ fun CampusMapScreen(
  *
  * Góra V1 i mapa znikają pod arkuszem V2 albo przy liście; ich stan, np. przewinięcie listy i widok kamery, czeka
  * na powrót. Pod arkuszem V2 nagłówka nie ma, jak w hi-fi V2: mapa sięga wtedy pod pasek stanu. Budynek z listy
- * też otwiera V2 jako arkusz na mapie. Pod arkuszem widok kamery się nie zapisuje, więc po „Wstecz”
- * wraca widok sprzed V2. Przy otwartej klawiaturze mapa jest za niska na przyciski, więc znikają do
+ * też otwiera V2 jako arkusz na mapie. Po zamknięciu arkusza mapa stoi na ekranie w widoku z chwili zamknięcia.
+ * Przy otwartej klawiaturze mapa jest za niska na przyciski, więc znikają do
  * jej zamknięcia.
  *
  * Wymagania: US9.1, NFR-10, NFR-19, NFR-20, US2, US1.1, US2.9, US3.3, US2.8

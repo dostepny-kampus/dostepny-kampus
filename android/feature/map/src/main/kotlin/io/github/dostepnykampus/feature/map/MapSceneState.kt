@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
+import io.github.dostepnykampus.feature.map.camera.CameraMotion
 import io.github.dostepnykampus.feature.map.camera.CameraSaver
 import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.ENTRANCE_ZOOM
@@ -41,6 +42,7 @@ import io.github.dostepnykampus.feature.map.camera.fitted
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.pickLine
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
+import io.github.dostepnykampus.feature.map.camera.shiftedNorth
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
@@ -115,8 +117,8 @@ internal class MapSceneState(
  * Stan sceny mapy z danych [layers], katalogu [catalog], zaznaczenia [focus] z trasy i nazwy terenu [area]
  * wybranego przez osobę, dla mapy o rozmiarze [size] zasłoniętej od dołu arkuszem V2 na wysokość
  * [cover]. Nad arkuszem budynek mieści się też nad napisem o zmianie terenu wysokim na [notice]. Widok kamery
- * i lista budynków do wyboru są zapisywane, więc wracają po „Wstecz” z V2 i po obrocie ekranu. Każdy ruch nad kartą
- * do nowego budynku trafia do [motion].
+ * i lista budynków do wyboru są zapisywane, więc wracają po obrocie ekranu. Zamknięcie arkusza zostawia obraz mapy
+ * bez ruchu: zapisany widok to widok z chwili zamknięcia. Każdy ruch nad kartą do nowego budynku trafia do [motion].
  *
  * Wymagania: US1.7, US1.8, NFR-22, NFR-56
  */
@@ -170,8 +172,11 @@ internal fun rememberMapSceneState(
     }
     val card = rememberCardMove(building = selection?.building, pick = pick)
     val above = card.move?.takeIf { isCovered }
-    val move = above ?: uncovered?.byControl()
-    SideEffect { last.keep(move?.camera) }
+    val left = remember(isCovered) { last.leftUnder(bar = top).takeIf { isCoveredBefore && !isCovered } }
+    SideEffect { left?.let(view.keep) }
+    val stays = left?.takeIf { it != view.camera }?.still()
+    val move = above ?: stays ?: uncovered?.byControl()
+    SideEffect { last.keep(shown = move?.camera, covered = if (above != null) cover + reserve else 0.dp) }
     val inset = sheetOrBarInset(isAbove = above != null, top = topInset, bottom = bottomInset)
     return MapSceneState(
         scene = scene,
@@ -194,6 +199,9 @@ internal fun rememberMapSceneState(
  */
 internal data class SceneCamera(val move: CameraTransition, val inset: MapInset, val landing: FreeMap)
 
+private fun MapCamera.still(): CameraTransition =
+    CameraTransition(camera = this, motion = CameraMotion.NONE, durationMillis = 0)
+
 private fun sheetOrBarInset(isAbove: Boolean, top: Double, bottom: Double): MapInset =
     if (isAbove) MapInset(bottom = bottom) else MapInset(top = top)
 
@@ -214,8 +222,7 @@ internal fun mapCover(isCovered: Boolean, hasControls: Boolean): MapCover =
 
 /**
  * Zapis widoku kamery po ruchu osoby. Nad arkuszem V2 ([isCovered]) widok trafia do [onCard], więc kamera nie
- * ustawia już budynku na nowo. Trafia też do [onMap], więc po zamknięciu karty zostaje widok osoby, a widok
- * sprzed karty wraca tylko wtedy, gdy osoba nie ruszyła mapy.
+ * ustawia już budynku na nowo. Każdy widok trafia też do [onMap].
  */
 internal fun cameraKeeper(
     isCovered: Boolean,
@@ -251,14 +258,25 @@ internal fun rememberNoticeReserve(building: String?, notice: Dp): Dp = remember
 /** Ruch mapy nad arkuszem V2 [move] i zapis widoku po ruchu osoby [keep]. */
 internal data class CardMove(val move: CameraTransition?, val keep: (MapCamera) -> Unit)
 
-/** Ostatni widok podany mapie: początek ruchu do następnego wybranego budynku. Nie jest stanem kompozycji. */
+/**
+ * Ostatni widok podany mapie i zasłonięty wtedy dół mapy: początek ruchu do następnego wybranego budynku i widok po
+ * zamknięciu karty. Nie jest stanem kompozycji.
+ */
 private class ShownCamera {
     private var camera: MapCamera? = null
+    private var covered = 0.dp
 
     fun startOr(fallback: MapCamera?): MapCamera? = camera ?: fallback
 
-    fun keep(shown: MapCamera?) {
+    /**
+     * Ten sam obraz mapy po zdjęciu arkusza: widok liczony dla mapy pod paskiem wysokim na [bar], ze środkiem
+     * niżej o połowę paska i zasłoniętego wcześniej dołu; `null` bez ostatniego widoku.
+     */
+    fun leftUnder(bar: Dp): MapCamera? = camera?.shiftedNorth(-(bar + covered).value / 2.0)
+
+    fun keep(shown: MapCamera?, covered: Dp) {
         camera = shown
+        this.covered = covered
     }
 }
 
