@@ -181,7 +181,9 @@ fun CampusMapScreen(
     val areas = rememberMapAreas(state.mapData, focus)
     val barExit = rememberTopBarExit(isCovered = isCovered, motion = motion)
     var barHeight by remember { mutableIntStateOf(0) }
+    var headerHeight by remember { mutableIntStateOf(0) }
     val barTop = with(LocalDensity.current) { barHeight.toDp() }
+    val headerTop = with(LocalDensity.current) { headerHeight.toDp() }
     Box(modifier.fillMaxSize()) {
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
@@ -194,6 +196,7 @@ fun CampusMapScreen(
                         focus = focus,
                         areas = areas,
                         top = mapTop(isCovered = isCovered, bar = barTop),
+                        cameraTop = mapTop(isCovered = isCovered, bar = headerTop),
                         contentPadding = contentPadding,
                         mapView = mapView,
                         motion = motion,
@@ -220,8 +223,11 @@ fun CampusMapScreen(
                     areas = areas.order,
                     onListChange = onListChange,
                     onBuildingClick = if (isList) onListBuildingClick else onBuildingClick,
-                    onBarHeight = { barHeight = it },
-                    modifier = (if (isList) Modifier.fillMaxSize() else Modifier).slideUp(barExit),
+                    onBarHeight = { headerHeight = it },
+                    modifier =
+                        (if (isList) Modifier.fillMaxSize() else Modifier)
+                            .slideUp(barExit)
+                            .onSizeChanged { barHeight = it.height },
                 )
             }
         }
@@ -236,6 +242,7 @@ private fun CampusMap(
     focus: MapFocus?,
     areas: MapAreas,
     top: Dp,
+    cameraTop: Dp,
     contentPadding: PaddingValues,
     mapView: CampusMapView,
     motion: MapMotion?,
@@ -261,7 +268,7 @@ private fun CampusMap(
             area = areas.chosenName,
             cover = cover,
             size = size,
-            top = top,
+            top = cameraTop,
             motion = motion,
             notice = notice,
         )

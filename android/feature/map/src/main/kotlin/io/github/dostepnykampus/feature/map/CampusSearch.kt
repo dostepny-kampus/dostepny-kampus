@@ -109,8 +109,8 @@ private val ClearIcon =
  *   zdejmuje fokus z pola, chowa klawiaturę ekranową i wyniki, a tekst w polu zostaje; wyniki wracają po dotknięciu
  *   pola albo zmianie tekstu. Pierwsze „Wstecz” zamyka V2
  * @param modifier położenie nad mapą; przy liście cała wysokość nad paskiem dolnym
- * @param onBarHeight wysokość w pikselach części zasłaniającej mapę: wiersz tytułu, pole i wiersz bez internetu,
- *   bez wyników, które leżą nad mapą
+ * @param onBarHeight wysokość w pikselach wiersza tytułu, pola i wiersza bez internetu, bez wyników: tę część
+ *   mapy kamera traktuje jako zasłoniętą, więc wpisywanie nie przesuwa mapy
  */
 @Composable
 internal fun CampusSearch(

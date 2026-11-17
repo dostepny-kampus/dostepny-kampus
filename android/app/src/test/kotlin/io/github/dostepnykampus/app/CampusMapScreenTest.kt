@@ -769,7 +769,7 @@ class CampusMapScreenTest {
         compose.onNodeWithText("Budynek C-14", useUnmergedTree = true).assertExists()
         compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
         compose.waitForIdle()
-        val shown = tops.subList(fromIndex = before, toIndex = tops.size).toSet()
+        val shown = tops.subList(fromIndex = before, toIndex = tops.size)
         assertTrue("góra mapy przy wpisywaniu i po wyborze: $shown, pasek $bar", shown.all { it == bar })
     }
 
