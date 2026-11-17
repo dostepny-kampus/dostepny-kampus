@@ -8,20 +8,16 @@ package io.github.dostepnykampus.barrier.submission.web;
 import io.github.dostepnykampus.barrier.submission.CreateResult;
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.Reader;
-import io.github.dostepnykampus.barrier.submission.Submission;
-import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionService;
 import io.github.dostepnykampus.shared.error.ConflictingState;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
-import io.github.dostepnykampus.shared.error.MissingLogin;
 import io.github.dostepnykampus.shared.error.MissingResource;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,8 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Zgłoszenia barier: wysłanie nowego zgłoszenia, edycja
- * z kontrolą wersji, odczyt zgłoszeń przyjętych,
- * odczyt zgłoszenia nieprzyjętego przez autora i Weryfikatora
+ * z kontrolą wersji, odczyt zgłoszenia nieprzyjętego przez autora i Weryfikatora
  * i podobne zgłoszenia dla Weryfikatora.
  *
  * <p>Wymagania: US4, US7, BR-9, US8.3, BR-10, BR-6, BR-5, US10.1, BR-13</p>
@@ -62,30 +57,6 @@ public final class SubmissionsController {
     SubmissionsController(final SubmissionService service, final SubmissionReading finder) {
         this.service = service;
         this.finder = finder;
-    }
-
-    /**
-     * Zwraca zgłoszenia przyjęte według filtrów, a z
-     * mine=true własne zgłoszenia zalogowanej osoby w każdym statusie.
-     *
-     * <p>Wymagania: US1.3, US2.2, BR-6, US8.1</p>
-     *
-     * @param filter Filtry z parametrów zapytania
-     * @param account Zalogowane konto albo null bez logowania
-     * @return Zgłoszenia od najstarszego
-     */
-    @GetMapping("/submissions")
-    List<SubmissionResponse> listSubmissions(
-        final SubmissionFilter filter, @Nullable final Principal account
-    ) {
-        final SubmissionQuery query = filter.toQuery();
-        final List<Submission> found;
-        if (filter.own()) {
-            found = this.finder.own(SubmissionsController.name(account), query);
-        } else {
-            found = this.finder.list(query);
-        }
-        return found.stream().map(SubmissionResponse::new).toList();
     }
 
     /**
@@ -203,12 +174,5 @@ public final class SubmissionsController {
             case EditResult.Missing _ -> throw new MissingResource(SubmissionsController.MISSING);
             case null -> throw new IllegalStateException("Brak wyniku edycji zgłoszenia");
         };
-    }
-
-    private static String name(@Nullable final Principal account) {
-        if (account == null) {
-            throw new MissingLogin("Własne zgłoszenia wymagają logowania");
-        }
-        return account.getName();
     }
 }
