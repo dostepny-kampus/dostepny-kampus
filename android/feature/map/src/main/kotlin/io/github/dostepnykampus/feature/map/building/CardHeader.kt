@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Modifier
@@ -54,7 +55,7 @@ private fun HeaderOrSpace(symbol: String, card: BuildingCardUiState, isFullScree
     ) {
         if (ready != null) {
             SymbolOverName(symbol = symbol, name = ready.name)
-            EntranceSummaryLine(entranceSummary(ready.entrances))
+            EntranceLines(ready.entrances)
         } else {
             Column {
                 Text(text = symbol, style = MaterialTheme.typography.headlineLarge)
@@ -64,6 +65,43 @@ private fun HeaderOrSpace(symbol: String, card: BuildingCardUiState, isFullScree
         }
     }
 }
+
+@Composable
+private fun EntranceLines(entrances: List<OrderedEntrance>) {
+    val answer = answerLine(visitAnswer(entrances))
+    Column(Modifier.semantics(mergeDescendants = true) {}) {
+        EntranceSummaryLine(entranceSummary(entrances))
+        answer?.let { sentence ->
+            Text(
+                text = sentence,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+/**
+ * Zdanie pod wierszem o wejściach dla [answer]: wejście zalecane albo liczba wejść bez dostępnego; bez danych `null`.
+ *
+ * Wymagania: US3.1, BR-25
+ */
+@Composable
+@ReadOnlyComposable
+internal fun answerLine(answer: VisitAnswer): String? =
+    when (answer) {
+        is VisitAnswer.Accessible ->
+            stringResource(R.string.karta_odpowiedz_zalecane, answer.name ?: stringResource(R.string.karta_bez_nazwy))
+
+        is VisitAnswer.NoAccessible ->
+            if (answer.total == 1) {
+                stringResource(R.string.karta_odpowiedz_jedyne)
+            } else {
+                stringResource(R.string.karta_odpowiedz_zadne, answer.total)
+            }
+
+        VisitAnswer.NoData, is VisitAnswer.Unknown -> null
+    }
 
 @Composable
 private fun EntranceSummaryLine(summary: EntranceSummary) {

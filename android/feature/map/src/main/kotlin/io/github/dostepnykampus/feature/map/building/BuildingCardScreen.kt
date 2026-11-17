@@ -20,6 +20,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
@@ -36,22 +38,22 @@ import io.github.dostepnykampus.feature.map.R
 /**
  * V2 Karta budynku: nagłówek z symbolem i nazwą z danych (budynek bez nazwy ma sam symbol), który TalkBack czyta jako
  * jeden, np. „Budynek A-1, Gmach Główny”, z fokusem po otwarciu; poza [CardMode.Direct] obok niego „Zamknij”. Pod
- * nim wiersz o wejściach, a bez danych o wejściach cichy napis, i wejścia z oznaczeniem, zalecane pierwsze. Czynności
- * stoją w przewijanej treści: „Sprawdź, którędy wejść” zawsze, „Pokaż budynek na mapie” w [CardMode.isWhole]; grupy
+ * nim wiersz o wejściach z odpowiedzią, a bez danych o wejściach cichy napis. Czynności stoją w przewijanej treści:
+ * „Pokaż wejście na mapie” przy wejściu zalecanym, „Pokaż budynek na mapie” w [CardMode.isWhole]; grupy
  * „Wejścia” i „Bariery w budynku” ma pełny opis, a pasek „Wstecz” tylko [CardMode.Direct].
  * Nieznany symbol: „budynku nie ma w telefonie”. Bez internetu nad nagłówkiem stoi [OfflinePill] bez daty.
  *
- * Wymagania: US2, BR-25, US2.8, NFR-18, US2.7, NFR-10
+ * Wymagania: US2, BR-25, US2.8, US3.2, NFR-18, US2.7, NFR-10
  *
  * @param symbol symbol z trasy, widoczny w nagłówku także w trakcie wczytywania
  * @param mode mała karta nad mapą, karta rozwinięta z niej, karta na cały ekran nad mapą albo pełny ekran od razu
- * @param onCheckEntrances „Sprawdź, którędy wejść” otwiera V3
  * @param onShowOnMap „Pokaż budynek na mapie” zaznacza budynek na V1
  * @param onBack „Wstecz” w [CardMode.Direct]
  * @param onClose „Zamknij” w nagłówku karty nad mapą
  * @param modifier wymiary nadane przez arkusz; mała karta ma wysokość treści, pełny ekran wypełnia całe miejsce
  * @param onReportEntrance „Zgłoś barierę przy wejściu” dla identyfikatora wejścia
- * @param onShowEntrance „Pokaż wejście na mapie” dla identyfikatora wejścia zalecanego
+ * @param onShowEntrance „Pokaż wejście na mapie” pod wierszem o wejściach i przy wejściu zalecanym, z jego
+ *   identyfikatorem
  * @param onReportRemoval „Zgłoś, że bariery nie ma” dla identyfikatora zgłoszenia; `null` ukrywa przycisk
  * @param viewModel stan karty; w aplikacji z grafu Hilt, w testach z podróbką katalogu
  */
@@ -59,7 +61,6 @@ import io.github.dostepnykampus.feature.map.R
 fun BuildingCardScreen(
     symbol: String,
     mode: CardMode,
-    onCheckEntrances: () -> Unit,
     onShowOnMap: () -> Unit,
     onBack: () -> Unit,
     onClose: () -> Unit,
@@ -79,7 +80,6 @@ fun BuildingCardScreen(
         mode = mode,
         card = state,
         isOnline = isOnline,
-        onCheckEntrances = onCheckEntrances,
         onShowOnMap = onShowOnMap,
         onBack = onBack,
         onClose = onClose,
@@ -102,7 +102,6 @@ fun BuildingCardContent(
     mode: CardMode,
     card: BuildingCardUiState,
     isOnline: Boolean,
-    onCheckEntrances: () -> Unit,
     onShowOnMap: () -> Unit,
     onBack: () -> Unit,
     onClose: () -> Unit,
@@ -124,7 +123,12 @@ fun BuildingCardContent(
             if (!isOnline) OfflinePill()
             CardHeader(symbol = symbol, card = card, mode = mode, onClose = onClose)
             if (card is BuildingCardUiState.Ready || card.isWaiting(isFullScreen)) {
-                CardActions(mode = mode, onCheckEntrances = onCheckEntrances, onShowOnMap = onShowOnMap)
+                CardActions(
+                    mode = mode,
+                    recommended = card.recommendedEntrance(),
+                    onShowEntrance = onShowEntrance,
+                    onShowOnMap = onShowOnMap,
+                )
             }
             FactsOrMissing(
                 card = card,
@@ -227,13 +231,29 @@ internal fun MissingBuilding(onRetry: () -> Unit) {
 }
 
 @Composable
-private fun CardActions(mode: CardMode, onCheckEntrances: () -> Unit, onShowOnMap: () -> Unit) {
+private fun CardActions(
+    mode: CardMode,
+    recommended: OrderedEntrance?,
+    onShowEntrance: (String) -> Unit,
+    onShowOnMap: () -> Unit,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(CeleDotyku.odstep)) {
-        CardButton(text = stringResource(R.string.karta_sprawdz), onClick = onCheckEntrances)
+        recommended?.let { listed -> ShowEntranceButton(listed = listed, onShowEntrance = onShowEntrance) }
         if (mode.isWhole) {
             CardButton(stringResource(R.string.karta_pokaz), onShowOnMap, outlined = true)
         }
     }
+}
+
+@Composable
+private fun ShowEntranceButton(listed: OrderedEntrance, onShowEntrance: (String) -> Unit) {
+    val title = listed.entrance.name ?: stringResource(R.string.karta_bez_nazwy)
+    val spoken = stringResource(R.string.wizyta_pokaz_czytaj, title)
+    PinnedButton(
+        text = stringResource(R.string.wizyta_pokaz),
+        onClick = { onShowEntrance(listed.entrance.id) },
+        modifier = Modifier.fillMaxWidth().semantics { contentDescription = spoken },
+    )
 }
 
 @Composable
@@ -244,7 +264,7 @@ private fun CardButton(text: String, onClick: () -> Unit, outlined: Boolean = fa
 
 /** Tryb treści V2 Karta budynku. Wymagania: US2.8, US2.9 */
 enum class CardMode {
-    /** Mała karta nad mapą: nagłówek z „Zamknij”, wiersz o wejściach i „Sprawdź, którędy wejść”. */
+    /** Mała karta nad mapą: nagłówek z „Zamknij”, wiersz o wejściach z odpowiedzią i „Pokaż wejście na mapie”. */
     Compact,
 
     /** Karta rozwinięta nad mapą: nagłówek z „Zamknij” i pod nim cały opis budynku. */

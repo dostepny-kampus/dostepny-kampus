@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.map
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -158,14 +159,22 @@ internal data class ScreenSheet(val signs: SignSheetState, val layout: CardLayou
 
 /**
  * Arkusz znaku przy zaznaczeniu [focus] i zasłonięciu ekranu [padding] przez kartę budynku, którą zamyka
- * [onCardClose].
+ * [onCardClose]. Wejście zaznaczone z trasy ma od razu otwarty swój arkusz, raz na zaznaczenie.
  *
- * Wymagania: US2.1, US2.8
+ * Wymagania: US2.1, US2.8, US3.3
  */
 @Composable
 internal fun screenSheet(focus: MapFocus?, padding: PaddingValues, onCardClose: () -> Unit): ScreenSheet {
     val cover = padding.calculateBottomPadding()
     val signs = rememberSignSheetState(focus = focus, cover = cover, onCardClose = onCardClose)
+    val entrance = (focus as? MapFocus.Entrance)?.id
+    var opened by rememberSaveable(entrance) { mutableStateOf(false) }
+    LaunchedEffect(entrance) {
+        if (entrance != null && !opened) {
+            signs.open(TouchSign.ENTRANCE, entrance)
+            opened = true
+        }
+    }
     val layout = signs.cardLayout(CardLayout(padding = padding, focus = focus))
     return ScreenSheet(signs = signs, layout = layout, padding = padding)
 }

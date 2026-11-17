@@ -89,6 +89,9 @@
     <string name="karta_ocena_obchod">Sprawdzone na miejscu %1$s</string>
     <string name="karta_bez_nazwy">Wejście bez nazwy w danych</string>
     <string name="karta_sprawdz">Sprawdź, którędy wejść</string>
+    <string name="karta_odpowiedz_zalecane">Zalecane: „%1$s”.</string>
+    <string name="karta_odpowiedz_zadne">Żadne z %1$d wejść nie jest dostępne.</string>
+    <string name="karta_odpowiedz_jedyne">Jedyne wejście nie jest dostępne.</string>
     <string name="karta_zglos">Zgłoś barierę przy wejściu</string>
     <string name="karta_zglos_czytaj">Zgłoś barierę przy wejściu: »%1$s«</string>
     <string name="karta_bariera_usunieta">Zgłoś, że bariery nie ma</string>

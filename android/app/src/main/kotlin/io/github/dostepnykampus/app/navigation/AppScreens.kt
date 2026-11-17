@@ -176,7 +176,6 @@ internal fun AppNavigator.BuildingCard(
         mode = card.mode,
         card = state,
         isOnline = isOnline,
-        onCheckEntrances = { openEntrances(symbol) },
         onShowOnMap = { showOnMap(MapFocus.Building(symbol, command = System.nanoTime())) },
         onBack = card.onBack,
         onClose = card.onClose,
