@@ -179,7 +179,8 @@ fun CampusMapScreen(
     onMapHide: () -> Unit = {},
 ) {
     val catalog = state.catalog
-    val isCovered = contentPadding.calculateBottomPadding() > 0.dp
+    val sheet = screenSheet(focus = focus, padding = contentPadding, onCardClose = onEmptyMapClick)
+    val isCovered = sheet.layout.calculateBottomPadding() > 0.dp
     val isList = state.isListSaved ?: (LocalDensity.current.fontScale >= LARGE_FONT_SCALE)
     val states = rememberSaveableStateHolder()
     val areas = rememberMapAreas(state.mapData, focus)
@@ -192,7 +193,7 @@ fun CampusMapScreen(
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
                 Box(Modifier.fillMaxSize()) {
-                    val shown = ShownBarriers(state.barriers.takeUnless { isCovered }.orEmpty())
+                    val shown = ShownBarriers(state.barriers.takeUnless { sheet.isCardOpen }.orEmpty())
                     CampusMap(
                         ui = state,
                         barriers = shown,
@@ -200,7 +201,7 @@ fun CampusMapScreen(
                         areas = areas,
                         top = mapTop(isCovered = isCovered, bar = barTop),
                         cameraTop = mapTop(isCovered = isCovered, bar = headerTop),
-                        contentPadding = contentPadding,
+                        sheet = sheet,
                         mapView = mapView,
                         motion = motion,
                         plan = PlanLink(shown = plan, onView = onCamera, onFloor = onFloorChoose, onHide = onMapHide),
@@ -244,7 +245,7 @@ private fun CampusMap(
     areas: MapAreas,
     top: Dp,
     cameraTop: Dp,
-    contentPadding: PaddingValues,
+    sheet: ScreenSheet,
     mapView: CampusMapView,
     motion: MapMotion?,
     plan: PlanLink,
@@ -253,11 +254,11 @@ private fun CampusMap(
     onEntrancesClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val cover = contentPadding.calculateBottomPadding()
+    val cover = sheet.layout.calculateBottomPadding()
     val isKeyboardOpen = rememberKeyboardOpenFlag()
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
-    val signs = rememberSignSheetState(focus = focus, cover = cover, onCardClose = onEmptyMapClick)
+    val signs = sheet.signs
     val width = with(LocalDensity.current) { size.width.toDp() }
     val notice = rememberNoticeHeight(shift = areas.selectionNotice, width = width)
     val state =
@@ -300,7 +301,7 @@ private fun CampusMap(
                 onCameraChange = state::move,
                 areas = areas,
                 onAreaShow = state::land,
-                modifier = Modifier.overlayArea(underBar = underBar, sheet = contentPadding),
+                modifier = Modifier.overlayArea(underBar = underBar, sheet = sheet.padding),
                 hasPanels = !state.isCovered && !isKeyboardOpen,
                 hasNotice = !isKeyboardOpen,
                 motion = motion,
