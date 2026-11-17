@@ -15,11 +15,7 @@ import io.github.dostepnykampus.feature.map.R
  * Wymagania: US16.1
  */
 @Immutable
-internal data class PlanSign(
-    val title: Int,
-    val building: String,
-    val floor: String,
-)
+internal data class PlanSign(val title: Int, val building: String, val floor: String)
 
 /**
  * Znak toalety dostosowanej albo schodów w pomieszczeniu [id] tego planu; `null` dla pomieszczenia spoza planu
