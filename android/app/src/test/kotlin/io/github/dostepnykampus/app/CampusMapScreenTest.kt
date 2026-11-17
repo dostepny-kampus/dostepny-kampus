@@ -703,8 +703,8 @@ class CampusMapScreenTest {
     }
 
     /**
-     * Wiersz: budynek wybrany na liście budynków → mapa powstaje razem z małą kartą i jednym ruchem pokazuje budynek,
-     * bez awarii przed pomiarem mapy.
+     * Wiersz: budynek wybrany na liście budynków → mapa powstaje razem z małą kartą i od razu stoi na budynku, bez
+     * ruchu kamery i bez awarii przed pomiarem mapy; karta wjeżdża w 300 ms.
      *
      * Wymagania: US2.8, NFR-19, NFR-56
      */
@@ -720,8 +720,9 @@ class CampusMapScreenTest {
         focus = "C-14"
         sheet = 400.dp
         compose.waitForIdle()
-        assertEquals("jeden ruch do budynku z listy", 1, motion.moves)
-        assertEquals("ruch mapy do budynku: $moves", true, moves.last().motion != CameraMotion.NONE)
+        assertEquals("jeden zapis widoku budynku z listy", 1, motion.moves)
+        assertEquals("z listy bez ruchu kamery: $moves", CameraMotion.NONE, moves.last().motion)
+        assertEquals("karta wjeżdża w 300 ms", 300L, motion.durationMillis)
     }
 
     /**

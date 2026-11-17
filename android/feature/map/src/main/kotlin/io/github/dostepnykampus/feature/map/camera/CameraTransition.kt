@@ -33,7 +33,10 @@ private const val APPROACH_MAX_ZOOM = 19.0
  * Wymagania: US2.8, NFR-56
  */
 enum class CameraMotion {
-    /** Bez ruchu: systemowe „Usuń animacje”, od razu stan końcowy. */
+    /**
+     * Bez ruchu kamery: od razu stan końcowy. Karta i pasek ruszają się w czasie ruchu: 0 przy systemowym
+     * „Usuń animacje”, 300 ms po wyborze z listy budynków ([placed]).
+     */
     NONE,
 
     /** Przesunięcie, z ewentualną zmianą powiększenia, po krzywej MapLibre. */

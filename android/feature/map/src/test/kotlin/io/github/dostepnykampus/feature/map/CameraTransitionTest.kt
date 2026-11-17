@@ -13,6 +13,7 @@ import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.camera.cameraTransition
 import io.github.dostepnykampus.feature.map.camera.fitted
+import io.github.dostepnykampus.feature.map.camera.placed
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -172,6 +173,20 @@ class CameraTransitionTest {
     fun landsNoCloserThanStartZoom() {
         val view = fitted(outline = outline, free = free, maxZoom = START_ZOOM)
         assertEquals(START_ZOOM, view.zoom, "mały teren: powiększenie startowe")
+    }
+
+    /**
+     * Wiersz: budynek wybrany na liście budynków → mapa od razu w widoku końcowym, karta wjeżdża w 300 ms;
+     * przy „Usuń animacje” karta też od razu.
+     */
+    @Test
+    fun placesListPick() {
+        val move = toBuilding(from = MapCamera(center = viewByDp(-2000.0), zoom = START_ZOOM))
+        val placed = move.placed(animationScale = 1f)
+        assertEquals(CameraMotion.NONE, placed.motion, "z listy bez ruchu kamery")
+        assertEquals(300L, placed.durationMillis, "karta wjeżdża w 300 ms")
+        assertEquals(move.camera, placed.camera, "ten sam widok końcowy co po ruchu")
+        assertEquals(0L, move.placed(animationScale = 0f).durationMillis, "„Usuń animacje”: karta od razu")
     }
 
     private fun toBuilding(from: MapCamera, scale: Float = 1f): CameraTransition =
