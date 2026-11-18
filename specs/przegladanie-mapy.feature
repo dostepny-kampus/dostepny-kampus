@@ -168,8 +168,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli znowu dotknie uchwytu karty
     Wtedy karta wraca na niską wysokość nad mapą
 
-  # kamera bez ruchu po zamknięciu karty: #3085
-  @US2.8 @NFR-53 @aplikacja @do-zrobienia
+  @US2.8 @NFR-53 @aplikacja
   Szablon scenariusza: Karta budynku zamyka się na każdej wysokości
     Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
     Oraz karta stoi na wysokości „<wysokość>”

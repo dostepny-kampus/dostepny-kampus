@@ -45,12 +45,6 @@ internal fun tapTransition(
     return CameraTransition(camera = view.shiftedNorth(-lift), motion = motion, durationMillis = millis)
 }
 
-private fun MapCamera.shiftedNorth(dp: Double): MapCamera {
-    if (dp == 0.0) return this
-    val y = mercatorY(center.latitude) + dp / dpPerRadian(zoom)
-    return copy(center = center.copy(latitude = latitudeOf(y)))
-}
-
 private fun MapCamera.lift(outline: CampusBounds, free: FreeMap, sight: TapSight): Double {
     val perDegree = dpPerDegree(zoom)
     val perRadian = dpPerRadian(zoom)

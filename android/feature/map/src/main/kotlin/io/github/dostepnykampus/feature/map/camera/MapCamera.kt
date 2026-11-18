@@ -163,6 +163,13 @@ internal fun mercatorY(latitude: Double): Double = asinh(tan(Math.toRadians(lati
 /** Szerokość geograficzna w stopniach dla współrzędnej pionowej [y] rzutu Merkatora w radianach. */
 internal fun latitudeOf(y: Double): Double = Math.toDegrees(atan(sinh(y)))
 
+/** Ten widok ze środkiem przesuniętym na północ o [dp] przy jego powiększeniu; ujemne [dp] przesuwa na południe. */
+internal fun MapCamera.shiftedNorth(dp: Double): MapCamera {
+    if (dp == 0.0) return this
+    val perRadian = WORLD_DP_AT_ZOOM_0 * 2.0.pow(zoom) / (2 * PI)
+    return copy(center = center.copy(latitude = latitudeOf(mercatorY(center.latitude) + dp / perRadian)))
+}
+
 /**
  * Kierunek strzałki przesuwania mapy, np. „Przesuń mapę w górę”.
  *

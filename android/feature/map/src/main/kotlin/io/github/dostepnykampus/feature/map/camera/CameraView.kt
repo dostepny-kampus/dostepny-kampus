@@ -27,9 +27,15 @@ internal val CameraSaver =
 /**
  * Widok mapy V1 do pokazania: [camera] albo `null`, gdy mapa zaczyna od widoku startowego lub wejścia; [keep]
  * zapisuje widok po ruchu kamery. [shown] to symbol budynku, gdy [camera] stoi na jego punkcie podpisu po
- * poleceniu „Pokaż budynek na mapie”, a nie na widoku zapisanym.
+ * poleceniu „Pokaż budynek na mapie”, a nie na widoku zapisanym. [hasTarget] jest prawdą, gdy zaznaczenie samo
+ * wyznacza widok: polecenie „Pokaż budynek na mapie” czeka albo wejście nie ma jeszcze zapisanego widoku.
  */
-internal data class CameraView(val camera: MapCamera?, val keep: (MapCamera) -> Unit, val shown: String? = null)
+internal data class CameraView(
+    val camera: MapCamera?,
+    val keep: (MapCamera) -> Unit,
+    val shown: String? = null,
+    val hasTarget: Boolean = false,
+)
 
 /**
  * Zapisywany widok mapy dla zaznaczenia [focus]. Nowe wejście zaczyna od nowa. Budynek z poleceniem
@@ -57,6 +63,7 @@ internal fun rememberCameraView(focus: MapFocus?, layers: CampusMapData?): Camer
             show?.command?.let { applied = it }
         },
         shown = if (isPending) show?.symbol else null,
+        hasTarget = isPending || (entranceId != null && camera == null),
     )
 }
 

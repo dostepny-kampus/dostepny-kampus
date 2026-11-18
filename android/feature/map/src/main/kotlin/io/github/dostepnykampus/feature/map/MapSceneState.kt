@@ -115,8 +115,8 @@ internal class MapSceneState(
  * Stan sceny mapy z danych [layers], katalogu [catalog], zaznaczenia [focus] z trasy i nazwy terenu [area]
  * wybranego przez osobę, dla mapy o rozmiarze [size] zasłoniętej od dołu arkuszem V2 na wysokość
  * [cover]. Nad arkuszem budynek mieści się też nad napisem o zmianie terenu wysokim na [notice]. Widok kamery
- * i lista budynków do wyboru są zapisywane, więc wracają po „Wstecz” z V2 i po obrocie ekranu. Każdy ruch nad kartą
- * do nowego budynku trafia do [motion].
+ * i lista budynków do wyboru są zapisywane, więc wracają po obrocie ekranu. Zamknięcie arkusza zostawia obraz mapy
+ * bez ruchu: zapisany widok to widok z chwili zamknięcia. Każdy ruch nad kartą do nowego budynku trafia do [motion].
  *
  * Wymagania: US1.7, US1.8, NFR-22, NFR-56
  */
@@ -138,8 +138,11 @@ internal fun rememberMapSceneState(
     val choices = rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }
     val isCovered = cover > 0.dp
     val density = LocalDensity.current
+    val last = remember { ShownCamera() }
+    val (isCoveredBefore, topBefore) = rememberPrevious(isCovered to top)
+    val seen = last.rememberView(isCovered = isCovered, wasCovered = isCoveredBefore, bar = top, view = view)
     val shown =
-        view.camera?.let {
+        seen?.let {
             density.besideFloorColumn(camera = it, symbol = view.shown, catalog = catalog, layers = layers, size = size)
         }
     val own = shown ?: selection?.entrance?.let { MapCamera(center = it.location, zoom = ENTRANCE_ZOOM) }
@@ -152,8 +155,6 @@ internal fun rememberMapSceneState(
     val free = density.freeMap(size, cover)
     val fit = free.copy(heightDp = free.heightDp - reserve.value)
     val outline = layers?.run { outlinesBySymbol[selection?.building] }.takeIf { isCovered }
-    val last = remember { ShownCamera() }
-    val (isCoveredBefore, topBefore) = rememberPrevious(isCovered to top)
     val scale = rememberAnimatorScale()
     val origin = remember { PickOrigin(isUnderCard = isCovered) }
     SideEffect { origin.follow(selection?.building) }
@@ -171,7 +172,7 @@ internal fun rememberMapSceneState(
     val card = rememberCardMove(building = selection?.building, pick = pick)
     val above = card.move?.takeIf { isCovered }
     val move = above ?: uncovered?.byControl()
-    SideEffect { last.keep(move?.camera) }
+    SideEffect { last.keep(shown = move?.camera, covered = cover + reserve, isAbove = above != null) }
     val inset = sheetOrBarInset(isAbove = above != null, top = topInset, bottom = bottomInset)
     return MapSceneState(
         scene = scene,
@@ -214,8 +215,7 @@ internal fun mapCover(isCovered: Boolean, hasControls: Boolean): MapCover =
 
 /**
  * Zapis widoku kamery po ruchu osoby. Nad arkuszem V2 ([isCovered]) widok trafia do [onCard], więc kamera nie
- * ustawia już budynku na nowo. Trafia też do [onMap], więc po zamknięciu karty zostaje widok osoby, a widok
- * sprzed karty wraca tylko wtedy, gdy osoba nie ruszyła mapy.
+ * ustawia już budynku na nowo. Każdy widok trafia też do [onMap].
  */
 internal fun cameraKeeper(
     isCovered: Boolean,
@@ -250,17 +250,6 @@ internal fun rememberNoticeReserve(building: String?, notice: Dp): Dp = remember
 
 /** Ruch mapy nad arkuszem V2 [move] i zapis widoku po ruchu osoby [keep]. */
 internal data class CardMove(val move: CameraTransition?, val keep: (MapCamera) -> Unit)
-
-/** Ostatni widok podany mapie: początek ruchu do następnego wybranego budynku. Nie jest stanem kompozycji. */
-private class ShownCamera {
-    private var camera: MapCamera? = null
-
-    fun startOr(fallback: MapCamera?): MapCamera? = camera ?: fallback
-
-    fun keep(shown: MapCamera?) {
-        camera = shown
-    }
-}
 
 @Composable
 private fun MapMotion?.RecordPick(pick: CameraTransition?, line: (CameraTransition) -> String) {
