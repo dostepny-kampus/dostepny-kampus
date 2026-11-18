@@ -321,12 +321,12 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
 
   # @do-zrobienia #3195, #3241, #3242, #1481: arkusze nie mają jeszcze wiersza budynku.
   @US2 @US2.8 @NFR-18 @NFR-53 @aplikacja @do-zrobienia
-  Szablon scenariusza: Wiersz budynku w arkuszu otwiera kartę budynku bez ruchu mapy
+  Szablon scenariusza: Wiersz budynku w arkuszu otwiera kartę budynku bez przelotu mapy
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce, bez otwartej karty
     Jeżeli <otwarcie>
     Oraz wybierze wiersz „<budynek>” pod nagłówkiem arkusza
     Wtedy widzi kartę budynku <budynek> na niskiej wysokości
-    Ale mapa stoi w tym samym widoku co przed dotknięciem wiersza
+    Ale mapa nie przelatuje do budynku, tylko zachowuje się jak po dotknięciu jego konturu
 
     Przykłady:
       | otwarcie                                          | budynek     |
