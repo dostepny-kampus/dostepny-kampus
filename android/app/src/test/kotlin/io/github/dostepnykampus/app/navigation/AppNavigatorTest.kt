@@ -142,6 +142,7 @@ class AppNavigatorTest {
 
     /**
      * Wiersz: pasek dolny, ponowne dotknięcie „Mapa” niczego nie zamyka: karta i V1 pod nią zostają.
+     * Scenariusz: przegladanie-mapy.feature: Ponowne dotknięcie „Mapa” w pasku dolnym nie zamyka karty
      *
      * Wymagania: NFR-15, US2.8
      */
