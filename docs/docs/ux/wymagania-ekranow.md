@@ -292,7 +292,9 @@ Dostępność i osoby starsze: lista budynków daje tę samą informację co map
 | Zbierający: „Oznacz obejrzane piętra” dla całego budynku | czynność | US15.1, PW-12 | C5 |
 | Pasek dolny | czynność | wymagania wspólne | V1, V4, V5, L1 / L2 |
 
-V2 to jedna karta nad mapą V1, bez osobnego pełnego ekranu, z dwiema wysokościami: niską i rozwiniętą (decyzja 115). Połowy ekranu nie ma, bo różniła się od niskiej karty o kilka wierszy. Uchwyt zmienia wysokość bez przeciągania (NFR-53). Niska karta podaje już odpowiedź o wejściu, więc odpowiedź widać po 1 dotknięciu od mapy (US3.2).
+V2 to jedna karta nad mapą V1, bez osobnego pełnego ekranu, z dwiema wysokościami: niską i rozwiniętą (decyzja 115). Uchwyt zmienia wysokość bez przeciągania (NFR-53). Niska karta podaje już odpowiedź o wejściu, więc odpowiedź widać po 1 dotknięciu od mapy (US3.2).
+
+Połowy ekranu nie ma, bo przy budynkach z planami PWr różniła się od niskiej karty o kilka wierszy.
 
 Karta V2 otwiera się od razu na cały ekran przy skali czcionki co najmniej 1,5 i w oknie co najmniej 600 dp (NFR-20, NFR-51). Tak samo jest w poziomie i po wyborze budynku z listy przy TalkBack (NFR-19, NFR-22). Ma wtedy dwie wysokości, cały ekran i zamknięta, i tylko wtedy „Pokaż budynek na mapie” (US2.9).
 
