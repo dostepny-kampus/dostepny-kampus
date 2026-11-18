@@ -28,13 +28,14 @@ import org.springframework.stereotype.Service;
 
 /**
  * Odczyt REST budynków: lista na mapie, podpowiedź budynku dla punktu i karta budynku
- * z wejściami. Nazwa wejścia z planów PWr wygrywa z nazwą
- * z OpenStreetMap; oznaczenie z obchodu wygrywa z oznaczeniem z planów PWr, a to z oznaczeniem
- * z OpenStreetMap. Zawieranie punktu liczy tylko {@link Outlines}, więc podpowiedź i budynek
- * zapisany przy zgłoszeniu szybkim są zawsze równe. Atrybucja listy to źródła konturów
- * bez powtórzeń, alfabetycznie, rozdzielone średnikiem; pusta tabela ma pustą atrybucję.
+ * z wejściami. Nazwa wejścia z planów PWr wygrywa z nazwą z OpenStreetMap; oznaczenie z obchodu
+ * wygrywa z oznaczeniem z planów PWr, a to z oznaczeniem z OpenStreetMap, a data oznaczenia idzie
+ * za tym samym pierwszeństwem. Zawieranie punktu liczy tylko {@link Outlines}, więc podpowiedź
+ * i budynek zapisany przy zgłoszeniu szybkim są zawsze równe. Atrybucja listy to źródła
+ * konturów bez powtórzeń, alfabetycznie, rozdzielone średnikiem; pusta tabela ma pustą
+ * atrybucję.
  *
- * <p>Wymagania: US1, BR-G2, US2, BR-14, NFR-40, US16, BR-24, BR-27</p>
+ * <p>Wymagania: US1, BR-G2, US2, BR-14, NFR-40, US16, BR-24, BR-27, US17.3</p>
  *
  * @since 0.1.0
  */
@@ -151,7 +152,9 @@ public final class BuildingQuery implements Buildings {
                 ST_AsGeoJSON(location) AS location, floor_id,
                 CASE WHEN marking_source = 'WALKTHROUGH' THEN marking
                     ELSE COALESCE(pwr_marking, marking) END AS marking,
-                marking_date::text AS marking_date, marking_source,
+                CASE WHEN marking_source = 'WALKTHROUGH' THEN marking_date
+                    ELSE COALESCE(pwr_marking_date, marking_date) END::text AS marking_date,
+                marking_source,
                 pwr_marking IS NOT NULL AS pwr, approach, door_width_cm
             FROM entrances
             WHERE building_symbol = :symbol
