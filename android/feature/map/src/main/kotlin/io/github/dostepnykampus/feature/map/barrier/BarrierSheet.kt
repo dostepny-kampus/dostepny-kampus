@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,48 +28,36 @@ import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
-import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.campusDay
 import io.github.dostepnykampus.core.designsystem.marking.SeverityIcon
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
-import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.overlay.BuildingLink
 import io.github.dostepnykampus.feature.map.overlay.MapSheet
+import io.github.dostepnykampus.feature.map.overlay.SheetExits
 
 /**
  * Arkusz bariery na dole mapy V1 po dotknięciu znaku: plakietka uciążliwości ze znakiem i słowem,
- * obrysowany „Zamknij”, typ bariery tymi samymi napisami co na V2 jako nagłówek, miejsce
- * i „Sprawdzone 14.10.2026”. „Pokaż opis budynku” jest tylko dla bariery w budynku z katalogu: bariera poza
+ * obrysowany „Zamknij”, wiersz budynku, typ bariery tymi samymi napisami co na V2 jako nagłówek, miejsce
+ * i „Sprawdzone 14.10.2026”. Wiersz budynku jest tylko dla bariery w budynku z katalogu: bariera poza
  * budynkiem nie ma budynku do pokazania (PW-5). Przy dużej czcionce arkusz się przewija.
  *
  * Miejsce składa [barrierPlace]. Dzień sprawdzenia liczy się w strefie czasu kampusu, nie telefonu.
  *
- * Wymagania: US1.5, NFR-21, NFR-53, NFR-17, NFR-20
+ * Wymagania: US1.5, US2.8, NFR-21, NFR-53, NFR-17, NFR-20
  *
  * @param chosen bariera z budynkiem i wejściem
- * @param onClose „Zamknij” zostawia samą mapę
- * @param onBuildingClick „Pokaż opis budynku” otwiera V2 budynku bariery
+ * @param exits „Zamknij” i wiersz budynku
  * @param modifier położenie arkusza na mapie
  */
 @Composable
-internal fun BarrierSheet(
-    chosen: ChosenBarrier,
-    onClose: () -> Unit,
-    onBuildingClick: (Building) -> Unit,
-    modifier: Modifier = Modifier,
-) {
+internal fun BarrierSheet(chosen: ChosenBarrier, exits: SheetExits, modifier: Modifier = Modifier) {
     MapSheet(modifier) {
-        SheetTop(chosen.barrier.severity, onClose)
+        SheetTop(chosen.barrier.severity, exits.onClose)
+        chosen.building?.let { building -> BuildingLink(building.symbol) { exits.onBuilding(building.symbol) } }
         BarrierFacts(chosen)
-        chosen.building?.let { building ->
-            PinnedButton(
-                text = stringResource(R.string.mapa_bariera_opis_budynku),
-                onClick = { onBuildingClick(building) },
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
     }
 }
 

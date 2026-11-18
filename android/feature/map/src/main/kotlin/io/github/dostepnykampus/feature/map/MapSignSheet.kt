@@ -296,8 +296,7 @@ internal fun ChosenSignSheet(
                 id = id,
                 barriers = barriers,
                 catalog = catalog,
-                onClose = { signs.back(onBuildingClick) },
-                onBuildingClick = onBuildingClick,
+                exits = signs.exits(onCard = onBuildingClick, onTap = onBuildingTap),
                 modifier = modifier,
             )
         }
@@ -314,7 +313,8 @@ internal fun ChosenSignSheet(
         }
 
         TouchSign.PLAN -> {
-            ChosenPlanSheet(id = id, plan = plan, onClose = { signs.back(onBuildingClick) }, modifier = modifier)
+            val exits = signs.exits(onCard = onBuildingClick, onTap = onBuildingTap)
+            ChosenPlanSheet(id = id, plan = plan, exits = exits, modifier = modifier)
         }
 
         null -> {}
