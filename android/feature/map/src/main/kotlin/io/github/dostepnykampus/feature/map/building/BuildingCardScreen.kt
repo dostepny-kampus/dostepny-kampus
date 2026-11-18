@@ -6,10 +6,12 @@
 package io.github.dostepnykampus.feature.map.building
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -118,18 +120,20 @@ fun BuildingCardContent(
     onExpand: () -> Unit = {},
 ) {
     val isFullScreen = mode != CardMode.Compact
+    val isHeaderFixed = mode == CardMode.Expanded
+    val top = @Composable { CardTop(symbol = symbol, card = card, mode = mode, isOnline = isOnline, onClose = onClose) }
     Column(if (isFullScreen) modifier.fillMaxSize() else modifier) {
         if (mode == CardMode.Direct) BackHeader(title = symbol, onBack = onBack)
+        if (isHeaderFixed) Box(Modifier.fixedTopPadding()) { top() }
         Column(
             modifier =
                 Modifier
                     .weight(1f, isFullScreen)
                     .verticalScroll(rememberScrollState())
-                    .cardPadding(isPeek = card.hasEntrancesPeek(isFullScreen)),
+                    .cardPadding(isPeek = card.hasEntrancesPeek(isFullScreen), hasTop = !isHeaderFixed),
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
         ) {
-            if (!isOnline) OfflinePill()
-            CardHeader(symbol = symbol, card = card, mode = mode, onClose = onClose)
+            if (!isHeaderFixed) top()
             if (card is BuildingCardUiState.Ready || card.isWaiting(isFullScreen)) {
                 CardActions(
                     mode = mode,
@@ -152,6 +156,23 @@ fun BuildingCardContent(
         }
     }
 }
+
+@Composable
+private fun CardTop(
+    symbol: String,
+    card: BuildingCardUiState,
+    mode: CardMode,
+    isOnline: Boolean,
+    onClose: () -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        if (!isOnline) OfflinePill()
+        CardHeader(symbol = symbol, card = card, mode = mode, onClose = onClose)
+    }
+}
+
+private fun Modifier.fixedTopPadding(): Modifier =
+    padding(start = Odstepy.m, top = Odstepy.m, end = Odstepy.m, bottom = Odstepy.s)
 
 @Composable
 private fun FactsOrMissing(
