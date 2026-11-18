@@ -37,6 +37,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 import kotlin.coroutines.EmptyCoroutineContext
 
 private const val NAME = "Gmach Główny"
@@ -225,11 +226,12 @@ class BuildingCardModesTest {
      */
     @Test
     @Config(fontScale = 2f)
-    fun givesEntranceRowWholeWidthAtLargeFont() {
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    fun keepsRowWideAtLargeFont() {
         card(CardMode.Compact)
         val close = compose.onNodeWithText(CLOSE).getUnclippedBoundsInRoot()
         val symbol = compose.onNodeWithText("A-1", useUnmergedTree = true).getUnclippedBoundsInRoot()
-        val row = compose.onNodeWithText(ROW, useUnmergedTree = true).getUnclippedBoundsInRoot()
+        val row = compose.onNode(hasText(ROW) and hasText(ANSWER)).getUnclippedBoundsInRoot()
         assertTrue("„Zamknij” obok symbolu: $close, symbol $symbol", close.top < symbol.bottom)
         assertTrue("wiersz pod „Zamknij”: $row, „Zamknij” $close", row.top >= close.bottom)
         assertTrue("wiersz od lewej krawędzi symbolu: $row, symbol $symbol", row.left <= symbol.left)
