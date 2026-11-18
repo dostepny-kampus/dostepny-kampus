@@ -321,19 +321,46 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy pinezka wejścia zalecanego stoi na środku części mapy nad arkuszem tego wejścia
     Oraz arkusz zajmuje najwyżej połowę ekranu, a jego treść się przewija
 
-  # @do-zrobienia #3195: „Zamknij” arkusza otwartego z karty zostawia mapę bez karty.
-  @US2.8 @US3.3 @NFR-53 @aplikacja @do-zrobienia
-  Szablon scenariusza: „Zamknij” w arkuszu wejścia wraca tam, skąd arkusz otwarto
+  # @do-zrobienia #3195: „Wstecz” arkusza otwartego z karty zostawia mapę bez karty, a „Zamknij” wraca do karty.
+  @US2.8 @US3.3 @NFR-15 @NFR-53 @aplikacja @do-zrobienia
+  Szablon scenariusza: „Wstecz” w arkuszu wejścia wraca tam, skąd arkusz otwarto, a „Zamknij” zostawia mapę
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
     Jeżeli <otwarcie>
-    Oraz wybierze „Zamknij” w arkuszu wejścia
+    Oraz wybierze <czynność> w arkuszu wejścia
     Wtedy <po zamknięciu>
 
     Przykłady:
-      | otwarcie                                                                   | po zamknięciu                                    |
-      | rozwinie kartę A-1, przewinie ją i dotknie wiersza wejścia                 | widzi kartę A-1 rozwiniętą, tak samo przewiniętą |
-      | otworzy kartę A-1 na niskiej wysokości i wybierze „Pokaż wejście na mapie” | widzi kartę A-1 na niskiej wysokości             |
-      | dotknie znaku wejścia A-1 na mapie bez otwartej karty                      | widzi mapę bez karty budynku                     |
+      | otwarcie                                                                   | czynność  | po zamknięciu                                    |
+      | rozwinie kartę A-1, przewinie ją i dotknie wiersza wejścia                 | „Wstecz”  | widzi kartę A-1 rozwiniętą, tak samo przewiniętą |
+      | otworzy kartę A-1 na niskiej wysokości i wybierze „Pokaż wejście na mapie” | „Wstecz”  | widzi kartę A-1 na niskiej wysokości             |
+      | otworzy kartę A-1 na niskiej wysokości i wybierze „Pokaż wejście na mapie” | „Zamknij” | widzi mapę bez karty budynku                     |
+      | dotknie znaku wejścia A-1 na mapie bez otwartej karty                      | „Zamknij” | widzi mapę bez karty budynku                     |
+
+  # @do-zrobienia #3195, #3241, #3242, #1481: arkusze nie mają jeszcze wiersza budynku.
+  @US2 @US2.8 @NFR-18 @NFR-53 @aplikacja @do-zrobienia
+  Szablon scenariusza: Wiersz budynku w arkuszu otwiera kartę budynku bez ruchu mapy
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce, bez otwartej karty
+    Jeżeli <otwarcie>
+    Oraz wybierze wiersz „<budynek>” pod nagłówkiem arkusza
+    Wtedy widzi kartę budynku <budynek> na niskiej wysokości
+    Ale mapa stoi w tym samym widoku co przed dotknięciem wiersza
+
+    Przykłady:
+      | otwarcie                                          | budynek     |
+      | dotknie znaku wejścia A-1 na mapie                | Budynek A-1 |
+      | dotknie znaku toalety dostosowanej na planie A-1  | Budynek A-1 |
+      | dotknie schodów na planie A-1                     | Budynek A-1 |
+      | dotknie znaku bariery przy budynku A-1            | Budynek A-1 |
+      | wyszuka „A-1 329”                                 | Budynek A-1 |
+      | dotknie wspólnego konturu C-3/C-4                 | Budynek C-3 |
+
+  # @do-zrobienia #3195: wiersza budynku w arkuszu wejścia jeszcze nie ma.
+  @US2.8 @US3.3 @aplikacja @do-zrobienia
+  Scenariusz: Wiersz budynku w arkuszu otwartym z karty wraca do tej karty
+    Zakładając, że Gość niezalogowany rozwinął kartę budynku A-1 i ją przewinął
+    Jeżeli dotknie wiersza wejścia na liście „Wejścia”
+    Oraz wybierze wiersz „Budynek A-1” pod nagłówkiem arkusza wejścia
+    Wtedy widzi kartę A-1 rozwiniętą, tak samo przewiniętą
 
   @US16.3 @aplikacja
   Scenariusz: Karta budynku szczegółowego opisuje piętra tekstem

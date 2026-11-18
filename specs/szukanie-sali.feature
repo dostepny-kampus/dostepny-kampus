@@ -36,7 +36,7 @@ Funkcja: Wyszukanie sali
     Zakładając, że <sytuacja>
     Jeżeli Gość niezalogowany wyszuka „A-1 <numer>”
     Wtedy widzi zdanie, które mówi, czego brakuje
-    Oraz widzi propozycję „Pokaż opis budynku”
+    Oraz widzi wiersz „Budynek A-1”, który otwiera opis budynku
 
     Przykłady:
       | sytuacja                                                     | numer |
