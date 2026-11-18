@@ -107,8 +107,8 @@ final class PostgisPwrEntrances {
                 PostgisPwrEntrances.NEAREST,
                 """
                 UPDATE entrances SET pwr_name = CASE
-                        WHEN near.name = 'Wejście' AND entrances.name IS NOT NULL THEN NULL
-                        ELSE near.name END,
+                    WHEN near.name = 'Wejście' AND entrances.name IS NOT NULL THEN NULL
+                    ELSE near.name END,
                     pwr_marking = near.marking,
                     approach = near.approach, door_width_cm = near.width,
                     pwr_marking_date = COALESCE(CAST(:edited AS DATE), CURRENT_DATE)
