@@ -62,9 +62,8 @@ internal fun AppNavigator.HiltMapScreen(
  * liczy wyszukiwanie. Budynek z listy przy TalkBack otwiera V2 od razu na pełnym ekranie. Przyciski i podpis OSM stoją
  * nad arkuszem V2; bez arkusza i pod arkuszem na cały ekran przy dużej czcionce V1 liczy widok bez arkusza.
  * [mapView] to MapLibre albo podróbka w testach, [plan] to plan piętra przy środku mapy, [onCamera] dostaje widok po
- * ruchu kamery, [onFloorChoose] piętro wybrane w kolumnie pięter, a [onMapHide] zejście mapy z ekranu. W arkuszu
- * wejścia „Pokaż to wejście na mapie” prowadzi do V1 z zaznaczonym tym wejściem, a „Zgłoś barierę przy wejściu” do
- * V4 z wybranym wejściem, Gościa najpierw do L1.
+ * ruchu kamery, [onFloorChoose] piętro wybrane w kolumnie pięter, a [onMapHide] zejście mapy z ekranu. Arkusz
+ * wejścia zaznacza inne wejście jak „Pokaż wejście na mapie”, a zgłoszenie przy wejściu prowadzi do V4 albo L1.
  *
  * Wymagania: US1.1, US2.1, NFR-19, US3.3, US4.6, US14.2
  */
