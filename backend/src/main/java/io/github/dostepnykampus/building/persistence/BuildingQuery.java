@@ -11,6 +11,7 @@ import io.github.dostepnykampus.building.domain.BuildingCard;
 import io.github.dostepnykampus.building.domain.BuildingList;
 import io.github.dostepnykampus.building.domain.Buildings;
 import io.github.dostepnykampus.building.domain.Entrance;
+import io.github.dostepnykampus.building.domain.EvacuationExit;
 import io.github.dostepnykampus.building.domain.Floor;
 import io.github.dostepnykampus.building.domain.FloorList;
 import io.github.dostepnykampus.building.domain.Placement;
@@ -21,16 +22,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import org.jspecify.annotations.Nullable;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 
 /**
  * Odczyt REST budynków: lista na mapie, podpowiedź budynku dla punktu i karta budynku
- * z wejściami. Zawieranie punktu liczy tylko {@link Outlines}, więc podpowiedź i budynek
+ * z wejściami i wyjściami ewakuacyjnymi. Nazwa wejścia z planów PWr wygrywa z nazwą
+ * z OpenStreetMap; oznaczenie z obchodu wygrywa z oznaczeniem z planów PWr, a to z oznaczeniem
+ * z OpenStreetMap. Zawieranie punktu liczy tylko {@link Outlines}, więc podpowiedź i budynek
  * zapisany przy zgłoszeniu szybkim są zawsze równe. Atrybucja listy to źródła konturów
  * bez powtórzeń, alfabetycznie, rozdzielone średnikiem; pusta tabela ma pustą atrybucję.
  *
- * <p>Wymagania: US1, BR-G2, US2, BR-14, NFR-40, US16</p>
+ * <p>Wymagania: US1, BR-G2, US2, BR-14, NFR-40, US16, BR-24, BR-27, US2.6</p>
  *
  * @since 0.1.0
  */
@@ -136,16 +140,20 @@ public final class BuildingQuery implements Buildings {
             item.name(),
             item.detailLevel(),
             item.outline(),
-            this.entrances(item.symbol())
+            this.entrances(item.symbol()),
+            this.exits(item.symbol())
         );
     }
 
     private List<Entrance> entrances(final String symbol) {
         return this.jdbc.sql(
             """
-            SELECT id, building_symbol, name, type, main,
-                ST_AsGeoJSON(location) AS location, floor_id, marking,
-                marking_date::text AS marking_date, marking_source
+            SELECT id, building_symbol, COALESCE(pwr_name, name) AS name, type, main,
+                ST_AsGeoJSON(location) AS location, floor_id,
+                CASE WHEN marking_source = 'WALKTHROUGH' THEN marking
+                    ELSE COALESCE(pwr_marking, marking) END AS marking,
+                marking_date::text AS marking_date, marking_source,
+                pwr_marking IS NOT NULL AS pwr, approach, door_width_cm
             FROM entrances
             WHERE building_symbol = :symbol
             ORDER BY main DESC, id
@@ -163,7 +171,27 @@ public final class BuildingQuery implements Buildings {
                     BuildingQuery.text(rows, "marking"),
                     BuildingQuery.text(rows, "marking_date"),
                     BuildingQuery.text(rows, "marking_source")
-                )
+                ),
+                BuildingQuery.plan(rows)
+            )
+        ).list();
+    }
+
+    private List<EvacuationExit> exits(final String symbol) {
+        return this.jdbc.sql(
+            """
+            SELECT id, ST_AsGeoJSON(location) AS location, floor_id, description, door_width_cm
+            FROM evacuation_exits
+            WHERE building_symbol = :symbol
+            ORDER BY id
+            """
+        ).param("symbol", symbol).query(
+            (rows, num) -> new EvacuationExit(
+                BuildingQuery.text(rows, "id"),
+                BuildingQuery.text(rows, "location"),
+                rows.getString("floor_id"),
+                BuildingQuery.text(rows, "description"),
+                rows.getObject("door_width_cm", Integer.class)
             )
         ).list();
     }
@@ -193,6 +221,19 @@ public final class BuildingQuery implements Buildings {
             found.add(BuildingQuery.one(rows));
         }
         return new BuildingList(String.join("; ", sources), found);
+    }
+
+    private static Entrance.@Nullable Plan plan(final ResultSet rows) throws SQLException {
+        final Entrance.Plan result;
+        if (rows.getBoolean("pwr")) {
+            result = new Entrance.Plan(
+                FloorList.PWR_SOURCE, rows.getString("approach"),
+                rows.getObject("door_width_cm", Integer.class)
+            );
+        } else {
+            result = null;
+        }
+        return result;
     }
 
     private static Building one(final ResultSet rows) throws SQLException {
