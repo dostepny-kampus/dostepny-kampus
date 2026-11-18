@@ -340,7 +340,7 @@ Czynność główna: „Pokaż wejście na mapie”.
 | Brak wejścia dostępnego | wiersz „Brak wejścia dostępnego” ze znakiem i zdaniem, np. „Żadne z 3 wejść nie jest dostępne.”; bez „Pokaż wejście na mapie” (US3.1, BR-25) |
 | Brak danych o wejściach | cichy napis „Brak danych o wejściach”, bez zdania i bez przycisku (US3.1, US17.1) |
 | Brak sieci | nad nagłówkiem plakietka „Bez internetu” (NFR-10) |
-| Rozwinięta | karta sięga do góry ekranu jak na wzorcu, ale ma uchwyt i nie ma „Pokaż budynek na mapie”. Gdy treść mieści się w połowie ekranu, karta ma wysokość treści, a nad nią zostaje mapa (US2.8, NFR-53) |
+| Rozwinięta | karta sięga do góry ekranu jak na wzorcu, ale ma uchwyt i nie ma „Pokaż budynek na mapie”. Krótka treść zostawia puste miejsce pod sobą (US2.8, NFR-53) |
 
 ### V2: od razu na cały ekran
 
