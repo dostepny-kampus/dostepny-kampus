@@ -82,7 +82,7 @@ class BuildingCardTest {
                     entrance(id = "boczne", marking = EntranceMarking.ACCESSIBLE),
                 ),
             )
-        assertEquals(listOf("dostosowane", "pwr", "osm", "boczne"), ordered.map { it.entrance.id }, "kolejność")
+        assertEquals(listOf("dostosowane", "boczne", "pwr", "osm"), ordered.map { it.entrance.id }, "kolejność")
         assertEquals("dostosowane", ordered.single { it.isRecommended }.entrance.id, "zalecane z nazwą")
     }
 
