@@ -40,7 +40,7 @@ import org.robolectric.annotation.GraphicsMode
 
 private const val SHOW = "Pokaż wejście na mapie"
 private const val REPORT = "Zgłoś barierę przy wejściu"
-private const val UNNAMED = "Wejście bez nazwy w danych"
+private const val UNNAMED = "Wejście"
 private const val NOBODY = "Nikt jeszcze nie sprawdził tych wejść."
 private const val SIGN_TAG = "znak-oznaczenia"
 private val TOUCH_TARGET = 48.dp
@@ -102,8 +102,8 @@ class EntrancesGroupTest {
     }
 
     /**
-     * Wiersz: V2, co najmniej dwa wejścia bez oznaczenia i nazwy → jeden wiersz „N wejścia/wejść bez nazw
-     *   w danych” (2, 4, 5), „Nikt jeszcze nie sprawdził tych wejść.” i jeden odnośnik zgłoszenia bez wejścia.
+     * Wiersz: V2, co najmniej dwa wejścia bez oznaczenia i nazwy → jeden wiersz „N wejścia” albo
+     *   „N wejść” (2, 4, 5), „Nikt jeszcze nie sprawdził tych wejść.” i jeden odnośnik zgłoszenia bez wejścia.
      * Scenariusz: przegladanie-mapy.feature: Kilka wejść bez oznaczenia i bez nazwy stoi jako jeden wiersz
      *
      * Wymagania: US2.1, US17.1, US4.6, NFR-21
@@ -112,7 +112,7 @@ class EntrancesGroupTest {
     fun collapsesNamelessEntrances() {
         val state = mutableStateOf(ready(nameless(3)))
         compose.setContent { Group(state.value) }
-        compose.onNodeWithText("3 wejścia bez nazw w danych").assertExists()
+        compose.onNodeWithText("3 wejścia").assertExists()
         compose.onNodeWithText("Brak danych").assertExists()
         compose.onNodeWithText(NOBODY).assertExists()
         compose.onAllNodes(hasText(UNNAMED)).assertCountEquals(0)
@@ -123,7 +123,7 @@ class EntrancesGroupTest {
         listOf(2 to "2 wejścia", 4 to "4 wejścia", 5 to "5 wejść").forEach { (count, text) ->
             state.value = ready(nameless(count))
             compose.waitForIdle()
-            compose.onNodeWithText("$text bez nazw w danych").assertExists()
+            compose.onNodeWithText(text).assertExists()
         }
     }
 

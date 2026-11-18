@@ -45,7 +45,7 @@ private const val NAMED_ID = "node/10"
 private val NAMED_AT = GeoPoint(longitude = 0.2, latitude = 0.3)
 private const val NAMED = "Wejście dostosowane"
 private const val SELECTED_NAMED = "Zaznaczone wejście: »$NAMED«, budynek A-1"
-private const val UNNAMED = "Wejście bez nazwy w danych"
+private const val UNNAMED = "Wejście"
 private const val SHOW_ENTRANCE = "Pokaż wejście na mapie"
 private const val SIDE = "Wejście boczne"
 private val SIDE_AT = GeoPoint(longitude = 0.9, latitude = 0.5)
