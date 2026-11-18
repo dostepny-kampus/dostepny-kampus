@@ -109,18 +109,14 @@ private data class CachedEntrance(
             type = type,
             location = GeoPoint(longitude = longitude, latitude = latitude),
             marking = marking,
-            assessment = assessment(),
+            assessment =
+                assessedOn?.let { day ->
+                    assessedBy?.let { source -> EntranceAssessment(date = LocalDate.parse(day), source = source) }
+                },
             floorId = floorId,
             approach = approach,
             doorWidthCm = doorWidthCm,
         )
-
-    private fun assessment(): EntranceAssessment? =
-        if (assessedOn == null || assessedBy == null) {
-            null
-        } else {
-            EntranceAssessment(date = LocalDate.parse(assessedOn), source = assessedBy)
-        }
 }
 
 private fun CachedBuilding.toApi(): ApiBuilding =
