@@ -166,8 +166,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | C-13    | wszystkie wejścia C-13 mają oznaczenie „brak danych” | Brak danych o wejściach | na karcie nie ma zdania ani przycisku wypełnionego                                      |
       | A-2     | budynek A-2 nie ma wejść w danych                    | Brak danych o wejściach | na karcie nie ma zdania ani przycisku wypełnionego                                      |
 
-  # @do-zrobienia #3228: uchwyt przechodzi jeszcze przez połowę ekranu.
-  @US2.8 @NFR-53 @aplikacja @do-zrobienia
+  @US2.8 @NFR-53 @aplikacja
   Scenariusz: Uchwyt zmienia wysokość karty bez przeciągania
     Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
     Jeżeli dotknie uchwytu karty
@@ -176,8 +175,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli znowu dotknie uchwytu karty
     Wtedy karta wraca na niską wysokość nad mapą
 
-  # @do-zrobienia #3228: nagłówek „Wejścia” podnosi kartę jeszcze na połowę ekranu.
-  @US2.8 @NFR-53 @aplikacja @do-zrobienia
+  @US2.8 @NFR-53 @aplikacja
   Szablon scenariusza: Wystający nagłówek „Wejścia” od razu rozwija kartę
     Zakładając, że w danych testowych <dane>
     Oraz Gość niezalogowany dotknął budynku <budynek> na mapie przy zwykłej czcionce
@@ -189,8 +187,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | A-1     | budynek A-1 ma wejścia i plany pięter PWr           | opis budynku A-1 zajmuje cały ekran                               |
       | A-2     | budynek A-2 nie ma wejść ani planów pięter w danych | karta ma wysokość swojej treści, a nad nią widać mapę z budynkiem |
 
-  # @do-zrobienia #3228: karta ma jeszcze połowę ekranu zamiast wysokości rozwiniętej.
-  @US2.8 @NFR-53 @aplikacja @do-zrobienia
+  @US2.8 @NFR-53 @aplikacja
   Szablon scenariusza: Karta budynku zamyka się na każdej wysokości
     Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
     Oraz karta stoi na wysokości „<wysokość>”
