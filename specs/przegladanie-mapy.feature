@@ -192,6 +192,13 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | połowa ekranu | wybierze „Zamknij”                            |
       | cały ekran    | wybierze „Wstecz” telefonu                    |
 
+  # @do-zrobienia #3237: ponowne „Mapa” w pasku dolnym zamyka jeszcze kartę.
+  @US2.8 @NFR-15 @aplikacja @do-zrobienia
+  Scenariusz: Ponowne dotknięcie „Mapa” w pasku dolnym nie zamyka karty
+    Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
+    Jeżeli dotknie pozycji „Mapa” w pasku dolnym
+    Wtedy nad mapą nadal widzi kartę budynku A-1 na tej samej wysokości
+
   @US2.8 @US1.4 @NFR-53 @aplikacja
   Scenariusz: Przy karcie budynek jest cały widoczny, a mapą sterują przyciski
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
