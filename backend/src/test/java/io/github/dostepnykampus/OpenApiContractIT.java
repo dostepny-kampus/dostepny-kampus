@@ -44,6 +44,23 @@ final class OpenApiContractIT {
     );
 
     /**
+     * Zgodna karta budynku z wejściem i wyjściem ewakuacyjnym z planów PWr.
+     */
+    private static final String PWR_CARD = String.join(
+        "",
+        OpenApiContractIT.CARD.replace("\"entrances\":[]}", ""),
+        "\"entrances\":[{\"id\":\"w-1\",\"buildingSymbol\":\"A-1\",\"main\":true,",
+        "\"location\":{\"type\":\"Point\",\"coordinates\":[17.05,51.10]},",
+        "\"marking\":\"ACCESSIBLE\",\"markingDate\":\"2024-01-10\",\"markingSource\":\"IMPORT\",",
+        "\"name\":\"Wejście Cesarskie\",\"approach\":\"Od ul. Wybrzeże.\",\"doorWidthCm\":120,",
+        "\"source\":\"Politechnika Wrocławska\"}],",
+        "\"evacuationExits\":[{\"id\":\"e-1\",",
+        "\"location\":{\"type\":\"Point\",\"coordinates\":[17.06,51.10]},",
+        "\"description\":\"Wyjście ewakuacyjne z pomieszczenia 41\",",
+        "\"source\":\"Politechnika Wrocławska\"}]}"
+    );
+
+    /**
      * Adres zdjęcia zgłoszenia.
      */
     private static final String PHOTO = String.join(
@@ -117,6 +134,11 @@ final class OpenApiContractIT {
                 OpenApiContractIT.json(200, OpenApiContractIT.CARD), "karta budynku"
             ),
             Arguments.of(
+                MockMvcRequestBuilders.get("/buildings/A-1"),
+                OpenApiContractIT.json(200, OpenApiContractIT.PWR_CARD),
+                "karta budynku z wejściem i wyjściem ewakuacyjnym z planów PWr"
+            ),
+            Arguments.of(
                 (RequestBuilder) servlet -> new MockHttpServletRequest(
                     servlet, "GET", "/buildings/A-1"
                 ),
@@ -172,6 +194,17 @@ final class OpenApiContractIT {
             OpenApiContractIT.card("\"detailLevel\":\"BASIC\",", "", "property 'detailLevel'"),
             OpenApiContractIT.card("\"A-1\"", "1", "body.schema.type /symbol "),
             OpenApiContractIT.card("BASIC", "MEDIUM", "body.schema.enum /detailLevel "),
+            OpenApiContractIT.pwrCard(
+                "\"doorWidthCm\":120", "\"doorWidthCm\":0",
+                "body.schema.minimum /entrances/0/doorWidthCm "
+            ),
+            OpenApiContractIT.pwrCard(
+                "\"approach\":\"Od ul. Wybrzeże.\"", "\"approach\":1",
+                "body.schema.type /entrances/0/approach "
+            ),
+            OpenApiContractIT.pwrCard(
+                "{\"id\":\"e-1\",", "{", "body.schema.required /evacuationExits/0 "
+            ),
             Arguments.of(
                 MockMvcRequestBuilders.get("/nieznane"), OpenApiContractIT.json(200, "{}"),
                 "GET /nieznane 200: validation.request.path.missing"
@@ -226,6 +259,16 @@ final class OpenApiContractIT {
         return Arguments.of(
             MockMvcRequestBuilders.get("/buildings/A-1"),
             OpenApiContractIT.json(200, OpenApiContractIT.CARD.replace(part, replacement)),
+            message
+        );
+    }
+
+    private static Arguments pwrCard(
+        final String part, final String replacement, final String message
+    ) {
+        return Arguments.of(
+            MockMvcRequestBuilders.get("/buildings/A-1"),
+            OpenApiContractIT.json(200, OpenApiContractIT.PWR_CARD.replace(part, replacement)),
             message
         );
     }
