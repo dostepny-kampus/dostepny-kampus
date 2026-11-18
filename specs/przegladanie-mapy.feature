@@ -299,10 +299,11 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
   # @do-zrobienia #3194: arkusz wejścia zalecanego z danymi z planów PWr zasłania pinezkę.
   @US3.3 @NFR-53 @aplikacja @do-zrobienia
   Scenariusz: Pinezka wejścia jest widoczna nad arkuszem wejścia
-    Zakładając, że wejście zalecane A-1 ma w danych opis dojścia i szerokość drzwi
+    Zakładając, że wejście zalecane A-1 ma w danych opis dojścia, szerokość drzwi i zgłoszenie przyjęte ze zdjęciem
     Oraz Gość niezalogowany otworzył kartę budynku A-1 przy zwykłej czcionce
     Jeżeli wybierze „Pokaż wejście na mapie”
-    Wtedy pinezka wejścia zalecanego stoi w części mapy nad arkuszem tego wejścia
+    Wtedy pinezka wejścia zalecanego stoi na środku części mapy nad arkuszem tego wejścia
+    Oraz arkusz zajmuje najwyżej połowę ekranu, a jego treść się przewija
 
   # @do-zrobienia #3195: „Zamknij” arkusza otwartego z karty zostawia mapę bez karty.
   @US2.8 @US3.3 @NFR-53 @aplikacja @do-zrobienia
