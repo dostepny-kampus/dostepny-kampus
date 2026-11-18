@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.building
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -96,7 +97,8 @@ fun BuildingCardScreen(
 /**
  * V2 dla gotowego stanu [card] i [isOnline]; „Spróbuj ponownie” to [onRetry], „Pokaż na planie” to [onShowPlan]
  * z identyfikatorem piętra, „Oznacz obejrzane piętra” pod grupą „Piętra” to [onMarkFloors] (`null` ukrywa przycisk),
- * dotknięcie wystającego nagłówka „Wejścia” niskiej karty to [onExpand], reszta jak w [BuildingCardScreen].
+ * dotknięcie wystającego nagłówka „Wejścia” niskiej karty to [onExpand], przewijanie treści to [scroll], reszta jak
+ * w [BuildingCardScreen].
  */
 @Composable
 fun BuildingCardContent(
@@ -115,6 +117,7 @@ fun BuildingCardContent(
     onShowPlan: (String) -> Unit = {},
     onMarkFloors: (() -> Unit)? = null,
     onExpand: () -> Unit = {},
+    scroll: ScrollState = rememberScrollState(),
 ) {
     val isFullScreen = mode != CardMode.Compact
     val isHeaderFixed = mode == CardMode.Expanded
@@ -126,7 +129,7 @@ fun BuildingCardContent(
             modifier =
                 Modifier
                     .weight(1f, isFullScreen)
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scroll)
                     .cardPadding(isPeek = card.hasEntrancesPeek(isFullScreen), hasTop = !isHeaderFixed),
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
         ) {

@@ -6,7 +6,10 @@
 package io.github.dostepnykampus.app.navigation
 
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalDensity
@@ -75,8 +78,8 @@ internal fun currentCardWindow(): CardWindow {
 }
 
 /**
- * Karta V2 w arkuszu: tryb [mode], „Wstecz” w górnym pasku pełnego ekranu [onBack], „Zamknij” w nagłówku [onClose]
- * i rozwinięcie niskiej karty na połowę ekranu [onExpand].
+ * Karta V2 w arkuszu: tryb [mode], „Wstecz” w górnym pasku pełnego ekranu [onBack], „Zamknij” w nagłówku [onClose],
+ * przewijanie treści [scroll] i rozwinięcie niskiej karty na połowę ekranu [onExpand].
  *
  * Wymagania: US2.8
  */
@@ -84,12 +87,14 @@ internal data class SheetCard(
     val mode: CardMode,
     val onBack: () -> Unit,
     val onClose: () -> Unit,
+    val scroll: ScrollState,
     val onExpand: () -> Unit = {},
 )
 
 /**
  * Karta V2: `Direct`, gdy okno go wymaga albo V2 otwarto od razu na pełnym ekranie, inaczej tryb z rozwinięcia
- * arkusza; „Wstecz” jak wstecz telefonu, „Zamknij” zamyka V2.
+ * arkusza; „Wstecz” jak wstecz telefonu, „Zamknij” zamyka V2. Przewijanie treści wraca na początek, gdy arkusz
+ * stanie niżej niż na całym oknie.
  *
  * Wymagania: NFR-19, US2.8, US2.9, NFR-15
  */
@@ -101,7 +106,15 @@ internal fun AppNavigator.sheetCard(): SheetCard {
     val isDirect = window.cardMode() == CardMode.Direct || (current as? BuildingRoute)?.isDirect == true
     val mode = if (isDirect) CardMode.Direct else sheet.cardMode(window.fontScale)
     val back = checkNotNull(LocalOnBackPressedDispatcherOwner.current).onBackPressedDispatcher
-    return SheetCard(mode = mode, onBack = back::onBackPressed, onClose = { back() }, onExpand = layout.onExpand)
+    val scroll = rememberScrollState()
+    LaunchedEffect(layout.isFull) { if (!layout.isFull) scroll.animateScrollTo(0) }
+    return SheetCard(
+        mode = mode,
+        onBack = back::onBackPressed,
+        onClose = { back() },
+        scroll = scroll,
+        onExpand = layout.onExpand,
+    )
 }
 
 /**
@@ -182,6 +195,7 @@ internal fun AppNavigator.BuildingCard(
         onShowPlan = { showOnMap(MapFocus.Building(symbol, command = System.nanoTime(), floor = it)) },
         onMarkFloors = { openFloorMarking(symbol) }.takeIf { isCollector },
         onExpand = card.onExpand,
+        scroll = card.scroll,
     )
 }
 
