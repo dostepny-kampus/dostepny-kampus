@@ -32,8 +32,9 @@ import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.overlay.MapControlIcons
 
 /**
- * Wyjścia ewakuacyjne budynku z karty [card]: przycisk z liczbą wyjść, który rozwija i zwija ich listę, na start zwiniętą.
- * Wiersz wyjścia ma opis i szerokość drzwi, gdy są w danych, i nie jest dotykalny. Bez wyjść nic się nie rysuje.
+ * Wyjścia ewakuacyjne budynku z karty [card]: przycisk z liczbą wyjść, który rozwija i zwija ich listę, na start
+ * zwiniętą. Wiersz wyjścia ma opis i szerokość drzwi, gdy są w danych, i nie jest dotykalny. Bez wyjść nic się nie
+ * rysuje.
  *
  * Wymagania: US2.6, BR-27, NFR-17, NFR-18
  */
