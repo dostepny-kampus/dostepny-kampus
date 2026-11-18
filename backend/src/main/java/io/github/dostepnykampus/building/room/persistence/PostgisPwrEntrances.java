@@ -15,11 +15,11 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 /**
  * Wpisy warstwy wejść PWr z piętrem planu w tabelach entrances i evacuation_exits. Wejście
  * z OpenStreetMap dostaje w kolumnach pwr_name, pwr_marking, approach i door_width_cm dane
- * najbliższego wpisu w promieniu 15 m; każdy inny wpis staje się wejściem
- * {@code pwr/<geohash>}, nie ruszając name i marking wejść z OpenStreetMap. Data oznaczenia
- * z PWr to dzień edycji warstwy. Dane PWr i wyjścia ewakuacyjne są zastępowane przy zapisie.
+ * najbliższego wpisu w promieniu 15 m, bez zastępczej nazwy „Wejście” przy nazwie z OSM; każdy
+ * inny wpis staje się wejściem {@code pwr/<geohash>}, nie ruszając name i marking wejść z OSM.
+ * Data oznaczenia z PWr to dzień edycji warstwy. Dane PWr i wyjścia ewakuacyjne są zastępowane.
  *
- * <p>Wymagania: BR-24, BR-27, US2.6, US17.1, US17.3</p>
+ * <p>Wymagania: BR-24, BR-27, US2.6, US17.1, US17.3, BR-25</p>
  *
  * @since 0.1.0
  */
@@ -106,7 +106,10 @@ final class PostgisPwrEntrances {
                 "",
                 PostgisPwrEntrances.NEAREST,
                 """
-                UPDATE entrances SET pwr_name = near.name, pwr_marking = near.marking,
+                UPDATE entrances SET pwr_name = CASE
+                    WHEN near.name = 'Wejście' AND entrances.name IS NOT NULL THEN NULL
+                    ELSE near.name END,
+                    pwr_marking = near.marking,
                     approach = near.approach, door_width_cm = near.width,
                     pwr_marking_date = COALESCE(CAST(:edited AS DATE), CURRENT_DATE)
                 FROM near
