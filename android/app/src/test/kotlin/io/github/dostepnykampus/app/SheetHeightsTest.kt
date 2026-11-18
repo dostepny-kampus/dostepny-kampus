@@ -57,9 +57,9 @@ private const val LONG_SWIPE_MILLIS = 300L
 private const val PEEK = "Wejścia"
 
 /**
- * Arkusz V2 z dwiema wysokościami: niska i rozwinięta, do góry ekranu albo do wysokości krótkiej treści; idzie za
- * palcem, staje na najbliższej wysokości albo w stronę rzutu, z niskiej w dół się zamyka, a uchwyt i czynności
- * TalkBack zmieniają wysokość bez przeciągania.
+ * Arkusz V2 z dwiema wysokościami: niska i rozwinięta, zawsze do góry ekranu; idzie za palcem, staje na najbliższej
+ * wysokości albo w stronę rzutu, z niskiej w dół się zamyka, a uchwyt i czynności TalkBack zmieniają wysokość bez
+ * przeciągania.
  *
  * Wymagania: US2, US2.8, NFR-17, NFR-18, NFR-53
  */
@@ -142,24 +142,24 @@ class SheetHeightsTest {
     }
 
     /**
-     * Wiersz: karta, której rozwinięta treść mieści się w połowie ekranu, rozwija się tylko do wysokości treści,
-     *   a nad nią zostaje mapa; uchwytem i nagłówkiem „Wejścia” tak samo.
+     * Wiersz: krótka rozwinięta treść → karta też do góry ekranu, pod treścią puste miejsce; uchwytem i nagłówkiem
+     *   „Wejścia” tak samo.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Wystający nagłówek „Wejścia” od razu rozwija kartę
      */
     @Test
-    fun fitsShortCardToContent() {
+    fun fillsScreenForShortCard() {
         open(expandedHeight = ShortHeight)
-        val top = map() - CeleDotyku.minimum - ShortHeight
+        val top = 0.dp
         compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
         compose.waitForIdle()
-        assertAt(top, "krótka karta do wysokości treści")
+        assertAt(top, "krótka karta do góry ekranu")
         compose.onNodeWithText("Expanded").assertExists("pełny opis krótkiej karty")
         compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
         compose.waitForIdle()
         assertAt(low(), "znowu niska")
         compose.onNodeWithText(PEEK).performClick()
         compose.waitForIdle()
-        assertAt(top, "krótka karta po dotknięciu „Wejścia”")
+        assertAt(top, "krótka karta do góry po dotknięciu „Wejścia”")
     }
 
     /** Wiersz: rozwinięta treść dłuższa niż połowa ekranu, a krótsza od niego → karta do góry ekranu, bez luki. */
