@@ -97,7 +97,7 @@ $wejscie_pierwsze($oznaczenie, $nazwa, $zalecane, $zrodlo, $akcja, $opis)
 !procedure $wejscia_bez_nazw($liczba)
 $ramka()
 <b>$brak_danych()</b>
-<b>$liczba bez nazw w danych</b>
+<b>$liczba</b>
 Nikt jeszcze nie sprawdził tych wejść.
 $przycisk("Zgłoś barierę przy wejściu")
 }
