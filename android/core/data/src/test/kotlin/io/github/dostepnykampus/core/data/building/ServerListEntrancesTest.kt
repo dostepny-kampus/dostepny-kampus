@@ -45,7 +45,7 @@ class ServerListEntrancesTest {
      * Wymagania: NFR-10
      */
     @Test
-    fun keepsFileEntrancesWithoutServerEntrances() {
+    fun keepsFileEntrancesWhenListEmpty() {
         val catalog = FILE.withServerList(emptyList())
         assertEquals(listOf(FILE_ENTRANCE), catalog.entrances, "wejścia z pliku")
     }
