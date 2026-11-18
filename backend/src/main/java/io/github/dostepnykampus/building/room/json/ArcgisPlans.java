@@ -26,9 +26,8 @@ import tools.jackson.databind.ObjectMapper;
  * {@link ArcgisLayers}. Wielokąt pomieszczenia staje się konturem MultiPolygon, pomieszczenie
  * bez wielokąta jest pomijane. Piętro bez identyfikatora LEVEL_ID jest pomijane. Wielkość
  * liter nazw pól pomieszczenia jest dowolna, a funkcja nazywa się Funkcja, Funkcje albo
- * d_funkcja. Numer z samych spacji jest pusty, a brak funkcji daje „Inne”. Wpis warstwy
- * wejść bez piętra jest pomijany. Czy_dostos „Tak” daje ACCESSIBLE, „Nie” INACCESSIBLE,
- * a inna wartość NO_DATA. Szerokosc 0 albo nieliczbowa nie daje szerokości drzwi.
+ * d_funkcja. Numer z samych spacji jest pusty, a brak funkcji daje „Inne”. Pola wejść opisuje
+ * {@link PlanSource#entrances(String, int)}.
  *
  * <p>Wymagania: US16, US18, BR-24, BR-27, NFR-40</p>
  *
