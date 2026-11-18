@@ -58,8 +58,7 @@ public class ServerEntrancesRepository(private val details: suspend (String) -> 
 
     override suspend fun entrances(symbol: String): List<Entrance> = card(symbol)?.entrances.orEmpty()
 
-    override suspend fun evacuationExits(symbol: String): List<EvacuationExit> =
-        card(symbol)?.evacuationExits.orEmpty()
+    override suspend fun evacuationExits(symbol: String): List<EvacuationExit> = card(symbol)?.evacuationExits.orEmpty()
 
     private suspend fun card(symbol: String): ServerCard? {
         val result = details(symbol)
