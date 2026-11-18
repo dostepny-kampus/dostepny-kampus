@@ -73,5 +73,5 @@ class LiftSheetTest {
         compose.onRoot().captureRoboImage()
     }
 
-    private fun show() = compose.showPlanSheet(id = "winda", onClose = {})
+    private fun show() = compose.showPlanSheet(id = "winda")
 }
