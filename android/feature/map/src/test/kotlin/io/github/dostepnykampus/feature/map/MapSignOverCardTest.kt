@@ -12,8 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -37,8 +35,9 @@ import org.robolectric.annotation.GraphicsMode
 private const val CARD_HEIGHT = 300
 
 /**
- * Arkusz znaku otwarty przy karcie budynku i powrót do karty nie ruszają kamery ani zaznaczenia budynku. Ekran
- * dostaje trasę jak w aplikacji: zamknięcie karty zdejmuje budynek z trasy mapy, a otwarcie karty go przywraca.
+ * Arkusz znaku otwarty przy karcie budynku i powrót do karty systemowym „Wstecz” nie ruszają kamery
+ * ani zaznaczenia budynku. Ekran dostaje trasę jak w aplikacji: zamknięcie karty zdejmuje budynek
+ * z trasy mapy, a otwarcie karty go przywraca.
  *
  * Wymagania: US2.1, US2.8, US16.1, NFR-17
  */
@@ -71,7 +70,7 @@ class MapSignOverCardTest {
         compose.runOnIdle { map.touchSign(sign, id) }
         compose.waitForIdle()
         compose.runOnIdle { assertEquals("arkusz w miejsce karty", card, map.selected to map.camera) }
-        compose.onNodeWithText("Zamknij").performClick()
+        compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
         compose.waitForIdle()
 
         compose.runOnIdle { assertEquals("powrót do karty", card, map.selected to map.camera) }
