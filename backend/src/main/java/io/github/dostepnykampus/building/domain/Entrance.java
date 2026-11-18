@@ -41,9 +41,10 @@ public record Entrance(
      *
      * @param text Opis wejścia albo null, gdy ani dane, ani import go nie podają
      * @param generated Czy nazwę nadał import, a nie dane
+     * @param place Opis położenia wejścia bez nazwy w danych
      * @since 0.1.0
      */
-    public record Name(@Nullable String text, boolean generated) {
+    public record Name(@Nullable String text, boolean generated, Approach place) {
     }
 
     /**
@@ -88,7 +89,7 @@ public record Entrance(
     }
 
     /**
-     * Opis dojścia do wejścia z danych albo jego brak.
+     * Opis dojścia do wejścia albo jego położenia, gdy jest, albo jego brak.
      *
      * <p>Wymagania: BR-27, US3.3</p>
      *
@@ -97,16 +98,16 @@ public record Entrance(
     public sealed interface Approach permits Approach.Described, Approach.Undescribed {
 
         /**
-         * Opis dojścia, jeśli dane go podają.
+         * Opis, jeśli jest.
          *
          * @return Opis albo pusty wynik
          */
         Optional<String> text();
 
         /**
-         * Dane podają opis dojścia.
+         * Opis jest.
          *
-         * @param description Opis dojścia, np. „Do wejścia prowadzą schody.”
+         * @param description Opis, np. „Do wejścia prowadzą schody.” albo „Od wschodu.”
          * @since 0.1.0
          */
         record Described(String description) implements Approach {
@@ -118,7 +119,7 @@ public record Entrance(
         }
 
         /**
-         * Dane nie podają opisu dojścia.
+         * Opisu nie ma.
          *
          * @since 0.1.0
          */

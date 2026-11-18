@@ -39,7 +39,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Kroki szablonów „Import bierze oznaczenie, nazwę i opis wejścia z warstwy wejść PWr”
- * i „Import nazywa wejście bez nazwy i opisu z położenia”: wymyślone wpisy warstwy wejść
+ * i „Import opisuje położenie wejścia bez nazwy”: wymyślone wpisy warstwy wejść
  * przechodzą przez odczyt usługi planów i zapis planu, a wynik widać w karcie budynku.
  *
  * <p>Usługę planów zastępuje serwer HTTP na losowym porcie. Zapis planu i odczyt karty
@@ -170,14 +170,14 @@ public final class PwrEntranceSteps {
     }
 
     /**
-     * Usługa zastępcza podaje warstwę wejść z wpisami bez uwag przy wschodniej ścianie
-     * budynku, a otoczenie budynku zmienia się w transakcji scenariusza.
+     * Usługa zastępcza podaje warstwę wejść z wpisami przy wschodniej ścianie budynku,
+     * a otoczenie budynku zmienia się w transakcji scenariusza.
      *
      * @param building Symbol budynku
      * @param entries Opis wpisów słowami scenariusza
      * @throws IOException Gdy serwer HTTP nie wystartuje
      */
-    @Given("^w danych testowych warstwa wejść PWr ma przy (\\S+) wpisy bez uwag: (.+)$")
+    @Given("^w danych testowych warstwa wejść PWr ma przy (\\S+) wpisy: (.+)$")
     public void placedEntries(final String building, final String entries) throws IOException {
         this.transaction = this.transactions.getTransaction(new DefaultTransactionDefinition());
         this.serve(
@@ -214,14 +214,16 @@ public final class PwrEntranceSteps {
     }
 
     /**
-     * Wejścia z wpisów warstwy mają na karcie budynku nazwy ze scenariusza.
+     * Wejścia z wpisów warstwy mają na karcie budynku nazwy i opisy położenia ze scenariusza.
      *
      * @param building Symbol budynku
-     * @param expected Nazwy słowami scenariusza, np. dwa razy „Wejście od wschodu”
+     * @param expected Nazwy słowami scenariusza, np. dwa razy „Wejście”
+     * @param places Opisy położenia słowami scenariusza, np. „Od wschodu.”
      * @throws Exception Gdy MockMvc nie wykona żądania
      */
-    @Then("^wejścia (\\S+) z tych wpisów mają nazwy (.+)$")
-    public void hasNames(final String building, final String expected) throws Exception {
+    @Then("^wejścia (\\S+) z tych wpisów mają nazwy (.+) i opisy położenia (.+)$")
+    public void hasNames(final String building, final String expected, final String places)
+        throws Exception {
         final JsonNode card = this.card(building);
         card.path("entrances").forEach(
             entrance -> {
@@ -232,9 +234,16 @@ public final class PwrEntranceSteps {
         );
         MatcherAssert.assertThat(
             String.format("Karta budynku po imporcie: %s", card),
-            this.placed.stream().map(entrance -> entrance.path("name").asString("")).sorted()
-                .toList(),
-            Matchers.equalTo(PwrEntranceSteps.names(expected))
+            List.of(
+                this.placed.stream().map(entrance -> entrance.path("name").asString(""))
+                    .sorted().toList(),
+                this.placed.stream()
+                    .map(entrance -> entrance.path("placeDescription").asString("")).sorted()
+                    .toList()
+            ),
+            Matchers.equalTo(
+                List.of(PwrEntranceSteps.names(expected), PwrEntranceSteps.names(places))
+            )
         );
     }
 
@@ -244,7 +253,7 @@ public final class PwrEntranceSteps {
     @Then("^żadna z tych nazw nie daje pierwszeństwa przy wyborze wejścia zalecanego$")
     public void namesGenerated() {
         MatcherAssert.assertThat(
-            "Nazwa z położenia uchodzi za nazwę w danych przy wyborze wejścia zalecanego",
+            "Nazwa nadana przez import uchodzi za nazwę w danych przy wyborze wejścia zalecanego",
             this.placed.stream()
                 .map(entrance -> entrance.path("generatedName").asBoolean(false)).toList(),
             Matchers.equalTo(Collections.nCopies(Math.max(1, this.placed.size()), true))

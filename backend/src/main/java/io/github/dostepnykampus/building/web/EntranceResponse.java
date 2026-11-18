@@ -48,7 +48,7 @@ public record EntranceResponse(
     public EntranceResponse(final String building, final Entrance entrance) {
         this(
             entrance.id(), building,
-            new Naming(entrance.name().text(), entrance.name().generated()),
+            Naming.of(entrance.name()),
             entrance.type(), entrance.main(),
             new Place(entrance.location(), entrance.floorId()), entrance.marking(),
             Plan.of(entrance.layer())
@@ -62,13 +62,25 @@ public record EntranceResponse(
      *
      * @param name Opis wejścia albo null, gdy ani dane, ani import go nie podają
      * @param generatedName Czy nazwę nadał import; w JSON tylko wartość true
+     * @param placeDescription Opis położenia wejścia bez nazwy w danych albo null
      * @since 0.1.0
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public record Naming(
         @Nullable String name,
-        @JsonInclude(JsonInclude.Include.NON_DEFAULT) boolean generatedName
+        @JsonInclude(JsonInclude.Include.NON_DEFAULT) boolean generatedName,
+        @Nullable String placeDescription
     ) {
+
+        /**
+         * Odpowiedź z nazwy wejścia.
+         *
+         * @param name Nazwa wejścia
+         * @return Nazwa w odpowiedzi HTTP
+         */
+        static Naming of(final Entrance.Name name) {
+            return new Naming(name.text(), name.generated(), name.place().text().orElse(null));
+        }
     }
 
     /**
