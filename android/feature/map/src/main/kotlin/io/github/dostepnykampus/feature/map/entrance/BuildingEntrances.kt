@@ -33,7 +33,7 @@ private const val STOP_TIMEOUT_MS = 5_000L
 data class BuildingEntrances(val symbol: String, val entrances: List<Entrance>)
 
 /**
- * Katalog, w którym wejścia budynku [fetched] dla odwiedzających zastępują wejścia tego budynku z pliku konturów, tak
+ * Katalog, w którym wejścia budynku [fetched] dla odwiedzających zastępują wejścia tego budynku z katalogu mapy, tak
  * jak na karcie V2. Bez [fetched] albo przy pustej liście katalog zostaje bez zmian.
  *
  * Wymagania: US2.1, US3.3, BR-25, NFR-10

@@ -25,10 +25,11 @@ internal fun BuildingCatalog.forVisitors(): BuildingCatalog =
     )
 
 /**
- * Katalog z listy serwera na tle katalogu z pliku: kontury, nazwy, atrybucja i budynki szczegółowe z serwera,
- * wejścia z pliku, ale tylko budynków, które serwer podał; wynik w kolejności i z wejściami dla odwiedzających.
+ * Katalog z listy serwera na tle katalogu z pliku: kontury, nazwy, atrybucja, budynki szczegółowe i wejścia z serwera;
+ * gdy lista nie ma żadnego wejścia, wejścia z pliku, ale tylko budynków, które serwer podał. Wynik w kolejności
+ * i z wejściami dla odwiedzających.
  *
- * Wymagania: US1.2, BR-G1
+ * Wymagania: US1.2, BR-G1, US1.4, BR-24, BR-27
  */
 internal fun BuildingCatalog.withServerList(server: BuildingList): BuildingCatalog {
     val symbols = server.buildings.map { item -> item.building.symbol }.toSet()
@@ -36,7 +37,10 @@ internal fun BuildingCatalog.withServerList(server: BuildingList): BuildingCatal
     val outlines =
         copy(
             buildings = server.buildings.map { item -> item.building },
-            entrances = entrances.filter { entrance -> entrance.buildingSymbol in symbols },
+            entrances =
+                server.buildings
+                    .flatMap { item -> item.entrances }
+                    .ifEmpty { entrances.filter { entrance -> entrance.buildingSymbol in symbols } },
             attribution = server.source,
             detailed = detailed.toSet(),
             hasServerList = true,

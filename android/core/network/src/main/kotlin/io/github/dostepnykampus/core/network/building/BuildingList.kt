@@ -36,12 +36,19 @@ import io.github.dostepnykampus.core.network.json.LocateResult as LocateResultJs
 public data class BuildingList(val source: String, val buildings: List<ApiBuilding>)
 
 /**
- * Budynek z serwera: model mapy i poziom szczegółowości.
+ * Budynek z serwera: model mapy, poziom szczegółowości i wejścia odczytane jak w [BuildingDetails].
+ *
+ * Wymagania: US1.4, BR-24, BR-27
  *
  * @property building symbol, nazwa i kontur
  * @property detailLevel poziom szczegółowości z kontraktu
+ * @property entrances wejścia budynku; pusta lista, gdy budynek ich nie ma albo odpowiedź ich nie podaje
  */
-public data class ApiBuilding(val building: Building, val detailLevel: DetailLevel)
+public data class ApiBuilding(
+    val building: Building,
+    val detailLevel: DetailLevel,
+    val entrances: List<Entrance> = emptyList(),
+)
 
 /**
  * Karta budynku (`BuildingDetails`).
@@ -150,6 +157,7 @@ private fun BuildingJson.toModel(json: Json): ApiBuilding =
     ApiBuilding(
         building = Building(symbol = symbol, name = name, outline = json.decodeFromJsonElement(GeoAreaJson, outline)),
         detailLevel = DetailLevel.valueOf(detailLevel.name),
+        entrances = entrances.orEmpty().map(EntranceJson::toModel),
     )
 
 private fun markingDay(text: String): LocalDate =
