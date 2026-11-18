@@ -169,6 +169,7 @@ internal fun AppNavigator.BuildingCard(
     onRetry: () -> Unit,
 ) {
     val card = sheetCard()
+    val isDirect = card.mode == CardMode.Direct
     val roles by account.collectAsStateWithLifecycle()
     val isCollector = StaffRole.COLLECTOR in (roles as? Account.SignedIn)?.staffRoles.orEmpty()
     BuildingCardContent(
@@ -180,7 +181,7 @@ internal fun AppNavigator.BuildingCard(
         onBack = card.onBack,
         onClose = card.onClose,
         onReportEntrance = { report(it) },
-        onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = symbol)) },
+        onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = symbol, isFullSheet = isDirect)) },
         onReportRemoval = this::openRemoved.takeIf { isCollector },
         onRetry = onRetry,
         onShowPlan = { showOnMap(MapFocus.Building(symbol, command = System.nanoTime(), floor = it)) },

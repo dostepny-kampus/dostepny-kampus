@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -193,7 +194,7 @@ fun CampusMapScreen(
     Box(modifier.fillMaxSize()) {
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
-                Box(Modifier.fillMaxSize()) {
+                Box(Modifier.fillMaxSize().unreadUnder(isSheet = sheet.isEntranceFull)) {
                     val shown = ShownBarriers(state.barriers.takeUnless { sheet.isCardOpen }.orEmpty())
                     CampusMap(
                         ui = state,
@@ -215,7 +216,7 @@ fun CampusMapScreen(
                 }
             }
         }
-        if (barExit.isBarShown(isCovered = isCovered, isList = isList)) {
+        if (barExit.isBarShown(isCovered = isCovered, isList = isList, isUnderFullSheet = sheet.isEntranceFull)) {
             states.SaveableStateProvider(TOP_STATE) {
                 CampusSearch(
                     catalog = catalog,
@@ -235,8 +236,11 @@ fun CampusMapScreen(
                 )
             }
         }
+        sheet.FullEntranceSheet(catalog = catalog, actions = entranceActions, onBuildingClick = onBuildingClick)
     }
 }
+
+private fun Modifier.unreadUnder(isSheet: Boolean): Modifier = if (isSheet) clearAndSetSemantics {} else this
 
 @Composable
 private fun CampusMap(
@@ -308,7 +312,7 @@ private fun CampusMap(
                 motion = motion,
                 start = { FloorColumn(plan = plan.shown, onChoose = plan.onFloor) },
             ) {
-                val open = OpenSign(signs = signs, barriers = barriers, catalog = ui.catalog, plan = plan.shown)
+                val open = OpenSign(sheet = sheet, barriers = barriers, catalog = ui.catalog, plan = plan.shown)
                 MapSheets(open = open, state = state, onBuilding = onBuildingClick, entranceActions = entranceActions)
             }
         }
@@ -321,9 +325,9 @@ private fun Modifier.overlayArea(underBar: PaddingValues, sheet: PaddingValues):
         .padding(underBar)
         .padding(sheet)
 
-/** Arkusz znaku [signs] z barierami [barriers], katalogiem [catalog] i planem [plan] na mapie. */
+/** Arkusz znaku z [sheet] z barierami [barriers], katalogiem [catalog] i planem [plan] na mapie. */
 private data class OpenSign(
-    val signs: SignSheetState,
+    val sheet: ScreenSheet,
     val barriers: ShownBarriers,
     val catalog: BuildingCatalog?,
     val plan: ShownPlan?,
@@ -361,13 +365,14 @@ private fun BoxScope.MapSheets(
 ) {
     val modifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
     ChosenSignSheet(
-        signs = open.signs,
+        signs = open.sheet.signs,
         barriers = open.barriers,
         catalog = open.catalog,
         plan = open.plan,
         onBuildingClick = onBuilding,
         entranceActions = entranceActions,
         modifier = modifier,
+        hidesEntrance = open.sheet.isEntranceFull,
     )
     BuildingChoices(catalog = open.catalog, state = state, onChoose = onBuilding, modifier = modifier)
 }
