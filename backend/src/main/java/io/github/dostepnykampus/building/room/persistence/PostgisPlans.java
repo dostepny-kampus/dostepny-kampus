@@ -26,6 +26,9 @@ import org.springframework.transaction.support.TransactionOperations;
  * Budynek z planem jest szczegółowy (DETAILED). Wejście bierze piętro najbliższego wejścia PWr
  * z piętrem planu do 15 m. Windy nad sobą łączy w szyb (lift_id).
  *
+ * <p>TODO(#3134): zapisać oznaczenie, nazwę, opis dojścia, szerokość drzwi i wyjścia
+ * ewakuacyjne z wpisów warstwy wejść PWr.</p>
+ *
  * <p>Wymagania: US16, US18, US18.2, BR-G1, NFR-40</p>
  *
  * @since 0.1.0
