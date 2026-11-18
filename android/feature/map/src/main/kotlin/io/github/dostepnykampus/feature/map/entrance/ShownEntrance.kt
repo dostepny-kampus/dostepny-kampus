@@ -19,23 +19,31 @@ import io.github.dostepnykampus.feature.map.building.orderedEntrances
  * @property entrance wejście z katalogu
  * @property isRecommended czy to wejście zalecane swojego budynku
  * @property barriers zgłoszenia przyjęte przy tym wejściu
+ * @property lift najbliższa winda za drzwiami; `null` bez windy w danych
  */
 @Immutable
 internal data class ShownEntrance(
     val entrance: Entrance,
     val isRecommended: Boolean = false,
     val barriers: List<AcceptedBarrier> = emptyList(),
+    val lift: EntranceLift? = null,
 )
 
 /**
- * Czynności arkusza wejścia na V1.
+ * Czynności arkusza wejścia na V1 i dane, o które arkusz prosi.
  *
- * Wymagania: US3.3, US4.6
+ * Wymagania: US3.3, US4.6, US16.3
  *
  * @property onReport zgłoszenie bariery przy wejściu o podanym identyfikatorze
+ * @property onShow wejście pokazane w arkuszu, którego windy szukamy
+ * @property lift najbliższa winda ostatnio pokazanego wejścia
  */
 @Immutable
-data class EntranceActions(val onReport: (String) -> Unit = {})
+data class EntranceActions(
+    val onReport: (String) -> Unit = {},
+    val onShow: (Entrance) -> Unit = {},
+    val lift: EntranceLift? = null,
+)
 
 /**
  * Wejście [id] z katalogu z jego miejscem wśród wejść budynku według [orderedEntrances] i zgłoszeniami
