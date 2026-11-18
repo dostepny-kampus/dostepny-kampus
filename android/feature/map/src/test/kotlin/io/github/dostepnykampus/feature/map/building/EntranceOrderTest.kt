@@ -36,6 +36,7 @@ class EntranceOrderTest {
         assertEquals(
             listOf("Wejście \"A\"", "Wejście \"C\"", "Wejście \"E\"", "Wejście od wschodu"),
             ordered.map { it.entrance.name },
+            "nazwy alfabetycznie, wejście z nazwą z importu na końcu",
         )
     }
 
@@ -51,7 +52,7 @@ class EntranceOrderTest {
                     entrance(name = "Arkady", marking = EntranceMarking.NO_DATA),
                 ),
             )
-        assertEquals(listOf("Schody", "Tył", "Arkady", "Brama"), ordered.map { it.entrance.name })
+        assertEquals(listOf("Schody", "Tył", "Arkady", "Brama"), ordered.map { it.entrance.name }, "grupy oznaczeń")
     }
 
     /** Wiersz: liczby w nazwie według wartości, polskie litery na swoim miejscu alfabetu. */
@@ -61,6 +62,7 @@ class EntranceOrderTest {
         assertEquals(
             listOf("Wejście 2", "Wejście 10", "Wejście L", "Wejście Ł", "Wejście M"),
             names.sortedWith(EntranceNameOrder),
+            "liczby według wartości, Ł między L i M",
         )
     }
 
@@ -75,7 +77,8 @@ class EntranceOrderTest {
                     entrance(name = "Brama", marking = EntranceMarking.NO_DATA),
                 ),
             )
-        assertEquals(listOf("Brama", "Wejście od zachodu", null), ordered.map { it.entrance.name })
+        val names = ordered.map { it.entrance.name }
+        assertEquals(listOf("Brama", "Wejście od zachodu", null), names, "bez nazw w kolejności danych")
     }
 
     private fun entrance(name: String?, marking: EntranceMarking, isGenerated: Boolean = false) =
