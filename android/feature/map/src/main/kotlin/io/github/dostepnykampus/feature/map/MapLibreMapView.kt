@@ -35,8 +35,6 @@ import dagger.hilt.android.EntryPointAccessors
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.feature.map.barrier.barrierImages
-import io.github.dostepnykampus.feature.map.building.entranceCaption
-import io.github.dostepnykampus.feature.map.building.entranceImages
 import io.github.dostepnykampus.feature.map.camera.BasemapReveal
 import io.github.dostepnykampus.feature.map.camera.CameraController
 import io.github.dostepnykampus.feature.map.camera.CameraMotion
@@ -62,6 +60,8 @@ import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.campus.touchedSymbols
+import io.github.dostepnykampus.feature.map.entrance.entranceCaption
+import io.github.dostepnykampus.feature.map.entrance.entranceImages
 import io.github.dostepnykampus.feature.map.plan.planSignImages
 import io.github.dostepnykampus.feature.map.style.BUILDINGS_LAYER
 import io.github.dostepnykampus.feature.map.style.Basemap
