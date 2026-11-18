@@ -136,15 +136,7 @@ jobs:
         run: bash ../.github/scripts/pakuj-serwer-systemowy.sh
       - name: Uruchom bazę, magazyn zdjęć, logowanie i serwer
         timeout-minutes: 15
-        run: |
-          cp infra/.env.example infra/.env
-          docker compose -f infra/docker-compose.yml up -d --wait
-          set -a
-          . infra/.env
-          set +a
-          jar="$(find backend/target -maxdepth 1 -name '*.jar' ! -name '*-plain.jar' | head -n 1)"
-          nohup java -jar "$jar" > "$RUNNER_TEMP/serwer.log" 2>&1 &
-          timeout 180 bash -c 'until curl -fs -o /dev/null http://127.0.0.1:8080/buildings; do sleep 3; done'
+        run: bash .github/scripts/uruchom-serwer-systemowy.sh
       - name: Obciążenie publicznego odczytu /buildings
         timeout-minutes: 5
         env:
