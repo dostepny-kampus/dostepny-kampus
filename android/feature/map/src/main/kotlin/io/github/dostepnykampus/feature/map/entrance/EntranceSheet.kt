@@ -97,8 +97,8 @@ internal fun isFullEntranceSheet(id: String, focus: MapFocus?): Boolean {
 /**
  * Arkusz wejścia [shown] na dole mapy V1: znak oznaczenia przy nagłówku z budynkiem, słowo oznaczenia, pod nim
  * „Zalecane.” przy wejściu zalecanym i dzień ze źródłem oznaczenia, gdy są w danych, nazwa wejścia, gdy jest
- * w danych, bariery i inne wejścia dostępne przy wejściu zalecanym i zgłoszenie bariery przy wejściu. Nagłówek dostaje fokus
- * po otwarciu, a treść się przewija.
+ * w danych, bariery i inne wejścia dostępne przy wejściu zalecanym i zgłoszenie bariery przy wejściu. Nagłówek
+ * dostaje fokus po otwarciu, a treść się przewija.
  *
  * Wymagania: US2.1, US2.2, US3.3, US4.6, US17.1, US17.3, BR-25, NFR-18, NFR-20, NFR-21, NFR-53
  *
