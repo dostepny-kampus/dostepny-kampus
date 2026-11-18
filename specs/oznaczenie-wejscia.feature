@@ -55,13 +55,7 @@ Funkcja: Oznaczenie wejścia
         | pola                                                                         | wynik                                                                        |
         | Czy_dostos „Tak”, Szerokosc 120, Uwagi „Wejście Cesarskie. Od ul. Wybrzeże.” | wejście „Wejście Cesarskie”, „dostępne”, drzwi 120 cm, opis „Od ul. Wybrzeże.” |
         | Czy_dostos „Tak”, Szerokosc 0, Uwagi „Wyjście ewakuacyjne z pomieszczenia 41” | wyjście ewakuacyjne, a nie wejście                                           |
-        | Czy_dostos „Nie”, Szerokosc 0, Uwagi „Do wejścia prowadzą schody.”           | wejście „Wejście”, „niedostępne”, bez szerokości drzwi                       |
-
-      # @do-zrobienia #3211: import nie liczy jeszcze nazw z położenia.
-      @do-zrobienia
-      Przykłady:
-        | pola                                       | wynik                                                                        |
-        | Czy_dostos „Nie”, Szerokosc 0, puste Uwagi | wejście z nazwą z położenia, „niedostępne”, bez szerokości drzwi             |
+        | Czy_dostos „Nie”, Szerokosc 0, Uwagi „Do wejścia prowadzą schody.”           | wejście „Wejście”, „niedostępne”, bez szerokości drzwi, opis „Do wejścia prowadzą schody.” |
 
     # @do-zrobienia #3211: import nie liczy jeszcze nazw z położenia.
     @BR-27 @BR-25 @US2.1 @serwer @do-zrobienia
