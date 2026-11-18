@@ -111,7 +111,7 @@ final class PlanImportTest {
     }
 
     private static PlanSource source() {
-        return new Source();
+        return new PlanImportTest.Source();
     }
 
     private static PlanEntrance entrance(final String floor) {
