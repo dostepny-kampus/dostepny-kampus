@@ -246,9 +246,7 @@ public final class PwrEntranceSteps {
             "Nazwa z położenia uchodzi za nazwę w danych przy wyborze wejścia zalecanego",
             this.placed.stream()
                 .map(entrance -> entrance.path("generatedName").asBoolean(false)).toList(),
-            Matchers.allOf(
-                Matchers.not(Matchers.empty()), Matchers.everyItem(Matchers.is(true))
-            )
+            Matchers.equalTo(Collections.nCopies(Math.max(1, this.placed.size()), true))
         );
     }
 
