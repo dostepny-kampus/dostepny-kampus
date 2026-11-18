@@ -7,8 +7,10 @@ $naglowek_karty("<i>[symbol]</i>", "<i>[nazwa budynku z danych]</i>")
 $karta_gora(0, "bez_danych")
 Z map i opisów, stan z <i>[data]</i>
 $sekcja("Wejścia")
-$wejscie_karty($niedostepne(), "<i>[nazwa wejścia z danych]</i>")
+$wejscia_poczatek()
+$wejscie_pierwsze($niedostepne(), "<i>[nazwa wejścia z danych]</i>")
 $wejscie_karty($brak_danych(), "<i>[nazwa wejścia z danych]</i>")
+$wejscia_koniec()
 ..
 $tekst("Nie mamy planu pięter tego budynku.")
 $sekcja("Bariery w budynku")

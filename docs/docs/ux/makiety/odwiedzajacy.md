@@ -7,7 +7,7 @@ Konwencje opisuje strona [Makiety](index.md). Stan, który różni się jednym n
 | Ekran | Makiety | Stany w tabelach |
 | --- | --- | --- |
 | V1 Mapa kampusu | zwykły, wyszukiwanie, lista budynków, brak wyniku, brak sieci, pierwsze otwarcie bez internetu, znaleziona sala, bariera na mapie, arkusz wejścia | ładowanie, brak mapy ulic, pierwsze uruchomienie, wybór budynku, plan piętra, sala bez drogi, brak sali, duża czcionka |
-| V2 Karta budynku | niska wysokość, połowa ekranu, od razu na cały ekran, budynek podstawowy bez wejścia zalecanego, brak barier, brak sieci, budynku nie ma w telefonie, Zbierający | ładowanie, błąd zdjęcia, budynek podstawowy bez barier |
+| V2 Karta budynku | niska wysokość, połowa ekranu, od razu na cały ekran, budynek podstawowy bez wejścia zalecanego, brak barier, wejścia bez nazw, brak sieci, budynku nie ma w telefonie, Zbierający | ładowanie, błąd zdjęcia, budynek podstawowy bez barier |
 | V4 Zgłoszenie szybkie | kroki 1–3, krok 1 ze zdjęciem, prośba o zgodę, zgoda przybliżona, brak pozycji, rezygnacja, wysłane, wysłane bez internetu | Gość, odmowa zgody, lokalizacja wyłączona, ustalanie miejsca, błąd zapisu |
 | V5 Pomoc | krok z objaśnieniem „Dostępne” | krok o koncie, ostatni krok |
 | L1 Prośba o logowanie | zwykły, brak sieci | wejście z „Konto”, błąd |
@@ -360,8 +360,26 @@ Czynność główna: „Pokaż wejście na mapie”.
 | Pod „Bariery w budynku” ramka „Brak zgłoszonych barier” ze zdaniem „Bariera pojawi się tutaj, gdy ktoś ją zgłosi i zostanie sprawdzona.” | UC2 2a, PW-6, decyzja 48 |
 | „Zgłoś barierę” w ramce: jedyne miejsce tego przycisku w treści karty | US4, decyzja 48 |
 | Wejścia mają różne źródła, więc data i źródło stoją przy każdym wejściu | BR-24, US17.3 |
+| Drugie wejście z planów PWr: nazwa, opis dojścia i szerokość drzwi, źródło „Z planów Politechniki Wrocławskiej, stan z [data]” | BR-24, BR-27, US17.1 |
+| „Pokaż wyjścia ewakuacyjne (2)” pod listą wejść; wyjście ewakuacyjne nie stoi na liście wejść | US2.6, BR-27 |
 | Nagłówek „Bariery w budynku” zostaje, więc osoba wie, której części dotyczy zdanie | UC2 2a |
 | Budynek szczegółowy jako zastępnik: pusta lista nie może brzmieć jak fakt o PWr | decyzja 16, zasada danych przykładowych |
+
+### V2: wejścia bez nazw
+
+![Makieta V2 budynku z trzema wejściami bez oznaczenia i nazwy: cichy napis Brak danych o wejściach, data i źródło, w grupie Wejścia jeden wiersz Brak danych, 3 wejścia bez nazw w danych, zdanie Nikt jeszcze nie sprawdził tych wejść i Zgłoś barierę przy wejściu](../../_generated/m-v2-karta-budynku-wejscia-bez-nazw.svg)
+
+Czynność główna: brak; bez wejścia zalecanego nie ma „Pokaż wejście na mapie”.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| Jeden wiersz zamiast jednakowych bloków, gdy żadne wejście budynku nie ma oznaczenia ani nazwy | US2.1, US17.1, NFR-21 |
+| Napis „3 wejścia bez nazw w danych”: 2–4 „wejścia”, 5 i więcej „wejść” | US17.1 |
+| „Zgłoś barierę przy wejściu” w wierszu, bo nie ma jednego wejścia do otwarcia: V4 bez wybranego wejścia, Gość: L1 | US4.6, US14.2 |
+
+| Stan bez osobnej makiety | Co się zmienia |
+| --- | --- |
+| Jedno wejście bez oznaczenia i nazwy | zwykły wiersz „Wejście bez nazwy w danych” ze strzałką (US17.1) |
 
 ### V2: brak sieci
 
@@ -390,13 +408,13 @@ Czynność główna: „Spróbuj ponownie” po połączeniu z internetem.
 
 ### V2: Zbierający
 
-![Makieta V2 budynku A-1 dla Zbierającego: przy każdym wejściu Zgłoś problem i Zmień oznaczenie, pod piętrami Oznacz obejrzane piętra, przy barierach Zgłoś, że bariery nie ma i Popraw zgłoszenie, pasek z Konto i praca](../../_generated/m-v2-karta-budynku-zbierajacy.svg)
+![Makieta V2 budynku A-1 dla Zbierającego: przy każdym wejściu Zmień oznaczenie, pod piętrami Oznacz obejrzane piętra, przy barierach Zgłoś, że bariery nie ma i Popraw zgłoszenie, pasek z Konto i praca](../../_generated/m-v2-karta-budynku-zbierajacy.svg)
 
 Czynność główna: „Pokaż wejście na mapie”; przyciski Zbierającego są zwykłe, bez pogrubienia.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Zmień oznaczenie” w ramce każdego wejścia pod „Zgłoś barierę przy wejściu”, także przy „Brak danych” | US17.2, BR-24 |
+| „Zmień oznaczenie” w wierszu każdego wejścia, także przy „Brak danych” | US17.2, BR-24 |
 | „Oznacz obejrzane piętra” pod grupą „Piętra”, raz dla całego budynku | US15.1, PW-12 |
 | „Zgłoś, że bariery nie ma” przy każdej barierze | US8.4, BR-19, PW-12 |
 | „Popraw zgłoszenie” tylko przy własnym zgłoszeniu przyjętym albo zgłoszeniu szybkim; tu przy drugiej barierze | BR-3, BR-18 |
