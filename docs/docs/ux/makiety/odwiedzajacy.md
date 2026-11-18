@@ -407,6 +407,18 @@ Czynność główna: brak; bez wejścia zalecanego nie ma „Pokaż wejście na 
 | --- | --- |
 | Jedno wejście bez oznaczenia i nazwy | zwykły wiersz „Wejście” ze strzałką (US17.1) |
 
+### V2: wejścia z opisem położenia
+
+![Makieta V2 budynku C-19 z wejściami bez nazwy w danych: zdanie Zalecane wejście od strony C-20, od północy, drzwi 100 cm, a w grupie Wejścia wiersze Wejście i Wejście główne z opisem położenia pod nazwą](../../_generated/m-v2-karta-budynku-opis-polozenia.svg)
+
+Czynność główna: „Pokaż wejście na mapie”.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| Nazwa „Wejście” albo „Wejście główne”, gdy dane nie podają nazwy. Pod nazwą najpierw opis położenia, potem uwaga uczelni, gdy jest, i szerokość drzwi. Opis położenia w kolorze tekstu podstawowego i gęściej, reszta w kolorze tekstu drugorzędnego. Numerów nie ma | US2.1, BR-27, NFR-21 |
+| Zdanie pod nagłówkiem podaje opis położenia bez cudzysłowu: „Zalecane wejście od strony C-20, od północy. Drzwi 100 cm.” | US3.1, BR-25, BR-27 |
+| Na mapie podpis „Wejście” bez opisu; w arkuszu wejścia oba opisy stoją w części „Dojście” w tej samej kolejności | US3.3, BR-27 |
+
 ### V2: brak sieci
 
 ![Makieta V2 budynku A-1 bez internetu na całym ekranie: plakietka z datą danych nad nagłówkiem z Zamknij, chipy, wiersz o wejściach, wejścia, grupy z planów PWr, pierwsza bariera ze zdjęciem z telefonu, druga z napisem o zdjęciu po połączeniu](../../_generated/m-v2-karta-budynku-brak-sieci.svg)

@@ -821,8 +821,8 @@ components:
       properties:
         id: {type: string, description: "Identyfikator wejścia."}
         buildingSymbol: {type: string, description: "Budynek, do którego prowadzi wejście."}
-        name: {type: string, description: "Opis wejścia na karcie budynku, np. „Wejście bramą od ul. Norwida”; Wejście bez nazwy i opisu w danych ma nazwę z położenia, np. „Wejście od strony B-7, od wschodu”, a wejście z planów PWr z samym opisem — „Wejście” (BR-27). Brak przy wejściu `emergency`, `exit` i `garage` bez nazwy w danych."}
-        generatedName: {type: boolean, default: false, description: "Czy nazwę nadał import: „Wejście”, „Wejście główne” albo nazwa z położenia (BR-27). Taka nazwa nie jest nazwą w danych przy wyborze wejścia zalecanego (BR-25)."}
+        name: {type: string, description: "Opis wejścia na karcie budynku, np. „Wejście bramą od ul. Norwida”; wejście bez nazwy w danych ma nazwę „Wejście”, a główne z OpenStreetMap — „Wejście główne” (BR-27). Brak przy wejściu `emergency`, `exit` i `garage` bez nazwy w danych."}
+        generatedName: {type: boolean, default: false, description: "Czy nazwę nadał import: „Wejście” albo „Wejście główne” (BR-27). Taka nazwa nie jest nazwą w danych przy wyborze wejścia zalecanego (BR-25)."}
         type: {type: string, description: "Rodzaj wejścia z tagu OpenStreetMap `entrance`, np. `main`, `service`, `emergency`; brak, gdy dane go nie podają."}
         main: {type: boolean, description: "Czy to wejście główne."}
         location: {$ref: '#/components/schemas/GeoPoint', description: "Położenie wejścia."}
@@ -833,6 +833,7 @@ components:
           type: string
           description: Źródło oznaczenia. `IMPORT` — dane PWr albo OpenStreetMap, `WALKTHROUGH` — obchód (US17.3, BR-24).
           enum: [IMPORT, WALKTHROUGH]
+        placeDescription: {type: string, description: "Opis położenia wejścia bez nazwy w danych, który liczy serwer, np. „Od strony C-20, od północy.” albo „Od wschodu.”; stoi obok `approach`, nie zamiast. Brak przy wejściu z nazwą w danych (US2.1, US3.3, BR-27)."}
         approach: {type: string, description: "Opis dojścia do wejścia z danych, np. „Do wejścia prowadzą schody.”; brak, gdy dane go nie podają (US3.3, BR-27)."}
         doorWidthCm: {type: integer, minimum: 1, description: "Szerokość drzwi wejścia w centymetrach; brak, gdy dane jej nie podają albo podają 0 (US2.1, US3.3, BR-27)."}
         source: {$ref: '#/components/schemas/PwrSource', description: "Źródło danych wejścia, gdy wejście jest w warstwie wejść planów PWr; brak przy wejściu tylko z OpenStreetMap (US17.3, BR-24)."}

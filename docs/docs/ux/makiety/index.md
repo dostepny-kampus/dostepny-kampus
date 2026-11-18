@@ -118,6 +118,7 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 | V2 | brak sprawdzonych barier | [`m-v2-karta-budynku-pusty`](../../_generated/m-v2-karta-budynku-pusty.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | brak sieci | [`m-v2-karta-budynku-brak-sieci`](../../_generated/m-v2-karta-budynku-brak-sieci.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | wejścia bez nazw | [`m-v2-karta-budynku-wejscia-bez-nazw`](../../_generated/m-v2-karta-budynku-wejscia-bez-nazw.svg) | [odwiedzający](odwiedzajacy.md) |
+| V2 | wejścia z opisem położenia | [`m-v2-karta-budynku-opis-polozenia`](../../_generated/m-v2-karta-budynku-opis-polozenia.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | budynku nie ma w telefonie | [`m-v2-karta-budynku-brak-w-telefonie`](../../_generated/m-v2-karta-budynku-brak-w-telefonie.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | Zbierający | [`m-v2-karta-budynku-zbierajacy`](../../_generated/m-v2-karta-budynku-zbierajacy.svg) | [odwiedzający](odwiedzajacy.md) |
 | V4 | krok 1 z 3 | [`m-v4-krok-1`](../../_generated/m-v4-krok-1.svg) | [odwiedzający](odwiedzajacy.md) |

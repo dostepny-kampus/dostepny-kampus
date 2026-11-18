@@ -57,20 +57,21 @@ Funkcja: Oznaczenie wejścia
         | Czy_dostos „Tak”, Szerokosc 0, Uwagi „Wyjście ewakuacyjne z pomieszczenia 41” | wyjście ewakuacyjne, a nie wejście                                           |
         | Czy_dostos „Nie”, Szerokosc 0, Uwagi „Do wejścia prowadzą schody.”           | wejście „Wejście”, „niedostępne”, bez szerokości drzwi, opis „Do wejścia prowadzą schody.” |
 
-    @BR-27 @BR-25 @US2.1 @serwer
-    Szablon scenariusza: Import nazywa wejście bez nazwy i opisu z położenia
-      Zakładając, że w danych testowych warstwa wejść PWr ma przy A-1 wpisy bez uwag: <wpisy>
+    # @do-zrobienia #3309: serwer oddaje jeszcze nazwę z położenia z numerem.
+    @BR-27 @BR-25 @US2.1 @serwer @do-zrobienia
+    Szablon scenariusza: Import opisuje położenie wejścia bez nazwy
+      Zakładając, że w danych testowych warstwa wejść PWr ma przy A-1 wpisy: <wpisy>
       Jeżeli zakończy się import budynków
-      Wtedy wejścia A-1 z tych wpisów mają nazwy <nazwy>
+      Wtedy wejścia A-1 z tych wpisów mają nazwy <nazwy> i opisy położenia <opisy>
       Ale żadna z tych nazw nie daje pierwszeństwa przy wyborze wejścia zalecanego
 
       Przykłady:
-        | wpisy                                                                | nazwy                                                                          |
-        | jeden na wschodniej ścianie, 30 m od budynku B-7                     | „Wejście od strony B-7, od wschodu”                                            |
-        | jeden na wschodniej ścianie, bez innego budynku do 40 m              | „Wejście od wschodu”                                                           |
-        | dwa na wschodniej ścianie 20 m od siebie, 30 m od budynku C-14       | „Wejście od strony C-14, od wschodu (1)”, „Wejście od strony C-14, od wschodu (2)” |
-        | dwa na wschodniej ścianie 5 m od siebie, bez innego budynku do 40 m  | dwa razy „Wejście od wschodu”                                                  |
-        | jeden przy wejściu głównym z OpenStreetMap bez nazwy                 | „Wejście główne”                                                               |
+        | wpisy                                                                               | nazwy              | opisy                                  |
+        | jeden bez uwag na wschodniej ścianie, 30 m od budynku B-7                           | „Wejście”          | „Od strony B-7, od wschodu.”           |
+        | jeden bez uwag na wschodniej ścianie, bez innego budynku do 40 m                    | „Wejście”          | „Od wschodu.”                          |
+        | jeden z uwagą „Do wejścia prowadzą schody.” na wschodniej ścianie, bez budynku do 40 m | „Wejście”          | „Od wschodu.”                          |
+        | dwa bez uwag na wschodniej ścianie 20 m od siebie, 30 m od budynku C-14             | dwa razy „Wejście” | dwa razy „Od strony C-14, od wschodu.” |
+        | jeden przy wejściu głównym z OpenStreetMap bez nazwy, bez innego budynku do 40 m    | „Wejście główne”   | „Od wschodu.”                          |
 
   Reguła: Wspólną datę i źródło ekran podaje raz, a różne przy każdym wejściu
 

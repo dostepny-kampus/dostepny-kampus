@@ -112,6 +112,21 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy wejścia „niedostępne” stoją w kolejności „Wejście "A"”, „Wejście "C"”, „Wejście "E"”
     Oraz wejście bez nazwy w danych stoi po nich
 
+  # @do-zrobienia #3310: aplikacja pokazuje jeszcze nazwę z położenia.
+  @US2.1 @US3.3 @BR-27 @aplikacja @do-zrobienia
+  Scenariusz: Wejście bez nazwy w danych ma na karcie opis położenia pod nazwą
+    # Dane testowe, a nie stan faktyczny budynku C-19.
+    Zakładając, że w danych testowych jedyne wejście C-19 z oznaczeniem „dostępne” nie ma nazwy
+    Oraz ma uwagę uczelni „Do wejścia prowadzi rampa.” i drzwi 100 cm
+    Oraz serwer podaje dla niego opis położenia „Od strony C-20, od północy.”
+    Jeżeli Gość niezalogowany otworzy kartę budynku C-19
+    Wtedy pod nagłówkiem stoi zdanie „Zalecane wejście od strony C-20, od północy. Drzwi 100 cm.”
+    Oraz w grupie „Wejścia” to wejście ma nazwę „Wejście”
+    Oraz pod nazwą stoi najpierw „Od strony C-20, od północy.”, a potem „Do wejścia prowadzi rampa.”
+    Jeżeli dotknie wiersza tego wejścia
+    Wtedy wejście na mapie ma podpis „Wejście”
+    Oraz część „Dojście” arkusza wejścia podaje oba opisy w tej samej kolejności
+
   @BR-25 @aplikacja
   Scenariusz: Przy kilku wejściach dostępnych bez głównego zalecane jest wejście z nazwą
     # Dane testowe, a nie stan faktyczny budynku C-13.
