@@ -19,73 +19,68 @@ import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 internal fun sheetBackOffset(progress: Float, height: Dp): Dp = height * progress
 
 /**
- * Arkusz V2: rozwinięty na połowę albo całe okno albo mała karta o wysokości treści ([isExpanded]) i postęp gestu
- * „Wstecz” w toku ([progress]).
+ * Arkusz V2: rozwinięty albo mała karta o wysokości treści ([isExpanded]) i postęp gestu „Wstecz” w toku
+ * ([progress]).
  */
 internal data class SheetState(val isExpanded: Boolean = false, val progress: Float = 0f)
 
 /**
- * Wysokość arkusza V2: zamknięty, niski z małą kartą, połowa okna i całe okno.
+ * Wysokość arkusza V2: zamknięty, niski z małą kartą i rozwinięty: do góry okna albo, przy treści mieszczącej się
+ * w połowie okna, do wysokości treści.
  *
  * Wymagania: US2, US2.8
  */
 internal enum class SheetHeight {
     Closed,
     Low,
-    Half,
     Full,
 }
 
 /** Czy na tej wysokości karta pokazuje pełny opis. Wymagania: US2.8 */
 internal val SheetHeight.isExpanded: Boolean
-    get() = this == SheetHeight.Half || this == SheetHeight.Full
+    get() = this == SheetHeight.Full
 
-/** Wysokość o stopień wyżej; `null` na całym oknie. Wymagania: US2.8, NFR-18 */
-internal fun SheetHeight.higher(): SheetHeight? =
-    when (this) {
-        SheetHeight.Closed, SheetHeight.Low -> SheetHeight.Half
-        SheetHeight.Half -> SheetHeight.Full
-        SheetHeight.Full -> null
-    }
-
-/** Wysokość o stopień niżej, bez zamknięcia; `null` na niskiej. Wymagania: US2.8, NFR-18 */
-internal fun SheetHeight.lower(): SheetHeight? =
-    when (this) {
-        SheetHeight.Full -> SheetHeight.Half
-        SheetHeight.Half -> SheetHeight.Low
-        SheetHeight.Low, SheetHeight.Closed -> null
-    }
-
-/** Wysokość po dotknięciu uchwytu: następna wyższa, a z całego okna znowu niska. Wymagania: US2.8, NFR-53 */
-internal fun SheetHeight.next(): SheetHeight = higher() ?: SheetHeight.Low
+/** Wysokość po dotknięciu uchwytu: z niskiej od razu rozwinięta, z rozwiniętej niska. Wymagania: US2.8, NFR-53 */
+internal fun SheetHeight.next(): SheetHeight = if (this == SheetHeight.Full) SheetHeight.Low else SheetHeight.Full
 
 /**
- * Wysokości osiągalne jednym gestem z tej: ona sama i sąsiednie, z niskiej także zamknięcie.
+ * Wysokości osiągalne jednym gestem z tej: z niskiej obie i zamknięcie, z rozwiniętej obie bez zamknięcia.
  *
  * Wymagania: US2.8, NFR-53
  */
 internal fun SheetHeight.reach(): Set<SheetHeight> =
     when (this) {
-        SheetHeight.Closed, SheetHeight.Low -> setOf(SheetHeight.Closed, SheetHeight.Low, SheetHeight.Half)
-        SheetHeight.Half -> setOf(SheetHeight.Low, SheetHeight.Half, SheetHeight.Full)
-        SheetHeight.Full -> setOf(SheetHeight.Half, SheetHeight.Full)
+        SheetHeight.Closed, SheetHeight.Low -> setOf(SheetHeight.Closed, SheetHeight.Low, SheetHeight.Full)
+        SheetHeight.Full -> setOf(SheetHeight.Low, SheetHeight.Full)
     }
 
 /**
+ * Odległość góry rozwiniętego arkusza od góry okna wysokiego na [window] px: zero, a gdy rozwinięta treść [content]
+ * mieści się w połowie okna, tyle, by arkusz miał wysokość treści. Nie niżej niż niska karta [low]; treść 0 to
+ * jeszcze nie zmierzona, więc do góry okna.
+ *
+ * Wymagania: US2.8, NFR-53
+ */
+internal fun expandedTop(window: Float, low: Float, content: Float): Float {
+    val top = if (content > 0f && content * 2 <= window) window - content else 0f
+    return minOf(a = top, b = window - low)
+}
+
+/**
  * Kotwice arkusza w oknie wysokim na [window] px: odległość góry arkusza od góry okna dla wysokości z [reach], gdy
- * niska karta ma [low] px. Połowa okna nie stoi niżej niż niska karta.
+ * niska karta ma [low] px, a rozwinięta treść [content] px (wysokość rozwinięta według [expandedTop]).
  *
  * Wymagania: US2, US2.8
  */
 internal fun sheetAnchors(
     window: Float,
     low: Float,
+    content: Float = 0f,
     reach: Set<SheetHeight> = SheetHeight.entries.toSet(),
 ): DraggableAnchors<SheetHeight> {
     val positions =
         mapOf(
-            SheetHeight.Full to 0f,
-            SheetHeight.Half to minOf(a = window / 2, b = window - low),
+            SheetHeight.Full to expandedTop(window = window, low = low, content = content),
             SheetHeight.Low to window - low,
             SheetHeight.Closed to window,
         )

@@ -10,8 +10,7 @@
     <string name="zmierz_i_zglos">Zmierz i zgłoś barierę</string>
     <string name="wysokosc_karty">Wysokość karty</string>
     <string name="wysokosc_niska">niska</string>
-    <string name="wysokosc_polowa">połowa ekranu</string>
-    <string name="wysokosc_caly">cały ekran</string>
+    <string name="wysokosc_rozwinieta">rozwinięta</string>
     <string name="rozwin">Rozwiń</string>
     <string name="zwin">Zwiń</string>
 </resources>

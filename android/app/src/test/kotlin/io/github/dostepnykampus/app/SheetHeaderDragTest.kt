@@ -41,8 +41,8 @@ private const val SWIPE_MILLIS = 600L
 private val DRAG = 160.dp
 
 /**
- * Arkusz V2 na całym ekranie z przewiniętą treścią: przeciągnięcie w dół po nagłówku karty opuszcza kartę o stopień,
- * tak jak przeciągnięcie uchwytu, a na połowie ekranu treść stoi od początku.
+ * Arkusz V2 na całym ekranie z przewiniętą treścią: przeciągnięcie w dół po nagłówku karty opuszcza kartę na niską
+ * wysokość, tak jak przeciągnięcie uchwytu, a mała karta po rozwinięciu znowu zaczyna treść od początku.
  *
  * Wymagania: US2.8, NFR-53
  */
@@ -53,45 +53,50 @@ class SheetHeaderDragTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     /**
-     * Wiersz: V2, cały ekran, treść przewinięta: przeciągnięcie nagłówka w dół → połowa ekranu.
+     * Wiersz: V2, cały ekran, treść przewinięta: przeciągnięcie nagłówka w dół → niska wysokość.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Uchwyt zmienia wysokość karty bez przeciągania
      */
     @Test
     fun lowersOnHeaderDrag() {
         openScrolledFull()
         dragDown(compose.onNodeWithText(NAME))
-        assertEquals("połowa ekranu po przeciągnięciu nagłówka", (map() / 2).value, handleTop().value, 1f)
+        compose.onNode(sheetHandle(isExpanded = false)).assertExists("niska po przeciągnięciu nagłówka")
     }
 
     /**
-     * Wiersz: V2, cały ekran, treść przewinięta: przeciągnięcie nagłówka w dół → połowa ekranu z początkiem treści.
+     * Wiersz: V2, cały ekran, treść przewinięta: przeciągnięcie nagłówka w dół i rozwinięcie → początek treści.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Uchwyt zmienia wysokość karty bez przeciągania
      */
     @Test
     fun showsStartAfterHeaderDrag() {
         val start = openScrolledFull()
         dragDown(compose.onNodeWithText(NAME))
-        assertEquals("połowa ekranu po przeciągnięciu nagłówka", (map() / 2).value, handleTop().value, 1f)
-        assertEquals("początek treści pod nagłówkiem na połowie", start.value, firstBelowHeader().value, 1f)
+        expandAgain()
+        assertEquals("początek treści pod nagłówkiem po rozwinięciu", start.value, firstBelowHeader().value, 1f)
     }
 
     /**
-     * Wiersz: V2, cały ekran, treść przewinięta: przeciągnięcie uchwytu w dół → połowa ekranu z początkiem treści.
+     * Wiersz: V2, cały ekran, treść przewinięta: przeciągnięcie uchwytu w dół i rozwinięcie → początek treści.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Uchwyt zmienia wysokość karty bez przeciągania
      */
     @Test
     fun showsStartAfterHandleDrag() {
         val start = openScrolledFull()
         dragDown(compose.onNodeWithContentDescription(EXPAND_HANDLE))
-        assertEquals("połowa ekranu po przeciągnięciu uchwytu", (map() / 2).value, handleTop().value, 1f)
-        assertEquals("początek treści pod nagłówkiem na połowie", start.value, firstBelowHeader().value, 1f)
+        expandAgain()
+        assertEquals("początek treści pod nagłówkiem po rozwinięciu", start.value, firstBelowHeader().value, 1f)
+    }
+
+    private fun expandAgain() {
+        compose.onNode(sheetHandle(isExpanded = false)).performClick()
+        compose.waitForIdle()
+        assertEquals("cały ekran po rozwinięciu", 0f, handleTop().value, 1f)
     }
 
     private fun openScrolledFull(): Dp {
         compose.openCardOverMap { BuildingCard(symbol = "A-1", state = ready(), isOnline = true, onRetry = {}) }
-        val handle = compose.onNodeWithContentDescription(EXPAND_HANDLE)
-        handle.performClick()
-        handle.performClick()
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
+        compose.waitForIdle()
         assertEquals("cały ekran", 0f, handleTop().value, 1f)
         val start = firstBelowHeader()
         compose.onNodeWithText(LAST).performScrollTo()
