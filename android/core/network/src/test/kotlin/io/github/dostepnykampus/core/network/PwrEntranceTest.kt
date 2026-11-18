@@ -8,15 +8,16 @@ package io.github.dostepnykampus.core.network
 import io.github.dostepnykampus.core.model.building.AssessmentSource
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.network.building.decodeBuildingDetails
+import io.github.dostepnykampus.core.network.building.decodeBuildingList
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 /**
- * Dane wejścia z warstwy wejść planów PWr w karcie budynku `GET /buildings/{symbol}`: opis dojścia, szerokość drzwi
- * i źródło oznaczenia.
+ * Dane wejścia z warstwy wejść planów PWr w karcie budynku `GET /buildings/{symbol}` i w liście `GET /buildings`:
+ * opis dojścia, szerokość drzwi i źródło oznaczenia.
  *
- * Wymagania: US2.1, US3.3, US17.3, BR-24, BR-27
+ * Wymagania: US2.1, US3.3, US17.3, BR-24, BR-27, US1.4
  */
 class PwrEntranceTest {
     /**
@@ -71,13 +72,38 @@ class PwrEntranceTest {
         assertEquals(0, entrance.doorWidthCm, "szerokość 0 to brak szerokości")
     }
 
+    /**
+     * Wiersz: lista budynków z wejściem tylko z planów PWr → budynek listy ma to samo wejście co karta; budynek bez
+     *   pola `entrances` nie ma wejść.
+     *
+     * Wymagania: US1.4, BR-27
+     */
+    @Test
+    fun readsEntranceInList() {
+        val fields = """"approach":"Do wejścia prowadzą schody.","doorWidthCm":90,"source":"$PWR","""
+        val listed =
+            Json.decodeBuildingList(
+                """{"source":"","buildings":[{"symbol":"A-1","detailLevel":"DETAILED","outline":$OUTLINE,""" +
+                    """"entrances":[${entranceJson(fields, "IMPORT")}]},""" +
+                    """{"symbol":"A-2","detailLevel":"BASIC","outline":$OUTLINE}]}""",
+            )
+        assertEquals(
+            listOf(listOf(entrance(fields)), emptyList()),
+            listed.buildings.map { it.entrances },
+            "wejścia budynków z listy",
+        )
+    }
+
+    private fun entranceJson(fields: String, markingSource: String): String =
+        """{"id":"pwr/1","buildingSymbol":"A-1","name":"Wejście","main":false,$fields""" +
+            """"location":{"type":"Point","coordinates":[17,51]},"marking":"ACCESSIBLE",""" +
+            """"markingDate":"2024-10-12","markingSource":"$markingSource"}"""
+
     private fun entrance(fields: String, markingSource: String = "IMPORT"): Entrance =
         Json
             .decodeBuildingDetails(
                 """{"symbol":"A-1","detailLevel":"DETAILED","outline":$OUTLINE,"entrances":[""" +
-                    """{"id":"pwr/1","buildingSymbol":"A-1","name":"Wejście","main":false,$fields""" +
-                    """"location":{"type":"Point","coordinates":[17,51]},"marking":"ACCESSIBLE",""" +
-                    """"markingDate":"2024-10-12","markingSource":"$markingSource"}]}""",
+                    """${entranceJson(fields, markingSource)}]}""",
             ).entrances
             .single()
 
