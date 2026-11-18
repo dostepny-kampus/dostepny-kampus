@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
@@ -45,10 +46,13 @@ private const val BUTTON = "Pokaż wyjścia ewakuacyjne (2)"
 private const val HIDE = "Ukryj wyjścia ewakuacyjne (2)"
 private const val ROOM_41 = "Wyjście ewakuacyjne z pomieszczenia 41"
 private const val STAIRS = "Wyjście ewakuacyjne na klatkę schodową"
+private const val TITLE = "Wyjście ewakuacyjne"
+private const val ROOM_41_DETAIL = "Z pomieszczenia 41."
+private const val STAIRS_DETAIL = "Na klatkę schodową."
 
 /**
  * Wyjścia ewakuacyjne z planów PWr na V2: przycisk z liczbą pod grupą „Wejścia”, lista rozwijana jak piętra,
- * w wierszu opis i szerokość drzwi z danych, bez dotyku wiersza.
+ * w wierszu pogrubione „Wyjście ewakuacyjne”, reszta opisu i szerokość drzwi z danych, bez dotyku wiersza.
  *
  * Wymagania: US2.6, BR-27, NFR-17, NFR-18
  */
@@ -72,12 +76,12 @@ class EvacuationExitsTest {
         val button = compose.onNodeWithText(BUTTON, useUnmergedTree = true).getUnclippedBoundsInRoot()
         val floors = compose.onNodeWithText("Piętra", useUnmergedTree = true).getUnclippedBoundsInRoot()
         assertTrue("przycisk nie stoi pod wejściami", button.top >= entrance.bottom && button.bottom <= floors.top)
-        compose.onAllNodes(hasText(ROOM_41), useUnmergedTree = true).assertCountEquals(0)
+        compose.onAllNodes(hasText(ROOM_41_DETAIL), useUnmergedTree = true).assertCountEquals(0)
     }
 
     /**
-     * Wiersz: dotknięcie „Pokaż wyjścia ewakuacyjne (2)” → lista obu wyjść z opisem; „Szerokość drzwi: 90 cm” tylko
-     *   przy wyjściu z szerokością w danych; wiersz wyjścia niczego nie otwiera.
+     * Wiersz: dotknięcie „Pokaż wyjścia ewakuacyjne (2)” → lista obu wyjść, każde z „Wyjście ewakuacyjne” i resztą
+     *   opisu; „Szerokość drzwi: 90 cm” tylko przy wyjściu z szerokością w danych; wiersz niczego nie otwiera.
      *
      * Wymagania: US2.6, BR-27
      */
@@ -85,8 +89,9 @@ class EvacuationExitsTest {
     fun expandsExitList() {
         exits(EXITS)
         compose.onNodeWithText(BUTTON, useUnmergedTree = true).performClick()
-        compose.onNodeWithText(ROOM_41, useUnmergedTree = true).assertExists()
-        compose.onNodeWithText(STAIRS, useUnmergedTree = true).assertExists()
+        compose.onAllNodes(hasText(TITLE), useUnmergedTree = true).assertCountEquals(2)
+        compose.onNodeWithText(ROOM_41_DETAIL, useUnmergedTree = true).assertExists()
+        compose.onNodeWithText(STAIRS_DETAIL, useUnmergedTree = true).assertExists()
         compose.onAllNodes(hasText("Szerokość drzwi: 90 cm"), useUnmergedTree = true).assertCountEquals(1)
         compose.onAllNodes(hasClickAction()).assertCountEquals(1)
     }
@@ -106,26 +111,53 @@ class EvacuationExitsTest {
         compose.onAllNodes(hasText(BUTTON)).assertCountEquals(0)
         compose.onNodeWithText(HIDE).performClick()
         compose.onNode(hasText(BUTTON) and state("zwinięte")).assertExists()
-        compose.onAllNodes(hasText(ROOM_41), useUnmergedTree = true).assertCountEquals(0)
+        compose.onAllNodes(hasText(ROOM_41_DETAIL), useUnmergedTree = true).assertCountEquals(0)
     }
 
     /**
-     * Wiersz: opis i szerokość drzwi w wierszu wyjścia zwykłą wagą, jak opis dojścia wejścia, nie jak nazwa wejścia.
+     * Wiersz: wiersz wyjścia jak wiersz wejścia bez nazwy: „Wyjście ewakuacyjne” wagą nazwy wejścia, a reszta opisu
+     *   i szerokość drzwi zwykłą wagą, jak opis dojścia.
      *
-     * Wymagania: US2.6
+     * Wymagania: US2.6, NFR-21
      */
     @Test
-    fun writesExitRowInPlainWeight() {
+    fun writesTitleBoldDetailPlain() {
         exits(EXITS)
         compose.onNodeWithText(BUTTON).performClick()
-        listOf(ROOM_41, "Szerokość drzwi: 90 cm").forEach { text ->
-            val layouts = mutableListOf<TextLayoutResult>()
-            compose
-                .onNodeWithText(text, useUnmergedTree = true)
-                .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
-            val weight = layouts.single().layoutInput.style.fontWeight ?: FontWeight.Normal
-            assertEquals("waga tekstu „$text”", FontWeight.Normal, weight)
+        assertEquals("waga „$TITLE”", Typografia.wyroznienieWaga, weightOf(TITLE))
+        listOf(ROOM_41_DETAIL, "Szerokość drzwi: 90 cm").forEach { text ->
+            assertEquals("waga tekstu „$text”", FontWeight.Normal, weightOf(text))
         }
+    }
+
+    /**
+     * Wiersz: opis z danych bez początkowego „Wyjście ewakuacyjne”, od wielkiej litery i z kropką; opis bez tego
+     *   początku w całości; sam początek bez opisu pod spodem.
+     *
+     * Wymagania: US2.6, BR-27
+     */
+    @Test
+    fun splitsTitleFromDetail() {
+        val cases =
+            mapOf(
+                "Wyjście ewakuacyjne z bufetu (pomieszczenie 42)" to "Z bufetu (pomieszczenie 42).",
+                "Wyjście ewakuacyjne z pomieszczenia 41." to ROOM_41_DETAIL,
+                "wyjście ewakuacyjne: na dziedziniec" to "Na dziedziniec.",
+                "Klatka schodowa B" to "Klatka schodowa B.",
+                "Wyjście ewakuacyjne" to "",
+                "Wyjście ewakuacyjnego brak" to "Wyjście ewakuacyjnego brak.",
+            )
+        cases.forEach { (description, detail) ->
+            assertEquals("opis „$description”", detail, exitDetail(description = description, title = TITLE))
+        }
+    }
+
+    private fun weightOf(text: String): FontWeight {
+        val layouts = mutableListOf<TextLayoutResult>()
+        compose
+            .onAllNodes(hasText(text), useUnmergedTree = true)[0]
+            .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+        return layouts.single().layoutInput.style.fontWeight ?: FontWeight.Normal
     }
 
     /**
