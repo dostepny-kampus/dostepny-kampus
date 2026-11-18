@@ -7,6 +7,7 @@ package io.github.dostepnykampus.core.data.server
 
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EvacuationExit
 import io.github.dostepnykampus.core.model.submission.Submission
 
 /**
@@ -50,8 +51,13 @@ public data class ServerBuildings(val source: String, val buildings: List<Buildi
  *
  * @property building budynek karty
  * @property entrances wejścia budynku
+ * @property evacuationExits wyjścia ewakuacyjne budynku; pusta lista, gdy serwer ich nie podał
  */
-public data class ServerCard(val building: Building, val entrances: List<Entrance>)
+public data class ServerCard(
+    val building: Building,
+    val entrances: List<Entrance>,
+    val evacuationExits: List<EvacuationExit> = emptyList(),
+)
 
 /** Wynik edycji zgłoszenia z wersją bazową na serwerze. Wymagania: US9.3, BR-10 */
 public sealed interface ServerEdit {
