@@ -13,7 +13,7 @@ Konwencje opisuje strona [Makiety](index.md). Stan, który różni się jednym n
 | L1 Prośba o logowanie | zwykły, brak sieci | wejście z „Konto”, błąd |
 | L2 Konto | Odwiedzający, rola pracownicza, klauzula, wycofanie zgody | brak sieci |
 
-Pole tekstowe, mapa z podpisem OpenStreetMap i przyciski mapy pochodzą z `_wspolne.iuml`, tak jak na C1 i R1. W pliku `_odwiedzajacy.iuml` są numer kroku V4 i V5 oraz części karty budynku V2: nagłówek karty, wiersz o wejściach, góra karty, wejście, grupy z planów PWr i dół karty. Każdy przycisk na pełną szerokość ma tę samą szerokość na wszystkich ekranach.
+Pole tekstowe, mapa z podpisem OpenStreetMap i przyciski mapy pochodzą z `_wspolne.iuml`, tak jak na C1 i R1. W pliku `_odwiedzajacy.iuml` jest numer kroku V4 i V5. Są tam też części karty budynku V2: nagłówek, wiersz o wejściach, góra karty, wejście, grupy z planów PWr i dół karty. Każdy przycisk na pełną szerokość ma tę samą szerokość na wszystkich ekranach.
 
 ## V1 Mapa kampusu
 
@@ -217,9 +217,9 @@ Czynność główna: brak; odpowiedź, którym wejściem wejść, podała już k
 | Wejście zaznaczone pinezką z podpisem nazwy; kamera stoi na wejściu | US3.3, NFR-19 |
 | Znak oznaczenia, nagłówek „Wejście, budynek A-1” i obrysowany „Zamknij”; po otwarciu fokus TalkBack na nagłówku | US2.1, NFR-18, NFR-21, NFR-53 |
 | Pod słowem oznaczenia „Zalecane.”, data i źródło | US17.3, BR-24, BR-25, PW-3 |
-| Części „Dojście”, „Drzwi” z szerokością i „Za drzwiami” z windą i odległością w linii prostej; część bez danych nie stoi, a przy wejściu z planów PWr nie ma „Za drzwiami” | US3.3, US16.3, BR-25 |
+| Części „Dojście”, „Drzwi” z szerokością i „Za drzwiami” z windą i odległością w linii prostej. Część bez danych nie stoi. Przy wejściu z planów PWr nie ma „Za drzwiami” | US3.3, US16.3, BR-25 |
 | „Bariery przy tym wejściu”: typ i uciążliwość jako zastępniki, bo deklaracja A-1 nie podaje barier przy tym wejściu | US2.2, US3.3, PW-3 |
-| „Inne wejście dostępne” z obrysowanym „Pokaż to wejście na mapie”; zastępnik pokazuje układ, bo według deklaracji A-1 ma jedno wejście dostępne, więc w danych A-1 tej części nie ma | US3.3, NFR-18 |
+| „Inne wejście dostępne” z obrysowanym „Pokaż to wejście na mapie”. Zastępnik pokazuje tylko układ: według deklaracji A-1 ma jedno wejście dostępne, więc w danych A-1 tej części nie ma | US3.3, NFR-18 |
 | „Zgłoś barierę przy wejściu” na końcu arkusza: V4 z wybranym wejściem, Gość: L1 | US4.6, US14.2, WCAG 2.5.3 |
 
 | Stan bez osobnej makiety | Co się zmienia |
