@@ -254,8 +254,10 @@ final class BuildingsHttpIT {
     private static String listedUnnamed() {
         return """
             {"source":"© OpenStreetMap contributors","buildings":[
-            {"symbol":"A-1","name":"Budynek A-1","detailLevel":"BASIC","outline":%s},
-            {"symbol":"C-13","detailLevel":"DETAILED","outline":%s}
+            {"symbol":"A-1","name":"Budynek A-1","detailLevel":"BASIC","outline":%s,
+            "entrances":[]},
+            {"symbol":"C-13","detailLevel":"DETAILED","outline":%s,
+            "entrances":[]}
             ]}
             """.formatted(BuildingsHttpIT.west(), BuildingsHttpIT.east());
     }
@@ -271,8 +273,10 @@ final class BuildingsHttpIT {
     private static String listed() {
         return """
             {"source":"© OpenStreetMap contributors","buildings":[
-            {"symbol":"A-1","name":"Budynek A-1","detailLevel":"BASIC","outline":%s},
-            {"symbol":"C-13","name":"Budynek C-13","detailLevel":"DETAILED","outline":%s}
+            {"symbol":"A-1","name":"Budynek A-1","detailLevel":"BASIC","outline":%s,
+            "entrances":[]},
+            {"symbol":"C-13","name":"Budynek C-13","detailLevel":"DETAILED","outline":%s,
+            "entrances":[]}
             ]}
             """.formatted(BuildingsHttpIT.west(), BuildingsHttpIT.east());
     }

@@ -8,6 +8,7 @@ package io.github.dostepnykampus.building;
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.SampleBuilding;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.StreamSupport;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,14 +25,14 @@ import tools.jackson.databind.ObjectMapper;
 
 /**
  * Kontrakt odczytu budynku: pełne metadane wejść, wejście główne
- * przed pozostałymi, dane wejść z planów PWr, wyjścia ewakuacyjne, próg podpowiedzi 50 m
- * i piętra budynku.
+ * przed pozostałymi, dane wejść z planów PWr w karcie i w liście budynków, wyjścia
+ * ewakuacyjne, próg podpowiedzi 50 m i piętra budynku.
  *
  * <p>Geometria przy równiku jest niezależna od danych kampusu. Punkty
  * oddalone o 49 i 51 m od północnej krawędzi powstają przez ST_Project;
  * margines jednego metra nie zależy od zaokrąglenia na granicy 50 m.</p>
  *
- * <p>Wymagania: US17.3, US2.1, BR-G4, US16.1, US16.2, NFR-40, BR-24, BR-27, US2.6</p>
+ * <p>Wymagania: US17.3, US2.1, BR-G4, US16.1, US16.2, NFR-40, BR-24, BR-27, US2.6, US1.4</p>
  *
  * @since 0.1.0
  */
@@ -89,6 +90,25 @@ final class BuildingReadContractIT {
             "Dane wejść z planów PWr albo pierwszeństwo oznaczenia nie zgadzają się z kontraktem",
             BuildingReadContractIT.get(context, "/buildings/G-900").required("entrances"),
             Matchers.equalTo(
+                context.getBean(ObjectMapper.class)
+                    .readTree(BuildingReadContractIT.pwrEntrances())
+            )
+        );
+    }
+
+    @Test
+    void listsBuildingWithSameEntrancesAsCard(final WebApplicationContext context)
+        throws Exception {
+        BuildingReadContractIT.insertPwrEntrances(context);
+        MatcherAssert.assertThat(
+            "Wejścia budynku w liście nie są tymi samymi wejściami co w karcie",
+            StreamSupport.stream(
+                BuildingReadContractIT.get(context, "/buildings").required("buildings")
+                    .spliterator(),
+                false
+            ).filter(building -> "G-900".equals(building.path("symbol").asString()))
+                .map(building -> building.required("entrances")).toList(),
+            Matchers.contains(
                 context.getBean(ObjectMapper.class)
                     .readTree(BuildingReadContractIT.pwrEntrances())
             )
