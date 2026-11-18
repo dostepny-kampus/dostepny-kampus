@@ -24,13 +24,13 @@ import tools.jackson.databind.ObjectMapper;
 
 /**
  * Kontrakt odczytu budynku: pełne metadane wejść, wejście główne
- * przed pozostałymi, próg podpowiedzi 50 m i piętra budynku.
+ * przed pozostałymi, dane wejść z planów PWr, próg podpowiedzi 50 m i piętra budynku.
  *
  * <p>Geometria przy równiku jest niezależna od danych kampusu. Punkty
  * oddalone o 49 i 51 m od północnej krawędzi powstają przez ST_Project;
  * margines jednego metra nie zależy od zaokrąglenia na granicy 50 m.</p>
  *
- * <p>Wymagania: US17.3, US2.1, BR-G4, US16.1, US16.2, NFR-40</p>
+ * <p>Wymagania: US17.3, US2.1, BR-G4, US16.1, US16.2, NFR-40, BR-24, BR-27</p>
  *
  * @since 0.1.0
  */
@@ -75,6 +75,21 @@ final class BuildingReadContractIT {
             Matchers.equalTo(
                 context.getBean(ObjectMapper.class)
                     .readTree(BuildingReadContractIT.entrances())
+            )
+        );
+    }
+
+    @Test
+    void showsPwrEntranceDataWithWalkthroughMarkingFirst(
+        final WebApplicationContext context
+    ) throws Exception {
+        BuildingReadContractIT.insertPwrEntrances(context);
+        MatcherAssert.assertThat(
+            "Dane wejść z planów PWr albo pierwszeństwo oznaczenia nie zgadzają się z kontraktem",
+            BuildingReadContractIT.get(context, "/buildings/G-900").required("entrances"),
+            Matchers.equalTo(
+                context.getBean(ObjectMapper.class)
+                    .readTree(BuildingReadContractIT.pwrEntrances())
             )
         );
     }
@@ -203,6 +218,51 @@ final class BuildingReadContractIT {
             {"id":"f1b","label":"1 piętro B","order":1},
             {"id":"f2","label":"2 piętro","order":2}
             ]}
+            """;
+    }
+
+    private static void insertPwrEntrances(final WebApplicationContext context) {
+        final JdbcClient jdbc = context.getBean(JdbcClient.class);
+        jdbc.sql(
+            """
+            INSERT INTO entrances (id, building_symbol, name, main, location, marking,
+                marking_date, marking_source, pwr_name, pwr_marking, approach, door_width_cm)
+            VALUES ('node/5', 'G-900', 'W-1', true, ST_SetSRID(ST_MakePoint(0.0005, 0), 4326),
+                'NO_DATA', DATE '2026-11-01', 'IMPORT', 'Wejście Cesarskie', 'ACCESSIBLE',
+                'Od ul. Wybrzeże.', 120),
+                ('node/6', 'G-900', NULL, false, ST_SetSRID(ST_MakePoint(0, 0.0005), 4326),
+                'INACCESSIBLE', DATE '2026-11-02', 'WALKTHROUGH', 'Wejście', 'ACCESSIBLE',
+                NULL, NULL),
+                ('node/7', 'G-900', 'Wejście boczne', false,
+                ST_SetSRID(ST_MakePoint(0.001, 0.0005), 4326), 'NO_DATA', DATE '2026-11-01',
+                'IMPORT', NULL, NULL, NULL, NULL),
+                ('pwr/s00000001', 'G-900', 'Wejście', false,
+                ST_SetSRID(ST_MakePoint(0.0005, 0.001), 4326), 'INACCESSIBLE',
+                DATE '2026-11-01', 'IMPORT', 'Wejście', 'INACCESSIBLE',
+                'Do wejścia prowadzą schody.', 90)
+            """
+        ).update();
+    }
+
+    private static String pwrEntrances() {
+        return """
+            [{"id":"node/5","buildingSymbol":"G-900","name":"Wejście Cesarskie","main":true,
+            "location":{"type":"Point","coordinates":[0.0005,0]},
+            "marking":"ACCESSIBLE","markingDate":"2026-11-01","markingSource":"IMPORT",
+            "approach":"Od ul. Wybrzeże.","doorWidthCm":120,
+            "source":"Politechnika Wrocławska"},
+            {"id":"node/6","buildingSymbol":"G-900","name":"Wejście","main":false,
+            "location":{"type":"Point","coordinates":[0,0.0005]},
+            "marking":"INACCESSIBLE","markingDate":"2026-11-02",
+            "markingSource":"WALKTHROUGH","source":"Politechnika Wrocławska"},
+            {"id":"node/7","buildingSymbol":"G-900","name":"Wejście boczne","main":false,
+            "location":{"type":"Point","coordinates":[0.001,0.0005]},
+            "marking":"NO_DATA","markingDate":"2026-11-01","markingSource":"IMPORT"},
+            {"id":"pwr/s00000001","buildingSymbol":"G-900","name":"Wejście","main":false,
+            "location":{"type":"Point","coordinates":[0.0005,0.001]},
+            "marking":"INACCESSIBLE","markingDate":"2026-11-01","markingSource":"IMPORT",
+            "approach":"Do wejścia prowadzą schody.","doorWidthCm":90,
+            "source":"Politechnika Wrocławska"}]
             """;
     }
 

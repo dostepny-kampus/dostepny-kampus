@@ -10,6 +10,7 @@ import io.github.dostepnykampus.building.domain.Building;
 import io.github.dostepnykampus.building.domain.BuildingCard;
 import io.github.dostepnykampus.building.domain.BuildingList;
 import io.github.dostepnykampus.building.domain.Buildings;
+import io.github.dostepnykampus.building.domain.Door;
 import io.github.dostepnykampus.building.domain.Entrance;
 import io.github.dostepnykampus.building.domain.Floor;
 import io.github.dostepnykampus.building.domain.FloorList;
@@ -21,16 +22,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import org.jspecify.annotations.Nullable;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 
 /**
  * Odczyt REST budynków: lista na mapie, podpowiedź budynku dla punktu i karta budynku
- * z wejściami. Zawieranie punktu liczy tylko {@link Outlines}, więc podpowiedź i budynek
+ * z wejściami. Nazwa wejścia z planów PWr wygrywa z nazwą
+ * z OpenStreetMap; oznaczenie z obchodu wygrywa z oznaczeniem z planów PWr, a to z oznaczeniem
+ * z OpenStreetMap. Zawieranie punktu liczy tylko {@link Outlines}, więc podpowiedź i budynek
  * zapisany przy zgłoszeniu szybkim są zawsze równe. Atrybucja listy to źródła konturów
  * bez powtórzeń, alfabetycznie, rozdzielone średnikiem; pusta tabela ma pustą atrybucję.
  *
- * <p>Wymagania: US1, BR-G2, US2, BR-14, NFR-40, US16</p>
+ * <p>Wymagania: US1, BR-G2, US2, BR-14, NFR-40, US16, BR-24, BR-27</p>
  *
  * @since 0.1.0
  */
@@ -143,9 +147,12 @@ public final class BuildingQuery implements Buildings {
     private List<Entrance> entrances(final String symbol) {
         return this.jdbc.sql(
             """
-            SELECT id, building_symbol, name, type, main,
-                ST_AsGeoJSON(location) AS location, floor_id, marking,
-                marking_date::text AS marking_date, marking_source
+            SELECT id, COALESCE(pwr_name, name) AS name, type, main,
+                ST_AsGeoJSON(location) AS location, floor_id,
+                CASE WHEN marking_source = 'WALKTHROUGH' THEN marking
+                    ELSE COALESCE(pwr_marking, marking) END AS marking,
+                marking_date::text AS marking_date, marking_source,
+                pwr_marking IS NOT NULL AS pwr, approach, door_width_cm
             FROM entrances
             WHERE building_symbol = :symbol
             ORDER BY main DESC, id
@@ -153,7 +160,6 @@ public final class BuildingQuery implements Buildings {
         ).param("symbol", symbol).query(
             (rows, num) -> new Entrance(
                 BuildingQuery.text(rows, "id"),
-                BuildingQuery.text(rows, "building_symbol"),
                 rows.getString("name"),
                 rows.getString("type"),
                 rows.getBoolean("main"),
@@ -163,7 +169,8 @@ public final class BuildingQuery implements Buildings {
                     BuildingQuery.text(rows, "marking"),
                     BuildingQuery.text(rows, "marking_date"),
                     BuildingQuery.text(rows, "marking_source")
-                )
+                ),
+                BuildingQuery.layer(rows)
             )
         ).list();
     }
@@ -193,6 +200,39 @@ public final class BuildingQuery implements Buildings {
             found.add(BuildingQuery.one(rows));
         }
         return new BuildingList(String.join("; ", sources), found);
+    }
+
+    private static Entrance.Layer layer(final ResultSet rows) throws SQLException {
+        final Entrance.Layer result;
+        if (rows.getBoolean("pwr")) {
+            result = new Entrance.Layer.Listed(
+                BuildingQuery.approach(rows.getString("approach")), BuildingQuery.door(rows)
+            );
+        } else {
+            result = new Entrance.Layer.Unlisted();
+        }
+        return result;
+    }
+
+    private static Entrance.Approach approach(final @Nullable String text) {
+        final Entrance.Approach result;
+        if (text == null) {
+            result = new Entrance.Approach.Undescribed();
+        } else {
+            result = new Entrance.Approach.Described(text);
+        }
+        return result;
+    }
+
+    private static Door door(final ResultSet rows) throws SQLException {
+        final Integer width = rows.getObject("door_width_cm", Integer.class);
+        final Door result;
+        if (width == null) {
+            result = new Door.Unmeasured();
+        } else {
+            result = new Door.Measured(width);
+        }
+        return result;
     }
 
     private static Building one(final ResultSet rows) throws SQLException {
