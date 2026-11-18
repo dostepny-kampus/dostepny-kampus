@@ -67,14 +67,11 @@ sealed interface BuildingCardUiState {
 }
 
 /**
- * Karta budynku [symbol] z katalogu w telefonie. Katalog jest czytany, gdy ekran jest widoczny,
- * i jeszcze 5 s po zniknięciu, więc obrót ekranu nie czyta go od nowa. [retry] pyta serwer i czyta plik od nowa.
- *
- * Tekst karty i wejścia z pliku pokazują się bez czekania na sieć, a z katalogu, który telefon już ma, od pierwszej
- * klatki. Równolegle karta pyta raz `serverEntrances` o wejścia z dniem i źródłem oznaczenia i o wyjścia ewakuacyjne;
- * niepusta lista wejść zastępuje wejścia z pliku, a pusta (brak sieci, błąd serwera) zostawia je bez komunikatu błędu.
- * Zgłoszenia przyjęte budynku pobiera tak samo, a plan pięter pobiera raz i czyta z kopii w telefonie. Zamknięcie
- * karty przerywa pobieranie.
+ * Karta budynku [symbol] z katalogu w telefonie. Katalog jest czytany, gdy ekran jest widoczny, i jeszcze 5 s po
+ * zniknięciu, więc obrót ekranu nie czyta go od nowa. [retry] pyta serwer i czyta plik od nowa. Tekst i wejścia
+ * z pliku pokazują się bez czekania na sieć. Równolegle karta pyta raz `serverEntrances` o wejścia z dniem i źródłem
+ * oznaczenia i o wyjścia ewakuacyjne; niepusta lista wejść zastępuje wejścia z pliku, pusta zostawia je bez błędu.
+ * Zgłoszenia przyjęte pobiera tak samo, a plan pięter raz, z kopii w telefonie. Zamknięcie karty przerywa pobieranie.
  *
  * Wymagania: US2, BR-25, NFR-12, US17.3, NFR-10, US2.2, US2.4, US2.7, NFR-56, US16.3, US2.6
  */

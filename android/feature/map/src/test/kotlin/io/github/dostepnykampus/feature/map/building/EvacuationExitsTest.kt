@@ -119,7 +119,7 @@ class EvacuationExitsTest {
         compose.setContent {
             DostepnyKampusTheme {
                 Column(Modifier.background(MaterialTheme.colorScheme.surface).padding(16.dp)) {
-                    EvacuationExits(exits = exits)
+                    EvacuationExits(BuildingCardUiState.Ready("A-1", null, emptyList(), evacuationExits = exits))
                 }
             }
         }

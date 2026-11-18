@@ -68,14 +68,6 @@ class CardEvacuationExitsTest {
         }
 
     private companion object {
-        val DETAILS by lazy {
-            ServerCard(
-                building = Building(symbol = "A-1", name = "Gmach", outline = GeoPolygon(emptyList())),
-                entrances = emptyList(),
-                evacuationExits = listOf(EXIT),
-            )
-        }
-
         val EXIT =
             EvacuationExit(
                 id = "pwr/9",
@@ -83,6 +75,14 @@ class CardEvacuationExitsTest {
                 description = "Wyjście ewakuacyjne z pomieszczenia 41",
                 doorWidthCm = 90,
             )
+
+        val DETAILS by lazy {
+            ServerCard(
+                building = Building(symbol = "A-1", name = "Gmach", outline = GeoPolygon(emptyList())),
+                entrances = emptyList(),
+                evacuationExits = listOf(EXIT),
+            )
+        }
 
         const val ASSET_JSON =
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +

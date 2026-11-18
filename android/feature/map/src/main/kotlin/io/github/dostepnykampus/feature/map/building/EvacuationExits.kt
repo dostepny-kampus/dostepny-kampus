@@ -32,13 +32,14 @@ import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.overlay.MapControlIcons
 
 /**
- * Wyjścia ewakuacyjne budynku [exits]: przycisk z liczbą wyjść, który rozwija i zwija ich listę, na start zwiniętą.
+ * Wyjścia ewakuacyjne budynku z karty [card]: przycisk z liczbą wyjść, który rozwija i zwija ich listę, na start zwiniętą.
  * Wiersz wyjścia ma opis i szerokość drzwi, gdy są w danych, i nie jest dotykalny. Bez wyjść nic się nie rysuje.
  *
  * Wymagania: US2.6, BR-27, NFR-17, NFR-18
  */
 @Composable
-internal fun EvacuationExits(exits: List<EvacuationExit>) {
+internal fun EvacuationExits(card: BuildingCardUiState.Ready) {
+    val exits = card.evacuationExits
     if (exits.isEmpty()) return
     var isExpanded by rememberSaveable { mutableStateOf(false) }
     val state = stringResource(if (isExpanded) R.string.karta_rozwiniete else R.string.karta_zwiniete)
