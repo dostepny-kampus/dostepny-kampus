@@ -19,12 +19,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Ikony
+import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
@@ -41,6 +44,8 @@ import io.github.dostepnykampus.feature.map.overlay.MapSheetHeader
 import kotlin.math.ceil
 import io.github.dostepnykampus.core.designsystem.R as DesignR
 
+private val WIDE_WINDOW = 600.dp
+
 /**
  * Arkusz wejścia o identyfikatorze [id] z [catalog] po dotknięciu jego znaku na mapie V1; bez [id] i bez takiego
  * wejścia w katalogu arkusza nie ma. Systemowe „Wstecz” przy otwartym arkuszu zamyka go jak [onClose].
@@ -52,6 +57,7 @@ import io.github.dostepnykampus.core.designsystem.R as DesignR
  * @param onClose zamyka arkusz
  * @param actions czynności przy wejściu
  * @param modifier położenie arkusza na mapie
+ * @param isFull arkusz na cały ekran, bez mapy
  */
 @Composable
 internal fun ChosenEntranceSheet(
@@ -60,12 +66,27 @@ internal fun ChosenEntranceSheet(
     onClose: () -> Unit,
     actions: EntranceActions,
     modifier: Modifier = Modifier,
+    isFull: Boolean = false,
 ) {
     val shown = remember(id, catalog) { id?.let { catalog?.shownEntrance(it) } }
     BackHandler(enabled = shown != null, onBack = onClose)
     if (shown != null) {
-        EntranceSheet(shown = shown, onClose = onClose, actions = actions, modifier = modifier)
+        EntranceSheet(shown = shown, onClose = onClose, actions = actions, modifier = modifier, isFull = isFull)
     }
+}
+
+/**
+ * Czy arkusz wejścia [id] zajmuje cały ekran: przy skali czcionki co najmniej 1,5, w oknie szerokim na co najmniej
+ * 600 dp i gdy [focus] zaznacza to wejście z ekranu budynku otwartego od razu na cały ekran.
+ *
+ * Wymagania: NFR-19, NFR-20, NFR-51
+ */
+@Composable
+internal fun isFullEntranceSheet(id: String, focus: MapFocus?): Boolean {
+    val density = LocalDensity.current
+    val width = with(density) { LocalWindowInfo.current.containerSize.width.toDp() }
+    val isFromFullCard = (focus as? MapFocus.Entrance)?.let { it.isFullSheet && it.id == id } == true
+    return density.fontScale >= LARGE_FONT_SCALE || width >= WIDE_WINDOW || isFromFullCard
 }
 
 /**
@@ -80,6 +101,7 @@ internal fun ChosenEntranceSheet(
  * @param onClose „Zamknij” zostawia samą mapę
  * @param actions „Pokaż to wejście na mapie” i „Zgłoś barierę przy wejściu”
  * @param modifier położenie arkusza na mapie
+ * @param isFull arkusz na cały ekran, bez mapy
  */
 @Composable
 internal fun EntranceSheet(
@@ -87,10 +109,11 @@ internal fun EntranceSheet(
     onClose: () -> Unit,
     actions: EntranceActions,
     modifier: Modifier = Modifier,
+    isFull: Boolean = false,
 ) {
     val entrance = shown.entrance
     val title = entrance.name ?: stringResource(R.string.karta_bez_nazwy)
-    MapSheet(modifier) {
+    MapSheet(modifier = modifier, isFull = isFull) {
         MapSheetHeader(
             title = stringResource(R.string.mapa_wejscie_naglowek, entrance.buildingSymbol),
             onClose = onClose,
@@ -105,7 +128,7 @@ internal fun EntranceSheet(
         if (entrance.marking == EntranceMarking.NO_DATA) {
             SecondaryText(stringResource(R.string.mapa_wejscie_niesprawdzone))
         }
-        if (shown.others.isNotEmpty()) OtherEntrances(shown = shown, onShow = actions.onShow)
+        if (shown.others.isNotEmpty()) OtherEntrances(shown) { actions.onShow(it.copy(isFullSheet = isFull)) }
         SheetButton(
             text = stringResource(R.string.karta_zglos),
             spoken = stringResource(R.string.karta_zglos_czytaj, title),

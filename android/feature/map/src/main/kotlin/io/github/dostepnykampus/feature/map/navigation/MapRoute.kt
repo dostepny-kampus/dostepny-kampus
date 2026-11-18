@@ -33,12 +33,13 @@ sealed interface MapFocus {
 
     /**
      * Wejście o identyfikatorze [id] z danych wejść, pokazane z ekranu budynku [buildingSymbol]; TalkBack
-     * czyta ten budynek także dla wejścia wspólnego kilku budynków.
+     * czyta ten budynek także dla wejścia wspólnego kilku budynków. [isFullSheet]: ekran budynku był od razu na
+     * cały ekran, więc arkusz tego wejścia też otwiera się na cały ekran.
      *
-     * Wymagania: BR-25
+     * Wymagania: BR-25, NFR-19
      */
     @Serializable
-    data class Entrance(val id: String, val buildingSymbol: String) : MapFocus
+    data class Entrance(val id: String, val buildingSymbol: String, val isFullSheet: Boolean = false) : MapFocus
 }
 
 /**

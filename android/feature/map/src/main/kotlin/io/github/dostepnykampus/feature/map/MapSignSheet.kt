@@ -53,6 +53,10 @@ internal class SignSheetState(initial: ChosenSign?) {
     val barrierId: String?
         get() = chosen?.takeIf { it.sign == TouchSign.BARRIER }?.id
 
+    /** Identyfikator wejścia z otwartym arkuszem; `null`, gdy otwarty arkusz nie dotyczy wejścia. */
+    val entranceId: String?
+        get() = chosen?.takeIf { it.sign == TouchSign.ENTRANCE }?.id
+
     /** Symbol budynku z otwartą kartą pod mapą; `null` bez karty. */
     var card: String? = null
 
@@ -192,6 +196,7 @@ internal fun screenSheet(focus: MapFocus?, padding: PaddingValues, onCardClose: 
  * @param onBuildingClick V2 budynku o podanym symbolu, także powrót do karty
  * @param entranceActions czynności arkusza wejścia
  * @param modifier położenie arkusza na mapie
+ * @param hidesEntrance arkusz wejścia stoi poza mapą, na cały ekran, więc tu go nie ma
  */
 @Composable
 internal fun ChosenSignSheet(
@@ -202,6 +207,7 @@ internal fun ChosenSignSheet(
     onBuildingClick: (String) -> Unit,
     entranceActions: EntranceActions,
     modifier: Modifier = Modifier,
+    hidesEntrance: Boolean = false,
 ) {
     val id = signs.chosen?.id
     when (signs.chosen?.sign) {
@@ -218,7 +224,7 @@ internal fun ChosenSignSheet(
 
         TouchSign.ENTRANCE -> {
             ChosenEntranceSheet(
-                id = id,
+                id = id.takeUnless { hidesEntrance },
                 catalog = catalog,
                 onClose = { signs.back(onBuildingClick) },
                 actions = entranceActions,

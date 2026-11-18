@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -57,7 +58,9 @@ import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.campus.selection
+import io.github.dostepnykampus.feature.map.entrance.ChosenEntranceSheet
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
+import io.github.dostepnykampus.feature.map.entrance.isFullEntranceSheet
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.overlay.MapOverlay
 import io.github.dostepnykampus.feature.map.overlay.MapStatusBar
@@ -181,6 +184,7 @@ fun CampusMapScreen(
 ) {
     val catalog = state.catalog
     val sheet = screenSheet(focus = focus, padding = contentPadding, onCardClose = onEmptyMapClick)
+    val fullEntrance = sheet.signs.entranceId?.takeIf { isFullEntranceSheet(it, focus) }
     val isCovered = sheet.layout.padding.calculateBottomPadding() > 0.dp
     val isList = state.isListSaved ?: (LocalDensity.current.fontScale >= LARGE_FONT_SCALE)
     val states = rememberSaveableStateHolder()
@@ -193,7 +197,7 @@ fun CampusMapScreen(
     Box(modifier.fillMaxSize()) {
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
-                Box(Modifier.fillMaxSize()) {
+                Box(Modifier.fillMaxSize().unreadUnder(isSheet = fullEntrance != null)) {
                     val shown = ShownBarriers(state.barriers.takeUnless { sheet.isCardOpen }.orEmpty())
                     CampusMap(
                         ui = state,
@@ -209,13 +213,14 @@ fun CampusMapScreen(
                         onBuildingClick = onBuildingClick,
                         onEmptyMapClick = onEmptyMapClick,
                         entranceActions = entranceActions,
+                        isEntranceFull = fullEntrance != null,
                         modifier = Modifier.fillMaxSize().background(DostepnyKampusTheme.mapColors.lad),
                     )
                     BarrierDescriptions(shown)
                 }
             }
         }
-        if (barExit.isBarShown(isCovered = isCovered, isList = isList)) {
+        if (fullEntrance == null && barExit.isBarShown(isCovered = isCovered, isList = isList)) {
             states.SaveableStateProvider(TOP_STATE) {
                 CampusSearch(
                     catalog = catalog,
@@ -235,8 +240,17 @@ fun CampusMapScreen(
                 )
             }
         }
+        ChosenEntranceSheet(
+            id = fullEntrance,
+            catalog = catalog,
+            onClose = { sheet.signs.back(onBuildingClick) },
+            actions = entranceActions,
+            isFull = true,
+        )
     }
 }
+
+private fun Modifier.unreadUnder(isSheet: Boolean): Modifier = if (isSheet) clearAndSetSemantics {} else this
 
 @Composable
 private fun CampusMap(
@@ -253,6 +267,7 @@ private fun CampusMap(
     onBuildingClick: (String) -> Unit,
     onEmptyMapClick: () -> Unit,
     entranceActions: EntranceActions,
+    isEntranceFull: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val cover = sheet.layout.padding.calculateBottomPadding()
@@ -308,7 +323,14 @@ private fun CampusMap(
                 motion = motion,
                 start = { FloorColumn(plan = plan.shown, onChoose = plan.onFloor) },
             ) {
-                val open = OpenSign(signs = signs, barriers = barriers, catalog = ui.catalog, plan = plan.shown)
+                val open =
+                    OpenSign(
+                        signs = signs,
+                        barriers = barriers,
+                        catalog = ui.catalog,
+                        plan = plan.shown,
+                        isEntranceFull = isEntranceFull,
+                    )
                 MapSheets(open = open, state = state, onBuilding = onBuildingClick, entranceActions = entranceActions)
             }
         }
@@ -321,12 +343,16 @@ private fun Modifier.overlayArea(underBar: PaddingValues, sheet: PaddingValues):
         .padding(underBar)
         .padding(sheet)
 
-/** Arkusz znaku [signs] z barierami [barriers], katalogiem [catalog] i planem [plan] na mapie. */
+/**
+ * Arkusz znaku [signs] z barierami [barriers], katalogiem [catalog] i planem [plan] na mapie; przy [isEntranceFull]
+ * arkusz wejścia stoi poza mapą.
+ */
 private data class OpenSign(
     val signs: SignSheetState,
     val barriers: ShownBarriers,
     val catalog: BuildingCatalog?,
     val plan: ShownPlan?,
+    val isEntranceFull: Boolean,
 )
 
 /**
@@ -368,6 +394,7 @@ private fun BoxScope.MapSheets(
         onBuildingClick = onBuilding,
         entranceActions = entranceActions,
         modifier = modifier,
+        hidesEntrance = open.isEntranceFull,
     )
     BuildingChoices(catalog = open.catalog, state = state, onChoose = onBuilding, modifier = modifier)
 }

@@ -180,7 +180,7 @@ internal fun AppNavigator.BuildingCard(
         onBack = card.onBack,
         onClose = card.onClose,
         onReportEntrance = { report(it) },
-        onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = symbol)) },
+        onShowEntrance = { showOnMap(MapFocus.Entrance(it, symbol, isFullSheet = card.mode == CardMode.Direct)) },
         onReportRemoval = this::openRemoved.takeIf { isCollector },
         onRetry = onRetry,
         onShowPlan = { showOnMap(MapFocus.Building(symbol, command = System.nanoTime(), floor = it)) },
