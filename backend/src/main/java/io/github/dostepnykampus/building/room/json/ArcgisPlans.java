@@ -32,8 +32,8 @@ import tools.jackson.databind.node.ObjectNode;
  * {@link ArcgisLayers}. Wielokąt pomieszczenia staje się konturem MultiPolygon; pomieszczenie
  * bez wielokąta i piętro bez LEVEL_ID są pomijane. Wielkość liter pól pomieszczenia jest dowolna,
  * funkcja to Funkcja, Funkcje albo d_funkcja. Numer z samych spacji jest pusty, brak funkcji daje
- * „Inne”. Pola wejść opisuje {@link PlanSource#entrances(String, int)}. Data edycji warstwy to
- * dzień w strefie Warszawy z dataLastEditDate, a bez niej z lastEditDate opisu warstwy.
+ * „Inne”. Pola wejść opisuje {@link PlanSource#entrances(String, int, String, int)}. Data
+ * edycji warstwy to dzień w strefie Warszawy z dataLastEditDate, a bez niej z lastEditDate.
  *
  * <p>Wymagania: US16, US18, BR-24, BR-27, NFR-40</p>
  *
