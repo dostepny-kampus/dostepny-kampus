@@ -314,12 +314,6 @@ private fun CampusMap(
     }
 }
 
-/**
- * Scena mapy V1 o rozmiarze [size] dla stanu [ui], zaznaczenia [focus] i terenów [areas]: dół mapy zasłania karta
- * budynku albo arkusz zaznaczonego wejścia z [sheet], a górę pasek do [top].
- *
- * Wymagania: US2.8, US3.3, NFR-53
- */
 @Composable
 private fun rememberCampusScene(
     ui: CampusMapUiState,
