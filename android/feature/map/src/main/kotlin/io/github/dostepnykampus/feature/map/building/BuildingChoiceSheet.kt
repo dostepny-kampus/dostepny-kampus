@@ -41,21 +41,20 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.overlay.BuildingLink
 import io.github.dostepnykampus.feature.map.overlay.MapSheet
 
 /**
  * Arkusz „Który budynek?” na dole mapy po dotknięciu konturu wspólnego albo dwóch konturów w zasięgu 24 dp.
- * Każdy budynek to jeden przycisk na pełną szerokość, jak wynik pod polem wyszukiwania:
- * symbol, nazwa z danych, gdy jest, i „Budynek C-3”. TalkBack czyta symbol i nazwę, a czynność przycisku to
- * „otwiera opis budynku”. Przy dużej czcionce arkusz się przewija.
- * Nagłówek „Który budynek?” ma obok obrysowany przycisk „Zamknij”. Przy każdym budynku stoi
- * symbol na plakietce w kolorze wybranej pozycji przełącznika, jak w hi-fi listy budynków.
+ * Każdy budynek to wiersz budynku w ramce na pełną szerokość, jak w innych arkuszach mapy, z nazwą z danych pod
+ * napisem. Przy dużej czcionce arkusz się przewija. Nagłówek „Który budynek?” ma obok obrysowany przycisk
+ * „Zamknij”.
  *
  * Wymagania: US2, NFR-17, NFR-18, NFR-20, NFR-53
  *
  * @param onClose „Zamknij” i „Wstecz” zamykają arkusz
  * @param modifier położenie arkusza na mapie
- * @param content przyciski [BuildingChoice] budynków trafionych dotknięciem, w kolejności podpisu konturu
+ * @param content wiersze [ChoiceLink] budynków trafionych dotknięciem, w kolejności podpisu konturu
  */
 @Composable
 internal fun BuildingChoiceSheet(
@@ -85,7 +84,7 @@ private fun SheetHeader(onClose: () -> Unit) {
 }
 
 /**
- * Karta budynku [building] w arkuszu „Który budynek?”, pod polem symbolu i na liście budynków:
+ * Karta budynku [building] pod polem symbolu i na liście budynków:
  * symbol na plakietce, nazwa z danych, a gdy nazwa jest, pod nią „Budynek C-3”; bez nazwy samo „Budynek C-3”.
  * Cała karta to jeden cel dotyku, a TalkBack czyta „C-3, nazwa” i czynność „otwiera opis budynku”. Wynik
  * wyszukiwania z innego terenu niż pokazany na mapie ma pod spodem dopisek „Wittigowo · inny teren”, a TalkBack
@@ -143,6 +142,30 @@ internal fun BuildingChoice(building: Building, otherArea: String? = null, onCli
                 otherArea?.let { OtherAreaNote(it) }
             }
         }
+    }
+}
+
+/**
+ * Wiersz budynku [building] w ramce w arkuszu „Który budynek?”: znak budynku, „Budynek C-3”, strzałka i nazwa
+ * z danych pod spodem; [onClick] wybiera ten budynek.
+ *
+ * Wymagania: US2, US2.8, NFR-17, NFR-18
+ */
+@Composable
+internal fun ChoiceLink(building: Building, onClick: () -> Unit) {
+    val shape = RoundedCornerShape(Zaokraglenia.duze)
+    Surface(
+        modifier = Modifier.fillMaxWidth().clip(shape),
+        shape = shape,
+        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+        border = BorderStroke(Obramowania.ramka, MaterialTheme.colorScheme.outlineVariant),
+    ) {
+        BuildingLink(
+            symbol = building.symbol,
+            modifier = Modifier.padding(Odstepy.m),
+            name = building.name,
+            onClick = onClick,
+        )
     }
 }
 
