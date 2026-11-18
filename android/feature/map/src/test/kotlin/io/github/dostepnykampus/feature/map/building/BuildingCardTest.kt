@@ -71,6 +71,45 @@ class BuildingCardTest {
     }
 
     @Test
+    fun recommendsFirstNamedWhenMainIsNot() {
+        val ordered =
+            orderedEntrances(
+                listOf(
+                    entrance(id = "pwr", marking = EntranceMarking.ACCESSIBLE).copy(name = "Wejście"),
+                    entrance(id = "osm", marking = EntranceMarking.ACCESSIBLE).copy(name = null),
+                    entrance(id = "dostosowane", marking = EntranceMarking.ACCESSIBLE),
+                    entrance(id = "boczne", marking = EntranceMarking.ACCESSIBLE),
+                ),
+            )
+        assertEquals(listOf("dostosowane", "pwr", "osm", "boczne"), ordered.map { it.entrance.id }, "kolejność")
+        assertEquals("dostosowane", ordered.single { it.isRecommended }.entrance.id, "zalecane z nazwą")
+    }
+
+    @Test
+    fun recommendsUnnamedMainOverNamed() {
+        val ordered =
+            orderedEntrances(
+                listOf(
+                    entrance(id = "dostosowane", marking = EntranceMarking.ACCESSIBLE),
+                    entrance(id = "glowne", marking = EntranceMarking.ACCESSIBLE, isMain = true).copy(name = null),
+                ),
+            )
+        assertEquals("glowne", ordered.single { it.isRecommended }.entrance.id, "główne bez nazwy wygrywa")
+    }
+
+    @Test
+    fun recommendsFirstWhenNoneNamed() {
+        val ordered =
+            orderedEntrances(
+                listOf(
+                    entrance(id = "osm", marking = EntranceMarking.ACCESSIBLE).copy(name = " "),
+                    entrance(id = "pwr", marking = EntranceMarking.ACCESSIBLE).copy(name = "Wejście"),
+                ),
+            )
+        assertEquals("osm", ordered.single { it.isRecommended }.entrance.id, "pierwsze bez nazw")
+    }
+
+    @Test
     fun putsInaccessibleFirst() {
         val ordered =
             orderedEntrances(
