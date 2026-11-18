@@ -61,6 +61,7 @@
     <string name="mapa_wejscie_glowne">%1$s, wejście główne</string>
     <string name="mapa_wejscie_niesprawdzone">Nikt jeszcze nie sprawdził tego wejścia.</string>
     <string name="mapa_wejscie_zalecane">Zalecane.</string>
+    <string name="mapa_wejscie_bariery">Bariery przy tym wejściu</string>
     <string name="mapa_wejscie_pokaz_to">Pokaż to wejście na mapie</string>
     <string name="mapa_wejscie_pokaz_to_czytaj">Pokaż to wejście na mapie: »%1$s«</string>
     <string name="mapa_plan_schody">Schody</string>
