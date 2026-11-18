@@ -59,7 +59,7 @@ class EntranceSheetTest {
     private val clicks = mutableListOf<String>()
     private val shownOnMap = mutableListOf<MapFocus.Entrance>()
 
-    /** Wiersz: arkusz wejścia, nagłówek z fokusem, słowo oznaczenia z dopiskiem, nazwa i „Zamknij”, bez V3. */
+    /** Wiersz: arkusz wejścia, nagłówek z fokusem, słowo oznaczenia z dopiskiem, nazwa i „Zamknij”. */
     @Test
     fun showsMainEntranceWithName() {
         val main = entrance(EntranceMarking.ACCESSIBLE, "Wejście Cesarskie", isMain = true)
@@ -69,7 +69,6 @@ class EntranceSheetTest {
         compose.onNodeWithText("Dostępne, wejście główne").assertExists()
         compose.onNodeWithText("Wejście Cesarskie").assertExists()
         compose.onNodeWithText("Nikt jeszcze nie sprawdził tego wejścia.").assertDoesNotExist()
-        compose.onNodeWithText("Sprawdź, którędy wejść").assertDoesNotExist()
         compose.onNodeWithText("Zamknij").assertHeightIsAtLeast(48.dp).performClick()
         assertEquals("„Zamknij” zamyka arkusz", listOf("zamknij"), clicks)
     }

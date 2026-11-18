@@ -30,7 +30,7 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 
 /**
- * Przypięty pasek czynności nad paskiem dolnym, np. „Sprawdź, którędy wejść” i „Pokaż na mapie” (V2).
+ * Przypięty pasek czynności nad paskiem dolnym, np. „Zgłoś barierę” i „Anuluj”.
  *
  * Tokeny: tło `surface`, cień [Wysokosci.pasekCzynnosci], margines [Odstepy.m], odstęp między przyciskami
  * [CeleDotyku.odstep]. Szerokość przycisków [content] ustala wywołujący, np. `Modifier.weight` w wierszu albo

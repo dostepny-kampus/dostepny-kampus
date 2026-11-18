@@ -21,16 +21,11 @@ import io.github.dostepnykampus.app.navigation.SignInRoute
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.map.building.BuildingCardViewModel
-import io.github.dostepnykampus.feature.map.building.EntrancesScreen
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
-import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
-import io.github.dostepnykampus.feature.map.navigation.MapFocus
-import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -109,14 +104,7 @@ class EntranceOnMapTest {
             choice = choice,
             mapView = fakeMap,
         ) { other ->
-            if (other is EntrancesRoute) {
-                EntrancesScreen(
-                    symbol = other.symbol,
-                    onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = other.symbol)) },
-                    onBack = { back() },
-                    viewModel = remember { BuildingCardViewModel(other.symbol, repository, { flowOf(true) }) },
-                )
-            } else if (other !is SignInRoute) {
+            if (other !is SignInRoute) {
                 AppScreen(other)
             }
         }

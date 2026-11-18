@@ -10,7 +10,7 @@ import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.building.Entrance
 import java.util.concurrent.ConcurrentHashMap
 
-/** Wejścia budynku z serwera dla karty V2 i V3, z dniem i źródłem oznaczenia. Wymagania: US17.3 */
+/** Wejścia budynku z serwera dla karty V2, z dniem i źródłem oznaczenia. Wymagania: US17.3 */
 public fun interface ServerEntrances {
     /**
      * Wejścia budynku [symbol] z serwera, każde z [Entrance.assessment]. Pusta lista, gdy serwer ich nie podał

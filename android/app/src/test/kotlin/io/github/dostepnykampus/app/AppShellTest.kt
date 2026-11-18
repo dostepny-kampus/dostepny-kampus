@@ -56,7 +56,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.app.navigation.Account
@@ -78,12 +77,9 @@ import io.github.dostepnykampus.feature.auth.SignInViewModel
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.MapLibreMapView
 import io.github.dostepnykampus.feature.map.building.BuildingCardViewModel
-import io.github.dostepnykampus.feature.map.building.EntrancesScreen
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
-import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
-import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
@@ -128,19 +124,6 @@ internal fun Context.buildingCardViewModel(symbol: String): BuildingCardViewMode
         },
         ConnectivityNetworkStatus(getSystemService(ConnectivityManager::class.java)),
     )
-
-/** V3 jak w aplikacji, ze stanem [buildingCardViewModel] zamiast ViewModel z grafu Hilt. */
-@Composable
-internal fun AppNavigator.TestEntrances(symbol: String) {
-    val context = LocalContext.current
-    val card = remember(symbol) { context.buildingCardViewModel(symbol) }
-    EntrancesScreen(
-        symbol = symbol,
-        onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = symbol)) },
-        onBack = { back() },
-        viewModel = card,
-    )
-}
 
 /** V2 jak w aplikacji, ze stanem [buildingCardViewModel] zamiast ViewModel z grafu Hilt. */
 @Composable
@@ -199,8 +182,6 @@ internal fun AppNavigator.TestAppScreen(
         )
     } else if (route is BuildingRoute) {
         TestBuildingCard(route.symbol)
-    } else if (route is EntrancesRoute) {
-        TestEntrances(route.symbol)
     } else if (route is SignInRoute) {
         TestSignIn(route)
     } else {

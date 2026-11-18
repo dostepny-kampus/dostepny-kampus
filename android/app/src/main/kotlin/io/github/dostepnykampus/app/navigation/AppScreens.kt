@@ -39,9 +39,7 @@ import io.github.dostepnykampus.feature.map.building.BuildingCardContent
 import io.github.dostepnykampus.feature.map.building.BuildingCardUiState
 import io.github.dostepnykampus.feature.map.building.BuildingCardViewModel
 import io.github.dostepnykampus.feature.map.building.CardMode
-import io.github.dostepnykampus.feature.map.building.EntrancesScreen
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
-import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlin.math.roundToInt
@@ -108,7 +106,7 @@ internal fun AppNavigator.sheetCard(): SheetCard {
 
 /**
  * Ekran trasy [route] z czynnościami podpiętymi do nawigatora. V1 to mapa z `feature:map` ze stanem w ViewModel
- * z grafu Hilt, V2 karta budynku, V3 „Którędy wejść”, C1, C2 i C3 z `feature:capture` i V5 z `feature:help`, reszta
+ * z grafu Hilt, V2 karta budynku, C1, C2 i C3 z `feature:capture` i V5 z `feature:help`, reszta
  * to zaślepki: nagłówek „Wstecz” z nazwą z listy ekranów i przyciski czynności bez danych. Ekran z `feature:*`
  * zastępuje swoją gałąź i dostaje czynności jako lambdy. Zaślepki nie zapamiętują stanu, więc nie muszą się
  * odświeżać osobno od nawigatora. Gdy konto staje się zalogowane (przełącznik ról w debug, potem logowanie),
@@ -122,7 +120,6 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
     val save = { reportSaved() }
     when (route) {
         is BuildingRoute -> HiltBuildingCard(route.symbol)
-        is EntrancesRoute -> Entrances(route.symbol)
         is ReportRoute -> QuickReport(route)
         MeasureRoute -> MeasureScreen(onBack = { back() }, onNext = { openReportForm(it) })
         is ReportFormRoute -> ReportFormScreen(route = route, onLeave = { back() }, onSave = save, draft = reportDraft)
@@ -135,15 +132,6 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         is MapRoute -> HiltMapScreen(focus = route.focus)
         else -> Unit
     }
-}
-
-@Composable
-private fun AppNavigator.Entrances(symbol: String) {
-    EntrancesScreen(
-        symbol = symbol,
-        onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = symbol)) },
-        onBack = { back() },
-    )
 }
 
 @Composable

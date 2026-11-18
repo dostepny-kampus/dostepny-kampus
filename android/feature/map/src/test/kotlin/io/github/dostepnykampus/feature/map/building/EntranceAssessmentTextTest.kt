@@ -45,7 +45,7 @@ private val hasDate =
         node.config.getOrNull(SemanticsProperties.Text)?.any { DATE_TEXT.containsMatchIn(it.text) } == true
     }
 
-/** Data i źródło oznaczenia wejść na V2 Karta budynku i V3 Którędy wejść (PW-3). Wymagania: US17.3, BR-24 */
+/** Data i źródło oznaczenia wejść na V2 Karta budynku (PW-3). Wymagania: US17.3, BR-24 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class EntranceAssessmentTextTest {
@@ -107,31 +107,6 @@ class EntranceAssessmentTextTest {
     }
 
     /**
-     * Wiersz: V3, wszystkie wejścia z importu z tym samym dniem → jeden wiersz „Z map i opisów, stan z 1.10.2026”
-     *   nad wejściami, import.
-     *
-     * Wymagania: US17.3, BR-24
-     */
-    @Test
-    fun showsListCommonRow() {
-        showVisit(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, IMPORT, IMPORT_DAY)))
-        compose.onNodeWithText(IMPORT_TEXT).assertExists()
-        assertEquals(1, datedCount())
-        assertTrue(top(IMPORT_TEXT) < top(GROUP_V3))
-    }
-
-    /**
-     * Wiersz: V3, wejścia z różnym źródłem → napis przy każdym wejściu, nad wejściami go nie ma.
-     *
-     * Wymagania: US17.3, BR-24
-     */
-    @Test
-    fun showsListPerEntrance() {
-        showVisit(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, WALKTHROUGH, WALK_DAY)))
-        assertPerEntrance(first = IMPORT_TEXT, second = WALK_TEXT, group = GROUP_V3)
-    }
-
-    /**
      * Wiersz: V2, wejścia z pliku bez dnia i źródła → brak wiersza i brak jakiejkolwiek daty.
      *
      * Wymagania: US17.3, BR-24
@@ -141,19 +116,6 @@ class EntranceAssessmentTextTest {
         showCard(emptyList())
         assertEquals(0, datedCount())
         listOf("stan z", "Sprawdzone").forEach { compose.onNodeWithText(it, substring = true).assertDoesNotExist() }
-    }
-
-    /**
-     * Wiersz: V3, wejścia z pliku → brak daty, zdanie „brak danych o wejściach” bez „z datą”, PW-10.
-     *
-     * Wymagania: US17.3
-     */
-    @Test
-    fun omitsListDateForFile() {
-        showVisit(emptyList())
-        compose.onNodeWithText("zobaczyć każde wejście.", substring = true).assertExists()
-        assertEquals(0, datedCount())
-        compose.onNodeWithText("z datą", substring = true).assertDoesNotExist()
     }
 
     private fun assertPerEntrance(first: String, second: String, group: String) {
@@ -175,16 +137,7 @@ class EntranceAssessmentTextTest {
             )
         }
 
-    private fun showVisit(server: List<Entrance>) =
-        show(server, if (server.isEmpty()) "brak danych o 1 z 1" else null) { viewModel ->
-            EntrancesScreen(symbol = SYMBOL, onShowEntrance = {}, onBack = {}, viewModel = viewModel)
-        }
-
-    private fun show(
-        server: List<Entrance>,
-        awaited: String? = null,
-        screen: @Composable (BuildingCardViewModel) -> Unit,
-    ) {
+    private fun show(server: List<Entrance>, screen: @Composable (BuildingCardViewModel) -> Unit) {
         val viewModel =
             BuildingCardViewModel(
                 symbol = SYMBOL,
@@ -193,7 +146,7 @@ class EntranceAssessmentTextTest {
                 serverEntrances = ServerEntrances { server },
             )
         compose.setContent { DostepnyKampusTheme { screen(viewModel) } }
-        val expected = awaited ?: server.firstOrNull()?.name ?: FILE_ENTRANCE
+        val expected = server.firstOrNull()?.name ?: FILE_ENTRANCE
         compose.waitUntil { compose.onAllNodes(hasText(expected, substring = true)).fetchSemanticsNodes().isNotEmpty() }
     }
 
@@ -219,7 +172,6 @@ class EntranceAssessmentTextTest {
         const val SIDE = "Boczne"
         const val FILE_ENTRANCE = "Brama"
         const val GROUP_V2 = "Wejścia"
-        const val GROUP_V3 = "Zalecane wejście"
         const val IMPORT_TEXT = "Z map i opisów, stan z 1.10.2026"
         const val NEXT_TEXT = "Z map i opisów, stan z 2.10.2026"
         const val WALK_TEXT = "Sprawdzone na miejscu 5.3.2026"

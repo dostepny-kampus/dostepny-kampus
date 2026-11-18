@@ -62,7 +62,7 @@ fun BarrierGroup.asksFloor(isInBuilding: Boolean?): Boolean = this != BarrierGro
 /**
  * Treść zgłoszenia szybkiego z bieżącą pozycją; budynek ustala serwer z konturu. Poza konturem
  * zgłoszenie idzie bez piętra, także gdy Odwiedzający je wybrał, zanim telefon ustalił pozycję. Wejście wybrane
- * na V2 albo V3 idzie razem z miejscem z pozycji.
+ * w arkuszu wejścia idzie razem z miejscem z pozycji.
  *
  * Wymagania: BR-14, US4.6
  */
