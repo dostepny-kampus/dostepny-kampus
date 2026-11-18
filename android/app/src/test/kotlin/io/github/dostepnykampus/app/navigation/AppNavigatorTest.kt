@@ -347,7 +347,7 @@ class AppNavigatorTest {
     }
 
     /**
-     * Wiersze: arkusz wejścia, „Pokaż to wejście na mapie” → V1 z zaznaczonym wejściem w widoku „Mapa”;
+     * Wiersze: V2, „Pokaż wejście na mapie” → V1 z zaznaczonym wejściem w widoku „Mapa”;
      * pasek, ponowne „Mapa” → V1, nie zmienia wyboru drugi raz.
      *
      * Wymagania: US2.1, NFR-15

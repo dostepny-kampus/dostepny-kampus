@@ -6,11 +6,15 @@
 package io.github.dostepnykampus.feature.map.entrance
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -23,6 +27,7 @@ import io.github.dostepnykampus.feature.map.PHOTO_URL
 import io.github.dostepnykampus.feature.map.photoAvailable
 import io.github.dostepnykampus.feature.map.usePhotoLoader
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,9 +39,10 @@ import java.time.Instant
 private const val BARRIERS = "Bariery przy tym wejściu"
 private const val PHOTO = "Zdjęcie bariery: Schody przy wejściu"
 private const val WAIT_MS = 5_000L
+private val HALF_SCREEN = 400.dp
 
 /**
- * Część „Bariery przy tym wejściu” arkusza wejścia na V1: zgłoszenia przyjęte przy wejściu zalecanym.
+ * Część „Bariery przy tym wejściu” arkusza wejścia na V1: zgłoszenia przyjęte przy każdym wejściu.
  *
  * Wymagania: US2.2, US3.3
  */
@@ -73,9 +79,9 @@ class EntranceBarriersTest {
         compose.onNodeWithText(BARRIERS).assertDoesNotExist()
     }
 
-    /** Wiersz: zalecane wejście dostaje tylko zgłoszenia przy sobie, a wejście niezalecane żadnych. */
+    /** Wiersz: każde wejście, zalecane i niezalecane, dostaje tylko zgłoszenia przy sobie. Wymagania: US2.2 */
     @Test
-    fun keepsBarriersOfRecommended() {
+    fun keepsBarriersOfEachEntrance() {
         val catalog =
             BuildingCatalog(
                 buildings = emptyList(),
@@ -87,7 +93,23 @@ class EntranceBarriersTest {
         val atRecommended = checkNotNull(catalog.shownEntrance("node/1", barriers)).barriers.map { it.id }
         val atOther = checkNotNull(catalog.shownEntrance("node/2", barriers)).barriers.map { it.id }
         assertEquals("przy wejściu zalecanym", listOf("z1"), atRecommended)
-        assertEquals("przy wejściu niezalecanym", emptyList<String>(), atOther)
+        assertEquals("przy wejściu niezalecanym", listOf("z2"), atOther)
+    }
+
+    /**
+     * Wiersz: arkusz z trzema barierami ze zdjęciem nie sięga wyżej niż połowa ekranu 800 dp, a jego treść
+     *   przewija się do ostatniej daty.
+     *
+     * Wymagania: US3.3, NFR-53
+     */
+    @Test
+    fun staysWithinHalfScreen() {
+        val many = recommended(barrier("z1"), barrier("z2"), barrier("z3"))
+        compose.setContent { EntranceSheetOnMap(many) }
+
+        val top = compose.onNodeWithText("Wejście, budynek A-1").getUnclippedBoundsInRoot().top
+        assertTrue("nagłówek arkusza w dolnej połowie ekranu: $top", top >= HALF_SCREEN)
+        compose.onAllNodesWithText("Sprawdzone 14.10.2026")[2].performScrollTo().assertIsDisplayed()
     }
 
     /** Zrzut arkusza wejścia zalecanego z barierą przy wejściu, motyw jasny. */
