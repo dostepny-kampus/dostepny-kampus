@@ -24,6 +24,7 @@ import org.junit.platform.suite.api.Suite;
 @Tag("kontekst-springa")
 @IncludeEngines("cucumber")
 @SelectFile("../specs/budynki-bez-szczegolow.feature")
+@SelectFile("../specs/oznaczenie-wejscia.feature")
 @SelectFile("../specs/przegladanie-mapy.feature")
 @SelectFile("../specs/uprawnienia.feature")
 @SelectFile("../specs/zgloszenia-zbierajacego.feature")
