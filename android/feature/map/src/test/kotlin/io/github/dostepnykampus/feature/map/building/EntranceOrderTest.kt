@@ -55,7 +55,7 @@ class EntranceOrderTest {
 
     /** Wiersz: liczby w nazwie według wartości, polskie litery na swoim miejscu alfabetu. */
     @Test
-    fun comparesNumbersAndPolishLetters() {
+    fun sortsNumbersAndPolish() {
         val names = listOf("Wejście 10", "Wejście Ł", "Wejście 2", "Wejście M", "Wejście L")
         assertEquals(
             listOf("Wejście 2", "Wejście 10", "Wejście L", "Wejście Ł", "Wejście M"),

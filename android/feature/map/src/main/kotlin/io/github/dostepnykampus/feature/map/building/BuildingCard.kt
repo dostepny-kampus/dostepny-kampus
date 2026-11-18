@@ -27,13 +27,15 @@ internal object EntranceNameOrder : Comparator<String> {
     override fun compare(first: String, second: String): Int {
         val left = NAME_PART.findAll(first).map { it.value }.toList()
         val right = NAME_PART.findAll(second).map { it.value }.toList()
-        val parts = left.zip(right).map { (a, b) -> comparePart(a, b) }
+        val parts = left.zip(right).map { (a, b) -> comparePart(first = a, second = b) }
         return parts.firstOrNull { it != 0 } ?: left.size.compareTo(right.size)
     }
 
     private fun comparePart(first: String, second: String): Int =
         if (first[0].isDigit() && second[0].isDigit()) {
-            compareValuesBy(first.trimStart('0'), second.trimStart('0'), { it.length }, { it })
+            val left = first.trimStart('0')
+            val right = second.trimStart('0')
+            if (left.length == right.length) left.compareTo(right) else left.length.compareTo(right.length)
         } else {
             polish.compare(first, second)
         }
