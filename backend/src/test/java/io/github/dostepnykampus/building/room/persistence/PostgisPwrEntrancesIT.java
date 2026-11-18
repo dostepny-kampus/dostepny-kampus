@@ -40,7 +40,7 @@ final class PostgisPwrEntrancesIT {
             PostgisPwrEntrancesIT.saved(context).sql(
                 """
                 SELECT CASE WHEN id LIKE 'pwr/%' THEN 'pwr' ELSE id END || '|'
-                    || COALESCE(pwr_name, name) || '|' || CASE WHEN marking_source = 'WALKTHROUGH'
+                    || COALESCE(pwr_name, name, '-') || '|' || CASE WHEN marking_source = 'WALKTHROUGH'
                         THEN marking ELSE COALESCE(pwr_marking, marking) END || '|'
                     || COALESCE(approach, '-') || '|' || COALESCE(door_width_cm::text, '-')
                     || '|' || (pwr_marking IS NOT NULL)
@@ -49,8 +49,8 @@ final class PostgisPwrEntrancesIT {
             ).query(String.class).list(),
             Matchers.contains(
                 "o1|Wejście Cesarskie|ACCESSIBLE|Od ul. Wybrzeże.|120|true",
-                "o2|Wejście|INACCESSIBLE|-|-|true",
-                "pwr|Wejście|INACCESSIBLE|Do wejścia prowadzą schody.|90|true"
+                "o2|-|INACCESSIBLE|-|-|true",
+                "pwr|-|INACCESSIBLE|Do wejścia prowadzą schody.|90|true"
             )
         );
     }
@@ -131,7 +131,7 @@ final class PostgisPwrEntrancesIT {
                 "G-957", List.of(new PlanFloor("P0", "Parter", 0)), List.of(),
                 List.of(
                     PostgisPwrEntrancesIT.pwr(
-                        "P0", 17.000_05, 51.0, "ACCESSIBLE", "Wejście",
+                        "P0", 17.000_05, 51.0, "ACCESSIBLE", null,
                         "Do wejścia prowadzą schody.", null
                     )
                 )
@@ -170,10 +170,10 @@ final class PostgisPwrEntrancesIT {
                 "G-956", List.of(new PlanFloor("P0", "Parter", 0)), List.of(),
                 List.of(
                     PostgisPwrEntrancesIT.pwr(
-                        "P0", 17.000_05, 51.0, "ACCESSIBLE", "Wejście", null, null
+                        "P0", 17.000_05, 51.0, "ACCESSIBLE", null, null, null
                     ),
                     PostgisPwrEntrancesIT.pwr(
-                        "P0", 17.0005, 51.0005, "INACCESSIBLE", "Wejście", null, null
+                        "P0", 17.0005, 51.0005, "INACCESSIBLE", null, null, null
                     )
                 ),
                 LocalDate.of(2026, 11, 4)
@@ -215,10 +215,10 @@ final class PostgisPwrEntrancesIT {
                     120
                 ),
                 PostgisPwrEntrancesIT.pwr(
-                    "P0", 17.001, 51.000_05, "ACCESSIBLE", "Wejście", null, null
+                    "P0", 17.001, 51.000_05, "ACCESSIBLE", null, null, null
                 ),
                 PostgisPwrEntrancesIT.pwr(
-                    "P0", 17.0005, 51.0005, "INACCESSIBLE", "Wejście",
+                    "P0", 17.0005, 51.0005, "INACCESSIBLE", null,
                     "Do wejścia prowadzą schody.", 90
                 ),
                 new PlanEntrance(
@@ -226,7 +226,7 @@ final class PostgisPwrEntrancesIT {
                     "Wyjście ewakuacyjne", "Wyjście ewakuacyjne z pomieszczenia 41", null, true
                 ),
                 PostgisPwrEntrancesIT.pwr(
-                    "P9", 17.0008, 51.0008, "ACCESSIBLE", "Wejście", null, null
+                    "P9", 17.0008, 51.0008, "ACCESSIBLE", null, null, null
                 )
             )
         );
@@ -237,7 +237,8 @@ final class PostgisPwrEntrancesIT {
 
     private static PlanEntrance pwr(
         final String floor, final double lon, final double lat, final String marking,
-        final String name, final @Nullable String approach, final @Nullable Integer width
+        final @Nullable String name, final @Nullable String approach,
+        final @Nullable Integer width
     ) {
         return new PlanEntrance(
             floor, PostgisPwrEntrancesIT.point(lon, lat), marking, name, approach, width, false

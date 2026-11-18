@@ -29,14 +29,14 @@ final class EntranceNoteTest {
             "Wejście Cesarskie. Od ul. Wybrzeże.|Wejście Cesarskie|Od ul. Wybrzeże.",
             "Wejście \"C\"|Wejście \"C\"|-",
             "Wejście dostosowane.|Wejście dostosowane|-",
-            "Do wejścia prowadzą schody.|Wejście|Do wejścia prowadzą schody.",
-            "Wejście znajduje się w obniżeniu.|Wejście|Wejście znajduje się w obniżeniu.",
-            "Wejście od ul. Wybrzeże.|Wejście|Wejście od ul. Wybrzeże.",
-            "''|Wejście|-"
+            "Do wejścia prowadzą schody.|-|Do wejścia prowadzą schody.",
+            "Wejście znajduje się w obniżeniu.|-|Wejście znajduje się w obniżeniu.",
+            "Wejście od ul. Wybrzeże.|-|Wejście od ul. Wybrzeże.",
+            "''|-|-"
         }
     )
     void splitsNoteIntoNameAndApproach(
-        final String note, final String name, final @Nullable String approach
+        final String note, final @Nullable String name, final @Nullable String approach
     ) {
         final EntranceNote parsed = new EntranceNote(note);
         MatcherAssert.assertThat(

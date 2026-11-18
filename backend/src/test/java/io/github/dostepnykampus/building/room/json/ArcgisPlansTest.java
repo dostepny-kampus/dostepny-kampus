@@ -159,7 +159,7 @@ final class ArcgisPlansTest {
                 )
             ),
             Matchers.contains(
-                new PlanEntrance("T.X.P0", point, "NO_DATA", "Wejście", null, null, false)
+                new PlanEntrance("T.X.P0", point, "NO_DATA", null, null, null, false)
             )
         );
     }
@@ -196,9 +196,9 @@ final class ArcgisPlansTest {
             ),
             Matchers.contains(
                 "ACCESSIBLE|Wejście Cesarskie|Od ul. Wybrzeże.|120|false",
-                "INACCESSIBLE|Wejście|null|null|false",
+                "INACCESSIBLE|null|null|null|false",
                 "ACCESSIBLE|Wyjście ewakuacyjne|Wyjście ewakuacyjne z pomieszczenia 41|90|true",
-                "NO_DATA|Wejście|Do wejścia prowadzą schody.|null|false"
+                "NO_DATA|null|Do wejścia prowadzą schody.|null|false"
             )
         );
     }
@@ -252,7 +252,7 @@ final class ArcgisPlansTest {
                         "|", "INACCESSIBLE", "Wyjście ewakuacyjne",
                         "Wyjście ewakuacyjne z pomieszczenia 41", "90", "true"
                     ),
-                    "ACCESSIBLE|Wejście|null|null|false"
+                    "ACCESSIBLE|null|null|null|false"
                 )
             );
         } finally {
@@ -383,7 +383,7 @@ final class ArcgisPlansTest {
 
     private static String describe(final PlanEntrance entry) {
         return String.join(
-            "|", entry.marking(), entry.name(), String.valueOf(entry.approach()),
+            "|", entry.marking(), String.valueOf(entry.name()), String.valueOf(entry.approach()),
             String.valueOf(entry.doorWidthCm()), String.valueOf(entry.evacuationExit())
         );
     }

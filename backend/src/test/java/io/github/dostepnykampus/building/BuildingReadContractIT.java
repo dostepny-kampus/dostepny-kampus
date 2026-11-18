@@ -313,14 +313,14 @@ final class BuildingReadContractIT {
                 'NO_DATA', DATE '2026-11-01', 'IMPORT', 'Wejście Cesarskie', 'ACCESSIBLE',
                 'Od ul. Wybrzeże.', 120),
                 ('node/6', 'G-900', NULL, false, ST_SetSRID(ST_MakePoint(0, 0.0005), 4326),
-                'INACCESSIBLE', DATE '2026-11-02', 'WALKTHROUGH', 'Wejście', 'ACCESSIBLE',
+                'INACCESSIBLE', DATE '2026-11-02', 'WALKTHROUGH', NULL, 'ACCESSIBLE',
                 NULL, NULL),
                 ('node/7', 'G-900', 'Wejście boczne', false,
                 ST_SetSRID(ST_MakePoint(0.001, 0.0005), 4326), 'NO_DATA', DATE '2026-11-01',
                 'IMPORT', NULL, NULL, NULL, NULL),
-                ('pwr/s00000001', 'G-900', 'Wejście', false,
+                ('pwr/s00000001', 'G-900', NULL, false,
                 ST_SetSRID(ST_MakePoint(0.0005, 0.001), 4326), 'INACCESSIBLE',
-                DATE '2026-11-01', 'IMPORT', 'Wejście', 'INACCESSIBLE',
+                DATE '2026-11-01', 'IMPORT', NULL, 'INACCESSIBLE',
                 'Do wejścia prowadzą schody.', 90)
             """
         ).update();
