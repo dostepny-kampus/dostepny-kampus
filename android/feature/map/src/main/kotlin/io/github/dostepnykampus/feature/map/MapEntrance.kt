@@ -23,7 +23,7 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
 /**
  * Wejście [entrance] z [catalog] jako zaznaczenie na mapie; `null` bez katalogu, bez wejścia albo gdy katalog go
- * nie zna. Wejście bez nazwy dostaje podpis „Wejście bez nazwy w danych”.
+ * nie zna. Wejście bez nazwy dostaje podpis zastępczy.
  *
  * Wymagania: US3.3
  */
