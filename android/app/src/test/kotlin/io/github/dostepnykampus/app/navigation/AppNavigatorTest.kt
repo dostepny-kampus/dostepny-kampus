@@ -154,10 +154,12 @@ class AppNavigatorTest {
             assertEquals(key, contentKey(index = 0))
             openBuilding(symbol = "C-13")
             val keys = stack.indices.map(::contentKey)
+            val routes = stack.toList()
             open(TopLevel.MAP)
             assertEquals(keys, stack.indices.map(::contentKey))
+            assertEquals(routes, stack)
         }
-        assertEquals(stackOf(BuildingRoute("C-13")), stack)
+        assertEquals(BuildingRoute("C-13"), stack.last())
     }
 
     /**
