@@ -13,6 +13,9 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
@@ -23,14 +26,20 @@ import tools.jackson.databind.ObjectMapper;
  * {@link ArcgisLayers}. Wielokąt pomieszczenia staje się konturem MultiPolygon, pomieszczenie
  * bez wielokąta jest pomijane. Piętro bez identyfikatora LEVEL_ID jest pomijane. Wielkość
  * liter nazw pól pomieszczenia jest dowolna, a funkcja nazywa się Funkcja, Funkcje albo
- * d_funkcja. Numer z samych spacji jest pusty, a brak funkcji daje „Inne”.
+ * d_funkcja. Numer z samych spacji jest pusty, a brak funkcji daje „Inne”. Pola wejść opisuje
+ * {@link PlanSource#entrances(String, int)}.
  *
- * <p>Wymagania: US16, US18, NFR-40</p>
+ * <p>Wymagania: US16, US18, BR-24, BR-27, NFR-40</p>
  *
  * @since 0.1.0
  */
 @Component
 final class ArcgisPlans implements PlanSource {
+
+    /**
+     * Szerokość drzwi w centymetrach, liczba całkowita albo z zerami po kropce.
+     */
+    private static final Pattern WIDTH = Pattern.compile("(\\d{1,4})(?:\\.0*)?");
 
     /**
      * Warstwy usługi ArcGIS.
@@ -89,11 +98,41 @@ final class ArcgisPlans implements PlanSource {
     public List<PlanEntrance> entrances(final String service, final int layer) {
         return this.layers.shapes(service, layer).stream()
             .filter(feature -> "Point".equals(feature.path("geometry").path("type").asString("")))
-            .filter(feature -> !ArcgisPlans.field(feature, "pietro").isEmpty()).map(
-                feature -> new PlanEntrance(
-                    ArcgisPlans.field(feature, "pietro"), feature.get("geometry").toString()
-                )
-            ).toList();
+            .filter(feature -> !ArcgisPlans.field(feature, "pietro").isEmpty())
+            .map(ArcgisPlans::entrance).toList();
+    }
+
+    private static String marking(final String adapted) {
+        final String result;
+        if ("tak".equalsIgnoreCase(adapted)) {
+            result = "ACCESSIBLE";
+        } else if ("nie".equalsIgnoreCase(adapted)) {
+            result = "INACCESSIBLE";
+        } else {
+            result = "NO_DATA";
+        }
+        return result;
+    }
+
+    private static @Nullable Integer width(final String text) {
+        final Matcher number = ArcgisPlans.WIDTH.matcher(text);
+        final Integer result;
+        if (number.matches() && Integer.parseInt(number.group(1)) > 0) {
+            result = Integer.valueOf(number.group(1));
+        } else {
+            result = null;
+        }
+        return result;
+    }
+
+    private static PlanEntrance entrance(final JsonNode feature) {
+        final EntranceNote note = new EntranceNote(ArcgisPlans.field(feature, "uwagi"));
+        return new PlanEntrance(
+            ArcgisPlans.field(feature, "pietro"), feature.get("geometry").toString(),
+            ArcgisPlans.marking(ArcgisPlans.field(feature, "czy_dostos")), note.name(),
+            note.approach(), ArcgisPlans.width(ArcgisPlans.field(feature, "szerokosc")),
+            note.exit()
+        );
     }
 
     private static String field(final JsonNode feature, final String... names) {

@@ -103,7 +103,7 @@ final class ArcgisLayers {
         final JsonNode root;
         try {
             root = this.mapper.readTree(
-                this.client.get().uri(uri).retrieve().requiredBody(String.class)
+                this.client.get().uri(uri).retrieve().requiredBody(byte[].class)
             );
         } catch (final RestClientException ex) {
             throw new IllegalStateException(
