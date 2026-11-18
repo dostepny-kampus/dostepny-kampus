@@ -38,9 +38,11 @@ final class PostgisPwrEntrancesIT {
             "Wejścia nie mają danych PWr, obchód nie wygrał albo wpis PWr nie stał się wejściem",
             PostgisPwrEntrancesIT.saved(context).sql(
                 """
-                SELECT CASE WHEN id LIKE 'pwr/%' THEN 'pwr' ELSE id END || '|' || name || '|'
-                    || marking || '|' || COALESCE(approach, '-') || '|'
-                    || COALESCE(door_width_cm::text, '-') || '|' || pwr
+                SELECT CASE WHEN id LIKE 'pwr/%' THEN 'pwr' ELSE id END || '|'
+                    || COALESCE(pwr_name, name) || '|' || CASE WHEN marking_source = 'WALKTHROUGH'
+                        THEN marking ELSE COALESCE(pwr_marking, marking) END || '|'
+                    || COALESCE(approach, '-') || '|' || COALESCE(door_width_cm::text, '-')
+                    || '|' || (pwr_marking IS NOT NULL)
                 FROM entrances WHERE building_symbol = 'G-952' ORDER BY 1
                 """
             ).query(String.class).list(),

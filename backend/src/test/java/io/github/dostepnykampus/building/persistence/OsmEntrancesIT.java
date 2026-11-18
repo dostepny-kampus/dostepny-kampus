@@ -94,7 +94,7 @@ final class OsmEntrancesIT {
         final JdbcClient jdbc = context.getBean(JdbcClient.class);
         jdbc.sql(
             """
-            UPDATE entrances SET name = 'Wejście Cesarskie', marking = 'ACCESSIBLE', pwr = TRUE,
+            UPDATE entrances SET pwr_name = 'Wejście Cesarskie', pwr_marking = 'ACCESSIBLE',
                 approach = 'Od ul. Wybrzeże.', door_width_cm = 120
             WHERE building_symbol = 'B-8'
             """
@@ -102,10 +102,10 @@ final class OsmEntrancesIT {
         jdbc.sql(
             """
             INSERT INTO entrances (id, building_symbol, name, main, location, marking,
-                marking_date, marking_source, pwr)
+                marking_date, marking_source, pwr_name, pwr_marking)
             VALUES ('pwr/u3qcnhb5j0', 'B-8', 'Wejście', FALSE,
                 ST_SetSRID(ST_MakePoint(17.06, 51.11), 4326), 'INACCESSIBLE', DATE '2026-11-01',
-                'IMPORT', TRUE)
+                'IMPORT', 'Wejście', 'INACCESSIBLE')
             """
         ).update();
         OsmEntrancesIT.reimport(context);
@@ -113,9 +113,10 @@ final class OsmEntrancesIT {
             "Ponowny import OpenStreetMap usunął albo nadpisał dane wejść z planów PWr",
             jdbc.sql(
                 """
-                SELECT name || '|' || marking || '|' || COALESCE(approach, '-') || '|'
+                SELECT pwr_name || '|' || pwr_marking || '|' || COALESCE(approach, '-') || '|'
                     || COALESCE(door_width_cm::text, '-')
-                FROM entrances WHERE building_symbol = 'B-8' AND pwr ORDER BY id
+                FROM entrances WHERE building_symbol = 'B-8' AND pwr_marking IS NOT NULL
+                ORDER BY id
                 """
             ).query(String.class).list(),
             Matchers.contains(

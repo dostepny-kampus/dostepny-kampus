@@ -12,9 +12,10 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 
 /**
  * Wpisy warstwy wejść PWr z piętrem planu w tabelach entrances i evacuation_exits. Wejście
- * z OpenStreetMap do 15 m od wpisu bierze dane najbliższego wpisu; wpis bez takiego wejścia staje
- * się wejściem {@code pwr/<geohash>}. Oznaczenie z obchodu zostaje. Wyjścia ewakuacyjne budynku
- * są zastępowane przy każdym zapisie.
+ * z OpenStreetMap do 15 m od wpisu dostaje w kolumnach pwr_name, pwr_marking, approach
+ * i door_width_cm dane najbliższego wpisu; wpis bez takiego wejścia staje się wejściem
+ * {@code pwr/<geohash>}. Kolumn name i marking wejść z OpenStreetMap zapis nie zmienia. Dane PWr
+ * i wyjścia ewakuacyjne budynku są zastępowane przy każdym zapisie.
  *
  * <p>Wymagania: BR-24, BR-27, US2.6, US17.1</p>
  *
@@ -61,17 +62,19 @@ final class PostgisPwrEntrances {
             WHERE building_symbol = :building AND id LIKE 'pwr/%' AND marking_source = 'IMPORT'
             """
         ).param("building", building).update();
+        this.jdbc.sql(
+            """
+            UPDATE entrances
+            SET pwr_name = NULL, pwr_marking = NULL, approach = NULL, door_width_cm = NULL
+            WHERE building_symbol = :building
+            """
+        ).param("building", building).update();
         this.bound(
             String.join(
                 "",
                 """
-                UPDATE entrances SET pwr = TRUE, name = near.name, approach = near.approach,
-                    door_width_cm = near.width,
-                    marking_date = CASE WHEN entrances.marking_source = 'IMPORT'
-                        AND entrances.marking <> near.marking
-                        THEN CURRENT_DATE ELSE entrances.marking_date END,
-                    marking = CASE WHEN entrances.marking_source = 'IMPORT'
-                        THEN near.marking ELSE entrances.marking END
+                UPDATE entrances SET pwr_name = near.name, pwr_marking = near.marking,
+                    approach = near.approach, door_width_cm = near.width
                 FROM (
                     SELECT DISTINCT ON (osm.id) osm.id, pwr.name, pwr.approach, pwr.width,
                         pwr.marking
@@ -94,9 +97,10 @@ final class PostgisPwrEntrances {
                 "",
                 """
                 INSERT INTO entrances (id, building_symbol, name, main, location, floor_id,
-                    marking, marking_date, marking_source, approach, door_width_cm, pwr)
+                    marking, marking_date, marking_source, approach, door_width_cm, pwr_name,
+                    pwr_marking)
                 SELECT DISTINCT ON (id) id, :building, name, FALSE, spot, floor, marking,
-                    CURRENT_DATE, 'IMPORT', approach, width, TRUE
+                    CURRENT_DATE, 'IMPORT', approach, width, name, marking
                 FROM (
                     SELECT 'pwr/' || ST_GeoHash(place.spot, 10) AS id, place.spot, pwr.floor,
                         pwr.marking, pwr.name, pwr.approach, pwr.width
@@ -114,7 +118,7 @@ final class PostgisPwrEntrances {
                 ON CONFLICT (id, building_symbol) DO UPDATE SET name = EXCLUDED.name,
                     location = EXCLUDED.location, floor_id = EXCLUDED.floor_id,
                     approach = EXCLUDED.approach, door_width_cm = EXCLUDED.door_width_cm,
-                    pwr = TRUE
+                    pwr_name = EXCLUDED.pwr_name, pwr_marking = EXCLUDED.pwr_marking
                 """
             ),
             building, known, entrances
