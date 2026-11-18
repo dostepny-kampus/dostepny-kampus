@@ -46,7 +46,7 @@ private const val WAIT_MS = 5_000L
 /**
  * Część „Bariery przy tym wejściu” arkusza wejścia na V1: zgłoszenia przyjęte przy wejściu zalecanym.
  *
- * Wymagania: US2.2, US3.3, PW-3, PW-13
+ * Wymagania: US2.2, US3.3
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
