@@ -108,7 +108,7 @@ class BuildingCardHeaderTest {
     @Test
     fun answersWithUnnamed() {
         show(entrances = listOf(door("Boczne", EntranceMarking.ACCESSIBLE, name = null)))
-        compose.onNodeWithText("Zalecane: „Wejście bez nazwy w danych”.").assertExists("zdanie bez nazwy")
+        compose.onNodeWithText("Zalecane: „Wejście”.").assertExists("zdanie bez nazwy")
     }
 
     /**

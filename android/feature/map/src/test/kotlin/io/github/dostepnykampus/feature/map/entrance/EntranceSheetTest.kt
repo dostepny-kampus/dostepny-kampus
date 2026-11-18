@@ -80,7 +80,7 @@ class EntranceSheetTest {
 
         compose.onNodeWithText("Niedostępne").assertExists()
         compose.onNodeWithText("wejście główne", substring = true).assertDoesNotExist()
-        compose.onNodeWithText("Wejście bez nazwy w danych").assertDoesNotExist()
+        compose.onNodeWithText("Wejście").assertDoesNotExist()
     }
 
     /** Wiersz: przy „Brak danych” zdanie, że nikt nie sprawdził wejścia. Wymagania: US17.1 */
@@ -131,8 +131,8 @@ class EntranceSheetTest {
 
         compose.onNodeWithText(OTHERS).performScrollTo().assertExists()
         compose.onNodeWithText("Wejście od ul. Norwida").assertExists()
-        compose.onNodeWithText("Wejście bez nazwy w danych").assertExists()
-        compose.onNode(showOther("Wejście bez nazwy w danych")).assertExists()
+        compose.onNodeWithText("Wejście").assertExists()
+        compose.onNode(showOther("Wejście")).assertExists()
         val other = compose.onNode(showOther("Wejście od ul. Norwida"))
         other.performScrollTo().assertHeightIsAtLeast(48.dp).performClick()
         val expected = MapFocus.Entrance(id = "node/2", buildingSymbol = "A-1")
