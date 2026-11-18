@@ -56,9 +56,17 @@ private val ChevronRight: ImageVector =
 internal fun BuildingCardUiState.hasEntrancesPeek(isFullScreen: Boolean): Boolean =
     !isFullScreen && this != BuildingCardUiState.Missing
 
-/** Wcięcie treści karty; bez dolnego, gdy wystaje nagłówek „Wejścia” ([isPeek]), więc wiersz ucina brzeg karty. */
-internal fun Modifier.cardPadding(isPeek: Boolean): Modifier =
-    padding(start = Odstepy.m, top = Odstepy.m, end = Odstepy.m, bottom = if (isPeek) 0.dp else Odstepy.m)
+/**
+ * Wcięcie treści karty; bez dolnego, gdy wystaje nagłówek „Wejścia” ([isPeek]), więc wiersz ucina brzeg karty,
+ * i bez górnego, gdy nad treścią stoi nieprzewijany nagłówek (`false` w [hasTop]).
+ */
+internal fun Modifier.cardPadding(isPeek: Boolean, hasTop: Boolean = true): Modifier =
+    padding(
+        start = Odstepy.m,
+        top = if (hasTop) Odstepy.m else 0.dp,
+        end = Odstepy.m,
+        bottom = if (isPeek) 0.dp else Odstepy.m,
+    )
 
 /**
  * Początek pełnego opisu pod kreską niskiej karty: cały nagłówek grupy „Wejścia” i ucięty następny wiersz, ta sama
