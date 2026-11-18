@@ -57,23 +57,49 @@ $wiersz_wejsc($wejscia, $zdanie, "[drzwi i winda za drzwiami z danych]", $budyne
 !endif
 !endprocedure
 
-' Wejście na karcie: oznaczenie, przy wejściu zalecanym „Zalecane” bez piętra (BR-25),
-' nazwa, opis z danych i „Zgłoś barierę przy wejściu”
-' (TalkBack: „Zgłoś barierę przy wejściu: nazwa wejścia”, WCAG 2.5.3).
+' Grupa „Wejścia”: wejścia w jednym bloku, jako lista; między wejściami cienka linia (US2.1, NFR-21).
+' Blok otwiera $wejscia_poczatek(), zamyka $wejscia_koniec(). Pierwsze wejście: $wejscie_pierwsze,
+' każde następne: $wejscie_karty (z linią nad nim).
+!procedure $wejscia_poczatek()
+$ramka()
+!endprocedure
+
+!procedure $wejscia_koniec()
+}
+!endprocedure
+
+' Wiersz wejścia: oznaczenie, przy wejściu zalecanym „Zalecane” bez piętra (BR-25), nazwa ze strzałką,
+' opis z danych. Cały wiersz jest dotykalny: pokazuje wejście na mapie V1 i otwiera jego arkusz (US3.3).
+' „Zgłoś barierę przy wejściu” jest w arkuszu wejścia, nie w wierszu.
 ' $zrodlo: data i źródło przy wejściu, gdy nie są wspólne dla wszystkich (BR-24).
 ' $akcja tylko dla Zbierającego: "Zmień oznaczenie".
-!procedure $wejscie_karty($oznaczenie, $nazwa, $zalecane="", $zrodlo="", $akcja="")
-$ramka()
+' $opis: zastępnik opisu; przy wejściu z planów PWr nazwa, opis dojścia i szerokość drzwi (BR-27).
+!procedure $wejscie_pierwsze($oznaczenie, $nazwa, $zalecane="", $zrodlo="", $akcja="", $opis="[opis i szerokość drzwi z danych]")
 <b>$oznaczenie</b>$dk_spacje(2)$zalecane
-<b>$nazwa</b>
-$tekst("[opis i szerokość drzwi z danych]", "i")
+{ <b>$nazwa</b> | <&chevron-right> }
+$tekst($opis, "i")
 !if $zrodlo != ""
-$zrodlo
+$tekst($zrodlo)
 !endif
-$przycisk("Zgłoś barierę przy wejściu")
 !if $akcja != ""
 $przycisk($akcja)
 !endif
+!endprocedure
+
+!procedure $wejscie_karty($oznaczenie, $nazwa, $zalecane="", $zrodlo="", $akcja="", $opis="[opis i szerokość drzwi z danych]")
+--
+$wejscie_pierwsze($oznaczenie, $nazwa, $zalecane, $zrodlo, $akcja, $opis)
+!endprocedure
+
+' Jeden wiersz dla co najmniej dwóch wejść bez oznaczenia i bez nazwy, gdy żadne wejście budynku nie ma
+' oznaczenia ani nazwy (US17.1). $liczba: np. "3 wejścia"; 5 i więcej: "5 wejść".
+' Jedyny odnośnik „Zgłoś barierę przy wejściu” otwiera V4 bez wybranego wejścia (US4.6).
+!procedure $wejscia_bez_nazw($liczba)
+$ramka()
+<b>$brak_danych()</b>
+<b>$liczba bez nazw w danych</b>
+Nikt jeszcze nie sprawdził tych wejść.
+$przycisk("Zgłoś barierę przy wejściu")
 }
 !endprocedure
 

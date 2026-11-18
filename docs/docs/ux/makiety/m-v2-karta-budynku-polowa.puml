@@ -11,7 +11,9 @@ $naglowek_karty("A-1", "<i>[nazwa budynku z danych]</i>")
 $karta_gora()
 Z map i opisów, stan z <i>[data]</i>
 $sekcja("Wejścia")
-$wejscie_karty($dostepne(), "Wejście bramą od ul. Norwida", "Zalecane")
+$wejscia_poczatek()
+$wejscie_pierwsze($dostepne(), "Wejście bramą od ul. Norwida", "Zalecane")
+$wejscia_koniec()
 $tekst("[dalej: pozostałe wejścia, Bariery w budynku, Winda i toaleta, Piętra i źródło po przewinięciu]", "i")
 }
 $pasek_dolny_konto()

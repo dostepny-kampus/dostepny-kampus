@@ -94,7 +94,7 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 
 ## Wszystkie makiety
 
-79 makiet ekranów i katalog fragmentów. Stan zwykły nie ma dopisku w nazwie pliku. Stany, które różnią się jednym napisem, opisuje tabela pod makietą na stronie grupy.
+80 makiet ekranów i katalog fragmentów. Stan zwykły nie ma dopisku w nazwie pliku. Stany, które różnią się jednym napisem, opisuje tabela pod makietą na stronie grupy.
 
 | Ekran | Stan | Makieta | Strona |
 | --- | --- | --- | --- |
@@ -118,6 +118,7 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 | V2 | budynek podstawowy bez wejścia zalecanego | [`m-v2-karta-budynku-podstawowy`](../../_generated/m-v2-karta-budynku-podstawowy.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | brak sprawdzonych barier | [`m-v2-karta-budynku-pusty`](../../_generated/m-v2-karta-budynku-pusty.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | brak sieci | [`m-v2-karta-budynku-brak-sieci`](../../_generated/m-v2-karta-budynku-brak-sieci.svg) | [odwiedzający](odwiedzajacy.md) |
+| V2 | wejścia bez nazw | [`m-v2-karta-budynku-wejscia-bez-nazw`](../../_generated/m-v2-karta-budynku-wejscia-bez-nazw.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | budynku nie ma w telefonie | [`m-v2-karta-budynku-brak-w-telefonie`](../../_generated/m-v2-karta-budynku-brak-w-telefonie.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | Zbierający | [`m-v2-karta-budynku-zbierajacy`](../../_generated/m-v2-karta-budynku-zbierajacy.svg) | [odwiedzający](odwiedzajacy.md) |
 | V4 | krok 1 z 3 | [`m-v4-krok-1`](../../_generated/m-v4-krok-1.svg) | [odwiedzający](odwiedzajacy.md) |
@@ -197,7 +198,8 @@ Makiety V2 pokazują kartę na całym ekranie, bez mapy. Po dotknięciu budynku 
 | Wejście: oznaczenie tekstem i ikoną na początku, potem nazwa wejścia; „Wejście główne” niedostępne, „Wejście bramą od ul. Norwida” dostępne [1]; nazwa odróżnia je od drugiego wejścia przy ul. Norwida, które według deklaracji nie jest dostosowane | US2.1, US17.1, NFR-21 |
 | „Brak danych” z ikoną `minus`, inną niż `x` przy „Niedostępne” | US17.1 |
 | Wspólna data i źródło jeden raz nad grupą „Wejścia”: „Z map i opisów, stan z [data]” | US17.3, BR-24, PW-3 |
-| „Zgłoś barierę przy wejściu” przy każdym wejściu: otwiera V4 z wybranym wejściem; TalkBack dodaje nazwę wejścia | US4, NFR-18, decyzja 48 |
+| Wejścia w jednym bloku, z linią między wejściami. Cały wiersz jest dotykalny i ma strzałkę: pokazuje wejście na V1 i otwiera jego arkusz | US2.1, US3.3, NFR-17, NFR-18 |
+| „Zgłoś barierę przy wejściu” nie stoi w wierszu, tylko w arkuszu wejścia | US4.6 |
 | „Pokaż wyjścia ewakuacyjne (2)” pod wejściami, liczba z danych | US2.1, decyzja 44, decyzja 48 |
 | Grupy „Winda i toaleta” i „Piętra”: zastępniki danych PWr, przy piętrze „Pokaż na planie” | US16.1, decyzja 44 |
 | „Źródło: Politechnika Wrocławska” na dole karty | NFR-40 |
