@@ -208,7 +208,13 @@ class EntranceSheetTest {
 
     private fun recommendedWithOthers() =
         ShownEntrance(
-            entrance = entrance(EntranceMarking.ACCESSIBLE, "Wejście Cesarskie", isMain = true, assessment = IMPORTED),
+            entrance =
+                entrance(
+                    marking = EntranceMarking.ACCESSIBLE,
+                    name = "Wejście Cesarskie",
+                    isMain = true,
+                    assessment = IMPORTED,
+                ),
             isRecommended = true,
             others =
                 listOf(

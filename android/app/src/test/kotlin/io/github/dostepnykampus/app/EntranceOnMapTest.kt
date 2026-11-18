@@ -116,7 +116,7 @@ class EntranceOnMapTest {
                     onBack = { back() },
                     viewModel = remember { BuildingCardViewModel(other.symbol, repository, { flowOf(true) }) },
                 )
-            } else {
+            } else if (other !is SignInRoute) {
                 AppScreen(other)
             }
         }
