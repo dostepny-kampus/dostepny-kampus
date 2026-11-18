@@ -821,7 +821,8 @@ components:
       properties:
         id: {type: string, description: "Identyfikator wejścia."}
         buildingSymbol: {type: string, description: "Budynek, do którego prowadzi wejście."}
-        name: {type: string, description: "Opis wejścia na karcie budynku, np. „Wejście bramą od ul. Norwida”; brak, gdy dane nie opisują wejścia. Wejście z planów PWr ma zawsze nazwę, co najmniej „Wejście” (BR-27)."}
+        name: {type: string, description: "Opis wejścia na karcie budynku, np. „Wejście bramą od ul. Norwida”; Wejście bez nazwy i opisu w danych ma nazwę z położenia, np. „Wejście od strony B-7, od wschodu”, a wejście z planów PWr z samym opisem — „Wejście” (BR-27). Brak przy wejściu `emergency`, `exit` i `garage` bez nazwy w danych."}
+        generatedName: {type: boolean, default: false, description: "Czy nazwę nadał import: „Wejście”, „Wejście główne” albo nazwa z położenia (BR-27). Taka nazwa nie jest nazwą w danych przy wyborze wejścia zalecanego (BR-25)."}
         type: {type: string, description: "Rodzaj wejścia z tagu OpenStreetMap `entrance`, np. `main`, `service`, `emergency`; brak, gdy dane go nie podają."}
         main: {type: boolean, description: "Czy to wejście główne."}
         location: {$ref: '#/components/schemas/GeoPoint', description: "Położenie wejścia."}
