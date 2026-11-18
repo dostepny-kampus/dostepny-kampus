@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map.building
+package io.github.dostepnykampus.feature.map.entrance
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.graphics.toArgb
