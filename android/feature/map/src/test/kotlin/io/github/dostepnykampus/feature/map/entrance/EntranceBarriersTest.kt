@@ -6,13 +6,6 @@
 package io.github.dostepnykampus.feature.map.entrance
 
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -20,7 +13,6 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performScrollTo
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
-import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
@@ -62,7 +54,7 @@ class EntranceBarriersTest {
     @Test
     fun showsBarriersAtRecommended() {
         usePhotoLoader(compose.activity, photoAvailable())
-        compose.setContent { Sheet(recommended(barrier("z1").copy(photoUrl = PHOTO_URL))) }
+        compose.setContent { EntranceSheetOnMap(recommended(barrier("z1").copy(photoUrl = PHOTO_URL))) }
 
         compose.onNodeWithText(BARRIERS).performScrollTo().assertExists()
         listOf("Schody przy wejściu", "Blokada", "Sprawdzone 14.10.2026").forEach {
@@ -76,7 +68,7 @@ class EntranceBarriersTest {
     /** Wiersz: bez zgłoszeń przy wejściu części „Bariery przy tym wejściu” nie ma. */
     @Test
     fun hidesBarriersWithoutThem() {
-        compose.setContent { Sheet(recommended()) }
+        compose.setContent { EntranceSheetOnMap(recommended()) }
 
         compose.onNodeWithText(BARRIERS).assertDoesNotExist()
     }
@@ -101,7 +93,7 @@ class EntranceBarriersTest {
     /** Zrzut arkusza wejścia zalecanego z barierą przy wejściu, motyw jasny. */
     @Test
     fun matchesLightMockup() {
-        compose.setContent { Sheet(recommended(barrier("z1"))) }
+        compose.setContent { EntranceSheetOnMap(recommended(barrier("z1"))) }
         compose.onRoot().captureRoboImage()
     }
 
@@ -109,24 +101,10 @@ class EntranceBarriersTest {
     @Test
     @Config(fontScale = 2f)
     fun matchesLargeFontMockup() {
-        compose.setContent { Sheet(recommended(barrier("z1"))) }
+        compose.setContent { EntranceSheetOnMap(recommended(barrier("z1"))) }
 
         compose.onNodeWithText("Sprawdzone 14.10.2026").performScrollTo().assertExists()
         compose.onRoot().captureRoboImage()
-    }
-
-    @Composable
-    private fun Sheet(shown: ShownEntrance) {
-        DostepnyKampusTheme {
-            Box(Modifier.fillMaxSize().background(MapGround)) {
-                EntranceSheet(
-                    shown = shown,
-                    onClose = {},
-                    actions = EntranceActions(),
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                )
-            }
-        }
     }
 
     private fun recommended(vararg barriers: AcceptedBarrier) =
@@ -157,8 +135,4 @@ class EntranceBarriersTest {
             verifiedAt = Instant.parse("2026-10-14T10:00:00Z"),
             entranceId = entrance,
         )
-
-    private companion object {
-        val MapGround = Color(0xFFBEE3F2)
-    }
 }

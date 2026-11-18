@@ -6,13 +6,6 @@
 package io.github.dostepnykampus.feature.map.entrance
 
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isHeading
@@ -21,7 +14,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performScrollTo
 import com.github.takahirom.roborazzi.captureRoboImage
-import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.AssessmentSource
 import io.github.dostepnykampus.core.model.building.Entrance
@@ -59,7 +51,7 @@ class PwrEntranceSheetTest {
      */
     @Test
     fun showsApproachAndDoor() {
-        compose.setContent { Sheet(recommended(approach = APPROACH, doorWidthCm = 120)) }
+        compose.setContent { EntranceSheetOnMap(recommended(approach = APPROACH, doorWidthCm = 120)) }
 
         compose.onNode(hasText("Dojście") and isHeading()).assertExists()
         compose.onNodeWithText(APPROACH).assertExists()
@@ -74,7 +66,7 @@ class PwrEntranceSheetTest {
      */
     @Test
     fun hidesEmptyParts() {
-        compose.setContent { Sheet(recommended(approach = "", doorWidthCm = 0)) }
+        compose.setContent { EntranceSheetOnMap(recommended(approach = "", doorWidthCm = 0)) }
 
         compose.onNodeWithText("Dojście").assertDoesNotExist()
         compose.onNodeWithText("Drzwi").assertDoesNotExist()
@@ -89,7 +81,7 @@ class PwrEntranceSheetTest {
      */
     @Test
     fun namesPwrSource() {
-        compose.setContent { Sheet(recommended(approach = APPROACH, doorWidthCm = 120)) }
+        compose.setContent { EntranceSheetOnMap(recommended(approach = APPROACH, doorWidthCm = 120)) }
 
         compose.onNodeWithText("Zalecane. Z planów Politechniki Wrocławskiej, stan z 12.10.2024").assertExists()
     }
@@ -102,7 +94,7 @@ class PwrEntranceSheetTest {
      */
     @Test
     fun showsOthersDoorWidth() {
-        compose.setContent { Sheet(recommended(approach = "", doorWidthCm = 0)) }
+        compose.setContent { EntranceSheetOnMap(recommended(approach = "", doorWidthCm = 0)) }
 
         compose.onNodeWithText("$WIDTH: 90 cm").performScrollTo().assertExists()
         compose.onAllNodes(hasText(WIDTH, substring = true)).assertCountEquals(1)
@@ -116,7 +108,7 @@ class PwrEntranceSheetTest {
     @Test
     fun showsPlainFactsWhenNotRecommended() {
         val plain = pwr(id = "pwr/4", name = "Wejście", approach = APPROACH, doorWidthCm = 90)
-        compose.setContent { Sheet(ShownEntrance(plain)) }
+        compose.setContent { EntranceSheetOnMap(ShownEntrance(plain)) }
 
         compose.onNodeWithText("$WIDTH: 90 cm").assertExists()
         compose.onNodeWithText(APPROACH).assertExists()
@@ -127,7 +119,7 @@ class PwrEntranceSheetTest {
     /** Zrzut arkusza wejścia zalecanego z planów PWr, motyw jasny. */
     @Test
     fun matchesLightMockup() {
-        compose.setContent { Sheet(recommended(approach = APPROACH, doorWidthCm = 120)) }
+        compose.setContent { EntranceSheetOnMap(recommended(approach = APPROACH, doorWidthCm = 120)) }
         compose.onRoot().captureRoboImage()
     }
 
@@ -135,27 +127,11 @@ class PwrEntranceSheetTest {
     @Test
     @Config(fontScale = 2f)
     fun matchesLargeFontMockup() {
-        compose.setContent { Sheet(recommended(approach = APPROACH, doorWidthCm = 120)) }
+        compose.setContent { EntranceSheetOnMap(recommended(approach = APPROACH, doorWidthCm = 120)) }
         compose.onRoot().captureRoboImage()
     }
 
-    @Composable
-    private fun Sheet(shown: ShownEntrance) {
-        DostepnyKampusTheme {
-            Box(Modifier.fillMaxSize().background(MapGround)) {
-                EntranceSheet(
-                    shown = shown,
-                    onClose = {},
-                    actions = EntranceActions(),
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                )
-            }
-        }
-    }
-
     private companion object {
-        val MapGround = Color(0xFFBEE3F2)
-
         fun recommended(approach: String, doorWidthCm: Int): ShownEntrance =
             ShownEntrance(
                 entrance = pwr("pwr/1", "Wejście Cesarskie", approach, doorWidthCm),
