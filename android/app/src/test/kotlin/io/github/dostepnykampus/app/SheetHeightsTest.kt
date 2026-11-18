@@ -52,6 +52,7 @@ private const val PARTIAL_SWIPE_MILLIS = 200L
 private const val SWIPE_PAIRS = 3
 private val SHORT_SWIPE = 60.dp
 private const val LONG_SWIPE_MILLIS = 300L
+private const val PEEK = "Wejścia"
 
 /**
  * Arkusz V2 z trzema wysokościami: niska, połowa ekranu i cały ekran; idzie za palcem, staje najwyżej o stopień dalej,
@@ -78,10 +79,15 @@ class SheetHeightsTest {
                         }
                     }
                 } else {
-                    val mode = sheetCard().mode
-                    val height = if (mode == CardMode.Compact) CompactHeight else 2000.dp
+                    val card = sheetCard()
+                    val height = if (card.mode == CardMode.Compact) CompactHeight else 2000.dp
                     val scroll = Modifier.verticalScroll(rememberScrollState())
-                    Column(modifier = scroll) { Text(text = "$mode", modifier = Modifier.requiredHeight(height)) }
+                    Column(modifier = scroll) {
+                        Column(modifier = Modifier.requiredHeight(height)) {
+                            Text(text = "${card.mode}")
+                            Text(text = PEEK, modifier = Modifier.clickable(onClick = card.onExpand))
+                        }
+                    }
                 }
             }
         }
@@ -118,6 +124,19 @@ class SheetHeightsTest {
         handle.performClick()
         assertAt(low(), "znowu niska")
         compose.onNodeWithText("Compact").assertExists()
+    }
+
+    /**
+     * Wiersz: dotknięcie wystającego nagłówka „Wejścia” na niskiej wysokości podnosi kartę na połowę ekranu, jak
+     *   dotknięcie uchwytu.
+     */
+    @Test
+    fun raisesToHalfFromPeek() {
+        open()
+        compose.onNodeWithText(PEEK).performClick()
+        compose.waitForIdle()
+        assertAt(map() / 2, "połowa ekranu po dotknięciu „Wejścia”")
+        compose.onNodeWithText("Expanded").assertExists("pełny opis na połowie ekranu")
     }
 
     /** Wiersz: kamera mapy nie rusza się przy zmianie wysokości karty — zasłonięta część mapy zostaje ta z niskiej. */
