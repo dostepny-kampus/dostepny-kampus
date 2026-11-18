@@ -391,6 +391,15 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy mapa dalej się nie przesuwa
     Oraz brzeg mapy leży na brzegu prostokąta terenu
 
+  # @do-zrobienia #3108: brak testu zamknięcia karty na małym terenie.
+  @US2.8 @NFR-39 @aplikacja @do-zrobienia
+  Scenariusz: Na małym terenie zamknięcie karty przesuwa mapę tylko do brzegu terenu
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „T-9 Atol”
+    Oraz dotknął budynku T-9 na mapie
+    Jeżeli wybierze „Zamknij” w karcie budynku
+    Wtedy cały widok mapy leży w prostokącie terenu
+    Oraz powiększenie mapy jest takie jak w chwili zamknięcia karty
+
   @US1.7 @BR-G5 @NFR-39 @aplikacja
   Scenariusz: Przy najmniejszym powiększeniu teren wypełnia mapę w krótszym wymiarze
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Wittigowo”
