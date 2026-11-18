@@ -23,7 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -159,7 +158,9 @@ private fun NamelessEntrances(count: Int, onReport: (() -> Unit)?) {
             verticalArrangement = Arrangement.spacedBy(Odstepy.xs),
         ) {
             MarkingSign(marking = EntranceMarking.NO_DATA)
-            val title = namelessTitle(count)
+            val isFew = PolishPlurals.select(count.toDouble()) == PluralRules.KEYWORD_FEW
+            val form = if (isFew) R.string.karta_wejscia_bez_nazw_kilka else R.string.karta_wejscia_bez_nazw_wiele
+            val title = stringResource(form, count)
             Text(text = title, fontWeight = Typografia.wyroznienieWaga, style = MaterialTheme.typography.titleMedium)
             Text(text = stringResource(R.string.karta_nikt_nie_sprawdzil), style = MaterialTheme.typography.bodyMedium)
         }
@@ -169,14 +170,6 @@ private fun NamelessEntrances(count: Int, onReport: (() -> Unit)?) {
             }
         }
     }
-}
-
-@Composable
-@ReadOnlyComposable
-private fun namelessTitle(count: Int): String {
-    val isFew = PolishPlurals.select(count.toDouble()) == PluralRules.KEYWORD_FEW
-    val title = if (isFew) R.string.karta_wejscia_bez_nazw_kilka else R.string.karta_wejscia_bez_nazw_wiele
-    return stringResource(title, count)
 }
 
 /**
