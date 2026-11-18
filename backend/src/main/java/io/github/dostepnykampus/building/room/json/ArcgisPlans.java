@@ -26,12 +26,11 @@ import tools.jackson.databind.ObjectMapper;
 
 /**
  * Piętra, pomieszczenia i wejścia z obiektów warstw usługi ArcGIS PWr, które pobiera
- * {@link ArcgisLayers}. Wielokąt pomieszczenia staje się konturem MultiPolygon, pomieszczenie
- * bez wielokąta jest pomijane. Piętro bez identyfikatora LEVEL_ID jest pomijane. Wielkość
- * liter nazw pól pomieszczenia jest dowolna, a funkcja nazywa się Funkcja, Funkcje albo
- * d_funkcja. Numer z samych spacji jest pusty, a brak funkcji daje „Inne”. Pola wejść opisuje
- * {@link PlanSource#entrances(String, int)}. Data edycji warstwy to dzień w strefie Warszawy
- * z dataLastEditDate, a bez niej z lastEditDate opisu warstwy.
+ * {@link ArcgisLayers}. Wielokąt pomieszczenia staje się konturem MultiPolygon; pomieszczenie
+ * bez wielokąta i piętro bez LEVEL_ID są pomijane. Wielkość liter pól pomieszczenia jest dowolna,
+ * funkcja to Funkcja, Funkcje albo d_funkcja. Numer z samych spacji jest pusty, brak funkcji daje
+ * „Inne”. Pola wejść opisuje {@link PlanSource#entrances(String, int)}. Data edycji warstwy to
+ * dzień w strefie Warszawy z dataLastEditDate, a bez niej z lastEditDate opisu warstwy.
  *
  * <p>Wymagania: US16, US18, BR-24, BR-27, NFR-40</p>
  *

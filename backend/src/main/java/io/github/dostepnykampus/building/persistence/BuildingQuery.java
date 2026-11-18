@@ -28,12 +28,10 @@ import org.springframework.stereotype.Service;
 
 /**
  * Odczyt REST budynków: lista na mapie, podpowiedź budynku dla punktu i karta budynku
- * z wejściami. Nazwa wejścia z planów PWr wygrywa z nazwą z OpenStreetMap; oznaczenie z obchodu
- * wygrywa z oznaczeniem z planów PWr, a to z oznaczeniem z OpenStreetMap, a data oznaczenia idzie
- * za tym samym pierwszeństwem. Zawieranie punktu liczy tylko {@link Outlines}, więc podpowiedź
- * i budynek zapisany przy zgłoszeniu szybkim są zawsze równe. Atrybucja listy to źródła
- * konturów bez powtórzeń, alfabetycznie, rozdzielone średnikiem; pusta tabela ma pustą
- * atrybucję.
+ * z wejściami. Nazwa z planów PWr wygrywa z OpenStreetMap; oznaczenie z datą: obchód, potem
+ * plany PWr, potem OpenStreetMap. Zawieranie punktu liczy tylko {@link Outlines}, więc
+ * podpowiedź i budynek zgłoszenia szybkiego są zawsze równe. Atrybucja listy to źródła konturów
+ * bez powtórzeń, alfabetycznie, rozdzielone średnikiem; pusta tabela ma pustą atrybucję.
  *
  * <p>Wymagania: US1, BR-G2, US2, BR-14, NFR-40, US16, BR-24, BR-27, US17.3</p>
  *

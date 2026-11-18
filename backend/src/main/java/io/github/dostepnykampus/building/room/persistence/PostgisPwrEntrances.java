@@ -16,10 +16,8 @@ import org.springframework.jdbc.core.simple.JdbcClient;
  * Wpisy warstwy wejść PWr z piętrem planu w tabelach entrances i evacuation_exits. Wejście
  * z OpenStreetMap dostaje w kolumnach pwr_name, pwr_marking, approach i door_width_cm dane
  * najbliższego wpisu w promieniu 15 m; każdy inny wpis staje się wejściem
- * {@code pwr/<geohash>}. Kolumn name i marking wejść z OpenStreetMap zapis nie zmienia. Datą
- * oznaczenia z PWr (pwr_marking_date, a przy wejściu {@code pwr/…} także marking_date) jest
- * dzień edycji warstwy. Dane PWr i wyjścia ewakuacyjne budynku są zastępowane przy każdym
- * zapisie.
+ * {@code pwr/<geohash>}, nie ruszając name i marking wejść z OpenStreetMap. Data oznaczenia
+ * z PWr to dzień edycji warstwy. Dane PWr i wyjścia ewakuacyjne są zastępowane przy zapisie.
  *
  * <p>Wymagania: BR-24, BR-27, US2.6, US17.1, US17.3</p>
  *
