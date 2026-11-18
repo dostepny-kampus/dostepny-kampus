@@ -75,7 +75,8 @@ class BuildingCardTest {
         val ordered =
             orderedEntrances(
                 listOf(
-                    entrance(id = "pwr", marking = EntranceMarking.ACCESSIBLE).copy(name = "Wejście"),
+                    entrance(id = "pwr", marking = EntranceMarking.ACCESSIBLE)
+                        .copy(name = "Wejście", isNameGenerated = true),
                     entrance(id = "osm", marking = EntranceMarking.ACCESSIBLE).copy(name = null),
                     entrance(id = "dostosowane", marking = EntranceMarking.ACCESSIBLE),
                     entrance(id = "boczne", marking = EntranceMarking.ACCESSIBLE),
@@ -103,7 +104,8 @@ class BuildingCardTest {
             orderedEntrances(
                 listOf(
                     entrance(id = "osm", marking = EntranceMarking.ACCESSIBLE).copy(name = " "),
-                    entrance(id = "pwr", marking = EntranceMarking.ACCESSIBLE).copy(name = "Wejście"),
+                    entrance(id = "pwr", marking = EntranceMarking.ACCESSIBLE)
+                        .copy(name = "Wejście", isNameGenerated = true),
                 ),
             )
         assertEquals("osm", ordered.single { it.isRecommended }.entrance.id, "pierwsze bez nazw")

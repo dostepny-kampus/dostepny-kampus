@@ -50,8 +50,11 @@ class EntranceTest {
 
     @Test
     fun tellsNameFromImportPlaceholder() {
-        val names = listOf("Wejście boczne", "Wejście", null, "", " ")
-        val named = names.map { sideEntrance().copy(name = it) }.filter(Entrance::hasName)
+        val names = listOf("Wejście boczne" to false, "Wejście od wschodu" to true, "Wejście" to true, null to false)
+        val named =
+            names
+                .map { (name, generated) -> sideEntrance().copy(name = name, isNameGenerated = generated) }
+                .filter(Entrance::hasName)
 
         assertEquals(listOf("Wejście boczne"), named.map(Entrance::name), "nazwa w danych")
     }

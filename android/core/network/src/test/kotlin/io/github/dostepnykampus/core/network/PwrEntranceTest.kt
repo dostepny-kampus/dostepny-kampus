@@ -62,6 +62,20 @@ class PwrEntranceTest {
     }
 
     /**
+     * Wiersz: wejście z `generatedName` true → nazwa nadana przez import; bez pola → nazwa z danych.
+     *
+     * Wymagania: BR-25, BR-27
+     */
+    @Test
+    fun readsGeneratedName() {
+        assertEquals(
+            listOf(true, false),
+            listOf(entrance(""""generatedName":true,"""), entrance("")).map(Entrance::isNameGenerated),
+            "nazwa nadana przez import",
+        )
+    }
+
+    /**
      * Wiersz: szerokość drzwi 0 → w modelu 0, czyli brak szerokości.
      *
      * Wymagania: BR-27
