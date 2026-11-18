@@ -306,6 +306,27 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz arkusz podaje dojście do drzwi, szerokość drzwi i najbliższą windę z przybliżoną odległością od wejścia
     Ale arkusz nie pokazuje innych wejść budynku
 
+  # @do-zrobienia #3118: arkusz nie ma jeszcze części „Za drzwiami”.
+  @US3.3 @US16.3 @BR-25 @aplikacja @do-zrobienia
+  Szablon scenariusza: Część „Za drzwiami” podaje najbliższą windę i jej piętra
+    Zakładając, że najbliższa winda wejścia zalecanego A-1 na planie PWr <winda>
+    Jeżeli Gość niezalogowany otworzy arkusz tego wejścia
+    Wtedy w części „Za drzwiami” widzi „<pierwsze zdanie>”
+    Oraz pod spodem widzi „<drugie zdanie>”
+
+    Przykłady:
+      | winda                                                                     | pierwsze zdanie                                 | drugie zdanie                          |
+      | stoi przy klatkach C i D 28 m od wejścia i jeździ z piwnicy na 3 piętro   | Winda przy klatkach C i D, ok. 30 m od wejścia. | Jeździ od piwnicy do 3 piętra.         |
+      | stoi 31 m od wejścia, bez klatek w danych, i jeździ z parteru na 1 piętro | Winda, ok. 30 m od wejścia.                     | Jeździ od parteru do 1 piętra.         |
+      | stoi 12 m od wejścia i staje na piwnicy, parterze i antresoli             | Winda, ok. 10 m od wejścia.                     | Jedzie na: piwnica, parter, antresola. |
+
+  # @do-zrobienia #3118: arkusz nie ma jeszcze części „Za drzwiami”.
+  @US3.3 @BR-25 @aplikacja @do-zrobienia
+  Scenariusz: Bez windy na planie arkusz wejścia nie ma części „Za drzwiami”
+    Zakładając, że plan PWr budynku A-1 nie ma windy
+    Jeżeli Gość niezalogowany otworzy arkusz wejścia zalecanego A-1
+    Wtedy arkusz nie ma części „Za drzwiami”
+
   @US2.1 @US3.3 @aplikacja
   Scenariusz: Arkusz każdego wejścia ma te same części
     Zakładając, że niezalecane wejście A-1 ma w danych opis dojścia, szerokość drzwi i zgłoszenie przyjęte
