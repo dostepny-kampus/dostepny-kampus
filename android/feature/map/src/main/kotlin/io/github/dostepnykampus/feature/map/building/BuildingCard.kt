@@ -25,15 +25,17 @@ data class OrderedEntrance(val entrance: Entrance, val isRecommended: Boolean)
  * Wejścia odwiedzających w kolejności karty budynku.
  *
  * Zalecane jest jedyne: wejście „dostępne”, a gdy jest ich kilka — wejście główne, a gdy żadne dostępne nie jest
- * główne — pierwsze „dostępne” w kolejności z danych. Wejście „brak danych” nigdy nie jest zalecane. Bez wejścia
- * „dostępne” nie ma zalecanego, a lista zaczyna się od „niedostępne”.
+ * główne — pierwsze „dostępne” z nazwą w danych ([Entrance.hasName]), a bez nazw — pierwsze „dostępne” w kolejności
+ * z danych. Wejście „brak danych” nigdy nie jest zalecane. Bez wejścia „dostępne” nie ma zalecanego, a lista zaczyna
+ * się od „niedostępne”.
  *
  * Wymagania: BR-25
  */
 fun orderedEntrances(entrances: List<Entrance>): List<OrderedEntrance> {
     val visitors = entrances.filter(Entrance::isForVisitors)
     val accessible = visitors.filter { it.marking == EntranceMarking.ACCESSIBLE }
-    val recommended = accessible.firstOrNull { it.isMain } ?: accessible.firstOrNull()
+    val recommended =
+        accessible.firstOrNull { it.isMain } ?: accessible.firstOrNull(Entrance::hasName) ?: accessible.firstOrNull()
     val rest = visitors.filter { it !== recommended }.sortedBy { MARKING_ORDER.indexOf(it.marking) }
     val head = recommended?.let { OrderedEntrance(entrance = it, isRecommended = true) }
     return listOfNotNull(head) + rest.map { OrderedEntrance(entrance = it, isRecommended = false) }

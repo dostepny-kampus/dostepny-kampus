@@ -7,6 +7,8 @@ package io.github.dostepnykampus.core.model.building
 
 import io.github.dostepnykampus.core.model.GeoPoint
 
+private const val IMPORT_PLACEHOLDER_NAME = "Wejście"
+
 /**
  * Wejście do budynku z oznaczeniem wejścia (`Entrance` z kontraktu API).
  *
@@ -39,6 +41,14 @@ public data class Entrance(
     val approach: String = "",
     val doorWidthCm: Int = 0,
 ) {
+    /**
+     * Czy wejście ma nazwę w danych: niepustą i inną niż „Wejście”, które import nadaje wejściu bez nazwy.
+     *
+     * Wymagania: BR-25, BR-27
+     */
+    val hasName: Boolean
+        get() = !name.isNullOrBlank() && name != IMPORT_PLACEHOLDER_NAME
+
     /** Czy rodzaj wejścia kwalifikuje je do pokazania odwiedzającym. Wymagania: BR-25 */
     val isForVisitors: Boolean
         get() =
