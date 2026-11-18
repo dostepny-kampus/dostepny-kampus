@@ -1,0 +1,19 @@
+@startsalt
+' V2 Karta budynku na połowie ekranu: mapa nad kartą, pod kreską początek pełnego opisu, który przewija się
+' w karcie (US2.8, NFR-53; decyzja 115).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$mapa("mapa ulic OpenStreetMap; kontur A-1 wyróżniony, sąsiednie przygaszone, wejścia A-1 ze znakami oznaczeń", "", "przyciski")
+$ramka()
+$tekst("[uchwyt; TalkBack: Wysokość karty, połowa ekranu]", "i")
+$naglowek_karty("A-1", "<i>[nazwa budynku z danych]</i>")
+$karta_gora()
+Z map i opisów, stan z <i>[data]</i>
+$sekcja("Wejścia")
+$wejscie_karty($dostepne(), "Wejście bramą od ul. Norwida", "Zalecane")
+$tekst("[dalej: pozostałe wejścia, Bariery w budynku, Winda i toaleta, Piętra i źródło po przewinięciu]", "i")
+}
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

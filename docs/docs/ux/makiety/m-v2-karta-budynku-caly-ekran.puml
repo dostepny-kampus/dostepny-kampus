@@ -1,0 +1,15 @@
+@startsalt
+' V2 Karta budynku otwarta od razu na cały ekran: skala czcionki co najmniej 1,5, okno co najmniej 600 dp,
+' poziomo albo wybór z listy przy TalkBack. Bez mapy; dwie wysokości: cały ekran i zamknięta (US2.9, NFR-20).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_karty("A-1", "<i>[nazwa budynku z danych]</i>")
+$karta_gora(1, "dostepne", "Zalecane: „Wejście bramą od ul. Norwida”.", 1)
+Z map i opisów, stan z <i>[data]</i>
+$sekcja("Wejścia")
+$wejscie_karty($dostepne(), "Wejście bramą od ul. Norwida", "Zalecane")
+$tekst("[dalej pełny opis jak na wzorcu: wejścia, bariery, winda i toaleta, piętra, źródło]", "i")
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

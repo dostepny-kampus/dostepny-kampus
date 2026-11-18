@@ -7,7 +7,7 @@ Konwencje opisuje strona [Makiety](index.md). Stan, który różni się jednym n
 | Ekran | Makiety | Stany w tabelach |
 | --- | --- | --- |
 | V1 Mapa kampusu | zwykły, wyszukiwanie, lista budynków, brak wyniku, brak sieci, pierwsze otwarcie bez internetu, znaleziona sala, bariera na mapie, arkusz wejścia | ładowanie, brak mapy ulic, pierwsze uruchomienie, wybór budynku, plan piętra, sala bez drogi, brak sali, duża czcionka |
-| V2 Karta budynku | budynek podstawowy bez wejścia zalecanego, brak barier, brak sieci, budynku nie ma w telefonie, Zbierający | ładowanie, błąd zdjęcia, budynek podstawowy bez barier |
+| V2 Karta budynku | niska wysokość, połowa ekranu, od razu na cały ekran, budynek podstawowy bez wejścia zalecanego, brak barier, brak sieci, budynku nie ma w telefonie, Zbierający | ładowanie, błąd zdjęcia, budynek podstawowy bez barier |
 | V4 Zgłoszenie szybkie | kroki 1–3, krok 1 ze zdjęciem, prośba o zgodę, zgoda przybliżona, brak pozycji, rezygnacja, wysłane, wysłane bez internetu | Gość, odmowa zgody, lokalizacja wyłączona, ustalanie miejsca, błąd zapisu |
 | V5 Pomoc | krok z objaśnieniem „Dostępne” | krok o koncie, ostatni krok |
 | L1 Prośba o logowanie | zwykły, brak sieci | wejście z „Konto”, błąd |
@@ -302,7 +302,32 @@ Czynność główna: „Pokaż wejście na mapie”.
 | Brak wejścia dostępnego | wiersz „Brak wejścia dostępnego” ze znakiem i zdaniem, np. „Żadne z 3 wejść nie jest dostępne.”; bez „Pokaż wejście na mapie” (US3.1, BR-25) |
 | Brak danych o wejściach | cichy napis „Brak danych o wejściach”, bez zdania i bez przycisku (US3.1, US17.1) |
 | Brak sieci | nad nagłówkiem plakietka „Bez internetu” (NFR-10) |
-| Cały ekran od razu | duża czcionka, okno co najmniej 600 dp, poziomo albo lista przy TalkBack. Karta od razu na cały ekran, a pod „Pokaż wejście na mapie” stoi obrysowany „Pokaż budynek na mapie” (US2.9) |
+
+### V2: połowa ekranu
+
+![Makieta karty A-1 na połowie ekranu: mapa z wyróżnionym konturem i przyciskami mapy, a pod nią uchwyt, nagłówek z Zamknij, wiersz Wejście dostępne, Pokaż wejście na mapie, kreska, chipy Winda i Toaleta dostosowana, data i źródło oraz początek grupy Wejścia](../../_generated/m-v2-karta-budynku-polowa.svg)
+
+Czynność główna: „Pokaż wejście na mapie”.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| Mapa nad kartą zostaje, z przyciskami mapy, gdy nad kartą jest co najmniej 300 dp mapy | US2.8, NFR-53, decyzja 151 |
+| Uchwyt „Wysokość karty” z bieżącą wysokością; dotknięcie przechodzi na cały ekran | US2.8, NFR-18, NFR-53 |
+| Nagłówek i wiersz o wejściach jak na niskiej wysokości | US2.8, US3.2 |
+| Pod kreską początek pełnego opisu: chipy, data i źródło, „Wejścia”. Po przewinięciu karty dalej „Bariery w budynku”, „Winda i toaleta”, „Piętra” i źródło | US2, US2.8, NFR-53 |
+
+### V2: od razu na cały ekran
+
+![Makieta karty A-1 otwartej od razu na cały ekran: nagłówek z Zamknij, wiersz Wejście dostępne, wypełniony Pokaż wejście na mapie, obrysowany Pokaż budynek na mapie, kreska, chipy i początek grupy Wejścia, bez mapy](../../_generated/m-v2-karta-budynku-caly-ekran.svg)
+
+Czynność główna: „Pokaż wejście na mapie”.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| Karta otwiera się od razu na cały ekran przy skali czcionki co najmniej 1,5 i w oknie co najmniej 600 dp. Tak samo poziomo i po wyborze z listy przy TalkBack. Mapy nie ma | NFR-19, NFR-20, NFR-22, NFR-51 |
+| Dwie wysokości: cały ekran i zamknięta; przeciągnięcie w dół zamyka kartę | US2.8, NFR-53 |
+| Pod „Pokaż wejście na mapie” obrysowany „Pokaż budynek na mapie”, a bez wejścia zalecanego pod wierszem o wejściach. Zmienia zapamiętany wybór V1 na „Mapa” | US2.9, NFR-19, NFR-20 |
+| Dalej pełny opis jak na wzorcu | US2 |
 
 ### V2: budynek podstawowy
 
@@ -340,14 +365,14 @@ Czynność główna: „Pokaż wejście na mapie”.
 
 ### V2: brak sieci
 
-![Makieta V2 budynku A-1 bez internetu: nad nagłówkiem wskaźnik z datą danych, chipy, wiersz o wejściach, wejścia, grupy z planów PWr, pierwsza bariera ze zdjęciem z telefonu, druga z napisem o zdjęciu po połączeniu](../../_generated/m-v2-karta-budynku-brak-sieci.svg)
+![Makieta V2 budynku A-1 bez internetu na całym ekranie: plakietka z datą danych nad nagłówkiem z Zamknij, chipy, wiersz o wejściach, wejścia, grupy z planów PWr, pierwsza bariera ze zdjęciem z telefonu, druga z napisem o zdjęciu po połączeniu](../../_generated/m-v2-karta-budynku-brak-sieci.svg)
 
 Czynność główna: „Pokaż wejście na mapie”; arkusz wejścia działa na danych z telefonu.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Brak internetu” z ikoną i „Dane z [data]” pod nagłówkiem | US9.1, NFR-10, NFR-21 |
-| Pełny ekran bez mapy; mapa bez mapy ulic jest tylko nad małą kartą | NFR-10, US2.8 |
+| Plakietka „Bez internetu · dane z [data]” nad nagłówkiem karty, w tym samym miejscu na każdej wysokości; bez „Wstecz” | US9.1, NFR-10, NFR-21, decyzja 153 |
+| Karta na całym ekranie bez mapy; na niższych wysokościach mapa nad kartą bez nowego podkładu | NFR-10, US2.8 |
 | Zdjęcie zapisane w telefonie widać normalnie | NFR-10 |
 | Zdjęcie spoza telefonu zastępuje „Zdjęcie zobaczysz po połączeniu z internetem.” | NFR-10, PW-6 |
 
