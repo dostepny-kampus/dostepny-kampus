@@ -158,14 +158,17 @@ final class PostgisPwrEntrances {
             .toArray(String[]::new);
         final Integer[] widths = entrances.stream().map(PlanEntrance::doorWidthCm)
             .toArray(Integer[]::new);
-        final Boolean[] exits = entrances.stream().map(PlanEntrance::evacuationExit)
-            .toArray(Boolean[]::new);
         return this.jdbc.sql(sql).param("building", building)
             .param("known", known.toArray(String[]::new))
             .param("floors", entrances.stream().map(PlanEntrance::floorId).toArray(String[]::new))
             .param("points", entrances.stream().map(PlanEntrance::point).toArray(String[]::new))
             .param("markings", entrances.stream().map(PlanEntrance::marking).toArray(String[]::new))
             .param("names", entrances.stream().map(PlanEntrance::name).toArray(String[]::new))
-            .param("approaches", approaches).param("widths", widths).param("exits", exits);
+            .param("approaches", approaches).param("widths", widths)
+            .param("exits", PostgisPwrEntrances.flags(entrances));
+    }
+
+    private static Boolean[] flags(final List<PlanEntrance> entrances) {
+        return entrances.stream().map(PlanEntrance::evacuationExit).toArray(Boolean[]::new);
     }
 }
