@@ -97,10 +97,22 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     # Dane testowe, a nie stan faktyczny budynku C-13.
     Zakładając, że w danych testowych wejście boczne i wejście od dziedzińca C-13 mają oznaczenie „dostępne”
     Oraz wejście główne C-13 ma oznaczenie „niedostępne”
+    Oraz oba wejścia dostępne mają nazwę w danych
     Oraz wejście boczne jest pierwsze w kolejności z danych
     Jeżeli Gość niezalogowany otworzy kartę budynku C-13
     Wtedy pierwsze jest wejście boczne z napisem „Zalecane”
     Ale wejście od dziedzińca nie ma napisu „Zalecane”
+
+  # @do-zrobienia #3190: aplikacja zaleca jeszcze pierwsze wejście dostępne z danych, także bez nazwy.
+  @BR-25 @aplikacja @do-zrobienia
+  Scenariusz: Przy kilku wejściach dostępnych bez głównego zalecane jest wejście z nazwą
+    # Dane testowe, a nie stan faktyczny budynku C-13.
+    Zakładając, że w danych testowych dwa wejścia C-13 z planów PWr mają oznaczenie „dostępne” i żadne nie jest główne
+    Oraz pierwsze w kolejności z danych nie ma nazwy w uwagach, więc import nazywa je „Wejście”
+    Oraz drugie ma w uwagach nazwę „Wejście dostosowane”
+    Jeżeli Gość niezalogowany otworzy kartę budynku C-13
+    Wtedy pierwsze jest „Wejście dostosowane” z napisem „Zalecane”
+    Ale wejście „Wejście” nie ma napisu „Zalecane”
 
   @US3.1 @BR-25 @aplikacja
   Scenariusz: Budynek bez wejścia dostępnego nie ma wejścia zalecanego
