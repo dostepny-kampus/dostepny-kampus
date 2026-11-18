@@ -9,6 +9,7 @@ import android.view.accessibility.AccessibilityManager
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -25,29 +26,39 @@ import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.MapLibreMapView
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.entrance.BuildingEntrancesViewModel
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
+import io.github.dostepnykampus.feature.map.entrance.focusedBuilding
+import io.github.dostepnykampus.feature.map.entrance.withBuildingEntrances
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.plan.MapPlanViewModel
 import io.github.dostepnykampus.feature.map.plan.ShownPlan
 
 /**
- * V1 ze stanem [viewModel] i planem piętra [planViewModel] z grafu Hilt oraz zaznaczeniem [focus] z trasy; piętro
- * z zaznaczenia budynku staje się wybranym piętrem jego planu.
+ * V1 ze stanem [viewModel], planem piętra [planViewModel] i wejściami z serwera [entrancesViewModel] z grafu Hilt oraz
+ * zaznaczeniem [focus] z trasy; piętro z zaznaczenia budynku staje się wybranym piętrem jego planu, a wejścia
+ * zaznaczonego budynku z serwera zastępują w arkuszu wejścia i pinezce wejścia z pliku konturów.
  *
- * Wymagania: US1, US3.3, NFR-19, US16.1
+ * Wymagania: US1, US3.3, NFR-19, US16.1, US2.1
  */
 @Composable
 internal fun AppNavigator.HiltMapScreen(
     focus: MapFocus?,
     viewModel: CampusMapViewModel = hiltViewModel(),
     planViewModel: MapPlanViewModel = hiltViewModel(),
+    entrancesViewModel: BuildingEntrancesViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val plan by planViewModel.shown.collectAsStateWithLifecycle()
-    SideEffect { planViewModel.show(focus) }
+    val entrances by entrancesViewModel.shown.collectAsStateWithLifecycle()
+    val shown = remember(state, entrances) { state.copy(catalog = state.catalog?.withBuildingEntrances(entrances)) }
+    SideEffect {
+        planViewModel.show(focus)
+        entrancesViewModel.show(focusedBuilding(focus))
+    }
     MapScreen(
         focus = focus,
-        state = state,
+        state = shown,
         onListChange = viewModel::chooseList,
         onSearch = viewModel::search,
         plan = plan,
