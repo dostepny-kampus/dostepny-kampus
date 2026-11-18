@@ -10,12 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
@@ -58,6 +60,10 @@ internal class SignSheetState(initial: ChosenSign?) {
     val entranceId: String?
         get() = chosen?.takeIf { it.sign == TouchSign.ENTRANCE }?.id
 
+    /** Wysokość arkusza wejścia w pikselach; 0 bez arkusza wejścia. */
+    var entranceHeight by mutableIntStateOf(0)
+        private set
+
     /** Symbol budynku z otwartą kartą pod mapą; `null` bez karty. */
     var card: String? = null
 
@@ -67,6 +73,18 @@ internal class SignSheetState(initial: ChosenSign?) {
     /** Arkusz, który zastąpił kartę, jest zamknięty, a karta jeszcze nie wróciła na ekran. */
     var isReturning by mutableStateOf(false)
         private set
+
+    /** Arkusz wejścia na mapie ma wysokość [height] w pikselach. */
+    fun measureEntrance(height: Int) {
+        entranceHeight = height
+    }
+
+    /**
+     * Wysokość w pikselach arkusza wejścia zaznaczonego w [focus], który zasłania dół mapy; 0, gdy otwarty arkusz
+     * nie dotyczy tego wejścia.
+     */
+    fun markedCover(focus: MapFocus?): Int =
+        entranceHeight.takeIf { entranceId == (focus as? MapFocus.Entrance)?.id } ?: 0
 
     /**
      * Otwiera arkusz znaku [sign] obiektu [id] w miejsce karty budynku [card], zamykając ją, albo w miejsce
@@ -81,6 +99,7 @@ internal class SignSheetState(initial: ChosenSign?) {
     /** Zamyka arkusz bez powrotu do karty. */
     fun close() {
         chosen = null
+        entranceHeight = 0
         isReturning = false
     }
 
@@ -267,7 +286,7 @@ internal fun ChosenSignSheet(
                 barriers = barriers,
                 onClose = { signs.back(onBuildingClick) },
                 actions = entranceActions,
-                modifier = modifier,
+                modifier = modifier.onSizeChanged { signs.measureEntrance(it.height) },
             )
         }
 

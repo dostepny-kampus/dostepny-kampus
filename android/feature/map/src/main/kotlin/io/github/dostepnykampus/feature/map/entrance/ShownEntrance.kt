@@ -9,9 +9,7 @@ import androidx.compose.runtime.Immutable
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
-import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.building.orderedEntrances
-import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
 /**
  * Wejście w arkuszu wejścia na V1.
@@ -20,14 +18,12 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
  *
  * @property entrance wejście z katalogu
  * @property isRecommended czy to wejście zalecane swojego budynku
- * @property others inne wejścia „dostępne” tego budynku; pusta lista przy wejściu niezalecanym
- * @property barriers zgłoszenia przyjęte przy tym wejściu; pusta lista przy wejściu niezalecanym
+ * @property barriers zgłoszenia przyjęte przy tym wejściu
  */
 @Immutable
 internal data class ShownEntrance(
     val entrance: Entrance,
     val isRecommended: Boolean = false,
-    val others: List<Entrance> = emptyList(),
     val barriers: List<AcceptedBarrier> = emptyList(),
 )
 
@@ -36,27 +32,23 @@ internal data class ShownEntrance(
  *
  * Wymagania: US3.3, US4.6
  *
- * @property onShow zaznacza na mapie podane wejście i otwiera jego arkusz
  * @property onReport zgłoszenie bariery przy wejściu o podanym identyfikatorze
  */
 @Immutable
-data class EntranceActions(val onShow: (MapFocus.Entrance) -> Unit = {}, val onReport: (String) -> Unit = {})
+data class EntranceActions(val onReport: (String) -> Unit = {})
 
 /**
- * Wejście [id] z katalogu z jego miejscem wśród wejść budynku według [orderedEntrances] i, gdy jest zalecane,
- * zgłoszeniami z [barriers] przy tym wejściu; `null`, gdy katalog nie ma takiego wejścia.
+ * Wejście [id] z katalogu z jego miejscem wśród wejść budynku według [orderedEntrances] i zgłoszeniami
+ * z [barriers] przy tym wejściu; `null`, gdy katalog nie ma takiego wejścia.
  *
  * Wymagania: BR-25, US3.3, US2.2
  */
 internal fun BuildingCatalog.shownEntrance(id: String, barriers: List<AcceptedBarrier> = emptyList()): ShownEntrance? {
     val entrance = entrances.firstOrNull { it.id == id } ?: return null
     val ordered = orderedEntrances(entrances.filter { it.buildingSymbol == entrance.buildingSymbol })
-    val isRecommended = ordered.any { it.isRecommended && it.entrance.id == id }
-    val others = ordered.filter { !it.isRecommended && it.entrance.marking == EntranceMarking.ACCESSIBLE }
     return ShownEntrance(
         entrance = entrance,
-        isRecommended = isRecommended,
-        others = others.map { it.entrance }.takeIf { isRecommended }.orEmpty(),
-        barriers = barriers.filter { isRecommended && it.entranceId == id },
+        isRecommended = ordered.any { it.isRecommended && it.entrance.id == id },
+        barriers = barriers.filter { it.entranceId == id },
     )
 }

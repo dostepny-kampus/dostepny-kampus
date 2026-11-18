@@ -7,9 +7,8 @@ package io.github.dostepnykampus.feature.map.entrance
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,11 +22,11 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Ikony
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
-import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
@@ -94,16 +93,16 @@ internal fun isFullEntranceSheet(id: String, focus: MapFocus?): Boolean {
 }
 
 /**
- * Arkusz wejścia [shown] na dole mapy V1: znak oznaczenia przy nagłówku z budynkiem, słowo oznaczenia, pod nim
- * „Zalecane.” przy wejściu zalecanym i dzień ze źródłem oznaczenia, gdy są w danych, nazwa, dojście i drzwi wejścia,
- * gdy są w danych, bariery i inne wejścia dostępne przy wejściu zalecanym i zgłoszenie bariery przy wejściu. Nagłówek
- * dostaje fokus po otwarciu, a treść się przewija.
+ * Arkusz wejścia [shown] na dole mapy V1, ten sam przy każdym wejściu: znak oznaczenia przy nagłówku z budynkiem,
+ * słowo oznaczenia, pod nim „Zalecane.” przy wejściu zalecanym i dzień ze źródłem oznaczenia, gdy są w danych, nazwa,
+ * dojście, drzwi i bariery wejścia, gdy są w danych, i zgłoszenie bariery przy wejściu. Nagłówek dostaje fokus po
+ * otwarciu i stoi nad treścią, która się przewija. Arkusz na mapie ma najwyżej połowę wysokości okna.
  *
  * Wymagania: US2.1, US2.2, US3.3, US4.6, US17.1, US17.3, BR-25, BR-27, NFR-18, NFR-20, NFR-21, NFR-53
  *
  * @param shown wejście z katalogu z jego miejscem wśród wejść budynku
  * @param onClose „Zamknij” zostawia samą mapę
- * @param actions „Pokaż to wejście na mapie” i „Zgłoś barierę przy wejściu”
+ * @param actions „Zgłoś barierę przy wejściu”
  * @param modifier położenie arkusza na mapie
  * @param isFull arkusz na cały ekran, bez mapy
  */
@@ -117,11 +116,14 @@ internal fun EntranceSheet(
 ) {
     val entrance = shown.entrance
     val title = entrance.name ?: stringResource(R.string.karta_bez_nazwy)
-    MapSheet(modifier = modifier, isFull = isFull) {
+    val header: @Composable () -> Unit = {
         MapSheetHeader(
             title = stringResource(R.string.mapa_wejscie_naglowek, entrance.buildingSymbol),
             onClose = onClose,
         ) { MarkingSign(entrance.marking) }
+    }
+    val bounded = if (isFull) modifier else modifier.heightIn(max = halfWindow())
+    MapSheet(modifier = bounded, isFull = isFull, header = header) {
         Text(
             text = markingLine(entrance),
             style = MaterialTheme.typography.titleMedium,
@@ -134,7 +136,6 @@ internal fun EntranceSheet(
             SecondaryText(stringResource(R.string.mapa_wejscie_niesprawdzone))
         }
         if (shown.barriers.isNotEmpty()) EntranceBarriers(shown)
-        if (shown.others.isNotEmpty()) OtherEntrances(shown) { actions.onShow(it.copy(isFullSheet = isFull)) }
         SheetButton(
             text = stringResource(R.string.karta_zglos),
             spoken = stringResource(R.string.karta_zglos_czytaj, title),
@@ -144,20 +145,10 @@ internal fun EntranceSheet(
 }
 
 @Composable
-private fun OtherEntrances(shown: ShownEntrance, onShow: (MapFocus.Entrance) -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        SheetHeading(stringResource(R.string.wizyta_inne))
-        shown.others.forEach { other ->
-            val name = other.name ?: stringResource(R.string.karta_bez_nazwy)
-            Text(text = name, style = MaterialTheme.typography.bodyLarge)
-            doorWidthText(other)?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
-            SheetButton(
-                text = stringResource(R.string.mapa_wejscie_pokaz_to),
-                spoken = stringResource(R.string.mapa_wejscie_pokaz_to_czytaj, name),
-                onClick = { onShow(MapFocus.Entrance(id = other.id, buildingSymbol = other.buildingSymbol)) },
-            )
-        }
-    }
+@ReadOnlyComposable
+private fun halfWindow(): Dp {
+    val height = LocalWindowInfo.current.containerSize.height
+    return with(LocalDensity.current) { height.toDp() } / 2
 }
 
 @Composable

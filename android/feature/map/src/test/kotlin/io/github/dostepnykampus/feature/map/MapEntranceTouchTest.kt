@@ -7,9 +7,11 @@ package io.github.dostepnykampus.feature.map
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.dp
@@ -23,6 +25,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,6 +33,8 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.GraphicsMode
 
 private const val CARD_HEIGHT = 200
+
+private val SHEET_EDGE = 32.dp
 
 private const val MAIN_ACCESSIBLE = """"entrance":"main","wheelchair":"yes","ref":"Główne""""
 
@@ -49,7 +54,6 @@ class MapEntranceTouchTest {
 
     private val opened = mutableListOf<String>()
     private var closedCards = 0
-    private val shownEntrances = mutableListOf<MapFocus.Entrance>()
     private val reports = mutableListOf<String>()
     private val map = TouchableMap()
     private val repository =
@@ -108,20 +112,23 @@ class MapEntranceTouchTest {
     }
 
     /**
-     * Wiersz: arkusz wejścia zalecanego, „Pokaż to wejście na mapie” przy innym wejściu dostępnym zaznacza to
-     *   wejście z budynkiem arkusza.
+     * Wiersz: wejście zaznaczone z trasy stoi na środku części mapy nad arkuszem: dół kamery zasłania wysokość
+     *   arkusza.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Pinezka wejścia jest widoczna nad arkuszem wejścia
      *
-     * Wymagania: US3.3
+     * Wymagania: US3.3, NFR-53
      */
     @Test
-    fun showsOtherEntranceFromSheet() {
-        start()
-        compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
-        compose.onNodeWithText("Boczne").performScrollTo()
-        compose.onNode(hasContentDescription("Pokaż to wejście na mapie: »Boczne«")).performClick()
+    fun centersEntranceAboveSheet() {
+        start(focus = MapFocus.Entrance(id = "node/1", buildingSymbol = "C-13"))
+        val header = compose.onNodeWithText("Wejście, budynek C-13").getUnclippedBoundsInRoot()
+        val root = compose.onRoot().getUnclippedBoundsInRoot()
 
-        val expected = MapFocus.Entrance(id = "node/2", buildingSymbol = "C-13")
-        compose.runOnIdle { assertEquals("wejście boczne C-13", listOf(expected), shownEntrances) }
+        val inset = checkNotNull(map.camera).second
+        val density = compose.activity.resources.displayMetrics.density
+        val covered = (inset.bottom / density).dp
+        assertTrue("arkusz pod nagłówkiem zasłania dół: $covered", covered >= root.bottom - header.top)
+        assertTrue("najwyżej o odstępy arkusza więcej: $covered", covered <= root.bottom - header.top + SHEET_EDGE)
     }
 
     /** Wiersz: arkusz wejścia, „Zgłoś barierę przy wejściu” przekazuje to wejście. Wymagania: US4.6 */
@@ -177,7 +184,7 @@ class MapEntranceTouchTest {
         compose.runOnIdle { assertEquals("bez karty", emptyList<String>(), opened) }
     }
 
-    private fun start(isCardOpen: Boolean = false) {
+    private fun start(isCardOpen: Boolean = false, focus: MapFocus? = null) {
         val viewModel =
             CampusMapViewModel(
                 repository = repository,
@@ -191,10 +198,10 @@ class MapEntranceTouchTest {
             DostepnyKampusTheme {
                 CampusMapScreen(
                     onBuildingClick = { opened += it },
-                    focus = if (isCardOpen) MapFocus.Building("C-13") else null,
+                    focus = if (isCardOpen) MapFocus.Building("C-13") else focus,
                     contentPadding = PaddingValues(bottom = if (isCardOpen) CARD_HEIGHT.dp else 0.dp),
                     onEmptyMapClick = { closedCards++ },
-                    entranceActions = EntranceActions(onShow = { shownEntrances += it }, onReport = { reports += it }),
+                    entranceActions = EntranceActions(onReport = { reports += it }),
                     mapView = map.view,
                     viewModel = viewModel,
                 )

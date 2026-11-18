@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map.overlay
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,16 +27,18 @@ import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 /**
  * Arkusz na dole mapy V1 z treścią [content] w przewijanej kolumnie, więc przy dużej czcionce treść się mieści.
  *
- * Wymagania: NFR-20
+ * Wymagania: NFR-20, NFR-53
  *
- * @param modifier położenie arkusza na mapie
+ * @param modifier położenie i najwyższa wysokość arkusza na mapie
  * @param isFull arkusz zajmuje cały ekran, bez zaokrągleń i cienia, z treścią poza paskami systemu
+ * @param header nagłówek nad przewijaną treścią, który się z nią nie przewija; `null` bez takiego nagłówka
  * @param content treść arkusza
  */
 @Composable
 internal fun MapSheet(
     modifier: Modifier = Modifier,
     isFull: Boolean = false,
+    header: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
@@ -43,13 +46,13 @@ internal fun MapSheet(
         shape = if (isFull) RectangleShape else RoundedCornerShape(Zaokraglenia.duze),
         shadowElevation = if (isFull) 0.dp else Odstepy.s,
     ) {
-        Column(
-            Modifier
-                .verticalScroll(rememberScrollState())
-                .then(if (isFull) Modifier.safeDrawingPadding() else Modifier)
-                .padding(Odstepy.m),
-            verticalArrangement = Arrangement.spacedBy(Odstepy.s),
-            content = content,
-        )
+        Column(if (isFull) Modifier.safeDrawingPadding() else Modifier) {
+            header?.let { Box(Modifier.padding(start = Odstepy.m, top = Odstepy.m, end = Odstepy.m)) { it() } }
+            Column(
+                Modifier.verticalScroll(rememberScrollState()).padding(Odstepy.m),
+                verticalArrangement = Arrangement.spacedBy(Odstepy.s),
+                content = content,
+            )
+        }
     }
 }

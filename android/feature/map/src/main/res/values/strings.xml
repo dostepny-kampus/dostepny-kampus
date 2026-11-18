@@ -64,8 +64,6 @@
     <string name="mapa_wejscie_dojscie">Dojście</string>
     <string name="mapa_wejscie_drzwi">Drzwi</string>
     <string name="mapa_wejscie_bariery">Bariery przy tym wejściu</string>
-    <string name="mapa_wejscie_pokaz_to">Pokaż to wejście na mapie</string>
-    <string name="mapa_wejscie_pokaz_to_czytaj">Pokaż to wejście na mapie: »%1$s«</string>
     <string name="mapa_plan_schody">Schody</string>
     <string name="mapa_winda_jedzie">Jedzie na: %1$s</string>
     <string name="mapa_winda_tutaj">%1$s (tutaj jesteś)</string>
@@ -126,7 +124,6 @@
     <string name="karta_rozwiniete">rozwinięte</string>
     <string name="karta_pokaz_na_planie">Pokaż na planie</string>
     <string name="karta_pokaz_na_planie_czytaj">Pokaż na planie: %1$s</string>
-    <string name="wizyta_inne">Inne wejście dostępne</string>
     <string name="wizyta_pokaz">Pokaż wejście na mapie</string>
     <string name="wizyta_pokaz_czytaj">Pokaż wejście na mapie: »%1$s«</string>
 </resources>

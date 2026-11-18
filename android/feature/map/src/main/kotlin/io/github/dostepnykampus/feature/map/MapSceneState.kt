@@ -117,8 +117,9 @@ internal class MapSceneState(
  * [cover]. Nad arkuszem budynek mieści się też nad napisem o zmianie terenu wysokim na [notice]. Widok kamery
  * i lista budynków do wyboru są zapisywane, więc wracają po obrocie ekranu. Zamknięcie arkusza zostawia obraz mapy
  * bez ruchu: zapisany widok to widok z chwili zamknięcia. Każdy ruch nad kartą do nowego budynku trafia do [motion].
+ * Arkusz zaznaczonego wejścia wysoki na [sheet] pikseli zasłania dół mapy, więc wejście staje na środku mapy nad nim.
  *
- * Wymagania: US1.7, US1.8, NFR-22, NFR-56
+ * Wymagania: US1.7, US1.8, US3.3, NFR-22, NFR-56
  */
 @Composable
 internal fun rememberMapSceneState(
@@ -131,6 +132,7 @@ internal fun rememberMapSceneState(
     top: Dp = 0.dp,
     motion: MapMotion? = null,
     notice: Dp = 0.dp,
+    sheet: Int = 0,
 ): MapSceneState {
     val scene = rememberMapScene(layers = layers, catalog = catalog, focus = focus, area = area)
     val selection = scene?.selection
@@ -173,7 +175,7 @@ internal fun rememberMapSceneState(
     val above = card.move?.takeIf { isCovered }
     val move = above ?: uncovered?.byControl()
     SideEffect { last.keep(shown = move?.camera, covered = cover + reserve, isAbove = above != null) }
-    val inset = sheetOrBarInset(isAbove = above != null, top = topInset, bottom = bottomInset)
+    val inset = sheetOrBarInset(isAbove = above != null, top = topInset, bottom = bottomInset, sign = sheet.toDouble())
     return MapSceneState(
         scene = scene,
         shown = move?.let { SceneCamera(move = it, inset = inset, landing = fit) },
@@ -191,12 +193,13 @@ internal fun rememberMapSceneState(
  *   na wybór, dopóki osoba nie ruszy mapy; poza tym przelot przycisków ([byControl]) do widoku zapisanego, na
  *   zaznaczonym wejściu albo startowego
  * @property inset zasłonięte krawędzie mapy: dół zasłonięty arkuszem V2, gdy [move] stawia budynek nad arkuszem
+ *   V2, a poza tym góra pod paskiem i dół pod arkuszem zaznaczonego wejścia
  * @property landing wolna część mapy, w której staje widok po wyborze terenu
  */
 internal data class SceneCamera(val move: CameraTransition, val inset: MapInset, val landing: FreeMap)
 
-private fun sheetOrBarInset(isAbove: Boolean, top: Double, bottom: Double): MapInset =
-    if (isAbove) MapInset(bottom = bottom) else MapInset(top = top)
+private fun sheetOrBarInset(isAbove: Boolean, top: Double, bottom: Double, sign: Double): MapInset =
+    if (isAbove) MapInset(bottom = bottom) else MapInset(top = top, bottom = sign)
 
 /**
  * Zasłonięcie mapy V1 przez arkusz V2. Nad arkuszem przyciski mapy stoją tylko przy co najmniej 300 dp wolnej mapy.

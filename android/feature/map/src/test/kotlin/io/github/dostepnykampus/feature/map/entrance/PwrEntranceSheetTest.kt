@@ -12,7 +12,6 @@ import androidx.compose.ui.test.isHeading
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.performScrollTo
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.AssessmentSource
@@ -66,7 +65,7 @@ class PwrEntranceSheetTest {
      */
     @Test
     fun hidesEmptyParts() {
-        val alone = recommended(approach = "", doorWidthCm = 0).copy(others = emptyList())
+        val alone = recommended(approach = "", doorWidthCm = 0)
         compose.setContent { EntranceSheetOnMap(alone) }
 
         compose.onNodeWithText("Dojście").assertDoesNotExist()
@@ -88,33 +87,21 @@ class PwrEntranceSheetTest {
     }
 
     /**
-     * Wiersz: w „Inne wejście dostępne” szerokość drzwi przy każdym wejściu, które ją ma w danych; wejście
-     *   z szerokością 0 stoi bez szerokości.
+     * Wiersz: wejście niezalecane z opisem i drzwiami 90 cm → części „Dojście” i „Drzwi” z nagłówkami, jak przy
+     *   wejściu zalecanym.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Arkusz każdego wejścia ma te same części
      *
-     * Wymagania: US3.3, BR-27
+     * Wymagania: US2.1, US3.3, BR-27
      */
     @Test
-    fun showsOthersDoorWidth() {
-        compose.setContent { EntranceSheetOnMap(recommended(approach = "", doorWidthCm = 0)) }
-
-        compose.onNodeWithText("$WIDTH: 90 cm").performScrollTo().assertExists()
-        compose.onAllNodes(hasText(WIDTH, substring = true)).assertCountEquals(1)
-    }
-
-    /**
-     * Wiersz: wejście niezalecane z opisem i drzwiami 90 cm → szerokość drzwi i opis bez części „Dojście” i „Drzwi”.
-     *
-     * Wymagania: US2.1, BR-27
-     */
-    @Test
-    fun showsFactsWithoutParts() {
+    fun showsPartsAtEveryEntrance() {
         val plain = pwr(id = "pwr/4", name = "Wejście", approach = APPROACH, doorWidthCm = 90)
         compose.setContent { EntranceSheetOnMap(ShownEntrance(plain)) }
 
-        compose.onNodeWithText("$WIDTH: 90 cm").assertExists()
+        compose.onNode(hasText("Dojście") and isHeading()).assertExists()
         compose.onNodeWithText(APPROACH).assertExists()
-        compose.onNodeWithText("Dojście").assertDoesNotExist()
-        compose.onNodeWithText("Drzwi").assertDoesNotExist()
+        compose.onNode(hasText("Drzwi") and isHeading()).assertExists()
+        compose.onNodeWithText("$WIDTH: 90 cm").assertExists()
     }
 
     /** Zrzut arkusza wejścia zalecanego z planów PWr, motyw jasny. */
@@ -138,11 +125,6 @@ class PwrEntranceSheetTest {
                 entrance =
                     pwr(id = "pwr/1", name = "Wejście Cesarskie", approach = approach, doorWidthCm = doorWidthCm),
                 isRecommended = true,
-                others =
-                    listOf(
-                        pwr(id = "pwr/2", name = "Wejście \"C\"", approach = "", doorWidthCm = 90),
-                        pwr(id = "pwr/3", name = "Wejście", approach = "", doorWidthCm = 0),
-                    ),
             )
 
         fun pwr(id: String, name: String, approach: String, doorWidthCm: Int): Entrance =

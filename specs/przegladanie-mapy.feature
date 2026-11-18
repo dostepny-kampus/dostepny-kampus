@@ -285,7 +285,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi liczbę wyjść ewakuacyjnych 2
     Oraz po wybraniu „Pokaż wyjścia ewakuacyjne (2)” widzi listę obu wyjść
 
-  # @do-zrobienia #3118, #3194: arkusz nie ma jeszcze windy za drzwiami, a pokazuje inne wejścia dostępne.
+  # @do-zrobienia #3118: arkusz nie ma jeszcze windy za drzwiami.
   @US3.3 @BR-25 @aplikacja @do-zrobienia
   Scenariusz: Opis wejścia zalecanego podaje dojście, drzwi i najbliższą windę
     Zakładając, że Gość niezalogowany otworzył kartę budynku A-1
@@ -294,16 +294,14 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz arkusz podaje dojście do drzwi, szerokość drzwi i najbliższą windę z przybliżoną odległością od wejścia
     Ale arkusz nie pokazuje innych wejść budynku
 
-  # @do-zrobienia #3194: arkusz innego wejścia nie ma jeszcze części z nagłówkami i barier.
-  @US2.1 @US3.3 @aplikacja @do-zrobienia
+  @US2.1 @US3.3 @aplikacja
   Scenariusz: Arkusz każdego wejścia ma te same części
     Zakładając, że niezalecane wejście A-1 ma w danych opis dojścia, szerokość drzwi i zgłoszenie przyjęte
     Oraz Gość niezalogowany otworzył kartę budynku A-1
     Jeżeli dotknie wiersza tego wejścia na liście „Wejścia”
     Wtedy arkusz tego wejścia ma części „Dojście”, „Drzwi” i „Bariery przy tym wejściu” jak arkusz wejścia zalecanego
 
-  # @do-zrobienia #3194: arkusz wejścia zalecanego z danymi z planów PWr zasłania pinezkę.
-  @US3.3 @NFR-53 @aplikacja @do-zrobienia
+  @US3.3 @NFR-53 @aplikacja
   Scenariusz: Pinezka wejścia jest widoczna nad arkuszem wejścia
     Zakładając, że wejście zalecane A-1 ma w danych opis dojścia, szerokość drzwi i zgłoszenie przyjęte ze zdjęciem
     Oraz Gość niezalogowany otworzył kartę budynku A-1 przy zwykłej czcionce
