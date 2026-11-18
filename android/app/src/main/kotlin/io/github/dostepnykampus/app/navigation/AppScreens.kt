@@ -79,7 +79,7 @@ internal fun currentCardWindow(): CardWindow {
 
 /**
  * Karta V2 w arkuszu: tryb [mode], „Wstecz” w górnym pasku pełnego ekranu [onBack], „Zamknij” w nagłówku [onClose],
- * przewijanie treści [scroll] i rozwinięcie niskiej karty na połowę ekranu [onExpand].
+ * przewijanie treści [scroll] i rozwinięcie niskiej karty [onExpand].
  *
  * Wymagania: US2.8
  */

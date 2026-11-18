@@ -85,8 +85,8 @@ private val SheetStateSaver =
 
 /**
  * Część V1 zasłonięta przez arkusz [cover], rozwinięcie arkusza [isExpanded] dla trybu karty w nim i postój arkusza
- * na całym oknie [isFull]. [isPending]: nowy arkusz nie ma jeszcze pomiaru, a [cover] to zasłonięcie sprzed niego.
- * [onExpand] podnosi niski arkusz na połowę ekranu.
+ * rozwiniętego [isFull]. [isPending]: nowy arkusz nie ma jeszcze pomiaru, a [cover] to zasłonięcie sprzed niego.
+ * [onExpand] od razu rozwija niski arkusz.
  *
  * Wymagania: US2.8, NFR-56
  */
