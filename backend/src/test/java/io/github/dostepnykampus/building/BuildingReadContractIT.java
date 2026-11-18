@@ -8,6 +8,7 @@ package io.github.dostepnykampus.building;
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.SampleBuilding;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.StreamSupport;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -99,13 +100,15 @@ final class BuildingReadContractIT {
     void listsBuildingWithSameEntrancesAsCard(final WebApplicationContext context)
         throws Exception {
         BuildingReadContractIT.insertPwrEntrances(context);
-        final JdbcClient jdbc = context.getBean(JdbcClient.class);
-        jdbc.sql("DELETE FROM entrances WHERE building_symbol <> 'G-900'").update();
-        jdbc.sql("DELETE FROM buildings WHERE symbol <> 'G-900'").update();
         MatcherAssert.assertThat(
             "Wejścia budynku w liście nie są tymi samymi wejściami co w karcie",
-            BuildingReadContractIT.get(context, "/buildings").at("/buildings/0/entrances"),
-            Matchers.equalTo(
+            StreamSupport.stream(
+                BuildingReadContractIT.get(context, "/buildings").required("buildings")
+                    .spliterator(),
+                false
+            ).filter(building -> "G-900".equals(building.path("symbol").asString()))
+                .map(building -> building.required("entrances")).toList(),
+            Matchers.contains(
                 context.getBean(ObjectMapper.class)
                     .readTree(BuildingReadContractIT.pwrEntrances())
             )
