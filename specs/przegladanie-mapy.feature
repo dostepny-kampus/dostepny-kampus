@@ -267,14 +267,45 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi liczbę wyjść ewakuacyjnych 2
     Oraz po wybraniu „Pokaż wyjścia ewakuacyjne (2)” widzi listę obu wyjść
 
-  # @do-zrobienia #3118, #3119: windy za drzwiami, dojścia i drzwi w arkuszu wejścia jeszcze nie ma w aplikacji.
+  # @do-zrobienia #3118, #3194: windy za drzwiami w arkuszu wejścia jeszcze nie ma w aplikacji, a arkusz pokazuje
+  # inne wejścia dostępne.
   @US3.3 @BR-25 @aplikacja @do-zrobienia
   Scenariusz: Opis wejścia zalecanego podaje dojście, drzwi i najbliższą windę
     Zakładając, że Gość niezalogowany otworzył kartę budynku A-1
     Jeżeli wybierze „Pokaż wejście na mapie”
     Wtedy widzi mapę z zaznaczonym wejściem zalecanym i arkusz tego wejścia
     Oraz arkusz podaje dojście do drzwi, szerokość drzwi i najbliższą windę z przybliżoną odległością od wejścia
-    Oraz każde inne wejście dostępne ma w arkuszu „Pokaż to wejście na mapie”
+    Ale arkusz nie pokazuje innych wejść budynku
+
+  # @do-zrobienia #3194: arkusz innego wejścia nie ma jeszcze części z nagłówkami i barier.
+  @US2.1 @US3.3 @aplikacja @do-zrobienia
+  Scenariusz: Arkusz każdego wejścia ma te same części
+    Zakładając, że niezalecane wejście A-1 ma w danych opis dojścia, szerokość drzwi i zgłoszenie przyjęte
+    Oraz Gość niezalogowany otworzył kartę budynku A-1
+    Jeżeli dotknie wiersza tego wejścia na liście „Wejścia”
+    Wtedy arkusz tego wejścia ma części „Dojście”, „Drzwi” i „Bariery przy tym wejściu” jak arkusz wejścia zalecanego
+
+  # @do-zrobienia #3194: arkusz wejścia zalecanego z danymi z planów PWr zasłania pinezkę.
+  @US3.3 @NFR-53 @aplikacja @do-zrobienia
+  Scenariusz: Pinezka wejścia jest widoczna nad arkuszem wejścia
+    Zakładając, że wejście zalecane A-1 ma w danych opis dojścia i szerokość drzwi
+    Oraz Gość niezalogowany otworzył kartę budynku A-1 przy zwykłej czcionce
+    Jeżeli wybierze „Pokaż wejście na mapie”
+    Wtedy pinezka wejścia zalecanego stoi w części mapy nad arkuszem tego wejścia
+
+  # @do-zrobienia #3195: „Zamknij” arkusza otwartego z karty zostawia mapę bez karty.
+  @US2.8 @US3.3 @NFR-53 @aplikacja @do-zrobienia
+  Szablon scenariusza: „Zamknij” w arkuszu wejścia wraca tam, skąd arkusz otwarto
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
+    Jeżeli <otwarcie>
+    Oraz wybierze „Zamknij” w arkuszu wejścia
+    Wtedy <po zamknięciu>
+
+    Przykłady:
+      | otwarcie                                                                    | po zamknięciu                                           |
+      | otworzy kartę A-1 na połowie ekranu, przewinie ją i dotknie wiersza wejścia | widzi kartę A-1 na połowie ekranu, tak samo przewiniętą |
+      | otworzy kartę A-1 na niskiej wysokości i wybierze „Pokaż wejście na mapie”  | widzi kartę A-1 na niskiej wysokości                    |
+      | dotknie znaku wejścia A-1 na mapie bez otwartej karty                       | widzi mapę bez karty budynku                            |
 
   @US16.3 @aplikacja
   Scenariusz: Karta budynku szczegółowego opisuje piętra tekstem
