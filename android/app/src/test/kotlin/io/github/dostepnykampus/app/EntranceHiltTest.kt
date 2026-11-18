@@ -57,7 +57,7 @@ private const val CATALOG =
         """"geometry":{"type":"Point","coordinates":[0.2,0.3]}}]}"""
 
 /**
- * „Pokaż wejście na mapie” przez prawdziwe `AppScreen` i graf Hilt: V2, V3, V1 z nazwą zaznaczonego wejścia dla
+ * „Pokaż wejście na mapie” przez prawdziwe `AppScreen` i graf Hilt: V2, V1 z nazwą zaznaczonego wejścia dla
  * TalkBack. Dane są w pamięci, bo katalog w zasobach nie ma wejść dostępnych.
  *
  * Wymagania: US3.3, NFR-18

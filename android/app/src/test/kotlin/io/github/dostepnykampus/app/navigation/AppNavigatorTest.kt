@@ -20,7 +20,6 @@ import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
-import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -231,11 +230,11 @@ class AppNavigatorTest {
         assertEquals(stackOf(), stack)
     }
 
-    /** Wymagania wspólne, wiersz „Pasek dolny na V1, V2, V3, V5 i L2”: L1 i V4 bez paska. */
+    /** Wymagania wspólne, wiersz „Pasek dolny na V1, V2, V5 i L2”: L1 i V4 bez paska. */
     @Test
     fun showsBarOnBarScreensOnly() {
-        val expected = listOf(TopLevel.MAP, TopLevel.MAP, TopLevel.MAP, TopLevel.HELP, TopLevel.ACCOUNT)
-        val routes = listOf(MapRoute(), BuildingRoute("A-1"), EntrancesRoute("A-1"), HelpRoute(), AccountRoute)
+        val expected = listOf(TopLevel.MAP, TopLevel.MAP, TopLevel.HELP, TopLevel.ACCOUNT)
+        val routes = listOf(MapRoute(), BuildingRoute("A-1"), HelpRoute(), AccountRoute)
         assertEquals(expected, routes.map(::selectedItem))
         assertTrue(hasNavigationBar(AccountRoute))
         val noBar = listOf(SignInRoute(isForReport = false), ReportRoute(), ReportRoute(step = ReportStep.SENT))
@@ -271,7 +270,7 @@ class AppNavigatorTest {
 
     /**
      * Wiersz: mała karta V2 nad V1, dotknięcie pustej mapy → V1 bez zaznaczenia budynku;
-     * samo V1, także z budynkiem zaznaczonym przez „Pokaż na mapie”, i V3 nad V2 zostają.
+     * samo V1, także z budynkiem zaznaczonym przez „Pokaż na mapie”, i V4 nad V2 zostają.
      *
      * Wymagania: US2.8, NFR-17
      */
@@ -283,49 +282,13 @@ class AppNavigatorTest {
             closeCardOnEmptyMap()
             assertEquals(listOf(selected), stack)
             openBuilding(symbol = "A-1")
-            openEntrances(symbol = "A-1")
+            report()
             closeCardOnEmptyMap()
-            assertEquals(listOf(selected, BuildingRoute("A-1"), EntrancesRoute("A-1")), stack)
+            assertEquals(listOf(selected, BuildingRoute("A-1"), SignInRoute(isForReport = true)), stack)
             back()
             closeCardOnEmptyMap()
         }
         assertEquals(listOf(MapRoute()), stack)
-    }
-
-    /**
-     * Wiersz: V3, „Wstecz” → pełny ekran V2, a pod nim V1 dalej z zaznaczonym budynkiem; zaznaczenie znika dopiero
-     * z zamknięciem karty.
-     *
-     * Wymagania: US2.8
-     */
-    @Test
-    fun keepsSelectionOnEntranceBack() {
-        navigator().run {
-            openBuilding(symbol = "A-1")
-            openEntrances(symbol = "A-1")
-            back()
-        }
-        assertEquals(listOf(MapRoute(MapFocus.Building("A-1")), BuildingRoute("A-1")), stack)
-    }
-
-    /**
-     * Wiersze: V3, „Wstecz” → V2 i „Pokaż wejście na mapie” → V1 z zaznaczonym wejściem.
-     * Scenariusz (częściowo): przegladanie-mapy.feature: Wejście dostępne najwyżej 3 dotknięcia od mapy
-     *
-     * Wymagania: US2.1, US3
-     */
-    @Test
-    fun goesBackToCard() {
-        navigator().run {
-            openBuilding(symbol = "A-1")
-            openEntrances(symbol = "A-1")
-            assertEquals(3, stack.size)
-            back()
-            assertEquals(BuildingRoute("A-1"), current)
-            openEntrances(symbol = "A-1")
-            showOnMap(MapFocus.Entrance(id = "A-1-glowne", buildingSymbol = "A-1"))
-        }
-        assertEquals(listOf(MapRoute(MapFocus.Entrance(id = "A-1-glowne", buildingSymbol = "A-1"))), stack)
     }
 
     /**
@@ -384,7 +347,7 @@ class AppNavigatorTest {
     }
 
     /**
-     * Wiersze: V3, „Pokaż wejście na mapie” → V1 z zaznaczonym wejściem w widoku „Mapa”;
+     * Wiersze: arkusz wejścia, „Pokaż to wejście na mapie” → V1 z zaznaczonym wejściem w widoku „Mapa”;
      * pasek, ponowne „Mapa” → V1, nie zmienia wyboru drugi raz.
      *
      * Wymagania: US2.1, NFR-15

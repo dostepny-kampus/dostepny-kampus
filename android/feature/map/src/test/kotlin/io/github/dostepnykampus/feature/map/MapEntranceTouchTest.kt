@@ -109,7 +109,7 @@ class MapEntranceTouchTest {
 
     /**
      * Wiersz: arkusz wejścia zalecanego, „Pokaż to wejście na mapie” przy innym wejściu dostępnym zaznacza to
-     *   wejście z budynkiem arkusza; „Sprawdź, którędy wejść” już nie ma.
+     *   wejście z budynkiem arkusza.
      *
      * Wymagania: US3.3
      */
@@ -117,7 +117,6 @@ class MapEntranceTouchTest {
     fun showsOtherEntranceFromSheet() {
         start()
         compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
-        compose.onNodeWithText("Sprawdź, którędy wejść").assertDoesNotExist()
         compose.onNodeWithText("Boczne").performScrollTo()
         compose.onNode(hasContentDescription("Pokaż to wejście na mapie: »Boczne«")).performClick()
 

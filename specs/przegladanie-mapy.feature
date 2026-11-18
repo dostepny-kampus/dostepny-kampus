@@ -146,7 +146,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy nad mapą widzi kartę budynku <budynek> na niskiej wysokości z napisem „<napis>”
     Oraz <pod napisem>
     Oraz w nagłówku karty jest „Zamknij”, a pod kreską wystaje nagłówek „Wejścia”
-    Ale na karcie nie ma „Pokaż budynek na mapie” ani „Sprawdź, którędy wejść”
+    Ale na karcie nie ma „Pokaż budynek na mapie”
 
     Przykłady:
       | budynek | dane                                                 | napis                   | pod napisem                                                                             |
