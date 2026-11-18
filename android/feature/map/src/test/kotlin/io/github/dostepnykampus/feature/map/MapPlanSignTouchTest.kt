@@ -65,13 +65,22 @@ class MapPlanSignTouchTest {
         compose.onNodeWithText("Toaleta dostosowana").assertDoesNotExist()
     }
 
-    /** Wiersz: V1, toaleta przy otwartej karcie budynku otwiera arkusz w miejsce karty; „Zamknij” wraca do karty. */
+    /** Wiersz: V1, toaleta przy otwartej karcie budynku otwiera arkusz w miejsce karty; „Wstecz” wraca do karty. */
     @Test
     fun replacesBuildingCard() {
         start(isCardOpen = true)
         compose.runOnIdle { map.touchSign(TouchSign.PLAN, "wc") }
-        compose.onNodeWithText("Zamknij").performClick()
+        compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
         compose.runOnIdle { assertEquals("karta zamknięta i otwarta znów", listOf("bez karty", "C-13"), opened) }
+    }
+
+    /** Wiersz: V1, toaleta przy otwartej karcie budynku, „Zamknij” zamyka arkusz razem z kartą. Wymagania: NFR-53 */
+    @Test
+    fun closeLeavesMapWithoutCard() {
+        start(isCardOpen = true)
+        compose.runOnIdle { map.touchSign(TouchSign.PLAN, "wc") }
+        compose.onNodeWithText("Zamknij").performClick()
+        compose.runOnIdle { assertEquals("karta zamknięta", listOf("bez karty"), opened) }
     }
 
     private fun start(isCardOpen: Boolean = false) {

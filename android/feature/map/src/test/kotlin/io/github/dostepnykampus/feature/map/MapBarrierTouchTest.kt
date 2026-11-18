@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
@@ -89,15 +90,17 @@ class MapBarrierTouchTest {
     }
 
     /**
-     * Wiersz: arkusz bariery, „Pokaż opis budynku” otwiera V2 budynku bariery i zamyka arkusz (PW-5).
+     * Wiersz: arkusz bariery, wiersz budynku otwiera V2 budynku bariery i zamyka arkusz (PW-5).
+     * Scenariusz (częściowo, przykład: dotknie znaku bariery przy budynku A-1): przegladanie-mapy.feature:
+     *   Wiersz budynku w arkuszu otwiera kartę budynku bez przelotu mapy
      *
-     * Wymagania: US1.5
+     * Wymagania: US1.5, US2.8
      */
     @Test
     fun opensBuildingFromSheet() {
         start()
         compose.runOnIdle { touchBarrier("z1") }
-        compose.onNodeWithText("Pokaż opis budynku").performClick()
+        compose.onNodeWithContentDescription("Budynek C-13").performClick()
 
         assertEquals(listOf("C-13"), opened)
         compose.onNodeWithText("Próg").assertDoesNotExist()
