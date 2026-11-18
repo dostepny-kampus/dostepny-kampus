@@ -88,7 +88,7 @@ class RecommendedEntrancePathTest {
     fun recommendsNamedWithoutMain() {
         openCard(
             symbol = "C-13",
-            entrance(name = UNNAMED, wheelchair = "yes"),
+            entrance(name = null, wheelchair = "yes"),
             entrance(name = ADAPTED, wheelchair = "yes"),
         )
         assertEquals(listOf("Zalecane", ADAPTED, UNNAMED), shown(NAMES))
@@ -160,7 +160,9 @@ class RecommendedEntrancePathTest {
                 setOf(UNNAMED, ADAPTED)
         val MARKINGS = setOf("Dostępne", "Niedostępne", "Brak danych")
 
-        fun entrance(name: String, type: String = "yes", wheelchair: String? = null): String =
-            """"entrance":"$type","ref":"$name"""" + wheelchair?.let { ""","wheelchair":"$it"""" }.orEmpty()
+        fun entrance(name: String?, type: String = "yes", wheelchair: String? = null): String =
+            """"entrance":"$type"""" +
+                name?.let { ""","ref":"$it"""" }.orEmpty() +
+                wheelchair?.let { ""","wheelchair":"$it"""" }.orEmpty()
     }
 }

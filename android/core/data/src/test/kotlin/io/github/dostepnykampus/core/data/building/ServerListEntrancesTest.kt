@@ -51,8 +51,8 @@ class ServerListEntrancesTest {
     }
 
     /**
-     * Wiersz: lista z wejściami zapisana w kopii i odczytana bez sieci → te same wejścia z oznaczeniem, dniem
-     *   i źródłem, piętrem, opisem dojścia i szerokością drzwi.
+     * Wiersz: lista z wejściami zapisana w kopii i odczytana bez sieci → te same wejścia z nazwą nadaną przez
+     *   import, oznaczeniem, dniem i źródłem, piętrem, opisem dojścia i szerokością drzwi.
      *
      * Wymagania: NFR-10
      */
@@ -109,6 +109,7 @@ class ServerListEntrancesTest {
                 id = "pwr/s00000001",
                 buildingSymbol = "A-1",
                 name = "Wejście",
+                isNameGenerated = true,
                 isMain = false,
                 type = null,
                 location = GeoPoint(longitude = 0.0, latitude = 0.5),
