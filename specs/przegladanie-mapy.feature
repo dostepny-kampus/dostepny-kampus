@@ -103,6 +103,16 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy pierwsze jest wejście boczne z napisem „Zalecane”
     Ale wejście od dziedzińca nie ma napisu „Zalecane”
 
+  # @do-zrobienia #3275: karta pokazuje jeszcze wejścia jednej grupy oznaczeń w kolejności z danych.
+  @US2.1 @BR-25 @aplikacja @do-zrobienia
+  Scenariusz: Wejścia z jednym oznaczeniem stoją na karcie alfabetycznie
+    # Dane testowe, a nie stan faktyczny budynku C-13.
+    Zakładając, że w danych testowych wejścia C-13 „Wejście "E"”, „Wejście "A"” i „Wejście "C"” mają oznaczenie „niedostępne”
+    Oraz jedno wejście C-13 z oznaczeniem „niedostępne” nie ma nazwy w danych
+    Jeżeli Gość niezalogowany otworzy kartę budynku C-13
+    Wtedy wejścia „niedostępne” stoją w kolejności „Wejście "A"”, „Wejście "C"”, „Wejście "E"”
+    Oraz wejście bez nazwy w danych stoi po nich
+
   @BR-25 @aplikacja
   Scenariusz: Przy kilku wejściach dostępnych bez głównego zalecane jest wejście z nazwą
     # Dane testowe, a nie stan faktyczny budynku C-13.
