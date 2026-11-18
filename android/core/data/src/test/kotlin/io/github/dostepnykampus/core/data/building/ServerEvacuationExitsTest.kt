@@ -22,7 +22,18 @@ class ServerEvacuationExitsTest {
         runBlocking {
             val exits = ServerEntrancesRepository { ServerReply.Ok(CARD) }
 
-            assertEquals(listOf(EXIT), exits.evacuationExits(SYMBOL), "wyjścia ewakuacyjne budynku z serwera")
+            val found = exits.cardEntrances(SYMBOL).evacuationExits
+            assertEquals(listOf(EXIT), found, "wyjścia ewakuacyjne budynku z serwera")
+        }
+
+    @Test
+    fun asksServerOnce() =
+        runBlocking {
+            var calls = 0
+            val card = ServerEntrancesRepository { ServerReply.Ok(CARD).also { calls++ } }.cardEntrances(SYMBOL)
+
+            val expected = CardEntrances(emptyList(), listOf(EXIT)) to 1
+            assertEquals(expected, card to calls, "wejścia i wyjścia z jednej odpowiedzi serwera")
         }
 
     @Test
@@ -33,7 +44,7 @@ class ServerEvacuationExitsTest {
 
             assertEquals(
                 List(2) { listOf(EXIT) },
-                List(2) { exits.evacuationExits(SYMBOL) },
+                List(2) { exits.cardEntrances(SYMBOL).evacuationExits },
                 "bez sieci zostają wyjścia pobrane wcześniej",
             )
         }
@@ -43,7 +54,7 @@ class ServerEvacuationExitsTest {
         runBlocking {
             assertEquals(
                 emptyList<EvacuationExit>(),
-                ServerEntrancesRepository { ServerReply.Missing }.evacuationExits(SYMBOL),
+                ServerEntrancesRepository { ServerReply.Missing }.cardEntrances(SYMBOL).evacuationExits,
                 "brak zasobu daje pustą listę wyjść",
             )
         }

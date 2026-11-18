@@ -29,21 +29,35 @@ public fun interface ServerEntrances {
     public suspend fun entrances(symbol: String): List<Entrance>
 
     /**
-     * Wyjścia ewakuacyjne budynku [symbol] z planów PWr z serwera. Pusta lista, gdy budynek ich nie ma albo serwer
-     * ich nie podał i nic nie pobrano wcześniej; bez nadpisania zawsze pusta lista.
+     * Wejścia jak w [entrances] i wyjścia ewakuacyjne budynku [symbol] z planów PWr z jednej odpowiedzi serwera.
+     * Wyjść nie ma, gdy budynek ich nie ma albo serwer ich nie podał i nic nie pobrano wcześniej; bez nadpisania
+     * same wejścia z [entrances].
      * TODO(#3165): karta V2 jeszcze nie pyta o wyjścia ewakuacyjne.
      *
      * Wymagania: US2.6, BR-27, NFR-10
      *
      * @param symbol symbol budynku
      */
-    public suspend fun evacuationExits(symbol: String): List<EvacuationExit> = emptyList()
+    public suspend fun cardEntrances(symbol: String): CardEntrances = CardEntrances(entrances(symbol))
 }
+
+/**
+ * Wejścia i wyjścia ewakuacyjne budynku z tej samej karty budynku z serwera.
+ *
+ * Wymagania: US2.6, US17.3
+ *
+ * @property entrances wejścia budynku
+ * @property evacuationExits wyjścia ewakuacyjne budynku; pusta lista, gdy ich nie ma
+ */
+public data class CardEntrances(
+    val entrances: List<Entrance>,
+    val evacuationExits: List<EvacuationExit> = emptyList(),
+)
 
 /**
  * [ServerEntrances] z karty budynku z serwera (`GET /buildings/{symbol}`).
  *
- * Każde wywołanie pyta serwer przez [details]; zapytanie i odczyt odpowiedzi idą poza wątkiem UI w kliencie
+ * Każde wywołanie pyta serwer przez [details] raz; zapytanie i odczyt odpowiedzi idą poza wątkiem UI w kliencie
  * HTTP. Karta z [ServerReply.Ok] jest zapamiętywana dla symbolu; przy innym wyniku (brak sieci, błąd serwera,
  * nieznany budynek) zostają wejścia i wyjścia pobrane wcześniej, a bez nich puste listy. Pamięć żyje tyle co
  * obiekt, więc w aplikacji jest jeden na proces.
@@ -56,12 +70,11 @@ public class ServerEntrancesRepository(private val details: suspend (String) -> 
     ServerEntrances {
     private val downloaded = ConcurrentHashMap<String, ServerCard>()
 
-    override suspend fun entrances(symbol: String): List<Entrance> = card(symbol)?.entrances.orEmpty()
+    override suspend fun entrances(symbol: String): List<Entrance> = cardEntrances(symbol).entrances
 
-    override suspend fun evacuationExits(symbol: String): List<EvacuationExit> = card(symbol)?.evacuationExits.orEmpty()
-
-    private suspend fun card(symbol: String): ServerCard? {
+    override suspend fun cardEntrances(symbol: String): CardEntrances {
         val result = details(symbol)
-        return if (result is ServerReply.Ok) result.value.also { downloaded[symbol] = it } else downloaded[symbol]
+        val card = if (result is ServerReply.Ok) result.value.also { downloaded[symbol] = it } else downloaded[symbol]
+        return CardEntrances(card?.entrances.orEmpty(), card?.evacuationExits.orEmpty())
     }
 }
