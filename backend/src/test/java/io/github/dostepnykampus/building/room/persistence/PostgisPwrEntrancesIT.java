@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Dane wpisów warstwy wejść PWr w tabelach entrances i evacuation_exits przy zapisie planu;
  * wartości wymyślone w kształcie danych PWr.
  *
- * <p>Wymagania: BR-24, BR-27, US2.6, US17.1</p>
+ * <p>Wymagania: BR-24, BR-27, US2.6, US17.1, BR-25</p>
  *
  * @since 0.1.0
  */
@@ -108,6 +108,46 @@ final class PostgisPwrEntrancesIT {
             Matchers.contains(
                 "o1|Wejście Cesarskie|ACCESSIBLE|120|true",
                 "pwr|Wejście boczne|INACCESSIBLE|80|false"
+            )
+        );
+    }
+
+    @Test
+    void keepsOsmNameWhenPwrNoteHasNoName(final ApplicationContext context) {
+        final JdbcClient jdbc = context.getBean(JdbcClient.class);
+        new SampleBuilding("G-957", "Budynek z nazwą wejścia w OSM", "DETAILED")
+            .wkt(jdbc, "POLYGON((17 51,17.002 51,17.002 51.002,17 51.002,17 51))");
+        jdbc.sql(
+            """
+            INSERT INTO entrances (id, building_symbol, name, main, location, marking,
+                marking_date, marking_source)
+            VALUES ('o1', 'G-957', 'Wejście od ul. Norwida', TRUE,
+                ST_SetSRID(ST_MakePoint(17.0, 51.0), 4326), 'NO_DATA', DATE '2026-11-01',
+                'IMPORT')
+            """
+        ).update();
+        context.getBean(FloorPlans.class).save(
+            new BuildingPlan(
+                "G-957", List.of(new PlanFloor("P0", "Parter", 0)), List.of(),
+                List.of(
+                    PostgisPwrEntrancesIT.pwr(
+                        "P0", 17.000_05, 51.0, "ACCESSIBLE", "Wejście",
+                        "Do wejścia prowadzą schody.", null
+                    )
+                )
+            )
+        );
+        MatcherAssert.assertThat(
+            "Zastępcza nazwa „Wejście” z planów PWr zasłoniła nazwę z OpenStreetMap",
+            jdbc.sql(
+                """
+                SELECT id || '|' || COALESCE(pwr_name, name) || '|' || pwr_marking
+                    || '|' || approach
+                FROM entrances WHERE building_symbol = 'G-957'
+                """
+            ).query(String.class).list(),
+            Matchers.contains(
+                "o1|Wejście od ul. Norwida|ACCESSIBLE|Do wejścia prowadzą schody."
             )
         );
     }
