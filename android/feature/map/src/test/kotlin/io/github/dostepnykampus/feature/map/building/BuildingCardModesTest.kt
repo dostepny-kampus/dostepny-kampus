@@ -50,7 +50,7 @@ private val TOUCH_TARGET = 48.dp
 private const val BACK = "Wstecz"
 private const val ROW = "Wejście dostępne"
 private const val SHOW_ENTRANCE = "Pokaż wejście na mapie"
-private const val UNNAMED = "Wejście bez nazwy w danych"
+private const val UNNAMED = "Wejście"
 private val ENTRANCES = listOf("Główne" to "node/1", "Schody" to "node/2", UNNAMED to "node/3")
 
 private val inScroll = hasAnyAncestor(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
@@ -141,7 +141,7 @@ class BuildingCardModesTest {
             assertOrder(NAME, CHECK, "Wejścia", "Główne", "Schody")
             val actions = hasClickAction() and !hasText(BACK) and !hasText(CLOSE)
             compose.onAllNodes(actions).onFirst().assert(hasText(CHECK))
-            compose.onNodeWithText("Wejście bez nazwy w danych").assertExists()
+            compose.onNodeWithText("Wejście").assertExists()
             assertOrder(NAME, ROW, CHECK)
         }
         compose.onNodeWithText(SHOW).assertDoesNotExist()
