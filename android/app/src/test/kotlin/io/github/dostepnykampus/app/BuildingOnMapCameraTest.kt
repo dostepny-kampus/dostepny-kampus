@@ -81,8 +81,7 @@ private val CATALOG =
 
 private fun mercatorY(latitude: Double): Double = asinh(tan(Math.toRadians(latitude)))
 
-/** Środek widoku (Merkator) [ideal] przesunięty najmniej, żeby pas o połowie wysokości [half] leżał w [area]. */
-private fun nearestInside(ideal: Double, half: Double, area: CampusBounds): Double =
+private fun centerNearestInside(ideal: Double, half: Double, area: CampusBounds): Double =
     ideal.coerceIn(minimumValue = mercatorY(area.south) + half, maximumValue = mercatorY(area.north) - half)
 
 /**
@@ -338,7 +337,7 @@ class BuildingOnMapCameraTest {
         val area = data.areas.first { "T-9" in it.symbols }.bounds
         val perRadian = WORLD_DP_AT_ZOOM_0 * 2.0.pow(above.zoom) / (2 * PI) * density
         val ideal = mercatorY(above.center.latitude) - (topInset + under) / 2 / perRadian
-        val expected = nearestInside(ideal = ideal, half = (mapSize.height - topInset) / 2 / perRadian, area = area)
+        val expected = centerNearestInside(ideal = ideal, half = (mapSize.height - topInset) / 2 / perRadian, area = area)
         assertTrue("teren T-9 mieści widok, test nie sprawdza małego terenu", abs(expected - ideal) * perRadian > 1.0)
         assertEquals("bez arkusza", 0.0, bottomInset, 0.0)
         assertEquals("powiększenie zostaje", above.zoom, after.zoom, 0.0)
