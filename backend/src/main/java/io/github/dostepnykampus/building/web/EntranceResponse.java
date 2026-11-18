@@ -19,8 +19,7 @@ import org.jspecify.annotations.Nullable;
  *
  * @param id Identyfikator wejścia, np. node/1167953448
  * @param buildingSymbol Budynek, do którego prowadzi wejście
- * @param name Opis wejścia albo null, gdy dane go nie podają
- * @param generatedName Czy nazwę nadał import; w JSON tylko wartość true
+ * @param naming Nazwa wejścia, w JSON pola obok pozostałych
  * @param type Rodzaj wejścia z OpenStreetMap albo null
  * @param main Czy to wejście główne
  * @param place Położenie i piętro wejścia, w JSON pola obok pozostałych
@@ -32,8 +31,7 @@ import org.jspecify.annotations.Nullable;
 public record EntranceResponse(
     String id,
     String buildingSymbol,
-    @Nullable String name,
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT) boolean generatedName,
+    @JsonUnwrapped Naming naming,
     @Nullable String type,
     boolean main,
     @JsonUnwrapped Place place,
@@ -49,11 +47,28 @@ public record EntranceResponse(
      */
     public EntranceResponse(final String building, final Entrance entrance) {
         this(
-            entrance.id(), building, entrance.name(), entrance.generatedName(),
+            entrance.id(), building,
+            new Naming(entrance.name().text(), entrance.name().generated()),
             entrance.type(), entrance.main(),
             new Place(entrance.location(), entrance.floorId()), entrance.marking(),
             Plan.of(entrance.layer())
         );
+    }
+
+    /**
+     * Nazwa wejścia w odpowiedzi HTTP.
+     *
+     * <p>Wymagania: BR-25, BR-27</p>
+     *
+     * @param name Opis wejścia albo null, gdy ani dane, ani import go nie podają
+     * @param generatedName Czy nazwę nadał import; w JSON tylko wartość true
+     * @since 0.1.0
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public record Naming(
+        @Nullable String name,
+        @JsonInclude(JsonInclude.Include.NON_DEFAULT) boolean generatedName
+    ) {
     }
 
     /**

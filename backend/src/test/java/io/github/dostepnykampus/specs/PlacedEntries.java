@@ -43,9 +43,9 @@ final class PlacedEntries {
     );
 
     /**
-     * Dopasowany opis.
+     * Opis wpisów słowami scenariusza.
      */
-    private final Matcher words;
+    private final String text;
 
     /**
      * Ctor.
@@ -53,10 +53,7 @@ final class PlacedEntries {
      * @param text Opis wpisów słowami scenariusza
      */
     PlacedEntries(final String text) {
-        this.words = PlacedEntries.WORDS.matcher(text);
-        if (!this.words.matches()) {
-            throw new IllegalArgumentException(String.format("Nieznany opis wpisów: %s", text));
-        }
+        this.text = text;
     }
 
     /**
@@ -68,6 +65,12 @@ final class PlacedEntries {
      * @return Warstwa wejść jako GeoJSON
      */
     String layer(final JdbcClient jdbc, final String building, final String floor) {
+        final Matcher words = PlacedEntries.WORDS.matcher(this.text);
+        if (!words.matches()) {
+            throw new IllegalArgumentException(
+                String.format("Nieznany opis wpisów: %s", this.text)
+            );
+        }
         final double[] wall = jdbc.sql(
             """
             SELECT ST_X(spot), ST_Y(spot) FROM (
@@ -85,10 +88,10 @@ final class PlacedEntries {
                 ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography, 100)
             """
         ).param("symbol", building).param("lon", wall[0]).param("lat", wall[1]).update();
-        if (this.words.group(4) != null) {
-            this.neighbour(jdbc, wall);
+        if (words.group(4) != null) {
+            PlacedEntries.neighbour(jdbc, words, wall);
         }
-        if (this.words.group(5) != null) {
+        if (words.group(5) != null) {
             jdbc.sql(
                 """
                 INSERT INTO entrances (id, building_symbol, type, main, location, marking,
@@ -100,7 +103,7 @@ final class PlacedEntries {
             ).param("symbol", building).param("lon", wall[0]).param("lat", wall[1]).update();
         }
         final List<String> features = new ArrayList<>(2);
-        for (final double lat : this.latitudes(wall[1])) {
+        for (final double lat : PlacedEntries.latitudes(words, wall[1])) {
             features.add(
                 String.format(
                     String.join(
@@ -116,28 +119,31 @@ final class PlacedEntries {
         return String.format("{\"features\":[%s]}", String.join(",", features));
     }
 
-    private void neighbour(final JdbcClient jdbc, final double[] wall) {
-        final double west = wall[0] + Double.parseDouble(this.words.group(3))
-            / (PlacedEntries.METRES * Math.cos(Math.toRadians(wall[1])));
+    private static void neighbour(
+        final JdbcClient jdbc, final Matcher words, final double... wall
+    ) {
         final int moved = jdbc.sql(
             """
             UPDATE buildings SET outline = ST_Multi(ST_MakeEnvelope(:west, :lat - 0.0003,
                 :west + 0.0005, :lat + 0.0003, 4326))
             WHERE symbol = :symbol
             """
-        ).param("west", west).param("lat", wall[1]).param("symbol", this.words.group(4))
-            .update();
+        ).param(
+            "west",
+            wall[0] + Double.parseDouble(words.group(3))
+                / (PlacedEntries.METRES * Math.cos(Math.toRadians(wall[1])))
+        ).param("lat", wall[1]).param("symbol", words.group(4)).update();
         if (moved != 1) {
             throw new IllegalStateException(
-                String.format("Brak budynku %s w danych testowych", this.words.group(4))
+                String.format("Brak budynku %s w danych testowych", words.group(4))
             );
         }
     }
 
-    private List<Double> latitudes(final double lat) {
+    private static List<Double> latitudes(final Matcher words, final double lat) {
         final List<Double> result;
-        if ("dwa".equals(this.words.group(1))) {
-            final double half = Double.parseDouble(this.words.group(2)) / 2 / PlacedEntries.METRES;
+        if ("dwa".equals(words.group(1))) {
+            final double half = Double.parseDouble(words.group(2)) / 2 / PlacedEntries.METRES;
             result = List.of(lat - half, lat + half);
         } else {
             result = List.of(lat);
