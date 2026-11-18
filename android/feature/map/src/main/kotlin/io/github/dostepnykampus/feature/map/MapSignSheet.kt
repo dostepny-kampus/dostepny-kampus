@@ -202,18 +202,21 @@ internal fun screenSheet(focus: MapFocus?, padding: PaddingValues, onCardClose: 
  * Wymagania: NFR-19, NFR-20, NFR-51
  *
  * @param catalog katalog budynków i wejść; `null` przed jego wczytaniem
+ * @param barriers bariery ze zgłoszeń przyjętych
  * @param actions czynności arkusza wejścia
  * @param onBuildingClick V2 budynku o podanym symbolu
  */
 @Composable
 internal fun ScreenSheet.FullEntranceSheet(
     catalog: BuildingCatalog?,
+    barriers: ShownBarriers,
     actions: EntranceActions,
     onBuildingClick: (String) -> Unit,
 ) {
     ChosenEntranceSheet(
         id = fullEntrance,
         catalog = catalog,
+        barriers = barriers,
         onClose = { signs.back(onBuildingClick) },
         actions = actions,
         isFull = true,
@@ -263,6 +266,7 @@ internal fun ChosenSignSheet(
             ChosenEntranceSheet(
                 id = id.takeUnless { hidesEntrance },
                 catalog = catalog,
+                barriers = barriers,
                 onClose = { signs.back(onBuildingClick) },
                 actions = entranceActions,
                 modifier = modifier,

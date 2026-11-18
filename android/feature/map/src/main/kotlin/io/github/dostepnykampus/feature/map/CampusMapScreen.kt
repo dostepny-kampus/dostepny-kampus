@@ -236,7 +236,12 @@ fun CampusMapScreen(
                 )
             }
         }
-        sheet.FullEntranceSheet(catalog = catalog, actions = entranceActions, onBuildingClick = onBuildingClick)
+        sheet.FullEntranceSheet(
+            catalog = catalog,
+            barriers = ShownBarriers(state.barriers),
+            actions = entranceActions,
+            onBuildingClick = onBuildingClick,
+        )
     }
 }
 

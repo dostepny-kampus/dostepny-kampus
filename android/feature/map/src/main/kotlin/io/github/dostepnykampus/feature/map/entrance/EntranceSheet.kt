@@ -37,6 +37,7 @@ import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
 import io.github.dostepnykampus.feature.map.building.assessmentText
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.overlay.MapSheet
@@ -54,6 +55,7 @@ private val WIDE_WINDOW = 600.dp
  *
  * @param id identyfikator wejścia dotkniętego znaku; `null` bez wybranego wejścia
  * @param catalog katalog budynków i wejść; `null` przed jego wczytaniem
+ * @param barriers bariery ze zgłoszeń przyjętych
  * @param onClose zamyka arkusz
  * @param actions czynności przy wejściu
  * @param modifier położenie arkusza na mapie
@@ -63,12 +65,13 @@ private val WIDE_WINDOW = 600.dp
 internal fun ChosenEntranceSheet(
     id: String?,
     catalog: BuildingCatalog?,
+    barriers: ShownBarriers,
     onClose: () -> Unit,
     actions: EntranceActions,
     modifier: Modifier = Modifier,
     isFull: Boolean = false,
 ) {
-    val shown = remember(id, catalog) { id?.let { catalog?.shownEntrance(it) } }
+    val shown = remember(id, catalog, barriers) { id?.let { catalog?.shownEntrance(it, barriers.barriers) } }
     BackHandler(enabled = shown != null, onBack = onClose)
     if (shown != null) {
         EntranceSheet(shown = shown, onClose = onClose, actions = actions, modifier = modifier, isFull = isFull)
@@ -94,10 +97,10 @@ internal fun isFullEntranceSheet(id: String, focus: MapFocus?): Boolean {
 /**
  * Arkusz wejścia [shown] na dole mapy V1: znak oznaczenia przy nagłówku z budynkiem, słowo oznaczenia, pod nim
  * „Zalecane.” przy wejściu zalecanym i dzień ze źródłem oznaczenia, gdy są w danych, nazwa wejścia, gdy jest
- * w danych, inne wejścia dostępne przy wejściu zalecanym i zgłoszenie bariery przy wejściu. Nagłówek dostaje fokus
+ * w danych, bariery i inne wejścia dostępne przy wejściu zalecanym i zgłoszenie bariery przy wejściu. Nagłówek dostaje fokus
  * po otwarciu, a treść się przewija.
  *
- * Wymagania: US2.1, US3.3, US4.6, US17.1, US17.3, BR-25, NFR-18, NFR-20, NFR-21, NFR-53
+ * Wymagania: US2.1, US2.2, US3.3, US4.6, US17.1, US17.3, BR-25, NFR-18, NFR-20, NFR-21, NFR-53
  *
  * @param shown wejście z katalogu z jego miejscem wśród wejść budynku
  * @param onClose „Zamknij” zostawia samą mapę
@@ -130,6 +133,7 @@ internal fun EntranceSheet(
         if (entrance.marking == EntranceMarking.NO_DATA) {
             SecondaryText(stringResource(R.string.mapa_wejscie_niesprawdzone))
         }
+        if (shown.barriers.isNotEmpty()) EntranceBarriers(shown)
         if (shown.others.isNotEmpty()) OtherEntrances(shown) { actions.onShow(it.copy(isFullSheet = isFull)) }
         SheetButton(
             text = stringResource(R.string.karta_zglos),

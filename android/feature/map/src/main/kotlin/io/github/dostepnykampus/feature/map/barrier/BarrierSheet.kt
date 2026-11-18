@@ -113,12 +113,13 @@ internal fun SeverityBadge(severity: Severity) {
 }
 
 /**
- * Typ bariery jako nagłówek, miejsce z [barrierPlace], „Sprawdzone 14.10.2026” i zdjęcie z [BarrierPhoto].
+ * Typ bariery jako nagłówek, miejsce z [barrierPlace], gdy [hasPlace], „Sprawdzone 14.10.2026” i zdjęcie
+ * z [BarrierPhoto].
  *
  * Wymagania: US1.5, US2.2, BR-17
  */
 @Composable
-internal fun BarrierFacts(chosen: ChosenBarrier) {
+internal fun BarrierFacts(chosen: ChosenBarrier, hasPlace: Boolean = true) {
     val barrier = chosen.barrier
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(
@@ -127,16 +128,7 @@ internal fun BarrierFacts(chosen: ChosenBarrier) {
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = Typografia.wyroznienieWaga,
         )
-        Text(
-            text =
-                barrierPlace(
-                    symbol = barrier.buildingSymbol,
-                    name = chosen.building?.name,
-                    entrance = chosen.entrance,
-                    floor = barrier.floor,
-                ),
-            style = MaterialTheme.typography.bodyLarge,
-        )
+        if (hasPlace) BarrierPlace(chosen)
         barrier.verifiedAt?.let { verified ->
             val day = campusDay(verified)
             Text(
@@ -147,4 +139,18 @@ internal fun BarrierFacts(chosen: ChosenBarrier) {
         }
         BarrierPhoto(chosen)
     }
+}
+
+@Composable
+private fun BarrierPlace(chosen: ChosenBarrier) {
+    Text(
+        text =
+            barrierPlace(
+                symbol = chosen.barrier.buildingSymbol,
+                name = chosen.building?.name,
+                entrance = chosen.entrance,
+                floor = chosen.barrier.floor,
+            ),
+        style = MaterialTheme.typography.bodyLarge,
+    )
 }
