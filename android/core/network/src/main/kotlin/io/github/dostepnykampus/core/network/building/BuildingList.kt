@@ -12,6 +12,7 @@ import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceAssessment
 import io.github.dostepnykampus.core.model.building.EntranceMarking
+import io.github.dostepnykampus.core.model.building.EvacuationExit
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.network.decodeContract
@@ -48,15 +49,21 @@ public data class ApiBuilding(val building: Building, val detailLevel: DetailLev
  * Kontrakt nie podaje rodzaju wejścia OSM, więc [Entrance.type] jest puste.
  * Dzień i źródło oznaczenia trafiają do [Entrance.assessment]; nieistniejący dzień
  * albo nieznane źródło to błąd treści odpowiedzi. Import wejścia z polem `source` ma źródło
- * [AssessmentSource.PWR_PLANS]. Brak opisu dojścia to pusty tekst, a brak szerokości drzwi to 0.
+ * [AssessmentSource.PWR_PLANS]. Brak opisu dojścia albo wyjścia to pusty tekst, a brak szerokości drzwi to 0.
  *
- * Wymagania: US17.3, BR-24, BR-27
+ * Wymagania: US17.3, BR-24, BR-27, US2.6
  *
  * @property building symbol, nazwa i kontur
  * @property detailLevel poziom szczegółowości
  * @property entrances wejścia; pusta lista, dopóki serwer nie ma danych wejść
+ * @property evacuationExits wyjścia ewakuacyjne z planów PWr; pusta lista, gdy odpowiedź ich nie podaje
  */
-public data class BuildingDetails(val building: Building, val detailLevel: DetailLevel, val entrances: List<Entrance>)
+public data class BuildingDetails(
+    val building: Building,
+    val detailLevel: DetailLevel,
+    val entrances: List<Entrance>,
+    val evacuationExits: List<EvacuationExit> = emptyList(),
+)
 
 /**
  * Podpowiedź budynku dla punktu (`LocateResult`).
@@ -91,6 +98,15 @@ internal fun Json.decodeBuildingDetails(body: String): BuildingDetails {
         building = Building(symbol = card.symbol, name = card.name, outline = outline),
         detailLevel = DetailLevel.valueOf(card.detailLevel.name),
         entrances = card.entrances.map(EntranceJson::toModel),
+        evacuationExits =
+            card.evacuationExits.orEmpty().map { exit ->
+                EvacuationExit(
+                    id = exit.id,
+                    location = exit.location.toModel(),
+                    description = exit.description.orEmpty(),
+                    doorWidthCm = exit.doorWidthCm?.coerceAtLeast(0) ?: 0,
+                )
+            },
     )
 }
 
