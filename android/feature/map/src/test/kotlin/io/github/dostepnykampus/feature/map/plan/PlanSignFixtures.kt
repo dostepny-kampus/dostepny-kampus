@@ -19,6 +19,7 @@ import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.room.Room
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.room.RoomList
+import io.github.dostepnykampus.feature.map.overlay.SheetExits
 
 private val CORNERS = listOf(0.0 to 0.0, 1.0 to 0.0, 1.0 to 1.0, 0.0 to 0.0)
 private val AREA = GeoPolygon(listOf(CORNERS.map { (lon, lat) -> GeoPoint(longitude = lon, latitude = lat) }))
@@ -60,13 +61,13 @@ private fun room(id: String, category: RoomCategory = RoomCategory.ELEVATOR, lif
 private fun rooms(vararg rooms: Room) =
     RoomList(source = "Politechnika Wrocławska", floorOutline = AREA, rooms = rooms.toList())
 
-/** Arkusz znaku planu pomieszczenia [id] z [SIGN_PLAN] przy dolnej krawędzi tła mapy; [onClose] dostaje „Zamknij”. */
-internal fun ComposeContentTestRule.showPlanSheet(id: String, onClose: () -> Unit) {
+/** Arkusz znaku planu pomieszczenia [id] z [SIGN_PLAN] przy dolnej krawędzi tła mapy z wyjściami [exits]. */
+internal fun ComposeContentTestRule.showPlanSheet(id: String, exits: SheetExits = SheetExits(onClose = {})) {
     setContent {
         DostepnyKampusTheme {
             Box(Modifier.fillMaxSize().background(Color(0xFFBEE3F2))) {
                 val bottom = Modifier.align(Alignment.BottomCenter)
-                ChosenPlanSheet(id = id, plan = SIGN_PLAN, onClose = onClose, modifier = bottom)
+                ChosenPlanSheet(id = id, plan = SIGN_PLAN, exits = exits, modifier = bottom)
             }
         }
     }
