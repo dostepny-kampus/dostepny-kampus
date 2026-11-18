@@ -35,8 +35,8 @@ class EntranceLiftTest {
         )
 
     /**
-     * Wiersz: najbliższa winda na piętrze wejścia, odległość w linii prostej zaokrąglona do 5 m i piętra windy
-     *   od najniższego.
+     * Wiersz: najbliższa winda na piętrze wejścia, odległość w linii prostej zaokrąglona do 5 m, najmniej 5 m,
+     *   i piętra windy od najniższego.
      * Scenariusz (częściowo, przykład: 28 m): przegladanie-mapy.feature: Część „Za drzwiami” podaje najbliższą windę
      *   i jej piętra
      */
@@ -49,14 +49,8 @@ class EntranceLiftTest {
 
             val stops = listOf("Piwnica", "Parter", "3 piętro")
             assertEquals(EntranceLift(entranceId = "node/1", meters = 30, floors = stops), lift)
-        }
-
-    /** Wiersz: odległość zaokrąglona do 5 m, najmniej 5 m. */
-    @Test
-    fun roundsToFiveMeters() =
-        runTest {
-            assertEquals(10, Plans(lift(meters = 12.0)).liftNear(entrance())?.meters)
-            assertEquals(5, Plans(lift(meters = 1.0)).liftNear(entrance())?.meters)
+            assertEquals("12 m", 10, Plans(lift(meters = 12.0)).liftNear(entrance())?.meters)
+            assertEquals("najmniej 5 m", 5, Plans(lift(meters = 1.0)).liftNear(entrance())?.meters)
         }
 
     /** Wiersz: wejście z piętrem w danych szuka windy na tym piętrze, a nie na parterze. */
@@ -117,7 +111,7 @@ class EntranceLiftTest {
             liftFloors = listOf("p3", "p0", "p-1"),
         )
 
-    /** Plan A-1 z [lifts] na piętrze [floor] i schodami; bez kopii, gdy nie [isStored]. */
+    /** Plan A-1 z [lifts] i schodami na piętrze [floor], a na innych piętrach tylko ze schodami. */
     private inner class Plans(
         vararg val lifts: Room,
         private val floor: String = "p0",
@@ -129,7 +123,8 @@ class EntranceLiftTest {
             FloorList(source = SOURCE, floors = this@EntranceLiftTest.floors).takeIf { isStored }
 
         override suspend fun rooms(symbol: String, floor: String): RoomList? {
-            val rooms = if (floor == this.floor) lifts.toList() + STAIRS else listOf(STAIRS)
+            val stairs = lift(id = "s", meters = 1.0).copy(category = RoomCategory.STAIRCASE)
+            val rooms = if (floor == this.floor) lifts.toList() + stairs else listOf(stairs)
             return RoomList(source = SOURCE, floorOutline = NO_OUTLINE, rooms = rooms).takeIf { isStored }
         }
     }
@@ -137,15 +132,5 @@ class EntranceLiftTest {
     private companion object {
         const val SOURCE = "Politechnika Wrocławska"
         val NO_OUTLINE = GeoMultiPolygon(emptyList())
-        val STAIRS =
-            Room(
-                id = "s",
-                number = null,
-                function = "Schody",
-                category = RoomCategory.STAIRCASE,
-                geometry = NO_OUTLINE,
-                labelPoint = GeoPoint(longitude = LON, latitude = LAT),
-                isLabelled = false,
-            )
     }
 }
