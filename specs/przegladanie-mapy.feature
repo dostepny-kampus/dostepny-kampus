@@ -184,7 +184,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli znowu dotknie uchwytu karty
     Wtedy karta wraca na niską wysokość nad mapą
 
-  @US2.8 @NFR-53 @aplikacja
+  # @do-zrobienia #3288: krótka karta rozwija się jeszcze do wysokości treści.
+  @US2.8 @NFR-53 @aplikacja @do-zrobienia
   Szablon scenariusza: Wystający nagłówek „Wejścia” od razu rozwija kartę
     Zakładając, że w danych testowych <dane>
     Oraz Gość niezalogowany dotknął budynku <budynek> na mapie przy zwykłej czcionce
@@ -192,9 +193,9 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy <po rozwinięciu>
 
     Przykłady:
-      | budynek | dane                                                | po rozwinięciu                                                    |
-      | A-1     | budynek A-1 ma wejścia i plany pięter PWr           | opis budynku A-1 zajmuje cały ekran                               |
-      | A-2     | budynek A-2 nie ma wejść ani planów pięter w danych | karta ma wysokość swojej treści, a nad nią widać mapę z budynkiem |
+      | budynek | dane                                                | po rozwinięciu                                                               |
+      | A-1     | budynek A-1 ma wejścia i plany pięter PWr           | opis budynku A-1 zajmuje cały ekran                                          |
+      | A-2     | budynek A-2 nie ma wejść ani planów pięter w danych | opis budynku A-2 zajmuje cały ekran, a pod krótką treścią jest puste miejsce |
 
   @US2.8 @NFR-53 @aplikacja
   Szablon scenariusza: Karta budynku zamyka się na każdej wysokości
