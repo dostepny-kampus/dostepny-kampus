@@ -54,7 +54,7 @@ services:
         condition: service_healthy
     restart: "no"
   logowanie:
-    image: quay.io/keycloak/keycloak:26.4
+    image: quay.io/keycloak/keycloak:26.8
     command: ["start-dev", "--import-realm", "--http-port=8180", "--health-enabled=true"]
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${DK_AUTH_ADMIN_USER:?ustaw DK_AUTH_ADMIN_USER w infra/.env}
