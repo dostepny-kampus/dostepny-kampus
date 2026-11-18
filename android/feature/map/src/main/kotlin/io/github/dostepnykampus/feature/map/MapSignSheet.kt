@@ -24,6 +24,7 @@ import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
 import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.entrance.ChosenEntranceSheet
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
+import io.github.dostepnykampus.feature.map.entrance.isFullEntranceSheet
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.plan.ChosenPlanSheet
 import io.github.dostepnykampus.feature.map.plan.ShownPlan
@@ -151,11 +152,21 @@ internal fun SignSheetState.cardLayout(now: CardLayout): CardLayout {
 
 /**
  * Arkusz znaku [signs] nad mapą i zasłonięcie ekranu przez kartę budynku: [padding] rzeczywiste, a [layout]
- * z zasłonięciem i zaznaczeniem dla kamery i układu ekranu według [cardLayout].
+ * z zasłonięciem i zaznaczeniem dla kamery i układu ekranu według [cardLayout]. [fullEntrance] to wejście, którego
+ * arkusz zajmuje cały ekran zamiast mapy; `null`, gdy takiego arkusza nie ma.
  *
- * Wymagania: US2.1, US2.8
+ * Wymagania: US2.1, US2.8, NFR-20
  */
-internal data class ScreenSheet(val signs: SignSheetState, val layout: CardLayout, val padding: PaddingValues) {
+internal data class ScreenSheet(
+    val signs: SignSheetState,
+    val layout: CardLayout,
+    val padding: PaddingValues,
+    val fullEntrance: String? = null,
+) {
+    /** Arkusz wejścia zajmuje cały ekran zamiast mapy. */
+    val isEntranceFull: Boolean
+        get() = fullEntrance != null
+
     /** Karta budynku zasłania teraz mapę. */
     val isCardOpen: Boolean
         get() = padding.calculateBottomPadding() > 0.dp
@@ -180,7 +191,33 @@ internal fun screenSheet(focus: MapFocus?, padding: PaddingValues, onCardClose: 
         }
     }
     val layout = signs.cardLayout(CardLayout(padding = padding, focus = focus))
-    return ScreenSheet(signs = signs, layout = layout, padding = padding)
+    val full = signs.entranceId?.takeIf { isFullEntranceSheet(id = it, focus = focus) }
+    return ScreenSheet(signs = signs, layout = layout, padding = padding, fullEntrance = full)
+}
+
+/**
+ * Arkusz wejścia na cały ekran, gdy [ScreenSheet.fullEntrance] go wskazuje; zamknięcie wraca do karty, którą arkusz
+ * zastąpił, przez [onBuildingClick].
+ *
+ * Wymagania: NFR-19, NFR-20, NFR-51
+ *
+ * @param catalog katalog budynków i wejść; `null` przed jego wczytaniem
+ * @param actions czynności arkusza wejścia
+ * @param onBuildingClick V2 budynku o podanym symbolu
+ */
+@Composable
+internal fun ScreenSheet.FullEntranceSheet(
+    catalog: BuildingCatalog?,
+    actions: EntranceActions,
+    onBuildingClick: (String) -> Unit,
+) {
+    ChosenEntranceSheet(
+        id = fullEntrance,
+        catalog = catalog,
+        onClose = { signs.back(onBuildingClick) },
+        actions = actions,
+        isFull = true,
+    )
 }
 
 /**

@@ -82,9 +82,11 @@ internal fun ChosenEntranceSheet(
  * Wymagania: NFR-19, NFR-20, NFR-51
  */
 @Composable
+@ReadOnlyComposable
 internal fun isFullEntranceSheet(id: String, focus: MapFocus?): Boolean {
     val density = LocalDensity.current
-    val width = with(density) { LocalWindowInfo.current.containerSize.width.toDp() }
+    val window = LocalWindowInfo.current.containerSize
+    val width = with(density) { window.width.toDp() }
     val isFromFullCard = (focus as? MapFocus.Entrance)?.let { it.isFullSheet && it.id == id } == true
     return density.fontScale >= LARGE_FONT_SCALE || width >= WIDE_WINDOW || isFromFullCard
 }
