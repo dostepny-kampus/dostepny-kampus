@@ -24,14 +24,14 @@ import tools.jackson.databind.ObjectMapper;
 
 /**
  * Kontrakt odczytu budynku: pełne metadane wejść, wejście główne
- * przed pozostałymi, dane wejść z planów PWr, wyjścia ewakuacyjne, próg podpowiedzi 50 m
- * i piętra budynku.
+ * przed pozostałymi, dane wejść z planów PWr w karcie i w liście budynków, wyjścia
+ * ewakuacyjne, próg podpowiedzi 50 m i piętra budynku.
  *
  * <p>Geometria przy równiku jest niezależna od danych kampusu. Punkty
  * oddalone o 49 i 51 m od północnej krawędzi powstają przez ST_Project;
  * margines jednego metra nie zależy od zaokrąglenia na granicy 50 m.</p>
  *
- * <p>Wymagania: US17.3, US2.1, BR-G4, US16.1, US16.2, NFR-40, BR-24, BR-27, US2.6</p>
+ * <p>Wymagania: US17.3, US2.1, BR-G4, US16.1, US16.2, NFR-40, BR-24, BR-27, US2.6, US1.4</p>
  *
  * @since 0.1.0
  */
@@ -88,6 +88,23 @@ final class BuildingReadContractIT {
         MatcherAssert.assertThat(
             "Dane wejść z planów PWr albo pierwszeństwo oznaczenia nie zgadzają się z kontraktem",
             BuildingReadContractIT.get(context, "/buildings/G-900").required("entrances"),
+            Matchers.equalTo(
+                context.getBean(ObjectMapper.class)
+                    .readTree(BuildingReadContractIT.pwrEntrances())
+            )
+        );
+    }
+
+    @Test
+    void listsBuildingWithSameEntrancesAsCard(final WebApplicationContext context)
+        throws Exception {
+        BuildingReadContractIT.insertPwrEntrances(context);
+        final JdbcClient jdbc = context.getBean(JdbcClient.class);
+        jdbc.sql("DELETE FROM entrances WHERE building_symbol <> 'G-900'").update();
+        jdbc.sql("DELETE FROM buildings WHERE symbol <> 'G-900'").update();
+        MatcherAssert.assertThat(
+            "Wejścia budynku w liście nie są tymi samymi wejściami co w karcie",
+            BuildingReadContractIT.get(context, "/buildings").at("/buildings/0/entrances"),
             Matchers.equalTo(
                 context.getBean(ObjectMapper.class)
                     .readTree(BuildingReadContractIT.pwrEntrances())
