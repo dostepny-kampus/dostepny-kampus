@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasClickAction
@@ -21,6 +23,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -28,6 +32,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.building.EvacuationExit
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -37,6 +42,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 private const val BUTTON = "Pokaż wyjścia ewakuacyjne (2)"
+private const val HIDE = "Ukryj wyjścia ewakuacyjne (2)"
 private const val ROOM_41 = "Wyjście ewakuacyjne z pomieszczenia 41"
 private const val STAIRS = "Wyjście ewakuacyjne na klatkę schodową"
 
@@ -86,6 +92,43 @@ class EvacuationExitsTest {
     }
 
     /**
+     * Wiersz: rozwinięty przycisk ma napis „Ukryj wyjścia ewakuacyjne (2)”, zwinięty „Pokaż wyjścia ewakuacyjne (2)”;
+     *   TalkBack czyta stan „rozwinięte” albo „zwinięte”.
+     *
+     * Wymagania: US2.6, NFR-18
+     */
+    @Test
+    fun namesButtonByNextAction() {
+        exits(EXITS)
+        compose.onNode(hasText(BUTTON) and state("zwinięte")).assertExists()
+        compose.onNodeWithText(BUTTON).performClick()
+        compose.onNode(hasText(HIDE) and state("rozwinięte")).assertExists()
+        compose.onAllNodes(hasText(BUTTON)).assertCountEquals(0)
+        compose.onNodeWithText(HIDE).performClick()
+        compose.onNode(hasText(BUTTON) and state("zwinięte")).assertExists()
+        compose.onAllNodes(hasText(ROOM_41), useUnmergedTree = true).assertCountEquals(0)
+    }
+
+    /**
+     * Wiersz: opis i szerokość drzwi w wierszu wyjścia zwykłą wagą, jak opis dojścia wejścia, nie jak nazwa wejścia.
+     *
+     * Wymagania: US2.6
+     */
+    @Test
+    fun writesExitRowInPlainWeight() {
+        exits(EXITS)
+        compose.onNodeWithText(BUTTON).performClick()
+        listOf(ROOM_41, "Szerokość drzwi: 90 cm").forEach { text ->
+            val layouts = mutableListOf<TextLayoutResult>()
+            compose
+                .onNodeWithText(text, useUnmergedTree = true)
+                .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+            val weight = layouts.single().layoutInput.style.fontWeight ?: FontWeight.Normal
+            assertEquals("waga tekstu „$text”", FontWeight.Normal, weight)
+        }
+    }
+
+    /**
      * Wiersz: V2 budynku bez wyjść ewakuacyjnych w danych → przycisku nie ma.
      *
      * Wymagania: US2.6
@@ -114,6 +157,8 @@ class EvacuationExitsTest {
         compose.onNodeWithText(BUTTON).performSemanticsAction(SemanticsActions.OnClick)
         compose.onRoot().captureRoboImage()
     }
+
+    private fun state(value: String) = SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, value)
 
     private fun exits(exits: List<EvacuationExit>) {
         compose.setContent {
