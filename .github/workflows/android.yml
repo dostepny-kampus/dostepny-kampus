@@ -21,6 +21,7 @@ on:
       - ".github/scripts/przytnij-cache-budowania.sh"
       - ".github/scripts/czysc-cache.sh"
       - ".github/scripts/wyniki-androida.sh"
+      - ".github/scripts/uruchom-serwer-systemowy.sh"
       - ".github/scripts/zmiany-obszaru.sh"
   merge_group:
     types:
@@ -80,7 +81,7 @@ jobs:
           .github/scripts/zmiany-obszaru.sh android android data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml
           .github/workflows/android.yml .github/actions/android-gradle .github/scripts/cache-budowania-sprintu.sh
           .github/scripts/cache-z-kolejki.sh .github/scripts/czysc-cache.sh .github/scripts/przytnij-cache-budowania.sh
-          .github/scripts/wyniki-androida.sh
+          .github/scripts/wyniki-androida.sh .github/scripts/uruchom-serwer-systemowy.sh
           .github/scripts/zmiany-obszaru.sh
 
   emulator:
@@ -123,20 +124,7 @@ jobs:
       - name: Uruchom bazę, magazyn zdjęć, logowanie i serwer
         if: matrix.zestaw == 'system'
         timeout-minutes: 15
-        run: |
-          cp infra/.env.example infra/.env
-          docker compose -f infra/docker-compose.yml up -d --wait postgis zdjecia logowanie
-          docker compose -f infra/docker-compose.yml run --rm zdjecia-konto
-          set -a
-          . infra/.env
-          set +a
-          jar="$(find backend/target -maxdepth 1 -name '*.jar' ! -name '*-plain.jar' | head -n 1)"
-          nohup java -jar "$jar" > "$RUNNER_TEMP/serwer.log" 2>&1 &
-          if ! timeout 180 bash -c 'until curl -fs -o /dev/null http://127.0.0.1:8080/buildings; do sleep 3; done'; then
-            echo "::error title=Test systemowy::Serwer nie odpowiedział na /buildings w 3 minuty."
-            cat "$RUNNER_TEMP/serwer.log"
-            exit 1
-          fi
+        run: bash .github/scripts/uruchom-serwer-systemowy.sh
       - name: Pobierz APK aplikacji i testów
         uses: actions/download-artifact@v8.0.2
         with:
