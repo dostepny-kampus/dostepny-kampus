@@ -32,7 +32,6 @@ data class EntranceLift(val entranceId: String, val meters: Int, val floors: Lis
 /**
  * Najbliższa winda [entrance] na jego piętrze, a bez piętra w danych na parterze; `null` bez planu budynku albo bez
  * windy na tym piętrze. Bez kopii planu pyta serwer raz. TODO(#3052): klatki przy windzie.
- * TODO(#3118): arkusz wejścia jeszcze nie pokazuje windy.
  */
 internal suspend fun FloorPlans.liftNear(entrance: Entrance): EntranceLift? {
     val symbol = entrance.buildingSymbol

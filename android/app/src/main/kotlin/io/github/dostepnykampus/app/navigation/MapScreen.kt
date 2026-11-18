@@ -28,6 +28,7 @@ import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.entrance.BuildingEntrancesViewModel
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
+import io.github.dostepnykampus.feature.map.entrance.EntranceLiftViewModel
 import io.github.dostepnykampus.feature.map.entrance.focusedBuilding
 import io.github.dostepnykampus.feature.map.entrance.withBuildingEntrances
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
@@ -47,10 +48,12 @@ internal fun AppNavigator.HiltMapScreen(
     viewModel: CampusMapViewModel = hiltViewModel(),
     planViewModel: MapPlanViewModel = hiltViewModel(),
     entrancesViewModel: BuildingEntrancesViewModel = hiltViewModel(),
+    liftViewModel: EntranceLiftViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val plan by planViewModel.shown.collectAsStateWithLifecycle()
     val entrances by entrancesViewModel.shown.collectAsStateWithLifecycle()
+    val lift by liftViewModel.shown.collectAsStateWithLifecycle()
     val shown = remember(state, entrances) { state.copy(catalog = state.catalog?.withBuildingEntrances(entrances)) }
     SideEffect {
         planViewModel.show(focus)
@@ -65,6 +68,7 @@ internal fun AppNavigator.HiltMapScreen(
         onCamera = planViewModel::camera,
         onFloorChoose = planViewModel::chooseFloor,
         onMapHide = planViewModel::hide,
+        entrance = EntranceActions(onShow = liftViewModel::show, lift = lift),
     )
 }
 
@@ -74,7 +78,7 @@ internal fun AppNavigator.HiltMapScreen(
  * nad arkuszem V2; bez arkusza i pod arkuszem na cały ekran przy dużej czcionce V1 liczy widok bez arkusza.
  * [mapView] to MapLibre albo podróbka w testach, [plan] to plan piętra przy środku mapy, [onCamera] dostaje widok po
  * ruchu kamery, [onFloorChoose] piętro wybrane w kolumnie pięter, a [onMapHide] zejście mapy z ekranu. Zgłoszenie
- * przy wejściu z arkusza wejścia prowadzi do V4 albo L1.
+ * przy wejściu z arkusza wejścia prowadzi do V4 albo L1, a [entrance] podaje arkuszowi windę za drzwiami.
  *
  * Wymagania: US1.1, US2.1, NFR-19, US3.3, US4.6, US14.2
  */
@@ -89,6 +93,7 @@ internal fun AppNavigator.MapScreen(
     onCamera: (MapCamera) -> Unit = {},
     onFloorChoose: (String, String) -> Unit = { _, _ -> },
     onMapHide: () -> Unit = {},
+    entrance: EntranceActions = EntranceActions(),
 ) {
     val accessibility = checkNotNull(LocalContext.current.getSystemService(AccessibilityManager::class.java))
     val isSheetAbove = SheetSceneStrategy.isSheet(current) && !isFullOnlySheet(LocalDensity.current.fontScale)
@@ -101,7 +106,7 @@ internal fun AppNavigator.MapScreen(
         contentPadding = if (isSheetAbove) LocalSheetPadding.current else SheetLayout(),
         onEmptyMapClick = { closeCardOnEmptyMap() },
         onListBuildingClick = { openBuildingFromList(it, accessibility.isTouchExplorationEnabled) },
-        entranceActions = EntranceActions(onReport = { report(it) }),
+        entranceActions = entrance.copy(onReport = { report(it) }),
         mapView = mapView,
         motion = mapMotion,
         plan = plan,
