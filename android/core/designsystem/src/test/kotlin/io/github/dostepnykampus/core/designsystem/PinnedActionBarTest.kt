@@ -26,6 +26,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 
 private const val REPORT = "Zgłoś barierę"
 private const val SHOW = "Pokaż na mapie"
@@ -36,6 +37,7 @@ private const val SHOW = "Pokaż na mapie"
  * Wymagania: NFR-20, NFR-17
  */
 @RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h800dp-xhdpi")
 class PinnedActionBarTest {
     @get:Rule
