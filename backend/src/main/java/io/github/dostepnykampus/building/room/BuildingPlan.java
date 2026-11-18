@@ -15,8 +15,8 @@ import java.util.List;
  * @param building Symbol budynku
  * @param floors Piętra budynku
  * @param rooms Pomieszczenia pięter
- * @param entrances Wpisy warstwy wejść PWr, od których wejście budynku bierze piętro;
- *  TODO(#3134) zapis oznaczenia, nazwy, opisu, szerokości drzwi i wyjść ewakuacyjnych
+ * @param entrances Wpisy warstwy wejść PWr: wejścia z oznaczeniem, nazwą, opisem i drzwiami
+ *  oraz wyjścia ewakuacyjne
  * @since 0.1.0
  */
 public record BuildingPlan(

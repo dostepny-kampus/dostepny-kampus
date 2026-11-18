@@ -14,8 +14,8 @@ import java.util.List;
 /**
  * Wejścia z pliku konturów OpenStreetMap w tabeli entrances, odczytane przez
  * {@link OsmFile}. Ponowny import zmienia
- * położenie, opis i rodzaj, nie rusza oznaczeń z obchodu (WALKTHROUGH) i usuwa nieaktualne
- * powiązania wejść z oznaczeniem IMPORT.
+ * położenie, opis i rodzaj, nie rusza oznaczeń z obchodu (WALKTHROUGH) ani nazwy i oznaczenia
+ * wejść z planów PWr i usuwa nieaktualne powiązania wejść z oznaczeniem IMPORT spoza PWr.
  *
  * <p>Wymagania: US17.1, BR-24, US17.3</p>
  *
@@ -31,12 +31,13 @@ final class OsmEntrances {
             marking, marking_date, marking_source)
         VALUES (?, ?, ?, ?, ?, ST_SetSRID(ST_GeomFromGeoJSON(?), 4326), ?,
             CURRENT_DATE, 'IMPORT')
-        ON CONFLICT (id, building_symbol) DO UPDATE SET name = EXCLUDED.name,
+        ON CONFLICT (id, building_symbol) DO UPDATE SET
+            name = CASE WHEN entrances.pwr THEN entrances.name ELSE EXCLUDED.name END,
             type = EXCLUDED.type, main = EXCLUDED.main, location = EXCLUDED.location,
-            marking_date = CASE WHEN entrances.marking_source = 'IMPORT'
+            marking_date = CASE WHEN entrances.marking_source = 'IMPORT' AND NOT entrances.pwr
                 AND entrances.marking <> EXCLUDED.marking
                 THEN EXCLUDED.marking_date ELSE entrances.marking_date END,
-            marking = CASE WHEN entrances.marking_source = 'IMPORT'
+            marking = CASE WHEN entrances.marking_source = 'IMPORT' AND NOT entrances.pwr
                 THEN EXCLUDED.marking ELSE entrances.marking END
         """;
 
@@ -71,7 +72,7 @@ final class OsmEntrances {
             PreparedStatement delete = connection.prepareStatement(
                 """
                 DELETE FROM entrances AS old
-                WHERE old.marking_source = 'IMPORT'
+                WHERE old.marking_source = 'IMPORT' AND old.id NOT LIKE 'pwr/%'
                     AND NOT EXISTS (
                         SELECT 1 FROM unnest(CAST(? AS TEXT[]), CAST(? AS TEXT[]))
                             AS snapshot(id, building_symbol)

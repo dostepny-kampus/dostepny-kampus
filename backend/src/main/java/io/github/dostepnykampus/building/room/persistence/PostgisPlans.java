@@ -80,6 +80,7 @@ public final class PostgisPlans implements FloorPlans {
                     "UPDATE buildings SET detail_level = 'DETAILED' WHERE symbol = :building"
                 ).param("building", building).update();
                 this.entrances(building, known, entrances);
+                new PostgisPwrEntrances(this.jdbc).save(building, known, entrances);
                 new PostgisShafts(this.jdbc).link(building);
             }
         );
