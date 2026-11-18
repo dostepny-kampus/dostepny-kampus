@@ -77,11 +77,17 @@ internal fun currentCardWindow(): CardWindow {
 }
 
 /**
- * Karta V2 w arkuszu: tryb [mode], „Wstecz” w górnym pasku pełnego ekranu [onBack] i „Zamknij” w nagłówku [onClose].
+ * Karta V2 w arkuszu: tryb [mode], „Wstecz” w górnym pasku pełnego ekranu [onBack], „Zamknij” w nagłówku [onClose]
+ * i rozwinięcie niskiej karty na połowę ekranu [onExpand].
  *
  * Wymagania: US2.8
  */
-internal data class SheetCard(val mode: CardMode, val onBack: () -> Unit, val onClose: () -> Unit)
+internal data class SheetCard(
+    val mode: CardMode,
+    val onBack: () -> Unit,
+    val onClose: () -> Unit,
+    val onExpand: () -> Unit = {},
+)
 
 /**
  * Karta V2: `Direct`, gdy okno go wymaga albo V2 otwarto od razu na pełnym ekranie, inaczej tryb z rozwinięcia
@@ -92,11 +98,12 @@ internal data class SheetCard(val mode: CardMode, val onBack: () -> Unit, val on
 @Composable
 internal fun AppNavigator.sheetCard(): SheetCard {
     val window = currentCardWindow()
-    val sheet = SheetState(isExpanded = LocalSheetPadding.current.isExpanded)
+    val layout = LocalSheetPadding.current
+    val sheet = SheetState(isExpanded = layout.isExpanded)
     val isDirect = window.cardMode() == CardMode.Direct || (current as? BuildingRoute)?.isDirect == true
     val mode = if (isDirect) CardMode.Direct else sheet.cardMode(window.fontScale)
     val back = checkNotNull(LocalOnBackPressedDispatcherOwner.current).onBackPressedDispatcher
-    return SheetCard(mode, onBack = back::onBackPressed, onClose = { back() })
+    return SheetCard(mode = mode, onBack = back::onBackPressed, onClose = { back() }, onExpand = layout.onExpand)
 }
 
 /**
@@ -186,6 +193,7 @@ internal fun AppNavigator.BuildingCard(
         onRetry = onRetry,
         onShowPlan = { showOnMap(MapFocus.Building(symbol, command = System.nanoTime(), floor = it)) },
         onMarkFloors = { openFloorMarking(symbol) }.takeIf { isCollector },
+        onExpand = card.onExpand,
     )
 }
 
