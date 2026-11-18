@@ -50,7 +50,7 @@ class PinnedActionBarTest {
     /** Czcionka 200 %: słowo nie mieści się w udziale przycisku, więc przyciski stoją jeden pod drugim. */
     @Test
     @Config(fontScale = 2f)
-    fun stacksWeightedButtonsWhenWordDoesNotFit() {
+    fun stacksWhenWordDoesNotFit() {
         show()
         listOf(REPORT, SHOW).forEach { label ->
             assertEquals("Napis „$label” nie łamie słowa w środku", emptyList<Int>(), brokenWords(label))

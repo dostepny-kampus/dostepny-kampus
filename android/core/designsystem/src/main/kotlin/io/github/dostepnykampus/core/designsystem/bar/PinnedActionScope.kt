@@ -79,13 +79,13 @@ internal val pinnedActionsPolicy: MeasurePolicy =
             val isWeighted = measurable.parentData is WeightNode
             val action = Action(measurable, if (isWeighted) null else measurable.measure(loose))
             val line = lines.lastOrNull()
-            if (line != null && fits(line + action, width, gap)) {
+            if (line != null && fitsInOneRow(line + action, width, gap)) {
                 lines[lines.lastIndex] = line + action
             } else {
                 lines += listOf(action)
             }
         }
-        val placed = lines.map { line -> measureLine(line, width, gap) }
+        val placed = lines.map { line -> measureRow(line, width, gap) }
         val heights = placed.map { line -> line.maxOf { it.height } }
         val height = heights.sum() + gap * (lines.size - 1).coerceAtLeast(0)
         layout(width, height.coerceIn(constraints.minHeight, constraints.maxHeight)) {
@@ -101,32 +101,28 @@ internal val pinnedActionsPolicy: MeasurePolicy =
         }
     }
 
-/** Szerokość wiersza [line] szerokości [width] pozostała dla przycisków z wagą. */
-private fun freeWidth(line: List<Action>, width: Int, gap: Int): Int =
+private fun widthLeftForWeights(line: List<Action>, width: Int, gap: Int): Int =
     width - gap * (line.size - 1) - line.sumOf { it.placeable?.width ?: 0 }
 
-/** Udział [action] w szerokości [free] przy sumie wag [total] wiersza. */
-private fun share(action: Action, free: Int, total: Float): Int = (free * action.weight / total).toInt()
+private fun weightedShare(action: Action, free: Int, total: Float): Int = (free * action.weight / total).toInt()
 
-/** Czy przyciski [line] mieszczą się w jednym wierszu szerokości [width]. */
-private fun fits(line: List<Action>, width: Int, gap: Int): Boolean {
-    val free = freeWidth(line, width, gap)
+private fun fitsInOneRow(line: List<Action>, width: Int, gap: Int): Boolean {
+    val free = widthLeftForWeights(line, width, gap)
     val total = line.sumOf { it.weight.toDouble() }.toFloat()
     return free >= 0 &&
         line.filter { it.placeable == null }.all { action ->
-            share(action, free, total) >= action.measurable.minIntrinsicWidth(Constraints.Infinity)
+            weightedShare(action, free, total) >= action.measurable.minIntrinsicWidth(Constraints.Infinity)
         }
 }
 
-/** Mierzy przyciski wiersza [line]; przycisk z wagą dostaje stałą szerokość udziału, ostatni resztę. */
-private fun measureLine(line: List<Action>, width: Int, gap: Int): List<Placeable> {
-    val free = freeWidth(line, width, gap)
+private fun measureRow(line: List<Action>, width: Int, gap: Int): List<Placeable> {
+    val free = widthLeftForWeights(line, width, gap)
     val total = line.sumOf { it.weight.toDouble() }.toFloat()
     val last = line.lastOrNull { it.placeable == null }
     var left = free
     return line.map { action ->
         action.placeable ?: run {
-            val actionWidth = if (action === last) left else share(action, free, total)
+            val actionWidth = if (action === last) left else weightedShare(action, free, total)
             left -= actionWidth
             action.measurable.measure(Constraints.fixedWidth(actionWidth.coerceAtLeast(0)))
         }
