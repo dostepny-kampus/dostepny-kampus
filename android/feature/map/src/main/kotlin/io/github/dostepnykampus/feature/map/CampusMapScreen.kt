@@ -57,6 +57,7 @@ import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.campus.selection
+import io.github.dostepnykampus.feature.map.entrance.EntranceActions
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.overlay.MapOverlay
 import io.github.dostepnykampus.feature.map.overlay.MapStatusBar
@@ -95,7 +96,7 @@ private const val MAP_STATE = "map"
  *   karty V2 dla wejścia z listy
  * @param mapView widok mapy; testy ekranu podają widok bez natywnej biblioteki
  * @param motion zapis ruchów mapy do budynku nad kartą V2, z których karta bierze czas; `null` bez zapisu
- * @param onEntrancesClick symbol budynku, którego V3 otwiera arkusz wejścia
+ * @param entranceActions „Pokaż to wejście na mapie” i „Zgłoś barierę przy wejściu” z arkusza wejścia
  * @param viewModel stan ekranu i zapis ostatniego widoku; w aplikacji z grafu Hilt, w testach z podróbkami źródeł
  */
 @Composable
@@ -108,7 +109,7 @@ fun CampusMapScreen(
     onListBuildingClick: (String) -> Unit = onBuildingClick,
     mapView: CampusMapView = MapLibreMapView,
     motion: MapMotion? = null,
-    onEntrancesClick: (String) -> Unit = {},
+    entranceActions: EntranceActions = EntranceActions(),
     viewModel: CampusMapViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -122,7 +123,7 @@ fun CampusMapScreen(
         contentPadding = contentPadding,
         onEmptyMapClick = onEmptyMapClick,
         onListBuildingClick = onListBuildingClick,
-        onEntrancesClick = onEntrancesClick,
+        entranceActions = entranceActions,
         mapView = mapView,
         motion = motion,
     )
@@ -151,7 +152,7 @@ fun CampusMapScreen(
  * @param contentPadding część ekranu zasłonięta przez arkusz V2
  * @param onEmptyMapClick dotknięcie mapy poza konturami
  * @param onListBuildingClick budynek dotknięty na liście
- * @param onEntrancesClick V3 budynku z arkusza wejścia
+ * @param entranceActions czynności arkusza wejścia
  * @param mapView widok mapy
  * @param motion zapis ruchów mapy do budynku nad kartą V2
  * @param plan plan piętra budynku przy środku mapy; `null`, gdy planu nie widać
@@ -170,7 +171,7 @@ fun CampusMapScreen(
     contentPadding: PaddingValues = PaddingValues(),
     onEmptyMapClick: () -> Unit = {},
     onListBuildingClick: (String) -> Unit = onBuildingClick,
-    onEntrancesClick: (String) -> Unit = {},
+    entranceActions: EntranceActions = EntranceActions(),
     mapView: CampusMapView = MapLibreMapView,
     motion: MapMotion? = null,
     plan: ShownPlan? = null,
@@ -207,7 +208,7 @@ fun CampusMapScreen(
                         plan = PlanLink(shown = plan, onView = onCamera, onFloor = onFloorChoose, onHide = onMapHide),
                         onBuildingClick = onBuildingClick,
                         onEmptyMapClick = onEmptyMapClick,
-                        onEntrancesClick = onEntrancesClick,
+                        entranceActions = entranceActions,
                         modifier = Modifier.fillMaxSize().background(DostepnyKampusTheme.mapColors.lad),
                     )
                     BarrierDescriptions(shown)
@@ -251,7 +252,7 @@ private fun CampusMap(
     plan: PlanLink,
     onBuildingClick: (String) -> Unit,
     onEmptyMapClick: () -> Unit,
-    onEntrancesClick: (String) -> Unit,
+    entranceActions: EntranceActions,
     modifier: Modifier = Modifier,
 ) {
     val cover = sheet.layout.padding.calculateBottomPadding()
@@ -308,7 +309,7 @@ private fun CampusMap(
                 start = { FloorColumn(plan = plan.shown, onChoose = plan.onFloor) },
             ) {
                 val open = OpenSign(signs = signs, barriers = barriers, catalog = ui.catalog, plan = plan.shown)
-                MapSheets(open = open, state = state, onBuilding = onBuildingClick, onEntrances = onEntrancesClick)
+                MapSheets(open = open, state = state, onBuilding = onBuildingClick, entranceActions = entranceActions)
             }
         }
     }
@@ -356,7 +357,7 @@ private fun BoxScope.MapSheets(
     open: OpenSign,
     state: MapSceneState,
     onBuilding: (String) -> Unit,
-    onEntrances: (String) -> Unit,
+    entranceActions: EntranceActions,
 ) {
     val modifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
     ChosenSignSheet(
@@ -365,7 +366,7 @@ private fun BoxScope.MapSheets(
         catalog = open.catalog,
         plan = open.plan,
         onBuildingClick = onBuilding,
-        onEntrancesClick = onEntrances,
+        entranceActions = entranceActions,
         modifier = modifier,
     )
     BuildingChoices(catalog = open.catalog, state = state, onChoose = onBuilding, modifier = modifier)

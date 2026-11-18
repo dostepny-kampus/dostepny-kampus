@@ -14,8 +14,7 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie powstaje po 3 krokach
     Oraz ma dołączoną bieżącą pozycję telefonu, o którą aplikacja nie pytała
 
-  # @do-zrobienia #3077: „Zgłoś barierę przy wejściu” w arkuszu wejścia jeszcze nie ma w aplikacji.
-  @US4.6 @aplikacja @do-zrobienia
+  @US4.6 @aplikacja
   Szablon scenariusza: Zgłoszenie przy wejściu podpowiada wejście, a miejsce bierze z bieżącej pozycji
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz otworzył <ekran> budynku A-1

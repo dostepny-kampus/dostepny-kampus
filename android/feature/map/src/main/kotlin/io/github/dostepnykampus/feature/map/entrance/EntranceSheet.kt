@@ -7,6 +7,8 @@ package io.github.dostepnykampus.feature.map.entrance
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
@@ -18,15 +20,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Ikony
+import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
+import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
 import io.github.dostepnykampus.core.designsystem.marking.mapMarkingImage
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.building.assessmentText
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.overlay.MapSheet
 import io.github.dostepnykampus.feature.map.overlay.MapSheetHeader
 import kotlin.math.ceil
@@ -41,7 +50,7 @@ import io.github.dostepnykampus.core.designsystem.R as DesignR
  * @param id identyfikator wejścia dotkniętego znaku; `null` bez wybranego wejścia
  * @param catalog katalog budynków i wejść; `null` przed jego wczytaniem
  * @param onClose zamyka arkusz
- * @param onEntrancesClick zamyka arkusz i otwiera V3 budynku wejścia o podanym symbolu
+ * @param actions czynności przy wejściu
  * @param modifier położenie arkusza na mapie
  */
 @Composable
@@ -49,42 +58,38 @@ internal fun ChosenEntranceSheet(
     id: String?,
     catalog: BuildingCatalog?,
     onClose: () -> Unit,
-    onEntrancesClick: (String) -> Unit,
+    actions: EntranceActions,
     modifier: Modifier = Modifier,
 ) {
-    val entrance = catalog?.entrances.orEmpty().firstOrNull { it.id == id }
-    BackHandler(enabled = entrance != null, onBack = onClose)
-    if (entrance != null) {
-        EntranceSheet(
-            entrance = entrance,
-            onClose = onClose,
-            onEntrancesClick = { symbol ->
-                onClose()
-                onEntrancesClick(symbol)
-            },
-            modifier = modifier,
-        )
+    val shown = remember(id, catalog) { id?.let { catalog?.shownEntrance(it) } }
+    BackHandler(enabled = shown != null, onBack = onClose)
+    if (shown != null) {
+        EntranceSheet(shown = shown, onClose = onClose, actions = actions, modifier = modifier)
     }
 }
 
 /**
- * Arkusz wejścia [entrance] na dole mapy V1: znak oznaczenia przy nagłówku z budynkiem, słowo oznaczenia, nazwa
- * wejścia, gdy jest w danych, i przejście do V3. Nagłówek dostaje fokus po otwarciu, a treść się przewija.
+ * Arkusz wejścia [shown] na dole mapy V1: znak oznaczenia przy nagłówku z budynkiem, słowo oznaczenia, pod nim
+ * „Zalecane.” przy wejściu zalecanym i dzień ze źródłem oznaczenia, gdy są w danych, nazwa wejścia, gdy jest
+ * w danych, inne wejścia dostępne przy wejściu zalecanym i zgłoszenie bariery przy wejściu. Nagłówek dostaje fokus
+ * po otwarciu, a treść się przewija.
  *
- * Wymagania: US2.1, US3.3, US17.1, NFR-18, NFR-20, NFR-21, NFR-53
+ * Wymagania: US2.1, US3.3, US4.6, US17.1, US17.3, BR-25, NFR-18, NFR-20, NFR-21, NFR-53
  *
- * @param entrance wejście z katalogu
+ * @param shown wejście z katalogu z jego miejscem wśród wejść budynku
  * @param onClose „Zamknij” zostawia samą mapę
- * @param onEntrancesClick V3 budynku wejścia o podanym symbolu
+ * @param actions „Pokaż to wejście na mapie” i „Zgłoś barierę przy wejściu”
  * @param modifier położenie arkusza na mapie
  */
 @Composable
 internal fun EntranceSheet(
-    entrance: Entrance,
+    shown: ShownEntrance,
     onClose: () -> Unit,
-    onEntrancesClick: (String) -> Unit,
+    actions: EntranceActions,
     modifier: Modifier = Modifier,
 ) {
+    val entrance = shown.entrance
+    val title = entrance.name ?: stringResource(R.string.karta_bez_nazwy)
     MapSheet(modifier) {
         MapSheetHeader(
             title = stringResource(R.string.mapa_wejscie_naglowek, entrance.buildingSymbol),
@@ -95,20 +100,63 @@ internal fun EntranceSheet(
             style = MaterialTheme.typography.titleMedium,
             fontWeight = Typografia.wyroznienieWaga,
         )
+        sourceLine(shown)?.let { SecondaryText(it) }
         entrance.name?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
         if (entrance.marking == EntranceMarking.NO_DATA) {
-            Text(
-                text = stringResource(R.string.mapa_wejscie_niesprawdzone),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            SecondaryText(stringResource(R.string.mapa_wejscie_niesprawdzone))
         }
-        PinnedButton(
-            text = stringResource(R.string.karta_sprawdz),
-            onClick = { onEntrancesClick(entrance.buildingSymbol) },
-            modifier = Modifier.fillMaxWidth(),
+        if (shown.others.isNotEmpty()) OtherEntrances(shown = shown, onShow = actions.onShow)
+        SheetButton(
+            text = stringResource(R.string.karta_zglos),
+            spoken = stringResource(R.string.karta_zglos_czytaj, title),
+            onClick = { actions.onReport(entrance.id) },
         )
     }
+}
+
+@Composable
+private fun OtherEntrances(shown: ShownEntrance, onShow: (MapFocus.Entrance) -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        Text(
+            text = stringResource(R.string.wizyta_inne),
+            modifier = Modifier.semantics { heading() },
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = Typografia.wyroznienieWaga,
+        )
+        shown.others.forEach { other ->
+            val name = other.name ?: stringResource(R.string.karta_bez_nazwy)
+            Text(text = name, style = MaterialTheme.typography.bodyLarge)
+            SheetButton(
+                text = stringResource(R.string.mapa_wejscie_pokaz_to),
+                spoken = stringResource(R.string.mapa_wejscie_pokaz_to_czytaj, name),
+                onClick = { onShow(MapFocus.Entrance(id = other.id, buildingSymbol = other.buildingSymbol)) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun SheetButton(text: String, spoken: String, onClick: () -> Unit) {
+    PinnedButton(
+        text = text,
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth().semantics { contentDescription = spoken },
+        kind = PinnedButtonKind.Outlined,
+    )
+}
+
+@Composable
+private fun SecondaryText(text: String) {
+    Text(text = text, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+}
+
+@Composable
+@ReadOnlyComposable
+private fun sourceLine(shown: ShownEntrance): String? {
+    val recommended = stringResource(R.string.mapa_wejscie_zalecane)
+    val source = shown.entrance.assessment?.let { assessmentText(it) }
+    val parts = listOfNotNull(recommended.takeIf { shown.isRecommended }, source)
+    return parts.takeIf { it.isNotEmpty() }?.joinToString(separator = " ")
 }
 
 @Composable

@@ -13,9 +13,11 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.AppScreen
+import io.github.dostepnykampus.app.navigation.SignInRoute
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -50,6 +52,9 @@ private const val NAMED = "Wejście dostosowane"
 private const val SELECTED_NAMED = "Zaznaczone wejście: »$NAMED«, budynek A-1"
 private const val UNNAMED = "Wejście bez nazwy w danych"
 private const val SHOW_ENTRANCE = "Pokaż wejście na mapie"
+private const val SIDE = "Wejście boczne"
+private val SIDE_AT = GeoPoint(longitude = 0.9, latitude = 0.5)
+private const val SHOW_SIDE = "Pokaż to wejście na mapie: »$SIDE«"
 
 private fun entrance(id: Int, at: GeoPoint, tags: String): String =
     """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/$id",$tags},""" +
@@ -73,7 +78,7 @@ private val OTHERS =
  * `showEntranceOnMap`: Od dotknięcia budynku na V1 przez V2 do „Pokaż wejście na mapie”; zwraca to, co dostała
  * mapa po tym.
  *
- * Wymagania: US3.3, US2.1, NFR-18, NFR-15
+ * Wymagania: US3.3, US2.1, US4.6, US14.2, NFR-18, NFR-15
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -86,6 +91,7 @@ class EntranceOnMapTest {
     private val selections = mutableListOf<MapSelection>()
     private var touch: (List<String>) -> Unit = {}
     private val choice = TestMapListChoice()
+    private lateinit var navigator: AppNavigator
     private val fakeMap =
         CampusMapView { data: CampusMapData, selection, move, _, _, onBuildingsTouch, _, _: Modifier ->
             shown += data to move.camera
@@ -95,6 +101,7 @@ class EntranceOnMapTest {
 
     @Composable
     private fun AppNavigator.Screen(route: NavKey, json: String) {
+        navigator = this
         val repository = remember { BuildingCatalogRepository(ioContext = EmptyCoroutineContext) { json } }
         MapOrBuildingScreen(
             route = route,
@@ -109,7 +116,7 @@ class EntranceOnMapTest {
                     onBack = { back() },
                     viewModel = remember { BuildingCardViewModel(other.symbol, repository, { flowOf(true) }) },
                 )
-            } else {
+            } else if (other !is SignInRoute) {
                 AppScreen(other)
             }
         }
@@ -198,6 +205,43 @@ class EntranceOnMapTest {
         showEntranceOnMap(namedCatalog())
         val sheet = hasText("Wejście, budynek A-1")
         compose.waitUntil { compose.onAllNodes(sheet).fetchSemanticsNodes().isNotEmpty() }
+    }
+
+    /**
+     * Wiersz: arkusz wejścia zalecanego → „Pokaż to wejście na mapie” przy innym wejściu dostępnym → V1 z zaznaczonym
+     *   tym wejściem i jego arkuszem.
+     *
+     * Wymagania: US3.3
+     */
+    @Test
+    fun showsOtherEntranceFromSheet() {
+        val main = entrance(10, NAMED_AT, """"entrance":"main","ref":"$NAMED","wheelchair":"yes"""")
+        val side = entrance(11, SIDE_AT, """"entrance":"yes","ref":"$SIDE","wheelchair":"yes"""")
+        showEntranceOnMap(catalog(main, side))
+        compose.waitUntil { compose.onAllNodes(hasContentDescription(SHOW_SIDE)).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNode(hasContentDescription(SHOW_SIDE)).performScrollTo().performClick()
+        compose.waitForIdle()
+
+        assertEquals("node/11", selections.last().entrance?.id)
+        compose.onNode(hasText(SIDE)).assertExists()
+    }
+
+    /**
+     * Wiersz: arkusz wejścia, Gość → „Zgłoś barierę przy wejściu” prowadzi do L1, który pamięta wejście.
+     * Scenariusz (częściowo, przykład: arkusz wejścia na mapie): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu
+     *   podpowiada wejście, a miejsce bierze z bieżącej pozycji
+     *
+     * Wymagania: US4.6, US14.2
+     */
+    @Test
+    fun sendsGuestFromSheetToSignIn() {
+        showEntranceOnMap(namedCatalog())
+        val report = hasContentDescription("Zgłoś barierę przy wejściu: »$NAMED«")
+        compose.waitUntil { compose.onAllNodes(report).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNode(report).performScrollTo().performClick()
+        compose.waitForIdle()
+
+        assertEquals(SignInRoute(isForReport = true, entranceId = NAMED_ID), navigator.current)
     }
 
     /** Wiersz E2, E4: wejście bez nazwy w danych dostaje podpis zastępczy, także dla TalkBack. */
