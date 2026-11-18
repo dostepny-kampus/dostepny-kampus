@@ -80,6 +80,52 @@ final class OsmEntrancesIT {
             WHERE building_symbol = 'B-8'
             """
         ).update();
+        OsmEntrancesIT.reimport(context);
+        MatcherAssert.assertThat(
+            "Ponowny import zmienił oznaczenie wejścia z obchodu",
+            jdbc.sql("SELECT marking FROM entrances WHERE building_symbol = 'B-8'")
+                .query(String.class).single(),
+            Matchers.equalTo("ACCESSIBLE")
+        );
+    }
+
+    @Test
+    void keepsPwrEntranceData(final WebApplicationContext context) throws Exception {
+        final JdbcClient jdbc = context.getBean(JdbcClient.class);
+        jdbc.sql(
+            """
+            UPDATE entrances SET name = 'Wejście Cesarskie', marking = 'ACCESSIBLE', pwr = TRUE,
+                approach = 'Od ul. Wybrzeże.', door_width_cm = 120
+            WHERE building_symbol = 'B-8'
+            """
+        ).update();
+        jdbc.sql(
+            """
+            INSERT INTO entrances (id, building_symbol, name, main, location, marking,
+                marking_date, marking_source, pwr)
+            VALUES ('pwr/u3qcnhb5j0', 'B-8', 'Wejście', FALSE,
+                ST_SetSRID(ST_MakePoint(17.06, 51.11), 4326), 'INACCESSIBLE', DATE '2026-11-01',
+                'IMPORT', TRUE)
+            """
+        ).update();
+        OsmEntrancesIT.reimport(context);
+        MatcherAssert.assertThat(
+            "Ponowny import OpenStreetMap usunął albo nadpisał dane wejść z planów PWr",
+            jdbc.sql(
+                """
+                SELECT name || '|' || marking || '|' || COALESCE(approach, '-') || '|'
+                    || COALESCE(door_width_cm::text, '-')
+                FROM entrances WHERE building_symbol = 'B-8' AND pwr ORDER BY id
+                """
+            ).query(String.class).list(),
+            Matchers.contains(
+                "Wejście Cesarskie|ACCESSIBLE|Od ul. Wybrzeże.|120",
+                "Wejście|INACCESSIBLE|-|-"
+            )
+        );
+    }
+
+    private static void reimport(final WebApplicationContext context) throws Exception {
         final Connection connection = DataSourceUtils.getConnection(
             context.getBean(DataSource.class)
         );
@@ -95,12 +141,6 @@ final class OsmEntrancesIT {
                     return connection;
                 }
             }
-        );
-        MatcherAssert.assertThat(
-            "Ponowny import zmienił oznaczenie wejścia z obchodu",
-            jdbc.sql("SELECT marking FROM entrances WHERE building_symbol = 'B-8'")
-                .query(String.class).single(),
-            Matchers.equalTo("ACCESSIBLE")
         );
     }
 }
