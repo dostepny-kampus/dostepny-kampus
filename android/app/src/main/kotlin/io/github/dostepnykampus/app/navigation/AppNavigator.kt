@@ -16,7 +16,6 @@ import io.github.dostepnykampus.feature.capture.report.ReportDraft
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
-import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.flow.StateFlow
@@ -47,15 +46,15 @@ fun startBackStack(firstLaunch: Boolean): List<NavKey> =
     if (firstLaunch) listOf(MapRoute(), HelpRoute(isFirstLaunch = true)) else listOf(MapRoute())
 
 /**
- * Czy ekran [route] ma pasek nawigacji, dolny albo z boku: V1, V2, V3, V5 i L2 tak, L1 i V4
- * nie (wymagania wspólne, wiersz „Pasek dolny na V1, V2, V3, V5 i L2”).
+ * Czy ekran [route] ma pasek nawigacji, dolny albo z boku: V1, V2, V5 i L2 tak, L1 i V4
+ * nie (wymagania wspólne, wiersz „Pasek dolny na V1, V2, V5 i L2”).
  */
 fun hasNavigationBar(route: NavKey): Boolean = selectedItem(route) != null
 
 /** Pozycja paska zaznaczona na ekranie [route] albo `null`, gdy żadna nie jest zaznaczona. */
 fun selectedItem(route: NavKey): TopLevel? =
     when (route) {
-        is MapRoute, is BuildingRoute, is EntrancesRoute -> TopLevel.MAP
+        is MapRoute, is BuildingRoute -> TopLevel.MAP
         is HelpRoute -> TopLevel.HELP
         AccountRoute -> TopLevel.ACCOUNT
         else -> null
@@ -206,11 +205,6 @@ class AppNavigator(
             this[0] = MapRoute(MapFocus.Building(symbol))
             add(BuildingRoute(symbol, isDirect))
         }
-    }
-
-    /** Arkusz wejścia na V1 → V3 budynku [symbol]: „Sprawdź, którędy wejść”. Wymagania: US3, US3.3 */
-    fun openEntrances(symbol: String) {
-        leaving { add(EntrancesRoute(symbol)) }
     }
 
     /**

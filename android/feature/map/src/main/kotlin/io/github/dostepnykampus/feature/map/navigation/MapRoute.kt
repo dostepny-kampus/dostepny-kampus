@@ -50,7 +50,3 @@ sealed interface MapFocus {
  */
 @Serializable
 data class BuildingRoute(val symbol: String, val isDirect: Boolean = false) : NavKey
-
-/** V3 Którędy wejść do budynku o symbolu [symbol]. Wymagania: US3 */
-@Serializable
-data class EntrancesRoute(val symbol: String) : NavKey

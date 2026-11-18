@@ -119,12 +119,6 @@
     <string name="karta_rozwiniete">rozwinięte</string>
     <string name="karta_pokaz_na_planie">Pokaż na planie</string>
     <string name="karta_pokaz_na_planie_czytaj">Pokaż na planie: %1$s</string>
-    <string name="wizyta_naglowek">Którędy wejść do %1$s</string>
-    <string name="wizyta_brak_danych">Nie mamy jeszcze danych o wejściach do budynku %1$s.</string>
-    <string name="wizyta_dostepne">Budynek %1$s ma wejście dostępne: »%2$s«.</string>
-    <string name="wizyta_brak">Budynek %1$s nie ma wejścia dostępnego. Wybierz »Wstecz«, aby w opisie budynku zobaczyć bariery przy każdym wejściu.</string>
-    <string name="wizyta_nie_wiemy">Nie wiemy jeszcze, czy budynek %1$s ma wejście dostępne: brak danych o %2$d z %3$d wejść. Wybierz »Wstecz«, aby w opisie budynku zobaczyć każde wejście.</string>
-    <string name="wizyta_zalecane">Zalecane wejście</string>
     <string name="wizyta_inne">Inne wejście dostępne</string>
     <string name="wizyta_pokaz">Pokaż wejście na mapie</string>
     <string name="wizyta_pokaz_czytaj">Pokaż wejście na mapie: »%1$s«</string>

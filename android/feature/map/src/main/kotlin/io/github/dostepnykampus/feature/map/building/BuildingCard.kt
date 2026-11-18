@@ -12,7 +12,7 @@ import io.github.dostepnykampus.core.model.building.EntranceMarking
 private val MARKING_ORDER = listOf(EntranceMarking.ACCESSIBLE, EntranceMarking.INACCESSIBLE, EntranceMarking.NO_DATA)
 
 /**
- * Wejście na liście karty budynku i na V3, w kolejności z [orderedEntrances].
+ * Wejście na liście karty budynku, w kolejności z [orderedEntrances].
  *
  * Wymagania: BR-25
  *
