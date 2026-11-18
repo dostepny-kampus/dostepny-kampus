@@ -192,9 +192,13 @@ Arkusz toalety i arkusz schodów na dole mapy otwiera dotknięcie znaku na plani
 
 Arkusze wejścia, toalety i schodów mają obrysowany „Zamknij” w nagłówku, jak arkusz bariery. Po otwarciu fokus TalkBack stoi na nagłówku, a przy skali czcionki 200% treść arkusza się przewija.
 
-Arkusz wejścia nie ma czynności głównej: odpowiedź już podała karta V2. Innych wejść budynku arkusz nie pokazuje: są na liście „Wejścia” karty V2. Arkusz jest niski: pinezka zaznaczonego wejścia stoi w części mapy nad arkuszem, także gdy arkusz ma wszystkie części (US3.3, NFR-53). Przy dużej czcionce zajmuje cały ekran (reguła 6 sekcji [Duża czcionka](#duza-czcionka)). Arkusz zamykają „Zamknij”, „Wstecz” telefonu i dotknięcie pustej mapy (NFR-18, NFR-20, NFR-53).
+Arkusz wejścia nie ma czynności głównej: odpowiedź już podała karta V2. Innych wejść budynku arkusz nie pokazuje: są na liście „Wejścia” karty V2. Arkusz jest niski: pinezka zaznaczonego wejścia stoi w części mapy nad arkuszem, także gdy arkusz ma wszystkie części (US3.3, NFR-53).
 
-Arkusz wejścia otwarty z karty budynku, dotknięciem wiersza na liście „Wejścia” albo przez „Pokaż wejście na mapie”, stoi w miejscu karty. Tak samo znak bariery, wejścia, toalety albo schodów dotknięty przy otwartej karcie budynku otwiera swój arkusz w miejsce karty. „Zamknij” i „Wstecz” arkusza wracają wtedy do karty tego budynku na tej samej wysokości i w tym samym miejscu przewinięcia. Arkusz otwarty znakiem na mapie bez karty zamyka się na mapę. Dotknięcie pustej mapy zamyka arkusz bez karty (US2.1, US3.3, NFR-15, NFR-53).
+Przy dużej czcionce arkusz wejścia zajmuje cały ekran (reguła 6 sekcji [Duża czcionka](#duza-czcionka)). Arkusz zamykają „Zamknij”, „Wstecz” telefonu i dotknięcie pustej mapy (NFR-18, NFR-20, NFR-53).
+
+Arkusz wejścia otwarty z karty budynku, dotknięciem wiersza na liście „Wejścia” albo przez „Pokaż wejście na mapie”, stoi w miejscu karty. Tak samo znak bariery, wejścia, toalety albo schodów dotknięty przy otwartej karcie budynku otwiera swój arkusz w miejsce karty.
+
+„Zamknij” i „Wstecz” arkusza wracają wtedy do karty tego budynku na tej samej wysokości i w tym samym miejscu przewinięcia. Arkusz otwarty znakiem na mapie bez karty zamyka się na mapę. Dotknięcie pustej mapy zamyka arkusz bez karty (US2.1, US3.3, NFR-15, NFR-53).
 
 Arkusz „Który budynek?” na dole mapy otwiera dotknięcie konturu wspólnego albo dotknięcie obok dwóch konturów, poza nimi (decyzja 85):
 

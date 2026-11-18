@@ -108,7 +108,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1 | dotknięcie znaku bariery | V1, arkusz bariery | wszystkie | US1.3, US10.6 |
 | V1, arkusz bariery | „Pokaż opis budynku”; „Zamknij” | V2 budynku bariery; V1 | wszystkie | US2 |
 | V1 | dotknięcie znaku wejścia | V1, arkusz wejścia | wszystkie | US2.1, US3.3 |
-| V1, arkusz wejścia | „Zamknij”, „Wstecz” | otwarty z karty budynku albo przy niej: ta karta na tej samej wysokości i w tym samym miejscu przewinięcia; otwarty znakiem na mapie bez karty: V1 | wszystkie | US3.3, NFR-15, NFR-53 |
+| V1, arkusz wejścia | „Zamknij”, „Wstecz” | otwarty z karty budynku albo przy niej: ta karta, na tej samej wysokości i tak samo przewinięta. Otwarty znakiem na mapie bez karty: V1 | wszystkie | US3.3, NFR-15, NFR-53 |
 | V1, arkusz wejścia | dotknięcie pustej mapy | V1 bez karty | wszystkie | NFR-53 |
 | V1, arkusz wejścia | „Zgłoś barierę przy wejściu” | V4, krok 1, wejście wybrane; Gość: L1, potem V4 z wybranym wejściem | wszystkie | US4.6, US14.2 |
 | V1, plan piętra | dotknięcie znaku toalety dostosowanej albo schodów | V1, arkusz toalety albo schodów | wszystkie | US16.1 |
