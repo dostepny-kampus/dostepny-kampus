@@ -47,8 +47,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -121,7 +121,7 @@ internal fun Sheet(
         modifier =
             modifier
                 .fillMaxWidth()
-                .clipBelow()
+                .clipBelowKeepShadow()
                 .followHeight(state = state, isCompact = !isExpanded && !isFullOnly, isLoose = !isFullOnly) { size ->
                     measure.window = size.window
                     measure.keepExpanded(size.expanded)
@@ -247,9 +247,10 @@ private fun FollowHeights(
         }
     }
     LaunchedEffect(isExpanded) {
-        if (isFullOnly || state.settledValue.isExpanded == isExpanded) return@LaunchedEffect
-        if (isExpanded) snapshotFlow { measure.isReadyToExpand(state) }.first { it }
-        jump.move(state = state, height = if (isExpanded) SheetHeight.Full else SheetHeight.Low)
+        if (!isFullOnly && state.settledValue.isExpanded != isExpanded) {
+            if (isExpanded) snapshotFlow { measure.isReadyToExpand(state) }.first { it }
+            jump.move(state = state, height = if (isExpanded) SheetHeight.Full else SheetHeight.Low)
+        }
     }
 }
 
@@ -263,14 +264,13 @@ private fun startHeight(isExpanded: Boolean, isFullOnly: Boolean): SheetHeight =
 private fun DraggableAnchors<SheetHeight>.keeping(height: SheetHeight): SheetHeight =
     if (hasPositionFor(height)) height else SheetHeight.Full
 
-/** Pomiar arkusza: okno [window], niska karta w spoczynku [restingLow] i rozwinięta treść [expanded], gdy są. */
+/**
+ * Pomiar arkusza: okno [window], niska karta w spoczynku [restingLow] i rozwinięta treść [expanded], gdy są.
+ * Mała karta w spoczynku ma wysokość treści, a w ruchu widoczną część okna. Rozwinięta treść ma własną wysokość,
+ * a od połowy okna co najmniej widoczną część; to, co wystaje poniżej arkusza, jest ucięte.
+ */
 private data class SheetSize(val window: Int, val restingLow: Int?, val expanded: Int?)
 
-/**
- * Wysokość arkusza za kotwicą [state]. Mała karta ([isCompact]) w spoczynku ma wysokość treści, a w ruchu widoczną
- * część okna. Rozwinięta treść przy [isLoose] ma własną wysokość, a od połowy okna co najmniej widoczną część; to,
- * co wystaje poniżej arkusza, ucina [clipBelow].
- */
 private fun Modifier.followHeight(
     state: AnchoredDraggableState<SheetHeight>,
     isCompact: Boolean,
@@ -303,8 +303,7 @@ private fun Modifier.followHeight(
         layout(width = placeable.width, height = height) { placeable.place(x = 0, y = 0) }
     }
 
-/** Ucina rysunek poniżej dolnej krawędzi; cień nad arkuszem zostaje. */
-private fun Modifier.clipBelow(): Modifier =
+private fun Modifier.clipBelowKeepShadow(): Modifier =
     drawWithContent {
         clipRect(left = -size.width, top = -size.height, right = size.width * 2, bottom = size.height) {
             this@drawWithContent.drawContent()
