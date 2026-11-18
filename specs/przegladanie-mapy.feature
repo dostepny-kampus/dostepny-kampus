@@ -184,8 +184,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli znowu dotknie uchwytu karty
     Wtedy karta wraca na niską wysokość nad mapą
 
-  # @do-zrobienia #3288: krótka karta rozwija się jeszcze do wysokości treści.
-  @US2.8 @NFR-53 @aplikacja @do-zrobienia
+  @US2.8 @NFR-53 @aplikacja
   Szablon scenariusza: Wystający nagłówek „Wejścia” od razu rozwija kartę
     Zakładając, że w danych testowych <dane>
     Oraz Gość niezalogowany dotknął budynku <budynek> na mapie przy zwykłej czcionce
