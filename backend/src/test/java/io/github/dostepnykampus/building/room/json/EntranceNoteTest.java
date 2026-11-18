@@ -52,6 +52,8 @@ final class EntranceNoteTest {
         value = {
             "Wyjście ewakuacyjne z pomieszczenia 41|true",
             "wyjście ewakuacyjne na dziedziniec|true",
+            "Wyjście pełni wyłącznie funkcję ewakuacyjną.|true",
+            "Jest to wyjście z zaplecza.|false",
             "Wejście Cesarskie. Wyjście ewakuacyjne obok.|false",
             "Do wejścia prowadzą schody.|false"
         }

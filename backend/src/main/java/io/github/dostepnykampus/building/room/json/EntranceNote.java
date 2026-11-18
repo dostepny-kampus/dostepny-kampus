@@ -16,8 +16,9 @@ import org.jspecify.annotations.Nullable;
  *
  * <p>Pierwsze zdanie jest nazwą, gdy zaczyna się od „Wejście”, ma najwyżej trzy słowa i nie
  * kończy się skrótem, np. „ul.”; reszta uwag to opis dojścia. Bez takiej nazwy wpis nie ma
- * nazwy, a całe uwagi są opisem. Uwagi zaczynające się od „Wyjście ewakuacyjne” opisują
- * wyjście ewakuacyjne: nazwą jest „Wyjście ewakuacyjne”, a opisem całe uwagi.</p>
+ * nazwy, a całe uwagi są opisem. Uwagi zaczynające się od „Wyjście ewakuacyjne” albo
+ * „Wyjście pełni wyłącznie funkcję ewakuacyjną” opisują wyjście ewakuacyjne: nazwą jest
+ * „Wyjście ewakuacyjne”, a opisem całe uwagi.</p>
  *
  * <p>Wymagania: BR-27</p>
  *
@@ -29,6 +30,11 @@ final class EntranceNote {
      * Nazwa i początek uwag wyjścia ewakuacyjnego.
      */
     private static final String EXIT = "Wyjście ewakuacyjne";
+
+    /**
+     * Początek uwag wyjścia, którym nie da się wejść.
+     */
+    private static final String ONLY_EXIT = "Wyjście pełni wyłącznie funkcję ewakuacyjną";
 
     /**
      * Pierwsze zdanie i reszta uwag.
@@ -66,11 +72,12 @@ final class EntranceNote {
     /**
      * Czy uwagi opisują wyjście ewakuacyjne.
      *
-     * @return Prawda, gdy uwagi zaczynają się od „Wyjście ewakuacyjne”
+     * @return Prawda, gdy uwagi zaczynają się od jednego z dwóch wzorów wyjścia
      */
     boolean exit() {
-        return this.text.toLowerCase(Locale.ROOT)
-            .startsWith(EntranceNote.EXIT.toLowerCase(Locale.ROOT));
+        final String lower = this.text.toLowerCase(Locale.ROOT);
+        return lower.startsWith(EntranceNote.EXIT.toLowerCase(Locale.ROOT))
+            || lower.startsWith(EntranceNote.ONLY_EXIT.toLowerCase(Locale.ROOT));
     }
 
     /**
