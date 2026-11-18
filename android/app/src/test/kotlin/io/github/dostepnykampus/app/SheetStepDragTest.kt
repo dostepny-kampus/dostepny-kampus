@@ -6,21 +6,17 @@
 package io.github.dostepnykampus.app
 
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.Dp
@@ -29,7 +25,6 @@ import androidx.compose.ui.unit.height
 import io.github.dostepnykampus.app.navigation.sheetCard
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.feature.map.building.CardMode
-import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -104,21 +99,11 @@ internal class SheetStepDragTest(
     }
 
     private fun open() {
-        compose.setContent {
-            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
-                if (route is MapRoute) {
-                    Column(modifier = Modifier.fillMaxSize().testTag("V1")) {
-                        Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
-                    }
-                } else {
-                    val height = if (sheetCard().mode == CardMode.Compact) CardHeight else 2000.dp
-                    val scroll = Modifier.verticalScroll(rememberScrollState())
-                    Column(modifier = scroll) { Text(text = "karta", modifier = Modifier.requiredHeight(height)) }
-                }
-            }
+        compose.openCardOverMap {
+            val height = if (sheetCard().mode == CardMode.Compact) CardHeight else 2000.dp
+            val scroll = Modifier.verticalScroll(rememberScrollState())
+            Column(modifier = scroll) { Text(text = "karta", modifier = Modifier.requiredHeight(height)) }
         }
-        compose.onNodeWithText("A-1").performClick()
-        compose.waitForIdle()
     }
 
     private fun drag() {
@@ -144,7 +129,7 @@ internal class SheetStepDragTest(
     }
 
     private fun topOf(height: SheetHeight): Dp {
-        val map = compose.onNodeWithTag("V1").getUnclippedBoundsInRoot().height
+        val map = compose.onNodeWithTag(MAP_TAG).getUnclippedBoundsInRoot().height
         return when (height) {
             SheetHeight.Full -> 0.dp
             SheetHeight.Half -> map / 2
