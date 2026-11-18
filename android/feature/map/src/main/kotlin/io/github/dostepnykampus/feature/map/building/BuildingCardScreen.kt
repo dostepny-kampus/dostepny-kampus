@@ -238,6 +238,7 @@ private fun BuildingFacts(
     val common = commonAssessment(card.entrances)
     common?.let { AssessmentLine(it) }
     EntrancesGroup(card = card, withAssessment = common == null, onShowEntrance = onShowEntrance, onReport = onReport)
+    EvacuationExits(card)
     BarriersGroup(card, onReportRemoval)
     card.floors?.let { LiftToiletGroup(it) }
     FloorsGroup(facts = card.floors, isBasic = card.isBasic, onShowPlan = onShowPlan)

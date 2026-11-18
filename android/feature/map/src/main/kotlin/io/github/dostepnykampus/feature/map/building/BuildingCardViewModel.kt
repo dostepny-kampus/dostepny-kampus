@@ -19,6 +19,7 @@ import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EvacuationExit
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.room.RoomList
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,6 +53,7 @@ sealed interface BuildingCardUiState {
      * @property floors fakty o piętrach z planów PWr; `null`, gdy budynek nie ma planu w telefonie
      * @property isBasic czy serwer podał budynek jako podstawowy, bez planu pięter; fałsz także wtedy, gdy telefon
      *   nie ma jeszcze listy budynków z serwera
+     * @property evacuationExits wyjścia ewakuacyjne z planów PWr; pusta lista, gdy dane ich nie podają
      */
     data class Ready(
         val symbol: String,
@@ -60,19 +62,18 @@ sealed interface BuildingCardUiState {
         val barriers: List<AcceptedBarrier>? = null,
         val floors: FloorFacts? = null,
         val isBasic: Boolean = false,
+        val evacuationExits: List<EvacuationExit> = emptyList(),
     ) : BuildingCardUiState
 }
 
 /**
- * Karta budynku [symbol] z katalogu w telefonie. Katalog jest czytany, gdy ekran jest widoczny,
- * i jeszcze 5 s po zniknięciu, więc obrót ekranu nie czyta go od nowa. [retry] pyta serwer i czyta plik od nowa.
+ * Karta budynku [symbol] z katalogu w telefonie. Katalog jest czytany, gdy ekran jest widoczny, i jeszcze 5 s po
+ * zniknięciu, więc obrót ekranu nie czyta go od nowa. [retry] pyta serwer i czyta plik od nowa. Tekst i wejścia
+ * z pliku pokazują się bez czekania na sieć. Równolegle karta pyta raz `serverEntrances` o wejścia z dniem i źródłem
+ * oznaczenia i o wyjścia ewakuacyjne; niepusta lista wejść zastępuje wejścia z pliku, pusta zostawia je bez błędu.
+ * Zgłoszenia przyjęte pobiera tak samo, a plan pięter raz, z kopii w telefonie. Zamknięcie karty przerywa pobieranie.
  *
- * Tekst karty i wejścia z pliku pokazują się bez czekania na sieć, a z katalogu, który telefon już ma, od pierwszej
- * klatki. Równolegle karta pyta `serverEntrances` o wejścia z dniem i źródłem oznaczenia; niepusta lista zastępuje
- * wejścia z pliku, a pusta (brak sieci, błąd serwera) zostawia je bez komunikatu błędu. Zgłoszenia przyjęte budynku
- * pobiera tak samo, a plan pięter pobiera raz i czyta z kopii w telefonie. Zamknięcie karty przerywa pobieranie.
- *
- * Wymagania: US2, BR-25, NFR-12, US17.3, NFR-10, US2.2, US2.4, US2.7, NFR-56, US16.3
+ * Wymagania: US2, BR-25, NFR-12, US17.3, NFR-10, US2.2, US2.4, US2.7, NFR-56, US16.3, US2.6
  */
 @HiltViewModel(assistedFactory = BuildingCardViewModel.Factory::class)
 class BuildingCardViewModel
@@ -93,6 +94,8 @@ class BuildingCardViewModel
 
         private val floors = MutableStateFlow<FloorFacts?>(null)
 
+        private val exits = MutableStateFlow(emptyList<EvacuationExit>())
+
         private val first = repository.current()?.let { buildingCard(it, symbol) } ?: BuildingCardUiState.Loading
 
         /** Bieżący stan karty. */
@@ -102,6 +105,7 @@ class BuildingCardViewModel
                 .combine(fromServer, ::withServerEntrances)
                 .combine(barriers, ::withBarriers)
                 .combine(floors, ::withFloors)
+                .combine(exits, ::withExits)
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
@@ -116,7 +120,11 @@ class BuildingCardViewModel
 
         init {
             viewModelScope.launch { floors.value = floorFactsOrNull(plans, symbol) }
-            viewModelScope.launch { fromServer.value = serverEntrances.entrances(symbol) }
+            viewModelScope.launch {
+                val card = serverEntrances.cardEntrances(symbol)
+                fromServer.value = card.entrances
+                exits.value = card.evacuationExits
+            }
             viewModelScope.launch {
                 val accepted = acceptedBarriers.barriers()
                 barriers.value =
@@ -143,6 +151,9 @@ class BuildingCardViewModel
 
         private fun withFloors(card: BuildingCardUiState, facts: FloorFacts?): BuildingCardUiState =
             if (card is BuildingCardUiState.Ready) card.copy(floors = facts) else card
+
+        private fun withExits(card: BuildingCardUiState, found: List<EvacuationExit>): BuildingCardUiState =
+            if (card is BuildingCardUiState.Ready) card.copy(evacuationExits = found) else card
 
         private suspend fun catalogFor(repository: BuildingCatalogRepository, attempt: Int): BuildingCatalog =
             if (attempt == 0) repository.catalog() else repository.refresh()
