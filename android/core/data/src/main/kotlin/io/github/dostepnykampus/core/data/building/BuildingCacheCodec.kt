@@ -78,8 +78,7 @@ private data class CachedEntrance(
     val longitude: Double,
     val latitude: Double,
     val marking: EntranceMarking,
-    val assessedOn: String? = null,
-    val assessedBy: AssessmentSource? = null,
+    val assessment: CachedAssessment? = null,
     val floorId: String? = null,
     val approach: String = "",
     val doorWidthCm: Int = 0,
@@ -93,8 +92,7 @@ private data class CachedEntrance(
         longitude = entrance.location.longitude,
         latitude = entrance.location.latitude,
         marking = entrance.marking,
-        assessedOn = entrance.assessment?.date?.toString(),
-        assessedBy = entrance.assessment?.source,
+        assessment = entrance.assessment?.let { CachedAssessment(date = it.date.toString(), source = it.source) },
         floorId = entrance.floorId,
         approach = entrance.approach,
         doorWidthCm = entrance.doorWidthCm,
@@ -109,15 +107,15 @@ private data class CachedEntrance(
             type = type,
             location = GeoPoint(longitude = longitude, latitude = latitude),
             marking = marking,
-            assessment =
-                assessedOn?.let { day ->
-                    assessedBy?.let { source -> EntranceAssessment(date = LocalDate.parse(day), source = source) }
-                },
+            assessment = assessment?.let { EntranceAssessment(date = LocalDate.parse(it.date), source = it.source) },
             floorId = floorId,
             approach = approach,
             doorWidthCm = doorWidthCm,
         )
 }
+
+@Serializable
+private data class CachedAssessment(val date: String, val source: AssessmentSource)
 
 private fun CachedBuilding.toApi(): ApiBuilding =
     ApiBuilding(
