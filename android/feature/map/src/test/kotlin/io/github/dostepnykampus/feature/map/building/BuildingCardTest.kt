@@ -71,7 +71,7 @@ class BuildingCardTest {
     }
 
     @Test
-    fun recommendsFirstNamedWhenMainIsNot() {
+    fun recommendsNamedWithoutMain() {
         val ordered =
             orderedEntrances(
                 listOf(
