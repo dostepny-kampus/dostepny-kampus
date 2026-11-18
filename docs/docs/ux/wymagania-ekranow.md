@@ -167,7 +167,9 @@ Przejście do karty budynku z arkusza innego obiektu to zawsze ten sam wiersz bu
 
 Cały wiersz to jeden cel dotyku, co najmniej 48 dp wysokości. TalkBack czyta „Budynek A-1, otwiera opis budynku”, jak budynek na liście budynków (NFR-17, NFR-18, WCAG 2.5.3 [1]).
 
-Wiersz budynku mają arkusze wejścia, toalety, schodów i bariery, arkusz znalezionej sali i arkusz „Który budynek?”. Znak budynku znaczy tylko „otwórz kartę tego budynku”, więc nie stoi w wynikach wyszukiwania ani na liście budynków. Tam wybór przenosi mapę do budynku, a to inna czynność (decyzja z 18.11.2026).
+Wiersz budynku mają arkusze wejścia, toalety, schodów i bariery, arkusz znalezionej sali i arkusz „Który budynek?”.
+
+Znak budynku znaczy tylko „otwórz kartę tego budynku”, więc nie stoi w wynikach wyszukiwania ani na liście budynków. Tam wybór przenosi mapę do budynku, a to inna czynność (decyzja z 18.11.2026).
 
 Dotknięcie wiersza budynku zamyka arkusz i otwiera kartę V2 na niskiej wysokości. Mapa nie jedzie do budynku, tylko zachowuje się jak po dotknięciu konturu: stoi, chyba że karta zasłoniłaby cały widoczny kontur (wiersz o dotknięciu konturu). Osoba patrzyła na obiekt obok budynku, więc przelot gubiłby jej miejsce na mapie (US2.8, NFR-56).
 
