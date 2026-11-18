@@ -9,9 +9,15 @@ import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -68,6 +74,7 @@ class SheetBackGestureTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
     private val models = mutableSetOf<ViewModel>()
     private val gesture = DirectNavigationEventInput()
+    private var cardExtra by mutableStateOf(0.dp)
 
     @Composable
     private fun Shell() {
@@ -77,7 +84,10 @@ class SheetBackGestureTest {
                 val map = Modifier.fillMaxSize().background(Brush.linearGradient(listOf(Color.Green, Color.Blue)))
                 Text(text = "A-1", modifier = map.clickable { openBuilding(symbol = "A-1") })
             } else {
-                Text(text = "karta")
+                Column {
+                    Text(text = "karta")
+                    Spacer(Modifier.height(cardExtra))
+                }
             }
         }
     }
@@ -446,7 +456,7 @@ class SheetBackGestureTest {
     }
 
     /**
-     * Wiersz: pasek stanu 24 px → uchwyt karty na całym ekranie pod paskiem stanu, niskiej przy górze arkusza.
+     * Wiersz: pasek stanu 24 px → uchwyt długiej karty rozwiniętej pod paskiem stanu, niskiej przy górze arkusza.
      *
      * Wymagania: NFR-52
      */
@@ -462,7 +472,9 @@ class SheetBackGestureTest {
         val compact = mapBottom() - CeleDotyku.minimum - (card.bottom - card.top)
         assertEquals("uchwyt małej karty przy górze arkusza", compact.value, sheetTop("niska").value, 1f)
         compose.mainClock.autoAdvance = true
-        repeat(2) { compose.onNode(hasContentDescription(EXPAND_HANDLE)).performClick() }
+        cardExtra = 1000.dp
+        compose.waitForIdle()
+        compose.onNode(hasContentDescription(EXPAND_HANDLE)).performClick()
         val belowStatusBar = top + with(compose.density) { 24.toDp() }
         assertEquals("uchwyt rozwiniętego V2 pod paskiem stanu", belowStatusBar.value, sheetTop("cały ekran").value, 1f)
     }

@@ -79,7 +79,7 @@ class SheetDirectTest {
         compose.onNodeWithText(SHOW_ON_MAP).assertExists("„$SHOW_ON_MAP” na karcie na cały ekran: $moment")
         compose.onNodeWithText("Wstecz").assertDoesNotExist()
         compose.onNodeWithText("Zamknij").assertExists("„Zamknij” w nagłówku karty na cały ekran: $moment")
-        val handle = compose.onNode(hasContentDescription(EXPAND_HANDLE) and hasStateDescription("cały ekran"))
+        val handle = compose.onNode(hasContentDescription(EXPAND_HANDLE) and hasStateDescription("rozwinięta"))
         handle.assertExists("uchwyt karty na cały ekran: $moment")
         val actions = handle.fetchSemanticsNode().config.getOrElse(SemanticsActions.CustomActions) { emptyList() }
         val labels = actions.map { it.label }
