@@ -5,13 +5,17 @@
  */
 package io.github.dostepnykampus.core.designsystem
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.unit.Density
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
@@ -21,7 +25,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
 private const val REPORT = "Zgłoś barierę"
@@ -51,8 +54,7 @@ class PinnedActionBarTest {
     /** Czcionka 200 %: słowo nie mieści się w udziale przycisku, więc przyciski stoją jeden pod drugim. */
     @Test
     fun stacksWhenWordDoesNotFit() {
-        RuntimeEnvironment.setFontScale(2f)
-        show()
+        show(fontScale = 2f)
         listOf(REPORT, SHOW).forEach { label ->
             assertEquals("Napis „$label” nie łamie słowa w środku", emptyList<Int>(), brokenWords(label))
         }
@@ -66,18 +68,26 @@ class PinnedActionBarTest {
         )
     }
 
-    private fun show() {
+    private fun show(fontScale: Float = 1f) {
         compose.setContent {
-            DostepnyKampusTheme {
-                PinnedActionBar {
-                    PinnedButton(text = REPORT, onClick = {}, modifier = Modifier.weight(3f))
-                    PinnedButton(
-                        text = SHOW,
-                        onClick = {},
-                        modifier = Modifier.weight(2f),
-                        kind = PinnedButtonKind.Tonal,
-                    )
-                }
+            val density = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale)) {
+                Bar()
+            }
+        }
+    }
+
+    @Composable
+    private fun Bar() {
+        DostepnyKampusTheme {
+            PinnedActionBar {
+                PinnedButton(text = REPORT, onClick = {}, modifier = Modifier.weight(3f))
+                PinnedButton(
+                    text = SHOW,
+                    onClick = {},
+                    modifier = Modifier.weight(2f),
+                    kind = PinnedButtonKind.Tonal,
+                )
             }
         }
     }
