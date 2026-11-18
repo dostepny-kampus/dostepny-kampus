@@ -92,8 +92,8 @@ class EntranceBarriersTest {
             )
         val barriers = listOf(barrier("z1"), barrier("z2", entrance = "node/2"), barrier("z3", entrance = null))
 
-        val atRecommended = catalog.shownEntrance("node/1", barriers)?.barriers?.map { it.id }
-        val atOther = catalog.shownEntrance("node/2", barriers)?.barriers?.map { it.id }
+        val atRecommended = checkNotNull(catalog.shownEntrance("node/1", barriers)).barriers.map { it.id }
+        val atOther = checkNotNull(catalog.shownEntrance("node/2", barriers)).barriers.map { it.id }
         assertEquals("przy wejściu zalecanym", listOf("z1"), atRecommended)
         assertEquals("przy wejściu niezalecanym", emptyList<String>(), atOther)
     }
