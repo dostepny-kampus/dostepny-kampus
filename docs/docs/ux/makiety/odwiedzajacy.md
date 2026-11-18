@@ -7,7 +7,7 @@ Konwencje opisuje strona [Makiety](index.md). Stan, który różni się jednym n
 | Ekran | Makiety | Stany w tabelach |
 | --- | --- | --- |
 | V1 Mapa kampusu | zwykły, wyszukiwanie, lista budynków, brak wyniku, brak sieci, pierwsze otwarcie bez internetu, znaleziona sala, bariera na mapie, arkusz wejścia | ładowanie, brak mapy ulic, pierwsze uruchomienie, wybór budynku, plan piętra, sala bez drogi, brak sali, duża czcionka |
-| V2 Karta budynku | niska wysokość, połowa ekranu, od razu na cały ekran, budynek podstawowy bez wejścia zalecanego, brak barier, wejścia bez nazw, brak sieci, budynku nie ma w telefonie, Zbierający | ładowanie, błąd zdjęcia, budynek podstawowy bez barier |
+| V2 Karta budynku | wysokości: niska, połowa ekranu, od razu cały ekran. Stany: budynek podstawowy bez wejścia zalecanego, brak barier, wejścia bez nazw, brak sieci, budynku nie ma w telefonie, Zbierający | ładowanie, błąd zdjęcia, budynek podstawowy bez barier |
 | V4 Zgłoszenie szybkie | kroki 1–3, krok 1 ze zdjęciem, prośba o zgodę, zgoda przybliżona, brak pozycji, rezygnacja, wysłane, wysłane bez internetu | Gość, odmowa zgody, lokalizacja wyłączona, ustalanie miejsca, błąd zapisu |
 | V5 Pomoc | krok z objaśnieniem „Dostępne” | krok o koncie, ostatni krok |
 | L1 Prośba o logowanie | zwykły, brak sieci | wejście z „Konto”, błąd |
