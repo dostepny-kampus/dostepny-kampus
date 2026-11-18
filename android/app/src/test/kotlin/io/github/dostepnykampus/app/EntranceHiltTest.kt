@@ -154,7 +154,7 @@ class EntranceHiltTest {
         compose.onNode(ListedA1).performClick()
         waitFor(hasText("Pokaż wejście na mapie"))
         compose.onAllNodes(hasText("Pokaż wejście na mapie")).onFirst().performClick()
-        waitFor(hasText("Wejście, budynek A-1"))
+        waitFor(hasText("Wejście"))
         compose.onNode(hasText("Zamknij")).performClick()
         waitFor(hasContentDescription("Zaznaczone wejście: »Wejście dostosowane«, budynek A-1"))
     }

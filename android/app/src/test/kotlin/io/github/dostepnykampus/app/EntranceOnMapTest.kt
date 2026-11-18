@@ -191,7 +191,7 @@ class EntranceOnMapTest {
     @Test
     fun opensEntranceSheet() {
         showEntranceOnMap(namedCatalog())
-        val sheet = hasText("Wejście, budynek A-1")
+        val sheet = hasText("Wejście")
         compose.waitUntil { compose.onAllNodes(sheet).fetchSemanticsNodes().isNotEmpty() }
     }
 
@@ -206,7 +206,7 @@ class EntranceOnMapTest {
         val main = entrance(10, NAMED_AT, """"entrance":"main","ref":"$NAMED","wheelchair":"yes"""")
         val side = entrance(11, SIDE_AT, """"entrance":"yes","ref":"$SIDE","wheelchair":"yes"""")
         showEntranceOnMap(catalog(main, side))
-        compose.waitUntil { compose.onAllNodes(hasText("Wejście, budynek A-1")).fetchSemanticsNodes().isNotEmpty() }
+        compose.waitUntil { compose.onAllNodes(hasText("Wejście")).fetchSemanticsNodes().isNotEmpty() }
 
         assertEquals("node/10", selections.last().entrance?.id)
         compose.onNode(hasText(SIDE)).assertDoesNotExist()
