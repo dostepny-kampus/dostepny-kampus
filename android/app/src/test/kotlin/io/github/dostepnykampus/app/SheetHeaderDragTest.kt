@@ -6,13 +6,7 @@
 package io.github.dostepnykampus.app
 
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -32,7 +26,6 @@ import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.building.BuildingCardContent
 import io.github.dostepnykampus.feature.map.building.BuildingCardUiState
 import io.github.dostepnykampus.feature.map.building.orderedEntrances
-import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -78,34 +71,24 @@ class SheetHeaderDragTest {
     }
 
     private fun open() {
-        compose.setContent {
-            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
-                if (route is MapRoute) {
-                    Column(modifier = Modifier.fillMaxSize().testTag("V1")) {
-                        Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
-                    }
-                } else {
-                    val card = sheetCard()
-                    BuildingCardContent(
-                        symbol = "A-1",
-                        mode = card.mode,
-                        card = ready(),
-                        isOnline = true,
-                        onShowOnMap = {},
-                        onBack = {},
-                        onClose = {},
-                        onReport = {},
-                        onRetry = {},
-                        onExpand = card.onExpand,
-                    )
-                }
-            }
+        compose.openCardOverMap {
+            val card = sheetCard()
+            BuildingCardContent(
+                symbol = "A-1",
+                mode = card.mode,
+                card = ready(),
+                isOnline = true,
+                onShowOnMap = {},
+                onBack = {},
+                onClose = {},
+                onReport = {},
+                onRetry = {},
+                onExpand = card.onExpand,
+            )
         }
-        compose.onNodeWithText("A-1").performClick()
-        compose.waitForIdle()
     }
 
-    private fun map(): Dp = compose.onNodeWithTag("V1").getUnclippedBoundsInRoot().height
+    private fun map(): Dp = compose.onNodeWithTag(MAP_TAG).getUnclippedBoundsInRoot().height
 
     private fun handleTop(): Dp = compose.onNodeWithContentDescription(EXPAND_HANDLE).getUnclippedBoundsInRoot().top
 
