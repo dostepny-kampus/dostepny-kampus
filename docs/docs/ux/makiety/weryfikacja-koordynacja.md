@@ -2,7 +2,7 @@
 
 Strona pokazuje makiety ekranów Weryfikatora (R1, R2) i Koordynatora (K1, K2, K3). Elementy i stany pochodzą z [wymagań do ekranów](../wymagania-ekranow.md), a napisy ze [słownika użytkownika](../slownik-uzytkownika.md). Konwencje rysowania opisuje strona [Makiety](index.md).
 
-Ekrany ról pracowniczych nie mają paska dolnego, bo wymagania wspólne przewidują go tylko na V1, V2, V3, V5 i L2. Do R1 i K1–K3 prowadzą przyciski z L2 „Konto i praca” ([mapa nawigacji](../mapa-nawigacji.md)).
+Ekrany ról pracowniczych nie mają paska dolnego, bo wymagania wspólne przewidują go tylko na V1, V2, V5 i L2. Do R1 i K1–K3 prowadzą przyciski z L2 „Konto i praca” ([mapa nawigacji](../mapa-nawigacji.md)).
 
 ## Stany wspólne
 
