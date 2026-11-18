@@ -26,7 +26,7 @@ import io.github.dostepnykampus.feature.map.barrier.SeverityBadge
  * Część arkusza wejścia ze zgłoszeniami przyjętymi przy wejściu [shown]: każde z uciążliwością, typem, dniem
  * sprawdzenia i zdjęciem, w tych samych słowach co arkusz bariery.
  *
- * Wymagania: US2.2, US3.3, PW-3, PW-13, NFR-21
+ * Wymagania: US2.2, US3.3, NFR-21
  */
 @Composable
 internal fun EntranceBarriers(shown: ShownEntrance) {
