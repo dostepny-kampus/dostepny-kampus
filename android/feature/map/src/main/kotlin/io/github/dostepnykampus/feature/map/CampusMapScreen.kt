@@ -393,6 +393,7 @@ private fun BoxScope.MapSheets(
         entranceActions = entranceActions,
         modifier = modifier,
         hidesEntrance = open.sheet.isEntranceFull,
+        onBuildingTap = { state.taps.choose(it, onBuilding) },
     )
     BuildingChoices(catalog = open.catalog, state = state, onChoose = onBuilding, modifier = modifier)
 }
