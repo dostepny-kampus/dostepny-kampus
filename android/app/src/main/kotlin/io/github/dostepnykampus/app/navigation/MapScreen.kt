@@ -51,7 +51,7 @@ internal fun AppNavigator.HiltMapScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val plan by planViewModel.shown.collectAsStateWithLifecycle()
     val entrances by entrancesViewModel.shown.collectAsStateWithLifecycle()
-    val shown = remember(state, entrances) { state.withBuildingEntrances(entrances) }
+    val shown = remember(state, entrances) { state.copy(catalog = state.catalog?.withBuildingEntrances(entrances)) }
     SideEffect {
         planViewModel.show(focus)
         entrancesViewModel.show(focusedBuilding(focus))

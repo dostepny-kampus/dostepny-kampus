@@ -9,8 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.building.ServerEntrances
+import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
-import io.github.dostepnykampus.feature.map.CampusMapUiState
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,18 +33,15 @@ private const val STOP_TIMEOUT_MS = 5_000L
 data class BuildingEntrances(val symbol: String, val entrances: List<Entrance>)
 
 /**
- * Stan V1, w którym wejścia budynku [fetched] zastępują w katalogu wejścia tego budynku z pliku konturów, tak jak na
- * karcie V2; arkusz wejścia i pinezka biorą je z katalogu. Bez katalogu, bez [fetched] albo przy pustej liście stan
- * zostaje bez zmian. Dane warstw mapy się nie zmieniają.
+ * Katalog, w którym wejścia budynku [fetched] dla odwiedzających zastępują wejścia tego budynku z pliku konturów, tak
+ * jak na karcie V2. Bez [fetched] albo przy pustej liście katalog zostaje bez zmian.
  *
  * Wymagania: US2.1, US3.3, BR-25, NFR-10
  */
-fun CampusMapUiState.withBuildingEntrances(fetched: BuildingEntrances?): CampusMapUiState {
-    val shown = catalog
+fun BuildingCatalog.withBuildingEntrances(fetched: BuildingEntrances?): BuildingCatalog {
     val server = fetched?.run { entrances.filter(Entrance::isForVisitors) }.orEmpty()
-    if (fetched == null || shown == null || server.isEmpty()) return this
-    val others = shown.entrances.filter { it.buildingSymbol != fetched.symbol }
-    return copy(catalog = shown.copy(entrances = others + server))
+    if (fetched == null || server.isEmpty()) return this
+    return copy(entrances = entrances.filter { it.buildingSymbol != fetched.symbol } + server)
 }
 
 /** Budynek zaznaczenia [focus]: budynek albo budynek wejścia; `null` bez zaznaczenia. Wymagania: US2.1, US3.3 */
