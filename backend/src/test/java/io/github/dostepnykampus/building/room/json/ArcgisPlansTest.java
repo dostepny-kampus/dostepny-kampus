@@ -11,6 +11,7 @@ import com.sun.net.httpserver.HttpServer;
 import io.github.dostepnykampus.building.room.PlanEntrance;
 import io.github.dostepnykampus.building.room.PlanFloor;
 import io.github.dostepnykampus.building.room.PlanRoom;
+import io.github.dostepnykampus.building.room.PlanSource;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
@@ -153,7 +154,9 @@ final class ArcgisPlansTest {
                     )
                 ),
                 new CountDownLatch(0),
-                url -> new ArcgisPlans(JsonMapper.builder().build()).entrances(url, 2)
+                url -> new ArcgisPlans(JsonMapper.builder().build()).entrances(
+                    new PlanSource.Layer(url, 2), ArcgisPlansTest.emptyCampus(url)
+                )
             ),
             Matchers.contains(
                 new PlanEntrance("T.X.P0", point, "NO_DATA", "Wejście", null, null, false)
@@ -186,7 +189,9 @@ final class ArcgisPlansTest {
                     )
                 ),
                 new CountDownLatch(0),
-                url -> new ArcgisPlans(JsonMapper.builder().build()).entrances(url, 2).stream()
+                url -> new ArcgisPlans(JsonMapper.builder().build())
+                    .entrances(new PlanSource.Layer(url, 2), ArcgisPlansTest.emptyCampus(url))
+                    .stream()
                     .map(ArcgisPlansTest::describe).toList()
             ),
             Matchers.contains(
@@ -196,6 +201,63 @@ final class ArcgisPlansTest {
                 "NO_DATA|Wejście|Do wejścia prowadzą schody.|null|false"
             )
         );
+    }
+
+    @Test
+    void takesNoteAndDoorWidthFromCampusLayerAtSamePoint() throws IOException {
+        final HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
+        server.createContext(
+            ArcgisPlansTest.QUERY,
+            exchange -> ArcgisPlansTest.send(
+                exchange,
+                String.format(
+                    "{\"features\":[%s]}",
+                    String.join(
+                        ",",
+                        ArcgisPlansTest.bare("17.1", "\"Tak\""),
+                        ArcgisPlansTest.bare("17.2", "\"Nie\""),
+                        ArcgisPlansTest.bare("17.3", "\"Tak\"")
+                    )
+                )
+            )
+        );
+        server.createContext(
+            "/Kampus/FeatureServer/29/query",
+            exchange -> ArcgisPlansTest.send(
+                exchange,
+                String.format(
+                    "{\"features\":[%s]}",
+                    String.join(
+                        ",",
+                        ArcgisPlansTest.entrance("\"Nie\"", "100", "\"Wejście \\\"C\\\"\""),
+                        ArcgisPlansTest.entrance(
+                            "\"Tak\"", "90", "\"Wyjście ewakuacyjne z pomieszczenia 41\""
+                        ).replace("17.1", "17.2")
+                    )
+                )
+            )
+        );
+        server.start();
+        try {
+            final String root = String.format("http://localhost:%d", server.getAddress().getPort());
+            MatcherAssert.assertThat(
+                "Wejście nie wzięło uwag i szerokości z warstwy kampusu w tym samym punkcie",
+                new ArcgisPlans(JsonMapper.builder().build()).entrances(
+                    new PlanSource.Layer(root.concat("/FeatureServer"), 2),
+                    new PlanSource.Layer(root.concat("/Kampus/FeatureServer"), 29)
+                ).stream().map(ArcgisPlansTest::describe).toList(),
+                Matchers.contains(
+                    "ACCESSIBLE|Wejście \"C\"|null|100|false",
+                    String.join(
+                        "|", "INACCESSIBLE", "Wyjście ewakuacyjne",
+                        "Wyjście ewakuacyjne z pomieszczenia 41", "90", "true"
+                    ),
+                    "ACCESSIBLE|Wejście|null|null|false"
+                )
+            );
+        } finally {
+            server.stop(0);
+        }
     }
 
     @Test
@@ -306,6 +368,19 @@ final class ArcgisPlansTest {
         );
     }
 
+    private static String bare(final String longitude, final String adapted) {
+        return String.join(
+            "",
+            "{\"geometry\":{\"type\":\"Point\",\"coordinates\":[", longitude, ",51.1]},",
+            "\"properties\":{\"Pietro\":\"T.X.P0\",\"Czy_dostos\":", adapted,
+            ",\"Budynek\":\"X\"}}"
+        );
+    }
+
+    private static PlanSource.Layer emptyCampus(final String url) {
+        return new PlanSource.Layer(url.replace("/FeatureServer", "/Pusty/FeatureServer"), 29);
+    }
+
     private static String describe(final PlanEntrance entry) {
         return String.join(
             "|", entry.marking(), entry.name(), String.valueOf(entry.approach()),
@@ -372,6 +447,10 @@ final class ArcgisPlansTest {
     ) throws IOException {
         final HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
         server.createContext(ArcgisPlansTest.QUERY, handler);
+        server.createContext(
+            "/Pusty/FeatureServer/29/query",
+            exchange -> ArcgisPlansTest.send(exchange, "{\"features\":[]}")
+        );
         server.start();
         try {
             return call.apply(

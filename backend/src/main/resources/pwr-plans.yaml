@@ -5,6 +5,9 @@
 dk:
   plans:
     service: https://services3.arcgis.com/rrLByHvJ7zuJQDVw/arcgis/rest/services
+    # Warstwy wejść planów nie mają pól Uwagi i Szerokosc (poza A-1); ma je warstwa wejść mapy
+    # kampusu, z punktami w tych samych miejscach (sprawdzone 18.11.2026).
+    campus: {name: MAPA_KAMPUSU_PWr_14122023_WFL1_widok, entrances: 29}
     buildings:
       # A-1: v3 zamiast v2: nowsza edycja (10.01.2024) i 34 pomieszczenia zamiast 32
       - {symbol: A-1, name: Planbudynku_A1_v3_WFL1_widok2, facility: K1.A1, levels: 2, rooms: 4, entrances: 1}

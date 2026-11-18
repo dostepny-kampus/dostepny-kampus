@@ -54,6 +54,17 @@ final class PlanSettingsIT {
     }
 
     @Test
+    void readsCampusEntranceLayer(final ApplicationContext context) {
+        MatcherAssert.assertThat(
+            "Konfiguracja planów nie wskazuje warstwy wejść mapy kampusu",
+            context.getBean(PlanSettings.class).campus(),
+            Matchers.equalTo(
+                new PlanSettings.Campus("MAPA_KAMPUSU_PWr_14122023_WFL1_widok", 29)
+            )
+        );
+    }
+
+    @Test
     void readsAllDetailedBuildings(final ApplicationContext context) {
         MatcherAssert.assertThat(
             "Konfiguracja planów nie ma 24 budynków szczegółowych",
