@@ -132,8 +132,7 @@ internal fun EntrancesGroup(
 
 /** Czy karta ma co najmniej dwa wejścia, a żadne nie ma oznaczenia ani nazwy w danych. Wymagania: US2.1, US17.1 */
 internal fun BuildingCardUiState.Ready.hasOnlyNamelessEntrances(): Boolean =
-    entrances.size > 1 &&
-        entrances.all { it.entrance.marking == EntranceMarking.NO_DATA && it.entrance.name == null }
+    entrances.size > 1 && entrances.all { it.entrance.marking == EntranceMarking.NO_DATA && it.entrance.name == null }
 
 @Composable
 private fun EntranceList(

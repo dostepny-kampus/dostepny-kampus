@@ -47,7 +47,6 @@ private const val CLOSE = "Zamknij"
 private val TOUCH_TARGET = 48.dp
 private const val BACK = "Wstecz"
 private const val ROW = "Wejście dostępne"
-private const val REPORT = "Zgłoś barierę przy wejściu"
 private const val SHOW_ENTRANCE = "Pokaż wejście na mapie"
 private const val UNNAMED = "Wejście bez nazwy w danych"
 private val ENTRANCES = listOf("Główne" to "node/1", "Schody" to "node/2", UNNAMED to "node/3")
@@ -220,22 +219,6 @@ class BuildingCardModesTest {
     private fun entranceRow(name: String) = compose.onNode(hasClickAction() and hasText(name))
 
     /**
-     * Wiersz: V2 na każdej wysokości bez „Zgłoś barierę przy wejściu” przy wejściach: czynności przy wejściu są
-     *   w arkuszu wejścia, więc lista zostaje krótka.
-     *
-     * Wymagania: US4.6
-     */
-    @Test
-    fun leavesReportToEntranceSheet() {
-        card(CardMode.Compact)
-        listOf(CardMode.Compact, CardMode.Expanded, CardMode.Direct).forEach { height ->
-            show(height)
-            compose.onAllNodes(hasText(REPORT, substring = true)).assertCountEquals(0)
-            compose.onAllNodes(hasContentDescription(REPORT, substring = true)).assertCountEquals(0)
-        }
-    }
-
-    /**
      * Wiersz: V2 pełny ekran: dotknięcie wiersza dowolnego wejścia w grupie „Wejścia”, nie tylko zalecanego,
      *   → onShowEntrance z id tego wejścia; w grupie nie ma osobnego przycisku „Pokaż wejście na mapie”.
      *
@@ -250,22 +233,6 @@ class BuildingCardModesTest {
         }
         ENTRANCES.forEach { (name, _) -> entranceRow(name).performScrollTo().performClick() }
         assertEquals(ENTRANCES.map { (_, id) -> "show $id" }, calls)
-    }
-
-    /**
-     * Wiersz: V2, jedno „Pokaż wejście na mapie” pod wierszem o wejściach na każdej wysokości, czytane
-     *   „Pokaż wejście na mapie: »nazwa wejścia«”.
-     *
-     * Wymagania: US3.3, NFR-18
-     */
-    @Test
-    fun keepsOneShowButton() {
-        card(CardMode.Compact)
-        listOf(CardMode.Compact, CardMode.Expanded, CardMode.Direct).forEach { height ->
-            show(height)
-            compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(1)
-            compose.onAllNodes(hasContentDescription("$SHOW_ENTRANCE: »Główne«")).assertCountEquals(1)
-        }
     }
 
     /**

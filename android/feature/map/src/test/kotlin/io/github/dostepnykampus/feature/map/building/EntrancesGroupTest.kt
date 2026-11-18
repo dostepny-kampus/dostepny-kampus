@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
-import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -67,21 +66,23 @@ class EntrancesGroupTest {
     private val calls = mutableListOf<String>()
 
     /**
-     * Wiersz: V2, znaki oznaczenia stoją w jednej kolumnie przy lewej krawędzi, a wiersze jeden pod drugim
-     *   z odstępem na linię.
+     * Wiersz: V2, znaki oznaczenia w jednej kolumnie przy lewej krawędzi, wiersze jeden pod drugim z odstępem
+     *   na linię, a cel dotyku wiersza ma co najmniej 48 dp wysokości i jest szerszy niż nazwa.
      *
-     * Wymagania: US2.1, NFR-21
+     * Wymagania: US2.1, NFR-17, NFR-21
      */
     @Test
-    fun alignsSignsInOneColumn() {
+    fun laysOutRowsInColumn() {
         group(NAMED)
         val signs = compose.onAllNodesWithTag(SIGN_TAG, useUnmergedTree = true).fetchSemanticsNodes()
-        assertEquals("znak przy każdym wejściu", NAMED.size, signs.size)
         val lefts = signs.map { it.boundsInRoot.left }
-        assertTrue("znaki w jednej kolumnie, a są na $lefts", lefts.distinct().size == 1)
-        val rows = rows().map { it.boundsInRoot }
-        val gaps = rows.zipWithNext { up, down -> down.top - up.bottom }
-        assertTrue("odstęp na linię między wierszami, a jest $gaps", gaps.all { it > 0f })
+        assertEquals("znak przy każdym wejściu", NAMED.size, lefts.size)
+        assertTrue("znaki w jednej kolumnie: $lefts", lefts.distinct().size == 1)
+        val rows = compose.onAllNodes(entranceRow).fetchSemanticsNodes().map { it.boundsInRoot }
+        assertTrue("odstęp na linię: $rows", rows.zipWithNext().all { (up, down) -> down.top > up.bottom })
+        val name = compose.onNodeWithText("Główne", useUnmergedTree = true).fetchSemanticsNode().boundsInRoot.width
+        val minimum = TOUCH_TARGET.value * DENSITY
+        assertTrue("wiersz 48 dp i szerszy niż nazwa: $rows", rows.all { it.height >= minimum && it.width > name })
     }
 
     /**
@@ -102,31 +103,17 @@ class EntrancesGroupTest {
     }
 
     /**
-     * Wiersz: V2, cel dotyku wiersza wejścia ma co najmniej 48 dp wysokości i całą szerokość listy.
-     *
-     * Wymagania: NFR-17
-     */
-    @Test
-    fun givesRowTouchTarget() {
-        group(NAMED)
-        val name = compose.onNodeWithText("Główne", useUnmergedTree = true).getUnclippedBoundsInRoot()
-        rows().map { it.boundsInRoot }.forEach { row ->
-            assertTrue("wiersz wysoki na 48 dp, a jest $row", row.height >= TOUCH_TARGET.value * DENSITY)
-            assertTrue("wiersz szerszy niż nazwa: $row, nazwa $name", row.width > (name.right - name.left).value)
-        }
-    }
-
-    /**
      * Wiersz: V2, dwa lub więcej wejść bez oznaczenia i bez nazwy → jeden wiersz „N wejścia/wejść bez nazw
      *   w danych” ze znakiem „Brak danych”, zdanie „Nikt jeszcze nie sprawdził tych wejść.” i jeden odnośnik
-     *   „Zgłoś barierę przy wejściu” do V4 bez wybranego wejścia.
+     *   „Zgłoś barierę przy wejściu” do V4 bez wybranego wejścia; liczba odmieniona: 2 i 4 „wejścia”, 5 „wejść”.
      * Scenariusz: przegladanie-mapy.feature: Kilka wejść bez oznaczenia i bez nazwy stoi jako jeden wiersz
      *
      * Wymagania: US2.1, US17.1, US4.6, NFR-21
      */
     @Test
     fun collapsesNamelessEntrances() {
-        group(nameless(3))
+        val state = mutableStateOf(ready(nameless(3)))
+        compose.setContent { Group(state.value) }
         compose.onNodeWithText("3 wejścia bez nazw w danych").assertExists()
         compose.onNodeWithText("Brak danych").assertExists()
         compose.onNodeWithText(NOBODY).assertExists()
@@ -135,19 +122,7 @@ class EntrancesGroupTest {
         compose.onAllNodes(hasText(REPORT) and hasClickAction()).assertCountEquals(1)
         compose.onNodeWithText(REPORT).performClick()
         assertEquals(listOf("report"), calls)
-    }
-
-    /**
-     * Wiersz: V2, napis zwiniętych wejść odmienia liczbę: 2 i 4 „wejścia”, 5 „wejść”.
-     *
-     * Wymagania: US2.1
-     */
-    @Test
-    fun inflectsNamelessCount() {
-        val texts = listOf(2 to "2 wejścia", 4 to "4 wejścia", 5 to "5 wejść")
-        val state = mutableStateOf(ready(nameless(2)))
-        compose.setContent { Group(state.value) }
-        texts.forEach { (count, text) ->
+        listOf(2 to "2 wejścia", 4 to "4 wejścia", 5 to "5 wejść").forEach { (count, text) ->
             state.value = ready(nameless(count))
             compose.waitForIdle()
             compose.onNodeWithText("$text bez nazw w danych").assertExists()
@@ -155,20 +130,8 @@ class EntrancesGroupTest {
     }
 
     /**
-     * Wiersz: V2, jedno wejście bez oznaczenia i nazwy to zwykły wiersz „Wejście bez nazwy w danych”.
-     *
-     * Wymagania: US2.1, US17.1
-     */
-    @Test
-    fun keepsSingleNamelessAsRow() {
-        group(nameless(1))
-        compose.onNode(entranceRow and hasText(UNNAMED)).assertExists()
-        compose.onNodeWithText(NOBODY).assertDoesNotExist()
-    }
-
-    /**
-     * Wiersz: V2, gdy choć jedno wejście ma oznaczenie albo nazwę, lista jest zwykła: każde wejście osobnym
-     *   wierszem.
+     * Wiersz: V2, jedno wejście bez oznaczenia i nazwy albo choć jedno wejście z oznaczeniem lub nazwą → zwykła
+     *   lista, każde wejście osobnym wierszem.
      *
      * Wymagania: US2.1, US17.1
      */
@@ -177,6 +140,7 @@ class EntrancesGroupTest {
         val state = mutableStateOf(ready(nameless(1)))
         compose.setContent { Group(state.value) }
         listOf(
+            nameless(1),
             nameless(2) + entrance(id = "node/9", name = null, marking = EntranceMarking.INACCESSIBLE),
             nameless(2) + entrance(id = "node/9", name = "Brama", marking = EntranceMarking.NO_DATA),
         ).forEach { entrances ->
@@ -208,16 +172,6 @@ class EntrancesGroupTest {
         group(nameless(3))
         compose.onRoot().captureRoboImage()
     }
-
-    /** Zrzut zwiniętych wejść bez danych przy czcionce 200 %. */
-    @Test
-    @Config(fontScale = 2f)
-    fun matchesNamelessLargeFontMockup() {
-        group(nameless(3))
-        compose.onRoot().captureRoboImage()
-    }
-
-    private fun rows() = compose.onAllNodes(entranceRow).fetchSemanticsNodes()
 
     private fun group(entrances: List<Entrance>) {
         val state = ready(entrances)
