@@ -64,11 +64,6 @@ internal class SignSheetState(initial: ChosenSign?) {
     var entranceHeight by mutableIntStateOf(0)
         private set
 
-    /** Arkusz wejścia na mapie ma wysokość [height] w pikselach. */
-    fun measureEntrance(height: Int) {
-        entranceHeight = height
-    }
-
     /** Symbol budynku z otwartą kartą pod mapą; `null` bez karty. */
     var card: String? = null
 
@@ -78,6 +73,18 @@ internal class SignSheetState(initial: ChosenSign?) {
     /** Arkusz, który zastąpił kartę, jest zamknięty, a karta jeszcze nie wróciła na ekran. */
     var isReturning by mutableStateOf(false)
         private set
+
+    /** Arkusz wejścia na mapie ma wysokość [height] w pikselach. */
+    fun measureEntrance(height: Int) {
+        entranceHeight = height
+    }
+
+    /**
+     * Wysokość w pikselach arkusza wejścia zaznaczonego w [focus], który zasłania dół mapy; 0, gdy otwarty arkusz
+     * nie dotyczy tego wejścia.
+     */
+    fun markedCover(focus: MapFocus?): Int =
+        entranceHeight.takeIf { entranceId == (focus as? MapFocus.Entrance)?.id } ?: 0
 
     /**
      * Otwiera arkusz znaku [sign] obiektu [id] w miejsce karty budynku [card], zamykając ją, albo w miejsce

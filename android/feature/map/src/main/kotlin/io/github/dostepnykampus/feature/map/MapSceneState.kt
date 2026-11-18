@@ -117,7 +117,7 @@ internal class MapSceneState(
  * [cover]. Nad arkuszem budynek mieści się też nad napisem o zmianie terenu wysokim na [notice]. Widok kamery
  * i lista budynków do wyboru są zapisywane, więc wracają po obrocie ekranu. Zamknięcie arkusza zostawia obraz mapy
  * bez ruchu: zapisany widok to widok z chwili zamknięcia. Każdy ruch nad kartą do nowego budynku trafia do [motion].
- * Arkusz zaznaczonego wejścia wysoki na [sheet] zasłania dół mapy, więc wejście staje na środku części mapy nad nim.
+ * Arkusz zaznaczonego wejścia wysoki na [sheet] pikseli zasłania dół mapy, więc wejście staje na środku mapy nad nim.
  *
  * Wymagania: US1.7, US1.8, US3.3, NFR-22, NFR-56
  */
@@ -132,7 +132,7 @@ internal fun rememberMapSceneState(
     top: Dp = 0.dp,
     motion: MapMotion? = null,
     notice: Dp = 0.dp,
-    sheet: Dp = 0.dp,
+    sheet: Int = 0,
 ): MapSceneState {
     val scene = rememberMapScene(layers = layers, catalog = catalog, focus = focus, area = area)
     val selection = scene?.selection
@@ -175,8 +175,7 @@ internal fun rememberMapSceneState(
     val above = card.move?.takeIf { isCovered }
     val move = above ?: uncovered?.byControl()
     SideEffect { last.keep(shown = move?.camera, covered = cover + reserve, isAbove = above != null) }
-    val sheetInset = with(density) { sheet.toPx() }.toDouble()
-    val inset = sheetOrBarInset(isAbove = above != null, top = topInset, bottom = bottomInset, sign = sheetInset)
+    val inset = sheetOrBarInset(isAbove = above != null, top = topInset, bottom = bottomInset, sign = sheet.toDouble())
     return MapSceneState(
         scene = scene,
         shown = move?.let { SceneCamera(move = it, inset = inset, landing = fit) },
