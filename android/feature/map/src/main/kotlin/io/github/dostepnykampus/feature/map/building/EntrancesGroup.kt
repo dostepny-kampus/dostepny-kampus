@@ -61,7 +61,7 @@ internal fun Modifier.cardPadding(isPeek: Boolean): Modifier =
     padding(start = Odstepy.m, top = Odstepy.m, end = Odstepy.m, bottom = if (isPeek) 0.dp else Odstepy.m)
 
 /**
- * Początek pełnego opisu pod kreską niskiej karty: cały nagłówek grupy „Wejścia” i ucięty następny wiersz, ta sama
+ * Początek pełnego opisu niskiej karty: cały nagłówek grupy „Wejścia” i ucięty następny wiersz, ta sama
  * wysokość w każdym stanie [card], także przed wczytaniem. Dotknięcie gotowej karty to [onExpand]; TalkBack czyta
  * całość jako przycisk „Wejścia”, bez uciętego wiersza.
  *
@@ -73,21 +73,18 @@ internal fun EntrancesPeek(card: BuildingCardUiState, onExpand: () -> Unit) {
     val lineHeight = MaterialTheme.typography.titleLarge.lineHeight
     val header = with(LocalDensity.current) { lineHeight.toDp() }
     val shown = Odstepy.l + header + Odstepy.s + NEXT_LINE_PEEK_HEIGHT
-    Column {
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-        if (card is BuildingCardUiState.Ready) {
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .clickable(role = Role.Button, onClick = onExpand)
-                        .semantics { contentDescription = title },
-            ) {
-                CutGroup(card = card, shown = shown)
-            }
-        } else {
-            Box(Modifier.height(shown))
+    if (card is BuildingCardUiState.Ready) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(role = Role.Button, onClick = onExpand)
+                    .semantics { contentDescription = title },
+        ) {
+            CutGroup(card = card, shown = shown)
         }
+    } else {
+        Box(Modifier.height(shown))
     }
 }
 
