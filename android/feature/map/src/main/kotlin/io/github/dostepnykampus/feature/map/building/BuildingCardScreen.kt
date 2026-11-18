@@ -12,12 +12,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -32,6 +34,9 @@ import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
 import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.R
+
+/** Znacznik kreski między górą karty a pełnym opisem. */
+internal const val DESCRIPTION_LINE_TAG = "kreska-opisu"
 
 /**
  * V2 Karta budynku: nagłówek z symbolem i nazwą z danych (budynek bez nazwy ma sam symbol), który TalkBack czyta jako
@@ -160,8 +165,14 @@ private fun FactsOrMissing(
     onMarkFloors: (() -> Unit)?,
     onExpand: () -> Unit,
 ) {
-    if (card.hasEntrancesPeek(isFullScreen)) EntrancesPeek(card = card, onExpand = onExpand)
+    if (card.hasEntrancesPeek(isFullScreen)) {
+        Column {
+            DescriptionLine()
+            EntrancesPeek(card = card, onExpand = onExpand)
+        }
+    }
     if (card is BuildingCardUiState.Ready && isFullScreen) {
+        DescriptionLine()
         BuildingFacts(
             card = card,
             onReport = onReport,
@@ -173,6 +184,10 @@ private fun FactsOrMissing(
     }
     if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = onRetry)
 }
+
+@Composable
+private fun DescriptionLine() =
+    HorizontalDivider(Modifier.testTag(DESCRIPTION_LINE_TAG), color = MaterialTheme.colorScheme.outlineVariant)
 
 /**
  * Wiersz o wejściach pod nagłówkiem: znak oznaczenia z mapy i słowo o wejściach budynku.
