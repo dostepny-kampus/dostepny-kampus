@@ -305,7 +305,7 @@ private fun Modifier.followHeight(
     }
 
 /**
- * Wymiary arkusza za kotwicą [state] w oknie [window]: widoczna część [shown], spoczynek małej karty [isResting]
+ * Wymiary arkusza za kotwicą [state] w oknie [window]: widoczna część, spoczynek małej karty [isResting]
  * i treść rozwinięta ([isOpen]) wypełniająca widoczną część od połowy okna ([isFilled]).
  */
 private class SheetFit(
