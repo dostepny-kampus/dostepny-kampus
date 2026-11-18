@@ -130,6 +130,7 @@ class SheetHeightsTest {
     /**
      * Wiersz: dotknięcie wystającego nagłówka „Wejścia” na niskiej wysokości od razu rozwija kartę, jak dotknięcie
      *   uchwytu.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Wystający nagłówek „Wejścia” od razu rozwija kartę
      */
     @Test
     fun raisesToFullFromPeek() {
@@ -143,6 +144,7 @@ class SheetHeightsTest {
     /**
      * Wiersz: karta, której rozwinięta treść mieści się w połowie ekranu, rozwija się tylko do wysokości treści,
      *   a nad nią zostaje mapa; uchwytem i nagłówkiem „Wejścia” tak samo.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Wystający nagłówek „Wejścia” od razu rozwija kartę
      */
     @Test
     fun fitsShortCardToContent() {
