@@ -276,7 +276,7 @@ Wymagania: [V3 „Którędy wejść”](../wymagania-ekranow.md#v3-zaplanuj-wizy
 
 ### V3: zalecane wejście do A-1
 
-`m-v3-ktoredy-wejsc` · [makieta low-fi](../makiety/odwiedzajacy.md#v3-wejscie-jest)
+`m-v3-ktoredy-wejsc`
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
@@ -284,7 +284,7 @@ Wymagania: [V3 „Którędy wejść”](../wymagania-ekranow.md#v3-zaplanuj-wizy
 
 ### V3: brak wejścia dostępnego (C-4)
 
-`m-v3-ktoredy-wejsc-brak-dostepnego` · [makieta low-fi](../makiety/odwiedzajacy.md#v3-brak-wejscia-dostepnego)
+`m-v3-ktoredy-wejsc-brak-dostepnego`
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
@@ -292,7 +292,7 @@ Wymagania: [V3 „Którędy wejść”](../wymagania-ekranow.md#v3-zaplanuj-wizy
 
 ### V3: brak danych o wejściach (C-7)
 
-`m-v3-ktoredy-wejsc-brak-danych` · [makieta low-fi](../makiety/odwiedzajacy.md#v3-brak-danych-o-wejsciach)
+`m-v3-ktoredy-wejsc-brak-danych`
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |

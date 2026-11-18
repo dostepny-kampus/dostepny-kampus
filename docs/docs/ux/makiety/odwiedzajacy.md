@@ -6,15 +6,14 @@ Konwencje opisuje strona [Makiety](index.md). Stan, który różni się jednym n
 
 | Ekran | Makiety | Stany w tabelach |
 | --- | --- | --- |
-| V1 Mapa kampusu | zwykły, wyszukiwanie, lista budynków, brak wyniku, brak sieci, pierwsze otwarcie bez internetu, znaleziona sala, bariera na mapie | ładowanie, brak mapy ulic, pierwsze uruchomienie, wybór budynku, plan piętra, sala bez drogi, brak sali, duża czcionka |
+| V1 Mapa kampusu | zwykły, wyszukiwanie, lista budynków, brak wyniku, brak sieci, pierwsze otwarcie bez internetu, znaleziona sala, bariera na mapie, arkusz wejścia | ładowanie, brak mapy ulic, pierwsze uruchomienie, wybór budynku, plan piętra, sala bez drogi, brak sali, duża czcionka |
 | V2 Karta budynku | budynek podstawowy bez wejścia zalecanego, brak barier, brak sieci, budynku nie ma w telefonie, Zbierający | ładowanie, błąd zdjęcia, budynek podstawowy bez barier |
-| V3 Którędy wejść | wejście jest, brak wejścia dostępnego, brak danych | brak sieci |
 | V4 Zgłoszenie szybkie | kroki 1–3, krok 1 ze zdjęciem, prośba o zgodę, zgoda przybliżona, brak pozycji, rezygnacja, wysłane, wysłane bez internetu | Gość, odmowa zgody, lokalizacja wyłączona, ustalanie miejsca, błąd zapisu |
 | V5 Pomoc | krok z objaśnieniem „Dostępne” | krok o koncie, ostatni krok |
 | L1 Prośba o logowanie | zwykły, brak sieci | wejście z „Konto”, błąd |
 | L2 Konto | Odwiedzający, rola pracownicza, klauzula, wycofanie zgody | brak sieci |
 
-Pole tekstowe, mapa z podpisem OpenStreetMap i przyciski mapy pochodzą z `_wspolne.iuml`, tak jak na C1 i R1. W pliku `_odwiedzajacy.iuml` są numer kroku V4 i V5 oraz części karty budynku V2: góra karty, wejście, grupy z planów PWr i dół karty. Każdy przycisk na pełną szerokość ma tę samą szerokość na wszystkich ekranach.
+Pole tekstowe, mapa z podpisem OpenStreetMap i przyciski mapy pochodzą z `_wspolne.iuml`, tak jak na C1 i R1. W pliku `_odwiedzajacy.iuml` jest numer kroku V4 i V5. Są tam też części karty budynku V2: nagłówek, wiersz o wejściach, góra karty, wejście, grupy z planów PWr i dół karty. Każdy przycisk na pełną szerokość ma tę samą szerokość na wszystkich ekranach.
 
 ## V1 Mapa kampusu
 
@@ -206,6 +205,29 @@ Czynność główna: „Pokaż opis budynku”, która otwiera V2.
 | Miejsce: budynek i wejście albo piętro, „Sprawdzone [data]” | US2.2, PW-3 |
 | „Zamknij” chowa arkusz, a mapa zostaje | wymagania do ekranów (V1) |
 
+### V1: arkusz wejścia
+
+![Makieta V1 z arkuszem wejścia zalecanego A-1: mapa z pinezką przy Wejściu bramą od ul. Norwida, a pod mapą arkusz z nagłówkiem Wejście, budynek A-1 i Zamknij, słowem Dostępne, napisem Zalecane z datą i źródłem, częściami Dojście, Drzwi, Za drzwiami, Bariery przy tym wejściu, Inne wejście dostępne z Pokaż to wejście na mapie i przyciskiem Zgłoś barierę przy wejściu](../../_generated/m-v1-mapa-wejscie.svg)
+
+Czynność główna: brak; odpowiedź, którym wejściem wejść, podała już karta V2.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| Arkusz otwiera „Pokaż wejście na mapie” z V2, dotknięcie wiersza wejścia na V2 i dotknięcie znaku wejścia na mapie | US2.1, US3.3 |
+| Wejście zaznaczone pinezką z podpisem nazwy; kamera stoi na wejściu | US3.3, NFR-19 |
+| Znak oznaczenia, nagłówek „Wejście, budynek A-1” i obrysowany „Zamknij”; po otwarciu fokus TalkBack na nagłówku | US2.1, NFR-18, NFR-21, NFR-53 |
+| Pod słowem oznaczenia „Zalecane.”, data i źródło | US17.3, BR-24, BR-25, PW-3 |
+| Części „Dojście”, „Drzwi” z szerokością i „Za drzwiami” z windą i odległością w linii prostej. Część bez danych nie stoi. Przy wejściu z planów PWr nie ma „Za drzwiami” | US3.3, US16.3, BR-25 |
+| „Bariery przy tym wejściu”: typ i uciążliwość jako zastępniki, bo deklaracja A-1 nie podaje barier przy tym wejściu | US2.2, US3.3, PW-3 |
+| „Inne wejście dostępne” z obrysowanym „Pokaż to wejście na mapie”. Zastępnik pokazuje tylko układ: według deklaracji A-1 ma jedno wejście dostępne, więc w danych A-1 tej części nie ma | US3.3, NFR-18 |
+| „Zgłoś barierę przy wejściu” na końcu arkusza: V4 z wybranym wejściem, Gość: L1 | US4.6, US14.2, WCAG 2.5.3 |
+
+| Stan bez osobnej makiety | Co się zmienia |
+| --- | --- |
+| Wejście „Niedostępne” albo niezalecane | znak i słowo oznaczenia, nazwa, szerokość drzwi i uwaga z danych, data i źródło; bez „Zalecane.” i bez części wejścia zalecanego (US2.1) |
+| Wejście „Brak danych” | cichy romb i słowo, zdanie „Nikt jeszcze nie sprawdził tego wejścia.” (US17.1) |
+| Duża czcionka, okno co najmniej 600 dp | arkusz na cały ekran, bez mapy, z „Zamknij” w nagłówku; mapę z zaznaczonym wejściem widać po „Zamknij” (reguła 6 sekcji „Duża czcionka”, NFR-20) |
+
 ### V1: panel „Teren na mapie”
 
 ![Makieta V1 z otwartym panelem Teren na mapie pod przyciskiem terenu: nagłówek z przyciskiem Zamknij i lista terenów z liczbą budynków i odległością; Kampus główny jest wybrany](../../_generated/m-v1-mapa-teren-panel.svg)
@@ -257,32 +279,36 @@ Czynność główna: jak w stanie zwykłym, na nowym terenie.
 
 Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V2 są [makiety hi-fi](../ekrany/index.md#v2-karta-budynku).
 
-Jak we wzorcu, makiety pokazują pełny ekran V2 bez mapy. Po dotknięciu budynku na mapie V2 jest najpierw małą kartą nad mapą V1 (decyzja 115).
+Jak we wzorcu, makiety pokazują kartę na całym ekranie, bez mapy. Po dotknięciu budynku na mapie karta otwiera się na niskiej wysokości nad mapą V1 (decyzja 115).
 
 ### V2: mała karta nad mapą
 
-![Makieta małej karty A-1 nad mapą: mapa z wyróżnionym konturem A-1 i przyciskami Powiększ, Pomniejsz oraz strzałkami, a pod nią uchwyt, symbol, nazwa, wiersz Wejście dostępne, Sprawdź, którędy wejść i Zamknij](../../_generated/m-v2-karta-budynku-mala.svg)
+![Makieta karty A-1 na niskiej wysokości nad mapą: mapa z wyróżnionym konturem A-1 i przyciskami Powiększ, Pomniejsz oraz strzałkami, a pod nią uchwyt, symbol A-1 z Zamknij, nazwa, wiersz Wejście dostępne ze zdaniem Zalecane, Pokaż wejście na mapie, kreska i wystający nagłówek Wejścia](../../_generated/m-v2-karta-budynku-mala.svg)
 
-Czynność główna: „Sprawdź, którędy wejść”.
+Czynność główna: „Pokaż wejście na mapie”.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| Mapa z konturem budynku na środku, wyróżnionym; mapa pod kartą bez nazw dla TalkBack | US2.8, NFR-19 |
+| Mapa z wyróżnionym konturem budynku; mapa pod kartą bez nazw dla TalkBack | US2.8, NFR-19 |
 | Przyciski mapy nad kartą: „Powiększ”, „Pomniejsz” i strzałki; bez wiersza tytułu i pola symbolu | NFR-53, decyzja 151 |
-| Uchwyt: przycisk „Rozwiń opis budynku” ze stanem; otwiera pełny ekran | US2.8, NFR-18, NFR-53 |
-| Wiersz o wejściach zamiast chipów; inne napisy: „Brak wejścia dostępnego”, „Brak danych o wejściach” | US2.8, US3.1, NFR-21 |
-| „Sprawdź, którędy wejść” wypełniony i obrysowany „Zamknij”; bez „Pokaż budynek na mapie” | US2.8, US3.2, NFR-53 |
+| Uchwyt: przycisk „Wysokość karty” z bieżącą wysokością; dotknięcie przechodzi na następną wysokość | US2.8, NFR-18, NFR-53 |
+| Nagłówek: symbol, nazwa i obrysowany „Zamknij” po prawej; dolnego „Zamknij” nie ma | US2, NFR-53, decyzja 152 |
+| Wiersz o wejściach zamiast chipów: znak, „Wejście dostępne” i zdanie z wejściem zalecanym | US2.8, US3.1, NFR-21 |
+| „Pokaż wejście na mapie” wypełniony, tylko gdy jest wejście zalecane: V1 z zaznaczonym wejściem i jego arkuszem | US3, US3.2, US3.3, BR-25 |
+| Pod kreską wystaje nagłówek „Wejścia” z uciętym następnym wierszem; dotknięcie podnosi kartę na połowę ekranu | US2.8, NFR-17, NFR-53 |
 
 | Stan bez osobnej makiety | Co się zmienia |
 | --- | --- |
-| Brak sieci | nad przyciskami linia „Bez internetu” (NFR-10) |
-| Cały ekran od razu | duża czcionka, okno co najmniej 600 dp, poziomo albo lista przy TalkBack. Karta od razu na cały ekran, a pod „Sprawdź, którędy wejść” stoi obrysowany „Pokaż budynek na mapie” (US2.9) |
+| Brak wejścia dostępnego | wiersz „Brak wejścia dostępnego” ze znakiem i zdaniem, np. „Żadne z 3 wejść nie jest dostępne.”; bez „Pokaż wejście na mapie” (US3.1, BR-25) |
+| Brak danych o wejściach | cichy napis „Brak danych o wejściach”, bez zdania i bez przycisku (US3.1, US17.1) |
+| Brak sieci | nad nagłówkiem plakietka „Bez internetu” (NFR-10) |
+| Cały ekran od razu | duża czcionka, okno co najmniej 600 dp, poziomo albo lista przy TalkBack. Karta od razu na cały ekran, a pod „Pokaż wejście na mapie” stoi obrysowany „Pokaż budynek na mapie” (US2.9) |
 
 ### V2: budynek podstawowy
 
-![Makieta V2 budynku podstawowego: bez chipów, wiersz Brak danych o wejściach, Sprawdź, którędy wejść, wejścia Niedostępne i Brak danych bez napisu Zalecane, napis o braku planu pięter i jedna bariera Tylko z pomocą](../../_generated/m-v2-karta-budynku-podstawowy.svg)
+![Makieta V2 budynku podstawowego: bez chipów, cichy napis Brak danych o wejściach bez przycisku, wejścia Niedostępne i Brak danych bez napisu Zalecane, napis o braku planu pięter i jedna bariera Tylko z pomocą](../../_generated/m-v2-karta-budynku-podstawowy.svg)
 
-Czynność główna: „Sprawdź, którędy wejść”, jak we wzorcu.
+Czynność główna: brak; bez wejścia zalecanego nie ma „Pokaż wejście na mapie”.
 
 | Element | AC/BR/NFR |
 | --- | --- |
@@ -302,7 +328,7 @@ Czynność główna: „Sprawdź, którędy wejść”, jak we wzorcu.
 
 ![Makieta V2 w stanie pustym: wejścia z datą i źródłem przy każdym, a pod nagłówkiem Bariery w budynku ramka Brak zgłoszonych barier z przyciskiem Zgłoś barierę](../../_generated/m-v2-karta-budynku-pusty.svg)
 
-Czynność główna: „Sprawdź, którędy wejść”.
+Czynność główna: „Pokaż wejście na mapie”.
 
 | Element | AC/BR/NFR |
 | --- | --- |
@@ -316,7 +342,7 @@ Czynność główna: „Sprawdź, którędy wejść”.
 
 ![Makieta V2 budynku A-1 bez internetu: nad nagłówkiem wskaźnik z datą danych, chipy, wiersz o wejściach, wejścia, grupy z planów PWr, pierwsza bariera ze zdjęciem z telefonu, druga z napisem o zdjęciu po połączeniu](../../_generated/m-v2-karta-budynku-brak-sieci.svg)
 
-Czynność główna: „Sprawdź, którędy wejść”; V3 działa na danych z telefonu.
+Czynność główna: „Pokaż wejście na mapie”; arkusz wejścia działa na danych z telefonu.
 
 | Element | AC/BR/NFR |
 | --- | --- |
@@ -341,7 +367,7 @@ Czynność główna: „Spróbuj ponownie” po połączeniu z internetem.
 
 ![Makieta V2 budynku A-1 dla Zbierającego: przy każdym wejściu Zgłoś problem i Zmień oznaczenie, pod piętrami Oznacz obejrzane piętra, przy barierach Zgłoś, że bariery nie ma i Popraw zgłoszenie, pasek z Konto i praca](../../_generated/m-v2-karta-budynku-zbierajacy.svg)
 
-Czynność główna: „Sprawdź, którędy wejść”; przyciski Zbierającego są zwykłe, bez pogrubienia.
+Czynność główna: „Pokaż wejście na mapie”; przyciski Zbierającego są zwykłe, bez pogrubienia.
 
 | Element | AC/BR/NFR |
 | --- | --- |
@@ -351,54 +377,6 @@ Czynność główna: „Sprawdź, którędy wejść”; przyciski Zbierającego 
 | „Popraw zgłoszenie” tylko przy własnym zgłoszeniu przyjętym albo zgłoszeniu szybkim; tu przy drugiej barierze | BR-3, BR-18 |
 | Pasek dolny z „Konto i praca” | US14.1, PW-1 |
 | Gość i Odwiedzający nie widzą tych przycisków | US14.1, NFR-33 |
-
-## V3 Którędy wejść
-
-Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V3 są [makiety hi-fi](../ekrany/index.md#v3-ktoredy-wejsc).
-
-### V3: wejście jest
-
-![Makieta V3 dla A-1: pogrubione zdanie o wejściu dostępnym bramą od ul. Norwida, ramka wejścia z oznaczeniem, źródłem i Pokaż wejście na mapie oraz bariera przy tym wejściu](../../_generated/m-v3-ktoredy-wejsc.svg)
-
-Czynność główna: brak; ekran odpowiada na jedno pytanie, a dalej prowadzą „Wstecz”, „Pokaż wejście na mapie” i pasek dolny.
-
-| Element | AC/BR/NFR |
-| --- | --- |
-| Nagłówek „Którędy wejść do A-1”, ten sam napis co przycisk na V2 | US3, PW-2 |
-| Zdanie z odpowiedzią na górze, pogrubione: TalkBack czyta je pierwsze | US3, US3.1, NFR-18 |
-| „Wejście bramą od ul. Norwida” jako dostępne, jak w deklaracji A-1; nazwa odróżnia je od niedostosowanego wejścia przy ul. Norwida [1] | US2.1, US3 |
-| Oznaczenie tekstem i ikoną, pod nim data i źródło | US2.1, US17.3, NFR-21 |
-| „Pokaż wejście na mapie” w ramce wejścia: V1 z zaznaczonym wejściem | US2.1, US3 |
-| Bariera przy tym wejściu: typ i uciążliwość jako zastępniki, bo deklaracja nie podaje barier przy tym wejściu; zdjęcie, „Sprawdzone [data]” | US2.2, UC4 4c, PW-3 |
-| Pasek dolny z „Konto” | wymagania wspólne |
-
-| Stan bez osobnej makiety | Co się zmienia |
-| --- | --- |
-| Brak sieci | pod nagłówkiem „Brak internetu” i „Dane z [data]”, jak na V2 (NFR-10) |
-
-### V3: brak wejścia dostępnego
-
-![Makieta V3, gdy budynek nie ma wejścia dostępnego: pogrubione zdanie z odpowiedzią i zdanie z radą, by wrócić do opisu budynku](../../_generated/m-v3-ktoredy-wejsc-brak-dostepnego.svg)
-
-Czynność główna: brak; „Wstecz” wraca do opisu budynku z barierami przy każdym wejściu.
-
-| Element | AC/BR/NFR |
-| --- | --- |
-| Pierwsze zdanie komunikatu pogrubione jako odpowiedź, drugie zwykłe jako rada: „Wybierz »Wstecz«, aby w opisie budynku zobaczyć bariery przy każdym wejściu.” | US3.1, UC4 4a, PW-10 |
-| Symbol budynku jako zastępnik zamiast „B-4” z katalogu, bo nie znamy wejść tego budynku | zasada danych przykładowych |
-| Bez przycisku: rada wskazuje „Wstecz” z nazwy, a ten przycisk jest zawsze w tym samym miejscu | NFR-15 (WCAG 3.2.3), heurystyka Nielsena 6 |
-
-### V3: brak danych o wejściach
-
-![Makieta V3, gdy brakuje danych o części wejść: pogrubione zdanie, że nie wiemy jeszcze, czy budynek ma wejście dostępne, z liczbami jako zastępnikami](../../_generated/m-v3-ktoredy-wejsc-brak-danych.svg)
-
-Czynność główna: brak; „Wstecz” wraca do opisu budynku z każdym wejściem i datą.
-
-| Element | AC/BR/NFR |
-| --- | --- |
-| Zdanie „Nie wiemy jeszcze…” różni się od „nie ma wejścia dostępnego” | US17.1, UC4 4b, PW-10 |
-| Liczby wejść jako zastępniki „[x] z [y]”, bo zależą od budynku | UC4 4b |
-| Ten sam układ co brak wejścia dostępnego; różnicę niesie treść, a nie kształt | US3.1, US17.1 |
 
 ## V4 Zgłoszenie szybkie
 
@@ -422,6 +400,7 @@ Czynność główna: „Zrób zdjęcie”.
 | Stan bez osobnej makiety | Co się zmienia |
 | --- | --- |
 | Błąd zapisu | „W telefonie brakuje miejsca, więc nie zapisaliśmy zdjęcia bariery…” i „Spróbuj ponownie”; zdjęcie i grupa zostają (NFR-5, NFR-7) |
+| Z wybranym wejściem | po „Zgłoś barierę przy wejściu” w arkuszu wejścia pod numerem kroku napis „Wejście: »nazwa wejścia«” (US4.6) |
 
 ### V4: krok 1 ze zdjęciem
 

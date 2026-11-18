@@ -1,0 +1,38 @@
+@startsalt
+' V1 Mapa kampusu, arkusz wejścia zalecanego po „Pokaż wejście na mapie” z V2 albo po dotknięciu znaku
+' wejścia (US2.1, US3.3). Arkusz nie ma czynności głównej: odpowiedź podała karta V2.
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_mapy("Pokaż listę")
+$pole_tekstowe("Szukaj budynku, np. C-13")
+$przycisk("Kampus główny ▾")
+$mapa("mapa ulic OpenStreetMap; wejście A-1 z pinezką i podpisem Wejście bramą od ul. Norwida, pozostałe wejścia ze znakami", "", "info")
+$ramka()
+{ <&check> <b>Wejście, budynek A-1</b> | [Zamknij] }
+<b>Dostępne</b>
+Zalecane. Z map i opisów,
+stan z <i>[data]</i>
+<b>Wejście bramą od ul. Norwida</b>
+$sekcja("Dojście")
+$tekst("[opis dojścia z danych]", "i")
+$sekcja("Drzwi")
+Szerokość drzwi: <i>[cm]</i>
+$sekcja("Za drzwiami")
+$tekst("[najbliższa winda, ok. [m] od wejścia]", "i")
+$tekst("[zakres pięter windy z danych PWr]", "i")
+$sekcja("Bariery przy tym wejściu")
+<b><i>[typ bariery z danych]</i></b>
+$tekst("[uciążliwość z danych: napis i ikona]", "i")
+$obraz("zdjęcie bariery")
+Sprawdzone <i>[data]</i>
+$sekcja("Inne wejście dostępne")
+<b><i>[nazwa wejścia z danych]</i></b>
+$tekst("[szerokość drzwi z danych]", "i")
+$przycisk("Pokaż to wejście na mapie")
+..
+$przycisk("Zgłoś barierę przy wejściu")
+}
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt
