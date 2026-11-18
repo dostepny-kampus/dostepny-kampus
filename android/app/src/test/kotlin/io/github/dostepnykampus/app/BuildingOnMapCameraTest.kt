@@ -337,7 +337,8 @@ class BuildingOnMapCameraTest {
         val area = data.areas.first { "T-9" in it.symbols }.bounds
         val perRadian = WORLD_DP_AT_ZOOM_0 * 2.0.pow(above.zoom) / (2 * PI) * density
         val ideal = mercatorY(above.center.latitude) - (topInset + under) / 2 / perRadian
-        val expected = centerNearestInside(ideal = ideal, half = (mapSize.height - topInset) / 2 / perRadian, area = area)
+        val half = (mapSize.height - topInset) / 2 / perRadian
+        val expected = centerNearestInside(ideal = ideal, half = half, area = area)
         assertTrue("teren T-9 mieści widok, test nie sprawdza małego terenu", abs(expected - ideal) * perRadian > 1.0)
         assertEquals("bez arkusza", 0.0, bottomInset, 0.0)
         assertEquals("powiększenie zostaje", above.zoom, after.zoom, 0.0)
