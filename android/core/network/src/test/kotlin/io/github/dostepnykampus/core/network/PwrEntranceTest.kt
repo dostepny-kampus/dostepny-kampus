@@ -35,7 +35,7 @@ class PwrEntranceTest {
     }
 
     /**
-     * Wiersz: wejście tylko z OpenStreetMap, bez `approach`, `doorWidthCm` i `source` → brak opisu i szerokości,
+     * Wiersz: wejście tylko z OpenStreetMap, bez `approach`, `doorWidthCm` i `source` → pusty opis i szerokość 0,
      *   źródło oznaczenia „z map i opisów”.
      *
      * Wymagania: US17.3, BR-24
@@ -43,8 +43,8 @@ class PwrEntranceTest {
     @Test
     fun keepsOsmEntrance() {
         val entrance = entrance("")
-        assertEquals(null, entrance.approach, "brak opisu dojścia")
-        assertEquals(null, entrance.doorWidthCm, "brak szerokości drzwi")
+        assertEquals("", entrance.approach, "brak opisu dojścia")
+        assertEquals(0, entrance.doorWidthCm, "brak szerokości drzwi")
         assertEquals(AssessmentSource.IMPORT, entrance.assessment?.source, "źródło oznaczenia z importu")
     }
 
@@ -61,14 +61,14 @@ class PwrEntranceTest {
     }
 
     /**
-     * Wiersz: szerokość drzwi 0 → w modelu brak szerokości.
+     * Wiersz: szerokość drzwi 0 → w modelu 0, czyli brak szerokości.
      *
      * Wymagania: BR-27
      */
     @Test
     fun dropsZeroDoorWidth() {
         val entrance = entrance(""""doorWidthCm":0,"source":"$PWR",""")
-        assertEquals(null, entrance.doorWidthCm, "szerokość 0 nie jest szerokością")
+        assertEquals(0, entrance.doorWidthCm, "szerokość 0 to brak szerokości")
     }
 
     private fun entrance(fields: String, markingSource: String = "IMPORT"): Entrance =

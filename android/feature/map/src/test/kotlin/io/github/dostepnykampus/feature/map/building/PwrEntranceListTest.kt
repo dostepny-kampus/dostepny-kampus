@@ -72,7 +72,7 @@ class PwrEntranceListTest {
      */
     @Test
     fun skipsMissingDoorWidth() {
-        group(listOf(pwr(id = "pwr/1", name = "Wejście", approach = null, doorWidthCm = null)))
+        group(listOf(pwr(id = "pwr/1", name = "Wejście", approach = "", doorWidthCm = 0)))
         compose.onNodeWithText("Wejście", useUnmergedTree = true).assertExists()
         compose.onAllNodes(hasText("Szerokość drzwi", substring = true), useUnmergedTree = true).assertCountEquals(0)
     }
@@ -109,7 +109,7 @@ class PwrEntranceListTest {
      */
     @Test
     fun answersWithoutDoorWidth() {
-        header(listOf(pwr(id = "pwr/1", name = CESARSKIE, approach = null, doorWidthCm = null)))
+        header(listOf(pwr(id = "pwr/1", name = CESARSKIE, approach = "", doorWidthCm = 0)))
         compose.onNode(hasText("Zalecane: „$CESARSKIE”.")).assertExists()
         compose.onAllNodes(hasText("Drzwi", substring = true)).assertCountEquals(0)
     }
@@ -150,14 +150,14 @@ class PwrEntranceListTest {
         val MIXED =
             listOf(
                 pwr(id = "pwr/1", name = CESARSKIE, approach = APPROACH, doorWidthCm = 120),
-                pwr(id = "pwr/2", name = "Wejście", approach = "Do wejścia prowadzą schody.", doorWidthCm = null)
+                pwr(id = "pwr/2", name = "Wejście", approach = "Do wejścia prowadzą schody.", doorWidthCm = 0)
                     .copy(marking = EntranceMarking.INACCESSIBLE),
             )
 
         fun ready(entrances: List<Entrance>): BuildingCardUiState.Ready =
             BuildingCardUiState.Ready(symbol = "A-1", name = null, entrances = orderedEntrances(entrances))
 
-        fun pwr(id: String, name: String, approach: String?, doorWidthCm: Int?): Entrance =
+        fun pwr(id: String, name: String, approach: String, doorWidthCm: Int): Entrance =
             Entrance(
                 id = id,
                 buildingSymbol = "A-1",
