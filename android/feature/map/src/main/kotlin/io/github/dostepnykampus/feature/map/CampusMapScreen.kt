@@ -259,25 +259,19 @@ private fun CampusMap(
     entranceActions: EntranceActions,
     modifier: Modifier = Modifier,
 ) {
-    val cover = sheet.layout.padding.calculateBottomPadding()
     val isKeyboardOpen = rememberKeyboardOpenFlag()
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
     val signs = sheet.signs
-    val width = with(LocalDensity.current) { size.width.toDp() }
-    val notice = rememberNoticeHeight(shift = areas.selectionNotice, width = width)
     val state =
-        rememberMapSceneState(
-            layers = ui.mapData,
-            catalog = ui.catalog,
+        rememberCampusScene(
+            ui = ui,
             focus = focus,
-            area = areas.chosenName,
-            cover = cover,
+            areas = areas,
+            sheet = sheet,
             size = size,
             top = cameraTop,
             motion = motion,
-            notice = notice,
-            sheet = signs.markedCover(focus),
         )
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
         val scene = state.scene
@@ -318,6 +312,37 @@ private fun CampusMap(
             }
         }
     }
+}
+
+/**
+ * Scena mapy V1 o rozmiarze [size] dla stanu [ui], zaznaczenia [focus] i terenów [areas]: dół mapy zasłania karta
+ * budynku albo arkusz zaznaczonego wejścia z [sheet], a górę pasek do [top].
+ *
+ * Wymagania: US2.8, US3.3, NFR-53
+ */
+@Composable
+private fun rememberCampusScene(
+    ui: CampusMapUiState,
+    focus: MapFocus?,
+    areas: MapAreas,
+    sheet: ScreenSheet,
+    size: IntSize,
+    top: Dp,
+    motion: MapMotion?,
+): MapSceneState {
+    val width = with(LocalDensity.current) { size.width.toDp() }
+    return rememberMapSceneState(
+        layers = ui.mapData,
+        catalog = ui.catalog,
+        focus = focus,
+        area = areas.chosenName,
+        cover = sheet.layout.padding.calculateBottomPadding(),
+        size = size,
+        top = top,
+        motion = motion,
+        notice = rememberNoticeHeight(shift = areas.selectionNotice, width = width),
+        sheet = sheet.signs.markedCover(focus),
+    )
 }
 
 private fun Modifier.overlayArea(underBar: PaddingValues, sheet: PaddingValues): Modifier =
