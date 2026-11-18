@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.feature.map.overlay.SheetExits
 
 private val MapGround = Color(0xFFBEE3F2)
 
@@ -22,20 +23,20 @@ private val MapGround = Color(0xFFBEE3F2)
  * Wymagania: US2.1, US3.3
  *
  * @param shown wejście w arkuszu
- * @param onClose „Zamknij” arkusza
+ * @param exits „Zamknij”, „Wstecz” i wiersz budynku arkusza
  * @param actions czynności przy wejściu
  */
 @Composable
 internal fun EntranceSheetOnMap(
     shown: ShownEntrance,
-    onClose: () -> Unit = {},
+    exits: SheetExits = SheetExits(onClose = {}),
     actions: EntranceActions = EntranceActions(),
 ) {
     DostepnyKampusTheme {
         Box(Modifier.fillMaxSize().background(MapGround)) {
             EntranceSheet(
                 shown = shown,
-                onClose = onClose,
+                exits = exits,
                 actions = actions,
                 modifier = Modifier.align(Alignment.BottomCenter),
             )
