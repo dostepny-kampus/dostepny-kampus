@@ -43,6 +43,11 @@ final class EntranceNote {
     );
 
     /**
+     * Odstępy między słowami.
+     */
+    private static final Pattern SPACES = Pattern.compile("\\s+");
+
+    /**
      * Skróty, po których kropka nie kończy zdania.
      */
     private static final Set<String> SHORTS = Set.of("ul", "al", "pl", "nr", "bud", "ok");
@@ -116,7 +121,7 @@ final class EntranceNote {
 
     private boolean named() {
         final String first = this.first();
-        final String[] words = first.split("\\s+");
+        final String[] words = EntranceNote.SPACES.split(first);
         return first.startsWith(EntranceNote.ENTRANCE) && words.length <= EntranceNote.WORDS
             && !EntranceNote.SHORTS.contains(words[words.length - 1].toLowerCase(Locale.ROOT));
     }
