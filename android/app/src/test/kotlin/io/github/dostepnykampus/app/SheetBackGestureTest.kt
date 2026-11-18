@@ -274,7 +274,7 @@ class SheetBackGestureTest {
     }
 
     /**
-     * Wiersz: mała karta, przeciągnięcie uchwytu w górę poza uchwyt → rozwinięta karta, krótka do wysokości treści.
+     * Wiersz: mała karta, przeciągnięcie uchwytu w górę poza uchwyt → rozwinięta karta do góry ekranu, także krótka.
      *
      * Wymagania: US2.8, NFR-53
      */
@@ -289,7 +289,7 @@ class SheetBackGestureTest {
         }
         compose.onNode(sheetHandle(isExpanded = true)).assertExists("rozwinięta karta po przeciągnięciu")
         val top = sheetTop("po przeciągnięciu")
-        assertTrue("krótka treść, nie cały ekran: góra na $top", top.value > 1f)
+        assertEquals("krótka treść też do góry ekranu", 0f, top.value, 1f)
     }
 
     private fun checkSlideBack(isExpanded: Boolean) {
