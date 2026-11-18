@@ -51,8 +51,8 @@ class ShowEntranceTest {
     private lateinit var navigator: AppNavigator
 
     /**
-     * Wiersz: V2 pełny ekran, wejście zalecane nie jest pierwsze w danych ani główne → „Pokaż wejście na mapie” przy
-     *   nim prowadzi do V1 z zaznaczonym tym wejściem i budynkiem karty; karta otwarta od razu na cały ekran otwiera
+     * Wiersz: V2 pełny ekran, wejście zalecane nie jest pierwsze w danych ani główne → „Pokaż wejście na mapie” pod
+     *   wierszem o wejściach prowadzi do V1 z zaznaczonym tym wejściem i budynkiem karty; karta otwarta od razu na cały ekran otwiera
      *   arkusz wejścia na cały ekran.
      *
      * Wymagania: US3.3, US2.1, BR-25, NFR-19
@@ -71,8 +71,8 @@ class ShowEntranceTest {
         }
         compose.onNodeWithText("V1").performClick()
         compose.waitUntil { compose.onAllNodesWithText("Wejścia").fetchSemanticsNodes().isNotEmpty() }
-        compose.onAllNodes(hasContentDescription(SHOW_ENTRANCE, substring = true)).assertCountEquals(2)
-        compose.onAllNodes(ShowButton)[1].performScrollTo().performClick()
+        compose.onAllNodes(hasContentDescription(SHOW_ENTRANCE, substring = true)).assertCountEquals(1)
+        compose.onNode(ShowButton).performScrollTo().performClick()
         val focus = MapFocus.Entrance(id = "node/2", buildingSymbol = "A-1", isFullSheet = true)
         assertEquals(MapRoute(focus), navigator.current)
     }

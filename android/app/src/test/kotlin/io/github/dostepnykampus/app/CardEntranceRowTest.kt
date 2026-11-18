@@ -9,9 +9,11 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
-import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
@@ -19,15 +21,12 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
-import io.github.dostepnykampus.app.navigation.SignInRoute
-import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.data.building.BUILDINGS_ASSET
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
-import io.github.dostepnykampus.core.model.Account
-import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.map.building.BuildingCardUiState
 import io.github.dostepnykampus.feature.map.building.buildingCard
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -39,57 +38,52 @@ import org.robolectric.annotation.Config
 import kotlin.coroutines.EmptyCoroutineContext
 
 private const val SYMBOL = "C-13"
+private const val SHOW = "Pokaż wejście na mapie"
+private const val REPORT = "Zgłoś barierę przy wejściu"
 
-private val ReportButton = hasClickAction() and hasContentDescription("Zgłoś barierę przy wejściu", substring = true)
+private val EntranceRow =
+    SemanticsMatcher("wiersz z czynnością „$SHOW”") { node ->
+        node.config.getOrElseNullable(SemanticsActions.OnClick) { null }?.label == SHOW
+    }
 
-/** „Zgłoś barierę przy wejściu” na V2 od dotknięcia do ekranu zgłoszenia albo logowania. Wymagania: US4.6, US14.2 */
+/** Wiersz wejścia na liście V2 od dotknięcia do V1 z zaznaczonym wejściem. Wymagania: US3.3, US4.6 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
-class ReportAtEntranceTest {
+class CardEntranceRowTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private lateinit var navigator: AppNavigator
 
     /**
-     * Wiersz: V2 pełny ekran, zalogowany → „Zgłoś barierę przy wejściu” przy każdym wejściu prowadzi do V4 z
-     *   wejściem, przy którym stoi.
+     * Wiersz: V2 pełny ekran → dotknięcie wiersza ostatniego wejścia na liście prowadzi do V1 z zaznaczonym tym
+     *   wejściem i jego arkuszem na całym ekranie, jak „Pokaż wejście na mapie” z karty otwartej od razu.
+     *
+     * Wymagania: US3.3
+     */
+    @Test
+    fun opensEntranceFromRow() {
+        val ids = entranceIds()
+        show()
+        compose.onAllNodes(EntranceRow).assertCountEquals(ids.size)
+        val row = compose.onAllNodes(EntranceRow)[ids.lastIndex]
+        row.performScrollTo()
+        row.performClick()
+        compose.waitForIdle()
+        val focus = MapFocus.Entrance(id = ids.last(), buildingSymbol = SYMBOL, isFullSheet = true)
+        assertEquals(MapRoute(focus), navigator.current)
+    }
+
+    /**
+     * Wiersz: V2 pełny ekran nie ma „Zgłoś barierę przy wejściu” przy wejściach; ta czynność jest w arkuszu wejścia.
      *
      * Wymagania: US4.6
      */
     @Test
-    fun opensReportAtEachEntrance() {
-        val ids = entranceIds()
-        show(TestRoles(Account.SignedIn()))
-        ids.forEachIndexed { index, id ->
-            val button = compose.onAllNodes(ReportButton)[index]
-            button.performScrollTo()
-            button.performClick()
-            assertEquals("wejście nr ${index + 1}", ReportRoute(entranceId = id), navigator.current)
-            pressBack()
-        }
-    }
-
-    /**
-     * Wiersz: V2 pełny ekran, Gość → ta sama czynność prowadzi najpierw do L1, który pamięta wejście.
-     *
-     * Wymagania: US14.2
-     */
-    @Test
-    fun sendsGuestToSignIn() {
-        val ids = entranceIds()
-        show(TestRoles())
-        ids.forEachIndexed { index, id ->
-            val button = compose.onAllNodes(ReportButton)[index]
-            button.performScrollTo()
-            button.performClick()
-            assertEquals(
-                "wejście nr ${index + 1}",
-                SignInRoute(isForReport = true, entranceId = id),
-                navigator.current,
-            )
-            pressBack()
-        }
+    fun leavesReportToSheet() {
+        show()
+        compose.onAllNodes(hasText(REPORT, substring = true)).assertCountEquals(0)
+        compose.onAllNodes(hasContentDescription(REPORT, substring = true)).assertCountEquals(0)
     }
 
     private fun entranceIds(): List<String> =
@@ -103,9 +97,9 @@ class ReportAtEntranceTest {
             card.entrances.map { it.entrance.id }
         }
 
-    private fun show(roles: RoleProvider) {
+    private fun show() {
         compose.setContent {
-            AppShell(firstLaunch = false, roles = roles, onFirstHelpLeft = {}) { route: NavKey ->
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route: NavKey ->
                 navigator = this
                 if (route is MapRoute) {
                     Text(text = "V1", modifier = Modifier.clickable { openBuilding(SYMBOL, isDirect = true) })
@@ -116,12 +110,5 @@ class ReportAtEntranceTest {
         }
         compose.onNodeWithText("V1").performClick()
         compose.waitUntil { compose.onAllNodesWithText("Wejścia").fetchSemanticsNodes().isNotEmpty() }
-        compose.onAllNodes(ReportButton).assertCountEquals(entranceIds().size)
-    }
-
-    private fun pressBack() {
-        compose.waitForIdle()
-        compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
-        compose.waitForIdle()
     }
 }

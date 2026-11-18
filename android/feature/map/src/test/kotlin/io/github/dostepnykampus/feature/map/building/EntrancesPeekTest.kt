@@ -142,7 +142,7 @@ class EntrancesPeekTest {
                         onShowOnMap = {},
                         onBack = {},
                         onClose = {},
-                        onReportEntrance = {},
+                        onReport = {},
                         onRetry = {},
                         onExpand = { expanded++ },
                     )

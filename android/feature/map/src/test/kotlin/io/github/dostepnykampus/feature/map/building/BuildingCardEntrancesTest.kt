@@ -43,7 +43,7 @@ class BuildingCardEntrancesTest {
                     onShowOnMap = {},
                     onBack = {},
                     onClose = {},
-                    onReportEntrance = {},
+                    onReport = {},
                     onRetry = {},
                 )
             }

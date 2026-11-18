@@ -116,8 +116,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy w grupie „Wejścia” widzi zdanie „Nie mamy jeszcze danych o wejściach do tego budynku.”
     Ale karta nie mówi, że budynek jest niedostępny
 
-  # @do-zrobienia #3096: wiersza kilku wejść bez danych jeszcze nie ma w aplikacji.
-  @US2.1 @US17.1 @aplikacja @do-zrobienia
+  @US2.1 @US17.1 @aplikacja
   Scenariusz: Kilka wejść bez oznaczenia i bez nazwy stoi jako jeden wiersz
     Zakładając, że budynek C-7 ma w danych 3 wejścia bez oznaczenia i bez nazwy
     Jeżeli Gość niezalogowany otworzy kartę budynku C-7 na całym ekranie

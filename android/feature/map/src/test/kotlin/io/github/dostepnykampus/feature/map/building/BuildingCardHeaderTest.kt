@@ -178,7 +178,7 @@ class BuildingCardHeaderTest {
                     onShowOnMap = {},
                     onBack = {},
                     onClose = {},
-                    onReportEntrance = {},
+                    onReport = {},
                     onRetry = {},
                     onShowEntrance = onShowEntrance,
                 )
