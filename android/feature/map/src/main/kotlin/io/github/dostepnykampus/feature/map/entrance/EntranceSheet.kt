@@ -123,7 +123,7 @@ internal fun EntranceSheet(
     val title = entrance.name ?: stringResource(R.string.karta_bez_nazwy)
     val header: @Composable () -> Unit = {
         Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-            MapSheetHeader(title = stringResource(R.string.mapa_wejscie_tytul), onClose = exits.onClose) {
+            MapSheetHeader(title = stringResource(R.string.karta_bez_nazwy), onClose = exits.onClose) {
                 MarkingSign(entrance.marking)
             }
             BuildingLink(entrance.buildingSymbol) { exits.onBuilding(entrance.buildingSymbol) }

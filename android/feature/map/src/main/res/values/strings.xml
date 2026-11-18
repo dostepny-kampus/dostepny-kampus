@@ -57,7 +57,6 @@
     <string name="mapa_bariera_opis_budynku">Pokaż opis budynku</string>
     <string name="mapa_bariera_sprawdzone">Sprawdzone %1$s</string>
     <string name="mapa_bariera_zdjecie">Zdjęcie bariery: %1$s</string>
-    <string name="mapa_wejscie_tytul">Wejście</string>
     <string name="mapa_wejscie_glowne">%1$s, wejście główne</string>
     <string name="mapa_wejscie_niesprawdzone">Nie mamy danych o dostępności tego wejścia.</string>
     <string name="mapa_wejscie_zalecane">Zalecane.</string>
