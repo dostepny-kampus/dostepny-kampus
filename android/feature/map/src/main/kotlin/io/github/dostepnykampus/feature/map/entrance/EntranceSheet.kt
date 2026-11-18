@@ -7,6 +7,8 @@ package io.github.dostepnykampus.feature.map.entrance
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
@@ -27,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Ikony
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
+import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
@@ -38,8 +41,10 @@ import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
 import io.github.dostepnykampus.feature.map.building.assessmentText
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import io.github.dostepnykampus.feature.map.overlay.BuildingLink
 import io.github.dostepnykampus.feature.map.overlay.MapSheet
 import io.github.dostepnykampus.feature.map.overlay.MapSheetHeader
+import io.github.dostepnykampus.feature.map.overlay.SheetExits
 import kotlin.math.ceil
 import io.github.dostepnykampus.core.designsystem.R as DesignR
 
@@ -47,14 +52,14 @@ private val WIDE_WINDOW = 600.dp
 
 /**
  * Arkusz wejścia o identyfikatorze [id] z [catalog] po dotknięciu jego znaku na mapie V1; bez [id] i bez takiego
- * wejścia w katalogu arkusza nie ma. Systemowe „Wstecz” przy otwartym arkuszu zamyka go jak [onClose].
+ * wejścia w katalogu arkusza nie ma. Systemowe „Wstecz” przy otwartym arkuszu wywołuje [SheetExits.onBack].
  *
  * Wymagania: US2.1, US3.3, NFR-53
  *
  * @param id identyfikator wejścia dotkniętego znaku; `null` bez wybranego wejścia
  * @param catalog katalog budynków i wejść; `null` przed jego wczytaniem
  * @param barriers bariery ze zgłoszeń przyjętych
- * @param onClose zamyka arkusz
+ * @param exits „Zamknij”, „Wstecz” i wiersz budynku
  * @param actions czynności przy wejściu
  * @param modifier położenie arkusza na mapie
  * @param isFull arkusz na cały ekran, bez mapy
@@ -64,15 +69,15 @@ internal fun ChosenEntranceSheet(
     id: String?,
     catalog: BuildingCatalog?,
     barriers: ShownBarriers,
-    onClose: () -> Unit,
+    exits: SheetExits,
     actions: EntranceActions,
     modifier: Modifier = Modifier,
     isFull: Boolean = false,
 ) {
     val shown = remember(id, catalog, barriers) { id?.let { catalog?.shownEntrance(it, barriers.barriers) } }
-    BackHandler(enabled = shown != null, onBack = onClose)
+    BackHandler(enabled = shown != null, onBack = exits.onBack)
     if (shown != null) {
-        EntranceSheet(shown = shown, onClose = onClose, actions = actions, modifier = modifier, isFull = isFull)
+        EntranceSheet(shown = shown, exits = exits, actions = actions, modifier = modifier, isFull = isFull)
     }
 }
 
@@ -93,15 +98,16 @@ internal fun isFullEntranceSheet(id: String, focus: MapFocus?): Boolean {
 }
 
 /**
- * Arkusz wejścia [shown] na dole mapy V1, ten sam przy każdym wejściu: znak oznaczenia przy nagłówku z budynkiem,
- * słowo oznaczenia, pod nim „Zalecane.” przy wejściu zalecanym i dzień ze źródłem oznaczenia, gdy są w danych, nazwa,
+ * Arkusz wejścia [shown] na dole mapy V1, ten sam przy każdym wejściu: znak oznaczenia przy nagłówku, pod nim wiersz
+ * budynku, słowo oznaczenia, pod nim „Zalecane.” przy wejściu zalecanym i dzień ze źródłem oznaczenia, gdy są w danych, nazwa,
  * dojście, drzwi i bariery wejścia, gdy są w danych, i zgłoszenie bariery przy wejściu. Nagłówek dostaje fokus po
- * otwarciu i stoi nad treścią, która się przewija. Arkusz na mapie ma najwyżej połowę wysokości okna.
+ * otwarciu i razem z wierszem budynku stoi nad treścią, która się przewija. Arkusz na mapie ma najwyżej połowę
+ * wysokości okna.
  *
- * Wymagania: US2.1, US2.2, US3.3, US4.6, US17.1, US17.3, BR-25, BR-27, NFR-18, NFR-20, NFR-21, NFR-53
+ * Wymagania: US2.1, US2.2, US2.8, US3.3, US4.6, US17.1, US17.3, BR-25, BR-27, NFR-18, NFR-20, NFR-21, NFR-53
  *
  * @param shown wejście z katalogu z jego miejscem wśród wejść budynku
- * @param onClose „Zamknij” zostawia samą mapę
+ * @param exits „Zamknij” i wiersz budynku
  * @param actions „Zgłoś barierę przy wejściu”
  * @param modifier położenie arkusza na mapie
  * @param isFull arkusz na cały ekran, bez mapy
@@ -109,7 +115,7 @@ internal fun isFullEntranceSheet(id: String, focus: MapFocus?): Boolean {
 @Composable
 internal fun EntranceSheet(
     shown: ShownEntrance,
-    onClose: () -> Unit,
+    exits: SheetExits,
     actions: EntranceActions,
     modifier: Modifier = Modifier,
     isFull: Boolean = false,
@@ -117,10 +123,12 @@ internal fun EntranceSheet(
     val entrance = shown.entrance
     val title = entrance.name ?: stringResource(R.string.karta_bez_nazwy)
     val header: @Composable () -> Unit = {
-        MapSheetHeader(
-            title = stringResource(R.string.mapa_wejscie_naglowek, entrance.buildingSymbol),
-            onClose = onClose,
-        ) { MarkingSign(entrance.marking) }
+        Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+            MapSheetHeader(title = stringResource(R.string.mapa_wejscie_tytul), onClose = exits.onClose) {
+                MarkingSign(entrance.marking)
+            }
+            BuildingLink(entrance.buildingSymbol) { exits.onBuilding(entrance.buildingSymbol) }
+        }
     }
     val bounded = if (isFull) modifier else modifier.heightIn(max = halfWindow())
     MapSheet(modifier = bounded, isFull = isFull, header = header) {

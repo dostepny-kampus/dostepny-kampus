@@ -28,6 +28,7 @@ import io.github.dostepnykampus.feature.map.entrance.ChosenEntranceSheet
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
 import io.github.dostepnykampus.feature.map.entrance.isFullEntranceSheet
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import io.github.dostepnykampus.feature.map.overlay.SheetExits
 import io.github.dostepnykampus.feature.map.plan.ChosenPlanSheet
 import io.github.dostepnykampus.feature.map.plan.ShownPlan
 
@@ -88,11 +89,12 @@ internal class SignSheetState(initial: ChosenSign?) {
 
     /**
      * Otwiera arkusz znaku [sign] obiektu [id] w miejsce karty budynku [card], zamykając ją, albo w miejsce
-     * poprzedniego arkusza; arkusz po arkuszu, który zastąpił kartę, wraca do tej samej karty.
+     * poprzedniego arkusza; arkusz po arkuszu, który zastąpił kartę, wraca do tej samej karty. [from] to symbol
+     * budynku, z którego karty pokazano obiekt, gdy karty już nie ma.
      */
-    fun open(sign: TouchSign, id: String) {
+    fun open(sign: TouchSign, id: String, from: String? = null) {
         val under = card
-        chosen = ChosenSign(sign = sign, id = id, card = under ?: chosen?.card)
+        chosen = ChosenSign(sign = sign, id = id, card = under ?: from ?: chosen?.card)
         if (under != null) onCardClose()
     }
 
@@ -108,8 +110,26 @@ internal class SignSheetState(initial: ChosenSign?) {
         val card = chosen?.card
         close()
         isReturning = card != null
+        // TODO(#3255): karta wraca na tę samą wysokość i z tym samym przewinięciem.
         card?.let(onCard)
     }
+
+    /**
+     * Wiersz budynku [symbol]: arkusz, który zastąpił kartę tego budynku, wraca do niej przez [onCard] jak [back],
+     * a inny zamyka się i przekazuje symbol [onTap] jak dotknięcie konturu.
+     */
+    fun toBuilding(symbol: String, onCard: (String) -> Unit, onTap: (String) -> Unit) {
+        if (chosen?.card == symbol) {
+            back(onCard)
+        } else {
+            close()
+            onTap(symbol)
+        }
+    }
+
+    /** „Zamknij” zamyka arkusz bez karty, „Wstecz” wraca do karty przez [onCard], a wiersz budynku jak [toBuilding]. */
+    fun exits(onCard: (String) -> Unit, onTap: (String) -> Unit = onCard): SheetExits =
+        SheetExits(onClose = ::close, onBack = { back(onCard) }, onBuilding = { toBuilding(it, onCard, onTap) })
 
     /** Karta budynku wróciła na ekran. */
     fun cardShown() {
@@ -201,11 +221,12 @@ internal data class ScreenSheet(
 internal fun screenSheet(focus: MapFocus?, padding: PaddingValues, onCardClose: () -> Unit): ScreenSheet {
     val cover = padding.calculateBottomPadding()
     val signs = rememberSignSheetState(focus = focus, cover = cover, onCardClose = onCardClose)
-    val entrance = (focus as? MapFocus.Entrance)?.id
+    val marked = focus as? MapFocus.Entrance
+    val entrance = marked?.id
     var isOpened by rememberSaveable(entrance) { mutableStateOf(false) }
     SideEffect {
-        if (entrance != null && !isOpened) {
-            signs.open(TouchSign.ENTRANCE, entrance)
+        if (marked != null && !isOpened) {
+            signs.open(sign = TouchSign.ENTRANCE, id = marked.id, from = marked.buildingSymbol)
             isOpened = true
         }
     }
@@ -215,8 +236,8 @@ internal fun screenSheet(focus: MapFocus?, padding: PaddingValues, onCardClose: 
 }
 
 /**
- * Arkusz wejścia na cały ekran, gdy [ScreenSheet.fullEntrance] go wskazuje; zamknięcie wraca do karty, którą arkusz
- * zastąpił, przez [onBuildingClick].
+ * Arkusz wejścia na cały ekran, gdy [ScreenSheet.fullEntrance] go wskazuje; „Wstecz” i wiersz budynku wracają do
+ * karty, którą arkusz zastąpił, przez [onBuildingClick].
  *
  * Wymagania: NFR-19, NFR-20, NFR-51
  *
@@ -234,7 +255,7 @@ internal fun ScreenSheet.FullEntranceSheet(
         id = fullEntrance,
         catalog = ui.catalog,
         barriers = ShownBarriers(ui.barriers),
-        onClose = { signs.back(onBuildingClick) },
+        exits = signs.exits(onBuildingClick),
         actions = actions,
         isFull = true,
     )
@@ -254,6 +275,7 @@ internal fun ScreenSheet.FullEntranceSheet(
  * @param entranceActions czynności arkusza wejścia
  * @param modifier położenie arkusza na mapie
  * @param hidesEntrance arkusz wejścia stoi poza mapą, na cały ekran, więc tu go nie ma
+ * @param onBuildingTap wiersz budynku w arkuszu bez karty pod spodem, jak dotknięcie konturu
  */
 @Composable
 internal fun ChosenSignSheet(
@@ -265,6 +287,7 @@ internal fun ChosenSignSheet(
     entranceActions: EntranceActions,
     modifier: Modifier = Modifier,
     hidesEntrance: Boolean = false,
+    onBuildingTap: (String) -> Unit = onBuildingClick,
 ) {
     val id = signs.chosen?.id
     when (signs.chosen?.sign) {
@@ -284,7 +307,7 @@ internal fun ChosenSignSheet(
                 id = id.takeUnless { hidesEntrance },
                 catalog = catalog,
                 barriers = barriers,
-                onClose = { signs.back(onBuildingClick) },
+                exits = signs.exits(onCard = onBuildingClick, onTap = onBuildingTap),
                 actions = entranceActions,
                 modifier = modifier.onSizeChanged { signs.measureEntrance(it.height) },
             )
