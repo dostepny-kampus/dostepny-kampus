@@ -122,7 +122,12 @@ internal fun Sheet(
             modifier
                 .fillMaxWidth()
                 .clipBelowKeepShadow()
-                .followHeight(state = state, isCompact = !isExpanded && !isFullOnly, isLoose = !isFullOnly) { size ->
+                .followHeight(
+                    state = state,
+                    isCompact = !isExpanded && !isFullOnly,
+                    isLoose = !isFullOnly,
+                    isKnownLong = measure.expanded * 2 > measure.window,
+                ) { size ->
                     measure.window = size.window
                     measure.keepExpanded(size.expanded)
                     measure.coverOf(restingLow = size.restingLow, isFullOnly = isFullOnly)?.let(currentOnLowHeight)
@@ -266,8 +271,8 @@ private fun DraggableAnchors<SheetHeight>.keeping(height: SheetHeight): SheetHei
 
 /**
  * Pomiar arkusza: okno [window], niska karta w spoczynku [restingLow] i rozwinięta treść [expanded], gdy są.
- * Mała karta w spoczynku ma wysokość treści, a w ruchu widoczną część okna. Rozwinięta treść ma własną wysokość,
- * a od połowy okna co najmniej widoczną część; to, co wystaje poniżej arkusza, jest ucięte.
+ * Mała karta w spoczynku ma wysokość treści, a w ruchu widoczną część okna. Rozwinięta treść ma własną wysokość;
+ * od połowy okna w ruchu albo przy znanej długiej treści co najmniej widoczną część. Wystające jest ucięte.
  */
 private data class SheetSize(val window: Int, val restingLow: Int?, val expanded: Int?)
 
@@ -275,20 +280,22 @@ private fun Modifier.followHeight(
     state: AnchoredDraggableState<SheetHeight>,
     isCompact: Boolean,
     isLoose: Boolean,
+    isKnownLong: Boolean,
     onMeasure: (SheetSize) -> Unit,
 ): Modifier =
     layout { measurable, constraints ->
         val offset = state.offset
-        val isLow =
-            state.anchors.hasPositionFor(SheetHeight.Low) && state.anchors.positionOf(SheetHeight.Low) == offset
-        val isResting = offset.isNaN() || (isCompact && isLow)
+        val anchors = state.anchors
+        val restsAt = state.settledValue.takeIf { anchors.hasPositionFor(it) && anchors.positionOf(it) == offset }
+        val isResting = offset.isNaN() || (isCompact && restsAt == SheetHeight.Low)
         val isOpen = isLoose && !isCompact
         val top = offset.roundToIntOrZero().coerceIn(minimumValue = 0, maximumValue = constraints.maxHeight)
         val shown = constraints.maxHeight - top
+        val isFilled = isOpen && shown * 2 > constraints.maxHeight && (isKnownLong || restsAt == null)
         val fixed =
             when {
                 isResting -> constraints.copy(minHeight = 0)
-                isOpen -> constraints.copy(minHeight = if (shown * 2 > constraints.maxHeight) shown else 0)
+                isOpen -> constraints.copy(minHeight = if (isFilled) shown else 0)
                 else -> constraints.copy(minHeight = shown, maxHeight = shown)
             }
         val placeable = measurable.measure(fixed)
@@ -296,7 +303,7 @@ private fun Modifier.followHeight(
             SheetSize(
                 window = constraints.maxHeight,
                 restingLow = placeable.height.takeIf { isResting && isCompact },
-                expanded = placeable.height.takeIf { isOpen },
+                expanded = placeable.height.takeIf { isOpen && !isFilled },
             )
         onMeasure(size)
         val height = if (isOpen && !offset.isNaN()) shown else placeable.height
