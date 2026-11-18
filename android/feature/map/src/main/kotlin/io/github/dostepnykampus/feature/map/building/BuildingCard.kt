@@ -8,8 +8,36 @@ package io.github.dostepnykampus.feature.map.building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
+import java.text.Collator
+import java.util.Locale
 
 private val MARKING_ORDER = listOf(EntranceMarking.ACCESSIBLE, EntranceMarking.INACCESSIBLE, EntranceMarking.NO_DATA)
+
+private val NAME_PART = Regex("""\d+|\D+""")
+
+/**
+ * Porządek nazw wejść na liście karty: alfabetycznie po polsku, a liczby w nazwie według wartości, więc
+ * „Wejście 2” stoi przed „Wejście 10”.
+ *
+ * Wymagania: BR-25, US2.1
+ */
+internal object EntranceNameOrder : Comparator<String> {
+    private val polish = Collator.getInstance(Locale.forLanguageTag("pl"))
+
+    override fun compare(first: String, second: String): Int {
+        val left = NAME_PART.findAll(first).map { it.value }.toList()
+        val right = NAME_PART.findAll(second).map { it.value }.toList()
+        val parts = left.zip(right).map { (a, b) -> comparePart(a, b) }
+        return parts.firstOrNull { it != 0 } ?: left.size.compareTo(right.size)
+    }
+
+    private fun comparePart(first: String, second: String): Int =
+        if (first[0].isDigit() && second[0].isDigit()) {
+            compareValuesBy(first.trimStart('0'), second.trimStart('0'), { it.length }, { it })
+        } else {
+            polish.compare(first, second)
+        }
+}
 
 /**
  * Wejście na liście karty budynku, w kolejności z [orderedEntrances].
@@ -27,7 +55,8 @@ data class OrderedEntrance(val entrance: Entrance, val isRecommended: Boolean)
  * Zalecane jest jedyne: wejście „dostępne”, a gdy jest ich kilka — wejście główne, a gdy żadne dostępne nie jest
  * główne — pierwsze „dostępne” z nazwą w danych ([Entrance.hasName]), a bez nazw — pierwsze „dostępne” w kolejności
  * z danych. Wejście „brak danych” nigdy nie jest zalecane. Bez wejścia „dostępne” nie ma zalecanego, a lista zaczyna
- * się od „niedostępne”.
+ * się od „niedostępne”. Dalej wejścia stoją w grupach oznaczeń, a w grupie najpierw wejścia z nazwą w danych
+ * według [EntranceNameOrder], potem pozostałe w kolejności z danych.
  *
  * Wymagania: BR-25
  */
@@ -36,7 +65,10 @@ fun orderedEntrances(entrances: List<Entrance>): List<OrderedEntrance> {
     val accessible = visitors.filter { it.marking == EntranceMarking.ACCESSIBLE }
     val recommended =
         accessible.firstOrNull { it.isMain } ?: accessible.firstOrNull(Entrance::hasName) ?: accessible.firstOrNull()
-    val rest = visitors.filter { it !== recommended }.sortedBy { MARKING_ORDER.indexOf(it.marking) }
+    val order =
+        compareBy<Entrance>({ MARKING_ORDER.indexOf(it.marking) }, { !it.hasName })
+            .thenBy(EntranceNameOrder) { if (it.hasName) it.name.orEmpty() else "" }
+    val rest = visitors.filter { it !== recommended }.sortedWith(order)
     val head = recommended?.let { OrderedEntrance(entrance = it, isRecommended = true) }
     return listOfNotNull(head) + rest.map { OrderedEntrance(entrance = it, isRecommended = false) }
 }
