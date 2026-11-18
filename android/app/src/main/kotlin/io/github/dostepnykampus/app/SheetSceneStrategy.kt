@@ -84,15 +84,16 @@ private val SheetStateSaver =
     )
 
 /**
- * Część V1 zasłonięta przez arkusz [cover] i rozwinięcie arkusza [isExpanded] dla trybu karty w nim. [isPending]:
- * nowy arkusz nie ma jeszcze pomiaru, a [cover] to zasłonięcie sprzed niego. [onExpand] podnosi niski arkusz na
- * połowę ekranu.
+ * Część V1 zasłonięta przez arkusz [cover], rozwinięcie arkusza [isExpanded] dla trybu karty w nim i postój arkusza
+ * na całym oknie [isFull]. [isPending]: nowy arkusz nie ma jeszcze pomiaru, a [cover] to zasłonięcie sprzed niego.
+ * [onExpand] podnosi niski arkusz na połowę ekranu.
  *
  * Wymagania: US2.8, NFR-56
  */
 internal data class SheetLayout(
     val cover: Dp = 0.dp,
     val isExpanded: Boolean = false,
+    val isFull: Boolean = false,
     val isPending: Boolean = false,
     val onExpand: () -> Unit = {},
 ) : PaddingValues by PaddingValues(bottom = cover)
@@ -217,8 +218,8 @@ private data class SheetScene(
                                 picture.record { sheetContent.drawContent() }
                                 drawLayer(picture)
                             },
-                ) {
-                    val layout = SheetLayout(isExpanded = state.isExpanded, onExpand = expand)
+                ) { isFull ->
+                    val layout = SheetLayout(isExpanded = state.isExpanded, isFull = isFull, onExpand = expand)
                     CompositionLocalProvider(LocalSheetPadding provides layout) { sheet.Content() }
                 }
             } else if (exit.isLeaving) {

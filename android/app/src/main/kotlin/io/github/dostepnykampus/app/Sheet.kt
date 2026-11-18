@@ -74,7 +74,8 @@ import kotlin.math.roundToInt
  * Arkusz V2 z wysokościami [SheetHeight], który idzie za palcem i staje według położenia i prędkości. Startuje na
  * połowie okna, gdy [isExpanded], inaczej niski, a gdy [isFullOnly], na całym oknie z samym zamknięciem. Rozwinięcie
  * zgłasza [onExpandedChange], przeciągnięcie w dół do końca [onClose], zasłoniętą część okna w px [onLowHeight].
- * Zmiana [isExpanded] z zewnątrz przenosi niski arkusz na połowę okna, a rozwinięty na niską wysokość.
+ * Zmiana [isExpanded] z zewnątrz przenosi niski arkusz na połowę okna, a rozwinięty na niską wysokość. Treść
+ * [content] dostaje, czy arkusz stoi na całym oknie.
  *
  * Wymagania: US2, US2.8, US2.9, NFR-17, NFR-18, NFR-20, NFR-53
  */
@@ -86,7 +87,7 @@ internal fun Sheet(
     onLowHeight: (Int) -> Unit,
     modifier: Modifier = Modifier,
     isFullOnly: Boolean = false,
-    content: @Composable () -> Unit,
+    content: @Composable (isFull: Boolean) -> Unit,
 ) {
     val state = remember { AnchoredDraggableState(startHeight(isExpanded = isExpanded, isFullOnly = isFullOnly)) }
     val measure = remember { SheetMeasure() }
@@ -142,7 +143,7 @@ internal fun Sheet(
                 onHeightChoose = { scope.launch { jump.move(state = state, height = it) } },
                 isFullOnly = isFullOnly,
             )
-            Box(Modifier.weight(1f, fill = false).fillMaxWidth()) { content() }
+            Box(Modifier.weight(1f, fill = false).fillMaxWidth()) { content(state.settledValue == SheetHeight.Full) }
         }
     }
 }
