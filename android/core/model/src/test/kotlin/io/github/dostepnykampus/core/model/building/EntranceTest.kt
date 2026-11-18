@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 /**
  * Wejście jako wartość: zmiana oznaczenia daje nowy stan tego samego wejścia.
  *
- * Wymagania: US17.1, US17.2, BR-24, US2.1, BR-25
+ * Wymagania: US17.1, US17.2, BR-24, US2.1, BR-25, BR-27
  */
 class EntranceTest {
     @Test
@@ -46,6 +46,14 @@ class EntranceTest {
         val visitors = types.map { sideEntrance().copy(type = it) }.filter(Entrance::isForVisitors)
 
         assertEquals(listOf("main", "service", "staircase", "yes", null), visitors.map(Entrance::type))
+    }
+
+    @Test
+    fun tellsNameFromImportPlaceholder() {
+        val names = listOf("Wejście boczne", "Wejście", null, "", " ")
+        val named = names.map { sideEntrance().copy(name = it) }.filter(Entrance::hasName)
+
+        assertEquals(listOf("Wejście boczne"), named.map(Entrance::name), "nazwa w danych")
     }
 
     private fun sideEntrance(): Entrance =

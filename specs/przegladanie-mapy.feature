@@ -103,8 +103,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy pierwsze jest wejście boczne z napisem „Zalecane”
     Ale wejście od dziedzińca nie ma napisu „Zalecane”
 
-  # @do-zrobienia #3190: aplikacja zaleca jeszcze pierwsze wejście dostępne z danych, także bez nazwy.
-  @BR-25 @aplikacja @do-zrobienia
+  @BR-25 @aplikacja
   Scenariusz: Przy kilku wejściach dostępnych bez głównego zalecane jest wejście z nazwą
     # Dane testowe, a nie stan faktyczny budynku C-13.
     Zakładając, że w danych testowych dwa wejścia C-13 z planów PWr mają oznaczenie „dostępne” i żadne nie jest główne

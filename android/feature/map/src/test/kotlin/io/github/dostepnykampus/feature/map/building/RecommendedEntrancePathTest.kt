@@ -80,6 +80,20 @@ class RecommendedEntrancePathTest {
         assertEquals(listOf("Dostępne", "Dostępne", "Niedostępne"), shown(MARKINGS))
     }
 
+    /**
+     * Scenariusz: przegladanie-mapy.feature: Przy kilku wejściach dostępnych bez głównego zalecane jest wejście
+     *   z nazwą.
+     */
+    @Test
+    fun recommendsNamedWithoutMain() {
+        openCard(
+            symbol = "C-13",
+            entrance(name = UNNAMED, wheelchair = "yes"),
+            entrance(name = ADAPTED, wheelchair = "yes"),
+        )
+        assertEquals(listOf("Zalecane", ADAPTED, UNNAMED), shown(NAMES))
+    }
+
     /** Scenariusz: przegladanie-mapy.feature: Budynek bez wejścia dostępnego nie ma wejścia zalecanego. */
     @Test
     fun recommendsNoneIfInaccessible() {
@@ -139,7 +153,11 @@ class RecommendedEntrancePathTest {
     }
 
     private companion object {
-        val NAMES = setOf("Zalecane", "Główne", "Boczne", "Od dziedzińca", "Północne", "Południowe", "Zachodnie")
+        const val UNNAMED = "Wejście"
+        const val ADAPTED = "Wejście dostosowane"
+        val NAMES =
+            setOf("Zalecane", "Główne", "Boczne", "Od dziedzińca", "Północne", "Południowe", "Zachodnie") +
+                setOf(UNNAMED, ADAPTED)
         val MARKINGS = setOf("Dostępne", "Niedostępne", "Brak danych")
 
         fun entrance(name: String, type: String = "yes", wheelchair: String? = null): String =
