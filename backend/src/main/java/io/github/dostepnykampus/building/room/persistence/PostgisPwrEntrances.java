@@ -12,8 +12,8 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 
 /**
  * Wpisy warstwy wejść PWr z piętrem planu w tabelach entrances i evacuation_exits. Wejście
- * z OpenStreetMap do 15 m od wpisu dostaje w kolumnach pwr_name, pwr_marking, approach
- * i door_width_cm dane najbliższego wpisu; wpis bez takiego wejścia staje się wejściem
+ * z OpenStreetMap dostaje w kolumnach pwr_name, pwr_marking, approach i door_width_cm dane
+ * najbliższego wpisu w promieniu 15 m; każdy inny wpis staje się wejściem
  * {@code pwr/<geohash>}. Kolumn name i marking wejść z OpenStreetMap zapis nie zmienia. Dane PWr
  * i wyjścia ewakuacyjne budynku są zastępowane przy każdym zapisie.
  *
@@ -29,10 +29,32 @@ final class PostgisPwrEntrances {
     private static final String RECORDS = """
         unnest(CAST(:floors AS TEXT[]), CAST(:points AS TEXT[]), CAST(:markings AS TEXT[]),
             CAST(:names AS TEXT[]), CAST(:approaches AS TEXT[]), CAST(:widths AS INTEGER[]),
-            CAST(:exits AS BOOLEAN[]))
-            AS pwr (floor, point, marking, name, approach, width, exit),
+            CAST(:exits AS BOOLEAN[])) WITH ORDINALITY
+            AS pwr (floor, point, marking, name, approach, width, exit, ord),
         LATERAL (SELECT ST_SetSRID(ST_GeomFromGeoJSON(pwr.point), 4326) AS spot) AS place
         """;
+
+    /**
+     * Najbliższy wpis każdego wejścia z OpenStreetMap budynku w promieniu 15 m.
+     */
+    private static final String NEAREST = String.join(
+        "",
+        """
+        WITH near AS (
+            SELECT DISTINCT ON (osm.id) osm.id, pwr.ord, pwr.name, pwr.approach, pwr.width,
+                pwr.marking
+            FROM entrances AS osm,
+        """,
+        PostgisPwrEntrances.RECORDS,
+        """
+            WHERE osm.building_symbol = :building AND osm.id NOT LIKE 'pwr/%'
+                AND NOT pwr.exit AND pwr.floor = ANY(:known)
+                AND ST_DWithin(place.spot::geography, osm.location::geography, 15)
+            ORDER BY osm.id, ST_Distance(place.spot::geography, osm.location::geography),
+                pwr.ord
+        )
+        """
+    );
 
     /**
      * Dostęp do tabel wejść.
@@ -72,21 +94,11 @@ final class PostgisPwrEntrances {
         this.bound(
             String.join(
                 "",
+                PostgisPwrEntrances.NEAREST,
                 """
                 UPDATE entrances SET pwr_name = near.name, pwr_marking = near.marking,
                     approach = near.approach, door_width_cm = near.width
-                FROM (
-                    SELECT DISTINCT ON (osm.id) osm.id, pwr.name, pwr.approach, pwr.width,
-                        pwr.marking
-                    FROM entrances AS osm,
-                """,
-                PostgisPwrEntrances.RECORDS,
-                """
-                    WHERE osm.building_symbol = :building AND osm.id NOT LIKE 'pwr/%'
-                        AND NOT pwr.exit AND pwr.floor = ANY(:known)
-                        AND ST_DWithin(place.spot::geography, osm.location::geography, 15)
-                    ORDER BY osm.id, ST_Distance(place.spot::geography, osm.location::geography)
-                ) AS near
+                FROM near
                 WHERE entrances.building_symbol = :building AND entrances.id = near.id
                 """
             ),
@@ -95,6 +107,7 @@ final class PostgisPwrEntrances {
         this.bound(
             String.join(
                 "",
+                PostgisPwrEntrances.NEAREST,
                 """
                 INSERT INTO entrances (id, building_symbol, name, main, location, floor_id,
                     marking, marking_date, marking_source, approach, door_width_cm, pwr_name,
@@ -108,11 +121,8 @@ final class PostgisPwrEntrances {
                 """,
                 PostgisPwrEntrances.RECORDS,
                 """
-                    WHERE NOT pwr.exit AND pwr.floor = ANY(:known) AND NOT EXISTS (
-                        SELECT 1 FROM entrances AS osm
-                        WHERE osm.building_symbol = :building AND osm.id NOT LIKE 'pwr/%'
-                            AND ST_DWithin(place.spot::geography, osm.location::geography, 15)
-                    )
+                    WHERE NOT pwr.exit AND pwr.floor = ANY(:known)
+                        AND pwr.ord NOT IN (SELECT near.ord FROM near)
                 ) AS record
                 ORDER BY id
                 ON CONFLICT (id, building_symbol) DO UPDATE SET name = EXCLUDED.name,
