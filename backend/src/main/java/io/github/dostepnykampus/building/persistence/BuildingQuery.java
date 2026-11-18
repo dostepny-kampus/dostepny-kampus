@@ -52,13 +52,16 @@ public final class BuildingQuery implements Buildings {
     static final int NEAR_METERS = 50;
 
     /**
-     * Odczyt wejść z regułą nazwy i oznaczenia, bez warunku i kolejności. Wejście z planów PWr
-     * bez nazwy w obu źródłach ma nazwę „Wejście”.
+     * Odczyt wejść z regułą nazwy i oznaczenia, bez warunku i kolejności. Wejście bez nazwy
+     * i opisu w danych ma nazwę z położenia, a wejście z planów PWr z samym opisem — „Wejście”;
+     * obie nadaje import, a nie dane.
      */
     private static final String ENTRANCES = """
         SELECT building_symbol, id,
-            COALESCE(pwr_name, name, CASE WHEN pwr_marking IS NOT NULL THEN 'Wejście' END)
-                AS name,
+            COALESCE(entrances.pwr_name, entrances.name, place.place_name,
+                CASE WHEN pwr_marking IS NOT NULL THEN 'Wejście' END) AS name,
+            COALESCE(entrances.pwr_name, entrances.name) IS NULL
+                AND (place.place_name IS NOT NULL OR pwr_marking IS NOT NULL) AS generated_name,
             type, main,
             ST_AsGeoJSON(location) AS location, floor_id,
             CASE WHEN marking_source = 'WALKTHROUGH' THEN marking
@@ -67,7 +70,7 @@ public final class BuildingQuery implements Buildings {
                 ELSE COALESCE(pwr_marking_date, marking_date) END::text AS marking_date,
             marking_source,
             pwr_marking IS NOT NULL AS pwr, approach, door_width_cm
-        FROM entrances
+        FROM entrances LEFT JOIN entrance_place_names AS place USING (id, building_symbol)
         """;
 
     /**
@@ -240,7 +243,7 @@ public final class BuildingQuery implements Buildings {
     private static Entrance entrance(final ResultSet rows) throws SQLException {
         return new Entrance(
             BuildingQuery.text(rows, "id"),
-            rows.getString("name"),
+            new Entrance.Name(rows.getString("name"), rows.getBoolean("generated_name")),
             rows.getString("type"),
             rows.getBoolean("main"),
             BuildingQuery.text(rows, "location"),

@@ -38,15 +38,15 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Kroki szablonu „Import bierze oznaczenie, nazwę i opis wejścia z warstwy wejść PWr”:
- * wymyślony wpis warstwy wejść przechodzi przez odczyt usługi planów i zapis planu,
- * a wynik widać w karcie budynku.
+ * Kroki szablonów „Import bierze oznaczenie, nazwę i opis wejścia z warstwy wejść PWr”
+ * i „Import nazywa wejście bez nazwy i opisu z położenia”: wymyślone wpisy warstwy wejść
+ * przechodzą przez odczyt usługi planów i zapis planu, a wynik widać w karcie budynku.
  *
  * <p>Usługę planów zastępuje serwer HTTP na losowym porcie. Zapis planu i odczyt karty
  * idą w jednej transakcji, którą hak po scenariuszu wycofuje, więc plan budynku wraca
  * do stanu sprzed scenariusza.</p>
  *
- * <p>Wymagania: BR-27, US17.1, US2.6</p>
+ * <p>Wymagania: BR-27, BR-25, US17.1, US2.6, US2.1</p>
  *
  * @since 0.1.0
  */
@@ -68,6 +68,11 @@ public final class PwrEntranceSteps {
     private static final Pattern FIELDS = Pattern.compile(
         "Czy_dostos „(\\p{L}+)”, Szerokosc (\\d+), (?:Uwagi „(.+)”|puste Uwagi)"
     );
+
+    /**
+     * Nazwa w cudzysłowie scenariusza.
+     */
+    private static final Pattern QUOTED = Pattern.compile("„([^”]+)”");
 
     /**
      * Oznaczenie z karty słowami scenariusza.
@@ -107,9 +112,14 @@ public final class PwrEntranceSteps {
     private @Nullable HttpServer service;
 
     /**
-     * Transakcja zapisu planu; null przed importem.
+     * Transakcja zmian scenariusza; null przed pierwszą zmianą.
      */
     private @Nullable TransactionStatus transaction;
+
+    /**
+     * Wejścia z wpisów warstwy na karcie budynku po kroku z nazwami.
+     */
+    private final List<JsonNode> placed;
 
     /**
      * Kroki na kontekście aplikacji.
@@ -129,6 +139,7 @@ public final class PwrEntranceSteps {
         this.source = source;
         this.store = store;
         this.transactions = transactions;
+        this.placed = new ArrayList<>(2);
     }
 
     /**
@@ -145,22 +156,33 @@ public final class PwrEntranceSteps {
             String.format("Scenariusz podaje nieznane pola wpisu: %s", fields),
             found.matches(), Matchers.is(true)
         );
-        final String body = String.format(
-            String.join(
-                "",
-                "{\"features\":[{\"geometry\":%s,\"properties\":{\"Pietro\":\"%s\",",
-                "\"Czy_dostos\":\"%s\",\"Szerokosc\":%s,\"Uwagi\":%s}}]}"
-            ),
-            this.inside(building), PwrEntranceSteps.FLOOR.id(), found.group(1), found.group(2),
-            PwrEntranceSteps.quoted(found.group(3))
+        this.serve(
+            String.format(
+                String.join(
+                    "",
+                    "{\"features\":[{\"geometry\":%s,\"properties\":{\"Pietro\":\"%s\",",
+                    "\"Czy_dostos\":\"%s\",\"Szerokosc\":%s,\"Uwagi\":%s}}]}"
+                ),
+                this.inside(building), PwrEntranceSteps.FLOOR.id(), found.group(1),
+                found.group(2), PwrEntranceSteps.quoted(found.group(3))
+            )
         );
-        final HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
-        server.createContext(
-            String.format("/FeatureServer/%d/query", PwrEntranceSteps.LAYER),
-            exchange -> PwrEntranceSteps.send(exchange, body)
+    }
+
+    /**
+     * Usługa zastępcza podaje warstwę wejść z wpisami bez uwag przy wschodniej ścianie
+     * budynku, a otoczenie budynku zmienia się w transakcji scenariusza.
+     *
+     * @param building Symbol budynku
+     * @param entries Opis wpisów słowami scenariusza
+     * @throws IOException Gdy serwer HTTP nie wystartuje
+     */
+    @Given("^w danych testowych warstwa wejść PWr ma przy (\\S+) wpisy bez uwag: (.+)$")
+    public void placedEntries(final String building, final String entries) throws IOException {
+        this.transaction = this.transactions.getTransaction(new DefaultTransactionDefinition());
+        this.serve(
+            new PlacedEntries(entries).layer(this.jdbc, building, PwrEntranceSteps.FLOOR.id())
         );
-        server.start();
-        this.service = server;
     }
 
     /**
@@ -175,7 +197,11 @@ public final class PwrEntranceSteps {
         final String url = String.format(
             "http://localhost:%d/FeatureServer", server.getAddress().getPort()
         );
-        this.transaction = this.transactions.getTransaction(new DefaultTransactionDefinition());
+        if (this.transaction == null) {
+            this.transaction = this.transactions.getTransaction(
+                new DefaultTransactionDefinition()
+            );
+        }
         this.store.save(
             new BuildingPlan(
                 "A-1", List.of(PwrEntranceSteps.FLOOR), List.of(),
@@ -188,6 +214,44 @@ public final class PwrEntranceSteps {
     }
 
     /**
+     * Wejścia z wpisów warstwy mają na karcie budynku nazwy ze scenariusza.
+     *
+     * @param building Symbol budynku
+     * @param expected Nazwy słowami scenariusza, np. dwa razy „Wejście od wschodu”
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    @Then("^wejścia (\\S+) z tych wpisów mają nazwy (.+)$")
+    public void hasNames(final String building, final String expected) throws Exception {
+        final JsonNode card = this.card(building);
+        card.path("entrances").forEach(
+            entrance -> {
+                if (entrance.has("source")) {
+                    this.placed.add(entrance);
+                }
+            }
+        );
+        MatcherAssert.assertThat(
+            String.format("Karta budynku po imporcie: %s", card),
+            this.placed.stream().map(entrance -> entrance.path("name").asString("")).sorted()
+                .toList(),
+            Matchers.equalTo(PwrEntranceSteps.names(expected))
+        );
+    }
+
+    /**
+     * Wejścia z wpisów warstwy mają nazwę nadaną przez import, nie nazwę w danych.
+     */
+    @Then("^żadna z tych nazw nie daje pierwszeństwa przy wyborze wejścia zalecanego$")
+    public void namesGenerated() {
+        MatcherAssert.assertThat(
+            "Nazwa z położenia uchodzi za nazwę w danych przy wyborze wejścia zalecanego",
+            this.placed.stream()
+                .map(entrance -> entrance.path("generatedName").asBoolean(false)).toList(),
+            Matchers.equalTo(Collections.nCopies(Math.max(1, this.placed.size()), true))
+        );
+    }
+
+    /**
      * Karta budynku podaje wejście z warstwy albo wyjście ewakuacyjne.
      *
      * @param building Symbol budynku
@@ -196,12 +260,10 @@ public final class PwrEntranceSteps {
      */
     @Then("^(\\S+) ma (wejście .+|wyjście ewakuacyjne, a nie wejście)$")
     public void hasResult(final String building, final String expected) throws Exception {
-        final String card = this.http.perform(
-            MockMvcRequestBuilders.get(String.format("/buildings/%s", building))
-        ).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        final JsonNode card = this.card(building);
         MatcherAssert.assertThat(
             String.format("Karta budynku po imporcie: %s", card),
-            PwrEntranceSteps.described(JsonMapper.builder().build().readTree(card)),
+            PwrEntranceSteps.described(card),
             Matchers.contains(expected)
         );
     }
@@ -219,6 +281,24 @@ public final class PwrEntranceSteps {
         if (server != null) {
             server.stop(0);
         }
+    }
+
+    private void serve(final String body) throws IOException {
+        final HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
+        server.createContext(
+            String.format("/FeatureServer/%d/query", PwrEntranceSteps.LAYER),
+            exchange -> PwrEntranceSteps.send(exchange, body)
+        );
+        server.start();
+        this.service = server;
+    }
+
+    private JsonNode card(final String building) throws Exception {
+        return JsonMapper.builder().build().readTree(
+            this.http.perform(
+                MockMvcRequestBuilders.get(String.format("/buildings/%s", building))
+            ).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8)
+        );
     }
 
     private String inside(final String building) {
@@ -260,6 +340,19 @@ public final class PwrEntranceSteps {
             text.append(String.format(", opis „%s”", entrance.path("approach").asString("")));
         }
         return text.toString();
+    }
+
+    private static List<String> names(final String text) {
+        final List<String> result = new ArrayList<>(2);
+        final Matcher quoted = PwrEntranceSteps.QUOTED.matcher(text);
+        while (quoted.find()) {
+            result.add(quoted.group(1));
+        }
+        if (text.startsWith("dwa razy ")) {
+            result.addAll(List.copyOf(result));
+        }
+        Collections.sort(result);
+        return result;
     }
 
     private static String word(final String marking) {

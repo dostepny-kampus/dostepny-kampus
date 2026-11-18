@@ -38,7 +38,8 @@ final class BuildingListResponseTest {
                         "A-1",
                         List.of(
                             new Entrance(
-                                "pwr/s00000001", "Wejście", null, false,
+                                "pwr/s00000001", new Entrance.Name("Wejście", true), null,
+                                false,
                                 "{\"type\":\"Point\",\"coordinates\":[17.0,51.0]}", "P0",
                                 new Entrance.Marking("ACCESSIBLE", "2026-11-01", "IMPORT"),
                                 new Entrance.Layer.Unlisted()

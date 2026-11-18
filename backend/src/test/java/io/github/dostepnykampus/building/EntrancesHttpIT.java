@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 /**
@@ -39,14 +40,17 @@ final class EntrancesHttpIT {
     }
 
     @Test
-    void omitsMissingEntranceName(final WebApplicationContext context)
+    void namesMainEntranceWithoutName(final WebApplicationContext context)
         throws Exception {
+        final JsonNode entrance = context.getBean(ObjectMapper.class)
+            .readTree(EntrancesHttpIT.card(context, "B-8")).at("/entrances/0");
         MatcherAssert.assertThat(
-            "Wejście bez opisu w danych ma pole name na karcie",
-            context.getBean(ObjectMapper.class)
-                .readTree(EntrancesHttpIT.card(context, "B-8"))
-                .at("/entrances/0").has("name"),
-            Matchers.is(false)
+            "Wejście główne bez nazwy w danych nie ma nazwy nadanej przez import",
+            String.join(
+                "|", entrance.path("name").asString(""),
+                String.valueOf(entrance.path("generatedName").asBoolean(false))
+            ),
+            Matchers.equalTo("Wejście główne|true")
         );
     }
 

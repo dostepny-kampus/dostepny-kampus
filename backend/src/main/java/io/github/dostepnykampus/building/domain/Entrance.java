@@ -11,10 +11,10 @@ import org.jspecify.annotations.Nullable;
 /**
  * Wejście budynku z karty budynku.
  *
- * <p>Wymagania: US2, US17, BR-24, US18.2, BR-27</p>
+ * <p>Wymagania: US2, US17, BR-24, US18.2, BR-27, BR-25</p>
  *
  * @param id Identyfikator wejścia, np. node/1167953448
- * @param name Opis wejścia albo null, gdy dane go nie podają
+ * @param name Nazwa wejścia i to, czy nadał ją import
  * @param type Rodzaj wejścia z OpenStreetMap albo null
  * @param main Czy to wejście główne
  * @param location Położenie wejścia jako tekst punktu GeoJSON
@@ -25,7 +25,7 @@ import org.jspecify.annotations.Nullable;
  */
 public record Entrance(
     String id,
-    @Nullable String name,
+    Name name,
     @Nullable String type,
     boolean main,
     String location,
@@ -33,6 +33,18 @@ public record Entrance(
     Marking marking,
     Layer layer
 ) {
+
+    /**
+     * Nazwa wejścia.
+     *
+     * <p>Wymagania: BR-25, BR-27</p>
+     *
+     * @param text Opis wejścia albo null, gdy ani dane, ani import go nie podają
+     * @param generated Czy nazwę nadał import, a nie dane
+     * @since 0.1.0
+     */
+    public record Name(@Nullable String text, boolean generated) {
+    }
 
     /**
      * Oznaczenie wejścia z datą i źródłem.
