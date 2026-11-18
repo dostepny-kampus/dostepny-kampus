@@ -440,7 +440,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
   Scenariusz: Na małym terenie zamknięcie karty przesuwa mapę tylko do brzegu terenu
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „T-9 Atol”
     Oraz dotknął budynku T-9 na mapie
-    Jeżeli wybierze „Zamknij” w karcie budynku
+    Jeżeli wybierze „Wstecz” telefonu
     Wtedy cały widok mapy leży w prostokącie terenu
     Oraz powiększenie mapy jest takie jak w chwili zamknięcia karty
 
