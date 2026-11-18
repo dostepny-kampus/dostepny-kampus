@@ -104,7 +104,7 @@ class EntranceSheetTest {
 
     /** Wiersz: wejście zalecane bez daty i źródła w danych ma samo „Zalecane.”. Wymagania: BR-25 */
     @Test
-    fun showsRecommendedWithoutAssessment() {
+    fun showsRecommendedWithoutDate() {
         compose.setContent { Sheet(ShownEntrance(entrance(EntranceMarking.ACCESSIBLE), isRecommended = true)) }
 
         compose.onNodeWithText("Zalecane.").assertExists()
@@ -112,7 +112,7 @@ class EntranceSheetTest {
 
     /** Wiersz: wejście niezalecane ma samą datę i źródło, bez „Zalecane.”. Wymagania: US17.3 */
     @Test
-    fun showsAssessmentWithoutRecommendation() {
+    fun showsDateWithoutRecommended() {
         val checked = EntranceAssessment(LocalDate.of(2026, 11, 12), AssessmentSource.WALKTHROUGH)
         compose.setContent { Sheet(ShownEntrance(entrance(EntranceMarking.INACCESSIBLE, assessment = checked))) }
 
