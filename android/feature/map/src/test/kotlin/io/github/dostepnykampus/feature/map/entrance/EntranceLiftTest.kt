@@ -20,8 +20,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-/** Metry na stopień długości geograficznej przy szerokości kampusu, 51,11°. */
-private const val METERS_PER_LON = 69_970.0
+private const val METERS_PER_LON_AT_CAMPUS = 69_970.0
 private const val LAT = 51.11
 private const val LON = 17.06
 
@@ -48,7 +47,7 @@ class EntranceLiftTest {
             val lift = plans.liftNear(entrance())
 
             val stops = listOf("Piwnica", "Parter", "3 piętro")
-            assertEquals(EntranceLift(entranceId = "node/1", meters = 30, floors = stops), lift)
+            assertEquals("28 m", EntranceLift(entranceId = "node/1", meters = 30, floors = stops), lift)
             assertEquals("12 m", 10, Plans(lift(meters = 12.0)).liftNear(entrance())?.meters)
             assertEquals("najmniej 5 m", 5, Plans(lift(meters = 1.0)).liftNear(entrance())?.meters)
         }
@@ -59,7 +58,7 @@ class EntranceLiftTest {
         runTest {
             val plans = Plans(lift(meters = 20.0), floor = "p-1")
 
-            assertEquals(20, plans.liftNear(entrance(floor = "p-1"))?.meters)
+            assertEquals("piwnica", 20, plans.liftNear(entrance(floor = "p-1"))?.meters)
             assertNull("parter bez windy", plans.liftNear(entrance()))
         }
 
@@ -81,8 +80,8 @@ class EntranceLiftTest {
      */
     @Test
     fun namesFloorRange() {
-        assertEquals("piwnicy" to "3 piętra", liftRange(listOf("Piwnica", "Parter", "3 piętro")))
-        assertEquals("parteru" to "1 piętra", liftRange(listOf("Parter", "1 piętro")))
+        assertEquals("piwnica–3 piętro", "piwnicy" to "3 piętra", liftRange(listOf("Piwnica", "Parter", "3 piętro")))
+        assertEquals("parter–1 piętro", "parteru" to "1 piętra", liftRange(listOf("Parter", "1 piętro")))
         assertNull("nazwa spoza odmiany", liftRange(listOf("Piwnica", "Parter", "Antresola")))
         assertNull("jedno piętro", liftRange(listOf("Parter")))
     }
@@ -106,7 +105,7 @@ class EntranceLiftTest {
             function = "Winda",
             category = RoomCategory.ELEVATOR,
             geometry = NO_OUTLINE,
-            labelPoint = GeoPoint(longitude = LON + meters / METERS_PER_LON, latitude = LAT),
+            labelPoint = GeoPoint(longitude = LON + meters / METERS_PER_LON_AT_CAMPUS, latitude = LAT),
             isLabelled = false,
             liftId = id,
             liftFloors = listOf("p3", "p0", "p-1"),

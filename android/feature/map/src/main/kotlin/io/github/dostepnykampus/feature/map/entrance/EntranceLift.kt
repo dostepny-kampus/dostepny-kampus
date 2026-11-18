@@ -54,7 +54,7 @@ internal suspend fun FloorPlans.liftNear(entrance: Entrance): EntranceLift? {
  * jest mniej niż dwa albo któregoś skrajnego nie odmieniamy (odmieniamy piwnicę, parter i „N piętro”).
  */
 internal fun liftRange(floors: List<String>): Pair<String, String>? {
-    val from = floors.takeIf { it.size > 1 }?.first()?.let(::genitive)
+    val from = if (floors.size > 1) genitive(floors.first()) else null
     val to = floors.lastOrNull()?.let(::genitive)
     return if (from != null && to != null) from to to else null
 }
@@ -67,7 +67,7 @@ private fun genitive(label: String): String? {
     return when {
         name == "piwnica" -> "piwnicy"
         name == "parter" -> "parteru"
-        NUMBERED_FLOOR.matches(name) -> name.replace("piętro", "piętra")
+        NUMBERED_FLOOR.matches(name) -> name.replace(oldValue = "piętro", newValue = "piętra")
         else -> null
     }
 }
