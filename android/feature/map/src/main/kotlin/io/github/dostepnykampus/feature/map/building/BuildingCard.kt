@@ -81,8 +81,8 @@ sealed interface VisitAnswer {
 fun visitAnswer(entrances: List<OrderedEntrance>): VisitAnswer {
     if (entrances.isEmpty()) return VisitAnswer.NoData
     val recommended = entrances.firstOrNull { it.isRecommended }
-    val answer =
-        recommended?.entrance?.let { VisitAnswer.Accessible(id = it.id, name = it.name, doorWidthCm = it.doorWidthCm) }
+    val entrance = recommended?.entrance
+    val answer = entrance?.let { VisitAnswer.Accessible(id = it.id, name = it.name, doorWidthCm = it.doorWidthCm) }
     return answer ?: missingOrNone(entrances)
 }
 

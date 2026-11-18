@@ -131,12 +131,20 @@ class PwrEntranceListTest {
 
     private fun group(entrances: List<Entrance>) {
         val card = ready(entrances)
-        compose.setContent { Themed { EntrancesGroup(card, withAssessment = true, onShowEntrance = {}, onReport = {}) } }
+        compose.setContent {
+            Themed {
+                EntrancesGroup(card = card, withAssessment = true, onShowEntrance = {}, onReport = {})
+            }
+        }
     }
 
     private fun header(entrances: List<Entrance>) {
         val card = ready(entrances)
-        compose.setContent { Themed { CardHeader(symbol = "A-1", card = card, mode = CardMode.Expanded, onClose = {}) } }
+        compose.setContent {
+            Themed {
+                CardHeader(symbol = "A-1", card = card, mode = CardMode.Expanded, onClose = {})
+            }
+        }
     }
 
     @Composable
