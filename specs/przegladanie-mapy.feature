@@ -432,8 +432,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy mapa dalej się nie przesuwa
     Oraz brzeg mapy leży na brzegu prostokąta terenu
 
-  # @do-zrobienia #3108: brak testu zamknięcia karty na małym terenie.
-  @US2.8 @NFR-39 @aplikacja @do-zrobienia
+  @US2.8 @NFR-39 @aplikacja
   Scenariusz: Na małym terenie zamknięcie karty przesuwa mapę tylko do brzegu terenu
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „T-9 Atol”
     Oraz dotknął budynku T-9 na mapie

@@ -30,12 +30,12 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -80,6 +80,9 @@ private val CATALOG =
     """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[$BUILDINGS]}"""
 
 private fun mercatorY(latitude: Double): Double = asinh(tan(Math.toRadians(latitude)))
+
+private fun centerNearestInside(ideal: Double, half: Double, area: CampusBounds): Double =
+    ideal.coerceIn(minimumValue = mercatorY(area.south) + half, maximumValue = mercatorY(area.north) - half)
 
 /**
  * „Pokaż budynek na mapie” z V2 przez prawdziwe ekrany aplikacji do kamery podróbki widoku mapy: budynek jest widoczny,
@@ -312,14 +315,15 @@ class BuildingOnMapCameraTest {
     }
 
     /**
-     * Wiersz: K3, po „Pokaż” i geście osoby na V1 mała karta budynku i „Wstecz” → obraz mapy stoi dokładnie:
-     * środek widoku niżej o połowę paska i zasłoniętego dołu.
+     * Wiersz: K3, po „Pokaż” mała karta T-9 i „Wstecz” na małym terenie: widoczna część mapy pod paskiem wraca do
+     * prostokąta terenu najmniejszym przesunięciem w pionie, powiększenie zostaje. Na terenie, który mieści widok,
+     * mapa stoi (`keepsViewOnBack`).
+     * Scenariusz: przegladanie-mapy.feature: Na małym terenie zamknięcie karty przesuwa mapę tylko do brzegu terenu
      *
-     * Wymagania: US2.8, NFR-56
+     * Wymagania: US2.8, NFR-39, NFR-56
      */
-    @Ignore("Po „Pokaż budynek na mapie” zamknięcie karty przesuwa obraz o ok. 48 px; przyczyna: #3108")
     @Test
-    fun keepsScreenAfterShowAndBack() {
+    fun keepsSmallAreaViewInBounds() {
         isIdleReported = true
         showOnMap("T-9")
         compose.waitForIdle()
@@ -330,6 +334,21 @@ class BuildingOnMapCameraTest {
         val under = bottomInset
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
         compose.waitForIdle()
-        assertStays(above = above, under = under)
+        val (data, after) = shown.last()
+        val area = data.areas.first { "T-9" in it.symbols }.bounds
+        val perRadian = WORLD_DP_AT_ZOOM_0 * 2.0.pow(above.zoom) / (2 * PI) * density
+        val ideal = mercatorY(above.center.latitude) - (topInset + under) / 2 / perRadian
+        val half = (mapSize.height - topInset) / 2 / perRadian
+        val expected = centerNearestInside(ideal = ideal, half = half, area = area)
+        assertTrue("teren T-9 mieści widok, test nie sprawdza małego terenu", abs(expected - ideal) * perRadian > 1.0)
+        assertEquals("bez arkusza", 0.0, bottomInset, 0.0)
+        assertEquals("powiększenie zostaje", above.zoom, after.zoom, 0.0)
+        assertEquals("bez ruchu w poziomie", above.center.longitude, after.center.longitude, 1e-9)
+        assertEquals(
+            "widok w granicy terenu, przesunięty najmniej",
+            expected * perRadian,
+            mercatorY(after.center.latitude) * perRadian,
+            1.0,
+        )
     }
 }
