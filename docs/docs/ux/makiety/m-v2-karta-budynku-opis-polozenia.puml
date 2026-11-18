@@ -5,7 +5,8 @@
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek_karty("C-19", "<i>[nazwa budynku z danych]</i>")
-$karta_gora(0, "dostepne", "Zalecane wejście od strony C-20, od północy. Drzwi 100 cm.")
+$wiersz_wejsc("dostepne", "Zalecane wejście od strony C-20, od północy. Drzwi 100 cm.", "")
+--
 Z map i opisów, stan z <i>[data]</i>
 $sekcja("Wejścia")
 $wejscia_poczatek()

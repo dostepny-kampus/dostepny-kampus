@@ -69,7 +69,7 @@ Funkcja: Oznaczenie wejścia
         | wpisy                                                                               | nazwy              | opisy                                  |
         | jeden bez uwag na wschodniej ścianie, 30 m od budynku B-7                           | „Wejście”          | „Od strony B-7, od wschodu.”           |
         | jeden bez uwag na wschodniej ścianie, bez innego budynku do 40 m                    | „Wejście”          | „Od wschodu.”                          |
-        | jeden z uwagą „Do wejścia prowadzą schody.” na wschodniej ścianie, bez budynku do 40 m | „Wejście”          | „Od wschodu.”                          |
+        | jeden z uwagą „Do wejścia prowadzą schody.” na wschodniej ścianie, bez innego budynku do 40 m | „Wejście” | „Od wschodu.” |
         | dwa bez uwag na wschodniej ścianie 20 m od siebie, 30 m od budynku C-14             | dwa razy „Wejście” | dwa razy „Od strony C-14, od wschodu.” |
         | jeden przy wejściu głównym z OpenStreetMap bez nazwy, bez innego budynku do 40 m    | „Wejście główne”   | „Od wschodu.”                          |
 
