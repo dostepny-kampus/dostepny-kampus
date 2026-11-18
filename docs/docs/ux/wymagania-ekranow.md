@@ -173,7 +173,7 @@ Znak budynku znaczy tylko „otwórz kartę tego budynku”, więc nie stoi w wy
 
 Dotknięcie wiersza budynku zamyka arkusz i otwiera kartę V2 na niskiej wysokości. Mapa nie jedzie do budynku, tylko zachowuje się jak po dotknięciu konturu: stoi, chyba że karta zasłoniłaby cały widoczny kontur (wiersz o dotknięciu konturu). Osoba patrzyła na obiekt obok budynku, więc przelot gubiłby jej miejsce na mapie (US2.8, NFR-56).
 
-Gdy arkusz otwarto z karty tego budynku, karta wraca na tę samą wysokość i do tego samego miejsca przewinięcia. Przy skali czcionki co najmniej 1,5 karta otwiera się na cały ekran. Karta otwarta wierszem zamyka się jak karta otwarta konturem.
+Gdy arkusz otwarto z karty tego budynku, karta wraca na tę samą wysokość i do tego samego miejsca przewinięcia. Przy skali czcionki co najmniej 1,5 karta otwiera się rozwinięta. Karta otwarta wierszem zamyka się jak karta otwarta konturem.
 
 Arkusz bariery na dole mapy otwiera dotknięcie znaku. Bariery nie trzeba szukać na liście, a TalkBack dochodzi do niej przez listę budynków (NFR-19):
 

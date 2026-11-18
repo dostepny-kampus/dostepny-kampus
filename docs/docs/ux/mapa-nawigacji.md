@@ -110,7 +110,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1 | dotknięcie znaku bariery | V1, arkusz bariery | wszystkie | US1.3, US10.6 |
 | V1, arkusz bariery | wiersz „Budynek A-1”; „Zamknij” | V2 budynku bariery na niskiej wysokości, mapa jak po dotknięciu konturu; V1 | wszystkie | US2 |
 | V1 | dotknięcie znaku wejścia | V1, arkusz wejścia | wszystkie | US2.1, US3.3 |
-| V1, arkusz wejścia | wiersz „Budynek A-1” | V2 tego budynku na niskiej wysokości, mapa jak po dotknięciu konturu. Otwarty z karty budynku albo przy niej: ta karta na tej samej wysokości i tak samo przewinięta. Duża czcionka: V2 na cały ekran | wszystkie | US2.8, US3.3, NFR-20 |
+| V1, arkusz wejścia | wiersz „Budynek A-1” | V2 tego budynku na niskiej wysokości, mapa jak po dotknięciu konturu. Otwarty z karty budynku albo przy niej: ta karta na tej samej wysokości i tak samo przewinięta. Duża czcionka: V2 rozwinięta | wszystkie | US2.8, US3.3, NFR-20 |
 | V1, arkusz wejścia | „Zamknij” | V1 bez karty, także gdy arkusz otwarto z karty | wszystkie | NFR-53 |
 | V1, arkusz wejścia | „Wstecz” | otwarty z karty budynku albo przy niej: ta karta, na tej samej wysokości i tak samo przewinięta. Otwarty znakiem na mapie bez karty: V1 | wszystkie | US3.3, NFR-15, NFR-53 |
 | V1, arkusz wejścia | dotknięcie pustej mapy | V1 bez karty | wszystkie | NFR-53 |
