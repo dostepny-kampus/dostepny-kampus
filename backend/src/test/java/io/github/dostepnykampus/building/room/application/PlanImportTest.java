@@ -111,34 +111,42 @@ final class PlanImportTest {
     }
 
     private static PlanSource source() {
-        return new PlanSource() {
-            @Override
-            public List<PlanFloor> floors(final String service, final int layer) {
-                return PlanImportTest.FLOORS;
-            }
-
-            @Override
-            public List<PlanRoom> rooms(final String service, final int layer) {
-                return List.of(
-                    new PlanRoom(
-                        String.format("%s/%d", service, layer), "K1.D1.P0", "1", "Sala", "{}"
-                    )
-                );
-            }
-
-            @Override
-            public List<PlanEntrance> entrances(final String service, final int layer) {
-                return List.of(PlanImportTest.entrance(String.format("%s/%d", service, layer)));
-            }
-
-            @Override
-            public Optional<LocalDate> edited(final String service, final int layer) {
-                return Optional.of(LocalDate.of(2026, 11, layer + 1));
-            }
-        };
+        return new Source();
     }
 
     private static PlanEntrance entrance(final String floor) {
         return new PlanEntrance(floor, "{}", "NO_DATA", "Wejście", null, null, false);
+    }
+
+    /**
+     * Usługa z planami, która zwraca wpisy z adresem usługi i numerem warstwy.
+     *
+     * @since 0.1.0
+     */
+    private static final class Source implements PlanSource {
+
+        @Override
+        public List<PlanFloor> floors(final String service, final int layer) {
+            return PlanImportTest.FLOORS;
+        }
+
+        @Override
+        public List<PlanRoom> rooms(final String service, final int layer) {
+            return List.of(
+                new PlanRoom(
+                    String.format("%s/%d", service, layer), "K1.D1.P0", "1", "Sala", "{}"
+                )
+            );
+        }
+
+        @Override
+        public List<PlanEntrance> entrances(final String service, final int layer) {
+            return List.of(PlanImportTest.entrance(String.format("%s/%d", service, layer)));
+        }
+
+        @Override
+        public Optional<LocalDate> edited(final String service, final int layer) {
+            return Optional.of(LocalDate.of(2026, 11, layer + 1));
+        }
     }
 }

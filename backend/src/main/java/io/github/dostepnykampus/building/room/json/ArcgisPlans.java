@@ -116,10 +116,11 @@ final class ArcgisPlans implements PlanSource {
         final JsonNode editing = this.layers.description(service, layer).path("editingInfo");
         return Optional.of(editing.path("dataLastEditDate")).filter(JsonNode::isNumber)
             .or(() -> Optional.of(editing.path("lastEditDate")).filter(JsonNode::isNumber))
-            .map(
-                date -> Instant.ofEpochMilli(date.asLong()).atZone(ArcgisPlans.ZONE)
-                    .toLocalDate()
-            );
+            .map(ArcgisPlans::day);
+    }
+
+    private static LocalDate day(final JsonNode millis) {
+        return Instant.ofEpochMilli(millis.asLong()).atZone(ArcgisPlans.ZONE).toLocalDate();
     }
 
     private static String marking(final String adapted) {
