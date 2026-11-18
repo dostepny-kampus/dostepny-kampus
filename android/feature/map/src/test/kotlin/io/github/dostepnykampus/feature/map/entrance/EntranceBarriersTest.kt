@@ -107,6 +107,16 @@ class EntranceBarriersTest {
         compose.onRoot().captureRoboImage()
     }
 
+    /** Wiersz: typ bariery stoi krojem nagłówka części, nie większym. Wymagania: US2.2, NFR-21 */
+    @Test
+    fun showsTypeAsPartHeading() {
+        compose.setContent { EntranceSheetOnMap(recommended(barrier("z1"))) }
+
+        val heading = compose.onNodeWithText(BARRIERS).fetchSemanticsNode().size.height
+        val type = compose.onNodeWithText("Schody przy wejściu").fetchSemanticsNode().size.height
+        assertEquals("wysokość wiersza typu bariery", heading, type)
+    }
+
     private fun recommended(vararg barriers: AcceptedBarrier) =
         ShownEntrance(
             entrance = entrance("node/1", EntranceMarking.ACCESSIBLE).copy(name = "Wejście Cesarskie"),
