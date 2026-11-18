@@ -19,9 +19,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.github.dostepnykampus.core.testing.CHECK_ENTRANCES
 import io.github.dostepnykampus.core.testing.DeviceSteps
 import io.github.dostepnykampus.core.testing.inCatalog
+import io.github.dostepnykampus.core.testing.openedCard
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -33,7 +33,7 @@ private val BuildingA1InCatalog = inCatalog("A-1")
 
 /**
  * Ścieżka od wyszukania budynku do wejścia na emulatorze, na prawdziwej aktywności i grafie Hilt aplikacji:
- * wyszukanie budynku, karta V2 i „Którędy wejść” V3. Sieć w grafie zastępuje [NoServerNetworkModule]: serwera
+ * wyszukanie budynku i karta V2 z wierszem o wejściach. Sieć w grafie zastępuje [NoServerNetworkModule]: serwera
  * nie ma, więc katalog i wejścia zawsze pochodzą z pliku w aplikacji.
  *
  * Wymagania: US1, US2, US3, NFR-41
@@ -62,14 +62,16 @@ class CampusPathDeviceTest {
     }
 
     /**
-     * Wiersz: V1, wpisanie symbolu i wybór wyniku → V2 z odpowiedzią o wejściu zalecanym.
+     * Wiersz: V1, wpisanie symbolu i wybór wyniku → V2 z wierszem o wejściach. Wejście A-1 w pliku nie ma danych
+     * o dostępności, więc karta mówi „Brak danych o wejściach” i nie ma „Pokaż wejście na mapie”.
      *
-     * Wymagania: US1.1, US2, US3.1
+     * Wymagania: US1.1, US2, US3.1, BR-25
      */
     @Test
     fun goesFromSearchToEntrances() {
         steps.openCard("A-1")
-        steps.waitFor(hasText("Zalecane:", substring = true))
+        steps.waitFor(hasText("Brak danych o wejściach"))
+        compose.onAllNodes(hasText("Pokaż wejście na mapie")).assertCountEquals(0)
     }
 
     /**
@@ -82,7 +84,7 @@ class CampusPathDeviceTest {
         compose.onNode(hasText("Pokaż listę")).performClick()
         steps.waitFor(BuildingA1InCatalog)
         compose.onAllNodes(BuildingA1InCatalog).onFirst().performClick()
-        steps.waitFor(hasText(CHECK_ENTRANCES))
+        steps.waitFor(openedCard())
     }
 
     /**
@@ -103,13 +105,13 @@ class CampusPathDeviceTest {
             compose.onNode(hasSetTextAction()).assertIsFocused()
             DeviceEvidence.record("v1-keyboard")
             compose.onAllNodes(BuildingA1InCatalog).onFirst().performClick()
-            steps.waitFor(hasText(CHECK_ENTRANCES))
+            steps.waitFor(openedCard())
             compose.waitUntil(timeoutMillis = WAIT_MS) { !DeviceEvidence.isKeyboardVisible() }
             compose.onAllNodes(hasSetTextAction() and isFocused()).assertCountEquals(0)
             DeviceEvidence.record("v2-no-keyboard")
             Espresso.pressBack()
             compose.waitUntil(timeoutMillis = WAIT_MS) {
-                compose.onAllNodes(hasText(CHECK_ENTRANCES)).fetchSemanticsNodes().isEmpty()
+                compose.onAllNodes(openedCard()).fetchSemanticsNodes().isEmpty()
             }
             steps.waitFor(hasSetTextAction())
             compose.waitUntil(timeoutMillis = WAIT_MS) {

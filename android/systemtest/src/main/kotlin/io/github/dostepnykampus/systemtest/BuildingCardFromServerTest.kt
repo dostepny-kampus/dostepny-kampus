@@ -6,20 +6,19 @@
 package io.github.dostepnykampus.systemtest
 
 import androidx.compose.ui.test.assertCountEquals
-import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.dostepnykampus.app.MainActivity
 import io.github.dostepnykampus.core.testing.DeviceSteps
+import io.github.dostepnykampus.core.testing.openedCard
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 private const val WAIT_MS = 30_000L
-private const val CARD_HEIGHT_HANDLE = "Wysokość karty"
 private const val SERVER_ASSESSMENT = "Z map i opisów, stan z "
 
 /**
@@ -56,9 +55,7 @@ class BuildingCardFromServerTest {
     @Test
     fun cardA1FromServer() {
         steps.openCard("A-1")
-        val handle = hasContentDescription(CARD_HEIGHT_HANDLE)
-        steps.waitFor(handle)
-        compose.onNode(handle).performClick()
+        compose.onNode(openedCard()).performClick()
         val assessment = hasText(SERVER_ASSESSMENT, substring = true)
         steps.waitFor(assessment)
         compose.onAllNodes(assessment).assertCountEquals(1)
