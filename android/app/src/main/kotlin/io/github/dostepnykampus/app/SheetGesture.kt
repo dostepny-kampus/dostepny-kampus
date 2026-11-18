@@ -63,7 +63,7 @@ internal fun SheetHeight.reach(): Set<SheetHeight> =
  */
 internal fun expandedTop(window: Float, low: Float, content: Float): Float {
     val top = if (content > 0f && content * 2 <= window) window - content else 0f
-    return minOf(top, window - low)
+    return minOf(a = top, b = window - low)
 }
 
 /**
