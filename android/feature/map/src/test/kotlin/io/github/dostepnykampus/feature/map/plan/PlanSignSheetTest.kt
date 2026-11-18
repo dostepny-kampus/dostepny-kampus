@@ -9,11 +9,13 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
+import io.github.dostepnykampus.feature.map.overlay.SheetExits
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Rule
@@ -31,26 +33,35 @@ class PlanSignSheetTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private var closed = 0
+    private val clicks = mutableListOf<String>()
 
-    /** Wiersz: toaleta dostosowana na planie ma nagłówek z fokusem, budynek z piętrem z danych i „Zamknij”. */
+    /**
+     * Wiersz: toaleta dostosowana na planie ma nagłówek z fokusem, „Zamknij”, wiersz budynku i piętro z danych.
+     * Scenariusz (częściowo, przykład: toaleta): przegladanie-mapy.feature: Wiersz budynku w arkuszu otwiera kartę
+     *   budynku bez przelotu mapy
+     *
+     * Wymagania: US16.1, US2.8, NFR-18
+     */
     @Test
     fun showsToilet() {
         show("wc")
 
         compose.onNodeWithText("Toaleta dostosowana").assertIsFocused()
-        compose.onNodeWithText("Budynek A-1, parter").assertExists()
+        compose.onNodeWithText("Parter").assertExists()
+        compose.onNodeWithText("Budynek A-1, parter").assertDoesNotExist()
         compose.onNodeWithText("Zamknij").assertHeightIsAtLeast(48.dp).performClick()
-        assertEquals("„Zamknij” zamyka arkusz", 1, closed)
+        compose.onNodeWithContentDescription("Budynek A-1").assertHeightIsAtLeast(48.dp).performClick()
+        assertEquals("„Zamknij”, potem wiersz budynku", listOf("zamknij", "budynek A-1"), clicks)
     }
 
-    /** Wiersz: schody na planie mają nagłówek „Schody” i piętro z danych PWr. Wymagania: US16.1 */
+    /** Wiersz: schody na planie mają nagłówek „Schody”, wiersz budynku i piętro z danych PWr. Wymagania: US16.1 */
     @Test
     fun showsStairs() {
         show("schody")
 
         compose.onNodeWithText("Schody").assertExists()
-        compose.onNodeWithText("Budynek A-1, 1 piętro").assertExists()
+        compose.onNodeWithContentDescription("Budynek A-1").assertExists()
+        compose.onNodeWithText("1 piętro").assertExists()
     }
 
     /** Pomieszczenie spoza planu nie ma arkusza. Wymagania: US16.1 */
@@ -82,5 +93,9 @@ class PlanSignSheetTest {
         compose.onRoot().captureRoboImage()
     }
 
-    private fun show(id: String) = compose.showPlanSheet(id = id, onClose = { closed++ })
+    private fun show(id: String) =
+        compose.showPlanSheet(
+            id = id,
+            exits = SheetExits(onClose = { clicks += "zamknij" }, onBuilding = { clicks += "budynek $it" }),
+        )
 }
