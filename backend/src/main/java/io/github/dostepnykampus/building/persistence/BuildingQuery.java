@@ -243,8 +243,7 @@ public final class BuildingQuery implements Buildings {
     private static Entrance entrance(final ResultSet rows) throws SQLException {
         return new Entrance(
             BuildingQuery.text(rows, "id"),
-            rows.getString("name"),
-            rows.getBoolean("generated_name"),
+            new Entrance.Name(rows.getString("name"), rows.getBoolean("generated_name")),
             rows.getString("type"),
             rows.getBoolean("main"),
             BuildingQuery.text(rows, "location"),

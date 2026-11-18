@@ -156,16 +156,17 @@ public final class PwrEntranceSteps {
             String.format("Scenariusz podaje nieznane pola wpisu: %s", fields),
             found.matches(), Matchers.is(true)
         );
-        final String body = String.format(
-            String.join(
-                "",
-                "{\"features\":[{\"geometry\":%s,\"properties\":{\"Pietro\":\"%s\",",
-                "\"Czy_dostos\":\"%s\",\"Szerokosc\":%s,\"Uwagi\":%s}}]}"
-            ),
-            this.inside(building), PwrEntranceSteps.FLOOR.id(), found.group(1), found.group(2),
-            PwrEntranceSteps.quoted(found.group(3))
+        this.serve(
+            String.format(
+                String.join(
+                    "",
+                    "{\"features\":[{\"geometry\":%s,\"properties\":{\"Pietro\":\"%s\",",
+                    "\"Czy_dostos\":\"%s\",\"Szerokosc\":%s,\"Uwagi\":%s}}]}"
+                ),
+                this.inside(building), PwrEntranceSteps.FLOOR.id(), found.group(1),
+                found.group(2), PwrEntranceSteps.quoted(found.group(3))
+            )
         );
-        this.serve(body);
     }
 
     /**
@@ -250,16 +251,6 @@ public final class PwrEntranceSteps {
         );
     }
 
-    private void serve(final String body) throws IOException {
-        final HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
-        server.createContext(
-            String.format("/FeatureServer/%d/query", PwrEntranceSteps.LAYER),
-            exchange -> PwrEntranceSteps.send(exchange, body)
-        );
-        server.start();
-        this.service = server;
-    }
-
     /**
      * Karta budynku podaje wejście z warstwy albo wyjście ewakuacyjne.
      *
@@ -290,6 +281,16 @@ public final class PwrEntranceSteps {
         if (server != null) {
             server.stop(0);
         }
+    }
+
+    private void serve(final String body) throws IOException {
+        final HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
+        server.createContext(
+            String.format("/FeatureServer/%d/query", PwrEntranceSteps.LAYER),
+            exchange -> PwrEntranceSteps.send(exchange, body)
+        );
+        server.start();
+        this.service = server;
     }
 
     private JsonNode card(final String building) throws Exception {
