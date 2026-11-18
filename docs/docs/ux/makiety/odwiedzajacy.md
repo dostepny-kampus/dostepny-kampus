@@ -215,8 +215,8 @@ Czynność główna: brak; odpowiedź, którym wejściem wejść, podała już k
 | --- | --- |
 | Arkusz otwiera „Pokaż wejście na mapie” z V2, dotknięcie wiersza wejścia na V2 i dotknięcie znaku wejścia na mapie | US2.1, US3.3 |
 | Wejście zaznaczone pinezką z podpisem nazwy; kamera stoi na wejściu. Arkusz ma najwyżej pół ekranu, a dłuższa treść się przewija; wejście stoi na środku mapy nad arkuszem | US3.3, NFR-19, NFR-53 |
-| Znak oznaczenia, nagłówek „Wejście” i obrysowany „Zamknij”; po otwarciu fokus TalkBack na nagłówku. „Zamknij” zamyka arkusz razem z kartą i zostawia mapę. „Wstecz” arkusza otwartego z karty V2 wraca do karty: ta sama wysokość, to samo przewinięcie |
-| Pod nagłówkiem wiersz budynku: znak budynku, „Budynek A-1” i strzałka. Otwiera V2 na niskiej wysokości, a arkusz otwarty z karty wraca do niej; mapa zachowuje się jak po dotknięciu konturu | US2.8, US3.3, NFR-18, decyzja z 18.11.2026 | US2.1, US3.3, NFR-18, NFR-21, NFR-53 |
+| Znak oznaczenia, nagłówek „Wejście” i obrysowany „Zamknij”; po otwarciu fokus TalkBack na nagłówku. „Zamknij” zamyka arkusz razem z kartą i zostawia mapę. „Wstecz” arkusza otwartego z karty V2 wraca do karty: ta sama wysokość, to samo przewinięcie | US2.1, US3.3, NFR-18, NFR-21, NFR-53 |
+| Pod nagłówkiem wiersz budynku: znak budynku, „Budynek A-1” i strzałka. Otwiera V2 na niskiej wysokości, a arkusz otwarty z karty wraca do niej; mapa zachowuje się jak po dotknięciu konturu | US2.8, US3.3, NFR-18, decyzja z 18.11.2026 |
 | Pod słowem oznaczenia „Zalecane.”, data i źródło | US17.3, BR-24, BR-25, PW-3 |
 | Części „Dojście”, „Drzwi” z szerokością i „Za drzwiami” z windą i odległością w linii prostej. Te same części z nagłówkami przy każdym wejściu; część bez danych nie stoi. Przy wejściu z planów PWr nie ma „Za drzwiami” | US3.3, US16.3, BR-25 |
 | „Bariery przy tym wejściu”: typ i uciążliwość jako zastępniki, bo deklaracja A-1 nie podaje barier przy tym wejściu | US2.2, US3.3, PW-3 |

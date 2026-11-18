@@ -25,7 +25,9 @@ Pasek dolny jest na ekranach V1, V2, V5 i L2. Prowadzi do mapy, zgłoszenia szyb
 
 ![Diagram: od uruchomienia przez V1 do V2, arkusza wejścia, arkusza znaku i planu piętra jako stanów V1, arkusza windy i zgłoszenia szybkiego](../_generated/nawigacja-gosc-mapa.svg)
 
-Główna droga to V1 i karta V2, która od razu odpowiada, którym wejściem wejść. Dalej „Pokaż wejście na mapie” prowadzi do V1 z zaznaczonym wejściem i jego arkuszem. Ten sam arkusz otwierają wiersz wejścia na V2 i znak wejścia na mapie, a w arkuszu osoba zgłasza barierę przy tym wejściu. Wiersz „Budynek A-1” pod nagłówkiem arkusza otwiera kartę budynku. „Zamknij” zamyka arkusz razem z kartą, a „Wstecz” wraca do karty, z której arkusz otwarto.
+Główna droga to V1 i karta V2, która od razu odpowiada, którym wejściem wejść. Dalej „Pokaż wejście na mapie” prowadzi do V1 z zaznaczonym wejściem i jego arkuszem. Ten sam arkusz otwierają wiersz wejścia na V2 i znak wejścia na mapie, a w arkuszu osoba zgłasza barierę przy tym wejściu.
+
+W arkuszu wiersz „Budynek A-1” pod nagłówkiem otwiera kartę budynku. „Zamknij” zamyka arkusz razem z kartą, a „Wstecz” wraca do karty, z której arkusz otwarto.
 
 Z V2 osoba otwiera też plan piętra na V1. Mapa ma jeszcze listę terenów oraz przybliżenie budynku szczegółowego na plan piętra.
 
@@ -135,7 +137,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V2, pełny ekran otwarty od razu | „Pokaż budynek na mapie” | V1 w widoku mapy z zaznaczonym budynkiem, bez karty; zapamiętany wybór „Mapa” | wszystkie | US2.9, NFR-19, decyzja 116 |
 | V2 | „Pokaż wejście na mapie” pod wierszem o wejściach albo przy wejściu zalecanym | V1 z zaznaczonym wejściem zalecanym i jego arkuszem; przy dużej czcionce arkusz na cały ekran; „Wstecz” arkusza wraca do karty, „Zamknij” zostawia mapę | wszystkie | US2.1, US3.3, BR-25 |
 | V2, niska wysokość | dotknięcie wystającego nagłówka „Wejścia” | V2 na połowie ekranu | wszystkie | US2.8, NFR-53 |
-| V2 | dotknięcie wiersza wejścia na liście „Wejścia” | V1 z zaznaczonym tym wejściem i jego arkuszem; „Wstecz” arkusza wraca do karty na tej samej wysokości i w tym samym miejscu przewinięcia listy, „Zamknij” zostawia mapę | wszystkie | US3.3 |
+| V2 | dotknięcie wiersza wejścia na liście „Wejścia” | V1 z zaznaczonym tym wejściem i jego arkuszem; „Wstecz” arkusza: karta na tej samej wysokości i z tym samym przewinięciem; „Zamknij”: mapa | wszystkie | US3.3 |
 | V2, wiersz kilku wejść bez danych | „Zgłoś barierę przy wejściu” | V4, krok 1, bez wybranego wejścia; Gość: L1, potem V4 | wszystkie | US4.6, US14.2 |
 | V2, stan „brak zgłoszeń przyjętych” | „Zgłoś barierę” | V4; Gość: L1 | wszystkie | US4, US14.2 |
 | V2, pełny ekran otwarty od razu | „Wstecz” | ekran sprzed V2, np. lista V1 | wszystkie | NFR-15, US2.9 |
