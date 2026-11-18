@@ -165,8 +165,8 @@ class MapEntranceTouchTest {
 
     /**
      * Wiersz: arkusz otwarty znakiem bez karty, wiersz „Budynek C-13” zamyka arkusz i otwiera kartę.
-     * Scenariusz (częściowo, przykład: znak wejścia): przegladanie-mapy.feature: Wiersz budynku w arkuszu otwiera
-     *   kartę budynku bez przelotu mapy
+     * Scenariusz (częściowo, przykład: dotknie znaku wejścia A-1 na mapie): przegladanie-mapy.feature:
+     *   Wiersz budynku w arkuszu otwiera kartę budynku bez przelotu mapy
      *
      * Wymagania: US2.8, US3.3
      */
@@ -180,7 +180,12 @@ class MapEntranceTouchTest {
         compose.runOnIdle { assertEquals("karta budynku", listOf("C-13"), opened) }
     }
 
-    /** Wiersz: arkusz otwarty przy karcie budynku, wiersz budynku wraca do tej karty. Wymagania: US2.8 */
+    /**
+     * Wiersz: arkusz otwarty przy karcie budynku, wiersz budynku wraca do tej karty.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Wiersz budynku w arkuszu otwartym z karty wraca do tej karty
+     *
+     * Wymagania: US2.8
+     */
     @Test
     fun rowReturnsToCard() {
         start(isCardOpen = true)
