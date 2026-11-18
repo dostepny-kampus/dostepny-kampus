@@ -30,13 +30,14 @@ Funkcja: Wyszukanie sali
       | sala 012 jest na piętrze wejścia zalecanego A-1                      | 012  | wejście zalecane, sala z przybliżoną odległością od wejścia                             |
       | dane A-1 nie podają piętra wejścia zalecanego                        | 329  | wejście zalecane z dopiskiem, że przyjęto parter, winda, piętro sali, sala              |
 
-  @US18.3 @aplikacja
+  # @do-zrobienia #1481: arkusz sali ma jeszcze „Pokaż opis budynku” zamiast wiersza budynku.
+  @US18.3 @aplikacja @do-zrobienia
   Szablon scenariusza: Bez sali w danych albo bez drogi bez schodów aplikacja mówi to zdaniem
     # Dane testowe, a nie stan faktyczny budynku A-1.
     Zakładając, że <sytuacja>
     Jeżeli Gość niezalogowany wyszuka „A-1 <numer>”
     Wtedy widzi zdanie, które mówi, czego brakuje
-    Oraz widzi propozycję „Pokaż opis budynku”
+    Oraz widzi wiersz „Budynek A-1”, który otwiera opis budynku
 
     Przykłady:
       | sytuacja                                                     | numer |

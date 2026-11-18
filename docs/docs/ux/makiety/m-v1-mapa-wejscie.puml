@@ -1,7 +1,8 @@
 @startsalt
 ' V1 Mapa kampusu, arkusz wejścia zalecanego po „Pokaż wejście na mapie” z V2 albo po dotknięciu znaku
 ' wejścia (US2.1, US3.3). Arkusz nie ma czynności głównej: odpowiedź podała karta V2. Każde wejście ma ten
-' sam układ części; innych wejść arkusz nie pokazuje, są na liście „Wejścia” karty V2.
+' sam układ części; innych wejść arkusz nie pokazuje, są na liście „Wejścia” karty V2. Wiersz budynku
+' pod nagłówkiem otwiera kartę V2; nagłówek nie powtarza budynku.
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
@@ -10,7 +11,8 @@ $pole_tekstowe("Szukaj budynku, np. C-13")
 $przycisk("Kampus główny ▾")
 $mapa("mapa ulic OpenStreetMap; wejście A-1 z pinezką i podpisem Wejście bramą od ul. Norwida, pozostałe wejścia ze znakami", "", "info")
 $ramka()
-{ <&check> <b>Wejście, budynek A-1</b> | [Zamknij] }
+{ <&check> <b>Wejście</b>$dk_spacje(14) | [Zamknij] }
+$wiersz_budynku()
 <b>Dostępne</b>
 Zalecane. Z map i opisów,
 stan z <i>[data]</i>

@@ -1,0 +1,20 @@
+@startsalt
+' V1 Mapa kampusu, arkusz toalety po dotknięciu znaku toalety na planie (US16.1). Wiersz budynku
+' pod nagłówkiem otwiera kartę V2; piętro stoi pod nim.
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_mapy("Pokaż listę")
+$pole_tekstowe("Szukaj budynku, np. C-13")
+$przycisk("Kampus główny ▾")
+$mapa("plan parteru A-1 z wybranym znakiem toalety dostosowanej; kolumna pięter po lewej pod przyciskiem terenu, wybrany parter", "", "info")
+Źródło: Politechnika Wrocławska
+$ramka()
+{ <b>Toaleta dostosowana</b> | [Zamknij] }
+$wiersz_budynku()
+Parter
+$tekst("[uwaga z danych PWr]", "i")
+}
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt
