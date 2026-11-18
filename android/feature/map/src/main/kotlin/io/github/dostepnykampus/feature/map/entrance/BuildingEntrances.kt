@@ -63,9 +63,7 @@ fun focusedBuilding(focus: MapFocus?): String? =
 @HiltViewModel
 class BuildingEntrancesViewModel
     @Inject
-    constructor(
-        private val entrances: ServerEntrances,
-    ) : ViewModel() {
+    constructor(entrances: ServerEntrances) : ViewModel() {
         private val symbols = MutableStateFlow<String?>(null)
 
         /** Wejścia wybranego budynku; `null` bez budynku i do pierwszej odpowiedzi. */
