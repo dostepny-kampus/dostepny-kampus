@@ -3,8 +3,8 @@
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
-$naglowek("<i>[symbol]</i>", "<i>[nazwa budynku z danych]</i>")
-$karta_gora(0, "Brak danych o wejściach")
+$naglowek_karty("<i>[symbol]</i>", "<i>[nazwa budynku z danych]</i>")
+$karta_gora(0, "bez_danych")
 Z map i opisów, stan z <i>[data]</i>
 $sekcja("Wejścia")
 $wejscie_karty($niedostepne(), "<i>[nazwa wejścia z danych]</i>")
