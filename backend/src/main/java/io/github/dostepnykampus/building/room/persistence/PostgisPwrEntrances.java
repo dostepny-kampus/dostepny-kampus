@@ -154,18 +154,23 @@ final class PostgisPwrEntrances {
         final String sql, final String building, final Set<String> known,
         final List<PlanEntrance> entrances
     ) {
-        final String[] approaches = entrances.stream().map(PlanEntrance::approach)
-            .toArray(String[]::new);
-        final Integer[] widths = entrances.stream().map(PlanEntrance::doorWidthCm)
-            .toArray(Integer[]::new);
         return this.jdbc.sql(sql).param("building", building)
             .param("known", known.toArray(String[]::new))
             .param("floors", entrances.stream().map(PlanEntrance::floorId).toArray(String[]::new))
             .param("points", entrances.stream().map(PlanEntrance::point).toArray(String[]::new))
             .param("markings", entrances.stream().map(PlanEntrance::marking).toArray(String[]::new))
             .param("names", entrances.stream().map(PlanEntrance::name).toArray(String[]::new))
-            .param("approaches", approaches).param("widths", widths)
+            .param("approaches", PostgisPwrEntrances.approaches(entrances))
+            .param("widths", PostgisPwrEntrances.widths(entrances))
             .param("exits", PostgisPwrEntrances.flags(entrances));
+    }
+
+    private static String[] approaches(final List<PlanEntrance> entrances) {
+        return entrances.stream().map(PlanEntrance::approach).toArray(String[]::new);
+    }
+
+    private static Integer[] widths(final List<PlanEntrance> entrances) {
+        return entrances.stream().map(PlanEntrance::doorWidthCm).toArray(Integer[]::new);
     }
 
     private static Boolean[] flags(final List<PlanEntrance> entrances) {
