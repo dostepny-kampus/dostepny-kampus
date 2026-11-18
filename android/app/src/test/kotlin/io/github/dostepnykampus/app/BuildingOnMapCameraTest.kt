@@ -35,7 +35,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -237,7 +236,13 @@ class BuildingOnMapCameraTest {
         assertEquals("bez arkusza", 0.0, bottomInset, 0.0)
         assertEquals("powiększenie zostaje", above.zoom, after.zoom, 0.0)
         assertEquals("bez ruchu w poziomie", above.center.longitude, after.center.longitude, 1e-9)
-        assertEquals("ekran stoi: środek niżej o pół paska i karty", (topInset + under) / 2, shift, 1.0)
+        val cameras = shown.map { it.second }.distinct()
+        assertEquals(
+            "ekran stoi: środek niżej o pół paska $topInset i karty $under, mapa $mapSize, kamery: $cameras",
+            (topInset + under) / 2,
+            shift,
+            1.0,
+        )
     }
 
     /** Wiersz: K4, po „Pokaż budynek na mapie” strzałka przesuwa mapę i fokus jej nie cofa. Wymagania: US2.9, NFR-53 */
@@ -317,7 +322,6 @@ class BuildingOnMapCameraTest {
      *
      * Wymagania: US2.8, NFR-56
      */
-    @Ignore("Po „Pokaż budynek na mapie” zamknięcie karty przesuwa obraz o ok. 48 px; przyczyna: #3108")
     @Test
     fun keepsScreenAfterShowAndBack() {
         isIdleReported = true
