@@ -83,7 +83,7 @@ class EntranceBarriersTest {
 
     /** Wiersz: zalecane wejście dostaje tylko zgłoszenia przy sobie, a wejście niezalecane żadnych. */
     @Test
-    fun takesBarriersOfRecommendedEntranceOnly() {
+    fun keepsBarriersOfRecommended() {
         val catalog =
             BuildingCatalog(
                 buildings = emptyList(),

@@ -53,11 +53,10 @@ internal fun BuildingCatalog.shownEntrance(id: String, barriers: List<AcceptedBa
     val ordered = orderedEntrances(entrances.filter { it.buildingSymbol == entrance.buildingSymbol })
     val isRecommended = ordered.any { it.isRecommended && it.entrance.id == id }
     val others = ordered.filter { !it.isRecommended && it.entrance.marking == EntranceMarking.ACCESSIBLE }
-    if (!isRecommended) return ShownEntrance(entrance)
     return ShownEntrance(
         entrance = entrance,
-        isRecommended = true,
-        others = others.map { it.entrance },
-        barriers = barriers.filter { it.entranceId == id },
+        isRecommended = isRecommended,
+        others = others.map { it.entrance }.takeIf { isRecommended }.orEmpty(),
+        barriers = barriers.filter { isRecommended && it.entranceId == id },
     )
 }
