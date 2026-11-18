@@ -56,7 +56,7 @@ class SheetHeaderDragTest {
      * Scenariusz (częściowo): przegladanie-mapy.feature: Uchwyt zmienia wysokość karty bez przeciągania
      */
     @Test
-    fun lowersFromFullOnHeaderDragWhenScrolled() {
+    fun lowersOnHeaderDrag() {
         open()
         val handle = compose.onNodeWithContentDescription(EXPAND_HANDLE)
         handle.performClick()
