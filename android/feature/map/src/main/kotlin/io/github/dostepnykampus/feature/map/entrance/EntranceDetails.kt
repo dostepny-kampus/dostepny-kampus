@@ -21,9 +21,8 @@ import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.feature.map.R
 
 /**
- * Opis dojścia i szerokość drzwi wejścia [shown]: przy wejściu zalecanym każde w swojej części z nagłówkiem, przy
- * innym wejściu bez nagłówków. Pusty opis i szerokość 0 nic nie dodają; bez obu kolumna jest
- * pusta.
+ * Opis dojścia i szerokość drzwi wejścia [shown], każde w swojej części z nagłówkiem. Pusty opis i szerokość 0 nic
+ * nie dodają; bez obu kolumna jest pusta.
  *
  * Wymagania: US2.1, US3.3, BR-27
  */
@@ -32,13 +31,8 @@ internal fun EntranceDetails(shown: ShownEntrance) {
     val approach = shown.entrance.approach.takeIf { it.isNotEmpty() }
     val door = doorWidthText(shown.entrance)
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        if (shown.isRecommended) {
-            approach?.let { SheetPart(title = stringResource(R.string.mapa_wejscie_dojscie), text = it) }
-            door?.let { SheetPart(title = stringResource(R.string.mapa_wejscie_drzwi), text = it) }
-        } else {
-            door?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
-            approach?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
-        }
+        approach?.let { SheetPart(title = stringResource(R.string.mapa_wejscie_dojscie), text = it) }
+        door?.let { SheetPart(title = stringResource(R.string.mapa_wejscie_drzwi), text = it) }
     }
 }
 
