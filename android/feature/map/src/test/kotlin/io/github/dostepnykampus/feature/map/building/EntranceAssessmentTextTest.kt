@@ -137,10 +137,7 @@ class EntranceAssessmentTextTest {
             )
         }
 
-    private fun show(
-        server: List<Entrance>,
-        screen: @Composable (BuildingCardViewModel) -> Unit,
-    ) {
+    private fun show(server: List<Entrance>, screen: @Composable (BuildingCardViewModel) -> Unit) {
         val viewModel =
             BuildingCardViewModel(
                 symbol = SYMBOL,

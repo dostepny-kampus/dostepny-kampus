@@ -82,7 +82,7 @@ class ComponentsScreenshotTest {
                     }
                 }
                 PinnedActionBar(modifier = Modifier.padding(top = Odstepy.l)) {
-                    PinnedButton(text = "Pokaż wejście na mapie", onClick = {}, modifier = Modifier.weight(3f))
+                    PinnedButton(text = "Zgłoś barierę", onClick = {}, modifier = Modifier.weight(3f))
                     PinnedButton(
                         text = "Pokaż na mapie",
                         onClick = {},
