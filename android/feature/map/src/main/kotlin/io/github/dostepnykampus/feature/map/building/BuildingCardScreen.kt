@@ -185,11 +185,6 @@ private fun FactsOrMissing(
     if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = onRetry)
 }
 
-/**
- * Kreska między górą karty a pełnym opisem.
- *
- * Wymagania: US2.8, NFR-53
- */
 @Composable
 private fun DescriptionLine() =
     HorizontalDivider(Modifier.testTag(DESCRIPTION_LINE_TAG), color = MaterialTheme.colorScheme.outlineVariant)
