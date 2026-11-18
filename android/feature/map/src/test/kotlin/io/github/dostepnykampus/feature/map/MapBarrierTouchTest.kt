@@ -91,8 +91,8 @@ class MapBarrierTouchTest {
 
     /**
      * Wiersz: arkusz bariery, wiersz budynku otwiera V2 budynku bariery i zamyka arkusz (PW-5).
-     * Scenariusz (częściowo, przykład: znak bariery): przegladanie-mapy.feature: Wiersz budynku w arkuszu otwiera
-     *   kartę budynku bez przelotu mapy
+     * Scenariusz (częściowo, przykład: dotknie znaku bariery przy budynku A-1): przegladanie-mapy.feature:
+     *   Wiersz budynku w arkuszu otwiera kartę budynku bez przelotu mapy
      *
      * Wymagania: US1.5, US2.8
      */

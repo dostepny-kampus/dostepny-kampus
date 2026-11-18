@@ -37,8 +37,8 @@ class PlanSignSheetTest {
 
     /**
      * Wiersz: toaleta dostosowana na planie ma nagłówek z fokusem, „Zamknij”, wiersz budynku i piętro z danych.
-     * Scenariusz (częściowo, przykład: toaleta): przegladanie-mapy.feature: Wiersz budynku w arkuszu otwiera kartę
-     *   budynku bez przelotu mapy
+     * Scenariusz (częściowo, przykład: dotknie znaku toalety dostosowanej na planie A-1): przegladanie-mapy.feature:
+     *   Wiersz budynku w arkuszu otwiera kartę budynku bez przelotu mapy
      *
      * Wymagania: US16.1, US2.8, NFR-18
      */
