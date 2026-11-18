@@ -23,7 +23,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.support.StaticApplicationContext;
 
 /**
- * Polecenie importu pobiera warstwy budynku i zapisuje plan.
+ * Polecenie importu pobiera warstwy budynku i warstwę wejść mapy kampusu i zapisuje plan.
  *
  * <p>Wymagania: US16, NFR-47, BR-24</p>
  *
@@ -39,8 +39,19 @@ final class PlanImportTest {
         List.of(
             new PlanSettings.Layer("D-1", "D1D2", "K1.D1", 5, 1, 0),
             new PlanSettings.Layer("D-2", "D1D2", "K1.D2", 5, 3, 2)
-        )
+        ),
+        new PlanSettings.Campus("Kampus", 29)
     );
+
+    /**
+     * Usługa planów obu budynków.
+     */
+    private static final String PLANS = "https://plany.test/services/D1D2/FeatureServer";
+
+    /**
+     * Warstwa wejść mapy kampusu z uwagami i szerokością drzwi.
+     */
+    private static final String CAMPUS = "https://plany.test/services/Kampus/FeatureServer/29";
 
     /**
      * Piętra wspólnej warstwy pięter dwóch budynków.
@@ -68,10 +79,10 @@ final class PlanImportTest {
             "Import zapisał piętra innego budynku albo pomieszczenia lub wejścia z cudzej warstwy",
             saved,
             Matchers.contains(
-                "D-1 [K1.D1.P0] [https://plany.test/services/D1D2/FeatureServer/1] [%s/0]"
-                    .formatted("https://plany.test/services/D1D2/FeatureServer"),
-                "D-2 [K1.D2.P0] [https://plany.test/services/D1D2/FeatureServer/3] [%s/2]"
-                    .formatted("https://plany.test/services/D1D2/FeatureServer")
+                "D-1 [K1.D1.P0] [https://plany.test/services/D1D2/FeatureServer/1] [%s/0 %s]"
+                    .formatted(PlanImportTest.PLANS, PlanImportTest.CAMPUS),
+                "D-2 [K1.D2.P0] [https://plany.test/services/D1D2/FeatureServer/3] [%s/2 %s]"
+                    .formatted(PlanImportTest.PLANS, PlanImportTest.CAMPUS)
             )
         );
     }
@@ -140,8 +151,14 @@ final class PlanImportTest {
         }
 
         @Override
-        public List<PlanEntrance> entrances(final String service, final int layer) {
-            return List.of(PlanImportTest.entrance(String.format("%s/%d", service, layer)));
+        public List<PlanEntrance> entrances(
+            final String service, final int layer, final String campus, final int notes
+        ) {
+            return List.of(
+                PlanImportTest.entrance(
+                    String.format("%s/%d %s/%d", service, layer, campus, notes)
+                )
+            );
         }
 
         @Override

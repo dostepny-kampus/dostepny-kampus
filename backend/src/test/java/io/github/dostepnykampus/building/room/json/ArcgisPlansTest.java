@@ -153,7 +153,7 @@ final class ArcgisPlansTest {
                     )
                 ),
                 new CountDownLatch(0),
-                url -> new ArcgisPlans(JsonMapper.builder().build()).entrances(url, 2)
+                url -> new ArcgisPlans(JsonMapper.builder().build()).entrances(url, 2, url, 2)
             ),
             Matchers.contains(
                 new PlanEntrance("T.X.P0", point, "NO_DATA", "Wejście", null, null, false)
@@ -186,7 +186,8 @@ final class ArcgisPlansTest {
                     )
                 ),
                 new CountDownLatch(0),
-                url -> new ArcgisPlans(JsonMapper.builder().build()).entrances(url, 2).stream()
+                url -> new ArcgisPlans(JsonMapper.builder().build())
+                    .entrances(url, 2, url, 2).stream()
                     .map(ArcgisPlansTest::describe).toList()
             ),
             Matchers.contains(
@@ -196,6 +197,62 @@ final class ArcgisPlansTest {
                 "NO_DATA|Wejście|Do wejścia prowadzą schody.|null|false"
             )
         );
+    }
+
+    @Test
+    void takesNoteAndDoorWidthFromCampusLayerAtSamePoint() throws IOException {
+        final HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
+        server.createContext(
+            ArcgisPlansTest.QUERY,
+            exchange -> ArcgisPlansTest.send(
+                exchange,
+                String.format(
+                    "{\"features\":[%s]}",
+                    String.join(
+                        ",",
+                        ArcgisPlansTest.bare("17.1", "\"Tak\""),
+                        ArcgisPlansTest.bare("17.2", "\"Nie\""),
+                        ArcgisPlansTest.bare("17.3", "\"Tak\"")
+                    )
+                )
+            )
+        );
+        server.createContext(
+            "/Kampus/FeatureServer/29/query",
+            exchange -> ArcgisPlansTest.send(
+                exchange,
+                String.format(
+                    "{\"features\":[%s]}",
+                    String.join(
+                        ",",
+                        ArcgisPlansTest.entrance("\"Nie\"", "100", "\"Wejście \\\"C\\\"\""),
+                        ArcgisPlansTest.entrance(
+                            "\"Tak\"", "90", "\"Wyjście ewakuacyjne z pomieszczenia 41\""
+                        ).replace("17.1", "17.2")
+                    )
+                )
+            )
+        );
+        server.start();
+        try {
+            final String root = String.format("http://localhost:%d", server.getAddress().getPort());
+            MatcherAssert.assertThat(
+                "Wejście nie wzięło uwag i szerokości z warstwy kampusu w tym samym punkcie",
+                new ArcgisPlans(JsonMapper.builder().build()).entrances(
+                    root.concat("/FeatureServer"), 2, root.concat("/Kampus/FeatureServer"), 29
+                ).stream().map(ArcgisPlansTest::describe).toList(),
+                Matchers.contains(
+                    "ACCESSIBLE|Wejście \"C\"|null|100|false",
+                    String.join(
+                        "|", "INACCESSIBLE", "Wyjście ewakuacyjne",
+                        "Wyjście ewakuacyjne z pomieszczenia 41", "90", "true"
+                    ),
+                    "ACCESSIBLE|Wejście|null|null|false"
+                )
+            );
+        } finally {
+            server.stop(0);
+        }
     }
 
     @Test
@@ -303,6 +360,15 @@ final class ArcgisPlansTest {
             "{\"geometry\":{\"type\":\"Point\",\"coordinates\":[17.1,51.1]},",
             "\"properties\":{\"Pietro\":\"T.X.P0\",\"Czy_dostos\":", adapted,
             ",\"Szerokosc\":", width, ",\"Uwagi\":", note, ",\"Budynek\":\"X\"}}"
+        );
+    }
+
+    private static String bare(final String longitude, final String adapted) {
+        return String.join(
+            "",
+            "{\"geometry\":{\"type\":\"Point\",\"coordinates\":[", longitude, ",51.1]},",
+            "\"properties\":{\"Pietro\":\"T.X.P0\",\"Czy_dostos\":", adapted,
+            ",\"Budynek\":\"X\"}}"
         );
     }
 
