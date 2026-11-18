@@ -27,10 +27,10 @@ import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.AssessmentSource
+import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceAssessment
 import io.github.dostepnykampus.core.model.building.EntranceMarking
-import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -57,7 +57,6 @@ class EntranceSheetTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val clicks = mutableListOf<String>()
-    private val shownOnMap = mutableListOf<MapFocus.Entrance>()
 
     /** Wiersz: arkusz wejścia, nagłówek z fokusem, słowo oznaczenia z dopiskiem, nazwa i „Zamknij”. */
     @Test
@@ -120,31 +119,21 @@ class EntranceSheetTest {
     }
 
     /**
-     * Wiersz: przy wejściu zalecanym „Inne wejście dostępne” z nazwą każdego innego wejścia dostępnego
-     *   i obrysowanym „Pokaż to wejście na mapie”, który zaznacza to wejście.
+     * Wiersz: arkusz wejścia zalecanego nie pokazuje innych wejść budynku ani „Pokaż to wejście na mapie”; inne
+     *   wejścia są na liście „Wejścia” karty.
      *
-     * Wymagania: US3.3, NFR-18
+     * Wymagania: US3.3
      */
     @Test
-    fun showsOtherAccessibleEntrances() {
-        compose.setContent { Sheet(recommendedWithOthers()) }
+    fun hidesOtherEntrances() {
+        val main = entrance(EntranceMarking.ACCESSIBLE, "Wejście Cesarskie", isMain = true)
+        val side = entrance(EntranceMarking.ACCESSIBLE, "Wejście od ul. Norwida", id = "node/2")
+        val catalog = BuildingCatalog(buildings = emptyList(), entrances = listOf(main, side), attribution = "")
+        compose.setContent { Sheet(checkNotNull(catalog.shownEntrance("node/1"))) }
 
-        compose.onNodeWithText(OTHERS).performScrollTo().assertExists()
-        compose.onNodeWithText("Wejście od ul. Norwida").assertExists()
-        compose.onNodeWithText("Wejście").assertExists()
-        compose.onNode(showOther("Wejście")).assertExists()
-        val other = compose.onNode(showOther("Wejście od ul. Norwida"))
-        other.performScrollTo().assertHeightIsAtLeast(48.dp).performClick()
-        val expected = MapFocus.Entrance(id = "node/2", buildingSymbol = "A-1")
-        assertEquals("zaznacza to wejście", listOf(expected), shownOnMap)
-    }
-
-    /** Wiersz: bez innego wejścia dostępnego i przy wejściu niezalecanym części „Inne wejście dostępne” nie ma. */
-    @Test
-    fun hidesOthersWithoutThem() {
-        compose.setContent { Sheet(ShownEntrance(entrance(EntranceMarking.ACCESSIBLE), isRecommended = true)) }
-
+        compose.onNodeWithText("Zalecane.").assertExists()
         compose.onNodeWithText(OTHERS).assertDoesNotExist()
+        compose.onNodeWithText("Wejście od ul. Norwida").assertDoesNotExist()
         compose.onNodeWithText(SHOW_OTHER, substring = true).assertDoesNotExist()
     }
 
@@ -168,24 +157,24 @@ class EntranceSheetTest {
     @Test
     @Config(fontScale = 2f)
     fun matchesLargeFontMockup() {
-        compose.setContent { Sheet(recommendedWithOthers()) }
+        compose.setContent { Sheet(recommendedMain()) }
 
         compose.onNodeWithText(REPORT).performScrollTo().assertExists()
         compose.onRoot().captureRoboImage()
     }
 
-    /** Zrzut arkusza wejścia zalecanego z innym wejściem, motyw jasny. */
+    /** Zrzut arkusza wejścia zalecanego, motyw jasny. */
     @Test
     fun matchesLightMockup() {
-        compose.setContent { Sheet(recommendedWithOthers()) }
+        compose.setContent { Sheet(recommendedMain()) }
         compose.onRoot().captureRoboImage()
     }
 
-    /** Zrzut arkusza wejścia zalecanego z innym wejściem, motyw ciemny. */
+    /** Zrzut arkusza wejścia zalecanego, motyw ciemny. */
     @Test
     @Config(qualifiers = "+night")
     fun matchesDarkMockup() {
-        compose.setContent { Sheet(recommendedWithOthers()) }
+        compose.setContent { Sheet(recommendedMain()) }
         compose.onRoot().captureRoboImage()
     }
 
@@ -196,16 +185,14 @@ class EntranceSheetTest {
                 EntranceSheet(
                     shown = shown,
                     onClose = { clicks += "zamknij" },
-                    actions = EntranceActions(onShow = { shownOnMap += it }, onReport = { clicks += "zgłoś $it" }),
+                    actions = EntranceActions(onReport = { clicks += "zgłoś $it" }),
                     modifier = Modifier.align(Alignment.BottomCenter),
                 )
             }
         }
     }
 
-    private fun showOther(name: String) = hasClickAction() and hasContentDescription("$SHOW_OTHER: »$name«")
-
-    private fun recommendedWithOthers() =
+    private fun recommendedMain() =
         ShownEntrance(
             entrance =
                 entrance(
@@ -215,11 +202,6 @@ class EntranceSheetTest {
                     assessment = IMPORTED,
                 ),
             isRecommended = true,
-            others =
-                listOf(
-                    entrance(EntranceMarking.ACCESSIBLE, "Wejście od ul. Norwida", id = "node/2"),
-                    entrance(EntranceMarking.ACCESSIBLE, id = "node/3"),
-                ),
         )
 
     private fun entrance(

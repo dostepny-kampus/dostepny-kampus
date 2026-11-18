@@ -49,7 +49,7 @@ private const val UNNAMED = "Wejście"
 private const val SHOW_ENTRANCE = "Pokaż wejście na mapie"
 private const val SIDE = "Wejście boczne"
 private val SIDE_AT = GeoPoint(longitude = 0.9, latitude = 0.5)
-private const val SHOW_SIDE = "Pokaż to wejście na mapie: »$SIDE«"
+private const val SHOW_OTHER = "Pokaż to wejście na mapie"
 
 private fun entrance(id: Int, at: GeoPoint, tags: String): String =
     """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/$id",$tags},""" +
@@ -196,22 +196,21 @@ class EntranceOnMapTest {
     }
 
     /**
-     * Wiersz: arkusz wejścia zalecanego → „Pokaż to wejście na mapie” przy innym wejściu dostępnym → V1 z zaznaczonym
-     *   tym wejściem i jego arkuszem.
+     * Wiersz: arkusz wejścia zalecanego nie pokazuje innego wejścia dostępnego ani „Pokaż to wejście na mapie”;
+     *   inne wejścia są na liście „Wejścia” karty.
      *
      * Wymagania: US3.3
      */
     @Test
-    fun showsOtherEntranceFromSheet() {
+    fun hidesOtherEntranceInSheet() {
         val main = entrance(10, NAMED_AT, """"entrance":"main","ref":"$NAMED","wheelchair":"yes"""")
         val side = entrance(11, SIDE_AT, """"entrance":"yes","ref":"$SIDE","wheelchair":"yes"""")
         showEntranceOnMap(catalog(main, side))
-        compose.waitUntil { compose.onAllNodes(hasContentDescription(SHOW_SIDE)).fetchSemanticsNodes().isNotEmpty() }
-        compose.onNode(hasContentDescription(SHOW_SIDE)).performScrollTo().performClick()
-        compose.waitForIdle()
+        compose.waitUntil { compose.onAllNodes(hasText("Wejście, budynek A-1")).fetchSemanticsNodes().isNotEmpty() }
 
-        assertEquals("node/11", selections.last().entrance?.id)
-        compose.onNode(hasText(SIDE)).assertExists()
+        assertEquals("node/10", selections.last().entrance?.id)
+        compose.onNode(hasText(SIDE)).assertDoesNotExist()
+        compose.onNode(hasContentDescription(SHOW_OTHER, substring = true)).assertDoesNotExist()
     }
 
     /**
