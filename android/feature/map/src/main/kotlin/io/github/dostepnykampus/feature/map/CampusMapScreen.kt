@@ -216,7 +216,7 @@ fun CampusMapScreen(
                 }
             }
         }
-        if (!sheet.isEntranceFull && barExit.isBarShown(isCovered = isCovered, isList = isList)) {
+        if (barExit.isBarShown(isCovered = isCovered, isList = isList, isUnderFullSheet = sheet.isEntranceFull)) {
             states.SaveableStateProvider(TOP_STATE) {
                 CampusSearch(
                     catalog = catalog,

@@ -49,12 +49,17 @@ internal fun rememberTopBarExit(isCovered: Boolean, motion: MapMotion?): Animata
 
 /**
  * Pasek widać bez arkusza V2, a nad arkuszem do odjazdu w całości, także w czasie czekania na ruch mapy; nad listą
- * budynków znika od razu. Zmiana pozycji paska przelicza wynik tylko przy zmianie widoczności.
+ * budynków znika od razu. Pod arkuszem na cały ekran ([isUnderFullSheet]) paska nie ma. Zmiana pozycji paska
+ * przelicza wynik tylko przy zmianie widoczności.
  */
 @Composable
-internal fun Animatable<Float, AnimationVector1D>.isBarShown(isCovered: Boolean, isList: Boolean): Boolean {
+internal fun Animatable<Float, AnimationVector1D>.isBarShown(
+    isCovered: Boolean,
+    isList: Boolean,
+    isUnderFullSheet: Boolean = false,
+): Boolean {
     val isOnScreen by remember(this) { derivedStateOf { value < 1f } }
-    return !isCovered || (isOnScreen && !isList)
+    return !isUnderFullSheet && (!isCovered || (isOnScreen && !isList))
 }
 
 /** Góra mapy zasłonięta paskiem wysokim na [bar]; z arkuszem V2 pasek odjechał, więc nic. */
