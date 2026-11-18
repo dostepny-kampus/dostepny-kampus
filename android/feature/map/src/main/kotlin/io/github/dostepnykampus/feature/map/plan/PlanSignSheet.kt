@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map.plan
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -55,13 +56,15 @@ internal fun ChosenPlanSheet(id: String?, plan: ShownPlan?, exits: SheetExits, m
 
 @Composable
 private fun LiftFacts(sign: PlanSign) {
-    Text(
-        text = stringResource(R.string.karta_czytaj, sign.building, sign.floor.lowercaseFirst()),
-        style = MaterialTheme.typography.bodyLarge,
-    )
     val here = stringResource(R.string.mapa_winda_tutaj, sign.floor)
     val stops = sign.liftFloors.joinToString(separator = ", ") { if (it == sign.floor) here else it }
-    Text(text = stringResource(R.string.mapa_winda_jedzie, stops), style = MaterialTheme.typography.bodyLarge)
+    Column {
+        Text(
+            text = stringResource(R.string.karta_czytaj, sign.building, sign.floor.lowercaseFirst()),
+            style = MaterialTheme.typography.bodyLarge,
+        )
+        Text(text = stringResource(R.string.mapa_winda_jedzie, stops), style = MaterialTheme.typography.bodyLarge)
+    }
 }
 
 private fun String.lowercaseFirst(): String = replaceFirstChar { it.lowercase(Locale.forLanguageTag("pl")) }
