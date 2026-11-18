@@ -35,13 +35,14 @@ internal fun AssessmentLine(assessment: EntranceAssessment) {
     )
 }
 
-/** Dzień i źródło oznaczenia [assessment] słowami (PW-3). Wymagania: US17.3, BR-24 */
+/** Dzień i źródło oznaczenia [assessment] słowami (PW-3). Wymagania: US17.3, BR-24, BR-27 */
 @Composable
 @ReadOnlyComposable
 internal fun assessmentText(assessment: EntranceAssessment): String {
     val day = campusDay(assessment.date)
     return when (assessment.source) {
         AssessmentSource.IMPORT -> stringResource(R.string.karta_ocena_import, day)
+        AssessmentSource.PWR_PLANS -> stringResource(R.string.karta_ocena_plany_pwr, day)
         AssessmentSource.WALKTHROUGH -> stringResource(R.string.karta_ocena_obchod, day)
     }
 }

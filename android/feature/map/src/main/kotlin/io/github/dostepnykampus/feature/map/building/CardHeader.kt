@@ -89,16 +89,22 @@ private fun EntranceLines(summary: EntranceSummary, answer: VisitAnswer) {
 }
 
 /**
- * Zdanie pod wierszem o wejściach dla [answer]: wejście zalecane albo liczba wejść bez dostępnego; bez danych `null`.
+ * Zdanie pod wierszem o wejściach dla [answer]: wejście zalecane z szerokością drzwi, gdy jest w danych, albo liczba
+ * wejść bez dostępnego; bez danych `null`.
  *
- * Wymagania: US3.1, BR-25
+ * Wymagania: US3.1, BR-25, BR-27
  */
 @Composable
 @ReadOnlyComposable
 internal fun answerLine(answer: VisitAnswer): String? =
     when (answer) {
         is VisitAnswer.Accessible -> {
-            stringResource(R.string.karta_odpowiedz_zalecane, answer.name ?: stringResource(R.string.karta_bez_nazwy))
+            val name = answer.name ?: stringResource(R.string.karta_bez_nazwy)
+            if (answer.doorWidthCm > 0) {
+                stringResource(R.string.karta_odpowiedz_zalecane_drzwi, name, answer.doorWidthCm)
+            } else {
+                stringResource(R.string.karta_odpowiedz_zalecane, name)
+            }
         }
 
         is VisitAnswer.NoAccessible -> {

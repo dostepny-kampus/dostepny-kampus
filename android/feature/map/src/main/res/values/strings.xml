@@ -91,11 +91,14 @@
     <string name="karta_zalecane">Zalecane</string>
     <string name="karta_ocena_import">Z map i opisów, stan z %1$s</string>
     <string name="karta_ocena_obchod">Sprawdzone na miejscu %1$s</string>
+    <string name="karta_ocena_plany_pwr">Z planów Politechniki Wrocławskiej, stan z %1$s</string>
+    <string name="karta_szerokosc_drzwi">Szerokość drzwi: %1$d cm</string>
     <string name="karta_bez_nazwy">Wejście bez nazwy w danych</string>
     <string name="karta_wejscia_bez_nazw_kilka">%1$d wejścia bez nazw w danych</string>
     <string name="karta_wejscia_bez_nazw_wiele">%1$d wejść bez nazw w danych</string>
     <string name="karta_nikt_nie_sprawdzil">Nikt jeszcze nie sprawdził tych wejść.</string>
     <string name="karta_odpowiedz_zalecane">Zalecane: „%1$s”.</string>
+    <string name="karta_odpowiedz_zalecane_drzwi">Zalecane: „%1$s”. Drzwi %2$d cm.</string>
     <string name="karta_odpowiedz_zadne">Żadne z %1$d wejść nie jest dostępne.</string>
     <string name="karta_odpowiedz_jedyne">Jedyne wejście nie jest dostępne.</string>
     <string name="karta_zglos">Zgłoś barierę przy wejściu</string>
