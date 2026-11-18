@@ -95,6 +95,32 @@ final class BuildingReadContractIT {
     }
 
     @Test
+    void showsPwrMarkingDateUnlessWalkthrough(final WebApplicationContext context)
+        throws Exception {
+        context.getBean(JdbcClient.class).sql(
+            """
+            INSERT INTO entrances (id, building_symbol, main, location, marking, marking_date,
+                marking_source, pwr_name, pwr_marking, pwr_marking_date)
+            VALUES ('node/8', 'G-900', false, ST_SetSRID(ST_MakePoint(0.0005, 0), 4326),
+                'NO_DATA', DATE '2026-11-01', 'IMPORT', 'Wejście', 'ACCESSIBLE',
+                DATE '2026-11-04'),
+                ('node/9', 'G-900', false, ST_SetSRID(ST_MakePoint(0, 0.0005), 4326),
+                'INACCESSIBLE', DATE '2026-11-02', 'WALKTHROUGH', 'Wejście', 'ACCESSIBLE',
+                DATE '2026-11-04')
+            """
+        ).update();
+        final JsonNode card = BuildingReadContractIT.get(context, "/buildings/G-900");
+        MatcherAssert.assertThat(
+            "Data oznaczenia nie jest datą warstwy PWr albo datą obchodu",
+            String.join(
+                " ", card.at("/entrances/0/markingDate").asString(),
+                card.at("/entrances/1/markingDate").asString()
+            ),
+            Matchers.equalTo("2026-11-04 2026-11-02")
+        );
+    }
+
+    @Test
     void suggestsBuildingFortyNineMetersFromOutline(
         final WebApplicationContext context
     ) throws Exception {
