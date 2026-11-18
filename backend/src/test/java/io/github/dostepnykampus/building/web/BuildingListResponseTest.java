@@ -25,12 +25,6 @@ final class BuildingListResponseTest {
 
     @Test
     void givesEveryBuildingOwnEntrances() {
-        final Entrance entrance = new Entrance(
-            "pwr/s00000001", "Wejście", null, false,
-            "{\"type\":\"Point\",\"coordinates\":[17.0,51.0]}", "P0",
-            new Entrance.Marking("ACCESSIBLE", "2026-11-01", "IMPORT"),
-            new Entrance.Layer.Unlisted()
-        );
         MatcherAssert.assertThat(
             "Budynek listy nie dostał swoich wejść albo budynek bez wejść dostał cudze",
             new BuildingListResponse(
@@ -40,7 +34,17 @@ final class BuildingListResponseTest {
                         new Building("A-1", "Budynek A-1", "DETAILED", "{}"),
                         new Building("A-2", null, "BASIC", "{}")
                     ),
-                    Map.of("A-1", List.of(entrance))
+                    Map.of(
+                        "A-1",
+                        List.of(
+                            new Entrance(
+                                "pwr/s00000001", "Wejście", null, false,
+                                "{\"type\":\"Point\",\"coordinates\":[17.0,51.0]}", "P0",
+                                new Entrance.Marking("ACCESSIBLE", "2026-11-01", "IMPORT"),
+                                new Entrance.Layer.Unlisted()
+                            )
+                        )
+                    )
                 )
             ).buildings().stream()
                 .map(building -> building.entrances().stream().map(EntranceResponse::id).toList())
