@@ -15,6 +15,7 @@ import io.github.dostepnykampus.core.model.building.EntranceAssessment
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.CampusMapUiState
 import io.github.dostepnykampus.feature.map.campus.selectedEntrance
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
@@ -84,6 +85,18 @@ class BuildingEntrancesTest {
         val state = CampusMapUiState(catalog = CATALOG)
         assertEquals(state, state.withBuildingEntrances(BuildingEntrances(symbol = "A-1", entrances = emptyList())))
         assertEquals(state, state.withBuildingEntrances(null))
+    }
+
+    /**
+     * Wiersz: zaznaczenie budynku A-1 albo wejścia budynku A-1 → wejścia budynku A-1; bez zaznaczenia brak budynku.
+     *
+     * Wymagania: US3.3
+     */
+    @Test
+    fun picksFocusedBuilding() {
+        assertEquals("A-1", focusedBuilding(MapFocus.Building(symbol = "A-1")), "budynek")
+        assertEquals("A-1", focusedBuilding(MapFocus.Entrance(id = "pwr/1", buildingSymbol = "A-1")), "wejście")
+        assertEquals(null, focusedBuilding(null), "bez zaznaczenia")
     }
 
     /**
