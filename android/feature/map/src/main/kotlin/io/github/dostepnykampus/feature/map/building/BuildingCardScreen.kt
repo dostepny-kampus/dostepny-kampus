@@ -6,10 +6,12 @@
 package io.github.dostepnykampus.feature.map.building
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -21,8 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
@@ -30,7 +30,6 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.OfflinePill
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
-import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
 import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.R
@@ -118,18 +117,20 @@ fun BuildingCardContent(
     onExpand: () -> Unit = {},
 ) {
     val isFullScreen = mode != CardMode.Compact
+    val isHeaderFixed = mode == CardMode.Expanded
+    val top = @Composable { CardTop(symbol = symbol, card = card, mode = mode, isOnline = isOnline, onClose = onClose) }
     Column(if (isFullScreen) modifier.fillMaxSize() else modifier) {
         if (mode == CardMode.Direct) BackHeader(title = symbol, onBack = onBack)
+        if (isHeaderFixed) Box(Modifier.fixedTopPadding()) { top() }
         Column(
             modifier =
                 Modifier
                     .weight(1f, isFullScreen)
                     .verticalScroll(rememberScrollState())
-                    .cardPadding(isPeek = card.hasEntrancesPeek(isFullScreen)),
+                    .cardPadding(isPeek = card.hasEntrancesPeek(isFullScreen), hasTop = !isHeaderFixed),
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
         ) {
-            if (!isOnline) OfflinePill()
-            CardHeader(symbol = symbol, card = card, mode = mode, onClose = onClose)
+            if (!isHeaderFixed) top()
             if (card is BuildingCardUiState.Ready || card.isWaiting(isFullScreen)) {
                 CardActions(
                     mode = mode,
@@ -152,6 +153,23 @@ fun BuildingCardContent(
         }
     }
 }
+
+@Composable
+private fun CardTop(
+    symbol: String,
+    card: BuildingCardUiState,
+    mode: CardMode,
+    isOnline: Boolean,
+    onClose: () -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        if (!isOnline) OfflinePill()
+        CardHeader(symbol = symbol, card = card, mode = mode, onClose = onClose)
+    }
+}
+
+private fun Modifier.fixedTopPadding(): Modifier =
+    padding(start = Odstepy.m, top = Odstepy.m, end = Odstepy.m, bottom = Odstepy.s)
 
 @Composable
 private fun FactsOrMissing(
@@ -237,38 +255,6 @@ internal fun MissingBuilding(onRetry: () -> Unit) {
             modifier = Modifier.fillMaxWidth(),
         )
     }
-}
-
-@Composable
-private fun CardActions(
-    mode: CardMode,
-    recommended: OrderedEntrance?,
-    onShowEntrance: (String) -> Unit,
-    onShowOnMap: () -> Unit,
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(CeleDotyku.odstep)) {
-        recommended?.let { listed -> ShowEntranceButton(listed = listed, onShowEntrance = onShowEntrance) }
-        if (mode.isWhole) {
-            CardButton(stringResource(R.string.karta_pokaz), onShowOnMap, outlined = true)
-        }
-    }
-}
-
-@Composable
-private fun ShowEntranceButton(listed: OrderedEntrance, onShowEntrance: (String) -> Unit) {
-    val title = listed.entrance.name ?: stringResource(R.string.karta_bez_nazwy)
-    val spoken = stringResource(R.string.wizyta_pokaz_czytaj, title)
-    PinnedButton(
-        text = stringResource(R.string.wizyta_pokaz),
-        onClick = { onShowEntrance(listed.entrance.id) },
-        modifier = Modifier.fillMaxWidth().semantics { contentDescription = spoken },
-    )
-}
-
-@Composable
-private fun CardButton(text: String, onClick: () -> Unit, outlined: Boolean = false) {
-    val kind = if (outlined) PinnedButtonKind.Outlined else PinnedButtonKind.Filled
-    PinnedButton(text = text, onClick = onClick, modifier = Modifier.fillMaxWidth(), kind = kind)
 }
 
 /** Tryb treści V2 Karta budynku. Wymagania: US2.8, US2.9 */
