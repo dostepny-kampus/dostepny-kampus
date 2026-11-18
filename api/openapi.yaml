@@ -61,7 +61,7 @@ paths:
     get:
       operationId: listBuildings
       summary: Lista budynków z konturami
-      description: Wszystkie budynki PWr z konturem budynku i poziomem szczegółowości do mapy kampusu (US1, US1.2).
+      description: Wszystkie budynki PWr z konturem budynku, poziomem szczegółowości i wejściami do mapy kampusu (US1, US1.2, US1.4).
       tags: [building]
       security: []
       responses:
@@ -769,6 +769,12 @@ components:
         name: {type: string, description: "Nazwa budynku; brak pola oznacza budynek bez nazwy (aplikacja pokazuje wtedy sam symbol)."}
         detailLevel: {$ref: '#/components/schemas/DetailLevel'}
         outline: {$ref: '#/components/schemas/GeoArea', description: "Kontur budynku z OpenStreetMap."}
+        entrances:
+          type: array
+          description: >-
+            Wejścia budynku do znaków wejść na mapie, te same co w karcie budynku; wejście główne jest pierwsze.
+            Brak pola oznacza, że serwer nie podał wejść (US1.4, US17.1, BR-24, BR-27).
+          items: {$ref: '#/components/schemas/Entrance'}
     BuildingList:
       type: object
       description: Budynki z atrybucją źródła konturów.
@@ -792,7 +798,7 @@ components:
       allOf:
         - $ref: '#/components/schemas/Building'
         - type: object
-          description: Wejścia budynku.
+          description: Wejścia budynku, w karcie zawsze podane.
           required: [entrances]
           properties:
             entrances:
