@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.building
 
+import android.icu.text.PluralRules
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -43,8 +43,11 @@ import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.R
+import java.util.Locale
 
 private val NEXT_LINE_PEEK_HEIGHT = 24.dp
+
+private val PolishPlurals: PluralRules = PluralRules.forLocale(Locale.forLanguageTag("pl"))
 
 private val ChevronRight: ImageVector =
     pathIcon(path = "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z", name = "ChevronRight", autoMirror = true)
@@ -125,7 +128,7 @@ internal fun EntrancesGroup(
             card.entrances.isEmpty() ->
                 Text(text = stringResource(R.string.karta_wejscia_brak), style = MaterialTheme.typography.bodyLarge)
             card.hasOnlyNamelessEntrances() -> NamelessEntrances(count = card.entrances.size, onReport = onReport)
-            else -> EntranceList(card = card, withAssessment = withAssessment, onShowEntrance = onShowEntrance)
+            else -> EntranceList(card = card, withAssessment = withAssessment, onShow = onShowEntrance)
         }
     }
 }
@@ -135,19 +138,11 @@ internal fun BuildingCardUiState.Ready.hasOnlyNamelessEntrances(): Boolean =
     entrances.size > 1 && entrances.all { it.entrance.marking == EntranceMarking.NO_DATA && it.entrance.name == null }
 
 @Composable
-private fun EntranceList(
-    card: BuildingCardUiState.Ready,
-    withAssessment: Boolean,
-    onShowEntrance: ((String) -> Unit)?,
-) {
+private fun EntranceList(card: BuildingCardUiState.Ready, withAssessment: Boolean, onShow: ((String) -> Unit)?) {
+    val line = MaterialTheme.colorScheme.outlineVariant
     card.entrances.forEachIndexed { index, listed ->
-        if (index > 0) {
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = Odstepy.s),
-                color = MaterialTheme.colorScheme.outlineVariant,
-            )
-        }
-        EntranceRow(listed = listed, withAssessment = withAssessment, onShowEntrance = onShowEntrance)
+        if (index > 0) HorizontalDivider(Modifier.padding(vertical = Odstepy.s), color = line)
+        EntranceRow(listed = listed, withAssessment = withAssessment, onShowEntrance = onShow)
     }
 }
 
@@ -159,11 +154,8 @@ private fun NamelessEntrances(count: Int, onReport: (() -> Unit)?) {
             verticalArrangement = Arrangement.spacedBy(Odstepy.xs),
         ) {
             MarkingSign(marking = EntranceMarking.NO_DATA)
-            Text(
-                text = pluralStringResource(R.plurals.karta_wejscia_bez_nazw, count, count),
-                fontWeight = Typografia.wyroznienieWaga,
-                style = MaterialTheme.typography.titleMedium,
-            )
+            val title = namelessTitle(count)
+            Text(text = title, fontWeight = Typografia.wyroznienieWaga, style = MaterialTheme.typography.titleMedium)
             Text(text = stringResource(R.string.karta_nikt_nie_sprawdzil), style = MaterialTheme.typography.bodyMedium)
         }
         onReport?.let { report ->
@@ -172,6 +164,14 @@ private fun NamelessEntrances(count: Int, onReport: (() -> Unit)?) {
             }
         }
     }
+}
+
+/** Napis „N wejścia/wejść bez nazw w danych” z liczbą odmienioną po polsku niezależnie od języka telefonu. */
+@Composable
+private fun namelessTitle(count: Int): String {
+    val isFew = PolishPlurals.select(count.toDouble()) == PluralRules.KEYWORD_FEW
+    val title = if (isFew) R.string.karta_wejscia_bez_nazw_kilka else R.string.karta_wejscia_bez_nazw_wiele
+    return stringResource(title, count)
 }
 
 /**
