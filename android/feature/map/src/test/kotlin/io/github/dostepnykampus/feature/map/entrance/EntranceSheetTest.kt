@@ -43,6 +43,7 @@ import java.time.LocalDate
 private const val REPORT = "Zgłoś barierę przy wejściu"
 private const val SHOW_OTHER = "Pokaż to wejście na mapie"
 private const val OTHERS = "Inne wejście dostępne"
+private const val NO_DATA_TEXT = "Nie mamy danych o dostępności tego wejścia."
 
 /**
  * Arkusz wejścia na V1 po dotknięciu znaku wejścia.
@@ -67,7 +68,7 @@ class EntranceSheetTest {
         compose.onNodeWithText("Wejście, budynek A-1").assertIsFocused()
         compose.onNodeWithText("Dostępne, wejście główne").assertExists()
         compose.onNodeWithText("Wejście Cesarskie").assertExists()
-        compose.onNodeWithText("Nikt jeszcze nie sprawdził tego wejścia.").assertDoesNotExist()
+        compose.onNodeWithText(NO_DATA_TEXT).assertDoesNotExist()
         compose.onNodeWithText("Zamknij").assertHeightIsAtLeast(48.dp).performClick()
         assertEquals("„Zamknij” zamyka arkusz", listOf("zamknij"), clicks)
     }
@@ -82,13 +83,13 @@ class EntranceSheetTest {
         compose.onNodeWithText("Wejście").assertDoesNotExist()
     }
 
-    /** Wiersz: przy „Brak danych” zdanie, że nikt nie sprawdził wejścia. Wymagania: US17.1 */
+    /** Wiersz: przy „Brak danych” zdanie, że nie mamy danych o dostępności wejścia. Wymagania: US17.1 */
     @Test
     fun showsUncheckedEntrance() {
         compose.setContent { Sheet(ShownEntrance(entrance(EntranceMarking.NO_DATA))) }
 
         compose.onNodeWithText("Brak danych").assertExists()
-        compose.onNodeWithText("Nikt jeszcze nie sprawdził tego wejścia.").assertExists()
+        compose.onNodeWithText(NO_DATA_TEXT).assertExists()
     }
 
     /** Wiersz: pod słowem oznaczenia wejścia zalecanego „Zalecane.” z datą i źródłem. Wymagania: US17.3, BR-25 */
