@@ -8,6 +8,14 @@
 <b>$t</b>
 !endprocedure
 
+' ---------- V1 arkusze na mapie ----------
+
+' Wiersz budynku pod nagłówkiem arkusza: znak budynku, napis i strzałka; otwiera V2 na niskiej
+' wysokości (decyzja z 18.11.2026). Ten sam w arkuszach wejścia, toalety, schodów, bariery, sali.
+!procedure $wiersz_budynku($symbol="A-1")
+<&home> <b>Budynek $symbol</b> <&chevron-right>
+!endprocedure
+
 ' ---------- V2 Karta budynku (decyzje 48, 115) ----------
 
 ' Nagłówek karty na każdej wysokości: symbol, po prawej obrysowany „Zamknij”, pod nim nazwa

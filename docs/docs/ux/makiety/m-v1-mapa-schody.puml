@@ -1,0 +1,19 @@
+@startsalt
+' V1 Mapa kampusu, arkusz schodów po dotknięciu schodów na planie (US16.1). Wiersz budynku
+' pod nagłówkiem otwiera kartę V2; piętro stoi pod nim.
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_mapy("Pokaż listę")
+$pole_tekstowe("Szukaj budynku, np. C-13")
+$przycisk("Kampus główny ▾")
+$mapa("plan parteru A-1 z wybranymi schodami; kolumna pięter po lewej pod przyciskiem terenu, wybrany parter", "", "info")
+Źródło: Politechnika Wrocławska
+$ramka()
+{ <b>Schody</b>$dk_spacje(14) | [Zamknij] }
+$wiersz_budynku()
+Parter
+}
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt
