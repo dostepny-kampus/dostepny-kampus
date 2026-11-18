@@ -31,7 +31,9 @@ import org.robolectric.annotation.GraphicsMode
 
 private const val HEADER = "Wejście, budynek C-13"
 
-private val ENTRANCE = entranceFeature(symbol = "C-13", id = "node/1", tags = """"entrance":"main","wheelchair":"yes"""")
+private const val TAGS = """"entrance":"main","wheelchair":"yes""""
+
+private val ENTRANCE = entranceFeature(symbol = "C-13", id = "node/1", tags = TAGS)
 
 private val ZoomIn = hasContentDescription("Powiększ")
 
