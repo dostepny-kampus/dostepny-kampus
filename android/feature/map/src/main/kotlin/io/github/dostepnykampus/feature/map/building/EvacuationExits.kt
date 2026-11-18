@@ -25,16 +25,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
+import io.github.dostepnykampus.core.designsystem.GroupFrame
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.model.building.EvacuationExit
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.overlay.MapControlIcons
 
 /**
  * Wyjścia ewakuacyjne budynku z karty [card]: przycisk z liczbą wyjść, który rozwija i zwija ich listę, na start
- * zwiniętą. Wiersz wyjścia ma opis i szerokość drzwi, gdy są w danych, i nie jest dotykalny. Bez wyjść nic się nie
- * rysuje.
+ * zwiniętą; napis przycisku mówi, co zrobi następne dotknięcie. Lista stoi w kontenerze grupy, a wiersz wyjścia ma
+ * opis i szerokość drzwi, gdy są w danych, i nie jest dotykalny. Bez wyjść nic się nie rysuje.
  *
  * Wymagania: US2.6, BR-27, NFR-17, NFR-18
  */
@@ -44,6 +44,7 @@ internal fun EvacuationExits(card: BuildingCardUiState.Ready) {
     if (exits.isEmpty()) return
     var isExpanded by rememberSaveable { mutableStateOf(false) }
     val state = stringResource(if (isExpanded) R.string.karta_rozwiniete else R.string.karta_zwiniete)
+    val label = if (isExpanded) R.string.karta_wyjscia_ukryj else R.string.karta_wyjscia_ewakuacyjne
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         OutlinedButton(
             onClick = { isExpanded = !isExpanded },
@@ -53,14 +54,16 @@ internal fun EvacuationExits(card: BuildingCardUiState.Ready) {
                     .heightIn(min = CeleDotyku.minimum)
                     .semantics { stateDescription = state },
         ) {
-            Text(text = stringResource(R.string.karta_wyjscia_ewakuacyjne, exits.size), modifier = Modifier.weight(1f))
+            Text(text = stringResource(label, exits.size), modifier = Modifier.weight(1f))
             Icon(if (isExpanded) MapControlIcons.Up else MapControlIcons.Down, contentDescription = null)
         }
         if (isExpanded) {
-            val line = MaterialTheme.colorScheme.outlineVariant
-            exits.forEachIndexed { index, exit ->
-                if (index > 0) HorizontalDivider(Modifier.padding(vertical = Odstepy.xs), color = line)
-                ExitRow(exit)
+            GroupFrame {
+                val line = MaterialTheme.colorScheme.outlineVariant
+                exits.forEachIndexed { index, exit ->
+                    if (index > 0) HorizontalDivider(Modifier.padding(vertical = Odstepy.s), color = line)
+                    ExitRow(exit)
+                }
             }
         }
     }
@@ -73,11 +76,7 @@ private fun ExitRow(exit: EvacuationExit) {
         verticalArrangement = Arrangement.spacedBy(Odstepy.xs),
     ) {
         if (exit.description.isNotEmpty()) {
-            Text(
-                text = exit.description,
-                fontWeight = Typografia.wyroznienieWaga,
-                style = MaterialTheme.typography.titleMedium,
-            )
+            Text(text = exit.description, style = MaterialTheme.typography.bodyLarge)
         }
         if (exit.doorWidthCm > 0) {
             val door = stringResource(R.string.karta_szerokosc_drzwi, exit.doorWidthCm)

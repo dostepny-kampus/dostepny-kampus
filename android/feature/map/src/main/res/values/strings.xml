@@ -96,6 +96,7 @@
     <string name="karta_ocena_plany_pwr">Z planów Politechniki Wrocławskiej, stan z %1$s</string>
     <string name="karta_szerokosc_drzwi">Szerokość drzwi: %1$d cm</string>
     <string name="karta_wyjscia_ewakuacyjne">Pokaż wyjścia ewakuacyjne (%1$d)</string>
+    <string name="karta_wyjscia_ukryj">Ukryj wyjścia ewakuacyjne (%1$d)</string>
     <string name="karta_bez_nazwy">Wejście bez nazwy w danych</string>
     <string name="karta_wejscia_bez_nazw_kilka">%1$d wejścia bez nazw w danych</string>
     <string name="karta_wejscia_bez_nazw_wiele">%1$d wejść bez nazw w danych</string>
