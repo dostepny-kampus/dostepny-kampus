@@ -30,7 +30,7 @@ Skrypt czyta powiązania z tabel i nagłówków. Identyfikator w pierwszej kolum
 | Kryteria akceptacji (USx.y) | 81     |
 | Przypadki użycia (UC)       | 19     |
 | Reguły biznesowe (BR)       | 31     |
-| Scenariusze                 | 200    |
+| Scenariusze                 | 201    |
 | Dziury                      | 0      |
 
 <!-- vale on -->
