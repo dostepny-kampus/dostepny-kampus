@@ -54,14 +54,6 @@ public final class PostgisPlans implements FloorPlans {
         this.transaction = transaction;
     }
 
-    /**
-     * Zapisuje plan budynku.
-     *
-     * <p>TODO(#3134): zapisać oznaczenie, nazwę, opis dojścia, szerokość drzwi i wyjścia
-     * ewakuacyjne z wpisów warstwy wejść PWr.</p>
-     *
-     * @param plan Plan budynku z usługi
-     */
     @Override
     public void save(final BuildingPlan plan) {
         final String building = plan.building();
