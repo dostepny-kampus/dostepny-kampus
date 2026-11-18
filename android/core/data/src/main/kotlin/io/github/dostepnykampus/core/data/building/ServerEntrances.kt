@@ -32,7 +32,6 @@ public fun interface ServerEntrances {
      * Wejścia jak w [entrances] i wyjścia ewakuacyjne budynku [symbol] z planów PWr z jednej odpowiedzi serwera.
      * Wyjść nie ma, gdy budynek ich nie ma albo serwer ich nie podał i nic nie pobrano wcześniej; bez nadpisania
      * same wejścia z [entrances].
-     * TODO(#3165): karta V2 jeszcze nie pyta o wyjścia ewakuacyjne.
      *
      * Wymagania: US2.6, BR-27, NFR-10
      *
