@@ -21,6 +21,10 @@ import org.maplibre.spatialk.units.International
 /** Punkt modelu jako pozycja GeoJSON spatialk: długość, potem szerokość. */
 public fun GeoPoint.toPosition(): Position = Position(longitude = longitude, latitude = latitude)
 
+/** Odległość w metrach na ziemi w linii prostej do [other]; obliczenia wykonuje Turf. */
+public fun GeoPoint.metersTo(other: GeoPoint): Double =
+    distance(from = toPosition(), to = other.toPosition()).toDouble(International.Meters)
+
 /** Kontur modelu jako geometria spatialk: `Polygon` albo `MultiPolygon`. */
 public fun GeoArea.toGeometry(): PolygonGeometry =
     when (this) {
