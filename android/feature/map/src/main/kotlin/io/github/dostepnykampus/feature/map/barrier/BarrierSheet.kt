@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
@@ -113,19 +114,23 @@ internal fun SeverityBadge(severity: Severity) {
 }
 
 /**
- * Typ bariery jako nagłówek, miejsce z [barrierPlace], gdy [hasPlace], „Sprawdzone 14.10.2026” i zdjęcie
- * z [BarrierPhoto].
+ * Typ bariery jako nagłówek krojem [titleStyle], miejsce z [barrierPlace], gdy [hasPlace], „Sprawdzone 14.10.2026”
+ * i zdjęcie z [BarrierPhoto].
  *
- * Wymagania: US1.5, US2.2, BR-17
+ * Wymagania: US1.5, US2.2, BR-17, NFR-21
  */
 @Composable
-internal fun BarrierFacts(chosen: ChosenBarrier, hasPlace: Boolean = true) {
+internal fun BarrierFacts(
+    chosen: ChosenBarrier,
+    hasPlace: Boolean = true,
+    titleStyle: TextStyle = MaterialTheme.typography.headlineSmall,
+) {
     val barrier = chosen.barrier
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(
             text = stringResource(barrier.type?.nameRes() ?: R.string.mapa_bariera_bez_typu),
             modifier = Modifier.semantics { heading() },
-            style = MaterialTheme.typography.headlineSmall,
+            style = titleStyle,
             fontWeight = Typografia.wyroznienieWaga,
         )
         if (hasPlace) BarrierPlace(chosen)

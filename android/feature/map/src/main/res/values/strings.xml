@@ -59,7 +59,7 @@
     <string name="mapa_bariera_zdjecie">Zdjęcie bariery: %1$s</string>
     <string name="mapa_wejscie_naglowek">Wejście, budynek %1$s</string>
     <string name="mapa_wejscie_glowne">%1$s, wejście główne</string>
-    <string name="mapa_wejscie_niesprawdzone">Nikt jeszcze nie sprawdził tego wejścia.</string>
+    <string name="mapa_wejscie_niesprawdzone">Nie mamy danych o dostępności tego wejścia.</string>
     <string name="mapa_wejscie_zalecane">Zalecane.</string>
     <string name="mapa_wejscie_dojscie">Dojście</string>
     <string name="mapa_wejscie_drzwi">Drzwi</string>
