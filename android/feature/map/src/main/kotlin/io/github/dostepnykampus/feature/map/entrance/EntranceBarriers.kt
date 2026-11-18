@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.map.entrance
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.res.stringResource
@@ -30,7 +31,11 @@ internal fun EntranceBarriers(shown: ShownEntrance) {
             key(barrier.id) {
                 Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
                     SeverityBadge(barrier.severity)
-                    BarrierFacts(ChosenBarrier(barrier, building = null, entrance = null), hasPlace = false)
+                    BarrierFacts(
+                        chosen = ChosenBarrier(barrier, building = null, entrance = null),
+                        hasPlace = false,
+                        titleStyle = MaterialTheme.typography.titleMedium,
+                    )
                 }
             }
         }
