@@ -43,19 +43,16 @@ final class EntranceNote {
     );
 
     /**
-     * Odstępy między słowami.
+     * Nazwa wejścia: „Wejście” i najwyżej dwa dalsze słowa, ostatnie słowo w grupie.
      */
-    private static final Pattern SPACES = Pattern.compile("\\s+");
+    private static final Pattern NAME = Pattern.compile(
+        "Wejście(?:\\s+\\S+)??(?:\\s+(\\S+))?"
+    );
 
     /**
      * Skróty, po których kropka nie kończy zdania.
      */
     private static final Set<String> SHORTS = Set.of("ul", "al", "pl", "nr", "bud", "ok");
-
-    /**
-     * Najwięcej słów w nazwie wejścia.
-     */
-    private static final int WORDS = 3;
 
     /**
      * Uwagi bez spacji na brzegach.
@@ -120,10 +117,11 @@ final class EntranceNote {
     }
 
     private boolean named() {
-        final String first = this.first();
-        final String[] words = EntranceNote.SPACES.split(first);
-        return first.startsWith(EntranceNote.ENTRANCE) && words.length <= EntranceNote.WORDS
-            && !EntranceNote.SHORTS.contains(words[words.length - 1].toLowerCase(Locale.ROOT));
+        final Matcher name = EntranceNote.NAME.matcher(this.first());
+        return name.matches() && (
+            name.group(1) == null
+                || !EntranceNote.SHORTS.contains(name.group(1).toLowerCase(Locale.ROOT))
+        );
     }
 
     private String first() {
