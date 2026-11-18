@@ -218,7 +218,7 @@ Czynność główna: brak; odpowiedź, którym wejściem wejść, podała już k
 | Znak oznaczenia, nagłówek „Wejście” i obrysowany „Zamknij”; po otwarciu fokus TalkBack na nagłówku. „Zamknij” zamyka arkusz razem z kartą i zostawia mapę. „Wstecz” arkusza otwartego z karty V2 wraca do karty: ta sama wysokość, to samo przewinięcie | US2.1, US3.3, NFR-18, NFR-21, NFR-53 |
 | Pod nagłówkiem wiersz budynku: znak budynku, „Budynek A-1” i strzałka. Otwiera V2 na niskiej wysokości, a arkusz otwarty z karty wraca do niej; mapa zachowuje się jak po dotknięciu konturu | US2.8, US3.3, NFR-18, decyzja z 18.11.2026 |
 | Pod słowem oznaczenia „Zalecane.”, data i źródło | US17.3, BR-24, BR-25, PW-3 |
-| Części „Dojście”, „Drzwi” z szerokością i „Za drzwiami” z windą i odległością w linii prostej. Te same części z nagłówkami przy każdym wejściu; część bez danych nie stoi. Przy wejściu z planów PWr nie ma „Za drzwiami” | US3.3, US16.3, BR-25 |
+| Części „Dojście”, „Drzwi” z szerokością i „Za drzwiami” z windą i odległością w linii prostej. Te same części z nagłówkami przy każdym wejściu; część bez danych nie stoi. Pod „Za drzwiami” zakres pięter windy, np. „Jeździ od piwnicy do 3 piętra.” | US3.3, US16.3, BR-25 |
 | „Bariery przy tym wejściu”: typ i uciążliwość jako zastępniki, bo deklaracja A-1 nie podaje barier przy tym wejściu. Typ stoi krojem nagłówków części | US2.2, US3.3, PW-3 |
 | Innych wejść budynku arkusz nie pokazuje: są na liście „Wejścia” karty V2 | US3.3 |
 | „Zgłoś barierę przy wejściu” na końcu arkusza: V4 z wybranym wejściem, Gość: L1 | US4.6, US14.2, WCAG 2.5.3 |
