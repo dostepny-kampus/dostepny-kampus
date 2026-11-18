@@ -1,0 +1,24 @@
+@startsalt
+' V1 Mapa kampusu, arkusz „Który budynek?” po dotknięciu konturu wspólnego C-3/C-4 (US2, decyzja 85).
+' Każdy budynek to wiersz budynku w ramce; otwiera kartę V2 na niskiej wysokości.
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_mapy("Pokaż listę")
+$pole_tekstowe("Szukaj budynku, np. C-13")
+$przycisk("Kampus główny ▾")
+$mapa("mapa ulic OpenStreetMap, kontury budynków z symbolami; wspólny kontur C-3/C-4", "", "info")
+$ramka()
+{ <b>Który budynek?</b>$dk_spacje(6) | [Zamknij] }
+{+
+$wiersz_budynku("C-3")
+<i>[nazwa budynku z danych]</i>
+}
+{+
+$wiersz_budynku("C-4")
+<i>[nazwa budynku z danych]</i>
+}
+}
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

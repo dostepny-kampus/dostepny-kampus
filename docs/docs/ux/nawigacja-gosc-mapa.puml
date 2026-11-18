@@ -15,8 +15,12 @@ split
     -> „Pokaż wejście\nna mapie” albo\nwiersz wejścia;
     :V1 Arkusz wejścia\nz zaznaczonym wejściem; <<stan>>
     split
-      -> „Zamknij”,\n„Wstecz”;
+      -> „Wstecz” albo\n„Budynek A-1”;
       :V2 Karta budynku\nna tej samej wysokości;
+      detach
+    split again
+      -> „Zamknij”;
+      :V1 Mapa kampusu;
       detach
     split again
       -> „Zgłoś barierę\nprzy wejściu”;
@@ -37,11 +41,17 @@ split
     detach
   end split
 split again
-  -> dotknięcie\nznaku wejścia;
-  :V1 Arkusz wejścia; <<stan>>
-  -> „Zgłoś barierę\nprzy wejściu”;
-  :V4 Zgłoszenie szybkie\n(następny rysunek);
-  detach
+  -> dotknięcie znaku wejścia,\ntoalety, schodów albo bariery;
+  :V1 Arkusz znaku; <<stan>>
+  split
+    -> „Budynek A-1”;
+    :V2 Karta budynku\nna niskiej wysokości;
+    detach
+  split again
+    -> „Zgłoś barierę\nprzy wejściu”\nw arkuszu wejścia;
+    :V4 Zgłoszenie szybkie\n(następny rysunek);
+    detach
+  end split
 split again
   -> przybliżenie budynku\nszczegółowego;
   :V1 Plan piętra\nna mapie; <<stan>>
@@ -59,8 +69,8 @@ split again
 split again
   -> wynik „A-1 329”;
   :V1 Plan piętra\nze znalezioną salą; <<stan>>
-  -> „Pokaż opis\nbudynku”;
-  :V2 Karta budynku;
+  -> „Budynek A-1”;
+  :V2 Karta budynku\nna niskiej wysokości;
   detach
 end split
 @enduml

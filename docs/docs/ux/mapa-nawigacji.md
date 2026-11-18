@@ -23,9 +23,9 @@ Pasek dolny jest na ekranach V1, V2, V5 i L2. Prowadzi do mapy, zgłoszenia szyb
 
 ### Od mapy do wejścia
 
-![Diagram: od uruchomienia przez V1 do V2, arkusza wejścia i planu piętra jako stanów V1, arkusza windy i zgłoszenia szybkiego](../_generated/nawigacja-gosc-mapa.svg)
+![Diagram: od uruchomienia przez V1 do V2, arkusza wejścia, arkusza znaku i planu piętra jako stanów V1, arkusza windy i zgłoszenia szybkiego](../_generated/nawigacja-gosc-mapa.svg)
 
-Główna droga to V1 i karta V2, która od razu odpowiada, którym wejściem wejść. Dalej „Pokaż wejście na mapie” prowadzi do V1 z zaznaczonym wejściem i jego arkuszem. Ten sam arkusz otwierają wiersz wejścia na V2 i znak wejścia na mapie, a w arkuszu osoba zgłasza barierę przy tym wejściu.
+Główna droga to V1 i karta V2, która od razu odpowiada, którym wejściem wejść. Dalej „Pokaż wejście na mapie” prowadzi do V1 z zaznaczonym wejściem i jego arkuszem. Ten sam arkusz otwierają wiersz wejścia na V2 i znak wejścia na mapie, a w arkuszu osoba zgłasza barierę przy tym wejściu. Wiersz „Budynek A-1” pod nagłówkiem arkusza otwiera kartę budynku. „Zamknij” zamyka arkusz razem z kartą, a „Wstecz” wraca do karty, z której arkusz otwarto.
 
 Z V2 osoba otwiera też plan piętra na V1. Mapa ma jeszcze listę terenów oraz przybliżenie budynku szczegółowego na plan piętra.
 
@@ -102,17 +102,20 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V2, mała karta | uchwyt „Rozwiń opis budynku”, przewinięcie albo przeciągnięcie w górę | V2, pełny ekran bez mapy | wszystkie | US2.8, NFR-53 |
 | V2, pełny ekran po małej karcie | „Wstecz” | V2, mała karta | wszystkie | NFR-15, decyzja 115 |
 | V1 | dotknięcie konturu wspólnego, np. „C-3/C-4”, albo dotknięcie obok dwóch konturów, poza nimi | V1, arkusz „Który budynek?” | wszystkie | US2, US3.2, decyzja 85 |
-| V1, arkusz „Który budynek?” | przycisk budynku, np. „Budynek C-3”; „Zamknij” | V2 tego budynku; V1 | wszystkie | US2, NFR-53 |
+| V1, arkusz „Który budynek?” | wiersz budynku, np. „Budynek C-3”; „Zamknij” | V2 tego budynku na niskiej wysokości, mapa stoi; V1 | wszystkie | US2, NFR-53 |
 | V1 | „Pokaż listę”; na liście „Pokaż mapę” | V1, lista; z listy V1, mapa | wszystkie | NFR-19 |
 | V1 | dotknięcie budynku na liście | zwykła czcionka: V1 w widoku mapy z kartą V2 na niskiej wysokości, chwilowo, bez zmiany zapamiętanego widoku listy. Mapa od razu stoi na budynku. Duża czcionka albo TalkBack: V2 na cały ekran | wszystkie | US2.8, US3.2, NFR-19, decyzje 115, 118 |
 | V1 | dotknięcie znaku bariery | V1, arkusz bariery | wszystkie | US1.3, US10.6 |
-| V1, arkusz bariery | „Pokaż opis budynku”; „Zamknij” | V2 budynku bariery; V1 | wszystkie | US2 |
+| V1, arkusz bariery | wiersz „Budynek A-1”; „Zamknij” | V2 budynku bariery na niskiej wysokości, mapa stoi; V1 | wszystkie | US2 |
 | V1 | dotknięcie znaku wejścia | V1, arkusz wejścia | wszystkie | US2.1, US3.3 |
-| V1, arkusz wejścia | „Zamknij”, „Wstecz” | otwarty z karty budynku albo przy niej: ta karta, na tej samej wysokości i tak samo przewinięta. Otwarty znakiem na mapie bez karty: V1 | wszystkie | US3.3, NFR-15, NFR-53 |
+| V1, arkusz wejścia | wiersz „Budynek A-1” | V2 tego budynku na niskiej wysokości, mapa stoi. Otwarty z karty budynku albo przy niej: ta karta na tej samej wysokości i tak samo przewinięta. Duża czcionka: V2 na cały ekran | wszystkie | US2.8, US3.3, NFR-20 |
+| V1, arkusz wejścia | „Zamknij” | V1 bez karty, także gdy arkusz otwarto z karty | wszystkie | NFR-53 |
+| V1, arkusz wejścia | „Wstecz” | otwarty z karty budynku albo przy niej: ta karta, na tej samej wysokości i tak samo przewinięta. Otwarty znakiem na mapie bez karty: V1 | wszystkie | US3.3, NFR-15, NFR-53 |
 | V1, arkusz wejścia | dotknięcie pustej mapy | V1 bez karty | wszystkie | NFR-53 |
 | V1, arkusz wejścia | „Zgłoś barierę przy wejściu” | V4, krok 1, wejście wybrane; Gość: L1, potem V4 z wybranym wejściem | wszystkie | US4.6, US14.2 |
 | V1, plan piętra | dotknięcie znaku toalety dostosowanej albo schodów | V1, arkusz toalety albo schodów | wszystkie | US16.1 |
-| V1, arkusz toalety albo schodów | „Zamknij”, „Wstecz” albo dotknięcie pustej mapy | V1 | wszystkie | NFR-53 |
+| V1, arkusz toalety albo schodów | wiersz „Budynek A-1” | V2 tego budynku na niskiej wysokości, mapa stoi | wszystkie | US2.8, US16.1 |
+| V1, arkusz toalety albo schodów | „Zamknij”, „Wstecz” albo dotknięcie pustej mapy | V1; „Wstecz” arkusza otwartego przy karcie: ta karta | wszystkie | NFR-53 |
 | V1 | napis „© OpenStreetMap contributors” | strona praw autorskich OSM | wszystkie | NFR-37 |
 | V1 | „Powiększ”, „Pomniejsz” i strzałki „Przesuń mapę w górę”, „…w dół”, „…w lewo”, „…w prawo” | V1, mapa powiększona albo przesunięta | wszystkie | NFR-15, PW-8, PW-11 |
 | V1 | „ⓘ” („Legenda i źródła mapy”) | V1, arkusz „Legenda” ze źródłami mapy na końcu | wszystkie | US1.4, NFR-21, NFR-37, NFR-40 |
@@ -126,13 +129,13 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1, stan „plan piętra” albo „znaleziona sala” | przełącznik pięter | V1, plan innego piętra | wszystkie | US16.1 |
 | V1, stan „plan piętra” albo „znaleziona sala” | dotknięcie windy | V1, stan „arkusz windy” | wszystkie | R14, US16.1 |
 | V1, stan „arkusz windy” | „Zamknij” | V1, stan „plan piętra” | wszystkie | NFR-53 |
-| V1, stan „znaleziona sala”, „sala bez drogi” albo „brak sali” | „Pokaż opis budynku” | V2 | wszystkie | US2 |
+| V1, stan „znaleziona sala”, „sala bez drogi” albo „brak sali” | wiersz „Budynek A-1” | V2 na niskiej wysokości, mapa stoi | wszystkie | US2 |
 | V1, stan „znaleziona sala” | „Zamknij” | V1 | wszystkie | decyzja 48 |
 | V2 | „Pokaż na planie” przy piętrze | V1, plan tego piętra, bez zaznaczonego budynku | wszystkie | US16.1, decyzja 44 |
 | V2, pełny ekran otwarty od razu | „Pokaż budynek na mapie” | V1 w widoku mapy z zaznaczonym budynkiem, bez karty; zapamiętany wybór „Mapa” | wszystkie | US2.9, NFR-19, decyzja 116 |
-| V2 | „Pokaż wejście na mapie” pod wierszem o wejściach albo przy wejściu zalecanym | V1 z zaznaczonym wejściem zalecanym i jego arkuszem; przy dużej czcionce arkusz na cały ekran; „Zamknij” arkusza wraca do karty | wszystkie | US2.1, US3.3, BR-25 |
+| V2 | „Pokaż wejście na mapie” pod wierszem o wejściach albo przy wejściu zalecanym | V1 z zaznaczonym wejściem zalecanym i jego arkuszem; przy dużej czcionce arkusz na cały ekran; „Wstecz” arkusza wraca do karty, „Zamknij” zostawia mapę | wszystkie | US2.1, US3.3, BR-25 |
 | V2, niska wysokość | dotknięcie wystającego nagłówka „Wejścia” | V2 na połowie ekranu | wszystkie | US2.8, NFR-53 |
-| V2 | dotknięcie wiersza wejścia na liście „Wejścia” | V1 z zaznaczonym tym wejściem i jego arkuszem; „Zamknij” arkusza wraca do karty na tej samej wysokości i w tym samym miejscu przewinięcia listy | wszystkie | US3.3 |
+| V2 | dotknięcie wiersza wejścia na liście „Wejścia” | V1 z zaznaczonym tym wejściem i jego arkuszem; „Wstecz” arkusza wraca do karty na tej samej wysokości i w tym samym miejscu przewinięcia listy, „Zamknij” zostawia mapę | wszystkie | US3.3 |
 | V2, wiersz kilku wejść bez danych | „Zgłoś barierę przy wejściu” | V4, krok 1, bez wybranego wejścia; Gość: L1, potem V4 | wszystkie | US4.6, US14.2 |
 | V2, stan „brak zgłoszeń przyjętych” | „Zgłoś barierę” | V4; Gość: L1 | wszystkie | US4, US14.2 |
 | V2, pełny ekran otwarty od razu | „Wstecz” | ekran sprzed V2, np. lista V1 | wszystkie | NFR-15, US2.9 |
@@ -286,7 +289,7 @@ Wiersz o wejściach stoi na karcie na każdej wysokości, także na karcie otwar
 | Ścieżka | Dotknięcia do odpowiedzi na V2 | Dotknięcia do arkusza wejścia | Wynik |
 | --- | --- | --- | --- |
 | A. V1: kontur budynku, niska karta z odpowiedzią | 1 | 2 | spełnione |
-| B. V1: bariera na mapie, „Pokaż opis budynku” | 2 | 3 | spełnione |
+| B. V1: bariera na mapie, wiersz „Budynek A-1” | 2 | 3 | spełnione |
 | C. V1: pole symbolu budynku, litery, wynik, niska karta z odpowiedzią | 2 | 3 | spełnione |
 | D. V1 z TalkBack: „Pokaż listę”, budynek, od razu V2 na cały ekran z odpowiedzią | 2 | 3 | spełnione |
 | E. Pierwsze uruchomienie: V5 „Pomiń instrukcję”, potem A | 2 | 3 | spełnione |

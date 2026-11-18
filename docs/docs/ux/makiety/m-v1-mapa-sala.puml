@@ -8,14 +8,13 @@ $przycisk("Kampus główny ▾")
 $mapa("plan 2 piętra A-1 z wyróżnioną salą; krótkie podpisy: Winda, Toaleta, Sala 329; numery kroków 2 przy windzie i 4 przy sali, bez linii trasy; kolumna pięter po lewej pod przyciskiem terenu, wybrane 2", "", "info")
 Źródło: Politechnika Wrocławska
 $ramka()
-<b>A-1: Sala 329</b>
+{ <b>Sala 329</b>$dk_spacje(14) | [Zamknij] }
+$wiersz_budynku()
 <i>[funkcja sali z danych]</i>, 2 piętro
 1. <i>[wejście zalecane]</i> (parter)
 2. Winda przy klatkach C i D
 3. 2 piętro
 4. Sala 329, ok. <i>[odległość]</i> od windy
-$przycisk_glowny("Pokaż opis budynku")
-$przycisk("Zamknij")
 }
 $pasek_dolny_konto()
 $ekran_koniec()
