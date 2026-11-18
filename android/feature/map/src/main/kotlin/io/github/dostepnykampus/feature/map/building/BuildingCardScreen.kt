@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map.building
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +22,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -37,6 +39,7 @@ import io.github.dostepnykampus.feature.map.R
 
 /** Znacznik kreski między górą karty a pełnym opisem. */
 internal const val DESCRIPTION_LINE_TAG = "kreska-opisu"
+internal const val SCROLL_LINE_TAG = "linia-przewiniecia"
 
 /**
  * V2 Karta budynku: nagłówek z symbolem i nazwą z danych (budynek bez nazwy ma sam symbol), który TalkBack czyta jako
@@ -98,7 +101,7 @@ fun BuildingCardScreen(
  * V2 dla gotowego stanu [card] i [isOnline]; „Spróbuj ponownie” to [onRetry], „Pokaż na planie” to [onShowPlan]
  * z identyfikatorem piętra, „Oznacz obejrzane piętra” pod grupą „Piętra” to [onMarkFloors] (`null` ukrywa przycisk),
  * dotknięcie wystającego nagłówka „Wejścia” niskiej karty to [onExpand], przewijanie treści to [scroll], reszta jak
- * w [BuildingCardScreen].
+ * w [BuildingCardScreen]. Przy przewiniętej treści nad jej górną krawędzią stoi linia.
  */
 @Composable
 fun BuildingCardContent(
@@ -125,35 +128,47 @@ fun BuildingCardContent(
     Column(if (isFullScreen) modifier.fillMaxSize() else modifier) {
         if (mode == CardMode.Direct) BackHeader(title = symbol, onBack = onBack)
         if (isHeaderFixed) Box(Modifier.fixedTopPadding()) { top() }
-        Column(
-            modifier =
-                Modifier
-                    .weight(1f, isFullScreen)
-                    .verticalScroll(scroll)
-                    .cardPadding(isPeek = card.hasEntrancesPeek(isFullScreen), hasTop = !isHeaderFixed),
-            verticalArrangement = Arrangement.spacedBy(Odstepy.s),
-        ) {
-            if (!isHeaderFixed) top()
-            if (card is BuildingCardUiState.Ready || card.isWaiting(isFullScreen)) {
-                CardActions(
-                    mode = mode,
-                    recommended = card.recommendedEntrance(),
+        Box(Modifier.weight(1f, isFullScreen)) {
+            Column(
+                modifier =
+                    Modifier
+                        .verticalScroll(scroll)
+                        .cardPadding(isPeek = card.hasEntrancesPeek(isFullScreen), hasTop = !isHeaderFixed),
+                verticalArrangement = Arrangement.spacedBy(Odstepy.s),
+            ) {
+                if (!isHeaderFixed) top()
+                if (card is BuildingCardUiState.Ready || card.isWaiting(isFullScreen)) {
+                    CardActions(
+                        mode = mode,
+                        recommended = card.recommendedEntrance(),
+                        onShowEntrance = onShowEntrance,
+                        onShowOnMap = onShowOnMap,
+                    )
+                }
+                FactsOrMissing(
+                    card = card,
+                    isFullScreen = isFullScreen,
+                    onReport = onReport,
                     onShowEntrance = onShowEntrance,
-                    onShowOnMap = onShowOnMap,
+                    onReportRemoval = onReportRemoval,
+                    onRetry = onRetry,
+                    onShowPlan = onShowPlan,
+                    onMarkFloors = onMarkFloors,
+                    onExpand = onExpand,
                 )
             }
-            FactsOrMissing(
-                card = card,
-                isFullScreen = isFullScreen,
-                onReport = onReport,
-                onShowEntrance = onShowEntrance,
-                onReportRemoval = onReportRemoval,
-                onRetry = onRetry,
-                onShowPlan = onShowPlan,
-                onMarkFloors = onMarkFloors,
-                onExpand = onExpand,
-            )
+            ScrollLine(scroll)
         }
+    }
+}
+
+@Composable
+private fun BoxScope.ScrollLine(scroll: ScrollState) {
+    if (scroll.canScrollBackward) {
+        HorizontalDivider(
+            modifier = Modifier.align(Alignment.TopCenter).testTag(SCROLL_LINE_TAG),
+            color = MaterialTheme.colorScheme.outlineVariant,
+        )
     }
 }
 
