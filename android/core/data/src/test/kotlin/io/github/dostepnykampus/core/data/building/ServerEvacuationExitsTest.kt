@@ -51,7 +51,7 @@ class ServerEvacuationExitsTest {
     private companion object {
         const val SYMBOL = "A-1"
         val ORIGIN = GeoPoint(longitude = 0.0, latitude = 0.0)
-        val EXIT = EvacuationExit(id = "pwr/9", location = ORIGIN, description = "Wyjście ewakuacyjne", doorWidthCm = 90)
+        val EXIT = EvacuationExit(id = "pwr/9", location = ORIGIN, description = "Wyjście", doorWidthCm = 90)
         val CARD =
             ServerCard(
                 building =
