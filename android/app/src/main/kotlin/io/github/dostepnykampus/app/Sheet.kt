@@ -61,6 +61,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
@@ -284,31 +285,52 @@ private fun Modifier.followHeight(
     onMeasure: (SheetSize) -> Unit,
 ): Modifier =
     layout { measurable, constraints ->
-        val offset = state.offset
-        val anchors = state.anchors
-        val restsAt = state.settledValue.takeIf { anchors.hasPositionFor(it) && anchors.positionOf(it) == offset }
-        val isResting = offset.isNaN() || (isCompact && restsAt == SheetHeight.Low)
-        val isOpen = isLoose && !isCompact
-        val top = offset.roundToIntOrZero().coerceIn(minimumValue = 0, maximumValue = constraints.maxHeight)
-        val shown = constraints.maxHeight - top
-        val isFilled = isOpen && shown * 2 > constraints.maxHeight && (isKnownLong || restsAt == null)
-        val fixed =
-            when {
-                isResting -> constraints.copy(minHeight = 0)
-                isOpen -> constraints.copy(minHeight = if (isFilled) shown else 0)
-                else -> constraints.copy(minHeight = shown, maxHeight = shown)
-            }
-        val placeable = measurable.measure(fixed)
+        val fit =
+            SheetFit(
+                state = state,
+                window = constraints.maxHeight,
+                isCompact = isCompact,
+                isOpen = isLoose && !isCompact,
+                isKnownLong = isKnownLong,
+            )
+        val placeable = measurable.measure(fit.constraints(constraints))
         val size =
             SheetSize(
                 window = constraints.maxHeight,
-                restingLow = placeable.height.takeIf { isResting && isCompact },
-                expanded = placeable.height.takeIf { isOpen && !isFilled },
+                restingLow = placeable.height.takeIf { fit.isResting && isCompact },
+                expanded = placeable.height.takeIf { fit.isOpen && !fit.isFilled },
             )
         onMeasure(size)
-        val height = if (isOpen && !offset.isNaN()) shown else placeable.height
-        layout(width = placeable.width, height = height) { placeable.place(x = 0, y = 0) }
+        layout(width = placeable.width, height = fit.height(placeable.height)) { placeable.place(x = 0, y = 0) }
     }
+
+/**
+ * Wymiary arkusza za kotwicą [state] w oknie [window]: widoczna część [shown], spoczynek małej karty [isResting]
+ * i treść rozwinięta ([isOpen]) wypełniająca widoczną część od połowy okna ([isFilled]).
+ */
+private class SheetFit(
+    state: AnchoredDraggableState<SheetHeight>,
+    window: Int,
+    isCompact: Boolean,
+    val isOpen: Boolean,
+    isKnownLong: Boolean,
+) {
+    private val offset = state.offset
+    private val restsAt =
+        state.settledValue.takeIf { state.anchors.hasPositionFor(it) && state.anchors.positionOf(it) == offset }
+    private val shown = window - offset.roundToIntOrZero().coerceIn(minimumValue = 0, maximumValue = window)
+    val isResting = offset.isNaN() || (isCompact && restsAt == SheetHeight.Low)
+    val isFilled = isOpen && shown * 2 > window && (isKnownLong || restsAt == null)
+
+    fun constraints(base: Constraints): Constraints =
+        when {
+            isResting -> base.copy(minHeight = 0)
+            isOpen -> base.copy(minHeight = if (isFilled) shown else 0)
+            else -> base.copy(minHeight = shown, maxHeight = shown)
+        }
+
+    fun height(measured: Int): Int = if (isOpen && !offset.isNaN()) shown else measured
+}
 
 private fun Modifier.clipBelowKeepShadow(): Modifier =
     drawWithContent {
