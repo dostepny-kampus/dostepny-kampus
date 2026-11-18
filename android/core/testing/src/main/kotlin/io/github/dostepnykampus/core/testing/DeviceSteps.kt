@@ -17,8 +17,11 @@ import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.text.AnnotatedString
 import androidx.test.espresso.Espresso
 
-/** Napis przycisku na karcie budynku, który prowadzi do wejść. */
-public const val CHECK_ENTRANCES: String = "Pokaż wejście na mapie"
+/** Opis uchwytu wysokości karty budynku; uchwyt jest na karcie bez względu na dane o wejściach. */
+public const val CARD_HANDLE: String = "Wysokość karty"
+
+/** Otwarta karta budynku, rozpoznana po uchwycie wysokości. */
+public fun openedCard(): SemanticsMatcher = hasContentDescription(CARD_HANDLE)
 
 /**
  * Wiersz budynku [symbol] w wynikach wyszukiwania i na liście budynków.
@@ -69,7 +72,7 @@ public class DeviceSteps(private val compose: ComposeTestRule, private val waitM
             .performSemanticsAction(SemanticsActions.SetText) { it(AnnotatedString(symbol)) }
         waitFor(inCatalog(symbol))
         compose.onAllNodes(inCatalog(symbol)).onFirst().performClick()
-        waitFor(hasText(CHECK_ENTRANCES))
+        waitFor(openedCard())
     }
 
     private companion object {

@@ -38,7 +38,7 @@ class DeviceStepsTest {
 
     private val steps = DeviceSteps(compose, waitMs = 2_000L)
 
-    /** Wstecz zamyka pomoc, a wpisany symbol i wybór wyniku prowadzą do karty z przyciskiem wejść. */
+    /** Wstecz zamyka pomoc, a wpisany symbol i wybór wyniku prowadzą do karty z uchwytem wysokości. */
     @Test
     fun helpThenCard() {
         compose.setContent { Campus() }
@@ -52,7 +52,7 @@ class DeviceStepsTest {
     fun missingNodeTimesOut() {
         compose.setContent { BasicText("Mapa") }
         assertThrows("Brak węzła po czasie", ComposeTimeoutException::class.java) {
-            steps.waitFor(hasText(CHECK_ENTRANCES))
+            steps.waitFor(openedCard())
         }
     }
 
@@ -74,7 +74,7 @@ class DeviceStepsTest {
                             .clickable { isCard = true },
                 )
             }
-            if (isCard) BasicText(CHECK_ENTRANCES)
+            if (isCard) BasicText(text = "A-1", modifier = Modifier.semantics { contentDescription = CARD_HANDLE })
         }
     }
 }
