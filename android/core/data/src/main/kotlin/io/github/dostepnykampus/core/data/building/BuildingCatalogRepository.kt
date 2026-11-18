@@ -36,14 +36,14 @@ import kotlin.coroutines.CoroutineContext
 public const val BUILDINGS_ASSET: String = "pwr-buildings.geojson"
 
 /**
- * Katalog budynków dla mapy. Z [listBuildings] kontury, nazwy i atrybucja są z serwera, a wejścia z pliku konturów,
- * tylko dla budynków podanych przez serwer. Bez niego, przy błędzie albo pustej liście katalog jest z pliku, chyba że
- * wcześniej pobrano katalog z serwera albo jego kopię w [buildingCache]. Budynki są sortowane naturalnie po symbolu
- * (A-2 przed A-10), bez wejść `emergency`, `exit` i `garage`. Trwające pobranie i odczyt pliku są wspólne dla
- * [catalogUpdates], [catalog] i [refresh]; [catalogUpdates] oddaje najpierw katalog bez czekania, potem z serwera.
- * Anulowanie prowadzącego pobranie każe pozostałym pytać od nowa. [syncedAt] to chwila pobrania z serwera.
+ * Katalog budynków dla mapy. Z [listBuildings] kontury, nazwy, atrybucja i wejścia są z serwera; lista bez wejść
+ * zostawia wejścia z pliku konturów budynków podanych przez serwer. Bez niego, przy błędzie albo pustej liście katalog
+ * jest z pliku, chyba że wcześniej pobrano katalog z serwera albo jego kopię w [buildingCache]. Budynki są sortowane
+ * naturalnie po symbolu (A-2 przed A-10), bez wejść `emergency`, `exit` i `garage`. Pobranie i odczyt pliku są wspólne
+ * dla [catalogUpdates] (najpierw katalog bez czekania, potem z serwera), [catalog] i [refresh]; anulowanie
+ * prowadzącego pobranie każe pozostałym pytać od nowa. [syncedAt] to chwila pobrania z serwera.
  *
- * Wymagania: US1, US1.2, US17.3, BR-25, NFR-11, NFR-10
+ * Wymagania: US1, US1.2, US1.4, US17.3, BR-25, NFR-11, NFR-10
  *
  * @param buildingCache kopia listy budynków w bazie; `null` zostawia katalog bez kopii
  * @param ioContext kontekst odczytu pliku i parsowania, np. dyspozytor wejścia-wyjścia

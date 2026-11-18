@@ -37,7 +37,7 @@ import io.github.dostepnykampus.feature.map.plan.ShownPlan
 /**
  * V1 ze stanem [viewModel], planem piętra [planViewModel] i wejściami z serwera [entrancesViewModel] z grafu Hilt oraz
  * zaznaczeniem [focus] z trasy; piętro z zaznaczenia budynku staje się wybranym piętrem jego planu, a wejścia
- * zaznaczonego budynku z serwera zastępują w arkuszu wejścia i pinezce wejścia z pliku konturów.
+ * zaznaczonego budynku z karty z serwera zastępują w arkuszu wejścia i pinezce wejścia tego budynku z katalogu mapy.
  *
  * Wymagania: US1, US3.3, NFR-19, US16.1, US2.1
  */
