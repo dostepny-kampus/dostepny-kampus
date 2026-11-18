@@ -58,6 +58,10 @@
     <string name="mapa_bariera_sprawdzone">Sprawdzone %1$s</string>
     <string name="mapa_bariera_zdjecie">Zdjęcie bariery: %1$s</string>
     <string name="mapa_wejscie_tytul">Wejście</string>
+    <string name="mapa_wejscie_za_drzwiami">Za drzwiami</string>
+    <string name="mapa_wejscie_winda">Winda, ok. %1$d m od wejścia.</string>
+    <string name="mapa_wejscie_winda_jezdzi">Jeździ od %1$s do %2$s.</string>
+    <string name="mapa_wejscie_winda_jedzie">Jedzie na: %1$s.</string>
     <string name="mapa_wejscie_glowne">%1$s, wejście główne</string>
     <string name="mapa_wejscie_niesprawdzone">Nie mamy danych o dostępności tego wejścia.</string>
     <string name="mapa_wejscie_zalecane">Zalecane.</string>

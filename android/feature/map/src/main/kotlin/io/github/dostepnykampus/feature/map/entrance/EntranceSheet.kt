@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -52,7 +53,8 @@ private val WIDE_WINDOW = 600.dp
 
 /**
  * Arkusz wejścia o identyfikatorze [id] z [catalog] po dotknięciu jego znaku na mapie V1; bez [id] i bez takiego
- * wejścia w katalogu arkusza nie ma. Systemowe „Wstecz” przy otwartym arkuszu wywołuje [SheetExits.onBack].
+ * wejścia w katalogu arkusza nie ma. Pokazane wejście trafia do [EntranceActions.onShow], a winda z
+ * [EntranceActions.lift] do części „Za drzwiami”. Systemowe „Wstecz” przy otwartym arkuszu wywołuje [SheetExits.onBack].
  *
  * Wymagania: US2.1, US3.3, NFR-53
  *
@@ -74,7 +76,9 @@ internal fun ChosenEntranceSheet(
     modifier: Modifier = Modifier,
     isFull: Boolean = false,
 ) {
-    val shown = remember(id, catalog, barriers) { id?.let { catalog?.shownEntrance(it, barriers.barriers) } }
+    val found = remember(id, catalog, barriers) { id?.let { catalog?.shownEntrance(it, barriers.barriers) } }
+    LaunchedEffect(found?.entrance) { found?.entrance?.let(actions.onShow) }
+    val shown = found?.copy(lift = actions.lift?.takeIf { it.entranceId == found.entrance.id })
     BackHandler(enabled = shown != null, onBack = exits.onBack)
     if (shown != null) {
         EntranceSheet(shown = shown, exits = exits, actions = actions, modifier = modifier, isFull = isFull)
@@ -99,8 +103,8 @@ internal fun isFullEntranceSheet(id: String, focus: MapFocus?): Boolean {
 
 /**
  * Arkusz wejścia [shown] na dole mapy V1, ten sam przy każdym wejściu: znak oznaczenia przy nagłówku, wiersz budynku,
- * słowo oznaczenia, „Zalecane.” przy wejściu zalecanym, dzień ze źródłem, nazwa, dojście, drzwi i bariery z danych
- * oraz zgłoszenie bariery. Nagłówek z fokusem i wiersz budynku stoją nad treścią, która się przewija. Arkusz na mapie
+ * słowo oznaczenia, „Zalecane.” przy wejściu zalecanym, dzień ze źródłem, nazwa, dojście, drzwi, winda i bariery
+ * z danych oraz zgłoszenie bariery. Nagłówek z fokusem i wiersz budynku stoją nad treścią, która się przewija. Arkusz na mapie
  * ma najwyżej połowę wysokości okna.
  *
  * Wymagania: US2.1, US2.2, US2.8, US3.3, US4.6, US17.1, US17.3, BR-25, BR-27, NFR-18, NFR-20, NFR-21, NFR-53
@@ -138,7 +142,7 @@ internal fun EntranceSheet(
         )
         sourceLine(shown)?.let { SecondaryText(it) }
         entrance.name?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
-        if (entrance.hasDetails()) EntranceDetails(shown)
+        if (shown.hasDetails()) EntranceDetails(shown)
         if (entrance.marking == EntranceMarking.NO_DATA) {
             SecondaryText(stringResource(R.string.mapa_wejscie_niesprawdzone))
         }

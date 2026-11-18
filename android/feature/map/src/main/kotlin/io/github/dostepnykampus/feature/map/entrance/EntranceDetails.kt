@@ -21,10 +21,10 @@ import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.feature.map.R
 
 /**
- * Opis dojścia i szerokość drzwi wejścia [shown], każde w swojej części z nagłówkiem. Pusty opis i szerokość 0 nic
- * nie dodają; bez obu kolumna jest pusta.
+ * Opis dojścia, szerokość drzwi i winda za drzwiami wejścia [shown], każde w swojej części z nagłówkiem. Pusty opis,
+ * szerokość 0 i brak windy nic nie dodają.
  *
- * Wymagania: US2.1, US3.3, BR-27
+ * Wymagania: US2.1, US3.3, US16.3, BR-25, BR-27
  */
 @Composable
 internal fun EntranceDetails(shown: ShownEntrance) {
@@ -33,11 +33,13 @@ internal fun EntranceDetails(shown: ShownEntrance) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         approach?.let { SheetPart(title = stringResource(R.string.mapa_wejscie_dojscie), text = it) }
         door?.let { SheetPart(title = stringResource(R.string.mapa_wejscie_drzwi), text = it) }
+        shown.lift?.let { LiftPart(it) }
     }
 }
 
-/** Czy wejście ma w danych opis dojścia albo szerokość drzwi. Wymagania: US2.1, BR-27 */
-internal fun Entrance.hasDetails(): Boolean = approach.isNotEmpty() || doorWidthCm > 0
+/** Czy wejście ma w danych opis dojścia, szerokość drzwi albo windę. Wymagania: US2.1, US16.3, BR-27 */
+internal fun ShownEntrance.hasDetails(): Boolean =
+    entrance.approach.isNotEmpty() || entrance.doorWidthCm > 0 || lift != null
 
 /** Szerokość drzwi [entrance] słowami; `null`, gdy dane jej nie podają. Wymagania: US2.1, BR-27 */
 @Composable
@@ -54,6 +56,23 @@ internal fun SheetHeading(text: String) {
         style = MaterialTheme.typography.titleMedium,
         fontWeight = Typografia.wyroznienieWaga,
     )
+}
+
+@Composable
+private fun LiftPart(lift: EntranceLift) {
+    val range = liftRange(lift.floors)
+    val stops =
+        when {
+            range != null -> stringResource(R.string.mapa_wejscie_winda_jezdzi, range.first, range.second)
+            lift.floors.isEmpty() -> null
+            else -> stringResource(R.string.mapa_wejscie_winda_jedzie, lift.floors.joinToString { it.floorWord() })
+        }
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        SheetHeading(stringResource(R.string.mapa_wejscie_za_drzwiami))
+        val near = stringResource(R.string.mapa_wejscie_winda, lift.meters)
+        Text(text = near, style = MaterialTheme.typography.bodyLarge)
+        stops?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
+    }
 }
 
 @Composable
