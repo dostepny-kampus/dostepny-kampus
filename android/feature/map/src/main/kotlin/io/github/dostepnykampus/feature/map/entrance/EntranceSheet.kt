@@ -146,7 +146,10 @@ internal fun EntranceSheet(
 
 @Composable
 @ReadOnlyComposable
-private fun halfWindow(): Dp = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.height.toDp() / 2 }
+private fun halfWindow(): Dp {
+    val height = LocalWindowInfo.current.containerSize.height
+    return with(LocalDensity.current) { height.toDp() } / 2
+}
 
 @Composable
 private fun SheetButton(text: String, spoken: String, onClick: () -> Unit) {

@@ -266,8 +266,6 @@ private fun CampusMap(
     val signs = sheet.signs
     val width = with(LocalDensity.current) { size.width.toDp() }
     val notice = rememberNoticeHeight(shift = areas.selectionNotice, width = width)
-    val isMarkedSheet = (focus as? MapFocus.Entrance)?.id?.let { it == signs.entranceId } == true
-    val entranceSheet = with(LocalDensity.current) { signs.entranceHeight.toDp() }.takeIf { isMarkedSheet }
     val state =
         rememberMapSceneState(
             layers = ui.mapData,
@@ -279,7 +277,7 @@ private fun CampusMap(
             top = cameraTop,
             motion = motion,
             notice = notice,
-            sheet = entranceSheet ?: 0.dp,
+            sheet = signs.markedCover(focus),
         )
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
         val scene = state.scene
