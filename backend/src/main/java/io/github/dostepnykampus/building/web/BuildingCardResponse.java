@@ -42,7 +42,8 @@ public record BuildingCardResponse(
     public BuildingCardResponse(final BuildingCard card) {
         this(
             card.symbol(), card.name(), card.detailLevel(), card.outline(),
-            card.entrances().stream().map(EntranceResponse::new).toList(),
+            card.entrances().stream()
+                .map(entrance -> new EntranceResponse(card.symbol(), entrance)).toList(),
             card.evacuationExits().stream().map(EvacuationExitResponse::new).toList()
         );
     }

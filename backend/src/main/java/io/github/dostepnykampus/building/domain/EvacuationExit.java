@@ -5,8 +5,6 @@
  */
 package io.github.dostepnykampus.building.domain;
 
-import org.jspecify.annotations.Nullable;
-
 /**
  * Wyjście ewakuacyjne budynku z warstwy wejść planów PWr; nie jest wejściem budynku.
  *
@@ -14,16 +12,16 @@ import org.jspecify.annotations.Nullable;
  *
  * @param id Identyfikator wyjścia
  * @param location Położenie wyjścia jako tekst punktu GeoJSON
- * @param floorId Piętro wyjścia z listy pięter budynku albo null, gdy dane go nie podają
+ * @param floorId Piętro wyjścia z listy pięter budynku
  * @param description Opis wyjścia z danych, np. „Wyjście ewakuacyjne z pomieszczenia 41”
- * @param doorWidthCm Szerokość drzwi w centymetrach albo null, gdy dane jej nie podają
+ * @param door Drzwi wyjścia
  * @since 0.1.0
  */
 public record EvacuationExit(
     String id,
     String location,
-    @Nullable String floorId,
+    String floorId,
     String description,
-    @Nullable Integer doorWidthCm
+    Door door
 ) {
 }

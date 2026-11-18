@@ -10,6 +10,7 @@ import io.github.dostepnykampus.building.domain.Building;
 import io.github.dostepnykampus.building.domain.BuildingCard;
 import io.github.dostepnykampus.building.domain.BuildingList;
 import io.github.dostepnykampus.building.domain.Buildings;
+import io.github.dostepnykampus.building.domain.Door;
 import io.github.dostepnykampus.building.domain.Entrance;
 import io.github.dostepnykampus.building.domain.EvacuationExit;
 import io.github.dostepnykampus.building.domain.Floor;
@@ -148,7 +149,7 @@ public final class BuildingQuery implements Buildings {
     private List<Entrance> entrances(final String symbol) {
         return this.jdbc.sql(
             """
-            SELECT id, building_symbol, COALESCE(pwr_name, name) AS name, type, main,
+            SELECT id, COALESCE(pwr_name, name) AS name, type, main,
                 ST_AsGeoJSON(location) AS location, floor_id,
                 CASE WHEN marking_source = 'WALKTHROUGH' THEN marking
                     ELSE COALESCE(pwr_marking, marking) END AS marking,
@@ -161,19 +162,17 @@ public final class BuildingQuery implements Buildings {
         ).param("symbol", symbol).query(
             (rows, num) -> new Entrance(
                 BuildingQuery.text(rows, "id"),
-                BuildingQuery.text(rows, "building_symbol"),
                 rows.getString("name"),
                 rows.getString("type"),
                 rows.getBoolean("main"),
-                new Entrance.Place(
-                    BuildingQuery.text(rows, "location"), rows.getString("floor_id")
-                ),
+                BuildingQuery.text(rows, "location"),
+                rows.getString("floor_id"),
                 new Entrance.Marking(
                     BuildingQuery.text(rows, "marking"),
                     BuildingQuery.text(rows, "marking_date"),
                     BuildingQuery.text(rows, "marking_source")
                 ),
-                BuildingQuery.plan(rows)
+                BuildingQuery.layer(rows)
             )
         ).list();
     }
@@ -190,9 +189,9 @@ public final class BuildingQuery implements Buildings {
             (rows, num) -> new EvacuationExit(
                 BuildingQuery.text(rows, "id"),
                 BuildingQuery.text(rows, "location"),
-                rows.getString("floor_id"),
+                BuildingQuery.text(rows, "floor_id"),
                 BuildingQuery.text(rows, "description"),
-                rows.getObject("door_width_cm", Integer.class)
+                BuildingQuery.door(rows)
             )
         ).list();
     }
@@ -224,15 +223,35 @@ public final class BuildingQuery implements Buildings {
         return new BuildingList(String.join("; ", sources), found);
     }
 
-    private static Entrance.@Nullable Plan plan(final ResultSet rows) throws SQLException {
-        final Entrance.Plan result;
+    private static Entrance.Layer layer(final ResultSet rows) throws SQLException {
+        final Entrance.Layer result;
         if (rows.getBoolean("pwr")) {
-            result = new Entrance.Plan(
-                FloorList.PWR_SOURCE, rows.getString("approach"),
-                rows.getObject("door_width_cm", Integer.class)
+            result = new Entrance.Layer.Listed(
+                BuildingQuery.approach(rows.getString("approach")), BuildingQuery.door(rows)
             );
         } else {
-            result = null;
+            result = new Entrance.Layer.Unlisted();
+        }
+        return result;
+    }
+
+    private static Entrance.Approach approach(final @Nullable String text) {
+        final Entrance.Approach result;
+        if (text == null) {
+            result = new Entrance.Approach.Undescribed();
+        } else {
+            result = new Entrance.Approach.Described(text);
+        }
+        return result;
+    }
+
+    private static Door door(final ResultSet rows) throws SQLException {
+        final Integer width = rows.getObject("door_width_cm", Integer.class);
+        final Door result;
+        if (width == null) {
+            result = new Door.Unmeasured();
+        } else {
+            result = new Door.Measured(width);
         }
         return result;
     }

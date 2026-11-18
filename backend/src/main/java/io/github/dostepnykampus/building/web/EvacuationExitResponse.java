@@ -41,7 +41,8 @@ public record EvacuationExitResponse(
      */
     public EvacuationExitResponse(final EvacuationExit exit) {
         this(
-            exit.id(), exit.location(), exit.floorId(), exit.description(), exit.doorWidthCm(),
+            exit.id(), exit.location(), exit.floorId(), exit.description(),
+            exit.door().widthCm().orElse(null),
             FloorList.PWR_SOURCE
         );
     }

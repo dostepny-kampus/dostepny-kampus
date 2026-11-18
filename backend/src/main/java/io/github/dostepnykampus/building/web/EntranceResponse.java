@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import io.github.dostepnykampus.building.domain.Entrance;
+import io.github.dostepnykampus.building.domain.FloorList;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -39,16 +40,16 @@ public record EntranceResponse(
 ) {
 
     /**
-     * Odpowiedź z wejścia.
+     * Odpowiedź z wejścia budynku.
      *
+     * @param building Symbol budynku, do którego prowadzi wejście
      * @param entrance Wejście
      */
-    public EntranceResponse(final Entrance entrance) {
+    public EntranceResponse(final String building, final Entrance entrance) {
         this(
-            entrance.id(), entrance.buildingSymbol(), entrance.name(), entrance.type(),
-            entrance.main(),
-            new Place(entrance.place().location(), entrance.place().floorId()),
-            entrance.marking(), Plan.of(entrance.plan())
+            entrance.id(), building, entrance.name(), entrance.type(), entrance.main(),
+            new Place(entrance.location(), entrance.floorId()), entrance.marking(),
+            Plan.of(entrance.layer())
         );
     }
 
@@ -68,7 +69,7 @@ public record EntranceResponse(
     /**
      * Dane wejścia z planów PWr w odpowiedzi HTTP.
      *
-     * <p>Wymagania: BR-27, US3.3, US17.3</p>
+     * <p>Wymagania: BR-27, US3.3, US17.3, NFR-40</p>
      *
      * @param approach Opis dojścia albo null, gdy dane go nie podają
      * @param doorWidthCm Szerokość drzwi w centymetrach albo null, gdy dane jej nie podają
@@ -79,19 +80,20 @@ public record EntranceResponse(
     public record Plan(@Nullable String approach, @Nullable Integer doorWidthCm, String source) {
 
         /**
-         * Odpowiedź z danych wejścia z planów PWr.
+         * Odpowiedź z obecności wejścia w warstwie wejść planów PWr.
          *
-         * @param plan Dane wejścia z planów PWr albo null
-         * @return Odpowiedź albo null, gdy wejścia nie ma w warstwie
+         * @param layer Obecność wejścia w warstwie
+         * @return Dane z warstwy albo null przy wejściu spoza warstwy
          */
-        static @Nullable Plan of(final Entrance.@Nullable Plan plan) {
-            final Plan result;
-            if (plan == null) {
-                result = null;
-            } else {
-                result = new Plan(plan.approach(), plan.doorWidthCm(), plan.source());
-            }
-            return result;
+        static @Nullable Plan of(final Entrance.Layer layer) {
+            return switch (layer) {
+                case Entrance.Layer.Listed listed -> new Plan(
+                    listed.approach().text().orElse(null),
+                    listed.door().widthCm().orElse(null),
+                    FloorList.PWR_SOURCE
+                );
+                case Entrance.Layer.Unlisted unlisted -> null;
+            };
         }
     }
 }
