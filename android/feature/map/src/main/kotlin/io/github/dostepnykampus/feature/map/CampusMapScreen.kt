@@ -51,8 +51,8 @@ import io.github.dostepnykampus.feature.map.area.rememberMapAreas
 import io.github.dostepnykampus.feature.map.area.rememberNoticeHeight
 import io.github.dostepnykampus.feature.map.barrier.BarrierDescriptions
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
-import io.github.dostepnykampus.feature.map.building.BuildingChoice
 import io.github.dostepnykampus.feature.map.building.BuildingChoiceSheet
+import io.github.dostepnykampus.feature.map.building.ChoiceLink
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
@@ -409,7 +409,7 @@ private fun BuildingChoices(
     if (chosen.isNotEmpty()) {
         BuildingChoiceSheet(onClose = state.taps::dismiss, modifier = modifier) {
             chosen.forEach { building ->
-                BuildingChoice(building) { state.taps.choose(building.symbol, onChoose) }
+                ChoiceLink(building) { state.taps.choose(building.symbol, onChoose) }
             }
         }
     }
