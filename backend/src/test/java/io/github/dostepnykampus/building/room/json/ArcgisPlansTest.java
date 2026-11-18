@@ -155,7 +155,7 @@ final class ArcgisPlansTest {
                 ),
                 new CountDownLatch(0),
                 url -> new ArcgisPlans(JsonMapper.builder().build()).entrances(
-                    new PlanSource.Layer(url, 2), new PlanSource.Layer(url, 2)
+                    new PlanSource.Layer(url, 2), ArcgisPlansTest.emptyCampus(url)
                 )
             ),
             Matchers.contains(
@@ -190,7 +190,8 @@ final class ArcgisPlansTest {
                 ),
                 new CountDownLatch(0),
                 url -> new ArcgisPlans(JsonMapper.builder().build())
-                    .entrances(new PlanSource.Layer(url, 2), new PlanSource.Layer(url, 2)).stream()
+                    .entrances(new PlanSource.Layer(url, 2), ArcgisPlansTest.emptyCampus(url))
+                    .stream()
                     .map(ArcgisPlansTest::describe).toList()
             ),
             Matchers.contains(
@@ -376,6 +377,10 @@ final class ArcgisPlansTest {
         );
     }
 
+    private static PlanSource.Layer emptyCampus(final String url) {
+        return new PlanSource.Layer(url.replace("/FeatureServer", "/Pusty/FeatureServer"), 29);
+    }
+
     private static String describe(final PlanEntrance entry) {
         return String.join(
             "|", entry.marking(), entry.name(), String.valueOf(entry.approach()),
@@ -442,6 +447,10 @@ final class ArcgisPlansTest {
     ) throws IOException {
         final HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
         server.createContext(ArcgisPlansTest.QUERY, handler);
+        server.createContext(
+            "/Pusty/FeatureServer/29/query",
+            exchange -> ArcgisPlansTest.send(exchange, "{\"features\":[]}")
+        );
         server.start();
         try {
             return call.apply(
