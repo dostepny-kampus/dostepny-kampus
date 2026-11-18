@@ -15,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -32,22 +31,6 @@ import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.feature.map.R
-
-/**
- * Wyjścia z arkusza na mapie V1.
- *
- * Wymagania: US2.8, NFR-15, NFR-53
- *
- * @property onClose „Zamknij”
- * @property onBack systemowe „Wstecz”
- * @property onBuilding wiersz budynku o podanym symbolu
- */
-@Immutable
-internal data class SheetExits(
-    val onClose: () -> Unit,
-    val onBack: () -> Unit = onClose,
-    val onBuilding: (String) -> Unit = {},
-)
 
 /**
  * Wiersz budynku [symbol] pod nagłówkiem arkusza, który przez [onClick] otwiera kartę tego budynku; cały wiersz to
