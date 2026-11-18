@@ -27,14 +27,16 @@ import androidx.compose.ui.semantics.stateDescription
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.GroupFrame
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.model.building.EvacuationExit
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.overlay.MapControlIcons
 
 /**
  * Wyjścia ewakuacyjne budynku z karty [card]: przycisk z liczbą wyjść, który rozwija i zwija ich listę, na start
- * zwiniętą; napis przycisku mówi, co zrobi następne dotknięcie. Lista stoi w kontenerze grupy, a wiersz wyjścia ma
- * opis i szerokość drzwi, gdy są w danych, i nie jest dotykalny. Bez wyjść nic się nie rysuje.
+ * zwiniętą; napis przycisku mówi, co zrobi następne dotknięcie. Lista stoi w kontenerze grupy. Wiersz wyjścia jak
+ * wiersz wejścia bez nazwy: pogrubione „Wyjście ewakuacyjne”, pod nim [exitDetail] i szerokość drzwi, gdy są w danych;
+ * wiersz nie jest dotykalny. Bez wyjść nic się nie rysuje.
  *
  * Wymagania: US2.6, BR-27, NFR-17, NFR-18
  */
@@ -69,15 +71,38 @@ internal fun EvacuationExits(card: BuildingCardUiState.Ready) {
     }
 }
 
+private const val SENTENCE_ENDS = ".!?"
+
+/**
+ * Reszta opisu wyjścia [description] z danych po początkowym [title] („Wyjście ewakuacyjne”), od wielkiej litery
+ * i z kropką na końcu; opis bez tego początku w całości. Pusty, gdy po [title] nic nie ma.
+ *
+ * Wymagania: US2.6, BR-27
+ */
+internal fun exitDetail(description: String, title: String): String {
+    val isTitled =
+        description.startsWith(title, ignoreCase = true) && description.getOrNull(title.length)?.isLetter() != true
+    val rest = if (isTitled) description.substring(title.length) else description
+    val detail = rest.trim().trimStart(':', '-', '–', ',').trim()
+    if (detail.isEmpty()) return ""
+    val capital = detail.replaceFirstChar { it.uppercaseChar() }
+    return if (capital.last() in SENTENCE_ENDS) capital else "$capital."
+}
+
 @Composable
 private fun ExitRow(exit: EvacuationExit) {
     Column(
-        modifier = Modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .heightIn(min = CeleDotyku.minimum)
+                .semantics(mergeDescendants = true) {},
         verticalArrangement = Arrangement.spacedBy(Odstepy.xs),
     ) {
-        if (exit.description.isNotEmpty()) {
-            Text(text = exit.description, style = MaterialTheme.typography.bodyLarge)
-        }
+        val title = stringResource(R.string.karta_wyjscie_ewakuacyjne)
+        Text(text = title, fontWeight = Typografia.wyroznienieWaga, style = MaterialTheme.typography.titleMedium)
+        val detail = exitDetail(description = exit.description, title = title)
+        if (detail.isNotEmpty()) Text(text = detail, style = MaterialTheme.typography.bodyLarge)
         if (exit.doorWidthCm > 0) {
             val door = stringResource(R.string.karta_szerokosc_drzwi, exit.doorWidthCm)
             Text(text = door, style = MaterialTheme.typography.bodyLarge)
