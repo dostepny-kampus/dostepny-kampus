@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasClickAction
@@ -19,6 +20,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -109,7 +111,7 @@ class EvacuationExitsTest {
 
     private fun expandedShot() {
         exits(EXITS)
-        compose.onNodeWithText(BUTTON, useUnmergedTree = true).performClick()
+        compose.onNodeWithText(BUTTON).performSemanticsAction(SemanticsActions.OnClick)
         compose.onRoot().captureRoboImage()
     }
 
