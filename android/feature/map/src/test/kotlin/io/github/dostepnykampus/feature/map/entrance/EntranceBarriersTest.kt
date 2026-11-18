@@ -79,7 +79,12 @@ class EntranceBarriersTest {
         compose.onNodeWithText(BARRIERS).assertDoesNotExist()
     }
 
-    /** Wiersz: każde wejście, zalecane i niezalecane, dostaje tylko zgłoszenia przy sobie. Wymagania: US2.2 */
+    /**
+     * Wiersz: każde wejście, zalecane i niezalecane, dostaje tylko zgłoszenia przy sobie.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Arkusz każdego wejścia ma te same części
+     *
+     * Wymagania: US2.2
+     */
     @Test
     fun keepsBarriersOfEachEntrance() {
         val catalog =
@@ -99,6 +104,7 @@ class EntranceBarriersTest {
     /**
      * Wiersz: arkusz z trzema barierami ze zdjęciem nie sięga wyżej niż połowa ekranu 800 dp, a jego treść
      *   przewija się do ostatniej daty.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Pinezka wejścia jest widoczna nad arkuszem wejścia
      *
      * Wymagania: US3.3, NFR-53
      */

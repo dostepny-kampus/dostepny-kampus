@@ -114,6 +114,7 @@ class MapEntranceTouchTest {
     /**
      * Wiersz: wejście zaznaczone z trasy stoi na środku części mapy nad arkuszem: dół kamery zasłania wysokość
      *   arkusza.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Pinezka wejścia jest widoczna nad arkuszem wejścia
      *
      * Wymagania: US3.3, NFR-53
      */

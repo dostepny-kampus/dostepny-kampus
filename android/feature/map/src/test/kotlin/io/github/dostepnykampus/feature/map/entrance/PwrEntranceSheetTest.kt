@@ -89,6 +89,7 @@ class PwrEntranceSheetTest {
     /**
      * Wiersz: wejście niezalecane z opisem i drzwiami 90 cm → części „Dojście” i „Drzwi” z nagłówkami, jak przy
      *   wejściu zalecanym.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Arkusz każdego wejścia ma te same części
      *
      * Wymagania: US2.1, US3.3, BR-27
      */
