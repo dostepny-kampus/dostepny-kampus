@@ -185,13 +185,7 @@ final class ArcgisPlansTest {
                 ),
                 new CountDownLatch(0),
                 url -> new ArcgisPlans(JsonMapper.builder().build()).entrances(url, 2).stream()
-                    .map(
-                        entry -> String.join(
-                            "|", entry.marking(), entry.name(), String.valueOf(entry.approach()),
-                            String.valueOf(entry.doorWidthCm()),
-                            String.valueOf(entry.evacuationExit())
-                        )
-                    ).toList()
+                    .map(ArcgisPlansTest::describe).toList()
             ),
             Matchers.contains(
                 "ACCESSIBLE|Wejście Cesarskie|Od ul. Wybrzeże.|120|false",
@@ -199,15 +193,6 @@ final class ArcgisPlansTest {
                 "ACCESSIBLE|Wyjście ewakuacyjne|Wyjście ewakuacyjne z pomieszczenia 41|90|true",
                 "NO_DATA|Wejście|Do wejścia prowadzą schody.|null|false"
             )
-        );
-    }
-
-    private static String entrance(final String adapted, final String width, final String note) {
-        return String.join(
-            "",
-            "{\"geometry\":{\"type\":\"Point\",\"coordinates\":[17.1,51.1]},",
-            "\"properties\":{\"Pietro\":\"T.X.P0\",\"Czy_dostos\":", adapted,
-            ",\"Szerokosc\":", width, ",\"Uwagi\":", note, ",\"Budynek\":\"X\"}}"
         );
     }
 
@@ -261,6 +246,22 @@ final class ArcgisPlansTest {
                     "{\"geometry\":null,\"properties\":{\"Pietro\":\"T.X.P0\"}}"
                 )
             )
+        );
+    }
+
+    private static String entrance(final String adapted, final String width, final String note) {
+        return String.join(
+            "",
+            "{\"geometry\":{\"type\":\"Point\",\"coordinates\":[17.1,51.1]},",
+            "\"properties\":{\"Pietro\":\"T.X.P0\",\"Czy_dostos\":", adapted,
+            ",\"Szerokosc\":", width, ",\"Uwagi\":", note, ",\"Budynek\":\"X\"}}"
+        );
+    }
+
+    private static String describe(final PlanEntrance entry) {
+        return String.join(
+            "|", entry.marking(), entry.name(), String.valueOf(entry.approach()),
+            String.valueOf(entry.doorWidthCm()), String.valueOf(entry.evacuationExit())
         );
     }
 

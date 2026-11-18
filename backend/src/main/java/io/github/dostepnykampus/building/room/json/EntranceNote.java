@@ -26,11 +26,6 @@ import org.jspecify.annotations.Nullable;
 final class EntranceNote {
 
     /**
-     * Nazwa wejścia, gdy uwagi jej nie podają.
-     */
-    private static final String ENTRANCE = "Wejście";
-
-    /**
      * Nazwa i początek uwag wyjścia ewakuacyjnego.
      */
     private static final String EXIT = "Wyjście ewakuacyjne";
@@ -62,10 +57,10 @@ final class EntranceNote {
     /**
      * Ctor.
      *
-     * @param text Treść pola uwag, może być pusta
+     * @param text Treść pola uwag bez spacji na brzegach, może być pusta
      */
     EntranceNote(final String text) {
-        this.text = text.strip();
+        this.text = text;
     }
 
     /**
@@ -90,7 +85,7 @@ final class EntranceNote {
         } else if (this.named()) {
             result = this.first();
         } else {
-            result = EntranceNote.ENTRANCE;
+            result = "Wejście";
         }
         return result;
     }
@@ -118,10 +113,14 @@ final class EntranceNote {
 
     private boolean named() {
         final Matcher name = EntranceNote.NAME.matcher(this.first());
-        return name.matches() && (
-            name.group(1) == null
-                || !EntranceNote.SHORTS.contains(name.group(1).toLowerCase(Locale.ROOT))
-        );
+        final boolean result;
+        if (name.matches()) {
+            final String last = name.group(1);
+            result = last == null || !EntranceNote.SHORTS.contains(last.toLowerCase(Locale.ROOT));
+        } else {
+            result = false;
+        }
+        return result;
     }
 
     private String first() {
