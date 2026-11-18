@@ -22,7 +22,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -96,11 +95,11 @@ internal fun isFullEntranceSheet(id: String, focus: MapFocus?): Boolean {
 
 /**
  * Arkusz wejścia [shown] na dole mapy V1: znak oznaczenia przy nagłówku z budynkiem, słowo oznaczenia, pod nim
- * „Zalecane.” przy wejściu zalecanym i dzień ze źródłem oznaczenia, gdy są w danych, nazwa wejścia, gdy jest
- * w danych, bariery i inne wejścia dostępne przy wejściu zalecanym i zgłoszenie bariery przy wejściu. Nagłówek
+ * „Zalecane.” przy wejściu zalecanym i dzień ze źródłem oznaczenia, gdy są w danych, nazwa, dojście i drzwi wejścia,
+ * gdy są w danych, bariery i inne wejścia dostępne przy wejściu zalecanym i zgłoszenie bariery przy wejściu. Nagłówek
  * dostaje fokus po otwarciu, a treść się przewija.
  *
- * Wymagania: US2.1, US2.2, US3.3, US4.6, US17.1, US17.3, BR-25, NFR-18, NFR-20, NFR-21, NFR-53
+ * Wymagania: US2.1, US2.2, US3.3, US4.6, US17.1, US17.3, BR-25, BR-27, NFR-18, NFR-20, NFR-21, NFR-53
  *
  * @param shown wejście z katalogu z jego miejscem wśród wejść budynku
  * @param onClose „Zamknij” zostawia samą mapę
@@ -130,6 +129,7 @@ internal fun EntranceSheet(
         )
         sourceLine(shown)?.let { SecondaryText(it) }
         entrance.name?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
+        if (entrance.hasDetails()) EntranceDetails(shown)
         if (entrance.marking == EntranceMarking.NO_DATA) {
             SecondaryText(stringResource(R.string.mapa_wejscie_niesprawdzone))
         }
@@ -146,15 +146,11 @@ internal fun EntranceSheet(
 @Composable
 private fun OtherEntrances(shown: ShownEntrance, onShow: (MapFocus.Entrance) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        Text(
-            text = stringResource(R.string.wizyta_inne),
-            modifier = Modifier.semantics { heading() },
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = Typografia.wyroznienieWaga,
-        )
+        SheetHeading(stringResource(R.string.wizyta_inne))
         shown.others.forEach { other ->
             val name = other.name ?: stringResource(R.string.karta_bez_nazwy)
             Text(text = name, style = MaterialTheme.typography.bodyLarge)
+            doorWidthText(other)?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
             SheetButton(
                 text = stringResource(R.string.mapa_wejscie_pokaz_to),
                 spoken = stringResource(R.string.mapa_wejscie_pokaz_to_czytaj, name),
