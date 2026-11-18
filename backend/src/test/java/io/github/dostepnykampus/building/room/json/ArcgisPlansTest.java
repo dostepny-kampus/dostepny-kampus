@@ -11,6 +11,7 @@ import com.sun.net.httpserver.HttpServer;
 import io.github.dostepnykampus.building.room.PlanEntrance;
 import io.github.dostepnykampus.building.room.PlanFloor;
 import io.github.dostepnykampus.building.room.PlanRoom;
+import io.github.dostepnykampus.building.room.PlanSource;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
@@ -153,7 +154,9 @@ final class ArcgisPlansTest {
                     )
                 ),
                 new CountDownLatch(0),
-                url -> new ArcgisPlans(JsonMapper.builder().build()).entrances(url, 2, url, 2)
+                url -> new ArcgisPlans(JsonMapper.builder().build()).entrances(
+                    new PlanSource.Layer(url, 2), new PlanSource.Layer(url, 2)
+                )
             ),
             Matchers.contains(
                 new PlanEntrance("T.X.P0", point, "NO_DATA", "Wejście", null, null, false)
@@ -187,7 +190,7 @@ final class ArcgisPlansTest {
                 ),
                 new CountDownLatch(0),
                 url -> new ArcgisPlans(JsonMapper.builder().build())
-                    .entrances(url, 2, url, 2).stream()
+                    .entrances(new PlanSource.Layer(url, 2), new PlanSource.Layer(url, 2)).stream()
                     .map(ArcgisPlansTest::describe).toList()
             ),
             Matchers.contains(
@@ -239,7 +242,8 @@ final class ArcgisPlansTest {
             MatcherAssert.assertThat(
                 "Wejście nie wzięło uwag i szerokości z warstwy kampusu w tym samym punkcie",
                 new ArcgisPlans(JsonMapper.builder().build()).entrances(
-                    root.concat("/FeatureServer"), 2, root.concat("/Kampus/FeatureServer"), 29
+                    new PlanSource.Layer(root.concat("/FeatureServer"), 2),
+                    new PlanSource.Layer(root.concat("/Kampus/FeatureServer"), 29)
                 ).stream().map(ArcgisPlansTest::describe).toList(),
                 Matchers.contains(
                     "ACCESSIBLE|Wejście \"C\"|null|100|false",

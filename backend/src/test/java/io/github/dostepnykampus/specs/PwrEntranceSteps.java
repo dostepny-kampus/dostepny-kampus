@@ -180,7 +180,8 @@ public final class PwrEntranceSteps {
             new BuildingPlan(
                 "A-1", List.of(PwrEntranceSteps.FLOOR), List.of(),
                 this.source.entrances(
-                    url, PwrEntranceSteps.LAYER, url, PwrEntranceSteps.LAYER
+                    new PlanSource.Layer(url, PwrEntranceSteps.LAYER),
+                    new PlanSource.Layer(url, PwrEntranceSteps.LAYER)
                 )
             )
         );

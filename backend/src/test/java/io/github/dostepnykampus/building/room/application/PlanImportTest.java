@@ -152,11 +152,14 @@ final class PlanImportTest {
 
         @Override
         public List<PlanEntrance> entrances(
-            final String service, final int layer, final String campus, final int notes
+            final PlanSource.Layer plan, final PlanSource.Layer campus
         ) {
             return List.of(
                 PlanImportTest.entrance(
-                    String.format("%s/%d %s/%d", service, layer, campus, notes)
+                    String.format(
+                        "%s/%d %s/%d", plan.service(), plan.number(), campus.service(),
+                        campus.number()
+                    )
                 )
             );
         }

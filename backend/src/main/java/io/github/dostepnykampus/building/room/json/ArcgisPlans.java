@@ -32,7 +32,7 @@ import tools.jackson.databind.node.ObjectNode;
  * {@link ArcgisLayers}. Wielokąt pomieszczenia staje się konturem MultiPolygon; pomieszczenie
  * bez wielokąta i piętro bez LEVEL_ID są pomijane. Wielkość liter pól pomieszczenia jest dowolna,
  * funkcja to Funkcja, Funkcje albo d_funkcja. Numer z samych spacji jest pusty, brak funkcji daje
- * „Inne”. Pola wejść opisuje {@link PlanSource#entrances(String, int, String, int)}. Data
+ * „Inne”. Pola wejść opisuje {@link PlanSource#entrances(Layer, Layer)}. Data
  * edycji warstwy to dzień w strefie Warszawy z dataLastEditDate, a bez niej z lastEditDate.
  *
  * <p>Wymagania: US16, US18, BR-24, BR-27, NFR-40</p>
@@ -107,20 +107,18 @@ final class ArcgisPlans implements PlanSource {
 
     @Override
     public List<PlanEntrance> entrances(
-        final String service, final int layer, final String campus, final int notes
+        final PlanSource.Layer plan, final PlanSource.Layer campus
     ) {
-        final Map<String, JsonNode> details = this.layers.shapes(campus, notes).stream()
-            .filter(ArcgisPlans::point)
-            .collect(
+        final Map<String, JsonNode> details = this.layers.shapes(campus.service(), campus.number())
+            .stream().filter(ArcgisPlans::point).collect(
                 Collectors.toMap(
                     feature -> feature.get("geometry").toString(),
                     feature -> feature.path("properties"),
                     (first, second) -> first
                 )
             );
-        return this.layers.shapes(service, layer).stream()
-            .filter(ArcgisPlans::point)
-            .map(
+        return this.layers.shapes(plan.service(), plan.number()).stream()
+            .filter(ArcgisPlans::point).map(
                 feature -> Optional.ofNullable(details.get(feature.get("geometry").toString()))
                     .map(found -> this.merged(feature, found))
                     .orElse(feature)

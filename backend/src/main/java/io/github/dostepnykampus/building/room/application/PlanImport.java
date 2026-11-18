@@ -82,13 +82,17 @@ final class PlanImport implements ApplicationListener<ApplicationReadyEvent> {
         final List<PlanFloor> floors = this.source.floors(service, layer.levels()).stream()
             .filter(floor -> floor.id().startsWith(prefix)).toList();
         final List<PlanRoom> rooms = this.source.rooms(service, layer.rooms());
-        final String campus = String.format(
-            "%s/%s/FeatureServer", this.settings.service(), this.settings.campus().name()
-        );
         this.store.save(
             new BuildingPlan(
                 layer.symbol(), floors, rooms, this.source.entrances(
-                    service, layer.entrances(), campus, this.settings.campus().entrances()
+                    new PlanSource.Layer(service, layer.entrances()),
+                    new PlanSource.Layer(
+                        String.format(
+                            "%s/%s/FeatureServer", this.settings.service(),
+                            this.settings.campus().name()
+                        ),
+                        this.settings.campus().entrances()
+                    )
                 ),
                 this.source.edited(service, layer.entrances()).orElse(null)
             )

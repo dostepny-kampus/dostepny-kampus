@@ -42,13 +42,11 @@ public interface PlanSource {
      * daje ACCESSIBLE, „Nie” INACCESSIBLE, inna wartość NO_DATA. Szerokosc 0 albo nieliczbowa
      * nie daje szerokości drzwi. Nazwę, opis dojścia i wyjście ewakuacyjne daje pole Uwagi.
      *
-     * @param service Adres usługi FeatureServer planu bez końcowego ukośnika
-     * @param layer Numer warstwy wejść planu
-     * @param campus Adres usługi FeatureServer mapy kampusu bez końcowego ukośnika
-     * @param notes Numer warstwy wejść mapy kampusu
+     * @param plan Warstwa wejść planu
+     * @param campus Warstwa wejść mapy kampusu
      * @return Wpisy z piętrem w kolejności usługi planu
      */
-    List<PlanEntrance> entrances(String service, int layer, String campus, int notes);
+    List<PlanEntrance> entrances(Layer plan, Layer campus);
 
     /**
      * Dzień ostatniej edycji danych warstwy z opisu warstwy w usłudze.
@@ -58,4 +56,14 @@ public interface PlanSource {
      * @return Dzień edycji albo pusty, gdy opis warstwy go nie podaje
      */
     Optional<LocalDate> edited(String service, int layer);
+
+    /**
+     * Warstwa usługi ArcGIS.
+     *
+     * @param service Adres usługi FeatureServer bez końcowego ukośnika
+     * @param number Numer warstwy
+     * @since 0.1.0
+     */
+    record Layer(String service, int number) {
+    }
 }
