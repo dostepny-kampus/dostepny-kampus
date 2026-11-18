@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test
 class EntranceOrderTest {
     /**
      * Wiersz: V2, grupa „Wejścia”: wejścia „niedostępne” z nazwą alfabetycznie, wejście bez nazwy w danych po nich.
+     * Scenariusz: przegladanie-mapy.feature: Wejścia z jednym oznaczeniem stoją na karcie alfabetycznie
      */
     @Test
     fun sortsNamesInsideMarking() {
