@@ -90,7 +90,6 @@ private fun VisitBody(card: BuildingCardUiState.Ready, onShowEntrance: (String) 
                     listed = recommended,
                     withAssessment = common == null,
                     onShowEntrance = onShowEntrance,
-                    onReportEntrance = null,
                 )
             }
         }
@@ -101,7 +100,6 @@ private fun VisitBody(card: BuildingCardUiState.Ready, onShowEntrance: (String) 
                         listed = entrance,
                         withAssessment = common == null,
                         onShowEntrance = onShowEntrance,
-                        onReportEntrance = null,
                     )
                 }
             }

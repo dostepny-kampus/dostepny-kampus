@@ -138,7 +138,7 @@ class BuildingCardBarriersTest {
                     onShowOnMap = {},
                     onBack = {},
                     onClose = {},
-                    onReportEntrance = {},
+                    onReport = {},
                     onRetry = {},
                     onReportRemoval = onReportRemoval,
                 )

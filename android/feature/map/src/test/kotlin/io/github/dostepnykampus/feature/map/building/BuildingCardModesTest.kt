@@ -16,7 +16,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasClickAction
-import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -47,7 +46,6 @@ private const val CLOSE = "Zamknij"
 private val TOUCH_TARGET = 48.dp
 private const val BACK = "Wstecz"
 private const val ROW = "Wejście dostępne"
-private const val REPORT = "Zgłoś barierę przy wejściu"
 private const val SHOW_ENTRANCE = "Pokaż wejście na mapie"
 private const val UNNAMED = "Wejście bez nazwy w danych"
 private val ENTRANCES = listOf("Główne" to "node/1", "Schody" to "node/2", UNNAMED to "node/3")
@@ -217,80 +215,23 @@ class BuildingCardModesTest {
         compose.onAllNodes(hasClickAction() and !hasText(BACK) and !inScroll).assertCountEquals(0)
     }
 
-    private fun reportButton(name: String) =
-        compose.onNode(hasClickAction() and hasContentDescription("$REPORT: »$name«"))
+    private fun entranceRow(name: String) = compose.onNode(hasClickAction() and hasText(name))
 
     /**
-     * Wiersz: V2, pełny ekran (rozwinięty i od razu): przy każdym wejściu, nie tylko zalecanym, „Zgłoś barierę
-     *   przy wejściu” pod opisem wejścia, w przewijanej treści; TalkBack czyta „Zgłoś barierę przy wejściu:
-     *   »nazwa wejścia«”, także dla wejścia bez nazwy, WCAG 2.5.3.
+     * Wiersz: V2 pełny ekran: dotknięcie wiersza dowolnego wejścia w grupie „Wejścia”, nie tylko zalecanego,
+     *   → onShowEntrance z id tego wejścia; w grupie nie ma osobnego przycisku „Pokaż wejście na mapie”.
      *
-     * Wymagania: US4.6, NFR-18
+     * Wymagania: US3.3, US2.1, NFR-18
      */
     @Test
-    fun offersReportAtEachEntrance() {
+    fun showsEntranceOnRowTap() {
         card(CardMode.Direct)
         listOf(CardMode.Direct, CardMode.Expanded).forEach { fullScreen ->
             show(fullScreen)
-            compose.onAllNodes(hasText(REPORT)).assertCountEquals(ENTRANCES.size)
-            ENTRANCES.forEach { (name, _) -> reportButton(name).assert(hasText(REPORT) and inScroll) }
-            val tops =
-                ENTRANCES.flatMap { (name, _) ->
-                    listOf(compose.onNodeWithText(name), reportButton(name)).map { it.getUnclippedBoundsInRoot().top }
-                }
-            val isDescending = tops.zipWithNext().all { (up, down) -> up < down }
-            assertTrue("wejście, jego czynność, następne wejście od góry, a są na $tops", isDescending)
+            compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(1)
         }
-    }
-
-    /**
-     * Wiersz: V2, dotknięcie „Zgłoś barierę przy wejściu” przy wejściu → onReportEntrance z identyfikatorem
-     *   dokładnie tego wejścia.
-     *
-     * Wymagania: US4.6
-     */
-    @Test
-    fun passesEntranceToReport() {
-        card(CardMode.Expanded)
-        ENTRANCES.forEach { (name, _) -> reportButton(name).performScrollTo().performClick() }
-        assertEquals(ENTRANCES.map { (_, id) -> "report $id" }, calls)
-    }
-
-    /**
-     * Wiersz: V2, mała karta nie ma listy wejść, więc nie ma „Zgłoś barierę przy wejściu”; pełny ekran ma.
-     *
-     * Wymagania: US4.6
-     */
-    @Test
-    fun hidesReportOnCompact() {
-        card(CardMode.Direct)
-        compose.onAllNodes(hasText(REPORT)).assertCountEquals(ENTRANCES.size)
-        show(CardMode.Compact)
-        compose.onAllNodes(hasText(REPORT)).assertCountEquals(0)
-        compose.onAllNodes(hasContentDescription(REPORT, substring = true)).assertCountEquals(0)
-    }
-
-    /**
-     * Wiersz: V2 pełny ekran: w grupie „Wejścia” „Pokaż wejście na mapie” tylko przy wejściu zalecanym, pod jego
-     *   opisem, w przewijanej treści; TalkBack czyta „Pokaż wejście na mapie: »nazwa wejścia«”; dotknięcie
-     *   → onShowEntrance z id tego wejścia.
-     *
-     * Wymagania: US3.3, US2.1, BR-25, NFR-18
-     */
-    @Test
-    fun showsRecommendedOnly() {
-        card(CardMode.Direct)
-        listOf(CardMode.Direct, CardMode.Expanded).forEach { fullScreen ->
-            show(fullScreen)
-            compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(2)
-            val shown = compose.onAllNodes(hasClickAction() and hasContentDescription("$SHOW_ENTRANCE: »Główne«"))[1]
-            shown.assert(hasText(SHOW_ENTRANCE) and inScroll)
-            val tops = listOf(compose.onNodeWithText("Główne"), shown, compose.onNodeWithText("Schody"))
-            val ys = tops.map { it.getUnclippedBoundsInRoot().top }
-            assertTrue("„Główne”, czynność, „Schody” od góry, a są na $ys", ys.zipWithNext().all { (a, b) -> a < b })
-        }
-        compose.onAllNodes(hasContentDescription("$SHOW_ENTRANCE: »Główne«"))[1].performClick()
-        assertEquals(listOf("show node/1"), calls)
+        ENTRANCES.forEach { (name, _) -> entranceRow(name).performScrollTo().performClick() }
+        assertEquals(ENTRANCES.map { (_, id) -> "show $id" }, calls)
     }
 
     /**
@@ -302,26 +243,11 @@ class BuildingCardModesTest {
     @Test
     fun hidesShowWithoutRecommended() {
         card(CardMode.Direct)
-        compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(2)
+        compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(1)
         symbol.value = "B-4"
         compose.waitUntil { compose.onAllNodes(hasText("Zamknięte")).fetchSemanticsNodes().isNotEmpty() }
         compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(0)
         compose.onNodeWithText("Jedyne wejście nie jest dostępne.").assertExists("zdanie o jedynym wejściu")
-    }
-
-    /**
-     * Wiersz: V2, mała karta ma jedno „Pokaż wejście na mapie” pod wierszem o wejściach; pełny ekran ma też drugie
-     *   przy wejściu zalecanym w grupie „Wejścia”.
-     *
-     * Wymagania: US3.3
-     */
-    @Test
-    fun hidesShowOnCompact() {
-        card(CardMode.Direct)
-        compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(2)
-        show(CardMode.Compact)
-        compose.onAllNodes(hasText(SHOW_ENTRANCE)).assertCountEquals(1)
-        compose.onAllNodes(hasContentDescription("$SHOW_ENTRANCE: »Główne«")).assertCountEquals(1)
     }
 
     private fun card(start: CardMode) {
@@ -339,7 +265,7 @@ class BuildingCardModesTest {
                     onShowOnMap = { calls += "map" },
                     onBack = { calls += "back" },
                     onClose = { calls += "close" },
-                    onReportEntrance = { calls += "report $it" },
+                    onReport = { calls += "report" },
                     onShowEntrance = { calls += "show $it" },
                     viewModel = viewModel,
                 )

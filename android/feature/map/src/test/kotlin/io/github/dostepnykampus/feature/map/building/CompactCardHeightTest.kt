@@ -57,7 +57,7 @@ class CompactCardHeightTest {
                         onShowOnMap = {},
                         onBack = {},
                         onClose = {},
-                        onReportEntrance = {},
+                        onReport = {},
                         onRetry = {},
                     )
                 }

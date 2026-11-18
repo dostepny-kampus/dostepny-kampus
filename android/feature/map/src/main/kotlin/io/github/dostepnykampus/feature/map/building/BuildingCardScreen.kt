@@ -24,7 +24,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
-import io.github.dostepnykampus.core.designsystem.GroupContainer
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.OfflinePill
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
@@ -38,7 +37,7 @@ import io.github.dostepnykampus.feature.map.R
  * V2 Karta budynku: nagłówek z symbolem i nazwą z danych (budynek bez nazwy ma sam symbol), który TalkBack czyta jako
  * jeden, np. „Budynek A-1, Gmach Główny”, z fokusem po otwarciu; poza [CardMode.Direct] obok niego „Zamknij”. Pod
  * nim wiersz o wejściach z odpowiedzią, a bez danych o wejściach cichy napis. Czynności stoją w przewijanej treści:
- * „Pokaż wejście na mapie” przy wejściu zalecanym, „Pokaż budynek na mapie” w [CardMode.isWhole]; grupy
+ * „Pokaż wejście na mapie” dla wejścia zalecanego, „Pokaż budynek na mapie” w [CardMode.isWhole]; grupy
  * „Wejścia” i „Bariery w budynku” ma pełny opis, a pasek „Wstecz” tylko [CardMode.Direct].
  * Nieznany symbol: „budynku nie ma w telefonie”. Bez internetu nad nagłówkiem stoi [OfflinePill] bez daty.
  *
@@ -50,9 +49,9 @@ import io.github.dostepnykampus.feature.map.R
  * @param onBack „Wstecz” w [CardMode.Direct]
  * @param onClose „Zamknij” w nagłówku karty nad mapą
  * @param modifier wymiary nadane przez arkusz; mała karta ma wysokość treści, pełny ekran wypełnia całe miejsce
- * @param onReportEntrance „Zgłoś barierę przy wejściu” dla identyfikatora wejścia
- * @param onShowEntrance „Pokaż wejście na mapie” pod wierszem o wejściach i przy wejściu zalecanym, z jego
- *   identyfikatorem
+ * @param onReport „Zgłoś barierę przy wejściu” bez wybranego wejścia, przy kilku wejściach bez danych
+ * @param onShowEntrance „Pokaż wejście na mapie” pod wierszem o wejściach i dotknięcie wiersza na liście wejść,
+ *   z identyfikatorem wejścia
  * @param onReportRemoval „Zgłoś, że bariery nie ma” dla identyfikatora zgłoszenia; `null` ukrywa przycisk
  * @param viewModel stan karty; w aplikacji z grafu Hilt, w testach z podróbką katalogu
  */
@@ -64,7 +63,7 @@ fun BuildingCardScreen(
     onBack: () -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
-    onReportEntrance: (String) -> Unit = {},
+    onReport: () -> Unit = {},
     onShowEntrance: (String) -> Unit = {},
     onReportRemoval: ((String) -> Unit)? = null,
     viewModel: BuildingCardViewModel =
@@ -82,7 +81,7 @@ fun BuildingCardScreen(
         onShowOnMap = onShowOnMap,
         onBack = onBack,
         onClose = onClose,
-        onReportEntrance = onReportEntrance,
+        onReport = onReport,
         onRetry = viewModel::retry,
         modifier = modifier,
         onShowEntrance = onShowEntrance,
@@ -104,7 +103,7 @@ fun BuildingCardContent(
     onShowOnMap: () -> Unit,
     onBack: () -> Unit,
     onClose: () -> Unit,
-    onReportEntrance: (String) -> Unit,
+    onReport: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     onShowEntrance: (String) -> Unit = {},
@@ -137,7 +136,7 @@ fun BuildingCardContent(
             FactsOrMissing(
                 card = card,
                 isFullScreen = isFullScreen,
-                onReportEntrance = onReportEntrance,
+                onReport = onReport,
                 onShowEntrance = onShowEntrance,
                 onReportRemoval = onReportRemoval,
                 onRetry = onRetry,
@@ -153,7 +152,7 @@ fun BuildingCardContent(
 private fun FactsOrMissing(
     card: BuildingCardUiState,
     isFullScreen: Boolean,
-    onReportEntrance: (String) -> Unit,
+    onReport: () -> Unit,
     onShowEntrance: (String) -> Unit,
     onReportRemoval: ((String) -> Unit)?,
     onRetry: () -> Unit,
@@ -165,7 +164,7 @@ private fun FactsOrMissing(
     if (card is BuildingCardUiState.Ready && isFullScreen) {
         BuildingFacts(
             card = card,
-            onReportEntrance = onReportEntrance,
+            onReport = onReport,
             onShowEntrance = onShowEntrance,
             onReportRemoval = onReportRemoval,
             onShowPlan = onShowPlan,
@@ -194,7 +193,7 @@ internal fun EntranceSummaryRow(summary: EntranceSummary) {
 @Composable
 private fun BuildingFacts(
     card: BuildingCardUiState.Ready,
-    onReportEntrance: (String) -> Unit,
+    onReport: () -> Unit,
     onShowEntrance: (String) -> Unit,
     onReportRemoval: ((String) -> Unit)?,
     onShowPlan: (String) -> Unit,
@@ -202,19 +201,7 @@ private fun BuildingFacts(
 ) {
     val common = commonAssessment(card.entrances)
     common?.let { AssessmentLine(it) }
-    GroupContainer(title = stringResource(R.string.karta_wejscia)) {
-        if (card.entrances.isEmpty()) {
-            Text(text = stringResource(R.string.karta_wejscia_brak), style = MaterialTheme.typography.bodyLarge)
-        }
-        card.entrances.forEach { entrance ->
-            EntranceRow(
-                listed = entrance,
-                withAssessment = common == null,
-                onShowEntrance = onShowEntrance.takeIf { entrance.isRecommended },
-                onReportEntrance = onReportEntrance,
-            )
-        }
-    }
+    EntrancesGroup(card = card, withAssessment = common == null, onShowEntrance = onShowEntrance, onReport = onReport)
     BarriersGroup(card, onReportRemoval)
     card.floors?.let { LiftToiletGroup(it) }
     FloorsGroup(facts = card.floors, isBasic = card.isBasic, onShowPlan = onShowPlan)

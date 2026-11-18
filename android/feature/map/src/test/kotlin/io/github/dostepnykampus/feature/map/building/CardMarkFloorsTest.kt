@@ -64,7 +64,7 @@ class CardMarkFloorsTest {
                     onShowOnMap = {},
                     onBack = {},
                     onClose = {},
-                    onReportEntrance = {},
+                    onReport = {},
                     onRetry = {},
                     onMarkFloors = onMarkFloors,
                 )
