@@ -227,9 +227,10 @@ private fun EntranceFacts(listed: OrderedEntrance, withAssessment: Boolean, modi
             fontWeight = Typografia.wyroznienieWaga,
             style = MaterialTheme.typography.titleMedium,
         )
-        listed.entrance.approach?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
-        listed.entrance.doorWidthCm?.let { width ->
-            val door = stringResource(R.string.karta_szerokosc_drzwi, width)
+        val entrance = listed.entrance
+        if (entrance.approach.isNotEmpty()) Text(text = entrance.approach, style = MaterialTheme.typography.bodyLarge)
+        if (entrance.doorWidthCm > 0) {
+            val door = stringResource(R.string.karta_szerokosc_drzwi, entrance.doorWidthCm)
             Text(text = door, style = MaterialTheme.typography.bodyLarge)
         }
         if (withAssessment) listed.entrance.assessment?.let { AssessmentLine(it) }

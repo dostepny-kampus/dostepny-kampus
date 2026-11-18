@@ -100,8 +100,11 @@ internal fun answerLine(answer: VisitAnswer): String? =
     when (answer) {
         is VisitAnswer.Accessible -> {
             val name = answer.name ?: stringResource(R.string.karta_bez_nazwy)
-            answer.doorWidthCm?.let { stringResource(R.string.karta_odpowiedz_zalecane_drzwi, name, it) }
-                ?: stringResource(R.string.karta_odpowiedz_zalecane, name)
+            if (answer.doorWidthCm > 0) {
+                stringResource(R.string.karta_odpowiedz_zalecane_drzwi, name, answer.doorWidthCm)
+            } else {
+                stringResource(R.string.karta_odpowiedz_zalecane, name)
+            }
         }
 
         is VisitAnswer.NoAccessible -> {

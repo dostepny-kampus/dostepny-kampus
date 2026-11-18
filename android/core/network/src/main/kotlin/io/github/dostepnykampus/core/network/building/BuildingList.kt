@@ -48,7 +48,7 @@ public data class ApiBuilding(val building: Building, val detailLevel: DetailLev
  * Kontrakt nie podaje rodzaju wejścia OSM, więc [Entrance.type] jest puste.
  * Dzień i źródło oznaczenia trafiają do [Entrance.assessment]; nieistniejący dzień
  * albo nieznane źródło to błąd treści odpowiedzi. Import wejścia z polem `source` ma źródło
- * [AssessmentSource.PWR_PLANS]. Szerokość drzwi 0 to brak szerokości.
+ * [AssessmentSource.PWR_PLANS]. Brak opisu dojścia to pusty tekst, a brak szerokości drzwi to 0.
  *
  * Wymagania: US17.3, BR-24, BR-27
  *
@@ -120,8 +120,8 @@ private fun EntranceJson.toModel(): Entrance =
         marking = EntranceMarking.valueOf(marking.name),
         assessment = EntranceAssessment(date = markingDay(markingDate), source = assessmentSource()),
         floorId = floorId,
-        approach = approach,
-        doorWidthCm = doorWidthCm?.takeIf { it > 0 },
+        approach = approach.orEmpty(),
+        doorWidthCm = doorWidthCm?.coerceAtLeast(0) ?: 0,
     )
 
 private fun EntranceJson.assessmentSource(): AssessmentSource =

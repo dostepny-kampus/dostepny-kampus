@@ -53,9 +53,9 @@ sealed interface VisitAnswer {
      *
      * @property id identyfikator wejścia zalecanego
      * @property name nazwa wejścia; `null`, gdy danych nazwy nie ma
-     * @property doorWidthCm szerokość drzwi w centymetrach; `null`, gdy danych szerokości nie ma
+     * @property doorWidthCm szerokość drzwi w centymetrach; 0, gdy danych szerokości nie ma
      */
-    data class Accessible(val id: String, val name: String?, val doorWidthCm: Int? = null) : VisitAnswer
+    data class Accessible(val id: String, val name: String?, val doorWidthCm: Int = 0) : VisitAnswer
 
     /** Żadne z [total] wejść odwiedzających nie jest „dostępne” i żadne nie ma „brak danych”. */
     data class NoAccessible(val total: Int) : VisitAnswer
