@@ -23,8 +23,8 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-private const val CHECK = "Zgłoś barierę"
-private const val VISIT = "Logowanie"
+private const val CHECK = "Zgłoś barierę przy wejściu"
+private const val VISIT = "Ekran logowania"
 
 private const val MID_TRANSITION_MILLIS = 48L
 
