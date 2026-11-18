@@ -14,14 +14,13 @@ import org.jspecify.annotations.Nullable;
 /**
  * Karta budynku w odpowiedzi HTTP, zgodna ze schematem BuildingDetails.
  *
- * <p>Wymagania: US2, US2.6, BR-27</p>
+ * <p>Wymagania: US2</p>
  *
  * @param symbol Symbol budynku, np. C-13
  * @param name Nazwa budynku albo null, gdy budynek jej nie ma
  * @param detailLevel Poziom szczegółowości: DETAILED albo BASIC
  * @param outline Kontur budynku jako GeoJSON z bazy, wstawiany do odpowiedzi bez zmian
  * @param entrances Wejścia budynku; pusta lista, gdy dane nie mają wejść
- * @param evacuationExits Wyjścia ewakuacyjne budynku; pusta lista nie trafia do JSON
  * @since 0.1.0
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -30,8 +29,7 @@ public record BuildingCardResponse(
     @Nullable String name,
     String detailLevel,
     @JsonRawValue String outline,
-    List<EntranceResponse> entrances,
-    @JsonInclude(JsonInclude.Include.NON_EMPTY) List<EvacuationExitResponse> evacuationExits
+    List<EntranceResponse> entrances
 ) {
 
     /**
@@ -43,8 +41,7 @@ public record BuildingCardResponse(
         this(
             card.symbol(), card.name(), card.detailLevel(), card.outline(),
             card.entrances().stream()
-                .map(entrance -> new EntranceResponse(card.symbol(), entrance)).toList(),
-            card.evacuationExits().stream().map(EvacuationExitResponse::new).toList()
+                .map(entrance -> new EntranceResponse(card.symbol(), entrance)).toList()
         );
     }
 }

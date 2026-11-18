@@ -12,7 +12,6 @@ import io.github.dostepnykampus.building.domain.BuildingList;
 import io.github.dostepnykampus.building.domain.Buildings;
 import io.github.dostepnykampus.building.domain.Door;
 import io.github.dostepnykampus.building.domain.Entrance;
-import io.github.dostepnykampus.building.domain.EvacuationExit;
 import io.github.dostepnykampus.building.domain.Floor;
 import io.github.dostepnykampus.building.domain.FloorList;
 import io.github.dostepnykampus.building.domain.Placement;
@@ -29,13 +28,13 @@ import org.springframework.stereotype.Service;
 
 /**
  * Odczyt REST budynków: lista na mapie, podpowiedź budynku dla punktu i karta budynku
- * z wejściami i wyjściami ewakuacyjnymi. Nazwa wejścia z planów PWr wygrywa z nazwą
+ * z wejściami. Nazwa wejścia z planów PWr wygrywa z nazwą
  * z OpenStreetMap; oznaczenie z obchodu wygrywa z oznaczeniem z planów PWr, a to z oznaczeniem
  * z OpenStreetMap. Zawieranie punktu liczy tylko {@link Outlines}, więc podpowiedź i budynek
  * zapisany przy zgłoszeniu szybkim są zawsze równe. Atrybucja listy to źródła konturów
  * bez powtórzeń, alfabetycznie, rozdzielone średnikiem; pusta tabela ma pustą atrybucję.
  *
- * <p>Wymagania: US1, BR-G2, US2, BR-14, NFR-40, US16, BR-24, BR-27, US2.6</p>
+ * <p>Wymagania: US1, BR-G2, US2, BR-14, NFR-40, US16, BR-24, BR-27</p>
  *
  * @since 0.1.0
  */
@@ -141,8 +140,7 @@ public final class BuildingQuery implements Buildings {
             item.name(),
             item.detailLevel(),
             item.outline(),
-            this.entrances(item.symbol()),
-            this.exits(item.symbol())
+            this.entrances(item.symbol())
         );
     }
 
@@ -173,25 +171,6 @@ public final class BuildingQuery implements Buildings {
                     BuildingQuery.text(rows, "marking_source")
                 ),
                 BuildingQuery.layer(rows)
-            )
-        ).list();
-    }
-
-    private List<EvacuationExit> exits(final String symbol) {
-        return this.jdbc.sql(
-            """
-            SELECT id, ST_AsGeoJSON(location) AS location, floor_id, description, door_width_cm
-            FROM evacuation_exits
-            WHERE building_symbol = :symbol
-            ORDER BY id
-            """
-        ).param("symbol", symbol).query(
-            (rows, num) -> new EvacuationExit(
-                BuildingQuery.text(rows, "id"),
-                BuildingQuery.text(rows, "location"),
-                BuildingQuery.text(rows, "floor_id"),
-                BuildingQuery.text(rows, "description"),
-                BuildingQuery.door(rows)
             )
         ).list();
     }
