@@ -37,15 +37,18 @@ public interface PlanSource {
     List<PlanRoom> rooms(String service, int layer);
 
     /**
-     * Wpisy warstwy wejść; wpis bez piętra albo bez punktu jest pomijany. Czy_dostos „Tak”
+     * Wpisy warstwy wejść planu; wpis bez piętra albo bez punktu jest pomijany. Pola, których
+     * wpis nie ma, bierze z wpisu warstwy wejść mapy kampusu w tym samym punkcie. Czy_dostos „Tak”
      * daje ACCESSIBLE, „Nie” INACCESSIBLE, inna wartość NO_DATA. Szerokosc 0 albo nieliczbowa
      * nie daje szerokości drzwi. Nazwę, opis dojścia i wyjście ewakuacyjne daje pole Uwagi.
      *
-     * @param service Adres usługi FeatureServer bez końcowego ukośnika
-     * @param layer Numer warstwy wejść
-     * @return Wpisy z piętrem w kolejności usługi
+     * @param service Adres usługi FeatureServer planu bez końcowego ukośnika
+     * @param layer Numer warstwy wejść planu
+     * @param campus Adres usługi FeatureServer mapy kampusu bez końcowego ukośnika
+     * @param notes Numer warstwy wejść mapy kampusu
+     * @return Wpisy z piętrem w kolejności usługi planu
      */
-    List<PlanEntrance> entrances(String service, int layer);
+    List<PlanEntrance> entrances(String service, int layer, String campus, int notes);
 
     /**
      * Dzień ostatniej edycji danych warstwy z opisu warstwy w usłudze.

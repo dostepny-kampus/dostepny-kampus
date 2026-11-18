@@ -15,14 +15,17 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Piętra, pomieszczenia i wejścia z obiektów warstw usługi ArcGIS PWr, które pobiera
@@ -103,9 +106,25 @@ final class ArcgisPlans implements PlanSource {
     }
 
     @Override
-    public List<PlanEntrance> entrances(final String service, final int layer) {
+    public List<PlanEntrance> entrances(
+        final String service, final int layer, final String campus, final int notes
+    ) {
+        final Map<String, JsonNode> details = this.layers.shapes(campus, notes).stream()
+            .filter(ArcgisPlans::point)
+            .collect(
+                Collectors.toMap(
+                    feature -> feature.get("geometry").toString(),
+                    feature -> feature.path("properties"),
+                    (first, second) -> first
+                )
+            );
         return this.layers.shapes(service, layer).stream()
-            .filter(feature -> "Point".equals(feature.path("geometry").path("type").asString("")))
+            .filter(ArcgisPlans::point)
+            .map(
+                feature -> Optional.ofNullable(details.get(feature.get("geometry").toString()))
+                    .map(found -> this.merged(feature, found))
+                    .orElse(feature)
+            )
             .filter(feature -> !ArcgisPlans.field(feature, "pietro").isEmpty())
             .map(ArcgisPlans::entrance).toList();
     }
@@ -153,6 +172,21 @@ final class ArcgisPlans implements PlanSource {
             note.approach(), ArcgisPlans.width(ArcgisPlans.field(feature, "szerokosc")),
             note.exit()
         );
+    }
+
+    private static boolean point(final JsonNode feature) {
+        return "Point".equals(feature.path("geometry").path("type").asString(""));
+    }
+
+    private JsonNode merged(final JsonNode feature, final JsonNode details) {
+        final ObjectNode properties = this.mapper.createObjectNode();
+        details.properties().forEach(entry -> properties.set(entry.getKey(), entry.getValue()));
+        feature.path("properties").properties()
+            .forEach(entry -> properties.set(entry.getKey(), entry.getValue()));
+        final ObjectNode result = this.mapper.createObjectNode();
+        result.set("geometry", feature.get("geometry"));
+        result.set("properties", properties);
+        return result;
     }
 
     private static String field(final JsonNode feature, final String... names) {

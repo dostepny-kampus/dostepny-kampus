@@ -24,12 +24,12 @@ import org.springframework.stereotype.Component;
 /**
  * Ręczny import planów pięter PWr (ADR-0012), uruchamiany profilem import-pwr. Każdy budynek z
  * konfiguracji dostaje piętra swojego FACILITY_ID oraz pomieszczenia i wejścia swoich warstw
- * z dniem edycji warstwy wejść.
+ * z dniem edycji warstwy wejść; uwagi i szerokość drzwi wejść uzupełnia warstwa mapy kampusu.
  * Import rusza, gdy aplikacja jest gotowa (po wszystkich zadaniach startu), a po nim aplikacja
  * się zamyka. Opcja --budynek ogranicza import do podanych symboli. Każdy budynek zapisuje się
  * osobno, więc błąd usługi przerywa import, a budynki zapisane wcześniej zostają.
  *
- * <p>Wymagania: US16, US18.2, NFR-40, NFR-47, BR-24</p>
+ * <p>Wymagania: US16, US18.2, NFR-40, NFR-47, BR-24, BR-27</p>
  *
  * @since 0.1.0
  */
@@ -82,9 +82,14 @@ final class PlanImport implements ApplicationListener<ApplicationReadyEvent> {
         final List<PlanFloor> floors = this.source.floors(service, layer.levels()).stream()
             .filter(floor -> floor.id().startsWith(prefix)).toList();
         final List<PlanRoom> rooms = this.source.rooms(service, layer.rooms());
+        final String campus = String.format(
+            "%s/%s/FeatureServer", this.settings.service(), this.settings.campus().name()
+        );
         this.store.save(
             new BuildingPlan(
-                layer.symbol(), floors, rooms, this.source.entrances(service, layer.entrances()),
+                layer.symbol(), floors, rooms, this.source.entrances(
+                    service, layer.entrances(), campus, this.settings.campus().entrances()
+                ),
                 this.source.edited(service, layer.entrances()).orElse(null)
             )
         );
