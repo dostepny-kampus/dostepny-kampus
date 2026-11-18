@@ -24,13 +24,14 @@ import tools.jackson.databind.ObjectMapper;
 
 /**
  * Kontrakt odczytu budynku: pełne metadane wejść, wejście główne
- * przed pozostałymi, dane wejść z planów PWr, próg podpowiedzi 50 m i piętra budynku.
+ * przed pozostałymi, dane wejść z planów PWr, wyjścia ewakuacyjne, próg podpowiedzi 50 m
+ * i piętra budynku.
  *
  * <p>Geometria przy równiku jest niezależna od danych kampusu. Punkty
  * oddalone o 49 i 51 m od północnej krawędzi powstają przez ST_Project;
  * margines jednego metra nie zależy od zaokrąglenia na granicy 50 m.</p>
  *
- * <p>Wymagania: US17.3, US2.1, BR-G4, US16.1, US16.2, NFR-40, BR-24, BR-27</p>
+ * <p>Wymagania: US17.3, US2.1, BR-G4, US16.1, US16.2, NFR-40, BR-24, BR-27, US2.6</p>
  *
  * @since 0.1.0
  */
@@ -117,6 +118,41 @@ final class BuildingReadContractIT {
                 card.at("/entrances/1/markingDate").asString()
             ),
             Matchers.equalTo("2026-11-04 2026-11-02")
+        );
+    }
+
+    @Test
+    void showsEvacuationExitsApartFromEntrances(
+        final WebApplicationContext context
+    ) throws Exception {
+        context.getBean(JdbcClient.class).sql(
+            """
+            INSERT INTO evacuation_exits (id, building_symbol, floor_id, location, description,
+                door_width_cm)
+            VALUES ('pwr/s00000002', 'G-900', 'P0', ST_SetSRID(ST_MakePoint(0.0002, 0.0003), 4326),
+                'Wyjście ewakuacyjne z pomieszczenia 41', NULL),
+                ('pwr/s00000003', 'G-900', 'P1', ST_SetSRID(ST_MakePoint(0.0003, 0.0002), 4326),
+                'Wyjście ewakuacyjne', 90)
+            """
+        ).update();
+        MatcherAssert.assertThat(
+            "Wyjścia ewakuacyjne nie są osobną listą karty budynku zgodną z kontraktem",
+            BuildingReadContractIT.get(context, "/buildings/G-900")
+                .required("evacuationExits"),
+            Matchers.equalTo(
+                context.getBean(ObjectMapper.class).readTree(
+                    """
+                    [{"id":"pwr/s00000002","floorId":"P0",
+                    "location":{"type":"Point","coordinates":[0.0002,0.0003]},
+                    "description":"Wyjście ewakuacyjne z pomieszczenia 41",
+                    "source":"Politechnika Wrocławska"},
+                    {"id":"pwr/s00000003","floorId":"P1",
+                    "location":{"type":"Point","coordinates":[0.0003,0.0002]},
+                    "description":"Wyjście ewakuacyjne","doorWidthCm":90,
+                    "source":"Politechnika Wrocławska"}]
+                    """
+                )
+            )
         );
     }
 
