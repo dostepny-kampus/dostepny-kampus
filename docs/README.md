@@ -52,6 +52,14 @@ python scripts/render.py --check   # tylko sprawdza aktualność
 
 Po zmianie źródła uruchom `render.py` i dodaj do commita obrazy i manifest. Krok `obrazy` w `verify.py` zgłasza FAIL, gdy manifest nie zgadza się ze źródłami, brakuje obrazu albo strona odwołuje się do nieistniejącego pliku. Kontrola nie porównuje samych obrazów, bo PNG różnią się między systemami.
 
+Bez lokalnego PlantUML obrazy daje CI. Zadanie `kontrola` w PR renderuje wszystkie diagramy i udostępnia je
+jako artefakt `diagramy` (SVG, PNG i manifest), także gdy krok `obrazy` zgłosił FAIL. Pobierz go i zastąp
+zawartość `docs/_generated/`:
+
+```sh
+gh run download <numer przebiegu docs> -n diagramy -D <katalog>
+```
+
 ## Podgląd strony
 
 ```sh
