@@ -20,7 +20,7 @@ class ServerEvacuationExitsTest {
     @Test
     fun takesExitsFromCard() =
         runBlocking {
-            val exits = ServerEvacuationExitsRepository { ServerReply.Ok(CARD) }
+            val exits = ServerEntrancesRepository { ServerReply.Ok(CARD) }
 
             assertEquals(listOf(EXIT), exits.evacuationExits(SYMBOL), "wyjścia ewakuacyjne budynku z serwera")
         }
@@ -29,7 +29,7 @@ class ServerEvacuationExitsTest {
     fun keepsLastOffline() =
         runBlocking {
             val answers = ArrayDeque(listOf(ServerReply.Ok(CARD), ServerReply.Offline))
-            val exits = ServerEvacuationExitsRepository { answers.removeFirst() }
+            val exits = ServerEntrancesRepository { answers.removeFirst() }
 
             assertEquals(
                 List(2) { listOf(EXIT) },
@@ -43,7 +43,7 @@ class ServerEvacuationExitsTest {
         runBlocking {
             assertEquals(
                 emptyList<EvacuationExit>(),
-                ServerEvacuationExitsRepository { ServerReply.Missing }.evacuationExits(SYMBOL),
+                ServerEntrancesRepository { ServerReply.Missing }.evacuationExits(SYMBOL),
                 "brak zasobu daje pustą listę wyjść",
             )
         }

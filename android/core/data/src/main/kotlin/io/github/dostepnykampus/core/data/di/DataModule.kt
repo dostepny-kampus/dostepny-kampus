@@ -68,12 +68,12 @@ public object DataModule {
             buildingCache = buildingList.cache,
         )
 
-    /** Wejścia karty budynku z serwera z dniem i źródłem oznaczenia. Wymagania: US17.3 */
+    /** Wejścia z dniem i źródłem oznaczenia i wyjścia ewakuacyjne karty budynku z serwera. Wymagania: US17.3, US2.6 */
     @Provides
     @Singleton
     public fun cardEntrances(api: BuildingsApi): ServerEntrances =
         ServerEntrancesRepository { symbol ->
-            api.building(symbol).toReply { ServerCard(it.building, it.entrances) }
+            api.building(symbol).toReply { ServerCard(it.building, it.entrances, it.evacuationExits) }
         }
 
     /** Piętra budynku szczegółowego z serwera do formularza C2. Wymagania: US7.2 */
