@@ -53,7 +53,7 @@ public final class BuildingQuery implements Buildings {
 
     /**
      * Odczyt wejść z regułą nazwy i oznaczenia, bez warunku i kolejności. Wejście z planów PWr
-     * bez nazwy w obu źródłach ma nazwę „Wejście” (BR-27).
+     * bez nazwy w obu źródłach ma nazwę „Wejście”.
      */
     private static final String ENTRANCES = """
         SELECT building_symbol, id,

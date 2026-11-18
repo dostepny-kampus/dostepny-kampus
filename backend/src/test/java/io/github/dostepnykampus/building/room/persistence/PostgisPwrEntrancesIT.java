@@ -40,7 +40,8 @@ final class PostgisPwrEntrancesIT {
             PostgisPwrEntrancesIT.saved(context).sql(
                 """
                 SELECT CASE WHEN id LIKE 'pwr/%' THEN 'pwr' ELSE id END || '|'
-                    || COALESCE(pwr_name, name, '-') || '|' || CASE WHEN marking_source = 'WALKTHROUGH'
+                    || COALESCE(pwr_name, name, '-') || '|'
+                    || CASE WHEN marking_source = 'WALKTHROUGH'
                         THEN marking ELSE COALESCE(pwr_marking, marking) END || '|'
                     || COALESCE(approach, '-') || '|' || COALESCE(door_width_cm::text, '-')
                     || '|' || (pwr_marking IS NOT NULL)
