@@ -25,8 +25,7 @@ internal fun sheetBackOffset(progress: Float, height: Dp): Dp = height * progres
 internal data class SheetState(val isExpanded: Boolean = false, val progress: Float = 0f)
 
 /**
- * Wysokość arkusza V2: zamknięty, niski z małą kartą i rozwinięty: do góry okna albo, przy treści mieszczącej się
- * w połowie okna, do wysokości treści.
+ * Wysokość arkusza V2: zamknięty, niski z małą kartą i rozwinięty, zawsze do góry okna.
  *
  * Wymagania: US2, US2.8
  */
@@ -55,32 +54,19 @@ internal fun SheetHeight.reach(): Set<SheetHeight> =
     }
 
 /**
- * Odległość góry rozwiniętego arkusza od góry okna wysokiego na [window] px: zero, a gdy rozwinięta treść [content]
- * mieści się w połowie okna, tyle, by arkusz miał wysokość treści. Nie niżej niż niska karta [low]; treść 0 to
- * jeszcze nie zmierzona, więc do góry okna.
- *
- * Wymagania: US2.8, NFR-53
- */
-internal fun expandedTop(window: Float, low: Float, content: Float): Float {
-    val top = if (content > 0f && content * 2 <= window) window - content else 0f
-    return minOf(a = top, b = window - low)
-}
-
-/**
  * Kotwice arkusza w oknie wysokim na [window] px: odległość góry arkusza od góry okna dla wysokości z [reach], gdy
- * niska karta ma [low] px, a rozwinięta treść [content] px (wysokość rozwinięta według [expandedTop]).
+ * niska karta ma [low] px; rozwinięta zawsze od góry okna.
  *
  * Wymagania: US2, US2.8
  */
 internal fun sheetAnchors(
     window: Float,
     low: Float,
-    content: Float = 0f,
     reach: Set<SheetHeight> = SheetHeight.entries.toSet(),
 ): DraggableAnchors<SheetHeight> {
     val positions =
         mapOf(
-            SheetHeight.Full to expandedTop(window = window, low = low, content = content),
+            SheetHeight.Full to 0f,
             SheetHeight.Low to window - low,
             SheetHeight.Closed to window,
         )

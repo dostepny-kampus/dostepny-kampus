@@ -75,8 +75,8 @@ import kotlin.math.roundToInt
  * Arkusz V2 z wysokościami [SheetHeight], który idzie za palcem i staje według położenia i prędkości. Startuje
  * rozwinięty, gdy [isExpanded], inaczej niski, a gdy [isFullOnly], na całym oknie z samym zamknięciem. Rozwinięcie
  * zgłasza [onExpandedChange], przeciągnięcie w dół do końca [onClose], zasłoniętą część okna w px [onLowHeight].
- * Zmiana [isExpanded] z zewnątrz rozwija niski arkusz po pomiarze rozwiniętej treści, a rozwinięty zwija na niską
- * wysokość. Treść [content] dostaje, czy arkusz stoi rozwinięty.
+ * Zmiana [isExpanded] z zewnątrz rozwija niski arkusz do góry okna, a rozwinięty zwija na niską wysokość.
+ * Treść [content] dostaje, czy arkusz stoi rozwinięty.
  *
  * Wymagania: US2, US2.8, US2.9, NFR-17, NFR-18, NFR-20, NFR-53
  */
@@ -103,7 +103,7 @@ internal fun Sheet(
         onExpandedChange = onExpandedChange,
         onClose = onClose,
     )
-    val isFull = state.currentValue == SheetHeight.Full && (isFullOnly || measure.reachesTop())
+    val isFull = state.currentValue == SheetHeight.Full
     val corner = if (isFull) 0.dp else Zaokraglenia.bardzoDuze
     val density = LocalDensity.current
     val fling =
@@ -123,14 +123,8 @@ internal fun Sheet(
             modifier
                 .fillMaxWidth()
                 .clipBelowKeepShadow()
-                .followHeight(
-                    state = state,
-                    isCompact = !isExpanded && !isFullOnly,
-                    isLoose = !isFullOnly,
-                    isKnownLong = measure.expanded * 2 > measure.window,
-                ) { size ->
+                .followHeight(state = state, isCompact = !isExpanded && !isFullOnly) { size ->
                     measure.window = size.window
-                    measure.keepExpanded(size.expanded)
                     measure.coverOf(restingLow = size.restingLow, isFullOnly = isFullOnly)?.let(currentOnLowHeight)
                 }.nestedScroll(scroll)
                 .anchoredDraggable(
@@ -154,36 +148,11 @@ private const val PROVISIONAL_LOW_SHARE = 3
 
 private val FLICK_VELOCITY = 125.dp
 
-/**
- * Zmierzona wysokość okna [window], niskiej karty [low] i rozwiniętej treści [expanded] w px; zero, dopóki nie
- * zmierzono. [isExpandedFresh]: [expanded] zmierzono przy treści rozwiniętej, która teraz stoi w arkuszu.
- */
+/** Zmierzona wysokość okna [window] i niskiej karty [low] w px; zero, dopóki nie zmierzono. */
 private class SheetMeasure {
     var window by mutableIntStateOf(0)
     var low by mutableIntStateOf(0)
         private set
-    var expanded by mutableIntStateOf(0)
-        private set
-    var isExpandedFresh by mutableStateOf(false)
-        private set
-
-    /** Zapamiętuje wysokość rozwiniętej treści [measured]; `null`, gdy w arkuszu stoi mała karta. */
-    fun keepExpanded(measured: Int?) {
-        isExpandedFresh = measured != null
-        if (measured != null) expanded = measured
-    }
-
-    /** Góra rozwiniętego arkusza w px od góry okna. */
-    fun fullTop(): Float = expandedTop(window = window.toFloat(), low = knownLow(), content = expanded.toFloat())
-
-    /** Czy rozwiniętą treść zmierzono, a kotwica rozwinięcia w [state] stoi już według niej. */
-    fun isReadyToExpand(state: AnchoredDraggableState<SheetHeight>): Boolean =
-        isExpandedFresh &&
-            state.anchors.hasPositionFor(SheetHeight.Full) &&
-            state.anchors.positionOf(SheetHeight.Full) == fullTop()
-
-    /** Czy rozwinięty arkusz sięga do góry okna. */
-    fun reachesTop(): Boolean = fullTop() == 0f
 
     private fun knownLow(): Float = (low.takeIf { it > 0 } ?: (window / PROVISIONAL_LOW_SHARE)).toFloat()
 
@@ -205,7 +174,7 @@ private class SheetMeasure {
     /** Kotwice wysokości [reach] dla zmierzonego okna; przed pomiarem niskiej karty jej wysokość to część okna. */
     fun anchors(isFullOnly: Boolean, reach: Set<SheetHeight>): DraggableAnchors<SheetHeight> {
         if (isFullOnly) return fullOnlyAnchors(window = window.toFloat())
-        return sheetAnchors(window = window.toFloat(), low = knownLow(), content = expanded.toFloat(), reach = reach)
+        return sheetAnchors(window = window.toFloat(), low = knownLow(), reach = reach)
     }
 }
 
@@ -240,7 +209,7 @@ private fun FollowHeights(
     val isFullOnlyNow by rememberUpdatedState(isFullOnly)
     val reach = state.settledValue.reach() + setOfNotNull(jump.target)
     val anchors =
-        remember(measure.window, measure.low, measure.expanded, isFullOnly, reach) {
+        remember(measure.window, measure.low, isFullOnly, reach) {
             measure.anchors(isFullOnly = isFullOnly, reach = reach).takeIf { measure.window > 0 }
         }
     SideEffect { anchors?.let { state.updateAnchors(newAnchors = it, newTarget = it.keeping(state.targetValue)) } }
@@ -254,7 +223,6 @@ private fun FollowHeights(
     }
     LaunchedEffect(isExpanded) {
         if (!isFullOnly && state.settledValue.isExpanded != isExpanded) {
-            if (isExpanded) snapshotFlow { measure.isReadyToExpand(state) }.first { it }
             jump.move(state = state, height = if (isExpanded) SheetHeight.Full else SheetHeight.Low)
         }
     }
@@ -271,66 +239,37 @@ private fun DraggableAnchors<SheetHeight>.keeping(height: SheetHeight): SheetHei
     if (hasPositionFor(height)) height else SheetHeight.Full
 
 /**
- * Pomiar arkusza: okno [window], niska karta w spoczynku [restingLow] i rozwinięta treść [expanded], gdy są.
- * Mała karta w spoczynku ma wysokość treści, a w ruchu widoczną część okna. Rozwinięta treść ma własną wysokość;
- * od połowy okna w ruchu albo przy znanej długiej treści co najmniej widoczną część. Wystające jest ucięte.
+ * Pomiar arkusza: okno [window] i niska karta w spoczynku [restingLow], gdy jest. Mała karta w spoczynku ma
+ * wysokość treści, a w ruchu i rozwinięta widoczną część okna.
  */
-private data class SheetSize(val window: Int, val restingLow: Int?, val expanded: Int?)
+private data class SheetSize(val window: Int, val restingLow: Int?)
 
 private fun Modifier.followHeight(
     state: AnchoredDraggableState<SheetHeight>,
     isCompact: Boolean,
-    isLoose: Boolean,
-    isKnownLong: Boolean,
     onMeasure: (SheetSize) -> Unit,
 ): Modifier =
     layout { measurable, constraints ->
-        val fit =
-            SheetFit(
-                state = state,
-                window = constraints.maxHeight,
-                isCompact = isCompact,
-                isOpen = isLoose && !isCompact,
-                isKnownLong = isKnownLong,
-            )
+        val fit = SheetFit(state = state, window = constraints.maxHeight, isCompact = isCompact)
         val placeable = measurable.measure(fit.constraints(constraints))
-        val size =
-            SheetSize(
-                window = constraints.maxHeight,
-                restingLow = placeable.height.takeIf { fit.isResting && isCompact },
-                expanded = placeable.height.takeIf { fit.isOpen && !fit.isFilled },
-            )
-        onMeasure(size)
-        layout(width = placeable.width, height = fit.height(placeable.height)) { placeable.place(x = 0, y = 0) }
+        onMeasure(SheetSize(window = constraints.maxHeight, restingLow = placeable.height.takeIf { fit.isRestingLow }))
+        layout(width = placeable.width, height = placeable.height) { placeable.place(x = 0, y = 0) }
     }
 
-/**
- * Wymiary arkusza za kotwicą [state] w oknie [window]: widoczna część, spoczynek małej karty [isResting]
- * i treść rozwinięta ([isOpen]) wypełniająca widoczną część od połowy okna ([isFilled]).
- */
-private class SheetFit(
-    state: AnchoredDraggableState<SheetHeight>,
-    window: Int,
-    isCompact: Boolean,
-    val isOpen: Boolean,
-    isKnownLong: Boolean,
-) {
+/** Wymiary arkusza za kotwicą [state] w oknie [window]: widoczna część i spoczynek małej karty ([isCompact]). */
+private class SheetFit(state: AnchoredDraggableState<SheetHeight>, window: Int, private val isCompact: Boolean) {
     private val offset = state.offset
-    private val restsAt =
-        state.settledValue.takeIf { state.anchors.hasPositionFor(it) && state.anchors.positionOf(it) == offset }
     private val top = if (offset.isNaN()) 0 else offset.roundToInt()
     private val shown = window - top.coerceIn(minimumValue = 0, maximumValue = window)
-    val isResting = offset.isNaN() || (isCompact && restsAt == SheetHeight.Low)
-    val isFilled = isOpen && shown * 2 > window && (isKnownLong || restsAt == null)
+    private val anchors = state.anchors
+    private val isLow = anchors.hasPositionFor(SheetHeight.Low) && anchors.positionOf(SheetHeight.Low) == offset
+    private val isResting = offset.isNaN() || (isCompact && isLow)
+
+    /** Czy to pomiar niskiej karty w spoczynku. */
+    val isRestingLow: Boolean get() = isResting && isCompact
 
     fun constraints(base: Constraints): Constraints =
-        when {
-            isResting -> base.copy(minHeight = 0)
-            isOpen -> base.copy(minHeight = if (isFilled) shown else 0)
-            else -> base.copy(minHeight = shown, maxHeight = shown)
-        }
-
-    fun height(measured: Int): Int = if (isOpen && !offset.isNaN()) shown else measured
+        if (isResting) base.copy(minHeight = 0) else base.copy(minHeight = shown, maxHeight = shown)
 }
 
 private fun Modifier.clipBelowKeepShadow(): Modifier =
