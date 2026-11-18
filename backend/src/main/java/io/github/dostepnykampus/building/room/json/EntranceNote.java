@@ -15,8 +15,8 @@ import org.jspecify.annotations.Nullable;
  * Pole uwag wpisu warstwy wejść PWr, np. {@code Wejście Cesarskie. Od ul. Wybrzeże.}
  *
  * <p>Pierwsze zdanie jest nazwą, gdy zaczyna się od „Wejście”, ma najwyżej trzy słowa i nie
- * kończy się skrótem, np. „ul.”; reszta uwag to opis dojścia. Bez takiej nazwy nazwą jest
- * „Wejście”, a całe uwagi są opisem. Uwagi zaczynające się od „Wyjście ewakuacyjne” opisują
+ * kończy się skrótem, np. „ul.”; reszta uwag to opis dojścia. Bez takiej nazwy wpis nie ma
+ * nazwy, a całe uwagi są opisem. Uwagi zaczynające się od „Wyjście ewakuacyjne” opisują
  * wyjście ewakuacyjne: nazwą jest „Wyjście ewakuacyjne”, a opisem całe uwagi.</p>
  *
  * <p>Wymagania: BR-27</p>
@@ -76,16 +76,16 @@ final class EntranceNote {
     /**
      * Nazwa wpisu.
      *
-     * @return Pierwsze zdanie, gdy jest nazwą, „Wyjście ewakuacyjne” albo „Wejście”
+     * @return Pierwsze zdanie, gdy jest nazwą, „Wyjście ewakuacyjne” albo null bez nazwy
      */
-    String name() {
-        final String result;
+    @Nullable String name() {
+        final @Nullable String result;
         if (this.exit()) {
             result = EntranceNote.EXIT;
         } else if (this.named()) {
             result = this.first();
         } else {
-            result = "Wejście";
+            result = null;
         }
         return result;
     }

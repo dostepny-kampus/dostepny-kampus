@@ -15,7 +15,7 @@ import org.jspecify.annotations.Nullable;
  * @param floorId Identyfikator piętra wpisu, np. {@code K1.A1.P0}
  * @param point Położenie jako tekst GeoJSON typu Point w układzie WGS 84
  * @param marking Oznaczenie wejścia: ACCESSIBLE, INACCESSIBLE albo NO_DATA
- * @param name Nazwa wejścia, co najmniej „Wejście”; przy wyjściu „Wyjście ewakuacyjne”
+ * @param name Nazwa wejścia z uwag albo null bez nazwy; przy wyjściu „Wyjście ewakuacyjne”
  * @param approach Opis dojścia z uwag albo null, gdy uwagi go nie podają
  * @param doorWidthCm Szerokość drzwi w centymetrach, większa od 0, albo null
  * @param evacuationExit Czy wpis jest wyjściem ewakuacyjnym, a nie wejściem
@@ -25,7 +25,7 @@ public record PlanEntrance(
     String floorId,
     String point,
     String marking,
-    String name,
+    @Nullable String name,
     @Nullable String approach,
     @Nullable Integer doorWidthCm,
     boolean evacuationExit

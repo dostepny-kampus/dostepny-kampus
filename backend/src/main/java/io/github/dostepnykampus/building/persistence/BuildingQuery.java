@@ -52,10 +52,14 @@ public final class BuildingQuery implements Buildings {
     static final int NEAR_METERS = 50;
 
     /**
-     * Odczyt wejść z regułą nazwy i oznaczenia, bez warunku i kolejności.
+     * Odczyt wejść z regułą nazwy i oznaczenia, bez warunku i kolejności. Wejście z planów PWr
+     * bez nazwy w obu źródłach ma nazwę „Wejście”.
      */
     private static final String ENTRANCES = """
-        SELECT building_symbol, id, COALESCE(pwr_name, name) AS name, type, main,
+        SELECT building_symbol, id,
+            COALESCE(pwr_name, name, CASE WHEN pwr_marking IS NOT NULL THEN 'Wejście' END)
+                AS name,
+            type, main,
             ST_AsGeoJSON(location) AS location, floor_id,
             CASE WHEN marking_source = 'WALKTHROUGH' THEN marking
                 ELSE COALESCE(pwr_marking, marking) END AS marking,
