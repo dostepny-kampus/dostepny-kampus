@@ -84,7 +84,7 @@ class CardDescriptionLineTest {
 
     /** Wiersz: V2, przewinięta treść karty: pod nagłówkiem z „Zamknij” cienka linia; bez przewinięcia jej nie ma. */
     @Test
-    fun drawsScrollLineOnlyWhenScrolled() {
+    fun drawsLineOnlyWhenScrolled() {
         val scroll = ScrollState(initial = 0)
         open(CardMode.Expanded, card = longCard(), scroll = scroll)
         compose.onAllNodesWithTag(SCROLL_LINE_TAG).assertCountEquals(0)

@@ -59,14 +59,17 @@ internal fun EvacuationExits(card: BuildingCardUiState.Ready) {
             Text(text = stringResource(label, exits.size), modifier = Modifier.weight(1f))
             Icon(if (isExpanded) MapControlIcons.Up else MapControlIcons.Down, contentDescription = null)
         }
-        if (isExpanded) {
-            GroupFrame {
-                val line = MaterialTheme.colorScheme.outlineVariant
-                exits.forEachIndexed { index, exit ->
-                    if (index > 0) HorizontalDivider(Modifier.padding(vertical = Odstepy.s), color = line)
-                    ExitRow(exit)
-                }
-            }
+        if (isExpanded) ExitList(exits)
+    }
+}
+
+@Composable
+private fun ExitList(exits: List<EvacuationExit>) {
+    GroupFrame {
+        val line = MaterialTheme.colorScheme.outlineVariant
+        exits.forEachIndexed { index, exit ->
+            if (index > 0) HorizontalDivider(Modifier.padding(vertical = Odstepy.s), color = line)
+            ExitRow(exit)
         }
     }
 }

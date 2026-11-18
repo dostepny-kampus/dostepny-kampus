@@ -157,7 +157,9 @@ class EvacuationExitsTest {
         compose
             .onAllNodes(hasText(text), useUnmergedTree = true)[0]
             .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
-        return layouts.single().layoutInput.style.fontWeight ?: FontWeight.Normal
+        return layouts
+            .single()
+            .layoutInput.style.fontWeight ?: FontWeight.Normal
     }
 
     /**
