@@ -46,8 +46,6 @@ private val Starts =
     listOf(
         SheetHeight.Low to true,
         SheetHeight.Low to false,
-        SheetHeight.Half to true,
-        SheetHeight.Half to false,
         SheetHeight.Full to false,
     )
 
@@ -64,8 +62,8 @@ internal enum class DragPace(val dpPerSecond: Int, val holdMillis: Long) {
 }
 
 /**
- * Arkusz V2 po przeciągnięciu uchwytu o 80 dp równymi krokami staje na sąsiedniej wysokości przy każdym tempie,
- * także gdy palec zatrzymał się przed puszczeniem, a z niskiej w dół się zamyka.
+ * Arkusz V2 po przeciągnięciu uchwytu o 80 dp równymi krokami: rzut przenosi go na sąsiednią wysokość w stronę
+ * ruchu, a z niskiej w dół zamyka; wolny ruch i palec zatrzymany przed puszczeniem wracają na najbliższą wysokość.
  *
  * Wymagania: US2.8, NFR-53
  */
@@ -79,16 +77,17 @@ internal class SheetStepDragTest(
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    /** Wiersz: przeciągnięcie o 80 dp → sąsiednia wysokość w stronę ruchu, z niskiej w dół zamknięcie. */
+    /** Wiersz: przeciągnięcie o 80 dp → rzut: sąsiednia wysokość w stronę ruchu; inaczej najbliższa wysokość. */
     @Test
-    fun settlesOnNeighbourHeight() {
+    fun settlesOnNearestOrFlung() {
         open()
         repeat(from.ordinal - SheetHeight.Low.ordinal) {
             compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
             compose.waitForIdle()
         }
         drag()
-        val target = (if (isUp) from.higher() else from.lower()) ?: SheetHeight.Closed
+        val flung = if (isUp) SheetHeight.Full else from.below()
+        val target = if (pace == DragPace.Quick) flung else from
         val handle = compose.onNodeWithContentDescription(EXPAND_HANDLE)
         if (target == SheetHeight.Closed) {
             handle.assertDoesNotExist()
@@ -132,10 +131,11 @@ internal class SheetStepDragTest(
         val map = compose.onNodeWithTag(MAP_TAG).getUnclippedBoundsInRoot().height
         return when (height) {
             SheetHeight.Full -> 0.dp
-            SheetHeight.Half -> map / 2
             SheetHeight.Low, SheetHeight.Closed -> map - CeleDotyku.minimum - CardHeight
         }
     }
+
+    private fun SheetHeight.below(): SheetHeight = if (this == SheetHeight.Full) SheetHeight.Low else SheetHeight.Closed
 
     /** Przypadki: każda wysokość, obie strony, trzy tempa. */
     companion object {

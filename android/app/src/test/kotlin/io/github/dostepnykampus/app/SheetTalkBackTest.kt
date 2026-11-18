@@ -61,7 +61,7 @@ class SheetTalkBackTest {
 
     /**
      * Wiersz: uchwyt niskiej karty → przycisk „Wysokość karty” ze stanem „niska”, a po dotknięciu ten sam
-     * przycisk ze stanem „połowa ekranu”.
+     * przycisk ze stanem „rozwinięta”.
      *
      * Wymagania: US2.8, NFR-18
      */
