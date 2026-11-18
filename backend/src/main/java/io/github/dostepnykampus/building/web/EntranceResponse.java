@@ -92,7 +92,8 @@ public record EntranceResponse(
                     listed.door().widthCm().orElse(null),
                     FloorList.PWR_SOURCE
                 );
-                case Entrance.Layer.Unlisted unlisted -> null;
+                case Entrance.Layer.Unlisted _ -> null;
+                case null -> throw new IllegalStateException("Brak obecności wejścia w warstwie");
             };
         }
     }
