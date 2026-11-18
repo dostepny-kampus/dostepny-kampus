@@ -53,8 +53,8 @@ private val WIDE_WINDOW = 600.dp
 
 /**
  * Arkusz wejścia o identyfikatorze [id] z [catalog] po dotknięciu jego znaku na mapie V1; bez [id] i bez takiego
- * wejścia w katalogu arkusza nie ma. Pokazane wejście trafia do [EntranceActions.onShow], a winda z
- * [EntranceActions.lift] do części „Za drzwiami”. Systemowe „Wstecz” przy otwartym arkuszu wywołuje [SheetExits.onBack].
+ * wejścia w katalogu arkusza nie ma. Pokazane wejście trafia do [EntranceActions.onShow], a winda
+ * z [EntranceActions.lift] do części „Za drzwiami”. Systemowe „Wstecz” wywołuje [SheetExits.onBack].
  *
  * Wymagania: US2.1, US3.3, NFR-53
  *

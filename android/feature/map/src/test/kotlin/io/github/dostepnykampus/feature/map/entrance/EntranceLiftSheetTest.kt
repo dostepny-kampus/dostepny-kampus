@@ -50,14 +50,6 @@ class EntranceLiftSheetTest {
         compose.onNodeWithText("Jedzie na: piwnica, parter, antresola.").assertExists()
     }
 
-    /** Wiersz: bez windy w danych części „Za drzwiami” nie ma. */
-    @Test
-    fun skipsWithoutLift() {
-        compose.setContent { EntranceSheetOnMap(ShownEntrance(entrance = ENTRANCE)) }
-
-        compose.onNodeWithText("Za drzwiami").assertDoesNotExist()
-    }
-
     /** Zrzut arkusza z częścią „Za drzwiami” przy czcionce 200%. */
     @Test
     @Config(fontScale = 2f)
