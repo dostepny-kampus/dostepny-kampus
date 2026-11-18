@@ -1,5 +1,5 @@
 @startsalt
-' V2 Karta budynku, budynek z trzema wejściami bez oznaczenia i bez nazwy w danych: jeden wiersz
+' V2 Karta budynku, budynek z trzema wejściami bez oznaczenia i bez nazwy: jeden wiersz
 ' zamiast trzech jednakowych (US2.1, US17.1).
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml

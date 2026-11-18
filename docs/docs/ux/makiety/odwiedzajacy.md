@@ -367,19 +367,19 @@ Czynność główna: „Pokaż wejście na mapie”.
 
 ### V2: wejścia bez nazw
 
-![Makieta V2 budynku z trzema wejściami bez oznaczenia i nazwy: cichy napis Brak danych o wejściach, data i źródło, w grupie Wejścia jeden wiersz Brak danych, 3 wejścia bez nazw w danych, zdanie Nikt jeszcze nie sprawdził tych wejść i Zgłoś barierę przy wejściu](../../_generated/m-v2-karta-budynku-wejscia-bez-nazw.svg)
+![Makieta V2 budynku z trzema wejściami bez oznaczenia i nazwy: cichy napis Brak danych o wejściach, data i źródło, w grupie Wejścia jeden wiersz Brak danych, 3 wejścia, zdanie Nikt jeszcze nie sprawdził tych wejść i Zgłoś barierę przy wejściu](../../_generated/m-v2-karta-budynku-wejscia-bez-nazw.svg)
 
 Czynność główna: brak; bez wejścia zalecanego nie ma „Pokaż wejście na mapie”.
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | Jeden wiersz zamiast jednakowych bloków, gdy żadne wejście budynku nie ma oznaczenia ani nazwy | US2.1, US17.1, NFR-21 |
-| Napis „3 wejścia bez nazw w danych”: 2–4 „wejścia”, 5 i więcej „wejść” | US17.1 |
+| Napis „3 wejścia”: 2–4 „wejścia”, 5 i więcej „wejść” | US17.1 |
 | „Zgłoś barierę przy wejściu” w wierszu, bo nie ma jednego wejścia do otwarcia: V4 bez wybranego wejścia, Gość: L1 | US4.6, US14.2 |
 
 | Stan bez osobnej makiety | Co się zmienia |
 | --- | --- |
-| Jedno wejście bez oznaczenia i nazwy | zwykły wiersz „Wejście bez nazwy w danych” ze strzałką (US17.1) |
+| Jedno wejście bez oznaczenia i nazwy | zwykły wiersz „Wejście” ze strzałką (US17.1) |
 
 ### V2: brak sieci
 

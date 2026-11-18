@@ -120,9 +120,9 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
   Scenariusz: Kilka wejść bez oznaczenia i bez nazwy stoi jako jeden wiersz
     Zakładając, że budynek C-7 ma w danych 3 wejścia bez oznaczenia i bez nazwy
     Jeżeli Gość niezalogowany otworzy kartę budynku C-7 na całym ekranie
-    Wtedy w grupie „Wejścia” widzi jeden wiersz „3 wejścia bez nazw w danych” ze znakiem „Brak danych”
+    Wtedy w grupie „Wejścia” widzi jeden wiersz „3 wejścia” ze znakiem „Brak danych”
     Oraz pod nim zdanie „Nikt jeszcze nie sprawdził tych wejść.” i jeden odnośnik „Zgłoś barierę przy wejściu”
-    Ale nie widzi trzech jednakowych bloków „Wejście bez nazwy w danych”
+    Ale nie widzi trzech jednakowych bloków „Wejście”
 
   @US2.2 @BR-17 @aplikacja
   Scenariusz: Zgłoszenie przyjęte na karcie budynku ma zdjęcie i datę weryfikacji
