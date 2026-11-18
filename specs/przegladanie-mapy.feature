@@ -336,7 +336,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | otworzy kartę A-1 na niskiej wysokości i wybierze „Pokaż wejście na mapie” | „Zamknij” | widzi mapę bez karty budynku                     |
       | dotknie znaku wejścia A-1 na mapie bez otwartej karty                      | „Zamknij” | widzi mapę bez karty budynku                     |
 
-  # @do-zrobienia #3242, #1481: arkusze sali i „Który budynek?” nie mają jeszcze wiersza budynku.
+  # @do-zrobienia #1481: arkusz znalezionej sali nie ma jeszcze wiersza budynku.
   @US2 @US2.8 @NFR-18 @NFR-53 @aplikacja @do-zrobienia
   Szablon scenariusza: Wiersz budynku w arkuszu otwiera kartę budynku bez przelotu mapy
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce, bez otwartej karty
