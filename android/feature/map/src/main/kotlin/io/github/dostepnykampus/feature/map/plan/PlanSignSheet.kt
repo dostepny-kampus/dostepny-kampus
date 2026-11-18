@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map.plan
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material3.MaterialTheme
@@ -15,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
+import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.overlay.BuildingLink
 import io.github.dostepnykampus.feature.map.overlay.MapSheet
@@ -58,7 +61,7 @@ internal fun ChosenPlanSheet(id: String?, plan: ShownPlan?, exits: SheetExits, m
 private fun LiftFacts(sign: PlanSign) {
     val here = stringResource(R.string.mapa_winda_tutaj, sign.floor)
     val stops = sign.liftFloors.joinToString(separator = ", ") { if (it == sign.floor) here else it }
-    Column {
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(
             text = stringResource(R.string.karta_czytaj, sign.building, sign.floor.lowercaseFirst()),
             style = MaterialTheme.typography.bodyLarge,
