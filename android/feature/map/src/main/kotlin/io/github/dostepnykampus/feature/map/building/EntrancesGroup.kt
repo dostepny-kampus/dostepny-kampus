@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -112,6 +113,7 @@ private fun CutGroup(card: BuildingCardUiState.Ready, shown: Dp) {
  *
  * Wymagania: US2.1, US3.3, US4.6, US17.1, NFR-17, NFR-18, NFR-21
  *
+ * @param card gotowa karta budynku z wejściami w kolejności karty
  * @param withAssessment czy przy każdym wejściu stoi data i źródło oznaczenia
  * @param onShowEntrance dotknięcie wiersza z identyfikatorem wejścia; `null` daje wiersze bez dotyku
  * @param onReport „Zgłoś barierę przy wejściu” bez wybranego wejścia; `null` ukrywa odnośnik
@@ -125,8 +127,7 @@ internal fun EntrancesGroup(
 ) {
     GroupContainer(title = stringResource(R.string.karta_wejscia)) {
         when {
-            card.entrances.isEmpty() ->
-                Text(text = stringResource(R.string.karta_wejscia_brak), style = MaterialTheme.typography.bodyLarge)
+            card.entrances.isEmpty() -> NoEntrances()
             card.hasOnlyNamelessEntrances() -> NamelessEntrances(count = card.entrances.size, onReport = onReport)
             else -> EntranceList(card = card, withAssessment = withAssessment, onShow = onShowEntrance)
         }
@@ -145,6 +146,10 @@ private fun EntranceList(card: BuildingCardUiState.Ready, withAssessment: Boolea
         EntranceRow(listed = listed, withAssessment = withAssessment, onShowEntrance = onShow)
     }
 }
+
+@Composable
+private fun NoEntrances() =
+    Text(text = stringResource(R.string.karta_wejscia_brak), style = MaterialTheme.typography.bodyLarge)
 
 @Composable
 private fun NamelessEntrances(count: Int, onReport: (() -> Unit)?) {
@@ -166,8 +171,8 @@ private fun NamelessEntrances(count: Int, onReport: (() -> Unit)?) {
     }
 }
 
-/** Napis „N wejścia/wejść bez nazw w danych” z liczbą odmienioną po polsku niezależnie od języka telefonu. */
 @Composable
+@ReadOnlyComposable
 private fun namelessTitle(count: Int): String {
     val isFew = PolishPlurals.select(count.toDouble()) == PluralRules.KEYWORD_FEW
     val title = if (isFew) R.string.karta_wejscia_bez_nazw_kilka else R.string.karta_wejscia_bez_nazw_wiele
@@ -202,7 +207,7 @@ internal fun EntranceRow(listed: OrderedEntrance, withAssessment: Boolean, onSho
 }
 
 @Composable
-private fun EntranceFacts(listed: OrderedEntrance, withAssessment: Boolean, modifier: Modifier) {
+private fun EntranceFacts(listed: OrderedEntrance, withAssessment: Boolean, modifier: Modifier = Modifier) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(Odstepy.s),

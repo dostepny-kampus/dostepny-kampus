@@ -66,8 +66,7 @@ class EntrancesGroupTest {
     private val calls = mutableListOf<String>()
 
     /**
-     * Wiersz: V2, znaki oznaczenia w jednej kolumnie przy lewej krawędzi, wiersze jeden pod drugim z odstępem
-     *   na linię, a cel dotyku wiersza ma co najmniej 48 dp wysokości i jest szerszy niż nazwa.
+     * Wiersz: V2, znaki w jednej kolumnie, odstęp na linię między wierszami, wiersz ≥ 48 dp i szerszy niż nazwa.
      *
      * Wymagania: US2.1, NFR-17, NFR-21
      */
@@ -80,15 +79,15 @@ class EntrancesGroupTest {
         assertTrue("znaki w jednej kolumnie: $lefts", lefts.distinct().size == 1)
         val rows = compose.onAllNodes(entranceRow).fetchSemanticsNodes().map { it.boundsInRoot }
         assertTrue("odstęp na linię: $rows", rows.zipWithNext().all { (up, down) -> down.top > up.bottom })
-        val name = compose.onNodeWithText("Główne", useUnmergedTree = true).fetchSemanticsNode().boundsInRoot.width
+        val text = compose.onNodeWithText("Główne", useUnmergedTree = true).fetchSemanticsNode()
+        val name = text.boundsInRoot.width
         val minimum = TOUCH_TARGET.value * DENSITY
         assertTrue("wiersz 48 dp i szerszy niż nazwa: $rows", rows.all { it.height >= minimum && it.width > name })
     }
 
     /**
-     * Wiersz: V2, wiersz wejścia dotykalny w całości, ze strzałką; dotknięcie każdego wejścia, nie tylko
-     *   zalecanego, pokazuje na mapie właśnie to wejście; w wierszu nie ma „Zgłoś barierę przy wejściu”
-     *   ani przycisku „Pokaż wejście na mapie”.
+     * Wiersz: V2, dotknięcie wiersza każdego wejścia pokazuje na mapie to wejście; w wierszu nie ma
+     *   „Zgłoś barierę przy wejściu” ani przycisku „Pokaż wejście na mapie”.
      *
      * Wymagania: US3.3, US4.6, NFR-18
      */
@@ -97,15 +96,14 @@ class EntrancesGroupTest {
         group(NAMED)
         compose.onAllNodes(entranceRow).assertCountEquals(NAMED.size)
         NAMED.forEach { compose.onNode(entranceRow and hasText(it.name ?: UNNAMED)).performClick() }
-        assertEquals(NAMED.map { "show ${it.id}" }, calls)
+        assertEquals("każdy wiersz pokazuje swoje wejście", NAMED.map { "show ${it.id}" }, calls)
         compose.onAllNodes(hasText(REPORT)).assertCountEquals(0)
         compose.onAllNodes(hasText(SHOW)).assertCountEquals(0)
     }
 
     /**
-     * Wiersz: V2, dwa lub więcej wejść bez oznaczenia i bez nazwy → jeden wiersz „N wejścia/wejść bez nazw
-     *   w danych” ze znakiem „Brak danych”, zdanie „Nikt jeszcze nie sprawdził tych wejść.” i jeden odnośnik
-     *   „Zgłoś barierę przy wejściu” do V4 bez wybranego wejścia; liczba odmieniona: 2 i 4 „wejścia”, 5 „wejść”.
+     * Wiersz: V2, co najmniej dwa wejścia bez oznaczenia i nazwy → jeden wiersz „N wejścia/wejść bez nazw
+     *   w danych” (2, 4, 5), „Nikt jeszcze nie sprawdził tych wejść.” i jeden odnośnik zgłoszenia bez wejścia.
      * Scenariusz: przegladanie-mapy.feature: Kilka wejść bez oznaczenia i bez nazwy stoi jako jeden wiersz
      *
      * Wymagania: US2.1, US17.1, US4.6, NFR-21
@@ -121,7 +119,7 @@ class EntrancesGroupTest {
         compose.onAllNodes(entranceRow).assertCountEquals(0)
         compose.onAllNodes(hasText(REPORT) and hasClickAction()).assertCountEquals(1)
         compose.onNodeWithText(REPORT).performClick()
-        assertEquals(listOf("report"), calls)
+        assertEquals("jeden odnośnik bez wejścia", listOf("report"), calls)
         listOf(2 to "2 wejścia", 4 to "4 wejścia", 5 to "5 wejść").forEach { (count, text) ->
             state.value = ready(nameless(count))
             compose.waitForIdle()
