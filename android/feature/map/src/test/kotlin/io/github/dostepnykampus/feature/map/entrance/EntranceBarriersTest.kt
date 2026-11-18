@@ -140,9 +140,12 @@ class EntranceBarriersTest {
     fun showsTypeAsPartHeading() {
         compose.setContent { EntranceSheetOnMap(recommended(barrier("z1"))) }
 
-        val heading = compose.onNodeWithText(BARRIERS).fetchSemanticsNode().size.height
-        val type = compose.onNodeWithText("Schody przy wejściu").fetchSemanticsNode().size.height
-        assertEquals("wysokość wiersza typu bariery", heading, type)
+        assertEquals("wysokość wiersza typu bariery", heightOf(BARRIERS), heightOf("Schody przy wejściu"))
+    }
+
+    private fun heightOf(text: String): Int {
+        val node = compose.onNodeWithText(text).fetchSemanticsNode()
+        return node.size.height
     }
 
     private fun recommended(vararg barriers: AcceptedBarrier) =
