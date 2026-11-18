@@ -145,6 +145,13 @@ jobs:
         env:
           PLANTUML_JAR: ${{ runner.temp }}/narzedzia/plantuml.jar
         run: python -X utf8 scripts/render.py --force --out "${RUNNER_TEMP}/diagramy"
+      - name: Udostępnij wyrenderowane diagramy
+        if: ${{ !cancelled() && steps.verify.outcome != 'skipped' }}
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: diagramy
+          path: ${{ runner.temp }}/diagramy
+          retention-days: 7
 
   # Jedna publikacja zawiera dwie wersje: main w katalogu głównym i najwyższy sprint/N pod /sprint/.
   pamiec:
