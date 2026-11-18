@@ -22,7 +22,8 @@ import io.github.dostepnykampus.feature.map.R
 
 /**
  * Opis dojścia i szerokość drzwi wejścia [shown]: przy wejściu zalecanym każde w swojej części z nagłówkiem, przy
- * innym wejściu bez nagłówków. Pusty opis i szerokość 0 nic nie dodają.
+ * innym wejściu bez nagłówków. Pusty opis i szerokość 0 nic nie dodają; bez obu kolumna jest
+ * pusta.
  *
  * Wymagania: US2.1, US3.3, BR-27
  */
@@ -30,14 +31,19 @@ import io.github.dostepnykampus.feature.map.R
 internal fun EntranceDetails(shown: ShownEntrance) {
     val approach = shown.entrance.approach.takeIf { it.isNotEmpty() }
     val door = doorWidthText(shown.entrance)
-    if (shown.isRecommended) {
-        approach?.let { SheetPart(title = stringResource(R.string.mapa_wejscie_dojscie), text = it) }
-        door?.let { SheetPart(title = stringResource(R.string.mapa_wejscie_drzwi), text = it) }
-    } else {
-        door?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
-        approach?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        if (shown.isRecommended) {
+            approach?.let { SheetPart(title = stringResource(R.string.mapa_wejscie_dojscie), text = it) }
+            door?.let { SheetPart(title = stringResource(R.string.mapa_wejscie_drzwi), text = it) }
+        } else {
+            door?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
+            approach?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
+        }
     }
 }
+
+/** Czy wejście ma w danych opis dojścia albo szerokość drzwi. Wymagania: US2.1, BR-27 */
+internal fun Entrance.hasDetails(): Boolean = approach.isNotEmpty() || doorWidthCm > 0
 
 /** Szerokość drzwi [entrance] słowami; `null`, gdy dane jej nie podają. Wymagania: US2.1, BR-27 */
 @Composable

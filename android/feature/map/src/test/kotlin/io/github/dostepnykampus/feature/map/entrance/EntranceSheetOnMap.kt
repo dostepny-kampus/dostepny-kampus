@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 
-/** Kolor tła w miejscu mapy pod arkuszem w testach. */
 private val MapGround = Color(0xFFBEE3F2)
 
 /**

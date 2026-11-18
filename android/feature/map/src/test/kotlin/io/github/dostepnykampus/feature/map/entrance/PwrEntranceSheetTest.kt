@@ -107,7 +107,7 @@ class PwrEntranceSheetTest {
      * Wymagania: US2.1, BR-27
      */
     @Test
-    fun showsPlainFactsWhenNotRecommended() {
+    fun showsFactsWithoutParts() {
         val plain = pwr(id = "pwr/4", name = "Wejście", approach = APPROACH, doorWidthCm = 90)
         compose.setContent { EntranceSheetOnMap(ShownEntrance(plain)) }
 
@@ -135,7 +135,8 @@ class PwrEntranceSheetTest {
     private companion object {
         fun recommended(approach: String, doorWidthCm: Int): ShownEntrance =
             ShownEntrance(
-                entrance = pwr("pwr/1", "Wejście Cesarskie", approach, doorWidthCm),
+                entrance =
+                    pwr(id = "pwr/1", name = "Wejście Cesarskie", approach = approach, doorWidthCm = doorWidthCm),
                 isRecommended = true,
                 others =
                     listOf(

@@ -129,7 +129,7 @@ internal fun EntranceSheet(
         )
         sourceLine(shown)?.let { SecondaryText(it) }
         entrance.name?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
-        EntranceDetails(shown)
+        if (entrance.hasDetails()) EntranceDetails(shown)
         if (entrance.marking == EntranceMarking.NO_DATA) {
             SecondaryText(stringResource(R.string.mapa_wejscie_niesprawdzone))
         }
