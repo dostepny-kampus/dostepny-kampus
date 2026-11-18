@@ -15,8 +15,8 @@ split
     -> „Pokaż wejście\nna mapie” albo\nwiersz wejścia;
     :V1 Arkusz wejścia\nz zaznaczonym wejściem; <<stan>>
     split
-      -> „Pokaż to wejście\nna mapie”;
-      :V1 Arkusz innego\nwejścia dostępnego; <<stan>>
+      -> „Zamknij”,\n„Wstecz”;
+      :V2 Karta budynku\nna tej samej wysokości;
       detach
     split again
       -> „Zgłoś barierę\nprzy wejściu”;

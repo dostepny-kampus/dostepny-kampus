@@ -1,6 +1,7 @@
 @startsalt
 ' V1 Mapa kampusu, arkusz wejścia zalecanego po „Pokaż wejście na mapie” z V2 albo po dotknięciu znaku
-' wejścia (US2.1, US3.3). Arkusz nie ma czynności głównej: odpowiedź podała karta V2.
+' wejścia (US2.1, US3.3). Arkusz nie ma czynności głównej: odpowiedź podała karta V2. Każde wejście ma ten
+' sam układ części; innych wejść arkusz nie pokazuje, są na liście „Wejścia” karty V2.
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
@@ -26,10 +27,6 @@ $sekcja("Bariery przy tym wejściu")
 $tekst("[uciążliwość z danych: napis i ikona]", "i")
 $obraz("zdjęcie bariery")
 Sprawdzone <i>[data]</i>
-$sekcja("Inne wejście dostępne")
-<b><i>[nazwa wejścia z danych]</i></b>
-$tekst("[szerokość drzwi z danych]", "i")
-$przycisk("Pokaż to wejście na mapie")
 ..
 $przycisk("Zgłoś barierę przy wejściu")
 }
