@@ -66,7 +66,8 @@ class PwrEntranceSheetTest {
      */
     @Test
     fun hidesEmptyParts() {
-        compose.setContent { EntranceSheetOnMap(recommended(approach = "", doorWidthCm = 0)) }
+        val alone = recommended(approach = "", doorWidthCm = 0).copy(others = emptyList())
+        compose.setContent { EntranceSheetOnMap(alone) }
 
         compose.onNodeWithText("Dojście").assertDoesNotExist()
         compose.onNodeWithText("Drzwi").assertDoesNotExist()
