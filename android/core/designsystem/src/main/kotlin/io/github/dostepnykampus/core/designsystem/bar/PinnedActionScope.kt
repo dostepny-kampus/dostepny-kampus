@@ -60,7 +60,7 @@ private class WeightNode(var weight: Float) :
 }
 
 /** Przycisk paska: miara, waga (0, gdy szerokość ustala sam przycisk) i zmierzony przycisk bez wagi. */
-private class Action(val measurable: Measurable, val placeable: Placeable?) {
+private data class Action(val measurable: Measurable, val placeable: Placeable?) {
     val weight: Float = (measurable.parentData as? WeightNode)?.weight ?: 0f
 }
 
@@ -88,7 +88,7 @@ internal val pinnedActionsPolicy: MeasurePolicy =
         val placed = lines.map { line -> measureRow(line, width, gap) }
         val heights = placed.map { line -> line.maxOf { it.height } }
         val height = heights.sum() + gap * (lines.size - 1).coerceAtLeast(0)
-        layout(width, height.coerceIn(constraints.minHeight, constraints.maxHeight)) {
+        layout(width, height.coerceIn(minimumValue = constraints.minHeight, maximumValue = constraints.maxHeight)) {
             var y = 0
             placed.forEachIndexed { row, line ->
                 var x = 0
