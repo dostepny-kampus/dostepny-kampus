@@ -21,6 +21,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
 private const val REPORT = "Zgłoś barierę"
@@ -32,7 +33,7 @@ private const val SHOW = "Pokaż na mapie"
  * Wymagania: NFR-20, NFR-17
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(qualifiers = "w360dp-h800dp")
+@Config(qualifiers = "w360dp-h800dp-xhdpi")
 class PinnedActionBarTest {
     @get:Rule
     val compose = createComposeRule()
@@ -49,8 +50,8 @@ class PinnedActionBarTest {
 
     /** Czcionka 200 %: słowo nie mieści się w udziale przycisku, więc przyciski stoją jeden pod drugim. */
     @Test
-    @Config(fontScale = 2f)
     fun stacksWhenWordDoesNotFit() {
+        RuntimeEnvironment.setFontScale(2f)
         show()
         listOf(REPORT, SHOW).forEach { label ->
             assertEquals("Napis „$label” nie łamie słowa w środku", emptyList<Int>(), brokenWords(label))
