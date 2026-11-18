@@ -49,10 +49,7 @@ public fun interface ServerEntrances {
  * @property entrances wejścia budynku
  * @property evacuationExits wyjścia ewakuacyjne budynku; pusta lista, gdy ich nie ma
  */
-public data class CardEntrances(
-    val entrances: List<Entrance>,
-    val evacuationExits: List<EvacuationExit> = emptyList(),
-)
+public data class CardEntrances(val entrances: List<Entrance>, val evacuationExits: List<EvacuationExit> = emptyList())
 
 /**
  * [ServerEntrances] z karty budynku z serwera (`GET /buildings/{symbol}`).
