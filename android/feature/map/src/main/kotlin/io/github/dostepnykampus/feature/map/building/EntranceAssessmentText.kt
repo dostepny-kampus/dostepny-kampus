@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map.building
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.res.stringResource
 import io.github.dostepnykampus.core.designsystem.campusDay
 import io.github.dostepnykampus.core.model.building.AssessmentSource
@@ -27,11 +28,20 @@ internal fun commonAssessment(entrances: List<OrderedEntrance>): EntranceAssessm
 /** Napis o dniu i źródle oznaczenia (PW-3). Wymagania: US17.3, BR-24 */
 @Composable
 internal fun AssessmentLine(assessment: EntranceAssessment) {
+    Text(
+        text = assessmentText(assessment),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
+
+/** Dzień i źródło oznaczenia [assessment] słowami (PW-3). Wymagania: US17.3, BR-24 */
+@Composable
+@ReadOnlyComposable
+internal fun assessmentText(assessment: EntranceAssessment): String {
     val day = campusDay(assessment.date)
-    val text =
-        when (assessment.source) {
-            AssessmentSource.IMPORT -> stringResource(R.string.karta_ocena_import, day)
-            AssessmentSource.WALKTHROUGH -> stringResource(R.string.karta_ocena_obchod, day)
-        }
-    Text(text = text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    return when (assessment.source) {
+        AssessmentSource.IMPORT -> stringResource(R.string.karta_ocena_import, day)
+        AssessmentSource.WALKTHROUGH -> stringResource(R.string.karta_ocena_obchod, day)
+    }
 }

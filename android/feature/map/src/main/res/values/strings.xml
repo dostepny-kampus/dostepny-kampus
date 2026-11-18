@@ -60,6 +60,10 @@
     <string name="mapa_wejscie_naglowek">Wejście, budynek %1$s</string>
     <string name="mapa_wejscie_glowne">%1$s, wejście główne</string>
     <string name="mapa_wejscie_niesprawdzone">Nikt jeszcze nie sprawdził tego wejścia.</string>
+    <string name="mapa_wejscie_zalecane">Zalecane.</string>
+    <string name="mapa_wejscie_inne">Inne wejście dostępne</string>
+    <string name="mapa_wejscie_pokaz_to">Pokaż to wejście na mapie</string>
+    <string name="mapa_wejscie_pokaz_to_czytaj">Pokaż to wejście na mapie: »%1$s«</string>
     <string name="mapa_plan_schody">Schody</string>
     <string name="mapa_winda_jedzie">Jedzie na: %1$s</string>
     <string name="mapa_winda_tutaj">%1$s (tutaj jesteś)</string>
@@ -88,7 +92,6 @@
     <string name="karta_ocena_import">Z map i opisów, stan z %1$s</string>
     <string name="karta_ocena_obchod">Sprawdzone na miejscu %1$s</string>
     <string name="karta_bez_nazwy">Wejście bez nazwy w danych</string>
-    <string name="karta_sprawdz">Sprawdź, którędy wejść</string>
     <string name="karta_odpowiedz_zalecane">Zalecane: „%1$s”.</string>
     <string name="karta_odpowiedz_zadne">Żadne z %1$d wejść nie jest dostępne.</string>
     <string name="karta_odpowiedz_jedyne">Jedyne wejście nie jest dostępne.</string>

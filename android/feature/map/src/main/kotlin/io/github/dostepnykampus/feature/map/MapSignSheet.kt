@@ -23,6 +23,7 @@ import io.github.dostepnykampus.feature.map.barrier.ChosenBarrierSheet
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
 import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.entrance.ChosenEntranceSheet
+import io.github.dostepnykampus.feature.map.entrance.EntranceActions
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.plan.ChosenPlanSheet
 import io.github.dostepnykampus.feature.map.plan.ShownPlan
@@ -189,7 +190,7 @@ internal fun screenSheet(focus: MapFocus?, padding: PaddingValues, onCardClose: 
  * @param catalog katalog budynków i wejść; `null` przed jego wczytaniem
  * @param plan plan piętra na mapie; `null`, gdy planu nie widać
  * @param onBuildingClick V2 budynku o podanym symbolu, także powrót do karty
- * @param onEntrancesClick V3 budynku o podanym symbolu
+ * @param entranceActions czynności arkusza wejścia
  * @param modifier położenie arkusza na mapie
  */
 @Composable
@@ -199,7 +200,7 @@ internal fun ChosenSignSheet(
     catalog: BuildingCatalog?,
     plan: ShownPlan?,
     onBuildingClick: (String) -> Unit,
-    onEntrancesClick: (String) -> Unit,
+    entranceActions: EntranceActions,
     modifier: Modifier = Modifier,
 ) {
     val id = signs.chosen?.id
@@ -220,7 +221,7 @@ internal fun ChosenSignSheet(
                 id = id,
                 catalog = catalog,
                 onClose = { signs.back(onBuildingClick) },
-                onEntrancesClick = onEntrancesClick,
+                actions = entranceActions,
                 modifier = modifier,
             )
         }

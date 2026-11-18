@@ -25,6 +25,7 @@ import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.MapLibreMapView
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.entrance.EntranceActions
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.plan.MapPlanViewModel
 import io.github.dostepnykampus.feature.map.plan.ShownPlan
@@ -61,9 +62,11 @@ internal fun AppNavigator.HiltMapScreen(
  * liczy wyszukiwanie. Budynek z listy przy TalkBack otwiera V2 od razu na pełnym ekranie. Przyciski i podpis OSM stoją
  * nad arkuszem V2; bez arkusza i pod arkuszem na cały ekran przy dużej czcionce V1 liczy widok bez arkusza.
  * [mapView] to MapLibre albo podróbka w testach, [plan] to plan piętra przy środku mapy, [onCamera] dostaje widok po
- * ruchu kamery, [onFloorChoose] piętro wybrane w kolumnie pięter, a [onMapHide] zejście mapy z ekranu.
+ * ruchu kamery, [onFloorChoose] piętro wybrane w kolumnie pięter, a [onMapHide] zejście mapy z ekranu. W arkuszu
+ * wejścia „Pokaż to wejście na mapie” prowadzi do V1 z zaznaczonym tym wejściem, a „Zgłoś barierę przy wejściu” do
+ * V4 z wybranym wejściem, Gościa najpierw do L1.
  *
- * Wymagania: US1.1, US2.1, NFR-19
+ * Wymagania: US1.1, US2.1, NFR-19, US3.3, US4.6, US14.2
  */
 @Composable
 internal fun AppNavigator.MapScreen(
@@ -88,7 +91,7 @@ internal fun AppNavigator.MapScreen(
         contentPadding = if (isSheetAbove) LocalSheetPadding.current else SheetLayout(),
         onEmptyMapClick = { closeCardOnEmptyMap() },
         onListBuildingClick = { openBuildingFromList(it, accessibility.isTouchExplorationEnabled) },
-        onEntrancesClick = { openEntrances(it) },
+        entranceActions = EntranceActions(onShow = { showOnMap(it) }, onReport = { report(it) }),
         mapView = mapView,
         motion = mapMotion,
         plan = plan,
