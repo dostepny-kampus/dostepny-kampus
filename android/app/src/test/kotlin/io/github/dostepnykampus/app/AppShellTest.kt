@@ -104,16 +104,11 @@ internal val MapTab = hasText("Mapa") and SemanticsMatcher.expectValue(Semantics
 internal const val EXPAND_HANDLE = "Wysokość karty"
 
 /**
- * Uchwyt arkusza V2: przycisk [EXPAND_HANDLE] ze stanem „niska” albo, gdy [isExpanded], „połowa ekranu” albo „cały
- * ekran”. Wymagania: US2.8, NFR-18
+ * Uchwyt arkusza V2: przycisk [EXPAND_HANDLE] ze stanem „niska” albo, gdy [isExpanded], „rozwinięta”.
+ * Wymagania: US2.8, NFR-18
  */
 internal fun sheetHandle(isExpanded: Boolean): SemanticsMatcher =
-    hasContentDescription(EXPAND_HANDLE) and
-        if (isExpanded) {
-            hasStateDescription("połowa ekranu") or hasStateDescription("cały ekran")
-        } else {
-            hasStateDescription("niska")
-        }
+    hasContentDescription(EXPAND_HANDLE) and hasStateDescription(if (isExpanded) "rozwinięta" else "niska")
 
 /** Karta V2 na katalogu z zasobów, bez grafu Hilt (aktywność testu go nie ma). */
 internal fun Context.buildingCardViewModel(symbol: String): BuildingCardViewModel =

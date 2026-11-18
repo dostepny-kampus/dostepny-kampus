@@ -44,6 +44,8 @@ import org.robolectric.annotation.Config
 import kotlin.math.abs
 
 private val CompactHeight = 120.dp
+private val ShortHeight = 200.dp
+private val MediumHeight = 500.dp
 private const val SLOW_SWIPE_MILLIS = 2000L
 private val STEP_DRAG = 80.dp
 private val TINY_DRAG = 30.dp
@@ -55,8 +57,9 @@ private const val LONG_SWIPE_MILLIS = 300L
 private const val PEEK = "Wejścia"
 
 /**
- * Arkusz V2 z trzema wysokościami: niska, połowa ekranu i cały ekran; idzie za palcem, staje najwyżej o stopień dalej,
- * z niskiej w dół się zamyka, a uchwyt i czynności TalkBack zmieniają wysokość bez przeciągania.
+ * Arkusz V2 z dwiema wysokościami: niska i rozwinięta, do góry ekranu albo do wysokości krótkiej treści; idzie za
+ * palcem, staje na najbliższej wysokości albo w stronę rzutu, z niskiej w dół się zamyka, a uchwyt i czynności
+ * TalkBack zmieniają wysokość bez przeciągania.
  *
  * Wymagania: US2, US2.8, NFR-17, NFR-18, NFR-53
  */
@@ -68,7 +71,7 @@ class SheetHeightsTest {
 
     private var cover = 0.dp
 
-    private fun open() {
+    private fun open(expandedHeight: Dp = 2000.dp) {
         compose.setContent {
             AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
@@ -80,7 +83,7 @@ class SheetHeightsTest {
                     }
                 } else {
                     val card = sheetCard()
-                    val height = if (card.mode == CardMode.Compact) CompactHeight else 2000.dp
+                    val height = if (card.mode == CardMode.Compact) CompactHeight else expandedHeight
                     val scroll = Modifier.verticalScroll(rememberScrollState())
                     Column(modifier = scroll) {
                         Column(modifier = Modifier.requiredHeight(height)) {
@@ -106,7 +109,7 @@ class SheetHeightsTest {
     }
 
     /**
-     * Wiersz: dotknięcie uchwytu → następna wysokość: niska, połowa ekranu, cały ekran, znowu niska.
+     * Wiersz: dotknięcie uchwytu na niskiej → od razu rozwinięta do góry ekranu, a znowu → niska.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Uchwyt zmienia wysokość karty bez przeciągania
      */
     @Test
@@ -116,9 +119,7 @@ class SheetHeightsTest {
         compose.onNodeWithText("Compact").assertExists()
         val handle = compose.onNodeWithContentDescription(EXPAND_HANDLE)
         handle.performClick()
-        assertAt(map() / 2, "połowa ekranu")
-        compose.onNodeWithText("Expanded").assertExists("pełny opis na połowie ekranu")
-        handle.performClick()
+        compose.waitForIdle()
         assertAt(0.dp, "cały ekran")
         compose.onNodeWithText("Expanded").assertExists("pełny opis na całym ekranie")
         handle.performClick()
@@ -127,16 +128,47 @@ class SheetHeightsTest {
     }
 
     /**
-     * Wiersz: dotknięcie wystającego nagłówka „Wejścia” na niskiej wysokości podnosi kartę na połowę ekranu, jak
-     *   dotknięcie uchwytu.
+     * Wiersz: dotknięcie wystającego nagłówka „Wejścia” na niskiej wysokości od razu rozwija kartę, jak dotknięcie
+     *   uchwytu.
      */
     @Test
-    fun raisesToHalfFromPeek() {
+    fun raisesToFullFromPeek() {
         open()
         compose.onNodeWithText(PEEK).performClick()
         compose.waitForIdle()
-        assertAt(map() / 2, "połowa ekranu po dotknięciu „Wejścia”")
-        compose.onNodeWithText("Expanded").assertExists("pełny opis na połowie ekranu")
+        assertAt(0.dp, "cały ekran po dotknięciu „Wejścia”")
+        compose.onNodeWithText("Expanded").assertExists("pełny opis po rozwinięciu")
+    }
+
+    /**
+     * Wiersz: karta, której rozwinięta treść mieści się w połowie ekranu, rozwija się tylko do wysokości treści,
+     *   a nad nią zostaje mapa; uchwytem i nagłówkiem „Wejścia” tak samo.
+     */
+    @Test
+    fun fitsShortCardToContent() {
+        open(expandedHeight = ShortHeight)
+        val top = map() - CeleDotyku.minimum - ShortHeight
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
+        compose.waitForIdle()
+        assertAt(top, "krótka karta do wysokości treści")
+        compose.onNodeWithText("Expanded").assertExists("pełny opis krótkiej karty")
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
+        compose.waitForIdle()
+        assertAt(low(), "znowu niska")
+        compose.onNodeWithText(PEEK).performClick()
+        compose.waitForIdle()
+        assertAt(top, "krótka karta po dotknięciu „Wejścia”")
+    }
+
+    /** Wiersz: rozwinięta treść dłuższa niż połowa ekranu, a krótsza od niego → karta do góry ekranu, bez luki. */
+    @Test
+    fun fillsScreenForLongerCard() {
+        open(expandedHeight = MediumHeight)
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
+        compose.waitForIdle()
+        assertAt(0.dp, "cały ekran przy treści dłuższej niż połowa")
+        val sheet = compose.onNodeWithText("Expanded").getUnclippedBoundsInRoot()
+        assertTrue("treść od góry karty: $sheet", sheet.top < CeleDotyku.minimum * 2)
     }
 
     /** Wiersz: kamera mapy nie rusza się przy zmianie wysokości karty — zasłonięta część mapy zostaje ta z niskiej. */
@@ -158,15 +190,15 @@ class SheetHeightsTest {
         compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
         compose.onNodeWithText("A-2").performClick()
         compose.waitForIdle()
-        assertAt(map() / 2, "połowa ekranu po wyborze innego budynku")
-        compose.onNode(sheetHandle(isExpanded = true)).assertExists("uchwyt na połowie ekranu")
+        assertAt(0.dp, "rozwinięta po wyborze innego budynku")
+        compose.onNode(sheetHandle(isExpanded = true)).assertExists("uchwyt rozwiniętej karty")
     }
 
-    /** Wiersz: wolne przeciągnięcie uchwytu w dół o 80 dp z niskiej wysokości → karta się zamyka. */
+    /** Wiersz: wolne przeciągnięcie uchwytu w dół za połowę niskiej karty → karta się zamyka. */
     @Test
     fun closesOnShortDragFromLow() {
         open()
-        dragHandle(by = STEP_DRAG)
+        dragHandle(by = CompactHeight)
         compose.onNodeWithContentDescription(EXPAND_HANDLE).assertDoesNotExist()
     }
 
@@ -178,22 +210,14 @@ class SheetHeightsTest {
         assertAt(low(), "niska po krótkim przeciągnięciu w górę")
     }
 
-    /** Wiersz: wolne przeciągnięcie uchwytu w górę o 80 dp z połowy ekranu → cały ekran. */
+    /** Wiersz: wolne przeciągnięcie uchwytu w dół o 80 dp z rozwiniętej → karta wraca do góry ekranu. */
     @Test
-    fun raisesToFullOnShortDrag() {
+    fun keepsFullOnShortDrag() {
         open()
         compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
-        dragHandle(by = -STEP_DRAG)
-        assertAt(0.dp, "cały ekran po przeciągnięciu z połowy")
-    }
-
-    /** Wiersz: wolne przeciągnięcie uchwytu w dół o 80 dp z całego ekranu → połowa ekranu. */
-    @Test
-    fun lowersToHalfOnShortDrag() {
-        open()
-        repeat(2) { compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick() }
+        compose.waitForIdle()
         dragHandle(by = STEP_DRAG)
-        assertAt(map() / 2, "połowa ekranu po przeciągnięciu z całego ekranu")
+        assertAt(0.dp, "rozwinięta po krótkim przeciągnięciu w dół")
     }
 
     private fun dragHandle(by: Dp) {
@@ -204,11 +228,11 @@ class SheetHeightsTest {
         compose.waitForIdle()
     }
 
-    /** Wiersz: przeciągnięcie uchwytu w górę blisko połowy ekranu i puszczenie → karta staje na połowie. */
+    /** Wiersz: wolne przeciągnięcie uchwytu w górę za połowę drogi do góry i puszczenie → karta rozwinięta. */
     @Test
     fun snapsToNearestHeight() {
         open()
-        val up = handleTop() - (map() / 2 + 40.dp)
+        val up = handleTop() / 2 + 40.dp
         compose.onNodeWithContentDescription(EXPAND_HANDLE).performTouchInput {
             swipe(
                 start = center,
@@ -217,12 +241,12 @@ class SheetHeightsTest {
             )
         }
         compose.waitForIdle()
-        assertAt(map() / 2, "połowa ekranu po puszczeniu")
+        assertAt(0.dp, "rozwinięta po puszczeniu")
     }
 
-    /** Wiersz: długie szybkie przeciągnięcie uchwytu w górę z niskiej → karta staje na połowie, nie wyżej. */
+    /** Wiersz: długie szybkie przeciągnięcie uchwytu w górę z niskiej → karta rozwinięta do góry ekranu. */
     @Test
-    fun stopsAtHalfOnLongSwipeUp() {
+    fun raisesOnLongSwipeUp() {
         open()
         val toTop = handleTop()
         compose.onNodeWithContentDescription(EXPAND_HANDLE).performTouchInput {
@@ -233,14 +257,15 @@ class SheetHeightsTest {
             )
         }
         compose.waitForIdle()
-        assertAt(map() / 2, "połowa ekranu po jednym geście z niskiej")
+        assertAt(0.dp, "rozwinięta po jednym geście z niskiej")
     }
 
-    /** Wiersz: długie szybkie przeciągnięcie uchwytu w dół z całego ekranu → karta staje na połowie, nie niżej. */
+    /** Wiersz: długie szybkie przeciągnięcie uchwytu w dół z rozwiniętej → karta staje na niskiej, nie zamyka się. */
     @Test
-    fun stopsAtHalfOnLongSwipeDown() {
+    fun stopsAtLowOnLongSwipeDown() {
         open()
-        repeat(2) { compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick() }
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
+        compose.waitForIdle()
         assertAt(0.dp, "cały ekran przed gestem")
         compose.onNodeWithContentDescription(EXPAND_HANDLE).performTouchInput {
             swipe(
@@ -250,7 +275,7 @@ class SheetHeightsTest {
             )
         }
         compose.waitForIdle()
-        assertAt(map() / 2, "połowa ekranu po jednym geście z całego ekranu")
+        assertAt(low(), "niska po jednym geście z rozwiniętej")
     }
 
     /** Wiersz: przeciągnięcie w dół z niskiej wysokości → karta się zamyka i zostaje sama mapa. */
@@ -310,24 +335,20 @@ class SheetHeightsTest {
         }
         compose.waitForIdle()
         val top = handleTop()
-        val heights = listOf(0.dp, map() / 2, low())
+        val heights = listOf(0.dp, low())
         assertTrue("karta na jednej z wysokości $heights: $top", heights.any { abs(it.value - top.value) <= 1f })
     }
 
-    /** Wiersz: TalkBack ma na uchwycie czynności „Rozwiń” i „Zwiń”, gdy jest dokąd. */
+    /** Wiersz: TalkBack ma na uchwycie niskiej karty czynność „Rozwiń”, a rozwiniętej „Zwiń”. */
     @Test
     fun offersExpandAndCollapseActions() {
         open()
         assertEquals("czynności na niskiej", listOf("Rozwiń"), actions())
         perform("Rozwiń")
-        assertAt(map() / 2, "połowa po „Rozwiń”")
-        assertEquals("czynności na połowie ekranu", listOf("Rozwiń", "Zwiń"), actions())
-        perform("Rozwiń")
-        assertAt(0.dp, "cały ekran po „Rozwiń”")
-        assertEquals("czynności na całym ekranie", listOf("Zwiń"), actions())
+        assertAt(0.dp, "rozwinięta po „Rozwiń”")
+        assertEquals("czynności na rozwiniętej", listOf("Zwiń"), actions())
         perform("Zwiń")
-        perform("Zwiń")
-        assertAt(low(), "niska po dwóch „Zwiń”")
+        assertAt(low(), "niska po „Zwiń”")
     }
 
     private fun actions(): List<String> =
