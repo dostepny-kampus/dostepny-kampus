@@ -15,8 +15,11 @@ import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.network.building.ApiBuilding
 import io.github.dostepnykampus.core.network.building.BuildingList
 import io.github.dostepnykampus.core.network.building.DetailLevel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.channelFlow
@@ -24,6 +27,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -31,6 +35,8 @@ import timber.log.Timber
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
+
+private typealias Running = CompletableDeferred<Result<BuildingCatalog>>
 
 /** Plik konturów OSM w zasobach aplikacji; przy budowie kopiuje go z `data/buildings` zadanie `copyBuildingsAsset`. */
 public const val BUILDINGS_ASSET: String = "pwr-buildings.geojson"
@@ -41,7 +47,7 @@ public const val BUILDINGS_ASSET: String = "pwr-buildings.geojson"
  * wcześniej pobrano katalog z serwera albo jego kopię w [buildingCache]. Budynki są sortowane naturalnie po symbolu
  * (A-2 przed A-10), bez wejść `emergency`, `exit` i `garage`. Trwające pobranie i odczyt pliku są wspólne dla
  * [catalogUpdates], [catalog] i [refresh]; [catalogUpdates] oddaje najpierw katalog bez czekania, potem z serwera.
- * Anulowanie prowadzącego pobranie każe pozostałym pytać od nowa. [syncedAt] to chwila pobrania z serwera.
+ * Błąd prowadzącego dostają też czekający, a jego anulowanie każe im pytać od nowa. [syncedAt] to chwila pobrania.
  *
  * Wymagania: US1, US1.2, US17.3, BR-25, NFR-11, NFR-10
  *
@@ -59,7 +65,7 @@ public class BuildingCatalogRepository internal constructor(
     private val readGeoJson: () -> String,
 ) {
     private val lock = Any()
-    private var inflight: CompletableDeferred<BuildingCatalog>? = null
+    private var inflight: Running? = null
     private val downloaded = MutableStateFlow<Downloaded?>(null)
     private val copy = buildingCache?.let { dao -> BuildingListCopy(dao, ioContext) }
 
@@ -135,7 +141,7 @@ public class BuildingCatalogRepository internal constructor(
     private suspend fun fetched(isFresh: Boolean): BuildingCatalog {
         val ready = if (isFresh) null else cached
         if (ready != null) return ready
-        val mine = CompletableDeferred<BuildingCatalog>()
+        val mine = CompletableDeferred<Result<BuildingCatalog>>()
         val running =
             synchronized(lock) {
                 val current = inflight
@@ -145,35 +151,51 @@ public class BuildingCatalogRepository internal constructor(
         return if (running == null) lead(mine, isFresh) else follow(running, isFresh)
     }
 
-    private suspend fun follow(running: CompletableDeferred<BuildingCatalog>, isFresh: Boolean): BuildingCatalog {
+    private suspend fun follow(running: Running, isFresh: Boolean): BuildingCatalog {
         running.join()
-        return if (running.isCancelled) fetched(isFresh) else running.await()
+        if (!running.isCancelled) return running.await().getOrThrow()
+        synchronized(lock) { if (inflight === running) inflight = null }
+        return fetched(isFresh)
     }
 
-    private suspend fun lead(mine: CompletableDeferred<BuildingCatalog>, isFresh: Boolean): BuildingCatalog {
+    private suspend fun lead(mine: Running, isFresh: Boolean): BuildingCatalog =
         try {
-            val started = System.nanoTime()
-            val file = readBundled(isFresh)
-            val server = nonEmptyServerList()
-            var source = if (server != null) "serwer" else "poprzedni odczyt"
-            if (server != null) {
-                val synced = SyncedBuildingList(list = server, syncedAtMillis = nowMillis())
-                downloaded.value = Downloaded(file.withServerList(server), synced.syncedAtMillis)
-                copy?.save(synced)
-            } else if (downloaded.value == null) {
-                val restored = copy?.restore()
-                downloaded.value = restored?.let { Downloaded(file.withServerList(it.list), it.syncedAtMillis) }
-                source = if (restored != null) "kopia z bazy" else "plik"
+            supervisorScope {
+                val work =
+                    async(start = CoroutineStart.UNDISPATCHED) {
+                        load(isFresh).also { mine.complete(Result.success(it)) }
+                    }
+                work.invokeOnCompletion { cause ->
+                    when {
+                        cause is CancellationException -> mine.cancel()
+                        cause != null -> mine.complete(Result.failure(cause))
+                    }
+                }
+                work.await()
             }
-            val result = downloaded.value?.catalog ?: file
-            Timber.i("Katalog budynków: %s, %d budynków, %d ms", source, result.buildings.size, elapsedMillis(started))
-            cached = result
-            mine.complete(result)
-            return result
         } finally {
             synchronized(lock) { inflight = null }
             mine.cancel()
         }
+
+    private suspend fun load(isFresh: Boolean): BuildingCatalog {
+        val started = System.nanoTime()
+        val file = readBundled(isFresh)
+        val server = nonEmptyServerList()
+        var source = if (server != null) "serwer" else "poprzedni odczyt"
+        if (server != null) {
+            val synced = SyncedBuildingList(list = server, syncedAtMillis = nowMillis())
+            downloaded.value = Downloaded(file.withServerList(server), synced.syncedAtMillis)
+            copy?.save(synced)
+        } else if (downloaded.value == null) {
+            val restored = copy?.restore()
+            downloaded.value = restored?.let { Downloaded(file.withServerList(it.list), it.syncedAtMillis) }
+            source = if (restored != null) "kopia z bazy" else "plik"
+        }
+        val result = downloaded.value?.catalog ?: file
+        Timber.i("Katalog budynków: %s, %d budynków, %d ms", source, result.buildings.size, elapsedMillis(started))
+        cached = result
+        return result
     }
 
     private suspend fun readBundled(isFresh: Boolean): BuildingCatalog =
