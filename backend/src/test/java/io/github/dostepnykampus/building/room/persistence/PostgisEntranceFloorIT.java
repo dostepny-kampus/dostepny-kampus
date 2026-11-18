@@ -71,8 +71,7 @@ final class PostgisEntranceFloorIT {
 
     private static PlanEntrance pwr(final String floor, final double lon, final double lat) {
         return new PlanEntrance(
-            floor, String.format("{\"type\":\"Point\",\"coordinates\":[%s,%s]}", lon, lat),
-            "NO_DATA", "Wejście", null, null, false
+            floor, String.format("{\"type\":\"Point\",\"coordinates\":[%s,%s]}", lon, lat)
         );
     }
 }

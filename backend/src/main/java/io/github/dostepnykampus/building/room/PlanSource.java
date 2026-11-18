@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Plany pięter z warstw pięter, pomieszczeń i wejść usługi FeatureServer.
  *
- * <p>Wymagania: US16, US18.2, BR-24, BR-27, NFR-40</p>
+ * <p>Wymagania: US16, US18.2, NFR-40</p>
  *
  * @since 0.1.0
  */
@@ -35,13 +35,11 @@ public interface PlanSource {
     List<PlanRoom> rooms(String service, int layer);
 
     /**
-     * Wpisy warstwy wejść; wpis bez piętra albo bez punktu jest pomijany. Czy_dostos „Tak”
-     * daje ACCESSIBLE, „Nie” INACCESSIBLE, inna wartość NO_DATA. Szerokosc 0 albo nieliczbowa
-     * nie daje szerokości drzwi. Nazwę, opis dojścia i wyjście ewakuacyjne daje pole Uwagi.
+     * Wejścia z warstwy wejść; wejście bez piętra albo bez punktu jest pomijane.
      *
      * @param service Adres usługi FeatureServer bez końcowego ukośnika
      * @param layer Numer warstwy wejść
-     * @return Wpisy z piętrem w kolejności usługi
+     * @return Wejścia z piętrem w kolejności usługi
      */
     List<PlanEntrance> entrances(String service, int layer);
 }

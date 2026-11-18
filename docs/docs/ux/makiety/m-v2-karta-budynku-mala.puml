@@ -1,17 +1,17 @@
 @startsalt
-' V2 Karta budynku, mała karta nad mapą V1 po dotknięciu konturu A-1 (US2.8; decyzje 115, 116).
+' V2 Karta budynku na niskiej wysokości nad mapą V1 po dotknięciu konturu A-1 (US2.8; decyzje 115, 116).
 ' Nad kartą sama mapa z przyciskami, bez nagłówka, pola symbolu i przełącznika (NFR-53; decyzja 151).
+' Pod kreską wystaje nagłówek „Wejścia” i ucięty następny wiersz; chipów nie ma.
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
-$mapa("mapa ulic OpenStreetMap; kontur A-1 na środku i wyróżniony, sąsiednie przygaszone, wejścia A-1 ze znakami oznaczeń", "", "przyciski")
+$mapa("mapa ulic OpenStreetMap; kontur A-1 wyróżniony, sąsiednie przygaszone, wejścia A-1 ze znakami oznaczeń", "", "przyciski")
 $ramka()
-$tekst("[uchwyt; TalkBack: Rozwiń opis budynku, zwinięte]", "i")
-<b>A-1</b>
-<i>[nazwa budynku z danych]</i>
-<b>Wejście dostępne</b>
-$przycisk_glowny("Sprawdź, którędy wejść")
-$przycisk("Zamknij")
+$tekst("[uchwyt; TalkBack: Wysokość karty, niska]", "i")
+$naglowek_karty("A-1", "<i>[nazwa budynku z danych]</i>")
+$karta_gora(0)
+<b>Wejścia</b>
+<i>[ucięty pierwszy wiersz grupy]</i>
 }
 $pasek_dolny_konto()
 $ekran_koniec()

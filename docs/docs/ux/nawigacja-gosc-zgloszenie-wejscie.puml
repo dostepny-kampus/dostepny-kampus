@@ -2,7 +2,7 @@
 !include _nawigacja.iuml
 
 start
-:„Zgłoś barierę” w pasku dolnym albo\n„Zgłoś barierę przy wejściu” na V2 i V3; <<stan>>
+:„Zgłoś barierę” w pasku dolnym albo\n„Zgłoś barierę przy wejściu” w arkuszu\nwejścia albo w wierszu wejść bez danych na V2; <<stan>>
 if (osoba zalogowana?) then (nie)
   :L1 Prośba o logowanie;
   -> „Zaloguj się”,\n„Załóż konto”;

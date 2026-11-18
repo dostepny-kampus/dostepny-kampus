@@ -17,8 +17,6 @@ info:
     | `outline` | kontur budynku |
     | `detailLevel`: `DETAILED`, `BASIC` | poziom szczegółowości: budynek szczegółowy, budynek podstawowy |
     | `Entrance`, `main` | wejście, wejście główne |
-    | `approach`, `doorWidthCm` | opis dojścia do wejścia, szerokość drzwi w centymetrach |
-    | `EvacuationExit` | wyjście ewakuacyjne |
     | `marking`: `ACCESSIBLE`, `INACCESSIBLE`, `NO_DATA` | oznaczenie wejścia: dostępne, niedostępne, brak danych |
     | `markingSource`: `IMPORT`, `WALKTHROUGH` | źródło oznaczenia: import, obchód |
     | `Floor`, `label` | piętro, etykieta piętra wyliczona z nazwy w danych PWr |
@@ -799,10 +797,6 @@ components:
               type: array
               description: Wejścia budynku; wejście główne jest pierwsze.
               items: {$ref: '#/components/schemas/Entrance'}
-            evacuationExits:
-              type: array
-              description: Wyjścia ewakuacyjne budynku z planów PWr; nie są wejściami budynku. Brak albo pusta lista, gdy dane ich nie podają (US2.6, BR-27).
-              items: {$ref: '#/components/schemas/EvacuationExit'}
 
     EntranceMarking:
       type: string
@@ -815,7 +809,7 @@ components:
       properties:
         id: {type: string, description: "Identyfikator wejścia."}
         buildingSymbol: {type: string, description: "Budynek, do którego prowadzi wejście."}
-        name: {type: string, description: "Opis wejścia na karcie budynku, np. „Wejście bramą od ul. Norwida”; brak, gdy dane nie opisują wejścia. Wejście z planów PWr ma zawsze nazwę, co najmniej „Wejście” (BR-27)."}
+        name: {type: string, description: "Opis wejścia na karcie budynku, np. „Wejście bramą od ul. Norwida”; brak, gdy dane nie opisują wejścia."}
         type: {type: string, description: "Rodzaj wejścia z tagu OpenStreetMap `entrance`, np. `main`, `service`, `emergency`; brak, gdy dane go nie podają."}
         main: {type: boolean, description: "Czy to wejście główne."}
         location: {$ref: '#/components/schemas/GeoPoint', description: "Położenie wejścia."}
@@ -826,20 +820,6 @@ components:
           type: string
           description: Źródło oznaczenia. `IMPORT` — dane PWr albo OpenStreetMap, `WALKTHROUGH` — obchód (US17.3, BR-24).
           enum: [IMPORT, WALKTHROUGH]
-        approach: {type: string, description: "Opis dojścia do wejścia z danych, np. „Do wejścia prowadzą schody.”; brak, gdy dane go nie podają (US3.3, BR-27)."}
-        doorWidthCm: {type: integer, minimum: 1, description: "Szerokość drzwi wejścia w centymetrach; brak, gdy dane jej nie podają albo podają 0 (US2.1, US3.3, BR-27)."}
-        source: {$ref: '#/components/schemas/PwrSource', description: "Źródło danych wejścia, gdy wejście jest w warstwie wejść planów PWr; brak przy wejściu tylko z OpenStreetMap (US17.3, BR-24)."}
-    EvacuationExit:
-      type: object
-      description: Wyjście ewakuacyjne budynku z warstwy wejść planów PWr (BR-27).
-      required: [id, location, source]
-      properties:
-        id: {type: string, description: "Identyfikator wyjścia ewakuacyjnego."}
-        location: {$ref: '#/components/schemas/GeoPoint', description: "Położenie wyjścia ewakuacyjnego."}
-        floorId: {type: string, description: "Piętro wyjścia z listy pięter budynku (`Floor.id`); brak, gdy dane go nie podają."}
-        description: {type: string, description: "Opis wyjścia z danych, np. „Wyjście ewakuacyjne z pomieszczenia 41”."}
-        doorWidthCm: {type: integer, minimum: 1, description: "Szerokość drzwi wyjścia w centymetrach; brak, gdy dane jej nie podają albo podają 0 (BR-27)."}
-        source: {$ref: '#/components/schemas/PwrSource', description: "Źródło danych wyjścia ewakuacyjnego."}
 
     LocateResult:
       type: object
