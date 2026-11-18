@@ -13,7 +13,6 @@ import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceAssessment
 import io.github.dostepnykampus.core.model.building.EntranceMarking
-import io.github.dostepnykampus.feature.map.CampusMapUiState
 import io.github.dostepnykampus.feature.map.campus.selectedEntrance
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import kotlinx.coroutines.Dispatchers
@@ -82,9 +81,9 @@ class BuildingEntrancesTest {
      */
     @Test
     fun keepsFileWithoutServer() {
-        val state = CampusMapUiState(catalog = CATALOG)
-        assertEquals(state, state.withBuildingEntrances(BuildingEntrances(symbol = "A-1", entrances = emptyList())))
-        assertEquals(state, state.withBuildingEntrances(null))
+        val empty = BuildingEntrances(symbol = "A-1", entrances = emptyList())
+        assertEquals(CATALOG, CATALOG.withBuildingEntrances(empty), "pusta odpowiedź serwera")
+        assertEquals(CATALOG, CATALOG.withBuildingEntrances(null), "brak odpowiedzi serwera")
     }
 
     /**
@@ -125,16 +124,15 @@ class BuildingEntrancesTest {
             val cleared = model.shown.value
             collector.cancel()
             model.viewModelScope.cancel()
+            advanceUntilIdle()
             Dispatchers.resetMain()
             assertEquals(BuildingEntrances(symbol = "A-1", entrances = listOf(SERVER_ONLY)), fetched, "wejścia A-1")
             assertEquals(listOf("A-1"), asked, "jedno pytanie o A-1")
             assertEquals(null, cleared, "bez budynku bez wejść")
         }
 
-    private fun catalogWith(entrances: List<Entrance>): BuildingCatalog {
-        val state = CampusMapUiState(catalog = CATALOG)
-        return checkNotNull(state.withBuildingEntrances(BuildingEntrances(symbol = "A-1", entrances)).catalog)
-    }
+    private fun catalogWith(entrances: List<Entrance>): BuildingCatalog =
+        CATALOG.withBuildingEntrances(BuildingEntrances(symbol = "A-1", entrances))
 
     private companion object {
         val DAY: LocalDate = LocalDate.of(2024, 10, 12)
