@@ -24,7 +24,9 @@ $nazwa
 ' "brak" — znak, „Brak wejścia dostępnego” i zdanie o liczbie wejść, bez przycisku;
 ' "bez_danych" — cichy napis „Brak danych o wejściach”, bez znaku, zdania i przycisku.
 ' $zdanie: zdanie z odpowiedzią; $dane: zastępnik drzwi i windy, pusty, gdy danych nie ma.
-!procedure $wiersz_wejsc($wejscia="dostepne", $zdanie="Zalecane: »Wejście bramą od ul. Norwida«.", $dane="[drzwi i winda za drzwiami z danych]")
+' $budynek: 1 — pod czynnością obrysowany „Pokaż budynek na mapie”, tylko na karcie otwartej od razu
+' na cały ekran (US2.9).
+!procedure $wiersz_wejsc($wejscia="dostepne", $zdanie="Zalecane: „Wejście bramą od ul. Norwida”.", $dane="[drzwi i winda za drzwiami z danych]", $budynek=0)
 !if $wejscia == "dostepne"
 <b><&check> Wejście dostępne</b>
 $tekst($zdanie)
@@ -38,13 +40,17 @@ $tekst($zdanie)
 !else
 Brak danych o wejściach
 !endif
+!if $budynek == 1
+$przycisk("Pokaż budynek na mapie")
+!endif
 !endprocedure
 
 ' Góra karty: wiersz o wejściach z czynnością główną, kreska, a pod nią początek pełnego opisu:
 ' chipy faktów z danych. Kreska nad pełnym opisem stoi na każdej wysokości (decyzja 115).
 ' $chipy: 1 — „Winda”, „Toaleta dostosowana” (wejście dostępne podaje wiersz); 0 — bez chipów.
-!procedure $karta_gora($chipy=1, $wejscia="dostepne", $zdanie="Zalecane: »Wejście bramą od ul. Norwida«.")
-$wiersz_wejsc($wejscia, $zdanie)
+' $budynek: jak w $wiersz_wejsc.
+!procedure $karta_gora($chipy=1, $wejscia="dostepne", $zdanie="Zalecane: „Wejście bramą od ul. Norwida”.", $budynek=0)
+$wiersz_wejsc($wejscia, $zdanie, "[drzwi i winda za drzwiami z danych]", $budynek)
 --
 !if $chipy == 1
 { [$dk_napis("Winda", "", 11)] | [$dk_napis("Toaleta dostosowana", "", 21)] }

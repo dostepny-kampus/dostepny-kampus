@@ -94,7 +94,7 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 
 ## Wszystkie makiety
 
-77 makiet ekranów i katalog fragmentów. Stan zwykły nie ma dopisku w nazwie pliku. Stany, które różnią się jednym napisem, opisuje tabela pod makietą na stronie grupy.
+79 makiet ekranów i katalog fragmentów. Stan zwykły nie ma dopisku w nazwie pliku. Stany, które różnią się jednym napisem, opisuje tabela pod makietą na stronie grupy.
 
 | Ekran | Stan | Makieta | Strona |
 | --- | --- | --- | --- |
@@ -112,6 +112,8 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 | V1 | wynik z innego terenu | [`m-v1-mapa-teren-wynik`](../../_generated/m-v1-mapa-teren-wynik.svg) | [odwiedzający](odwiedzajacy.md) |
 | V1 | po zmianie terenu | [`m-v1-mapa-teren-zmiana`](../../_generated/m-v1-mapa-teren-zmiana.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | niska wysokość nad mapą | [`m-v2-karta-budynku-mala`](../../_generated/m-v2-karta-budynku-mala.svg) | [odwiedzający](odwiedzajacy.md) |
+| V2 | połowa ekranu | [`m-v2-karta-budynku-polowa`](../../_generated/m-v2-karta-budynku-polowa.svg) | [odwiedzający](odwiedzajacy.md) |
+| V2 | od razu na cały ekran | [`m-v2-karta-budynku-caly-ekran`](../../_generated/m-v2-karta-budynku-caly-ekran.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | zwykły, budynek szczegółowy (wzorzec) | [`m-v2-karta-budynku`](../../_generated/m-v2-karta-budynku.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | budynek podstawowy bez wejścia zalecanego | [`m-v2-karta-budynku-podstawowy`](../../_generated/m-v2-karta-budynku-podstawowy.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | brak sprawdzonych barier | [`m-v2-karta-budynku-pusty`](../../_generated/m-v2-karta-budynku-pusty.svg) | [odwiedzający](odwiedzajacy.md) |

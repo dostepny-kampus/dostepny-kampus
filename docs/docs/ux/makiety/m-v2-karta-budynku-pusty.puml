@@ -4,7 +4,7 @@
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek_karty("<i>[symbol]</i>", "<i>[nazwa budynku z danych]</i>")
-$karta_gora(1, "dostepne", "Zalecane: »<i>[nazwa]</i>«.")
+$karta_gora(1, "dostepne", "Zalecane: „<i>[nazwa]</i>”.")
 $sekcja("Wejścia")
 $wejscie_karty($dostepne(), "<i>[nazwa wejścia z danych]</i>", "Zalecane", "Sprawdzone na miejscu <i>[data]</i>")
 $wejscie_karty($niedostepne(), "<i>[nazwa wejścia z danych]</i>", "", "Z map i opisów, stan z <i>[data]</i>")
