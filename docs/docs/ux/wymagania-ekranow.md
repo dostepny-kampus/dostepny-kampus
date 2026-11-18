@@ -198,7 +198,7 @@ Przy dużej czcionce arkusz wejścia zajmuje cały ekran (reguła 6 sekcji [Duż
 
 Arkusz wejścia otwarty z karty budynku, dotknięciem wiersza na liście „Wejścia” albo przez „Pokaż wejście na mapie”, stoi w miejscu karty. Tak samo znak bariery, wejścia, toalety albo schodów dotknięty przy otwartej karcie budynku otwiera swój arkusz w miejsce karty.
 
-„Zamknij” i „Wstecz” arkusza wracają wtedy do karty tego budynku na tej samej wysokości i w tym samym miejscu przewinięcia. Arkusz otwarty znakiem na mapie bez karty zamyka się na mapę. Dotknięcie pustej mapy zamyka arkusz bez karty (US2.1, US3.3, NFR-15, NFR-53).
+„Zamknij” i „Wstecz” arkusza wracają wtedy do karty tego budynku na tej samej wysokości i w tym samym miejscu przewinięcia. Arkusz otwarty znakiem na mapie bez karty zamyka się na mapę. Dotknięcie pustej mapy zamyka arkusz bez karty (US3.3, NFR-15, NFR-53).
 
 Arkusz „Który budynek?” na dole mapy otwiera dotknięcie konturu wspólnego albo dotknięcie obok dwóch konturów, poza nimi (decyzja 85):
 
