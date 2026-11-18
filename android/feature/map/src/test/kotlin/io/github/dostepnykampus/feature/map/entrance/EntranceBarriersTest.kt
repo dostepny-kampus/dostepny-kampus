@@ -113,7 +113,7 @@ class EntranceBarriersTest {
         val many = recommended(barrier("z1"), barrier("z2"), barrier("z3"))
         compose.setContent { EntranceSheetOnMap(many) }
 
-        val top = compose.onNodeWithText("Wejście, budynek A-1").getUnclippedBoundsInRoot().top
+        val top = compose.onNodeWithText("Wejście").getUnclippedBoundsInRoot().top
         assertTrue("nagłówek arkusza w dolnej połowie ekranu: $top", top >= HALF_SCREEN)
         compose.onAllNodesWithText("Sprawdzone 14.10.2026")[2].performScrollTo().assertIsDisplayed()
     }

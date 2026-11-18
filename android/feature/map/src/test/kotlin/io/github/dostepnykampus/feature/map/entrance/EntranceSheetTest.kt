@@ -13,11 +13,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -31,6 +34,7 @@ import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceAssessment
 import io.github.dostepnykampus.core.model.building.EntranceMarking
+import io.github.dostepnykampus.feature.map.overlay.SheetExits
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -65,12 +69,30 @@ class EntranceSheetTest {
         val main = entrance(EntranceMarking.ACCESSIBLE, "Wejście Cesarskie", isMain = true)
         compose.setContent { Sheet(ShownEntrance(main)) }
 
-        compose.onNodeWithText("Wejście, budynek A-1").assertIsFocused()
+        compose.onNodeWithText("Wejście").assertIsFocused()
         compose.onNodeWithText("Dostępne, wejście główne").assertExists()
         compose.onNodeWithText("Wejście Cesarskie").assertExists()
         compose.onNodeWithText(NO_DATA_TEXT).assertDoesNotExist()
         compose.onNodeWithText("Zamknij").assertHeightIsAtLeast(48.dp).performClick()
         assertEquals("„Zamknij” zamyka arkusz", listOf("zamknij"), clicks)
+    }
+
+    /**
+     * Wiersz: pod nagłówkiem wiersz „Budynek A-1” na co najmniej 48 dp; TalkBack czyta „Budynek A-1” z czynnością
+     *   „otwiera opis budynku”, a dotknięcie otwiera kartę tego budynku.
+     *
+     * Wymagania: US2.8, US3.3, NFR-17, NFR-18
+     */
+    @Test
+    fun opensBuildingFromRow() {
+        compose.setContent { Sheet(recommendedMain()) }
+
+        val row = compose.onNode(hasContentDescription("Budynek A-1") and hasClickAction())
+        row.assertHeightIsAtLeast(48.dp)
+        val label = row.fetchSemanticsNode().config[SemanticsActions.OnClick].label
+        assertEquals("czynność dla TalkBack", "otwiera opis budynku", label)
+        row.performClick()
+        assertEquals("otwiera kartę budynku", listOf("budynek A-1"), clicks)
     }
 
     /** Wiersz: wejście bez nazwy w danych nie ma nazwy, a „Niedostępne” stoi bez dopisku. Wymagania: US2.1 */
@@ -80,7 +102,7 @@ class EntranceSheetTest {
 
         compose.onNodeWithText("Niedostępne").assertExists()
         compose.onNodeWithText("wejście główne", substring = true).assertDoesNotExist()
-        compose.onNodeWithText("Wejście").assertDoesNotExist()
+        compose.onAllNodesWithText("Wejście").assertCountEquals(1)
     }
 
     /** Wiersz: przy „Brak danych” zdanie, że nie mamy danych o dostępności wejścia. Wymagania: US17.1 */
@@ -185,7 +207,7 @@ class EntranceSheetTest {
             Box(Modifier.fillMaxSize().background(MapGround)) {
                 EntranceSheet(
                     shown = shown,
-                    onClose = { clicks += "zamknij" },
+                    exits = SheetExits(onClose = { clicks += "zamknij" }, onBuilding = { clicks += "budynek $it" }),
                     actions = EntranceActions(onReport = { clicks += "zgłoś $it" }),
                     modifier = Modifier.align(Alignment.BottomCenter),
                 )

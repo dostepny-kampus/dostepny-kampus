@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -72,7 +73,7 @@ class MapEntranceTouchTest {
         start()
         compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
 
-        compose.onNodeWithText("Wejście, budynek C-13").assertExists()
+        compose.onNodeWithText("Wejście").assertExists()
         compose.onNodeWithText("Dostępne, wejście główne").assertExists()
         compose.runOnIdle { assertEquals("bez V2", emptyList<String>(), opened) }
         compose.runOnIdle { assertEquals("bez zaznaczenia budynku", null, map.selected) }
@@ -85,7 +86,7 @@ class MapEntranceTouchTest {
         compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
         compose.onNodeWithText("Zamknij").performClick()
 
-        compose.onNodeWithText("Wejście, budynek C-13").assertDoesNotExist()
+        compose.onNodeWithText("Wejście").assertDoesNotExist()
     }
 
     /** Wiersz: V1, dotknięcie pustej mapy zamyka arkusz wejścia. Wymagania: NFR-53 */
@@ -93,10 +94,10 @@ class MapEntranceTouchTest {
     fun closesSheetOnEmptyMap() {
         start()
         compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
-        compose.onNodeWithText("Wejście, budynek C-13").assertExists()
+        compose.onNodeWithText("Wejście").assertExists()
         compose.runOnIdle { map.touchBuildings(emptyList()) }
 
-        compose.onNodeWithText("Wejście, budynek C-13").assertDoesNotExist()
+        compose.onNodeWithText("Wejście").assertDoesNotExist()
     }
 
     /** Wiersz: V1, „Wstecz” przy otwartym arkuszu wejścia zamyka arkusz i zostawia mapę. Wymagania: NFR-15 */
@@ -104,10 +105,10 @@ class MapEntranceTouchTest {
     fun closesSheetOnBack() {
         start()
         compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
-        compose.onNodeWithText("Wejście, budynek C-13").assertExists()
+        compose.onNodeWithText("Wejście").assertExists()
         compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
 
-        compose.onNodeWithText("Wejście, budynek C-13").assertDoesNotExist()
+        compose.onNodeWithText("Wejście").assertDoesNotExist()
         compose.runOnIdle { assertFalse("mapa zostaje", compose.activity.isFinishing) }
     }
 
@@ -121,7 +122,7 @@ class MapEntranceTouchTest {
     @Test
     fun centersEntranceAboveSheet() {
         start(focus = MapFocus.Entrance(id = "node/1", buildingSymbol = "C-13"))
-        val header = compose.onNodeWithText("Wejście, budynek C-13").getUnclippedBoundsInRoot()
+        val header = compose.onNodeWithText("Wejście").getUnclippedBoundsInRoot()
         val root = compose.onRoot().getUnclippedBoundsInRoot()
 
         val inset = checkNotNull(map.camera).second
@@ -147,19 +148,75 @@ class MapEntranceTouchTest {
         start(isCardOpen = true)
         compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
 
-        compose.onNodeWithText("Wejście, budynek C-13").assertExists()
+        compose.onNodeWithText("Wejście").assertExists()
         compose.runOnIdle { assertEquals("karta zamknięta", 1, closedCards) }
     }
 
-    /** Wiersz: arkusz otwarty przy karcie budynku, „Zamknij” wraca do karty. Wymagania: NFR-53 */
+    /** Wiersz: arkusz otwarty przy karcie budynku, „Zamknij” zamyka arkusz razem z kartą. Wymagania: NFR-53 */
     @Test
-    fun closeReturnsToCard() {
+    fun closeLeavesMapWithoutCard() {
         start(isCardOpen = true)
         compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
         compose.onNodeWithText("Zamknij").performClick()
 
-        compose.onNodeWithText("Wejście, budynek C-13").assertDoesNotExist()
+        compose.onNodeWithText("Wejście").assertDoesNotExist()
+        compose.runOnIdle { assertEquals("bez karty", emptyList<String>(), opened) }
+    }
+
+    /**
+     * Wiersz: arkusz otwarty znakiem bez karty, wiersz „Budynek C-13” zamyka arkusz i otwiera kartę.
+     * Scenariusz (częściowo, przykład: dotknie znaku wejścia A-1 na mapie): przegladanie-mapy.feature:
+     *   Wiersz budynku w arkuszu otwiera kartę budynku bez przelotu mapy
+     *
+     * Wymagania: US2.8, US3.3
+     */
+    @Test
+    fun rowOpensBuildingCard() {
+        start()
+        compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
+        compose.onNodeWithContentDescription("Budynek C-13").performClick()
+
+        compose.onNodeWithText("Wejście").assertDoesNotExist()
         compose.runOnIdle { assertEquals("karta budynku", listOf("C-13"), opened) }
+    }
+
+    /**
+     * Wiersz: arkusz otwarty przy karcie budynku, wiersz budynku wraca do tej karty.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Wiersz budynku w arkuszu otwartym z karty wraca do tej karty
+     *
+     * Wymagania: US2.8
+     */
+    @Test
+    fun rowReturnsToCard() {
+        start(isCardOpen = true)
+        compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
+        compose.onNodeWithContentDescription("Budynek C-13").performClick()
+
+        compose.runOnIdle { assertEquals("karta budynku", listOf("C-13"), opened) }
+    }
+
+    /**
+     * Wiersz: arkusz wejścia zaznaczonego z karty, „Wstecz” wraca do karty.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: „Wstecz” w arkuszu wejścia wraca tam, skąd arkusz
+     *   otwarto, a „Zamknij” zostawia mapę
+     *
+     * Wymagania: US3.3, NFR-15, NFR-53
+     */
+    @Test
+    fun backFromCardEntrance() {
+        start(focus = MapFocus.Entrance(id = "node/1", buildingSymbol = "C-13"))
+        compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
+        compose.runOnIdle { assertEquals("karta budynku", listOf("C-13"), opened) }
+    }
+
+    /** Wiersz: arkusz wejścia zaznaczonego z karty, „Zamknij” zostawia mapę bez karty. Wymagania: NFR-53 */
+    @Test
+    fun closeFromCardEntrance() {
+        start(focus = MapFocus.Entrance(id = "node/1", buildingSymbol = "C-13"))
+        compose.onNodeWithText("Zamknij").performClick()
+
+        compose.onNodeWithText("Wejście").assertDoesNotExist()
+        compose.runOnIdle { assertEquals("bez karty", emptyList<String>(), opened) }
     }
 
     /** Wiersz: arkusz otwarty przy karcie budynku, „Wstecz” wraca do karty. Wymagania: NFR-15 */
@@ -169,7 +226,7 @@ class MapEntranceTouchTest {
         compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
         compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
 
-        compose.onNodeWithText("Wejście, budynek C-13").assertDoesNotExist()
+        compose.onNodeWithText("Wejście").assertDoesNotExist()
         compose.runOnIdle { assertEquals("karta budynku", listOf("C-13"), opened) }
     }
 
@@ -180,7 +237,7 @@ class MapEntranceTouchTest {
         compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
         compose.runOnIdle { map.touchBuildings(emptyList()) }
 
-        compose.onNodeWithText("Wejście, budynek C-13").assertDoesNotExist()
+        compose.onNodeWithText("Wejście").assertDoesNotExist()
         compose.runOnIdle { assertEquals("bez karty", emptyList<String>(), opened) }
     }
 

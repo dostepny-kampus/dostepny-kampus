@@ -349,7 +349,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy pinezka wejścia zalecanego stoi na środku części mapy nad arkuszem tego wejścia
     Oraz arkusz zajmuje najwyżej połowę ekranu, a jego treść się przewija
 
-  # @do-zrobienia #3195: „Wstecz” arkusza otwartego z karty zostawia mapę bez karty, a „Zamknij” wraca do karty.
+  # @do-zrobienia #3255: „Wstecz” otwiera kartę na niskiej wysokości od góry, bez jej wysokości i przewinięcia.
   @US2.8 @US3.3 @NFR-15 @NFR-53 @aplikacja @do-zrobienia
   Szablon scenariusza: „Wstecz” w arkuszu wejścia wraca tam, skąd arkusz otwarto, a „Zamknij” zostawia mapę
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
@@ -364,7 +364,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | otworzy kartę A-1 na niskiej wysokości i wybierze „Pokaż wejście na mapie” | „Zamknij” | widzi mapę bez karty budynku                     |
       | dotknie znaku wejścia A-1 na mapie bez otwartej karty                      | „Zamknij” | widzi mapę bez karty budynku                     |
 
-  # @do-zrobienia #3195, #3241, #3242, #1481: arkusze nie mają jeszcze wiersza budynku.
+  # @do-zrobienia #3241, #3242, #1481: arkusze toalety, schodów, bariery, sali i „Który budynek?” nie mają jeszcze wiersza budynku.
   @US2 @US2.8 @NFR-18 @NFR-53 @aplikacja @do-zrobienia
   Szablon scenariusza: Wiersz budynku w arkuszu otwiera kartę budynku bez przelotu mapy
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce, bez otwartej karty
@@ -382,7 +382,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | wyszuka „A-1 329”                                 | Budynek A-1 |
       | dotknie wspólnego konturu C-3/C-4                 | Budynek C-3 |
 
-  # @do-zrobienia #3195: wiersza budynku w arkuszu wejścia jeszcze nie ma.
+  # @do-zrobienia #3255: karta wraca na niskiej wysokości od góry, bez jej wysokości i przewinięcia.
   @US2.8 @US3.3 @aplikacja @do-zrobienia
   Scenariusz: Wiersz budynku w arkuszu otwartym z karty wraca do tej karty
     Zakładając, że Gość niezalogowany rozwinął kartę budynku A-1 i ją przewinął
