@@ -318,6 +318,7 @@ class BuildingOnMapCameraTest {
      * Wiersz: K3, po „Pokaż” mała karta T-9 i „Wstecz” na małym terenie: widoczna część mapy pod paskiem wraca do
      * prostokąta terenu najmniejszym przesunięciem w pionie, powiększenie zostaje. Na terenie, który mieści widok,
      * mapa stoi (`keepsViewOnBack`).
+     * Scenariusz: przegladanie-mapy.feature: Na małym terenie zamknięcie karty przesuwa mapę tylko do brzegu terenu
      *
      * Wymagania: US2.8, NFR-39, NFR-56
      */
