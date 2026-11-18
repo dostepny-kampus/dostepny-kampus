@@ -54,7 +54,7 @@ class BuildingEntrancesTest {
      * Wymagania: US2.1, US17.3, BR-25
      */
     @Test
-    fun replacesFileEntrancesOfBuilding() {
+    fun replacesBuildingEntrances() {
         val catalog = catalogWith(listOf(SERVER_MATCH, SERVER_ONLY))
         assertEquals(SERVER_MATCH, catalog.shownEntrance("node/1")?.entrance, "wejście A-1 z serwera")
         assertEquals(OTHER_BUILDING, catalog.shownEntrance("node/9")?.entrance, "wejście C-13 z pliku")
