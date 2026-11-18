@@ -14,8 +14,8 @@ import java.util.List;
 /**
  * Wejścia z pliku konturów OpenStreetMap w tabeli entrances, odczytane przez
  * {@link OsmFile}. Ponowny import zmienia
- * położenie, opis i rodzaj, nie rusza oznaczeń z obchodu (WALKTHROUGH) i usuwa nieaktualne
- * powiązania wejść z oznaczeniem IMPORT.
+ * położenie, opis i rodzaj, nie rusza oznaczeń z obchodu (WALKTHROUGH) ani wejść z planów PWr
+ * ({@code pwr/…}) i usuwa nieaktualne powiązania pozostałych wejść z oznaczeniem IMPORT.
  *
  * <p>Wymagania: US17.1, BR-24, US17.3</p>
  *
@@ -71,7 +71,7 @@ final class OsmEntrances {
             PreparedStatement delete = connection.prepareStatement(
                 """
                 DELETE FROM entrances AS old
-                WHERE old.marking_source = 'IMPORT'
+                WHERE old.marking_source = 'IMPORT' AND old.id NOT LIKE 'pwr/%'
                     AND NOT EXISTS (
                         SELECT 1 FROM unnest(CAST(? AS TEXT[]), CAST(? AS TEXT[]))
                             AS snapshot(id, building_symbol)

@@ -181,5 +181,6 @@ public final class PostgisPlans implements FloorPlans {
             .param("floors", entrances.stream().map(PlanEntrance::floorId).toArray(String[]::new))
             .param("points", entrances.stream().map(PlanEntrance::point).toArray(String[]::new))
             .update();
+        new PostgisPwrEntrances(this.jdbc).save(building, known, entrances);
     }
 }
