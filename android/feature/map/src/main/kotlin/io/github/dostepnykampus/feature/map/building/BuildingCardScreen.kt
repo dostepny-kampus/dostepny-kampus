@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
@@ -94,7 +95,7 @@ fun BuildingCardScreen(
 /**
  * V2 dla gotowego stanu [card] i [isOnline]; „Spróbuj ponownie” to [onRetry], „Pokaż na planie” to [onShowPlan]
  * z identyfikatorem piętra, „Oznacz obejrzane piętra” pod grupą „Piętra” to [onMarkFloors] (`null` ukrywa przycisk),
- * reszta jak w [BuildingCardScreen].
+ * dotknięcie wystającego nagłówka „Wejścia” niskiej karty to [onExpand], reszta jak w [BuildingCardScreen].
  */
 @Composable
 fun BuildingCardContent(
@@ -112,12 +113,19 @@ fun BuildingCardContent(
     onReportRemoval: ((String) -> Unit)? = null,
     onShowPlan: (String) -> Unit = {},
     onMarkFloors: (() -> Unit)? = null,
+    onExpand: () -> Unit = {},
 ) {
     val isFullScreen = mode != CardMode.Compact
+    val isPeek = !isFullScreen && card != BuildingCardUiState.Missing
+    val bottom = if (isPeek) 0.dp else Odstepy.m
     Column(if (isFullScreen) modifier.fillMaxSize() else modifier) {
         if (mode == CardMode.Direct) BackHeader(title = symbol, onBack = onBack)
         Column(
-            modifier = Modifier.weight(1f, isFullScreen).verticalScroll(rememberScrollState()).padding(Odstepy.m),
+            modifier =
+                Modifier
+                    .weight(1f, isFullScreen)
+                    .verticalScroll(rememberScrollState())
+                    .padding(start = Odstepy.m, top = Odstepy.m, end = Odstepy.m, bottom = bottom),
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
         ) {
             if (!isOnline) OfflinePill()
@@ -140,6 +148,7 @@ fun BuildingCardContent(
                 onShowPlan = onShowPlan,
                 onMarkFloors = onMarkFloors,
             )
+            if (isPeek) EntrancesPeek(card = card, onExpand = onExpand)
         }
     }
 }
