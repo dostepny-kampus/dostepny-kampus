@@ -61,6 +61,18 @@ final class OpenApiContractIT {
     );
 
     /**
+     * Zgodna lista budynków z wejściem budynku.
+     */
+    private static final String LIST = String.join(
+        "",
+        "{\"source\":\"© OpenStreetMap contributors\",\"buildings\":[",
+        OpenApiContractIT.PWR_CARD.substring(
+            0, OpenApiContractIT.PWR_CARD.indexOf(",\"evacuationExits\"")
+        ),
+        "}]}"
+    );
+
+    /**
      * Adres zdjęcia zgłoszenia.
      */
     private static final String PHOTO = String.join(
@@ -139,6 +151,10 @@ final class OpenApiContractIT {
                 "karta budynku z wejściem i wyjściem ewakuacyjnym z planów PWr"
             ),
             Arguments.of(
+                MockMvcRequestBuilders.get("/buildings"),
+                OpenApiContractIT.json(200, OpenApiContractIT.LIST), "lista budynków z wejściem"
+            ),
+            Arguments.of(
                 (RequestBuilder) servlet -> new MockHttpServletRequest(
                     servlet, "GET", "/buildings/A-1"
                 ),
@@ -204,6 +220,13 @@ final class OpenApiContractIT {
             ),
             OpenApiContractIT.pwrCard(
                 "{\"id\":\"e-1\",", "{", "body.schema.required /evacuationExits/0 "
+            ),
+            Arguments.of(
+                MockMvcRequestBuilders.get("/buildings"),
+                OpenApiContractIT.json(
+                    200, OpenApiContractIT.LIST.replace("ACCESSIBLE", "OPEN")
+                ),
+                "body.schema.enum /buildings/0/entrances/0/marking "
             ),
             Arguments.of(
                 MockMvcRequestBuilders.get("/nieznane"), OpenApiContractIT.json(200, "{}"),
