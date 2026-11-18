@@ -140,19 +140,24 @@ class AppNavigatorTest {
         assertEquals(stack.size, restarts.size)
     }
 
-    /** Wiersz: pasek dolny, ponowne dotknięcie „Mapa” → V1 bez arkusza i wyniku wyszukiwania. Wymagania: NFR-15 */
+    /**
+     * Wiersz: pasek dolny, ponowne dotknięcie „Mapa” niczego nie zamyka: karta i V1 pod nią zostają.
+     *
+     * Wymagania: NFR-15, US2.8
+     */
     @Test
-    fun restartsMapOnReselect() {
+    fun keepsCardOnMapReselect() {
         navigator().run {
             val key = contentKey(index = 0)
             open(TopLevel.HELP)
             open(TopLevel.MAP)
             assertEquals(key, contentKey(index = 0))
             openBuilding(symbol = "C-13")
+            val keys = stack.indices.map(::contentKey)
             open(TopLevel.MAP)
-            assertNotEquals(key, contentKey(index = 0))
+            assertEquals(keys, stack.indices.map(::contentKey))
         }
-        assertEquals(stackOf(), stack)
+        assertEquals(stackOf(BuildingRoute("C-13")), stack)
     }
 
     /**

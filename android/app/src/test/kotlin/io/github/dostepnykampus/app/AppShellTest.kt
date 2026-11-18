@@ -387,7 +387,7 @@ class AppShellTest {
     }
 
     /**
-     * Wiersz: V2, „Wstecz” → V1 w poprzednim stanie; ponowne „Mapa” → świeże V1.
+     * Wiersz: V2, „Wstecz” → V1 w poprzednim stanie; ponowne „Mapa” przy karcie niczego nie zamyka.
      * V1 żyje pod arkuszem V2, więc zostaje nawet stan z remember.
      *
      * Wymagania: US1.1
@@ -412,7 +412,7 @@ class AppShellTest {
         compose.waitUntil { compose.onAllNodesWithText("v=1").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("A-1").performClick()
         compose.onNode(MapTab).performClick()
-        compose.onNodeWithText("v=0").assertExists()
+        compose.onNodeWithText("v=1").assertExists()
     }
 
     /** Wiersz: V2 rozwinięte, „Wstecz” → V1, dotknięcie konturu → nowe V2 znów jako mała karta. Wymagania: US2.8 */
