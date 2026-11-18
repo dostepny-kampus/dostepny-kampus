@@ -166,18 +166,31 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | C-13    | wszystkie wejścia C-13 mają oznaczenie „brak danych” | Brak danych o wejściach | na karcie nie ma zdania ani przycisku wypełnionego                                      |
       | A-2     | budynek A-2 nie ma wejść w danych                    | Brak danych o wejściach | na karcie nie ma zdania ani przycisku wypełnionego                                      |
 
-  @US2.8 @NFR-53 @aplikacja
+  # @do-zrobienia #3228: uchwyt przechodzi jeszcze przez połowę ekranu.
+  @US2.8 @NFR-53 @aplikacja @do-zrobienia
   Scenariusz: Uchwyt zmienia wysokość karty bez przeciągania
     Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
     Jeżeli dotknie uchwytu karty
-    Wtedy karta stoi na połowie ekranu, a nad nią widać mapę
-    Oraz pod kreską karty zaczyna się pełny opis budynku A-1
-    Jeżeli znowu dotknie uchwytu karty
     Wtedy opis budynku A-1 zajmuje cały ekran
+    Oraz pod kreską karty stoi pełny opis budynku A-1
     Jeżeli znowu dotknie uchwytu karty
     Wtedy karta wraca na niską wysokość nad mapą
 
-  @US2.8 @NFR-53 @aplikacja
+  # @do-zrobienia #3228: nagłówek „Wejścia” podnosi kartę jeszcze na połowę ekranu.
+  @US2.8 @NFR-53 @aplikacja @do-zrobienia
+  Szablon scenariusza: Wystający nagłówek „Wejścia” od razu rozwija kartę
+    Zakładając, że w danych testowych <dane>
+    Oraz Gość niezalogowany dotknął budynku <budynek> na mapie przy zwykłej czcionce
+    Jeżeli dotknie wystającego nagłówka „Wejścia”
+    Wtedy <po rozwinięciu>
+
+    Przykłady:
+      | budynek | dane                                                | po rozwinięciu                                                    |
+      | A-1     | budynek A-1 ma wejścia i plany pięter PWr           | opis budynku A-1 zajmuje cały ekran                               |
+      | A-2     | budynek A-2 nie ma wejść ani planów pięter w danych | karta ma wysokość swojej treści, a nad nią widać mapę z budynkiem |
+
+  # @do-zrobienia #3228: karta ma jeszcze połowę ekranu zamiast wysokości rozwiniętej.
+  @US2.8 @NFR-53 @aplikacja @do-zrobienia
   Szablon scenariusza: Karta budynku zamyka się na każdej wysokości
     Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
     Oraz karta stoi na wysokości „<wysokość>”
@@ -186,11 +199,11 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz położenie i powiększenie mapy są takie jak w chwili zamknięcia karty
 
     Przykłady:
-      | wysokość      | czynność                                      |
-      | niska         | przeciągnie kartę w dół                       |
-      | niska         | dotknie pustej mapy                           |
-      | połowa ekranu | wybierze „Zamknij”                            |
-      | cały ekran    | wybierze „Wstecz” telefonu                    |
+      | wysokość   | czynność                   |
+      | niska      | przeciągnie kartę w dół    |
+      | niska      | dotknie pustej mapy        |
+      | rozwinięta | wybierze „Zamknij”         |
+      | rozwinięta | wybierze „Wstecz” telefonu |
 
   @US2.8 @NFR-15 @aplikacja
   Scenariusz: Ponowne dotknięcie „Mapa” w pasku dolnym nie zamyka karty
@@ -317,10 +330,10 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy <po zamknięciu>
 
     Przykłady:
-      | otwarcie                                                                    | po zamknięciu                                           |
-      | otworzy kartę A-1 na połowie ekranu, przewinie ją i dotknie wiersza wejścia | widzi kartę A-1 na połowie ekranu, tak samo przewiniętą |
-      | otworzy kartę A-1 na niskiej wysokości i wybierze „Pokaż wejście na mapie”  | widzi kartę A-1 na niskiej wysokości                    |
-      | dotknie znaku wejścia A-1 na mapie bez otwartej karty                       | widzi mapę bez karty budynku                            |
+      | otwarcie                                                                   | po zamknięciu                                    |
+      | rozwinie kartę A-1, przewinie ją i dotknie wiersza wejścia                 | widzi kartę A-1 rozwiniętą, tak samo przewiniętą |
+      | otworzy kartę A-1 na niskiej wysokości i wybierze „Pokaż wejście na mapie” | widzi kartę A-1 na niskiej wysokości             |
+      | dotknie znaku wejścia A-1 na mapie bez otwartej karty                      | widzi mapę bez karty budynku                     |
 
   @US16.3 @aplikacja
   Scenariusz: Karta budynku szczegółowego opisuje piętra tekstem

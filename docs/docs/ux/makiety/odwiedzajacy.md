@@ -7,7 +7,7 @@ Konwencje opisuje strona [Makiety](index.md). Stan, który różni się jednym n
 | Ekran | Makiety | Stany w tabelach |
 | --- | --- | --- |
 | V1 Mapa kampusu | zwykły, wyszukiwanie, lista budynków, brak wyniku, brak sieci, pierwsze otwarcie bez internetu, znaleziona sala, bariera na mapie, arkusz wejścia | ładowanie, brak mapy ulic, pierwsze uruchomienie, wybór budynku, plan piętra, sala bez drogi, brak sali, duża czcionka |
-| V2 Karta budynku | wysokości: niska, połowa ekranu, od razu cały ekran. Stany: budynek podstawowy bez wejścia zalecanego, brak barier, wejścia bez nazw, brak sieci, budynku nie ma w telefonie, Zbierający | ładowanie, błąd zdjęcia, budynek podstawowy bez barier |
+| V2 Karta budynku | wysokości: niska, od razu cały ekran. Stany: budynek podstawowy bez wejścia zalecanego, brak barier, wejścia bez nazw, brak sieci, budynku nie ma w telefonie, Zbierający | ładowanie, błąd zdjęcia, budynek podstawowy bez barier |
 | V4 Zgłoszenie szybkie | kroki 1–3, krok 1 ze zdjęciem, prośba o zgodę, zgoda przybliżona, brak pozycji, rezygnacja, wysłane, wysłane bez internetu | Gość, odmowa zgody, lokalizacja wyłączona, ustalanie miejsca, błąd zapisu |
 | V5 Pomoc | krok z objaśnieniem „Dostępne” | krok o koncie, ostatni krok |
 | L1 Prośba o logowanie | zwykły, brak sieci | wejście z „Konto”, błąd |
@@ -291,30 +291,18 @@ Czynność główna: „Pokaż wejście na mapie”.
 | --- | --- |
 | Mapa z wyróżnionym konturem budynku; mapa pod kartą bez nazw dla TalkBack | US2.8, NFR-19 |
 | Przyciski mapy nad kartą: „Powiększ”, „Pomniejsz” i strzałki; bez wiersza tytułu i pola symbolu | NFR-53, decyzja 151 |
-| Uchwyt: przycisk „Wysokość karty” z bieżącą wysokością; dotknięcie przechodzi na następną wysokość | US2.8, NFR-18, NFR-53 |
+| Uchwyt: przycisk „Wysokość karty” z bieżącą wysokością; dotknięcie od razu rozwija kartę, a z rozwiniętej wraca na niską | US2.8, NFR-18, NFR-53 |
 | Nagłówek: symbol, nazwa i obrysowany „Zamknij” po prawej; dolnego „Zamknij” nie ma | US2, NFR-53, decyzja 152 |
 | Wiersz o wejściach zamiast chipów: znak, „Wejście dostępne” i zdanie z wejściem zalecanym | US2.8, US3.1, NFR-21 |
 | „Pokaż wejście na mapie” wypełniony, tylko gdy jest wejście zalecane: V1 z zaznaczonym wejściem i jego arkuszem | US3, US3.2, US3.3, BR-25 |
-| Pod kreską wystaje nagłówek „Wejścia” z uciętym następnym wierszem; dotknięcie podnosi kartę na połowę ekranu | US2.8, NFR-17, NFR-53 |
+| Pod kreską wystaje nagłówek „Wejścia” z uciętym następnym wierszem; dotknięcie od razu rozwija kartę jak uchwyt | US2.8, NFR-17, NFR-53 |
 
 | Stan bez osobnej makiety | Co się zmienia |
 | --- | --- |
 | Brak wejścia dostępnego | wiersz „Brak wejścia dostępnego” ze znakiem i zdaniem, np. „Żadne z 3 wejść nie jest dostępne.”; bez „Pokaż wejście na mapie” (US3.1, BR-25) |
 | Brak danych o wejściach | cichy napis „Brak danych o wejściach”, bez zdania i bez przycisku (US3.1, US17.1) |
 | Brak sieci | nad nagłówkiem plakietka „Bez internetu” (NFR-10) |
-
-### V2: połowa ekranu
-
-![Makieta karty A-1 na połowie ekranu: mapa z wyróżnionym konturem i przyciskami mapy, a pod nią uchwyt, nagłówek z Zamknij, wiersz Wejście dostępne, Pokaż wejście na mapie, kreska, chipy Winda i Toaleta dostosowana, data i źródło oraz początek grupy Wejścia](../../_generated/m-v2-karta-budynku-polowa.svg)
-
-Czynność główna: „Pokaż wejście na mapie”.
-
-| Element | AC/BR/NFR |
-| --- | --- |
-| Mapa nad kartą zostaje, z przyciskami mapy, gdy nad kartą jest co najmniej 300 dp mapy | US2.8, NFR-53, decyzja 151 |
-| Uchwyt „Wysokość karty” z bieżącą wysokością; dotknięcie przechodzi na cały ekran | US2.8, NFR-18, NFR-53 |
-| Nagłówek i wiersz o wejściach jak na niskiej wysokości | US2.8, US3.2 |
-| Pod kreską początek pełnego opisu: chipy, data i źródło, „Wejścia”. Po przewinięciu karty dalej „Bariery w budynku”, „Winda i toaleta”, „Piętra” i źródło | US2, US2.8, NFR-53 |
+| Rozwinięta | karta sięga do góry ekranu jak na wzorcu, ale ma uchwyt i nie ma „Pokaż budynek na mapie”. Gdy treść mieści się w połowie ekranu, karta ma wysokość treści, a nad nią zostaje mapa (US2.8, NFR-53) |
 
 ### V2: od razu na cały ekran
 

@@ -99,8 +99,8 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1 | dotknięcie konturu budynku | V2, mała karta nad mapą o wysokości treści | wszystkie | US2.8, US3.2, decyzja 115 |
 | V1 z małą kartą V2 | dotknięcie konturu innego budynku | V2 tego budynku zamiast poprzedniego; „Wstecz” wraca do V1 | wszystkie | US2.8, decyzja 115 |
 | V1 z małą kartą V2 | dotknięcie pustej mapy; „Zamknij”; „Wstecz” | V1 bez zaznaczenia w widoku sprzed karty: mapa albo lista; po otwarciu z listy wraca lista, a zapamiętany widok listy się nie zmienia. Tekst wyszukiwania bez zmian. Położenie i przybliżenie mapy się nie zmieniają: zostaje widok z chwili zamknięcia, także po wyborze z wyszukiwania | wszystkie | US2.8, NFR-19, NFR-53, NFR-56, decyzje 83, 116, 118, 153 |
-| V2, mała karta | uchwyt „Rozwiń opis budynku”, przewinięcie albo przeciągnięcie w górę | V2, pełny ekran bez mapy | wszystkie | US2.8, NFR-53 |
-| V2, pełny ekran po małej karcie | „Wstecz” | V2, mała karta | wszystkie | NFR-15, decyzja 115 |
+| V2, mała karta | dotknięcie uchwytu „Wysokość karty”, przewinięcie albo przeciągnięcie w górę | V2 rozwinięta: cały ekran bez mapy, a karta z treścią mieszczącą się w połowie ekranu do wysokości treści, z mapą nad nią | wszystkie | US2.8, NFR-53 |
+| V2 rozwinięta po małej karcie | „Wstecz”; dotknięcie uchwytu „Wysokość karty” | V2, mała karta | wszystkie | NFR-15, decyzja 115 |
 | V1 | dotknięcie konturu wspólnego, np. „C-3/C-4”, albo dotknięcie obok dwóch konturów, poza nimi | V1, arkusz „Który budynek?” | wszystkie | US2, US3.2, decyzja 85 |
 | V1, arkusz „Który budynek?” | przycisk budynku, np. „Budynek C-3”; „Zamknij” | V2 tego budynku; V1 | wszystkie | US2, NFR-53 |
 | V1 | „Pokaż listę”; na liście „Pokaż mapę” | V1, lista; z listy V1, mapa | wszystkie | NFR-19 |
@@ -131,7 +131,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V2 | „Pokaż na planie” przy piętrze | V1, plan tego piętra, bez zaznaczonego budynku | wszystkie | US16.1, decyzja 44 |
 | V2, pełny ekran otwarty od razu | „Pokaż budynek na mapie” | V1 w widoku mapy z zaznaczonym budynkiem, bez karty; zapamiętany wybór „Mapa” | wszystkie | US2.9, NFR-19, decyzja 116 |
 | V2 | „Pokaż wejście na mapie” pod wierszem o wejściach albo przy wejściu zalecanym | V1 z zaznaczonym wejściem zalecanym i jego arkuszem; przy dużej czcionce arkusz na cały ekran; „Zamknij” arkusza wraca do karty | wszystkie | US2.1, US3.3, BR-25 |
-| V2, niska wysokość | dotknięcie wystającego nagłówka „Wejścia” | V2 na połowie ekranu | wszystkie | US2.8, NFR-53 |
+| V2, niska wysokość | dotknięcie wystającego nagłówka „Wejścia” | V2 rozwinięta, jak po dotknięciu uchwytu | wszystkie | US2.8, NFR-53 |
 | V2 | dotknięcie wiersza wejścia na liście „Wejścia” | V1 z zaznaczonym tym wejściem i jego arkuszem; „Zamknij” arkusza wraca do karty na tej samej wysokości i w tym samym miejscu przewinięcia listy | wszystkie | US3.3 |
 | V2, wiersz kilku wejść bez danych | „Zgłoś barierę przy wejściu” | V4, krok 1, bez wybranego wejścia; Gość: L1, potem V4 | wszystkie | US4.6, US14.2 |
 | V2, stan „brak zgłoszeń przyjętych” | „Zgłoś barierę” | V4; Gość: L1 | wszystkie | US4, US14.2 |
