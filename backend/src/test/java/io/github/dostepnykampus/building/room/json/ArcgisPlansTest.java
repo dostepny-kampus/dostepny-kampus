@@ -153,7 +153,61 @@ final class ArcgisPlansTest {
                 new CountDownLatch(0),
                 url -> new ArcgisPlans(JsonMapper.builder().build()).entrances(url, 2)
             ),
-            Matchers.contains(new PlanEntrance("T.X.P0", point))
+            Matchers.contains(
+                new PlanEntrance("T.X.P0", point, "NO_DATA", "Wejście", null, null, false)
+            )
+        );
+    }
+
+    @Test
+    void readsEntranceMarkingNoteAndDoorWidth() throws IOException {
+        MatcherAssert.assertThat(
+            "Wpisy warstwy wejść nie dały oznaczenia, nazwy, opisu, szerokości i wyjścia",
+            ArcgisPlansTest.served(
+                exchange -> ArcgisPlansTest.send(
+                    exchange,
+                    String.format(
+                        "{\"features\":[%s]}",
+                        String.join(
+                            ",",
+                            ArcgisPlansTest.entrance(
+                                "\"Tak\"", "120", "\"Wejście Cesarskie. Od ul. Wybrzeże.\""
+                            ),
+                            ArcgisPlansTest.entrance("\"Nie\"", "0", "null"),
+                            ArcgisPlansTest.entrance(
+                                "\"Tak\"", "\"90\"", "\"Wyjście ewakuacyjne z pomieszczenia 41\""
+                            ),
+                            ArcgisPlansTest.entrance(
+                                "\"?\"", "null", "\"Do wejścia prowadzą schody.\""
+                            )
+                        )
+                    )
+                ),
+                new CountDownLatch(0),
+                url -> new ArcgisPlans(JsonMapper.builder().build()).entrances(url, 2).stream()
+                    .map(
+                        entry -> String.join(
+                            "|", entry.marking(), entry.name(), String.valueOf(entry.approach()),
+                            String.valueOf(entry.doorWidthCm()),
+                            String.valueOf(entry.evacuationExit())
+                        )
+                    ).toList()
+            ),
+            Matchers.contains(
+                "ACCESSIBLE|Wejście Cesarskie|Od ul. Wybrzeże.|120|false",
+                "INACCESSIBLE|Wejście|null|null|false",
+                "ACCESSIBLE|Wyjście ewakuacyjne|Wyjście ewakuacyjne z pomieszczenia 41|90|true",
+                "NO_DATA|Wejście|Do wejścia prowadzą schody.|null|false"
+            )
+        );
+    }
+
+    private static String entrance(final String adapted, final String width, final String note) {
+        return String.join(
+            "",
+            "{\"geometry\":{\"type\":\"Point\",\"coordinates\":[17.1,51.1]},",
+            "\"properties\":{\"Pietro\":\"T.X.P0\",\"Czy_dostos\":", adapted,
+            ",\"Szerokosc\":", width, ",\"Uwagi\":", note, ",\"Budynek\":\"X\"}}"
         );
     }
 

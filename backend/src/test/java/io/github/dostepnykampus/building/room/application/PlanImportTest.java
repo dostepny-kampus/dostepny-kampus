@@ -112,7 +112,12 @@ final class PlanImportTest {
 
             @Override
             public List<PlanEntrance> entrances(final String service, final int layer) {
-                return List.of(new PlanEntrance(String.format("%s/%d", service, layer), "{}"));
+                return List.of(
+                    new PlanEntrance(
+                        String.format("%s/%d", service, layer), "{}", "NO_DATA", "Wejście", null,
+                        null, false
+                    )
+                );
             }
         };
     }
