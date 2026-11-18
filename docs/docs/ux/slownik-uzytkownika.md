@@ -263,7 +263,7 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | V1, brak mapy ulic | „Mapa ulic chwilowo się nie wczytuje. Budynki i bariery nadal możesz oglądać.” | — | — |
 | V1, brak sali | „Nie znaleźliśmy sali »X« w budynku A-1. Sprawdź numer albo otwórz opis budynku.” | „Pokaż opis budynku” | decyzja 44 |
 | V1, sala bez drogi | „Nie znaleźliśmy w danych wejścia i windy, którymi dotrzesz do tej sali bez schodów.” | „Pokaż opis budynku” | decyzja 48 |
-| V1, arkusz wejścia z oznaczeniem „Brak danych” | „Nikt jeszcze nie sprawdził tego wejścia.” | „Zgłoś barierę przy wejściu” | — |
+| V1, arkusz wejścia z oznaczeniem „Brak danych” | „Nie mamy danych o dostępności tego wejścia.” | „Zgłoś barierę przy wejściu” | — |
 | V2, ładowanie zdjęcia | „Wczytujemy zdjęcie…” | — | PW-9 |
 | V2, brak barier | nagłówek „Brak zgłoszonych barier”, zdanie „Bariera pojawi się tutaj, gdy ktoś ją zgłosi i zostanie sprawdzona.” | „Zgłoś barierę” | PW-6; decyzja 48 |
 | V2, brak wejść w danych | „Nie mamy jeszcze danych o wejściach do tego budynku.” | — | US3.1, US17.1; symbolu nie ma, bo podaje go nagłówek karty. Brak danych nie potwierdza niedostępności. |
