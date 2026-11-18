@@ -98,7 +98,8 @@ final class PostgisPwrEntrances {
                 SELECT DISTINCT ON (id) id, :building, name, FALSE, spot, floor, marking,
                     CURRENT_DATE, 'IMPORT', approach, width, TRUE
                 FROM (
-                    SELECT 'pwr/' || ST_GeoHash(place.spot, 10) AS id, place.spot, pwr.*
+                    SELECT 'pwr/' || ST_GeoHash(place.spot, 10) AS id, place.spot, pwr.floor,
+                        pwr.marking, pwr.name, pwr.approach, pwr.width
                     FROM
                 """,
                 PostgisPwrEntrances.RECORDS,
@@ -134,7 +135,8 @@ final class PostgisPwrEntrances {
                     description, door_width_cm)
                 SELECT DISTINCT ON (id) id, :building, floor, spot, approach, width
                 FROM (
-                    SELECT 'pwr/' || ST_GeoHash(place.spot, 10) AS id, place.spot, pwr.*
+                    SELECT 'pwr/' || ST_GeoHash(place.spot, 10) AS id, place.spot, pwr.floor,
+                        pwr.marking, pwr.name, pwr.approach, pwr.width
                     FROM
                 """,
                 PostgisPwrEntrances.RECORDS,
@@ -152,21 +154,18 @@ final class PostgisPwrEntrances {
         final String sql, final String building, final Set<String> known,
         final List<PlanEntrance> entrances
     ) {
+        final String[] approaches = entrances.stream().map(PlanEntrance::approach)
+            .toArray(String[]::new);
+        final Integer[] widths = entrances.stream().map(PlanEntrance::doorWidthCm)
+            .toArray(Integer[]::new);
+        final Boolean[] exits = entrances.stream().map(PlanEntrance::evacuationExit)
+            .toArray(Boolean[]::new);
         return this.jdbc.sql(sql).param("building", building)
             .param("known", known.toArray(String[]::new))
             .param("floors", entrances.stream().map(PlanEntrance::floorId).toArray(String[]::new))
             .param("points", entrances.stream().map(PlanEntrance::point).toArray(String[]::new))
             .param("markings", entrances.stream().map(PlanEntrance::marking).toArray(String[]::new))
             .param("names", entrances.stream().map(PlanEntrance::name).toArray(String[]::new))
-            .param(
-                "approaches", entrances.stream().map(PlanEntrance::approach).toArray(String[]::new)
-            )
-            .param(
-                "widths", entrances.stream().map(PlanEntrance::doorWidthCm).toArray(Integer[]::new)
-            )
-            .param(
-                "exits", entrances.stream().map(PlanEntrance::evacuationExit)
-                    .toArray(Boolean[]::new)
-            );
+            .param("approaches", approaches).param("widths", widths).param("exits", exits);
     }
 }

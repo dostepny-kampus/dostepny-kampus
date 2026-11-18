@@ -34,10 +34,9 @@ final class PostgisPwrEntrancesIT {
 
     @Test
     void storesPwrEntrancesAndEvacuationExits(final ApplicationContext context) {
-        final JdbcClient jdbc = PostgisPwrEntrancesIT.saved(context);
         MatcherAssert.assertThat(
             "Wejścia nie mają danych PWr, obchód nie wygrał albo wpis PWr nie stał się wejściem",
-            jdbc.sql(
+            PostgisPwrEntrancesIT.saved(context).sql(
                 """
                 SELECT CASE WHEN id LIKE 'pwr/%' THEN 'pwr' ELSE id END || '|' || name || '|'
                     || marking || '|' || COALESCE(approach, '-') || '|'
