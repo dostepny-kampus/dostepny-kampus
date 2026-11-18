@@ -21,8 +21,7 @@ import org.jspecify.annotations.Nullable;
  * @param name Opis wejścia albo null, gdy dane go nie podają
  * @param type Rodzaj wejścia z OpenStreetMap albo null
  * @param main Czy to wejście główne
- * @param location Położenie wejścia jako punkt GeoJSON z bazy, wstawiany do odpowiedzi bez zmian
- * @param floorId Piętro wejścia albo null, gdy dane go nie podają
+ * @param place Położenie i piętro wejścia, w JSON pola obok pozostałych
  * @param marking Oznaczenie wejścia, w JSON pola obok pozostałych
  * @param plan Dane z planów PWr, w JSON pola obok pozostałych; null przy wejściu spoza warstwy
  * @since 0.1.0
@@ -34,8 +33,7 @@ public record EntranceResponse(
     @Nullable String name,
     @Nullable String type,
     boolean main,
-    @JsonRawValue String location,
-    @Nullable String floorId,
+    @JsonUnwrapped Place place,
     @JsonUnwrapped Entrance.Marking marking,
     @JsonUnwrapped @Nullable Plan plan
 ) {
@@ -48,9 +46,23 @@ public record EntranceResponse(
     public EntranceResponse(final Entrance entrance) {
         this(
             entrance.id(), entrance.buildingSymbol(), entrance.name(), entrance.type(),
-            entrance.main(), entrance.location(), entrance.floorId(), entrance.marking(),
-            Plan.of(entrance.plan())
+            entrance.main(),
+            new Place(entrance.place().location(), entrance.place().floorId()),
+            entrance.marking(), Plan.of(entrance.plan())
         );
+    }
+
+    /**
+     * Położenie i piętro wejścia w odpowiedzi HTTP.
+     *
+     * <p>Wymagania: US2, US18.2</p>
+     *
+     * @param location Położenie wejścia jako punkt GeoJSON z bazy, wstawiany bez zmian
+     * @param floorId Piętro wejścia albo null, gdy dane go nie podają
+     * @since 0.1.0
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public record Place(@JsonRawValue String location, @Nullable String floorId) {
     }
 
     /**

@@ -165,8 +165,9 @@ public final class BuildingQuery implements Buildings {
                 rows.getString("name"),
                 rows.getString("type"),
                 rows.getBoolean("main"),
-                BuildingQuery.text(rows, "location"),
-                rows.getString("floor_id"),
+                new Entrance.Place(
+                    BuildingQuery.text(rows, "location"), rows.getString("floor_id")
+                ),
                 new Entrance.Marking(
                     BuildingQuery.text(rows, "marking"),
                     BuildingQuery.text(rows, "marking_date"),
