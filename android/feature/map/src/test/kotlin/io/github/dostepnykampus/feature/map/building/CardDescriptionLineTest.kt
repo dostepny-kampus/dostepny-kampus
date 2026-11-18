@@ -15,8 +15,10 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.Dp
+import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Entrance
@@ -27,9 +29,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 
 private const val HEADER = "Wejścia"
 private const val NAME = "Gmach Testowy"
+private const val SCROLLED_PX = 500f
 
 /**
  * V2 Karta budynku: kreska między górą karty a pełnym opisem na każdej wysokości karty i w pełnym ekranie od razu,
@@ -90,6 +94,17 @@ class CardDescriptionLineTest {
         val line = compose.onNodeWithTag(SCROLL_LINE_TAG).getUnclippedBoundsInRoot()
         val name = compose.onNodeWithText(NAME).getUnclippedBoundsInRoot()
         assertTrue("linia pod nagłówkiem: od ${line.top}, nazwa do ${name.bottom}", line.top >= name.bottom)
+    }
+
+    /** Zrzut przewiniętej karty na połowie ekranu: linia pod nagłówkiem nad uciętym wierszem, motyw jasny. */
+    @Test
+    @Config(qualifiers = "w360dp-h800dp-xhdpi")
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    fun matchesScrolledMockup() {
+        val scroll = ScrollState(initial = 0)
+        open(CardMode.Expanded, card = longCard(), scroll = scroll)
+        compose.runOnIdle { scroll.dispatchRawDelta(SCROLLED_PX) }
+        compose.onRoot().captureRoboImage()
     }
 
     private fun longCard(): BuildingCardUiState.Ready {
