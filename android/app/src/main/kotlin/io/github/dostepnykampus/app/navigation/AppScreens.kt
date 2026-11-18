@@ -103,7 +103,7 @@ internal fun AppNavigator.sheetCard(): SheetCard {
     val isDirect = window.cardMode() == CardMode.Direct || (current as? BuildingRoute)?.isDirect == true
     val mode = if (isDirect) CardMode.Direct else sheet.cardMode(window.fontScale)
     val back = checkNotNull(LocalOnBackPressedDispatcherOwner.current).onBackPressedDispatcher
-    return SheetCard(mode, onBack = back::onBackPressed, onClose = { back() }, onExpand = layout.onExpand)
+    return SheetCard(mode = mode, onBack = back::onBackPressed, onClose = { back() }, onExpand = layout.onExpand)
 }
 
 /**

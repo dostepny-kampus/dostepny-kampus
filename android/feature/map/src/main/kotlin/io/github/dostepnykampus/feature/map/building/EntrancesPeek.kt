@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -30,8 +31,15 @@ import io.github.dostepnykampus.core.designsystem.GroupContainer
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.feature.map.R
 
-/** Ile następnego wiersza grupy widać pod nagłówkiem: ramka, wcięcie i góra wiersza. */
-private val NEXT_LINE_SHOWN = 24.dp
+private val NEXT_LINE_PEEK_HEIGHT = 24.dp
+
+/** Czy pod treścią karty wystaje nagłówek „Wejścia”: tylko na niskiej karcie ([isFullScreen] fałsz) z budynkiem. */
+internal fun BuildingCardUiState.hasEntrancesPeek(isFullScreen: Boolean): Boolean =
+    !isFullScreen && this != BuildingCardUiState.Missing
+
+/** Wcięcie treści karty; bez dolnego, gdy wystaje nagłówek „Wejścia” ([isPeek]), więc wiersz ucina brzeg karty. */
+internal fun Modifier.cardPadding(isPeek: Boolean): Modifier =
+    padding(start = Odstepy.m, top = Odstepy.m, end = Odstepy.m, bottom = if (isPeek) 0.dp else Odstepy.m)
 
 /**
  * Początek pełnego opisu pod kreską niskiej karty: cały nagłówek grupy „Wejścia” i ucięty następny wiersz, ta sama
@@ -43,8 +51,9 @@ private val NEXT_LINE_SHOWN = 24.dp
 @Composable
 internal fun EntrancesPeek(card: BuildingCardUiState, onExpand: () -> Unit) {
     val title = stringResource(R.string.karta_wejscia)
-    val header = with(LocalDensity.current) { MaterialTheme.typography.titleLarge.lineHeight.toDp() }
-    val shown = Odstepy.l + header + Odstepy.s + NEXT_LINE_SHOWN
+    val lineHeight = MaterialTheme.typography.titleLarge.lineHeight
+    val header = with(LocalDensity.current) { lineHeight.toDp() }
+    val shown = Odstepy.l + header + Odstepy.s + NEXT_LINE_PEEK_HEIGHT
     Column {
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         if (card is BuildingCardUiState.Ready) {

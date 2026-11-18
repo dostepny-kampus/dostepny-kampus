@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -22,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
@@ -116,8 +114,6 @@ fun BuildingCardContent(
     onExpand: () -> Unit = {},
 ) {
     val isFullScreen = mode != CardMode.Compact
-    val isPeek = !isFullScreen && card != BuildingCardUiState.Missing
-    val bottom = if (isPeek) 0.dp else Odstepy.m
     Column(if (isFullScreen) modifier.fillMaxSize() else modifier) {
         if (mode == CardMode.Direct) BackHeader(title = symbol, onBack = onBack)
         Column(
@@ -125,7 +121,7 @@ fun BuildingCardContent(
                 Modifier
                     .weight(1f, isFullScreen)
                     .verticalScroll(rememberScrollState())
-                    .padding(start = Odstepy.m, top = Odstepy.m, end = Odstepy.m, bottom = bottom),
+                    .cardPadding(isPeek = card.hasEntrancesPeek(isFullScreen)),
             verticalArrangement = Arrangement.spacedBy(Odstepy.s),
         ) {
             if (!isOnline) OfflinePill()
@@ -147,8 +143,8 @@ fun BuildingCardContent(
                 onRetry = onRetry,
                 onShowPlan = onShowPlan,
                 onMarkFloors = onMarkFloors,
+                onExpand = onExpand,
             )
-            if (isPeek) EntrancesPeek(card = card, onExpand = onExpand)
         }
     }
 }
@@ -163,7 +159,9 @@ private fun FactsOrMissing(
     onRetry: () -> Unit,
     onShowPlan: (String) -> Unit,
     onMarkFloors: (() -> Unit)?,
+    onExpand: () -> Unit,
 ) {
+    if (card.hasEntrancesPeek(isFullScreen)) EntrancesPeek(card = card, onExpand = onExpand)
     if (card is BuildingCardUiState.Ready && isFullScreen) {
         BuildingFacts(
             card = card,
