@@ -267,8 +267,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi liczbę wyjść ewakuacyjnych 2
     Oraz po wybraniu „Pokaż wyjścia ewakuacyjne (2)” widzi listę obu wyjść
 
-  # @do-zrobienia #3118, #3194: windy za drzwiami w arkuszu wejścia jeszcze nie ma w aplikacji, a arkusz pokazuje
-  # inne wejścia dostępne.
+  # @do-zrobienia #3118, #3194: arkusz nie ma jeszcze windy za drzwiami, a pokazuje inne wejścia dostępne.
   @US3.3 @BR-25 @aplikacja @do-zrobienia
   Scenariusz: Opis wejścia zalecanego podaje dojście, drzwi i najbliższą windę
     Zakładając, że Gość niezalogowany otworzył kartę budynku A-1
