@@ -34,7 +34,7 @@ import org.robolectric.annotation.GraphicsMode
 import java.time.LocalDate
 
 private const val CESARSKIE = "Wejście Cesarskie"
-private const val APPROACH = "Przy wejściu znajduje się platforma."
+private const val APPROACH = "Do wejścia prowadzi pochylnia."
 private const val PWR_SOURCE = "Z planów Politechniki Wrocławskiej, stan z 12.10.2024"
 
 /**
