@@ -11,8 +11,10 @@ import io.github.dostepnykampus.building.room.PlanRoom;
 import io.github.dostepnykampus.building.room.PlanSource;
 import java.net.URI;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -23,7 +25,7 @@ import org.springframework.context.support.StaticApplicationContext;
 /**
  * Polecenie importu pobiera warstwy budynku i zapisuje plan.
  *
- * <p>Wymagania: US16, NFR-47</p>
+ * <p>Wymagania: US16, NFR-47, BR-24</p>
  *
  * @since 0.1.0
  */
@@ -88,6 +90,20 @@ final class PlanImportTest {
         );
     }
 
+    @Test
+    void passesEditDateOfOwnEntranceLayer() {
+        final List<String> saved = new ArrayList<>(2);
+        new PlanImport(
+            PlanImportTest.SETTINGS, PlanImportTest.source(),
+            plan -> saved.add(String.format("%s %s", plan.building(), plan.edited()))
+        ).onApplicationEvent(PlanImportTest.ready());
+        MatcherAssert.assertThat(
+            "Plan nie dostał daty edycji swojej warstwy wejść",
+            saved,
+            Matchers.contains("D-1 2026-11-01", "D-2 2026-11-03")
+        );
+    }
+
     private static ApplicationReadyEvent ready(final String... args) {
         final StaticApplicationContext context = new StaticApplicationContext();
         context.refresh();
@@ -113,6 +129,11 @@ final class PlanImportTest {
             @Override
             public List<PlanEntrance> entrances(final String service, final int layer) {
                 return List.of(PlanImportTest.entrance(String.format("%s/%d", service, layer)));
+            }
+
+            @Override
+            public Optional<LocalDate> edited(final String service, final int layer) {
+                return Optional.of(LocalDate.of(2026, 11, layer + 1));
             }
         };
     }

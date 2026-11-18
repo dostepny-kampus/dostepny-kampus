@@ -15,7 +15,9 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -30,7 +32,7 @@ import tools.jackson.databind.json.JsonMapper;
  * Klient usługi ArcGIS zamienia wymyśloną odpowiedź usługi na piętra i pomieszczenia
  * z konturem, numerem i funkcją; przekroczenie limitu czasu kończy odczyt wyjątkiem.
  *
- * <p>Wymagania: US16, US18, NFR-40</p>
+ * <p>Wymagania: US16, US18, NFR-40, BR-24</p>
  *
  * @since 0.1.0
  */
@@ -197,6 +199,38 @@ final class ArcgisPlansTest {
     }
 
     @Test
+    void readsDataEditDateOfLayerInWarsawTime() throws IOException {
+        MatcherAssert.assertThat(
+            "Data edycji warstwy nie wzięła daty edycji danych w strefie Warszawy",
+            ArcgisPlansTest.edited(
+                String.join(
+                    "", "{\"editingInfo\":{\"lastEditDate\":1700000000000,",
+                    "\"dataLastEditDate\":1793748600000}}"
+                )
+            ),
+            Matchers.equalTo(Optional.of(LocalDate.of(2026, 11, 4)))
+        );
+    }
+
+    @Test
+    void readsLastEditDateWithoutDataEditDate() throws IOException {
+        MatcherAssert.assertThat(
+            "Data edycji warstwy bez daty edycji danych nie wzięła daty ostatniej edycji",
+            ArcgisPlansTest.edited("{\"editingInfo\":{\"lastEditDate\":1793748600000}}"),
+            Matchers.equalTo(Optional.of(LocalDate.of(2026, 11, 4)))
+        );
+    }
+
+    @Test
+    void givesNoEditDateWithoutEditingInfo() throws IOException {
+        MatcherAssert.assertThat(
+            "Warstwa bez informacji o edycji dała datę edycji",
+            ArcgisPlansTest.edited("{\"name\":\"Wejscia\"}"),
+            Matchers.equalTo(Optional.empty())
+        );
+    }
+
+    @Test
     void rejectsErrorOfService() {
         Assertions.assertThrows(
             IllegalStateException.class,
@@ -232,6 +266,20 @@ final class ArcgisPlansTest {
             ).getMessage(),
             Matchers.containsString(ArcgisPlansTest.QUERY)
         );
+    }
+
+    private static Optional<LocalDate> edited(final String body) throws IOException {
+        final HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
+        server.createContext("/FeatureServer/2", exchange -> ArcgisPlansTest.send(exchange, body));
+        server.start();
+        try {
+            return new ArcgisPlans(JsonMapper.builder().build()).edited(
+                String.format("http://localhost:%d/FeatureServer", server.getAddress().getPort()),
+                2
+            );
+        } finally {
+            server.stop(0);
+        }
     }
 
     private static List<PlanRoom> rooms() throws IOException {
