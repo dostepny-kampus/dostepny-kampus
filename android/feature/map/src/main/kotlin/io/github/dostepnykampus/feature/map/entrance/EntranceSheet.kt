@@ -118,7 +118,7 @@ internal fun EntranceSheet(
 private fun OtherEntrances(shown: ShownEntrance, onShow: (MapFocus.Entrance) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(
-            text = stringResource(R.string.mapa_wejscie_inne),
+            text = stringResource(R.string.wizyta_inne),
             modifier = Modifier.semantics { heading() },
             style = MaterialTheme.typography.titleMedium,
             fontWeight = Typografia.wyroznienieWaga,
