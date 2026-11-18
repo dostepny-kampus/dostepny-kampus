@@ -318,7 +318,8 @@ private class SheetFit(
     private val offset = state.offset
     private val restsAt =
         state.settledValue.takeIf { state.anchors.hasPositionFor(it) && state.anchors.positionOf(it) == offset }
-    private val shown = window - offset.roundToIntOrZero().coerceIn(minimumValue = 0, maximumValue = window)
+    private val top = if (offset.isNaN()) 0 else offset.roundToInt()
+    private val shown = window - top.coerceIn(minimumValue = 0, maximumValue = window)
     val isResting = offset.isNaN() || (isCompact && restsAt == SheetHeight.Low)
     val isFilled = isOpen && shown * 2 > window && (isKnownLong || restsAt == null)
 
@@ -338,8 +339,6 @@ private fun Modifier.clipBelowKeepShadow(): Modifier =
             this@drawWithContent.drawContent()
         }
     }
-
-private fun Float.roundToIntOrZero(): Int = if (isNaN()) 0 else roundToInt()
 
 /**
  * Przewijanie treści przesuwa najpierw arkusz w górę, a resztę przewinięcia w dół oddaje arkuszowi. Arkusz
