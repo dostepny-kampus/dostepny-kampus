@@ -170,13 +170,13 @@ class AppNavigator(
 
     /**
      * Pozycja [item] paska: „Mapa” wraca do V1, inna otwiera swój ekran nad bieżącym. Ponowne dotknięcie wybranej
-     * pozycji wraca do pierwszego ekranu sekcji w postaci jak po wejściu.
+     * pozycji wraca do pierwszego ekranu sekcji w postaci jak po wejściu; „Mapa” niczego wtedy nie zamyka.
      *
      * Wymagania: NFR-15
      */
     fun open(item: TopLevel) {
         if (selectedItem(current) == item) {
-            restartSection(item)
+            if (item != TopLevel.MAP) restartTop()
             return
         }
         when (item) {
@@ -185,11 +185,6 @@ class AppNavigator(
             TopLevel.HELP -> leaving { add(HelpRoute()) }
             TopLevel.ACCOUNT -> leaving { add(if (isSignedIn) AccountRoute else SignInRoute(isForReport = false)) }
         }
-    }
-
-    private fun restartSection(item: TopLevel) {
-        if (item == TopLevel.MAP) showOnMap(focus = null)
-        restartTop()
     }
 
     /**
