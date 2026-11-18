@@ -57,7 +57,7 @@ class PinnedActionBarTest {
         }
         val report = compose.onNodeWithText(REPORT).getUnclippedBoundsInRoot()
         val shown = compose.onNodeWithText(SHOW).getUnclippedBoundsInRoot()
-        assertTrue("„$SHOW” ma stać pod „$REPORT”", shown.top >= report.bottom)
+        assertTrue("„$SHOW” $shown ma stać pod „$REPORT” $report", shown.top >= report.bottom)
         assertEquals(
             "Oba przyciski mają 328 dp szerokości",
             listOf(328f, 328f),
