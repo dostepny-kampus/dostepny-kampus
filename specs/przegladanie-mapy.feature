@@ -316,16 +316,16 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
   # @do-zrobienia #3118: arkusz nie ma jeszcze części „Za drzwiami”.
   @US3.3 @US16.3 @BR-25 @aplikacja @do-zrobienia
   Szablon scenariusza: Część „Za drzwiami” podaje najbliższą windę i jej piętra
-    Zakładając, że najbliższa winda wejścia zalecanego A-1 na planie PWr <winda>
+    Zakładając, że najbliższa winda wejścia zalecanego A-1 na planie PWr: <winda>
     Jeżeli Gość niezalogowany otworzy arkusz tego wejścia
     Wtedy w części „Za drzwiami” widzi „<pierwsze zdanie>”
     Oraz pod spodem widzi „<drugie zdanie>”
 
     Przykłady:
-      | winda                                                                     | pierwsze zdanie                                 | drugie zdanie                          |
-      | stoi przy klatkach C i D 28 m od wejścia i jeździ z piwnicy na 3 piętro   | Winda przy klatkach C i D, ok. 30 m od wejścia. | Jeździ od piwnicy do 3 piętra.         |
-      | stoi 31 m od wejścia, bez klatek w danych, i jeździ z parteru na 1 piętro | Winda, ok. 30 m od wejścia.                     | Jeździ od parteru do 1 piętra.         |
-      | stoi 12 m od wejścia i staje na piwnicy, parterze i antresoli             | Winda, ok. 10 m od wejścia.                     | Jedzie na: piwnica, parter, antresola. |
+      | winda                                            | pierwsze zdanie                                 | drugie zdanie                          |
+      | przy klatkach C i D, 28 m, z piwnicy na 3 piętro | Winda przy klatkach C i D, ok. 30 m od wejścia. | Jeździ od piwnicy do 3 piętra.         |
+      | bez klatek w danych, 31 m, z parteru na 1 piętro | Winda, ok. 30 m od wejścia.                     | Jeździ od parteru do 1 piętra.         |
+      | 12 m, staje na piwnicy, parterze i antresoli     | Winda, ok. 10 m od wejścia.                     | Jedzie na: piwnica, parter, antresola. |
 
   # @do-zrobienia #3118: arkusz nie ma jeszcze części „Za drzwiami”.
   @US3.3 @BR-25 @aplikacja @do-zrobienia
