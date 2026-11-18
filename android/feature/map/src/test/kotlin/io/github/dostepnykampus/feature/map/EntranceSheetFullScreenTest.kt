@@ -29,7 +29,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-private const val HEADER = "Wejście, budynek C-13"
+private const val HEADER = "Wejście"
 
 private const val TAGS = """"entrance":"main","wheelchair":"yes""""
 
