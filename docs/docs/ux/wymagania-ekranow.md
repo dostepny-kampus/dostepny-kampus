@@ -167,7 +167,7 @@ Przejście do karty budynku z arkusza innego obiektu to zawsze ten sam wiersz bu
 
 Wiersz budynku mają arkusze wejścia, toalety, schodów i bariery, arkusz znalezionej sali i arkusz „Który budynek?”. Znak budynku znaczy tylko „otwórz kartę tego budynku”. Dlatego nie stoi w wynikach wyszukiwania ani na liście budynków: tam wybór przenosi mapę do budynku, a to inna czynność (decyzja z 18.11.2026).
 
-Dotknięcie wiersza budynku zamyka arkusz i otwiera kartę V2 na niskiej wysokości. Mapa się nie rusza, także gdy karta zasłoni zaznaczony obiekt. Osoba patrzyła na obiekt, a nie na budynek, więc ruch gubiłby jej miejsce na mapie (US2.8, NFR-56). Gdy arkusz otwarto z karty tego budynku, karta wraca na tę samą wysokość i do tego samego miejsca przewinięcia. Przy skali czcionki co najmniej 1,5 karta otwiera się na cały ekran. Karta otwarta wierszem zamyka się jak karta otwarta konturem.
+Dotknięcie wiersza budynku zamyka arkusz i otwiera kartę V2 na niskiej wysokości. Mapa nie jedzie do budynku, tylko zachowuje się jak po dotknięciu konturu: stoi, chyba że karta zasłoniłaby cały widoczny kontur (wiersz o dotknięciu konturu). Osoba patrzyła na obiekt obok budynku, więc przelot gubiłby jej miejsce na mapie (US2.8, NFR-56). Gdy arkusz otwarto z karty tego budynku, karta wraca na tę samą wysokość i do tego samego miejsca przewinięcia. Przy skali czcionki co najmniej 1,5 karta otwiera się na cały ekran. Karta otwarta wierszem zamyka się jak karta otwarta konturem.
 
 Arkusz bariery na dole mapy otwiera dotknięcie znaku. Bariery nie trzeba szukać na liście, a TalkBack dochodzi do niej przez listę budynków (NFR-19):
 
