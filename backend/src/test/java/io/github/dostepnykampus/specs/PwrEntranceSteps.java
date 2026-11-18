@@ -179,7 +179,9 @@ public final class PwrEntranceSteps {
         this.store.save(
             new BuildingPlan(
                 "A-1", List.of(PwrEntranceSteps.FLOOR), List.of(),
-                this.source.entrances(url, PwrEntranceSteps.LAYER)
+                this.source.entrances(
+                    url, PwrEntranceSteps.LAYER, url, PwrEntranceSteps.LAYER
+                )
             )
         );
     }
