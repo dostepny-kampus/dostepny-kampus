@@ -91,6 +91,13 @@
     <string name="karta_ocena_import">Z map i opisów, stan z %1$s</string>
     <string name="karta_ocena_obchod">Sprawdzone na miejscu %1$s</string>
     <string name="karta_bez_nazwy">Wejście bez nazwy w danych</string>
+    <plurals name="karta_wejscia_bez_nazw">
+        <item quantity="one">%1$d wejście bez nazwy w danych</item>
+        <item quantity="few">%1$d wejścia bez nazw w danych</item>
+        <item quantity="many">%1$d wejść bez nazw w danych</item>
+        <item quantity="other">%1$d wejścia bez nazw w danych</item>
+    </plurals>
+    <string name="karta_nikt_nie_sprawdzil">Nikt jeszcze nie sprawdził tych wejść.</string>
     <string name="karta_odpowiedz_zalecane">Zalecane: „%1$s”.</string>
     <string name="karta_odpowiedz_zadne">Żadne z %1$d wejść nie jest dostępne.</string>
     <string name="karta_odpowiedz_jedyne">Jedyne wejście nie jest dostępne.</string>

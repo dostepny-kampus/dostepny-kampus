@@ -11,13 +11,13 @@ import kotlinx.serialization.Serializable
 
 /**
  * V4 Zgłoszenie szybkie na kroku [step]. Każdy krok to osobny wpis historii, więc „Wstecz” cofa o krok.
- * [entranceId]: wejście wybrane na V2 albo V3 przez „Zgłoś barierę przy wejściu”. Wpis niesie
+ * [entranceId]: wejście wybrane w arkuszu wejścia przez „Zgłoś barierę przy wejściu”. Wpis niesie
  * dane z wcześniejszych kroków, więc powrót między krokami nie usuwa zdjęcia ani grupy.
  *
  * Wymagania: US4, NFR-15, US4.6, US4.8, BR-14, US4.5, US4.2
  *
  * @property step bieżący krok
- * @property entranceId wejście z V2 albo V3; `null`, gdy zgłoszenie zaczęło się z mapy
+ * @property entranceId wejście z arkusza wejścia; `null`, gdy zgłoszenie nie wskazuje wejścia
  * @property photoId identyfikator zdjęcia z kroku 1
  * @property photoPath plik zdjęcia z kroku 1
  * @property group grupa barier z kroku 2
