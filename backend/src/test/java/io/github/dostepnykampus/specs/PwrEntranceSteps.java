@@ -107,7 +107,7 @@ public final class PwrEntranceSteps {
     private @Nullable HttpServer service;
 
     /**
-     * Transakcja zapisu planu; null przed importem i po wycofaniu.
+     * Transakcja zapisu planu; null przed importem.
      */
     private @Nullable TransactionStatus transaction;
 
@@ -211,12 +211,10 @@ public final class PwrEntranceSteps {
         final TransactionStatus status = this.transaction;
         if (status != null) {
             this.transactions.rollback(status);
-            this.transaction = null;
         }
         final HttpServer server = this.service;
         if (server != null) {
             server.stop(0);
-            this.service = null;
         }
     }
 
