@@ -52,7 +52,7 @@ internal const val OPENMAPTILES_SITE = "https://openmaptiles.org/"
 
 /** Dzień stanu danych z importu: najpóźniejszy dzień oznaczenia wejść ze źródła PWr; `null`, gdy takich nie ma. */
 internal fun BuildingCatalog.dataDay(): LocalDate? {
-    val imported = entrances.mapNotNull { it.assessment }.filter { it.source == AssessmentSource.IMPORT }
+    val imported = entrances.mapNotNull { it.assessment }.filter { it.source != AssessmentSource.WALKTHROUGH }
     return imported.maxOfOrNull { it.date }
 }
 

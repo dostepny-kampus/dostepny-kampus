@@ -17,10 +17,17 @@ import java.time.LocalDate
  */
 public data class EntranceAssessment(val date: LocalDate, val source: AssessmentSource)
 
-/** Źródło oznaczenia wejścia (`markingSource` z kontraktu API). Wymagania: BR-24 */
+/**
+ * Źródło oznaczenia wejścia (`markingSource` z kontraktu API, przy imporcie razem z polem `source` wejścia).
+ *
+ * Wymagania: BR-24, BR-27
+ */
 public enum class AssessmentSource {
-    /** Import danych PWr albo OpenStreetMap. */
+    /** Import z OpenStreetMap i opisów, bez warstwy wejść planów PWr. */
     IMPORT,
+
+    /** Import z warstwy wejść planów PWr. */
+    PWR_PLANS,
 
     /** Przyjęta zmiana oznaczenia z obchodu. */
     WALKTHROUGH,

@@ -10,7 +10,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 /**
  * Wejście do budynku z oznaczeniem wejścia (`Entrance` z kontraktu API).
  *
- * Wymagania: US17.3
+ * Wymagania: US17.3, US2.1, US3.3, BR-27
  *
  * @property id identyfikator wejścia
  * @property buildingSymbol symbol budynku, do którego prowadzi wejście
@@ -23,6 +23,8 @@ import io.github.dostepnykampus.core.model.GeoPoint
  * @property assessment dzień i źródło oznaczenia z serwera; `null` dla wejścia z pliku konturów,
  *   który ich nie podaje
  * @property floorId piętro wejścia z listy pięter budynku (`Floor.id`); `null`, gdy dane go nie podają
+ * @property approach opis dojścia do wejścia, np. „Do wejścia prowadzą schody.”; `null`, gdy dane go nie podają
+ * @property doorWidthCm szerokość drzwi w centymetrach, zawsze dodatnia; `null`, gdy dane jej nie podają
  */
 public data class Entrance(
     val id: String,
@@ -34,6 +36,8 @@ public data class Entrance(
     val marking: EntranceMarking,
     val assessment: EntranceAssessment? = null,
     val floorId: String? = null,
+    val approach: String? = null,
+    val doorWidthCm: Int? = null,
 ) {
     /** Czy rodzaj wejścia kwalifikuje je do pokazania odwiedzającym. Wymagania: BR-25 */
     val isForVisitors: Boolean

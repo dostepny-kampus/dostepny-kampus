@@ -47,9 +47,10 @@ public data class ApiBuilding(val building: Building, val detailLevel: DetailLev
  *
  * Kontrakt nie podaje rodzaju wejścia OSM, więc [Entrance.type] jest puste.
  * Dzień i źródło oznaczenia trafiają do [Entrance.assessment]; nieistniejący dzień
- * albo nieznane źródło to błąd treści odpowiedzi.
+ * albo nieznane źródło to błąd treści odpowiedzi. Import wejścia z polem `source` ma źródło
+ * [AssessmentSource.PWR_PLANS]. Szerokość drzwi 0 to brak szerokości.
  *
- * Wymagania: US17.3
+ * Wymagania: US17.3, BR-24, BR-27
  *
  * @property building symbol, nazwa i kontur
  * @property detailLevel poziom szczegółowości
@@ -117,9 +118,17 @@ private fun EntranceJson.toModel(): Entrance =
         type = type,
         location = location.toModel(),
         marking = EntranceMarking.valueOf(marking.name),
-        assessment = EntranceAssessment(date = markingDay(markingDate), source = markingSource.toModel()),
+        assessment = EntranceAssessment(date = markingDay(markingDate), source = assessmentSource()),
         floorId = floorId,
+        approach = approach,
+        doorWidthCm = doorWidthCm?.takeIf { it > 0 },
     )
+
+private fun EntranceJson.assessmentSource(): AssessmentSource =
+    when (markingSource) {
+        EntranceJson.MarkingSource.IMPORT -> if (source == null) AssessmentSource.IMPORT else AssessmentSource.PWR_PLANS
+        EntranceJson.MarkingSource.WALKTHROUGH -> AssessmentSource.WALKTHROUGH
+    }
 
 private fun BuildingJson.toModel(json: Json): ApiBuilding =
     ApiBuilding(
@@ -132,12 +141,6 @@ private fun markingDay(text: String): LocalDate =
         LocalDate.parse(text)
     } catch (error: DateTimeParseException) {
         throw IllegalArgumentException("Zła data oznaczenia wejścia", error)
-    }
-
-private fun EntranceJson.MarkingSource.toModel(): AssessmentSource =
-    when (this) {
-        EntranceJson.MarkingSource.IMPORT -> AssessmentSource.IMPORT
-        EntranceJson.MarkingSource.WALKTHROUGH -> AssessmentSource.WALKTHROUGH
     }
 
 internal fun GeoPointJson.toModel(): GeoPoint {

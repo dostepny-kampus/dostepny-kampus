@@ -48,8 +48,14 @@ sealed interface VisitAnswer {
     /** Brak wejść odwiedzających w danych nie potwierdza niedostępności budynku. Wymagania: US17.1 */
     data object NoData : VisitAnswer
 
-    /** Jest wejście zalecane o identyfikatorze [id]; [name] to jego nazwa, `null`, gdy danych nazwy nie ma. */
-    data class Accessible(val id: String, val name: String?) : VisitAnswer
+    /**
+     * Jest wejście zalecane.
+     *
+     * @property id identyfikator wejścia zalecanego
+     * @property name nazwa wejścia; `null`, gdy danych nazwy nie ma
+     * @property doorWidthCm szerokość drzwi w centymetrach; `null`, gdy danych szerokości nie ma
+     */
+    data class Accessible(val id: String, val name: String?, val doorWidthCm: Int? = null) : VisitAnswer
 
     /** Żadne z [total] wejść odwiedzających nie jest „dostępne” i żadne nie ma „brak danych”. */
     data class NoAccessible(val total: Int) : VisitAnswer
@@ -75,7 +81,8 @@ sealed interface VisitAnswer {
 fun visitAnswer(entrances: List<OrderedEntrance>): VisitAnswer {
     if (entrances.isEmpty()) return VisitAnswer.NoData
     val recommended = entrances.firstOrNull { it.isRecommended }
-    val answer = recommended?.let { VisitAnswer.Accessible(id = it.entrance.id, name = it.entrance.name) }
+    val answer =
+        recommended?.entrance?.let { VisitAnswer.Accessible(id = it.id, name = it.name, doorWidthCm = it.doorWidthCm) }
     return answer ?: missingOrNone(entrances)
 }
 
