@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map.building
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
@@ -24,6 +25,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -213,6 +215,28 @@ class BuildingCardModesTest {
         listOf(NAME, CHECK, SHOW, "Wejścia").forEach { compose.onAllNodesWithText(it).onFirst().assert(inScroll) }
         assertOrder(CHECK, SHOW, "Wejścia")
         compose.onAllNodes(hasClickAction() and !hasText(BACK) and !inScroll).assertCountEquals(0)
+    }
+
+    /**
+     * Wiersz: V2 przy czcionce 200 %: wiersz o wejściach zaczyna się pod „Zamknij” i ma całą szerokość karty pod
+     *   symbolem, więc łamie się tylko po słowach; „Zamknij” zostaje obok symbolu.
+     *
+     * Wymagania: NFR-20, US2.8
+     */
+    @Test
+    @Config(fontScale = 2f)
+    fun givesEntranceRowWholeWidthAtLargeFont() {
+        card(CardMode.Compact)
+        val close = compose.onNodeWithText(CLOSE).getUnclippedBoundsInRoot()
+        val symbol = compose.onNodeWithText("A-1", useUnmergedTree = true).getUnclippedBoundsInRoot()
+        val row = compose.onNodeWithText(ROW, useUnmergedTree = true).getUnclippedBoundsInRoot()
+        assertTrue("„Zamknij” obok symbolu: $close, symbol $symbol", close.top < symbol.bottom)
+        assertTrue("wiersz pod „Zamknij”: $row, „Zamknij” $close", row.top >= close.bottom)
+        assertTrue("wiersz od lewej krawędzi symbolu: $row, symbol $symbol", row.left <= symbol.left)
+        val line = compose.onNodeWithText(ROW, useUnmergedTree = true).fetchSemanticsNode()
+        val layout = mutableListOf<TextLayoutResult>()
+        line.config[SemanticsActions.GetTextLayoutResult].action?.invoke(layout)
+        assertEquals("„$ROW” w jednym wierszu, bez łamania słów", 1, layout.single().lineCount)
     }
 
     private fun entranceRow(name: String) = compose.onNode(hasClickAction() and hasText(name))
