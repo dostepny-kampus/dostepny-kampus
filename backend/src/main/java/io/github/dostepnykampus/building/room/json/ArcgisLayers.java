@@ -18,8 +18,9 @@ import tools.jackson.databind.ObjectMapper;
 
 /**
  * Warstwy usługi ArcGIS PWr (FeatureServer): obiekty warstwy w formacie GeoJSON w układzie
- * WGS 84, pobierane stronami po 1000 do ostatniej strony. Błąd usługi, odpowiedź bez listy
- * obiektów albo przekroczenie czasu daje IllegalStateException ze ścieżką zapytania.
+ * WGS 84, pobierane stronami po 1000 do ostatniej strony, oraz opis warstwy. Błąd usługi,
+ * odpowiedź strony bez listy obiektów albo przekroczenie czasu daje IllegalStateException ze
+ * ścieżką zapytania.
  *
  * <p>Wymagania: US16, NFR-40</p>
  *
@@ -78,6 +79,20 @@ final class ArcgisLayers {
         return this.features(service, layer, "*", true);
     }
 
+    /**
+     * Opis warstwy z usługi, m.in. z informacją o ostatniej edycji (editingInfo).
+     *
+     * @param service Adres usługi FeatureServer
+     * @param layer Numer warstwy
+     * @return Opis warstwy w formacie JSON usługi
+     */
+    JsonNode description(final String service, final int layer) {
+        return this.fetch(
+            UriComponentsBuilder.fromUriString(service).pathSegment(String.valueOf(layer))
+                .queryParam("f", "json").build().encode().toUri()
+        );
+    }
+
     private List<JsonNode> features(
         final String service, final int layer, final String fields, final boolean geometry
     ) {
@@ -100,6 +115,14 @@ final class ArcgisLayers {
     }
 
     private JsonNode page(final URI uri) {
+        final JsonNode root = this.fetch(uri);
+        if (!root.path("features").isArray()) {
+            throw new IllegalStateException(uri.getPath());
+        }
+        return root;
+    }
+
+    private JsonNode fetch(final URI uri) {
         final JsonNode root;
         try {
             root = this.mapper.readTree(
@@ -114,7 +137,7 @@ final class ArcgisLayers {
                 ex
             );
         }
-        if (root.has("error") || !root.path("features").isArray()) {
+        if (root.has("error")) {
             throw new IllegalStateException(uri.getPath());
         }
         return root;

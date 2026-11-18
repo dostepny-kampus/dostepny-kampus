@@ -5,7 +5,9 @@
  */
 package io.github.dostepnykampus.building.room;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Plany pięter z warstw pięter, pomieszczeń i wejść usługi FeatureServer.
@@ -44,4 +46,13 @@ public interface PlanSource {
      * @return Wpisy z piętrem w kolejności usługi
      */
     List<PlanEntrance> entrances(String service, int layer);
+
+    /**
+     * Dzień ostatniej edycji danych warstwy z opisu warstwy w usłudze.
+     *
+     * @param service Adres usługi FeatureServer bez końcowego ukośnika
+     * @param layer Numer warstwy
+     * @return Dzień edycji albo pusty, gdy opis warstwy go nie podaje
+     */
+    Optional<LocalDate> edited(String service, int layer);
 }

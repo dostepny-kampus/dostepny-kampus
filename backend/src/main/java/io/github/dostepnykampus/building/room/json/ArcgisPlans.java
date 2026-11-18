@@ -10,6 +10,9 @@ import io.github.dostepnykampus.building.room.PlanFloor;
 import io.github.dostepnykampus.building.room.PlanRoom;
 import io.github.dostepnykampus.building.room.PlanSource;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -27,7 +30,8 @@ import tools.jackson.databind.ObjectMapper;
  * bez wielokąta jest pomijane. Piętro bez identyfikatora LEVEL_ID jest pomijane. Wielkość
  * liter nazw pól pomieszczenia jest dowolna, a funkcja nazywa się Funkcja, Funkcje albo
  * d_funkcja. Numer z samych spacji jest pusty, a brak funkcji daje „Inne”. Pola wejść opisuje
- * {@link PlanSource#entrances(String, int)}.
+ * {@link PlanSource#entrances(String, int)}. Data edycji warstwy to dzień w strefie Warszawy
+ * z dataLastEditDate, a bez niej z lastEditDate opisu warstwy.
  *
  * <p>Wymagania: US16, US18, BR-24, BR-27, NFR-40</p>
  *
@@ -35,6 +39,11 @@ import tools.jackson.databind.ObjectMapper;
  */
 @Component
 final class ArcgisPlans implements PlanSource {
+
+    /**
+     * Strefa czasu dnia edycji warstwy.
+     */
+    private static final ZoneId ZONE = ZoneId.of("Europe/Warsaw");
 
     /**
      * Szerokość drzwi w centymetrach, liczba całkowita albo z zerami po kropce.
@@ -100,6 +109,17 @@ final class ArcgisPlans implements PlanSource {
             .filter(feature -> "Point".equals(feature.path("geometry").path("type").asString("")))
             .filter(feature -> !ArcgisPlans.field(feature, "pietro").isEmpty())
             .map(ArcgisPlans::entrance).toList();
+    }
+
+    @Override
+    public Optional<LocalDate> edited(final String service, final int layer) {
+        final JsonNode editing = this.layers.description(service, layer).path("editingInfo");
+        return Optional.of(editing.path("dataLastEditDate")).filter(JsonNode::isNumber)
+            .or(() -> Optional.of(editing.path("lastEditDate")).filter(JsonNode::isNumber))
+            .map(
+                date -> Instant.ofEpochMilli(date.asLong()).atZone(ArcgisPlans.ZONE)
+                    .toLocalDate()
+            );
     }
 
     private static String marking(final String adapted) {

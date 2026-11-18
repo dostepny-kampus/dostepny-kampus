@@ -6,18 +6,22 @@
 package io.github.dostepnykampus.building.room.persistence;
 
 import io.github.dostepnykampus.building.room.PlanEntrance;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import org.jspecify.annotations.Nullable;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
 /**
  * Wpisy warstwy wejść PWr z piętrem planu w tabelach entrances i evacuation_exits. Wejście
  * z OpenStreetMap dostaje w kolumnach pwr_name, pwr_marking, approach i door_width_cm dane
  * najbliższego wpisu w promieniu 15 m; każdy inny wpis staje się wejściem
- * {@code pwr/<geohash>}. Kolumn name i marking wejść z OpenStreetMap zapis nie zmienia. Dane PWr
- * i wyjścia ewakuacyjne budynku są zastępowane przy każdym zapisie.
+ * {@code pwr/<geohash>}. Kolumn name i marking wejść z OpenStreetMap zapis nie zmienia. Datą
+ * oznaczenia z PWr (pwr_marking_date, a przy wejściu {@code pwr/…} także marking_date) jest
+ * dzień edycji warstwy. Dane PWr i wyjścia ewakuacyjne budynku są zastępowane przy każdym
+ * zapisie.
  *
- * <p>Wymagania: BR-24, BR-27, US2.6, US17.1</p>
+ * <p>Wymagania: BR-24, BR-27, US2.6, US17.1, US17.3</p>
  *
  * @since 0.1.0
  */
@@ -62,12 +66,19 @@ final class PostgisPwrEntrances {
     private final JdbcClient jdbc;
 
     /**
+     * Dzień edycji warstwy wejść albo null, gdy usługa go nie podaje.
+     */
+    private final @Nullable LocalDate edited;
+
+    /**
      * Wejścia PWr w tabelach wejść.
      *
      * @param jdbc Dostęp do tabel wejść
+     * @param edited Dzień edycji warstwy wejść, data oznaczenia z PWr; null to dzień zapisu
      */
-    PostgisPwrEntrances(final JdbcClient jdbc) {
+    PostgisPwrEntrances(final JdbcClient jdbc, final @Nullable LocalDate edited) {
         this.jdbc = jdbc;
+        this.edited = edited;
     }
 
     /**
@@ -87,7 +98,8 @@ final class PostgisPwrEntrances {
         this.jdbc.sql(
             """
             UPDATE entrances
-            SET pwr_name = NULL, pwr_marking = NULL, approach = NULL, door_width_cm = NULL
+            SET pwr_name = NULL, pwr_marking = NULL, approach = NULL, door_width_cm = NULL,
+                pwr_marking_date = NULL
             WHERE building_symbol = :building
             """
         ).param("building", building).update();
@@ -97,7 +109,8 @@ final class PostgisPwrEntrances {
                 PostgisPwrEntrances.NEAREST,
                 """
                 UPDATE entrances SET pwr_name = near.name, pwr_marking = near.marking,
-                    approach = near.approach, door_width_cm = near.width
+                    approach = near.approach, door_width_cm = near.width,
+                    pwr_marking_date = COALESCE(CAST(:edited AS DATE), CURRENT_DATE)
                 FROM near
                 WHERE entrances.building_symbol = :building AND entrances.id = near.id
                 """
@@ -111,9 +124,10 @@ final class PostgisPwrEntrances {
                 """
                 INSERT INTO entrances (id, building_symbol, name, main, location, floor_id,
                     marking, marking_date, marking_source, approach, door_width_cm, pwr_name,
-                    pwr_marking)
+                    pwr_marking, pwr_marking_date)
                 SELECT DISTINCT ON (id) id, :building, name, FALSE, spot, floor, marking,
-                    CURRENT_DATE, 'IMPORT', approach, width, name, marking
+                    COALESCE(CAST(:edited AS DATE), CURRENT_DATE), 'IMPORT', approach, width,
+                    name, marking, COALESCE(CAST(:edited AS DATE), CURRENT_DATE)
                 FROM (
                     SELECT 'pwr/' || ST_GeoHash(place.spot, 10) AS id, place.spot, pwr.floor,
                         pwr.marking, pwr.name, pwr.approach, pwr.width
@@ -128,7 +142,8 @@ final class PostgisPwrEntrances {
                 ON CONFLICT (id, building_symbol) DO UPDATE SET name = EXCLUDED.name,
                     location = EXCLUDED.location, floor_id = EXCLUDED.floor_id,
                     approach = EXCLUDED.approach, door_width_cm = EXCLUDED.door_width_cm,
-                    pwr_name = EXCLUDED.pwr_name, pwr_marking = EXCLUDED.pwr_marking
+                    pwr_name = EXCLUDED.pwr_name, pwr_marking = EXCLUDED.pwr_marking,
+                    pwr_marking_date = EXCLUDED.pwr_marking_date
                 """
             ),
             building, known, entrances
@@ -176,7 +191,8 @@ final class PostgisPwrEntrances {
             .param("names", entrances.stream().map(PlanEntrance::name).toArray(String[]::new))
             .param("approaches", PostgisPwrEntrances.approaches(entrances))
             .param("widths", PostgisPwrEntrances.widths(entrances))
-            .param("exits", PostgisPwrEntrances.flags(entrances));
+            .param("exits", PostgisPwrEntrances.flags(entrances))
+            .param("edited", this.edited);
     }
 
     private static String[] approaches(final List<PlanEntrance> entrances) {
