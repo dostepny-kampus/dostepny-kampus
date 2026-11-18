@@ -11,6 +11,7 @@ import io.github.dostepnykampus.building.room.BuildingPlan;
 import io.github.dostepnykampus.building.room.FloorPlans;
 import io.github.dostepnykampus.building.room.PlanEntrance;
 import io.github.dostepnykampus.building.room.PlanFloor;
+import java.time.LocalDate;
 import java.util.List;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -108,6 +109,46 @@ final class PostgisPwrEntrancesIT {
                 "o1|Wejście Cesarskie|ACCESSIBLE|120|true",
                 "pwr|Wejście boczne|INACCESSIBLE|80|false"
             )
+        );
+    }
+
+    @Test
+    void storesLayerEditDateAsPwrMarkingDate(final ApplicationContext context) {
+        final JdbcClient jdbc = context.getBean(JdbcClient.class);
+        new SampleBuilding("G-956", "Budynek z datą warstwy", "DETAILED")
+            .wkt(jdbc, "POLYGON((17 51,17.002 51,17.002 51.002,17 51.002,17 51))");
+        jdbc.sql(
+            """
+            INSERT INTO entrances (id, building_symbol, name, main, location, marking,
+                marking_date, marking_source)
+            VALUES ('o1', 'G-956', 'W-1', TRUE, ST_SetSRID(ST_MakePoint(17.0, 51.0), 4326),
+                'NO_DATA', DATE '2026-11-01', 'IMPORT')
+            """
+        ).update();
+        context.getBean(FloorPlans.class).save(
+            new BuildingPlan(
+                "G-956", List.of(new PlanFloor("P0", "Parter", 0)), List.of(),
+                List.of(
+                    PostgisPwrEntrancesIT.pwr(
+                        "P0", 17.000_05, 51.0, "ACCESSIBLE", "Wejście", null, null
+                    ),
+                    PostgisPwrEntrancesIT.pwr(
+                        "P0", 17.0005, 51.0005, "INACCESSIBLE", "Wejście", null, null
+                    )
+                ),
+                LocalDate.of(2026, 11, 4)
+            )
+        );
+        MatcherAssert.assertThat(
+            "Data edycji warstwy nie stała się datą oznaczenia z planów PWr",
+            jdbc.sql(
+                """
+                SELECT CASE WHEN id LIKE 'pwr/%' THEN 'pwr' ELSE id END || '|' || marking_date
+                    || '|' || pwr_marking_date
+                FROM entrances WHERE building_symbol = 'G-956' ORDER BY 1
+                """
+            ).query(String.class).list(),
+            Matchers.contains("o1|2026-11-01|2026-11-04", "pwr|2026-11-04|2026-11-04")
         );
     }
 

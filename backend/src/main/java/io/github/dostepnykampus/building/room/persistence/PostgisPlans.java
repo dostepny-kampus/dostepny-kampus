@@ -11,9 +11,11 @@ import io.github.dostepnykampus.building.room.PlanEntrance;
 import io.github.dostepnykampus.building.room.PlanFloor;
 import io.github.dostepnykampus.building.room.PlanRoom;
 import io.github.dostepnykampus.building.room.PwrFunction;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionOperations;
@@ -79,7 +81,7 @@ public final class PostgisPlans implements FloorPlans {
                 this.jdbc.sql(
                     "UPDATE buildings SET detail_level = 'DETAILED' WHERE symbol = :building"
                 ).param("building", building).update();
-                this.entrances(building, known, entrances);
+                this.entrances(building, known, entrances, plan.edited());
                 new PostgisShafts(this.jdbc).link(building);
             }
         );
@@ -160,7 +162,8 @@ public final class PostgisPlans implements FloorPlans {
     }
 
     private void entrances(
-        final String building, final Set<String> known, final List<PlanEntrance> entrances
+        final String building, final Set<String> known, final List<PlanEntrance> entrances,
+        final @Nullable LocalDate edited
     ) {
         this.jdbc.sql(
             """
@@ -181,6 +184,6 @@ public final class PostgisPlans implements FloorPlans {
             .param("floors", entrances.stream().map(PlanEntrance::floorId).toArray(String[]::new))
             .param("points", entrances.stream().map(PlanEntrance::point).toArray(String[]::new))
             .update();
-        new PostgisPwrEntrances(this.jdbc).save(building, known, entrances);
+        new PostgisPwrEntrances(this.jdbc, edited).save(building, known, entrances);
     }
 }
