@@ -49,11 +49,6 @@ internal fun BuildingCatalog.shownEntrance(id: String): ShownEntrance? {
     val entrance = entrances.firstOrNull { it.id == id } ?: return null
     val ordered = orderedEntrances(entrances.filter { it.buildingSymbol == entrance.buildingSymbol })
     val isRecommended = ordered.any { it.isRecommended && it.entrance.id == id }
-    val others =
-        ordered
-            .filter { !it.isRecommended && it.entrance.marking == EntranceMarking.ACCESSIBLE }
-            .map { it.entrance }
-            .takeIf { isRecommended }
-            .orEmpty()
-    return ShownEntrance(entrance = entrance, isRecommended = isRecommended, others = others)
+    val others = ordered.filter { !it.isRecommended && it.entrance.marking == EntranceMarking.ACCESSIBLE }
+    return ShownEntrance(entrance, isRecommended, others.map { it.entrance }.takeIf { isRecommended }.orEmpty())
 }
