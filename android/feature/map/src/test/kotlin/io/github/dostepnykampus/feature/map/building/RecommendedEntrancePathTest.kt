@@ -46,7 +46,7 @@ class RecommendedEntrancePathTest {
             entrance(name = "Zachodnie"),
         )
         assertEquals(
-            listOf("Zalecane", "Boczne", "Główne", "Od dziedzińca", "Północne", "Południowe", "Zachodnie"),
+            listOf("Zalecane", "Boczne", "Główne", "Od dziedzińca", "Południowe", "Północne", "Zachodnie"),
             shown(NAMES),
         )
         assertEquals("Dostępne", shown(MARKINGS).first())
@@ -102,7 +102,7 @@ class RecommendedEntrancePathTest {
             entrance(name = "Główne", type = "main", wheelchair = "no"),
             entrance(name = "Boczne", wheelchair = "no"),
         )
-        assertEquals(listOf("Główne", "Boczne"), shown(NAMES))
+        assertEquals(listOf("Boczne", "Główne"), shown(NAMES))
         assertEquals(listOf("Niedostępne", "Niedostępne"), shown(MARKINGS))
     }
 
