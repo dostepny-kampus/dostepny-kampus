@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -22,6 +23,7 @@ import androidx.compose.ui.test.performTouchInput
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,8 +37,8 @@ class MapSearchCloseTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val map =
-        CampusMapView { _: CampusMapData, _, _, _, _, _, _, modifier: Modifier ->
-            Box(modifier.testTag(MAP))
+        CampusMapView { _: CampusMapData, _, _, _, _, onBuildingsTouch, _, modifier: Modifier ->
+            Box(modifier.testTag(MAP).clickable { onBuildingsTouch(listOf("C-13")) })
         }
     private val repository =
         BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
@@ -66,6 +68,25 @@ class MapSearchCloseTest {
         field.assertIsNotFocused()
         field.assertTextEquals("C", includeEditableText = true)
         compose.onNode(hasContentDescription("C-13") and hasClickAction()).assertDoesNotExist()
+    }
+
+    /**
+     * Wiersz: V1 z otwartymi podpowiedziami. Dotknięcie konturu budynku tylko zamyka klawiaturę i podpowiedzi,
+     *   a nie otwiera budynku; dopiero drugie dotknięcie go otwiera.
+     *
+     * Wymagania: US3.1, NFR-17
+     */
+    @Test
+    fun firstTouchOnlyCloses() {
+        val opened = mutableListOf<String>()
+        compose.showMap(viewModel = testMapViewModel(repository), map = map, onBuildingClick = { opened += it })
+        compose.onNode(hasSetTextAction()).performTextInput("C")
+        compose.onNodeWithTag(MAP).performTouchInput { click() }
+
+        compose.runOnIdle { assertEquals(emptyList<String>(), opened, "Pierwsze dotknięcie nie otwiera budynku") }
+        compose.onNode(hasSetTextAction()).assertIsNotFocused()
+        compose.onNodeWithTag(MAP).performTouchInput { click() }
+        compose.runOnIdle { assertEquals(listOf("C-13"), opened, "Drugie dotknięcie otwiera budynek") }
     }
 
     private companion object {

@@ -29,15 +29,19 @@ internal fun testMapViewModel(
         geometry = ::campusMapData,
     )
 
-/** Ekran mapy V1 z modelem [viewModel] i zaznaczeniem [focus] na widoku [map]; czeka na katalog i dane mapy. */
+/**
+ * Ekran mapy V1 z modelem [viewModel] i zaznaczeniem [focus] na widoku [map]; budynek otwarty z mapy dostaje
+ * [onBuildingClick]. Czeka na katalog i dane mapy.
+ */
 internal fun ComposeContentTestRule.showMap(
     viewModel: CampusMapViewModel,
     map: CampusMapView,
     focus: MapFocus? = null,
+    onBuildingClick: (String) -> Unit = {},
 ) {
     setContent {
         DostepnyKampusTheme {
-            CampusMapScreen(onBuildingClick = {}, focus = focus, mapView = map, viewModel = viewModel)
+            CampusMapScreen(onBuildingClick = onBuildingClick, focus = focus, mapView = map, viewModel = viewModel)
         }
     }
     val state = viewModel.uiState
