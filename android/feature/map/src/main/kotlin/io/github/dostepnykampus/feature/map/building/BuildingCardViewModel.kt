@@ -147,7 +147,14 @@ class BuildingCardViewModel
             }
 
         private fun withBarriers(card: BuildingCardUiState, accepted: List<AcceptedBarrier>?): BuildingCardUiState =
-            if (card is BuildingCardUiState.Ready) card.copy(barriers = accepted) else card
+            if (card is BuildingCardUiState.Ready) {
+                card.copy(
+                    barriers = accepted,
+                    entrances = orderedEntrances(card.entrances.map { it.entrance }, accepted.orEmpty()),
+                )
+            } else {
+                card
+            }
 
         private fun withFloors(card: BuildingCardUiState, facts: FloorFacts?): BuildingCardUiState =
             if (card is BuildingCardUiState.Ready) card.copy(floors = facts) else card

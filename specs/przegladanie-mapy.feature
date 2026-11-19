@@ -264,16 +264,14 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy na karcie budynku B-8 widzi „Brak wejścia dostępnego” i zdanie, że żadne wejście nie jest dostępne
     Ale karta nie jest pusta i nie pokazuje samego braku wyniku
 
-  # @do-zrobienia #3331: karta nie bierze jeszcze pod uwagę barier przy wejściu.
-  @US2.1 @US2.2 @BR-25 @aplikacja @do-zrobienia
+  @US2.1 @US2.2 @BR-25 @aplikacja
   Scenariusz: Bariera przy wejściu zalecanym jest na karcie przy tym wejściu
     Zakładając, że przy wejściu zalecanym budynku C-13 jest przyjęta bariera „Tylko z pomocą” typu „ciężkie drzwi”
     Jeżeli Gość niezalogowany otworzy kartę budynku C-13
     Wtedy to wejście zostaje zalecane, a zdanie pod wierszem o wejściach kończy się „Przy wejściu jest bariera: tylko z pomocą.”
     Oraz wiersz tego wejścia na liście „Wejścia” ma pod szerokością drzwi „Tylko z pomocą: ciężkie drzwi”
 
-  # @do-zrobienia #3331: blokada nie zmienia jeszcze wejścia zalecanego.
-  @US3.1 @BR-25 @aplikacja @do-zrobienia
+  @US3.1 @BR-25 @aplikacja
   Szablon scenariusza: Wejście z blokadą nie jest zalecane, a jego oznaczenie zostaje
     Zakładając, że w budynku C-13 <inne> wejścia dostępnego bez blokady
     Oraz przy wejściu dostępnym C-13 jest przyjęta bariera „Blokada” typu „wejście zamknięte”

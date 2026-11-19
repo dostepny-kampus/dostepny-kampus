@@ -43,6 +43,7 @@ import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.barrier.EntranceBarrierLine
 import java.util.Locale
 
 private val NEXT_LINE_PEEK_HEIGHT = 24.dp
@@ -178,11 +179,11 @@ private fun NamelessEntrances(count: Int, onReport: (() -> Unit)?) {
 }
 
 /**
- * Wiersz wejścia na liście: oznaczenie, znacznik „zalecane”, nazwa, opis dojścia i szerokość drzwi, gdy są w danych,
+ * Wiersz wejścia na liście: oznaczenie, znacznik „zalecane”, nazwa, opis dojścia, szerokość drzwi i bariera, gdy są,
  * i ocena; z [onShowEntrance] dotykalny w całości, ze strzałką po prawej. Jeden układ dla grupy i jej wystającego
  * początku, więc wygląd się nie rozjedzie.
  *
- * Wymagania: US2.1, US3.3, US17, NFR-17, NFR-18, BR-27
+ * Wymagania: US2.1, US2.2, US3.3, US17, NFR-17, NFR-18, BR-25, BR-27
  *
  * @param listed wejście z kolejnością i znacznikiem „zalecane”
  * @param withAssessment czy pokazać ocenę wejścia; bez niej, gdy wszystkie wejścia mają tę samą ocenę nad listą
@@ -239,6 +240,7 @@ private fun EntranceFacts(listed: OrderedEntrance, withAssessment: Boolean, modi
             val door = stringResource(R.string.karta_szerokosc_drzwi, entrance.doorWidthCm)
             Text(text = door, color = secondary, style = MaterialTheme.typography.bodyLarge)
         }
+        listed.barrier?.let { EntranceBarrierLine(it) }
         if (withAssessment) listed.entrance.assessment?.let { AssessmentLine(it) }
     }
 }
