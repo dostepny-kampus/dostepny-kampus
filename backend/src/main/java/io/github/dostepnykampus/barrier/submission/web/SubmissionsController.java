@@ -10,7 +10,7 @@ import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.Reader;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionService;
-import io.github.dostepnykampus.barrier.submission.content.EntrancePlaces;
+import io.github.dostepnykampus.barrier.submission.content.json.EntrancePlaces;
 import io.github.dostepnykampus.shared.error.ConflictingState;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import io.github.dostepnykampus.shared.error.MissingResource;
