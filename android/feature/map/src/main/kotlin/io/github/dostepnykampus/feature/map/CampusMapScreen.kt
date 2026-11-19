@@ -321,6 +321,7 @@ private fun CampusMap(
                 hasPanels = !state.isCovered && !isKeyboardOpen,
                 hasNotice = !isKeyboardOpen,
                 motion = motion,
+                hasPlanSource = plan.shown != null,
                 start = { FloorColumn(plan = plan.shown, onChoose = plan.onFloor) },
             ) {
                 val open = OpenSign(sheet = sheet, barriers = barriers, catalog = ui.catalog, plan = plan.shown)

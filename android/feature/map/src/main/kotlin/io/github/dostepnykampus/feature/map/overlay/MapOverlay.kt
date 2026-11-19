@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -27,9 +28,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDecoration
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
@@ -54,6 +57,8 @@ private fun NoticeAndAttribution(
     areas: MapAreas,
     motion: MapMotion?,
     hasNotice: Boolean,
+    hasPlanSource: Boolean,
+    onAttributionHeight: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val noticeAlpha = rememberNoticeAlpha(shift = areas.notice, motion = motion)
@@ -67,17 +72,21 @@ private fun NoticeAndAttribution(
                 modifier = Modifier.graphicsLayer { alpha = noticeAlpha.value },
             )
         }
-        OsmAttribution()
+        OsmAttribution(
+            hasPlanSource = hasPlanSource,
+            modifier = Modifier.onSizeChanged { onAttributionHeight(it.height) },
+        )
     }
 }
 
 /**
- * Nakładka mapy V1: przyciski powiększania i przesuwania, przycisk terenu, „ⓘ” z legendą, podpis OSM, po zmianie
- * terenu napis „Pokazuję teren: …” i nad nimi [content]. Otwarty panel zasłania przyciski, które by na nim leżały;
- * dotknięcie mapy obok panelu terenu zamyka go. Otwarty panel jest stanem zapisywanym. Nad małą kartą V2 zostają
- * tylko przyciski powiększania i przesuwania, podpis OSM i napis o zmianie terenu tuż nad kartą.
+ * Nakładka mapy V1: przyciski powiększania i przesuwania, przycisk terenu, „ⓘ” z legendą, podpis OSM (przy planie
+ * piętra z „Źródło: Politechnika Wrocławska” pod nim), po zmianie terenu napis „Pokazuję teren: …” i nad nimi
+ * [content]. Otwarty panel zasłania przyciski, które by na nim leżały; dotknięcie mapy obok panelu terenu zamyka go.
+ * Otwarty panel jest stanem zapisywanym. Nad małą kartą V2 zostają tylko przyciski powiększania i przesuwania,
+ * podpis OSM i napis o zmianie terenu tuż nad kartą.
  *
- * Wymagania: NFR-53, US1.6, US1.7, NFR-37, US1.8, US2.8
+ * Wymagania: NFR-53, US1.6, US1.7, NFR-37, NFR-40, US1.8, US2.8
  *
  * @param camera widok kamery, od którego liczą się przyciski mapy
  * @param hasControls czy mapa ma przyciski powiększania i przesuwania; nie ma ich przy otwartej klawiaturze
@@ -90,6 +99,7 @@ private fun NoticeAndAttribution(
  * @param hasPanels czy mapa ma przycisk terenu i „ⓘ”; nie ma ich nad arkuszem V2
  * @param hasNotice czy mapa może pokazać napis o zmianie terenu; nie przy otwartej klawiaturze
  * @param motion ruchy mapy do budynku; nowy napis o zmianie terenu czeka do końca przelotu
+ * @param hasPlanSource czy pod podpisem OSM stoi źródło planu piętra; tak, gdy na mapie widać plan
  * @param start elementy przy lewej krawędzi pod przyciskiem terenu, np. kolumna pięter; nie ma ich przy otwartym
  *  panelu terenu
  * @param content elementy nad nakładką
@@ -106,11 +116,14 @@ internal fun MapOverlay(
     hasPanels: Boolean = hasControls,
     hasNotice: Boolean = hasPanels,
     motion: MapMotion? = null,
+    hasPlanSource: Boolean = false,
     start: @Composable ColumnScope.() -> Unit = {},
     content: @Composable BoxScope.() -> Unit,
 ) {
     var saved by rememberSaveable { mutableStateOf<MapPanel?>(null) }
     val open = saved.takeIf { hasPanels }
+    var attributionHeight by remember { mutableIntStateOf(0) }
+    val attribution = with(LocalDensity.current) { attributionHeight.toDp() }
     Box(modifier) {
         if (hasControls && open == null) {
             MapControls(
@@ -125,7 +138,8 @@ internal fun MapOverlay(
         if (open == MapPanel.Area) {
             Box(Modifier.matchParentSize().pointerInput(Unit) { detectTapGestures { saved = null } })
         }
-        val above = Modifier.align(Alignment.TopStart).padding(bottom = MapControlTouchSize + Odstepy.s)
+        val reserve = attribution.coerceAtLeast(MapControlTouchSize) + Odstepy.s
+        val above = Modifier.align(Alignment.TopStart).padding(bottom = reserve)
         AreaColumn(
             areas = areas.takeIf { hasPanels && open != MapPanel.Info },
             open = open,
@@ -138,6 +152,8 @@ internal fun MapOverlay(
             areas = areas,
             motion = motion,
             hasNotice = hasNotice && open == null,
+            hasPlanSource = hasPlanSource,
+            onAttributionHeight = { attributionHeight = it },
             modifier = Modifier.align(Alignment.BottomStart),
         )
         if (hasPanels) {
@@ -183,13 +199,13 @@ private fun AreaColumn(
 }
 
 @Composable
-private fun OsmAttribution(modifier: Modifier = Modifier) {
+private fun OsmAttribution(hasPlanSource: Boolean, modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
     val isShort = LocalDensity.current.fontScale >= SHORT_ATTRIBUTION_FONT_SCALE
     Box(
         modifier =
             modifier
-                .padding(horizontal = Odstepy.s)
+                .padding(start = Odstepy.s, end = MapControlTouchSize + Odstepy.s * 2)
                 .clickable { uriHandler.openUri(OSM_COPYRIGHT) }
                 .heightIn(min = MapControlTouchSize),
         contentAlignment = Alignment.Center,
@@ -201,13 +217,21 @@ private fun OsmAttribution(modifier: Modifier = Modifier) {
             shadowElevation = Wysokosci.kontrolkiMapy,
             border = mapControlBorder(),
         ) {
-            Text(
-                text = stringResource(if (isShort) R.string.mapa_osm_krotko else R.string.mapa_osm),
-                modifier = Modifier.padding(horizontal = Odstepy.s),
-                maxLines = 1,
-                textDecoration = TextDecoration.Underline,
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            Column(Modifier.padding(horizontal = Odstepy.s)) {
+                Text(
+                    text = stringResource(if (isShort) R.string.mapa_osm_krotko else R.string.mapa_osm),
+                    maxLines = 1,
+                    textDecoration = TextDecoration.Underline,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                if (hasPlanSource) {
+                    Text(
+                        text = stringResource(R.string.mapa_zrodlo_planu),
+                        modifier = Modifier.semantics(mergeDescendants = true) {},
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            }
         }
     }
 }
