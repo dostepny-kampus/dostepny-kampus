@@ -193,8 +193,7 @@ fun CampusMapScreen(
     sheetCover: (() -> Int)? = null,
     onEntranceSelect: (String?) -> Unit = {},
 ) {
-    val sheet =
-        screenSheet(focus = focus, padding = contentPadding, onCardClose = onEmptyMapClick, onCardReturn = onCardReturn)
+    val sheet = screenSheet(focus, contentPadding, onEmptyMapClick, onCardReturn)
     val isCovered = sheet.layout.padding.calculateBottomPadding() > 0.dp
     val isList = state.isListSaved ?: (LocalDensity.current.fontScale >= LARGE_FONT_SCALE)
     val states = rememberSaveableStateHolder()
@@ -218,14 +217,7 @@ fun CampusMapScreen(
                         sheet = sheet.copy(cover = sheetCover),
                         mapView = remember(mapView, search) { mapView.closingSearchFirst(search) },
                         motion = motion,
-                        plan =
-                            PlanLink(
-                                shown = plan,
-                                onView = onCamera,
-                                onFloor = onFloorChoose,
-                                onHide = onMapHide,
-                                onEntrance = onEntranceSelect,
-                            ),
+                        plan = PlanLink(plan, onCamera, onFloorChoose, onMapHide, onEntranceSelect),
                         onBuildingClick = onBuildingClick,
                         onEmptyMapClick = onEmptyMapClick,
                         entranceActions = entranceActions,
@@ -301,14 +293,7 @@ private fun CampusMap(
         val move = state.move
         if (scene != null && move != null && state.limits != null) {
             val pinned = signs.rememberPinnedEntrance(catalog = ui.catalog, chosen = scene.selection.entrance)
-            val reported = remember { mutableStateOf<String?>(null) }
-            SideEffect {
-                val symbol = pinned?.buildingSymbol
-                if (symbol != reported.value) {
-                    reported.value = symbol
-                    plan.onEntrance(symbol)
-                }
-            }
+            TrackOpenEntrance(symbol = pinned?.buildingSymbol, onSelect = plan.onEntrance)
             mapView.Show(
                 data = scene.data,
                 selection = scene.selection.copy(entrance = pinned, barrier = signs.barrierId, plan = plan.shown),
@@ -411,6 +396,17 @@ private fun FollowCamera(camera: MapCamera, limits: MapLimits, area: String?, pl
     }
     DisposableEffect(Unit) { onDispose { hide() } }
     AreaEdgeAnnouncement(camera = camera, limits = limits, area = area)
+}
+
+@Composable
+private fun TrackOpenEntrance(symbol: String?, onSelect: (String?) -> Unit) {
+    val reported = remember { mutableStateOf<String?>(null) }
+    SideEffect {
+        if (symbol != reported.value) {
+            reported.value = symbol
+            onSelect(symbol)
+        }
+    }
 }
 
 @Composable

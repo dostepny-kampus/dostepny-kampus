@@ -22,7 +22,7 @@ internal const val PLAN_NEAR_METERS = 60.0
 /** Przewaga odległości, przy której plan przechodzi na inny budynek (histereza R3). */
 internal const val PLAN_SWITCH_METERS = 10.0
 
-/** Odległość poza obrysem budynku podstawowego, po której plan sąsiada wraca bez otwartej karty (US16.2). */
+/** Odległość poza obrysem budynku podstawowego, po której plan sąsiada wraca bez otwartej karty. */
 internal const val PLAN_BASIC_EXIT_METERS = 5.0
 
 /**
@@ -79,8 +79,9 @@ private fun isBlockedByBasic(
     shown: String?,
 ): Boolean {
     if (basic.isEmpty() || near.any { it.isInside }) return false
-    val closest = buildingHints(center, basic, limit = basic.size).nearby.firstOrNull() ?: return false
-    return if (shown != null) closest.isInside else closest.distanceMeters <= PLAN_BASIC_EXIT_METERS
+    val closest = buildingHints(center, basic, limit = basic.size).nearby.firstOrNull()
+    return closest != null &&
+        if (shown != null) closest.isInside else closest.distanceMeters <= PLAN_BASIC_EXIT_METERS
 }
 
 private fun cameraFocus(near: List<BuildingHint>, zoom: Double, shown: String?): String? {

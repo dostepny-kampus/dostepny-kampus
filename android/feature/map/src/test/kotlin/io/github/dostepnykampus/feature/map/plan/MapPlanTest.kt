@@ -141,7 +141,7 @@ class MapPlanTest {
         runTest(UnconfinedTestDispatcher()) {
             val plan = MapPlan(Plans(setOf("A")), entrances())
             val shown = collected(plan, CLOSE_CATALOG)
-            plan.at(INSIDE_A)
+            plan.moveTo(INSIDE_A)
             val initial = shown.value?.building
             plan.show(MapFocus.Building(symbol = "B-8"))
             val selected = shown.value?.building
@@ -154,12 +154,12 @@ class MapPlanTest {
         runTest(UnconfinedTestDispatcher()) {
             val plan = MapPlan(Plans(setOf("A", "B")), entrances())
             val shown = collected(plan, CLOSE_CATALOG)
-            plan.at(INSIDE_A)
+            plan.moveTo(INSIDE_A)
             plan.show(MapFocus.Building(symbol = "B"))
             val switched = shown.value?.building
-            plan.at(FAR_WEST)
+            plan.moveTo(FAR_WEST)
             val hiddenFar = shown.value?.building
-            plan.at(INSIDE_A)
+            plan.moveTo(INSIDE_A)
             plan.show(null)
             assertEquals(listOf("B", null, "A"), listOf(switched, hiddenFar, shown.value?.building), "Wybrana karta")
         }
@@ -169,7 +169,7 @@ class MapPlanTest {
         runTest(UnconfinedTestDispatcher()) {
             val plan = MapPlan(Plans(setOf("A")), entrances())
             val shown = collected(plan, CLOSE_CATALOG)
-            plan.at(INSIDE_A)
+            plan.moveTo(INSIDE_A)
             plan.show(MapFocus.Entrance(id = "e1", buildingSymbol = "B-8"))
             val withFocus = shown.value?.building
             plan.selectEntrance(null)
@@ -187,14 +187,14 @@ class MapPlanTest {
             val plan = MapPlan(Plans(setOf("A", "B")), entrances())
             val shown = collected(plan, CLOSE_CATALOG)
             plan.show(MapFocus.Building(symbol = "B-8", command = 1L))
-            plan.at(INSIDE_A)
+            plan.moveTo(INSIDE_A)
             val onShowBasic = shown.value?.building
             plan.show(MapFocus.Building(symbol = "A", command = 2L, floor = "P1"))
-            plan.at(INSIDE_B)
+            plan.moveTo(INSIDE_B)
             assertEquals(listOf("A", "B"), listOf(onShowBasic, shown.value?.building), "Tryb środka mapy po poleceniu")
         }
 
-    private fun MapPlan.at(point: GeoPoint) = camera(MapCamera(center = point, zoom = 18.0))
+    private fun MapPlan.moveTo(point: GeoPoint) = camera(MapCamera(center = point, zoom = 18.0))
 
     private fun entrances(floor: String? = null): ServerEntrances =
         ServerEntrances { symbol ->
@@ -212,10 +212,7 @@ class MapPlanTest {
             )
         }
 
-    private fun TestScope.collected(
-        plan: MapPlan,
-        catalog: BuildingCatalog = CATALOG,
-    ): MutableStateFlow<ShownPlan?> {
+    private fun TestScope.collected(plan: MapPlan, catalog: BuildingCatalog = CATALOG): MutableStateFlow<ShownPlan?> {
         val shown = MutableStateFlow<ShownPlan?>(null)
         backgroundScope.launch { plan.shown(MutableStateFlow(catalog)).collect { shown.value = it } }
         return shown

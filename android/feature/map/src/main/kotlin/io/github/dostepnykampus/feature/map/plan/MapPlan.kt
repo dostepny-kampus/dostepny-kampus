@@ -112,11 +112,11 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
         val views = combine(flow = cameras, flow2 = catalogs, flow3 = selected, transform = ::PlanInput)
         val focus =
             views.scan<PlanInput, String?>(null) { shown, input ->
-                val buildings = input.catalog?.planBuildings() ?: PlanBuildings(detailed = emptyList())
-                input.view?.let {
+                val buildings = planBuildings(input.catalog)
+                input.view?.let { view ->
                     planFocus(
-                        center = it.center,
-                        zoom = it.zoom,
+                        center = view.center,
+                        zoom = view.zoom,
                         buildings = buildings,
                         shown = shown,
                         selected = input.selected,
@@ -128,6 +128,12 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
         return combine(flow = loaded, flow2 = chosen) { plan, floors ->
             plan?.run { copy(floor = floors[building]?.takeIf { id -> id in rooms } ?: floor) }
         }
+    }
+
+    private fun planBuildings(catalog: BuildingCatalog?): PlanBuildings {
+        if (catalog == null) return PlanBuildings(detailed = emptyList())
+        val (withPlan, withoutPlan) = catalog.buildings.partition { it.symbol in catalog.detailed }
+        return PlanBuildings(detailed = withPlan, basic = withoutPlan)
     }
 
     private fun currentSelection(): String? =
@@ -149,8 +155,3 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
 }
 
 private data class PlanInput(val view: MapCamera?, val catalog: BuildingCatalog?, val selected: String?)
-
-private fun BuildingCatalog.planBuildings(): PlanBuildings {
-    val (withPlan, withoutPlan) = buildings.partition { it.symbol in detailed }
-    return PlanBuildings(detailed = withPlan, basic = withoutPlan)
-}

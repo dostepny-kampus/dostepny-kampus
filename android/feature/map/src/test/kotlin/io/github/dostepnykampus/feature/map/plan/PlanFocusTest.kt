@@ -74,7 +74,7 @@ class PlanFocusTest {
 
     /**
      * Scenariusz: budynki-bez-szczegolow.feature: Budynek podstawowy blisko budynku szczegółowego
-     *   nie pokazuje planu sąsiada
+     *   nie pokazuje planu sąsiada.
      */
     @Test
     fun hidesNeighborInsideBasic() {

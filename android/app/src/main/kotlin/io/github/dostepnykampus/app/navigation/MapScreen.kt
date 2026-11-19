@@ -80,15 +80,12 @@ internal fun AppNavigator.HiltMapScreen(
 
 /**
  * V1 ze stanem [state] i zaznaczeniem [focus] z trasy; [onListChange] zapisuje widok, mapę albo listę, [onSearch]
- * liczy wyszukiwanie. Budynek z listy przy TalkBack otwiera V2 od razu na pełnym ekranie. Przyciski i podpis OSM stoją
- * nad arkuszem V2; bez arkusza i pod arkuszem na cały ekran przy dużej czcionce V1 liczy widok bez arkusza.
- * [mapView] to MapLibre albo podróbka w testach, [plan] to plan piętra przy środku mapy, [onCamera] dostaje widok po
- * ruchu kamery, [onFloorChoose] piętro wybrane w kolumnie pięter, a [onMapHide] zejście mapy z ekranu. Zgłoszenie
- * przy wejściu z arkusza wejścia prowadzi do V4 albo L1, a [entrance] podaje arkuszowi windę za drzwiami.
+ * liczy wyszukiwanie. Budynek z listy przy TalkBack otwiera V2 od razu na pełnym ekranie. Przyciski i podpis OSM
+ * stoją nad arkuszem V2; bez arkusza i pod arkuszem przy dużej czcionce V1 liczy widok bez arkusza. [mapView]
+ * to MapLibre albo podróbka, [plan] plan piętra, [onCamera] widok kamery, [onFloorChoose] wybór piętra,
+ * [onMapHide] zejście mapy, [entrance] winda za drzwiami, a [onEntranceSelect] budynek arkusza wejścia.
  *
  * Wymagania: US1.1, US2.1, NFR-19, US3.3, US4.6, US14.2
- *
- * @param onEntranceSelect budynek otwartego arkusza wejścia albo `null` po jego zamknięciu
  */
 @Composable
 internal fun AppNavigator.MapScreen(
