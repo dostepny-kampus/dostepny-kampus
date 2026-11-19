@@ -27,7 +27,8 @@ import tools.jackson.databind.ObjectMapper;
  * posortowane według symbolu, z atrybucją wszystkich źródeł konturów,
  * albo pustą listę z pustą atrybucją.
  *
- * <p>Każdy test zaczyna od pustej tabeli, bez budynków z pliku konturów;
+ * <p>Każdy test zaczyna od pustej tabeli, bez budynków z pliku konturów
+ * i bez wierszy tabel zależnych, np. pięter zostawionych przez inne testy;
  * transakcja testu przywraca je po teście.</p>
  *
  * <p>Wymagania: US1, NFR-40, US2, US6.2</p>
@@ -40,8 +41,7 @@ final class BuildingsHttpIT {
 
     @BeforeEach
     void clearBuildings(final WebApplicationContext context) {
-        context.getBean(JdbcClient.class).sql("DELETE FROM entrances").update();
-        context.getBean(JdbcClient.class).sql("DELETE FROM buildings").update();
+        context.getBean(JdbcClient.class).sql("TRUNCATE buildings CASCADE").update();
     }
 
     @Test
