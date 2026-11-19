@@ -121,9 +121,9 @@ fun visitAnswer(entrances: List<OrderedEntrance>): VisitAnswer {
     val recommended = entrances.firstOrNull { it.isRecommended }
     val entrance = recommended?.entrance
     val answer =
-        entrance?.let {
-            val place = if (it.isNameGenerated && !it.isMain) it.placeDescription else ""
-            VisitAnswer.Accessible(id = it.id, name = it.name, doorWidthCm = it.doorWidthCm, place = place)
+        entrance?.let { found ->
+            val place = if (found.isNameGenerated && !found.isMain) found.placeDescription else ""
+            VisitAnswer.Accessible(id = found.id, name = found.name, doorWidthCm = found.doorWidthCm, place = place)
         }
     return answer ?: missingOrNone(entrances)
 }

@@ -44,7 +44,8 @@ class PlaceDescriptionListTest {
     /**
      * Wiersz: V2, wejście bez nazwy z opisem położenia, uwagą i drzwiami 100 cm → w wierszu od góry „Wejście”,
      *   opis położenia, uwaga i szerokość drzwi.
-     * Scenariusz (częściowo): przegladanie-mapy.feature: Wejście bez nazwy w danych ma na karcie opis położenia pod nazwą
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Wejście bez nazwy w danych ma na karcie opis położenia
+     *   pod nazwą
      *
      * Wymagania: US2.1, BR-27
      */

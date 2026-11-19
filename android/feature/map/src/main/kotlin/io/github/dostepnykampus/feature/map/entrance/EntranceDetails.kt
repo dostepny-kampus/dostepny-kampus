@@ -42,7 +42,11 @@ internal fun EntranceDetails(shown: ShownEntrance) {
     }
 }
 
-/** Czy wejście ma w danych opis położenia, opis dojścia, szerokość drzwi albo windę. Wymagania: US2.1, US16.3, BR-27 */
+/**
+ * Czy wejście ma w danych opis położenia, opis dojścia, szerokość drzwi albo windę.
+ *
+ * Wymagania: US2.1, US16.3, BR-27
+ */
 internal fun ShownEntrance.hasDetails(): Boolean =
     entrance.placeDescription.isNotEmpty() || entrance.approach.isNotEmpty() || entrance.doorWidthCm > 0 ||
         lift != null
