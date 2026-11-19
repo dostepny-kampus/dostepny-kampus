@@ -8,12 +8,14 @@ package io.github.dostepnykampus.barrier.submission.content.json;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import io.github.dostepnykampus.barrier.submission.content.EntrancePlaces;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.NewEntranceMarking;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
@@ -112,7 +114,9 @@ public record SubmissionContentJson(
         final SubmissionContent content;
         if (this.kind == SubmissionKind.QUICK && this.entranceId != null) {
             content = this.content(
-                entrances.place(this.entranceId, this.place.buildingSymbol()).orElseThrow(
+                entrances.place(
+                    this.entranceId, Objects.requireNonNullElse(this.place.buildingSymbol(), "")
+                ).orElseThrow(
                     () -> new InvalidSubmission("Nie ma wejścia z pola entranceId")
                 )
             );

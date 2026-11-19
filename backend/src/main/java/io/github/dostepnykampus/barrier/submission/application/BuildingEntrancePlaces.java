@@ -5,14 +5,13 @@
  */
 package io.github.dostepnykampus.barrier.submission.application;
 
+import io.github.dostepnykampus.barrier.submission.content.EntrancePlaces;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionFloor;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
-import io.github.dostepnykampus.barrier.submission.content.json.EntrancePlaces;
 import io.github.dostepnykampus.building.api.EntrancePlace;
 import io.github.dostepnykampus.building.api.KnownBuildings;
 import java.util.Optional;
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -40,7 +39,7 @@ public final class BuildingEntrancePlaces implements EntrancePlaces {
     }
 
     @Override
-    public Optional<SubmissionPlace> place(final String id, final @Nullable String symbol) {
+    public Optional<SubmissionPlace> place(final String id, final String symbol) {
         return this.buildings.entrance(id, symbol).map(BuildingEntrancePlaces::placeOf);
     }
 

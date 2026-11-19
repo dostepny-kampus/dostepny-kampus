@@ -3,11 +3,9 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier.submission.content.json;
+package io.github.dostepnykampus.barrier.submission.content;
 
-import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
 import java.util.Optional;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Miejsce zgłoszenia w punkcie wejścia: punkt, budynek i piętro wejścia.
@@ -24,8 +22,8 @@ public interface EntrancePlaces {
      * należy do budynku z podpowiedzi, a bez niej do budynku o najmniejszym symbolu.
      *
      * @param id Identyfikator wejścia
-     * @param symbol Podpowiedź budynku albo null
+     * @param symbol Podpowiedź budynku albo pusty napis, gdy jej nie ma
      * @return Miejsce w punkcie wejścia albo puste, gdy wejścia nie ma
      */
-    Optional<SubmissionPlace> place(String id, @Nullable String symbol);
+    Optional<SubmissionPlace> place(String id, String symbol);
 }
