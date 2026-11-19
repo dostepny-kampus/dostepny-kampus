@@ -6,9 +6,9 @@
 $ekran_poczatek()
 $naglowek_karty("<i>[symbol]</i>", "<i>[nazwa budynku z danych]</i>")
 $karta_gora(0, "bez_danych")
-Z map i opisów, stan z <i>[data]</i>
 $sekcja("Wejścia")
 $wejscia_bez_nazw("3 wejścia")
+Z map i opisów, stan z <i>[data]</i>
 $tekst("[dalej pełny opis jak na wzorcu]", "i")
 $pasek_dolny_konto()
 $ekran_koniec()

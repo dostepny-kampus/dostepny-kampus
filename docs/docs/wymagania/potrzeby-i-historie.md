@@ -154,7 +154,7 @@ Usunięcie bariery nie ma osobnego procesu ani formularza. Przechodzi tę samą 
 | --- | --- | --- |
 | US17.1 | Przy imporcie budynków wejście dostaje oznaczenie „dostępne” albo „niedostępne” z danych PWr albo OpenStreetMap. Wejście bez takich danych ma oznaczenie „brak danych” tekstem i ikoną. | BR-24, NFR-21 |
 | US17.2 | Zbierający na obchodzie składa zmianę oznaczenia wejścia z nowym zdjęciem. Sprawdza ją inny Weryfikator, a po przyjęciu nowe oznaczenie widać na karcie budynku. | BR-4, BR-24 |
-| US17.3 | Dla każdego wejścia widać datę i źródło oznaczenia: „import” albo „obchód”. Gdy są wspólne dla wszystkich wejść budynku, stoją raz nad listą wejść. | BR-24 |
+| US17.3 | Dla każdego wejścia widać datę i źródło oznaczenia: „import” albo „obchód”. Gdy są wspólne dla wszystkich wejść budynku, stoją raz pod listą wejść. | BR-24 |
 
 Zmiana oznaczenia wejścia to zgłoszenie, więc przechodzi te same statusy co każde zgłoszenie. Po przyjęciu jest od razu archiwalna, podobnie jak „bariera usunięta” (BR-24).
 
