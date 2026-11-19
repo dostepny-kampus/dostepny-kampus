@@ -6,6 +6,9 @@
 package io.github.dostepnykampus.feature.map.entrance
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -70,6 +73,31 @@ class EntranceBarriersTest {
     }
 
     private fun photoShown() = compose.onAllNodesWithContentDescription(PHOTO).fetchSemanticsNodes().isNotEmpty()
+
+    /**
+     * Wiersz: przy wejściu z barierą część „Bariery przy tym wejściu” z typem, uciążliwością i datą stoi pod nazwą
+     *   wejścia, nad „Dojście”; bez barier tej części nie ma, a arkusz zaczyna się od „Dojście”.
+     * Scenariusz: przegladanie-mapy.feature: Bariery przy wejściu stoją w arkuszu zaraz pod oznaczeniem
+     */
+    @Test
+    fun putsBarriersAboveApproach() {
+        val plain = recommended().let { it.copy(entrance = it.entrance.copy(approach = "Od zachodu.")) }
+        var shown by mutableStateOf(plain.copy(barriers = listOf(barrier("z1"))))
+        compose.setContent { EntranceSheetOnMap(shown) }
+
+        val name = topOf("Wejście Cesarskie")
+        val barriers = topOf(BARRIERS)
+        val details = listOf("Schody przy wejściu", "Blokada", "Sprawdzone 14.10.2026").map(::topOf)
+        val approach = topOf("Dojście")
+        assertTrue("bariery pod nazwą wejścia: $name < $barriers", name < barriers)
+        assertTrue("typ, uciążliwość i data nad „Dojście”: $details < $approach", details.all { it < approach })
+        shown = plain
+        compose.waitForIdle()
+        compose.onNodeWithText(BARRIERS).assertDoesNotExist()
+        compose.onNodeWithText("Dojście").assertExists()
+    }
+
+    private fun topOf(text: String) = compose.onAllNodesWithText(text)[0].getUnclippedBoundsInRoot().top
 
     /** Wiersz: bez zgłoszeń przy wejściu części „Bariery przy tym wejściu” nie ma. */
     @Test
