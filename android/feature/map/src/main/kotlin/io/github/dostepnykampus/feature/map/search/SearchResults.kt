@@ -30,18 +30,22 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
+import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.area.AreaOrder
 import io.github.dostepnykampus.feature.map.area.otherAreaOf
 import io.github.dostepnykampus.feature.map.building.BuildingChoice
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
 import io.github.dostepnykampus.feature.map.building.foundFor
+import io.github.dostepnykampus.feature.map.room.BuildingMissing
+import io.github.dostepnykampus.feature.map.room.RoomChoice
 
 /**
- * Wyniki pod polem szukaj V1 dla tekstu [query]: budynki, a bez wyniku karta „brak wyniku”. Wyniki budynków są
- * tylko przy mapie; „brak wyniku” także przy liście. Bez niczego do pokazania nie ma panelu.
+ * Wyniki pod polem szukaj V1 dla tekstu [query]: budynki albo sale, przy samym numerze sali prośba o budynek,
+ * a bez wyniku karta „brak wyniku”. Wyniki budynków i sal są tylko przy mapie; prośba i „brak wyniku” także przy
+ * liście. Bez niczego do pokazania nie ma panelu.
  *
- * Wymagania: US1.1, NFR-18, US1.8
+ * Wymagania: US1.1, US18.1, NFR-18, NFR-50
  *
  * @param search wynik z modelu widoku; liczy się tylko dla zapytania [query]
  * @param query tekst z pola
@@ -49,6 +53,8 @@ import io.github.dostepnykampus.feature.map.building.foundFor
  * @param isHidden czy wyniki są schowane po wyborze albo po utracie fokusu pola
  * @param areas tereny do dopisku o innym terenie przy budynku
  * @param onBuildingClick symbol wybranego budynku
+ * @param onRoomClick wybrana sala, po [onRelease]
+ * @param onRelease chowa wyniki i klawiaturę przed wyborem sali
  * @param onShowList „Pokaż listę” z karty „brak wyniku” przy mapie
  */
 @Composable
@@ -59,18 +65,33 @@ internal fun SearchResults(
     isHidden: Boolean,
     areas: AreaOrder,
     onBuildingClick: (String) -> Unit,
+    onRoomClick: (FoundRoom) -> Unit,
+    onRelease: () -> Unit,
     onShowList: () -> Unit,
 ) {
+    val isCurrent = search.query == query
     val found = search.foundFor(query)
-    val isNoResult = query.isNotBlank() && found?.isEmpty() == true
-    val buildings = found.orEmpty().takeUnless { isList || isHidden }.orEmpty()
-    val hasNote = isNoResult && (isList || !isHidden)
-    if (buildings.isEmpty() && !hasNote) return
+    val rooms = search.rooms.takeIf { isCurrent }.orEmpty()
+    val isBuildingMissing = isCurrent && search.isBuildingMissing
+    val isNoResult = query.isNotBlank() && found?.isEmpty() == true && rooms.isEmpty() && !isBuildingMissing
+    val isOnMap = !isList && !isHidden
+    val isNoteShown = isList || !isHidden
+    val buildings = found.orEmpty().takeIf { isOnMap }.orEmpty()
+    val shownRooms = rooms.takeIf { isOnMap }.orEmpty()
+    val hasNote = isNoteShown && (isNoResult || isBuildingMissing)
+    if (buildings.isEmpty() && shownRooms.isEmpty() && !hasNote) return
     ResultPanel {
         buildings.forEach { building ->
             BuildingChoice(building, areas.otherAreaOf(building.symbol)) { onBuildingClick(building.symbol) }
         }
-        if (hasNote) NoResult(query, onShowList = onShowList.takeUnless { isList })
+        shownRooms.forEach { room ->
+            RoomChoice(room) {
+                onRelease()
+                onRoomClick(room)
+            }
+        }
+        if (hasNote && isBuildingMissing) BuildingMissing()
+        if (hasNote && isNoResult) NoResult(query, onShowList = onShowList.takeUnless { isList })
     }
 }
 

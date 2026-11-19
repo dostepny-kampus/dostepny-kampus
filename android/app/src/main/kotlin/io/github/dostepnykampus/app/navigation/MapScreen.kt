@@ -82,8 +82,9 @@ internal fun AppNavigator.HiltMapScreen(
  * [mapView] to MapLibre albo podróbka w testach, [plan] to plan piętra przy środku mapy, [onCamera] dostaje widok po
  * ruchu kamery, [onFloorChoose] piętro wybrane w kolumnie pięter, a [onMapHide] zejście mapy z ekranu. Zgłoszenie
  * przy wejściu z arkusza wejścia prowadzi do V4 albo L1, a [entrance] podaje arkuszowi windę za drzwiami.
+ * Wynik sali pokazuje plan piętra sali.
  *
- * Wymagania: US1.1, US2.1, NFR-19, US3.3, US4.6, US14.2
+ * Wymagania: US1.1, US2.1, NFR-19, US3.3, US4.6, US14.2, US18.1
  */
 @Composable
 internal fun AppNavigator.MapScreen(
@@ -119,6 +120,9 @@ internal fun AppNavigator.MapScreen(
         onMapHide = onMapHide,
         onCardReturn = { returnToCard(it) },
         sheetCover = LocalSheetPadding.current.shownCover.takeUnless { isFullOnly },
+        // TODO(#3418): wyróżnienie sali na planie.
+        // TODO(#1481): karta sali.
+        onRoomClick = { showOnMap(MapFocus.Building(it.building, command = System.nanoTime(), floor = it.floor.id)) },
     )
 }
 
