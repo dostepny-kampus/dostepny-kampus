@@ -321,11 +321,11 @@ Kolejność od góry: nazwa budynku, wiersz o wejściach, czynności, chipy, „
 
 Na całym ekranie nagłówek karty z „Zamknij” stoi u góry, a treść przewija się pod nim. Pasek dolny nie zasłania elementu z fokusem: treść przewija się tak, by był widoczny (WCAG 2.4.11 [7]).
 
-„Zgłoś barierę przy wejściu” w arkuszu wejścia otwiera krok 1 V4 („Zgłoś barierę”) z napisem „Wejście: »nazwa wejścia«”. Wybrane wejście dołącza się do zgłoszenia jako wskazówka dla Weryfikatora, a miejsce i budynek nadal pochodzą z bieżącej pozycji (US4.6, BR-8, BR-14).
+„Zgłoś barierę przy wejściu” w arkuszu wejścia otwiera krok 1 V4 („Zgłoś barierę”) z napisem „Wejście: »nazwa wejścia«”. Miejscem zgłoszenia jest punkt wybranego wejścia, a budynek i piętro pochodzą od wejścia (US4.6, BR-8, BR-14).
 
 Gość przechodzi najpierw do L1, a po zalogowaniu wraca do V4 z tym samym wejściem (US14.2).
 
-Odnośnik „Zgłoś barierę przy wejściu” w wierszu kilku wejść bez danych otwiera krok 1 V4 bez wybranego wejścia.
+Odnośnik „Zgłoś barierę przy wejściu” w wierszu kilku wejść bez danych otwiera krok 1 V4 bez wybranego wejścia. Miejscem jest wtedy bieżąca pozycja (BR-8).
 
 Mapa nad kartą i plany pięter pokazują to, co już jest na liście, więc TalkBack ich nie potrzebuje (NFR-19). Gość i Odwiedzający nie widzą przycisków Zbierającego, więc ich karta jest krótka.
 
@@ -376,16 +376,18 @@ Dojście, drzwi, windę za drzwiami i bariery przy wejściu pokazuje arkusz wej�
 | Krok 1: komunikat ostrzegawczy (wymagania wspólne) nad „Zrób zdjęcie”: „Ważne”, wymaganie „Nie fotografuj twarzy ani tablic rejestracyjnych.” i zdanie „Zdjęcie zobaczą inni użytkownicy.” Ten sam komunikat jest w kroku 1 po powrocie z kroku 2 | dane | NFR-25, NFR-21, BR-17, decyzja 54 | — |
 | Krok 1: „Zrób zdjęcie” i „Zrób nowe zdjęcie” | czynność | US4.1, BR-8, PW-8 | aparat, potem krok 2 |
 | Krok 1 po powrocie z kroku 2: miniatura zdjęcia i „Dalej” nad „Zrób nowe zdjęcie”. Przy skali czcionki co najmniej 1,5 „Dalej” zostaje przypięte na dole, a „Zrób nowe zdjęcie” stoi na końcu treści | czynność główna | US4.8, NFR-52 | krok 2; zdjęcie i grupa zostają |
-| Krok 1 po „Zgłoś barierę przy wejściu” w arkuszu wejścia: napis „Wejście: »nazwa wejścia«” nad „Zrób zdjęcie” | dane | US4.6; znaczenie wejścia: V2 | — |
+| Krok 1 po „Zgłoś barierę przy wejściu” w arkuszu wejścia: napis „Wejście: »nazwa wejścia«” nad „Zrób zdjęcie”. Przy wejściu bez nazwy w danych napis ma też opis położenia, np. „Wejście: »Wejście«, od strony E-3, od południa”, bo kilka wejść może się nazywać „Wejście” | dane | US4.6, BR-27; znaczenie wejścia: V2 | — |
 | Krok 2: pytanie „Czego dotyczy bariera?” i 6 przycisków grup barier na całą szerokość ekranu, każdy co najmniej 48 dp wysokości. Napisy bez ikon: „Wejście i drzwi”, „Schody i windy”, „Przejścia i chodniki”, „Toalety”, „Napisy i oznaczenia”, „Coś innego” | czynność | US4.3, NFR-17, PW-7 | krok 3 albo pytanie o piętro |
 | Krok 2, pytanie o piętro: wybrana grupa, pytanie „Na którym piętrze?”. Pod nim przyciski na całą szerokość ekranu: „Nie wiem” i piętra od najniższego. W budynku szczegółowym etykiety z danych PWr, w podstawowym numery od -1 do 10 z „Parter” zamiast 0 | czynność | US4.5, BR-14, NFR-17 | krok 3 |
 | Krok 3: miniatura zdjęcia, wybrana grupa oraz piętro albo „Nie wiem”, jeśli było pytanie | dane | US4.1, US4.5 | — |
-| Krok 3: napis „Dołączymy miejsce, w którym teraz stoisz.” | dane | US4.1, NFR-27 | — |
+| Krok 3: napis „Dołączymy miejsce, w którym teraz stoisz.” Przy wybranym wejściu zamiast niego stoi napis z kroku 1 „Wejście: »nazwa wejścia«” | dane | US4.1, US4.6, NFR-27 | — |
 | Krok 3: „Wyślij” | czynność główna | US4.1 | potwierdzenie |
 | Potwierdzenie: „Dziękujemy. Sprawdzimy zdjęcie, a jeśli bariera się potwierdzi, pokażemy ją na mapie.” | dane | US4.4, PW-5 | — |
 | Potwierdzenie: „Wróć do mapy” | czynność | US4.4 | V1 |
 
 Aplikacja nie pyta o typ bariery, uciążliwość ani budynek (US4.3, BR-14). Pozycję zaczyna ustalać po wejściu na ekran, w trakcie kroków 1 i 2 (NFR-27).
+
+Przy wybranym wejściu pozycji nie ustala, o zgodę na lokalizację nie prosi i o piętro nie pyta. Stany o lokalizacji, pozycji i terenie PWr wtedy nie występują (US4.6, BR-8).
 
 O piętro aplikacja pyta tylko w konturze budynku i przy każdej grupie poza „Coś innego” (US4.5, tabela w [regułach](../biznes/reguly.md#pietro-w-zgloszeniu-szybkim)). W budynku podstawowym, a także zanim telefon ustali pozycję, przyciski pięter to numery od -1 do 10, z „Parter” zamiast 0. W budynku szczegółowym są to piętra z danych PWr, a zgłoszenie dostaje identyfikator piętra zamiast numeru.
 
