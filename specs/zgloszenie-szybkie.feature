@@ -32,8 +32,7 @@ Funkcja: Zgłoszenie szybkie
     Jeżeli wybierze „Zgłoś barierę przy wejściu”
     Wtedy napis o wejściu w zgłoszeniu szybkim brzmi „Wejście: »Wejście«, od strony E-3, od południa”
 
-  # @do-zrobienia #3322: serwer wymaga jeszcze bieżącej pozycji.
-  @US4.6 @BR-8 @BR-14 @serwer @do-zrobienia
+  @US4.6 @BR-8 @BR-14 @serwer
   Scenariusz: Serwer bierze miejsce, budynek i piętro zgłoszenia od wybranego wejścia
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Jeżeli wyśle zgłoszenie szybkie ze zdjęciem, grupą barier i wejściem głównym A-1, bez bieżącej pozycji
