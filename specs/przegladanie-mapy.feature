@@ -518,6 +518,17 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | D-1     | 5      |
       | D-2     | 5      |
 
+  # @do-zrobienia #3004: wybór planu przy otwartej karcie budynku, arkuszu wejścia i karcie sali.
+  @US16.1 @US2.8 @aplikacja @do-zrobienia
+  Scenariusz: Otwarta karta budynku albo sali trzyma plan tego budynku
+    Zakładając, że na mapie w powiększeniu 18 widać plan budynku szczegółowego A-1
+    Jeżeli Odwiedzający dotknie sąsiedniego budynku szczegółowego B-1 bliżej niż 60 m
+    Wtedy otwiera się karta budynku B-1 i plan piętra przełącza się na B-1
+    Jeżeli przesunie mapę dalej niż 60 m od budynku B-1
+    Wtedy karta budynku B-1 zostaje otwarta, a plan piętra znika
+    Jeżeli zamknie kartę budynku B-1
+    Wtedy plan piętra znów wybiera budynek ze środka mapy bez poruszenia widoku
+
   @US1.6 @BR-G5 @aplikacja
   Scenariusz: Mapa otwiera się na terenie „Kampus główny”
     Zakładając, że Gość niezalogowany pierwszy raz otwiera aplikację i pomija instrukcję

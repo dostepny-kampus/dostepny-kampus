@@ -132,6 +132,10 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1, stan „znaleziona sala” | „Pokaż po kolei”, wiersz kroku albo numer kroku na planie | V1, stan „kroki po kolei”: wybrany krok, plan jego piętra | wszystkie | US18.2, decyzja z 19.11.2026 |
 | V1, stan „kroki po kolei” | „Szczegóły wejścia” albo „Szczegóły windy” | arkusz wejścia albo windy; jego „Zamknij” wraca na ten sam krok | wszystkie | US18.2, decyzja z 19.11.2026 |
 | V1, stan „plan piętra” | oddalenie (< 16,5), wyjście z zasięgu budynku albo zmiana terenu | V1 | wszystkie | R3, R4, US16.1, US1.6 |
+| V1, stan „plan piętra” | dotknięcie innego budynku szczegółowego (≥ 17, do 60 m) | V2 na niskiej wysokości, plan tego budynku | wszystkie | US16.1, US2.8; decyzja z 19.11.2026 |
+| V1, stan „plan piętra” | dotknięcie budynku podstawowego albo środek w budynku podstawowym | V2 albo V1 bez planu | wszystkie | US16.2, BR-G1; decyzja z 19.11.2026 |
+| V2 z planem, arkusz wejścia albo karta sali | odsunięcie wybranego budynku powyżej 60 m | ta sama karta bez planu | wszystkie | US16.1, NFR-56; decyzja z 19.11.2026 |
+| V2 z ukrytym planem | „Zamknij”, „Wstecz” albo dotknięcie pustej mapy | V1, wybór planu od środka mapy | wszystkie | US16.1, NFR-15; decyzja z 19.11.2026 |
 | V1, stan „plan piętra” albo „znaleziona sala” | przełącznik pięter | V1, plan innego piętra | wszystkie | US16.1 |
 | V1, stan „plan piętra” albo „znaleziona sala” | dotknięcie windy | V1, stan „arkusz windy” | wszystkie | R14, US16.1 |
 | V1, stan „arkusz windy” | „Zamknij” | V1, stan „plan piętra” | wszystkie | NFR-53 |
