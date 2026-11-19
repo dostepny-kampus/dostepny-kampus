@@ -57,8 +57,7 @@ Funkcja: Oznaczenie wejścia
         | Czy_dostos „Tak”, Szerokosc 0, Uwagi „Wyjście ewakuacyjne z pomieszczenia 41” | wyjście ewakuacyjne, a nie wejście                                           |
         | Czy_dostos „Nie”, Szerokosc 0, Uwagi „Do wejścia prowadzą schody.”           | wejście „Wejście”, „niedostępne”, bez szerokości drzwi, opis „Do wejścia prowadzą schody.” |
 
-    # @do-zrobienia #3309: serwer oddaje jeszcze nazwę z położenia z numerem.
-    @BR-27 @BR-25 @US2.1 @serwer @do-zrobienia
+    @BR-27 @BR-25 @US2.1 @serwer
     Szablon scenariusza: Import opisuje położenie wejścia bez nazwy
       Zakładając, że w danych testowych warstwa wejść PWr ma przy A-1 wpisy: <wpisy>
       Jeżeli zakończy się import budynków
