@@ -213,8 +213,7 @@ fun CampusMapScreen(
                         areas = areas,
                         top = mapTop(isCovered = isCovered, bar = barTop),
                         cameraTop = mapTop(isCovered = isCovered, bar = headerTop),
-                        sheet = sheet,
-                        sheetCover = sheetCover,
+                        sheet = sheet.copy(cover = sheetCover),
                         mapView = mapView,
                         motion = motion,
                         plan = PlanLink(shown = plan, onView = onCamera, onFloor = onFloorChoose, onHide = onMapHide),
@@ -262,7 +261,6 @@ private fun CampusMap(
     top: Dp,
     cameraTop: Dp,
     sheet: ScreenSheet,
-    sheetCover: (() -> Int)?,
     mapView: CampusMapView,
     motion: MapMotion?,
     plan: PlanLink,
@@ -314,7 +312,7 @@ private fun CampusMap(
                 onCameraChange = state::move,
                 areas = areas,
                 onAreaShow = state::land,
-                modifier = Modifier.overlayArea(underBar = underBar, sheet = sheet.padding, cover = sheetCover),
+                modifier = Modifier.overlayArea(underBar = underBar, sheet = sheet),
                 hasPanels = !state.isCovered && !isKeyboardOpen,
                 hasNotice = !isKeyboardOpen,
                 motion = motion,
@@ -352,22 +350,15 @@ private fun rememberCampusScene(
     )
 }
 
-private fun Modifier.overlayArea(
-    underBar: PaddingValues,
-    sheet: PaddingValues,
-    cover: (() -> Int)?,
-): Modifier =
-    fillMaxSize()
-        .safeDrawingPadding()
-        .padding(underBar)
-        .then(if (cover == null) Modifier.padding(sheet) else Modifier.bottomCover(cover))
-
-private fun Modifier.bottomCover(cover: () -> Int): Modifier =
-    layout { measurable, constraints ->
+private fun Modifier.overlayArea(underBar: PaddingValues, sheet: ScreenSheet): Modifier {
+    val area = fillMaxSize().safeDrawingPadding().padding(underBar)
+    val cover = sheet.cover ?: return area.padding(sheet.padding)
+    return area.layout { measurable, constraints ->
         val bottom = cover().coerceIn(minimumValue = 0, maximumValue = constraints.maxHeight)
         val placeable = measurable.measure(constraints.offset(vertical = -bottom))
         layout(width = placeable.width, height = placeable.height + bottom) { placeable.place(x = 0, y = 0) }
     }
+}
 
 /** Arkusz znaku z [sheet] z barierami [barriers], katalogiem [catalog] i planem [plan] na mapie. */
 private data class OpenSign(
