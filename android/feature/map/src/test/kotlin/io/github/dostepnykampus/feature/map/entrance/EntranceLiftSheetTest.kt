@@ -9,6 +9,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performScrollTo
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Entrance
@@ -58,11 +59,12 @@ class EntranceLiftSheetTest {
         compose.onNodeWithText("Jedzie na: piwnica, parter, antresola.").assertExists()
     }
 
-    /** Zrzut arkusza z częścią „Za drzwiami” przy czcionce 200%. */
+    /** Zrzut arkusza przewiniętego do części „Za drzwiami” przy czcionce 200%. */
     @Test
     @Config(fontScale = 2f)
     fun matchesLargeFontMockup() {
         show(listOf("Piwnica", "Parter", "3 piętro"))
+        compose.onNodeWithText("Jeździ od piwnicy do 3 piętra.").performScrollTo()
         compose.onRoot().captureRoboImage()
     }
 
