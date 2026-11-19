@@ -324,7 +324,7 @@ Kolejność od góry: nazwa budynku, wiersz o wejściach, czynności, chipy, „
 
 Na całym ekranie nagłówek karty z „Zamknij” stoi u góry, a treść przewija się pod nim. Pasek dolny nie zasłania elementu z fokusem: treść przewija się tak, by był widoczny (WCAG 2.4.11 [7]).
 
-„Zgłoś barierę przy wejściu” w arkuszu wejścia otwiera krok 1 V4 („Zgłoś barierę”) z napisem „Wejście: »nazwa wejścia«”. Cudzysłów stoi tylko przy nazwie z danych, więc wejście główne bez nazwy ma napis „Wejście: Wejście główne”. Miejscem zgłoszenia jest punkt wybranego wejścia, a budynek i piętro pochodzą od wejścia (US4.6, BR-8, BR-14; decyzja z 19.11.2026).
+„Zgłoś barierę przy wejściu” w arkuszu wejścia otwiera krok 1 V4 („Zgłoś barierę”) z napisem „Wejście: »nazwa wejścia«”. Cudzysłów stoi tylko przy nazwie z danych, więc wejście główne bez nazwy ma napis „Wejście: Wejście główne”. Miejscem zgłoszenia jest punkt wybranego wejścia, a budynek i piętro pochodzą od wejścia (US4.6, BR-8, BR-14).
 
 Gość przechodzi najpierw do L1, a po zalogowaniu wraca do V4 z tym samym wejściem (US14.2).
 
