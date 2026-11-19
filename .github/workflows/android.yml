@@ -109,13 +109,8 @@ jobs:
         with:
           ref: ${{ inputs.sha }}
           persist-credentials: false
-      - uses: actions/setup-java@v6.2.0
+      - uses: ./.github/actions/java-serwera
         if: matrix.zestaw == 'system'
-        with:
-          distribution: temurin
-          java-version: 25
-          cache: maven
-          cache-dependency-path: backend/pom.xml
       - name: Zbuduj serwer (jedno ponowienie po błędzie pobierania z Maven Central)
         if: matrix.zestaw == 'system'
         timeout-minutes: 10
