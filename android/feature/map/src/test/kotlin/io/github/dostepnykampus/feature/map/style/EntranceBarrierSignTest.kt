@@ -7,20 +7,22 @@ package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.barrier.BARRIER_OFFSET
 import io.github.dostepnykampus.feature.map.barrier.BARRIER_SEVERITY
 import io.github.dostepnykampus.feature.map.barrier.withBarriers
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.math.roundToInt
 
 /**
  * Znak bariery zgłoszonej przy wejściu na V1 stoi obok znaku wejścia, na zewnątrz konturu, a kilka barier przy
@@ -32,7 +34,8 @@ class EntranceBarrierSignTest {
     private val data =
         campusMapData(styleCatalog()).copy(
             entrancePoints = mapOf("w1" to GeoPoint(longitude = 17.5, latitude = 51.25)),
-            outlinesBySymbol = mapOf("C-13" to CampusBounds(west = 17.0, south = 51.0, east = 17.5, north = 51.5)),
+            buildingOutlines =
+                mapOf("C-13" to outline(17.0 to 51.0, 17.5 to 51.0, 17.5 to 51.5, 17.0 to 51.5)),
         )
 
     /**
@@ -56,9 +59,31 @@ class EntranceBarrierSignTest {
                 .jsonArray
                 .map { it.jsonObject.getValue("properties").jsonObject }
         assertEquals(
-            listOf("ONLY_WITH_HELP" to null, "BLOCKING" to "[48.0,0.0]"),
-            properties.map { it.text(BARRIER_SEVERITY) to it[BARRIER_OFFSET]?.toString() },
+            listOf("ONLY_WITH_HELP" to null, "BLOCKING" to listOf(48, 0)),
+            properties.map { it.text(BARRIER_SEVERITY) to it.offset() },
             "Przesunięty jest tylko znak bariery przy wejściu",
+        )
+    }
+
+    /**
+     * Wiersz: V1, „Blokada” przy wejściu w zagłębieniu budynku w kształcie litery L, na ścianie zwróconej na
+     *   wschód → znak przesunięty o 48 dp na wschód, poza kontur, a nie na północ od środka prostokąta.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Znak bariery przy wejściu stoi obok znaku wejścia
+     */
+    @Test
+    fun putsSignOutsideNotchOfConcaveBuilding() {
+        val corners = listOf(17.0 to 51.0, 17.5 to 51.0, 17.5 to 51.25, 17.25 to 51.25, 17.25 to 51.5, 17.0 to 51.5)
+        val concave =
+            data.copy(
+                entrancePoints = mapOf("w1" to GeoPoint(longitude = 17.25, latitude = 51.4)),
+                buildingOutlines = mapOf("C-13" to outline(*corners.toTypedArray())),
+            )
+        val shown = concave.withBarriers(listOf(barrier("b", Severity.BLOCKING, entrance = "w1")))
+        val properties = shown.barriers.jsonObject.getValue("features").jsonArray.single().jsonObject
+        assertEquals(
+            listOf(48, 0),
+            properties.getValue("properties").jsonObject.offset(),
+            "Znak bariery w zagłębieniu konturu nie stoi na zewnątrz ściany wejścia",
         )
     }
 
@@ -92,4 +117,10 @@ class EntranceBarrierSignTest {
         )
 
     private fun JsonObject.text(key: String): String = getValue(key).jsonPrimitive.content
+
+    private fun JsonObject.offset(): List<Int>? =
+        get(BARRIER_OFFSET)?.jsonArray?.map { it.jsonPrimitive.double.roundToInt() }
+
+    private fun outline(vararg corners: Pair<Double, Double>): GeoPolygon =
+        GeoPolygon(listOf((corners.toList() + corners.first()).map { (x, y) -> GeoPoint(longitude = x, latitude = y) }))
 }
