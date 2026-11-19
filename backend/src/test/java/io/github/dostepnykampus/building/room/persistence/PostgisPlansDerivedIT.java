@@ -18,15 +18,18 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Zapis planu liczy grupę funkcji, podpis numeru i obrys piętra.
+ * Transakcja testu cofa budynek, piętra i pomieszczenia, więc nie zostają dla innych testów.
  *
  * <p>Wymagania: US16.1, US18.1</p>
  *
  * @since 0.1.0
  */
 @IntegrationTest
+@Transactional
 final class PostgisPlansDerivedIT {
 
     @Test
