@@ -32,11 +32,9 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
@@ -144,7 +142,7 @@ fun CampusMapScreen(
  * na powrót. Pod arkuszem V2 nagłówka nie ma, jak w hi-fi V2: mapa sięga wtedy pod pasek stanu. Budynek z listy
  * też otwiera V2 jako arkusz na mapie. Po zamknięciu arkusza mapa stoi na ekranie w widoku z chwili zamknięcia.
  * Przy otwartej klawiaturze mapa jest za niska na przyciski, więc znikają do jej zamknięcia; dotknięcie mapy
- * zamyka klawiaturę i wyniki pola „Szukaj”, a tekst w polu zostaje.
+ * zamyka klawiaturę i wyniki pola „Szukaj” bez wyboru obiektu pod palcem, a tekst w polu zostaje.
  *
  * Wymagania: US9.1, NFR-10, NFR-19, NFR-20, US2, US1.1, US2.9, US3.3, US2.8
  *
@@ -201,20 +199,20 @@ fun CampusMapScreen(
     val barExit = rememberTopBarExit(isCovered = isCovered, motion = motion)
     var barHeight by remember { mutableIntStateOf(0) }
     var headerHeight by remember { mutableIntStateOf(0) }
-    val barTop = with(LocalDensity.current) { barHeight.toDp() }
-    val headerTop = with(LocalDensity.current) { headerHeight.toDp() }
+    val search = rememberSearchFocus()
+    val density = LocalDensity.current
     Box(modifier.fillMaxSize()) {
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
-                Box(Modifier.mapArea(isUnderSheet = sheet.isEntranceFull, focus = LocalFocusManager.current)) {
+                Box(Modifier.mapArea(isUnderSheet = sheet.isEntranceFull, search = search)) {
                     val shown = ShownBarriers(state.barriers.takeUnless { sheet.isCardOpen }.orEmpty())
                     CampusMap(
                         ui = state,
                         barriers = shown,
                         focus = sheet.layout.focus,
                         areas = areas,
-                        top = mapTop(isCovered = isCovered, bar = barTop),
-                        cameraTop = mapTop(isCovered = isCovered, bar = headerTop),
+                        top = mapTop(isCovered = isCovered, bar = with(density) { barHeight.toDp() }),
+                        cameraTop = mapTop(isCovered = isCovered, bar = with(density) { headerHeight.toDp() }),
                         sheet = sheet.copy(cover = sheetCover),
                         mapView = mapView,
                         motion = motion,
@@ -241,6 +239,7 @@ fun CampusMapScreen(
                     onListChange = onListChange,
                     onBuildingClick = if (isList) onListBuildingClick else onBuildingClick,
                     onBarHeight = { headerHeight = it },
+                    searchFocus = search,
                     modifier =
                         (if (isList) Modifier.fillMaxSize() else Modifier)
                             .slideUp(barExit)
@@ -252,9 +251,9 @@ fun CampusMapScreen(
     }
 }
 
-private fun Modifier.mapArea(isUnderSheet: Boolean, focus: FocusManager): Modifier =
+private fun Modifier.mapArea(isUnderSheet: Boolean, search: SearchFocus): Modifier =
     fillMaxSize()
-        .releasesSearchOnTouch(focus)
+        .releasesSearchOnTouch(search)
         .then(if (isUnderSheet) Modifier.clearAndSetSemantics {} else Modifier)
 
 @Composable

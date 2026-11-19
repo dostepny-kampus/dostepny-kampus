@@ -5,8 +5,6 @@
  */
 package io.github.dostepnykampus.feature.map
 
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
@@ -48,11 +46,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -114,6 +109,7 @@ private val ClearIcon =
  * @param modifier położenie nad mapą; przy liście cała wysokość nad paskiem dolnym
  * @param onBarHeight wysokość w pikselach wiersza tytułu, pola i wiersza bez internetu, bez wyników: tę część
  *   mapy kamera traktuje jako zasłoniętą, więc wpisywanie nie przesuwa mapy
+ * @param searchFocus fokus pola widziany przez mapę; `null`, gdy żadna mapa go nie śledzi
  */
 @Composable
 internal fun CampusSearch(
@@ -128,6 +124,7 @@ internal fun CampusSearch(
     onBuildingClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     onBarHeight: (Int) -> Unit = {},
+    searchFocus: SearchFocus? = null,
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var isHidden by rememberSaveable { mutableStateOf(false) }
@@ -154,7 +151,10 @@ internal fun CampusSearch(
                 query = query,
                 onQueryChange = onQueryChange,
                 onFieldTap = { isHidden = false },
-                onFieldLeave = { isHidden = true },
+                onFieldFocus = { isFocused ->
+                    searchFocus?.onField(isFocused = isFocused)
+                    if (!isFocused) isHidden = true
+                },
                 isList = isList,
                 onListChange = onListChange,
             )
@@ -187,7 +187,7 @@ private fun SearchHeader(
     query: String,
     onQueryChange: (String) -> Unit,
     onFieldTap: () -> Unit,
-    onFieldLeave: () -> Unit,
+    onFieldFocus: (Boolean) -> Unit,
     isList: Boolean,
     onListChange: (Boolean) -> Unit,
 ) {
@@ -199,7 +199,7 @@ private fun SearchHeader(
                 verticalArrangement = Arrangement.spacedBy(Odstepy.s),
             ) {
                 TitleRow(isList, onListChange)
-                SymbolField(query = query, onQueryChange = onQueryChange, onTap = onFieldTap, onLeave = onFieldLeave)
+                SymbolField(query = query, onQueryChange = onQueryChange, onTap = onFieldTap, onFocus = onFieldFocus)
             }
             HorizontalDivider(thickness = Obramowania.ramka, color = MaterialTheme.colorScheme.outlineVariant)
         }
@@ -244,7 +244,7 @@ private fun ViewButton(isList: Boolean, hasIcon: Boolean, onListChange: (Boolean
 }
 
 @Composable
-private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: () -> Unit, onLeave: () -> Unit) {
+private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: () -> Unit, onFocus: (Boolean) -> Unit) {
     val interactions = remember { MutableInteractionSource() }
     val tap by rememberUpdatedState(onTap)
     LaunchedEffect(interactions) {
@@ -265,7 +265,7 @@ private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: (
             Modifier
                 .fillMaxWidth()
                 .defaultMinSize(minHeight = OutlinedTextFieldDefaults.MinHeight)
-                .onFocusChanged { if (!it.isFocused) onLeave() },
+                .onFocusChanged { onFocus(it.isFocused) },
         textStyle = textStyle,
         keyboardOptions =
             KeyboardOptions(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Search),
@@ -321,16 +321,3 @@ private fun ClearButton(onClick: () -> Unit) {
     }
 }
 
-/**
- * Każde dotknięcie tego elementu albo jego zawartości zdejmuje fokus z [focus], więc pole „Szukaj” traci fokus,
- * a klawiatura ekranowa się chowa. Dotknięcie nie jest zużywane i dalej trafia do zawartości.
- *
- * Wymagania: US3.1, NFR-17
- */
-internal fun Modifier.releasesSearchOnTouch(focus: FocusManager): Modifier =
-    pointerInput(focus) {
-        awaitEachGesture {
-            awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
-            focus.clearFocus(force = true)
-        }
-    }
