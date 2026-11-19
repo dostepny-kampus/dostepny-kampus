@@ -201,6 +201,7 @@ Czynność główna: przeczytanie, jaka to bariera. Wiersz budynku „Budynek A-
 | Element | AC/BR/NFR |
 | --- | --- |
 | Dotknięcie znaku bariery otwiera arkusz; znak ma nazwę dla TalkBack | US1.3, NFR-18 |
+| Znak bariery przy wejściu stoi w punkcie wejścia, gdy znaku wejścia nie widać. Gdy go widać, stoi tuż obok niego, na zewnątrz ściany, i oba znaki się stykają | US2.2, BR-8, NFR-17, decyzja z 19.11.2026 |
 | Typ bariery jako zastępnik, uciążliwość napisem i ikoną | US1.3, BR-7, NFR-21 |
 | Miejsce: budynek i wejście albo piętro, „Sprawdzone [data]” | US2.2, PW-3 |
 | Wiersz budynku ze znakiem budynku i strzałką zastępuje „Pokaż opis budynku”; mapa zachowuje się jak po dotknięciu konturu. Bariera poza budynkiem ma „Poza budynkiem” i nie ma wiersza | US1.5, BR-G2, decyzja z 18.11.2026 |
