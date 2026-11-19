@@ -55,7 +55,7 @@ public final class QuickPlaceSteps {
     /**
      * Zgłoszenie scenariusza.
      */
-    private static final UUID SUBMISSION =
+    static final UUID SUBMISSION =
         UUID.fromString("4d2e3f40-5b6c-4d7e-8f90-0b1c2d3e4f50");
 
     /**
@@ -238,6 +238,7 @@ public final class QuickPlaceSteps {
 
     /**
      * Wysyła zgłoszenie z miejsca osoby i zapamiętuje odpowiedź serwera.
+     * Bez kroku o miejscu osoby zgłoszenie nie ma pola location.
      *
      * @param fields Pola zgłoszenia poza identyfikatorem, miejscem i zdjęciem
      * @throws Exception Gdy MockMvc nie wykona żądania
@@ -282,11 +283,18 @@ public final class QuickPlaceSteps {
     }
 
     private String body(final String fields) {
+        final String location;
+        if (this.place.isEmpty()) {
+            location = "";
+        } else {
+            location = String.join(
+                "", "\"location\":{\"type\":\"Point\",\"coordinates\":", this.place, "},"
+            );
+        }
         return String.join(
             "",
             "{\"id\":\"", QuickPlaceSteps.SUBMISSION.toString(),
-            "\",", fields, ",",
-            "\"location\":{\"type\":\"Point\",\"coordinates\":", this.place, "},",
+            "\",", fields, ",", location,
             "\"photoIds\":[\"", UUID.randomUUID().toString(), "\"]}"
         );
     }
