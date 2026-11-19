@@ -29,6 +29,7 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.overlay.SheetCloseButton
+import io.github.dostepnykampus.feature.map.overlay.entranceTitle
 
 /**
  * Nagłówek karty V2 w trybie [mode]: symbol i nazwa z [card] albo miejsce na nie w trakcie wczytywania; poza

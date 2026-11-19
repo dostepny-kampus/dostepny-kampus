@@ -40,7 +40,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 private const val SHOW_ENTRANCE = "Pokaż wejście na mapie"
 
-private val ShowButton = hasClickAction() and hasContentDescription("$SHOW_ENTRANCE: »Boczne«")
+private val ShowButton = hasClickAction() and hasContentDescription("$SHOW_ENTRANCE: „Boczne”")
 
 /** „Pokaż wejście na mapie” i wiersz wejścia na V2 → V1 z zaznaczonym wejściem. Wymagania: US3.3, US2.1, BR-25 */
 @RunWith(RobolectricTestRunner::class)

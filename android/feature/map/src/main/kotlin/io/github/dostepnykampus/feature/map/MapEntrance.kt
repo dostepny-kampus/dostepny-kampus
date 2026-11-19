@@ -14,13 +14,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
-import io.github.dostepnykampus.feature.map.building.entranceTitle
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
 import io.github.dostepnykampus.feature.map.campus.selectedEntrance
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import io.github.dostepnykampus.feature.map.overlay.entranceTitle
 
 /**
  * Wejście [entrance] z [catalog] jako zaznaczenie na mapie; `null` bez katalogu, bez wejścia albo gdy katalog go

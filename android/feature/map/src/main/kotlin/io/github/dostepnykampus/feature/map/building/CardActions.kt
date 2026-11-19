@@ -17,6 +17,7 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.overlay.entranceTitle
 
 /**
  * Czynności karty budynku: „Pokaż wejście na mapie” dla wejścia zalecanego, które TalkBack czyta z nazwą wejścia,

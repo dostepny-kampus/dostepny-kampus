@@ -96,7 +96,7 @@ class BuildingCardHeaderTest {
             onShowEntrance = { shown += it },
         )
         val answer = compose.onNode(hasText("Wejście dostępne") and hasText("Zalecane: „Główne”."))
-        val button = compose.onNode(hasContentDescription("$SHOW_ENTRANCE: »Główne«"))
+        val button = compose.onNode(hasContentDescription("$SHOW_ENTRANCE: „Główne”"))
         val line = answer.getUnclippedBoundsInRoot()
         val below = button.getUnclippedBoundsInRoot()
         assertTrue("zdanie nad przyciskiem: $line, $below", line.bottom <= below.top)

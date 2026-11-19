@@ -41,12 +41,12 @@ import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
 import io.github.dostepnykampus.feature.map.building.assessmentText
-import io.github.dostepnykampus.feature.map.building.entranceTitle
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.overlay.BuildingLink
 import io.github.dostepnykampus.feature.map.overlay.MapSheet
 import io.github.dostepnykampus.feature.map.overlay.MapSheetHeader
 import io.github.dostepnykampus.feature.map.overlay.SheetExits
+import io.github.dostepnykampus.feature.map.overlay.entranceTitle
 import kotlin.math.ceil
 import io.github.dostepnykampus.core.designsystem.R as DesignR
 
