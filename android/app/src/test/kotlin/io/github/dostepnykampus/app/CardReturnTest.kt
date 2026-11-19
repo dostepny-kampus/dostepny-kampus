@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -48,6 +51,7 @@ class CardReturnTest {
 
     private lateinit var navigator: AppNavigator
     private var scroll: ScrollState? = null
+    private var isCardTall by mutableStateOf(true)
 
     private fun open() {
         compose.setContent {
@@ -62,7 +66,7 @@ class CardReturnTest {
                     val card = sheetCard()
                     scroll = card.scroll
                     Column(modifier = Modifier.verticalScroll(card.scroll)) {
-                        Text(text = CARD, modifier = Modifier.requiredHeight(3000.dp))
+                        Text(text = CARD, modifier = Modifier.requiredHeight(if (isCardTall) 3000.dp else 100.dp))
                     }
                 }
             }
@@ -106,6 +110,28 @@ class CardReturnTest {
 
         compose.onNode(sheetHandle(isExpanded = true)).assertExists("karta rozwinięta po powrocie")
         assertEquals("przewinięcie po powrocie", SCROLLED_PX, scrolled())
+    }
+
+    /**
+     * Wiersz: karta rozwinięta i przewinięta, arkusz w jej miejscu, „Wstecz” → karta, której treść dochodzi po
+     * pierwszej klatce, staje na tym samym przewinięciu, gdy treść urośnie.
+     * Scenariusz (częściowo, przykład: rozwinie kartę A-1, przewinie ją i dotknie wiersza wejścia):
+     *   przegladanie-mapy.feature: „Wstecz” w arkuszu wejścia wraca tam, skąd arkusz otwarto, a „Zamknij” zostawia mapę
+     */
+    @Test
+    fun returnsToScrollWhenContentArrivesLater() {
+        open()
+        expand()
+        scrollCard()
+        replaceCardBySign()
+        isCardTall = false
+
+        compose.onNodeWithText(BACK).performClick()
+        compose.waitForIdle()
+        isCardTall = true
+        compose.waitForIdle()
+
+        assertEquals("przewinięcie po doczytaniu treści", SCROLLED_PX, scrolled())
     }
 
     /** Wiersz: karta niska, arkusz znaku w jej miejscu, „Wstecz” → karta niska. */
