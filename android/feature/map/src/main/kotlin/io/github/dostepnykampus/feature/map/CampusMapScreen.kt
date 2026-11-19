@@ -70,7 +70,6 @@ import io.github.dostepnykampus.feature.map.overlay.MapStatusBar
 import io.github.dostepnykampus.feature.map.overlay.dataDay
 import io.github.dostepnykampus.feature.map.plan.FloorColumn
 import io.github.dostepnykampus.feature.map.plan.ShownPlan
-import io.github.dostepnykampus.feature.map.search.searchBarArea
 
 private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"

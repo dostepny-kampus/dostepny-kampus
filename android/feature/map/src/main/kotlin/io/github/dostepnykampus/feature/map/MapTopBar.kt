@@ -9,6 +9,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -16,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.feature.map.camera.MapMotion
@@ -73,3 +75,18 @@ internal fun Modifier.slideUp(hidden: Animatable<Float, AnimationVector1D>): Mod
             placeable.place(x = 0, y = -(hidden.value * placeable.height).roundToInt())
         }
     }
+
+/**
+ * Miejsce góry V1: przy liście ([isList]) cała wysokość ekranu, a pasek odjeżdża w górę o część [barExit]
+ * swojej wysokości. [onHeight] dostaje wysokość całej góry z wynikami w pikselach.
+ *
+ * Wymagania: US1.1, US18.1
+ */
+internal fun Modifier.searchBarArea(
+    isList: Boolean,
+    barExit: Animatable<Float, AnimationVector1D>,
+    onHeight: (Int) -> Unit,
+): Modifier =
+    then(if (isList) Modifier.fillMaxSize() else Modifier)
+        .slideUp(barExit)
+        .onSizeChanged { onHeight(it.height) }
