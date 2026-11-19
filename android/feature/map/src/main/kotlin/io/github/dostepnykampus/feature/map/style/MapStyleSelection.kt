@@ -90,6 +90,8 @@ internal fun selectedLayer(filter: JsonElement, colors: MapStyleColors): JsonObj
  * @property chosenEntrance dane GeoJSON źródła [CHOSEN_SOURCE]
  * @property planFloor piętro planu w warstwach planu; `null` bez planu
  * @property barriersFilter filtr warstw [BARRIERS_LAYER] i [BARRIER_WORDS_LAYER]
+ * @property besideEntrance kiedy znak bariery przy wejściu stoi obok znaku wejścia: przy tych samych
+ *   powiększeniach i budynkach co znaki wejść z [entrancesMinZoom] i [entrancesFilter]
  */
 internal data class SelectionLook(
     val dimmed: List<Boolean>,
@@ -103,6 +105,7 @@ internal data class SelectionLook(
     val chosenEntrance: JsonElement,
     val planFloor: String?,
     val barriersFilter: JsonElement,
+    val besideEntrance: BesideEntrance,
 )
 
 /**
@@ -119,6 +122,7 @@ internal fun selectionLook(data: CampusMapData, selection: MapSelection): Select
     val alone = chosen.takeIf { selection.entrance == null }
     val planned = selection.plan?.let { data.outlineOf(it.building) }
     val kept = listOfNotNull(alone, planned)
+    val entrancesZoom = if (alone == null) MARKS_MIN_ZOOM else ANY_ZOOM
     return SelectionLook(
         dimmed = data.outlines.map { kept.isNotEmpty() && it !in kept },
         underPlan = data.outlines.map { it == planned },
@@ -128,7 +132,7 @@ internal fun selectionLook(data: CampusMapData, selection: MapSelection): Select
                 ?: NO_FEATURES,
         labelsFilter = planned?.let(::withoutLabel) ?: ALL_FEATURES,
         entrancesFilter = alone?.let(::ofBuildings) ?: ALL_FEATURES,
-        entrancesMinZoom = if (alone == null) MARKS_MIN_ZOOM else ANY_ZOOM,
+        entrancesMinZoom = entrancesZoom,
         chosenBarrierFilter = selection.barrier?.let(::ofBarrier) ?: NO_FEATURES,
         chosenEntrance = featureCollection(selection.entrance?.let(::chosenFeatures).orEmpty()),
         planFloor = selection.plan?.floor,
@@ -138,6 +142,7 @@ internal fun selectionLook(data: CampusMapData, selection: MapSelection): Select
                 barriersOnPlan(building = selection.plan?.building, floor = selection.plan?.floor),
                 barriersByZoom(chosen),
             ),
+        besideEntrance = BesideEntrance(minZoom = entrancesZoom, buildings = alone),
     )
 }
 
@@ -151,6 +156,9 @@ internal interface MapStyleTarget {
 
     /** Ustawia stan [key] obiektu o identyfikatorze [feature] w źródle [source] na [value]. */
     fun state(source: String, feature: Int, key: String, value: Boolean)
+
+    /** Ustawia pole [property] układu warstwy [layer] na [value]: wyrażenie stylu albo stałą. */
+    fun layout(layer: String, property: String, value: JsonElement)
 
     /** Ustawia najmniejsze powiększenie [zoom], przy którym rysuje się warstwa [layer]. */
     fun minZoom(layer: String, zoom: Double)
@@ -187,6 +195,7 @@ internal fun MapStyleTarget.showSelection(look: SelectionLook, images: Map<Strin
     showPlanFloor(floor = look.planFloor)
     filter(layer = BARRIERS_LAYER, filter = look.barriersFilter)
     filter(layer = BARRIER_WORDS_LAYER, filter = look.barriersFilter)
+    showBesideEntrance(look.besideEntrance)
 }
 
 /**

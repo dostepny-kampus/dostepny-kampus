@@ -43,8 +43,11 @@ const val BARRIER_OFFSET = "offset"
 /** Właściwość punktu bariery przy wejściu z przesunięciem słowa uciążliwości w dp, `[x, y]`. Wymagania: NFR-20 */
 const val BARRIER_WORD_OFFSET = "word_offset"
 
-/** Odległość znaku bariery przy wejściu od znaku wejścia w dp: bok obszaru dotyku znaku. Wymagania: NFR-17 */
-const val ENTRANCE_BARRIER_DP = 48.0
+/**
+ * Odległość środka znaku bariery przy wejściu od punktu wejścia w dp: połowa znaku wejścia i połowa znaku bariery,
+ * więc znaki się stykają. Wymagania: US2.2, NFR-17
+ */
+const val ENTRANCE_BARRIER_DP = 30.0
 
 /** Odstęp słowa uciążliwości od środka znaku bariery w dp. */
 const val BARRIER_WORD_DP = 20.0

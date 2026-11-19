@@ -45,7 +45,41 @@ internal const val MINOR_BARRIER_ZOOM = 16
 
 private const val WORD_OFFSET_DP = BARRIER_SIGN_DP / 2 + 4
 
-private val SIGN_OFFSET = "icon-offset" to offsetOr(BARRIER_OFFSET, numbers(0.0, 0.0))
+private const val ICON_OFFSET = "icon-offset"
+
+/**
+ * Warunki, przy których znak bariery przy wejściu stoi obok znaku wejścia, a nie w punkcie wejścia: te same, przy
+ * których widać znak wejścia, czyli od powiększenia [minZoom] i tylko przy wejściach budynków [buildings]; `null`
+ * przy wejściach wszystkich budynków.
+ *
+ * Wymagania: US2.2, NFR-17
+ */
+internal data class BesideEntrance(val minZoom: Double, val buildings: List<String>?) {
+    /** Czy przy powiększeniu [zoom] znak bariery przy wejściu budynku [building] stoi obok znaku wejścia. */
+    fun isBeside(zoom: Double, building: String?): Boolean =
+        zoom >= minZoom && (buildings == null || building in buildings)
+
+    /** Pole `icon-offset` znaku bariery: przesunięcie z punktu obok widocznego znaku wejścia, inaczej zero. */
+    fun signOffset(): JsonElement = shifted(key = BARRIER_OFFSET, still = numbers(0.0, 0.0))
+
+    /** Pole `icon-offset` słowa uciążliwości: obok znaku bariery tam, gdzie stoi znak. */
+    fun wordOffset(): JsonElement = shifted(key = BARRIER_WORD_OFFSET, still = numbers(WORD_OFFSET_DP.toDouble(), 0.0))
+
+    private fun shifted(key: String, still: JsonArray): JsonElement {
+        val stays = expression("literal", still)
+        val moves = offsetOr(key, still)
+        val byBuilding =
+            when {
+                buildings == null -> moves
+                buildings.isEmpty() -> stays
+                else -> {
+                    val symbols = JsonArray(buildings.map(::JsonPrimitive))
+                    expression("match", expression("to-string", property(BARRIER_BUILDING)), symbols, moves, stays)
+                }
+            }
+        return expression("step", expression("zoom"), stays, JsonPrimitive(minZoom), byBuilding)
+    }
+}
 
 /** Nazwa obrazu znaku bariery o uciążliwości [severity]. Wymagania: NFR-21 */
 internal fun barrierSignImage(severity: Severity): String = "bariera_${severity.name}"
@@ -62,18 +96,19 @@ internal fun barrierWordImage(severity: Severity): String = "bariera_slowo_${sev
  * stylu wymagają sieci. Pojawia się od powiększenia [BARRIER_WORD_ZOOM], nie przy krawędzi mapy i tylko wtedy,
  * gdy mieści się bez nakładania. Warstwy stoją pod podpisami budynków, więc przy kolizji zostaje podpis budynku
  * (wiersz o znakach barier w wymaganiach V1). Znak i słowo bariery przy wejściu stoją przesunięte o wartości
- * z właściwości punktu, a filtr [filter] z [SelectionLook.barriersFilter] zostawia bariery widoczne teraz.
+ * z właściwości punktu, gdy [beside] na to pozwala, a filtr [filter] z [SelectionLook.barriersFilter] zostawia
+ * bariery widoczne teraz.
  *
- * Wymagania: US1.3, NFR-21, NFR-20
+ * Wymagania: US1.3, NFR-21, NFR-20, US2.2
  */
-internal fun barrierLayers(filter: JsonElement): List<JsonObject> {
+internal fun barrierLayers(filter: JsonElement, beside: BesideEntrance): List<JsonObject> {
     val words =
         symbolLayer(
             id = BARRIER_WORDS_LAYER,
             source = BARRIERS_SOURCE,
             image = bySeverity(::barrierWordImage),
             "icon-anchor" to JsonPrimitive("left"),
-            "icon-offset" to offsetOr(BARRIER_WORD_OFFSET, numbers(WORD_OFFSET_DP.toDouble(), 0.0)),
+            ICON_OFFSET to beside.wordOffset(),
             "symbol-avoid-edges" to JsonPrimitive(true),
         )
     val signs =
@@ -82,7 +117,7 @@ internal fun barrierLayers(filter: JsonElement): List<JsonObject> {
             source = BARRIERS_SOURCE,
             image = bySeverity(::barrierSignImage),
             OVERLAP,
-            SIGN_OFFSET,
+            ICON_OFFSET to beside.signOffset(),
         )
     return listOf(
         JsonObject(words + ("minzoom" to JsonPrimitive(BARRIER_WORD_ZOOM)) + (FILTER to filter)),
@@ -122,20 +157,32 @@ internal fun barriersByZoom(buildings: List<String>?): JsonElement {
 /**
  * Warstwa wybranej bariery z filtrem [filter] z [SelectionLook.chosenBarrierFilter]: jej znak jest większy
  * i w obwódce, więc wyróżnia go rozmiar i kształt, a nie sama barwa. Warstwa stoi nad pozostałymi znakami
- * i rysuje się zawsze.
+ * i rysuje się zawsze; znak stoi tam, gdzie znak tej bariery według [beside].
  *
- * Wymagania: US1.5, NFR-21
+ * Wymagania: US1.5, NFR-21, US2.2
  */
-internal fun chosenBarrierLayer(filter: JsonElement): JsonObject {
+internal fun chosenBarrierLayer(filter: JsonElement, beside: BesideEntrance): JsonObject {
     val sign =
         symbolLayer(
             id = CHOSEN_BARRIER_LAYER,
             source = BARRIERS_SOURCE,
             image = bySeverity(::chosenBarrierImage),
             OVERLAP,
-            SIGN_OFFSET,
+            ICON_OFFSET to beside.signOffset(),
         )
     return JsonObject(sign + (FILTER to filter))
+}
+
+/**
+ * Ustawia w stylu położenie znaków i słów barier przy wejściach według [beside]; po wywołaniu warstwy barier są
+ * takie, jak z [barrierLayers] i [chosenBarrierLayer] z tym samym [beside].
+ *
+ * Wymagania: US2.2, NFR-17
+ */
+internal fun MapStyleTarget.showBesideEntrance(beside: BesideEntrance) {
+    layout(layer = BARRIERS_LAYER, property = ICON_OFFSET, value = beside.signOffset())
+    layout(layer = CHOSEN_BARRIER_LAYER, property = ICON_OFFSET, value = beside.signOffset())
+    layout(layer = BARRIER_WORDS_LAYER, property = ICON_OFFSET, value = beside.wordOffset())
 }
 
 /** Filtr warstwy [CHOSEN_BARRIER_LAYER]: tylko bariera [id]. */
