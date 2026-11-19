@@ -31,7 +31,6 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Ikony
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.R as DesignR
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
@@ -49,6 +48,7 @@ import io.github.dostepnykampus.feature.map.overlay.MapSheet
 import io.github.dostepnykampus.feature.map.overlay.MapSheetHeader
 import io.github.dostepnykampus.feature.map.overlay.SheetExits
 import kotlin.math.ceil
+import io.github.dostepnykampus.core.designsystem.R as DesignR
 
 private val WIDE_WINDOW = 600.dp
 
