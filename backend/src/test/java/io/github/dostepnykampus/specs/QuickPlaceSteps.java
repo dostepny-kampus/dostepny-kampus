@@ -34,6 +34,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 public final class QuickPlaceSteps {
 
     /**
+     * Zgłoszenie scenariusza.
+     */
+    static final UUID SUBMISSION =
+        UUID.fromString("4d2e3f40-5b6c-4d7e-8f90-0b1c2d3e4f50");
+
+    /**
      * Token testowy dla roli nazwanej w scenariuszu.
      */
     private static final Map<String, String> TOKENS = Map.of(
@@ -51,12 +57,6 @@ public final class QuickPlaceSteps {
      * Pola zgłoszenia szybkiego z grupą „inne”.
      */
     private static final String OTHER = "\"kind\":\"QUICK\",\"barrierGroup\":\"OTHER\"";
-
-    /**
-     * Zgłoszenie scenariusza.
-     */
-    static final UUID SUBMISSION =
-        UUID.fromString("4d2e3f40-5b6c-4d7e-8f90-0b1c2d3e4f50");
 
     /**
      * Klient żądań HTTP do aplikacji.
