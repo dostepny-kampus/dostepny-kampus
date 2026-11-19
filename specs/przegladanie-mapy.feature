@@ -377,7 +377,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | „Pokaż wejście na mapie” na karcie A-1  | „Zamknij”              |
       | wiersz wejścia na karcie A-1            | „Wstecz”               |
       | znak wejścia A-1 na mapie               | wiersz budynku A-1     |
-      | znak wejścia A-1 na mapie               | pusta mapa             |
+      | znak wejścia A-1 na mapie               | dotyk pustej mapy      |
 
   # @do-zrobienia #3255: „Wstecz” otwiera kartę na niskiej wysokości od góry, bez jej wysokości i przewinięcia.
   @US2.8 @US3.3 @NFR-15 @NFR-53 @aplikacja @do-zrobienia
