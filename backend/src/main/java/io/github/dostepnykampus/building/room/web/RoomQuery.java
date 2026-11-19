@@ -48,6 +48,15 @@ public final class RoomQuery {
     );
 
     /**
+     * Opis błędu zapytania, którego nie da się rozebrać.
+     */
+    private static final String ERROR = String.join(
+        " ",
+        "Parametr q to numer sali i opcjonalnie symbol budynku w dowolnej",
+        "kolejności, np. A-1 329 albo 329 A-1, do 50 znaków"
+    );
+
+    /**
      * Tekst parametru {@code q}.
      */
     private final String text;
@@ -92,14 +101,6 @@ public final class RoomQuery {
             .map(form -> form.matcher(plain))
             .filter(parts -> this.text.length() <= 50 && parts.matches())
             .findFirst()
-            .orElseThrow(
-                () -> new InvalidInput(
-                    String.join(
-                        " ",
-                        "Parametr q to numer sali i opcjonalnie symbol budynku w dowolnej",
-                        "kolejności, np. A-1 329 albo 329 A-1, do 50 znaków"
-                    )
-                )
-            );
+            .orElseThrow(() -> new InvalidInput(RoomQuery.ERROR));
     }
 }
