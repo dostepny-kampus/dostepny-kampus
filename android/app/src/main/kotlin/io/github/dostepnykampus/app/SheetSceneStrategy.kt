@@ -321,11 +321,11 @@ internal class SheetEdge(private val exit: SheetExit) {
         val part = hidden
         val visible =
             when {
-                part != null -> exit.height * (1f - part().coerceIn(0f, 1f))
+                part != null -> exit.height * (1f - part().coerceIn(minimumValue = 0f, maximumValue = 1f))
                 exit.isLeaving -> exit.height * (1f - exit.gone.value)
                 else -> 0f
             }
-        return minOf(cover.toFloat(), visible).roundToInt()
+        return minOf(a = cover.toFloat(), b = visible).roundToInt()
     }
 }
 
