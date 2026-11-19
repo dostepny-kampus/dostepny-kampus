@@ -16,11 +16,7 @@ import kotlinx.serialization.Serializable
  * Wymagania: US14.2, UC7
  */
 @Serializable
-data class SignInRoute(
-    val isForReport: Boolean,
-    val entranceId: String? = null,
-    val place: ReportPlace? = null,
-) : NavKey
+data class SignInRoute(val isForReport: Boolean, val entranceId: String? = null, val place: ReportPlace? = null) : NavKey
 
 /** L2 Konto. Wymagania: US14.1 */
 @Serializable
