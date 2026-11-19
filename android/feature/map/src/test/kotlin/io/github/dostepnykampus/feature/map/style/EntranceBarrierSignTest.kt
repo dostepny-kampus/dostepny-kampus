@@ -58,6 +58,7 @@ class EntranceBarrierSignTest {
         assertEquals(
             listOf("ONLY_WITH_HELP" to null, "BLOCKING" to "[48.0,0.0]"),
             properties.map { it.text(BARRIER_SEVERITY) to it[BARRIER_OFFSET]?.toString() },
+            "Przesunięty jest tylko znak bariery przy wejściu",
         )
     }
 
@@ -76,7 +77,7 @@ class EntranceBarrierSignTest {
                     .toString()
             }
         val expected = """["coalesce",["get","$BARRIER_OFFSET"],["literal",[0.0,0.0]]]"""
-        assertEquals(listOf(expected, expected), offsets)
+        assertEquals(listOf(expected, expected), offsets, "Obie warstwy znaków biorą przesunięcie z punktu")
     }
 
     private fun barrier(id: String, severity: Severity, entrance: String?) =
