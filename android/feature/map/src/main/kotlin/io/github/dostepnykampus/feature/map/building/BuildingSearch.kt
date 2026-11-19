@@ -19,14 +19,14 @@ import io.github.dostepnykampus.core.model.room.FoundRoom
  *   się wczytuje
  * @property rooms sale z serwera, gdy żaden budynek nie pasuje, a tekst ma cyfry i symbol budynku; pusta bez sieci
  *   i bez wyniku
- * @property needsBuilding czy [query] to sam numer sali bez symbolu budynku; sali bez budynku model nie szuka
+ * @property isBuildingMissing czy [query] to sam numer sali bez symbolu budynku; sali bez budynku model nie szuka
  */
 @Immutable
 data class BuildingSearch(
     val query: String = "",
     val buildings: List<Building>? = null,
     val rooms: List<FoundRoom> = emptyList(),
-    val needsBuilding: Boolean = false,
+    val isBuildingMissing: Boolean = false,
 )
 
 /** Wynik dla zapytania [shown] z pola; `null`, gdy wynik jest dla innego zapytania albo katalog się wczytuje. */

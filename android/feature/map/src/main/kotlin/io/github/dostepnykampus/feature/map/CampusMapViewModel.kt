@@ -188,9 +188,9 @@ class CampusMapViewModel(
             pairs.mapLatest { (catalog, query) ->
                 val found = catalog?.let { withContext(computeContext) { searchBuildings(query, it.buildings) } }
                 val isNoBuilding = found?.isEmpty() == true && query.any(Char::isDigit)
-                val needsBuilding = isNoBuilding && isRoomNumberOnly(query)
-                val rooms = if (isNoBuilding && !needsBuilding) roomsFor(query.trim()) else emptyList()
-                BuildingSearch(query = query, buildings = found, rooms = rooms, needsBuilding = needsBuilding)
+                val isBuildingMissing = isNoBuilding && isRoomNumberOnly(query)
+                val rooms = if (isNoBuilding && !isBuildingMissing) roomsFor(query.trim()) else emptyList()
+                BuildingSearch(query = query, buildings = found, rooms = rooms, isBuildingMissing = isBuildingMissing)
             }
         return results.onStart { emit(BuildingSearch()) }
     }

@@ -94,7 +94,7 @@ class MapRoomSearchTest {
             listOf("329", " sala 329 ", "s. 2.21").forEach { query ->
                 val search = searched(scope = this, query = query, reply = ServerReply.Ok(listOf(FOUND)))
 
-                assertTrue(search.needsBuilding, "Sam numer sali „$query” nie dał prośby o budynek")
+                assertTrue(search.isBuildingMissing, "Sam numer sali „$query” nie dał prośby o budynek")
             }
             assertEquals(emptyList<String>(), asked, "Model szukał sali bez budynku")
         }
@@ -104,7 +104,7 @@ class MapRoomSearchTest {
         runTest(UnconfinedTestDispatcher()) {
             val search = searched(scope = this, query = "A-1 329", reply = ServerReply.Ok(listOf(FOUND)))
 
-            assertFalse(search.needsBuilding, "Zapytanie z budynkiem dało prośbę o budynek")
+            assertFalse(search.isBuildingMissing, "Zapytanie z budynkiem dało prośbę o budynek")
         }
 
     @Test
