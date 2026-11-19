@@ -37,7 +37,7 @@ internal fun GeoArea.outwardBearing(point: GeoPoint): Double? {
         allRings()
             .filter { it.size > 1 }
             .map { ring -> LineString(ring.map(GeoPoint::toPosition)) }
-            .map { line -> line to nearestPointTo(line, position) }
+            .map { line -> line to line.nearestPointTo(position) }
             .minByOrNull { (_, found) -> found.properties.distance.toDouble(International.Meters) }
     return nearest?.let { (line, found) ->
         val edge = line.coordinates
