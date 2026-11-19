@@ -105,6 +105,7 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 | V1 | brak sieci | [`m-v1-mapa-brak-sieci`](../../_generated/m-v1-mapa-brak-sieci.svg) | [odwiedzający](odwiedzajacy.md) |
 | V1 | pierwsze otwarcie bez internetu | [`m-v1-mapa-pierwsze-otwarcie`](../../_generated/m-v1-mapa-pierwsze-otwarcie.svg) | [odwiedzający](odwiedzajacy.md) |
 | V1 | znaleziona sala | [`m-v1-mapa-sala`](../../_generated/m-v1-mapa-sala.svg) | [odwiedzający](odwiedzajacy.md) |
+| V1 | kroki po kolei | [`m-v1-mapa-sala-kroki`](../../_generated/m-v1-mapa-sala-kroki.svg) | [odwiedzający](odwiedzajacy.md) |
 | V1 | bariera na mapie | [`m-v1-mapa-bariera`](../../_generated/m-v1-mapa-bariera.svg) | [odwiedzający](odwiedzajacy.md) |
 | V1 | arkusz wejścia | [`m-v1-mapa-wejscie`](../../_generated/m-v1-mapa-wejscie.svg) | [odwiedzający](odwiedzajacy.md) |
 | V1 | panel „Teren na mapie” | [`m-v1-mapa-teren-panel`](../../_generated/m-v1-mapa-teren-panel.svg) | [odwiedzający](odwiedzajacy.md) |

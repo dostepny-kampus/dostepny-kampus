@@ -6,7 +6,7 @@ Konwencje opisuje strona [Makiety](index.md). Stan, który różni się jednym n
 
 | Ekran | Makiety | Stany w tabelach |
 | --- | --- | --- |
-| V1 Mapa kampusu | zwykły, wyszukiwanie, lista budynków, brak wyniku, brak sieci, pierwsze otwarcie bez internetu, znaleziona sala, bariera na mapie, arkusz wejścia | ładowanie, brak mapy ulic, pierwsze uruchomienie, wybór budynku, plan piętra, sala bez drogi, brak sali, duża czcionka |
+| V1 Mapa kampusu | zwykły, wyszukiwanie, lista budynków, brak wyniku, brak sieci, pierwsze otwarcie bez internetu, znaleziona sala, kroki po kolei, bariera na mapie, arkusz wejścia | ładowanie, brak mapy ulic, pierwsze uruchomienie, wybór budynku, plan piętra, sala bez drogi, brak sali, duża czcionka |
 | V2 Karta budynku | wysokości: niska, od razu cały ekran. Stany: budynek podstawowy bez wejścia zalecanego, brak barier, wejścia bez nazw, brak sieci, budynku nie ma w telefonie, Zbierający | ładowanie, błąd zdjęcia, budynek podstawowy bez barier |
 | V4 Zgłoszenie szybkie | kroki 1–3, krok 1 ze zdjęciem, prośba o zgodę, zgoda przybliżona, brak pozycji, rezygnacja, wysłane, wysłane bez internetu | Gość, odmowa zgody, lokalizacja wyłączona, ustalanie miejsca, błąd zapisu |
 | V5 Pomoc | krok z objaśnieniem „Dostępne” | krok o koncie, ostatni krok |
@@ -112,25 +112,40 @@ Czynność główna: wpisanie symbolu budynku, jak w stanie zwykłym.
 
 ### V1: znaleziona sala
 
-![Makieta V1 po wyszukaniu A-1 329: pole z numerem sali, przycisk terenu, plan piętra z numerami kroków 2 przy windzie i 4 przy sali, kolumna pięter po lewej, podpis źródła, przyciski mapy i arkusz z nagłówkiem Sala 329 i Zamknij, wierszem Budynek A-1 i czterema krokami](../../_generated/m-v1-mapa-sala.svg)
+![Makieta V1 po wyszukaniu A-1 329: wiersz tytułu z Pokaż listę, pole z numerem sali, przycisk terenu, plan 2 piętra z wyróżnioną salą i numerami kroków 2 przy windzie i 3 w sali, kolumna pięter po lewej i karta sali: Sala 329 z Zamknij, rodzaj sali i piętro, wiersz Budynek A-1, nagłówek Jak dojść z przyciskiem Pokaż po kolei i trzy kroki bez wybranego](../../_generated/m-v1-mapa-sala.svg)
 
-Czynność główna: przeczytanie kroków. Wiersz budynku „Budynek A-1” pod nagłówkiem otwiera V2 na niskiej wysokości.
+Czynność główna: przeczytanie listy „Jak dojść”. Pokaz drogi zaczyna sama osoba przyciskiem „Pokaż po kolei” albo dotknięciem kroku (decyzja z 19.11.2026). Wiersz budynku „Budynek A-1” otwiera V2 na niskiej wysokości.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| W polu „A-1 329”: symbol budynku i numer sali | decyzja 44 |
-| Kolumna pięter po lewej pod przyciskiem terenu, nad arkuszem; wybrane piętro sali | US16.1, NFR-21 |
-| Plan piętra z wyróżnioną salą i krótkimi podpisami; pod mapą „Źródło: Politechnika Wrocławska” | US16.1, NFR-40 |
-| Nagłówek arkusza „Sala 329” z „Zamknij”, pod nim wiersz budynku ze znakiem budynku i strzałką, funkcja sali jako zastępnik i piętro z danych PWr | decyzja 44, NFR-40, decyzja z 18.11.2026 |
-| Kroki tekstem od wejścia zalecanego, bez linii trasy | BR-25, decyzja 44, decyzja 48 |
+| Wiersz tytułu i pole „A-1 329” zostają: symbol budynku i numer sali | US18.1, decyzja 44 |
+| Kolumna pięter po lewej pod przyciskiem terenu; wybrane piętro sali | US16.1, NFR-21 |
+| Plan piętra z wyróżnioną salą bez pinezki; numery kroków w kółkach, bez linii trasy | US18.1, US18.2, NFR-21 |
+| Nagłówek karty „Sala 329” z „Zamknij”, pod nim rodzaj sali i piętro z danych PWr, dalej wiersz budynku | US18.1, NFR-40, decyzja z 18.11.2026 |
+| „Jak dojść” z „Pokaż po kolei ›” i trzy kroki: wejście zalecane z piętrem, winda z odległością od wejścia, sala z odległością od windy | US18.2, BR-25 |
 | Krok 2: winda przy klatkach C i D, bo tylko ona staje na parterze i na 2 piętrze [2] | decyzja 48 |
-| „Zamknij” chowa arkusz, a plan zostaje | decyzja 48 |
+| „Zamknij” zamyka kartę, a plan zostaje | decyzja 48 |
 
 | Stan bez osobnej makiety | Co się zmienia |
 | --- | --- |
-| Plan piętra | po „Pokaż na planie” na V2: plan bez arkusza sali |
-| Sala bez drogi | w arkuszu zamiast kroków komunikat „Nie znaleźliśmy w danych wejścia i windy…”; wiersz budynku zostaje (BR-25) |
+| Plan piętra | po „Pokaż na planie” na V2: plan bez karty sali |
+| Sala bez drogi | w karcie zamiast listy komunikat „Nie znaleźliśmy w danych wejścia i windy…”; wiersz budynku zostaje (BR-25) |
 | Brak sali | komunikat „Nie znaleźliśmy sali »X« w budynku A-1…”, a pod nim wiersz budynku „Budynek A-1” |
+| Sam numer sali | pod polem „Dopisz budynek do numeru sali. Na przykład: A-1 329.” zamiast wyników (US18.1) |
+| Dotknięcie sali na planie | ta sama karta sali co po wyszukaniu (US18.1) |
+| Duża czcionka | karta na cały ekran z „Wstecz”, bez „Pokaż po kolei”; „Pokaż na mapie” na końcu treści (NFR-20) |
+
+### V1: kroki po kolei
+
+![Makieta V1 po Pokaż po kolei: plan parteru A-1 z wypełnionym kółkiem 1 przy wejściu zalecanym i kółkiem 2 przy windzie, kolumna pięter z wybranym parterem i karta sali: nagłówek Jak dojść z napisem Krok 1 z 3 i strzałkami, wybrany krok 1 w ramce z odsyłaczem Szczegóły wejścia, pod nim kroki 2 i 3](../../_generated/m-v1-mapa-sala-kroki.svg)
+
+Czynność główna: przejście do następnego kroku strzałką „›”.
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| „Krok 1 z 3” i okrągłe strzałki „‹” „›” w miejscu „Pokaż po kolei”; na pierwszym kroku „‹” wyłączona | US18.2, NFR-17 |
+| Wybrany krok w ramce z wypełnionym numerem i „Szczegóły wejścia ›”; powrót z arkusza wejścia na ten sam krok | US18.2, US3.3, NFR-21 |
+| Plan na piętrze kroku, mapa przy jego punkcie, ruch kamery jak przy wyborze budynku | US18.2, US2.8 |
 
 ### V1: plan piętra
 
