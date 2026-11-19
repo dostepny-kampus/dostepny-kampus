@@ -48,7 +48,6 @@ public interface KnownBuildings {
      * @param symbol Podpowiedź budynku albo null
      * @return Miejsce wejścia albo puste, gdy wejścia nie ma
      */
-    // TODO(#3322): zgłoszenie szybkie przy wejściu bierze stąd swoje miejsce.
     default Optional<EntrancePlace> entrance(final String id, final @Nullable String symbol) {
         return Optional.empty();
     }

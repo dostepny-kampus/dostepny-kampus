@@ -7,7 +7,10 @@ package io.github.dostepnykampus.barrier.submission.content.json;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionFloor;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
+import io.github.dostepnykampus.building.api.EntrancePlace;
 import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 
@@ -55,6 +58,24 @@ record PlaceJson(
             this.location.toPoint(), this.accuracyMeters,
             Boolean.TRUE.equals(this.manualCorrection), this.buildingSymbol,
             Optional.ofNullable(this.floor).map(SubmissionFloorJson::toFloor).orElse(null)
+        );
+    }
+
+    /**
+     * Daje miejsce zgłoszenia w punkcie wejścia, z budynkiem i piętrem wejścia.
+     *
+     * <p>Wymagania: BR-8, BR-14</p>
+     *
+     * @param entrance Miejsce wejścia
+     * @return Miejsce zgłoszenia
+     */
+    static SubmissionPlace of(final EntrancePlace entrance) {
+        return new SubmissionPlace(
+            new SubmissionPoint(entrance.longitude(), entrance.latitude()), null, false,
+            entrance.buildingSymbol(),
+            Optional.ofNullable(entrance.floorId())
+                .map(id -> new SubmissionFloor(id, null, false))
+                .orElse(null)
         );
     }
 }

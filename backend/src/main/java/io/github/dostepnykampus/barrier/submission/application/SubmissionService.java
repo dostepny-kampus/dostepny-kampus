@@ -148,7 +148,7 @@ public class SubmissionService {
 
     private SubmissionContent placed(final SubmissionContent content) {
         final SubmissionContent result;
-        if (content.kind().buildingFromOutline()) {
+        if (content.kind().buildingFromOutline() && content.entranceId() == null) {
             final SubmissionPoint point = content.place().point();
             result = this.outlines.containing(point.latitude(), point.longitude())
                 .map(content::withBuilding)
