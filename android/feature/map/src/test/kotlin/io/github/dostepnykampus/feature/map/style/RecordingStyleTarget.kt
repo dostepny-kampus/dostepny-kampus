@@ -8,7 +8,7 @@ package io.github.dostepnykampus.feature.map.style
 import android.graphics.Bitmap
 import kotlinx.serialization.json.JsonElement
 
-/** Styl, który zapisuje dane źródeł i dodane obrazy, a filtry, barwy, stany obiektów i powiększenia pomija. */
+/** Styl, który zapisuje dane źródeł i dodane obrazy, a filtry, pola warstw, stany i powiększenia pomija. */
 internal class RecordingStyleTarget : MapStyleTarget {
     /** Ostatnie dane każdego źródła po nazwie źródła. */
     val data = mutableMapOf<String, String>()
@@ -25,6 +25,8 @@ internal class RecordingStyleTarget : MapStyleTarget {
     override fun filter(layer: String, filter: JsonElement) = Unit
 
     override fun paint(layer: String, property: String, value: JsonElement) = Unit
+
+    override fun layout(layer: String, property: String, value: JsonElement) = Unit
 
     override fun state(source: String, feature: Int, key: String, value: Boolean) = Unit
 

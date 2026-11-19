@@ -188,10 +188,10 @@ private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap
         add(selectedLayer(look.selectedFilter, colors))
         add(selectedPlanLayer(look.selectedPlanFilter, colors))
         add(marksLayer(look.entrancesFilter, look.entrancesMinZoom))
-        barrierLayers(look.barriersFilter).forEach { add(it) }
+        barrierLayers(filter = look.barriersFilter, beside = look.besideEntrance).forEach { add(it) }
         val labels = symbolLayer(id = LABELS_LAYER, source = LABELS_SOURCE, image = property(LABEL))
         add(JsonObject(labels + ("filter" to look.labelsFilter)))
-        add(chosenBarrierLayer(look.chosenBarrierFilter))
+        add(chosenBarrierLayer(filter = look.chosenBarrierFilter, beside = look.besideEntrance))
         chosenLayers().forEach { add(it) }
     }
 

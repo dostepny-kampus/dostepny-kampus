@@ -237,6 +237,12 @@ private class JsonStyle(style: String) : MapStyleTarget {
             found + ("paint" to JsonObject(paint))
         }
 
+    override fun layout(layer: String, property: String, value: JsonElement) =
+        edit(layer) { found ->
+            val layout = found.getValue("layout").jsonObject + (property to value)
+            found + ("layout" to JsonObject(layout))
+        }
+
     override fun state(source: String, feature: Int, key: String, value: Boolean) {
         if (source == BUILDINGS_SOURCE && key == DIMMED_STATE) dimmed[feature] = value
         if (source == BUILDINGS_SOURCE && key == UNDER_PLAN_STATE) underPlan[feature] = value

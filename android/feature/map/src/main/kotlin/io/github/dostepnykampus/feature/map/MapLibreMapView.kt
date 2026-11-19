@@ -34,6 +34,7 @@ import com.google.gson.JsonObject
 import dagger.hilt.android.EntryPointAccessors
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.feature.map.barrier.BARRIER_BUILDING
 import io.github.dostepnykampus.feature.map.barrier.BARRIER_OFFSET
 import io.github.dostepnykampus.feature.map.barrier.barrierImages
 import io.github.dostepnykampus.feature.map.camera.BasemapReveal
@@ -98,6 +99,7 @@ import org.maplibre.android.maps.Style
 import org.maplibre.android.module.http.HttpRequestUtil
 import org.maplibre.android.style.expressions.Expression
 import org.maplibre.android.style.layers.FillLayer
+import org.maplibre.android.style.layers.LayoutPropertyValue
 import org.maplibre.android.style.layers.LineLayer
 import org.maplibre.android.style.layers.PaintPropertyValue
 import org.maplibre.android.style.layers.PropertyFactory
@@ -161,12 +163,14 @@ object MapLibreMapView : CampusMapView {
         val cameraIdle by rememberUpdatedState(onCameraIdle)
         val buildingsTouch by rememberUpdatedState(onBuildingsTouch)
         val signTouch by rememberUpdatedState(onSignTouch)
+        val currentLook by rememberUpdatedState(look)
         DisposableEffect(mapView) {
             mapView.getMapAsync { ready ->
                 ready.prefetchZoomDelta = 0
                 ready.cameraPosition = currentMove.camera.toPosition(currentInset)
                 ready.onPersonIdle { cameraIdle(it) }
-                ready.onTouch(tolerance, onSign = { signTouch(it.sign, it.id) }) { hit, near ->
+                val onSign = { touch: MapTouch.Sign -> signTouch(touch.sign, touch.id) }
+                ready.onTouch(tolerance = tolerance, look = { currentLook }, onSign = onSign) { hit, near ->
                     currentData.touchedSymbols(hit, near).also { buildingsTouch(it) }.isNotEmpty()
                 }
                 map = ready
@@ -346,6 +350,7 @@ object MapLibreMapView : CampusMapView {
 
     private fun MapLibreMap.onTouch(
         tolerance: Float,
+        look: () -> SelectionLook,
         onSign: (MapTouch.Sign) -> Unit,
         isTaken: (hit: List<Int>, near: () -> List<Int>) -> Boolean,
     ) {
@@ -358,11 +363,19 @@ object MapLibreMapView : CampusMapView {
                     hit = { queryRenderedFeatures(at, BUILDINGS_LAYER).mapNotNull(number) },
                     near = { queryRenderedFeatures(area, BUILDINGS_LAYER).mapNotNull(number) },
                 )
+            val zoom = cameraPosition.zoom
+            val beside = { building: String? -> look().besideEntrance.isBeside(zoom = zoom, building = building) }
             val signsNear = { sign: TouchSign ->
                 val under = queryRenderedFeatures(at, sign.layer).mapNotNull { it.getStringProperty(sign.idKey) }
                 val near =
-                    queryRenderedFeatures(area, sign.layer).mapNotNull {
-                        signPoint(feature = it, idKey = sign.idKey, at = at, pxPerDp = tolerance / TOUCH_TOLERANCE_DP)
+                    queryRenderedFeatures(area, sign.layer).mapNotNull { feature ->
+                        signPoint(
+                            feature = feature,
+                            idKey = sign.idKey,
+                            at = at,
+                            pxPerDp = tolerance / TOUCH_TOLERANCE_DP,
+                            isBeside = beside,
+                        )
                     }
                 signsInReach(under = under, near = near, reach = tolerance)
             }
@@ -379,12 +392,22 @@ object MapLibreMapView : CampusMapView {
         }
     }
 
-    private fun MapLibreMap.signPoint(feature: Feature, idKey: String, at: PointF, pxPerDp: Float): SignPoint? {
+    private fun MapLibreMap.signPoint(
+        feature: Feature,
+        idKey: String,
+        at: PointF,
+        pxPerDp: Float,
+        isBeside: (building: String?) -> Boolean,
+    ): SignPoint? {
         val id = feature.getStringProperty(idKey)
         val point = (feature.geometry() as? Point)?.let { LatLng(latitude = it.latitude(), longitude = it.longitude()) }
         val screen = point?.let(projection::toScreenLocation)
         if (id == null || screen == null) return null
-        val offset = feature.getProperty(BARRIER_OFFSET)?.takeIf { it.isJsonArray }?.asJsonArray
+        val offset =
+            feature
+                .getProperty(BARRIER_OFFSET)
+                ?.takeIf { it.isJsonArray && isBeside(feature.getStringProperty(BARRIER_BUILDING)) }
+                ?.asJsonArray
         val shiftX = offset?.run { get(0).asFloat * pxPerDp } ?: 0f
         val shiftY = offset?.run { get(1).asFloat * pxPerDp } ?: 0f
         return SignPoint(id = id, dx = screen.x + shiftX - at.x, dy = screen.y + shiftY - at.y)
@@ -516,6 +539,11 @@ object MapLibreMapView : CampusMapView {
         override fun state(source: String, feature: Int, key: String, value: Boolean) {
             val state = JsonObject().apply { addProperty(key, value) }
             style.getSourceAs<GeoJsonSource>(source)?.setFeatureState(feature.toString(), state)
+        }
+
+        override fun layout(layer: String, property: String, value: JsonElement) {
+            val styled: Any = if (value is JsonArray) expressionOf(value) else value.jsonPrimitive.content
+            style.getLayer(layer)?.setProperties(LayoutPropertyValue(property, styled))
         }
 
         override fun minZoom(layer: String, zoom: Double) {
