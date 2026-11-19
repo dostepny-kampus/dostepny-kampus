@@ -32,6 +32,7 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -197,11 +198,10 @@ fun CampusMapScreen(
     var headerHeight by remember { mutableIntStateOf(0) }
     val barTop = with(LocalDensity.current) { barHeight.toDp() }
     val headerTop = with(LocalDensity.current) { headerHeight.toDp() }
-    val mapModifier = Modifier.fillMaxSize().releasesSearchOnTouch(LocalFocusManager.current)
     Box(modifier.fillMaxSize()) {
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
-                Box(mapModifier.unreadUnder(isSheet = sheet.isEntranceFull)) {
+                Box(Modifier.mapArea(isUnderSheet = sheet.isEntranceFull, focus = LocalFocusManager.current)) {
                     val shown = ShownBarriers(state.barriers.takeUnless { sheet.isCardOpen }.orEmpty())
                     CampusMap(
                         ui = state,
@@ -247,7 +247,10 @@ fun CampusMapScreen(
     }
 }
 
-private fun Modifier.unreadUnder(isSheet: Boolean): Modifier = if (isSheet) clearAndSetSemantics {} else this
+private fun Modifier.mapArea(isUnderSheet: Boolean, focus: FocusManager): Modifier =
+    fillMaxSize()
+        .releasesSearchOnTouch(focus)
+        .then(if (isUnderSheet) Modifier.clearAndSetSemantics {} else Modifier)
 
 @Composable
 private fun CampusMap(
