@@ -112,9 +112,7 @@ class BuildingCardViewModel
         val uiState: StateFlow<BuildingCardUiState> =
             attempts
                 .map { attempt -> catalogFor(repository, attempt) }
-                .map { catalog ->
-                    MapTrace.section(name = MapTrace.CARD_STATE_SECTION) { buildingCard(catalog, symbol) }
-                }
+                .map(::cardOf)
                 .combine(fromServer, ::withServerEntrances)
                 .combine(barriers, ::withBarriers)
                 .combine(floors, ::withFloors)
@@ -154,6 +152,9 @@ class BuildingCardViewModel
         fun retry() {
             attempts.value++
         }
+
+        private fun cardOf(catalog: BuildingCatalog): BuildingCardUiState =
+            MapTrace.section(name = MapTrace.CARD_STATE_SECTION) { buildingCard(catalog, symbol) }
 
         private fun withServerEntrances(card: BuildingCardUiState, entrances: List<Entrance>): BuildingCardUiState =
             MapTrace.section(name = MapTrace.CARD_STATE_SECTION) {
