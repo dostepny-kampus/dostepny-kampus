@@ -55,6 +55,20 @@ final class EntrancesHttpIT {
     }
 
     @Test
+    void describesPlaceOfUnnamedEntrance(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Wejście główne B-8 bez nazwy w danych nie ma opisu położenia",
+            context.getBean(ObjectMapper.class)
+                .readTree(EntrancesHttpIT.card(context, "B-8"))
+                .at("/entrances/0/placeDescription").asString(""),
+            Matchers.matchesPattern(
+                "Od (strony \\S+, od )?(północy|wschodu|południa|zachodu)\\."
+            )
+        );
+    }
+
+    @Test
     void showsAllEntrancesOfBuilding(final WebApplicationContext context)
         throws Exception {
         MatcherAssert.assertThat(

@@ -9,11 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.jspecify.annotations.Nullable;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
 /**
- * Wpisy warstwy wejść PWr bez uwag przy wschodniej ścianie budynku według słów scenariusza,
- * np. „dwa na wschodniej ścianie 20 m od siebie, 30 m od budynku C-14”.
+ * Wpisy warstwy wejść PWr przy wschodniej ścianie budynku według słów scenariusza,
+ * np. „dwa bez uwag na wschodniej ścianie 20 m od siebie, 30 m od budynku C-14”.
  *
  * <p>Budynki do 100 m od ściany odsuwa daleko, a budynek z opisu stawia we wskazanej
  * odległości na wschód od wpisów. Zmiany trzeba robić w transakcji wycofywanej po
@@ -36,9 +37,9 @@ final class PlacedEntries {
     private static final Pattern WORDS = Pattern.compile(
         String.join(
             "",
-            "(jeden|dwa) (?:na wschodniej ścianie(?: (\\d+) m od siebie)?, ",
-            "(?:(\\d+) m od budynku (\\S+)|bez innego budynku do 40 m)",
-            "|(przy wejściu głównym) z OpenStreetMap bez nazwy)"
+            "(jeden|dwa) (?:(?:bez uwag|z uwagą „([^”]+)”) na wschodniej ścianie",
+            "(?: (\\d+) m od siebie)?|(przy wejściu głównym) z OpenStreetMap bez nazwy), ",
+            "(?:(\\d+) m od budynku (\\S+)|bez innego budynku do 40 m)"
         )
     );
 
@@ -88,10 +89,10 @@ final class PlacedEntries {
                 ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography, 100)
             """
         ).param("symbol", building).param("lon", wall[0]).param("lat", wall[1]).update();
-        if (words.group(4) != null) {
+        if (words.group(5) != null) {
             PlacedEntries.neighbour(jdbc, words, wall);
         }
-        if (words.group(5) != null) {
+        if (words.group(4) != null) {
             jdbc.sql(
                 """
                 INSERT INTO entrances (id, building_symbol, type, main, location, marking,
@@ -110,9 +111,9 @@ final class PlacedEntries {
                         "",
                         "{\"geometry\":{\"type\":\"Point\",\"coordinates\":[%s,%s]},",
                         "\"properties\":{\"Pietro\":\"%s\",\"Czy_dostos\":\"Nie\",",
-                        "\"Szerokosc\":0,\"Uwagi\":null}}"
+                        "\"Szerokosc\":0,\"Uwagi\":%s}}"
                     ),
-                    wall[0], lat, floor
+                    wall[0], lat, floor, PlacedEntries.remarks(words.group(2))
                 )
             );
         }
@@ -130,20 +131,30 @@ final class PlacedEntries {
             """
         ).param(
             "west",
-            wall[0] + Double.parseDouble(words.group(3))
+            wall[0] + Double.parseDouble(words.group(5))
                 / (PlacedEntries.METRES * Math.cos(Math.toRadians(wall[1])))
-        ).param("lat", wall[1]).param("symbol", words.group(4)).update();
+        ).param("lat", wall[1]).param("symbol", words.group(6)).update();
         if (moved != 1) {
             throw new IllegalStateException(
-                String.format("Brak budynku %s w danych testowych", words.group(4))
+                String.format("Brak budynku %s w danych testowych", words.group(6))
             );
         }
+    }
+
+    private static String remarks(final @Nullable String text) {
+        final String result;
+        if (text == null) {
+            result = "null";
+        } else {
+            result = String.format("\"%s\"", text);
+        }
+        return result;
     }
 
     private static List<Double> latitudes(final Matcher words, final double lat) {
         final List<Double> result;
         if ("dwa".equals(words.group(1))) {
-            final double half = Double.parseDouble(words.group(2)) / 2 / PlacedEntries.METRES;
+            final double half = Double.parseDouble(words.group(3)) / 2 / PlacedEntries.METRES;
             result = List.of(lat - half, lat + half);
         } else {
             result = List.of(lat);

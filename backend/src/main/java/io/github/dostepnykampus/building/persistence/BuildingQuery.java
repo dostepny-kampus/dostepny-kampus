@@ -53,8 +53,8 @@ public final class BuildingQuery implements Buildings {
 
     /**
      * Odczyt wejść z regułą nazwy i oznaczenia, bez warunku i kolejności. Wejście bez nazwy
-     * i opisu w danych ma nazwę z położenia, a wejście z planów PWr z samym opisem — „Wejście”;
-     * obie nadaje import, a nie dane.
+     * w danych ma nazwę „Wejście” albo „Wejście główne” i opis położenia; oba nadaje import,
+     * a nie dane.
      */
     private static final String ENTRANCES = """
         SELECT building_symbol, id,
@@ -62,6 +62,7 @@ public final class BuildingQuery implements Buildings {
                 CASE WHEN pwr_marking IS NOT NULL THEN 'Wejście' END) AS name,
             COALESCE(entrances.pwr_name, entrances.name) IS NULL
                 AND (place.place_name IS NOT NULL OR pwr_marking IS NOT NULL) AS generated_name,
+            place.place_description,
             type, main,
             ST_AsGeoJSON(location) AS location, floor_id,
             CASE WHEN marking_source = 'WALKTHROUGH' THEN marking
@@ -70,7 +71,7 @@ public final class BuildingQuery implements Buildings {
                 ELSE COALESCE(pwr_marking_date, marking_date) END::text AS marking_date,
             marking_source,
             pwr_marking IS NOT NULL AS pwr, approach, door_width_cm
-        FROM entrances LEFT JOIN entrance_place_names AS place USING (id, building_symbol)
+        FROM entrances LEFT JOIN entrance_places AS place USING (id, building_symbol)
         """;
 
     /**
@@ -243,7 +244,10 @@ public final class BuildingQuery implements Buildings {
     private static Entrance entrance(final ResultSet rows) throws SQLException {
         return new Entrance(
             BuildingQuery.text(rows, "id"),
-            new Entrance.Name(rows.getString("name"), rows.getBoolean("generated_name")),
+            new Entrance.Name(
+                rows.getString("name"), rows.getBoolean("generated_name"),
+                BuildingQuery.approach(rows.getString("place_description"))
+            ),
             rows.getString("type"),
             rows.getBoolean("main"),
             BuildingQuery.text(rows, "location"),
