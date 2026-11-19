@@ -63,7 +63,7 @@ final class EntrancesHttpIT {
                 .readTree(EntrancesHttpIT.card(context, "B-8"))
                 .at("/entrances/0/placeDescription").asString(""),
             Matchers.matchesPattern(
-                "Od (strony \S+, od )?(północy|wschodu|południa|zachodu)\."
+                "Od (strony \\S+, od )?(północy|wschodu|południa|zachodu)\\."
             )
         );
     }
