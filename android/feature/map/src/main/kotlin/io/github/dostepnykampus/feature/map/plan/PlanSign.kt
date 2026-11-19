@@ -6,7 +6,6 @@
 package io.github.dostepnykampus.feature.map.plan
 
 import androidx.compose.runtime.Immutable
-import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.feature.map.R
 
@@ -41,7 +40,14 @@ internal fun ShownPlan.signOf(id: String): PlanSign? {
     return if (title == null || label == null) {
         null
     } else {
-        val report = PlanReport(room.category, building, floorId = floor, floorLabel = label, point = room.labelPoint)
+        val report =
+            PlanReport(
+                category = room.category,
+                building = building,
+                floorId = floor,
+                floorLabel = label,
+                point = room.labelPoint,
+            )
         PlanSign(title = title, building = building, floor = label, liftFloors = stops, report = report)
     }
 }

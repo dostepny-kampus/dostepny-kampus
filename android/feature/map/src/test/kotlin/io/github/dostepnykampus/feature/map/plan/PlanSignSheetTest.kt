@@ -111,7 +111,15 @@ class PlanSignSheetTest {
         val point = GeoPoint(longitude = 0.5, latitude = 0.5)
         assertEquals(
             "Przycisk w liście schodów nie zgłasza tych schodów",
-            listOf(PlanReport(RoomCategory.STAIRCASE, "A-1", "f1", "1 piętro", point)),
+            listOf(
+                PlanReport(
+                    category = RoomCategory.STAIRCASE,
+                    building = "A-1",
+                    floorId = "f1",
+                    floorLabel = "1 piętro",
+                    point = point,
+                ),
+            ),
             reports,
         )
     }
