@@ -71,12 +71,11 @@ fun CampusMapData.withBarriers(barriers: List<AcceptedBarrier>): CampusMapData {
                     put(key = BARRIER_SEVERITY, value = barrier.severity.name)
                     barrier.buildingSymbol?.let { put(key = BARRIER_BUILDING, value = it) }
                     barrier.floor?.floorId?.let { put(key = BARRIER_FLOOR, value = it) }
-                    outward(barrier)?.let { (x, y) ->
-                        put(key = BARRIER_OFFSET, element = dp(x * ENTRANCE_BARRIER_DP, y * ENTRANCE_BARRIER_DP))
-                        put(
-                            key = BARRIER_WORD_OFFSET,
-                            element = dp(x * ENTRANCE_BARRIER_DP + BARRIER_WORD_DP, y * ENTRANCE_BARRIER_DP),
-                        )
+                    directionFromOutlineCentre(barrier)?.let { (x, y) ->
+                        val signX = x * ENTRANCE_BARRIER_DP
+                        val signY = y * ENTRANCE_BARRIER_DP
+                        put(key = BARRIER_OFFSET, element = dpOffset(x = signX, y = signY))
+                        put(key = BARRIER_WORD_OFFSET, element = dpOffset(x = signX + BARRIER_WORD_DP, y = signY))
                     }
                 }
             Feature(Point(barrier.location.toPosition()), properties)
@@ -84,17 +83,14 @@ fun CampusMapData.withBarriers(barriers: List<AcceptedBarrier>): CampusMapData {
     return copy(barriers = featureCollection(features))
 }
 
-/**
- * Kierunek na ekranie od środka konturu budynku bariery do jej wejścia, długość 1, oś y w dół; `null` bez wejścia
- * albo bez konturu. Wejście w środku konturu daje kierunek na północ.
- */
-private fun CampusMapData.outward(barrier: AcceptedBarrier): Pair<Double, Double>? {
-    val entrance = barrier.entranceId?.let(entrancePoints::get) ?: return null
-    val outline = barrier.buildingSymbol?.let(outlinesBySymbol::get) ?: return null
+private fun CampusMapData.directionFromOutlineCentre(barrier: AcceptedBarrier): Pair<Double, Double>? {
+    val entrance = barrier.entranceId?.let(entrancePoints::get)
+    val outline = barrier.buildingSymbol?.let(outlinesBySymbol::get)
+    if (entrance == null || outline == null) return null
     val east = (entrance.longitude - (outline.west + outline.east) / 2) * cos(Math.toRadians(entrance.latitude))
     val north = entrance.latitude - (outline.south + outline.north) / 2
-    val length = hypot(east, north)
+    val length = hypot(x = east, y = north)
     return if (length > 0) east / length to (0.0 - north) / length else 0.0 to -1.0
 }
 
-private fun dp(x: Double, y: Double): JsonArray = JsonArray(listOf(JsonPrimitive(x), JsonPrimitive(y)))
+private fun dpOffset(x: Double, y: Double): JsonArray = JsonArray(listOf(JsonPrimitive(x), JsonPrimitive(y)))

@@ -362,7 +362,7 @@ object MapLibreMapView : CampusMapView {
                 val under = queryRenderedFeatures(at, sign.layer).mapNotNull { it.getStringProperty(sign.idKey) }
                 val near =
                     queryRenderedFeatures(area, sign.layer).mapNotNull {
-                        signPoint(it, sign.idKey, at, pxPerDp = tolerance / TOUCH_TOLERANCE_DP)
+                        signPoint(feature = it, idKey = sign.idKey, at = at, pxPerDp = tolerance / TOUCH_TOLERANCE_DP)
                     }
                 signsInReach(under = under, near = near, reach = tolerance)
             }
@@ -385,8 +385,8 @@ object MapLibreMapView : CampusMapView {
         val screen = point?.let(projection::toScreenLocation)
         if (id == null || screen == null) return null
         val offset = feature.getProperty(BARRIER_OFFSET)?.takeIf { it.isJsonArray }?.asJsonArray
-        val shiftX = offset?.get(0)?.asFloat?.times(pxPerDp) ?: 0f
-        val shiftY = offset?.get(1)?.asFloat?.times(pxPerDp) ?: 0f
+        val shiftX = offset?.run { get(0).asFloat * pxPerDp } ?: 0f
+        val shiftY = offset?.run { get(1).asFloat * pxPerDp } ?: 0f
         return SignPoint(id = id, dx = screen.x + shiftX - at.x, dy = screen.y + shiftY - at.y)
     }
 
