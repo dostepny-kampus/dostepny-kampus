@@ -99,7 +99,8 @@ internal fun AppNavigator.MapScreen(
     entrance: EntranceActions = EntranceActions(),
 ) {
     val accessibility = checkNotNull(LocalContext.current.getSystemService(AccessibilityManager::class.java))
-    val isSheetAbove = SheetSceneStrategy.isSheet(current) && !isFullOnlySheet(LocalDensity.current.fontScale)
+    val isFullOnly = isFullOnlySheet(LocalDensity.current.fontScale)
+    val isSheetAbove = SheetSceneStrategy.isSheet(current) && !isFullOnly
     CampusMapScreen(
         state = state,
         onListChange = onListChange,
@@ -117,6 +118,7 @@ internal fun AppNavigator.MapScreen(
         onFloorChoose = onFloorChoose,
         onMapHide = onMapHide,
         onCardReturn = { returnToCard(it) },
+        sheetCover = LocalSheetPadding.current.shownCover.takeUnless { isFullOnly },
     )
 }
 

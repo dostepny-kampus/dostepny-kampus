@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -40,6 +41,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.offset
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -166,6 +168,8 @@ fun CampusMapScreen(
  * @param onFloorChoose piętro wybrane w kolumnie pięter: symbol budynku i identyfikator piętra
  * @param onMapHide mapa zeszła z ekranu, np. pod listę budynków; jej plan piętra przestaje obowiązywać
  * @param onCardReturn powrót z arkusza znaku do karty budynku, którą arkusz zastąpił
+ * @param sheetCover zasłonięty dół okna w px w bieżącej klatce, za którym przyciski mapy i podpis OSM idą razem
+ *   z krawędzią arkusza V2 w ruchu; czytany tylko w fazie układu; `null` stawia je nad [contentPadding]
  */
 @Composable
 fun CampusMapScreen(
@@ -186,6 +190,7 @@ fun CampusMapScreen(
     onFloorChoose: (String, String) -> Unit = { _, _ -> },
     onMapHide: () -> Unit = {},
     onCardReturn: (String) -> Unit = onBuildingClick,
+    sheetCover: (() -> Int)? = null,
 ) {
     val sheet =
         screenSheet(focus = focus, padding = contentPadding, onCardClose = onEmptyMapClick, onCardReturn = onCardReturn)
@@ -210,7 +215,7 @@ fun CampusMapScreen(
                         areas = areas,
                         top = mapTop(isCovered = isCovered, bar = barTop),
                         cameraTop = mapTop(isCovered = isCovered, bar = headerTop),
-                        sheet = sheet,
+                        sheet = sheet.copy(cover = sheetCover),
                         mapView = mapView,
                         motion = motion,
                         plan = PlanLink(shown = plan, onView = onCamera, onFloor = onFloorChoose, onHide = onMapHide),
@@ -312,7 +317,7 @@ private fun CampusMap(
                 onCameraChange = state::move,
                 areas = areas,
                 onAreaShow = state::land,
-                modifier = Modifier.overlayArea(underBar = underBar, sheet = sheet.padding),
+                modifier = Modifier.overlayArea(underBar = underBar, sheet = sheet),
                 hasPanels = !state.isCovered && !isKeyboardOpen,
                 hasNotice = !isKeyboardOpen,
                 motion = motion,
@@ -350,11 +355,15 @@ private fun rememberCampusScene(
     )
 }
 
-private fun Modifier.overlayArea(underBar: PaddingValues, sheet: PaddingValues): Modifier =
-    fillMaxSize()
-        .safeDrawingPadding()
-        .padding(underBar)
-        .padding(sheet)
+private fun Modifier.overlayArea(underBar: PaddingValues, sheet: ScreenSheet): Modifier {
+    val area = fillMaxSize().safeDrawingPadding().padding(underBar)
+    val cover = sheet.cover ?: return area.padding(sheet.padding)
+    return area.layout { measurable, constraints ->
+        val bottom = cover().coerceIn(minimumValue = 0, maximumValue = constraints.maxHeight)
+        val placeable = measurable.measure(constraints.offset(vertical = -bottom))
+        layout(width = placeable.width, height = placeable.height + bottom) { placeable.place(x = 0, y = 0) }
+    }
+}
 
 /** Arkusz znaku z [sheet] z barierami [barriers], katalogiem [catalog] i planem [plan] na mapie. */
 private data class OpenSign(

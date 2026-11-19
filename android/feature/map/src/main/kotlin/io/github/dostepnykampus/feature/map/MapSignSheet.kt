@@ -201,7 +201,8 @@ internal fun SignSheetState.cardLayout(now: CardLayout): CardLayout {
 /**
  * Arkusz znaku [signs] nad mapą i zasłonięcie ekranu przez kartę budynku: [padding] rzeczywiste, a [layout]
  * z zasłonięciem i zaznaczeniem dla kamery i układu ekranu według [cardLayout]. [fullEntrance] to wejście, którego
- * arkusz zajmuje cały ekran zamiast mapy; `null`, gdy takiego arkusza nie ma.
+ * arkusz zajmuje cały ekran zamiast mapy; `null`, gdy takiego arkusza nie ma. [cover] to zasłonięty dół okna w px
+ * w bieżącej klatce, czytany tylko w fazie układu; `null`, gdy przyciski mapy stoją nad [padding].
  *
  * Wymagania: US2.1, US2.8, NFR-20
  */
@@ -210,6 +211,7 @@ internal data class ScreenSheet(
     val layout: CardLayout,
     val padding: PaddingValues,
     val fullEntrance: String? = null,
+    val cover: (() -> Int)? = null,
 ) {
     /** Arkusz wejścia zajmuje cały ekran zamiast mapy. */
     val isEntranceFull: Boolean

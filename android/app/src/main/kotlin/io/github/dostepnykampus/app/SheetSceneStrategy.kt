@@ -87,7 +87,8 @@ private val SheetStateSaver =
 /**
  * Część V1 zasłonięta przez arkusz [cover], rozwinięcie arkusza [isExpanded] dla trybu karty w nim i postój arkusza
  * rozwiniętego [isFull]. [isPending]: nowy arkusz nie ma jeszcze pomiaru, a [cover] to zasłonięcie sprzed niego.
- * [onExpand] od razu rozwija niski arkusz.
+ * [onExpand] od razu rozwija niski arkusz. [shownCover] to zasłonięcie dołu okna w px w bieżącej klatce, także
+ * w trakcie wjazdu, gestu „Wstecz” i zjazdu arkusza; czytane w fazie układu nie wywołuje ponownej kompozycji.
  *
  * Wymagania: US2.8, NFR-56
  */
@@ -97,6 +98,7 @@ internal data class SheetLayout(
     val isFull: Boolean = false,
     val isPending: Boolean = false,
     val onExpand: () -> Unit = {},
+    val shownCover: () -> Int = { 0 },
 ) : PaddingValues by PaddingValues(bottom = cover)
 
 /**
@@ -183,9 +185,15 @@ private data class SheetScene(
         val exit = rememberSheetExit(isShown = sheet != null)
         val isPending = sheet != null && height == 0.dp
         val cover = rememberHeldWhile(isHeld = isPending, value = if (sheet == null) 0.dp else height)
+        val edge = remember { SheetEdge(exit) }
+        SideEffect {
+            val part = { shift.value + hidden.value }
+            edge.keep(cover = with(density) { cover.roundToPx() }, hidden = part.takeIf { sheet != null })
+        }
         Box(modifier = Modifier.fillMaxSize()) {
             val silentUnderSheet = Modifier.semantics { if (sheet != null) hideFromAccessibility() }
-            CompositionLocalProvider(LocalSheetPadding provides SheetLayout(cover = cover, isPending = isPending)) {
+            val mapLayout = SheetLayout(cover = cover, isPending = isPending, shownCover = edge::shown)
+            CompositionLocalProvider(LocalSheetPadding provides mapLayout) {
                 Box(modifier = silentUnderSheet) { map.Content() }
             }
             if (sheet != null) {
@@ -290,6 +298,35 @@ internal class SheetExit {
     }
 
     suspend fun show() = gone.snapTo(1f)
+}
+
+/**
+ * Zasłonięcie dołu okna przez arkusz V2 w bieżącej klatce: najwyżej zasłonięcie otwartego arkusza, a mniej, gdy
+ * arkusz jest częściowo schowany pod krawędzią przy wjeździe, geście „Wstecz” albo zjeździe po zamknięciu ([exit]).
+ *
+ * Wymagania: NFR-56, US2.8
+ */
+internal class SheetEdge(private val exit: SheetExit) {
+    private var cover = 0
+    private var hidden: (() -> Float)? = null
+
+    /** Zasłonięcie otwartego arkusza [cover] w px i jego schowana część [hidden]; `null` [hidden] po zamknięciu. */
+    fun keep(cover: Int, hidden: (() -> Float)?) {
+        if (hidden != null) this.cover = cover
+        this.hidden = hidden
+    }
+
+    /** Zasłonięty dół okna w px w tej klatce. */
+    fun shown(): Int {
+        val part = hidden
+        val visible =
+            when {
+                part != null -> exit.height * (1f - part().coerceIn(minimumValue = 0f, maximumValue = 1f))
+                exit.isLeaving -> exit.height * (1f - exit.gone.value)
+                else -> 0f
+            }
+        return minOf(a = cover.toFloat(), b = visible).roundToInt()
+    }
 }
 
 @Composable

@@ -7,6 +7,7 @@ package io.github.dostepnykampus.app
 
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
@@ -62,11 +63,38 @@ class SheetExitTest {
         assertTrue("po zjeździe karty nie ma", left.isEmpty())
     }
 
-    private fun show(stack: List<NavKey>) {
+    /**
+     * Wiersz: V1, „Zamknij” na małej karcie — dół mapy zasłonięty dla jej przycisków maleje razem z zjeżdżającą
+     * kartą: w połowie zjazdu jest między zasłonięciem przed zamknięciem a zerem, a po końcu zerem.
+     */
+    @Test
+    fun mapCoverFollowsClosingCard() {
+        val stack = mutableStateListOf<NavKey>(MapRoute(), BuildingRoute(symbol = "A-1"))
+        var cover: () -> Int = { -1 }
+        show(stack) { cover = LocalSheetPadding.current.shownCover }
+        val open = compose.runOnIdle { cover() }
+        compose.mainClock.autoAdvance = false
+        compose.runOnUiThread {
+            stack.removeAt(1)
+            Snapshot.sendApplyNotifications()
+        }
+        advanceUntilClosing()
+        compose.mainClock.advanceTimeBy(SLIDE_MILLIS / 2)
+        val midway = compose.runOnUiThread<Int> { cover() }
+        assertTrue("karta zasłania dół mapy: $open", open > 0)
+        assertTrue("w połowie zjazdu zasłonięcie maleje razem z kartą: $midway z $open", midway in 1..<open)
+        compose.mainClock.advanceTimeBy(SLIDE_MILLIS)
+        assertEquals("po zjeździe mapa odsłonięta", 0, compose.runOnUiThread<Int> { cover() })
+    }
+
+    private fun show(stack: List<NavKey>, onMap: @Composable () -> Unit = {}) {
         val sheet = SheetSceneStrategy(MapMotion())
         compose.setContent {
             NavDisplay(backStack = stack, onBack = {}, sceneStrategies = listOf(sheet)) { route: NavKey ->
-                NavEntry(key = route, metadata = SheetSceneStrategy.metadata(route)) { Text(text = "$route") }
+                NavEntry(key = route, metadata = SheetSceneStrategy.metadata(route)) {
+                    if (route is MapRoute) onMap()
+                    Text(text = "$route")
+                }
             }
         }
         compose.waitForIdle()
