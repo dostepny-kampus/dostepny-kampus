@@ -54,10 +54,7 @@ private const val ICON_OFFSET = "icon-offset"
  *
  * Wymagania: US2.2, NFR-17
  */
-internal class BesideEntrance(
-    val minZoom: Double,
-    val buildings: List<String>?,
-) {
+internal class BesideEntrance(val minZoom: Double, val buildings: List<String>?) {
     /** Czy przy powiększeniu [zoom] znak bariery przy wejściu budynku [building] stoi obok znaku wejścia. */
     fun isBeside(zoom: Double, building: String?): Boolean =
         zoom >= minZoom && (buildings == null || building in buildings)
