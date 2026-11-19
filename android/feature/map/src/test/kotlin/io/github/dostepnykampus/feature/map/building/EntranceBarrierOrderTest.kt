@@ -17,14 +17,15 @@ import org.junit.jupiter.api.Test
  */
 class EntranceBarrierOrderTest {
     /**
-     * Wiersz: bariera „Tylko z pomocą” przy wejściu zalecanym → wejście zostaje zalecane, a odpowiedź ma jej
-     *   uciążliwość.
+     * Wiersz: bariera „Tylko z pomocą” przy wejściu zalecanym, innego wejścia dostępnego nie ma → wejście zostaje
+     *   zalecane, a odpowiedź ma jej uciążliwość.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Bariera przy wejściu zalecanym jest na karcie przy tym
      *   wejściu
      */
     @Test
     fun keepsRecommendedAtMinorBarrier() {
-        val ordered = orderedEntrances(TWO_ENTRANCES, listOf(entranceBarrier("b", Severity.ONLY_WITH_HELP)))
+        val entrances = listOf(sampleEntrance("b"), sampleEntrance("c").copy(marking = EntranceMarking.INACCESSIBLE))
+        val ordered = orderedEntrances(entrances, listOf(entranceBarrier("b", Severity.ONLY_WITH_HELP)))
         assertEquals(
             listOf("b"),
             ordered.filter { it.isRecommended }.map { it.entrance.id },
@@ -87,4 +88,52 @@ class EntranceBarrierOrderTest {
             "Karta nie mówi o blokadzie jedynego wejścia dostępnego",
         )
     }
+
+    /**
+     * Wiersz: „Utrudnienie” przy głównym, boczne bez barier → zalecane jest boczne, główne zostaje na liście.
+     * Scenariusz (częściowo, przykład: Utrudnienie | żadnej | wejście boczne): przegladanie-mapy.feature: Wejście
+     *   bez barier jest zalecane przed wejściem z barierą
+     */
+    @Test
+    fun prefersEntranceWithoutBarrier() {
+        val ordered = orderedEntrances(MAIN_AND_SIDE, listOf(entranceBarrier("b", Severity.HINDRANCE)))
+        assertEquals(
+            listOf("c" to true, "b" to false),
+            ordered.map { it.entrance.id to it.isRecommended },
+            "Zalecane nie jest wejście bez barier",
+        )
+    }
+
+    /**
+     * Wiersz: „Tylko z pomocą” przy głównym, „Utrudnienie” przy bocznym → zalecane jest boczne, z najlżejszą
+     *   barierą.
+     * Scenariusz (częściowo, przykład: Tylko z pomocą | przyjęta bariera „Utrudnienie” | wejście boczne, bo ma
+     *   najlżejszą barierę): przegladanie-mapy.feature: Wejście bez barier jest zalecane przed wejściem z barierą
+     */
+    @Test
+    fun prefersLightestBarrier() {
+        val barriers = listOf(entranceBarrier("b", Severity.ONLY_WITH_HELP), entranceBarrier("c", Severity.HINDRANCE))
+        assertEquals(
+            listOf("c"),
+            orderedEntrances(MAIN_AND_SIDE, barriers).filter { it.isRecommended }.map { it.entrance.id },
+            "Zalecane nie jest wejście z najlżejszą barierą",
+        )
+    }
+
+    /**
+     * Wiersz: „Utrudnienie” przy obu → zalecane zostaje główne.
+     * Scenariusz (częściowo, przykład: Utrudnienie | przyjęta bariera „Utrudnienie” | wejście główne):
+     *   przegladanie-mapy.feature: Wejście bez barier jest zalecane przed wejściem z barierą
+     */
+    @Test
+    fun keepsMainAtEqualBarriers() {
+        val barriers = listOf(entranceBarrier("b", Severity.HINDRANCE), entranceBarrier("c", Severity.HINDRANCE))
+        assertEquals(
+            listOf("b"),
+            orderedEntrances(MAIN_AND_SIDE, barriers).filter { it.isRecommended }.map { it.entrance.id },
+            "Przy równych barierach zalecane nie jest wejście główne",
+        )
+    }
 }
+
+private val MAIN_AND_SIDE = listOf(sampleEntrance("b").copy(isMain = true), sampleEntrance("c"))

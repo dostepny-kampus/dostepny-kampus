@@ -37,26 +37,26 @@ class EntranceBarrierListTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     /**
-     * Wiersz: V2, „Tylko z pomocą” typu „ciężkie drzwi” przy zalecanym „Wejście B” → w wierszu wejścia
-     *   „Tylko z pomocą: ciężkie drzwi”.
+     * Wiersz: V2, „Tylko z pomocą” typu „ciężkie drzwi” przy zalecanym „Wejście B”, jedynym dostępnym → w wierszu
+     *   wejścia „Tylko z pomocą: ciężkie drzwi”.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Bariera przy wejściu zalecanym jest na karcie przy tym
      *   wejściu
      */
     @Test
     fun listsMinorBarrierInRow() {
-        show(TWO_ENTRANCES, HELP) { EntranceListContent(it) }
+        show(ONLY_B_ACCESSIBLE, HELP) { EntranceListContent(it) }
         compose.onNode(hasText("Tylko z pomocą: ciężkie drzwi"), useUnmergedTree = true).assertExists()
     }
 
     /**
-     * Wiersz: V2, „Tylko z pomocą” przy zalecanym „Wejście B” z drzwiami 100 cm → zdanie kończy się „Przy wejściu
-     *   jest bariera: tylko z pomocą.”.
+     * Wiersz: V2, „Tylko z pomocą” przy zalecanym „Wejście B”, jedynym dostępnym, z drzwiami 100 cm → zdanie
+     *   kończy się „Przy wejściu jest bariera: tylko z pomocą.”.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Bariera przy wejściu zalecanym jest na karcie przy tym
      *   wejściu
      */
     @Test
     fun answersWithMinorBarrier() {
-        show(TWO_ENTRANCES, HELP) { CardHeaderContent(it) }
+        show(ONLY_B_ACCESSIBLE, HELP) { CardHeaderContent(it) }
         compose
             .onNode(hasText("Zalecane: „Wejście B”. Drzwi 100 cm. Przy wejściu jest bariera: tylko z pomocą."))
             .assertExists()
@@ -70,8 +70,7 @@ class EntranceBarrierListTest {
      */
     @Test
     fun answersBlockedOnlyAccessible() {
-        val entrances = listOf(sampleEntrance("b"), sampleEntrance("c").copy(marking = EntranceMarking.INACCESSIBLE))
-        show(entrances, listOf(entranceBarrier("b", Severity.BLOCKING, BarrierType.STAIRS_AT_ENTRANCE))) {
+        show(ONLY_B_ACCESSIBLE, listOf(entranceBarrier("b", Severity.BLOCKING, BarrierType.STAIRS_AT_ENTRANCE))) {
             CardHeaderContent(it)
         }
         compose.onNode(hasText("Brak wejścia dostępnego"), useUnmergedTree = true).assertExists()
@@ -103,6 +102,10 @@ class EntranceBarrierListTest {
     }
 
     private companion object {
+        /** „Wejście B” jako jedyne „dostępne”, „Wejście C” „niedostępne”. */
+        val ONLY_B_ACCESSIBLE =
+            listOf(sampleEntrance("b"), sampleEntrance("c").copy(marking = EntranceMarking.INACCESSIBLE))
+
         val HELP = listOf(entranceBarrier("b", Severity.ONLY_WITH_HELP))
 
         val MIXED =
