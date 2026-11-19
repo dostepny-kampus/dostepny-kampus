@@ -16,6 +16,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
+import io.github.dostepnykampus.feature.map.camera.CameraMotion
 import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import org.junit.Assert.assertEquals
@@ -87,5 +88,47 @@ class CardCloseCameraTest {
         val tops = shown.subList(fromIndex = before, toIndex = shown.size).filter { it.first == move }.map { it.second }
         assertTrue("po zamknięciu mapa ma górę pod paskiem: $top", top > 0.0)
         assertEquals("góra przy celu po zamknięciu: $tops", setOf(top), tops.toSet())
+    }
+
+    /**
+     * Wiersz: mała karta V2, „Zamknij” → V1: mapa dostaje cel i dopełnienie w jednym skoku bez ruchu na ekranie, bez
+     * przelotu ani przesunięcia w czasie zjazdu karty.
+     *
+     * Wymagania: US2.8, NFR-56
+     */
+    @Test
+    fun closesWithoutFlight() {
+        val moves = movesAfterClose { compose.onNodeWithText("Zamknij").performClick() }
+        assertTrue("po zamknięciu mapa dostaje widok bez arkusza: $moves", moves.isNotEmpty())
+        assertEquals("po zamknięciu tylko skok: $moves", setOf(CameraMotion.NONE), moves.map { it.motion }.toSet())
+    }
+
+    /**
+     * Wiersz: mała karta V2, „Wstecz” → V1: tak samo jak „Zamknij”, tylko skok bez ruchu na ekranie.
+     *
+     * Wymagania: US2.8, NFR-56
+     */
+    @Test
+    fun backClosesWithoutFlight() {
+        val back = compose.activity.onBackPressedDispatcher
+        val moves = movesAfterClose { compose.runOnUiThread { back.onBackPressed() } }
+        assertTrue("po „Wstecz” mapa dostaje widok bez arkusza: $moves", moves.isNotEmpty())
+        assertEquals("po „Wstecz” tylko skok: $moves", setOf(CameraMotion.NONE), moves.map { it.motion }.toSet())
+    }
+
+    private fun movesAfterClose(close: () -> Unit): List<CameraTransition> {
+        compose.runOnUiThread { touch(listOf("A-1")) }
+        compose.waitForIdle()
+        val card = shown.last().first
+        val before = shown.size
+        close()
+        compose.waitForIdle()
+        return shown
+            .subList(fromIndex = before, toIndex = shown.size)
+            .asSequence()
+            .map { it.first }
+            .filter { it != card }
+            .distinct()
+            .toList()
     }
 }
