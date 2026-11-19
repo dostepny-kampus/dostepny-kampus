@@ -14,12 +14,16 @@ import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.di.ComputeContext
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.NetworkStatus
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.geo.building.searchBuildings
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
+import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.map.barrier.withBarriers
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.CampusMapDataCache
+import io.github.dostepnykampus.feature.map.campus.MapServer
+import io.github.dostepnykampus.feature.map.campus.NO_SERVER
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -87,7 +91,7 @@ data class CampusMapUiState(
  * @param mapListChoice zapamiętany wybór „Mapa” albo „Lista budynków”
  * @property computeContext kontekst obliczeń geometrii; w aplikacji `Dispatchers.Default` z grafu Hilt
  * @property geometry dane mapy z katalogu, przerywalne przerwaniem wątku; w aplikacji pamięć `CampusMapDataCache`
- * @param barriers bariery ze zgłoszeń przyjętych; w testach bez barier
+ * @param server bariery ze zgłoszeń przyjętych i wyszukiwanie sal; w testach bez barier i sal
  */
 @HiltViewModel
 class CampusMapViewModel(
@@ -96,7 +100,7 @@ class CampusMapViewModel(
     private val mapListChoice: MapListChoice,
     internal val computeContext: CoroutineContext,
     internal val geometry: (BuildingCatalog) -> CampusMapData,
-    barriers: AcceptedBarriers = AcceptedBarriers { emptyList() },
+    private val server: MapServer = NO_SERVER,
 ) : ViewModel() {
     private val queries = MutableStateFlow("")
 
@@ -108,7 +112,7 @@ class CampusMapViewModel(
                     .map<BuildingCatalog, BuildingCatalog?> { it }
                     .onStart { emit(null) }
                     .withGeometry()
-                    .combine(networkStatus.isOnline().onNetworkChange(barriers)) { (catalog, data), fetched ->
+                    .combine(networkStatus.isOnline().onNetworkChange(server.barriers)) { (catalog, data), fetched ->
                         Triple(catalog, data?.withBarriers(fetched.barriers), fetched)
                     },
             flow2 = networkStatus.isOnline(),
@@ -137,10 +141,10 @@ class CampusMapViewModel(
         repository: BuildingCatalogRepository,
         networkStatus: NetworkStatus,
         mapListChoice: MapListChoice,
-        barriers: AcceptedBarriers,
+        server: MapServer,
         @ComputeContext computeContext: CoroutineContext,
         cache: CampusMapDataCache,
-    ) : this(repository, networkStatus, mapListChoice, computeContext, cache::dataFor, barriers)
+    ) : this(repository, networkStatus, mapListChoice, computeContext, cache::dataFor, server)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun Flow<Boolean>.onNetworkChange(barriers: AcceptedBarriers): Flow<FetchedBarriers> =
@@ -164,7 +168,12 @@ class CampusMapViewModel(
             )
         }
 
-    /** Szuka budynku po symbolu [query] w [computeContext]; wynik przychodzi w [CampusMapUiState.search]. */
+    /**
+     * Szuka budynku po symbolu [query] w [computeContext], a gdy go nie ma i tekst ma cyfry, sali na serwerze; wynik
+     * przychodzi w [CampusMapUiState.search].
+     *
+     * Wymagania: US1.3, US18.1
+     */
     fun search(query: String) {
         queries.value = query
     }
@@ -176,9 +185,16 @@ class CampusMapViewModel(
         val results =
             pairs.mapLatest { (catalog, query) ->
                 val found = catalog?.let { withContext(computeContext) { searchBuildings(query, it.buildings) } }
-                BuildingSearch(query = query, buildings = found)
+                val isRoomQuery = found?.isEmpty() == true && query.any(Char::isDigit)
+                val rooms = if (isRoomQuery) roomsFor(query.trim()) else emptyList()
+                BuildingSearch(query = query, buildings = found, rooms = rooms)
             }
         return results.onStart { emit(BuildingSearch()) }
+    }
+
+    private suspend fun roomsFor(query: String): List<FoundRoom> {
+        val reply = server.rooms.search(query)
+        return if (reply is ServerReply.Ok) reply.value else emptyList()
     }
 
     /** Bariery z jednego pytania źródła razem z chwilą ich pobrania z serwera. */

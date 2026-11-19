@@ -19,6 +19,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.camera.TouchSign
+import io.github.dostepnykampus.feature.map.campus.NO_SERVER
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.plan.SIGN_PLAN
@@ -89,7 +90,7 @@ class MapSignOverCardTest {
                 mapListChoice = TestMapListChoice(),
                 computeContext = UnconfinedTestDispatcher(),
                 geometry = ::campusMapData,
-                barriers = { listOf(THRESHOLD) },
+                server = NO_SERVER.copy(barriers = { listOf(THRESHOLD) }),
             )
         compose.setContent {
             val state by viewModel.uiState.collectAsState()

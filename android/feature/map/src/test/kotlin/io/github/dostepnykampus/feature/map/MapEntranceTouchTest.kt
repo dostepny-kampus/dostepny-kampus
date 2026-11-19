@@ -259,7 +259,6 @@ class MapEntranceTouchTest {
                 mapListChoice = TestMapListChoice(),
                 computeContext = UnconfinedTestDispatcher(),
                 geometry = ::campusMapData,
-                barriers = { emptyList() },
             )
         compose.setContent {
             DostepnyKampusTheme {
