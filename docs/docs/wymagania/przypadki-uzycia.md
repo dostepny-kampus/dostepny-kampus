@@ -228,7 +228,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Warunki wstępne | Brak; logowanie nie jest potrzebne (US1.2). |
 | Wyzwalacz | Osoba zna symbol budynku z planu zajęć albo zaproszenia. |
 | Przepływ główny | 1. Osoba otwiera mapę kampusu. <br> 2. Wpisuje symbol budynku, np. „c13”. <br> 3. Od pierwszego znaku system podpowiada budynki, których symbol zaczyna się od wpisanego tekstu, niezależnie od zapisu; osoba wybiera C-13 (US1.1). <br> 4. System pokazuje budynek na mapie z barierami ze zgłoszeń przyjętych (US1.3). |
-| Alternatywy i wyjątki | 1a. Brak sieci: dane z ostatniej synchronizacji z datą (NFR-10). <br> 2a. Czytnik ekranu: osoba wybiera budynek z listy (NFR-19). <br> 3a. Żaden symbol nie zaczyna się od wpisanego tekstu: system mówi to zdaniem z przykładem symbolu i proponuje listę budynków (NFR-19). <br> 3b. Budynek leży na innym terenie: system zmienia teren, mówi o tym napisem, a teren zostaje po zamknięciu karty (US1.8, BR-G5). |
+| Alternatywy i wyjątki | 1a. Brak sieci: dane z ostatniej synchronizacji z datą (NFR-10). <br> 1b. Osoba wpisuje sam numer sali: system prosi o dopisanie budynku (US18.1). <br> 1c. Osoba dotyka sali z numerem na planie: dalej jak od kroku 2 (US18.1). <br> 2a. Czytnik ekranu: osoba wybiera budynek z listy (NFR-19). <br> 3a. Żaden symbol nie zaczyna się od wpisanego tekstu: system mówi to zdaniem z przykładem symbolu i proponuje listę budynków (NFR-19). <br> 3b. Budynek leży na innym terenie: system zmienia teren, mówi o tym napisem, a teren zostaje po zamknięciu karty (US1.8, BR-G5). |
 | Warunki końcowe | Budynek jest zaznaczony na mapie; dalej można otworzyć UC2. |
 | Odwołania | US1.1…US1.8, BR-6, BR-G5, NFR-11, NFR-19, NFR-37, T20 |
 
@@ -240,7 +240,7 @@ Mapa nieba z położeniem satelitów (US6.5) uzupełnia krok 2 i ma priorytet �
 | Aktor | Gość niezalogowany. |
 | Warunki wstępne | Brak; logowanie nie jest potrzebne (US1.2). |
 | Wyzwalacz | Osoba zna budynek i numer sali, np. z planu zajęć. |
-| Przepływ główny | 1. Osoba wpisuje budynek i numer sali, np. „A-1 329”. <br> 2. System pokazuje plan piętra sali z wyróżnioną salą, jej funkcję i piętro z danych PWr (US18.1). <br> 3. System podaje kroki tekstem: wejście zalecane, winda, piętro sali i sala (US18.2, BR-25). |
+| Przepływ główny | 1. Osoba wpisuje budynek i numer sali w dowolnej kolejności, np. „A-1 329” albo „329 A-1”, i wybiera salę z podpowiedzi (US18.1). <br> 2. System pokazuje plan piętra sali z wyróżnioną salą, jej funkcję i piętro z danych PWr (US18.1). <br> 3. System podaje kroki tekstem: wejście zalecane, winda i sala (US18.2, BR-25). <br> 4. Osoba może przejść kroki po kolei; system pokazuje na mapie miejsce każdego kroku (US18.2). |
 | Alternatywy i wyjątki | 1a. Brak sieci: dane z ostatniej synchronizacji z datą (NFR-10). <br> 2a. Sali nie ma w danych: system mówi to zdaniem i proponuje opis budynku (US18.3). <br> 3a. Sala na piętrze wejścia: kroki bez windy, odległość od wejścia (US18.2). <br> 3b. Brak wejścia zalecanego albo windy z piętra wejścia na piętro sali: system mówi to zdaniem i proponuje opis budynku (US18.3). |
 | Warunki końcowe | Osoba zna piętro sali i drogę bez schodów albo wie, że w danych takiej drogi nie ma; system niczego nie zapisuje. |
 | Odwołania | US18.1…US18.3, US1.1, BR-25, NFR-10, NFR-19, NFR-40 |

@@ -64,7 +64,15 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Znaleziona sala: w polu A-1 329, plan 2 piętra A-1, po lewej pod przyciskiem terenu kolumna Piętro z zaznaczonym 2, na planie sala 329 z numerem kroku 4 i winda z numerem kroku 2, a w arkuszu cztery kroki: Wejście dostosowane, parter, Winda przy klatkach C i D, 2 piętro, Sala 329 przy klatkach A i B, ok. 85 m od windy, i przycisk Pokaż opis budynku](obrazy/m-v1-mapa-sala-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-jasny.webp) | [![Ta sama sala w motywie ciemnym z ciemnym planem piętra](obrazy/m-v1-mapa-sala-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-ciemny.webp) | [![Kroki do sali przy czcionce 200% na cały ekran: u góry tylko Wstecz, potem Sala 329, cztery kroki oraz przyciski Pokaż opis budynku i Pokaż na mapie](obrazy/m-v1-mapa-sala-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-jasny-200.webp) |
+| [![Znaleziona sala: wiersz tytułu z Pokaż listę, w polu A-1 329, plan 2 piętra A-1 z wyróżnioną salą 329 i kółkami kroków 2 przy windzie i 3 w sali, kolumna Piętro z zaznaczonym 2, a w karcie Sala 329, Sala wykładowa · 2 piętro, Budynek A-1, Jak dojść z przyciskiem Pokaż po kolei i trzy kroki bez wybranego](obrazy/m-v1-mapa-sala-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-jasny.webp) | [![Ta sama karta sali w motywie ciemnym z ciemnym planem piętra](obrazy/m-v1-mapa-sala-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-ciemny.webp) | [![Karta sali przy czcionce 200% na cały ekran: u góry Wstecz, Sala 329, rodzaj i piętro, Budynek A-1, Jak dojść i kroki przewijane nad paskiem dolnym](obrazy/m-v1-mapa-sala-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-jasny-200.webp) |
+
+### V1: kroki po kolei
+
+`m-v1-mapa-sala-kroki` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-kroki-po-kolei)
+
+| Jasny | Ciemny |
+| --- | --- |
+| [![Po Pokaż po kolei: plan parteru A-1 z wypełnionym kółkiem 1 przy wejściu zalecanym i kółkiem 2 przy windzie, kolumna Piętro z zaznaczonym parterem, a w karcie Krok 1 z 3 ze strzałkami i wybrany krok Wejście dostosowane z odsyłaczem Szczegóły wejścia](obrazy/m-v1-mapa-sala-kroki-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-kroki-jasny.webp) | [![Ten sam krok 1 w motywie ciemnym](obrazy/m-v1-mapa-sala-kroki-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-kroki-ciemny.webp) |
 
 ### V1: plan piętra
 
