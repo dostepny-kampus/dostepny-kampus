@@ -14,8 +14,7 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie powstaje po 3 krokach
     Oraz ma dołączoną bieżącą pozycję telefonu, o którą aplikacja nie pytała
 
-  # @do-zrobienia #3378: napis wejścia bez nazwy w danych jeszcze w cudzysłowie.
-  @US4.6 @BR-8 @BR-14 @aplikacja @do-zrobienia
+  @US4.6 @BR-8 @BR-14 @aplikacja
   Scenariusz: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego wejścia
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz otworzył arkusz wejścia głównego A-1 na mapie
@@ -26,8 +25,7 @@ Funkcja: Zgłoszenie szybkie
     Wtedy aplikacja nie pyta o piętro
     Oraz miejscem zgłoszenia jest punkt wejścia głównego A-1, a budynkiem A-1
 
-  # @do-zrobienia #3378: napis wejścia bez nazwy w danych jeszcze w cudzysłowie.
-  @US4.6 @BR-27 @aplikacja @do-zrobienia
+  @US4.6 @BR-27 @aplikacja
   Scenariusz: Napis wejścia bez nazwy w danych ma opis położenia
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz otworzył arkusz wejścia bez nazwy w danych, położonego od strony E-3, od południa
