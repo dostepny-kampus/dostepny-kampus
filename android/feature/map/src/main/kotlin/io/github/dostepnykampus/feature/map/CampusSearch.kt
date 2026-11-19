@@ -132,17 +132,11 @@ internal fun CampusSearch(
     var query by rememberSaveable { mutableStateOf("") }
     var isHidden by rememberSaveable { mutableStateOf(false) }
     SideEffect { onSearch(query) }
-    val focus = LocalFocusManager.current
-    val keyboard = LocalSoftwareKeyboardController.current
     val showList = {
         query = ""
         onListChange(true)
     }
-    val release: () -> Unit = {
-        isHidden = true
-        focus.clearFocus(force = true)
-        keyboard?.hide()
-    }
+    val release = searchRelease { isHidden = true }
     val choose = { symbol: String ->
         release()
         onBuildingClick(symbol)
@@ -188,6 +182,17 @@ internal fun CampusSearch(
                 modifier = Modifier.weight(1f),
             )
         }
+    }
+}
+
+@Composable
+private fun searchRelease(onHide: () -> Unit): () -> Unit {
+    val focus = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
+    return {
+        onHide()
+        focus.clearFocus(force = true)
+        keyboard?.hide()
     }
 }
 
