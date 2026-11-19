@@ -3,7 +3,13 @@
 # Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
 
 name: Java serwera
-description: JDK 25 i cache zależności Maven serwera; cache zapisuje tylko push do gałęzi, a zależności spoza cache w PR i kolejce pochodzą z Maven Central z ponowieniami przy 429 i 503 według backend/.mvn/maven.config.
+description: JDK 25 i cache zależności Maven serwera; cache zapisuje tylko zadanie z `zapisz` przy pushu do gałęzi, a zależności spoza cache pochodzą z Maven Central z ponowieniami przy 429 i 503 według backend/.mvn/maven.config.
+
+inputs:
+  zapisz:
+    description: Zapisz cache po zadaniu (tylko przy pushu). Jedno zadanie pobiera wszystkie zależności i wtyczki, więc tylko ono zapisuje wpis.
+    required: false
+    default: "false"
 
 runs:
   using: composite
@@ -13,6 +19,11 @@ runs:
         distribution: temurin
         java-version: 25
         cache: maven
-        cache-dependency-path: backend/pom.xml
-        # Zapis tylko z pusha do sprintu: kopie PR i kolejki wypierały jego wpis.
-        cache-read-only: ${{ github.event_name != 'push' }}
+        # Klucz zależy też od tej akcji: zmiana tego, co trafia do cache, daje nowy wpis zamiast starego niepełnego.
+        cache-dependency-path: |
+          backend/pom.xml
+          .github/actions/java-serwera/action.yml
+        # Zapis tylko z pusha do sprintu: kopie PR i kolejki wypierały jego wpis. Zapisuje jedno zadanie z `zapisz`:
+        # wpis zapisany przez zadanie z samym `test-compile` nie miał wtyczek `package` ani PIT, więc pakowanie serwera
+        # w kontroli sprintu pobierało je z Maven Central i przekraczało limit czasu przy 429.
+        cache-read-only: ${{ github.event_name != 'push' || inputs.zapisz != 'true' }}
