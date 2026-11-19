@@ -45,7 +45,11 @@ class BuildingLookup
 
         /** Wejście [id] z katalogu; `null`, gdy katalog go nie ma. Wymagania: US4.6, BR-8 */
         internal suspend fun entrance(id: String): Entrance? =
-            catalog.catalogUpdates().first().entrances.firstOrNull { it.id == id }
+            catalog
+                .catalogUpdates()
+                .first()
+                .entrances
+                .firstOrNull { it.id == id }
 
         private suspend fun currentBuildings(): List<Building> = catalog.catalogUpdates().first().buildings
     }
