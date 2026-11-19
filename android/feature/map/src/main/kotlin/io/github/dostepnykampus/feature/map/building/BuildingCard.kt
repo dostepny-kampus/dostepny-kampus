@@ -60,9 +60,10 @@ data class OrderedEntrance(val entrance: Entrance, val isRecommended: Boolean, v
 
 /**
  * Wejścia odwiedzających w kolejności karty budynku, każde z najcięższą barierą z [barriers] przy nim. Zalecane
- * jest jedyne: wejście „dostępne” bez blokady, a z kilku — główne, potem pierwsze z nazwą w danych
- * ([Entrance.hasName]), potem pierwsze z danych. Bez takiego wejścia nie ma zalecanego. Wejścia stoją w grupach
- * oznaczeń, w grupie najpierw z nazwą według [EntranceNameOrder], potem pozostałe w kolejności z danych.
+ * jest jedyne: wejście „dostępne” bez blokady, a z kilku — bez przyjętych barier, a gdy każde je ma, to z najlżejszą
+ * najcięższą barierą; przy równych główne, potem pierwsze z nazwą w danych ([Entrance.hasName]), potem pierwsze
+ * z danych. Bez takiego wejścia nie ma zalecanego. Wejścia stoją w grupach oznaczeń, w grupie najpierw z nazwą
+ * według [EntranceNameOrder], potem pozostałe w kolejności z danych.
  *
  * Wymagania: BR-25, US2.2
  */
@@ -77,8 +78,9 @@ fun orderedEntrances(entrances: List<Entrance>, barriers: List<AcceptedBarrier> 
         visitors.filter {
             it.marking == EntranceMarking.ACCESSIBLE && worst[it.id]?.severity != Severity.BLOCKING
         }
-    val recommended =
-        accessible.firstOrNull { it.isMain } ?: accessible.firstOrNull(Entrance::hasName) ?: accessible.firstOrNull()
+    val preference =
+        compareBy<Entrance>({ worst[it.id]?.severity?.value ?: 0 }, { !it.isMain }, { !it.hasName })
+    val recommended = accessible.minWithOrNull(preference)
     val order =
         compareBy<Entrance>({ MARKING_ORDER.indexOf(it.marking) }, { !it.hasName })
             .thenBy(EntranceNameOrder) { if (it.hasName) it.name.orEmpty() else "" }
