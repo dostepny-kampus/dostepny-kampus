@@ -129,15 +129,24 @@ public final class SubmissionReading {
     }
 
     /**
-     * Przyjęte zgłoszenia istniejących barier.
+     * Strona przyjętych zgłoszeń istniejących barier. Pominięte zgłoszenia nadal
+     * przesuwają kursor, nawet gdy strona nie ma wierszy do eksportu.
      *
-     * @return Zgłoszenia w kolejności utworzenia
+     * @param after Kursor albo {@link SubmissionFinder.Page#START} dla pierwszej strony
+     * @return Strona eksportu w kolejności identyfikatorów z kursorem listy zgłoszeń
      */
-    public List<Submission> exportable() {
-        return this.finder.list(new SubmissionQuery(Set.of(SubmissionStatus.ACCEPTED), null, null))
-            .stream().filter(item -> !item.content().barrier().removed())
-            .filter(item -> item.content().kind() != SubmissionKind.ENTRANCE_MARKING)
-            .toList();
+    public SubmissionFinder.Page exportablePage(final UUID after) {
+        final SubmissionFinder.Page page = this.pages.page(
+            new SubmissionQuery(Set.of(SubmissionStatus.ACCEPTED), null, null),
+            new SubmissionFinder.Window(after, 500)
+        );
+        return new SubmissionFinder.Page(
+            page.items().stream()
+                .filter(item -> !item.content().barrier().removed())
+                .filter(item -> item.content().kind() != SubmissionKind.ENTRANCE_MARKING)
+                .toList(),
+            page.last(), page.more()
+        );
     }
 
     /**
