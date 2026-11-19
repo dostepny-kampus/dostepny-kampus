@@ -2,7 +2,8 @@
 ' V1 Mapa kampusu, arkusz wejścia zalecanego po „Pokaż wejście na mapie” z V2 albo po dotknięciu znaku
 ' wejścia (US2.1, US3.3). Arkusz nie ma czynności głównej: odpowiedź podała karta V2. Każde wejście ma ten
 ' sam układ części; innych wejść arkusz nie pokazuje, są na liście „Wejścia” karty V2. Wiersz budynku
-' pod nagłówkiem otwiera kartę V2; nagłówek nie powtarza budynku.
+' pod nagłówkiem otwiera kartę V2; nagłówek nie powtarza budynku. Bariery przy wejściu stoją zaraz pod
+' oznaczeniem, źródłem i nazwą, przed „Dojście”; bez barier tej części nie ma.
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
@@ -17,6 +18,11 @@ $wiersz_budynku()
 Zalecane. Z map i opisów,
 stan z <i>[data]</i>
 <b>Wejście bramą od ul. Norwida</b>
+$sekcja("Bariery przy tym wejściu")
+<b><i>[typ bariery z danych]</i></b>
+$tekst("[uciążliwość z danych: napis i ikona]", "i")
+$obraz("zdjęcie bariery")
+Sprawdzone <i>[data]</i>
 $sekcja("Dojście")
 $tekst("[opis dojścia z danych]", "i")
 $sekcja("Drzwi")
@@ -24,11 +30,6 @@ Szerokość drzwi: <i>[cm]</i>
 $sekcja("Za drzwiami")
 $tekst("[najbliższa winda, ok. [m] od wejścia]", "i")
 $tekst("[zakres pięter windy z danych PWr]", "i")
-$sekcja("Bariery przy tym wejściu")
-<b><i>[typ bariery z danych]</i></b>
-$tekst("[uciążliwość z danych: napis i ikona]", "i")
-$obraz("zdjęcie bariery")
-Sprawdzone <i>[data]</i>
 ..
 $przycisk("Zgłoś barierę przy wejściu")
 }

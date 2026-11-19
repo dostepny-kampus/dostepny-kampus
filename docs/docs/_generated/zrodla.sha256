@@ -58,7 +58,7 @@ cde23064f96fe221ede251e786254a969e45b5f788f652aa3b3ff56b0a9093d6  ux/makiety/m-v
 2376a2486138d475dbe389f48d8baf0495b00690fd28812ab4eb3b7d2e3a31aa  ux/makiety/m-v1-mapa-plan-bariery.puml
 c7db70763acc1bc951a32a9e0def35ea11f420965ac8b3d8066fc881322096be  ux/makiety/m-v1-mapa-plan-legenda.puml
 6aeae7e131a5fa790c1c7b842fdb318cfb7809ca7baeae112615fc2b89ab025f  ux/makiety/m-v1-mapa-plan-podstawowy.puml
-0471c99fdc7f808e8bad017194aed679f02677541434ceba8339e74fcd3affb7  ux/makiety/m-v1-mapa-plan-winda.puml
+790d5508d356173c214d6ab16f0d20c7ae1e5ea14209cba142156d68ecfc583f  ux/makiety/m-v1-mapa-plan-winda.puml
 11d830331cfc07bce82244e500bc9221807f49cd35b098a83d5441402160520c  ux/makiety/m-v1-mapa-plan.puml
 cfbef1157d4beaac7d8fd473f3f14a0e8ef95348fc3f51da573af76848e19b7e  ux/makiety/m-v1-mapa-pusty.puml
 daf37cf40ac8881579646a08202747681fd136556870d6be74741a184eabd3af  ux/makiety/m-v1-mapa-sala.puml
@@ -68,7 +68,7 @@ f26f6cc88a5b9b2c699c7c700a8ec848b78f73cf3f9039f8910bc0d81b0b7244  ux/makiety/m-v
 7a1436dd156d5e3bdd2ef8341ac627b2a0277ca0e1a607d8ab11a7df0c362034  ux/makiety/m-v1-mapa-teren-wynik.puml
 1c97a57ad9f74d3a7cd4c63e238516519e569460b089da44469765bd4c14efcc  ux/makiety/m-v1-mapa-teren-zmiana.puml
 4a2f898e90d283680ccc106f0792102d197bf4411ad8c7d47b5e8bc4695d9c64  ux/makiety/m-v1-mapa-toaleta.puml
-95b7cd40274e29bd812dcb6c5d8e9ec4f40b389df7d82d2518592dfa10210a97  ux/makiety/m-v1-mapa-wejscie.puml
+f0a468efdb787515f279c725053eb18ca43a2d16feea5d28a34ad3792d351b78  ux/makiety/m-v1-mapa-wejscie.puml
 3680bc45886dfeb056c378627d17c7d58b9f7d837a0ab9a5b54ad94a3fdd01c6  ux/makiety/m-v1-mapa-wyszukiwanie.puml
 c8680e99b27cce25672bb8f430bbf71ae04539fafcecafe29241a7dfb6d95828  ux/makiety/m-v1-mapa.puml
 3f394308faf0bc86be3b08897cce871245f8ec34ccb150e7372b2d1f471a6ffc  ux/makiety/m-v2-karta-budynku-brak-sieci.puml
@@ -95,7 +95,7 @@ f2b3d072d6df1e84800f8b6df66b12f7dad5b315995a6ebd15485271288844c8  ux/makiety/m-v
 b2422e9aa75119fe18c04799a59ec382db6be7de9fa44b12a04013600b284d1e  ux/makiety/m-v5-pomoc.puml
 483fef88b3ab48d4de93cc49646aa632e34d87a6a3fbac742acd1f01d3de1a82  ux/makiety/m-wspolne-fragmenty.puml
 a865bcb94aa870e26d5cb85ee60f390676eb1e2bc687563d59d271d6e3ec1039  ux/nawigacja-gosc-konto.puml
-b95f8476bdf0498f25cbcbfb0cfd95ddd4edd1d2196a774d93e48f0638818ecc  ux/nawigacja-gosc-mapa.puml
+6df74ddea4e8d1ccaeb8b41b939ae32cc5eff1ca780d893a3faaff81e414a124  ux/nawigacja-gosc-mapa.puml
 5843cdc80daab4a02d5b052ce86c8f234e8d5cb0b9efafe61f138af2af67fb68  ux/nawigacja-gosc-zgloszenie-kroki.puml
 397d16f84bd2954f078fd32c7a9957b4aef513076ae3ec543798ea92a654534e  ux/nawigacja-gosc-zgloszenie-wejscie.puml
 4f14f78d5c1370cf2d5a6cf445db82404eed81bd197ec3d1ab55927d1e85d699  ux/nawigacja-weryfikacja.puml

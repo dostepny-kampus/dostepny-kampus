@@ -132,6 +132,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1, stan „plan piętra” albo „znaleziona sala” | przełącznik pięter | V1, plan innego piętra | wszystkie | US16.1 |
 | V1, stan „plan piętra” albo „znaleziona sala” | dotknięcie windy | V1, stan „arkusz windy” | wszystkie | R14, US16.1 |
 | V1, stan „arkusz windy” | „Zamknij” | V1, stan „plan piętra” | wszystkie | NFR-53 |
+| V1, stan „arkusz windy” | wiersz „Budynek A-1” | V2 tego budynku na niskiej wysokości, mapa jak po dotknięciu konturu | wszystkie | US2.8, US16.1 |
 | V1, stan „arkusz windy” | „Zgłoś barierę przy windzie” | V4, krok 1, winda wybrana, miejsce w punkcie windy, piętro oglądanego planu; Gość: L1, potem V4 z wybraną windą | wszystkie | US4.6, US14.2, BR-8 |
 | V1, stan „znaleziona sala”, „sala bez drogi” albo „brak sali” | wiersz „Budynek A-1” | V2 na niskiej wysokości, mapa jak po dotknięciu konturu | wszystkie | US2 |
 | V1, stan „znaleziona sala” | „Zamknij” | V1 | wszystkie | decyzja 48 |

@@ -264,9 +264,11 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy na karcie budynku B-8 widzi „Brak wejścia dostępnego” i zdanie, że żadne wejście nie jest dostępne
     Ale karta nie jest pusta i nie pokazuje samego braku wyniku
 
-  @US2.1 @US2.2 @BR-25 @aplikacja
+  # @do-zrobienia #3379: testy karty mają jeszcze drugie wejście dostępne bez barier.
+  @US2.1 @US2.2 @BR-25 @aplikacja @do-zrobienia
   Scenariusz: Bariera przy wejściu zalecanym jest na karcie przy tym wejściu
     Zakładając, że przy wejściu zalecanym budynku C-13 jest przyjęta bariera „Tylko z pomocą” typu „ciężkie drzwi”
+    Oraz C-13 nie ma innego wejścia dostępnego bez barier
     Jeżeli Gość niezalogowany otworzy kartę budynku C-13
     Wtedy to wejście zostaje zalecane, a zdanie pod wierszem o wejściach kończy się „Przy wejściu jest bariera: tylko z pomocą.”
     Oraz wiersz tego wejścia na liście „Wejścia” ma pod szerokością drzwi „Tylko z pomocą: ciężkie drzwi”
@@ -283,6 +285,22 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | inne      | wiersz                  | zdanie                                 |
       | jest inne | Wejście dostępne        | Zalecane: »Wejście C«. Drzwi 100 cm.   |
       | nie ma    | Brak wejścia dostępnego | Jedyne wejście dostępne ma blokadę.    |
+
+  # @do-zrobienia #3379: wejście zalecane nie patrzy jeszcze na bariery lżejsze od blokady.
+  @US3.1 @BR-25 @aplikacja @do-zrobienia
+  Szablon scenariusza: Wejście bez barier jest zalecane przed wejściem z barierą
+    # Dane testowe, a nie stan faktyczny budynku C-13.
+    Zakładając, że w danych testowych wejście główne i wejście boczne C-13 mają oznaczenie „dostępne”
+    Oraz przy wejściu głównym jest przyjęta bariera „<przy głównym>”, a przy bocznym <przy bocznym>
+    Jeżeli Gość niezalogowany otworzy kartę budynku C-13
+    Wtedy zalecane jest <zalecane>
+    Oraz kolejność pozostałych wejść na liście „Wejścia” się nie zmienia
+
+    Przykłady:
+      | przy głównym   | przy bocznym                         | zalecane                                |
+      | Utrudnienie    | żadnej                               | wejście boczne                          |
+      | Tylko z pomocą | przyjęta bariera „Utrudnienie”       | wejście boczne, bo ma najlżejszą barierę |
+      | Utrudnienie    | przyjęta bariera „Utrudnienie”       | wejście główne                          |
 
   # @do-zrobienia #3380: znak bariery stoi jeszcze 48 dp od wejścia przy każdym powiększeniu.
   @US1.5 @US2.2 @BR-8 @NFR-17 @aplikacja @do-zrobienia
@@ -385,6 +403,25 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz Gość niezalogowany otworzył kartę budynku A-1
     Jeżeli dotknie wiersza tego wejścia na liście „Wejścia”
     Wtedy arkusz tego wejścia ma części „Dojście”, „Drzwi” i „Bariery przy tym wejściu” jak arkusz wejścia zalecanego
+
+  # @do-zrobienia #3376: część „Bariery przy tym wejściu” stoi jeszcze na końcu arkusza.
+  @US2.2 @US3.3 @aplikacja @do-zrobienia
+  Scenariusz: Bariery przy wejściu stoją w arkuszu zaraz pod oznaczeniem
+    Zakładając, że przy wejściu zalecanym E-1 jest przyjęta bariera „Blokada” typu „schody przy wejściu”
+    Jeżeli Gość niezalogowany otworzy arkusz tego wejścia
+    Wtedy pod oznaczeniem, źródłem i nazwą wejścia stoi część „Bariery przy tym wejściu” z typem, uciążliwością, zdjęciem i datą sprawdzenia
+    Oraz części „Dojście”, „Drzwi” i „Za drzwiami” stoją pod nią
+    Ale arkusz wejścia bez przyjętych barier nie ma tej części i zaczyna się od „Dojście”
+
+  # @do-zrobienia #3377: arkusz windy podaje jeszcze budynek i piętro jednym wierszem tekstu.
+  @US2.8 @US16.1 @aplikacja @do-zrobienia
+  Scenariusz: Arkusz windy ma wiersz budynku i piętro osobnym wierszem
+    Zakładając, że Gość niezalogowany ma otwarty plan parteru A-1
+    Jeżeli dotknie znaku windy na planie
+    Wtedy arkusz „Winda” ma pod nagłówkiem wiersz „Budynek A-1”, a pod nim piętro „Parter”
+    Oraz pod piętrem stoi „Jedzie na: …” z piętrami windy
+    Jeżeli wybierze wiersz „Budynek A-1”
+    Wtedy widzi kartę budynku A-1 na niskiej wysokości
 
   @US3.3 @NFR-53 @aplikacja
   Scenariusz: Pinezka wejścia jest widoczna nad arkuszem wejścia
