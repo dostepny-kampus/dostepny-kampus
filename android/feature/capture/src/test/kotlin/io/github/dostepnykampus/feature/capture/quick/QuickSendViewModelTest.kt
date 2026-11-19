@@ -73,7 +73,7 @@ class QuickSendViewModelTest {
             buildingFloors = BuildingFloors { null },
             buildingLookup =
                 BuildingLookup(
-                    catalog = BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS },
+                    catalog = BuildingCatalogRepository(EmptyCoroutineContext) { QUICK_CAMPUS },
                     computeContext = dispatcher,
                     grounds = CampusGrounds { isOnGrounds },
                 ),
@@ -309,12 +309,5 @@ class QuickSendViewModelTest {
         val INSIDE_A1 = GeoPoint(longitude = 17.0605, latitude = 51.1105)
         val OUTSIDE = GeoPoint(longitude = 17.10, latitude = 51.20)
         val ENTRANCE = GeoPoint(longitude = 17.06, latitude = 51.11)
-        const val CAMPUS =
-            """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
-                """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"A-1",""" +
-                """"osm_id":"way/A-1"},"geometry":{"type":"Polygon","coordinates":[[[17.06,51.11],""" +
-                """[17.061,51.11],[17.061,51.111],[17.06,51.111],[17.06,51.11]]]}},""" +
-                """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/6",""" +
-                """"entrance":"main"},"geometry":{"type":"Point","coordinates":[17.06,51.11]}}]}"""
     }
 }

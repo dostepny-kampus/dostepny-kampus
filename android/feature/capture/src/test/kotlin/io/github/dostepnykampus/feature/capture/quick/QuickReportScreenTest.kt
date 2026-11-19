@@ -267,7 +267,7 @@ class QuickReportScreenTest {
         val app = ApplicationProvider.getApplicationContext<Application>()
         if (isLocationGranted) shadowOf(app).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
         val transcoder = PhotoTranscoder()
-        val catalog = BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS }
+        val catalog = BuildingCatalogRepository(EmptyCoroutineContext) { QUICK_CAMPUS }
         val entrances = QuickEntranceViewModel(catalog)
         val send =
             QuickSendViewModel(
@@ -296,12 +296,5 @@ class QuickReportScreenTest {
         const val ACCURACY = 6.0
         val INSIDE = GeoPoint(longitude = 17.0605, latitude = 51.1105)
         val OUTSIDE = GeoPoint(longitude = 17.059, latitude = 51.109)
-        const val CAMPUS =
-            """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
-                """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"A-1",""" +
-                """"osm_id":"way/A-1"},"geometry":{"type":"Polygon","coordinates":[[[17.06,51.11],""" +
-                """[17.061,51.11],[17.061,51.111],[17.06,51.111],[17.06,51.11]]]}},""" +
-                """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/6",""" +
-                """"entrance":"yes","ref":"G"},"geometry":{"type":"Point","coordinates":[17.06,51.11]}}]}"""
     }
 }
