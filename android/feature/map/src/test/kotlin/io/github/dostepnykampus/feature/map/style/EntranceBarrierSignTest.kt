@@ -68,7 +68,12 @@ class EntranceBarrierSignTest {
         val layers = style.getValue("layers").jsonArray.map { it.jsonObject }
         val offsets =
             listOf(BARRIERS_LAYER, CHOSEN_BARRIER_LAYER).map { id ->
-                layers.single { it.text("id") == id }.getValue("layout").jsonObject.getValue("icon-offset").toString()
+                layers
+                    .single { it.text("id") == id }
+                    .getValue("layout")
+                    .jsonObject
+                    .getValue("icon-offset")
+                    .toString()
             }
         val expected = """["coalesce",["get","$BARRIER_OFFSET"],["literal",[0.0,0.0]]]"""
         assertEquals(listOf(expected, expected), offsets)
