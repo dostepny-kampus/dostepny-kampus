@@ -14,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -47,6 +48,7 @@ import io.github.dostepnykampus.feature.map.building.CardMode
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
+import kotlinx.coroutines.flow.first
 import kotlin.math.roundToInt
 
 /** Szerokość okna w dp, od której pasek nawigacji stoi z boku, a V2 otwiera się od razu na pełnym ekranie. */
@@ -96,7 +98,8 @@ internal data class SheetCard(
 /**
  * Karta V2: `Direct`, gdy okno go wymaga albo V2 otwarto od razu na pełnym ekranie, inaczej tryb z rozwinięcia
  * arkusza; „Wstecz” jak wstecz telefonu, „Zamknij” zamyka V2. Przewijanie treści startuje od
- * [BuildingRoute.scroll] i wraca na początek, gdy arkusz stanie niżej niż na całym oknie. Karta schodząca
+ * [BuildingRoute.scroll], także gdy treść dochodzi po pierwszej klatce, i wraca na początek, gdy arkusz stanie niżej
+ * niż na całym oknie. Karta schodząca
  * z ekranu zostawia nawigatorowi swoją wysokość i przewinięcie ([keepCard]).
  *
  * Wymagania: NFR-19, US2.8, US2.9, NFR-15
@@ -110,7 +113,9 @@ internal fun AppNavigator.sheetCard(): SheetCard {
     val isDirect = window.cardMode() == CardMode.Direct || route?.isDirect == true
     val mode = if (isDirect) CardMode.Direct else sheet.cardMode(window.fontScale)
     val back = checkNotNull(LocalOnBackPressedDispatcherOwner.current).onBackPressedDispatcher
-    val scroll = rememberScrollState(initial = route?.scroll ?: 0)
+    val start = route?.scroll ?: 0
+    val scroll = rememberScrollState(initial = start)
+    LaunchedEffect(scroll) { scroll.restore(target = start) }
     LaunchedEffect(layout.isFull) { if (!layout.isFull) scroll.animateScrollTo(0) }
     KeepCardOnLeave(route = route, isExpanded = layout.isExpanded, scroll = scroll)
     return SheetCard(
@@ -120,6 +125,16 @@ internal fun AppNavigator.sheetCard(): SheetCard {
         scroll = scroll,
         onExpand = layout.onExpand,
     )
+}
+
+/**
+ * Przewija do [target], gdy treść urośnie na tyle, żeby to przewinięcie było możliwe; nic, gdy wcześniej ruszy
+ * przewijanie z innego powodu.
+ */
+private suspend fun ScrollState.restore(target: Int) {
+    if (target == 0) return
+    snapshotFlow { isScrollInProgress || maxValue in target..<Int.MAX_VALUE }.first { it }
+    if (!isScrollInProgress && value < target) scrollTo(target)
 }
 
 @Composable
