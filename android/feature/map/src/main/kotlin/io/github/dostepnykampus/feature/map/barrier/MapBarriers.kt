@@ -16,7 +16,7 @@ import kotlinx.serialization.json.put
 import org.maplibre.spatialk.geojson.Feature
 import org.maplibre.spatialk.geojson.Point
 import kotlin.math.cos
-import kotlin.math.hypot
+import kotlin.math.sin
 
 /**
  * Właściwość punktu bariery z identyfikatorem zgłoszenia; po niej dotknięcie znaku wskazuje barierę.
@@ -52,7 +52,8 @@ const val BARRIER_WORD_DP = 20.0
 /**
  * Te same dane mapy z barierami [barriers] jako punktami warstwy barier, z budynkiem i piętrem zgłoszenia.
  * Pusta lista czyści warstwę, więc zgłoszenie, które przestało być przyjęte, znika z mapy. Bariery przy jednym
- * wejściu dają jeden punkt, tej o najwyższej uciążliwości, z przesunięciem znaku na zewnątrz konturu budynku.
+ * wejściu dają jeden punkt, tej o najwyższej uciążliwości, z przesunięciem znaku na zewnątrz konturu budynku,
+ * prostopadle do najbliższej ściany; przy wierzchołku wklęsłym znak stoi nad wejściem.
  *
  * Wymagania: US1.3, BR-6, BR-8, US16.1, US2.2, NFR-17
  */
@@ -71,7 +72,7 @@ fun CampusMapData.withBarriers(barriers: List<AcceptedBarrier>): CampusMapData {
                     put(key = BARRIER_SEVERITY, value = barrier.severity.name)
                     barrier.buildingSymbol?.let { put(key = BARRIER_BUILDING, value = it) }
                     barrier.floor?.floorId?.let { put(key = BARRIER_FLOOR, value = it) }
-                    directionFromOutlineCentre(barrier)?.let { (x, y) ->
+                    outwardDirection(barrier)?.let { (x, y) ->
                         val signX = x * ENTRANCE_BARRIER_DP
                         val signY = y * ENTRANCE_BARRIER_DP
                         put(key = BARRIER_OFFSET, element = dpOffset(x = signX, y = signY))
@@ -83,14 +84,12 @@ fun CampusMapData.withBarriers(barriers: List<AcceptedBarrier>): CampusMapData {
     return copy(barriers = featureCollection(features))
 }
 
-private fun CampusMapData.directionFromOutlineCentre(barrier: AcceptedBarrier): Pair<Double, Double>? {
+private fun CampusMapData.outwardDirection(barrier: AcceptedBarrier): Pair<Double, Double>? {
     val entrance = barrier.entranceId?.let(entrancePoints::get)
-    val outline = barrier.buildingSymbol?.let(outlinesBySymbol::get)
+    val outline = barrier.buildingSymbol?.let(buildingOutlines::get)
     if (entrance == null || outline == null) return null
-    val east = (entrance.longitude - (outline.west + outline.east) / 2) * cos(Math.toRadians(entrance.latitude))
-    val north = entrance.latitude - (outline.south + outline.north) / 2
-    val length = hypot(x = east, y = north)
-    return if (length > 0) east / length to (0.0 - north) / length else 0.0 to -1.0
+    val bearing = Math.toRadians(outline.outwardBearing(entrance) ?: 0.0)
+    return sin(bearing) to -cos(bearing)
 }
 
 private fun dpOffset(x: Double, y: Double): JsonArray = JsonArray(listOf(JsonPrimitive(x), JsonPrimitive(y)))
