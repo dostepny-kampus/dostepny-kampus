@@ -14,15 +14,18 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Pomieszczenia piętra z bazy z obrysem piętra.
+ * Transakcja testu cofa budynek, piętra i pomieszczenia, więc nie zostają dla innych testów.
  *
  * <p>Wymagania: US16.1, NFR-40</p>
  *
  * @since 0.1.0
  */
 @IntegrationTest
+@Transactional
 final class PostgisFloorRoomsIT {
 
     @Test
