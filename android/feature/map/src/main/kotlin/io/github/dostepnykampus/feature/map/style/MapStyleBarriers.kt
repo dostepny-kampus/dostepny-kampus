@@ -9,7 +9,9 @@ import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.barrier.BARRIER_BUILDING
 import io.github.dostepnykampus.feature.map.barrier.BARRIER_FLOOR
 import io.github.dostepnykampus.feature.map.barrier.BARRIER_ID
+import io.github.dostepnykampus.feature.map.barrier.BARRIER_OFFSET
 import io.github.dostepnykampus.feature.map.barrier.BARRIER_SEVERITY
+import io.github.dostepnykampus.feature.map.barrier.BARRIER_WORD_OFFSET
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -43,6 +45,9 @@ internal const val MINOR_BARRIER_ZOOM = 16
 
 private const val WORD_OFFSET_DP = BARRIER_SIGN_DP / 2 + 4
 
+/** Przesunięcie znaku bariery przy wejściu z właściwości punktu; bez niej znak stoi na punkcie. */
+private val SIGN_OFFSET = "icon-offset" to offsetOr(BARRIER_OFFSET, numbers(0.0, 0.0))
+
 /** Nazwa obrazu znaku bariery o uciążliwości [severity]. Wymagania: NFR-21 */
 internal fun barrierSignImage(severity: Severity): String = "bariera_${severity.name}"
 
@@ -57,7 +62,8 @@ internal fun barrierWordImage(severity: Severity): String = "bariera_slowo_${sev
  * od uciążliwości, więc znaczenie niesie kształt, a barwa je powtarza. Słowo jest obrazem, bo napisy z czcionek
  * stylu wymagają sieci. Pojawia się od powiększenia [BARRIER_WORD_ZOOM], nie przy krawędzi mapy i tylko wtedy,
  * gdy mieści się bez nakładania. Warstwy stoją pod podpisami budynków, więc przy kolizji zostaje podpis budynku
- * (wiersz o znakach barier w wymaganiach V1). Filtr [filter] z [SelectionLook.barriersFilter] zostawia bariery
+ * (wiersz o znakach barier w wymaganiach V1). Znak i słowo bariery przy wejściu stoją przesunięte o wartości
+ * z właściwości punktu. Filtr [filter] z [SelectionLook.barriersFilter] zostawia bariery
  * piętra planu i bariery widoczne przy bieżącym powiększeniu.
  *
  * Wymagania: US1.3, NFR-21, NFR-20
@@ -69,11 +75,17 @@ internal fun barrierLayers(filter: JsonElement): List<JsonObject> {
             source = BARRIERS_SOURCE,
             image = bySeverity(::barrierWordImage),
             "icon-anchor" to JsonPrimitive("left"),
-            "icon-offset" to numbers(WORD_OFFSET_DP.toDouble(), 0.0),
+            "icon-offset" to offsetOr(BARRIER_WORD_OFFSET, numbers(WORD_OFFSET_DP.toDouble(), 0.0)),
             "symbol-avoid-edges" to JsonPrimitive(true),
         )
     val signs =
-        symbolLayer(id = BARRIERS_LAYER, source = BARRIERS_SOURCE, image = bySeverity(::barrierSignImage), OVERLAP)
+        symbolLayer(
+            id = BARRIERS_LAYER,
+            source = BARRIERS_SOURCE,
+            image = bySeverity(::barrierSignImage),
+            OVERLAP,
+            SIGN_OFFSET,
+        )
     return listOf(
         JsonObject(words + ("minzoom" to JsonPrimitive(BARRIER_WORD_ZOOM)) + (FILTER to filter)),
         JsonObject(signs + (FILTER to filter)),
@@ -123,6 +135,7 @@ internal fun chosenBarrierLayer(filter: JsonElement): JsonObject {
             source = BARRIERS_SOURCE,
             image = bySeverity(::chosenBarrierImage),
             OVERLAP,
+            SIGN_OFFSET,
         )
     return JsonObject(sign + (FILTER to filter))
 }
@@ -135,3 +148,6 @@ private fun bySeverity(image: (Severity) -> String): JsonArray {
     val other = JsonPrimitive(image(Severity.entries.last()))
     return JsonArray(listOf(JsonPrimitive("match"), property(BARRIER_SEVERITY)) + named + other)
 }
+
+private fun offsetOr(key: String, fallback: JsonArray): JsonArray =
+    expression("coalesce", property(key), expression("literal", fallback))

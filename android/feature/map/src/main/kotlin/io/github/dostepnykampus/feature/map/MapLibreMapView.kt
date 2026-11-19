@@ -34,6 +34,7 @@ import com.google.gson.JsonObject
 import dagger.hilt.android.EntryPointAccessors
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.feature.map.barrier.BARRIER_OFFSET
 import io.github.dostepnykampus.feature.map.barrier.barrierImages
 import io.github.dostepnykampus.feature.map.camera.BasemapReveal
 import io.github.dostepnykampus.feature.map.camera.CameraController
@@ -359,7 +360,10 @@ object MapLibreMapView : CampusMapView {
                 )
             val signsNear = { sign: TouchSign ->
                 val under = queryRenderedFeatures(at, sign.layer).mapNotNull { it.getStringProperty(sign.idKey) }
-                val near = queryRenderedFeatures(area, sign.layer).mapNotNull { signPoint(it, sign.idKey, at) }
+                val near =
+                    queryRenderedFeatures(area, sign.layer).mapNotNull {
+                        signPoint(it, sign.idKey, at, pxPerDp = tolerance / TOUCH_TOLERANCE_DP)
+                    }
                 signsInReach(under = under, near = near, reach = tolerance)
             }
             when (val touch = chooseTouch(signsNear = signsNear, outlines = outlines)) {
@@ -375,12 +379,15 @@ object MapLibreMapView : CampusMapView {
         }
     }
 
-    private fun MapLibreMap.signPoint(feature: Feature, idKey: String, at: PointF): SignPoint? {
+    private fun MapLibreMap.signPoint(feature: Feature, idKey: String, at: PointF, pxPerDp: Float): SignPoint? {
         val id = feature.getStringProperty(idKey)
         val point = (feature.geometry() as? Point)?.let { LatLng(latitude = it.latitude(), longitude = it.longitude()) }
         val screen = point?.let(projection::toScreenLocation)
         if (id == null || screen == null) return null
-        return SignPoint(id = id, dx = screen.x - at.x, dy = screen.y - at.y)
+        val offset = feature.getProperty(BARRIER_OFFSET)?.takeIf { it.isJsonArray }?.asJsonArray
+        val shiftX = offset?.get(0)?.asFloat?.times(pxPerDp) ?: 0f
+        val shiftY = offset?.get(1)?.asFloat?.times(pxPerDp) ?: 0f
+        return SignPoint(id = id, dx = screen.x + shiftX - at.x, dy = screen.y + shiftY - at.y)
     }
 
     private fun MapLibreMap.onPersonIdle(report: (MapCamera) -> Unit) {
