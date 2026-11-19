@@ -6,14 +6,16 @@
 package io.github.dostepnykampus.feature.map.camera
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 /**
- * Ślad mapy bez włączonego śledzenia: znaczniki niczego nie zmieniają, a zmiana terenu oddaje wynik bloku.
+ * Ślad mapy bez włączonego śledzenia: znaczniki niczego nie zmieniają, a zmiana terenu i sekcja oddają wynik
+ * bloku albo jego wyjątek.
  *
- * Wymagania: NFR-57
+ * Wymagania: NFR-57, NFR-56
  */
 @RunWith(RobolectricTestRunner::class)
 class MapTraceTest {
@@ -39,5 +41,19 @@ class MapTraceTest {
             }
 
         assertEquals("znaczniki bez śledzenia nie zmieniają wyniku", CameraMotion.entries.size, result)
+    }
+
+    @Test
+    fun sectionReturnsBlockResult() {
+        val result = MapTrace.section(name = MapTrace.CARD_STATE_SECTION) { "C-13" }
+
+        assertEquals("sekcja oddaje wynik bloku", "C-13", result)
+    }
+
+    @Test
+    fun sectionPassesException() {
+        assertThrows("sekcja przepuszcza wyjątek bloku", IllegalStateException::class.java) {
+            MapTrace.section(name = MapTrace.SELECTION_SECTION) { error("styl bez warstwy") }
+        }
     }
 }

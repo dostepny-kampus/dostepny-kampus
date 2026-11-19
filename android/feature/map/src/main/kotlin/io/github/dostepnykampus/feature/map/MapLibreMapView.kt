@@ -258,7 +258,9 @@ object MapLibreMapView : CampusMapView {
                 map?.setStyle(styleBuilder(json)) { ready ->
                     MapTrace.endStyle(load)
                     ready.addMapImages(images = images)
-                    StyleTarget(ready).showSelection(currentLook, selectionImages(currentSelection, images))
+                    MapTrace.section(name = MapTrace.SELECTION_SECTION) {
+                        StyleTarget(ready).showSelection(currentLook, selectionImages(currentSelection, images))
+                    }
                     StyleTarget(ready).hideBasemap()
                     reveal.hide()
                     shown = built
@@ -277,7 +279,11 @@ object MapLibreMapView : CampusMapView {
             loaded?.let { StyleTarget(it).showPlanData(floors, images, numbered) }
         }
         DisposableEffect(loaded, look) {
-            loaded?.let { StyleTarget(it).showSelection(look, selectionImages(currentSelection, images)) }
+            loaded?.let { ready ->
+                MapTrace.section(name = MapTrace.SELECTION_SECTION) {
+                    StyleTarget(ready).showSelection(look, selectionImages(currentSelection, images))
+                }
+            }
             onDispose {}
         }
         DisposableEffect(loaded, area) {
