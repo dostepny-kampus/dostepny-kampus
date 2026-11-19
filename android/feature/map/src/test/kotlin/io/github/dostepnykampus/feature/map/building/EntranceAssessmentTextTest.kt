@@ -54,8 +54,8 @@ class EntranceAssessmentTextTest {
 
     /**
      * Wiersz: V2, wszystkie wejścia z importu z tym samym dniem → jeden wiersz „Z map i opisów, stan z 1.10.2026”
-     *   nad grupą „Wejścia”, import. Przy wejściach nie ma osobnej daty ani źródła.
-     * Scenariusz (częściowo): oznaczenie-wejscia.feature: Wspólna data i źródło stoją raz pod listą wejść
+     *   pod listą wejść, import. Przy wejściach nie ma osobnej daty ani źródła.
+     * Scenariusz: oznaczenie-wejscia.feature: Wspólna data i źródło stoją raz pod listą wejść
      *
      * Wymagania: US17.3, BR-24
      */
@@ -65,7 +65,7 @@ class EntranceAssessmentTextTest {
         compose.onNodeWithText(IMPORT_TEXT).assertExists()
         assertEquals(1, datedCount())
         assertEquals(1, compose.onAllNodesWithText(SOURCE_IMPORT, substring = true).fetchSemanticsNodes().size)
-        assertTrue(top(IMPORT_TEXT) < top(GROUP_V2))
+        assertTrue(isBelowEntrances(IMPORT_TEXT))
     }
 
     /**
@@ -80,11 +80,11 @@ class EntranceAssessmentTextTest {
         compose.onNodeWithText(WALK_TEXT).assertExists()
         assertEquals(1, datedCount())
         compose.onNodeWithText("Z map i opisów", substring = true).assertDoesNotExist()
-        assertTrue(top(WALK_TEXT) < top(GROUP_V2))
+        assertTrue(isBelowEntrances(WALK_TEXT))
     }
 
     /**
-     * Wiersz: V2, wejścia z różnym źródłem → napis przy każdym wejściu, nad grupą go nie ma.
+     * Wiersz: V2, wejścia z różnym źródłem → napis przy każdym wejściu, pod listą go nie ma.
      * Scenariusz: oznaczenie-wejscia.feature: Różne źródła stoją przy każdym wejściu
      *
      * Wymagania: US17.3, BR-24
@@ -96,7 +96,7 @@ class EntranceAssessmentTextTest {
     }
 
     /**
-     * Wiersz: V2, wejścia z tym samym źródłem i różnym dniem → napis przy każdym wejściu, nad grupą go nie ma, import.
+     * Wiersz: V2, wejścia z tym samym źródłem i różnym dniem → napis przy każdym wejściu, pod listą go nie ma, import.
      *
      * Wymagania: US17.3, BR-24
      */
@@ -151,6 +151,15 @@ class EntranceAssessmentTextTest {
     }
 
     private fun datedCount(): Int = compose.onAllNodes(hasDate).fetchSemanticsNodes().size
+
+    private fun isBelowEntrances(row: String): Boolean {
+        val line = compose.onNodeWithText(row).fetchSemanticsNode().boundsInRoot
+        val entrances =
+            listOf(MAIN, SIDE).flatMap { name ->
+                compose.onAllNodes(hasText(name, substring = true)).fetchSemanticsNodes()
+            }
+        return entrances.size >= 2 && entrances.all { node -> node.boundsInRoot.bottom <= line.top }
+    }
 
     private fun top(text: String) = compose.onNodeWithText(text).getUnclippedBoundsInRoot().top
 

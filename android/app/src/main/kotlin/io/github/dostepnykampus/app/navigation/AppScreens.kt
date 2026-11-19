@@ -83,7 +83,8 @@ internal fun currentCardWindow(): CardWindow {
 
 /**
  * Karta V2 w arkuszu: tryb [mode], „Wstecz” w górnym pasku pełnego ekranu [onBack], „Zamknij” w nagłówku [onClose],
- * przewijanie treści [scroll] i rozwinięcie niskiej karty [onExpand].
+ * przewijanie treści [scroll] i rozwinięcie niskiej karty [onExpand]. [isRising]: niska karta jedzie w górę albo stoi
+ * wyżej, a [mode] to już tryb rozwiniętej.
  *
  * Wymagania: US2.8
  */
@@ -93,6 +94,7 @@ internal data class SheetCard(
     val onClose: () -> Unit,
     val scroll: ScrollState,
     val onExpand: () -> Unit = {},
+    val isRising: Boolean = false,
 )
 
 /**
@@ -108,7 +110,7 @@ internal data class SheetCard(
 internal fun AppNavigator.sheetCard(): SheetCard {
     val window = currentCardWindow()
     val layout = LocalSheetPadding.current
-    val sheet = SheetState(isExpanded = layout.isExpanded)
+    val sheet = SheetState(isExpanded = layout.isExpanded || layout.isRising)
     val route = current as? BuildingRoute
     val isDirect = window.cardMode() == CardMode.Direct || route?.isDirect == true
     val mode = if (isDirect) CardMode.Direct else sheet.cardMode(window.fontScale)
@@ -124,6 +126,7 @@ internal fun AppNavigator.sheetCard(): SheetCard {
         onClose = { back() },
         scroll = scroll,
         onExpand = layout.onExpand,
+        isRising = layout.isRising && !layout.isExpanded,
     )
 }
 
@@ -202,11 +205,12 @@ internal fun AppNavigator.BuildingCard(
 ) {
     val card = sheetCard()
     val isDirect = card.mode == CardMode.Direct
+    val mode = if (card.isRising && state !is BuildingCardUiState.Ready) CardMode.Compact else card.mode
     val roles by account.collectAsStateWithLifecycle()
     val isCollector = StaffRole.COLLECTOR in (roles as? Account.SignedIn)?.staffRoles.orEmpty()
     BuildingCardContent(
         symbol = symbol,
-        mode = card.mode,
+        mode = mode,
         card = state,
         isOnline = isOnline,
         onShowOnMap = { showOnMap(MapFocus.Building(symbol, command = System.nanoTime())) },
