@@ -5,7 +5,9 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
@@ -16,13 +18,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.barrier.ChosenBarrierSheet
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
+import io.github.dostepnykampus.feature.map.building.BuildingChoiceSheet
+import io.github.dostepnykampus.feature.map.building.ChoiceLink
 import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.entrance.ChosenEntranceSheet
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
@@ -342,3 +349,58 @@ internal fun ChosenSignSheet(
         null -> {}
     }
 }
+
+/** Arkusz znaku z [sheet] z barierami [barriers], katalogiem [catalog] i planem [plan] na mapie. */
+internal data class OpenSign(
+    val sheet: ScreenSheet,
+    val barriers: ShownBarriers,
+    val catalog: BuildingCatalog?,
+    val plan: ShownPlan?,
+)
+
+/**
+ * Arkusze V1 na dole mapy: arkusz znaku z [open] i arkusz „Który budynek?” po dotknięciu kilku budynków naraz
+ * w [state]. Wybór budynku w arkuszu idzie do [onBuilding], a czynności arkusza wejścia do [entranceActions].
+ *
+ * Wymagania: US1.5, US2, US2.1, US3.3, US16.1
+ */
+@Composable
+internal fun BoxScope.MapSheets(
+    open: OpenSign,
+    state: MapSceneState,
+    onBuilding: (String) -> Unit,
+    entranceActions: EntranceActions,
+) {
+    val modifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
+    ChosenSignSheet(
+        signs = open.sheet.signs,
+        barriers = open.barriers,
+        catalog = open.catalog,
+        plan = open.plan,
+        onBuildingTap = { state.taps.choose(it, onBuilding) },
+        entranceActions = entranceActions,
+        modifier = modifier,
+        hidesEntrance = open.sheet.isEntranceFull,
+    )
+    BuildingChoices(catalog = open.catalog, state = state, onChoose = onBuilding, modifier = modifier)
+}
+
+@Composable
+private fun BuildingChoices(
+    catalog: BuildingCatalog?,
+    state: MapSceneState,
+    onChoose: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val chosen = catalog?.buildingsOf(state.taps.choice).orEmpty()
+    if (chosen.isNotEmpty()) {
+        BuildingChoiceSheet(onClose = state.taps::dismiss, modifier = modifier) {
+            chosen.forEach { building ->
+                ChoiceLink(building) { state.taps.choose(building.symbol, onChoose) }
+            }
+        }
+    }
+}
+
+private fun BuildingCatalog.buildingsOf(symbols: List<String>): List<Building> =
+    symbols.mapNotNull { symbol -> buildings.firstOrNull { it.symbol == symbol } }
