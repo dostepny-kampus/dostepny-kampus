@@ -185,14 +185,8 @@ fun CampusMapScreen(
     onMapHide: () -> Unit = {},
     onCardReturn: (String) -> Unit = onBuildingClick,
 ) {
-    val catalog = state.catalog
     val sheet =
-        screenSheet(
-            focus = focus,
-            padding = contentPadding,
-            onCardClose = onEmptyMapClick,
-            onCardReturn = onCardReturn,
-        )
+        screenSheet(focus = focus, padding = contentPadding, onCardClose = onEmptyMapClick, onCardReturn = onCardReturn)
     val isCovered = sheet.layout.padding.calculateBottomPadding() > 0.dp
     val isList = state.isListSaved ?: (LocalDensity.current.fontScale >= LARGE_FONT_SCALE)
     val states = rememberSaveableStateHolder()
@@ -230,7 +224,7 @@ fun CampusMapScreen(
         if (barExit.isBarShown(isCovered = isCovered, isList = isList, isUnderFullSheet = sheet.isEntranceFull)) {
             states.SaveableStateProvider(TOP_STATE) {
                 CampusSearch(
-                    catalog = catalog,
+                    catalog = state.catalog,
                     search = state.search,
                     onSearch = onSearch,
                     isOnline = state.isOnline,

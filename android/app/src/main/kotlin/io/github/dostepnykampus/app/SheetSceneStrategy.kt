@@ -170,7 +170,7 @@ private data class SheetScene(
     override val previousEntries: List<NavEntry<NavKey>> = if (sheet == null) emptyList() else listOf(map)
     override val content: @Composable () -> Unit = {
         var state by rememberSaveable(sheet != null, stateSaver = SheetStateSaver) {
-            mutableStateOf(SheetState(isExpanded = sheet?.metadata?.get(EXPANDED_KEY) == true))
+            mutableStateOf(SheetState(isExpanded = sheet?.run { metadata[EXPANDED_KEY] } == true))
         }
         val shift = remember(sheet?.contentKey) { Animatable(0f) }
         var isClosing by remember(sheet?.contentKey) { mutableStateOf(false) }
