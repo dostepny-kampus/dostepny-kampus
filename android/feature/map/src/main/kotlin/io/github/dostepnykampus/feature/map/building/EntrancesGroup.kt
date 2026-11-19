@@ -43,6 +43,7 @@ import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.barrier.EntranceBarrierLine
 import java.util.Locale
 
 private val NEXT_LINE_PEEK_HEIGHT = 24.dp
