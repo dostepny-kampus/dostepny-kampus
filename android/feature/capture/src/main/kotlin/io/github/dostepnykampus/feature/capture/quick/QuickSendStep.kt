@@ -107,11 +107,20 @@ internal fun entranceLine(entrance: Entrance): String {
     val name = entrance.name
     val place = entrance.placeDescription.removeSuffix(".").replaceFirstChar(Char::lowercaseChar)
     return when {
-        name != null && entrance.isNameGenerated && place.isNotEmpty() ->
+        name != null && entrance.isNameGenerated && place.isNotEmpty() -> {
             stringResource(R.string.szybkie_wejscie_polozenie, name, place)
+        }
 
-        name != null -> stringResource(R.string.szybkie_wejscie, name)
-        entrance.isMain -> stringResource(R.string.szybkie_wejscie_glowne)
-        else -> stringResource(R.string.szybkie_wejscie_bez_nazwy)
+        name != null -> {
+            stringResource(R.string.szybkie_wejscie, name)
+        }
+
+        entrance.isMain -> {
+            stringResource(R.string.szybkie_wejscie_glowne)
+        }
+
+        else -> {
+            stringResource(R.string.szybkie_wejscie_bez_nazwy)
+        }
     }
 }
