@@ -41,9 +41,7 @@ import tools.jackson.databind.node.ObjectNode;
  */
 final class SubmissionContentJsonTest {
 
-    /**
-     * Miejsce wejścia node/7: punkt, budynek i piętro.
-     */
+    /** Miejsce wejścia node/7: punkt, budynek i piętro. */
     private static final SubmissionPlace AT_ENTRANCE = new SubmissionPlace(
         new SubmissionPoint(17.05, 51.11), null, false, "C-13",
         new SubmissionFloor("p0", null, false)
