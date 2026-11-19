@@ -84,6 +84,8 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/java-serwera
+        with:
+          zapisz: "true"
       - name: Zależności skryptów danych
         if: ${{ github.event_name != 'push' }}
         run: python3 -m pip install --no-input -r ../data/requirements.txt
@@ -115,8 +117,9 @@ jobs:
           retention-days: 14
       - name: Pobierz zależności do cache Maven
         # Na push po scaleniu z kolejki kontrole przeszły już w merge_group na tym samym SHA; tu tylko zapis cache zależności.
+        # resolve-plugins dokłada wtyczki dalszych faz (package, PIT, qulice), których używają pozostałe zadania serwera.
         if: ${{ github.event_name == 'push' }}
-        run: ./mvnw -B -DskipTests test-compile
+        run: ./mvnw -B -DskipTests test-compile dependency:resolve-plugins
 
   mutacje:
     # Tylko kontrola sprintu (inputs.sha): PIT na połączonych zmianach kilku PR po scaleniu.
