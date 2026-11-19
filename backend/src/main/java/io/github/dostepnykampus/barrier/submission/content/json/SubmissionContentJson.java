@@ -12,6 +12,8 @@ import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.NewEntranceMarking;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
+import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
+import io.github.dostepnykampus.building.api.KnownBuildings;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,7 +28,7 @@ import org.jspecify.annotations.Nullable;
  * @param place Pola miejsca zgłoszenia
  * @param barrier Pola bariery
  * @param replaces Zastępowane zgłoszenie, w JSON replacesSubmissionId
- * @param entranceId Wejście w zmianie oznaczenia albo null
+ * @param entranceId Wejście zgłoszenia szybkiego albo zmiany oznaczenia, albo null
  * @param entranceMarking Nowe oznaczenie wejścia albo null
  * @param photoIds Identyfikatory zdjęć
  * @since 0.1.0
@@ -94,6 +96,36 @@ public record SubmissionContentJson(
      * @return Treść zgłoszenia
      */
     public SubmissionContent toContent() {
+        return this.content(this.place.toPlace());
+    }
+
+    /**
+     * Przenosi treść żądania do domeny. Zgłoszenie szybkie z wejściem dostaje
+     * punkt, budynek i piętro wejścia zamiast pozycji z żądania; nieznane wejście
+     * daje {@link InvalidSubmission}.
+     *
+     * <p>Wymagania: BR-8, BR-14</p>
+     *
+     * @param buildings Budynki i wejścia znane serwerowi
+     * @return Treść zgłoszenia
+     */
+    public SubmissionContent toContent(final KnownBuildings buildings) {
+        final SubmissionContent content;
+        if (this.kind == SubmissionKind.QUICK && this.entranceId != null) {
+            content = this.content(
+                PlaceJson.of(
+                    buildings.entrance(this.entranceId, this.place.buildingSymbol()).orElseThrow(
+                        () -> new InvalidSubmission("Nie ma wejścia z pola entranceId")
+                    )
+                )
+            );
+        } else {
+            content = this.toContent();
+        }
+        return content;
+    }
+
+    private SubmissionContent content(final SubmissionPlace where) {
         if (this.kind == null) {
             throw new InvalidSubmission("Zgłoszenie wymaga pola kind");
         }
@@ -101,7 +133,7 @@ public record SubmissionContentJson(
             throw new InvalidSubmission("Zgłoszenie wymaga pola photoIds");
         }
         return new SubmissionContent(
-            this.kind, this.place.toPlace(), this.barrier.toDetails(), this.entranceId,
+            this.kind, where, this.barrier.toDetails(), this.entranceId,
             this.entranceMarking, this.replaces, this.photoIds
         );
     }

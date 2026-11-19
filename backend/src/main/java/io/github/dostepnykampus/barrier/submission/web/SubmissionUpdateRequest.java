@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import io.github.dostepnykampus.barrier.submission.SubmissionEdit;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.json.SubmissionContentJson;
+import io.github.dostepnykampus.building.api.KnownBuildings;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 
@@ -27,12 +28,13 @@ record SubmissionUpdateRequest(
      * Przenosi ciało żądania do komendy domeny.
      *
      * @param path Identyfikator zgłoszenia z adresu
+     * @param buildings Budynki i wejścia znane serwerowi
      * @return Komenda edycji zgłoszenia
      */
-    SubmissionEdit toCommand(final UUID path) {
+    SubmissionEdit toCommand(final UUID path, final KnownBuildings buildings) {
         if (this.version == null) {
             throw new InvalidSubmission("Brak wersji bazowej edycji w polu version");
         }
-        return new SubmissionEdit(path, this.version, this.content.toContent());
+        return new SubmissionEdit(path, this.version, this.content.toContent(buildings));
     }
 }

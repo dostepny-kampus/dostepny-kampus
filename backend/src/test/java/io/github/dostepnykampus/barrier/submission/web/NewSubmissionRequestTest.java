@@ -32,7 +32,7 @@ final class NewSubmissionRequestTest {
             new NewSubmission(WebBodies.ID, WebBodies.content(), "konto"),
             WebBodies.MAPPER.readValue(
                 WebBodies.newBody("'extra':'x'"), NewSubmissionRequest.class
-            ).toCommand("konto"),
+            ).toCommand("konto", symbol -> true),
             "Komenda bez identyfikatora z ciała albo bez treści"
         );
     }
@@ -45,7 +45,7 @@ final class NewSubmissionRequestTest {
                 InvalidSubmission.class,
                 () -> WebBodies.MAPPER.readValue(
                     WebBodies.body("'extra':'x'"), NewSubmissionRequest.class
-                ).toCommand("konto"),
+                ).toCommand("konto", symbol -> true),
                 "Zgłoszenie bez id nie dało błędu 400"
             ).getMessage(),
             "Zły komunikat błędu"
@@ -59,7 +59,7 @@ final class NewSubmissionRequestTest {
             WebBodies.MAPPER.readValue(
                 WebBodies.body(String.format("'version':3,'id':'%s'", WebBodies.ID)),
                 SubmissionUpdateRequest.class
-            ).toCommand(WebBodies.PATH),
+            ).toCommand(WebBodies.PATH, symbol -> true),
             "Komenda edycji bez identyfikatora z adresu, wersji albo treści"
         );
     }
@@ -70,7 +70,7 @@ final class NewSubmissionRequestTest {
             InvalidInput.class,
             () -> WebBodies.MAPPER.readValue(
                 WebBodies.body("'extra':'x'"), SubmissionUpdateRequest.class
-            ).toCommand(WebBodies.PATH),
+            ).toCommand(WebBodies.PATH, symbol -> true),
             "Edycja bez wersji nie dała błędu 400"
         );
     }
@@ -84,7 +84,7 @@ final class NewSubmissionRequestTest {
                 WebBodies.MAPPER.readValue(
                     WebBodies.newBody(extra),
                     NewSubmissionRequest.class
-                ).toCommand("konto").id(),
+                ).toCommand("konto", symbol -> true).id(),
                 "Nieznane pole zepsuło wiązanie POST"
             ),
             () -> Assertions.assertEquals(
@@ -92,7 +92,7 @@ final class NewSubmissionRequestTest {
                 WebBodies.MAPPER.readValue(
                     WebBodies.body(String.format("'version':2,%s", extra)),
                     SubmissionUpdateRequest.class
-                ).toCommand(WebBodies.PATH).expectedVersion(),
+                ).toCommand(WebBodies.PATH, symbol -> true).expectedVersion(),
                 "Nieznane pole zepsuło wiązanie PUT"
             )
         );
