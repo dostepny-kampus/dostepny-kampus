@@ -15,7 +15,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 
-/** Model mapy V1 nad katalogiem [repository], z siecią i bez barier; wybór „Mapa” albo „Lista” z [choice]. */
+/** Model mapy V1 nad katalogiem [repository], z siecią, bez barier i sal; wybór „Mapa” albo „Lista” z [choice]. */
 @OptIn(ExperimentalCoroutinesApi::class)
 internal fun testMapViewModel(
     repository: BuildingCatalogRepository,
@@ -27,7 +27,6 @@ internal fun testMapViewModel(
         mapListChoice = choice,
         computeContext = UnconfinedTestDispatcher(),
         geometry = ::campusMapData,
-        barriers = { emptyList() },
     )
 
 /** Ekran mapy V1 z modelem [viewModel] i zaznaczeniem [focus] na widoku [map]; czeka na katalog i dane mapy. */
