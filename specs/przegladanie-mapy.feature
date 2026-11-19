@@ -302,7 +302,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | Tylko z pomocą | przyjęta bariera „Utrudnienie”       | wejście boczne, bo ma najlżejszą barierę |
       | Utrudnienie    | przyjęta bariera „Utrudnienie”       | wejście główne                          |
 
-  # @do-zrobienia #3391: dotknięcie obrazu znaku wejścia przy stykającym się znaku bariery otwiera jeszcze barierę.
+  # @do-zrobienia #3381: brak pełnego testu sceny; położenie i dotyk sprawdzają testy częściowe.
   @US1.5 @US2.2 @BR-8 @NFR-17 @aplikacja @do-zrobienia
   Szablon scenariusza: Znak bariery przy wejściu stoi obok znaku wejścia
     Zakładając, że przy wejściu głównym A-1 są przyjęte bariery „Utrudnienie” i „Blokada” zgłoszone w jego arkuszu
