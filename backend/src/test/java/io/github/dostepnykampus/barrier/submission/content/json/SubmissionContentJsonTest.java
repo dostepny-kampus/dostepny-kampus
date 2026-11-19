@@ -42,6 +42,14 @@ import tools.jackson.databind.node.ObjectNode;
 final class SubmissionContentJsonTest {
 
     /**
+     * Miejsce wejścia node/7: punkt, budynek i piętro.
+     */
+    private static final SubmissionPlace AT_ENTRANCE = new SubmissionPlace(
+        new SubmissionPoint(17.05, 51.11), null, false, "C-13",
+        new SubmissionFloor("p0", null, false)
+    );
+
+    /**
      * Grupy barier: stała domeny i wartość ze schematu BarrierGroup
      * w api/openapi.yaml.
      */
@@ -435,18 +443,8 @@ final class SubmissionContentJsonTest {
                 SubmissionContentJsonTest.bound(node -> node.put("entranceId", "node/7"))
             ).map(
                 body -> () -> Assertions.assertEquals(
-                    new SubmissionPlace(
-                        new SubmissionPoint(17.05, 51.11), null, false, "C-13",
-                        new SubmissionFloor("p0", null, false)
-                    ),
-                    body.toContent(
-                        SubmissionContentJsonTest.entrance(
-                            new SubmissionPlace(
-                                new SubmissionPoint(17.05, 51.11), null, false, "C-13",
-                                new SubmissionFloor("p0", null, false)
-                            )
-                        )
-                    ).place(),
+                    SubmissionContentJsonTest.AT_ENTRANCE,
+                    body.toContent(SubmissionContentJsonTest.entrance()).place(),
                     "Zgłoszenie przy wejściu nie dostało punktu, budynku i piętra wejścia"
                 )
             )
@@ -454,16 +452,21 @@ final class SubmissionContentJsonTest {
     }
 
     @Test
+    void rejectsQuickSubmissionAtUnknownEntrance() {
+        Assertions.assertThrows(
+            InvalidSubmission.class,
+            () -> SubmissionContentJsonTest.bound(node -> node.put("entranceId", "node/8"))
+                .toContent(SubmissionContentJsonTest.entrance()),
+            "Zgłoszenie przy nieznanym wejściu przeszło"
+        );
+    }
+
+    @Test
     void keepsLocationOfPreciseSubmissionWithEntrance() {
         Assertions.assertEquals(
             new SubmissionPoint(17.06, 51.1),
-            JsonBodies.bind(JsonBodies.json(JsonBodies.FULL)).toContent(
-                SubmissionContentJsonTest.entrance(
-                    new SubmissionPlace(
-                        new SubmissionPoint(17.05, 51.11), null, false, "C-13", null
-                    )
-                )
-            ).place().point(),
+            JsonBodies.bind(JsonBodies.json(JsonBodies.FULL))
+                .toContent(SubmissionContentJsonTest.entrance()).place().point(),
             "Pomiar precyzyjny dostał punkt wejścia zamiast własnego"
         );
     }
@@ -476,7 +479,8 @@ final class SubmissionContentJsonTest {
         return node.put("replacesSubmissionId", JsonBodies.REPLACED.toString());
     }
 
-    private static EntrancePlaces entrance(final SubmissionPlace place) {
-        return (id, symbol) -> Optional.of(place).filter(found -> "node/7".equals(id));
+    private static EntrancePlaces entrance() {
+        return (id, symbol) -> Optional.of(SubmissionContentJsonTest.AT_ENTRANCE)
+            .filter(found -> "node/7".equals(id));
     }
 }
