@@ -221,7 +221,6 @@ private fun OsmAttribution(hasPlanSource: Boolean, modifier: Modifier = Modifier
             Column(Modifier.padding(horizontal = Odstepy.s)) {
                 Text(
                     text = stringResource(if (isShort) R.string.mapa_osm_krotko else R.string.mapa_osm),
-                    maxLines = 1,
                     textDecoration = TextDecoration.Underline,
                     style = MaterialTheme.typography.bodyMedium,
                 )
