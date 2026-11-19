@@ -52,6 +52,7 @@ internal fun AppNavigator.HiltMapScreen(
     planViewModel: MapPlanViewModel = hiltViewModel(),
     entrancesViewModel: BuildingEntrancesViewModel = hiltViewModel(),
     liftViewModel: EntranceLiftViewModel = hiltViewModel(),
+    mapView: CampusMapView = MapLibreMapView,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val plan by planViewModel.shown.collectAsStateWithLifecycle()
@@ -67,11 +68,17 @@ internal fun AppNavigator.HiltMapScreen(
         state = shown,
         onListChange = viewModel::chooseList,
         onSearch = viewModel::search,
+        mapView = mapView,
         plan = plan,
         onCamera = planViewModel::camera,
         onFloorChoose = planViewModel::chooseFloor,
         onMapHide = planViewModel::hide,
-        entrance = EntranceActions(onShow = liftViewModel::show, lift = lift),
+        entrance =
+            EntranceActions(
+                onShow = liftViewModel::show,
+                lift = lift,
+                onBuildingSelect = planViewModel::selectEntrance,
+            ),
     )
 }
 

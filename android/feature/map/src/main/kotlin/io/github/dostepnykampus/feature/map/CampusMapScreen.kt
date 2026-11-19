@@ -291,7 +291,8 @@ private fun CampusMap(
         val scene = state.scene
         val move = state.move
         if (scene != null && move != null && state.limits != null) {
-            val pinned = signs.rememberPinnedEntrance(catalog = ui.catalog, chosen = scene.selection.entrance)
+            val pinned =
+                signs.rememberPinnedEntrance(ui.catalog, scene.selection.entrance, entranceActions.onBuildingSelect)
             mapView.Show(
                 data = scene.data,
                 selection = scene.selection.copy(entrance = pinned, barrier = signs.barrierId, plan = plan.shown),

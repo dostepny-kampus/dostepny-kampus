@@ -40,6 +40,17 @@ data class ShownPlan(
 )
 
 /**
+ * Symbol budynku trzymającego plan przy zaznaczeniu [focus] albo `null`, gdy wyborem rządzi środek mapy.
+ * Karta V2 i arkusz wejścia trzymają swój budynek; „Pokaż na mapie” i „Pokaż na planie” zostawiają wybór z mapy.
+ */
+internal fun selectedBuilding(focus: MapFocus?): String? =
+    when (focus) {
+        null -> null
+        is MapFocus.Building -> focus.symbol.takeIf { focus.command == null && focus.floor == null }
+        is MapFocus.Entrance -> focus.buildingSymbol
+    }
+
+/**
  * Plan piętra przy bieżącym widoku mapy. Budynek wybiera [planFocus] z budynków szczegółowych katalogu (R2, R3).
  * Plan budynku pobiera się z serwera raz na udane pobranie, a bez sieci pochodzi z kopii [plans]. Na start jest
  * piętro wejścia zalecanego z [entrances], a gdy dane go nie podają albo plan nie ma tego piętra — parter albo
@@ -54,8 +65,11 @@ data class ShownPlan(
 internal class MapPlan(private val plans: FloorPlans, private val entrances: ServerEntrances) {
     private val cameras = MutableStateFlow<MapCamera?>(null)
     private val chosen = MutableStateFlow<Map<String, String>>(emptyMap())
+    private val selected = MutableStateFlow<String?>(null)
     private val downloaded = mutableSetOf<String>()
     private var shownFocus: MapFocus? = null
+    private var entranceSheet: String? = null
+    private var isEntranceClosed = false
 
     /** Zapisuje widok mapy [view] po ruchu kamery. */
     fun camera(view: MapCamera) {
@@ -73,24 +87,41 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
     }
 
     /**
-     * Zapamiętuje piętro z zaznaczenia budynku [focus] raz na zaznaczenie; ponowne podanie tego samego zaznaczenia
-     * nie cofa piętra wybranego później. Zaznaczenie bez piętra nic nie zmienia.
+     * Pokazuje budynek i piętro z zaznaczenia [focus] raz na zaznaczenie; „Pokaż na mapie” i „Pokaż na planie”
+     * zostawiają wybór od środka mapy, a karta V2 i arkusz wejścia trzymają plan tego budynku.
      */
     fun show(focus: MapFocus?) {
         if (focus == shownFocus) return
         shownFocus = focus
+        isEntranceClosed = false
+        selected.value = currentSelection()
         val building = focus as? MapFocus.Building
         building?.floor?.let { choose(building = building.symbol, floor = it) }
+    }
+
+    /** Ustawia budynek [building] otwartego arkusza wejścia; `null` wraca do zaznaczenia albo kamery. */
+    fun selectEntrance(building: String?) {
+        entranceSheet = building
+        if (building == null && shownFocus is MapFocus.Entrance) isEntranceClosed = true
+        selected.value = currentSelection()
     }
 
     /** Plan przy widoku mapy dla katalogów [catalogs]; `null`, gdy planu nie widać. */
     @OptIn(ExperimentalCoroutinesApi::class)
     fun shown(catalogs: Flow<BuildingCatalog?>): Flow<ShownPlan?> {
-        val views = combine(flow = cameras, flow2 = catalogs) { view, catalog -> view to catalog }
+        val views = combine(flow = cameras, flow2 = catalogs, flow3 = selected, transform = ::PlanInput)
         val focus =
-            views.scan<Pair<MapCamera?, BuildingCatalog?>, String?>(null) { shown, (view, catalog) ->
-                val detailed = catalog?.run { buildings.filter { it.symbol in detailed } }.orEmpty()
-                view?.let { planFocus(center = it.center, zoom = it.zoom, detailed = detailed, shown = shown) }
+            views.scan<PlanInput, String?>(null) { shown, input ->
+                val buildings = planBuildings(input.catalog)
+                input.view?.let { view ->
+                    planFocus(
+                        center = view.center,
+                        zoom = view.zoom,
+                        buildings = buildings,
+                        shown = shown,
+                        selected = input.selected,
+                    )
+                }
             }
         val distinct = focus.distinctUntilChanged()
         val loaded = distinct.mapLatest { symbol -> symbol?.let { load(it) } }
@@ -98,6 +129,15 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
             plan?.run { copy(floor = floors[building]?.takeIf { id -> id in rooms } ?: floor) }
         }
     }
+
+    private fun planBuildings(catalog: BuildingCatalog?): PlanBuildings {
+        if (catalog == null) return PlanBuildings(detailed = emptyList())
+        val (withPlan, withoutPlan) = catalog.buildings.partition { it.symbol in catalog.detailed }
+        return PlanBuildings(detailed = withPlan, basic = withoutPlan)
+    }
+
+    private fun currentSelection(): String? =
+        entranceSheet ?: selectedBuilding(shownFocus).takeUnless { isEntranceClosed && shownFocus is MapFocus.Entrance }
 
     private suspend fun load(symbol: String): ShownPlan? {
         if (symbol !in downloaded && plans.download(symbol)) downloaded += symbol
@@ -113,3 +153,5 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
         return start?.let { ShownPlan(building = symbol, floors = floors, floor = it.id, rooms = rooms) }
     }
 }
+
+private data class PlanInput(val view: MapCamera?, val catalog: BuildingCatalog?, val selected: String?)

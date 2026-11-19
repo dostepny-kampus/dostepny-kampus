@@ -61,8 +61,13 @@ class MapPlanViewModel
             plan.choose(building, floor)
         }
 
-        /** Pokazuje piętro z zaznaczenia budynku [focus] raz na zaznaczenie; zaznaczenie bez piętra nic nie zmienia. */
+        /** Pokazuje budynek i piętro z zaznaczenia [focus] raz na zaznaczenie. */
         fun show(focus: MapFocus?) {
             plan.show(focus)
+        }
+
+        /** Wybiera budynek [building] otwartego arkusza wejścia; `null` wraca do zaznaczenia lub kamery. */
+        fun selectEntrance(building: String?) {
+            plan.selectEntrance(building)
         }
     }

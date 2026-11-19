@@ -16,8 +16,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
       Oraz w miejscu planu piętra widzi napis „Nie mamy planu pięter tego budynku.”
       Oraz widzi wejścia budynku B-8 i jego zgłoszenia przyjęte
 
-    # @do-zrobienia #3004: wybór planu przy budynku podstawowym blisko szczegółowego.
-    @US16.2 @aplikacja @do-zrobienia
+    @US16.2 @aplikacja
     Scenariusz: Budynek podstawowy blisko budynku szczegółowego nie pokazuje planu sąsiada
       Zakładając, że budynek podstawowy B-8 leży bliżej niż 60 m od budynku szczegółowego A-1
       Jeżeli Odwiedzający otworzy kartę budynku B-8 przy powiększeniu 18 albo przesunie środek mapy do B-8
