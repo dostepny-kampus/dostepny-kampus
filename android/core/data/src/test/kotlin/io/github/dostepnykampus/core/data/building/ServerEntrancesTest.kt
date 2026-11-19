@@ -12,7 +12,11 @@ import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.yield
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -47,6 +51,37 @@ class ServerEntrancesTest {
                 ServerEntrancesRepository { ServerReply.Missing }.entrances(SYMBOL),
                 "brak zasobu daje pustą listę wejść",
             )
+        }
+
+    /** Wiersz: karta pobrana wcześniej jest dostępna bez pytania serwera; przed pierwszym pobraniem jej nie ma. */
+    @Test
+    fun knowsDownloadedCard() =
+        runBlocking {
+            val entrances = ServerEntrancesRepository { ServerReply.Ok(CARD) }
+            val before = entrances.knownCard(SYMBOL)
+            entrances.cardEntrances(SYMBOL)
+
+            assertEquals(null, before, "karta przed pobraniem")
+            assertEquals(listOf(ENTRANCE), entrances.knownCard(SYMBOL)?.entrances, "karta pobrana wcześniej")
+        }
+
+    /** Wiersz: dwa pytania o ten sam budynek w trakcie jednego pobrania → jedno zapytanie do serwera. */
+    @Test
+    fun asksServerOnceWhenConcurrent() =
+        runBlocking {
+            val answer = CompletableDeferred<ServerReply<ServerCard>>()
+            var calls = 0
+            val entrances =
+                ServerEntrancesRepository {
+                    calls++
+                    answer.await()
+                }
+            val both = List(2) { async { entrances.entrances(SYMBOL) } }
+            yield()
+            answer.complete(ServerReply.Ok(CARD))
+
+            assertEquals(List(2) { listOf(ENTRANCE) }, both.awaitAll(), "wejścia dla obu pytań")
+            assertEquals(1, calls, "zapytania do serwera")
         }
 
     private companion object {

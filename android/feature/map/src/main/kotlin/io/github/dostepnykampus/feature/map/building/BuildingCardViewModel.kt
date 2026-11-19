@@ -67,11 +67,12 @@ sealed interface BuildingCardUiState {
 }
 
 /**
- * Karta budynku [symbol] z katalogu w telefonie. Katalog jest czytany, gdy ekran jest widoczny, i jeszcze 5 s po
- * zniknięciu, więc obrót ekranu nie czyta go od nowa. [retry] pyta serwer i czyta plik od nowa. Tekst i wejścia
- * z pliku pokazują się bez czekania na sieć. Równolegle karta pyta raz `serverEntrances` o wejścia z dniem i źródłem
- * oznaczenia i o wyjścia ewakuacyjne; niepusta lista wejść zastępuje wejścia z pliku, pusta zostawia je bez błędu.
- * Zgłoszenia przyjęte pobiera tak samo, a plan pięter raz, z kopii w telefonie. Zamknięcie karty przerywa pobieranie.
+ * Karta budynku [symbol] z katalogu w telefonie, czytanego, gdy ekran jest widoczny, i jeszcze 5 s po zniknięciu.
+ * [retry] pyta serwer i czyta plik od nowa. Pierwszy stan ma to, co telefon już zna: wejścia z pliku, wejścia
+ * i wyjścia z karty serwera pobranej wcześniej i zgłoszenia przyjęte z ostatniego pobrania. Równolegle karta pyta raz
+ * `serverEntrances` i zgłoszenia przyjęte; niepusta lista wejść z serwera zastępuje wejścia z pliku, pusta je zostawia.
+ * Fakty o piętrach bierze najpierw z kopii planu w telefonie, a po pobraniu planu z nowej kopii. Zamknięcie karty
+ * przerywa pobieranie.
  *
  * Wymagania: US2, BR-25, NFR-12, US17.3, NFR-10, US2.2, US2.4, US2.7, NFR-56, US16.3, US2.6
  */
@@ -88,15 +89,23 @@ class BuildingCardViewModel
     ) : ViewModel() {
         private val attempts = MutableStateFlow(0)
 
-        private val fromServer = MutableStateFlow(emptyList<Entrance>())
+        private val known = serverEntrances.knownCard(symbol)
 
-        private val barriers = MutableStateFlow<List<AcceptedBarrier>?>(null)
+        private val fromServer = MutableStateFlow(known?.entrances.orEmpty())
+
+        private val barriers = MutableStateFlow(acceptedBarriers.known()?.let(::ofBuilding))
 
         private val floors = MutableStateFlow<FloorFacts?>(null)
 
-        private val exits = MutableStateFlow(emptyList<EvacuationExit>())
+        private val exits = MutableStateFlow(known?.evacuationExits.orEmpty())
 
-        private val first = repository.current()?.let { buildingCard(it, symbol) } ?: BuildingCardUiState.Loading
+        private val first =
+            repository.current()?.let { catalog ->
+                withExits(
+                    withBarriers(withServerEntrances(buildingCard(catalog, symbol), fromServer.value), barriers.value),
+                    exits.value,
+                )
+            } ?: BuildingCardUiState.Loading
 
         /** Bieżący stan karty. */
         val uiState: StateFlow<BuildingCardUiState> =
@@ -119,7 +128,10 @@ class BuildingCardViewModel
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), true)
 
         init {
-            viewModelScope.launch { floors.value = floorFactsOrNull(plans, symbol) }
+            viewModelScope.launch {
+                floors.value = storedFloorFacts(plans, symbol)
+                if (plans.download(symbol)) floors.value = storedFloorFacts(plans, symbol)
+            }
             viewModelScope.launch {
                 val card = serverEntrances.cardEntrances(symbol)
                 fromServer.value = card.entrances
@@ -127,12 +139,12 @@ class BuildingCardViewModel
             }
             viewModelScope.launch {
                 val accepted = acceptedBarriers.barriers()
-                barriers.value =
-                    acceptedBarriers.syncedAt()?.let {
-                        accepted.filter { barrier -> barrier.buildingSymbol == symbol }
-                    }
+                barriers.value = acceptedBarriers.syncedAt()?.let { ofBuilding(accepted) }
             }
         }
+
+        private fun ofBuilding(accepted: List<AcceptedBarrier>): List<AcceptedBarrier> =
+            accepted.filter { barrier -> barrier.buildingSymbol == symbol }
 
         /** „Spróbuj ponownie”, gdy budynku nie ma w telefonie. Wymagania: NFR-10 */
         fun retry() {
@@ -173,9 +185,8 @@ class BuildingCardViewModel
         }
     }
 
-/** Fakty o piętrach budynku [symbol] z planu w [plans]; `null`, gdy budynek nie ma planu ani jego kopii. */
-internal suspend fun floorFactsOrNull(plans: FloorPlans, symbol: String): FloorFacts? {
-    plans.download(symbol)
+/** Fakty o piętrach budynku [symbol] z kopii planu w [plans], bez pobierania; `null`, gdy kopii nie ma. */
+internal suspend fun storedFloorFacts(plans: FloorPlans, symbol: String): FloorFacts? {
     val floors = plans.floors(symbol)?.floors.orEmpty()
     val rooms = floors.mapNotNull { floor -> plans.rooms(symbol, floor.id)?.let { floor.id to it } }.toMap()
     return floorFacts(floors, rooms).takeIf { floors.isNotEmpty() }

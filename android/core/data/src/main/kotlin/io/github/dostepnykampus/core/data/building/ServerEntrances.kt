@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.data.server.ServerCard
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EvacuationExit
+import kotlinx.coroutines.CompletableDeferred
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -38,6 +39,15 @@ public fun interface ServerEntrances {
      * @param symbol symbol budynku
      */
     public suspend fun cardEntrances(symbol: String): CardEntrances = CardEntrances(entrances(symbol))
+
+    /**
+     * Wejścia i wyjścia budynku [symbol] pobrane wcześniej, bez pytania serwera; `null`, gdy jeszcze nic nie pobrano.
+     *
+     * Wymagania: NFR-10, NFR-56
+     *
+     * @param symbol symbol budynku
+     */
+    public fun knownCard(symbol: String): CardEntrances? = null
 }
 
 /**
@@ -53,10 +63,11 @@ public data class CardEntrances(val entrances: List<Entrance>, val evacuationExi
 /**
  * [ServerEntrances] z karty budynku z serwera (`GET /buildings/{symbol}`).
  *
- * Każde wywołanie pyta serwer przez [details] raz; zapytanie i odczyt odpowiedzi idą poza wątkiem UI w kliencie
- * HTTP. Karta z [ServerReply.Ok] jest zapamiętywana dla symbolu; przy innym wyniku (brak sieci, błąd serwera,
- * nieznany budynek) zostają wejścia i wyjścia pobrane wcześniej, a bez nich puste listy. Pamięć żyje tyle co
- * obiekt, więc w aplikacji jest jeden na proces.
+ * Każde wywołanie pyta serwer przez [details] raz, a wywołania o ten sam symbol w trakcie trwającego pytania czekają
+ * na jego wynik; anulowanie pytającego każe pozostałym pytać od nowa. Zapytanie i odczyt odpowiedzi idą poza
+ * wątkiem UI w kliencie HTTP. Karta z [ServerReply.Ok] jest zapamiętywana dla symbolu; przy innym wyniku (brak sieci,
+ * błąd serwera, nieznany budynek) zostają wejścia i wyjścia pobrane wcześniej, a bez nich puste listy. Pamięć żyje
+ * tyle co obiekt, więc w aplikacji jest jeden na proces.
  *
  * Wymagania: NFR-10
  *
@@ -65,12 +76,33 @@ public data class CardEntrances(val entrances: List<Entrance>, val evacuationExi
 public class ServerEntrancesRepository(private val details: suspend (String) -> ServerReply<ServerCard>) :
     ServerEntrances {
     private val downloaded = ConcurrentHashMap<String, ServerCard>()
+    private val asking = ConcurrentHashMap<String, CompletableDeferred<ServerReply<ServerCard>>>()
 
     override suspend fun entrances(symbol: String): List<Entrance> = cardEntrances(symbol).entrances
 
     override suspend fun cardEntrances(symbol: String): CardEntrances {
-        val result = details(symbol)
+        val result = reply(symbol)
         val card = if (result is ServerReply.Ok) result.value.also { downloaded[symbol] = it } else downloaded[symbol]
-        return CardEntrances(card?.entrances.orEmpty(), card?.evacuationExits.orEmpty())
+        return card.toCardEntrances()
     }
+
+    override fun knownCard(symbol: String): CardEntrances? = downloaded[symbol]?.toCardEntrances()
+
+    private suspend fun reply(symbol: String): ServerReply<ServerCard> {
+        val mine = CompletableDeferred<ServerReply<ServerCard>>()
+        val running = asking.putIfAbsent(symbol, mine)
+        if (running != null) {
+            running.join()
+            return if (running.isCancelled) reply(symbol) else running.await()
+        }
+        try {
+            return details(symbol).also(mine::complete)
+        } finally {
+            asking.remove(symbol, mine)
+            mine.cancel()
+        }
+    }
+
+    private fun ServerCard?.toCardEntrances(): CardEntrances =
+        CardEntrances(this?.entrances.orEmpty(), this?.evacuationExits.orEmpty())
 }

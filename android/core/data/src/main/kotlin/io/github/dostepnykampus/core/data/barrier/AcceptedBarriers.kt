@@ -61,6 +61,14 @@ public fun interface AcceptedBarriers {
      * Wymagania: NFR-10
      */
     public fun syncedAt(): Instant? = null
+
+    /**
+     * Bariery z ostatniego wywołania [barriers] bez pytania serwera: z odpowiedzi albo kopii; `null` przed pierwszym
+     * wywołaniem i wtedy, gdy nie były ani z serwera, ani z kopii.
+     *
+     * Wymagania: NFR-10, NFR-56
+     */
+    public fun known(): List<AcceptedBarrier>? = null
 }
 
 /**
@@ -82,6 +90,8 @@ internal class ServerAcceptedBarriers internal constructor(
 ) : AcceptedBarriers {
     @Volatile private var synced: Instant? = null
 
+    @Volatile private var last: List<AcceptedBarrier>? = null
+
     /**
      * Bariery bez kopii w bazie.
      *
@@ -94,15 +104,19 @@ internal class ServerAcceptedBarriers internal constructor(
         return if (result is ServerReply.Ok) {
             val shown = result.value.mapNotNull { it.toBarrier() }
             synced = copy?.save(shown) ?: Instant.now()
+            last = shown
             shown
         } else {
             val restored = copy?.restoreSynced()
             synced = restored?.syncedAt
+            last = restored?.barriers
             restored?.barriers.orEmpty()
         }
     }
 
     override fun syncedAt(): Instant? = synced
+
+    override fun known(): List<AcceptedBarrier>? = last
 }
 
 internal fun Submission.toBarrier(): AcceptedBarrier? {
