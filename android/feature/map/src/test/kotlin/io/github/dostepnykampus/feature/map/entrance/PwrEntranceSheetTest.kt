@@ -119,8 +119,7 @@ class PwrEntranceSheetTest {
         compose.setContent { EntranceSheetOnMap(ShownEntrance(unnamed)) }
 
         compose.onNode(hasText("Dojście") and isHeading()).assertExists()
-        compose.onNodeWithText("$place
-$APPROACH").assertExists()
+        compose.onNodeWithText("$place\n$APPROACH").assertExists()
     }
 
     /** Zrzut arkusza wejścia zalecanego z planów PWr, motyw jasny. */
