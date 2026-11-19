@@ -103,6 +103,7 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
         if (symbol !in downloaded && plans.download(symbol)) downloaded += symbol
         val floors = plans.floors(symbol)?.floors.orEmpty()
         val rooms = floors.mapNotNull { floor -> plans.rooms(symbol, floor.id)?.let { floor.id to it } }.toMap()
+        // TODO(#3334): wejście zalecane bez przyjętych barier przy wejściach.
         val recommended = orderedEntrances(entrances.entrances(symbol)).firstOrNull { it.isRecommended }
         val entranceFloor = recommended?.run { entrance.floorId }
         val start =

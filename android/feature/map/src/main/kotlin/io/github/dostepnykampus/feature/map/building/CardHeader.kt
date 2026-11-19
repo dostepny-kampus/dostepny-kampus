@@ -26,6 +26,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.overlay.SheetCloseButton
 
@@ -89,17 +90,29 @@ private fun EntranceLines(summary: EntranceSummary, answer: VisitAnswer) {
 }
 
 /**
- * Zdanie pod wierszem o wejściach dla [answer]: wejście zalecane z szerokością drzwi, gdy jest w danych, albo liczba
- * wejść bez dostępnego; bez danych `null`.
+ * Zdanie pod wierszem o wejściach dla [answer]: wejście zalecane z szerokością drzwi, gdy jest w danych, i barierą
+ * przy nim, albo liczba wejść bez dostępnego lub z blokadą; bez danych `null`.
  *
- * Wymagania: US3.1, BR-25, BR-27
+ * Wymagania: US3.1, US2.2, BR-25, BR-27
  */
 @Composable
 @ReadOnlyComposable
 internal fun answerLine(answer: VisitAnswer): String? =
     when (answer) {
         is VisitAnswer.Accessible -> {
-            if (answer.place.isNotEmpty()) placeLine(answer) else nameLine(answer)
+            val entrance = if (answer.place.isNotEmpty()) placeLine(answer) else nameLine(answer)
+            answer.barrier?.let { severity ->
+                val word = stringResource(severity.nameRes()).replaceFirstChar(Char::lowercaseChar)
+                stringResource(R.string.karta_odpowiedz_bariera, entrance, word)
+            } ?: entrance
+        }
+
+        is VisitAnswer.Blocked -> {
+            if (answer.count == 1) {
+                stringResource(R.string.karta_odpowiedz_jedyne_blokada)
+            } else {
+                stringResource(R.string.karta_odpowiedz_kazde_blokada, answer.count)
+            }
         }
 
         is VisitAnswer.NoAccessible -> {
