@@ -77,6 +77,7 @@ private val CAMPUS_MARGIN = 100.meters
  * @property barriers bariery ze zgłoszeń przyjętych, każda jako punkt z właściwościami `id` i `severity`
  *   (`HINDRANCE`, `ONLY_WITH_HELP` albo `BLOCKING`); pusta kolekcja, dopóki ich nie ma
  * @property entrancePoints punkt każdego wejścia po identyfikatorze, ten sam co w [entrances]
+ * @property buildingOutlines pełny kontur budynku każdego symbolu, z otworami i częściami
  */
 data class CampusMapData(
     val buildings: JsonElement,
@@ -91,6 +92,7 @@ data class CampusMapData(
     val outlines: List<List<String>> = emptyList(),
     val barriers: JsonElement = featureCollection(emptyList()),
     val entrancePoints: Map<String, GeoPoint> = emptyMap(),
+    val buildingOutlines: Map<String, GeoArea> = emptyMap(),
 )
 
 /**
@@ -230,6 +232,7 @@ fun campusMapData(catalog: BuildingCatalog, boundaries: Map<String, GeoArea> = P
         outlinesBySymbol = catalog.buildings.mapNotNull { it.outlineBounds() }.toMap(),
         outlines = outlines.values.toList(),
         entrancePoints = catalog.entrances.associate { it.id to it.location },
+        buildingOutlines = catalog.buildings.associate { it.symbol to it.outline },
     )
 }
 
