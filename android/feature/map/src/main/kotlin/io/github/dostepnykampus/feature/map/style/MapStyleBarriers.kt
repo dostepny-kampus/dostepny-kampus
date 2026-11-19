@@ -54,7 +54,7 @@ private const val ICON_OFFSET = "icon-offset"
  *
  * Wymagania: US2.2, NFR-17
  */
-internal data class BesideEntrance(val minZoom: Double, val buildings: List<String>?) {
+internal class BesideEntrance(val minZoom: Double, val buildings: List<String>?) {
     /** Czy przy powiększeniu [zoom] znak bariery przy wejściu budynku [building] stoi obok znaku wejścia. */
     fun isBeside(zoom: Double, building: String?): Boolean =
         zoom >= minZoom && (buildings == null || building in buildings)
@@ -68,14 +68,13 @@ internal data class BesideEntrance(val minZoom: Double, val buildings: List<Stri
     private fun shifted(key: String, still: JsonArray): JsonElement {
         val stays = expression("literal", still)
         val moves = offsetOr(key, still)
+        val symbols = buildings?.map(::JsonPrimitive)
+        val building = expression("to-string", property(BARRIER_BUILDING))
         val byBuilding =
             when {
-                buildings == null -> moves
-                buildings.isEmpty() -> stays
-                else -> {
-                    val symbols = JsonArray(buildings.map(::JsonPrimitive))
-                    expression("match", expression("to-string", property(BARRIER_BUILDING)), symbols, moves, stays)
-                }
+                symbols == null -> moves
+                symbols.isEmpty() -> stays
+                else -> expression("match", building, JsonArray(symbols), moves, stays)
             }
         return expression("step", expression("zoom"), stays, JsonPrimitive(minZoom), byBuilding)
     }
@@ -95,9 +94,8 @@ internal fun barrierWordImage(severity: Severity): String = "bariera_slowo_${sev
  * od uciążliwości, więc znaczenie niesie kształt, a barwa je powtarza. Słowo jest obrazem, bo napisy z czcionek
  * stylu wymagają sieci. Pojawia się od powiększenia [BARRIER_WORD_ZOOM], nie przy krawędzi mapy i tylko wtedy,
  * gdy mieści się bez nakładania. Warstwy stoją pod podpisami budynków, więc przy kolizji zostaje podpis budynku
- * (wiersz o znakach barier w wymaganiach V1). Znak i słowo bariery przy wejściu stoją przesunięte o wartości
- * z właściwości punktu, gdy [beside] na to pozwala, a filtr [filter] z [SelectionLook.barriersFilter] zostawia
- * bariery widoczne teraz.
+ * (wiersz o znakach barier w wymaganiach V1). Znak i słowo przy wejściu przesuwa [beside], a filtr [filter]
+ * z [SelectionLook.barriersFilter] zostawia bariery widoczne teraz.
  *
  * Wymagania: US1.3, NFR-21, NFR-20, US2.2
  */
