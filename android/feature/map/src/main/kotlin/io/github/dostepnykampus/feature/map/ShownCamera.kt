@@ -14,8 +14,12 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.github.dostepnykampus.feature.map.camera.CameraMotion
+import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.CameraView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.byControl
+import io.github.dostepnykampus.feature.map.camera.isSameView
 import io.github.dostepnykampus.feature.map.camera.shiftedNorth
 
 /**
@@ -57,3 +61,26 @@ internal class ShownCamera {
         return left.takeUnless { isKept } ?: view.camera
     }
 }
+
+/**
+ * Widok [seen] z chwili zniknięcia arkusza V2 ([wasCovered], ale nie [isCovered]); zostaje do następnej zmiany
+ * zasłonięcia, a bez zamknięcia jest `null`.
+ *
+ * Wymagania: NFR-56
+ */
+@Composable
+internal fun rememberClosedView(isCovered: Boolean, wasCovered: Boolean, seen: MapCamera?): MapCamera? =
+    remember(isCovered) { seen.takeIf { wasCovered && !isCovered } }
+
+/**
+ * Ruch do widoku bez arkusza: do obrazu mapy z chwili zamknięcia arkusza [closed] skok, który zmienia cel
+ * i dopełnienie w jednej klatce bez ruchu na ekranie; do innego widoku przelot przycisków.
+ *
+ * Wymagania: US2.8, NFR-56
+ */
+internal fun MapCamera.uncoveredMove(closed: MapCamera?): CameraTransition =
+    if (closed?.isSameView(this) == true) {
+        CameraTransition(camera = this, motion = CameraMotion.NONE, durationMillis = 0L)
+    } else {
+        byControl()
+    }

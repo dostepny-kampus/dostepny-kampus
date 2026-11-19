@@ -123,6 +123,12 @@ class CardCloseCameraTest {
         val before = shown.size
         close()
         compose.waitForIdle()
-        return shown.subList(fromIndex = before, toIndex = shown.size).map { it.first }.filter { it != card }.distinct()
+        return shown
+            .subList(fromIndex = before, toIndex = shown.size)
+            .asSequence()
+            .map { it.first }
+            .filter { it != card }
+            .distinct()
+            .toList()
     }
 }

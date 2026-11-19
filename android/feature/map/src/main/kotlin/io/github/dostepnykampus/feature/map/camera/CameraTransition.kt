@@ -62,10 +62,6 @@ internal fun CameraTransition.within(limits: MapLimits?, free: FreeMap): CameraT
 internal fun MapCamera.byControl(): CameraTransition =
     CameraTransition(camera = this, motion = CameraMotion.FLIGHT, durationMillis = CONTROL_MILLIS)
 
-/** Skok do widoku, który pokazuje ten sam obraz mapy przy innym dopełnieniu: bez ruchu na ekranie. Wymagania: NFR-56 */
-internal fun MapCamera.inPlace(): CameraTransition =
-    CameraTransition(camera = this, motion = CameraMotion.NONE, durationMillis = 0L)
-
 /**
  * Ruch mapy z widoku [from] do budynku o prostokącie [outline] w wolnej części mapy [free]: rodzaj i czas według
  * położenia budynku względem widoku, czas mnożony przez skalę animacji [animationScale] (0 daje
