@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.barrier.submission.web;
 
 import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
 import io.github.dostepnykampus.barrier.submission.content.BarrierDetails;
 import io.github.dostepnykampus.barrier.submission.content.BarrierGroup;
@@ -15,16 +16,23 @@ import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
 import io.github.dostepnykampus.shared.geo.Puwg1992;
 import io.github.dostepnykampus.shared.geo.Puwg1992Point;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
-import java.util.StringJoiner;
+import java.util.UUID;
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 /**
  * Nagłówek i wiersze eksportu ze współrzędnymi w EPSG:2180. Opis zaczynający się od
@@ -43,6 +51,13 @@ public final class ExportCsvController {
      */
     private static final Set<Character> FORMULA = Set.of('=', '+', '-', '@', '\t', '\r');
 
+    /** Format i nagłówek eksportu. */
+    private static final CSVFormat FORMAT = CSVFormat.RFC4180.builder()
+        .setHeader(
+            "submissionId", "x", "y", "barrierType", "barrierGroup", "severity",
+            "buildingSymbol", "floor", "description", "verifiedAt"
+        ).get();
+
     /** Przyjęte zgłoszenia. */
     private final SubmissionReading submissions;
 
@@ -51,23 +66,39 @@ public final class ExportCsvController {
     }
 
     @GetMapping(value = "/export.csv", produces = "text/csv;charset=UTF-8")
-    ResponseEntity<String> csv() {
-        final String separator = CSVFormat.RFC4180.getRecordSeparator();
-        final StringJoiner csv = new StringJoiner(separator, "", separator).add(
-            "submissionId,x,y,barrierType,barrierGroup,severity,buildingSymbol,floor,description,verifiedAt"
-        );
-        this.submissions.exportable().stream().map(this::row).forEach(csv::add);
+    ResponseEntity<StreamingResponseBody> csv() {
         return ResponseEntity.ok()
             .contentType(MediaType.parseMediaType("text/csv;charset=UTF-8"))
-            .body(csv.toString());
+            .body(this::write);
     }
 
-    private String row(final Submission submission) {
+    private void write(final OutputStream output) throws IOException {
+        try (
+            CSVPrinter printer = new CSVPrinter(
+                new OutputStreamWriter(StreamUtils.nonClosing(output), StandardCharsets.UTF_8),
+                ExportCsvController.FORMAT
+            )
+        ) {
+            UUID after = SubmissionFinder.Page.START;
+            boolean more;
+            do {
+                final SubmissionFinder.Page page = this.submissions.exportablePage(after);
+                for (final Submission submission : page.items()) {
+                    this.printRow(printer, submission);
+                }
+                printer.flush();
+                after = page.last();
+                more = page.more();
+            } while (more);
+        }
+    }
+
+    private void printRow(final CSVPrinter printer, final Submission submission) throws IOException {
         final SubmissionPlace place = submission.content().place();
         final SubmissionPoint source = place.point();
         final Puwg1992Point point = new Puwg1992(source.longitude(), source.latitude()).point();
         final BarrierDetails barrier = submission.content().barrier();
-        return CSVFormat.RFC4180.format(
+        printer.printRecord(
             submission.id(), point.easting(), point.northing(),
             Optional.ofNullable(barrier.type()).map(BarrierType::code).orElse(""),
             Optional.ofNullable(barrier.group()).map(ExportCsvController::group).orElse(""),
