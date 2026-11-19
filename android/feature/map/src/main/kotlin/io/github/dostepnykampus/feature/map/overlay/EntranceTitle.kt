@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.feature.map.overlay
 
-import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.res.stringResource
@@ -34,7 +33,7 @@ internal fun spokenEntranceTitle(name: String?, isFromData: Boolean): String =
 
 @Composable
 @ReadOnlyComposable
-private fun titleOf(name: String?, isFromData: Boolean, @StringRes quoted: Int): String =
+private fun titleOf(name: String?, isFromData: Boolean, quoted: Int): String =
     when {
         name == null -> stringResource(R.string.karta_bez_nazwy)
         isFromData -> stringResource(quoted, name)
