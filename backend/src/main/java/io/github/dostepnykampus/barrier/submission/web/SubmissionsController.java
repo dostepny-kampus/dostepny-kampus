@@ -10,7 +10,7 @@ import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.Reader;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionService;
-import io.github.dostepnykampus.building.api.KnownBuildings;
+import io.github.dostepnykampus.barrier.submission.content.EntrancePlaces;
 import io.github.dostepnykampus.shared.error.ConflictingState;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import io.github.dostepnykampus.shared.error.MissingResource;
@@ -58,15 +58,15 @@ public final class SubmissionsController {
     /**
      * Wejścia, od których zgłoszenie szybkie bierze miejsce. Wymagania: BR-8
      */
-    private final KnownBuildings buildings;
+    private final EntrancePlaces entrances;
 
     SubmissionsController(
         final SubmissionService service, final SubmissionReading finder,
-        final KnownBuildings buildings
+        final EntrancePlaces entrances
     ) {
         this.service = service;
         this.finder = finder;
-        this.buildings = buildings;
+        this.entrances = entrances;
     }
 
     /**
@@ -145,7 +145,7 @@ public final class SubmissionsController {
             throw new ForbiddenChange("Zwykłą zmianę tego zgłoszenia składa tylko jego autor");
         }
         final CreateResult result = this.service.create(
-            body.toCommand(account.getName(), this.buildings)
+            body.toCommand(account.getName(), this.entrances)
         );
         final HttpStatus status;
         if (result instanceof CreateResult.Created) {
@@ -176,7 +176,7 @@ public final class SubmissionsController {
         if (this.finder.foreign(id, account.getName())) {
             throw new ForbiddenChange("Zgłoszenie zmienia tylko jego autor");
         }
-        return switch (this.service.update(body.toCommand(id, this.buildings))) {
+        return switch (this.service.update(body.toCommand(id, this.entrances))) {
             case EditResult.Saved saved -> new SubmissionResponse(saved.submission());
             case EditResult.Conflict conflict -> throw new ConflictingState(
                 "Na serwerze jest inna wersja zgłoszenia albo jego status nie pozwala na zmianę",
