@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDecoration
+import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.feature.map.R
@@ -46,8 +47,6 @@ import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import java.time.LocalDate
-
-private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
 
 /** Panel otwarty na mapie V1. Naraz otwarty jest najwyżej jeden, więc stanem nakładki jest jedna wartość. */
 private enum class MapPanel { Area, Info }
@@ -81,10 +80,10 @@ private fun NoticeAndAttribution(
 
 /**
  * Nakładka mapy V1: przyciski powiększania i przesuwania, przycisk terenu, „ⓘ” z legendą, podpis OSM (przy planie
- * piętra z „Źródło: Politechnika Wrocławska” pod nim), po zmianie terenu napis „Pokazuję teren: …” i nad nimi
- * [content]. Otwarty panel zasłania przyciski, które by na nim leżały; dotknięcie mapy obok panelu terenu zamyka go.
- * Otwarty panel jest stanem zapisywanym. Nad małą kartą V2 zostają tylko przyciski powiększania i przesuwania,
- * podpis OSM i napis o zmianie terenu tuż nad kartą.
+ * piętra i zwykłej czcionce z „Źródło: Politechnika Wrocławska” pod nim), po zmianie terenu napis „Pokazuję teren:
+ * …” i nad nimi [content]. Otwarty panel zasłania przyciski, które by na nim leżały; dotknięcie mapy obok panelu
+ * terenu zamyka go. Otwarty panel jest stanem zapisywanym. Nad małą kartą V2 zostają tylko przyciski powiększania
+ * i przesuwania, podpis OSM i napis o zmianie terenu tuż nad kartą.
  *
  * Wymagania: NFR-53, US1.6, US1.7, NFR-37, NFR-40, US1.8, US2.8
  *
@@ -99,7 +98,8 @@ private fun NoticeAndAttribution(
  * @param hasPanels czy mapa ma przycisk terenu i „ⓘ”; nie ma ich nad arkuszem V2
  * @param hasNotice czy mapa może pokazać napis o zmianie terenu; nie przy otwartej klawiaturze
  * @param motion ruchy mapy do budynku; nowy napis o zmianie terenu czeka do końca przelotu
- * @param hasPlanSource czy pod podpisem OSM stoi źródło planu piętra; tak, gdy na mapie widać plan
+ * @param hasPlanSource czy na mapie widać plan piętra; wtedy pod podpisem OSM stoi źródło planu, a przy dużej
+ *  czcionce tylko legenda pod „ⓘ” je podaje
  * @param start elementy przy lewej krawędzi pod przyciskiem terenu, np. kolumna pięter; nie ma ich przy otwartym
  *  panelu terenu
  * @param content elementy nad nakładką
@@ -201,8 +201,9 @@ private fun AreaColumn(
 @Composable
 private fun OsmAttribution(hasPlanSource: Boolean, modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
-    val isShort = LocalDensity.current.fontScale >= SHORT_ATTRIBUTION_FONT_SCALE
-    val end = if (hasPlanSource) MapControlTouchSize + Odstepy.s else Odstepy.s
+    val isShort = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+    val hasSource = hasPlanSource && !isShort
+    val end = if (hasSource) MapControlTouchSize + Odstepy.s else Odstepy.s
     Box(
         modifier =
             modifier
@@ -224,7 +225,7 @@ private fun OsmAttribution(hasPlanSource: Boolean, modifier: Modifier = Modifier
                     textDecoration = TextDecoration.Underline,
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                if (hasPlanSource) {
+                if (hasSource) {
                     Text(
                         text = stringResource(R.string.mapa_zrodlo_planu),
                         modifier = Modifier.semantics(mergeDescendants = true) {},

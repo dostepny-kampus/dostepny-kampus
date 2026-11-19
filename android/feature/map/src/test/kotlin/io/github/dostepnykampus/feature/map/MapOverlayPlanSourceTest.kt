@@ -102,20 +102,20 @@ class MapOverlayPlanSourceTest {
     }
 
     /**
-     * Wiersz: V1, przy czcionce 200% na wąskim ekranie źródło planu łamie się i nie wchodzi na „ⓘ”, krótki podpis
-     * OpenStreetMap mieści się cały, a kolumna pięter kończy się nad całym podpisem.
+     * Wiersz: V1, przy czcionce 200% na wąskim ekranie źródła planu na mapie nie ma (jest w legendzie pod „ⓘ”),
+     * jeden krótki podpis OpenStreetMap mieści się cały przed „ⓘ”, a kolumna pięter kończy się nad nim.
      *
-     * Wymagania: NFR-40, NFR-20, US16.1
+     * Wymagania: NFR-40, NFR-37, NFR-20, US16.1
      */
     @Test
     @Config(qualifiers = "w320dp-h640dp-xhdpi", fontScale = 2f)
-    fun keepsClearAtLargeFont() {
+    fun hidesSourceAtLargeFont() {
         compose.setContent { Overlay(hasPlan = true) }
-        val source = bounds(SOURCE)
+        compose.onNodeWithText(SOURCE).assertDoesNotExist()
+        val osm = bounds(OSM_SHORT)
         val info = compose.onNodeWithContentDescription(INFO).getUnclippedBoundsInRoot()
-        val floors = bounds(FLOORS)
-        assertTrue("źródło planu przed „ⓘ”", source.right <= info.left)
-        assertTrue("kolumna pięter nad podpisem OSM", floors.bottom <= bounds(OSM_SHORT).top)
+        assertTrue("podpis OSM przed „ⓘ”", osm.right <= info.left)
+        assertTrue("kolumna pięter nad podpisem OSM", bounds(FLOORS).bottom <= osm.top)
         assertFalse("podpis OSM bez ucięcia", layoutOf(OSM_SHORT).hasVisualOverflow)
     }
 
