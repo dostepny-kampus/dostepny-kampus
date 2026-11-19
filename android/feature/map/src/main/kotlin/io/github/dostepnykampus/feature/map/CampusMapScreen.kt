@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -169,7 +168,6 @@ fun CampusMapScreen(
  * @param onCardReturn powrót z arkusza znaku do karty budynku, którą arkusz zastąpił
  * @param sheetCover zasłonięty dół okna w px w bieżącej klatce, za którym przyciski mapy i podpis OSM idą razem
  *   z krawędzią arkusza V2 w ruchu; czytany tylko w fazie układu; `null` stawia je nad [contentPadding]
- * @param onEntranceSelect budynek otwartego arkusza wejścia albo `null` po jego zamknięciu
  */
 @Composable
 fun CampusMapScreen(
@@ -191,9 +189,9 @@ fun CampusMapScreen(
     onMapHide: () -> Unit = {},
     onCardReturn: (String) -> Unit = onBuildingClick,
     sheetCover: (() -> Int)? = null,
-    onEntranceSelect: (String?) -> Unit = {},
 ) {
-    val sheet = screenSheet(focus, contentPadding, onEmptyMapClick, onCardReturn)
+    val sheet =
+        screenSheet(focus = focus, padding = contentPadding, onCardClose = onEmptyMapClick, onCardReturn = onCardReturn)
     val isCovered = sheet.layout.padding.calculateBottomPadding() > 0.dp
     val isList = state.isListSaved ?: (LocalDensity.current.fontScale >= LARGE_FONT_SCALE)
     val states = rememberSaveableStateHolder()
@@ -217,7 +215,7 @@ fun CampusMapScreen(
                         sheet = sheet.copy(cover = sheetCover),
                         mapView = remember(mapView, search) { mapView.closingSearchFirst(search) },
                         motion = motion,
-                        plan = PlanLink(plan, onCamera, onFloorChoose, onMapHide, onEntranceSelect),
+                        plan = PlanLink(shown = plan, onView = onCamera, onFloor = onFloorChoose, onHide = onMapHide),
                         onBuildingClick = onBuildingClick,
                         onEmptyMapClick = onEmptyMapClick,
                         entranceActions = entranceActions,
@@ -292,8 +290,8 @@ private fun CampusMap(
         val scene = state.scene
         val move = state.move
         if (scene != null && move != null && state.limits != null) {
-            val pinned = signs.rememberPinnedEntrance(catalog = ui.catalog, chosen = scene.selection.entrance)
-            TrackOpenEntrance(symbol = pinned?.buildingSymbol, onSelect = plan.onEntrance)
+            val pinned =
+                signs.rememberPinnedEntrance(ui.catalog, scene.selection.entrance, entranceActions.onBuildingSelect)
             mapView.Show(
                 data = scene.data,
                 selection = scene.selection.copy(entrance = pinned, barrier = signs.barrierId, plan = plan.shown),
@@ -383,7 +381,6 @@ private data class PlanLink(
     val onView: (MapCamera) -> Unit,
     val onFloor: (String, String) -> Unit,
     val onHide: () -> Unit,
-    val onEntrance: (String?) -> Unit,
 )
 
 @Composable
@@ -396,17 +393,6 @@ private fun FollowCamera(camera: MapCamera, limits: MapLimits, area: String?, pl
     }
     DisposableEffect(Unit) { onDispose { hide() } }
     AreaEdgeAnnouncement(camera = camera, limits = limits, area = area)
-}
-
-@Composable
-private fun TrackOpenEntrance(symbol: String?, onSelect: (String?) -> Unit) {
-    val reported = remember { mutableStateOf<String?>(null) }
-    SideEffect {
-        if (symbol != reported.value) {
-            reported.value = symbol
-            onSelect(symbol)
-        }
-    }
 }
 
 @Composable

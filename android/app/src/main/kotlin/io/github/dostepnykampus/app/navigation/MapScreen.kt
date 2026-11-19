@@ -73,17 +73,22 @@ internal fun AppNavigator.HiltMapScreen(
         onCamera = planViewModel::camera,
         onFloorChoose = planViewModel::chooseFloor,
         onMapHide = planViewModel::hide,
-        entrance = EntranceActions(onShow = liftViewModel::show, lift = lift),
-        onEntranceSelect = planViewModel::selectEntrance,
+        entrance =
+            EntranceActions(
+                onShow = liftViewModel::show,
+                lift = lift,
+                onBuildingSelect = planViewModel::selectEntrance,
+            ),
     )
 }
 
 /**
  * V1 ze stanem [state] i zaznaczeniem [focus] z trasy; [onListChange] zapisuje widok, mapę albo listę, [onSearch]
- * liczy wyszukiwanie. Budynek z listy przy TalkBack otwiera V2 od razu na pełnym ekranie. Przyciski i podpis OSM
- * stoją nad arkuszem V2; bez arkusza i pod arkuszem przy dużej czcionce V1 liczy widok bez arkusza. [mapView]
- * to MapLibre albo podróbka, [plan] plan piętra, [onCamera] widok kamery, [onFloorChoose] wybór piętra,
- * [onMapHide] zejście mapy, [entrance] winda za drzwiami, a [onEntranceSelect] budynek arkusza wejścia.
+ * liczy wyszukiwanie. Budynek z listy przy TalkBack otwiera V2 od razu na pełnym ekranie. Przyciski i podpis OSM stoją
+ * nad arkuszem V2; bez arkusza i pod arkuszem na cały ekran przy dużej czcionce V1 liczy widok bez arkusza.
+ * [mapView] to MapLibre albo podróbka w testach, [plan] to plan piętra przy środku mapy, [onCamera] dostaje widok po
+ * ruchu kamery, [onFloorChoose] piętro wybrane w kolumnie pięter, a [onMapHide] zejście mapy z ekranu. Zgłoszenie
+ * przy wejściu z arkusza wejścia prowadzi do V4 albo L1, a [entrance] podaje arkuszowi windę za drzwiami.
  *
  * Wymagania: US1.1, US2.1, NFR-19, US3.3, US4.6, US14.2
  */
@@ -99,7 +104,6 @@ internal fun AppNavigator.MapScreen(
     onFloorChoose: (String, String) -> Unit = { _, _ -> },
     onMapHide: () -> Unit = {},
     entrance: EntranceActions = EntranceActions(),
-    onEntranceSelect: (String?) -> Unit = {},
 ) {
     val accessibility = checkNotNull(LocalContext.current.getSystemService(AccessibilityManager::class.java))
     val isFullOnly = isFullOnlySheet(LocalDensity.current.fontScale)
@@ -122,7 +126,6 @@ internal fun AppNavigator.MapScreen(
         onMapHide = onMapHide,
         onCardReturn = { returnToCard(it) },
         sheetCover = LocalSheetPadding.current.shownCover.takeUnless { isFullOnly },
-        onEntranceSelect = onEntranceSelect,
     )
 }
 
