@@ -17,7 +17,7 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
 import io.github.dostepnykampus.feature.map.R
-import io.github.dostepnykampus.feature.map.overlay.entranceTitle
+import io.github.dostepnykampus.feature.map.overlay.spokenEntranceTitle
 
 /**
  * Czynności karty budynku: „Pokaż wejście na mapie” dla wejścia zalecanego, które TalkBack czyta z nazwą wejścia,
@@ -47,7 +47,7 @@ internal fun CardActions(
 
 @Composable
 private fun ShowEntranceButton(listed: OrderedEntrance, onShowEntrance: (String) -> Unit) {
-    val title = entranceTitle(listed.entrance.name, isFromData = listed.entrance.hasName)
+    val title = spokenEntranceTitle(listed.entrance.name, isFromData = listed.entrance.hasName)
     val spoken = stringResource(R.string.wizyta_pokaz_czytaj, title)
     PinnedButton(
         text = stringResource(R.string.wizyta_pokaz),

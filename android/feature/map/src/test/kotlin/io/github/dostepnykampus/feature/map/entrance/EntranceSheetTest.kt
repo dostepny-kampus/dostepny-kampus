@@ -170,7 +170,7 @@ class EntranceSheetTest {
     fun reportsBarrierAtEntrance() {
         compose.setContent { Sheet(ShownEntrance(entrance(EntranceMarking.NO_DATA, "Wejście od podwórza"))) }
 
-        val report = hasClickAction() and hasContentDescription("$REPORT: „Wejście od podwórza”")
+        val report = hasClickAction() and hasContentDescription("$REPORT: »Wejście od podwórza«")
         val button = compose.onNode(report)
         button.performScrollTo().assertHeightIsAtLeast(48.dp).performClick()
         assertEquals("zgłoszenie przy tym wejściu", listOf("zgłoś node/1"), clicks)

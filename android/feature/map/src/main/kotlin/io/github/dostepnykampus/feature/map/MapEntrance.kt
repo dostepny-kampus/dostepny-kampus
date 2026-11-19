@@ -20,7 +20,7 @@ import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
 import io.github.dostepnykampus.feature.map.campus.selectedEntrance
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
-import io.github.dostepnykampus.feature.map.overlay.entranceTitle
+import io.github.dostepnykampus.feature.map.overlay.spokenEntranceTitle
 
 /**
  * Wejście [entrance] z [catalog] jako zaznaczenie na mapie; `null` bez katalogu, bez wejścia albo gdy katalog go
@@ -116,7 +116,7 @@ internal fun CampusMapData.focusSelection(focus: MapFocus?, chosen: SelectedEntr
  */
 @Composable
 internal fun EntranceDescription(chosen: SelectedEntrance) {
-    val label = entranceTitle(chosen.label, isFromData = chosen.isLabelFromData)
+    val label = spokenEntranceTitle(chosen.label, isFromData = chosen.isLabelFromData)
     val text = stringResource(R.string.mapa_zaznaczone_wejscie, label, chosen.buildingSymbol)
     Spacer(Modifier.fillMaxSize().semantics { contentDescription = text })
 }

@@ -104,6 +104,7 @@
     <string name="karta_wyjscie_ewakuacyjne">Wyjście ewakuacyjne</string>
     <string name="karta_bez_nazwy">Wejście</string>
     <string name="wejscie_nazwa_z_danych">„%1$s”</string>
+    <string name="wejscie_nazwa_czytaj">»%1$s«</string>
     <string name="karta_wejscia_bez_nazw_kilka">%1$d wejścia</string>
     <string name="karta_wejscia_bez_nazw_wiele">%1$d wejść</string>
     <string name="karta_nikt_nie_sprawdzil">Nikt jeszcze nie sprawdził tych wejść.</string>
