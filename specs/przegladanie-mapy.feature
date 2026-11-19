@@ -265,6 +265,37 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy na karcie budynku B-8 widzi „Brak wejścia dostępnego” i zdanie, że żadne wejście nie jest dostępne
     Ale karta nie jest pusta i nie pokazuje samego braku wyniku
 
+  # @do-zrobienia #3331: karta nie bierze jeszcze pod uwagę barier przy wejściu.
+  @US2.1 @US2.2 @BR-25 @aplikacja @do-zrobienia
+  Scenariusz: Bariera przy wejściu zalecanym jest na karcie przy tym wejściu
+    Zakładając, że przy wejściu zalecanym budynku C-13 jest przyjęta bariera „Tylko z pomocą” typu „ciężkie drzwi”
+    Jeżeli Gość niezalogowany otworzy kartę budynku C-13
+    Wtedy to wejście zostaje zalecane, a zdanie pod wierszem o wejściach kończy się „Przy wejściu jest bariera: tylko z pomocą.”
+    Oraz wiersz tego wejścia na liście „Wejścia” ma pod szerokością drzwi „Tylko z pomocą: ciężkie drzwi”
+
+  # @do-zrobienia #3331: blokada nie zmienia jeszcze wejścia zalecanego.
+  @US3.1 @BR-25 @aplikacja @do-zrobienia
+  Szablon scenariusza: Wejście z blokadą nie jest zalecane, a jego oznaczenie zostaje
+    Zakładając, że w budynku C-13 <inne> wejścia dostępnego bez blokady
+    Oraz przy wejściu dostępnym C-13 jest przyjęta bariera „Blokada” typu „wejście zamknięte”
+    Jeżeli Gość niezalogowany otworzy kartę budynku C-13
+    Wtedy wiersz o wejściach mówi „<wiersz>”, a zdanie pod nim „<zdanie>”
+    Oraz wiersz zablokowanego wejścia ma „Dostępne” i „Blokada: wejście zamknięte”, bez „Zalecane”
+
+    Przykłady:
+      | inne      | wiersz                  | zdanie                                 |
+      | jest inne | Wejście dostępne        | Zalecane: »Wejście C«. Drzwi 100 cm.   |
+      | nie ma    | Brak wejścia dostępnego | Jedyne wejście dostępne ma blokadę.    |
+
+  # @do-zrobienia #3332: znak bariery stoi jeszcze w punkcie wejścia.
+  @US1.5 @US2.2 @BR-8 @NFR-17 @aplikacja @do-zrobienia
+  Scenariusz: Znak bariery przy wejściu stoi obok znaku wejścia
+    Zakładając, że przy wejściu głównym A-1 są przyjęte bariery „Utrudnienie” i „Blokada” zgłoszone w jego arkuszu
+    Jeżeli Gość niezalogowany otworzy mapę kampusu przy budynku A-1
+    Wtedy obok znaku wejścia, na zewnątrz budynku, stoi jeden znak bariery „Blokada”
+    Oraz dotknięcie znaku wejścia otwiera arkusz wejścia, a dotknięcie znaku bariery arkusz bariery
+    Oraz znak wejścia ma to samo oznaczenie co bez barier
+
   @US1.4 @aplikacja
   Scenariusz: Mapa pokazuje wejścia i ścieżki, a legenda objaśnia znaki słowem
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy budynku A-1
