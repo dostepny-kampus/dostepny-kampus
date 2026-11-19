@@ -342,7 +342,8 @@ jobs:
         run: |
           # check: testy jednostkowe wszystkich modułów i Kover; lint: wszystkie warianty (w tym lintJvm modułów JVM);
           # detekt: wszystkie zbiory źródeł; verifyRoborazziDebug włącza weryfikację zrzutów (nie należy do check).
-          ./gradlew check lint verifyRoborazziDebug detekt detektDebug detektDebugUnitTest detektDebugAndroidTest detektMain detektTest detektRelease --console=plain 2>&1 | tee "$RUNNER_TEMP/gradle.log"
+          # --continue: błąd jednego narzędzia nie zatrzymuje pozostałych, więc przebieg pokazuje wszystkie uwagi.
+          ./gradlew check lint verifyRoborazziDebug detekt detektDebug detektDebugUnitTest detektDebugAndroidTest detektMain detektTest detektRelease --continue --console=plain 2>&1 | tee "$RUNNER_TEMP/gradle.log"
       - name: Policz wykonane testy
         if: ${{ !cancelled() }}
         run: |
