@@ -368,9 +368,9 @@ object MapLibreMapView : CampusMapView {
             val signsNear = { sign: TouchSign ->
                 val under = queryRenderedFeatures(at, sign.layer).mapNotNull { it.getStringProperty(sign.idKey) }
                 val near =
-                    queryRenderedFeatures(area, sign.layer).mapNotNull {
+                    queryRenderedFeatures(area, sign.layer).mapNotNull { feature ->
                         signPoint(
-                            feature = it,
+                            feature = feature,
                             idKey = sign.idKey,
                             at = at,
                             pxPerDp = tolerance / TOUCH_TOLERANCE_DP,
