@@ -31,8 +31,8 @@ import org.junit.jupiter.api.Test
 class EntranceBarrierSignTest {
     private val data =
         campusMapData(styleCatalog()).copy(
-            entrancePoints = mapOf("w1" to GeoPoint(longitude = 17.002, latitude = 51.001)),
-            outlinesBySymbol = mapOf("C-13" to CampusBounds(west = 17.0, south = 51.0, east = 17.002, north = 51.002)),
+            entrancePoints = mapOf("w1" to GeoPoint(longitude = 17.5, latitude = 51.25)),
+            outlinesBySymbol = mapOf("C-13" to CampusBounds(west = 17.0, south = 51.0, east = 17.5, north = 51.5)),
         )
 
     /**
@@ -82,7 +82,7 @@ class EntranceBarrierSignTest {
     private fun barrier(id: String, severity: Severity, entrance: String?) =
         AcceptedBarrier(
             id = id,
-            location = GeoPoint(longitude = 17.002, latitude = 51.001),
+            location = GeoPoint(longitude = 17.5, latitude = 51.25),
             severity = severity,
             type = null,
             buildingSymbol = "C-13",
