@@ -107,7 +107,7 @@ internal fun isFullEntranceSheet(id: String, focus: MapFocus?): Boolean {
 
 /**
  * Arkusz wejścia [shown] na dole mapy V1, ten sam przy każdym wejściu: znak oznaczenia przy nagłówku, wiersz budynku,
- * słowo oznaczenia, „Zalecane.” przy wejściu zalecanym, dzień ze źródłem, nazwa, dojście, drzwi, winda i bariery
+ * słowo oznaczenia, „Zalecane.” przy wejściu zalecanym, dzień ze źródłem, nazwa, bariery, dojście, drzwi i winda
  * z danych oraz zgłoszenie bariery. Nagłówek z fokusem i wiersz budynku stoją nad treścią, która się przewija.
  * Arkusz na mapie ma najwyżej połowę wysokości okna.
  *
@@ -146,11 +146,11 @@ internal fun EntranceSheet(
         )
         sourceLine(shown)?.let { SecondaryText(it) }
         entrance.name?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
+        if (shown.barriers.isNotEmpty()) EntranceBarriers(shown)
         if (shown.hasDetails()) EntranceDetails(shown)
         if (entrance.marking == EntranceMarking.NO_DATA) {
             SecondaryText(stringResource(R.string.mapa_wejscie_niesprawdzone))
         }
-        if (shown.barriers.isNotEmpty()) EntranceBarriers(shown)
         SheetButton(
             text = stringResource(R.string.karta_zglos),
             spoken = stringResource(R.string.karta_zglos_czytaj, title),
