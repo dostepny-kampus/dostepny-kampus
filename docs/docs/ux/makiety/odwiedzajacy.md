@@ -114,7 +114,7 @@ Czynność główna: wpisanie symbolu budynku, jak w stanie zwykłym.
 
 ![Makieta V1 po wyszukaniu A-1 329: wiersz tytułu z Pokaż listę, pole z numerem sali, przycisk terenu, plan 2 piętra z wyróżnioną salą i numerami kroków 2 przy windzie i 3 w sali, kolumna pięter po lewej i karta sali: Sala 329 z Zamknij, rodzaj sali i piętro, wiersz Budynek A-1, nagłówek Jak dojść z przyciskiem Pokaż po kolei i trzy kroki bez wybranego](../../_generated/m-v1-mapa-sala.svg)
 
-Czynność główna: przeczytanie listy „Jak dojść”. Pokaz drogi zaczyna sama osoba przyciskiem „Pokaż po kolei” albo dotknięciem kroku (decyzja z 19.11.2026). Wiersz budynku „Budynek A-1” otwiera V2 na niskiej wysokości.
+Czynność główna: przeczytanie listy „Jak dojść”. Pokaz drogi zaczyna sama osoba przyciskiem „Pokaż po kolei” albo dotknięciem kroku. Wiersz budynku „Budynek A-1” otwiera V2 na niskiej wysokości.
 
 | Element | AC/BR/NFR |
 | --- | --- |
