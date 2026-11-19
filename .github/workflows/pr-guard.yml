@@ -200,7 +200,21 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           PR_BODY: ${{ github.event.pull_request.body }}
-        run: bash .github/scripts/todo-issue.sh
+        # Na PR znaczniki sprawdzamy w stanie po scaleniu z bieżącą głową gałęzi bazowej: znacznik zdjęty już
+        # na bazie nie wywraca PR odgałęzionego wcześniej. Gałąź, która się nie scala, sprawdzamy w stanie z PR.
+        run: |
+          if [[ $GITHUB_EVENT_NAME == pull_request ]]; then
+            baza="origin/${GITHUB_BASE_REF}"
+            katalog="${RUNNER_TEMP}/po-scaleniu"
+            git fetch --no-tags --quiet origin "+refs/heads/${GITHUB_BASE_REF}:refs/remotes/${baza}"
+            git worktree add --detach --quiet "$katalog" "$HEAD_SHA"
+            if git -C "$katalog" -c user.name=straznik -c user.email=straznik@localhost merge --quiet --no-edit "$baza"; then
+              cd "$katalog"
+            else
+              echo "Gałąź nie scala się z bazą; znaczniki sprawdzone w stanie z PR."
+            fi
+          fi
+          bash .github/scripts/todo-issue.sh
 
       # Ostatni, bo usuwa z drzewa roboczego konfigurację gitleaks dodaną w PR.
       - name: "sekrety: pobierz gitleaks"
