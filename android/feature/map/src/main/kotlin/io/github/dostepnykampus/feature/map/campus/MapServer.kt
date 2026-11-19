@@ -15,16 +15,9 @@ import javax.inject.Inject
  *
  * Wymagania: US1.3, US18.1
  */
-class MapServer
+data class MapServer
     @Inject
-    constructor(
-        val barriers: AcceptedBarriers,
-        val rooms: RoomSearch,
-    )
+    constructor(val barriers: AcceptedBarriers, val rooms: RoomSearch)
 
 /** Serwer bez barier i bez sal, np. w testach i podglądach. */
 internal val NO_SERVER = MapServer(barriers = { emptyList() }, rooms = { ServerReply.Ok(emptyList()) })
-
-/** Ten sam serwer z barierami [barriers] albo wyszukiwaniem sal [rooms] na miejscu dotychczasowych. */
-internal fun MapServer.with(barriers: AcceptedBarriers = this.barriers, rooms: RoomSearch = this.rooms): MapServer =
-    MapServer(barriers = barriers, rooms = rooms)

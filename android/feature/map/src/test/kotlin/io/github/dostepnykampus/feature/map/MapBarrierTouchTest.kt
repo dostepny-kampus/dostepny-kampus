@@ -23,7 +23,6 @@ import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.NO_SERVER
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
-import io.github.dostepnykampus.feature.map.campus.with
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -142,7 +141,7 @@ class MapBarrierTouchTest {
                 mapListChoice = TestMapListChoice(),
                 computeContext = UnconfinedTestDispatcher(),
                 geometry = ::campusMapData,
-                server = NO_SERVER.with(barriers = { listOf(THRESHOLD) }),
+                server = NO_SERVER.copy(barriers = { listOf(THRESHOLD) }),
             )
         compose.setContent {
             DostepnyKampusTheme {

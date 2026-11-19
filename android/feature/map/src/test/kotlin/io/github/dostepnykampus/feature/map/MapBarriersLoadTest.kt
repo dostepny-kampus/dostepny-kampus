@@ -11,7 +11,6 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.campus.NO_SERVER
 import io.github.dostepnykampus.feature.map.campus.campusMapData
-import io.github.dostepnykampus.feature.map.campus.with
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -99,7 +98,7 @@ class MapBarriersLoadTest {
                 mapListChoice = TestMapListChoice(),
                 computeContext = EmptyCoroutineContext,
                 geometry = ::campusMapData,
-                server = NO_SERVER.with(barriers = { answers.removeFirst() }),
+                server = NO_SERVER.copy(barriers = { answers.removeFirst() }),
             )
         backgroundScope.launch { viewModel.uiState.collect {} }
         return viewModel

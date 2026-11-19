@@ -18,7 +18,6 @@ import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
 import io.github.dostepnykampus.feature.map.campus.NO_SERVER
 import io.github.dostepnykampus.feature.map.campus.campusMapData
-import io.github.dostepnykampus.feature.map.campus.with
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -95,7 +94,7 @@ class MapRoomSearchTest {
                 computeContext = EmptyCoroutineContext,
                 geometry = ::campusMapData,
                 server =
-                    NO_SERVER.with(
+                    NO_SERVER.copy(
                         rooms =
                             RoomSearch { text ->
                                 asked += text

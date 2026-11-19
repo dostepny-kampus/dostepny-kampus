@@ -15,7 +15,6 @@ import io.github.dostepnykampus.core.geo.parseGeoArea
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.feature.map.campus.NO_SERVER
 import io.github.dostepnykampus.feature.map.campus.campusMapData
-import io.github.dostepnykampus.feature.map.campus.with
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -77,7 +76,7 @@ class CampusMapViewModelTest {
         mapListChoice = choice,
         computeContext = EmptyCoroutineContext,
         geometry = ::campusMapData,
-        server = NO_SERVER.with(barriers = barriers),
+        server = NO_SERVER.copy(barriers = barriers),
     )
 
     /** Wiersz: bariery pobrane przed listą budynków → linia „Bez internetu” z dniem pobrania barier. */
