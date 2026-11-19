@@ -82,11 +82,11 @@ class MapSearchCloseTest {
         val opened = mutableListOf<String>()
         compose.showMap(viewModel = testMapViewModel(repository), map = map, onBuildingClick = { opened += it })
         compose.onNode(hasSetTextAction()).performTextInput("C")
-        compose.onNodeWithTag(MAP).performTouchInput { click() }
+        compose.onNodeWithTag(MAP).performTouchInput { click(percentOffset(x = 0.5f, y = 0.9f)) }
 
         compose.runOnIdle { assertEquals("Pierwsze dotknięcie nie otwiera budynku", emptyList<String>(), opened) }
         compose.onNode(hasSetTextAction()).assertIsNotFocused()
-        compose.onNodeWithTag(MAP).performTouchInput { click() }
+        compose.onNodeWithTag(MAP).performTouchInput { click(percentOffset(x = 0.5f, y = 0.9f)) }
         compose.runOnIdle { assertEquals("Drugie dotknięcie otwiera budynek", listOf("C-13"), opened) }
     }
 

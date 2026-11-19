@@ -200,7 +200,6 @@ fun CampusMapScreen(
     var barHeight by remember { mutableIntStateOf(0) }
     var headerHeight by remember { mutableIntStateOf(0) }
     val search = rememberSearchFocus()
-    val density = LocalDensity.current
     Box(modifier.fillMaxSize()) {
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
@@ -211,10 +210,10 @@ fun CampusMapScreen(
                         barriers = shown,
                         focus = sheet.layout.focus,
                         areas = areas,
-                        top = mapTop(isCovered = isCovered, bar = with(density) { barHeight.toDp() }),
-                        cameraTop = mapTop(isCovered = isCovered, bar = with(density) { headerHeight.toDp() }),
+                        top = mapTop(isCovered = isCovered, bar = barHeight),
+                        cameraTop = mapTop(isCovered = isCovered, bar = headerHeight),
                         sheet = sheet.copy(cover = sheetCover),
-                        mapView = mapView,
+                        mapView = remember(mapView, search) { mapView.closingSearchFirst(search) },
                         motion = motion,
                         plan = PlanLink(shown = plan, onView = onCamera, onFloor = onFloorChoose, onHide = onMapHide),
                         onBuildingClick = onBuildingClick,

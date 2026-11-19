@@ -20,6 +20,7 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import io.github.dostepnykampus.feature.map.camera.CampusMapView
 
 /**
  * Fokus pola „Szukaj” widziany przez mapę: [isActive], gdy pole ma fokus, czyli klawiaturę albo wyniki pod polem.
@@ -50,19 +51,50 @@ internal fun rememberSearchFocus(): SearchFocus {
 }
 
 /**
- * Każde dotknięcie tego elementu albo jego zawartości zdejmuje fokus z pola [search]. Gdy pole miało fokus,
- * dotknięcie bez ruchu na tym się kończy i nie trafia do zawartości; gest z ruchem trafia do niej jak zwykle.
- * Bez fokusu pola dotknięcia przechodzą bez zmian.
+ * Każde dotknięcie tego elementu albo jego zawartości zdejmuje fokus z pola [search], gdy zawartość już je
+ * obsłużyła; przyciski i arkusze w zawartości działają od pierwszego dotknięcia.
  *
  * Wymagania: US3.1, NFR-17
  */
 internal fun Modifier.releasesSearchOnTouch(search: SearchFocus): Modifier =
     pointerInput(search) {
         awaitEachGesture {
-            val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
-            val isSearching = search.isActive
+            awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Final)
             search.release()
-            if (isSearching) swallowTap(down)
+        }
+    }
+
+/**
+ * Ten widok mapy, w którym dotknięcie bez ruchu przy fokusie pola [search] tylko zdejmuje fokus: nie zaznacza
+ * budynku ani znaku. Gest z ruchem przesuwa mapę jak zwykle, a bez fokusu pola dotknięcia przechodzą bez zmian.
+ *
+ * Wymagania: US3.1, NFR-17
+ */
+internal fun CampusMapView.closingSearchFirst(search: SearchFocus): CampusMapView {
+    val view = this
+    return CampusMapView { data, selection, move, inset, onCameraIdle, onBuildingsTouch, onSignTouch, modifier ->
+        view.Show(
+            data = data,
+            selection = selection,
+            move = move,
+            inset = inset,
+            onCameraIdle = onCameraIdle,
+            onBuildingsTouch = onBuildingsTouch,
+            onSignTouch = onSignTouch,
+            modifier = modifier.closesSearchFirst(search),
+        )
+    }
+}
+
+/** Dotknięcie bez ruchu przy fokusie pola [search] tylko zdejmuje fokus. Wymagania: US3.1 */
+internal fun Modifier.closesSearchFirst(search: SearchFocus): Modifier =
+    pointerInput(search) {
+        awaitEachGesture {
+            val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
+            if (search.isActive) {
+                search.release()
+                swallowTap(down)
+            }
         }
     }
 

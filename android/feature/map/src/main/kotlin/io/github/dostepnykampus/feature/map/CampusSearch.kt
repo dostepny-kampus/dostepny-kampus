@@ -146,15 +146,16 @@ internal fun CampusSearch(
             query = text
             isHidden = false
         }
-        Column(Modifier.onSizeChanged { onBarHeight(it.height) }) {
+        Column(
+            Modifier
+                .onSizeChanged { onBarHeight(it.height) }
+                .onFocusChanged { field -> searchFocus?.onField(isFocused = field.hasFocus) },
+        ) {
             SearchHeader(
                 query = query,
                 onQueryChange = onQueryChange,
                 onFieldTap = { isHidden = false },
-                onFieldFocus = { isFocused ->
-                    searchFocus?.onField(isFocused = isFocused)
-                    if (!isFocused) isHidden = true
-                },
+                onFieldLeave = { isHidden = true },
                 isList = isList,
                 onListChange = onListChange,
             )
@@ -187,7 +188,7 @@ private fun SearchHeader(
     query: String,
     onQueryChange: (String) -> Unit,
     onFieldTap: () -> Unit,
-    onFieldFocus: (Boolean) -> Unit,
+    onFieldLeave: () -> Unit,
     isList: Boolean,
     onListChange: (Boolean) -> Unit,
 ) {
@@ -199,7 +200,7 @@ private fun SearchHeader(
                 verticalArrangement = Arrangement.spacedBy(Odstepy.s),
             ) {
                 TitleRow(isList, onListChange)
-                SymbolField(query = query, onQueryChange = onQueryChange, onTap = onFieldTap, onFocus = onFieldFocus)
+                SymbolField(query = query, onQueryChange = onQueryChange, onTap = onFieldTap, onLeave = onFieldLeave)
             }
             HorizontalDivider(thickness = Obramowania.ramka, color = MaterialTheme.colorScheme.outlineVariant)
         }
@@ -244,7 +245,7 @@ private fun ViewButton(isList: Boolean, hasIcon: Boolean, onListChange: (Boolean
 }
 
 @Composable
-private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: () -> Unit, onFocus: (Boolean) -> Unit) {
+private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: () -> Unit, onLeave: () -> Unit) {
     val interactions = remember { MutableInteractionSource() }
     val tap by rememberUpdatedState(onTap)
     LaunchedEffect(interactions) {
@@ -265,7 +266,7 @@ private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: (
             Modifier
                 .fillMaxWidth()
                 .defaultMinSize(minHeight = OutlinedTextFieldDefaults.MinHeight)
-                .onFocusChanged { onFocus(it.isFocused) },
+                .onFocusChanged { if (!it.isFocused) onLeave() },
         textStyle = textStyle,
         keyboardOptions =
             KeyboardOptions(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Search),
