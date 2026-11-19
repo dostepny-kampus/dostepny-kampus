@@ -30,6 +30,7 @@ import io.github.dostepnykampus.feature.map.entrance.BuildingEntrancesViewModel
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
 import io.github.dostepnykampus.feature.map.entrance.focusedBuilding
 import io.github.dostepnykampus.feature.map.entrance.withBuildingEntrances
+import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.plan.MapPlanViewModel
 import io.github.dostepnykampus.feature.map.plan.ShownPlan
@@ -108,5 +109,21 @@ internal fun AppNavigator.MapScreen(
         onCamera = onCamera,
         onFloorChoose = onFloorChoose,
         onMapHide = onMapHide,
+        onCardReturn = { returnToCard(it) },
     )
+}
+
+/**
+ * Powrót z arkusza znaku do V2 budynku [symbol], którą arkusz zastąpił: z wysokością i przewinięciem
+ * zapamiętanymi przez [keepCard], gdy to karta tego budynku, inaczej jak [AppNavigator.openBuilding].
+ *
+ * Wymagania: US2.8, US3.3
+ */
+internal fun AppNavigator.returnToCard(symbol: String) {
+    openCard(keptCard?.takeIf { it.symbol == symbol } ?: BuildingRoute(symbol))
+}
+
+/** Zapamiętuje V2 [card] z wysokością i przewinięciem z chwili, gdy zeszła z ekranu. Wymagania: US2.8 */
+internal fun AppNavigator.keepCard(card: BuildingRoute) {
+    keptCard = card
 }

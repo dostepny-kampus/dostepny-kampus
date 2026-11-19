@@ -98,6 +98,7 @@ private const val MAP_STATE = "map"
  * @param mapView widok mapy; testy ekranu podają widok bez natywnej biblioteki
  * @param motion zapis ruchów mapy do budynku nad kartą V2, z których karta bierze czas; `null` bez zapisu
  * @param entranceActions „Zgłoś barierę przy wejściu” z arkusza wejścia
+ * @param onCardReturn powrót z arkusza znaku do karty budynku o podanym symbolu, którą arkusz zastąpił
  * @param viewModel stan ekranu i zapis ostatniego widoku; w aplikacji z grafu Hilt, w testach z podróbkami źródeł
  */
 @Composable
@@ -111,6 +112,7 @@ fun CampusMapScreen(
     mapView: CampusMapView = MapLibreMapView,
     motion: MapMotion? = null,
     entranceActions: EntranceActions = EntranceActions(),
+    onCardReturn: (String) -> Unit = onBuildingClick,
     viewModel: CampusMapViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -127,6 +129,7 @@ fun CampusMapScreen(
         entranceActions = entranceActions,
         mapView = mapView,
         motion = motion,
+        onCardReturn = onCardReturn,
     )
 }
 
@@ -160,6 +163,7 @@ fun CampusMapScreen(
  * @param onCamera widok mapy po geście osoby i widok, do którego zmierza ruch kamery wykonany przez aplikację
  * @param onFloorChoose piętro wybrane w kolumnie pięter: symbol budynku i identyfikator piętra
  * @param onMapHide mapa zeszła z ekranu, np. pod listę budynków; jej plan piętra przestaje obowiązywać
+ * @param onCardReturn powrót z arkusza znaku do karty budynku, którą arkusz zastąpił
  */
 @Composable
 fun CampusMapScreen(
@@ -179,9 +183,16 @@ fun CampusMapScreen(
     onCamera: (MapCamera) -> Unit = {},
     onFloorChoose: (String, String) -> Unit = { _, _ -> },
     onMapHide: () -> Unit = {},
+    onCardReturn: (String) -> Unit = onBuildingClick,
 ) {
     val catalog = state.catalog
-    val sheet = screenSheet(focus = focus, padding = contentPadding, onCardClose = onEmptyMapClick)
+    val sheet =
+        screenSheet(
+            focus = focus,
+            padding = contentPadding,
+            onCardClose = onEmptyMapClick,
+            onCardReturn = onCardReturn,
+        )
     val isCovered = sheet.layout.padding.calculateBottomPadding() > 0.dp
     val isList = state.isListSaved ?: (LocalDensity.current.fontScale >= LARGE_FONT_SCALE)
     val states = rememberSaveableStateHolder()
@@ -389,11 +400,10 @@ private fun BoxScope.MapSheets(
         barriers = open.barriers,
         catalog = open.catalog,
         plan = open.plan,
-        onBuildingClick = onBuilding,
+        onBuildingTap = { state.taps.choose(it, onBuilding) },
         entranceActions = entranceActions,
         modifier = modifier,
         hidesEntrance = open.sheet.isEntranceFull,
-        onBuildingTap = { state.taps.choose(it, onBuilding) },
     )
     BuildingChoices(catalog = open.catalog, state = state, onChoose = onBuilding, modifier = modifier)
 }

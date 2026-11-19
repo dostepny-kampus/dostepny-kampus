@@ -44,9 +44,15 @@ sealed interface MapFocus {
 
 /**
  * V2 Karta budynku o symbolu [symbol]. [isDirect]: karta otwarta od razu na pełnym ekranie, bez
- * małej karty, bo budynek wybrano z listy przy TalkBack.
+ * małej karty, bo budynek wybrano z listy przy TalkBack. [isExpanded] i [scroll] to wysokość rozwinięta
+ * i przewinięcie treści w px, od których karta startuje.
  *
- * Wymagania: US2, US3.2, NFR-19
+ * Wymagania: US2, US3.2, NFR-19, US2.8
  */
 @Serializable
-data class BuildingRoute(val symbol: String, val isDirect: Boolean = false) : NavKey
+data class BuildingRoute(
+    val symbol: String,
+    val isDirect: Boolean = false,
+    val isExpanded: Boolean = false,
+    val scroll: Int = 0,
+) : NavKey
