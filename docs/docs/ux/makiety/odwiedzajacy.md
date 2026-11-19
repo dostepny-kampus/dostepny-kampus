@@ -124,6 +124,7 @@ Czynność główna: przeczytanie listy „Jak dojść”. Pokaz drogi zaczyna s
 | Nagłówek karty „Sala 329” z „Zamknij”, pod nim rodzaj sali i piętro z danych PWr, dalej wiersz budynku | US18.1, NFR-40, decyzja z 18.11.2026 |
 | „Jak dojść” z „Pokaż po kolei ›” i trzy kroki: wejście zalecane z piętrem, winda z odległością od wejścia, sala z odległością od windy | US18.2, BR-25 |
 | Krok 2: winda przy klatkach C i D, bo tylko ona staje na parterze i na 2 piętrze [2] | decyzja 48 |
+| Karta ma wysokość treści: nagłówek, wiersz budynku i cała lista „Jak dojść” bez przewijania, plan piętra nad kartą | US18.1, decyzja z 19.11.2026 |
 | „Zamknij” zamyka kartę, a plan zostaje | decyzja 48 |
 
 | Stan bez osobnej makiety | Co się zmienia |
