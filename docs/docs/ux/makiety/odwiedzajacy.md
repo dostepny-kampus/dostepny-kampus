@@ -338,6 +338,9 @@ Czynność główna: „Pokaż wejście na mapie”.
 | Stan bez osobnej makiety | Co się zmienia |
 | --- | --- |
 | Brak wejścia dostępnego | wiersz „Brak wejścia dostępnego” ze znakiem i zdaniem, np. „Żadne z 3 wejść nie jest dostępne.”; bez „Pokaż wejście na mapie” (US3.1, BR-25) |
+| Bariera przy wejściu zalecanym | zdanie kończy się np. „Przy wejściu jest bariera: tylko z pomocą.”, a wiersz wejścia ma pod szerokością drzwi wiersz ze znakiem uciążliwości, np. „Tylko z pomocą: ciężkie drzwi” (US2.2, BR-25) |
+| Blokada przy wejściu, jest inne wejście dostępne | zalecane jest następne wejście według BR-25; wiersz zablokowanego wejścia nie ma „Zalecane”, ma „Dostępne” i wiersz „Blokada: wejście zamknięte” (BR-25) |
+| Blokada przy jedynym wejściu dostępnym | wiersz „Brak wejścia dostępnego” ze znakiem i zdaniem „Jedyne wejście dostępne ma blokadę.”; bez „Pokaż wejście na mapie” (US3.1, BR-25) |
 | Brak danych o wejściach | cichy napis „Brak danych o wejściach”, bez zdania i bez przycisku (US3.1, US17.1) |
 | Brak sieci | nad nagłówkiem plakietka „Bez internetu” (NFR-10) |
 | Rozwinięta | karta sięga do góry ekranu jak na wzorcu, ale ma uchwyt i nie ma „Pokaż budynek na mapie”. Krótka treść zostawia puste miejsce pod sobą (US2.8, NFR-53) |
