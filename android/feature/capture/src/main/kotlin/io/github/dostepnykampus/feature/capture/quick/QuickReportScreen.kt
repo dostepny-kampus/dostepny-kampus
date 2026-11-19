@@ -53,9 +53,9 @@ import java.io.File
 /**
  * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie (`SENT`).
  * Kroki przed wysłaniem wymagają zgody na dokładną lokalizację, a pozycja jest ustalana od kroku 1; zgłoszenie
- * przy wejściu albo obiekcie planu wybranym w arkuszu bierze miejsce z niego, bez tej zgody i bez pytania o piętro. „Wstecz” z kroku 1
- * ze zdjęciem i „Zrezygnuj” przy „Brak pozycji” pytają o rezygnację; „Tak, zrezygnuj” usuwa zdjęcie i wraca
- * z kroku 1 do ekranu sprzed V4, a z kroku 3 na mapę.
+ * przy wejściu albo obiekcie planu wybranym w arkuszu bierze miejsce z niego, bez tej zgody i bez pytania o piętro.
+ * „Wstecz” z kroku 1 ze zdjęciem i „Zrezygnuj” przy „Brak pozycji” pytają o rezygnację; „Tak, zrezygnuj” usuwa
+ * zdjęcie i wraca z kroku 1 do ekranu sprzed V4, a z kroku 3 na mapę.
  *
  * Wymagania: US4.1, NFR-27, BR-8, BR-14, BR-G2, UC7
  *

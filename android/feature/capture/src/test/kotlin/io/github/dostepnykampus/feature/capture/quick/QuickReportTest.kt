@@ -9,9 +9,11 @@ import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
+import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
+import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
@@ -108,5 +110,24 @@ class QuickReportTest {
         assertNull(content.accuracyMeters)
         assertEquals("node/6", content.entranceId)
         assertEquals(SubmissionFloor(floorId = "A-1/p0"), content.floor)
+    }
+
+    /**
+     * Zgłoszenie przy obiekcie planu ma punkt obiektu, jego budynek i piętro oglądanego planu, bez dokładności
+     * pozycji i bez wejścia.
+     * Scenariusz (częściowo, przykład: arkusz windy): zgloszenie-szybkie.feature: Zgłoszenie przy obiekcie
+     *   planu ma miejsce w punkcie obiektu i piętro planu
+     *
+     * Wymagania: US4.6, BR-8, BR-14
+     */
+    @Test
+    fun takesPlaceFromPlanObject() {
+        val place = ReportPlace(RoomCategory.ELEVATOR, "A-1", "A-1/p2", "2 piętro", point.latitude, point.longitude)
+        val report = QuickReport(photo = photo, group = BarrierGroup.VERTICAL_CIRCULATION, floorNumber = 1)
+        val content = report.content(placePosition(place))
+        assertEquals(point, content.location)
+        assertNull(content.accuracyMeters)
+        assertNull(content.entranceId)
+        assertEquals(SubmissionFloor(floorId = "A-1/p2"), content.floor)
     }
 }

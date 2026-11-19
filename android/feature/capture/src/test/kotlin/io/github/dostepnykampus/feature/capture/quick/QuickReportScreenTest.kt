@@ -24,8 +24,10 @@ import io.github.dostepnykampus.core.location.PositionSource
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.building.FloorList
+import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.feature.capture.location.BuildingLookup
+import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
@@ -246,6 +248,25 @@ class QuickReportScreenTest {
         compose.onNodeWithText("Toalety").performClick()
         compose.onNodeWithText("Na którym piętrze?").assertDoesNotExist()
         assertEquals(listOf(atEntrance.copy(group = BarrierGroup.TOILETS)), next)
+        assertFalse(isListened)
+    }
+
+    /**
+     * Wiersz: V4 po przycisku zgłoszenia w arkuszu toalety → napis obiektu w kroku 1, bez zgody na lokalizację,
+     *   bez odbiornika pozycji i bez pytania o piętro w kroku 2.
+     * Scenariusz (częściowo, przykład: arkusz toalety): zgloszenie-szybkie.feature: Zgłoszenie przy obiekcie
+     *   planu ma miejsce w punkcie obiektu i piętro planu
+     *
+     * Wymagania: US4.6, BR-8, BR-14
+     */
+    @Test
+    fun reportsAtPlanObject() {
+        var isListened = false
+        val place = ReportPlace(RoomCategory.ACCESSIBLE_TOILET, "A-1", "A-1/p0", "Parter", 51.1105, 17.0605)
+        val positions = PositionSource { flow { isListened = true } }
+        show(ReportRoute(place = place), positions = positions, isLocationGranted = false)
+        compose.onNodeWithText("Toaleta dostosowana: Budynek A-1, parter").assertIsDisplayed()
+        compose.onNodeWithText("Zrób zdjęcie").assertIsDisplayed()
         assertFalse(isListened)
     }
 
