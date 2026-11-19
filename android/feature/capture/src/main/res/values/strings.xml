@@ -118,6 +118,7 @@
     <string name="szybkie_wejscie_glowne">Wejście: główne</string>
     <string name="szybkie_wejscie_bez_nazwy">Wejście: bez nazwy</string>
     <string name="szybkie_obiekt">%1$s: Budynek %2$s, %3$s</string>
+    <string name="szybkie_obiekt_inny">Obiekt planu</string>
     <string name="szybkie_obiekt_schody">Schody</string>
     <string name="szybkie_obiekt_toaleta">Toaleta dostosowana</string>
     <string name="szybkie_obiekt_winda">Winda</string>

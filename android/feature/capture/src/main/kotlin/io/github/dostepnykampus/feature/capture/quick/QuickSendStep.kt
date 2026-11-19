@@ -134,7 +134,14 @@ internal fun placeLine(place: ReportPlace): String {
         when (place.category) {
             RoomCategory.STAIRCASE -> stringResource(R.string.szybkie_obiekt_schody)
             RoomCategory.ELEVATOR -> stringResource(R.string.szybkie_obiekt_winda)
-            else -> stringResource(R.string.szybkie_obiekt_toaleta)
+            RoomCategory.ACCESSIBLE_TOILET -> stringResource(R.string.szybkie_obiekt_toaleta)
+            RoomCategory.CLASSROOM,
+            RoomCategory.LECTURE_HALL,
+            RoomCategory.CORRIDOR,
+            RoomCategory.TOILET,
+            RoomCategory.OFFICE,
+            RoomCategory.OTHER,
+            -> stringResource(R.string.szybkie_obiekt_inny)
         }
     return stringResource(R.string.szybkie_obiekt, name, place.buildingSymbol, floor)
 }

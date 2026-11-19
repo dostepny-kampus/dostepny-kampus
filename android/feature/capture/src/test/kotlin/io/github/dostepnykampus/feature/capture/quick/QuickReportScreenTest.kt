@@ -262,7 +262,15 @@ class QuickReportScreenTest {
     @Test
     fun reportsAtPlanObject() {
         var isListened = false
-        val place = ReportPlace(RoomCategory.ACCESSIBLE_TOILET, "A-1", "A-1/p0", "Parter", 51.1105, 17.0605)
+        val place =
+            ReportPlace(
+                category = RoomCategory.ACCESSIBLE_TOILET,
+                buildingSymbol = "A-1",
+                floorId = "A-1/p0",
+                floorLabel = "Parter",
+                latitude = 51.1105,
+                longitude = 17.0605,
+            )
         val positions = PositionSource { flow { isListened = true } }
         show(ReportRoute(place = place), positions = positions, isLocationGranted = false)
         compose.onNodeWithText("Toaleta dostosowana: Budynek A-1, parter").assertIsDisplayed()

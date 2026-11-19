@@ -122,7 +122,15 @@ class QuickReportTest {
      */
     @Test
     fun takesPlaceFromPlanObject() {
-        val place = ReportPlace(RoomCategory.ELEVATOR, "A-1", "A-1/p2", "2 piętro", point.latitude, point.longitude)
+        val place =
+            ReportPlace(
+                category = RoomCategory.ELEVATOR,
+                buildingSymbol = "A-1",
+                floorId = "A-1/p2",
+                floorLabel = "2 piętro",
+                latitude = point.latitude,
+                longitude = point.longitude,
+            )
         val report = QuickReport(photo = photo, group = BarrierGroup.VERTICAL_CIRCULATION, floorNumber = 1)
         val content = report.content(placePosition(place))
         assertEquals(point, content.location)

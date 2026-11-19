@@ -118,14 +118,12 @@ private fun QuickSteps(
     val step: @Composable () -> Unit = {
         QuickStep(route = route, actions = actions, models = models, onGiveUp = onGiveUp)
     }
-    if (!route.isPlaceChosen()) {
+    if (!route.isPlaceChosen) {
         WithLocationPermission(onBack = actions.onBack, content = step)
     } else {
         step()
     }
 }
-
-private fun ReportRoute.isPlaceChosen(): Boolean = entranceId != null || place != null
 
 private fun leave(route: ReportRoute, actions: QuickReportActions) {
     route.photoPath?.let { File(it).delete() }
@@ -214,7 +212,7 @@ private fun QuickGroupStep(route: ReportRoute, onNext: (ReportRoute) -> Unit, wh
     val group = asked
     if (group == null) {
         QuickGroupQuestion(selected = route.group, onGroup = { chosen ->
-            val isAskingFloor = !route.isPlaceChosen() && chosen.asksFloor(isInBuilding)
+            val isAskingFloor = !route.isPlaceChosen && chosen.asksFloor(isInBuilding)
             if (isAskingFloor) asked = chosen else onNext(route.copy(group = chosen))
         })
     } else {

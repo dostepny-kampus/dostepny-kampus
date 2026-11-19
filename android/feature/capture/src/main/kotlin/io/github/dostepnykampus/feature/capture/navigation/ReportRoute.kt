@@ -42,7 +42,10 @@ data class ReportRoute(
     val floorLabel: String? = null,
     val isFloorAsked: Boolean = false,
     val isSavedOffline: Boolean = false,
-) : NavKey
+) : NavKey {
+    /** Czy miejsce zgłoszenia wybrano w arkuszu: wejście albo obiekt planu. */
+    val isPlaceChosen: Boolean get() = entranceId != null || place != null
+}
 
 /** Krok V4. */
 enum class ReportStep {
