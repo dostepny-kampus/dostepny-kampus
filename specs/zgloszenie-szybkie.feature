@@ -43,6 +43,24 @@ Funkcja: Zgłoszenie szybkie
     Wtedy krok 1 zgłoszenia szybkiego nie ma napisu o wejściu
     Oraz miejscem zgłoszenia jest bieżąca pozycja telefonu
 
+  # @do-zrobienia #3344: arkusze planu nie mają jeszcze przycisku zgłoszenia.
+  @US4.6 @BR-8 @BR-14 @aplikacja @do-zrobienia
+  Szablon scenariusza: Zgłoszenie przy obiekcie planu ma miejsce w punkcie obiektu i piętro planu
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz na planie 2 piętra A-1 otworzył <arkusz>
+    Jeżeli wybierze „<przycisk>”
+    Wtedy krok 1 zgłoszenia szybkiego ma napis „<napis>”
+    Oraz aplikacja nie prosi o zgodę na lokalizację i nie ustala bieżącej pozycji
+    Jeżeli zrobi zdjęcie, wybierze grupę barier i wyśle zgłoszenie
+    Wtedy aplikacja nie pyta o piętro
+    Oraz miejscem zgłoszenia jest punkt tego obiektu, budynkiem A-1, a piętrem 2 piętro
+
+    Przykłady:
+      | arkusz         | przycisk                    | napis                                      |
+      | arkusz schodów | Zgłoś barierę przy schodach | Schody: Budynek A-1, 2 piętro              |
+      | arkusz toalety | Zgłoś barierę przy toalecie | Toaleta dostosowana: Budynek A-1, 2 piętro |
+      | arkusz windy   | Zgłoś barierę przy windzie  | Winda: Budynek A-1, 2 piętro               |
+
   @US4.3 @aplikacja
   Scenariusz: Wybór jednej z 6 grup barier dużymi przyciskami
     Zakładając, że Odwiedzający zrobił zdjęcie bariery w zgłoszeniu szybkim
