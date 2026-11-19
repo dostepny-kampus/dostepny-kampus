@@ -250,15 +250,7 @@ private fun BuildingFacts(
     onMarkFloors: (() -> Unit)?,
 ) {
     val common = commonAssessment(card.entrances)
-    Column {
-        DescriptionLine()
-        EntrancesGroup(
-            card = card,
-            withAssessment = common == null,
-            onShowEntrance = onShowEntrance,
-            onReport = onReport,
-        )
-    }
+    LinedEntrances(card = card, withAssessment = common == null, onShowEntrance = onShowEntrance, onReport = onReport)
     common?.let { AssessmentLine(it) }
     EvacuationExits(card)
     BarriersGroup(card, onReportRemoval)
@@ -268,6 +260,24 @@ private fun BuildingFacts(
         OutlinedButton(onClick = onMark, modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.minimum)) {
             Text(stringResource(R.string.karta_oznacz_pietra))
         }
+    }
+}
+
+@Composable
+private fun LinedEntrances(
+    card: BuildingCardUiState.Ready,
+    withAssessment: Boolean,
+    onShowEntrance: (String) -> Unit,
+    onReport: () -> Unit,
+) {
+    Column {
+        DescriptionLine()
+        EntrancesGroup(
+            card = card,
+            withAssessment = withAssessment,
+            onShowEntrance = onShowEntrance,
+            onReport = onReport,
+        )
     }
 }
 

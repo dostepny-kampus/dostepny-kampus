@@ -153,11 +153,12 @@ class EntranceAssessmentTextTest {
     private fun datedCount(): Int = compose.onAllNodes(hasDate).fetchSemanticsNodes().size
 
     private fun isBelowEntrances(row: String): Boolean {
-        val line = compose.onNodeWithText(row).fetchSemanticsNode().boundsInRoot.top
-        val entrances = listOf(MAIN, SIDE).flatMap { name ->
-            compose.onAllNodes(hasText(name, substring = true)).fetchSemanticsNodes()
-        }
-        return entrances.size >= 2 && entrances.all { node -> node.boundsInRoot.bottom <= line }
+        val line = compose.onNodeWithText(row).fetchSemanticsNode().boundsInRoot
+        val entrances =
+            listOf(MAIN, SIDE).flatMap { name ->
+                compose.onAllNodes(hasText(name, substring = true)).fetchSemanticsNodes()
+            }
+        return entrances.size >= 2 && entrances.all { node -> node.boundsInRoot.bottom <= line.top }
     }
 
     private fun top(text: String) = compose.onNodeWithText(text).getUnclippedBoundsInRoot().top
