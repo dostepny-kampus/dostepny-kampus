@@ -288,7 +288,7 @@ internal fun ScreenSheet.FullEntranceSheet(
  * @param catalog katalog budynków i wejść; `null` przed jego wczytaniem
  * @param plan plan piętra na mapie; `null`, gdy planu nie widać
  * @param onBuildingTap wiersz budynku w arkuszu bez karty pod spodem, jak dotknięcie konturu
- * @param entranceActions czynności arkusza wejścia
+ * @param entranceActions czynności arkusza wejścia i zgłoszenie z arkusza znaku planu
  * @param modifier położenie arkusza na mapie
  * @param hidesEntrance arkusz wejścia stoi poza mapą, na cały ekran, więc tu go nie ma
  */
@@ -328,7 +328,13 @@ internal fun ChosenSignSheet(
 
         TouchSign.PLAN -> {
             val exits = signs.exits(onTap = onBuildingTap)
-            ChosenPlanSheet(id = id, plan = plan, exits = exits, modifier = modifier)
+            ChosenPlanSheet(
+                id = id,
+                plan = plan,
+                exits = exits,
+                modifier = modifier,
+                onReport = entranceActions.onPlanReport,
+            )
         }
 
         null -> {}

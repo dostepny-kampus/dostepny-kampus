@@ -12,6 +12,7 @@ import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
+import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 
 /**
@@ -45,6 +46,7 @@ data class QuickReport(
  * @property isInBuilding czy pozycja leży w konturze budynku; przy wejściu prawda
  * @property buildingSymbol budynek, w którego konturze leży pozycja, albo budynek wejścia
  * @property entrance wejście, od którego pochodzi miejsce; `null` przy bieżącej pozycji
+ * @property place obiekt planu, od którego pochodzi miejsce; `null` przy bieżącej pozycji
  */
 data class QuickPosition(
     val point: GeoPoint,
@@ -52,6 +54,7 @@ data class QuickPosition(
     val isInBuilding: Boolean,
     val buildingSymbol: String? = null,
     val entrance: Entrance? = null,
+    val place: ReportPlace? = null,
 )
 
 /**
@@ -69,6 +72,20 @@ fun entrancePosition(entrance: Entrance): QuickPosition =
     )
 
 /**
+ * Miejsce zgłoszenia w punkcie obiektu planu [place], z jego budynkiem i piętrem planu.
+ *
+ * Wymagania: BR-8, BR-14, US4.6
+ */
+fun placePosition(place: ReportPlace): QuickPosition =
+    QuickPosition(
+        point = GeoPoint(longitude = place.longitude, latitude = place.latitude),
+        accuracyMeters = null,
+        isInBuilding = true,
+        buildingSymbol = place.buildingSymbol,
+        place = place,
+    )
+
+/**
  * Czy krok 2 pyta o piętro po wyborze grupy: w konturze budynku i przy każdej grupie poza „Coś innego”.
  * Gdy pozycja jeszcze nie jest znana ([isInBuilding] `null`), pyta jak w konturze.
  *
@@ -79,7 +96,7 @@ fun BarrierGroup.asksFloor(isInBuilding: Boolean?): Boolean = this != BarrierGro
 /**
  * Treść zgłoszenia szybkiego z miejscem [position]; budynek ustala serwer. Poza konturem zgłoszenie idzie bez
  * piętra, także gdy Odwiedzający je wybrał, zanim telefon ustalił pozycję. Przy wejściu wybranym w arkuszu wejścia
- * zgłoszenie ma punkt i piętro wejścia oraz jego identyfikator.
+ * zgłoszenie ma punkt i piętro wejścia oraz jego identyfikator, a przy obiekcie planu jego punkt i piętro planu.
  *
  * Wymagania: BR-14, US4.6, BR-8
  */
@@ -89,12 +106,13 @@ fun QuickReport.content(position: QuickPosition): SubmissionContent =
         location = position.point,
         photoIds = listOf(photo.photoId),
         accuracyMeters = position.accuracyMeters,
-        floor = position.entranceFloor() ?: floor().takeIf { position.isInBuilding },
+        floor = position.chosenFloor() ?: floor().takeIf { position.isInBuilding },
         barrierGroup = group,
         entranceId = position.entrance?.id ?: entranceId,
     )
 
-private fun QuickPosition.entranceFloor(): SubmissionFloor? = entrance?.floorId?.let { SubmissionFloor(floorId = it) }
+private fun QuickPosition.chosenFloor(): SubmissionFloor? =
+    (entrance?.floorId ?: place?.floorId)?.let { SubmissionFloor(floorId = it) }
 
 private fun QuickReport.floor(): SubmissionFloor? =
     when {

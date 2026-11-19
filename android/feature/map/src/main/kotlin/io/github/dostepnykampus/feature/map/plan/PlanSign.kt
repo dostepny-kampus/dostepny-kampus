@@ -6,14 +6,15 @@
 package io.github.dostepnykampus.feature.map.plan
 
 import androidx.compose.runtime.Immutable
+import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.feature.map.R
 
 /**
  * Znak planu w arkuszu: nazwa [title], symbol budynku [building], etykieta piętra [floor] z danych PWr i etykiety
- * pięter windy [liftFloors] od najniższego, puste poza windą.
+ * pięter windy [liftFloors] od najniższego, puste poza windą. Zgłoszenie z arkusza bierze [report].
  *
- * Wymagania: US16.1, US18.2
+ * Wymagania: US16.1, US18.2, US4.6
  */
 @Immutable
 internal data class PlanSign(
@@ -21,6 +22,7 @@ internal data class PlanSign(
     val building: String,
     val floor: String,
     val liftFloors: List<String> = emptyList(),
+    val report: PlanReport? = null,
 )
 
 /**
@@ -39,7 +41,8 @@ internal fun ShownPlan.signOf(id: String): PlanSign? {
     return if (title == null || label == null) {
         null
     } else {
-        PlanSign(title = title, building = building, floor = label, liftFloors = stops)
+        val report = PlanReport(room.category, building, floorId = floor, floorLabel = label, point = room.labelPoint)
+        PlanSign(title = title, building = building, floor = label, liftFloors = stops, report = report)
     }
 }
 
