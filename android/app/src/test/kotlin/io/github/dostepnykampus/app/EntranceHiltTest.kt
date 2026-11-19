@@ -144,7 +144,7 @@ class EntranceHiltTest {
 
     /**
      * Wiersz: V1 lista, budynek → V2 od razu na cały ekran → „Pokaż wejście na mapie” → arkusz wejścia na cały ekran;
-     *   po „Zamknij” V1, TalkBack czyta wejście i budynek.
+     *   po „Zamknij” V1 bez pinezki, więc TalkBack nie czyta już zaznaczonego wejścia.
      *
      * Wymagania: US3.3, NFR-18, NFR-19
      */
@@ -156,6 +156,8 @@ class EntranceHiltTest {
         compose.onAllNodes(hasText("Pokaż wejście na mapie")).onFirst().performClick()
         waitFor(hasText("Wejście"))
         compose.onNode(hasText("Zamknij")).performClick()
-        waitFor(hasContentDescription("Zaznaczone wejście: »Wejście dostosowane«, budynek A-1"))
+        compose.waitForIdle()
+        compose.onNode(hasText("Zamknij")).assertDoesNotExist()
+        compose.onNode(hasContentDescription("Zaznaczone wejście", substring = true)).assertDoesNotExist()
     }
 }
