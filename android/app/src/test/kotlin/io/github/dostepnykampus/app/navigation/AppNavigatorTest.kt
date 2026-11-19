@@ -277,6 +277,29 @@ class AppNavigatorTest {
     }
 
     /**
+     * Wiersz: karta zastąpiona arkuszem znaku, powrót do karty tego budynku → V2 z zapamiętaną wysokością
+     *   i przewinięciem, a do karty innego budynku albo po dotknięciu konturu → V2 od nowa.
+     *
+     * Wymagania: US2.8, US3.3
+     */
+    @Test
+    fun returnsToKeptCard() {
+        val kept = BuildingRoute("A-1", isExpanded = true, scroll = 300)
+        navigator().run {
+            openBuilding(symbol = "A-1")
+            keepCard(kept)
+            showOnMap(MapFocus.Entrance(id = "node/1", buildingSymbol = "A-1"))
+            returnToCard("A-1")
+            assertEquals(listOf(MapRoute(MapFocus.Building("A-1")), kept), stack)
+            returnToCard("C-13")
+            assertEquals(BuildingRoute("C-13"), current, "karta innego budynku od nowa")
+            keepCard(kept)
+            openBuilding(symbol = "A-1")
+            assertEquals(BuildingRoute("A-1"), current, "dotknięcie konturu od nowa")
+        }
+    }
+
+    /**
      * Wiersz: mała karta V2 nad V1, dotknięcie pustej mapy → V1 bez zaznaczenia budynku;
      * samo V1, także z budynkiem zaznaczonym przez „Pokaż na mapie”, i V4 nad V2 zostają.
      *

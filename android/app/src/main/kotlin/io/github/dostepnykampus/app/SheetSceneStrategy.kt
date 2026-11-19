@@ -67,6 +67,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 private const val SHEET_KEY = "arkusz"
+private const val EXPANDED_KEY = "rozwiniety"
 private const val MAP_KEY = "mapa"
 private const val MATERIAL_DURATION_MEDIUM2_MILLIS = 300
 
@@ -139,13 +140,17 @@ internal class SheetSceneStrategy(private val motion: MapMotion) : SceneStrategy
     /** Metadane wpisów sceny. */
     companion object {
         private val sheet: Map<String, Any> = mapOf(SHEET_KEY to true)
+        private val expandedSheet: Map<String, Any> = sheet + (EXPANDED_KEY to true)
         private val map: Map<String, Any> = mapOf(MAP_KEY to true)
 
-        /** Metadane wpisu [route]: V1 to mapa, V2 arkusz nad V1, chyba że [BuildingRoute.isDirect], inne trasy bez. */
+        /**
+         * Metadane wpisu [route]: V1 to mapa, V2 arkusz nad V1, chyba że [BuildingRoute.isDirect], startujący
+         * rozwinięty przy [BuildingRoute.isExpanded]; inne trasy bez.
+         */
         fun metadata(route: NavKey): Map<String, Any> =
             when {
                 route is MapRoute -> map
-                isSheet(route) -> sheet
+                isSheet(route) -> if ((route as BuildingRoute).isExpanded) expandedSheet else sheet
                 else -> emptyMap()
             }
 
@@ -164,7 +169,9 @@ private data class SheetScene(
     override val entries: List<NavEntry<NavKey>> = listOfNotNull(map, sheet)
     override val previousEntries: List<NavEntry<NavKey>> = if (sheet == null) emptyList() else listOf(map)
     override val content: @Composable () -> Unit = {
-        var state by rememberSaveable(sheet != null, stateSaver = SheetStateSaver) { mutableStateOf(SheetState()) }
+        var state by rememberSaveable(sheet != null, stateSaver = SheetStateSaver) {
+            mutableStateOf(SheetState(isExpanded = sheet?.run { metadata[EXPANDED_KEY] } == true))
+        }
         val shift = remember(sheet?.contentKey) { Animatable(0f) }
         var isClosing by remember(sheet?.contentKey) { mutableStateOf(false) }
         var height by remember(sheet != null) { mutableStateOf(0.dp) }

@@ -54,6 +54,7 @@ class MapEntranceTouchTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val opened = mutableListOf<String>()
+    private val returned = mutableListOf<String>()
     private var closedCards = 0
     private val reports = mutableListOf<String>()
     private val map = TouchableMap()
@@ -192,7 +193,10 @@ class MapEntranceTouchTest {
         compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
         compose.onNodeWithContentDescription("Budynek C-13").performClick()
 
-        compose.runOnIdle { assertEquals("karta budynku", listOf("C-13"), opened) }
+        compose.runOnIdle {
+            assertEquals("powrót do karty", listOf("C-13"), returned)
+            assertEquals("bez nowej karty", emptyList<String>(), opened)
+        }
     }
 
     /**
@@ -206,7 +210,10 @@ class MapEntranceTouchTest {
     fun backFromCardEntrance() {
         start(focus = MapFocus.Entrance(id = "node/1", buildingSymbol = "C-13"))
         compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
-        compose.runOnIdle { assertEquals("karta budynku", listOf("C-13"), opened) }
+        compose.runOnIdle {
+            assertEquals("powrót do karty", listOf("C-13"), returned)
+            assertEquals("bez nowej karty", emptyList<String>(), opened)
+        }
     }
 
     /** Wiersz: arkusz wejścia zaznaczonego z karty, „Zamknij” zostawia mapę bez karty. Wymagania: NFR-53 */
@@ -227,7 +234,10 @@ class MapEntranceTouchTest {
         compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
 
         compose.onNodeWithText("Wejście").assertDoesNotExist()
-        compose.runOnIdle { assertEquals("karta budynku", listOf("C-13"), opened) }
+        compose.runOnIdle {
+            assertEquals("powrót do karty", listOf("C-13"), returned)
+            assertEquals("bez nowej karty", emptyList<String>(), opened)
+        }
     }
 
     /** Wiersz: arkusz otwarty przy karcie budynku, pusta mapa zamyka arkusz bez karty. Wymagania: NFR-53 */
@@ -255,6 +265,7 @@ class MapEntranceTouchTest {
             DostepnyKampusTheme {
                 CampusMapScreen(
                     onBuildingClick = { opened += it },
+                    onCardReturn = { returned += it },
                     focus = if (isCardOpen) MapFocus.Building("C-13") else focus,
                     contentPadding = PaddingValues(bottom = if (isCardOpen) CARD_HEIGHT.dp else 0.dp),
                     onEmptyMapClick = { closedCards++ },

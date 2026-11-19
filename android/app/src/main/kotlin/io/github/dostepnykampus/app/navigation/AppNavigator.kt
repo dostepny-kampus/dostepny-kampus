@@ -158,6 +158,9 @@ class AppNavigator(
     /** Ruchy mapy V1 do budynku, z których karta V2 bierze czas wjazdu. Wymagania: NFR-56 */
     internal val mapMotion: MapMotion = MapMotion()
 
+    /** V2 z wysokością i przewinięciem z chwili, gdy ostatnio zeszła z ekranu; `null`, zanim jakaś zeszła. */
+    internal var keptCard: BuildingRoute? = null
+
     /** Konto osoby do obserwowania przez ekrany; zmienia się po zalogowaniu i wylogowaniu. */
     internal val account: StateFlow<Account>
         get() = roles.account
@@ -195,10 +198,15 @@ class AppNavigator(
      * Wymagania: US2.8, NFR-19
      */
     fun openBuilding(symbol: String, isDirect: Boolean = false) {
+        openCard(BuildingRoute(symbol, isDirect))
+    }
+
+    /** V1 → V2 [card] z jej wysokością i przewinięciem, jak [openBuilding]. Wymagania: US2.8 */
+    internal fun openCard(card: BuildingRoute) {
         leaving {
             subList(fromIndex = 1, toIndex = size).clear()
-            this[0] = MapRoute(MapFocus.Building(symbol))
-            add(BuildingRoute(symbol, isDirect))
+            this[0] = MapRoute(MapFocus.Building(card.symbol))
+            add(card)
         }
     }
 

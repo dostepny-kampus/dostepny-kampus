@@ -9,9 +9,11 @@ import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -93,8 +95,9 @@ internal data class SheetCard(
 
 /**
  * Karta V2: `Direct`, gdy okno go wymaga albo V2 otwarto od razu na pełnym ekranie, inaczej tryb z rozwinięcia
- * arkusza; „Wstecz” jak wstecz telefonu, „Zamknij” zamyka V2. Przewijanie treści wraca na początek, gdy arkusz
- * stanie niżej niż na całym oknie.
+ * arkusza; „Wstecz” jak wstecz telefonu, „Zamknij” zamyka V2. Przewijanie treści startuje od
+ * [BuildingRoute.scroll] i wraca na początek, gdy arkusz stanie niżej niż na całym oknie. Karta schodząca
+ * z ekranu zostawia nawigatorowi swoją wysokość i przewinięcie ([keepCard]).
  *
  * Wymagania: NFR-19, US2.8, US2.9, NFR-15
  */
@@ -103,11 +106,13 @@ internal fun AppNavigator.sheetCard(): SheetCard {
     val window = currentCardWindow()
     val layout = LocalSheetPadding.current
     val sheet = SheetState(isExpanded = layout.isExpanded)
-    val isDirect = window.cardMode() == CardMode.Direct || (current as? BuildingRoute)?.isDirect == true
+    val route = current as? BuildingRoute
+    val isDirect = window.cardMode() == CardMode.Direct || route?.isDirect == true
     val mode = if (isDirect) CardMode.Direct else sheet.cardMode(window.fontScale)
     val back = checkNotNull(LocalOnBackPressedDispatcherOwner.current).onBackPressedDispatcher
-    val scroll = rememberScrollState()
+    val scroll = rememberScrollState(initial = route?.scroll ?: 0)
     LaunchedEffect(layout.isFull) { if (!layout.isFull) scroll.animateScrollTo(0) }
+    KeepCardOnLeave(route = route, isExpanded = layout.isExpanded, scroll = scroll)
     return SheetCard(
         mode = mode,
         onBack = back::onBackPressed,
@@ -115,6 +120,14 @@ internal fun AppNavigator.sheetCard(): SheetCard {
         scroll = scroll,
         onExpand = layout.onExpand,
     )
+}
+
+@Composable
+private fun AppNavigator.KeepCardOnLeave(route: BuildingRoute?, isExpanded: Boolean, scroll: ScrollState) {
+    val isExpandedNow by rememberUpdatedState(isExpanded)
+    DisposableEffect(route) {
+        onDispose { route?.let { keepCard(it.copy(isExpanded = isExpandedNow, scroll = scroll.value)) } }
+    }
 }
 
 /**
