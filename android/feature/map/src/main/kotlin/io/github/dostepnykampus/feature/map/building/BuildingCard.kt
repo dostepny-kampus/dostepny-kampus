@@ -52,25 +52,17 @@ internal object EntranceNameOrder : Comparator<String> {
  * @property isRecommended czy to jedyne wejście zalecane budynku; napis „Zalecane”
  * @property barrier przyjęta bariera przy wejściu o najwyższej uciążliwości; `null` bez barier
  */
-data class OrderedEntrance(
-    val entrance: Entrance,
-    val isRecommended: Boolean,
-    val barrier: AcceptedBarrier? = null,
-) {
+data class OrderedEntrance(val entrance: Entrance, val isRecommended: Boolean, val barrier: AcceptedBarrier? = null) {
     /** Czy wejście „dostępne” ma przy sobie blokadę, przez którą nie może być zalecane. Wymagania: BR-25 */
     val isBlocked: Boolean
         get() = entrance.marking == EntranceMarking.ACCESSIBLE && barrier?.severity == Severity.BLOCKING
 }
 
 /**
- * Wejścia odwiedzających w kolejności karty budynku, każde z najcięższą barierą z [barriers] o jego
- * identyfikatorze wejścia.
- *
- * Zalecane jest jedyne: wejście „dostępne” bez blokady, a gdy jest ich kilka — wejście główne, a gdy żadne nie jest
- * główne — pierwsze z nazwą w danych ([Entrance.hasName]), a bez nazw — pierwsze w kolejności z danych. Wejście
- * „brak danych” nigdy nie jest zalecane. Bez takiego wejścia nie ma zalecanego, a lista zaczyna się od pierwszej
- * grupy oznaczeń. Wejścia stoją w grupach oznaczeń, a w grupie najpierw wejścia z nazwą w danych według
- * [EntranceNameOrder], potem pozostałe w kolejności z danych.
+ * Wejścia odwiedzających w kolejności karty budynku, każde z najcięższą barierą z [barriers] przy nim. Zalecane
+ * jest jedyne: wejście „dostępne” bez blokady, a z kilku — główne, potem pierwsze z nazwą w danych
+ * ([Entrance.hasName]), potem pierwsze z danych. Bez takiego wejścia nie ma zalecanego. Wejścia stoją w grupach
+ * oznaczeń, w grupie najpierw z nazwą według [EntranceNameOrder], potem pozostałe w kolejności z danych.
  *
  * Wymagania: BR-25, US2.2
  */

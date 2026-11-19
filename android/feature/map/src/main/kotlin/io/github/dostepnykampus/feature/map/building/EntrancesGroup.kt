@@ -39,9 +39,7 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.GroupContainer
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
-import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
-import io.github.dostepnykampus.core.designsystem.marking.SeverityIcon
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.core.model.building.EntranceMarking
@@ -242,24 +240,7 @@ private fun EntranceFacts(listed: OrderedEntrance, withAssessment: Boolean, modi
             val door = stringResource(R.string.karta_szerokosc_drzwi, entrance.doorWidthCm)
             Text(text = door, color = secondary, style = MaterialTheme.typography.bodyLarge)
         }
-        listed.barrier?.let { BarrierLine(it) }
+        listed.barrier?.let { EntranceBarrierLine(it) }
         if (withAssessment) listed.entrance.assessment?.let { AssessmentLine(it) }
-    }
-}
-
-@Composable
-private fun BarrierLine(barrier: AcceptedBarrier) {
-    val severity = stringResource(barrier.severity.nameRes())
-    val type = barrier.type?.run { stringResource(nameRes()).replaceFirstChar(Char::lowercaseChar) }
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        SeverityIcon(barrier.severity)
-        Text(
-            text = type?.let { stringResource(R.string.karta_wejscie_bariera, severity, it) } ?: severity,
-            fontWeight = Typografia.wyroznienieWaga,
-            style = MaterialTheme.typography.bodyLarge,
-        )
     }
 }
