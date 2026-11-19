@@ -32,8 +32,10 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
@@ -139,8 +141,8 @@ fun CampusMapScreen(
  * Góra V1 i mapa znikają pod arkuszem V2 albo przy liście; ich stan, np. przewinięcie listy i widok kamery, czeka
  * na powrót. Pod arkuszem V2 nagłówka nie ma, jak w hi-fi V2: mapa sięga wtedy pod pasek stanu. Budynek z listy
  * też otwiera V2 jako arkusz na mapie. Po zamknięciu arkusza mapa stoi na ekranie w widoku z chwili zamknięcia.
- * Przy otwartej klawiaturze mapa jest za niska na przyciski, więc znikają do
- * jej zamknięcia.
+ * Przy otwartej klawiaturze mapa jest za niska na przyciski, więc znikają do jej zamknięcia; dotknięcie mapy
+ * zamyka klawiaturę i wyniki pola „Szukaj”, a tekst w polu zostaje.
  *
  * Wymagania: US9.1, NFR-10, NFR-19, NFR-20, US2, US1.1, US2.9, US3.3, US2.8
  *
@@ -199,7 +201,7 @@ fun CampusMapScreen(
     Box(modifier.fillMaxSize()) {
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
-                Box(Modifier.fillMaxSize().unreadUnder(isSheet = sheet.isEntranceFull)) {
+                Box(Modifier.mapArea(isUnderSheet = sheet.isEntranceFull, focus = LocalFocusManager.current)) {
                     val shown = ShownBarriers(state.barriers.takeUnless { sheet.isCardOpen }.orEmpty())
                     CampusMap(
                         ui = state,
@@ -245,7 +247,10 @@ fun CampusMapScreen(
     }
 }
 
-private fun Modifier.unreadUnder(isSheet: Boolean): Modifier = if (isSheet) clearAndSetSemantics {} else this
+private fun Modifier.mapArea(isUnderSheet: Boolean, focus: FocusManager): Modifier =
+    fillMaxSize()
+        .releasesSearchOnTouch(focus)
+        .then(if (isUnderSheet) Modifier.clearAndSetSemantics {} else Modifier)
 
 @Composable
 private fun CampusMap(

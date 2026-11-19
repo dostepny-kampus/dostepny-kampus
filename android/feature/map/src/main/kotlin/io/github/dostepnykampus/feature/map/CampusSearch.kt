@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
@@ -48,7 +50,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -109,8 +115,8 @@ private val ClearIcon =
  * @param areas tereny w kolejności nagłówków listy budynków
  * @param onListChange wybór widoku w wierszu tytułu albo przejście do listy z karty „brak wyniku”
  * @param onBuildingClick symbol wybranego wyniku albo budynku z listy; ekran otwiera V2 i zaznacza budynek. Wybór
- *   zdejmuje fokus z pola, chowa klawiaturę ekranową i wyniki, a tekst w polu zostaje; wyniki wracają po dotknięciu
- *   pola albo zmianie tekstu. Pierwsze „Wstecz” zamyka V2
+ *   zdejmuje fokus z pola, chowa klawiaturę ekranową i wyniki, a tekst w polu zostaje; utrata fokusu z innego
+ *   powodu też chowa wyniki. Wyniki wracają po dotknięciu pola albo zmianie tekstu. Pierwsze „Wstecz” zamyka V2
  * @param modifier położenie nad mapą; przy liście cała wysokość nad paskiem dolnym
  * @param onBarHeight wysokość w pikselach wiersza tytułu, pola i wiersza bez internetu, bez wyników: tę część
  *   mapy kamera traktuje jako zasłoniętą, więc wpisywanie nie przesuwa mapy
@@ -130,12 +136,13 @@ internal fun CampusSearch(
     onBarHeight: (Int) -> Unit = {},
 ) {
     var query by rememberSaveable { mutableStateOf("") }
-    var isChosen by rememberSaveable { mutableStateOf(false) }
+    var isHidden by rememberSaveable { mutableStateOf(false) }
     SideEffect { onSearch(query) }
     val found = search.foundFor(query)
     val results = found.orEmpty()
     val isNoResult = query.isNotBlank() && found?.isEmpty() == true
-    val shown = results.takeUnless { isList || isChosen }.orEmpty()
+    val shown = results.takeUnless { isList || isHidden }.orEmpty()
+    val isNoResultShown = isNoResult && (isList || !isHidden)
     val focus = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
     val showList = {
@@ -143,7 +150,7 @@ internal fun CampusSearch(
         onListChange(true)
     }
     val choose = { symbol: String ->
-        isChosen = true
+        isHidden = true
         focus.clearFocus(force = true)
         keyboard?.hide()
         onBuildingClick(symbol)
@@ -151,24 +158,25 @@ internal fun CampusSearch(
     Column(modifier.fillMaxWidth()) {
         val onQueryChange = { text: String ->
             query = text
-            isChosen = false
+            isHidden = false
         }
         Column(Modifier.onSizeChanged { onBarHeight(it.height) }) {
             SearchHeader(
                 query = query,
                 onQueryChange = onQueryChange,
-                onFieldTap = { isChosen = false },
+                onFieldTap = { isHidden = false },
+                onFieldLeave = { isHidden = true },
                 isList = isList,
                 onListChange = onListChange,
             )
             if (!isOnline) OfflineLine(syncedAt)
         }
-        if (isNoResult || shown.isNotEmpty()) {
+        if (isNoResultShown || shown.isNotEmpty()) {
             ResultPanel {
                 shown.forEach { building ->
                     BuildingChoice(building, areas.otherAreaOf(building.symbol)) { choose(building.symbol) }
                 }
-                query.takeIf { isNoResult }?.let { NoResult(it, onShowList = showList.takeUnless { isList }) }
+                query.takeIf { isNoResultShown }?.let { NoResult(it, onShowList = showList.takeUnless { isList }) }
             }
         }
         if (isList) {
@@ -189,6 +197,7 @@ private fun SearchHeader(
     query: String,
     onQueryChange: (String) -> Unit,
     onFieldTap: () -> Unit,
+    onFieldLeave: () -> Unit,
     isList: Boolean,
     onListChange: (Boolean) -> Unit,
 ) {
@@ -200,7 +209,7 @@ private fun SearchHeader(
                 verticalArrangement = Arrangement.spacedBy(Odstepy.s),
             ) {
                 TitleRow(isList, onListChange)
-                SymbolField(query, onQueryChange, onFieldTap)
+                SymbolField(query = query, onQueryChange = onQueryChange, onTap = onFieldTap, onLeave = onFieldLeave)
             }
             HorizontalDivider(thickness = Obramowania.ramka, color = MaterialTheme.colorScheme.outlineVariant)
         }
@@ -257,7 +266,7 @@ private fun ResultPanel(content: @Composable ColumnScope.() -> Unit) {
 }
 
 @Composable
-private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: () -> Unit) {
+private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: () -> Unit, onLeave: () -> Unit) {
     val interactions = remember { MutableInteractionSource() }
     val tap by rememberUpdatedState(onTap)
     LaunchedEffect(interactions) {
@@ -274,7 +283,11 @@ private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: (
     BasicTextField(
         value = query,
         onValueChange = onQueryChange,
-        modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = OutlinedTextFieldDefaults.MinHeight),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = OutlinedTextFieldDefaults.MinHeight)
+                .onFocusChanged { if (!it.isFocused) onLeave() },
         textStyle = textStyle,
         keyboardOptions =
             KeyboardOptions(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Search),
@@ -352,3 +365,17 @@ private fun NoResult(query: String, onShowList: (() -> Unit)?) {
         }
     }
 }
+
+/**
+ * Każde dotknięcie tego elementu albo jego zawartości zdejmuje fokus z [focus], więc pole „Szukaj” traci fokus,
+ * a klawiatura ekranowa się chowa. Dotknięcie nie jest zużywane i dalej trafia do zawartości.
+ *
+ * Wymagania: US3.1, NFR-17
+ */
+internal fun Modifier.releasesSearchOnTouch(focus: FocusManager): Modifier =
+    pointerInput(focus) {
+        awaitEachGesture {
+            awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
+            focus.clearFocus(force = true)
+        }
+    }
