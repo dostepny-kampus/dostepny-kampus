@@ -141,7 +141,7 @@ internal fun CampusSearch(
         query = ""
         onListChange(true)
     }
-    val release = {
+    val release: () -> Unit = {
         isHidden = true
         focus.clearFocus(force = true)
         keyboard?.hide()
