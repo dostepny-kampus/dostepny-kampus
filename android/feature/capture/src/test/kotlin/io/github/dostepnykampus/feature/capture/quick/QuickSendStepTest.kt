@@ -76,6 +76,8 @@ class QuickSendStepTest {
 
     /**
      * Wiersz: V4 krok 3 przy wejściu głównym z nazwą nadaną przez import → napis bez cudzysłowu.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego
+     *   wejścia
      *
      * Wymagania: US4.6, BR-27
      */
