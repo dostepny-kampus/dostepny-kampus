@@ -19,7 +19,6 @@ import org.maplibre.spatialk.turf.measurement.distance
 import org.maplibre.spatialk.units.International
 import kotlin.math.roundToInt
 
-/** Krok zaokrąglenia odległości pokazywanej osobie, w metrach. */
 private const val ROUNDING_METERS = 5
 
 /** Punkt modelu jako pozycja GeoJSON spatialk: długość, potem szerokość. */
