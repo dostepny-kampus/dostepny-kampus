@@ -28,7 +28,7 @@ class RoomWayTest {
 
     /**
      * Wiersz: winda staje na piętrze wejścia i na piętrze sali; odległości w linii prostej, zaokrąglone do 5 m.
-     * Scenariusz (częściowo, przykład: winda łączy parter z piętrem sali 329): szukanie-sali.feature:
+     * Scenariusz (częściowo): szukanie-sali.feature:
      *   Kroki do sali podane tekstem bez rysowania trasy
      */
     @Test
@@ -53,7 +53,7 @@ class RoomWayTest {
 
     /**
      * Wiersz: sala na piętrze wejścia ma kroki bez windy, z odległością od wejścia.
-     * Scenariusz (częściowo, przykład: sala 012 na piętrze wejścia): szukanie-sali.feature:
+     * Scenariusz (częściowo): szukanie-sali.feature:
      *   Kroki do sali podane tekstem bez rysowania trasy
      */
     @Test
@@ -66,7 +66,7 @@ class RoomWayTest {
 
     /**
      * Wiersz: bez piętra wejścia w danych krok przyjmuje parter i mówi to.
-     * Scenariusz (częściowo, przykład: dane nie podają piętra wejścia): szukanie-sali.feature:
+     * Scenariusz (częściowo): szukanie-sali.feature:
      *   Kroki do sali podane tekstem bez rysowania trasy
      */
     @Test
@@ -78,7 +78,7 @@ class RoomWayTest {
 
     /**
      * Wiersz: brak wejścia zalecanego albo windy z piętra wejścia na piętro sali daje powód zamiast kroków.
-     * Scenariusz (częściowo, przykład: żadna winda nie łączy pięter): szukanie-sali.feature:
+     * Scenariusz (częściowo): szukanie-sali.feature:
      *   Bez sali w danych albo bez drogi bez schodów aplikacja mówi to zdaniem
      */
     @Test
