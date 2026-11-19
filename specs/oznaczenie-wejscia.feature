@@ -74,8 +74,8 @@ Funkcja: Oznaczenie wejścia
 
   Reguła: Wspólną datę i źródło ekran podaje raz, a różne przy każdym wejściu
 
-    @US17.3 @aplikacja
     # @do-zrobienia #3440: karta stawia jeszcze wspólny wiersz nad listą wejść.
+    @US17.3 @aplikacja @do-zrobienia
     Scenariusz: Wspólna data i źródło stoją raz pod listą wejść
       Zakładając, że wszystkie wejścia A-1 mają oznaczenie z datą 3.11.2026 i źródłem „import”
       Jeżeli Gość niezalogowany otworzy kartę budynku A-1
