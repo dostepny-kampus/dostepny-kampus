@@ -14,19 +14,34 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie powstaje po 3 krokach
     Oraz ma dołączoną bieżącą pozycję telefonu, o którą aplikacja nie pytała
 
-  @US4.6 @aplikacja
-  Szablon scenariusza: Zgłoszenie przy wejściu podpowiada wejście, a miejsce bierze z bieżącej pozycji
+  # @do-zrobienia #3323: aplikacja bierze jeszcze miejsce z bieżącej pozycji.
+  @US4.6 @BR-8 @BR-14 @aplikacja @do-zrobienia
+  Scenariusz: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego wejścia
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
-    Oraz otworzył <ekran> budynku A-1
-    Jeżeli przy wejściu głównym wybierze „Zgłoś barierę przy wejściu”
+    Oraz otworzył arkusz wejścia głównego A-1 na mapie
+    Jeżeli wybierze „Zgłoś barierę przy wejściu”
     Wtedy krok 1 zgłoszenia szybkiego ma napis „Wejście: »Wejście główne«”
-    Oraz wysłane zgłoszenie ma wejście główne A-1 jako wskazówkę dla Weryfikatora
-    Ale miejsce zgłoszenia pochodzi z bieżącej pozycji telefonu, a nie z wybranego wejścia
+    Oraz aplikacja nie prosi o zgodę na lokalizację i nie ustala bieżącej pozycji
+    Jeżeli zrobi zdjęcie, wybierze grupę barier „wejście i drzwi” i wyśle zgłoszenie
+    Wtedy aplikacja nie pyta o piętro
+    Oraz miejscem zgłoszenia jest punkt wejścia głównego A-1, a budynkiem A-1
 
-    Przykłady:
-      | ekran                   |
-      | kartę                   |
-      | arkusz wejścia na mapie |
+  # @do-zrobienia #3322: serwer wymaga jeszcze bieżącej pozycji.
+  @US4.6 @BR-8 @BR-14 @serwer @do-zrobienia
+  Scenariusz: Serwer bierze miejsce, budynek i piętro zgłoszenia od wybranego wejścia
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Jeżeli wyśle zgłoszenie szybkie ze zdjęciem, grupą barier i wejściem głównym A-1, bez bieżącej pozycji
+    Wtedy zgłoszenie ma miejsce w punkcie wejścia głównego A-1, budynek A-1 i piętro tego wejścia
+    Ale zgłoszenie bez bieżącej pozycji i bez wejścia albo z nieznanym wejściem serwer odrzuca
+
+  # @do-zrobienia #3323: bez testu odnośnika w wierszu kilku wejść.
+  @US4.6 @BR-8 @aplikacja @do-zrobienia
+  Scenariusz: Odnośnik w wierszu kilku wejść bez danych bierze miejsce z bieżącej pozycji
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz karta budynku pokazuje jeden wiersz kilku wejść bez danych
+    Jeżeli wybierze w nim „Zgłoś barierę przy wejściu”
+    Wtedy krok 1 zgłoszenia szybkiego nie ma napisu o wejściu
+    Oraz miejscem zgłoszenia jest bieżąca pozycja telefonu
 
   @US4.3 @aplikacja
   Scenariusz: Wybór jednej z 6 grup barier dużymi przyciskami

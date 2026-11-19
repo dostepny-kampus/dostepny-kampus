@@ -215,8 +215,8 @@ class EntranceOnMapTest {
 
     /**
      * Wiersz: arkusz wejścia, Gość → „Zgłoś barierę przy wejściu” prowadzi do L1, który pamięta wejście.
-     * Scenariusz (częściowo, przykład: arkusz wejścia na mapie): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu
-     *   podpowiada wejście, a miejsce bierze z bieżącej pozycji
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego
+     *   wejścia
      *
      * Wymagania: US4.6, US14.2
      */

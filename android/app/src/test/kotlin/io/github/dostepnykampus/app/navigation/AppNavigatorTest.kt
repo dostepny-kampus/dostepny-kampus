@@ -371,8 +371,8 @@ class AppNavigatorTest {
 
     /**
      * Wiersz: V4, „Tak, zrezygnuj” po „Wstecz” z kroku 1 → ekran sprzed V4; poza V4 kroki nic nie robią.
-     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu podpowiada wejście, a miejsce
-     *   bierze z bieżącej pozycji
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego
+     *   wejścia
      *
      * Wymagania: UC7
      */

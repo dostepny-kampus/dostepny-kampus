@@ -114,7 +114,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1, arkusz wejścia | „Zamknij” | V1 bez karty, także gdy arkusz otwarto z karty | wszystkie | NFR-53 |
 | V1, arkusz wejścia | „Wstecz” | otwarty z karty budynku albo przy niej: ta karta, na tej samej wysokości i tak samo przewinięta. Otwarty znakiem na mapie bez karty: V1 | wszystkie | US3.3, NFR-15, NFR-53 |
 | V1, arkusz wejścia | dotknięcie pustej mapy | V1 bez karty | wszystkie | NFR-53 |
-| V1, arkusz wejścia | „Zgłoś barierę przy wejściu” | V4, krok 1, wejście wybrane; Gość: L1, potem V4 z wybranym wejściem | wszystkie | US4.6, US14.2 |
+| V1, arkusz wejścia | „Zgłoś barierę przy wejściu” | V4, krok 1, wejście wybrane, miejsce w punkcie wejścia; Gość: L1, potem V4 z wybranym wejściem | wszystkie | US4.6, US14.2, BR-8 |
 | V1, plan piętra | dotknięcie znaku toalety dostosowanej albo schodów | V1, arkusz toalety albo schodów | wszystkie | US16.1 |
 | V1, arkusz toalety albo schodów | wiersz „Budynek A-1” | V2 tego budynku na niskiej wysokości, mapa jak po dotknięciu konturu | wszystkie | US2.8, US16.1 |
 | V1, arkusz toalety albo schodów | „Zamknij”, „Wstecz” albo dotknięcie pustej mapy | V1; „Wstecz” arkusza otwartego przy karcie: ta karta | wszystkie | NFR-53 |
@@ -138,7 +138,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V2 | „Pokaż wejście na mapie” pod wierszem o wejściach albo przy wejściu zalecanym | V1 z zaznaczonym wejściem zalecanym i jego arkuszem; przy dużej czcionce arkusz na cały ekran; „Wstecz” arkusza wraca do karty, „Zamknij” zostawia mapę | wszystkie | US2.1, US3.3, BR-25 |
 | V2, niska wysokość | dotknięcie wystającego nagłówka „Wejścia” | V2 rozwinięta, jak po dotknięciu uchwytu | wszystkie | US2.8, NFR-53 |
 | V2 | dotknięcie wiersza wejścia na liście „Wejścia” | V1 z zaznaczonym tym wejściem i jego arkuszem; „Wstecz” arkusza: karta na tej samej wysokości i z tym samym przewinięciem; „Zamknij”: mapa | wszystkie | US3.3 |
-| V2, wiersz kilku wejść bez danych | „Zgłoś barierę przy wejściu” | V4, krok 1, bez wybranego wejścia; Gość: L1, potem V4 | wszystkie | US4.6, US14.2 |
+| V2, wiersz kilku wejść bez danych | „Zgłoś barierę przy wejściu” | V4, krok 1, bez wybranego wejścia, miejsce z bieżącej pozycji; Gość: L1, potem V4 | wszystkie | US4.6, US14.2, BR-8 |
 | V2, stan „brak zgłoszeń przyjętych” | „Zgłoś barierę” | V4; Gość: L1 | wszystkie | US4, US14.2 |
 | V2, pełny ekran otwarty od razu | „Wstecz” | ekran sprzed V2, np. lista V1 | wszystkie | NFR-15, US2.9 |
 | V2, stan „budynku nie ma w telefonie” | „Spróbuj ponownie” | V2 | wszystkie | NFR-10 |

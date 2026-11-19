@@ -124,7 +124,7 @@ Aplikacja nie pyta o typ bariery ani uciążliwość; ustala je Weryfikator w UC
 | --- | --- | --- |
 | 1a | Gość niezalogowany wybiera zgłoszenie szybkie | Przed zdjęciem aplikacja prosi o logowanie albo rejestrację (US14.2, UC6). Po zalogowaniu wraca do kroku 2. |
 | 1b | Gość rezygnuje z logowania | Zgłoszenie nie powstaje, a aplikacja wraca do mapy. |
-| 1c | Zgłoszenie zaczęte przy wejściu na karcie budynku albo w arkuszu wejścia na mapie | Krok 1 pokazuje nazwę wejścia, a zgłoszenie dostaje ją jako wskazówkę. Miejsce nadal pochodzi z bieżącej pozycji (US4.6, BR-8, BR-14). |
+| 1c | Zgłoszenie zaczęte w arkuszu wejścia | Krok 1 pokazuje nazwę wejścia. Miejscem jest punkt wejścia, a budynek i piętro pochodzą od wejścia (US4.6, BR-8, BR-14). Krok 4, pytanie o piętro oraz wiersze 2a, 4c i 4d nie zachodzą. Odnośnik w wierszu kilku wejść bez danych nie wybiera wejścia, więc idzie przepływem głównym. |
 | 2a | Brak zgody na lokalizację | Bez pozycji zgłoszenia nie da się wysłać (BR-8, NFR-27). Aplikacja prosi o zgodę przed aparatem. Po odmowie mówi, że bez lokalizacji zgłoszenia nie wyśle, i proponuje ustawienia telefonu. Aparat się nie otwiera, więc Odwiedzający nie robi zdjęcia na próżno. Przy zgodzie tylko na przybliżoną lokalizację aplikacja prosi o dokładną, bo przybliżona nie wskaże budynku (BR-14). |
 | 4a | Pozycja poza konturem budynku | Zgłoszenie zapisuje się z pozycją, bez komunikatu o błędzie (BR-G2, BR-G4, NFR-49). |
 | 4b | Budynek podstawowy | Zgłoszenie działa tak samo, jak w budynku szczegółowym (BR-G1). |
