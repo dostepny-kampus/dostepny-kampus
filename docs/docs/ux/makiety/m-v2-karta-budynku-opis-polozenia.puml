@@ -1,0 +1,30 @@
+@startsalt
+' V2 Karta budynku z wejściami bez nazwy w danych: nazwa „Wejście”, pod nią opis położenia,
+' potem uwaga uczelni, gdy jest, i szerokość drzwi; numerów nie ma (BR-27).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_karty("C-19", "<i>[nazwa budynku z danych]</i>")
+$wiersz_wejsc("dostepne", "Zalecane wejście od strony C-20, od północy. Drzwi 100 cm.", "")
+--
+Z map i opisów, stan z <i>[data]</i>
+$sekcja("Wejścia")
+$wejscia_poczatek()
+<b>$dostepne()</b>$dk_spacje(2)Zalecane
+{ <b>Wejście</b> | <&chevron-right> }
+Od strony C-20, od północy.
+Do wejścia prowadzi rampa.
+Drzwi 100 cm
+--
+<b>$niedostepne()</b>
+{ <b>Wejście główne</b> | <&chevron-right> }
+Od wschodu.
+--
+<b>$brak_danych()</b>
+{ <b>Wejście</b> | <&chevron-right> }
+Od strony C-20, od północy.
+$wejscia_koniec()
+$tekst("[dalej pełny opis jak na wzorcu]", "i")
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt
