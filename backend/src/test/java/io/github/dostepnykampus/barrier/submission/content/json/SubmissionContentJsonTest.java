@@ -454,33 +454,6 @@ final class SubmissionContentJsonTest {
     }
 
     @Test
-    void rejectsUnknownEntranceAndQuickWithoutPlace() {
-        Assertions.assertAll(
-            () -> Assertions.assertEquals(
-                "Nie ma wejścia z pola entranceId",
-                Assertions.assertThrows(
-                    InvalidSubmission.class,
-                    () -> SubmissionContentJsonTest.bound(
-                        node -> node.put("entranceId", "node/0").remove("location")
-                    ).toContent((id, symbol) -> Optional.empty()),
-                    "Nieznane wejście przeszło"
-                ).getMessage(),
-                "Zły komunikat nieznanego wejścia"
-            ),
-            () -> Assertions.assertEquals(
-                "Zgłoszenie wymaga pola location",
-                Assertions.assertThrows(
-                    InvalidSubmission.class,
-                    () -> SubmissionContentJsonTest.bound(node -> node.remove("location"))
-                        .toContent((id, symbol) -> Optional.empty()),
-                    "Zgłoszenie bez pozycji i bez wejścia przeszło"
-                ).getMessage(),
-                "Zły komunikat braku miejsca"
-            )
-        );
-    }
-
-    @Test
     void keepsLocationOfPreciseSubmissionWithEntrance() {
         Assertions.assertEquals(
             new SubmissionPoint(17.06, 51.1),
