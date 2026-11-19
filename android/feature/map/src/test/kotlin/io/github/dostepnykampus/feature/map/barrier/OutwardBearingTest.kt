@@ -18,23 +18,23 @@ class OutwardBearingTest {
         GeoPolygon(
             listOf(
                 listOf(
-                    point(17.0, 51.0),
-                    point(17.5, 51.0),
-                    point(17.5, 51.25),
-                    point(17.25, 51.25),
-                    point(17.25, 51.5),
-                    point(17.0, 51.5),
-                    point(17.0, 51.0),
+                    point(longitude = 17.0, latitude = 51.0),
+                    point(longitude = 17.5, latitude = 51.0),
+                    point(longitude = 17.5, latitude = 51.25),
+                    point(longitude = 17.25, latitude = 51.25),
+                    point(longitude = 17.25, latitude = 51.5),
+                    point(longitude = 17.0, latitude = 51.5),
+                    point(longitude = 17.0, latitude = 51.0),
                 ),
             ),
         )
 
     /** Wiersz: wejście na ścianie w zagłębieniu konturu → kierunek na wschód, poza kontur. Wymagania: NFR-17 */
     @Test
-    fun pointsOutOfNotchOfConcaveOutline() {
+    fun pointsOutOfConcaveNotch() {
         assertEquals(
             listOf(1.0, 0.0),
-            direction(building.outwardBearing(point(17.25, 51.4))),
+            direction(checkNotNull(building.outwardBearing(point(longitude = 17.25, latitude = 51.4)))),
             "Kierunek z zagłębienia konturu nie wskazuje wschodu",
         )
     }
@@ -44,13 +44,13 @@ class OutwardBearingTest {
     fun pointsAwayFromOuterWall() {
         assertEquals(
             listOf(0.0, -1.0),
-            direction(building.outwardBearing(point(17.1, 51.0))),
+            direction(checkNotNull(building.outwardBearing(point(longitude = 17.1, latitude = 51.0)))),
             "Kierunek od południowej ściany nie wskazuje południa",
         )
     }
 
-    private fun direction(degrees: Double?): List<Double> {
-        val radians = Math.toRadians(checkNotNull(degrees))
+    private fun direction(degrees: Double): List<Double> {
+        val radians = Math.toRadians(degrees)
         return listOf(sin(radians), cos(radians)).map { Math.round(it * PRECISION) / PRECISION + 0.0 }
     }
 

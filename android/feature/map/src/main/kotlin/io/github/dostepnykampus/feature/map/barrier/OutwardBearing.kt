@@ -33,18 +33,19 @@ private val SIDE_STEP = 0.5.meters
 internal fun GeoArea.outwardBearing(point: GeoPoint): Double? {
     val position = point.toPosition()
     val geometry = toGeometry()
-    val nearest =
+    val (line, found) =
         allRings()
+            .asSequence()
             .filter { it.size > 1 }
             .map { ring -> LineString(ring.map(GeoPoint::toPosition)) }
             .map { line -> line to line.nearestPointTo(position) }
-            .minByOrNull { (_, found) -> found.properties.distance.toDouble(International.Meters) }
-    return nearest?.let { (line, found) ->
-        val edge = line.coordinates
-        val start = found.properties.index.coerceAtMost(edge.lastIndex - 1)
-        val along = edge[start].bearingTo(edge[start + 1])
+            .minByOrNull { (_, nearest) -> nearest.properties.distance.toDouble(International.Meters) }
+            ?: return null
+    val edge = line.coordinates
+    val start = found.properties.index.coerceAtMost(edge.lastIndex - 1)
+    val along = edge[start].bearingTo(edge[start + 1])
+    val outside =
         listOf(along + 90.degrees, along - 90.degrees)
             .firstOrNull { side -> found.geometry.coordinates.offset(SIDE_STEP, side) !in geometry }
-            ?.let { side -> (side - Bearing.North).inDegrees }
-    }
+    return outside?.let { (it - Bearing.North).inDegrees }
 }

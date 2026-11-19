@@ -71,7 +71,7 @@ class EntranceBarrierSignTest {
      * Scenariusz (częściowo): przegladanie-mapy.feature: Znak bariery przy wejściu stoi obok znaku wejścia
      */
     @Test
-    fun putsSignOutsideNotchOfConcaveBuilding() {
+    fun putsSignOutOfConcaveNotch() {
         val corners = listOf(17.0 to 51.0, 17.5 to 51.0, 17.5 to 51.25, 17.25 to 51.25, 17.25 to 51.5, 17.0 to 51.5)
         val concave =
             data.copy(
@@ -119,7 +119,7 @@ class EntranceBarrierSignTest {
     private fun JsonObject.text(key: String): String = getValue(key).jsonPrimitive.content
 
     private fun JsonObject.offset(): List<Int>? =
-        get(BARRIER_OFFSET)?.jsonArray?.map { it.jsonPrimitive.double.roundToInt() }
+        get(BARRIER_OFFSET)?.run { jsonArray.map { it.jsonPrimitive.double.roundToInt() } }
 
     private fun outline(vararg corners: Pair<Double, Double>): GeoPolygon =
         GeoPolygon(listOf((corners.toList() + corners.first()).map { (x, y) -> GeoPoint(longitude = x, latitude = y) }))

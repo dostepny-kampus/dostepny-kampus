@@ -87,12 +87,9 @@ fun CampusMapData.withBarriers(barriers: List<AcceptedBarrier>): CampusMapData {
 private fun CampusMapData.outwardDirection(barrier: AcceptedBarrier): Pair<Double, Double>? {
     val entrance = barrier.entranceId?.let(entrancePoints::get)
     val outline = barrier.buildingSymbol?.let(buildingOutlines::get)
-    return entrance?.let { point ->
-        outline?.let { area ->
-            val bearing = Math.toRadians(area.outwardBearing(point) ?: 0.0)
-            sin(bearing) to -cos(bearing)
-        }
-    }
+    if (entrance == null || outline == null) return null
+    val bearing = Math.toRadians(outline.outwardBearing(entrance) ?: 0.0)
+    return sin(bearing) to -cos(bearing)
 }
 
 private fun dpOffset(x: Double, y: Double): JsonArray = JsonArray(listOf(JsonPrimitive(x), JsonPrimitive(y)))
