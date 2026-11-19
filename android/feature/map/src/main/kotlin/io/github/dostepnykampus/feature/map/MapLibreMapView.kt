@@ -358,15 +358,18 @@ object MapLibreMapView : CampusMapView {
                     hit = { queryRenderedFeatures(at, BUILDINGS_LAYER).mapNotNull(number) },
                     near = { queryRenderedFeatures(area, BUILDINGS_LAYER).mapNotNull(number) },
                 )
+            val signsUnder = { sign: TouchSign ->
+                queryRenderedFeatures(at, sign.layer).mapNotNull { it.getStringProperty(sign.idKey) }
+            }
             val signsNear = { sign: TouchSign ->
-                val under = queryRenderedFeatures(at, sign.layer).mapNotNull { it.getStringProperty(sign.idKey) }
+                val under = signsUnder(sign)
                 val near =
                     queryRenderedFeatures(area, sign.layer).mapNotNull {
                         signPoint(feature = it, idKey = sign.idKey, at = at, pxPerDp = tolerance / TOUCH_TOLERANCE_DP)
                     }
                 signsInReach(under = under, near = near, reach = tolerance)
             }
-            when (val touch = chooseTouch(signsNear = signsNear, outlines = outlines)) {
+            when (val touch = chooseTouch(signsUnder = signsUnder, signsNear = signsNear, outlines = outlines)) {
                 is MapTouch.Sign -> {
                     onSign(touch)
                     true

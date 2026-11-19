@@ -29,15 +29,25 @@ internal sealed interface MapTouch {
 }
 
 /**
- * Pierwszy znak w kolejności [TouchSign], dla którego [signsNear] zwraca identyfikator w zasięgu dotknięcia;
- * bez znaku kontury z [outlines]. Znaków po trafionym ani konturów przy trafionym znaku nie sprawdza.
+ * Znak, którego obraz jest pod palcem według [signsUnder], pierwszy w kolejności [TouchSign]. Bez obrazu pod palcem
+ * pierwszy znak w tej kolejności, dla którego [signsNear] zwraca identyfikator w zasięgu dotknięcia, a bez znaku
+ * kontury z [outlines]. Znaków po trafionym ani konturów przy trafionym znaku nie sprawdza.
  *
- * Wymagania: US1.5, US2, NFR-17
+ * Wymagania: US1.5, US2, US2.1, NFR-17
  */
-internal fun chooseTouch(signsNear: (TouchSign) -> List<String>, outlines: OutlinesQuery): MapTouch =
+internal fun chooseTouch(
+    signsUnder: (TouchSign) -> List<String>,
+    signsNear: (TouchSign) -> List<String>,
+    outlines: OutlinesQuery,
+): MapTouch =
+    firstSign(signsUnder)
+        ?: firstSign(signsNear)
+        ?: MapTouch.Outlines(hit = outlines.hit(), near = outlines.near)
+
+private fun firstSign(ids: (TouchSign) -> List<String>): MapTouch.Sign? =
     TouchSign.entries.firstNotNullOfOrNull { sign ->
-        signsNear(sign).firstOrNull()?.let { id -> MapTouch.Sign(sign = sign, id = id) }
-    } ?: MapTouch.Outlines(hit = outlines.hit(), near = outlines.near)
+        ids(sign).firstOrNull()?.let { id -> MapTouch.Sign(sign = sign, id = id) }
+    }
 
 /**
  * Znak [id], którego punkt leży [dx] w poziomie i [dy] w pionie od palca, w pikselach ekranu.
