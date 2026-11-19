@@ -83,7 +83,7 @@ private fun placeInWords(place: ReportPlace): String {
     val name = nearest.entrance.name
     val entrance =
         when {
-            name != null -> stringResource(R.string.formularz_wejscie_nazwa, name)
+            name != null && nearest.entrance.hasName -> stringResource(R.string.formularz_wejscie_nazwa, name)
             nearest.entrance.isMain -> stringResource(R.string.formularz_wejscie_glowne)
             else -> stringResource(R.string.formularz_wejscie)
         }

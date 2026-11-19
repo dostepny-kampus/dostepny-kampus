@@ -31,6 +31,7 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Ikony
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.R as DesignR
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
@@ -41,13 +42,13 @@ import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
 import io.github.dostepnykampus.feature.map.building.assessmentText
+import io.github.dostepnykampus.feature.map.building.entranceTitle
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.overlay.BuildingLink
 import io.github.dostepnykampus.feature.map.overlay.MapSheet
 import io.github.dostepnykampus.feature.map.overlay.MapSheetHeader
 import io.github.dostepnykampus.feature.map.overlay.SheetExits
 import kotlin.math.ceil
-import io.github.dostepnykampus.core.designsystem.R as DesignR
 
 private val WIDE_WINDOW = 600.dp
 
@@ -128,7 +129,7 @@ internal fun EntranceSheet(
     isFull: Boolean = false,
 ) {
     val entrance = shown.entrance
-    val title = entrance.name ?: stringResource(R.string.karta_bez_nazwy)
+    val title = entranceTitle(entrance.name, isFromData = entrance.hasName)
     val header: @Composable () -> Unit = {
         Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
             MapSheetHeader(title = stringResource(R.string.karta_bez_nazwy), onClose = exits.onClose) {

@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
+import io.github.dostepnykampus.feature.map.building.entranceTitle
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
@@ -109,12 +110,13 @@ internal fun CampusMapData.focusSelection(focus: MapFocus?, chosen: SelectedEntr
 
 /**
  * Węzeł dla TalkBack: natywna mapa nie opisuje pinezki, więc czytany jest tekst „Zaznaczone wejście: »nazwa«,
- * budynek X” dla [chosen], z budynkiem ekranu.
+ * budynek X” dla [chosen], z budynkiem ekranu; cudzysłów tylko przy nazwie z danych.
  *
  * Wymagania: NFR-18
  */
 @Composable
 internal fun EntranceDescription(chosen: SelectedEntrance) {
-    val text = stringResource(R.string.mapa_zaznaczone_wejscie, chosen.label, chosen.buildingSymbol)
+    val label = entranceTitle(chosen.label, isFromData = chosen.isLabelFromData)
+    val text = stringResource(R.string.mapa_zaznaczone_wejscie, label, chosen.buildingSymbol)
     Spacer(Modifier.fillMaxSize().semantics { contentDescription = text })
 }

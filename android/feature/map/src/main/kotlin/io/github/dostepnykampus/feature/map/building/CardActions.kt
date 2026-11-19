@@ -46,7 +46,7 @@ internal fun CardActions(
 
 @Composable
 private fun ShowEntranceButton(listed: OrderedEntrance, onShowEntrance: (String) -> Unit) {
-    val title = listed.entrance.name ?: stringResource(R.string.karta_bez_nazwy)
+    val title = entranceTitle(listed.entrance.name, isFromData = listed.entrance.hasName)
     val spoken = stringResource(R.string.wizyta_pokaz_czytaj, title)
     PinnedButton(
         text = stringResource(R.string.wizyta_pokaz),

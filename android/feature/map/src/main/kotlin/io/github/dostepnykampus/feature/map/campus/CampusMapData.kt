@@ -143,7 +143,13 @@ data class MapArea(
  * @property label podpis pinezki: nazwa wejścia albo tekst zastępczy, gdy dane nie mają nazwy
  * @property buildingSymbol symbol budynku ekranu, z którego użyto „Pokaż wejście na mapie”
  */
-data class SelectedEntrance(val id: String, val location: GeoPoint, val label: String, val buildingSymbol: String)
+data class SelectedEntrance(
+    val id: String,
+    val location: GeoPoint,
+    val label: String,
+    val buildingSymbol: String,
+    val isLabelFromData: Boolean = true,
+)
 
 /**
  * Wejście [id] z [catalog] jako zaznaczenie na mapie, widziane z budynku [buildingSymbol]; [unnamed] to podpis
@@ -158,6 +164,7 @@ fun selectedEntrance(catalog: BuildingCatalog, id: String, buildingSymbol: Strin
             location = found.location,
             label = found.name?.takeIf(String::isNotBlank) ?: unnamed,
             buildingSymbol = buildingSymbol,
+            isLabelFromData = found.hasName,
         )
     }
 

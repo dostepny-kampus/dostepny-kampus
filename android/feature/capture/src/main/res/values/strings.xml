@@ -114,8 +114,9 @@
     <string name="szybkie_brak_pozycji">Telefon nie ustalił, gdzie jesteś. Podejdź do okna albo wyjdź na zewnątrz i spróbuj ponownie.</string>
     <string name="szybkie_poza_terenem">Jesteś poza terenem PWr. Zdjęcie bariery wyślesz tylko na terenie Politechniki.</string>
     <string name="szybkie_zrezygnuj">Zrezygnuj</string>
-    <string name="szybkie_wejscie">Wejście: „%1$s”</string>
-    <string name="szybkie_wejscie_polozenie">Wejście: „%1$s”, %2$s</string>
+    <string name="szybkie_wejscie">Wejście: %1$s</string>
+    <string name="szybkie_wejscie_nazwa">„%1$s”</string>
+    <string name="szybkie_wejscie_polozenie">Wejście: %1$s, %2$s</string>
     <string name="szybkie_wejscie_glowne">Wejście: główne</string>
     <string name="szybkie_wejscie_bez_nazwy">Wejście: bez nazwy</string>
     <string name="szybkie_obiekt">%1$s: Budynek %2$s, %3$s</string>

@@ -131,7 +131,7 @@ internal fun answerLine(answer: VisitAnswer): String? =
 @Composable
 @ReadOnlyComposable
 private fun nameLine(answer: VisitAnswer.Accessible): String {
-    val name = answer.name ?: stringResource(R.string.karta_bez_nazwy)
+    val name = entranceTitle(answer.name, isFromData = answer.isNameFromData)
     return if (answer.doorWidthCm > 0) {
         stringResource(R.string.karta_odpowiedz_zalecane_drzwi, name, answer.doorWidthCm)
     } else {
