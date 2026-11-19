@@ -107,16 +107,16 @@ class MapRoomSearchTest {
         val FOUND =
             FoundRoom(
                 building = "A-1",
-                floor = Floor(id = "K1.A1.P2", label = "2 piętro", order = 2),
+                floor = Floor(id = "K1.A1.P3", label = "3 piętro", order = 3),
                 room =
                     Room(
-                        id = "7",
+                        id = "12",
                         number = "329",
-                        function = "Sala wykładowa",
+                        function = "Sala ćwiczeniowa",
                         category = RoomCategory.LECTURE_HALL,
-                        geometry = GeoMultiPolygon(emptyList()),
-                        labelPoint = GeoPoint(longitude = 17.06, latitude = 51.1),
-                        isLabelled = true,
+                        geometry = GeoMultiPolygon(polygons = emptyList()),
+                        labelPoint = GeoPoint(longitude = 17.059, latitude = 51.108),
+                        isLabelled = false,
                     ),
             )
     }
