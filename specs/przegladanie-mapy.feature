@@ -413,8 +413,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz części „Dojście”, „Drzwi” i „Za drzwiami” stoją pod nią
     Ale arkusz wejścia bez przyjętych barier nie ma tej części i zaczyna się od „Dojście”
 
-  # @do-zrobienia #3377: arkusz windy podaje jeszcze budynek i piętro jednym wierszem tekstu.
-  @US2.8 @US16.1 @aplikacja @do-zrobienia
+  @US2.8 @US16.1 @aplikacja
   Scenariusz: Arkusz windy ma wiersz budynku i piętro osobnym wierszem
     Zakładając, że Gość niezalogowany ma otwarty plan parteru A-1
     Jeżeli dotknie znaku windy na planie
