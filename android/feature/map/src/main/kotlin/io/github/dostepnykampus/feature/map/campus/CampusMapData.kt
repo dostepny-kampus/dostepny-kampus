@@ -136,12 +136,13 @@ data class MapArea(
 /**
  * Wejście zaznaczone na mapie pinezką z podpisem.
  *
- * Wymagania: US3.3
+ * Wymagania: US3.3, BR-27
  *
  * @property id identyfikator wejścia
  * @property location punkt wejścia, w którym stoi czubek pinezki
  * @property label podpis pinezki: nazwa wejścia albo tekst zastępczy, gdy dane nie mają nazwy
  * @property buildingSymbol symbol budynku ekranu, z którego użyto „Pokaż wejście na mapie”
+ * @property isLabelFromData czy [label] to nazwa z danych; fałsz dla nazwy nadanej przez import i tekstu zastępczego
  */
 data class SelectedEntrance(
     val id: String,
