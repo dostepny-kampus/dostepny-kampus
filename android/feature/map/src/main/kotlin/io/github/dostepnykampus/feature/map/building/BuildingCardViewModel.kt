@@ -22,6 +22,7 @@ import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EvacuationExit
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.room.RoomList
+import io.github.dostepnykampus.feature.map.camera.MapTrace
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -110,7 +111,10 @@ class BuildingCardViewModel
         /** Bieżący stan karty. */
         val uiState: StateFlow<BuildingCardUiState> =
             attempts
-                .map { attempt -> buildingCard(catalogFor(repository, attempt), symbol) }
+                .map { attempt -> catalogFor(repository, attempt) }
+                .map { catalog ->
+                    MapTrace.section(name = MapTrace.CARD_STATE_SECTION) { buildingCard(catalog, symbol) }
+                }
                 .combine(fromServer, ::withServerEntrances)
                 .combine(barriers, ::withBarriers)
                 .combine(floors, ::withFloors)
@@ -152,20 +156,24 @@ class BuildingCardViewModel
         }
 
         private fun withServerEntrances(card: BuildingCardUiState, entrances: List<Entrance>): BuildingCardUiState =
-            if (card is BuildingCardUiState.Ready && entrances.isNotEmpty()) {
-                card.copy(entrances = orderedEntrances(entrances))
-            } else {
-                card
+            MapTrace.section(name = MapTrace.CARD_STATE_SECTION) {
+                if (card is BuildingCardUiState.Ready && entrances.isNotEmpty()) {
+                    card.copy(entrances = orderedEntrances(entrances))
+                } else {
+                    card
+                }
             }
 
         private fun withBarriers(card: BuildingCardUiState, accepted: List<AcceptedBarrier>?): BuildingCardUiState =
-            if (card is BuildingCardUiState.Ready) {
-                card.copy(
-                    barriers = accepted,
-                    entrances = orderedEntrances(card.entrances.map { it.entrance }, accepted.orEmpty()),
-                )
-            } else {
-                card
+            MapTrace.section(name = MapTrace.CARD_STATE_SECTION) {
+                if (card is BuildingCardUiState.Ready) {
+                    card.copy(
+                        barriers = accepted,
+                        entrances = orderedEntrances(card.entrances.map { it.entrance }, accepted.orEmpty()),
+                    )
+                } else {
+                    card
+                }
             }
 
         private fun withFloors(card: BuildingCardUiState, facts: FloorFacts?): BuildingCardUiState =
@@ -189,7 +197,8 @@ class BuildingCardViewModel
 internal suspend fun storedFloorFacts(plans: FloorPlans, symbol: String): FloorFacts? {
     val floors = plans.floors(symbol)?.floors.orEmpty()
     val rooms = floors.mapNotNull { floor -> plans.rooms(symbol, floor.id)?.let { floor.id to it } }.toMap()
-    return floorFacts(floors, rooms).takeIf { floors.isNotEmpty() }
+    val facts = MapTrace.section(name = MapTrace.CARD_FLOORS_SECTION) { floorFacts(floors, rooms) }
+    return facts.takeIf { floors.isNotEmpty() }
 }
 
 /** Plany pięter budynku bez planu: nic nie pobiera i nic nie ma. */
