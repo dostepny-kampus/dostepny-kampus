@@ -37,9 +37,14 @@ internal fun entranceFeature(symbol: String, id: String, tags: String): String =
     """{"type":"Feature","properties":{"kind":"entrance","symbols":["$symbol"],"osm_id":"$id",$tags},""" +
         """"geometry":{"type":"Point","coordinates":[0,0]}}"""
 
-/** Widok zastępczy mapy [view]: budynek [selected], ruch [camera] i dotknięcia [touchBuildings], [touchSign]. */
+/**
+ * Widok zastępczy mapy [view]: budynek [selected], wejście z pinezką [pinned], ruch [camera] i dotknięcia
+ * [touchBuildings], [touchSign].
+ */
 internal class TouchableMap {
     var selected: String? = null
+        private set
+    var pinned: String? = null
         private set
     var camera: Pair<CameraTransition, MapInset>? = null
         private set
@@ -50,6 +55,7 @@ internal class TouchableMap {
     val view =
         CampusMapView { _: CampusMapData, selection, move, inset, _, onBuildingsTouch, onSignTouch, _: Modifier ->
             selected = selection.building
+            pinned = selection.entrance?.id
             camera = move to inset
             touchBuildings = onBuildingsTouch
             touchSign = onSignTouch

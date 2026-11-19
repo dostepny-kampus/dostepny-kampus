@@ -44,6 +44,33 @@ internal fun rememberChosenEntrance(catalog: BuildingCatalog?, entrance: MapFocu
     }
 }
 
+/**
+ * Wejście z pinezką i podpisem: wejście z otwartym arkuszem z [catalog], a gdy to wejście z trasy, to [chosen].
+ * `null` bez otwartego arkusza wejścia, więc zamknięcie arkusza usuwa pinezkę.
+ *
+ * Wymagania: US3.3, NFR-53
+ */
+@Composable
+internal fun SignSheetState.rememberPinnedEntrance(
+    catalog: BuildingCatalog?,
+    chosen: SelectedEntrance?,
+): SelectedEntrance? {
+    val unnamed = stringResource(R.string.karta_bez_nazwy)
+    val openId = entranceId
+    return remember(catalog, openId, chosen, unnamed) {
+        when {
+            openId == null -> null
+            chosen?.id == openId -> chosen
+            else -> catalog?.pinned(id = openId, unnamed = unnamed)
+        }
+    }
+}
+
+private fun BuildingCatalog.pinned(id: String, unnamed: String): SelectedEntrance? =
+    entrances.firstOrNull { it.id == id }?.let { found ->
+        selectedEntrance(catalog = this, id = id, buildingSymbol = found.buildingSymbol, unnamed = unnamed)
+    }
+
 /** Dane katalogu [data] razem z bieżącym zaznaczeniem [selection]: mapa jest, gdy są oba. */
 internal data class MapScene(val data: CampusMapData, val selection: MapSelection)
 

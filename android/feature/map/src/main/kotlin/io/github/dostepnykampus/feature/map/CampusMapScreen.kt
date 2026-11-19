@@ -282,9 +282,10 @@ private fun CampusMap(
         val scene = state.scene
         val move = state.move
         if (scene != null && move != null && state.limits != null) {
+            val pinned = signs.rememberPinnedEntrance(catalog = ui.catalog, chosen = scene.selection.entrance)
             mapView.Show(
                 data = scene.data,
-                selection = scene.selection.copy(barrier = signs.barrierId, plan = plan.shown),
+                selection = scene.selection.copy(entrance = pinned, barrier = signs.barrierId, plan = plan.shown),
                 move = move,
                 inset = state.inset,
                 onCameraIdle = { view ->
@@ -295,7 +296,7 @@ private fun CampusMap(
                 onSignTouch = { sign, id -> signs.open(sign, id).also { state.taps.dismiss() } },
                 modifier = Modifier.fillMaxSize(),
             )
-            scene.selection.entrance?.let { EntranceDescription(it) }
+            pinned?.let { EntranceDescription(it) }
             FollowCamera(camera = move.camera, limits = state.limits, area = areas.current?.name, plan = plan)
             MapStatusBar(topInset, isShown = state.isCovered)
             val underBar = if (state.isCovered) topInset.asPaddingValues() else PaddingValues(top = top)

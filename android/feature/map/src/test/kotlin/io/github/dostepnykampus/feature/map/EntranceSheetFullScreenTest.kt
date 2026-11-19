@@ -15,13 +15,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import com.github.takahirom.roborazzi.captureRoboImage
-import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.camera.TouchSign
-import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -120,22 +116,8 @@ class EntranceSheetFullScreenTest {
 
     private fun start(focus: MapFocus? = null) {
         val choice = TestMapListChoice().apply { savedChoice.value = false }
-        val viewModel =
-            CampusMapViewModel(
-                repository = unitSquareCatalog(symbol = "C-13", entrances = listOf(ENTRANCE)),
-                networkStatus = { flowOf(true) },
-                mapListChoice = choice,
-                computeContext = UnconfinedTestDispatcher(),
-                geometry = ::campusMapData,
-                barriers = { emptyList() },
-            )
-        compose.setContent {
-            DostepnyKampusTheme {
-                CampusMapScreen(onBuildingClick = {}, focus = focus, mapView = map.view, viewModel = viewModel)
-            }
-        }
-        val state = viewModel.uiState
-        compose.waitUntil { state.value.catalog != null && state.value.mapData != null }
-        compose.waitForIdle()
+        val repository = unitSquareCatalog(symbol = "C-13", entrances = listOf(ENTRANCE))
+        val viewModel = testMapViewModel(repository = repository, choice = choice)
+        compose.showMap(viewModel = viewModel, map = map.view, focus = focus)
     }
 }
