@@ -127,7 +127,6 @@ class EntranceSheetFullScreenTest {
                 mapListChoice = choice,
                 computeContext = UnconfinedTestDispatcher(),
                 geometry = ::campusMapData,
-                barriers = { emptyList() },
             )
         compose.setContent {
             DostepnyKampusTheme {

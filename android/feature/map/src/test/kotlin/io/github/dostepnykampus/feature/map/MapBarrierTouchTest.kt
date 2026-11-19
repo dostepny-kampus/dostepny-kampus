@@ -140,7 +140,7 @@ class MapBarrierTouchTest {
                 mapListChoice = TestMapListChoice(),
                 computeContext = UnconfinedTestDispatcher(),
                 geometry = ::campusMapData,
-                barriers = { listOf(THRESHOLD) },
+                server = MapServer(barriers = { listOf(THRESHOLD) }),
             )
         compose.setContent {
             DostepnyKampusTheme {

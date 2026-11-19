@@ -61,7 +61,7 @@ class MapRoomSearchTest {
     @Test
     fun findsRoomWhenNoBuilding() =
         runTest(UnconfinedTestDispatcher()) {
-            val search = searched(query = "A-1 329", reply = ServerReply.Ok(listOf(FOUND)))
+            val search = searched(scope = this, query = "A-1 329", reply = ServerReply.Ok(listOf(FOUND)))
 
             assertEquals(listOf(FOUND), search.rooms, "Model nie oddał sali z serwera")
             assertEquals(listOf("A-1 329"), asked, "Model nie zapytał serwera o salę")
@@ -70,7 +70,7 @@ class MapRoomSearchTest {
     @Test
     fun skipsRoomSearchForBuilding() =
         runTest(UnconfinedTestDispatcher()) {
-            val search = searched(query = "C-13", reply = ServerReply.Ok(listOf(FOUND)))
+            val search = searched(scope = this, query = "C-13", reply = ServerReply.Ok(listOf(FOUND)))
 
             assertEquals(listOf("C-13"), search.buildings.orEmpty().map { it.symbol }, "Budynek zniknął z wyniku")
             assertEquals(emptyList<String>(), asked, "Model pytał o salę, choć budynek jest")
@@ -79,12 +79,12 @@ class MapRoomSearchTest {
     @Test
     fun givesNoRoomsOffline() =
         runTest(UnconfinedTestDispatcher()) {
-            val search = searched(query = "A-1 329", reply = ServerReply.Offline)
+            val search = searched(scope = this, query = "A-1 329", reply = ServerReply.Offline)
 
             assertEquals(emptyList<FoundRoom>(), search.rooms, "Brak sieci dał sale")
         }
 
-    private suspend fun TestScope.searched(query: String, reply: ServerReply<List<FoundRoom>>): BuildingSearch {
+    private suspend fun searched(scope: TestScope, query: String, reply: ServerReply<List<FoundRoom>>): BuildingSearch {
         val viewModel =
             CampusMapViewModel(
                 repository = BuildingCatalogRepository(EmptyCoroutineContext) { geoJson },
@@ -92,13 +92,16 @@ class MapRoomSearchTest {
                 mapListChoice = choice,
                 computeContext = EmptyCoroutineContext,
                 geometry = ::campusMapData,
-                roomSearch =
-                    RoomSearch {
-                        asked += it
-                        reply
-                    },
+                server =
+                    MapServer(
+                        rooms =
+                            RoomSearch { text ->
+                                asked += text
+                                reply
+                            },
+                    ),
             )
-        backgroundScope.launch { viewModel.uiState.collect {} }
+        scope.backgroundScope.launch { viewModel.uiState.collect {} }
         viewModel.search(query)
         return viewModel.uiState.first { it.search.query == query && it.search.buildings != null }.search
     }
