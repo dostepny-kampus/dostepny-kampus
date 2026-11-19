@@ -48,7 +48,9 @@ internal fun EntranceDetails(shown: ShownEntrance) {
  * Wymagania: US2.1, US16.3, BR-27
  */
 internal fun ShownEntrance.hasDetails(): Boolean =
-    entrance.placeDescription.isNotEmpty() || entrance.approach.isNotEmpty() || entrance.doorWidthCm > 0 ||
+    entrance.placeDescription.isNotEmpty() ||
+        entrance.approach.isNotEmpty() ||
+        entrance.doorWidthCm > 0 ||
         lift != null
 
 /** Szerokość drzwi [entrance] słowami; `null`, gdy dane jej nie podają. Wymagania: US2.1, BR-27 */
