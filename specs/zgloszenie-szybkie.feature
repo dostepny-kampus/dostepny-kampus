@@ -25,6 +25,13 @@ Funkcja: Zgłoszenie szybkie
     Wtedy aplikacja nie pyta o piętro
     Oraz miejscem zgłoszenia jest punkt wejścia głównego A-1, a budynkiem A-1
 
+  @US4.6 @BR-27 @aplikacja
+  Scenariusz: Napis wejścia bez nazwy w danych ma opis położenia
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz otworzył arkusz wejścia bez nazwy w danych, położonego od strony E-3, od południa
+    Jeżeli wybierze „Zgłoś barierę przy wejściu”
+    Wtedy napis o wejściu w zgłoszeniu szybkim brzmi „Wejście: »Wejście«, od strony E-3, od południa”
+
   # @do-zrobienia #3322: serwer wymaga jeszcze bieżącej pozycji.
   @US4.6 @BR-8 @BR-14 @serwer @do-zrobienia
   Scenariusz: Serwer bierze miejsce, budynek i piętro zgłoszenia od wybranego wejścia

@@ -115,6 +115,7 @@
     <string name="szybkie_poza_terenem">Jesteś poza terenem PWr. Zdjęcie bariery wyślesz tylko na terenie Politechniki.</string>
     <string name="szybkie_zrezygnuj">Zrezygnuj</string>
     <string name="szybkie_wejscie">Wejście: „%1$s”</string>
+    <string name="szybkie_wejscie_polozenie">Wejście: „%1$s”, %2$s</string>
     <string name="szybkie_wejscie_glowne">Wejście: główne</string>
     <string name="szybkie_wejscie_bez_nazwy">Wejście: bez nazwy</string>
     <string name="moje_naglowek">Moje zgłoszenia</string>
