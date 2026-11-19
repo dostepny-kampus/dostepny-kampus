@@ -20,6 +20,7 @@ import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.map.barrier.withBarriers
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
+import io.github.dostepnykampus.feature.map.building.isRoomNumberOnly
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.CampusMapDataCache
 import io.github.dostepnykampus.feature.map.campus.MapServer
@@ -169,8 +170,9 @@ class CampusMapViewModel(
         }
 
     /**
-     * Szuka budynku po symbolu [query] w [computeContext], a gdy go nie ma i tekst ma cyfry, sali na serwerze; wynik
-     * przychodzi w [CampusMapUiState.search].
+     * Szuka budynku po symbolu [query] w [computeContext], a gdy go nie ma i tekst ma cyfry, sali na serwerze; sam
+     * numer sali bez budynku daje prośbę o budynek zamiast pytania serwera. Wynik przychodzi w
+     * [CampusMapUiState.search].
      *
      * Wymagania: US1.3, US18.1
      */
@@ -185,9 +187,10 @@ class CampusMapViewModel(
         val results =
             pairs.mapLatest { (catalog, query) ->
                 val found = catalog?.let { withContext(computeContext) { searchBuildings(query, it.buildings) } }
-                val isRoomQuery = found?.isEmpty() == true && query.any(Char::isDigit)
-                val rooms = if (isRoomQuery) roomsFor(query.trim()) else emptyList()
-                BuildingSearch(query = query, buildings = found, rooms = rooms)
+                val isNoBuilding = found?.isEmpty() == true && query.any(Char::isDigit)
+                val needsBuilding = isNoBuilding && isRoomNumberOnly(query)
+                val rooms = if (isNoBuilding && !needsBuilding) roomsFor(query.trim()) else emptyList()
+                BuildingSearch(query = query, buildings = found, rooms = rooms, needsBuilding = needsBuilding)
             }
         return results.onStart { emit(BuildingSearch()) }
     }
