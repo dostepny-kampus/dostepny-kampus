@@ -5,9 +5,11 @@
  */
 package io.github.dostepnykampus.feature.map.building
 
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
+import io.github.dostepnykampus.core.model.submission.Severity
 import java.text.Collator
 import java.util.Locale
 
@@ -44,35 +46,53 @@ internal object EntranceNameOrder : Comparator<String> {
 /**
  * Wejście na liście karty budynku, w kolejności z [orderedEntrances].
  *
- * Wymagania: BR-25
+ * Wymagania: BR-25, US2.2
  *
  * @property entrance wejście z katalogu, już bez rodzajów spoza odwiedzających
  * @property isRecommended czy to jedyne wejście zalecane budynku; napis „Zalecane”
+ * @property barrier przyjęta bariera przy wejściu o najwyższej uciążliwości; `null` bez barier
  */
-data class OrderedEntrance(val entrance: Entrance, val isRecommended: Boolean)
+data class OrderedEntrance(
+    val entrance: Entrance,
+    val isRecommended: Boolean,
+    val barrier: AcceptedBarrier? = null,
+) {
+    /** Czy wejście „dostępne” ma przy sobie blokadę, przez którą nie może być zalecane. Wymagania: BR-25 */
+    val isBlocked: Boolean
+        get() = entrance.marking == EntranceMarking.ACCESSIBLE && barrier?.severity == Severity.BLOCKING
+}
 
 /**
- * Wejścia odwiedzających w kolejności karty budynku.
+ * Wejścia odwiedzających w kolejności karty budynku, każde z najcięższą barierą z [barriers] o jego
+ * identyfikatorze wejścia.
  *
- * Zalecane jest jedyne: wejście „dostępne”, a gdy jest ich kilka — wejście główne, a gdy żadne dostępne nie jest
- * główne — pierwsze „dostępne” z nazwą w danych ([Entrance.hasName]), a bez nazw — pierwsze „dostępne” w kolejności
- * z danych. Wejście „brak danych” nigdy nie jest zalecane. Bez wejścia „dostępne” nie ma zalecanego, a lista zaczyna
- * się od „niedostępne”. Dalej wejścia stoją w grupach oznaczeń, a w grupie najpierw wejścia z nazwą w danych
- * według [EntranceNameOrder], potem pozostałe w kolejności z danych.
+ * Zalecane jest jedyne: wejście „dostępne” bez blokady, a gdy jest ich kilka — wejście główne, a gdy żadne nie jest
+ * główne — pierwsze z nazwą w danych ([Entrance.hasName]), a bez nazw — pierwsze w kolejności z danych. Wejście
+ * „brak danych” nigdy nie jest zalecane. Bez takiego wejścia nie ma zalecanego, a lista zaczyna się od pierwszej
+ * grupy oznaczeń. Wejścia stoją w grupach oznaczeń, a w grupie najpierw wejścia z nazwą w danych według
+ * [EntranceNameOrder], potem pozostałe w kolejności z danych.
  *
- * Wymagania: BR-25
+ * Wymagania: BR-25, US2.2
  */
-fun orderedEntrances(entrances: List<Entrance>): List<OrderedEntrance> {
+fun orderedEntrances(entrances: List<Entrance>, barriers: List<AcceptedBarrier> = emptyList()): List<OrderedEntrance> {
+    val worst =
+        barriers
+            .filter { it.entranceId != null }
+            .groupBy { it.entranceId }
+            .mapValues { (_, found) -> found.maxBy { it.severity.value } }
     val visitors = entrances.filter(Entrance::isForVisitors)
-    val accessible = visitors.filter { it.marking == EntranceMarking.ACCESSIBLE }
+    val accessible =
+        visitors.filter {
+            it.marking == EntranceMarking.ACCESSIBLE && worst[it.id]?.severity != Severity.BLOCKING
+        }
     val recommended =
         accessible.firstOrNull { it.isMain } ?: accessible.firstOrNull(Entrance::hasName) ?: accessible.firstOrNull()
     val order =
         compareBy<Entrance>({ MARKING_ORDER.indexOf(it.marking) }, { !it.hasName })
             .thenBy(EntranceNameOrder) { if (it.hasName) it.name.orEmpty() else "" }
     val rest = visitors.filter { it !== recommended }.sortedWith(order)
-    val head = recommended?.let { OrderedEntrance(entrance = it, isRecommended = true) }
-    return listOfNotNull(head) + rest.map { OrderedEntrance(entrance = it, isRecommended = false) }
+    val head = recommended?.let { OrderedEntrance(entrance = it, isRecommended = true, barrier = worst[it.id]) }
+    return listOfNotNull(head) + rest.map { OrderedEntrance(it, isRecommended = false, barrier = worst[it.id]) }
 }
 
 /**
@@ -91,12 +111,21 @@ sealed interface VisitAnswer {
      * @property name nazwa wejścia; `null`, gdy danych nazwy nie ma
      * @property doorWidthCm szerokość drzwi w centymetrach; 0, gdy danych szerokości nie ma
      * @property place opis położenia wejścia „Wejście” bez nazwy w danych; pusty przy innym wejściu
+     * @property barrier uciążliwość najcięższej bariery przy wejściu zalecanym; `null` bez barier
      */
-    data class Accessible(val id: String, val name: String?, val doorWidthCm: Int = 0, val place: String = "") :
-        VisitAnswer
+    data class Accessible(
+        val id: String,
+        val name: String?,
+        val doorWidthCm: Int = 0,
+        val place: String = "",
+        val barrier: Severity? = null,
+    ) : VisitAnswer
 
     /** Żadne z [total] wejść odwiedzających nie jest „dostępne” i żadne nie ma „brak danych”. */
     data class NoAccessible(val total: Int) : VisitAnswer
+
+    /** Każde z [count] wejść „dostępne” ma blokadę, więc budynek nie ma wejścia zalecanego. Wymagania: BR-25 */
+    data class Blocked(val count: Int) : VisitAnswer
 
     /**
      * Nie ma wejścia „dostępne”, a o części nie ma danych.
@@ -110,21 +139,28 @@ sealed interface VisitAnswer {
 /**
  * Odpowiedź z listy [entrances] ułożonej przez [orderedEntrances].
  *
- * Wejście zalecane jest w zdaniu „ma wejście dostępne”. Bez niego, gdy choć jedno wejście ma „brak danych”,
- * zdanie podaje, o ilu z ilu wejść brak danych — także wtedy, gdy danych brak o wszystkich. Inaczej budynek
- * nie ma wejścia dostępnego. Pusta lista oznacza brak danych o wejściach.
+ * Wejście zalecane jest w zdaniu „ma wejście dostępne”. Bez niego, gdy każde wejście „dostępne” ma blokadę,
+ * odpowiedź podaje ich liczbę. Inaczej, gdy choć jedno wejście ma „brak danych”, zdanie podaje, o ilu z ilu wejść
+ * brak danych — także wtedy, gdy danych brak o wszystkich. Inaczej budynek nie ma wejścia dostępnego. Pusta lista
+ * oznacza brak danych o wejściach.
  *
  * Wymagania: BR-25, US3.1, US17.1
  */
 fun visitAnswer(entrances: List<OrderedEntrance>): VisitAnswer {
     if (entrances.isEmpty()) return VisitAnswer.NoData
     val recommended = entrances.firstOrNull { it.isRecommended }
-    val entrance = recommended?.entrance
+    val blocked = entrances.count { it.isBlocked }
     val answer =
-        entrance?.let { found ->
-            val place = if (found.isNameGenerated && !found.isMain) found.placeDescription else ""
-            VisitAnswer.Accessible(id = found.id, name = found.name, doorWidthCm = found.doorWidthCm, place = place)
-        }
+        recommended?.let { listed ->
+            val found = listed.entrance
+            VisitAnswer.Accessible(
+                id = found.id,
+                name = found.name,
+                doorWidthCm = found.doorWidthCm,
+                place = if (found.isNameGenerated && !found.isMain) found.placeDescription else "",
+                barrier = listed.barrier?.severity,
+            )
+        } ?: VisitAnswer.Blocked(blocked).takeIf { blocked > 0 }
     return answer ?: missingOrNone(entrances)
 }
 
@@ -157,7 +193,7 @@ enum class EntranceSummary {
 fun entranceSummary(entrances: List<OrderedEntrance>): EntranceSummary =
     when (visitAnswer(entrances)) {
         is VisitAnswer.Accessible -> EntranceSummary.Accessible
-        is VisitAnswer.NoAccessible -> EntranceSummary.NoAccessible
+        is VisitAnswer.NoAccessible, is VisitAnswer.Blocked -> EntranceSummary.NoAccessible
         VisitAnswer.NoData, is VisitAnswer.Unknown -> EntranceSummary.NoData
     }
 
