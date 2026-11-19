@@ -90,6 +90,8 @@ private const val OUTLINE_WIDTH = 2.4
  * @property toilet toaleta (`p_wc`)
  * @property wall ściany pomieszczeń (`p_kontur`)
  * @property floorWall ściana piętra, czyli obrys budynku z planem (`pwr_kontur`)
+ * @property chosen wypełnienie wyróżnionej sali (`p_wybrana`)
+ * @property chosenOutline kontur wyróżnionej sali (`p_wybrana_kontur`)
  */
 data class PlanColors(
     val classroom: String,
@@ -99,6 +101,8 @@ data class PlanColors(
     val toilet: String,
     val wall: String,
     val floorWall: String,
+    val chosen: String,
+    val chosenOutline: String,
 )
 
 /**
@@ -115,7 +119,10 @@ internal fun planFeatures(floors: Map<String, RoomList>): JsonElement =
         floors.flatMap { (floor, plan) ->
             val walls = plan.floorOutline.takeUnless { it is GeoMultiPolygon && it.polygons.isEmpty() }
             val outline = listOfNotNull(walls?.let { Feature(it.toGeometry(), part(floor, OUTLINE)) })
-            val rooms = plan.rooms.map { room -> Feature(room.geometry.toGeometry(), part(floor, ROOM, room.category)) }
+            val rooms =
+                plan.rooms.map { room ->
+                    Feature(room.geometry.toGeometry(), part(floor, ROOM, room.category, room = room.id))
+                }
             val numbers =
                 plan.rooms.filter { it.isLabelled }.mapNotNull { room ->
                     room.number?.let {
@@ -136,11 +143,12 @@ internal fun planFeatures(floors: Map<String, RoomList>): JsonElement =
  * Warstwy planu w kolorach [colors]: tło piętra [floor] w barwie korytarza, pomieszczenia według grupy funkcji, ich
  * ściany grubiejące z powiększeniem, jedna ściana piętra, znaki windy, toalety dostosowanej i schodów oraz numery sal
  * od powiększenia 19; numer albo znak, który zachodzi na inny, znika. Znak rośnie z powiększeniem, a winda i toaleta
- * mają pierwszeństwo przed schodami. Bez piętra filtry nie przepuszczają niczego.
+ * mają pierwszeństwo przed schodami. Sala [room] ma wyróżnienie z [chosenRoomLayers] nad ścianami. Bez piętra
+ * filtry nie przepuszczają niczego.
  *
- * Wymagania: US16.1, NFR-16, NFR-21
+ * Wymagania: US16.1, NFR-16, NFR-21, US18.1
  */
-internal fun planLayers(colors: PlanColors, floor: String? = null): List<JsonObject> {
+internal fun planLayers(colors: PlanColors, floor: String? = null, room: String? = null): List<JsonObject> {
     val none = planFilter(floor = floor, kind = ROOM)
     val fill =
         styleLayer(id = PLAN_ROOMS_LAYER, type = "fill", source = PLAN_SOURCE) {
@@ -158,33 +166,33 @@ internal fun planLayers(colors: PlanColors, floor: String? = null): List<JsonObj
             put(key = FILTER, element = none)
             paint("line-color" to JsonPrimitive(colors.wall), "line-width" to byZoom(WALL_WIDTHS))
         }
-    return listOf(
-        ground,
-        fill,
-        walls,
-        lineLayer(
-            id = PLAN_OUTLINE_LAYER,
-            source = PLAN_SOURCE,
-            color = colors.floorWall,
-            width = OUTLINE_WIDTH,
-            filter = outline,
-        ),
-        JsonObject(
-            symbolLayer(
-                id = PLAN_SIGNS_LAYER,
+    val chosen = chosenRoomLayers(colors = colors, floor = floor, room = room)
+    val above =
+        listOf(
+            lineLayer(
+                id = PLAN_OUTLINE_LAYER,
                 source = PLAN_SOURCE,
-                image = property(IMAGE),
-                "icon-size" to byZoom(PLAN_SIGN_SIZES.map { (zoom, dp) -> zoom to dp / PLAN_SIGN_DP }),
-                "symbol-sort-key" to signOrder(),
-            ) +
-                (FILTER to planFilter(floor = floor, kind = SIGN)),
-        ),
-        JsonObject(
-            symbolLayer(id = PLAN_NUMBERS_LAYER, source = PLAN_SOURCE, image = property(IMAGE)) +
-                (FILTER to planFilter(floor = floor, kind = NUMBER)) +
-                ("minzoom" to JsonPrimitive(NUMBERS_MIN_ZOOM)),
-        ),
-    )
+                color = colors.floorWall,
+                width = OUTLINE_WIDTH,
+                filter = outline,
+            ),
+            JsonObject(
+                symbolLayer(
+                    id = PLAN_SIGNS_LAYER,
+                    source = PLAN_SOURCE,
+                    image = property(IMAGE),
+                    "icon-size" to byZoom(PLAN_SIGN_SIZES.map { (zoom, dp) -> zoom to dp / PLAN_SIGN_DP }),
+                    "symbol-sort-key" to signOrder(),
+                ) +
+                    (FILTER to planFilter(floor = floor, kind = SIGN)),
+            ),
+            JsonObject(
+                symbolLayer(id = PLAN_NUMBERS_LAYER, source = PLAN_SOURCE, image = property(IMAGE)) +
+                    (FILTER to planFilter(floor = floor, kind = NUMBER)) +
+                    ("minzoom" to JsonPrimitive(NUMBERS_MIN_ZOOM)),
+            ),
+        )
+    return listOf(ground, fill, walls) + chosen + above
 }
 
 private fun byZoom(stops: List<Pair<Double, Double>>): JsonElement {
