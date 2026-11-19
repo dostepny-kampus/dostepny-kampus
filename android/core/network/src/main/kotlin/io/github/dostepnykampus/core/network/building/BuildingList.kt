@@ -146,6 +146,7 @@ private fun EntranceJson.toModel(): Entrance =
         approach = approach.orEmpty(),
         doorWidthCm = doorWidthCm?.coerceAtLeast(0) ?: 0,
         isNameGenerated = generatedName == true,
+        placeDescription = placeDescription.orEmpty(),
     )
 
 private fun EntranceJson.assessmentSource(): AssessmentSource =

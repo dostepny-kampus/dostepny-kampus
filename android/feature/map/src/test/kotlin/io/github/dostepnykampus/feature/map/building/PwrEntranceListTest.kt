@@ -6,20 +6,12 @@
 package io.github.dostepnykampus.feature.map.building
 
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
-import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.AssessmentSource
 import io.github.dostepnykampus.core.model.building.Entrance
@@ -130,28 +122,13 @@ class PwrEntranceListTest {
     }
 
     private fun group(entrances: List<Entrance>) {
-        val card = ready(entrances)
-        compose.setContent {
-            Themed {
-                EntrancesGroup(card = card, withAssessment = true, onShowEntrance = {}, onReport = {})
-            }
-        }
+        val card = readyCard(symbol = "A-1", entrances = entrances)
+        compose.setContent { EntranceListContent(card) }
     }
 
     private fun header(entrances: List<Entrance>) {
-        val card = ready(entrances)
-        compose.setContent {
-            Themed {
-                CardHeader(symbol = "A-1", card = card, mode = CardMode.Expanded, onClose = {})
-            }
-        }
-    }
-
-    @Composable
-    private fun Themed(content: @Composable () -> Unit) {
-        DostepnyKampusTheme {
-            Column(Modifier.background(MaterialTheme.colorScheme.surface).padding(16.dp)) { content() }
-        }
+        val card = readyCard(symbol = "A-1", entrances = entrances)
+        compose.setContent { CardHeaderContent(card) }
     }
 
     private companion object {
@@ -161,9 +138,6 @@ class PwrEntranceListTest {
                 pwr(id = "pwr/2", name = "Wejście", approach = "Do wejścia prowadzą schody.", doorWidthCm = 0)
                     .copy(marking = EntranceMarking.INACCESSIBLE),
             )
-
-        fun ready(entrances: List<Entrance>): BuildingCardUiState.Ready =
-            BuildingCardUiState.Ready(symbol = "A-1", name = null, entrances = orderedEntrances(entrances))
 
         fun pwr(id: String, name: String, approach: String, doorWidthCm: Int): Entrance =
             Entrance(

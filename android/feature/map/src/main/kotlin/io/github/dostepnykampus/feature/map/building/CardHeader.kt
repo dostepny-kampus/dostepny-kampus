@@ -99,12 +99,7 @@ private fun EntranceLines(summary: EntranceSummary, answer: VisitAnswer) {
 internal fun answerLine(answer: VisitAnswer): String? =
     when (answer) {
         is VisitAnswer.Accessible -> {
-            val name = answer.name ?: stringResource(R.string.karta_bez_nazwy)
-            if (answer.doorWidthCm > 0) {
-                stringResource(R.string.karta_odpowiedz_zalecane_drzwi, name, answer.doorWidthCm)
-            } else {
-                stringResource(R.string.karta_odpowiedz_zalecane, name)
-            }
+            if (answer.place.isNotEmpty()) placeLine(answer) else nameLine(answer)
         }
 
         is VisitAnswer.NoAccessible -> {
@@ -119,6 +114,28 @@ internal fun answerLine(answer: VisitAnswer): String? =
             null
         }
     }
+
+@Composable
+@ReadOnlyComposable
+private fun nameLine(answer: VisitAnswer.Accessible): String {
+    val name = answer.name ?: stringResource(R.string.karta_bez_nazwy)
+    return if (answer.doorWidthCm > 0) {
+        stringResource(R.string.karta_odpowiedz_zalecane_drzwi, name, answer.doorWidthCm)
+    } else {
+        stringResource(R.string.karta_odpowiedz_zalecane, name)
+    }
+}
+
+@Composable
+@ReadOnlyComposable
+private fun placeLine(answer: VisitAnswer.Accessible): String {
+    val place = answer.place.replaceFirstChar(Char::lowercaseChar)
+    return if (answer.doorWidthCm > 0) {
+        stringResource(R.string.karta_odpowiedz_polozenie_drzwi, place, answer.doorWidthCm)
+    } else {
+        stringResource(R.string.karta_odpowiedz_polozenie, place)
+    }
+}
 
 @Composable
 private fun EntranceSummaryLine(summary: EntranceSummary) {

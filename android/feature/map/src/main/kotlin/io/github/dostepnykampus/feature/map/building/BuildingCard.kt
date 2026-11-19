@@ -90,8 +90,10 @@ sealed interface VisitAnswer {
      * @property id identyfikator wejścia zalecanego
      * @property name nazwa wejścia; `null`, gdy danych nazwy nie ma
      * @property doorWidthCm szerokość drzwi w centymetrach; 0, gdy danych szerokości nie ma
+     * @property place opis położenia wejścia „Wejście” bez nazwy w danych; pusty przy innym wejściu
      */
-    data class Accessible(val id: String, val name: String?, val doorWidthCm: Int = 0) : VisitAnswer
+    data class Accessible(val id: String, val name: String?, val doorWidthCm: Int = 0, val place: String = "") :
+        VisitAnswer
 
     /** Żadne z [total] wejść odwiedzających nie jest „dostępne” i żadne nie ma „brak danych”. */
     data class NoAccessible(val total: Int) : VisitAnswer
@@ -118,7 +120,11 @@ fun visitAnswer(entrances: List<OrderedEntrance>): VisitAnswer {
     if (entrances.isEmpty()) return VisitAnswer.NoData
     val recommended = entrances.firstOrNull { it.isRecommended }
     val entrance = recommended?.entrance
-    val answer = entrance?.let { VisitAnswer.Accessible(id = it.id, name = it.name, doorWidthCm = it.doorWidthCm) }
+    val answer =
+        entrance?.let { found ->
+            val place = if (found.isNameGenerated && !found.isMain) found.placeDescription else ""
+            VisitAnswer.Accessible(id = found.id, name = found.name, doorWidthCm = found.doorWidthCm, place = place)
+        }
     return answer ?: missingOrNone(entrances)
 }
 
