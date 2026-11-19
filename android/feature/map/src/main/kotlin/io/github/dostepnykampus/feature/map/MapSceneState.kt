@@ -38,6 +38,8 @@ import io.github.dostepnykampus.feature.map.camera.belowTop
 import io.github.dostepnykampus.feature.map.camera.besideStart
 import io.github.dostepnykampus.feature.map.camera.byControl
 import io.github.dostepnykampus.feature.map.camera.fitted
+import io.github.dostepnykampus.feature.map.camera.inPlace
+import io.github.dostepnykampus.feature.map.camera.isSameView
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.pickLine
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
@@ -143,6 +145,7 @@ internal fun rememberMapSceneState(
     val last = remember { ShownCamera() }
     val (isCoveredBefore, topBefore) = rememberPrevious(isCovered to top)
     val seen = last.rememberView(isCovered = isCovered, wasCovered = isCoveredBefore, bar = top, view = view)
+    val closed = remember(isCovered) { seen.takeIf { isCoveredBefore && !isCovered } }
     val shown =
         seen?.let {
             density.besideFloorColumn(camera = it, symbol = view.shown, catalog = catalog, layers = layers, size = size)
@@ -173,7 +176,8 @@ internal fun rememberMapSceneState(
     }
     val card = rememberCardMove(building = selection?.building, pick = pick)
     val above = card.move?.takeIf { isCovered }
-    val move = above ?: uncovered?.byControl()
+    val isLeftView = uncovered != null && closed?.isSameView(uncovered) == true
+    val move = above ?: uncovered?.run { if (isLeftView) inPlace() else byControl() }
     SideEffect { last.keep(shown = move?.camera, covered = cover + reserve, isAbove = above != null) }
     val inset = sheetOrBarInset(isAbove = above != null, top = topInset, bottom = bottomInset, sign = sheet.toDouble())
     return MapSceneState(
@@ -190,8 +194,8 @@ internal fun rememberMapSceneState(
  * Ruch mapy V1 do pokazania.
  *
  * @property move ruch kamery do widoku: nad arkuszem V2 do zaznaczonego budynku według [cameraTransition], liczony raz
- *   na wybór, dopóki osoba nie ruszy mapy; poza tym przelot przycisków ([byControl]) do widoku zapisanego, na
- *   zaznaczonym wejściu albo startowego
+ *   na wybór, dopóki osoba nie ruszy mapy; po zamknięciu arkusza skok do tego samego obrazu mapy ([inPlace]); poza
+ *   tym przelot przycisków ([byControl]) do widoku zapisanego, na zaznaczonym wejściu albo startowego
  * @property inset zasłonięte krawędzie mapy: dół zasłonięty arkuszem V2, gdy [move] stawia budynek nad arkuszem
  *   V2, a poza tym góra pod paskiem i dół pod arkuszem zaznaczonego wejścia
  * @property landing wolna część mapy, w której staje widok po wyborze terenu
