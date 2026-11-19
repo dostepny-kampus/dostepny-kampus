@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotFocused
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
@@ -83,10 +84,10 @@ class MapSearchCloseTest {
         compose.onNode(hasSetTextAction()).performTextInput("C")
         compose.onNodeWithTag(MAP).performTouchInput { click() }
 
-        compose.runOnIdle { assertEquals(emptyList<String>(), opened, "Pierwsze dotknięcie nie otwiera budynku") }
+        compose.runOnIdle { assertEquals("Pierwsze dotknięcie nie otwiera budynku", emptyList<String>(), opened) }
         compose.onNode(hasSetTextAction()).assertIsNotFocused()
         compose.onNodeWithTag(MAP).performTouchInput { click() }
-        compose.runOnIdle { assertEquals(listOf("C-13"), opened, "Drugie dotknięcie otwiera budynek") }
+        compose.runOnIdle { assertEquals("Drugie dotknięcie otwiera budynek", listOf("C-13"), opened) }
     }
 
     private companion object {
