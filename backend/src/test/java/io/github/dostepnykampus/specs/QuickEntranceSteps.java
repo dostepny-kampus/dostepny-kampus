@@ -59,10 +59,7 @@ public final class QuickEntranceSteps {
      * @param symbol Symbol budynku
      * @throws Exception Gdy MockMvc nie wykona żądania
      */
-    @When(
-        "^wyśle zgłoszenie szybkie ze zdjęciem, grupą barier i wejściem głównym (\\S+), "
-            + "bez bieżącej pozycji$"
-    )
+    @When("^wyśle zgłoszenie szybkie .+ wejściem głównym (\\S+), bez bieżącej pozycji$")
     public void sendsAtEntrance(final String symbol) throws Exception {
         this.jdbc.sql(
             String.join(
@@ -81,10 +78,7 @@ public final class QuickEntranceSteps {
      *
      * @param symbol Symbol budynku
      */
-    @Then(
-        "^zgłoszenie ma miejsce w punkcie wejścia głównego (\\S+), budynek \\1 "
-            + "i piętro tego wejścia$"
-    )
+    @Then("^zgłoszenie ma miejsce w punkcie wejścia głównego (\\S+), budynek .+ tego wejścia$")
     public void placedAtEntrance(final String symbol) {
         MatcherAssert.assertThat(
             "Serwer nie przyjął zgłoszenia przy wejściu albo nie dał mu piętra wejścia",
