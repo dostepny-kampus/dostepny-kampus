@@ -173,7 +173,10 @@ paths:
         - name: q
           in: query
           required: true
-          description: Numer sali, opcjonalnie poprzedzony symbolem budynku, np. `A-1 135`.
+          description: >-
+            Numer sali i opcjonalnie symbol budynku w dowolnej kolejności, rozdzielone odstępem, przecinkiem
+            albo ukośnikiem; słowa „sala”, „s.” i „pok.” są pomijane, np. `A-1 135`, `135 A-1`, `sala 135 A-1`,
+            `A-1/135`.
           schema: {type: string, minLength: 1, maxLength: 50, description: "Tekst wyszukiwania."}
       responses:
         '429': {$ref: '#/components/responses/TooManyRequests'}
