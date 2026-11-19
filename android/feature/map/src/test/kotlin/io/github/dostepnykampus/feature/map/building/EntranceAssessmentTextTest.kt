@@ -55,7 +55,7 @@ class EntranceAssessmentTextTest {
     /**
      * Wiersz: V2, wszystkie wejścia z importu z tym samym dniem → jeden wiersz „Z map i opisów, stan z 1.10.2026”
      *   nad grupą „Wejścia”, import. Przy wejściach nie ma osobnej daty ani źródła.
-     * Scenariusz: oznaczenie-wejscia.feature: Wspólna data i źródło stoją raz nad listą wejść
+     * Scenariusz (częściowo): oznaczenie-wejscia.feature: Wspólna data i źródło stoją raz pod listą wejść
      *
      * Wymagania: US17.3, BR-24
      */

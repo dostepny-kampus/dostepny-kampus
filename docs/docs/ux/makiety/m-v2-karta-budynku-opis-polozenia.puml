@@ -7,7 +7,6 @@ $ekran_poczatek()
 $naglowek_karty("C-19", "<i>[nazwa budynku z danych]</i>")
 $wiersz_wejsc("dostepne", "Zalecane wejście od strony C-20, od północy. Drzwi 100 cm.", "")
 --
-Z map i opisów, stan z <i>[data]</i>
 $sekcja("Wejścia")
 $wejscia_poczatek()
 <b>$dostepne()</b>$dk_spacje(2)Zalecane
@@ -24,6 +23,7 @@ Od wschodu.
 { <b>Wejście</b> | <&chevron-right> }
 Od strony C-20, od północy.
 $wejscia_koniec()
+Z map i opisów, stan z <i>[data]</i>
 $tekst("[dalej pełny opis jak na wzorcu]", "i")
 $pasek_dolny_konto()
 $ekran_koniec()
