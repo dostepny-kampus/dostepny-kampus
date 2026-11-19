@@ -30,11 +30,13 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Wyszukiwanie sali w modelu mapy V1, gdy budynku o takim symbolu nie ma. Wymagania: US18.1 */
+/** Wyszukiwanie sali w modelu mapy V1: sala, gdy budynku o takim symbolu nie ma, i sam numer. Wymagania: US18.1 */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MapRoomSearchTest {
     private val asked = mutableListOf<String>()
@@ -75,6 +77,34 @@ class MapRoomSearchTest {
 
             assertEquals(listOf("C-13"), search.buildings.orEmpty().map { it.symbol }, "Budynek zniknął z wyniku")
             assertEquals(emptyList<String>(), asked, "Model pytał o salę, choć budynek jest")
+        }
+
+    @Test
+    fun findsRoomNumberFirst() =
+        runTest(UnconfinedTestDispatcher()) {
+            val search = searched(scope = this, query = "329 A-1", reply = ServerReply.Ok(listOf(FOUND)))
+
+            assertEquals(listOf(FOUND), search.rooms, "Model nie oddał sali dla numeru przed budynkiem")
+            assertEquals(listOf("329 A-1"), asked, "Model nie zapytał serwera o numer przed budynkiem")
+        }
+
+    @Test
+    fun asksForBuilding() =
+        runTest(UnconfinedTestDispatcher()) {
+            listOf("329", " sala 329 ", "s. 2.21").forEach { query ->
+                val search = searched(scope = this, query = query, reply = ServerReply.Ok(listOf(FOUND)))
+
+                assertTrue(search.isBuildingMissing, "Sam numer sali „$query” nie dał prośby o budynek")
+            }
+            assertEquals(emptyList<String>(), asked, "Model szukał sali bez budynku")
+        }
+
+    @Test
+    fun keepsBuildingWithNumber() =
+        runTest(UnconfinedTestDispatcher()) {
+            val search = searched(scope = this, query = "A-1 329", reply = ServerReply.Ok(listOf(FOUND)))
+
+            assertFalse(search.isBuildingMissing, "Zapytanie z budynkiem dało prośbę o budynek")
         }
 
     @Test
