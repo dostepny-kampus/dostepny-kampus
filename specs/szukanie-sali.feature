@@ -3,7 +3,8 @@ Funkcja: Wyszukanie sali
   Gość niezalogowany i Odwiedzający szukają sali po numerze, aby wiedzieć, na którym jest piętrze
   i jak dojść do niej bez schodów (N1). Piętro wejścia zalecanego pochodzi z danych planu PWr.
 
-  @US18.1 @aplikacja @serwer
+  # @do-zrobienia #2549: zapisy z numerem na początku i ze słowem „sala” w aplikacji.
+  @US18.1 @aplikacja @serwer @do-zrobienia
   Szablon scenariusza: Wyszukanie sali po budynku i numerze w różnym zapisie
     Zakładając, że dane PWr budynku A-1 mają salę 329 z funkcją i piętrem
     Oraz Gość niezalogowany ma otwartą mapę kampusu
@@ -34,7 +35,8 @@ Funkcja: Wyszukanie sali
     Wtedy pod polem widzi „Dopisz budynek do numeru sali. Na przykład: A-1 329.”
     Ale aplikacja nie szuka sali
 
-  @US18.2 @BR-25 @aplikacja
+  # @do-zrobienia #1481: lista „Jak dojść” w karcie sali.
+  @US18.2 @BR-25 @aplikacja @do-zrobienia
   Szablon scenariusza: Kroki do sali podane tekstem bez rysowania trasy
     # Sala 012 na piętrze wejścia i brak piętra wejścia to dane testowe, a nie stan faktyczny A-1.
     Zakładając, że <dane>
