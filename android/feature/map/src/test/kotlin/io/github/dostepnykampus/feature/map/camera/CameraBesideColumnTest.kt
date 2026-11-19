@@ -3,12 +3,9 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map
+package io.github.dostepnykampus.feature.map.camera
 
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.map.camera.MapCamera
-import io.github.dostepnykampus.feature.map.camera.START_ZOOM
-import io.github.dostepnykampus.feature.map.camera.besideStart
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -28,7 +25,7 @@ class CameraBesideColumnTest {
 
     /** Budynek węższy niż mapa obok kolumny stoi na środku tej części, nie pod kolumną. */
     @Test
-    fun centersNarrowBuildingBesideColumn() {
+    fun centersNarrowBuilding() {
         val narrow = outline(widthDp = 200.0)
         val moved = view.besideStart(outline = narrow, widthDp = WIDTH_DP, startDp = COLUMN_DP)
         val west = screenDp(longitude = narrow.west, camera = moved)
