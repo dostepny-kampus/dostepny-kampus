@@ -24,6 +24,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,11 +51,11 @@ import kotlinx.coroutines.flow.filter
 import java.io.File
 
 /**
- * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie; kroki przed
- * wysłaniem wymagają zgody na dokładną lokalizację, a pozycja jest ustalana od kroku 1. Krok 1: „Zrób zdjęcie” otwiera
- * aparat i prowadzi do kroku 2; „Wstecz” ze zdjęciem pyta o rezygnację, a „Tak, zrezygnuj” usuwa zdjęcie. Krok 2:
- * grupa, a w konturze albo przy nieznanej pozycji pytanie o piętro. Krok 3: „Brak pozycji” ma „Spróbuj ponownie” i
- * „Zrezygnuj”, a „Tak, zrezygnuj” otwiera mapę. Po wysłaniu ekran pokazuje tylko potwierdzenie (`SENT`).
+ * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie (`SENT`).
+ * Kroki przed wysłaniem wymagają zgody na dokładną lokalizację, a pozycja jest ustalana od kroku 1; zgłoszenie
+ * przy wejściu wybranym w arkuszu bierze miejsce z wejścia, bez tej zgody i bez pytania o piętro. „Wstecz” z kroku 1
+ * ze zdjęciem i „Zrezygnuj” przy „Brak pozycji” pytają o rezygnację; „Tak, zrezygnuj” usuwa zdjęcie i wraca
+ * z kroku 1 do ekranu sprzed V4, a z kroku 3 na mapę.
  *
  * Wymagania: US4.1, NFR-27, BR-8, BR-14, BR-G2, UC7
  *
@@ -99,18 +100,28 @@ fun QuickReportScreen(
 
                     else -> {
                         QuickStepProgress(step = route.step.ordinal + 1)
-                        WithLocationPermission(onBack = actions.onBack) {
-                            QuickStep(
-                                route = route,
-                                actions = actions,
-                                models = models,
-                                onGiveUp = { isLeaving = true },
-                            )
-                        }
+                        QuickSteps(route = route, actions = actions, models = models, onGiveUp = { isLeaving = true })
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun QuickSteps(
+    route: ReportRoute,
+    actions: QuickReportActions,
+    models: QuickReportModels,
+    onGiveUp: () -> Unit,
+) {
+    val step: @Composable () -> Unit = {
+        QuickStep(route = route, actions = actions, models = models, onGiveUp = onGiveUp)
+    }
+    if (route.entranceId == null) {
+        WithLocationPermission(onBack = actions.onBack, content = step)
+    } else {
+        step()
     }
 }
 
@@ -127,6 +138,7 @@ private fun QuickStep(
     onGiveUp: () -> Unit,
 ) {
     val where = models.sendModel()
+    SideEffect { where.start(route.entranceId) }
     when (route.step) {
         ReportStep.PHOTO -> {
             QuickPositionWarmUp(where)
@@ -187,16 +199,7 @@ private fun QuickPhotoStep(
 private fun QuickEntranceLine(id: String, entrances: QuickEntranceViewModel = hiltViewModel()) {
     val updates = remember(entrances, id) { entrances.entrance(id) }
     val entrance by updates.collectAsStateWithLifecycle(initialValue = null)
-    entrance?.let { chosen ->
-        val name = chosen.name
-        Text(
-            when {
-                name != null -> stringResource(R.string.szybkie_wejscie, name)
-                chosen.isMain -> stringResource(R.string.szybkie_wejscie_glowne)
-                else -> stringResource(R.string.szybkie_wejscie_bez_nazwy)
-            },
-        )
-    }
+    entrance?.let { Text(entranceLine(it)) }
 }
 
 @Composable
@@ -208,7 +211,8 @@ private fun QuickGroupStep(route: ReportRoute, onNext: (ReportRoute) -> Unit, wh
     val group = asked
     if (group == null) {
         QuickGroupQuestion(selected = route.group, onGroup = { chosen ->
-            if (chosen.asksFloor(isInBuilding)) asked = chosen else onNext(route.copy(group = chosen))
+            val isAskingFloor = route.entranceId == null && chosen.asksFloor(isInBuilding)
+            if (isAskingFloor) asked = chosen else onNext(route.copy(group = chosen))
         })
     } else {
         BackHandler { asked = null }

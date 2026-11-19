@@ -9,6 +9,7 @@ import android.Manifest
 import android.app.Application
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -216,21 +217,57 @@ class QuickReportScreenTest {
         assertFalse(photo.exists())
     }
 
+    /**
+     * Wiersz: V4 krok 1 bez wybranego wejścia → bez napisu o wejściu.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Odnośnik w wierszu kilku wejść bez danych bierze miejsce
+     *   z bieżącej pozycji
+     *
+     * Wymagania: US4.6
+     */
     @Test
     fun opensStepOneWithoutEntrance() {
         show(ReportRoute())
         compose.onNodeWithText("Wejście", substring = true).assertDoesNotExist()
     }
 
+    /**
+     * Wiersz: V4 po „Zgłoś barierę przy wejściu” → bez zgody na lokalizację, bez odbiornika pozycji i bez pytania
+     *   o piętro.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego
+     *   wejścia
+     *
+     * Wymagania: US4.6, BR-8
+     */
+    @Test
+    fun skipsLocationAtEntrance() {
+        var isListened = false
+        val atEntrance = atGroup.copy(entranceId = "node/6")
+        show(atEntrance, positions = PositionSource { flow { isListened = true } }, isLocationGranted = false)
+        compose.onNodeWithText("Toalety").performClick()
+        compose.onNodeWithText("Na którym piętrze?").assertDoesNotExist()
+        assertEquals(listOf(atEntrance.copy(group = BarrierGroup.TOILETS)), next)
+        assertFalse(isListened)
+    }
+
+    /** Wiersz: V4 krok 3 przy wejściu → napis o wejściu zamiast zdania o miejscu, „Wyślij” czynne. Wymagania: US4.6 */
+    @Test
+    fun sendsAtEntrance() {
+        val photo = folder.newFile("zdjecie-1.jpg").apply { writeBytes(byteArrayOf(1, 2, 3)) }
+        show(atSend(photo.path).copy(entranceId = "node/6"), isLocationGranted = false)
+        compose.onNodeWithText("Wejście: „G”").assertIsDisplayed()
+        compose.onNodeWithText("Wyślij").assertIsEnabled()
+    }
+
     private fun show(
         route: ReportRoute,
         positions: PositionSource = PositionSource { flow { throw SecurityException("brak zgody") } },
         floors: BuildingFloors = BuildingFloors { null },
+        isLocationGranted: Boolean = true,
     ) {
         val app = ApplicationProvider.getApplicationContext<Application>()
-        shadowOf(app).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+        if (isLocationGranted) shadowOf(app).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
         val transcoder = PhotoTranscoder()
-        val catalog = BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS }
+        val catalog = BuildingCatalogRepository(EmptyCoroutineContext) { QUICK_CAMPUS }
         val entrances = QuickEntranceViewModel(catalog)
         val send =
             QuickSendViewModel(
@@ -259,12 +296,5 @@ class QuickReportScreenTest {
         const val ACCURACY = 6.0
         val INSIDE = GeoPoint(longitude = 17.0605, latitude = 51.1105)
         val OUTSIDE = GeoPoint(longitude = 17.059, latitude = 51.109)
-        const val CAMPUS =
-            """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
-                """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"A-1",""" +
-                """"osm_id":"way/A-1"},"geometry":{"type":"Polygon","coordinates":[[[17.06,51.11],""" +
-                """[17.061,51.11],[17.061,51.111],[17.06,51.111],[17.06,51.11]]]}},""" +
-                """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/6",""" +
-                """"entrance":"yes","ref":"G"},"geometry":{"type":"Point","coordinates":[17.06,51.11]}}]}"""
     }
 }

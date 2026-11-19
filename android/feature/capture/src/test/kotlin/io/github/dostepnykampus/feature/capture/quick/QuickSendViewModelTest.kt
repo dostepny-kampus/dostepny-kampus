@@ -73,11 +73,11 @@ class QuickSendViewModelTest {
             buildingFloors = BuildingFloors { null },
             buildingLookup =
                 BuildingLookup(
-                    catalog = BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS },
+                    catalog = BuildingCatalogRepository(EmptyCoroutineContext) { QUICK_CAMPUS },
                     computeContext = dispatcher,
                     grounds = CampusGrounds { isOnGrounds },
                 ),
-        )
+        ).apply { start(entranceId = null) }
     }
 
     @BeforeEach
@@ -118,7 +118,14 @@ class QuickSendViewModelTest {
             assertEquals(listOf(SubmissionFloor(number = 1)), saved.map { it.floor })
         }
 
-    /** Następny odczyt nie zmienia budynku używanego w zgłoszeniu V4. Wymagania: US4.1 */
+    /**
+     * Zgłoszenie bez wybranego wejścia bierze miejsce z bieżącej pozycji, a następny odczyt nie zmienia budynku
+     * używanego w zgłoszeniu V4.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Odnośnik w wierszu kilku wejść bez danych bierze miejsce
+     *   z bieżącej pozycji
+     *
+     * Wymagania: US4.1, US4.6
+     */
     @Test
     fun keepsFirstPosition() =
         runTest(dispatcher) {
@@ -272,6 +279,25 @@ class QuickSendViewModelTest {
             assertEquals(QuickSendStage.FAILED, viewModel.stage.value)
         }
 
+    /**
+     * Zgłoszenie przy wejściu bierze punkt i budynek wejścia z katalogu i nie słucha odbiornika pozycji.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego
+     *   wejścia
+     *
+     * Wymagania: US4.6, BR-8
+     */
+    @Test
+    fun takesPlaceFromEntrance() =
+        runTest(dispatcher) {
+            source = flow { error("odbiornik pozycji przy wejściu") }
+            viewModel.start(entranceId = "node/6")
+            watch()
+            val position = (viewModel.lookup.value as QuickLookup.Found).position
+            assertEquals(ENTRANCE, position.point)
+            assertEquals("A-1", position.buildingSymbol)
+            assertEquals("node/6", position.entrance?.id)
+        }
+
     private fun TestScope.watch() = backgroundScope.launch { viewModel.lookup.collect {} }.also { runCurrent() }
 
     private fun TestScope.fix(point: GeoPoint) {
@@ -282,10 +308,6 @@ class QuickSendViewModelTest {
     private companion object {
         val INSIDE_A1 = GeoPoint(longitude = 17.0605, latitude = 51.1105)
         val OUTSIDE = GeoPoint(longitude = 17.10, latitude = 51.20)
-        const val CAMPUS =
-            """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
-                """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"A-1",""" +
-                """"osm_id":"way/A-1"},"geometry":{"type":"Polygon","coordinates":[[[17.06,51.11],""" +
-                """[17.061,51.11],[17.061,51.111],[17.06,51.111],[17.06,51.11]]]}}]}"""
+        val ENTRANCE = GeoPoint(longitude = 17.06, latitude = 51.11)
     }
 }

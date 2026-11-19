@@ -14,8 +14,7 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie powstaje po 3 krokach
     Oraz ma dołączoną bieżącą pozycję telefonu, o którą aplikacja nie pytała
 
-  # @do-zrobienia #3323: aplikacja bierze jeszcze miejsce z bieżącej pozycji.
-  @US4.6 @BR-8 @BR-14 @aplikacja @do-zrobienia
+  @US4.6 @BR-8 @BR-14 @aplikacja
   Scenariusz: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego wejścia
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz otworzył arkusz wejścia głównego A-1 na mapie
@@ -34,8 +33,7 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie ma miejsce w punkcie wejścia głównego A-1, budynek A-1 i piętro tego wejścia
     Ale zgłoszenie bez bieżącej pozycji i bez wejścia albo z nieznanym wejściem serwer odrzuca
 
-  # @do-zrobienia #3323: bez testu odnośnika w wierszu kilku wejść.
-  @US4.6 @BR-8 @aplikacja @do-zrobienia
+  @US4.6 @BR-8 @aplikacja
   Scenariusz: Odnośnik w wierszu kilku wejść bez danych bierze miejsce z bieżącej pozycji
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz karta budynku pokazuje jeden wiersz kilku wejść bez danych
