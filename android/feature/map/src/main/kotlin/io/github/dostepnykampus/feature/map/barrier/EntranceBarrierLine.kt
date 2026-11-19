@@ -35,7 +35,7 @@ internal fun EntranceBarrierLine(barrier: AcceptedBarrier) {
     ) {
         SeverityIcon(barrier.severity)
         Text(
-            text = type?.let { stringResource(R.string.karta_wejscie_bariera, severity, it) } ?: severity,
+            text = type?.let { stringResource(R.string.mapa_bariera_typ, severity, it) } ?: severity,
             fontWeight = Typografia.wyroznienieWaga,
             style = MaterialTheme.typography.bodyLarge,
         )

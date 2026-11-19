@@ -111,7 +111,6 @@
     <string name="karta_odpowiedz_bariera">%1$s Przy wejściu jest bariera: %2$s.</string>
     <string name="karta_odpowiedz_jedyne_blokada">Jedyne wejście dostępne ma blokadę.</string>
     <string name="karta_odpowiedz_kazde_blokada">Każde z %1$d wejść dostępnych ma blokadę.</string>
-    <string name="karta_wejscie_bariera">%1$s: %2$s</string>
     <string name="karta_zglos">Zgłoś barierę przy wejściu</string>
     <string name="karta_zglos_czytaj">Zgłoś barierę przy wejściu: »%1$s«</string>
     <string name="karta_bariera_usunieta">Zgłoś, że bariery nie ma</string>
