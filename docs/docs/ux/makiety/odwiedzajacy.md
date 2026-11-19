@@ -158,13 +158,14 @@ Czynność główna: brak; zdanie mówi, dlaczego planu nie widać.
 
 ### V1: winda na planie
 
-![Makieta V1 po dotknięciu windy na planie 2 piętra A-1: arkusz z nagłówkiem Winda i przyciskiem Zamknij, klatkami C i D oraz piętrami, na które jedzie winda, z dopiskiem tutaj jesteś przy 2 piętrze i przyciskiem Zgłoś barierę przy windzie](../../_generated/m-v1-mapa-plan-winda.svg)
+![Makieta V1 po dotknięciu windy na planie 2 piętra A-1: arkusz z nagłówkiem Winda i przyciskiem Zamknij, wierszem Budynek A-1, piętrem, klatkami C i D oraz piętrami, na które jedzie winda, z dopiskiem tutaj jesteś przy 2 piętrze i przyciskiem Zgłoś barierę przy windzie](../../_generated/m-v1-mapa-plan-winda.svg)
 
 Czynność główna: przeczytanie, na które piętra jedzie winda.
 
 | Element | AC/BR/NFR |
 | --- | --- |
 | Dotknięcie windy na planie otwiera arkusz „Winda” z klatkami, przy których stoi | US16.1, US18.2 |
+| Pod nagłówkiem wiersz budynku „Budynek A-1”, jak w arkuszu toalety: otwiera V2 na niskiej wysokości. Pod nim piętro osobnym wierszem, np. „2 piętro” | US2.8, US16.1, decyzja z 19.11.2026 |
 | „Jedzie na: …” z piętrami windy; przy bieżącym piętrze „(tutaj jesteś)” | US16.1, US18.2, NFR-18 |
 | „Zamknij” w nagłówku; przy dużej czcionce arkusz na cały ekran | NFR-53, NFR-20 |
 | „Zgłoś barierę przy windzie” na końcu arkusza: V4 z wybraną windą i piętrem planu, Gość: L1 | US4.6, US14.2, BR-8 |
@@ -209,7 +210,7 @@ Czynność główna: przeczytanie, jaka to bariera. Wiersz budynku „Budynek A-
 
 ### V1: arkusz wejścia
 
-![Makieta V1 z arkuszem wejścia zalecanego A-1: mapa z pinezką przy Wejściu bramą od ul. Norwida, a pod mapą arkusz z nagłówkiem Wejście i Zamknij, wierszem Budynek A-1, słowem Dostępne, napisem Zalecane z datą i źródłem, częściami Dojście, Drzwi, Za drzwiami, Bariery przy tym wejściu i przyciskiem Zgłoś barierę przy wejściu](../../_generated/m-v1-mapa-wejscie.svg)
+![Makieta V1 z arkuszem wejścia zalecanego A-1: mapa z pinezką przy Wejściu bramą od ul. Norwida, a pod mapą arkusz z nagłówkiem Wejście i Zamknij, wierszem Budynek A-1, słowem Dostępne, napisem Zalecane z datą i źródłem, częścią Bariery przy tym wejściu zaraz pod nazwą, częściami Dojście, Drzwi, Za drzwiami i przyciskiem Zgłoś barierę przy wejściu](../../_generated/m-v1-mapa-wejscie.svg)
 
 Czynność główna: brak; odpowiedź, którym wejściem wejść, podała już karta V2.
 
@@ -220,8 +221,8 @@ Czynność główna: brak; odpowiedź, którym wejściem wejść, podała już k
 | Znak oznaczenia, nagłówek „Wejście” i obrysowany „Zamknij”; po otwarciu fokus TalkBack na nagłówku. „Zamknij” zamyka arkusz razem z kartą i zostawia mapę. „Wstecz” arkusza otwartego z karty V2 wraca do karty: ta sama wysokość, to samo przewinięcie | US2.1, US3.3, NFR-18, NFR-21, NFR-53 |
 | Pod nagłówkiem wiersz budynku: znak budynku, „Budynek A-1” i strzałka. Otwiera V2 na niskiej wysokości, a arkusz otwarty z karty wraca do niej; mapa zachowuje się jak po dotknięciu konturu | US2.8, US3.3, NFR-18, decyzja z 18.11.2026 |
 | Pod słowem oznaczenia „Zalecane.”, data i źródło | US17.3, BR-24, BR-25, PW-3 |
+| „Bariery przy tym wejściu” zaraz pod oznaczeniem, źródłem i nazwą, przed „Dojście”, żeby o barierze mówić bez przewijania: typ i uciążliwość jako zastępniki, bo deklaracja A-1 nie podaje barier przy tym wejściu. Typ stoi krojem nagłówków części. Bez barier tej części nie ma, a arkusz się nie zmienia | US2.2, US3.3, PW-3, decyzja z 19.11.2026 |
 | Części „Dojście”, „Drzwi” z szerokością i „Za drzwiami” z windą i odległością w linii prostej. Te same części z nagłówkami przy każdym wejściu; część bez danych nie stoi. Pod „Za drzwiami” zakres pięter windy, np. „Jeździ od piwnicy do 3 piętra.” | US3.3, US16.3, BR-25 |
-| „Bariery przy tym wejściu”: typ i uciążliwość jako zastępniki, bo deklaracja A-1 nie podaje barier przy tym wejściu. Typ stoi krojem nagłówków części | US2.2, US3.3, PW-3 |
 | Innych wejść budynku arkusz nie pokazuje: są na liście „Wejścia” karty V2 | US3.3 |
 | „Zgłoś barierę przy wejściu” na końcu arkusza: V4 z wybranym wejściem, Gość: L1 | US4.6, US14.2, WCAG 2.5.3 |
 
@@ -488,7 +489,7 @@ Czynność główna: „Zrób zdjęcie”.
 | Stan bez osobnej makiety | Co się zmienia |
 | --- | --- |
 | Błąd zapisu | „W telefonie brakuje miejsca, więc nie zapisaliśmy zdjęcia bariery…” i „Spróbuj ponownie”; zdjęcie i grupa zostają (NFR-5, NFR-7) |
-| Z wybranym wejściem | po „Zgłoś barierę przy wejściu” w arkuszu wejścia pod numerem kroku napis „Wejście: »nazwa wejścia«”. Przy wejściu bez nazwy w danych napis ma opis położenia: „Wejście: »Wejście«, od strony E-3, od południa”. Bez prośby o lokalizację i bez pytania o piętro (US4.6, BR-8) |
+| Z wybranym wejściem | po „Zgłoś barierę przy wejściu” w arkuszu wejścia pod numerem kroku napis „Wejście: »nazwa wejścia«”; cudzysłów stoi tylko przy nazwie z danych, więc przy wejściu głównym bez nazwy „Wejście: Wejście główne”. Przy wejściu bez nazwy w danych napis ma opis położenia: „Wejście: Wejście, od strony E-3, od południa”. Bez prośby o lokalizację i bez pytania o piętro (US4.6, BR-8) |
 
 ### V4: krok 1 ze zdjęciem
 

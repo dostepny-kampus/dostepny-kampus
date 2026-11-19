@@ -58,9 +58,15 @@ split again
   split
     -> dotknięcie\nwindy;
     :V1 Arkusz windy; <<stan>>
-    -> „Zamknij”;
-    :V1 Plan piętra\nna mapie; <<stan>>
-    detach
+    split
+      -> „Zamknij”;
+      :V1 Plan piętra\nna mapie; <<stan>>
+      detach
+    split again
+      -> „Budynek A-1”;
+      :V2 Karta budynku\nna niskiej wysokości;
+      detach
+    end split
   split again
     -> oddalenie;
     :V1 Mapa kampusu;
