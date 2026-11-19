@@ -64,10 +64,10 @@ public data class CardEntrances(val entrances: List<Entrance>, val evacuationExi
  * [ServerEntrances] z karty budynku z serwera (`GET /buildings/{symbol}`).
  *
  * Każde wywołanie pyta serwer przez [details] raz, a wywołania o ten sam symbol w trakcie trwającego pytania czekają
- * na jego wynik; anulowanie pytającego każe pozostałym pytać od nowa. Zapytanie i odczyt odpowiedzi idą poza wątkiem
- * UI w kliencie HTTP. Karta z [ServerReply.Ok] jest zapamiętywana dla symbolu; przy innym wyniku (brak sieci, błąd serwera,
- * nieznany budynek) zostają wejścia i wyjścia pobrane wcześniej, a bez nich puste listy. Pamięć żyje tyle co
- * obiekt, więc w aplikacji jest jeden na proces.
+ * na jego wynik; anulowanie pytającego każe pozostałym pytać od nowa. Zapytanie i odczyt odpowiedzi idą poza
+ * wątkiem UI w kliencie HTTP. Karta z [ServerReply.Ok] jest zapamiętywana dla symbolu; przy innym wyniku (brak sieci,
+ * błąd serwera, nieznany budynek) zostają wejścia i wyjścia pobrane wcześniej, a bez nich puste listy. Pamięć żyje
+ * tyle co obiekt, więc w aplikacji jest jeden na proces.
  *
  * Wymagania: NFR-10
  *
