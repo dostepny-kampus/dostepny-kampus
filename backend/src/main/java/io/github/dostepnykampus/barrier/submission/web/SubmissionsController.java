@@ -144,7 +144,9 @@ public final class SubmissionsController {
             .filter(replaced -> this.finder.authorOnly(replaced, account.getName())).isPresent()) {
             throw new ForbiddenChange("Zwykłą zmianę tego zgłoszenia składa tylko jego autor");
         }
-        final CreateResult result = this.service.create(body.toCommand(account.getName(), this.buildings));
+        final CreateResult result = this.service.create(
+            body.toCommand(account.getName(), this.buildings)
+        );
         final HttpStatus status;
         if (result instanceof CreateResult.Created) {
             status = HttpStatus.CREATED;
