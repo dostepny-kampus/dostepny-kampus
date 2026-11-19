@@ -361,8 +361,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy pinezka wejścia zalecanego stoi na środku części mapy nad arkuszem tego wejścia
     Oraz arkusz zajmuje najwyżej połowę ekranu, a jego treść się przewija
 
-  # @do-zrobienia #3318: pinezka zostaje po zamknięciu arkusza, a po dotknięciu znaku jej nie ma.
-  @US3.3 @NFR-18 @NFR-53 @aplikacja @do-zrobienia
+  @US3.3 @NFR-18 @NFR-53 @aplikacja
   Szablon scenariusza: Pinezka i podpis wejścia są na mapie tylko przy otwartym arkuszu wejścia
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
     Jeżeli otworzy arkusz wejścia A-1 przez <otwarcie>
