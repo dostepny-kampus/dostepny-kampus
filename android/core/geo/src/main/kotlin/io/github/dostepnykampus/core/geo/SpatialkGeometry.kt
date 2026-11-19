@@ -17,6 +17,10 @@ import org.maplibre.spatialk.geojson.Position
 import org.maplibre.spatialk.turf.booleans.contains
 import org.maplibre.spatialk.turf.measurement.distance
 import org.maplibre.spatialk.units.International
+import kotlin.math.roundToInt
+
+/** Krok zaokrąglenia odległości pokazywanej osobie, w metrach. */
+private const val ROUNDING_METERS = 5
 
 /** Punkt modelu jako pozycja GeoJSON spatialk: długość, potem szerokość. */
 public fun GeoPoint.toPosition(): Position = Position(longitude = longitude, latitude = latitude)
@@ -24,6 +28,14 @@ public fun GeoPoint.toPosition(): Position = Position(longitude = longitude, lat
 /** Odległość w metrach na ziemi w linii prostej do [other]; obliczenia wykonuje Turf. */
 public fun GeoPoint.metersTo(other: GeoPoint): Double =
     distance(from = toPosition(), to = other.toPosition()).toDouble(International.Meters)
+
+/**
+ * Odległość do [other] w linii prostej do pokazania osobie: zaokrąglona do 5 m, najmniej 5 m.
+ *
+ * Wymagania: US3.3, US18.2
+ */
+public fun GeoPoint.roundedMetersTo(other: GeoPoint): Int =
+    (metersTo(other) / ROUNDING_METERS).roundToInt().coerceAtLeast(1) * ROUNDING_METERS
 
 /** Kontur modelu jako geometria spatialk: `Polygon` albo `MultiPolygon`. */
 public fun GeoArea.toGeometry(): PolygonGeometry =
