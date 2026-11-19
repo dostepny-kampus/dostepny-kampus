@@ -61,13 +61,20 @@ private fun room(id: String, category: RoomCategory = RoomCategory.ELEVATOR, lif
 private fun rooms(vararg rooms: Room) =
     RoomList(source = "Politechnika Wrocławska", floorOutline = AREA, rooms = rooms.toList())
 
-/** Arkusz znaku planu pomieszczenia [id] z [SIGN_PLAN] przy dolnej krawędzi tła mapy z wyjściami [exits]. */
-internal fun ComposeContentTestRule.showPlanSheet(id: String, exits: SheetExits = SheetExits(onClose = {})) {
+/**
+ * Arkusz znaku planu pomieszczenia [id] z [SIGN_PLAN] przy dolnej krawędzi tła mapy z wyjściami [exits]
+ * i zgłoszeniem [onReport].
+ */
+internal fun ComposeContentTestRule.showPlanSheet(
+    id: String,
+    exits: SheetExits = SheetExits(onClose = {}),
+    onReport: (PlanReport) -> Unit = {},
+) {
     setContent {
         DostepnyKampusTheme {
             Box(Modifier.fillMaxSize().background(Color(0xFFBEE3F2))) {
                 val bottom = Modifier.align(Alignment.BottomCenter)
-                ChosenPlanSheet(id = id, plan = SIGN_PLAN, exits = exits, modifier = bottom)
+                ChosenPlanSheet(id = id, plan = SIGN_PLAN, exits = exits, modifier = bottom, onReport = onReport)
             }
         }
     }

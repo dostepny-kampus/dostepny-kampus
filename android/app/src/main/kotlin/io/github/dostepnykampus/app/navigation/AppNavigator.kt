@@ -10,6 +10,7 @@ import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.core.model.isSignedIn
+import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.capture.report.ReportDraft
@@ -225,16 +226,16 @@ class AppNavigator(
     }
 
     /**
-     * „Zgłoś barierę”, także przy wejściu [entranceId]: V4 krok 1, a Gość najpierw L1.
+     * „Zgłoś barierę”, także przy wejściu [entranceId] albo obiekcie planu [place]: V4 krok 1, a Gość najpierw L1.
      *
      * Wymagania: US4, US4.6, US14.2
      */
-    fun report(entranceId: String? = null) {
+    fun report(entranceId: String? = null, place: ReportPlace? = null) {
         val route =
             if (isSignedIn) {
-                ReportRoute(entranceId = entranceId)
+                ReportRoute(entranceId = entranceId, place = place)
             } else {
-                SignInRoute(isForReport = true, entranceId = entranceId)
+                SignInRoute(isForReport = true, entranceId = entranceId, spot = place)
             }
         leaving { add(route) }
     }
@@ -273,12 +274,22 @@ class AppNavigator(
         leaving { dropReport() }
     }
 
-    /** Po zalogowaniu na L1: V4 krok 1 z wejściem wybranym przed L1 albo L2 (P3). Wymagania: US14.2, UC7 */
+    /**
+     * Po zalogowaniu na L1: V4 krok 1 z wejściem albo obiektem wybranym przed L1 albo L2 (P3).
+     *
+     * Wymagania: US14.2, UC7
+     */
     fun signedIn() {
         val route = current as? SignInRoute ?: return
         leaving {
             removeAt(lastIndex)
-            add(if (route.isForReport) ReportRoute(entranceId = route.entranceId) else AccountRoute)
+            add(
+                if (route.isForReport) {
+                    ReportRoute(entranceId = route.entranceId, place = route.spot)
+                } else {
+                    AccountRoute
+                },
+            )
         }
     }
 

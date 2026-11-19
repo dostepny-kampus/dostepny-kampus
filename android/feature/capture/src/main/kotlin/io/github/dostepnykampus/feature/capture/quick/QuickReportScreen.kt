@@ -53,9 +53,9 @@ import java.io.File
 /**
  * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie (`SENT`).
  * Kroki przed wysłaniem wymagają zgody na dokładną lokalizację, a pozycja jest ustalana od kroku 1; zgłoszenie
- * przy wejściu wybranym w arkuszu bierze miejsce z wejścia, bez tej zgody i bez pytania o piętro. „Wstecz” z kroku 1
- * ze zdjęciem i „Zrezygnuj” przy „Brak pozycji” pytają o rezygnację; „Tak, zrezygnuj” usuwa zdjęcie i wraca
- * z kroku 1 do ekranu sprzed V4, a z kroku 3 na mapę.
+ * przy wejściu albo obiekcie planu wybranym w arkuszu bierze miejsce z niego, bez tej zgody i bez pytania o piętro.
+ * „Wstecz” z kroku 1 ze zdjęciem i „Zrezygnuj” przy „Brak pozycji” pytają o rezygnację; „Tak, zrezygnuj” usuwa
+ * zdjęcie i wraca z kroku 1 do ekranu sprzed V4, a z kroku 3 na mapę.
  *
  * Wymagania: US4.1, NFR-27, BR-8, BR-14, BR-G2, UC7
  *
@@ -118,7 +118,7 @@ private fun QuickSteps(
     val step: @Composable () -> Unit = {
         QuickStep(route = route, actions = actions, models = models, onGiveUp = onGiveUp)
     }
-    if (route.entranceId == null) {
+    if (!route.isPlaceChosen) {
         WithLocationPermission(onBack = actions.onBack, content = step)
     } else {
         step()
@@ -138,7 +138,7 @@ private fun QuickStep(
     onGiveUp: () -> Unit,
 ) {
     val where = models.sendModel()
-    SideEffect { where.start(route.entranceId) }
+    SideEffect { where.start(route.entranceId, route.place) }
     when (route.step) {
         ReportStep.PHOTO -> {
             QuickPositionWarmUp(where)
@@ -147,6 +147,7 @@ private fun QuickStep(
             route.entranceId?.let { id ->
                 if (entrances == null) QuickEntranceLine(id = id) else QuickEntranceLine(id = id, entrances = entrances)
             }
+            route.place?.let { Text(placeLine(it)) }
             if (photoTranscoder == null) {
                 QuickPhotoStep(route = route, onNext = actions.onNext)
             } else {
@@ -211,7 +212,7 @@ private fun QuickGroupStep(route: ReportRoute, onNext: (ReportRoute) -> Unit, wh
     val group = asked
     if (group == null) {
         QuickGroupQuestion(selected = route.group, onGroup = { chosen ->
-            val isAskingFloor = route.entranceId == null && chosen.asksFloor(isInBuilding)
+            val isAskingFloor = !route.isPlaceChosen && chosen.asksFloor(isInBuilding)
             if (isAskingFloor) asked = chosen else onNext(route.copy(group = chosen))
         })
     } else {

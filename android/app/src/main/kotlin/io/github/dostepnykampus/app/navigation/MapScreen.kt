@@ -20,6 +20,7 @@ import io.github.dostepnykampus.app.SheetSceneStrategy
 import io.github.dostepnykampus.app.closeCardOnEmptyMap
 import io.github.dostepnykampus.app.isFullOnlySheet
 import io.github.dostepnykampus.app.shownFocus
+import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapUiState
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
@@ -34,6 +35,7 @@ import io.github.dostepnykampus.feature.map.entrance.withBuildingEntrances
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.plan.MapPlanViewModel
+import io.github.dostepnykampus.feature.map.plan.PlanReport
 import io.github.dostepnykampus.feature.map.plan.ShownPlan
 
 /**
@@ -107,7 +109,7 @@ internal fun AppNavigator.MapScreen(
         contentPadding = if (isSheetAbove) LocalSheetPadding.current else SheetLayout(),
         onEmptyMapClick = { closeCardOnEmptyMap() },
         onListBuildingClick = { openBuildingFromList(it, accessibility.isTouchExplorationEnabled) },
-        entranceActions = entrance.copy(onReport = { report(it) }),
+        entranceActions = entrance.copy(onReport = { report(it) }, onPlanReport = { report(place = it.toPlace()) }),
         mapView = mapView,
         motion = mapMotion,
         plan = plan,
@@ -132,3 +134,13 @@ internal fun AppNavigator.returnToCard(symbol: String) {
 internal fun AppNavigator.keepCard(card: BuildingRoute) {
     keptCard = card
 }
+
+private fun PlanReport.toPlace(): ReportPlace =
+    ReportPlace(
+        category = category,
+        buildingSymbol = building,
+        floorId = floorId,
+        floorLabel = floorLabel,
+        latitude = point.latitude,
+        longitude = point.longitude,
+    )

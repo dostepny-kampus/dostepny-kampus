@@ -15,6 +15,8 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
+import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.feature.map.overlay.SheetExits
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -91,6 +93,35 @@ class PlanSignSheetTest {
     fun matchesDarkMockup() {
         show("wc")
         compose.onRoot().captureRoboImage()
+    }
+
+    /**
+     * Wiersz: arkusz schodów → „Zgłoś barierę przy schodach” na końcu, TalkBack z budynkiem i piętrem; dotknięcie
+     *   przekazuje schody z punktem znaku i piętrem oglądanego planu.
+     * Scenariusz (częściowo, przykład: arkusz schodów): zgloszenie-szybkie.feature: Zgłoszenie przy obiekcie
+     *   planu ma miejsce w punkcie obiektu i piętro planu
+     *
+     * Wymagania: US4.6, BR-8, BR-14
+     */
+    @Test
+    fun reportsAtStairs() {
+        val reports = mutableListOf<PlanReport>()
+        compose.showPlanSheet(id = "schody", onReport = { reports += it })
+        compose.onNodeWithContentDescription("Zgłoś barierę przy schodach: Budynek A-1, 1 piętro").performClick()
+        val point = GeoPoint(longitude = 0.5, latitude = 0.5)
+        assertEquals(
+            "Przycisk w liście schodów nie zgłasza tych schodów",
+            listOf(
+                PlanReport(
+                    category = RoomCategory.STAIRCASE,
+                    building = "A-1",
+                    floorId = "f1",
+                    floorLabel = "1 piętro",
+                    point = point,
+                ),
+            ),
+            reports,
+        )
     }
 
     private fun show(id: String) =

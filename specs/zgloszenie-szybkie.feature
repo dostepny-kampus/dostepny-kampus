@@ -47,8 +47,7 @@ Funkcja: Zgłoszenie szybkie
     Wtedy krok 1 zgłoszenia szybkiego nie ma napisu o wejściu
     Oraz miejscem zgłoszenia jest bieżąca pozycja telefonu
 
-  # @do-zrobienia #3344: arkusze planu nie mają jeszcze przycisku zgłoszenia.
-  @US4.6 @BR-8 @BR-14 @aplikacja @do-zrobienia
+  @US4.6 @BR-8 @BR-14 @aplikacja
   Szablon scenariusza: Zgłoszenie przy obiekcie planu ma miejsce w punkcie obiektu i piętro planu
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz na planie 2 piętra A-1 otworzył <arkusz>

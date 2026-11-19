@@ -17,6 +17,7 @@ import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.feature.capture.location.BuildingLookup
+import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
 import io.github.dostepnykampus.feature.capture.report.form.ReportSaver
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -118,7 +119,9 @@ class QuickSendViewModel
 
         private val lookups: Flow<QuickLookup> =
             origins.filterNotNull().flatMapLatest { origin ->
-                origin.entranceId?.let(::atEntrance) ?: attempts.flatMapLatest { whenLocationOn() }
+                origin.place?.let { flowOf(QuickLookup.Found(placePosition(it))) }
+                    ?: origin.entranceId?.let(::atEntrance)
+                    ?: attempts.flatMapLatest { whenLocationOn() }
             }
 
         /** Bieżąca pozycja, jej ustalanie, „Brak pozycji” albo pozycja poza terenem PWr. */
@@ -134,14 +137,14 @@ class QuickSendViewModel
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), emptyList())
 
         /**
-         * Skąd zgłoszenie bierze miejsce: z wejścia [entranceId] wybranego w arkuszu wejścia, bez odbiornika
-         * pozycji, albo z bieżącej pozycji, gdy [entranceId] to `null`. Do pierwszego wywołania pozycja nie jest
-         * ustalana.
+         * Skąd zgłoszenie bierze miejsce: z obiektu planu [place] albo z wejścia [entranceId] wybranego w arkuszu,
+         * bez odbiornika pozycji, albo z bieżącej pozycji, gdy oba to `null`. Do pierwszego wywołania pozycja nie
+         * jest ustalana.
          *
          * Wymagania: BR-8, US4.6
          */
-        fun start(entranceId: String?) {
-            origins.value = QuickOrigin(entranceId)
+        fun start(entranceId: String?, place: ReportPlace? = null) {
+            origins.value = QuickOrigin(entranceId, place)
         }
 
         /** „Spróbuj ponownie” po „Brak pozycji” albo poza terenem PWr: ustalanie od nowa; zdjęcie i grupa zostają. */
@@ -207,5 +210,5 @@ class QuickSendViewModel
         }
     }
 
-/** Wejście, od którego zgłoszenie bierze miejsce; `null` to bieżąca pozycja. */
-private data class QuickOrigin(val entranceId: String?)
+/** Wejście albo obiekt planu, od którego zgłoszenie bierze miejsce; oba `null` to bieżąca pozycja. */
+private data class QuickOrigin(val entranceId: String?, val place: ReportPlace?)

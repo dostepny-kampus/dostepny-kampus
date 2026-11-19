@@ -10,12 +10,14 @@ import io.github.dostepnykampus.app.TestRoles
 import io.github.dostepnykampus.app.closeCardOnEmptyMap
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
+import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
+import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
@@ -450,6 +452,33 @@ class AppNavigatorTest {
         }
         repeat(times = 2) { navigator(visitor).signedIn() }
         assertEquals(listOf(BuildingRoute("A-1"), ReportRoute(entranceId = "A-1-glowne")), stack.drop(1))
+    }
+
+    /**
+     * Wiersz: arkusz toalety, schodów albo windy, przycisk zgłoszenia → V4 z obiektem; Gość przez L1 wraca do V4
+     *   z tym samym obiektem.
+     * Scenariusz (częściowo, przykład: arkusz windy): zgloszenie-szybkie.feature: Zgłoszenie przy obiekcie
+     *   planu ma miejsce w punkcie obiektu i piętro planu
+     *
+     * Wymagania: US4.6, US14.2
+     */
+    @Test
+    fun reportsAtPlanObjectAfterSignIn() {
+        val place =
+            ReportPlace(
+                category = RoomCategory.ELEVATOR,
+                buildingSymbol = "A-1",
+                floorId = "A-1/p2",
+                floorLabel = "2 piętro",
+                latitude = 51.11,
+                longitude = 17.06,
+            )
+        navigator().run {
+            report(place = place)
+            assertEquals(SignInRoute(isForReport = true, spot = place), current)
+        }
+        navigator(visitor).signedIn()
+        assertEquals(ReportRoute(place = place), stack.last())
     }
 
     /** Wiersz: strona logowania, wejście z „Konto”, zalogowanie → L2, P3. Wymagania: UC6 */

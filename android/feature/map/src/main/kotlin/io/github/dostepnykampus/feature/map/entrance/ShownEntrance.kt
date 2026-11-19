@@ -10,6 +10,7 @@ import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.feature.map.building.orderedEntrances
+import io.github.dostepnykampus.feature.map.plan.PlanReport
 
 /**
  * Wejście w arkuszu wejścia na V1.
@@ -30,17 +31,19 @@ internal data class ShownEntrance(
 )
 
 /**
- * Czynności arkusza wejścia na V1 i dane, o które arkusz prosi.
+ * Czynności arkusza wejścia na V1 i dane, o które arkusz prosi, oraz zgłoszenie z arkusza znaku planu.
  *
  * Wymagania: US3.3, US4.6, US16.3
  *
  * @property onReport zgłoszenie bariery przy wejściu o podanym identyfikatorze
+ * @property onPlanReport zgłoszenie bariery przy schodach, toalecie albo windzie z arkusza znaku planu
  * @property onShow wejście pokazane w arkuszu, którego windy szukamy
  * @property lift najbliższa winda ostatnio pokazanego wejścia
  */
 @Immutable
 data class EntranceActions(
     val onReport: (String) -> Unit = {},
+    val onPlanReport: (PlanReport) -> Unit = {},
     val onShow: (Entrance) -> Unit = {},
     val lift: EntranceLift? = null,
 )
