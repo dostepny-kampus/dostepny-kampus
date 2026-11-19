@@ -284,7 +284,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | jest inne | Wejście dostępne        | Zalecane: »Wejście C«. Drzwi 100 cm.   |
       | nie ma    | Brak wejścia dostępnego | Jedyne wejście dostępne ma blokadę.    |
 
-  @US1.5 @US2.2 @BR-8 @NFR-17 @aplikacja
+  # @do-zrobienia #3380: znak bariery stoi jeszcze 48 dp od wejścia przy każdym powiększeniu.
+  @US1.5 @US2.2 @BR-8 @NFR-17 @aplikacja @do-zrobienia
   Szablon scenariusza: Znak bariery przy wejściu stoi obok znaku wejścia
     Zakładając, że przy wejściu głównym A-1 są przyjęte bariery „Utrudnienie” i „Blokada” zgłoszone w jego arkuszu
     Jeżeli Gość niezalogowany otworzy mapę kampusu przy budynku A-1 bez zaznaczonego budynku, w powiększeniu <powiększenie>
