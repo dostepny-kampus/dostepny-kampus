@@ -36,6 +36,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -76,7 +77,7 @@ import kotlin.math.roundToInt
  * rozwinięty, gdy [isExpanded], inaczej niski, a gdy [isFullOnly], na całym oknie z samym zamknięciem. Rozwinięcie
  * zgłasza [onExpandedChange], przeciągnięcie w dół do końca [onClose], zasłoniętą część okna w px [onLowHeight].
  * Zmiana [isExpanded] z zewnątrz rozwija niski arkusz do góry okna, a rozwinięty zwija na niską wysokość.
- * Treść [content] dostaje, czy arkusz stoi rozwinięty.
+ * Treść [content] dostaje, czy arkusz stoi rozwinięty, i czy jest wyżej niż niska karta albo do góry jedzie.
  *
  * Wymagania: US2, US2.8, US2.9, NFR-17, NFR-18, NFR-20, NFR-53
  */
@@ -88,7 +89,7 @@ internal fun Sheet(
     onLowHeight: (Int) -> Unit,
     modifier: Modifier = Modifier,
     isFullOnly: Boolean = false,
-    content: @Composable (isFull: Boolean) -> Unit,
+    content: @Composable (isFull: Boolean, isRising: Boolean) -> Unit,
 ) {
     val state = remember { AnchoredDraggableState(startHeight(isExpanded = isExpanded, isFullOnly = isFullOnly)) }
     val measure = remember { SheetMeasure() }
@@ -104,6 +105,7 @@ internal fun Sheet(
         onClose = onClose,
     )
     val isFull = state.currentValue == SheetHeight.Full
+    val isRising by remember(state) { derivedStateOf { state.isAboveLow() } }
     val corner = if (isFull) 0.dp else Zaokraglenia.bardzoDuze
     val density = LocalDensity.current
     val fling =
@@ -139,7 +141,9 @@ internal fun Sheet(
         val statusBar = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
         Column(modifier = Modifier.belowStatusBarWhenFull(statusBar, isFull)) {
             Handle(state = state, onHeightChoose = { onExpandedChange(it.isExpanded) }, isFullOnly = isFullOnly)
-            Box(Modifier.weight(1f, fill = false).fillMaxWidth()) { content(state.settledValue == SheetHeight.Full) }
+            Box(Modifier.weight(1f, fill = false).fillMaxWidth()) {
+                content(state.settledValue == SheetHeight.Full, isRising)
+            }
         }
     }
 }
@@ -226,6 +230,11 @@ private fun FollowHeights(
             jump.move(state = state, height = if (isExpanded) SheetHeight.Full else SheetHeight.Low)
         }
     }
+}
+
+private fun AnchoredDraggableState<SheetHeight>.isAboveLow(): Boolean {
+    val low = anchors.positionOf(SheetHeight.Low)
+    return targetValue == SheetHeight.Full || (!low.isNaN() && offset < low - ANCHOR_TOLERANCE_PX)
 }
 
 private fun startHeight(isExpanded: Boolean, isFullOnly: Boolean): SheetHeight =

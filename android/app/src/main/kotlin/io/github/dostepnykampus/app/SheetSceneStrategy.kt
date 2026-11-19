@@ -90,8 +90,9 @@ private val SheetStateSaver =
 /**
  * Część V1 zasłonięta przez arkusz [cover], rozwinięcie arkusza [isExpanded] dla trybu karty w nim i postój arkusza
  * rozwiniętego [isFull]. [isPending]: nowy arkusz nie ma jeszcze pomiaru, a [cover] to zasłonięcie sprzed niego.
- * [onExpand] od razu rozwija niski arkusz. [shownCover] to zasłonięcie dołu okna w px w bieżącej klatce, także
- * w trakcie wjazdu, gestu „Wstecz” i zjazdu arkusza; czytane w fazie układu nie wywołuje ponownej kompozycji.
+ * [isRising]: arkusz stoi albo jedzie wyżej niż niska karta. [onExpand] od razu rozwija niski arkusz. [shownCover]
+ * to zasłonięcie dołu okna w px w bieżącej klatce, także w trakcie wjazdu, gestu „Wstecz” i zjazdu arkusza;
+ * czytane w fazie układu nie wywołuje ponownej kompozycji.
  *
  * Wymagania: US2.8, NFR-56
  */
@@ -100,6 +101,7 @@ internal data class SheetLayout(
     val isExpanded: Boolean = false,
     val isFull: Boolean = false,
     val isPending: Boolean = false,
+    val isRising: Boolean = false,
     val onExpand: () -> Unit = {},
     val shownCover: () -> Int = { 0 },
 ) : PaddingValues by PaddingValues(bottom = cover)
@@ -236,8 +238,14 @@ private data class SheetScene(
                                 picture.record { sheetContent.drawContent() }
                                 drawLayer(picture)
                             },
-                ) { isFull ->
-                    val layout = SheetLayout(isExpanded = state.isExpanded, isFull = isFull, onExpand = expand)
+                ) { isFull, isRising ->
+                    val layout =
+                        SheetLayout(
+                            isExpanded = state.isExpanded,
+                            isFull = isFull,
+                            isRising = isRising,
+                            onExpand = expand,
+                        )
                     CompositionLocalProvider(LocalSheetPadding provides layout) { sheet.Content() }
                 }
             } else if (exit.isLeaving || exit.closes(isShown = false)) {

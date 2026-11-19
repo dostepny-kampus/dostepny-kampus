@@ -208,7 +208,6 @@ private fun FactsOrMissing(
         }
     }
     if (card is BuildingCardUiState.Ready && isFullScreen) {
-        DescriptionLine()
         BuildingFacts(
             card = card,
             onReport = onReport,
@@ -251,8 +250,16 @@ private fun BuildingFacts(
     onMarkFloors: (() -> Unit)?,
 ) {
     val common = commonAssessment(card.entrances)
+    Column {
+        DescriptionLine()
+        EntrancesGroup(
+            card = card,
+            withAssessment = common == null,
+            onShowEntrance = onShowEntrance,
+            onReport = onReport,
+        )
+    }
     common?.let { AssessmentLine(it) }
-    EntrancesGroup(card = card, withAssessment = common == null, onShowEntrance = onShowEntrance, onReport = onReport)
     EvacuationExits(card)
     BarriersGroup(card, onReportRemoval)
     card.floors?.let { LiftToiletGroup(it) }

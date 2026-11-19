@@ -47,7 +47,7 @@ private val Assessed = EntranceAssessment(date = LocalDate.of(2026, 11, 1), sour
 
 /**
  * Mała karta budynku V2 ciągnięta za uchwyt w górę, zanim palec puści: pełny opis jest już pod krawędzią karty,
- * a nagłówek „Wejścia” stoi w tym samym miejscu karty co przed gestem.
+ * a nagłówek „Wejścia” stoi w tym samym miejscu karty przed gestem, w jego trakcie i po rozwinięciu.
  *
  * Wymagania: NFR-56, US2.8
  */
@@ -57,7 +57,7 @@ class SheetDragContentTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    /** Wiersz: mała karta, palec w połowie gestu w górę — drugie wejście już jest, „Wejścia” nie skacze. */
+    /** Wiersz: mała karta, palec w połowie gestu w górę i po puszczeniu — drugie wejście już jest, „Wejścia” stoi. */
     @Test
     fun showsWholeWhileDragging() {
         compose.openCardOverMap { Card() }
@@ -73,8 +73,11 @@ class SheetDragContentTest {
         val during = entrancesBelowHandle()
         val sides = compose.onAllNodes(side).fetchSemanticsNodes().size
         handle.performTouchInput { up() }
+        compose.waitForIdle()
+        val after = entrancesBelowHandle()
         assertEquals("drugie wejście w połowie gestu", 1, sides)
-        assertEquals("„Wejścia” względem góry karty: $before → $during", before.value, during.value, 1f)
+        assertEquals("„Wejścia” względem góry karty w geście: $before → $during", before.value, during.value, 1f)
+        assertEquals("„Wejścia” względem góry karty po rozwinięciu: $before → $after", before.value, after.value, 1f)
     }
 
     @Composable
