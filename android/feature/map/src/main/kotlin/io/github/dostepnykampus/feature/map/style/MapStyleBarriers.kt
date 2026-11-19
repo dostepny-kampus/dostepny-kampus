@@ -192,5 +192,6 @@ private fun bySeverity(image: (Severity) -> String): JsonArray {
     return JsonArray(listOf(JsonPrimitive("match"), property(BARRIER_SEVERITY)) + named + other)
 }
 
-private fun offsetOr(key: String, fallback: JsonArray): JsonArray =
+/** Przesunięcie z właściwości [key] punktu, a bez niej [fallback]. */
+internal fun offsetOr(key: String, fallback: JsonArray): JsonArray =
     expression("coalesce", property(key), expression("literal", fallback))
