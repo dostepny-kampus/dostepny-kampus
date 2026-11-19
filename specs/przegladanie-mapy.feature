@@ -318,8 +318,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi liczbę wyjść ewakuacyjnych 2
     Oraz po wybraniu „Pokaż wyjścia ewakuacyjne (2)” widzi listę obu wyjść
 
-  # @do-zrobienia #3118: arkusz nie ma jeszcze windy za drzwiami.
-  @US3.3 @BR-25 @aplikacja @do-zrobienia
+  @US3.3 @BR-25 @aplikacja
   Scenariusz: Opis wejścia zalecanego podaje dojście, drzwi i najbliższą windę
     Zakładając, że Gość niezalogowany otworzył kartę budynku A-1
     Jeżeli wybierze „Pokaż wejście na mapie”
@@ -327,7 +326,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz arkusz podaje dojście do drzwi, szerokość drzwi i najbliższą windę z przybliżoną odległością od wejścia
     Ale arkusz nie pokazuje innych wejść budynku
 
-  # @do-zrobienia #3118: arkusz nie ma jeszcze części „Za drzwiami”.
+  # @do-zrobienia #3052: plan piętra nie ma jeszcze klatek schodowych przy windzie.
   @US3.3 @US16.3 @BR-25 @aplikacja @do-zrobienia
   Szablon scenariusza: Część „Za drzwiami” podaje najbliższą windę i jej piętra
     Zakładając, że najbliższa winda wejścia zalecanego A-1 na planie PWr: <winda>
@@ -341,8 +340,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | bez klatek w danych, 31 m, z parteru na 1 piętro | Winda, ok. 30 m od wejścia.                     | Jeździ od parteru do 1 piętra.         |
       | 12 m, staje na piwnicy, parterze i antresoli     | Winda, ok. 10 m od wejścia.                     | Jedzie na: piwnica, parter, antresola. |
 
-  # @do-zrobienia #3118: arkusz nie ma jeszcze części „Za drzwiami”.
-  @US3.3 @BR-25 @aplikacja @do-zrobienia
+  @US3.3 @BR-25 @aplikacja
   Scenariusz: Bez windy na planie arkusz wejścia nie ma części „Za drzwiami”
     Zakładając, że plan PWr budynku A-1 nie ma windy
     Jeżeli Gość niezalogowany otworzy arkusz wejścia zalecanego A-1
