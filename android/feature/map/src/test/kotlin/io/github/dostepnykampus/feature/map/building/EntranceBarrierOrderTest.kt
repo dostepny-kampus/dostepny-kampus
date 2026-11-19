@@ -23,7 +23,7 @@ class EntranceBarrierOrderTest {
      *   wejściu
      */
     @Test
-    fun keepsRecommendationWithMinorBarrier() {
+    fun keepsRecommendedAtMinorBarrier() {
         val ordered = orderedEntrances(TWO_ENTRANCES, listOf(entranceBarrier("b", Severity.ONLY_WITH_HELP)))
         assertEquals(listOf("b"), ordered.filter { it.isRecommended }.map { it.entrance.id })
         assertEquals(
@@ -61,7 +61,7 @@ class EntranceBarrierOrderTest {
      *   zalecane, a jego oznaczenie zostaje
      */
     @Test
-    fun answersBlockedWhenOnlyAccessibleIsBlocked() {
+    fun answersOnlyAccessibleBlocked() {
         val entrances = listOf(sampleEntrance("b"), sampleEntrance("c").copy(marking = EntranceMarking.INACCESSIBLE))
         val ordered = orderedEntrances(entrances, listOf(entranceBarrier("b", Severity.BLOCKING)))
         assertEquals(
