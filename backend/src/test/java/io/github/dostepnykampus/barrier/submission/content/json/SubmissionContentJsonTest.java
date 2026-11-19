@@ -9,6 +9,7 @@ import io.github.dostepnykampus.OpenApiContract;
 import io.github.dostepnykampus.barrier.submission.content.BarrierDetails;
 import io.github.dostepnykampus.barrier.submission.content.BarrierGroup;
 import io.github.dostepnykampus.barrier.submission.content.BarrierType;
+import io.github.dostepnykampus.barrier.submission.content.EntrancePlaces;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.NewEntranceMarking;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
@@ -16,7 +17,6 @@ import io.github.dostepnykampus.barrier.submission.content.SubmissionFloor;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
-import io.github.dostepnykampus.building.api.EntrancePlace;
 import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.util.EnumSet;
 import java.util.List;
@@ -440,8 +440,11 @@ final class SubmissionContentJsonTest {
                         new SubmissionFloor("p0", null, false)
                     ),
                     body.toContent(
-                        new EntranceBuildings(
-                            new EntrancePlace(51.11, 17.05, "C-13", "p0")
+                        SubmissionContentJsonTest.entrance(
+                            new SubmissionPlace(
+                                new SubmissionPoint(17.05, 51.11), null, false, "C-13",
+                                new SubmissionFloor("p0", null, false)
+                            )
                         )
                     ).place(),
                     "Zgłoszenie przy wejściu nie dostało punktu, budynku i piętra wejścia"
@@ -459,7 +462,7 @@ final class SubmissionContentJsonTest {
                     InvalidSubmission.class,
                     () -> SubmissionContentJsonTest.bound(
                         node -> node.put("entranceId", "node/0").remove("location")
-                    ).toContent(symbol -> true),
+                    ).toContent((id, symbol) -> Optional.empty()),
                     "Nieznane wejście przeszło"
                 ).getMessage(),
                 "Zły komunikat nieznanego wejścia"
@@ -469,7 +472,7 @@ final class SubmissionContentJsonTest {
                 Assertions.assertThrows(
                     InvalidSubmission.class,
                     () -> SubmissionContentJsonTest.bound(node -> node.remove("location"))
-                        .toContent(symbol -> true),
+                        .toContent((id, symbol) -> Optional.empty()),
                     "Zgłoszenie bez pozycji i bez wejścia przeszło"
                 ).getMessage(),
                 "Zły komunikat braku miejsca"
@@ -482,7 +485,9 @@ final class SubmissionContentJsonTest {
         Assertions.assertEquals(
             new SubmissionPoint(17.06, 51.1),
             JsonBodies.bind(JsonBodies.json(JsonBodies.FULL)).toContent(
-                new EntranceBuildings(new EntrancePlace(51.11, 17.05, "C-13", null))
+                SubmissionContentJsonTest.entrance(
+                    new SubmissionPlace(new SubmissionPoint(17.05, 51.11), null, false, "C-13", null)
+                )
             ).place().point(),
             "Pomiar precyzyjny dostał punkt wejścia zamiast własnego"
         );
@@ -494,5 +499,9 @@ final class SubmissionContentJsonTest {
 
     private static ObjectNode replacing(final ObjectNode node) {
         return node.put("replacesSubmissionId", JsonBodies.REPLACED.toString());
+    }
+
+    private static EntrancePlaces entrance(final SubmissionPlace place) {
+        return (id, symbol) -> Optional.of(place).filter(found -> "node/7".equals(id));
     }
 }
