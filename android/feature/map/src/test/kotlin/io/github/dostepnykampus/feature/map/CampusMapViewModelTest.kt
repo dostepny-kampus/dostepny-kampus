@@ -75,7 +75,7 @@ class CampusMapViewModelTest {
         mapListChoice = choice,
         computeContext = EmptyCoroutineContext,
         geometry = ::campusMapData,
-        server = MapServer(barriers = barriers),
+        server = NO_SERVER.with(barriers = barriers),
     )
 
     /** Wiersz: bariery pobrane przed listą budynków → linia „Bez internetu” z dniem pobrania barier. */

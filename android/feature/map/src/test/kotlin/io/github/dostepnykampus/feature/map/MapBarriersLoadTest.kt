@@ -97,7 +97,7 @@ class MapBarriersLoadTest {
                 mapListChoice = TestMapListChoice(),
                 computeContext = EmptyCoroutineContext,
                 geometry = ::campusMapData,
-                server = MapServer(barriers = { answers.removeFirst() }),
+                server = NO_SERVER.with(barriers = { answers.removeFirst() }),
             )
         backgroundScope.launch { viewModel.uiState.collect {} }
         return viewModel

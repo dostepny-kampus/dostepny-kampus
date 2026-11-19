@@ -93,7 +93,7 @@ class MapRoomSearchTest {
                 computeContext = EmptyCoroutineContext,
                 geometry = ::campusMapData,
                 server =
-                    MapServer(
+                    NO_SERVER.with(
                         rooms =
                             RoomSearch { text ->
                                 asked += text

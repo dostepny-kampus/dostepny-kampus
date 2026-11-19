@@ -89,7 +89,7 @@ class MapSignOverCardTest {
                 mapListChoice = TestMapListChoice(),
                 computeContext = UnconfinedTestDispatcher(),
                 geometry = ::campusMapData,
-                server = MapServer(barriers = { listOf(THRESHOLD) }),
+                server = NO_SERVER.with(barriers = { listOf(THRESHOLD) }),
             )
         compose.setContent {
             val state by viewModel.uiState.collectAsState()

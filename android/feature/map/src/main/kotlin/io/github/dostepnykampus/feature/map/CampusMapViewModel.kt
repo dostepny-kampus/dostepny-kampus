@@ -98,7 +98,7 @@ class CampusMapViewModel(
     private val mapListChoice: MapListChoice,
     internal val computeContext: CoroutineContext,
     internal val geometry: (BuildingCatalog) -> CampusMapData,
-    private val server: MapServer = MapServer(),
+    private val server: MapServer = NO_SERVER,
 ) : ViewModel() {
     private val queries = MutableStateFlow("")
 
