@@ -45,7 +45,6 @@ internal const val MINOR_BARRIER_ZOOM = 16
 
 private const val WORD_OFFSET_DP = BARRIER_SIGN_DP / 2 + 4
 
-/** Przesunięcie znaku bariery przy wejściu z właściwości punktu; bez niej znak stoi na punkcie. */
 private val SIGN_OFFSET = "icon-offset" to offsetOr(BARRIER_OFFSET, numbers(0.0, 0.0))
 
 /** Nazwa obrazu znaku bariery o uciążliwości [severity]. Wymagania: NFR-21 */
@@ -63,8 +62,7 @@ internal fun barrierWordImage(severity: Severity): String = "bariera_slowo_${sev
  * stylu wymagają sieci. Pojawia się od powiększenia [BARRIER_WORD_ZOOM], nie przy krawędzi mapy i tylko wtedy,
  * gdy mieści się bez nakładania. Warstwy stoją pod podpisami budynków, więc przy kolizji zostaje podpis budynku
  * (wiersz o znakach barier w wymaganiach V1). Znak i słowo bariery przy wejściu stoją przesunięte o wartości
- * z właściwości punktu. Filtr [filter] z [SelectionLook.barriersFilter] zostawia bariery
- * piętra planu i bariery widoczne przy bieżącym powiększeniu.
+ * z właściwości punktu, a filtr [filter] z [SelectionLook.barriersFilter] zostawia bariery widoczne teraz.
  *
  * Wymagania: US1.3, NFR-21, NFR-20
  */
