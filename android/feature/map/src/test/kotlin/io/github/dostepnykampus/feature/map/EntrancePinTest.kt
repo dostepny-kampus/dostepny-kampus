@@ -77,7 +77,7 @@ class EntrancePinTest {
      *   Pinezka i podpis wejścia są na mapie tylko przy otwartym arkuszu wejścia
      */
     @Test
-    fun pinsTouchedSignUntilBuildingRow() {
+    fun pinsSignUntilBuildingRow() {
         start()
         compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/1") }
         compose.runOnIdle { assertEquals("pinezka po dotknięciu znaku", "node/1", map.pinned) }
