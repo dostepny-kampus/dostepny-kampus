@@ -367,17 +367,17 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
   @US3.3 @NFR-18 @NFR-53 @aplikacja @do-zrobienia
   Szablon scenariusza: Pinezka i podpis wejścia są na mapie tylko przy otwartym arkuszu wejścia
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
-    Jeżeli <otwarcie>
-    Wtedy wejście zalecane A-1 ma pinezkę i podpis z nazwą
-    Jeżeli zamknie arkusz wejścia przez <zamknięcie>
+    Jeżeli otworzy arkusz wejścia A-1 przez <otwarcie>
+    Wtedy to wejście ma na mapie pinezkę i podpis z nazwą
+    Jeżeli zamknie arkusz przez <zamknięcie>
     Wtedy na mapie nie ma pinezki ani podpisu wejścia
 
     Przykłady:
-      | otwarcie                                                          | zamknięcie                 |
-      | otworzy kartę A-1 i wybierze „Pokaż wejście na mapie”             | „Zamknij”                  |
-      | otworzy kartę A-1 i dotknie wiersza wejścia zalecanego            | „Wstecz”                   |
-      | dotknie znaku wejścia zalecanego A-1 na mapie bez otwartej karty  | wiersz budynku A-1         |
-      | dotknie znaku wejścia zalecanego A-1 na mapie bez otwartej karty  | dotknięcie pustej mapy     |
+      | otwarcie                                | zamknięcie             |
+      | „Pokaż wejście na mapie” na karcie A-1  | „Zamknij”              |
+      | wiersz wejścia na karcie A-1            | „Wstecz”               |
+      | znak wejścia A-1 na mapie               | wiersz budynku A-1     |
+      | znak wejścia A-1 na mapie               | dotknięcie pustej mapy |
 
   # @do-zrobienia #3255: „Wstecz” otwiera kartę na niskiej wysokości od góry, bez jej wysokości i przewinięcia.
   @US2.8 @US3.3 @NFR-15 @NFR-53 @aplikacja @do-zrobienia
