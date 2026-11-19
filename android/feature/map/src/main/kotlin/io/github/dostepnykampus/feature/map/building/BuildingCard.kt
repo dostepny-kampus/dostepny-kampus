@@ -106,6 +106,7 @@ sealed interface VisitAnswer {
      * @property doorWidthCm szerokość drzwi w centymetrach; 0, gdy danych szerokości nie ma
      * @property place opis położenia wejścia „Wejście” bez nazwy w danych; pusty przy innym wejściu
      * @property barrier uciążliwość najcięższej bariery przy wejściu zalecanym; `null` bez barier
+     * @property isNameFromData czy [name] pochodzi z danych, a nie od importu
      */
     data class Accessible(
         val id: String,
@@ -113,6 +114,7 @@ sealed interface VisitAnswer {
         val doorWidthCm: Int = 0,
         val place: String = "",
         val barrier: Severity? = null,
+        val isNameFromData: Boolean = name != null,
     ) : VisitAnswer
 
     /** Żadne z [total] wejść odwiedzających nie jest „dostępne” i żadne nie ma „brak danych”. */
@@ -153,6 +155,7 @@ fun visitAnswer(entrances: List<OrderedEntrance>): VisitAnswer {
                 doorWidthCm = found.doorWidthCm,
                 place = if (found.isNameGenerated && !found.isMain) found.placeDescription else "",
                 barrier = listed.barrier?.severity,
+                isNameFromData = found.hasName,
             )
         } ?: VisitAnswer.Blocked(blocked).takeIf { blocked > 0 }
     return answer ?: missingOrNone(entrances)

@@ -49,7 +49,7 @@
     <string name="mapa_teren_naglowek">%1$s · %2$d</string>
     <string name="mapa_teren_naglowek_opis">%1$s, %2$s</string>
     <string name="mapa_budynek">Budynek %1$s</string>
-    <string name="mapa_zaznaczone_wejscie">Zaznaczone wejście: »%1$s«, budynek %2$s</string>
+    <string name="mapa_zaznaczone_wejscie">Zaznaczone wejście: %1$s, budynek %2$s</string>
     <string name="mapa_bariera_typ">%1$s: %2$s</string>
     <string name="mapa_bariera_w_budynku">%1$s, budynek %2$s</string>
     <string name="mapa_bariera_poza_budynkiem">%1$s, poza budynkiem</string>
@@ -103,11 +103,13 @@
     <string name="karta_wyjscia_ukryj">Ukryj wyjścia ewakuacyjne (%1$d)</string>
     <string name="karta_wyjscie_ewakuacyjne">Wyjście ewakuacyjne</string>
     <string name="karta_bez_nazwy">Wejście</string>
+    <string name="wejscie_nazwa_z_danych">„%1$s”</string>
+    <string name="wejscie_nazwa_czytaj">»%1$s«</string>
     <string name="karta_wejscia_bez_nazw_kilka">%1$d wejścia</string>
     <string name="karta_wejscia_bez_nazw_wiele">%1$d wejść</string>
     <string name="karta_nikt_nie_sprawdzil">Nikt jeszcze nie sprawdził tych wejść.</string>
-    <string name="karta_odpowiedz_zalecane">Zalecane: „%1$s”.</string>
-    <string name="karta_odpowiedz_zalecane_drzwi">Zalecane: „%1$s”. Drzwi %2$d cm.</string>
+    <string name="karta_odpowiedz_zalecane">Zalecane: %1$s.</string>
+    <string name="karta_odpowiedz_zalecane_drzwi">Zalecane: %1$s. Drzwi %2$d cm.</string>
     <string name="karta_odpowiedz_polozenie">Zalecane wejście %1$s</string>
     <string name="karta_odpowiedz_polozenie_drzwi">Zalecane wejście %1$s Drzwi %2$d cm.</string>
     <string name="karta_odpowiedz_zadne">Żadne z %1$d wejść nie jest dostępne.</string>
@@ -116,7 +118,7 @@
     <string name="karta_odpowiedz_jedyne_blokada">Jedyne wejście dostępne ma blokadę.</string>
     <string name="karta_odpowiedz_kazde_blokada">Każde z %1$d wejść dostępnych ma blokadę.</string>
     <string name="karta_zglos">Zgłoś barierę przy wejściu</string>
-    <string name="karta_zglos_czytaj">Zgłoś barierę przy wejściu: »%1$s«</string>
+    <string name="karta_zglos_czytaj">Zgłoś barierę przy wejściu: %1$s</string>
     <string name="karta_bariera_usunieta">Zgłoś, że bariery nie ma</string>
     <string name="karta_pokaz">Pokaż budynek na mapie</string>
     <string name="karta_brak_w_telefonie">Tego budynku nie ma jeszcze w telefonie. Połącz się z internetem, aby zobaczyć opis budynku.</string>
@@ -138,5 +140,5 @@
     <string name="karta_pokaz_na_planie">Pokaż na planie</string>
     <string name="karta_pokaz_na_planie_czytaj">Pokaż na planie: %1$s</string>
     <string name="wizyta_pokaz">Pokaż wejście na mapie</string>
-    <string name="wizyta_pokaz_czytaj">Pokaż wejście na mapie: »%1$s«</string>
+    <string name="wizyta_pokaz_czytaj">Pokaż wejście na mapie: %1$s</string>
 </resources>

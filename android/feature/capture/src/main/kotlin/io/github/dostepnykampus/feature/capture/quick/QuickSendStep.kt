@@ -105,15 +105,17 @@ private fun floorLabel(floor: Int?): String =
     }
 
 /**
- * Napis o wejściu [entrance] w krokach 1 i 3 V4: nazwa, „Wejście główne” albo wejście bez nazwy. Przy nazwie
- * nadanej przez import napis ma też opis położenia, bo kilka wejść może się nazywać „Wejście”.
+ * Napis o wejściu [entrance] w krokach 1 i 3 V4: nazwa, „Wejście główne” albo wejście bez nazwy; cudzysłów tylko
+ * przy nazwie z danych. Przy nazwie nadanej przez import napis ma też opis położenia, bo kilka wejść może się
+ * nazywać „Wejście”.
  *
  * Wymagania: US4.6, BR-27
  */
 @Composable
 @ReadOnlyComposable
 internal fun entranceLine(entrance: Entrance): String {
-    val name = entrance.name
+    val quoted = entrance.name?.takeIf { entrance.hasName }?.let { stringResource(R.string.szybkie_wejscie_nazwa, it) }
+    val name = quoted ?: entrance.name
     val place = entrance.placeDescription.removeSuffix(".").replaceFirstChar(Char::lowercaseChar)
     return when {
         name != null && entrance.isNameGenerated && place.isNotEmpty() -> {

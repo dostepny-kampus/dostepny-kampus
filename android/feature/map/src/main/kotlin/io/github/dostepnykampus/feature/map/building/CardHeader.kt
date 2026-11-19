@@ -29,6 +29,7 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.overlay.SheetCloseButton
+import io.github.dostepnykampus.feature.map.overlay.entranceTitle
 
 /**
  * Nagłówek karty V2 w trybie [mode]: symbol i nazwa z [card] albo miejsce na nie w trakcie wczytywania; poza
@@ -131,7 +132,7 @@ internal fun answerLine(answer: VisitAnswer): String? =
 @Composable
 @ReadOnlyComposable
 private fun nameLine(answer: VisitAnswer.Accessible): String {
-    val name = answer.name ?: stringResource(R.string.karta_bez_nazwy)
+    val name = entranceTitle(answer.name, isFromData = answer.isNameFromData)
     return if (answer.doorWidthCm > 0) {
         stringResource(R.string.karta_odpowiedz_zalecane_drzwi, name, answer.doorWidthCm)
     } else {
