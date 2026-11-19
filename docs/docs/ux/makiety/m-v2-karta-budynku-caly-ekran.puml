@@ -6,11 +6,11 @@
 $ekran_poczatek()
 $naglowek_karty("A-1", "<i>[nazwa budynku z danych]</i>")
 $karta_gora(1, "dostepne", "Zalecane: „Wejście bramą od ul. Norwida”.", 1)
-Z map i opisów, stan z <i>[data]</i>
 $sekcja("Wejścia")
 $wejscia_poczatek()
 $wejscie_pierwsze($dostepne(), "Wejście bramą od ul. Norwida", "Zalecane")
 $wejscia_koniec()
+Z map i opisów, stan z <i>[data]</i>
 $tekst("[dalej pełny opis jak na wzorcu: wejścia, bariery, winda i toaleta, piętra, źródło]", "i")
 $pasek_dolny_konto()
 $ekran_koniec()

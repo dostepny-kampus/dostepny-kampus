@@ -47,7 +47,7 @@ class BuildingCardFromServerTest {
     }
 
     /**
-     * Scenariusz (częściowo): oznaczenie-wejscia.feature: Wspólna data i źródło stoją raz nad listą wejść.
+     * Scenariusz (częściowo): oznaczenie-wejscia.feature: Wspólna data i źródło stoją raz pod listą wejść.
      * Scenariusz (częściowo): scenariusz-demo.feature: Schody przy wejściu głównym A-1 od pomiaru do eksportu
      *
      * Wymagania: US17.3, US1.1, US2.8

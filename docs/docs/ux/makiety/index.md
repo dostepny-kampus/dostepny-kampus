@@ -188,7 +188,7 @@ Wejście główne ma schody, a dostępne jest wejście z tyłu budynku, bramą o
 
 Makiety V2 pokazują kartę na całym ekranie, bez mapy. Po dotknięciu budynku na mapie karta otwiera się na niskiej wysokości nad mapą V1 (wymagania V2, decyzja 115), osobna makieta `m-v2-karta-budynku-mala`.
 
-![Makieta V2 Karta budynku: nagłówek A-1 z Zamknij, wiersz Wejście dostępne ze zdaniem Zalecane, Pokaż wejście na mapie, kreska, chipy Winda i Toaleta dostosowana, wiersz daty i źródła, trzy wejścia z wejściem zalecanym na górze, grupy Winda i toaleta oraz Piętra, dwie bariery i pasek dolny](../../_generated/m-v2-karta-budynku.svg)
+![Makieta V2 Karta budynku: nagłówek A-1 z Zamknij, wiersz Wejście dostępne ze zdaniem Zalecane, Pokaż wejście na mapie, kreska, chipy Winda i Toaleta dostosowana, trzy wejścia z wejściem zalecanym na górze, wiersz daty i źródła, grupy Winda i toaleta oraz Piętra, dwie bariery i pasek dolny](../../_generated/m-v2-karta-budynku.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
@@ -198,7 +198,7 @@ Makiety V2 pokazują kartę na całym ekranie, bez mapy. Po dotknięciu budynku 
 | Wejście zalecane pierwsze, z napisem „Zalecane” bez piętra | BR-25, decyzja 48, decyzja 53 |
 | Wejście: oznaczenie tekstem i ikoną na początku, potem nazwa wejścia; „Wejście główne” niedostępne, „Wejście bramą od ul. Norwida” dostępne [1]; nazwa odróżnia je od drugiego wejścia przy ul. Norwida, które według deklaracji nie jest dostosowane | US2.1, US17.1, NFR-21 |
 | „Brak danych” z ikoną `minus`, inną niż `x` przy „Niedostępne” | US17.1 |
-| Wspólna data i źródło jeden raz nad grupą „Wejścia”: „Z map i opisów, stan z [data]” | US17.3, BR-24, PW-3 |
+| Wspólna data i źródło jeden raz pod grupą „Wejścia”: „Z map i opisów, stan z [data]” | US17.3, BR-24, PW-3, decyzja z 19.11.2026 |
 | Wejścia w jednym bloku, z linią między wejściami. Cały wiersz jest dotykalny i ma strzałkę: pokazuje wejście na V1 i otwiera jego arkusz | US2.1, US3.3, NFR-17, NFR-18 |
 | „Zgłoś barierę przy wejściu” nie stoi w wierszu, tylko w arkuszu wejścia | US4.6 |
 | „Pokaż wyjścia ewakuacyjne (2)” pod wejściami, liczba z danych | US2.1, decyzja 44, decyzja 48 |

@@ -74,11 +74,12 @@ Funkcja: Oznaczenie wejścia
 
   Reguła: Wspólną datę i źródło ekran podaje raz, a różne przy każdym wejściu
 
-    @US17.3 @aplikacja
-    Scenariusz: Wspólna data i źródło stoją raz nad listą wejść
+    # @do-zrobienia #3440: karta stawia jeszcze wspólny wiersz nad listą wejść.
+    @US17.3 @aplikacja @do-zrobienia
+    Scenariusz: Wspólna data i źródło stoją raz pod listą wejść
       Zakładając, że wszystkie wejścia A-1 mają oznaczenie z datą 3.11.2026 i źródłem „import”
       Jeżeli Gość niezalogowany otworzy kartę budynku A-1
-      Wtedy nad listą wejść widnieje jeden wiersz z datą 3.11.2026 i źródłem „import”
+      Wtedy pod listą wejść widnieje jeden wiersz z datą 3.11.2026 i źródłem „import”
       Ale przy wejściach nie ma osobnej daty ani źródła
 
     @US17.3 @aplikacja
@@ -87,7 +88,7 @@ Funkcja: Oznaczenie wejścia
       Oraz pozostałe wejścia A-1 mają oznaczenie z datą 3.11.2026 i źródłem „import”
       Jeżeli Gość niezalogowany otworzy kartę budynku A-1
       Wtedy przy każdym wejściu widnieje jego data i źródło
-      Ale nad listą wejść nie ma wspólnego wiersza z datą
+      Ale pod listą wejść nie ma wspólnego wiersza z datą
 
   Reguła: Zmianę oznaczenia składa Zbierający, a sprawdza Weryfikator, który jej nie złożył
 

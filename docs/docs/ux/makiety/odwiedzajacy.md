@@ -416,7 +416,7 @@ Czynność główna: „Pokaż wejście na mapie”.
 
 ### V2: wejścia bez nazw
 
-![Makieta V2 budynku z trzema wejściami bez oznaczenia i nazwy: cichy napis Brak danych o wejściach, data i źródło, w grupie Wejścia jeden wiersz Brak danych, 3 wejścia, zdanie Nikt jeszcze nie sprawdził tych wejść i Zgłoś barierę przy wejściu](../../_generated/m-v2-karta-budynku-wejscia-bez-nazw.svg)
+![Makieta V2 budynku z trzema wejściami bez oznaczenia i nazwy: cichy napis Brak danych o wejściach, w grupie Wejścia jeden wiersz Brak danych, 3 wejścia, zdanie Nikt jeszcze nie sprawdził tych wejść i Zgłoś barierę przy wejściu, pod grupą data i źródło](../../_generated/m-v2-karta-budynku-wejscia-bez-nazw.svg)
 
 Czynność główna: brak; bez wejścia zalecanego nie ma „Pokaż wejście na mapie”.
 
