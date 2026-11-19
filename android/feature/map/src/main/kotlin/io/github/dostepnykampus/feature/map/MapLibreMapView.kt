@@ -365,8 +365,11 @@ object MapLibreMapView : CampusMapView {
                 )
             val zoom = cameraPosition.zoom
             val beside = { building: String? -> look().besideEntrance.isBeside(zoom = zoom, building = building) }
+            val signsUnder = { sign: TouchSign ->
+                queryRenderedFeatures(at, sign.layer).mapNotNull { it.getStringProperty(sign.idKey) }
+            }
             val signsNear = { sign: TouchSign ->
-                val under = queryRenderedFeatures(at, sign.layer).mapNotNull { it.getStringProperty(sign.idKey) }
+                val under = signsUnder(sign)
                 val near =
                     queryRenderedFeatures(area, sign.layer).mapNotNull { feature ->
                         signPoint(
@@ -379,7 +382,7 @@ object MapLibreMapView : CampusMapView {
                     }
                 signsInReach(under = under, near = near, reach = tolerance)
             }
-            when (val touch = chooseTouch(signsNear = signsNear, outlines = outlines)) {
+            when (val touch = chooseTouch(signsUnder = signsUnder, signsNear = signsNear, outlines = outlines)) {
                 is MapTouch.Sign -> {
                     onSign(touch)
                     true
