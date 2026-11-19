@@ -221,6 +221,22 @@ final class SubmissionServiceTest {
     }
 
     @Test
+    void keepsBuildingOfEntranceForQuickAtEntrance() {
+        final SubmissionServiceTest.RecordingSubmissions fake =
+            new SubmissionServiceTest.RecordingSubmissions(null, null);
+        final SubmissionContent entrance =
+            SubmissionServiceTest.content(SubmissionKind.QUICK, "Z9", "e1");
+        SubmissionServiceTest.service(fake, SubmissionServiceTest.CONTOUR).create(
+            new NewSubmission(SubmissionServiceTest.ID, entrance, "konto")
+        );
+        Assertions.assertEquals(
+            entrance,
+            ((NewSubmission) fake.seen().get(0)).content(),
+            "Zgłoszenie przy wejściu powinno zachować budynek wejścia"
+        );
+    }
+
+    @Test
     void appliesSameBuildingRulesOnUpdateAsOnCreate() {
         final SubmissionServiceTest.RecordingSubmissions fake =
             new SubmissionServiceTest.RecordingSubmissions(null, null);
@@ -330,6 +346,18 @@ final class SubmissionServiceTest {
     }
 
     private static SubmissionContent content(final SubmissionKind kind, final String building) {
+        final String entrance;
+        if (kind == SubmissionKind.QUICK) {
+            entrance = null;
+        } else {
+            entrance = "e1";
+        }
+        return SubmissionServiceTest.content(kind, building, entrance);
+    }
+
+    private static SubmissionContent content(
+        final SubmissionKind kind, final String building, final String entrance
+    ) {
         return new SubmissionContent(
             kind,
             new SubmissionPlace(
@@ -337,7 +365,7 @@ final class SubmissionServiceTest {
                 new SubmissionFloor("p2", 2, false)
             ),
             new BarrierDetails(BarrierGroup.OTHER, new BarrierType(5), 2, "opis", false),
-            "e1", NewEntranceMarking.ACCESSIBLE, null,
+            entrance, NewEntranceMarking.ACCESSIBLE, null,
             List.of(UUID.fromString("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d"))
         );
     }
