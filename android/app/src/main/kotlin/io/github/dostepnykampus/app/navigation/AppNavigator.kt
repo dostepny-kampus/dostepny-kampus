@@ -235,7 +235,7 @@ class AppNavigator(
             if (isSignedIn) {
                 ReportRoute(entranceId = entranceId, place = place)
             } else {
-                SignInRoute(isForReport = true, entranceId = entranceId, place = place)
+                SignInRoute(isForReport = true, entranceId = entranceId, spot = place)
             }
         leaving { add(route) }
     }
@@ -285,7 +285,7 @@ class AppNavigator(
             removeAt(lastIndex)
             add(
                 if (route.isForReport) {
-                    ReportRoute(entranceId = route.entranceId, place = route.place)
+                    ReportRoute(entranceId = route.entranceId, place = route.spot)
                 } else {
                     AccountRoute
                 },

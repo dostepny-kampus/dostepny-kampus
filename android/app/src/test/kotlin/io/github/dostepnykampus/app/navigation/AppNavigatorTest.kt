@@ -467,7 +467,7 @@ class AppNavigatorTest {
         val place = ReportPlace(RoomCategory.ELEVATOR, "A-1", "A-1/p2", "2 piętro", 51.11, 17.06)
         navigator().run {
             report(place = place)
-            assertEquals(SignInRoute(isForReport = true, place = place), current)
+            assertEquals(SignInRoute(isForReport = true, spot = place), current)
         }
         navigator(visitor).signedIn()
         assertEquals(ReportRoute(place = place), stack.last())
