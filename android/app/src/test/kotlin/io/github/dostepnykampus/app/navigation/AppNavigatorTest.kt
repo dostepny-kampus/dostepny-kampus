@@ -464,7 +464,15 @@ class AppNavigatorTest {
      */
     @Test
     fun reportsAtPlanObjectAfterSignIn() {
-        val place = ReportPlace(RoomCategory.ELEVATOR, "A-1", "A-1/p2", "2 piętro", 51.11, 17.06)
+        val place =
+            ReportPlace(
+                category = RoomCategory.ELEVATOR,
+                buildingSymbol = "A-1",
+                floorId = "A-1/p2",
+                floorLabel = "2 piętro",
+                latitude = 51.11,
+                longitude = 17.06,
+            )
         navigator().run {
             report(place = place)
             assertEquals(SignInRoute(isForReport = true, spot = place), current)
