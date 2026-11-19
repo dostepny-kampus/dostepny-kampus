@@ -10,9 +10,9 @@ import io.github.dostepnykampus.barrier.submission.NewSubmission;
 import io.github.dostepnykampus.barrier.submission.Reader;
 import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
+import io.github.dostepnykampus.barrier.submission.content.EntrancePlaces;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.json.SubmissionContentJson;
-import io.github.dostepnykampus.building.api.KnownBuildings;
 import io.github.dostepnykampus.shared.error.ConflictingState;
 import io.github.dostepnykampus.shared.error.MissingResource;
 import java.util.UUID;
@@ -33,14 +33,14 @@ record NewSubmissionRequest(
      * Przenosi ciało żądania do komendy domeny.
      *
      * @param author Identyfikator konta z tokenu
-     * @param buildings Budynki i wejścia znane serwerowi
+     * @param entrances Miejsca wejść znanych serwerowi
      * @return Komenda utworzenia zgłoszenia
      */
-    NewSubmission toCommand(final String author, final KnownBuildings buildings) {
+    NewSubmission toCommand(final String author, final EntrancePlaces entrances) {
         if (this.id == null) {
             throw new InvalidSubmission("Brak identyfikatora zgłoszenia w polu id");
         }
-        return new NewSubmission(this.id, this.content.toContent(buildings), author);
+        return new NewSubmission(this.id, this.content.toContent(entrances), author);
     }
 
     /**
