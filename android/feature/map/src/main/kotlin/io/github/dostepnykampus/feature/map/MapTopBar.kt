@@ -11,6 +11,7 @@ import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -65,6 +66,7 @@ internal fun Animatable<Float, AnimationVector1D>.isBarShown(
 
 /** Góra mapy zasłonięta paskiem wysokim na [bar] px; z arkuszem V2 pasek odjechał, więc nic. */
 @Composable
+@ReadOnlyComposable
 internal fun mapTop(isCovered: Boolean, bar: Int): Dp =
     if (isCovered) 0.dp else with(LocalDensity.current) { bar.toDp() }
 

@@ -321,4 +321,3 @@ private fun ClearButton(onClick: () -> Unit) {
         Icon(ClearIcon, contentDescription = stringResource(R.string.mapa_wyczysc_pole))
     }
 }
-
