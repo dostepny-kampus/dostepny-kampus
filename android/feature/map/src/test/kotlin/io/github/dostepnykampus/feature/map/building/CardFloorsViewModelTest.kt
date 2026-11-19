@@ -17,6 +17,7 @@ import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.room.RoomList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -46,6 +47,20 @@ class CardFloorsViewModelTest {
             )
         }
 
+    /** Wiersz: plan w telefonie, pobieranie nowego planu trwa → karta ma fakty z kopii, nie czeka na serwer. */
+    @Test
+    fun readsStoredPlanBeforeDownload() =
+        runTest {
+            Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+            val facts = cardFloors(isStored = true, isDownloading = true)
+            Dispatchers.resetMain()
+            assertEquals(
+                listOf("Parter"),
+                facts?.elevator?.run { floors.map { it.name } },
+                "Karta czekała na pobranie planu, choć miała jego kopię",
+            )
+        }
+
     @Test
     fun hasNoFloorsWithoutPlan() =
         runTest {
@@ -55,13 +70,13 @@ class CardFloorsViewModelTest {
             assertEquals(null, facts, "Budynek bez planu w telefonie dostał fakty o piętrach")
         }
 
-    private fun TestScope.cardFloors(isStored: Boolean): FloorFacts? {
+    private fun TestScope.cardFloors(isStored: Boolean, isDownloading: Boolean = false): FloorFacts? {
         val card =
             BuildingCardViewModel(
                 symbol = "A-1",
                 repository = BuildingCatalogRepository(EmptyCoroutineContext) { ASSET_JSON },
                 networkStatus = { flowOf(true) },
-                plans = Plans(isStored),
+                plans = Plans(isStored, isDownloading),
             )
         val collector = backgroundScope.launch { card.uiState.collect {} }
         advanceUntilIdle()
@@ -72,9 +87,12 @@ class CardFloorsViewModelTest {
         return ready.floors
     }
 
-    /** Plan budynku A-1 z windą na parterze, gdy [isStored]; bez kopii nic nie ma. */
-    private class Plans(private val isStored: Boolean) : FloorPlans {
-        override suspend fun download(symbol: String): Boolean = isStored
+    /**
+     * Plan budynku A-1 z windą na parterze, gdy [isStored]; bez kopii nic nie ma. Pobieranie trwa bez końca, gdy
+     * [isDownloading].
+     */
+    private class Plans(private val isStored: Boolean, private val isDownloading: Boolean) : FloorPlans {
+        override suspend fun download(symbol: String): Boolean = if (isDownloading) awaitCancellation() else isStored
 
         override suspend fun floors(symbol: String): FloorList? =
             FloorList(source = SOURCE, floors = listOf(Floor(id = "P0", label = "Parter", order = 0)))

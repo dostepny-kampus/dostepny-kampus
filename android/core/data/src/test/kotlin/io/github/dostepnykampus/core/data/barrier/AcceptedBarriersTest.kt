@@ -70,6 +70,19 @@ class AcceptedBarriersTest {
             assertEquals(listOf(emptyList(), emptyList<AcceptedBarrier>()), lists, "puste listy zostają puste")
         }
 
+    /** Wiersz: bariery z ostatniej odpowiedzi są dostępne bez pytania serwera; przed pierwszym pobraniem ich nie ma. */
+    @Test
+    fun knowsLastReply() =
+        runBlocking {
+            val one = listOf(submission(id = "z1", content = precise(severity = 1)))
+            val source = ServerAcceptedBarriers { ServerReply.Ok(one) }
+            val before = source.known()
+            source.barriers()
+
+            assertEquals(null, before, "bariery przed pobraniem")
+            assertEquals(listOf("z1"), source.known()?.map(AcceptedBarrier::id), "bariery z ostatniej odpowiedzi")
+        }
+
     @Test
     fun dropsNotAccepted() =
         runBlocking {
