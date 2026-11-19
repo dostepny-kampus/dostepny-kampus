@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map.building
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -49,7 +50,7 @@ class PlaceDescriptionListTest {
      */
     @Test
     fun listsPlaceBeforeRemark() {
-        group(listOf(unnamed(id = "pwr/1", approach = RAMP, doorWidthCm = 100)))
+        show(listOf(unnamed(id = "pwr/1", approach = RAMP, doorWidthCm = 100))) { EntranceListContent(it) }
         val tops =
             listOf("Wejście", PLACE, RAMP, DOOR).map {
                 compose.onNodeWithText(it, useUnmergedTree = true).getUnclippedBoundsInRoot().top
@@ -65,7 +66,7 @@ class PlaceDescriptionListTest {
      */
     @Test
     fun answersWithPlace() {
-        header(listOf(unnamed(id = "pwr/1", approach = "", doorWidthCm = 100)))
+        show(listOf(unnamed(id = "pwr/1", approach = "", doorWidthCm = 100))) { CardHeaderContent(it) }
         compose.onNode(hasText("Zalecane wejście od strony C-20, od północy. Drzwi 100 cm.")).assertExists()
     }
 
@@ -77,14 +78,14 @@ class PlaceDescriptionListTest {
     @Test
     fun answersMainByName() {
         val main = unnamed(id = "pwr/1", approach = "", doorWidthCm = 0).copy(name = "Wejście główne", isMain = true)
-        header(listOf(main))
+        show(listOf(main)) { CardHeaderContent(it) }
         compose.onNode(hasText("Zalecane: „Wejście główne”.")).assertExists()
     }
 
     /** Zrzut listy wejść z opisem położenia, motyw jasny. */
     @Test
     fun matchesLightMockup() {
-        group(MIXED)
+        show(MIXED) { EntranceListContent(it) }
         compose.onRoot().captureRoboImage()
     }
 
@@ -92,18 +93,13 @@ class PlaceDescriptionListTest {
     @Test
     @Config(fontScale = 2f)
     fun matchesLargeFontMockup() {
-        group(MIXED)
+        show(MIXED) { EntranceListContent(it) }
         compose.onRoot().captureRoboImage()
     }
 
-    private fun group(entrances: List<Entrance>) {
+    private fun show(entrances: List<Entrance>, content: @Composable (BuildingCardUiState.Ready) -> Unit) {
         val card = readyCard(symbol = "C-19", entrances = entrances)
-        compose.setContent { EntranceListContent(card) }
-    }
-
-    private fun header(entrances: List<Entrance>) {
-        val card = readyCard(symbol = "C-19", entrances = entrances)
-        compose.setContent { CardHeaderContent(card) }
+        compose.setContent { content(card) }
     }
 
     private companion object {
