@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map
+package io.github.dostepnykampus.feature.map.search
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,6 +30,7 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
+import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.area.AreaOrder
 import io.github.dostepnykampus.feature.map.area.otherAreaOf
 import io.github.dostepnykampus.feature.map.building.BuildingChoice

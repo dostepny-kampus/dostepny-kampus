@@ -79,6 +79,7 @@ import io.github.dostepnykampus.feature.map.area.AreaOrder
 import io.github.dostepnykampus.feature.map.building.BuildingList
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
 import io.github.dostepnykampus.feature.map.overlay.OfflineLine
+import io.github.dostepnykampus.feature.map.search.SearchResults
 import java.time.Instant
 
 private val SearchIcon =
