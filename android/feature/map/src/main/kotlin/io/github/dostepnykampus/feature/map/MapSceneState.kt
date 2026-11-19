@@ -191,8 +191,9 @@ internal fun rememberMapSceneState(
  * Ruch mapy V1 do pokazania.
  *
  * @property move ruch kamery do widoku: nad arkuszem V2 do zaznaczonego budynku według [cameraTransition], liczony raz
- *   na wybór, dopóki osoba nie ruszy mapy; po zamknięciu arkusza skok do tego samego obrazu mapy ([uncoveredMove]); poza
- *   tym przelot przycisków ([byControl]) do widoku zapisanego, na zaznaczonym wejściu albo startowego
+ *   na wybór, dopóki osoba nie ruszy mapy; po zamknięciu arkusza skok do tego samego obrazu mapy
+ *   ([uncoveredMove]); poza tym przelot przycisków ([byControl]) do widoku zapisanego, na zaznaczonym wejściu albo
+ *   startowego
  * @property inset zasłonięte krawędzie mapy: dół zasłonięty arkuszem V2, gdy [move] stawia budynek nad arkuszem
  *   V2, a poza tym góra pod paskiem i dół pod arkuszem zaznaczonego wejścia
  * @property landing wolna część mapy, w której staje widok po wyborze terenu
