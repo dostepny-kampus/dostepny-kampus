@@ -3,8 +3,9 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier.submission.content;
+package io.github.dostepnykampus.barrier.submission.content.json;
 
+import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
 import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 
