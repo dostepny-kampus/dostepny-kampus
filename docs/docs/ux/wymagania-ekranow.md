@@ -385,7 +385,9 @@ Dojście, drzwi, windę za drzwiami i bariery przy wejściu pokazuje arkusz wej�
 | Potwierdzenie: „Dziękujemy. Sprawdzimy zdjęcie, a jeśli bariera się potwierdzi, pokażemy ją na mapie.” | dane | US4.4, PW-5 | — |
 | Potwierdzenie: „Wróć do mapy” | czynność | US4.4 | V1 |
 
-Aplikacja nie pyta o typ bariery, uciążliwość ani budynek (US4.3, BR-14). Pozycję zaczyna ustalać po wejściu na ekran, w trakcie kroków 1 i 2 (NFR-27). Przy wybranym wejściu pozycji nie ustala, o zgodę na lokalizację nie prosi i o piętro nie pyta. Stany o lokalizacji, pozycji i terenie PWr wtedy nie występują (US4.6, BR-8).
+Aplikacja nie pyta o typ bariery, uciążliwość ani budynek (US4.3, BR-14). Pozycję zaczyna ustalać po wejściu na ekran, w trakcie kroków 1 i 2 (NFR-27).
+
+Przy wybranym wejściu pozycji nie ustala, o zgodę na lokalizację nie prosi i o piętro nie pyta. Stany o lokalizacji, pozycji i terenie PWr wtedy nie występują (US4.6, BR-8).
 
 O piętro aplikacja pyta tylko w konturze budynku i przy każdej grupie poza „Coś innego” (US4.5, tabela w [regułach](../biznes/reguly.md#pietro-w-zgloszeniu-szybkim)). W budynku podstawowym, a także zanim telefon ustali pozycję, przyciski pięter to numery od -1 do 10, z „Parter” zamiast 0. W budynku szczegółowym są to piętra z danych PWr, a zgłoszenie dostaje identyfikator piętra zamiast numeru.
 

@@ -481,7 +481,7 @@ Czynność główna: „Zrób zdjęcie”.
 | Stan bez osobnej makiety | Co się zmienia |
 | --- | --- |
 | Błąd zapisu | „W telefonie brakuje miejsca, więc nie zapisaliśmy zdjęcia bariery…” i „Spróbuj ponownie”; zdjęcie i grupa zostają (NFR-5, NFR-7) |
-| Z wybranym wejściem | po „Zgłoś barierę przy wejściu” w arkuszu wejścia pod numerem kroku napis „Wejście: »nazwa wejścia«”, a przy wejściu bez nazwy w danych z opisem położenia: „Wejście: »Wejście«, od strony E-3, od południa”. Bez prośby o lokalizację i bez pytania o piętro (US4.6, BR-8) |
+| Z wybranym wejściem | po „Zgłoś barierę przy wejściu” w arkuszu wejścia pod numerem kroku napis „Wejście: »nazwa wejścia«”. Przy wejściu bez nazwy w danych napis ma opis położenia: „Wejście: »Wejście«, od strony E-3, od południa”. Bez prośby o lokalizację i bez pytania o piętro (US4.6, BR-8) |
 
 ### V4: krok 1 ze zdjęciem
 
