@@ -238,6 +238,8 @@ Karta sali na dole mapy otwiera się po wyniku wyszukiwania sali albo po dotkni�
 
 Otwarcie nie zaczyna pokazu drogi. Mapa pokazuje plan piętra sali z wyróżnioną salą. Karta od razu pokazuje całą listę „Jak dojść”, bez wybranego kroku.
 
+Przy zwykłej czcionce karta ma wysokość swojej treści: nagłówek, wiersz budynku i cała lista „Jak dojść” mieszczą się bez przewijania, a plan piętra z wyróżnioną salą widać nad kartą. Przy [dużej czcionce](#duza-czcionka) karta stoi na cały ekran według reguły 13 (US18.1, NFR-20, decyzja z 19.11.2026).
+
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
 | Nagłówek „Sala 329” i „Zamknij”, pod nim rodzaj pomieszczenia z danych PWr i piętro, np. „Sala wykładowa · 2 piętro”; rodzaju „Inne” nie ma, zostaje samo piętro. Pod nimi wiersz budynku | dane, czynność | US18.1, NFR-40 | wiersz: V2 na niskiej wysokości; „Zamknij”: V1 |
