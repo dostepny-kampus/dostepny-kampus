@@ -728,7 +728,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
         compose.onNode(showMap).assertExists()
         compose.onNodeWithContentDescription("Powiększ").assertDoesNotExist()
         compose.onNodeWithContentDescription("C-13, Budynek testowy").assertExists()
-        compose.onNodeWithContentDescription("Budynek C-14, Budynek testowy").performClick()
+        compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
         assertEquals(listOf("C-14"), opened)
         sheet = 400.dp
         compose.onNodeWithText("© OpenStreetMap contributors").assertExists()
