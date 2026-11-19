@@ -25,7 +25,9 @@ import io.github.dostepnykampus.core.model.GeoPoint
  * @property floorId piętro wejścia z listy pięter budynku (`Floor.id`); `null`, gdy dane go nie podają
  * @property approach opis dojścia do wejścia, np. „Do wejścia prowadzą schody.”; pusty, gdy dane go nie podają
  * @property doorWidthCm szerokość drzwi w centymetrach; 0, gdy dane jej nie podają
- * @property isNameGenerated czy [name] nadał import, np. „Wejście od wschodu”, a nie dane (pole `generatedName`)
+ * @property isNameGenerated czy [name] nadał import, np. „Wejście”, a nie dane (pole `generatedName`)
+ * @property placeDescription opis położenia wejścia bez nazwy w danych, np. „Od strony C-20, od północy.”; pusty
+ *   przy wejściu z nazwą w danych (pole `placeDescription`)
  */
 public data class Entrance(
     val id: String,
@@ -40,6 +42,7 @@ public data class Entrance(
     val approach: String = "",
     val doorWidthCm: Int = 0,
     val isNameGenerated: Boolean = false,
+    val placeDescription: String = "",
 ) {
     /**
      * Czy wejście ma nazwę w danych: niepustą i nienadaną przez import ([isNameGenerated]).

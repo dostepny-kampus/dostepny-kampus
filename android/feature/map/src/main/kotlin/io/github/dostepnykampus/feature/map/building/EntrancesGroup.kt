@@ -228,10 +228,16 @@ private fun EntranceFacts(listed: OrderedEntrance, withAssessment: Boolean, modi
             style = MaterialTheme.typography.titleMedium,
         )
         val entrance = listed.entrance
-        if (entrance.approach.isNotEmpty()) Text(text = entrance.approach, style = MaterialTheme.typography.bodyLarge)
+        if (entrance.placeDescription.isNotEmpty()) {
+            Text(text = entrance.placeDescription, style = MaterialTheme.typography.bodyMedium)
+        }
+        val secondary = MaterialTheme.colorScheme.onSurfaceVariant
+        if (entrance.approach.isNotEmpty()) {
+            Text(text = entrance.approach, color = secondary, style = MaterialTheme.typography.bodyLarge)
+        }
         if (entrance.doorWidthCm > 0) {
             val door = stringResource(R.string.karta_szerokosc_drzwi, entrance.doorWidthCm)
-            Text(text = door, style = MaterialTheme.typography.bodyLarge)
+            Text(text = door, color = secondary, style = MaterialTheme.typography.bodyLarge)
         }
         if (withAssessment) listed.entrance.assessment?.let { AssessmentLine(it) }
     }

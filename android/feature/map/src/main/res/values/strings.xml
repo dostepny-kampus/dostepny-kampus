@@ -100,6 +100,8 @@
     <string name="karta_nikt_nie_sprawdzil">Nikt jeszcze nie sprawdził tych wejść.</string>
     <string name="karta_odpowiedz_zalecane">Zalecane: „%1$s”.</string>
     <string name="karta_odpowiedz_zalecane_drzwi">Zalecane: „%1$s”. Drzwi %2$d cm.</string>
+    <string name="karta_odpowiedz_polozenie">Zalecane wejście %1$s</string>
+    <string name="karta_odpowiedz_polozenie_drzwi">Zalecane wejście %1$s Drzwi %2$d cm.</string>
     <string name="karta_odpowiedz_zadne">Żadne z %1$d wejść nie jest dostępne.</string>
     <string name="karta_odpowiedz_jedyne">Jedyne wejście nie jest dostępne.</string>
     <string name="karta_zglos">Zgłoś barierę przy wejściu</string>
