@@ -57,7 +57,9 @@ import io.github.dostepnykampus.feature.map.overlay.SheetExits
 internal fun BarrierSheet(chosen: ChosenBarrier, exits: SheetExits, modifier: Modifier = Modifier) {
     MapSheet(modifier) {
         SheetTop(chosen.barrier.severity, exits.onClose)
-        chosen.building?.let { building -> BuildingLink(building.symbol) { exits.onBuilding(building.symbol) } }
+        chosen.building?.let { building ->
+            BuildingLink(building.symbol, onClick = { exits.onBuilding(building.symbol) })
+        }
         BarrierFacts(chosen)
     }
 }

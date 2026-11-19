@@ -41,7 +41,7 @@ import io.github.dostepnykampus.feature.map.R
  * Wymagania: US2.8, NFR-17, NFR-18, NFR-20
  */
 @Composable
-internal fun BuildingLink(symbol: String, modifier: Modifier = Modifier, name: String? = null, onClick: () -> Unit) {
+internal fun BuildingLink(symbol: String, onClick: () -> Unit, modifier: Modifier = Modifier, name: String? = null) {
     val text = stringResource(R.string.mapa_budynek, symbol)
     val action = stringResource(R.string.mapa_otwiera_opis_budynku)
     val linkSemantics =
@@ -64,9 +64,9 @@ internal fun BuildingLink(symbol: String, modifier: Modifier = Modifier, name: S
         verticalArrangement = Arrangement.Center,
     ) {
         LinkLine(text)
-        name?.let {
+        name?.let { shown ->
             val color = MaterialTheme.colorScheme.onSurfaceVariant
-            Text(text = it, style = MaterialTheme.typography.bodyLarge, color = color)
+            Text(text = shown, style = MaterialTheme.typography.bodyLarge, color = color)
         }
     }
 }

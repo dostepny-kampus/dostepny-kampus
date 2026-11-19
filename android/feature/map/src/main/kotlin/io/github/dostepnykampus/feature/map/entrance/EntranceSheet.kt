@@ -126,7 +126,7 @@ internal fun EntranceSheet(
             MapSheetHeader(title = stringResource(R.string.karta_bez_nazwy), onClose = exits.onClose) {
                 MarkingSign(entrance.marking)
             }
-            BuildingLink(entrance.buildingSymbol) { exits.onBuilding(entrance.buildingSymbol) }
+            BuildingLink(entrance.buildingSymbol, onClick = { exits.onBuilding(entrance.buildingSymbol) })
         }
     }
     val bounded = if (isFull) modifier else modifier.heightIn(max = halfWindow())
