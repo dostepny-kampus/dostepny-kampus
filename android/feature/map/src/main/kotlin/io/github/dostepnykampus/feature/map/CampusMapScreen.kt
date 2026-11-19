@@ -70,6 +70,7 @@ import io.github.dostepnykampus.feature.map.overlay.MapStatusBar
 import io.github.dostepnykampus.feature.map.overlay.dataDay
 import io.github.dostepnykampus.feature.map.plan.FloorColumn
 import io.github.dostepnykampus.feature.map.plan.ShownPlan
+import io.github.dostepnykampus.feature.map.search.MapSearchBar
 
 private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"
@@ -233,22 +234,17 @@ fun CampusMapScreen(
         }
         if (barExit.isBarShown(isCovered = isCovered, isList = isList, isUnderFullSheet = sheet.isEntranceFull)) {
             states.SaveableStateProvider(TOP_STATE) {
-                CampusSearch(
-                    catalog = state.catalog,
-                    search = state.search,
-                    onSearch = onSearch,
-                    isOnline = state.isOnline,
-                    syncedAt = state.syncedAt,
+                MapSearchBar(
+                    state = state,
                     isList = isList,
                     areas = areas.order,
+                    onSearch = onSearch,
                     onListChange = onListChange,
                     onBuildingClick = if (isList) onListBuildingClick else onBuildingClick,
                     onRoomClick = onRoomClick,
-                    onBarHeight = { headerHeight = it },
-                    modifier =
-                        (if (isList) Modifier.fillMaxSize() else Modifier)
-                            .slideUp(barExit)
-                            .onSizeChanged { barHeight = it.height },
+                    barExit = barExit,
+                    onBarHeight = { barHeight = it },
+                    onHeaderHeight = { headerHeight = it },
                 )
             }
         }

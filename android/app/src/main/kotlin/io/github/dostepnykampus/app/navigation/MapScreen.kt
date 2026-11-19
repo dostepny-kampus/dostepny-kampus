@@ -82,7 +82,6 @@ internal fun AppNavigator.HiltMapScreen(
  * [mapView] to MapLibre albo podróbka w testach, [plan] to plan piętra przy środku mapy, [onCamera] dostaje widok po
  * ruchu kamery, [onFloorChoose] piętro wybrane w kolumnie pięter, a [onMapHide] zejście mapy z ekranu. Zgłoszenie
  * przy wejściu z arkusza wejścia prowadzi do V4 albo L1, a [entrance] podaje arkuszowi windę za drzwiami.
- * Wynik sali pokazuje plan piętra sali.
  *
  * Wymagania: US1.1, US2.1, NFR-19, US3.3, US4.6, US14.2, US18.1
  */

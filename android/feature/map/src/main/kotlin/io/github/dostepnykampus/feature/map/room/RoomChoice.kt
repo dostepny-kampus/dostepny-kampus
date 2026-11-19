@@ -26,6 +26,8 @@ import io.github.dostepnykampus.feature.map.building.ResultCard
 import io.github.dostepnykampus.feature.map.entrance.floorWord
 
 private const val OTHER_FUNCTION = "Inne"
+private const val SEPARATOR = " · "
+private const val NO_BREAK_SPACE = '\u00A0'
 
 /**
  * Wynik sali [found] pod polem szukaj: znak budynku, „Sala 329”, a pod numerem rodzaj pomieszczenia z danych PWr
@@ -40,8 +42,10 @@ internal fun RoomChoice(found: FoundRoom, onClick: () -> Unit) {
     val kind = found.room.function.takeUnless { it.isBlank() || it == OTHER_FUNCTION }
     val floor = found.floor.label
     val title = stringResource(R.string.mapa_sala, number)
-    val building = stringResource(R.string.mapa_sala_budynek, found.building)
+    val building = stringResource(R.string.mapa_budynek, found.building).replaceFirstChar(Char::lowercaseChar)
     val spoken = listOfNotNull(title, building, kind?.floorWord(), floor.floorWord())
+    val shownFloor = floor.replace(oldChar = ' ', newChar = NO_BREAK_SPACE)
+    val detail = listOfNotNull(kind, if (kind == null) shownFloor else shownFloor.floorWord())
     ResultCard(
         symbol = found.building,
         description = spoken.joinToString(separator = ", "),
@@ -50,7 +54,7 @@ internal fun RoomChoice(found: FoundRoom, onClick: () -> Unit) {
     ) {
         Text(text = title, style = MaterialTheme.typography.titleMedium, fontWeight = Typografia.wyroznienieWaga)
         Text(
-            text = kind?.let { stringResource(R.string.mapa_sala_rodzaj, it, floor.floorWord()) } ?: floor,
+            text = detail.joinToString(separator = SEPARATOR),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

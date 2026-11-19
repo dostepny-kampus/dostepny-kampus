@@ -30,6 +30,7 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
+import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.area.AreaOrder
@@ -69,31 +70,72 @@ internal fun SearchResults(
     onRelease: () -> Unit,
     onShowList: () -> Unit,
 ) {
-    val isCurrent = search.query == query
-    val found = search.foundFor(query)
-    val rooms = search.rooms.takeIf { isCurrent }.orEmpty()
-    val isBuildingMissing = isCurrent && search.isBuildingMissing
-    val isNoResult = query.isNotBlank() && found?.isEmpty() == true && rooms.isEmpty() && !isBuildingMissing
-    val isOnMap = !isList && !isHidden
-    val isNoteShown = isList || !isHidden
-    val buildings = found.orEmpty().takeIf { isOnMap }.orEmpty()
-    val shownRooms = rooms.takeIf { isOnMap }.orEmpty()
-    val hasNote = isNoteShown && (isNoResult || isBuildingMissing)
-    if (buildings.isEmpty() && shownRooms.isEmpty() && !hasNote) return
+    val results = shownResults(search = search, query = query, isList = isList, isHidden = isHidden)
+    if (results.buildings.isEmpty() && results.rooms.isEmpty() && results.note == null) return
     ResultPanel {
-        buildings.forEach { building ->
+        results.buildings.forEach { building ->
             BuildingChoice(building, areas.otherAreaOf(building.symbol)) { onBuildingClick(building.symbol) }
         }
-        shownRooms.forEach { room ->
+        results.rooms.forEach { room ->
             RoomChoice(room) {
                 onRelease()
                 onRoomClick(room)
             }
         }
-        if (hasNote && isBuildingMissing) BuildingMissing()
-        if (hasNote && isNoResult) NoResult(query, onShowList = onShowList.takeUnless { isList })
+        when (results.note) {
+            ResultNote.BUILDING_MISSING -> BuildingMissing()
+            ResultNote.NO_RESULT -> NoResult(query, onShowList = onShowList.takeUnless { isList })
+            null -> Unit
+        }
     }
 }
+
+/** Zdanie pod wynikami pola szukaj. Wymagania: US1.1, US18.1 */
+internal enum class ResultNote {
+    /** Sam numer sali bez budynku: prośba o budynek. */
+    BUILDING_MISSING,
+
+    /** Nic nie pasuje: karta „brak wyniku”. */
+    NO_RESULT,
+}
+
+/**
+ * Wyniki do pokazania pod polem.
+ *
+ * Wymagania: US1.1, US18.1
+ *
+ * @property buildings budynki, tylko przy mapie z widocznymi wynikami
+ * @property rooms sale, tylko przy mapie z widocznymi wynikami
+ * @property note zdanie pod wynikami, przy mapie z widocznymi wynikami i przy liście; `null` bez zdania
+ */
+internal data class ShownResults(val buildings: List<Building>, val rooms: List<FoundRoom>, val note: ResultNote?)
+
+/**
+ * Wyniki z [search] dla tekstu [query] z pola: wynik liczy się tylko dla tego samego zapytania. Przy liście
+ * ([isList]) albo po schowaniu ([isHidden]) budynków i sal nie ma, a zdanie zostaje przy liście.
+ *
+ * Wymagania: US1.1, US18.1
+ */
+internal fun shownResults(search: BuildingSearch, query: String, isList: Boolean, isHidden: Boolean): ShownResults {
+    val isCurrent = search.query == query
+    val found = search.foundFor(query)
+    val rooms = search.rooms.takeIf { isCurrent }.orEmpty()
+    val isEmpty = query.isNotBlank() && found?.isEmpty() == true && rooms.isEmpty()
+    val note = resultNote(isMissing = isCurrent && search.isBuildingMissing, isEmpty = isEmpty)
+    val isOnMap = !isList && !isHidden
+    return ShownResults(
+        buildings = found.orEmpty().takeIf { isOnMap }.orEmpty(),
+        rooms = rooms.takeIf { isOnMap }.orEmpty(),
+        note = note.takeIf { isList || !isHidden },
+    )
+}
+
+private fun resultNote(isMissing: Boolean, isEmpty: Boolean): ResultNote? =
+    when {
+        isMissing -> ResultNote.BUILDING_MISSING
+        isEmpty -> ResultNote.NO_RESULT
+        else -> null
+    }
 
 @Composable
 private fun ResultPanel(content: @Composable ColumnScope.() -> Unit) {

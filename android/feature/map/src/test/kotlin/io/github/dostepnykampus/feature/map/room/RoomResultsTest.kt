@@ -69,7 +69,7 @@ class RoomResultsTest {
             }
         assertEquals("Kolejność sal inna niż z serwera", tops.sorted(), tops)
         compose.onNodeWithContentDescription("Sala 329, budynek A-1, sala wykładowa, 2 piętro").assertExists()
-        compose.onNodeWithText("Sala wykładowa · 2 piętro", useUnmergedTree = true).assertExists()
+        compose.onNodeWithText("Sala wykładowa · 2\u00A0piętro", useUnmergedTree = true).assertExists()
     }
 
     /** Wiersz: V1, rodzaju „Inne” wynik nie ma, zostaje samo piętro. Wymagania: US18.1 */
@@ -78,7 +78,7 @@ class RoomResultsTest {
         compose.setContent { Search() }
         compose.onNode(hasSetTextAction()).performTextInput("A-1 3")
         compose.onNodeWithContentDescription("Sala 301, budynek A-1, 2 piętro").assertExists()
-        compose.onNodeWithText("2 piętro", useUnmergedTree = true).assertExists()
+        compose.onNodeWithText("2\u00A0piętro", useUnmergedTree = true).assertExists()
     }
 
     /** Wiersz: V1, dotknięcie wyniku sali wybiera tę salę. Wymagania: US18.1, NFR-17 */
