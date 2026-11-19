@@ -44,7 +44,7 @@ private const val BUILDING =
 private const val NAMED_ID = "node/10"
 private val NAMED_AT = GeoPoint(longitude = 0.2, latitude = 0.3)
 private const val NAMED = "Wejście dostosowane"
-private const val SELECTED_NAMED = "Zaznaczone wejście: »$NAMED«, budynek A-1"
+private const val SELECTED_NAMED = "Zaznaczone wejście: „$NAMED”, budynek A-1"
 private const val UNNAMED = "Wejście"
 private const val SHOW_ENTRANCE = "Pokaż wejście na mapie"
 private const val SIDE = "Wejście boczne"
@@ -223,7 +223,7 @@ class EntranceOnMapTest {
     @Test
     fun sendsGuestFromSheetToSignIn() {
         showEntranceOnMap(namedCatalog())
-        val report = hasContentDescription("Zgłoś barierę przy wejściu: »$NAMED«")
+        val report = hasContentDescription("Zgłoś barierę przy wejściu: „$NAMED”")
         compose.waitUntil { compose.onAllNodes(report).fetchSemanticsNodes().isNotEmpty() }
         compose.onNode(report).performScrollTo().performClick()
         compose.waitForIdle()
@@ -239,7 +239,7 @@ class EntranceOnMapTest {
         val selected = selections.last().entrance
         assertEquals(UNNAMED, selected?.label)
         assertEquals(NAMED_AT, selected?.location)
-        compose.onNode(read("Zaznaczone wejście: »$UNNAMED«, budynek A-1")).assertExists()
+        compose.onNode(read("Zaznaczone wejście: $UNNAMED, budynek A-1")).assertExists()
     }
 
     /** Wiersz E2 (O5): pozostałe wejścia, także niedostępne i bez danych, zostają w danych mapy. */

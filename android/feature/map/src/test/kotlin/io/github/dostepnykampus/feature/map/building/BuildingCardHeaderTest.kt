@@ -104,11 +104,14 @@ class BuildingCardHeaderTest {
         assertEquals("id wejścia zalecanego", listOf("Główne"), shown)
     }
 
-    /** Wiersz wymagań V2 „Odpowiedź”: wejście zalecane bez nazwy jest w zdaniu opisane słowami. Wymagania: US3.1 */
+    /**
+     * Wiersz wymagań V2 „Odpowiedź”: wejście zalecane bez nazwy jest w zdaniu opisane słowem „Wejście” bez
+     *   cudzysłowu. Wymagania: US3.1, BR-27
+     */
     @Test
     fun answersWithUnnamed() {
         show(entrances = listOf(door("Boczne", EntranceMarking.ACCESSIBLE, name = null)))
-        compose.onNodeWithText("Zalecane: „Wejście”.").assertExists("zdanie bez nazwy")
+        compose.onNodeWithText("Zalecane: Wejście.").assertExists("zdanie bez nazwy")
     }
 
     /**

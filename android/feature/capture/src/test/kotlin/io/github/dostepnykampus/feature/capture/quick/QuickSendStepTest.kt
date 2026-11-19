@@ -71,7 +71,30 @@ class QuickSendStepTest {
             )
         val report = QuickReport(photo = photo, group = BarrierGroup.ENTRANCE_AND_DOORS)
         show(report = report, isFloorAsked = false, lookup = QuickLookup.Found(entrancePosition(entrance)))
-        compose.onNodeWithText("Wejście: „Wejście”, od strony E-3, od południa").assertIsDisplayed()
+        compose.onNodeWithText("Wejście: Wejście, od strony E-3, od południa").assertIsDisplayed()
+    }
+
+    /**
+     * Wiersz: V4 krok 3 przy wejściu głównym z nazwą nadaną przez import → napis bez cudzysłowu.
+     *
+     * Wymagania: US4.6, BR-27
+     */
+    @Test
+    fun showsMainWithoutQuotes() {
+        val entrance =
+            Entrance(
+                id = "node/1",
+                buildingSymbol = "A-1",
+                name = "Wejście główne",
+                isMain = true,
+                type = null,
+                location = point,
+                marking = EntranceMarking.ACCESSIBLE,
+                isNameGenerated = true,
+            )
+        val report = QuickReport(photo = photo, group = BarrierGroup.ENTRANCE_AND_DOORS)
+        show(report = report, isFloorAsked = false, lookup = QuickLookup.Found(entrancePosition(entrance)))
+        compose.onNodeWithText("Wejście: Wejście główne").assertIsDisplayed()
     }
 
     /** Wiersz: V4 krok 3, „Nie wiem” → podsumowanie z „Nie wiem”. Wymagania: US4.5 */

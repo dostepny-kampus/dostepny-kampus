@@ -72,7 +72,8 @@ class PlaceDescriptionListTest {
     }
 
     /**
-     * Wiersz: V2, zalecane „Wejście główne” z opisem położenia → zdanie podaje nazwę, a nie położenie.
+     * Wiersz: V2, zalecane „Wejście główne” z opisem położenia → zdanie podaje nazwę, a nie położenie, bez
+     *   cudzysłowu, bo nazwę nadał import.
      *
      * Wymagania: US3.1, BR-25, BR-27
      */
@@ -80,7 +81,7 @@ class PlaceDescriptionListTest {
     fun answersMainByName() {
         val main = unnamed(id = "pwr/1", approach = "", doorWidthCm = 0).copy(name = "Wejście główne", isMain = true)
         show(listOf(main)) { CardHeaderContent(it) }
-        compose.onNode(hasText("Zalecane: „Wejście główne”.")).assertExists()
+        compose.onNode(hasText("Zalecane: Wejście główne.")).assertExists()
     }
 
     /** Zrzut listy wejść z opisem położenia, motyw jasny. */

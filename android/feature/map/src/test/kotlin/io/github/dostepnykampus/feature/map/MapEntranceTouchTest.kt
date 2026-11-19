@@ -138,7 +138,7 @@ class MapEntranceTouchTest {
     fun reportsAtEntranceFromSheet() {
         start()
         compose.runOnIdle { map.touchSign(TouchSign.ENTRANCE, "node/2") }
-        compose.onNode(hasContentDescription("Zgłoś barierę przy wejściu: »Boczne«")).performScrollTo().performClick()
+        compose.onNode(hasContentDescription("Zgłoś barierę przy wejściu: „Boczne”")).performScrollTo().performClick()
 
         compose.runOnIdle { assertEquals("wejście boczne", listOf("node/2"), reports) }
     }
