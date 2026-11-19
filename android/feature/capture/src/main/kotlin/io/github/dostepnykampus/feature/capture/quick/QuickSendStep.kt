@@ -133,8 +133,11 @@ internal fun placeLine(place: ReportPlace): String {
     val name =
         when (place.category) {
             RoomCategory.STAIRCASE -> stringResource(R.string.szybkie_obiekt_schody)
+
             RoomCategory.ELEVATOR -> stringResource(R.string.szybkie_obiekt_winda)
+
             RoomCategory.ACCESSIBLE_TOILET -> stringResource(R.string.szybkie_obiekt_toaleta)
+
             RoomCategory.CLASSROOM,
             RoomCategory.LECTURE_HALL,
             RoomCategory.CORRIDOR,
