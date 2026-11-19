@@ -27,14 +27,16 @@ import org.jspecify.annotations.Nullable;
 final class EntranceNote {
 
     /**
-     * Nazwa i początek uwag wyjścia ewakuacyjnego.
+     * Nazwa wyjścia ewakuacyjnego.
      */
     private static final String EXIT = "Wyjście ewakuacyjne";
 
     /**
-     * Początek uwag wyjścia, którym nie da się wejść.
+     * Początki uwag wyjścia ewakuacyjnego, małymi literami.
      */
-    private static final String ONLY_EXIT = "Wyjście pełni wyłącznie funkcję ewakuacyjną";
+    private static final Set<String> EXITS = Set.of(
+        "wyjście ewakuacyjne", "wyjście pełni wyłącznie funkcję ewakuacyjną"
+    );
 
     /**
      * Pierwsze zdanie i reszta uwag.
@@ -76,8 +78,7 @@ final class EntranceNote {
      */
     boolean exit() {
         final String lower = this.text.toLowerCase(Locale.ROOT);
-        return lower.startsWith(EntranceNote.EXIT.toLowerCase(Locale.ROOT))
-            || lower.startsWith(EntranceNote.ONLY_EXIT.toLowerCase(Locale.ROOT));
+        return EntranceNote.EXITS.stream().anyMatch(lower::startsWith);
     }
 
     /**
