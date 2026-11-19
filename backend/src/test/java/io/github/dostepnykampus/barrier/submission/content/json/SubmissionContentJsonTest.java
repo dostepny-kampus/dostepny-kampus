@@ -16,6 +16,7 @@ import io.github.dostepnykampus.barrier.submission.content.SubmissionFloor;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
+import io.github.dostepnykampus.building.api.EntrancePlace;
 import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.util.EnumSet;
 import java.util.List;
@@ -421,6 +422,69 @@ final class SubmissionContentJsonTest {
                     String.format("Punkt %s przeszedł", point)
                 )
             )
+        );
+    }
+
+    @Test
+    void placesQuickSubmissionAtChosenEntrance() {
+        Assertions.assertAll(
+            Stream.of(
+                SubmissionContentJsonTest.bound(
+                    node -> node.put("entranceId", "node/7").remove("location")
+                ),
+                SubmissionContentJsonTest.bound(node -> node.put("entranceId", "node/7"))
+            ).map(
+                body -> () -> Assertions.assertEquals(
+                    new SubmissionPlace(
+                        new SubmissionPoint(17.05, 51.11), null, false, "C-13",
+                        new SubmissionFloor("p0", null, false)
+                    ),
+                    body.toContent(
+                        new EntranceBuildings(
+                            new EntrancePlace(51.11, 17.05, "C-13", "p0")
+                        )
+                    ).place(),
+                    "Zgłoszenie przy wejściu nie dostało punktu, budynku i piętra wejścia"
+                )
+            )
+        );
+    }
+
+    @Test
+    void rejectsUnknownEntranceAndQuickWithoutPlace() {
+        Assertions.assertAll(
+            () -> Assertions.assertEquals(
+                "Nie ma wejścia z pola entranceId",
+                Assertions.assertThrows(
+                    InvalidSubmission.class,
+                    () -> SubmissionContentJsonTest.bound(
+                        node -> node.put("entranceId", "node/0").remove("location")
+                    ).toContent(symbol -> true),
+                    "Nieznane wejście przeszło"
+                ).getMessage(),
+                "Zły komunikat nieznanego wejścia"
+            ),
+            () -> Assertions.assertEquals(
+                "Zgłoszenie wymaga pola location",
+                Assertions.assertThrows(
+                    InvalidSubmission.class,
+                    () -> SubmissionContentJsonTest.bound(node -> node.remove("location"))
+                        .toContent(symbol -> true),
+                    "Zgłoszenie bez pozycji i bez wejścia przeszło"
+                ).getMessage(),
+                "Zły komunikat braku miejsca"
+            )
+        );
+    }
+
+    @Test
+    void keepsLocationOfPreciseSubmissionWithEntrance() {
+        Assertions.assertEquals(
+            new SubmissionPoint(17.06, 51.1),
+            JsonBodies.bind(JsonBodies.json(JsonBodies.FULL)).toContent(
+                new EntranceBuildings(new EntrancePlace(51.11, 17.05, "C-13", null))
+            ).place().point(),
+            "Pomiar precyzyjny dostał punkt wejścia zamiast własnego"
         );
     }
 

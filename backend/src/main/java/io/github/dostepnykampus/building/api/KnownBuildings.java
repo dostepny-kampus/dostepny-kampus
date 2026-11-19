@@ -37,4 +37,18 @@ public interface KnownBuildings {
     default Optional<String> floorLabel(final @Nullable String symbol, final @Nullable String id) {
         return Optional.empty();
     }
+
+    /**
+     * Szuka miejsca wejścia. Wejście wspólne kilku budynków daje wiersz budynku
+     * z podpowiedzi, a bez niej budynek o najmniejszym symbolu.
+     *
+     * <p>Wymagania: BR-8, BR-14</p>
+     *
+     * @param id Identyfikator wejścia
+     * @param symbol Podpowiedź budynku albo null
+     * @return Miejsce wejścia albo puste, gdy wejścia nie ma
+     */
+    default Optional<EntrancePlace> entrance(final String id, final @Nullable String symbol) {
+        return Optional.empty();
+    }
 }

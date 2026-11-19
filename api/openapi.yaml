@@ -974,25 +974,25 @@ components:
         mezzanine: {type: boolean, default: false, description: "Dopisek „półpiętro” w budynku podstawowym."}
     SubmissionContent:
       type: object
-      description: Treść zgłoszenia ustalana przez składającego.
-      required: [kind, location, photoIds]
+      description: Treść zgłoszenia ustalana przez składającego. Bez `location` serwer przyjmuje tylko zgłoszenie szybkie z `entranceId` (US4.6, BR-8).
+      required: [kind, photoIds]
       properties:
         kind:
           type: string
           description: "`PRECISE` — pomiar precyzyjny, `QUICK` — zgłoszenie szybkie, `ENTRANCE_MARKING` — zmiana oznaczenia wejścia."
           enum: [PRECISE, QUICK, ENTRANCE_MARKING]
-        location: {$ref: '#/components/schemas/GeoPoint', description: "Miejsce bariery po pomiarze precyzyjnym albo bieżąca pozycja."}
+        location: {$ref: '#/components/schemas/GeoPoint', description: "Miejsce bariery po pomiarze precyzyjnym albo bieżąca pozycja. Wymagane poza zgłoszeniem szybkim z `entranceId`, w którym serwer bierze punkt wejścia zamiast podanego (BR-8)."}
         accuracyMeters: {type: number, format: double, minimum: 0, maximum: 10000, description: "Dokładność pozycji w metrach (US6.1)."}
         manualCorrection: {type: boolean, default: false, description: "Oznaczenie „korekta ręczna” (US6.3, US6.4)."}
-        buildingSymbol: {type: string, maxLength: 16, description: "Budynek; brak to „poza budynkiem” (BR-G2). W zgłoszeniu szybkim ustala go serwer z konturu (BR-14)."}
-        floor: {$ref: '#/components/schemas/SubmissionFloor', description: "Piętro; w budynku wymagane przy pomiarze precyzyjnym (BR-7), w zgłoszeniu szybkim może być puste (BR-14)."}
+        buildingSymbol: {type: string, maxLength: 16, description: "Budynek; brak to „poza budynkiem” (BR-G2). W zgłoszeniu szybkim ustala go serwer z konturu, a przy `entranceId` z wejścia (BR-14); przy wejściu kilku budynków podany symbol wybiera budynek."}
+        floor: {$ref: '#/components/schemas/SubmissionFloor', description: "Piętro; w budynku wymagane przy pomiarze precyzyjnym (BR-7), w zgłoszeniu szybkim może być puste, a przy `entranceId` serwer bierze piętro wejścia (BR-14)."}
         barrierGroup: {$ref: '#/components/schemas/BarrierGroup', description: "Grupa barier; w zgłoszeniu szybkim zamiast typu bariery (US4.3)."}
         barrierType: {$ref: '#/components/schemas/BarrierType', description: "Typ bariery; wymagany przy pomiarze precyzyjnym (BR-7)."}
         severity: {$ref: '#/components/schemas/Severity', description: "Uciążliwość; wymagana przy pomiarze precyzyjnym poza „bariera usunięta” (BR-7, BR-19)."}
         description: {type: string, maxLength: 2000, description: "Opis; obowiązkowy przy TB-29 „inna bariera” (US7.3)."}
         replacesSubmissionId: {type: string, format: uuid, description: "Zgłoszenie przyjęte, które ta zmiana zastąpi po przyjęciu (BR-18)."}
         barrierRemoved: {type: boolean, default: false, description: "Oznaczenie „bariera usunięta”; wymaga `replacesSubmissionId` (US8.4, BR-19)."}
-        entranceId: {type: string, maxLength: 64, description: "Wejście w zmianie oznaczenia wejścia (BR-24) albo w zgłoszeniu szybkim z „Zgłoś barierę przy wejściu” (US4.6)."}
+        entranceId: {type: string, maxLength: 64, description: "Wejście w zmianie oznaczenia wejścia (BR-24) albo w zgłoszeniu szybkim z „Zgłoś barierę przy wejściu” (US4.6); nieznane wejście w zgłoszeniu szybkim daje 400."}
         entranceMarking: {type: string, enum: [ACCESSIBLE, INACCESSIBLE], description: "Nowe oznaczenie wejścia w zmianie oznaczenia wejścia (US17.2)."}
         photoIds:
           type: array
@@ -1024,8 +1024,9 @@ components:
         - $ref: '#/components/schemas/SubmissionContent'
         - type: object
           description: Dane nadane przez serwer.
-          required: [id, version, status, createdAt]
+          required: [id, version, status, createdAt, location]
           properties:
+            location: {$ref: '#/components/schemas/GeoPoint', description: "Miejsce zgłoszenia zapisane przez serwer, przy wejściu punkt wejścia (BR-8)."}
             id: {type: string, format: uuid, description: "Identyfikator zgłoszenia."}
             version: {type: integer, minimum: 1, description: "Wersja zgłoszenia; rośnie po każdej zapisanej edycji (BR-3)."}
             status: {$ref: '#/components/schemas/SubmissionStatus'}
