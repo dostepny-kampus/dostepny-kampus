@@ -18,15 +18,16 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
 import io.github.dostepnykampus.feature.capture.photo.PhotoPreviews
 
 /**
  * Krok 3 V4 przed „Wyślij”: miniatura zdjęcia, wybrana grupa, piętro albo „Nie wiem”, jeśli było pytanie,
- * i zdanie o dołączeniu bieżącego miejsca. Gdy pozycja jest jeszcze nieznana,
- * zamiast zdania „Ustalamy, gdzie jesteś…”; „Wyślij” wtedy czeka. Przy „Brak pozycji” i pozycji poza terenem PWr
- * komunikat mówi, co zrobić; zdjęcie i grupa zostają.
+ * i zdanie o dołączeniu bieżącego miejsca albo, przy wybranym wejściu, napis o wejściu. Gdy pozycja jest jeszcze
+ * nieznana, zamiast zdania „Ustalamy, gdzie jesteś…”; „Wyślij” wtedy czeka. Przy „Brak pozycji” i pozycji poza
+ * terenem PWr komunikat mówi, co zrobić; zdjęcie i grupa zostają.
  *
  * Wymagania: US4.1, US4.5, NFR-27, NFR-23, UC7, US4.9
  *
@@ -42,7 +43,9 @@ internal fun QuickSendSummary(report: QuickReport, isFloorAsked: Boolean, lookup
         if (isFloorAsked) Text(report.floorLabel ?: floorLabel(report.floorNumber))
         when (lookup) {
             is QuickLookup.Found -> {
-                Text(stringResource(R.string.szybkie_dolaczymy_miejsce))
+                val entrance = lookup.position.entrance
+                val place = stringResource(R.string.szybkie_dolaczymy_miejsce)
+                Text(if (entrance != null) entranceLine(entrance) else place)
             }
 
             QuickLookup.Locating -> {
@@ -91,3 +94,19 @@ private fun floorLabel(floor: Int?): String =
         0 -> stringResource(R.string.szybkie_parter)
         else -> stringResource(R.string.szybkie_pietro, floor)
     }
+
+/**
+ * Napis o wejściu [entrance] w krokach 1 i 3 V4: nazwa, „Wejście główne” albo wejście bez nazwy.
+ *
+ * Wymagania: US4.6
+ */
+@Composable
+@ReadOnlyComposable
+internal fun entranceLine(entrance: Entrance): String {
+    val name = entrance.name
+    return when {
+        name != null -> stringResource(R.string.szybkie_wejscie, name)
+        entrance.isMain -> stringResource(R.string.szybkie_wejscie_glowne)
+        else -> stringResource(R.string.szybkie_wejscie_bez_nazwy)
+    }
+}

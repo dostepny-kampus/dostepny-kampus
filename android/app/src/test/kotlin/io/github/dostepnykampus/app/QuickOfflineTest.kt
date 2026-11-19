@@ -118,7 +118,7 @@ class QuickOfflineTest {
             networkStatus = NetworkStatus { flowOf(false) },
             buildingFloors = BuildingFloors { null },
             buildingLookup = BuildingLookup(catalog, EmptyCoroutineContext),
-        )
+        ).also { it.start(entranceId = null) }
 
     private fun queue(): SubmissionQueue = offlineQueue(store) { sent++ }
 

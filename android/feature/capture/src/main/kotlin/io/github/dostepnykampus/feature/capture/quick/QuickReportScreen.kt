@@ -51,10 +51,12 @@ import java.io.File
 
 /**
  * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie; kroki przed
- * wysłaniem wymagają zgody na dokładną lokalizację, a pozycja jest ustalana od kroku 1. Krok 1: „Zrób zdjęcie” otwiera
- * aparat i prowadzi do kroku 2; „Wstecz” ze zdjęciem pyta o rezygnację, a „Tak, zrezygnuj” usuwa zdjęcie. Krok 2:
- * grupa, a w konturze albo przy nieznanej pozycji pytanie o piętro. Krok 3: „Brak pozycji” ma „Spróbuj ponownie” i
- * „Zrezygnuj”, a „Tak, zrezygnuj” otwiera mapę. Po wysłaniu ekran pokazuje tylko potwierdzenie (`SENT`).
+ * wysłaniem wymagają zgody na dokładną lokalizację, a pozycja jest ustalana od kroku 1. Zgłoszenie przy wejściu
+ * wybranym w arkuszu wejścia bierze miejsce z wejścia: bez zgody na lokalizację i bez pytania o piętro.
+ * Krok 1: „Zrób zdjęcie” otwiera aparat i prowadzi do kroku 2; „Wstecz” ze zdjęciem pyta o rezygnację,
+ * a „Tak, zrezygnuj” usuwa zdjęcie. Krok 2: grupa, a w konturze albo przy nieznanej pozycji pytanie o piętro.
+ * Krok 3: „Brak pozycji” ma „Spróbuj ponownie” i „Zrezygnuj”, a „Tak, zrezygnuj” otwiera mapę. Po wysłaniu ekran
+ * pokazuje tylko potwierdzenie (`SENT`).
  *
  * Wymagania: US4.1, NFR-27, BR-8, BR-14, BR-G2, UC7
  *
@@ -99,13 +101,18 @@ fun QuickReportScreen(
 
                     else -> {
                         QuickStepProgress(step = route.step.ordinal + 1)
-                        WithLocationPermission(onBack = actions.onBack) {
+                        val step: @Composable () -> Unit = {
                             QuickStep(
                                 route = route,
                                 actions = actions,
                                 models = models,
                                 onGiveUp = { isLeaving = true },
                             )
+                        }
+                        if (route.entranceId == null) {
+                            WithLocationPermission(onBack = actions.onBack, content = step)
+                        } else {
+                            step()
                         }
                     }
                 }
@@ -127,6 +134,7 @@ private fun QuickStep(
     onGiveUp: () -> Unit,
 ) {
     val where = models.sendModel()
+    LaunchedEffect(where, route.entranceId) { where.start(route.entranceId) }
     when (route.step) {
         ReportStep.PHOTO -> {
             QuickPositionWarmUp(where)
@@ -187,16 +195,7 @@ private fun QuickPhotoStep(
 private fun QuickEntranceLine(id: String, entrances: QuickEntranceViewModel = hiltViewModel()) {
     val updates = remember(entrances, id) { entrances.entrance(id) }
     val entrance by updates.collectAsStateWithLifecycle(initialValue = null)
-    entrance?.let { chosen ->
-        val name = chosen.name
-        Text(
-            when {
-                name != null -> stringResource(R.string.szybkie_wejscie, name)
-                chosen.isMain -> stringResource(R.string.szybkie_wejscie_glowne)
-                else -> stringResource(R.string.szybkie_wejscie_bez_nazwy)
-            },
-        )
-    }
+    entrance?.let { Text(entranceLine(it)) }
 }
 
 @Composable
@@ -208,7 +207,8 @@ private fun QuickGroupStep(route: ReportRoute, onNext: (ReportRoute) -> Unit, wh
     val group = asked
     if (group == null) {
         QuickGroupQuestion(selected = route.group, onGroup = { chosen ->
-            if (chosen.asksFloor(isInBuilding)) asked = chosen else onNext(route.copy(group = chosen))
+            val asks = route.entranceId == null && chosen.asksFloor(isInBuilding)
+            if (asks) asked = chosen else onNext(route.copy(group = chosen))
         })
     } else {
         BackHandler { asked = null }

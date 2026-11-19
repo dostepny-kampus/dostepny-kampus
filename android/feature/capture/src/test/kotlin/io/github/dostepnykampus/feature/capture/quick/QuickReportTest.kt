@@ -7,6 +7,8 @@ package io.github.dostepnykampus.feature.capture.quick
 
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
@@ -77,5 +79,34 @@ class QuickReportTest {
         val report = QuickReport(photo = photo, group = BarrierGroup.TOILETS)
         val content = report.content(QuickPosition(point = point, accuracyMeters = 6.0, isInBuilding = true))
         assertNull(content.floor)
+    }
+
+    /**
+     * Zgłoszenie przy wejściu wybranym w arkuszu wejścia ma punkt, budynek i piętro wejścia, bez dokładności
+     * pozycji; piętro z kroku 2 nie zastępuje piętra wejścia.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego
+     *   wejścia
+     *
+     * Wymagania: US4.6, BR-8
+     */
+    @Test
+    fun takesPlaceFromEntrance() {
+        val entrance =
+            Entrance(
+                id = "node/6",
+                buildingSymbol = "A-1",
+                name = null,
+                isMain = true,
+                type = "main",
+                location = point,
+                marking = EntranceMarking.ACCESSIBLE,
+                floorId = "A-1/p0",
+            )
+        val report = QuickReport(photo = photo, group = BarrierGroup.ENTRANCE_AND_DOORS, floorNumber = 2)
+        val content = report.content(entrancePosition(entrance))
+        assertEquals(point, content.location)
+        assertNull(content.accuracyMeters)
+        assertEquals("node/6", content.entranceId)
+        assertEquals(SubmissionFloor(floorId = "A-1/p0"), content.floor)
     }
 }
