@@ -89,13 +89,10 @@ class CardReturnTest {
     private fun scrolled(): Int = compose.runOnIdle { checkNotNull(scroll).value }
 
     /**
-     * Wiersz: karta rozwinięta i przewinięta, arkusz znaku w jej miejscu, „Wstecz” → karta rozwinięta, tak samo
-     *   przewinięta.
+     * Wiersz: karta rozwinięta i przewinięta, arkusz w jej miejscu, „Wstecz” → karta jak przed arkuszem.
      * Scenariusz (częściowo, przykład: rozwinie kartę A-1, przewinie ją i dotknie wiersza wejścia):
-     *   przegladanie-mapy.feature: „Wstecz” w arkuszu wejścia wraca tam, skąd arkusz otwarto, a „Zamknij” zostawia
-     *   mapę
-     * Scenariusz (częściowo): przegladanie-mapy.feature: Wiersz budynku w arkuszu otwartym z karty wraca do tej
-     *   karty
+     *   przegladanie-mapy.feature: „Wstecz” w arkuszu wejścia wraca tam, skąd arkusz otwarto, a „Zamknij” zostawia mapę
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Wiersz budynku w arkuszu otwartym z karty wraca do tej karty
      */
     @Test
     fun returnsToExpandedScrolledCard() {
