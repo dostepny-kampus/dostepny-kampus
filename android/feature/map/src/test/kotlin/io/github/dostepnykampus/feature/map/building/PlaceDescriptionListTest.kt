@@ -6,20 +6,12 @@
 package io.github.dostepnykampus.feature.map.building
 
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
-import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
@@ -105,28 +97,13 @@ class PlaceDescriptionListTest {
     }
 
     private fun group(entrances: List<Entrance>) {
-        val card = ready(entrances)
-        compose.setContent {
-            Themed {
-                EntrancesGroup(card = card, withAssessment = true, onShowEntrance = {}, onReport = {})
-            }
-        }
+        val card = readyCard(symbol = "C-19", entrances = entrances)
+        compose.setContent { EntranceListContent(card) }
     }
 
     private fun header(entrances: List<Entrance>) {
-        val card = ready(entrances)
-        compose.setContent {
-            Themed {
-                CardHeader(symbol = "C-19", card = card, mode = CardMode.Expanded, onClose = {})
-            }
-        }
-    }
-
-    @Composable
-    private fun Themed(content: @Composable () -> Unit) {
-        DostepnyKampusTheme {
-            Column(Modifier.background(MaterialTheme.colorScheme.surface).padding(16.dp)) { content() }
-        }
+        val card = readyCard(symbol = "C-19", entrances = entrances)
+        compose.setContent { CardHeaderContent(card) }
     }
 
     private companion object {
@@ -135,9 +112,6 @@ class PlaceDescriptionListTest {
                 unnamed(id = "pwr/1", approach = RAMP, doorWidthCm = 100),
                 unnamed(id = "pwr/2", approach = "", doorWidthCm = 0).copy(marking = EntranceMarking.NO_DATA),
             )
-
-        fun ready(entrances: List<Entrance>): BuildingCardUiState.Ready =
-            BuildingCardUiState.Ready(symbol = "C-19", name = null, entrances = orderedEntrances(entrances))
 
         fun unnamed(id: String, approach: String, doorWidthCm: Int): Entrance =
             Entrance(
