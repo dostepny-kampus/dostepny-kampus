@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.app
 
+import android.os.Build
+import android.os.Trace
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
@@ -70,6 +72,7 @@ private const val SHEET_KEY = "arkusz"
 private const val EXPANDED_KEY = "rozwiniety"
 private const val MAP_KEY = "mapa"
 private const val MATERIAL_DURATION_MEDIUM2_MILLIS = 300
+private const val COVER_COUNTER = "Arkusz: zasłonięcie"
 
 /** Znacznik testowy obrazu zamkniętej karty, która zjeżdża w dół. */
 internal const val CLOSING_SHEET_TAG = "zamykana_karta"
@@ -237,7 +240,7 @@ private data class SheetScene(
                     val layout = SheetLayout(isExpanded = state.isExpanded, isFull = isFull, onExpand = expand)
                     CompositionLocalProvider(LocalSheetPadding provides layout) { sheet.Content() }
                 }
-            } else if (exit.isLeaving) {
+            } else if (exit.isLeaving || exit.closes(isShown = false)) {
                 ClosingSheet(exit = exit, picture = picture, modifier = Modifier.align(Alignment.BottomCenter))
             }
         }
@@ -277,27 +280,47 @@ private class HeldValue<T>(private var last: T) {
  * Zjazd zamkniętej karty: ostatni obraz arkusza o wysokości [height] w px, schowany pod dolną krawędzią w części
  * [gone]. Karta zamknięta przez „Zamknij”, dotknięcie mapy albo „Wstecz” zjeżdża z miejsca, w którym stała, w czasie
  * `medium2`, jak przelot mapy do widoku sprzed karty; karta już schowana gestem „Wstecz” nie zjeżdża drugi raz.
- * Skala animacji 0 kończy zjazd od razu. Wymagania: NFR-56, US2.8
+ * Zjazd trwa od klatki zamknięcia ([closes], [mark]), zanim ruszy animacja. Skala animacji 0 kończy zjazd od razu.
+ * Wymagania: NFR-56, US2.8
  */
 internal class SheetExit {
     var height: Int = 0
         private set
     private var offset = 0f
+    private var isShownBefore = false
+    private var isStarting by mutableStateOf(false)
     val gone = Animatable(1f)
-    val isLeaving: Boolean by derivedStateOf { gone.value < 1f }
+    val isLeaving: Boolean by derivedStateOf { isStarting || gone.value < 1f }
+
+    /** Część wysokości karty schowana pod krawędzią w tej klatce; 1, gdy karta nie zjeżdża. */
+    val hiddenPart: Float
+        get() = if (isStarting) offset else gone.value
 
     fun keep(height: Int, offset: Float) {
         this.height = height
         this.offset = offset
     }
 
+    /** Arkusz pokazany w poprzedniej klatce, a teraz zamknięty ([isShown] fałsz), ma z czego zjechać. */
+    fun closes(isShown: Boolean): Boolean = !isShown && isShownBefore && height != 0 && offset < 1f
+
+    /** Zapisuje po kompozycji, czy arkusz jest pokazany ([isShown]); zamknięcie zaczyna zjazd w tej samej klatce. */
+    fun mark(isShown: Boolean) {
+        isStarting = closes(isShown) || (isStarting && !isShown)
+        isShownBefore = isShown
+    }
+
     suspend fun leave() {
-        if (height == 0 || offset >= 1f) return
+        if (!isStarting) return
         gone.snapTo(offset)
+        isStarting = false
         gone.animateTo(targetValue = 1f, animationSpec = MaterialStandardMediumSlide)
     }
 
-    suspend fun show() = gone.snapTo(1f)
+    suspend fun show() {
+        isStarting = false
+        gone.snapTo(1f)
+    }
 }
 
 /**
@@ -322,16 +345,23 @@ internal class SheetEdge(private val exit: SheetExit) {
         val visible =
             when {
                 part != null -> exit.height * (1f - part().coerceIn(minimumValue = 0f, maximumValue = 1f))
-                exit.isLeaving -> exit.height * (1f - exit.gone.value)
+                exit.isLeaving -> exit.height * (1f - exit.hiddenPart)
                 else -> 0f
             }
-        return minOf(a = cover.toFloat(), b = visible).roundToInt()
+        return minOf(a = cover.toFloat(), b = visible).roundToInt().also(::trace)
+    }
+
+    private fun trace(shown: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Trace.isEnabled()) {
+            Trace.setCounter(COVER_COUNTER, shown.toLong())
+        }
     }
 }
 
 @Composable
 internal fun rememberSheetExit(isShown: Boolean): SheetExit {
     val exit = remember { SheetExit() }
+    SideEffect { exit.mark(isShown) }
     LaunchedEffect(isShown) { if (isShown) exit.show() else exit.leave() }
     return exit
 }
@@ -342,7 +372,7 @@ internal fun ClosingSheet(exit: SheetExit, picture: GraphicsLayer, modifier: Mod
     Box(
         modifier =
             modifier
-                .offset { IntOffset(x = 0, y = (exit.gone.value * exit.height).roundToInt()) }
+                .offset { IntOffset(x = 0, y = (exit.hiddenPart * exit.height).roundToInt()) }
                 .fillMaxWidth()
                 .height(height)
                 .testTag(CLOSING_SHEET_TAG)
