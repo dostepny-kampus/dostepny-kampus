@@ -33,8 +33,8 @@ class MapStylePlanTest {
         val expected =
             listOf(
                 """{"floor":"P0","kind":"outline"}""",
-                """{"floor":"P0","kind":"room","category":"ELEVATOR"}""",
-                """{"floor":"P0","kind":"room","category":"CORRIDOR"}""",
+                """{"floor":"P0","kind":"room","category":"ELEVATOR","room_id":"0"}""",
+                """{"floor":"P0","kind":"room","category":"CORRIDOR","room_id":"1"}""",
                 """{"floor":"P0","kind":"sign","image":"znak planu: ELEVATOR","room_id":"0"}""",
             )
         assertEquals(expected, parts.map(JsonElement::toString), "Obiekty planu nie mają piętra i rodzaju")
@@ -165,6 +165,59 @@ class MapStylePlanTest {
         )
     }
 
+    /**
+     * Wiersz: wyróżniona sala ma nad ścianami wypełnienie `p_wybrana` i kontur `p_wybrana_kontur` grubszy od ściany
+     * piętra, więc widać ją nie tylko po kolorze.
+     * Scenariusz (częściowo): szukanie-sali.feature:
+     *   Wyszukanie sali po budynku i numerze w różnym zapisie
+     */
+    @Test
+    fun outlinesChosenRoom() {
+        val layers = planLayers(TOKENS, floor = "P1", room = "7")
+        val ids = layers.map { it.text("id") }
+        val byId = layers.associateBy { it.text("id") }
+        val outline = byId.paint(PLAN_CHOSEN_OUTLINE_LAYER)
+        assertEquals(
+            listOf(ids.indexOf(PLAN_WALLS_LAYER) + 1, "#8FD3EA", "#001F27", true),
+            listOf(
+                ids.indexOf(PLAN_CHOSEN_LAYER),
+                byId.paint(PLAN_CHOSEN_LAYER).text("fill-color"),
+                outline.text("line-color"),
+                outline.getValue("line-width").jsonPrimitive.double > 2.4,
+            ),
+            "Wyróżnienie sali nie leży nad ścianami albo nie ma barw i grubego konturu",
+        )
+    }
+
+    /** Styl mapy wyróżnia salę z planu, a plan bez sali nie wyróżnia żadnej. Wymagania: US18.1 */
+    @Test
+    fun showsChosenRoomOfPlan() {
+        val rooms = mapOf("P1" to plan(RoomCategory.CLASSROOM))
+        val plan = ShownPlan(building = "A", floors = emptyList(), floor = "P1", rooms = rooms, room = "0")
+        val filters =
+            listOf(plan, plan.copy(room = null)).map { shown ->
+                val layers = style(shown).items("layers").associate { it.jsonObject.text("id") to it.jsonObject }
+                layers.getValue(PLAN_CHOSEN_LAYER).getValue("filter")
+            }
+        assertEquals(
+            listOf(chosenRoomFilter(floor = "P1", room = "0"), chosenRoomFilter(floor = "P1", room = null)),
+            filters,
+            "Styl nie wyróżnia sali planu albo wyróżnia ją bez sali w planie",
+        )
+    }
+
+    /** Filtr wyróżnienia bierze identyfikator sali jako literał, a bez sali nie przepuszcza niczego. */
+    @Test
+    fun filtersChosenRoomById() {
+        val chosen = chosenRoomFilter(floor = "P1", room = """["get","x"]""").jsonArray
+        val none = chosenRoomFilter(floor = "P1", room = null).jsonArray
+        assertEquals(
+            listOf("""["==",["get","room_id"],["literal","[\"get\",\"x\"]"]]""", """["==",["get","room_id"],false]"""),
+            listOf(chosen.last().toString(), none.last().toString()),
+            "Identyfikator sali nie trafił do filtra jako literał albo filtr bez sali coś przepuszcza",
+        )
+    }
+
     private fun layers(): Map<String, JsonObject> =
         style(plan = null).items("layers").associate { it.jsonObject.text("id") to it.jsonObject }
 
@@ -220,6 +273,8 @@ class MapStylePlanTest {
                 toilet = "#F2F5F6",
                 wall = "#6A7579",
                 floorWall = "#004E5E",
+                chosen = "#8FD3EA",
+                chosenOutline = "#001F27",
             )
     }
 }
