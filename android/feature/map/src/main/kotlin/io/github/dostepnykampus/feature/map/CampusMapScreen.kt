@@ -47,6 +47,7 @@ import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
+import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.map.area.AreaEdgeAnnouncement
 import io.github.dostepnykampus.feature.map.area.MapAreas
 import io.github.dostepnykampus.feature.map.area.rememberMapAreas
@@ -168,6 +169,7 @@ fun CampusMapScreen(
  * @param onCardReturn powrót z arkusza znaku do karty budynku, którą arkusz zastąpił
  * @param sheetCover zasłonięty dół okna w px w bieżącej klatce, za którym przyciski mapy i podpis OSM idą razem
  *   z krawędzią arkusza V2 w ruchu; czytany tylko w fazie układu; `null` stawia je nad [contentPadding]
+ * @param onRoomClick sala wybrana w wynikach pola szukaj
  */
 @Composable
 fun CampusMapScreen(
@@ -189,6 +191,7 @@ fun CampusMapScreen(
     onMapHide: () -> Unit = {},
     onCardReturn: (String) -> Unit = onBuildingClick,
     sheetCover: (() -> Int)? = null,
+    onRoomClick: (FoundRoom) -> Unit = {},
 ) {
     val sheet =
         screenSheet(focus = focus, padding = contentPadding, onCardClose = onEmptyMapClick, onCardReturn = onCardReturn)
@@ -237,12 +240,10 @@ fun CampusMapScreen(
                     areas = areas.order,
                     onListChange = onListChange,
                     onBuildingClick = if (isList) onListBuildingClick else onBuildingClick,
+                    onRoomClick = onRoomClick,
                     onBarHeight = { headerHeight = it },
                     searchFocus = search,
-                    modifier =
-                        (if (isList) Modifier.fillMaxSize() else Modifier)
-                            .slideUp(barExit)
-                            .onSizeChanged { barHeight = it.height },
+                    modifier = Modifier.searchBarArea(isList = isList, barExit = barExit) { barHeight = it },
                 )
             }
         }

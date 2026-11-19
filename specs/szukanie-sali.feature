@@ -3,7 +3,7 @@ Funkcja: Wyszukanie sali
   Gość niezalogowany i Odwiedzający szukają sali po numerze, aby wiedzieć, na którym jest piętrze
   i jak dojść do niej bez schodów (N1). Piętro wejścia zalecanego pochodzi z danych planu PWr.
 
-  # @do-zrobienia #2549: zapisy z numerem na początku i ze słowem „sala” w aplikacji.
+  # @do-zrobienia #1481: plan piętra z wyróżnioną salą (#3418) i karta sali z funkcją i piętrem.
   @US18.1 @aplikacja @serwer @do-zrobienia
   Szablon scenariusza: Wyszukanie sali po budynku i numerze w różnym zapisie
     Zakładając, że dane PWr budynku A-1 mają salę 329 z funkcją i piętrem
@@ -20,16 +20,14 @@ Funkcja: Wyszukanie sali
       | sala 329 A-1 |
       | A-1/329      |
 
-  # @do-zrobienia #2549: podpowiedzi sal w panelu wyników.
-  @US18.1 @aplikacja @do-zrobienia
+  @US18.1 @aplikacja
   Scenariusz: Symbol budynku i cyfra podpowiadają sale tego budynku
     Zakładając, że dane PWr budynku A-1 mają sale 301, 314 i 329 na 2 piętrze
     Jeżeli Gość niezalogowany wpisze „A-1 3”
     Wtedy wyniki pod polem to sale 301, 314 i 329 budynku A-1 w tej kolejności
     Oraz każdy wynik ma symbol budynku, numer sali, rodzaj pomieszczenia i piętro
 
-  # @do-zrobienia #2549: podpowiedź do samego numeru sali.
-  @US18.1 @aplikacja @do-zrobienia
+  @US18.1 @aplikacja
   Scenariusz: Sam numer sali bez budynku prosi o dopisanie budynku
     Jeżeli Gość niezalogowany wpisze „329”
     Wtedy pod polem widzi „Dopisz budynek do numeru sali. Na przykład: A-1 329.”

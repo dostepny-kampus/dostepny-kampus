@@ -70,6 +70,7 @@ import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.bar.NavigationIcons
 import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
+import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.map.area.AreaOrder
 import io.github.dostepnykampus.feature.map.building.BuildingList
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
@@ -107,6 +108,7 @@ private val ClearIcon =
  *   zdejmuje fokus z pola, chowa klawiaturę ekranową i wyniki, a tekst w polu zostaje; utrata fokusu z innego
  *   powodu też chowa wyniki. Wyniki wracają po dotknięciu pola albo zmianie tekstu. Pierwsze „Wstecz” zamyka V2
  * @param modifier położenie nad mapą; przy liście cała wysokość nad paskiem dolnym
+ * @param onRoomClick wybrany wynik sali; wybór chowa wyniki i klawiaturę jak wybór budynku
  * @param onBarHeight wysokość w pikselach wiersza tytułu, pola i wiersza bez internetu, bez wyników: tę część
  *   mapy kamera traktuje jako zasłoniętą, więc wpisywanie nie przesuwa mapy
  * @param searchFocus fokus pola widziany przez mapę; `null`, gdy żadna mapa go nie śledzi
@@ -123,6 +125,7 @@ internal fun CampusSearch(
     onListChange: (Boolean) -> Unit,
     onBuildingClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    onRoomClick: (FoundRoom) -> Unit = {},
     onBarHeight: (Int) -> Unit = {},
     searchFocus: SearchFocus? = null,
 ) {
@@ -135,10 +138,13 @@ internal fun CampusSearch(
         query = ""
         onListChange(true)
     }
-    val choose = { symbol: String ->
+    val release: () -> Unit = {
         isHidden = true
         focus.clearFocus(force = true)
         keyboard?.hide()
+    }
+    val choose = { symbol: String ->
+        release()
         onBuildingClick(symbol)
     }
     Column(modifier.fillMaxWidth()) {
@@ -168,6 +174,8 @@ internal fun CampusSearch(
             isHidden = isHidden,
             areas = areas,
             onBuildingClick = choose,
+            onRoomClick = onRoomClick,
+            onRelease = release,
             onShowList = showList,
         )
         if (isList) {
