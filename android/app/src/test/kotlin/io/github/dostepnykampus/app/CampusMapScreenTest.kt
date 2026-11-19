@@ -216,7 +216,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
         compose.onNodeWithContentDescription("Powiększ").assertDoesNotExist()
     }
 
-    /** Wiersz: kontur wspólny „C-13/C-14” → arkusz „Który budynek?”, przycisk budynku → V2. */
+    /** Wiersz: kontur wspólny „C-13/C-14” → arkusz „Który budynek?”, wiersz „Budynek C-14” → V2. */
     @Test
     fun opensCardFromChoice() {
         compose.setContent { Screen() }
@@ -227,7 +227,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
             SemanticsMatcher("otwiera opis budynku") {
                 it.config.getOrNull(SemanticsActions.OnClick)?.label == "otwiera opis budynku"
             }
-        compose.onNodeWithContentDescription("C-14, Budynek testowy").assert(action).performClick()
+        compose.onNodeWithContentDescription("Budynek C-14, Budynek testowy").assert(action).performClick()
         compose.onNodeWithText("Który budynek?").assertDoesNotExist()
         assertEquals(listOf("C-14"), opened)
     }
@@ -728,7 +728,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
         compose.onNode(showMap).assertExists()
         compose.onNodeWithContentDescription("Powiększ").assertDoesNotExist()
         compose.onNodeWithContentDescription("C-13, Budynek testowy").assertExists()
-        compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
+        compose.onNodeWithContentDescription("Budynek C-14, Budynek testowy").performClick()
         assertEquals(listOf("C-14"), opened)
         sheet = 400.dp
         compose.onNodeWithText("© OpenStreetMap contributors").assertExists()
