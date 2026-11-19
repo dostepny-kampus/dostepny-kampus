@@ -127,7 +127,10 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1, panel „Teren na mapie” | teren z listy; „Zamknij” | V1 z wybranym terenem; V1 | wszystkie | US1.7 |
 | V1 | wybór wyniku albo budynku z listy, który leży na innym terenie | V1 z terenem tego budynku; dalej jak przy każdym wyniku. „Wstecz” z V2 zostawia ten teren, nie wraca na startowy | wszystkie | US1.8 |
 | V1 | przybliżenie budynku szczegółowego (≥ 17) | V1, stan „plan piętra” | wszystkie | R2, US16.1 |
-| V1 | wybór sali w wynikach pola, np. „A-1 329” | V1, stan „znaleziona sala”: plan piętra i kroki | wszystkie | BR-25, decyzja 44 |
+| V1 | wybór sali w wynikach pola, np. „A-1 329” | V1, stan „znaleziona sala”: plan piętra i karta sali z listą „Jak dojść” | wszystkie | BR-25, decyzja 44 |
+| V1, stan „plan piętra” | dotknięcie sali z numerem na planie | V1, stan „znaleziona sala” | wszystkie | US18.1, decyzja z 19.11.2026 |
+| V1, stan „znaleziona sala” | „Pokaż po kolei”, wiersz kroku albo numer kroku na planie | V1, stan „kroki po kolei”: wybrany krok, plan jego piętra | wszystkie | US18.2, decyzja z 19.11.2026 |
+| V1, stan „kroki po kolei” | „Szczegóły wejścia” albo „Szczegóły windy” | arkusz wejścia albo windy; jego „Zamknij” wraca na ten sam krok | wszystkie | US18.2, decyzja z 19.11.2026 |
 | V1, stan „plan piętra” | oddalenie (< 16,5), wyjście z zasięgu budynku albo zmiana terenu | V1 | wszystkie | R3, R4, US16.1, US1.6 |
 | V1, stan „plan piętra” albo „znaleziona sala” | przełącznik pięter | V1, plan innego piętra | wszystkie | US16.1 |
 | V1, stan „plan piętra” albo „znaleziona sala” | dotknięcie windy | V1, stan „arkusz windy” | wszystkie | R14, US16.1 |
@@ -135,7 +138,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1, stan „arkusz windy” | wiersz „Budynek A-1” | V2 tego budynku na niskiej wysokości, mapa jak po dotknięciu konturu | wszystkie | US2.8, US16.1 |
 | V1, stan „arkusz windy” | „Zgłoś barierę przy windzie” | V4, krok 1, winda wybrana, miejsce w punkcie windy, piętro oglądanego planu; Gość: L1, potem V4 z wybraną windą | wszystkie | US4.6, US14.2, BR-8 |
 | V1, stan „znaleziona sala”, „sala bez drogi” albo „brak sali” | wiersz „Budynek A-1” | V2 na niskiej wysokości, mapa jak po dotknięciu konturu | wszystkie | US2 |
-| V1, stan „znaleziona sala” | „Zamknij” | V1 | wszystkie | decyzja 48 |
+| V1, stan „znaleziona sala” albo „kroki po kolei” | „Zamknij” | V1 | wszystkie | decyzja 48 |
 | V2 | „Pokaż na planie” przy piętrze | V1, plan tego piętra, bez zaznaczonego budynku | wszystkie | US16.1, decyzja 44 |
 | V2, pełny ekran otwarty od razu | „Pokaż budynek na mapie” | V1 w widoku mapy z zaznaczonym budynkiem, bez karty; zapamiętany wybór „Mapa” | wszystkie | US2.9, NFR-19, decyzja 116 |
 | V2 | „Pokaż wejście na mapie” pod wierszem o wejściach albo przy wejściu zalecanym | V1 z zaznaczonym wejściem zalecanym i jego arkuszem; przy dużej czcionce arkusz na cały ekran; „Wstecz” arkusza wraca do karty, „Zamknij” zostawia mapę | wszystkie | US2.1, US3.3, BR-25 |
