@@ -49,7 +49,7 @@ internal fun ChosenPlanSheet(id: String?, plan: ShownPlan?, exits: SheetExits, m
             if (isLift) {
                 LiftFacts(sign)
             } else {
-                BuildingLink(sign.building) { exits.onBuilding(sign.building) }
+                BuildingLink(sign.building, onClick = { exits.onBuilding(sign.building) })
                 Text(text = sign.floor, style = MaterialTheme.typography.bodyLarge)
             }
         }

@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.map.overlay
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -34,34 +35,46 @@ import io.github.dostepnykampus.feature.map.R
 
 /**
  * Wiersz budynku [symbol] pod nagłówkiem arkusza, który przez [onClick] otwiera kartę tego budynku; cały wiersz to
- * jeden cel dotyku z nazwą i czynnością dla TalkBack.
+ * jeden cel dotyku z nazwą i czynnością dla TalkBack. Nazwa [name] z danych stoi pod napisem i dochodzi do opisu
+ * dla TalkBack; [modifier] to wnętrze celu dotyku, np. odstęp od ramki.
  *
  * Wymagania: US2.8, NFR-17, NFR-18, NFR-20
  */
 @Composable
-internal fun BuildingLink(symbol: String, onClick: () -> Unit) {
+internal fun BuildingLink(symbol: String, onClick: () -> Unit, modifier: Modifier = Modifier, name: String? = null) {
     val text = stringResource(R.string.mapa_budynek, symbol)
     val action = stringResource(R.string.mapa_otwiera_opis_budynku)
-    val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     val linkSemantics =
         Modifier.clearAndSetSemantics {
-            contentDescription = text
+            contentDescription = listOfNotNull(text, name).joinToString(separator = ", ")
             role = Role.Button
             onClick(label = action) {
                 onClick()
                 true
             }
         }
-    Row(
+    Column(
         modifier =
             Modifier
                 .fillMaxWidth()
                 .heightIn(min = CeleDotyku.minimum)
                 .then(linkSemantics)
-                .clickable(onClick = onClick),
-        horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
-        verticalAlignment = Alignment.CenterVertically,
+                .clickable(onClick = onClick)
+                .then(modifier),
+        verticalArrangement = Arrangement.Center,
     ) {
+        LinkLine(text)
+        name?.let { shown ->
+            val color = MaterialTheme.colorScheme.onSurfaceVariant
+            Text(text = shown, style = MaterialTheme.typography.bodyLarge, color = color)
+        }
+    }
+}
+
+@Composable
+private fun LinkLine(text: String) {
+    val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+    Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
         if (!isLarge) LinkIcon(MapControlIcons.Building)
         Text(
             text = text,
