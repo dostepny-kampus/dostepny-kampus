@@ -13,6 +13,7 @@ $ramka()
 Przy klatkach C i D
 Jedzie na: piwnica, parter, 1 piętro,
 2 piętro (tutaj jesteś), 3 piętro
+$przycisk("Zgłoś barierę przy windzie")
 }
 $pasek_dolny_konto()
 $ekran_koniec()

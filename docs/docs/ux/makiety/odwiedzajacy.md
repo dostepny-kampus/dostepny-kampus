@@ -158,7 +158,7 @@ Czynność główna: brak; zdanie mówi, dlaczego planu nie widać.
 
 ### V1: winda na planie
 
-![Makieta V1 po dotknięciu windy na planie 2 piętra A-1: arkusz z nagłówkiem Winda i przyciskiem Zamknij, klatkami C i D oraz piętrami, na które jedzie winda, z dopiskiem tutaj jesteś przy 2 piętrze](../../_generated/m-v1-mapa-plan-winda.svg)
+![Makieta V1 po dotknięciu windy na planie 2 piętra A-1: arkusz z nagłówkiem Winda i przyciskiem Zamknij, klatkami C i D oraz piętrami, na które jedzie winda, z dopiskiem tutaj jesteś przy 2 piętrze i przyciskiem Zgłoś barierę przy windzie](../../_generated/m-v1-mapa-plan-winda.svg)
 
 Czynność główna: przeczytanie, na które piętra jedzie winda.
 
@@ -167,6 +167,7 @@ Czynność główna: przeczytanie, na które piętra jedzie winda.
 | Dotknięcie windy na planie otwiera arkusz „Winda” z klatkami, przy których stoi | US16.1, US18.2 |
 | „Jedzie na: …” z piętrami windy; przy bieżącym piętrze „(tutaj jesteś)” | US16.1, US18.2, NFR-18 |
 | „Zamknij” w nagłówku; przy dużej czcionce arkusz na cały ekran | NFR-53, NFR-20 |
+| „Zgłoś barierę przy windzie” na końcu arkusza: V4 z wybraną windą i piętrem planu, Gość: L1 | US4.6, US14.2, BR-8 |
 
 ### V1: legenda przy planie
 
@@ -231,7 +232,7 @@ Czynność główna: brak; odpowiedź, którym wejściem wejść, podała już k
 
 ### V1: arkusz toalety
 
-![Makieta V1 z planem parteru A-1 i arkuszem toalety: nagłówek Toaleta dostosowana z Zamknij, wiersz Budynek A-1, pod nim Parter i uwaga z danych PWr](../../_generated/m-v1-mapa-toaleta.svg)
+![Makieta V1 z planem parteru A-1 i arkuszem toalety: nagłówek Toaleta dostosowana z Zamknij, wiersz Budynek A-1, pod nim Parter, uwaga z danych PWr i przycisk Zgłoś barierę przy toalecie](../../_generated/m-v1-mapa-toaleta.svg)
 
 Czynność główna: przeczytanie, gdzie jest toaleta.
 
@@ -241,10 +242,11 @@ Czynność główna: przeczytanie, gdzie jest toaleta.
 | Nagłówek „Toaleta dostosowana” i obrysowany „Zamknij” | US16.1, NFR-53 |
 | Pod nagłówkiem wiersz budynku „Budynek A-1”: otwiera V2 na niskiej wysokości | US2.8, decyzja z 18.11.2026 |
 | Etykieta piętra z danych PWr, np. „Parter”, i uwaga, gdy jest w danych | US16.1, NFR-40 |
+| „Zgłoś barierę przy toalecie” na końcu arkusza: V4 z wybraną toaletą i piętrem planu, Gość: L1 | US4.6, US14.2, BR-8 |
 
 ### V1: arkusz schodów
 
-![Makieta V1 z planem parteru A-1 i arkuszem schodów: nagłówek Schody z Zamknij, wiersz Budynek A-1 i Parter](../../_generated/m-v1-mapa-schody.svg)
+![Makieta V1 z planem parteru A-1 i arkuszem schodów: nagłówek Schody z Zamknij, wiersz Budynek A-1, Parter i przycisk Zgłoś barierę przy schodach](../../_generated/m-v1-mapa-schody.svg)
 
 Czynność główna: przeczytanie, na którym piętrze są schody.
 
@@ -253,6 +255,7 @@ Czynność główna: przeczytanie, na którym piętrze są schody.
 | Dotknięcie schodów na planie otwiera arkusz; mapa się nie rusza | US16.1, NFR-17 |
 | Nagłówek „Schody” i obrysowany „Zamknij” | US16.1, NFR-53 |
 | Pod nagłówkiem wiersz budynku „Budynek A-1”, a pod nim etykieta piętra z danych PWr | US2.8, US16.1, decyzja z 18.11.2026 |
+| „Zgłoś barierę przy schodach” na końcu arkusza: V4 z wybranymi schodami i piętrem planu, Gość: L1 | US4.6, US14.2, BR-8 |
 
 ### V1: arkusz „Który budynek?”
 

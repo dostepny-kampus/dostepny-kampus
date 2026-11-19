@@ -131,7 +131,7 @@ Stany wspólne dla ekranów ról pracowniczych, które potrzebują serwera (R1, 
 | Zgłoszenie przyjęte z piętrem stoi tylko na swoim piętrze. Zgłoszenie bez piętra stoi na każdym piętrze ze znakiem „?” i słowem „piętro nieznane” dla TalkBack | dane | US16.1, BR-14, NFR-18 | arkusz bariery na tym ekranie |
 | Kolumna pięter przy lewej krawędzi mapy pod przyciskiem terenu, jak przyciski w windzie: napis „Piętro”, nad nim najwyższe piętro, wybrane w kółku, nie samym kolorem. Etykiety z danych PWr skrócone do numeru, np. „2”; TalkBack czyta pełną etykietę „2 piętro”. Kolumna jest zawsze rozwinięta, gdy widać plan, bez zwijania do jednego przycisku: osoba widzi wszystkie piętra i wybiera jednym dotknięciem. Kończy się nad podpisem OpenStreetMap. Przy otwartym panelu terenu kolumny nie ma. Gdy się nie mieści, przewija się, a napis „Piętro” i wybrane piętro są zawsze widoczne. Zmiana piętra nie przesuwa mapy. Kolumna nie zasłania budynku po ruchu aplikacji. „Pokaż na planie” i „Pokaż budynek na mapie” stawiają budynek szczegółowy na środku części mapy obok kolumny. Powiększenie zostaje 17, bo poniżej 16,5 plan znika. Budynek szerszy niż ta część mapy wystaje w prawo, nie pod kolumnę. Gest osoby nie przesuwa mapy z powodu kolumny | czynność | US16.1, US1.3, US1.4, NFR-17, NFR-18, NFR-20, NFR-21 | plan innego piętra |
 | Budynek podstawowy przy powiększeniu co najmniej 17: nad mapą zdanie „Nie mamy planu pięter tego budynku.”, bez kolumny pięter | dane | US16.2, BR-G1 | — |
-| Dotknięcie windy na planie otwiera arkusz: nagłówek „Winda” i „Zamknij”, pod nim budynek i piętro, np. „Budynek A-1, parter”, bez wiersza budynku. Dalej klatki, przy których stoi winda, tylko gdy są w danych, i „Jedzie na: …” z piętrami windy, przy bieżącym piętrze „(tutaj jesteś)”. Przy dużej czcionce arkusz zajmuje cały ekran, jak kroki do sali | czynność | US16.1, US18.2, NFR-20 | arkusz windy na tym ekranie |
+| Dotknięcie windy na planie otwiera arkusz: nagłówek „Winda” i „Zamknij”, pod nim budynek i piętro, np. „Budynek A-1, parter”, bez wiersza budynku. Dalej klatki, przy których stoi winda, tylko gdy są w danych, i „Jedzie na: …” z piętrami windy, przy bieżącym piętrze „(tutaj jesteś)”. Przy dużej czcionce arkusz zajmuje cały ekran, jak kroki do sali. Na końcu arkusza obrysowany „Zgłoś barierę przy windzie”, jak w arkuszu toalety | czynność | US16.1, US18.2, NFR-20, US4.6 | arkusz windy na tym ekranie |
 | Dotknięcie toalety dostosowanej na planie otwiera arkusz toalety. Dotknięcie znaku nie zaznacza budynku i nie rusza kamery | czynność | US16.1, NFR-17 | arkusz toalety na tym ekranie |
 | Dotknięcie schodów na planie otwiera arkusz schodów. Dotknięcie znaku nie zaznacza budynku i nie rusza kamery | czynność | US16.1, NFR-17 | arkusz schodów na tym ekranie |
 | Po pojawieniu się planu i po zmianie piętra TalkBack mówi raz, np. „Plan budynku A-1, parter. Piętra: piwnica, parter, 1, 2, 3” | dane | NFR-18, NFR-19 | — |
@@ -203,8 +203,11 @@ Arkusz toalety i arkusz schodów na dole mapy otwiera dotknięcie znaku na plani
 | --- | --- | --- | --- |
 | Nagłówek „Toaleta dostosowana” albo „Schody” i „Zamknij”. Pod nagłówkiem wiersz budynku, a pod nim etykieta piętra z danych PWr, np. „Parter” | dane, czynność | US16.1, NFR-53 | wiersz: V2 na niskiej wysokości; „Zamknij”: V1; „Wstecz” arkusza otwartego przy karcie budynku: ta karta |
 | Przy toalecie uwaga, gdy jest w danych | dane | US16.1 | — |
+| „Zgłoś barierę przy toalecie” albo „Zgłoś barierę przy schodach”, obrysowany, na końcu arkusza; TalkBack czyta napis z budynkiem i piętrem, np. „Zgłoś barierę przy toalecie: Budynek A-1, parter” | czynność | US4.6, US14.2, NFR-18, WCAG 2.5.3 [1] | V4 z wybranym obiektem; Gość: L1 |
 
 Arkusze wejścia, toalety i schodów mają obrysowany „Zamknij” w nagłówku, jak arkusz bariery. Po otwarciu fokus TalkBack stoi na nagłówku, a przy skali czcionki 200% treść arkusza się przewija.
+
+Przycisk zgłoszenia w arkuszu toalety, schodów albo windy otwiera krok 1 V4 z napisem obiektu. Miejscem zgłoszenia jest punkt obiektu, a piętrem piętro planu, na którym osoba dotknęła znaku. Winda obsługuje kilka pięter, więc zgłoszenie dostaje piętro oglądanego planu (US4.6, BR-8, BR-14).
 
 Arkusz wejścia nie ma czynności głównej: odpowiedź już podała karta V2. Innych wejść budynku arkusz nie pokazuje: są na liście „Wejścia” karty V2.
 
@@ -378,6 +381,7 @@ Dojście, drzwi, windę za drzwiami i bariery przy wejściu pokazuje arkusz wej�
 | Krok 1: „Zrób zdjęcie” i „Zrób nowe zdjęcie” | czynność | US4.1, BR-8, PW-8 | aparat, potem krok 2 |
 | Krok 1 po powrocie z kroku 2: miniatura zdjęcia i „Dalej” nad „Zrób nowe zdjęcie”. Przy skali czcionki co najmniej 1,5 „Dalej” zostaje przypięte na dole, a „Zrób nowe zdjęcie” stoi na końcu treści | czynność główna | US4.8, NFR-52 | krok 2; zdjęcie i grupa zostają |
 | Krok 1 po „Zgłoś barierę przy wejściu” w arkuszu wejścia: napis „Wejście: »nazwa wejścia«” nad „Zrób zdjęcie”. Przy wejściu bez nazwy w danych napis ma też opis położenia, np. „Wejście: »Wejście«, od strony E-3, od południa”, bo kilka wejść może się nazywać „Wejście” | dane | US4.6, BR-27; znaczenie wejścia: V2 | — |
+| Krok 1 po przycisku zgłoszenia w arkuszu toalety, schodów albo windy: nagłówek arkusza z budynkiem i piętrem, np. „Toaleta dostosowana: Budynek A-1, parter”, nad „Zrób zdjęcie” | dane | US4.6, BR-8 | — |
 | Krok 2: pytanie „Czego dotyczy bariera?” i 6 przycisków grup barier na całą szerokość ekranu, każdy co najmniej 48 dp wysokości. Napisy bez ikon: „Wejście i drzwi”, „Schody i windy”, „Przejścia i chodniki”, „Toalety”, „Napisy i oznaczenia”, „Coś innego” | czynność | US4.3, NFR-17, PW-7 | krok 3 albo pytanie o piętro |
 | Krok 2, pytanie o piętro: wybrana grupa, pytanie „Na którym piętrze?”. Pod nim przyciski na całą szerokość ekranu: „Nie wiem” i piętra od najniższego. W budynku szczegółowym etykiety z danych PWr, w podstawowym numery od -1 do 10 z „Parter” zamiast 0 | czynność | US4.5, BR-14, NFR-17 | krok 3 |
 | Krok 3: miniatura zdjęcia, wybrana grupa oraz piętro albo „Nie wiem”, jeśli było pytanie | dane | US4.1, US4.5 | — |
@@ -987,7 +991,7 @@ Każde kryterium akceptacji ma ekran albo dopisek „bez ekranu”, gdy dotyczy 
 | | US4.3 | V4 | 6 przycisków grup |
 | | US4.4 | V4 | potwierdzenie |
 | | US4.5 | V4 | pytanie o piętro |
-| | US4.6 | V2, V1, V4 | „Zgłoś barierę przy wejściu” i nazwa wejścia w kroku 1 |
+| | US4.6 | V2, V1, V4 | „Zgłoś barierę przy wejściu” i nazwa wejścia w kroku 1; przyciski zgłoszenia w arkuszach toalety, schodów i windy |
 | | US4.7 | V4 | „Wstecz” z potwierdzenia |
 | | US4.8 | V4 | zdjęcie i grupa po powrocie, pytanie o rezygnację |
 | | US4.9 | V4 | stan „Poza terenem PWr” |
