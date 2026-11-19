@@ -119,7 +119,7 @@ class CardReturnTest {
      *   przegladanie-mapy.feature: „Wstecz” w arkuszu wejścia wraca tam, skąd arkusz otwarto, a „Zamknij” zostawia mapę
      */
     @Test
-    fun returnsToScrollWhenContentArrivesLater() {
+    fun keepsScrollOnLateContent() {
         open()
         expand()
         scrollCard()

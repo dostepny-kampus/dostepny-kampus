@@ -115,7 +115,7 @@ internal fun AppNavigator.sheetCard(): SheetCard {
     val back = checkNotNull(LocalOnBackPressedDispatcherOwner.current).onBackPressedDispatcher
     val start = route?.scroll ?: 0
     val scroll = rememberScrollState(initial = start)
-    LaunchedEffect(scroll) { scroll.restore(target = start) }
+    LaunchedEffect(scroll) { scroll.scrollToOnceContentReaches(target = start) }
     LaunchedEffect(layout.isFull) { if (!layout.isFull) scroll.animateScrollTo(0) }
     KeepCardOnLeave(route = route, isExpanded = layout.isExpanded, scroll = scroll)
     return SheetCard(
@@ -127,11 +127,7 @@ internal fun AppNavigator.sheetCard(): SheetCard {
     )
 }
 
-/**
- * Przewija do [target], gdy treść urośnie na tyle, żeby to przewinięcie było możliwe; nic, gdy wcześniej ruszy
- * przewijanie z innego powodu.
- */
-private suspend fun ScrollState.restore(target: Int) {
+private suspend fun ScrollState.scrollToOnceContentReaches(target: Int) {
     if (target == 0) return
     snapshotFlow { isScrollInProgress || maxValue in target..<Int.MAX_VALUE }.first { it }
     if (!isScrollInProgress && value < target) scrollTo(target)
