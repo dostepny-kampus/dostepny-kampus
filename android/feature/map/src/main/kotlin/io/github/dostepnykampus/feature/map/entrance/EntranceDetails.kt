@@ -21,14 +21,19 @@ import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.feature.map.R
 
 /**
- * Opis dojścia, szerokość drzwi i winda za drzwiami wejścia [shown], każde w swojej części z nagłówkiem. Pusty opis,
- * szerokość 0 i brak windy nic nie dodają.
+ * Opis położenia z opisem dojścia, szerokość drzwi i winda za drzwiami wejścia [shown], każde w swojej
+ * części z nagłówkiem. Puste opisy, szerokość 0 i brak windy nic nie dodają.
  *
  * Wymagania: US2.1, US3.3, US16.3, BR-25, BR-27
  */
 @Composable
 internal fun EntranceDetails(shown: ShownEntrance) {
-    val approach = shown.entrance.approach.takeIf { it.isNotEmpty() }
+    val entrance = shown.entrance
+    val approach =
+        listOf(entrance.placeDescription, entrance.approach)
+            .filter { it.isNotEmpty() }
+            .joinToString(separator = "\n")
+            .takeIf { it.isNotEmpty() }
     val door = doorWidthText(shown.entrance)
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         approach?.let { SheetPart(title = stringResource(R.string.mapa_wejscie_dojscie), text = it) }
@@ -37,9 +42,10 @@ internal fun EntranceDetails(shown: ShownEntrance) {
     }
 }
 
-/** Czy wejście ma w danych opis dojścia, szerokość drzwi albo windę. Wymagania: US2.1, US16.3, BR-27 */
+/** Czy wejście ma w danych opis położenia, opis dojścia, szerokość drzwi albo windę. Wymagania: US2.1, US16.3, BR-27 */
 internal fun ShownEntrance.hasDetails(): Boolean =
-    entrance.approach.isNotEmpty() || entrance.doorWidthCm > 0 || lift != null
+    entrance.placeDescription.isNotEmpty() || entrance.approach.isNotEmpty() || entrance.doorWidthCm > 0 ||
+        lift != null
 
 /** Szerokość drzwi [entrance] słowami; `null`, gdy dane jej nie podają. Wymagania: US2.1, BR-27 */
 @Composable

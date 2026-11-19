@@ -104,6 +104,25 @@ class PwrEntranceSheetTest {
         compose.onNodeWithText("$WIDTH: 90 cm").assertExists()
     }
 
+    /**
+     * Wiersz: wejście bez nazwy w danych z opisem położenia i uwagą uczelni → część „Dojście” najpierw podaje opis
+     *   położenia, a pod nim uwagę.
+     *
+     * Wymagania: US3.3, BR-27
+     */
+    @Test
+    fun putsPlaceIntoApproach() {
+        val place = "Od strony C-20, od północy."
+        val unnamed =
+            pwr(id = "pwr/5", name = "Wejście", approach = APPROACH, doorWidthCm = 0)
+                .copy(isNameGenerated = true, placeDescription = place)
+        compose.setContent { EntranceSheetOnMap(ShownEntrance(unnamed)) }
+
+        compose.onNode(hasText("Dojście") and isHeading()).assertExists()
+        compose.onNodeWithText("$place
+$APPROACH").assertExists()
+    }
+
     /** Zrzut arkusza wejścia zalecanego z planów PWr, motyw jasny. */
     @Test
     fun matchesLightMockup() {

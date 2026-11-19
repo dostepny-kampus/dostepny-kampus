@@ -83,6 +83,7 @@ private data class CachedEntrance(
     val approach: String = "",
     val doorWidthCm: Int = 0,
     val isNameGenerated: Boolean = false,
+    val placeDescription: String = "",
 ) {
     constructor(entrance: Entrance) : this(
         id = entrance.id,
@@ -98,6 +99,7 @@ private data class CachedEntrance(
         approach = entrance.approach,
         doorWidthCm = entrance.doorWidthCm,
         isNameGenerated = entrance.isNameGenerated,
+        placeDescription = entrance.placeDescription,
     )
 
     fun toModel(): Entrance =
@@ -114,6 +116,7 @@ private data class CachedEntrance(
             approach = approach,
             doorWidthCm = doorWidthCm,
             isNameGenerated = isNameGenerated,
+            placeDescription = placeDescription,
         )
 }
 
