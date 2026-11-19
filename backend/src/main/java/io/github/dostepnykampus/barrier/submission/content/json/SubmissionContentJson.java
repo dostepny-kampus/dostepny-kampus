@@ -8,12 +8,12 @@ package io.github.dostepnykampus.barrier.submission.content.json;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import io.github.dostepnykampus.barrier.submission.content.EntrancePlaces;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.NewEntranceMarking;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
-import io.github.dostepnykampus.building.api.KnownBuildings;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -106,17 +106,15 @@ public record SubmissionContentJson(
      *
      * <p>Wymagania: BR-8, BR-14</p>
      *
-     * @param buildings Budynki i wejścia znane serwerowi
+     * @param entrances Miejsca wejść znanych serwerowi
      * @return Treść zgłoszenia
      */
-    public SubmissionContent toContent(final KnownBuildings buildings) {
+    public SubmissionContent toContent(final EntrancePlaces entrances) {
         final SubmissionContent content;
         if (this.kind == SubmissionKind.QUICK && this.entranceId != null) {
             content = this.content(
-                PlaceJson.of(
-                    buildings.entrance(this.entranceId, this.place.buildingSymbol()).orElseThrow(
-                        () -> new InvalidSubmission("Nie ma wejścia z pola entranceId")
-                    )
+                entrances.place(this.entranceId, this.place.buildingSymbol()).orElseThrow(
+                    () -> new InvalidSubmission("Nie ma wejścia z pola entranceId")
                 )
             );
         } else {
