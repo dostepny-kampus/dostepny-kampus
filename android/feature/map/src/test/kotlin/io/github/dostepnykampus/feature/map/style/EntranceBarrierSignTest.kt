@@ -79,10 +79,17 @@ class EntranceBarrierSignTest {
                 buildingOutlines = mapOf("C-13" to outline(*corners.toTypedArray())),
             )
         val shown = concave.withBarriers(listOf(barrier("b", Severity.BLOCKING, entrance = "w1")))
-        val properties = shown.barriers.jsonObject.getValue("features").jsonArray.single().jsonObject
+        val sign =
+            shown.barriers.jsonObject
+                .getValue("features")
+                .jsonArray
+                .single()
+                .jsonObject
+                .getValue("properties")
+                .jsonObject
         assertEquals(
             listOf(48, 0),
-            properties.getValue("properties").jsonObject.offset(),
+            sign.offset(),
             "Znak bariery w zagłębieniu konturu nie stoi na zewnątrz ściany wejścia",
         )
     }
