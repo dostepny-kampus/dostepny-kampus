@@ -13,6 +13,7 @@ $ramka()
 { <b>Schody</b>$dk_spacje(14) | [Zamknij] }
 $wiersz_budynku()
 Parter
+$przycisk("Zgłoś barierę przy schodach")
 }
 $pasek_dolny_konto()
 $ekran_koniec()
