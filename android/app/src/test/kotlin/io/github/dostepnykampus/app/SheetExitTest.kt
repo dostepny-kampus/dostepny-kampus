@@ -98,7 +98,7 @@ class SheetExitTest {
     fun coverNeverJumpsOnClose() {
         val stack = mutableStateListOf<NavKey>(MapRoute(), BuildingRoute(symbol = "A-1"))
         val covers = mutableListOf<Int>()
-        show(stack) { CoverProbe(covers) }
+        show(stack) { CoverProbe { covers += it } }
         val open = compose.runOnIdle { covers.last() }
         compose.mainClock.autoAdvance = false
         compose.runOnUiThread {
@@ -128,13 +128,13 @@ class SheetExitTest {
     }
 
     @Composable
-    private fun CoverProbe(covers: MutableList<Int>) {
+    private fun CoverProbe(onCover: (Int) -> Unit) {
         val sheet = LocalSheetPadding.current
         Box(
             modifier =
                 Modifier.layout { measurable, constraints ->
                     val placeable = measurable.measure(constraints)
-                    covers += sheet.shownCover()
+                    onCover(sheet.shownCover())
                     layout(width = placeable.width, height = placeable.height) { placeable.place(x = 0, y = 0) }
                 },
         )
