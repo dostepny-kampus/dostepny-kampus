@@ -33,7 +33,12 @@ class MapTouchTest {
     /** Wiersz: V1, znak bariery w zasięgu wygrywa z konturem pod palcem, a kontury nie są sprawdzane. */
     @Test
     fun barrierWinsOverOutline() {
-        val touch = chooseTouch(signsNear = { listOf("z1") }, outlines = outlinesAt(hit = listOf(3)))
+        val touch =
+            chooseTouch(
+                signsUnder = { emptyList() },
+                signsNear = { listOf("z1") },
+                outlines = outlinesAt(hit = listOf(3)),
+            )
 
         assertEquals(MapTouch.Sign(TouchSign.BARRIER, "z1"), touch, "bariera w zasięgu wygrywa")
         assertEquals(emptyList<String>(), asked, "przy trafionym znaku kontury nie są sprawdzane")
@@ -42,9 +47,15 @@ class MapTouchTest {
     /** Wiersz: V1, bariera i wejście w zasięgu: wygrywa bariera; samo wejście wygrywa z konturem. */
     @Test
     fun entranceBetweenBarrierAndShape() {
-        val both = chooseTouch(signsNear = { sign -> listOf(sign.name) }, outlines = outlinesAt(hit = listOf(3)))
+        val both =
+            chooseTouch(
+                signsUnder = { emptyList() },
+                signsNear = { sign -> listOf(sign.name) },
+                outlines = outlinesAt(hit = listOf(3)),
+            )
         val entrance =
             chooseTouch(
+                signsUnder = { emptyList() },
                 signsNear = { sign -> if (sign == TouchSign.ENTRANCE) listOf("node/1") else emptyList() },
                 outlines = outlinesAt(hit = listOf(3)),
             )
@@ -58,6 +69,7 @@ class MapTouchTest {
     fun entranceBeforePlanSign() {
         val touch =
             chooseTouch(
+                signsUnder = { emptyList() },
                 signsNear = { sign -> if (sign == TouchSign.BARRIER) emptyList() else listOf(sign.name) },
                 outlines = outlinesAt(hit = emptyList()),
             )
@@ -69,7 +81,7 @@ class MapTouchTest {
     @Test
     fun outlineWithoutSign() {
         val outlines = outlinesAt(hit = listOf(3), near = listOf(3, 4))
-        val touch = chooseTouch(signsNear = { emptyList() }, outlines = outlines)
+        val touch = chooseTouch(signsUnder = { emptyList() }, signsNear = { emptyList() }, outlines = outlines)
 
         val chosen = assertInstanceOf(MapTouch.Outlines::class.java, touch, "bez znaku wygrywa kontur")
         assertEquals(listOf(3), chosen.hit, "kontur pod palcem")
@@ -80,7 +92,12 @@ class MapTouchTest {
     /** Wiersz: V1, dotknięcie pustej mapy nie ma znaku ani konturu. */
     @Test
     fun emptyMapHasNoTarget() {
-        val touch = chooseTouch(signsNear = { emptyList() }, outlines = outlinesAt(hit = emptyList()))
+        val touch =
+            chooseTouch(
+                signsUnder = { emptyList() },
+                signsNear = { emptyList() },
+                outlines = outlinesAt(hit = emptyList()),
+            )
 
         val outlines = assertInstanceOf(MapTouch.Outlines::class.java, touch, "pusta mapa daje puste kontury")
         assertEquals(emptyList<Int>(), outlines.hit, "brak konturu pod palcem")
@@ -92,6 +109,7 @@ class MapTouchTest {
     fun asksSignsInPriorityOrder() {
         val touch =
             chooseTouch(
+                signsUnder = { emptyList() },
                 signsNear = { sign ->
                     asked += sign.name
                     emptyList()
@@ -101,6 +119,36 @@ class MapTouchTest {
 
         assertInstanceOf(MapTouch.Outlines::class.java, touch, "bez znaku wygrywa kontur")
         assertEquals(TouchSign.entries.map { it.name } + "hit", asked, "znaki po kolei, potem kontur")
+    }
+
+    /**
+     * Wiersz: V1, palec na obrazie znaku wejścia w obszarze dotyku stykającego się znaku bariery: wygrywa wejście,
+     *   bo obraz pod palcem wygrywa z obszarem dotyku znaku obok.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Znak bariery przy wejściu stoi obok znaku wejścia
+     */
+    @Test
+    fun imageWinsOverNearSign() {
+        val touch =
+            chooseTouch(
+                signsUnder = { sign -> if (sign == TouchSign.ENTRANCE) listOf("w1") else emptyList() },
+                signsNear = { sign -> if (sign == TouchSign.BARRIER) listOf("z1") else listOf("w1") },
+                outlines = outlinesAt(hit = emptyList()),
+            )
+
+        assertEquals(MapTouch.Sign(TouchSign.ENTRANCE, "w1"), touch, "obraz wejścia pod palcem wygrywa z barierą obok")
+    }
+
+    /** Wiersz: V1, palec obok obu obrazów, w obszarach dotyku obu znaków: wygrywa bariera. */
+    @Test
+    fun orderWinsWithoutImage() {
+        val touch =
+            chooseTouch(
+                signsUnder = { emptyList() },
+                signsNear = { sign -> listOf(sign.name) },
+                outlines = outlinesAt(hit = emptyList()),
+            )
+
+        assertEquals(MapTouch.Sign(TouchSign.BARRIER, "BARRIER"), touch, "bez obrazu pod palcem kolejność")
     }
 
     /** Wiersz: V1, znak 20 dp trafiony 24 dp od swojego punktu, a 30 dp już nie. Wymagania: NFR-17 */
