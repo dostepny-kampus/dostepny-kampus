@@ -136,5 +136,4 @@ class EntranceBarrierOrderTest {
     }
 }
 
-/** Wejście główne „Wejście B” i boczne „Wejście C” budynku C-13, oba „dostępne”. Wymagania: BR-25 */
 private val MAIN_AND_SIDE = listOf(sampleEntrance("b").copy(isMain = true), sampleEntrance("c"))

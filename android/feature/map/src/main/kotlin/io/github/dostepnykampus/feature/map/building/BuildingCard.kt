@@ -78,8 +78,8 @@ fun orderedEntrances(entrances: List<Entrance>, barriers: List<AcceptedBarrier> 
         visitors.filter {
             it.marking == EntranceMarking.ACCESSIBLE && worst[it.id]?.severity != Severity.BLOCKING
         }
-    val preference =
-        compareBy<Entrance>({ worst[it.id]?.severity?.value ?: 0 }, { !it.isMain }, { !it.hasName })
+    val weight = { entrance: Entrance -> worst[entrance.id]?.let { found -> found.severity.value } ?: 0 }
+    val preference = compareBy<Entrance>(weight, { !it.isMain }, { !it.hasName })
     val recommended = accessible.minWithOrNull(preference)
     val order =
         compareBy<Entrance>({ MARKING_ORDER.indexOf(it.marking) }, { !it.hasName })
