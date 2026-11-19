@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
  * @since 0.1.0
  */
 @Service
-public class BuildingEntrancePlaces implements EntrancePlaces {
+public final class BuildingEntrancePlaces implements EntrancePlaces {
 
     /**
      * Budynki i wejścia znane serwerowi.
