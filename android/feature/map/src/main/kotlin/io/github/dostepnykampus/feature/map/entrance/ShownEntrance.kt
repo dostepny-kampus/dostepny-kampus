@@ -53,7 +53,7 @@ data class EntranceActions(
  */
 internal fun BuildingCatalog.shownEntrance(id: String, barriers: List<AcceptedBarrier> = emptyList()): ShownEntrance? {
     val entrance = entrances.firstOrNull { it.id == id } ?: return null
-    val ordered = orderedEntrances(entrances.filter { it.buildingSymbol == entrance.buildingSymbol })
+    val ordered = orderedEntrances(entrances.filter { it.buildingSymbol == entrance.buildingSymbol }, barriers)
     return ShownEntrance(
         entrance = entrance,
         isRecommended = ordered.any { it.isRecommended && it.entrance.id == id },
