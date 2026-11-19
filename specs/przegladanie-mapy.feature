@@ -404,8 +404,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli dotknie wiersza tego wejścia na liście „Wejścia”
     Wtedy arkusz tego wejścia ma części „Dojście”, „Drzwi” i „Bariery przy tym wejściu” jak arkusz wejścia zalecanego
 
-  # @do-zrobienia #3376: część „Bariery przy tym wejściu” stoi jeszcze na końcu arkusza.
-  @US2.2 @US3.3 @aplikacja @do-zrobienia
+  @US2.2 @US3.3 @aplikacja
   Scenariusz: Bariery przy wejściu stoją w arkuszu zaraz pod oznaczeniem
     Zakładając, że przy wejściu zalecanym E-1 jest przyjęta bariera „Blokada” typu „schody przy wejściu”
     Jeżeli Gość niezalogowany otworzy arkusz tego wejścia
