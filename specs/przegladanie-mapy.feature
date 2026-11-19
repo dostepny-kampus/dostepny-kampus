@@ -264,8 +264,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy na karcie budynku B-8 widzi „Brak wejścia dostępnego” i zdanie, że żadne wejście nie jest dostępne
     Ale karta nie jest pusta i nie pokazuje samego braku wyniku
 
-  # @do-zrobienia #3379: testy karty mają jeszcze drugie wejście dostępne bez barier.
-  @US2.1 @US2.2 @BR-25 @aplikacja @do-zrobienia
+  @US2.1 @US2.2 @BR-25 @aplikacja
   Scenariusz: Bariera przy wejściu zalecanym jest na karcie przy tym wejściu
     Zakładając, że przy wejściu zalecanym budynku C-13 jest przyjęta bariera „Tylko z pomocą” typu „ciężkie drzwi”
     Oraz C-13 nie ma innego wejścia dostępnego bez barier
@@ -286,8 +285,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | jest inne | Wejście dostępne        | Zalecane: »Wejście C«. Drzwi 100 cm.   |
       | nie ma    | Brak wejścia dostępnego | Jedyne wejście dostępne ma blokadę.    |
 
-  # @do-zrobienia #3379: wejście zalecane nie patrzy jeszcze na bariery lżejsze od blokady.
-  @US3.1 @BR-25 @aplikacja @do-zrobienia
+  @US3.1 @BR-25 @aplikacja
   Szablon scenariusza: Wejście bez barier jest zalecane przed wejściem z barierą
     # Dane testowe, a nie stan faktyczny budynku C-13.
     Zakładając, że w danych testowych wejście główne i wejście boczne C-13 mają oznaczenie „dostępne”
