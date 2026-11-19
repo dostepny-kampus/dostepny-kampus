@@ -154,7 +154,7 @@ echo "$*" >>"%s/calls.txt"
     git add app/Main.kt
     git commit --quiet -m baza
   )
-  out="$(cd "$repo" && PATH="$workdir/bin:$PATH" bash "$script" 2>&1)" || status=$?
+  out="$(cd "$repo" && PATH="$workdir/bin:$PATH" TODO_ISSUE_RETRY_DELAY=0 bash "$script" 2>&1)" || status=$?
   if ((status == expected)) && [[ $out == *"$text"* ]] &&
     { [[ -z $calls ]] || (($(wc -l <"$workdir/calls.txt") == calls)); }; then
     echo "OK: ${name}"
@@ -173,5 +173,12 @@ run_tool_case "gh zawodzi: komunikat o narzędziu, kod 2" 2 'błąd narzędzia g
 run_tool_case "gh: issue nie istnieje to naruszenie, nie błąd narzędzia" 1 "$missing" '' 'echo "GraphQL: Could not resolve to an issue" >&2; exit 1' '' '// TODO(#5): a'
 run_tool_case "jq zawodzi: komunikat o narzędziu, kod 2" 2 'błąd narzędzia jq' '' "$gh_ok" 'exit 3' '// TODO(#5): a'
 run_tool_case "stan issue pobierany raz dla dwóch znaczników" 0 '' 1 "$gh_ok" '' "$two_markers"
+# Chwilowy błąd GitHuba (5xx, sieć) jest ponawiany do 3 prób; inny błąd gh i brak issue nie są ponawiane.
+gh_503_once="if (( \$(wc -l <\"$workdir/calls.txt\") < 2 )); then echo 'HTTP 503: Service Unavailable' >&2; exit 1; fi; $gh_ok"
+run_tool_case "gh: 503 raz, potem stan issue" 0 '' 2 "$gh_503_once" '' '// TODO(#5): a'
+run_tool_case "gh: 503 trzy razy to błąd GitHuba po 3 próbach" 2 'GitHub nie odpowiedział po 3 próbach' 3 'echo "HTTP 503" >&2; exit 1' '' '// TODO(#5): a'
+run_tool_case "gh: błąd sieci jest ponawiany" 2 'po 3 próbach' 3 'echo "error connecting to api.github.com" >&2; exit 1' '' '// TODO(#5): a'
+run_tool_case "gh: 401 nie jest ponawiany" 2 'błąd narzędzia gh' 1 'echo "HTTP 401: Bad credentials" >&2; exit 1' '' '// TODO(#5): a'
+run_tool_case "gh: brak issue nie jest ponawiany" 1 "$missing" 1 'echo "GraphQL: Could not resolve to an issue" >&2; exit 1' '' '// TODO(#5): a'
 
 exit "$((failures > 0 ? 1 : 0))"
