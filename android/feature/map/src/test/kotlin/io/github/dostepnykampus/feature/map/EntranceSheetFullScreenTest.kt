@@ -117,6 +117,7 @@ class EntranceSheetFullScreenTest {
     private fun start(focus: MapFocus? = null) {
         val choice = TestMapListChoice().apply { savedChoice.value = false }
         val repository = unitSquareCatalog(symbol = "C-13", entrances = listOf(ENTRANCE))
-        compose.showMap(viewModel = testMapViewModel(repository = repository, choice = choice), map = map.view, focus = focus)
+        val viewModel = testMapViewModel(repository = repository, choice = choice)
+        compose.showMap(viewModel = viewModel, map = map.view, focus = focus)
     }
 }
