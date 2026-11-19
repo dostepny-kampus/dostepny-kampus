@@ -34,8 +34,6 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.ValueSource
 import kotlin.coroutines.EmptyCoroutineContext
 
 /** Wyszukiwanie sali w modelu mapy V1: sala, gdy budynku o takim symbolu nie ma, i sam numer. Wymagania: US18.1 */
@@ -90,13 +88,14 @@ class MapRoomSearchTest {
             assertEquals(listOf("329 A-1"), asked, "Model nie zapytał serwera o numer przed budynkiem")
         }
 
-    @ParameterizedTest
-    @ValueSource(strings = ["329", " sala 329 ", "s. 2.21"])
-    fun asksForBuilding(query: String) =
+    @Test
+    fun asksForBuilding() =
         runTest(UnconfinedTestDispatcher()) {
-            val search = searched(scope = this, query = query, reply = ServerReply.Ok(listOf(FOUND)))
+            listOf("329", " sala 329 ", "s. 2.21").forEach { query ->
+                val search = searched(scope = this, query = query, reply = ServerReply.Ok(listOf(FOUND)))
 
-            assertTrue(search.needsBuilding, "Sam numer sali nie dał prośby o budynek")
+                assertTrue(search.needsBuilding, "Sam numer sali „$query” nie dał prośby o budynek")
+            }
             assertEquals(emptyList<String>(), asked, "Model szukał sali bez budynku")
         }
 
