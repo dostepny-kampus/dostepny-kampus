@@ -8,12 +8,11 @@ package io.github.dostepnykampus.feature.map.entrance
 import androidx.compose.runtime.Immutable
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.geo.metersTo
+import io.github.dostepnykampus.core.geo.roundedMetersTo
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import java.util.Locale
-import kotlin.math.roundToInt
 
-private const val STEP_METERS = 5
 private val POLISH = Locale.forLanguageTag("pl")
 private val NUMBERED_FLOOR = Regex("""-?\d+ piętro""")
 
@@ -43,9 +42,9 @@ internal suspend fun FloorPlans.liftNear(entrance: Entrance): EntranceLift? {
             .orEmpty()
             .filter { it.category == RoomCategory.ELEVATOR }
     val nearest = lifts.minByOrNull { it.labelPoint.metersTo(entrance.location) } ?: return null
-    val steps = (nearest.labelPoint.metersTo(entrance.location) / STEP_METERS).roundToInt()
+    val meters = nearest.labelPoint.roundedMetersTo(entrance.location)
     val stops = floors.filter { it.id in nearest.liftFloors }.map { it.label }
-    return EntranceLift(entranceId = entrance.id, meters = steps.coerceAtLeast(1) * STEP_METERS, floors = stops)
+    return EntranceLift(entranceId = entrance.id, meters = meters, floors = stops)
 }
 
 /**

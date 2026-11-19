@@ -7,15 +7,12 @@ package io.github.dostepnykampus.feature.map.room
 
 import androidx.compose.runtime.Immutable
 import io.github.dostepnykampus.core.geo.metersTo
-import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.geo.roundedMetersTo
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.core.model.room.Room
 import io.github.dostepnykampus.core.model.room.RoomCategory
-import kotlin.math.roundToInt
-
-private const val STEP_METERS = 5
 
 /**
  * Droga do znalezionej sali bez schodów: kroki od wejścia zalecanego albo powód, dla którego ich nie ma.
@@ -68,7 +65,7 @@ fun roomWay(found: FoundRoom, entrance: Entrance?, floors: List<Floor>, rooms: (
         }
 
         floor.id == found.floor.id -> {
-            val meters = rounded(from = entrance.location, to = found.room.labelPoint)
+            val meters = entrance.location.roundedMetersTo(found.room.labelPoint)
             RoomWay.Steps(entranceFloor = floor, isFloorAssumed = known == null, lift = null, roomMeters = meters)
         }
 
@@ -91,15 +88,12 @@ private fun viaLift(
             .minByOrNull { it.labelPoint.metersTo(entrance.location) }
             ?: return RoomWay.NoLift
     val upstairs = rooms(found.floor.id).firstOrNull { it.liftId != null && it.liftId == lift.liftId } ?: lift
-    val meters = rounded(from = entrance.location, to = lift.labelPoint)
+    val meters = entrance.location.roundedMetersTo(lift.labelPoint)
     val step = RoomWay.Lift(id = lift.liftId ?: lift.id, metersFromEntrance = meters)
     return RoomWay.Steps(
         entranceFloor = floor,
         isFloorAssumed = isFloorAssumed,
         lift = step,
-        roomMeters = rounded(from = upstairs.labelPoint, to = found.room.labelPoint),
+        roomMeters = upstairs.labelPoint.roundedMetersTo(found.room.labelPoint),
     )
 }
-
-private fun rounded(from: GeoPoint, to: GeoPoint): Int =
-    (from.metersTo(to) / STEP_METERS).roundToInt().coerceAtLeast(1) * STEP_METERS
