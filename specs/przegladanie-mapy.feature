@@ -285,12 +285,17 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | nie ma    | Brak wejścia dostępnego | Jedyne wejście dostępne ma blokadę.    |
 
   @US1.5 @US2.2 @BR-8 @NFR-17 @aplikacja
-  Scenariusz: Znak bariery przy wejściu stoi obok znaku wejścia
+  Szablon scenariusza: Znak bariery przy wejściu stoi obok znaku wejścia
     Zakładając, że przy wejściu głównym A-1 są przyjęte bariery „Utrudnienie” i „Blokada” zgłoszone w jego arkuszu
-    Jeżeli Gość niezalogowany otworzy mapę kampusu przy budynku A-1
-    Wtedy obok znaku wejścia, na zewnątrz budynku, stoi jeden znak bariery „Blokada”
-    Oraz dotknięcie znaku wejścia otwiera arkusz wejścia, a dotknięcie znaku bariery arkusz bariery
-    Oraz znak wejścia ma to samo oznaczenie co bez barier
+    Jeżeli Gość niezalogowany otworzy mapę kampusu przy budynku A-1 bez zaznaczonego budynku, w powiększeniu <powiększenie>
+    Wtedy <znak wejścia>, a jeden znak bariery „Blokada” stoi <miejsce>
+    Oraz dotknięcie znaku bariery otwiera arkusz bariery, a dotknięcie widocznego znaku wejścia arkusz wejścia
+    Oraz widoczny znak wejścia ma to samo oznaczenie co bez barier
+
+    Przykłady:
+      | powiększenie | znak wejścia               | miejsce                                                       |
+      | 16           | znaku wejścia nie widać    | w punkcie wejścia                                             |
+      | 18           | znak wejścia jest widoczny | tuż obok znaku wejścia, na zewnątrz ściany, i oba się stykają |
 
   @US1.4 @aplikacja
   Scenariusz: Mapa pokazuje wejścia i ścieżki, a legenda objaśnia znaki słowem
