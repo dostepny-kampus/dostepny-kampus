@@ -202,10 +202,11 @@ private fun AreaColumn(
 private fun OsmAttribution(hasPlanSource: Boolean, modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
     val isShort = LocalDensity.current.fontScale >= SHORT_ATTRIBUTION_FONT_SCALE
+    val end = if (hasPlanSource) MapControlTouchSize + Odstepy.s else Odstepy.s
     Box(
         modifier =
             modifier
-                .padding(start = Odstepy.s, end = MapControlTouchSize + Odstepy.s * 2)
+                .padding(start = Odstepy.s, end = end)
                 .clickable { uriHandler.openUri(OSM_COPYRIGHT) }
                 .heightIn(min = MapControlTouchSize),
         contentAlignment = Alignment.Center,

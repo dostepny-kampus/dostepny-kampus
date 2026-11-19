@@ -15,12 +15,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.DpRect
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -31,6 +34,7 @@ import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.overlay.MapOverlay
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -98,8 +102,8 @@ class MapOverlayPlanSourceTest {
     }
 
     /**
-     * Wiersz: V1, przy czcionce 200% na wąskim ekranie źródło planu łamie się i nie wchodzi na „ⓘ”,
-     * a kolumna pięter kończy się nad całym podpisem.
+     * Wiersz: V1, przy czcionce 200% na wąskim ekranie źródło planu łamie się i nie wchodzi na „ⓘ”, krótki podpis
+     * OpenStreetMap mieści się cały, a kolumna pięter kończy się nad całym podpisem.
      *
      * Wymagania: NFR-40, NFR-20, US16.1
      */
@@ -112,6 +116,7 @@ class MapOverlayPlanSourceTest {
         val floors = bounds(FLOORS)
         assertTrue("źródło planu przed „ⓘ”", source.right <= info.left)
         assertTrue("kolumna pięter nad podpisem OSM", floors.bottom <= bounds(OSM_SHORT).top)
+        assertFalse("podpis OSM bez ucięcia", layoutOf(OSM_SHORT).hasVisualOverflow)
     }
 
     @Test
@@ -129,6 +134,14 @@ class MapOverlayPlanSourceTest {
 
     private fun bounds(text: String): DpRect =
         compose.onNodeWithText(text, useUnmergedTree = true).getUnclippedBoundsInRoot()
+
+    private fun layoutOf(text: String): TextLayoutResult {
+        val layouts = mutableListOf<TextLayoutResult>()
+        compose
+            .onNodeWithText(text, useUnmergedTree = true)
+            .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+        return layouts.single()
+    }
 
     private fun buttons(): List<DpRect> =
         listOf(
