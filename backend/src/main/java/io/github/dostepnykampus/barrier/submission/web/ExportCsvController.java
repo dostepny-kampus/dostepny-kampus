@@ -52,11 +52,10 @@ public final class ExportCsvController {
     private static final Set<Character> FORMULA = Set.of('=', '+', '-', '@', '\t', '\r');
 
     /** Format i nagłówek eksportu. */
-    private static final CSVFormat FORMAT = CSVFormat.RFC4180.builder()
-        .setHeader(
-            "submissionId", "x", "y", "barrierType", "barrierGroup", "severity",
-            "buildingSymbol", "floor", "description", "verifiedAt"
-        ).get();
+    private static final CSVFormat FORMAT = CSVFormat.RFC4180.builder().setHeader(
+        "submissionId", "x", "y", "barrierType", "barrierGroup", "severity",
+        "buildingSymbol", "floor", "description", "verifiedAt"
+    ).get();
 
     /** Przyjęte zgłoszenia. */
     private final SubmissionReading submissions;
@@ -93,7 +92,8 @@ public final class ExportCsvController {
         }
     }
 
-    private void printRow(final CSVPrinter printer, final Submission submission) throws IOException {
+    private void printRow(final CSVPrinter printer, final Submission submission)
+        throws IOException {
         final SubmissionPlace place = submission.content().place();
         final SubmissionPoint source = place.point();
         final Puwg1992Point point = new Puwg1992(source.longitude(), source.latitude()).point();

@@ -26,7 +26,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
@@ -44,17 +43,6 @@ import org.springframework.web.context.WebApplicationContext;
 @IntegrationTest
 final class ExportCsvHttpIT {
 
-    /** Identyfikatory zgłoszeń próbnych do usunięcia po żądaniu HTTP. */
-    private final List<UUID> inserted = new ArrayList<>(0);
-
-    @AfterEach
-    void removeSamples(final WebApplicationContext context) {
-        if (!this.inserted.isEmpty()) {
-            context.getBean(JdbcClient.class).sql("DELETE FROM submissions WHERE id IN (:ids)")
-                .param("ids", this.inserted).update();
-        }
-    }
-
     @Test
     void exportsAcceptedRowInPolishGrid(
         final WebApplicationContext context, @LocalServerPort final int port
@@ -68,10 +56,17 @@ final class ExportCsvHttpIT {
             "Schody, \"próg\" i żółta poręcz", UUID.randomUUID()
         );
         final UUID accepted = UUID.randomUUID();
-        this.add(samples, accepted, "ACCEPTED", content);
-        this.add(samples, UUID.randomUUID(), "ARCHIVED", content);
-        this.add(samples, UUID.randomUUID(), "IN_REVIEW", content);
-        final String[] lines = ExportCsvHttpIT.get(port).body().lines().toArray(String[]::new);
+        final UUID archived = UUID.randomUUID();
+        final UUID reviewing = UUID.randomUUID();
+        final String[] lines;
+        try {
+            samples.add(accepted, "ACCEPTED", content);
+            samples.add(archived, "ARCHIVED", content);
+            samples.add(reviewing, "IN_REVIEW", content);
+            lines = ExportCsvHttpIT.get(port).body().lines().toArray(String[]::new);
+        } finally {
+            ExportCsvHttpIT.remove(context, List.of(accepted, archived, reviewing));
+        }
         final String[] row = lines[1].split(",", 4);
         MatcherAssert.assertThat(
             "Nagłówek, jedyny wiersz CSV i punkt według PROJ w milimetrach",
@@ -103,23 +98,29 @@ final class ExportCsvHttpIT {
         final SampleSubmissions samples = new SampleSubmissions(context);
         final List<String> starts = Stream.of('=', '+', '-', '@', '\t', '\r')
             .map(String::valueOf).toList();
-        for (final String start : starts) {
-            this.add(
-                samples, UUID.randomUUID(), "ACCEPTED",
-                SampleSubmissions.quick(
-                    new SubmissionPlace(
-                        new SubmissionPoint(17.059_89, 51.109_16), null, false, "A-1", null
-                    ),
-                    start.concat("1+1"), UUID.randomUUID()
-                )
-            );
+        final List<UUID> ids = new ArrayList<>(starts.size());
+        final String csv;
+        try {
+            for (final String start : starts) {
+                final UUID id = UUID.randomUUID();
+                ids.add(id);
+                samples.add(
+                    id, "ACCEPTED",
+                    SampleSubmissions.quick(
+                        new SubmissionPlace(
+                            new SubmissionPoint(17.059_89, 51.109_16), null, false, "A-1", null
+                        ),
+                        start.concat("1+1"), UUID.randomUUID()
+                    )
+                );
+            }
+            csv = ExportCsvHttpIT.get(port).body();
+        } finally {
+            ExportCsvHttpIT.remove(context, ids);
         }
-        final List<String> descriptions = ExportCsvHttpIT.column(
-            ExportCsvHttpIT.get(port).body(), "description"
-        );
         MatcherAssert.assertThat(
             "Opis zaczynający się od znaku formuły nie ma apostrofu na początku",
-            descriptions,
+            ExportCsvHttpIT.column(csv, "description"),
             Matchers.containsInAnyOrder(
                 starts.stream().map(start -> "'".concat(start).concat("1+1")).toArray()
             )
@@ -134,27 +135,30 @@ final class ExportCsvHttpIT {
         final SubmissionContent content = SampleSubmissions.quick(UUID.randomUUID());
         final List<UUID> ids = IntStream.rangeClosed(1, 501)
             .mapToObj(number -> new UUID(1L, number)).toList();
-        for (final UUID id : ids.reversed()) {
-            this.add(samples, id, "ACCEPTED", content);
+        final HttpResponse<String> reply;
+        try {
+            for (final UUID id : ids.reversed()) {
+                samples.add(id, "ACCEPTED", content);
+            }
+            reply = ExportCsvHttpIT.get(port);
+        } finally {
+            ExportCsvHttpIT.remove(context, ids);
         }
-        final HttpResponse<String> reply = ExportCsvHttpIT.get(port);
         MatcherAssert.assertThat(
-            "Eksport podaje długość odpowiedzi z góry",
-            reply.headers().firstValue(HttpHeaders.CONTENT_LENGTH).isEmpty(), Matchers.is(true)
-        );
-        MatcherAssert.assertThat(
-            "Wiersze eksportu z więcej niż jednej strony w kolejności identyfikatorów",
-            ExportCsvHttpIT.column(reply.body(), "submissionId"),
-            Matchers.is(ids.stream().map(UUID::toString).toList())
+            "Strumień CSV bez podanej długości i z wierszami w kolejności identyfikatorów",
+            List.of(
+                reply.headers().firstValue(HttpHeaders.CONTENT_LENGTH).isEmpty(),
+                ExportCsvHttpIT.column(reply.body(), "submissionId")
+            ),
+            Matchers.is(List.of(true, ids.stream().map(UUID::toString).toList()))
         );
     }
 
-    private void add(
-        final SampleSubmissions samples, final UUID id, final String status,
-        final SubmissionContent content
-    ) {
-        this.inserted.add(id);
-        samples.add(id, status, content);
+    private static void remove(final WebApplicationContext context, final List<UUID> ids) {
+        if (!ids.isEmpty()) {
+            context.getBean(JdbcClient.class).sql("DELETE FROM submissions WHERE id IN (:ids)")
+                .param("ids", ids).update();
+        }
     }
 
     private static List<String> column(final String csv, final String name) throws Exception {
@@ -179,8 +183,9 @@ final class ExportCsvHttpIT {
             "Status i typ treści eksportu",
             List.of(
                 reply.statusCode(),
-                MediaType.parseMediaType(reply.headers().firstValue(HttpHeaders.CONTENT_TYPE)
-                    .orElseThrow())
+                MediaType.parseMediaType(
+                    reply.headers().firstValue(HttpHeaders.CONTENT_TYPE).orElseThrow()
+                )
             ),
             Matchers.is(List.of(200, MediaType.parseMediaType("text/csv;charset=UTF-8")))
         );

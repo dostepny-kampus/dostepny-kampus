@@ -31,9 +31,6 @@ import org.springframework.stereotype.Service;
 @Service
 public final class SubmissionReading {
 
-    /** Rozmiar strony eksportu. */
-    private static final int EXPORT_PAGE_SIZE = 500;
-
     /** Port odczytu zgłoszeń. */
     private final SubmissionFinder finder;
 
@@ -141,7 +138,7 @@ public final class SubmissionReading {
     public SubmissionFinder.Page exportablePage(final UUID after) {
         final SubmissionFinder.Page page = this.pages.page(
             new SubmissionQuery(Set.of(SubmissionStatus.ACCEPTED), null, null),
-            new SubmissionFinder.Window(after, SubmissionReading.EXPORT_PAGE_SIZE)
+            new SubmissionFinder.Window(after, 500)
         );
         return new SubmissionFinder.Page(
             page.items().stream()
