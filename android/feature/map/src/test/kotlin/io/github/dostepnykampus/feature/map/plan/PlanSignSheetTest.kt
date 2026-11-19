@@ -109,7 +109,11 @@ class PlanSignSheetTest {
         compose.showPlanSheet(id = "schody", onReport = { reports += it })
         compose.onNodeWithContentDescription("Zgłoś barierę przy schodach: Budynek A-1, 1 piętro").performClick()
         val point = GeoPoint(longitude = 0.5, latitude = 0.5)
-        assertEquals(listOf(PlanReport(RoomCategory.STAIRCASE, "A-1", "f1", "1 piętro", point)), reports)
+        assertEquals(
+            listOf(PlanReport(RoomCategory.STAIRCASE, "A-1", "f1", "1 piętro", point)),
+            reports,
+            "Przycisk w liście schodów nie zgłasza tych schodów",
+        )
     }
 
     private fun show(id: String) =
