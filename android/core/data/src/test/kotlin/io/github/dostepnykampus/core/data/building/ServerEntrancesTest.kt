@@ -67,7 +67,7 @@ class ServerEntrancesTest {
 
     /** Wiersz: dwa pytania o ten sam budynek w trakcie jednego pobrania → jedno zapytanie do serwera. */
     @Test
-    fun asksServerOnceForConcurrentCalls() =
+    fun asksServerOnceWhenConcurrent() =
         runBlocking {
             val answer = CompletableDeferred<ServerReply<ServerCard>>()
             var calls = 0
