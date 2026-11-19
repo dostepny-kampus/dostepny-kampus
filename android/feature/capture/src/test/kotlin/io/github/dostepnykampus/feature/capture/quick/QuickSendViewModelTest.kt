@@ -77,7 +77,7 @@ class QuickSendViewModelTest {
                     computeContext = dispatcher,
                     grounds = CampusGrounds { isOnGrounds },
                 ),
-        ).also { it.start(entranceId = null) }
+        ).apply { start(entranceId = null) }
     }
 
     @BeforeEach
