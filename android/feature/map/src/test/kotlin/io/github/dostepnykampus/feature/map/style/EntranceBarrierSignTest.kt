@@ -11,7 +11,9 @@ import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.barrier.BARRIER_OFFSET
 import io.github.dostepnykampus.feature.map.barrier.BARRIER_SEVERITY
+import io.github.dostepnykampus.feature.map.barrier.ENTRANCE_BARRIER_DP
 import io.github.dostepnykampus.feature.map.barrier.withBarriers
+import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
 import kotlinx.serialization.json.Json
@@ -25,8 +27,9 @@ import org.junit.jupiter.api.Test
 import kotlin.math.roundToInt
 
 /**
- * Znak bariery zgłoszonej przy wejściu na V1 stoi obok znaku wejścia, na zewnątrz konturu, a kilka barier przy
- * jednym wejściu daje jeden znak. Kontur „Budynek testowy” (nie dane PWr).
+ * Znak bariery zgłoszonej przy wejściu na V1 stoi obok widocznego znaku wejścia, na zewnątrz konturu, a gdy znaku
+ * wejścia nie widać, w punkcie wejścia; kilka barier przy jednym wejściu daje jeden znak. Kontur „Budynek testowy”
+ * (nie dane PWr).
  *
  * Wymagania: US1.3, US2.2, BR-8, NFR-17
  */
@@ -40,7 +43,7 @@ class EntranceBarrierSignTest {
 
     /**
      * Wiersz: V1, „Utrudnienie” i „Blokada” przy wejściu na wschodniej ścianie i bariera bez wejścia → dwa znaki:
-     *   „Blokada” przesunięta o 48 dp na wschód i bariera bez wejścia bez przesunięcia.
+     *   „Blokada” przesunięta o 30 dp na wschód i bariera bez wejścia bez przesunięcia.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Znak bariery przy wejściu stoi obok znaku wejścia
      */
     @Test
@@ -59,7 +62,7 @@ class EntranceBarrierSignTest {
                 .jsonArray
                 .map { it.jsonObject.getValue("properties").jsonObject }
         assertEquals(
-            listOf("ONLY_WITH_HELP" to null, "BLOCKING" to listOf(48, 0)),
+            listOf("ONLY_WITH_HELP" to null, "BLOCKING" to listOf(30, 0)),
             properties.map { it.text(BARRIER_SEVERITY) to it.offset() },
             "Przesunięty jest tylko znak bariery przy wejściu",
         )
@@ -67,7 +70,7 @@ class EntranceBarrierSignTest {
 
     /**
      * Wiersz: V1, „Blokada” przy wejściu w zagłębieniu budynku w kształcie litery L, na ścianie zwróconej na
-     *   wschód → znak przesunięty o 48 dp na wschód, poza kontur, a nie na północ od środka prostokąta.
+     *   wschód → znak przesunięty o 30 dp na wschód, poza kontur, a nie na północ od środka prostokąta.
      * Scenariusz (częściowo): przegladanie-mapy.feature: Znak bariery przy wejściu stoi obok znaku wejścia
      */
     @Test
@@ -88,28 +91,79 @@ class EntranceBarrierSignTest {
                 .getValue("properties")
                 .jsonObject
         assertEquals(
-            listOf(48, 0),
+            listOf(30, 0),
             sign.offset(),
             "Znak bariery w zagłębieniu konturu nie stoi na zewnątrz ściany wejścia",
         )
     }
 
-    /** Wiersz: V1, znak i wyróżniony znak bariery biorą przesunięcie z punktu, a bez niego stoją na punkcie. */
+    /**
+     * Wiersz: V1 bez zaznaczenia, znak i wyróżniony znak bariery biorą przesunięcie z punktu od powiększenia, od
+     *   którego widać znaki wejść, a niżej stoją na punkcie.
+     * Scenariusz (częściowo): przegladanie-mapy.feature: Znak bariery przy wejściu stoi obok znaku wejścia
+     */
     @Test
-    fun offsetsSignsByProperty() {
-        val style = Json.parseToJsonElement(campusMapStyle(data, data.selection(), styleColors())).jsonObject
+    fun offsetsFromEntranceZoom() {
+        val zero = """["literal",[0.0,0.0]]"""
+        val moved = """["coalesce",["get","$BARRIER_OFFSET"],$zero]"""
+        val expected = """["step",["zoom"],$zero,17.0,$moved]"""
+        assertEquals(listOf(expected, expected), signOffsets(data.selection()), "Przesunięcie od progu znaków wejść")
+    }
+
+    /**
+     * Wiersz: V1 z zaznaczonym budynkiem C-13: jego znaki wejść widać przy każdym powiększeniu, więc znak bariery
+     *   przy jego wejściu stoi obok przy każdym, a przy wejściach innych budynków w punkcie wejścia.
+     */
+    @Test
+    fun offsetsAtSelectedBuilding() {
+        val zero = """["literal",[0.0,0.0]]"""
+        val moved = """["coalesce",["get","$BARRIER_OFFSET"],$zero]"""
+        val match = """["match",["to-string",["get","building"]],["C-13"],$moved,$zero]"""
+        val expected = """["step",["zoom"],$zero,0.0,$match]"""
+        assertEquals(
+            listOf(expected, expected),
+            signOffsets(data.selection(building = "C-13")),
+            "Przy zaznaczonym budynku przesunięcie tylko przy jego wejściach",
+        )
+    }
+
+    /** Wiersz: V1, znak bariery stoi obok znaku wejścia dokładnie tam, gdzie ten znak widać. */
+    @Test
+    fun besideWhereEntranceShows() {
+        val all = selectionLook(data, data.selection())
+        val chosen = selectionLook(data, data.selection(building = "C-13"))
+        val cases =
+            listOf(
+                all.besideEntrance.isBeside(zoom = all.entrancesMinZoom - 0.1, building = "C-13"),
+                all.besideEntrance.isBeside(zoom = all.entrancesMinZoom, building = "C-13"),
+                chosen.besideEntrance.isBeside(zoom = 12.0, building = "C-13"),
+                chosen.besideEntrance.isBeside(zoom = 18.0, building = "A-1"),
+                chosen.besideEntrance.isBeside(zoom = 18.0, building = null),
+            )
+        assertEquals(listOf(false, true, true, false, false), cases, "Obok tylko przy widocznym znaku wejścia")
+    }
+
+    /** Wiersz: V1, znaki wejścia i bariery stykają się: odstęp środków to połowy obu znaków. Wymagania: NFR-17 */
+    @Test
+    fun signsTouch() {
+        assertEquals(
+            ENTRANCE_MARK_DP / 2.0 + BARRIER_SIGN_DP / 2.0,
+            ENTRANCE_BARRIER_DP,
+            "Odstęp znaku bariery od punktu wejścia to połowa znaku wejścia i połowa znaku bariery",
+        )
+    }
+
+    private fun signOffsets(selection: MapSelection): List<String> {
+        val style = Json.parseToJsonElement(campusMapStyle(data, selection, styleColors())).jsonObject
         val layers = style.getValue("layers").jsonArray.map { it.jsonObject }
-        val offsets =
-            listOf(BARRIERS_LAYER, CHOSEN_BARRIER_LAYER).map { id ->
-                layers
-                    .single { it.text("id") == id }
-                    .getValue("layout")
-                    .jsonObject
-                    .getValue("icon-offset")
-                    .toString()
-            }
-        val expected = """["coalesce",["get","$BARRIER_OFFSET"],["literal",[0.0,0.0]]]"""
-        assertEquals(listOf(expected, expected), offsets, "Obie warstwy znaków biorą przesunięcie z punktu")
+        return listOf(BARRIERS_LAYER, CHOSEN_BARRIER_LAYER).map { id ->
+            layers
+                .single { it.text("id") == id }
+                .getValue("layout")
+                .jsonObject
+                .getValue("icon-offset")
+                .toString()
+        }
     }
 
     private fun barrier(id: String, severity: Severity, entrance: String?) =
