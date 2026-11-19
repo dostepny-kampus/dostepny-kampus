@@ -486,7 +486,9 @@ final class SubmissionContentJsonTest {
             new SubmissionPoint(17.06, 51.1),
             JsonBodies.bind(JsonBodies.json(JsonBodies.FULL)).toContent(
                 SubmissionContentJsonTest.entrance(
-                    new SubmissionPlace(new SubmissionPoint(17.05, 51.11), null, false, "C-13", null)
+                    new SubmissionPlace(
+                        new SubmissionPoint(17.05, 51.11), null, false, "C-13", null
+                    )
                 )
             ).place().point(),
             "Pomiar precyzyjny dostał punkt wejścia zamiast własnego"
