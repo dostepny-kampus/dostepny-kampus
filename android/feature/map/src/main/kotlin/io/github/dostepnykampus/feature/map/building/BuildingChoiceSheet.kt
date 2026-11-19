@@ -98,9 +98,41 @@ private fun SheetHeader(onClose: () -> Unit) {
  */
 @Composable
 internal fun BuildingChoice(building: Building, otherArea: String? = null, onClick: () -> Unit) {
-    val action = stringResource(R.string.mapa_otwiera_opis_budynku)
     val spokenArea = otherArea?.let { stringResource(R.string.mapa_teren_inny_opis, it) }
-    val description = listOfNotNull(building.symbol, building.name, spokenArea).joinToString(separator = ", ")
+    ResultCard(
+        symbol = building.symbol,
+        description = listOfNotNull(building.symbol, building.name, spokenArea).joinToString(separator = ", "),
+        action = stringResource(R.string.mapa_otwiera_opis_budynku),
+        onClick = onClick,
+    ) {
+        val generic = stringResource(R.string.mapa_budynek, building.symbol)
+        Text(
+            text = building.name ?: generic,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = Typografia.wyroznienieWaga,
+        )
+        if (building.name != null) {
+            val color = MaterialTheme.colorScheme.onSurfaceVariant
+            Text(text = generic, style = MaterialTheme.typography.bodyLarge, color = color)
+        }
+        otherArea?.let { OtherAreaNote(it) }
+    }
+}
+
+/**
+ * Karta wyniku w ramce: znak budynku [symbol] i obok [content]. Cała karta to jeden cel dotyku [onClick],
+ * a TalkBack czyta [description] i czynność [action], gdy jest.
+ *
+ * Wymagania: NFR-17, NFR-18
+ */
+@Composable
+internal fun ResultCard(
+    symbol: String,
+    description: String,
+    action: String?,
+    onClick: () -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
+) {
     val shape = RoundedCornerShape(Zaokraglenia.duze)
     val choiceSemantics =
         Modifier.clearAndSetSemantics {
@@ -127,20 +159,8 @@ internal fun BuildingChoice(building: Building, otherArea: String? = null, onCli
             horizontalArrangement = Arrangement.spacedBy(Odstepy.m),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            SymbolBadge(building.symbol)
-            Column {
-                val generic = stringResource(R.string.mapa_budynek, building.symbol)
-                Text(
-                    text = building.name ?: generic,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = Typografia.wyroznienieWaga,
-                )
-                if (building.name != null) {
-                    val color = MaterialTheme.colorScheme.onSurfaceVariant
-                    Text(text = generic, style = MaterialTheme.typography.bodyLarge, color = color)
-                }
-                otherArea?.let { OtherAreaNote(it) }
-            }
+            SymbolBadge(symbol)
+            Column(content = content)
         }
     }
 }

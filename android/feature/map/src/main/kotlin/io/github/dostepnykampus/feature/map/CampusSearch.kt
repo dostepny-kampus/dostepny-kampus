@@ -12,7 +12,6 @@ import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -28,7 +27,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -60,10 +58,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -80,12 +76,10 @@ import io.github.dostepnykampus.core.designsystem.bar.NavigationIcons
 import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.area.AreaOrder
-import io.github.dostepnykampus.feature.map.area.otherAreaOf
-import io.github.dostepnykampus.feature.map.building.BuildingChoice
 import io.github.dostepnykampus.feature.map.building.BuildingList
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
-import io.github.dostepnykampus.feature.map.building.foundFor
 import io.github.dostepnykampus.feature.map.overlay.OfflineLine
+import io.github.dostepnykampus.feature.map.search.SearchResults
 import java.time.Instant
 
 private val SearchIcon =
@@ -138,11 +132,6 @@ internal fun CampusSearch(
     var query by rememberSaveable { mutableStateOf("") }
     var isHidden by rememberSaveable { mutableStateOf(false) }
     SideEffect { onSearch(query) }
-    val found = search.foundFor(query)
-    val results = found.orEmpty()
-    val isNoResult = query.isNotBlank() && found?.isEmpty() == true
-    val shown = results.takeUnless { isList || isHidden }.orEmpty()
-    val isNoResultShown = isNoResult && (isList || !isHidden)
     val focus = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
     val showList = {
@@ -171,14 +160,15 @@ internal fun CampusSearch(
             )
             if (!isOnline) OfflineLine(syncedAt)
         }
-        if (isNoResultShown || shown.isNotEmpty()) {
-            ResultPanel {
-                shown.forEach { building ->
-                    BuildingChoice(building, areas.otherAreaOf(building.symbol)) { choose(building.symbol) }
-                }
-                query.takeIf { isNoResultShown }?.let { NoResult(it, onShowList = showList.takeUnless { isList }) }
-            }
-        }
+        SearchResults(
+            search = search,
+            query = query,
+            isList = isList,
+            isHidden = isHidden,
+            areas = areas,
+            onBuildingClick = choose,
+            onShowList = showList,
+        )
         if (isList) {
             BuildingList(
                 catalog = catalog,
@@ -249,18 +239,6 @@ private fun ViewButton(isList: Boolean, hasIcon: Boolean, onListChange: (Boolean
             text = stringResource(if (isList) R.string.mapa_pokaz_widok_mapy else R.string.mapa_pokaz_liste),
             style = MaterialTheme.typography.labelLarge,
             fontWeight = Typografia.wyroznienieWaga,
-        )
-    }
-}
-
-@Composable
-private fun ResultPanel(content: @Composable ColumnScope.() -> Unit) {
-    val insets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
-    Surface(Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.surface) {
-        Column(
-            Modifier.windowInsetsPadding(insets).padding(horizontal = Odstepy.m, vertical = Odstepy.s),
-            verticalArrangement = Arrangement.spacedBy(Odstepy.s),
-            content = content,
         )
     }
 }
@@ -340,29 +318,6 @@ private fun FieldWithHint(isEmpty: Boolean, style: TextStyle, content: @Composab
 private fun ClearButton(onClick: () -> Unit) {
     IconButton(onClick = onClick) {
         Icon(ClearIcon, contentDescription = stringResource(R.string.mapa_wyczysc_pole))
-    }
-}
-
-@Composable
-private fun NoResult(query: String, onShowList: (() -> Unit)?) {
-    Surface(
-        modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
-        shape = RoundedCornerShape(Zaokraglenia.duze),
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-    ) {
-        Column(Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-            Text(
-                text = stringResource(R.string.mapa_brak_wyniku, query.trim()),
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Text(text = stringResource(R.string.mapa_brak_wyniku_rada), style = MaterialTheme.typography.bodyLarge)
-            onShowList?.let { showList ->
-                val buttonModifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk)
-                FilledTonalButton(onClick = showList, modifier = buttonModifier) {
-                    Text(text = stringResource(R.string.mapa_pokaz_liste), style = MaterialTheme.typography.bodyLarge)
-                }
-            }
-        }
     }
 }
 

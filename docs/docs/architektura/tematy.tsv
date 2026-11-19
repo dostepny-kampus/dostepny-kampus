@@ -32,6 +32,7 @@ removed	ścieżka	bariera usunięta	Zgłoszenie, że bariery ze zgłoszenia przy
 report	ścieżka	pełne zgłoszenie	Formularz i edycja pełnego zgłoszenia.
 retention	temat	przechowywanie danych	Usuwanie zgłoszeń i zdjęć po terminie przechowywania (NFR-29).
 room	temat	pomieszczenie	Pomieszczenie piętra: numer sali, funkcja, kontur.
+search	temat	wyszukiwanie	Pole „Szukaj” i wyniki pod nim.
 server	temat	odpowiedź serwera	Wynik żądania do serwera bez typów klienta HTTP.
 start	temat	pierwsze uruchomienie	Pierwsze uruchomienie aplikacji i instrukcja otwierana wtedy sama.
 style	temat	styl mapy	Warstwy, kolory i obrazy mapy.

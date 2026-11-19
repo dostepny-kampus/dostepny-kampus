@@ -18,6 +18,7 @@ Mapa kampusu: budynki, wejścia i bariery na mapie, wyszukiwanie budynku, karta 
 - `feature.map.overlay` — nakładki mapy: sterowanie, legenda, informacja, stan sieci i ramka arkuszy.
 - `feature.map.plan` — plan piętra budynku po przybliżeniu mapy i arkusz znaku planu.
 - `feature.map.room` — znaleziona sala i droga do niej: wejście zalecane, winda i sala.
+- `feature.map.search` — wyniki pod polem szukaj: karty wyników i karta „brak wyniku”.
 - `feature.map.style` — styl mapy: warstwy, obrazy i kafle.
 
 ## API
