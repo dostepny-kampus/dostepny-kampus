@@ -52,6 +52,7 @@ internal fun AppNavigator.HiltMapScreen(
     planViewModel: MapPlanViewModel = hiltViewModel(),
     entrancesViewModel: BuildingEntrancesViewModel = hiltViewModel(),
     liftViewModel: EntranceLiftViewModel = hiltViewModel(),
+    mapView: CampusMapView = MapLibreMapView,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val plan by planViewModel.shown.collectAsStateWithLifecycle()
@@ -67,11 +68,13 @@ internal fun AppNavigator.HiltMapScreen(
         state = shown,
         onListChange = viewModel::chooseList,
         onSearch = viewModel::search,
+        mapView = mapView,
         plan = plan,
         onCamera = planViewModel::camera,
         onFloorChoose = planViewModel::chooseFloor,
         onMapHide = planViewModel::hide,
         entrance = EntranceActions(onShow = liftViewModel::show, lift = lift),
+        onEntranceSelect = planViewModel::selectEntrance,
     )
 }
 
@@ -84,6 +87,8 @@ internal fun AppNavigator.HiltMapScreen(
  * przy wejściu z arkusza wejścia prowadzi do V4 albo L1, a [entrance] podaje arkuszowi windę za drzwiami.
  *
  * Wymagania: US1.1, US2.1, NFR-19, US3.3, US4.6, US14.2
+ *
+ * @param onEntranceSelect budynek otwartego arkusza wejścia albo `null` po jego zamknięciu
  */
 @Composable
 internal fun AppNavigator.MapScreen(
@@ -97,6 +102,7 @@ internal fun AppNavigator.MapScreen(
     onFloorChoose: (String, String) -> Unit = { _, _ -> },
     onMapHide: () -> Unit = {},
     entrance: EntranceActions = EntranceActions(),
+    onEntranceSelect: (String?) -> Unit = {},
 ) {
     val accessibility = checkNotNull(LocalContext.current.getSystemService(AccessibilityManager::class.java))
     val isFullOnly = isFullOnlySheet(LocalDensity.current.fontScale)
@@ -119,6 +125,7 @@ internal fun AppNavigator.MapScreen(
         onMapHide = onMapHide,
         onCardReturn = { returnToCard(it) },
         sheetCover = LocalSheetPadding.current.shownCover.takeUnless { isFullOnly },
+        onEntranceSelect = onEntranceSelect,
     )
 }
 

@@ -67,6 +67,13 @@ class BasicServerListTest {
             ) { ASSET }.catalog()
         }
 
+    @Test
+    fun mapsDetailedSymbols() {
+        val catalog = fixture(ServerReply.Ok(ServerBuildings(SOURCE, listOf(SERVER), detailed = setOf(SYMBOL))))
+
+        assertEquals(setOf(SYMBOL), catalog.detailed, "symbol szczegółowy z listy serwera")
+    }
+
     private fun fixture(reply: ServerReply<ServerBuildings>): BuildingCatalog =
         runBlocking { BuildingCatalogRepository(EmptyCoroutineContext, listBuildings = { reply }) { ASSET }.catalog() }
 

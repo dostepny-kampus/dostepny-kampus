@@ -518,7 +518,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | D-1     | 5      |
       | D-2     | 5      |
 
-  # @do-zrobienia #3004: wybór planu przy otwartej karcie budynku, arkuszu wejścia i karcie sali.
+  # @do-zrobienia #3452: test nawigacji wyboru planu przy otwartej karcie budynku i arkuszu wejścia.
   @US16.1 @US2.8 @aplikacja @do-zrobienia
   Scenariusz: Otwarta karta budynku albo sali trzyma plan tego budynku
     Zakładając, że na mapie w powiększeniu 18 widać plan budynku szczegółowego A-1

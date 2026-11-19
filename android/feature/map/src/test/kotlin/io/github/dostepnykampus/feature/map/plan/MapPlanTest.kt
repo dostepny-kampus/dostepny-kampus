@@ -136,6 +136,66 @@ class MapPlanTest {
             assertEquals("P0", shown.value?.floor, "Piętro wejścia spoza planu nie dało parteru")
         }
 
+    @Test
+    fun hidesPlanWhenBasicSelected() =
+        runTest(UnconfinedTestDispatcher()) {
+            val plan = MapPlan(Plans(setOf("A")), entrances())
+            val shown = collected(plan, CLOSE_CATALOG)
+            plan.at(INSIDE_A)
+            val initial = shown.value?.building
+            plan.show(MapFocus.Building(symbol = "B-8"))
+            val selected = shown.value?.building
+            plan.show(null)
+            assertEquals(listOf("A", null, "A"), listOf(initial, selected, shown.value?.building), "Wybrany podstawowy")
+        }
+
+    @Test
+    fun switchesPlanOnSelectedCard() =
+        runTest(UnconfinedTestDispatcher()) {
+            val plan = MapPlan(Plans(setOf("A", "B")), entrances())
+            val shown = collected(plan, CLOSE_CATALOG)
+            plan.at(INSIDE_A)
+            plan.show(MapFocus.Building(symbol = "B"))
+            val switched = shown.value?.building
+            plan.at(FAR_WEST)
+            val hiddenFar = shown.value?.building
+            plan.at(INSIDE_A)
+            plan.show(null)
+            assertEquals(listOf("B", null, "A"), listOf(switched, hiddenFar, shown.value?.building), "Wybrana karta")
+        }
+
+    @Test
+    fun hidesPlanForBasicEntrance() =
+        runTest(UnconfinedTestDispatcher()) {
+            val plan = MapPlan(Plans(setOf("A")), entrances())
+            val shown = collected(plan, CLOSE_CATALOG)
+            plan.at(INSIDE_A)
+            plan.show(MapFocus.Entrance(id = "e1", buildingSymbol = "B-8"))
+            val withFocus = shown.value?.building
+            plan.selectEntrance(null)
+            val closedFocus = shown.value?.building
+            plan.selectEntrance("B-8")
+            val fromPin = shown.value?.building
+            plan.selectEntrance(null)
+            val all = listOf(withFocus, closedFocus, fromPin, shown.value?.building)
+            assertEquals(listOf(null, "A", null, "A"), all, "Arkusz wejścia budynku podstawowego")
+        }
+
+    @Test
+    fun keepsCameraModeForCommands() =
+        runTest(UnconfinedTestDispatcher()) {
+            val plan = MapPlan(Plans(setOf("A", "B")), entrances())
+            val shown = collected(plan, CLOSE_CATALOG)
+            plan.show(MapFocus.Building(symbol = "B-8", command = 1L))
+            plan.at(INSIDE_A)
+            val onShowBasic = shown.value?.building
+            plan.show(MapFocus.Building(symbol = "A", command = 2L, floor = "P1"))
+            plan.at(INSIDE_B)
+            assertEquals(listOf("A", "B"), listOf(onShowBasic, shown.value?.building), "Tryb środka mapy po poleceniu")
+        }
+
+    private fun MapPlan.at(point: GeoPoint) = camera(MapCamera(center = point, zoom = 18.0))
+
     private fun entrances(floor: String? = null): ServerEntrances =
         ServerEntrances { symbol ->
             listOf(
@@ -152,9 +212,12 @@ class MapPlanTest {
             )
         }
 
-    private fun TestScope.collected(plan: MapPlan): MutableStateFlow<ShownPlan?> {
+    private fun TestScope.collected(
+        plan: MapPlan,
+        catalog: BuildingCatalog = CATALOG,
+    ): MutableStateFlow<ShownPlan?> {
         val shown = MutableStateFlow<ShownPlan?>(null)
-        backgroundScope.launch { plan.shown(MutableStateFlow(CATALOG)).collect { shown.value = it } }
+        backgroundScope.launch { plan.shown(MutableStateFlow(catalog)).collect { shown.value = it } }
         return shown
     }
 
@@ -178,20 +241,32 @@ class MapPlanTest {
     private companion object {
         const val SOURCE = "Politechnika Wrocławska"
         val INSIDE_A = GeoPoint(longitude = 17.00025, latitude = 51.00015)
+        val INSIDE_B = GeoPoint(longitude = 17.00085, latitude = 51.00015)
+        val FAR_WEST = GeoPoint(longitude = 16.998, latitude = 51.00015)
         val FLOORS =
             listOf(
                 Floor(id = "P-1", label = "Piwnica", order = -1),
                 Floor(id = "P0", label = "Parter", order = 0),
                 Floor(id = "P1", label = "1 piętro", order = 1),
             )
-        val RING = listOf(17.0 to 51.0, 17.0005 to 51.0, 17.0005 to 51.0003, 17.0 to 51.0003, 17.0 to 51.0)
-        val OUTLINE = GeoPolygon(listOf(RING.map { (lon, lat) -> GeoPoint(longitude = lon, latitude = lat) }))
         val CATALOG =
             BuildingCatalog(
-                buildings = listOf(Building(symbol = "A", name = null, outline = OUTLINE)),
+                buildings = listOf(square("A", west = 17.0)),
                 entrances = emptyList(),
                 attribution = SOURCE,
                 detailed = setOf("A"),
             )
+        val CLOSE_CATALOG =
+            CATALOG.copy(
+                buildings = listOf(square("A", 17.0), square("B", 17.0006), square("B-8", 17.0012)),
+                detailed = setOf("A", "B"),
+            )
+
+        fun square(symbol: String, west: Double): Building {
+            val east = west + 0.0005
+            val ring = listOf(west to 51.0, east to 51.0, east to 51.0003, west to 51.0003, west to 51.0)
+            val outline = GeoPolygon(listOf(ring.map { (lon, lat) -> GeoPoint(longitude = lon, latitude = lat) }))
+            return Building(symbol = symbol, name = null, outline = outline)
+        }
     }
 }
