@@ -32,12 +32,8 @@ sealed interface RoomWay {
      * @property lift winda z piętra wejścia na piętro sali; `null`, gdy sala jest na piętrze wejścia
      * @property roomMeters odległość sali od windy, a bez windy od wejścia
      */
-    data class Steps(
-        val entranceFloor: Floor,
-        val isFloorAssumed: Boolean,
-        val lift: Lift?,
-        val roomMeters: Int,
-    ) : RoomWay
+    data class Steps(val entranceFloor: Floor, val isFloorAssumed: Boolean, val lift: Lift?, val roomMeters: Int) :
+        RoomWay
 
     /**
      * Winda w krokach.
@@ -58,6 +54,8 @@ sealed interface RoomWay {
  * Droga do sali [found] od wejścia zalecanego [entrance]. Winda to najbliższa wejściu winda, która staje na piętrze
  * wejścia i na piętrze sali. Odległości są w linii prostej, zaokrąglone do 5 m, najmniej 5 m. TODO(#1481): karta sali.
  *
+ * @param found znaleziona sala z piętrem
+ * @param entrance wejście zalecane budynku sali; `null`, gdy budynek go nie ma
  * @param floors piętra budynku sali
  * @param rooms pomieszczenia piętra o podanym identyfikatorze
  */
@@ -65,16 +63,18 @@ fun roomWay(found: FoundRoom, entrance: Entrance?, floors: List<Floor>, rooms: (
     val known = entrance?.floorId?.let { id -> floors.firstOrNull { it.id == id } }
     val floor = known ?: floors.firstOrNull { it.order == 0 }
     return when {
-        entrance == null || floor == null -> RoomWay.NoEntrance
-        floor.id == found.floor.id ->
-            RoomWay.Steps(
-                entranceFloor = floor,
-                isFloorAssumed = known == null,
-                lift = null,
-                roomMeters = rounded(entrance.location, found.room.labelPoint),
-            )
-        else ->
+        entrance == null || floor == null -> {
+            RoomWay.NoEntrance
+        }
+
+        floor.id == found.floor.id -> {
+            val meters = rounded(from = entrance.location, to = found.room.labelPoint)
+            RoomWay.Steps(entranceFloor = floor, isFloorAssumed = known == null, lift = null, roomMeters = meters)
+        }
+
+        else -> {
             viaLift(found = found, entrance = entrance, floor = floor, isFloorAssumed = known == null, rooms = rooms)
+        }
     }
 }
 
@@ -91,13 +91,13 @@ private fun viaLift(
             .minByOrNull { it.labelPoint.metersTo(entrance.location) }
             ?: return RoomWay.NoLift
     val upstairs = rooms(found.floor.id).firstOrNull { it.liftId != null && it.liftId == lift.liftId } ?: lift
-    val meters = rounded(entrance.location, lift.labelPoint)
+    val meters = rounded(from = entrance.location, to = lift.labelPoint)
     val step = RoomWay.Lift(id = lift.liftId ?: lift.id, metersFromEntrance = meters)
     return RoomWay.Steps(
         entranceFloor = floor,
         isFloorAssumed = isFloorAssumed,
         lift = step,
-        roomMeters = rounded(upstairs.labelPoint, found.room.labelPoint),
+        roomMeters = rounded(from = upstairs.labelPoint, to = found.room.labelPoint),
     )
 }
 

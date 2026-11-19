@@ -132,8 +132,6 @@ class RoomWayTest {
     private companion object {
         val NO_OUTLINE = GeoMultiPolygon(emptyList())
 
-        fun point(meters: Double) = GeoPoint(longitude = LON + meters / METERS_PER_LON_AT_CAMPUS, latitude = LAT)
-
         val ROOM =
             Room(
                 id = "329",
@@ -144,5 +142,7 @@ class RoomWayTest {
                 labelPoint = point(meters = 113.0),
                 isLabelled = true,
             )
+
+        fun point(meters: Double) = GeoPoint(longitude = LON + meters / METERS_PER_LON_AT_CAMPUS, latitude = LAT)
     }
 }
