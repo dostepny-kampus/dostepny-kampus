@@ -10,7 +10,7 @@ import io.github.dostepnykampus.inspection.domain.ProgressMarker;
 import io.github.dostepnykampus.inspection.domain.ProgressRepository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -29,36 +29,6 @@ import org.springframework.stereotype.Component;
 public final class JdbcProgress implements ProgressRepository {
 
     /**
-     * Liczba numerów w pseudonimie autora znacznika.
-     */
-    private static final int PSEUDONYMS = 999;
-
-    /**
-     * Zapytanie liczące bieżący postęp każdego budynku.
-     */
-    private static final String QUERY = """
-        SELECT b.symbol, b.detail_level,
-            (SELECT COUNT(*) FROM floors f WHERE f.building_symbol = b.symbol) AS floors_total,
-            (SELECT COUNT(DISTINCT m.floor_id) FROM inspection_markers m
-             JOIN floors f ON f.building_symbol = m.building_symbol AND f.id = m.floor_id
-             WHERE m.building_symbol = b.symbol AND NOT m.revoked) AS floors_inspected,
-            EXISTS (SELECT 1 FROM inspection_markers m
-                    WHERE m.building_symbol = b.symbol AND NOT m.revoked) AS inspected,
-            (SELECT COUNT(*) FROM submissions s
-             WHERE s.building_symbol = b.symbol
-               AND s.status IN ('SENT', 'IN_REVIEW')) AS pending,
-            (SELECT COUNT(*) FROM submissions s
-             WHERE s.building_symbol = b.symbol AND s.status = 'ACCEPTED') AS accepted,
-            (SELECT COUNT(*) FROM entrances e
-             WHERE e.building_symbol = b.symbol) AS entrances_total,
-            (SELECT COUNT(*) FROM entrances e
-             WHERE e.building_symbol = b.symbol
-               AND e.marking_source = 'WALKTHROUGH') AS checked
-        FROM buildings b
-        ORDER BY b.symbol
-        """;
-
-    /**
      * Dostęp do bazy PostgreSQL.
      */
     private final JdbcClient jdbc;
@@ -75,9 +45,29 @@ public final class JdbcProgress implements ProgressRepository {
     @Override
     public List<BuildingProgress> read(final String viewer) {
         final Map<String, List<ProgressMarker>> grouped = this.activeMarkers(viewer);
-        return this.jdbc.sql(JdbcProgress.QUERY).query(
-            (rows, num) -> JdbcProgress.building(rows, grouped)
-        ).list();
+        return this.jdbc.sql(
+            """
+            SELECT b.symbol, b.detail_level,
+                (SELECT COUNT(*) FROM floors f WHERE f.building_symbol = b.symbol) AS floors_total,
+                (SELECT COUNT(DISTINCT m.floor_id) FROM inspection_markers m
+                    JOIN floors f ON f.building_symbol = m.building_symbol AND f.id = m.floor_id
+                    WHERE m.building_symbol = b.symbol AND NOT m.revoked) AS floors_inspected,
+                EXISTS (SELECT 1 FROM inspection_markers m
+                    WHERE m.building_symbol = b.symbol AND NOT m.revoked) AS inspected,
+                (SELECT COUNT(*) FROM submissions s
+                    WHERE s.building_symbol = b.symbol
+                    AND s.status IN ('SENT', 'IN_REVIEW')) AS pending,
+                (SELECT COUNT(*) FROM submissions s
+                    WHERE s.building_symbol = b.symbol AND s.status = 'ACCEPTED') AS accepted,
+                (SELECT COUNT(*) FROM entrances e
+                    WHERE e.building_symbol = b.symbol) AS entrances_total,
+                (SELECT COUNT(*) FROM entrances e
+                    WHERE e.building_symbol = b.symbol
+                    AND e.marking_source = 'WALKTHROUGH') AS checked
+            FROM buildings b
+            ORDER BY b.symbol
+            """
+        ).query((rows, num) -> JdbcProgress.building(rows, grouped)).list();
     }
 
     private Map<String, List<ProgressMarker>> activeMarkers(final String viewer) {
@@ -95,7 +85,7 @@ public final class JdbcProgress implements ProgressRepository {
     private static ProgressMarker marker(final ResultSet rows, final String viewer)
         throws SQLException {
         final String author = JdbcProgress.text(rows, "author");
-        final Timestamp created = rows.getTimestamp("created_at");
+        final OffsetDateTime created = rows.getObject("created_at", OffsetDateTime.class);
         if (created == null) {
             throw new SQLException("Brak wartości kolumny created_at");
         }
@@ -113,38 +103,29 @@ public final class JdbcProgress implements ProgressRepository {
         final ResultSet rows, final Map<String, List<ProgressMarker>> grouped
     ) throws SQLException {
         final String symbol = JdbcProgress.text(rows, "symbol");
-        final String detail = JdbcProgress.text(rows, "detail_level");
-        final boolean detailed = "DETAILED".equals(detail);
-        final Integer floors;
-        final Integer covered;
-        final Boolean inspected;
-        if (detailed) {
-            floors = rows.getInt("floors_total");
-            covered = rows.getInt("floors_inspected");
-            inspected = null;
+        final BuildingProgress.Coverage coverage;
+        if ("DETAILED".equals(JdbcProgress.text(rows, "detail_level"))) {
+            coverage = new BuildingProgress.Coverage.Floors(
+                rows.getInt("floors_total"), rows.getInt("floors_inspected")
+            );
         } else {
-            floors = null;
-            covered = null;
-            inspected = rows.getBoolean("inspected");
+            coverage = new BuildingProgress.Coverage.Whole(rows.getBoolean("inspected"));
         }
         return new BuildingProgress(
             symbol,
-            detail,
-            floors,
-            covered,
-            inspected,
-            rows.getInt("pending"),
-            rows.getInt("accepted"),
-            rows.getInt("entrances_total"),
-            rows.getInt("checked"),
+            coverage,
+            new BuildingProgress.Counts(
+                rows.getInt("pending"),
+                rows.getInt("accepted"),
+                rows.getInt("entrances_total"),
+                rows.getInt("checked")
+            ),
             grouped.getOrDefault(symbol, List.of())
         );
     }
 
     private static String pseudonym(final String author) {
-        return String.format(
-            "Autor %d", Math.floorMod(author.hashCode(), JdbcProgress.PSEUDONYMS) + 1
-        );
+        return String.format("Autor %d", Math.floorMod(author.hashCode(), 999) + 1);
     }
 
     private static String text(final ResultSet rows, final String column) throws SQLException {

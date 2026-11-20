@@ -29,23 +29,22 @@ final class JdbcProgressIT {
 
     @Test
     void readsDetailedAndBasicProgress(final WebApplicationContext context) {
-        final JdbcClient jdbc = context.getBean(JdbcClient.class);
-        JdbcProgressIT.seed(jdbc);
+        JdbcProgressIT.seed(context.getBean(JdbcClient.class));
         final List<BuildingProgress> list = context.getBean(JdbcProgress.class)
             .read("konto-testowe");
         final BuildingProgress detailed = JdbcProgressIT.find(list, "T-D1");
         final BuildingProgress basic = JdbcProgressIT.find(list, "T-B1");
         Assertions.assertEquals(
-            "2/1/null/2/1/2/1/2/true/true/true/null",
+            "Floors[total=2, covered=1]/2/1/2/1/2/true/true/Whole[inspected=true]",
             String.format(
-                "%s/%s/%s/%d/%d/%d/%d/%d/%b/%b/%s/%s",
-                detailed.floors(), detailed.covered(), detailed.inspected(),
-                detailed.pending(), detailed.accepted(),
-                detailed.entrances(), detailed.checked(),
+                "%s/%d/%d/%d/%d/%d/%b/%b/%s",
+                detailed.coverage(),
+                detailed.counts().pending(), detailed.counts().accepted(),
+                detailed.counts().entrances(), detailed.counts().checked(),
                 detailed.markers().size(),
                 detailed.markers().getFirst().pseudonym().startsWith("Autor "),
                 detailed.markers().getFirst().mine(),
-                basic.inspected(), basic.floors()
+                basic.coverage()
             ),
             "Odczyt postępu budynku szczegółowego albo podstawowego nie zgadza się z bazą"
         );
@@ -56,9 +55,11 @@ final class JdbcProgressIT {
             """
             INSERT INTO buildings (symbol, name, detail_level, outline, source) VALUES
             ('T-D1', 'Det', 'DETAILED',
-             ST_GeomFromText('MULTIPOLYGON(((17 51, 17.01 51, 17.01 51.01, 17 51)))', 4326), 'OSM'),
+                ST_GeomFromText('MULTIPOLYGON(((17 51, 17.01 51, 17.01 51.01, 17 51)))', 4326),
+                'OSM'),
             ('T-B1', 'Bas', 'BASIC',
-             ST_GeomFromText('MULTIPOLYGON(((17 51, 17.01 51, 17.01 51.01, 17 51)))', 4326), 'OSM')
+                ST_GeomFromText('MULTIPOLYGON(((17 51, 17.01 51, 17.01 51.01, 17 51)))', 4326),
+                'OSM')
             """
         ).update();
         jdbc.sql(
@@ -94,9 +95,9 @@ final class JdbcProgressIT {
             INSERT INTO entrances (id, building_symbol, main, location, marking,
                 marking_date, marking_source) VALUES
             ('e1', 'T-D1', TRUE, ST_GeomFromText('POINT(17 51)', 4326), 'ACCESSIBLE',
-             DATE '2026-11-10', 'WALKTHROUGH'),
+                DATE '2026-11-10', 'WALKTHROUGH'),
             ('e2', 'T-D1', FALSE, ST_GeomFromText('POINT(17 51)', 4326), 'NO_DATA',
-             DATE '2026-11-10', 'IMPORT')
+                DATE '2026-11-10', 'IMPORT')
             """
         ).update();
     }

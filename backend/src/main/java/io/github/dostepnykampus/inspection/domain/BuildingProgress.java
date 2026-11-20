@@ -6,35 +6,23 @@
 package io.github.dostepnykampus.inspection.domain;
 
 import java.util.List;
-import org.jspecify.annotations.Nullable;
 
 /**
- * Postęp inwentaryzacji jednego budynku z liczbami pięter, zgłoszeń, wejść i aktywnych znaczników.
+ * Postęp inwentaryzacji jednego budynku z pokryciem pięter, liczbami zgłoszeń i wejść oraz
+ * aktywnymi znacznikami.
  *
  * <p>Wymagania: US11.1, US11.2, US11.3, US11.4, BR-21, BR-24</p>
  *
  * @param symbol Symbol budynku
- * @param detail Poziom szczegółowości: DETAILED albo BASIC
- * @param floors Liczba pięter z danych PWr albo null dla BASIC
- * @param covered Liczba pięter obejrzanych albo null dla BASIC
- * @param inspected Znacznik obejrzanego budynku albo null dla DETAILED
- * @param pending Zgłoszenia wysłane i w weryfikacji
- * @param accepted Zgłoszenia przyjęte, bez archiwalnych
- * @param entrances Wszystkie wejścia budynku
- * @param checked Wejścia sprawdzone na miejscu
+ * @param coverage Pokrycie pięter (szczegółowy) albo całego budynku (podstawowy)
+ * @param counts Liczby zgłoszeń i wejść budynku
  * @param markers Aktywne znaczniki do cofnięcia
  * @since 0.1.0
  */
 public record BuildingProgress(
     String symbol,
-    String detail,
-    @Nullable Integer floors,
-    @Nullable Integer covered,
-    @Nullable Boolean inspected,
-    int pending,
-    int accepted,
-    int entrances,
-    int checked,
+    Coverage coverage,
+    Counts counts,
     List<ProgressMarker> markers
 ) {
 
@@ -43,5 +31,44 @@ public record BuildingProgress(
      */
     public BuildingProgress {
         markers = List.copyOf(markers);
+    }
+
+    /**
+     * Sposób liczenia pokrycia budynku: piętra albo cały budynek.
+     *
+     * @since 0.1.0
+     */
+    public sealed interface Coverage {
+
+        /**
+         * Budynek szczegółowy z piętrami z danych PWr.
+         *
+         * @param total Wszystkie piętra budynku
+         * @param covered Piętra z aktywnym znacznikiem
+         * @since 0.1.0
+         */
+        record Floors(int total, int covered) implements Coverage {
+        }
+
+        /**
+         * Budynek podstawowy z jednym znacznikiem całego budynku.
+         *
+         * @param inspected Prawda, gdy istnieje aktywny znacznik budynku
+         * @since 0.1.0
+         */
+        record Whole(boolean inspected) implements Coverage {
+        }
+    }
+
+    /**
+     * Liczby zgłoszeń i wejść budynku w postępie inwentaryzacji.
+     *
+     * @param pending Zgłoszenia wysłane i w weryfikacji
+     * @param accepted Zgłoszenia przyjęte, bez archiwalnych
+     * @param entrances Wszystkie wejścia budynku
+     * @param checked Wejścia sprawdzone na miejscu
+     * @since 0.1.0
+     */
+    public record Counts(int pending, int accepted, int entrances, int checked) {
     }
 }

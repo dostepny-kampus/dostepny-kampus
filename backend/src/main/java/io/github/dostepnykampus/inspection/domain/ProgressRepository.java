@@ -14,6 +14,7 @@ import java.util.List;
  *
  * @since 0.1.0
  */
+@FunctionalInterface
 public interface ProgressRepository {
 
     /**
