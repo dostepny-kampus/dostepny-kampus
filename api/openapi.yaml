@@ -23,6 +23,7 @@ info:
     | `markingSource`: `IMPORT`, `WALKTHROUGH` | źródło oznaczenia: import, obchód |
     | `Floor`, `label` | piętro, etykieta piętra wyliczona z nazwy w danych PWr |
     | `Room` | pomieszczenie z planu piętra |
+    | `AccessiblePath` | ścieżka dostosowana (odcinek) |
     | `source` | źródło danych w podpisie (NFR-40) |
     | `Submission` | zgłoszenie |
     | `status`: `SENT`, `IN_REVIEW`, `ACCEPTED`, `REJECTED`, `ARCHIVED` | status zgłoszenia: wysłane, w weryfikacji, przyjęte, odrzucone, archiwalne |
@@ -186,6 +187,23 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/RoomSearchResults'}
         '400': {$ref: '#/components/responses/BadRequest'}
+  /accessible-paths:
+    get:
+      operationId: listAccessiblePaths
+      summary: Ścieżki dostosowane kampusu
+      description: >-
+        Odcinki ścieżek dostosowanych z mapy kampusu PWr do rysowania na mapie kampusu (US1.4, NFR-40). Pusta lista,
+        gdy serwer nie ma jeszcze danych ścieżek.
+      tags: [building]
+      security: []
+      responses:
+        '429': {$ref: '#/components/responses/TooManyRequests'}
+        '200':
+          description: Odcinki ścieżek dostosowanych i źródło danych.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AccessiblePathList'}
+        '4XX': {$ref: '#/components/responses/ClientError'}
   /submissions:
     get:
       operationId: listSubmissions
@@ -730,6 +748,17 @@ components:
         description: Zamknięty pierścień; pierwszy i ostatni punkt są równe.
         minItems: 4
         items: {$ref: '#/components/schemas/Position'}
+    GeoLineString:
+      type: object
+      description: Linia GeoJSON.
+      required: [type, coordinates]
+      properties:
+        type: {const: LineString, description: "Typ geometrii."}
+        coordinates:
+          type: array
+          description: Kolejne punkty linii.
+          minItems: 2
+          items: {$ref: '#/components/schemas/Position'}
     GeoPolygon:
       type: object
       description: Wielokąt GeoJSON.
@@ -862,7 +891,7 @@ components:
 
     PwrSource:
       type: string
-      description: Źródło danych planów pięter do podpisu na ekranie (NFR-40, decyzja projektu nr 44).
+      description: Źródło danych planów pięter i mapy kampusu PWr do podpisu na ekranie (NFR-40, decyzja projektu nr 44).
       const: Politechnika Wrocławska
     Floor:
       type: object
@@ -934,6 +963,23 @@ components:
               buildingSymbol: {type: string, description: "Budynek z salą."}
               floor: {$ref: '#/components/schemas/Floor', description: "Piętro z salą."}
               room: {$ref: '#/components/schemas/Room', description: "Sala do wyróżnienia na planie piętra."}
+    AccessiblePath:
+      type: object
+      description: Odcinek ścieżki dostosowanej z mapy kampusu PWr (US1.4).
+      required: [id, line]
+      properties:
+        id: {type: string, description: "Identyfikator odcinka z danych PWr."}
+        line: {$ref: '#/components/schemas/GeoLineString', description: "Przebieg odcinka."}
+    AccessiblePathList:
+      type: object
+      description: Odcinki ścieżek dostosowanych ze źródłem danych.
+      required: [source, paths]
+      properties:
+        source: {$ref: '#/components/schemas/PwrSource'}
+        paths:
+          type: array
+          description: Odcinki według identyfikatora.
+          items: {$ref: '#/components/schemas/AccessiblePath'}
 
     VersionConflictProblem:
       description: Błąd konfliktu wersji z wersją zgłoszenia z serwera do ekranu wyboru wersji (US9.3, BR-10).

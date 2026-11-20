@@ -108,7 +108,7 @@ public final class ApiSecurity {
         rules.requestMatchers(
             HttpMethod.GET, "/buildings", "/buildings/locate", "/buildings/{symbol}",
             "/buildings/{symbol}/floors", "/buildings/{symbol}/floors/{floor}/rooms",
-            "/rooms", "/submissions", "/submissions/{id}",
+            "/rooms", "/accessible-paths", "/submissions", "/submissions/{id}",
             "/submissions/{id}/photos/{photo}"
         ).permitAll();
         rules.requestMatchers(HttpMethod.GET, "/actuator/health").permitAll();
