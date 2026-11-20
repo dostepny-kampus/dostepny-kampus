@@ -48,7 +48,7 @@ data class ShownPlan(
 internal fun selectedBuilding(focus: MapFocus?): String? =
     when (focus) {
         null -> null
-        is MapFocus.Building -> focus.run { symbol.takeIf { room != null || command == null && floor == null } }
+        is MapFocus.Building -> focus.run { symbol.takeIf { if (floor == null) command == null else room != null } }
         is MapFocus.Entrance -> focus.buildingSymbol
     }
 

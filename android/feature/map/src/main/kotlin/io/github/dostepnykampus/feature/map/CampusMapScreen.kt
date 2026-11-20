@@ -51,6 +51,7 @@ import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import io.github.dostepnykampus.feature.map.overlay.CampusMapPanels
 import io.github.dostepnykampus.feature.map.plan.ShownPlan
 import io.github.dostepnykampus.feature.map.room.OpenRoom
 import io.github.dostepnykampus.feature.map.room.RoomCardLayer
@@ -182,7 +183,8 @@ fun CampusMapScreen(
     onRoomClick: (FoundRoom) -> Unit = {},
     room: OpenRoom? = null,
 ) {
-    val sheet = screenSheet(focus, contentPadding, onCardClose = onEmptyMapClick, onCardReturn = onCardReturn)
+    val sheet =
+        screenSheet(focus = focus, padding = contentPadding, onCardClose = onEmptyMapClick, onCardReturn = onCardReturn)
     val isCovered = sheet.layout.padding.calculateBottomPadding() > 0.dp
     val states = rememberSaveableStateHolder()
     val areas = rememberMapAreas(state.mapData, sheet.layout.focus)
@@ -190,8 +192,7 @@ fun CampusMapScreen(
     var barHeight by remember { mutableIntStateOf(0) }
     var headerHeight by remember { mutableIntStateOf(0) }
     val search = rememberSearchFocus()
-    val roomSheets = RoomSheetSources(onBuildingClick, ShownBarriers(state.barriers), entranceActions)
-    sheet.RoomLayout(room, roomSheets, modifier) { isLarge ->
+    sheet.RoomLayout(room, state.roomSheets(onBuildingClick, entranceActions), modifier) { isLarge ->
         val isList = if (room == null) state.isListSaved ?: isLarge else false
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
@@ -241,6 +242,9 @@ fun CampusMapScreen(
         sheet.FullEntranceSheet(ui = state, actions = entranceActions, onBuildingClick = onBuildingClick)
     }
 }
+
+private fun CampusMapUiState.roomSheets(onBuilding: (String) -> Unit, actions: EntranceActions): RoomSheetSources =
+    RoomSheetSources(onBuilding, ShownBarriers(barriers), actions)
 
 @Composable
 private fun ScreenSheet.RoomLayout(

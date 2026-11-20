@@ -138,7 +138,7 @@ class MapOverlayControlsTest {
 
     /** Wybrane piętro mieści się nad kartą sali. Wymagania: US16.1, US18.2 */
     @Test
-    fun keepsSelectedFloorAboveRoomCard() {
+    fun keepsFloorAboveRoomCard() {
         val cover = 470.dp
         compose.setContent { Overlay(controlsCover = cover) }
         val window = compose.onRoot().getUnclippedBoundsInRoot()

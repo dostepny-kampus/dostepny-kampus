@@ -70,7 +70,7 @@ internal fun AppNavigator.HiltMapScreen(
     val room = card?.takeIf { current is MapRoute }?.let { if (isLarge) it.copy(step = null) else it }
     val found = room?.found
     val target = room?.mapTarget()
-    val roomFocus = remember(found, room?.step) { found?.focus()?.copy(floor = target?.floor) }
+    val roomFocus = remember(found, room?.step) { found?.let { it.focus().copy(floor = target?.floor) } }
     val selected = roomFocus ?: focus
     val shown = remember(state, entrances) { state.copy(catalog = state.catalog?.withBuildingEntrances(entrances)) }
     SideEffect {
