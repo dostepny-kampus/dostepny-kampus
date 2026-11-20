@@ -9,7 +9,8 @@
  *
  * <p>Zadanie: zapis znaczników piętra obejrzanego wysłanych z telefonu.</p>
  *
- * <p>API: brak typów dla innych modułów; HTTP {@code /sync/push}.</p>
+ * <p>API: brak typów dla innych modułów; HTTP {@code /sync/push},
+ * {@code DELETE /inspection-markers/{markerId}}.</p>
  *
  * <p>Zależności: {@code building :: api}, {@code shared}.</p>
  *

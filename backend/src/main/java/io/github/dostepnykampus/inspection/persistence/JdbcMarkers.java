@@ -8,6 +8,7 @@ package io.github.dostepnykampus.inspection.persistence;
 import io.github.dostepnykampus.inspection.domain.MarkerPlace;
 import io.github.dostepnykampus.inspection.domain.MarkerRepository;
 import io.github.dostepnykampus.inspection.domain.NewMarker;
+import java.util.Optional;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -53,6 +54,21 @@ public final class JdbcMarkers implements MarkerRepository {
         return this.jdbc.sql(
             "UPDATE inspection_markers SET revoked = TRUE WHERE id = :id AND author = :author"
         ).param("id", id).param("author", author).update() > 0;
+    }
+
+    @Override
+    public Optional<String> authorOf(final UUID id) {
+        return this.jdbc.sql("SELECT author FROM inspection_markers WHERE id = :id")
+            .param("id", id)
+            .query(String.class)
+            .optional();
+    }
+
+    @Override
+    public boolean revokeAny(final UUID id) {
+        return this.jdbc.sql("UPDATE inspection_markers SET revoked = TRUE WHERE id = :id")
+            .param("id", id)
+            .update() > 0;
     }
 
     private static @Nullable String floor(final MarkerPlace place) {
