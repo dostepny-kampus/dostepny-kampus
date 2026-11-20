@@ -14,8 +14,10 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.inspection.FloorMarkers
 import io.github.dostepnykampus.core.data.inspection.PendingMarkerChange
+import io.github.dostepnykampus.core.data.inspection.ServerFloorMarkers
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.model.building.Floor
+import io.github.dostepnykampus.core.model.inspection.InspectionMarker
 import io.github.dostepnykampus.core.model.inspection.MarkerPlace
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,14 +33,16 @@ import java.io.IOException
  *
  * @property place piętro albo cały budynek
  * @property label etykieta piętra z danych PWr; `null` dla całego budynku
- * @property markerId identyfikator własnego znacznika; `null`, gdy wiersz jest nieobejrzany
+ * @property markerId identyfikator znacznika; `null`, gdy wiersz jest nieobejrzany
  * @property isPending czy znacznik czeka w telefonie na wysłanie
+ * @property isMine czy znacznik postawił bieżący Zbierający
  */
 data class FloorRow(
     val place: MarkerPlace,
     val label: String?,
     val markerId: String? = null,
     val isPending: Boolean = false,
+    val isMine: Boolean = true,
 )
 
 /** Stan ekranu C5 w wariancie Zbierającego. Wymagania: US15.1, US15.2, US15.3, NFR-7 */
@@ -58,11 +62,9 @@ sealed interface CollectorMarkersUiState {
 }
 
 /**
- * Piętra budynku [symbol] dla Zbierającego: „Oznacz jako obejrzane” i „Cofnij znacznik” z potwierdzeniem. Zmiany
- * trafiają najpierw do kolejki w telefonie, która wysyła je na serwer, gdy jest sieć. Budynek bez pięter w kopii
- * planów ma jeden wiersz całego budynku.
- *
- * TODO(#2787): znaczniki zapisane na serwerze, także innych Zbierających.
+ * Piętra budynku [symbol] dla Zbierającego: „Oznacz jako obejrzane” i „Cofnij znacznik” z potwierdzeniem. Łączy
+ * znaczniki pobrane z serwera (własne i innych Zbierających) ze zmianami czekającymi w kolejce telefonu. Budynek
+ * bez pięter w kopii planów ma jeden wiersz całego budynku.
  *
  * Wymagania: US15.1, US15.2, US15.3, BR-20, BR-G3, NFR-7
  */
@@ -73,20 +75,26 @@ class CollectorMarkersViewModel
         @Assisted private val symbol: String,
         private val plans: FloorPlans,
         private val markers: FloorMarkers,
+        private val serverMarkers: ServerFloorMarkers,
     ) : ViewModel() {
         private val asking = MutableStateFlow<String?>(null)
         private val unsaved = MutableStateFlow<MarkerPlace?>(null)
 
-        /** Stan ekranu; zmienia się po każdym zapisie w kolejce telefonu. */
+        init {
+            viewModelScope.launch { serverMarkers.pull() }
+        }
+
+        /** Stan ekranu; zmienia się po każdym zapisie w kolejce telefonu i pobraniu z serwera. */
         val state: StateFlow<CollectorMarkersUiState> =
             combine(
                 flow = flow { emit(floors()) },
                 flow2 = markers.pending(),
-                flow3 = asking,
-                flow4 = unsaved,
-            ) { floors, pending, asked, failed ->
-                val list = rows(floors, pending)
-                val activeAsk = asked?.takeIf { id -> list.any { it.markerId == id } }
+                flow3 = serverMarkers.markers(symbol),
+                flow4 = asking,
+                flow5 = unsaved,
+            ) { floors, pending, synced, asked, failed ->
+                val list = rows(floors, pending, synced)
+                val activeAsk = asked?.takeIf { id -> list.any { it.markerId == id && it.isMine } }
                 CollectorMarkersUiState.Ready(rows = list, asking = activeAsk, unsaved = failed)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, CollectorMarkersUiState.Loading)
 
@@ -138,7 +146,7 @@ class CollectorMarkersViewModel
 
         private fun askedRow(): FloorRow? {
             val ready = state.value as? CollectorMarkersUiState.Ready
-            return ready?.asking?.let { id -> ready.rows.firstOrNull { it.markerId == id } }
+            return ready?.asking?.let { id -> ready.rows.firstOrNull { it.markerId == id && it.isMine } }
         }
 
         private suspend fun floors(): List<Floor> =
@@ -147,19 +155,51 @@ class CollectorMarkersViewModel
                 .orEmpty()
                 .sortedBy { it.order }
 
-        private fun rows(floors: List<Floor>, pending: List<PendingMarkerChange>): List<FloorRow> {
+        private fun rows(
+            floors: List<Floor>,
+            pending: List<PendingMarkerChange>,
+            synced: List<InspectionMarker>,
+        ): List<FloorRow> {
             val revoked = pending.filter { it.buildingSymbol == symbol && it.isRevoke }.map { it.markerId }.toSet()
-            val own =
+            val ownPending =
                 pending
                     .filter { it.buildingSymbol == symbol && !it.isRevoke && it.markerId !in revoked }
                     .associateBy { it.floorId }
+            val byFloor =
+                synced
+                    .filter { it.id !in revoked }
+                    .groupBy { (it.place as? MarkerPlace.Floor)?.floorId }
             val places =
                 floors
                     .map<Floor, Pair<MarkerPlace, String?>> { MarkerPlace.Floor(it.id) to it.label }
                     .ifEmpty { listOf(MarkerPlace.WholeBuilding to null) }
             return places.map { (place, label) ->
-                val marker = own[(place as? MarkerPlace.Floor)?.floorId]
-                FloorRow(place = place, label = label, markerId = marker?.markerId, isPending = marker != null)
+                rowFor(place = place, label = label, ownPending = ownPending, synced = byFloor)
+            }
+        }
+
+        private fun rowFor(
+            place: MarkerPlace,
+            label: String?,
+            ownPending: Map<String?, PendingMarkerChange>,
+            synced: Map<String?, List<InspectionMarker>>,
+        ): FloorRow {
+            val floorId = (place as? MarkerPlace.Floor)?.floorId
+            val queued = ownPending[floorId]
+            val serverList = synced[floorId].orEmpty()
+            val fromServer = serverList.firstOrNull { it.isMine } ?: serverList.firstOrNull()
+            return when {
+                queued != null ->
+                    FloorRow(place = place, label = label, markerId = queued.markerId, isPending = true, isMine = true)
+                fromServer != null ->
+                    FloorRow(
+                        place = place,
+                        label = label,
+                        markerId = fromServer.id,
+                        isPending = false,
+                        isMine = fromServer.isMine,
+                    )
+                else -> FloorRow(place = place, label = label)
             }
         }
 
