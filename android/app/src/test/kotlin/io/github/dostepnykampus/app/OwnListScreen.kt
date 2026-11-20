@@ -23,7 +23,7 @@ import kotlinx.coroutines.runBlocking
 
 /** Model listy „Moje zgłoszenia” z historią odczytaną teraz z [store], bez sieci. */
 internal fun offlineOwnList(store: SubmissionStore): MySubmissionsViewModel {
-    val list = runBlocking { DataModule.ownSubmissions(store).observe().first() }
+    val list = runBlocking { DataModule.ownSubmissions(store, testTokens()).observe().first() }
     return MySubmissionsViewModel(
         history = OwnSubmissions { flowOf(list) },
         statuses = OwnStatuses { StatusRefresh.OFFLINE },

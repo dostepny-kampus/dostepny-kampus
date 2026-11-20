@@ -10,7 +10,9 @@ import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionServer
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
+import io.github.dostepnykampus.core.network.auth.AccessTokens
 import java.io.File
+import java.util.Base64
 import kotlin.coroutines.EmptyCoroutineContext
 
 /** Kolejka zgłoszeń w [store] z serwerem bez sieci: każda próba wysyłki woła [onSend] i kończy się `Offline`. */
@@ -20,7 +22,7 @@ internal fun offlineQueue(store: SubmissionStore, onSend: () -> Unit): Submissio
         ioContext = EmptyCoroutineContext,
         server =
             SubmissionServer(
-                subject = { "konto-testowe" },
+                subject = { TEST_ACCOUNT },
                 create = { _, _, _ ->
                     onSend()
                     ServerReply.Offline
@@ -29,6 +31,16 @@ internal fun offlineQueue(store: SubmissionStore, onSend: () -> Unit): Submissio
                 update = { _, _, _, _ -> ServerReply.Missing },
             ),
     )
+
+/** Token konta [TEST_ACCOUNT], tego samego, którym pisze [offlineQueue]. */
+internal fun testTokens(): AccessTokens = AccessTokens().also { it.signIn(testJwt(TEST_ACCOUNT)) }
+
+private fun testJwt(subject: String): String {
+    val payload = Base64.getUrlEncoder().withoutPadding().encodeToString("""{"sub":"$subject"}""".toByteArray())
+    return "e30.$payload.e30"
+}
+
+internal const val TEST_ACCOUNT = "konto-testowe"
 
 /** Zdjęcie testowe [id] zapisane jako plik w katalogu [dir]. */
 internal fun photoDraft(dir: File, id: String): PendingPhotoDraft {

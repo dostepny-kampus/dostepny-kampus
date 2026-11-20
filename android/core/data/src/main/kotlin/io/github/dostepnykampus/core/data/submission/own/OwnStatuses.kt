@@ -31,17 +31,22 @@ public fun interface OwnStatuses {
 }
 
 /**
- * Statusy z [mine] (`GET /submissions?mine=true`) w historii [history]. Zgłoszenie, którego telefon nie zna, np. po
- * ponownej instalacji, dochodzi do listy jako wysłane; szybkie zgłoszenia lista pomija. Stan wysyłki z
- * telefonu zostaje, więc poprawka czekająca w kolejce nadal jest „W telefonie”.
+ * Statusy z [mine] (`GET /submissions?mine=true`) w historii [history] konta [subject]. Zgłoszenie, którego telefon
+ * nie zna, np. po ponownej instalacji, dochodzi do listy jako wysłane; szybkie zgłoszenia lista pomija. Stan wysyłki
+ * z telefonu zostaje, więc poprawka czekająca w kolejce nadal jest „W telefonie”. Wiersz innego konta zostaje.
  *
- * Wymagania: US4.4, BR-9
+ * Wymagania: US4.4, BR-9, NFR-33
  */
-internal fun ownStatusesOf(mine: suspend () -> ApiResult<List<Submission>>, history: OwnSubmissionDao): OwnStatuses =
+internal fun ownStatusesOf(
+    mine: suspend () -> ApiResult<List<Submission>>,
+    history: OwnSubmissionDao,
+    subject: () -> String?,
+): OwnStatuses =
     OwnStatuses {
+        val owner = subject() ?: return@OwnStatuses StatusRefresh.FAILED
         when (val result = mine()) {
             is ApiResult.Success -> {
-                result.value.filter { it.content.kind != SubmissionKind.QUICK }.forEach { history.keep(it) }
+                result.value.filter { it.content.kind != SubmissionKind.QUICK }.forEach { history.keep(it, owner) }
                 StatusRefresh.DONE
             }
 
@@ -55,8 +60,10 @@ internal fun ownStatusesOf(mine: suspend () -> ApiResult<List<Submission>>, hist
         }
     }
 
-private suspend fun OwnSubmissionDao.keep(submission: Submission) {
-    if (find(submission.id) == null) save(submission.toOwnSubmissionEntity())
+private suspend fun OwnSubmissionDao.keep(submission: Submission, owner: String) {
+    val existing = find(submission.id)
+    if (existing != null && existing.ownerSub != owner) return
+    if (existing == null) save(submission.toOwnSubmissionEntity(owner))
     saveServerStatus(
         id = submission.id,
         status = submission.status.name,
@@ -65,7 +72,7 @@ private suspend fun OwnSubmissionDao.keep(submission: Submission) {
     )
 }
 
-internal fun Submission.toOwnSubmissionEntity(): OwnSubmissionEntity =
+internal fun Submission.toOwnSubmissionEntity(owner: String): OwnSubmissionEntity =
     OwnSubmissionEntity(
         id = id,
         savedAtMillis = createdAt.toEpochMilli(),
@@ -76,4 +83,5 @@ internal fun Submission.toOwnSubmissionEntity(): OwnSubmissionEntity =
         barrierType = content.barrierType,
         severity = content.severity,
         state = OwnSubmissionState.SENT,
+        ownerSub = owner,
     )

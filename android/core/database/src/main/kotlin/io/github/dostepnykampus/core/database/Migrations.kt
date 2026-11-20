@@ -126,6 +126,14 @@ internal val MIGRATION_11_12: Migration =
         }
     }
 
+/** Migracja 12→13: historia „Moje zgłoszenia” dostaje kolumnę właściciela konta. Wymagania: NFR-33, US8.1 */
+internal val MIGRATION_12_13: Migration =
+    object : Migration(12, 13) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE `own_submissions` ADD COLUMN `owner_sub` TEXT")
+        }
+    }
+
 /** Wszystkie migracje od wersji 1 w kolejności wersji. */
 internal val ALL_MIGRATIONS: List<Migration> =
     listOf(
@@ -138,4 +146,5 @@ internal val ALL_MIGRATIONS: List<Migration> =
         MIGRATION_7_8,
         MIGRATION_8_9,
         MIGRATION_11_12,
+        MIGRATION_12_13,
     )

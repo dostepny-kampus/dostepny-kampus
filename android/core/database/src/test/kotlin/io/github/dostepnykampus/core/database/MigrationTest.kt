@@ -269,6 +269,32 @@ class MigrationTest {
                 )
             }
     }
+
+    @Test
+    fun givesHistoryWithoutOwnerToTheFirstAccount() {
+        helper.createDatabase(DB_NAME, 12).use { twelfth ->
+            twelfth.execSQL(
+                "INSERT INTO own_submissions (id, saved_at, kind, state) VALUES ('h', 7, 'PRECISE', 'SENT')",
+            )
+        }
+
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val database =
+            Room
+                .databaseBuilder(context, DkDatabase::class.java, DB_NAME)
+                .addMigrations(*ALL_MIGRATIONS.toTypedArray())
+                .build()
+        try {
+            runBlocking {
+                database.queueOwnership().adopt("pierwsze")
+                database.queueOwnership().adopt("drugie")
+                val owner = database.ownSubmissions().find("h")?.ownerSub
+                assertEquals("historia bez właściciela należy do pierwszego konta", "pierwsze", owner)
+            }
+        } finally {
+            database.close()
+        }
+    }
 }
 
 private fun readCount(cursor: Cursor): Int {
