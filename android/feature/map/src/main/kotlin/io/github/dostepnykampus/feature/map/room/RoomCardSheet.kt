@@ -11,8 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
@@ -28,8 +26,9 @@ internal fun RoomCardSheet(
     onBuilding: (String) -> Unit,
     modifier: Modifier = Modifier,
     onShowMap: (() -> Unit)? = null,
+    onDetails: ((RoomStepDetail) -> Unit)? = null,
 ) {
-    val (card, onClose) = room
+    val (card, onClose, onStep) = room
     val found = card.found
     val title = stringResource(R.string.mapa_sala, found.room.number.orEmpty())
     MapSheet(modifier = modifier, isFull = onShowMap != null) {
@@ -40,12 +39,9 @@ internal fun RoomCardSheet(
         }
         Text(text = found.roomDetail(), style = MaterialTheme.typography.bodyLarge)
         BuildingLink(symbol = found.building, onClick = { onBuilding(found.building) })
-        Text(
-            text = stringResource(R.string.mapa_sala_droga),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.semantics { heading() },
-        )
-        RoomWayContent(way = card.way, floor = found.floor.label, roomTitle = title)
+        val pick = onStep.takeIf { onShowMap == null }
+        RoomWayHeader(card = card, onStep = pick)
+        RoomWayContent(card = card, roomTitle = title, onStep = pick, onDetails = onDetails)
         if (onShowMap != null) {
             PinnedButton(
                 text = stringResource(R.string.mapa_sala_pokaz_na_mapie),

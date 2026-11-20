@@ -51,17 +51,27 @@ internal fun ChosenPlanSheet(
     onReport: (PlanReport) -> Unit = {},
 ) {
     val sign = id?.let { plan?.signOf(it) }
-    BackHandler(enabled = sign != null, onBack = exits.onBack)
-    val isLift = sign?.liftFloors.orEmpty().isNotEmpty()
+    if (sign != null) PlanSignSheet(sign = sign, exits = exits, modifier = modifier, onReport = onReport)
+}
+
+/** Arkusz gotowego znaku [sign]. Wymagania: US16.1, US18.2 */
+@Composable
+internal fun PlanSignSheet(
+    sign: PlanSign,
+    exits: SheetExits,
+    modifier: Modifier = Modifier,
+    onReport: (PlanReport) -> Unit,
+    isFullScreen: Boolean = false,
+) {
+    BackHandler(onBack = exits.onBack)
+    val isLift = sign.liftFloors.isNotEmpty()
     val isFull = isLift && LocalDensity.current.fontScale >= LARGE_FONT_SCALE
-    if (sign != null) {
-        MapSheet(if (isFull) modifier.fillMaxHeight() else modifier) {
-            MapSheetHeader(title = stringResource(sign.title), onClose = exits.onClose)
-            BuildingLink(sign.building, onClick = { exits.onBuilding(sign.building) })
-            Text(text = sign.floor, style = MaterialTheme.typography.bodyLarge)
-            if (isLift) LiftStops(sign)
-            sign.report?.let { ReportButton(it, onReport) }
-        }
+    MapSheet(modifier = if (isFull) modifier.fillMaxHeight() else modifier, isFull = isFullScreen) {
+        MapSheetHeader(title = stringResource(sign.title), onClose = exits.onClose)
+        BuildingLink(sign.building, onClick = { exits.onBuilding(sign.building) })
+        Text(text = sign.floor, style = MaterialTheme.typography.bodyLarge)
+        if (isLift) LiftStops(sign)
+        sign.report?.let { ReportButton(it, onReport) }
     }
 }
 

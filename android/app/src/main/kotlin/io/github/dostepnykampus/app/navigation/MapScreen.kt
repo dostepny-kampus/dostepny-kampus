@@ -20,6 +20,7 @@ import io.github.dostepnykampus.app.SheetSceneStrategy
 import io.github.dostepnykampus.app.closeCardOnEmptyMap
 import io.github.dostepnykampus.app.isFullOnlySheet
 import io.github.dostepnykampus.app.shownFocus
+import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
 import io.github.dostepnykampus.feature.map.CampusMapScreen
@@ -64,7 +65,8 @@ internal fun AppNavigator.HiltMapScreen(
     val entrances by entrancesViewModel.shown.collectAsStateWithLifecycle()
     val lift by liftViewModel.shown.collectAsStateWithLifecycle()
     val card by roomViewModel.shown.collectAsStateWithLifecycle()
-    val room = card?.takeIf { current is MapRoute }
+    val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+    val room = card?.takeIf { current is MapRoute }?.let { if (isLarge) it.copy(step = null) else it }
     val found = room?.found
     val roomFocus = remember(found) { found?.focus() }
     val selected = roomFocus ?: focus
@@ -83,7 +85,7 @@ internal fun AppNavigator.HiltMapScreen(
         onCamera = planViewModel::camera,
         onFloorChoose = planViewModel::chooseFloor,
         onMapHide = planViewModel::hide,
-        room = room?.let { OpenRoom(card = it, onClose = roomViewModel::close) },
+        room = room?.let { OpenRoom(card = it, onClose = roomViewModel::close, onStep = roomViewModel::choose) },
         onOpenRoom = roomViewModel::show,
         entrance =
             EntranceActions(

@@ -42,9 +42,11 @@ sealed interface RoomWay {
      * Winda w krokach.
      *
      * @property id identyfikator windy wspólny dla jej pięter
+     * @property room pomieszczenie windy na piętrze wejścia
+     * @property stops etykiety pięter, na których staje winda
      * @property metersFromEntrance odległość windy od wejścia
      */
-    data class Lift(val id: String, val metersFromEntrance: Int)
+    data class Lift(val id: String, val room: Room, val stops: List<String>, val metersFromEntrance: Int)
 
     /** Budynek nie ma wejścia zalecanego albo dane nie znają jego piętra ani parteru. */
     data object NoEntrance : RoomWay
@@ -82,7 +84,14 @@ fun roomWay(found: FoundRoom, entrance: Entrance?, floors: List<Floor>, rooms: (
         }
 
         else -> {
-            viaLift(found = found, entrance = entrance, floor = floor, isFloorAssumed = known == null, rooms = rooms)
+            viaLift(
+                found = found,
+                entrance = entrance,
+                floor = floor,
+                isFloorAssumed = known == null,
+                rooms = rooms,
+                floors = floors,
+            )
         }
     }
 }
@@ -93,6 +102,7 @@ private fun viaLift(
     floor: Floor,
     isFloorAssumed: Boolean,
     rooms: (String) -> List<Room>,
+    floors: List<Floor>,
 ): RoomWay {
     val lift =
         rooms(floor.id)
@@ -101,7 +111,8 @@ private fun viaLift(
             ?: return RoomWay.NoLift
     val upstairs = rooms(found.floor.id).firstOrNull { it.liftId != null && it.liftId == lift.liftId } ?: lift
     val meters = entrance.location.roundedMetersTo(lift.labelPoint)
-    val step = RoomWay.Lift(id = lift.liftId ?: lift.id, metersFromEntrance = meters)
+    val stops = floors.filter { it.id in lift.liftFloors }.sortedBy(Floor::order).map(Floor::label)
+    val step = RoomWay.Lift(id = lift.liftId ?: lift.id, room = lift, stops = stops, metersFromEntrance = meters)
     return RoomWay.Steps(
         entrance = entrance,
         entranceFloor = floor,

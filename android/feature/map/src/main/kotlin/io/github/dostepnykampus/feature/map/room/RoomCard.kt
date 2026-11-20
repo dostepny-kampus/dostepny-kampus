@@ -52,4 +52,4 @@ internal fun RoomCard.next(): RoomCard = step?.let { chosen(it + 1) } ?: this
 internal fun RoomCard.previous(): RoomCard = step?.let { chosen(it - 1) } ?: this
 
 /** Otwarta karta [card], którą zamyka [onClose]. Wymagania: US18.1 */
-data class OpenRoom(val card: RoomCard, val onClose: () -> Unit)
+data class OpenRoom(val card: RoomCard, val onClose: () -> Unit, val onStep: (Int) -> Unit)

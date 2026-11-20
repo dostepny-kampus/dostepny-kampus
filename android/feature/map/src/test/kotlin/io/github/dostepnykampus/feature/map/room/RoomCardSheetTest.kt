@@ -86,10 +86,8 @@ class RoomCardSheetTest {
             DostepnyKampusTheme {
                 var card by remember { mutableStateOf(RoomCard(found = FOUND, way = VIA_LIFT)) }
                 RoomCardSheet(
-                    card = card,
-                    onClose = {},
+                    room = OpenRoom(card = card, onClose = {}, onStep = { card = card.chosen(it) }),
                     onBuilding = {},
-                    onStep = { card = card.chosen(it) },
                 )
             }
         }
@@ -98,7 +96,7 @@ class RoomCardSheetTest {
         compose.onNodeWithContentDescription("Poprzedni krok").assertIsNotEnabled()
         compose.onNodeWithContentDescription("Następny krok").performClick()
         compose.onNodeWithText("Krok 2 z 3").assertExists()
-        compose.onNodeWithText("2 piętro, ok. 85 m od windy.").performClick()
+        compose.onNodeWithText("ok. 85 m od windy.", substring = true).performClick()
         compose.onNodeWithText("Krok 3 z 3").assertExists()
         compose.onNodeWithContentDescription("Następny krok").assertIsNotEnabled()
     }
@@ -131,7 +129,7 @@ class RoomCardSheetTest {
         density: Density? = null,
         onShowMap: (() -> Unit)? = null,
     ) {
-        val room = OpenRoom(card = RoomCard(found = FOUND, way = way), onClose = {})
+        val room = OpenRoom(card = RoomCard(found = FOUND, way = way), onClose = {}, onStep = {})
         compose.setContent {
             CompositionLocalProvider(LocalDensity provides (density ?: LocalDensity.current)) {
                 DostepnyKampusTheme {
