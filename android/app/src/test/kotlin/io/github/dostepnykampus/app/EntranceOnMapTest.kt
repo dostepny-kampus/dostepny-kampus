@@ -21,8 +21,11 @@ import io.github.dostepnykampus.app.navigation.SignInRoute
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.feature.map.camera.CameraMotion
+import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
@@ -84,13 +87,17 @@ class EntranceOnMapTest {
 
     private val shown = mutableListOf<Pair<CampusMapData, MapCamera>>()
     private val selections = mutableListOf<MapSelection>()
+    private val moves = mutableListOf<Pair<CameraTransition, MapInset>>()
+    private var idle: (MapCamera) -> Unit = {}
     private var touch: (List<String>) -> Unit = {}
     private val choice = TestMapListChoice()
     private lateinit var navigator: AppNavigator
     private val fakeMap =
-        CampusMapView { data: CampusMapData, selection, move, _, _, onBuildingsTouch, _, _: Modifier ->
+        CampusMapView { data: CampusMapData, selection, move, inset, onCameraIdle, onBuildingsTouch, _, _: Modifier ->
             shown += data to move.camera
             selections += selection
+            moves += move to inset
+            idle = onCameraIdle
             touch = onBuildingsTouch
         }
 
@@ -185,6 +192,34 @@ class EntranceOnMapTest {
         compose.waitUntil { compose.onAllNodes(answer).fetchSemanticsNodes().isNotEmpty() }
         val buttons = compose.onAllNodes(hasText(SHOW_ENTRANCE)).fetchSemanticsNodes()
         assertTrue("bez „Pokaż wejście na mapie”, a jest ${buttons.size}", buttons.isEmpty())
+    }
+
+    /**
+     * Wiersz: arkusz wejścia z „Pokaż wejście na mapie”, kamera stoi, „Zamknij” → V1: mapa dostaje ten sam obraz bez
+     * arkusza w jednym skoku, ze środkiem niżej i dopełnieniem bez dołu, bez przelotu ani zjazdu mapy.
+     *
+     * Wymagania: US3.3, US16.1, NFR-56
+     */
+    @Test
+    fun closesEntranceWithoutMotion() {
+        showEntranceOnMap(namedCatalog())
+        compose.waitUntil { moves.last().second.bottom > 0.0 }
+        val (above, inset) = moves.last()
+        compose.runOnUiThread { idle(above.camera) }
+        compose.waitForIdle()
+        val before = moves.size
+        click("Zamknij")
+        val after = moves.subList(fromIndex = before, toIndex = moves.size).filter { it.first != above }
+        val (closed, uncovered) = after.last()
+        val motions = after.map { it.first.motion }.toSet()
+        assertEquals("po zamknięciu tylko skok: $after", setOf(CameraMotion.NONE), motions)
+        assertEquals("dopełnienie bez dołu po zamknięciu", 0.0, uncovered.bottom, 0.0)
+        assertEquals("ta sama góra mapy", inset.top, uncovered.top, 0.0)
+        assertEquals("to samo powiększenie", above.camera.zoom, closed.camera.zoom, 0.0)
+        assertTrue(
+            "środek niżej o połowę arkusza, ten sam obraz: ${above.camera} → ${closed.camera}",
+            closed.camera.center.latitude < above.camera.center.latitude,
+        )
     }
 
     /** Wiersz: „Pokaż wejście na mapie” na V2 → V1 z otwartym arkuszem tego wejścia. Wymagania: US3.3, US3.2 */

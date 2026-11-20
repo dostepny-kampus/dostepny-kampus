@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 
 /**
  * Ostatni widok podany mapie i zasłonięty wtedy dół mapy: początek ruchu do następnego wybranego budynku i obraz
- * mapy po zamknięciu arkusza V2. Nie jest stanem kompozycji.
+ * mapy po zamknięciu karty V2 albo innego arkusza nad mapą. Nie jest stanem kompozycji.
  *
  * Wymagania: US2.8, NFR-56
  */
@@ -28,17 +28,17 @@ internal class ShownCamera {
     /** Ostatni widok albo [fallback], gdy mapa jeszcze nic nie pokazała. */
     fun startOr(fallback: MapCamera?): MapCamera? = camera ?: fallback
 
-    /** Zapisuje widok [shown]; dół mapy jest zasłonięty na [covered] tylko wtedy, gdy widok stoi nad arkuszem. */
-    fun keep(shown: MapCamera?, covered: Dp, isAbove: Boolean) {
+    /** Zapisuje widok [shown] z dołem mapy zasłoniętym na [covered]; 0, gdy widok nie stoi nad arkuszem. */
+    fun keep(shown: MapCamera?, covered: Dp) {
         camera = shown
-        this.covered = if (isAbove) covered else 0.dp
+        this.covered = covered
     }
 
     /**
      * Widok mapy do pokazania bez arkusza: zapisany w [view], a w chwili zniknięcia arkusza ([wasCovered], ale nie
-     * [isCovered]) ten sam obraz mapy pod paskiem wysokim na [bar], czyli ostatni widok ze środkiem niżej o połowę
-     * paska i zasłoniętego dołu. Ten widok raz trafia do [view]. Gdy zaznaczenie samo wyznacza widok
-     * ([CameraView.hasTarget]), zostaje widok z [view].
+     * [isCovered]) ten sam obraz mapy pod paskiem wysokim na [bar] (0, gdy pasek był już nad arkuszem), czyli ostatni
+     * widok ze środkiem niżej o połowę paska i zasłoniętego dołu. Ten widok raz trafia do [view]. Gdy zaznaczenie
+     * samo wyznacza widok ([CameraView.hasTarget]), zostaje widok z [view].
      */
     @Composable
     fun rememberView(isCovered: Boolean, wasCovered: Boolean, bar: Dp, view: CameraView): MapCamera? {
@@ -56,7 +56,7 @@ internal class ShownCamera {
 }
 
 /**
- * Widok [seen] z chwili zniknięcia arkusza V2 ([wasCovered], ale nie [isCovered]); zostaje do następnej zmiany
+ * Widok [seen] z chwili zniknięcia arkusza ([wasCovered], ale nie [isCovered]); zostaje do następnej zmiany
  * zasłonięcia, a bez zamknięcia jest `null`.
  *
  * Wymagania: NFR-56
