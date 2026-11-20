@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.core.geo
 
-import io.github.dostepnykampus.core.geo.building.edgeDistanceMeters
 import io.github.dostepnykampus.core.model.GeoArea
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Building
@@ -73,9 +72,10 @@ public fun campusAreas(buildings: List<Building>): List<CampusArea> {
     return areas
 }
 
-private fun Building.isNear(other: Building): Boolean =
-    outline.allRings().any { ring -> ring.any { point -> other.edgeDistanceMeters(point) <= AREA_LINK_METERS } } ||
-        other.outline.allRings().any { ring -> ring.any { point -> edgeDistanceMeters(point) <= AREA_LINK_METERS } }
+private fun Building.isNear(other: Building): Boolean = outline.reaches(other.outline) || other.outline.reaches(outline)
+
+private fun GeoArea.reaches(other: GeoArea): Boolean =
+    allRings().any { ring -> ring.any { point -> other.edgeDistanceMeters(point) <= AREA_LINK_METERS } }
 
 /**
  * Prostokąt konturu w stopniach. [gapMeters] to dolne oszacowanie odległości w metrach między konturami dwóch
