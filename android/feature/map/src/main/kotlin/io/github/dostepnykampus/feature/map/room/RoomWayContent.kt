@@ -46,7 +46,8 @@ internal fun RoomWayContent(
     onStep: ((Int) -> Unit)?,
     onDetails: ((RoomStepDetail) -> Unit)?,
 ) {
-    val floor = card.found.floor.label.replace(oldValue = " piętro", newValue = "\u00A0piętro")
+    val label = card.found.floor.label
+    val floor = label.replace(oldValue = " piętro", newValue = "\u00A0piętro")
     when (val way = card.way) {
         null -> {
             Text(stringResource(R.string.mapa_sala_droga_ladowanie))
@@ -61,23 +62,13 @@ internal fun RoomWayContent(
         }
 
         is RoomWay.Steps -> {
-            val entranceTitle =
-                way.entrance.name?.takeIf { way.entrance.hasName } ?: stringResource(R.string.mapa_sala_droga_wejscie)
-            val entranceFloor =
-                if (way.isFloorAssumed) {
-                    stringResource(R.string.mapa_sala_droga_parter, way.entranceFloor.label)
-                } else {
-                    way.entranceFloor.label
-                }
-            val place = way.entrance.placeDescription.ifBlank { way.entrance.approach }
-            val entranceText = listOf(entranceFloor, place).filter(String::isNotBlank).joinToString(separator = ". ")
+            val (entranceTitle, entranceText) = way.entranceLabels()
             RoomWayRow(
                 number = 1,
                 title = entranceTitle,
                 text = entranceText,
                 selected = card.step == 0,
-                onClick =
-                    rowAction(index = 0, detail = RoomStepDetail.ENTRANCE, onStep = onStep, onDetails = onDetails),
+                onClick = rowTap(index = 0, detail = RoomStepDetail.ENTRANCE, onStep = onStep, onDetails = onDetails),
             )
             if (card.step == 0 && onStep != null && onDetails != null) {
                 DetailLink(detail = RoomStepDetail.ENTRANCE, onClick = onDetails)
@@ -88,8 +79,7 @@ internal fun RoomWayContent(
                     title = stringResource(R.string.karta_winda),
                     text = stringResource(R.string.mapa_sala_droga_jedz, lift.metersFromEntrance, floor.floorWord()),
                     selected = card.step == 1,
-                    onClick =
-                        rowAction(index = 1, detail = RoomStepDetail.LIFT, onStep = onStep, onDetails = onDetails),
+                    onClick = rowTap(index = 1, detail = RoomStepDetail.LIFT, onStep = onStep, onDetails = onDetails),
                 )
                 if (card.step == 1 && onStep != null && onDetails != null) {
                     DetailLink(detail = RoomStepDetail.LIFT, onClick = onDetails)
@@ -107,6 +97,15 @@ internal fun RoomWayContent(
             )
         }
     }
+}
+
+@Composable
+private fun RoomWay.Steps.entranceLabels(): Pair<String, String> {
+    val title = entrance.name?.takeIf { entrance.hasName } ?: stringResource(R.string.mapa_sala_droga_wejscie)
+    val label = entranceFloor.label
+    val floor = if (isFloorAssumed) stringResource(R.string.mapa_sala_droga_parter, label) else label
+    val place = entrance.placeDescription.ifBlank { entrance.approach }
+    return title to listOf(floor, place).filter(String::isNotBlank).joinToString(separator = ". ")
 }
 
 @Composable
@@ -165,7 +164,7 @@ private fun RoomStepBadge(number: Int, size: Dp, selected: Boolean) {
     }
 }
 
-private fun rowAction(
+private fun rowTap(
     index: Int,
     detail: RoomStepDetail,
     onStep: ((Int) -> Unit)?,

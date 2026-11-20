@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.feature.map.R
@@ -60,10 +59,7 @@ private fun StepArrow(glyph: String, label: Int, enabled: Boolean, onClick: () -
     IconButton(
         onClick = onClick,
         enabled = enabled,
-        modifier = Modifier.semantics {
-            contentDescription = name
-            if (!enabled) disabled()
-        },
+        modifier = Modifier.semantics { contentDescription = name },
     ) {
         Text(text = glyph, style = MaterialTheme.typography.headlineSmall)
     }

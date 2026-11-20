@@ -84,14 +84,7 @@ fun roomWay(found: FoundRoom, entrance: Entrance?, floors: List<Floor>, rooms: (
         }
 
         else -> {
-            viaLift(
-                found = found,
-                entrance = entrance,
-                floor = floor,
-                isFloorAssumed = known == null,
-                rooms = rooms,
-                floors = floors,
-            )
+            viaLift(found = found, entrance = entrance, floor = floor, rooms = rooms, floors = floors)
         }
     }
 }
@@ -100,7 +93,6 @@ private fun viaLift(
     found: FoundRoom,
     entrance: Entrance,
     floor: Floor,
-    isFloorAssumed: Boolean,
     rooms: (String) -> List<Room>,
     floors: List<Floor>,
 ): RoomWay {
@@ -111,12 +103,13 @@ private fun viaLift(
             ?: return RoomWay.NoLift
     val upstairs = rooms(found.floor.id).firstOrNull { it.liftId != null && it.liftId == lift.liftId } ?: lift
     val meters = entrance.location.roundedMetersTo(lift.labelPoint)
-    val stops = floors.filter { it.id in lift.liftFloors }.sortedBy(Floor::order).map(Floor::label)
+    val servedFloors = floors.asSequence().filter { it.id in lift.liftFloors }
+    val stops = servedFloors.sortedBy(Floor::order).map(Floor::label).toList()
     val step = RoomWay.Lift(id = lift.liftId ?: lift.id, room = lift, stops = stops, metersFromEntrance = meters)
     return RoomWay.Steps(
         entrance = entrance,
         entranceFloor = floor,
-        isFloorAssumed = isFloorAssumed,
+        isFloorAssumed = entrance.floorId != floor.id,
         lift = step,
         roomMeters = upstairs.labelPoint.roundedMetersTo(found.room.labelPoint),
     )

@@ -59,8 +59,8 @@ internal fun ChosenPlanSheet(
 internal fun PlanSignSheet(
     sign: PlanSign,
     exits: SheetExits,
-    modifier: Modifier = Modifier,
     onReport: (PlanReport) -> Unit,
+    modifier: Modifier = Modifier,
     isFullScreen: Boolean = false,
 ) {
     BackHandler(onBack = exits.onBack)
