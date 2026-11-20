@@ -64,6 +64,32 @@ internal fun Modifier.releasesSearchOnTouch(search: SearchFocus): Modifier =
         }
     }
 
+/** Tylko dotknięcie wolnego miejsca listy zdejmuje fokus z pola [search]. Wymagania: US3.1, NFR-17 */
+internal fun Modifier.releasesSearchOnBlankTap(search: SearchFocus?): Modifier =
+    if (search == null) {
+        this
+    } else {
+        pointerInput(search) {
+            awaitEachGesture {
+                val down = awaitFirstDown(pass = PointerEventPass.Final)
+                if (search.isActive && isBlankTap(down)) search.release()
+            }
+        }
+    }
+
+private suspend fun AwaitPointerEventScope.isBlankTap(down: PointerInputChange): Boolean {
+    val slop = viewConfiguration.touchSlop
+    var change: PointerInputChange? = down
+    while (change?.pressed == true) {
+        change =
+            awaitPointerEvent(PointerEventPass.Final)
+                .changes
+                .singleOrNull()
+                ?.takeUnless { it.isConsumed || (it.position - down.position).getDistance() > slop }
+    }
+    return change != null
+}
+
 /**
  * Ten widok mapy, w którym dotknięcie bez ruchu przy fokusie pola [search] tylko zdejmuje fokus: nie zaznacza
  * budynku ani znaku. Gest z ruchem przesuwa mapę jak zwykle, a bez fokusu pola dotknięcia przechodzą bez zmian.
