@@ -269,7 +269,7 @@ dostepnykampus:
       - '**/feature/map/src/test/kotlin/io/github/dostepnykampus/feature/map/style/MapSelectionImagesTest.kt'
       - '**/feature/map/src/test/kotlin/io/github/dostepnykampus/feature/map/style/MapStyleJsonTest.kt'
       - '**/feature/map/src/test/kotlin/io/github/dostepnykampus/feature/map/style/MapStyleRememberTest.kt'
-      - '**/feature/map/src/test/kotlin/io/github/dostepnykampus/feature/map/style/MapTileHttpTest.kt'
+      - '**/feature/map/src/test/kotlin/io/github/dostepnykampus/feature/map/tiles/MapTileHttpTest.kt'
   # Uzupełnienie ForbiddenMethodCall/tekst-json dla wywołań bez wyznaczonego typu; te same pliki graniczne.
   JsonTextCall:
     excludes: *granice-tekstu-json
