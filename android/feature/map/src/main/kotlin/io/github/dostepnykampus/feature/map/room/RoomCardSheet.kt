@@ -34,6 +34,7 @@ internal fun RoomCardSheet(
     onShowMap: (() -> Unit)? = null,
 ) {
     val (card, onClose) = room
+    val found = card.found
     val title = stringResource(R.string.mapa_sala, found.room.number.orEmpty())
     MapSheet(modifier = modifier, isFull = onShowMap != null) {
         if (onShowMap == null) {
