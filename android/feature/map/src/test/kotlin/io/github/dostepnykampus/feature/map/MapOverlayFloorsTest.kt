@@ -61,7 +61,7 @@ class MapOverlayFloorsTest {
         compose.setContent { Overlay() }
         val floors = compose.onNodeWithText(FLOORS).getUnclippedBoundsInRoot()
         val button = compose.onNode(areaButton).getUnclippedBoundsInRoot()
-        val osm = compose.onNodeWithText("© OpenStreetMap contributors").getUnclippedBoundsInRoot()
+        val osm = compose.onNodeWithText("© OpenStreetMap").getUnclippedBoundsInRoot()
         val width = compose.onRoot().getUnclippedBoundsInRoot().width
         assertTrue("kolumna pod przyciskiem terenu", floors.top >= button.bottom)
         assertTrue("kolumna przy lewej krawędzi", floors.right <= width / 2)

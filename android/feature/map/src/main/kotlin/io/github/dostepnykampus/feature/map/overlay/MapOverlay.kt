@@ -27,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
@@ -43,8 +42,6 @@ import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import java.time.LocalDate
-
-private const val SHORT_ATTRIBUTION_FONT_SCALE = 1.5f
 
 /** Panel otwarty na mapie V1. Naraz otwarty jest najwyżej jeden, więc stanem nakładki jest jedna wartość. */
 private enum class MapPanel { Area, Info }
@@ -185,7 +182,6 @@ private fun AreaColumn(
 @Composable
 private fun OsmAttribution(modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
-    val isShort = LocalDensity.current.fontScale >= SHORT_ATTRIBUTION_FONT_SCALE
     Box(
         modifier =
             modifier
@@ -202,11 +198,11 @@ private fun OsmAttribution(modifier: Modifier = Modifier) {
             border = mapControlBorder(),
         ) {
             Text(
-                text = stringResource(if (isShort) R.string.mapa_osm_krotko else R.string.mapa_osm),
+                text = stringResource(R.string.mapa_osm_podpis),
                 modifier = Modifier.padding(horizontal = Odstepy.s),
                 maxLines = 1,
                 textDecoration = TextDecoration.Underline,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
             )
         }
     }
