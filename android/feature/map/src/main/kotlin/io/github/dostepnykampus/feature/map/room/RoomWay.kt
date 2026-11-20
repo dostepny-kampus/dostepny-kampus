@@ -24,13 +24,19 @@ sealed interface RoomWay {
     /**
      * Kroki: wejście zalecane, winda, gdy sala jest na innym piętrze, i sala.
      *
+     * @property entrance wejście wybrane dla tej drogi
      * @property entranceFloor piętro wejścia z danych, a bez niego parter
      * @property isFloorAssumed czy dane nie podają piętra wejścia i krok przyjmuje parter
      * @property lift winda z piętra wejścia na piętro sali; `null`, gdy sala jest na piętrze wejścia
      * @property roomMeters odległość sali od windy, a bez windy od wejścia
      */
-    data class Steps(val entranceFloor: Floor, val isFloorAssumed: Boolean, val lift: Lift?, val roomMeters: Int) :
-        RoomWay
+    data class Steps(
+        val entrance: Entrance,
+        val entranceFloor: Floor,
+        val isFloorAssumed: Boolean,
+        val lift: Lift?,
+        val roomMeters: Int,
+    ) : RoomWay
 
     /**
      * Winda w krokach.
@@ -66,7 +72,13 @@ fun roomWay(found: FoundRoom, entrance: Entrance?, floors: List<Floor>, rooms: (
 
         floor.id == found.floor.id -> {
             val meters = entrance.location.roundedMetersTo(found.room.labelPoint)
-            RoomWay.Steps(entranceFloor = floor, isFloorAssumed = known == null, lift = null, roomMeters = meters)
+            RoomWay.Steps(
+                entrance = entrance,
+                entranceFloor = floor,
+                isFloorAssumed = known == null,
+                lift = null,
+                roomMeters = meters,
+            )
         }
 
         else -> {
@@ -91,6 +103,7 @@ private fun viaLift(
     val meters = entrance.location.roundedMetersTo(lift.labelPoint)
     val step = RoomWay.Lift(id = lift.liftId ?: lift.id, metersFromEntrance = meters)
     return RoomWay.Steps(
+        entrance = entrance,
         entranceFloor = floor,
         isFloorAssumed = isFloorAssumed,
         lift = step,

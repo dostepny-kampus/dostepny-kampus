@@ -7,6 +7,8 @@ package io.github.dostepnykampus.feature.map.room
 
 import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.core.model.room.Room
@@ -37,8 +39,21 @@ internal object RoomCardFixtures {
                 ),
         )
 
+    val ENTRANCE =
+        Entrance(
+            id = "node/1",
+            buildingSymbol = "A-1",
+            name = "Wejście dostosowane",
+            isMain = false,
+            type = null,
+            location = point(meters = 0.0),
+            marking = EntranceMarking.ACCESSIBLE,
+            floorId = GROUND.id,
+        )
+
     val VIA_LIFT =
         RoomWay.Steps(
+            entrance = ENTRANCE,
             entranceFloor = GROUND,
             isFloorAssumed = false,
             lift = RoomWay.Lift(id = "w", metersFromEntrance = 30),
