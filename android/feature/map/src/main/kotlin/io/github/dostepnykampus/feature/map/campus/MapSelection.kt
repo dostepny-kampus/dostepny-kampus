@@ -6,7 +6,6 @@
 package io.github.dostepnykampus.feature.map.campus
 
 import io.github.dostepnykampus.core.model.GeoArea
-import io.github.dostepnykampus.feature.map.room.RoomStepMarker
 
 /**
  * Zaznaczenie na mapie V1. Zmienia się przy każdym wyborze osoby, a dane katalogu [CampusMapData] zostają te same,

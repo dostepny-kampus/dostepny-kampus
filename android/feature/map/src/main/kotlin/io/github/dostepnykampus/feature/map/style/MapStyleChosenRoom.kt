@@ -7,7 +7,7 @@ package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.geo.toPosition
 import io.github.dostepnykampus.feature.map.campus.featureCollection
-import io.github.dostepnykampus.feature.map.room.RoomStepMarker
+import io.github.dostepnykampus.feature.map.campus.RoomStepMarker
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive

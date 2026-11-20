@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.campus
 
+import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.room.RoomList
 
@@ -26,3 +27,6 @@ data class ShownPlan(
     val rooms: Map<String, RoomList>,
     val room: String? = null,
 )
+
+/** Numer kroku [index] od zera, jego [point] i stan [selected] na planie. Wymagania: US18.2 */
+data class RoomStepMarker(val index: Int, val point: GeoPoint, val selected: Boolean)

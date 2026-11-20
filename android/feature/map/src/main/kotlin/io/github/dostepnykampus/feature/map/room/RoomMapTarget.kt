@@ -11,6 +11,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.camera.ENTRANCE_ZOOM
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.shiftedNorth
+import io.github.dostepnykampus.feature.map.campus.RoomStepMarker
 
 /** Piętro planu [floor] i punkt kamery [point]. Wymagania: US18.1, US18.2 */
 data class RoomMapTarget(val floor: String, val point: GeoPoint)
@@ -35,9 +36,6 @@ internal fun OpenRoom.cameraForRoom(isRoomOnMap: Boolean, cover: Dp): MapCamera?
         else -> camera.shiftedNorth(-cover.value.toDouble() / 2.0)
     }
 }
-
-/** Numer kroku [index] od zera, jego [point] i stan [selected] na planie. Wymagania: US18.2 */
-data class RoomStepMarker(val index: Int, val point: GeoPoint, val selected: Boolean)
 
 /** Numery kroków drogi, których punkty są na wybranym [floor]. Wymagania: US18.2 */
 internal fun RoomCard.markersOn(floor: String): List<RoomStepMarker> =
