@@ -6,7 +6,8 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
   @BR-20
   Reguła: Piętro obejrzane oznacza Zbierający, a cofa ten sam Zbierający albo Koordynator
 
-    @US15.1 @serwer
+    # @do-zrobienia #2122: wymaga operacji GET /progress.
+    @US15.1 @serwer @do-zrobienia
     Szablon scenariusza: Oznaczenie piętra albo budynku jako obejrzanego
       Zakładając, że Zbierający jest zalogowany z rolą Zbierającego
       Oraz telefon ma sieć
@@ -88,7 +89,8 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
     Założenia:
       Zakładając, że Koordynator jest zalogowany z rolą Koordynatora
 
-    @US11.1 @serwer
+    # @do-zrobienia #2122: wymaga operacji GET /progress.
+    @US11.1 @serwer @do-zrobienia
     Scenariusz: Postęp budynku szczegółowego i podstawowego z liczbami zgłoszeń
       Zakładając, że w budynku A-1 obejrzano 3 z 5 pięter, a budynek B-8 ma znacznik „obejrzany”
       Oraz w budynku A-1 są 2 zgłoszenia „wysłane”, 1 „w weryfikacji” i 4 „przyjęte”
@@ -96,7 +98,8 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       Wtedy przy budynku A-1 widzi 60 procent pięter obejrzanych, 3 zgłoszenia czekające i 4 przyjęte
       Oraz przy budynku B-8 widzi znacznik „obejrzany”
 
-    @US11.2 @serwer
+    # @do-zrobienia #2122: wymaga operacji GET /progress.
+    @US11.2 @serwer @do-zrobienia
     Szablon scenariusza: Postęp pokazuje nową wartość po dotarciu znacznika na serwer
       Zakładając, że w budynku A-1 obejrzano <przed> z 5 pięter
       Jeżeli na serwer dotrze <zmiana>
@@ -116,7 +119,8 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       Wtedy widzi nową wartość postępu budynku A-1
       Oraz datę i godzinę nowego odczytu
 
-    @serwer
+    # @do-zrobienia #2122: wymaga operacji GET /progress.
+    @serwer @do-zrobienia
     Szablon scenariusza: Do postępu nie wchodzą zgłoszenia nieznane serwerowi, archiwalne ani poza budynkiem
       Zakładając, że przy budynku A-1 są 4 zgłoszenia przyjęte
       Oraz jest też <zgłoszenie>
@@ -137,7 +141,8 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       # Dane testowe, a nie stan faktyczny budynku A-1.
       Oraz budynek A-1 ma w danych testowych 6 wejść
 
-    @US11.4 @serwer
+    # @do-zrobienia #2122: wymaga operacji GET /progress.
+    @US11.4 @serwer @do-zrobienia
     Szablon scenariusza: Liczba wejść ze źródłem „obchód” w budynku szczegółowym
       Zakładając, że liczba wejść A-1 ze źródłem oznaczenia „obchód” to <obchód>, a pozostałe mają źródło „import”
       Oraz liczba wejść A-1 ze zmianą oznaczenia czekającą na decyzję Weryfikatora to <czeka>
@@ -151,7 +156,8 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
         | 4      | 2     |
         | 6      | 0     |
 
-    @US11.4 @serwer
+    # @do-zrobienia #2122: wymaga operacji GET /progress.
+    @US11.4 @serwer @do-zrobienia
     Scenariusz: Przyjęta zmiana oznaczenia wejścia zwiększa liczbę wejść sprawdzonych na miejscu
       Zakładając, że 4 wejścia A-1 mają oznaczenie ze źródłem „obchód”
       Jeżeli Weryfikator przyjmie zmianę oznaczenia jednego z pozostałych wejść A-1

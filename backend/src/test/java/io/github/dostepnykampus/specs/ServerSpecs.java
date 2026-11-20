@@ -25,6 +25,7 @@ import org.junit.platform.suite.api.Suite;
 @IncludeEngines("cucumber")
 @SelectFile("../specs/budynki-bez-szczegolow.feature")
 @SelectFile("../specs/oznaczenie-wejscia.feature")
+@SelectFile("../specs/postep-inwentaryzacji.feature")
 @SelectFile("../specs/przegladanie-mapy.feature")
 @SelectFile("../specs/uprawnienia.feature")
 @SelectFile("../specs/zgloszenia-zbierajacego.feature")
