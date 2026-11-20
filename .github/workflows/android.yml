@@ -18,6 +18,7 @@ on:
       - ".github/actions/android-gradle/**"
       - ".github/scripts/cache-budowania-sprintu.sh"
       - ".github/scripts/cache-z-kolejki.sh"
+      - ".github/scripts/pobierz-artefakty.sh"
       - ".github/scripts/przytnij-cache-budowania.sh"
       - ".github/scripts/czysc-cache.sh"
       - ".github/scripts/wyniki-androida.sh"
@@ -82,7 +83,7 @@ jobs:
           .github/workflows/android.yml .github/actions/android-gradle .github/scripts/cache-budowania-sprintu.sh
           .github/scripts/cache-z-kolejki.sh .github/scripts/czysc-cache.sh .github/scripts/przytnij-cache-budowania.sh
           .github/scripts/wyniki-androida.sh .github/scripts/uruchom-serwer-systemowy.sh
-          .github/scripts/zmiany-obszaru.sh
+          .github/scripts/zmiany-obszaru.sh .github/scripts/pobierz-artefakty.sh
 
   emulator:
     needs: apk
@@ -316,6 +317,16 @@ jobs:
     needs: zmiany
     # Bez przebiegu na wskazanym commicie: kontrola sprintu sprawdza głowę, którą `testy` przeszły już w kolejce.
     if: ${{ !cancelled() && !inputs.sha && github.event_name != 'push' && needs.zmiany.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
+    # Dwie równoległe części jednego kroku Gradle: testy jednostkowe z Kover i Roborazzi oraz lint z detekt.
+    name: ${{ matrix.czesc }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - czesc: testy
+            cache: gradle-build-cache
+          - czesc: analiza-statyczna
+            cache: gradle-build-cache-analiza
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -333,14 +344,27 @@ jobs:
       - name: Przygotuj JDK i cache Gradle
         id: gradle
         uses: ./.github/actions/android-gradle
-      - name: Testy, lint, detekt, Kover i zrzuty Roborazzi
+      - name: Testy, Kover i zrzuty Roborazzi albo lint i detekt
+        env:
+          CZESC: ${{ matrix.czesc }}
+          # Wszystkie zadania detekt, które check dołącza: część testy je pomija, część analiza-statyczna uruchamia.
+          DETEKT: >-
+            detekt detektMain detektTest detektDebug detektDebugUnitTest detektDebugAndroidTest detektRelease
+            detektBenchmark detektScripts
         run: |
-          # check: testy jednostkowe wszystkich modułów i Kover; lint: wszystkie warianty (w tym lintJvm modułów JVM);
-          # detekt: wszystkie zbiory źródeł; verifyRoborazziDebug włącza weryfikację zrzutów (nie należy do check).
+          # testy: check (testy jednostkowe wszystkich modułów, Kover, zrzuty Roborazzi) bez lint i detekt.
+          # analiza-statyczna: lint wszystkich wariantów (w tym lintJvm modułów JVM) i detekt wszystkich zbiorów źródeł.
           # --continue: błąd jednego narzędzia nie zatrzymuje pozostałych, więc przebieg pokazuje wszystkie uwagi.
-          ./gradlew check lint verifyRoborazziDebug detekt detektDebug detektDebugUnitTest detektDebugAndroidTest detektMain detektTest detektRelease --continue --console=plain 2>&1 | tee "$RUNNER_TEMP/gradle.log"
+          read -ra detekt <<<"$DETEKT"
+          if [[ $CZESC == testy ]]; then
+            zadania=(check verifyRoborazziDebug)
+            for zadanie in lint "${detekt[@]}"; do zadania+=(-x "$zadanie"); done
+          else
+            zadania=(lint "${detekt[@]}")
+          fi
+          ./gradlew "${zadania[@]}" --continue --console=plain 2>&1 | tee "$RUNNER_TEMP/gradle.log"
       - name: Policz wykonane testy
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && matrix.czesc == 'testy' }}
         run: |
           liczba="$(find . -path '*/build/test-results/*' -name 'TEST-*.xml' -print0 |
             xargs -0 -r grep -h '<testsuite ' | grep -o ' tests="[0-9]*"' | tr -dc '0-9\n' | awk '{ s += $1 } END { print s + 0 }')"
@@ -353,7 +377,7 @@ jobs:
             exit 1
           fi
       - name: Zbierz diagnostykę generowania Hilt i KSP po porażce
-        if: failure()
+        if: ${{ failure() && matrix.czesc == 'testy' }}
         run: |
           # Bez powtarzania zadań: tylko kopia tego, co zostało po porażce (wyjście KSP i Hilt, listing, log Gradle i demona).
           mkdir -p "$RUNNER_TEMP/diagnostyka"
@@ -362,7 +386,7 @@ jobs:
           cp "$RUNNER_TEMP/gradle.log" "$RUNNER_TEMP/diagnostyka/" || true
           cp ~/.gradle/daemon/*/daemon-*.out.log "$RUNNER_TEMP/diagnostyka/" || true
       - name: Zapisz diagnostykę Hilt i KSP
-        if: failure()
+        if: ${{ failure() && matrix.czesc == 'testy' }}
         uses: actions/upload-artifact@v7.0.2
         # Raport diagnostyczny: błąd zapisu artefaktu (np. awaria GitHuba) nie zmienia wyniku zadania (#1028).
         continue-on-error: true
@@ -377,7 +401,7 @@ jobs:
         # Raport diagnostyczny: błąd zapisu artefaktu (np. awaria GitHuba) nie zmienia wyniku zadania (#1028).
         continue-on-error: true
         with:
-          name: raporty-testy
+          name: raporty-${{ matrix.czesc }}
           # Obrazy porównania Roborazzi pokazują, czym zrzut różni się od wzorca (#2195).
           path: |
             android/**/build/reports/
@@ -392,14 +416,14 @@ jobs:
         if: ${{ success() && github.event_name == 'merge_group' }}
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: gradle-build-cache
+          name: ${{ matrix.cache }}
           path: ~/.gradle/caches/build-cache-1/
           if-no-files-found: warn
           retention-days: 3
       - name: Sprawdź, czy gałąź docelowa ma już cache tych zależności
         # Bez tego każda grupa kolejki po zmianie zależności wysyłałaby całe archiwum, choć cache gałęzi już je ma.
         id: zaleznosci-galezi
-        if: ${{ success() && github.event_name == 'merge_group' && steps.gradle.outputs.trafienie-zaleznosci != 'true' }}
+        if: ${{ success() && matrix.czesc == 'testy' && github.event_name == 'merge_group' && steps.gradle.outputs.trafienie-zaleznosci != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -447,7 +471,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           PRZED: ${{ github.event.before }}
-        run: bash .github/scripts/cache-z-kolejki.sh "$GITHUB_SHA" gradle-build-cache "$HOME/.gradle/caches/build-cache-1" "$PRZED"
+        run: |
+          bash .github/scripts/cache-z-kolejki.sh "$GITHUB_SHA" "gradle-build-cache gradle-build-cache-analiza" \
+            "$HOME/.gradle/caches/build-cache-1" "$PRZED"
       - name: Zapisz cache budowania Gradle
         if: ${{ steps.budowanie.outputs.jest == 'true' }}
         uses: actions/cache/save@v6.1.0
@@ -548,8 +574,8 @@ jobs:
       - name: Sprawdź wyniki wszystkich zadań Androida
         env:
           ZMIANY: ${{ needs.zmiany.result }}
-          # Grupa kolejki: testy. Przebieg na wskazanym commicie: APK, emulatory, analiza zależności. PR: testy,
-          # analiza zależności.
+          # Grupa kolejki: testy (obie części). Przebieg na wskazanym commicie: APK, emulatory, analiza zależności. PR:
+          # testy, analiza zależności.
           WYNIKI: >-
             ${{ github.event_name == 'merge_group' && needs.testy.result
             || inputs.sha && format('{0} {1} {2}', needs.apk.result, needs.emulator.result, needs.analiza-zaleznosci.result)
