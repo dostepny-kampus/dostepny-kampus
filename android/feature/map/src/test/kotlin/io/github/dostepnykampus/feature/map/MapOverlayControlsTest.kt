@@ -19,6 +19,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -134,6 +135,16 @@ class MapOverlayControlsTest {
         compose.onRoot().captureRoboImage()
     }
 
+    /** Wybrane piętro mieści się nad kartą sali. Wymagania: US16.1, US18.2 */
+    @Test
+    fun keepsFloorAboveRoomCard() {
+        val cover = 470.dp
+        compose.setContent { Overlay(controlsCover = cover) }
+        val window = compose.onRoot().getUnclippedBoundsInRoot()
+        val selected = compose.onNodeWithContentDescription("0").assertIsDisplayed().getUnclippedBoundsInRoot()
+        assertTrue("Parter nad kartą sali", selected.bottom <= window.bottom - cover)
+    }
+
     private fun changeArea(name: String) {
         compose.runOnUiThread { areas.show(name) }
         repeat(FRAMES) {
@@ -155,7 +166,7 @@ class MapOverlayControlsTest {
         left < other.right && other.left < right && top < other.bottom && other.top < bottom
 
     @Composable
-    private fun Overlay() {
+    private fun Overlay(controlsCover: Dp = 0.dp) {
         DostepnyKampusTheme {
             MapOverlay(
                 camera = MapCamera(center = main.bounds.center, zoom = START_ZOOM),
@@ -165,6 +176,7 @@ class MapOverlayControlsTest {
                 areas = areas,
                 onAreaShow = {},
                 modifier = Modifier.fillMaxSize().background(Color(color = 0xFFBEE3F2)),
+                controlsCover = controlsCover,
                 start = {
                     FloorPicker(
                         options = FloorOptions(FLOORS.map { FloorOption(key = it, label = it) }),

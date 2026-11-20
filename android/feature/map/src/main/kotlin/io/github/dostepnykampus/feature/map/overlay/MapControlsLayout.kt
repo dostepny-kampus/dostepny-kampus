@@ -12,7 +12,8 @@ import androidx.compose.ui.layout.MeasureScope
 import io.github.dostepnykampus.core.designsystem.Odstepy
 
 /**
- * Układa przełącznik terenu, piętra i sterowanie mapą we wspólnym obszarze. Dół zostawia na podpis i legendę.
+ * Układa przełącznik terenu, piętra i sterowanie mapą we wspólnym obszarze. Gdy [reserveFooter], dół zostawia
+ * na podpis i legendę.
  *
  * Wymagania: NFR-20, NFR-53, US1.7, US16.1
  */
@@ -22,13 +23,14 @@ internal fun MapControlsLayout(
     areaSwitch: @Composable () -> Unit,
     floorColumn: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    reserveFooter: Boolean = true,
 ) {
     Layout(
         contents = listOf(mapControls, areaSwitch, floorColumn),
         modifier = modifier,
     ) { (buttons, area, floors), bounds ->
         val loose = bounds.copy(minWidth = 0, minHeight = 0)
-        val footer = (MapControlTouchSize + Odstepy.s).roundToPx()
+        val footer = if (reserveFooter) (MapControlTouchSize + Odstepy.s).roundToPx() else 0
         val contentHeight = (loose.maxHeight - footer).coerceAtLeast(0)
         val switch = area.singleOrNull()?.measure(loose.copy(maxHeight = contentHeight))
         val floorsTop = switch?.height ?: 0
@@ -40,7 +42,9 @@ internal fun MapControlsLayout(
                 val start = bounds.maxWidth - controls.width
                 val endOfSwitch = (switch?.width ?: 0) - Odstepy.s.roundToPx()
                 val top = controlsTop(start = start, switchEnd = endOfSwitch, switchBottom = floorsTop)
-                controls.placeRelative(x = start, y = top)
+                if (reserveFooter || top + controls.height <= bounds.maxHeight) {
+                    controls.placeRelative(x = start, y = top)
+                }
             }
             switch?.placeRelative(x = 0, y = 0)
             floorPicker?.placeRelative(x = 0, y = floorsTop)

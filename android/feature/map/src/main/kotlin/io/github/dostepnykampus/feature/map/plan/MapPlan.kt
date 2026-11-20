@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.update
 internal fun selectedBuilding(focus: MapFocus?): String? =
     when (focus) {
         null -> null
-        is MapFocus.Building -> focus.symbol.takeIf { focus.command == null && focus.floor == null }
+        is MapFocus.Building -> focus.run { symbol.takeIf { if (floor == null) command == null else room != null } }
         is MapFocus.Entrance -> focus.buildingSymbol
     }
 

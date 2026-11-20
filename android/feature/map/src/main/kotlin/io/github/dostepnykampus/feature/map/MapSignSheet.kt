@@ -374,11 +374,13 @@ internal fun BoxScope.MapSheets(
     state: MapSceneState,
     onBuilding: (String) -> Unit,
     entranceActions: EntranceActions,
+    onRoomHeight: (Int) -> Unit,
 ) {
     val room = open.room
     val modifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
     if (room != null) {
-        RoomCardLayer(room, RoomSheetSources(onBuilding, open.barriers, entranceActions), modifier)
+        val sources = RoomSheetSources(onBuilding, open.barriers, entranceActions)
+        RoomCardLayer(room, sources, modifier.onSizeChanged { onRoomHeight(it.height) })
         return
     }
     ChosenSignSheet(

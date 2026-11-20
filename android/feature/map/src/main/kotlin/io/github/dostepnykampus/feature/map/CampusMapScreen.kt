@@ -11,14 +11,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -27,25 +24,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.offset
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.model.room.FoundRoom
-import io.github.dostepnykampus.feature.map.area.AreaEdgeAnnouncement
 import io.github.dostepnykampus.feature.map.area.MapAreas
 import io.github.dostepnykampus.feature.map.area.rememberMapAreas
 import io.github.dostepnykampus.feature.map.area.rememberNoticeHeight
@@ -53,19 +46,16 @@ import io.github.dostepnykampus.feature.map.barrier.BarrierDescriptions
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
-import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
-import io.github.dostepnykampus.feature.map.overlay.MapStatusBar
-import io.github.dostepnykampus.feature.map.overlay.dataDay
-import io.github.dostepnykampus.feature.map.plan.FloorColumn
 import io.github.dostepnykampus.feature.map.room.OpenRoom
 import io.github.dostepnykampus.feature.map.room.RoomCardLayer
 import io.github.dostepnykampus.feature.map.room.RoomSheetSources
+import io.github.dostepnykampus.feature.map.room.cameraForRoom
 
 private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"
@@ -201,8 +191,7 @@ fun CampusMapScreen(
     var barHeight by remember { mutableIntStateOf(0) }
     var headerHeight by remember { mutableIntStateOf(0) }
     val search = rememberSearchFocus()
-    val roomSheets = RoomSheetSources(onBuildingClick, ShownBarriers(state.barriers), entranceActions)
-    sheet.RoomLayout(room, roomSheets, modifier) { isLarge ->
+    sheet.RoomLayout(room, state.roomSheets(onBuildingClick, entranceActions), modifier) { isLarge ->
         val isList = if (room == null) state.isListSaved ?: isLarge else false
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
@@ -221,8 +210,9 @@ fun CampusMapScreen(
                         plan = PlanLink(shown = plan, onView = onCamera, onFloor = onFloorChoose, onHide = onMapHide),
                         onBuildingClick = onBuildingClick,
                         onEmptyMapClick = onEmptyMapClick,
-                        entranceActions = entranceActions,
-                        room = room?.takeUnless { isLarge },
+                        entrance = entranceActions,
+                        room = room,
+                        isRoomFull = isLarge,
                         modifier = Modifier.fillMaxSize().background(DostepnyKampusTheme.mapColors.lad),
                     )
                     BarrierDescriptions(shown)
@@ -251,6 +241,9 @@ fun CampusMapScreen(
         sheet.FullEntranceSheet(ui = state, actions = entranceActions, onBuildingClick = onBuildingClick)
     }
 }
+
+private fun CampusMapUiState.roomSheets(onBuilding: (String) -> Unit, actions: EntranceActions): RoomSheetSources =
+    RoomSheetSources(onBuilding, ShownBarriers(barriers), actions)
 
 @Composable
 private fun ScreenSheet.RoomLayout(
@@ -295,14 +288,18 @@ private fun CampusMap(
     plan: PlanLink,
     onBuildingClick: (String) -> Unit,
     onEmptyMapClick: () -> Unit,
-    entranceActions: EntranceActions,
+    entrance: EntranceActions,
     room: OpenRoom?,
+    isRoomFull: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val isKeyboardOpen = rememberKeyboardOpenFlag()
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
     val signs = sheet.signs
+    var roomHeight by remember { mutableIntStateOf(0) }
+    val isRoomOnMap = room != null && !isRoomFull
+    val roomCover = with(LocalDensity.current) { roomHeight.toDp() }.takeIf { isRoomOnMap } ?: 0.dp
     val state =
         rememberCampusScene(
             ui = ui,
@@ -312,16 +309,16 @@ private fun CampusMap(
             size = size,
             top = cameraTop,
             motion = motion,
+            roomCamera = room?.run { cameraForRoom(isRoomOnMap, roomCover) },
         )
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
-        val scene = state.scene
         val move = state.move
-        if (scene != null && move != null && state.limits != null) {
+        if (state.scene != null && move != null && state.limits != null) {
             val pinned =
-                signs.rememberPinnedEntrance(ui.catalog, scene.selection.entrance, entranceActions.onBuildingSelect)
+                signs.rememberPinnedEntrance(ui.catalog, state.scene.selection.entrance, entrance.onBuildingSelect)
             mapView.Show(
-                data = scene.data,
-                selection = scene.selection.copy(entrance = pinned, barrier = signs.barrierId, plan = plan.shown),
+                data = state.scene.data,
+                selection = state.scene.selection.copy(entrance = pinned, barrier = signs.barrierId, plan = plan.shown),
                 move = move,
                 inset = state.inset,
                 onCameraIdle = { view ->
@@ -333,26 +330,24 @@ private fun CampusMap(
                 modifier = Modifier.fillMaxSize(),
             )
             pinned?.let { EntranceDescription(it) }
-            FollowCamera(camera = move.camera, limits = state.limits, area = areas.current?.name, plan = plan)
-            MapStatusBar(topInset, isShown = state.isCovered)
-            val underBar = if (state.isCovered) topInset.asPaddingValues() else PaddingValues(top = top)
-            MapOverlay(
-                camera = move.camera,
-                hasControls = state.hasControls && !isKeyboardOpen,
-                dataDay = ui.catalog?.dataDay(),
-                onCameraChange = state::move,
+            CampusMapPanels(
+                state = state,
+                catalog = ui.catalog,
                 areas = areas,
-                onAreaShow = state::land,
-                modifier = Modifier.overlayArea(underBar = underBar, sheet = sheet),
-                hasPanels = !state.isCovered && !isKeyboardOpen,
-                hasNotice = !isKeyboardOpen,
+                top = top,
+                topInset = topInset,
+                sheet = sheet,
+                isKeyboardOpen = isKeyboardOpen,
                 motion = motion,
-                start = { FloorColumn(plan = plan.shown, onChoose = plan.onFloor) },
+                roomCover = roomCover,
+                plan = plan,
             ) {
-                val shown = room.takeUnless { isKeyboardOpen }
+                val shown = room.takeIf { isRoomOnMap && !isKeyboardOpen }
                 val open =
                     OpenSign(sheet = sheet, barriers = barriers, catalog = ui.catalog, plan = plan.shown, room = shown)
-                MapSheets(open = open, state = state, onBuilding = onBuildingClick, entranceActions = entranceActions)
+                MapSheets(open = open, state = state, onBuilding = onBuildingClick, entranceActions = entrance) {
+                    roomHeight = it
+                }
             }
         }
     }
@@ -374,6 +369,7 @@ private fun rememberCampusScene(
     size: IntSize,
     top: Dp,
     motion: MapMotion?,
+    roomCamera: MapCamera?,
 ): MapSceneState {
     val width = with(LocalDensity.current) { size.width.toDp() }
     return rememberMapSceneState(
@@ -387,41 +383,20 @@ private fun rememberCampusScene(
         motion = motion,
         notice = rememberNoticeHeight(shift = areas.selectionNotice, width = width),
         sheet = sheet.signs.markedCover(focus),
+        roomCamera = roomCamera,
     )
-}
-
-private fun Modifier.overlayArea(underBar: PaddingValues, sheet: ScreenSheet): Modifier {
-    val area = fillMaxSize().safeDrawingPadding().padding(underBar)
-    val cover = sheet.cover ?: return area.padding(sheet.padding)
-    return area.layout { measurable, constraints ->
-        val bottom = cover().coerceIn(minimumValue = 0, maximumValue = constraints.maxHeight)
-        val placeable = measurable.measure(constraints.offset(vertical = -bottom))
-        layout(width = placeable.width, height = placeable.height + bottom) { placeable.place(x = 0, y = 0) }
-    }
 }
 
 /**
  * Plan piętra [shown] przy mapie: [onView] dostaje widok kamery, [onFloor] piętro z kolumny, a [onHide] zejście
  * mapy z ekranu.
  */
-private data class PlanLink(
+internal data class PlanLink(
     val shown: ShownPlan?,
     val onView: (MapCamera) -> Unit,
     val onFloor: (String, String) -> Unit,
     val onHide: () -> Unit,
 )
-
-@Composable
-private fun FollowCamera(camera: MapCamera, limits: MapLimits, area: String?, plan: PlanLink) {
-    val report by rememberUpdatedState(plan.onView)
-    val hide by rememberUpdatedState(plan.onHide)
-    DisposableEffect(camera) {
-        report(camera)
-        onDispose {}
-    }
-    DisposableEffect(Unit) { onDispose { hide() } }
-    AreaEdgeAnnouncement(camera = camera, limits = limits, area = area)
-}
 
 @Composable
 private fun rememberKeyboardOpenFlag(): Boolean {

@@ -9,7 +9,7 @@ import androidx.compose.runtime.MutableState
 
 /**
  * Wybór budynku dotykiem na mapie V1: budynki czekające na wybór w arkuszu „Który budynek?” są zapisywane w
- * [choices], a budynek wybrany dotykiem trafia do [onTap], bo od tego zależy ruch mapy ([PickOrigin]).
+ * [choices], a budynek wybrany dotykiem trafia do [onTap], bo od tego zależy ruch mapy.
  *
  * Wymagania: US2.8
  */

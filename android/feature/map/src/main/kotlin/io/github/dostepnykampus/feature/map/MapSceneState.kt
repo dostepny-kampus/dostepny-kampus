@@ -32,6 +32,7 @@ import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
+import io.github.dostepnykampus.feature.map.camera.PickOrigin
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.camera.ShownCamera
 import io.github.dostepnykampus.feature.map.camera.TapSight
@@ -41,6 +42,7 @@ import io.github.dostepnykampus.feature.map.camera.byControl
 import io.github.dostepnykampus.feature.map.camera.fitted
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.pickLine
+import io.github.dostepnykampus.feature.map.camera.pickView
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
 import io.github.dostepnykampus.feature.map.camera.rememberClosedView
 import io.github.dostepnykampus.feature.map.camera.uncoveredMove
@@ -136,10 +138,11 @@ internal fun rememberMapSceneState(
     motion: MapMotion? = null,
     notice: Dp = 0.dp,
     sheet: Int = 0,
+    roomCamera: MapCamera? = null,
 ): MapSceneState {
     val scene = rememberMapScene(layers = layers, catalog = catalog, focus = focus, area = area)
     val selection = scene?.selection
-    val view = rememberCameraView(focus, layers)
+    val view = rememberCameraView(focus = focus, layers = layers, roomCamera = roomCamera)
     val choices = rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }
     val isCovered = cover > 0.dp
     val density = LocalDensity.current
