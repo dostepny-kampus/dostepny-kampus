@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
@@ -67,6 +68,7 @@ internal fun mapControlBorder(): BorderStroke? {
  * @param isOpen czy panel przycisku jest otwarty
  * @param modifier zachowanie i opis przycisku
  * @param rowModifier wcięcia i semantyka wiersza treści
+ * @param spacing odstęp między elementami wiersza
  * @param content ikona i napis przycisku
  */
 @Composable
@@ -74,6 +76,7 @@ internal fun MapTogglePill(
     isOpen: Boolean,
     modifier: Modifier = Modifier,
     rowModifier: Modifier = Modifier,
+    spacing: Dp = Odstepy.s,
     content: @Composable RowScope.() -> Unit,
 ) {
     val scheme = MaterialTheme.colorScheme
@@ -86,7 +89,7 @@ internal fun MapTogglePill(
     ) {
         Row(
             modifier = Modifier.heightIn(min = MapControlTouchSize).then(rowModifier),
-            horizontalArrangement = Arrangement.spacedBy(Odstepy.xs),
+            horizontalArrangement = Arrangement.spacedBy(spacing),
             verticalAlignment = Alignment.CenterVertically,
             content = content,
         )

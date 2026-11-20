@@ -25,6 +25,7 @@ import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -36,6 +37,8 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.overlay.MapControlIcons
 import io.github.dostepnykampus.feature.map.overlay.MapTogglePill
+
+private const val COMPACT_AREA_FONT_SCALE = 2f
 
 /**
  * Przycisk terenu mapy V1 według makiety hi-fi: znak „⊙”, nazwa pokazanego terenu i znak rozwinięcia, a pod nim,
@@ -61,6 +64,7 @@ internal fun MapAreaSwitch(
     modifier: Modifier = Modifier,
 ) {
     val shown = areas.choices.firstOrNull() ?: return
+    val isCompact = LocalDensity.current.fontScale >= COMPACT_AREA_FONT_SCALE
     val button = remember { FocusRequester() }
     var hasBeenOpen by remember { mutableStateOf(isOpen) }
     LaunchedEffect(isOpen) {
@@ -76,8 +80,10 @@ internal fun MapAreaSwitch(
                 .focusable()
                 .clickable(role = Role.Button) { onOpenChange(!isOpen) }
                 .semantics { contentDescription = label }
-        val row = Modifier.padding(horizontal = Odstepy.s).clearAndSetSemantics {}
-        MapTogglePill(isOpen = isOpen, modifier = toggle, rowModifier = row) {
+        val startPadding = if (isCompact) Odstepy.s else Odstepy.m
+        val spacing = if (isCompact) Odstepy.xs else Odstepy.s
+        val row = Modifier.padding(start = startPadding, end = Odstepy.s).clearAndSetSemantics {}
+        MapTogglePill(isOpen = isOpen, modifier = toggle, rowModifier = row, spacing = spacing) {
             Icon(imageVector = MapControlIcons.Area, contentDescription = null)
             Text(
                 text = shown.name,
@@ -88,7 +94,7 @@ internal fun MapAreaSwitch(
             Icon(
                 imageVector = if (isOpen) MapControlIcons.Up else MapControlIcons.Down,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp),
+                modifier = if (isCompact) Modifier.size(20.dp) else Modifier,
             )
         }
         if (isOpen) {
