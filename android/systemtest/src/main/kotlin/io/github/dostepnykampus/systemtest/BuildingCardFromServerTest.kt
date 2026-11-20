@@ -20,6 +20,8 @@ import org.junit.runner.RunWith
 
 private const val WAIT_MS = 30_000L
 private const val SERVER_ASSESSMENT = "Z map i opisów, stan z "
+private const val SERVER_ONLY_SYMBOL = "TS-1"
+private const val SERVER_ONLY_NAME = "Budynek testu systemowego"
 
 /**
  * Aplikacja z własnym grafem Hilt i siecią na emulatorze, serwer z bazą na komputerze gospodarza: katalog budynków
@@ -59,5 +61,17 @@ class BuildingCardFromServerTest {
         val assessment = hasText(SERVER_ASSESSMENT, substring = true)
         steps.waitFor(assessment)
         compose.onAllNodes(assessment).assertCountEquals(1)
+    }
+
+    /**
+     * Lista budynków pochodzi z serwera, a nie z pliku konturów w aplikacji: budynek [SERVER_ONLY_SYMBOL] istnieje
+     * wyłącznie w bazie serwera, więc bez pobrania listy z serwera nie pojawia się w wynikach wyszukiwania.
+     *
+     * Wymagania: US1.2, NFR-41
+     */
+    @Test
+    fun listContainsServerOnlyBuilding() {
+        steps.openCard(SERVER_ONLY_SYMBOL)
+        steps.waitFor(hasText(SERVER_ONLY_NAME, substring = true))
     }
 }
