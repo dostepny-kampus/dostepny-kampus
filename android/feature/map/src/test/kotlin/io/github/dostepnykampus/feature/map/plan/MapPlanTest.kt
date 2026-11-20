@@ -93,6 +93,34 @@ class MapPlanTest {
             )
         }
 
+    /** Sala z zaznaczenia jest wyróżniona na planie swojego budynku, a zaznaczenie bez sali zdejmuje wyróżnienie. */
+    @Test
+    fun highlightsRoomOfFocus() =
+        runTest(UnconfinedTestDispatcher()) {
+            val plan = MapPlan(Plans(), entrances())
+            val shown = collected(plan)
+            plan.show(MapFocus.Building(symbol = "A", command = 1L, floor = "P1", room = "7"))
+            plan.camera(MapCamera(center = INSIDE_A, zoom = 18.0))
+            val chosen = shown.value?.room
+            plan.show(MapFocus.Building(symbol = "A", command = 2L))
+            assertEquals(listOf("7", null), listOf(chosen, shown.value?.room), "Sala z zaznaczenia nie jest wyróżniona")
+        }
+
+    /** Sala innego budynku nie jest wyróżniona na pokazanym planie, nawet gdy identyfikatory się zgadzają. */
+    @Test
+    fun skipsRoomOfOtherBuilding() =
+        runTest(UnconfinedTestDispatcher()) {
+            val plan = MapPlan(Plans(), entrances())
+            val shown = collected(plan)
+            plan.show(MapFocus.Building(symbol = "B", command = 1L, room = "7"))
+            plan.camera(MapCamera(center = INSIDE_A, zoom = 18.0))
+            assertEquals(
+                listOf("A", null),
+                listOf(shown.value?.building, shown.value?.room),
+                "Plan budynku A wyróżnił salę budynku B",
+            )
+        }
+
     @Test
     fun hidesPlanOfBuildingWithoutCopy() =
         runTest(UnconfinedTestDispatcher()) {

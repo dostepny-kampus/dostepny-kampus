@@ -31,12 +31,14 @@ import kotlinx.coroutines.flow.update
  * @property floors piętra budynku od najniższego
  * @property floor identyfikator wybranego piętra
  * @property rooms pomieszczenia pięter z kopii planu, według identyfikatora piętra
+ * @property room identyfikator wyróżnionej sali tego budynku; `null` bez wyróżnienia
  */
 data class ShownPlan(
     val building: String,
     val floors: List<Floor>,
     val floor: String,
     val rooms: Map<String, RoomList>,
+    val room: String? = null,
 )
 
 /**
@@ -66,6 +68,7 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
     private val cameras = MutableStateFlow<MapCamera?>(null)
     private val chosen = MutableStateFlow<Map<String, String>>(emptyMap())
     private val selected = MutableStateFlow<String?>(null)
+    private val chosenRoom = MutableStateFlow<Pair<String, String>?>(null)
     private val downloaded = mutableSetOf<String>()
     private var shownFocus: MapFocus? = null
     private var entranceSheet: String? = null
@@ -89,6 +92,7 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
     /**
      * Pokazuje budynek i piętro z zaznaczenia [focus] raz na zaznaczenie; „Pokaż na mapie” i „Pokaż na planie”
      * zostawiają wybór od środka mapy, a karta V2 i arkusz wejścia trzymają plan tego budynku.
+     * Sala z zaznaczenia jest wyrozniona na planie swojego budynku.
      */
     fun show(focus: MapFocus?) {
         if (focus == shownFocus) return
@@ -97,6 +101,7 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
         selected.value = currentSelection()
         val building = focus as? MapFocus.Building
         building?.floor?.let { choose(building = building.symbol, floor = it) }
+        chosenRoom.value = building?.room?.let { building.symbol to it }
     }
 
     /** Ustawia budynek [building] otwartego arkusza wejścia; `null` wraca do zaznaczenia albo kamery. */
@@ -125,8 +130,11 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
             }
         val distinct = focus.distinctUntilChanged()
         val loaded = distinct.mapLatest { symbol -> symbol?.let { load(it) } }
-        return combine(flow = loaded, flow2 = chosen) { plan, floors ->
-            plan?.run { copy(floor = floors[building]?.takeIf { id -> id in rooms } ?: floor) }
+        return combine(flow = loaded, flow2 = chosen, flow3 = chosenRoom) { plan, floors, room ->
+            plan?.run {
+                val chosenFloor = floors[building]?.takeIf { id -> id in rooms } ?: floor
+                copy(floor = chosenFloor, room = room?.takeIf { it.first == building }?.second)
+            }
         }
     }
 

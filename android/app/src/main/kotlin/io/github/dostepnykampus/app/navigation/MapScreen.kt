@@ -20,6 +20,7 @@ import io.github.dostepnykampus.app.SheetSceneStrategy
 import io.github.dostepnykampus.app.closeCardOnEmptyMap
 import io.github.dostepnykampus.app.isFullOnlySheet
 import io.github.dostepnykampus.app.shownFocus
+import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapUiState
@@ -126,9 +127,8 @@ internal fun AppNavigator.MapScreen(
         onMapHide = onMapHide,
         onCardReturn = { returnToCard(it) },
         sheetCover = LocalSheetPadding.current.shownCover.takeUnless { isFullOnly },
-        // TODO(#3418): wyróżnienie sali na planie.
         // TODO(#1481): karta sali.
-        onRoomClick = { showOnMap(MapFocus.Building(it.building, command = System.nanoTime(), floor = it.floor.id)) },
+        onRoomClick = { showOnMap(it.focus()) },
     )
 }
 
@@ -156,3 +156,6 @@ private fun PlanReport.toPlace(): ReportPlace =
         latitude = point.latitude,
         longitude = point.longitude,
     )
+
+private fun FoundRoom.focus(): MapFocus =
+    MapFocus.Building(symbol = building, command = System.nanoTime(), floor = floor.id, room = room.id)

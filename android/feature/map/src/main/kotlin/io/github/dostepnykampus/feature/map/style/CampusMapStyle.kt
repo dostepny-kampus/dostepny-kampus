@@ -96,6 +96,8 @@ data class MapStyleColors(
             toilet = land,
             wall = buildingOutline,
             floorWall = buildingOutline,
+            chosen = land,
+            chosenOutline = selectedOutline,
         ),
     val basemap: BasemapColors? = null,
     val labelSize: Double = Typografia.napisyMapy.value.toDouble(),
@@ -184,7 +186,7 @@ private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap
                 paint(OUTLINES_COLOR to color, "line-width" to OUTLINE_WIDTH, "line-opacity" to opacity)
             },
         )
-        planLayers(colors.plan, look.planFloor).forEach { add(it) }
+        planLayers(colors = colors.plan, floor = look.planFloor, room = look.planRoom).forEach { add(it) }
         add(selectedLayer(look.selectedFilter, colors))
         add(selectedPlanLayer(look.selectedPlanFilter, colors))
         add(marksLayer(look.entrancesFilter, look.entrancesMinZoom))
