@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.core.network.building
 
 import io.github.dostepnykampus.core.model.building.FloorList
+import io.github.dostepnykampus.core.model.path.AccessiblePathList
 import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.core.network.ApiResult
@@ -19,7 +20,8 @@ import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import java.net.HttpURLConnection.HTTP_OK
 
 /**
- * Klient HTTP listy budynków, karty, pięter, wyszukiwania sali i podpowiedzi punktu (`GET /buildings`, `/rooms`).
+ * Klient HTTP listy budynków, karty, pięter, wyszukiwania sali, podpowiedzi punktu i ścieżek dostosowanych
+ * (`GET /buildings`, `/rooms`, `/accessible-paths`).
  *
  * Wynik to [ApiResult]: błąd sieci i zła treść nie wychodzą jako wyjątek. Anulowanie korutyny wywołującej
  * każdą funkcję `suspend` przerywa jej żądanie HTTP, także w trakcie czytania odpowiedzi, i kończy się
@@ -87,6 +89,10 @@ public class BuildingsApi(private val http: OkHttpClient, private val json: Json
             json.decodeLocateResult(it)
         }
 
+    /** Odcinki ścieżek dostosowanych z mapy kampusu PWr (`listAccessiblePaths`). Wymagania: US1.4 */
+    public suspend fun accessiblePaths(): ApiResult<AccessiblePathList> =
+        fetch(endpoint(listOf(ACCESSIBLE_PATHS))) { json.decodeAccessiblePaths(it) }
+
     private suspend fun <T> fetch(target: HttpUrl, decode: (String) -> T): ApiResult<T> {
         val builder = Request.Builder().url(target)
         val request = builder.header(name = ACCEPT, value = JSON).build()
@@ -120,5 +126,6 @@ public class BuildingsApi(private val http: OkHttpClient, private val json: Json
         const val LOCATE = "locate"
         const val FLOORS = "floors"
         const val ROOMS = "rooms"
+        const val ACCESSIBLE_PATHS = "accessible-paths"
     }
 }
