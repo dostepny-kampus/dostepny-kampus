@@ -1,13 +1,10 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.account
 
-import io.github.dostepnykampus.core.data.di.IoContext
-import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
-import io.github.dostepnykampus.core.database.QueueOwnershipDao
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.network.auth.AccessTokens
@@ -25,8 +22,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
 import java.util.concurrent.atomic.AtomicReference
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -39,18 +34,15 @@ import kotlin.coroutines.CoroutineContext
  * @param vault zalogowanie zapisane do następnego uruchomienia
  * @param refresher odświeżenie tokenu dostępu
  * @param work wątek zapisu i odświeżania
- * @param adoptLegacyQueue przypisanie wpisów bez właściciela
- * @param onLogin wywołanie po zalogowaniu konta
+ * @param queue wpisy kolejki w telefonie, które sesja przekazuje zalogowanemu kontu
  */
-@Singleton
 public class AccountSession
     internal constructor(
         private val tokens: AccessTokens,
         private val vault: LoginVault,
         private val refresher: LoginRefresh,
         private val work: CoroutineContext,
-        private val adoptLegacyQueue: suspend (String) -> Unit = {},
-        private val onLogin: () -> Unit = {},
+        private val queue: QueueHandover,
     ) : RoleProvider {
         private val state = MutableStateFlow<Account>(Account.Guest)
         private val scope = CoroutineScope(SupervisorJob() + work)
@@ -59,16 +51,6 @@ public class AccountSession
         override val account: StateFlow<Account> = state.asStateFlow()
 
         private val restored = scope.launch { vault.read()?.takeIf { state.value == Account.Guest }?.let { keep(it) } }
-
-        @Inject
-        internal constructor(
-            tokens: AccessTokens,
-            vault: LoginVault,
-            refresher: LoginRefresh,
-            @IoContext work: CoroutineContext,
-            owners: QueueOwnershipDao,
-            queue: SubmissionQueue,
-        ) : this(tokens, vault, refresher, work, owners::adopt, queue::onLoggedIn)
 
         internal suspend fun awaitRestore() = restored.join()
 
@@ -80,7 +62,7 @@ public class AccountSession
         internal suspend fun signIn(login: AuthState): Boolean {
             if (!keep(login)) return false
             withContext(work) { vault.write(login) }
-            onLogin()
+            queue.onLoggedIn()
             return true
         }
 
@@ -90,13 +72,13 @@ public class AccountSession
          * @param token token JWT z Usługi logowania
          * @return `true`, gdy konto jest zalogowane tym tokenem
          */
-        public suspend fun signIn(token: String): Boolean = activate(token).also { if (it) onLogin() }
+        public suspend fun signIn(token: String): Boolean = activate(token).also { if (it) queue.onLoggedIn() }
 
         private suspend fun activate(token: String): Boolean {
             val signedIn = accountOf(token) ?: return false
             val subject = subjectOf(token)
             if (subject != null && subject != tokens.subject) {
-                withContext(work) { adoptLegacyQueue(subject) }
+                withContext(work) { queue.adopt(subject) }
             }
             tokens.signIn(token)
             state.value = signedIn
@@ -136,6 +118,15 @@ public class AccountSession
             const val RETRY_MS = 30_000L
         }
     }
+
+/** Wpisy kolejki w telefonie, które sesja konta przekazuje zalogowanemu kontu. Wymagania: US14.1, BR-1 */
+internal interface QueueHandover {
+    /** Przypisuje kontu [subject] wpisy kolejki bez właściciela. */
+    suspend fun adopt(subject: String)
+
+    /** Budzi wysyłkę kolejki po zalogowaniu konta. */
+    fun onLoggedIn()
+}
 
 /**
  * Konto z ról realmu w tokenie; token bez ról pracowniczych to Odwiedzający.

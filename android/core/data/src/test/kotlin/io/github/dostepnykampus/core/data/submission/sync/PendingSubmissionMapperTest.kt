@@ -1,9 +1,9 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.data.submission.pending
+package io.github.dostepnykampus.core.data.submission.sync
 
 import io.github.dostepnykampus.core.database.submission.PendingPhotoEntity
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity

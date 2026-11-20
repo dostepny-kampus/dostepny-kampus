@@ -21,8 +21,8 @@ Wysyłka obejmuje wpisy bieżącego konta. Pierwsze zalogowanie po migracji przy
 - `core.data.server` — wynik żądania do serwera bez typów klienta HTTP.
 - `core.data.start` — pierwsze uruchomienie aplikacji.
 - `core.data.submission.own` — własne zgłoszenia w telefonie i ich statusy.
-- `core.data.submission.pending` — zgłoszenia i edycje czekające na wysłanie.
-- `core.data.submission.sync` — kolejka zgłoszeń, jej wysyłka w tle i wyniki wysyłki.
+- `core.data.submission.pending` — poprawki zgłoszeń czekających w kolejce na wysłanie.
+- `core.data.submission.sync` — kolejka zgłoszeń z jej wierszami w bazie, wysyłką w tle i wynikami wysyłki.
 
 ## API
 

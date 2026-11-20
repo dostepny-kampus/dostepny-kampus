@@ -10,8 +10,6 @@ import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.submission.own.isOwnHistory
 import io.github.dostepnykampus.core.data.submission.own.keepingServerState
 import io.github.dostepnykampus.core.data.submission.own.toOwnSubmissionEntity
-import io.github.dostepnykampus.core.data.submission.pending.toPendingSubmissionEntity
-import io.github.dostepnykampus.core.data.submission.pending.toSubmissionContentOrNull
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import io.github.dostepnykampus.core.database.submission.PendingPhotoEntity
