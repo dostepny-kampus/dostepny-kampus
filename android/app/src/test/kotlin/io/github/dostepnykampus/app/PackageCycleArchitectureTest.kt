@@ -113,15 +113,6 @@ class PackageCycleArchitectureTest {
 
         val CYCLES =
             mapOf(
-                setOf("app", "app.navigation") to "#3538",
-                setOf(
-                    "feature.capture.location",
-                    "feature.capture.measure",
-                    "feature.capture.quick",
-                    "feature.capture.report",
-                    "feature.capture.report.edit",
-                    "feature.capture.report.form",
-                ) to "#3538",
                 setOf(
                     "core.network",
                     "core.network.auth",
