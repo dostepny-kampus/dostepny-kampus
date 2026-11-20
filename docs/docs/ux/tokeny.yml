@@ -440,7 +440,7 @@ karta_budynku:
 # Jasny podkład to wariant „żywy”: wyraźna zieleń i woda, budynki spoza PWr od powiększenia 13,
 # nazwy dzielnic wielkimi literami, budynki PWr najbardziej nasycone na mapie.
 # Nie są to role Material 3: aplikacja wstawia je do stylu mapy, a nie do motywu.
-# W jasnym motywie kontur PWr i ścieżka mają barwę `primary`. Ciemny to wariant „żywy ciemny”: łupkowe tło
+# W jasnym motywie kontur PWr ma barwę `primary`. Ciemny to wariant „żywy ciemny”: łupkowe tło
 # (nie czarne), drogi jaśniejsze od tła, wyraźna woda i zieleń, budynki PWr najjaśniejsze na mapie. Napisy: Noto Sans z obwódką.
 # Skrypt strony jeszcze nie sprawdza tej sekcji; pary niżej mają ten sam zapis
 # co `kontrast.pary`, a progi są te same (tekst 7:1, nietekst 3:1).
@@ -462,6 +462,21 @@ mapa:
       - {powiekszenie: 18, dp: 24}
       - {powiekszenie: 19, dp: 28}
     zrodlo: US16.1, NFR-16, NFR-17, NFR-21
+  # Ścieżka dostosowana na mapie V1: pod budynkami PWr, od powiększenia `od_powiekszenia`. Szerokość rośnie
+  # wykładniczo między progami: `sciezka_brzeg` to cała wstęga, `sciezka_wnetrze` leży na niej węższa, więc z każdej
+  # strony zostaje brzeg. Chodniki OSM pod nią mają krycie `chodniki_krycie`, żeby nie wyglądały jak ścieżka.
+  sciezka:
+    od_powiekszenia: 15.5
+    wstega_dp:
+      - {powiekszenie: 15.5, dp: 3.2}
+      - {powiekszenie: 17, dp: 5.2}
+      - {powiekszenie: 19, dp: 16}
+    wnetrze_dp:
+      - {powiekszenie: 15.5, dp: 1.2}
+      - {powiekszenie: 17, dp: 3.2}
+      - {powiekszenie: 19, dp: 12.5}
+    chodniki_krycie: 0.4
+    zrodlo: US1.4, NFR-16, NFR-21
   # Przygaszony budynek PWr (inne budynki przy zaznaczonym budynku i przy planie piętra) zostaje w swojej barwie,
   # bledszy: tło `pwr` albo `pwr_podstawowy` z kryciem `tlo_krycie`, kontur `pwr_kontur` z kryciem `kontur_krycie`,
   # grubość konturu i podpis symbolu bez zmian. Barw `budynek` i `budynek_kontur` przygaszony budynek PWr nie dostaje.
@@ -503,7 +518,10 @@ mapa:
     napis_woda: {jasny: "#2B454D", ciemny: "#96B9CC", uzycie: nazwa rzeki}
     napis_dzielnica: {jasny: "#4E5A5E", ciemny: "#A9B2B6", uzycie: "nazwy dzielnic wielkimi literami, z odstępem liter"}
     obwodka: {jasny: "#FFFFFF", ciemny: "#20272B", uzycie: obwódka napisów}
-    sciezka: {jasny: "#004E5E", ciemny: "#8AA7B2", uzycie: ścieżka dostosowana}
+    # Ścieżka dostosowana: piaskowa wstęga z cienkimi turkusowymi brzegami. Piasku nie ma nigdzie indziej na mapie,
+    # ale do lądu ma tylko ok. 1,1:1, więc ścieżkę wyznaczają brzegi (≥ 3:1 do lądu, zieleni, ulicy i piasku).
+    sciezka_brzeg: {jasny: "#3D7C88", ciemny: "#6E95A1", uzycie: brzegi ścieżki dostosowanej}
+    sciezka_wnetrze: {jasny: "#EFE2C4", ciemny: "#4A4334", uzycie: wnętrze ścieżki dostosowanej}
     tusz: {jasny: "#181C1D", ciemny: "#D5DADC", uzycie: "kontur znaków wejść i barier, znak „Niedostępne”, ikony pochylni i planu"}
     papier: {jasny: "#FFFFFF", ciemny: "#20272B", uzycie: "obwódka znaków wejść i barier, wnętrze znaczników"}
     # Znaki wejść i barier na mapie i w legendzie. Barwa powtarza kształt i słowo, których nie zastępuje (NFR-21).
@@ -539,8 +557,10 @@ mapa:
     - {kolor: pwr_wybrany, tlo: pwr, rodzaj: komponent, gdzie: obrys wybranego budynku do wypełnienia}
     - {kolor: pwr_wybrany, tlo: pwr_podstawowy, rodzaj: komponent, gdzie: obrys wybranego budynku podstawowego do wypełnienia}
     - {kolor: pwr_wybrany, tlo: lad, rodzaj: komponent, gdzie: obrys wybranego budynku na podkładzie}
-    - {kolor: sciezka, tlo: lad, rodzaj: komponent, gdzie: ścieżka dostosowana na podkładzie}
-    - {kolor: sciezka, tlo: droga, rodzaj: komponent, gdzie: ścieżka dostosowana na ulicy}
+    - {kolor: sciezka_brzeg, tlo: lad, rodzaj: komponent, gdzie: brzeg ścieżki dostosowanej na podkładzie}
+    - {kolor: sciezka_brzeg, tlo: zielen, rodzaj: komponent, gdzie: brzeg ścieżki dostosowanej przez trawnik}
+    - {kolor: sciezka_brzeg, tlo: droga, rodzaj: komponent, gdzie: brzeg ścieżki dostosowanej na ulicy}
+    - {kolor: sciezka_brzeg, tlo: sciezka_wnetrze, rodzaj: komponent, gdzie: brzeg do wnętrza ścieżki dostosowanej}
     - {kolor: tusz, tlo: lad, rodzaj: komponent, gdzie: "znacznik wejścia, ikona pochylni"}
     - {kolor: tusz, tlo: pwr, rodzaj: komponent, gdzie: znacznik wejścia na budynku PWr}
     - {kolor: tusz, tlo: pwr_podstawowy, rodzaj: komponent, gdzie: znacznik wejścia na budynku podstawowym}
