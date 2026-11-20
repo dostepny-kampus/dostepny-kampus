@@ -93,8 +93,7 @@ public final class ForeignMarkerSteps {
             this.http.perform(
                 MockMvcRequestBuilders.post("/sync/push")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .with(new AsCollector())
-                    .content(
+                    .with(new AsCollector()).content(
                         String.join(
                             "",
                             "{\"operations\":[{\"clientOperationId\":\"",
