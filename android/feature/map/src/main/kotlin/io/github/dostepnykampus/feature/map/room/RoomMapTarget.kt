@@ -27,7 +27,7 @@ fun RoomCard.mapTarget(): RoomMapTarget {
 
 /** Kamera kroku z miejscem na kartę pod mapą. Wymagania: US18.2 */
 internal fun OpenRoom.cameraForRoom(isRoomOnMap: Boolean, cover: Dp): MapCamera? {
-    val target = card.mapTarget() ?: return null
+    val target = card.mapTarget()
     val camera = MapCamera(center = target.point, zoom = ENTRANCE_ZOOM)
     return when {
         !isRoomOnMap -> camera
