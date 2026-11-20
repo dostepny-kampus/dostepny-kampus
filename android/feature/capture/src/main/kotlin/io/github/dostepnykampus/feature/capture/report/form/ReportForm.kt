@@ -14,7 +14,6 @@ import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
-import io.github.dostepnykampus.feature.capture.measure.place
 import kotlinx.serialization.Serializable
 
 /**

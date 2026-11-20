@@ -33,7 +33,6 @@ import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
-import io.github.dostepnykampus.feature.capture.measure.place
 import io.github.dostepnykampus.feature.capture.photo.LocalPhotoDecodeContext
 import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
 import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit

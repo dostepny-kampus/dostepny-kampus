@@ -30,7 +30,6 @@ import io.github.dostepnykampus.core.geo.building.BuildingHint
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.measure.PlaceChoice
-import io.github.dostepnykampus.feature.capture.measure.place
 import kotlin.math.roundToInt
 
 /**

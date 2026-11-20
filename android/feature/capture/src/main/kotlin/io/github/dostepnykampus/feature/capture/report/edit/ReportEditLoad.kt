@@ -13,8 +13,6 @@ import io.github.dostepnykampus.core.data.submission.pending.PendingEdits
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
-import io.github.dostepnykampus.feature.capture.measure.place
-import io.github.dostepnykampus.feature.capture.quick.content
 import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
 import io.github.dostepnykampus.feature.capture.report.form.ReportForm
 import io.github.dostepnykampus.feature.capture.report.form.ReportPlace

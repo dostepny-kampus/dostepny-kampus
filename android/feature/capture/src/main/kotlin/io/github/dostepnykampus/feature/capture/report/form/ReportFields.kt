@@ -33,7 +33,6 @@ import io.github.dostepnykampus.core.designsystem.marking.descriptionRes
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.capture.R
-import io.github.dostepnykampus.feature.capture.measure.place
 import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
 import java.util.Locale
 import kotlin.math.roundToInt

@@ -14,7 +14,6 @@ import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
-import io.github.dostepnykampus.feature.capture.quick.content
 import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull

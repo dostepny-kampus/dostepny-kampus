@@ -21,7 +21,6 @@ import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
-import io.github.dostepnykampus.feature.capture.quick.content
 import io.github.dostepnykampus.feature.capture.report.form.ReportFormViewModel
 import org.junit.Assert.assertEquals
 import org.junit.Rule

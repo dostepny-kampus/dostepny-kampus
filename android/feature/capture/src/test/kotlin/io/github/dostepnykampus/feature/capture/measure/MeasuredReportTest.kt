@@ -17,7 +17,6 @@ import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.feature.capture.location.BuildingLookup
-import io.github.dostepnykampus.feature.capture.quick.content
 import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
 import io.github.dostepnykampus.feature.capture.report.edit.ReportStage
 import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
