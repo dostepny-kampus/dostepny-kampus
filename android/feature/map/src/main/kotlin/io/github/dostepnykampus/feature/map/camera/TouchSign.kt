@@ -11,6 +11,8 @@ import io.github.dostepnykampus.feature.map.style.BARRIERS_LAYER
 import io.github.dostepnykampus.feature.map.style.ENTRANCES_LAYER
 import io.github.dostepnykampus.feature.map.style.PLAN_ROOM_ID
 import io.github.dostepnykampus.feature.map.style.PLAN_SIGNS_LAYER
+import io.github.dostepnykampus.feature.map.style.ROOM_STEPS_LAYER
+import io.github.dostepnykampus.feature.map.style.ROOM_STEP_INDEX
 
 /**
  * Znak mapy V1, który reaguje na dotknięcie, z warstwą [layer] i właściwością [idKey] z identyfikatorem obiektu.
@@ -27,4 +29,7 @@ enum class TouchSign(internal val layer: String, internal val idKey: String) {
 
     /** Znak windy, toalety dostosowanej albo schodów na planie piętra. */
     PLAN(layer = PLAN_SIGNS_LAYER, idKey = PLAN_ROOM_ID),
+
+    /** Numer kroku drogi do sali. */
+    ROOM_STEP(layer = ROOM_STEPS_LAYER, idKey = ROOM_STEP_INDEX),
 }

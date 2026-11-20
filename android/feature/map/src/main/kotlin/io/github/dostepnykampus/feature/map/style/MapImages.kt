@@ -71,3 +71,42 @@ internal data class MapImages(
     val labelSize: Float,
     val words: List<String> = emptyList(),
 )
+
+private const val ROOM_STEP_SIZE_DP = 32f
+private const val ROOM_STEP_NUMBER_DP = 16f
+private const val ROOM_STEP_COUNT = 3
+
+/** Obrazy numerów kroków do sali, po jednej wersji dla obu stanów. Wymagania: US18.2, NFR-21 */
+internal fun roomStepImages(images: MapImages): Map<String, Bitmap> =
+    buildMap {
+        repeat(ROOM_STEP_COUNT) { index ->
+            listOf(false, true).forEach { selected ->
+                val key = roomStepImage(index = index, selected = selected)
+                put(key, roomStepBitmap(number = index + 1, selected = selected, images = images))
+            }
+        }
+    }
+
+private fun roomStepBitmap(number: Int, selected: Boolean, images: MapImages): Bitmap {
+    val density = images.density
+    val size = ceil(ROOM_STEP_SIZE_DP * density).toInt()
+    val center = size / 2f
+    val radius = center - density
+    val colors = images.colors
+    val bitmap = createBitmap(size, size)
+    val canvas = Canvas(bitmap)
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    paint.color = (if (selected) colors.pwrKontur else colors.obwodka).toArgb()
+    canvas.drawCircle(center, center, radius, paint)
+    paint.color = colors.napisPwr.toArgb()
+    paint.style = Paint.Style.STROKE
+    paint.strokeWidth = density
+    canvas.drawCircle(center, center, radius, paint)
+    paint.style = Paint.Style.FILL
+    paint.typeface = Typeface.DEFAULT_BOLD
+    paint.textAlign = Paint.Align.CENTER
+    paint.textSize = ROOM_STEP_NUMBER_DP * density
+    paint.color = (if (selected) colors.obwodka else colors.napisPwr).toArgb()
+    canvas.drawText(number.toString(), center, center - (paint.ascent() + paint.descent()) / 2f, paint)
+    return bitmap
+}

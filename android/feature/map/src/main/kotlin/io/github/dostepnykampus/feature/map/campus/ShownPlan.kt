@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.campus
 
+import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.room.RoomList
 
@@ -26,3 +27,9 @@ data class ShownPlan(
     val rooms: Map<String, RoomList>,
     val room: String? = null,
 )
+
+/**
+ * Znacznik kroku [index] na planie w punkcie [point]. [isSelected] oznacza aktywny krok, a [isDestination]
+ * ostatni krok przy sali, którego znak odsuwa się od numeru pomieszczenia. Wymagania: US18.2.
+ */
+data class RoomStepMarker(val index: Int, val point: GeoPoint, val isSelected: Boolean, val isDestination: Boolean)

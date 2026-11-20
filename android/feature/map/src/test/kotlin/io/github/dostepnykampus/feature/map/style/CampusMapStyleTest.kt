@@ -33,7 +33,7 @@ class CampusMapStyleTest {
         val layers = style.array("layers").map { it.jsonObject }
         val below = listOf("lad") + BASEMAP_LAYERS + PATHS + listOf(BUILDINGS_LAYER, "kontury") + PLAN + SELECTED
         val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)
-        val expected = below + marks + listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
+        val expected = below + marks + listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER, ROOM_STEPS_LAYER)
         assertEquals(expected, layers.map { it.text("id") })
         assertEquals("#E8EDEE", layers.first().obj("paint").text("background-color"))
     }
@@ -150,15 +150,15 @@ class CampusMapStyleTest {
         val bare = Json.parseToJsonElement(styled(MapSelection()))
         val base = listOf("lad") + BASEMAP_LAYERS + PATHS + listOf(BUILDINGS_LAYER, "kontury") + PLAN
         val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)
-        val pin = listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
+        val top = listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER, ROOM_STEPS_LAYER)
         val bareIds = bare.jsonObject.array("layers").map { it.jsonObject.text("id") }
-        assertEquals(base + SELECTED + marks + pin, bareIds)
+        assertEquals(base + SELECTED + marks + top, bareIds)
         val sources =
             setOf(BASEMAP, "budynki", "podpisy", "wejscia", "bariery", PATHS_SOURCE, CHOSEN_SOURCE, PLAN_SOURCE)
-        assertEquals(sources, bare.jsonObject.obj("sources").keys)
+        assertEquals(sources + ROOM_STEPS_SOURCE, bare.jsonObject.obj("sources").keys)
         val entrance = SelectedEntrance(id = "w1", location = STYLE_ORIGIN, label = "Główne", buildingSymbol = "C-13")
         val full = Json.parseToJsonElement(styled(data.selection(building = "C-13", entrance = entrance)))
-        val expected = base + SELECTED + marks + pin
+        val expected = base + SELECTED + marks + top
         assertEquals(expected, full.jsonObject.array("layers").map { it.jsonObject.text("id") })
     }
 

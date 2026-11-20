@@ -48,6 +48,8 @@ import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.camera.TouchSign
+import io.github.dostepnykampus.feature.map.campus.MapSelection
+import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
 import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
@@ -56,6 +58,7 @@ import io.github.dostepnykampus.feature.map.room.OpenRoom
 import io.github.dostepnykampus.feature.map.room.RoomCardLayer
 import io.github.dostepnykampus.feature.map.room.RoomSheetSources
 import io.github.dostepnykampus.feature.map.room.cameraForRoom
+import io.github.dostepnykampus.feature.map.room.markersOn
 
 private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"
@@ -318,7 +321,7 @@ private fun CampusMap(
                 signs.rememberPinnedEntrance(ui.catalog, state.scene.selection.entrance, entrance.onBuildingSelect)
             mapView.Show(
                 data = state.scene.data,
-                selection = state.scene.selection.copy(entrance = pinned, barrier = signs.barrierId, plan = plan.shown),
+                selection = signs.overlay(base = state.scene.selection, plan = plan.shown, room = room, pin = pinned),
                 move = move,
                 inset = state.inset,
                 onCameraIdle = { view ->
@@ -353,11 +356,29 @@ private fun CampusMap(
     }
 }
 
+private fun SignSheetState.overlay(
+    base: MapSelection,
+    plan: ShownPlan?,
+    room: OpenRoom?,
+    pin: SelectedEntrance?,
+): MapSelection {
+    val card = room?.card
+    val building = card?.run { found.building }
+    val floor = plan?.takeIf { it.building == building }?.floor
+    val markers = floor?.let { card?.markersOn(it) }.orEmpty()
+    return base.copy(entrance = pin, barrier = barrierId, plan = plan, roomSteps = markers)
+}
+
 private fun SignSheetState.signTouch(room: OpenRoom?, dismiss: () -> Unit): (TouchSign, String) -> Unit =
     { sign, id ->
-        room?.run { onClose() }
-        open(sign, id)
-        dismiss()
+        if (sign == TouchSign.ROOM_STEP) {
+            val step = id.toIntOrNull()
+            if (room != null && step != null) room.onStep(step)
+        } else {
+            room?.run { onClose() }
+            open(sign, id)
+            dismiss()
+        }
     }
 
 @Composable

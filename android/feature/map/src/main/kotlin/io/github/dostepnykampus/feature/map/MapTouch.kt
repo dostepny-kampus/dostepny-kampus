@@ -40,7 +40,8 @@ internal fun chooseTouch(
     signsNear: (TouchSign) -> List<String>,
     outlines: OutlinesQuery,
 ): MapTouch =
-    firstSign(signsUnder)
+    signsUnder(TouchSign.ROOM_STEP).firstOrNull()?.let { MapTouch.Sign(sign = TouchSign.ROOM_STEP, id = it) }
+        ?: firstSign { sign -> if (sign == TouchSign.ROOM_STEP) emptyList() else signsUnder(sign) }
         ?: firstSign(signsNear)
         ?: MapTouch.Outlines(hit = outlines.hit(), near = outlines.near)
 
