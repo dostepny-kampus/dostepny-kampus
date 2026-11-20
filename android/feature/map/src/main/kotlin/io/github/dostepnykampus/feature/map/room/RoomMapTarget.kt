@@ -41,5 +41,7 @@ internal fun OpenRoom.cameraForRoom(isRoomOnMap: Boolean, cover: Dp): MapCamera?
 internal fun RoomCard.markersOn(floor: String): List<RoomStepMarker> =
     (0 until stepCount).mapNotNull { index ->
         val target = copy(step = index).mapTarget()
-        target.point.takeIf { target.floor == floor }?.let { RoomStepMarker(index = index, point = it, selected = index == step) }
+        target.point.takeIf { target.floor == floor }?.let {
+            RoomStepMarker(index = index, point = it, selected = index == step, isDestination = index == stepCount - 1)
+        }
     }

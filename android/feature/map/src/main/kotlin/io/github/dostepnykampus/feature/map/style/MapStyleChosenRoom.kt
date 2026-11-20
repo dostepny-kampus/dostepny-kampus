@@ -80,6 +80,8 @@ internal const val ROOM_STEPS_SOURCE = "kroki_sali"
 internal const val ROOM_STEPS_LAYER = "plan_kroki_sali"
 internal const val ROOM_STEP_INDEX = "step"
 private const val ROOM_STEP_IMAGE = "image"
+internal const val ROOM_STEP_OFFSET = "room_step_offset"
+private const val ROOM_LABEL_CLEARANCE_DP = 30.0
 
 /** Nazwa obrazu dla [index] kroku i jego stanu [selected]. Wymagania: US18.2 */
 internal fun roomStepImage(index: Int, selected: Boolean): String = "krok: $index/$selected"
@@ -92,6 +94,7 @@ internal fun roomStepsFeatures(steps: List<RoomStepMarker>): JsonElement =
                 buildJsonObject {
                     put(key = ROOM_STEP_INDEX, value = step.index.toString())
                     put(key = ROOM_STEP_IMAGE, value = roomStepImage(index = step.index, selected = step.selected))
+                    if (step.isDestination) put(key = ROOM_STEP_OFFSET, element = numbers(0.0, -ROOM_LABEL_CLEARANCE_DP))
                 }
             Feature(Point(step.point.toPosition()), properties)
         },
@@ -103,5 +106,10 @@ internal fun roomStepsLayer(): JsonObject =
         id = ROOM_STEPS_LAYER,
         source = ROOM_STEPS_SOURCE,
         image = property(ROOM_STEP_IMAGE),
-        layout = arrayOf("icon-allow-overlap" to JsonPrimitive(true), "icon-ignore-placement" to JsonPrimitive(true)),
+        layout =
+            arrayOf(
+                "icon-allow-overlap" to JsonPrimitive(true),
+                "icon-ignore-placement" to JsonPrimitive(true),
+                "icon-offset" to offsetOr(key = ROOM_STEP_OFFSET, fallback = numbers(0.0, 0.0)),
+            ),
     )

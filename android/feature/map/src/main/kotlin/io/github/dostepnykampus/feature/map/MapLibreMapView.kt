@@ -70,6 +70,7 @@ import io.github.dostepnykampus.feature.map.style.Basemap
 import io.github.dostepnykampus.feature.map.style.MapImages
 import io.github.dostepnykampus.feature.map.style.MapStyleColors
 import io.github.dostepnykampus.feature.map.style.MapStyleTarget
+import io.github.dostepnykampus.feature.map.style.ROOM_STEP_OFFSET
 import io.github.dostepnykampus.feature.map.style.SelectionLook
 import io.github.dostepnykampus.feature.map.style.asStyleText
 import io.github.dostepnykampus.feature.map.style.campusMapShell
@@ -418,6 +419,7 @@ object MapLibreMapView : CampusMapView {
                 .getProperty(BARRIER_OFFSET)
                 ?.takeIf { it.isJsonArray && isBeside(feature.getStringProperty(BARRIER_BUILDING)) }
                 ?.asJsonArray
+                ?: feature.getProperty(ROOM_STEP_OFFSET)?.takeIf { it.isJsonArray }?.asJsonArray
         val shiftX = offset?.run { get(0).asFloat * pxPerDp } ?: 0f
         val shiftY = offset?.run { get(1).asFloat * pxPerDp } ?: 0f
         return SignPoint(id = id, dx = screen.x + shiftX - at.x, dy = screen.y + shiftY - at.y)
