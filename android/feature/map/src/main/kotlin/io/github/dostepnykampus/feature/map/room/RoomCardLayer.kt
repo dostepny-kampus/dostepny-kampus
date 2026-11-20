@@ -23,16 +23,28 @@ import io.github.dostepnykampus.feature.map.plan.PlanReport
 import io.github.dostepnykampus.feature.map.plan.PlanSign
 import io.github.dostepnykampus.feature.map.plan.PlanSignSheet
 
+/** Szczegóły dostępne z kroku karty sali. Wymagania: US18.2 */
+internal enum class RoomStepDetail(val title: Int) {
+    ENTRANCE(R.string.mapa_sala_szczegoly_wejscia),
+    LIFT(R.string.mapa_sala_szczegoly_windy),
+}
+
+/** Dane arkuszy drogi i ich przejścia. Wymagania: US18.2 */
+internal data class RoomSheetSources(
+    val onBuilding: (String) -> Unit,
+    val barriers: ShownBarriers,
+    val actions: EntranceActions,
+)
+
 /** Karta [room] albo otwarte z niej szczegóły kroku, z powrotem do tego kroku. Wymagania: US18.2 */
 @Composable
 internal fun RoomCardLayer(
     room: OpenRoom,
-    onBuilding: (String) -> Unit,
-    barriers: ShownBarriers,
-    actions: EntranceActions,
+    sources: RoomSheetSources,
     modifier: Modifier = Modifier,
     onShowMap: (() -> Unit)? = null,
 ) {
+    val (onBuilding, barriers, actions) = sources
     val card = room.card
     var detail by rememberSaveable(card.found.building, card.found.room.id) { mutableStateOf<RoomStepDetail?>(null) }
     val exits = SheetExits(onClose = { detail = null }, onBuilding = onBuilding)
