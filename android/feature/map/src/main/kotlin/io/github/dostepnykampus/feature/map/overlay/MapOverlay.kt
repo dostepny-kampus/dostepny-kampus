@@ -91,6 +91,7 @@ private fun NoticeAndAttribution(
  * @param motion ruchy mapy do budynku; nowy napis o zmianie terenu czeka do końca przelotu
  * @param start elementy przy lewej krawędzi pod przyciskiem terenu, np. kolumna pięter; nie ma ich przy otwartym
  *  panelu terenu
+ * @param controlsCover część dołu zasłonięta przez arkusz V1, poza obszarem przycisków i kolumny pięter
  * @param content elementy nad nakładką
  */
 @Composable
