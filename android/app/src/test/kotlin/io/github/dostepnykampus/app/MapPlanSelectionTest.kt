@@ -34,6 +34,7 @@ import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.entrance.BuildingEntrancesViewModel
 import io.github.dostepnykampus.feature.map.entrance.EntranceLiftViewModel
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import io.github.dostepnykampus.feature.map.plan.MapPlanViewModel
 import kotlinx.coroutines.flow.flowOf
@@ -57,12 +58,15 @@ class MapPlanSelectionTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private var shownPlan: String? = null
+    private var seenFocus: MapFocus? = null
+    private var lastCamera: MapCamera? = null
     private var onIdle: ((MapCamera) -> Unit)? = null
     private var onBuildings: (List<String>) -> Unit = {}
     private var onSign: (TouchSign, String) -> Unit = { _, _ -> }
     private val fakeMap =
-        CampusMapView { _, selection, _, _, idle, touch, sign, modifier: Modifier ->
+        CampusMapView { _, selection, move, _, idle, touch, sign, modifier: Modifier ->
             shownPlan = selection.plan?.building
+            lastCamera = move.camera
             onIdle = idle
             onBuildings = touch
             onSign = sign
@@ -72,6 +76,24 @@ class MapPlanSelectionTest {
     /** Scenariusz: przegladanie-mapy.feature: Otwarta karta budynku albo sali trzyma plan tego budynku. */
     @Test
     fun tracksPlanWithCardAndEntrance() {
+        startShell()
+        move(INSIDE_A1, "A-1")
+        tap(listOf("B-1"), "B-1")
+        compose.onNodeWithText("Karta B-1").assertIsDisplayed()
+        move(FAR_WEST, null)
+        compose.onNodeWithText("Karta B-1").assertIsDisplayed()
+        move(INSIDE_A1, "B-1")
+        tap(listOf("B-8"), null)
+        compose.onNodeWithText("Karta B-8").assertIsDisplayed()
+        tap(emptyList(), "A-1")
+        compose.onNodeWithText("Karta B-8").assertDoesNotExist()
+        compose.runOnUiThread { onSign(TouchSign.ENTRANCE, "node/b8") }
+        waitPlan(expected = null, step = "wejście node/b8")
+        tap(emptyList(), "A-1")
+        assertEquals("plan po zamknięciu arkusza wejścia wraca do A-1", "A-1", shownPlan)
+    }
+
+    private fun startShell() {
         val repo =
             BuildingCatalogRepository(
                 ioContext = EmptyCoroutineContext,
@@ -87,7 +109,8 @@ class MapPlanSelectionTest {
             DostepnyKampusTheme {
                 AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route: NavKey ->
                     when (route) {
-                        is MapRoute ->
+                        is MapRoute -> {
+                            seenFocus = route.focus
                             HiltMapScreen(
                                 focus = route.focus,
                                 viewModel = mapModel,
@@ -96,53 +119,54 @@ class MapPlanSelectionTest {
                                 liftViewModel = liftModel,
                                 mapView = fakeMap,
                             )
+                        }
 
-                        is BuildingRoute -> Text("Karta ${route.symbol}")
+                        is BuildingRoute -> {
+                            Text("Karta ${route.symbol}")
+                        }
 
-                        else -> Unit
+                        else -> {}
                     }
                 }
             }
         }
-        compose.waitUntil { onIdle != null }
-        move(INSIDE_A1, "A-1")
-        tap(listOf("B-1"), "B-1")
-        compose.onNodeWithText("Karta B-1").assertIsDisplayed()
-        move(FAR_WEST, null)
-        compose.onNodeWithText("Karta B-1").assertIsDisplayed()
-        move(INSIDE_A1, "B-1")
-        tap(listOf("B-8"), null)
-        compose.onNodeWithText("Karta B-8").assertIsDisplayed()
-        tap(emptyList(), "A-1")
         compose.waitForIdle()
-        compose.onNodeWithText("Karta B-8").assertDoesNotExist()
-        compose.runOnUiThread { onSign(TouchSign.ENTRANCE, "node/b8") }
-        compose.waitUntil { shownPlan == null }
-        tap(emptyList(), "A-1")
-        assertEquals("plan po zamknięciu arkusza wejścia wraca do A-1", "A-1", shownPlan)
+        compose.waitUntil("widok mapy gotowy", timeoutMillis = WAIT_MS) { onIdle != null }
     }
 
     private fun move(center: GeoPoint, expected: String?) {
         compose.runOnUiThread { onIdle?.invoke(MapCamera(center = center, zoom = 18.0)) }
-        compose.waitUntil { shownPlan == expected }
+        waitPlan(expected = expected, step = "ruch")
     }
 
     private fun tap(symbols: List<String>, expected: String?) {
         compose.runOnUiThread { onBuildings(symbols) }
-        compose.waitUntil { shownPlan == expected }
+        waitPlan(expected = expected, step = "dotknięcie $symbols")
+    }
+
+    private fun waitPlan(expected: String?, step: String) {
+        compose.waitForIdle()
+        compose.waitUntil(
+            "$step: plan=$shownPlan, focus=$seenFocus, camera=$lastCamera",
+            timeoutMillis = WAIT_MS,
+        ) {
+            shownPlan == expected
+        }
     }
 
     private class FakePlans : FloorPlans {
         override suspend fun download(symbol: String): Boolean = true
 
         override suspend fun floors(symbol: String): FloorList? =
-            FloorList(SOURCE, listOf(Floor("P0", "Parter", 0))).takeIf { symbol in setOf("A-1", "B-1") }
+            FloorList(SOURCE, listOf(Floor(id = "P0", label = "Parter", order = 0)))
+                .takeIf { symbol in setOf("A-1", "B-1") }
 
         override suspend fun rooms(symbol: String, floor: String): RoomList? =
             RoomList(SOURCE, GeoMultiPolygon(emptyList()), emptyList()).takeIf { symbol in setOf("A-1", "B-1") }
     }
 
     private companion object {
+        const val WAIT_MS = 5_000L
         const val SOURCE = "Politechnika Wrocławska"
         val INSIDE_A1 = GeoPoint(longitude = 17.0502, latitude = 51.1102)
         val FAR_WEST = GeoPoint(longitude = 17.048, latitude = 51.1102)
@@ -152,7 +176,7 @@ class MapPlanSelectionTest {
                 buildings = listOf(square("A-1", 17.0500), square("B-1", 17.0505), square("B-8", 17.0510)),
                 detailed = setOf("A-1", "B-1"),
             )
-        val GEOJSON =
+        const val GEOJSON =
             """{"type":"FeatureCollection","attribution":"© OSM","features":[""" +
                 """{"type":"Feature","properties":{"kind":"building","symbols":["B-8"],"osm_id":"way/b8"},""" +
                 """"geometry":{"type":"Polygon","coordinates":[[[17.051,51.11],[17.0514,51.11],""" +
@@ -164,7 +188,8 @@ class MapPlanSelectionTest {
         fun square(symbol: String, west: Double): Building {
             val east = west + 0.0004
             val pts = listOf(west to 51.11, east to 51.11) + listOf(east to 51.1104, west to 51.1104, west to 51.11)
-            return Building(symbol, null, GeoPolygon(listOf(pts.map { (lon, lat) -> GeoPoint(lon, lat) })))
+            val outline = GeoPolygon(listOf(pts.map { (lon, lat) -> GeoPoint(longitude = lon, latitude = lat) }))
+            return Building(symbol = symbol, name = null, outline = outline)
         }
     }
 }
