@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.feature.map.R
@@ -35,7 +36,11 @@ internal fun RoomCardSheet(
     val found = card.found
     val title = stringResource(R.string.mapa_sala, found.room.number.orEmpty())
     MapSheet(modifier = modifier, isFull = onShowMap != null) {
-        if (onShowMap == null) MapSheetHeader(title = title, onClose = onClose) else BackHeader(title, onBack = onClose)
+        if (onShowMap == null) {
+            MapSheetHeader(title = title, onClose = onClose)
+        } else {
+            BackHeader(title = title, onBack = onClose, horizontalPadding = 0.dp)
+        }
         Text(text = found.roomDetail(), style = MaterialTheme.typography.bodyLarge)
         BuildingLink(symbol = found.building, onClick = { onBuilding(found.building) })
         Text(
