@@ -87,18 +87,17 @@ internal fun AppNavigator.HiltMapScreen(
             EntranceActions(
                 onShow = liftViewModel::show,
                 lift = lift,
-                onBuildingSelect = planViewModel::selectEntrance,
             ),
+        onPlanSelect = planViewModel::select,
     )
 }
 
 /**
- * V1 ze stanem [state] i zaznaczeniem [focus] z trasy; [onListChange] zapisuje widok, mapę albo listę, [onSearch]
- * liczy wyszukiwanie. Budynek z listy przy TalkBack otwiera V2 od razu na pełnym ekranie. Przyciski i podpis OSM stoją
- * nad arkuszem V2; bez arkusza i pod arkuszem na cały ekran przy dużej czcionce V1 liczy widok bez arkusza.
- * [mapView] to MapLibre albo podróbka w testach, [plan] to plan piętra przy środku mapy, [onCamera] dostaje widok po
- * ruchu kamery, [onFloorChoose] piętro wybrane w kolumnie pięter, a [onMapHide] zejście mapy z ekranu. Zgłoszenie
- * przy wejściu z arkusza wejścia prowadzi do V4 albo L1, a [entrance] podaje arkuszowi windę za drzwiami.
+ * V1 ze stanem [state] i zaznaczeniem [focus] z trasy; [onListChange] zapisuje widok, [onSearch] liczy wyszukiwanie.
+ * Budynek z listy przy TalkBack otwiera V2 od razu na pełnym ekranie. Przyciski i podpis OSM stoją nad arkuszem V2.
+ * [mapView] to MapLibre albo podróbka, [plan] to plan piętra przy środku mapy, [onCamera] widok po ruchu kamery,
+ * [onFloorChoose] piętro z kolumny pięter, [onMapHide] zejście mapy z ekranu, [onPlanSelect] budynek trzymający plan.
+ * Zgłoszenie z arkusza wejścia prowadzi do V4 albo L1, a [entrance] podaje arkuszowi windę za drzwiami.
  *
  * Wymagania: US1.1, US2.1, NFR-19, US3.3, US4.6, US14.2, US18.1
  */
@@ -113,6 +112,7 @@ internal fun AppNavigator.MapScreen(
     onCamera: (MapCamera) -> Unit = {},
     onFloorChoose: (String, String) -> Unit = { _, _ -> },
     onMapHide: () -> Unit = {},
+    onPlanSelect: (String?) -> Unit = {},
     entrance: EntranceActions = EntranceActions(),
     room: OpenRoom? = null,
     onOpenRoom: ((FoundRoom) -> Unit)? = null,
@@ -142,6 +142,7 @@ internal fun AppNavigator.MapScreen(
         onCamera = onCamera,
         onFloorChoose = onFloorChoose,
         onMapHide = onMapHide,
+        onPlanSelect = onPlanSelect,
         onCardReturn = { returnToCard(it) },
         sheetCover = LocalSheetPadding.current.shownCover.takeUnless { isFullOnly },
         onRoomClick = onOpenRoom ?: { found -> showOnMap(found.focus()) },

@@ -172,9 +172,9 @@ class MapPlanTest {
             val shown = collected(plan, CLOSE_CATALOG)
             plan.moveTo(INSIDE_A)
             val initial = shown.value?.building
-            plan.show(MapFocus.Building(symbol = "B-8"))
+            plan.select("B-8")
             val selected = shown.value?.building
-            plan.show(null)
+            plan.select(null)
             assertEquals(listOf("A", null, "A"), listOf(initial, selected, shown.value?.building), "Wybrany podstawowy")
         }
 
@@ -184,30 +184,13 @@ class MapPlanTest {
             val plan = MapPlan(Plans(setOf("A", "B")), entrances())
             val shown = collected(plan, CLOSE_CATALOG)
             plan.moveTo(INSIDE_A)
-            plan.show(MapFocus.Building(symbol = "B"))
+            plan.select("B")
             val switched = shown.value?.building
             plan.moveTo(FAR_WEST)
             val hiddenFar = shown.value?.building
             plan.moveTo(INSIDE_A)
-            plan.show(null)
+            plan.select(null)
             assertEquals(listOf("B", null, "A"), listOf(switched, hiddenFar, shown.value?.building), "Wybrana karta")
-        }
-
-    @Test
-    fun hidesPlanForBasicEntrance() =
-        runTest(UnconfinedTestDispatcher()) {
-            val plan = MapPlan(Plans(setOf("A")), entrances())
-            val shown = collected(plan, CLOSE_CATALOG)
-            plan.moveTo(INSIDE_A)
-            plan.show(MapFocus.Entrance(id = "e1", buildingSymbol = "B-8"))
-            val withFocus = shown.value?.building
-            plan.selectEntrance(null)
-            val closedFocus = shown.value?.building
-            plan.selectEntrance("B-8")
-            val fromPin = shown.value?.building
-            plan.selectEntrance(null)
-            val all = listOf(withFocus, closedFocus, fromPin, shown.value?.building)
-            assertEquals(listOf(null, "A", null, "A"), all, "Arkusz wejścia budynku podstawowego")
         }
 
     @Test

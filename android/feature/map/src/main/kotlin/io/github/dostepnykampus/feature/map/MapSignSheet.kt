@@ -38,6 +38,7 @@ import io.github.dostepnykampus.feature.map.entrance.isFullEntranceSheet
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.overlay.SheetExits
 import io.github.dostepnykampus.feature.map.plan.ChosenPlanSheet
+import io.github.dostepnykampus.feature.map.plan.MapPanel
 import io.github.dostepnykampus.feature.map.room.OpenRoom
 import io.github.dostepnykampus.feature.map.room.RoomCardLayer
 import io.github.dostepnykampus.feature.map.room.RoomSheetSources
@@ -212,9 +213,10 @@ internal fun SignSheetState.cardLayout(now: CardLayout): CardLayout {
  * Arkusz znaku [signs] nad mapą i zasłonięcie ekranu przez kartę budynku: [padding] rzeczywiste, a [layout]
  * z zasłonięciem i zaznaczeniem dla kamery i układu ekranu według [cardLayout]. [fullEntrance] to wejście, którego
  * arkusz zajmuje cały ekran zamiast mapy; `null`, gdy takiego arkusza nie ma. [cover] to zasłonięty dół okna w px
- * w bieżącej klatce, czytany tylko w fazie układu; `null`, gdy przyciski mapy stoją nad [padding].
+ * w bieżącej klatce, czytany tylko w fazie układu; `null`, gdy przyciski mapy stoją nad [padding]. [panel] to arkusz
+ * nad mapą: budynek, który trzyma plan, i dół mapy zasłonięty dopełnieniem kamery.
  *
- * Wymagania: US2.1, US2.8, NFR-20
+ * Wymagania: US2.1, US2.8, NFR-20, US16.1
  */
 internal data class ScreenSheet(
     val signs: SignSheetState,
@@ -222,6 +224,7 @@ internal data class ScreenSheet(
     val padding: PaddingValues,
     val fullEntrance: String? = null,
     val cover: (() -> Int)? = null,
+    val panel: MapPanel = MapPanel(),
 ) {
     /** Arkusz wejścia zajmuje cały ekran zamiast mapy. */
     val isEntranceFull: Boolean
