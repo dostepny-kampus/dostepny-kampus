@@ -77,6 +77,18 @@ class MapTouchTest {
         assertEquals(MapTouch.Sign(TouchSign.ENTRANCE, "ENTRANCE"), touch, "wejście przed znakiem planu")
     }
 
+    /** Numer kroku leży nad znakiem tego samego wejścia lub windy. Wymagania: US18.2 */
+    @Test
+    fun stepImageWinsOverSignBelowIt() {
+        val touch =
+            chooseTouch(
+                signsUnder = { sign -> if (sign in setOf(TouchSign.PLAN, TouchSign.ROOM_STEP)) listOf("1") else emptyList() },
+                signsNear = { emptyList() },
+                outlines = outlinesAt(hit = emptyList()),
+            )
+        assertEquals(MapTouch.Sign(TouchSign.ROOM_STEP, "1"), touch, "Numer kroku leży nad windą")
+    }
+
     /** Wiersz: V1, bez znaku w zasięgu wygrywa kontur pod palcem; kontury obok są liczone na żądanie. */
     @Test
     fun outlineWithoutSign() {

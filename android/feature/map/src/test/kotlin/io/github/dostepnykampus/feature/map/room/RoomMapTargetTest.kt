@@ -48,4 +48,14 @@ class RoomMapTargetTest {
             "Tylko sala z piętrem trzyma plan",
         )
     }
+
+    @Test
+    fun showsNumbersForCurrentFloorOnly() {
+        val card = RoomCard(found = FOUND, way = VIA_LIFT, step = 1)
+        val ground = card.markersOn(GROUND.id)
+        val second = card.markersOn(SECOND.id)
+
+        assertEquals(listOf(0 to false, 1 to true), ground.map { it.index to it.selected }, "Wejście i wybrana winda")
+        assertEquals(listOf(2 to false), second.map { it.index to it.selected }, "Sala na drugim piętrze")
+    }
 }
