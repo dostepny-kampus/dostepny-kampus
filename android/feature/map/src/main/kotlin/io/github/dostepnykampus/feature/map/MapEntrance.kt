@@ -8,8 +8,6 @@ package io.github.dostepnykampus.feature.map
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -49,7 +47,7 @@ internal fun rememberChosenEntrance(catalog: BuildingCatalog?, entrance: MapFocu
 
 /**
  * Wejście z pinezką i podpisem: wejście z otwartym arkuszem z [catalog], a gdy to wejście z trasy, to [chosen].
- * `null` bez otwartego arkusza wejścia, więc zamknięcie arkusza usuwa pinezkę; [onSelect] dostaje budynek wejścia.
+ * `null` bez otwartego arkusza wejścia, więc zamknięcie arkusza usuwa pinezkę.
  *
  * Wymagania: US3.3, NFR-53
  */
@@ -57,7 +55,6 @@ internal fun rememberChosenEntrance(catalog: BuildingCatalog?, entrance: MapFocu
 internal fun SignSheetState.rememberPinnedEntrance(
     catalog: BuildingCatalog?,
     chosen: SelectedEntrance?,
-    onSelect: (String?) -> Unit = {},
 ): SelectedEntrance? {
     val unnamed = stringResource(R.string.karta_bez_nazwy)
     val openId = entranceId
@@ -69,14 +66,6 @@ internal fun SignSheetState.rememberPinnedEntrance(
                 else -> catalog?.pinned(id = openId, unnamed = unnamed)
             }
         }
-    val reported = remember { mutableStateOf<String?>(null) }
-    SideEffect {
-        val symbol = pinned?.buildingSymbol
-        if (symbol != reported.value) {
-            reported.value = symbol
-            onSelect(symbol)
-        }
-    }
     return pinned
 }
 

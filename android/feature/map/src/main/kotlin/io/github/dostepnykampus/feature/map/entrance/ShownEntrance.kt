@@ -39,7 +39,6 @@ internal data class ShownEntrance(
  * @property onPlanReport zgłoszenie bariery przy schodach, toalecie albo windzie z arkusza znaku planu
  * @property onShow wejście pokazane w arkuszu, którego windy szukamy
  * @property lift najbliższa winda ostatnio pokazanego wejścia
- * @property onBuildingSelect budynek otwartego arkusza wejścia albo `null` po jego zamknięciu
  */
 @Immutable
 data class EntranceActions(
@@ -47,7 +46,6 @@ data class EntranceActions(
     val onPlanReport: (PlanReport) -> Unit = {},
     val onShow: (Entrance) -> Unit = {},
     val lift: EntranceLift? = null,
-    val onBuildingSelect: (String?) -> Unit = {},
 )
 
 /**

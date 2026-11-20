@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -38,6 +39,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
+import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.map.area.MapAreas
 import io.github.dostepnykampus.feature.map.area.rememberMapAreas
@@ -54,6 +56,7 @@ import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import io.github.dostepnykampus.feature.map.plan.mapPanel
 import io.github.dostepnykampus.feature.map.plan.roomAt
 import io.github.dostepnykampus.feature.map.room.OpenRoom
 import io.github.dostepnykampus.feature.map.room.RoomCardLayer
@@ -157,6 +160,7 @@ fun CampusMapScreen(
  * @param onCamera widok mapy po geście osoby i widok, do którego zmierza ruch kamery wykonany przez aplikację
  * @param onFloorChoose piętro wybrane w kolumnie pięter: symbol budynku i identyfikator piętra
  * @param onMapHide mapa zeszła z ekranu, np. pod listę budynków; jej plan piętra przestaje obowiązywać
+ * @param onPlanSelect budynek karty albo arkusza nad mapą, który trzyma plan; `null`, gdy plan wybiera środek mapy
  * @param onCardReturn powrót z arkusza znaku do karty budynku, którą arkusz zastąpił
  * @param sheetCover zasłonięty dół okna w px w bieżącej klatce, za którym przyciski mapy i podpis OSM idą razem
  *   z krawędzią arkusza V2 w ruchu; czytany tylko w fazie układu; `null` stawia je nad [contentPadding]
@@ -181,6 +185,7 @@ fun CampusMapScreen(
     onCamera: (MapCamera) -> Unit = {},
     onFloorChoose: (String, String) -> Unit = { _, _ -> },
     onMapHide: () -> Unit = {},
+    onPlanSelect: (String?) -> Unit = {},
     onCardReturn: (String) -> Unit = onBuildingClick,
     sheetCover: (() -> Int)? = null,
     onRoomClick: (FoundRoom) -> Unit = {},
@@ -188,6 +193,7 @@ fun CampusMapScreen(
 ) {
     val sheet =
         screenSheet(focus = focus, padding = contentPadding, onCardClose = onEmptyMapClick, onCardReturn = onCardReturn)
+            .withPanel(focus = focus, catalog = state.catalog, onSelect = onPlanSelect)
     val isCovered = sheet.layout.padding.calculateBottomPadding() > 0.dp
     val states = rememberSaveableStateHolder()
     val areas = rememberMapAreas(state.mapData, sheet.layout.focus)
@@ -243,6 +249,21 @@ fun CampusMapScreen(
         }
         sheet.FullEntranceSheet(ui = state, actions = entranceActions, onBuildingClick = onBuildingClick)
     }
+}
+
+@Composable
+private fun ScreenSheet.withPanel(
+    focus: MapFocus?,
+    catalog: BuildingCatalog?,
+    onSelect: (String?) -> Unit,
+): ScreenSheet {
+    val entrance = signs.entranceId
+    val marked = (focus as? MapFocus.Entrance)?.takeIf { it.id == entrance }
+    val opened = catalog?.run { entrances.firstOrNull { it.id == entrance } }
+    val building = marked?.buildingSymbol ?: opened?.buildingSymbol
+    val panel = mapPanel(focus = focus, entranceBuilding = building, entranceCover = signs.markedCover(layout.focus))
+    SideEffect { onSelect(panel.building) }
+    return copy(panel = panel)
 }
 
 private fun CampusMapUiState.roomSheets(onBuilding: (String) -> Unit, actions: EntranceActions): RoomSheetSources =
@@ -333,7 +354,7 @@ private fun CampusMap(
         val move = state.move
         if (state.scene != null && move != null && state.limits != null) {
             val pinned =
-                signs.rememberPinnedEntrance(ui.catalog, state.scene.selection.entrance, entrance.onBuildingSelect)
+                signs.rememberPinnedEntrance(ui.catalog, state.scene.selection.entrance)
             mapView.Show(
                 data = state.scene.data,
                 selection = signs.overlay(base = state.scene.selection, plan = plan.shown, room = room, pin = pinned),
@@ -430,7 +451,7 @@ private fun rememberCampusScene(
         top = top,
         motion = motion,
         notice = rememberNoticeHeight(shift = areas.selectionNotice, width = width),
-        sheet = sheet.signs.markedCover(focus),
+        sheet = sheet.panel.cover,
         roomCamera = roomCamera,
     )
 }
