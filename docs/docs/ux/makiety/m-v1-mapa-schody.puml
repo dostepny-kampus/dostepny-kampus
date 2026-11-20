@@ -8,7 +8,6 @@ $naglowek_mapy("Pokaż listę")
 $pole_tekstowe("Szukaj budynku, np. C-13")
 $przycisk("Kampus główny ▾")
 $mapa("plan parteru A-1 z wybranymi schodami; kolumna pięter po lewej pod przyciskiem terenu, wybrany parter", "", "info")
-Źródło: Politechnika Wrocławska
 $ramka()
 { <b>Schody</b>$dk_spacje(14) | [Zamknij] }
 $wiersz_budynku()

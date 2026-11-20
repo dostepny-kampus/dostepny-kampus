@@ -109,7 +109,7 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | uciążliwość 3 „blokada” | „Blokada” | wszystkie | bez zmian; krótkie i jednoznaczne | 4.2 |
 | przełącznik pięter | „Piętro:” i etykiety z danych PWr | wszystkie | Bez słowa „przełącznik”. | 6.3 |
 | plan piętra (V1) i opis pięter (V2) | grupa „Piętra”, przy piętrze „Pokaż na planie” | wszystkie | Plan jest na mapie, a karta opisuje piętra słowami (decyzja 44). | 6.3 |
-| podpis pod planem (NFR-40) | „Źródło: Politechnika Wrocławska” | wszystkie | bez zmian; mówi, skąd jest plan | 2.2 |
+| źródło planu i wejść (NFR-40) | „Źródło: Politechnika Wrocławska” | wszystkie | na dole karty V2, pod planem C1 i w legendzie pod „ⓘ” na V1 (bez napisu na samej mapie V1) | 2.2 |
 | budynek podstawowy (napis na V2, C1 i C2) | „Nie mamy planu pięter tego budynku.” | wszystkie | Słowo „niedostępny” zostaje dla wejścia. Ten sam napis na każdym ekranie, na którym brakuje planu (BR-G1). | 6.3 |
 | czynność główna karty budynku (US3) | „Pokaż wejście na mapie”; dawniej „Sprawdź, którędy wejść” do ekranu V3 | wszystkie | Odpowiedź o wejściu stoi już na karcie, więc przycisk nie obiecuje odpowiedzi, tylko mówi, co się pokaże: wejście na mapie z jego opisem. Dawna nazwa zastąpiła roboczą, która brzmiała jak rezerwacja terminu; wraz z ekranem V3 zniknął też nagłówek „Którędy wejść do C-13”. | 2.1, 2.2, 4.1 |
 | zgłoszenie szybkie (nagłówek V4) | „Zgłoś barierę” | Odwiedzający | Ten sam napis co na pasku. | 4.6 |

@@ -1,6 +1,6 @@
 @startsalt
 ' V1 Mapa kampusu, plan piętra po przybliżeniu budynku szczegółowego (US16.1): piętro wejścia zalecanego,
-' kolumna pięter po lewej pod przyciskiem terenu, sąsiednie budynki przygaszone, podpis źródła.
+' kolumna pięter po lewej pod przyciskiem terenu, sąsiednie budynki przygaszone.
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
@@ -21,9 +21,8 @@ $przyciski_obok("Powiększ", "Pomniejsz")
   <b>(0)</b> | . | . | . | .
   [-1] | . | . | . | .
 }
-{ [<&info>] | <u>© OpenStreetMap contributors</u> }
+{ [<&info>] | <u>© OpenStreetMap</u> }
 }
-Źródło: Politechnika Wrocławska
 $pasek_dolny_konto()
 $ekran_koniec()
 @endsalt
