@@ -35,3 +35,13 @@ internal fun OpenRoom.cameraForRoom(isRoomOnMap: Boolean, cover: Dp): MapCamera?
         else -> camera.shiftedNorth(-cover.value.toDouble() / 2.0)
     }
 }
+
+/** Numer kroku [index] od zera, jego [point] i stan [selected] na planie. Wymagania: US18.2 */
+data class RoomStepMarker(val index: Int, val point: GeoPoint, val selected: Boolean)
+
+/** Numery kroków drogi, których punkty są na wybranym [floor]. Wymagania: US18.2 */
+internal fun RoomCard.markersOn(floor: String): List<RoomStepMarker> =
+    (0 until stepCount).mapNotNull { index ->
+        val target = copy(step = index).mapTarget()
+        target.point.takeIf { target.floor == floor }?.let { RoomStepMarker(index = index, point = it, selected = index == step) }
+    }

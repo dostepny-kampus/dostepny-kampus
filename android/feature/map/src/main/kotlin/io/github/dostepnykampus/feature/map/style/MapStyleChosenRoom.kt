@@ -5,9 +5,16 @@
  */
 package io.github.dostepnykampus.feature.map.style
 
+import io.github.dostepnykampus.core.geo.toPosition
+import io.github.dostepnykampus.feature.map.campus.featureCollection
+import io.github.dostepnykampus.feature.map.room.RoomStepMarker
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import org.maplibre.spatialk.geojson.Feature
+import org.maplibre.spatialk.geojson.Point
 
 /** Warstwa wypełnienia wyróżnionej sali na planie (`p_wybrana`). Wymagania: US18.1 */
 internal const val PLAN_CHOSEN_LAYER = "plan_sala_wybrana"
@@ -67,4 +74,34 @@ internal fun chosenRoomFilter(floor: String?, room: String?): JsonElement =
             property(PLAN_ROOM_ID),
             room?.let { expression("literal", JsonPrimitive(it)) } ?: JsonPrimitive(false),
         ),
+    )
+
+internal const val ROOM_STEPS_SOURCE = "kroki_sali"
+internal const val ROOM_STEPS_LAYER = "plan_kroki_sali"
+internal const val ROOM_STEP_INDEX = "step"
+private const val ROOM_STEP_IMAGE = "image"
+
+/** Nazwa obrazu dla [index] kroku i jego stanu [selected]. Wymagania: US18.2 */
+internal fun roomStepImage(index: Int, selected: Boolean): String = "krok: $index/$selected"
+
+/** Punkty [steps] widoczne na aktualnym piętrze. Wymagania: US18.2 */
+internal fun roomStepsFeatures(steps: List<RoomStepMarker>): JsonElement =
+    featureCollection(
+        steps.map { step ->
+            val properties =
+                buildJsonObject {
+                    put(key = ROOM_STEP_INDEX, value = step.index.toString())
+                    put(key = ROOM_STEP_IMAGE, value = roomStepImage(index = step.index, selected = step.selected))
+                }
+            Feature(Point(step.point.toPosition()), properties)
+        },
+    )
+
+/** Numery kroków rysowane nad znakami planu. Wymagania: US18.2 */
+internal fun roomStepsLayer(): JsonObject =
+    symbolLayer(
+        id = ROOM_STEPS_LAYER,
+        source = ROOM_STEPS_SOURCE,
+        image = property(ROOM_STEP_IMAGE),
+        layout = arrayOf("icon-allow-overlap" to JsonPrimitive(true), "icon-ignore-placement" to JsonPrimitive(true)),
     )

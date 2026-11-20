@@ -166,6 +166,7 @@ private fun sources(data: CampusMapData, look: SelectionLook, plan: JsonElement)
         put(key = BARRIERS_SOURCE, element = geoJsonSource(data.barriers))
         put(key = CHOSEN_SOURCE, element = geoJsonSource(look.chosenEntrance))
         put(key = PLAN_SOURCE, element = geoJsonSource(plan))
+        put(key = ROOM_STEPS_SOURCE, element = geoJsonSource(look.roomSteps))
     }
 
 private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap?): JsonArray =
@@ -198,6 +199,7 @@ private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap
         add(JsonObject(labels + ("filter" to look.labelsFilter)))
         add(chosenBarrierLayer(filter = look.chosenBarrierFilter, beside = look.besideEntrance))
         chosenLayers().forEach { add(it) }
+        add(roomStepsLayer())
     }
 
 private fun marksLayer(filter: JsonElement, minZoom: Double): JsonObject {

@@ -76,6 +76,7 @@ import io.github.dostepnykampus.feature.map.style.campusMapShell
 import io.github.dostepnykampus.feature.map.style.hideBasemap
 import io.github.dostepnykampus.feature.map.style.rememberMapImages
 import io.github.dostepnykampus.feature.map.style.revealBasemap
+import io.github.dostepnykampus.feature.map.style.roomStepImages
 import io.github.dostepnykampus.feature.map.style.selectionLook
 import io.github.dostepnykampus.feature.map.style.showBasemap
 import io.github.dostepnykampus.feature.map.style.showData
@@ -637,6 +638,7 @@ internal fun Style.addMapImages(images: MapImages) {
     barrierImages(images).forEach { (name, image) -> addImage(name, image) }
     val signs = planSignImages(colors = images.colors, density = images.density)
     signs.forEach { (name, image) -> addImage(name, image) }
+    roomStepImages(images).forEach { (name, image) -> addImage(name, image) }
 }
 
 /**

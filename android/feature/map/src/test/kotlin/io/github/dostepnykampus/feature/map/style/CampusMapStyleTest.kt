@@ -33,7 +33,7 @@ class CampusMapStyleTest {
         val layers = style.array("layers").map { it.jsonObject }
         val below = listOf("lad") + BASEMAP_LAYERS + listOf(BUILDINGS_LAYER, "kontury") + PLAN + SELECTED
         val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)
-        val expected = below + marks + listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
+        val expected = below + marks + listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER, ROOM_STEPS_LAYER)
         assertEquals(expected, layers.map { it.text("id") })
         assertEquals("#E8EDEE", layers.first().obj("paint").text("background-color"))
     }

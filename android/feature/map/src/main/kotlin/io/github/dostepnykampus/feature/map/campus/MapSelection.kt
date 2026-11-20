@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map.campus
 
 import io.github.dostepnykampus.core.model.GeoArea
+import io.github.dostepnykampus.feature.map.room.RoomStepMarker
 
 /**
  * Zaznaczenie na mapie V1. Zmienia się przy każdym wyborze osoby, a dane katalogu [CampusMapData] zostają te same,
@@ -22,6 +23,7 @@ import io.github.dostepnykampus.core.model.GeoArea
  * `null` bez wybranej bariery
  * @property boundary wielokąt granicy terenu pokazanego na mapie; `null`, gdy granicą jest prostokąt [bounds]
  * @property plan plan piętra budynku przy środku mapy; `null`, gdy planu nie widać
+ * @property roomSteps numery kroków na widocznym piętrze
  */
 data class MapSelection(
     val building: String? = null,
@@ -30,6 +32,7 @@ data class MapSelection(
     val barrier: String? = null,
     val boundary: GeoArea? = null,
     val plan: ShownPlan? = null,
+    val roomSteps: List<RoomStepMarker> = emptyList(),
 )
 
 /**

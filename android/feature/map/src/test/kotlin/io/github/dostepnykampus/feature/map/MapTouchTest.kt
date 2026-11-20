@@ -82,7 +82,9 @@ class MapTouchTest {
     fun stepImageWinsOverSignBelowIt() {
         val touch =
             chooseTouch(
-                signsUnder = { sign -> if (sign in setOf(TouchSign.PLAN, TouchSign.ROOM_STEP)) listOf("1") else emptyList() },
+                signsUnder = { sign ->
+                    if (sign == TouchSign.PLAN || sign == TouchSign.ROOM_STEP) listOf("1") else emptyList()
+                },
                 signsNear = { emptyList() },
                 outlines = outlinesAt(hit = emptyList()),
             )
