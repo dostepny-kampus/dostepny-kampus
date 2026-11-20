@@ -7,6 +7,7 @@ package io.github.dostepnykampus.core.network
 
 import io.github.dostepnykampus.core.model.inspection.BuildingProgress
 import io.github.dostepnykampus.core.model.inspection.InspectionCoverage
+import io.github.dostepnykampus.core.network.di.NetworkModule
 import io.github.dostepnykampus.core.network.inspection.InspectionProgressApi
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient

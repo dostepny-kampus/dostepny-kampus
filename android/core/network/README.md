@@ -6,8 +6,9 @@ Klient HTTP serwera: budynki, zgłoszenia, zmiany znaczników piętra obejrzaneg
 
 ## Pakiety
 
-- `core.network` — wspólna wymiana HTTP z wynikiem `ApiResult`, parser kontraktu i wiązania Hilt.
+- `core.network` — wspólna wymiana HTTP z wynikiem `ApiResult`, właścicielem wpisu kolejki i parserem kontraktu.
 - `core.network.auth` — token dostępu, role realmu i kontrola właściciela przy wysyłce wpisu kolejki.
+- `core.network.di` — wiązania Hilt klienta HTTP i interfejsów API.
 - `core.network.building` — klient listy budynków, karty budynku, podpowiedzi punktu i ścieżek dostosowanych.
 - `core.network.inspection` — klienty znaczników piętra obejrzanego i wysyłki ich zmian.
 - `core.network.submission` — klient zgłoszeń i zdjęć.
@@ -15,7 +16,7 @@ Klient HTTP serwera: budynki, zgłoszenia, zmiany znaczników piętra obejrzaneg
 
 ## API
 
-Interfejsy API (`BuildingsApi`, `SubmissionsApi`, `MarkerChangesApi`, `InspectionProgressApi`, `SyncPullApi`), modele JSON i wiązania Hilt (`NetworkModule`). Moduły funkcji nie używają sieci bezpośrednio, tylko przez `:core:data`.
+Interfejsy API (`BuildingsApi`, `SubmissionsApi`, `MarkerChangesApi`, `InspectionProgressApi`, `SyncPullApi`), modele JSON i wiązania Hilt (`di.NetworkModule`). Moduły funkcji nie używają sieci bezpośrednio, tylko przez `:core:data`.
 
 Modele JSON z pakietu `json` generuje przy budowie openapi-generator z `api/openapi.yaml`; zmiana kontraktu
 zmienia je bez edycji kodu.

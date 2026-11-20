@@ -13,8 +13,8 @@ import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.NetworkModule
 import io.github.dostepnykampus.core.network.auth.AccessTokens
+import io.github.dostepnykampus.core.network.di.NetworkModule
 import kotlinx.coroutines.runBlocking
 import okhttp3.FormBody
 import okhttp3.OkHttpClient

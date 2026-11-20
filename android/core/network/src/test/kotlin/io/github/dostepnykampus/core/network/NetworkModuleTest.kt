@@ -10,6 +10,7 @@ import io.github.dostepnykampus.core.network.auth.AccessTokens
 import io.github.dostepnykampus.core.network.building.ApiBuilding
 import io.github.dostepnykampus.core.network.building.BuildingsApi
 import io.github.dostepnykampus.core.network.building.decodeBuildingList
+import io.github.dostepnykampus.core.network.di.NetworkModule
 import io.github.dostepnykampus.core.network.inspection.InspectionProgressApi
 import io.github.dostepnykampus.core.network.inspection.MarkerChangesApi
 import org.junit.jupiter.api.Assertions.assertEquals

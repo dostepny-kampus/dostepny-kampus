@@ -10,6 +10,7 @@ import io.github.dostepnykampus.core.model.inspection.InspectionCoverage
 import io.github.dostepnykampus.core.model.inspection.InspectionMarker
 import io.github.dostepnykampus.core.model.inspection.MarkerPlace
 import io.github.dostepnykampus.core.model.inspection.ProgressMarker
+import io.github.dostepnykampus.core.network.di.NetworkModule
 import io.github.dostepnykampus.core.network.inspection.decodeProgress
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
