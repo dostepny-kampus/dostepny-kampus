@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "bpmn-to-image": "^0.10.0",
-    "markdownlint-cli2": "^0.24.0"
+    "markdownlint-cli2": "^0.24.1"
   },
   "overrides": {
     "basic-ftp": "6.2.4",
