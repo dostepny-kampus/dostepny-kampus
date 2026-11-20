@@ -20,19 +20,21 @@ internal data class MapPanel(val building: String? = null, val cover: Int = 0)
 
 /**
  * Arkusz nad mapą przy zaznaczeniu [focus]. Otwarty arkusz wejścia budynku [entranceBuilding] trzyma ten budynek
- * i zasłania dół mapy na [entranceCover] pikseli. Bez niego budynek trzyma zaznaczenie według [selectedBuilding];
- * zaznaczone wejście z zamkniętym arkuszem już nic nie trzyma.
+ * i zasłania dół mapy na [entranceCover] pikseli; bez niego dół zasłania karta sali na mapie, wysoka na [roomCover].
+ * Bez arkusza wejścia budynek trzyma zaznaczenie według [selectedBuilding], także karta sali; zaznaczone wejście
+ * z zamkniętym arkuszem już nic nie trzyma.
  *
- * Wymagania: US16.1, US16.2, US2.8, US3.3, BR-G1
+ * Wymagania: US16.1, US16.2, US2.8, US3.3, US18.1, BR-G1
  *
  * @param focus zaznaczenie z trasy
  * @param entranceBuilding symbol budynku otwartego arkusza wejścia; `null` bez arkusza wejścia
  * @param entranceCover wysokość arkusza wejścia zasłaniającego dół mapy w pikselach; 0 bez dopełnienia
+ * @param roomCover wysokość karty sali na mapie w pikselach; 0 bez karty albo z kartą na cały ekran
  */
-internal fun mapPanel(focus: MapFocus?, entranceBuilding: String?, entranceCover: Int): MapPanel =
+internal fun mapPanel(focus: MapFocus?, entranceBuilding: String?, entranceCover: Int, roomCover: Int = 0): MapPanel =
     MapPanel(
         building = entranceBuilding ?: selectedBuilding(focus).takeUnless { focus is MapFocus.Entrance },
-        cover = entranceCover,
+        cover = entranceCover.takeIf { it > 0 } ?: roomCover,
     )
 
 /**

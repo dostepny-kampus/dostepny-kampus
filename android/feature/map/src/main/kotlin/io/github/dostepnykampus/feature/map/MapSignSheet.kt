@@ -89,6 +89,15 @@ internal class SignSheetState(initial: ChosenSign?) {
     var isReturning by mutableStateOf(false)
         private set
 
+    /** Wysokość karty sali na mapie w pikselach; 0 przed pomiarem. */
+    var roomHeight by mutableIntStateOf(0)
+        private set
+
+    /** Karta sali na mapie ma wysokość [height] w pikselach. */
+    fun measureRoom(height: Int) {
+        roomHeight = height
+    }
+
     /** Arkusz wejścia na mapie ma wysokość [height] w pikselach. */
     fun measureEntrance(height: Int) {
         entranceHeight = height

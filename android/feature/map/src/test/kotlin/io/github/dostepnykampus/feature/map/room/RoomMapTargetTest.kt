@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.room
 
+import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.plan.selectedBuilding
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.ENTRANCE
@@ -36,6 +37,20 @@ class RoomMapTargetTest {
                 RoomMapTarget(floor = SECOND.id, point = FOUND.room.labelPoint),
             )
         assertEquals(expected, targets, "Punkty i piętra kroków drogi")
+    }
+
+    /** Krok staje na środku części mapy nad kartą przez dopełnienie kamery, bez przesuwania środka. */
+    @Test
+    fun putsStepPointInCameraCenter() {
+        val room = OpenRoom(card = RoomCard(found = FOUND, way = VIA_LIFT, step = 1), onClose = {}, onStep = {})
+        val lift = lift(GROUND.id).labelPoint
+        val centers =
+            listOf(
+                room.cameraForRoom(isRoomOnMap = true, cover = 320.dp)?.center,
+                room.cameraForRoom(isRoomOnMap = true, cover = 0.dp)?.center,
+                room.cameraForRoom(isRoomOnMap = false, cover = 0.dp)?.center,
+            )
+        assertEquals(listOf(lift, null, lift), centers, "Kamera kroku przesunięta albo bez czekania na pomiar karty")
     }
 
     @Test

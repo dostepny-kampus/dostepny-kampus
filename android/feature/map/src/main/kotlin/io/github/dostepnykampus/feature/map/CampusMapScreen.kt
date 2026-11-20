@@ -193,7 +193,7 @@ fun CampusMapScreen(
 ) {
     val sheet =
         screenSheet(focus = focus, padding = contentPadding, onCardClose = onEmptyMapClick, onCardReturn = onCardReturn)
-            .withPanel(focus = focus, catalog = state.catalog, onSelect = onPlanSelect)
+            .withPanel(focus = focus, catalog = state.catalog, room = room, onSelect = onPlanSelect)
     val isCovered = sheet.layout.padding.calculateBottomPadding() > 0.dp
     val states = rememberSaveableStateHolder()
     val areas = rememberMapAreas(state.mapData, sheet.layout.focus)
@@ -255,13 +255,17 @@ fun CampusMapScreen(
 private fun ScreenSheet.withPanel(
     focus: MapFocus?,
     catalog: BuildingCatalog?,
+    room: OpenRoom?,
     onSelect: (String?) -> Unit,
 ): ScreenSheet {
+    val isBelowMap = LocalDensity.current.fontScale < LARGE_FONT_SCALE
     val entrance = signs.entranceId
     val marked = (focus as? MapFocus.Entrance)?.takeIf { it.id == entrance }
     val opened = catalog?.run { entrances.firstOrNull { it.id == entrance } }
     val building = marked?.buildingSymbol ?: opened?.buildingSymbol
-    val panel = mapPanel(focus = focus, entranceBuilding = building, entranceCover = signs.markedCover(layout.focus))
+    val roomCover = signs.roomHeight.takeIf { room != null && isBelowMap } ?: 0
+    val cover = signs.markedCover(layout.focus)
+    val panel = mapPanel(focus = focus, entranceBuilding = building, entranceCover = cover, roomCover = roomCover)
     SideEffect { onSelect(panel.building) }
     return copy(panel = panel)
 }
@@ -336,9 +340,8 @@ private fun CampusMap(
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
     val signs = sheet.signs
-    var roomHeight by remember { mutableIntStateOf(0) }
     val isRoomOnMap = room != null && !isRoomFull
-    val roomCover = with(LocalDensity.current) { roomHeight.toDp() }.takeIf { isRoomOnMap } ?: 0.dp
+    val roomCover = with(LocalDensity.current) { sheet.panel.cover.toDp() }.takeIf { isRoomOnMap } ?: 0.dp
     val state =
         rememberCampusScene(
             ui = ui,
@@ -385,7 +388,7 @@ private fun CampusMap(
                 val open =
                     OpenSign(sheet = sheet, barriers = barriers, catalog = ui.catalog, plan = plan.shown, room = shown)
                 MapSheets(open = open, state = state, onBuilding = onBuildingClick, entranceActions = entrance) {
-                    roomHeight = it
+                    signs.measureRoom(it)
                 }
             }
         }
