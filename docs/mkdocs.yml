@@ -84,7 +84,9 @@ nav:
       - Analiza SWOT: ux/swot.md
       - QFD — potrzeby a funkcje: ux/qfd.md
       - Wymagania do ekranów: ux/wymagania-ekranow.md
-      - Ekrany (makiety hi-fi): ux/ekrany/index.md
+      - Ekrany (makiety hi-fi):
+          - Przegląd i ekrany zespołu: ux/ekrany/index.md
+          - Odwiedzający: ux/ekrany/odwiedzajacy.md
       - Mapa nawigacji: ux/mapa-nawigacji.md
       - Słownik użytkownika: ux/slownik-uzytkownika.md
       - Dostępność w aplikacji: ux/dostepnosc.md
