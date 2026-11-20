@@ -19,7 +19,8 @@ Mapa kampusu: budynki, wejścia i bariery na mapie, wyszukiwanie budynku, karta 
 - `feature.map.plan` — plan piętra budynku po przybliżeniu mapy i arkusz znaku planu.
 - `feature.map.room` — znaleziona sala: wynik pod polem szukaj, karta sali i droga do niej (wejście zalecane, winda i sala).
 - `feature.map.search` — wyniki pod polem szukaj: budynki i sale, prośba o budynek i karta „brak wyniku”.
-- `feature.map.style` — styl mapy: warstwy, obrazy i kafle.
+- `feature.map.style` — styl mapy: warstwy i obrazy.
+- `feature.map.tiles` — klient HTTP kafelków podkładu z nagłówkiem User-Agent aplikacji.
 
 ## API
 

@@ -3,7 +3,7 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map.style
+package io.github.dostepnykampus.feature.map.tiles
 
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
