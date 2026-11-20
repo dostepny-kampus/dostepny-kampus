@@ -87,7 +87,11 @@ class RoomCardSheetTest {
                 var card by remember { mutableStateOf(RoomCard(found = FOUND, way = VIA_LIFT)) }
                 RoomCardLayer(
                     room = OpenRoom(card = card, onClose = {}, onStep = { card = card.chosen(it) }),
-                    sources = RoomSheetSources(onBuilding = {}, ShownBarriers(emptyList()), EntranceActions()),
+                    sources = RoomSheetSources(
+                        onBuilding = {},
+                        barriers = ShownBarriers(emptyList()),
+                        actions = EntranceActions(),
+                    ),
                 )
             }
         }

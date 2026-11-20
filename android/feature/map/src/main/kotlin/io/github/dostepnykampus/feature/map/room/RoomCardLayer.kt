@@ -92,8 +92,8 @@ private fun RoomEntranceDetails(
     barriers: ShownBarriers,
     exits: SheetExits,
     actions: EntranceActions,
-    modifier: Modifier,
     isFull: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     val entrance = way.entrance
     DisposableEffect(entrance) {
