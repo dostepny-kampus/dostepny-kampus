@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,6 +28,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -53,6 +55,7 @@ import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
+import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
@@ -61,6 +64,8 @@ import io.github.dostepnykampus.feature.map.overlay.MapStatusBar
 import io.github.dostepnykampus.feature.map.overlay.dataDay
 import io.github.dostepnykampus.feature.map.plan.FloorColumn
 import io.github.dostepnykampus.feature.map.plan.ShownPlan
+import io.github.dostepnykampus.feature.map.room.OpenRoom
+import io.github.dostepnykampus.feature.map.room.RoomCardSheet
 
 private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"
@@ -162,6 +167,7 @@ fun CampusMapScreen(
  * @param sheetCover zasłonięty dół okna w px w bieżącej klatce, za którym przyciski mapy i podpis OSM idą razem
  *   z krawędzią arkusza V2 w ruchu; czytany tylko w fazie układu; `null` stawia je nad [contentPadding]
  * @param onRoomClick sala wybrana w wynikach pola szukaj
+ * @param room karta sali i jej zamknięcie; `null` bez karty
  */
 @Composable
 fun CampusMapScreen(
@@ -184,18 +190,19 @@ fun CampusMapScreen(
     onCardReturn: (String) -> Unit = onBuildingClick,
     sheetCover: (() -> Int)? = null,
     onRoomClick: (FoundRoom) -> Unit = {},
+    room: OpenRoom? = null,
 ) {
     val sheet =
         screenSheet(focus = focus, padding = contentPadding, onCardClose = onEmptyMapClick, onCardReturn = onCardReturn)
     val isCovered = sheet.layout.padding.calculateBottomPadding() > 0.dp
-    val isList = state.isListSaved ?: (LocalDensity.current.fontScale >= LARGE_FONT_SCALE)
     val states = rememberSaveableStateHolder()
     val areas = rememberMapAreas(state.mapData, sheet.layout.focus)
     val barExit = rememberTopBarExit(isCovered = isCovered, motion = motion)
     var barHeight by remember { mutableIntStateOf(0) }
     var headerHeight by remember { mutableIntStateOf(0) }
     val search = rememberSearchFocus()
-    Box(modifier.fillMaxSize()) {
+    sheet.RoomLayout(room, onBuildingClick, modifier) { isLarge ->
+        val isList = if (room == null) state.isListSaved ?: isLarge else false
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
                 Box(Modifier.mapArea(isUnderSheet = sheet.isEntranceFull, search = search)) {
@@ -214,6 +221,7 @@ fun CampusMapScreen(
                         onBuildingClick = onBuildingClick,
                         onEmptyMapClick = onEmptyMapClick,
                         entranceActions = entranceActions,
+                        room = room?.takeUnless { isLarge },
                         modifier = Modifier.fillMaxSize().background(DostepnyKampusTheme.mapColors.lad),
                     )
                     BarrierDescriptions(shown)
@@ -243,6 +251,30 @@ fun CampusMapScreen(
     }
 }
 
+@Composable
+private fun ScreenSheet.RoomLayout(
+    room: OpenRoom?,
+    onBuilding: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable (isLarge: Boolean) -> Unit,
+) {
+    val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+    val found = room?.run { card.found }
+    var isPlanShown by rememberSaveable(found?.building, found?.run { this.room.id }) { mutableStateOf(false) }
+    BackHandler(enabled = room != null) {
+        if (isLarge && isPlanShown) isPlanShown = false else room?.run { onClose() }
+    }
+    DisposableEffect(found, signs) {
+        if (found != null) signs.close()
+        onDispose {}
+    }
+    if (room != null && isLarge && !isPlanShown) {
+        RoomCardSheet(room, onBuilding, modifier) { isPlanShown = true }
+    } else {
+        Box(modifier.fillMaxSize()) { content(isLarge) }
+    }
+}
+
 private fun Modifier.mapArea(isUnderSheet: Boolean, search: SearchFocus): Modifier =
     fillMaxSize()
         .releasesSearchOnTouch(search)
@@ -263,6 +295,7 @@ private fun CampusMap(
     onBuildingClick: (String) -> Unit,
     onEmptyMapClick: () -> Unit,
     entranceActions: EntranceActions,
+    room: OpenRoom?,
     modifier: Modifier = Modifier,
 ) {
     val isKeyboardOpen = rememberKeyboardOpenFlag()
@@ -295,7 +328,7 @@ private fun CampusMap(
                     plan.onView(view.also { state.keep(it) })
                 },
                 onBuildingsTouch = { state.taps.touch(it, onBuildingClick, onEmptyMapClick).also { signs.close() } },
-                onSignTouch = { sign, id -> signs.open(sign, id).also { state.taps.dismiss() } },
+                onSignTouch = signs.signTouch(room, state.taps::dismiss),
                 modifier = Modifier.fillMaxSize(),
             )
             pinned?.let { EntranceDescription(it) }
@@ -315,12 +348,21 @@ private fun CampusMap(
                 motion = motion,
                 start = { FloorColumn(plan = plan.shown, onChoose = plan.onFloor) },
             ) {
-                val open = OpenSign(sheet = sheet, barriers = barriers, catalog = ui.catalog, plan = plan.shown)
+                val shown = room.takeUnless { isKeyboardOpen }
+                val open =
+                    OpenSign(sheet = sheet, barriers = barriers, catalog = ui.catalog, plan = plan.shown, room = shown)
                 MapSheets(open = open, state = state, onBuilding = onBuildingClick, entranceActions = entranceActions)
             }
         }
     }
 }
+
+private fun SignSheetState.signTouch(room: OpenRoom?, dismiss: () -> Unit): (TouchSign, String) -> Unit =
+    { sign, id ->
+        room?.run { onClose() }
+        open(sign, id)
+        dismiss()
+    }
 
 @Composable
 private fun rememberCampusScene(

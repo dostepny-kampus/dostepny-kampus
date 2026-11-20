@@ -3,7 +3,7 @@ Funkcja: Wyszukanie sali
   Gość niezalogowany i Odwiedzający szukają sali po numerze, aby wiedzieć, na którym jest piętrze
   i jak dojść do niej bez schodów (N1). Piętro wejścia zalecanego pochodzi z danych planu PWr.
 
-  # @do-zrobienia #1481: karta sali z funkcją i piętrem.
+  # @do-zrobienia #707: sprawdzenie na planie wszystkich zapisów wyniku z funkcją i piętrem.
   @US18.1 @aplikacja @serwer @do-zrobienia
   Szablon scenariusza: Wyszukanie sali po budynku i numerze w różnym zapisie
     Zakładając, że dane PWr budynku A-1 mają salę 329 z funkcją i piętrem
@@ -33,7 +33,7 @@ Funkcja: Wyszukanie sali
     Wtedy pod polem widzi „Dopisz budynek do numeru sali. Na przykład: A-1 329.”
     Ale aplikacja nie szuka sali
 
-  # @do-zrobienia #1481: lista „Jak dojść” w karcie sali.
+  # @do-zrobienia #707: sprawdzenie wszystkich wariantów drogi tekstowej w karcie.
   @US18.2 @BR-25 @aplikacja @do-zrobienia
   Szablon scenariusza: Kroki do sali podane tekstem bez rysowania trasy
     # Sala 012 na piętrze wejścia i brak piętra wejścia to dane testowe, a nie stan faktyczny A-1.
@@ -48,14 +48,14 @@ Funkcja: Wyszukanie sali
       | sala 012 jest na piętrze wejścia zalecanego A-1                      | 012  | wejście zalecane, sala z przybliżoną odległością od wejścia                                        |
       | dane A-1 nie podają piętra wejścia zalecanego                        | 329  | wejście zalecane z dopiskiem, że przyjęto parter, winda, sala                                      |
 
-  # @do-zrobienia #1481: karta sali z listą „Jak dojść”.
+  # @do-zrobienia #3502: przycisk „Pokaż po kolei” obok listy.
   @US18.2 @aplikacja @do-zrobienia
   Scenariusz: Znaleziona sala nie zaczyna pokazu drogi
     Jeżeli Gość niezalogowany znajdzie salę 329 w budynku A-1
     Wtedy plan pokazuje 2 piętro z wyróżnioną salą 329
     Oraz karta sali ma całą listę „Jak dojść” bez wybranego kroku i przycisk „Pokaż po kolei”
 
-  # @do-zrobienia #1481: pokaz kroków po kolei.
+  # @do-zrobienia #3503: śledzenie piętra i punktu aktualnego kroku.
   @US18.2 @aplikacja @do-zrobienia
   Scenariusz: Pokaż po kolei prowadzi od wejścia do sali
     Zakładając, że Gość niezalogowany znalazł salę 329 w budynku A-1
@@ -65,7 +65,7 @@ Funkcja: Wyszukanie sali
     Jeżeli dotknie „Następny krok”
     Wtedy krok 2 jest wybrany, a mapa pokazuje windę
 
-  # @do-zrobienia #1481: powrót z arkusza wejścia do kroku.
+  # @do-zrobienia #3502: powrót z arkusza wejścia do kroku.
   @US18.2 @aplikacja @do-zrobienia
   Scenariusz: Arkusz wejścia z kroku wraca do tego kroku
     Zakładając, że w karcie sali 329 jest wybrany krok 1
@@ -80,7 +80,7 @@ Funkcja: Wyszukanie sali
     Wtedy widzi kartę sali 329 z listą „Jak dojść”
     Ale dotknięcie korytarza nie otwiera karty sali
 
-  # @do-zrobienia #1481: arkusz sali ma jeszcze „Pokaż opis budynku” zamiast wiersza budynku.
+  # @do-zrobienia #707: pokrycie wariantów braku sali i braku drogi.
   @US18.3 @aplikacja @do-zrobienia
   Szablon scenariusza: Bez sali w danych albo bez drogi bez schodów aplikacja mówi to zdaniem
     # Dane testowe, a nie stan faktyczny budynku A-1.

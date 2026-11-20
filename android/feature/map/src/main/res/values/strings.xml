@@ -143,4 +143,14 @@
     <string name="karta_pokaz_na_planie_czytaj">Pokaż na planie: %1$s</string>
     <string name="wizyta_pokaz">Pokaż wejście na mapie</string>
     <string name="wizyta_pokaz_czytaj">Pokaż wejście na mapie: %1$s</string>
+    <string name="mapa_sala_droga">Jak dojść</string>
+    <string name="mapa_sala_droga_ladowanie">Wczytujemy drogę…</string>
+    <string name="mapa_sala_droga_brak_wejscia">Nie możemy podać drogi bez schodów. Brakuje zalecanego wejścia z ustalonym piętrem.</string>
+    <string name="mapa_sala_droga_brak_windy">Żadna winda nie łączy piętra wejścia z piętrem sali.</string>
+    <string name="mapa_sala_droga_wejscie">Wejście zalecane</string>
+    <string name="mapa_sala_droga_parter">%1$s (brak piętra w danych)</string>
+    <string name="mapa_sala_droga_jedz">Ok. %1$d m od wejścia. Jedź na %2$s.</string>
+    <string name="mapa_sala_droga_od_wejscia">%1$s, ok. %2$d m od wejścia.</string>
+    <string name="mapa_sala_droga_od_windy">%1$s, ok. %2$d m od windy.</string>
+    <string name="mapa_sala_pokaz_na_mapie">Pokaż na mapie</string>
 </resources>

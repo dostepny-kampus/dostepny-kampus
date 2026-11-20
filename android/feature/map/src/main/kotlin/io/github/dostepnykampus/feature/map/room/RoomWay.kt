@@ -55,7 +55,7 @@ sealed interface RoomWay {
 
 /**
  * Droga do sali [found] od wejścia zalecanego [entrance]. Winda to najbliższa wejściu winda, która staje na piętrze
- * wejścia i na piętrze sali. Odległości są w linii prostej, zaokrąglone do 5 m, najmniej 5 m. TODO(#1481): karta sali.
+ * wejścia i na piętrze sali. Odległości są w linii prostej, zaokrąglone do 5 m, najmniej 5 m.
  *
  * @param found znaleziona sala z piętrem
  * @param entrance wejście zalecane budynku sali; `null`, gdy budynek go nie ma

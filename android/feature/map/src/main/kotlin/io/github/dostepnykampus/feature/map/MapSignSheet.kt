@@ -38,6 +38,8 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.overlay.SheetExits
 import io.github.dostepnykampus.feature.map.plan.ChosenPlanSheet
 import io.github.dostepnykampus.feature.map.plan.ShownPlan
+import io.github.dostepnykampus.feature.map.room.OpenRoom
+import io.github.dostepnykampus.feature.map.room.RoomCardSheet
 
 /**
  * Znak [sign] obiektu o identyfikatorze [id] dotknięty na mapie V1, z otwartym arkuszem; [card] to symbol budynku,
@@ -356,6 +358,7 @@ internal data class OpenSign(
     val barriers: ShownBarriers,
     val catalog: BuildingCatalog?,
     val plan: ShownPlan?,
+    val room: OpenRoom?,
 )
 
 /**
@@ -371,7 +374,12 @@ internal fun BoxScope.MapSheets(
     onBuilding: (String) -> Unit,
     entranceActions: EntranceActions,
 ) {
+    val room = open.room
     val modifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
+    if (room != null) {
+        RoomCardSheet(room = room, onBuilding = onBuilding, modifier = modifier)
+        return
+    }
     ChosenSignSheet(
         signs = open.sheet.signs,
         barriers = open.barriers,

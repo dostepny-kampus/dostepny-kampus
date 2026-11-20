@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Obramowania
@@ -55,10 +56,16 @@ private fun arrowBack(): ImageVector =
  * do lewej. Przycisk obrysowany ma wysokość co najmniej [CeleDotyku.minimum]. Przy zwykłej czcionce tytuł stoi obok
  * przycisku i zawija się w swojej kolumnie, a od skali czcionki 1,5 stoi pod nim na całą szerokość.
  *
+ * [horizontalPadding] ustala odstęp przycisku i tytułu od bocznych krawędzi.
  * Wymagania: NFR-15, NFR-20, NFR-17
  */
 @Composable
-public fun BackHeader(title: String, onBack: () -> Unit, modifier: Modifier = Modifier) {
+public fun BackHeader(
+    title: String,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    horizontalPadding: Dp = Odstepy.m,
+) {
     val isTitleBelow = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     val titleText = @Composable { titleModifier: Modifier ->
         val asHeading = titleModifier.semantics { heading() }
@@ -67,7 +74,7 @@ public fun BackHeader(title: String, onBack: () -> Unit, modifier: Modifier = Mo
     Column(modifier = modifier) {
         Surface(color = MaterialTheme.colorScheme.surface) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = Odstepy.m, vertical = Odstepy.s),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding, vertical = Odstepy.s),
                 horizontalArrangement = Arrangement.spacedBy(Odstepy.m),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -75,7 +82,7 @@ public fun BackHeader(title: String, onBack: () -> Unit, modifier: Modifier = Mo
                 if (!isTitleBelow) titleText(Modifier.weight(1f))
             }
         }
-        val below = Modifier.fillMaxWidth().padding(start = Odstepy.m, top = Odstepy.m, end = Odstepy.m)
+        val below = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding).padding(top = Odstepy.m)
         if (isTitleBelow) titleText(below)
     }
 }
