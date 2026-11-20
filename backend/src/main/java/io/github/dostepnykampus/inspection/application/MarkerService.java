@@ -93,8 +93,6 @@ public class MarkerService {
      * @param id Identyfikator cofanego znacznika
      * @param actor Identyfikator konta z tokenu
      * @param coordinator Prawda, gdy konto ma rolę Koordynatora
-     * @throws MissingResource Gdy znacznik o tym identyfikatorze nie istnieje
-     * @throws ForbiddenChange Gdy Zbierający próbuje cofnąć cudzy znacznik
      */
     @Transactional
     public void revokeOne(final UUID id, final String actor, final boolean coordinator) {

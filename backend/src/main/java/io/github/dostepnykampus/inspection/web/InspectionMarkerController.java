@@ -41,18 +41,18 @@ public final class InspectionMarkerController {
      *
      * <p>Wymagania: US11.3, US15.2, BR-20</p>
      *
-     * @param markerId Identyfikator cofanego znacznika
+     * @param id Identyfikator cofanego znacznika
      * @param account Zalogowane konto z tokenu
      * @param request Bieżące żądanie HTTP z rolami konta
      */
     @DeleteMapping("/inspection-markers/{markerId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void revoke(
-        @PathVariable final UUID markerId, final Principal account,
+        @PathVariable("markerId") final UUID id, final Principal account,
         final HttpServletRequest request
     ) {
         this.service.revokeOne(
-            markerId, account.getName(), request.isUserInRole("COORDINATOR")
+            id, account.getName(), request.isUserInRole("COORDINATOR")
         );
     }
 }

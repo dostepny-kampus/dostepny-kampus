@@ -33,10 +33,13 @@ final class InspectionMarkerHttpIT {
     void revokesAnyMarkerForCoordinator(final WebApplicationContext context) throws Exception {
         final UUID id = UUID.randomUUID();
         InspectionMarkerHttpIT.insert(context, id, "inne-konto");
-        final int status = InspectionMarkerHttpIT.delete(context, "COORDINATOR", id);
         Assertions.assertEquals(
             "204, cofnięty true",
-            String.format("%d, cofnięty %b", status, InspectionMarkerHttpIT.revoked(context, id)),
+            String.format(
+                "%d, cofnięty %b",
+                InspectionMarkerHttpIT.delete(context, "COORDINATOR", id),
+                InspectionMarkerHttpIT.revoked(context, id)
+            ),
             "Koordynator nie cofnął cudzego znacznika"
         );
     }
@@ -45,10 +48,13 @@ final class InspectionMarkerHttpIT {
     void revokesOwnMarkerForCollector(final WebApplicationContext context) throws Exception {
         final UUID id = UUID.randomUUID();
         InspectionMarkerHttpIT.insert(context, id, "konto-testowe");
-        final int status = InspectionMarkerHttpIT.delete(context, "COLLECTOR", id);
         Assertions.assertEquals(
             "204, cofnięty true",
-            String.format("%d, cofnięty %b", status, InspectionMarkerHttpIT.revoked(context, id)),
+            String.format(
+                "%d, cofnięty %b",
+                InspectionMarkerHttpIT.delete(context, "COLLECTOR", id),
+                InspectionMarkerHttpIT.revoked(context, id)
+            ),
             "Zbierający nie cofnął własnego znacznika"
         );
     }
@@ -66,10 +72,13 @@ final class InspectionMarkerHttpIT {
         throws Exception {
         final UUID id = UUID.randomUUID();
         InspectionMarkerHttpIT.insert(context, id, "inne-konto");
-        final int status = InspectionMarkerHttpIT.delete(context, "COLLECTOR", id);
         Assertions.assertEquals(
             "403, cofnięty false",
-            String.format("%d, cofnięty %b", status, InspectionMarkerHttpIT.revoked(context, id)),
+            String.format(
+                "%d, cofnięty %b",
+                InspectionMarkerHttpIT.delete(context, "COLLECTOR", id),
+                InspectionMarkerHttpIT.revoked(context, id)
+            ),
             "Inny Zbierający cofnął cudzy znacznik"
         );
     }
