@@ -357,11 +357,12 @@ private fun CampusMap(
     }
 }
 
-private fun SignSheetState.signTouch(room: OpenRoom?, dismiss: () -> Unit): (TouchSign, String) -> Unit = { sign, id ->
-    room?.run { onClose() }
-    open(sign, id)
-    dismiss()
-}
+private fun SignSheetState.signTouch(room: OpenRoom?, dismiss: () -> Unit): (TouchSign, String) -> Unit =
+    { sign, id ->
+        room?.run { onClose() }
+        open(sign, id)
+        dismiss()
+    }
 
 @Composable
 private fun rememberCampusScene(
