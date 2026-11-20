@@ -160,12 +160,14 @@ Rozmiary podajemy w sp, więc tekst rośnie razem z ustawieniem czcionki w telef
 
 Krój to `Atkinson Hyperlegible Next`: litery łatwe do pomylenia, np. I, l i 1, mają wyraźnie różne kształty, a krój powstał dla osób słabowidzących [9]. Licencja `SIL Open Font License` pozwala dołączyć plik czcionki do aplikacji. Jeśli czcionka nie zostanie wczytana, aplikacja pokaże tekst krojem systemowym.
 
+Material 3 ma 15 slotów stylu, a nasza skala osiem. Pozostałe sloty (`display…`, `headlineSmall`, `titleSmall`, `bodySmall`, `labelSmall`) dostają styl z listy `typografia.zastepstwa`, np. `titleSmall` to `titleMedium`. Komponenty biblioteki, np. tytuł okna dialogowego i podpowiedź pod polem, sięgają po te sloty same, więc bez zastępstw miałyby krój systemowy i 12–14 sp. W kodzie ekranów piszemy nazwy stylów ze skali, nie zastępstw.
+
 Napisy paska dolnego mają 18 sp i mogą zawinąć się do dwóch wierszy pod ikoną, np. „Zgłoś barierę” i „Konto i praca”. Faza C sprawdza na zrzutach ekranu, czy napisy paska mieszczą się bez ucięcia przy czcionce 200% (NFR-20).
 
 | Reguła | Wartość | Źródło |
 | --- | --- | --- |
 | Tekst podstawowy | 18 sp; 34 znaki w wierszu na ekranie 360 dp (konwencja makiet) | [konwencje makiet](makiety/index.md#konwencje), NFR-20 |
-| Najmniejszy tekst w aplikacji | 16 sp, tylko napisy na mapie; każdy styl interfejsu ma co najmniej 18 sp (próg zespołu) | PE-1, PE-3 |
+| Najmniejszy tekst w aplikacji | 16 sp, tylko napisy na mapie; każdy styl interfejsu ma co najmniej 18 sp (próg zespołu). Wyjątek: podpis „© OpenStreetMap” w rogu mapy, 12 sp (`mapa.podpis_osm_sp`), bo to atrybucja licencji, a pełne źródła są w legendzie | PE-1, PE-3, NFR-37 |
 | Tekst duży według NFR-16 | od 24 sp albo od 19 sp pogrubiony; mimo to wymagamy 7:1 | NFR-16 |
 | Interlinia tekstu podstawowego i podpisu | 28 sp przy 18 sp, czyli 1,56 rozmiaru (zalecane ≥ 1,5) | WCAG 1.4.8 [1], decyzja 50 |
 | Pogrubienie | waga 700 dla przycisków, oznaczeń wejścia i błędu przy polu | styl „Karta miejsca” |
@@ -181,7 +183,7 @@ Napisy paska dolnego mają 18 sp i mogą zawinąć się do dwóch wierszy pod ik
 | `titleMedium`    | 20 sp   | 700  | 26 sp      | nazwa wejścia, udogodnienia albo piętra w kontenerze grupy                                                | styl „Karta miejsca”, NFR-16 (duży tekst ≥ 19 sp pogrubiony)                                          |
 | `bodyLarge`      | 18 sp   | 400  | 28 sp      | tekst podstawowy, np. „Drzwi 120 cm”, opis piętra, kroki do sali                                          | konwencje makiet, NFR-20, PE-1                                                                        |
 | `labelLarge`     | 18 sp   | 600  | 24 sp      | napis przycisku i chipu; przyciski i oznaczenia wejścia mają wagę wyróżnienia                             | styl „Karta miejsca”, NFR-17                                                                          |
-| `bodyMedium`     | 18 sp   | 500  | 28 sp      | podpis, np. źródło i data oceny wejść, napisy „Zalecane”, podpisy OpenStreetMap                           | styl „Karta miejsca”, US17.3, NFR-37, NFR-40                                                          |
+| `bodyMedium`     | 18 sp   | 500  | 28 sp      | podpis, np. źródło i data oceny wejść, napisy „Zalecane”                                                  | styl „Karta miejsca”, US17.3, NFR-37, NFR-40                                                          |
 | `labelMedium`    | 18 sp   | 500  | 20 sp      | napisy pod ikonami paska dolnego, w razie potrzeby w dwóch wierszach                                      | styl „Karta miejsca”, wymagania wspólne (pasek dolny)                                                 |
 
 <!-- vale on -->
