@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.MapColors
+import io.github.dostepnykampus.core.designsystem.MapaSciezka
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.building.EntranceMarking
@@ -57,8 +59,8 @@ private val ENTRANCE_WORDS =
 private data class BuildingLevel(val word: String, val fill: Color, val stroke: Dp)
 
 /**
- * Znaki mapy V1, każdy z napisem, do arkusza legendy: budynki obu poziomów, znaki wejść i barier. Znaki wejść
- * i barier to te same obrazy co na mapie.
+ * Znaki mapy V1, każdy z napisem, do arkusza legendy: budynki obu poziomów, ścieżka dostosowana, znaki wejść
+ * i barier. Znaki wejść i barier to te same obrazy co na mapie.
  *
  * Wymagania: US1.4, NFR-21, US1.3, US16.1
  */
@@ -81,6 +83,7 @@ internal fun LegendSigns() {
     buildings.forEach { level ->
         LegendRow(level.word) { BuildingSample(fill = level.fill, stroke = level.stroke) }
     }
+    LegendRow(stringResource(R.string.mapa_legenda_sciezka)) { PathBandAtLastZoomStop() }
     ENTRANCE_WORDS.forEach { (marking, word) ->
         LegendRow(stringResource(word)) {
             SignSample(marking) { colors, density -> entranceSign(marking, colors, density) }
@@ -124,6 +127,27 @@ private fun BuildingSample(fill: Color, stroke: Dp) {
         drawRect(color = fill, topLeft = Offset(inset, inset), size = inner)
         val outline = Stroke(stroke.toPx())
         drawRect(color = colors.pwrKontur, topLeft = Offset(inset, inset), size = inner, style = outline)
+    }
+}
+
+@Composable
+private fun PathBandAtLastZoomStop() {
+    val colors = DostepnyKampusTheme.mapColors
+    val band = MapaSciezka.wstegaDp.last()
+    val inside = MapaSciezka.wnetrzeDp.last()
+    Canvas(Modifier.size(width = SampleWidth, height = SampleHeight)) {
+        val bandWidth = band.dp.dp.toPx()
+        val insideWidth = inside.dp.dp.toPx()
+        val start = Offset(x = bandWidth / 2, y = center.y)
+        val end = Offset(x = size.width - bandWidth / 2, y = center.y)
+        drawLine(color = colors.sciezkaBrzeg, start = start, end = end, strokeWidth = bandWidth, cap = StrokeCap.Round)
+        drawLine(
+            color = colors.sciezkaWnetrze,
+            start = start,
+            end = end,
+            strokeWidth = insideWidth,
+            cap = StrokeCap.Round,
+        )
     }
 }
 

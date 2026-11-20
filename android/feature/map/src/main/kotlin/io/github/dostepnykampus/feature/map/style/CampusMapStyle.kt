@@ -84,6 +84,7 @@ private val OUTLINE_WIDTH =
  * @property labelSize wysokość napisów podkładu w dp mapy, z tokenu `mapa.napisy_sp` i skali czcionki
  * @property basicBuilding wypełnienie budynków podstawowych, bez planu pięter (`pwr_podstawowy`); bez niego budynki
  *   obu poziomów mają barwę [building]
+ * @property path barwy ścieżki dostosowanej; bez nich brzeg ma barwę konturu, a wnętrze barwę lądu
  */
 data class MapStyleColors(
     val land: String,
@@ -105,6 +106,7 @@ data class MapStyleColors(
     val basemap: BasemapColors? = null,
     val labelSize: Double = Typografia.napisyMapy.value.toDouble(),
     val basicBuilding: String = building,
+    val path: PathColors = PathColors(edge = buildingOutline, inside = land),
 )
 
 /**
@@ -164,6 +166,7 @@ private fun sources(data: CampusMapData, look: SelectionLook, plan: JsonElement)
         put(key = LABELS_SOURCE, element = geoJsonSource(data.labelPoints))
         put(key = ENTRANCES_SOURCE, element = geoJsonSource(data.entrances))
         put(key = BARRIERS_SOURCE, element = geoJsonSource(data.barriers))
+        put(key = PATHS_SOURCE, element = geoJsonSource(data.paths))
         put(key = CHOSEN_SOURCE, element = geoJsonSource(look.chosenEntrance))
         put(key = PLAN_SOURCE, element = geoJsonSource(plan))
     }
@@ -175,6 +178,7 @@ private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap
             val minZoom = basemap?.minZoom ?: 0.0
             basemapLayers(colors = palette, minZoom = minZoom, textSize = colors.labelSize).forEach(::add)
         }
+        pathLayers(colors.path).forEach(::add)
         add(
             styleLayer(id = BUILDINGS_LAYER, type = "fill", source = BUILDINGS_SOURCE) {
                 val fill =

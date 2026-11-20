@@ -9,6 +9,7 @@
     <string name="mapa_legenda">Legenda</string>
     <string name="mapa_legenda_budynek_szczegolowy">Budynek z planem pięter</string>
     <string name="mapa_legenda_budynek_podstawowy">Budynek bez planu</string>
+    <string name="mapa_legenda_sciezka">Ścieżka dostosowana</string>
     <string name="mapa_legenda_wejscie_niedostepne">Wejście niedostępne</string>
     <string name="mapa_legenda_wejscie_bez_danych">Wejście bez danych</string>
     <string name="mapa_legenda_przewin">Przewiń w dół ↓</string>

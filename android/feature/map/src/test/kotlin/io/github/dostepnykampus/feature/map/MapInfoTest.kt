@@ -200,6 +200,7 @@ class MapInfoTest {
             listOf(
                 "Budynek z planem pięter",
                 "Budynek bez planu",
+                "Ścieżka dostosowana",
                 "Wejście dostępne",
                 "Wejście niedostępne",
                 "Wejście bez danych",

@@ -31,7 +31,7 @@ class CampusMapStyleTest {
     @Test
     fun drawsOutlinesOverBasemap() {
         val layers = style.array("layers").map { it.jsonObject }
-        val below = listOf("lad") + BASEMAP_LAYERS + listOf(BUILDINGS_LAYER, "kontury") + PLAN + SELECTED
+        val below = listOf("lad") + BASEMAP_LAYERS + PATHS + listOf(BUILDINGS_LAYER, "kontury") + PLAN + SELECTED
         val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)
         val expected = below + marks + listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
         assertEquals(expected, layers.map { it.text("id") })
@@ -148,12 +148,13 @@ class CampusMapStyleTest {
     @Test
     fun ordersOptionalLayers() {
         val bare = Json.parseToJsonElement(styled(MapSelection()))
-        val base = listOf("lad") + BASEMAP_LAYERS + listOf(BUILDINGS_LAYER, "kontury") + PLAN
+        val base = listOf("lad") + BASEMAP_LAYERS + PATHS + listOf(BUILDINGS_LAYER, "kontury") + PLAN
         val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)
         val pin = listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
         val bareIds = bare.jsonObject.array("layers").map { it.jsonObject.text("id") }
         assertEquals(base + SELECTED + marks + pin, bareIds)
-        val sources = setOf(BASEMAP, "budynki", "podpisy", "wejscia", "bariery", CHOSEN_SOURCE, PLAN_SOURCE)
+        val sources =
+            setOf(BASEMAP, "budynki", "podpisy", "wejscia", "bariery", PATHS_SOURCE, CHOSEN_SOURCE, PLAN_SOURCE)
         assertEquals(sources, bare.jsonObject.obj("sources").keys)
         val entrance = SelectedEntrance(id = "w1", location = STYLE_ORIGIN, label = "Główne", buildingSymbol = "C-13")
         val full = Json.parseToJsonElement(styled(data.selection(building = "C-13", entrance = entrance)))
@@ -192,3 +193,5 @@ private val PLAN =
     )
 
 private val SELECTED = listOf(SELECTED_LAYER, SELECTED_PLAN_LAYER)
+
+private val PATHS = listOf(PATH_EDGE_LAYER, PATH_INSIDE_LAYER)
