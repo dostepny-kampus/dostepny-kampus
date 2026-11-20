@@ -16,6 +16,8 @@ import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
 import io.github.dostepnykampus.feature.capture.report.form.ReportForm
 import io.github.dostepnykampus.feature.capture.report.form.ReportPlace
+import io.github.dostepnykampus.feature.capture.report.form.ReportUiState
+import io.github.dostepnykampus.feature.capture.report.form.edited
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

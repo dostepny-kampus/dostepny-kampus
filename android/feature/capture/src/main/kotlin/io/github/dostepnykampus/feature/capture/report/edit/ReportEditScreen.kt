@@ -18,9 +18,11 @@ import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
 import io.github.dostepnykampus.feature.capture.photo.rememberPhotoCamera
 import io.github.dostepnykampus.feature.capture.report.ReportDraft
-import io.github.dostepnykampus.feature.capture.report.form.ReportFormHost
-import io.github.dostepnykampus.feature.capture.report.form.ReportFormViewModel
-import io.github.dostepnykampus.feature.capture.report.form.controls
+import io.github.dostepnykampus.feature.capture.report.ReportEditExits
+import io.github.dostepnykampus.feature.capture.report.ReportFormHost
+import io.github.dostepnykampus.feature.capture.report.ReportFormViewModel
+import io.github.dostepnykampus.feature.capture.report.controls
+import io.github.dostepnykampus.feature.capture.report.form.ReportEdit
 import kotlinx.coroutines.flow.first
 
 /**
@@ -61,12 +63,3 @@ fun ReportEditScreen(
         rememberPhotoCamera(onPhoto = { viewModel.edit(ReportEdit.Photo(it)) }, transcoder = photoTranscoder)
     ReportFormHost(controls = viewModel.controls(), camera = camera, exits = exits, modifier = modifier)
 }
-
-/**
- * Wyjścia z formularza C2; w nowym zgłoszeniu „Zmień miejsce” wychodzi tak samo jak [onLeave].
- *
- * @property onLeave wyjście bez zapisu albo brak zgłoszenia; powrót do C3
- * @property onSave poprawka zapisana; powrót do C3
- * @property onChangePlace „Zmień miejsce”: pomiar C1 zamiast poprawki
- */
-data class ReportEditExits(val onLeave: () -> Unit, val onSave: () -> Unit, val onChangePlace: () -> Unit)

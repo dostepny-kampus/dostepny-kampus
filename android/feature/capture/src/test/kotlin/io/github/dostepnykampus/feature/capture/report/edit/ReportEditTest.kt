@@ -9,9 +9,12 @@ import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.capture.report.A1
+import io.github.dostepnykampus.feature.capture.report.form.ReportEdit
 import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
 import io.github.dostepnykampus.feature.capture.report.form.ReportForm
 import io.github.dostepnykampus.feature.capture.report.form.ReportFormError
+import io.github.dostepnykampus.feature.capture.report.form.ReportUiState
+import io.github.dostepnykampus.feature.capture.report.form.edited
 import io.github.dostepnykampus.feature.capture.report.form.errors
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull

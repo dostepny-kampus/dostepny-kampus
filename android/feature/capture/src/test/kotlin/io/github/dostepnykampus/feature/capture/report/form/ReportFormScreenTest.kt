@@ -13,6 +13,8 @@ import androidx.compose.ui.test.performClick
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
+import io.github.dostepnykampus.feature.capture.report.ReportFormScreen
+import io.github.dostepnykampus.feature.capture.report.ReportFormViewModel
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test

@@ -3,7 +3,7 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.capture.report.form
+package io.github.dostepnykampus.feature.capture.report
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
@@ -13,12 +13,9 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
-import io.github.dostepnykampus.feature.capture.report.ReportActions
-import io.github.dostepnykampus.feature.capture.report.ReportContent
-import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
-import io.github.dostepnykampus.feature.capture.report.edit.ReportEditExits
-import io.github.dostepnykampus.feature.capture.report.edit.ReportStage
-import io.github.dostepnykampus.feature.capture.report.edit.ReportUiState
+import io.github.dostepnykampus.feature.capture.report.form.ReportEdit
+import io.github.dostepnykampus.feature.capture.report.form.ReportStage
+import io.github.dostepnykampus.feature.capture.report.form.ReportUiState
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -104,3 +101,12 @@ internal fun ReportFormHost(
         ReportContent(state = current, actions = actions, modifier = modifier)
     }
 }
+
+/**
+ * Wyjścia z formularza C2; w nowym zgłoszeniu „Zmień miejsce” wychodzi tak samo jak [onLeave].
+ *
+ * @property onLeave wyjście bez zapisu albo brak zgłoszenia; powrót do C3
+ * @property onSave poprawka zapisana; powrót do C3
+ * @property onChangePlace „Zmień miejsce”: pomiar C1 zamiast poprawki
+ */
+data class ReportEditExits(val onLeave: () -> Unit, val onSave: () -> Unit, val onChangePlace: () -> Unit)

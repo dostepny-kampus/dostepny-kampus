@@ -3,16 +3,11 @@
  * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.capture.report.edit
+package io.github.dostepnykampus.feature.capture.report.form
 
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
-import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
-import io.github.dostepnykampus.feature.capture.report.form.ReportForm
-import io.github.dostepnykampus.feature.capture.report.form.ReportFormError
-import io.github.dostepnykampus.feature.capture.report.form.ReportPlace
-import io.github.dostepnykampus.feature.capture.report.form.errors
 
 /** Co ekran C2 robi po „Zapisz”. Wymagania: US7 */
 enum class ReportStage {

@@ -3,7 +3,7 @@
  * Author: Myroslav Hryniuka, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.capture.report.form
+package io.github.dostepnykampus.feature.capture.report
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -14,9 +14,8 @@ import io.github.dostepnykampus.feature.capture.measure.place
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
 import io.github.dostepnykampus.feature.capture.photo.rememberPhotoCamera
-import io.github.dostepnykampus.feature.capture.report.ReportDraft
-import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
-import io.github.dostepnykampus.feature.capture.report.edit.ReportEditExits
+import io.github.dostepnykampus.feature.capture.report.form.ReportEdit
+import io.github.dostepnykampus.feature.capture.report.form.ReportForm
 
 /**
  * C2 Opisz barierę z miejscem z [route]. „Wstecz” w nagłówku i wstecz telefonu bez zmian wychodzą od razu,

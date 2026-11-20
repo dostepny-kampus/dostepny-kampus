@@ -14,9 +14,7 @@ import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.feature.capture.report.A1
-import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
-import io.github.dostepnykampus.feature.capture.report.edit.ReportStage
-import io.github.dostepnykampus.feature.capture.report.edit.ReportUiState
+import io.github.dostepnykampus.feature.capture.report.ReportFormViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher

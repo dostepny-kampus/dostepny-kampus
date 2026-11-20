@@ -3,7 +3,7 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.capture.report.form
+package io.github.dostepnykampus.feature.capture.measure
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -21,7 +21,6 @@ import io.github.dostepnykampus.core.geo.building.BuildingHint
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.building.Building
-import io.github.dostepnykampus.feature.capture.measure.PlaceChoice
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
