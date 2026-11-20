@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map.plan
 
 import io.github.dostepnykampus.core.model.building.Floor
+import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
