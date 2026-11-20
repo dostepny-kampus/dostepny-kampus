@@ -39,13 +39,11 @@ private const val NO_BREAK_SPACE = '\u00A0'
 @Composable
 internal fun RoomChoice(found: FoundRoom, onClick: () -> Unit) {
     val number = found.room.number.orEmpty()
-    val kind = found.room.function.takeUnless { it.isBlank() || it == OTHER_FUNCTION }
+    val kind = found.visibleKind()
     val floor = found.floor.label
     val title = stringResource(R.string.mapa_sala, number)
     val building = stringResource(R.string.mapa_budynek, found.building).replaceFirstChar(Char::lowercaseChar)
     val spoken = listOfNotNull(title, building, kind?.floorWord(), floor.floorWord())
-    val shownFloor = floor.replace(oldChar = ' ', newChar = NO_BREAK_SPACE)
-    val detail = listOfNotNull(kind, if (kind == null) shownFloor else shownFloor.floorWord())
     ResultCard(
         symbol = found.building,
         description = spoken.joinToString(separator = ", "),
@@ -54,7 +52,7 @@ internal fun RoomChoice(found: FoundRoom, onClick: () -> Unit) {
     ) {
         Text(text = title, style = MaterialTheme.typography.titleMedium, fontWeight = Typografia.wyroznienieWaga)
         Text(
-            text = detail.joinToString(separator = SEPARATOR),
+            text = found.roomDetail(),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -81,3 +79,12 @@ internal fun BuildingMissing() {
         )
     }
 }
+
+/** Rodzaj pomieszczenia i piętro dla wyniku i karty sali. Wymagania: US18.1 */
+internal fun FoundRoom.roomDetail(): String {
+    val kind = visibleKind()
+    val shownFloor = floor.label.replace(oldChar = ' ', newChar = NO_BREAK_SPACE)
+    return listOfNotNull(kind, if (kind == null) shownFloor else shownFloor.floorWord()).joinToString(separator = SEPARATOR)
+}
+
+private fun FoundRoom.visibleKind(): String? = room.function.takeUnless { it.isBlank() || it == OTHER_FUNCTION }

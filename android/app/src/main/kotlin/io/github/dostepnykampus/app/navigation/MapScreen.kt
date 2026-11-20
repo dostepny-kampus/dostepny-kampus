@@ -35,9 +35,12 @@ import io.github.dostepnykampus.feature.map.entrance.focusedBuilding
 import io.github.dostepnykampus.feature.map.entrance.withBuildingEntrances
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import io.github.dostepnykampus.feature.map.plan.MapPlanViewModel
 import io.github.dostepnykampus.feature.map.plan.PlanReport
 import io.github.dostepnykampus.feature.map.plan.ShownPlan
+import io.github.dostepnykampus.feature.map.room.OpenRoom
+import io.github.dostepnykampus.feature.map.room.RoomCardViewModel
 
 /**
  * V1 ze stanem [viewModel], planem piętra [planViewModel] i wejściami z serwera [entrancesViewModel] z grafu Hilt oraz
@@ -54,18 +57,24 @@ internal fun AppNavigator.HiltMapScreen(
     entrancesViewModel: BuildingEntrancesViewModel = hiltViewModel(),
     liftViewModel: EntranceLiftViewModel = hiltViewModel(),
     mapView: CampusMapView = MapLibreMapView,
+    roomViewModel: RoomCardViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val plan by planViewModel.shown.collectAsStateWithLifecycle()
     val entrances by entrancesViewModel.shown.collectAsStateWithLifecycle()
     val lift by liftViewModel.shown.collectAsStateWithLifecycle()
+    val card by roomViewModel.shown.collectAsStateWithLifecycle()
+    val room = card?.takeIf { current is MapRoute }
+    val found = room?.found
+    val roomFocus = remember(found) { found?.focus() }
+    val selected = roomFocus ?: focus
     val shown = remember(state, entrances) { state.copy(catalog = state.catalog?.withBuildingEntrances(entrances)) }
     SideEffect {
-        planViewModel.show(focus)
-        entrancesViewModel.show(focusedBuilding(focus))
+        planViewModel.show(selected)
+        entrancesViewModel.show(focusedBuilding(selected))
     }
     MapScreen(
-        focus = focus,
+        focus = selected,
         state = shown,
         onListChange = viewModel::chooseList,
         onSearch = viewModel::search,
@@ -74,6 +83,8 @@ internal fun AppNavigator.HiltMapScreen(
         onCamera = planViewModel::camera,
         onFloorChoose = planViewModel::chooseFloor,
         onMapHide = planViewModel::hide,
+        room = room?.let { OpenRoom(card = it, onClose = roomViewModel::close) },
+        onOpenRoom = roomViewModel::show,
         entrance =
             EntranceActions(
                 onShow = liftViewModel::show,
@@ -105,6 +116,8 @@ internal fun AppNavigator.MapScreen(
     onFloorChoose: (String, String) -> Unit = { _, _ -> },
     onMapHide: () -> Unit = {},
     entrance: EntranceActions = EntranceActions(),
+    room: OpenRoom? = null,
+    onOpenRoom: ((FoundRoom) -> Unit)? = null,
 ) {
     val accessibility = checkNotNull(LocalContext.current.getSystemService(AccessibilityManager::class.java))
     val isFullOnly = isFullOnlySheet(LocalDensity.current.fontScale)
@@ -113,7 +126,10 @@ internal fun AppNavigator.MapScreen(
         state = state,
         onListChange = onListChange,
         onSearch = onSearch,
-        onBuildingClick = { openBuilding(it) },
+        onBuildingClick = { symbol ->
+            room?.onClose?.invoke()
+            openBuilding(symbol)
+        },
         focus = shownFocus(focus, isSheetAbove = isSheetAbove),
         contentPadding = if (isSheetAbove) LocalSheetPadding.current else SheetLayout(),
         onEmptyMapClick = { closeCardOnEmptyMap() },
@@ -127,8 +143,8 @@ internal fun AppNavigator.MapScreen(
         onMapHide = onMapHide,
         onCardReturn = { returnToCard(it) },
         sheetCover = LocalSheetPadding.current.shownCover.takeUnless { isFullOnly },
-        // TODO(#1481): karta sali.
-        onRoomClick = { showOnMap(it.focus()) },
+        onRoomClick = onOpenRoom ?: { found -> showOnMap(found.focus()) },
+        room = room,
     )
 }
 

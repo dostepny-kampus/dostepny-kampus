@@ -33,7 +33,7 @@ class RoomCardSheetTest {
     @Test
     fun showsAllStepsAndOpensBuilding() {
         val opened = mutableListOf<String>()
-        show(VIA_LIFT, onBuilding = opened::add)
+        show(VIA_LIFT, onBuilding = { opened.add(it) })
 
         compose.onNodeWithText("Sala 329").assertExists()
         compose.onNodeWithText("Jak dojść").assertExists()
