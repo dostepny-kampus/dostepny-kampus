@@ -10,11 +10,10 @@ import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.model.GeoPolygon
-import io.github.dostepnykampus.core.model.building.Entrance
-import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.ENTRANCE
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.FOUND
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.GROUND
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.SECOND
@@ -134,20 +133,6 @@ class RoomCardViewModelTest {
 
         val NO_AREA = GeoPolygon(emptyList())
 
-        val ENTRANCES =
-            ServerEntrances {
-                listOf(
-                    Entrance(
-                        id = "node/1",
-                        buildingSymbol = "A-1",
-                        name = "Wejście dostosowane",
-                        isMain = false,
-                        type = null,
-                        location = point(meters = 0.0),
-                        marking = EntranceMarking.ACCESSIBLE,
-                        floorId = "a1-0",
-                    ),
-                )
-            }
+        val ENTRANCES = ServerEntrances { listOf(ENTRANCE) }
     }
 }
