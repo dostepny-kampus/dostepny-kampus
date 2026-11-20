@@ -23,6 +23,7 @@ mine	ścieżka	moje zgłoszenia	Lista zgłoszeń osoby i ich statusy.
 network	temat	stan sieci	Informacja, czy urządzenie ma połączenie z siecią.
 overlay	temat	nakładka mapy	Elementy nad mapą: sterowanie, legenda, informacja, stan sieci.
 own	temat	własne zgłoszenia	Zgłoszenia osoby zapisane na urządzeniu i ich statusy.
+path	temat	ścieżka dostosowana	Odcinki ścieżek dostosowanych z mapy kampusu PWr.
 pending	temat	oczekujące zmiany	Zmiany zgłoszeń czekające na wysłanie.
 photo	temat	zdjęcie	Zdjęcie zgłoszenia: wykonanie, zapis, wysłanie.
 plan	temat	plan piętra	Plan piętra budynku na mapie i wybór budynku, którego plan widać.
