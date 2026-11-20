@@ -260,7 +260,7 @@ private fun ScreenSheet.RoomLayout(
 ) {
     val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     val found = room?.run { card.found }
-    var isPlanShown by rememberSaveable(found?.building, found?.run { room.id }) { mutableStateOf(false) }
+    var isPlanShown by rememberSaveable(found?.building, found?.run { this.room.id }) { mutableStateOf(false) }
     BackHandler(enabled = room != null) {
         if (isLarge && isPlanShown) isPlanShown = false else room?.run { onClose() }
     }
