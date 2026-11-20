@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map.overlay
+package io.github.dostepnykampus.feature.map
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -22,14 +22,14 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.offset
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
-import io.github.dostepnykampus.feature.map.MapSceneState
-import io.github.dostepnykampus.feature.map.PlanLink
-import io.github.dostepnykampus.feature.map.ScreenSheet
 import io.github.dostepnykampus.feature.map.area.AreaEdgeAnnouncement
 import io.github.dostepnykampus.feature.map.area.MapAreas
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
+import io.github.dostepnykampus.feature.map.overlay.MapOverlay
+import io.github.dostepnykampus.feature.map.overlay.MapStatusBar
+import io.github.dostepnykampus.feature.map.overlay.dataDay
 import io.github.dostepnykampus.feature.map.plan.FloorColumn
 
 /** Sterowanie, kolumna pięter i arkusze nad widokiem mapy. Wymagania: US1.1, US2, US18.2 */

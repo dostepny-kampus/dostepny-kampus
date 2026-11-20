@@ -3,17 +3,8 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map
+package io.github.dostepnykampus.feature.map.camera
 
-import io.github.dostepnykampus.feature.map.camera.CameraTransition
-import io.github.dostepnykampus.feature.map.camera.FreeMap
-import io.github.dostepnykampus.feature.map.camera.MapCamera
-import io.github.dostepnykampus.feature.map.camera.MapLimits
-import io.github.dostepnykampus.feature.map.camera.TapSight
-import io.github.dostepnykampus.feature.map.camera.cameraTransition
-import io.github.dostepnykampus.feature.map.camera.placed
-import io.github.dostepnykampus.feature.map.camera.tapTransition
-import io.github.dostepnykampus.feature.map.camera.within
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 
 /**
@@ -69,7 +60,7 @@ internal class PickOrigin(isUnderCard: Boolean) {
  * @property outline kontur wybranego budynku
  * @property free wolna część mapy nad kartą
  * @property limits granice kamery; `null` przed pomiarem mapy
- * @property scale skala animacji systemu, zob. [rememberAnimatorScale]
+ * @property scale skala animacji w ustawieniach systemu
  */
 internal data class PickView(
     val from: MapCamera,

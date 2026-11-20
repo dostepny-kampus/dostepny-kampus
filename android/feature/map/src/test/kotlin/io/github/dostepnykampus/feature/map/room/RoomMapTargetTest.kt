@@ -42,6 +42,10 @@ class RoomMapTargetTest {
     fun pinsOnlyExplicitRoomFloor() {
         val room = MapFocus.Building(symbol = FOUND.building, command = 1L, room = FOUND.room.id)
         val floor = room.copy(floor = FOUND.floor.id)
-        assertEquals(listOf(null, FOUND.building), listOf(selectedBuilding(room), selectedBuilding(floor)))
+        assertEquals(
+            listOf(null, FOUND.building),
+            listOf(selectedBuilding(room), selectedBuilding(floor)),
+            "Tylko sala z piętrem trzyma plan",
+        )
     }
 }

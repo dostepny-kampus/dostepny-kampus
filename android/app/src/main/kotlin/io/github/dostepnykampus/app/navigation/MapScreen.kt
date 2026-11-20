@@ -70,7 +70,7 @@ internal fun AppNavigator.HiltMapScreen(
     val room = card?.takeIf { current is MapRoute }?.let { if (isLarge) it.copy(step = null) else it }
     val found = room?.found
     val target = room?.mapTarget()
-    val roomFocus = remember(found, room?.step) { found?.let { it.focus().copy(floor = target?.floor) } }
+    val roomFocus = remember(found, room?.step) { found?.focus(floorId = target?.floor) }
     val selected = roomFocus ?: focus
     val shown = remember(state, entrances) { state.copy(catalog = state.catalog?.withBuildingEntrances(entrances)) }
     SideEffect {
@@ -180,5 +180,5 @@ private fun PlanReport.toPlace(): ReportPlace =
         longitude = point.longitude,
     )
 
-private fun FoundRoom.focus(): MapFocus.Building =
-    MapFocus.Building(symbol = building, command = System.nanoTime(), floor = floor.id, room = room.id)
+private fun FoundRoom.focus(floorId: String? = floor.id): MapFocus.Building =
+    MapFocus.Building(symbol = building, command = System.nanoTime(), floor = floorId, room = room.id)
