@@ -464,18 +464,17 @@ mapa:
     zrodlo: US16.1, NFR-16, NFR-17, NFR-21
   # Ścieżka dostosowana na mapie V1: pod budynkami PWr, od powiększenia `od_powiekszenia`. Szerokość rośnie
   # wykładniczo między progami: `sciezka_brzeg` to cała wstęga, `sciezka_wnetrze` leży na niej węższa, więc z każdej
-  # strony zostaje brzeg. Chodniki OSM pod nią mają krycie `chodniki_krycie`, żeby nie wyglądały jak ścieżka.
+  # strony zostaje brzeg. Chodniki OSM zostają bez zmian: od ścieżki odróżnia je barwa i legenda.
   sciezka:
     od_powiekszenia: 15.5
     wstega_dp:
-      - {powiekszenie: 15.5, dp: 3.2}
-      - {powiekszenie: 17, dp: 5.2}
-      - {powiekszenie: 19, dp: 16}
+      - {powiekszenie: 15.5, dp: 4.2}
+      - {powiekszenie: 17, dp: 7}
+      - {powiekszenie: 19, dp: 20}
     wnetrze_dp:
-      - {powiekszenie: 15.5, dp: 1.2}
-      - {powiekszenie: 17, dp: 3.2}
-      - {powiekszenie: 19, dp: 12.5}
-    chodniki_krycie: 0.4
+      - {powiekszenie: 15.5, dp: 2}
+      - {powiekszenie: 17, dp: 4.8}
+      - {powiekszenie: 19, dp: 16}
     zrodlo: US1.4, NFR-16, NFR-21
   # Przygaszony budynek PWr (inne budynki przy zaznaczonym budynku i przy planie piętra) zostaje w swojej barwie,
   # bledszy: tło `pwr` albo `pwr_podstawowy` z kryciem `tlo_krycie`, kontur `pwr_kontur` z kryciem `kontur_krycie`,
