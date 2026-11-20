@@ -124,12 +124,12 @@ private fun RoomWayRow(number: Int, title: String, text: String, selected: Boole
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     RoomStepBadge(number = number, size = 40.dp, selected = selected)
-                    Text(text = title, modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
+                    Text(text = title, modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
                     if (onClick != null) {
                         Icon(imageVector = MapControlIcons.Right, contentDescription = null, tint = colors.primary)
                     }
                 }
-                Text(text = text, style = MaterialTheme.typography.bodyMedium)
+                Text(text = text, style = MaterialTheme.typography.bodyLarge)
             }
         } else {
             Row(
@@ -139,8 +139,8 @@ private fun RoomWayRow(number: Int, title: String, text: String, selected: Boole
             ) {
                 RoomStepBadge(number = number, size = 28.dp, selected = selected)
                 Column(Modifier.weight(1f)) {
-                    Text(text = title, style = MaterialTheme.typography.titleSmall)
-                    Text(text = text, style = MaterialTheme.typography.bodyMedium)
+                    Text(text = title, style = MaterialTheme.typography.titleMedium)
+                    Text(text = text, style = MaterialTheme.typography.bodyLarge)
                 }
             }
         }

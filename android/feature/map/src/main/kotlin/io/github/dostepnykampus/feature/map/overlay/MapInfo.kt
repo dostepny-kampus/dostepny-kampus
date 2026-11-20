@@ -104,7 +104,7 @@ private fun InfoPanel(dataDay: LocalDate?, onClose: () -> Unit, modifier: Modifi
                 Text(
                     text = stringResource(R.string.mapa_zrodla),
                     modifier = Modifier.semantics { heading() },
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 StreetSource()
                 BasemapSource()

@@ -102,7 +102,7 @@ private fun ListTop(list: MySubmissions, onMeasure: () -> Unit) {
             Text(stringResource(R.string.moje_pusty), style = MaterialTheme.typography.bodyLarge)
         }
         if (list.waitingCount > 0) {
-            Text(stringResource(R.string.moje_czeka, list.waitingCount), style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.moje_czeka, list.waitingCount), style = MaterialTheme.typography.titleMedium)
         }
         Button(onClick = onMeasure) {
             Text(stringResource(R.string.pomiar_naglowek))

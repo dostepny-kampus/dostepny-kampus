@@ -82,7 +82,7 @@ private fun Accepted(barrier: AcceptedBarrier) {
         Text(
             text = stringResource(barrier.type?.nameRes() ?: R.string.moje_typ_nieznany),
             modifier = Modifier.semantics { heading() },
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.headlineMedium,
             fontWeight = Typografia.wyroznienieWaga,
         )
         // TODO(#2227): nazwy budynku i wejścia z katalogu budynków w core:data
