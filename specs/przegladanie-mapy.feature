@@ -518,8 +518,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | D-1     | 5      |
       | D-2     | 5      |
 
-  # @do-zrobienia #3452: test nawigacji wyboru planu przy otwartej karcie budynku i arkuszu wejścia.
-  @US16.1 @US2.8 @aplikacja @do-zrobienia
+  @US16.1 @US2.8 @aplikacja
   Scenariusz: Otwarta karta budynku albo sali trzyma plan tego budynku
     Zakładając, że na mapie w powiększeniu 18 widać plan budynku szczegółowego A-1
     Jeżeli Odwiedzający dotknie sąsiedniego budynku szczegółowego B-1 bliżej niż 60 m
