@@ -72,7 +72,7 @@ cd backend
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=import-pwr -Dspring-boot.run.arguments=--budynek=A-1
 ```
 
-Opcja `--budynek` ogranicza import do podanych symboli. Ponowne uruchomienie zastępuje plan budynku bez duplikatów. Dziennik podaje liczbę pięter i pomieszczeń każdego budynku.
+Polecenie uruchamia po kolei kroki importu (`PwrImportStep`, kolejność `@Order`); plany pięter są pierwszym krokiem. Błąd kroku przerywa import przed następnymi krokami. Opcja `--budynek` ogranicza import planów do podanych symboli. Ponowne uruchomienie zastępuje plan budynku bez duplikatów. Dziennik podaje liczbę pięter i pomieszczeń każdego budynku.
 
 ## Usługa logowania
 

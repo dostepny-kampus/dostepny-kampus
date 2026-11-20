@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.building.room.application;
 
 import io.github.dostepnykampus.building.application.CampusMapSettings;
+import io.github.dostepnykampus.building.application.PwrImportStep;
 import io.github.dostepnykampus.building.room.BuildingPlan;
 import io.github.dostepnykampus.building.room.FloorPlans;
 import io.github.dostepnykampus.building.room.PlanFloor;
@@ -15,20 +16,17 @@ import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.DefaultApplicationArguments;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationListener;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * Ręczny import planów pięter PWr (ADR-0012), uruchamiany profilem import-pwr. Każdy budynek z
- * konfiguracji dostaje piętra swojego FACILITY_ID oraz pomieszczenia i wejścia swoich warstw
- * z dniem edycji warstwy wejść; uwagi i szerokość drzwi wejść uzupełnia warstwa mapy kampusu.
- * Import rusza, gdy aplikacja jest gotowa (po wszystkich zadaniach startu), a po nim aplikacja
- * się zamyka. Opcja --budynek ogranicza import do podanych symboli. Każdy budynek zapisuje się
- * osobno, więc błąd usługi przerywa import, a budynki zapisane wcześniej zostają.
+ * Pierwszy krok importu PWr (ADR-0012): plany pięter. Każdy budynek z konfiguracji dostaje
+ * piętra swojego FACILITY_ID oraz pomieszczenia i wejścia swoich warstw z dniem edycji warstwy
+ * wejść; uwagi i szerokość drzwi wejść uzupełnia warstwa mapy kampusu. Opcja --budynek ogranicza
+ * import do podanych symboli. Każdy budynek zapisuje się osobno, więc błąd usługi przerywa
+ * import, a budynki zapisane wcześniej zostają.
  *
  * <p>Wymagania: US16, US18.2, NFR-40, NFR-47, BR-24, BR-27</p>
  *
@@ -36,7 +34,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Profile("import-pwr")
-final class PlanImport implements ApplicationListener<ApplicationReadyEvent> {
+@Order(1)
+final class PlanImport implements PwrImportStep {
 
     /**
      * Dziennik importu.
@@ -74,14 +73,12 @@ final class PlanImport implements ApplicationListener<ApplicationReadyEvent> {
     }
 
     @Override
-    public void onApplicationEvent(final ApplicationReadyEvent event) {
-        final List<String> only = Optional.ofNullable(
-            new DefaultApplicationArguments(event.getArgs()).getOptionValues("budynek")
-        ).orElse(List.of());
+    public void run(final ApplicationArguments args) {
+        final List<String> only = Optional.ofNullable(args.getOptionValues("budynek"))
+            .orElse(List.of());
         this.settings.buildings().stream()
             .filter(layer -> only.isEmpty() || only.contains(layer.symbol()))
             .forEach(this::building);
-        SpringApplication.exit(event.getApplicationContext());
     }
 
     private void building(final PlanSettings.Layer layer) {
