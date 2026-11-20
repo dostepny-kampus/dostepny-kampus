@@ -15,6 +15,7 @@ Wysyłka obejmuje wpisy bieżącego konta. Pierwsze zalogowanie po migracji przy
 - `core.data.inspection` — znaczniki piętra obejrzanego czekające w kolejce telefonu.
 - `core.data.map` — zapamiętany wybór między mapą a listą budynków.
 - `core.data.network` — stan połączenia z siecią.
+- `core.data.path` — ścieżki dostosowane z serwera z kopią w telefonie.
 - `core.data.photo` — wykonanie zdjęcia zgłoszenia i jego wynik.
 - `core.data.room` — plany pięter budynków z serwera z kopią w telefonie.
 - `core.data.server` — wynik żądania do serwera bez typów klienta HTTP.
