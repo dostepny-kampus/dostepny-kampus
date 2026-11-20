@@ -35,7 +35,7 @@ final class CampusMapSettingsIT {
                             "services/MAPA_KAMPUSU_PWr_14122023_WFL1_widok/FeatureServer"
                         )
                     ),
-                    new CampusMapSettings.Layers(29)
+                    new CampusMapSettings.Layers(29, 2)
                 )
             )
         );

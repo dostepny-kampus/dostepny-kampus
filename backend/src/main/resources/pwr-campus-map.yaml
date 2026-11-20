@@ -7,3 +7,5 @@ dk:
       # Warstwy wejść planów nie mają pól Uwagi i Szerokosc (poza A-1); ma je ta warstwa,
       # z punktami w tych samych miejscach (sprawdzone 18.11.2026).
       entrances: 29
+      # „Ścieżki dostosowane”: polilinie z GlobalID (sprawdzone 20.11.2026).
+      paths: 2
