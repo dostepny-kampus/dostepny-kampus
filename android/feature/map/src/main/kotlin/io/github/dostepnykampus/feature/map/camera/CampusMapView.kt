@@ -20,6 +20,7 @@ import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.style.BasemapColors
 import io.github.dostepnykampus.feature.map.style.MapStyleColors
+import io.github.dostepnykampus.feature.map.style.PathColors
 import io.github.dostepnykampus.feature.map.style.PlanColors
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
@@ -104,6 +105,7 @@ internal fun MapColors.styleColors(fontScale: Float = 1f): MapStyleColors =
                 halo = obwodka.hex(),
             ),
         labelSize = (Typografia.napisyMapy.value * fontScale).toDouble(),
+        path = PathColors(edge = sciezkaBrzeg.hex(), inside = sciezkaWnetrze.hex()),
     )
 
 internal fun Color.hex(): String = "#%06X".format(Locale.ROOT, toArgb() and RGB_MASK)

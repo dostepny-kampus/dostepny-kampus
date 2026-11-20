@@ -30,13 +30,17 @@ private val EMPTY_MAP_DATA =
 internal fun campusMapShell(selection: MapSelection, colors: MapStyleColors, basemap: Basemap?): String =
     campusMapStyle(data = EMPTY_MAP_DATA, selection = selection, colors = colors, basemap = basemap)
 
-/** Teksty GeoJSON źródeł stylu z danymi katalogu i barier, po nazwie źródła; reszta źródeł nie zależy od danych. */
+/**
+ * Teksty GeoJSON źródeł stylu z danymi katalogu, barier i ścieżek, po nazwie źródła; reszta źródeł nie zależy od
+ * danych.
+ */
 internal fun CampusMapData.sourceTexts(): Map<String, String> =
     mapOf(
         BUILDINGS_SOURCE to buildings.asStyleText(),
         LABELS_SOURCE to labelPoints.asStyleText(),
         ENTRANCES_SOURCE to entrances.asStyleText(),
         BARRIERS_SOURCE to barriers.asStyleText(),
+        PATHS_SOURCE to paths.asStyleText(),
     )
 
 /**
