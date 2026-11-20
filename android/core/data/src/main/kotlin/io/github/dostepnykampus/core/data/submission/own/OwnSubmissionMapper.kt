@@ -31,6 +31,7 @@ internal fun PendingSubmissionEntity.toOwnSubmissionEntity(): OwnSubmissionEntit
         floorId = floorId,
         barrierType = barrierType,
         severity = severity,
+        ownerSub = ownerSub,
     )
 
 /**

@@ -41,7 +41,7 @@ import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
         FloorRoomEntity::class,
         InspectionMarkerEntity::class,
     ],
-    version = 12,
+    version = 13,
     autoMigrations = [AutoMigration(from = 9, to = 10), AutoMigration(from = 10, to = 11)],
     exportSchema = true,
 )
@@ -58,7 +58,7 @@ internal abstract class DkDatabase : RoomDatabase() {
     /** Odczyt zgłoszenia z kolejki do poprawki. */
     abstract fun pendingEdits(): PendingEditDao
 
-    /** Przypisanie właściciela wierszom obu kolejek po migracji. */
+    /** Przypisanie właściciela wierszom kolejek i historii „Moje zgłoszenia” po migracji. */
     abstract fun queueOwnership(): QueueOwnershipDao
 
     /** Kolejka zmian znaczników piętra obejrzanego. */

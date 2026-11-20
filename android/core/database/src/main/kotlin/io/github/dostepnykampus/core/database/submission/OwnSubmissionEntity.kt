@@ -41,6 +41,7 @@ public enum class OwnSubmissionState {
  * @property refusalCode kod odpowiedzi HTTP przy odmowie; `null`, gdy telefon nie odczytał zgłoszenia
  * @property serverStatus status z serwera (`SubmissionStatus`); `null` przed pierwszym odświeżeniem
  * @property rejectionReason powód odrzucenia od Weryfikatora; `null` poza odrzuceniem
+ * @property ownerSub identyfikator konta albo `null` przed przypisaniem po migracji
  */
 @Entity(tableName = "own_submissions")
 public data class OwnSubmissionEntity(
@@ -57,4 +58,5 @@ public data class OwnSubmissionEntity(
     @ColumnInfo(name = "refusal_code") val refusalCode: Int? = null,
     @ColumnInfo(name = "server_status") val serverStatus: String? = null,
     @ColumnInfo(name = "rejection_reason") val rejectionReason: String? = null,
+    @ColumnInfo(name = "owner_sub") val ownerSub: String? = null,
 )

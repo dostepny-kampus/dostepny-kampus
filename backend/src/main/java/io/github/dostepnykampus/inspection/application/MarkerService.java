@@ -9,8 +9,6 @@ import io.github.dostepnykampus.building.api.KnownBuildings;
 import io.github.dostepnykampus.inspection.domain.MarkerPlace;
 import io.github.dostepnykampus.inspection.domain.MarkerRepository;
 import io.github.dostepnykampus.inspection.domain.NewMarker;
-import io.github.dostepnykampus.shared.error.ForbiddenChange;
-import io.github.dostepnykampus.shared.error.MissingResource;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -82,33 +80,6 @@ public class MarkerService {
             }
         }
         return missing;
-    }
-
-    /**
-     * Cofa pojedynczy znacznik: Koordynator cofa znacznik dowolnego Zbierającego, a Zbierający
-     * wyłącznie własny.
-     *
-     * <p>Wymagania: US11.3, US15.2, BR-20</p>
-     *
-     * @param id Identyfikator cofanego znacznika
-     * @param actor Identyfikator konta z tokenu
-     * @param coordinator Prawda, gdy konto ma rolę Koordynatora
-     */
-    @Transactional
-    public void revokeOne(final UUID id, final String actor, final boolean coordinator) {
-        if (coordinator) {
-            if (!this.repository.revokeAny(id)) {
-                throw new MissingResource("Nie ma znacznika o tym identyfikatorze");
-            }
-        } else {
-            final String owner = this.repository.authorOf(id).orElseThrow(
-                () -> new MissingResource("Nie ma znacznika o tym identyfikatorze")
-            );
-            if (!owner.equals(actor)) {
-                throw new ForbiddenChange("Zbierający może cofnąć wyłącznie własny znacznik");
-            }
-            this.repository.revoke(id, actor);
-        }
     }
 
     private boolean exists(final MarkerPlace place) {

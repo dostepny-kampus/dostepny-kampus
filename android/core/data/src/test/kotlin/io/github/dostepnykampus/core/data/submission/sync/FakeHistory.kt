@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.flow
 internal class FakeHistory : OwnSubmissionDao {
     val rows = mutableMapOf<String, OwnSubmissionEntity>()
 
-    override fun observe(): Flow<List<OwnSubmissionEntity>> =
-        flow { emit(rows.values.sortedByDescending { it.savedAtMillis }) }
+    override fun observe(owner: String): Flow<List<OwnSubmissionEntity>> =
+        flow { emit(rows.values.filter { it.ownerSub == owner }.sortedByDescending { it.savedAtMillis }) }
 
     override suspend fun save(submission: OwnSubmissionEntity) {
         rows[submission.id] = submission
