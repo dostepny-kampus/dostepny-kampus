@@ -6,6 +6,9 @@
 package io.github.dostepnykampus.feature.map.room
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -35,7 +38,7 @@ class RoomCardSheetTest {
         val opened = mutableListOf<String>()
         show(VIA_LIFT, onBuilding = { opened.add(it) })
 
-        compose.onNodeWithText("Sala 329").assertExists()
+        compose.onNode(hasText("Sala 329") and SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading)).assertExists()
         compose.onNodeWithText("Jak dojść").assertExists()
         compose.onNodeWithText("Ok. 30 m od wejścia.", substring = true).assertExists()
         compose.onNodeWithText("ok. 85 m od windy.", substring = true).assertExists()
