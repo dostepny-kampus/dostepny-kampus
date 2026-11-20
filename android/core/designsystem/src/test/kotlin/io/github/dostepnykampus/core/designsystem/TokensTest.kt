@@ -22,8 +22,7 @@ import java.io.File
 import kotlin.reflect.KVisibility
 import kotlin.reflect.full.memberProperties
 
-/** Sloty `Typography` Material 3: display, headline, title, body i label w trzech rozmiarach. */
-private const val M3_TEXT_SLOT_COUNT = 15
+private const val MATERIAL_TEXT_SLOT_COUNT = 15
 
 /**
  * Kolory, typografia i wymiary motywu pochodzą z pliku tokenów.
@@ -78,7 +77,7 @@ class TokensTest {
      * domyślny. Wymagania: NFR-16, NFR-20
      */
     @Test
-    fun everyTypographySlotHasAppFontAndMinimumSize() {
+    fun slotsHaveAppFontAndMinimum() {
         val font = FontFamily.Serif
         val typography = typography(font)
         val section = tokens.sub("typografia")
@@ -87,9 +86,9 @@ class TokensTest {
             Typography::class.memberProperties.filter {
                 it.visibility == KVisibility.PUBLIC && it.returnType.classifier == TextStyle::class
             }
-        assertEquals("sloty Material 3", M3_TEXT_SLOT_COUNT, slots.size)
+        assertEquals("sloty Material 3", MATERIAL_TEXT_SLOT_COUNT, slots.size)
         slots.forEach { slot ->
-            val style = slot.getter.call(typography) as TextStyle
+            val style = checkNotNull(slot.getter.call(typography)) as TextStyle
             assertEquals("${slot.name} krój", font, style.fontFamily)
             assertTrue("${slot.name} ${style.fontSize} < $minimum sp", style.fontSize.value >= minimum)
         }
