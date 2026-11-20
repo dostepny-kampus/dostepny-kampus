@@ -211,6 +211,45 @@ final class ReviewHttpIT {
     }
 
     @Test
+    void archivesAcceptedSubmissionReplacedByAcceptedChange(final WebApplicationContext context)
+        throws Exception {
+        final UUID replaced = new SampleSubmissions(context)
+            .add("ACCEPTED", SampleSubmissions.quick(ReviewHttpIT.PHOTO));
+        final UUID id = ReviewHttpIT.replacing(context, replaced);
+        ReviewHttpIT.claim(context, id);
+        MatcherAssert.assertThat(
+            "Przyjęcie zmiany nie dało 200, ARCHIVED zastąpionego i ACCEPTED zmiany",
+            List.of(
+                ReviewHttpIT.review(context, id),
+                ReviewHttpIT.status(context, replaced),
+                ReviewHttpIT.status(context, id)
+            ),
+            Matchers.contains(200, "ARCHIVED", "ACCEPTED")
+        );
+    }
+
+    @Test
+    void keepsReplacedSubmissionWhenChangeIsRejected(final WebApplicationContext context)
+        throws Exception {
+        final UUID replaced = new SampleSubmissions(context)
+            .add("ACCEPTED", SampleSubmissions.quick(ReviewHttpIT.PHOTO));
+        final UUID id = ReviewHttpIT.replacing(context, replaced);
+        ReviewHttpIT.claim(context, id);
+        MatcherAssert.assertThat(
+            "Odrzucenie zmiany nie dało 200, ACCEPTED zastąpionego i REJECTED zmiany",
+            List.of(
+                ReviewHttpIT.review(
+                    context, id,
+                    "{\"decision\":\"REJECT\",\"version\":1,\"rejectionReason\":\"Nie\"}"
+                ),
+                ReviewHttpIT.status(context, replaced),
+                ReviewHttpIT.status(context, id)
+            ),
+            Matchers.contains(200, "ACCEPTED", "REJECTED")
+        );
+    }
+
+    @Test
     void refusesClaimOfOwnSubmission(final WebApplicationContext context)
         throws Exception {
         final UUID id = ReviewHttpIT.sent(context, "konto-testowe");
@@ -270,6 +309,19 @@ final class ReviewHttpIT {
             List.of(ReviewHttpIT.review(context, id), ReviewHttpIT.status(context, id)),
             Matchers.contains(409, "IN_REVIEW")
         );
+    }
+
+    private static UUID replacing(final WebApplicationContext context, final UUID replaced)
+        throws IOException {
+        final UUID id = ReviewHttpIT.sent(context, "inne-konto");
+        context.getBean(JdbcClient.class).sql(
+            """
+            UPDATE submissions SET content = content
+                || JSONB_BUILD_OBJECT('replacesSubmissionId', CAST(:replaced AS TEXT))
+            WHERE id = :id
+            """
+        ).param("replaced", replaced).param("id", id).update();
+        return id;
     }
 
     private static List<Object> refused(final WebApplicationContext context, final String body)

@@ -200,7 +200,7 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
 
     @Override
     public EditResult decide(final ReviewDecision decision) {
-        return this.written(
+        final EditResult result = this.written(
             this.jdbc.sql(JdbcSubmissions.DECIDE)
                 .param("id", decision.id())
                 .param("version", decision.expectedVersion())
@@ -213,6 +213,16 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                 .query(this.rows).optional().orElse(null),
             decision.id()
         );
+        if (result instanceof EditResult.Saved && decision.outcome() == SubmissionStatus.ACCEPTED) {
+            this.jdbc.sql(
+                """
+                UPDATE submissions SET status = 'ARCHIVED'
+                WHERE status = 'ACCEPTED'
+                    AND id = (SELECT replaces_submission_id FROM submissions WHERE id = :id)
+                """
+            ).param("id", decision.id()).update();
+        }
+        return result;
     }
 
     @Override
