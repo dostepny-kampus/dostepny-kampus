@@ -35,7 +35,13 @@ class RoomWayTest {
     fun leadsThroughLift() {
         val way = way(entrance(floor = "p0"), *liftThrough())
 
-        val lift = RoomWay.Lift(id = "w", metersFromEntrance = 30)
+        val lift =
+            RoomWay.Lift(
+                id = "w",
+                room = liftThrough().first().second,
+                stops = floors.map(Floor::label),
+                metersFromEntrance = 30,
+            )
         val steps =
             RoomWay.Steps(
                 entrance = entrance(floor = "p0"),

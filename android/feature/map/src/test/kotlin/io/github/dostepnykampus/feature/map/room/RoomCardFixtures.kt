@@ -56,7 +56,12 @@ internal object RoomCardFixtures {
             entrance = ENTRANCE,
             entranceFloor = GROUND,
             isFloorAssumed = false,
-            lift = RoomWay.Lift(id = "w", metersFromEntrance = 30),
+            lift = RoomWay.Lift(
+                id = "w",
+                room = lift(GROUND.id),
+                stops = listOf(GROUND.label, SECOND.label),
+                metersFromEntrance = 30,
+            ),
             roomMeters = 85,
         )
 

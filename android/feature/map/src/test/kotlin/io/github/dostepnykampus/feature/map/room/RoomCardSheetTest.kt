@@ -7,9 +7,14 @@ package io.github.dostepnykampus.feature.map.room
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -20,6 +25,8 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.Density
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
+import io.github.dostepnykampus.feature.map.entrance.EntranceActions
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.FOUND
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.VIA_LIFT
 import org.junit.Assert.assertEquals
@@ -71,6 +78,51 @@ class RoomCardSheetTest {
     fun matchesLightMockup() {
         show(VIA_LIFT)
         compose.onRoot().captureRoboImage()
+    }
+
+    @Test
+    fun walksStepsAndKeepsSelection() {
+        compose.setContent {
+            DostepnyKampusTheme {
+                var card by remember { mutableStateOf(RoomCard(found = FOUND, way = VIA_LIFT)) }
+                RoomCardSheet(
+                    card = card,
+                    onClose = {},
+                    onBuilding = {},
+                    onStep = { card = card.chosen(it) },
+                )
+            }
+        }
+        compose.onNodeWithText("Pokaż po kolei").performClick()
+        compose.onNodeWithText("Krok 1 z 3").assertExists()
+        compose.onNodeWithContentDescription("Poprzedni krok").assertIsNotEnabled()
+        compose.onNodeWithContentDescription("Następny krok").performClick()
+        compose.onNodeWithText("Krok 2 z 3").assertExists()
+        compose.onNodeWithText("2 piętro, ok. 85 m od windy.").performClick()
+        compose.onNodeWithText("Krok 3 z 3").assertExists()
+        compose.onNodeWithContentDescription("Następny krok").assertIsNotEnabled()
+    }
+
+    @Test
+    fun returnsFromLiftToSameStep() {
+        compose.setContent {
+            DostepnyKampusTheme {
+                var card by remember { mutableStateOf(RoomCard(found = FOUND, way = VIA_LIFT)) }
+                RoomCardLayer(
+                    room = OpenRoom(card = card, onClose = {}, onStep = { card = card.chosen(it) }),
+                    onBuilding = {},
+                    barriers = ShownBarriers(emptyList()),
+                    actions = EntranceActions(),
+                )
+            }
+        }
+
+        compose.onNodeWithText("Ok. 30 m od wejścia.", substring = true).performClick()
+        compose.onNodeWithText("Szczegóły windy").performClick()
+        compose.onNodeWithText("Jedzie na:", substring = true).assertExists()
+        compose.onNodeWithText("Zamknij").performClick()
+
+        compose.onNodeWithText("Krok 2 z 3").assertExists()
     }
 
     private fun show(
