@@ -14,10 +14,15 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.model.GeoMultiPolygon
+import io.github.dostepnykampus.core.model.room.FoundRoom
+import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.plan.SIGN_PLAN
+import io.github.dostepnykampus.feature.map.plan.ShownPlan
+import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.FOUND
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -83,7 +88,26 @@ class MapPlanSignTouchTest {
         compose.runOnIdle { assertEquals("karta zamknięta", listOf("bez karty"), opened) }
     }
 
-    private fun start(isCardOpen: Boolean = false) {
+    /** Dotknięcie sali z numerem podaje ten sam wynik co wyszukiwanie. Wymagania: US18.1 */
+    @Test
+    fun opensNumberedRoomFromPlan() {
+        val chosen = mutableListOf<FoundRoom>()
+        val list = RoomList(source = "PWr", floorOutline = GeoMultiPolygon(emptyList()), rooms = listOf(FOUND.room))
+        val plan =
+            ShownPlan(
+                building = FOUND.building,
+                floors = listOf(FOUND.floor),
+                floor = FOUND.floor.id,
+                rooms = mapOf(FOUND.floor.id to list),
+            )
+        start(plan = plan, onRoom = { chosen += it })
+
+        compose.runOnIdle { map.touchSign(TouchSign.ROOM, FOUND.room.id) }
+
+        compose.runOnIdle { assertEquals("Wybrana sala", listOf(FOUND), chosen) }
+    }
+
+    private fun start(isCardOpen: Boolean = false, plan: ShownPlan = SIGN_PLAN, onRoom: (FoundRoom) -> Unit = {}) {
         val viewModel =
             CampusMapViewModel(
                 repository = unitSquareCatalog("C-13"),
@@ -101,7 +125,8 @@ class MapPlanSignTouchTest {
                     onSearch = {},
                     onBuildingClick = { opened += it },
                     mapView = map.view,
-                    plan = SIGN_PLAN,
+                    plan = plan,
+                    onRoomClick = onRoom,
                     focus = MapFocus.Building("C-13").takeIf { isCardOpen },
                     contentPadding = PaddingValues(bottom = if (isCardOpen) 200.dp else 0.dp),
                     onEmptyMapClick = { opened += "bez karty" },
