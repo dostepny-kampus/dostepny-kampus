@@ -175,11 +175,11 @@ private fun sources(data: CampusMapData, look: SelectionLook, plan: JsonElement)
 private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap?): JsonArray =
     buildJsonArray {
         add(styleLayer(id = "lad", type = "background") { paint("background-color" to JsonPrimitive(colors.land)) })
-        colors.basemap?.let { palette ->
-            val minZoom = basemap?.minZoom ?: 0.0
-            basemapLayers(colors = palette, minZoom = minZoom, textSize = colors.labelSize).forEach(::add)
-        }
+        val minZoom = basemap?.minZoom ?: 0.0
+        val palette = colors.basemap
+        palette?.let { basemapShapeLayers(colors = it, minZoom = minZoom).forEach(::add) }
         pathLayers(colors.path).forEach(::add)
+        palette?.let { basemapNameLayers(colors = it, minZoom = minZoom, textSize = colors.labelSize).forEach(::add) }
         add(
             styleLayer(id = BUILDINGS_LAYER, type = "fill", source = BUILDINGS_SOURCE) {
                 val fill =

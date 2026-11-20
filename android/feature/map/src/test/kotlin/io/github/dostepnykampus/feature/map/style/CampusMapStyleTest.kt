@@ -31,7 +31,7 @@ class CampusMapStyleTest {
     @Test
     fun drawsOutlinesOverBasemap() {
         val layers = style.array("layers").map { it.jsonObject }
-        val below = listOf("lad") + BASEMAP_LAYERS + PATHS + listOf(BUILDINGS_LAYER, "kontury") + PLAN + SELECTED
+        val below = listOf("lad") + basemapShapesPathsNames() + listOf(BUILDINGS_LAYER, "kontury") + PLAN + SELECTED
         val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)
         val expected = below + marks + listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER, ROOM_STEPS_LAYER)
         assertEquals(expected, layers.map { it.text("id") })
@@ -148,7 +148,7 @@ class CampusMapStyleTest {
     @Test
     fun ordersOptionalLayers() {
         val bare = Json.parseToJsonElement(styled(MapSelection()))
-        val base = listOf("lad") + BASEMAP_LAYERS + PATHS + listOf(BUILDINGS_LAYER, "kontury") + PLAN
+        val base = listOf("lad") + basemapShapesPathsNames() + listOf(BUILDINGS_LAYER, "kontury") + PLAN
         val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)
         val top = listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER, ROOM_STEPS_LAYER)
         val bareIds = bare.jsonObject.array("layers").map { it.jsonObject.text("id") }
@@ -195,3 +195,9 @@ private val PLAN =
 private val SELECTED = listOf(SELECTED_LAYER, SELECTED_PLAN_LAYER)
 
 private val PATHS = listOf(PATH_EDGE_LAYER, PATH_INSIDE_LAYER)
+
+private fun basemapShapesPathsNames(): List<String> {
+    val names = basemapNameLayers(checkNotNull(styleColors().basemap), minZoom = 0.0, textSize = 1.0)
+    val nameIds = names.map { it.getValue("id").jsonPrimitive.content }
+    return BASEMAP_LAYERS - nameIds.toSet() + PATHS + nameIds
+}

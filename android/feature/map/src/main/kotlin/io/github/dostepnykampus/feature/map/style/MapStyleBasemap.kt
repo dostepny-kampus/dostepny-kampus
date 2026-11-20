@@ -107,14 +107,14 @@ internal val BASEMAP_LAYERS: List<String>
 internal fun basemapMinZoom(layer: String, area: Double): Double = maxOf(a = area, b = OWN_MIN_ZOOM[layer] ?: 0.0)
 
 /**
- * Warstwy podkładu wektorowego w kolorach [colors], każda od powiększenia [basemapMinZoom] dla [minZoom]: zieleń,
- * woda, ulice, chodniki, tory, budynki miasta oraz nazwy rzek, ulic i dzielnic z tekstem wysokim na [textSize]. Mapa
- * nie ma punktów usług ani numerów domów.
+ * Kształty podkładu wektorowego w kolorach [colors], każdy od powiększenia [basemapMinZoom] dla [minZoom]: zieleń,
+ * woda, ulice, chodniki, tory i budynki miasta. Mapa nie ma punktów usług ani numerów domów; nazwy podaje
+ * [basemapNameLayers], rysowane nad warstwami, które leżą na kształtach podkładu.
  *
  * Wymagania: NFR-16, NFR-39, US1.4
  */
-internal fun basemapLayers(colors: BasemapColors, minZoom: Double, textSize: Double): List<JsonObject> {
-    val shapes =
+internal fun basemapShapeLayers(colors: BasemapColors, minZoom: Double): List<JsonObject> =
+    withMinZoom(
         listOf(
             basemapFill(id = "zielen", layer = "landcover", color = colors.green, filter = classIn(GREEN_CLASSES)),
             basemapFill(id = "parki", layer = "park", color = colors.green),
@@ -127,12 +127,24 @@ internal fun basemapLayers(colors: BasemapColors, minZoom: Double, textSize: Dou
             basemapLine(id = "tory", layer = TRANSPORTATION, color = colors.rail, width = railWidth())
                 .filtered(RAIL_CLASSES),
             cityBuildings(id = CITY_BUILDINGS, colors = colors),
-        )
-    return (shapes + basemapNames(colors, textSize)).map { layer ->
+        ),
+        minZoom,
+    )
+
+/**
+ * Nazwy rzek, ulic i dzielnic podkładu w kolorach [colors], z tekstem wysokim na [textSize], każda od powiększenia
+ * [basemapMinZoom] dla [minZoom].
+ *
+ * Wymagania: NFR-16, NFR-39
+ */
+internal fun basemapNameLayers(colors: BasemapColors, minZoom: Double, textSize: Double): List<JsonObject> =
+    withMinZoom(basemapNames(colors, textSize), minZoom)
+
+private fun withMinZoom(layers: List<JsonObject>, minZoom: Double): List<JsonObject> =
+    layers.map { layer ->
         val id = layer.getValue("id").jsonPrimitive.content
         JsonObject(layer + ("minzoom" to JsonPrimitive(basemapMinZoom(layer = id, area = minZoom))))
     }
-}
 
 /** Filtr obiektów źródła, których klasa OpenMapTiles jest jedną z [names]. */
 internal fun classIn(names: List<String>): JsonArray =
