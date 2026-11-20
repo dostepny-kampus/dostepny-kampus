@@ -57,5 +57,7 @@ class RoomMapTargetTest {
 
         assertEquals(listOf(0 to false, 1 to true), ground.map { it.index to it.selected }, "Wejście i wybrana winda")
         assertEquals(listOf(2 to false), second.map { it.index to it.selected }, "Sala na drugim piętrze")
+        assertEquals(listOf(false, false), ground.map { it.isDestination }, "Początek drogi bez przesunięcia")
+        assertEquals(true, second.single().isDestination, "Znacznik sali zostawia miejsce na numer")
     }
 }
