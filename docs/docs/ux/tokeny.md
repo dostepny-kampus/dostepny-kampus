@@ -160,7 +160,9 @@ Rozmiary podajemy w sp, więc tekst rośnie razem z ustawieniem czcionki w telef
 
 Krój to `Atkinson Hyperlegible Next`: litery łatwe do pomylenia, np. I, l i 1, mają wyraźnie różne kształty, a krój powstał dla osób słabowidzących [9]. Licencja `SIL Open Font License` pozwala dołączyć plik czcionki do aplikacji. Jeśli czcionka nie zostanie wczytana, aplikacja pokaże tekst krojem systemowym.
 
-Material 3 ma 15 slotów stylu, a nasza skala osiem. Pozostałe sloty (`display…`, `headlineSmall`, `titleSmall`, `bodySmall`, `labelSmall`) dostają styl z listy `typografia.zastepstwa`, np. `titleSmall` to `titleMedium`. Komponenty biblioteki, np. tytuł okna dialogowego i podpowiedź pod polem, sięgają po te sloty same, więc bez zastępstw miałyby krój systemowy i 12–14 sp. W kodzie ekranów piszemy nazwy stylów ze skali, nie zastępstw.
+Material 3 ma 15 slotów stylu, a nasza skala osiem. Pozostałe sloty (`display…`, `headlineSmall`, `titleSmall`, `bodySmall`, `labelSmall`) dostają styl z listy `typografia.zastepstwa`, np. `titleSmall` to `titleMedium`.
+
+Komponenty biblioteki, np. tytuł okna dialogowego i podpowiedź pod polem, sięgają po te sloty same, więc bez zastępstw miałyby krój systemowy i 12–14 sp. W kodzie ekranów piszemy nazwy stylów ze skali, nie zastępstw.
 
 Napisy paska dolnego mają 18 sp i mogą zawinąć się do dwóch wierszy pod ikoną, np. „Zgłoś barierę” i „Konto i praca”. Faza C sprawdza na zrzutach ekranu, czy napisy paska mieszczą się bez ucięcia przy czcionce 200% (NFR-20).
 
