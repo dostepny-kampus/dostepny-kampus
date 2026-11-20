@@ -132,7 +132,7 @@ class MapTouchTest {
             )
 
         assertInstanceOf(MapTouch.Outlines::class.java, touch, "bez znaku wygrywa kontur")
-        assertEquals(TouchSign.entries.map { it.name } + "hit", asked, "znaki po kolei, potem kontur")
+        assertEquals(TouchSign.entries.filterNot { it == TouchSign.ROOM }.map { it.name } + "hit", asked, "znaki po kolei, potem kontur")
     }
 
     /**

@@ -70,6 +70,7 @@ import io.github.dostepnykampus.feature.map.style.Basemap
 import io.github.dostepnykampus.feature.map.style.MapImages
 import io.github.dostepnykampus.feature.map.style.MapStyleColors
 import io.github.dostepnykampus.feature.map.style.MapStyleTarget
+import io.github.dostepnykampus.feature.map.style.PLAN_ROOM_NUMBER_ZOOM
 import io.github.dostepnykampus.feature.map.style.ROOM_STEP_OFFSET
 import io.github.dostepnykampus.feature.map.style.SelectionLook
 import io.github.dostepnykampus.feature.map.style.asStyleText
@@ -374,7 +375,11 @@ object MapLibreMapView : CampusMapView {
             val zoom = cameraPosition.zoom
             val beside = { building: String? -> look().besideEntrance.isBeside(zoom = zoom, building = building) }
             val signsUnder = { sign: TouchSign ->
-                queryRenderedFeatures(at, sign.layer).mapNotNull { it.getStringProperty(sign.idKey) }
+                if (sign == TouchSign.ROOM && zoom < PLAN_ROOM_NUMBER_ZOOM) {
+                    emptyList()
+                } else {
+                    queryRenderedFeatures(at, sign.layer).mapNotNull { it.getStringProperty(sign.idKey) }
+                }
             }
             val signsNear = { sign: TouchSign ->
                 val under = signsUnder(sign)

@@ -72,7 +72,7 @@ Funkcja: Wyszukanie sali
     Jeżeli Gość niezalogowany dotknie „Szczegóły wejścia” i potem „Zamknij”
     Wtedy widzi kartę sali 329 z wybranym krokiem 1
 
-  # @do-zrobienia #3383: dotknięcie sali na planie.
+  # @do-zrobienia #707: scenariusz z dotknięciem sali i korytarza na rzeczywistym planie.
   @US18.1 @aplikacja @do-zrobienia
   Scenariusz: Dotknięcie sali z numerem na planie otwiera kartę sali
     Zakładając, że Gość niezalogowany widzi plan 2 piętra A-1 z numerami sal

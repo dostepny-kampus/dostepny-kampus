@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map.plan
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
+import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.map.building.orderedEntrances
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.campus.ShownPlan
@@ -143,3 +144,11 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
 }
 
 private data class PlanInput(val view: MapCamera?, val catalog: BuildingCatalog?, val selected: String?)
+
+
+/** Numerowana sala [id] na widocznym piętrze albo `null`. Wymagania: US18.1 */
+internal fun ShownPlan.roomAt(id: String): FoundRoom? {
+    val level = floors.firstOrNull { it.id == floor } ?: return null
+    val found = rooms[floor]?.rooms?.firstOrNull { it.id == id && it.isLabelled && !it.number.isNullOrBlank() }
+    return found?.let { FoundRoom(building = building, floor = level, room = it) }
+}

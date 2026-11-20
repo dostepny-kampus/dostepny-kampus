@@ -54,6 +54,7 @@ import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import io.github.dostepnykampus.feature.map.plan.roomAt
 import io.github.dostepnykampus.feature.map.room.OpenRoom
 import io.github.dostepnykampus.feature.map.room.RoomCardLayer
 import io.github.dostepnykampus.feature.map.room.RoomSheetSources
@@ -213,6 +214,7 @@ fun CampusMapScreen(
                         plan = PlanLink(shown = plan, onView = onCamera, onFloor = onFloorChoose, onHide = onMapHide),
                         onBuildingClick = onBuildingClick,
                         onEmptyMapClick = onEmptyMapClick,
+                        onRoomClick = onRoomClick,
                         entrance = entranceActions,
                         room = room,
                         isRoomFull = isLarge,
@@ -291,6 +293,7 @@ private fun CampusMap(
     plan: PlanLink,
     onBuildingClick: (String) -> Unit,
     onEmptyMapClick: () -> Unit,
+    onRoomClick: (FoundRoom) -> Unit,
     entrance: EntranceActions,
     room: OpenRoom?,
     isRoomFull: Boolean,
@@ -329,7 +332,7 @@ private fun CampusMap(
                     plan.onView(view.also { state.keep(it) })
                 },
                 onBuildingsTouch = { state.taps.touch(it, onBuildingClick, onEmptyMapClick).also { signs.close() } },
-                onSignTouch = signs.signTouch(room, state.taps::dismiss),
+                onSignTouch = signs.signTouch(room, state.taps::dismiss) { plan.shown?.roomAt(it)?.let(onRoomClick) },
                 modifier = Modifier.fillMaxSize(),
             )
             pinned?.let { EntranceDescription(it) }
@@ -369,15 +372,27 @@ private fun SignSheetState.overlay(
     return base.copy(entrance = pin, barrier = barrierId, plan = plan, roomSteps = markers)
 }
 
-private fun SignSheetState.signTouch(room: OpenRoom?, dismiss: () -> Unit): (TouchSign, String) -> Unit =
+private fun SignSheetState.signTouch(
+    room: OpenRoom?,
+    dismiss: () -> Unit,
+    onRoom: (String) -> Unit,
+): (TouchSign, String) -> Unit =
     { sign, id ->
-        if (sign == TouchSign.ROOM_STEP) {
-            val step = id.toIntOrNull()
-            if (room != null && step != null) room.onStep(step)
-        } else {
-            room?.run { onClose() }
-            open(sign, id)
-            dismiss()
+        when (sign) {
+            TouchSign.ROOM -> {
+                onRoom(id)
+            }
+
+            TouchSign.ROOM_STEP -> {
+                val step = id.toIntOrNull()
+                if (room != null && step != null) room.onStep(step)
+            }
+
+            else -> {
+                room?.run { onClose() }
+                open(sign, id)
+                dismiss()
+            }
         }
     }
 
