@@ -38,6 +38,7 @@ private const val FONT = "androidx.compose.ui.text.font"
 private val COLOR = ClassName("androidx.compose.ui.graphics", "Color")
 private const val COLORS_DOC = "Kolory spoza ról Material 3 z pliku tokenów, osobno dla motywu jasnego i ciemnego."
 private const val MAP_LABELS_DOC = "Rozmiar napisów na mapie: podpisów budynków i napisów podkładu."
+private const val OSM_LABEL_DOC = "Rozmiar podpisu „© OpenStreetMap” w rogu mapy, wyjątek od minimum."
 private val TEXT_STYLE = ClassName("androidx.compose.ui.text", "TextStyle")
 private val FONT_WEIGHT = ClassName(FONT, "FontWeight")
 private val ROUNDED = ClassName("androidx.compose.foundation.shape", "RoundedCornerShape")
@@ -46,16 +47,23 @@ private val SP = MemberName(UNIT, "sp", isExtension = true)
 private val TEXT_UNIT = ClassName(UNIT, "TextUnit")
 private val THEMES = listOf("jasny" to "Light", "ciemny" to "Dark")
 
+/** Wszystkie sloty `Typography` Material 3; każdy dostaje styl ze skali albo z `typografia.zastepstwa`. */
+private val M3_TEXT_SLOTS =
+    listOf("display", "headline", "title", "body", "label").flatMap { role ->
+        listOf("Large", "Medium", "Small").map { size -> role + size }
+    }
+
 /** Zaokrąglenia z tokenów, które mają miejsce w skali kształtów Material 3 (komentarze w pliku tokenów). */
 private val M3_SHAPES =
     mapOf("standard" to "small", "srednie" to "medium", "duze" to "large", "bardzo_duze" to "extraLarge")
 
 /**
  * Generuje `DesignTokens.kt` w [packageName] z pliku tokenów: kolory Material 3 obu motywów, `StatusColors`,
- * `MapColors`, `typography`, `Typografia`, `AppShapes`, obiekt stałych dp dla każdej sekcji wymiarów i obiekt
- * `Mapa…` dla każdej podsekcji `mapa` poza kolorami (liczby jako `Double`, progi `{powiekszenie, dp}` jako
- * `ZoomStop`). Nazwy przechodzą na camelCase, pole `uzycie` staje się KDoc. Zmiana [tokensFile] unieważnia
- * wynik; brak wymaganej sekcji albo wartości przerywa budowanie.
+ * `MapColors`, `typography` (każdy slot Material 3: styl skali albo jego zastępstwo), `Typografia`, `AppShapes`,
+ * obiekt stałych dp dla każdej sekcji wymiarów i obiekt `Mapa…` dla każdej podsekcji `mapa` poza kolorami (liczby
+ * jako `Double`, progi `{powiekszenie, dp}` jako `ZoomStop`). Nazwy przechodzą na camelCase, pole `uzycie` staje
+ * się KDoc. Zmiana [tokensFile] unieważnia wynik; brak wymaganej sekcji albo wartości, także slotu typografii bez
+ * stylu i bez zastępstwa, przerywa budowanie.
  */
 @CacheableTask
 abstract class GenerateDesignTokens : DefaultTask() {
@@ -88,7 +96,7 @@ abstract class GenerateDesignTokens : DefaultTask() {
         }
         palette(file, ClassName(packageName.get(), "StatusColors"), status.toMap())
         palette(file, ClassName(packageName.get(), "MapColors"), tokens.sub("mapa").sub("kolory"))
-        typography(file, tokens.sub("typografia"), mapLabels = tokens.sub("mapa").require("napisy_sp"))
+        typography(file, tokens.sub("typografia"), tokens.sub("mapa"))
         mapSections(file, tokens.sub("mapa"))
         tokens.filterValues { section -> section is Map<*, *> && section.values.all { it is Map<*, *> && "dp" in it } }
             .forEach { (name, section) -> dimensions(file, name, section.asMap()) }
@@ -121,9 +129,13 @@ abstract class GenerateDesignTokens : DefaultTask() {
         }
     }
 
-    private fun typography(file: FileSpec.Builder, section: Map<String, Any?>, mapLabels: Any) {
-        val styles = section.sub("style").map { (name, value) ->
-            val style = value.asMap()
+    private fun typography(file: FileSpec.Builder, section: Map<String, Any?>, map: Map<String, Any?>) {
+        val scale = section.sub("style")
+        val aliases = section.sub("zastepstwa")
+        val missing = M3_TEXT_SLOTS - scale.keys - aliases.keys
+        check(missing.isEmpty()) { "Sloty typografii bez stylu i bez zastępstwa: $missing" }
+        val styles = M3_TEXT_SLOTS.map { name ->
+            val style = (scale[name] ?: scale.require(aliases.require(name).toString())).asMap()
             CodeBlock.of(
                 "%N = %T(fontFamily = fontFamily, fontWeight = %T(%L), fontSize = %L.%M, lineHeight = %L.%M)",
                 name, TEXT_STYLE, FONT_WEIGHT, style.require("waga"),
@@ -144,7 +156,8 @@ abstract class GenerateDesignTokens : DefaultTask() {
             TypeSpec.objectBuilder("Typografia")
                 .addKdoc("Stałe typografii z pliku tokenów.")
                 .addProperty(constant("wyroznienieWaga", FONT_WEIGHT, emphasis, emphasisDoc))
-                .addProperty(constant("napisyMapy", TEXT_UNIT, CodeBlock.of("%L.%M", mapLabels, SP), MAP_LABELS_DOC))
+                .addProperty(map.spConstant("napisyMapy", "napisy_sp", MAP_LABELS_DOC))
+                .addProperty(map.spConstant("podpisOsm", "podpis_osm_sp", OSM_LABEL_DOC))
                 .build(),
         )
     }
@@ -214,6 +227,9 @@ abstract class GenerateDesignTokens : DefaultTask() {
 
     private fun Any?.asMap(): Map<String, Any?> =
         (this as? Map<*, *>)?.mapKeys { it.key.toString() } ?: error("Oczekiwano sekcji w pliku tokenów, jest: $this")
+
+    private fun Map<String, Any?>.spConstant(name: String, key: String, doc: String) =
+        constant(name, TEXT_UNIT, CodeBlock.of("%L.%M", require(key), SP), doc)
 
     private fun Map<String, Any?>.sub(key: String) = require(key).asMap()
 
