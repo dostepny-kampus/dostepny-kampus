@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.plan
 
+import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 
 /**
@@ -19,23 +20,32 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 internal data class MapPanel(val building: String? = null, val cover: Int = 0)
 
 /**
- * Arkusz nad mapą przy zaznaczeniu [focus]. Otwarty arkusz wejścia budynku [entranceBuilding] trzyma ten budynek
- * i zasłania dół mapy na [entranceCover] pikseli; bez niego dół zasłania karta sali na mapie, wysoka na [roomCover].
- * Bez arkusza wejścia budynek trzyma zaznaczenie według [selectedBuilding], także karta sali; zaznaczone wejście
- * z zamkniętym arkuszem już nic nie trzyma.
+ * Arkusz nad mapą przy zaznaczeniu [focus]. Otwarty arkusz wejścia albo znaku planu budynku [sheetBuilding] trzyma
+ * ten budynek i zasłania dół mapy na [sheetCover] pikseli; bez niego dół zasłania karta sali na mapie, wysoka na
+ * [roomCover]. Bez takiego arkusza budynek trzyma zaznaczenie według [selectedBuilding], także karta sali;
+ * zaznaczone wejście z zamkniętym arkuszem już nic nie trzyma.
  *
- * Wymagania: US16.1, US16.2, US2.8, US3.3, US18.1, BR-G1
+ * Wymagania: US16.1, US16.2, US2.8, US3.3, US18.1, US18.2, BR-G1
  *
  * @param focus zaznaczenie z trasy
- * @param entranceBuilding symbol budynku otwartego arkusza wejścia; `null` bez arkusza wejścia
- * @param entranceCover wysokość arkusza wejścia zasłaniającego dół mapy w pikselach; 0 bez dopełnienia
+ * @param sheetBuilding symbol budynku otwartego arkusza wejścia albo znaku planu; `null` bez takiego arkusza
+ * @param sheetCover wysokość tego arkusza zasłaniającego dół mapy w pikselach; 0 bez dopełnienia
  * @param roomCover wysokość karty sali na mapie w pikselach; 0 bez karty albo z kartą na cały ekran
  */
-internal fun mapPanel(focus: MapFocus?, entranceBuilding: String?, entranceCover: Int, roomCover: Int = 0): MapPanel =
+internal fun mapPanel(focus: MapFocus?, sheetBuilding: String?, sheetCover: Int, roomCover: Int = 0): MapPanel =
     MapPanel(
-        building = entranceBuilding ?: selectedBuilding(focus).takeUnless { focus is MapFocus.Entrance },
-        cover = entranceCover.takeIf { it > 0 } ?: roomCover,
+        building = sheetBuilding ?: selectedBuilding(focus).takeUnless { focus is MapFocus.Entrance },
+        cover = sheetCover.takeIf { it > 0 } ?: roomCover,
     )
+
+/**
+ * Znak planu w pomieszczeniu [id] stoi na pokazanym piętrze tego planu. Bez planu albo na innym piętrze znaku nie
+ * widać, więc jego arkusz się zamyka.
+ *
+ * Wymagania: US16.1, US2.8
+ */
+internal fun ShownPlan?.showsSign(id: String): Boolean =
+    this?.run { rooms[floor]?.rooms.orEmpty().any { it.id == id } } == true
 
 /**
  * Symbol budynku trzymającego plan przy zaznaczeniu [focus] albo `null`, gdy wyborem rządzi środek mapy.
