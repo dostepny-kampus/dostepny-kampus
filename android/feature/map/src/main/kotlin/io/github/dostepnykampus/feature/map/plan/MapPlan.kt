@@ -148,6 +148,6 @@ private data class PlanInput(val view: MapCamera?, val catalog: BuildingCatalog?
 /** Numerowana sala [id] na widocznym piętrze albo `null`. Wymagania: US18.1 */
 internal fun ShownPlan.roomAt(id: String): FoundRoom? {
     val level = floors.firstOrNull { it.id == floor } ?: return null
-    val found = rooms[floor]?.rooms?.firstOrNull { it.id == id && it.isLabelled && !it.number.isNullOrBlank() }
+    val found = rooms[floor]?.run { rooms.firstOrNull { it.id == id && it.isLabelled && !it.number.isNullOrBlank() } }
     return found?.let { FoundRoom(building = building, floor = level, room = it) }
 }

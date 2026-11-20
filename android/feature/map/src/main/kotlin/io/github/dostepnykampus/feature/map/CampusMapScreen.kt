@@ -281,7 +281,8 @@ private fun MapArea(
 ) {
     val shown = ShownBarriers(state.barriers.takeUnless { sheet.isCardOpen }.orEmpty())
     val modifier =
-        Modifier.fillMaxSize()
+        Modifier
+            .fillMaxSize()
             .releasesSearchOnTouch(search)
             .then(if (sheet.isEntranceFull) Modifier.clearAndSetSemantics {} else Modifier)
     Box(modifier) {
@@ -399,7 +400,7 @@ private fun SignSheetState.signTouch(
                 if (room != null && step != null) room.onStep(step)
             }
 
-            else -> {
+            TouchSign.BARRIER, TouchSign.ENTRANCE, TouchSign.PLAN -> {
                 room?.run { onClose() }
                 open(sign, id)
                 dismiss()
