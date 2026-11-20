@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.feature.map.room
 
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.model.GeoPolygon
@@ -12,6 +14,7 @@ import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.room.RoomList
+import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.FOUND
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.GROUND
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.SECOND
@@ -45,7 +48,7 @@ class RoomCardViewModelTest {
     /** Wiersz: karta otwiera się bez kroku z drogą od wejścia zalecanego przez windę do sali. */
     @Test
     fun loadsWayFromPlansAndEntrance() {
-        val card = RoomCardViewModel(Plans(), ENTRANCES)
+        val card = RoomCardViewModel(plans = Plans(), entrances = ENTRANCES, barriers = NO_BARRIERS)
 
         card.show(FOUND)
 
@@ -55,7 +58,7 @@ class RoomCardViewModelTest {
     /** Wiersz: „Pokaż po kolei”, „›” i „‹” przestawiają krok, a „Zamknij” zamyka kartę. */
     @Test
     fun walksStepsAndCloses() {
-        val card = RoomCardViewModel(Plans(), ENTRANCES)
+        val card = RoomCardViewModel(plans = Plans(), entrances = ENTRANCES, barriers = NO_BARRIERS)
         card.show(FOUND)
 
         val steps =
@@ -80,7 +83,7 @@ class RoomCardViewModelTest {
     @Test
     fun dropsWayOfPreviousRoom() {
         val slow = CompletableDeferred<Unit>()
-        val card = RoomCardViewModel(Plans(waitFor = slow), ENTRANCES)
+        val card = RoomCardViewModel(plans = Plans(waitFor = slow), entrances = ENTRANCES, barriers = NO_BARRIERS)
 
         card.show(FOUND)
         val other = FOUND.copy(room = FOUND.room.copy(id = "301", number = "301"))
@@ -88,6 +91,30 @@ class RoomCardViewModelTest {
         slow.complete(Unit)
 
         assertEquals(other, card.shown.value?.found, "Karta pokazała poprzednią salę")
+    }
+
+    /** Blokada przy jedynym dostępnym wejściu wyklucza zalecaną drogę. */
+    @Test
+    fun skipsBlockedEntrance() {
+        val blocked =
+            AcceptedBarriers {
+                listOf(
+                    AcceptedBarrier(
+                        id = "barrier",
+                        location = point(meters = 0.0),
+                        severity = Severity.BLOCKING,
+                        type = null,
+                        buildingSymbol = FOUND.building,
+                        verifiedAt = null,
+                        entranceId = "node/1",
+                    ),
+                )
+            }
+        val card = RoomCardViewModel(plans = Plans(), entrances = ENTRANCES, barriers = blocked)
+
+        card.show(FOUND)
+
+        assertEquals(RoomWay.NoEntrance, card.shown.value?.way, "Karta prowadzi przez zablokowane wejście")
     }
 
     private class Plans(private val waitFor: CompletableDeferred<Unit>? = null) : FloorPlans {
@@ -103,6 +130,8 @@ class RoomCardViewModelTest {
     }
 
     private companion object {
+        val NO_BARRIERS = AcceptedBarriers { emptyList() }
+
         val NO_AREA = GeoPolygon(emptyList())
 
         val ENTRANCES =
