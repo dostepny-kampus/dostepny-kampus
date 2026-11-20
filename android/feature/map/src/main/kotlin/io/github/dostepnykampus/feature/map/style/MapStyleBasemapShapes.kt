@@ -14,7 +14,10 @@ import kotlinx.serialization.json.put
 private const val SOURCE_LAYER = "source-layer"
 private const val STREET_ZOOM_NEAR = 16.0
 private const val CLOSE_ZOOM = 19.0
-private const val ROAD_GROWTH = 1.6
+
+/** Podstawa wykładniczego wzrostu grubości linii między progami powiększenia: ulice i ścieżki dostosowane. */
+internal const val LINE_GROWTH = 1.6
+
 private const val RIVER_NEAR_WIDTH = 4.0
 private const val PATH_NEAR_WIDTH = 4.0
 private const val RAIL_WIDTH = 1.5
@@ -112,7 +115,12 @@ private fun roadWidth(widths: List<RoadWidth>): JsonArray {
         listOf(CITY_ZOOM, STREET_ZOOM_NEAR, CLOSE_ZOOM).zip(widths).flatMap { (zoom, width) ->
             listOf(JsonPrimitive(zoom), width.byClass())
         }
-    val growth = expression("exponential", JsonPrimitive(ROAD_GROWTH))
+    return growingWidth(stops)
+}
+
+/** Szerokość linii rosnąca wykładniczo o [LINE_GROWTH] między progami [stops]: na przemian powiększenie i szerokość. */
+internal fun growingWidth(stops: List<JsonElement>): JsonArray {
+    val growth = expression("exponential", JsonPrimitive(LINE_GROWTH))
     val head = listOf(JsonPrimitive("interpolate"), growth, expression("zoom"))
     return JsonArray(head + stops)
 }
