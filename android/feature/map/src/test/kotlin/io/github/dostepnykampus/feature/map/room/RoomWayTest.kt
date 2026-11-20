@@ -37,7 +37,13 @@ class RoomWayTest {
 
         val lift = RoomWay.Lift(id = "w", metersFromEntrance = 30)
         val steps =
-            RoomWay.Steps(entrance = entrance(floor = "p0"), entranceFloor = ground, isFloorAssumed = false, lift = lift, roomMeters = 85)
+            RoomWay.Steps(
+                entrance = entrance(floor = "p0"),
+                entranceFloor = ground,
+                isFloorAssumed = false,
+                lift = lift,
+                roomMeters = 85,
+            )
         assertEquals("winda", steps, way)
     }
 
@@ -62,7 +68,13 @@ class RoomWayTest {
         val way = way(entrance(floor = "p2"))
 
         val steps =
-            RoomWay.Steps(entrance = entrance(floor = "p2"), entranceFloor = second, isFloorAssumed = false, lift = null, roomMeters = 115)
+            RoomWay.Steps(
+                entrance = entrance(floor = "p2"),
+                entranceFloor = second,
+                isFloorAssumed = false,
+                lift = null,
+                roomMeters = 115,
+            )
         assertEquals("bez windy", steps, way)
     }
 
