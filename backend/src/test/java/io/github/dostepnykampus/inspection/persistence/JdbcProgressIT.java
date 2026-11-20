@@ -89,14 +89,7 @@ final class JdbcProgressIT {
         ).param("a", UUID.randomUUID()).param("b", UUID.randomUUID())
             .param("c", UUID.randomUUID()).param("d", UUID.randomUUID())
             .param("e", UUID.randomUUID()).param("f", UUID.randomUUID())
-            .param(
-                "td1",
-                String.join(
-                    "",
-                    "{\"kind\":\"QUICK\",\"buildingSymbol\":\"T-D1\",",
-                    "\"location\":{\"coordinates\":[17,51]}}"
-                )
-            )
+            .param("td1", JdbcProgressIT.quickJson("T-D1"))
             .param("out", "{\"kind\":\"QUICK\",\"location\":{\"coordinates\":[17,51]}}").update();
         jdbc.sql(
             """
@@ -113,5 +106,12 @@ final class JdbcProgressIT {
     private static BuildingProgress find(final List<BuildingProgress> list, final String symbol) {
         return list.stream().filter(item -> symbol.equals(item.symbol())).findFirst()
             .orElseThrow(() -> new IllegalStateException(String.format("Brak %s", symbol)));
+    }
+
+    private static String quickJson(final String symbol) {
+        return String.format(
+            "{\"kind\":\"QUICK\",\"buildingSymbol\":\"%s\",\"location\":{\"coordinates\":[17,51]}}",
+            symbol
+        );
     }
 }
