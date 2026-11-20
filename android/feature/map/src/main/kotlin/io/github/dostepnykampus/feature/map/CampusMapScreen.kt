@@ -7,7 +7,6 @@ package io.github.dostepnykampus.feature.map
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -30,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
@@ -44,9 +42,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
-import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.model.building.Building
-import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.map.area.AreaEdgeAnnouncement
 import io.github.dostepnykampus.feature.map.area.MapAreas
@@ -54,8 +49,6 @@ import io.github.dostepnykampus.feature.map.area.rememberMapAreas
 import io.github.dostepnykampus.feature.map.area.rememberNoticeHeight
 import io.github.dostepnykampus.feature.map.barrier.BarrierDescriptions
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
-import io.github.dostepnykampus.feature.map.building.BuildingChoiceSheet
-import io.github.dostepnykampus.feature.map.building.ChoiceLink
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
@@ -364,14 +357,6 @@ private fun Modifier.overlayArea(underBar: PaddingValues, sheet: ScreenSheet): M
     }
 }
 
-/** Arkusz znaku z [sheet] z barierami [barriers], katalogiem [catalog] i planem [plan] na mapie. */
-private data class OpenSign(
-    val sheet: ScreenSheet,
-    val barriers: ShownBarriers,
-    val catalog: BuildingCatalog?,
-    val plan: ShownPlan?,
-)
-
 /**
  * Plan piętra [shown] przy mapie: [onView] dostaje widok kamery, [onFloor] piętro z kolumny, a [onHide] zejście
  * mapy z ekranu.
@@ -394,47 +379,6 @@ private fun FollowCamera(camera: MapCamera, limits: MapLimits, area: String?, pl
     DisposableEffect(Unit) { onDispose { hide() } }
     AreaEdgeAnnouncement(camera = camera, limits = limits, area = area)
 }
-
-@Composable
-private fun BoxScope.MapSheets(
-    open: OpenSign,
-    state: MapSceneState,
-    onBuilding: (String) -> Unit,
-    entranceActions: EntranceActions,
-) {
-    val modifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
-    ChosenSignSheet(
-        signs = open.sheet.signs,
-        barriers = open.barriers,
-        catalog = open.catalog,
-        plan = open.plan,
-        onBuildingTap = { state.taps.choose(it, onBuilding) },
-        entranceActions = entranceActions,
-        modifier = modifier,
-        hidesEntrance = open.sheet.isEntranceFull,
-    )
-    BuildingChoices(catalog = open.catalog, state = state, onChoose = onBuilding, modifier = modifier)
-}
-
-@Composable
-private fun BuildingChoices(
-    catalog: BuildingCatalog?,
-    state: MapSceneState,
-    onChoose: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val chosen = catalog?.buildingsOf(state.taps.choice).orEmpty()
-    if (chosen.isNotEmpty()) {
-        BuildingChoiceSheet(onClose = state.taps::dismiss, modifier = modifier) {
-            chosen.forEach { building ->
-                ChoiceLink(building) { state.taps.choose(building.symbol, onChoose) }
-            }
-        }
-    }
-}
-
-private fun BuildingCatalog.buildingsOf(symbols: List<String>): List<Building> =
-    symbols.mapNotNull { symbol -> buildings.firstOrNull { it.symbol == symbol } }
 
 @Composable
 private fun rememberKeyboardOpenFlag(): Boolean {
