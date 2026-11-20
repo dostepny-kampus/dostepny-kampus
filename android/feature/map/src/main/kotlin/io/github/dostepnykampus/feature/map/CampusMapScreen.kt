@@ -372,7 +372,8 @@ private fun SignSheetState.overlay(
 private fun SignSheetState.signTouch(room: OpenRoom?, dismiss: () -> Unit): (TouchSign, String) -> Unit =
     { sign, id ->
         if (sign == TouchSign.ROOM_STEP) {
-            id.toIntOrNull()?.let { number -> room?.run { onStep(number) } }
+            val step = id.toIntOrNull()
+            if (room != null && step != null) room.onStep(step)
         } else {
             room?.run { onClose() }
             open(sign, id)

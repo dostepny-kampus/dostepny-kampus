@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.geo.toPosition
-import io.github.dostepnykampus.feature.map.campus.featureCollection
 import io.github.dostepnykampus.feature.map.campus.RoomStepMarker
+import io.github.dostepnykampus.feature.map.campus.featureCollection
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -93,7 +93,7 @@ internal fun roomStepsFeatures(steps: List<RoomStepMarker>): JsonElement =
             val properties =
                 buildJsonObject {
                     put(key = ROOM_STEP_INDEX, value = step.index.toString())
-                    put(key = ROOM_STEP_IMAGE, value = roomStepImage(index = step.index, selected = step.selected))
+                    put(key = ROOM_STEP_IMAGE, value = roomStepImage(index = step.index, selected = step.isSelected))
                     if (step.isDestination) {
                         put(key = ROOM_STEP_OFFSET, element = numbers(0.0, -ROOM_LABEL_CLEARANCE_DP))
                     }

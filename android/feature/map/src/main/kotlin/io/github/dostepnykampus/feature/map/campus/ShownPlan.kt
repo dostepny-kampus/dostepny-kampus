@@ -29,7 +29,7 @@ data class ShownPlan(
 )
 
 /**
- * Znacznik kroku [index] na planie w punkcie [point]. [selected] oznacza aktywny krok, a [isDestination]
+ * Znacznik kroku [index] na planie w punkcie [point]. [isSelected] oznacza aktywny krok, a [isDestination]
  * ostatni krok przy sali, którego znak odsuwa się od numeru pomieszczenia. Wymagania: US18.2.
  */
-data class RoomStepMarker(val index: Int, val point: GeoPoint, val selected: Boolean, val isDestination: Boolean)
+data class RoomStepMarker(val index: Int, val point: GeoPoint, val isSelected: Boolean, val isDestination: Boolean)
