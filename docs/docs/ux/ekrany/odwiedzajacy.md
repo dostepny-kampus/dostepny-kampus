@@ -19,6 +19,7 @@ Wymagania: [V1 Mapa kampusu](../wymagania-ekranow.md#v1-mapa-kampusu).
 `m-v1-mapa-lista` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-lista-budynkow) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.8, NFR-19
 
 Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista ma wszystkie budynki.
+
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
 | [![Lista budynków: w wierszu tytułu przycisk „Pokaż mapę”, pod nim pole symbolu, niżej nagłówki terenów: „Kampus główny · 78”, „Wittigowo · 9”, „Długa · 4”, „T-9 Atol · 1”, „Bartoszowice · 3”; pod każdym nagłówkiem karty budynków](obrazy/m-v1-mapa-lista-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-jasny.webp) | [![Ta sama lista z nagłówkami terenów w motywie ciemnym](obrazy/m-v1-mapa-lista-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-ciemny.webp) | [![Ta sama lista z nagłówkami terenów przy czcionce 200%](obrazy/m-v1-mapa-lista-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-jasny-200.webp) |
@@ -162,6 +163,7 @@ Zestaw pokazuje pięć głównych stanów karty (pozostałe korzystają z tych s
 `m-v2-karta-budynku-mala`. Po dotknięciu budynku na V1 mapa otwiera V2 jako małą kartę o wysokości treści. Nie ma na niej chipów ani listy wejść. Uchwyt, przewinięcie albo przeciągnięcie w górę otwiera pełny ekran.
 
 Nad kartą zostają przyciski mapy, a zaznaczony budynek mieści się w części mapy obok nich (NFR-53). „Zamknij” i „Wstecz” wracają do mapy bez zaznaczenia.
+
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
 | [![Mała karta budynku A-1 nad mapą z wyróżnionym konturem, podpisami sąsiednich budynków i przyciskami mapy: uchwyt, symbol A-1, nazwa Gmach Główny, wiersz Wejście dostępne i przyciski Sprawdź, którędy wejść oraz Zamknij](obrazy/m-v2-karta-budynku-mala-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-jasny.webp) | [![Ta sama mała karta w motywie ciemnym](obrazy/m-v2-karta-budynku-mala-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-ciemny.webp) | [![Ten sam budynek przy czcionce 200%: zamiast małej karty od razu pełny ekran bez mapy, z przyciskami Sprawdź, którędy wejść i Pokaż budynek na mapie](obrazy/m-v2-karta-budynku-mala-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-jasny-200.webp) |
