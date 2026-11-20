@@ -13,11 +13,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.BuildingFloors
-import io.github.dostepnykampus.core.data.building.BuildingListStore
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.building.ServerEntrancesRepository
 import io.github.dostepnykampus.core.data.building.ServerFloorsRepository
 import io.github.dostepnykampus.core.data.building.assetRepository
+import io.github.dostepnykampus.core.data.cache.ServerCopyStore
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.map.MapListChoiceRepository
 import io.github.dostepnykampus.core.data.map.mapDataStore
@@ -58,14 +58,14 @@ public object DataModule {
     public fun buildingCatalog(
         app: Application,
         api: BuildingsApi,
-        buildingList: BuildingListStore,
+        copies: ServerCopyStore,
         @IoContext ioContext: CoroutineContext,
     ): BuildingCatalogRepository =
         assetRepository(
             assets = app.assets,
             ioContext = ioContext,
             listBuildings = { api.listBuildings().toReply { it } },
-            buildingCache = buildingList.cache,
+            serverCopy = copies.dao,
         )
 
     /** Wejścia z dniem i źródłem oznaczenia i wyjścia ewakuacyjne karty budynku z serwera. Wymagania: US17.3, US2.6 */

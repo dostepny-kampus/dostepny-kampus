@@ -7,6 +7,8 @@ package io.github.dostepnykampus.core.database
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import io.github.dostepnykampus.core.database.cache.BARRIERS_COPY
+import io.github.dostepnykampus.core.database.cache.BUILDINGS_COPY
 
 private const val LIST_COPY_COLUMNS =
     "(`id` INTEGER NOT NULL, `list_json` TEXT NOT NULL, `synced_at` INTEGER NOT NULL, PRIMARY KEY(`id`))"
@@ -102,6 +104,28 @@ internal val MIGRATION_8_9: Migration =
         }
     }
 
+/**
+ * Migracja 11→12: kopie listy budynków i barier przechodzą do wspólnej tabeli `server_copy` pod kluczami
+ * [BUILDINGS_COPY] i [BARRIERS_COPY]; stare tabele znikają. Wymagania: NFR-10
+ */
+internal val MIGRATION_11_12: Migration =
+    object : Migration(11, 12) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                "CREATE TABLE IF NOT EXISTS `server_copy` (`key` TEXT NOT NULL, `document_json` TEXT NOT NULL, " +
+                    "`synced_at` INTEGER NOT NULL, PRIMARY KEY(`key`))",
+            )
+            db.execSQL(
+                "INSERT INTO `server_copy` SELECT '$BUILDINGS_COPY', `list_json`, `synced_at` FROM `building_cache`",
+            )
+            db.execSQL(
+                "INSERT INTO `server_copy` SELECT '$BARRIERS_COPY', `list_json`, `synced_at` FROM `barrier_cache`",
+            )
+            db.execSQL("DROP TABLE `building_cache`")
+            db.execSQL("DROP TABLE `barrier_cache`")
+        }
+    }
+
 /** Wszystkie migracje od wersji 1 w kolejności wersji. */
 internal val ALL_MIGRATIONS: List<Migration> =
     listOf(
@@ -113,4 +137,5 @@ internal val ALL_MIGRATIONS: List<Migration> =
         MIGRATION_6_7,
         MIGRATION_7_8,
         MIGRATION_8_9,
+        MIGRATION_11_12,
     )

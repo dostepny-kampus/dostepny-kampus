@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.barrier
 
+import io.github.dostepnykampus.core.data.cache.ServerCopy
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierType
@@ -83,10 +84,12 @@ public fun interface AcceptedBarriers {
  *
  * @param copy kopia ostatnich barier w bazie; `null` zostawia źródło bez kopii
  * @param accepted zgłoszenia przyjęte z serwera
+ * @param nowMillis zegar chwili pobrania z serwera
  */
 internal class ServerAcceptedBarriers internal constructor(
-    private val copy: BarrierListCopy?,
+    private val copy: ServerCopy<List<AcceptedBarrier>>?,
     private val accepted: suspend () -> ServerReply<List<Submission>>,
+    private val nowMillis: () -> Long = System::currentTimeMillis,
 ) : AcceptedBarriers {
     @Volatile private var synced: Instant? = null
 
@@ -103,14 +106,16 @@ internal class ServerAcceptedBarriers internal constructor(
         val result = accepted()
         return if (result is ServerReply.Ok) {
             val shown = result.value.mapNotNull { it.toBarrier() }
-            synced = copy?.save(shown) ?: Instant.now()
+            val syncedAt = Instant.ofEpochMilli(nowMillis())
+            copy?.save(shown, syncedAt)
+            synced = syncedAt
             last = shown
             shown
         } else {
-            val restored = copy?.restoreSynced()
+            val restored = copy?.restore()
             synced = restored?.syncedAt
-            last = restored?.barriers
-            restored?.barriers.orEmpty()
+            last = restored?.value
+            restored?.value.orEmpty()
         }
     }
 

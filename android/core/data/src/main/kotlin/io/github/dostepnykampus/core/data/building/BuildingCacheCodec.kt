@@ -5,8 +5,11 @@
  */
 package io.github.dostepnykampus.core.data.building
 
+import io.github.dostepnykampus.core.data.cache.ServerCopy
 import io.github.dostepnykampus.core.data.cache.decodeCache
 import io.github.dostepnykampus.core.data.cache.encodeCache
+import io.github.dostepnykampus.core.database.cache.BUILDINGS_COPY
+import io.github.dostepnykampus.core.database.cache.ServerCopyDao
 import io.github.dostepnykampus.core.geo.GeoAreaJson
 import io.github.dostepnykampus.core.model.GeoArea
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -20,8 +23,13 @@ import io.github.dostepnykampus.core.network.building.BuildingList
 import io.github.dostepnykampus.core.network.building.DetailLevel
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
+import kotlin.coroutines.CoroutineContext
 
-/** Lista budynków z serwera z wejściami jako dokument JSON do wiersza `building_cache`. Wymagania: NFR-10 */
+/** Kopia listy budynków pod kluczem [BUILDINGS_COPY] w [dao]. Wymagania: NFR-10 */
+internal fun buildingCopy(dao: ServerCopyDao, ioContext: CoroutineContext): ServerCopy<BuildingList> =
+    ServerCopy(dao, BUILDINGS_COPY, BuildingList::toCacheJson, String::toCachedBuildingList, ioContext)
+
+/** Lista budynków z serwera z wejściami jako dokument JSON kopii. Wymagania: NFR-10 */
 internal fun BuildingList.toCacheJson(): String =
     encodeCache(
         CachedList.serializer(),

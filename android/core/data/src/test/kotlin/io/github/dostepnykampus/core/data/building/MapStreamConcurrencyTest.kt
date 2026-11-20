@@ -35,7 +35,7 @@ class MapStreamConcurrencyTest {
     private var isFirstCallFailing = false
     private val repository =
         BuildingCatalogRepository(
-            buildingCache = null,
+            serverCopy = null,
             ioContext = EmptyCoroutineContext,
             listBuildings = ::server,
         ) { FILE_JSON }
@@ -88,7 +88,7 @@ class MapStreamConcurrencyTest {
         }
         val late =
             BuildingCatalogRepository(
-                buildingCache = null,
+                serverCopy = null,
                 ioContext = EmptyCoroutineContext,
                 listBuildings = ask,
             ) { FILE_JSON }

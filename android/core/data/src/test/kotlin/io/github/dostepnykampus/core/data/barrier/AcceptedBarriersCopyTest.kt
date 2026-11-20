@@ -5,10 +5,10 @@
  */
 package io.github.dostepnykampus.core.data.barrier
 
+import io.github.dostepnykampus.core.data.cache.FakeServerCopyDao
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.database.cache.BARRIER_CACHE_SINGLE_ROW
-import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
-import io.github.dostepnykampus.core.database.cache.BarrierCacheEntity
+import io.github.dostepnykampus.core.database.cache.BARRIERS_COPY
+import io.github.dostepnykampus.core.database.cache.ServerCopyEntity
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
@@ -25,7 +25,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 /** Kopia barier w bazie: zapis przy udanej odpowiedzi serwera i czytanie, gdy serwer nie odpowie. Wymagania: NFR-10 */
 class AcceptedBarriersCopyTest {
-    private val dao = FakeBarrierCacheDao()
+    private val dao = FakeServerCopyDao()
 
     /** Wiersz: bez sieci bariery przychodzą z kopii ze wszystkimi polami. Wymagania: NFR-10 */
     @Test
@@ -38,7 +38,7 @@ class AcceptedBarriersCopyTest {
 
             assertEquals(online, offline, "kopia offline równa odpowiedzi serwera")
             assertEquals(listOf("z1", "z2"), offline.map(AcceptedBarrier::id), "identyfikatory z kopii offline")
-            assertEquals(SYNCED, dao.entity?.syncedAt, "czas synchronizacji zapisany z kopią")
+            assertEquals(SYNCED, dao.rows[BARRIERS_COPY]?.syncedAt, "czas synchronizacji zapisany z kopią")
         }
 
     /** Wiersz: źródło podaje chwilę pobrania barier z odpowiedzi i z kopii; bez obu jej nie ma. Wymagania: NFR-10 */
@@ -70,7 +70,7 @@ class AcceptedBarriersCopyTest {
             val placed = precise(type = null, symbol = "A-1").copy(entranceId = "w1", floor = floor)
             source { ServerReply.Ok(listOf(submission(id = "z1", content = placed))) }.barriers()
             val restored = source { OFFLINE }.barriers().single()
-            dao.entity = dao.entity?.copy(listJson = OLD_COPY)
+            dao.save(dao.rows.getValue(BARRIERS_COPY).copy(documentJson = OLD_COPY))
             val old = source { OFFLINE }.barriers().single()
 
             assertEquals(
@@ -90,9 +90,9 @@ class AcceptedBarriersCopyTest {
     fun givesEmptyWithoutCopy() =
         runBlocking {
             val without = source { OFFLINE }.barriers()
-            dao.entity = BarrierCacheEntity(id = BARRIER_CACHE_SINGLE_ROW, listJson = "[{\"id\":", syncedAt = SYNCED)
+            dao.save(ServerCopyEntity(key = BARRIERS_COPY, documentJson = "[{\"id\":", syncedAt = SYNCED))
             val broken = source { ServerReply.Fault(code = 500) }.barriers()
-            dao.entity = dao.entity?.copy(listJson = UNKNOWN_SEVERITY)
+            dao.save(dao.rows.getValue(BARRIERS_COPY).copy(documentJson = UNKNOWN_SEVERITY))
             val unknown = source { OFFLINE }.barriers()
 
             assertEquals(
@@ -118,7 +118,7 @@ class AcceptedBarriersCopyTest {
         }
 
     private fun source(accepted: suspend () -> ServerReply<List<Submission>>) =
-        ServerAcceptedBarriers(BarrierListCopy(dao, EmptyCoroutineContext) { SYNCED }, accepted)
+        ServerAcceptedBarriers(barrierCopy(dao, EmptyCoroutineContext), accepted) { SYNCED }
 
     private fun precise(type: String?, symbol: String?) =
         SubmissionContent(
@@ -146,15 +146,5 @@ class AcceptedBarriersCopyTest {
         const val UNKNOWN_SEVERITY = """[{"id":"z","longitude":1.0,"latitude":2.0,"severity":9}]"""
         val VERIFIED: Instant = Instant.parse("2026-10-14T10:00:00Z")
         val OFFLINE = ServerReply.Offline
-    }
-}
-
-private class FakeBarrierCacheDao : BarrierCacheDao {
-    var entity: BarrierCacheEntity? = null
-
-    override suspend fun get(): BarrierCacheEntity? = entity
-
-    override suspend fun save(entity: BarrierCacheEntity) {
-        this.entity = entity
     }
 }
