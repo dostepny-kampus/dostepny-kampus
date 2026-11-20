@@ -23,12 +23,6 @@ import io.github.dostepnykampus.feature.map.plan.PlanReport
 import io.github.dostepnykampus.feature.map.plan.PlanSign
 import io.github.dostepnykampus.feature.map.plan.PlanSignSheet
 
-/** Szczegóły dostępne z kroku karty sali. Wymagania: US18.2 */
-internal enum class RoomStepDetail(val title: Int) {
-    ENTRANCE(R.string.mapa_sala_szczegoly_wejscia),
-    LIFT(R.string.mapa_sala_szczegoly_windy),
-}
-
 /** Karta [room] albo otwarte z niej szczegóły kroku, z powrotem do tego kroku. Wymagania: US18.2 */
 @Composable
 internal fun RoomCardLayer(
@@ -46,22 +40,27 @@ internal fun RoomCardLayer(
     val shownDetail = detail
     if (way != null && shownDetail != null) {
         when (shownDetail) {
-            RoomStepDetail.ENTRANCE -> RoomEntranceDetails(
-                way = way,
-                barriers = barriers,
-                exits = exits,
-                actions = actions,
-                modifier = modifier,
-                isFull = onShowMap != null,
-            )
-            RoomStepDetail.LIFT -> way.liftSign(card.found.building)?.let { sign ->
-                PlanSignSheet(
-                    sign = sign,
+            RoomStepDetail.ENTRANCE -> {
+                RoomEntranceDetails(
+                    way = way,
+                    barriers = barriers,
                     exits = exits,
+                    actions = actions,
                     modifier = modifier,
-                    onReport = actions.onPlanReport,
-                    isFullScreen = onShowMap != null,
+                    isFull = onShowMap != null,
                 )
+            }
+
+            RoomStepDetail.LIFT -> {
+                way.liftSign(card.found.building)?.let { sign ->
+                    PlanSignSheet(
+                        sign = sign,
+                        exits = exits,
+                        modifier = modifier,
+                        onReport = actions.onPlanReport,
+                        isFullScreen = onShowMap != null,
+                    )
+                }
             }
         }
     } else {
