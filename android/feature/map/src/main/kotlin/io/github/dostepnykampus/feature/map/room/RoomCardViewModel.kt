@@ -52,7 +52,7 @@ class RoomCardViewModel
             card.value = RoomCard(found = found, way = null)
             loading =
                 viewModelScope.launch {
-                    val way = plans.wayTo(found = found, entrances = entrances, barriers = barriers)
+                    val way = loadWay(found)
                     card.update { shown -> shown?.takeIf { it.found == found }?.copy(way = way) ?: shown }
                 }
         }
@@ -82,20 +82,20 @@ class RoomCardViewModel
         fun previous() {
             card.update { it?.previous() }
         }
-    }
 
-/**
- * Droga do sali [found] z planów pięter budynku, pobranych, gdy telefon nie ma ich kopii, i wejścia zalecanego
- * z [entrances], po uwzględnieniu przyjętych [barriers] przy wejściach do tego budynku.
- *
- * Wymagania: US18.2, BR-25
- */
-private suspend fun FloorPlans.wayTo(found: FoundRoom, entrances: ServerEntrances, barriers: AcceptedBarriers): RoomWay {
-    val symbol = found.building
-    val floors = (floors(symbol) ?: if (download(symbol)) floors(symbol) else null)?.floors.orEmpty()
-    val rooms = floors.associate { floor -> floor.id to rooms(symbol, floor.id)?.rooms.orEmpty() }
-    val accepted = (barriers.known() ?: barriers.barriers()).filter { it.buildingSymbol == symbol }
-    val recommended =
-        orderedEntrances(entrances = entrances.entrances(symbol), barriers = accepted).firstOrNull { it.isRecommended }
-    return roomWay(found = found, entrance = recommended?.entrance, floors = floors, rooms = { rooms[it].orEmpty() })
-}
+        private suspend fun loadWay(found: FoundRoom): RoomWay {
+            val symbol = found.building
+            val floors =
+                (plans.floors(symbol) ?: if (plans.download(symbol)) plans.floors(symbol) else null)?.floors.orEmpty()
+            val rooms = floors.associate { floor -> floor.id to plans.rooms(symbol, floor.id)?.rooms.orEmpty() }
+            val accepted = (barriers.known() ?: barriers.barriers()).filter { it.buildingSymbol == symbol }
+            val ordered = orderedEntrances(entrances = entrances.entrances(symbol), barriers = accepted)
+            val recommended = ordered.firstOrNull { it.isRecommended }
+            return roomWay(
+                found = found,
+                entrance = recommended?.entrance,
+                floors = floors,
+                rooms = { rooms[it].orEmpty() },
+            )
+        }
+    }
