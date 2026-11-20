@@ -1,3 +1,3 @@
-# Profil polecenia importu planów PWr: serwer HTTP nie startuje, aplikacja kończy się po imporcie.
+# Profil polecenia importu PWr: serwer HTTP nie startuje, aplikacja kończy się po ostatnim kroku.
 server:
   port: -1

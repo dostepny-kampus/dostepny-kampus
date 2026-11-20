@@ -5,7 +5,8 @@
  */
 
 /**
- * Usługi budynków: odczyt budynków, kart i podpowiedzi dla warstwy web.
+ * Usługi budynków: odczyt budynków, kart i podpowiedzi dla warstwy web oraz przebieg ręcznego
+ * importu z usług PWr.
  *
  * @since 0.1.0
  */

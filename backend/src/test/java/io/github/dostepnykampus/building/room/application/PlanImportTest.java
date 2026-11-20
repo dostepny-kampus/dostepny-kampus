@@ -11,7 +11,6 @@ import io.github.dostepnykampus.building.room.PlanFloor;
 import io.github.dostepnykampus.building.room.PlanRoom;
 import io.github.dostepnykampus.building.room.PlanSource;
 import java.net.URI;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +18,11 @@ import java.util.Optional;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.DefaultApplicationArguments;
 
 /**
- * Polecenie importu pobiera warstwy budynku i warstwę wejść mapy kampusu i zapisuje plan.
+ * Krok importu planów pobiera warstwy budynku i warstwę wejść mapy kampusu i zapisuje plan.
  *
  * <p>Wymagania: US16, NFR-47, BR-24</p>
  *
@@ -82,7 +80,7 @@ final class PlanImportTest {
                     plan.entrances().stream().map(PlanEntrance::floorId).toList()
                 )
             )
-        ).onApplicationEvent(PlanImportTest.ready());
+        ).run(PlanImportTest.args());
         MatcherAssert.assertThat(
             "Import zapisał piętra innego budynku albo pomieszczenia lub wejścia z cudzej warstwy",
             saved,
@@ -101,7 +99,7 @@ final class PlanImportTest {
         new PlanImport(
             PlanImportTest.SETTINGS, PlanImportTest.CAMPUS_MAP, PlanImportTest.source(),
             plan -> saved.add(plan.building())
-        ).onApplicationEvent(PlanImportTest.ready("--budynek=D-2"));
+        ).run(PlanImportTest.args("--budynek=D-2"));
         MatcherAssert.assertThat(
             "Import z opcją --budynek zapisał inny budynek",
             saved,
@@ -115,7 +113,7 @@ final class PlanImportTest {
         new PlanImport(
             PlanImportTest.SETTINGS, PlanImportTest.CAMPUS_MAP, PlanImportTest.source(),
             plan -> saved.add(String.format("%s %s", plan.building(), plan.edited()))
-        ).onApplicationEvent(PlanImportTest.ready());
+        ).run(PlanImportTest.args());
         MatcherAssert.assertThat(
             "Plan nie dostał daty edycji swojej warstwy wejść",
             saved,
@@ -123,10 +121,8 @@ final class PlanImportTest {
         );
     }
 
-    private static ApplicationReadyEvent ready(final String... args) {
-        final StaticApplicationContext context = new StaticApplicationContext();
-        context.refresh();
-        return new ApplicationReadyEvent(new SpringApplication(), args, context, Duration.ZERO);
+    private static ApplicationArguments args(final String... args) {
+        return new DefaultApplicationArguments(args);
     }
 
     private static PlanSource source() {
