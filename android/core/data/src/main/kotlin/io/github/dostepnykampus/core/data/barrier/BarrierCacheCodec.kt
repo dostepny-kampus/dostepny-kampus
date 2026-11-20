@@ -23,7 +23,13 @@ private val cachedList = ListSerializer(CachedBarrier.serializer())
 
 /** Kopia barier pod kluczem [BARRIERS_COPY] w [dao]. Wymagania: NFR-10 */
 internal fun barrierCopy(dao: ServerCopyDao, ioContext: CoroutineContext): ServerCopy<List<AcceptedBarrier>> =
-    ServerCopy(dao, BARRIERS_COPY, List<AcceptedBarrier>::toCacheJson, String::toCachedBarriers, ioContext)
+    ServerCopy(
+        dao = dao,
+        key = BARRIERS_COPY,
+        encode = List<AcceptedBarrier>::toCacheJson,
+        decode = String::toCachedBarriers,
+        ioContext = ioContext,
+    )
 
 /** Bariery jako dokument JSON kopii. Wymagania: NFR-10 */
 internal fun List<AcceptedBarrier>.toCacheJson(): String = encodeCache(cachedList, map(::cached))

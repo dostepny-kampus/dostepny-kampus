@@ -47,7 +47,7 @@ class ServerCopyDaoTest {
     @Test
     fun staysEmptyBeforeFirstSave() =
         runTest {
-            assertNull(dao.get(BUILDINGS_COPY))
+            assertNull("przed pierwszym zapisem kopii nie ma", dao.get(BUILDINGS_COPY))
         }
 
     @Test
@@ -56,7 +56,7 @@ class ServerCopyDaoTest {
             val entity = ServerCopyEntity(key = BUILDINGS_COPY, documentJson = DOCUMENT, syncedAt = 42)
             dao.save(entity)
 
-            assertEquals(entity, dao.get(BUILDINGS_COPY))
+            assertEquals("odczyt zwraca zapisaną kopię", entity, dao.get(BUILDINGS_COPY))
         }
 
     @Test
@@ -68,7 +68,11 @@ class ServerCopyDaoTest {
             val newer = ServerCopyEntity(key = BUILDINGS_COPY, documentJson = "{}", syncedAt = 9)
             dao.save(newer)
 
-            assertEquals(listOf(newer, barriers), listOf(dao.get(BUILDINGS_COPY), dao.get(BARRIERS_COPY)))
+            assertEquals(
+                "nowy zapis zastępuje tylko kopię pod tym samym kluczem",
+                listOf(newer, barriers),
+                listOf(dao.get(BUILDINGS_COPY), dao.get(BARRIERS_COPY)),
+            )
         }
 }
 

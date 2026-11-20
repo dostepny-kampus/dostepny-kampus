@@ -27,7 +27,13 @@ import kotlin.coroutines.CoroutineContext
 
 /** Kopia listy budynków pod kluczem [BUILDINGS_COPY] w [dao]. Wymagania: NFR-10 */
 internal fun buildingCopy(dao: ServerCopyDao, ioContext: CoroutineContext): ServerCopy<BuildingList> =
-    ServerCopy(dao, BUILDINGS_COPY, BuildingList::toCacheJson, String::toCachedBuildingList, ioContext)
+    ServerCopy(
+        dao = dao,
+        key = BUILDINGS_COPY,
+        encode = BuildingList::toCacheJson,
+        decode = String::toCachedBuildingList,
+        ioContext = ioContext,
+    )
 
 /** Lista budynków z serwera z wejściami jako dokument JSON kopii. Wymagania: NFR-10 */
 internal fun BuildingList.toCacheJson(): String =

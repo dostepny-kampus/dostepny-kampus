@@ -203,7 +203,11 @@ class MigrationTest {
         }
 
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val database = Room.databaseBuilder(context, DkDatabase::class.java, DB_NAME).build()
+        val database =
+            Room
+                .databaseBuilder(context, DkDatabase::class.java, DB_NAME)
+                .addMigrations(*ALL_MIGRATIONS.toTypedArray())
+                .build()
         try {
             runBlocking {
                 database.queueOwnership().adopt("pierwsze")
