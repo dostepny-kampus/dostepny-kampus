@@ -45,7 +45,7 @@ internal data class CameraView(
  * idzie za osobą, także po obrocie ekranu. Wykonane polecenie jest zapamiętane razem
  * z zapisanym widokiem przez jego tożsamość ([MapFocus.Building.command]), więc nowe polecenie, także dla tego
  * samego budynku, znów przesuwa kamerę, niezależnie od tego, czy mapa była między nimi składana.
- * [roomCamera] staje się zapamiętanym widokiem również przed pierwszym gestem, żeby zamknięcie karty sali go nie cofało.
+ * [roomCamera] zapisuje widok przed pierwszym gestem, żeby zamknięcie karty sali nie cofnęło kamery.
  *
  * Wymagania: US3.3, US2.9, NFR-53, NFR-22
  */

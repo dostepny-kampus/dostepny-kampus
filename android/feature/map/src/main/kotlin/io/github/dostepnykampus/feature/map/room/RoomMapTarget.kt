@@ -12,7 +12,7 @@ import io.github.dostepnykampus.feature.map.camera.ENTRANCE_ZOOM
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.shiftedNorth
 
-/** Piętro planu i punkt, który ma wskazać kamera. Wymagania: US18.1, US18.2 */
+/** Piętro planu [floor] i punkt kamery [point]. Wymagania: US18.1, US18.2 */
 data class RoomMapTarget(val floor: String, val point: GeoPoint)
 
 /** Cel dla aktualnego kroku [RoomCard.step] albo sali, kiedy pokaz drogi jeszcze nie trwa. Wymagania: US18.2 */

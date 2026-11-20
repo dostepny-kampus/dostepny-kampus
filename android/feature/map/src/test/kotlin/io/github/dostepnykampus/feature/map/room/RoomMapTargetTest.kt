@@ -19,7 +19,8 @@ class RoomMapTargetTest {
     @Test
     fun showsRoomBeforeChoosingStep() {
         val card = RoomCard(found = FOUND, way = null)
-        assertEquals(RoomMapTarget(floor = SECOND.id, point = FOUND.room.labelPoint), card.mapTarget(), "Sala na planie")
+        val expected = RoomMapTarget(floor = SECOND.id, point = FOUND.room.labelPoint)
+        assertEquals(expected, card.mapTarget(), "Sala na planie")
     }
 
     @Test

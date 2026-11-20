@@ -27,7 +27,8 @@ class RoomCameraViewTest {
 
     @Test
     fun keepsRoomCameraWhenCardCloses() {
-        val focus = MapFocus.Building(symbol = FOUND.building, command = 1L, floor = FOUND.floor.id, room = FOUND.room.id)
+        val focus =
+            MapFocus.Building(symbol = FOUND.building, command = 1L, floor = FOUND.floor.id, room = FOUND.room.id)
         val target = MapCamera(center = FOUND.room.labelPoint, zoom = 19.0)
         val open = mutableStateOf(true)
         var shown: MapCamera? = null
