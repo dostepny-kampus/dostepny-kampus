@@ -96,7 +96,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Plan 2 piętra A-1 przesunięty do windy, pod nim arkusz: Winda i Zamknij, wiersz Budynek A-1, osobny wiersz 2 piętro, Przy klatkach C i D, Jedzie na: Piwnica, Parter, 1 piętro, 2 piętro (tutaj jesteś), 3 piętro i przycisk Zgłoś barierę przy windzie](obrazy/m-v1-mapa-plan-winda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-jasny.webp) | [![Ten sam arkusz windy w motywie ciemnym](obrazy/m-v1-mapa-plan-winda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-ciemny.webp) | [![Arkusz windy przy czcionce 200% na cały ekran: u góry Wstecz, niżej Winda, wiersz Budynek A-1, piętro, klatki, piętra windy i przycisk Zgłoś barierę przy windzie](obrazy/m-v1-mapa-plan-winda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-jasny-200.webp) |
+| [![Plan 2 piętra A-1 z kolumną pięter 3, 2, 1, 0 i −1. Pod mapą arkusz Winda z przyciskiem Zamknij, wierszem Budynek A-1, osobnym wierszem 2 piętro, klatkami C i D, listą pięter windy i przyciskiem Zgłoś barierę przy windzie](obrazy/m-v1-mapa-plan-winda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-jasny.webp) | [![Ten sam arkusz windy w motywie ciemnym](obrazy/m-v1-mapa-plan-winda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-ciemny.webp) | [![Arkusz windy przy czcionce 200% na cały ekran: u góry Wstecz, niżej Winda, wiersz Budynek A-1, piętro, klatki, piętra windy i przycisk Zgłoś barierę przy windzie](obrazy/m-v1-mapa-plan-winda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-jasny-200.webp) |
 
 ### V1: legenda przy planie
 
