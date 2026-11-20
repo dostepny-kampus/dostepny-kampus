@@ -30,3 +30,6 @@ public const val BUILDINGS_COPY: String = "buildings"
 
 /** Klucz kopii barier ze zgłoszeń przyjętych. */
 public const val BARRIERS_COPY: String = "barriers"
+
+/** Klucz kopii ścieżek dostosowanych. */
+public const val ACCESSIBLE_PATHS_COPY: String = "accessible_paths"
