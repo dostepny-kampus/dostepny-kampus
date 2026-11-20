@@ -14,12 +14,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.dostepnykampus.app.LocalSheetPadding
-import io.github.dostepnykampus.app.SheetLayout
-import io.github.dostepnykampus.app.SheetSceneStrategy
-import io.github.dostepnykampus.app.closeCardOnEmptyMap
-import io.github.dostepnykampus.app.isFullOnlySheet
-import io.github.dostepnykampus.app.shownFocus
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
@@ -29,6 +23,7 @@ import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.MapLibreMapView
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.entrance.BuildingEntrancesViewModel
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
 import io.github.dostepnykampus.feature.map.entrance.EntranceLiftViewModel
@@ -39,7 +34,6 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import io.github.dostepnykampus.feature.map.plan.MapPlanViewModel
 import io.github.dostepnykampus.feature.map.plan.PlanReport
-import io.github.dostepnykampus.feature.map.plan.ShownPlan
 import io.github.dostepnykampus.feature.map.room.OpenRoom
 import io.github.dostepnykampus.feature.map.room.RoomCardViewModel
 

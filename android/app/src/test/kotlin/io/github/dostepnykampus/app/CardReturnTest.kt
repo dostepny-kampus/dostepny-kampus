@@ -22,6 +22,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.app.navigation.AppNavigator
+import io.github.dostepnykampus.app.navigation.isExpanded
 import io.github.dostepnykampus.app.navigation.returnToCard
 import io.github.dostepnykampus.app.navigation.sheetCard
 import io.github.dostepnykampus.feature.map.navigation.MapRoute

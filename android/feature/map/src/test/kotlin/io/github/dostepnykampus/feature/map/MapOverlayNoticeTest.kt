@@ -31,7 +31,6 @@ import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
-import io.github.dostepnykampus.feature.map.overlay.MapOverlay
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test

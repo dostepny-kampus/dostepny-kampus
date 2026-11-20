@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.report.edit
@@ -13,11 +13,10 @@ import io.github.dostepnykampus.core.data.submission.pending.PendingEdits
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
-import io.github.dostepnykampus.feature.capture.measure.place
-import io.github.dostepnykampus.feature.capture.quick.content
 import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
 import io.github.dostepnykampus.feature.capture.report.form.ReportForm
 import io.github.dostepnykampus.feature.capture.report.form.ReportPlace
+import io.github.dostepnykampus.feature.capture.report.form.ReportUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

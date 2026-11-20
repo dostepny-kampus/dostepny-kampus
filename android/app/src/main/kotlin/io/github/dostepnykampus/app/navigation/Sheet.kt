@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.app
+package io.github.dostepnykampus.app.navigation
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -65,6 +65,7 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
+import io.github.dostepnykampus.app.R
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia

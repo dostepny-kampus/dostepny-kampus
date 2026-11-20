@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.report
@@ -24,12 +24,8 @@ import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.feature.capture.R
-import io.github.dostepnykampus.feature.capture.measure.place
 import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
-import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
-import io.github.dostepnykampus.feature.capture.report.edit.ReportStage
-import io.github.dostepnykampus.feature.capture.report.edit.ReportUiState
 import io.github.dostepnykampus.feature.capture.report.form.DescriptionSection
 import io.github.dostepnykampus.feature.capture.report.form.ExitDialog
 import io.github.dostepnykampus.feature.capture.report.form.FieldError
@@ -38,11 +34,14 @@ import io.github.dostepnykampus.feature.capture.report.form.PhotoSection
 import io.github.dostepnykampus.feature.capture.report.form.PlaceCard
 import io.github.dostepnykampus.feature.capture.report.form.PlanFloorSection
 import io.github.dostepnykampus.feature.capture.report.form.ReportBanner
+import io.github.dostepnykampus.feature.capture.report.form.ReportEdit
 import io.github.dostepnykampus.feature.capture.report.form.ReportFormError.MISSING_BARRIER_TYPE
 import io.github.dostepnykampus.feature.capture.report.form.ReportFormError.MISSING_DESCRIPTION
 import io.github.dostepnykampus.feature.capture.report.form.ReportFormError.MISSING_FLOOR
 import io.github.dostepnykampus.feature.capture.report.form.ReportFormError.MISSING_PHOTO
 import io.github.dostepnykampus.feature.capture.report.form.ReportFormError.MISSING_SEVERITY
+import io.github.dostepnykampus.feature.capture.report.form.ReportStage
+import io.github.dostepnykampus.feature.capture.report.form.ReportUiState
 import io.github.dostepnykampus.feature.capture.report.form.SeveritySection
 import io.github.dostepnykampus.feature.capture.report.form.TypeSection
 

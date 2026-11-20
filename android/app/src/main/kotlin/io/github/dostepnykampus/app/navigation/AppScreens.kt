@@ -20,9 +20,6 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
-import io.github.dostepnykampus.app.LocalSheetPadding
-import io.github.dostepnykampus.app.SheetState
-import io.github.dostepnykampus.app.cardMode
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
@@ -35,7 +32,7 @@ import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.quick.QuickReportActions
 import io.github.dostepnykampus.feature.capture.quick.QuickReportScreen
-import io.github.dostepnykampus.feature.capture.report.form.ReportFormScreen
+import io.github.dostepnykampus.feature.capture.report.ReportFormScreen
 import io.github.dostepnykampus.feature.help.HelpScreen
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.inspection.navigation.CollectorMarkersRoute

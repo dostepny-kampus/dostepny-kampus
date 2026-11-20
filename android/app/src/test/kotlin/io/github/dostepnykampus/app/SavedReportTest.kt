@@ -20,13 +20,13 @@ import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.feature.capture.report.ReportFormViewModel
 import io.github.dostepnykampus.feature.capture.report.ReportSaverModule
-import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
-import io.github.dostepnykampus.feature.capture.report.edit.ReportStage
+import io.github.dostepnykampus.feature.capture.report.form.ReportEdit
 import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
 import io.github.dostepnykampus.feature.capture.report.form.ReportForm
-import io.github.dostepnykampus.feature.capture.report.form.ReportFormViewModel
 import io.github.dostepnykampus.feature.capture.report.form.ReportPlace
+import io.github.dostepnykampus.feature.capture.report.form.ReportStage
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Before

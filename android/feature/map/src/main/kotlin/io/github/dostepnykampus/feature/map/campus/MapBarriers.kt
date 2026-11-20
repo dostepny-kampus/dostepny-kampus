@@ -3,12 +3,10 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map.barrier
+package io.github.dostepnykampus.feature.map.campus
 
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.geo.toPosition
-import io.github.dostepnykampus.feature.map.campus.CampusMapData
-import io.github.dostepnykampus.feature.map.campus.featureCollection
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject

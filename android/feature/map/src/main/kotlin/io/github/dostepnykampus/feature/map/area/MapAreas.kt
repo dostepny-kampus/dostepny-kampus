@@ -15,6 +15,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapArea
+import io.github.dostepnykampus.feature.map.campus.areaOf
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import timber.log.Timber
 

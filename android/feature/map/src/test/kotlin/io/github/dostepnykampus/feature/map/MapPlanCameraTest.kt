@@ -20,9 +20,9 @@ import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
+import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
-import io.github.dostepnykampus.feature.map.plan.ShownPlan
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher

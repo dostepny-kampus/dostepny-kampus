@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.app
+package io.github.dostepnykampus.app.navigation
 
 import android.os.Build
 import android.os.Trace
@@ -57,8 +57,6 @@ import androidx.navigationevent.NavigationEvent
 import androidx.navigationevent.NavigationEventHandler
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
-import io.github.dostepnykampus.app.navigation.CardWindow
-import io.github.dostepnykampus.app.navigation.isWideOrLandscape
 import io.github.dostepnykampus.feature.map.camera.MOVE_WAIT_MILLIS
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute

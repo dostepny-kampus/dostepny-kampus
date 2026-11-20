@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.report.form
@@ -11,7 +11,6 @@ import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
-import io.github.dostepnykampus.feature.capture.measure.place
 import io.github.dostepnykampus.feature.capture.report.A1
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull

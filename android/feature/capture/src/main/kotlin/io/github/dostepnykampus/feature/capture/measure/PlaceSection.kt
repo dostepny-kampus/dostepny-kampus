@@ -1,9 +1,9 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.capture.report.form
+package io.github.dostepnykampus.feature.capture.measure
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,8 +29,6 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.geo.building.BuildingHint
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.feature.capture.R
-import io.github.dostepnykampus.feature.capture.measure.PlaceChoice
-import io.github.dostepnykampus.feature.capture.measure.place
 import kotlin.math.roundToInt
 
 /**

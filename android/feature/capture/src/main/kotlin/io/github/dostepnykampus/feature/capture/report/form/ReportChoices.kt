@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Yevhenii Lukianenko
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.report.form
@@ -54,7 +54,6 @@ import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.feature.capture.R
-import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
 
 /**
  * Piętro wpisane liczbą w budynku bez planu PWr, z polem „Półpiętro” (PW-6).

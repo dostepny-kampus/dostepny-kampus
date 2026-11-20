@@ -6,6 +6,8 @@
 package io.github.dostepnykampus.app
 
 import androidx.compose.runtime.MonotonicFrameClock
+import io.github.dostepnykampus.app.navigation.SheetEdge
+import io.github.dostepnykampus.app.navigation.SheetExit
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

@@ -7,9 +7,9 @@ package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.room.RoomList
+import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
-import io.github.dostepnykampus.feature.map.plan.ShownPlan
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive

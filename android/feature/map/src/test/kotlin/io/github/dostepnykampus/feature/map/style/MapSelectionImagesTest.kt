@@ -18,9 +18,9 @@ import io.github.dostepnykampus.core.model.room.Room
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
+import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
-import io.github.dostepnykampus.feature.map.plan.ShownPlan
 import io.github.dostepnykampus.feature.map.selectionImages
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals

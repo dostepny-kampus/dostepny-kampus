@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map.plan
 import androidx.compose.runtime.Immutable
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.campus.ShownPlan
 
 /**
  * Znak planu w arkuszu: nazwa [title], symbol budynku [building], etykieta piętra [floor] z danych PWr i etykiety

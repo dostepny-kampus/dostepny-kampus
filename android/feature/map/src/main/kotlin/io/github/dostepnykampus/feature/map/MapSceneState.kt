@@ -33,6 +33,7 @@ import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
+import io.github.dostepnykampus.feature.map.camera.ShownCamera
 import io.github.dostepnykampus.feature.map.camera.TapSight
 import io.github.dostepnykampus.feature.map.camera.belowTop
 import io.github.dostepnykampus.feature.map.camera.besideStart
@@ -41,6 +42,8 @@ import io.github.dostepnykampus.feature.map.camera.fitted
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.pickLine
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
+import io.github.dostepnykampus.feature.map.camera.rememberClosedView
+import io.github.dostepnykampus.feature.map.camera.uncoveredMove
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
