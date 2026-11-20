@@ -27,14 +27,17 @@ class AccessiblePathsStyleTest {
     private val data = campusMapData(styleCatalog()).withPaths(listOf(PATH))
     private val style = Json.parseToJsonElement(campusMapStyle(data, data.selection(), colors)).jsonObject
 
-    /** Wstęga ścieżki leży nad podkładem, a pod budynkami PWr i wszystkimi znakami. Wymagania: US1.4 */
+    /** Wstęga ścieżki leży nad kształtami podkładu, pod jego nazwami, budynkami PWr i znakami. Wymagania: US1.4 */
     @Test
-    fun drawsPathsUnderBuildings() {
+    fun drawsPathsUnderNames() {
         val ids = style.getValue("layers").jsonArray.map { it.jsonObject.text("id") }
         val edge = ids.indexOf(PATH_EDGE_LAYER)
-        assertEquals(ids.indexOf(BASEMAP_LAYERS.last()) + 1, edge, "brzeg zaraz nad podkładem")
-        val next = ids.subList(fromIndex = edge + 1, toIndex = edge + 3)
-        assertEquals(listOf(PATH_INSIDE_LAYER, BUILDINGS_LAYER), next, "nad brzegiem wnętrze, potem budynki")
+        val palette = checkNotNull(colors.basemap)
+        val shapes = basemapShapeLayers(palette, minZoom = 0.0).map { it.text("id") }
+        val names = basemapNameLayers(palette, minZoom = 0.0, textSize = 1.0).map { it.text("id") }
+        assertEquals(ids.indexOf(shapes.last()) + 1, edge, "brzeg zaraz nad kształtami podkładu")
+        val next = ids.subList(fromIndex = edge + 1, toIndex = edge + 2 + names.size + 1)
+        assertEquals(listOf(PATH_INSIDE_LAYER) + names + BUILDINGS_LAYER, next, "wnętrze, nazwy podkładu, budynki")
     }
 
     /** Brzeg i wnętrze w barwach `sciezka_brzeg` i `sciezka_wnetrze`, od powiększenia z tokenu. Wymagania: NFR-16 */
