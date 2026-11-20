@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.feature.map.style
 
+import io.github.dostepnykampus.core.designsystem.MapaPlan
+import io.github.dostepnykampus.core.designsystem.ZoomStop
 import io.github.dostepnykampus.core.geo.toGeometry
 import io.github.dostepnykampus.core.geo.toPosition
 import io.github.dostepnykampus.core.model.GeoMultiPolygon
@@ -47,17 +49,8 @@ internal const val PLAN_SIGNS_LAYER = "plan_znaki"
 /** Właściwość znaku planu z identyfikatorem jego pomieszczenia; czyta ją dotknięcie mapy. */
 internal const val PLAN_ROOM_ID = "room_id"
 
-/** Bok obrazu znaku na planie w dp: największy rozmiar znaku, od powiększenia 19 (token `mapa.plan.znak_dp`). */
-internal const val PLAN_SIGN_DP = 28
-
-private const val SIGN_DP_AT_17 = 20.0
-private const val SIGN_DP_AT_18 = 24.0
-private const val SIGN_ZOOM_17 = 17.0
-private const val SIGN_ZOOM_18 = 18.0
-private const val SIGN_ZOOM_19 = 19.0
-
-private val PLAN_SIGN_SIZES =
-    listOf(SIGN_ZOOM_17 to SIGN_DP_AT_17, SIGN_ZOOM_18 to SIGN_DP_AT_18, SIGN_ZOOM_19 to PLAN_SIGN_DP.toDouble())
+/** Bok obrazu znaku na planie w dp: największy rozmiar znaku z tokenu `mapa.plan.znak_dp`. */
+internal val PLAN_SIGN_DP: Double = MapaPlan.znakDp.maxOf(ZoomStop::dp)
 
 /** Grupy funkcji, które mają na planie znak zamiast samego koloru. Wymagania: US16.1 */
 internal val PLAN_SIGN_CATEGORIES =
@@ -73,12 +66,6 @@ private const val SIGN = "sign"
 private const val FILTER = "filter"
 private const val IMAGE = "image"
 private const val NUMBERS_MIN_ZOOM = 19.0
-private const val WALL_ZOOM_FROM = 17.0
-private const val WALL_ZOOM_TO = 20.0
-private const val WALL_WIDTH_FROM = 0.75
-private const val WALL_WIDTH_TO = 1.5
-private val WALL_WIDTHS = listOf(WALL_ZOOM_FROM to WALL_WIDTH_FROM, WALL_ZOOM_TO to WALL_WIDTH_TO)
-private const val OUTLINE_WIDTH = 2.4
 
 /**
  * Kolory planu piętra z tokenów `mapa.kolory` jako `#RRGGBB`.
@@ -165,7 +152,7 @@ internal fun planLayers(colors: PlanColors, floor: String? = null, room: String?
     val walls =
         styleLayer(id = PLAN_WALLS_LAYER, type = "line", source = PLAN_SOURCE) {
             put(key = FILTER, element = none)
-            paint("line-color" to JsonPrimitive(colors.wall), "line-width" to byZoom(WALL_WIDTHS))
+            paint("line-color" to JsonPrimitive(colors.wall), "line-width" to byZoom(MapaPlan.scianyDp))
         }
     val chosen = chosenRoomLayers(colors = colors, floor = floor, room = room)
     val above =
@@ -174,7 +161,7 @@ internal fun planLayers(colors: PlanColors, floor: String? = null, room: String?
                 id = PLAN_OUTLINE_LAYER,
                 source = PLAN_SOURCE,
                 color = colors.floorWall,
-                width = OUTLINE_WIDTH,
+                width = MapaPlan.obrysDp,
                 filter = outline,
             ),
             JsonObject(
@@ -182,7 +169,7 @@ internal fun planLayers(colors: PlanColors, floor: String? = null, room: String?
                     id = PLAN_SIGNS_LAYER,
                     source = PLAN_SOURCE,
                     image = property(IMAGE),
-                    "icon-size" to byZoom(PLAN_SIGN_SIZES.map { (zoom, dp) -> zoom to dp / PLAN_SIGN_DP }),
+                    "icon-size" to byZoom(MapaPlan.znakDp.map { it.copy(dp = it.dp / PLAN_SIGN_DP) }),
                     "symbol-sort-key" to signOrder(),
                 ) +
                     (FILTER to planFilter(floor = floor, kind = SIGN)),
@@ -196,8 +183,8 @@ internal fun planLayers(colors: PlanColors, floor: String? = null, room: String?
     return listOf(ground, fill, walls) + chosen + above
 }
 
-private fun byZoom(stops: List<Pair<Double, Double>>): JsonElement {
-    val values = stops.flatMap { (zoom, value) -> listOf(JsonPrimitive(zoom), JsonPrimitive(value)) }
+private fun byZoom(stops: List<ZoomStop>): JsonElement {
+    val values = stops.flatMap { listOf(JsonPrimitive(it.zoom), JsonPrimitive(it.dp)) }
     return JsonArray(listOf(JsonPrimitive("interpolate"), expression("linear"), expression("zoom")) + values)
 }
 

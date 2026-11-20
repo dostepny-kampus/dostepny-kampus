@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map.style
 
 import android.graphics.Bitmap
+import io.github.dostepnykampus.core.designsystem.MapaPrzygaszenie
 import io.github.dostepnykampus.feature.map.campus.BUILDING_DETAILED
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
@@ -30,10 +31,10 @@ private val NO_FEATURES = expression("!", JsonPrimitive(true))
 internal const val DIMMED_STATE = "przygaszony"
 
 /** Krycie tła przygaszonego budynku z tokenu `mapa.przygaszenie.tlo_krycie`. Wymagania: US2.8, NFR-16 */
-internal const val DIMMED_FILL_OPACITY = 0.4
+internal val DIMMED_FILL_OPACITY: Double = MapaPrzygaszenie.tloKrycie
 
 /** Krycie konturu przygaszonego budynku z tokenu `mapa.przygaszenie.kontur_krycie`. Wymagania: US2.8, NFR-16 */
-internal const val DIMMED_OUTLINE_OPACITY = 0.7
+internal val DIMMED_OUTLINE_OPACITY: Double = MapaPrzygaszenie.konturKrycie
 
 /**
  * Krycie tła albo konturu budynku ze stanu obiektu: 0 dla budynku ze stanem [UNDER_PLAN_STATE], bo jego miejsce
