@@ -180,5 +180,5 @@ private fun PlanReport.toPlace(): ReportPlace =
         longitude = point.longitude,
     )
 
-private fun FoundRoom.focus(): MapFocus =
+private fun FoundRoom.focus(): MapFocus.Building =
     MapFocus.Building(symbol = building, command = System.nanoTime(), floor = floor.id, room = room.id)
