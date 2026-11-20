@@ -38,6 +38,7 @@ final class RouteParityIT {
     static final Map<String, String> PENDING = Map.ofEntries(
         Map.entry("GET /review/queue", "kolejka Weryfikatora: moduł weryfikacji"),
         Map.entry("GET /sync/pull", "pobranie zmian do aplikacji: synchronizacja"),
+        Map.entry("DELETE /inspection-markers/{}", "znaczniki inspekcji: moduł inspekcji"),
         Map.entry("GET /progress", "postęp inspekcji: moduł inspekcji"),
         Map.entry("GET /export.geojson", "eksport GeoJSON: moduł eksportu"),
         Map.entry("POST /invitations", "zaproszenia: moduł tożsamości")
