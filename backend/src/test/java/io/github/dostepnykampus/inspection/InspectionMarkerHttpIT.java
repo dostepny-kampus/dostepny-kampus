@@ -30,7 +30,7 @@ import org.springframework.web.context.WebApplicationContext;
 final class InspectionMarkerHttpIT {
 
     @Test
-    void coordinatorRevokesAnyMarker(final WebApplicationContext context) throws Exception {
+    void revokesAnyMarkerForCoordinator(final WebApplicationContext context) throws Exception {
         final UUID id = UUID.randomUUID();
         InspectionMarkerHttpIT.insert(context, id, "inne-konto");
         final int status = InspectionMarkerHttpIT.delete(context, "COORDINATOR", id);
@@ -42,7 +42,7 @@ final class InspectionMarkerHttpIT {
     }
 
     @Test
-    void collectorRevokesOwnMarker(final WebApplicationContext context) throws Exception {
+    void revokesOwnMarkerForCollector(final WebApplicationContext context) throws Exception {
         final UUID id = UUID.randomUUID();
         InspectionMarkerHttpIT.insert(context, id, "konto-testowe");
         final int status = InspectionMarkerHttpIT.delete(context, "COLLECTOR", id);
@@ -62,7 +62,8 @@ final class InspectionMarkerHttpIT {
      * @throws Exception Błąd wywołania MockMvc
      */
     @Test
-    void collectorCannotRevokeForeignMarker(final WebApplicationContext context) throws Exception {
+    void rejectsForeignMarkerRevokeForCollector(final WebApplicationContext context)
+        throws Exception {
         final UUID id = UUID.randomUUID();
         InspectionMarkerHttpIT.insert(context, id, "inne-konto");
         final int status = InspectionMarkerHttpIT.delete(context, "COLLECTOR", id);
