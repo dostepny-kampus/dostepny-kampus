@@ -5,29 +5,17 @@
 set -euo pipefail
 
 # Użycie: cache-budowania-sprintu.sh <gałąź sprintu, np. sprint/4> <katalog build-cache Gradle>
-# Grupa kolejki nie widzi cache zapisanego na gałęzi sprintu, więc udana grupa kolejki wysyła build cache jako artefakt
-# `gradle-build-cache` (zadanie `testy`) i `gradle-build-cache-analiza` (zadanie `analiza-statyczna`), a ten skrypt pobiera go z najnowszego udanego przebiegu `android` ze zdarzenia merge_group
-# na gałęziach kolejki tego sprintu (nigdy z przebiegu pull_request) i scala oba w jeden katalog. Grupa, która pominęła budowanie, artefaktu nie ma,
+# Grupa kolejki nie widzi cache zapisanego na gałęzi sprintu, więc udana grupa kolejki wysyła build cache jako artefakty
+# `gradle-build-cache` i `gradle-build-cache-analiza` (dwie części zadania `testy`), a ten skrypt scala je w jeden
+# katalog z najnowszego udanego przebiegu `android` ze zdarzenia merge_group na gałęziach kolejki tego sprintu (nigdy
+# z przebiegu pull_request). Grupa, która pominęła budowanie, artefaktów nie ma,
 # więc skrypt sprawdza kolejne. Brak artefaktu albo błąd nie psuje budowania: zostaje zimny cache.
 # Środowisko: GH_TOKEN, GH_REPO; GITHUB_RUN_ID (pomijany, jeśli to ten sam przebieg); CACHE_WORKFLOW (domyślnie android.yml).
 branch="${1:?Podaj gałąź sprintu}"
 dest="${2:?Podaj katalog docelowy}"
 names=(gradle-build-cache gradle-build-cache-analiza)
 
-# pobierz <przebieg>: wszystkie artefakty z names, które ten przebieg ma, scalone w dest; kod 1, gdy żadnego.
-pobierz() {
-  local part="${dest}.czesc" name found=1
-  rm -rf "$dest"
-  for name in "${names[@]}"; do
-    rm -rf "$part"
-    if gh run download "$1" --name "$name" --dir "$part" && [[ -n $(ls -A "$part") ]]; then
-      if [[ -d $dest ]]; then cp -a "$part/." "$dest/"; else mv "$part" "$dest"; fi
-      found=0
-    fi
-  done
-  rm -rf "$part"
-  return "$found"
-}
+pobierz() { bash "$(dirname "$0")/pobierz-artefakty.sh" "$1" "$dest" "${names[@]}"; }
 
 if ! runs="$(gh run list --workflow "${CACHE_WORKFLOW:-android.yml}" --event merge_group --status success --limit 20 \
   --json databaseId,headBranch \

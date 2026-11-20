@@ -18,9 +18,7 @@ echo "$*" >>"$FAKE_DIR/wywolania"
 case "$1 $2" in
   'run list') [[ -f $FAKE_DIR/lista ]] || exit 1; cat "$FAKE_DIR/lista" ;;
   'run download')
-    # artefakt-<id>: artefakt gradle-build-cache z plikiem `wpis`; artefakt-<id>-<nazwa>: artefakt <nazwa> z plikiem <nazwa>.
-    if [[ -f $FAKE_DIR/artefakt-$3-$5 ]]; then mkdir -p "$7"; cp "$FAKE_DIR/artefakt-$3-$5" "$7/$5"; exit 0; fi
-    [[ -f $FAKE_DIR/artefakt-$3 && $5 == gradle-build-cache ]] || exit 1
+    [[ -f $FAKE_DIR/artefakt-$3 ]] || exit 1
     mkdir -p "$7"; cp "$FAKE_DIR/artefakt-$3" "$7/wpis" ;;
 esac
 SH
@@ -49,21 +47,6 @@ przypadek "pomija przebieg bez artefaktu (wygasł)" wpis-8 "przebiegu 8" "9 8" "
 przypadek "pomija własny przebieg" wpis-8 "przebiegu 8" "3 8" "3 8"
 przypadek "brak artefaktów: zimny cache, kod 0" BRAK "Brak artefaktu cache" "9 8" ""
 przypadek "błąd listy przebiegów: zimny cache, kod 0" BRAK "Nie udało się odczytać" BRAK ""
-rm -rf "$workdir/f" "$workdir/cache"
-mkdir "$workdir/f"
-printf '%s
-' 9 8 >"$workdir/f/lista"
-echo analiza-9 >"$workdir/f/artefakt-9-gradle-build-cache-analiza"
-echo wpis-8 >"$workdir/f/artefakt-8"
-PATH="$workdir/bin:$PATH" FAKE_DIR="$workdir/f" GH_REPO=o/r GITHUB_RUN_ID=3 bash "$script" sprint/4 "$workdir/cache" >/dev/null 2>&1 &&
-  [[ $(ls -A "$workdir/cache") == gradle-build-cache-analiza ]] &&
-  echo "OK: przebieg z samym artefaktem analizy statycznej wystarcza" ||
-  { echo "BŁĄD: artefakt analizy: $(ls -A "$workdir/cache" 2>&1)"; failures=$((failures + 1)); }
-echo wpis-9 >"$workdir/f/artefakt-9"
-PATH="$workdir/bin:$PATH" FAKE_DIR="$workdir/f" GH_REPO=o/r GITHUB_RUN_ID=3 bash "$script" sprint/4 "$workdir/cache" >/dev/null 2>&1 &&
-  [[ $(cat "$workdir/cache/wpis") == wpis-9 && $(cat "$workdir/cache/gradle-build-cache-analiza") == analiza-9 ]] &&
-  echo "OK: artefakty testów i analizy statycznej scalone w jednym katalogu" ||
-  { echo "BŁĄD: scalenie artefaktów: $(ls -A "$workdir/cache" 2>&1)"; failures=$((failures + 1)); }
 przypadek "lista tylko udanych grup kolejki tego sprintu" wpis-9 "przebiegu 9" "9" "9"
 grep -q -- '--event merge_group' "$workdir/f/wywolania" && grep -q -- '--status success' "$workdir/f/wywolania" &&
   grep -q -- 'startswith("gh-readonly-queue/sprint/4/")' "$workdir/f/wywolania" &&

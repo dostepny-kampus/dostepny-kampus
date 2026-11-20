@@ -18,6 +18,7 @@ on:
       - ".github/actions/android-gradle/**"
       - ".github/scripts/cache-budowania-sprintu.sh"
       - ".github/scripts/cache-z-kolejki.sh"
+      - ".github/scripts/pobierz-artefakty.sh"
       - ".github/scripts/przytnij-cache-budowania.sh"
       - ".github/scripts/czysc-cache.sh"
       - ".github/scripts/wyniki-androida.sh"
@@ -82,7 +83,7 @@ jobs:
           .github/workflows/android.yml .github/actions/android-gradle .github/scripts/cache-budowania-sprintu.sh
           .github/scripts/cache-z-kolejki.sh .github/scripts/czysc-cache.sh .github/scripts/przytnij-cache-budowania.sh
           .github/scripts/wyniki-androida.sh .github/scripts/uruchom-serwer-systemowy.sh
-          .github/scripts/zmiany-obszaru.sh
+          .github/scripts/zmiany-obszaru.sh .github/scripts/pobierz-artefakty.sh
 
   emulator:
     needs: apk
@@ -316,6 +317,16 @@ jobs:
     needs: zmiany
     # Bez przebiegu na wskazanym commicie: kontrola sprintu sprawdza głowę, którą `testy` przeszły już w kolejce.
     if: ${{ !cancelled() && !inputs.sha && github.event_name != 'push' && needs.zmiany.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
+    # Dwie równoległe części jednego kroku Gradle: testy jednostkowe z Kover i Roborazzi oraz lint z detekt.
+    name: ${{ matrix.czesc }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - czesc: testy
+            cache: gradle-build-cache
+          - czesc: analiza-statyczna
+            cache: gradle-build-cache-analiza
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -333,16 +344,27 @@ jobs:
       - name: Przygotuj JDK i cache Gradle
         id: gradle
         uses: ./.github/actions/android-gradle
-      - name: Testy, Kover i zrzuty Roborazzi
+      - name: Testy, Kover i zrzuty Roborazzi albo lint i detekt
+        env:
+          CZESC: ${{ matrix.czesc }}
+          # Wszystkie zadania detekt, które check dołącza: część testy je pomija, część analiza-statyczna uruchamia.
+          DETEKT: >-
+            detekt detektMain detektTest detektDebug detektDebugUnitTest detektDebugAndroidTest detektRelease
+            detektBenchmark detektScripts
         run: |
-          # check: testy jednostkowe wszystkich modułów, Kover i zrzuty Roborazzi. Lint i detekt (check dołącza wszystkie
-          # zadania detekt) sprawdza równolegle zadanie analiza-statyczna; jego lista detekt i ta lista -x są te same.
-          # --continue: błąd jednego modułu nie zatrzymuje pozostałych, więc przebieg pokazuje wszystkie uwagi.
-          ./gradlew check verifyRoborazziDebug -x lint -x detekt -x detektMain -x detektTest -x detektDebug \
-            -x detektDebugUnitTest -x detektDebugAndroidTest -x detektRelease -x detektBenchmark -x detektScripts \
-            --continue --console=plain 2>&1 | tee "$RUNNER_TEMP/gradle.log"
+          # testy: check (testy jednostkowe wszystkich modułów, Kover, zrzuty Roborazzi) bez lint i detekt.
+          # analiza-statyczna: lint wszystkich wariantów (w tym lintJvm modułów JVM) i detekt wszystkich zbiorów źródeł.
+          # --continue: błąd jednego narzędzia nie zatrzymuje pozostałych, więc przebieg pokazuje wszystkie uwagi.
+          read -ra detekt <<<"$DETEKT"
+          if [[ $CZESC == testy ]]; then
+            zadania=(check verifyRoborazziDebug)
+            for zadanie in lint "${detekt[@]}"; do zadania+=(-x "$zadanie"); done
+          else
+            zadania=(lint "${detekt[@]}")
+          fi
+          ./gradlew "${zadania[@]}" --continue --console=plain 2>&1 | tee "$RUNNER_TEMP/gradle.log"
       - name: Policz wykonane testy
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && matrix.czesc == 'testy' }}
         run: |
           liczba="$(find . -path '*/build/test-results/*' -name 'TEST-*.xml' -print0 |
             xargs -0 -r grep -h '<testsuite ' | grep -o ' tests="[0-9]*"' | tr -dc '0-9\n' | awk '{ s += $1 } END { print s + 0 }')"
@@ -355,7 +377,7 @@ jobs:
             exit 1
           fi
       - name: Zbierz diagnostykę generowania Hilt i KSP po porażce
-        if: failure()
+        if: ${{ failure() && matrix.czesc == 'testy' }}
         run: |
           # Bez powtarzania zadań: tylko kopia tego, co zostało po porażce (wyjście KSP i Hilt, listing, log Gradle i demona).
           mkdir -p "$RUNNER_TEMP/diagnostyka"
@@ -364,7 +386,7 @@ jobs:
           cp "$RUNNER_TEMP/gradle.log" "$RUNNER_TEMP/diagnostyka/" || true
           cp ~/.gradle/daemon/*/daemon-*.out.log "$RUNNER_TEMP/diagnostyka/" || true
       - name: Zapisz diagnostykę Hilt i KSP
-        if: failure()
+        if: ${{ failure() && matrix.czesc == 'testy' }}
         uses: actions/upload-artifact@v7.0.2
         # Raport diagnostyczny: błąd zapisu artefaktu (np. awaria GitHuba) nie zmienia wyniku zadania (#1028).
         continue-on-error: true
@@ -379,7 +401,7 @@ jobs:
         # Raport diagnostyczny: błąd zapisu artefaktu (np. awaria GitHuba) nie zmienia wyniku zadania (#1028).
         continue-on-error: true
         with:
-          name: raporty-testy
+          name: raporty-${{ matrix.czesc }}
           # Obrazy porównania Roborazzi pokazują, czym zrzut różni się od wzorca (#2195).
           path: |
             android/**/build/reports/
@@ -394,14 +416,14 @@ jobs:
         if: ${{ success() && github.event_name == 'merge_group' }}
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: gradle-build-cache
+          name: ${{ matrix.cache }}
           path: ~/.gradle/caches/build-cache-1/
           if-no-files-found: warn
           retention-days: 3
       - name: Sprawdź, czy gałąź docelowa ma już cache tych zależności
         # Bez tego każda grupa kolejki po zmianie zależności wysyłałaby całe archiwum, choć cache gałęzi już je ma.
         id: zaleznosci-galezi
-        if: ${{ success() && github.event_name == 'merge_group' && steps.gradle.outputs.trafienie-zaleznosci != 'true' }}
+        if: ${{ success() && matrix.czesc == 'testy' && github.event_name == 'merge_group' && steps.gradle.outputs.trafienie-zaleznosci != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -422,54 +444,6 @@ jobs:
           path: ${{ runner.temp }}/zaleznosci.tar
           if-no-files-found: error
           retention-days: 1
-
-  analiza-statyczna:
-    needs: zmiany
-    # Te same warunki co `testy`: oba zadania dzielą dawny jeden krok Gradle, żeby biegły równolegle.
-    if: ${{ !cancelled() && !inputs.sha && github.event_name != 'push' && needs.zmiany.outputs.pomin != 'true' && (needs.zmiany.result != 'success' || needs.zmiany.outputs.android == 'true') }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    permissions:
-      actions: read
-      contents: read
-    defaults:
-      run:
-        shell: bash
-        working-directory: android
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          ref: ${{ inputs.sha }}
-          persist-credentials: false
-      - name: Przygotuj JDK i cache Gradle
-        uses: ./.github/actions/android-gradle
-      - name: Lint i detekt
-        run: |
-          # lint: wszystkie warianty (w tym lintJvm modułów JVM); detekt: wszystkie zadania detekt, które dołącza check.
-          # --continue: błąd jednego narzędzia nie zatrzymuje pozostałych, więc przebieg pokazuje wszystkie uwagi.
-          ./gradlew lint detekt detektMain detektTest detektDebug detektDebugUnitTest detektDebugAndroidTest \
-            detektRelease detektBenchmark detektScripts --continue --console=plain
-      - name: Zapisz raporty
-        if: always()
-        uses: actions/upload-artifact@v7.0.2
-        # Raport diagnostyczny: błąd zapisu artefaktu (np. awaria GitHuba) nie zmienia wyniku zadania (#1028).
-        continue-on-error: true
-        with:
-          name: raporty-analiza-statyczna
-          path: android/**/build/reports/
-          if-no-files-found: ignore
-      - name: Przytnij cache budowania do wpisów tego buildu
-        if: ${{ success() && github.event_name == 'merge_group' }}
-        run: bash ../.github/scripts/przytnij-cache-budowania.sh przytnij "$HOME/.gradle/caches/build-cache-1"
-      - name: Udostępnij cache budowania zadaniu po scaleniu i następnym grupom kolejki
-        # Drugi artefakt cache przebiegu; skrypty cache scalają go z `gradle-build-cache` zadania `testy`.
-        if: ${{ success() && github.event_name == 'merge_group' }}
-        uses: actions/upload-artifact@v7.0.2
-        with:
-          name: gradle-build-cache-analiza
-          path: ~/.gradle/caches/build-cache-1/
-          if-no-files-found: warn
-          retention-days: 3
 
   cache:
     # Po scaleniu nic się nie buduje ani nie testuje: grupa kolejki sprawdziła ten sam commit. Zadanie przekłada cache
@@ -585,7 +559,7 @@ jobs:
           retention-days: 7
 
   budowanie:
-    needs: [zmiany, testy, analiza-statyczna, apk, emulator, analiza-zaleznosci]
+    needs: [zmiany, testy, apk, emulator, analiza-zaleznosci]
     # always(): także po anulowaniu poprzednich zadań, żeby anulowana część dawała czerwony check, a nie pominięty.
     # Gdy grupa kolejki ma drzewo sprawdzone na PR, wszystkie zadania są pominięte, więc i ten check (pominięty = zaliczony).
     # Bez zmiany Androida check jest pominięty.
@@ -600,10 +574,10 @@ jobs:
       - name: Sprawdź wyniki wszystkich zadań Androida
         env:
           ZMIANY: ${{ needs.zmiany.result }}
-          # Grupa kolejki: testy i analiza statyczna. Przebieg na wskazanym commicie: APK, emulatory, analiza zależności.
-          # PR: testy, analiza statyczna, analiza zależności.
+          # Grupa kolejki: testy (obie części). Przebieg na wskazanym commicie: APK, emulatory, analiza zależności. PR:
+          # testy, analiza zależności.
           WYNIKI: >-
-            ${{ github.event_name == 'merge_group' && format('{0} {1}', needs.testy.result, needs.analiza-statyczna.result)
+            ${{ github.event_name == 'merge_group' && needs.testy.result
             || inputs.sha && format('{0} {1} {2}', needs.apk.result, needs.emulator.result, needs.analiza-zaleznosci.result)
-            || format('{0} {1} {2}', needs.testy.result, needs.analiza-statyczna.result, needs.analiza-zaleznosci.result) }}
+            || format('{0} {1}', needs.testy.result, needs.analiza-zaleznosci.result) }}
         run: bash .github/scripts/wyniki-androida.sh

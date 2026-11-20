@@ -5,8 +5,7 @@
 set -euo pipefail
 
 # Wymagany check `budowanie`: zielony tylko, gdy każde zadanie z WYNIKI zakończyło się sukcesem.
-# Wejście ze zmiennych środowiskowych: ZMIANY, WYNIKI (w grupie kolejki testy i analiza-statyczna; na PR także
-# analiza-zaleznosci;
+# Wejście ze zmiennych środowiskowych: ZMIANY, WYNIKI (w grupie kolejki testy; na PR testy i analiza-zaleznosci;
 # na wskazanym commicie apk, emulator i analiza-zaleznosci). Po scaleniu (push) check nie działa: tylko cache.
 echo "zmiany: ${ZMIANY}; wyniki zadań: ${WYNIKI}"
 if [[ $ZMIANY != success && $ZMIANY != skipped ]]; then
