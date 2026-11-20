@@ -42,6 +42,7 @@ val generateContractModels =
             listOf(
                 "BuildingList", "BuildingDetails", "LocateResult", "FloorList", "RoomList", "RoomSearchResults",
                 "SubmissionContent", "Submission", "VersionConflictProblem", "BuildingProgress", "SyncPullResponse",
+                "AccessiblePathList",
             )
         generateRecursiveDependentModels = true
         generateModelDocumentation = false

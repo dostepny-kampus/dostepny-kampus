@@ -9,13 +9,13 @@ import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.submission.Severity
-import io.github.dostepnykampus.feature.map.barrier.BARRIER_OFFSET
-import io.github.dostepnykampus.feature.map.barrier.BARRIER_SEVERITY
-import io.github.dostepnykampus.feature.map.barrier.ENTRANCE_BARRIER_DP
-import io.github.dostepnykampus.feature.map.barrier.withBarriers
+import io.github.dostepnykampus.feature.map.campus.BARRIER_OFFSET
+import io.github.dostepnykampus.feature.map.campus.BARRIER_SEVERITY
+import io.github.dostepnykampus.feature.map.campus.ENTRANCE_BARRIER_DP
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
+import io.github.dostepnykampus.feature.map.campus.withBarriers
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.double

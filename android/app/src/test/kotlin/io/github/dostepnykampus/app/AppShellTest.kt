@@ -64,6 +64,7 @@ import io.github.dostepnykampus.app.navigation.AppScreen
 import io.github.dostepnykampus.app.navigation.BuildingCard
 import io.github.dostepnykampus.app.navigation.MapScreen
 import io.github.dostepnykampus.app.navigation.SignInRoute
+import io.github.dostepnykampus.app.navigation.isExpanded
 import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.data.building.BUILDINGS_ASSET
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository

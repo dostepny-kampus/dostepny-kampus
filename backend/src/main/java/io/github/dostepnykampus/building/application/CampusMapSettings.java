@@ -26,8 +26,9 @@ public record CampusMapSettings(URI service, Layers layers) {
      * Numery warstw usługi mapy kampusu.
      *
      * @param entrances Warstwa wejść do budynków z uwagami i szerokością drzwi
+     * @param paths Warstwa ścieżek dostosowanych (polilinie)
      * @since 0.1.0
      */
-    public record Layers(int entrances) {
+    public record Layers(int entrances, int paths) {
     }
 }

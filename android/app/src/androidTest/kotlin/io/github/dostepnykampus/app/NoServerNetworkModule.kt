@@ -15,6 +15,7 @@ import io.github.dostepnykampus.core.network.building.BuildingsApi
 import io.github.dostepnykampus.core.network.inspection.InspectionProgressApi
 import io.github.dostepnykampus.core.network.inspection.MarkerChangesApi
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi
+import io.github.dostepnykampus.core.network.sync.SyncPullApi
 import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
@@ -95,6 +96,11 @@ object NoServerNetworkModule {
     @Singleton
     fun inspectionProgressApi(http: OkHttpClient, json: Json): InspectionProgressApi =
         NetworkModule.inspectionProgressApi(http, json)
+
+    /** Pobieranie zmian na kliencie bez serwera. */
+    @Provides
+    @Singleton
+    fun syncPullApi(http: OkHttpClient, json: Json): SyncPullApi = NetworkModule.syncPullApi(http, json)
 
     /** Jedna odpowiedź ma własny strumień PNG; odbiorca zamyka go razem z [response], jak odpowiedź sieciową. */
     private class LocalTileResponse(request: Request, tile: ByteArray) {

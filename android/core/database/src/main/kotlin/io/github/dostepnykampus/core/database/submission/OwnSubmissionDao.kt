@@ -13,9 +13,13 @@ import kotlinx.coroutines.flow.Flow
 /** Historia własnych zgłoszeń w telefonie dla listy C3. Wymagania: US8, NFR-5 */
 @Dao
 public interface OwnSubmissionDao {
-    /** Własne zgłoszenia od najnowszego; zmienia się po każdym zapisie i zmianie stanu. */
-    @Query("SELECT * FROM own_submissions ORDER BY saved_at DESC, id")
-    public fun observe(): Flow<List<OwnSubmissionEntity>>
+    /**
+     * Własne zgłoszenia konta [owner] od najnowszego. Wiersz innego konta tu nie wraca, także z powodem odrzucenia.
+     *
+     * Wymagania: NFR-33
+     */
+    @Query("SELECT * FROM own_submissions WHERE owner_sub = :owner ORDER BY saved_at DESC, id")
+    public fun observe(owner: String): Flow<List<OwnSubmissionEntity>>
 
     /**
      * Zapisuje zgłoszenie; ten sam identyfikator zastępuje poprzedni zapis, więc poprawka nie robi duplikatu.

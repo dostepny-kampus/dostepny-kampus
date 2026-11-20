@@ -8,10 +8,9 @@ package io.github.dostepnykampus.feature.map.plan
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
-import io.github.dostepnykampus.core.model.building.Floor
-import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.feature.map.building.orderedEntrances
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -21,25 +20,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.update
-
-/**
- * Plan piętra pokazany na mapie.
- *
- * Wymagania: US16.1
- *
- * @property building symbol budynku z planem
- * @property floors piętra budynku od najniższego
- * @property floor identyfikator wybranego piętra
- * @property rooms pomieszczenia pięter z kopii planu, według identyfikatora piętra
- * @property room identyfikator wyróżnionej sali tego budynku; `null` bez wyróżnienia
- */
-data class ShownPlan(
-    val building: String,
-    val floors: List<Floor>,
-    val floor: String,
-    val rooms: Map<String, RoomList>,
-    val room: String? = null,
-)
 
 /**
  * Symbol budynku trzymającego plan przy zaznaczeniu [focus] albo `null`, gdy wyborem rządzi środek mapy.

@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map.overlay
+package io.github.dostepnykampus.feature.map
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
-import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.area.AreaList
 import io.github.dostepnykampus.feature.map.area.AreaNotice
 import io.github.dostepnykampus.feature.map.area.MapAreaSwitch
@@ -43,6 +42,12 @@ import io.github.dostepnykampus.feature.map.area.rememberNoticeAlpha
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import io.github.dostepnykampus.feature.map.overlay.MapControlTouchSize
+import io.github.dostepnykampus.feature.map.overlay.MapControls
+import io.github.dostepnykampus.feature.map.overlay.MapControlsLayout
+import io.github.dostepnykampus.feature.map.overlay.MapInfo
+import io.github.dostepnykampus.feature.map.overlay.OSM_COPYRIGHT
+import io.github.dostepnykampus.feature.map.overlay.mapControlBorder
 import java.time.LocalDate
 
 /** Panel otwarty na mapie V1. Naraz otwarty jest najwyżej jeden, więc stanem nakładki jest jedna wartość. */

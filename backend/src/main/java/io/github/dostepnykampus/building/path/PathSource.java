@@ -12,8 +12,6 @@ import java.util.List;
  *
  * <p>Wymagania: US1.4, NFR-40</p>
  *
- * <p>TODO(#3487): krok importu PWr czyta odcinki przez ten port.</p>
- *
  * @since 0.1.0
  */
 @FunctionalInterface

@@ -10,9 +10,9 @@ import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.room.Room
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.room.RoomList
+import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
-import io.github.dostepnykampus.feature.map.plan.ShownPlan
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -75,7 +75,7 @@ class MapStylePlanTest {
         val layout = layers().getValue(PLAN_SIGNS_LAYER).part("layout")
         val size = """["interpolate",["linear"],["zoom"],17.0,${20.0 / 28},18.0,${24.0 / 28},19.0,1.0]"""
         assertEquals(size, layout.getValue("icon-size").toString(), "Rozmiar znaku planu nie zależy od powiększenia")
-        assertEquals(28, PLAN_SIGN_DP, "Obraz znaku planu nie ma największego rozmiaru")
+        assertEquals(28.0, PLAN_SIGN_DP, "Obraz znaku planu nie ma największego rozmiaru")
     }
 
     /** Winda i toaleta dostosowana mają pierwszeństwo przed schodami: niższy klucz kolejności. */

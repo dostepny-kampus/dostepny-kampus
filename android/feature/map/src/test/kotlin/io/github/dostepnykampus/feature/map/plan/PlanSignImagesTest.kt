@@ -71,7 +71,7 @@ class PlanSignImagesTest {
 
     private companion object {
         const val DENSITY = 2f
-        const val SIGN_PX = PLAN_SIGN_DP * 2
+        val SIGN_PX = (PLAN_SIGN_DP * 2).toInt()
         const val SIGN_UNITS = 34f
         const val BACKGROUND_UNIT = 6f
     }

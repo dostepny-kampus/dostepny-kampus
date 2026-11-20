@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.report.form
@@ -33,8 +33,6 @@ import io.github.dostepnykampus.core.designsystem.marking.descriptionRes
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.capture.R
-import io.github.dostepnykampus.feature.capture.measure.place
-import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
 import java.util.Locale
 import kotlin.math.roundToInt
 

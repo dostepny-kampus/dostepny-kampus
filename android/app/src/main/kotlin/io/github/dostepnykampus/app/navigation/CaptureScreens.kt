@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.app.navigation
@@ -10,7 +10,7 @@ import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsScreen
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
-import io.github.dostepnykampus.feature.capture.report.edit.ReportEditExits
+import io.github.dostepnykampus.feature.capture.report.ReportEditExits
 import io.github.dostepnykampus.feature.capture.report.edit.ReportEditScreen
 import io.github.dostepnykampus.feature.capture.report.removed.RemovedScreen
 

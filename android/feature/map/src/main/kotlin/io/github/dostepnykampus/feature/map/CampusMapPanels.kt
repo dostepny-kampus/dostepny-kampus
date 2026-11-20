@@ -27,7 +27,6 @@ import io.github.dostepnykampus.feature.map.area.MapAreas
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
-import io.github.dostepnykampus.feature.map.overlay.MapOverlay
 import io.github.dostepnykampus.feature.map.overlay.MapStatusBar
 import io.github.dostepnykampus.feature.map.overlay.dataDay
 import io.github.dostepnykampus.feature.map.plan.FloorColumn

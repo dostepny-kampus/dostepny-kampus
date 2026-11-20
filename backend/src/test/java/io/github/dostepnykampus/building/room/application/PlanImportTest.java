@@ -46,7 +46,7 @@ final class PlanImportTest {
      */
     private static final CampusMapSettings CAMPUS_MAP = new CampusMapSettings(
         URI.create("https://kampus.test/Kampus/FeatureServer"),
-        new CampusMapSettings.Layers(29)
+        new CampusMapSettings.Layers(29, 2)
     );
 
     /**

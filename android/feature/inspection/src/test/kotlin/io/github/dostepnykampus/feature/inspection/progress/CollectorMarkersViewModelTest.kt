@@ -7,9 +7,11 @@ package io.github.dostepnykampus.feature.inspection.progress
 
 import io.github.dostepnykampus.core.data.inspection.FloorMarkers
 import io.github.dostepnykampus.core.data.inspection.PendingMarkerChange
+import io.github.dostepnykampus.core.data.inspection.ServerFloorMarkers
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.building.FloorList
+import io.github.dostepnykampus.core.model.inspection.InspectionMarker
 import io.github.dostepnykampus.core.model.inspection.MarkerPlace
 import io.github.dostepnykampus.core.model.room.RoomList
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +27,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.IOException
+import java.time.Instant
 
 /**
  * C5 Zbierającego: piętra budynku od najniższego, cały budynek bez planu, znacznik w kolejce telefonu i błąd zapisu.
@@ -80,16 +83,114 @@ class CollectorMarkersViewModelTest {
             assertEquals(CollectorMarkersUiState.Ready(listOf(marked, FIRST)), viewModel.state.value, "po ponowieniu")
         }
 
+    /**
+     * Potwierdzenie cofnięcia kasuje własny znacznik Zbierającego.
+     *
+     * Scenariusz: postep-inwentaryzacji.feature: Zbierający cofa własny znacznik po potwierdzeniu
+     *
+     * Wymagania: US15.2, BR-20
+     */
+    @Test
+    fun revokesOwnMarkerAfterConfirm() =
+        viewModelTest(FakePlans(stored = A1_FLOORS)) { viewModel, markers ->
+            viewModel.mark(MarkerPlace.Floor("p0"))
+            runCurrent()
+            viewModel.askRevoke("m-1")
+            runCurrent()
+            val marked = GROUND.copy(markerId = "m-1", isPending = true)
+            assertEquals(
+                CollectorMarkersUiState.Ready(listOf(marked, FIRST), asking = "m-1"),
+                viewModel.state.value,
+                "pytanie o potwierdzenie",
+            )
+            assertEquals(emptyList<RevokedCall>(), markers.revoked, "bez cofnięcia przed zgodą")
+            viewModel.confirmRevoke()
+            runCurrent()
+            assertEquals(
+                CollectorMarkersUiState.Ready(listOf(GROUND, FIRST)),
+                viewModel.state.value,
+                "po potwierdzeniu cofnięcia",
+            )
+            assertEquals(
+                listOf(RevokedCall(markerId = "m-1", symbol = "A-1", floorId = "p0")),
+                markers.revoked,
+                "zapisane cofnięcie",
+            )
+        }
+
+    /**
+     * Bez potwierdzenia własny znacznik Zbierającego zostaje na piętrze.
+     *
+     * Scenariusz: postep-inwentaryzacji.feature: Bez potwierdzenia znacznik zostaje
+     *
+     * Wymagania: US15.2, BR-20
+     */
+    @Test
+    fun keepsMarkerWhenCancelled() =
+        viewModelTest(FakePlans(stored = A1_FLOORS)) { viewModel, markers ->
+            viewModel.mark(MarkerPlace.Floor("p0"))
+            runCurrent()
+            viewModel.askRevoke("m-1")
+            runCurrent()
+            viewModel.keepMarker()
+            runCurrent()
+            val marked = GROUND.copy(markerId = "m-1", isPending = true)
+            assertEquals(
+                CollectorMarkersUiState.Ready(listOf(marked, FIRST), asking = null),
+                viewModel.state.value,
+                "znacznik zostaje",
+            )
+            assertEquals(emptyList<RevokedCall>(), markers.revoked, "brak cofnięcia")
+        }
+
+    @Test
+    fun reportsFailedRevoke() =
+        viewModelTest(FakePlans(stored = A1_FLOORS), FakeMarkers(revokeFailures = 1)) { viewModel, _ ->
+            viewModel.mark(MarkerPlace.Floor("p0"))
+            runCurrent()
+            viewModel.askRevoke("m-1")
+            runCurrent()
+            viewModel.confirmRevoke()
+            runCurrent()
+            val marked = GROUND.copy(markerId = "m-1", isPending = true)
+            assertEquals(
+                CollectorMarkersUiState.Ready(listOf(marked, FIRST), unsaved = MarkerPlace.Floor("p0")),
+                viewModel.state.value,
+                "błąd zapisu cofnięcia",
+            )
+        }
+
+    @Test
+    fun showsSyncedOwnAndOtherMarkers() =
+        viewModelTest(
+            plans = FakePlans(stored = A1_FLOORS),
+            server = FakeServerMarkers(listOf(SYNCED_OWN, SYNCED_OTHER)),
+        ) { viewModel, _ ->
+            val expected =
+                listOf(
+                    GROUND.copy(markerId = "s-1", isPending = false, isMine = true),
+                    FIRST.copy(markerId = "s-2", isPending = false, isMine = false),
+                )
+            assertEquals(CollectorMarkersUiState.Ready(expected), viewModel.state.value, "znaczniki z serwera")
+        }
+
     private fun viewModelTest(
         plans: FloorPlans,
         markers: FakeMarkers = FakeMarkers(),
+        server: FakeServerMarkers = FakeServerMarkers(),
         block: suspend TestScope.(CollectorMarkersViewModel, FakeMarkers) -> Unit,
     ) {
         val dispatcher = StandardTestDispatcher()
         Dispatchers.setMain(dispatcher)
         try {
             runTest(dispatcher) {
-                val viewModel = CollectorMarkersViewModel(symbol = "A-1", plans = plans, markers = markers)
+                val viewModel =
+                    CollectorMarkersViewModel(
+                        symbol = "A-1",
+                        plans = plans,
+                        markers = markers,
+                        serverMarkers = server,
+                    )
                 runCurrent()
                 block(viewModel, markers)
             }
@@ -99,6 +200,25 @@ class CollectorMarkersViewModelTest {
     }
 
     private companion object {
+        val TIME: Instant = Instant.parse("2026-11-18T10:00:00Z")
+        val SYNCED_OWN =
+            InspectionMarker(
+                id = "s-1",
+                buildingSymbol = "A-1",
+                place = MarkerPlace.Floor("p0"),
+                createdAt = TIME,
+                isRevoked = false,
+                isMine = true,
+            )
+        val SYNCED_OTHER =
+            InspectionMarker(
+                id = "s-2",
+                buildingSymbol = "A-1",
+                place = MarkerPlace.Floor("p1"),
+                createdAt = TIME,
+                isRevoked = false,
+                isMine = false,
+            )
         val A1_FLOORS =
             FloorList(
                 source = "PWr",
@@ -113,6 +233,15 @@ class CollectorMarkersViewModelTest {
     }
 }
 
+/** Kopia znaczników z serwera w testach modelu widoku. */
+private class FakeServerMarkers(initial: List<InspectionMarker> = emptyList()) : ServerFloorMarkers {
+    private val stored = MutableStateFlow(initial)
+
+    override fun markers(buildingSymbol: String): Flow<List<InspectionMarker>> = stored
+
+    override suspend fun pull(): Boolean = true
+}
+
 /** Kopia planów z piętrami w telefonie [stored] i piętrami, które daje pobranie z serwera [downloaded]. */
 private class FakePlans(private var stored: FloorList?, private val downloaded: FloorList? = null) : FloorPlans {
     override suspend fun download(symbol: String): Boolean {
@@ -125,10 +254,14 @@ private class FakePlans(private var stored: FloorList?, private val downloaded: 
     override suspend fun rooms(symbol: String, floor: String): RoomList? = null
 }
 
-/** Kolejka znaczników w telefonie; pierwsze [failures] zapisy kończą się błędem dysku. */
-private class FakeMarkers(private var failures: Int = 0) : FloorMarkers {
+/** Zapisane wywołanie cofnięcia znacznika w atrapie kolejki. */
+private data class RevokedCall(val markerId: String, val symbol: String, val floorId: String?)
+
+/** Kolejka znaczników w telefonie; pierwsze [failures] zapisy i [revokeFailures] cofnięcia kończą się błędem. */
+private class FakeMarkers(private var failures: Int = 0, private var revokeFailures: Int = 0) : FloorMarkers {
     private val queue = MutableStateFlow(emptyList<PendingMarkerChange>())
     val saved = mutableListOf<Pair<String, String?>>()
+    val revoked = mutableListOf<RevokedCall>()
 
     override fun pending(): Flow<List<PendingMarkerChange>> = queue
 
@@ -147,6 +280,8 @@ private class FakeMarkers(private var failures: Int = 0) : FloorMarkers {
     }
 
     override suspend fun revoke(markerId: String, buildingSymbol: String, floorId: String?) {
+        if (revokeFailures-- > 0) throw IOException("brak miejsca")
+        revoked += RevokedCall(markerId = markerId, symbol = buildingSymbol, floorId = floorId)
         queue.value +=
             PendingMarkerChange(
                 markerId = markerId,

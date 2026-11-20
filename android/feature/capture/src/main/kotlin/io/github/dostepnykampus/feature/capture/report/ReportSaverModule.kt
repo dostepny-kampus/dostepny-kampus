@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.report
@@ -10,8 +10,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
-import io.github.dostepnykampus.feature.capture.quick.content
-import io.github.dostepnykampus.feature.capture.report.form.ReportSaver
 
 /** Formularz C2 zapisuje do kolejki zgłoszeń z `core:data`. Wymagania: NFR-5 */
 @Module

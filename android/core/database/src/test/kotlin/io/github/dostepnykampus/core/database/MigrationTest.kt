@@ -202,20 +202,21 @@ class MigrationTest {
             )
         }
 
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val database =
-            Room
-                .databaseBuilder(context, DkDatabase::class.java, DB_NAME)
-                .addMigrations(*ALL_MIGRATIONS.toTypedArray())
-                .build()
+        val database = databaseAfterFirstAccount()
         try {
             runBlocking {
-                database.queueOwnership().adopt("pierwsze")
-                database.queueOwnership().adopt("drugie")
-                val submissions = database.pendingSubmissions()
-                val markers = database.pendingMarkerChanges()
-                val submission = submissions.all().single().submission
-                val marker = markers.observe().first().single()
+                val submission =
+                    database
+                        .pendingSubmissions()
+                        .all()
+                        .single()
+                        .submission
+                val marker =
+                    database
+                        .pendingMarkerChanges()
+                        .observe()
+                        .first()
+                        .single()
                 assertEquals("zgłoszenie należy do pierwszego konta", "pierwsze", submission.ownerSub)
                 assertEquals("zmiana znacznika należy do pierwszego konta", "pierwsze", marker.ownerSub)
             }
@@ -269,6 +270,39 @@ class MigrationTest {
                 )
             }
     }
+
+    @Test
+    fun adoptsOwnerlessHistory() {
+        helper.createDatabase(DB_NAME, 12).use { twelfth ->
+            twelfth.execSQL(
+                "INSERT INTO own_submissions (id, saved_at, kind, state) VALUES ('h', 7, 'PRECISE', 'SENT')",
+            )
+        }
+
+        val database = databaseAfterFirstAccount()
+        try {
+            runBlocking {
+                val owner = database.ownSubmissions().find("h")?.ownerSub
+                assertEquals("historia bez właściciela należy do pierwszego konta", "pierwsze", owner)
+            }
+        } finally {
+            database.close()
+        }
+    }
+}
+
+private fun databaseAfterFirstAccount(): DkDatabase {
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    val database =
+        Room
+            .databaseBuilder(context, DkDatabase::class.java, DB_NAME)
+            .addMigrations(*ALL_MIGRATIONS.toTypedArray())
+            .build()
+    runBlocking {
+        database.queueOwnership().adopt("pierwsze")
+        database.queueOwnership().adopt("drugie")
+    }
+    return database
 }
 
 private fun readCount(cursor: Cursor): Int {

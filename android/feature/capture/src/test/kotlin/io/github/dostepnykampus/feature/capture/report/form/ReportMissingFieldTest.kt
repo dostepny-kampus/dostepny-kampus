@@ -16,8 +16,8 @@ import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
-import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
-import io.github.dostepnykampus.feature.capture.report.edit.ReportStage
+import io.github.dostepnykampus.feature.capture.report.ReportFormScreen
+import io.github.dostepnykampus.feature.capture.report.ReportFormViewModel
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test

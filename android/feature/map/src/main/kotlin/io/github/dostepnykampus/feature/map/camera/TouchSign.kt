@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.camera
 
-import io.github.dostepnykampus.feature.map.barrier.BARRIER_ID
+import io.github.dostepnykampus.feature.map.campus.BARRIER_ID
 import io.github.dostepnykampus.feature.map.campus.ENTRANCE_ID
 import io.github.dostepnykampus.feature.map.style.BARRIERS_LAYER
 import io.github.dostepnykampus.feature.map.style.ENTRANCES_LAYER

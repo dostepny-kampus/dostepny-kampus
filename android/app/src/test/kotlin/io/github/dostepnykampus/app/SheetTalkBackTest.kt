@@ -22,6 +22,7 @@ import androidx.compose.ui.test.isHiddenFromAccessibility
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import io.github.dostepnykampus.app.navigation.isExpanded
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Rule

@@ -8,7 +8,7 @@ Klient HTTP serwera: budynki, zgłoszenia, zmiany znaczników piętra obejrzaneg
 
 - `core.network` — wspólna wymiana HTTP z wynikiem `ApiResult`, parser kontraktu i wiązania Hilt.
 - `core.network.auth` — token dostępu, role realmu i kontrola właściciela przy wysyłce wpisu kolejki.
-- `core.network.building` — klient listy budynków, karty budynku i podpowiedzi punktu.
+- `core.network.building` — klient listy budynków, karty budynku, podpowiedzi punktu i ścieżek dostosowanych.
 - `core.network.inspection` — klienty znaczników piętra obejrzanego i wysyłki ich zmian.
 - `core.network.submission` — klient zgłoszeń i zdjęć.
 - `core.network.sync` — klient pobrania zmian z serwera (`GET /sync/pull`), na razie ze znacznikami pięter.

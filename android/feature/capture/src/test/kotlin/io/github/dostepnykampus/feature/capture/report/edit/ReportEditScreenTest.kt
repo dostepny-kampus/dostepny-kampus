@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.report.edit
@@ -21,8 +21,9 @@ import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
-import io.github.dostepnykampus.feature.capture.quick.content
-import io.github.dostepnykampus.feature.capture.report.form.ReportFormViewModel
+import io.github.dostepnykampus.feature.capture.report.ReportEditExits
+import io.github.dostepnykampus.feature.capture.report.ReportFormViewModel
+import io.github.dostepnykampus.feature.capture.report.form.edited
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test

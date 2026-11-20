@@ -31,6 +31,7 @@ import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.then
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import io.github.dostepnykampus.app.navigation.isExpanded
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Assert.assertEquals

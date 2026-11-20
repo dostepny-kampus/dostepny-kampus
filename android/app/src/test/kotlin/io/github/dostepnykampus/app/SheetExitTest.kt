@@ -22,6 +22,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.ui.NavDisplay
+import io.github.dostepnykampus.app.navigation.CLOSING_SHEET_TAG
+import io.github.dostepnykampus.app.navigation.LocalSheetPadding
+import io.github.dostepnykampus.app.navigation.SheetSceneStrategy
+import io.github.dostepnykampus.app.navigation.sceneStrategies
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute

@@ -1,9 +1,9 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Yevhenii Lukianenko
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.capture.report.form
+package io.github.dostepnykampus.feature.capture.report
 
 import android.database.sqlite.SQLiteException
 import androidx.lifecycle.ViewModel
@@ -16,13 +16,17 @@ import io.github.dostepnykampus.core.data.submission.sync.SaveRefusal
 import io.github.dostepnykampus.core.data.submission.sync.SaveRefusedException
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
-import io.github.dostepnykampus.feature.capture.measure.place
-import io.github.dostepnykampus.feature.capture.quick.content
-import io.github.dostepnykampus.feature.capture.report.ReportDraft
-import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
-import io.github.dostepnykampus.feature.capture.report.edit.ReportStage
-import io.github.dostepnykampus.feature.capture.report.edit.ReportUiState
-import io.github.dostepnykampus.feature.capture.report.edit.edited
+import io.github.dostepnykampus.feature.capture.report.form.PlanFloor
+import io.github.dostepnykampus.feature.capture.report.form.PlanFloors
+import io.github.dostepnykampus.feature.capture.report.form.ReportCheck
+import io.github.dostepnykampus.feature.capture.report.form.ReportEdit
+import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
+import io.github.dostepnykampus.feature.capture.report.form.ReportForm
+import io.github.dostepnykampus.feature.capture.report.form.ReportStage
+import io.github.dostepnykampus.feature.capture.report.form.ReportUiState
+import io.github.dostepnykampus.feature.capture.report.form.check
+import io.github.dostepnykampus.feature.capture.report.form.edited
+import io.github.dostepnykampus.feature.capture.report.form.errors
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

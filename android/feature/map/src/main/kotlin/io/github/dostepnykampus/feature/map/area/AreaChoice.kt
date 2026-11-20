@@ -10,7 +10,6 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapArea
-import io.github.dostepnykampus.feature.map.campus.boundsOf
 import org.maplibre.spatialk.turf.measurement.distance
 import org.maplibre.spatialk.units.extensions.inKilometers
 import kotlin.math.roundToInt
@@ -29,15 +28,6 @@ data class AreaChoice(val name: String, val buildings: Int, val kilometers: Int?
 /** Środek prostokąta terenu: punkt startowy widoku po wybraniu terenu i punkt, od którego liczy się odległość. */
 val CampusBounds.center: GeoPoint
     get() = GeoPoint(longitude = (west + east) / 2, latitude = (south + north) / 2)
-
-/**
- * Teren pokazany na mapie: teren o nazwie [chosen] wybrany przez osobę, bez wyboru teren budynku [symbol],
- * np. z wyszukiwania, a bez niego teren startowy. `null` bez budynków w katalogu.
- *
- * Wymagania: US1.7, US1.8, US1.6
- */
-fun CampusMapData.areaOf(chosen: String?, symbol: String?): MapArea? =
-    areas.firstOrNull { it.name == chosen } ?: areas.firstOrNull { it.bounds == boundsOf(symbol) }
 
 /**
  * Lista terenów dla wybranego terenu [current]: wybrany stoi pierwszy, pozostałe od najbliższego. Odległość liczy

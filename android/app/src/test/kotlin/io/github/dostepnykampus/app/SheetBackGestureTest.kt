@@ -45,6 +45,10 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigationevent.DirectNavigationEventInput
 import androidx.navigationevent.NavigationEvent
+import io.github.dostepnykampus.app.navigation.SheetSceneStrategy
+import io.github.dostepnykampus.app.navigation.isExpanded
+import io.github.dostepnykampus.app.navigation.sceneStrategies
+import io.github.dostepnykampus.app.navigation.sheetBackOffset
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
