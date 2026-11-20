@@ -27,7 +27,6 @@ public fun openedCard(): SemanticsMatcher = hasContentDescription(CARD_HANDLE)
  * Wiersz budynku [symbol] w wynikach wyszukiwania i na liście budynków.
  *
  * @param symbol symbol budynku, np. `A-1`
-     * @param query wpisywany tekst, domyślnie symbol budynku
  */
 public fun inCatalog(symbol: String): SemanticsMatcher = hasContentDescription("$symbol, ", substring = true)
 
