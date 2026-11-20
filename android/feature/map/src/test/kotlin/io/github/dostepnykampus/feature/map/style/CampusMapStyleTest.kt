@@ -150,14 +150,14 @@ class CampusMapStyleTest {
         val bare = Json.parseToJsonElement(styled(MapSelection()))
         val base = listOf("lad") + BASEMAP_LAYERS + listOf(BUILDINGS_LAYER, "kontury") + PLAN
         val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)
-        val pin = listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
+        val top = listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER, ROOM_STEPS_LAYER)
         val bareIds = bare.jsonObject.array("layers").map { it.jsonObject.text("id") }
-        assertEquals(base + SELECTED + marks + pin, bareIds)
-        val sources = setOf(BASEMAP, "budynki", "podpisy", "wejscia", "bariery", CHOSEN_SOURCE, PLAN_SOURCE)
+        assertEquals(base + SELECTED + marks + top, bareIds)
+        val sources = setOf(BASEMAP, "budynki", "podpisy", "wejscia", "bariery", CHOSEN_SOURCE, PLAN_SOURCE, ROOM_STEPS_SOURCE)
         assertEquals(sources, bare.jsonObject.obj("sources").keys)
         val entrance = SelectedEntrance(id = "w1", location = STYLE_ORIGIN, label = "Główne", buildingSymbol = "C-13")
         val full = Json.parseToJsonElement(styled(data.selection(building = "C-13", entrance = entrance)))
-        val expected = base + SELECTED + marks + pin
+        val expected = base + SELECTED + marks + top
         assertEquals(expected, full.jsonObject.array("layers").map { it.jsonObject.text("id") })
     }
 
