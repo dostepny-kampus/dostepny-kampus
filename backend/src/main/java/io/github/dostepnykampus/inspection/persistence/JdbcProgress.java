@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.inspection.persistence;
 
 import io.github.dostepnykampus.inspection.domain.BuildingProgress;
+import io.github.dostepnykampus.inspection.domain.MarkerPlace;
 import io.github.dostepnykampus.inspection.domain.ProgressMarker;
 import io.github.dostepnykampus.inspection.domain.ProgressRepository;
 import java.sql.ResultSet;
@@ -79,7 +80,7 @@ public final class JdbcProgress implements ProgressRepository {
             ORDER BY building_symbol, created_at, id
             """
         ).query((rows, num) -> JdbcProgress.marker(rows, viewer)).list().stream()
-            .collect(Collectors.groupingBy(ProgressMarker::building));
+            .collect(Collectors.groupingBy(item -> item.place().building()));
     }
 
     private static ProgressMarker marker(final ResultSet rows, final String viewer)
@@ -89,10 +90,17 @@ public final class JdbcProgress implements ProgressRepository {
         if (created == null) {
             throw new SQLException("Brak wartości kolumny created_at");
         }
+        final String building = JdbcProgress.text(rows, "building_symbol");
+        final String floor = rows.getString("floor_id");
+        final MarkerPlace place;
+        if (floor == null) {
+            place = new MarkerPlace.Building(building);
+        } else {
+            place = new MarkerPlace.Floor(building, floor);
+        }
         return new ProgressMarker(
             UUID.fromString(JdbcProgress.text(rows, "id")),
-            JdbcProgress.text(rows, "building_symbol"),
-            rows.getString("floor_id"),
+            place,
             created.toInstant(),
             author.equals(viewer),
             JdbcProgress.pseudonym(author)

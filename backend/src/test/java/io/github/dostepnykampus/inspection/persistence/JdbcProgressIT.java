@@ -33,7 +33,6 @@ final class JdbcProgressIT {
         final List<BuildingProgress> list = context.getBean(JdbcProgress.class)
             .read("konto-testowe");
         final BuildingProgress detailed = JdbcProgressIT.find(list, "T-D1");
-        final BuildingProgress basic = JdbcProgressIT.find(list, "T-B1");
         Assertions.assertEquals(
             "Floors[total=2, covered=1]/2/1/2/1/2/true/true/Whole[inspected=true]",
             String.format(
@@ -44,7 +43,7 @@ final class JdbcProgressIT {
                 detailed.markers().size(),
                 detailed.markers().getFirst().pseudonym().startsWith("Autor "),
                 detailed.markers().getFirst().mine(),
-                basic.coverage()
+                JdbcProgressIT.find(list, "T-B1").coverage()
             ),
             "Odczyt postępu budynku szczegółowego albo podstawowego nie zgadza się z bazą"
         );
@@ -79,13 +78,18 @@ final class JdbcProgressIT {
         ).update();
         jdbc.sql(
             """
-            INSERT INTO submissions (id, status, kind, building_symbol, location, content) VALUES
-            (:a, 'SENT', 'QUICK', 'T-D1', ST_GeomFromText('POINT(17 51)', 4326), '{}'::jsonb),
-            (:b, 'IN_REVIEW', 'QUICK', 'T-D1', ST_GeomFromText('POINT(17 51)', 4326), '{}'::jsonb),
-            (:c, 'ACCEPTED', 'QUICK', 'T-D1', ST_GeomFromText('POINT(17 51)', 4326), '{}'::jsonb),
-            (:d, 'ARCHIVED', 'QUICK', 'T-D1', ST_GeomFromText('POINT(17 51)', 4326), '{}'::jsonb),
-            (:e, 'REJECTED', 'QUICK', 'T-D1', ST_GeomFromText('POINT(17 51)', 4326), '{}'::jsonb),
-            (:f, 'ACCEPTED', 'QUICK', NULL, ST_GeomFromText('POINT(17 51)', 4326), '{}'::jsonb)
+            INSERT INTO submissions (id, status, building_symbol, location, content) VALUES
+            (:a, 'SENT', 'T-D1', ST_GeomFromText('POINT(17 51)', 4326), '{"kind":"QUICK"}'::jsonb),
+            (:b, 'IN_REVIEW', 'T-D1', ST_GeomFromText('POINT(17 51)', 4326),
+                '{"kind":"QUICK"}'::jsonb),
+            (:c, 'ACCEPTED', 'T-D1', ST_GeomFromText('POINT(17 51)', 4326),
+                '{"kind":"QUICK"}'::jsonb),
+            (:d, 'ARCHIVED', 'T-D1', ST_GeomFromText('POINT(17 51)', 4326),
+                '{"kind":"QUICK"}'::jsonb),
+            (:e, 'REJECTED', 'T-D1', ST_GeomFromText('POINT(17 51)', 4326),
+                '{"kind":"QUICK"}'::jsonb),
+            (:f, 'ACCEPTED', NULL, ST_GeomFromText('POINT(17 51)', 4326),
+                '{"kind":"QUICK"}'::jsonb)
             """
         ).param("a", UUID.randomUUID()).param("b", UUID.randomUUID())
             .param("c", UUID.randomUUID()).param("d", UUID.randomUUID())

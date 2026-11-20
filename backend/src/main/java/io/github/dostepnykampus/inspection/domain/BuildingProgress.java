@@ -38,7 +38,7 @@ public record BuildingProgress(
      *
      * @since 0.1.0
      */
-    public sealed interface Coverage {
+    public sealed interface Coverage permits Coverage.Floors, Coverage.Whole {
 
         /**
          * Budynek szczegółowy z piętrami z danych PWr.
