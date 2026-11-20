@@ -95,9 +95,9 @@ class MapOverlayControlsTest {
             buttons.all { it.right - it.left >= TOUCH && it.bottom - it.top >= TOUCH },
         )
         val floorLabels =
-            FLOORS.map {
+            FLOORS.map { label ->
                 compose
-                    .onNodeWithContentDescription(it)
+                    .onNodeWithContentDescription(label)
                     .assertIsDisplayed()
                     .getUnclippedBoundsInRoot()
             }

@@ -127,7 +127,8 @@ internal fun MapOverlay(
             },
             areaSwitch = {
                 MapAreaSelection(
-                    areas = areas.takeIf { hasPanels && open != MapPanel.Info },
+                    areas = areas,
+                    isVisible = hasPanels && open != MapPanel.Info,
                     isOpen = open == MapPanel.Area,
                     onOpenChange = { isOpening -> saved = MapPanel.Area.takeIf { isOpening } },
                     onAreaShow = onAreaShow,
@@ -155,12 +156,13 @@ internal fun MapOverlay(
 
 @Composable
 private fun MapAreaSelection(
-    areas: MapAreas?,
+    areas: MapAreas,
+    isVisible: Boolean,
     isOpen: Boolean,
     onOpenChange: (Boolean) -> Unit,
     onAreaShow: (CampusBounds) -> Unit,
 ) {
-    if (areas == null) return
+    if (!isVisible) return
     MapAreaSwitch(
         areas = AreaList(areas.choices),
         isOpen = isOpen,
