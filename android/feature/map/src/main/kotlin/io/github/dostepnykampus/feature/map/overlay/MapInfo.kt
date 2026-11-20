@@ -8,7 +8,6 @@ package io.github.dostepnykampus.feature.map.overlay
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -136,10 +134,7 @@ private fun InfoHeader(onClose: () -> Unit) {
             modifier = Modifier.weight(1f).semantics { heading() },
             style = MaterialTheme.typography.titleMedium,
         )
-        val padding = PaddingValues(horizontal = Odstepy.m, vertical = Odstepy.s)
-        OutlinedButton(onClick = onClose, contentPadding = padding) {
-            Text(stringResource(R.string.mapa_zamknij))
-        }
+        SheetCloseButton(onClose)
     }
 }
 

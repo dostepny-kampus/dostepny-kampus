@@ -13,13 +13,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.assertWidthIsAtLeast
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Odstepy
@@ -92,6 +96,17 @@ class MapAreaPanelTest {
         assertEquals(listOf(R.string.mapa_teren_budynki), few)
         assertEquals(listOf(R.string.mapa_teren_budynkow), many)
         assertEquals(R.string.mapa_teren_budynek, buildingsWord(count = 1))
+    }
+
+    /** „Zamknij” w panelu terenu ma co najmniej 48 × 48 dp. Wymagania: NFR-17 */
+    @Test
+    fun keepsCloseTouchTarget() {
+        compose.setContent { Panel() }
+        compose
+            .onNodeWithText("Zamknij")
+            .assertHasClickAction()
+            .assertHeightIsAtLeast(48.dp)
+            .assertWidthIsAtLeast(48.dp)
     }
 
     /** Wiersz: V1, „Zamknij” ma od prawej krawędzi panelu taki odstęp jak tytuł od lewej i nie dotyka góry. */

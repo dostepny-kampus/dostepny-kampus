@@ -10,11 +10,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +22,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
-import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
@@ -37,6 +34,7 @@ import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.overlay.BuildingLink
 import io.github.dostepnykampus.feature.map.overlay.MapSheet
+import io.github.dostepnykampus.feature.map.overlay.SheetCloseButton
 import io.github.dostepnykampus.feature.map.overlay.SheetExits
 
 /**
@@ -69,9 +67,7 @@ private fun SheetTop(severity: Severity, onClose: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         SeverityBadge(severity)
         Spacer(Modifier.weight(1f))
-        OutlinedButton(onClick = onClose, modifier = Modifier.heightIn(min = CeleDotyku.minimum)) {
-            Text(stringResource(R.string.mapa_zamknij))
-        }
+        SheetCloseButton(onClose)
     }
 }
 

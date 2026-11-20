@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,6 +42,7 @@ import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.overlay.BuildingLink
 import io.github.dostepnykampus.feature.map.overlay.MapSheet
+import io.github.dostepnykampus.feature.map.overlay.SheetCloseButton
 
 /**
  * Arkusz „Który budynek?” na dole mapy po dotknięciu konturu wspólnego albo dwóch konturów w zasięgu 24 dp.
@@ -77,9 +77,7 @@ private fun SheetHeader(onClose: () -> Unit) {
             modifier = Modifier.weight(1f).semantics { heading() },
             style = MaterialTheme.typography.titleLarge,
         )
-        OutlinedButton(onClick = onClose, modifier = Modifier.heightIn(min = CeleDotyku.minimum)) {
-            Text(stringResource(R.string.mapa_zamknij))
-        }
+        SheetCloseButton(onClose)
     }
 }
 
