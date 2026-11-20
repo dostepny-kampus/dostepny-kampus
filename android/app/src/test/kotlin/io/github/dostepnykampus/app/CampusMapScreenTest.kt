@@ -144,7 +144,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
         assertEquals(true, moved.center.latitude > zoomed.center.latitude)
         val names = listOf("Pomniejsz", "Przesuń mapę w dół", "Przesuń mapę w lewo", "Przesuń mapę w prawo")
         names.forEach { compose.onNodeWithContentDescription(it).assertExists() }
-        compose.onNodeWithText("© OpenStreetMap contributors").assertHasClickAction().assertHeightIsAtLeast(48.dp)
+        compose.onNodeWithText("© OpenStreetMap").assertHasClickAction().assertHeightIsAtLeast(48.dp)
         compose.runOnUiThread { listOf(listOf("C-3", "C-4"), listOf("C-13")).forEach(touch) }
         assertEquals(listOf("C-13"), opened)
     }
@@ -195,11 +195,11 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
      * Wymagania: NFR-19, NFR-20, NFR-37
      */
     @Test
-    fun shortensOsmOnList() {
+    fun showsShortOsmAfterList() {
         compose.setContent { Screen(fontScale = 1.5f) }
         compose.onNode(showMap).performClick()
         compose.onNode(showList).assertExists()
-        compose.onNodeWithText("© OpenStreetMap").assertExists()
+        compose.onNodeWithText("© OpenStreetMap").assertHasClickAction().assertHeightIsAtLeast(48.dp)
         assertEquals(false, choice.savedChoice.value)
     }
 
@@ -268,7 +268,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
         keyboard(isOpen = true)
         compose.onNodeWithContentDescription("Powiększ").assertDoesNotExist()
         compose.onNodeWithContentDescription("Przesuń mapę w górę").assertDoesNotExist()
-        compose.onNodeWithText("© OpenStreetMap contributors").assertExists()
+        compose.onNodeWithText("© OpenStreetMap").assertExists()
         keyboard(isOpen = false)
         compose.onNodeWithContentDescription("Powiększ").assertExists()
         compose.onNodeWithContentDescription("Przesuń mapę w górę").assertExists()
@@ -285,7 +285,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
     fun keepsOsmAboveSheet() {
         compose.setContent { Screen(sheet = 400.dp) }
         val bottom = compose.onRoot().getBoundsInRoot().bottom
-        val osm = compose.onNodeWithText("© OpenStreetMap contributors").getBoundsInRoot()
+        val osm = compose.onNodeWithText("© OpenStreetMap").getBoundsInRoot()
         assertEquals(true, osm.bottom <= bottom - 400.dp)
         val down = compose.onNodeWithContentDescription("Pomniejsz").getBoundsInRoot()
         assertEquals(true, down.bottom <= bottom - 400.dp)
@@ -351,7 +351,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
         compose.setContent { Screen(focus = "C-13", sheet = sheet) }
         compose.onNodeWithContentDescription("Pomniejsz").assertDoesNotExist()
         compose.onNodeWithContentDescription("Przesuń mapę w górę").assertDoesNotExist()
-        compose.onNodeWithText("© OpenStreetMap contributors").assertExists()
+        compose.onNodeWithText("© OpenStreetMap").assertExists()
         sheet = 0.dp
         compose.onNodeWithContentDescription("Pomniejsz").assertExists()
     }
@@ -731,11 +731,11 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
         compose.onNodeWithContentDescription("C-14, Budynek testowy").performClick()
         assertEquals(listOf("C-14"), opened)
         sheet = 400.dp
-        compose.onNodeWithText("© OpenStreetMap contributors").assertExists()
+        compose.onNodeWithText("© OpenStreetMap").assertExists()
         compose.onNode(showMap).assertDoesNotExist()
         sheet = 0.dp
         compose.onNode(showMap).assertExists()
-        compose.onNodeWithText("© OpenStreetMap contributors").assertDoesNotExist()
+        compose.onNodeWithText("© OpenStreetMap").assertDoesNotExist()
     }
 
     /**

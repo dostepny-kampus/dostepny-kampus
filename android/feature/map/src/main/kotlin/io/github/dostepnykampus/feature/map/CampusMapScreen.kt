@@ -77,8 +77,7 @@ private const val MAP_STATE = "map"
  * internetu”, a pod nimi lista albo mapa z konturami z pliku, przyciskami mapy i podpisem OSM. Widok kamery jest stanem
  * zapisywanym; pod arkuszem V2 budynek z [focus] stoi nad arkuszem w punkcie podpisu. Jeden trafiony budynek otwiera
  * V2, kilka czeka na wybór w arkuszu „Który budynek?”. Przyciski mapy są bez arkusza V2 i klawiatury, każdy z polem 48
- * dp i nazwą dla TalkBack. Podpis „© OpenStreetMap contributors” jest odnośnikiem, od skali 1,5 krótszym; na ciemnym
- * tle elementy pływające mają obwódkę.
+ * dp i nazwą dla TalkBack. Podpis OpenStreetMap jest odnośnikiem. Na ciemnym tle elementy pływające mają obwódkę.
  *
  * Wymagania: US1, US1.1, NFR-19, US9.1, NFR-53, NFR-37, NFR-17, NFR-18, US2, US2.9, US3.3, US2.8
  *

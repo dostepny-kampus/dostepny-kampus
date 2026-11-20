@@ -70,7 +70,7 @@ class MapOverlayNoticeTest {
         val notice = compose.onNodeWithText(NOTICE)
         notice.assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.LiveRegion))
         notice.assert(hasContentDescription("Pokazuję teren: Wittigowo, 2 km na wschód"))
-        val attribution = compose.onNodeWithText("© OpenStreetMap contributors").getUnclippedBoundsInRoot()
+        val attribution = compose.onNodeWithText("© OpenStreetMap").getUnclippedBoundsInRoot()
         assertTrue(notice.getUnclippedBoundsInRoot().bottom <= attribution.top)
     }
 

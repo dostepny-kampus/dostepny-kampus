@@ -33,7 +33,7 @@ internal const val BUILDING_ON_MAP = "Pokaż budynek na mapie"
 /** Budynek A-1 na liście V1 z katalogu w zasobach aplikacji. Wymagania: NFR-19 */
 internal val ListedA1 = hasContentDescription("A-1, ", substring = true)
 
-private const val OSM = "© OpenStreetMap contributors"
+private const val OSM = "© OpenStreetMap"
 
 /** Budynek z listy V1, z wyszukiwania albo z mapy: tryb karty V2 przy TalkBack i bez niego. Wymagania: NFR-19 */
 @RunWith(RobolectricTestRunner::class)
