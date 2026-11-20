@@ -55,7 +55,7 @@ Funkcja: Wyszukanie sali
     Wtedy plan pokazuje 2 piętro z wyróżnioną salą 329
     Oraz karta sali ma całą listę „Jak dojść” bez wybranego kroku i przycisk „Pokaż po kolei”
 
-  # @do-zrobienia #3503: śledzenie piętra i punktu aktualnego kroku.
+  # @do-zrobienia #707: automatyczne sprawdzenie zmiany piętra i punktu kamery w całym scenariuszu.
   @US18.2 @aplikacja @do-zrobienia
   Scenariusz: Pokaż po kolei prowadzi od wejścia do sali
     Zakładając, że Gość niezalogowany znalazł salę 329 w budynku A-1
