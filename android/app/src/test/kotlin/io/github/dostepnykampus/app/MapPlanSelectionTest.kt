@@ -34,7 +34,6 @@ import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.entrance.BuildingEntrancesViewModel
 import io.github.dostepnykampus.feature.map.entrance.EntranceLiftViewModel
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
-import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import io.github.dostepnykampus.feature.map.plan.MapPlanViewModel
 import kotlinx.coroutines.flow.flowOf
@@ -44,6 +43,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
@@ -52,21 +52,19 @@ import kotlin.coroutines.EmptyCoroutineContext
  * Wymagania: US16.1, US16.2, US2.8, NFR-56
  */
 @RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h800dp")
 class MapPlanSelectionTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private var shownPlan: String? = null
-    private var seenFocus: MapFocus? = null
-    private var lastCamera: MapCamera? = null
     private var onIdle: ((MapCamera) -> Unit)? = null
     private var onBuildings: (List<String>) -> Unit = {}
     private var onSign: (TouchSign, String) -> Unit = { _, _ -> }
     private val fakeMap =
-        CampusMapView { _, selection, move, _, idle, touch, sign, modifier: Modifier ->
+        CampusMapView { _, selection, _, _, idle, touch, sign, modifier: Modifier ->
             shownPlan = selection.plan?.building
-            lastCamera = move.camera
             onIdle = idle
             onBuildings = touch
             onSign = sign
@@ -110,7 +108,6 @@ class MapPlanSelectionTest {
                 AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route: NavKey ->
                     when (route) {
                         is MapRoute -> {
-                            seenFocus = route.focus
                             HiltMapScreen(
                                 focus = route.focus,
                                 viewModel = mapModel,
@@ -146,12 +143,8 @@ class MapPlanSelectionTest {
 
     private fun waitPlan(expected: String?, step: String) {
         compose.waitForIdle()
-        compose.waitUntil(
-            "$step: plan=$shownPlan, focus=$seenFocus, camera=$lastCamera",
-            timeoutMillis = WAIT_MS,
-        ) {
-            shownPlan == expected
-        }
+        val shown = shownPlan ?: "brak"
+        compose.waitUntil("$step: plan=$shown", timeoutMillis = WAIT_MS) { shownPlan == expected }
     }
 
     private class FakePlans : FloorPlans {
