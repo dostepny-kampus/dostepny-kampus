@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map.camera
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +45,7 @@ internal data class CameraView(
  * idzie za osobą, także po obrocie ekranu. Wykonane polecenie jest zapamiętane razem
  * z zapisanym widokiem przez jego tożsamość ([MapFocus.Building.command]), więc nowe polecenie, także dla tego
  * samego budynku, znów przesuwa kamerę, niezależnie od tego, czy mapa była między nimi składana.
+ * [roomCamera] staje się zapamiętanym widokiem również przed pierwszym gestem, żeby zamknięcie karty sali go nie cofało.
  *
  * Wymagania: US3.3, US2.9, NFR-53, NFR-22
  */
@@ -66,6 +68,9 @@ internal fun rememberCameraView(
             }
         }
     val isPending = target != null && show?.command != applied
+    if (isPending && show?.room != null) {
+        SideEffect { camera = target }
+    }
     return CameraView(
         camera = target.takeIf { isPending } ?: camera,
         keep = { next ->
