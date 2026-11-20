@@ -84,7 +84,8 @@ internal fun BuildingMissing() {
 internal fun FoundRoom.roomDetail(): String {
     val kind = visibleKind()
     val shownFloor = floor.label.replace(oldChar = ' ', newChar = NO_BREAK_SPACE)
-    return listOfNotNull(kind, if (kind == null) shownFloor else shownFloor.floorWord()).joinToString(separator = SEPARATOR)
+    val floorLabel = if (kind == null) shownFloor else shownFloor.floorWord()
+    return listOfNotNull(kind, floorLabel).joinToString(separator = SEPARATOR)
 }
 
 private fun FoundRoom.visibleKind(): String? = room.function.takeUnless { it.isBlank() || it == OTHER_FUNCTION }

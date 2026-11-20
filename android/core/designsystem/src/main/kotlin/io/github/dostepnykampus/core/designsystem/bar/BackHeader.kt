@@ -56,7 +56,7 @@ private fun arrowBack(): ImageVector =
  * do lewej. Przycisk obrysowany ma wysokość co najmniej [CeleDotyku.minimum]. Przy zwykłej czcionce tytuł stoi obok
  * przycisku i zawija się w swojej kolumnie, a od skali czcionki 1,5 stoi pod nim na całą szerokość.
  *
- * @param horizontalPadding odstęp przycisku i tytułu od bocznych krawędzi.
+ * [horizontalPadding] ustala odstęp przycisku i tytułu od bocznych krawędzi.
  * Wymagania: NFR-15, NFR-20, NFR-17
  */
 @Composable

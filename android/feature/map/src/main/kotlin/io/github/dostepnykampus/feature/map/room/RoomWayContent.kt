@@ -33,9 +33,18 @@ import io.github.dostepnykampus.feature.map.entrance.floorWord
 @Composable
 internal fun RoomWayContent(way: RoomWay?, floor: String, roomTitle: String) {
     when (way) {
-        null -> Text(stringResource(R.string.mapa_sala_droga_ladowanie))
-        RoomWay.NoEntrance -> Text(stringResource(R.string.mapa_sala_droga_brak_wejscia))
-        RoomWay.NoLift -> Text(stringResource(R.string.mapa_sala_droga_brak_windy))
+        null -> {
+            Text(stringResource(R.string.mapa_sala_droga_ladowanie))
+        }
+
+        RoomWay.NoEntrance -> {
+            Text(stringResource(R.string.mapa_sala_droga_brak_wejscia))
+        }
+
+        RoomWay.NoLift -> {
+            Text(stringResource(R.string.mapa_sala_droga_brak_windy))
+        }
+
         is RoomWay.Steps -> {
             val entranceTitle =
                 way.entrance.name?.takeIf { way.entrance.hasName } ?: stringResource(R.string.mapa_sala_droga_wejscie)
@@ -48,11 +57,11 @@ internal fun RoomWayContent(way: RoomWay?, floor: String, roomTitle: String) {
             val place = way.entrance.placeDescription.ifBlank { way.entrance.approach }
             val entranceText = listOf(entranceFloor, place).filter(String::isNotBlank).joinToString(separator = ". ")
             RoomWayRow(number = 1, title = entranceTitle, text = entranceText)
-            way.lift?.let {
+            way.lift?.let { lift ->
                 RoomWayRow(
                     number = 2,
-                    title = stringResource(R.string.mapa_sala_droga_winda),
-                    text = stringResource(R.string.mapa_sala_droga_jedz, it.metersFromEntrance, floor.floorWord()),
+                    title = stringResource(R.string.karta_winda),
+                    text = stringResource(R.string.mapa_sala_droga_jedz, lift.metersFromEntrance, floor.floorWord()),
                 )
             }
             val roomDistance =
@@ -69,8 +78,8 @@ internal fun RoomWayContent(way: RoomWay?, floor: String, roomTitle: String) {
 @Composable
 private fun RoomWayRow(number: Int, title: String, text: String) {
     if (LocalDensity.current.fontScale >= LARGE_FONT_SCALE) {
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             Row(
                 horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
                 verticalAlignment = Alignment.CenterVertically,
@@ -78,7 +87,10 @@ private fun RoomWayRow(number: Int, title: String, text: String) {
                 RoomStepBadge(number = number, size = 40.dp)
                 Text(text = title, style = MaterialTheme.typography.titleSmall)
             }
-            Text(text = text.replace(" piętro", "\u00A0piętro"), style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = text.replace(oldValue = " piętro", newValue = "\u00A0piętro"),
+                style = MaterialTheme.typography.bodyMedium,
+            )
         }
     } else {
         Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.Top) {

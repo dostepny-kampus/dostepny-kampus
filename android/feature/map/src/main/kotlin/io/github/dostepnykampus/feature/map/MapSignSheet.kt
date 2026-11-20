@@ -358,6 +358,7 @@ internal data class OpenSign(
     val barriers: ShownBarriers,
     val catalog: BuildingCatalog?,
     val plan: ShownPlan?,
+    val room: OpenRoom?,
 )
 
 /**
@@ -372,11 +373,11 @@ internal fun BoxScope.MapSheets(
     state: MapSceneState,
     onBuilding: (String) -> Unit,
     entranceActions: EntranceActions,
-    room: OpenRoom?,
 ) {
+    val room = open.room
     val modifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
     if (room != null) {
-        RoomCardSheet(card = room.card, onClose = room.onClose, onBuilding = onBuilding, modifier = modifier)
+        RoomCardSheet(room = room, onBuilding = onBuilding, modifier = modifier)
         return
     }
     ChosenSignSheet(

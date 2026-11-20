@@ -15,6 +15,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.HiltMapScreen
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.room.FloorPlans
@@ -36,6 +37,7 @@ import io.github.dostepnykampus.feature.map.entrance.EntranceLiftViewModel
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import io.github.dostepnykampus.feature.map.plan.MapPlanViewModel
+import io.github.dostepnykampus.feature.map.room.RoomCardViewModel
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -104,6 +106,9 @@ class MapPlanSelectionTest {
             val planModel = remember { MapPlanViewModel(repo, plans, entrances) }
             val entrModel = remember { BuildingEntrancesViewModel(entrances) }
             val liftModel = remember { EntranceLiftViewModel(plans) }
+            val roomModel = remember {
+                RoomCardViewModel(plans = plans, entrances = entrances, barriers = AcceptedBarriers { emptyList() })
+            }
             DostepnyKampusTheme {
                 AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route: NavKey ->
                     when (route) {
@@ -114,6 +119,7 @@ class MapPlanSelectionTest {
                                 planViewModel = planModel,
                                 entrancesViewModel = entrModel,
                                 liftViewModel = liftModel,
+                                roomViewModel = roomModel,
                                 mapView = fakeMap,
                             )
                         }

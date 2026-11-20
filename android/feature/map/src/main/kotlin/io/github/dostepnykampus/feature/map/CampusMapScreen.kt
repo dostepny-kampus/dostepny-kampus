@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -56,6 +55,7 @@ import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
+import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
@@ -195,33 +195,14 @@ fun CampusMapScreen(
     val sheet =
         screenSheet(focus = focus, padding = contentPadding, onCardClose = onEmptyMapClick, onCardReturn = onCardReturn)
     val isCovered = sheet.layout.padding.calculateBottomPadding() > 0.dp
-    val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
-    val isList = room == null && (state.isListSaved ?: isLarge)
-    var showsRoomPlan by rememberSaveable(room?.card?.found?.building, room?.card?.found?.room?.id) { mutableStateOf(false) }
-    val closeRoom = room?.onClose
-    BackHandler(enabled = closeRoom != null) {
-        if (isLarge && showsRoomPlan) showsRoomPlan = false else closeRoom?.invoke()
-    }
-    LaunchedEffect(room?.card?.found) {
-        if (room != null) sheet.signs.close()
-    }
     val states = rememberSaveableStateHolder()
     val areas = rememberMapAreas(state.mapData, sheet.layout.focus)
     val barExit = rememberTopBarExit(isCovered = isCovered, motion = motion)
     var barHeight by remember { mutableIntStateOf(0) }
     var headerHeight by remember { mutableIntStateOf(0) }
     val search = rememberSearchFocus()
-    if (room != null && isLarge && !showsRoomPlan) {
-        RoomCardSheet(
-            card = room.card,
-            onClose = room.onClose,
-            onBuilding = onBuildingClick,
-            modifier = modifier,
-            onShowMap = { showsRoomPlan = true },
-        )
-        return
-    }
-    Box(modifier.fillMaxSize()) {
+    RoomLayout(room, modifier, onBuildingClick, sheet.signs::close) { isLarge ->
+        val isList = if (room == null) state.isListSaved ?: isLarge else false
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
                 Box(Modifier.mapArea(isUnderSheet = sheet.isEntranceFull, search = search)) {
@@ -257,10 +238,7 @@ fun CampusMapScreen(
                     syncedAt = state.syncedAt,
                     isList = isList,
                     areas = areas.order,
-                    onListChange = { list ->
-                        if (list) closeRoom?.invoke()
-                        onListChange(list)
-                    },
+                    onListChange = onListChange,
                     onBuildingClick = if (isList) onListBuildingClick else onBuildingClick,
                     onRoomClick = onRoomClick,
                     onBarHeight = { headerHeight = it },
@@ -270,6 +248,31 @@ fun CampusMapScreen(
             }
         }
         sheet.FullEntranceSheet(ui = state, actions = entranceActions, onBuildingClick = onBuildingClick)
+    }
+}
+
+@Composable
+private fun RoomLayout(
+    room: OpenRoom?,
+    modifier: Modifier,
+    onBuilding: (String) -> Unit,
+    onRoomOpen: () -> Unit,
+    content: @Composable (isLarge: Boolean) -> Unit,
+) {
+    val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+    val found = room?.run { card.found }
+    var isPlanShown by rememberSaveable(found?.building, found?.room?.id) { mutableStateOf(false) }
+    BackHandler(enabled = room != null) {
+        if (isLarge && isPlanShown) isPlanShown = false else room?.run { onClose() }
+    }
+    DisposableEffect(found) {
+        if (found != null) onRoomOpen()
+        onDispose {}
+    }
+    if (room != null && isLarge && !isPlanShown) {
+        RoomCardSheet(room, onBuilding, modifier) { isPlanShown = true }
+    } else {
+        Box(modifier.fillMaxSize()) { content(isLarge) }
     }
 }
 
@@ -326,11 +329,7 @@ private fun CampusMap(
                     plan.onView(view.also { state.keep(it) })
                 },
                 onBuildingsTouch = { state.taps.touch(it, onBuildingClick, onEmptyMapClick).also { signs.close() } },
-                onSignTouch = { sign, id ->
-                    room?.onClose?.invoke()
-                    signs.open(sign, id)
-                    state.taps.dismiss()
-                },
+                onSignTouch = { sign, id -> signs.openFromMap(sign, id, room, state.taps::dismiss) },
                 modifier = Modifier.fillMaxSize(),
             )
             pinned?.let { EntranceDescription(it) }
@@ -350,17 +349,17 @@ private fun CampusMap(
                 motion = motion,
                 start = { FloorColumn(plan = plan.shown, onChoose = plan.onFloor) },
             ) {
-                val open = OpenSign(sheet = sheet, barriers = barriers, catalog = ui.catalog, plan = plan.shown)
-                MapSheets(
-                    open = open,
-                    state = state,
-                    onBuilding = onBuildingClick,
-                    entranceActions = entranceActions,
-                    room = room.takeUnless { isKeyboardOpen },
-                )
+                val open = OpenSign(sheet, barriers, ui.catalog, plan.shown, room.takeUnless { isKeyboardOpen })
+                MapSheets(open = open, state = state, onBuilding = onBuildingClick, entranceActions = entranceActions)
             }
         }
     }
+}
+
+private fun SignSheetState.openFromMap(sign: TouchSign, id: String, room: OpenRoom?, dismiss: () -> Unit) {
+    room?.run { onClose() }
+    open(sign, id)
+    dismiss()
 }
 
 @Composable

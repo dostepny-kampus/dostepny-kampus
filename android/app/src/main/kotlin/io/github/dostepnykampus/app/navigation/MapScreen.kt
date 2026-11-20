@@ -124,10 +124,13 @@ internal fun AppNavigator.MapScreen(
     val isSheetAbove = SheetSceneStrategy.isSheet(current) && !isFullOnly
     CampusMapScreen(
         state = state,
-        onListChange = onListChange,
+        onListChange = { isList ->
+            if (isList) room?.run { onClose() }
+            onListChange(isList)
+        },
         onSearch = onSearch,
         onBuildingClick = { symbol ->
-            room?.onClose?.invoke()
+            room?.run { onClose() }
             openBuilding(symbol)
         },
         focus = shownFocus(focus, isSheetAbove = isSheetAbove),

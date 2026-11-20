@@ -21,19 +21,19 @@ import io.github.dostepnykampus.feature.map.overlay.BuildingLink
 import io.github.dostepnykampus.feature.map.overlay.MapSheet
 import io.github.dostepnykampus.feature.map.overlay.MapSheetHeader
 
-/** Otwarta karta [card], którą zamyka [onClose]. Wymagania: US18.1 */
-data class OpenRoom(val card: RoomCard, val onClose: () -> Unit)
-
-/** Karta [card] z drogą tekstem. [onShowMap] oznacza pełny ekran z powrotem do planu. Wymagania: US18.1, US18.2, US18.3 */
+/**
+ * Karta [room] z drogą tekstem. [onShowMap] oznacza pełny ekran z powrotem do planu.
+ *
+ * Wymagania: US18.1, US18.2, US18.3
+ */
 @Composable
 internal fun RoomCardSheet(
-    card: RoomCard,
-    onClose: () -> Unit,
+    room: OpenRoom,
     onBuilding: (String) -> Unit,
     modifier: Modifier = Modifier,
     onShowMap: (() -> Unit)? = null,
 ) {
-    val found = card.found
+    val (card, onClose) = room
     val title = stringResource(R.string.mapa_sala, found.room.number.orEmpty())
     MapSheet(modifier = modifier, isFull = onShowMap != null) {
         if (onShowMap == null) {
@@ -51,7 +51,7 @@ internal fun RoomCardSheet(
         RoomWayContent(way = card.way, floor = found.floor.label, roomTitle = title)
         if (onShowMap != null) {
             PinnedButton(
-                text = stringResource(R.string.mapa_sala_pokaz_mape),
+                text = stringResource(R.string.mapa_sala_pokaz_na_mapie),
                 onClick = onShowMap,
                 modifier = Modifier.fillMaxWidth(),
             )

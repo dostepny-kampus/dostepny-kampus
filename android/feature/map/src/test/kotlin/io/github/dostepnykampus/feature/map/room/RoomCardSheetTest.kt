@@ -43,7 +43,8 @@ class RoomCardSheetTest {
         val opened = mutableListOf<String>()
         show(VIA_LIFT, onBuilding = { opened.add(it) })
 
-        compose.onNode(hasText("Sala 329") and SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading)).assertExists()
+        val heading = SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading)
+        compose.onNode(hasText("Sala 329") and heading).assertExists()
         compose.onNodeWithText("Jak dojść").assertExists()
         compose.onNodeWithText("Ok. 30 m od wejścia.", substring = true).assertExists()
         compose.onNodeWithText("ok. 85 m od windy.", substring = true).assertExists()
@@ -61,18 +62,7 @@ class RoomCardSheetTest {
     @Test
     fun largeTextCanScrollToMapAction() {
         var opens = 0
-        compose.setContent {
-            CompositionLocalProvider(LocalDensity provides Density(density = 1f, fontScale = 2f)) {
-                DostepnyKampusTheme {
-                    RoomCardSheet(
-                        card = RoomCard(found = FOUND, way = VIA_LIFT),
-                        onClose = {},
-                        onBuilding = {},
-                        onShowMap = { opens += 1 },
-                    )
-                }
-            }
-        }
+        show(VIA_LIFT, density = Density(density = 1f, fontScale = 2f), onShowMap = { opens += 1 })
         compose.onNodeWithText("Pokaż na mapie").performScrollTo().performClick()
         compose.runOnIdle { assertEquals("Przejście do planu", 1, opens) }
     }
@@ -83,14 +73,18 @@ class RoomCardSheetTest {
         compose.onRoot().captureRoboImage()
     }
 
-    private fun show(way: RoomWay, onBuilding: (String) -> Unit = {}) {
+    private fun show(
+        way: RoomWay,
+        onBuilding: (String) -> Unit = {},
+        density: Density? = null,
+        onShowMap: (() -> Unit)? = null,
+    ) {
+        val room = OpenRoom(card = RoomCard(found = FOUND, way = way), onClose = {})
         compose.setContent {
-            DostepnyKampusTheme {
-                RoomCardSheet(
-                    card = RoomCard(found = FOUND, way = way),
-                    onClose = {},
-                    onBuilding = onBuilding,
-                )
+            CompositionLocalProvider(LocalDensity provides (density ?: LocalDensity.current)) {
+                DostepnyKampusTheme {
+                    RoomCardSheet(room = room, onBuilding = onBuilding, onShowMap = onShowMap)
+                }
             }
         }
     }
