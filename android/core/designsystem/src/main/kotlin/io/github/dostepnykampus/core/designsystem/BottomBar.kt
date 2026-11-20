@@ -86,7 +86,7 @@ fun BottomBar(items: BottomBarItems, selectedIndex: Int, onSelect: (Int) -> Unit
                     selected = isSelected,
                     onClick = { onSelect(index) },
                     icon = { Icon(imageVector = item.icon, contentDescription = null, modifier = iconSize) },
-                    label = { BottomBarLabel(text = item.label, items = items, selected = isSelected) },
+                    label = { BottomBarLabel(text = item.label, items = items, selected = isSelected, minLines = 2) },
                     colors =
                         NavigationBarItemDefaults.colors(
                             selectedIconColor = colors.onPrimaryContainer,
@@ -149,7 +149,7 @@ fun SideBar(items: BottomBarItems, selectedIndex: Int, onSelect: (Int) -> Unit, 
 internal fun keepShortWordsWithNext(text: String): String = text.replace(ShortWordBeforeSpace, "\u00A0")
 
 @Composable
-private fun BottomBarLabel(text: String, items: BottomBarItems, selected: Boolean) {
+private fun BottomBarLabel(text: String, items: BottomBarItems, selected: Boolean, minLines: Int = 1) {
     val style = MaterialTheme.typography.labelMedium
     BoxWithConstraints {
         val fontSize = sharedLabelSize(items, style.copy(fontWeight = Typografia.wyroznienieWaga), constraints.maxWidth)
@@ -158,6 +158,7 @@ private fun BottomBarLabel(text: String, items: BottomBarItems, selected: Boolea
             style = style.copy(fontSize = fontSize, lineHeight = (style.lineHeight.value / style.fontSize.value).em),
             fontWeight = if (selected) Typografia.wyroznienieWaga else null,
             textAlign = TextAlign.Center,
+            minLines = minLines,
             maxLines = 2,
         )
     }
