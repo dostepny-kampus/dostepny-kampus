@@ -81,28 +81,7 @@ class RoomCardSheetTest {
     }
 
     @Test
-    fun walksStepsAndKeepsSelection() {
-        compose.setContent {
-            DostepnyKampusTheme {
-                var card by remember { mutableStateOf(RoomCard(found = FOUND, way = VIA_LIFT)) }
-                RoomCardSheet(
-                    room = OpenRoom(card = card, onClose = {}, onStep = { card = card.chosen(it) }),
-                    onBuilding = {},
-                )
-            }
-        }
-        compose.onNodeWithText("Pokaż po kolei").performClick()
-        compose.onNodeWithText("Krok 1 z 3").assertExists()
-        compose.onNodeWithContentDescription("Poprzedni krok").assertIsNotEnabled()
-        compose.onNodeWithContentDescription("Następny krok").performClick()
-        compose.onNodeWithText("Krok 2 z 3").assertExists()
-        compose.onNodeWithText("ok. 85 m od windy.", substring = true).performClick()
-        compose.onNodeWithText("Krok 3 z 3").assertExists()
-        compose.onNodeWithContentDescription("Następny krok").assertIsNotEnabled()
-    }
-
-    @Test
-    fun returnsFromLiftToSameStep() {
+    fun walksStepsAndReturnsFromLift() {
         compose.setContent {
             DostepnyKampusTheme {
                 var card by remember { mutableStateOf(RoomCard(found = FOUND, way = VIA_LIFT)) }
@@ -115,12 +94,19 @@ class RoomCardSheetTest {
             }
         }
 
-        compose.onNodeWithText("Ok. 30 m od wejścia.", substring = true).performClick()
+        compose.onNodeWithText("Pokaż po kolei").performClick()
+        compose.onNodeWithText("Krok 1 z 3").assertExists()
+        compose.onNodeWithContentDescription("Poprzedni krok").assertIsNotEnabled()
+        compose.onNodeWithContentDescription("Następny krok").performClick()
+        compose.onNodeWithText("Krok 2 z 3").assertExists()
         compose.onNodeWithText("Szczegóły windy").performClick()
         compose.onNodeWithText("Jedzie na:", substring = true).assertExists()
         compose.onNodeWithText("Zamknij").performClick()
 
         compose.onNodeWithText("Krok 2 z 3").assertExists()
+        compose.onNodeWithText("ok. 85 m od windy.", substring = true).performClick()
+        compose.onNodeWithText("Krok 3 z 3").assertExists()
+        compose.onNodeWithContentDescription("Następny krok").assertIsNotEnabled()
     }
 
     private fun show(
