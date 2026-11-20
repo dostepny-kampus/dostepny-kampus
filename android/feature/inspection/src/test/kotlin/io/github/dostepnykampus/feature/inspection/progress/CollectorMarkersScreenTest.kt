@@ -120,6 +120,31 @@ class CollectorMarkersScreenTest {
     }
 
     /**
+     * Znacznik z serwera: własny bez „Czeka na wysłanie”, cudzy jako „Znacznik innej osoby” bez „Cofnij znacznik”.
+     *
+     * Wymagania: US15.1, US15.2
+     */
+    @Test
+    fun showsSyncedOwnAndOtherMarker() {
+        val synced =
+            listOf(
+                FloorRow(place = MarkerPlace.Floor("p0"), label = "Parter", markerId = "s-1", isPending = false),
+                FloorRow(
+                    place = MarkerPlace.Floor("p1"),
+                    label = "1 piętro",
+                    markerId = "s-2",
+                    isPending = false,
+                    isMine = false,
+                ),
+            )
+        show(CollectorMarkersUiState.Ready(synced))
+        compose.onNodeWithText("Twój znacznik").assertIsDisplayed()
+        compose.onNodeWithText("Znacznik innej osoby").assertIsDisplayed()
+        compose.onNodeWithText("Czeka na wysłanie").assertDoesNotExist()
+        compose.onNodeWithText(REVOKE).assertIsDisplayed()
+    }
+
+    /**
      * Błąd zapisu w telefonie mówi, co zrobić, a „Spróbuj ponownie” zapisuje znacznik jeszcze raz.
      *
      * Wymagania: NFR-7

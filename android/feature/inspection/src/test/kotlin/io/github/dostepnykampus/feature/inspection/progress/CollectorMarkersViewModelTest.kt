@@ -7,9 +7,11 @@ package io.github.dostepnykampus.feature.inspection.progress
 
 import io.github.dostepnykampus.core.data.inspection.FloorMarkers
 import io.github.dostepnykampus.core.data.inspection.PendingMarkerChange
+import io.github.dostepnykampus.core.data.inspection.ServerFloorMarkers
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.building.FloorList
+import io.github.dostepnykampus.core.model.inspection.InspectionMarker
 import io.github.dostepnykampus.core.model.inspection.MarkerPlace
 import io.github.dostepnykampus.core.model.room.RoomList
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +27,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.IOException
+import java.time.Instant
 
 /**
  * C5 Zbierającego: piętra budynku od najniższego, cały budynek bez planu, znacznik w kolejce telefonu i błąd zapisu.
@@ -157,16 +160,37 @@ class CollectorMarkersViewModelTest {
             )
         }
 
+    @Test
+    fun showsSyncedOwnAndOtherMarkers() =
+        viewModelTest(
+            plans = FakePlans(stored = A1_FLOORS),
+            server = FakeServerMarkers(listOf(SYNCED_OWN, SYNCED_OTHER)),
+        ) { viewModel, _ ->
+            val expected =
+                listOf(
+                    GROUND.copy(markerId = "s-1", isPending = false, isMine = true),
+                    FIRST.copy(markerId = "s-2", isPending = false, isMine = false),
+                )
+            assertEquals(CollectorMarkersUiState.Ready(expected), viewModel.state.value, "znaczniki z serwera")
+        }
+
     private fun viewModelTest(
         plans: FloorPlans,
         markers: FakeMarkers = FakeMarkers(),
+        server: FakeServerMarkers = FakeServerMarkers(),
         block: suspend TestScope.(CollectorMarkersViewModel, FakeMarkers) -> Unit,
     ) {
         val dispatcher = StandardTestDispatcher()
         Dispatchers.setMain(dispatcher)
         try {
             runTest(dispatcher) {
-                val viewModel = CollectorMarkersViewModel(symbol = "A-1", plans = plans, markers = markers)
+                val viewModel =
+                    CollectorMarkersViewModel(
+                        symbol = "A-1",
+                        plans = plans,
+                        markers = markers,
+                        serverMarkers = server,
+                    )
                 runCurrent()
                 block(viewModel, markers)
             }
@@ -176,6 +200,25 @@ class CollectorMarkersViewModelTest {
     }
 
     private companion object {
+        val TIME: Instant = Instant.parse("2026-11-18T10:00:00Z")
+        val SYNCED_OWN =
+            InspectionMarker(
+                id = "s-1",
+                buildingSymbol = "A-1",
+                place = MarkerPlace.Floor("p0"),
+                createdAt = TIME,
+                isRevoked = false,
+                isMine = true,
+            )
+        val SYNCED_OTHER =
+            InspectionMarker(
+                id = "s-2",
+                buildingSymbol = "A-1",
+                place = MarkerPlace.Floor("p1"),
+                createdAt = TIME,
+                isRevoked = false,
+                isMine = false,
+            )
         val A1_FLOORS =
             FloorList(
                 source = "PWr",
@@ -188,6 +231,15 @@ class CollectorMarkersViewModelTest {
         val GROUND = FloorRow(MarkerPlace.Floor("p0"), label = "Parter")
         val FIRST = FloorRow(MarkerPlace.Floor("p1"), label = "Piętro 1")
     }
+}
+
+/** Kopia znaczników z serwera w testach modelu widoku. */
+private class FakeServerMarkers(initial: List<InspectionMarker> = emptyList()) : ServerFloorMarkers {
+    private val stored = MutableStateFlow(initial)
+
+    override fun markers(buildingSymbol: String): Flow<List<InspectionMarker>> = stored
+
+    override suspend fun pull(): Boolean = true
 }
 
 /** Kopia planów z piętrami w telefonie [stored] i piętrami, które daje pobranie z serwera [downloaded]. */

@@ -188,7 +188,10 @@ private fun Inspected(row: FloorRow, isAsking: Boolean, isUnsaved: Boolean, acti
             Icon(InspectedIcon, contentDescription = null)
             Text(stringResource(R.string.zbierajacy_obejrzane), style = MaterialTheme.typography.titleMedium)
         }
-        Text(stringResource(R.string.zbierajacy_twoj_znacznik))
+        val authorText =
+            if (row.isMine) R.string.zbierajacy_twoj_znacznik else R.string.zbierajacy_znacznik_innej_osoby
+        Text(stringResource(authorText))
+        if (!row.isMine) return
         if (row.isPending) Text(stringResource(R.string.zbierajacy_czeka), fontWeight = FontWeight.Bold)
         if (isUnsaved) Text(stringResource(R.string.zbierajacy_blad_zapisu))
         if (isAsking) {
