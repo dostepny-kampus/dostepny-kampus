@@ -1,5 +1,5 @@
 @startsalt
-' V1 Mapa kampusu, kroki po kolei: po „Pokaż po kolei” wybrany krok 1, plan parteru przy wejściu zalecanym (US18.2).
+' V1 Mapa kampusu, kroki po kolei: po „Pokaż po kolei” sam krok 1, plan parteru przy wejściu zalecanym (US18.2).
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
@@ -9,18 +9,14 @@ $przycisk("Kampus główny ▾")
 $mapa("plan parteru A-1 przy wejściu zalecanym; wypełnione kółko 1 przy wejściu, kółko 2 przy windzie, bez linii trasy; kolumna pięter po lewej, wybrany parter", "", "info")
 $ramka()
 { <b>Sala 329</b>$dk_spacje(14) | [Zamknij] }
-<i>[rodzaj sali z danych]</i> · 2 piętro
-$wiersz_budynku()
-{ <b>Jak dojść</b> | Krok 1 z 3 | [‹] | [›] }
+{ <b>Krok 1 z 3</b>$dk_spacje(6) | <b>Wszystkie kroki</b> }
+<i>[pasek postępu: 1 z 3]</i>
 {+
 (1) <b><i>[wejście zalecane]</i></b>
 Parter, <i>[położenie wejścia]</i>
 <b>Szczegóły wejścia ›</b>
 }
-(2) <b>Winda</b> ›
-Ok. <i>[odległość]</i> od wejścia. Jedź na 2 piętro.
-(3) <b>Sala 329</b> ›
-2 piętro, ok. <i>[odległość]</i> od windy.
+{ [‹ Wstecz] | [Dalej ›] }
 }
 $pasek_dolny_konto()
 $ekran_koniec()

@@ -11,13 +11,17 @@ $ramka()
 { <b>Sala 329</b>$dk_spacje(14) | [Zamknij] }
 <i>[rodzaj sali z danych]</i> · 2 piętro
 $wiersz_budynku()
-{ <b>Jak dojść</b>$dk_spacje(6) | [Pokaż po kolei ›] }
+{ <b>Jak dojść</b>$dk_spacje(6) | <b>Pokaż po kolei</b> }
+{+
 (1) <b><i>[wejście zalecane]</i></b> ›
 Parter, <i>[położenie wejścia]</i>
+--
 (2) <b>Winda</b> ›
 Ok. <i>[odległość]</i> od wejścia. Jedź na 2 piętro.
+--
 (3) <b>Sala 329</b> ›
 2 piętro, ok. <i>[odległość]</i> od windy.
+}
 }
 $pasek_dolny_konto()
 $ekran_koniec()

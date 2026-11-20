@@ -122,7 +122,7 @@ Czynność główna: przeczytanie listy „Jak dojść”. Pokaz drogi zaczyna s
 | Kolumna pięter po lewej pod przyciskiem terenu; wybrane piętro sali | US16.1, NFR-21 |
 | Plan piętra z wyróżnioną salą bez pinezki; numery kroków w kółkach, bez linii trasy | US18.1, US18.2, NFR-21 |
 | Nagłówek karty „Sala 329” z „Zamknij”, pod nim rodzaj sali i piętro z danych PWr, dalej wiersz budynku | US18.1, NFR-40, decyzja z 18.11.2026 |
-| „Jak dojść” z „Pokaż po kolei ›” i trzy kroki: wejście zalecane z piętrem, winda z odległością od wejścia, sala z odległością od windy | US18.2, BR-25 |
+| „Jak dojść” z „Pokaż po kolei” i trzy kroki w ramce grupy z dzielnikami, każdy wiersz z „›”. Kroki: wejście zalecane z piętrem, winda z odległością od wejścia, sala z odległością od windy | US18.2, BR-25, decyzja z 20.11.2026 |
 | Krok 2: winda przy klatkach C i D, bo tylko ona staje na parterze i na 2 piętrze [2] | decyzja 48 |
 | Karta ma wysokość treści: nagłówek, wiersz budynku i cała lista „Jak dojść” bez przewijania, plan piętra nad kartą | US18.1, decyzja z 19.11.2026 |
 | „Zamknij” zamyka kartę, a plan zostaje | decyzja 48 |
@@ -138,14 +138,16 @@ Czynność główna: przeczytanie listy „Jak dojść”. Pokaz drogi zaczyna s
 
 ### V1: kroki po kolei
 
-![Makieta V1 po Pokaż po kolei: plan parteru A-1 z wypełnionym kółkiem 1 przy wejściu zalecanym i kółkiem 2 przy windzie, kolumna pięter z wybranym parterem i karta sali: nagłówek Jak dojść z napisem Krok 1 z 3 i strzałkami, wybrany krok 1 w ramce z odsyłaczem Szczegóły wejścia, pod nim kroki 2 i 3](../../_generated/m-v1-mapa-sala-kroki.svg)
+![Makieta V1 po Pokaż po kolei: plan parteru A-1 z wypełnionym kółkiem 1 przy wejściu zalecanym i kółkiem 2 przy windzie, kolumna pięter z wybranym parterem i niska karta sali: Sala 329 z Zamknij, Krok 1 z 3 z odsyłaczem Wszystkie kroki, pasek postępu, sam krok 1 z odsyłaczem Szczegóły wejścia, na dole Wstecz wyłączone i Dalej](../../_generated/m-v1-mapa-sala-kroki.svg)
 
-Czynność główna: przejście do następnego kroku strzałką „›”.
+Czynność główna: przejście do następnego kroku przyciskiem „Dalej ›”.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Krok 1 z 3” i okrągłe strzałki „‹” „›” w miejscu „Pokaż po kolei”; na pierwszym kroku „‹” wyłączona | US18.2, NFR-17 |
-| Wybrany krok w ramce z wypełnionym numerem i „Szczegóły wejścia ›”; powrót z arkusza wejścia na ten sam krok | US18.2, US3.3, NFR-21 |
+| „Krok 1 z 3” z odsyłaczem „Wszystkie kroki” i pasek postępu pod nagłówkiem sali | US18.2, NFR-18, decyzja z 20.11.2026 |
+| Tylko bieżący krok z wypełnionym numerem i „Szczegóły wejścia ›”; arkusz wejścia ma „‹ Sala 329”, który wraca na ten sam krok | US18.2, US3.3, NFR-21 |
+| „‹ Wstecz” i „Dalej ›” na dole karty; na pierwszym kroku „Wstecz” wyłączone, na ostatnim „Dalej” | US18.2, NFR-17 |
+| Karta niska, mapa zostaje na mniej więcej połowie ekranu | US18.2, decyzja z 20.11.2026 |
 | Plan na piętrze kroku, mapa przy jego punkcie, ruch kamery jak przy wyborze budynku | US18.2, US2.8 |
 
 ### V1: plan piętra

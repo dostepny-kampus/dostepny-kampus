@@ -60,16 +60,18 @@ Funkcja: Wyszukanie sali
   Scenariusz: Pokaż po kolei prowadzi od wejścia do sali
     Zakładając, że Gość niezalogowany znalazł salę 329 w budynku A-1
     Jeżeli dotknie „Pokaż po kolei”
-    Wtedy krok 1 jest wybrany, a karta pokazuje „Krok 1 z 3”
+    Wtedy karta pokazuje tylko krok 1 i „Krok 1 z 3”
     Oraz plan pokazuje parter z wejściem zalecanym
-    Jeżeli dotknie „Następny krok”
-    Wtedy krok 2 jest wybrany, a mapa pokazuje windę
+    Jeżeli dotknie „Dalej”
+    Wtedy karta pokazuje krok 2, a mapa pokazuje windę
+    Jeżeli dotknie „Wszystkie kroki”
+    Wtedy widzi całą listę „Jak dojść” z wybranym krokiem 2
 
   # @do-zrobienia #707: pełny scenariusz powrotu z arkusza wejścia.
   @US18.2 @aplikacja @do-zrobienia
   Scenariusz: Arkusz wejścia z kroku wraca do tego kroku
     Zakładając, że w karcie sali 329 jest wybrany krok 1
-    Jeżeli Gość niezalogowany dotknie „Szczegóły wejścia” i potem „Zamknij”
+    Jeżeli Gość niezalogowany dotknie „Szczegóły wejścia” i potem „‹ Sala 329”
     Wtedy widzi kartę sali 329 z wybranym krokiem 1
 
   # @do-zrobienia #707: scenariusz z dotknięciem sali i korytarza na rzeczywistym planie.
