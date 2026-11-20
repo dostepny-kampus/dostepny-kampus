@@ -145,7 +145,6 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
 
 private data class PlanInput(val view: MapCamera?, val catalog: BuildingCatalog?, val selected: String?)
 
-
 /** Numerowana sala [id] na widocznym piętrze albo `null`. Wymagania: US18.1 */
 internal fun ShownPlan.roomAt(id: String): FoundRoom? {
     val level = floors.firstOrNull { it.id == floor } ?: return null

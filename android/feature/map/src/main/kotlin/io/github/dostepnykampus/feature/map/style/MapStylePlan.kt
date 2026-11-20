@@ -13,7 +13,6 @@ import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.feature.map.campus.featureCollection
-import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonArray
@@ -24,6 +23,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.maplibre.spatialk.geojson.Feature
 import org.maplibre.spatialk.geojson.Point
+import kotlin.coroutines.CoroutineContext
 
 /** Źródło stylu z pomieszczeniami i ścianami wszystkich pięter budynku z planem. Wymagania: US16.1 */
 internal const val PLAN_SOURCE = "plan"
@@ -40,8 +40,10 @@ internal const val PLAN_WALLS_LAYER = "plan_sciany"
 /** Warstwa ściany piętra z obrysu sumy jego pomieszczeń (R11). Wymagania: US16.1 */
 internal const val PLAN_OUTLINE_LAYER = "plan_obrys"
 
-/** Warstwa numerów sal wybranego piętra od powiększenia 19 (R12). Wymagania: US16.1 */
+/** Id sali dostępnej przez dotyk planu. Wymagania: US18.1 */
 internal const val PLAN_TAPPABLE_ROOM = "tap_room"
+
+/** Warstwa numerów sal wybranego piętra od powiększenia 19 (R12). Wymagania: US16.1 */
 internal const val PLAN_NUMBERS_LAYER = "plan_numery"
 
 /** Warstwa znaków windy, toalety dostosowanej i schodów na planie. Wymagania: US16.1 */
