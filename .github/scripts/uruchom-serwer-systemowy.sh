@@ -6,7 +6,8 @@ set -euo pipefail
 
 # Uruchamiany z katalogu repozytorium po pakuj-serwer-systemowy.sh. Startuje bazę, magazyn zdjęć i logowanie
 # z --wait, jednorazowo zakłada konto serwera w magazynie (--wait padłby na zakończonej usłudze zdjecia-konto),
-# potem serwer z backend/target i czeka na /buildings. Dziennik serwera: $RUNNER_TEMP/serwer.log.
+# potem serwer z backend/target, czeka na /buildings i dopisuje w bazie budynek testu systemowego (TS-1),
+# którego nie ma w pliku konturów w aplikacji. Dziennik serwera: $RUNNER_TEMP/serwer.log.
 # CZAS_STARTU: sekundy czekania na serwer (domyślnie 180).
 compose=(docker compose -f infra/docker-compose.yml)
 cp infra/.env.example infra/.env
@@ -23,3 +24,5 @@ if ! timeout "${CZAS_STARTU:-180}" bash -c 'until curl -fs -o /dev/null http://1
   cat "${RUNNER_TEMP}/serwer.log"
   exit 1
 fi
+"${compose[@]}" exec -T postgis psql -v ON_ERROR_STOP=1 -U "$DK_DB_USER" -d "$DK_DB_NAME" -c \
+  "INSERT INTO buildings (symbol, name, detail_level, outline, source) VALUES ('TS-1', 'Budynek testu systemowego', 'BASIC', ST_GeomFromText('MULTIPOLYGON(((17.0615 51.1081, 17.0616 51.1081, 17.0616 51.1082, 17.0615 51.1082, 17.0615 51.1081)))', 4326), '© OpenStreetMap contributors') ON CONFLICT (symbol) DO NOTHING;"
