@@ -71,7 +71,7 @@ class BuildingCardFromServerTest {
      */
     @Test
     fun listContainsServerOnlyBuilding() {
-        steps.openCard(SERVER_ONLY_SYMBOL)
+        steps.openCard(symbol = SERVER_ONLY_SYMBOL, query = SERVER_ONLY_NAME)
         steps.waitFor(hasText(SERVER_ONLY_NAME, substring = true))
     }
 }

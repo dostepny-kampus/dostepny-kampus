@@ -59,17 +59,18 @@ public class DeviceSteps(private val compose: ComposeTestRule, private val waitM
     }
 
     /**
-     * Wpisuje [symbol] w pole symbolu akcją semantyki, bez klawiatury ekranowej, wybiera pierwszy wynik i czeka
+     * Wpisuje [query] w pole szukaj akcją semantyki, bez klawiatury ekranowej, wybiera wynik o [symbol] i czeka
      * na kartę budynku.
      *
      * Wymagania: US1.1, US2
      *
      * @param symbol symbol budynku, np. `A-1`
+     * @param query wpisywany tekst, domyślnie symbol budynku
      */
-    public fun openCard(symbol: String) {
+    public fun openCard(symbol: String, query: String = symbol) {
         compose
             .onNode(hasSetTextAction())
-            .performSemanticsAction(SemanticsActions.SetText) { it(AnnotatedString(symbol)) }
+            .performSemanticsAction(SemanticsActions.SetText) { it(AnnotatedString(query)) }
         waitFor(inCatalog(symbol))
         compose.onAllNodes(inCatalog(symbol)).onFirst().performClick()
         waitFor(openedCard())
