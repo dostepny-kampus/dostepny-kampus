@@ -24,7 +24,6 @@ import javax.inject.Inject
 /**
  * Karta sali na V1: sala wybrana w wynikach pola albo na planie, droga do niej z planów pięter w telefonie
  * i wejścia zalecanego budynku oraz krok pokazu drogi. Nowa sala przerywa wczytywanie drogi poprzedniej.
- * TODO(#1481): karta sali na ekranie mapy.
  *
  * Wymagania: US18.1, US18.2, BR-25
  *

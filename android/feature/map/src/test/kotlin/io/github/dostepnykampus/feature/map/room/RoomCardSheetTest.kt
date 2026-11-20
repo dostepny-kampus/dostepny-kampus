@@ -6,6 +6,8 @@
 package io.github.dostepnykampus.feature.map.room
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasText
@@ -14,6 +16,8 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.unit.Density
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.FOUND
@@ -52,6 +56,25 @@ class RoomCardSheetTest {
         show(RoomWay.NoLift)
 
         compose.onNodeWithText("Żadna winda nie łączy", substring = true).assertExists()
+    }
+
+    @Test
+    fun largeTextCanScrollToMapAction() {
+        var opens = 0
+        compose.setContent {
+            CompositionLocalProvider(LocalDensity provides Density(density = 1f, fontScale = 2f)) {
+                DostepnyKampusTheme {
+                    RoomCardSheet(
+                        card = RoomCard(found = FOUND, way = VIA_LIFT),
+                        onClose = {},
+                        onBuilding = {},
+                        onShowMap = { opens += 1 },
+                    )
+                }
+            }
+        }
+        compose.onNodeWithText("Pokaż na mapie").performScrollTo().performClick()
+        compose.runOnIdle { assertEquals("Przejście do planu", 1, opens) }
     }
 
     @Test
