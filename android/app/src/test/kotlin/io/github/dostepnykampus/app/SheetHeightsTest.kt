@@ -30,6 +30,8 @@ import androidx.compose.ui.test.swipeUp
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
+import io.github.dostepnykampus.app.navigation.LocalSheetPadding
+import io.github.dostepnykampus.app.navigation.isExpanded
 import io.github.dostepnykampus.app.navigation.sheetCard
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.feature.map.building.CardMode

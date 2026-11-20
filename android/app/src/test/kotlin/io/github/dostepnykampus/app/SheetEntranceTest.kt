@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.ui.NavDisplay
+import io.github.dostepnykampus.app.navigation.SheetSceneStrategy
+import io.github.dostepnykampus.app.navigation.sceneStrategies
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.camera.CameraMotion
 import io.github.dostepnykampus.feature.map.camera.CameraTransition

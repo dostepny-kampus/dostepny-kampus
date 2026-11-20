@@ -7,7 +7,6 @@ package io.github.dostepnykampus.app.navigation
 
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.TestRoles
-import io.github.dostepnykampus.app.closeCardOnEmptyMap
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.model.room.RoomCategory

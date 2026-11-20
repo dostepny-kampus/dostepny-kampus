@@ -10,7 +10,7 @@ import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsScreen
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
-import io.github.dostepnykampus.feature.capture.report.edit.ReportEditExits
+import io.github.dostepnykampus.feature.capture.report.ReportEditExits
 import io.github.dostepnykampus.feature.capture.report.edit.ReportEditScreen
 import io.github.dostepnykampus.feature.capture.report.removed.RemovedScreen
 

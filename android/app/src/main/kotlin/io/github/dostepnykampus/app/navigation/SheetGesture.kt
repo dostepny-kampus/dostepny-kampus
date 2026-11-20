@@ -3,12 +3,10 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.app
+package io.github.dostepnykampus.app.navigation
 
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.ui.unit.Dp
-import io.github.dostepnykampus.app.navigation.AppNavigator
-import io.github.dostepnykampus.app.navigation.cardModeFor
 import io.github.dostepnykampus.feature.map.building.CardMode
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 

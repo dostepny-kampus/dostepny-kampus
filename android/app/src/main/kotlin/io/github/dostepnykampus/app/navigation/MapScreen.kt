@@ -14,12 +14,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.dostepnykampus.app.LocalSheetPadding
-import io.github.dostepnykampus.app.SheetLayout
-import io.github.dostepnykampus.app.SheetSceneStrategy
-import io.github.dostepnykampus.app.closeCardOnEmptyMap
-import io.github.dostepnykampus.app.isFullOnlySheet
-import io.github.dostepnykampus.app.shownFocus
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.capture.navigation.ReportPlace

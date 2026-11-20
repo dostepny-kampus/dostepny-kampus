@@ -22,6 +22,7 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
+import io.github.dostepnykampus.app.navigation.SheetHeight
 import io.github.dostepnykampus.app.navigation.sheetCard
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.feature.map.building.CardMode

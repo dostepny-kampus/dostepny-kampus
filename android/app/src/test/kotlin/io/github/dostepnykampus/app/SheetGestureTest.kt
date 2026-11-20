@@ -10,6 +10,12 @@ import io.github.dostepnykampus.app.BackGesture.Cancelled
 import io.github.dostepnykampus.app.BackGesture.Completed
 import io.github.dostepnykampus.app.BackGesture.Progressed
 import io.github.dostepnykampus.app.BackGesture.Started
+import io.github.dostepnykampus.app.navigation.SheetState
+import io.github.dostepnykampus.app.navigation.after
+import io.github.dostepnykampus.app.navigation.cardMode
+import io.github.dostepnykampus.app.navigation.isExpanded
+import io.github.dostepnykampus.app.navigation.isSlide
+import io.github.dostepnykampus.app.navigation.sheetBackOffset
 import io.github.dostepnykampus.feature.map.building.CardMode
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
