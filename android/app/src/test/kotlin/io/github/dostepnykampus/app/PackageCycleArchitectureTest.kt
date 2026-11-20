@@ -28,7 +28,8 @@ class PackageCycleArchitectureTest {
     /** Wpis listy wyjątków dla cyklu, którego już nie ma, czerwieni test. */
     @Test
     fun shrinksCycleList() {
-        assertEquals(emptySet<Set<String>>(), CYCLES.keys - cycles(Konsist.scopeFromProduction().files))
+        val gone = CYCLES.keys - cycles(Konsist.scopeFromProduction().files)
+        assertEquals(emptySet<Set<String>>(), gone, "Usuń z listy wyjątków cykle, których już nie ma")
     }
 
     /**
@@ -46,7 +47,7 @@ class PackageCycleArchitectureTest {
         source(fixtures = fixtures, name = "Root", pack = "y", import = "y.part.Part")
         source(fixtures = fixtures, name = "Part", pack = "y.part", import = "y.R")
         val files = Konsist.scopeFromExternalDirectory(fixtures.absolutePath).files
-        assertEquals(setOf(setOf("x.a", "x.b", "x.c")), cycles(files))
+        assertEquals(setOf(setOf("x.a", "x.b", "x.c")), cycles(files), "Cykl tworzą tylko pakiety x.a, x.b i x.c")
     }
 
     private fun source(fixtures: File, name: String, pack: String, import: String) {
@@ -65,28 +66,26 @@ class PackageCycleArchitectureTest {
     private fun cycles(files: List<KoFileDeclaration>): Set<Set<String>> {
         val edges = imports(files)
         val reach = edges.keys.associateWith { reachable(start = it, edges = edges) }
-        return edges.keys
-            .map { from -> reach.getValue(from).filter { from in reach[it].orEmpty() }.toSet() + from }
-            .filter { it.size > 1 }
-            .map { cycle -> cycle.map { it.removePrefix("$BASE.") }.toSet() }
-            .toSet()
+        val found = mutableSetOf<Set<String>>()
+        for ((from, targets) in reach) {
+            val cycle = targets.filterTo(mutableSetOf(from)) { from in reach[it].orEmpty() }
+            if (cycle.size > 1) found += cycle.mapTo(mutableSetOf()) { it.removePrefix("$BASE.") }
+        }
+        return found
     }
 
-    private fun imports(files: List<KoFileDeclaration>): Map<String, Set<String>> =
-        files
-            .filter { it.packagee?.name.orEmpty().startsWith("$BASE.") }
-            .groupBy(
-                keySelector = { it.packagee?.name.orEmpty() },
-                valueTransform = { file -> file.imports.map { it.name } },
-            )
-            .mapValues { (from, names) ->
-                names
-                    .flatten()
-                    .filter { it.startsWith("$BASE.") && it.substringAfterLast('.') !in GENERATED }
-                    .map(::packageOf)
-                    .filter { it != from }
-                    .toSet()
-            }
+    private fun imports(files: List<KoFileDeclaration>): Map<String, Set<String>> {
+        val edges = mutableMapOf<String, MutableSet<String>>()
+        for (file in files) {
+            val from = file.packagee?.name.orEmpty()
+            val targets = file.imports.mapNotNull { target(it.name) }.toSet() - from
+            if (from.startsWith("$BASE.")) edges.getOrPut(from) { mutableSetOf() } += targets
+        }
+        return edges
+    }
+
+    private fun target(name: String): String? =
+        if (name.startsWith("$BASE.") && name.substringAfterLast('.') !in GENERATED) packageOf(name) else null
 
     private fun packageOf(name: String): String {
         val parts = name.split('.')

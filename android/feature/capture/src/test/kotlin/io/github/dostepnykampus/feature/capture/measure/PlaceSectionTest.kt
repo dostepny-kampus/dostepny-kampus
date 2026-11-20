@@ -76,7 +76,7 @@ class PlaceSectionTest {
         compose.onNodeWithText("12 m od punktu").assertIsDisplayed()
         compose.onNodeWithText("Poza budynkiem").assertIsDisplayed()
         compose.onNodeWithText("Potwierdź").performClick()
-        assertEquals(listOf("confirm"), actions)
+        assertEquals("Potwierdzenie podpowiedzi wysyła potwierdzenie", listOf("confirm"), actions)
     }
 
     @Test
@@ -85,7 +85,7 @@ class PlaceSectionTest {
         compose.onNodeWithText("Punkt leży w obrysie budynku").assertIsDisplayed()
         compose.onNodeWithText("Wybierz inny").performClick()
         compose.onNodeWithText("Budynek B-1 Budynek B-1, 31 m").performClick()
-        assertEquals(listOf("B-1"), actions)
+        assertEquals("Wybór z listy wysyła wybrany budynek", listOf("B-1"), actions)
         compose.onNodeWithText("Wybierz inny").assertIsDisplayed()
     }
 
@@ -93,7 +93,7 @@ class PlaceSectionTest {
     fun leavesOutside() {
         show(PlaceChoice.Suggested(BuildingHint(a1, distanceMeters = 30.0, isInside = false)))
         compose.onNodeWithText("Poza budynkiem").performClick()
-        assertEquals(listOf("outside"), actions)
+        assertEquals("„Poza budynkiem” wysyła wybór poza budynkiem", listOf("outside"), actions)
     }
 
     /** Wiersz: C1 „Wybór innego budynku” → „Poza budynkiem” na końcu listy zamyka wybór. Wymagania: US6.2 */
@@ -103,7 +103,7 @@ class PlaceSectionTest {
         compose.onNodeWithText("Wybierz budynek").performClick()
         compose.onNodeWithText("Budynek B-1 Budynek B-1, 31 m").assertIsDisplayed()
         compose.onNodeWithText("Poza budynkiem").performClick()
-        assertEquals(listOf("outside"), actions)
+        assertEquals("„Poza budynkiem” z listy wysyła wybór poza budynkiem", listOf("outside"), actions)
         compose.onNodeWithText("Anuluj").assertDoesNotExist()
     }
 
@@ -120,7 +120,7 @@ class PlaceSectionTest {
         compose.onNodeWithText("Najbliżej punktu, od najbliższego:").assertIsDisplayed()
         val first = compose.onNodeWithText("Budynek A-1 Gmach Główny, 5 m").getUnclippedBoundsInRoot().top
         val second = compose.onNodeWithText("Budynek B-1 Budynek B-1, 31 m").getUnclippedBoundsInRoot().top
-        assertTrue(first < second)
+        assertTrue("Bliższy budynek stoi na liście wyżej", first < second)
         compose.onNodeWithText("Anuluj").performClick()
         compose.onNodeWithText("Budynek: B-1 Budynek B-1").assertIsDisplayed()
     }
