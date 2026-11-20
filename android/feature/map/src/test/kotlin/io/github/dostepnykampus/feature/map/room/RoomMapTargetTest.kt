@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.feature.map.room
 
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import io.github.dostepnykampus.feature.map.plan.selectedBuilding
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.ENTRANCE
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.FOUND
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.GROUND
@@ -34,5 +36,12 @@ class RoomMapTargetTest {
                 RoomMapTarget(floor = SECOND.id, point = FOUND.room.labelPoint),
             )
         assertEquals(expected, targets, "Punkty i piętra kroków drogi")
+    }
+
+    @Test
+    fun pinsOnlyExplicitRoomFloor() {
+        val room = MapFocus.Building(symbol = FOUND.building, command = 1L, room = FOUND.room.id)
+        val floor = room.copy(floor = FOUND.floor.id)
+        assertEquals(listOf(null, FOUND.building), listOf(selectedBuilding(room), selectedBuilding(floor)))
     }
 }
