@@ -201,7 +201,7 @@ fun CampusMapScreen(
     var barHeight by remember { mutableIntStateOf(0) }
     var headerHeight by remember { mutableIntStateOf(0) }
     val search = rememberSearchFocus()
-    RoomLayout(room, modifier, onBuildingClick, sheet.signs::close) { isLarge ->
+    sheet.RoomLayout(room, onBuildingClick, modifier) { isLarge ->
         val isList = if (room == null) state.isListSaved ?: isLarge else false
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
@@ -252,21 +252,20 @@ fun CampusMapScreen(
 }
 
 @Composable
-private fun RoomLayout(
+private fun ScreenSheet.RoomLayout(
     room: OpenRoom?,
-    modifier: Modifier,
     onBuilding: (String) -> Unit,
-    onRoomOpen: () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable (isLarge: Boolean) -> Unit,
 ) {
     val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     val found = room?.run { card.found }
-    var isPlanShown by rememberSaveable(found?.building, found?.room?.id) { mutableStateOf(false) }
+    var isPlanShown by rememberSaveable(found?.building, found?.run { room.id }) { mutableStateOf(false) }
     BackHandler(enabled = room != null) {
         if (isLarge && isPlanShown) isPlanShown = false else room?.run { onClose() }
     }
-    DisposableEffect(found) {
-        if (found != null) onRoomOpen()
+    DisposableEffect(found, signs) {
+        if (found != null) signs.close()
         onDispose {}
     }
     if (room != null && isLarge && !isPlanShown) {
@@ -329,7 +328,7 @@ private fun CampusMap(
                     plan.onView(view.also { state.keep(it) })
                 },
                 onBuildingsTouch = { state.taps.touch(it, onBuildingClick, onEmptyMapClick).also { signs.close() } },
-                onSignTouch = { sign, id -> signs.openFromMap(sign, id, room, state.taps::dismiss) },
+                onSignTouch = signs.signTouch(room, state.taps::dismiss),
                 modifier = Modifier.fillMaxSize(),
             )
             pinned?.let { EntranceDescription(it) }
@@ -349,14 +348,16 @@ private fun CampusMap(
                 motion = motion,
                 start = { FloorColumn(plan = plan.shown, onChoose = plan.onFloor) },
             ) {
-                val open = OpenSign(sheet, barriers, ui.catalog, plan.shown, room.takeUnless { isKeyboardOpen })
+                val shown = room.takeUnless { isKeyboardOpen }
+                val open =
+                    OpenSign(sheet = sheet, barriers = barriers, catalog = ui.catalog, plan = plan.shown, room = shown)
                 MapSheets(open = open, state = state, onBuilding = onBuildingClick, entranceActions = entranceActions)
             }
         }
     }
 }
 
-private fun SignSheetState.openFromMap(sign: TouchSign, id: String, room: OpenRoom?, dismiss: () -> Unit) {
+private fun SignSheetState.signTouch(room: OpenRoom?, dismiss: () -> Unit): (TouchSign, String) -> Unit = { sign, id ->
     room?.run { onClose() }
     open(sign, id)
     dismiss()

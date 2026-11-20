@@ -21,11 +21,7 @@ import io.github.dostepnykampus.feature.map.overlay.BuildingLink
 import io.github.dostepnykampus.feature.map.overlay.MapSheet
 import io.github.dostepnykampus.feature.map.overlay.MapSheetHeader
 
-/**
- * Karta [room] z drogą tekstem. [onShowMap] oznacza pełny ekran z powrotem do planu.
- *
- * Wymagania: US18.1, US18.2, US18.3
- */
+/** Karta [room] z drogą tekstem i powrotem do planu [onShowMap]. Wymagania: US18.1, US18.2, US18.3 */
 @Composable
 internal fun RoomCardSheet(
     room: OpenRoom,

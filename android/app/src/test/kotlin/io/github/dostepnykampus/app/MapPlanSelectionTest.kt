@@ -106,9 +106,10 @@ class MapPlanSelectionTest {
             val planModel = remember { MapPlanViewModel(repo, plans, entrances) }
             val entrModel = remember { BuildingEntrancesViewModel(entrances) }
             val liftModel = remember { EntranceLiftViewModel(plans) }
-            val roomModel = remember {
-                RoomCardViewModel(plans = plans, entrances = entrances, barriers = AcceptedBarriers { emptyList() })
-            }
+            val roomModel =
+                remember {
+                    RoomCardViewModel(plans = plans, entrances = entrances, barriers = AcceptedBarriers { emptyList() })
+                }
             DostepnyKampusTheme {
                 AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route: NavKey ->
                     when (route) {
