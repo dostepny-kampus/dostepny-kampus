@@ -22,7 +22,9 @@ case "$1 $2" in
     if [[ -f $FAKE_DIR/lista-$commit ]]; then cat "$FAKE_DIR/lista-$commit"; else cat "$FAKE_DIR/lista"; fi ;;
   'api repos/o/r/compare/stary...abc123') [[ -f $FAKE_DIR/zakres ]] || exit 1; cat "$FAKE_DIR/zakres" ;;
   'run download')
-    [[ -f $FAKE_DIR/artefakt-$3 ]] || exit 1
+    # artefakt-<id>: artefakt gradle-build-cache z plikiem `wpis`; artefakt-<id>-<nazwa>: artefakt <nazwa> z plikiem <nazwa>.
+    if [[ -f $FAKE_DIR/artefakt-$3-$5 ]]; then mkdir -p "$7"; cp "$FAKE_DIR/artefakt-$3-$5" "$7/$5"; exit 0; fi
+    [[ -f $FAKE_DIR/artefakt-$3 && $5 == gradle-build-cache ]] || exit 1
     mkdir -p "$7"; cp "$FAKE_DIR/artefakt-$3" "$7/wpis" ;;
 esac
 SH
@@ -80,6 +82,21 @@ zakres "push z dwoma scaleniami: artefakt ma grupa starszego commita" wpis-5 tru
 zakres "push z dwoma scaleniami: nowszy commit ma pierwszeństwo" wpis-7 true "abc123 def456" def456:5 abc123:7
 zakres "żadna grupa pusha nie ma artefaktu" BRAK false "abc123 def456"
 zakres "błąd odczytu zakresu: zostaje commit głowy" wpis-7 true BRAK abc123:7
+rm -rf "$workdir/f" "$workdir/cache" "$workdir/output"
+mkdir "$workdir/f"
+echo 9 >"$workdir/f/lista"
+echo wpis-9 >"$workdir/f/artefakt-9"
+echo analiza-9 >"$workdir/f/artefakt-9-gradle-build-cache-analiza"
+PATH="$workdir/bin:$PATH" FAKE_DIR="$workdir/f" GH_REPO=o/r GITHUB_OUTPUT="$workdir/output"   bash "$script" abc123 "gradle-build-cache gradle-build-cache-analiza" "$workdir/cache" >/dev/null 2>&1 &&
+  [[ $(cat "$workdir/cache/wpis") == wpis-9 && $(cat "$workdir/cache/gradle-build-cache-analiza") == analiza-9 ]] &&
+  [[ ! -e $workdir/cache.czesc && $(cat "$workdir/output") == jest=true ]] &&
+  echo "OK: kilka nazw: artefakty obu zadań scalone w jednym katalogu" ||
+  { echo "BŁĄD: kilka nazw: $(ls -A "$workdir/cache" 2>&1)"; failures=$((failures + 1)); }
+rm -f "$workdir/f/artefakt-9"
+PATH="$workdir/bin:$PATH" FAKE_DIR="$workdir/f" GH_REPO=o/r GITHUB_OUTPUT="$workdir/output"   bash "$script" abc123 "gradle-build-cache gradle-build-cache-analiza" "$workdir/cache" >/dev/null 2>&1 &&
+  [[ $(ls -A "$workdir/cache") == gradle-build-cache-analiza ]] &&
+  echo "OK: kilka nazw: wystarczy jeden artefakt i nie zostaje nic z poprzedniego pobrania" ||
+  { echo "BŁĄD: jeden z kilku artefaktów: $(ls -A "$workdir/cache" 2>&1)"; failures=$((failures + 1)); }
 przypadek "zapytanie o przebiegi" wpis-9 true "przebiegu 9" "9" "9"
 grep -q -- '--event merge_group' "$workdir/f/wywolania" && grep -q -- '--commit abc123' "$workdir/f/wywolania" &&
   grep -q -- '--status success' "$workdir/f/wywolania" && grep -q -- '--name gradle-build-cache' "$workdir/f/wywolania" &&

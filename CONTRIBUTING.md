@@ -19,7 +19,8 @@ opisy w kodzie), mówi [AGENTS.md](AGENTS.md).
    PR z `sprint/N` tego repozytorium do `main` nie musi zamykać pojedynczego issue.
    Kolejka uruchamia kontrole także na wyniku scalenia (zdarzenie `merge_group`, np. w [`android.yml`](.github/workflows/android.yml)
    i [`api.yml`](.github/workflows/api.yml)); squash i kolejka to ustawienia repozytorium, nie plik.
-   Android w grupie kolejki uruchamia tylko `testy` (kompilacja, lint, detekt, testy jednostkowe i architektury, Roborazzi);
+   Android w grupie kolejki uruchamia tylko dwa równoległe zadania: `testy` (testy jednostkowe i architektury, Kover,
+   Roborazzi) i `analiza-statyczna` (lint, detekt);
    `buildHealth` biegnie na PR i w kontroli sprintu (punkt 7), APK i emulatory tylko w kontroli sprintu albo po ręcznym
    uruchomieniu `android.yml` z commitem (`gh workflow run android.yml -f sha=<commit>`); push po scaleniu tylko przekłada cache.
    Serwer w grupie kolejki uruchamia `mvn verify` bez testów mutacyjnych PIT; PIT biegnie na PR i w kontroli sprintu.
@@ -34,7 +35,7 @@ opisy w kodzie), mówi [AGENTS.md](AGENTS.md).
    [`kontrola-sprintu-cel.sh`](.github/scripts/kontrola-sprintu-cel.sh)) po każdym wypchnięciu na `sprint/N` (i co godzinę
    z harmonogramu GitHub jako zapas) bierze głowę gałęzi `sprint/N` z najwyższym N,
    której nie ma jeszcze w `main`, uruchamia na niej pełny przebieg [`android.yml`](.github/workflows/android.yml) (APK,
-   emulatory, pełny test systemowy, `buildHealth`; bez `testy`, które głowa przeszła w kolejce) oraz testy mutacyjne PIT
+   emulatory, pełny test systemowy, `buildHealth`; bez `testy` i `analiza-statyczna`, które głowa przeszła w kolejce) oraz testy mutacyjne PIT
    serwera ([`backend.yml`](.github/workflows/backend.yml), zadanie `mutacje`) i zapisuje wspólny wynik
    jako status commita `kontrola-sprintu`. Głowę z tym statusem pomija; gdy od ostatniego sprawdzonego commita
    nie zmienił się Android, serwer, `infra/` ani dane budynków, stawia zielony status bez budowy. Ręczne uruchomienie
