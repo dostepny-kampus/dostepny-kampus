@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.network
 
+import io.github.dostepnykampus.core.network.di.NetworkModule
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 import okhttp3.OkHttpClient
 import org.junit.jupiter.api.Assertions.assertEquals

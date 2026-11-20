@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.account
@@ -74,7 +74,12 @@ internal fun sessionOf(
         vault = LoginVault(file, ReversingCipher),
         refresher = refresher,
         work = work,
-        onLogin = onLogin,
+        queue =
+            object : QueueHandover {
+                override suspend fun adopt(subject: String) = Unit
+
+                override fun onLoggedIn() = onLogin()
+            },
     )
 
 internal const val REFRESH_TOKEN = "odswiezenie"

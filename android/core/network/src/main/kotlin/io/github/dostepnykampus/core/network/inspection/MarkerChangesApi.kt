@@ -1,12 +1,12 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.network.inspection
 
 import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.auth.QueueOwner
+import io.github.dostepnykampus.core.network.QueueOwner
 import io.github.dostepnykampus.core.network.decodeContract
 import io.github.dostepnykampus.core.network.encodeContract
 import io.github.dostepnykampus.core.network.exchange

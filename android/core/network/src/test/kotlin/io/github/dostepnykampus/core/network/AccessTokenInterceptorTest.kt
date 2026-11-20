@@ -12,6 +12,7 @@ import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.network.auth.AccessTokenInterceptor
 import io.github.dostepnykampus.core.network.auth.AccessTokens
 import io.github.dostepnykampus.core.network.building.BuildingsApi
+import io.github.dostepnykampus.core.network.di.NetworkModule
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async

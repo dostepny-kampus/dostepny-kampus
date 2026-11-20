@@ -110,23 +110,6 @@ class PackageCycleArchitectureTest {
 
         val GENERATED = setOf("R", "BuildConfig")
 
-        val CYCLES =
-            mapOf(
-                setOf(
-                    "core.network",
-                    "core.network.auth",
-                    "core.network.building",
-                    "core.network.inspection",
-                    "core.network.submission",
-                    "core.network.sync",
-                ) to "#3539",
-                setOf(
-                    "core.data.account",
-                    "core.data.di",
-                    "core.data.submission.pending",
-                    "core.data.submission.sync",
-                ) to "#3540",
-                setOf("core.geo", "core.geo.building") to "#3541",
-            )
+        val CYCLES = emptyMap<Set<String>, String>()
     }
 }

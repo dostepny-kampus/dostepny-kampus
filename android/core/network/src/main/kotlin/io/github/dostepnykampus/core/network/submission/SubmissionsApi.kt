@@ -8,7 +8,7 @@ package io.github.dostepnykampus.core.network.submission
 import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.auth.QueueOwner
+import io.github.dostepnykampus.core.network.QueueOwner
 import io.github.dostepnykampus.core.network.decodedResult
 import io.github.dostepnykampus.core.network.exchange
 import io.github.dostepnykampus.core.network.exchangeBody

@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.core.network
 
-import io.github.dostepnykampus.core.network.auth.QueueOwnerMismatch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Callback

@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.network.SubmissionServer.Companion.ID
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.PHOTO
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.quick
 import io.github.dostepnykampus.core.network.building.BuildingsApi
+import io.github.dostepnykampus.core.network.di.NetworkModule
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred

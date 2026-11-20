@@ -7,8 +7,8 @@ package io.github.dostepnykampus.systemtest
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.NetworkModule
 import io.github.dostepnykampus.core.network.auth.AccessTokens
+import io.github.dostepnykampus.core.network.di.NetworkModule
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Test

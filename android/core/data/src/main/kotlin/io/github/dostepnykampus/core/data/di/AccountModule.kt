@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.di
@@ -20,8 +20,14 @@ import io.github.dostepnykampus.core.data.account.KeystoreCipher
 import io.github.dostepnykampus.core.data.account.LoginCipher
 import io.github.dostepnykampus.core.data.account.LoginRefresh
 import io.github.dostepnykampus.core.data.account.LoginVault
+import io.github.dostepnykampus.core.data.account.QueueHandover
 import io.github.dostepnykampus.core.data.account.RoleProvider
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
+import io.github.dostepnykampus.core.database.QueueOwnershipDao
+import io.github.dostepnykampus.core.network.auth.AccessTokens
 import java.io.File
+import javax.inject.Singleton
+import kotlin.coroutines.CoroutineContext
 
 /** Konto `core:data` w grafie Hilt aplikacji. */
 @Module
@@ -50,5 +56,29 @@ internal interface AccountModule {
             @ApplicationContext context: Context,
             cipher: LoginCipher,
         ): LoginVault = LoginVault(File(context.noBackupFilesDir, "logowanie"), cipher)
+
+        /**
+         * Logowanie innego konta przejmuje wpisy kolejki bez właściciela z [owners], a każde logowanie budzi
+         * wysyłkę kolejki zgłoszeń [submissions]. Wymagania: US14.1, BR-1
+         */
+        @Provides
+        fun queueHandover(owners: QueueOwnershipDao, submissions: SubmissionQueue): QueueHandover =
+            object : QueueHandover {
+                override suspend fun adopt(subject: String) = owners.adopt(subject)
+
+                override fun onLoggedIn() = submissions.onLoggedIn()
+            }
+
+        /** Jedna sesja konta na proces. Wymagania: US14.1, US14.4 */
+        @Provides
+        @Singleton
+        fun accountSession(
+            tokens: AccessTokens,
+            vault: LoginVault,
+            refresher: LoginRefresh,
+            @IoContext work: CoroutineContext,
+            queue: QueueHandover,
+        ): AccountSession =
+            AccountSession(tokens = tokens, vault = vault, refresher = refresher, work = work, queue = queue)
     }
 }
