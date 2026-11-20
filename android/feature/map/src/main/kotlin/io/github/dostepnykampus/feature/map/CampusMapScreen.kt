@@ -182,8 +182,7 @@ fun CampusMapScreen(
     onRoomClick: (FoundRoom) -> Unit = {},
     room: OpenRoom? = null,
 ) {
-    val sheet =
-        screenSheet(focus = focus, padding = contentPadding, onCardClose = onEmptyMapClick, onCardReturn = onCardReturn)
+    val sheet = screenSheet(focus, contentPadding, onCardClose = onEmptyMapClick, onCardReturn = onCardReturn)
     val isCovered = sheet.layout.padding.calculateBottomPadding() > 0.dp
     val states = rememberSaveableStateHolder()
     val areas = rememberMapAreas(state.mapData, sheet.layout.focus)
@@ -211,7 +210,7 @@ fun CampusMapScreen(
                         plan = PlanLink(shown = plan, onView = onCamera, onFloor = onFloorChoose, onHide = onMapHide),
                         onBuildingClick = onBuildingClick,
                         onEmptyMapClick = onEmptyMapClick,
-                        entranceActions = entranceActions,
+                        entrance = entranceActions,
                         room = room,
                         isRoomFull = isLarge,
                         modifier = Modifier.fillMaxSize().background(DostepnyKampusTheme.mapColors.lad),
@@ -286,7 +285,7 @@ private fun CampusMap(
     plan: PlanLink,
     onBuildingClick: (String) -> Unit,
     onEmptyMapClick: () -> Unit,
-    entranceActions: EntranceActions,
+    entrance: EntranceActions,
     room: OpenRoom?,
     isRoomFull: Boolean,
     modifier: Modifier = Modifier,
@@ -310,14 +309,13 @@ private fun CampusMap(
             roomCamera = room?.run { cameraForRoom(isRoomOnMap, roomCover) },
         )
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
-        val scene = state.scene
         val move = state.move
-        if (scene != null && move != null && state.limits != null) {
+        if (state.scene != null && move != null && state.limits != null) {
             val pinned =
-                signs.rememberPinnedEntrance(ui.catalog, scene.selection.entrance, entranceActions.onBuildingSelect)
+                signs.rememberPinnedEntrance(ui.catalog, state.scene.selection.entrance, entrance.onBuildingSelect)
             mapView.Show(
-                data = scene.data,
-                selection = scene.selection.copy(entrance = pinned, barrier = signs.barrierId, plan = plan.shown),
+                data = state.scene.data,
+                selection = state.scene.selection.copy(entrance = pinned, barrier = signs.barrierId, plan = plan.shown),
                 move = move,
                 inset = state.inset,
                 onCameraIdle = { view ->
@@ -341,9 +339,12 @@ private fun CampusMap(
                 roomCover = roomCover,
                 plan = plan,
             ) {
-                val visibleRoom = room.takeIf { isRoomOnMap && !isKeyboardOpen }
-                val open = OpenSign(sheet, barriers, ui.catalog, plan.shown, visibleRoom)
-                MapSheets(open, state, onBuildingClick, entranceActions) { roomHeight = it }
+                val shown = room.takeIf { isRoomOnMap && !isKeyboardOpen }
+                val open =
+                    OpenSign(sheet = sheet, barriers = barriers, catalog = ui.catalog, plan = plan.shown, room = shown)
+                MapSheets(open = open, state = state, onBuilding = onBuildingClick, entranceActions = entrance) {
+                    roomHeight = it
+                }
             }
         }
     }
