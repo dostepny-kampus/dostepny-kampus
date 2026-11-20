@@ -18,7 +18,7 @@ import io.github.dostepnykampus.core.network.building.BuildingsApi
 import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 
-/** Źródło ścieżek dostosowanych `core:data` w grafie Hilt aplikacji. TODO(#3535): podłączenie do mapy kampusu. */
+/** Źródło ścieżek dostosowanych `core:data` w grafie Hilt aplikacji. */
 @Module
 @InstallIn(SingletonComponent::class)
 internal object PathDataModule {

@@ -19,7 +19,7 @@ const val PATH_ID = "id"
 
 /**
  * Dane mapy z odcinkami ścieżek dostosowanych [paths] jako liniami GeoJSON z właściwością [PATH_ID] zamiast
- * poprzednich ścieżek. TODO(#3535): ekran mapy wpisuje tu ścieżki ze źródła `AccessiblePaths`.
+ * poprzednich ścieżek.
  *
  * Wymagania: US1.4
  */
