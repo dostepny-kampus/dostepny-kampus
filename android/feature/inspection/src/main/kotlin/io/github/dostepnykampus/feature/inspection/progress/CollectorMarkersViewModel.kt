@@ -188,18 +188,18 @@ class CollectorMarkersViewModel
             val queued = ownPending[floorId]
             val serverList = synced[floorId].orEmpty()
             val fromServer = serverList.firstOrNull { it.isMine } ?: serverList.firstOrNull()
-            return when {
-                queued != null ->
-                    FloorRow(place = place, label = label, markerId = queued.markerId, isPending = true, isMine = true)
-                fromServer != null ->
-                    FloorRow(
-                        place = place,
-                        label = label,
-                        markerId = fromServer.id,
-                        isPending = false,
-                        isMine = fromServer.isMine,
-                    )
-                else -> FloorRow(place = place, label = label)
+            return if (queued != null) {
+                FloorRow(place = place, label = label, markerId = queued.markerId, isPending = true, isMine = true)
+            } else if (fromServer != null) {
+                FloorRow(
+                    place = place,
+                    label = label,
+                    markerId = fromServer.id,
+                    isPending = false,
+                    isMine = fromServer.isMine,
+                )
+            } else {
+                FloorRow(place = place, label = label)
             }
         }
 

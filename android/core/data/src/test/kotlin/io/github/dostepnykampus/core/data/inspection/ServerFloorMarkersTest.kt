@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.io.IOException
 import java.time.Instant
 
 /**
@@ -38,7 +39,9 @@ class ServerFloorMarkersTest {
                 ArrayDeque(
                     listOf(
                         ApiResult.Success(SyncPull(cursor = "c-1", inspectionMarkers = listOf(OWN, OTHER))),
-                        ApiResult.Success(SyncPull(cursor = "c-2", inspectionMarkers = listOf(OWN.copy(isRevoked = true)))),
+                        ApiResult.Success(
+                            SyncPull(cursor = "c-2", inspectionMarkers = listOf(OWN.copy(isRevoked = true))),
+                        ),
                     ),
                 )
             val store =
@@ -61,7 +64,7 @@ class ServerFloorMarkersTest {
                 ArrayDeque<ApiResult<SyncPull>>(
                     listOf(
                         ApiResult.Success(SyncPull(cursor = "c-1", inspectionMarkers = listOf(OWN))),
-                        ApiResult.NetworkError(cause = RuntimeException("offline")),
+                        ApiResult.NetworkError(cause = IOException("offline")),
                     ),
                 )
             val store = serverFloorMarkersOf(dao = dao) { replies.removeFirst() }
