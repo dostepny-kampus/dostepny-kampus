@@ -29,6 +29,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.style.TextDecoration
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
@@ -103,17 +105,19 @@ internal fun MapOverlay(
     hasPanels: Boolean = hasControls,
     hasNotice: Boolean = hasPanels,
     motion: MapMotion? = null,
+    controlsCover: Dp = 0.dp,
     start: @Composable ColumnScope.() -> Unit = {},
     content: @Composable BoxScope.() -> Unit,
 ) {
     var saved by rememberSaveable { mutableStateOf<MapPanel?>(null) }
-    val open = saved.takeIf { hasPanels }
+    val open = saved.takeIf { hasPanels && controlsCover == 0.dp }
     Box(modifier) {
         if (open == MapPanel.Area) {
             Box(Modifier.matchParentSize().pointerInput(Unit) { detectTapGestures { saved = null } })
         }
         MapControlsLayout(
-            modifier = Modifier.matchParentSize(),
+            modifier = Modifier.matchParentSize().padding(bottom = controlsCover),
+            reserveFooter = controlsCover == 0.dp,
             mapControls = {
                 if (hasControls && open == null) {
                     MapControls(
@@ -128,7 +132,7 @@ internal fun MapOverlay(
             areaSwitch = {
                 MapAreaSelection(
                     areas = areas,
-                    isVisible = hasPanels && open != MapPanel.Info,
+                    isVisible = hasPanels && open != MapPanel.Info && controlsCover == 0.dp,
                     isOpen = open == MapPanel.Area,
                     onOpenChange = { isOpening -> saved = MapPanel.Area.takeIf { isOpening } },
                     onAreaShow = onAreaShow,

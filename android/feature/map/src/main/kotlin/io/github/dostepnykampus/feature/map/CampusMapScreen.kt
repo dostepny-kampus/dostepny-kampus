@@ -311,7 +311,8 @@ private fun CampusMap(
     val signs = sheet.signs
     var roomHeight by remember { mutableIntStateOf(0) }
     val isRoomOnMap = room != null && !isRoomFull
-    val roomOffset = with(LocalDensity.current) { roomHeight.toDp().value.toDouble() / 2.0 }
+    val roomCover = with(LocalDensity.current) { roomHeight.toDp() }.takeIf { isRoomOnMap } ?: 0.dp
+    val roomOffset = roomCover.value.toDouble() / 2.0
     val roomCamera =
         room?.card?.mapTarget()?.let { target ->
             val camera = MapCamera(center = target.point, zoom = ENTRANCE_ZOOM)
@@ -366,6 +367,7 @@ private fun CampusMap(
                 hasPanels = !state.isCovered && !isKeyboardOpen,
                 hasNotice = !isKeyboardOpen,
                 motion = motion,
+                controlsCover = roomCover,
                 start = { FloorColumn(plan = plan.shown, onChoose = plan.onFloor) },
             ) {
                 val visibleRoom = room.takeIf { isRoomOnMap && !isKeyboardOpen }
