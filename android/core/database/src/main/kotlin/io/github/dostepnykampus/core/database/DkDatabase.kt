@@ -8,10 +8,8 @@ package io.github.dostepnykampus.core.database
 import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
-import io.github.dostepnykampus.core.database.cache.BarrierCacheEntity
-import io.github.dostepnykampus.core.database.cache.BuildingCacheDao
-import io.github.dostepnykampus.core.database.cache.BuildingCacheEntity
+import io.github.dostepnykampus.core.database.cache.ServerCopyDao
+import io.github.dostepnykampus.core.database.cache.ServerCopyEntity
 import io.github.dostepnykampus.core.database.inspection.InspectionMarkerDao
 import io.github.dostepnykampus.core.database.inspection.InspectionMarkerEntity
 import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeDao
@@ -36,15 +34,14 @@ import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
     entities = [
         PendingSubmissionEntity::class,
         PendingPhotoEntity::class,
-        BuildingCacheEntity::class,
+        ServerCopyEntity::class,
         OwnSubmissionEntity::class,
-        BarrierCacheEntity::class,
         PendingMarkerChangeEntity::class,
         FloorPlanEntity::class,
         FloorRoomEntity::class,
         InspectionMarkerEntity::class,
     ],
-    version = 11,
+    version = 12,
     autoMigrations = [AutoMigration(from = 9, to = 10), AutoMigration(from = 10, to = 11)],
     exportSchema = true,
 )
@@ -52,17 +49,14 @@ internal abstract class DkDatabase : RoomDatabase() {
     /** Kolejka zgłoszeń. */
     abstract fun pendingSubmissions(): PendingSubmissionDao
 
-    /** Kopia listy budynków. */
-    abstract fun buildingCache(): BuildingCacheDao
+    /** Kopie odpowiedzi serwera: lista budynków, bariery ze zgłoszeń przyjętych. */
+    abstract fun serverCopy(): ServerCopyDao
 
     /** Historia własnych zgłoszeń. */
     abstract fun ownSubmissions(): OwnSubmissionDao
 
     /** Odczyt zgłoszenia z kolejki do poprawki. */
     abstract fun pendingEdits(): PendingEditDao
-
-    /** Kopia barier ze zgłoszeń przyjętych. */
-    abstract fun barrierCache(): BarrierCacheDao
 
     /** Przypisanie właściciela wierszom obu kolejek po migracji. */
     abstract fun queueOwnership(): QueueOwnershipDao

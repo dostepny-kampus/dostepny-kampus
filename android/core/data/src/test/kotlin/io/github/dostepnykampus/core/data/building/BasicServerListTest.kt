@@ -61,7 +61,7 @@ class BasicServerListTest {
     private fun direct(result: ServerReply<BuildingList>): BuildingCatalog =
         runBlocking {
             BuildingCatalogRepository(
-                buildingCache = null,
+                serverCopy = null,
                 ioContext = EmptyCoroutineContext,
                 listBuildings = { result },
             ) { ASSET }.catalog()

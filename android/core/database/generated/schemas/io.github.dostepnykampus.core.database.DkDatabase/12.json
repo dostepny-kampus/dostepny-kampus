@@ -1,0 +1,562 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 12,
+    "identityHash": "bf3048f34a24949b6b4bbd8fda737086",
+    "entities": [
+      {
+        "tableName": "pending_submissions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `base_version` INTEGER, `saved_at` INTEGER NOT NULL, `owner_sub` TEXT, `created_on_server` INTEGER NOT NULL, `kind` TEXT NOT NULL, `longitude` REAL NOT NULL, `latitude` REAL NOT NULL, `accuracy_meters` REAL, `manual_correction` INTEGER, `building_symbol` TEXT, `floor_id` TEXT, `floor_number` INTEGER, `mezzanine` INTEGER, `barrier_group` TEXT, `barrier_type` TEXT, `severity` INTEGER, `description` TEXT, `replaces_submission_id` TEXT, `barrier_removed` INTEGER, `entrance_id` TEXT, `entrance_marking` TEXT, `refused` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "baseVersion",
+            "columnName": "base_version",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "savedAtMillis",
+            "columnName": "saved_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ownerSub",
+            "columnName": "owner_sub",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "isCreatedOnServer",
+            "columnName": "created_on_server",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kind",
+            "columnName": "kind",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitude",
+            "columnName": "longitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "latitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "accuracyMeters",
+            "columnName": "accuracy_meters",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "isManualCorrection",
+            "columnName": "manual_correction",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "buildingSymbol",
+            "columnName": "building_symbol",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "floorId",
+            "columnName": "floor_id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "floorNumber",
+            "columnName": "floor_number",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "isMezzanine",
+            "columnName": "mezzanine",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "barrierGroup",
+            "columnName": "barrier_group",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "barrierType",
+            "columnName": "barrier_type",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "severity",
+            "columnName": "severity",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "replacesSubmissionId",
+            "columnName": "replaces_submission_id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "isBarrierRemoved",
+            "columnName": "barrier_removed",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "entranceId",
+            "columnName": "entrance_id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "entranceMarking",
+            "columnName": "entrance_marking",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "isRefused",
+            "columnName": "refused",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "pending_photos",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`submission_id` TEXT NOT NULL, `photo_id` TEXT NOT NULL, `path` TEXT NOT NULL, `uploaded` INTEGER NOT NULL, PRIMARY KEY(`submission_id`, `photo_id`), FOREIGN KEY(`submission_id`) REFERENCES `pending_submissions`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "submissionId",
+            "columnName": "submission_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "photoId",
+            "columnName": "photo_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "path",
+            "columnName": "path",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isUploaded",
+            "columnName": "uploaded",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "submission_id",
+            "photo_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_pending_photos_submission_id",
+            "unique": false,
+            "columnNames": [
+              "submission_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_pending_photos_submission_id` ON `${TABLE_NAME}` (`submission_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "pending_submissions",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "submission_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "server_copy",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`key` TEXT NOT NULL, `document_json` TEXT NOT NULL, `synced_at` INTEGER NOT NULL, PRIMARY KEY(`key`))",
+        "fields": [
+          {
+            "fieldPath": "key",
+            "columnName": "key",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "documentJson",
+            "columnName": "document_json",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "syncedAt",
+            "columnName": "synced_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "key"
+          ]
+        }
+      },
+      {
+        "tableName": "own_submissions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `saved_at` INTEGER NOT NULL, `kind` TEXT NOT NULL, `building_symbol` TEXT, `floor_number` INTEGER, `floor_id` TEXT, `barrier_type` TEXT, `severity` INTEGER, `state` TEXT NOT NULL, `server_version` INTEGER, `refusal_code` INTEGER, `server_status` TEXT, `rejection_reason` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "savedAtMillis",
+            "columnName": "saved_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kind",
+            "columnName": "kind",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "buildingSymbol",
+            "columnName": "building_symbol",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "floorNumber",
+            "columnName": "floor_number",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "floorId",
+            "columnName": "floor_id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "barrierType",
+            "columnName": "barrier_type",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "severity",
+            "columnName": "severity",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "serverVersion",
+            "columnName": "server_version",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "refusalCode",
+            "columnName": "refusal_code",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "serverStatus",
+            "columnName": "server_status",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "rejectionReason",
+            "columnName": "rejection_reason",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "pending_marker_changes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`operation_id` TEXT NOT NULL, `type` TEXT NOT NULL, `marker_id` TEXT NOT NULL, `building_symbol` TEXT NOT NULL, `floor_id` TEXT, `saved_at` INTEGER NOT NULL, `owner_sub` TEXT, PRIMARY KEY(`operation_id`))",
+        "fields": [
+          {
+            "fieldPath": "operationId",
+            "columnName": "operation_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "markerId",
+            "columnName": "marker_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "buildingSymbol",
+            "columnName": "building_symbol",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "floorId",
+            "columnName": "floor_id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "savedAtMillis",
+            "columnName": "saved_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ownerSub",
+            "columnName": "owner_sub",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "operation_id"
+          ]
+        }
+      },
+      {
+        "tableName": "floor_plans",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`building_symbol` TEXT NOT NULL, `floor_id` TEXT NOT NULL, `label` TEXT NOT NULL, `sort_order` INTEGER NOT NULL, `source` TEXT NOT NULL, `outline_json` TEXT NOT NULL, `synced_at` INTEGER NOT NULL, PRIMARY KEY(`building_symbol`, `floor_id`))",
+        "fields": [
+          {
+            "fieldPath": "building",
+            "columnName": "building_symbol",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "floor",
+            "columnName": "floor_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "label",
+            "columnName": "label",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "order",
+            "columnName": "sort_order",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "outlineJson",
+            "columnName": "outline_json",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "syncedAt",
+            "columnName": "synced_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "building_symbol",
+            "floor_id"
+          ]
+        }
+      },
+      {
+        "tableName": "floor_rooms",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`building_symbol` TEXT NOT NULL, `floor_id` TEXT NOT NULL, `id` TEXT NOT NULL, `number` TEXT, `function` TEXT NOT NULL, `category` TEXT NOT NULL, `geometry_json` TEXT NOT NULL, `label_longitude` REAL NOT NULL, `label_latitude` REAL NOT NULL, `labelled` INTEGER NOT NULL, `lift_id` TEXT, `lift_floors_json` TEXT, PRIMARY KEY(`building_symbol`, `floor_id`, `id`))",
+        "fields": [
+          {
+            "fieldPath": "building",
+            "columnName": "building_symbol",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "floor",
+            "columnName": "floor_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "number",
+            "columnName": "number",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "function",
+            "columnName": "function",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "category",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "geometryJson",
+            "columnName": "geometry_json",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "labelLongitude",
+            "columnName": "label_longitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "labelLatitude",
+            "columnName": "label_latitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isLabelled",
+            "columnName": "labelled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "liftId",
+            "columnName": "lift_id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "liftFloorsJson",
+            "columnName": "lift_floors_json",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "building_symbol",
+            "floor_id",
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "inspection_markers",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `building_symbol` TEXT NOT NULL, `floor_id` TEXT, `created_at` INTEGER NOT NULL, `is_mine` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "buildingSymbol",
+            "columnName": "building_symbol",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "floorId",
+            "columnName": "floor_id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAtMillis",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isMine",
+            "columnName": "is_mine",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_inspection_markers_building_symbol",
+            "unique": false,
+            "columnNames": [
+              "building_symbol"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_inspection_markers_building_symbol` ON `${TABLE_NAME}` (`building_symbol`)"
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bf3048f34a24949b6b4bbd8fda737086')"
+    ]
+  }
+}

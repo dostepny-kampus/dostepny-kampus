@@ -10,11 +10,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
-import io.github.dostepnykampus.core.data.barrier.BarrierListCopy
 import io.github.dostepnykampus.core.data.barrier.PhotoAddressBarriers
 import io.github.dostepnykampus.core.data.barrier.ServerAcceptedBarriers
+import io.github.dostepnykampus.core.data.barrier.barrierCopy
 import io.github.dostepnykampus.core.data.server.toReply
-import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
+import io.github.dostepnykampus.core.database.cache.ServerCopyDao
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
@@ -28,11 +28,15 @@ internal object BarrierDataModule {
     @Singleton
     fun acceptedBarriers(
         api: SubmissionsApi,
-        cache: BarrierCacheDao,
+        copies: ServerCopyDao,
         @IoContext ioContext: CoroutineContext,
     ): AcceptedBarriers =
         PhotoAddressBarriers(
-            source = ServerAcceptedBarriers(BarrierListCopy(cache, ioContext)) { api.accepted().toReply { it } },
+            source =
+                ServerAcceptedBarriers(
+                    copy = barrierCopy(copies, ioContext),
+                    accepted = { api.accepted().toReply { it } },
+                ),
             address = api::photoUrl,
         )
 }

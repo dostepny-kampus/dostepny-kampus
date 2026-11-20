@@ -203,7 +203,11 @@ class MigrationTest {
         }
 
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val database = Room.databaseBuilder(context, DkDatabase::class.java, DB_NAME).build()
+        val database =
+            Room
+                .databaseBuilder(context, DkDatabase::class.java, DB_NAME)
+                .addMigrations(*ALL_MIGRATIONS.toTypedArray())
+                .build()
         try {
             runBlocking {
                 database.queueOwnership().adopt("pierwsze")
@@ -233,6 +237,36 @@ class MigrationTest {
                 val markers = eleventh.query("SELECT COUNT(*) FROM inspection_markers").use { row -> readCount(row) }
 
                 assertEquals("kopia budynków i pusta tabela znaczników", listOf(1, 0), listOf(buildings, markers))
+            }
+    }
+
+    @Test
+    fun movesCopiesToOneTableIn12() {
+        helper.createDatabase(DB_NAME, 11).use { eleventh ->
+            eleventh.execSQL("INSERT INTO building_cache (id, list_json, synced_at) VALUES (1, '{\"b\":1}', 7)")
+            eleventh.execSQL("INSERT INTO barrier_cache (id, list_json, synced_at) VALUES (1, '[]', 9)")
+        }
+
+        helper
+            .runMigrationsAndValidate(DB_NAME, 12, true, MIGRATION_11_12)
+            .use { twelfth ->
+                val copies =
+                    twelfth.query("SELECT `key`, document_json, synced_at FROM server_copy ORDER BY `key`").use { row ->
+                        generateSequence { if (row.moveToNext()) row else null }
+                            .map { "${it.getString(0)} ${it.getString(1)} ${it.getLong(2)}" }
+                            .toList()
+                    }
+                val oldTables =
+                    twelfth
+                        .query(
+                            "SELECT COUNT(*) FROM sqlite_master WHERE name IN ('building_cache', 'barrier_cache')",
+                        ).use { row -> readCount(row) }
+
+                assertEquals(
+                    "kopie pod kluczami i bez starych tabel",
+                    listOf("barriers [] 9", "buildings {\"b\":1} 7", "0"),
+                    copies + oldTables.toString(),
+                )
             }
     }
 }

@@ -12,8 +12,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.github.dostepnykampus.core.database.cache.BarrierCacheDao
-import io.github.dostepnykampus.core.database.cache.BuildingCacheDao
+import io.github.dostepnykampus.core.database.cache.ServerCopyDao
 import io.github.dostepnykampus.core.database.inspection.InspectionMarkerDao
 import io.github.dostepnykampus.core.database.inspection.PendingMarkerChangeDao
 import io.github.dostepnykampus.core.database.room.FloorPlanDao
@@ -43,9 +42,9 @@ internal object DatabaseModule {
     @Provides
     fun pendingSubmissions(database: DkDatabase): PendingSubmissionDao = database.pendingSubmissions()
 
-    /** Kopia listy budynków z [database]. Wymagania: NFR-10 */
+    /** Kopie odpowiedzi serwera z [database]. Wymagania: NFR-10 */
     @Provides
-    fun buildingCache(database: DkDatabase): BuildingCacheDao = database.buildingCache()
+    fun serverCopy(database: DkDatabase): ServerCopyDao = database.serverCopy()
 
     /** Historia własnych zgłoszeń z [database]. Wymagania: US8 */
     @Provides
@@ -54,10 +53,6 @@ internal object DatabaseModule {
     /** Odczyt zgłoszenia z kolejki do poprawki z [database]. Wymagania: US8.3 */
     @Provides
     fun pendingEdits(database: DkDatabase): PendingEditDao = database.pendingEdits()
-
-    /** Kopia barier ze zgłoszeń przyjętych z [database]. Wymagania: NFR-10 */
-    @Provides
-    fun barrierCache(database: DkDatabase): BarrierCacheDao = database.barrierCache()
 
     /** Przypisanie właściciela wierszom kolejek utworzonym przed migracją. */
     @Provides
