@@ -150,7 +150,7 @@ Czynność główna: przejście do następnego kroku strzałką „›”.
 
 ### V1: plan piętra
 
-![Makieta V1 po przybliżeniu budynku szczegółowego: plan parteru A-1 w kolorach grup z numerami sal, przygaszone sąsiednie budynki, przyciski mapy, kolumna pięter po lewej z napisem Piętro i wybranym parterem w kółku, podpis źródła](../../_generated/m-v1-mapa-plan.svg)
+![Makieta V1 po przybliżeniu budynku szczegółowego: plan parteru A-1 w kolorach grup z numerami sal, przygaszone sąsiednie budynki, przyciski mapy, kolumna pięter po lewej z napisem Piętro i wybranym parterem w kółku, podpis OpenStreetMap i przycisk informacji](../../_generated/m-v1-mapa-plan.svg)
 
 Czynność główna: wybór piętra w kolumnie pięter.
 
@@ -159,7 +159,7 @@ Czynność główna: wybór piętra w kolumnie pięter.
 | Plan pojawia się sam przy powiększeniu co najmniej 17 dla budynku szczegółowego na środku mapy; inne budynki przygaszone z podpisami | US16.1, NFR-11 |
 | Na start piętro wejścia zalecanego; gdy dane go nie podają, parter | US16.1, BR-25 |
 | Kolumna pięter po lewej pod przyciskiem terenu: „Piętro”, najwyższe u góry, wybrane w kółku, numery zamiast etykiet; TalkBack czyta pełną etykietę. Po „Pokaż na planie” budynek stoi obok kolumny, nie pod nią | US16.1, US1.3, US1.4, NFR-17, NFR-18, NFR-21 |
-| Pod mapą „Źródło: Politechnika Wrocławska” | NFR-40 |
+| Pod „ⓘ” w legendzie źródło PWr („Źródło: Politechnika Wrocławska”); na samej mapie V1 nie stoi | NFR-40, decyzja z 20.11.2026 |
 
 ### V1: budynek bez planu
 
@@ -170,7 +170,7 @@ Czynność główna: brak; zdanie mówi, dlaczego planu nie widać.
 | Element | AC/BR/NFR |
 | --- | --- |
 | Nad mapą „Nie mamy planu pięter tego budynku.” przy powiększeniu co najmniej 17 | US16.2, BR-G1 |
-| Bez kolumny pięter i bez podpisu źródła planu | US16.2 |
+| Bez kolumny pięter | US16.2 |
 
 ### V1: winda na planie
 
@@ -340,7 +340,7 @@ Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V2 są [makiety hi-fi](../e
 
 Jak we wzorcu, makiety pokazują kartę na całym ekranie, bez mapy. Po dotknięciu budynku na mapie karta otwiera się na niskiej wysokości nad mapą V1 (decyzja 115).
 
-### V2: mała karta nad mapą
+### V2: niska wysokość nad mapą
 
 ![Makieta karty A-1 na niskiej wysokości nad mapą: mapa z wyróżnionym konturem A-1 i przyciskami Powiększ, Pomniejsz oraz strzałkami, a pod nią uchwyt, symbol A-1 z Zamknij, nazwa, wiersz Wejście dostępne ze zdaniem Zalecane, Pokaż wejście na mapie, kreska i wystający nagłówek Wejścia](../../_generated/m-v2-karta-budynku-mala.svg)
 

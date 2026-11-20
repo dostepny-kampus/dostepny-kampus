@@ -393,8 +393,8 @@ $przycisk("Zrób nowe zdjęcie")
 ' ---------- Mapa ----------
 
 ' Napis o prawach autorskich OpenStreetMap jako odnośnik, zawsze w ramce mapy (NFR-37).
-!procedure $osm()
-<u>© OpenStreetMap contributors</u>
+!procedure $osm($podpis="© OpenStreetMap")
+<u>$podpis</u>
 !endprocedure
 
 ' Zastępnik mapy na pełną szerokość, z podpisem OpenStreetMap w ramce (NFR-37).
@@ -402,7 +402,7 @@ $przycisk("Zrób nowe zdjęcie")
 ' (NFR-21), np. $blokada() na V1; pusta, gdy mapa nie pokazuje barier.
 ' $kontrolki: "" (bez przycisków), "mapa" (same przyciski mapy)
 ' albo "info" (przyciski mapy i „ⓘ” przy podpisie OpenStreetMap, V1 i R1; C1: $punkt_na_srodku).
-!procedure $mapa($opis, $legenda="", $kontrolki="")
+!procedure $mapa($opis, $legenda="", $kontrolki="", $podpis="© OpenStreetMap")
 $ramka()
 .
 $tekst("[" + $opis + "]", "i")
@@ -416,9 +416,9 @@ $legenda
 $przyciski_mapy()
 !endif
 !if $kontrolki == "info"
-{ [<&info>] | <u>© OpenStreetMap contributors</u> }
+{ [<&info>] | <u>$podpis</u> }
 !else
-$osm()
+$osm($podpis)
 !endif
 }
 !endprocedure

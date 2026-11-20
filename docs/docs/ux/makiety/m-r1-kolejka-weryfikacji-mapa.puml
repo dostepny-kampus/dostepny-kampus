@@ -16,7 +16,7 @@ $przycisk("Otwórz", "chevron-right")
 ..
 <b>Do sprawdzenia</b>
 $przelacznik("Mapa", "Lista", 1)
-$mapa("mapa kampusu z punktami zgłoszeń do sprawdzenia; wybrany punkt przy C-13", "", "info")
+$mapa("mapa kampusu z punktami zgłoszeń do sprawdzenia; wybrany punkt przy C-13", "", "info", "© OpenStreetMap contributors")
 $ramka()
 <b>próg</b>
 Budynek C-13
