@@ -10,6 +10,7 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -42,7 +43,7 @@ class RoomCardSheetTest {
         compose.onNodeWithText("Jak dojść").assertExists()
         compose.onNodeWithText("Ok. 30 m od wejścia.", substring = true).assertExists()
         compose.onNodeWithText("ok. 85 m od windy.", substring = true).assertExists()
-        compose.onNodeWithText("Budynek A-1").performClick()
+        compose.onNodeWithContentDescription("Budynek A-1").performClick()
         assertEquals("Otwarto inny budynek", listOf("A-1"), opened)
     }
 
