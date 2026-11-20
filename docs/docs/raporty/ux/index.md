@@ -9,7 +9,7 @@ Raport zbiera prace projektowe do kursu „Projektowanie doświadczeń użytkown
 | 3 | Opisać 2–3 persony, historyjki, przypadki użycia, scenariusze, funkcje, SWOT i QFD. | [Persony](../../ux/persony.md), [Potrzeby i historyjki](../../wymagania/potrzeby-i-historie.md), [Przypadki użycia](../../wymagania/przypadki-uzycia.md), [Mapy ścieżki](../../ux/journey.md), [SWOT](../../ux/swot.md), [QFD](../../ux/qfd.md) | gotowe: PE-1 po wywiadach, nowa PE-4, PE-2 i PE-3 to nadal hipotezy |
 | 4 | Ułożyć słownik i metafory, zadania i widoki, zebrać prototypy papierowe od użytkowników i je omówić. | [Słownik użytkownika](../../ux/slownik-uzytkownika.md), [Metafory i ikony](../../ux/slownik-uzytkownika.md#metafory-i-ikony), [Makiety low-fi](../../ux/makiety/index.md), [Mapa nawigacji](../../ux/mapa-nawigacji.md) | w toku |
 | 5 | Zrobić makietę elektroniczną, przegląd kognitywny, GOMS i KLM lub TLM oraz listę problemów i poprawek. | [Ekrany (makiety hi-fi)](../../ux/ekrany/index.md), [Dostępność w aplikacji](../../ux/dostepnosc.md), [Przegląd kognitywny](przeglad-kognitywny.md) | w toku |
-| 6 | Zrealizować projekt z instrukcją, pomocą dla nowej osoby, scenariuszami testów i metrykami. | [V5 Pomoc](../../ux/ekrany/index.md#v5-pomoc), [Mierzalne cele](../../biznes/wizja.md#mierzalne-cele) | później |
+| 6 | Zrealizować projekt z instrukcją, pomocą dla nowej osoby, scenariuszami testów i metrykami. | [V5 Pomoc](../../ux/ekrany/odwiedzajacy.md#v5-pomoc), [Mierzalne cele](../../biznes/wizja.md#mierzalne-cele) | później |
 | 7 | Przeprowadzić test z użytkownikami i opisać wyniki. | — | później |
 | 8 | Przeprowadzić test z osobami z innych grup. | — | później |
 | 9 | Oddać raport końcowy, prezentację i poprawki. | — | później |

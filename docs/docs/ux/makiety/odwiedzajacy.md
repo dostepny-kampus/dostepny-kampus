@@ -17,7 +17,7 @@ Pole tekstowe, mapa z podpisem OpenStreetMap i przyciski mapy pochodzą z `_wspo
 
 ## V1 Mapa kampusu
 
-Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V1 są [makiety hi-fi](../ekrany/index.md#v1-mapa-kampusu).
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V1 są [makiety hi-fi](../ekrany/odwiedzajacy.md#v1-mapa-kampusu).
 
 ### V1: stan zwykły
 
@@ -336,7 +336,7 @@ Czynność główna: jak w stanie zwykłym, na nowym terenie.
 
 ## V2 Karta budynku
 
-Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V2 są [makiety hi-fi](../ekrany/index.md#v2-karta-budynku).
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V2 są [makiety hi-fi](../ekrany/odwiedzajacy.md#v2-karta-budynku).
 
 Jak we wzorcu, makiety pokazują kartę na całym ekranie, bez mapy. Po dotknięciu budynku na mapie karta otwiera się na niskiej wysokości nad mapą V1 (decyzja 115).
 
@@ -485,7 +485,7 @@ Czynność główna: „Pokaż wejście na mapie”; przyciski Zbierającego są
 
 ## V4 Zgłoszenie szybkie
 
-Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V4 są [makiety hi-fi](../ekrany/index.md#v4-zgoszenie-szybkie).
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V4 są [makiety hi-fi](../ekrany/odwiedzajacy.md#v4-zgoszenie-szybkie).
 
 Kroki i potwierdzenia nie mają paska dolnego (wymagania wspólne). Gość niezalogowany zamiast aparatu widzi L1 (US14.2).
 
@@ -641,7 +641,7 @@ Czynność główna: „Wróć do mapy”.
 
 ## V5 Pomoc
 
-Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V5 są [makiety hi-fi](../ekrany/index.md#v5-pomoc).
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu V5 są [makiety hi-fi](../ekrany/odwiedzajacy.md#v5-pomoc).
 
 ![Makieta V5: nagłówek Jak korzystać z aplikacji, numer kroku jako zastępnik, zdanie objaśniające napis Dostępne, przyciski Dalej i Pomiń instrukcję, pasek dolny](../../_generated/m-v5-pomoc.svg)
 
@@ -665,7 +665,7 @@ Czynność główna: „Dalej”.
 
 ## L1 Prośba o logowanie
 
-Makiety low-fi to wcześniejszy etap. Wzorcem ekranu L1 są [makiety hi-fi](../ekrany/index.md#l1-prosba-o-logowanie).
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu L1 są [makiety hi-fi](../ekrany/odwiedzajacy.md#l1-prosba-o-logowanie).
 
 ### L1: stan zwykły
 
@@ -702,7 +702,7 @@ Czynność główna: „Wróć do mapy”.
 
 ## L2 Konto
 
-Makiety low-fi to wcześniejszy etap. Wzorcem ekranu L2 są [makiety hi-fi](../ekrany/index.md#l2-konto).
+Makiety low-fi to wcześniejszy etap. Wzorcem ekranu L2 są [makiety hi-fi](../ekrany/odwiedzajacy.md#l2-konto).
 
 ### L2: Odwiedzający
 
