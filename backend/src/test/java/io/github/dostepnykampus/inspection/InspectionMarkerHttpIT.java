@@ -100,14 +100,13 @@ final class InspectionMarkerHttpIT {
     @Test
     void rejectsForbiddenRolesAndAnonymous(final WebApplicationContext context) throws Exception {
         final UUID id = UUID.randomUUID();
-        final int anon = context.getBean(MockMvc.class)
-            .perform(MockMvcRequestBuilders.delete("/inspection-markers/{id}", id))
-            .andReturn().getResponse().getStatus();
         Assertions.assertEquals(
             "401, 403, 403",
             String.format(
                 "%d, %d, %d",
-                anon,
+                context.getBean(MockMvc.class)
+                    .perform(MockMvcRequestBuilders.delete("/inspection-markers/{id}", id))
+                    .andReturn().getResponse().getStatus(),
                 InspectionMarkerHttpIT.delete(context, "VISITOR", id),
                 InspectionMarkerHttpIT.delete(context, "VERIFIER", id)
             ),
