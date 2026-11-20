@@ -18,21 +18,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @param service Katalog usług ArcGIS PWr bez końcowego ukośnika
  * @param buildings Warstwy budynków szczegółowych
- * @param campus Warstwa wejść mapy kampusu z uwagami i szerokością drzwi
  * @since 0.1.0
  */
 @ConfigurationProperties("dk.plans")
-public record PlanSettings(URI service, List<Layer> buildings, Campus campus) {
-
-    /**
-     * Warstwa wejść całego kampusu w usłudze mapy kampusu PWr.
-     *
-     * @param name Nazwa usługi FeatureServer
-     * @param entrances Numer warstwy wejść
-     * @since 0.1.0
-     */
-    public record Campus(String name, int entrances) {
-    }
+public record PlanSettings(URI service, List<Layer> buildings) {
 
     /**
      * Warstwa planu jednego budynku.

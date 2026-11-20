@@ -25,7 +25,7 @@ spring:
   application:
     name: dostepny-kampus
   config:
-    import: classpath:pwr-plans.yaml
+    import: classpath:pwr-plans.yaml,classpath:pwr-campus-map.yaml
   datasource:
     password: ${DK_DB_APP_PASSWORD:}
     url: jdbc:postgresql://${DK_DB_HOST:127.0.0.1}:${DK_DB_PORT:5432}/${DK_DB_NAME:dostepny_kampus}
