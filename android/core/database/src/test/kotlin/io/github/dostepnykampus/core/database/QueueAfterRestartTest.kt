@@ -38,13 +38,15 @@ class QueueAfterRestartTest {
             val before = DatabaseModule.database(app)
             IDS.forEachIndexed { index, id ->
                 before.pendingSubmissions().save(submission(id, savedAt = index.toLong()), photos(of = id))
-                before.ownSubmissions().save(OwnSubmissionEntity(id = id, savedAtMillis = index.toLong(), kind = KIND))
+                before.ownSubmissions().save(
+                    OwnSubmissionEntity(id = id, savedAtMillis = index.toLong(), kind = KIND, ownerSub = OWNER),
+                )
             }
             before.close()
 
             val after = DatabaseModule.database(app)
             val pending = after.pendingSubmissions().all()
-            val own = after.ownSubmissions().observe().first()
+            val own = after.ownSubmissions().observe(OWNER).first()
             after.close()
 
             assertEquals(IDS, pending.map { it.submission.id })
@@ -90,6 +92,7 @@ class QueueAfterRestartTest {
 
     private companion object {
         const val KIND = "PRECISE"
+        const val OWNER = "konto"
         const val PHOTOS_EACH = 2
         val IDS = listOf("a", "b", "c")
     }

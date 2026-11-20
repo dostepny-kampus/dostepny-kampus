@@ -131,17 +131,18 @@ public object DataModule {
             onSaved = sync::scheduleAfterSave,
         )
 
-    /** Własne zgłoszenia dla listy C3 z historii w telefonie. Wymagania: US8.1, NFR-5 */
+    /** Własne zgłoszenia dla listy C3 z historii zalogowanego konta. Wymagania: US8.1, NFR-5, NFR-33 */
     @Provides
-    public fun ownSubmissions(store: SubmissionStore): OwnSubmissions = ownSubmissionsOf(store.history, store.pending)
+    public fun ownSubmissions(store: SubmissionStore, tokens: AccessTokens): OwnSubmissions =
+        ownSubmissionsOf(store.history, store.pending, tokens.subjects)
 
     /** Zgłoszenia z kolejki telefonu do poprawki w C2. Wymagania: US8.3 */
     @Provides
     public fun pendingEdits(store: SubmissionStore, tokens: AccessTokens): PendingEdits =
         pendingEditsOf(store.edits, tokens::subject)
 
-    /** Odświeżenie statusów listy C3 z serwera. Wymagania: US8.2 */
+    /** Odświeżenie statusów listy C3 z serwera dla zalogowanego konta. Wymagania: US8.2, NFR-33 */
     @Provides
-    public fun ownStatuses(api: SubmissionsApi, store: SubmissionStore): OwnStatuses =
-        ownStatusesOf(api::mine, store.history)
+    public fun ownStatuses(api: SubmissionsApi, store: SubmissionStore, tokens: AccessTokens): OwnStatuses =
+        ownStatusesOf(api::mine, store.history, tokens::subject)
 }

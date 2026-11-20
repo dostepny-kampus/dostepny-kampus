@@ -12,11 +12,12 @@ import androidx.room.Transaction
 /** Właściciel wpisów zapisanych przed dodaniem `owner_sub`. Wymagania: BR-9, NFR-33 */
 @Dao
 public interface QueueOwnershipDao {
-    /** Przypisuje stare wpisy obu kolejek do pierwszego konta po migracji. */
+    /** Przypisuje stare wpisy kolejek i historii „Moje zgłoszenia” do pierwszego konta po migracji. */
     @Transaction
     public suspend fun adopt(subject: String) {
         adoptSubmissions(subject)
         adoptMarkers(subject)
+        adoptHistory(subject)
     }
 
     /** Przypisuje zgłoszenia w ramach [adopt]. */
@@ -26,4 +27,8 @@ public interface QueueOwnershipDao {
     /** Przypisuje zmiany znaczników w ramach [adopt]. */
     @Query("UPDATE pending_marker_changes SET owner_sub = :subject WHERE owner_sub IS NULL")
     public suspend fun adoptMarkers(subject: String)
+
+    /** Przypisuje historię „Moje zgłoszenia” w ramach [adopt]. */
+    @Query("UPDATE own_submissions SET owner_sub = :subject WHERE owner_sub IS NULL")
+    public suspend fun adoptHistory(subject: String)
 }

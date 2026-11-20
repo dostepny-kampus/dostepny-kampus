@@ -91,7 +91,7 @@ class RevokedRoleTest {
         assertEquals(1, creates)
         assertNotNull(runBlocking { edits.find(ID) })
 
-        val list = runBlocking { DataModule.ownSubmissions(store).observe().first() }
+        val list = runBlocking { DataModule.ownSubmissions(store, testTokens()).observe().first() }
         val viewModel =
             MySubmissionsViewModel(
                 history = OwnSubmissions { flowOf(list) },

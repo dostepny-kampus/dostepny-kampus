@@ -34,7 +34,7 @@ class OwnStatusesTest {
     @Test
     fun takesStatusFromServer() =
         runBlocking {
-            history.save(OwnSubmissionEntity(id = "a", savedAtMillis = 1, kind = "PRECISE"))
+            history.save(OwnSubmissionEntity(id = "a", savedAtMillis = 1, kind = "PRECISE", ownerSub = OWNER))
             history.markSent("a")
             val rejected = server("a").copy(status = SubmissionStatus.REJECTED, rejectionReason = REASON, version = 3)
 
@@ -61,6 +61,7 @@ class OwnStatusesTest {
             assertEquals("TB-5", row.barrierType, "typ bariery zostaje")
             assertEquals(CREATED.toEpochMilli(), row.savedAtMillis, "czas zapisu to czas utworzenia")
             assertEquals("SENT", row.serverStatus, "status z serwera")
+            assertEquals(OWNER, row.ownerSub, "nowy wiersz należy do zalogowanego konta")
         }
 
     @Test
@@ -99,7 +100,7 @@ class OwnStatusesTest {
     }
 
     private suspend fun refresh(result: ApiResult<List<Submission>>): StatusRefresh =
-        ownStatusesOf(mine = { result }, history = history).refresh()
+        ownStatusesOf(mine = { result }, history = history, subject = { OWNER }).refresh()
 
     private fun server(id: String): Submission =
         Submission(id = id, version = 1, status = SubmissionStatus.SENT, createdAt = CREATED, content = content())
@@ -116,3 +117,4 @@ class OwnStatusesTest {
 
 private val CREATED = Instant.parse("2026-11-10T12:00:00Z")
 private const val REASON = "Nieostre zdjęcie"
+private const val OWNER = "konto-testowe"

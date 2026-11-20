@@ -10,8 +10,11 @@ import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import java.time.Instant
 
 /** Stan wysyłki własnego zgłoszenia, te same nazwy co w bazie. Wymagania: US8.1, NFR-5 */
@@ -76,12 +79,28 @@ public fun interface OwnSubmissions {
     public fun observe(): Flow<List<OwnSubmission>>
 }
 
-/** Własne zgłoszenia z historii [history] w bazie Room, ze zmianami czekającymi w kolejce [pending]. */
-internal fun ownSubmissionsOf(history: OwnSubmissionDao, pending: PendingSubmissionDao): OwnSubmissions =
+/**
+ * Własne zgłoszenia z historii [history] konta z [subjects]. Bez zalogowanego konta lista jest pusta.
+ * Zmiana czekająca w kolejce [pending] liczy się tylko dla tego samego konta.
+ *
+ * Wymagania: US8.1, NFR-33
+ */
+@OptIn(ExperimentalCoroutinesApi::class)
+internal fun ownSubmissionsOf(
+    history: OwnSubmissionDao,
+    pending: PendingSubmissionDao,
+    subjects: Flow<String?>,
+): OwnSubmissions =
     OwnSubmissions {
-        combine(history.observe(), pending.observe()) { rows, queued ->
-            val waiting = queued.map { it.submission.id }.toSet()
-            rows.map { it.toOwnSubmission(isQueued = it.id in waiting) }
+        subjects.flatMapLatest { owner ->
+            if (owner == null) {
+                flowOf(emptyList())
+            } else {
+                combine(history.observe(owner), pending.observe()) { rows, queued ->
+                    val waiting = queued.filter { it.submission.ownerSub == owner }.map { it.submission.id }.toSet()
+                    rows.map { it.toOwnSubmission(isQueued = it.id in waiting) }
+                }
+            }
         }
     }
 
