@@ -18,10 +18,10 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
  */
 @Composable
 internal fun MapControlsLayout(
-    modifier: Modifier,
     mapControls: @Composable () -> Unit,
     areaSwitch: @Composable () -> Unit,
     floorColumn: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Layout(
         contents = listOf(mapControls, areaSwitch, floorColumn),
@@ -35,7 +35,7 @@ internal fun MapControlsLayout(
         val floorsHeight = (contentHeight - floorsTop).coerceAtLeast(0)
         val floorPicker = floors.singleOrNull()?.measure(loose.copy(maxHeight = floorsHeight))
         val controls = buttons.singleOrNull()?.measure(loose)
-        layout(bounds.maxWidth, bounds.maxHeight) {
+        layout(width = bounds.maxWidth, height = bounds.maxHeight) {
             if (controls != null) {
                 val start = bounds.maxWidth - controls.width
                 val endOfSwitch = (switch?.width ?: 0) - Odstepy.s.roundToPx()

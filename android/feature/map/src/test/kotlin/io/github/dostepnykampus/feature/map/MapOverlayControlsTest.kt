@@ -51,7 +51,7 @@ import org.robolectric.annotation.GraphicsMode
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(qualifiers = "w320dp-h640dp-xhdpi", fontScale = 2f)
+@Config(qualifiers = "w320dp-h640dp-xhdpi")
 class MapOverlayControlsTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
@@ -66,7 +66,7 @@ class MapOverlayControlsTest {
      * Wymagania: NFR-53, US1.7
      */
     @Test
-    @Config(qualifiers = "w360dp-h640dp-xhdpi", fontScale = 1f)
+    @Config(qualifiers = "w360dp-h640dp-xhdpi")
     fun keepsControlsBesideArea() {
         compose.setContent { Overlay() }
         val area = compose.onNode(areaButton).getUnclippedBoundsInRoot()
@@ -82,6 +82,7 @@ class MapOverlayControlsTest {
      * Wymagania: NFR-20, NFR-53, NFR-17, US16.1
      */
     @Test
+    @Config(fontScale = 2f)
     fun dropsControlsUnderArea() {
         compose.setContent { Overlay() }
         val area = compose.onNode(areaButton).getUnclippedBoundsInRoot()
@@ -93,7 +94,13 @@ class MapOverlayControlsTest {
             "cel dotyku co najmniej 48 dp",
             buttons.all { it.right - it.left >= TOUCH && it.bottom - it.top >= TOUCH },
         )
-        val floorLabels = FLOORS.map { compose.onNodeWithContentDescription(it).assertIsDisplayed().getUnclippedBoundsInRoot() }
+        val floorLabels =
+            FLOORS.map {
+                compose
+                    .onNodeWithContentDescription(it)
+                    .assertIsDisplayed()
+                    .getUnclippedBoundsInRoot()
+            }
         val osm = compose.onNodeWithText(OSM).getUnclippedBoundsInRoot()
         val info = compose.onNodeWithContentDescription(INFO).getUnclippedBoundsInRoot()
         buttons.forEach { button ->
@@ -109,26 +116,32 @@ class MapOverlayControlsTest {
      * Wymagania: NFR-20, US1.7
      */
     @Test
-    fun movesWithinOneFrame() {
+    @Config(fontScale = 2f)
+    fun keepsFramesClearOnAreaChange() {
         compose.setContent { Overlay() }
+        compose.waitForIdle()
         compose.mainClock.autoAdvance = false
-        compose.runOnUiThread { areas.show(SHORT) }
-        compose.mainClock.advanceTimeByFrame()
-        compose.onNodeWithContentDescription("Teren: $SHORT. Zmień teren").assertExists()
-        assertNoOverlap()
+        changeArea(SHORT)
         val shortArea = compose.onNode(areaButton).getUnclippedBoundsInRoot()
         val up = compose.onNodeWithContentDescription(UP).getUnclippedBoundsInRoot()
         assertTrue("krótka nazwa mieści się obok przycisków", up.top < shortArea.bottom)
-        compose.runOnUiThread { areas.show(main.name) }
-        compose.mainClock.advanceTimeByFrame()
-        compose.onNodeWithContentDescription("Teren: ${main.name}. Zmień teren").assertExists()
-        assertNoOverlap()
+        changeArea(main.name)
     }
 
     @Test
+    @Config(fontScale = 2f)
     fun matchesLargeFontMockup() {
         compose.setContent { Overlay() }
         compose.onRoot().captureRoboImage()
+    }
+
+    private fun changeArea(name: String) {
+        compose.runOnUiThread { areas.show(name) }
+        repeat(FRAMES) {
+            compose.mainClock.advanceTimeByFrame()
+            assertNoOverlap()
+        }
+        compose.onNodeWithContentDescription("Teren: $name. Zmień teren").assertExists()
     }
 
     private fun controls(): List<DpRect> =
@@ -172,6 +185,7 @@ class MapOverlayControlsTest {
         const val UP = "Przesuń mapę w górę"
         const val INFO = "Legenda i źródła mapy"
         const val OSM = "© OpenStreetMap"
+        const val FRAMES = 3
         val TOUCH = 48.dp
         val FLOORS = listOf("3", "2", "1", "0", "-1")
         val CONTROLS =

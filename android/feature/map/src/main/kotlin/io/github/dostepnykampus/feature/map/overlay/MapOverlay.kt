@@ -126,18 +126,12 @@ internal fun MapOverlay(
                 }
             },
             areaSwitch = {
-                if (hasPanels && open != MapPanel.Info) {
-                    MapAreaSwitch(
-                        areas = AreaList(areas.choices),
-                        isOpen = open == MapPanel.Area,
-                        onOpenChange = { isOpening -> saved = MapPanel.Area.takeIf { isOpening } },
-                        onChoose = { name ->
-                            areas.show(name)?.let(onAreaShow)
-                            saved = null
-                        },
-                        modifier = Modifier.padding(start = Odstepy.s, top = Odstepy.s, end = Odstepy.s),
-                    )
-                }
+                MapAreaSelection(
+                    areas = areas.takeIf { hasPanels && open != MapPanel.Info },
+                    isOpen = open == MapPanel.Area,
+                    onOpenChange = { isOpening -> saved = MapPanel.Area.takeIf { isOpening } },
+                    onAreaShow = onAreaShow,
+                )
             },
             floorColumn = { if (open != MapPanel.Area) Column(content = start) },
         )
@@ -157,6 +151,26 @@ internal fun MapOverlay(
         }
         content()
     }
+}
+
+@Composable
+private fun MapAreaSelection(
+    areas: MapAreas?,
+    isOpen: Boolean,
+    onOpenChange: (Boolean) -> Unit,
+    onAreaShow: (CampusBounds) -> Unit,
+) {
+    if (areas == null) return
+    MapAreaSwitch(
+        areas = AreaList(areas.choices),
+        isOpen = isOpen,
+        onOpenChange = onOpenChange,
+        onChoose = { name ->
+            areas.show(name)?.let(onAreaShow)
+            onOpenChange(false)
+        },
+        modifier = Modifier.padding(start = Odstepy.s, top = Odstepy.s, end = Odstepy.s),
+    )
 }
 
 @Composable
