@@ -10,7 +10,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -18,8 +19,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.entrance.floorWord
@@ -63,12 +66,20 @@ internal fun RoomWayContent(way: RoomWay?, floor: String, roomTitle: String) {
 
 @Composable
 private fun RoomWayRow(number: Int, title: String, text: String) {
-    Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.Top) {
+    val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+    val badgeSize = if (isLarge) 48.dp else 28.dp
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
+        verticalAlignment = if (isLarge) Alignment.CenterVertically else Alignment.Top,
+    ) {
         Surface(
             shape = CircleShape,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         ) {
-            Box(Modifier.size(28.dp), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier.sizeIn(minWidth = badgeSize, minHeight = badgeSize).padding(horizontal = Odstepy.xs),
+                contentAlignment = Alignment.Center,
+            ) {
                 Text(text = number.toString(), style = MaterialTheme.typography.labelLarge)
             }
         }
