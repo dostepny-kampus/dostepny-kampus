@@ -112,7 +112,7 @@ private val ClearIcon =
  * @param onRoomClick wybrany wynik sali; wybór chowa wyniki i klawiaturę jak wybór budynku
  * @param onBarHeight wysokość w pikselach wiersza tytułu, pola i wiersza bez internetu, bez wyników: tę część
  *   mapy kamera traktuje jako zasłoniętą, więc wpisywanie nie przesuwa mapy
- * @param searchFocus fokus pola widziany przez mapę; `null`, gdy żadna mapa go nie śledzi
+ * @param searchFocus fokus pola widziany przez mapę i listę
  */
 @Composable
 internal fun CampusSearch(
@@ -180,7 +180,7 @@ internal fun CampusSearch(
                 areas = areas,
                 search = search,
                 onBuildingClick = choose,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).releasesSearchOnBlankTap(searchFocus),
             )
         }
     }
