@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.building.room.application;
 
+import io.github.dostepnykampus.building.application.CampusMapSettings;
 import io.github.dostepnykampus.building.room.BuildingPlan;
 import io.github.dostepnykampus.building.room.FloorPlans;
 import io.github.dostepnykampus.building.room.PlanFloor;
@@ -48,6 +49,11 @@ final class PlanImport implements ApplicationListener<ApplicationReadyEvent> {
     private final PlanSettings settings;
 
     /**
+     * Usługa mapy kampusu z warstwą wejść.
+     */
+    private final CampusMapSettings campus;
+
+    /**
      * Usługa z planami.
      */
     private final PlanSource source;
@@ -57,8 +63,12 @@ final class PlanImport implements ApplicationListener<ApplicationReadyEvent> {
      */
     private final FloorPlans store;
 
-    PlanImport(final PlanSettings settings, final PlanSource source, final FloorPlans store) {
+    PlanImport(
+        final PlanSettings settings, final CampusMapSettings campus, final PlanSource source,
+        final FloorPlans store
+    ) {
         this.settings = settings;
+        this.campus = campus;
         this.source = source;
         this.store = store;
     }
@@ -87,11 +97,7 @@ final class PlanImport implements ApplicationListener<ApplicationReadyEvent> {
                 layer.symbol(), floors, rooms, this.source.entrances(
                     new PlanSource.Layer(service, layer.entrances()),
                     new PlanSource.Layer(
-                        String.format(
-                            "%s/%s/FeatureServer", this.settings.service(),
-                            this.settings.campus().name()
-                        ),
-                        this.settings.campus().entrances()
+                        this.campus.service().toString(), this.campus.layers().entrances()
                     )
                 ),
                 this.source.edited(service, layer.entrances()).orElse(null)

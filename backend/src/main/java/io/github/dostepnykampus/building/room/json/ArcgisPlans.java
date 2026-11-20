@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.building.room.json;
 
+import io.github.dostepnykampus.building.json.ArcgisLayers;
 import io.github.dostepnykampus.building.room.PlanEntrance;
 import io.github.dostepnykampus.building.room.PlanFloor;
 import io.github.dostepnykampus.building.room.PlanRoom;

@@ -5,7 +5,7 @@
  */
 
 /**
- * Klient usługi ArcGIS PWr: odpowiedź GeoJSON jako plan budynku.
+ * Plan budynku z obiektów GeoJSON warstw usługi ArcGIS PWr.
  *
  * @since 0.1.0
  */

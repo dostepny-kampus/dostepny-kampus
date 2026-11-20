@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.building.room.json;
+package io.github.dostepnykampus.building.json;
 
 import java.net.URI;
 import java.time.Duration;
@@ -20,13 +20,13 @@ import tools.jackson.databind.ObjectMapper;
  * Warstwy usługi ArcGIS PWr (FeatureServer): obiekty warstwy w formacie GeoJSON w układzie
  * WGS 84, pobierane stronami po 1000 do ostatniej strony, oraz opis warstwy. Błąd usługi,
  * odpowiedź strony bez listy obiektów albo przekroczenie czasu daje IllegalStateException ze
- * ścieżką zapytania.
+ * ścieżką zapytania. Wspólny dla warstw planów budynków i warstw mapy kampusu.
  *
  * <p>Wymagania: US16, NFR-40</p>
  *
  * @since 0.1.0
  */
-final class ArcgisLayers {
+public final class ArcgisLayers {
 
     /**
      * Domyślny limit czasu połączenia i odczytu odpowiedzi usługi.
@@ -43,15 +43,26 @@ final class ArcgisLayers {
      */
     private final ObjectMapper mapper;
 
-    ArcgisLayers(final ObjectMapper mapper) {
+    /**
+     * Tworzy klienta z domyślnym limitem czasu.
+     *
+     * @param mapper Parser odpowiedzi
+     */
+    public ArcgisLayers(final ObjectMapper mapper) {
         this(ArcgisLayers.TIMEOUT, mapper);
     }
 
-    ArcgisLayers(final Duration timeout, final ObjectMapper mapper) {
+    /**
+     * Tworzy klienta z podanym limitem czasu połączenia i odczytu.
+     *
+     * @param timeout Limit czasu
+     * @param mapper Parser odpowiedzi
+     */
+    public ArcgisLayers(final Duration timeout, final ObjectMapper mapper) {
         this(ArcgisLayers.http(timeout), mapper);
     }
 
-    ArcgisLayers(final RestClient client, final ObjectMapper mapper) {
+    private ArcgisLayers(final RestClient client, final ObjectMapper mapper) {
         this.client = client;
         this.mapper = mapper;
     }
@@ -64,7 +75,7 @@ final class ArcgisLayers {
      * @param fields Pola obiektu, rozdzielone przecinkami
      * @return Obiekty GeoJSON ze wszystkich stron w kolejności usługi
      */
-    List<JsonNode> attributes(final String service, final int layer, final String fields) {
+    public List<JsonNode> attributes(final String service, final int layer, final String fields) {
         return this.features(service, layer, fields, false);
     }
 
@@ -75,7 +86,7 @@ final class ArcgisLayers {
      * @param layer Numer warstwy
      * @return Obiekty GeoJSON ze wszystkich stron w kolejności usługi
      */
-    List<JsonNode> shapes(final String service, final int layer) {
+    public List<JsonNode> shapes(final String service, final int layer) {
         return this.features(service, layer, "*", true);
     }
 
@@ -86,7 +97,7 @@ final class ArcgisLayers {
      * @param layer Numer warstwy
      * @return Opis warstwy w formacie JSON usługi
      */
-    JsonNode description(final String service, final int layer) {
+    public JsonNode description(final String service, final int layer) {
         return this.fetch(
             UriComponentsBuilder.fromUriString(service).pathSegment(String.valueOf(layer))
                 .queryParam("f", "json").build().encode().toUri()

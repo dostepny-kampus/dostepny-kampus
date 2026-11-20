@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.building.room.application;
 
+import io.github.dostepnykampus.building.application.CampusMapSettings;
 import io.github.dostepnykampus.building.room.PlanEntrance;
 import io.github.dostepnykampus.building.room.PlanFloor;
 import io.github.dostepnykampus.building.room.PlanRoom;
@@ -39,8 +40,15 @@ final class PlanImportTest {
         List.of(
             new PlanSettings.Layer("D-1", "D1D2", "K1.D1", 5, 1, 0),
             new PlanSettings.Layer("D-2", "D1D2", "K1.D2", 5, 3, 2)
-        ),
-        new PlanSettings.Campus("Kampus", 29)
+        )
+    );
+
+    /**
+     * Usługa mapy kampusu pod innym adresem niż plany.
+     */
+    private static final CampusMapSettings CAMPUS_MAP = new CampusMapSettings(
+        URI.create("https://kampus.test/Kampus/FeatureServer"),
+        new CampusMapSettings.Layers(29)
     );
 
     /**
@@ -51,7 +59,7 @@ final class PlanImportTest {
     /**
      * Warstwa wejść mapy kampusu z uwagami i szerokością drzwi.
      */
-    private static final String CAMPUS = "https://plany.test/services/Kampus/FeatureServer/29";
+    private static final String CAMPUS = "https://kampus.test/Kampus/FeatureServer/29";
 
     /**
      * Piętra wspólnej warstwy pięter dwóch budynków.
@@ -65,7 +73,7 @@ final class PlanImportTest {
     void savesFloorsOfOwnFacilityAndRoomsOfOwnLayer() {
         final List<String> saved = new ArrayList<>(2);
         new PlanImport(
-            PlanImportTest.SETTINGS, PlanImportTest.source(),
+            PlanImportTest.SETTINGS, PlanImportTest.CAMPUS_MAP, PlanImportTest.source(),
             plan -> saved.add(
                 String.format(
                     "%s %s %s %s", plan.building(),
@@ -91,7 +99,7 @@ final class PlanImportTest {
     void importsOnlyRequestedBuilding() {
         final List<String> saved = new ArrayList<>(2);
         new PlanImport(
-            PlanImportTest.SETTINGS, PlanImportTest.source(),
+            PlanImportTest.SETTINGS, PlanImportTest.CAMPUS_MAP, PlanImportTest.source(),
             plan -> saved.add(plan.building())
         ).onApplicationEvent(PlanImportTest.ready("--budynek=D-2"));
         MatcherAssert.assertThat(
@@ -105,7 +113,7 @@ final class PlanImportTest {
     void passesEditDateOfOwnEntranceLayer() {
         final List<String> saved = new ArrayList<>(2);
         new PlanImport(
-            PlanImportTest.SETTINGS, PlanImportTest.source(),
+            PlanImportTest.SETTINGS, PlanImportTest.CAMPUS_MAP, PlanImportTest.source(),
             plan -> saved.add(String.format("%s %s", plan.building(), plan.edited()))
         ).onApplicationEvent(PlanImportTest.ready());
         MatcherAssert.assertThat(
