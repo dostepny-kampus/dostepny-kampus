@@ -94,11 +94,9 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 `m-v1-mapa-plan-winda` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-winda-na-planie) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.1, US18.2
 
-Obrazy nie mają jeszcze wiersza budynku „Budynek A-1” z piętrem osobnym wierszem, których wymagają wymagania V1 i makieta low-fi (decyzja z 19.11.2026); obrazy odświeża #3393.
-
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Plan 2 piętra A-1 przesunięty do windy, pod nim arkusz: A-1, Winda przy klatkach C i D, przycisk Zamknij i zdanie Jedzie na: piwnica, parter, 1, 2 (tutaj jesteś) i 3 piętro](obrazy/m-v1-mapa-plan-winda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-jasny.webp) | [![Ten sam arkusz windy w motywie ciemnym](obrazy/m-v1-mapa-plan-winda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-ciemny.webp) | [![Arkusz windy przy czcionce 200% na cały ekran: u góry Wstecz, niżej Winda, piętra i przycisk Pokaż na mapie](obrazy/m-v1-mapa-plan-winda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-jasny-200.webp) |
+| [![Plan 2 piętra A-1 z kolumną pięter 3, 2, 1, 0 i −1. Pod mapą arkusz Winda z przyciskiem Zamknij, wierszem Budynek A-1, osobnym wierszem 2 piętro, klatkami C i D, listą pięter windy i przyciskiem Zgłoś barierę przy windzie](obrazy/m-v1-mapa-plan-winda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-jasny.webp) | [![Ten sam arkusz windy w motywie ciemnym](obrazy/m-v1-mapa-plan-winda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-ciemny.webp) | [![Arkusz windy przy czcionce 200% na cały ekran: u góry Wstecz, niżej Winda, wiersz Budynek A-1, piętro, klatki, piętra windy i przycisk Zgłoś barierę przy windzie](obrazy/m-v1-mapa-plan-winda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-jasny-200.webp) |
 
 ### V1: legenda przy planie
 
