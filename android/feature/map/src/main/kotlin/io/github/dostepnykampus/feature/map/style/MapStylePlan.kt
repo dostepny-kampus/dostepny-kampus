@@ -121,7 +121,8 @@ internal fun planFeatures(floors: Map<String, RoomList>): JsonElement =
             val outline = listOfNotNull(walls?.let { Feature(it.toGeometry(), part(floor, OUTLINE)) })
             val rooms =
                 plan.rooms.map { room ->
-                    Feature(room.geometry.toGeometry(), part(floor = floor, kind = ROOM, category = room.category, room = room.id))
+                    val properties = part(floor = floor, kind = ROOM, category = room.category, room = room.id)
+                    Feature(room.geometry.toGeometry(), properties)
                 }
             val numbers =
                 plan.rooms.filter { it.isLabelled }.mapNotNull { room ->
