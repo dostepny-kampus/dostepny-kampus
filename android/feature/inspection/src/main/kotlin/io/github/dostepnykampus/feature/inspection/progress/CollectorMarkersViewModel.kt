@@ -79,7 +79,12 @@ class CollectorMarkersViewModel
 
         /** Stan ekranu; zmienia się po każdym zapisie w kolejce telefonu. */
         val state: StateFlow<CollectorMarkersUiState> =
-            combine(flow { emit(floors()) }, markers.pending(), asking, unsaved) { floors, pending, asked, failed ->
+            combine(
+                flow = flow { emit(floors()) },
+                flow2 = markers.pending(),
+                flow3 = asking,
+                flow4 = unsaved,
+            ) { floors, pending, asked, failed ->
                 val list = rows(floors, pending)
                 val activeAsk = asked?.takeIf { id -> list.any { it.markerId == id } }
                 CollectorMarkersUiState.Ready(rows = list, asking = activeAsk, unsaved = failed)
@@ -112,10 +117,7 @@ class CollectorMarkersViewModel
 
         /** „Cofnij znacznik” w potwierdzeniu: zapisuje cofnięcie własnego znacznika w telefonie. */
         fun confirmRevoke() {
-            val row =
-                (state.value as? CollectorMarkersUiState.Ready)?.let { ready ->
-                    ready.asking?.let { id -> ready.rows.firstOrNull { it.markerId == id } }
-                } ?: return
+            val row = askedRow() ?: return
             val markerId = row.markerId ?: return
             asking.value = null
             unsaved.value = null
@@ -132,6 +134,11 @@ class CollectorMarkersViewModel
                     unsaved.value = row.place
                 }
             }
+        }
+
+        private fun askedRow(): FloorRow? {
+            val ready = state.value as? CollectorMarkersUiState.Ready
+            return ready?.asking?.let { id -> ready.rows.firstOrNull { it.markerId == id } }
         }
 
         private suspend fun floors(): List<Floor> =
