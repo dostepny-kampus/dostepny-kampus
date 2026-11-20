@@ -51,14 +51,11 @@ private val M3_SHAPES =
     mapOf("standard" to "small", "srednie" to "medium", "duze" to "large", "bardzo_duze" to "extraLarge")
 
 /**
- * Generuje `DesignTokens.kt` w [packageName] z pliku tokenów wizualnych: schematy kolorów Material 3 jasny i
- * ciemny (`kolory`), klasy `StatusColors` (`kolory.status…`) i `MapColors` (`mapa.kolory`) z wartościami dla obu
- * motywów, funkcję `typography` (`typografia.style`, rozmiary w sp), obiekt `Typografia` z rozmiarem napisów mapy
- * (`mapa.napisy_sp`), kształty `AppShapes`, obiekt stałych w dp dla każdej sekcji wymiarów (`odstepy`, …) i obiekt
- * `Mapa…` dla każdej podsekcji `mapa` poza kolorami (`mapa.plan` → `MapaPlan`): liczby jako `Double`, progi
- * `{powiekszenie, dp}` jako listy `ZoomStop`, reszta (pary kontrastu, `zrodlo`) bez kodu. Nazwy
- * przechodzą na camelCase (`droga_kontur` → `drogaKontur`), pole `uzycie` staje się KDoc. Zmiana [tokensFile]
- * unieważnia wynik; brak wymaganej sekcji albo wartości przerywa budowanie.
+ * Generuje `DesignTokens.kt` w [packageName] z pliku tokenów: kolory Material 3 obu motywów, `StatusColors`,
+ * `MapColors`, `typography`, `Typografia`, `AppShapes`, obiekt stałych dp dla każdej sekcji wymiarów i obiekt
+ * `Mapa…` dla każdej podsekcji `mapa` poza kolorami (liczby jako `Double`, progi `{powiekszenie, dp}` jako
+ * `ZoomStop`). Nazwy przechodzą na camelCase, pole `uzycie` staje się KDoc. Zmiana [tokensFile] unieważnia
+ * wynik; brak wymaganej sekcji albo wartości przerywa budowanie.
  */
 @CacheableTask
 abstract class GenerateDesignTokens : DefaultTask() {
