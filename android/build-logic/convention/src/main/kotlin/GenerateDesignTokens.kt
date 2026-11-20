@@ -6,11 +6,14 @@
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.DOUBLE
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.LIST
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
@@ -51,7 +54,9 @@ private val M3_SHAPES =
  * Generuje `DesignTokens.kt` w [packageName] z pliku tokenów wizualnych: schematy kolorów Material 3 jasny i
  * ciemny (`kolory`), klasy `StatusColors` (`kolory.status…`) i `MapColors` (`mapa.kolory`) z wartościami dla obu
  * motywów, funkcję `typography` (`typografia.style`, rozmiary w sp), obiekt `Typografia` z rozmiarem napisów mapy
- * (`mapa.napisy_sp`), kształty `AppShapes` i obiekt stałych w dp dla każdej sekcji wymiarów (`odstepy`, …). Nazwy
+ * (`mapa.napisy_sp`), kształty `AppShapes`, obiekt stałych w dp dla każdej sekcji wymiarów (`odstepy`, …) i obiekt
+ * `Mapa…` dla każdej podsekcji `mapa` poza kolorami (`mapa.plan` → `MapaPlan`): liczby jako `Double`, progi
+ * `{powiekszenie, dp}` jako listy `ZoomStop`, reszta (pary kontrastu, `zrodlo`) bez kodu. Nazwy
  * przechodzą na camelCase (`droga_kontur` → `drogaKontur`), pole `uzycie` staje się KDoc. Zmiana [tokensFile]
  * unieważnia wynik; brak wymaganej sekcji albo wartości przerywa budowanie.
  */
@@ -87,6 +92,7 @@ abstract class GenerateDesignTokens : DefaultTask() {
         palette(file, ClassName(packageName.get(), "StatusColors"), status.toMap())
         palette(file, ClassName(packageName.get(), "MapColors"), tokens.sub("mapa").sub("kolory"))
         typography(file, tokens.sub("typografia"), mapLabels = tokens.sub("mapa").require("napisy_sp"))
+        mapSections(file, tokens.sub("mapa"))
         tokens.filterValues { section -> section is Map<*, *> && section.values.all { it is Map<*, *> && "dp" in it } }
             .forEach { (name, section) -> dimensions(file, name, section.asMap()) }
         val shapes =
@@ -160,6 +166,35 @@ abstract class GenerateDesignTokens : DefaultTask() {
         }
         file.addType(type.build())
     }
+
+    private fun mapSections(file: FileSpec.Builder, map: Map<String, Any?>) {
+        val stop = ClassName(packageName.get(), "ZoomStop")
+        map.filter { (name, value) -> name != "kolory" && value is Map<*, *> }.forEach { (name, section) ->
+            val type = TypeSpec.objectBuilder("Mapa" + camel(name).replaceFirstChar(Char::uppercase))
+                .addKdoc("Wartości z sekcji `mapa.%L` pliku tokenów.", name)
+            section.asMap().forEach { (key, value) ->
+                val doc = "Token `mapa.$name.$key`."
+                val stops = (value as? List<*>)?.takeIf { list ->
+                    list.all { it is Map<*, *> && "powiekszenie" in it && "dp" in it }
+                }
+                when {
+                    value is Number ->
+                        type.addProperty(constant(camel(key), DOUBLE, CodeBlock.of("%L", value.toDouble()), doc))
+                    stops != null -> {
+                        val values = stops.map {
+                            val entry = it.asMap()
+                            CodeBlock.of("%T(zoom = %L, dp = %L)", stop, entry.number("powiekszenie"), entry.number("dp"))
+                        }
+                        val list = CodeBlock.of("listOf%L", values.args())
+                        type.addProperty(constant(camel(key), LIST.parameterizedBy(stop), list, doc))
+                    }
+                }
+            }
+            file.addType(type.build())
+        }
+    }
+
+    private fun Map<String, Any?>.number(key: String) = (require(key) as Number).toDouble()
 
     private fun internal(name: String, type: TypeName, format: String, vararg args: Any) =
         PropertySpec.builder(name, type, KModifier.INTERNAL).initializer(format, *args).build()

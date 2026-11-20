@@ -74,6 +74,19 @@ class TokensTest {
         assertEquals("napisy mapy", expected.int().sp, Typografia.napisyMapy)
     }
 
+    /** Grubości, progi powiększenia i krycia mapy z podsekcji `mapa` poza kolorami. Wymagania: NFR-16, NFR-21 */
+    @Test
+    fun takesMapSectionsFromTokens() {
+        val generated = mapOf("plan" to MapaPlan, "sciezka" to MapaSciezka, "przygaszenie" to MapaPrzygaszenie)
+        val sections = tokens.sub("mapa").filter { (name, value) -> name != "kolory" && value is Map<*, *> }
+        assertEquals(sections.keys, generated.keys)
+        generated.forEach { (section, holder) ->
+            sections.getValue(section).asMap().forEach { (key, value) ->
+                generatedValueOrNull(value)?.let { assertEquals("mapa $section $key", it, holder.property(camel(key))) }
+            }
+        }
+    }
+
     @Test
     fun takesSizesFromTokens() {
         val generated =
@@ -120,6 +133,21 @@ class TokensTest {
             .joinToString("")
 
     private fun Any.int() = (this as Number).toInt()
+
+    private fun Any.double() = (this as Number).toDouble()
+
+    private fun generatedValueOrNull(token: Any): Any? {
+        val stops =
+            (token as? List<*>)?.run {
+                filterIsInstance<Map<*, *>>().filter { "powiekszenie" in it }.takeIf { it.size == size }
+            }
+        return if (token is Number) token.double() else stops?.map(::zoomStop)
+    }
+
+    private fun zoomStop(stop: Map<*, *>): ZoomStop {
+        val entry = stop.asMap()
+        return ZoomStop(zoom = entry.getValue("powiekszenie").double(), dp = entry.getValue("dp").double())
+    }
 
     private fun Any.asMap(): Map<String, Any> =
         (this as Map<*, *>).entries.associate { checkNotNull(it.key).toString() to checkNotNull(it.value) }

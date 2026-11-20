@@ -60,7 +60,10 @@ internal const val LABELS_LAYER = LABELS
 internal const val LABEL = "label"
 private const val STYLE_VERSION = 8
 
-/** Grubość konturu budynku szczegółowego (z planem pięter) w dp: gruby kontur. Wymagania: US16.1, NFR-21 */
+/**
+ * Grubość konturu budynku szczegółowego (z planem pięter) w dp: gruby kontur. Wymagania: US16.1, NFR-21
+ * TODO(#3530): grubości konturu z tokenów.
+ */
 internal const val DETAILED_OUTLINE_DP = 2.4
 
 /** Grubość konturu budynku podstawowego (bez planu pięter) w dp: cienki ciągły kontur. Wymagania: US16.1, NFR-21 */
