@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map.room
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.model.room.FoundRoom
@@ -29,11 +30,16 @@ import javax.inject.Inject
  *
  * @param plans plany pięter z kopią w telefonie
  * @param entrances wejścia budynku z serwera z piętrem wejścia
+ * @param barriers przyjęte bariery używane przy wyborze wejścia zalecanego
  */
 @HiltViewModel
 class RoomCardViewModel
     @Inject
-    constructor(private val plans: FloorPlans, private val entrances: ServerEntrances) : ViewModel() {
+    constructor(
+        private val plans: FloorPlans,
+        private val entrances: ServerEntrances,
+        private val barriers: AcceptedBarriers,
+    ) : ViewModel() {
         private val card = MutableStateFlow<RoomCard?>(null)
         private var loading: Job? = null
 
@@ -46,7 +52,7 @@ class RoomCardViewModel
             card.value = RoomCard(found = found, way = null)
             loading =
                 viewModelScope.launch {
-                    val way = plans.wayTo(found = found, entrances = entrances)
+                    val way = plans.wayTo(found = found, entrances = entrances, barriers = barriers)
                     card.update { shown -> shown?.takeIf { it.found == found }?.copy(way = way) ?: shown }
                 }
         }
@@ -80,15 +86,16 @@ class RoomCardViewModel
 
 /**
  * Droga do sali [found] z planów pięter budynku, pobranych, gdy telefon nie ma ich kopii, i wejścia zalecanego
- * z [entrances].
+ * z [entrances], po uwzględnieniu przyjętych [barriers] przy wejściach do tego budynku.
  *
  * Wymagania: US18.2, BR-25
  */
-internal suspend fun FloorPlans.wayTo(found: FoundRoom, entrances: ServerEntrances): RoomWay {
+private suspend fun FloorPlans.wayTo(found: FoundRoom, entrances: ServerEntrances, barriers: AcceptedBarriers): RoomWay {
     val symbol = found.building
     val floors = (floors(symbol) ?: if (download(symbol)) floors(symbol) else null)?.floors.orEmpty()
     val rooms = floors.associate { floor -> floor.id to rooms(symbol, floor.id)?.rooms.orEmpty() }
-    // TODO(#3334): wejście zalecane bez przyjętych barier przy wejściach.
-    val recommended = orderedEntrances(entrances.entrances(symbol)).firstOrNull { it.isRecommended }
+    val accepted = (barriers.known() ?: barriers.barriers()).filter { it.buildingSymbol == symbol }
+    val recommended =
+        orderedEntrances(entrances = entrances.entrances(symbol), barriers = accepted).firstOrNull { it.isRecommended }
     return roomWay(found = found, entrance = recommended?.entrance, floors = floors, rooms = { rooms[it].orEmpty() })
 }
