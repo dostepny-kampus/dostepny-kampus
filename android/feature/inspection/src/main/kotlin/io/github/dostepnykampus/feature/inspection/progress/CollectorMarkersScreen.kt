@@ -155,12 +155,7 @@ private fun FloorRows(symbol: String, state: CollectorMarkersUiState.Ready, acti
 }
 
 @Composable
-private fun FloorCard(
-    row: FloorRow,
-    isAsking: Boolean,
-    isUnsaved: Boolean,
-    actions: CollectorMarkerActions,
-) {
+private fun FloorCard(row: FloorRow, isAsking: Boolean, isUnsaved: Boolean, actions: CollectorMarkerActions) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(Zaokraglenia.duze),
@@ -187,12 +182,7 @@ private fun FloorCard(
 }
 
 @Composable
-private fun Inspected(
-    row: FloorRow,
-    isAsking: Boolean,
-    isUnsaved: Boolean,
-    actions: CollectorMarkerActions,
-) {
+private fun Inspected(row: FloorRow, isAsking: Boolean, isUnsaved: Boolean, actions: CollectorMarkerActions) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
             Icon(InspectedIcon, contentDescription = null)

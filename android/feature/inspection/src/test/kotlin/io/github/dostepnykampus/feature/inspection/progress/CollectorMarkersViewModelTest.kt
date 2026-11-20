@@ -81,12 +81,14 @@ class CollectorMarkersViewModelTest {
         }
 
     /**
+     * Potwierdzenie cofnięcia kasuje własny znacznik Zbierającego.
+     *
      * Scenariusz: postep-inwentaryzacji.feature: Zbierający cofa własny znacznik po potwierdzeniu
      *
      * Wymagania: US15.2, BR-20
      */
     @Test
-    fun revokesOwnMarkerAfterConfirmation() =
+    fun revokesOwnMarkerAfterConfirm() =
         viewModelTest(FakePlans(stored = A1_FLOORS)) { viewModel, markers ->
             viewModel.mark(MarkerPlace.Floor("p0"))
             runCurrent()
@@ -98,7 +100,7 @@ class CollectorMarkersViewModelTest {
                 viewModel.state.value,
                 "pytanie o potwierdzenie",
             )
-            assertEquals(emptyList<Triple<String, String, String?>>(), markers.revoked, "bez cofnięcia przed zgodą")
+            assertEquals(emptyList<RevokedCall>(), markers.revoked, "bez cofnięcia przed zgodą")
             viewModel.confirmRevoke()
             runCurrent()
             assertEquals(
@@ -106,10 +108,16 @@ class CollectorMarkersViewModelTest {
                 viewModel.state.value,
                 "po potwierdzeniu cofnięcia",
             )
-            assertEquals(listOf(Triple("m-1", "A-1", "p0")), markers.revoked, "zapisane cofnięcie")
+            assertEquals(
+                listOf(RevokedCall(markerId = "m-1", symbol = "A-1", floorId = "p0")),
+                markers.revoked,
+                "zapisane cofnięcie",
+            )
         }
 
     /**
+     * Bez potwierdzenia własny znacznik Zbierającego zostaje na piętrze.
+     *
      * Scenariusz: postep-inwentaryzacji.feature: Bez potwierdzenia znacznik zostaje
      *
      * Wymagania: US15.2, BR-20
@@ -129,7 +137,7 @@ class CollectorMarkersViewModelTest {
                 viewModel.state.value,
                 "znacznik zostaje",
             )
-            assertEquals(emptyList<Triple<String, String, String?>>(), markers.revoked, "brak cofnięcia")
+            assertEquals(emptyList<RevokedCall>(), markers.revoked, "brak cofnięcia")
         }
 
     @Test
@@ -194,11 +202,14 @@ private class FakePlans(private var stored: FloorList?, private val downloaded: 
     override suspend fun rooms(symbol: String, floor: String): RoomList? = null
 }
 
+/** Zapisane wywołanie cofnięcia znacznika w atrapie kolejki. */
+private data class RevokedCall(val markerId: String, val symbol: String, val floorId: String?)
+
 /** Kolejka znaczników w telefonie; pierwsze [failures] zapisy i [revokeFailures] cofnięcia kończą się błędem. */
 private class FakeMarkers(private var failures: Int = 0, private var revokeFailures: Int = 0) : FloorMarkers {
     private val queue = MutableStateFlow(emptyList<PendingMarkerChange>())
     val saved = mutableListOf<Pair<String, String?>>()
-    val revoked = mutableListOf<Triple<String, String, String?>>()
+    val revoked = mutableListOf<RevokedCall>()
 
     override fun pending(): Flow<List<PendingMarkerChange>> = queue
 
@@ -218,7 +229,7 @@ private class FakeMarkers(private var failures: Int = 0, private var revokeFailu
 
     override suspend fun revoke(markerId: String, buildingSymbol: String, floorId: String?) {
         if (revokeFailures-- > 0) throw IOException("brak miejsca")
-        revoked += Triple(markerId, buildingSymbol, floorId)
+        revoked += RevokedCall(markerId = markerId, symbol = buildingSymbol, floorId = floorId)
         queue.value +=
             PendingMarkerChange(
                 markerId = markerId,

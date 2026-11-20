@@ -113,7 +113,8 @@ class CollectorMarkersScreenTest {
     /** Pytanie o cofnięcie znacznika całego budynku wskazuje cały budynek. Wymagania: US15.2 */
     @Test
     fun showsWholeBuildingConfirmation() {
-        val whole = listOf(FloorRow(MarkerPlace.WholeBuilding, label = null, markerId = "m-1", isPending = true))
+        val whole =
+            listOf(FloorRow(place = MarkerPlace.WholeBuilding, label = null, markerId = "m-1", isPending = true))
         show(CollectorMarkersUiState.Ready(whole, asking = "m-1"))
         compose.onNodeWithText("Cofnąć znacznik całego budynku? Postęp budynku się zmniejszy.").assertIsDisplayed()
     }

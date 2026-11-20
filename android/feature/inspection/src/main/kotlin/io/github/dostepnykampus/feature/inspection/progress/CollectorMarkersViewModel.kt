@@ -53,11 +53,8 @@ sealed interface CollectorMarkersUiState {
      * @property asking identyfikator własnego znacznika, o którego cofnięcie pyta aplikacja, albo `null`
      * @property unsaved miejsce, którego zmiany nie udało się zapisać w telefonie, albo `null`
      */
-    data class Ready(
-        val rows: List<FloorRow>,
-        val asking: String? = null,
-        val unsaved: MarkerPlace? = null,
-    ) : CollectorMarkersUiState
+    data class Ready(val rows: List<FloorRow>, val asking: String? = null, val unsaved: MarkerPlace? = null) :
+        CollectorMarkersUiState
 }
 
 /**
@@ -115,9 +112,11 @@ class CollectorMarkersViewModel
 
         /** „Cofnij znacznik” w potwierdzeniu: zapisuje cofnięcie własnego znacznika w telefonie. */
         fun confirmRevoke() {
-            val ready = state.value as? CollectorMarkersUiState.Ready ?: return
-            val markerId = ready.asking ?: return
-            val row = ready.rows.firstOrNull { it.markerId == markerId } ?: return
+            val row =
+                (state.value as? CollectorMarkersUiState.Ready)?.let { ready ->
+                    ready.asking?.let { id -> ready.rows.firstOrNull { it.markerId == id } }
+                } ?: return
+            val markerId = row.markerId ?: return
             asking.value = null
             unsaved.value = null
             viewModelScope.launch {
