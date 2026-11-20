@@ -65,7 +65,8 @@ import io.github.dostepnykampus.feature.map.overlay.dataDay
 import io.github.dostepnykampus.feature.map.plan.FloorColumn
 import io.github.dostepnykampus.feature.map.plan.ShownPlan
 import io.github.dostepnykampus.feature.map.room.OpenRoom
-import io.github.dostepnykampus.feature.map.room.RoomCardSheet
+import io.github.dostepnykampus.feature.map.room.RoomCardLayer
+import io.github.dostepnykampus.feature.map.room.RoomSheetSources
 
 private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"
@@ -201,7 +202,8 @@ fun CampusMapScreen(
     var barHeight by remember { mutableIntStateOf(0) }
     var headerHeight by remember { mutableIntStateOf(0) }
     val search = rememberSearchFocus()
-    sheet.RoomLayout(room, onBuildingClick, modifier) { isLarge ->
+    val roomSheets = RoomSheetSources(onBuildingClick, ShownBarriers(state.barriers), entranceActions)
+    sheet.RoomLayout(room, roomSheets, modifier) { isLarge ->
         val isList = if (room == null) state.isListSaved ?: isLarge else false
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
@@ -254,7 +256,7 @@ fun CampusMapScreen(
 @Composable
 private fun ScreenSheet.RoomLayout(
     room: OpenRoom?,
-    onBuilding: (String) -> Unit,
+    roomSheets: RoomSheetSources,
     modifier: Modifier = Modifier,
     content: @Composable (isLarge: Boolean) -> Unit,
 ) {
@@ -269,7 +271,7 @@ private fun ScreenSheet.RoomLayout(
         onDispose {}
     }
     if (room != null && isLarge && !isPlanShown) {
-        RoomCardSheet(room, onBuilding, modifier) { isPlanShown = true }
+        RoomCardLayer(room, roomSheets, modifier) { isPlanShown = true }
     } else {
         Box(modifier.fillMaxSize()) { content(isLarge) }
     }

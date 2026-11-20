@@ -48,7 +48,7 @@ Funkcja: Wyszukanie sali
       | sala 012 jest na piętrze wejścia zalecanego A-1                      | 012  | wejście zalecane, sala z przybliżoną odległością od wejścia                                        |
       | dane A-1 nie podają piętra wejścia zalecanego                        | 329  | wejście zalecane z dopiskiem, że przyjęto parter, winda, sala                                      |
 
-  # @do-zrobienia #3502: przycisk „Pokaż po kolei” obok listy.
+  # @do-zrobienia #707: sprawdzenie ekranu bez wybranego kroku po wyszukaniu.
   @US18.2 @aplikacja @do-zrobienia
   Scenariusz: Znaleziona sala nie zaczyna pokazu drogi
     Jeżeli Gość niezalogowany znajdzie salę 329 w budynku A-1
@@ -65,7 +65,7 @@ Funkcja: Wyszukanie sali
     Jeżeli dotknie „Następny krok”
     Wtedy krok 2 jest wybrany, a mapa pokazuje windę
 
-  # @do-zrobienia #3502: powrót z arkusza wejścia do kroku.
+  # @do-zrobienia #707: pełny scenariusz powrotu z arkusza wejścia.
   @US18.2 @aplikacja @do-zrobienia
   Scenariusz: Arkusz wejścia z kroku wraca do tego kroku
     Zakładając, że w karcie sali 329 jest wybrany krok 1
