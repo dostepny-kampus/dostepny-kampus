@@ -54,6 +54,7 @@ import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import io.github.dostepnykampus.feature.map.plan.roomAt
 import io.github.dostepnykampus.feature.map.room.OpenRoom
 import io.github.dostepnykampus.feature.map.room.RoomCardLayer
 import io.github.dostepnykampus.feature.map.room.RoomSheetSources
@@ -198,8 +199,7 @@ fun CampusMapScreen(
         val isList = if (room == null) state.isListSaved ?: isLarge else false
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
-                Box(Modifier.mapArea(isUnderSheet = sheet.isEntranceFull, search = search)) {
-                    val shown = ShownBarriers(state.barriers.takeUnless { sheet.isCardOpen }.orEmpty())
+                MapArea(state, sheet, search) { shown ->
                     CampusMap(
                         ui = state,
                         barriers = shown,
@@ -213,12 +213,12 @@ fun CampusMapScreen(
                         plan = PlanLink(shown = plan, onView = onCamera, onFloor = onFloorChoose, onHide = onMapHide),
                         onBuildingClick = onBuildingClick,
                         onEmptyMapClick = onEmptyMapClick,
+                        onRoomClick = onRoomClick,
                         entrance = entranceActions,
                         room = room,
                         isRoomFull = isLarge,
                         modifier = Modifier.fillMaxSize().background(DostepnyKampusTheme.mapColors.lad),
                     )
-                    BarrierDescriptions(shown)
                 }
             }
         }
@@ -272,10 +272,24 @@ private fun ScreenSheet.RoomLayout(
     }
 }
 
-private fun Modifier.mapArea(isUnderSheet: Boolean, search: SearchFocus): Modifier =
-    fillMaxSize()
-        .releasesSearchOnTouch(search)
-        .then(if (isUnderSheet) Modifier.clearAndSetSemantics {} else Modifier)
+@Composable
+private fun MapArea(
+    state: CampusMapUiState,
+    sheet: ScreenSheet,
+    search: SearchFocus,
+    content: @Composable (ShownBarriers) -> Unit,
+) {
+    val shown = ShownBarriers(state.barriers.takeUnless { sheet.isCardOpen }.orEmpty())
+    val modifier =
+        Modifier
+            .fillMaxSize()
+            .releasesSearchOnTouch(search)
+            .then(if (sheet.isEntranceFull) Modifier.clearAndSetSemantics {} else Modifier)
+    Box(modifier) {
+        content(shown)
+        BarrierDescriptions(shown)
+    }
+}
 
 @Composable
 private fun CampusMap(
@@ -291,6 +305,7 @@ private fun CampusMap(
     plan: PlanLink,
     onBuildingClick: (String) -> Unit,
     onEmptyMapClick: () -> Unit,
+    onRoomClick: (FoundRoom) -> Unit,
     entrance: EntranceActions,
     room: OpenRoom?,
     isRoomFull: Boolean,
@@ -329,7 +344,7 @@ private fun CampusMap(
                     plan.onView(view.also { state.keep(it) })
                 },
                 onBuildingsTouch = { state.taps.touch(it, onBuildingClick, onEmptyMapClick).also { signs.close() } },
-                onSignTouch = signs.signTouch(room, state.taps::dismiss),
+                onSignTouch = signs.signTouch(room, state.taps::dismiss) { plan.shown?.roomAt(it)?.let(onRoomClick) },
                 modifier = Modifier.fillMaxSize(),
             )
             pinned?.let { EntranceDescription(it) }
@@ -369,15 +384,27 @@ private fun SignSheetState.overlay(
     return base.copy(entrance = pin, barrier = barrierId, plan = plan, roomSteps = markers)
 }
 
-private fun SignSheetState.signTouch(room: OpenRoom?, dismiss: () -> Unit): (TouchSign, String) -> Unit =
+private fun SignSheetState.signTouch(
+    room: OpenRoom?,
+    dismiss: () -> Unit,
+    onRoom: (String) -> Unit,
+): (TouchSign, String) -> Unit =
     { sign, id ->
-        if (sign == TouchSign.ROOM_STEP) {
-            val step = id.toIntOrNull()
-            if (room != null && step != null) room.onStep(step)
-        } else {
-            room?.run { onClose() }
-            open(sign, id)
-            dismiss()
+        when (sign) {
+            TouchSign.ROOM -> {
+                onRoom(id)
+            }
+
+            TouchSign.ROOM_STEP -> {
+                val step = id.toIntOrNull()
+                if (room != null && step != null) room.onStep(step)
+            }
+
+            TouchSign.BARRIER, TouchSign.ENTRANCE, TouchSign.PLAN -> {
+                room?.run { onClose() }
+                open(sign, id)
+                dismiss()
+            }
         }
     }
 

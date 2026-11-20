@@ -9,8 +9,10 @@ import io.github.dostepnykampus.feature.map.campus.BARRIER_ID
 import io.github.dostepnykampus.feature.map.campus.ENTRANCE_ID
 import io.github.dostepnykampus.feature.map.style.BARRIERS_LAYER
 import io.github.dostepnykampus.feature.map.style.ENTRANCES_LAYER
+import io.github.dostepnykampus.feature.map.style.PLAN_ROOMS_LAYER
 import io.github.dostepnykampus.feature.map.style.PLAN_ROOM_ID
 import io.github.dostepnykampus.feature.map.style.PLAN_SIGNS_LAYER
+import io.github.dostepnykampus.feature.map.style.PLAN_TAPPABLE_ROOM
 import io.github.dostepnykampus.feature.map.style.ROOM_STEPS_LAYER
 import io.github.dostepnykampus.feature.map.style.ROOM_STEP_INDEX
 
@@ -32,4 +34,7 @@ enum class TouchSign(internal val layer: String, internal val idKey: String) {
 
     /** Numer kroku drogi do sali. */
     ROOM_STEP(layer = ROOM_STEPS_LAYER, idKey = ROOM_STEP_INDEX),
+
+    /** Obrys sali z numerem na widocznym piętrze. */
+    ROOM(layer = PLAN_ROOMS_LAYER, idKey = PLAN_TAPPABLE_ROOM),
 }

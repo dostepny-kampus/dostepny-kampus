@@ -40,6 +40,9 @@ internal const val PLAN_WALLS_LAYER = "plan_sciany"
 /** Warstwa ściany piętra z obrysu sumy jego pomieszczeń (R11). Wymagania: US16.1 */
 internal const val PLAN_OUTLINE_LAYER = "plan_obrys"
 
+/** Id sali dostępnej przez dotyk planu. Wymagania: US18.1 */
+internal const val PLAN_TAPPABLE_ROOM = "tap_room"
+
 /** Warstwa numerów sal wybranego piętra od powiększenia 19 (R12). Wymagania: US16.1 */
 internal const val PLAN_NUMBERS_LAYER = "plan_numery"
 
@@ -65,7 +68,7 @@ private const val NUMBER = "number"
 private const val SIGN = "sign"
 private const val FILTER = "filter"
 private const val IMAGE = "image"
-private const val NUMBERS_MIN_ZOOM = 19.0
+internal const val PLAN_ROOM_NUMBER_ZOOM = 19.0
 
 /**
  * Kolory planu piętra z tokenów `mapa.kolory` jako `#RRGGBB`.
@@ -108,8 +111,10 @@ internal fun planFeatures(floors: Map<String, RoomList>): JsonElement =
             val outline = listOfNotNull(walls?.let { Feature(it.toGeometry(), part(floor, OUTLINE)) })
             val rooms =
                 plan.rooms.map { room ->
-                    val properties = part(floor = floor, kind = ROOM, category = room.category, room = room.id)
-                    Feature(room.geometry.toGeometry(), properties)
+                    val roomProperties = part(floor = floor, kind = ROOM, category = room.category, room = room.id)
+                    val id = room.id.takeIf { room.isLabelled && !room.number.isNullOrBlank() }
+                    val properties = id?.let { JsonObject(roomProperties + (PLAN_TAPPABLE_ROOM to JsonPrimitive(it))) }
+                    Feature(room.geometry.toGeometry(), properties ?: roomProperties)
                 }
             val numbers =
                 plan.rooms.filter { it.isLabelled }.mapNotNull { room ->
@@ -177,7 +182,7 @@ internal fun planLayers(colors: PlanColors, floor: String? = null, room: String?
             JsonObject(
                 symbolLayer(id = PLAN_NUMBERS_LAYER, source = PLAN_SOURCE, image = property(IMAGE)) +
                     (FILTER to planFilter(floor = floor, kind = NUMBER)) +
-                    ("minzoom" to JsonPrimitive(NUMBERS_MIN_ZOOM)),
+                    ("minzoom" to JsonPrimitive(PLAN_ROOM_NUMBER_ZOOM)),
             ),
         )
     return listOf(ground, fill, walls) + chosen + above

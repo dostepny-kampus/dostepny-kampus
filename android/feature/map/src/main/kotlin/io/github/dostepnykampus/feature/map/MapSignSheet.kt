@@ -349,7 +349,7 @@ internal fun ChosenSignSheet(
             )
         }
 
-        TouchSign.ROOM_STEP, null -> {}
+        TouchSign.ROOM_STEP, TouchSign.ROOM, null -> {}
     }
 }
 

@@ -43,10 +43,11 @@ internal fun chooseTouch(
     signsUnder(TouchSign.ROOM_STEP).firstOrNull()?.let { MapTouch.Sign(sign = TouchSign.ROOM_STEP, id = it) }
         ?: firstSign { sign -> if (sign == TouchSign.ROOM_STEP) emptyList() else signsUnder(sign) }
         ?: firstSign(signsNear)
+        ?: signsUnder(TouchSign.ROOM).firstOrNull()?.let { MapTouch.Sign(sign = TouchSign.ROOM, id = it) }
         ?: MapTouch.Outlines(hit = outlines.hit(), near = outlines.near)
 
 private fun firstSign(ids: (TouchSign) -> List<String>): MapTouch.Sign? =
-    TouchSign.entries.firstNotNullOfOrNull { sign ->
+    TouchSign.entries.asSequence().filterNot { it == TouchSign.ROOM }.firstNotNullOfOrNull { sign ->
         ids(sign).firstOrNull()?.let { id -> MapTouch.Sign(sign = sign, id = id) }
     }
 
