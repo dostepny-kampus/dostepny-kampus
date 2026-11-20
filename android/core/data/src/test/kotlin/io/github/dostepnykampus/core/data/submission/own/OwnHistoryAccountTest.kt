@@ -33,7 +33,7 @@ class OwnHistoryAccountTest {
     private val subjects = MutableStateFlow<String?>("konto-a")
 
     @Test
-    fun hidesOtherAccountAndRestoresOwner() =
+    fun keepsListWithTheOwner() =
         runBlocking {
             history.save(row(id = "a", owner = "konto-a", reason = "Schody"))
             history.save(row(id = "b", owner = "konto-b", reason = "Próg"))
@@ -58,7 +58,7 @@ class OwnHistoryAccountTest {
         }
 
     @Test
-    fun refreshLeavesTheOtherAccountAlone() =
+    fun keepsOtherAccountOnRefresh() =
         runBlocking {
             history.save(row(id = "a", owner = "konto-a", reason = "Schody"))
 

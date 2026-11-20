@@ -33,7 +33,7 @@ internal fun offlineQueue(store: SubmissionStore, onSend: () -> Unit): Submissio
     )
 
 /** Token konta [TEST_ACCOUNT], tego samego, którym pisze [offlineQueue]. */
-internal fun testTokens(): AccessTokens = AccessTokens().also { it.signIn(testJwt(TEST_ACCOUNT)) }
+internal fun testTokens(): AccessTokens = AccessTokens().apply { signIn(testJwt(TEST_ACCOUNT)) }
 
 private fun testJwt(subject: String): String {
     val payload = Base64.getUrlEncoder().withoutPadding().encodeToString("""{"sub":"$subject"}""".toByteArray())

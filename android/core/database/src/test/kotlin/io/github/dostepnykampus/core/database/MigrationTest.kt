@@ -205,8 +205,18 @@ class MigrationTest {
         val database = databaseAfterFirstAccount()
         try {
             runBlocking {
-                val submission = database.pendingSubmissions().all().single().submission
-                val marker = database.pendingMarkerChanges().observe().first().single()
+                val submission =
+                    database
+                        .pendingSubmissions()
+                        .all()
+                        .single()
+                        .submission
+                val marker =
+                    database
+                        .pendingMarkerChanges()
+                        .observe()
+                        .first()
+                        .single()
                 assertEquals("zgłoszenie należy do pierwszego konta", "pierwsze", submission.ownerSub)
                 assertEquals("zmiana znacznika należy do pierwszego konta", "pierwsze", marker.ownerSub)
             }
@@ -262,7 +272,7 @@ class MigrationTest {
     }
 
     @Test
-    fun givesHistoryWithoutOwnerToTheFirstAccount() {
+    fun adoptsOwnerlessHistory() {
         helper.createDatabase(DB_NAME, 12).use { twelfth ->
             twelfth.execSQL(
                 "INSERT INTO own_submissions (id, saved_at, kind, state) VALUES ('h', 7, 'PRECISE', 'SENT')",

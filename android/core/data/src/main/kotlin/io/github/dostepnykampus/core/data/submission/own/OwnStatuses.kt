@@ -43,19 +43,23 @@ internal fun ownStatusesOf(
     subject: () -> String?,
 ): OwnStatuses =
     OwnStatuses {
-        val owner = subject() ?: return@OwnStatuses StatusRefresh.FAILED
-        when (val result = mine()) {
-            is ApiResult.Success -> {
-                result.value.filter { it.content.kind != SubmissionKind.QUICK }.forEach { history.keep(it, owner) }
-                StatusRefresh.DONE
-            }
+        val owner = subject()
+        if (owner == null) {
+            StatusRefresh.FAILED
+        } else {
+            when (val result = mine()) {
+                is ApiResult.Success -> {
+                    result.value.filter { it.content.kind != SubmissionKind.QUICK }.forEach { history.keep(it, owner) }
+                    StatusRefresh.DONE
+                }
 
-            is ApiResult.NetworkError -> {
-                StatusRefresh.OFFLINE
-            }
+                is ApiResult.NetworkError -> {
+                    StatusRefresh.OFFLINE
+                }
 
-            is ApiResult.ServerError, ApiResult.NotFound -> {
-                StatusRefresh.FAILED
+                is ApiResult.ServerError, ApiResult.NotFound -> {
+                    StatusRefresh.FAILED
+                }
             }
         }
     }

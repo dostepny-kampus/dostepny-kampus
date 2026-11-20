@@ -36,6 +36,7 @@ class OwnListTest {
 
     private val store = FakeStore()
     private val history = FakeHistory()
+    private val account = flowOf("konto-testowe")
     private val ids = ArrayDeque(listOf(QUICK_ID, PRECISE_ID))
 
     /**
@@ -88,8 +89,6 @@ class OwnListTest {
             val listed = ownSubmissionsOf(history, store, account).observe().first()
             assertFalse(listed.single().isChangeWaiting, "bez poprawki nic nie czeka")
         }
-
-    private val account = flowOf("konto-testowe")
 
     private fun queue(): SubmissionQueue =
         SubmissionQueue(
