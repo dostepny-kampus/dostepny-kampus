@@ -6,10 +6,10 @@
 package io.github.dostepnykampus.app
 
 import androidx.compose.ui.unit.dp
-import io.github.dostepnykampus.app.BackGesture.Cancelled
-import io.github.dostepnykampus.app.BackGesture.Completed
-import io.github.dostepnykampus.app.BackGesture.Progressed
-import io.github.dostepnykampus.app.BackGesture.Started
+import io.github.dostepnykampus.app.navigation.BackGesture.Cancelled
+import io.github.dostepnykampus.app.navigation.BackGesture.Completed
+import io.github.dostepnykampus.app.navigation.BackGesture.Progressed
+import io.github.dostepnykampus.app.navigation.BackGesture.Started
 import io.github.dostepnykampus.app.navigation.SheetState
 import io.github.dostepnykampus.app.navigation.after
 import io.github.dostepnykampus.app.navigation.cardMode
