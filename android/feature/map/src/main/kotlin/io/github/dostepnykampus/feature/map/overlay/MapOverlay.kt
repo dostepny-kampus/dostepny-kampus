@@ -109,27 +109,32 @@ internal fun MapOverlay(
     var saved by rememberSaveable { mutableStateOf<MapPanel?>(null) }
     val open = saved.takeIf { hasPanels }
     Box(modifier) {
-        if (hasControls && open == null) {
-            MapControls(
-                camera = camera,
-                onCameraChange = { moved ->
-                    areas.acknowledge()
-                    onCameraChange(moved)
-                },
-                modifier = Modifier.align(Alignment.TopEnd),
-            )
-        }
         if (open == MapPanel.Area) {
             Box(Modifier.matchParentSize().pointerInput(Unit) { detectTapGestures { saved = null } })
         }
-        val above = Modifier.align(Alignment.TopStart).padding(bottom = MapControlTouchSize + Odstepy.s)
-        AreaColumn(
-            areas = areas.takeIf { hasPanels && open != MapPanel.Info },
-            open = open,
-            onOpenChange = { saved = it },
-            onAreaShow = onAreaShow,
-            modifier = above,
-            content = start,
+        MapControlsLayout(
+            modifier = Modifier.matchParentSize(),
+            mapControls = {
+                if (hasControls && open == null) {
+                    MapControls(
+                        camera = camera,
+                        onCameraChange = { moved ->
+                            areas.acknowledge()
+                            onCameraChange(moved)
+                        },
+                    )
+                }
+            },
+            areaSwitch = {
+                MapAreaSelection(
+                    areas = areas,
+                    isVisible = hasPanels && open != MapPanel.Info,
+                    isOpen = open == MapPanel.Area,
+                    onOpenChange = { isOpening -> saved = MapPanel.Area.takeIf { isOpening } },
+                    onAreaShow = onAreaShow,
+                )
+            },
+            floorColumn = { if (open != MapPanel.Area) Column(content = start) },
         )
         NoticeAndAttribution(
             areas = areas,
@@ -150,33 +155,24 @@ internal fun MapOverlay(
 }
 
 @Composable
-private fun AreaColumn(
-    areas: MapAreas?,
-    open: MapPanel?,
-    onOpenChange: (MapPanel?) -> Unit,
+private fun MapAreaSelection(
+    areas: MapAreas,
+    isVisible: Boolean,
+    isOpen: Boolean,
+    onOpenChange: (Boolean) -> Unit,
     onAreaShow: (CampusBounds) -> Unit,
-    modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit,
 ) {
-    Column(modifier) {
-        val isOpen = open == MapPanel.Area
-        if (areas != null) {
-            MapAreaSwitch(
-                areas = AreaList(areas.choices),
-                isOpen = isOpen,
-                onOpenChange = { isOpening -> onOpenChange(MapPanel.Area.takeIf { isOpening }) },
-                onChoose = { name ->
-                    areas.show(name)?.let(onAreaShow)
-                    onOpenChange(null)
-                },
-                modifier =
-                    Modifier
-                        .then(if (isOpen) Modifier.weight(weight = 1f, fill = false) else Modifier)
-                        .padding(start = Odstepy.s, top = Odstepy.s, end = Odstepy.s),
-            )
-        }
-        if (!isOpen) content()
-    }
+    if (!isVisible) return
+    MapAreaSwitch(
+        areas = AreaList(areas.choices),
+        isOpen = isOpen,
+        onOpenChange = onOpenChange,
+        onChoose = { name ->
+            areas.show(name)?.let(onAreaShow)
+            onOpenChange(false)
+        },
+        modifier = Modifier.padding(start = Odstepy.s, top = Odstepy.s, end = Odstepy.s),
+    )
 }
 
 @Composable

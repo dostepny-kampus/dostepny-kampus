@@ -86,7 +86,7 @@ internal fun MapTogglePill(
     ) {
         Row(
             modifier = Modifier.heightIn(min = MapControlTouchSize).then(rowModifier),
-            horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
+            horizontalArrangement = Arrangement.spacedBy(Odstepy.xs),
             verticalAlignment = Alignment.CenterVertically,
             content = content,
         )
