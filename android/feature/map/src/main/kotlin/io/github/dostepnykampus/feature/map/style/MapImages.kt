@@ -81,7 +81,8 @@ internal fun roomStepImages(images: MapImages): Map<String, Bitmap> =
     buildMap {
         repeat(ROOM_STEP_COUNT) { index ->
             listOf(false, true).forEach { selected ->
-                put(roomStepImage(index = index, selected = selected), roomStepBitmap(number = index + 1, selected = selected, images = images))
+                val key = roomStepImage(index = index, selected = selected)
+                put(key, roomStepBitmap(number = index + 1, selected = selected, images = images))
             }
         }
     }

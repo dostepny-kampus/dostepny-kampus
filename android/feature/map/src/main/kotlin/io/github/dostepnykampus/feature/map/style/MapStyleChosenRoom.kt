@@ -94,7 +94,9 @@ internal fun roomStepsFeatures(steps: List<RoomStepMarker>): JsonElement =
                 buildJsonObject {
                     put(key = ROOM_STEP_INDEX, value = step.index.toString())
                     put(key = ROOM_STEP_IMAGE, value = roomStepImage(index = step.index, selected = step.selected))
-                    if (step.isDestination) put(key = ROOM_STEP_OFFSET, element = numbers(0.0, -ROOM_LABEL_CLEARANCE_DP))
+                    if (step.isDestination) {
+                        put(key = ROOM_STEP_OFFSET, element = numbers(0.0, -ROOM_LABEL_CLEARANCE_DP))
+                    }
                 }
             Feature(Point(step.point.toPosition()), properties)
         },
