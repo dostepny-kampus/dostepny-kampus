@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.core.designsystem
 
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Typography
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -18,7 +19,10 @@ import org.junit.Test
 import org.snakeyaml.engine.v2.api.Load
 import org.snakeyaml.engine.v2.api.LoadSettings
 import java.io.File
+import kotlin.reflect.KVisibility
 import kotlin.reflect.full.memberProperties
+
+private const val MATERIAL_TEXT_SLOT_COUNT = 15
 
 /**
  * Kolory, typografia i wymiary motywu pochodzą z pliku tokenów.
@@ -67,11 +71,41 @@ class TokensTest {
         assertEquals(FontWeight(section.getValue("wyroznienie_waga").int()), Typografia.wyroznienieWaga)
     }
 
-    /** Rozmiar napisów na mapie z `mapa.napisy_sp`. Wymagania: NFR-16 */
+    /**
+     * Każdy publiczny slot `Typography` ma krój motywu i co najmniej `minimum_sp`, a slot spoza skali ma styl
+     * swojego zastępstwa. Komponenty Material same sięgają po sloty spoza skali, więc żaden nie może zostać
+     * domyślny. Wymagania: NFR-16, NFR-20
+     */
+    @Test
+    fun slotsHaveAppFontAndMinimum() {
+        val font = FontFamily.Serif
+        val typography = typography(font)
+        val section = tokens.sub("typografia")
+        val minimum = section.getValue("minimum_sp").int()
+        val slots =
+            Typography::class.memberProperties.filter {
+                it.visibility == KVisibility.PUBLIC && it.returnType.classifier == TextStyle::class
+            }
+        assertEquals("sloty Material 3", MATERIAL_TEXT_SLOT_COUNT, slots.size)
+        slots.forEach { slot ->
+            val style = checkNotNull(slot.getter.call(typography)) as TextStyle
+            assertEquals("${slot.name} krój", font, style.fontFamily)
+            assertTrue("${slot.name} ${style.fontSize} < $minimum sp", style.fontSize.value >= minimum)
+        }
+        section.sub("zastepstwa").forEach { (slot, target) ->
+            assertEquals("zastępstwo $slot", typography.property(target.toString()), typography.property(slot))
+        }
+    }
+
+    /**
+     * Rozmiar napisów na mapie z `mapa.napisy_sp` i podpisu OpenStreetMap z `mapa.podpis_osm_sp`.
+     * Wymagania: NFR-16, NFR-37
+     */
     @Test
     fun takesMapLabelSizeFromTokens() {
-        val expected = tokens.sub("mapa").getValue("napisy_sp")
-        assertEquals("napisy mapy", expected.int().sp, Typografia.napisyMapy)
+        val map = tokens.sub("mapa")
+        assertEquals("napisy mapy", map.getValue("napisy_sp").int().sp, Typografia.napisyMapy)
+        assertEquals("podpis OpenStreetMap", map.getValue("podpis_osm_sp").int().sp, Typografia.podpisOsm)
     }
 
     /** Grubości, progi powiększenia i krycia mapy z podsekcji `mapa` poza kolorami. Wymagania: NFR-16, NFR-21 */

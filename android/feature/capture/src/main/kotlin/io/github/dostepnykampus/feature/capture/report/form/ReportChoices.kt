@@ -121,7 +121,7 @@ internal fun PlanFloorSection(floors: PlanFloors, floor: ReportFloor?, onEdit: (
         if (floors.source.isNotEmpty()) {
             Text(
                 text = stringResource(R.string.formularz_zrodlo_pieter, floors.source),
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
     }
@@ -222,7 +222,7 @@ private fun TypeList(onPick: (BarrierType) -> Unit, modifier: Modifier = Modifie
             Text(
                 text = stringResource(group.nameRes()),
                 modifier = Modifier.padding(horizontal = Odstepy.m, vertical = Odstepy.s).semantics { heading() },
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleMedium,
             )
             BarrierType.entries.filter { it.group == group }.forEach { option ->
                 TextButton(

@@ -61,6 +61,6 @@ private fun StepArrow(glyph: String, label: Int, enabled: Boolean, onClick: () -
         enabled = enabled,
         modifier = Modifier.semantics { contentDescription = name },
     ) {
-        Text(text = glyph, style = MaterialTheme.typography.headlineSmall)
+        Text(text = glyph, style = MaterialTheme.typography.headlineMedium)
     }
 }

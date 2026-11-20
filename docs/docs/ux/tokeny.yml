@@ -243,7 +243,8 @@ kontrast:
 # Typografia — rozmiary w sp, żeby tekst rósł z ustawieniem czcionki (NFR-20, WCAG 1.4.4).
 # Skala stylu „Karta miejsca”: symbol / nazwa / nagłówek grupy / pozycja / treść / podpis.
 # Każdy styl interfejsu ma co najmniej 18 sp. Mniejsze (16 sp) są tylko napisy na mapie,
-# zapisane w sekcji `mapa`.
+# zapisane w sekcji `mapa`. Jedyny wyjątek od `minimum_sp` to podpis „© OpenStreetMap”
+# (`mapa.podpis_osm_sp`).
 # Interlinia tekstu podstawowego ≈ 1,45 rozmiaru (WCAG 1.4.8, poziom AAA, zaleca 1,5).
 # ---------------------------------------------------------------------------
 typografia:
@@ -251,8 +252,8 @@ typografia:
   # słabowidzących. Licencja SIL Open Font License: aplikacja dołącza plik czcionki.
   # Gdy krój się nie wczyta, aplikacja używa kroju systemowego.
   kroj: Atkinson Hyperlegible Next
-  # Żaden tekst w aplikacji nie jest mniejszy (próg zespołu, dotyczy też napisów mapy).
-  # Skrypt sprawdza każdy styl.
+  # Żaden tekst w aplikacji nie jest mniejszy (próg zespołu, dotyczy też napisów mapy),
+  # poza podpisem „© OpenStreetMap” (`mapa.podpis_osm_sp`). Skrypt sprawdza każdy styl.
   minimum_sp: 16
   # Pogrubienie przycisków, oznaczeń wejścia i błędu przy polu.
   wyroznienie_waga: 700
@@ -297,7 +298,7 @@ typografia:
       sp: 18
       waga: 500
       interlinia_sp: 28  # podpis bywa dwuwierszowy, ta sama interlinia co tekst podstawowy (decyzja 50)
-      uzycie: podpis, np. źródło i data oceny wejść, napisy „Zalecane”, podpisy OpenStreetMap
+      uzycie: podpis, np. źródło i data oceny wejść, napisy „Zalecane”
       zrodlo: styl „Karta miejsca”, US17.3, NFR-37, NFR-40
     labelMedium:
       sp: 18
@@ -305,6 +306,19 @@ typografia:
       interlinia_sp: 20   # ciaśniej niż podpis, bo napis może mieć dwa wiersze pod ikoną
       uzycie: napisy pod ikonami paska dolnego, w razie potrzeby w dwóch wierszach
       zrodlo: styl „Karta miejsca”, wymagania wspólne (pasek dolny)
+
+  # Sloty Material 3 bez własnego stylu w skali. Komponenty biblioteki sięgają po nie same,
+  # np. tytuł okna dialogowego (headlineSmall), etykieta i podpowiedź pola tekstowego (bodySmall).
+  # Każdy dostaje styl z tej listy, więc ma krój aplikacji i co najmniej `minimum_sp`,
+  # a nie krój systemowy i 12–14 sp z domyślnej skali Material.
+  zastepstwa:
+    displayLarge: headlineLarge
+    displayMedium: headlineLarge
+    displaySmall: headlineLarge
+    headlineSmall: headlineMedium
+    titleSmall: titleMedium
+    bodySmall: bodyMedium
+    labelSmall: labelMedium
 
 # ---------------------------------------------------------------------------
 # Wymiary w dp. Odstępy na siatce 4 dp (Material 3); skrypt sprawdza wielokrotność.
@@ -447,6 +461,10 @@ karta_budynku:
 # ---------------------------------------------------------------------------
 mapa:
   napisy_sp: 16
+  # Podpis „© OpenStreetMap” w rogu mapy: wyjątek od `minimum_sp`. To atrybucja wymagana licencją ODbL,
+  # a nie informacja dla osoby; mały napis nie zasłania mapy. Pełne źródła danych są w legendzie
+  # pod „ⓘ” stylem bodyLarge (NFR-37). Krój ten sam co w całej aplikacji.
+  podpis_osm_sp: 12
   # Plan piętra na mapie V1: grubości linii i rozmiar znaków planu według powiększenia, liniowo między progami.
   # Przy widocznym planie tło i kontur budynku z OpenStreetMap są ukryte. Ściana piętra z planu PWr to jedna linia
   # `pwr_kontur` (obrys wybranego budynku też idzie po niej), a pod pomieszczeniami w jej obrysie leży `p_korytarz`. Winda, toaleta dostosowana i schody mają ten sam rozmiar; ważność niesie jasność

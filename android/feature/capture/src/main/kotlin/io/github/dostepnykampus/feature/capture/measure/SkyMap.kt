@@ -132,7 +132,7 @@ internal fun SkyMap(sky: Sky, modifier: Modifier = Modifier) {
             stringResource(R.string.pomiar_mapa_nieba_opis, resources.systemCounts(systems))
         }
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        Text(text = stringResource(R.string.pomiar_mapa_nieba), style = MaterialTheme.typography.titleSmall)
+        Text(text = stringResource(R.string.pomiar_mapa_nieba), style = MaterialTheme.typography.titleMedium)
         Sphere(sky = sky, description = description)
         systems.keys.groupBy(GnssSystem::mark).toSortedMap().forEach { (mark, marked) ->
             LegendRow(mark = mark, names = marked.joinToString(", ") { resources.systemName(it) })

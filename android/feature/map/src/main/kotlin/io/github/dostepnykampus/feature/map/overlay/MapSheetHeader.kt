@@ -25,6 +25,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.Hyphens
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
@@ -59,7 +60,7 @@ internal fun MapSheetHeader(title: String, onClose: () -> Unit, content: @Compos
                         .focusRequester(header)
                         .focusable()
                         .semantics { heading() },
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.headlineMedium.copy(hyphens = Hyphens.Auto),
                 fontWeight = Typografia.wyroznienieWaga,
             )
             if (!isLarge) SheetCloseButton(onClose)

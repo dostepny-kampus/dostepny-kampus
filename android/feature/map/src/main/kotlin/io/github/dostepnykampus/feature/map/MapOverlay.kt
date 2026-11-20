@@ -31,8 +31,10 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.feature.map.area.AreaList
 import io.github.dostepnykampus.feature.map.area.AreaNotice
@@ -208,7 +210,11 @@ private fun OsmAttribution(modifier: Modifier = Modifier) {
                 modifier = Modifier.padding(horizontal = Odstepy.s),
                 maxLines = 1,
                 textDecoration = TextDecoration.Underline,
-                style = MaterialTheme.typography.bodySmall,
+                style =
+                    MaterialTheme.typography.bodyLarge.copy(
+                        fontSize = Typografia.podpisOsm,
+                        lineHeight = TextUnit.Unspecified,
+                    ),
             )
         }
     }

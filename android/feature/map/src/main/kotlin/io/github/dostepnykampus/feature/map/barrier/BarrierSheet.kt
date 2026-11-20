@@ -108,7 +108,7 @@ internal fun SeverityBadge(severity: Severity) {
 internal fun BarrierFacts(
     chosen: ChosenBarrier,
     hasPlace: Boolean = true,
-    titleStyle: TextStyle = MaterialTheme.typography.headlineSmall,
+    titleStyle: TextStyle = MaterialTheme.typography.headlineMedium,
 ) {
     val barrier = chosen.barrier
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
