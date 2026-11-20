@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -19,8 +20,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.DpRect
-import androidx.compose.ui.unit.height
-import androidx.compose.ui.unit.width
+import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.FloorOption
@@ -85,14 +85,19 @@ class MapOverlayControlsTest {
     fun dropsControlsUnderArea() {
         compose.setContent { Overlay() }
         val area = compose.onNode(areaButton).getUnclippedBoundsInRoot()
-        assertTrue("przyciski pod przyciskiem terenu", controls().all { it.top >= area.bottom })
+        val buttons = controls()
+        assertTrue("nazwa głównego kampusu mieści się w jednym wierszu", area.bottom - area.top <= TOUCH)
+        assertTrue("przyciski pod przyciskiem terenu", buttons.all { it.top >= area.bottom })
         assertNoOverlap()
-        assertTrue("cel dotyku co najmniej 48 dp", controls().all { it.width.value >= TOUCH && it.height.value >= TOUCH })
-        val floors = compose.onNodeWithText(FLOOR_TOP).getUnclippedBoundsInRoot()
+        assertTrue(
+            "cel dotyku co najmniej 48 dp",
+            buttons.all { it.right - it.left >= TOUCH && it.bottom - it.top >= TOUCH },
+        )
+        val floorLabels = FLOORS.map { compose.onNodeWithContentDescription(it).assertIsDisplayed().getUnclippedBoundsInRoot() }
         val osm = compose.onNodeWithText(OSM).getUnclippedBoundsInRoot()
         val info = compose.onNodeWithContentDescription(INFO).getUnclippedBoundsInRoot()
-        controls().forEach { button ->
-            assertFalse("przycisk na kolumnie pięter", button.overlaps(floors))
+        buttons.forEach { button ->
+            assertFalse("przycisk na kolumnie pięter", floorLabels.any { button.overlaps(it) })
             assertTrue("przycisk nad podpisem mapy i „ⓘ”", button.bottom <= osm.top && button.bottom <= info.top)
         }
     }
@@ -109,11 +114,14 @@ class MapOverlayControlsTest {
         compose.mainClock.autoAdvance = false
         compose.runOnUiThread { areas.show(SHORT) }
         compose.mainClock.advanceTimeByFrame()
-        compose.onNodeWithText(SHORT).assertExists()
+        compose.onNodeWithContentDescription("Teren: $SHORT. Zmień teren").assertExists()
         assertNoOverlap()
+        val shortArea = compose.onNode(areaButton).getUnclippedBoundsInRoot()
+        val up = compose.onNodeWithContentDescription(UP).getUnclippedBoundsInRoot()
+        assertTrue("krótka nazwa mieści się obok przycisków", up.top < shortArea.bottom)
         compose.runOnUiThread { areas.show(main.name) }
         compose.mainClock.advanceTimeByFrame()
-        compose.onNodeWithText(main.name).assertExists()
+        compose.onNodeWithContentDescription("Teren: ${main.name}. Zmień teren").assertExists()
         assertNoOverlap()
     }
 
@@ -164,8 +172,7 @@ class MapOverlayControlsTest {
         const val UP = "Przesuń mapę w górę"
         const val INFO = "Legenda i źródła mapy"
         const val OSM = "© OpenStreetMap"
-        const val FLOOR_TOP = "3"
-        const val TOUCH = 48f
+        val TOUCH = 48.dp
         val FLOORS = listOf("3", "2", "1", "0", "-1")
         val CONTROLS =
             listOf(

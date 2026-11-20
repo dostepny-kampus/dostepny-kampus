@@ -11,6 +11,7 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,6 +30,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.feature.map.R
@@ -74,7 +76,7 @@ internal fun MapAreaSwitch(
                 .focusable()
                 .clickable(role = Role.Button) { onOpenChange(!isOpen) }
                 .semantics { contentDescription = label }
-        val row = Modifier.padding(start = Odstepy.m, end = Odstepy.s).clearAndSetSemantics {}
+        val row = Modifier.padding(horizontal = Odstepy.s).clearAndSetSemantics {}
         MapTogglePill(isOpen = isOpen, modifier = toggle, rowModifier = row) {
             Icon(imageVector = MapControlIcons.Area, contentDescription = null)
             Text(
@@ -83,7 +85,11 @@ internal fun MapAreaSwitch(
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = Typografia.wyroznienieWaga,
             )
-            Icon(if (isOpen) MapControlIcons.Up else MapControlIcons.Down, contentDescription = null)
+            Icon(
+                imageVector = if (isOpen) MapControlIcons.Up else MapControlIcons.Down,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+            )
         }
         if (isOpen) {
             val panel = Modifier.weight(weight = 1f, fill = false)
