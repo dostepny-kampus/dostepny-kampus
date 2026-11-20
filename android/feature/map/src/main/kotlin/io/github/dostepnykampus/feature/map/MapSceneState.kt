@@ -133,10 +133,11 @@ internal fun rememberMapSceneState(
     motion: MapMotion? = null,
     notice: Dp = 0.dp,
     sheet: Int = 0,
+    roomCamera: MapCamera? = null,
 ): MapSceneState {
     val scene = rememberMapScene(layers = layers, catalog = catalog, focus = focus, area = area)
     val selection = scene?.selection
-    val view = rememberCameraView(focus, layers)
+    val view = rememberCameraView(focus = focus, layers = layers, roomCamera = roomCamera)
     val choices = rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }
     val isCovered = cover > 0.dp
     val density = LocalDensity.current

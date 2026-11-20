@@ -52,10 +52,12 @@ import io.github.dostepnykampus.feature.map.area.rememberNoticeHeight
 import io.github.dostepnykampus.feature.map.barrier.BarrierDescriptions
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
+import io.github.dostepnykampus.feature.map.camera.ENTRANCE_ZOOM
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.camera.TouchSign
+import io.github.dostepnykampus.feature.map.camera.shiftedNorth
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
@@ -67,6 +69,7 @@ import io.github.dostepnykampus.feature.map.plan.ShownPlan
 import io.github.dostepnykampus.feature.map.room.OpenRoom
 import io.github.dostepnykampus.feature.map.room.RoomCardLayer
 import io.github.dostepnykampus.feature.map.room.RoomSheetSources
+import io.github.dostepnykampus.feature.map.room.mapTarget
 
 private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"
@@ -223,7 +226,8 @@ fun CampusMapScreen(
                         onBuildingClick = onBuildingClick,
                         onEmptyMapClick = onEmptyMapClick,
                         entranceActions = entranceActions,
-                        room = room?.takeUnless { isLarge },
+                        room = room,
+                        isRoomFull = isLarge,
                         modifier = Modifier.fillMaxSize().background(DostepnyKampusTheme.mapColors.lad),
                     )
                     BarrierDescriptions(shown)
@@ -298,12 +302,25 @@ private fun CampusMap(
     onEmptyMapClick: () -> Unit,
     entranceActions: EntranceActions,
     room: OpenRoom?,
+    isRoomFull: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val isKeyboardOpen = rememberKeyboardOpenFlag()
     val topInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
     var size by remember { mutableStateOf(IntSize.Zero) }
     val signs = sheet.signs
+    var roomHeight by remember { mutableIntStateOf(0) }
+    val isRoomOnMap = room != null && !isRoomFull
+    val roomOffset = with(LocalDensity.current) { roomHeight.toDp().value.toDouble() / 2.0 }
+    val roomCamera =
+        room?.card?.mapTarget()?.let { target ->
+            val camera = MapCamera(center = target.point, zoom = ENTRANCE_ZOOM)
+            when {
+                !isRoomOnMap -> camera
+                roomHeight == 0 -> null
+                else -> camera.shiftedNorth(-roomOffset)
+            }
+        }
     val state =
         rememberCampusScene(
             ui = ui,
@@ -313,6 +330,7 @@ private fun CampusMap(
             size = size,
             top = cameraTop,
             motion = motion,
+            roomCamera = roomCamera,
         )
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
         val scene = state.scene
@@ -350,10 +368,9 @@ private fun CampusMap(
                 motion = motion,
                 start = { FloorColumn(plan = plan.shown, onChoose = plan.onFloor) },
             ) {
-                val shown = room.takeUnless { isKeyboardOpen }
-                val open =
-                    OpenSign(sheet = sheet, barriers = barriers, catalog = ui.catalog, plan = plan.shown, room = shown)
-                MapSheets(open = open, state = state, onBuilding = onBuildingClick, entranceActions = entranceActions)
+                val visibleRoom = room.takeIf { isRoomOnMap && !isKeyboardOpen }
+                val open = OpenSign(sheet, barriers, ui.catalog, plan.shown, visibleRoom)
+                MapSheets(open, state, onBuildingClick, entranceActions) { roomHeight = it }
             }
         }
     }
@@ -375,6 +392,7 @@ private fun rememberCampusScene(
     size: IntSize,
     top: Dp,
     motion: MapMotion?,
+    roomCamera: MapCamera?,
 ): MapSceneState {
     val width = with(LocalDensity.current) { size.width.toDp() }
     return rememberMapSceneState(
@@ -388,6 +406,7 @@ private fun rememberCampusScene(
         motion = motion,
         notice = rememberNoticeHeight(shift = areas.selectionNotice, width = width),
         sheet = sheet.signs.markedCover(focus),
+        roomCamera = roomCamera,
     )
 }
 

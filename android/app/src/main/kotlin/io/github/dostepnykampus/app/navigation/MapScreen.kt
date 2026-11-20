@@ -42,6 +42,7 @@ import io.github.dostepnykampus.feature.map.plan.PlanReport
 import io.github.dostepnykampus.feature.map.plan.ShownPlan
 import io.github.dostepnykampus.feature.map.room.OpenRoom
 import io.github.dostepnykampus.feature.map.room.RoomCardViewModel
+import io.github.dostepnykampus.feature.map.room.mapTarget
 
 /**
  * V1 ze stanem [viewModel], planem piętra [planViewModel] i wejściami z serwera [entrancesViewModel] z grafu Hilt oraz
@@ -68,7 +69,8 @@ internal fun AppNavigator.HiltMapScreen(
     val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     val room = card?.takeIf { current is MapRoute }?.let { if (isLarge) it.copy(step = null) else it }
     val found = room?.found
-    val roomFocus = remember(found) { found?.focus() }
+    val target = room?.mapTarget()
+    val roomFocus = remember(found, room?.step) { found?.focus()?.copy(floor = target?.floor) }
     val selected = roomFocus ?: focus
     val shown = remember(state, entrances) { state.copy(catalog = state.catalog?.withBuildingEntrances(entrances)) }
     SideEffect {
