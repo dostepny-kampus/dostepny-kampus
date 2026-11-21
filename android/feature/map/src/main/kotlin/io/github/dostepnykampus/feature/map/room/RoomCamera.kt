@@ -32,7 +32,16 @@ internal class RoomMemory {
     var idle: MapCamera? = null
     var tapped: String? = null
     var top: Dp = 0.dp
-    var isOpen = false
+    private var isOpen = false
+
+    /** Karta otwarta ([isOpenNow]) albo nie: zamknięcie otwartej karty kasuje dotknięcie, bez karty pasek ma [bar]. */
+    fun follow(isOpenNow: Boolean, bar: Dp) {
+        if (!isOpenNow) {
+            if (isOpen) tapped = null
+            top = bar
+        }
+        isOpen = isOpenNow
+    }
 }
 
 /**
@@ -79,11 +88,7 @@ internal fun rememberRoomView(scene: RoomScene, focus: MapFocus?, cover: Int, to
     val seen = remember(command) { memory.idle?.let { SeenPlan(camera = it, plan = plan?.building) } }
     val held = remember(command) { IntArray(1) }
     held[0] = held[0].heldWith(cover = cover, hasWay = room?.run { card.way } != null)
-    if (room == null) {
-        if (memory.isOpen) memory.tapped = null
-        memory.top = top
-    }
-    memory.isOpen = room != null
+    memory.follow(isOpenNow = room != null, bar = top)
     val kept = if (isOnMap) held[0] else cover
     val isTapped = room?.run { card.step == null && card.found.room.id == memory.tapped } == true
     val density = LocalDensity.current

@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.map.room
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.unit.dp
@@ -56,14 +57,14 @@ class RoomCameraViewTest {
         val focus =
             MapFocus.Building(symbol = FOUND.building, command = 1L, floor = FOUND.floor.id, room = FOUND.room.id)
         val room = mutableStateOf<OpenRoom?>(null)
-        val cover = mutableStateOf(0)
+        val cover = mutableIntStateOf(0)
         lateinit var view: RoomView
         compose.setContent {
             view =
                 rememberRoomView(
                     scene = RoomScene(room = room.value, isOnMap = true, plan = null),
                     focus = focus.takeIf { room.value != null },
-                    cover = cover.value,
+                    cover = cover.intValue,
                     top = 0.dp,
                     height = 2000,
                 )
@@ -72,16 +73,16 @@ class RoomCameraViewTest {
         compose.runOnIdle {
             view.onIdle(idle)
             view.tapped {}(FOUND)
-            cover.value = 1
+            cover.intValue = 1
         }
         compose.runOnIdle {
             room.value = OpenRoom(card = RoomCard(found = FOUND, way = VIA_LIFT), onClose = {}, onStep = {})
-            cover.value = 600
+            cover.intValue = 600
         }
         compose.runOnIdle {
             val camera = view.camera
             assertEquals("Powiększenie się zmieniło", idle.zoom, camera?.zoom ?: 0.0, 1e-9)
-            assertEquals("Mapa ruszyła w bok", idle.center.longitude, camera?.center?.longitude ?: 0.0, 1e-9)
+            assertEquals("Mapa ruszyła w bok", idle.center.longitude, camera?.run { center.longitude } ?: 0.0, 1e-9)
         }
     }
 }
