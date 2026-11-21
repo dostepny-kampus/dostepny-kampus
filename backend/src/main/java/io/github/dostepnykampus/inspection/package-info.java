@@ -5,20 +5,19 @@
  */
 
 /**
- * Moduł inspection obejmuje znaczniki obejrzanych pięter i postęp inwentaryzacji.
+ * Moduł inspection: znaczniki pięter obejrzanych przez Zbierających.
  *
- * <p>Zapis znaczników obejrzanych pięter i odczyt postępu budynków.</p>
+ * <p>Zadanie: zapis znaczników i odczyt postępu inwentaryzacji.</p>
  *
- * <p>API: HTTP {@code /sync/push}, {@code DELETE /inspection-markers/{id}}
- * i {@code GET /progress}.</p>
+ * <p>API: {@code /sync/push}, {@code /inspection-markers/{id}}, {@code /progress}.</p>
  *
  * <p>Zależności: {@code building :: api}, {@code shared}.</p>
  *
  * <p>Nie robi: nie przyjmuje zgłoszeń barier.</p>
  *
- * <p>Kiedy dodawać tutaj: znaczniki obejrzanych pięter i postęp budynków.</p>
+ * <p>Kiedy dodawać tutaj: kod znaczników piętra; zgłoszenia barier zostają w module barrier.</p>
  *
- * <p>Wymagania: US11.1, US11.2, US11.3, US11.4, US15, BR-20, BR-21, BR-24</p>
+ * <p>Wymagania: US15, BR-20</p>
  *
  * @since 0.1.0
  */
