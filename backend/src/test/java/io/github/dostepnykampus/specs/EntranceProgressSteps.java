@@ -26,10 +26,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 public final class EntranceProgressSteps {
 
     /** Zgłoszenie oznaczenia. */
-    private final UUID submission = UUID.randomUUID();
+    private static final UUID SUBMISSION =
+        UUID.fromString("1467d14f-8db6-4c36-9f27-bed095f1883d");
 
     /** Zdjęcie zgłoszenia. */
-    private final UUID photo = UUID.randomUUID();
+    private static final UUID PHOTO =
+        UUID.fromString("c6bc0a95-535e-415c-8810-51e25286ab71");
 
     /** Klient HTTP. */
     private final MockMvc http;
@@ -67,17 +69,20 @@ public final class EntranceProgressSteps {
             INSERT INTO submissions (id, author, status, content)
             VALUES (:id, 'autor-zgloszenia', 'SENT', CAST(:content AS jsonb))
             """
-        ).param("id", this.submission).param("content", this.content()).update();
+        ).param("id", EntranceProgressSteps.SUBMISSION).param("content", this.content()).update();
         this.photos.put(
-            this.submission, this.photo, "zdjęcie wejścia".getBytes(StandardCharsets.UTF_8)
+            EntranceProgressSteps.SUBMISSION, EntranceProgressSteps.PHOTO,
+            "zdjęcie wejścia".getBytes(StandardCharsets.UTF_8)
         );
         this.http.perform(
-            MockMvcRequestBuilders.post("/submissions/{id}/claim", this.submission)
-                .with(new AsVerifier())
+            MockMvcRequestBuilders.post(
+                "/submissions/{id}/claim", EntranceProgressSteps.SUBMISSION
+            ).with(new AsVerifier())
         ).andExpect(MockMvcResultMatchers.status().isOk());
         this.http.perform(
-            MockMvcRequestBuilders.post("/submissions/{id}/review", this.submission)
-                .with(new AsVerifier()).contentType(MediaType.APPLICATION_JSON)
+            MockMvcRequestBuilders.post(
+                "/submissions/{id}/review", EntranceProgressSteps.SUBMISSION
+            ).with(new AsVerifier()).contentType(MediaType.APPLICATION_JSON)
                 .content("{\"decision\":\"ACCEPT\",\"version\":1}")
         ).andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -89,7 +94,7 @@ public final class EntranceProgressSteps {
      */
     @After("@przyjecie-wejscia")
     public void cleanup() throws IOException {
-        this.photos.delete(this.submission, this.photo);
+        this.photos.delete(EntranceProgressSteps.SUBMISSION, EntranceProgressSteps.PHOTO);
     }
 
     private String content() {
@@ -99,7 +104,7 @@ public final class EntranceProgressSteps {
                 "buildingSymbol":"%s","location":{"type":"Point","coordinates":[17,51]},
                 "photoIds":["%s"]}
             """,
-            ProgressFixtures.key("A-1"), this.photo
+            ProgressFixtures.key("A-1"), EntranceProgressSteps.PHOTO
         );
     }
 }
