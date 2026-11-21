@@ -17,6 +17,7 @@ import io.github.dostepnykampus.shared.error.ConflictingState;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import io.github.dostepnykampus.shared.error.MissingResource;
 import java.security.Principal;
+import java.util.Objects;
 import java.util.UUID;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -109,7 +110,8 @@ public final class ReviewController {
             return ReviewController.saved(this.review.decide(decision));
         } catch (final StaleEntranceMarking stale) {
             throw new ConflictingState(
-                stale.getMessage(), "serverSubmission", new SubmissionResponse(current)
+                Objects.requireNonNull(stale.getMessage()), "serverSubmission",
+                new SubmissionResponse(current)
             );
         }
     }
