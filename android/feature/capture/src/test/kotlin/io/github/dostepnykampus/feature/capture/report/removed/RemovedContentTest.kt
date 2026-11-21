@@ -8,8 +8,15 @@ package io.github.dostepnykampus.feature.capture.report.removed
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import coil3.ColorImage
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
+import coil3.annotation.DelicateCoilApi
+import coil3.test.FakeImageLoaderEngine
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -71,7 +78,26 @@ class RemovedContentTest {
         assertEquals("„Spróbuj ponownie” wysyła jeszcze raz", 1, sends)
     }
 
+    /** Wiersz: zgłoszenie przyjęte ze zdjęciem → C7 pokazuje zdjęcie pod danymi zgłoszenia. Wymagania: US8.4, BR-19 */
+    @OptIn(DelicateCoilApi::class)
+    @Test
+    fun showsAcceptedPhoto() {
+        val image = ColorImage(PHOTO_COLOR, width = 64, height = 48)
+        val engine = FakeImageLoaderEngine.Builder().intercept(PHOTO_URL, image).build()
+        SingletonImageLoader.setUnsafe(ImageLoader.Builder(compose.activity).components { add(engine) }.build())
+        show(RemovedUiState(previous = LIFT.copy(photoUrl = PHOTO_URL), stage = RemovedStage.EDITING))
+
+        val description = "Zdjęcie bariery: Niesprawna winda"
+        compose.waitUntil(WAIT_MS) {
+            compose.onAllNodesWithContentDescription(description).fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNodeWithContentDescription(description).assertIsDisplayed()
+    }
+
     private companion object {
+        const val WAIT_MS = 5_000L
+        const val PHOTO_URL = "https://serwer.test/submissions/tb9/photos/p1"
+        const val PHOTO_COLOR = 0xFF336699.toInt()
         val LIFT =
             AcceptedBarrier(
                 id = "tb9",

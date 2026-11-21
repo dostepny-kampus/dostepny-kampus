@@ -33,6 +33,7 @@ import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.campusDay
+import io.github.dostepnykampus.core.designsystem.marking.BarrierPhoto
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.feature.capture.R
@@ -91,7 +92,7 @@ private fun Accepted(barrier: AcceptedBarrier) {
             val text = stringResource(R.string.usuniecie_sprawdzone, campusDay(verified))
             Text(text, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        // TODO(#2299): zdjęcie zgłoszenia przyjętego z BarrierPhoto przeniesionego do wspólnego modułu
+        BarrierPhoto(url = barrier.photoUrl, type = barrier.type)
     }
 }
 

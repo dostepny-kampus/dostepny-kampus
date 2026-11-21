@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map.barrier
+package io.github.dostepnykampus.core.designsystem.marking
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertHeightIsAtLeast
@@ -14,31 +14,31 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.unit.dp
+import coil3.ColorImage
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
+import coil3.annotation.DelicateCoilApi
 import coil3.intercept.Interceptor
-import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
+import coil3.request.ErrorResult
+import coil3.test.FakeImageLoaderEngine
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierType
-import io.github.dostepnykampus.core.model.submission.Severity
-import io.github.dostepnykampus.feature.map.PHOTO_URL
-import io.github.dostepnykampus.feature.map.photoAvailable
-import io.github.dostepnykampus.feature.map.photoFailing
-import io.github.dostepnykampus.feature.map.photoPending
-import io.github.dostepnykampus.feature.map.usePhotoLoader
+import kotlinx.coroutines.awaitCancellation
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.io.IOException
 
-/** Zdjęcie zgłoszenia w arkuszu bariery. Wymagania: US1.5, BR-17, NFR-12, NFR-18, NFR-50 */
+/** Wspólny komponent zdjęcia zgłoszenia bariery. Wymagania: US1.5, US8.4, BR-17, BR-19, NFR-12, NFR-18, NFR-50 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class BarrierPhotoTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    /** Wiersz: bariera z adresem zdjęcia → w arkuszu obraz z opisem „Zdjęcie bariery: typ”. Wymagania: NFR-18 */
+    /** Wiersz: adres zdjęcia → obraz z opisem typu bariery. Wymagania: NFR-18 */
     @Test
     fun showsPhotoWithDescription() {
         show(PHOTO_URL, photoAvailable())
@@ -47,7 +47,7 @@ class BarrierPhotoTest {
         compose.onNodeWithContentDescription(DESCRIPTION).assertIsDisplayed()
     }
 
-    /** Wiersz: bariera bez zdjęcia → w arkuszu nie ma obrazu ani napisu o wczytywaniu. Wymagania: BR-17 */
+    /** Wiersz: brak adresu zdjęcia → brak obrazu i napisu o wczytywaniu. Wymagania: BR-17 */
     @Test
     fun hidesPhotoWithoutAddress() {
         show(null, photoAvailable())
@@ -57,10 +57,10 @@ class BarrierPhotoTest {
         compose.onNodeWithText("Wczytujemy zdjęcie…").assertDoesNotExist()
     }
 
-    /** Wiersz: zdjęcie się wczytuje → w jego miejscu napis „Wczytujemy zdjęcie…”. Wymagania: NFR-12 */
+    /** Wiersz: zdjęcie się wczytuje → napis o wczytywaniu. Wymagania: NFR-12 */
     @Test
     fun showsLoadingNoteWhilePending() {
-        show(PHOTO_URL, photoPending())
+        show(PHOTO_URL, Interceptor { awaitCancellation() })
 
         compose.onNodeWithText("Wczytujemy zdjęcie…").assertIsDisplayed()
         compose.onNodeWithContentDescription(DESCRIPTION).assertDoesNotExist()
@@ -69,7 +69,8 @@ class BarrierPhotoTest {
     /** Wiersz: błąd pobrania → komunikat i „Spróbuj ponownie” o wysokości co najmniej 48 dp. Wymagania: NFR-50 */
     @Test
     fun showsErrorWithRetryOnFailure() {
-        show(PHOTO_URL, photoFailing())
+        val failing = Interceptor { chain -> ErrorResult(null, chain.request, IOException("błąd")) }
+        show(PHOTO_URL, failing)
 
         val message = "Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę."
         compose.waitUntil(WAIT_MS) { shownText(message) }
@@ -83,27 +84,22 @@ class BarrierPhotoTest {
 
     private fun shownText(text: String) = compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()
 
+    @OptIn(DelicateCoilApi::class)
     private fun show(url: String?, loader: Interceptor) {
-        usePhotoLoader(compose.activity, loader)
+        val imageLoader = ImageLoader.Builder(compose.activity).components { add(loader) }.build()
+        SingletonImageLoader.setUnsafe(imageLoader)
         compose.setContent {
-            DostepnyKampusTheme { BarrierPhoto(ChosenBarrier(barrier(url), building = null, entrance = null)) }
+            DostepnyKampusTheme { BarrierPhoto(url = url, type = BarrierType.STAIRS_AT_ENTRANCE) }
         }
     }
 
-    private fun barrier(url: String?) =
-        AcceptedBarrier(
-            id = "z1",
-            location = GeoPoint(longitude = 17.06, latitude = 51.107),
-            severity = Severity.BLOCKING,
-            type = BarrierType.STAIRS_AT_ENTRANCE,
-            buildingSymbol = null,
-            verifiedAt = null,
-            photoIds = listOfNotNull(url?.let { "p1" }),
-            photoUrl = url,
-        )
+    private fun photoAvailable(): Interceptor =
+        FakeImageLoaderEngine.Builder().intercept(PHOTO_URL, ColorImage(PHOTO_COLOR, width = 64, height = 48)).build()
 
     private companion object {
         const val WAIT_MS = 5_000L
+        const val PHOTO_URL = "https://serwer.test/submissions/z1/photos/p1"
+        const val PHOTO_COLOR = 0xFF336699.toInt()
         const val DESCRIPTION = "Zdjęcie bariery: Schody przy wejściu"
     }
 }

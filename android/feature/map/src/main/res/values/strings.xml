@@ -56,7 +56,6 @@
     <string name="mapa_bariera_poza_budynkiem">%1$s, poza budynkiem</string>
     <string name="mapa_bariera_bez_typu">Bariera</string>
     <string name="mapa_bariera_sprawdzone">Sprawdzone %1$s</string>
-    <string name="mapa_bariera_zdjecie">Zdjęcie bariery: %1$s</string>
     <string name="mapa_wejscie_za_drzwiami">Za drzwiami</string>
     <string name="mapa_wejscie_winda">Winda, ok. %1$d m od wejścia.</string>
     <string name="mapa_wejscie_winda_jezdzi">Jeździ od %1$s do %2$s.</string>
@@ -70,8 +69,6 @@
     <string name="mapa_plan_schody">Schody</string>
     <string name="mapa_winda_jedzie">Jedzie na: %1$s</string>
     <string name="mapa_winda_tutaj">%1$s (tutaj jesteś)</string>
-    <string name="mapa_zdjecie_wczytujemy">Wczytujemy zdjęcie…</string>
-    <string name="mapa_zdjecie_blad">Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.</string>
     <string name="mapa_otwiera_opis_budynku">otwiera opis budynku</string>
     <string name="mapa_kampusu">Mapa kampusu</string>
     <string name="mapa_szukaj_podpowiedz">Szukaj budynku, np. C-13</string>

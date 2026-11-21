@@ -13,7 +13,6 @@ plugins {
 dependencies {
     api(libs.androidx.compose.animation.core)
     api(libs.androidx.compose.foundation.layout)
-    api(libs.coil.compose.core)
     api(libs.androidx.compose.runtime)
     api(libs.androidx.compose.ui)
     api(libs.androidx.lifecycle.viewmodel)
@@ -40,7 +39,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
     implementation(libs.androidx.core)
-    implementation(libs.coil.compose)
     implementation(libs.hilt.core)
     api(libs.kotlinx.serialization.json)
     implementation(libs.maplibre.android)
