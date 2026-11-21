@@ -23,24 +23,22 @@ import androidx.compose.ui.unit.dp
  */
 internal class ShownCamera {
     private var camera: MapCamera? = null
+    private var origin: MapCamera? = null
     private var covered = 0.dp
-
-    /** Widok, w którym mapa ostatnio stanęła; `null`, dopóki nie stanęła ani razu. */
-    var rest: MapCamera? = null
-        private set
 
     /** Ostatni widok albo [fallback], gdy mapa jeszcze nic nie pokazała. */
     fun startOr(fallback: MapCamera?): MapCamera? = camera ?: fallback
 
-    /** Zapis [keep] widoku, w którym mapa stanęła, który zapamiętuje go też jako [rest]. */
-    fun settling(keep: (MapCamera) -> Unit): (MapCamera) -> Unit =
-        { view ->
-            rest = view
-            keep(view)
-        }
+    /** Widok, z którego mapa rusza do [target]: ostatni podany widok, a gdy to już [target], widok sprzed niego. */
+    fun originOf(target: MapCamera): MapCamera? = if (target == camera) origin else camera
+
+    /** Ruch bez arkusza do [target] ([uncoveredMove]) z widoku startowego ([originOf]); `null` bez celu. */
+    fun moveTo(target: MapCamera?, closed: MapCamera?, free: FreeMap): CameraTransition? =
+        target?.uncoveredMove(closed = closed, from = originOf(target), free = free)
 
     /** Zapisuje widok [shown] z dołem mapy zasłoniętym na [covered]; 0, gdy widok nie stoi nad arkuszem. */
     fun keep(shown: MapCamera?, covered: Dp) {
+        if (shown != camera) origin = camera
         camera = shown
         this.covered = covered
     }
