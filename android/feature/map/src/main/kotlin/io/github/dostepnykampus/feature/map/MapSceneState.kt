@@ -44,7 +44,6 @@ import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.pickLine
 import io.github.dostepnykampus.feature.map.camera.pickView
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
-import io.github.dostepnykampus.feature.map.camera.rememberClosedView
 import io.github.dostepnykampus.feature.map.camera.uncoveredMove
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
@@ -117,12 +116,11 @@ internal class MapSceneState(
 }
 
 /**
- * Stan sceny mapy z danych [layers], katalogu [catalog], zaznaczenia [focus] z trasy i nazwy terenu [area]
- * wybranego przez osobę, dla mapy o rozmiarze [size] zasłoniętej od dołu arkuszem V2 na wysokość
- * [cover]. Nad arkuszem budynek mieści się też nad napisem o zmianie terenu wysokim na [notice]. Widok kamery
- * i lista budynków do wyboru są zapisywane, więc wracają po obrocie ekranu. Zamknięcie arkusza zostawia obraz mapy
- * bez ruchu: zapisany widok to widok z chwili zamknięcia. Każdy ruch nad kartą do nowego budynku trafia do [motion].
- * Arkusz zaznaczonego wejścia wysoki na [sheet] pikseli zasłania dół mapy, więc wejście staje na środku mapy nad nim.
+ * Stan sceny mapy z danych [layers], katalogu [catalog], zaznaczenia [focus] z trasy i nazwy terenu [area] dla mapy
+ * o rozmiarze [size] zasłoniętej od dołu arkuszem V2 na [cover] albo innym arkuszem na [sheet] pikseli. Nad arkuszem
+ * V2 budynek mieści się też nad napisem o zmianie terenu wysokim na [notice]. Widok kamery i lista budynków do wyboru
+ * wracają po obrocie ekranu. Zamknięcie każdego arkusza zostawia obraz mapy bez ruchu: zapisany widok to widok
+ * z chwili zamknięcia. Każdy ruch nad kartą do nowego budynku trafia do [motion].
  *
  * Wymagania: US1.7, US1.8, US3.3, NFR-22, NFR-56
  */
@@ -148,8 +146,8 @@ internal fun rememberMapSceneState(
     val density = LocalDensity.current
     val last = remember { ShownCamera() }
     val (isCoveredBefore, topBefore) = rememberPrevious(isCovered to top)
-    val seen = last.rememberView(isCovered = isCovered, wasCovered = isCoveredBefore, bar = top, view = view)
-    val closed = rememberClosedView(isCovered = isCovered, wasCovered = isCoveredBefore, seen = seen)
+    val (seen, closed) =
+        last.rememberSeen(isCovered = isCovered, wasCovered = isCoveredBefore, top = top, sheet = sheet, view = view)
     val shown =
         seen?.let {
             density.besideFloorColumn(camera = it, symbol = view.shown, catalog = catalog, layers = layers, size = size)
@@ -181,7 +179,9 @@ internal fun rememberMapSceneState(
     val card = rememberCardMove(building = selection?.building, pick = pick)
     val above = card.move?.takeIf { isCovered }
     val move = above ?: uncovered?.uncoveredMove(closed)
-    SideEffect { last.keep(shown = move?.camera, covered = cover + reserve, isAbove = above != null) }
+    val covered =
+        density.keptCover(isAboveCard = above != null, isCovered = isCovered, card = cover + reserve, sheet = sheet)
+    SideEffect { last.keep(shown = move?.camera, covered = covered) }
     val inset = sheetOrBarInset(isAbove = above != null, top = topInset, bottom = bottomInset, sign = sheet.toDouble())
     return MapSceneState(
         scene = scene,
