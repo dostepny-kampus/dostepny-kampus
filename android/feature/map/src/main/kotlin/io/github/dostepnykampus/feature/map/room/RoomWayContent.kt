@@ -100,8 +100,8 @@ private fun RoomWay.Steps.wayRows(floor: String, roomTitle: String): List<WayRow
     val (entranceTitle, entranceText) = entranceLabels()
     val entrance = WayRow(title = entranceTitle, text = entranceText, detail = RoomStepDetail.ENTRANCE)
     val liftRow =
-        lift?.let {
-            val text = stringResource(R.string.mapa_sala_droga_jedz, it.metersFromEntrance, floor.floorWord())
+        lift?.let { step ->
+            val text = stringResource(R.string.mapa_sala_droga_jedz, step.metersFromEntrance, floor.floorWord())
             WayRow(title = stringResource(R.string.karta_winda), text = text, detail = RoomStepDetail.LIFT)
         }
     val distance = if (lift == null) R.string.mapa_sala_droga_od_wejscia else R.string.mapa_sala_droga_od_windy
@@ -129,17 +129,23 @@ private fun RoomWayRow(
     val colors = MaterialTheme.colorScheme
     val shape = RoundedCornerShape(Zaokraglenia.duze)
     val action = onClick?.let { Modifier.selectable(selected = selected, role = Role.Button, onClick = it) }
-    val row = Modifier.fillMaxWidth().clip(shape).then(action ?: Modifier).padding(Odstepy.s)
+    val row =
+        Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .then(action ?: Modifier)
+            .padding(Odstepy.s)
     Surface(
         color = if (selected) colors.primaryContainer else Color.Transparent,
         shape = shape,
         border = BorderStroke(Obramowania.wybrane, colors.onPrimaryContainer).takeIf { selected },
     ) {
         Column {
+            val isLink = onClick != null
             if (LocalDensity.current.fontScale >= LARGE_FONT_SCALE) {
-                LargeStepRow(number = number, step = step, selected = selected, isLink = onClick != null, row = row)
+                LargeStepRow(number = number, step = step, selected = selected, isLink = isLink, modifier = row)
             } else {
-                StepRow(number = number, step = step, selected = selected, isLink = onClick != null, row = row)
+                StepRow(number = number, step = step, selected = selected, isLink = isLink, modifier = row)
             }
             val detail = step.detail
             if (selected && detail != null && onDetails != null) {
@@ -150,9 +156,9 @@ private fun RoomWayRow(
 }
 
 @Composable
-private fun StepRow(number: Int, step: WayRow, selected: Boolean, isLink: Boolean, row: Modifier) {
+private fun StepRow(number: Int, step: WayRow, selected: Boolean, isLink: Boolean, modifier: Modifier = Modifier) {
     Row(
-        modifier = row,
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
         verticalAlignment = Alignment.Top,
     ) {
@@ -168,8 +174,14 @@ private fun StepRow(number: Int, step: WayRow, selected: Boolean, isLink: Boolea
 }
 
 @Composable
-private fun LargeStepRow(number: Int, step: WayRow, selected: Boolean, isLink: Boolean, row: Modifier) {
-    Column(row, verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+private fun LargeStepRow(
+    number: Int,
+    step: WayRow,
+    selected: Boolean,
+    isLink: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
             RoomStepBadge(number = number, size = 40.dp, selected = selected)
             Text(
