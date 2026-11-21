@@ -10,7 +10,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
@@ -67,7 +66,6 @@ class RoomCameraViewTest {
                     focus = focus.takeIf { room.value != null },
                     panel =
                         MapPanel(cover = cover.intValue, wayCover = cover.intValue.takeIf { room.value != null } ?: 0),
-                    top = 0.dp,
                     height = 2000,
                 )
         }

@@ -7,7 +7,6 @@ package io.github.dostepnykampus.feature.map.room
 
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.feature.map.camera.MapCamera
-import io.github.dostepnykampus.feature.map.camera.shiftedNorth
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.plan.selectedBuilding
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.ENTRANCE
@@ -85,14 +84,6 @@ class RoomMapTargetTest {
             ).map { open.cameraForRoom(isRoomOnMap = true, cover = 320.dp, seen = it)?.zoom }
 
         assertEquals(listOf(18.0, 19.0, 19.0, 19.0), zooms, "Powiększenie po czynności")
-    }
-
-    /** Wiersz: karta 200 dp i pasek 56 dp przesuwają środek dopełnienia o 128 dp, więc obraz mapy zostaje w miejscu. */
-    @Test
-    fun keepsPictureUnderCardAndBar() {
-        val view = MapCamera(center = FOUND.room.labelPoint, zoom = 18.0)
-
-        assertEquals(view.shiftedNorth(128.0), view.stillUnder(card = 200.dp, bar = 56.dp), "Obraz mapy przesunięty")
     }
 
     /** Wiersz: przed pomiarem z drogą kamera czeka; pierwsza wysokość z drogą zostaje na czynność. */

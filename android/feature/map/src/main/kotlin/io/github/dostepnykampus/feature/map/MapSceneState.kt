@@ -137,6 +137,8 @@ internal fun rememberMapSceneState(
     notice: Dp = 0.dp,
     sheet: Int = 0,
     roomCamera: MapCamera? = null,
+    isRoomJump: Boolean = false,
+    heldInset: MapInset? = null,
 ): MapSceneState {
     val scene = rememberMapScene(layers = layers, catalog = catalog, focus = focus, area = area)
     val selection = scene?.selection
@@ -146,14 +148,14 @@ internal fun rememberMapSceneState(
     val density = LocalDensity.current
     val last = remember { ShownCamera() }
     val (isCoveredBefore, topBefore) = rememberPrevious(isCovered to top)
-    val bar = barGrowth(wasCovered = isCoveredBefore, top = top, topBefore = topBefore)
-    val (seen, closed) = last.rememberSeen(isCovered = isCovered, bar = bar, sheet = sheet, view = view)
+    val topInset = with(density) { top.toPx() }.toDouble()
+    val next = cameraInset(held = heldInset, isAbove = false, top = topInset, bottom = 0.0, sign = sheet)
+    val (seen, closed) = last.rememberSeen(isCovered = isCovered, next = next, sheet = sheet, view = view)
     val shown =
         seen?.let {
             density.besideFloorColumn(camera = it, symbol = view.shown, catalog = catalog, layers = layers, size = size)
         }
     val own = shown ?: selection?.entrance?.let { MapCamera(center = it.location, zoom = ENTRANCE_ZOOM) }
-    val topInset = with(density) { top.toPx() }.toDouble()
     val limits = density.mapLimits(selection?.bounds, size.belowTop(topInset))
     val start = layers?.start?.let { MapCamera(center = it, zoom = START_ZOOM) }
     val uncovered = (own ?: start)?.let { limits?.clamp(it) ?: it }
@@ -178,11 +180,10 @@ internal fun rememberMapSceneState(
     }
     val card = rememberCardMove(building = selection?.building, pick = pick)
     val above = card.move?.takeIf { isCovered }
-    val move = above ?: last.moveTo(target = uncovered, closed = closed, free = fit)
-    val covered =
-        density.keptCover(isAboveCard = above != null, isCovered = isCovered, card = cover + reserve, sheet = sheet)
-    SideEffect { last.keep(shown = move?.camera, covered = covered) }
-    val inset = sheetOrBarInset(isAbove = above != null, top = topInset, bottom = bottomInset, sign = sheet.toDouble())
+    val move = above ?: last.moveTo(target = uncovered, closed = closed, free = fit, isJump = isRoomJump)
+    val inset =
+        cameraInset(held = heldInset, isAbove = above != null, top = topInset, bottom = bottomInset, sign = sheet)
+    SideEffect { last.keep(shown = move?.camera, inset = inset) }
     return MapSceneState(
         scene = scene,
         shown = move?.let { SceneCamera(move = it, inset = inset, landing = fit) },
@@ -206,8 +207,12 @@ internal fun rememberMapSceneState(
  */
 internal data class SceneCamera(val move: CameraTransition, val inset: MapInset, val landing: FreeMap)
 
-private fun sheetOrBarInset(isAbove: Boolean, top: Double, bottom: Double, sign: Double): MapInset =
-    if (isAbove) MapInset(bottom = bottom) else MapInset(top = top, bottom = sign)
+private fun cameraInset(held: MapInset?, isAbove: Boolean, top: Double, bottom: Double, sign: Int): MapInset =
+    when {
+        held != null -> held
+        isAbove -> MapInset(bottom = bottom)
+        else -> MapInset(top = top, bottom = sign.toDouble())
+    }
 
 /**
  * Zasłonięcie mapy V1 przez arkusz V2. Nad arkuszem przyciski mapy stoją tylko przy co najmniej 300 dp wolnej mapy.
