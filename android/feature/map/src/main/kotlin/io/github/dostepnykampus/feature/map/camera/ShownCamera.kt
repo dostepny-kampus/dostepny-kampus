@@ -78,14 +78,17 @@ internal fun rememberClosedView(isCovered: Boolean, wasCovered: Boolean, seen: M
 
 /**
  * Ruch do widoku bez arkusza: do obrazu mapy z chwili zamknięcia arkusza [closed] skok, który zmienia cel
- * i dopełnienie w jednej klatce bez ruchu na ekranie; do innego widoku z widoku [from] w wolnej mapie [free]
- * przesunięcie albo przelot według odległości ([byControlFrom]).
+ * i dopełnienie w jednej klatce bez ruchu na ekranie. Do innego widoku ruch według reguły ruchu do budynku: cel
+ * w zasięgu jednego ekranu wolnej mapy [free] od widoku [from] to przesunięcie w 300 ms, bez oddalania mapy po
+ * drodze; dalszy cel albo nieznany [from] to przelot przycisków.
  *
  * Wymagania: US2.8, US18.1, US18.2, NFR-56
  */
 internal fun MapCamera.uncoveredMove(closed: MapCamera?, from: MapCamera?, free: FreeMap): CameraTransition =
-    if (closed?.isSameView(this) == true) {
-        CameraTransition(camera = this, motion = CameraMotion.NONE, durationMillis = 0L)
-    } else {
-        byControlFrom(from = from, free = free)
+    when {
+        closed?.isSameView(this) == true ->
+            CameraTransition(camera = this, motion = CameraMotion.NONE, durationMillis = 0L)
+        from != null && distanceDp(from = from, to = this) <= free.widthDp ->
+            CameraTransition(camera = this, motion = CameraMotion.EASE, durationMillis = CONTROL_MILLIS)
+        else -> byControl()
     }
