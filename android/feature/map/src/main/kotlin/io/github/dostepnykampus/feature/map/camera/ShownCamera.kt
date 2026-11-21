@@ -12,8 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 
 /**
  * Ostatni widok podany mapie i zasłonięty wtedy dół mapy: początek ruchu do następnego wybranego budynku i obraz
@@ -24,7 +22,7 @@ import androidx.compose.ui.unit.dp
 internal class ShownCamera {
     private var camera: MapCamera? = null
     private var origin: MapCamera? = null
-    private var covered = 0.dp
+    private var inset = MapInset()
 
     /** Ostatni widok albo [fallback], gdy mapa jeszcze nic nie pokazała. */
     fun startOr(fallback: MapCamera?): MapCamera? = camera ?: fallback
@@ -39,23 +37,30 @@ internal class ShownCamera {
     fun moveTo(target: MapCamera?, closed: MapCamera?, free: FreeMap, isJump: Boolean = false): CameraTransition? =
         target?.uncoveredMove(closed = target.takeIf { isJump } ?: closed, from = originOf(target), free = free)
 
-    /** Zapisuje widok [shown] z dołem mapy zasłoniętym na [covered]; 0, gdy widok nie stoi nad arkuszem. */
-    fun keep(shown: MapCamera?, covered: Dp) {
+    /** Zapisuje widok [shown] podany mapie z dopełnieniem kamery [inset]. */
+    fun keep(shown: MapCamera?, inset: MapInset) {
         if (shown != camera) origin = camera
         camera = shown
-        this.covered = covered
+        this.inset = inset
     }
 
     /**
      * Widok mapy do pokazania bez arkusza: zapisany w [view], a w chwili zniknięcia arkusza ([wasCovered], ale nie
-     * [isCovered]) ten sam obraz mapy pod paskiem wysokim na [bar] (0, gdy pasek był już nad arkuszem), czyli ostatni
-     * widok ze środkiem niżej o połowę paska i zasłoniętego dołu. Ten widok raz trafia do [view]. Gdy zaznaczenie
-     * samo wyznacza widok ([CameraView.hasTarget]), zostaje widok z [view].
+     * [isCovered]) ten sam obraz mapy pod nowym dopełnieniem [next] przy [pxPerDp] pikselach na dp ([keptUnder]).
+     * Ten widok raz trafia do [view]. Gdy zaznaczenie samo wyznacza widok ([CameraView.hasTarget]), zostaje widok
+     * z [view].
      */
     @Composable
-    fun rememberView(isCovered: Boolean, wasCovered: Boolean, bar: Dp, view: CameraView): MapCamera? {
+    fun rememberView(
+        isCovered: Boolean,
+        wasCovered: Boolean,
+        next: MapInset,
+        pxPerDp: Float,
+        view: CameraView,
+    ): MapCamera? {
         val isClosed = wasCovered && !isCovered && !view.hasTarget
-        val left = remember(isCovered) { camera?.shiftedNorth(-(bar + covered).value / 2.0).takeIf { isClosed } }
+        val left =
+            remember(isCovered) { camera?.takeIf { isClosed }?.keptUnder(from = inset, to = next, pxPerDp = pxPerDp) }
         val keep by rememberUpdatedState(view.keep)
         var isKept by remember(isCovered) { mutableStateOf(false) }
         DisposableEffect(left) {
@@ -66,6 +71,15 @@ internal class ShownCamera {
         return left.takeUnless { isKept } ?: view.camera
     }
 }
+
+/**
+ * Ten sam obraz mapy po zmianie dopełnienia kamery z [from] na [to] (piksele, [pxPerDp] pikseli na dp): środek
+ * widoku idzie na południe o połowę przyrostu górnego dopełnienia i o połowę ubytku dolnego.
+ *
+ * Wymagania: US2.8, US18.1, NFR-56
+ */
+internal fun MapCamera.keptUnder(from: MapInset, to: MapInset, pxPerDp: Float): MapCamera =
+    shiftedNorth(-(to.top - from.top - (to.bottom - from.bottom)) / 2.0 / pxPerDp)
 
 /**
  * Widok [seen] z chwili zniknięcia arkusza ([wasCovered], ale nie [isCovered]); zostaje do następnej zmiany

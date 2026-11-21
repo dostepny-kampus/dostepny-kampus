@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.feature.map.camera
 
-import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.model.GeoPoint
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -38,9 +37,9 @@ class UncoveredMoveTest {
     fun knowsOriginAfterAppMove() {
         val last = ShownCamera()
         val target = view(latitude = 51.1072)
-        last.keep(shown = REST, covered = 0.dp)
+        last.keep(shown = REST, inset = MapInset())
         val before = last.originOf(target)
-        last.keep(shown = target, covered = 0.dp)
+        last.keep(shown = target, inset = MapInset())
 
         assertEquals(listOf(REST, REST), listOf(before, last.originOf(target)), "Ruch bez widoku startowego")
     }

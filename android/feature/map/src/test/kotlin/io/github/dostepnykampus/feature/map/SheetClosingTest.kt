@@ -5,27 +5,33 @@
  */
 package io.github.dostepnykampus.feature.map
 
-import androidx.compose.ui.unit.dp
+import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapInset
+import io.github.dostepnykampus.feature.map.camera.keptUnder
+import io.github.dostepnykampus.feature.map.camera.shiftedNorth
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-/** Obraz mapy po zamknięciu arkusza mimo zmiany paska u góry. Wymagania: US18.1, NFR-56 */
+/** Ten sam obraz mapy po zmianie dopełnienia kamery przy zamknięciu arkusza. Wymagania: US18.1, NFR-56 */
 class SheetClosingTest {
-    /** Wiersz: pole wyszukiwania schowane przy karcie sali wraca po jej zamknięciu i dochodzi cały pasek. */
+    /** Wiersz: karta sali z wyszukiwania znika, a pasek wraca: środek idzie na południe o połowę obu. */
     @Test
-    fun countsBarBackAfterRoomCard() {
-        assertEquals(157.dp, barGrowth(wasCovered = false, top = 157.dp, topBefore = 0.dp), "Pasek nie wliczony")
+    fun keepsPictureWhenCardAndBarSwap() {
+        val shown = VIEW.keptUnder(from = MapInset(bottom = 1200.0), to = MapInset(top = 400.0), pxPerDp = 2f)
+
+        assertEquals(VIEW.shiftedNorth(-400.0).center.latitude, shown.center.latitude, 1e-9, "Obraz mapy skoczył")
     }
 
-    /** Wiersz: pasek widoczny pod arkuszem i po nim nie zmienia dopełnienia. */
+    /** Wiersz: karta dotkniętej sali nie zmieniała dopełnienia, więc jej zamknięcie zostawia widok. */
     @Test
-    fun keepsSameBar() {
-        assertEquals(0.dp, barGrowth(wasCovered = false, top = 157.dp, topBefore = 157.dp), "Pasek wliczony dwa razy")
+    fun keepsViewForSameInset() {
+        val inset = MapInset(top = 400.0)
+
+        assertEquals(VIEW, VIEW.keptUnder(from = inset, to = inset, pxPerDp = 2f), "Widok się zmienił")
     }
 
-    /** Wiersz: nad kartą budynku górnego dopełnienia nie było, więc po zamknięciu dochodzi cały pasek. */
-    @Test
-    fun countsBarAfterBuildingCard() {
-        assertEquals(157.dp, barGrowth(wasCovered = true, top = 157.dp, topBefore = 157.dp), "Pasek nie wliczony")
+    private companion object {
+        val VIEW = MapCamera(center = GeoPoint(longitude = 17.06, latitude = 51.11), zoom = 19.0)
     }
 }
