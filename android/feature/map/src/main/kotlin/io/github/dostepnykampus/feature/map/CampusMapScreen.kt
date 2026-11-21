@@ -452,7 +452,8 @@ private fun rememberCampusScene(
     room: RoomScene,
 ): Pair<MapSceneState, RoomView> {
     val width = with(LocalDensity.current) { size.width.toDp() }
-    val view = rememberRoomView(scene = room, focus = focus, cover = sheet.panel.cover, top = top)
+    val view =
+        rememberRoomView(scene = room, focus = focus, cover = sheet.panel.cover, top = top, height = size.height)
     return rememberMapSceneState(
         layers = ui.mapData,
         catalog = ui.catalog,
