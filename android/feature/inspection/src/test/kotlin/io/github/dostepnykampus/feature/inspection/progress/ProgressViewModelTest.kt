@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.inspection.progress
 
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.inspection.InspectionProgress
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.inspection.BuildingProgress
@@ -24,6 +25,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Stan listy K1: wczytywanie, lista z chwilą odczytu, bez sieci, błąd serwera, brak uprawnień i odświeżanie.
@@ -37,8 +39,16 @@ class ProgressViewModelTest {
         viewModelTest(ServerReply.Ok(listOf(DETAILED))) { viewModel ->
             assertEquals(ProgressUiState.Loading, viewModel.state.value, "przed odpowiedzią serwera")
             runCurrent()
-            val expected = ProgressUiState.Ready(buildings = listOf(DETAILED), readAt = READ_AT)
+            val expected = ProgressUiState.Ready(buildings = listOf(DETAILED), readAt = READ_AT, names = NAMES)
             assertEquals(expected, viewModel.state.value, "lista z chwilą odczytu")
+        }
+
+    @Test
+    fun carriesNamesFromCatalog() =
+        viewModelTest(ServerReply.Ok(listOf(DETAILED, BASIC))) { viewModel ->
+            runCurrent()
+            val state = viewModel.state.value as ProgressUiState.Ready
+            assertEquals(mapOf("A-1" to "Gmach A"), state.names, "nazwa z katalogu tylko dla budynku, który ją ma")
         }
 
     @Test
@@ -68,9 +78,17 @@ class ProgressViewModelTest {
             runCurrent()
             viewModel.refresh()
             val state = viewModel.state
-            assertEquals(ProgressUiState.Ready(listOf(DETAILED), READ_AT, true), state.value, "stara lista w trakcie")
+            val busy =
+                ProgressUiState.Ready(
+                    buildings = listOf(DETAILED),
+                    readAt = READ_AT,
+                    isRefreshing = true,
+                    names = NAMES,
+                )
+            assertEquals(busy, state.value, "stara lista w trakcie")
             runCurrent()
-            assertEquals(ProgressUiState.Ready(listOf(BASIC), READ_AT), state.value, "nowa lista po odświeżeniu")
+            val fresh = ProgressUiState.Ready(listOf(BASIC), READ_AT, names = NAMES)
+            assertEquals(fresh, state.value, "nowa lista po odświeżeniu")
         }
 
     /**
@@ -89,10 +107,12 @@ class ProgressViewModelTest {
             }
         runViewModelTest(source, StepClock(OPENED_AT, READ_AT)) { viewModel ->
             runCurrent()
-            assertEquals(ProgressUiState.Ready(listOf(before), OPENED_AT), viewModel.state.value, "po otwarciu")
+            val opened = ProgressUiState.Ready(listOf(before), OPENED_AT, names = NAMES)
+            assertEquals(opened, viewModel.state.value, "po otwarciu")
             viewModel.refresh()
             runCurrent()
-            assertEquals(ProgressUiState.Ready(listOf(DETAILED), READ_AT), viewModel.state.value, "po odświeżeniu")
+            val refreshed = ProgressUiState.Ready(listOf(DETAILED), READ_AT, names = NAMES)
+            assertEquals(refreshed, viewModel.state.value, "po odświeżeniu")
         }
     }
 
@@ -138,17 +158,26 @@ class ProgressViewModelTest {
         val dispatcher = StandardTestDispatcher()
         Dispatchers.setMain(dispatcher)
         try {
-            runTest(dispatcher) { block(ProgressViewModel(source, clock)) }
+            runTest(dispatcher) { block(ProgressViewModel(source, catalog(), clock)) }
         } finally {
             Dispatchers.resetMain()
         }
     }
+
+    private fun catalog() = BuildingCatalogRepository(EmptyCoroutineContext) { FILE }
 
     private companion object {
         const val SERVER_ERROR = 500
         const val FORBIDDEN = 403
         val OPENED_AT: Instant = Instant.parse("2026-10-28T09:15:00Z")
         val READ_AT: Instant = Instant.parse("2026-11-12T10:42:00Z")
+        val NAMES = mapOf("A-1" to "Gmach A")
+        const val FILE =
+            """{"type":"FeatureCollection","attribution":"© plik","features":[""" +
+                """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"display_name":"Gmach A",""" +
+                """"osm_id":"way/1"},"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}},""" +
+                """{"type":"Feature","properties":{"kind":"building","symbols":["B-4"],"osm_id":"way/2"},""" +
+                """"geometry":{"type":"Polygon","coordinates":[[[2,2],[3,2],[3,3],[2,2]]]}}]}"""
         val DETAILED =
             BuildingProgress(
                 buildingSymbol = "A-1",

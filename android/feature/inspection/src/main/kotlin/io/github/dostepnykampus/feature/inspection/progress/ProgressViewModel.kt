@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.inspection.progress
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.inspection.InspectionProgress
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.inspection.BuildingProgress
@@ -29,9 +30,14 @@ sealed interface ProgressUiState {
      * @property buildings budynki w kolejności odpowiedzi serwera
      * @property readAt chwila odczytu, pokazywana jako „Stan z …”
      * @property isRefreshing czy trwa odświeżanie; lista z poprzedniego odczytu zostaje widoczna
+     * @property names nazwy budynków z katalogu według symbolu; budynek bez nazwy nie ma wpisu
      */
-    data class Ready(val buildings: List<BuildingProgress>, val readAt: Instant, val isRefreshing: Boolean = false) :
-        ProgressUiState
+    data class Ready(
+        val buildings: List<BuildingProgress>,
+        val readAt: Instant,
+        val isRefreshing: Boolean = false,
+        val names: Map<String, String> = emptyMap(),
+    ) : ProgressUiState
 
     /** Bez internetu: postęp liczy serwer, więc bez sieci go nie widać. */
     data object Offline : ProgressUiState
@@ -49,11 +55,16 @@ sealed interface ProgressUiState {
  * Wymagania: US11.1, US11.2, NFR-50
  *
  * @param progress źródło postępu inwentaryzacji
+ * @param catalog katalog budynków z nazwami
  * @param clock zegar chwili odczytu
  */
 @HiltViewModel
-class ProgressViewModel internal constructor(private val progress: InspectionProgress, private val clock: Clock) :
-    ViewModel() {
+class ProgressViewModel
+    internal constructor(
+        private val progress: InspectionProgress,
+        private val catalog: BuildingCatalogRepository,
+        private val clock: Clock,
+    ) : ViewModel() {
         private val current = MutableStateFlow<ProgressUiState>(ProgressUiState.Loading)
 
         /** Stan listy; zmienia się tylko po otwarciu i po [refresh]. */
@@ -64,7 +75,8 @@ class ProgressViewModel internal constructor(private val progress: InspectionPro
         }
 
         @Inject
-        constructor(progress: InspectionProgress) : this(progress, Clock.systemDefaultZone())
+        constructor(progress: InspectionProgress, catalog: BuildingCatalogRepository) :
+            this(progress, catalog, Clock.systemDefaultZone())
 
         /** „Odśwież” i „Spróbuj ponownie”: czyta postęp od nowa; w trakcie odczytu nie startuje drugiego. */
         fun refresh() {
@@ -80,13 +92,20 @@ class ProgressViewModel internal constructor(private val progress: InspectionPro
             viewModelScope.launch { current.value = progress.buildings().toState() }
         }
 
-        private fun ServerReply<List<BuildingProgress>>.toState(): ProgressUiState =
+        private suspend fun ServerReply<List<BuildingProgress>>.toState(): ProgressUiState =
             when (this) {
-                is ServerReply.Ok -> ProgressUiState.Ready(buildings = value, readAt = clock.instant())
+                is ServerReply.Ok -> ProgressUiState.Ready(buildings = value, readAt = clock.instant(), names = names())
                 ServerReply.Offline -> ProgressUiState.Offline
                 ServerReply.Missing -> ProgressUiState.ServerError
                 is ServerReply.Fault -> faultState(code)
             }
+
+        private suspend fun names(): Map<String, String> =
+            catalog
+                .catalog()
+                .buildings
+                .mapNotNull { building -> building.name?.let { building.symbol to it } }
+                .toMap()
 
         private fun faultState(code: Int): ProgressUiState =
             if (code == FORBIDDEN) ProgressUiState.Forbidden else ProgressUiState.ServerError

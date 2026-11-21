@@ -54,17 +54,17 @@ internal fun ReadLine(readAt: Instant, isRefreshing: Boolean, onRefresh: () -> U
 }
 
 /**
- * Karta budynku K1: symbol, postęp słowem, liczby zgłoszeń, wejścia sprawdzone na miejscu i „Otwórz”.
- * Budynek szczegółowy pokazuje piętra z procentem, podstawowy „Obejrzany” albo „Nieobejrzany”.
+ * Karta budynku K1: symbol, pod nim nazwa z katalogu, postęp słowem, liczby zgłoszeń, wejścia sprawdzone na miejscu
+ * i „Otwórz”. Budynek szczegółowy pokazuje piętra z procentem, podstawowy „Obejrzany” albo „Nieobejrzany”.
  *
  * Wymagania: US11.1, US11.3, US11.4, BR-21, NFR-21
- * TODO(#2340): nazwa budynku z katalogu pod symbolem.
  *
  * @param building postęp budynku
+ * @param name nazwa budynku z katalogu; `null` zostawia sam symbol
  * @param onOpen „Otwórz”: C5 budynku
  */
 @Composable
-internal fun BuildingCard(building: BuildingProgress, onOpen: () -> Unit) {
+internal fun BuildingCard(building: BuildingProgress, name: String?, onOpen: () -> Unit) {
     OutlinedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
             Column(
@@ -72,6 +72,7 @@ internal fun BuildingCard(building: BuildingProgress, onOpen: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(Odstepy.xs),
             ) {
                 Text(building.buildingSymbol, style = MaterialTheme.typography.titleMedium)
+                name?.let { Text(it) }
                 Text(coverageText(building.coverage))
                 Text(stringResource(R.string.postep_czeka, building.pendingSubmissions))
                 Text(stringResource(R.string.postep_przyjete, building.acceptedSubmissions))

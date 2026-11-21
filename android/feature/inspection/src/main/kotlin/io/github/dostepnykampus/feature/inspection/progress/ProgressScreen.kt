@@ -113,7 +113,11 @@ private fun BuildingList(state: ProgressUiState.Ready, onOpen: (String) -> Unit,
     LazyColumn(contentPadding = PaddingValues(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.m)) {
         item { ReadLine(readAt = state.readAt, isRefreshing = state.isRefreshing, onRefresh = onRefresh) }
         items(state.buildings, key = { it.buildingSymbol }) { building ->
-            BuildingCard(building = building, onOpen = { onOpen(building.buildingSymbol) })
+            BuildingCard(
+                building = building,
+                name = state.names[building.buildingSymbol],
+                onOpen = { onOpen(building.buildingSymbol) },
+            )
         }
     }
 }
