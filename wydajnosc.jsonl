@@ -256,3 +256,4 @@
 {"sha": "d61c8ffa43a29b5cb18fa9a54c8ac112002667e1", "data": "2026-11-21", "start_ms": {"p50": 523.35, "p90": 535.59, "proby": 10}, "klatka_ms": {"p50": 6.19, "p90": 10.87, "p99": 16.66, "probki": 1524}, "wolne_proc": 0.98}
 {"sha": "da1977a1d2b8a0a5fc9f0203fbaebbfc46720b4f", "data": "2026-11-21", "start_ms": {"p50": 449.11, "p90": 511.97, "proby": 10}, "klatka_ms": {"p50": 8.48, "p90": 14.29, "p99": 25.04, "probki": 1416}, "wolne_proc": 6.14}
 {"sha": "9f63660ab7519fdd0fbbf91024c713ab1bb8859d", "data": "2026-11-21", "start_ms": {"p50": 870.58, "p90": 894.56, "proby": 10}, "klatka_ms": {"p50": 14.29, "p90": 25.24, "p99": 175.08, "probki": 937}, "wolne_proc": 43.76}
+{"sha": "d8f561d306c9cee8b263dd78140159e9c4883f3d", "data": "2026-11-21", "start_ms": {"p50": 590.45, "p90": 617.3, "proby": 10}, "klatka_ms": {"p50": 7.52, "p90": 13.17, "p99": 125.56, "probki": 1458}, "wolne_proc": 5.01}
