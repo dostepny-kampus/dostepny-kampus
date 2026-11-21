@@ -243,7 +243,7 @@ Otwarcie nie zaczyna pokazu drogi. Mapa pokazuje plan piętra sali z wyróżnion
 
 Przy zwykłej czcionce karta ma wysokość treści: nagłówek, wiersz budynku i cała lista „Jak dojść” bez przewijania, plan piętra z salą nad kartą (US18.1).
 
-Przy zwykłej czcionce nad kartą sali nie ma wiersza tytułu z „Pokaż listę” ani pola z numerem sali. Odjeżdżają w górę jak nad V2, także w trybie „po kolei” i pod arkuszem kroku, a mapa sięga górnej krawędzi. Po zamknięciu karty pasek wraca z tym samym tekstem w polu (decyzja z 21.11.2026).
+Przy zwykłej czcionce nad kartą sali nie ma wiersza tytułu z „Pokaż listę” ani pola z numerem sali. Odjeżdżają w górę jak nad V2, także w trybie „po kolei” i pod arkuszem kroku, a mapa sięga górnej krawędzi. Po zamknięciu karty pasek wraca z tym samym tekstem w polu (US18.1, NFR-53).
 
 Przy [dużej czcionce](#duza-czcionka) karta stoi na cały ekran według reguły 13 (decyzja z 19.11.2026).
 
