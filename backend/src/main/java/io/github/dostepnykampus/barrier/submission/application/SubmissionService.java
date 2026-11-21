@@ -9,7 +9,6 @@ import io.github.dostepnykampus.barrier.submission.CreateResult;
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.NewSubmission;
 import io.github.dostepnykampus.barrier.submission.OutsideCampus;
-import io.github.dostepnykampus.barrier.submission.ReviewDecision;
 import io.github.dostepnykampus.barrier.submission.SubmissionEdit;
 import io.github.dostepnykampus.barrier.submission.SubmissionRepository;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
@@ -131,19 +130,6 @@ public class SubmissionService {
     @Transactional
     public EditResult claim(final UUID id, final String reviewer) {
         return this.repository.claim(id, reviewer);
-    }
-
-    /**
-     * Zapisuje decyzję Weryfikatora.
-     *
-     * <p>Wymagania: BR-3, BR-11, BR-16</p>
-     *
-     * @param decision Decyzja
-     * @return Wynik zapisu decyzji
-     */
-    @Transactional
-    public EditResult decide(final ReviewDecision decision) {
-        return this.repository.decide(decision);
     }
 
     private SubmissionContent placed(final SubmissionContent content) {

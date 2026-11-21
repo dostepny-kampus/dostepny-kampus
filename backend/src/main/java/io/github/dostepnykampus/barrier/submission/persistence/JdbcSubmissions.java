@@ -7,6 +7,7 @@ package io.github.dostepnykampus.barrier.submission.persistence;
 
 import io.github.dostepnykampus.barrier.submission.CreateResult;
 import io.github.dostepnykampus.barrier.submission.EditResult;
+import io.github.dostepnykampus.barrier.submission.EntranceChangeArchive;
 import io.github.dostepnykampus.barrier.submission.NewSubmission;
 import io.github.dostepnykampus.barrier.submission.Reader;
 import io.github.dostepnykampus.barrier.submission.ReviewDecision;
@@ -45,7 +46,8 @@ import tools.jackson.databind.ObjectMapper;
  * @since 0.1.0
  */
 @Component
-public final class JdbcSubmissions implements SubmissionRepository, SubmissionFinder {
+public final class JdbcSubmissions
+    implements SubmissionRepository, SubmissionFinder, EntranceChangeArchive {
 
     /**
      * Kolumny zgłoszenia czytane do modelu.
@@ -213,6 +215,18 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
                 .query(this.rows).optional().orElse(null),
             decision.id()
         );
+    }
+
+    @Override
+    public Submission archiveEntranceChange(final UUID id) {
+        return this.jdbc.sql(String.format(
+            """
+            UPDATE submissions SET status = 'ARCHIVED'
+            WHERE id = :id AND status = 'ACCEPTED' AND kind = 'ENTRANCE_MARKING'
+            RETURNING %s
+            """,
+            JdbcSubmissions.COLUMNS
+        )).param("id", id).query(this.rows).single();
     }
 
     @Override
