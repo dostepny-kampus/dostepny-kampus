@@ -91,7 +91,10 @@ final class ProgressFixtures implements AutoCloseable {
     private void submissions(final String status, final int amount, final String body) {
         for (int index = 0; index < amount; ++index) {
             this.jdbc.sql(
-                "INSERT INTO submissions (id, status, content) VALUES (:id, :status, CAST(:body AS jsonb))"
+                """
+                INSERT INTO submissions (id, status, content)
+                VALUES (:id, :status, CAST(:body AS jsonb))
+                """
             ).param("id", UUID.randomUUID()).param("status", status).param("body", body).update();
         }
     }

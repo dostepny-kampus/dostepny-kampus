@@ -112,12 +112,15 @@ public final class ProgressSteps {
 
     @When("Zbierający oznaczy budynek {string} na poziomie {int}")
     public void mark(final String symbol, final int floor) throws Exception {
-        final String level;
-        if (floor == 0) {
-            level = "";
-        } else {
-            level = String.format(",\"floorId\":\"%d\"", floor);
-        }
+        this.recordMarker(symbol, String.format(",\"floorId\":\"%d\"", floor));
+    }
+
+    @When("Zbierający oznaczy budynek {string} w całości")
+    public void markWhole(final String symbol) throws Exception {
+        this.recordMarker(symbol, "");
+    }
+
+    private void recordMarker(final String symbol, final String level) throws Exception {
         this.send(String.format(
             """
             "type":"SET_INSPECTION_MARKER",
@@ -167,13 +170,9 @@ public final class ProgressSteps {
         );
     }
 
-    @Then("postęp {string} po oznaczeniu to {int} z {int}")
+    @Then("postęp {string} pokazuje {int} z {int} pięter")
     public void marked(final String symbol, final int covered, final int total) {
-        if (total == 0) {
-            this.coveredWhole(symbol);
-        } else {
-            this.coveredFloors(symbol, covered, total, 100 * covered / total);
-        }
+        this.coveredFloors(symbol, covered, total, 100 * covered / total);
     }
 
     @Then("budynek {string} jest obejrzany w całości")
@@ -184,7 +183,7 @@ public final class ProgressSteps {
         );
     }
 
-    @Then("postęp A-1 pokazuje {int} zgłoszeń czekających i {int} przyjętych")
+    @Then("postęp A-1 ma {int} w liczniku czekających i {int} w liczniku przyjętych")
     public void countedSubmissions(final int pending, final int accepted) {
         final JsonNode building = this.building("A-1");
         MatcherAssert.assertThat(

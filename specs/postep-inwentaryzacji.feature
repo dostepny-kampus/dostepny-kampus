@@ -10,15 +10,15 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
     Szablon scenariusza: Oznaczenie piętra albo budynku jako obejrzanego
       Zakładając, że Zbierający jest zalogowany z rolą Zbierającego
       Oraz budynek "<budynek>" ma <piętra> pięter z danych testowych i nie ma znaczników
-      Jeżeli Zbierający oznaczy budynek "<budynek>" na poziomie <piętro>
+      Jeżeli <czynność>
       Oraz Koordynator otworzy postęp inwentaryzacji
-      Wtedy postęp "<budynek>" po oznaczeniu to <obejrzane> z <piętra>
+      Wtedy <wynik>
 
       Przykłady:
-        | budynek | piętra | piętro | obejrzane |
-        | A-1     | 5      | 1      | 1         |
-        | B-1     | 7      | 1      | 1         |
-        | B-8     | 0      | 0      | 1         |
+        | budynek | piętra | czynność                                      | wynik                               |
+        | A-1     | 5      | Zbierający oznaczy budynek "A-1" na poziomie 1  | postęp "A-1" pokazuje 1 z 5 pięter   |
+        | B-1     | 7      | Zbierający oznaczy budynek "B-1" na poziomie 1  | postęp "B-1" pokazuje 1 z 7 pięter   |
+        | B-8     | 0      | Zbierający oznaczy budynek "B-8" w całości      | budynek "B-8" jest obejrzany w całości |
 
     @US15.2 @aplikacja
     Scenariusz: Zbierający cofa własny znacznik po potwierdzeniu
@@ -95,7 +95,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       Oraz w budynku A-1 są 2 wysłane, 1 w weryfikacji i 4 przyjęte zgłoszenia
       Jeżeli Koordynator otworzy postęp inwentaryzacji
       Wtedy postęp "A-1" to 3 z 5 pięter, czyli 60 procent
-      Oraz postęp A-1 pokazuje 3 zgłoszeń czekających i 4 przyjętych
+      Oraz postęp A-1 ma 3 w liczniku czekających i 4 w liczniku przyjętych
       Oraz budynek "B-8" jest obejrzany w całości
 
     @US11.2 @serwer @postep-http
