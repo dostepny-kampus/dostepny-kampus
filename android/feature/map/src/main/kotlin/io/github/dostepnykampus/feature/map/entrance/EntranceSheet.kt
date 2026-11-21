@@ -132,7 +132,8 @@ internal fun EntranceSheet(
     val title = spokenEntranceTitle(entrance.name, isFromData = entrance.hasName)
     val header: @Composable () -> Unit = {
         Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-            MapSheetHeader(title = stringResource(R.string.karta_bez_nazwy), onClose = exits.onClose) {
+            val unnamed = stringResource(R.string.karta_bez_nazwy)
+            MapSheetHeader(title = unnamed, onClose = exits.onClose, back = exits.back) {
                 MarkingSign(entrance.marking)
             }
             BuildingLink(entrance.buildingSymbol, onClick = { exits.onBuilding(entrance.buildingSymbol) })
