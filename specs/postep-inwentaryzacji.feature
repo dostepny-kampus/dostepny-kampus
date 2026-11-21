@@ -127,7 +127,7 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       Oraz w budynku A-1 są 0 wysłane, 0 w weryfikacji i 4 przyjęte zgłoszenia
       Oraz istnieje dodatkowe zgłoszenie "<zgłoszenie>"
       Jeżeli Koordynator otworzy postęp inwentaryzacji
-      Wtedy postęp A-1 pokazuje 0 zgłoszeń czekających i 4 przyjętych
+      Wtedy postęp A-1 ma 0 w liczniku czekających i 4 w liczniku przyjętych
 
       Przykłady:
         | zgłoszenie     |

@@ -47,7 +47,9 @@ public final class EntranceProgressSteps {
      * @param jdbc Baza zgłoszeń
      * @param photos Magazyn zdjęć zgłoszeń
      */
-    public EntranceProgressSteps(final MockMvc http, final JdbcClient jdbc, final PhotoStore photos) {
+    public EntranceProgressSteps(
+        final MockMvc http, final JdbcClient jdbc, final PhotoStore photos
+    ) {
         this.http = http;
         this.jdbc = jdbc;
         this.photos = photos;
