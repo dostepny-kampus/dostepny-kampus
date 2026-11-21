@@ -6,6 +6,8 @@
 package io.github.dostepnykampus.feature.map.room
 
 import androidx.compose.ui.unit.dp
+import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.shiftedNorth
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.plan.selectedBuilding
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.ENTRANCE
@@ -51,6 +53,46 @@ class RoomMapTargetTest {
                 room.cameraForRoom(isRoomOnMap = false, cover = 0.dp)?.center,
             )
         assertEquals(listOf(lift, null, lift), centers, "Kamera kroku przesunięta albo bez czekania na pomiar karty")
+    }
+
+    /** Wiersz: dotknięcie sali na planie nie rusza kamery, a wybrany potem krok już tak. */
+    @Test
+    fun keepsCameraForTappedRoom() {
+        val open = OpenRoom(card = RoomCard(found = FOUND, way = VIA_LIFT), onClose = {}, onStep = {})
+        val step = open.copy(card = open.card.copy(step = 1))
+
+        assertEquals(
+            listOf(null, lift(GROUND.id).labelPoint),
+            listOf(
+                open.cameraForRoom(isRoomOnMap = true, cover = 320.dp, isTapped = true)?.center,
+                step.cameraForRoom(isRoomOnMap = true, cover = 320.dp)?.center,
+            ),
+            "Dotknięta sala ruszyła kamerę albo krok jej nie ruszył",
+        )
+    }
+
+    /** Wiersz: plan budynku sali widoczny przed czynnością zostawia powiększenie, bez niego kamera daje 19. */
+    @Test
+    fun keepsZoomWithRoomPlan() {
+        val open = OpenRoom(card = RoomCard(found = FOUND, way = null), onClose = {}, onStep = {})
+        val near = MapCamera(center = FOUND.room.labelPoint, zoom = 18.0)
+        val zooms =
+            listOf(
+                SeenPlan(camera = near, plan = FOUND.building),
+                SeenPlan(camera = near, plan = "C-13"),
+                SeenPlan(camera = near.copy(zoom = 16.0), plan = FOUND.building),
+                null,
+            ).map { open.cameraForRoom(isRoomOnMap = true, cover = 320.dp, seen = it)?.zoom }
+
+        assertEquals(listOf(18.0, 19.0, 19.0, 19.0), zooms, "Powiększenie po czynności")
+    }
+
+    /** Wiersz: karta 200 dp i pasek 56 dp przesuwają środek dopełnienia o 128 dp, więc obraz mapy zostaje w miejscu. */
+    @Test
+    fun keepsPictureUnderCardAndBar() {
+        val view = MapCamera(center = FOUND.room.labelPoint, zoom = 18.0)
+
+        assertEquals(view.shiftedNorth(128.0), view.stillUnder(card = 200.dp, bar = 56.dp), "Obraz mapy przesunięty")
     }
 
     @Test

@@ -61,9 +61,11 @@ import io.github.dostepnykampus.feature.map.plan.roomAt
 import io.github.dostepnykampus.feature.map.plan.showsSign
 import io.github.dostepnykampus.feature.map.room.OpenRoom
 import io.github.dostepnykampus.feature.map.room.RoomCardLayer
+import io.github.dostepnykampus.feature.map.room.RoomScene
 import io.github.dostepnykampus.feature.map.room.RoomSheetSources
-import io.github.dostepnykampus.feature.map.room.cameraForRoom
+import io.github.dostepnykampus.feature.map.room.RoomView
 import io.github.dostepnykampus.feature.map.room.markersOn
+import io.github.dostepnykampus.feature.map.room.rememberRoomView
 
 private const val TOP_STATE = "top"
 private const val MAP_STATE = "map"
@@ -346,8 +348,7 @@ private fun CampusMap(
     var size by remember { mutableStateOf(IntSize.Zero) }
     val signs = sheet.signs
     val isRoomOnMap = room != null && !isRoomFull
-    val roomCover = with(LocalDensity.current) { sheet.panel.cover.toDp() }.takeIf { isRoomOnMap } ?: 0.dp
-    val state =
+    val (state, rooms) =
         rememberCampusScene(
             ui = ui,
             focus = focus,
@@ -356,13 +357,12 @@ private fun CampusMap(
             size = size,
             top = cameraTop,
             motion = motion,
-            roomCamera = room?.run { cameraForRoom(isRoomOnMap, roomCover) },
+            room = RoomScene(room = room, isOnMap = isRoomOnMap, plan = plan.shown),
         )
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
         val move = state.move
         if (state.scene != null && move != null && state.limits != null) {
-            val pinned =
-                signs.rememberPinnedEntrance(ui.catalog, state.scene.selection.entrance)
+            val pinned = signs.rememberPinnedEntrance(ui.catalog, state.scene.selection.entrance)
             mapView.Show(
                 data = state.scene.data,
                 selection = signs.overlay(base = state.scene.selection, plan = plan.shown, room = room, pin = pinned),
@@ -370,10 +370,13 @@ private fun CampusMap(
                 inset = state.inset,
                 onCameraIdle = { view ->
                     areas.acknowledge()
-                    plan.onView(view.also { state.keep(it) })
+                    plan.onView(view.also { state.keep(it) }.also(rooms::onIdle))
                 },
                 onBuildingsTouch = { state.taps.touch(it, onBuildingClick, onEmptyMapClick).also { signs.close() } },
-                onSignTouch = signs.signTouch(room, state.taps::dismiss) { plan.shown?.roomAt(it)?.let(onRoomClick) },
+                onSignTouch =
+                    signs.signTouch(room, state.taps::dismiss) {
+                        plan.shown?.roomAt(it)?.let(rooms.tapped(onRoomClick))
+                    },
                 modifier = Modifier.fillMaxSize(),
             )
             pinned?.let { EntranceDescription(it) }
@@ -386,7 +389,7 @@ private fun CampusMap(
                 sheet = sheet,
                 isKeyboardOpen = isKeyboardOpen,
                 motion = motion,
-                roomCover = roomCover,
+                roomCover = rooms.mapCover,
                 plan = plan,
             ) {
                 val shown = room.takeIf { isRoomOnMap && !isKeyboardOpen }
@@ -446,9 +449,10 @@ private fun rememberCampusScene(
     size: IntSize,
     top: Dp,
     motion: MapMotion?,
-    roomCamera: MapCamera?,
-): MapSceneState {
+    room: RoomScene,
+): Pair<MapSceneState, RoomView> {
     val width = with(LocalDensity.current) { size.width.toDp() }
+    val view = rememberRoomView(scene = room, focus = focus, cover = sheet.panel.cover, top = top)
     return rememberMapSceneState(
         layers = ui.mapData,
         catalog = ui.catalog,
@@ -459,9 +463,9 @@ private fun rememberCampusScene(
         top = top,
         motion = motion,
         notice = rememberNoticeHeight(shift = areas.selectionNotice, width = width),
-        sheet = sheet.panel.cover,
-        roomCamera = roomCamera,
-    )
+        sheet = view.cover,
+        roomCamera = view.camera,
+    ) to view
 }
 
 /**
