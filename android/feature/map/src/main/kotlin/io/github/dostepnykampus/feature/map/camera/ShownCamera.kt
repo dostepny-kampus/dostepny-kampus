@@ -32,6 +32,10 @@ internal class ShownCamera {
     /** Widok, z którego mapa rusza do [target]: ostatni podany widok, a gdy to już [target], widok sprzed niego. */
     fun originOf(target: MapCamera): MapCamera? = if (target == camera) origin else camera
 
+    /** Ruch bez arkusza do [target] ([uncoveredMove]) z widoku startowego ([originOf]); `null` bez celu. */
+    fun moveTo(target: MapCamera?, closed: MapCamera?, free: FreeMap): CameraTransition? =
+        target?.uncoveredMove(closed = closed, from = originOf(target), free = free)
+
     /** Zapisuje widok [shown] z dołem mapy zasłoniętym na [covered]; 0, gdy widok nie stoi nad arkuszem. */
     fun keep(shown: MapCamera?, covered: Dp) {
         if (shown != camera) origin = camera

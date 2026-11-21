@@ -178,7 +178,7 @@ internal fun rememberMapSceneState(
     }
     val card = rememberCardMove(building = selection?.building, pick = pick)
     val above = card.move?.takeIf { isCovered }
-    val move = above ?: uncovered?.run { uncoveredMove(closed = closed, from = last.originOf(this), free = fit) }
+    val move = above ?: last.moveTo(target = uncovered, closed = closed, free = fit)
     val covered =
         density.keptCover(isAboveCard = above != null, isCovered = isCovered, card = cover + reserve, sheet = sheet)
     SideEffect { last.keep(shown = move?.camera, covered = covered) }
