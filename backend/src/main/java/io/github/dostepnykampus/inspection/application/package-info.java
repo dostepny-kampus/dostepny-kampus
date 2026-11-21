@@ -5,7 +5,7 @@
  */
 
 /**
- * Usługi znaczników piętra: zapis paczki znaczników w transakcji.
+ * Operacje na znacznikach obejrzanych pięter i odczyt postępu inwentaryzacji.
  *
  * @since 0.1.0
  */

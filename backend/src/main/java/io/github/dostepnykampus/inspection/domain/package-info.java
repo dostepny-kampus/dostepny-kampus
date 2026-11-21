@@ -5,7 +5,7 @@
  */
 
 /**
- * Znacznik piętra obejrzanego i port jego zapisu, bez frameworków.
+ * Modele znaczników i postępu inwentaryzacji oraz porty dostępu do danych.
  *
  * @since 0.1.0
  */
