@@ -51,7 +51,13 @@ internal class RoomMemory {
  *
  * Wymagania: US18.1, US18.2, US2.8, NFR-56
  */
-internal class RoomView(val camera: MapCamera?, val cover: Int, val mapCover: Dp, private val memory: RoomMemory) {
+internal class RoomView(
+    val camera: MapCamera?,
+    val cover: Int,
+    val mapCover: Dp,
+    val isJump: Boolean,
+    private val memory: RoomMemory,
+) {
     /** Mapa stanęła w widoku [view]. */
     fun onIdle(view: MapCamera) {
         memory.idle = view
@@ -97,10 +103,11 @@ internal fun rememberRoomView(scene: RoomScene, focus: MapFocus?, panel: MapPane
     val keptDp = with(density) { kept.toDp() }
     val mapDp = with(density) { height.toDp() }
     val area = room?.run { card.found.room.geometry }
-    val still = seen?.takeIf { isTapped && kept > 0 }?.tapped(area = area, card = keptDp, bar = memory.top, map = mapDp)
-    val camera = still ?: room?.cameraForRoom(isRoomOnMap = isOnMap, cover = keptDp, seen = seen, isTapped = isTapped)
+    val tap = seen?.takeIf { isTapped && kept > 0 }?.tapped(area = area, card = keptDp, bar = memory.top, map = mapDp)
+    val searched = room?.cameraForRoom(isRoomOnMap = isOnMap, cover = keptDp, seen = seen, isTapped = isTapped)
+    val camera = tap?.camera ?: searched
     val mapCover = with(density) { cover.toDp() }.takeIf { isOnMap } ?: 0.dp
-    return RoomView(camera = camera, cover = kept, mapCover = mapCover, memory = memory)
+    return RoomView(camera = camera, cover = kept, mapCover = mapCover, isJump = tap?.isJump == true, memory = memory)
 }
 
 /**
@@ -111,15 +118,20 @@ internal fun rememberRoomView(scene: RoomScene, focus: MapFocus?, panel: MapPane
 internal fun MapCamera.stillUnder(card: Dp, bar: Dp): MapCamera = shiftedNorth(((card + bar) / 2).value.toDouble())
 
 /**
- * Widok po dotknięciu sali [area] na mapie wysokiej na [map]: ten sam obraz mimo karty [card] i paska [bar]
- * ([stillUnder]), a sala zasłonięta kartą nad nią ([revealing]). Wymagania: US18.1, US2.8, NFR-56
+ * Widok [camera] po dotknięciu sali; [isJump], gdy to ten sam obraz mapy, który kamera ustawia skokiem bez ruchu na
+ * ekranie. Wymagania: US18.1, US2.8, NFR-56
  */
-internal fun SeenPlan.tapped(area: GeoArea?, card: Dp, bar: Dp, map: Dp): MapCamera =
-    camera.stillUnder(card = card, bar = bar).revealing(
-        area = area,
-        free = (map - card).value.toDouble(),
-        card = card.value.toDouble(),
-    )
+internal data class TappedView(val camera: MapCamera, val isJump: Boolean)
+
+/**
+ * Widok po dotknięciu sali [area] na mapie wysokiej na [map]: ten sam obraz mimo karty [card] i paska [bar]
+ * ([stillUnder]) skokiem, a sala zasłonięta kartą przesunięta nad nią ([revealing]). Wymagania: US18.1, US2.8, NFR-56
+ */
+internal fun SeenPlan.tapped(area: GeoArea?, card: Dp, bar: Dp, map: Dp): TappedView {
+    val still = camera.stillUnder(card = card, bar = bar)
+    val shown = still.revealing(area = area, free = (map - card).value.toDouble(), card = card.value.toDouble())
+    return TappedView(camera = shown, isJump = shown == still)
+}
 
 /**
  * Widok, w którym sala [area] zasłonięta kartą wysoką na [card] dp stoi dolnym brzegiem 16 dp nad kartą, a górnym

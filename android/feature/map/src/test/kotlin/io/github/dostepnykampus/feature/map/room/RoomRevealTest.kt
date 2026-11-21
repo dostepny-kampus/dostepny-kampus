@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.room
 
+import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.feature.map.camera.MapCamera
@@ -30,6 +31,17 @@ class RoomRevealTest {
         val cut = VIEW.revealing(area = room(topDp = 200.0, bottomDp = 600.0), free = FREE, card = CARD)
 
         assertEquals(listOf(VIEW, VIEW), listOf(above, cut), "Mapa ruszyła bez potrzeby")
+    }
+
+    /** Wiersz: sala nad kartą to skok kamery bez ruchu na ekranie, sala pod kartą przesuwa mapę w górę. */
+    @Test
+    fun jumpsOnlyForSeenRoom() {
+        val seen = SeenPlan(camera = VIEW, plan = null)
+        val map = (FREE + CARD).dp
+        val above = seen.tapped(area = null, card = CARD.dp, bar = 0.dp, map = map)
+        val under = seen.tapped(area = room(topDp = 150.0, bottomDp = 250.0), card = CARD.dp, bar = 0.dp, map = map)
+
+        assertEquals(listOf(true, false), listOf(above.isJump, under.isJump), "Ruch kamery po dotknięciu sali")
     }
 
     private companion object {

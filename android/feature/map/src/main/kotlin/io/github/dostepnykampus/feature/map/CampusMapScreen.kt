@@ -474,6 +474,7 @@ private fun rememberCampusScene(
         notice = rememberNoticeHeight(shift = areas.selectionNotice, width = width),
         sheet = view.cover,
         roomCamera = view.camera,
+        isRoomJump = view.isJump,
     ) to view
 }
 
