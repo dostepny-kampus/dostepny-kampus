@@ -127,6 +127,24 @@ class RoomCardSheetTest {
         compose.onRoot().captureRoboImage()
     }
 
+    /** Wiersz: arkusz wejścia z kroku ma „‹ Sala 329” zamiast „Zamknij” i wraca do karty na tym kroku. */
+    @Test
+    fun returnsFromEntranceToStep() {
+        val barriers = ShownBarriers(emptyList())
+        val sources = RoomSheetSources(onBuilding = {}, barriers = barriers, actions = EntranceActions())
+        val card = RoomCard(found = FOUND, way = VIA_LIFT, step = 0)
+        compose.setContent {
+            DostepnyKampusTheme {
+                RoomCardLayer(room = OpenRoom(card = card, onClose = {}, onStep = {}), sources = sources)
+            }
+        }
+
+        compose.onNodeWithText("Szczegóły wejścia").performClick()
+        compose.onNodeWithText("Zamknij").assertDoesNotExist()
+        compose.onNodeWithContentDescription("Wróć do sali 329").performClick()
+        compose.onNodeWithText("Szczegóły wejścia").assertExists()
+    }
+
     @Test
     fun walksStepsAndReturnsFromLift() {
         val barriers = ShownBarriers(emptyList())
@@ -152,7 +170,7 @@ class RoomCardSheetTest {
         compose.onNodeWithText("Dalej").performClick()
         compose.onNodeWithText("Szczegóły windy").performClick()
         compose.onNodeWithText("Jedzie na:", substring = true).assertExists()
-        compose.onNodeWithText("Zamknij").performClick()
+        compose.onNodeWithContentDescription("Wróć do sali 329").performClick()
 
         compose.onNodeWithText("Krok 2 z 3").assertExists()
         compose.onNodeWithText("Dalej").performClick()
