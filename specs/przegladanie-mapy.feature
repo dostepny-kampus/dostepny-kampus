@@ -68,7 +68,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | Odwiedzający       | archiwalne    | nie jest widoczne   |
       | Odwiedzający       | przyjęte      | jest widoczne       |
 
-  @US2.1 @aplikacja
+  # brak pełnego testu: #3645
+  @US2.1 @aplikacja @do-zrobienia
   Scenariusz: Wejście ma oznaczenie znakiem z mapy i słowem, nie tylko kolorem
     Zakładając, że Gość niezalogowany otworzył kartę budynku A-1
     Jeżeli przejrzy listę wejść
@@ -112,7 +113,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy wejścia „niedostępne” stoją w kolejności „Wejście "A"”, „Wejście "C"”, „Wejście "E"”
     Oraz wejście bez nazwy w danych stoi po nich
 
-  @US2.1 @US3.3 @BR-27 @aplikacja
+  # brak pełnego testu: #3645
+  @US2.1 @US3.3 @BR-27 @aplikacja @do-zrobienia
   Scenariusz: Wejście bez nazwy w danych ma na karcie opis położenia pod nazwą
     # Dane testowe, a nie stan faktyczny budynku C-19.
     Zakładając, że w danych testowych jedyne wejście C-19 z oznaczeniem „dostępne” nie ma nazwy
@@ -172,7 +174,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy na karcie budynku A-1 widzi „Wejście dostępne” i zdanie z wejściem zalecanym
     Oraz od mapy wykonał 1 dotknięcie, czyli nie więcej niż 3
 
-  @US2.8 @aplikacja
+  # brak pełnego testu: #3645
+  @US2.8 @aplikacja @do-zrobienia
   Szablon scenariusza: Niska karta nad mapą mówi słowami o wejściach
     Zakładając, że w danych testowych <dane>
     Oraz Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
@@ -189,7 +192,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | C-13    | wszystkie wejścia C-13 mają oznaczenie „brak danych” | Brak danych o wejściach | na karcie nie ma zdania ani przycisku wypełnionego                                      |
       | A-2     | budynek A-2 nie ma wejść w danych                    | Brak danych o wejściach | na karcie nie ma zdania ani przycisku wypełnionego                                      |
 
-  @US2.8 @NFR-53 @aplikacja
+  # brak pełnego testu: #3645
+  @US2.8 @NFR-53 @aplikacja @do-zrobienia
   Scenariusz: Uchwyt zmienia wysokość karty bez przeciągania
     Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
     Jeżeli dotknie uchwytu karty
@@ -198,7 +202,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli znowu dotknie uchwytu karty
     Wtedy karta wraca na niską wysokość nad mapą
 
-  @US2.8 @NFR-53 @aplikacja
+  # brak pełnego testu: #3645
+  @US2.8 @NFR-53 @aplikacja @do-zrobienia
   Szablon scenariusza: Wystający nagłówek „Wejścia” od razu rozwija kartę
     Zakładając, że w danych testowych <dane>
     Oraz Gość niezalogowany dotknął budynku <budynek> na mapie przy zwykłej czcionce
@@ -242,7 +247,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz po „Pomniejsz” mapa się oddala, a karta budynku A-1 zostaje otwarta
     Ale nad kartą nie ma pola „Szukaj budynku, np. C-13” ani przycisku „Pokaż listę”
 
-  @US2.8 @NFR-53 @aplikacja
+  # brak pełnego testu: #3645
+  @US2.8 @NFR-53 @aplikacja @do-zrobienia
   Scenariusz: Przy niskiej mapie nad kartą nie ma przycisków mapy
     Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
     Oraz nad kartą zostaje mniej niż 300 dp mapy
@@ -264,7 +270,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy na karcie budynku B-8 widzi „Brak wejścia dostępnego” i zdanie, że żadne wejście nie jest dostępne
     Ale karta nie jest pusta i nie pokazuje samego braku wyniku
 
-  @US2.1 @US2.2 @BR-25 @aplikacja
+  # brak pełnego testu: #3645
+  @US2.1 @US2.2 @BR-25 @aplikacja @do-zrobienia
   Scenariusz: Bariera przy wejściu zalecanym jest na karcie przy tym wejściu
     Zakładając, że przy wejściu zalecanym budynku C-13 jest przyjęta bariera „Tylko z pomocą” typu „ciężkie drzwi”
     Oraz C-13 nie ma innego wejścia dostępnego bez barier
@@ -272,7 +279,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy to wejście zostaje zalecane, a zdanie pod wierszem o wejściach kończy się „Przy wejściu jest bariera: tylko z pomocą.”
     Oraz wiersz tego wejścia na liście „Wejścia” ma pod szerokością drzwi „Tylko z pomocą: ciężkie drzwi”
 
-  @US3.1 @BR-25 @aplikacja
+  # brak pełnego testu: #3645
+  @US3.1 @BR-25 @aplikacja @do-zrobienia
   Szablon scenariusza: Wejście z blokadą nie jest zalecane, a jego oznaczenie zostaje
     Zakładając, że w budynku C-13 <inne> wejścia dostępnego bez blokady
     Oraz przy wejściu dostępnym C-13 jest przyjęta bariera „Blokada” typu „wejście zamknięte”
@@ -285,7 +293,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | jest inne | Wejście dostępne        | Zalecane: »Wejście C«. Drzwi 100 cm.   |
       | nie ma    | Brak wejścia dostępnego | Jedyne wejście dostępne ma blokadę.    |
 
-  @US3.1 @BR-25 @aplikacja
+  # brak pełnego testu: #3645
+  @US3.1 @BR-25 @aplikacja @do-zrobienia
   Szablon scenariusza: Wejście bez barier jest zalecane przed wejściem z barierą
     # Dane testowe, a nie stan faktyczny budynku C-13.
     Zakładając, że w danych testowych wejście główne i wejście boczne C-13 mają oznaczenie „dostępne”
@@ -367,7 +376,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi liczbę wyjść ewakuacyjnych 2
     Oraz po wybraniu „Pokaż wyjścia ewakuacyjne (2)” widzi listę obu wyjść
 
-  @US3.3 @BR-25 @aplikacja
+  # brak pełnego testu: #3645
+  @US3.3 @BR-25 @aplikacja @do-zrobienia
   Scenariusz: Opis wejścia zalecanego podaje dojście, drzwi i najbliższą windę
     Zakładając, że Gość niezalogowany otworzył kartę budynku A-1
     Jeżeli wybierze „Pokaż wejście na mapie”
@@ -395,7 +405,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli Gość niezalogowany otworzy arkusz wejścia zalecanego A-1
     Wtedy arkusz nie ma części „Za drzwiami”
 
-  @US2.1 @US3.3 @aplikacja
+  # brak pełnego testu: #3645
+  @US2.1 @US3.3 @aplikacja @do-zrobienia
   Scenariusz: Arkusz każdego wejścia ma te same części
     Zakładając, że niezalecane wejście A-1 ma w danych opis dojścia, szerokość drzwi i zgłoszenie przyjęte
     Oraz Gość niezalogowany otworzył kartę budynku A-1
@@ -419,7 +430,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli wybierze wiersz „Budynek A-1”
     Wtedy widzi kartę budynku A-1 na niskiej wysokości
 
-  @US3.3 @NFR-53 @aplikacja
+  # brak pełnego testu: #3645
+  @US3.3 @NFR-53 @aplikacja @do-zrobienia
   Scenariusz: Pinezka wejścia jest widoczna nad arkuszem wejścia
     Zakładając, że wejście zalecane A-1 ma w danych opis dojścia, szerokość drzwi i zgłoszenie przyjęte ze zdjęciem
     Oraz Gość niezalogowany otworzył kartę budynku A-1 przy zwykłej czcionce
@@ -427,7 +439,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy pinezka wejścia zalecanego stoi na środku części mapy nad arkuszem tego wejścia
     Oraz arkusz zajmuje najwyżej połowę ekranu, a jego treść się przewija
 
-  @US3.3 @NFR-18 @NFR-53 @aplikacja
+  # brak pełnego testu: #3645
+  @US3.3 @NFR-18 @NFR-53 @aplikacja @do-zrobienia
   Szablon scenariusza: Pinezka i podpis wejścia są na mapie tylko przy otwartym arkuszu wejścia
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
     Jeżeli otworzy arkusz wejścia A-1 przez <otwarcie>
@@ -442,7 +455,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | znak wejścia A-1 na mapie               | wiersz budynku A-1     |
       | znak wejścia A-1 na mapie               | dotyk pustej mapy      |
 
-  @US2.8 @US3.3 @NFR-15 @NFR-53 @aplikacja
+  # brak pełnego testu: #3645
+  @US2.8 @US3.3 @NFR-15 @NFR-53 @aplikacja @do-zrobienia
   Szablon scenariusza: „Wstecz” w arkuszu wejścia wraca tam, skąd arkusz otwarto, a „Zamknij” zostawia mapę
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
     Jeżeli <otwarcie>
@@ -474,7 +488,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | wyszuka „A-1 329”                                 | Budynek A-1 |
       | dotknie wspólnego konturu C-3/C-4                 | Budynek C-3 |
 
-  @US2.8 @US3.3 @aplikacja
+  # brak pełnego testu: #3645
+  @US2.8 @US3.3 @aplikacja @do-zrobienia
   Scenariusz: Wiersz budynku w arkuszu otwartym z karty wraca do tej karty
     Zakładając, że Gość niezalogowany rozwinął kartę budynku A-1 i ją przewinął
     Jeżeli dotknie wiersza wejścia na liście „Wejścia”
@@ -550,7 +565,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi mapę terenu „Wittigowo” z budynkiem T-15
     Oraz na mapie widzi nazwę terenu „Wittigowo”
 
-  @US1.7 @BR-G5 @aplikacja
+  # brak pełnego testu: #3645
+  @US1.7 @BR-G5 @aplikacja @do-zrobienia
   Scenariusz: Po wyborze terenu widać wszystkie jego budynki
     Zakładając, że Gość niezalogowany ma otwartą listę terenów
     Jeżeli wybierze teren „Wittigowo”
@@ -572,7 +588,8 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy cały widok mapy leży w prostokącie terenu
     Oraz powiększenie mapy jest takie jak w chwili zamknięcia karty
 
-  @US1.7 @BR-G5 @NFR-39 @aplikacja
+  # brak pełnego testu: #3645
+  @US1.7 @BR-G5 @NFR-39 @aplikacja @do-zrobienia
   Scenariusz: Przy najmniejszym powiększeniu teren wypełnia mapę w krótszym wymiarze
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Wittigowo”
     Jeżeli pomniejszy mapę do końca
@@ -593,14 +610,16 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi mapę terenu „Wittigowo” z zaznaczonym budynkiem T-15
     Oraz widzi napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód”
 
-  @US1.8 @NFR-56 @aplikacja
+  # brak pełnego testu: #3645
+  @US1.8 @NFR-56 @aplikacja @do-zrobienia
   Scenariusz: TalkBack czyta napis o zmianie terenu raz, po nagłówku karty
     Zakładając, że Gość niezalogowany z włączonym TalkBack ma otwartą mapę kampusu na terenie „Kampus główny”
     Jeżeli wyszuka „T-15” i wybierze wynik
     Wtedy TalkBack czyta nagłówek karty budynku T-15
     Oraz potem raz czyta „Pokazuję teren: Wittigowo · 2 km na południowy wschód”
 
-  @US1.8 @NFR-23 @aplikacja
+  # brak pełnego testu: #3645
+  @US1.8 @NFR-23 @aplikacja @do-zrobienia
   Scenariusz: Ruch mapy gasi widoczny napis o zmianie terenu
     Zakładając, że Gość niezalogowany wyszukał „T-15”, wybrał wynik i widzi napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód”
     Jeżeli przesunie mapę gestem

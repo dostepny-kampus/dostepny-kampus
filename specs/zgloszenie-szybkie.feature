@@ -14,7 +14,8 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie powstaje po 3 krokach
     Oraz ma dołączoną bieżącą pozycję telefonu, o którą aplikacja nie pytała
 
-  @US4.6 @BR-8 @BR-14 @aplikacja
+  # brak pełnego testu: #3653
+  @US4.6 @BR-8 @BR-14 @aplikacja @do-zrobienia
   Scenariusz: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego wejścia
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz otworzył arkusz wejścia głównego A-1 na mapie
@@ -39,7 +40,8 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie ma miejsce w punkcie wejścia głównego A-1, budynek A-1 i piętro tego wejścia
     Ale zgłoszenie bez bieżącej pozycji i bez wejścia albo z nieznanym wejściem serwer odrzuca
 
-  @US4.6 @BR-8 @aplikacja
+  # brak pełnego testu: #3653
+  @US4.6 @BR-8 @aplikacja @do-zrobienia
   Scenariusz: Odnośnik w wierszu kilku wejść bez danych bierze miejsce z bieżącej pozycji
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz karta budynku pokazuje jeden wiersz kilku wejść bez danych
@@ -47,7 +49,8 @@ Funkcja: Zgłoszenie szybkie
     Wtedy krok 1 zgłoszenia szybkiego nie ma napisu o wejściu
     Oraz miejscem zgłoszenia jest bieżąca pozycja telefonu
 
-  @US4.6 @BR-8 @BR-14 @aplikacja
+  # brak pełnego testu: #3653
+  @US4.6 @BR-8 @BR-14 @aplikacja @do-zrobienia
   Szablon scenariusza: Zgłoszenie przy obiekcie planu ma miejsce w punkcie obiektu i piętro planu
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz na planie 2 piętra A-1 otworzył <arkusz>
@@ -226,7 +229,8 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie nie powstaje
     Oraz aplikacja wraca do mapy kampusu
 
-  @US4.9 @BR-G5 @aplikacja @serwer
+  # brak pełnego testu: #3653
+  @US4.9 @BR-G5 @aplikacja @serwer @do-zrobienia
   Szablon scenariusza: Zgłoszenie szybkie tylko na terenie PWr
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz zrobił zdjęcie bariery i wybrał grupę barier „komunikacja pozioma”
