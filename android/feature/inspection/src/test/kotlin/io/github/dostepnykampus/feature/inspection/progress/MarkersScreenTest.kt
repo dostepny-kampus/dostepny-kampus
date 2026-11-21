@@ -62,6 +62,14 @@ class MarkersScreenTest {
         compose.onNodeWithText(KEEP).assertIsDisplayed()
     }
 
+    /** Wiersz: znacznik piętra pokazuje etykietę z danych PWr, a pytanie o cofnięcie też. Wymagania: US11.3 */
+    @Test
+    fun showsFloorLabelNotId() {
+        show(MarkersUiState.Ready(BUILDING, asking = MARKER_ID, floorLabels = mapOf("2" to "1 piętro")))
+        compose.onNodeWithText("1 piętro").assertIsDisplayed()
+        compose.onNodeWithText("Cofnąć znacznik piętra „1 piętro”?", substring = true).assertIsDisplayed()
+    }
+
     /**
      * „Cofnij znacznik” przy znaczniku przekazuje jego identyfikator.
      *

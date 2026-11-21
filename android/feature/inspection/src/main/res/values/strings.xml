@@ -27,6 +27,7 @@
     <string name="znaczniki_cofnij">Cofnij znacznik</string>
     <string name="znaczniki_zostaw">Zostaw znacznik</string>
     <string name="znaczniki_pytanie_pietra">Cofnąć znacznik piętra %1$s? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.</string>
+    <string name="znaczniki_pytanie_pietra_z_etykieta">Cofnąć znacznik piętra „%1$s”? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.</string>
     <string name="znaczniki_pytanie_budynku">Cofnąć znacznik całego budynku? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.</string>
     <string name="zbierajacy_budynek">Budynek %1$s</string>
     <string name="zbierajacy_obejrzane">Obejrzane</string>

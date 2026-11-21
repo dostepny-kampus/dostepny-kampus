@@ -5,8 +5,11 @@
  */
 package io.github.dostepnykampus.feature.inspection.progress
 
+import io.github.dostepnykampus.core.data.building.BuildingFloors
 import io.github.dostepnykampus.core.data.inspection.InspectionProgress
 import io.github.dostepnykampus.core.data.server.ServerReply
+import io.github.dostepnykampus.core.model.building.Floor
+import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.inspection.BuildingProgress
 import io.github.dostepnykampus.core.model.inspection.InspectionCoverage
 import io.github.dostepnykampus.core.model.inspection.InspectionMarker
@@ -111,9 +114,22 @@ class MarkersViewModelTest {
             assertEquals(MarkersUiState.ServerError, viewModel.state.value, "budynku nadal nie ma")
         }
 
+    /** Etykieta piętra z danych PWr trafia do stanu i zostaje po cofnięciu znacznika. Wymagania: US11.3 */
+    @Test
+    fun carriesFloorLabels() =
+        viewModelTest(floors = { FloorList("PWr", listOf(Floor(id = "2", label = "Parter", order = 0))) }) { vm, _ ->
+            val expected = mapOf("2" to "Parter")
+            assertEquals(expected, (vm.state.value as MarkersUiState.Ready).floorLabels, "etykieta po otwarciu")
+            vm.ask(MARKER_ID)
+            vm.confirm()
+            runCurrent()
+            assertEquals(expected, (vm.state.value as MarkersUiState.Ready).floorLabels, "etykieta po cofnięciu")
+        }
+
     private fun viewModelTest(
         symbol: String = "A-1",
         revokeReply: ServerReply<Unit> = ServerReply.Ok(Unit),
+        floors: BuildingFloors = BuildingFloors { null },
         block: suspend TestScope.(MarkersViewModel, MutableList<String>) -> Unit,
     ) {
         val revoked = mutableListOf<String>()
@@ -130,7 +146,7 @@ class MarkersViewModelTest {
         Dispatchers.setMain(dispatcher)
         try {
             runTest(dispatcher) {
-                val viewModel = MarkersViewModel(symbol, source)
+                val viewModel = MarkersViewModel(symbol, source, floors)
                 runCurrent()
                 block(viewModel, revoked)
             }

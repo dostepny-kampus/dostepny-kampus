@@ -11,6 +11,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.dostepnykampus.core.data.building.BuildingFloors
 import io.github.dostepnykampus.core.data.inspection.InspectionProgress
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.inspection.BuildingProgress
@@ -40,9 +41,14 @@ sealed interface MarkersUiState {
      * @property building postęp budynku, po cofnięciu pomniejszony o cofnięty znacznik
      * @property asking identyfikator znacznika, o którego cofnięcie pyta aplikacja, albo null
      * @property failure czemu ostatnie cofnięcie się nie udało, albo null
+     * @property floorLabels etykiety pięter z danych PWr według identyfikatora; bez etykiety piętra nie ma go w mapie
      */
-    data class Ready(val building: BuildingProgress, val asking: String? = null, val failure: RevokeFailure? = null) :
-        MarkersUiState
+    data class Ready(
+        val building: BuildingProgress,
+        val asking: String? = null,
+        val failure: RevokeFailure? = null,
+        val floorLabels: Map<String, String> = emptyMap(),
+    ) : MarkersUiState
 
     /** Bez internetu. */
     data object Offline : MarkersUiState
@@ -63,6 +69,7 @@ class MarkersViewModel
     constructor(
         @Assisted private val symbol: String,
         private val progress: InspectionProgress,
+        private val floors: BuildingFloors,
     ) : ViewModel() {
         private val current = MutableStateFlow<MarkersUiState>(MarkersUiState.Loading)
 
@@ -100,15 +107,22 @@ class MarkersViewModel
             val reply = progress.buildings()
             val building = (reply as? ServerReply.Ok)?.run { value.firstOrNull { it.buildingSymbol == symbol } }
             return when {
-                building != null -> MarkersUiState.Ready(building)
+                building != null -> MarkersUiState.Ready(building, floorLabels = labels())
                 reply == ServerReply.Offline -> MarkersUiState.Offline
                 else -> MarkersUiState.ServerError
             }
         }
 
+        private suspend fun labels(): Map<String, String> =
+            floors
+                .floors(symbol)
+                ?.floors
+                .orEmpty()
+                .associate { floor -> floor.id to floor.label }
+
         private suspend fun revoked(shown: MarkersUiState.Ready, markerId: String): MarkersUiState =
             when (progress.revoke(markerId)) {
-                is ServerReply.Ok -> MarkersUiState.Ready(without(shown.building, markerId))
+                is ServerReply.Ok -> shown.copy(building = without(shown.building, markerId), asking = null)
                 ServerReply.Offline -> shown.copy(asking = null, failure = RevokeFailure.OFFLINE)
                 ServerReply.Missing, is ServerReply.Fault -> shown.copy(asking = null, failure = RevokeFailure.SERVER)
             }
