@@ -117,6 +117,28 @@ public final class ProgressSteps {
         this.data.submissions("A-1", "ACCEPTED", accepted);
     }
 
+    @Given("istnieje dodatkowe zgłoszenie {string}")
+    void additionalSubmission(final String kind) {
+        switch (kind) {
+            case "archiwalne" -> this.data.submissions("A-1", "ARCHIVED", 1);
+            case "poza budynkiem" -> this.data.submissions("", "ACCEPTED", 1);
+            case "lokalne" -> MatcherAssert.assertThat(
+                "Zgłoszenie lokalne nie jest wysłane do serwera",
+                this.jdbc.sql("SELECT COUNT(*) FROM submissions WHERE building_symbol = :symbol")
+                    .param("symbol", ProgressFixtures.key("A-1")).query(Integer.class).single(),
+                Matchers.is(4)
+            );
+            case null, default -> throw new IllegalArgumentException(kind);
+        }
+    }
+
+    @Given("A-1 ma {int} wejść z obchodu i {int} zmian oznaczenia czekających na decyzję")
+    void entranceCounts(final int walked, final int pending) {
+        this.data.building("A-1", 5);
+        this.data.entrances(walked);
+        this.data.pendingEntranceChanges(pending);
+    }
+
     @When("Zbierający oznaczy budynek {string} na poziomie {int}")
     void mark(final String symbol, final int floor) throws Exception {
         this.recordMarker(symbol, String.format(",\"floorId\":\"%d\"", floor));
@@ -184,6 +206,17 @@ public final class ProgressSteps {
                 building.path("acceptedSubmissions").asInt(-1)
             ),
             Matchers.contains(pending, accepted)
+        );
+    }
+
+    @Then("postęp A-1 pokazuje {int} z {int} wejść sprawdzonych na miejscu")
+    void countedEntrances(final int checked, final int total) {
+        final JsonNode building = this.building("A-1");
+        MatcherAssert.assertThat(
+            "Wejścia z obchodu i wszystkie wejścia",
+            List.of(building.path("entrancesCheckedOnSite").asInt(-1),
+                building.path("entrancesTotal").asInt(-1)),
+            Matchers.contains(checked, total)
         );
     }
 

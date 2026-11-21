@@ -71,6 +71,33 @@ final class ProgressFixtures {
         );
     }
 
+    void entrances(final int walked) {
+        this.jdbc.sql(
+            """
+            INSERT INTO entrances (id, building_symbol, main, location, marking,
+                marking_date, marking_source)
+            SELECT CAST(n AS text), :symbol, n = 1, ST_SetSRID(ST_Point(17, 51), 4326),
+                'ACCESSIBLE', DATE '2026-11-10',
+                CASE WHEN n <= :walked THEN 'WALKTHROUGH' ELSE 'IMPORT' END
+            FROM generate_series(1, 6) AS n
+            """
+        ).param("symbol", ProgressFixtures.key("A-1")).param("walked", walked).update();
+    }
+
+    void pendingEntranceChanges(final int amount) {
+        for (int index = 0; index < amount; ++index) {
+            this.submissions(
+                "SENT", 1, String.format(
+                    """
+                    {"kind":"ENTRANCE_MARKING","entranceId":"%d","entranceMarking":"INACCESSIBLE",
+                        "buildingSymbol":"%s","location":{"coordinates":[17,51]}}
+                    """,
+                    6 - index, ProgressFixtures.key("A-1")
+                )
+            );
+        }
+    }
+
     UUID markerAt(final String symbol, final int floor) {
         return this.jdbc.sql(
             """
