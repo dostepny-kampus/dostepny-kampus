@@ -239,6 +239,14 @@ Arkusz „Który budynek?” na dole mapy otwiera dotknięcie konturu wspólnego
 
 Karta sali na dole mapy otwiera się po wyniku wyszukiwania sali albo po dotknięciu sali na planie (US18.1, US18.2).
 
+Gdy wejścia budynku są już w telefonie, karta otwiera się od razu z drogą i potem nie zmienia wysokości. Pierwsza sala budynku po uruchomieniu aplikacji czeka na serwer. Do tego czasu zamiast kroków stoi „Wczytujemy drogę…” (NFR-10, NFR-56).
+
+Dotknięcie sali na planie nie zmienia powiększenia, a mapa stoi. Gdy karta zasłoni część sali, mapa przesuwa się w górę jak przy konturze budynku: pionowo, w 300 ms, sala 16 dp nad kartą (US2.8, NFR-56).
+
+Po wyniku wyszukiwania sali i po wyborze kroku ruch zależy od planu. Z planem piętra tego budynku na mapie mapa tylko przesuwa punkt na środek wolnej części nad kartą, a powiększenie zostaje. Bez tego planu mapa przelatuje do punktu z powiększeniem 19, przy którym widać numery sal (US18.2, NFR-56).
+
+Jedna czynność osoby rusza mapę najwyżej raz. Zmiana wysokości karty, np. po wczytaniu drogi, nie rusza mapy. Zamknięcie karty zostawia widok bez ruchu (NFR-56).
+
 Otwarcie nie zaczyna pokazu drogi. Mapa pokazuje plan piętra sali z wyróżnioną salą. Karta od razu pokazuje całą listę „Jak dojść”, bez wybranego kroku.
 
 Przy zwykłej czcionce karta ma wysokość treści: nagłówek, wiersz budynku i cała lista „Jak dojść” bez przewijania, plan piętra z salą nad kartą (US18.1).
@@ -256,7 +264,7 @@ Przy [dużej czcionce](#duza-czcionka) karta stoi na cały ekran według reguły
 | Tryb „po kolei” pokazuje jeden krok naraz. Pod nagłówkiem „Sala 329” z „Zamknij” stoją „Krok 1 z 3” i odsyłacz „Wszystkie kroki”, a pod nimi pasek postępu. Niżej jest tylko bieżący krok z wypełnionym kółkiem i odsyłaczem szczegółów. Na dole stoją „‹ Wstecz” i „Dalej ›”, wyłączone na pierwszym i ostatnim kroku. „Wszystkie kroki” wraca do listy z tym samym krokiem wybranym. Karta jest niska, więc mapa zostaje na mniej więcej połowie ekranu | czynność | US18.2, NFR-17, NFR-18, NFR-21; decyzja z 20.11.2026 | stan „Znaleziona sala” z wybranym krokiem |
 | Na planie numery kroków w kółkach 32 dp, bez linii trasy: 1 przy wejściu, 2 przy windzie, 3 w sali, każdy tylko na swoim piętrze. Kółko ma tło `papier` i kontur `tusz`, a wybrany krok wypełnienie `primary`. Sala ma wypełnienie `p_wybrana` i kontur `p_wybrana_kontur` przez cały czas, gdy karta jest otwarta; pinezki nie ma | dane | US18.1, US18.2, NFR-17, NFR-21, decyzja z 19.11.2026 | — |
 
-Wybór kroku przestawia plan na piętro kroku i przesuwa mapę do jego punktu. Ruch kamery jest ten sam co po wyniku wyszukiwania budynku (wiersz o dotknięciu konturu). „Zamknij” kończy pokaz i zamyka kartę.
+Wybór kroku przestawia plan na piętro kroku, a mapa rusza się według reguł karty sali opisanych wyżej. „Zamknij” kończy pokaz i zamyka kartę.
 
 Kroki prowadzą od wejścia zalecanego (BR-25) windą, która staje na piętrze tego wejścia i na piętrze sali (US18.2). W A-1, z wejściami na parterze, to winda przy klatkach C i D, bo winda przy A i B staje tylko na 2 piętrze [6]. Sala na piętrze wejścia ma tylko krok wejścia i krok sali, a odległość liczy się od wejścia.
 
