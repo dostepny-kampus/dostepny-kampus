@@ -54,7 +54,7 @@ class RoomCardViewModelTest {
         assertEquals(RoomCard(found = FOUND, way = VIA_LIFT), card.shown.value, "Karta nie wczytała drogi")
     }
 
-    /** Wiersz: „Pokaż po kolei”, „›” i „‹” przestawiają krok, a „Zamknij” zamyka kartę. */
+    /** Wiersz: „Pokaż po kolei”, „Dalej” i „Wstecz” przestawiają krok, a „Zamknij” zamyka kartę. */
     @Test
     fun walksStepsAndCloses() {
         val card = RoomCardViewModel(plans = Plans(), entrances = ENTRANCES, barriers = NO_BARRIERS)
@@ -62,7 +62,7 @@ class RoomCardViewModelTest {
 
         val steps =
             buildList {
-                card.start()
+                card.stepByStep(isOn = true)
                 add(card.shown.value?.step)
                 card.next()
                 card.next()

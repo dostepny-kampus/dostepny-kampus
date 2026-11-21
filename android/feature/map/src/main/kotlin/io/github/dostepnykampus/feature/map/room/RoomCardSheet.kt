@@ -37,11 +37,15 @@ internal fun RoomCardSheet(
         } else {
             BackHeader(title = title, onBack = onClose, horizontalPadding = 0.dp)
         }
-        Text(text = found.roomDetail(), style = MaterialTheme.typography.bodyLarge)
-        BuildingLink(symbol = found.building, onClick = { onBuilding(found.building) })
-        val pick = onStep.takeIf { onShowMap == null }
-        RoomWayHeader(card = card, onStep = pick)
-        RoomWayContent(card = card, roomTitle = title, onStep = pick, onDetails = onDetails)
+        if (card.isStepByStep && onShowMap == null) {
+            RoomStepByStep(room = room, roomTitle = title, onDetails = onDetails)
+        } else {
+            Text(text = found.roomDetail(), style = MaterialTheme.typography.bodyLarge)
+            BuildingLink(symbol = found.building, onClick = { onBuilding(found.building) })
+            val pick = onStep.takeIf { onShowMap == null }
+            RoomWayHeader(card = card, onStart = pick?.let { { room.onStepByStep(true) } })
+            RoomWayContent(card = card, roomTitle = title, onStep = pick, onDetails = onDetails)
+        }
         if (onShowMap != null) {
             PinnedButton(
                 text = stringResource(R.string.mapa_sala_pokaz_na_mapie),

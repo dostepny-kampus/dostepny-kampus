@@ -53,8 +53,6 @@ internal fun RoomWayContent(
     onStep: ((Int) -> Unit)?,
     onDetails: ((RoomStepDetail) -> Unit)?,
 ) {
-    val label = card.found.floor.label
-    val floor = label.replace(oldValue = " piętro", newValue = "\u00A0piętro")
     when (val way = card.way) {
         null -> {
             Text(stringResource(R.string.mapa_sala_droga_ladowanie))
@@ -69,7 +67,7 @@ internal fun RoomWayContent(
         }
 
         is RoomWay.Steps -> {
-            val steps = way.wayRows(floor = floor, roomTitle = roomTitle)
+            val steps = way.wayRows(floor = card.floorText, roomTitle = roomTitle)
             val links = onDetails.takeIf { onStep != null }
             GroupFrame {
                 steps.forEachIndexed { index, step ->
@@ -93,10 +91,16 @@ internal fun RoomWayContent(
     }
 }
 
-private data class WayRow(val title: String, val text: String, val detail: RoomStepDetail?)
+/** Piętro sali z twardą spacją przed „piętro”, żeby numer nie został sam na końcu linii. */
+internal val RoomCard.floorText: String
+    get() = found.floor.label.replace(oldValue = " piętro", newValue = "\u00A0piętro")
 
+/** Krok drogi w wierszu: nazwa [title], zdanie [text] i szczegóły [detail]; sala nie ma szczegółów. */
+internal data class WayRow(val title: String, val text: String, val detail: RoomStepDetail?)
+
+/** Wiersze kroków drogi do sali [roomTitle] na piętrze [floor]: wejście, winda, jeśli jest, i sala. */
 @Composable
-private fun RoomWay.Steps.wayRows(floor: String, roomTitle: String): List<WayRow> {
+internal fun RoomWay.Steps.wayRows(floor: String, roomTitle: String): List<WayRow> {
     val (entranceTitle, entranceText) = entranceLabels()
     val entrance = WayRow(title = entranceTitle, text = entranceText, detail = RoomStepDetail.ENTRANCE)
     val liftRow =
@@ -155,8 +159,9 @@ private fun RoomWayRow(
     }
 }
 
+/** Krok [step] z numerem [number] w kółku, wypełnionym przy [selected], i „›” przy [isLink]. */
 @Composable
-private fun StepRow(number: Int, step: WayRow, selected: Boolean, isLink: Boolean, modifier: Modifier = Modifier) {
+internal fun StepRow(number: Int, step: WayRow, selected: Boolean, isLink: Boolean, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
@@ -241,8 +246,9 @@ private fun rowTap(
         }
     }
 
+/** Odsyłacz „Szczegóły …” kroku [detail] z celem dotyku 48 dp. */
 @Composable
-private fun DetailLink(detail: RoomStepDetail, onClick: (RoomStepDetail) -> Unit) {
+internal fun DetailLink(detail: RoomStepDetail, onClick: (RoomStepDetail) -> Unit) {
     TextButton(
         onClick = { onClick(detail) },
         modifier = Modifier.padding(start = Odstepy.s).heightIn(min = CeleDotyku.minimum),
