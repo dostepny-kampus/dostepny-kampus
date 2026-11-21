@@ -72,8 +72,12 @@ internal class SignSheetState(initial: ChosenSign?) {
     val entranceId: String?
         get() = chosen?.takeIf { it.sign == TouchSign.ENTRANCE }?.id
 
-    /** Wysokość arkusza wejścia w pikselach; 0 bez arkusza wejścia. */
-    var entranceHeight by mutableIntStateOf(0)
+    /** Pomieszczenie znaku planu z otwartym arkuszem; `null`, gdy otwarty arkusz nie dotyczy znaku planu. */
+    val planSignId: String?
+        get() = chosen?.takeIf { it.sign == TouchSign.PLAN }?.id
+
+    /** Wysokość arkusza wejścia albo znaku planu w pikselach; 0 bez takiego arkusza. */
+    var height by mutableIntStateOf(0)
         private set
 
     /** Symbol budynku z otwartą kartą pod mapą; `null` bez karty. */
@@ -98,17 +102,19 @@ internal class SignSheetState(initial: ChosenSign?) {
         roomHeight = height
     }
 
-    /** Arkusz wejścia na mapie ma wysokość [height] w pikselach. */
-    fun measureEntrance(height: Int) {
-        entranceHeight = height
+    /** Arkusz wejścia albo znaku planu na mapie ma wysokość [height] w pikselach. */
+    fun measure(height: Int) {
+        this.height = height
     }
 
     /**
      * Wysokość w pikselach arkusza wejścia zaznaczonego w [focus], który zasłania dół mapy; 0, gdy otwarty arkusz
      * nie dotyczy tego wejścia.
      */
-    fun markedCover(focus: MapFocus?): Int =
-        entranceHeight.takeIf { entranceId == (focus as? MapFocus.Entrance)?.id } ?: 0
+    fun markedCover(focus: MapFocus?): Int = height.takeIf { entranceId == (focus as? MapFocus.Entrance)?.id } ?: 0
+
+    /** Wysokość w pikselach otwartego arkusza znaku planu, który zasłania dół mapy; 0 bez takiego arkusza. */
+    fun planCover(): Int = height.takeIf { planSignId != null } ?: 0
 
     /**
      * Otwiera arkusz znaku [sign] obiektu [id] w miejsce karty budynku [card], zamykając ją, albo w miejsce
@@ -124,7 +130,7 @@ internal class SignSheetState(initial: ChosenSign?) {
     /** Zamyka arkusz bez powrotu do karty. */
     fun close() {
         chosen = null
-        entranceHeight = 0
+        height = 0
         isReturning = false
     }
 
@@ -346,7 +352,7 @@ internal fun ChosenSignSheet(
                 barriers = barriers,
                 exits = signs.exits(onTap = onBuildingTap),
                 actions = entranceActions,
-                modifier = modifier.onSizeChanged { signs.measureEntrance(it.height) },
+                modifier = modifier.onSizeChanged { signs.measure(it.height) },
             )
         }
 
@@ -356,7 +362,7 @@ internal fun ChosenSignSheet(
                 id = id,
                 plan = plan,
                 exits = exits,
-                modifier = modifier,
+                modifier = modifier.onSizeChanged { signs.measure(it.height) },
                 onReport = entranceActions.onPlanReport,
             )
         }

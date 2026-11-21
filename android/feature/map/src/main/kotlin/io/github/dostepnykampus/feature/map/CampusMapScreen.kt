@@ -58,6 +58,7 @@ import io.github.dostepnykampus.feature.map.entrance.EntranceActions
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.plan.mapPanel
 import io.github.dostepnykampus.feature.map.plan.roomAt
+import io.github.dostepnykampus.feature.map.plan.showsSign
 import io.github.dostepnykampus.feature.map.room.OpenRoom
 import io.github.dostepnykampus.feature.map.room.RoomCardLayer
 import io.github.dostepnykampus.feature.map.room.RoomSheetSources
@@ -193,7 +194,7 @@ fun CampusMapScreen(
 ) {
     val sheet =
         screenSheet(focus = focus, padding = contentPadding, onCardClose = onEmptyMapClick, onCardReturn = onCardReturn)
-            .withPanel(focus = focus, catalog = state.catalog, room = room, onSelect = onPlanSelect)
+            .withPanel(focus = focus, catalog = state.catalog, opened = room to plan, onSelect = onPlanSelect)
     val isCovered = sheet.layout.padding.calculateBottomPadding() > 0.dp
     val states = rememberSaveableStateHolder()
     val areas = rememberMapAreas(state.mapData, sheet.layout.focus)
@@ -255,18 +256,22 @@ fun CampusMapScreen(
 private fun ScreenSheet.withPanel(
     focus: MapFocus?,
     catalog: BuildingCatalog?,
-    room: OpenRoom?,
+    opened: Pair<OpenRoom?, ShownPlan?>,
     onSelect: (String?) -> Unit,
 ): ScreenSheet {
+    val (room, plan) = opened
     val isBelowMap = LocalDensity.current.fontScale < LARGE_FONT_SCALE
     val entrance = signs.entranceId
     val marked = (focus as? MapFocus.Entrance)?.takeIf { it.id == entrance }
-    val opened = catalog?.run { entrances.firstOrNull { it.id == entrance } }
-    val building = marked?.buildingSymbol ?: opened?.buildingSymbol
+    val entered = catalog?.run { entrances.firstOrNull { it.id == entrance } }
+    val sign = signs.planSignId?.let { plan?.building }
+    val building = marked?.buildingSymbol ?: entered?.buildingSymbol ?: sign
     val roomCover = signs.roomHeight.takeIf { room != null && isBelowMap } ?: 0
-    val cover = signs.markedCover(layout.focus)
-    val panel = mapPanel(focus = focus, entranceBuilding = building, entranceCover = cover, roomCover = roomCover)
+    val cover = signs.markedCover(layout.focus).takeIf { it > 0 } ?: signs.planCover().takeIf { isBelowMap } ?: 0
+    val panel = mapPanel(focus = focus, sheetBuilding = building, sheetCover = cover, roomCover = roomCover)
     SideEffect { onSelect(panel.building) }
+    val gone = signs.planSignId?.takeUnless { plan.showsSign(it) }
+    SideEffect { if (gone != null) signs.close() }
     return copy(panel = panel)
 }
 

@@ -51,17 +51,36 @@ internal class MapPanelTest {
 
     @Test
     fun coversMapWithEntranceSheet() {
-        val panel = mapPanel(focus = null, entranceBuilding = "A", entranceCover = 640)
+        val panel = mapPanel(focus = null, sheetBuilding = "A", sheetCover = 640)
         assertEquals(MapPanel(building = "A", cover = 640), panel, "Arkusz wejścia nie zasłania dołu mapy")
     }
 
     @Test
     fun coversMapWithRoomCard() {
         val room = MapFocus.Building(symbol = "A", command = 1L, floor = "P1", room = "7")
-        val panel = mapPanel(focus = room, entranceBuilding = null, entranceCover = 0, roomCover = 480)
+        val panel = mapPanel(focus = room, sheetBuilding = null, sheetCover = 0, roomCover = 480)
         assertEquals(MapPanel(building = "A", cover = 480), panel, "Karta sali nie zasłania dołu mapy dopełnieniem")
     }
 
+    @Test
+    fun holdsBuildingOfPlanSignSheet() {
+        val panel = mapPanel(focus = null, sheetBuilding = "A-1", sheetCover = 400, roomCover = 0)
+        assertEquals(MapPanel(building = "A-1", cover = 400), panel, "Arkusz znaku planu nie trzyma planu budynku")
+    }
+
+    /** Arkusz znaku planu żyje tylko ze znakiem na pokazanym piętrze. Wymagania: US16.1, US2.8 */
+    @Test
+    fun showsSignOnlyOnShownFloor() {
+        val shown =
+            listOf(
+                SIGN_PLAN.showsSign("winda"),
+                SIGN_PLAN.showsSign("schody"),
+                SIGN_PLAN.copy(floor = "f1").showsSign("schody"),
+                null.showsSign("winda"),
+            )
+        assertEquals(listOf(true, false, true, false), shown, "Znak spoza pokazanego piętra albo bez planu")
+    }
+
     private fun building(focus: MapFocus?, entrance: String? = null): String? =
-        mapPanel(focus = focus, entranceBuilding = entrance, entranceCover = 0).building
+        mapPanel(focus = focus, sheetBuilding = entrance, sheetCover = 0).building
 }
