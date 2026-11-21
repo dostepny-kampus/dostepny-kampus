@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.camera
 
+import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.model.GeoPoint
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -30,6 +31,18 @@ class UncoveredMoveTest {
             listOf(far.motion, unknown.motion),
             "Daleki albo nieznany start bez przelotu",
         )
+    }
+
+    /** Wiersz: po ruchu aplikacji (bez gestu) ruch do sali zna widok startowy, także gdy cel jest już zapisany. */
+    @Test
+    fun knowsOriginAfterAppMove() {
+        val last = ShownCamera()
+        val target = view(latitude = 51.1072)
+        last.keep(shown = REST, covered = 0.dp)
+        val before = last.originOf(target)
+        last.keep(shown = target, covered = 0.dp)
+
+        assertEquals(listOf(REST, REST), listOf(before, last.originOf(target)), "Ruch bez widoku startowego")
     }
 
     private companion object {
