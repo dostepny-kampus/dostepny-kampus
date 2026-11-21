@@ -272,6 +272,50 @@ final class ReviewHttpIT {
         );
     }
 
+    @Test
+    void appliesAndArchivesAcceptedEntranceMarking(final WebApplicationContext context)
+        throws Exception {
+        final UUID id = ReviewHttpIT.entranceChange(context);
+        final int claim = ReviewHttpIT.claim(context, id);
+        final int review = ReviewHttpIT.review(context, id, "{\"decision\":\"ACCEPT\",\"version\":1}");
+        final JdbcClient jdbc = context.getBean(JdbcClient.class);
+        MatcherAssert.assertThat(
+            "Przyjęcie zmiany stosuje oznaczenie wejścia i archiwizuje zgłoszenie",
+            List.of(
+                claim, review, ReviewHttpIT.status(context, id),
+                jdbc.sql(
+                    """
+                    SELECT marking || '/' || marking_source FROM entrances
+                    WHERE building_symbol = 'C-13' AND id = 'spec-review-entrance'
+                    """
+                ).query(String.class).single()
+            ),
+            Matchers.contains(200, 200, "ARCHIVED", "INACCESSIBLE/WALKTHROUGH")
+        );
+    }
+
+    private static UUID entranceChange(final WebApplicationContext context) throws IOException {
+        final UUID id = ReviewHttpIT.sent(context, "inne-konto");
+        final JdbcClient jdbc = context.getBean(JdbcClient.class);
+        jdbc.sql(
+            """
+            INSERT INTO entrances (id, building_symbol, main, location, marking,
+                marking_date, marking_source)
+            VALUES ('spec-review-entrance', 'C-13', FALSE, ST_SetSRID(ST_Point(17, 51), 4326),
+                'ACCESSIBLE', DATE '2026-11-10', 'IMPORT')
+            """
+        ).update();
+        jdbc.sql(
+            """
+            UPDATE submissions SET content = content - 'barrierGroup' || '{
+                "kind":"ENTRANCE_MARKING","buildingSymbol":"C-13",
+                "entranceId":"spec-review-entrance","entranceMarking":"INACCESSIBLE"
+            }'::jsonb WHERE id = :id
+            """
+        ).param("id", id).update();
+        return id;
+    }
+
     private static List<Object> refused(final WebApplicationContext context, final String body)
         throws Exception {
         final UUID id = ReviewHttpIT.sent(context, "inne-konto");
