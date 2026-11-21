@@ -14,6 +14,9 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlin.math.abs
+
+private const val SAME_ZOOM = 1e-6
 
 /**
  * Ostatni widok podany mapie i zasłonięty wtedy dół mapy: początek ruchu do następnego wybranego budynku i obraz
@@ -25,8 +28,19 @@ internal class ShownCamera {
     private var camera: MapCamera? = null
     private var covered = 0.dp
 
+    /** Widok, w którym mapa ostatnio stanęła; `null`, dopóki nie stanęła ani razu. */
+    var rest: MapCamera? = null
+        private set
+
     /** Ostatni widok albo [fallback], gdy mapa jeszcze nic nie pokazała. */
     fun startOr(fallback: MapCamera?): MapCamera? = camera ?: fallback
+
+    /** Zapis [keep] widoku, w którym mapa stanęła, który zapamiętuje go też jako [rest]. */
+    fun settling(keep: (MapCamera) -> Unit): (MapCamera) -> Unit =
+        { view ->
+            rest = view
+            keep(view)
+        }
 
     /** Zapisuje widok [shown] z dołem mapy zasłoniętym na [covered]; 0, gdy widok nie stoi nad arkuszem. */
     fun keep(shown: MapCamera?, covered: Dp) {
@@ -67,13 +81,15 @@ internal fun rememberClosedView(isCovered: Boolean, wasCovered: Boolean, seen: M
 
 /**
  * Ruch do widoku bez arkusza: do obrazu mapy z chwili zamknięcia arkusza [closed] skok, który zmienia cel
- * i dopełnienie w jednej klatce bez ruchu na ekranie; do innego widoku przelot przycisków.
+ * i dopełnienie w jednej klatce bez ruchu na ekranie; z widoku [from] o tym samym powiększeniu przesunięcie
+ * ([bySlide]), bo przelot oddala mapę po drodze; poza tym przelot przycisków.
  *
- * Wymagania: US2.8, NFR-56
+ * Wymagania: US2.8, US18.1, US18.2, NFR-56
  */
-internal fun MapCamera.uncoveredMove(closed: MapCamera?): CameraTransition =
-    if (closed?.isSameView(this) == true) {
-        CameraTransition(camera = this, motion = CameraMotion.NONE, durationMillis = 0L)
-    } else {
-        byControl()
+internal fun MapCamera.uncoveredMove(closed: MapCamera?, from: MapCamera? = null): CameraTransition =
+    when {
+        closed?.isSameView(this) == true ->
+            CameraTransition(camera = this, motion = CameraMotion.NONE, durationMillis = 0L)
+        from != null && abs(from.zoom - zoom) < SAME_ZOOM -> bySlide()
+        else -> byControl()
     }

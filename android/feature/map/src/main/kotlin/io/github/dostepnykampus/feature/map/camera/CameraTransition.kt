@@ -63,6 +63,13 @@ internal fun MapCamera.byControl(): CameraTransition =
     CameraTransition(camera = this, motion = CameraMotion.FLIGHT, durationMillis = CONTROL_MILLIS)
 
 /**
+ * Przesunięcie do widoku bez zmiany powiększenia: płynny ruch w 300 ms, bez oddalania mapy po drodze.
+ * Wymagania: US2.8, NFR-56
+ */
+internal fun MapCamera.bySlide(): CameraTransition =
+    CameraTransition(camera = this, motion = CameraMotion.EASE, durationMillis = CONTROL_MILLIS)
+
+/**
  * Ruch mapy z widoku [from] do budynku o prostokącie [outline] w wolnej części mapy [free]: rodzaj i czas według
  * położenia budynku względem widoku, czas mnożony przez skalę animacji [animationScale] (0 daje
  * [CameraMotion.NONE]). Kontur kończy na połowie wolnej mapy, najwyżej przy powiększeniu 19; większe powiększenie

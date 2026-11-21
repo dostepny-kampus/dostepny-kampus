@@ -178,7 +178,7 @@ internal fun rememberMapSceneState(
     }
     val card = rememberCardMove(building = selection?.building, pick = pick)
     val above = card.move?.takeIf { isCovered }
-    val move = above ?: uncovered?.uncoveredMove(closed)
+    val move = above ?: uncovered?.uncoveredMove(closed = closed, from = last.rest)
     val covered =
         density.keptCover(isAboveCard = above != null, isCovered = isCovered, card = cover + reserve, sheet = sheet)
     SideEffect { last.keep(shown = move?.camera, covered = covered) }
@@ -189,7 +189,7 @@ internal fun rememberMapSceneState(
         limits = limits,
         cover = mapCover(isCovered, hasControls = free.hasRoomForControls),
         taps = MapPicking(choices = choices, onTap = origin::tap),
-        onCamera = cameraKeeper(isCovered, onMap = view.keep, onCard = card.keep),
+        onCamera = cameraKeeper(isCovered, onMap = last.settling(view.keep), onCard = card.keep),
     )
 }
 
