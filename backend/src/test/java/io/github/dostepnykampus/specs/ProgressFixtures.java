@@ -90,9 +90,10 @@ final class ProgressFixtures {
                 "SENT", 1, String.format(
                     """
                     {"kind":"ENTRANCE_MARKING","entranceId":"%d","entranceMarking":"INACCESSIBLE",
-                        "buildingSymbol":"%s","location":{"coordinates":[17,51]}}
+                        "buildingSymbol":"%s","location":{"type":"Point","coordinates":[17,51]},
+                        "photoIds":["%s"]}
                     """,
-                    6 - index, ProgressFixtures.key("A-1")
+                    6 - index, ProgressFixtures.key("A-1"), UUID.randomUUID()
                 )
             );
         }

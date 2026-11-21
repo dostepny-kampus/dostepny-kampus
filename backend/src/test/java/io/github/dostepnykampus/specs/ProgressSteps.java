@@ -214,8 +214,10 @@ public final class ProgressSteps {
         final JsonNode building = this.building("A-1");
         MatcherAssert.assertThat(
             "Wejścia z obchodu i wszystkie wejścia",
-            List.of(building.path("entrancesCheckedOnSite").asInt(-1),
-                building.path("entrancesTotal").asInt(-1)),
+            List.of(
+                building.path("entrancesCheckedOnSite").asInt(-1),
+                building.path("entrancesTotal").asInt(-1)
+            ),
             Matchers.contains(checked, total)
         );
     }
