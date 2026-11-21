@@ -3,7 +3,7 @@ Funkcja: Logowanie, role i zaproszenia
   Każda osoba korzysta tylko z czynności swojej roli. Role pracownicze nadaje Koordynator,
   więc o publikacji decydują osoby mu znane (N2, N8, N9).
 
-  # test aplikacji: #708
+  # test aplikacji: #3649
   @US14.1 @aplikacja @serwer
   Szablon scenariusza: Bez wymaganej roli czynność jest niedostępna w aplikacji i na serwerze
     Zakładając, że osoba jest zalogowana tylko z rolą <rola>
@@ -43,7 +43,7 @@ Funkcja: Logowanie, role i zaproszenia
     Wtedy próba jest odrzucona
     Oraz zgłoszenie ma nadal uciążliwość nadaną przez autora
 
-  # test aplikacji: #708
+  # test aplikacji: #3649
   @US14.3 @BR-1 @BR-2 @aplikacja @serwer @usluga-logowania
   Scenariusz: Samodzielna rejestracja daje tylko uprawnienia Odwiedzającego
     Zakładając, że osoba bez konta korzysta z aplikacji jako Gość niezalogowany
