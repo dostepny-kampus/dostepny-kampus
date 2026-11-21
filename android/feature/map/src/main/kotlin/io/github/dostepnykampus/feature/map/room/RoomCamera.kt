@@ -10,11 +10,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.github.dostepnykampus.core.geo.allRings
+import io.github.dostepnykampus.core.model.GeoArea
 import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.dpPerDegree
+import io.github.dostepnykampus.feature.map.camera.mercatorY
 import io.github.dostepnykampus.feature.map.camera.shiftedNorth
 import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import kotlin.math.PI
+
+private const val REVEAL_MARGIN_DP = 16.0
+private const val HALF_TURN_DEGREES = 180.0
 
 /** Ostatni widok mapy w spoczynku i sala dotknięta na planie, zapamiętane między czynnościami osoby. */
 internal class RoomMemory {
@@ -54,12 +62,13 @@ internal data class RoomScene(val room: OpenRoom?, val isOnMap: Boolean, val pla
  * Widok karty [scene] przy zaznaczeniu [focus], dole mapy zasłoniętym na [cover] pikseli i górze zasłoniętej na
  * [top]. Czynność to polecenie [MapFocus.Building.command]: widzi widok
  * i plan z chwili przed nią, a wysokość karty z pierwszego pomiaru, więc późniejsza zmiana wysokości karty nie rusza
- * mapy. Dotknięta sala zostawia obraz mapy w miejscu mimo karty i paska, które zmieniają dopełnienie kamery.
+ * mapy. Dotknięta sala zostawia obraz mapy w miejscu mimo karty i paska, które zmieniają dopełnienie kamery,
+ * a gdy karta ją zasłoni, mapa wysoka na [height] pikseli przesuwa się w górę ([revealing]).
  *
  * Wymagania: US18.1, US18.2, US2.8, NFR-56
  */
 @Composable
-internal fun rememberRoomView(scene: RoomScene, focus: MapFocus?, cover: Int, top: Dp): RoomView {
+internal fun rememberRoomView(scene: RoomScene, focus: MapFocus?, cover: Int, top: Dp, height: Int): RoomView {
     val (room, isOnMap, plan) = scene
     val memory = remember { RoomMemory() }
     val command = (focus as? MapFocus.Building)?.command
@@ -74,7 +83,9 @@ internal fun rememberRoomView(scene: RoomScene, focus: MapFocus?, cover: Int, to
     val isTapped = room?.run { card.step == null && card.found.room.id == memory.tapped } == true
     val density = LocalDensity.current
     val keptDp = with(density) { kept.toDp() }
-    val still = seen?.camera?.takeIf { isTapped && kept > 0 }?.stillUnder(card = keptDp, bar = memory.top)
+    val mapDp = with(density) { height.toDp() }
+    val area = room?.run { card.found.room.geometry }
+    val still = seen?.takeIf { isTapped && kept > 0 }?.tapped(area = area, card = keptDp, bar = memory.top, map = mapDp)
     val camera = still ?: room?.cameraForRoom(isRoomOnMap = isOnMap, cover = keptDp, seen = seen, isTapped = isTapped)
     val mapCover = with(density) { cover.toDp() }.takeIf { isOnMap } ?: 0.dp
     return RoomView(camera = camera, cover = kept, mapCover = mapCover, memory = memory)
@@ -86,3 +97,34 @@ internal fun rememberRoomView(scene: RoomScene, focus: MapFocus?, cover: Int, to
  * Wymagania: US18.1, NFR-56
  */
 internal fun MapCamera.stillUnder(card: Dp, bar: Dp): MapCamera = shiftedNorth(((card + bar) / 2).value.toDouble())
+
+/**
+ * Widok po dotknięciu sali [area] na mapie wysokiej na [map]: ten sam obraz mimo karty [card] i paska [bar]
+ * ([stillUnder]), a sala zasłonięta kartą nad nią ([revealing]). Wymagania: US18.1, US2.8, NFR-56
+ */
+internal fun SeenPlan.tapped(area: GeoArea?, card: Dp, bar: Dp, map: Dp): MapCamera =
+    camera.stillUnder(card = card, bar = bar).revealing(
+        area = area,
+        free = (map - card).value.toDouble(),
+        card = card.value.toDouble(),
+    )
+
+/**
+ * Widok, w którym sala [area] zasłonięta kartą wysoką na [card] dp stoi dolnym brzegiem 16 dp nad kartą, a górnym
+ * najwyżej 16 dp pod górą wolnej części mapy wysokiej na [free] dp. Ruch jest tylko w pionie i bez zmiany
+ * powiększenia. Sala cała widoczna nad kartą, ucięta brzegiem ekranu albo bez konturu zostaje.
+ *
+ * Wymagania: US18.1, US2.8, NFR-56
+ */
+internal fun MapCamera.revealing(area: GeoArea?, free: Double, card: Double): MapCamera {
+    val latitudes = area?.run { allRings().flatten().map { it.latitude } }.orEmpty()
+    val south = latitudes.minOrNull() ?: return this
+    val perRadian = dpPerDegree(zoom) * HALF_TURN_DEGREES / PI
+    val middle = mercatorY(center.latitude)
+    val bottom = free / 2 + (middle - mercatorY(south)) * perRadian
+    val top = free / 2 + (middle - mercatorY(latitudes.max())) * perRadian
+    val isSeen = top >= 0 && bottom <= free + card
+    val covered = bottom - (free - REVEAL_MARGIN_DP)
+    val lift = minOf(a = covered, b = (top - REVEAL_MARGIN_DP).coerceAtLeast(minimumValue = 0.0))
+    return if (isSeen && covered > 0) shiftedNorth(-lift) else this
+}
