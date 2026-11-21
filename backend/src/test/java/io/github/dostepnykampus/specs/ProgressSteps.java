@@ -204,8 +204,7 @@ public final class ProgressSteps {
             "Serwer przyjął operację znacznika",
             this.response(
                 MockMvcRequestBuilders.post("/sync/push").with(new AsCollector())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(
+                    .contentType(MediaType.APPLICATION_JSON).content(
                         String.format(
                             "{\"operations\":[{\"clientOperationId\":\"%s\",%s}]}",
                             UUID.randomUUID(), operation
