@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
@@ -157,7 +158,7 @@ private fun StepRow(number: Int, step: WayRow, selected: Boolean, isLink: Boolea
     ) {
         RoomStepBadge(number = number, size = 28.dp, selected = selected)
         Column(Modifier.weight(1f)) {
-            Text(text = step.title, style = MaterialTheme.typography.titleMedium)
+            Text(text = step.title, style = MaterialTheme.typography.titleMedium.copy(hyphens = Hyphens.Auto))
             Text(text = step.text, style = MaterialTheme.typography.bodyLarge)
         }
         if (isLink) {
@@ -171,7 +172,11 @@ private fun LargeStepRow(number: Int, step: WayRow, selected: Boolean, isLink: B
     Column(row, verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
             RoomStepBadge(number = number, size = 40.dp, selected = selected)
-            Text(text = step.title, modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = step.title,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.titleMedium.copy(hyphens = Hyphens.Auto),
+            )
             if (isLink) {
                 StepChevron()
             }
