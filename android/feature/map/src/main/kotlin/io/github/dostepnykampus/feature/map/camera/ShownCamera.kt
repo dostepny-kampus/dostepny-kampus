@@ -14,9 +14,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import kotlin.math.abs
-
-private const val SAME_ZOOM = 1e-6
 
 /**
  * Ostatni widok podany mapie i zasłonięty wtedy dół mapy: początek ruchu do następnego wybranego budynku i obraz
@@ -81,15 +78,14 @@ internal fun rememberClosedView(isCovered: Boolean, wasCovered: Boolean, seen: M
 
 /**
  * Ruch do widoku bez arkusza: do obrazu mapy z chwili zamknięcia arkusza [closed] skok, który zmienia cel
- * i dopełnienie w jednej klatce bez ruchu na ekranie; z widoku [from] o tym samym powiększeniu przesunięcie
- * ([bySlide]), bo przelot oddala mapę po drodze; poza tym przelot przycisków.
+ * i dopełnienie w jednej klatce bez ruchu na ekranie; do innego widoku z widoku [from] w wolnej mapie [free]
+ * przesunięcie albo przelot według odległości ([byControlFrom]).
  *
  * Wymagania: US2.8, US18.1, US18.2, NFR-56
  */
-internal fun MapCamera.uncoveredMove(closed: MapCamera?, from: MapCamera? = null): CameraTransition =
-    when {
-        closed?.isSameView(this) == true ->
-            CameraTransition(camera = this, motion = CameraMotion.NONE, durationMillis = 0L)
-        from != null && abs(from.zoom - zoom) < SAME_ZOOM -> bySlide()
-        else -> byControl()
+internal fun MapCamera.uncoveredMove(closed: MapCamera?, from: MapCamera?, free: FreeMap): CameraTransition =
+    if (closed?.isSameView(this) == true) {
+        CameraTransition(camera = this, motion = CameraMotion.NONE, durationMillis = 0L)
+    } else {
+        byControlFrom(from = from, free = free)
     }

@@ -63,11 +63,17 @@ internal fun MapCamera.byControl(): CameraTransition =
     CameraTransition(camera = this, motion = CameraMotion.FLIGHT, durationMillis = CONTROL_MILLIS)
 
 /**
- * Przesunięcie do widoku bez zmiany powiększenia: płynny ruch w 300 ms, bez oddalania mapy po drodze.
- * Wymagania: US2.8, NFR-56
+ * Ruch do widoku z widoku [from] według reguły ruchu do budynku: cel w zasięgu jednego ekranu wolnej mapy [free]
+ * to przesunięcie w 300 ms, bez oddalania mapy po drodze; dalszy cel albo nieznany [from] to przelot przycisków.
+ *
+ * Wymagania: US2.8, US18.1, US18.2, NFR-56
  */
-internal fun MapCamera.bySlide(): CameraTransition =
-    CameraTransition(camera = this, motion = CameraMotion.EASE, durationMillis = CONTROL_MILLIS)
+internal fun MapCamera.byControlFrom(from: MapCamera?, free: FreeMap): CameraTransition =
+    if (from != null && distanceDp(from = from, to = this) <= free.widthDp) {
+        CameraTransition(camera = this, motion = CameraMotion.EASE, durationMillis = CONTROL_MILLIS)
+    } else {
+        byControl()
+    }
 
 /**
  * Ruch mapy z widoku [from] do budynku o prostokącie [outline] w wolnej części mapy [free]: rodzaj i czas według

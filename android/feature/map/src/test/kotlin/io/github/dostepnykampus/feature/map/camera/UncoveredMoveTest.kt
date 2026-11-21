@@ -9,31 +9,33 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-/** Ruch mapy bez arkusza: przesunięcie bez zmiany powiększenia, przelot ze zmianą. Wymagania: US18.1, NFR-56 */
+/** Ruch mapy bez arkusza według odległości celu, jak ruch do budynku. Wymagania: US2.8, US18.1, NFR-56 */
 class UncoveredMoveTest {
-    /** Wiersz: sala dotknięta przy tym samym powiększeniu przesuwa mapę płynnie, bez przelotu. */
+    /** Wiersz: cel w zasięgu ekranu, np. dotknięta sala, to przesunięcie bez przelotu. */
     @Test
-    fun slidesAtSameZoom() {
-        val move = TARGET.uncoveredMove(closed = null, from = REST)
+    fun slidesToNearView() {
+        val move = view(latitude = 51.1072).uncoveredMove(closed = null, from = REST, free = FREE)
 
-        assertEquals(CameraMotion.EASE, move.motion, "Ruch bez zmiany powiększenia poszedł przelotem")
+        assertEquals(CameraMotion.EASE, move.motion, "Bliski cel poszedł przelotem")
     }
 
-    /** Wiersz: ruch ze zmianą powiększenia i ruch bez znanego widoku to przelot przycisków. */
+    /** Wiersz: cel dalej niż ekran i ruch bez znanego widoku to przelot przycisków. */
     @Test
-    fun fliesOnZoomChange() {
-        val zoomed = TARGET.uncoveredMove(closed = null, from = REST.copy(zoom = 17.0))
-        val unknown = TARGET.uncoveredMove(closed = null)
+    fun fliesToFarView() {
+        val far = view(latitude = 51.11).uncoveredMove(closed = null, from = REST, free = FREE)
+        val unknown = view(latitude = 51.1072).uncoveredMove(closed = null, from = null, free = FREE)
 
         assertEquals(
             listOf(CameraMotion.FLIGHT, CameraMotion.FLIGHT),
-            listOf(zoomed.motion, unknown.motion),
-            "Ruch ze zmianą powiększenia bez przelotu",
+            listOf(far.motion, unknown.motion),
+            "Daleki albo nieznany start bez przelotu",
         )
     }
 
     private companion object {
-        val REST = MapCamera(center = GeoPoint(longitude = 17.059, latitude = 51.107), zoom = 19.0)
-        val TARGET = MapCamera(center = GeoPoint(longitude = 17.059, latitude = 51.108), zoom = 19.0)
+        val FREE = FreeMap(widthDp = 411.0, heightDp = 400.0, endDp = 0.0, marginDp = 24.0)
+        val REST = view(latitude = 51.107)
+
+        fun view(latitude: Double) = MapCamera(center = GeoPoint(longitude = 17.059, latitude = latitude), zoom = 19.0)
     }
 }
