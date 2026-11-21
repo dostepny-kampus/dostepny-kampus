@@ -276,14 +276,12 @@ final class ReviewHttpIT {
     void appliesAndArchivesAcceptedEntranceMarking(final WebApplicationContext context)
         throws Exception {
         final UUID id = ReviewHttpIT.entranceChange(context);
-        final int claim = ReviewHttpIT.claim(context, id);
-        final int review = ReviewHttpIT.review(
-            context, id, "{\"decision\":\"ACCEPT\",\"version\":1}"
-        );
         MatcherAssert.assertThat(
             "Przyjęcie zmiany stosuje oznaczenie wejścia i archiwizuje zgłoszenie",
             List.of(
-                claim, review, ReviewHttpIT.status(context, id),
+                ReviewHttpIT.claim(context, id),
+                ReviewHttpIT.review(context, id, "{\"decision\":\"ACCEPT\",\"version\":1}"),
+                ReviewHttpIT.status(context, id),
                 context.getBean(JdbcClient.class).sql(
                     """
                     SELECT marking || '/' || marking_source FROM entrances
