@@ -69,10 +69,8 @@ class BarrierPhotoTest {
     /** Wiersz: błąd pobrania → komunikat i „Spróbuj ponownie” o wysokości co najmniej 48 dp. Wymagania: NFR-50 */
     @Test
     fun showsErrorWithRetryOnFailure() {
-        show(
-            PHOTO_URL,
-            Interceptor { chain -> ErrorResult(image = null, request = chain.request, throwable = IOException("błąd")) },
-        )
+        val failing = Interceptor { chain -> ErrorResult(null, chain.request, IOException("błąd")) }
+        show(PHOTO_URL, failing)
 
         val message = "Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę."
         compose.waitUntil(WAIT_MS) { shownText(message) }

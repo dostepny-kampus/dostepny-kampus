@@ -82,8 +82,8 @@ class RemovedContentTest {
     @OptIn(DelicateCoilApi::class)
     @Test
     fun showsAcceptedPhoto() {
-        val engine =
-            FakeImageLoaderEngine.Builder().intercept(PHOTO_URL, ColorImage(PHOTO_COLOR, width = 64, height = 48)).build()
+        val image = ColorImage(PHOTO_COLOR, width = 64, height = 48)
+        val engine = FakeImageLoaderEngine.Builder().intercept(PHOTO_URL, image).build()
         SingletonImageLoader.setUnsafe(ImageLoader.Builder(compose.activity).components { add(engine) }.build())
         show(RemovedUiState(previous = LIFT.copy(photoUrl = PHOTO_URL), stage = RemovedStage.EDITING))
 
