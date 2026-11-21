@@ -16,6 +16,7 @@ import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
+import io.github.dostepnykampus.feature.capture.navigation.ReportReplaceRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
@@ -569,6 +570,32 @@ class AppNavigatorTest {
             reportSaved()
         }
         assertEquals(stackOf(BuildingRoute("A-1"), MySubmissionsRoute), stack, "C7 znika z historii, C3 po V2")
+    }
+
+    /** Wiersz: V2 „Popraw zgłoszenie” → C2 zmiany przyjętego, „Zapisz” → C3 bez C2. Wymagania: BR-18, NFR-54 */
+    @Test
+    fun replaceSavedOpensC3WithoutReplaceRoute() {
+        stack += BuildingRoute("A-1")
+        navigator(collector).run {
+            openReplace("tb13")
+            assertEquals(ReportReplaceRoute("tb13"), current, "V2 otwiera C2 zmiany przyjętego")
+            reportSaved()
+        }
+        assertEquals(stackOf(BuildingRoute("A-1"), MySubmissionsRoute), stack, "C2 znika z historii, C3 po V2")
+    }
+
+    /** Wiersz: zmiana przyjętego C2 „Zmień miejsce” → C1 → C2 → „Zapisz” → C3. Wymagania: BR-18, US7.4 */
+    @Test
+    fun changesPlaceOnReplace() {
+        val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = "A-1")
+        stack += listOf(BuildingRoute("A-1"), ReportReplaceRoute("tb13"))
+        navigator(collector).run {
+            changeEditPlace()
+            assertEquals(MeasureRoute, current)
+            openReportForm(form)
+            reportSaved()
+        }
+        assertEquals(stackOf(BuildingRoute("A-1"), MySubmissionsRoute), stack)
     }
 
     /** Wiersz: „Otwórz” i „Zmień miejsce” poza C3 i poprawką nic nie robią. Wymagania: US8.3 */

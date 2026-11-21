@@ -8,6 +8,8 @@ package io.github.dostepnykampus.feature.capture.report.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.submission.pending.PendingEdit
 import io.github.dostepnykampus.core.data.submission.pending.PendingEdits
 import io.github.dostepnykampus.core.model.submission.BarrierType
@@ -84,6 +86,53 @@ internal fun PendingEdit.toReportUiState(): ReportUiState {
     return ReportUiState(form = form, photos = photos)
 }
 
-private fun SubmissionFloor.toReportFloor(): ReportFloor? =
+internal fun SubmissionFloor.toReportFloor(): ReportFloor? =
     floorId?.let { ReportFloor.Planned(it) }
         ?: number?.let { ReportFloor.Numbered(number = it, isMezzanine = isMezzanine == true) }
+
+/** Model widoku wczytujący zgłoszenie przyjęte do zmiany w C2 raz na ekran. Wymagania: BR-3, BR-18 */
+@HiltViewModel
+class ReportReplaceViewModel
+    @Inject
+    constructor(private val barriers: AcceptedBarriers) : ViewModel() {
+        private val state = MutableStateFlow<ReportEditLoad>(ReportEditLoad.Loading)
+        private var requested: String? = null
+
+        /** Wynik wczytania zgłoszenia przyjętego. */
+        val load: StateFlow<ReportEditLoad> = state.asStateFlow()
+
+        /** Wczytuje zgłoszenie przyjęte [id]; kolejne wywołania nic nie zmieniają. */
+        fun open(id: String) {
+            if (requested != null) return
+            requested = id
+            viewModelScope.launch {
+                val found = barriers.barriers().firstOrNull { it.id == id }
+                state.value = found?.let { ReportEditLoad.Ready(it.toReplaceUiState()) } ?: ReportEditLoad.Missing
+            }
+        }
+    }
+
+/**
+ * Stan formularza na start zmiany zgłoszenia przyjętego; zapis tworzy nowe zgłoszenie z powiązaniem.
+ *
+ * Wymagania: BR-18
+ */
+internal fun AcceptedBarrier.toReplaceUiState(): ReportUiState {
+    val place =
+        ReportPlace(
+            location = location,
+            accuracyMeters = 0.0,
+            buildingSymbol = buildingSymbol,
+            isManualCorrection = false,
+        )
+    val form =
+        ReportForm(
+            place = place,
+            floor = floor?.toReportFloor()?.takeIf { place.buildingSymbol != null },
+            barrierType = type,
+            severity = severity,
+            description = description.orEmpty(),
+            replacesSubmissionId = id,
+        )
+    return ReportUiState(form = form)
+}

@@ -9,6 +9,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -117,9 +118,47 @@ class BuildingCardBarriersTest {
         compose.onNodeWithText("Zgłoś, że bariery nie ma").assertDoesNotExist()
     }
 
+    /**
+     * Wiersz: Zbierający widzi „Popraw zgłoszenie” przy własnym zgłoszeniu przyjętym i przy przyjętym szybkim,
+     *   a nie widzi go przy cudzym zgłoszeniu precyzyjnym.
+     * Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Zmiana zgłoszenia przyjętego tworzy nowe zgłoszenie
+     *
+     * Wymagania: BR-3, BR-18
+     */
+    @Test
+    fun collectorSeesReplaceOnOwnAndQuickOnly() {
+        val replaced = mutableListOf<String>()
+        val quick = BARRIER.copy(id = "z-quick", isQuick = true)
+        val other = BARRIER.copy(id = "z-other", isQuick = false)
+        show(
+            barriers = listOf(BARRIER, quick, other),
+            ownBarrierIds = setOf("z1"),
+            onReplaceBarrier = { replaced.add(it) },
+        )
+
+        val buttons = compose.onAllNodesWithText("Popraw zgłoszenie")
+        assertEquals("Dwa przyciski: dla własnego i dla szybkiego", 2, buttons.fetchSemanticsNodes().size)
+        buttons[0].performScrollTo().performClick()
+        buttons[1].performScrollTo().performClick()
+        assertEquals(listOf("z1", "z-quick"), replaced)
+    }
+
+    /** Wiersz: bez roli Zbierającego przycisku „Popraw zgłoszenie” nie ma. Wymagania: BR-3, BR-18 */
+    @Test
+    fun noRoleHidesReplaceButton() {
+        show(barriers = listOf(BARRIER.copy(isQuick = true)), ownBarrierIds = setOf("z1"))
+
+        compose.onNodeWithText("Popraw zgłoszenie").assertDoesNotExist()
+    }
+
     private fun photoShown() = compose.onAllNodesWithContentDescription(PHOTO).fetchSemanticsNodes().isNotEmpty()
 
-    private fun show(barriers: List<AcceptedBarrier>?, onReportRemoval: ((String) -> Unit)? = null) {
+    private fun show(
+        barriers: List<AcceptedBarrier>?,
+        onReportRemoval: ((String) -> Unit)? = null,
+        ownBarrierIds: Set<String> = emptySet(),
+        onReplaceBarrier: ((String) -> Unit)? = null,
+    ) {
         usePhotoLoader(compose.activity, photoAvailable())
         val entrances = orderedEntrances(listOf(ENTRANCE))
         compose.setContent {
@@ -133,6 +172,7 @@ class BuildingCardBarriersTest {
                             name = "Gmach Główny",
                             entrances = entrances,
                             barriers = barriers,
+                            ownBarrierIds = ownBarrierIds,
                         ),
                     isOnline = true,
                     onShowOnMap = {},
@@ -141,6 +181,7 @@ class BuildingCardBarriersTest {
                     onReport = {},
                     onRetry = {},
                     onReportRemoval = onReportRemoval,
+                    onReplaceBarrier = onReplaceBarrier,
                 )
             }
         }

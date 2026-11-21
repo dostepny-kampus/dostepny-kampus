@@ -17,3 +17,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class ReportEditRoute(val submissionId: String) : NavKey
+
+/** C2 w trybie zmiany przyjętego zgłoszenia [acceptedId]; zapis tworzy nowe zgłoszenie. Wymagania: BR-18 */
+@Serializable
+data class ReportReplaceRoute(val acceptedId: String) : NavKey

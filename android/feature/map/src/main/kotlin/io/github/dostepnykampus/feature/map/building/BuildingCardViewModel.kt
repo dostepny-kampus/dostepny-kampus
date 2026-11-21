@@ -17,6 +17,7 @@ import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.room.FloorPlans
+import io.github.dostepnykampus.core.data.submission.own.OwnSubmissions
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EvacuationExit
@@ -27,9 +28,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 private const val STOP_TIMEOUT_MS = 5_000L
 
@@ -55,6 +58,7 @@ sealed interface BuildingCardUiState {
      * @property isBasic czy serwer podał budynek jako podstawowy, bez planu pięter; fałsz także wtedy, gdy telefon
      *   nie ma jeszcze listy budynków z serwera
      * @property evacuationExits wyjścia ewakuacyjne z planów PWr; pusta lista, gdy dane ich nie podają
+     * @property ownBarrierIds identyfikatory własnych zgłoszeń zalogowanego konta
      */
     data class Ready(
         val symbol: String,
@@ -64,8 +68,19 @@ sealed interface BuildingCardUiState {
         val floors: FloorFacts? = null,
         val isBasic: Boolean = false,
         val evacuationExits: List<EvacuationExit> = emptyList(),
+        val ownBarrierIds: Set<String> = emptySet(),
     ) : BuildingCardUiState
 }
+
+/** Źródła danych serwera i własnych zgłoszeń dla karty budynku V2. Wymagania: US2, US17.3, US16.3, BR-3, BR-18 */
+class BuildingCardSources
+    @Inject
+    constructor(
+        val serverEntrances: ServerEntrances,
+        val acceptedBarriers: AcceptedBarriers,
+        val plans: FloorPlans,
+        val ownSubmissions: OwnSubmissions,
+    )
 
 /**
  * Karta budynku [symbol] z katalogu w telefonie, czytanego, gdy ekran jest widoczny, i jeszcze 5 s po zniknięciu.
@@ -75,7 +90,7 @@ sealed interface BuildingCardUiState {
  * Fakty o piętrach bierze najpierw z kopii planu w telefonie, a po pobraniu planu z nowej kopii. Zamknięcie karty
  * przerywa pobieranie.
  *
- * Wymagania: US2, BR-25, NFR-12, US17.3, NFR-10, US2.2, US2.4, US2.7, NFR-56, US16.3, US2.6
+ * Wymagania: US2, BR-25, NFR-12, US17.3, NFR-10, US2.2, US2.4, US2.7, NFR-56, US16.3, US2.6, BR-3, BR-18
  */
 @HiltViewModel(assistedFactory = BuildingCardViewModel.Factory::class)
 class BuildingCardViewModel
@@ -84,21 +99,37 @@ class BuildingCardViewModel
         @Assisted val symbol: String,
         repository: BuildingCatalogRepository,
         networkStatus: NetworkStatus,
-        serverEntrances: ServerEntrances = ServerEntrances { emptyList() },
-        acceptedBarriers: AcceptedBarriers = AcceptedBarriers { emptyList() },
-        plans: FloorPlans = NoFloorPlans,
+        sources: BuildingCardSources,
     ) : ViewModel() {
+        /** Wariant dla testów z pojedynczymi źródłami bez [BuildingCardSources]. */
+        constructor(
+            symbol: String,
+            repository: BuildingCatalogRepository,
+            networkStatus: NetworkStatus,
+            serverEntrances: ServerEntrances = ServerEntrances { emptyList() },
+            acceptedBarriers: AcceptedBarriers = AcceptedBarriers { emptyList() },
+            plans: FloorPlans = NoFloorPlans,
+        ) : this(
+            symbol = symbol,
+            repository = repository,
+            networkStatus = networkStatus,
+            sources =
+                BuildingCardSources(serverEntrances, acceptedBarriers, plans, OwnSubmissions { flowOf(emptyList()) }),
+        )
+
         private val attempts = MutableStateFlow(0)
 
-        private val known = serverEntrances.knownCard(symbol)
+        private val known = sources.serverEntrances.knownCard(symbol)
 
         private val fromServer = MutableStateFlow(known?.entrances.orEmpty())
 
-        private val barriers = MutableStateFlow(acceptedBarriers.known()?.let(::ofBuilding))
+        private val barriers = MutableStateFlow(sources.acceptedBarriers.known()?.let(::ofBuilding))
 
         private val floors = MutableStateFlow<FloorFacts?>(null)
 
         private val exits = MutableStateFlow(known?.evacuationExits.orEmpty())
+
+        private val ownIds = sources.ownSubmissions.observe().map { rows -> rows.mapTo(mutableSetOf()) { it.id } }
 
         private val first =
             repository.current()?.let { catalog ->
@@ -117,6 +148,7 @@ class BuildingCardViewModel
                 .combine(barriers, ::withBarriers)
                 .combine(floors, ::withFloors)
                 .combine(exits, ::withExits)
+                .combine(ownIds, ::withOwnBarriers)
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
@@ -131,17 +163,17 @@ class BuildingCardViewModel
 
         init {
             viewModelScope.launch {
-                floors.value = storedFloorFacts(plans, symbol)
-                if (plans.download(symbol)) floors.value = storedFloorFacts(plans, symbol)
+                floors.value = storedFloorFacts(sources.plans, symbol)
+                if (sources.plans.download(symbol)) floors.value = storedFloorFacts(sources.plans, symbol)
             }
             viewModelScope.launch {
-                val card = serverEntrances.cardEntrances(symbol)
+                val card = sources.serverEntrances.cardEntrances(symbol)
                 fromServer.value = card.entrances
                 exits.value = card.evacuationExits
             }
             viewModelScope.launch {
-                val accepted = acceptedBarriers.barriers()
-                barriers.value = acceptedBarriers.syncedAt()?.let { ofBuilding(accepted) }
+                val accepted = sources.acceptedBarriers.barriers()
+                barriers.value = sources.acceptedBarriers.syncedAt()?.let { ofBuilding(accepted) }
             }
         }
 
@@ -182,6 +214,9 @@ class BuildingCardViewModel
 
         private fun withExits(card: BuildingCardUiState, found: List<EvacuationExit>): BuildingCardUiState =
             if (card is BuildingCardUiState.Ready) card.copy(evacuationExits = found) else card
+
+        private fun withOwnBarriers(card: BuildingCardUiState, ids: Set<String>): BuildingCardUiState =
+            if (card is BuildingCardUiState.Ready) card.copy(ownBarrierIds = ids) else card
 
         private suspend fun catalogFor(repository: BuildingCatalogRepository, attempt: Int): BuildingCatalog =
             if (attempt == 0) repository.catalog() else repository.refresh()

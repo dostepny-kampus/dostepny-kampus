@@ -10,8 +10,10 @@ import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsScreen
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
+import io.github.dostepnykampus.feature.capture.navigation.ReportReplaceRoute
 import io.github.dostepnykampus.feature.capture.report.ReportEditExits
 import io.github.dostepnykampus.feature.capture.report.edit.ReportEditScreen
+import io.github.dostepnykampus.feature.capture.report.edit.ReportReplaceScreen
 import io.github.dostepnykampus.feature.capture.report.removed.RemovedScreen
 
 /** C3 „Moje zgłoszenia”: „Otwórz” prowadzi do poprawki w C2, „Zmierz i zgłoś barierę” do C1. Wymagania: US8.1, US8.3 */
@@ -43,4 +45,23 @@ internal fun AppNavigator.ReportEdit(route: ReportEditRoute) {
 @Composable
 internal fun AppNavigator.Removed(route: RemovedRoute) {
     RemovedScreen(route = route, onLeave = { back() }, onFinish = { reportSaved() })
+}
+
+/**
+ * Zmiana przyjętego zgłoszenia [route] z V2; zapis otwiera C3 z nowym zgłoszeniem, „Zmień miejsce” idzie przez C1.
+ *
+ * Wymagania: BR-3, BR-18, NFR-54
+ */
+@Composable
+internal fun AppNavigator.ReportReplace(route: ReportReplaceRoute) {
+    ReportReplaceScreen(
+        route = route,
+        exits =
+            ReportEditExits(
+                onLeave = { back() },
+                onSave = { reportSaved() },
+                onChangePlace = { changeEditPlace() },
+            ),
+        draft = reportDraft,
+    )
 }
