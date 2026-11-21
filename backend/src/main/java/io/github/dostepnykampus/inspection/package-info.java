@@ -7,13 +7,13 @@
 /**
  * Moduł inspection: znaczniki pięter obejrzanych przez Zbierających.
  *
- * <p>Zadanie: zapis znaczników piętra obejrzanego wysłanych z telefonu.</p>
+ * <p>Zadanie: zapis znaczników i odczyt postępu inwentaryzacji.</p>
  *
- * <p>API: HTTP {@code /sync/push} i {@code DELETE /inspection-markers/{id}}.</p>
+ * <p>API: {@code /sync/push}, {@code /inspection-markers/{id}}, {@code /progress}.</p>
  *
  * <p>Zależności: {@code building :: api}, {@code shared}.</p>
  *
- * <p>Nie robi: nie przyjmuje zgłoszeń barier i nie liczy postępu inwentaryzacji.</p>
+ * <p>Nie robi: nie przyjmuje zgłoszeń barier.</p>
  *
  * <p>Kiedy dodawać tutaj: kod znaczników piętra; zgłoszenia barier zostają w module barrier.</p>
  *
