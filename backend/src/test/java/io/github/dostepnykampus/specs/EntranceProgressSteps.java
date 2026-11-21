@@ -69,7 +69,7 @@ public final class EntranceProgressSteps {
             INSERT INTO submissions (id, author, status, content)
             VALUES (:id, 'autor-zgloszenia', 'SENT', CAST(:content AS jsonb))
             """
-        ).param("id", EntranceProgressSteps.SUBMISSION).param("content", this.content()).update();
+        ).param("id", EntranceProgressSteps.SUBMISSION).param("content", EntranceProgressSteps.content()).update();
         this.photos.put(
             EntranceProgressSteps.SUBMISSION, EntranceProgressSteps.PHOTO,
             "zdjęcie wejścia".getBytes(StandardCharsets.UTF_8)
@@ -97,7 +97,7 @@ public final class EntranceProgressSteps {
         this.photos.delete(EntranceProgressSteps.SUBMISSION, EntranceProgressSteps.PHOTO);
     }
 
-    private String content() {
+    private static String content() {
         return String.format(
             """
             {"kind":"ENTRANCE_MARKING","entranceId":"5","entranceMarking":"INACCESSIBLE",
