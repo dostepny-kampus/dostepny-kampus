@@ -83,7 +83,10 @@ public fun BottomBar(
         HorizontalDivider(thickness = Obramowania.ramka, color = colors.outlineVariant)
         NavigationBar(
             containerColor = colors.surfaceContainerLow,
-            windowInsets = NavigationBarDefaults.windowInsets.add(WindowInsets(left = Odstepy.s, right = Odstepy.s)),
+            windowInsets =
+                NavigationBarDefaults.windowInsets.add(
+                    WindowInsets(left = Odstepy.s, top = Odstepy.s, right = Odstepy.s),
+                ),
         ) {
             items.entries.forEachIndexed { index, item ->
                 val isSelected = index == selectedIndex
