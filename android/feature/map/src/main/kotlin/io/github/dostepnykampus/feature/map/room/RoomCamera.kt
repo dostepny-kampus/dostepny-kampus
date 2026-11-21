@@ -103,7 +103,7 @@ internal fun rememberRoomView(scene: RoomScene, focus: MapFocus?, panel: MapPane
     val keptDp = with(density) { kept.toDp() }
     val mapDp = with(density) { height.toDp() }
     val area = room?.run { card.found.room.geometry }
-    val tap = seen?.takeIf { isTapped && kept > 0 }?.tapped(area = area, card = keptDp, bar = memory.top, map = mapDp)
+    val tap = seen?.takeIf { isTapped }?.tapped(area = area, card = keptDp, bar = memory.top, map = mapDp)
     val searched = room?.cameraForRoom(isRoomOnMap = isOnMap, cover = keptDp, seen = seen, isTapped = isTapped)
     val camera = tap?.camera ?: searched
     val mapCover = with(density) { cover.toDp() }.takeIf { isOnMap } ?: 0.dp
