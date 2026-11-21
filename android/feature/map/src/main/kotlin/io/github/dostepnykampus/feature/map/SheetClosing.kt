@@ -18,24 +18,32 @@ import io.github.dostepnykampus.feature.map.camera.rememberClosedView
 
 /**
  * Widok kamery widziany pod arkuszem i widok z chwili zamknięcia arkusza, gdy mapę zasłania arkusz V2
- * ([isCovered], przedtem [wasCovered] pod paskiem [top]) albo inny arkusz wysoki na [sheet] pikseli.
+ * ([isCovered]) albo inny arkusz wysoki na [sheet] pikseli, a górne dopełnienie mapy rośnie przy zamknięciu o [bar]
+ * ([barGrowth]).
  *
  * Wymagania: NFR-56
  */
 @Composable
 internal fun ShownCamera.rememberSeen(
     isCovered: Boolean,
-    wasCovered: Boolean,
-    top: Dp,
+    bar: Dp,
     sheet: Int,
     view: CameraView,
 ): Pair<MapCamera?, MapCamera?> {
     val isHidden = isCovered || sheet > 0
     val isHiddenBefore = rememberPrevious(isHidden)
-    val bar = if (wasCovered) top else 0.dp
     val seen = rememberView(isCovered = isHidden, wasCovered = isHiddenBefore, bar = bar, view = view)
     return seen to rememberClosedView(isCovered = isHidden, wasCovered = isHiddenBefore, seen = seen)
 }
+
+/**
+ * Przyrost górnego dopełnienia mapy przy zamknięciu arkusza: nad kartą V2 ([wasCovered]) dopełnienia u góry nie było,
+ * więc cały pasek [top]; pod innym arkuszem różnica paska [top] i [topBefore], np. pole wyszukiwania schowane przy
+ * karcie sali wraca po jej zamknięciu.
+ *
+ * Wymagania: US18.1, NFR-56
+ */
+internal fun barGrowth(wasCovered: Boolean, top: Dp, topBefore: Dp): Dp = if (wasCovered) top else top - topBefore
 
 /**
  * Zasłonięty dół mapy zapisany z widokiem: nad kartą V2 jej wysokość [card], pod kartą V2 bez ruchu kamery 0,
