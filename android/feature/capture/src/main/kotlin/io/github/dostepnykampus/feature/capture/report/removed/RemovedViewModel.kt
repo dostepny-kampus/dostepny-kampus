@@ -9,9 +9,12 @@ import android.database.sqlite.SQLiteException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submission.sync.SaveRefusedException
+import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.capture.report.ReportSaver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,6 +33,7 @@ import javax.inject.Inject
  * Wymagania: US8.4, BR-19, BR-7, NFR-7
  *
  * @param barriers zgłoszenia przyjęte, z których bierze się poprzednie
+ * @param catalog katalog budynków, z którego są nazwy budynku i wejścia; bez niego miejsce ma sam symbol
  * @param saver zapis w kolejce telefonu
  */
 @HiltViewModel
@@ -37,6 +41,7 @@ class RemovedViewModel
     @Inject
     constructor(
         private val barriers: AcceptedBarriers,
+        private val catalog: BuildingCatalogRepository,
         private val saver: ReportSaver,
     ) : ViewModel() {
         private val state = MutableStateFlow(RemovedUiState())
@@ -52,7 +57,11 @@ class RemovedViewModel
             viewModelScope.launch {
                 val previous = barriers.barriers().firstOrNull { it.id == id }
                 val stage = if (previous == null) RemovedStage.MISSING else RemovedStage.EDITING
-                state.update { it.copy(previous = previous, stage = stage) }
+                val found = previous?.let { place(it) }
+                val (building, entrance) = found ?: (null to null)
+                state.update {
+                    it.copy(previous = previous, buildingName = building, entranceName = entrance, stage = stage)
+                }
             }
         }
 
@@ -89,4 +98,22 @@ class RemovedViewModel
                 state.update { it.copy(stage = stage) }
             }
         }
+
+        private suspend fun place(barrier: AcceptedBarrier): Pair<String?, String?>? {
+            val found = catalogOrNull() ?: return null
+            val building = found.buildings.firstOrNull { it.symbol == barrier.buildingSymbol }
+            val entrance = found.entrances.firstOrNull { it.id == barrier.entranceId }
+            return building?.name to entrance?.name
+        }
+
+        private suspend fun catalogOrNull(): BuildingCatalog? =
+            try {
+                catalog.catalog()
+            } catch (error: IOException) {
+                Timber.w("Katalog budynków dla ekranu usunięcia bariery niedostępny: %s", error.javaClass.simpleName)
+                null
+            } catch (error: SQLiteException) {
+                Timber.w("Katalog budynków dla ekranu usunięcia bariery niedostępny: %s", error.javaClass.simpleName)
+                null
+            }
     }

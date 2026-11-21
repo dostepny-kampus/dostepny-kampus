@@ -44,6 +44,15 @@ class RemovedContentTest {
         compose.setContent { DostepnyKampusTheme { RemovedContent(state = state, actions = actions) } }
     }
 
+    /** Wiersz: nazwa budynku i wejścia z katalogu stoi w miejscu zgłoszenia przyjętego. Wymagania: US8.4, US1.5 */
+    @Test
+    fun showsBuildingAndEntranceNames() {
+        val state = RemovedUiState(previous = LIFT, buildingName = "Gmach Główny", entranceName = "Wejście Cesarskie")
+        show(state.copy(stage = RemovedStage.EDITING))
+
+        compose.onNodeWithText("A-1 Gmach Główny · Wejście Cesarskie, piętro 1").assertIsDisplayed()
+    }
+
     /** Wiersz: zgłoszenie przyjęte bez edycji, nowe zdjęcie i napis o mapie. Wymagania: US8.4, BR-19 */
     @Test
     fun showsAcceptedAndNewPhoto() {
