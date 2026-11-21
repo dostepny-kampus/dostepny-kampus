@@ -43,6 +43,7 @@ final class ProgressHttpIT {
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
         final JsonNode progress = context.getBean(ObjectMapper.class).readTree(body);
+        Assertions.assertTrue(progress.isArray(), "Postęp zawiera tablicę budynków");
         ProgressHttpIT.detailed(ProgressHttpIT.find(progress, "T-D1"));
         ProgressHttpIT.basic(ProgressHttpIT.find(progress, "T-B1"));
     }
