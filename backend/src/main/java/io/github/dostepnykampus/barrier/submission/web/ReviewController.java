@@ -109,10 +109,12 @@ public final class ReviewController {
         try {
             return ReviewController.saved(this.review.decide(decision));
         } catch (final StaleEntranceMarking stale) {
-            throw new ConflictingState(
+            final ConflictingState conflict = new ConflictingState(
                 Objects.requireNonNull(stale.getMessage()), "serverSubmission",
                 new SubmissionResponse(current)
             );
+            conflict.initCause(stale);
+            throw conflict;
         }
     }
 

@@ -61,7 +61,7 @@ public class SubmissionReview {
      * @throws StaleEntranceMarking Gdy przyjęcia nie da się zastosować do bieżącego wejścia
      */
     @Transactional
-    public EditResult decide(final ReviewDecision decision) {
+    public EditResult decide(final ReviewDecision decision) throws StaleEntranceMarking {
         EditResult result = this.decisions.decide(decision);
         if (result instanceof EditResult.Saved saved && saved.submission().accepted()
             && saved.submission().content().kind() == SubmissionKind.ENTRANCE_MARKING) {

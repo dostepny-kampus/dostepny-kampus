@@ -277,13 +277,14 @@ final class ReviewHttpIT {
         throws Exception {
         final UUID id = ReviewHttpIT.entranceChange(context);
         final int claim = ReviewHttpIT.claim(context, id);
-        final int review = ReviewHttpIT.review(context, id, "{\"decision\":\"ACCEPT\",\"version\":1}");
-        final JdbcClient jdbc = context.getBean(JdbcClient.class);
+        final int review = ReviewHttpIT.review(
+            context, id, "{\"decision\":\"ACCEPT\",\"version\":1}"
+        );
         MatcherAssert.assertThat(
             "Przyjęcie zmiany stosuje oznaczenie wejścia i archiwizuje zgłoszenie",
             List.of(
                 claim, review, ReviewHttpIT.status(context, id),
-                jdbc.sql(
+                context.getBean(JdbcClient.class).sql(
                     """
                     SELECT marking || '/' || marking_source FROM entrances
                     WHERE building_symbol = 'C-13' AND id = 'spec-review-entrance'

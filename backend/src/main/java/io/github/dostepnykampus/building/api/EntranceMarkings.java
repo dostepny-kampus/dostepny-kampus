@@ -46,6 +46,7 @@ public interface EntranceMarkings {
      * @since 0.1.0
      */
     enum Marking {
+
         /** Wejście dostępne. */
         ACCESSIBLE,
         /** Wejście niedostępne. */
