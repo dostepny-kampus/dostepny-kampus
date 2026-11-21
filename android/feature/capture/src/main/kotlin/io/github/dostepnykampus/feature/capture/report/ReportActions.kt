@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -88,6 +89,7 @@ fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifi
                 modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
                 verticalArrangement = Arrangement.spacedBy(Odstepy.m),
             ) {
+                ReplaceNotice(state.form.replacesSubmissionId)
                 ReportBanner(state = state, onRetry = actions.onSave)
                 PlaceCard(place = state.form.place, onChangePlace = actions.onChangePlace)
                 state.form.place.buildingSymbol?.let { building ->
@@ -116,4 +118,14 @@ fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifi
             }
         }
     }
+}
+
+@Composable
+private fun ReplaceNotice(replacesSubmissionId: String?) {
+    if (replacesSubmissionId.isNullOrBlank()) return
+    Text(
+        text = stringResource(R.string.formularz_zmiana_przyjetego),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }

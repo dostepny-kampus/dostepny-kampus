@@ -28,13 +28,19 @@ import io.github.dostepnykampus.feature.map.barrier.SeverityBadge
  * grupa jest w stanie pustym; bez danych o barierach grupy nie ma.
  * TODO(#2042): przycisk zgłoszenia bariery w stanie pustym.
  *
- * Wymagania: US2.2, US2.3, US2.4, US2.5, US2.7, BR-17, NFR-21, US8.4
+ * Wymagania: US2.2, US2.3, US2.4, US2.5, US2.7, BR-17, NFR-21, US8.4, BR-3, BR-18
  *
  * @param card karta budynku; `null` w [BuildingCardUiState.Ready.barriers] oznacza brak grupy
  * @param onReportRemoval „Zgłoś, że bariery nie ma” dla identyfikatora zgłoszenia; `null` ukrywa przycisk
+ * @param onReplaceBarrier „Popraw zgłoszenie” przy własnym zgłoszeniu przyjętym i przy przyjętym zgłoszeniu szybkim;
+ *   `null` ukrywa przycisk
  */
 @Composable
-internal fun BarriersGroup(card: BuildingCardUiState.Ready, onReportRemoval: ((String) -> Unit)?) {
+internal fun BarriersGroup(
+    card: BuildingCardUiState.Ready,
+    onReportRemoval: ((String) -> Unit)?,
+    onReplaceBarrier: ((String) -> Unit)? = null,
+) {
     val barriers = card.barriers ?: return
     if (barriers.isEmpty()) {
         EmptyBarriers()
@@ -47,6 +53,14 @@ internal fun BarriersGroup(card: BuildingCardUiState.Ready, onReportRemoval: ((S
                 Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
                     SeverityBadge(barrier.severity)
                     BarrierFacts(ChosenBarrier(barrier, building = null, entrance = entranceNames[barrier.entranceId]))
+                    if (onReplaceBarrier != null && (barrier.isQuick || barrier.id in card.ownBarrierIds)) {
+                        PinnedButton(
+                            text = stringResource(R.string.karta_popraw_zgloszenie),
+                            onClick = { onReplaceBarrier(barrier.id) },
+                            modifier = Modifier.fillMaxWidth(),
+                            kind = PinnedButtonKind.Tonal,
+                        )
+                    }
                     onReportRemoval?.let { report ->
                         PinnedButton(
                             text = stringResource(R.string.karta_bariera_usunieta),

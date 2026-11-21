@@ -50,7 +50,7 @@ fun ReportEditScreen(
     viewModel: ReportFormViewModel = hiltViewModel(),
     photoTranscoder: PhotoTranscoder = hiltViewModel(),
 ) {
-    SideEffect { loader.open(route.submissionId) }
+    SideEffect { loader.open(route.submissionId, route.isAccepted) }
     val load by loader.load.collectAsStateWithLifecycle()
     val start = (load as? ReportEditLoad.Ready)?.start
     if (start != null) SideEffect { viewModel.open(start.form, draft, start.photos) }

@@ -61,6 +61,7 @@ internal const val SCROLL_LINE_TAG = "linia-przewiniecia"
  * @param onShowEntrance „Pokaż wejście na mapie” pod wierszem o wejściach i dotknięcie wiersza na liście wejść,
  *   z identyfikatorem wejścia
  * @param onReportRemoval „Zgłoś, że bariery nie ma” dla identyfikatora zgłoszenia; `null` ukrywa przycisk
+ * @param onReplaceBarrier „Popraw zgłoszenie” dla identyfikatora zgłoszenia przyjętego; `null` ukrywa przycisk
  * @param viewModel stan karty; w aplikacji z grafu Hilt, w testach z podróbką katalogu
  */
 @Composable
@@ -74,6 +75,7 @@ fun BuildingCardScreen(
     onReport: () -> Unit = {},
     onShowEntrance: (String) -> Unit = {},
     onReportRemoval: ((String) -> Unit)? = null,
+    onReplaceBarrier: ((String) -> Unit)? = null,
     viewModel: BuildingCardViewModel =
         hiltViewModel<BuildingCardViewModel, BuildingCardViewModel.Factory>(
             creationCallback = { factory -> factory.create(symbol) },
@@ -94,6 +96,7 @@ fun BuildingCardScreen(
         modifier = modifier,
         onShowEntrance = onShowEntrance,
         onReportRemoval = onReportRemoval,
+        onReplaceBarrier = onReplaceBarrier,
     )
 }
 
@@ -117,6 +120,7 @@ fun BuildingCardContent(
     modifier: Modifier = Modifier,
     onShowEntrance: (String) -> Unit = {},
     onReportRemoval: ((String) -> Unit)? = null,
+    onReplaceBarrier: ((String) -> Unit)? = null,
     onShowPlan: (String) -> Unit = {},
     onMarkFloors: (() -> Unit)? = null,
     onExpand: () -> Unit = {},
@@ -151,6 +155,7 @@ fun BuildingCardContent(
                     onReport = onReport,
                     onShowEntrance = onShowEntrance,
                     onReportRemoval = onReportRemoval,
+                    onReplaceBarrier = onReplaceBarrier,
                     onRetry = onRetry,
                     onShowPlan = onShowPlan,
                     onMarkFloors = onMarkFloors,
@@ -196,6 +201,7 @@ private fun FactsOrMissing(
     onReport: () -> Unit,
     onShowEntrance: (String) -> Unit,
     onReportRemoval: ((String) -> Unit)?,
+    onReplaceBarrier: ((String) -> Unit)?,
     onRetry: () -> Unit,
     onShowPlan: (String) -> Unit,
     onMarkFloors: (() -> Unit)?,
@@ -213,6 +219,7 @@ private fun FactsOrMissing(
             onReport = onReport,
             onShowEntrance = onShowEntrance,
             onReportRemoval = onReportRemoval,
+            onReplaceBarrier = onReplaceBarrier,
             onShowPlan = onShowPlan,
             onMarkFloors = onMarkFloors,
         )
@@ -246,6 +253,7 @@ private fun BuildingFacts(
     onReport: () -> Unit,
     onShowEntrance: (String) -> Unit,
     onReportRemoval: ((String) -> Unit)?,
+    onReplaceBarrier: ((String) -> Unit)?,
     onShowPlan: (String) -> Unit,
     onMarkFloors: (() -> Unit)?,
 ) {
@@ -253,7 +261,7 @@ private fun BuildingFacts(
     LinedEntrances(card = card, withAssessment = common == null, onShowEntrance = onShowEntrance, onReport = onReport)
     common?.let { AssessmentLine(it) }
     EvacuationExits(card)
-    BarriersGroup(card, onReportRemoval)
+    BarriersGroup(card, onReportRemoval, onReplaceBarrier)
     card.floors?.let { LiftToiletGroup(it) }
     FloorsGroup(facts = card.floors, isBasic = card.isBasic, onShowPlan = onShowPlan)
     onMarkFloors?.let { onMark ->

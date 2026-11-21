@@ -92,6 +92,7 @@
     <string name="karta_wejscia">Wejścia</string>
     <string name="karta_wejscia_brak">Nie mamy jeszcze danych o wejściach do tego budynku.</string>
     <string name="karta_bariery">Bariery w budynku</string>
+    <string name="karta_popraw_zgloszenie">Popraw zgłoszenie</string>
     <string name="karta_bariery_brak">Brak zgłoszonych barier</string>
     <string name="karta_bariery_brak_opis">Bariera pojawi się tutaj, gdy ktoś ją zgłosi i zostanie sprawdzona.</string>
     <string name="karta_zalecane">Zalecane</string>

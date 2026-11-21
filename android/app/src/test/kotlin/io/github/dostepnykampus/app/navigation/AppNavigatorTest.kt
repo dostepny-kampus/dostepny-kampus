@@ -571,6 +571,32 @@ class AppNavigatorTest {
         assertEquals(stackOf(BuildingRoute("A-1"), MySubmissionsRoute), stack, "C7 znika z historii, C3 po V2")
     }
 
+    /** Wiersz: V2 „Popraw zgłoszenie” → C2 zmiany przyjętego, „Zapisz” → C3 bez C2. Wymagania: BR-18, NFR-54 */
+    @Test
+    fun replaceSavedOpensC3() {
+        stack += BuildingRoute("A-1")
+        navigator(collector).run {
+            openReplace("tb13")
+            assertEquals(ReportEditRoute("tb13", isAccepted = true), current, "V2 otwiera C2 zmiany przyjętego")
+            reportSaved()
+        }
+        assertEquals(stackOf(BuildingRoute("A-1"), MySubmissionsRoute), stack, "C2 znika z historii, C3 po V2")
+    }
+
+    /** Wiersz: zmiana przyjętego C2 „Zmień miejsce” → C1 → C2 → „Zapisz” → C3. Wymagania: BR-18, US7.4 */
+    @Test
+    fun changesPlaceOnReplace() {
+        val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = "A-1")
+        stack += listOf(BuildingRoute("A-1"), ReportEditRoute("tb13", isAccepted = true))
+        navigator(collector).run {
+            changeEditPlace()
+            assertEquals(MeasureRoute, current)
+            openReportForm(form)
+            reportSaved()
+        }
+        assertEquals(stackOf(BuildingRoute("A-1"), MySubmissionsRoute), stack)
+    }
+
     /** Wiersz: „Otwórz” i „Zmień miejsce” poza C3 i poprawką nic nie robią. Wymagania: US8.3 */
     @Test
     fun editsOnlyFromOwnList() {

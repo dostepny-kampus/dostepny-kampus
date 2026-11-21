@@ -38,6 +38,11 @@ fun AppNavigator.openRemoved(acceptedId: String) {
     if (current is BuildingRoute) leaving { add(RemovedRoute(acceptedId)) }
 }
 
+/** V2 → C2: „Popraw zgłoszenie” przy zgłoszeniu przyjętym; poza V2 nic nie robi. Wymagania: BR-3, BR-18 */
+fun AppNavigator.openReplace(acceptedId: String) {
+    if (current is BuildingRoute) leaving { add(ReportEditRoute(acceptedId, isAccepted = true)) }
+}
+
 /** Poprawka C2 → C1: „Zmień miejsce”; pola czekają w szkicu, po „Dalej” wraca C2 z nowym miejscem. Wymagania: US7.4 */
 fun AppNavigator.changeEditPlace() {
     if (current is ReportEditRoute) {

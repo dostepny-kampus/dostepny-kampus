@@ -216,6 +216,7 @@ internal fun AppNavigator.BuildingCard(
         onReport = { report() },
         onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = symbol, isFullSheet = isDirect)) },
         onReportRemoval = this::openRemoved.takeIf { isCollector },
+        onReplaceBarrier = this::openReplace.takeIf { isCollector },
         onRetry = onRetry,
         onShowPlan = { showOnMap(MapFocus.Building(symbol, command = System.nanoTime(), floor = it)) },
         onMarkFloors = { openFloorMarking(symbol) }.takeIf { isCollector },

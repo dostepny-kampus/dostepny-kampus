@@ -50,6 +50,8 @@ private data class CachedBarrier(
     val entranceId: String? = null,
     val floor: CachedFloor? = null,
     val photoIds: List<String> = emptyList(),
+    val description: String? = null,
+    val isQuick: Boolean = false,
 )
 
 @Serializable
@@ -67,6 +69,8 @@ private fun cached(barrier: AcceptedBarrier): CachedBarrier =
         entranceId = barrier.entranceId,
         floor = barrier.floor?.run { CachedFloor(floorId = floorId, number = number, isMezzanine = isMezzanine) },
         photoIds = barrier.photoIds,
+        description = barrier.description,
+        isQuick = barrier.isQuick,
     )
 
 private fun CachedBarrier.toBarrier(): AcceptedBarrier =
@@ -80,4 +84,6 @@ private fun CachedBarrier.toBarrier(): AcceptedBarrier =
         entranceId = entranceId,
         floor = floor?.run { SubmissionFloor(floorId = floorId, number = number, isMezzanine = isMezzanine) },
         photoIds = photoIds,
+        description = description,
+        isQuick = isQuick,
     )

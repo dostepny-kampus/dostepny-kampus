@@ -8,6 +8,8 @@ package io.github.dostepnykampus.feature.capture.report.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.submission.pending.PendingEdit
 import io.github.dostepnykampus.core.data.submission.pending.PendingEdits
 import io.github.dostepnykampus.core.model.submission.BarrierType
@@ -39,24 +41,35 @@ sealed interface ReportEditLoad {
     data object Missing : ReportEditLoad
 }
 
-/** Model widoku wczytujący zgłoszenie z kolejki raz na ekran. Wymagania: US8.3 */
+/** Model widoku wczytujący zgłoszenie z kolejki albo zgłoszenie przyjęte raz na ekran. Wymagania: US8.3, BR-18 */
 @HiltViewModel
 class ReportEditViewModel
     @Inject
-    constructor(private val edits: PendingEdits) : ViewModel() {
+    constructor(
+        private val edits: PendingEdits,
+        private val barriers: AcceptedBarriers,
+    ) : ViewModel() {
         private val state = MutableStateFlow<ReportEditLoad>(ReportEditLoad.Loading)
         private var requested: String? = null
 
         /** Wynik wczytania. */
         val load: StateFlow<ReportEditLoad> = state.asStateFlow()
 
+        /** Wariant dla testów poprawki z kolejki bez źródła zgłoszeń przyjętych. */
+        constructor(edits: PendingEdits) : this(edits = edits, barriers = AcceptedBarriers { emptyList() })
+
         /** Wczytuje zgłoszenie [id]; kolejne wywołania nic nie zmieniają, więc obrót ekranu nie kasuje pól. */
-        fun open(id: String) {
+        fun open(id: String, isAccepted: Boolean = false) {
             if (requested != null) return
             requested = id
             viewModelScope.launch {
-                val edit = edits.load(id)
-                state.value = if (edit == null) ReportEditLoad.Missing else ReportEditLoad.Ready(edit.toReportUiState())
+                val loaded =
+                    if (isAccepted) {
+                        barriers.barriers().firstOrNull { it.id == id }?.toReplaceUiState()
+                    } else {
+                        edits.load(id)?.toReportUiState()
+                    }
+                state.value = if (loaded == null) ReportEditLoad.Missing else ReportEditLoad.Ready(loaded)
             }
         }
     }
@@ -84,6 +97,31 @@ internal fun PendingEdit.toReportUiState(): ReportUiState {
     return ReportUiState(form = form, photos = photos)
 }
 
-private fun SubmissionFloor.toReportFloor(): ReportFloor? =
+internal fun SubmissionFloor.toReportFloor(): ReportFloor? =
     floorId?.let { ReportFloor.Planned(it) }
         ?: number?.let { ReportFloor.Numbered(number = it, isMezzanine = isMezzanine == true) }
+
+/**
+ * Stan formularza na start zmiany zgłoszenia przyjętego; zapis tworzy nowe zgłoszenie z powiązaniem.
+ *
+ * Wymagania: BR-18
+ */
+internal fun AcceptedBarrier.toReplaceUiState(): ReportUiState {
+    val place =
+        ReportPlace(
+            location = location,
+            accuracyMeters = 0.0,
+            buildingSymbol = buildingSymbol,
+            isManualCorrection = false,
+        )
+    val form =
+        ReportForm(
+            place = place,
+            floor = floor?.toReportFloor()?.takeIf { place.buildingSymbol != null },
+            barrierType = type,
+            severity = severity,
+            description = description.orEmpty(),
+            replacesSubmissionId = id,
+        )
+    return ReportUiState(form = form)
+}
