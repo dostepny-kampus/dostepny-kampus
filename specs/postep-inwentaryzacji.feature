@@ -6,20 +6,19 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
   @BR-20
   Reguła: Piętro obejrzane oznacza Zbierający, a cofa ten sam Zbierający albo Koordynator
 
-    # @do-zrobienia #703: wymaga operacji GET /progress.
-    @US15.1 @serwer @do-zrobienia
+    @US15.1 @serwer @postep-http
     Szablon scenariusza: Oznaczenie piętra albo budynku jako obejrzanego
       Zakładając, że Zbierający jest zalogowany z rolą Zbierającego
-      Oraz telefon ma sieć
-      Oraz w budynku <budynek> nie ma jeszcze żadnego znacznika
-      Jeżeli w budynku <budynek> oznaczy <co>
-      Wtedy postęp budynku <budynek> liczony na serwerze to <wynik>
+      Oraz budynek "<budynek>" ma <piętra> pięter z danych testowych i nie ma znaczników
+      Jeżeli Zbierający oznaczy budynek "<budynek>" na poziomie <piętro>
+      Oraz Koordynator otworzy postęp inwentaryzacji
+      Wtedy postęp "<budynek>" po oznaczeniu to <obejrzane> z <piętra>
 
       Przykłady:
-        | budynek | co                                 | wynik                    |
-        | A-1     | jedno z 5 pięter jako obejrzane    | 1 z 5 pięter             |
-        | B-1     | jedno z 7 pięter jako obejrzane    | 1 z 7 pięter             |
-        | B-8     | cały budynek jako „obejrzany”      | znacznik „obejrzany”     |
+        | budynek | piętra | piętro | obejrzane |
+        | A-1     | 5      | 1      | 1         |
+        | B-1     | 7      | 1      | 1         |
+        | B-8     | 0      | 0      | 1         |
 
     @US15.2 @aplikacja
     Scenariusz: Zbierający cofa własny znacznik po potwierdzeniu
@@ -89,27 +88,28 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
     Założenia:
       Zakładając, że Koordynator jest zalogowany z rolą Koordynatora
 
-    # @do-zrobienia #703: wymaga operacji GET /progress.
-    @US11.1 @serwer @do-zrobienia
+    @US11.1 @serwer @postep-http
     Scenariusz: Postęp budynku szczegółowego i podstawowego z liczbami zgłoszeń
-      Zakładając, że w budynku A-1 obejrzano 3 z 5 pięter, a budynek B-8 ma znacznik „obejrzany”
-      Oraz w budynku A-1 są 2 zgłoszenia „wysłane”, 1 „w weryfikacji” i 4 „przyjęte”
+      Zakładając, że w budynku A-1 obejrzano 3 z 5 pięter
+      Oraz budynek B-8 ma znacznik całego budynku
+      Oraz w budynku A-1 są 2 wysłane, 1 w weryfikacji i 4 przyjęte zgłoszenia
       Jeżeli Koordynator otworzy postęp inwentaryzacji
-      Wtedy przy budynku A-1 widzi 60 procent pięter obejrzanych, 3 zgłoszenia czekające i 4 przyjęte
-      Oraz przy budynku B-8 widzi znacznik „obejrzany”
+      Wtedy postęp "A-1" to 3 z 5 pięter, czyli 60 procent
+      Oraz postęp A-1 pokazuje 3 zgłoszeń czekających i 4 przyjętych
+      Oraz budynek "B-8" jest obejrzany w całości
 
-    # @do-zrobienia #703: wymaga operacji GET /progress.
-    @US11.2 @serwer @do-zrobienia
+    @US11.2 @serwer @postep-http
     Szablon scenariusza: Postęp pokazuje nową wartość po dotarciu znacznika na serwer
       Zakładając, że w budynku A-1 obejrzano <przed> z 5 pięter
-      Jeżeli na serwer dotrze <zmiana>
-      Wtedy postęp budynku A-1 pokazuje <po> z 5 pięter, czyli <procent> procent
+      Jeżeli <zmiana>
+      Oraz Koordynator otworzy postęp inwentaryzacji
+      Wtedy postęp "A-1" to <po> z 5 pięter, czyli <procent> procent
 
       Przykłady:
-        | przed | zmiana                                   | po | procent |
-        | 3     | znacznik kolejnego piętra obejrzanego    | 4  | 80      |
-        | 4     | cofnięcie znacznika jednego piętra       | 3  | 60      |
-        | 4     | drugi znacznik już obejrzanego piętra    | 4  | 80      |
+        | przed | zmiana                                                      | po | procent |
+        | 3     | Zbierający oznaczy budynek "A-1" na poziomie 4               | 4  | 80      |
+        | 4     | do serwera dotrze cofnięcie znacznika z piętra 4 budynku A-1  | 3  | 60      |
+        | 4     | Zbierający oznaczy budynek "A-1" na poziomie 1               | 4  | 80      |
 
     @US11.2 @aplikacja
     Scenariusz: Postęp podaje datę i godzinę odczytu i daje się odświeżyć

@@ -43,7 +43,7 @@ public final class QuickPlaceSteps {
      * Token testowy dla roli nazwanej w scenariuszu.
      */
     private static final Map<String, String> TOKENS = Map.of(
-        "Odwiedzającego", "VISITOR", "Zbierającego", "COLLECTOR"
+        "Odwiedzającego", "VISITOR", "Zbierającego", "COLLECTOR", "Koordynatora", "COORDINATOR"
     );
 
     /**
