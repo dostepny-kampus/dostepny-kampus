@@ -84,11 +84,11 @@ internal fun rememberClosedView(isCovered: Boolean, wasCovered: Boolean, seen: M
  *
  * Wymagania: US2.8, US18.1, US18.2, NFR-56
  */
-internal fun MapCamera.uncoveredMove(closed: MapCamera?, from: MapCamera?, free: FreeMap): CameraTransition =
-    when {
-        closed?.isSameView(this) == true ->
-            CameraTransition(camera = this, motion = CameraMotion.NONE, durationMillis = 0L)
-        from != null && distanceDp(from = from, to = this) <= free.widthDp ->
-            CameraTransition(camera = this, motion = CameraMotion.EASE, durationMillis = CONTROL_MILLIS)
+internal fun MapCamera.uncoveredMove(closed: MapCamera?, from: MapCamera?, free: FreeMap): CameraTransition {
+    val isNear = from != null && distanceDp(from = from, to = this) <= free.widthDp
+    return when {
+        closed?.isSameView(this) == true -> CameraTransition(this, CameraMotion.NONE, 0L)
+        isNear -> CameraTransition(this, CameraMotion.EASE, CONTROL_MILLIS)
         else -> byControl()
     }
+}

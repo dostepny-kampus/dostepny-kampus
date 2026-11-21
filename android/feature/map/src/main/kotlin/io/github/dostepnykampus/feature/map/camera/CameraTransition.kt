@@ -24,8 +24,10 @@ private const val FLIGHT_MILLIS_PER_PATH = 250.0
 private const val WORLD_DP_AT_ZOOM_0 = 512.0
 private const val FULL_TURN_DEGREES = 360.0
 private const val SAME_PLACE_DP = 1e-6
+
 /** Czas ruchu po przycisku mapy i ruchu bez arkusza w zasięgu ekranu w ms. */
 internal const val CONTROL_MILLIS = 300L
+
 private const val APPROACH_MAX_ZOOM = 19.0
 
 /**
