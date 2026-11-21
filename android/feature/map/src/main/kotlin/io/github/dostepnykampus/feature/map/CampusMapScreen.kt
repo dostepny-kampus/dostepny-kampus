@@ -404,10 +404,7 @@ private fun CampusMap(
                 val open =
                     OpenSign(sheet = sheet, barriers = barriers, catalog = ui.catalog, plan = plan.shown, room = shown)
                 MapSheets(open = open, state = state, onBuilding = onBuildingClick, entranceActions = entrance) {
-                        height,
-                        card,
-                    ->
-                    signs.measureRoom(height = height, card = card)
+                    signs.measureRoom(height = it, card = this)
                 }
             }
         }
