@@ -85,11 +85,11 @@ class RoomCardViewModelTest {
         card.show(FOUND)
 
         card.stepByStep(isOn = true)
-        val started = card.shown.value?.isStepByStep
+        val isStarted = card.shown.value?.isStepByStep
         card.next()
         card.stepByStep(isOn = false)
 
-        assertEquals(true, started, "„Pokaż po kolei” nie włączył trybu")
+        assertEquals(true, isStarted, "„Pokaż po kolei” nie włączył trybu")
         assertEquals(RoomCard(found = FOUND, way = VIA_LIFT, step = 1), card.shown.value, "Lista bez kroku 2")
     }
 

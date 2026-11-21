@@ -84,7 +84,7 @@ class RoomCardSheetTest {
 
     @Test
     fun linksDetailsWithFullTarget() {
-        show(VIA_LIFT, step = 0)
+        show(VIA_LIFT) { chosen(0) }
 
         compose.onNodeWithText("Szczegóły wejścia").assertHeightIsAtLeast(CeleDotyku.minimum)
     }
@@ -92,7 +92,7 @@ class RoomCardSheetTest {
     /** Zrzut do porównania z makietą hi-fi „m-v1-mapa-sala” z wybranym krokiem 1, motyw jasny. */
     @Test
     fun matchesSelectedStepMockup() {
-        show(VIA_LIFT, step = 0)
+        show(VIA_LIFT) { chosen(0) }
         compose.onRoot().captureRoboImage()
     }
 
@@ -100,7 +100,7 @@ class RoomCardSheetTest {
     @Test
     @Config(qualifiers = "+night")
     fun matchesDarkSelectedStepMockup() {
-        show(VIA_LIFT, step = 0)
+        show(VIA_LIFT) { chosen(0) }
         compose.onRoot().captureRoboImage()
     }
 
@@ -115,7 +115,7 @@ class RoomCardSheetTest {
     /** Zrzut trybu po kolei na kroku 1 do porównania z makietą hi-fi „m-v1-mapa-sala-kroki”, motyw jasny. */
     @Test
     fun matchesStepByStepMockup() {
-        show(VIA_LIFT, step = 0, isStepByStep = true)
+        show(VIA_LIFT) { started() }
         compose.onRoot().captureRoboImage()
     }
 
@@ -123,7 +123,7 @@ class RoomCardSheetTest {
     @Test
     @Config(qualifiers = "+night")
     fun matchesDarkStepByStepMockup() {
-        show(VIA_LIFT, step = 0, isStepByStep = true)
+        show(VIA_LIFT) { started() }
         compose.onRoot().captureRoboImage()
     }
 
@@ -167,11 +167,9 @@ class RoomCardSheetTest {
         onBuilding: (String) -> Unit = {},
         density: Density? = null,
         onShowMap: (() -> Unit)? = null,
-        step: Int? = null,
-        isStepByStep: Boolean = false,
+        card: RoomCard.() -> RoomCard = { this },
     ) {
-        val card = RoomCard(found = FOUND, way = way, step = step, isStepByStep = isStepByStep)
-        val room = OpenRoom(card = card, onClose = {}, onStep = {})
+        val room = OpenRoom(card = RoomCard(found = FOUND, way = way).card(), onClose = {}, onStep = {})
         compose.setContent {
             CompositionLocalProvider(LocalDensity provides (density ?: LocalDensity.current)) {
                 DostepnyKampusTheme {

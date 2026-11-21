@@ -82,9 +82,9 @@ internal fun AppNavigator.HiltMapScreen(
         onFloorChoose = planViewModel::chooseFloor,
         onMapHide = planViewModel::hide,
         room =
-            room?.let {
+            room?.let { card ->
                 OpenRoom(
-                    card = it,
+                    card = card,
                     onClose = roomViewModel::close,
                     onStep = roomViewModel::choose,
                     onStepByStep = roomViewModel::stepByStep,

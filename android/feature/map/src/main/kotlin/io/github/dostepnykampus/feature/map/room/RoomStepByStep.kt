@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map.room
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -42,33 +43,35 @@ import io.github.dostepnykampus.feature.map.overlay.MapControlIcons
  */
 @Composable
 internal fun RoomStepByStep(room: OpenRoom, roomTitle: String, onDetails: ((RoomStepDetail) -> Unit)?) {
-    val card = room.card
-    val index = card.step ?: 0
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = stringResource(R.string.mapa_sala_krok_z, index + 1, card.stepCount),
-            modifier = Modifier.weight(1f).semantics { heading() },
-            style = MaterialTheme.typography.titleMedium,
-        )
-        TextButton(onClick = { room.onStepByStep(false) }, modifier = Modifier.heightIn(min = CeleDotyku.minimum)) {
-            Text(stringResource(R.string.mapa_sala_wszystkie_kroki))
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        val card = room.card
+        val index = card.step ?: 0
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(R.string.mapa_sala_krok_z, index + 1, card.stepCount),
+                modifier = Modifier.weight(1f).semantics { heading() },
+                style = MaterialTheme.typography.titleMedium,
+            )
+            TextButton(onClick = { room.onStepByStep(false) }, modifier = Modifier.heightIn(min = CeleDotyku.minimum)) {
+                Text(stringResource(R.string.mapa_sala_wszystkie_kroki))
+            }
         }
-    }
-    StepProgress(done = index + 1, count = card.stepCount)
-    RoomWayStep(card = card, roomTitle = roomTitle, onDetails = onDetails)
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(CeleDotyku.odstep)) {
-        val button = Modifier.weight(1f).heightIn(min = CeleDotyku.przycisk)
-        OutlinedButton(onClick = { room.onStep(index - 1) }, modifier = button, enabled = card.hasPrevious) {
-            Icon(imageVector = MapControlIcons.Left, contentDescription = null)
-            Text(stringResource(R.string.mapa_sala_krok_wstecz))
-        }
-        Button(onClick = { room.onStep(index + 1) }, modifier = button, enabled = card.hasNext) {
-            Text(stringResource(R.string.mapa_sala_krok_dalej))
-            Icon(imageVector = MapControlIcons.Right, contentDescription = null)
+        StepProgress(done = index + 1, count = card.stepCount)
+        RoomWayStep(card = card, roomTitle = roomTitle, onDetails = onDetails)
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(CeleDotyku.odstep)) {
+            val button = Modifier.weight(1f).heightIn(min = CeleDotyku.przycisk)
+            OutlinedButton(onClick = { room.onStep(index - 1) }, modifier = button, enabled = card.hasPrevious) {
+                Icon(imageVector = MapControlIcons.Left, contentDescription = null)
+                Text(stringResource(R.string.mapa_sala_krok_wstecz))
+            }
+            Button(onClick = { room.onStep(index + 1) }, modifier = button, enabled = card.hasNext) {
+                Text(stringResource(R.string.mapa_sala_krok_dalej))
+                Icon(imageVector = MapControlIcons.Right, contentDescription = null)
+            }
         }
     }
 }
@@ -90,7 +93,11 @@ private fun RoomWayStep(card: RoomCard, roomTitle: String, onDetails: ((RoomStep
 private fun StepProgress(done: Int, count: Int) {
     val colors = MaterialTheme.colorScheme
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = Odstepy.xs).clearAndSetSemantics {},
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = Odstepy.xs)
+                .clearAndSetSemantics {},
         horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
     ) {
         repeat(count) { step ->
