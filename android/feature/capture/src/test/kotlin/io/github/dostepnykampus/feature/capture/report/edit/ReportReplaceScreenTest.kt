@@ -42,18 +42,12 @@ class ReportReplaceScreenTest {
 
     private var left = 0
     private var saved = 0
-    private val savedContents = mutableListOf<SubmissionContent>()
-    private val savedEdits = mutableListOf<EditedSubmission?>()
+    private val savedEntries = mutableListOf<Pair<SubmissionContent, EditedSubmission?>>()
     private lateinit var viewModel: ReportFormViewModel
 
     private fun show(barrier: AcceptedBarrier?) {
         val loader = ReportReplaceViewModel { listOfNotNull(barrier) }
-        viewModel =
-            ReportFormViewModel { content, _, edited ->
-                savedContents.add(content)
-                savedEdits.add(edited)
-            }
-        val transcoder = PhotoTranscoder()
+        viewModel = ReportFormViewModel { content, _, edited -> savedEntries.add(content to edited) }
         val exits = ReportEditExits(onLeave = { left++ }, onSave = { saved++ }, onChangePlace = {})
         compose.setContent {
             DostepnyKampusTheme {
@@ -62,7 +56,7 @@ class ReportReplaceScreenTest {
                     exits = exits,
                     loader = loader,
                     viewModel = viewModel,
-                    photoTranscoder = transcoder,
+                    photoTranscoder = PhotoTranscoder(),
                 )
             }
         }
@@ -87,10 +81,11 @@ class ReportReplaceScreenTest {
         compose.onNodeWithText("Zapisz").performClick()
         compose.waitForIdle()
 
+        val (content, edited) = savedEntries.single()
         assertEquals(1, saved)
-        assertEquals(ID, savedContents.single().replacesSubmissionId)
-        assertEquals(Severity.BLOCKING.value, savedContents.single().severity)
-        assertNull(savedEdits.single())
+        assertEquals(ID, content.replacesSubmissionId)
+        assertEquals(Severity.BLOCKING.value, content.severity)
+        assertNull(edited)
     }
 
     /** Wiersz: brak zgłoszenia przyjętego → powrót bez otwierania formularza. Wymagania: BR-18 */
@@ -106,7 +101,7 @@ class ReportReplaceScreenTest {
         val BARRIER =
             AcceptedBarrier(
                 id = ID,
-                location = GeoPoint(longitude = 17.06, latitude = 51.11),
+                location = GeoPoint(17.06, 51.11),
                 severity = Severity.ONLY_WITH_HELP,
                 type = BarrierType.THRESHOLD,
                 buildingSymbol = "C-13",

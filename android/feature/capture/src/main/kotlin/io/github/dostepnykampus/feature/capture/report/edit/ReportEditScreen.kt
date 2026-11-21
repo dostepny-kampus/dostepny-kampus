@@ -24,6 +24,7 @@ import io.github.dostepnykampus.feature.capture.report.ReportFormHost
 import io.github.dostepnykampus.feature.capture.report.ReportFormViewModel
 import io.github.dostepnykampus.feature.capture.report.controls
 import io.github.dostepnykampus.feature.capture.report.form.ReportEdit
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 
 /**
@@ -52,17 +53,7 @@ fun ReportEditScreen(
     photoTranscoder: PhotoTranscoder = hiltViewModel(),
 ) {
     SideEffect { loader.open(route.submissionId) }
-    val load by loader.load.collectAsStateWithLifecycle()
-    val start = (load as? ReportEditLoad.Ready)?.start
-    if (start != null) SideEffect { viewModel.open(start.form, draft, start.photos) }
-    val leave by rememberUpdatedState(exits.onLeave)
-    LaunchedEffect(loader) {
-        loader.load.first { it == ReportEditLoad.Missing }
-        leave()
-    }
-    val camera =
-        rememberPhotoCamera(onPhoto = { viewModel.edit(ReportEdit.Photo(it)) }, transcoder = photoTranscoder)
-    ReportFormHost(controls = viewModel.controls(), camera = camera, exits = exits, modifier = modifier)
+    LoadedReportForm(loader.load, exits, modifier, draft, viewModel, photoTranscoder)
 }
 
 /** C2 dla zmiany zgłoszenia przyjętego [route]; zapis tworzy nowe zgłoszenie. Wymagania: BR-3, BR-18, US7.4, NFR-54 */
@@ -77,12 +68,24 @@ fun ReportReplaceScreen(
     photoTranscoder: PhotoTranscoder = hiltViewModel(),
 ) {
     SideEffect { loader.open(route.acceptedId) }
-    val load by loader.load.collectAsStateWithLifecycle()
+    LoadedReportForm(loader.load, exits, modifier, draft, viewModel, photoTranscoder)
+}
+
+@Composable
+private fun LoadedReportForm(
+    loadFlow: StateFlow<ReportEditLoad>,
+    exits: ReportEditExits,
+    modifier: Modifier,
+    draft: ReportDraft,
+    viewModel: ReportFormViewModel,
+    photoTranscoder: PhotoTranscoder,
+) {
+    val load by loadFlow.collectAsStateWithLifecycle()
     val start = (load as? ReportEditLoad.Ready)?.start
     if (start != null) SideEffect { viewModel.open(start.form, draft, start.photos) }
     val leave by rememberUpdatedState(exits.onLeave)
-    LaunchedEffect(loader) {
-        loader.load.first { it == ReportEditLoad.Missing }
+    LaunchedEffect(loadFlow) {
+        loadFlow.first { it == ReportEditLoad.Missing }
         leave()
     }
     val camera = rememberPhotoCamera(onPhoto = { viewModel.edit(ReportEdit.Photo(it)) }, transcoder = photoTranscoder)
