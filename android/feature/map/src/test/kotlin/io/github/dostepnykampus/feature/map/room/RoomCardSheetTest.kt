@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -24,6 +25,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.Density
 import com.github.takahirom.roborazzi.captureRoboImage
+import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
@@ -81,6 +83,36 @@ class RoomCardSheetTest {
     }
 
     @Test
+    fun linksDetailsWithFullTarget() {
+        show(VIA_LIFT, step = 0)
+
+        compose.onNodeWithText("Szczegóły wejścia").assertHeightIsAtLeast(CeleDotyku.minimum)
+    }
+
+    /** Zrzut do porównania z makietą hi-fi „m-v1-mapa-sala” z wybranym krokiem 1, motyw jasny. */
+    @Test
+    fun matchesSelectedStepMockup() {
+        show(VIA_LIFT, step = 0)
+        compose.onRoot().captureRoboImage()
+    }
+
+    /** Zrzut do porównania z makietą hi-fi „m-v1-mapa-sala” z wybranym krokiem 1, motyw ciemny. */
+    @Test
+    @Config(qualifiers = "+night")
+    fun matchesDarkSelectedStepMockup() {
+        show(VIA_LIFT, step = 0)
+        compose.onRoot().captureRoboImage()
+    }
+
+    /** Zrzut karty na cały ekran przy czcionce 200%: zdanie kroku stoi pod numerem i nazwą. Wymagania: NFR-20 */
+    @Test
+    @Config(fontScale = 2f)
+    fun matchesLargeFontStepMockup() {
+        show(VIA_LIFT, onShowMap = {})
+        compose.onRoot().captureRoboImage()
+    }
+
+    @Test
     fun walksStepsAndReturnsFromLift() {
         val barriers = ShownBarriers(emptyList())
         val sources = RoomSheetSources(onBuilding = {}, barriers = barriers, actions = EntranceActions())
@@ -114,12 +146,13 @@ class RoomCardSheetTest {
         onBuilding: (String) -> Unit = {},
         density: Density? = null,
         onShowMap: (() -> Unit)? = null,
+        step: Int? = null,
     ) {
-        val room = OpenRoom(card = RoomCard(found = FOUND, way = way), onClose = {}, onStep = {})
+        val room = OpenRoom(card = RoomCard(found = FOUND, way = way, step = step), onClose = {}, onStep = {})
         compose.setContent {
             CompositionLocalProvider(LocalDensity provides (density ?: LocalDensity.current)) {
                 DostepnyKampusTheme {
-                    RoomCardSheet(room = room, onBuilding = onBuilding, onShowMap = onShowMap)
+                    RoomCardSheet(room = room, onBuilding = onBuilding, onShowMap = onShowMap, onDetails = {})
                 }
             }
         }

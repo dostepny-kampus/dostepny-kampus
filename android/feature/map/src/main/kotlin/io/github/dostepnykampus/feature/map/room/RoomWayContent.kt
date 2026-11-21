@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.selection.selectable
@@ -26,12 +27,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.github.dostepnykampus.core.designsystem.CeleDotyku
+import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.designsystem.GroupFrame
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
+import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.feature.map.R
@@ -62,41 +69,44 @@ internal fun RoomWayContent(
         }
 
         is RoomWay.Steps -> {
-            val (entranceTitle, entranceText) = way.entranceLabels()
-            RoomWayRow(
-                number = 1,
-                title = entranceTitle,
-                text = entranceText,
-                selected = card.step == 0,
-                onClick = rowTap(index = 0, detail = RoomStepDetail.ENTRANCE, onStep = onStep, onDetails = onDetails),
-            )
-            if (card.step == 0 && onStep != null && onDetails != null) {
-                DetailLink(detail = RoomStepDetail.ENTRANCE, onClick = onDetails)
-            }
-            way.lift?.let { lift ->
-                RoomWayRow(
-                    number = 2,
-                    title = stringResource(R.string.karta_winda),
-                    text = stringResource(R.string.mapa_sala_droga_jedz, lift.metersFromEntrance, floor.floorWord()),
-                    selected = card.step == 1,
-                    onClick = rowTap(index = 1, detail = RoomStepDetail.LIFT, onStep = onStep, onDetails = onDetails),
-                )
-                if (card.step == 1 && onStep != null && onDetails != null) {
-                    DetailLink(detail = RoomStepDetail.LIFT, onClick = onDetails)
+            val steps = way.wayRows(floor = floor, roomTitle = roomTitle)
+            val links = onDetails.takeIf { onStep != null }
+            GroupFrame {
+                steps.forEachIndexed { index, step ->
+                    if (index > 0) {
+                        val isNextToChosen = card.step == index || card.step == index - 1
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = Odstepy.s),
+                            color = if (isNextToChosen) Color.Transparent else MaterialTheme.colorScheme.outlineVariant,
+                        )
+                    }
+                    RoomWayRow(
+                        number = index + 1,
+                        step = step,
+                        selected = card.step == index,
+                        onClick = rowTap(index = index, detail = step.detail, onStep = onStep, onDetails = onDetails),
+                        onDetails = links,
+                    )
                 }
             }
-            val roomDistance =
-                if (way.lift == null) R.string.mapa_sala_droga_od_wejscia else R.string.mapa_sala_droga_od_windy
-            val lastStep = card.stepCount - 1
-            RoomWayRow(
-                number = lastStep + 1,
-                title = roomTitle,
-                text = stringResource(roomDistance, floor, way.roomMeters),
-                selected = card.step == lastStep,
-                onClick = onStep?.let { { it(lastStep) } },
-            )
         }
     }
+}
+
+private data class WayRow(val title: String, val text: String, val detail: RoomStepDetail?)
+
+@Composable
+private fun RoomWay.Steps.wayRows(floor: String, roomTitle: String): List<WayRow> {
+    val (entranceTitle, entranceText) = entranceLabels()
+    val entrance = WayRow(title = entranceTitle, text = entranceText, detail = RoomStepDetail.ENTRANCE)
+    val liftRow =
+        lift?.let { step ->
+            val text = stringResource(R.string.mapa_sala_droga_jedz, step.metersFromEntrance, floor.floorWord())
+            WayRow(title = stringResource(R.string.karta_winda), text = text, detail = RoomStepDetail.LIFT)
+        }
+    val distance = if (lift == null) R.string.mapa_sala_droga_od_wejscia else R.string.mapa_sala_droga_od_windy
+    val room = WayRow(title = roomTitle, text = stringResource(distance, floor, roomMeters), detail = null)
+    return listOfNotNull(entrance, liftRow, room)
 }
 
 @Composable
@@ -109,51 +119,98 @@ private fun RoomWay.Steps.entranceLabels(): Pair<String, String> {
 }
 
 @Composable
-private fun RoomWayRow(number: Int, title: String, text: String, selected: Boolean, onClick: (() -> Unit)?) {
+private fun RoomWayRow(
+    number: Int,
+    step: WayRow,
+    selected: Boolean,
+    onClick: (() -> Unit)?,
+    onDetails: ((RoomStepDetail) -> Unit)?,
+) {
     val colors = MaterialTheme.colorScheme
-    val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     val shape = RoundedCornerShape(Zaokraglenia.duze)
     val action = onClick?.let { Modifier.selectable(selected = selected, role = Role.Button, onClick = it) }
-    val row = Modifier.fillMaxWidth().clip(shape).then(action ?: Modifier)
-    Surface(color = if (selected) colors.primaryContainer else colors.surface, shape = shape) {
-        if (isLarge) {
-            Column(row.padding(vertical = Odstepy.s), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-                HorizontalDivider(color = colors.outlineVariant)
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    RoomStepBadge(number = number, size = 40.dp, selected = selected)
-                    Text(text = title, modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
-                    if (onClick != null) {
-                        Icon(imageVector = MapControlIcons.Right, contentDescription = null, tint = colors.primary)
-                    }
-                }
-                Text(text = text, style = MaterialTheme.typography.bodyLarge)
+    val row =
+        Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .then(action ?: Modifier)
+            .padding(Odstepy.s)
+    Surface(
+        color = if (selected) colors.primaryContainer else Color.Transparent,
+        shape = shape,
+        border = BorderStroke(Obramowania.wybrane, colors.onPrimaryContainer).takeIf { selected },
+    ) {
+        Column {
+            val isLink = onClick != null
+            if (LocalDensity.current.fontScale >= LARGE_FONT_SCALE) {
+                LargeStepRow(number = number, step = step, selected = selected, isLink = isLink, modifier = row)
+            } else {
+                StepRow(number = number, step = step, selected = selected, isLink = isLink, modifier = row)
             }
-        } else {
-            Row(
-                modifier = row.padding(Odstepy.s),
-                horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
-                verticalAlignment = Alignment.Top,
-            ) {
-                RoomStepBadge(number = number, size = 28.dp, selected = selected)
-                Column(Modifier.weight(1f)) {
-                    Text(text = title, style = MaterialTheme.typography.titleMedium)
-                    Text(text = text, style = MaterialTheme.typography.bodyLarge)
-                }
+            val detail = step.detail
+            if (selected && detail != null && onDetails != null) {
+                DetailLink(detail = detail, onClick = onDetails)
             }
         }
     }
 }
 
 @Composable
+private fun StepRow(number: Int, step: WayRow, selected: Boolean, isLink: Boolean, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
+        verticalAlignment = Alignment.Top,
+    ) {
+        RoomStepBadge(number = number, size = 28.dp, selected = selected)
+        Column(Modifier.weight(1f)) {
+            Text(text = step.title, style = MaterialTheme.typography.titleMedium.copy(hyphens = Hyphens.Auto))
+            Text(text = step.text, style = MaterialTheme.typography.bodyLarge)
+        }
+        if (isLink) {
+            StepChevron()
+        }
+    }
+}
+
+@Composable
+private fun LargeStepRow(
+    number: Int,
+    step: WayRow,
+    selected: Boolean,
+    isLink: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
+            RoomStepBadge(number = number, size = 40.dp, selected = selected)
+            Text(
+                text = step.title,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.titleMedium.copy(hyphens = Hyphens.Auto),
+            )
+            if (isLink) {
+                StepChevron()
+            }
+        }
+        Text(text = step.text, style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+@Composable
+private fun StepChevron() {
+    Icon(imageVector = MapControlIcons.Right, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+}
+
+@Composable
 private fun RoomStepBadge(number: Int, size: Dp, selected: Boolean) {
+    val map = DostepnyKampusTheme.mapColors
     val colors = MaterialTheme.colorScheme
     Surface(
         shape = CircleShape,
-        border = BorderStroke(1.dp, colors.outline),
-        color = if (selected) colors.primary else colors.surface,
+        border = BorderStroke(Obramowania.ramka, if (selected) colors.primary else map.tusz),
+        color = if (selected) colors.primary else map.papier,
+        contentColor = if (selected) colors.onPrimary else map.tusz,
     ) {
         Box(
             modifier = Modifier.sizeIn(minWidth = size, minHeight = size).padding(horizontal = Odstepy.xs),
@@ -166,12 +223,31 @@ private fun RoomStepBadge(number: Int, size: Dp, selected: Boolean) {
 
 private fun rowTap(
     index: Int,
-    detail: RoomStepDetail,
+    detail: RoomStepDetail?,
     onStep: ((Int) -> Unit)?,
     onDetails: ((RoomStepDetail) -> Unit)?,
-): (() -> Unit)? = onStep?.let { choose -> { choose(index) } } ?: onDetails?.let { open -> { open(detail) } }
+): (() -> Unit)? =
+    when {
+        onStep != null -> {
+            { onStep(index) }
+        }
+
+        detail != null && onDetails != null -> {
+            { onDetails(detail) }
+        }
+
+        else -> {
+            null
+        }
+    }
 
 @Composable
 private fun DetailLink(detail: RoomStepDetail, onClick: (RoomStepDetail) -> Unit) {
-    TextButton(onClick = { onClick(detail) }) { Text(stringResource(detail.title)) }
+    TextButton(
+        onClick = { onClick(detail) },
+        modifier = Modifier.padding(start = Odstepy.s).heightIn(min = CeleDotyku.minimum),
+    ) {
+        Text(stringResource(detail.title))
+        Icon(imageVector = MapControlIcons.Right, contentDescription = null)
+    }
 }
