@@ -5,16 +5,19 @@
  */
 package io.github.dostepnykampus.barrier.submission.web;
 
+import io.github.dostepnykampus.barrier.entrance.StaleEntranceMarking;
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.ReviewDecision;
 import io.github.dostepnykampus.barrier.submission.StoredPhotos;
 import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
+import io.github.dostepnykampus.barrier.submission.application.SubmissionReview;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionService;
 import io.github.dostepnykampus.shared.error.ConflictingState;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import io.github.dostepnykampus.shared.error.MissingResource;
 import java.security.Principal;
+import java.util.Objects;
 import java.util.UUID;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +41,9 @@ public final class ReviewController {
     /** Zapis zgłoszeń. */
     private final SubmissionService service;
 
+    /** Zapis i zastosowanie decyzji. */
+    private final SubmissionReview review;
+
     /** Odczyt zgłoszeń. */
     private final SubmissionReading finder;
 
@@ -45,9 +51,11 @@ public final class ReviewController {
     private final StoredPhotos photos;
 
     ReviewController(
-        final SubmissionService service, final SubmissionReading finder, final StoredPhotos photos
+        final SubmissionService service, final SubmissionReview review,
+        final SubmissionReading finder, final StoredPhotos photos
     ) {
         this.service = service;
+        this.review = review;
         this.finder = finder;
         this.photos = photos;
     }
@@ -96,8 +104,18 @@ public final class ReviewController {
         }
         this.checkPhotos(id);
         final ReviewDecision decision = body.toDecision(id, account.getName());
-        decision.admit(this.finder.find(id).orElseThrow().content().kind());
-        return ReviewController.saved(this.service.decide(decision));
+        final Submission current = this.finder.find(id).orElseThrow();
+        decision.admit(current.content().kind());
+        try {
+            return ReviewController.saved(this.review.decide(decision));
+        } catch (final StaleEntranceMarking stale) {
+            final ConflictingState conflict = new ConflictingState(
+                Objects.requireNonNull(stale.getMessage()), "serverSubmission",
+                new SubmissionResponse(current)
+            );
+            conflict.initCause(stale);
+            throw conflict;
+        }
     }
 
     private void checkNotOwn(final UUID id, final Principal account) {
