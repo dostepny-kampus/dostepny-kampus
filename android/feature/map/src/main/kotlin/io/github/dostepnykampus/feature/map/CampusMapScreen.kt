@@ -365,7 +365,7 @@ private fun CampusMap(
             size = size,
             top = cameraTop,
             motion = motion,
-            room = RoomScene(room = room, isOnMap = isRoomOnMap, plan = plan.shown),
+            room = RoomScene(room = room, isOnMap = isRoomOnMap, plan = plan.shown, sign = signs.planSignId),
         )
     Box(modifier.consumeWindowInsets(topInset).onSizeChanged { size = it }) {
         val move = state.move
@@ -474,7 +474,8 @@ private fun rememberCampusScene(
             motion = motion,
             notice = rememberNoticeHeight(shift = areas.selectionNotice, width = width),
             sheet = view.cover,
-            roomCamera = view.camera,
+            roomCamera = view.roomCamera,
+            signCamera = view.signCamera,
             isRoomJump = view.isJump,
             heldInset = view.heldInset,
         )

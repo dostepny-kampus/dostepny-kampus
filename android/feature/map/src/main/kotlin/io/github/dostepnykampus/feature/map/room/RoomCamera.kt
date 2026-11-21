@@ -37,6 +37,10 @@ internal class RoomMemory {
     var tapped: String? = null
     private var isOpen = false
 
+    /** Scena [scene] pokazuje dotknięte na planie: arkusz znaku planu albo kartę dotkniętej sali bez kroku. */
+    fun isTouched(scene: RoomScene): Boolean =
+        scene.sign != null || scene.room?.run { card.step == null && card.found.room.id == tapped } == true
+
     /** Karta otwarta ([isOpenNow]) albo nie: zamknięcie otwartej karty kasuje dotknięcie. */
     fun follow(isOpenNow: Boolean) {
         if (isOpen && !isOpenNow) tapped = null
@@ -45,25 +49,43 @@ internal class RoomMemory {
 }
 
 /**
- * Kamera karty sali na mapie dla jednej czynności osoby (otwarcie sali, wybór kroku): widok [camera], karta wysoka
- * na [kept] pikseli z pierwszego pomiaru w tej czynności i dół mapy [mapCover] bieżąco dla przycisków. Karta sali
- * dotkniętej na planie leży nad mapą z dopełnieniem kamery [held] sprzed dotknięcia, więc obraz mapy stoi.
+ * Dotknięcie na planie w jednej czynności osoby: sala albo znak planu ([isSign]), którego karta albo arkusz leży
+ * nad mapą z dopełnieniem kamery [held] sprzed dotknięcia; [isJump], gdy kamera nie rusza się wcale. Bez dotknięcia
+ * [held] jest `null`.
  *
- * Wymagania: US18.1, US18.2, US2.8, NFR-56
+ * Wymagania: US18.1, US16.1, US2.8, NFR-56
+ */
+internal data class PlanTouch(val isJump: Boolean = false, val held: MapInset? = null, val isSign: Boolean = false)
+
+/**
+ * Kamera karty sali albo arkusza znaku planu na mapie dla jednej czynności osoby (otwarcie sali, wybór kroku,
+ * dotknięcie znaku): widok [camera], karta albo arkusz wysoki na [kept] pikseli z pierwszego pomiaru w tej
+ * czynności i dół mapy [mapCover] bieżąco dla przycisków. Karta albo arkusz po dotknięciu na planie ([touch]) leży
+ * nad mapą z dopełnieniem kamery sprzed dotknięcia, więc obraz mapy stoi.
+ *
+ * Wymagania: US18.1, US18.2, US16.1, US2.8, NFR-56
  */
 internal class RoomView(
     val camera: MapCamera?,
     private val kept: Int,
     val mapCover: Dp,
-    val isJump: Boolean,
-    private val held: MapInset?,
+    private val touch: PlanTouch,
     private val memory: RoomMemory,
 ) {
-    /** Dół mapy zasłonięty kartą dla dopełnienia kamery w pikselach. */
+    /** Dół mapy zasłonięty kartą albo arkuszem dla dopełnienia kamery w pikselach. */
     val cover: Int get() = kept
 
-    /** Dopełnienie kamery sprzed dotknięcia sali, które zostaje przy dotkniętej sali; `null` poza dotknięciem. */
-    val heldInset: MapInset? get() = held
+    /** Kamera nie rusza się po dotknięciu na planie. */
+    val isJump: Boolean get() = touch.isJump
+
+    /** Dopełnienie kamery sprzed dotknięcia na planie, które zostaje przy dotkniętym; `null` poza dotknięciem. */
+    val heldInset: MapInset? get() = touch.held
+
+    /** Widok karty sali; `null` przy arkuszu znaku planu. */
+    val roomCamera: MapCamera? get() = camera.takeUnless { touch.isSign }
+
+    /** Widok po dotknięciu znaku planu; `null` bez arkusza znaku. */
+    val signCamera: MapCamera? get() = camera.takeIf { touch.isSign }
 
     /** Mapa stanęła po geście w widoku [view]. */
     fun onIdle(view: MapCamera) {
@@ -85,51 +107,53 @@ internal class RoomView(
 }
 
 /**
- * Karta sali [room] przy mapie: na mapie ([isOnMap]) albo na cały ekran, i plan piętra [plan] pokazany na mapie.
+ * Karta sali [room] przy mapie: na mapie ([isOnMap]) albo na cały ekran, plan piętra [plan] pokazany na mapie
+ * i pomieszczenie [sign] znaku planu z arkuszem nad mapą; `null` bez takiego arkusza.
  *
- * Wymagania: US18.1, US18.2
+ * Wymagania: US18.1, US18.2, US16.1
  */
-internal data class RoomScene(val room: OpenRoom?, val isOnMap: Boolean, val plan: ShownPlan?)
+internal data class RoomScene(val room: OpenRoom?, val isOnMap: Boolean, val plan: ShownPlan?, val sign: String? = null)
 
 /**
  * Widok karty [scene] przy zaznaczeniu [focus] i dole mapy zasłoniętym według [panel]. Czynność to polecenie
- * [MapFocus.Building.command]: widzi widok, dopełnienie kamery i plan z chwili przed nią, a wysokość karty
- * z pierwszego pomiaru z drogą ([heldWith]), więc późniejsza zmiana wysokości karty nie rusza mapy. Dotknięta sala
- * nie zmienia ani widoku, ani dopełnienia kamery; tylko gdy karta ją zasłoni, mapa wysoka na [height] pikseli
- * przesuwa się w górę ([revealing]).
+ * [MapFocus.Building.command] albo dotknięcie znaku planu: widzi widok, dopełnienie kamery i plan z chwili przed
+ * nią, a wysokość karty z pierwszego pomiaru z drogą, a arkusza znaku z pierwszego pomiaru ([heldWith]), więc
+ * późniejsza zmiana wysokości nie rusza mapy. Dotknięta sala i dotknięty znak nie zmieniają ani widoku, ani
+ * dopełnienia kamery; tylko gdy karta albo arkusz je zasłoni, mapa wysoka na [height] pikseli przesuwa się w górę
+ * ([revealing]).
  *
- * Wymagania: US18.1, US18.2, US2.8, NFR-56
+ * Wymagania: US18.1, US18.2, US16.1, US2.8, NFR-56
  */
 @Composable
 internal fun rememberRoomView(scene: RoomScene, focus: MapFocus?, panel: MapPanel, height: Int): RoomView {
     val (room, isOnMap, plan) = scene
-    val cover = panel.cover
+    val isSign = scene.sign != null
     val memory = remember { RoomMemory() }
-    val command = (focus as? MapFocus.Building)?.command
-    val seen = remember(command) { memory.idle?.let { SeenPlan(camera = it, plan = plan?.building) } }
-    val seenInset = remember(command) { memory.inset }
-    val held = remember(command) { IntArray(1) }
-    held[0] = held[0].heldWith(cover = panel.wayCover)
+    val act = (focus as? MapFocus.Building)?.command to scene.sign
+    val seen = remember(act) { memory.idle?.let { SeenPlan(camera = it, plan = plan?.building) } }
+    val seenInset = remember(act) { memory.inset }
+    val held = remember(act) { IntArray(1) }
+    held[0] = held[0].heldWith(cover = panel.cover.takeIf { isSign } ?: panel.wayCover)
     memory.follow(isOpenNow = room != null)
-    val kept = if (isOnMap) held[0] else cover
-    val isTapped = room?.run { card.step == null && card.found.room.id == memory.tapped } == true
+    val kept = if (isOnMap || isSign) held[0] else panel.cover
+    val isTouched = memory.isTouched(scene)
     val density = LocalDensity.current
     val keptDp = with(density) { kept.toDp() }
-    val mapDp = with(density) { height.toDp() }
-    val area = room?.run { card.found.room.geometry }
-    val screen = density.tapScreen(map = mapDp, inset = seenInset, card = keptDp)
-    val tap = seen?.takeIf { isTapped }?.tapped(area = area, screen = screen)
-    val searched = room?.cameraForRoom(isRoomOnMap = isOnMap, cover = keptDp, seen = seen, isTapped = isTapped)
-    val camera = tap?.camera ?: searched
-    val mapCover = with(density) { cover.toDp() }.takeIf { isOnMap } ?: 0.dp
-    return RoomView(
-        camera = camera,
-        kept = kept,
-        mapCover = mapCover,
-        isJump = tap?.isJump == true,
-        held = seenInset.takeIf { isTapped },
-        memory = memory,
-    )
+    val screen = density.tapScreen(map = with(density) { height.toDp() }, inset = seenInset, card = keptDp)
+    val tap = seen?.takeIf { isTouched }?.tapped(area = scene.touchedArea(), screen = screen)
+    val searched = room?.cameraForRoom(isRoomOnMap = isOnMap, cover = keptDp, seen = seen, isTapped = isTouched)
+    val mapCover = with(density) { panel.cover.toDp() }.takeIf { isOnMap } ?: 0.dp
+    val touch = PlanTouch(isJump = tap?.isJump == true, held = seenInset.takeIf { isTouched }, isSign = isSign)
+    return RoomView(camera = tap?.camera ?: searched, kept = kept, mapCover = mapCover, touch = touch, memory = memory)
+}
+
+/**
+ * Obrys dotkniętego na planie: pomieszczenia znaku planu na pokazanym piętrze, a bez arkusza znaku sali z karty;
+ * `null`, gdy takiego pomieszczenia nie ma. Wymagania: US16.1, US18.1
+ */
+internal fun RoomScene.touchedArea(): GeoArea? {
+    val shown = plan?.run { rooms[floor]?.rooms }
+    return sign?.let { id -> shown?.firstOrNull { it.id == id }?.geometry } ?: room?.run { card.found.room.geometry }
 }
 
 /**

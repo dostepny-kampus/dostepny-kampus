@@ -11,19 +11,24 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
+import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.plan.MapPanel
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.FOUND
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.VIA_LIFT
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-/** Zamknięcie karty i dotknięcie sali bez zbędnego ruchu mapy. Wymagania: US18.1, US18.2, NFR-56 */
+/** Zamknięcie karty, dotknięcie sali i znaku planu bez zbędnego ruchu mapy. Wymagania: US18.1, US16.1, NFR-56 */
 @RunWith(RobolectricTestRunner::class)
 class RoomCameraViewTest {
     @get:Rule
@@ -83,6 +88,46 @@ class RoomCameraViewTest {
             val camera = view.camera
             assertEquals("Powiększenie się zmieniło", idle.zoom, camera?.zoom ?: 0.0, 1e-9)
             assertEquals("Mapa ruszyła w bok", idle.center.longitude, camera?.run { center.longitude } ?: 0.0, 1e-9)
+        }
+    }
+
+    /** Arkusz znaku planu, który nie zasłania znaku, zostawia widok i dopełnienie kamery sprzed dotknięcia. */
+    @Test
+    fun keepsPictureForPlanSign() {
+        val idle = MapCamera(center = FOUND.room.labelPoint, zoom = 19.0)
+        val inset = MapInset(top = 120.0)
+        val plan =
+            ShownPlan(
+                building = FOUND.building,
+                floors = listOf(FOUND.floor),
+                floor = FOUND.floor.id,
+                rooms =
+                    mapOf(
+                        FOUND.floor.id to
+                            RoomList(source = "PWr", floorOutline = FOUND.room.geometry, rooms = listOf(FOUND.room)),
+                    ),
+            )
+        val sign = mutableStateOf<String?>(null)
+        lateinit var view: RoomView
+        compose.setContent {
+            view =
+                rememberRoomView(
+                    scene = RoomScene(room = null, isOnMap = false, plan = plan, sign = sign.value),
+                    focus = null,
+                    panel = MapPanel(cover = if (sign.value != null) 300 else 0),
+                    height = 2000,
+                )
+        }
+
+        compose.runOnIdle {
+            view.onShown(view = idle, inset = inset)
+            sign.value = FOUND.room.id
+        }
+        compose.runOnIdle {
+            assertEquals("Kamera ruszyła po dotknięciu znaku", idle, view.signCamera)
+            assertTrue("Kamera dostała ruch", view.isJump)
+            assertEquals("Dopełnienie kamery się zmieniło", inset, view.heldInset)
+            assertNull("Znak planu zmienił kamerę sali", view.roomCamera)
         }
     }
 }

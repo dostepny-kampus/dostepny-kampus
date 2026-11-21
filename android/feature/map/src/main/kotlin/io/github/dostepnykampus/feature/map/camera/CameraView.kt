@@ -42,12 +42,18 @@ internal data class CameraView(
  * Zapisywany widok mapy dla [focus]. Nowe wejście zaczyna od nowa, a polecenie budynku kieruje kamerę do
  * punktu podpisu z [layers]. Po wykonaniu polecenia kamera idzie za osobą, także po obrocie ekranu.
  * Tożsamość [MapFocus.Building.command] pozwala ponownie wybrać ten sam budynek. [roomCamera] zapisuje widok
- * od razu po przesunięciu do sali, dzięki czemu zostaje po zamknięciu karty.
+ * od razu po przesunięciu do sali, dzięki czemu zostaje po zamknięciu karty. [signCamera] to widok przy otwartym
+ * arkuszu znaku planu, który wyznacza widok niezależnie od zaznaczenia.
  *
- * Wymagania: US3.3, US2.9, NFR-53, NFR-22
+ * Wymagania: US3.3, US2.9, US16.1, NFR-53, NFR-22
  */
 @Composable
-internal fun rememberCameraView(focus: MapFocus?, layers: CampusMapData?, roomCamera: MapCamera? = null): CameraView {
+internal fun rememberCameraView(
+    focus: MapFocus?,
+    layers: CampusMapData?,
+    roomCamera: MapCamera? = null,
+    signCamera: MapCamera? = null,
+): CameraView {
     val entranceId = (focus as? MapFocus.Entrance)?.id
     val show = (focus as? MapFocus.Building)?.takeIf { it.command != null }
     var camera by rememberSaveable(entranceId, stateSaver = CameraSaver) { mutableStateOf<MapCamera?>(null) }
@@ -65,13 +71,13 @@ internal fun rememberCameraView(focus: MapFocus?, layers: CampusMapData?, roomCa
         SideEffect { camera = target }
     }
     return CameraView(
-        camera = target.takeIf { isPending } ?: camera,
+        camera = signCamera ?: target.takeIf { isPending } ?: camera,
         keep = { next ->
             camera = next
             show?.command?.let { applied = it }
         },
         shown = show?.symbol.takeIf { isPending && show?.room == null },
-        hasTarget = isPending || (entranceId != null && camera == null),
+        hasTarget = signCamera != null || isPending || (entranceId != null && camera == null),
     )
 }
 
