@@ -62,9 +62,9 @@ class RoomCardViewModel
             card.value = null
         }
 
-        /** „Pokaż po kolei”: wybiera krok 1. */
-        fun start() {
-            card.update { it?.started() }
+        /** „Pokaż po kolei” ([isOn]) włącza jeden krok naraz od kroku 1; „Wszystkie kroki” wraca do listy. */
+        fun stepByStep(isOn: Boolean) {
+            card.update { if (isOn) it?.started() else it?.listed() }
         }
 
         /** Wybiera krok [index] od zera, dotknięty w karcie albo na planie. */
@@ -72,12 +72,12 @@ class RoomCardViewModel
             card.update { it?.chosen(index) }
         }
 
-        /** „›”: następny krok. */
+        /** „Dalej”: następny krok. */
         fun next() {
             card.update { it?.next() }
         }
 
-        /** „‹”: poprzedni krok. */
+        /** „Wstecz”: poprzedni krok. */
         fun previous() {
             card.update { it?.previous() }
         }

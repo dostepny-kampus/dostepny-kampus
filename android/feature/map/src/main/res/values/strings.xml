@@ -156,8 +156,9 @@
     <string name="mapa_sala_pokaz_na_mapie">Pokaż na mapie</string>
     <string name="mapa_sala_pokaz_kroki">Pokaż po kolei</string>
     <string name="mapa_sala_krok_z">Krok %1$d z %2$d</string>
-    <string name="mapa_sala_krok_wstecz">Poprzedni krok</string>
-    <string name="mapa_sala_krok_dalej">Następny krok</string>
+    <string name="mapa_sala_wszystkie_kroki">Wszystkie kroki</string>
+    <string name="mapa_sala_krok_wstecz">Wstecz</string>
+    <string name="mapa_sala_krok_dalej">Dalej</string>
     <string name="mapa_sala_szczegoly_wejscia">Szczegóły wejścia</string>
     <string name="mapa_sala_szczegoly_windy">Szczegóły windy</string>
 </resources>

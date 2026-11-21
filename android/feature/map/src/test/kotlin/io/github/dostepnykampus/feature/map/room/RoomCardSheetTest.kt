@@ -84,7 +84,7 @@ class RoomCardSheetTest {
 
     @Test
     fun linksDetailsWithFullTarget() {
-        show(VIA_LIFT, step = 0)
+        show(VIA_LIFT) { chosen(0) }
 
         compose.onNodeWithText("Szczegóły wejścia").assertHeightIsAtLeast(CeleDotyku.minimum)
     }
@@ -92,7 +92,7 @@ class RoomCardSheetTest {
     /** Zrzut do porównania z makietą hi-fi „m-v1-mapa-sala” z wybranym krokiem 1, motyw jasny. */
     @Test
     fun matchesSelectedStepMockup() {
-        show(VIA_LIFT, step = 0)
+        show(VIA_LIFT) { chosen(0) }
         compose.onRoot().captureRoboImage()
     }
 
@@ -100,7 +100,7 @@ class RoomCardSheetTest {
     @Test
     @Config(qualifiers = "+night")
     fun matchesDarkSelectedStepMockup() {
-        show(VIA_LIFT, step = 0)
+        show(VIA_LIFT) { chosen(0) }
         compose.onRoot().captureRoboImage()
     }
 
@@ -112,6 +112,21 @@ class RoomCardSheetTest {
         compose.onRoot().captureRoboImage()
     }
 
+    /** Zrzut trybu po kolei na kroku 1 do porównania z makietą hi-fi „m-v1-mapa-sala-kroki”, motyw jasny. */
+    @Test
+    fun matchesStepByStepMockup() {
+        show(VIA_LIFT) { started() }
+        compose.onRoot().captureRoboImage()
+    }
+
+    /** Zrzut trybu po kolei na kroku 1, motyw ciemny. */
+    @Test
+    @Config(qualifiers = "+night")
+    fun matchesDarkStepByStepMockup() {
+        show(VIA_LIFT) { started() }
+        compose.onRoot().captureRoboImage()
+    }
+
     @Test
     fun walksStepsAndReturnsFromLift() {
         val barriers = ShownBarriers(emptyList())
@@ -119,26 +134,32 @@ class RoomCardSheetTest {
         compose.setContent {
             DostepnyKampusTheme {
                 var card by remember { mutableStateOf(RoomCard(found = FOUND, way = VIA_LIFT)) }
-                RoomCardLayer(
-                    room = OpenRoom(card = card, onClose = {}, onStep = { card = card.chosen(it) }),
-                    sources = sources,
-                )
+                val room =
+                    OpenRoom(
+                        card = card,
+                        onClose = {},
+                        onStep = { card = card.chosen(it) },
+                        onStepByStep = { card = if (it) card.started() else card.listed() },
+                    )
+                RoomCardLayer(room = room, sources = sources)
             }
         }
 
         compose.onNodeWithText("Pokaż po kolei").performClick()
         compose.onNodeWithText("Krok 1 z 3").assertExists()
-        compose.onNodeWithContentDescription("Poprzedni krok").assertIsNotEnabled()
-        compose.onNodeWithContentDescription("Następny krok").performClick()
-        compose.onNodeWithText("Krok 2 z 3").assertExists()
+        compose.onNodeWithText("ok. 85 m od windy.", substring = true).assertDoesNotExist()
+        compose.onNodeWithText("Wstecz").assertIsNotEnabled()
+        compose.onNodeWithText("Dalej").performClick()
         compose.onNodeWithText("Szczegóły windy").performClick()
         compose.onNodeWithText("Jedzie na:", substring = true).assertExists()
         compose.onNodeWithText("Zamknij").performClick()
 
         compose.onNodeWithText("Krok 2 z 3").assertExists()
-        compose.onNodeWithText("ok. 85 m od windy.", substring = true).performClick()
-        compose.onNodeWithText("Krok 3 z 3").assertExists()
-        compose.onNodeWithContentDescription("Następny krok").assertIsNotEnabled()
+        compose.onNodeWithText("Dalej").performClick()
+        compose.onNodeWithText("Dalej").assertIsNotEnabled()
+        compose.onNodeWithText("Wszystkie kroki").performClick()
+        compose.onNodeWithText("Pokaż po kolei").assertExists()
+        compose.onNodeWithText("Ok. 30 m od wejścia.", substring = true).assertExists()
     }
 
     private fun show(
@@ -146,9 +167,9 @@ class RoomCardSheetTest {
         onBuilding: (String) -> Unit = {},
         density: Density? = null,
         onShowMap: (() -> Unit)? = null,
-        step: Int? = null,
+        card: RoomCard.() -> RoomCard = { this },
     ) {
-        val room = OpenRoom(card = RoomCard(found = FOUND, way = way, step = step), onClose = {}, onStep = {})
+        val room = OpenRoom(card = RoomCard(found = FOUND, way = way).card(), onClose = {}, onStep = {})
         compose.setContent {
             CompositionLocalProvider(LocalDensity provides (density ?: LocalDensity.current)) {
                 DostepnyKampusTheme {

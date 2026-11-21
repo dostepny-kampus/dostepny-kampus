@@ -32,24 +32,36 @@ class RoomCardTest {
         )
     }
 
-    /** Wiersz: „‹” wyłączona na pierwszym kroku, „›” na ostatnim. */
+    /** Wiersz: „Wstecz” wyłączony na pierwszym kroku, „Dalej” na ostatnim. */
     @Test
     fun limitsArrowsAtEnds() {
         val card = RoomCard(found = FOUND, way = VIA_LIFT)
 
         val ends = listOf(card.chosen(0), card.chosen(1), card.chosen(2)).map { it.hasPrevious to it.hasNext }
 
-        assertEquals(listOf(false to true, true to true, true to false), ends, "Strzałki na złych krokach")
+        assertEquals(listOf(false to true, true to true, true to false), ends, "Przyciski na złych krokach")
     }
 
-    /** Wiersz: strzałki przechodzą o jeden krok i nie wychodzą poza kroki drogi. */
+    /** Wiersz: „Dalej” i „Wstecz” przechodzą o jeden krok i nie wychodzą poza kroki drogi. */
     @Test
     fun movesByOneStep() {
         val card = RoomCard(found = FOUND, way = VIA_LIFT).chosen(1)
 
         val moved = listOf(card.next(), card.previous(), card.next().next(), card.previous().previous())
 
-        assertEquals(listOf(2, 0, 2, 0), moved.map { it.step }, "Strzałki przeszły źle")
+        assertEquals(listOf(2, 0, 2, 0), moved.map { it.step }, "Kroki przeszły źle")
+    }
+
+    /** Wiersz: „Pokaż po kolei” włącza tryb po kolei, a „Wszystkie kroki” wraca do listy z tym samym krokiem. */
+    @Test
+    fun switchesStepByStepMode() {
+        val card = RoomCard(found = FOUND, way = VIA_LIFT)
+        val walked = card.started().next()
+
+        val modes = listOf(card, card.chosen(1), walked, walked.listed()).map { it.isStepByStep to it.step }
+
+        val expected = listOf(false to null, false to 1, true to 1, false to 1)
+        assertEquals(expected, modes, "Tryb po kolei przełączył się źle")
     }
 
     /** Wiersz: bez drogi i w czasie wczytywania kroku nie da się wybrać. */
