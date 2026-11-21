@@ -45,7 +45,7 @@ private val PhotoMaxHeight = 240.dp
  */
 @Composable
 public fun BarrierPhoto(url: String?, type: BarrierType?, modifier: Modifier = Modifier) {
-    if (url == null) return
+    if (url.isNullOrBlank()) return
     val typeName = stringResource(type?.nameRes() ?: R.string.bariera_bez_typu)
     val description = stringResource(R.string.bariera_zdjecie, typeName)
     var attempt by rememberSaveable(url) { mutableIntStateOf(0) }
