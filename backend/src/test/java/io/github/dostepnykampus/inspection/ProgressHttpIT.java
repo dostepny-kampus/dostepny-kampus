@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +37,7 @@ final class ProgressHttpIT {
     @Test
     void readsProgressForCoordinator(final WebApplicationContext context) throws Exception {
         ProgressHttpIT.seed(context.getBean(JdbcClient.class));
-        final var response = context.getBean(MockMvc.class).perform(
+        final MockHttpServletResponse response = context.getBean(MockMvc.class).perform(
             MockMvcRequestBuilders.get("/progress")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer COORDINATOR")
         ).andReturn().getResponse();
@@ -68,8 +69,7 @@ final class ProgressHttpIT {
             List.of(2, 1, 2, 1, 2, 1, 2),
             List.of(
                 item.path("floorsTotal").asInt(-1), item.path("floorsInspected").asInt(-1),
-                item.path("pendingSubmissions").asInt(-1),
-                item.path("acceptedSubmissions").asInt(-1),
+                item.path("pendingSubmissions").asInt(-1), item.path("acceptedSubmissions").asInt(-1),
                 item.path("entrancesTotal").asInt(-1),
                 item.path("entrancesCheckedOnSite").asInt(-1), item.path("markers").size()
             ),
