@@ -12,6 +12,7 @@ import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.room.RoomList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -38,6 +39,7 @@ public interface FloorPlans {
 
 /**
  * [FloorPlans] z serwera (`listFloors`, `listFloorRooms`) z kopią w tabelach `floor_plans` i `floor_rooms`.
+ * Pomieszczenia piętra odczytane raz zostają w pamięci do następnego pobrania planu budynku.
  *
  * @param dao tabele kopii planów
  * @param fetchFloors piętra budynku z serwera
@@ -52,6 +54,8 @@ internal class FloorPlanCopy(
     private val ioContext: CoroutineContext = Dispatchers.IO,
     private val now: () -> Long = System::currentTimeMillis,
 ) : FloorPlans {
+    private val read = ConcurrentHashMap<Pair<String, String>, RoomList>()
+
     override suspend fun download(symbol: String): Boolean {
         val plans = fetchPlans(symbol) ?: return false
         val syncedAt = now()
@@ -65,6 +69,7 @@ internal class FloorPlanCopy(
                     },
             )
         }
+        read.keys.removeAll { it.first == symbol }
         return true
     }
 
@@ -84,7 +89,7 @@ internal class FloorPlanCopy(
         }
 
     override suspend fun rooms(symbol: String, floor: String): RoomList? =
-        withContext(ioContext) {
+        read[symbol to floor] ?: withContext(ioContext) {
             dao.plan(building = symbol, floor = floor)?.toRoomList(dao.rooms(building = symbol, floor = floor))
-        }
+        }?.also { read[symbol to floor] = it }
 }
