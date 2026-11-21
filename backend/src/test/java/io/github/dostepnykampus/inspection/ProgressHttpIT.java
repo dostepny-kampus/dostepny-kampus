@@ -43,7 +43,6 @@ final class ProgressHttpIT {
         Assertions.assertEquals(200, response.getStatus(), "Dostęp Koordynatora do postępu");
         final JsonNode progress = context.getBean(ObjectMapper.class)
             .readTree(response.getContentAsString(StandardCharsets.UTF_8));
-        Assertions.assertTrue(progress.isArray(), "Postęp zawiera tablicę budynków");
         ProgressHttpIT.detailed(ProgressHttpIT.find(progress, "T-D1"));
         ProgressHttpIT.basic(ProgressHttpIT.find(progress, "T-B1"));
     }

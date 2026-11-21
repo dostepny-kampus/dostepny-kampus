@@ -5,7 +5,7 @@
  */
 
 /**
- * HTTP znaczników obejrzanych pięter i postępu inwentaryzacji.
+ * Operacja HTTP wysyłki zmian z telefonu, ciała żądania i odpowiedzi.
  *
  * @since 0.1.0
  */

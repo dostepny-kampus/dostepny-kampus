@@ -5,7 +5,7 @@
  */
 
 /**
- * Zapis znaczników i odczyt postępu inwentaryzacji z bazy.
+ * Adapter zapisu znaczników piętra w bazie.
  *
  * @since 0.1.0
  */
