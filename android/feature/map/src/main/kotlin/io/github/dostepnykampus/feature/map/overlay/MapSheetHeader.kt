@@ -39,16 +39,24 @@ import io.github.dostepnykampus.core.designsystem.Typografia
  *
  * @param title tytuł arkusza, nagłówek dla TalkBack
  * @param onClose zamyka arkusz
+ * @param back powrót w miejscu „Zamknij”, gdy arkusz otwarto z innego arkusza; `null` daje „Zamknij”
  * @param content treść przed tytułem, np. znak; domyślnie pusta
  */
 @Composable
-internal fun MapSheetHeader(title: String, onClose: () -> Unit, content: @Composable RowScope.() -> Unit = {}) {
+internal fun MapSheetHeader(
+    title: String,
+    onClose: () -> Unit,
+    back: SheetBack? = null,
+    content: @Composable RowScope.() -> Unit = {},
+) {
     val header = remember { FocusRequester() }
     val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     LaunchedEffect(header) { withFrameMillis { header.requestFocus() } }
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         if (isLarge) {
-            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) { SheetCloseButton(onClose) }
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                SheetCloseButton(onClose = onClose, back = back)
+            }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
             content()
@@ -63,7 +71,7 @@ internal fun MapSheetHeader(title: String, onClose: () -> Unit, content: @Compos
                 style = MaterialTheme.typography.headlineMedium.copy(hyphens = Hyphens.Auto),
                 fontWeight = Typografia.wyroznienieWaga,
             )
-            if (!isLarge) SheetCloseButton(onClose)
+            if (!isLarge) SheetCloseButton(onClose = onClose, back = back)
         }
     }
 }

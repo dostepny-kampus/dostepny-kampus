@@ -13,11 +13,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
 import io.github.dostepnykampus.feature.map.entrance.EntranceActions
 import io.github.dostepnykampus.feature.map.entrance.EntranceSheet
 import io.github.dostepnykampus.feature.map.entrance.ShownEntrance
+import io.github.dostepnykampus.feature.map.overlay.SheetBack
 import io.github.dostepnykampus.feature.map.overlay.SheetExits
 import io.github.dostepnykampus.feature.map.plan.PlanReport
 import io.github.dostepnykampus.feature.map.plan.PlanSign
@@ -47,7 +49,12 @@ internal fun RoomCardLayer(
     val (onBuilding, barriers, actions) = sources
     val card = room.card
     var detail by rememberSaveable(card.found.building, card.found.room.id) { mutableStateOf<RoomStepDetail?>(null) }
-    val exits = SheetExits(onClose = { detail = null }, onBuilding = onBuilding)
+    val number =
+        card.found.room.number
+            .orEmpty()
+    val label = stringResource(R.string.mapa_sala, number)
+    val back = SheetBack(label = label, spoken = stringResource(R.string.mapa_sala_wroc, number))
+    val exits = SheetExits(onClose = { detail = null }, onBuilding = onBuilding, back = back)
     val way = card.way as? RoomWay.Steps
     val shownDetail = detail
     if (way != null && shownDetail != null) {

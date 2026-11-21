@@ -68,7 +68,7 @@ internal fun PlanSignSheet(
     val isLift = sign.liftFloors.isNotEmpty()
     val isFull = isLift && LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     MapSheet(modifier = if (isFull) modifier.fillMaxHeight() else modifier, isFull = isFullScreen) {
-        MapSheetHeader(title = stringResource(sign.title), onClose = exits.onClose)
+        MapSheetHeader(title = stringResource(sign.title), onClose = exits.onClose, back = exits.back)
         BuildingLink(sign.building, onClick = { exits.onBuilding(sign.building) })
         Text(text = sign.floor, style = MaterialTheme.typography.bodyLarge)
         if (isLift) LiftStops(sign)

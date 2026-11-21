@@ -157,6 +157,7 @@
     <string name="mapa_sala_pokaz_kroki">Pokaż po kolei</string>
     <string name="mapa_sala_krok_z">Krok %1$d z %2$d</string>
     <string name="mapa_sala_wszystkie_kroki">Wszystkie kroki</string>
+    <string name="mapa_sala_wroc">Wróć do sali %1$s</string>
     <string name="mapa_sala_krok_wstecz">Wstecz</string>
     <string name="mapa_sala_krok_dalej">Dalej</string>
     <string name="mapa_sala_szczegoly_wejscia">Szczegóły wejścia</string>
