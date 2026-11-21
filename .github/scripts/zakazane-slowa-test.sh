@@ -94,6 +94,43 @@ authors_case "#1447: dopisek o współautorze nie jest zakazany" 0 tajneslowo au
 authors_case "#1447: grupa kolejki bez autora PR" 0 "tajneslowo|$trailer" '' inny@example.com
 authors_case "#1447: Dependabot ma własny wyjątek" 0 "tajneslowo|$trailer" "$bot" inny@example.com
 
+# release_case <nazwa> <oczekiwany kod> <gałąź PR> <repozytorium gałęzi> <zawartość pliku>
+# Gałąź ma commit z zakazanym dopiskiem o współautorze i commit innej osoby, jak historia sprintu.
+release_case() {
+  local name="$1" expected="$2" head_ref="$3" head_repo="$4" content="$5" status=0 out
+  rm -rf "$repo"
+  mkdir -p "$repo"
+  (
+    cd "$repo"
+    git init --quiet
+    git config user.name Test
+    git config user.email test@example.com
+    git commit --quiet --allow-empty -m baza
+    git commit --quiet --allow-empty -m "$(printf 'build: zmiana
+
+%s: Osoba <osoba@example.com>
+' "$trailer")"
+    printf '%s
+' "$content" >plik.txt
+    git add plik.txt
+    git -c user.name=Inny -c user.email=inny@example.com commit --quiet -m 'build: druga zmiana'
+  )
+  out="$(cd "$repo" && FORBIDDEN_PATTERNS="tajneslowo|$trailer" PR_AUTHOR=autor-pr PR_BRANCH="$head_ref"     PR_TITLE='chore: scalenie' PR_BODY=opis BASE_REF=main HEAD_REF="$head_ref" HEAD_REPO="$head_repo"     GITHUB_REPOSITORY=org/repo bash "$script" HEAD~2 HEAD 2>&1)" || status=$?
+  if ((status == expected)); then
+    echo "OK: ${name}"
+  else
+    echo "BŁĄD: ${name}: kod wyjścia ${status}, oczekiwano ${expected}"
+    printf '%s
+' "$out" | sed 's/^/    /'
+    failures=$((failures + 1))
+  fi
+}
+
+release_case "#3657: scalenie sprintu do main pomija commity i autorów" 0 sprint/4 org/repo czysto
+release_case "#3657: scalenie sprintu do main dalej sprawdza pliki" 1 sprint/4 org/repo tajneslowo
+release_case "#3657: gałąź sprint z innego repozytorium nie ma wyjątku" 1 sprint/4 inne/repo czysto
+release_case "#3657: gałąź zadania do main nie ma wyjątku" 1 3657-zadanie org/repo czysto
+
 begin_tree() {
   rm -rf "$repo"
   mkdir -p "$repo"
