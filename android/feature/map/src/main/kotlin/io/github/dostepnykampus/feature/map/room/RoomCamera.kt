@@ -26,7 +26,7 @@ private const val HALF_TURN_DEGREES = 180.0
 
 /**
  * Ostatni widok mapy w spoczynku i sala dotknięta na planie, zapamiętane między czynnościami osoby. Dotknięcie
- * zostaje, aż zamknie się otwarta karta ([isOpen]); karta otwiera się chwilę po dotknięciu, gdy czeka na drogę.
+ * zostaje, aż zamknie się otwarta karta; karta otwiera się chwilę po dotknięciu, gdy czeka na drogę.
  */
 internal class RoomMemory {
     var idle: MapCamera? = null
