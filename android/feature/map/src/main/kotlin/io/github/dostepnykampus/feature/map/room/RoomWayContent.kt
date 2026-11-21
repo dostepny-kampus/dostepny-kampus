@@ -74,7 +74,7 @@ internal fun RoomWayContent(
                     if (index > 0) {
                         val isNextToChosen = card.step == index || card.step == index - 1
                         HorizontalDivider(
-                            modifier = Modifier.padding(vertical = Odstepy.s),
+                            modifier = Modifier.padding(vertical = Odstepy.xs),
                             color = if (isNextToChosen) Color.Transparent else MaterialTheme.colorScheme.outlineVariant,
                         )
                     }
@@ -138,7 +138,7 @@ private fun RoomWayRow(
             .fillMaxWidth()
             .clip(shape)
             .then(action ?: Modifier)
-            .padding(Odstepy.s)
+            .padding(horizontal = Odstepy.s, vertical = Odstepy.xs)
     Surface(
         color = if (selected) colors.primaryContainer else Color.Transparent,
         shape = shape,
