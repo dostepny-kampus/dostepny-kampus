@@ -55,6 +55,13 @@ internal class MapPanelTest {
         assertEquals(MapPanel(building = "A", cover = 640), panel, "Arkusz wejścia nie zasłania dołu mapy")
     }
 
+    @Test
+    fun coversMapWithRoomCard() {
+        val room = MapFocus.Building(symbol = "A", command = 1L, floor = "P1", room = "7")
+        val panel = mapPanel(focus = room, entranceBuilding = null, entranceCover = 0, roomCover = 480)
+        assertEquals(MapPanel(building = "A", cover = 480), panel, "Karta sali nie zasłania dołu mapy dopełnieniem")
+    }
+
     private fun building(focus: MapFocus?, entrance: String? = null): String? =
         mapPanel(focus = focus, entranceBuilding = entrance, entranceCover = 0).building
 }

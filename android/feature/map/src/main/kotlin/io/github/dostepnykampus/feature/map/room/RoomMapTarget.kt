@@ -10,7 +10,6 @@ import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.camera.ENTRANCE_ZOOM
 import io.github.dostepnykampus.feature.map.camera.MapCamera
-import io.github.dostepnykampus.feature.map.camera.shiftedNorth
 import io.github.dostepnykampus.feature.map.campus.RoomStepMarker
 
 /** Piętro planu [floor] i punkt kamery [point]. Wymagania: US18.1, US18.2 */
@@ -26,16 +25,12 @@ fun RoomCard.mapTarget(): RoomMapTarget {
     }
 }
 
-/** Kamera kroku z miejscem na kartę pod mapą. Wymagania: US18.2 */
-internal fun OpenRoom.cameraForRoom(isRoomOnMap: Boolean, cover: Dp): MapCamera? {
-    val target = card.mapTarget()
-    val camera = MapCamera(center = target.point, zoom = ENTRANCE_ZOOM)
-    return when {
-        !isRoomOnMap -> camera
-        cover == 0.dp -> null
-        else -> camera.shiftedNorth(-cover.value.toDouble() / 2.0)
-    }
-}
+/**
+ * Kamera na punkcie kroku. Karta na mapie ([isRoomOnMap]) zasłania dół mapy dopełnieniem kamery, więc punkt staje
+ * na środku części mapy nad kartą; do pomiaru karty ([cover] 0) kamery nie ma. Wymagania: US18.2, US16.1
+ */
+internal fun OpenRoom.cameraForRoom(isRoomOnMap: Boolean, cover: Dp): MapCamera? =
+    MapCamera(center = card.mapTarget().point, zoom = ENTRANCE_ZOOM).takeUnless { isRoomOnMap && cover == 0.dp }
 
 /** Numery kroków drogi, których punkty są na wybranym [floor]. Wymagania: US18.2 */
 internal fun RoomCard.markersOn(floor: String): List<RoomStepMarker> =
