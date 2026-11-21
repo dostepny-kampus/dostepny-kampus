@@ -112,13 +112,13 @@ Czynność główna: wpisanie symbolu budynku, jak w stanie zwykłym.
 
 ### V1: znaleziona sala
 
-![Makieta V1 po wyszukaniu A-1 329: wiersz tytułu z Pokaż listę, pole z numerem sali, przycisk terenu, plan 2 piętra z wyróżnioną salą i numerami kroków 2 przy windzie i 3 w sali, kolumna pięter po lewej i karta sali: Sala 329 z Zamknij, rodzaj sali i piętro, wiersz Budynek A-1, nagłówek Jak dojść z przyciskiem Pokaż po kolei i trzy kroki bez wybranego](../../_generated/m-v1-mapa-sala.svg)
+![Makieta V1 po wyszukaniu A-1 329: bez wiersza tytułu i pola, plan 2 piętra z wyróżnioną salą i numerami kroków 2 przy windzie i 3 w sali, kolumna pięter po lewej i karta sali: Sala 329 z Zamknij, rodzaj sali i piętro, wiersz Budynek A-1, nagłówek Jak dojść z przyciskiem Pokaż po kolei i trzy kroki bez wybranego](../../_generated/m-v1-mapa-sala.svg)
 
 Czynność główna: przeczytanie listy „Jak dojść”. Pokaz drogi zaczyna sama osoba przyciskiem „Pokaż po kolei” albo dotknięciem kroku. Wiersz budynku „Budynek A-1” otwiera V2 na niskiej wysokości.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| Wiersz tytułu i pole „A-1 329” zostają: symbol budynku i numer sali | US18.1, decyzja 44 |
+| Wiersz tytułu i pole „A-1 329” odjeżdżają w górę jak nad V2; wracają po zamknięciu karty z tym samym tekstem w polu | US18.1, NFR-53, decyzja z 21.11.2026 |
 | Kolumna pięter po lewej pod przyciskiem terenu; wybrane piętro sali | US16.1, NFR-21 |
 | Plan piętra z wyróżnioną salą bez pinezki; numery kroków w kółkach, bez linii trasy | US18.1, US18.2, NFR-21 |
 | Nagłówek karty „Sala 329” z „Zamknij”, pod nim rodzaj sali i piętro z danych PWr, dalej wiersz budynku | US18.1, NFR-40, decyzja z 18.11.2026 |

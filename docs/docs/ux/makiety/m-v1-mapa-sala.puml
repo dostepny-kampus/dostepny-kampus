@@ -1,10 +1,9 @@
 @startsalt
 ' V1 Mapa kampusu, znaleziona sala: plan piętra z wyróżnioną salą i karta sali z listą „Jak dojść”, nic nie wybrane (US18.1, US18.2).
+' Nad kartą bez wiersza tytułu i pola z numerem sali, jak nad V2 (decyzja z 21.11.2026).
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
-$naglowek_mapy("Pokaż listę")
-$pole_tekstowe("A-1 329")
 $przycisk("Kampus główny ▾")
 $mapa("plan 2 piętra A-1 z wyróżnioną salą 329; numery kroków w kółkach: 2 przy windzie, 3 w sali, bez linii trasy; kolumna pięter po lewej, wybrane 2", "", "info")
 $ramka()
