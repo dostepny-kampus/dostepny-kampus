@@ -60,10 +60,10 @@ internal data class RoomScene(val room: OpenRoom?, val isOnMap: Boolean, val pla
 
 /**
  * Widok karty [scene] przy zaznaczeniu [focus], dole mapy zasłoniętym na [cover] pikseli i górze zasłoniętej na
- * [top]. Czynność to polecenie [MapFocus.Building.command]: widzi widok
- * i plan z chwili przed nią, a wysokość karty z pierwszego pomiaru, więc późniejsza zmiana wysokości karty nie rusza
- * mapy. Dotknięta sala zostawia obraz mapy w miejscu mimo karty i paska, które zmieniają dopełnienie kamery,
- * a gdy karta ją zasłoni, mapa wysoka na [height] pikseli przesuwa się w górę ([revealing]).
+ * [top]. Czynność to polecenie [MapFocus.Building.command]: widzi widok i plan z chwili przed nią, a wysokość karty
+ * z pierwszego pomiaru z drogą ([heldWith]), więc późniejsza zmiana wysokości karty nie rusza mapy. Dotknięta sala
+ * zostawia obraz mapy w miejscu mimo karty i paska, które zmieniają dopełnienie kamery, a gdy karta ją zasłoni,
+ * mapa wysoka na [height] pikseli przesuwa się w górę ([revealing]).
  *
  * Wymagania: US18.1, US18.2, US2.8, NFR-56
  */
@@ -74,7 +74,7 @@ internal fun rememberRoomView(scene: RoomScene, focus: MapFocus?, cover: Int, to
     val command = (focus as? MapFocus.Building)?.command
     val seen = remember(command) { memory.idle?.let { SeenPlan(camera = it, plan = plan?.building) } }
     val held = remember(command) { IntArray(1) }
-    if (held[0] == 0) held[0] = cover
+    held[0] = held[0].heldWith(cover = cover, hasWay = room?.run { card.way } != null)
     if (room == null) {
         memory.tapped = null
         memory.top = top
@@ -128,3 +128,9 @@ internal fun MapCamera.revealing(area: GeoArea?, free: Double, card: Double): Ma
     val lift = minOf(a = covered, b = (top - REVEAL_MARGIN_DP).coerceAtLeast(minimumValue = 0.0))
     return if (isSeen && covered > 0) shiftedNorth(-lift) else this
 }
+
+/**
+ * Wysokość karty zapamiętana dla czynności: pierwszy pomiar [cover] karty z drogą ([hasWay]).
+ * Karta bez drogi jeszcze rośnie, więc do wczytania drogi zostaje 0 i kamera czeka. Wymagania: US18.2, NFR-56
+ */
+internal fun Int.heldWith(cover: Int, hasWay: Boolean): Int = if (this == 0 && hasWay) cover else this
