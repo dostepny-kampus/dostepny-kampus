@@ -121,35 +121,31 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       Wtedy widzi nową wartość postępu budynku A-1
       Oraz datę i godzinę nowego odczytu
 
-    # @do-zrobienia #703: wymaga operacji GET /progress.
-    @serwer @do-zrobienia
+    @serwer @postep-http
     Szablon scenariusza: Do postępu nie wchodzą zgłoszenia nieznane serwerowi, archiwalne ani poza budynkiem
-      Zakładając, że przy budynku A-1 są 4 zgłoszenia przyjęte
-      Oraz jest też <zgłoszenie>
+      Zakładając, że budynek "A-1" ma 5 pięter z danych testowych i nie ma znaczników
+      Oraz w budynku A-1 są 0 wysłane, 0 w weryfikacji i 4 przyjęte zgłoszenia
+      Oraz istnieje dodatkowe zgłoszenie "<zgłoszenie>"
       Jeżeli Koordynator otworzy postęp inwentaryzacji
-      Wtedy przy budynku A-1 widzi nadal 4 zgłoszenia przyjęte i 0 czekających
+      Wtedy postęp A-1 ma 0 w liczniku czekających i 4 w liczniku przyjętych
 
       Przykłady:
-        | zgłoszenie                                                      |
-        | zgłoszenie „lokalne” z budynku A-1 w telefonie Zbierającego     |
-        | zgłoszenie „archiwalne” w budynku A-1                           |
-        | zgłoszenie przyjęte „poza budynkiem” 5 m od wejścia głównego A-1 |
+        | zgłoszenie     |
+        | lokalne        |
+        | archiwalne     |
+        | poza budynkiem |
 
   @BR-24
   Reguła: Postęp pokazuje wejścia budynku szczegółowego sprawdzone na miejscu
 
     Założenia:
       Zakładając, że Koordynator jest zalogowany z rolą Koordynatora
-      # Dane testowe, a nie stan faktyczny budynku A-1.
-      Oraz budynek A-1 ma w danych testowych 6 wejść
 
-    # @do-zrobienia #703: wymaga operacji GET /progress.
-    @US11.4 @serwer @do-zrobienia
+    @US11.4 @serwer @postep-http
     Szablon scenariusza: Liczba wejść ze źródłem „obchód” w budynku szczegółowym
-      Zakładając, że liczba wejść A-1 ze źródłem oznaczenia „obchód” to <obchód>, a pozostałe mają źródło „import”
-      Oraz liczba wejść A-1 ze zmianą oznaczenia czekającą na decyzję Weryfikatora to <czeka>
+      Zakładając, że A-1 ma <obchód> wejść z obchodu i <czeka> zmian oznaczenia czekających na decyzję
       Jeżeli Koordynator otworzy postęp inwentaryzacji
-      Wtedy przy budynku A-1 widzi „Wejścia sprawdzone na miejscu: <obchód> z 6”
+      Wtedy postęp A-1 pokazuje <obchód> z 6 wejść sprawdzonych na miejscu
 
       Przykłady:
         | obchód | czeka |
@@ -158,9 +154,9 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
         | 4      | 2     |
         | 6      | 0     |
 
-    # @do-zrobienia #703: wymaga operacji GET /progress.
-    @US11.4 @serwer @do-zrobienia
+    @US11.4 @serwer @postep-http @przyjecie-wejscia
     Scenariusz: Przyjęta zmiana oznaczenia wejścia zwiększa liczbę wejść sprawdzonych na miejscu
-      Zakładając, że 4 wejścia A-1 mają oznaczenie ze źródłem „obchód”
+      Zakładając, że A-1 ma 4 wejść z obchodu i 0 zmian oznaczenia czekających na decyzję
       Jeżeli Weryfikator przyjmie zmianę oznaczenia jednego z pozostałych wejść A-1
-      Wtedy przy budynku A-1 Koordynator widzi „Wejścia sprawdzone na miejscu: 5 z 6”
+      Oraz Koordynator otworzy postęp inwentaryzacji
+      Wtedy postęp A-1 pokazuje 5 z 6 wejść sprawdzonych na miejscu
