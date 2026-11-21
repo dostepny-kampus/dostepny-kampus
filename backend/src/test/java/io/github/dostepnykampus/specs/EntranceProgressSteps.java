@@ -69,7 +69,8 @@ public final class EntranceProgressSteps {
             INSERT INTO submissions (id, author, status, content)
             VALUES (:id, 'autor-zgloszenia', 'SENT', CAST(:content AS jsonb))
             """
-        ).param("id", EntranceProgressSteps.SUBMISSION).param("content", EntranceProgressSteps.content()).update();
+        ).param("id", EntranceProgressSteps.SUBMISSION)
+            .param("content", EntranceProgressSteps.content()).update();
         this.photos.put(
             EntranceProgressSteps.SUBMISSION, EntranceProgressSteps.PHOTO,
             "zdjęcie wejścia".getBytes(StandardCharsets.UTF_8)
