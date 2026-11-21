@@ -80,11 +80,11 @@ internal fun Animatable<Float, AnimationVector1D>.isBarShown(
 internal fun isMapCovered(sheet: PaddingValues, isRoomOpen: Boolean): Boolean =
     sheet.calculateBottomPadding() > 0.dp || (isRoomOpen && LocalDensity.current.fontScale < LARGE_FONT_SCALE)
 
-/** Góra mapy zasłonięta paskiem wysokim na [bar] px; gdy mapę zasłania arkusz albo karta, pasek odjechał, więc nic. */
+/** Góra mapy zasłonięta paskiem wysokim na [bar] px; `null`, gdy mapa zasłonięta ([isCovered]) i pasek odjechał. */
 @Composable
 @ReadOnlyComposable
-internal fun mapTop(isCovered: Boolean, bar: Int): Dp =
-    if (isCovered) 0.dp else with(LocalDensity.current) { bar.toDp() }
+internal fun mapTop(isCovered: Boolean, bar: Int): Dp? =
+    if (isCovered) null else with(LocalDensity.current) { bar.toDp() }
 
 /** Przesuwa element w górę o część [hidden] jego wysokości; odczyt w fazie układu, bez ponownej kompozycji. */
 internal fun Modifier.slideUp(hidden: Animatable<Float, AnimationVector1D>): Modifier =

@@ -37,7 +37,7 @@ internal fun CampusMapPanels(
     state: MapSceneState,
     catalog: BuildingCatalog?,
     areas: MapAreas,
-    top: Dp,
+    top: Dp?,
     topInset: WindowInsets,
     sheet: ScreenSheet,
     isKeyboardOpen: Boolean,
@@ -50,8 +50,9 @@ internal fun CampusMapPanels(
     val limits = state.limits ?: return
     Box(Modifier.fillMaxSize()) {
         FollowCamera(camera = camera, limits = limits, area = areas.current?.name, plan = plan)
-        MapStatusBar(topInset, isShown = state.isCovered)
-        val underBar = if (state.isCovered) topInset.asPaddingValues() else PaddingValues(top = top)
+        val barTop = top?.takeUnless { state.isCovered }
+        MapStatusBar(topInset, isShown = barTop == null)
+        val underBar = barTop?.let { PaddingValues(top = it) } ?: topInset.asPaddingValues()
         MapOverlay(
             camera = camera,
             hasControls = state.hasControls && !isKeyboardOpen,
