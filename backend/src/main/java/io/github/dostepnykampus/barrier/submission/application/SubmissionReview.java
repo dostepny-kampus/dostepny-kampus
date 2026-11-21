@@ -14,7 +14,10 @@ import io.github.dostepnykampus.barrier.submission.SubmissionRepository;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
 import io.github.dostepnykampus.building.api.EntranceMarkings;
+import io.github.dostepnykampus.building.api.EntrancePlace;
+import io.github.dostepnykampus.building.api.KnownBuildings;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,13 +40,17 @@ public class SubmissionReview {
     /** Archiwizacja zastosowanej zmiany. */
     private final EntranceChangeArchive archive;
 
+    /** Lokalizacja wejścia, gdy zgłoszenie nie wskazuje budynku. */
+    private final KnownBuildings buildings;
+
     SubmissionReview(
         final SubmissionRepository decisions, final EntranceMarkings entrances,
-        final EntranceChangeArchive archive
+        final EntranceChangeArchive archive, final KnownBuildings buildings
     ) {
         this.decisions = decisions;
         this.entrances = entrances;
         this.archive = archive;
+        this.buildings = buildings;
     }
 
     /**
@@ -65,10 +72,10 @@ public class SubmissionReview {
 
     private EditResult apply(final Submission submission) {
         final SubmissionContent content = submission.content();
+        final String entrance = Objects.requireNonNull(content.entranceId());
         if (!this.entrances.apply(
             new EntranceMarkings.Change(
-                Objects.requireNonNull(content.place().buildingSymbol()),
-                Objects.requireNonNull(content.entranceId()),
+                this.building(content, entrance), entrance,
                 EntranceMarkings.Marking.valueOf(
                     Objects.requireNonNull(content.entranceMarking()).name()
                 ),
@@ -78,5 +85,12 @@ public class SubmissionReview {
             throw new StaleEntranceMarking();
         }
         return new EditResult.Saved(this.archive.archiveEntranceChange(submission.id()));
+    }
+
+    private String building(final SubmissionContent content, final String entrance) {
+        return Optional.ofNullable(content.place().buildingSymbol()).orElseGet(
+            () -> this.buildings.entrance(entrance, null)
+                .map(EntrancePlace::buildingSymbol).orElseThrow(StaleEntranceMarking::new)
+        );
     }
 }
