@@ -16,7 +16,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.JsonNode;
@@ -37,19 +36,21 @@ final class ProgressHttpIT {
     @Test
     void readsProgressForCoordinator(final WebApplicationContext context) throws Exception {
         ProgressHttpIT.seed(context.getBean(JdbcClient.class));
-        final String body = context.getBean(MockMvc.class)
-            .perform(MockMvcRequestBuilders.get("/progress")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer COORDINATOR"))
-            .andExpect(MockMvcResultMatchers.status().isOk())
-            .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
-        final JsonNode progress = context.getBean(ObjectMapper.class).readTree(body);
+        final var response = context.getBean(MockMvc.class).perform(
+            MockMvcRequestBuilders.get("/progress")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer COORDINATOR")
+        ).andReturn().getResponse();
+        Assertions.assertEquals(200, response.getStatus(), "Dostęp Koordynatora do postępu");
+        final JsonNode progress = context.getBean(ObjectMapper.class)
+            .readTree(response.getContentAsString(StandardCharsets.UTF_8));
         Assertions.assertTrue(progress.isArray(), "Postęp zawiera tablicę budynków");
         ProgressHttpIT.detailed(ProgressHttpIT.find(progress, "T-D1"));
         ProgressHttpIT.basic(ProgressHttpIT.find(progress, "T-B1"));
     }
 
     @Test
-    void deniesAccessWithoutCoordinatorRole(final MockMvc http) throws Exception {
+    void deniesAccessWithoutCoordinatorRole(final WebApplicationContext context) throws Exception {
+        final MockMvc http = context.getBean(MockMvc.class);
         Assertions.assertEquals(
             List.of(401, 403, 403, 403),
             List.of(
@@ -81,8 +82,10 @@ final class ProgressHttpIT {
             .filter(marker -> marker.path("mine").asBoolean(false)).findFirst().orElseThrow();
         Assertions.assertEquals(
             List.of("00000000-0000-4000-8000-000000000001", "T-D1", "f0", "false"),
-            List.of(mine.path("id").asString(), mine.path("buildingSymbol").asString(),
-                mine.path("floorId").asString(), mine.path("revoked").asString()),
+            List.of(
+                mine.path("id").asString(), mine.path("buildingSymbol").asString(),
+                mine.path("floorId").asString(), mine.path("revoked").asString()
+            ),
             "Aktywny znacznik czytającego"
         );
         Assertions.assertTrue(
@@ -108,9 +111,10 @@ final class ProgressHttpIT {
     }
 
     private static int status(final MockMvc http, final String role) throws Exception {
-        return http.perform(MockMvcRequestBuilders.get("/progress")
-            .header(HttpHeaders.AUTHORIZATION, "Bearer ".concat(role)))
-            .andReturn().getResponse().getStatus();
+        return http.perform(
+            MockMvcRequestBuilders.get("/progress")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer ".concat(role))
+        ).andReturn().getResponse().getStatus();
     }
 
     private static void seed(final JdbcClient jdbc) {
@@ -168,8 +172,9 @@ final class ProgressHttpIT {
     }
 
     private static JsonNode find(final JsonNode list, final String symbol) {
-        return list.valueStream().filter(item -> symbol.equals(item.path("buildingSymbol").asString()))
-            .findFirst()
+        return list.valueStream().filter(
+            item -> symbol.equals(item.path("buildingSymbol").asString())
+        ).findFirst()
             .orElseThrow(() -> new IllegalStateException(String.format("Brak %s", symbol)));
     }
 

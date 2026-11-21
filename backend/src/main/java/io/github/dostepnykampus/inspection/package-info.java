@@ -9,13 +9,16 @@
  *
  * <p>Zapis znaczników obejrzanych pięter i odczyt postępu budynków.</p>
  *
- * <p>API: HTTP {@code /sync/push}, {@code DELETE /inspection-markers/{id}} i {@code GET /progress}.</p>
+ * <p>API: HTTP {@code /sync/push}, {@code DELETE /inspection-markers/{id}}
+ * i {@code GET /progress}.</p>
  *
  * <p>Zależności: {@code building :: api}, {@code shared}.</p>
  *
- * <p>Własność zgłoszeń barier pozostaje w module barrier.</p>
+ * <p>Nie robi: nie przyjmuje zgłoszeń barier.</p>
  *
- * <p>Wymagania: US11.1–US11.4, US15, BR-20, BR-21, BR-24</p>
+ * <p>Kiedy dodawać tutaj: znaczniki obejrzanych pięter i postęp budynków.</p>
+ *
+ * <p>Wymagania: US11.1, US11.2, US11.3, US11.4, US15, BR-20, BR-21, BR-24</p>
  *
  * @since 0.1.0
  */

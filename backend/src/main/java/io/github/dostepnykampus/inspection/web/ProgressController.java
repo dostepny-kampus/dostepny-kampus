@@ -21,9 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public final class ProgressController {
 
-    /**
-     * Odczyt postępu budynków.
-     */
+    /** Odczyt postępu budynków. */
     private final ProgressReading progress;
 
     ProgressController(final ProgressReading progress) {

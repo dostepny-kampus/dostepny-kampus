@@ -37,9 +37,14 @@ record ProgressMarkerResponse(
 
     static ProgressMarkerResponse from(final ProgressMarker marker) {
         final MarkerPlace place = marker.place();
+        final String level;
+        if (place instanceof MarkerPlace.Floor floor) {
+            level = floor.floor();
+        } else {
+            level = null;
+        }
         return new ProgressMarkerResponse(
-            marker.id(), place.building(), place instanceof MarkerPlace.Floor floor
-                ? floor.floor() : null,
+            marker.id(), place.building(), level,
             marker.created(), false, marker.mine(), marker.pseudonym()
         );
     }

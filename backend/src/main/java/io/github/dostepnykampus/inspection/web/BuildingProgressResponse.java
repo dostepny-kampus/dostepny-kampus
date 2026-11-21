@@ -6,6 +6,8 @@
 package io.github.dostepnykampus.inspection.web;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import io.github.dostepnykampus.inspection.domain.BuildingProgress;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
@@ -18,10 +20,7 @@ import org.jspecify.annotations.Nullable;
  * @param floorsTotal Liczba pięter, tylko w budynku szczegółowym
  * @param floorsInspected Liczba obejrzanych pięter, tylko w budynku szczegółowym
  * @param inspected Czy obejrzano cały budynek, tylko w budynku podstawowym
- * @param pendingSubmissions Liczba zgłoszeń czekających na sprawdzenie
- * @param acceptedSubmissions Liczba przyjętych zgłoszeń
- * @param entrancesTotal Liczba wszystkich wejść
- * @param entrancesCheckedOnSite Liczba wejść sprawdzonych na miejscu
+ * @param counts Liczby zgłoszeń i wejść budynku
  * @param markers Aktywne znaczniki budynku
  * @since 0.1.0
  */
@@ -32,26 +31,43 @@ record BuildingProgressResponse(
     @Nullable Integer floorsTotal,
     @Nullable Integer floorsInspected,
     @Nullable Boolean inspected,
-    int pendingSubmissions,
-    int acceptedSubmissions,
-    int entrancesTotal,
-    int entrancesCheckedOnSite,
+    @JsonUnwrapped Counts counts,
     List<ProgressMarkerResponse> markers
 ) {
 
     static BuildingProgressResponse from(final BuildingProgress progress) {
-        final BuildingProgress.Counts counts = progress.counts();
+        final BuildingProgress.Counts source = progress.counts();
+        final Counts counts = new Counts(
+            source.pending(), source.accepted(), source.entrances(), source.checked()
+        );
         final List<ProgressMarkerResponse> markers = progress.markers().stream()
             .map(ProgressMarkerResponse::from).toList();
         return switch (progress.coverage()) {
             case BuildingProgress.Coverage.Floors floors -> new BuildingProgressResponse(
                 progress.symbol(), "DETAILED", floors.total(), floors.covered(), null,
-                counts.pending(), counts.accepted(), counts.entrances(), counts.checked(), markers
+                counts, markers
             );
             case BuildingProgress.Coverage.Whole whole -> new BuildingProgressResponse(
                 progress.symbol(), "BASIC", null, null, whole.inspected(),
-                counts.pending(), counts.accepted(), counts.entrances(), counts.checked(), markers
+                counts, markers
             );
+            case null -> throw new IllegalArgumentException("Brak pokrycia budynku");
         };
+    }
+
+    /**
+     * Liczby zgłoszeń i wejść budynku w odpowiedzi HTTP.
+     *
+     * @param pending Zgłoszenia czekające
+     * @param accepted Zgłoszenia przyjęte
+     * @param entrances Wszystkie wejścia
+     * @param checked Wejścia sprawdzone na miejscu
+     */
+    record Counts(
+        @JsonProperty("pendingSubmissions") int pending,
+        @JsonProperty("acceptedSubmissions") int accepted,
+        @JsonProperty("entrancesTotal") int entrances,
+        @JsonProperty("entrancesCheckedOnSite") int checked
+    ) {
     }
 }

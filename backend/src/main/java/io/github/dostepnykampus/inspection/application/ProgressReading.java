@@ -22,15 +22,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ProgressReading {
 
-    /**
-     * Źródło postępu budynków.
-     */
+    /** Dane postępu budynków. */
     private final ProgressRepository progress;
 
     /**
      * Tworzy usługę odczytu postępu.
      *
-     * @param progress Źródło postępu budynków
+     * @param progress Dane postępu budynków
      */
     public ProgressReading(final ProgressRepository progress) {
         this.progress = progress;
