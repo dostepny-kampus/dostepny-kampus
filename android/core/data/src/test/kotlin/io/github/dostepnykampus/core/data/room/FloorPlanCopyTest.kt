@@ -72,6 +72,24 @@ class FloorPlanCopyTest {
             assertEquals(null, dao.copy().rooms(symbol = C13, floor = "P0"), "Zepsuta kopia dała plan")
         }
 
+    /** Wiersz: piętro odczytane raz idzie z pamięci, a nowe pobranie planu budynku daje nowe pomieszczenia. */
+    @Test
+    fun keepsReadFloorInMemory() =
+        runBlocking {
+            val dao = FakeFloorPlanDao()
+            var floor = plan("P0")
+            val copy = dao.copy(rooms = { _, _ -> ServerReply.Ok(floor) })
+            copy.download(C13)
+            val first = copy.rooms(symbol = C13, floor = "P0")
+            dao.rooms.clear()
+            val kept = copy.rooms(symbol = C13, floor = "P0")
+            floor = plan("P1")
+            copy.download(C13)
+            val fresh = copy.rooms(symbol = C13, floor = "P0")
+
+            assertEquals(listOf(first, plan("P1")), listOf(kept, fresh), "Pamięć piętra")
+        }
+
     private fun FakeFloorPlanDao.copy(
         floors: suspend (String) -> ServerReply<FloorList> = { ServerReply.Ok(FLOORS) },
         rooms: suspend (String, String) -> ServerReply<RoomList> = { _, _ -> ServerReply.Offline },
