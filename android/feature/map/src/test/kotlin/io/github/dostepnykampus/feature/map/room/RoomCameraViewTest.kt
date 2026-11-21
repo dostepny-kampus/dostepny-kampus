@@ -15,6 +15,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import io.github.dostepnykampus.feature.map.plan.MapPanel
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.FOUND
 import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.VIA_LIFT
 import org.junit.Assert.assertEquals
@@ -64,7 +65,8 @@ class RoomCameraViewTest {
                 rememberRoomView(
                     scene = RoomScene(room = room.value, isOnMap = true, plan = null),
                     focus = focus.takeIf { room.value != null },
-                    cover = cover.intValue,
+                    panel =
+                        MapPanel(cover = cover.intValue, wayCover = cover.intValue.takeIf { room.value != null } ?: 0),
                     top = 0.dp,
                     height = 2000,
                 )

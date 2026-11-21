@@ -19,6 +19,7 @@ import io.github.dostepnykampus.feature.map.camera.mercatorY
 import io.github.dostepnykampus.feature.map.camera.shiftedNorth
 import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import io.github.dostepnykampus.feature.map.plan.MapPanel
 import kotlin.math.PI
 
 private const val REVEAL_MARGIN_DP = 16.0
@@ -72,7 +73,7 @@ internal class RoomView(val camera: MapCamera?, val cover: Int, val mapCover: Dp
 internal data class RoomScene(val room: OpenRoom?, val isOnMap: Boolean, val plan: ShownPlan?)
 
 /**
- * Widok karty [scene] przy zaznaczeniu [focus], dole mapy zasłoniętym na [cover] pikseli i górze zasłoniętej na
+ * Widok karty [scene] przy zaznaczeniu [focus], dole mapy zasłoniętym według [panel] i górze zasłoniętej na
  * [top]. Czynność to polecenie [MapFocus.Building.command]: widzi widok i plan z chwili przed nią, a wysokość karty
  * z pierwszego pomiaru z drogą ([heldWith]), więc późniejsza zmiana wysokości karty nie rusza mapy. Dotknięta sala
  * zostawia obraz mapy w miejscu mimo karty i paska, które zmieniają dopełnienie kamery, a gdy karta ją zasłoni,
@@ -81,13 +82,14 @@ internal data class RoomScene(val room: OpenRoom?, val isOnMap: Boolean, val pla
  * Wymagania: US18.1, US18.2, US2.8, NFR-56
  */
 @Composable
-internal fun rememberRoomView(scene: RoomScene, focus: MapFocus?, cover: Int, top: Dp, height: Int): RoomView {
+internal fun rememberRoomView(scene: RoomScene, focus: MapFocus?, panel: MapPanel, top: Dp, height: Int): RoomView {
     val (room, isOnMap, plan) = scene
+    val cover = panel.cover
     val memory = remember { RoomMemory() }
     val command = (focus as? MapFocus.Building)?.command
     val seen = remember(command) { memory.idle?.let { SeenPlan(camera = it, plan = plan?.building) } }
     val held = remember(command) { IntArray(1) }
-    held[0] = held[0].heldWith(cover = cover, hasWay = room?.run { card.way } != null)
+    held[0] = held[0].heldWith(cover = panel.wayCover)
     memory.follow(isOpenNow = room != null, bar = top)
     val kept = if (isOnMap) held[0] else cover
     val isTapped = room?.run { card.step == null && card.found.room.id == memory.tapped } == true
@@ -140,7 +142,7 @@ internal fun MapCamera.revealing(area: GeoArea?, free: Double, card: Double): Ma
 }
 
 /**
- * Wysokość karty zapamiętana dla czynności: pierwszy pomiar [cover] karty z drogą ([hasWay]).
- * Karta bez drogi jeszcze rośnie, więc do wczytania drogi zostaje 0 i kamera czeka. Wymagania: US18.2, NFR-56
+ * Wysokość karty zapamiętana dla czynności: pierwszy pomiar [cover] karty tej sali już z drogą ([MapPanel.wayCover]).
+ * Karta bez drogi jeszcze rośnie, więc do pomiaru z drogą zostaje 0 i kamera czeka. Wymagania: US18.2, NFR-56
  */
-internal fun Int.heldWith(cover: Int, hasWay: Boolean): Int = if (this == 0 && hasWay) cover else this
+internal fun Int.heldWith(cover: Int): Int = if (this == 0) cover else this

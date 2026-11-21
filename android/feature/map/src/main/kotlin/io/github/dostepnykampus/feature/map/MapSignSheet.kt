@@ -40,6 +40,7 @@ import io.github.dostepnykampus.feature.map.overlay.SheetExits
 import io.github.dostepnykampus.feature.map.plan.ChosenPlanSheet
 import io.github.dostepnykampus.feature.map.plan.MapPanel
 import io.github.dostepnykampus.feature.map.room.OpenRoom
+import io.github.dostepnykampus.feature.map.room.RoomCard
 import io.github.dostepnykampus.feature.map.room.RoomCardLayer
 import io.github.dostepnykampus.feature.map.room.RoomSheetSources
 
@@ -97,9 +98,14 @@ internal class SignSheetState(initial: ChosenSign?) {
     var roomHeight by mutableIntStateOf(0)
         private set
 
-    /** Karta sali na mapie ma wysokość [height] w pikselach. */
-    fun measureRoom(height: Int) {
+    /** Sala i wysokość jej karty z drogą w pikselach z ostatniego pomiaru; `null` przed pomiarem karty z drogą. */
+    var roomWay by mutableStateOf<Pair<String, Int>?>(null)
+        private set
+
+    /** Karta sali [card] na mapie ma wysokość [height] w pikselach. */
+    fun measureRoom(height: Int, card: RoomCard) {
         roomHeight = height
+        roomWay = (card.found.room.id to height).takeIf { card.way != null }
     }
 
     /** Arkusz wejścia albo znaku planu na mapie ma wysokość [height] w pikselach. */
@@ -392,13 +398,13 @@ internal fun BoxScope.MapSheets(
     state: MapSceneState,
     onBuilding: (String) -> Unit,
     entranceActions: EntranceActions,
-    onRoomHeight: (Int) -> Unit,
+    onRoomHeight: RoomCard.(Int) -> Unit,
 ) {
     val room = open.room
     val modifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
     if (room != null) {
         val sources = RoomSheetSources(onBuilding, open.barriers, entranceActions)
-        RoomCardLayer(room, sources, modifier.onSizeChanged { onRoomHeight(it.height) })
+        RoomCardLayer(room, sources, modifier.onSizeChanged { room.card.onRoomHeight(it.height) })
         return
     }
     ChosenSignSheet(
