@@ -20,9 +20,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
@@ -48,6 +51,9 @@ public final class ProgressSteps {
     /** Dane bieżącego scenariusza. */
     private ProgressFixtures data;
 
+    /** Transakcja otwarta na czas scenariusza. */
+    private TransactionStatus transaction;
+
     /** Ostatni odczyt postępu. */
     private JsonNode progress;
 
@@ -67,116 +73,101 @@ public final class ProgressSteps {
         this.jdbc = jdbc;
         this.manager = manager;
         this.mapper = mapper;
-        this.progress = mapper.createArrayNode();
     }
 
     /**
      * Izoluje dane jednego scenariusza.
      */
     @Before("@postep-http")
-    public void start() {
-        this.data = new ProgressFixtures(this.jdbc, this.manager);
+    void start() {
+        this.transaction = this.manager.getTransaction(new DefaultTransactionDefinition());
+        this.data = new ProgressFixtures(this.jdbc);
+        this.progress = this.mapper.createArrayNode();
     }
 
     /**
      * Wycofuje dane scenariusza i zmiany wykonane przez żądania.
      */
     @After("@postep-http")
-    public void finish() {
-        this.data.close();
+    void finish() {
+        this.manager.rollback(this.transaction);
     }
 
     @Given("budynek {string} ma {int} pięter z danych testowych i nie ma znaczników")
-    public void emptyBuilding(final String symbol, final int floors) {
+    void emptyBuilding(final String symbol, final int floors) {
         this.data.building(symbol, floors);
     }
 
     @Given("w budynku A-1 obejrzano {int} z 5 pięter")
-    public void inspectedFloors(final int covered) {
+    void inspectedFloors(final int covered) {
         this.data.building("A-1", 5);
         this.data.markedFloors("A-1", covered);
     }
 
     @Given("budynek B-8 ma znacznik całego budynku")
-    public void inspectedBasic() {
+    void inspectedBasic() {
         this.data.building("B-8", 0);
         this.data.marker("B-8", "");
     }
 
     @Given("w budynku A-1 są {int} wysłane, {int} w weryfikacji i {int} przyjęte zgłoszenia")
-    public void submissionCounts(final int sent, final int reviewing, final int accepted) {
+    void submissionCounts(final int sent, final int reviewing, final int accepted) {
         this.data.submissions("A-1", "SENT", sent);
         this.data.submissions("A-1", "IN_REVIEW", reviewing);
         this.data.submissions("A-1", "ACCEPTED", accepted);
     }
 
     @When("Zbierający oznaczy budynek {string} na poziomie {int}")
-    public void mark(final String symbol, final int floor) throws Exception {
+    void mark(final String symbol, final int floor) throws Exception {
         this.recordMarker(symbol, String.format(",\"floorId\":\"%d\"", floor));
     }
 
     @When("Zbierający oznaczy budynek {string} w całości")
-    public void markWhole(final String symbol) throws Exception {
+    void markWhole(final String symbol) throws Exception {
         this.recordMarker(symbol, "");
     }
 
-    private void recordMarker(final String symbol, final String level) throws Exception {
-        this.send(String.format(
-            """
-            "type":"SET_INSPECTION_MARKER",
-            "marker":{"id":"%s","buildingSymbol":"%s"%s}
-            """,
-            UUID.randomUUID(), ProgressFixtures.key(symbol), level
-        ));
-    }
-
     @When("do serwera dotrze cofnięcie znacznika z piętra {int} budynku A-1")
-    public void revoke(final int floor) throws Exception {
-        final UUID marker = this.jdbc.sql(
-            """
-            SELECT id FROM inspection_markers
-            WHERE building_symbol = :symbol AND floor_id = :floor AND NOT revoked
-            """
-        ).param("symbol", ProgressFixtures.key("A-1")).param("floor", Integer.toString(floor))
-            .query(UUID.class).single();
-        this.send(String.format(
-            "\"type\":\"REVOKE_INSPECTION_MARKER\",\"markerId\":\"%s\"", marker
-        ));
-    }
-
-    @When("Koordynator otworzy postęp inwentaryzacji")
-    public void read() throws Exception {
-        this.progress = this.mapper.readTree(
-            this.http.perform(
-                MockMvcRequestBuilders.get("/progress")
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer COORDINATOR")
-            ).andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8)
+    void revoke(final int floor) throws Exception {
+        this.send(
+            String.format(
+                "\"type\":\"REVOKE_INSPECTION_MARKER\",\"markerId\":\"%s\"",
+                this.data.markerAt("A-1", floor)
+            )
         );
     }
 
-    @Then("postęp {string} to {int} z {int} pięter, czyli {int} procent")
-    public void coveredFloors(
-        final String symbol, final int covered, final int total, final int percent
-    ) {
-        final JsonNode building = this.building(symbol);
-        final int seen = building.path("floorsInspected").asInt(-1);
-        final int listed = building.path("floorsTotal").asInt(-1);
-        MatcherAssert.assertThat("Budynek ma piętra", listed, Matchers.greaterThan(0));
-        MatcherAssert.assertThat(
-            "Piętra obejrzane, wszystkie piętra i procent postępu",
-            List.of(seen, listed, 100 * seen / listed),
-            Matchers.contains(covered, total, percent)
+    @When("Koordynator otworzy postęp inwentaryzacji")
+    void read() throws Exception {
+        this.progress = this.response(
+            MockMvcRequestBuilders.get("/progress")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer COORDINATOR")
         );
     }
 
     @Then("postęp {string} pokazuje {int} z {int} pięter")
-    public void marked(final String symbol, final int covered, final int total) {
-        this.coveredFloors(symbol, covered, total, 100 * covered / total);
+    void coveredFloors(final String symbol, final int covered, final int total) {
+        final JsonNode building = this.building(symbol);
+        MatcherAssert.assertThat(
+            "Piętra obejrzane i wszystkie piętra",
+            List.of(
+                building.path("floorsInspected").asInt(-1), building.path("floorsTotal").asInt(-1)
+            ),
+            Matchers.contains(covered, total)
+        );
+    }
+
+    @Then("postęp {string} wynosi {int} procent")
+    void percent(final String symbol, final int expected) {
+        final JsonNode building = this.building(symbol);
+        final int covered = building.path("floorsInspected").asInt(-1);
+        final int total = building.path("floorsTotal").asInt(-1);
+        MatcherAssert.assertThat("Budynek ma piętra", total, Matchers.greaterThan(0));
+        MatcherAssert.assertThat("Procent postępu", 100 * covered / total, Matchers.is(expected));
     }
 
     @Then("budynek {string} jest obejrzany w całości")
-    public void coveredWhole(final String symbol) {
+    void coveredWhole(final String symbol) {
         MatcherAssert.assertThat(
             "Znacznik obejrzenia całego budynku",
             this.building(symbol).path("inspected").asBoolean(false), Matchers.is(true)
@@ -184,7 +175,7 @@ public final class ProgressSteps {
     }
 
     @Then("postęp A-1 ma {int} w liczniku czekających i {int} w liczniku przyjętych")
-    public void countedSubmissions(final int pending, final int accepted) {
+    void countedSubmissions(final int pending, final int accepted) {
         final JsonNode building = this.building("A-1");
         MatcherAssert.assertThat(
             "Zgłoszenia czekające i przyjęte",
@@ -196,21 +187,39 @@ public final class ProgressSteps {
         );
     }
 
-    private void send(final String operation) throws Exception {
-        final JsonNode reply = this.mapper.readTree(
-            this.http.perform(
-                MockMvcRequestBuilders.post("/sync/push").with(new AsCollector())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(String.format(
-                        "{\"operations\":[{\"clientOperationId\":\"%s\",%s}]}",
-                        UUID.randomUUID(), operation
-                    ))
-            ).andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8)
+    private void recordMarker(final String symbol, final String level) throws Exception {
+        this.send(
+            String.format(
+                """
+                "type":"SET_INSPECTION_MARKER",
+                "marker":{"id":"%s","buildingSymbol":"%s"%s}
+                """,
+                UUID.randomUUID(), ProgressFixtures.key(symbol), level
+            )
         );
+    }
+
+    private void send(final String operation) throws Exception {
         MatcherAssert.assertThat(
             "Serwer przyjął operację znacznika",
-            reply.path("results").path(0).path("outcome").asString(), Matchers.is("APPLIED")
+            this.response(
+                MockMvcRequestBuilders.post("/sync/push").with(new AsCollector())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(
+                        String.format(
+                            "{\"operations\":[{\"clientOperationId\":\"%s\",%s}]}",
+                            UUID.randomUUID(), operation
+                        )
+                    )
+            ).path("results").path(0).path("outcome").asString(),
+            Matchers.is("APPLIED")
+        );
+    }
+
+    private JsonNode response(final RequestBuilder request) throws Exception {
+        return this.mapper.readTree(
+            this.http.perform(request).andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8)
         );
     }
 

@@ -94,7 +94,8 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       Oraz budynek B-8 ma znacznik całego budynku
       Oraz w budynku A-1 są 2 wysłane, 1 w weryfikacji i 4 przyjęte zgłoszenia
       Jeżeli Koordynator otworzy postęp inwentaryzacji
-      Wtedy postęp "A-1" to 3 z 5 pięter, czyli 60 procent
+      Wtedy postęp "A-1" pokazuje 3 z 5 pięter
+      Oraz postęp "A-1" wynosi 60 procent
       Oraz postęp A-1 ma 3 w liczniku czekających i 4 w liczniku przyjętych
       Oraz budynek "B-8" jest obejrzany w całości
 
@@ -103,7 +104,8 @@ Funkcja: Piętro obejrzane i postęp inwentaryzacji
       Zakładając, że w budynku A-1 obejrzano <przed> z 5 pięter
       Jeżeli <zmiana>
       Oraz Koordynator otworzy postęp inwentaryzacji
-      Wtedy postęp "A-1" to <po> z 5 pięter, czyli <procent> procent
+      Wtedy postęp "A-1" pokazuje <po> z 5 pięter
+      Oraz postęp "A-1" wynosi <procent> procent
 
       Przykłady:
         | przed | zmiana                                                      | po | procent |
