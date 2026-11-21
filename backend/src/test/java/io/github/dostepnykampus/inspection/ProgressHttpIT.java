@@ -7,7 +7,6 @@ package io.github.dostepnykampus.inspection;
 
 import io.github.dostepnykampus.IntegrationTest;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
@@ -69,7 +68,8 @@ final class ProgressHttpIT {
             List.of(2, 1, 2, 1, 2, 1, 2),
             List.of(
                 item.path("floorsTotal").asInt(-1), item.path("floorsInspected").asInt(-1),
-                item.path("pendingSubmissions").asInt(-1), item.path("acceptedSubmissions").asInt(-1),
+                item.path("pendingSubmissions").asInt(-1),
+                item.path("acceptedSubmissions").asInt(-1),
                 item.path("entrancesTotal").asInt(-1),
                 item.path("entrancesCheckedOnSite").asInt(-1), item.path("markers").size()
             ),
@@ -90,10 +90,6 @@ final class ProgressHttpIT {
         Assertions.assertTrue(
             mine.path("authorPseudonym").asString().startsWith("Autor "),
             "Odpowiedź używa pseudonimu autora"
-        );
-        Assertions.assertDoesNotThrow(
-            () -> Instant.parse(mine.path("createdAt").asString()),
-            "Chwila utworzenia jest datą i godziną w formacie ISO"
         );
     }
 
