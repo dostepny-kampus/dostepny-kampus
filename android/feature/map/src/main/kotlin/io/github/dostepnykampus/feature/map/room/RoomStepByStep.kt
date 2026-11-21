@@ -102,7 +102,13 @@ private fun StepProgress(done: Int, count: Int) {
     ) {
         repeat(count) { step ->
             val color = if (step < done) colors.primary else colors.surfaceVariant
-            Box(Modifier.weight(1f).height(PROGRESS_HEIGHT).clip(CircleShape).background(color))
+            Box(
+                Modifier
+                    .weight(1f)
+                    .height(PROGRESS_HEIGHT)
+                    .clip(CircleShape)
+                    .background(color),
+            )
         }
     }
 }
