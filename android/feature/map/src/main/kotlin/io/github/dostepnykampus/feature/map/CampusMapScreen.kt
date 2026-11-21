@@ -195,8 +195,7 @@ fun CampusMapScreen(
     val sheet =
         screenSheet(focus = focus, padding = contentPadding, onCardClose = onEmptyMapClick, onCardReturn = onCardReturn)
             .withPanel(focus = focus, catalog = state.catalog, opened = room to plan, onSelect = onPlanSelect)
-    val isCovered =
-        isMapCovered(sheetPadding = sheet.layout.padding.calculateBottomPadding(), isRoomOpen = room != null)
+    val isCovered = isMapCovered(sheet = sheet.layout.padding, isRoomOpen = room != null)
     val states = rememberSaveableStateHolder()
     val areas = rememberMapAreas(state.mapData, sheet.layout.focus)
     val barExit = rememberTopBarExit(isCovered = isCovered, motion = motion)

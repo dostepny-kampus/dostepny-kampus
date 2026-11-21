@@ -9,6 +9,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -68,7 +69,7 @@ internal fun Animatable<Float, AnimationVector1D>.isBarShown(
 }
 
 /**
- * Mapę zasłania arkusz V2 wysoki na [sheetPadding] albo, przy zwykłej czcionce, karta sali pod mapą
+ * Mapę zasłania arkusz V2 od dołu ([sheet]) albo, przy zwykłej czcionce, karta sali pod mapą
  * ([isRoomOpen]); wtedy górny pasek V1 odjeżdża w górę, a mapa sięga górnej krawędzi. Przy dużej czcionce
  * karta sali stoi na cały ekran.
  *
@@ -76,8 +77,8 @@ internal fun Animatable<Float, AnimationVector1D>.isBarShown(
  */
 @Composable
 @ReadOnlyComposable
-internal fun isMapCovered(sheetPadding: Dp, isRoomOpen: Boolean): Boolean =
-    sheetPadding > 0.dp || (isRoomOpen && LocalDensity.current.fontScale < LARGE_FONT_SCALE)
+internal fun isMapCovered(sheet: PaddingValues, isRoomOpen: Boolean): Boolean =
+    sheet.calculateBottomPadding() > 0.dp || (isRoomOpen && LocalDensity.current.fontScale < LARGE_FONT_SCALE)
 
 /** Góra mapy zasłonięta paskiem wysokim na [bar] px; gdy mapę zasłania arkusz albo karta, pasek odjechał, więc nic. */
 @Composable

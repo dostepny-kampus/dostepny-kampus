@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -49,14 +50,14 @@ class MapTopBarTest {
     }
 
     private fun covered(sheet: Dp, isRoomOpen: Boolean, fontScale: Float): Boolean {
-        var result: Boolean? = null
+        var isCovered: Boolean? = null
         compose.setContent {
             val density = LocalDensity.current
             CompositionLocalProvider(LocalDensity provides Density(density = density.density, fontScale = fontScale)) {
-                result = isMapCovered(sheetPadding = sheet, isRoomOpen = isRoomOpen)
+                isCovered = isMapCovered(sheet = PaddingValues(bottom = sheet), isRoomOpen = isRoomOpen)
             }
         }
         compose.waitForIdle()
-        return checkNotNull(result)
+        return checkNotNull(isCovered)
     }
 }
