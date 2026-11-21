@@ -58,7 +58,7 @@ internal class RoomView(
     val isJump: Boolean,
     private val memory: RoomMemory,
 ) {
-    /** Mapa stanęła w widoku [view]. */
+    /** Mapa stanęła po geście w widoku [view] albo dostała go od aplikacji. */
     fun onIdle(view: MapCamera) {
         memory.idle = view
     }

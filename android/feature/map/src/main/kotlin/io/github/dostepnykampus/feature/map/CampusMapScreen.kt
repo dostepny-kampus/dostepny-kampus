@@ -462,20 +462,23 @@ private fun rememberCampusScene(
     val width = with(LocalDensity.current) { size.width.toDp() }
     val view =
         rememberRoomView(scene = room, focus = focus, panel = sheet.panel, top = top, height = size.height)
-    return rememberMapSceneState(
-        layers = ui.mapData,
-        catalog = ui.catalog,
-        focus = focus,
-        area = areas.chosenName,
-        cover = sheet.layout.padding.calculateBottomPadding(),
-        size = size,
-        top = top,
-        motion = motion,
-        notice = rememberNoticeHeight(shift = areas.selectionNotice, width = width),
-        sheet = view.cover,
-        roomCamera = view.camera,
-        isRoomJump = view.isJump,
-    ) to view
+    val state =
+        rememberMapSceneState(
+            layers = ui.mapData,
+            catalog = ui.catalog,
+            focus = focus,
+            area = areas.chosenName,
+            cover = sheet.layout.padding.calculateBottomPadding(),
+            size = size,
+            top = top,
+            motion = motion,
+            notice = rememberNoticeHeight(shift = areas.selectionNotice, width = width),
+            sheet = view.cover,
+            roomCamera = view.camera,
+            isRoomJump = view.isJump,
+        )
+    SideEffect { state.shown?.run { view.onIdle(move.camera) } }
+    return state to view
 }
 
 /**
