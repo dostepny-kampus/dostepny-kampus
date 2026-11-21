@@ -7,9 +7,11 @@ package io.github.dostepnykampus.feature.map.room
 
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
+import io.github.dostepnykampus.core.data.building.CardEntrances
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.core.model.submission.Severity
@@ -24,7 +26,9 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -92,6 +96,53 @@ class RoomCardViewModelTest {
         assertEquals(true, isStarted, "„Pokaż po kolei” nie włączył trybu")
         assertEquals(RoomCard(found = FOUND, way = VIA_LIFT, step = 1), card.shown.value, "Lista bez kroku 2")
     }
+
+    /** Wiersz: wejścia pobrane wcześniej idą z pamięci, więc karta ma drogę bez pytania serwera. */
+    @Test
+    fun usesKnownEntrances() {
+        val server =
+            object : ServerEntrances {
+                override suspend fun entrances(symbol: String): List<Entrance> = error("Karta pytała serwer")
+
+                override fun knownCard(symbol: String): CardEntrances = CardEntrances(listOf(ENTRANCE))
+            }
+        val card = RoomCardViewModel(plans = Plans(), entrances = server, barriers = NO_BARRIERS)
+
+        card.show(FOUND)
+
+        assertEquals(RoomCard(found = FOUND, way = VIA_LIFT), card.shown.value, "Karta nie wzięła wejść z pamięci")
+    }
+
+    /** Wiersz: droga gotowa przed upływem [QUICK_WAY_MILLIS] otwiera kartę od razu z drogą, bez stanu wczytywania. */
+    @Test
+    fun opensWithWayWhenQuick() =
+        runTest {
+            val slow = CompletableDeferred<Unit>()
+            val card = RoomCardViewModel(plans = Plans(waitFor = slow), entrances = ENTRANCES, barriers = NO_BARRIERS)
+
+            card.show(FOUND)
+            val waiting = card.shown.value
+            slow.complete(Unit)
+
+            assertEquals(null, waiting, "Karta otworzyła się przed drogą")
+            assertEquals(RoomCard(found = FOUND, way = VIA_LIFT), card.shown.value, "Karta bez drogi")
+        }
+
+    /** Wiersz: wczytywanie dłuższe niż [QUICK_WAY_MILLIS] otwiera kartę bez drogi, a droga dochodzi później. */
+    @Test
+    fun opensWithoutWayWhenSlow() =
+        runTest {
+            val slow = CompletableDeferred<Unit>()
+            val card = RoomCardViewModel(plans = Plans(waitFor = slow), entrances = ENTRANCES, barriers = NO_BARRIERS)
+
+            card.show(FOUND)
+            advanceTimeBy(QUICK_WAY_MILLIS + 1)
+            val waiting = card.shown.value
+            slow.complete(Unit)
+
+            assertEquals(RoomCard(found = FOUND, way = null), waiting, "Karta czekała na drogę zbyt długo")
+            assertEquals(RoomCard(found = FOUND, way = VIA_LIFT), card.shown.value, "Droga nie doszła")
+        }
 
     /** Nowa sala przerywa wczytywanie drogi poprzedniej, więc karta nie dostaje cudzej drogi. */
     @Test
