@@ -24,7 +24,10 @@ private const val FLIGHT_MILLIS_PER_PATH = 250.0
 private const val WORLD_DP_AT_ZOOM_0 = 512.0
 private const val FULL_TURN_DEGREES = 360.0
 private const val SAME_PLACE_DP = 1e-6
-private const val CONTROL_MILLIS = 300L
+
+/** Czas ruchu po przycisku mapy i ruchu bez arkusza w zasięgu ekranu w ms. */
+internal const val CONTROL_MILLIS = 300L
+
 private const val APPROACH_MAX_ZOOM = 19.0
 
 /**
@@ -166,7 +169,8 @@ private fun isVisible(outline: CampusBounds, view: MapCamera, free: FreeMap): Bo
     return left >= -halfWidth && right <= halfWidth - free.endDp && top >= -halfHeight && bottom <= halfHeight
 }
 
-private fun distanceDp(from: MapCamera, to: MapCamera): Double {
+/** Odległość w dp między środkami widoków [from] i [to] przy powiększeniu [from]. */
+internal fun distanceDp(from: MapCamera, to: MapCamera): Double {
     val east = (to.center.longitude - from.center.longitude) * dpPerDegree(from.zoom)
     val perRadian = WORLD_DP_AT_ZOOM_0 * 2.0.pow(from.zoom) / (2 * PI)
     val south = (mercatorY(from.center.latitude) - mercatorY(to.center.latitude)) * perRadian
