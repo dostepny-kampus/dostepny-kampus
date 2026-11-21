@@ -17,7 +17,6 @@ import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
-import io.github.dostepnykampus.feature.capture.navigation.ReportReplaceRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
@@ -578,7 +577,7 @@ class AppNavigatorTest {
         stack += BuildingRoute("A-1")
         navigator(collector).run {
             openReplace("tb13")
-            assertEquals(ReportReplaceRoute("tb13"), current, "V2 otwiera C2 zmiany przyjętego")
+            assertEquals(ReportEditRoute("tb13", isAccepted = true), current, "V2 otwiera C2 zmiany przyjętego")
             reportSaved()
         }
         assertEquals(stackOf(BuildingRoute("A-1"), MySubmissionsRoute), stack, "C2 znika z historii, C3 po V2")
@@ -588,7 +587,7 @@ class AppNavigatorTest {
     @Test
     fun changesPlaceOnReplace() {
         val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = "A-1")
-        stack += listOf(BuildingRoute("A-1"), ReportReplaceRoute("tb13"))
+        stack += listOf(BuildingRoute("A-1"), ReportEditRoute("tb13", isAccepted = true))
         navigator(collector).run {
             changeEditPlace()
             assertEquals(MeasureRoute, current)

@@ -41,24 +41,35 @@ sealed interface ReportEditLoad {
     data object Missing : ReportEditLoad
 }
 
-/** Model widoku wczytujący zgłoszenie z kolejki raz na ekran. Wymagania: US8.3 */
+/** Model widoku wczytujący zgłoszenie z kolejki albo zgłoszenie przyjęte raz na ekran. Wymagania: US8.3, BR-18 */
 @HiltViewModel
 class ReportEditViewModel
     @Inject
-    constructor(private val edits: PendingEdits) : ViewModel() {
+    constructor(
+        private val edits: PendingEdits,
+        private val barriers: AcceptedBarriers,
+    ) : ViewModel() {
         private val state = MutableStateFlow<ReportEditLoad>(ReportEditLoad.Loading)
         private var requested: String? = null
 
         /** Wynik wczytania. */
         val load: StateFlow<ReportEditLoad> = state.asStateFlow()
 
+        /** Wariant dla testów poprawki z kolejki bez źródła zgłoszeń przyjętych. */
+        constructor(edits: PendingEdits) : this(edits = edits, barriers = AcceptedBarriers { emptyList() })
+
         /** Wczytuje zgłoszenie [id]; kolejne wywołania nic nie zmieniają, więc obrót ekranu nie kasuje pól. */
-        fun open(id: String) {
+        fun open(id: String, isAccepted: Boolean = false) {
             if (requested != null) return
             requested = id
             viewModelScope.launch {
-                val edit = edits.load(id)
-                state.value = if (edit == null) ReportEditLoad.Missing else ReportEditLoad.Ready(edit.toReportUiState())
+                val loaded =
+                    if (isAccepted) {
+                        barriers.barriers().firstOrNull { it.id == id }?.toReplaceUiState()
+                    } else {
+                        edits.load(id)?.toReportUiState()
+                    }
+                state.value = if (loaded == null) ReportEditLoad.Missing else ReportEditLoad.Ready(loaded)
             }
         }
     }
@@ -89,28 +100,6 @@ internal fun PendingEdit.toReportUiState(): ReportUiState {
 internal fun SubmissionFloor.toReportFloor(): ReportFloor? =
     floorId?.let { ReportFloor.Planned(it) }
         ?: number?.let { ReportFloor.Numbered(number = it, isMezzanine = isMezzanine == true) }
-
-/** Model widoku wczytujący zgłoszenie przyjęte do zmiany w C2 raz na ekran. Wymagania: BR-3, BR-18 */
-@HiltViewModel
-class ReportReplaceViewModel
-    @Inject
-    constructor(private val barriers: AcceptedBarriers) : ViewModel() {
-        private val state = MutableStateFlow<ReportEditLoad>(ReportEditLoad.Loading)
-        private var requested: String? = null
-
-        /** Wynik wczytania zgłoszenia przyjętego. */
-        val load: StateFlow<ReportEditLoad> = state.asStateFlow()
-
-        /** Wczytuje zgłoszenie przyjęte [id]; kolejne wywołania nic nie zmieniają. */
-        fun open(id: String) {
-            if (requested != null) return
-            requested = id
-            viewModelScope.launch {
-                val found = barriers.barriers().firstOrNull { it.id == id }
-                state.value = found?.let { ReportEditLoad.Ready(it.toReplaceUiState()) } ?: ReportEditLoad.Missing
-            }
-        }
-    }
 
 /**
  * Stan formularza na start zmiany zgłoszenia przyjętego; zapis tworzy nowe zgłoszenie z powiązaniem.

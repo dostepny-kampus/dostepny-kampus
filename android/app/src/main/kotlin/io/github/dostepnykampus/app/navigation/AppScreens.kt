@@ -29,7 +29,6 @@ import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
-import io.github.dostepnykampus.feature.capture.navigation.ReportReplaceRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.quick.QuickReportActions
 import io.github.dostepnykampus.feature.capture.quick.QuickReportScreen
@@ -162,7 +161,6 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         MeasureRoute -> MeasureScreen(onBack = { back() }, onNext = { openReportForm(it) })
         is ReportFormRoute -> ReportFormScreen(route = route, onLeave = { back() }, onSave = save, draft = reportDraft)
         is ReportEditRoute -> ReportEdit(route)
-        is ReportReplaceRoute -> ReportReplace(route)
         is RemovedRoute -> Removed(route)
         MySubmissionsRoute -> MySubmissions()
         ProgressRoute, is MarkersRoute, is CollectorMarkersRoute -> Inspection(route)

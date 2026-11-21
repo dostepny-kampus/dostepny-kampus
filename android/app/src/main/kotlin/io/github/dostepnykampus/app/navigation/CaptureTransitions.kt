@@ -11,7 +11,6 @@ import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
-import io.github.dostepnykampus.feature.capture.navigation.ReportReplaceRoute
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 
 /** L2 → C1: „Zmierz i zgłoś barierę”. Wymagania: US6, US14.1 */
@@ -41,12 +40,12 @@ fun AppNavigator.openRemoved(acceptedId: String) {
 
 /** V2 → C2: „Popraw zgłoszenie” przy zgłoszeniu przyjętym; poza V2 nic nie robi. Wymagania: BR-3, BR-18 */
 fun AppNavigator.openReplace(acceptedId: String) {
-    if (current is BuildingRoute) leaving { add(ReportReplaceRoute(acceptedId)) }
+    if (current is BuildingRoute) leaving { add(ReportEditRoute(acceptedId, isAccepted = true)) }
 }
 
 /** Poprawka C2 → C1: „Zmień miejsce”; pola czekają w szkicu, po „Dalej” wraca C2 z nowym miejscem. Wymagania: US7.4 */
 fun AppNavigator.changeEditPlace() {
-    if (current is ReportEditRoute || current is ReportReplaceRoute) {
+    if (current is ReportEditRoute) {
         leaving {
             removeAt(lastIndex)
             add(MeasureRoute)
@@ -73,8 +72,4 @@ fun AppNavigator.reportSaved() {
  * ze stosu po zapisie. Jedyna lista takich tras; nową trasę zbierania dopisuje się tylko tutaj.
  */
 internal fun NavKey.isCaptureRoute(): Boolean =
-    this == MeasureRoute ||
-        this is ReportFormRoute ||
-        this is ReportEditRoute ||
-        this is ReportReplaceRoute ||
-        this is RemovedRoute
+    this == MeasureRoute || this is ReportFormRoute || this is ReportEditRoute || this is RemovedRoute

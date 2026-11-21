@@ -20,7 +20,7 @@ import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
-import io.github.dostepnykampus.feature.capture.navigation.ReportReplaceRoute
+import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
 import io.github.dostepnykampus.feature.capture.report.ReportEditExits
 import io.github.dostepnykampus.feature.capture.report.ReportFormViewModel
@@ -46,14 +46,14 @@ class ReportReplaceScreenTest {
     private lateinit var viewModel: ReportFormViewModel
 
     private fun show(barrier: AcceptedBarrier?) {
-        val loader = ReportReplaceViewModel { listOfNotNull(barrier) }
+        val loader = ReportEditViewModel(edits = { null }, barriers = { listOfNotNull(barrier) })
         viewModel = ReportFormViewModel { content, _, edited -> savedEntries.add(content to edited) }
         val exits = ReportEditExits(onLeave = { left++ }, onSave = { saved++ }, onChangePlace = {})
-        val route = ReportReplaceRoute(acceptedId = ID)
+        val route = ReportEditRoute(submissionId = ID, isAccepted = true)
         val transcoder = PhotoTranscoder()
         compose.setContent {
             DostepnyKampusTheme {
-                ReportReplaceScreen(
+                ReportEditScreen(
                     route = route,
                     exits = exits,
                     loader = loader,
