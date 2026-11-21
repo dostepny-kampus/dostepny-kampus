@@ -22,6 +22,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import kotlin.math.roundToInt
 
@@ -31,8 +32,8 @@ private val BarSlide =
 
 /**
  * Część wysokości górnego paska V1 schowana nad górną krawędzią ekranu: pasek odjeżdża w górę, gdy arkusz V2
- * zasłania mapę ([isCovered]), w czasie i po krzywej ruchu mapy z [motion], i wraca z góry po zamknięciu arkusza.
- * Bez ruchu mapy pasek rusza się w czasie `medium2` po krzywej standardowej Material.
+ * albo karta sali zasłania mapę ([isCovered]), w czasie i po krzywej ruchu mapy z [motion], i wraca z góry
+ * po zamknięciu arkusza albo karty. Bez ruchu mapy pasek rusza się w czasie `medium2` po krzywej standardowej Material.
  *
  * Wymagania: NFR-56, US2.8
  */
@@ -66,7 +67,19 @@ internal fun Animatable<Float, AnimationVector1D>.isBarShown(
     return !isUnderFullSheet && (!isCovered || (isOnScreen && !isList))
 }
 
-/** Góra mapy zasłonięta paskiem wysokim na [bar] px; z arkuszem V2 pasek odjechał, więc nic. */
+/**
+ * Mapę zasłania arkusz V2 wysoki na [sheetPadding] albo, przy zwykłej czcionce, karta sali pod mapą
+ * ([isRoomOpen]); wtedy górny pasek V1 odjeżdża w górę, a mapa sięga górnej krawędzi. Przy dużej czcionce
+ * karta sali stoi na cały ekran.
+ *
+ * Wymagania: US18.1, US18.2, NFR-53
+ */
+@Composable
+@ReadOnlyComposable
+internal fun isMapCovered(sheetPadding: Dp, isRoomOpen: Boolean): Boolean =
+    sheetPadding > 0.dp || (isRoomOpen && LocalDensity.current.fontScale < LARGE_FONT_SCALE)
+
+/** Góra mapy zasłonięta paskiem wysokim na [bar] px; gdy mapę zasłania arkusz albo karta, pasek odjechał, więc nic. */
 @Composable
 @ReadOnlyComposable
 internal fun mapTop(isCovered: Boolean, bar: Int): Dp =
