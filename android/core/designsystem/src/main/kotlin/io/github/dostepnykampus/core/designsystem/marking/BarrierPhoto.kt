@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map.barrier
+package io.github.dostepnykampus.core.designsystem.marking
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,38 +27,39 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.R
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
-import io.github.dostepnykampus.core.designsystem.marking.nameRes
-import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.core.model.submission.BarrierType
 
 private val PhotoMaxHeight = 240.dp
 
 /**
- * Zdjęcie zgłoszenia bariery z adresu [io.github.dostepnykampus.core.data.barrier.AcceptedBarrier.photoUrl].
- * Bez adresu nie rysuje niczego. Obraz ma opis z typem bariery; w miejscu zdjęcia stoi napis o wczytywaniu,
- * a po błędzie komunikat z przyciskiem ponowienia.
+ * Zdjęcie zgłoszenia bariery z adresu [url]. Bez adresu nie rysuje niczego. W miejscu zdjęcia stoi napis
+ * o wczytywaniu, a po błędzie komunikat z ponowieniem.
  *
- * Wymagania: US1.5, US2.2, BR-17, NFR-12, NFR-18, NFR-50
+ * Wymagania: US1.5, US2.2, US8.4, BR-17, BR-19, NFR-12, NFR-18, NFR-50
  *
- * @param chosen bariera, której zdjęcie się pokazuje
+ * @param url adres zdjęcia albo `null`, gdy zgłoszenie nie ma zdjęcia
+ * @param type typ bariery do opisu obrazu; `null` daje ogólny opis
+ * @param modifier modyfikator obrazu
  */
 @Composable
-internal fun BarrierPhoto(chosen: ChosenBarrier) {
-    val url = chosen.barrier.photoUrl ?: return
-    val type = stringResource(chosen.barrier.type?.nameRes() ?: R.string.mapa_bariera_bez_typu)
-    val description = stringResource(R.string.mapa_bariera_zdjecie, type)
+public fun BarrierPhoto(url: String?, type: BarrierType?, modifier: Modifier = Modifier) {
+    if (url == null) return
+    val typeName = stringResource(type?.nameRes() ?: R.string.bariera_bez_typu)
+    val description = stringResource(R.string.bariera_zdjecie, typeName)
     var attempt by rememberSaveable(url) { mutableIntStateOf(0) }
     key(attempt) {
         SubcomposeAsyncImage(
             model = url,
             contentDescription = description,
             modifier =
-                Modifier
+                modifier
                     .fillMaxWidth()
                     .heightIn(max = PhotoMaxHeight)
                     .clip(RoundedCornerShape(Zaokraglenia.srednie)),
             contentScale = ContentScale.Fit,
-            loading = { PhotoNote(stringResource(R.string.mapa_zdjecie_wczytujemy)) },
+            loading = { PhotoNote(stringResource(R.string.zdjecie_wczytujemy)) },
             error = { PhotoError(onRetry = { attempt++ }) },
         )
     }
@@ -67,9 +68,9 @@ internal fun BarrierPhoto(chosen: ChosenBarrier) {
 @Composable
 private fun PhotoError(onRetry: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        PhotoNote(stringResource(R.string.mapa_zdjecie_blad))
+        PhotoNote(stringResource(R.string.zdjecie_blad))
         OutlinedButton(onClick = onRetry, modifier = Modifier.heightIn(min = CeleDotyku.minimum)) {
-            Text(stringResource(R.string.karta_sprobuj))
+            Text(stringResource(R.string.sprobuj_ponownie))
         }
     }
 }

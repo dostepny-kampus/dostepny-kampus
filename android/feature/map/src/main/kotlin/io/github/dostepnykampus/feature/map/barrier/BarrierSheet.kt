@@ -27,6 +27,7 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.campusDay
+import io.github.dostepnykampus.core.designsystem.marking.BarrierPhoto
 import io.github.dostepnykampus.core.designsystem.marking.SeverityIcon
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
@@ -127,7 +128,7 @@ internal fun BarrierFacts(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        BarrierPhoto(chosen)
+        BarrierPhoto(url = barrier.photoUrl, type = barrier.type)
     }
 }
 
