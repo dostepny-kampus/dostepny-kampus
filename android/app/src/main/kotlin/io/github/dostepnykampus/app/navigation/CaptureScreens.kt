@@ -47,21 +47,9 @@ internal fun AppNavigator.Removed(route: RemovedRoute) {
     RemovedScreen(route = route, onLeave = { back() }, onFinish = { reportSaved() })
 }
 
-/**
- * Zmiana przyjętego zgłoszenia [route] z V2; zapis otwiera C3 z nowym zgłoszeniem, „Zmień miejsce” idzie przez C1.
- *
- * Wymagania: BR-3, BR-18, NFR-54
- */
+/** Zmiana przyjętego zgłoszenia [route] z V2; zapis otwiera C3. Wymagania: BR-3, BR-18 */
 @Composable
 internal fun AppNavigator.ReportReplace(route: ReportReplaceRoute) {
-    ReportReplaceScreen(
-        route = route,
-        exits =
-            ReportEditExits(
-                onLeave = { back() },
-                onSave = { reportSaved() },
-                onChangePlace = { changeEditPlace() },
-            ),
-        draft = reportDraft,
-    )
+    val exits = ReportEditExits(onLeave = { back() }, onSave = { reportSaved() }, onChangePlace = { changeEditPlace() })
+    ReportReplaceScreen(route = route, exits = exits, draft = reportDraft)
 }

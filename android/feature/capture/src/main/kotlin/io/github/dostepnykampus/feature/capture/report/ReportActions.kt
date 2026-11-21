@@ -89,13 +89,7 @@ fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifi
                 modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
                 verticalArrangement = Arrangement.spacedBy(Odstepy.m),
             ) {
-                if (state.form.replacesSubmissionId != null) {
-                    Text(
-                        text = stringResource(R.string.formularz_zmiana_przyjetego),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+                ReplaceNotice(state.form.replacesSubmissionId)
                 ReportBanner(state = state, onRetry = actions.onSave)
                 PlaceCard(place = state.form.place, onChangePlace = actions.onChangePlace)
                 state.form.place.buildingSymbol?.let { building ->
@@ -124,4 +118,14 @@ fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifi
             }
         }
     }
+}
+
+@Composable
+private fun ReplaceNotice(replacesSubmissionId: String?) {
+    if (replacesSubmissionId.isNullOrBlank()) return
+    Text(
+        text = stringResource(R.string.formularz_zmiana_przyjetego),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }

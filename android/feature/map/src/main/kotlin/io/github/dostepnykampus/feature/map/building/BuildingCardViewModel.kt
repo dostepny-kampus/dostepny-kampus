@@ -73,13 +73,13 @@ sealed interface BuildingCardUiState {
 }
 
 /** Źródła danych serwera i własnych zgłoszeń dla karty budynku V2. Wymagania: US2, US17.3, US16.3, BR-3, BR-18 */
-class BuildingCardSources
+data class BuildingCardSources
     @Inject
     constructor(
-        val serverEntrances: ServerEntrances,
-        val acceptedBarriers: AcceptedBarriers,
-        val plans: FloorPlans,
-        val ownSubmissions: OwnSubmissions,
+        internal val serverEntrances: ServerEntrances,
+        internal val acceptedBarriers: AcceptedBarriers,
+        internal val plans: FloorPlans,
+        internal val ownSubmissions: OwnSubmissions,
     )
 
 /**
@@ -101,22 +101,6 @@ class BuildingCardViewModel
         networkStatus: NetworkStatus,
         sources: BuildingCardSources,
     ) : ViewModel() {
-        /** Wariant dla testów z pojedynczymi źródłami bez [BuildingCardSources]. */
-        constructor(
-            symbol: String,
-            repository: BuildingCatalogRepository,
-            networkStatus: NetworkStatus,
-            serverEntrances: ServerEntrances = ServerEntrances { emptyList() },
-            acceptedBarriers: AcceptedBarriers = AcceptedBarriers { emptyList() },
-            plans: FloorPlans = NoFloorPlans,
-        ) : this(
-            symbol = symbol,
-            repository = repository,
-            networkStatus = networkStatus,
-            sources =
-                BuildingCardSources(serverEntrances, acceptedBarriers, plans, OwnSubmissions { flowOf(emptyList()) }),
-        )
-
         private val attempts = MutableStateFlow(0)
 
         private val known = sources.serverEntrances.knownCard(symbol)
@@ -176,6 +160,27 @@ class BuildingCardViewModel
                 barriers.value = sources.acceptedBarriers.syncedAt()?.let { ofBuilding(accepted) }
             }
         }
+
+        /** Wariant dla testów z pojedynczymi źródłami bez [BuildingCardSources]. */
+        constructor(
+            symbol: String,
+            repository: BuildingCatalogRepository,
+            networkStatus: NetworkStatus,
+            serverEntrances: ServerEntrances = ServerEntrances { emptyList() },
+            acceptedBarriers: AcceptedBarriers = AcceptedBarriers { emptyList() },
+            plans: FloorPlans = NoFloorPlans,
+        ) : this(
+            symbol = symbol,
+            repository = repository,
+            networkStatus = networkStatus,
+            sources =
+                BuildingCardSources(
+                    serverEntrances = serverEntrances,
+                    acceptedBarriers = acceptedBarriers,
+                    plans = plans,
+                    ownSubmissions = OwnSubmissions { flowOf(emptyList()) },
+                ),
+        )
 
         private fun ofBuilding(accepted: List<AcceptedBarrier>): List<AcceptedBarrier> =
             accepted.filter { barrier -> barrier.buildingSymbol == symbol }

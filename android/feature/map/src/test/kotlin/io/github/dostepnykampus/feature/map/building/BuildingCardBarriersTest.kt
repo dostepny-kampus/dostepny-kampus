@@ -126,7 +126,7 @@ class BuildingCardBarriersTest {
      * Wymagania: BR-3, BR-18
      */
     @Test
-    fun collectorSeesReplaceOnOwnAndQuickOnly() {
+    fun replacesOwnAndQuickOnly() {
         val replaced = mutableListOf<String>()
         val quick = BARRIER.copy(id = "z-quick", isQuick = true)
         val other = BARRIER.copy(id = "z-other", isQuick = false)
@@ -140,7 +140,7 @@ class BuildingCardBarriersTest {
         assertEquals("Dwa przyciski: dla własnego i dla szybkiego", 2, buttons.fetchSemanticsNodes().size)
         buttons[0].performScrollTo().performClick()
         buttons[1].performScrollTo().performClick()
-        assertEquals(listOf("z1", "z-quick"), replaced)
+        assertEquals("identyfikatory poprawianych zgłoszeń", listOf("z1", "z-quick"), replaced)
     }
 
     /** Wiersz: bez roli Zbierającego przycisku „Popraw zgłoszenie” nie ma. Wymagania: BR-3, BR-18 */
@@ -155,9 +155,9 @@ class BuildingCardBarriersTest {
 
     private fun show(
         barriers: List<AcceptedBarrier>?,
-        onReportRemoval: ((String) -> Unit)? = null,
         ownBarrierIds: Set<String> = emptySet(),
         onReplaceBarrier: ((String) -> Unit)? = null,
+        onReportRemoval: ((String) -> Unit)? = null,
     ) {
         usePhotoLoader(compose.activity, photoAvailable())
         val entrances = orderedEntrances(listOf(ENTRANCE))

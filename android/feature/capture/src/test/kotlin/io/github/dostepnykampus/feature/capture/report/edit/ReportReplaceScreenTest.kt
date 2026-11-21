@@ -49,14 +49,16 @@ class ReportReplaceScreenTest {
         val loader = ReportReplaceViewModel { listOfNotNull(barrier) }
         viewModel = ReportFormViewModel { content, _, edited -> savedEntries.add(content to edited) }
         val exits = ReportEditExits(onLeave = { left++ }, onSave = { saved++ }, onChangePlace = {})
+        val route = ReportReplaceRoute(acceptedId = ID)
+        val transcoder = PhotoTranscoder()
         compose.setContent {
             DostepnyKampusTheme {
                 ReportReplaceScreen(
-                    route = ReportReplaceRoute(acceptedId = ID),
+                    route = route,
                     exits = exits,
                     loader = loader,
                     viewModel = viewModel,
-                    photoTranscoder = PhotoTranscoder(),
+                    photoTranscoder = transcoder,
                 )
             }
         }
@@ -70,7 +72,7 @@ class ReportReplaceScreenTest {
      * Wymagania: BR-3, BR-18
      */
     @Test
-    fun savesNewSubmissionLinkedToAccepted() {
+    fun savesLinkedNewSubmission() {
         show(BARRIER)
         compose.onNodeWithText("Popraw zgłoszenie").assertIsDisplayed()
         compose.onNodeWithText("Zapis utworzy nowe zgłoszenie, które znów sprawdzi Weryfikator.").assertIsDisplayed()
@@ -82,17 +84,17 @@ class ReportReplaceScreenTest {
         compose.waitForIdle()
 
         val (content, edited) = savedEntries.single()
-        assertEquals(1, saved)
-        assertEquals(ID, content.replacesSubmissionId)
-        assertEquals(Severity.BLOCKING.value, content.severity)
-        assertNull(edited)
+        assertEquals("zapis kończy ekran", 1, saved)
+        assertEquals("powiązanie z przyjętym", ID, content.replacesSubmissionId)
+        assertEquals("nowa uciążliwość", Severity.BLOCKING.value, content.severity)
+        assertNull("nowe zgłoszenie bez edycji starego", edited)
     }
 
     /** Wiersz: brak zgłoszenia przyjętego → powrót bez otwierania formularza. Wymagania: BR-18 */
     @Test
     fun goesBackWhenAcceptedMissing() {
         show(null)
-        assertEquals(1, left)
+        assertEquals("powrót bez danych", 1, left)
         compose.onNodeWithText("Popraw zgłoszenie").assertDoesNotExist()
     }
 
@@ -101,7 +103,7 @@ class ReportReplaceScreenTest {
         val BARRIER =
             AcceptedBarrier(
                 id = ID,
-                location = GeoPoint(17.06, 51.11),
+                location = GeoPoint(longitude = 17.06, latitude = 51.11),
                 severity = Severity.ONLY_WITH_HELP,
                 type = BarrierType.THRESHOLD,
                 buildingSymbol = "C-13",

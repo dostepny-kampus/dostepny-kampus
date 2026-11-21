@@ -16,8 +16,8 @@ import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
-import io.github.dostepnykampus.feature.capture.navigation.ReportReplaceRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
+import io.github.dostepnykampus.feature.capture.navigation.ReportReplaceRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
@@ -574,7 +574,7 @@ class AppNavigatorTest {
 
     /** Wiersz: V2 „Popraw zgłoszenie” → C2 zmiany przyjętego, „Zapisz” → C3 bez C2. Wymagania: BR-18, NFR-54 */
     @Test
-    fun replaceSavedOpensC3WithoutReplaceRoute() {
+    fun replaceSavedOpensC3() {
         stack += BuildingRoute("A-1")
         navigator(collector).run {
             openReplace("tb13")
