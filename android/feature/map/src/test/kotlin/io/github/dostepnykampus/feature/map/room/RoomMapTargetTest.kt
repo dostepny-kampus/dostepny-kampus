@@ -95,12 +95,12 @@ class RoomMapTargetTest {
         assertEquals(view.shiftedNorth(128.0), view.stillUnder(card = 200.dp, bar = 56.dp), "Obraz mapy przesunięty")
     }
 
-    /** Wiersz: karta bez drogi nie ustala wysokości dla kamery; pierwsza wysokość z drogą zostaje na czynność. */
+    /** Wiersz: przed pomiarem z drogą kamera czeka; pierwsza wysokość z drogą zostaje na czynność. */
     @Test
-    fun holdsCoverOnlyWithWay() {
-        val held = listOf(0.heldWith(cover = 300, hasWay = false), 0.heldWith(cover = 600, hasWay = true))
+    fun holdsFirstWayCover() {
+        val held = listOf(0.heldWith(cover = 0), 0.heldWith(cover = 600), 600.heldWith(cover = 400))
 
-        assertEquals(listOf(0, 600, 600), held + 600.heldWith(cover = 400, hasWay = true), "Wysokość karty kamery")
+        assertEquals(listOf(0, 600, 600), held, "Wysokość karty kamery")
     }
 
     @Test

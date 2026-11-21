@@ -269,8 +269,16 @@ private fun ScreenSheet.withPanel(
     val sign = signs.planSignId?.let { plan?.building }
     val building = marked?.buildingSymbol ?: entered?.buildingSymbol ?: sign
     val roomCover = signs.roomHeight.takeIf { room != null && isBelowMap } ?: 0
+    val roomWay = signs.roomWay?.takeIf { (id) -> isBelowMap && id == room?.run { card.found.room.id } }?.second ?: 0
     val cover = signs.markedCover(layout.focus).takeIf { it > 0 } ?: signs.planCover().takeIf { isBelowMap } ?: 0
-    val panel = mapPanel(focus = focus, sheetBuilding = building, sheetCover = cover, roomCover = roomCover)
+    val panel =
+        mapPanel(
+            focus = focus,
+            sheetBuilding = building,
+            sheetCover = cover,
+            roomCover = roomCover,
+            roomWayCover = roomWay,
+        )
     SideEffect { onSelect(panel.building) }
     val gone = signs.planSignId?.takeUnless { plan.showsSign(it) }
     SideEffect { if (gone != null) signs.close() }
@@ -396,7 +404,10 @@ private fun CampusMap(
                 val open =
                     OpenSign(sheet = sheet, barriers = barriers, catalog = ui.catalog, plan = plan.shown, room = shown)
                 MapSheets(open = open, state = state, onBuilding = onBuildingClick, entranceActions = entrance) {
-                    signs.measureRoom(it)
+                        height,
+                        card,
+                    ->
+                    signs.measureRoom(height = height, card = card)
                 }
             }
         }
@@ -453,7 +464,7 @@ private fun rememberCampusScene(
 ): Pair<MapSceneState, RoomView> {
     val width = with(LocalDensity.current) { size.width.toDp() }
     val view =
-        rememberRoomView(scene = room, focus = focus, cover = sheet.panel.cover, top = top, height = size.height)
+        rememberRoomView(scene = room, focus = focus, panel = sheet.panel, top = top, height = size.height)
     return rememberMapSceneState(
         layers = ui.mapData,
         catalog = ui.catalog,

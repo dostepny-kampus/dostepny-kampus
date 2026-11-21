@@ -16,8 +16,10 @@ import io.github.dostepnykampus.feature.map.navigation.MapFocus
  *
  * @property building symbol budynku trzymającego plan; `null`, gdy wyborem planu rządzi środek mapy
  * @property cover wysokość zasłoniętego dołu mapy w pikselach; 0 bez dopełnienia kamery
+ * @property wayCover wysokość karty sali zmierzona już z drogą w pikselach; 0 bez takiego pomiaru albo pod innym
+ *   arkuszem
  */
-internal data class MapPanel(val building: String? = null, val cover: Int = 0)
+internal data class MapPanel(val building: String? = null, val cover: Int = 0, val wayCover: Int = 0)
 
 /**
  * Arkusz nad mapą przy zaznaczeniu [focus]. Otwarty arkusz wejścia albo znaku planu budynku [sheetBuilding] trzyma
@@ -31,11 +33,19 @@ internal data class MapPanel(val building: String? = null, val cover: Int = 0)
  * @param sheetBuilding symbol budynku otwartego arkusza wejścia albo znaku planu; `null` bez takiego arkusza
  * @param sheetCover wysokość tego arkusza zasłaniającego dół mapy w pikselach; 0 bez dopełnienia
  * @param roomCover wysokość karty sali na mapie w pikselach; 0 bez karty albo z kartą na cały ekran
+ * @param roomWayCover wysokość tej karty zmierzona już z drogą; 0 przed takim pomiarem
  */
-internal fun mapPanel(focus: MapFocus?, sheetBuilding: String?, sheetCover: Int, roomCover: Int = 0): MapPanel =
+internal fun mapPanel(
+    focus: MapFocus?,
+    sheetBuilding: String?,
+    sheetCover: Int,
+    roomCover: Int = 0,
+    roomWayCover: Int = 0,
+): MapPanel =
     MapPanel(
         building = sheetBuilding ?: selectedBuilding(focus).takeUnless { focus is MapFocus.Entrance },
         cover = sheetCover.takeIf { it > 0 } ?: roomCover,
+        wayCover = roomWayCover.takeIf { sheetCover <= 0 } ?: 0,
     )
 
 /**
