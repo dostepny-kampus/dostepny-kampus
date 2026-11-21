@@ -5,14 +5,14 @@
  */
 package io.github.dostepnykampus.barrier.submission.application;
 
-import io.github.dostepnykampus.barrier.submission.EditResult;
-import io.github.dostepnykampus.barrier.submission.EntranceChangeArchive;
-import io.github.dostepnykampus.barrier.submission.ReviewDecision;
-import io.github.dostepnykampus.barrier.submission.StaleEntranceMarking;
-import io.github.dostepnykampus.barrier.submission.Submission;
-import io.github.dostepnykampus.barrier.submission.SubmissionRepository;
+import io.github.dostepnykampus.barrier.entrance.EntranceChangeArchive;
+import io.github.dostepnykampus.barrier.entrance.StaleEntranceMarking;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
+import io.github.dostepnykampus.barrier.submission.EditResult;
+import io.github.dostepnykampus.barrier.submission.ReviewDecision;
+import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.SubmissionRepository;
 import io.github.dostepnykampus.building.api.EntranceMarkings;
 import io.github.dostepnykampus.building.api.EntrancePlace;
 import io.github.dostepnykampus.building.api.KnownBuildings;

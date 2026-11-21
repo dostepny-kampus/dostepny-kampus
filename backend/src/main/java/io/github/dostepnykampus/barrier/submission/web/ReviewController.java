@@ -5,14 +5,14 @@
  */
 package io.github.dostepnykampus.barrier.submission.web;
 
-import io.github.dostepnykampus.barrier.submission.EditResult;
-import io.github.dostepnykampus.barrier.submission.ReviewDecision;
-import io.github.dostepnykampus.barrier.submission.StaleEntranceMarking;
-import io.github.dostepnykampus.barrier.submission.StoredPhotos;
-import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.entrance.StaleEntranceMarking;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReview;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionService;
+import io.github.dostepnykampus.barrier.submission.EditResult;
+import io.github.dostepnykampus.barrier.submission.ReviewDecision;
+import io.github.dostepnykampus.barrier.submission.StoredPhotos;
+import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.shared.error.ConflictingState;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import io.github.dostepnykampus.shared.error.MissingResource;

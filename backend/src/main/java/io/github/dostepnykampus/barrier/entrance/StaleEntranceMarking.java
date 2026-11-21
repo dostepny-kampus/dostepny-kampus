@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier.submission;
+package io.github.dostepnykampus.barrier.entrance;
 
 /**
  * Zmiana dotyczy wejścia usuniętego albo zmienionego po wysłaniu zgłoszenia.

@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.submission.persistence;
 
-import io.github.dostepnykampus.barrier.submission.EntranceChangeArchive;
+import io.github.dostepnykampus.barrier.entrance.EntranceChangeArchive;
 import io.github.dostepnykampus.barrier.submission.Submission;
 import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
