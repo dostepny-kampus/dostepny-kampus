@@ -52,6 +52,18 @@ class RoomCardTest {
         assertEquals(listOf(2, 0, 2, 0), moved.map { it.step }, "Strzałki przeszły źle")
     }
 
+    /** Wiersz: „Pokaż po kolei” włącza tryb po kolei, a „Wszystkie kroki” wraca do listy z tym samym krokiem. */
+    @Test
+    fun switchesStepByStepMode() {
+        val card = RoomCard(found = FOUND, way = VIA_LIFT)
+        val walked = card.started().next()
+
+        val modes = listOf(card, card.chosen(1), walked, walked.listed()).map { it.isStepByStep to it.step }
+
+        val expected = listOf(false to null, false to 1, true to 1, false to 1)
+        assertEquals(expected, modes, "Tryb po kolei przełączył się źle")
+    }
+
     /** Wiersz: bez drogi i w czasie wczytywania kroku nie da się wybrać. */
     @Test
     fun ignoresStepWithoutWay() {

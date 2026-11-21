@@ -78,6 +78,21 @@ class RoomCardViewModelTest {
         assertEquals(null, card.shown.value, "„Zamknij” nie zamknął karty")
     }
 
+    /** Wiersz: „Wszystkie kroki” wraca z trybu po kolei do listy z tym samym krokiem wybranym. */
+    @Test
+    fun returnsToAllSteps() {
+        val card = RoomCardViewModel(plans = Plans(), entrances = ENTRANCES, barriers = NO_BARRIERS)
+        card.show(FOUND)
+
+        card.stepByStep(isOn = true)
+        val started = card.shown.value?.isStepByStep
+        card.next()
+        card.stepByStep(isOn = false)
+
+        assertEquals(true, started, "„Pokaż po kolei” nie włączył trybu")
+        assertEquals(RoomCard(found = FOUND, way = VIA_LIFT, step = 1), card.shown.value, "Lista bez kroku 2")
+    }
+
     /** Nowa sala przerywa wczytywanie drogi poprzedniej, więc karta nie dostaje cudzej drogi. */
     @Test
     fun dropsWayOfPreviousRoom() {
