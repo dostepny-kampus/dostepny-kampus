@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.data.submission.own.RefusalReason
 import io.github.dostepnykampus.core.data.submission.own.SendState
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import org.junit.Assert.assertEquals
@@ -143,6 +145,54 @@ class SubmissionCardTest {
     }
 
     /**
+     * Karta z jednym statusem: słowo i ikona obok, inne statusy nie są widoczne, a ikony różnią się w szarości.
+     * Scenariusz: zgloszenia-zbierajacego.feature: Każde własne zgłoszenie ma jeden status tekstem i ikoną
+     *
+     * Wymagania: US8.1, NFR-21
+     */
+    @Test
+    fun showsOneStatusWithIconPerRow() {
+        val rows =
+            listOf(
+                item(id = "a", state = SendState.LOCAL) to "W telefonie",
+                item(id = "b", state = SendState.SENT, serverStatus = SubmissionStatus.SENT) to "Wysłane",
+                item(id = "c", state = SendState.SENT, serverStatus = SubmissionStatus.IN_REVIEW) to "W weryfikacji",
+                item(id = "d", state = SendState.SENT, serverStatus = SubmissionStatus.ACCEPTED) to "Przyjęte",
+                item(id = "e", state = SendState.SENT, serverStatus = SubmissionStatus.REJECTED) to "Odrzucone",
+                item(id = "f", state = SendState.SENT, serverStatus = SubmissionStatus.ARCHIVED) to "Archiwalne",
+            )
+        var shown by mutableStateOf(rows.first().first)
+        compose.setContent {
+            DostepnyKampusTheme {
+                SubmissionCard(item = shown, onOpen = null)
+            }
+        }
+        val grays =
+            rows.map { (candidate, word) ->
+                shown = candidate
+                compose.onNodeWithText(word).assertIsDisplayed()
+                rows.map { it.second }.filter { it != word }.forEach { other ->
+                    val count = compose.onAllNodesWithText(other).fetchSemanticsNodes().size
+                    assertEquals("karta „$word” nie pokazuje statusu „$other”", 0, count)
+                }
+                grayIconBeside(word)
+            }
+        grays.forEachIndexed { index, gray ->
+            val dark = gray.count { it < DARK_LUMA }
+            assertTrue("ikona przy „${rows[index].second}” ma widoczne piksele: $dark", dark >= MIN_PIXELS)
+        }
+        grays.indices.forEach { first ->
+            (first + 1 until grays.size).forEach { second ->
+                val differing = differingPixels(first = grays[first], second = grays[second])
+                assertTrue(
+                    "ikony „${rows[first].second}” i „${rows[second].second}” w szarości: $differing px",
+                    differing >= MIN_PIXELS,
+                )
+            }
+        }
+    }
+
+    /**
      * Scenariusz: zgloszenia-zbierajacego.feature: Zgłoszenie ze zmianą czekającą w telefonie ma napis
      *   przy statusie.
      */
@@ -245,6 +295,17 @@ class SubmissionCardTest {
         assertTrue(tree.indexOf("W telefonie") in 0 until tree.indexOf("Schody przy wejściu"))
     }
 
+    private fun grayIconBeside(word: String): IntArray {
+        val text = compose.onNodeWithText(word, useUnmergedTree = true).fetchSemanticsNode().boundsInRoot
+        val density = compose.activity.resources.displayMetrics.density
+        val side = STATUS_ICON_DP.value * density
+        val right = text.left - Odstepy.s.value * density
+        val top = text.center.y - side / 2
+        val root = compose.onRoot().captureToImage().asAndroidBitmap()
+        val icon = Bitmap.createBitmap(root, (right - side).toInt(), top.toInt(), side.toInt(), side.toInt())
+        return grayOnWhite(icon)
+    }
+
     private fun grayOnWhite(bitmap: Bitmap): IntArray {
         val pixels = IntArray(bitmap.width * bitmap.height)
         bitmap.getPixels(pixels, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
@@ -261,6 +322,7 @@ class SubmissionCardTest {
 }
 
 private val ICON_DP = 48.dp
+private val STATUS_ICON_DP = 24.dp
 private const val DARK_LUMA = 128
 private const val LUMA_DIFFERENCE = 64
 private const val MIN_PIXELS = 100
