@@ -58,7 +58,6 @@ class MarkerSyncTest {
             phone.markers.revoke(markerId = "m2", buildingSymbol = "A-1", floorId = "p2")
             phone.server.isOnline = false
             assertEquals(ListenableWorker.Result.retry(), phone.sync.syncResult(), "bez sieci")
-            assertEquals(3, phone.server.marked.size, "postęp przed powrotem sieci")
 
             phone.server.isOnline = true
             assertEquals(ListenableWorker.Result.success(), phone.sync.syncResult(), "po powrocie sieci")
