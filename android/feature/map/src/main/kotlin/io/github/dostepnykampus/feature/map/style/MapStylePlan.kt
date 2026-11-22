@@ -70,6 +70,17 @@ private const val FILTER = "filter"
 private const val IMAGE = "image"
 internal const val PLAN_ROOM_NUMBER_ZOOM = 19.0
 
+/** Rodzaj obiektów planu, które każda warstwa planu pokazuje na wybranym piętrze. Wymagania: US16.1 */
+internal val PLAN_LAYER_KINDS: List<Pair<String, String>> =
+    listOf(
+        PLAN_FLOOR_LAYER to OUTLINE,
+        PLAN_ROOMS_LAYER to ROOM,
+        PLAN_WALLS_LAYER to ROOM,
+        PLAN_OUTLINE_LAYER to OUTLINE,
+        PLAN_SIGNS_LAYER to SIGN,
+        PLAN_NUMBERS_LAYER to NUMBER,
+    )
+
 /**
  * Kolory planu piętra z tokenów `mapa.kolory` jako `#RRGGBB`.
  *
@@ -142,16 +153,16 @@ internal fun planFeatures(floors: Map<String, RoomList>): JsonElement =
  * Wymagania: US16.1, NFR-16, NFR-21, US18.1
  */
 internal fun planLayers(colors: PlanColors, floor: String? = null, room: String? = null): List<JsonObject> {
-    val none = planFilter(floor = floor, kind = ROOM)
+    val filters = PLAN_LAYER_KINDS.associate { (layer, kind) -> layer to planFilter(floor = floor, kind = kind) }
+    val none = filters.getValue(PLAN_ROOMS_LAYER)
     val fill =
         styleLayer(id = PLAN_ROOMS_LAYER, type = "fill", source = PLAN_SOURCE) {
             put(key = FILTER, element = none)
             paint("fill-color" to categoryColor(colors))
         }
-    val outline = planFilter(floor = floor, kind = OUTLINE)
     val ground =
         styleLayer(id = PLAN_FLOOR_LAYER, type = "fill", source = PLAN_SOURCE) {
-            put(key = FILTER, element = outline)
+            put(key = FILTER, element = filters.getValue(PLAN_FLOOR_LAYER))
             paint("fill-color" to JsonPrimitive(colors.corridor))
         }
     val walls =
@@ -167,7 +178,7 @@ internal fun planLayers(colors: PlanColors, floor: String? = null, room: String?
                 source = PLAN_SOURCE,
                 color = colors.floorWall,
                 width = MapaPlan.obrysDp,
-                filter = outline,
+                filter = filters.getValue(PLAN_OUTLINE_LAYER),
             ),
             JsonObject(
                 symbolLayer(
@@ -177,11 +188,11 @@ internal fun planLayers(colors: PlanColors, floor: String? = null, room: String?
                     "icon-size" to byZoom(MapaPlan.znakDp.map { it.copy(dp = it.dp / PLAN_SIGN_DP) }),
                     "symbol-sort-key" to signOrder(),
                 ) +
-                    (FILTER to planFilter(floor = floor, kind = SIGN)),
+                    (FILTER to filters.getValue(PLAN_SIGNS_LAYER)),
             ),
             JsonObject(
                 symbolLayer(id = PLAN_NUMBERS_LAYER, source = PLAN_SOURCE, image = property(IMAGE)) +
-                    (FILTER to planFilter(floor = floor, kind = NUMBER)) +
+                    (FILTER to filters.getValue(PLAN_NUMBERS_LAYER)) +
                     ("minzoom" to JsonPrimitive(PLAN_ROOM_NUMBER_ZOOM)),
             ),
         )
@@ -212,12 +223,7 @@ internal fun planSignImage(category: RoomCategory): String = "znak planu: ${cate
  * Zmienia tylko filtry warstw, więc zmiana piętra nie przelicza danych planu. Wymagania: US16.1, NFR-10
  */
 internal fun MapStyleTarget.showPlanFloor(floor: String?) {
-    filter(layer = PLAN_FLOOR_LAYER, filter = planFilter(floor = floor, kind = OUTLINE))
-    filter(layer = PLAN_ROOMS_LAYER, filter = planFilter(floor = floor, kind = ROOM))
-    filter(layer = PLAN_WALLS_LAYER, filter = planFilter(floor = floor, kind = ROOM))
-    filter(layer = PLAN_OUTLINE_LAYER, filter = planFilter(floor = floor, kind = OUTLINE))
-    filter(layer = PLAN_SIGNS_LAYER, filter = planFilter(floor = floor, kind = SIGN))
-    filter(layer = PLAN_NUMBERS_LAYER, filter = planFilter(floor = floor, kind = NUMBER))
+    PLAN_LAYER_KINDS.forEach { (layer, kind) -> filter(layer = layer, filter = planFilter(floor = floor, kind = kind)) }
 }
 
 /**
