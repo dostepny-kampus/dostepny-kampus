@@ -62,7 +62,14 @@ public final class VerificationSteps {
     /** Pola decyzji ustalone przez Weryfikatora. */
     private static final Map<String, String> FIELDS = Map.of(
         "typ TB-9 „niesprawna winda”", ",\"barrierType\":\"TB-9\"",
-        "uciążliwość 3", ",\"severity\":3"
+        "uciążliwość 3", ",\"severity\":3",
+        "typ TB-13 „próg” z grupy „komunikacja pozioma” i uciążliwość 2",
+        ",\"barrierType\":\"TB-13\",\"severity\":2"
+    );
+
+    /** Grupy barier zgłoszeń szybkich ze scenariuszy. */
+    private static final Map<String, BarrierGroup> GROUPS = Map.of(
+        "komunikacja pionowa", BarrierGroup.VERTICAL, "wejście i drzwi", BarrierGroup.ENTRANCE
     );
 
     /** Statusy serwera dla statusów ze scenariuszy. */
@@ -135,13 +142,12 @@ public final class VerificationSteps {
     /**
      * Pierwszy Weryfikator bierze zgłoszenie szybkie bez typu i uciążliwości.
      *
+     * @param group Grupa barier słowami scenariusza
      * @throws Exception Gdy MockMvc nie wykona żądania
      */
-    @Given(
-        "^pierwszy Weryfikator wziął zgłoszenie szybkie z grupą barier „komunikacja pionowa” .+$"
-    )
-    public void claimedQuick() throws Exception {
-        this.claimed(BarrierGroup.VERTICAL, null, null);
+    @Given("^pierwszy Weryfikator wziął zgłoszenie szybkie z grupą barier „(.+)” z budynku \\S+$")
+    public void claimedQuick(final String group) throws Exception {
+        this.claimed(VerificationSteps.GROUPS.get(group), null, null);
     }
 
     /**
@@ -150,6 +156,7 @@ public final class VerificationSteps {
      * @param field Ustalone pole słowami scenariusza
      */
     @Given("^ustalił tylko (typ TB-9 „niesprawna winda”|uciążliwość 3)$")
+    @When("^ustali (typ TB-13 „próg” z grupy „komunikacja pozioma” i uciążliwość 2)$")
     public void fixedOnly(final String field) {
         this.fixed = VerificationSteps.FIELDS.get(field);
     }
@@ -170,6 +177,7 @@ public final class VerificationSteps {
      * @throws Exception Gdy MockMvc nie wykona żądania
      */
     @When("spróbuje przyjąć zgłoszenie")
+    @When("przyjmie zgłoszenie")
     public void accepts() throws Exception {
         this.decide(
             String.join("", "{\"decision\":\"ACCEPT\",\"version\":1", this.fixed, "}")
@@ -190,6 +198,25 @@ public final class VerificationSteps {
         MatcherAssert.assertThat(
             "Serwer nie odmówił decyzji statusem 400",
             this.outcome.status(), Matchers.equalTo(400)
+        );
+    }
+
+    /**
+     * Zgłoszenie przyjęte ma na mapie typ i uciążliwość ustalone przez Weryfikatora.
+     *
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    @Then("^na mapie jest bariera TB-13 „próg” z uciążliwością 2$")
+    public void onMap() throws Exception {
+        MatcherAssert.assertThat(
+            "Gość nie widzi zgłoszenia przyjętego z typem TB-13 i uciążliwością 2",
+            this.http.perform(
+                MockMvcRequestBuilders.get("/submissions/{id}", VerificationSteps.SUBMISSION)
+            ).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+            Matchers.allOf(
+                Matchers.containsString("\"barrierType\":\"TB-13\""),
+                Matchers.containsString("\"severity\":2")
+            )
         );
     }
 
