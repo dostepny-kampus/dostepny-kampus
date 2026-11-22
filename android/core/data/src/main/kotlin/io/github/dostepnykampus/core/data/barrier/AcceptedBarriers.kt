@@ -74,6 +74,16 @@ public fun interface AcceptedBarriers {
      * Wymagania: NFR-10, NFR-56
      */
     public fun known(): List<AcceptedBarrier>? = null
+
+    /**
+     * Bariery budynku [symbol] z [barriers]; `null`, gdy bariery nie są ani z serwera, ani z kopii.
+     *
+     * Wymagania: BR-25
+     */
+    public suspend fun barriersOf(symbol: String): List<AcceptedBarrier>? {
+        val accepted = barriers()
+        return syncedAt()?.let { accepted.filter { barrier -> barrier.buildingSymbol == symbol } }
+    }
 }
 
 /**

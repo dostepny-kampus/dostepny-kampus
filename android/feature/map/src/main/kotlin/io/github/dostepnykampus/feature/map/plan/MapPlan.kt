@@ -10,7 +10,6 @@ import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.room.FoundRoom
-import io.github.dostepnykampus.feature.map.building.barriersOf
 import io.github.dostepnykampus.feature.map.building.orderedEntrances
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.campus.ShownPlan
