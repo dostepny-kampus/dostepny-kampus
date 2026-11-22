@@ -30,6 +30,7 @@ import org.junit.platform.suite.api.Suite;
 @SelectFile("../specs/przegladanie-mapy.feature")
 @SelectFile("../specs/szukanie-sali.feature")
 @SelectFile("../specs/uprawnienia.feature")
+@SelectFile("../specs/weryfikacja.feature")
 @SelectFile("../specs/zgloszenia-zbierajacego.feature")
 @SelectFile("../specs/zgloszenie-szybkie.feature")
 @ConfigurationParameter(
