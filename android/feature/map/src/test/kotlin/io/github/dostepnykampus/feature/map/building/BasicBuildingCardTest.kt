@@ -29,19 +29,17 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.time.Instant
 
-/**
- * Karta budynku podstawowego B-8 zamiast planu piętra: napis o braku planu, wejścia i zgłoszenie przyjęte.
- *
- * Scenariusz: budynki-bez-szczegolow.feature: Karta budynku podstawowego zamiast planu piętra pokazuje napis
- *
- * Wymagania: US16.2, BR-17
- */
+/** Karta budynku podstawowego B-8 zamiast planu piętra. Wymagania: US16.2, BR-17 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class BasicBuildingCardTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
+    /**
+     * Napis o braku planu, wejścia i zgłoszenie przyjęte budynku podstawowego.
+     * Scenariusz: budynki-bez-szczegolow.feature: Karta budynku podstawowego zamiast planu piętra pokazuje napis
+     */
     @Test
     fun showsNoPlanInsteadOfFloors() {
         show()
