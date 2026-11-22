@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.feature.map.plan
 
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.model.GeoMultiPolygon
@@ -17,6 +19,7 @@ import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.room.RoomList
+import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
@@ -28,6 +31,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.time.Instant
 
 /**
  * Plan piętra przy widoku mapy: budynek, piętro na start, pamięć piętra i pobranie planu.
@@ -157,6 +161,20 @@ class MapPlanTest {
         }
 
     @Test
+    fun startsOnUnblockedEntrance() =
+        runTest(UnconfinedTestDispatcher()) {
+            val barriers = synced(listOf(barrierAt(entrance = "w1", severity = Severity.BLOCKING)))
+            val plan = MapPlan(Plans(), twoEntrances(), barriers)
+            val shown = collected(plan)
+            plan.camera(MapCamera(center = INSIDE_A, zoom = 18.0))
+            assertEquals(
+                "P1",
+                shown.value?.floor,
+                "Plan startował na piętrze wejścia z blokadą, a karta wybiera drugie wejście",
+            )
+        }
+
+    @Test
     fun startsOnGroundForUnknownFloor() =
         runTest(UnconfinedTestDispatcher()) {
             val plan = MapPlan(Plans(), entrances(floor = "P7"))
@@ -223,6 +241,44 @@ class MapPlanTest {
                 ),
             )
         }
+
+    private fun twoEntrances(): ServerEntrances =
+        ServerEntrances { symbol ->
+            listOf(
+                entrance(id = "w1", symbol = symbol, isMain = true, floor = "P-1"),
+                entrance(id = "w2", symbol = symbol, isMain = false, floor = "P1"),
+            )
+        }
+
+    private fun entrance(id: String, symbol: String, isMain: Boolean, floor: String): Entrance =
+        Entrance(
+            id = id,
+            buildingSymbol = symbol,
+            name = null,
+            isMain = isMain,
+            type = null,
+            location = INSIDE_A,
+            marking = EntranceMarking.ACCESSIBLE,
+            floorId = floor,
+        )
+
+    private fun synced(barriers: List<AcceptedBarrier>): AcceptedBarriers =
+        object : AcceptedBarriers {
+            override suspend fun barriers(): List<AcceptedBarrier> = barriers
+
+            override fun syncedAt(): Instant? = Instant.parse("2026-10-14T10:00:00Z")
+        }
+
+    private fun barrierAt(entrance: String, severity: Severity) =
+        AcceptedBarrier(
+            id = "$entrance-${severity.value}",
+            location = INSIDE_A,
+            severity = severity,
+            type = null,
+            buildingSymbol = "A",
+            verifiedAt = null,
+            entranceId = entrance,
+        )
 
     private fun TestScope.collected(plan: MapPlan, catalog: BuildingCatalog = CATALOG): MutableStateFlow<ShownPlan?> {
         val shown = MutableStateFlow<ShownPlan?>(null)

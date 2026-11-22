@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map.plan
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.room.FloorPlans
@@ -30,6 +31,7 @@ private const val STOP_TIMEOUT_MS = 5_000L
  * @param repository katalog budynków z listą budynków szczegółowych
  * @param plans plany pięter z kopią w telefonie
  * @param entrances wejścia budynku z serwera z piętrem wejścia
+ * @param barriers przyjęte bariery przy wejściach, z którymi wybiera się wejście zalecane
  */
 @HiltViewModel
 class MapPlanViewModel
@@ -38,8 +40,9 @@ class MapPlanViewModel
         repository: BuildingCatalogRepository,
         plans: FloorPlans,
         entrances: ServerEntrances,
+        barriers: AcceptedBarriers,
     ) : ViewModel() {
-        private val plan = MapPlan(plans, entrances)
+        private val plan = MapPlan(plans, entrances, barriers)
 
         /** Plan piętra budynku przy środku mapy; `null`, gdy planu nie widać. */
         val shown: StateFlow<ShownPlan?> =

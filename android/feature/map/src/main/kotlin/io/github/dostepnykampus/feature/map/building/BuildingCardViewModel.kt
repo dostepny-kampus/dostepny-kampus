@@ -156,8 +156,7 @@ class BuildingCardViewModel
                 exits.value = card.evacuationExits
             }
             viewModelScope.launch {
-                val accepted = sources.acceptedBarriers.barriers()
-                barriers.value = sources.acceptedBarriers.syncedAt()?.let { ofBuilding(accepted) }
+                barriers.value = sources.acceptedBarriers.barriersOf(symbol)
             }
         }
 
