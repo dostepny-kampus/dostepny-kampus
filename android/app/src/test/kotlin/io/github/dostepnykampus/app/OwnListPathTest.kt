@@ -19,12 +19,15 @@ import io.github.dostepnykampus.core.data.submission.sync.SubmissionServer
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStamps
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -63,6 +66,9 @@ class OwnListPathTest {
 
     @Inject
     lateinit var history: OwnSubmissionDao
+
+    @Inject
+    lateinit var pending: PendingSubmissionDao
 
     private var isServerReachable = false
     private var today = LocalDate.of(YEAR, OCTOBER, FIRST_DAY)
@@ -156,6 +162,34 @@ class OwnListPathTest {
 
         compose.onNodeWithText("Przyjęte").assertExists("przyjęte zgłoszenie zostaje na liście")
         compose.onNodeWithText("W telefonie").assertExists("zmiana czeka w telefonie")
+    }
+
+    /**
+     * Zmiana przyjętego zgłoszenia zostaje nowym zgłoszeniem obok przyjętego, a przyjęte zostaje przyjęte.
+     * Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Zmiana zgłoszenia przyjętego tworzy nowe zgłoszenie
+     *
+     * Wymagania: BR-3, BR-18, NFR-10
+     */
+    @Test
+    fun keepsAcceptedBesideChange() {
+        isServerReachable = true
+        send()
+        runBlocking {
+            history.saveServerStatus(id = "s-0", status = "ACCEPTED", reason = null, version = 2)
+        }
+        isServerReachable = false
+        runBlocking { queue().save(precise().copy(replacesSubmissionId = "s-0", severity = 3), photo()) }
+
+        showMine()
+
+        compose.onNodeWithText("Przyjęte").assertExists("przyjęte zgłoszenie zostaje na liście")
+        compose.onNodeWithText("W telefonie").assertExists("zmiana czeka w telefonie")
+        val rows = runBlocking { history.observe(TEST_ACCOUNT).first() }
+        assertEquals("zmiana to osobny wpis obok przyjętego", 2, rows.size)
+        assertEquals("przyjęte zostaje przyjęte", "ACCEPTED", rows.first { it.id == "s-0" }.serverStatus)
+        val pendingChange = runBlocking { pending.observe().first() }.single().submission
+        assertEquals("zmiana wskazuje przyjęte", "s-0", pendingChange.replacesSubmissionId)
+        assertEquals("zmiana ma nową uciążliwość", 3, pendingChange.severity)
     }
 
     /**

@@ -6,8 +6,7 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
   Założenia:
     Zakładając, że Zbierający jest zalogowany z rolą Zbierającego
 
-  # brak pełnego testu: #3693
-  @US8.1 @aplikacja @do-zrobienia
+  @US8.1 @aplikacja
   Szablon scenariusza: Każde własne zgłoszenie ma jeden status tekstem i ikoną
     Zakładając, że Zbierający ma zgłoszenie TB-13 „próg” w budynku C-13 ze statusem „<status>”
     Jeżeli otworzy listę swoich zgłoszeń
@@ -106,7 +105,7 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
     Wtedy zgłoszenie ma status „wysłane”
     Oraz trafia z powrotem do kolejki weryfikacji
 
-  # brak pełnego testu: #3693
+  # brak testu mapy: #3710
   @BR-3 @BR-18 @aplikacja @serwer @do-zrobienia
   Scenariusz: Zmiana zgłoszenia przyjętego tworzy nowe zgłoszenie
     Zakładając, że zgłoszenie Zbierającego TB-13 „próg” w C-13 z uciążliwością 2 jest przyjęte
@@ -129,7 +128,7 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
     Oraz autorem nowego zgłoszenia jest ten Zbierający
     Oraz poprzednie zgłoszenie nadal jest przyjęte i widoczne na mapie
 
-  # brak pełnego testu: #3693
+  # brak testu mapy: #3710
   @US8.4 @BR-19 @aplikacja @do-zrobienia
   Scenariusz: Inny Zbierający niż autor zgłasza usunięcie bariery
     Zakładając, że zgłoszenie TB-9 „niesprawna winda” na piętrze budynku C-13 jest przyjęte, a jego autorem jest inna osoba
