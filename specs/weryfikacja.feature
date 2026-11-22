@@ -38,7 +38,7 @@ Funkcja: Weryfikacja zgłoszeń
       Wtedy zgłoszenie ma status „w weryfikacji”
       Oraz drugi Weryfikator nie widzi go w swojej kolejce
 
-    # brak kroków serwera: #3701
+    # brak kroków serwera: #3708
     @US10.4 @serwer @do-zrobienia
     Szablon scenariusza: Drugi Weryfikator nie obsłuży zgłoszenia wziętego przez pierwszego
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie TB-13 „próg” z budynku C-13
@@ -76,7 +76,7 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-5
   Reguła: Weryfikator zna autora tylko z roli i pseudonimu
 
-    # brak kroków serwera: #3701
+    # brak kroków serwera: #3707
     @serwer @do-zrobienia
     Scenariusz: Weryfikator widzi rolę i pseudonim autora, a nie jego dane osobowe
       Zakładając, że zgłoszenie wysłał Zbierający Jan Kowalski z adresem e-mail jan.kowalski@example.org
@@ -87,8 +87,7 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-13
   Reguła: O duplikacie decyduje Weryfikator na podstawie podobnych zgłoszeń w promieniu 10 m
 
-    # brak kroków serwera: #3701
-    @US10.1 @serwer @do-zrobienia
+    @US10.1 @serwer
     Szablon scenariusza: Podobne zgłoszenia w promieniu 10 m
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie TB-1 „schody przy wejściu” przy wejściu głównym A-1
       Oraz <odległość> od niego jest zgłoszenie TB-13 „próg” ze statusem „<status>”
@@ -105,8 +104,7 @@ Funkcja: Weryfikacja zgłoszeń
         | 5 m       | odrzucone     | nie jest widoczne |
         | 5 m       | archiwalne    | nie jest widoczne |
 
-    # brak kroków serwera: #3701
-    @US10.1 @serwer @do-zrobienia
+    @US10.1 @serwer
     Scenariusz: Podobne zgłoszenie pokazuje typ, zdjęcie, odległość i piętro
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie TB-1 „schody przy wejściu” przy wejściu głównym A-1
       Oraz 5 m od niego jest przyjęte zgłoszenie TB-13 „próg” z innego piętra
@@ -121,8 +119,7 @@ Funkcja: Weryfikacja zgłoszeń
       Wtedy widzi w niej oba zgłoszenia osobno
       Ale żadne z nich nie jest odrzucone ani połączone z drugim
 
-    # brak kroków serwera: #3701
-    @serwer @do-zrobienia
+    @serwer
     Scenariusz: Odrzucenie duplikatu wskazuje wcześniejsze zgłoszenie
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie TB-1, a 2 m od niego jest przyjęte zgłoszenie TB-1 tej samej bariery
       Jeżeli odrzuci sprawdzane zgłoszenie jako duplikat
@@ -160,8 +157,7 @@ Funkcja: Weryfikacja zgłoszeń
         | typ TB-9 „niesprawna winda”     |
         | uciążliwość 3                   |
 
-    # brak kroków serwera: #3701
-    @US10.3 @serwer @do-zrobienia
+    @US10.3 @serwer
     Scenariusz: Weryfikator ustala typ z innej grupy barier niż wybrana przez Odwiedzającego
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie szybkie z grupą barier „wejście i drzwi” z budynku C-13
       Jeżeli ustali typ TB-13 „próg” z grupy „komunikacja pozioma” i uciążliwość 2
@@ -171,7 +167,7 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-15
   Reguła: Weryfikator nie poprawia zgłoszenia z pomiaru precyzyjnego
 
-    # brak kroków serwera: #3701
+    # brak kroków serwera: #3708
     @serwer @do-zrobienia
     Szablon scenariusza: Weryfikator nie zmienia danych zgłoszenia z pomiaru precyzyjnego
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie z pomiaru precyzyjnego TB-13 „próg” z uciążliwością 2 z budynku C-13
@@ -185,14 +181,13 @@ Funkcja: Weryfikacja zgłoszeń
         | uciążliwość na 3                          |
         | miejsce                                   |
 
-    # brak kroków serwera: #3701
-    @serwer @do-zrobienia
+    @serwer
     Scenariusz: Błąd w zgłoszeniu z pomiaru precyzyjnego oznacza odrzucenie z powodem
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie z pomiaru precyzyjnego TB-13 „próg” z budynku C-13
       Jeżeli odrzuci je z powodem „Na zdjęciu są schody, a nie próg”
       Wtedy autor widzi zgłoszenie ze statusem „odrzucone” i powodem odrzucenia „Na zdjęciu są schody, a nie próg”
 
-    # brak kroków serwera: #3701
+    # brak kroków serwera: #3708
     @serwer @do-zrobienia
     Scenariusz: Zasłonięcie twarzy na zdjęciu nie tworzy nowej wersji
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie z pomiaru precyzyjnego, na którego zdjęciu widać twarz przechodnia
@@ -204,7 +199,7 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-3
   Reguła: Weryfikator decyduje o aktualnej wersji zgłoszenia
 
-    # brak kroków serwera: #3701
+    # brak kroków serwera: #3708
     @US8.3 @serwer @do-zrobienia
     Scenariusz: Edycja autora w trakcie weryfikacji daje Weryfikatorowi nową wersję
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie TB-13 „próg” z uciążliwością 1
@@ -215,8 +210,7 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-17
   Reguła: Zgłoszenie przyjęte jest widoczne od chwili decyzji
 
-    # brak kroków serwera: #3701
-    @US1.3 @US2.2 @BR-6 @serwer @do-zrobienia
+    @US1.3 @US2.2 @BR-6 @serwer
     Scenariusz: Przyjęte zgłoszenie od razu pojawia się na mapie i karcie budynku
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie TB-1 „schody przy wejściu” przy wejściu głównym A-1
       Jeżeli przyjmie je 12.11.2026
@@ -235,7 +229,7 @@ Funkcja: Weryfikacja zgłoszeń
       Wtedy na mapie jest tylko bariera TB-13 z uciążliwością 3
       Oraz poprzednie zgłoszenie ma status „archiwalne”
 
-    # brak kroków serwera: #3701
+    # brak kroków serwera: #3708
     @serwer @do-zrobienia
     Scenariusz: Po odrzuceniu zmiany na mapie zostaje poprzednie zgłoszenie
       Zakładając, że na mapie jest przyjęte zgłoszenie TB-13 „próg” z uciążliwością 2 w budynku C-13
@@ -257,7 +251,7 @@ Funkcja: Weryfikacja zgłoszeń
       Oraz oba zgłoszenia zostają w systemie ze statusem „archiwalne”
       Oraz zgłoszenie „bariera usunięta” ma to oznaczenie
 
-    # brak kroków serwera: #3701
+    # brak kroków serwera: #3708
     @US8.4 @serwer @do-zrobienia
     Scenariusz: Po odrzuceniu „bariera usunięta” bariera zostaje na mapie
       Zakładając, że na mapie jest przyjęte zgłoszenie TB-9 „niesprawna winda” w budynku D-2
@@ -268,7 +262,7 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-23
   Reguła: Z dwóch równoległych zmian tego samego zgłoszenia przyjąć można tylko jedną
 
-    # brak kroków serwera: #3701
+    # brak kroków serwera: #3708
     @US10.1 @serwer @do-zrobienia
     Scenariusz: Druga równoległa zmiana jest widoczna jako podobne zgłoszenie
       Zakładając, że autor przyjętego zgłoszenia TB-9 „niesprawna winda” w budynku D-2 wysłał zmianę z uciążliwością 2, a inny Zbierający niezależnie wysłał zmianę „bariera usunięta” tego zgłoszenia
