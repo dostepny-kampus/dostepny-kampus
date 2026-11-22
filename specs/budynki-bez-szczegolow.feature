@@ -9,7 +9,8 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
   @BR-G1
   Reguła: Budynek bez planów pięter nie ma przełącznika pięter, a piętro wpisuje się ręcznie
 
-    @US16.2 @aplikacja
+    # brak pełnego testu (przełącznik pięter na mapie): #3666
+    @US16.2 @aplikacja @do-zrobienia
     Scenariusz: Karta budynku podstawowego zamiast planu piętra pokazuje napis
       Jeżeli Gość niezalogowany otworzy kartę budynku B-8
       Wtedy nie widzi przełącznika pięter
@@ -116,7 +117,8 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
   @BR-G3
   Reguła: Nieudany import planów nie psuje pozostałych budynków
 
-    @US16.2 @aplikacja
+    # brak kodu: import nie toleruje uszkodzonych planów i nie ma raportu importu: #3665
+    @US16.2 @aplikacja @do-zrobienia
     Scenariusz: Budynek z uszkodzonymi danymi planów działa jako budynek podstawowy
       Zakładając, że dane planów pięter budynku B-1 są uszkodzone
       Jeżeli import planów pięter się zakończy
@@ -134,7 +136,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
   @BR-G4
   Reguła: Dalej niż 50 m od budynków PWr zgłoszenie zapisuje się jako „poza budynkiem”
 
-    # brak pełnego testu: #3640
+    # brak testu wiersza 50 m, bo kod dla 50 m podaje „poza budynkiem”, a tabela podpowiada A-1: #3664
     @US6.2 @aplikacja @do-zrobienia
     Szablon scenariusza: Propozycja budynku po pomiarze zależy od odległości od konturu
       Zakładając, że Zbierający stoi na terenie PWr poza konturem, <odległość> od konturu budynku A-1, a dalej od innych budynków PWr
@@ -148,7 +150,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
         | 50 m      | aplikacja podpowiada budynek A-1 do potwierdzenia                                                     |
         | 60 m      | aplikacja nie podpowiada żadnego budynku, a po zapisaniu zgłoszenie jest „poza budynkiem”, bez piętra |
 
-    # brak pełnego testu: #3640
+    # brak pełnego testu: #3666
     @aplikacja @do-zrobienia
     Scenariusz: Mapa działa daleko od budynków PWr
       Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego

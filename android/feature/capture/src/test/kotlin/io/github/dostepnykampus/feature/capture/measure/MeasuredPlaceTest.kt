@@ -68,20 +68,46 @@ class MeasuredPlaceTest {
     }
 
     /**
-     * Przekazuje skorygowany punkt do zgłoszenia z oznaczeniem korekty ręcznej.
-     * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Korekta punktu na mapie w każdym budynku i poza budynkiem
+     * Przekazuje skorygowany punkt do zgłoszenia z oznaczeniem korekty ręcznej w budynku podstawowym.
+     * Scenariusz (przykład: w budynku B-8): budynki-bez-szczegolow.feature: Korekta punktu na mapie w każdym budynku
+     *   i poza budynkiem
      *
-     * Wymagania: US6.4
+     * Wymagania: US6.4, BR-G2
      */
     @Test
-    fun passesCorrectedPoint() {
-        val b8 = a1.copy(symbol = "B-8", name = null)
+    fun passesCorrectedBasic() {
+        assertCorrected(PlaceChoice.Chosen(a1.copy(symbol = "B-8", name = null)))
+    }
+
+    /**
+     * Przekazuje skorygowany punkt do zgłoszenia z oznaczeniem korekty ręcznej w budynku szczegółowym.
+     * Scenariusz (przykład: w budynku szczegółowym A-1): budynki-bez-szczegolow.feature: Korekta punktu na mapie
+     *   w każdym budynku i poza budynkiem
+     *
+     * Wymagania: US6.4, BR-G2
+     */
+    @Test
+    fun passesCorrectedDetailed() {
+        assertCorrected(PlaceChoice.Chosen(a1))
+    }
+
+    /**
+     * Przekazuje skorygowany punkt do zgłoszenia z oznaczeniem korekty ręcznej poza budynkiem.
+     * Scenariusz (przykład: na chodniku przed wejściem głównym A-1): budynki-bez-szczegolow.feature: Korekta punktu
+     *   na mapie w każdym budynku i poza budynkiem
+     *
+     * Wymagania: US6.4, BR-G2
+     */
+    @Test
+    fun passesCorrectedOutside() {
+        assertCorrected(PlaceChoice.Outside)
+    }
+
+    private fun assertCorrected(choice: PlaceChoice) {
         val moved = GeoPoint(longitude = 17.06215, latitude = 51.10790)
-        val places =
-            listOf(PlaceChoice.Chosen(b8), PlaceChoice.Chosen(a1), PlaceChoice.Outside).map { choice ->
-                finished(choice).copy(corrected = moved).reportFormRoute()?.place()
-            }
-        assertEquals(List(3) { moved to true }, places.map { it?.location to it?.isManualCorrection })
+        val place = finished(choice).copy(corrected = moved).reportFormRoute()?.place()
+        val marked = place?.location to place?.isManualCorrection
+        assertEquals(moved to true, marked, "skorygowany punkt z korektą ręczną")
     }
 
     /** Wiersz: C1 bez korekty → miejsce ze średnią z pomiaru, bez oznaczenia „korekta ręczna”. Wymagania: US6.4 */

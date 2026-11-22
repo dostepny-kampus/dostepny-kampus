@@ -25,6 +25,8 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.concurrent.atomic.AtomicInteger
@@ -237,6 +239,43 @@ class BuildingCardTest {
         assertEquals(false, isBasic(file, "A-4"), "katalog z pliku: plan nieznany, nie budynek podstawowy")
         assertEquals(true, isBasic(server, "A-4"), "lista serwera bez A-4 wśród szczegółowych: budynek podstawowy")
         assertEquals(false, isBasic(server, "A-1"), "A-1 szczegółowy według listy serwera")
+    }
+
+    /**
+     * Budynek podstawowy z listy serwera ma swoje wejścia i nie ma faktów o piętrach, więc karta nie pokazuje
+     * planu. Scenariusz (częściowo): budynki-bez-szczegolow.feature: Karta budynku podstawowego zamiast planu piętra
+     *   pokazuje napis
+     *
+     * Wymagania: US16.2
+     */
+    @Test
+    fun basicCardHasEntrances() {
+        val outline = GeoPolygon(emptyList())
+        val location = GeoPoint(longitude = 0.0, latitude = 0.0)
+        val entrances =
+            listOf("w1", "w2").map { id ->
+                Entrance(
+                    id = id,
+                    buildingSymbol = "B-8",
+                    name = id,
+                    isMain = false,
+                    type = "yes",
+                    location = location,
+                    marking = EntranceMarking.ACCESSIBLE,
+                )
+            }
+        val catalog =
+            BuildingCatalog(
+                buildings = listOf("A-1", "B-8").map { Building(symbol = it, name = null, outline = outline) },
+                entrances = entrances,
+                attribution = "©",
+                detailed = setOf("A-1"),
+                hasServerList = true,
+            )
+        val card = buildingCard(catalog, "B-8") as BuildingCardUiState.Ready
+        assertTrue(card.isBasic, "B-8 spoza listy szczegółowych jest budynkiem podstawowym")
+        assertNull(card.floors, "budynek podstawowy nie ma faktów o piętrach")
+        assertEquals(listOf("w1", "w2"), card.entrances.map { it.entrance.id }.sorted(), "wejścia budynku B-8")
     }
 
     @Test
