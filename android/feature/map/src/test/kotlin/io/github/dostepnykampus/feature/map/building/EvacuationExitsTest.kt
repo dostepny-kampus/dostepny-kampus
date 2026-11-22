@@ -67,6 +67,8 @@ class EvacuationExitsTest {
      * Wiersz: V2 budynku z 2 wyjściami w danych → pod grupą „Wejścia”, nad „Piętra”, przycisk
      *   „Pokaż wyjścia ewakuacyjne (2)”; lista na start zwinięta.
      *
+     * Scenariusz: przegladanie-mapy.feature: Wyjścia ewakuacyjne rozwijają się na żądanie
+     *
      * Wymagania: US2.6, BR-27
      */
     @Test
@@ -82,6 +84,8 @@ class EvacuationExitsTest {
     /**
      * Wiersz: dotknięcie „Pokaż wyjścia ewakuacyjne (2)” → lista obu wyjść, każde z „Wyjście ewakuacyjne” i resztą
      *   opisu; „Szerokość drzwi: 90 cm” tylko przy wyjściu z szerokością w danych; wiersz niczego nie otwiera.
+     *
+     * Scenariusz: przegladanie-mapy.feature: Wyjścia ewakuacyjne rozwijają się na żądanie
      *
      * Wymagania: US2.6, BR-27
      */
