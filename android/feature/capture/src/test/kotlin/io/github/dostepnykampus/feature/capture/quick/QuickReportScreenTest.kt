@@ -168,7 +168,7 @@ class QuickReportScreenTest {
         compose.onNodeWithText("Wróć do zdjęcia").performClick()
         compose.onNodeWithText("Krok 1 z 3").assertIsDisplayed()
         assertEquals(0, backs)
-        assertTrue(photo.exists())
+        assertTrue("zdjęcie zostaje w telefonie", photo.exists())
         compose.onNodeWithText("Wstecz").performClick()
         compose.onNodeWithText("Tak, zrezygnuj").performClick()
         assertEquals(1, backs)
@@ -212,7 +212,7 @@ class QuickReportScreenTest {
         compose.onNodeWithText("Zrezygnuj").performClick()
         compose.onNodeWithText("Wróć do zdjęcia").performClick()
         compose.onNodeWithText("Spróbuj ponownie").assertIsDisplayed()
-        assertTrue(photo.exists())
+        assertTrue("zdjęcie zostaje w telefonie", photo.exists())
         compose.onNodeWithText("Zrezygnuj").performClick()
         compose.onNodeWithText("Tak, zrezygnuj").performClick()
         assertEquals(1, toMap)
@@ -285,6 +285,38 @@ class QuickReportScreenTest {
         show(atSend(photo.path).copy(entranceId = "node/6"), isLocationGranted = false)
         compose.onNodeWithText("Wejście: „G”").assertIsDisplayed()
         compose.onNodeWithText("Wyślij").assertIsEnabled()
+    }
+
+    /**
+     * Bez pozycji „Wyślij” nic nie wysyła, a komunikat mówi, co zrobić; zdjęcie i grupa „Coś innego” zostają.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Bez bieżącej pozycji zgłoszenie czeka na ponowną próbę
+     *
+     * Wymagania: UC7, US4.1
+     */
+    @Test
+    fun keepsReportWithoutPosition() {
+        val photo = folder.newFile("zdjecie-1.jpg").apply { writeBytes(byteArrayOf(1, 2, 3)) }
+        show(atSend(photo.path).copy(group = BarrierGroup.OTHER))
+        compose.onNodeWithText("Telefon nie ustalił, gdzie jesteś.", substring = true).assertIsDisplayed()
+        compose.onNodeWithText("Podejdź do okna", substring = true).assertIsDisplayed()
+        compose.onNodeWithText("Wyślij").assertDoesNotExist()
+        compose.onNodeWithText("Spróbuj ponownie").assertIsDisplayed()
+        compose.onNodeWithText("Dziękujemy", substring = true).assertDoesNotExist()
+        compose.onNodeWithText("Coś innego").assertIsDisplayed()
+        assertTrue("zdjęcie zostaje w telefonie", photo.exists())
+    }
+
+    /**
+     * Bez zgody na lokalizację krok 1 pyta o zgodę zamiast otwierać aparat.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Bez zgody na lokalizację aparat się nie otwiera
+     *
+     * Wymagania: US4.1, NFR-27
+     */
+    @Test
+    fun asksLocationBeforeCamera() {
+        show(ReportRoute(step = ReportStep.PHOTO), isLocationGranted = false)
+        compose.onNodeWithText("Zezwól na lokalizację").assertIsDisplayed()
+        compose.onNodeWithText("Zrób zdjęcie").assertDoesNotExist()
     }
 
     private fun show(

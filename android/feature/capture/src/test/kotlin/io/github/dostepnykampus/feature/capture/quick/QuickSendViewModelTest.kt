@@ -199,6 +199,32 @@ class QuickSendViewModelTest {
         }
 
     /**
+     * Pozycja ustalona przy „Spróbuj ponownie” wysyła zgłoszenie z tym samym zdjęciem, grupą „Coś innego” i pozycją.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Pozycja ustalona przy ponownej próbie pozwala
+     *   wysłać zgłoszenie
+     *
+     * Wymagania: UC7, US4.1
+     */
+    @Test
+    fun sendsAfterRetry() =
+        runTest(dispatcher) {
+            val other = report.copy(group = BarrierGroup.OTHER, floorNumber = null)
+            source = flow { throw SecurityException("brak zgody") }
+            watch()
+            assertEquals(QuickLookup.Lost, viewModel.lookup.value, "bez pozycji")
+            source = fixes
+            viewModel.retry()
+            runCurrent()
+            fix(INSIDE_A1)
+            viewModel.send(other)
+            runCurrent()
+            assertEquals(listOf(INSIDE_A1), saved.map { it.location }, "pozycja z ponownej próby")
+            assertEquals(listOf(listOf("zdjecie-1")), saved.map { it.photoIds }, "to samo zdjęcie")
+            assertEquals(listOf(BarrierGroup.OTHER), saved.map { it.barrierGroup }, "ta sama grupa")
+            assertEquals(QuickSendStage.SENT, viewModel.stage.value, "potwierdzenie po wysyłce")
+        }
+
+    /**
      * Pozycja poza terenem PWr: „Wyślij” niczego nie zapisuje, a „Spróbuj ponownie” ustala pozycję od nowa; zdjęcie
      * i grupa zostają.
      * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie szybkie tylko na terenie PWr
