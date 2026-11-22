@@ -196,6 +196,29 @@ class MapPlanTest {
             assertEquals(listOf("A", null, "A"), listOf(initial, selected, shown.value?.building), "Wybrany podstawowy")
         }
 
+    /**
+     * Karta budynku podstawowego B-8 nie dostaje przełącznika pięter na mapie, nawet gdy kamera stoi w jego środku.
+     *
+     * Scenariusz: budynki-bez-szczegolow.feature: Karta budynku podstawowego zamiast planu piętra pokazuje napis
+     *
+     * Wymagania: US16.2, BR-G4
+     */
+    @Test
+    fun hidesFloorSwitchOfBasicCard() =
+        runTest(UnconfinedTestDispatcher()) {
+            val plan = MapPlan(Plans(setOf("A")), entrances())
+            val shown = collected(plan, CLOSE_CATALOG)
+            plan.moveTo(INSIDE_A)
+            val beforeCard = shown.value?.building
+            plan.select("B-8")
+            plan.moveTo(INSIDE_B8)
+            assertEquals(
+                listOf("A", null),
+                listOf(beforeCard, shown.value?.building),
+                "Przełącznik pięter został przy karcie budynku podstawowego B-8",
+            )
+        }
+
     @Test
     fun switchesPlanOnSelectedCard() =
         runTest(UnconfinedTestDispatcher()) {
@@ -307,6 +330,7 @@ class MapPlanTest {
         const val SOURCE = "Politechnika Wrocławska"
         val INSIDE_A = GeoPoint(longitude = 17.00025, latitude = 51.00015)
         val INSIDE_B = GeoPoint(longitude = 17.00085, latitude = 51.00015)
+        val INSIDE_B8 = GeoPoint(longitude = 17.00145, latitude = 51.00015)
         val FAR_WEST = GeoPoint(longitude = 16.998, latitude = 51.00015)
         val FLOORS =
             listOf(

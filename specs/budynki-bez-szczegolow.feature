@@ -9,8 +9,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
   @BR-G1
   Reguła: Budynek bez planów pięter nie ma przełącznika pięter, a piętro wpisuje się ręcznie
 
-    # brak pełnego testu (przełącznik pięter na mapie): #3666
-    @US16.2 @aplikacja @do-zrobienia
+    @US16.2 @aplikacja
     Scenariusz: Karta budynku podstawowego zamiast planu piętra pokazuje napis
       Jeżeli Gość niezalogowany otworzy kartę budynku B-8
       Wtedy nie widzi przełącznika pięter
@@ -149,7 +148,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
         | 50 m      | aplikacja podpowiada budynek A-1 do potwierdzenia                                                     |
         | 60 m      | aplikacja nie podpowiada żadnego budynku, a po zapisaniu zgłoszenie jest „poza budynkiem”, bez piętra |
 
-    # brak pełnego testu: #3666
+    # brak pełnego testu (zgłoszenie szybkie z powłoki aplikacji): #3674
     @aplikacja @do-zrobienia
     Scenariusz: Mapa działa daleko od budynków PWr
       Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
