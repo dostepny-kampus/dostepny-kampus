@@ -136,8 +136,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
   @BR-G4
   Reguła: Dalej niż 50 m od budynków PWr zgłoszenie zapisuje się jako „poza budynkiem”
 
-    # brak testu wiersza 50 m, bo kod dla 50 m podaje „poza budynkiem”, a tabela podpowiada A-1: #3664
-    @US6.2 @aplikacja @do-zrobienia
+    @US6.2 @aplikacja
     Szablon scenariusza: Propozycja budynku po pomiarze zależy od odległości od konturu
       Zakładając, że Zbierający stoi na terenie PWr poza konturem, <odległość> od konturu budynku A-1, a dalej od innych budynków PWr
       Jeżeli skończy uśrednianie pozycji

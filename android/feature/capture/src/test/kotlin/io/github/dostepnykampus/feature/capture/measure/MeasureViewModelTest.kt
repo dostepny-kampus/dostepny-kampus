@@ -397,6 +397,23 @@ class MeasureViewModelTest {
         }
 
     /**
+     * Dokładnie 50 m na południe od konturu A-1, na terenie PWr: nadal podpowiedź A-1 do potwierdzenia, bo granica
+     * jest ostra („poza budynkiem” dopiero powyżej 50 m).
+     * Scenariusz (przykład: 50 m): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od
+     *   odległości od konturu
+     *
+     * Wymagania: BR-G4
+     */
+    @Test
+    fun suggestsBuildingAt50Meters() =
+        runTest(dispatcher) {
+            finish(southOfA1(meters = 50.0))
+            val suggested = place() as PlaceChoice.Suggested
+            assertEquals("A-1", suggested.hint.building.symbol, "podpowiedź w 50 m od konturu")
+            assertFalse(suggested.hint.isInside, "punkt w 50 m nie leży w konturze")
+        }
+
+    /**
      * 60 m na południe od konturu A-1, na terenie PWr i dalej od innych budynków: bez podpowiedzi, od razu „poza
      * budynkiem”.
      * Scenariusz (przykład: 60 m): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od
@@ -444,7 +461,7 @@ class MeasureViewModelTest {
         val MOVED = GeoPoint(longitude = 17.0606, latitude = 51.1106)
         val A1_EDGE_POINT = GeoPoint(longitude = 17.06, latitude = 51.1105)
         const val A1_SOUTH_EDGE = 51.11
-        const val METERS_PER_DEGREE = 111_195.0
+        const val METERS_PER_DEGREE = 111_195.080234
         val CAMPUS =
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
                 feature("A-1", west = 17.06) +
