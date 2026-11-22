@@ -20,8 +20,10 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.geo.parseGeoArea
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.room.FoundRoom
@@ -30,6 +32,7 @@ import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.feature.map.CampusSearch
 import io.github.dostepnykampus.feature.map.area.AreaOrder
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
+import io.github.dostepnykampus.feature.map.building.MissingRoom
 import io.github.dostepnykampus.feature.map.building.isRoomNumberOnly
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -53,6 +56,7 @@ class RoomResultsTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val chosen = mutableListOf<FoundRoom>()
+    private val opened = mutableListOf<String>()
 
     /**
      * Wiersz: V1, wyniki sal stoją w kolejności z serwera, a każdy ma symbol budynku, numer, rodzaj i piętro.
@@ -102,6 +106,22 @@ class RoomResultsTest {
         compose.onNodeWithText("Nie znaleźliśmy", substring = true).assertDoesNotExist()
     }
 
+    /**
+     * Wiersz: V1, sali, której nie ma w danych budynku, zdanie o sali i wiersz budynku, bez „Nie znaleźliśmy”.
+     * Scenariusz (przykład: dane PWr budynku A-1 nie mają sali 999): szukanie-sali.feature:
+     *   Bez sali w danych albo bez drogi bez schodów aplikacja mówi to zdaniem
+     */
+    @Test
+    fun namesMissingRoomWithBuilding() {
+        compose.setContent { Search() }
+        compose.onNode(hasSetTextAction()).performTextInput("A-1 999")
+        compose.onNodeWithText("W danych PWr budynku A-1 nie ma sali 999.").assertExists()
+        compose.onNodeWithText("Budynek A-1", useUnmergedTree = true).assertExists()
+        compose.onNodeWithText("Nie znaleźliśmy", substring = true).assertDoesNotExist()
+        compose.onNodeWithContentDescription("A-1").performClick()
+        assertEquals("Wiersz budynku nie otworzył budynku A-1", listOf("A-1"), opened)
+    }
+
     @Test
     fun matchesLightMockup() {
         compose.setContent { Search() }
@@ -122,7 +142,7 @@ class RoomResultsTest {
                 isList = false,
                 areas = AreaOrder(emptyList()),
                 onListChange = {},
-                onBuildingClick = {},
+                onBuildingClick = { opened += it },
                 onRoomClick = { chosen += it },
             )
         }
@@ -130,6 +150,12 @@ class RoomResultsTest {
 
     private companion object {
         val SECOND = Floor(id = "a1-2", label = "2 piętro", order = 2)
+        val BUILDING_A1 =
+            Building(
+                symbol = "A-1",
+                name = null,
+                outline = parseGeoArea("""{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}"""),
+            )
         val ROOMS =
             listOf("301" to "Inne", "314" to "Pracownia komputerowa", "329" to "Sala wykładowa").map { (number, kind) ->
                 FoundRoom(building = "A-1", floor = SECOND, room = room(number = number, function = kind))
@@ -140,7 +166,14 @@ class RoomResultsTest {
         fun searchFor(query: String): BuildingSearch {
             val isMissing = isRoomNumberOnly(query)
             val rooms = if (isMissing || query.isBlank()) emptyList() else ROOMS
-            return BuildingSearch(query = query, buildings = emptyList(), rooms = rooms, isBuildingMissing = isMissing)
+            val missing = MissingRoom(building = BUILDING_A1, number = "999").takeIf { query == "A-1 999" }
+            return BuildingSearch(
+                query = query,
+                buildings = emptyList(),
+                rooms = rooms,
+                isBuildingMissing = isMissing,
+                missingRoom = missing,
+            )
         }
 
         fun room(number: String, function: String): Room {

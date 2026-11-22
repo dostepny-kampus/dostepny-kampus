@@ -37,9 +37,11 @@ import io.github.dostepnykampus.feature.map.area.AreaOrder
 import io.github.dostepnykampus.feature.map.area.otherAreaOf
 import io.github.dostepnykampus.feature.map.building.BuildingChoice
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
+import io.github.dostepnykampus.feature.map.building.MissingRoom
 import io.github.dostepnykampus.feature.map.building.foundFor
 import io.github.dostepnykampus.feature.map.room.BuildingMissing
 import io.github.dostepnykampus.feature.map.room.RoomChoice
+import io.github.dostepnykampus.feature.map.room.RoomMissing
 
 /**
  * Wyniki pod polem szukaj V1 dla tekstu [query]: budynki albo sale, przy samym numerze sali prośba o budynek,
@@ -71,8 +73,10 @@ internal fun SearchResults(
     onShowList: () -> Unit,
 ) {
     val results = shownResults(search = search, query = query, isList = isList, isHidden = isHidden)
-    if (results.buildings.isEmpty() && results.rooms.isEmpty() && results.note == null) return
+    val hasItems = results.buildings.isNotEmpty() || results.rooms.isNotEmpty() || results.missingRoom != null
+    if (!hasItems && results.note == null) return
     ResultPanel {
+        results.missingRoom?.let { RoomMissing(it) }
         results.buildings.forEach { building ->
             BuildingChoice(building, areas.otherAreaOf(building.symbol)) { onBuildingClick(building.symbol) }
         }
@@ -107,26 +111,34 @@ internal enum class ResultNote {
  * @property buildings budynki, tylko przy mapie z widocznymi wynikami
  * @property rooms sale, tylko przy mapie z widocznymi wynikami
  * @property note zdanie pod wynikami, przy mapie z widocznymi wynikami i przy liście; `null` bez zdania
+ * @property missingRoom zdanie o sali, której nie ma w danych budynku; przy mapie wiersz budynku jest w [buildings]
  */
-internal data class ShownResults(val buildings: List<Building>, val rooms: List<FoundRoom>, val note: ResultNote?)
+internal data class ShownResults(
+    val buildings: List<Building>,
+    val rooms: List<FoundRoom>,
+    val note: ResultNote?,
+    val missingRoom: MissingRoom?,
+)
 
 /**
  * Wyniki z [search] dla tekstu [query] z pola: wynik liczy się tylko dla tego samego zapytania. Przy liście
  * ([isList]) albo po schowaniu ([isHidden]) budynków i sal nie ma, a zdanie zostaje przy liście.
  *
- * Wymagania: US1.1, US18.1
+ * Wymagania: US1.1, US18.1, US18.3
  */
 internal fun shownResults(search: BuildingSearch, query: String, isList: Boolean, isHidden: Boolean): ShownResults {
     val isCurrent = search.query == query
     val found = search.foundFor(query)
     val rooms = search.rooms.takeIf { isCurrent }.orEmpty()
-    val isEmpty = query.isNotBlank() && found?.isEmpty() == true && rooms.isEmpty()
+    val missing = search.missingRoom.takeIf { isCurrent }
+    val isEmpty = query.isNotBlank() && found?.isEmpty() == true && rooms.isEmpty() && missing == null
     val note = resultNote(isMissing = isCurrent && search.isBuildingMissing, isEmpty = isEmpty)
     val isOnMap = !isList && !isHidden
     return ShownResults(
-        buildings = found.orEmpty().takeIf { isOnMap }.orEmpty(),
+        buildings = (found.orEmpty() + listOfNotNull(missing?.building)).takeIf { isOnMap }.orEmpty(),
         rooms = rooms.takeIf { isOnMap }.orEmpty(),
         note = note.takeIf { isList || !isHidden },
+        missingRoom = missing.takeIf { isList || !isHidden },
     )
 }
 

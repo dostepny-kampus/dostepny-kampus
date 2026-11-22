@@ -76,8 +76,7 @@ Funkcja: Wyszukanie sali
     Wtedy widzi kartę sali 329 z listą „Jak dojść”
     Ale dotknięcie korytarza nie otwiera karty sali
 
-  # @do-zrobienia #3671: pokrycie wariantu braku sali w danych.
-  @US18.3 @aplikacja @do-zrobienia
+  @US18.3 @aplikacja
   Szablon scenariusza: Bez sali w danych albo bez drogi bez schodów aplikacja mówi to zdaniem
     # Dane testowe, a nie stan faktyczny budynku A-1.
     Zakładając, że <sytuacja>
@@ -86,6 +85,6 @@ Funkcja: Wyszukanie sali
     Oraz widzi wiersz „Budynek A-1”, który otwiera opis budynku
 
     Przykłady:
-      | sytuacja                                                     | numer |
-      | dane PWr budynku A-1 nie mają sali 999                       | 999   |
-      | żadna winda budynku A-1 nie łączy piętra wejścia z piętrem sali 329 | 329   |
+      | sytuacja                                                      | numer |
+      | dane PWr budynku A-1 nie mają sali 999                        | 999   |
+      | żadna winda w A-1 nie łączy piętra wejścia z piętrem sali 329 | 329   |

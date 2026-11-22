@@ -22,6 +22,7 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.building.MissingRoom
 import io.github.dostepnykampus.feature.map.building.ResultCard
 import io.github.dostepnykampus.feature.map.entrance.floorWord
 
@@ -67,13 +68,28 @@ internal fun RoomChoice(found: FoundRoom, onClick: () -> Unit) {
  */
 @Composable
 internal fun BuildingMissing() {
+    PoliteNote(stringResource(R.string.mapa_dopisz_budynek))
+}
+
+/**
+ * Zdanie, że w danych budynku z [missing] nie ma sali o podanym numerze.
+ *
+ * Wymagania: US18.3
+ */
+@Composable
+internal fun RoomMissing(missing: MissingRoom) {
+    PoliteNote(stringResource(R.string.mapa_sala_brak_w_danych, missing.building.symbol, missing.number))
+}
+
+@Composable
+private fun PoliteNote(text: String) {
     Surface(
         modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
         shape = RoundedCornerShape(Zaokraglenia.duze),
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
         Text(
-            text = stringResource(R.string.mapa_dopisz_budynek),
+            text = text,
             modifier = Modifier.padding(Odstepy.m),
             style = MaterialTheme.typography.bodyLarge,
         )

@@ -36,6 +36,20 @@ public fun searchBuildings(query: String, buildings: List<Building>): List<Build
     return bySymbol + byName
 }
 
+/**
+ * Budynek z [buildings], którego symbol stoi w [query] przed końcowym numerem sali, np. A-1 dla „A-1 999”.
+ * Symbol musi być taki sam jak w zapytaniu po normalizacji zapisu; bez numeru na końcu wynik to `null`.
+ *
+ * @param query tekst wpisany w pole wyszukiwania
+ * @param buildings budynki, wśród których szukamy symbolu
+ */
+public fun buildingBeforeRoom(query: String, buildings: List<Building>): Building? {
+    val parts = query.trim().split(' ').filter(String::isNotBlank)
+    val hasRoomNumber = parts.size >= 2 && parts.last().first().isDigit()
+    val start = if (hasRoomNumber) symbolStart(parts.dropLast(1).joinToString(separator = " ")) else null
+    return start?.let { symbol -> buildings.firstOrNull { symbolStart(it.symbol) == symbol } }
+}
+
 private const val NAME_MIN_LENGTH = 3
 
 private val SYMBOL_START = Regex("""([A-Za-z])\s*[-‐-―−]?\s*(\d*)([A-Za-z]?)""")
