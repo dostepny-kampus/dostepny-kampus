@@ -98,7 +98,8 @@ Funkcja: Tryb offline i synchronizacja
     Wtedy zgłoszenie ma status „lokalne”
     Oraz aplikacja wysyła je znów
 
-  @US9.3 @BR-10 @aplikacja
+  # brak kodu: ekran konfliktu wersji: #3668
+  @US9.3 @BR-10 @aplikacja @do-zrobienia
   Scenariusz: Przy konflikcie wersji aplikacja pokazuje obie wersje
     Zakładając, że zgłoszenie Zbierającego z uciążliwością 1 ma status „wysłane” i jest na dwóch jego telefonach
     Oraz na pierwszym telefonie zmienił uciążliwość na 3 i zmiana dotarła na serwer
@@ -108,7 +109,8 @@ Funkcja: Tryb offline i synchronizacja
     Oraz nazywa pole, którym wersje się różnią: „uciążliwość”
     Oraz serwer ma nadal wersję z uciążliwością 3
 
-  @US9.3 @BR-10 @aplikacja
+  # brak kodu: ekran konfliktu wersji: #3668
+  @US9.3 @BR-10 @aplikacja @do-zrobienia
   Szablon scenariusza: Przy konflikcie wersji Zbierający wybiera wersję
     Zakładając, że aplikacja pokazuje konflikt wersji: własną z uciążliwością 2 i z serwera z uciążliwością 3
     Jeżeli Zbierający wybierze wersję <wybór>
@@ -119,7 +121,8 @@ Funkcja: Tryb offline i synchronizacja
       | własną      | 2           |
       | z serwera   | 3           |
 
-  @US9.3 @BR-10 @aplikacja
+  # brak kodu: ekran konfliktu wersji: #3668
+  @US9.3 @BR-10 @aplikacja @do-zrobienia
   Scenariusz: Odłożony wybór wersji zostawia zmianę w telefonie
     Zakładając, że synchronizacja wykryła konflikt wersji zgłoszenia Zbierającego
     Jeżeli Zbierający zamknie ekran z obiema wersjami bez wyboru
