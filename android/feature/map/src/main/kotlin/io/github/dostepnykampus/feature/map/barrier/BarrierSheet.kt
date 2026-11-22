@@ -7,9 +7,11 @@ package io.github.dostepnykampus.feature.map.barrier
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -18,10 +20,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
+import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
@@ -65,10 +69,18 @@ internal fun BarrierSheet(chosen: ChosenBarrier, exits: SheetExits, modifier: Mo
 
 @Composable
 private fun SheetTop(severity: Severity, onClose: () -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        SeverityBadge(severity)
-        Spacer(Modifier.weight(1f))
-        SheetCloseButton(onClose)
+    val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        if (isLarge) {
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                SheetCloseButton(onClose)
+            }
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            SeverityBadge(severity)
+            Spacer(Modifier.weight(1f))
+            if (!isLarge) SheetCloseButton(onClose)
+        }
     }
 }
 
