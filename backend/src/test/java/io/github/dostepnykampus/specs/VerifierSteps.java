@@ -51,13 +51,13 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 public final class VerifierSteps {
 
     /** Zgłoszenie sprawdzane przez Weryfikatora. */
-    private static final UUID CHECKED = UUID.fromString("b4c5d6e7-0001-4f8a-9b0c-1d2e3f4a5b6c");
+    static final UUID CHECKED = UUID.fromString("b4c5d6e7-0001-4f8a-9b0c-1d2e3f4a5b6c");
+
+    /** Jedyne zdjęcie sprawdzanego zgłoszenia. */
+    static final UUID PHOTO = UUID.fromString("b4c5d6e7-0003-4f8a-9b0c-1d2e3f4a5b6c");
 
     /** Zgłoszenie zapisane obok sprawdzanego. */
     private static final UUID OTHER = UUID.fromString("b4c5d6e7-0002-4f8a-9b0c-1d2e3f4a5b6c");
-
-    /** Jedyne zdjęcie sprawdzanego zgłoszenia. */
-    private static final UUID PHOTO = UUID.fromString("b4c5d6e7-0003-4f8a-9b0c-1d2e3f4a5b6c");
 
     /** Jedyne zdjęcie drugiego zgłoszenia. */
     private static final UUID NEXT_PHOTO = UUID.fromString("b4c5d6e7-0004-4f8a-9b0c-1d2e3f4a5b6c");
@@ -159,7 +159,7 @@ public final class VerifierSteps {
         );
     }
 
-    @When("^odrzuci je z powodem „(.+)”$")
+    @When("^odrzuci (?:je|zmianę) z powodem „(.+)”$")
     void rejects(final String reason) throws Exception {
         this.decided(
             String.join(

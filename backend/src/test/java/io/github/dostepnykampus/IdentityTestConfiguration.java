@@ -21,11 +21,10 @@ import org.springframework.security.web.SecurityFilterChain;
 /**
  * Tożsamość testowa zamiast Usługi logowania.
  *
- * <p>Token to nazwa roli z kontraktu, np. {@code COLLECTOR}, albo kilka ról
- * połączonych znakiem {@code +}; każdy inny napis dekoder odrzuca. Podpisu,
- * wystawcy i ważności tokenu testy tu nie sprawdzają.
- * Punkty HTTP tylko dla testów są poza kontraktem, więc mają osobny łańcuch
- * bez zabezpieczeń; bez niego serwer by je odrzucał.</p>
+ * <p>Token to nazwa roli z kontraktu albo kilka ról połączonych znakiem {@code +}, po kropce
+ * opcjonalnie konto, np. {@code COLLECTOR.autor}, a bez niego {@code konto-testowe}; inny
+ * napis dekoder odrzuca. Podpisu, wystawcy i ważności tokenu testy nie sprawdzają.
+ * Punkty HTTP tylko dla testów mają osobny łańcuch bez zabezpieczeń, bo są poza kontraktem.</p>
  *
  * @since 0.1.0
  */
@@ -49,16 +48,18 @@ public final class IdentityTestConfiguration {
      * Dekoder tokenów testowych.
      *
      * @return Dekoder, który przyjmuje jako token nazwę roli albo kilka nazw
-     *  połączonych znakiem {@code +}
+     *  połączonych znakiem {@code +}, z kontem po kropce albo bez niego
      */
     @Bean
     static JwtDecoder decoder() {
         return token -> {
-            final List<String> roles = List.of(token.split("\\+"));
+            final List<String> parts = List.of(token.split("\\.", 2));
+            final List<String> roles = List.of(parts.getFirst().split("\\+"));
             if (!IdentityTestConfiguration.ROLES.containsAll(roles)) {
                 throw new BadJwtException("Nieznany token testowy");
             }
-            return Jwt.withTokenValue(token).header("alg", "none").subject("konto-testowe")
+            return Jwt.withTokenValue(token).header("alg", "none")
+                .subject(parts.stream().skip(1).findFirst().orElse("konto-testowe"))
                 .claim("name", "Konto testowe").claim("email", "konto@example.com")
                 .claim("realm_access", Map.of("roles", roles)).build();
         };
