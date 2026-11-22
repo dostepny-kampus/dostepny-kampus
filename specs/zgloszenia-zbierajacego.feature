@@ -105,7 +105,7 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
     Wtedy zgłoszenie ma status „wysłane”
     Oraz trafia z powrotem do kolejki weryfikacji
 
-  # brak testu mapy: #3710
+  # brak testu całej drogi: #3722
   @BR-3 @BR-18 @aplikacja @serwer @do-zrobienia
   Scenariusz: Zmiana zgłoszenia przyjętego tworzy nowe zgłoszenie
     Zakładając, że zgłoszenie Zbierającego TB-13 „próg” w C-13 z uciążliwością 2 jest przyjęte
@@ -128,7 +128,7 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
     Oraz autorem nowego zgłoszenia jest ten Zbierający
     Oraz poprzednie zgłoszenie nadal jest przyjęte i widoczne na mapie
 
-  # brak testu mapy: #3710
+  # brak testu całej drogi: #3722
   @US8.4 @BR-19 @aplikacja @do-zrobienia
   Scenariusz: Inny Zbierający niż autor zgłasza usunięcie bariery
     Zakładając, że zgłoszenie TB-9 „niesprawna winda” na piętrze budynku C-13 jest przyjęte, a jego autorem jest inna osoba
