@@ -10,23 +10,47 @@ import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionServer
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
+import io.github.dostepnykampus.core.model.submission.Submission
+import io.github.dostepnykampus.core.model.submission.SubmissionContent
+import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import io.github.dostepnykampus.core.network.auth.AccessTokens
 import java.io.File
+import java.time.Instant
 import java.util.Base64
 import kotlin.coroutines.EmptyCoroutineContext
 
 /** Kolejka zgłoszeń w [store] z serwerem bez sieci: każda próba wysyłki woła [onSend] i kończy się `Offline`. */
 internal fun offlineQueue(store: SubmissionStore, onSend: () -> Unit): SubmissionQueue =
+    queueWith(store) { _, _ ->
+        onSend()
+        ServerReply.Offline
+    }
+
+/** Kolejka zgłoszeń w [store] z serwerem, który przyjmuje każde zgłoszenie i potwierdza je jako wysłane. */
+internal fun acceptingQueue(store: SubmissionStore): SubmissionQueue =
+    queueWith(store) { id, content ->
+        ServerReply.Ok(
+            Submission(
+                id = id,
+                version = 1,
+                status = SubmissionStatus.SENT,
+                createdAt = Instant.EPOCH,
+                content = content,
+            ),
+        )
+    }
+
+private fun queueWith(
+    store: SubmissionStore,
+    create: (String, SubmissionContent) -> ServerReply<Submission>,
+): SubmissionQueue =
     SubmissionQueue(
         store = store,
         ioContext = EmptyCoroutineContext,
         server =
             SubmissionServer(
                 subject = { TEST_ACCOUNT },
-                create = { _, _, _ ->
-                    onSend()
-                    ServerReply.Offline
-                },
+                create = { _, id, content -> create(id, content) },
                 putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
                 update = { _, _, _, _ -> ServerReply.Missing },
             ),
