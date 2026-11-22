@@ -73,11 +73,6 @@ public final class ExportSteps {
         "odrzucone", "REJECTED", "archiwalne", "ARCHIVED"
     );
 
-    /** Kontur budynku założonego przez scenariusz, przesunięty o numer budynku. */
-    private static final String OUTLINE =
-        "POLYGON((17.05%1$s 51.10%1$s,17.05%1$s1 51.10%1$s,17.05%1$s1 51.10%1$s1,"
-            + "17.05%1$s 51.10%1$s))";
-
     /** Klient żądań HTTP do aplikacji. */
     private final MockMvc http;
 
@@ -337,7 +332,14 @@ public final class ExportSteps {
             .param("symbol", symbol).query(Integer.class).single();
         if (present == 0) {
             new SampleBuilding(symbol, symbol, "BASIC")
-                .wkt(this.jdbc, String.format(ExportSteps.OUTLINE, shift));
+                .wkt(
+                    this.jdbc,
+                    String.format(
+                        "POLYGON((17.05%1$s 51.10%1$s,17.05%1$s1 51.10%1$s,17.05%1$s1 51.10%1$s1,"
+                            + "17.05%1$s 51.10%1$s))",
+                        shift
+                    )
+                );
             this.buildings.add(symbol);
         }
     }
