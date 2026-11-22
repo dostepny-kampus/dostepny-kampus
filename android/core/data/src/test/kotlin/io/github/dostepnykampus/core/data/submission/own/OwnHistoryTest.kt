@@ -109,7 +109,7 @@ class OwnHistoryTest {
 
     /**
      * Serwer zapisał treść, ale telefon nie dostał odpowiedzi: ponawia to samo id i treść, potem wysyła zdjęcie.
-     * Scenariusz (częściowo): synchronizacja.feature: Przerwana synchronizacja
+     * Scenariusz: synchronizacja.feature: Przerwana synchronizacja
      *   nie gubi zgłoszenia i nie tworzy drugiego
      */
     @Test
@@ -170,6 +170,73 @@ class OwnHistoryTest {
             assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state)
         }
 
+    /**
+     * Zgłoszenie zapisane bez sieci zostaje w kolejce i na liście jako „lokalne”, z typem i uciążliwością.
+     * Scenariusz: synchronizacja.feature: Bez sieci widać wskaźnik, a zgłoszenie czeka ze statusem „lokalne”
+     */
+    @Test
+    fun savesOfflineAsLocal() =
+        runBlocking {
+            val target = queue()
+            target.save(precise(PHOTO, severity = 3).copy(barrierType = "TB-8"), photo(tempDir, PHOTO))
+            store.createResults.addLast(ServerReply.Offline)
+
+            assertFalse(target.sendAll(), "bez sieci przebieg kończy się ponowieniem")
+            val row = history.rows.getValue(ID)
+            assertEquals(OwnSubmissionState.LOCAL, row.state, "zgłoszenie czeka jako lokalne")
+            assertEquals("TB-8", row.barrierType, "typ zgłoszenia")
+            assertEquals(3, row.severity, "uciążliwość zgłoszenia")
+            assertEquals(listOf(ID), store.all().map { it.submission.id }, "zgłoszenie czeka w kolejce")
+        }
+
+    /**
+     * Zgłoszenia zapisane bez sieci wysyła kolejny przebieg planowany przy zapisie, bez działania Zbierającego.
+     * Scenariusz: synchronizacja.feature: Po powrocie sieci synchronizacja rusza sama
+     */
+    @Test
+    fun sendsBothWhenNetworkReturns() =
+        runBlocking {
+            val ids = ArrayDeque(listOf(ID, SECOND))
+            var planned = 0
+            val target = queue(newId = { ids.removeFirst() }, onSaved = { planned++ })
+            target.save(precise(PHOTO), photo(tempDir, PHOTO))
+            target.save(precise(SECOND_PHOTO), photo(tempDir, SECOND_PHOTO))
+            store.createResults.addLast(ServerReply.Offline)
+
+            assertFalse(target.sendAll(), "bez sieci przebieg kończy się ponowieniem")
+            assertEquals(listOf(ID, SECOND), history.rows.keys.sorted(), "oba zgłoszenia są lokalne")
+            assertEquals(2, planned, "każdy zapis planuje wysyłkę")
+
+            assertTrue(target.sendAll(), "po powrocie sieci przebieg wysyła wszystko")
+            val states = history.rows.values.map { it.state }
+            assertEquals(listOf(OwnSubmissionState.SENT, OwnSubmissionState.SENT), states, "oba zgłoszenia wysłane")
+            assertTrue(store.rows.isEmpty(), "kolejka jest pusta")
+        }
+
+    /**
+     * Odpowiedź 401 zostawia zgłoszenie jako „lokalne” i czeka na zalogowanie, które samo planuje wysyłkę.
+     * Scenariusz: synchronizacja.feature: Wygasłe zalogowanie czeka na ponowne zalogowanie
+     */
+    @Test
+    fun sendsAfterRelogin() =
+        runBlocking {
+            var planned = 0
+            val target = queue(onSaved = { planned++ })
+            target.save(precise(PHOTO), photo(tempDir, PHOTO))
+            store.createResults.addLast(ServerReply.Fault(code = 401))
+
+            target.sendAll()
+            assertEquals(OwnSubmissionState.LOCAL, history.rows.getValue(ID).state, "zgłoszenie zostaje lokalne")
+            assertTrue(target.loginExpired.value, "aplikacja prosi o ponowne zalogowanie")
+            val before = planned
+
+            target.onLoggedIn()
+            assertFalse(target.loginExpired.value, "prośba znika po zalogowaniu")
+            assertEquals(before + 1, planned, "zalogowanie planuje wysyłkę")
+            target.sendAll()
+            assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state, "zgłoszenie zostaje wysłane")
+        }
+
     @Test
     fun keepsRefusalCode() =
         runBlocking {
@@ -185,7 +252,7 @@ class OwnHistoryTest {
 
     /**
      * Odmowa treści albo zdjęcia zostaje w historii z kodem i nie wraca do wysyłki przy kolejnych przebiegach.
-     * Scenariusz (częściowo): synchronizacja.feature: Odrzucona treść albo zdjęcie
+     * Scenariusz: synchronizacja.feature: Odrzucona treść albo zdjęcie
      *   zostawia zgłoszenie ze statusem „Nie wysłano”
      */
     @ParameterizedTest
@@ -206,6 +273,11 @@ class OwnHistoryTest {
             val row = history.rows.getValue(ID)
             assertEquals(OwnSubmissionState.REFUSED, row.state)
             assertEquals(code, row.refusalCode)
+            assertEquals(
+                RefusalReason.NOT_ACCEPTED,
+                refusalReasonOf(row.state, row.refusalCode),
+                "powód na liście to „Serwer nie przyjął zgłoszenia”",
+            )
 
             assertTrue(target.sendAll())
             assertTrue(target.sendAll())
@@ -284,6 +356,8 @@ class OwnHistoryTest {
         }
 
     private fun queue(
+        newId: () -> String = { ID },
+        onSaved: () -> Unit = {},
         create: suspend (String, SubmissionContent) -> ServerReply<Submission> = { id, content ->
             store.createResults.removeFirstOrNull() ?: accepted(id, content)
         },
@@ -300,8 +374,9 @@ class OwnHistoryTest {
                     },
                     update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content, version = 3))) },
                 ),
-            stamps = SubmissionStamps(newId = { ID }),
+            stamps = SubmissionStamps(newId = newId),
             history = history,
+            onSaved = onSaved,
         )
 
     private fun accepted(id: String, content: SubmissionContent): ServerReply<Submission> =
@@ -311,4 +386,6 @@ class OwnHistoryTest {
 private const val ID = "s1"
 private const val PHOTO = "p1"
 private const val OLD = "s-old"
+private const val SECOND = "s2"
+private const val SECOND_PHOTO = "p2"
 private const val SERVICE_UNAVAILABLE = 503
