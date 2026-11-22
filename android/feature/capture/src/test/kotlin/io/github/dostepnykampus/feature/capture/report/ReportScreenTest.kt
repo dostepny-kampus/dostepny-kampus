@@ -135,6 +135,13 @@ class ReportScreenTest {
         compose.onNodeWithText("Popraw zgłoszenie").assertIsDisplayed()
     }
 
+    /**
+     * Miejsce na ulicy: formularz nie pokazuje pola piętra.
+     * Scenariusz (przykład: poza budynek, na ulicę): pomiar-precyzyjny.feature: Piętro zostaje po zmianie miejsca
+     *   tylko w tym samym budynku
+     *
+     * Wymagania: BR-G4
+     */
     @Test
     fun hidesFloorOutside() {
         show(place = A1.copy(buildingSymbol = null))
@@ -204,6 +211,26 @@ class ReportScreenTest {
         assertEquals(ReportEdit.Floor(ReportFloor.Planned("A-1-3")), edits.last())
         assertEquals(0, compose.onAllNodes(hasText("Numer piętra")).fetchSemanticsNodes().size)
         assertEquals(0, compose.onAllNodes(hasText("Nie mamy planu", substring = true)).fetchSemanticsNodes().size)
+    }
+
+    /**
+     * Budynek szczegółowy: pięć etykiet pięter z planu i brak pola na piętro wpisane ręcznie.
+     * Scenariusz: pomiar-precyzyjny.feature: Piętro w budynku szczegółowym wybiera się z etykiet z danych PWr
+     *
+     * Wymagania: US7.2
+     */
+    @Test
+    fun offersOnlyPlanFloorLabels() {
+        val labels = listOf("Piwnica", "Parter", "1 piętro", "2 piętro", "3 piętro")
+        val floors = labels.mapIndexed { index, label -> PlanFloor(id = "A-1-$index", label = label) }
+        show(A1.copy(floors = PlanFloors(floors, source = "Politechnika Wrocławska")))
+
+        labels.forEach { label -> compose.onNodeWithText(label).performScrollTo().assertIsDisplayed() }
+        assertEquals(
+            "brak pola na piętro wpisane ręcznie",
+            0,
+            compose.onAllNodes(hasText("Numer piętra")).fetchSemanticsNodes().size,
+        )
     }
 
     /**
