@@ -38,7 +38,7 @@ Funkcja: Weryfikacja zgłoszeń
       Wtedy zgłoszenie ma status „w weryfikacji”
       Oraz drugi Weryfikator nie widzi go w swojej kolejce
 
-    # brak kroków serwera: #3708
+    # brak kroków serwera: #3712
     @US10.4 @serwer @do-zrobienia
     Szablon scenariusza: Drugi Weryfikator nie obsłuży zgłoszenia wziętego przez pierwszego
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie TB-13 „próg” z budynku C-13
@@ -167,8 +167,7 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-15
   Reguła: Weryfikator nie poprawia zgłoszenia z pomiaru precyzyjnego
 
-    # brak kroków serwera: #3708
-    @serwer @do-zrobienia
+    @serwer
     Szablon scenariusza: Weryfikator nie zmienia danych zgłoszenia z pomiaru precyzyjnego
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie z pomiaru precyzyjnego TB-13 „próg” z uciążliwością 2 z budynku C-13
       Jeżeli spróbuje zmienić w zgłoszeniu <dane>
@@ -187,7 +186,7 @@ Funkcja: Weryfikacja zgłoszeń
       Jeżeli odrzuci je z powodem „Na zdjęciu są schody, a nie próg”
       Wtedy autor widzi zgłoszenie ze statusem „odrzucone” i powodem odrzucenia „Na zdjęciu są schody, a nie próg”
 
-    # brak kroków serwera: #3708
+    # brak kroków serwera: #3712
     @serwer @do-zrobienia
     Scenariusz: Zasłonięcie twarzy na zdjęciu nie tworzy nowej wersji
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie z pomiaru precyzyjnego, na którego zdjęciu widać twarz przechodnia
@@ -199,8 +198,7 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-3
   Reguła: Weryfikator decyduje o aktualnej wersji zgłoszenia
 
-    # brak kroków serwera: #3708
-    @US8.3 @serwer @do-zrobienia
+    @US8.3 @serwer
     Scenariusz: Edycja autora w trakcie weryfikacji daje Weryfikatorowi nową wersję
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie TB-13 „próg” z uciążliwością 1
       Jeżeli autor zmieni uciążliwość na 2
@@ -229,8 +227,7 @@ Funkcja: Weryfikacja zgłoszeń
       Wtedy na mapie jest tylko bariera TB-13 z uciążliwością 3
       Oraz poprzednie zgłoszenie ma status „archiwalne”
 
-    # brak kroków serwera: #3708
-    @serwer @do-zrobienia
+    @serwer
     Scenariusz: Po odrzuceniu zmiany na mapie zostaje poprzednie zgłoszenie
       Zakładając, że na mapie jest przyjęte zgłoszenie TB-13 „próg” z uciążliwością 2 w budynku C-13
       Oraz pierwszy Weryfikator wziął zmianę tego zgłoszenia z uciążliwością 3
@@ -251,8 +248,7 @@ Funkcja: Weryfikacja zgłoszeń
       Oraz oba zgłoszenia zostają w systemie ze statusem „archiwalne”
       Oraz zgłoszenie „bariera usunięta” ma to oznaczenie
 
-    # brak kroków serwera: #3708
-    @US8.4 @serwer @do-zrobienia
+    @US8.4 @serwer
     Scenariusz: Po odrzuceniu „bariera usunięta” bariera zostaje na mapie
       Zakładając, że na mapie jest przyjęte zgłoszenie TB-9 „niesprawna winda” w budynku D-2
       Oraz pierwszy Weryfikator wziął zgłoszenie „bariera usunięta” tej bariery
@@ -262,8 +258,7 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-23
   Reguła: Z dwóch równoległych zmian tego samego zgłoszenia przyjąć można tylko jedną
 
-    # brak kroków serwera: #3708
-    @US10.1 @serwer @do-zrobienia
+    @US10.1 @serwer
     Scenariusz: Druga równoległa zmiana jest widoczna jako podobne zgłoszenie
       Zakładając, że autor przyjętego zgłoszenia TB-9 „niesprawna winda” w budynku D-2 wysłał zmianę z uciążliwością 2, a inny Zbierający niezależnie wysłał zmianę „bariera usunięta” tego zgłoszenia
       Jeżeli pierwszy Weryfikator weźmie zmianę autora
