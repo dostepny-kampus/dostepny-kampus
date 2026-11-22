@@ -7,12 +7,16 @@ package io.github.dostepnykampus.feature.capture.quick
 
 import android.Manifest
 import android.app.Application
+import android.graphics.Bitmap
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.BuildingFloors
@@ -159,7 +163,13 @@ class QuickReportScreenTest {
         statuses.forEach { compose.onNodeWithText(it).assertDoesNotExist() }
     }
 
-    /** Wiersz: V4 krok 1 ze zdjęciem, „Wstecz” → potwierdzenie rezygnacji. Wymagania: US4.8 */
+    /**
+     * Wiersz: V4 krok 1 ze zdjęciem, „Wstecz” → potwierdzenie rezygnacji; zdjęcie znika po potwierdzeniu.
+     * Scenariusz (częściowo): zgloszenie-szybkie-powrot.feature: Powrót między krokami nie usuwa zdjęcia ani grupy
+     *   barier
+     *
+     * Wymagania: US4.8
+     */
     @Test
     fun leavesAfterConfirm() {
         val photo = folder.newFile("zdjecie-1.jpg").apply { writeBytes(byteArrayOf(1, 2, 3)) }
@@ -173,6 +183,40 @@ class QuickReportScreenTest {
         compose.onNodeWithText("Tak, zrezygnuj").performClick()
         assertEquals(1, backs)
         assertFalse(photo.exists())
+    }
+
+    /**
+     * Wiersz: V4 krok 1 po powrocie z kroku 2 pokazuje zrobione zdjęcie i nadal pozwala przejść dalej.
+     * Scenariusz (częściowo): zgloszenie-szybkie-powrot.feature: Powrót między krokami nie usuwa zdjęcia ani grupy
+     *   barier
+     *
+     * Wymagania: US4.8
+     */
+    @Test
+    fun showsPhotoOnReturnToStepOne() {
+        val photo = folder.newFile("zdjecie-1.jpg")
+        photo.outputStream().use { out ->
+            Bitmap.createBitmap(4, 3, Bitmap.Config.ARGB_8888).compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, out)
+        }
+        show(ReportRoute(step = ReportStep.PHOTO, photoId = "zdjecie-1", photoPath = photo.path))
+        val preview = hasContentDescription("Zrobione zdjęcie 1 z 1")
+        compose.waitUntil(timeoutMillis = PREVIEW_MS) { compose.onAllNodes(preview).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNode(preview).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Dalej").assertIsEnabled()
+    }
+
+    /**
+     * Wiersz: V4 krok 2 po ponownym przejściu dalej pokazuje grupę „Toalety” wybraną wcześniej.
+     * Scenariusz (częściowo): zgloszenie-szybkie-powrot.feature: Powrót między krokami nie usuwa zdjęcia ani grupy
+     *   barier
+     *
+     * Wymagania: US4.8
+     */
+    @Test
+    fun keepsToiletsOnReturnToStepTwo() {
+        show(atGroup.copy(group = BarrierGroup.TOILETS))
+        compose.onNodeWithText("Krok 2 z 3").assertIsDisplayed()
+        compose.onNodeWithText("✓ Toalety").assertIsSelected()
     }
 
     /** Wiersz: V4 krok 1 po „Zgłoś barierę przy wejściu”, napis z wejściem. Wymagania: US4.6 */
@@ -354,6 +398,8 @@ class QuickReportScreenTest {
         ReportRoute(step = ReportStep.SEND, photoId = "zdjecie-1", photoPath = path, group = BarrierGroup.TOILETS)
 
     private companion object {
+        const val JPEG_QUALITY = 90
+        const val PREVIEW_MS = 5_000L
         const val ACCURACY = 6.0
         val INSIDE = GeoPoint(longitude = 17.0605, latitude = 51.1105)
         val OUTSIDE = GeoPoint(longitude = 17.059, latitude = 51.109)

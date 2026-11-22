@@ -431,6 +431,27 @@ class AppNavigatorTest {
         assertEquals(BuildingRoute("D-2"), stack.last())
     }
 
+    /**
+     * Wiersz: V4 po wysłaniu „Wstecz” wraca do karty budynku, kolejne „Wstecz” nie otwiera kroków zgłoszenia.
+     * Scenariusz (częściowo): zgloszenie-szybkie-powrot.feature: Po wysłaniu „Wstecz” wraca do ekranu,
+     *   z którego zaczęto zgłoszenie
+     *
+     * Wymagania: US4.7
+     */
+    @Test
+    fun returnsToCardThenMapAfterSend() {
+        navigator(visitor).run {
+            openBuilding(symbol = "A-1")
+            report()
+            repeat(times = 3) { nextReportStep() }
+            reportSent()
+            back()
+            assertEquals(BuildingRoute("A-1"), stack.last(), "karta budynku po pierwszym „Wstecz”")
+            back()
+        }
+        assertEquals(listOf<NavKey>(MapRoute()), stack, "po drugim „Wstecz” nie ma kroków wysłanego zgłoszenia")
+    }
+
     /** Wysłanie bez internetu: potwierdzenie mówi, że zdjęcie wyśle się samo. Wymagania: US4.2 */
     @Test
     fun sendsOffline() {
