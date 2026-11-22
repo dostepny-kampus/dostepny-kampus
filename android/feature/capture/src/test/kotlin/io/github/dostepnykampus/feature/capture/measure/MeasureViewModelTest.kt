@@ -372,8 +372,8 @@ class MeasureViewModelTest {
 
     /**
      * 30 m na południe od konturu A-1, na terenie PWr: podpowiedź A-1 do potwierdzenia, punkt nie leży w konturze.
-     * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od odległości od
-     *   konturu
+     * Scenariusz (przykład: 30 m): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od
+     *   odległości od konturu
      *
      * Wymagania: BR-G4
      */
@@ -382,31 +382,25 @@ class MeasureViewModelTest {
         runTest(dispatcher) {
             finish(southOfA1(meters = 30.0))
             val suggested = place() as PlaceChoice.Suggested
-            assertEquals("A-1", suggested.hint.building.symbol)
-            assertFalse(suggested.hint.isInside)
+            assertEquals("A-1", suggested.hint.building.symbol, "podpowiedź budynku A-1 przy 30 m")
+            assertFalse(suggested.hint.isInside, "punkt 30 m od konturu nie leży w konturze")
         }
 
-    /**
-     * Tuż poniżej progu 50 m na południe od konturu A-1, na terenie PWr: nadal podpowiedź A-1 do potwierdzenia.
-     * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od odległości od
-     *   konturu
-     *
-     * Wymagania: BR-G4
-     */
+    /** Tuż poniżej progu 50 m na południe od konturu A-1, na terenie PWr: nadal podpowiedź A-1. Wymagania: BR-G4 */
     @Test
     fun suggestsBuildingAt49Meters() =
         runTest(dispatcher) {
             finish(southOfA1(meters = 49.0))
             val suggested = place() as PlaceChoice.Suggested
-            assertEquals("A-1", suggested.hint.building.symbol)
-            assertFalse(suggested.hint.isInside)
+            assertEquals("A-1", suggested.hint.building.symbol, "podpowiedź budynku A-1 przy 49 m")
+            assertFalse(suggested.hint.isInside, "punkt 49 m od konturu nie leży w konturze")
         }
 
     /**
      * 60 m na południe od konturu A-1, na terenie PWr i dalej od innych budynków: bez podpowiedzi, od razu „poza
      * budynkiem”.
-     * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od odległości od
-     *   konturu
+     * Scenariusz (przykład: 60 m): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od
+     *   odległości od konturu
      *
      * Wymagania: BR-G4
      */
@@ -414,7 +408,7 @@ class MeasureViewModelTest {
     fun putsPointAt60MetersOutside() =
         runTest(dispatcher) {
             finish(southOfA1(meters = 60.0))
-            assertEquals(PlaceChoice.Outside, place())
+            assertEquals(PlaceChoice.Outside, place(), "punkt 60 m od konturu jest poza budynkiem")
         }
 
     private fun southOfA1(meters: Double): GeoPoint {
