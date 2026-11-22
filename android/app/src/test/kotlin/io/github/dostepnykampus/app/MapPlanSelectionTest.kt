@@ -103,7 +103,15 @@ class MapPlanSelectionTest {
         val entrances = ServerEntrances { emptyList() }
         compose.setContent {
             val mapModel = remember { inlineMapViewModel(repo, { flowOf(true) }, TestMapListChoice()) }
-            val planModel = remember { MapPlanViewModel(repo, plans, entrances) }
+            val planModel =
+                remember {
+                    MapPlanViewModel(
+                        repository = repo,
+                        plans = plans,
+                        entrances = entrances,
+                        barriers = AcceptedBarriers { emptyList() },
+                    )
+                }
             val entrModel = remember { BuildingEntrancesViewModel(entrances) }
             val liftModel = remember { EntranceLiftViewModel(plans) }
             val roomModel =

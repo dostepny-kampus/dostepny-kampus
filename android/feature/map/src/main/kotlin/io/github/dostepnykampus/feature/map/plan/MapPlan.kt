@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.plan
 
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
@@ -33,8 +34,13 @@ import kotlinx.coroutines.flow.update
  *
  * @param plans plany pięter z kopią w telefonie
  * @param entrances wejścia budynku z serwera z piętrem wejścia
+ * @param barriers przyjęte bariery przy wejściach; wejście zalecane bierze je pod uwagę jak karta budynku
  */
-internal class MapPlan(private val plans: FloorPlans, private val entrances: ServerEntrances) {
+internal class MapPlan(
+    private val plans: FloorPlans,
+    private val entrances: ServerEntrances,
+    private val barriers: AcceptedBarriers = AcceptedBarriers { emptyList() },
+) {
     private val cameras = MutableStateFlow<MapCamera?>(null)
     private val chosen = MutableStateFlow<Map<String, String>>(emptyMap())
     private val selected = MutableStateFlow<String?>(null)
@@ -111,8 +117,8 @@ internal class MapPlan(private val plans: FloorPlans, private val entrances: Ser
         if (symbol !in downloaded && plans.download(symbol)) downloaded += symbol
         val floors = plans.floors(symbol)?.floors.orEmpty()
         val rooms = floors.mapNotNull { floor -> plans.rooms(symbol, floor.id)?.let { floor.id to it } }.toMap()
-        // TODO(#3334): wejście zalecane bez przyjętych barier przy wejściach.
-        val recommended = orderedEntrances(entrances.entrances(symbol)).firstOrNull { it.isRecommended }
+        val accepted = barriers.barriersOf(symbol).orEmpty()
+        val recommended = orderedEntrances(entrances.entrances(symbol), accepted).firstOrNull { it.isRecommended }
         val entranceFloor = recommended?.run { entrance.floorId }
         val start =
             floors.firstOrNull { it.id == entranceFloor }
