@@ -22,13 +22,18 @@ internal class RecordingStyleTarget : MapStyleTarget {
     /** Nazwy źródeł i obrazów razem, w kolejności wywołań. */
     val calls = mutableListOf<String>()
 
+    /** Stany obiektów jako trójki: numer obiektu, klucz i wartość, w kolejności wywołań. */
+    val states = mutableListOf<Triple<Int, String, Boolean>>()
+
     override fun filter(layer: String, filter: JsonElement) = Unit
 
     override fun paint(layer: String, property: String, value: JsonElement) = Unit
 
     override fun layout(layer: String, property: String, value: JsonElement) = Unit
 
-    override fun state(source: String, feature: Int, key: String, value: Boolean) = Unit
+    override fun state(source: String, feature: Int, key: String, value: Boolean) {
+        states += Triple(feature, key, value)
+    }
 
     override fun minZoom(layer: String, zoom: Double) = Unit
 

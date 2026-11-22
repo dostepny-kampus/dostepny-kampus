@@ -157,6 +157,37 @@ class CampusMapSelectionStyleTest {
         }
     }
 
+    /** Zaznaczenie wysyła tylko zmienione stany konturów względem tego samego stylu. */
+    @Test
+    fun sendsOnlyChangedContourStates() {
+        val target = RecordingStyleTarget()
+        val sent = ContourStates()
+        target.showSelection(selectionLook(data, data.selection()), sent = sent)
+        assertEquals(4, target.states.size, "Pierwszy styl dostaje oba stany obu konturów")
+        target.states.clear()
+        target.showSelection(selectionLook(data, data.selection(building = "A-1")), sent = sent)
+        val changed = listOf(Triple(1, DIMMED_STATE, true))
+        assertEquals(changed, target.states, "Drugie zaznaczenie wysyła tylko zmieniony stan")
+    }
+
+    /** Po wczytaniu nowego stylu wszystkie stany konturów wysyłane są od nowa. */
+    @Test
+    fun sendsAllStatesOnNewStyle() {
+        val look = selectionLook(data, data.selection(building = "A-1"))
+        val sent = ContourStates()
+        RecordingStyleTarget().showSelection(look, sent = sent)
+        val fresh = RecordingStyleTarget()
+        fresh.showSelection(look, sent = ContourStates())
+        val all =
+            listOf(
+                Triple(0, DIMMED_STATE, false),
+                Triple(1, DIMMED_STATE, true),
+                Triple(0, UNDER_PLAN_STATE, false),
+                Triple(1, UNDER_PLAN_STATE, false),
+            )
+        assertEquals(all, fresh.states, "Nowy styl dostaje wszystkie stany konturów")
+    }
+
     /**
      * Podkład terenu pokazany w gotowym stylu daje ten sam styl co styl zbudowany z nim, więc zmiana terenu
      * nie wczytuje stylu od nowa, a mapa wygląda tak samo. Wymagania: US1.7, NFR-39
