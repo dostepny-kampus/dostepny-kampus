@@ -160,6 +160,27 @@ class CampusBoundsTest {
         assertEquals(limits.minZoom, farthest.zoom)
     }
 
+    /**
+     * Wiersz: V1, stojący 60 m od konturu budynku PWr na terenie „Kampus główny” mieści się w prostokącie mapy,
+     *   a ten budynek ma swój kontur na mapie.
+     * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Mapa działa daleko od budynków PWr
+     *
+     * Wymagania: US1.7, BR-G5
+     */
+    @Test
+    fun showsOutlinesFarFromBuildings() {
+        val building = rectangle(west = 17.0, south = 51.11, east = 17.001, north = 51.111)
+        val standing = GeoPoint(longitude = 17.0005, latitude = 51.11 - LAT_60_M)
+        val data = campusMapData(catalog("A-1" to building))
+        val bounds = checkNotNull(data.bounds) { "obszar kampusu bez budynków" }
+        assertEquals(
+            listOf(true, true),
+            listOf(standing.longitude in bounds.west..bounds.east, standing.latitude in bounds.south..bounds.north),
+            "punkt 60 m od konturu w prostokącie mapy",
+        )
+        assertEquals(true, data.outlinesBySymbol.containsKey("A-1"), "kontur A-1 na mapie")
+    }
+
     private fun catalog(vararg outlines: Pair<String, GeoArea>): BuildingCatalog =
         BuildingCatalog(
             buildings =
@@ -183,6 +204,7 @@ class CampusBoundsTest {
 
     private companion object {
         const val LAT_100_M = 100.0 / 111_195.0
+        const val LAT_60_M = 60.0 / 111_195.0
         const val DEGREE_DELTA = 5e-5
         const val ZOOM_DELTA = 1e-3
     }
