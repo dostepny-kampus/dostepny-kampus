@@ -9,10 +9,12 @@ import android.Manifest
 import android.app.Application
 import android.graphics.Bitmap
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -30,6 +32,7 @@ import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
+import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.feature.capture.location.BuildingLookup
 import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
@@ -67,8 +70,16 @@ class QuickReportScreenTest {
     private val next = mutableListOf<ReportRoute>()
     private var toMap = 0
     private var backs = 0
+    private val shown = mutableStateOf(ReportRoute())
+    private val saved = mutableListOf<SubmissionContent>()
+    private val sent = mutableListOf<Boolean>()
     private val actions =
-        QuickReportActions(onNext = { next.add(it) }, onSent = {}, onBack = { backs++ }, onBackToMap = { toMap++ })
+        QuickReportActions(
+            onNext = { next.add(it) },
+            onSent = { sent.add(it) },
+            onBack = { backs++ },
+            onBackToMap = { toMap++ },
+        )
     private val atGroup = ReportRoute(step = ReportStep.GROUP, photoId = "zdjecie-1", photoPath = "/zdjecie-1.jpg")
 
     /** Pozycja nieznana (odbiornik bez odczytu): pytanie o piętro jak w budynku podstawowym. Wymagania: BR-14 */
@@ -333,7 +344,7 @@ class QuickReportScreenTest {
 
     /**
      * Bez pozycji „Wyślij” nic nie wysyła, a komunikat mówi, co zrobić; zdjęcie i grupa „Coś innego” zostają.
-     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Bez bieżącej pozycji zgłoszenie czeka na ponowną próbę
+     * Scenariusz: zgloszenie-szybkie.feature: Bez bieżącej pozycji zgłoszenie czeka na ponowną próbę
      *
      * Wymagania: UC7, US4.1
      */
@@ -348,6 +359,62 @@ class QuickReportScreenTest {
         compose.onNodeWithText("Dziękujemy", substring = true).assertDoesNotExist()
         compose.onNodeWithText("Coś innego").assertIsDisplayed()
         assertTrue("zdjęcie zostaje w telefonie", photo.exists())
+        assertTrue("zgłoszenie nie zapisuje się w telefonie", saved.isEmpty())
+        assertTrue("zgłoszenie nie zostaje wysłane", sent.isEmpty())
+    }
+
+    /**
+     * Pozycja ustalona przy „Spróbuj ponownie” wysyła zgłoszenie z tym samym zdjęciem, grupą „Coś innego” i pozycją.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Pozycja ustalona przy ponownej próbie pozwala
+     *   wysłać zgłoszenie
+     *
+     * Wymagania: UC7, US4.1
+     */
+    @Test
+    fun sendsAfterRetryWithPosition() {
+        val photo = folder.newFile("zdjecie-1.jpg").apply { writeBytes(byteArrayOf(1, 2, 3)) }
+        var isFixed = false
+        val positions =
+            PositionSource {
+                if (isFixed) {
+                    flowOf(PositionFix(INSIDE, ACCURACY, 0L))
+                } else {
+                    flow { throw SecurityException("brak zgody") }
+                }
+            }
+        show(atSend(photo.path).copy(group = BarrierGroup.OTHER), positions = positions)
+        compose.onNodeWithText("Telefon nie ustalił", substring = true).assertIsDisplayed()
+        isFixed = true
+        compose.onNodeWithText("Spróbuj ponownie").performClick()
+        compose.waitUntil(timeoutMillis = PREVIEW_MS) {
+            compose.onAllNodes(hasText("Wyślij")).fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNodeWithText("Wyślij").assertIsEnabled().performClick()
+        compose.waitUntil(timeoutMillis = PREVIEW_MS) { sent.isNotEmpty() }
+        assertEquals("wysłane przy sieci", listOf(false), sent)
+        val content = saved.single()
+        assertEquals("to samo zdjęcie", listOf("zdjecie-1"), content.photoIds)
+        assertEquals("ta sama grupa", BarrierGroup.OTHER, content.barrierGroup)
+        assertEquals("pozycja z ponownej próby", INSIDE, content.location)
+    }
+
+    /**
+     * Bez zdjęcia albo bez grupy barier krok 3 nie ma zgłoszenia: „Wyślij” się nie pojawia i nic nie zostaje wysłane.
+     * Scenariusz: zgloszenie-szybkie.feature: Zgłoszenia szybkiego nie da się wysłać bez zdjęcia albo grupy barier
+     *
+     * Wymagania: US4.1, US4.3
+     */
+    @Test
+    fun refusesSendWithoutPhotoOrGroup() {
+        val photo = folder.newFile("zdjecie-1.jpg").apply { writeBytes(byteArrayOf(1, 2, 3)) }
+        val withoutPhoto = atSend(photo.path).copy(photoId = null, photoPath = null)
+        val withoutGroup = atSend(photo.path).copy(group = null)
+        show(withoutPhoto)
+        compose.onNodeWithText("Wyślij").assertDoesNotExist()
+        compose.runOnIdle { shown.value = withoutGroup }
+        compose.onNodeWithText("Wyślij").assertDoesNotExist()
+        assertTrue("zgłoszenie nie zapisuje się w telefonie", saved.isEmpty())
+        assertTrue("zgłoszenie nie zostaje wysłane", sent.isEmpty())
     }
 
     /**
@@ -369,6 +436,7 @@ class QuickReportScreenTest {
         floors: BuildingFloors = BuildingFloors { null },
         isLocationGranted: Boolean = true,
     ) {
+        shown.value = route
         val app = ApplicationProvider.getApplicationContext<Application>()
         if (isLocationGranted) shadowOf(app).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
         val transcoder = PhotoTranscoder()
@@ -378,7 +446,7 @@ class QuickReportScreenTest {
             QuickSendViewModel(
                 positions = positions,
                 locationSwitch = LocationSwitch { flowOf(true) },
-                saver = { _, _, _ -> },
+                saver = { content, _, _ -> saved.add(content) },
                 networkStatus = NetworkStatus { flowOf(true) },
                 buildingFloors = floors,
                 buildingLookup = BuildingLookup(catalog, EmptyCoroutineContext),
@@ -386,7 +454,7 @@ class QuickReportScreenTest {
         compose.setContent {
             DostepnyKampusTheme {
                 QuickReportScreen(
-                    route = route,
+                    route = shown.value,
                     actions = actions,
                     models = QuickReportModels(photoTranscoder = transcoder, entrances = entrances, send = send),
                 )
