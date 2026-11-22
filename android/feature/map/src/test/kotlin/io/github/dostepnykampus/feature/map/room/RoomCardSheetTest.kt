@@ -67,15 +67,17 @@ class RoomCardSheetTest {
 
     /**
      * Wiersz: bez windy z piętra wejścia na piętro sali karta mówi to zdaniem i ma wiersz budynku.
-     * Scenariusz (częściowo): szukanie-sali.feature:
+     * Scenariusz (przykład: żadna winda w A-1 nie łączy piętra wejścia z piętrem sali 329): szukanie-sali.feature:
      *   Bez sali w danych albo bez drogi bez schodów aplikacja mówi to zdaniem
      */
     @Test
     fun explainsMissingLift() {
-        show(RoomWay.NoLift)
+        val opened = mutableListOf<String>()
+        show(RoomWay.NoLift, onBuilding = { opened.add(it) })
 
         compose.onNodeWithText("Żadna winda nie łączy", substring = true).assertExists()
-        compose.onNodeWithContentDescription("Budynek A-1").assertExists()
+        compose.onNodeWithContentDescription("Budynek A-1").performClick()
+        assertEquals("Wiersz budynku nie otworzył budynku A-1", listOf("A-1"), opened)
     }
 
     @Test

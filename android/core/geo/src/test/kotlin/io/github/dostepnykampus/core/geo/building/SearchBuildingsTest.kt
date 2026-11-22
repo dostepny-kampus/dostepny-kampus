@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.building.Building
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -91,6 +92,18 @@ class SearchBuildingsTest {
         val found = searchBuildings("A-1", real.buildings).map { it.symbol }
         assertEquals("A-1", found.firstOrNull { it == "A-1" }, "A-1 wśród podpowiedzi: $found")
         assertEquals(emptyList<String>(), found.filterNot { it.startsWith("A-1") }, "tylko symbole od A-1: $found")
+    }
+
+    @Test
+    fun buildingBeforeRoomIsExact() {
+        assertEquals("A-10", buildingBeforeRoom("A-10 999", buildings())?.symbol, "Symbol A-10 nie dał budynku A-10")
+        assertEquals("A-1", buildingBeforeRoom("a1 999", buildings())?.symbol, "Zapis bez dywizu nie dał budynku A-1")
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["", "329", "A-1", "329 A-1", "Z-9 999", "A-1 sala 999"])
+    fun buildingBeforeRoomNeedsBoth(query: String) {
+        assertNull(buildingBeforeRoom(query, buildings()), "Znaleziono budynek dla „$query”")
     }
 
     private fun symbols(query: String): List<String> = searchBuildings(query, buildings()).map { it.symbol }

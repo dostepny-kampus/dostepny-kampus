@@ -31,6 +31,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -49,7 +50,9 @@ class MapRoomSearchTest {
     private val geoJson =
         """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
             """{"type":"Feature","properties":{"kind":"building","symbols":["C-13"],"osm_id":"way/1"},""" +
-            """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
+            """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}},""" +
+            """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"osm_id":"way/2"},""" +
+            """"geometry":{"type":"Polygon","coordinates":[[[2,0],[3,0],[3,1],[2,0]]]}}]}"""
 
     @BeforeEach
     fun main() {
@@ -113,6 +116,28 @@ class MapRoomSearchTest {
             val search = searched(scope = this, query = "A-1 329", reply = ServerReply.Offline)
 
             assertEquals(emptyList<FoundRoom>(), search.rooms, "Brak sieci dał sale")
+        }
+
+    /**
+     * Wiersz: budynek A-1 jest w danych, a serwer nie ma sali 999, więc model podaje brak tej sali w budynku.
+     * Scenariusz (przykład: dane PWr budynku A-1 nie mają sali 999): szukanie-sali.feature:
+     *   Bez sali w danych albo bez drogi bez schodów aplikacja mówi to zdaniem
+     */
+    @Test
+    fun namesMissingRoom() =
+        runTest(UnconfinedTestDispatcher()) {
+            val search = searched(scope = this, query = "A-1 999", reply = ServerReply.Ok(emptyList()))
+
+            assertEquals("A-1", search.missingRoom?.run { building.symbol }, "Model nie podał budynku bez sali 999")
+            assertEquals("999", search.missingRoom?.number, "Model nie podał numeru sali, której nie ma w danych")
+        }
+
+    @Test
+    fun givesNoMissingRoomOffline() =
+        runTest(UnconfinedTestDispatcher()) {
+            val search = searched(scope = this, query = "A-1 999", reply = ServerReply.Offline)
+
+            assertNull(search.missingRoom, "Brak sieci dał brak sali w danych")
         }
 
     private suspend fun searched(scope: TestScope, query: String, reply: ServerReply<List<FoundRoom>>): BuildingSearch {

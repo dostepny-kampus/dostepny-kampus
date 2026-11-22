@@ -14,11 +14,13 @@ import io.github.dostepnykampus.core.data.di.ComputeContext
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.server.ServerReply
+import io.github.dostepnykampus.core.geo.building.buildingBeforeRoom
 import io.github.dostepnykampus.core.geo.building.searchBuildings
+import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.path.AccessiblePath
-import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
+import io.github.dostepnykampus.feature.map.building.MissingRoom
 import io.github.dostepnykampus.feature.map.building.isRoomNumberOnly
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.CampusMapDataCache
@@ -191,15 +193,24 @@ class CampusMapViewModel(
                 val found = catalog?.let { withContext(computeContext) { searchBuildings(query, it.buildings) } }
                 val isNoBuilding = found?.isEmpty() == true && query.any(Char::isDigit)
                 val isBuildingMissing = isNoBuilding && isRoomNumberOnly(query)
-                val rooms = if (isNoBuilding && !isBuildingMissing) roomsFor(query.trim()) else emptyList()
-                BuildingSearch(query = query, buildings = found, rooms = rooms, isBuildingMissing = isBuildingMissing)
+                val reply = if (isNoBuilding && !isBuildingMissing) server.rooms.search(query.trim()) else null
+                val rooms = (reply as? ServerReply.Ok)?.value.orEmpty()
+                val isRoomAbsent = reply is ServerReply.Ok && rooms.isEmpty()
+                val missing = catalog?.takeIf { isRoomAbsent }?.let { missingRoomOf(query, it.buildings) }
+                BuildingSearch(
+                    query = query,
+                    buildings = found,
+                    rooms = rooms,
+                    isBuildingMissing = isBuildingMissing,
+                    missingRoom = missing,
+                )
             }
         return results.onStart { emit(BuildingSearch()) }
     }
 
-    private suspend fun roomsFor(query: String): List<FoundRoom> {
-        val reply = server.rooms.search(query)
-        return if (reply is ServerReply.Ok) reply.value else emptyList()
+    private fun missingRoomOf(query: String, buildings: List<Building>): MissingRoom? {
+        val building = buildingBeforeRoom(query, buildings) ?: return null
+        return MissingRoom(building = building, number = query.trim().substringAfterLast(' '))
     }
 
     private suspend fun MapServer.fetched(): Fetched {
