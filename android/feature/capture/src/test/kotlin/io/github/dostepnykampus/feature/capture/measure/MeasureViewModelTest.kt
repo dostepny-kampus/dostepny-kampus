@@ -6,6 +6,8 @@
 package io.github.dostepnykampus.feature.capture.measure
 
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.server.ServerBuildings
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.geo.PwrGrounds
 import io.github.dostepnykampus.core.location.ElapsedClock
 import io.github.dostepnykampus.core.location.GnssSystem
@@ -56,6 +58,7 @@ class MeasureViewModelTest {
             }
         }
     private var catalogReads = 0
+    private var server: (suspend () -> ServerReply<ServerBuildings>)? = null
     private val fixes = MutableSharedFlow<PositionFix>(extraBufferCapacity = 1)
     private val satellites = MutableSharedFlow<List<Satellite>>(extraBufferCapacity = 1)
     private var failure: RuntimeException? = null
@@ -69,10 +72,14 @@ class MeasureViewModelTest {
             locationSwitch = LocationSwitch { locationOn },
             buildingLookup =
                 BuildingLookup(
-                    BuildingCatalogRepository(catalogDispatcher) {
-                        catalogReads += 1
-                        CAMPUS
-                    },
+                    BuildingCatalogRepository(
+                        ioContext = catalogDispatcher,
+                        listBuildings = server,
+                        readGeoJson = {
+                            catalogReads += 1
+                            CAMPUS
+                        },
+                    ),
                     lookupDispatcher,
                 ),
         )
@@ -266,6 +273,29 @@ class MeasureViewModelTest {
         runTest(dispatcher) {
             finish()
             assertEquals("A-1", (place() as PlaceChoice.Suggested).hint.building.symbol)
+        }
+
+    /**
+     * Telefon bez sieci: serwer nie odpowiada, a podpowiedź budynku z pliku pojawia się najpóźniej 2 s
+     *   po końcu pomiaru.
+     * Scenariusz: pomiar-precyzyjny.feature: Podpowiedź budynku działa bez sieci
+     *
+     * Wymagania: US6.2
+     */
+    @Test
+    fun hintsBuildingWithoutNetwork() =
+        runTest(dispatcher) {
+            server = { ServerReply.Offline }
+            watch()
+            fix(accuracy = 6.0)
+            advanceTimeBy(30_000)
+            runCurrent()
+            advanceTimeBy(2_000)
+            assertEquals(
+                "A-1",
+                (place() as PlaceChoice.Suggested).hint.building.symbol,
+                "podpowiedź A-1 z pliku bez sieci po końcu pomiaru",
+            )
         }
 
     @Test
