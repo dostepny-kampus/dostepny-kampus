@@ -91,13 +91,19 @@ sealed class NavigationHistory(
 
     /**
      * „Wstecz” w nagłówku i wstecz telefonu: poprzedni ekran. Zamknięcie V2 zdejmuje z V1 zaznaczenie
-     * budynku, a resztę stanu V1 zostawia. Na V1 fałsz, wtedy aplikacja się zamyka.
+     * budynku, a resztę stanu V1 zostawia. Poprzedni krok V4 dostaje dane zdjętego kroku. Na V1 fałsz,
+     * wtedy aplikacja się zamyka.
      *
-     * Wymagania: NFR-15
+     * Wymagania: NFR-15, US4.8
      */
     fun back(): Boolean {
         if (backStack.size == 1) return false
-        leaving { if (removeAt(lastIndex) is BuildingRoute) this[0] = MapRoute() }
+        leaving {
+            val left = removeAt(lastIndex)
+            val previous = last()
+            if (left is BuildingRoute) this[0] = MapRoute()
+            if (left is ReportRoute && previous is ReportRoute) this[lastIndex] = left.copy(step = previous.step)
+        }
         return true
     }
 

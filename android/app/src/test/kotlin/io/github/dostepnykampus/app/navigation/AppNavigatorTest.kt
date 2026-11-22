@@ -643,4 +643,21 @@ class AppNavigatorTest {
         assertEquals(BarrierGroup.TOILETS, step.group)
         assertEquals("z-1", (stack[1] as ReportRoute).photoId)
     }
+
+    /** Wiersz: V4, „Wstecz” do kroku 1 i ponowne „Dalej” zostawiają wybraną grupę. Wymagania: US4.8 */
+    @Test
+    fun keepsGroupAfterPhotoStep() {
+        navigator(visitor).run {
+            report()
+            nextReportStep(ReportRoute(photoId = "z-1", photoPath = "/z-1.jpg"))
+            nextReportStep((current as ReportRoute).copy(group = BarrierGroup.TOILETS))
+            back()
+            back()
+            nextReportStep()
+        }
+        val step = stack.last() as ReportRoute
+        assertEquals(ReportStep.GROUP, step.step, "krok grupy po ponownym „Dalej”")
+        assertEquals(BarrierGroup.TOILETS, step.group, "grupa po powrocie do kroku 1")
+        assertEquals("z-1", step.photoId, "zdjęcie po powrocie do kroku 1")
+    }
 }
