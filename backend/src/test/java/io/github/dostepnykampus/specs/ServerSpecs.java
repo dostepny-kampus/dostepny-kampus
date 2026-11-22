@@ -28,6 +28,7 @@ import org.junit.platform.suite.api.Suite;
 @SelectFile("../specs/oznaczenie-wejscia.feature")
 @SelectFile("../specs/postep-inwentaryzacji.feature")
 @SelectFile("../specs/przegladanie-mapy.feature")
+@SelectFile("../specs/szukanie-sali.feature")
 @SelectFile("../specs/uprawnienia.feature")
 @SelectFile("../specs/zgloszenia-zbierajacego.feature")
 @SelectFile("../specs/zgloszenie-szybkie.feature")

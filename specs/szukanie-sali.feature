@@ -3,8 +3,7 @@ Funkcja: Wyszukanie sali
   Gość niezalogowany i Odwiedzający szukają sali po numerze, aby wiedzieć, na którym jest piętrze
   i jak dojść do niej bez schodów (N1). Piętro wejścia zalecanego pochodzi z danych planu PWr.
 
-  # @do-zrobienia #3670: sprawdzenie na planie wszystkich zapisów wyniku z funkcją i piętrem.
-  @US18.1 @aplikacja @serwer @do-zrobienia
+  @US18.1 @aplikacja @serwer
   Szablon scenariusza: Wyszukanie sali po budynku i numerze w różnym zapisie
     Zakładając, że dane PWr budynku A-1 mają salę 329 z funkcją i piętrem
     Oraz Gość niezalogowany ma otwartą mapę kampusu
