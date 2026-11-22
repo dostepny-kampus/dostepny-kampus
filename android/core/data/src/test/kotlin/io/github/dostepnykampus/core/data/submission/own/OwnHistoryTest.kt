@@ -311,20 +311,43 @@ class OwnHistoryTest {
         }
     }
 
+    /**
+     * Scenariusz (przykład: lokalne): zgloszenia-zbierajacego.feature: Edycja zgłoszenia przed decyzją Weryfikatora.
+     */
     @Test
     fun editsUnsent() =
         runBlocking {
             val target = queue()
-            target.save(precise(PHOTO), photo(tempDir, PHOTO))
+            target.save(precise(PHOTO, severity = 1), photo(tempDir, PHOTO))
             target.saveEdit(
                 EditedSubmission(id = ID, baseVersion = null),
-                precise(PHOTO, severity = 1),
+                precise(PHOTO, severity = 2),
                 photo(tempDir, PHOTO),
             )
 
             val row = history.rows.getValue(ID)
-            assertEquals(OwnSubmissionState.LOCAL, row.state)
-            assertEquals(1, row.severity)
+            assertEquals(OwnSubmissionState.LOCAL, row.state, "zgłoszenie zostaje lokalne")
+            assertEquals(2, row.severity, "nowa uciążliwość")
+        }
+
+    /**
+     * Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Zmiana zgłoszenia przyjętego tworzy nowe zgłoszenie.
+     */
+    @Test
+    fun replacesAcceptedAsLocal() =
+        runBlocking {
+            history.rows[OLD] =
+                OwnSubmissionEntity(id = OLD, savedAtMillis = 1, kind = "PRECISE", barrierType = "TB-13")
+            history.saveServerStatus(id = OLD, status = SubmissionStatus.ACCEPTED.name, reason = null, version = 2)
+
+            queue().save(precise(PHOTO, severity = 3).copy(replacesSubmissionId = OLD), photo(tempDir, PHOTO))
+
+            val pending = store.all().single().submission
+            assertEquals(OLD, pending.replacesSubmissionId, "nowe wskazuje przyjęte")
+            assertEquals(OwnSubmissionState.LOCAL, history.rows.getValue(ID).state, "nowe zgłoszenie jest lokalne")
+            val original = history.rows.getValue(OLD)
+            assertEquals("ACCEPTED", original.serverStatus, "przyjęte zostaje przyjęte")
+            assertEquals(2, original.serverVersion, "przyjęte nie zmienia wersji")
         }
 
     /**

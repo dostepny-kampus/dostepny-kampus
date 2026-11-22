@@ -5,16 +5,27 @@
  */
 package io.github.dostepnykampus.feature.capture.mine
 
+import android.graphics.Bitmap
+import android.graphics.Color
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.printToString
+import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.data.submission.own.RefusalReason
 import io.github.dostepnykampus.core.data.submission.own.SendState
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -27,10 +38,13 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 import java.time.Instant
+import kotlin.math.abs
 
 @RunWith(RobolectricTestRunner::class)
-@Config(qualifiers = "w360dp-h800dp")
+@Config(qualifiers = "w360dp-h800dp-xhdpi")
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 class SubmissionCardTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
@@ -85,6 +99,47 @@ class SubmissionCardTest {
         show(rejected.copy(rejectionReason = "Zdjęcie nieostre"))
         compose.onNodeWithText("Odrzucone").assertIsDisplayed()
         compose.onNodeWithText("Powód odrzucenia: Zdjęcie nieostre").assertIsDisplayed()
+    }
+
+    /**
+     * Każdy status ma widoczną ikonę, a ikony różnią się w odcieniach szarości, więc nie zależą od koloru.
+     * Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Każde własne zgłoszenie ma jeden status
+     *   tekstem i ikoną
+     *
+     * Wymagania: US8.1, NFR-21
+     */
+    @Test
+    fun iconsDifferInGrayscale() {
+        compose.setContent {
+            DostepnyKampusTheme {
+                Column {
+                    ShownStatus.entries.forEach { status ->
+                        Icon(
+                            imageVector = status.icon,
+                            contentDescription = null,
+                            modifier = Modifier.size(ICON_DP).testTag(status.name),
+                        )
+                    }
+                }
+            }
+        }
+        val grays =
+            ShownStatus.entries.map { status ->
+                grayOnWhite(compose.onNodeWithTag(status.name).captureToImage().asAndroidBitmap())
+            }
+        grays.forEachIndexed { index, gray ->
+            val dark = gray.count { it < DARK_LUMA }
+            assertTrue("ikona „${ShownStatus.entries[index]}” ma widoczne piksele: $dark", dark >= MIN_PIXELS)
+        }
+        grays.indices.forEach { first ->
+            (first + 1 until grays.size).forEach { second ->
+                val differing = differingPixels(first = grays[first], second = grays[second])
+                assertTrue(
+                    "${ShownStatus.entries[first]} i ${ShownStatus.entries[second]} w szarości: $differing px",
+                    differing >= MIN_PIXELS,
+                )
+            }
+        }
     }
 
     /**
@@ -189,7 +244,27 @@ class SubmissionCardTest {
         val tree = compose.onRoot(useUnmergedTree = false).printToString()
         assertTrue(tree.indexOf("W telefonie") in 0 until tree.indexOf("Schody przy wejściu"))
     }
+
+    private fun grayOnWhite(bitmap: Bitmap): IntArray {
+        val pixels = IntArray(bitmap.width * bitmap.height)
+        bitmap.getPixels(pixels, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+        return IntArray(pixels.size) { index ->
+            val pixel = pixels[index]
+            val alpha = Color.alpha(pixel) / OPAQUE
+            val luma = 0.299 * Color.red(pixel) + 0.587 * Color.green(pixel) + 0.114 * Color.blue(pixel)
+            (alpha * luma + (1 - alpha) * OPAQUE).toInt()
+        }
+    }
+
+    private fun differingPixels(first: IntArray, second: IntArray): Int =
+        first.indices.count { index -> abs(first[index] - second[index]) > LUMA_DIFFERENCE }
 }
+
+private val ICON_DP = 48.dp
+private const val DARK_LUMA = 128
+private const val LUMA_DIFFERENCE = 64
+private const val MIN_PIXELS = 100
+private const val OPAQUE = 255.0
 
 private fun item(
     id: String,

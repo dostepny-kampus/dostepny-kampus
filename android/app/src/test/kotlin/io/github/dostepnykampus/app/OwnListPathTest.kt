@@ -136,18 +136,60 @@ class OwnListPathTest {
         compose.onNodeWithText("Powód odrzucenia: $REASON").assertExists()
     }
 
+    /**
+     * Przyjęte zgłoszenie zostaje „Przyjęte”, a jego zmiana czeka w telefonie jako nowe „W telefonie”.
+     * Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Zmiana zgłoszenia przyjętego tworzy nowe zgłoszenie
+     *
+     * Wymagania: BR-3, BR-18
+     */
+    @Test
+    fun showsReplacementBesideAccepted() {
+        isServerReachable = true
+        send()
+        runBlocking {
+            history.saveServerStatus(id = "s-0", status = "ACCEPTED", reason = null, version = 2)
+        }
+        isServerReachable = false
+        runBlocking { queue().save(precise().copy(replacesSubmissionId = "s-0"), photo()) }
+
+        showMine()
+
+        compose.onNodeWithText("Przyjęte").assertExists("przyjęte zgłoszenie zostaje na liście")
+        compose.onNodeWithText("W telefonie").assertExists("zmiana czeka w telefonie")
+    }
+
+    /**
+     * Usunięcie bariery wysłane przy dostępnej sieci: na liście zgłoszenie ma status „Wysłane”.
+     * Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Inny Zbierający niż autor zgłasza usunięcie bariery
+     *
+     * Wymagania: US8.4, BR-19
+     */
+    @Test
+    fun showsRemovalSent() {
+        isServerReachable = true
+        send(removal())
+
+        showMine()
+
+        compose.onNodeWithText("Wysłane").assertExists("usunięcie bariery wysłane")
+        compose.onNodeWithText("W telefonie").assertDoesNotExist()
+    }
+
     private fun sendOne() {
         send()
         showMine()
     }
 
-    private fun send() {
+    private fun send(content: SubmissionContent = precise()) {
         val queue = queue()
         runBlocking {
-            queue.save(precise(), photo())
+            queue.save(content, photo())
             queue.sendAll()
         }
     }
+
+    private fun removal(): SubmissionContent =
+        precise().copy(severity = null, isBarrierRemoved = true, replacesSubmissionId = "tb9", barrierType = "TB-9")
 
     private fun showMine() {
         val viewModel = offlineOwnList(store)
