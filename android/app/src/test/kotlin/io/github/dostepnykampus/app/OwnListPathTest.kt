@@ -18,6 +18,7 @@ import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionServer
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStamps
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
@@ -59,6 +60,9 @@ class OwnListPathTest {
 
     @Inject
     lateinit var store: SubmissionStore
+
+    @Inject
+    lateinit var history: OwnSubmissionDao
 
     private var isServerReachable = false
     private var today = LocalDate.of(YEAR, OCTOBER, FIRST_DAY)
@@ -114,13 +118,35 @@ class OwnListPathTest {
         compose.onNodeWithText("W telefonie").assertDoesNotExist()
     }
 
+    /**
+     * Serwer odrzucił zgłoszenie z powodem: lista pokazuje status „Odrzucone” i powód przy zgłoszeniu.
+     * Scenariusz: zgloszenia-zbierajacego.feature: Zgłoszenie odrzucone pokazuje powód odrzucenia
+     */
+    @Test
+    fun showsRejectionReason() {
+        isServerReachable = true
+        send()
+        runBlocking {
+            history.saveServerStatus(id = "s-0", status = "REJECTED", reason = REASON, version = 2)
+        }
+
+        showMine()
+
+        compose.onNodeWithText("Odrzucone").assertExists()
+        compose.onNodeWithText("Powód odrzucenia: $REASON").assertExists()
+    }
+
     private fun sendOne() {
+        send()
+        showMine()
+    }
+
+    private fun send() {
         val queue = queue()
         runBlocking {
             queue.save(precise(), photo())
             queue.sendAll()
         }
-        showMine()
     }
 
     private fun showMine() {
@@ -191,3 +217,4 @@ private const val FIRST_DAY = 12
 private const val MIDDLE_DAY = 24
 private const val LAST_DAY = 28
 private const val NOON = 12
+private const val REASON = "Zdjęcie nie pokazuje progu"
