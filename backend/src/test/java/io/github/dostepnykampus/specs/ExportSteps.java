@@ -19,7 +19,6 @@ import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
 import io.github.dostepnykampus.barrier.submission.persistence.JdbcSubmissions;
-import java.io.StringReader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -77,7 +76,7 @@ public final class ExportSteps {
         "odrzucone", "REJECTED", "archiwalne", "ARCHIVED"
     );
 
-    /** Środowisko aplikacji z portem serwera. */
+    /** Port serwera w środowisku aplikacji. */
     private final Environment environment;
 
     /** Baza aplikacji. */
@@ -101,7 +100,7 @@ public final class ExportSteps {
     /**
      * Kroki na kontekście aplikacji.
      *
-     * @param environment Środowisko aplikacji z portem serwera
+     * @param environment Port serwera w środowisku aplikacji
      * @param jdbc Baza aplikacji
      * @param submissions Zapis zgłoszeń jak na serwerze
      */
@@ -124,7 +123,7 @@ public final class ExportSteps {
      */
     @Given("^przy wejściu głównym A-1 jest przyjęte zgłoszenie .+ z uciążliwością (\\d)$")
     public void acceptedAtMainEntrance(final int severity) {
-        this.building("A-1", "1");
+        this.building("A-1", 17.051, 51.101);
         this.jdbc.sql(
             String.join(
                 " ",
@@ -156,7 +155,7 @@ public final class ExportSteps {
      */
     @Given("^w budynku C-13 jest zgłoszenie TB-13 „próg” ze statusem „(.+)”$")
     public void thresholdWithStatus(final String status) {
-        this.building("C-13", "2");
+        this.building("C-13", 17.052, 51.102);
         this.add(
             ExportSteps.THRESHOLD, ExportSteps.STATUSES.get(status),
             new SubmissionPlace(new SubmissionPoint(17.052, 51.102), null, false, "C-13", null),
@@ -193,26 +192,30 @@ public final class ExportSteps {
         );
         this.body = reply.body();
         if ("CSV".equals(name)) {
-            try (CSVParser parser = CSVFormat.RFC4180.builder().setHeader()
-                .setSkipHeaderRecord(true).get().parse(new StringReader(this.body))) {
+            try (
+                CSVParser parser = CSVParser.parse(
+                    this.body,
+                    CSVFormat.RFC4180.builder().setHeader().setSkipHeaderRecord(true).get()
+                )
+            ) {
                 this.columns.addAll(parser.getHeaderNames());
                 parser.forEach(row -> this.rows.put(row.get("submissionId"), row));
             }
         }
     }
 
-    /** Plik CSV otwarty w QGIS jako warstwa punktów ze współrzędnymi z kolumn x i y. */
-    @When("otworzy plik w QGIS ze wskazanym układem EPSG:2180")
-    public void opensInQgis() {
+    /**
+     * Plik CSV otwarty w QGIS daje warstwę punktów: kolumny x i y, a w każdym wierszu
+     * liczbowe współrzędne.
+     */
+    @Then(
+        "^(?:otworzy plik w QGIS ze wskazanym układem EPSG:2180|QGIS pokazuje warstwę punktów)$"
+    )
+    public void showsPointLayer() {
         MatcherAssert.assertThat(
             "Plik nie ma kolumn x i y, z których QGIS czyta współrzędne punktów",
             this.columns, Matchers.hasItems("x", "y")
         );
-    }
-
-    /** Każdy wiersz pliku ma punkt o liczbowych współrzędnych. */
-    @Then("QGIS pokazuje warstwę punktów")
-    public void showsPointLayer() {
         MatcherAssert.assertThat(
             "Plik nie ma wierszy, więc warstwa punktów byłaby pusta",
             this.rows.keySet(), Matchers.not(Matchers.empty())
@@ -326,16 +329,17 @@ public final class ExportSteps {
         ).param("id", ExportSteps.ENTRANCE).query(Double.class).single();
     }
 
-    private void building(final String symbol, final String shift) {
+    private void building(
+        final String symbol, final double longitude, final double latitude
+    ) {
         final int present = this.jdbc.sql("SELECT count(*) FROM buildings WHERE symbol = :symbol")
             .param("symbol", symbol).query(Integer.class).single();
         if (present == 0) {
-            final String south = String.format("17.05%1$s 51.10%1$s", shift);
             new SampleBuilding(symbol, symbol, "BASIC").wkt(
                 this.jdbc,
                 String.format(
-                    "POLYGON((%1$s,17.05%2$s1 51.10%2$s,17.05%2$s1 51.10%2$s1,%1$s))",
-                    south, shift
+                    Locale.ROOT, "POLYGON((%1$f %2$f,%3$f %2$f,%3$f %4$f,%1$f %2$f))",
+                    longitude, latitude, longitude + 0.0001, latitude + 0.0001
                 )
             );
             this.buildings.add(symbol);
