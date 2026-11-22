@@ -159,10 +159,9 @@ class QuickReturnPathTest {
     }
 
     /**
-     * Krok 1 po powrocie z kroku 2 pokazuje zdjęcie, a „Wstecz” w kroku 1 usuwa je dopiero po potwierdzeniu
-     * rezygnacji; grupa „Toalety” zostaje wybrana w kroku 2 po powrocie z kroku 3.
-     * Scenariusz (częściowo): zgloszenie-szybkie-powrot.feature: Powrót między krokami nie usuwa zdjęcia ani grupy
-     *   barier
+     * Krok 1 po powrocie z kroku 2 pokazuje zdjęcie, grupa „Toalety” zostaje wybrana po powrocie z kroku 3
+     * i po ponownym „Dalej” z kroku 1, a „Wstecz” w kroku 1 usuwa zdjęcie dopiero po potwierdzeniu rezygnacji.
+     * Scenariusz: zgloszenie-szybkie-powrot.feature: Powrót między krokami nie usuwa zdjęcia ani grupy barier
      *
      * Wymagania: US4.8
      */
@@ -179,6 +178,10 @@ class QuickReturnPathTest {
         compose.onNodeWithText("Wstecz").performClick()
         awaitPreview()
         assertTrue("zdjęcie zostaje w kroku 1", photo.exists())
+        compose.onNodeWithText("Dalej").performClick()
+        compose.onNodeWithText("✓ Toalety").assertIsSelected()
+        compose.onNodeWithText("Wstecz").performClick()
+        awaitPreview()
         compose.onNodeWithText("Wstecz").performClick()
         compose.onNodeWithText("Wróć do zdjęcia").performClick()
         assertTrue("zdjęcie zostaje do decyzji", photo.exists())
