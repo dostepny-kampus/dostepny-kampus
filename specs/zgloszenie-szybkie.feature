@@ -4,7 +4,7 @@ Funkcja: Zgłoszenie szybkie
   Odwiedzający zgłasza nową barierę zdjęciem i bieżącą pozycją, bez trudnego formularza (N3, N4).
   Typ bariery i uciążliwość ustala później Weryfikator.
 
-  # brak pełnego testu: #3695
+  # brak pełnego testu: #3717
   @US4.1 @aplikacja @do-zrobienia
   Scenariusz: Zgłoszenie szybkie w 3 krokach z pozycją dołączoną automatycznie
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
@@ -15,7 +15,7 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie powstaje po 3 krokach
     Oraz ma dołączoną bieżącą pozycję telefonu, o którą aplikacja nie pytała
 
-  # brak pełnego testu: #3695
+  # brak pełnego testu: #3718
   @US4.6 @BR-8 @BR-14 @aplikacja @do-zrobienia
   Scenariusz: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego wejścia
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
@@ -41,7 +41,7 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie ma miejsce w punkcie wejścia głównego A-1, budynek A-1 i piętro tego wejścia
     Ale zgłoszenie bez bieżącej pozycji i bez wejścia albo z nieznanym wejściem serwer odrzuca
 
-  # brak pełnego testu: #3695
+  # brak pełnego testu: #3718
   @US4.6 @BR-8 @aplikacja @do-zrobienia
   Scenariusz: Odnośnik w wierszu kilku wejść bez danych bierze miejsce z bieżącej pozycji
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
@@ -50,7 +50,7 @@ Funkcja: Zgłoszenie szybkie
     Wtedy krok 1 zgłoszenia szybkiego nie ma napisu o wejściu
     Oraz miejscem zgłoszenia jest bieżąca pozycja telefonu
 
-  # brak pełnego testu: #3695
+  # brak pełnego testu: #3718
   @US4.6 @BR-8 @BR-14 @aplikacja @do-zrobienia
   Szablon scenariusza: Zgłoszenie przy obiekcie planu ma miejsce w punkcie obiektu i piętro planu
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
@@ -76,8 +76,7 @@ Funkcja: Zgłoszenie szybkie
     Oraz każdy przycisk ma co najmniej 48 × 48 dp
     Ale aplikacja nie pyta o typ bariery ani o uciążliwość
 
-  # brak pełnego testu: #3695
-  @US4.1 @US4.3 @aplikacja @do-zrobienia
+  @US4.1 @US4.3 @aplikacja
   Szablon scenariusza: Zgłoszenia szybkiego nie da się wysłać bez zdjęcia albo grupy barier
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz zaczął zgłoszenie szybkie w budynku C-13
@@ -101,8 +100,7 @@ Funkcja: Zgłoszenie szybkie
     Oraz widzi przycisk otwierający ustawienia telefonu
     Ale zgłoszenie nie powstaje
 
-  # brak pełnego testu: #3695
-  @US4.1 @aplikacja @do-zrobienia
+  @US4.1 @aplikacja
   Scenariusz: Bez bieżącej pozycji zgłoszenie czeka na ponowną próbę
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz telefon nie ustala bieżącej pozycji
@@ -114,7 +112,7 @@ Funkcja: Zgłoszenie szybkie
     Oraz widzi komunikat, że telefon nie ustalił miejsca, z radą, co zrobić
     Oraz zdjęcie i grupa barier zostają do ponownej próby
 
-  # brak pełnego testu: #3695
+  # brak pełnego testu: #3719
   @US4.1 @aplikacja @do-zrobienia
   Scenariusz: Pozycja ustalona przy ponownej próbie pozwala wysłać zgłoszenie
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
@@ -140,7 +138,7 @@ Funkcja: Zgłoszenie szybkie
       | w budynku C-13                                                 | ma budynek C-13       |
       | na chodniku przed wejściem głównym A-1, poza konturem budynku  | jest „poza budynkiem” |
 
-  # brak pełnego testu: #3695
+  # brak pełnego testu: #3719
   @US4.5 @BR-14 @aplikacja @do-zrobienia
   Szablon scenariusza: Pytanie o piętro tylko w budynku i przy grupie, która go wymaga
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
@@ -157,7 +155,7 @@ Funkcja: Zgłoszenie szybkie
       | w budynku C-13                       | „inne”                | przechodzi do kroku 3 bez pytania o piętro                                |
       | na chodniku przed A-1, poza konturem | „komunikacja pozioma” | przechodzi do kroku 3 bez pytania o piętro                                |
 
-  # brak pełnego testu: #3695
+  # brak pełnego testu: #3719
   @US4.5 @aplikacja @do-zrobienia
   Scenariusz: Odpowiedź „Nie wiem” zostawia piętro puste i pozwala wysłać zgłoszenie
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
@@ -168,7 +166,7 @@ Funkcja: Zgłoszenie szybkie
     Oraz zgłoszenie nie ma piętra
     Oraz zgłoszenie powstało po 3 krokach
 
-  # brak pełnego testu: #3695
+  # brak pełnego testu: #3719
   @US4.5 @aplikacja @do-zrobienia
   Scenariusz: Wybrane piętro trafia do zgłoszenia
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
@@ -194,7 +192,7 @@ Funkcja: Zgłoszenie szybkie
     Jeżeli wyśle zgłoszenie szybkie z grupą barier „komunikacja pozioma”
     Wtedy zgłoszenie zapisuje się w telefonie
 
-  # brak pełnego testu: #3695
+  # brak pełnego testu: #3717
   @US4.2 @BR-9 @aplikacja @do-zrobienia
   Scenariusz: Zgłoszenie szybkie zapisane bez sieci wysyła się samo po powrocie sieci
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
@@ -211,7 +209,7 @@ Funkcja: Zgłoszenie szybkie
     Wtedy widzi potwierdzenie, że zgłoszenie trafi do weryfikacji
     Ale aplikacja nie pokazuje mu listy jego zgłoszeń ani ich statusów
 
-  # brak pełnego testu: #3695
+  # brak pełnego testu: #3720
   @US4.4 @US4.2 @aplikacja @do-zrobienia
   Scenariusz: Potwierdzenie bez sieci mówi o późniejszej wysyłce
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
@@ -219,7 +217,7 @@ Funkcja: Zgłoszenie szybkie
     Jeżeli wyśle zgłoszenie szybkie z grupą barier „inne”
     Wtedy widzi potwierdzenie, że zgłoszenie wyśle się po powrocie sieci i trafi do weryfikacji
 
-  # brak pełnego testu: #3695
+  # brak pełnego testu: #3717
   @US14.2 @RO-GOS @aplikacja @do-zrobienia
   Scenariusz: Gość niezalogowany jest proszony o logowanie przed zdjęciem
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
@@ -227,7 +225,7 @@ Funkcja: Zgłoszenie szybkie
     Wtedy widzi prośbę o logowanie albo rejestrację
     Ale aparat się nie otwiera
 
-  # brak pełnego testu: #3695
+  # brak pełnego testu: #3717
   @US14.2 @RO-GOS @aplikacja @do-zrobienia
   Scenariusz: Gość po zalogowaniu wraca do zgłoszenia szybkiego
     Zakładając, że Gość niezalogowany wybrał zgłoszenie szybkie i widzi prośbę o logowanie
@@ -241,7 +239,7 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie nie powstaje
     Oraz aplikacja wraca do mapy kampusu
 
-  # brak pełnego testu: #3695
+  # brak pełnego testu: #3718
   @US4.9 @BR-G5 @aplikacja @serwer @do-zrobienia
   Szablon scenariusza: Zgłoszenie szybkie tylko na terenie PWr
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
