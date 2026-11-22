@@ -123,6 +123,26 @@ class SubmissionSyncWorkerTest {
             assertEquals(emptyList<String>(), store.rows.map { it.submission.id })
         }
 
+    /**
+     * Zgłoszenie zapisane bez sieci: pierwsza próba ponawia zadanie, a po powrocie sieci wysyła się jeden raz.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie szybkie zapisane bez sieci wysyła się samo po
+     *   powrocie sieci
+     *
+     * Wymagania: US4.2, BR-9
+     */
+    @Test
+    fun sendsOnceWhenNetworkReturns() =
+        runBlocking {
+            val target = queue()
+            target.save(content(), photos())
+            store.createResults.addLast(ServerReply.Offline)
+
+            assertEquals(ListenableWorker.Result.retry(), target.syncResult(), "bez sieci ponawia")
+            assertEquals(ListenableWorker.Result.success(), target.syncResult(), "po powrocie sieci wysyła")
+            assertEquals(listOf(SENT_ID), store.created, "dokładnie jedno zgłoszenie na serwerze")
+            assertEquals(emptyList<String>(), store.rows.map { it.submission.id }, "kolejka pusta")
+        }
+
     private fun queue(): SubmissionQueue =
         SubmissionQueue(
             store = store,

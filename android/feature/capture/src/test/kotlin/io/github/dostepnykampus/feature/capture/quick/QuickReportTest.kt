@@ -138,4 +138,20 @@ class QuickReportTest {
         assertNull(content.entranceId)
         assertEquals(SubmissionFloor(floorId = "A-1/p2"), content.floor)
     }
+
+    /**
+     * Krok 2 pyta o piętro tylko w budynku i przy grupie, która je wymaga; przy „Coś innego” i poza konturem nie pyta.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Pytanie o piętro tylko w budynku i przy grupie, która go
+     *   wymaga
+     *
+     * Wymagania: US4.5, BR-14
+     */
+    @Test
+    fun asksFloorWhereNeeded() {
+        assertTrue(BarrierGroup.VERTICAL_CIRCULATION.asksFloor(isInBuilding = true), "D-2, schody i windy")
+        assertTrue(BarrierGroup.TOILETS.asksFloor(isInBuilding = true), "B-4, toalety")
+        assertTrue(BarrierGroup.ENTRANCE_AND_DOORS.asksFloor(isInBuilding = true), "C-13, wejście i drzwi")
+        assertFalse(BarrierGroup.OTHER.asksFloor(isInBuilding = true), "C-13, coś innego")
+        assertFalse(BarrierGroup.HORIZONTAL_CIRCULATION.asksFloor(isInBuilding = false), "przed A-1, poza konturem")
+    }
 }

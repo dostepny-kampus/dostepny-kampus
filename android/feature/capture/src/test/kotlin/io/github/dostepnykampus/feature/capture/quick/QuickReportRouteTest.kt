@@ -50,6 +50,13 @@ class QuickReportRouteTest {
         assertNull(requireNotNull(filled.quickReport()).content(position).entranceId)
     }
 
+    /**
+     * Bez zdjęcia albo grupy barier zgłoszenia nie ma, więc krok 3 nie ma czego wysłać.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenia szybkiego nie da się wysłać bez zdjęcia albo
+     *   grupy barier
+     *
+     * Wymagania: US4.1, US4.3
+     */
     @Test
     fun returnsNullWithoutPhotoOrGroup() {
         assertNull(filled.copy(photoId = null).quickReport())
