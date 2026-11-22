@@ -3,8 +3,7 @@ Funkcja: Powrót w zgłoszeniu szybkim
   Odwiedzający może cofnąć się w każdym kroku i nie traci pracy, a po wysłaniu nie wraca
   do kroków wysłanego zgłoszenia (N3, N4).
 
-  # brak pełnego testu: #3698
-  @US4.7 @aplikacja @do-zrobienia
+  @US4.7 @aplikacja
   Scenariusz: Po wysłaniu „Wstecz” wraca do ekranu, z którego zaczęto zgłoszenie
     Zakładając, że Odwiedzający zaczął zgłoszenie szybkie z karty budynku A-1
     Oraz wysłał je i widzi potwierdzenie
@@ -13,7 +12,7 @@ Funkcja: Powrót w zgłoszeniu szybkim
     Ale kolejne „Wstecz” nie otwiera kroków wysłanego zgłoszenia
     Oraz na serwer trafia jedno zdjęcie tego zgłoszenia
 
-  # brak pełnego testu: #3698
+  # grupa barier ginie po powrocie do kroku 1: #3704
   @US4.8 @aplikacja @do-zrobienia
   Scenariusz: Powrót między krokami nie usuwa zdjęcia ani grupy barier
     Zakładając, że Odwiedzający zrobił zdjęcie i wybrał grupę barier „toalety”
