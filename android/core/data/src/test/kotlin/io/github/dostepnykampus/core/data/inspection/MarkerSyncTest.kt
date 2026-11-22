@@ -28,8 +28,8 @@ class MarkerSyncTest {
     /**
      * Przykład „oznaczy kolejne piętro jako obejrzane”: bez sieci zadanie prosi o ponowienie, po powrocie sieci
      * znacznik dociera na serwer bez działania Zbierającego.
-     * Scenariusz (częściowo): postep-inwentaryzacji.feature: Po powrocie sieci znacznik i jego cofnięcie
-     *   wysyłają się same
+     * Scenariusz (przykład: oznaczył kolejne piętro jako obejrzane | 4): postep-inwentaryzacji.feature: Po powrocie
+     *   sieci znacznik i jego cofnięcie wysyłają się same
      */
     @Test
     fun sendsMarkerAfterReconnect() =
@@ -48,8 +48,8 @@ class MarkerSyncTest {
 
     /**
      * Przykład „cofnie swój znacznik jednego z obejrzanych pięter”.
-     * Scenariusz (częściowo): postep-inwentaryzacji.feature: Po powrocie sieci znacznik i jego cofnięcie
-     *   wysyłają się same
+     * Scenariusz (przykład: cofnął swój znacznik jednego z obejrzanych pięter | 2): postep-inwentaryzacji.feature:
+     *   Po powrocie sieci znacznik i jego cofnięcie wysyłają się same
      */
     @Test
     fun sendsRevokeAfterReconnect() =
@@ -58,6 +58,7 @@ class MarkerSyncTest {
             phone.markers.revoke(markerId = "m2", buildingSymbol = "A-1", floorId = "p2")
             phone.server.isOnline = false
             assertEquals(ListenableWorker.Result.retry(), phone.sync.syncResult(), "bez sieci")
+            assertEquals(3, phone.server.marked.size, "postęp przed powrotem sieci")
 
             phone.server.isOnline = true
             assertEquals(ListenableWorker.Result.success(), phone.sync.syncResult(), "po powrocie sieci")
