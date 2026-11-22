@@ -279,7 +279,13 @@ class QuickSendViewModelTest {
             assertEquals(1, saved.size)
         }
 
-    /** Drugie „Wyślij” nie wysyła zdjęcia drugi raz. Wymagania: US4.7 */
+    /**
+     * Drugie „Wyślij” nie wysyła zdjęcia drugi raz, a zapisane zgłoszenie niesie jedno zdjęcie.
+     * Scenariusz (częściowo): zgloszenie-szybkie-powrot.feature: Po wysłaniu „Wstecz” wraca do ekranu,
+     *   z którego zaczęto zgłoszenie
+     *
+     * Wymagania: US4.7
+     */
     @Test
     fun sendsOnce() =
         runTest(dispatcher) {
@@ -290,7 +296,8 @@ class QuickSendViewModelTest {
             runCurrent()
             viewModel.send(report)
             runCurrent()
-            assertEquals(1, saved.size)
+            assertEquals(1, saved.size, "jedno zapisanie zgłoszenia")
+            assertEquals(listOf("zdjecie-1"), saved.single().photoIds, "jedno zdjęcie w zgłoszeniu")
         }
 
     /** Pełna pamięć: „Spróbuj ponownie” zostaje. Wymagania: NFR-7 */
