@@ -67,6 +67,7 @@ import io.github.dostepnykampus.feature.map.entrance.entranceImages
 import io.github.dostepnykampus.feature.map.plan.planSignImages
 import io.github.dostepnykampus.feature.map.style.BUILDINGS_LAYER
 import io.github.dostepnykampus.feature.map.style.Basemap
+import io.github.dostepnykampus.feature.map.style.ContourStates
 import io.github.dostepnykampus.feature.map.style.MapImages
 import io.github.dostepnykampus.feature.map.style.MapStyleColors
 import io.github.dostepnykampus.feature.map.style.MapStyleTarget
@@ -251,6 +252,7 @@ object MapLibreMapView : CampusMapView {
         val currentArea by rememberUpdatedState(area)
         var shown by remember { mutableStateOf<StyleArea?>(null) }
         var styleLoads by remember { mutableIntStateOf(0) }
+        val sent = remember<ContourStates>(map, style, images) { ContourStates() }
         DisposableEffect(map, style, images) {
             loaded = null
             val built = currentArea
@@ -262,7 +264,7 @@ object MapLibreMapView : CampusMapView {
                     MapTrace.endStyle(load)
                     ready.addMapImages(images = images)
                     MapTrace.section(name = MapTrace.SELECTION_SECTION) {
-                        StyleTarget(ready).showSelection(currentLook, selectionImages(currentSelection, images))
+                        StyleTarget(ready).showSelection(currentLook, selectionImages(currentSelection, images), sent)
                     }
                     StyleTarget(ready).hideBasemap()
                     reveal.hide()
@@ -284,7 +286,7 @@ object MapLibreMapView : CampusMapView {
         DisposableEffect(loaded, look) {
             loaded?.let { ready ->
                 MapTrace.section(name = MapTrace.SELECTION_SECTION) {
-                    StyleTarget(ready).showSelection(look, selectionImages(currentSelection, images))
+                    StyleTarget(ready).showSelection(look, selectionImages(currentSelection, images), sent)
                 }
             }
             onDispose {}

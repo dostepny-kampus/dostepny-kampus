@@ -180,17 +180,34 @@ internal interface MapStyleTarget {
     fun fade(layer: String, opacity: Float, millis: Long)
 }
 
+/** Stany konturów wysłane do jednego wczytanego stylu po numerze konturu i kluczu; nowy styl dostaje nowy obiekt. */
+internal class ContourStates {
+    private val sent = mutableMapOf<Pair<Int, String>, Boolean>()
+
+    /** Ustawia stan [key] konturu [outline] na [value] w [target], tylko gdy różni się od wysłanego wcześniej. */
+    fun send(target: MapStyleTarget, outline: Int, key: String, value: Boolean) {
+        if (sent[outline to key] == value) return
+        sent[outline to key] = value
+        target.state(source = BUILDINGS_SOURCE, feature = outline, key = key, value = value)
+    }
+}
+
 /**
  * Pokazuje zaznaczenie [look] w stylu z [campusMapStyle] i dodaje obrazy zaznaczenia [images]. Po wywołaniu styl
- * rysuje to samo co styl z [campusMapStyle] dla tego zaznaczenia.
+ * rysuje to samo co styl z [campusMapStyle] dla tego zaznaczenia. Stany konturów wysyła tylko zmienione względem
+ * [sent], czyli stanów wysłanych do tego samego stylu.
  */
-internal fun MapStyleTarget.showSelection(look: SelectionLook, images: Map<String, Bitmap> = emptyMap()) {
+internal fun MapStyleTarget.showSelection(
+    look: SelectionLook,
+    images: Map<String, Bitmap> = emptyMap(),
+    sent: ContourStates = ContourStates(),
+) {
     images.forEach { (name, image) -> image(name, image) }
     look.dimmed.forEachIndexed { outline, isDimmed ->
-        state(source = BUILDINGS_SOURCE, feature = outline, key = DIMMED_STATE, value = isDimmed)
+        sent.send(target = this, outline = outline, key = DIMMED_STATE, value = isDimmed)
     }
     look.underPlan.forEachIndexed { outline, isUnder ->
-        state(source = BUILDINGS_SOURCE, feature = outline, key = UNDER_PLAN_STATE, value = isUnder)
+        sent.send(target = this, outline = outline, key = UNDER_PLAN_STATE, value = isUnder)
     }
     filter(layer = SELECTED_LAYER, filter = look.selectedFilter)
     filter(layer = SELECTED_PLAN_LAYER, filter = look.selectedPlanFilter)
