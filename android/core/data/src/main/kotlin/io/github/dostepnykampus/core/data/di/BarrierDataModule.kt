@@ -22,11 +22,11 @@ import kotlin.coroutines.CoroutineContext
 /** Źródła barier `core:data` w grafie Hilt aplikacji; osobno od [DataModule], żeby ten nie rósł. */
 @Module
 @InstallIn(SingletonComponent::class)
-internal object BarrierDataModule {
+public object BarrierDataModule {
     /** Bariery ze zgłoszeń przyjętych dla mapy, z kopią w bazie na czas bez sieci. Wymagania: US1.3, BR-6, NFR-10 */
     @Provides
     @Singleton
-    fun acceptedBarriers(
+    public fun acceptedBarriers(
         api: SubmissionsApi,
         copies: ServerCopyDao,
         @IoContext ioContext: CoroutineContext,
