@@ -28,8 +28,8 @@ class MarkerSyncTest {
     /**
      * Przykład „oznaczy kolejne piętro jako obejrzane”: bez sieci zadanie prosi o ponowienie, po powrocie sieci
      * znacznik dociera na serwer bez działania Zbierającego.
-     * Scenariusz (częściowo): postep-inwentaryzacji.feature: Po powrocie sieci znacznik i jego cofnięcie
-     *   wysyłają się same
+     * Scenariusz (przykład: oznaczył kolejne piętro jako obejrzane | 4): postep-inwentaryzacji.feature: Po powrocie
+     *   sieci znacznik i jego cofnięcie wysyłają się same
      */
     @Test
     fun sendsMarkerAfterReconnect() =
@@ -48,8 +48,8 @@ class MarkerSyncTest {
 
     /**
      * Przykład „cofnie swój znacznik jednego z obejrzanych pięter”.
-     * Scenariusz (częściowo): postep-inwentaryzacji.feature: Po powrocie sieci znacznik i jego cofnięcie
-     *   wysyłają się same
+     * Scenariusz (przykład: cofnął swój znacznik jednego z obejrzanych pięter | 2): postep-inwentaryzacji.feature:
+     *   Po powrocie sieci znacznik i jego cofnięcie wysyłają się same
      */
     @Test
     fun sendsRevokeAfterReconnect() =
