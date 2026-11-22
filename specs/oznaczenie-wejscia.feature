@@ -9,7 +9,7 @@ Funkcja: Oznaczenie wejścia
     # Dane testowe, a nie stan faktyczny budynku B-8.
     Oraz w danych testowych wejście boczne B-8 nie ma informacji o dostępności ani w danych PWr, ani w OpenStreetMap
 
-  # kroki serwera: #3172
+  # kroki serwera: #3172, formularz w aplikacji: #3676
   @US14.1 @aplikacja @serwer @do-zrobienia
   Szablon scenariusza: Bez roli Zbierającego zmiany oznaczenia wejścia nie da się złożyć
     Zakładając, że osoba jest zalogowana tylko z rolą <rola>
@@ -95,7 +95,8 @@ Funkcja: Oznaczenie wejścia
       Zakładając, że Zbierający jest zalogowany z rolą Zbierającego
       Oraz pierwszy i drugi Weryfikator są zalogowani z rolą Weryfikatora
 
-    @US17.2 @BR-9 @aplikacja
+    # brak formularza zmiany oznaczenia: #3676
+    @US17.2 @BR-9 @aplikacja @do-zrobienia
     Scenariusz: Zmiana oznaczenia wejścia przechodzi te same statusy co zgłoszenie
       Zakładając, że wejście boczne B-8 ma oznaczenie „brak danych”
       Oraz telefon nie ma sieci
@@ -105,7 +106,8 @@ Funkcja: Oznaczenie wejścia
       Wtedy zgłoszenie zmiany oznaczenia ma status „wysłane” i jest w kolejce weryfikacji
       Oraz wejście boczne B-8 nadal ma oznaczenie „brak danych”
 
-    @US17.2 @BR-7 @aplikacja
+    # brak formularza zmiany oznaczenia: #3676
+    @US17.2 @BR-7 @aplikacja @do-zrobienia
     Scenariusz: Zmiany oznaczenia wejścia nie da się zapisać bez zdjęcia
       Jeżeli Zbierający wybierze dla wejścia bocznego B-8 oznaczenie „dostępne” i nie zrobi zdjęcia
       Wtedy aplikacja wskazuje brak zdjęcia i nie zapisuje zgłoszenia
