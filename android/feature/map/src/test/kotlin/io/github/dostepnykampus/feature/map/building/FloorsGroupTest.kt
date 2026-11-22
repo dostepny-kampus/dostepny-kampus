@@ -55,6 +55,11 @@ class FloorsGroupTest {
         )
     }
 
+    /**
+     * Zwinięte piętro rozwija opis z funkcji pomieszczeń, a zwinięcie i rozwinięcie zmienia stan wiersza.
+     *
+     * Scenariusz: przegladanie-mapy.feature: Karta budynku szczegółowego opisuje piętra tekstem
+     */
     @Test
     fun expandsFloorDescription() {
         compose.setContent { Group(FACTS) }
@@ -64,6 +69,11 @@ class FloorsGroupTest {
         compose.onNodeWithText("Parter").assert(state("rozwinięte"))
     }
 
+    /**
+     * Przycisk „Pokaż na planie” przy piętrze podaje identyfikator tego piętra.
+     *
+     * Scenariusz: przegladanie-mapy.feature: Karta budynku szczegółowego opisuje piętra tekstem
+     */
     @Test
     fun showsPlanOfFloor() {
         val shown = mutableListOf<String>()

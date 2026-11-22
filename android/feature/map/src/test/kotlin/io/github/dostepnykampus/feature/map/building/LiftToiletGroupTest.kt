@@ -33,6 +33,11 @@ class LiftToiletGroupTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
+    /**
+     * Grupa „Winda i toaleta” podaje tekstem piętra z windą i toaletą, a piętra bez nich wymienia osobno.
+     *
+     * Scenariusz: przegladanie-mapy.feature: Karta budynku szczegółowego opisuje piętra tekstem
+     */
     @Test
     fun showsLiftAndToiletFloors() {
         compose.setContent { Group() }
