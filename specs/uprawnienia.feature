@@ -42,7 +42,7 @@ Funkcja: Logowanie, role i zaproszenia
     Wtedy próba jest odrzucona
     Oraz zgłoszenie ma nadal uciążliwość nadaną przez autora
 
-  # test aplikacji: #3649
+  # test aplikacji: #3727
   @US14.3 @BR-1 @BR-2 @aplikacja @serwer @usluga-logowania
   Scenariusz: Samodzielna rejestracja daje tylko uprawnienia Odwiedzającego
     Zakładając, że osoba bez konta korzysta z aplikacji jako Gość niezalogowany
@@ -90,6 +90,7 @@ Funkcja: Logowanie, role i zaproszenia
     Wtedy próba jest odrzucona
     Oraz zgłoszenie ma nadal status „wysłane”
 
+  # test aplikacji: #3727
   @US14.4 @aplikacja
   Scenariusz: Zalogowany Odwiedzający nie jest proszony o logowanie ponownie
     Zakładając, że Odwiedzający zalogował się przy pierwszym zgłoszeniu szybkim

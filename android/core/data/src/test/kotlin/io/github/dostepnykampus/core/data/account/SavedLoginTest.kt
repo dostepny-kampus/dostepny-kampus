@@ -33,6 +33,10 @@ class SavedLoginTest {
     private val hourLater = System.currentTimeMillis() + HOUR_MS
     private val collector = Account.SignedIn(setOf(StaffRole.COLLECTOR))
 
+    /**
+     * Po ponownym uruchomieniu konto wraca z zapisu.
+     * Scenariusz (częściowo): uprawnienia.feature: Zalogowany Odwiedzający nie jest proszony o logowanie ponownie
+     */
     @Test
     fun restoresAccountAfterRestart() =
         runTest {
@@ -46,6 +50,10 @@ class SavedLoginTest {
             assertEquals("token do żądań", token, tokens.token)
         }
 
+    /**
+     * Odrzucone odświeżenie logowania zostawia Gościa i usuwa zapis.
+     * Scenariusz (częściowo): uprawnienia.feature: Zalogowany Odwiedzający nie jest proszony o logowanie ponownie
+     */
     @Test
     fun forgetsRejectedLogin() =
         runTest {
