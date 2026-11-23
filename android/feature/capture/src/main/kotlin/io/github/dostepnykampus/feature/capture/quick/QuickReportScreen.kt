@@ -207,7 +207,12 @@ private fun QuickEntranceLine(id: String, entrances: QuickEntranceViewModel = hi
 private fun QuickGroupStep(route: ReportRoute, onNext: (ReportRoute) -> Unit, where: QuickSendViewModel) {
     var asked by rememberSaveable { mutableStateOf<BarrierGroup?>(null) }
     val lookup by where.lookup.collectAsStateWithLifecycle()
-    val isInBuilding = (lookup as? QuickLookup.Found)?.run { position.isInBuilding }
+    val isInBuilding =
+        when (val found = lookup) {
+            is QuickLookup.Found -> found.position.isInBuilding
+            QuickLookup.Outside -> false
+            else -> null
+        }
     val floors by where.floorChoices.collectAsStateWithLifecycle()
     val group = asked
     if (group == null) {
