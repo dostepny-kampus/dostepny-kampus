@@ -168,6 +168,19 @@ class QuickFloorScenarioTest {
         assertEquals("piętro 2", SubmissionFloor(number = 2), submissions.single().floor)
     }
 
+    /**
+     * Poza terenem PWr grupa „Schody i windy” przechodzi do kroku 3 bez pytania o piętro.
+     *
+     * Wymagania: US4.5, BR-14
+     */
+    @Test
+    fun skipsFloorOutsideGrounds() {
+        val model = standAt(OUTSIDE_PWR)
+        compose.waitUntil(timeoutMillis = WAIT_MS) { model.lookup.value == QuickLookup.Outside }
+        compose.onNodeWithText("Schody i windy").performClick()
+        assertSkipsFloor(BarrierGroup.VERTICAL_CIRCULATION)
+    }
+
     private fun standAt(point: GeoPoint): QuickSendViewModel {
         val app = ApplicationProvider.getApplicationContext<Application>()
         shadowOf(app).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -216,5 +229,6 @@ class QuickFloorScenarioTest {
         val B4 = GeoPoint(longitude = 17.0653, latitude = 51.10815)
         val C13 = GeoPoint(longitude = 17.0597, latitude = 51.1076)
         val BEFORE_A1 = GeoPoint(longitude = 17.059, latitude = 51.109)
+        val OUTSIDE_PWR = GeoPoint(longitude = 17.0082293, latitude = 51.1269098)
     }
 }
