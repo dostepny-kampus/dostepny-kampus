@@ -6,19 +6,10 @@
 package io.github.dostepnykampus.app.debug
 
 import androidx.activity.ComponentActivity
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.navigation3.runtime.NavKey
-import io.github.dostepnykampus.app.AppShell
-import io.github.dostepnykampus.app.TestRoles
-import io.github.dostepnykampus.app.navigation.AppNavigator
-import io.github.dostepnykampus.app.navigation.AppScreen
-import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
-import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,7 +31,7 @@ class VisitorScreensTest {
      */
     @Test
     fun visitorHasNoMeasure() {
-        show()
+        compose.showShell(Account.SignedIn())
         compose.onNodeWithText("Konto").performClick()
         compose.onNodeWithText(MEASURE).assertDoesNotExist()
         compose.onNodeWithText(PROGRESS).assertDoesNotExist()
@@ -52,23 +43,9 @@ class VisitorScreensTest {
      */
     @Test
     fun visitorHasNoMine() {
-        show()
+        compose.showShell(Account.SignedIn())
         compose.onNodeWithText("Konto").performClick()
         compose.onNodeWithText(MINE).assertDoesNotExist()
-    }
-
-    private fun show() {
-        val roles = TestRoles(Account.SignedIn())
-        compose.setContent {
-            DostepnyKampusTheme {
-                AppShell(firstLaunch = false, roles = roles, onFirstHelpLeft = {}) { route -> Screen(route) }
-            }
-        }
-    }
-
-    @Composable
-    private fun AppNavigator.Screen(route: NavKey) {
-        if (route is MapRoute) Text("V1") else AppScreen(route)
     }
 
     private companion object {
