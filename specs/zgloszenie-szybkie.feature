@@ -4,8 +4,7 @@ Funkcja: Zgłoszenie szybkie
   Odwiedzający zgłasza nową barierę zdjęciem i bieżącą pozycją, bez trudnego formularza (N3, N4).
   Typ bariery i uciążliwość ustala później Weryfikator.
 
-  # brak pełnego testu: #3717
-  @US4.1 @aplikacja @do-zrobienia
+  @US4.1 @aplikacja
   Scenariusz: Zgłoszenie szybkie w 3 krokach z pozycją dołączoną automatycznie
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz stoi przy niesprawnej windzie w budynku D-2
@@ -192,7 +191,7 @@ Funkcja: Zgłoszenie szybkie
     Jeżeli wyśle zgłoszenie szybkie z grupą barier „komunikacja pozioma”
     Wtedy zgłoszenie zapisuje się w telefonie
 
-  # brak pełnego testu: #3717
+  # brak pełnego testu: #3729
   @US4.2 @BR-9 @aplikacja @do-zrobienia
   Scenariusz: Zgłoszenie szybkie zapisane bez sieci wysyła się samo po powrocie sieci
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
@@ -217,16 +216,14 @@ Funkcja: Zgłoszenie szybkie
     Jeżeli wyśle zgłoszenie szybkie z grupą barier „inne”
     Wtedy widzi potwierdzenie, że zgłoszenie wyśle się po powrocie sieci i trafi do weryfikacji
 
-  # brak pełnego testu: #3717
-  @US14.2 @RO-GOS @aplikacja @do-zrobienia
+  @US14.2 @RO-GOS @aplikacja
   Scenariusz: Gość niezalogowany jest proszony o logowanie przed zdjęciem
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
     Jeżeli wybierze zgłoszenie szybkie
     Wtedy widzi prośbę o logowanie albo rejestrację
     Ale aparat się nie otwiera
 
-  # brak pełnego testu: #3717
-  @US14.2 @RO-GOS @aplikacja @do-zrobienia
+  @US14.2 @RO-GOS @aplikacja
   Scenariusz: Gość po zalogowaniu wraca do zgłoszenia szybkiego
     Zakładając, że Gość niezalogowany wybrał zgłoszenie szybkie i widzi prośbę o logowanie
     Jeżeli zaloguje się jako Odwiedzający
