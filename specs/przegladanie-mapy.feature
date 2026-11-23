@@ -68,7 +68,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | Odwiedzający       | archiwalne    | nie jest widoczne   |
       | Odwiedzający       | przyjęte      | jest widoczne       |
 
-  # brak pełnego testu: #3645
+  # brak pełnego testu: #3740
   @US2.1 @aplikacja @do-zrobienia
   Scenariusz: Wejście ma oznaczenie znakiem z mapy i słowem, nie tylko kolorem
     Zakładając, że Gość niezalogowany otworzył kartę budynku A-1
@@ -113,8 +113,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy wejścia „niedostępne” stoją w kolejności „Wejście "A"”, „Wejście "C"”, „Wejście "E"”
     Oraz wejście bez nazwy w danych stoi po nich
 
-  # brak pełnego testu: #3645
-  @US2.1 @US3.3 @BR-27 @aplikacja @do-zrobienia
+  @US2.1 @US3.3 @BR-27 @aplikacja
   Scenariusz: Wejście bez nazwy w danych ma na karcie opis położenia pod nazwą
     # Dane testowe, a nie stan faktyczny budynku C-19.
     Zakładając, że w danych testowych jedyne wejście C-19 z oznaczeniem „dostępne” nie ma nazwy
@@ -270,8 +269,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy na karcie budynku B-8 widzi „Brak wejścia dostępnego” i zdanie, że żadne wejście nie jest dostępne
     Ale karta nie jest pusta i nie pokazuje samego braku wyniku
 
-  # brak pełnego testu: #3645
-  @US2.1 @US2.2 @BR-25 @aplikacja @do-zrobienia
+  @US2.1 @US2.2 @BR-25 @aplikacja
   Scenariusz: Bariera przy wejściu zalecanym jest na karcie przy tym wejściu
     Zakładając, że przy wejściu zalecanym budynku C-13 jest przyjęta bariera „Tylko z pomocą” typu „ciężkie drzwi”
     Oraz C-13 nie ma innego wejścia dostępnego bez barier
@@ -376,8 +374,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi liczbę wyjść ewakuacyjnych 2
     Oraz po wybraniu „Pokaż wyjścia ewakuacyjne (2)” widzi listę obu wyjść
 
-  # brak pełnego testu: #3645
-  @US3.3 @BR-25 @aplikacja @do-zrobienia
+  @US3.3 @BR-25 @aplikacja
   Scenariusz: Opis wejścia zalecanego podaje dojście, drzwi i najbliższą windę
     Zakładając, że Gość niezalogowany otworzył kartę budynku A-1
     Jeżeli wybierze „Pokaż wejście na mapie”
@@ -405,8 +402,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli Gość niezalogowany otworzy arkusz wejścia zalecanego A-1
     Wtedy arkusz nie ma części „Za drzwiami”
 
-  # brak pełnego testu: #3645
-  @US2.1 @US3.3 @aplikacja @do-zrobienia
+  @US2.1 @US3.3 @aplikacja
   Scenariusz: Arkusz każdego wejścia ma te same części
     Zakładając, że niezalecane wejście A-1 ma w danych opis dojścia, szerokość drzwi i zgłoszenie przyjęte
     Oraz Gość niezalogowany otworzył kartę budynku A-1
@@ -430,8 +426,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli wybierze wiersz „Budynek A-1”
     Wtedy widzi kartę budynku A-1 na niskiej wysokości
 
-  # brak pełnego testu: #3645
-  @US3.3 @NFR-53 @aplikacja @do-zrobienia
+  @US3.3 @NFR-53 @aplikacja
   Scenariusz: Pinezka wejścia jest widoczna nad arkuszem wejścia
     Zakładając, że wejście zalecane A-1 ma w danych opis dojścia, szerokość drzwi i zgłoszenie przyjęte ze zdjęciem
     Oraz Gość niezalogowany otworzył kartę budynku A-1 przy zwykłej czcionce
@@ -488,7 +483,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | wyszuka „A-1 329”                                 | Budynek A-1 |
       | dotknie wspólnego konturu C-3/C-4                 | Budynek C-3 |
 
-  # brak pełnego testu: #3645
+  # brak pełnego testu: #3740
   @US2.8 @US3.3 @aplikacja @do-zrobienia
   Scenariusz: Wiersz budynku w arkuszu otwartym z karty wraca do tej karty
     Zakładając, że Gość niezalogowany rozwinął kartę budynku A-1 i ją przewinął
