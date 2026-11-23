@@ -187,8 +187,7 @@ Funkcja: Zgłoszenie szybkie
     Jeżeli wyśle zgłoszenie szybkie z grupą barier „komunikacja pozioma”
     Wtedy zgłoszenie zapisuje się w telefonie
 
-  # brak pełnego testu: #3729
-  @US4.2 @BR-9 @aplikacja @do-zrobienia
+  @US4.2 @BR-9 @aplikacja
   Scenariusz: Zgłoszenie szybkie zapisane bez sieci wysyła się samo po powrocie sieci
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz w telefonie czeka zgłoszenie szybkie zapisane bez sieci
