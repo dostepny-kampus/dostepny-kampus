@@ -20,11 +20,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
-import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.BuildingFloors
-import io.github.dostepnykampus.core.data.network.NetworkStatus
-import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -33,11 +29,10 @@ import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
-import io.github.dostepnykampus.feature.capture.location.BuildingLookup
 import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
-import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
+import io.github.dostepnykampus.feature.capture.report.ReportSaver
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertEquals
@@ -51,7 +46,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
-import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Ekran V4: krok 2 przekazuje grupę i piętro dalej, a potwierdzenie prowadzi do mapy.
@@ -364,8 +358,9 @@ class QuickReportScreenTest {
     }
 
     /**
-     * Pozycja ustalona przy „Spróbuj ponownie” wysyła zgłoszenie z tym samym zdjęciem, grupą „Coś innego” i pozycją.
-     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Pozycja ustalona przy ponownej próbie pozwala
+     * Pozycja ustalona przy „Spróbuj ponownie” wysyła zgłoszenie z tym samym zdjęciem, grupą „Coś innego” i pozycją;
+     * po wysłaniu ekran potwierdza, że zgłoszenie trafi do weryfikacji.
+     * Scenariusz: zgloszenie-szybkie.feature: Pozycja ustalona przy ponownej próbie pozwala
      *   wysłać zgłoszenie
      *
      * Wymagania: UC7, US4.1
@@ -396,6 +391,8 @@ class QuickReportScreenTest {
         assertEquals("to samo zdjęcie", listOf("zdjecie-1"), content.photoIds)
         assertEquals("ta sama grupa", BarrierGroup.OTHER, content.barrierGroup)
         assertEquals("pozycja z ponownej próby", INSIDE, content.location)
+        compose.runOnIdle { shown.value = ReportRoute(step = ReportStep.SENT, isSavedOffline = sent.single()) }
+        compose.onNodeWithText("Sprawdzimy zdjęcie", substring = true).assertIsDisplayed()
     }
 
     /**
@@ -439,27 +436,9 @@ class QuickReportScreenTest {
         shown.value = route
         val app = ApplicationProvider.getApplicationContext<Application>()
         if (isLocationGranted) shadowOf(app).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
-        val transcoder = PhotoTranscoder()
-        val catalog = BuildingCatalogRepository(EmptyCoroutineContext) { QUICK_CAMPUS }
-        val entrances = QuickEntranceViewModel(catalog)
-        val send =
-            QuickSendViewModel(
-                positions = positions,
-                locationSwitch = LocationSwitch { flowOf(true) },
-                saver = { content, _, _ -> saved.add(content) },
-                networkStatus = NetworkStatus { flowOf(true) },
-                buildingFloors = floors,
-                buildingLookup = BuildingLookup(catalog, EmptyCoroutineContext),
-            )
-        compose.setContent {
-            DostepnyKampusTheme {
-                QuickReportScreen(
-                    route = shown.value,
-                    actions = actions,
-                    models = QuickReportModels(photoTranscoder = transcoder, entrances = entrances, send = send),
-                )
-            }
-        }
+        val saver = ReportSaver { content, _, _ -> saved.add(content) }
+        val send = quickSendModel(positions = positions, saver = saver, floors = floors)
+        compose.showQuickReport(route = shown, actions = actions, send = send)
     }
 
     private fun atSend(path: String) =

@@ -112,8 +112,7 @@ Funkcja: Zgłoszenie szybkie
     Oraz widzi komunikat, że telefon nie ustalił miejsca, z radą, co zrobić
     Oraz zdjęcie i grupa barier zostają do ponownej próby
 
-  # brak pełnego testu: #3719
-  @US4.1 @aplikacja @do-zrobienia
+  @US4.1 @aplikacja
   Scenariusz: Pozycja ustalona przy ponownej próbie pozwala wysłać zgłoszenie
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz zrobił zdjęcie bariery i wybrał grupę barier „inne”
@@ -138,8 +137,7 @@ Funkcja: Zgłoszenie szybkie
       | w budynku C-13                                                 | ma budynek C-13       |
       | na chodniku przed wejściem głównym A-1, poza konturem budynku  | jest „poza budynkiem” |
 
-  # brak pełnego testu: #3719
-  @US4.5 @BR-14 @aplikacja @do-zrobienia
+  @US4.5 @BR-14 @aplikacja
   Szablon scenariusza: Pytanie o piętro tylko w budynku i przy grupie, która go wymaga
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz zrobił zdjęcie bariery, stojąc <miejsce>
@@ -151,12 +149,11 @@ Funkcja: Zgłoszenie szybkie
       | miejsce                              | grupa                 | pytanie                                                                   |
       | w budynku D-2                        | „komunikacja pionowa” | widzi pytanie o piętro z „Nie wiem” i etykietami pięter z danych PWr      |
       | w budynku B-4                        | „toalety”             | widzi pytanie o piętro z „Nie wiem” i przyciskami „Parter”, „1”, „2”      |
-      | w budynku C-13                       | „wejście i drzwi”     | widzi pytanie o piętro z „Nie wiem” i etykietami pięter z danych PWr      |
+      | w budynku C-13, przy wejściu         | „wejście i drzwi”     | widzi pytanie o piętro z „Nie wiem” i etykietami pięter z danych PWr      |
       | w budynku C-13                       | „inne”                | przechodzi do kroku 3 bez pytania o piętro                                |
       | na chodniku przed A-1, poza konturem | „komunikacja pozioma” | przechodzi do kroku 3 bez pytania o piętro                                |
 
-  # brak pełnego testu: #3719
-  @US4.5 @aplikacja @do-zrobienia
+  @US4.5 @aplikacja
   Scenariusz: Odpowiedź „Nie wiem” zostawia piętro puste i pozwala wysłać zgłoszenie
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz w budynku D-2 wybrał grupę barier „komunikacja pionowa” i widzi pytanie o piętro
@@ -166,8 +163,7 @@ Funkcja: Zgłoszenie szybkie
     Oraz zgłoszenie nie ma piętra
     Oraz zgłoszenie powstało po 3 krokach
 
-  # brak pełnego testu: #3719
-  @US4.5 @aplikacja @do-zrobienia
+  @US4.5 @aplikacja
   Scenariusz: Wybrane piętro trafia do zgłoszenia
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz w budynku B-4 wybrał grupę barier „toalety” i widzi pytanie o piętro
