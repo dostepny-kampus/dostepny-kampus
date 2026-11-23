@@ -191,8 +191,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | C-13    | wszystkie wejścia C-13 mają oznaczenie „brak danych” | Brak danych o wejściach | na karcie nie ma zdania ani przycisku wypełnionego                                      |
       | A-2     | budynek A-2 nie ma wejść w danych                    | Brak danych o wejściach | na karcie nie ma zdania ani przycisku wypełnionego                                      |
 
-  # brak pełnego testu: #3645
-  @US2.8 @NFR-53 @aplikacja @do-zrobienia
+  @US2.8 @NFR-53 @aplikacja
   Scenariusz: Uchwyt zmienia wysokość karty bez przeciągania
     Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
     Jeżeli dotknie uchwytu karty
@@ -246,8 +245,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Oraz po „Pomniejsz” mapa się oddala, a karta budynku A-1 zostaje otwarta
     Ale nad kartą nie ma pola „Szukaj budynku, np. C-13” ani przycisku „Pokaż listę”
 
-  # brak pełnego testu: #3645
-  @US2.8 @NFR-53 @aplikacja @do-zrobienia
+  @US2.8 @NFR-53 @aplikacja
   Scenariusz: Przy niskiej mapie nad kartą nie ma przycisków mapy
     Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
     Oraz nad kartą zostaje mniej niż 300 dp mapy
@@ -560,7 +558,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi mapę terenu „Wittigowo” z budynkiem T-15
     Oraz na mapie widzi nazwę terenu „Wittigowo”
 
-  # brak pełnego testu: #3645
+  # brak pełnego testu: #3742
   @US1.7 @BR-G5 @aplikacja @do-zrobienia
   Scenariusz: Po wyborze terenu widać wszystkie jego budynki
     Zakładając, że Gość niezalogowany ma otwartą listę terenów
@@ -583,8 +581,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy cały widok mapy leży w prostokącie terenu
     Oraz powiększenie mapy jest takie jak w chwili zamknięcia karty
 
-  # brak pełnego testu: #3645
-  @US1.7 @BR-G5 @NFR-39 @aplikacja @do-zrobienia
+  @US1.7 @BR-G5 @NFR-39 @aplikacja
   Scenariusz: Przy najmniejszym powiększeniu teren wypełnia mapę w krótszym wymiarze
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „Wittigowo”
     Jeżeli pomniejszy mapę do końca
@@ -605,16 +602,14 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy widzi mapę terenu „Wittigowo” z zaznaczonym budynkiem T-15
     Oraz widzi napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód”
 
-  # brak pełnego testu: #3645
-  @US1.8 @NFR-56 @aplikacja @do-zrobienia
+  @US1.8 @NFR-56 @aplikacja
   Scenariusz: TalkBack czyta napis o zmianie terenu raz, po nagłówku karty
     Zakładając, że Gość niezalogowany z włączonym TalkBack ma otwartą mapę kampusu na terenie „Kampus główny”
     Jeżeli wyszuka „T-15” i wybierze wynik
     Wtedy TalkBack czyta nagłówek karty budynku T-15
     Oraz potem raz czyta „Pokazuję teren: Wittigowo · 2 km na południowy wschód”
 
-  # brak pełnego testu: #3645
-  @US1.8 @NFR-23 @aplikacja @do-zrobienia
+  @US1.8 @NFR-23 @aplikacja
   Scenariusz: Ruch mapy gasi widoczny napis o zmianie terenu
     Zakładając, że Gość niezalogowany wyszukał „T-15”, wybrał wynik i widzi napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód”
     Jeżeli przesunie mapę gestem
