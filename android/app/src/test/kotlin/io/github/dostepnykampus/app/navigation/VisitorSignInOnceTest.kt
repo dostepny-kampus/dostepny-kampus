@@ -15,7 +15,8 @@ import org.junit.jupiter.api.Test
 /** Przejścia zalogowanego Odwiedzającego do zgłoszenia: logowanie wraca dopiero po wylogowaniu. */
 class VisitorSignInOnceTest {
     /**
-     * Scenariusz (częściowo): uprawnienia.feature: Zalogowany Odwiedzający nie jest proszony o logowanie ponownie.
+     * Zalogowany Odwiedzający od razu otwiera aparat, a po wylogowaniu zgłoszenie prosi o logowanie.
+     * Scenariusz (częściowo): uprawnienia.feature: Zalogowany Odwiedzający nie jest proszony o logowanie ponownie
      *
      * Wymagania: US14.4
      */
