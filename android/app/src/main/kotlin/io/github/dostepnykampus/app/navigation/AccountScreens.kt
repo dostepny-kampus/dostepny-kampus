@@ -36,13 +36,16 @@ import io.github.dostepnykampus.feature.inspection.R as InspectionR
 
 private typealias Action = Pair<String, () -> Unit>
 
+private val Account.isCollector: Boolean
+    get() = this is Account.SignedIn && StaffRole.COLLECTOR in staffRoles
+
 private val Account.isCoordinator: Boolean
     get() = this is Account.SignedIn && StaffRole.COORDINATOR in staffRoles
 
 /**
  * Ekran konta: L1 „Prośba o logowanie” albo L2 „Konto i praca” jako zaślepka z czynnościami roli.
- * „Postęp inwentaryzacji” widzi tylko Koordynator. Zaślepki nie zapamiętują stanu, więc nie muszą się odświeżać
- * osobno od nawigatora.
+ * „Zmierz i zgłoś barierę” i „Moje zgłoszenia” widzi tylko Zbierający, „Postęp inwentaryzacji” tylko Koordynator.
+ * Zaślepki nie zapamiętują stanu, więc nie muszą się odświeżać osobno od nawigatora.
  *
  * Wymagania: US14.2, US11.1
  *
@@ -67,7 +70,9 @@ internal fun AppNavigator.Account(route: NavKey, signIn: SignInViewModel? = null
             val progress = stringResource(InspectionR.string.postep_naglowek) to { inspectionProgress() }
             val toMeasure = stringResource(R.string.zmierz_i_zglos) to { measure() }
             val toMine = stringResource(CaptureR.string.moje_naglowek) to { mySubmissions() }
-            if (current.isCoordinator) Stub(title, toMeasure, toMine, progress) else Stub(title, toMeasure, toMine)
+            val isCollector = current.isCollector
+            val coordinated = progress.takeIf { current.isCoordinator }
+            Stub(title, toMeasure.takeIf { isCollector }, toMine.takeIf { isCollector }, coordinated)
         }
 
         else -> {
@@ -78,11 +83,11 @@ internal fun AppNavigator.Account(route: NavKey, signIn: SignInViewModel? = null
 
 @Composable
 @NonRestartableComposable
-private fun AppNavigator.Stub(title: String, vararg actions: Action) {
+private fun AppNavigator.Stub(title: String, vararg actions: Action?) {
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
             BackHeader(title = title, onBack = { back() })
-            actions.forEach { (label, onClick) -> TextButton(onClick = onClick) { Text(text = label) } }
+            actions.filterNotNull().forEach { (label, onClick) -> TextButton(onClick = onClick) { Text(text = label) } }
         }
     }
 }
