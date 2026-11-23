@@ -148,8 +148,7 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
         | 50 m      | aplikacja podpowiada budynek A-1 do potwierdzenia                                                     |
         | 60 m      | aplikacja nie podpowiada żadnego budynku, a po zapisaniu zgłoszenie jest „poza budynkiem”, bez piętra |
 
-    # brak pełnego testu (zgłoszenie szybkie z powłoki aplikacji): #3674
-    @aplikacja @do-zrobienia
+    @aplikacja
     Scenariusz: Mapa działa daleko od budynków PWr
       Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
       Oraz stoi na terenie „Kampus główny” 60 m od konturu najbliższego budynku PWr
