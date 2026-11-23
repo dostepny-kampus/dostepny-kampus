@@ -27,21 +27,24 @@ internal fun offlineQueue(store: SubmissionStore, onSend: () -> Unit): Submissio
     }
 
 /** Kolejka zgłoszeń w [store] z serwerem, który przyjmuje każde zgłoszenie i potwierdza je jako wysłane. */
-internal fun acceptingQueue(store: SubmissionStore): SubmissionQueue =
-    queueWith(store) { id, content ->
-        ServerReply.Ok(
-            Submission(
-                id = id,
-                version = 1,
-                status = SubmissionStatus.SENT,
-                createdAt = Instant.EPOCH,
-                content = content,
-            ),
-        )
-    }
+internal fun acceptingQueue(store: SubmissionStore): SubmissionQueue = queueWith(store, create = ::sentSubmission)
 
-private fun queueWith(
+/** Zgłoszenie [id] z treścią [content] w odpowiedzi serwera, który je przyjął. */
+internal fun sentSubmission(id: String, content: SubmissionContent): ServerReply<Submission> =
+    ServerReply.Ok(
+        Submission(
+            id = id,
+            version = 1,
+            status = SubmissionStatus.SENT,
+            createdAt = Instant.EPOCH,
+            content = content,
+        ),
+    )
+
+/** Kolejka zgłoszeń w [store], która po zapisie woła [onSaved], a na każde zgłoszenie odpowiada [create]. */
+internal fun queueWith(
     store: SubmissionStore,
+    onSaved: () -> Unit = {},
     create: (String, SubmissionContent) -> ServerReply<Submission>,
 ): SubmissionQueue =
     SubmissionQueue(
@@ -54,6 +57,7 @@ private fun queueWith(
                 putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
                 update = { _, _, _, _ -> ServerReply.Missing },
             ),
+        onSaved = onSaved,
     )
 
 /** Token konta [TEST_ACCOUNT], tego samego, którym pisze [offlineQueue]. */
