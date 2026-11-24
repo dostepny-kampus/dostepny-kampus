@@ -59,7 +59,7 @@ internal fun CampusMapPanels(
             dataDay = catalog?.dataDay(),
             onCameraChange = state::move,
             areas = areas,
-            onAreaShow = state::land,
+            onAreaShow = { state.land(buildings = it, area = areas.current?.bounds) },
             modifier = Modifier.overlayArea(underBar = underBar, sheet = sheet),
             hasPanels = !state.isCovered && !isKeyboardOpen,
             hasNotice = !isKeyboardOpen,

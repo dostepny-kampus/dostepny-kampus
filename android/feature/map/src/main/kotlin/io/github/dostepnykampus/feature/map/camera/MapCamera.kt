@@ -157,6 +157,26 @@ internal class MapLimits(val bounds: CampusBounds, val widthDp: Double, val heig
 /** Powiększenie, przy którym część świata [worldShare] (0–1) zajmuje [viewDp] dp widoku. */
 internal fun fitZoom(viewDp: Double, worldShare: Double): Double = log2(viewDp / (WORLD_DP_AT_ZOOM_0 * worldShare))
 
+/**
+ * Widok na [outline] jak w [fitted], po podniesieniu powiększenia do najmniejszego dla terenu [area] (`null`: dla
+ * granic [limits]). Podniesione powiększenie wyśrodkowuje [outline] na całej wolnej części, bo pas przycisków nie
+ * zostawia wtedy dość miejsca obok.
+ *
+ * Wymagania: US1.7, BR-G5
+ */
+internal fun landed(
+    outline: CampusBounds,
+    free: FreeMap,
+    maxZoom: Double,
+    limits: MapLimits?,
+    area: CampusBounds?,
+): MapCamera {
+    val fit = fitted(outline = outline, free = free, maxZoom = maxZoom)
+    val next = limits?.run { MapLimits(bounds = area ?: bounds, widthDp = widthDp, heightDp = heightDp) }
+    val zoom = next?.run { clamp(fit, viewWidthDp = free.widthDp, viewHeightDp = free.heightDp).zoom } ?: fit.zoom
+    return centered(outline = outline, zoom = zoom, free = if (zoom > fit.zoom) free.copy(endDp = 0.0) else free)
+}
+
 /** Współrzędna pionowa szerokości [latitude] w rzucie Merkatora, w radianach. */
 internal fun mercatorY(latitude: Double): Double = asinh(tan(Math.toRadians(latitude)))
 

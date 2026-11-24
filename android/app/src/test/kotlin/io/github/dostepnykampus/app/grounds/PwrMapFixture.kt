@@ -10,6 +10,7 @@ import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import io.github.dostepnykampus.app.AppShell
 import io.github.dostepnykampus.app.TestAppScreen
@@ -23,6 +24,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowNetworkCapabilities
+
+internal const val MAP_TAG = "fake-map"
 
 /**
  * Powłoka aplikacji z mapą V1 na danych PWr i z widokiem zastępczym zamiast MapLibre, który zapamiętuje dane,
@@ -44,7 +47,7 @@ open class PwrMapFixture {
             camera = move.camera
             idle = onIdle
             touch = onTouch
-            Box(modifier)
+            Box(modifier.testTag(MAP_TAG))
         }
 
     @Before
