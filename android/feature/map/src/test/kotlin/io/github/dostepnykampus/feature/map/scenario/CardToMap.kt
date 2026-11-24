@@ -19,6 +19,7 @@ import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
@@ -67,6 +68,9 @@ internal class CardToMap(private val compose: ComposeContentTestRule, private va
     var camera: Pair<CameraTransition, MapInset>? = null
         private set
 
+    lateinit var mapColors: MapColors
+        private set
+
     private val view =
         CampusMapView { _: CampusMapData, selection, move, inset, _, _, _, _: Modifier ->
             pinned = selection.entrance
@@ -86,6 +90,7 @@ internal class CardToMap(private val compose: ComposeContentTestRule, private va
         val map = testMapViewModel(repository)
         compose.setContent {
             DostepnyKampusTheme {
+                mapColors = DostepnyKampusTheme.mapColors
                 val state by map.uiState.collectAsStateWithLifecycle()
                 val fetched = BuildingEntrances(symbol = symbol, entrances = entrances)
                 val shown = state.copy(catalog = state.catalog?.withBuildingEntrances(fetched), barriers = barriers)
