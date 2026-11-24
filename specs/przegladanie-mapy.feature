@@ -68,8 +68,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | Odwiedzający       | archiwalne    | nie jest widoczne   |
       | Odwiedzający       | przyjęte      | jest widoczne       |
 
-  # brak pełnego testu: #3740
-  @US2.1 @aplikacja @do-zrobienia
+  @US2.1 @aplikacja
   Scenariusz: Wejście ma oznaczenie znakiem z mapy i słowem, nie tylko kolorem
     Zakładając, że Gość niezalogowany otworzył kartę budynku A-1
     Jeżeli przejrzy listę wejść
@@ -481,8 +480,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | wyszuka „A-1 329”                                 | Budynek A-1 |
       | dotknie wspólnego konturu C-3/C-4                 | Budynek C-3 |
 
-  # brak pełnego testu: #3740
-  @US2.8 @US3.3 @aplikacja @do-zrobienia
+  @US2.8 @US3.3 @aplikacja
   Scenariusz: Wiersz budynku w arkuszu otwartym z karty wraca do tej karty
     Zakładając, że Gość niezalogowany rozwinął kartę budynku A-1 i ją przewinął
     Jeżeli dotknie wiersza wejścia na liście „Wejścia”
