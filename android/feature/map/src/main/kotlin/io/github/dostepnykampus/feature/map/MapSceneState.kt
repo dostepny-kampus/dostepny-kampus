@@ -39,7 +39,7 @@ import io.github.dostepnykampus.feature.map.camera.TapSight
 import io.github.dostepnykampus.feature.map.camera.belowTop
 import io.github.dostepnykampus.feature.map.camera.besideStart
 import io.github.dostepnykampus.feature.map.camera.byControl
-import io.github.dostepnykampus.feature.map.camera.fitted
+import io.github.dostepnykampus.feature.map.camera.landed
 import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.pickLine
 import io.github.dostepnykampus.feature.map.camera.pickView
@@ -100,13 +100,15 @@ internal class MapSceneState(
     }
 
     /**
-     * Pokazuje teren wybrany z listy: wszystkie jego budynki [buildings] w wolnej części mapy, w powiększeniu
-     * najwyżej startowym, przy którym symbole budynków są czytelne.
+     * Pokazuje teren wybrany z listy: wszystkie jego budynki [buildings] w powiększeniu najwyżej startowym, przy
+     * którym symbole budynków są czytelne. [area] to prostokąt nowego terenu; bez niego granice zostają dotychczasowe.
      *
      * Wymagania: US1.7, BR-G5
      */
-    fun land(buildings: CampusBounds) {
-        shown?.let { keep(fitted(outline = buildings, free = it.landing, maxZoom = START_ZOOM)) }
+    fun land(buildings: CampusBounds, area: CampusBounds? = null) {
+        shown?.let { scene ->
+            keep(landed(outline = buildings, free = scene.landing, maxZoom = START_ZOOM, limits = limits, area = area))
+        }
     }
 
     /** Przesuwa kamerę przyciskiem na [next], w granicach terenu, także nad arkuszem V2. Wymagania: NFR-53, BR-G5 */
