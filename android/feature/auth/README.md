@@ -17,6 +17,7 @@ Konto osoby: prośba o logowanie (L1) i konto zalogowanej osoby z rolami i wylog
 
 - `:core:data`
 - `:core:designsystem`
+- `:core:model`
 
 ## Czego moduł nie robi
 
