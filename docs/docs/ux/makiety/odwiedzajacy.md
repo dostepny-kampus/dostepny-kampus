@@ -190,7 +190,7 @@ Czynność główna: przeczytanie, na które piętra jedzie winda.
 
 ### V1: legenda przy planie
 
-![Makieta V1 z arkuszem Legenda otwartym przyciskiem informacji pod planem: nagłówek Legenda z Zamknij, budynek z planem pięter i bez planu, trzy znaki wejść, ścieżka dostosowana, pochylnia i trzy znaki barier, kolory sali, korytarza i klatki schodowej, znaki windy i toalety dostosowanej, znak zgłoszenia bez piętra, na końcu Źródła danych i Przewiń w dół](../../_generated/m-v1-mapa-plan-legenda.svg)
+![Makieta V1 z arkuszem Legenda otwartym przyciskiem informacji pod planem: nagłówek Legenda z Zamknij, budynek z planem pięter i bez planu, ścieżka dostosowana, pochylnia, trzy znaki wejść i trzy znaki barier, kolory sali, korytarza i klatki schodowej, znaki windy i toalety dostosowanej, znak zgłoszenia bez piętra, na końcu Źródła danych i Przewiń w dół](../../_generated/m-v1-mapa-plan-legenda.svg)
 
 Czynność główna: odczytanie znaków planu.
 
