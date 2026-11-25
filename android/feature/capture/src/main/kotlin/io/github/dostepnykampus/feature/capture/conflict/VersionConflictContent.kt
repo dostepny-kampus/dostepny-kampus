@@ -98,7 +98,7 @@ private fun Effect(isAccepted: Boolean) {
 @Composable
 private fun Differences(state: ConflictUiState.Ready) {
     val label = pluralStringResource(R.plurals.konflikt_rozni_sie, state.differences.size)
-    val names = state.differences.map { stringResource(it) }.joinToString(separator = ", ")
+    val names = state.differences.map { stringResource(it).lowercase() }.joinToString(separator = ", ")
     Text(
         text =
             buildAnnotatedString {

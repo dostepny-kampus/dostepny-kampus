@@ -110,12 +110,12 @@ internal val ConflictField.label: Int
             ConflictField.LOCATION -> R.string.konflikt_pole_miejsce
             ConflictField.PHOTOS -> R.string.konflikt_pole_zdjecia
             ConflictField.BUILDING -> R.string.konflikt_pole_budynek
-            ConflictField.FLOOR -> R.string.konflikt_pole_pietro
+            ConflictField.FLOOR -> R.string.formularz_pietro
             ConflictField.BARRIER_GROUP -> R.string.konflikt_pole_grupa
-            ConflictField.BARRIER_TYPE -> R.string.konflikt_pole_typ
-            ConflictField.SEVERITY -> R.string.konflikt_pole_uciazliwosc
-            ConflictField.DESCRIPTION -> R.string.konflikt_pole_opis
+            ConflictField.BARRIER_TYPE -> R.string.formularz_typ
+            ConflictField.SEVERITY -> R.string.formularz_uciazliwosc
+            ConflictField.DESCRIPTION -> R.string.formularz_opis
             ConflictField.BARRIER_REMOVED -> R.string.konflikt_pole_usunieta
-            ConflictField.ENTRANCE -> R.string.konflikt_pole_wejscie
+            ConflictField.ENTRANCE -> R.string.zmiana_oznaczenia_bez_nazwy
             ConflictField.ENTRANCE_MARKING -> R.string.konflikt_pole_oznaczenie
         }
