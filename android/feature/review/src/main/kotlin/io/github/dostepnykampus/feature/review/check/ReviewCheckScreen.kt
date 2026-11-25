@@ -32,6 +32,8 @@ import io.github.dostepnykampus.core.designsystem.OfflinePill
 import io.github.dostepnykampus.core.designsystem.StaffProblem
 import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
+import io.github.dostepnykampus.core.designsystem.marking.BarrierTypeField
+import io.github.dostepnykampus.core.designsystem.marking.SeverityChoice
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.review.R
 
@@ -63,6 +65,8 @@ fun ReviewCheckScreen(
             onReject = { choice ->
                 viewModel.reject(reason = choice.reason, duplicateOf = choice.duplicateOf, onDone = actions.onDecided)
             },
+            onType = viewModel::pickType,
+            onSeverity = viewModel::pickSeverity,
         )
     ReviewCheckContent(
         state = state,
@@ -126,6 +130,7 @@ private fun Check(state: CheckUiState.Ready, decision: DecisionActions) {
             Notice(title = R.string.sprawdzenie_zmienione, body = R.string.sprawdzenie_zmienione_sprawdz)
         }
         SubmissionDetails(state)
+        if (state.submission.content.kind == SubmissionKind.QUICK) QuickChoice(state = state, decision = decision)
         SimilarList(similar)
         HorizontalDivider(thickness = Obramowania.ramka, color = MaterialTheme.colorScheme.outlineVariant)
         Decision(
@@ -134,5 +139,17 @@ private fun Check(state: CheckUiState.Ready, decision: DecisionActions) {
             notice = state.notice,
             actions = decision,
         )
+    }
+}
+
+@Composable
+private fun QuickChoice(state: CheckUiState.Ready, decision: DecisionActions) {
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.m)) {
+        BarrierTypeField(
+            type = state.quickType,
+            onPick = decision.onType,
+            firstGroup = state.submission.content.barrierGroup,
+        )
+        SeverityChoice(severity = state.quickSeverity, onPick = decision.onSeverity)
     }
 }
