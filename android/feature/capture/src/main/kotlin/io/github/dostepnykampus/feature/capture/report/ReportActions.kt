@@ -24,6 +24,8 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
+import io.github.dostepnykampus.core.designsystem.marking.BarrierTypeField
+import io.github.dostepnykampus.core.designsystem.marking.SeverityChoice
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
@@ -43,8 +45,6 @@ import io.github.dostepnykampus.feature.capture.report.form.ReportFormError.MISS
 import io.github.dostepnykampus.feature.capture.report.form.ReportFormError.MISSING_SEVERITY
 import io.github.dostepnykampus.feature.capture.report.form.ReportStage
 import io.github.dostepnykampus.feature.capture.report.form.ReportUiState
-import io.github.dostepnykampus.feature.capture.report.form.SeveritySection
-import io.github.dostepnykampus.feature.capture.report.form.TypeSection
 
 /**
  * Czynności ekranu C2 przekazywane z ViewModelu.
@@ -101,9 +101,9 @@ fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifi
                     }
                     FieldError(MISSING_FLOOR, isShown = MISSING_FLOOR in state.errors)
                 }
-                TypeSection(type = state.form.barrierType, onEdit = actions.onEdit)
+                BarrierTypeField(type = state.form.barrierType, onPick = { actions.onEdit(ReportEdit.Type(it)) })
                 FieldError(MISSING_BARRIER_TYPE, isShown = MISSING_BARRIER_TYPE in state.errors)
-                SeveritySection(severity = state.form.severity, onEdit = actions.onEdit)
+                SeverityChoice(severity = state.form.severity, onPick = { actions.onEdit(ReportEdit.Rating(it)) })
                 FieldError(MISSING_SEVERITY, isShown = MISSING_SEVERITY in state.errors)
                 PhotoSection(photos = PhotoPaths(state.photos.map { it.path }), camera = actions.camera)
                 FieldError(MISSING_PHOTO, isShown = MISSING_PHOTO in state.errors)

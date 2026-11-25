@@ -58,6 +58,11 @@
     <string name="bez_internetu">Bez internetu</string>
     <string name="bez_internetu_dane_z">Bez internetu · dane z %1$s</string>
     <string name="bariera_bez_typu">Bariera</string>
+    <string name="wybor_typ">Typ bariery</string>
+    <string name="wybor_typ_wybierz">Wybierz typ bariery</string>
+    <string name="wybor_zamknij">Zamknij</string>
+    <string name="wybor_uciazliwosc">Uciążliwość</string>
+    <string name="wybor_uciazliwosc_podpowiedz">Oceń dla osoby, dla której bariera jest najtrudniejsza.</string>
     <string name="bariera_zdjecie">Zdjęcie bariery: %1$s</string>
     <string name="zdjecie_wczytujemy">Wczytujemy zdjęcie…</string>
     <string name="zdjecie_blad">Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.</string>

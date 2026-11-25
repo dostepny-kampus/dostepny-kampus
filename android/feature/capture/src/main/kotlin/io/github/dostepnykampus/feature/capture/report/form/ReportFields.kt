@@ -5,36 +5,23 @@
  */
 package io.github.dostepnykampus.feature.capture.report.form
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
-import io.github.dostepnykampus.core.designsystem.marking.SeverityIcon
-import io.github.dostepnykampus.core.designsystem.marking.descriptionRes
-import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.building.EntranceDistance
-import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.capture.R
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -101,54 +88,6 @@ internal fun nearestInWords(nearest: EntranceDistance): String {
         }
     val meters = nearest.meters.roundToInt().coerceAtLeast(1)
     return stringResource(R.string.formularz_miejsce_od, meters, entrance)
-}
-
-/** Znacznik testowy znaku uciążliwości przy wartości wyboru „Uciążliwość”. */
-internal const val SEVERITY_SIGN_TAG: String = "znak-uciazliwosci"
-
-/**
- * „Uciążliwość”: trzy wybory z opisem, oceniane dla osoby, dla której bariera jest najtrudniejsza (PW-13).
- *
- * Wymagania: US7.1
- */
-@Composable
-internal fun SeveritySection(severity: Severity?, onEdit: (ReportEdit) -> Unit) {
-    Column(modifier = Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        SectionTitle(stringResource(R.string.formularz_uciazliwosc))
-        Text(stringResource(R.string.formularz_uciazliwosc_podpowiedz))
-        Severity.entries.forEach { option ->
-            SeverityOption(option = option, isChosen = option == severity, onEdit = onEdit)
-        }
-    }
-}
-
-@Composable
-private fun SeverityOption(option: Severity, isChosen: Boolean, onEdit: (ReportEdit) -> Unit) {
-    OutlinedCard(
-        modifier =
-            Modifier.fillMaxWidth().selectable(selected = isChosen, role = Role.RadioButton) {
-                onEdit(ReportEdit.Rating(option))
-            },
-        border =
-            BorderStroke(
-                width = if (isChosen) Obramowania.wybrane else Obramowania.ramka,
-                color = MaterialTheme.colorScheme.outline,
-            ),
-    ) {
-        Column(modifier = Modifier.padding(Odstepy.m)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(selected = isChosen, onClick = null)
-                val sign = Modifier.padding(start = Odstepy.s).testTag(SEVERITY_SIGN_TAG)
-                SeverityIcon(severity = option, modifier = sign)
-                Text(
-                    text = stringResource(option.nameRes()),
-                    modifier = Modifier.padding(start = Odstepy.s),
-                    fontWeight = Typografia.wyroznienieWaga,
-                )
-            }
-            Text(stringResource(option.descriptionRes()))
-        }
-    }
 }
 
 @Composable
