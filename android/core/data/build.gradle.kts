@@ -43,6 +43,7 @@ dependencies {
     api(libs.dagger)
     api(libs.javax.inject)
     implementation(libs.androidx.activity)
+    implementation(libs.androidx.annotation)
     implementation(libs.androidx.core)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.appauth)

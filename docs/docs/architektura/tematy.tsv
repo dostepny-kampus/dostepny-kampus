@@ -12,6 +12,7 @@ content	temat	treść zgłoszenia	Typ, grupa, miejsce i piętro bariery w zgłos
 edit	ścieżka	edycja zgłoszenia	Zmiana wysłanego zgłoszenia.
 entrance	temat	wejście	Wejście do budynku wybrane na mapie i jego arkusz.
 error	temat	błąd	Błędy wspólne dla modułów i ich odpowiedź HTTP.
+export	temat	eksport	Eksport barier dla Koordynatora do pliku.
 form	ścieżka	formularz zgłoszenia	Pełny formularz nowego zgłoszenia.
 geo	temat	geometria	Punkty, obszary i układy współrzędnych.
 inspection	temat	obejrzenie piętra	Znacznik piętra obejrzanego i zmiany znaczników czekające na wysłanie.
