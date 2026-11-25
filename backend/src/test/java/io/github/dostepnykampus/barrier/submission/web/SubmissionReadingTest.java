@@ -221,5 +221,10 @@ final class SubmissionReadingTest {
         public List<SimilarSubmission> similar(final UUID id) {
             throw new UnsupportedOperationException("Sprawdzenie zmiany nie szuka podobnych");
         }
+
+        @Override
+        public List<Submission> reviewQueue(final String reviewer) {
+            throw new UnsupportedOperationException("Sprawdzenie zmiany nie czyta kolejki");
+        }
     }
 }

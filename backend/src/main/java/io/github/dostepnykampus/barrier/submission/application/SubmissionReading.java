@@ -194,4 +194,17 @@ public final class SubmissionReading {
     public List<SimilarSubmission> similar(final UUID id) {
         return this.finder.similar(id);
     }
+
+    /**
+     * Wyszukuje zgłoszenia w kolejce weryfikacji dla danego konta Weryfikatora,
+     * bez kontroli kompletu zdjęć w magazynie.
+     *
+     * <p>Wymagania: US10.4, US10.5, US10.7, BR-4, BR-11</p>
+     *
+     * @param reviewer Identyfikator konta Weryfikatora
+     * @return Zgłoszenia w kolejce od najdawniej wysłanego
+     */
+    public List<Submission> reviewQueue(final String reviewer) {
+        return this.finder.reviewQueue(reviewer);
+    }
 }

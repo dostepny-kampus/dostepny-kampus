@@ -17,18 +17,21 @@ import io.github.dostepnykampus.shared.error.ConflictingState;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import io.github.dostepnykampus.shared.error.MissingResource;
 import java.security.Principal;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Weryfikacja zgłoszeń: wzięcie zgłoszenia do weryfikacji i decyzja Weryfikatora.
- * Własnego zgłoszenia Weryfikator nie bierze ani nie rozstrzyga.
+ * Weryfikacja zgłoszeń: kolejka weryfikacji, wzięcie zgłoszenia do weryfikacji
+ * i decyzja Weryfikatora. Własnego zgłoszenia Weryfikator nie widzi w kolejce,
+ * nie bierze ani nie rozstrzyga.
  *
- * <p>Wymagania: US10, US10.4, BR-4, BR-11, BR-3, BR-16, BR-7, BR-8</p>
+ * <p>Wymagania: US10, US10.4, US10.5, US10.7, BR-4, BR-11, BR-3, BR-16, BR-7, BR-8</p>
  *
  * @since 0.1.0
  */
@@ -58,6 +61,24 @@ public final class ReviewController {
         this.review = review;
         this.finder = finder;
         this.photos = photos;
+    }
+
+    /**
+     * Zwraca kolejkę zgłoszeń do weryfikacji przez zalogowanego Weryfikatora,
+     * od najdawniej wysłanego: zgłoszenia „wysłane” innych osób oraz „w weryfikacji”
+     * wzięte przez tego Weryfikatora, z kompletem zdjęć w magazynie.
+     *
+     * <p>Wymagania: US10.4, US10.5, US10.7, BR-4, BR-7, BR-11</p>
+     *
+     * @param account Zalogowany Weryfikator
+     * @return Zgłoszenia w kolejce od najstarszego
+     */
+    @GetMapping("/review/queue")
+    List<SubmissionResponse> listReviewQueue(final Principal account) {
+        return this.finder.reviewQueue(account.getName()).stream()
+            .filter(this.photos::complete)
+            .map(SubmissionResponse::new)
+            .toList();
     }
 
     /**
