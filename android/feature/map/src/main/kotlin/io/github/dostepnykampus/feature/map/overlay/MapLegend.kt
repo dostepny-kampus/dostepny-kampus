@@ -33,14 +33,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.MapColors
+import io.github.dostepnykampus.core.designsystem.MapaKontur
 import io.github.dostepnykampus.core.designsystem.MapaSciezka
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.R
-import io.github.dostepnykampus.feature.map.style.BASIC_OUTLINE_DP
-import io.github.dostepnykampus.feature.map.style.DETAILED_OUTLINE_DP
 import io.github.dostepnykampus.feature.map.style.barrierSign
 import io.github.dostepnykampus.feature.map.style.entranceSign
 
@@ -72,12 +71,12 @@ internal fun LegendSigns() {
             BuildingLevel(
                 stringResource(R.string.mapa_legenda_budynek_szczegolowy),
                 mapColors.pwr,
-                DETAILED_OUTLINE_DP.dp,
+                MapaKontur.szczegolowyDp.dp,
             ),
             BuildingLevel(
                 stringResource(R.string.mapa_legenda_budynek_podstawowy),
                 mapColors.pwrPodstawowy,
-                BASIC_OUTLINE_DP.dp,
+                MapaKontur.podstawowyDp.dp,
             ),
         )
     buildings.forEach { level ->
