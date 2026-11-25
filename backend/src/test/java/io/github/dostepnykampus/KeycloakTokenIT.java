@@ -34,7 +34,8 @@ import tools.jackson.databind.json.JsonMapper;
  *
  * <p>Ma własny kontekst bez tożsamości testowej, bo sprawdza drogę z działającego systemu:
  * adres realmu z ustawień, klucze z realmu i role z tokenu konta z
- * {@code infra/keycloak/realm.json}. Konto techniczne serwera nadaje tam role kontom.</p>
+ * {@code infra/keycloak/realm.json}. Konto techniczne serwera nadaje tam role kontom,
+ * także przez {@code POST /invitations}.</p>
  *
  * <p>Wymagania: NFR-33, US14.1, US12.1, US12.2</p>
  *
@@ -143,6 +144,49 @@ final class KeycloakTokenIT {
         );
     }
 
+    @Test
+    void invitesOnlyAsCoordinator(final WebApplicationContext context) throws Exception {
+        final JsonMapper mapper = context.getBean(JsonMapper.class);
+        final String realm = context.getEnvironment().getRequiredProperty(
+            "spring.security.oauth2.resourceserver.jwt.issuer-uri"
+        );
+        final String address = "http://localhost:%s/invitations".formatted(
+            context.getEnvironment().getRequiredProperty("local.server.port")
+        );
+        final String email = "zaproszenie-%s@example.test".formatted(UUID.randomUUID());
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            final String boss = KeycloakTokenIT.token(
+                client, mapper, realm, KeycloakTokenIT.APP, "koordynator.test"
+            );
+            final List<HttpResponse<String>> answers = List.of(
+                KeycloakTokenIT.invite(
+                    client, address,
+                    KeycloakTokenIT.token(
+                        client, mapper, realm, KeycloakTokenIT.APP, "weryfikator.test"
+                    ),
+                    email, "COLLECTOR"
+                ),
+                KeycloakTokenIT.invite(client, address, boss, email, "COLLECTOR"),
+                KeycloakTokenIT.invite(client, address, boss, email, "VERIFIER"),
+                KeycloakTokenIT.invite(client, address, boss, email, "VERIFIER"),
+                KeycloakTokenIT.invite(client, address, boss, "bez-malpy", "VERIFIER")
+            );
+            MatcherAssert.assertThat(
+                "Kody zaproszeń oraz informacje o koncie i błędzie 409",
+                List.of(
+                    answers.stream().map(HttpResponse::statusCode).toList(),
+                    mapper.readTree(answers.get(1).body()).path("accountExisted").asBoolean(),
+                    mapper.readTree(answers.get(2).body()).path("accountExisted").asBoolean(),
+                    mapper.readTree(answers.get(3).body()).path("type").asString()
+                ),
+                Matchers.contains(
+                    List.of(403, 201, 201, 409, 400),
+                    false, true, "urn:dostepny-kampus:rola-juz-nadana"
+                )
+            );
+        }
+    }
+
     private static int edit(
         final HttpClient client, final String operation, final String token
     ) throws Exception {
@@ -185,6 +229,22 @@ final class KeycloakTokenIT {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .POST(HttpRequest.BodyPublishers.ofString(form))
                 .build(),
+            HttpResponse.BodyHandlers.ofString()
+        );
+    }
+
+    private static HttpResponse<String> invite(
+        final HttpClient client, final String address, final String token,
+        final String email, final String role
+    ) throws Exception {
+        return client.send(
+            HttpRequest.newBuilder(URI.create(address))
+                .header(HttpHeaders.AUTHORIZATION, "Bearer %s".formatted(token))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).POST(
+                    HttpRequest.BodyPublishers.ofString(
+                        "{\"email\":\"%s\",\"role\":\"%s\"}".formatted(email, role)
+                    )
+                ).build(),
             HttpResponse.BodyHandlers.ofString()
         );
     }
