@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.mine
@@ -198,6 +198,33 @@ class MySubmissionsScreenTest {
         compose.onNodeWithText("Archiwalne").assertIsDisplayed()
         compose.onNodeWithText("Otwórz").performClick()
         assertEquals(listOf("c"), opened)
+    }
+
+    /**
+     * Wiersz: C3 znak „Dwie wersje: wybierz jedną” → C4 zgłoszenia z konfliktem wersji.
+     *
+     * Wymagania: US9.3
+     */
+    @Test
+    fun conflictOpensChoice() {
+        val conflicted = item(id = "k", state = SendState.REFUSED).copy(refusal = RefusalReason.CHANGED_ON_SERVER)
+        val chosen = mutableListOf<String>()
+        val actions = MySubmissionsActions(onBack = {}, onMeasure = {}, onConflict = { chosen += it })
+        val state = MySubmissionsUiState.Ready(MySubmissions(listOf(conflicted)))
+        compose.setContent {
+            DostepnyKampusTheme {
+                MySubmissionsContent(state = state, actions = actions)
+            }
+        }
+        compose.onNodeWithText("Dwie wersje: wybierz jedną").performClick()
+        assertEquals("C4 zgłoszenia z konfliktem", listOf("k"), chosen)
+    }
+
+    /** Pozycja bez konfliktu wersji nie ma znaku wyboru wersji. Wymagania: US9.3 */
+    @Test
+    fun noConflictNoChoice() {
+        show(item(id = "a", state = SendState.REFUSED).copy(refusal = RefusalReason.NO_PERMISSION))
+        compose.onNodeWithText("Dwie wersje: wybierz jedną").assertDoesNotExist()
     }
 }
 

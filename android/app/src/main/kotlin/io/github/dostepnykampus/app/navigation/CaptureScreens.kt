@@ -7,6 +7,7 @@ package io.github.dostepnykampus.app.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.NavKey
+import io.github.dostepnykampus.feature.capture.conflict.VersionConflictScreen
 import io.github.dostepnykampus.feature.capture.measure.MeasureScreen
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsScreen
@@ -16,13 +17,14 @@ import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
+import io.github.dostepnykampus.feature.capture.navigation.VersionConflictRoute
 import io.github.dostepnykampus.feature.capture.report.ReportEditExits
 import io.github.dostepnykampus.feature.capture.report.ReportFormScreen
 import io.github.dostepnykampus.feature.capture.report.edit.ReportEditScreen
 import io.github.dostepnykampus.feature.capture.report.marking.MarkingScreen
 import io.github.dostepnykampus.feature.capture.report.removed.RemovedScreen
 
-/** Trasy pomiaru, formularza i własnych zgłoszeń. */
+/** Trasy pomiaru, formularza, własnych zgłoszeń i wyboru wersji. */
 @Composable
 internal fun AppNavigator.Capture(route: NavKey) {
     when (route) {
@@ -32,6 +34,7 @@ internal fun AppNavigator.Capture(route: NavKey) {
         is RemovedRoute -> Removed(route)
         is MarkingRoute -> Marking(route)
         MySubmissionsRoute -> MySubmissions()
+        is VersionConflictRoute -> VersionConflictScreen(route = route, onClose = { back() })
         else -> Unit
     }
 }
@@ -41,10 +44,22 @@ private fun AppNavigator.ReportForm(route: ReportFormRoute) {
     ReportFormScreen(route = route, onLeave = { back() }, onSave = { reportSaved() }, draft = reportDraft)
 }
 
-/** C3 „Moje zgłoszenia”: „Otwórz” prowadzi do poprawki w C2, „Zmierz i zgłoś barierę” do C1. Wymagania: US8.1, US8.3 */
+/**
+ * C3 „Moje zgłoszenia”: „Otwórz” prowadzi do poprawki w C2, „Zmierz i zgłoś barierę” do C1, a znak konfliktu
+ * wersji do C4.
+ *
+ * Wymagania: US8.1, US8.3, US9.3
+ */
 @Composable
 internal fun AppNavigator.MySubmissions() {
-    MySubmissionsScreen(MySubmissionsActions(onBack = { back() }, onMeasure = { measure() }, onOpen = { openEdit(it) }))
+    val actions =
+        MySubmissionsActions(
+            onBack = { back() },
+            onMeasure = { measure() },
+            onOpen = { openEdit(it) },
+            onConflict = { openConflict(it) },
+        )
+    MySubmissionsScreen(actions)
 }
 
 /**

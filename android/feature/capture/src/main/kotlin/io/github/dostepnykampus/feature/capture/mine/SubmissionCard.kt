@@ -39,12 +39,13 @@ import java.time.ZoneId
  * wersji, a zgłoszenie z pomiaru zamiast „Otwórz” ma „Wyślij ponownie”; usunięcie bariery ma
  * „Zmierz i zgłoś barierę”.
  *
- * Wymagania: US8.1, NFR-18, NFR-21, US9.5, US8.3, US8.4, US17.2, BR-23
+ * Wymagania: US8.1, NFR-18, NFR-21, US9.5, US8.3, US8.4, US17.2, BR-23, US9.3
  *
  * @param item zgłoszenie
  * @param onOpen „Otwórz” albo „Wyślij ponownie”: poprawka w C2 dla zgłoszeń, które można poprawić; `null` bez
  *   przycisku
  * @param onMeasure „Zmierz i zgłoś barierę” po odrzuceniu usunięcia bariery jako „nieaktualne”
+ * @param onConflict wybór wersji w C4 przy konflikcie wersji; `null` bez przycisku
  * @param modifier wymiary nadane przez listę
  */
 @Composable
@@ -52,16 +53,21 @@ internal fun SubmissionCard(
     item: OwnSubmissionItem,
     onOpen: (() -> Unit)?,
     onMeasure: () -> Unit,
+    onConflict: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     val status = item.shownStatus()
     OutlinedCard(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
             SubmissionDetails(item = item, status = status)
+            onConflict?.let { choose ->
+                ArrowButton(text = stringResource(R.string.moje_dwie_wersje), onClick = choose)
+            }
             if (item.isOutdated && item.isBarrierRemoved) {
                 OutlinedButton(onClick = onMeasure) { Text(stringResource(R.string.pomiar_naglowek)) }
             } else if (onOpen != null && canOpen(status)) {
-                OpenButton(isOutdated = item.isOutdated, onClick = onOpen)
+                val open = if (item.isOutdated) R.string.moje_wyslij_ponownie else R.string.moje_otworz
+                ArrowButton(text = stringResource(open), onClick = onOpen)
             }
         }
     }
@@ -80,7 +86,7 @@ private fun SubmissionDetails(item: OwnSubmissionItem, status: ShownStatus) {
         item.entranceMarking?.let { marking -> NewMarking(marking) }
         Text(placeText(item))
         Text(campusDay(item.savedAt.atZone(ZoneId.systemDefault()).toLocalDate()))
-        item.refusal?.let { reason -> Text(stringResource(reason.textRes())) }
+        item.refusal?.textRes()?.let { reason -> Text(stringResource(reason)) }
         item.rejectionReason?.takeIf { status == ShownStatus.REJECTED }?.let { reason ->
             Text(stringResource(R.string.moje_powod_odrzucenia, reason))
         }
@@ -89,9 +95,9 @@ private fun SubmissionDetails(item: OwnSubmissionItem, status: ShownStatus) {
 }
 
 @Composable
-private fun OpenButton(isOutdated: Boolean, onClick: () -> Unit) {
+private fun ArrowButton(text: String, onClick: () -> Unit) {
     OutlinedButton(onClick = onClick) {
-        Text(stringResource(if (isOutdated) R.string.moje_wyslij_ponownie else R.string.moje_otworz))
+        Text(text)
         Icon(imageVector = StatusIcons.Open, contentDescription = null, modifier = Modifier.padding(start = Odstepy.s))
     }
 }
@@ -138,6 +144,10 @@ private fun outdatedText(item: OwnSubmissionItem): Int =
 
 private const val OUTDATED_REASON = "nieaktualne"
 
+/** Czy zgłoszenie czeka w telefonie na wybór jednej z dwóch wersji. Wymagania: US9.3, BR-10 */
+internal val OwnSubmissionItem.hasVersionConflict: Boolean
+    get() = refusal == RefusalReason.CHANGED_ON_SERVER
+
 /** Czy zgłoszenie odrzucono jako „nieaktualne”. Wymagania: BR-23, BR-24 */
 internal val OwnSubmissionItem.isOutdated: Boolean
     get() = shownStatus() == ShownStatus.REJECTED && rejectionReason?.trim().equals(OUTDATED_REASON, ignoreCase = true)
@@ -164,10 +174,10 @@ private fun placeText(item: OwnSubmissionItem): String {
     return parts.joinToString(", ")
 }
 
-private fun RefusalReason.textRes(): Int =
+private fun RefusalReason.textRes(): Int? =
     when (this) {
         RefusalReason.NO_PERMISSION -> R.string.moje_brak_uprawnien
         RefusalReason.NOT_ACCEPTED -> R.string.moje_nie_przyjal
         RefusalReason.UNREADABLE -> R.string.moje_nie_odczytano
-        RefusalReason.CHANGED_ON_SERVER -> R.string.moje_zmienione_na_serwerze
+        RefusalReason.CHANGED_ON_SERVER -> null
     }
