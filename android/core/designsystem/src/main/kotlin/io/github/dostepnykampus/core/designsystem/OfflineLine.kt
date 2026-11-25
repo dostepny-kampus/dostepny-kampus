@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map.overlay
+package io.github.dostepnykampus.core.designsystem
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,28 +27,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
-import io.github.dostepnykampus.core.designsystem.NoInternetIcon
-import io.github.dostepnykampus.core.designsystem.Obramowania
-import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.Typografia
-import io.github.dostepnykampus.core.designsystem.campusDay
-import io.github.dostepnykampus.feature.map.R
 import java.time.Instant
 
 /**
- * Wskaźnik braku sieci na V1: jedna linia z ikoną i napisem „Bez internetu” na całą szerokość, pod górą ekranu
- * (PW-4). Gdy na mapie są dane pobrane z serwera, linia ma dopisek „dane z …” z dniem
+ * Wskaźnik braku sieci: jedna linia z ikoną i napisem „Bez internetu” na całą szerokość, pod górą ekranu
+ * (PW-4). Gdy ekran ma dane pobrane z serwera, linia ma dopisek „dane z …” z dniem
  * pobrania najstarszych z nich; przy samych danych z pakietu aplikacji daty nie ma. Linia
  * pojawia się sama, więc TalkBack czyta ją jako komunikat stanu
  * (WCAG 4.1.3).
  *
  * Wymagania: US9.1, NFR-10, NFR-21, NFR-15
  *
- * @param syncedAt chwila pobrania najstarszych danych z serwera na mapie; `null` dla danych z pakietu aplikacji
+ * @param syncedAt chwila pobrania najstarszych danych z serwera na ekranie; `null` dla danych z pakietu aplikacji
  * @param modifier położenie linii wyznacza wołający
  */
 @Composable
-internal fun OfflineLine(syncedAt: Instant?, modifier: Modifier = Modifier) {
+public fun OfflineLine(syncedAt: Instant?, modifier: Modifier = Modifier) {
     val insets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
     Surface(
         modifier = modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
@@ -66,8 +60,8 @@ internal fun OfflineLine(syncedAt: Instant?, modifier: Modifier = Modifier) {
                     text =
                         syncedAt?.let { synced ->
                             val day = campusDay(synced)
-                            stringResource(R.string.mapa_bez_internetu_dane_z, day)
-                        } ?: stringResource(R.string.mapa_bez_internetu),
+                            stringResource(R.string.bez_internetu_dane_z, day)
+                        } ?: stringResource(R.string.bez_internetu),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = Typografia.wyroznienieWaga,
                 )

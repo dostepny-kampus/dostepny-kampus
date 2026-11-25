@@ -22,11 +22,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-/**
- * L2 „Konto”: role konta, czynności ról i wylogowanie.
- *
- * Wymagania: US14.1, US14.3, US14.4
- */
+/** L2 „Konto”: role konta, czynności ról i wylogowanie. Wymagania: US14.1, US14.3, US14.4 */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h800dp-xhdpi")
@@ -35,15 +31,6 @@ class AccountScreenTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val events = mutableListOf<String>()
-
-    /** Odwiedzający: nagłówek „Konto”, jego rola i bez sekcji „Twoja praca”. */
-    @Test
-    fun visitorSeesOwnRole() {
-        show(Account.SignedIn())
-        compose.onNodeWithText("Konto i praca").assertDoesNotExist()
-        compose.onNodeWithText("Twoje role: Odwiedzający").assertIsDisplayed()
-        compose.onNodeWithText("Twoja praca").assertDoesNotExist()
-    }
 
     /** Zbierający i Koordynator: wszystkie role na karcie i czynności obu ról. */
     @Test

@@ -11,6 +11,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -78,6 +79,17 @@ class ProgressScreenTest {
         compose.onNodeWithText("Obejrzany").assertIsDisplayed()
         compose.onNodeWithText("Nieobejrzany").assertIsDisplayed()
         compose.onAllNodesWithText("Wejścia sprawdzone na miejscu", substring = true).assertCountEquals(0)
+    }
+
+    /**
+     * Budynek podstawowy obejrzany ma „Obejrzany” z ikoną, a nieobejrzany samo słowo.
+     *
+     * Wymagania: US11.1, NFR-21
+     */
+    @Test
+    fun marksSeenWithIcon() {
+        show(ready(BASIC_SEEN, BASIC_UNSEEN))
+        compose.onAllNodesWithTag(INSPECTED_ICON_TAG, useUnmergedTree = true).assertCountEquals(1)
     }
 
     /**

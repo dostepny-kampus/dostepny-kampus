@@ -16,7 +16,10 @@ import io.github.dostepnykampus.core.model.StaffRole
  * @property role rola, do której należy czynność
  * @property label napis wiersza
  */
-enum class WorkAction(val role: StaffRole, @param:StringRes val label: Int) {
+enum class WorkAction(
+    val role: StaffRole,
+    @param:StringRes val label: Int,
+) {
     /** Pomiar pozycji C1. Wymagania: US6 */
     MEASURE(StaffRole.COLLECTOR, R.string.konto_zmierz),
 

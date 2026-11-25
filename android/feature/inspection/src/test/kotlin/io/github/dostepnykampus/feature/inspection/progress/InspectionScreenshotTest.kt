@@ -16,6 +16,8 @@ import io.github.dostepnykampus.core.model.inspection.InspectionCoverage
 import io.github.dostepnykampus.core.model.inspection.InspectionMarker
 import io.github.dostepnykampus.core.model.inspection.MarkerPlace
 import io.github.dostepnykampus.core.model.inspection.ProgressMarker
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -24,9 +26,11 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import java.time.Instant
+import java.util.TimeZone
 
 /**
  * Zrzuty K1 „Postęp inwentaryzacji” z listą budynków i C5 Koordynatora ze znacznikami i pytaniem o cofnięcie.
+ * Strefa czasowa na czas testu to Warszawa, więc godzina „Stan z …” jest ta sama w każdym środowisku.
  *
  * Wymagania: US11.1, US11.3, NFR-20
  */
@@ -36,6 +40,18 @@ import java.time.Instant
 class InspectionScreenshotTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
+
+    private val zone = TimeZone.getDefault()
+
+    @Before
+    fun warsaw() {
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Warsaw"))
+    }
+
+    @After
+    fun restore() {
+        TimeZone.setDefault(zone)
+    }
 
     private fun capture(content: @Composable () -> Unit) {
         compose.setContent { DostepnyKampusTheme { content() } }

@@ -1,0 +1,15 @@
+# Dostępny Kampus
+# Author: Vladyslav Yevkov
+# Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+
+# Pośrednik HTTPS nakładki produkcyjnej: certyfikat dla DK_PUBLIC_HOST pobiera Caddy sam (Let's Encrypt).
+# Ścieżki realmu usługi logowania idą do Keycloak, reszta do serwera. Konsoli administratora nie wystawia.
+{$DK_PUBLIC_HOST} {
+	@logowanie path /realms/* /resources/*
+	handle @logowanie {
+		reverse_proxy logowanie:8180
+	}
+	handle {
+		reverse_proxy serwer:8080
+	}
+}

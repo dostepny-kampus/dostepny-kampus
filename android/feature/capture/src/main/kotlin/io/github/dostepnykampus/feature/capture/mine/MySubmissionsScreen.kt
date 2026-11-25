@@ -89,7 +89,7 @@ private fun SubmissionList(state: MySubmissionsUiState.Ready, actions: MySubmiss
             StatusCheckLine(check = state.check, isOnline = state.isOnline, onRetry = onRetry)
         }
         items(state.list.items, key = { it.id }) { item ->
-            val open = actions.onOpen.takeIf { canOpen(item.shownStatus()) }
+            val open = actions.onOpen.takeIf { item.canOpenHere() }
             SubmissionCard(item = item, onOpen = open?.let { { it(item.id) } })
         }
     }
