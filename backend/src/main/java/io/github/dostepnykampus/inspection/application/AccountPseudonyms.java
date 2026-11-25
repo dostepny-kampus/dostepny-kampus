@@ -19,6 +19,13 @@ import org.springframework.stereotype.Component;
 @Component
 public final class AccountPseudonyms implements Pseudonyms {
 
+    /**
+     * Tworzy pseudonimy według reguły modułu tożsamości.
+     */
+    public AccountPseudonyms() {
+        super();
+    }
+
     @Override
     public String of(final String account) {
         return new AccountId(account).pseudonym();
