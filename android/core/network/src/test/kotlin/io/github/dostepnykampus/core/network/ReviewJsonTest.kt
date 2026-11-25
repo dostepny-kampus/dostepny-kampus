@@ -45,7 +45,8 @@ class ReviewJsonTest {
         decisions.forEach { (decision, expected) ->
             val body = json.encodeDecision(decision)
             assertEquals(json.parseToJsonElement(expected), json.parseToJsonElement(body), "treść decyzji $decision")
-            assertEquals(emptyList<String>(), SPEC.violations(DECISION, body), "decyzja zgodna z ReviewDecision")
+            val problems = SPEC.violations(pointer = DECISION, json = body)
+            assertEquals(emptyList<String>(), problems, "decyzja zgodna z ReviewDecision")
         }
     }
 

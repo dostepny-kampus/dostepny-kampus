@@ -38,27 +38,27 @@ internal fun Json.encodeDecision(decision: ReviewDecision): String =
     encodeContract(
         JsonObject.serializer(),
         buildJsonObject {
-            put("version", decision.version)
+            put(key = "version", value = decision.version)
             when (decision) {
                 is ReviewDecision.Accept -> {
-                    put(DECISION, ACCEPT)
+                    put(key = DECISION, value = ACCEPT)
                 }
 
                 is ReviewDecision.AcceptQuick -> {
-                    put(DECISION, ACCEPT)
-                    put("barrierType", decision.barrierType)
-                    put("severity", decision.severity)
+                    put(key = DECISION, value = ACCEPT)
+                    put(key = "barrierType", value = decision.barrierType)
+                    put(key = "severity", value = decision.severity)
                 }
 
                 is ReviewDecision.Reject -> {
-                    put(DECISION, REJECT)
-                    put(REASON, decision.reason)
+                    put(key = DECISION, value = REJECT)
+                    put(key = REASON, value = decision.reason)
                 }
 
                 is ReviewDecision.RejectDuplicate -> {
-                    put(DECISION, REJECT)
-                    put(REASON, decision.reason)
-                    put("duplicateOfSubmissionId", decision.duplicateOf)
+                    put(key = DECISION, value = REJECT)
+                    put(key = REASON, value = decision.reason)
+                    put(key = "duplicateOfSubmissionId", value = decision.duplicateOf)
                 }
             }
         },
