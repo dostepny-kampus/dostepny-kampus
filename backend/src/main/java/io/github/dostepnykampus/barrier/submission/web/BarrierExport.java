@@ -58,17 +58,6 @@ final class BarrierExport {
         return result;
     }
 
-    private static @Nullable String number(final SubmissionFloor floor) {
-        final String suffix;
-        if (floor.mezzanine()) {
-            suffix = " półpiętro";
-        } else {
-            suffix = "";
-        }
-        return Optional.ofNullable(floor.number())
-            .map(number -> number + suffix).orElse(floor.floorId());
-    }
-
     static @Nullable String group(final @Nullable BarrierGroup group) {
         return switch (group) {
             case ENTRANCE -> "ENTRANCE_AND_DOORS";
@@ -89,6 +78,17 @@ final class BarrierExport {
             result = verified;
         }
         return result;
+    }
+
+    private static @Nullable String number(final SubmissionFloor floor) {
+        final String suffix;
+        if (floor.mezzanine()) {
+            suffix = " półpiętro";
+        } else {
+            suffix = "";
+        }
+        return Optional.ofNullable(floor.number())
+            .map(number -> number + suffix).orElse(floor.floorId());
     }
 
     /**
