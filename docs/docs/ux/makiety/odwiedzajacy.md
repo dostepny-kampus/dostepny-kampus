@@ -639,7 +639,7 @@ Czynność główna: „Wróć do mapy”.
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Brak internetu” z ikoną, bez daty danych, bo ekran nie pokazuje danych z telefonu | US9.1, NFR-21 |
-| „Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet.” | US4.2, UC7 7a, PW-5 |
+| „Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet. Potem sprawdzimy zdjęcie, a jeśli bariera się potwierdzi, pokażemy ją na mapie.” | US4.2, US4.4, UC7 7a, PW-5 |
 
 ## V5 Pomoc
 

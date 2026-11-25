@@ -236,15 +236,17 @@ class QuickReportScreenTest {
     }
 
     /**
-     * Wiersz: V4 brak sieci → „Zapisaliśmy zdjęcie w telefonie…” i „Wróć do mapy”. Napis nie mówi o weryfikacji.
-     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Potwierdzenie bez sieci mówi o późniejszej wysyłce
+     * Wiersz: V4 brak sieci → „Zapisaliśmy zdjęcie w telefonie…” z późniejszym sprawdzeniem i „Wróć do mapy”.
+     * Scenariusz: zgloszenie-szybkie.feature: Potwierdzenie bez sieci mówi o późniejszej wysyłce
      *
-     * Wymagania: US4.2
+     * Wymagania: US4.2, US4.4
      */
     @Test
     fun confirmsSavedOffline() {
         show(ReportRoute(step = ReportStep.SENT, isSavedOffline = true))
-        val saved = "Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet."
+        val saved =
+            "Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet. " +
+                "Potem sprawdzimy zdjęcie, a jeśli bariera się potwierdzi, pokażemy ją na mapie."
         compose.onNodeWithText(saved).assertIsDisplayed()
         compose.onNodeWithText("Dziękujemy", substring = true).assertDoesNotExist()
         compose.onNodeWithText("Wróć do mapy").performClick()
