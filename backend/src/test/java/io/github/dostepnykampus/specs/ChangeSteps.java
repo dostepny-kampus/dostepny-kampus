@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.specs;
@@ -185,6 +185,19 @@ public final class ChangeSteps {
         );
     }
 
+    @When("^przyjmie (?:zmianę|zgłoszenie „bariera usunięta”)$")
+    void acceptsChange() throws Exception {
+        MatcherAssert.assertThat(
+            "Serwer nie przyjął zmiany zgłoszenia przyjętego, nie dał 200",
+            this.http.perform(
+                MockMvcRequestBuilders.post("/submissions/{id}/review", VerifierSteps.CHECKED)
+                    .contentType(MediaType.APPLICATION_JSON).with(new AsVerifier())
+                    .content("{\"decision\":\"ACCEPT\",\"version\":1}")
+            ).andReturn().getResponse().getStatus(),
+            Matchers.equalTo(200)
+        );
+    }
+
     @When("^spróbuje zmienić w zgłoszeniu (typ bariery na TB-1 .+|uciążliwość na 3|miejsce)$")
     void triesToEdit(final String data) throws Exception {
         this.place = this.stored();
@@ -215,6 +228,63 @@ public final class ChangeSteps {
                 Matchers.containsString("\"barrierType\":\"TB-13\""),
                 Matchers.containsString("\"severity\":2")
             )
+        );
+    }
+
+    @Then("^na mapie jest tylko bariera TB-13 z uciążliwością 3$")
+    void onlyChangeShown() throws Exception {
+        final String map = this.get("/submissions");
+        MatcherAssert.assertThat(
+            "Mapa nie pokazuje samej zmiany z uciążliwością 3 w miejscu poprzedniego zgłoszenia",
+            List.of(
+                map.contains(VerifierSteps.CHECKED.toString()),
+                map.contains(ChangeSteps.ORIGINAL.toString()),
+                this.get(String.format("/submissions/%s", VerifierSteps.CHECKED))
+                    .contains("\"severity\":3")
+            ),
+            Matchers.contains(true, false, true)
+        );
+    }
+
+    @Then("poprzednie zgłoszenie ma status „archiwalne”")
+    void originalArchived() {
+        MatcherAssert.assertThat(
+            "Poprzednie zgłoszenie nie zostało archiwalne po przyjęciu zmiany",
+            this.status(ChangeSteps.ORIGINAL), Matchers.equalTo("ARCHIVED")
+        );
+    }
+
+    @Then("niesprawnej windy nie ma na mapie ani na karcie budynku D-2")
+    void elevatorGone() throws Exception {
+        MatcherAssert.assertThat(
+            "Mapa albo karta budynku D-2 pokazuje barierę po przyjęciu jej usunięcia",
+            this.get("/submissions").concat(
+                this.get(String.format("/submissions?buildingSymbol=%s", this.building))
+            ),
+            Matchers.not(
+                Matchers.anyOf(
+                    Matchers.containsString(ChangeSteps.ORIGINAL.toString()),
+                    Matchers.containsString(VerifierSteps.CHECKED.toString())
+                )
+            )
+        );
+    }
+
+    @Then("oba zgłoszenia zostają w systemie ze statusem „archiwalne”")
+    void bothArchived() {
+        MatcherAssert.assertThat(
+            "Zgłoszenie usuniętej bariery albo „bariera usunięta” nie jest archiwalne",
+            List.of(this.status(ChangeSteps.ORIGINAL), this.status(VerifierSteps.CHECKED)),
+            Matchers.everyItem(Matchers.equalTo("ARCHIVED"))
+        );
+    }
+
+    @Then("zgłoszenie „bariera usunięta” ma to oznaczenie")
+    void removalMarked() throws Exception {
+        MatcherAssert.assertThat(
+            "Zgłoszenie archiwalne nie ma oznaczenia „bariera usunięta”",
+            this.get(String.format("/submissions/%s", VerifierSteps.CHECKED)),
+            Matchers.containsString("\"barrierRemoved\":true")
         );
     }
 
@@ -298,6 +368,11 @@ public final class ChangeSteps {
         this.photos.put(id, VerifierSteps.PHOTO, "zdjęcie".getBytes(StandardCharsets.UTF_8));
         this.jdbc.sql("UPDATE submissions SET status = :status WHERE id = :id")
             .param("status", status).param("id", id).update();
+    }
+
+    private String status(final UUID id) {
+        return this.jdbc.sql("SELECT status FROM submissions WHERE id = :id")
+            .param("id", id).query(String.class).single();
     }
 
     private void claim() throws Exception {

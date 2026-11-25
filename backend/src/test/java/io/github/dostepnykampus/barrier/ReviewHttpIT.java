@@ -28,7 +28,7 @@ import tools.jackson.databind.ObjectMapper;
  * Weryfikator bierze cudze zgłoszenie do weryfikacji i rozstrzyga je, ale nie własne
  * ani takie, któremu brakuje zdjęcia w magazynie.
  *
- * <p>Wymagania: US10.3, BR-4, BR-11, BR-3, BR-14, BR-16, BR-7, BR-8</p>
+ * <p>Wymagania: US10.3, BR-4, BR-11, BR-3, BR-14, BR-16, BR-7, BR-8, BR-18</p>
  *
  * @since 0.1.0
  */
@@ -211,6 +211,45 @@ final class ReviewHttpIT {
     }
 
     @Test
+    void archivesAcceptedSubmissionReplacedByAcceptedChange(final WebApplicationContext context)
+        throws Exception {
+        final UUID replaced = new SampleSubmissions(context)
+            .add("ACCEPTED", SampleSubmissions.quick(ReviewHttpIT.PHOTO));
+        final UUID id = ReviewHttpIT.replacing(context, replaced);
+        ReviewHttpIT.claim(context, id);
+        MatcherAssert.assertThat(
+            "Przyjęcie zmiany nie dało 200, ARCHIVED zastąpionego i ACCEPTED zmiany",
+            List.of(
+                ReviewHttpIT.review(context, id),
+                ReviewHttpIT.status(context, replaced),
+                ReviewHttpIT.status(context, id)
+            ),
+            Matchers.contains(200, "ARCHIVED", "ACCEPTED")
+        );
+    }
+
+    @Test
+    void keepsReplacedSubmissionWhenChangeIsRejected(final WebApplicationContext context)
+        throws Exception {
+        final UUID replaced = new SampleSubmissions(context)
+            .add("ACCEPTED", SampleSubmissions.quick(ReviewHttpIT.PHOTO));
+        final UUID id = ReviewHttpIT.replacing(context, replaced);
+        ReviewHttpIT.claim(context, id);
+        MatcherAssert.assertThat(
+            "Odrzucenie zmiany nie dało 200, ACCEPTED zastąpionego i REJECTED zmiany",
+            List.of(
+                ReviewHttpIT.review(
+                    context, id,
+                    "{\"decision\":\"REJECT\",\"version\":1,\"rejectionReason\":\"Nie\"}"
+                ),
+                ReviewHttpIT.status(context, replaced),
+                ReviewHttpIT.status(context, id)
+            ),
+            Matchers.contains(200, "ACCEPTED", "REJECTED")
+        );
+    }
+
+    @Test
     void refusesClaimOfOwnSubmission(final WebApplicationContext context)
         throws Exception {
         final UUID id = ReviewHttpIT.sent(context, "konto-testowe");
@@ -312,6 +351,19 @@ final class ReviewHttpIT {
             }'::jsonb WHERE id = :id
             """
         ).param("id", id).update();
+        return id;
+    }
+
+    private static UUID replacing(final WebApplicationContext context, final UUID replaced)
+        throws IOException {
+        final UUID id = ReviewHttpIT.sent(context, "inne-konto");
+        context.getBean(JdbcClient.class).sql(
+            """
+            UPDATE submissions SET content = content
+                || JSONB_BUILD_OBJECT('replacesSubmissionId', CAST(:replaced AS TEXT))
+            WHERE id = :id
+            """
+        ).param("replaced", replaced).param("id", id).update();
         return id;
     }
 
