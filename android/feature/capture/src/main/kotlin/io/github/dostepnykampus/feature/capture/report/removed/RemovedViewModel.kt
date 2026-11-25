@@ -14,6 +14,8 @@ import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submission.sync.SaveRefusedException
+import io.github.dostepnykampus.core.geo.building.EntranceDistance
+import io.github.dostepnykampus.core.geo.building.nearestEntrance
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.capture.report.ReportSaver
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -57,10 +59,15 @@ class RemovedViewModel
             viewModelScope.launch {
                 val previous = barriers.barriers().firstOrNull { it.id == id }
                 val stage = if (previous == null) RemovedStage.MISSING else RemovedStage.EDITING
-                val found = previous?.let { place(it) }
-                val (building, entrance) = found ?: (null to null)
+                val found = previous?.let { place(it) } ?: AcceptedPlace()
                 state.update {
-                    it.copy(previous = previous, buildingName = building, entranceName = entrance, stage = stage)
+                    it.copy(
+                        previous = previous,
+                        buildingName = found.building,
+                        entranceName = found.entrance,
+                        nearest = found.nearest,
+                        stage = stage,
+                    )
                 }
             }
         }
@@ -99,11 +106,13 @@ class RemovedViewModel
             }
         }
 
-        private suspend fun place(barrier: AcceptedBarrier): Pair<String?, String?>? {
+        private suspend fun place(barrier: AcceptedBarrier): AcceptedPlace? {
             val found = catalogOrNull() ?: return null
             val building = found.buildings.firstOrNull { it.symbol == barrier.buildingSymbol }
             val entrance = found.entrances.firstOrNull { it.id == barrier.entranceId }
-            return building?.name to entrance?.name
+            val own = found.entrances.filter { it.buildingSymbol == barrier.buildingSymbol }
+            val nearest = nearestEntrance(point = barrier.location, entrances = own)
+            return AcceptedPlace(building = building?.name, entrance = entrance?.name, nearest = nearest)
         }
 
         private suspend fun catalogOrNull(): BuildingCatalog? =
@@ -117,3 +126,16 @@ class RemovedViewModel
                 null
             }
     }
+
+/**
+ * Miejsce zgłoszenia przyjętego z katalogu budynków. Wymagania: US8.4
+ *
+ * @property building nazwa budynku
+ * @property entrance nazwa wejścia przy barierze
+ * @property nearest najbliższe wejście budynku z odległością
+ */
+internal data class AcceptedPlace(
+    val building: String? = null,
+    val entrance: String? = null,
+    val nearest: EntranceDistance? = null,
+)

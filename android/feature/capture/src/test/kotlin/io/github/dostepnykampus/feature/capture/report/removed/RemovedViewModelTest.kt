@@ -90,6 +90,17 @@ class RemovedViewModelTest {
             assertEquals("Gmach C" to "Wejście A", with.uiState.value.names(), "zgłoszenie z wejściem")
         }
 
+    /** Najbliższe wejście budynku bariery z katalogu trafia do stanu ekranu. Wymagania: US8.4, NFR-19 */
+    @Test
+    fun findsNearestEntrance() =
+        runTest(dispatcher) {
+            val named = viewModel(NAMED)
+            named.open("tb9")
+            runCurrent()
+            assertEquals("n/1", named.uiState.value.nearest?.entrance?.id, "najbliższe wejście budynku C-13")
+            assertEquals(null, viewModel.uiState.value.nearest, "bez wejść w katalogu nie ma odległości")
+        }
+
     /**
      * Wysłanie bez zdjęcia kończy się błędem walidacji i niczego nie zapisuje.
      * Scenariusz: zgloszenia-zbierajacego.feature: Usunięcia bariery nie da się zgłosić bez nowego zdjęcia
