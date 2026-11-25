@@ -18,6 +18,7 @@ dependencies {
     api(libs.javax.inject)
     api(libs.kotlinx.coroutines.core)
     api(project(":core:data"))
+    api(project(":core:model"))
     implementation(project(":core:designsystem"))
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.compose.foundation)

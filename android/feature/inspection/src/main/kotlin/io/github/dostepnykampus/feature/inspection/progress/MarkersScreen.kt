@@ -30,11 +30,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.StaffProblem
+import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.model.inspection.InspectionCoverage
 import io.github.dostepnykampus.core.model.inspection.MarkerPlace
 import io.github.dostepnykampus.core.model.inspection.ProgressMarker
 import io.github.dostepnykampus.feature.inspection.R
+import io.github.dostepnykampus.core.designsystem.R as DesignR
 
 /**
  * C5 „Obejrzane piętra” w wariancie Koordynatora budynku [symbol].
@@ -102,8 +105,8 @@ fun MarkersContent(state: MarkersUiState, actions: MarkerActions, onBack: () -> 
             BackHeader(title = stringResource(R.string.znaczniki_naglowek), onBack = onBack)
             when (state) {
                 MarkersUiState.Loading -> Loading()
-                MarkersUiState.Offline -> Failure(Problem.OFFLINE, actions.onRetry)
-                MarkersUiState.ServerError -> Failure(Problem.SERVER, actions.onRetry)
+                MarkersUiState.Offline -> StaffProblemMessage(StaffProblem.OFFLINE, actions.onRetry)
+                MarkersUiState.ServerError -> StaffProblemMessage(StaffProblem.SERVER, actions.onRetry)
                 is MarkersUiState.Ready -> MarkerList(state, actions)
             }
         }
@@ -134,6 +137,7 @@ private fun MarkerCard(marker: ProgressMarker, floorLabel: String?, isAsking: Bo
     OutlinedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
             Text(placeText(marker.marker.place, floorLabel), style = MaterialTheme.typography.titleMedium)
+            InspectedLabel(stringResource(R.string.zbierajacy_obejrzane))
             Text(stringResource(R.string.znaczniki_autor, marker.authorPseudonym))
             if (isAsking) {
                 Text(questionText(marker.marker.place, floorLabel))
@@ -190,4 +194,8 @@ private fun ProgressMarker.floorLabel(floorLabels: Map<String, String>): String?
     (marker.place as? MarkerPlace.Floor)?.let { floorLabels[it.floorId] }
 
 private val RevokeFailure.message: Int
-    get() = if (this == RevokeFailure.OFFLINE) R.string.postep_wymaga_internetu else R.string.postep_blad_serwera
+    get() =
+        when (this) {
+            RevokeFailure.OFFLINE -> DesignR.string.praca_wymaga_internetu
+            RevokeFailure.SERVER -> DesignR.string.praca_blad_serwera
+        }

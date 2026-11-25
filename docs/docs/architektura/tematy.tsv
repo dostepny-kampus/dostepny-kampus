@@ -12,6 +12,7 @@ content	temat	treść zgłoszenia	Typ, grupa, miejsce i piętro bariery w zgłos
 edit	ścieżka	edycja zgłoszenia	Zmiana wysłanego zgłoszenia.
 entrance	temat	wejście	Wejście do budynku wybrane na mapie i jego arkusz.
 error	temat	błąd	Błędy wspólne dla modułów i ich odpowiedź HTTP.
+export	temat	eksport	Eksport barier dla Koordynatora do pliku.
 form	ścieżka	formularz zgłoszenia	Pełny formularz nowego zgłoszenia.
 geo	temat	geometria	Punkty, obszary i układy współrzędnych.
 inspection	temat	obejrzenie piętra	Znacznik piętra obejrzanego i zmiany znaczników czekające na wysłanie.
@@ -32,6 +33,7 @@ quick	ścieżka	szybkie zgłoszenie	Zgłoszenie wejścia w kilku krokach.
 removed	ścieżka	bariera usunięta	Zgłoszenie, że bariery ze zgłoszenia przyjętego już nie ma (C7).
 report	ścieżka	pełne zgłoszenie	Formularz i edycja pełnego zgłoszenia.
 retention	temat	przechowywanie danych	Usuwanie zgłoszeń i zdjęć po terminie przechowywania (NFR-29).
+review	temat	weryfikacja	Kolejka weryfikacji, wzięcie zgłoszenia do sprawdzenia i decyzja Weryfikatora.
 room	temat	pomieszczenie	Pomieszczenie piętra: numer sali, funkcja, kontur.
 search	temat	wyszukiwanie	Pole „Szukaj” i wyniki pod nim.
 server	temat	odpowiedź serwera	Wynik żądania do serwera bez typów klienta HTTP.

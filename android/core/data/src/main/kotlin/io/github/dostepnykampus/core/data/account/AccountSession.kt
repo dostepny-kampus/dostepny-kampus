@@ -86,7 +86,7 @@ public class AccountSession
         }
 
         /** Wylogowuje: usuwa token i zapisane logowanie, wraca do Gościa. */
-        public fun signOut() {
+        override fun signOut() {
             renewal.getAndSet(null)?.cancel()
             tokens.signOut()
             state.value = Account.Guest

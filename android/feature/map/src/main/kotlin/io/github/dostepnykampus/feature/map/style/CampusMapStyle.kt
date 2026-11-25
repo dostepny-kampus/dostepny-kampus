@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.designsystem.Ikony
+import io.github.dostepnykampus.core.designsystem.MapaKontur
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
@@ -60,17 +61,8 @@ internal const val LABELS_LAYER = LABELS
 internal const val LABEL = "label"
 private const val STYLE_VERSION = 8
 
-/**
- * Grubość konturu budynku szczegółowego (z planem pięter) w dp: gruby kontur. Wymagania: US16.1, NFR-21
- * TODO(#3530): grubości konturu z tokenów.
- */
-internal const val DETAILED_OUTLINE_DP = 2.4
-
-/** Grubość konturu budynku podstawowego (bez planu pięter) w dp: cienki ciągły kontur. Wymagania: US16.1, NFR-21 */
-internal const val BASIC_OUTLINE_DP = 1.0
-
 private val OUTLINE_WIDTH =
-    byLevel(detailed = JsonPrimitive(DETAILED_OUTLINE_DP), basic = JsonPrimitive(BASIC_OUTLINE_DP))
+    byLevel(detailed = JsonPrimitive(MapaKontur.szczegolowyDp), basic = JsonPrimitive(MapaKontur.podstawowyDp))
 
 /**
  * Wygląd stylu mapy: kolory z tokenów `mapa.kolory` jako `#RRGGBB` i rozmiar napisów podkładu.

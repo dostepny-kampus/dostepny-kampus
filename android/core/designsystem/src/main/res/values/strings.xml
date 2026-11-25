@@ -3,6 +3,9 @@
     <string name="oznaczenie_dostepne">Dostępne</string>
     <string name="oznaczenie_niedostepne">Niedostępne</string>
     <string name="oznaczenie_brak_danych">Brak danych</string>
+    <string name="ocena_wejscia_import">Z map i opisów, stan z %1$s</string>
+    <string name="ocena_wejscia_obchod">Sprawdzone na miejscu %1$s</string>
+    <string name="ocena_wejscia_plany_pwr">Z planów Politechniki Wrocławskiej, stan z %1$s</string>
     <string name="wstecz">Wstecz</string>
     <string name="pietro_kolumna">Piętro</string>
     <string name="typ_bariery_1">Schody przy wejściu</string>
@@ -59,4 +62,8 @@
     <string name="zdjecie_wczytujemy">Wczytujemy zdjęcie…</string>
     <string name="zdjecie_blad">Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.</string>
     <string name="sprobuj_ponownie">Spróbuj ponownie</string>
+    <string name="praca_wymaga_internetu">Ta czynność wymaga internetu. Połącz się z internetem i spróbuj ponownie.</string>
+    <string name="praca_blad_serwera">Serwer chwilowo nie odpowiada. Spróbuj ponownie za kilka minut.</string>
+    <string name="praca_brak_uprawnien">Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.</string>
+    <string name="praca_wroc_do_mapy">Wróć do mapy</string>
 </resources>
