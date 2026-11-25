@@ -53,14 +53,12 @@ class BarrierExportTest {
     fun savesToChosenPlace() {
         val outcome =
             download(
-                reply = ApiResult.Success(ExportFile("a
-", isEmpty = false)),
+                reply = ApiResult.Success(ExportFile("a\n", isEmpty = false)),
                 format = ExportFormat.CSV,
                 place = ExportPlace.Chosen(URI),
             )
         assertEquals(ExportOutcome.Saved(isEmpty = false), outcome, "plik zapisany w wybranym miejscu")
-        assertEquals(listOf(listOf(URI, "a
-")), saved, "miejsce i treść pliku, bez folderu „Pobrane”")
+        assertEquals(listOf(listOf(URI, "a\n")), saved, "miejsce i treść pliku, bez folderu „Pobrane”")
     }
 
     @Test
