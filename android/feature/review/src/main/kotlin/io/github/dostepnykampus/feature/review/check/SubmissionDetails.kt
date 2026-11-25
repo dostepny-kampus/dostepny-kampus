@@ -21,7 +21,6 @@ import io.github.dostepnykampus.core.designsystem.marking.SeverityBadge
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
-import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.feature.review.queue.kindRes
 import io.github.dostepnykampus.feature.review.queue.titleRes
 
@@ -34,12 +33,11 @@ import io.github.dostepnykampus.feature.review.queue.titleRes
  *
  * Wymagania: US10, BR-14, BR-15, NFR-21
  *
- * @param submission zgłoszenie
- * @param photoUrls adresy zdjęć zgłoszenia
+ * @param shown zgłoszenie z adresami zdjęć
  */
 @Composable
-internal fun SubmissionDetails(submission: Submission, photoUrls: List<String>) {
-    val content = submission.content
+internal fun SubmissionDetails(shown: CheckUiState.Ready) {
+    val content = shown.submission.content
     val type = content.barrierType?.let { BarrierType.fromCode(it) }
     GroupFrame {
         Text(stringResource(content.kindRes()), style = MaterialTheme.typography.titleSmall)
@@ -55,7 +53,7 @@ internal fun SubmissionDetails(submission: Submission, photoUrls: List<String>) 
             text = barrierPlace(symbol = content.buildingSymbol, name = null, entrance = null, floor = content.floor),
             style = MaterialTheme.typography.bodyLarge,
         )
-        photoUrls.forEach { url ->
+        shown.photoUrls.forEach { url ->
             BarrierPhoto(url = url, type = type, modifier = Modifier.fillMaxWidth().padding(top = Odstepy.s))
         }
     }

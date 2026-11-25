@@ -27,23 +27,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.Obramowania
-import io.github.dostepnykampus.core.designsystem.OfflinePill
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.OfflinePill
 import io.github.dostepnykampus.core.designsystem.StaffProblem
 import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.review.R
-
-/**
- * Czynności ekranu R2.
- *
- * Wymagania: US10, US10.2
- *
- * @property onBack „Wstecz” i „Wróć do mapy”
- * @property onDecided powrót do R1 po zapisanej decyzji
- */
-data class ReviewCheckActions(val onBack: () -> Unit, val onDecided: () -> Unit)
 
 /**
  * R2 „Sprawdzenie zgłoszenia” [submissionId] ze stanem z modelu widoku.
@@ -137,7 +127,7 @@ private fun Check(state: CheckUiState.Ready, decision: DecisionActions) {
         if (state.notice == CheckNotice.CHANGED) {
             Notice(title = R.string.sprawdzenie_zmienione, body = R.string.sprawdzenie_zmienione_sprawdz)
         }
-        SubmissionDetails(submission = state.submission, photoUrls = state.photoUrls)
+        SubmissionDetails(state)
         HorizontalDivider(thickness = Obramowania.ramka, color = MaterialTheme.colorScheme.outlineVariant)
         Decision(
             similar = similar,
