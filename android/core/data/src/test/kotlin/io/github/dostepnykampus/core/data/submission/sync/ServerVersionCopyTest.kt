@@ -45,7 +45,8 @@ class ServerVersionCopyTest {
 
             val copy = serverVersionCopy(copies, ID, EmptyCoroutineContext).restore()
             assertEquals(theirs, copy?.value, "kopia ma całą wersję z serwera")
-            assertEquals(2, store.rows.single().submission.severity, "wersja własna zostaje w kolejce")
+            val stored = store.rows.single()
+            assertEquals(2, stored.submission.severity, "wersja własna zostaje w kolejce")
         }
 
     @Test
