@@ -19,6 +19,7 @@ import io.github.dostepnykampus.core.data.submission.sync.SubmissionStamps
 import io.github.dostepnykampus.core.data.submission.sync.submissionServer
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
@@ -187,6 +188,33 @@ class OwnHistoryTest {
             assertEquals("TB-8", row.barrierType, "typ zgłoszenia")
             assertEquals(3, row.severity, "uciążliwość zgłoszenia")
             assertEquals(listOf(ID), store.all().map { it.submission.id }, "zgłoszenie czeka w kolejce")
+        }
+
+    /**
+     * Zmiana oznaczenia wejścia bez sieci czeka jako „lokalne”, a po powrocie sieci jest „wysłana” i znika z kolejki.
+     * Scenariusz (częściowo): oznaczenie-wejscia.feature:
+     *   Zmiana oznaczenia wejścia przechodzi te same statusy co zgłoszenie
+     */
+    @Test
+    fun sendsMarkingAfterOffline() =
+        runBlocking {
+            val target = queue()
+            val marking =
+                precise(PHOTO).copy(
+                    kind = SubmissionKind.ENTRANCE_MARKING,
+                    barrierType = null,
+                    severity = null,
+                    entranceId = "n/1",
+                    entranceMarking = EntranceMarking.INACCESSIBLE,
+                )
+            target.save(marking, photo(tempDir, PHOTO))
+            store.createResults.addLast(ServerReply.Offline)
+
+            assertFalse(target.sendAll(), "bez sieci przebieg kończy się ponowieniem")
+            assertEquals(OwnSubmissionState.LOCAL, history.rows.getValue(ID).state, "zmiana czeka jako lokalna")
+            assertTrue(target.sendAll(), "po powrocie sieci przebieg wysyła zmianę")
+            assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state, "zmiana wysłana")
+            assertTrue(store.rows.isEmpty(), "kolejka jest pusta")
         }
 
     /**
