@@ -96,6 +96,23 @@ jobs:
       - name: Zbuduj, przetestuj i sprawdź qulice
         if: ${{ github.event_name != 'push' }}
         run: bash ../.github/scripts/mvn-z-ponowieniem.sh -B verify
+      - name: Obraz serwera z backend/Dockerfile w compose z profilem serwer odpowiada na /buildings
+        # Plik JAR pochodzi z `verify` powyżej.
+        if: ${{ github.event_name != 'push' }}
+        timeout-minutes: 8
+        working-directory: .
+        run: |
+          cp infra/.env.example infra/.env
+          compose=(docker compose -f infra/docker-compose.yml --profile serwer)
+          "${compose[@]}" up -d --build serwer
+          if ! timeout 240 bash -c 'until curl -fs -o /dev/null http://127.0.0.1:8080/buildings; do sleep 3; done'; then
+            echo "::error title=Obraz serwera::Serwer z compose nie odpowiedział na /buildings w 240 s."
+            "${compose[@]}" ps
+            "${compose[@]}" logs serwer
+            "${compose[@]}" down -v
+            exit 1
+          fi
+          "${compose[@]}" down -v
       - name: Testy mutacyjne PIT dziedziny serwera
         # Na PR; w grupie kolejki PIT nie padał, więc po scaleniu biegnie w kontroli sprintu (zadanie `mutacje`).
         if: ${{ github.event_name == 'pull_request' }}
@@ -159,36 +176,6 @@ jobs:
       - uses: ./.github/actions/java-serwera
       - name: Sprawdź qulice niezależnie od wyniku testów
         run: bash ../.github/scripts/mvn-z-ponowieniem.sh -B -DskipTests test-compile qulice:check
-
-  obraz:
-    # Obraz serwera z backend/Dockerfile i cały compose z profilem `serwer`: serwer musi odpowiedzieć na /buildings.
-    needs: zmiany
-    if: *warunek-jakosc
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-      - uses: ./.github/actions/java-serwera
-      - name: Zbuduj plik JAR serwera
-        working-directory: backend
-        timeout-minutes: 10
-        run: bash ../.github/scripts/pakuj-serwer-systemowy.sh
-      - name: Zbuduj obraz i uruchom compose z serwerem
-        timeout-minutes: 10
-        run: |
-          cp infra/.env.example infra/.env
-          docker compose -f infra/docker-compose.yml --profile serwer up -d --build serwer
-          if ! timeout 240 bash -c 'until curl -fs -o /dev/null http://127.0.0.1:8080/buildings; do sleep 3; done'; then
-            echo "::error title=Obraz serwera::Serwer z compose nie odpowiedział na /buildings w 240 s."
-            docker compose -f infra/docker-compose.yml --profile serwer ps
-            docker compose -f infra/docker-compose.yml --profile serwer logs serwer
-            exit 1
-          fi
-      - name: Zatrzymaj compose
-        if: ${{ always() }}
-        run: docker compose -f infra/docker-compose.yml --profile serwer down -v
 
   spojnosc:
     # Raport spójności klas (jpeek) jako artefakt; próg dla klas ustalimy po sprincie (#1698).
