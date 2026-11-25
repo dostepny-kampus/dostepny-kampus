@@ -226,7 +226,7 @@ internal fun ReportForm.withNearest(measured: ReportPlace, nearest: EntranceDist
         copy(place = place.copy(nearestEntrance = nearest))
     }
 
-private suspend fun BuildingCatalogRepository.entrancesOrEmpty(symbol: String): List<Entrance> =
+internal suspend fun BuildingCatalogRepository.entrancesOrEmpty(symbol: String): List<Entrance> =
     try {
         catalog().entrances.filter { it.buildingSymbol == symbol }
     } catch (error: IOException) {
@@ -253,7 +253,7 @@ private val StagesWithoutNewDraft = setOf(ReportStage.LEFT, ReportStage.PLACE_CH
 internal val ReportUiState.isSavingOrSaved: Boolean
     get() = stage == ReportStage.SAVING || stage == ReportStage.SAVED
 
-private fun emptyBuildingCatalog(): BuildingCatalogRepository =
+internal fun emptyBuildingCatalog(): BuildingCatalogRepository =
     BuildingCatalogRepository(EmptyCoroutineContext) { EMPTY_CATALOG }
 
 private const val EMPTY_CATALOG = """{"type":"FeatureCollection","attribution":"© plik","features":[]}"""
