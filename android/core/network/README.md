@@ -23,6 +23,12 @@ zmienia je bez edycji kodu.
 Tekst JSON treści HTTP powstaje i jest czytany tylko w `ContractJson.kt` (`encodeContract`, `decodeContract`);
 klienci HTTP pracują na modelach.
 
+Adres serwera to `BuildConfig.API_BASE_URL`. Debug ma `http://10.0.2.2:8080/`, czyli komputer gospodarza
+emulatora. Release bierze adres z właściwości Gradle `dk.apiUrl` albo ze zmiennej środowiska `DK_API_URL`
+(np. `./gradlew assembleRelease -Pdk.apiUrl=https://serwer.example/`). Adres musi zaczynać się od `https://`
+i kończyć ukośnikiem. Bez takiego adresu wersja release się kompiluje, ale zadanie `checkReleaseAddresses`
+zatrzymuje budowę pliku APK i pakietu.
+
 ## Zależności
 
 - `:core:geo`

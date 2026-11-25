@@ -28,6 +28,10 @@ Wysyłka obejmuje wpisy bieżącego konta. Pierwsze zalogowanie po migracji przy
 
 Repozytoria i przypadki użycia w podpakietach `account`, `barrier`, `building`, `inspection`, `submission` (`own`, `pending`, `sync`), `map`, `network`, `start`; odpowiedź serwera bez typów klienta HTTP (`ServerReply`, `ServerBuildings`, `ServerCard`) w `server`; wiązania Hilt w `di`. Tekst JSON dokumentów kopii w bazie telefonu powstaje i jest czytany tylko w `cache` (`encodeCache`, `decodeCache`); każdą kopię odpowiedzi serwera trzyma `ServerCopy` pod własnym kluczem tabeli `server_copy`. `SubmissionQueue.save` zwraca `SavedSubmission` z identyfikatorem zgłoszenia, bez encji Room. Tabele bazy są za uchwytami `SubmissionStore` i `ServerCopyStore`, które daje Hilt; `:core:database` jest zależnością `implementation`.
 
+Adres realmu logowania to `BuildConfig.LOGIN_REALM_URL`. Debug ma `http://10.0.2.2:8180/realms/dostepny-kampus/`.
+Release bierze adres z właściwości Gradle `dk.loginRealmUrl` albo ze zmiennej `DK_LOGIN_REALM_URL`, z tymi samymi
+warunkami co adres serwera w `:core:network` (`https://`, ukośnik na końcu, zadanie `checkReleaseAddresses`).
+
 ## Zależności
 
 - `:core:database`
