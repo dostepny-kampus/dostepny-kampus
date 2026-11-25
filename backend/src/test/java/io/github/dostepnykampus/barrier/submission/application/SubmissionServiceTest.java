@@ -417,6 +417,12 @@ final class SubmissionServiceTest {
             return this.edited;
         }
 
+        @Override
+        public Optional<Submission> archive(final UUID id) {
+            this.seen.add(id);
+            return Optional.empty();
+        }
+
         List<Object> seen() {
             return List.copyOf(this.seen);
         }

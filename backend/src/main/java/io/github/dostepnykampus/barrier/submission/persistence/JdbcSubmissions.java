@@ -199,6 +199,20 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     }
 
     @Override
+    public Optional<Submission> archive(final UUID id) {
+        return this.jdbc.sql(
+            String.format(
+                """
+                UPDATE submissions SET status = 'ARCHIVED'
+                WHERE id = :id AND status = 'ACCEPTED'
+                RETURNING %s
+                """,
+                JdbcSubmissions.COLUMNS
+            )
+        ).param("id", id).query(this.rows).optional();
+    }
+
+    @Override
     public EditResult decide(final ReviewDecision decision) {
         return this.written(
             this.jdbc.sql(JdbcSubmissions.DECIDE)

@@ -5,8 +5,6 @@
  */
 package io.github.dostepnykampus.barrier.submission.application;
 
-import io.github.dostepnykampus.barrier.entrance.EntranceChangeArchive;
-import io.github.dostepnykampus.barrier.entrance.StaleEntranceMarking;
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.ReviewDecision;
 import io.github.dostepnykampus.barrier.submission.Submission;
@@ -18,59 +16,78 @@ import io.github.dostepnykampus.building.api.EntrancePlace;
 import io.github.dostepnykampus.building.api.KnownBuildings;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Zapis decyzji Weryfikatora i skutku przyjęcia zmiany oznaczenia wejścia.
+ * Zapis decyzji Weryfikatora i skutków przyjęcia: archiwizacji zastąpionego zgłoszenia,
+ * zgłoszenia „bariera usunięta” i zastosowanej zmiany oznaczenia wejścia.
  *
- * <p>Wymagania: US17.2, US17.3, BR-11, BR-23, BR-24</p>
+ * <p>Wymagania: US10.6, US17.2, US17.3, BR-11, BR-18, BR-19, BR-23, BR-24</p>
  *
  * @since 0.1.0
  */
 @Service
 public class SubmissionReview {
 
-    /** Zapis decyzji o zgłoszeniu. */
+    /** Zapis decyzji o zgłoszeniu i archiwizacja zgłoszeń. */
     private final SubmissionRepository decisions;
 
     /** Zastosowanie oznaczenia w danych budynku. */
     private final EntranceMarkings entrances;
-
-    /** Archiwizacja zastosowanej zmiany. */
-    private final EntranceChangeArchive archive;
 
     /** Lokalizacja wejścia, gdy zgłoszenie nie wskazuje budynku. */
     private final KnownBuildings buildings;
 
     SubmissionReview(
         final SubmissionRepository decisions, final EntranceMarkings entrances,
-        final EntranceChangeArchive archive, final KnownBuildings buildings
+        final KnownBuildings buildings
     ) {
         this.decisions = decisions;
         this.entrances = entrances;
-        this.archive = archive;
         this.buildings = buildings;
     }
 
     /**
-     * Zapisuje decyzję, a przyjętą zmianę oznaczenia stosuje i archiwizuje atomowo.
+     * Zapisuje decyzję razem ze skutkami przyjęcia w jednej transakcji. Przyjęcie zmiany
+     * archiwizuje zastąpione zgłoszenie, jeśli jest jeszcze przyjęte. Przyjęte zgłoszenie
+     * „bariera usunięta” i zastosowana zmiana oznaczenia wejścia same stają się archiwalne.
+     * TODO(#3958): przyjęcie zmiany zgłoszenia, które nie jest już przyjęte, ma dać konflikt.
+     *
+     * <p>Wymagania: BR-18, BR-19, BR-24</p>
      *
      * @param decision Decyzja Weryfikatora
-     * @return Wynik zapisu decyzji
+     * @return Wynik zapisu decyzji; przy przyjęciu zgłoszenie po jego skutkach
      * @throws StaleEntranceMarking Gdy przyjęcia nie da się zastosować do bieżącego wejścia
      */
     @Transactional
     public EditResult decide(final ReviewDecision decision) throws StaleEntranceMarking {
         EditResult result = this.decisions.decide(decision);
-        if (result instanceof EditResult.Saved saved && saved.submission().accepted()
-            && saved.submission().content().kind() == SubmissionKind.ENTRANCE_MARKING) {
-            result = this.apply(saved.submission());
+        if (result instanceof EditResult.Saved saved && saved.submission().accepted()) {
+            result = new EditResult.Saved(this.accepted(saved.submission()));
         }
         return result;
     }
 
-    private EditResult apply(final Submission submission) {
+    private Submission accepted(final Submission submission) {
+        final SubmissionContent content = submission.content();
+        final UUID replaced = content.replaces();
+        if (replaced != null) {
+            this.decisions.archive(replaced);
+        }
+        final boolean marking = content.kind() == SubmissionKind.ENTRANCE_MARKING;
+        if (marking) {
+            this.apply(submission);
+        }
+        Submission result = submission;
+        if (marking || content.barrier().removed()) {
+            result = this.decisions.archive(submission.id()).orElseThrow();
+        }
+        return result;
+    }
+
+    private void apply(final Submission submission) {
         final SubmissionContent content = submission.content();
         final String entrance = Objects.requireNonNull(content.entranceId());
         if (!this.entrances.apply(
@@ -84,7 +101,6 @@ public class SubmissionReview {
         )) {
             throw new StaleEntranceMarking();
         }
-        return new EditResult.Saved(this.archive.archiveEntranceChange(submission.id()));
     }
 
     private String building(final SubmissionContent content, final String entrance) {
