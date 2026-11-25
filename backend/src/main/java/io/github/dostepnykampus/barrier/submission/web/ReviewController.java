@@ -10,6 +10,7 @@ import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.ReviewDecision;
 import io.github.dostepnykampus.barrier.submission.StoredPhotos;
 import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.application.ReviewQueue;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReview;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionService;
@@ -50,16 +51,20 @@ public final class ReviewController {
     /** Odczyt zgłoszeń. */
     private final SubmissionReading finder;
 
+    /** Kolejka weryfikacji. */
+    private final ReviewQueue queue;
+
     /** Kontrola kompletu zdjęć przed wzięciem i decyzją. */
     private final StoredPhotos photos;
 
     ReviewController(
         final SubmissionService service, final SubmissionReview review,
-        final SubmissionReading finder, final StoredPhotos photos
+        final SubmissionReading finder, final ReviewQueue queue, final StoredPhotos photos
     ) {
         this.service = service;
         this.review = review;
         this.finder = finder;
+        this.queue = queue;
         this.photos = photos;
     }
 
@@ -75,7 +80,7 @@ public final class ReviewController {
      */
     @GetMapping("/review/queue")
     List<SubmissionResponse> listReviewQueue(final Principal account) {
-        return this.finder.reviewQueue(account.getName()).stream()
+        return this.queue.forReviewer(account.getName()).stream()
             .filter(this.photos::complete)
             .map(SubmissionResponse::new)
             .toList();

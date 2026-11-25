@@ -31,7 +31,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,25 +67,26 @@ final class ReviewQueueHttpIT {
         final UUID older = ReviewQueueHttpIT.complete(
             context, "SENT", "inne-konto", ReviewQueueHttpIT.FIRST
         );
-        final UUID ownClaimed = ReviewQueueHttpIT.complete(
+        final UUID mine = ReviewQueueHttpIT.complete(
             context, "IN_REVIEW", "inne-konto", ReviewQueueHttpIT.FIRST.plusHours(2)
         );
         final UUID newer = ReviewQueueHttpIT.complete(
             context, "SENT", "inne-konto", ReviewQueueHttpIT.FIRST.plusDays(1)
         );
-        final UUID otherClaimed = ReviewQueueHttpIT.complete(
+        final UUID theirs = ReviewQueueHttpIT.complete(
             context, "IN_REVIEW", "inne-konto", ReviewQueueHttpIT.FIRST.minusDays(1)
         );
         final UUID accepted = ReviewQueueHttpIT.complete(
             context, "ACCEPTED", "inne-konto", ReviewQueueHttpIT.FIRST.minusHours(5)
         );
-        ReviewQueueHttpIT.reviewer(context, ownClaimed, "konto-testowe");
-        ReviewQueueHttpIT.reviewer(context, otherClaimed, "inny-weryfikator");
-        final Set<UUID> seeded = Set.of(older, ownClaimed, newer, otherClaimed, accepted);
+        ReviewQueueHttpIT.reviewer(context, mine, "konto-testowe");
+        ReviewQueueHttpIT.reviewer(context, theirs, "inny-weryfikator");
         MatcherAssert.assertThat(
             "Kolejka nie jest od najstarszego, gubi własne wzięte albo ma cudze wzięte",
-            ReviewQueueHttpIT.queueIds(context, new AsVerifier(), seeded),
-            Matchers.contains(older, ownClaimed, newer)
+            ReviewQueueHttpIT.queueIds(
+                context, new AsVerifier(), Set.of(older, mine, newer, theirs, accepted)
+            ),
+            Matchers.contains(older, mine, newer)
         );
     }
 
@@ -99,11 +99,11 @@ final class ReviewQueueHttpIT {
         final UUID accepted = ReviewQueueHttpIT.complete(
             context, "ACCEPTED", "inne-konto", ReviewQueueHttpIT.FIRST.plusMinutes(5)
         );
-        final UUID ownRemoval = ReviewQueueHttpIT.removal(context, accepted);
+        final UUID deletion = ReviewQueueHttpIT.removal(context, accepted);
         final UUID foreign = ReviewQueueHttpIT.complete(
             context, "SENT", "inne-konto", ReviewQueueHttpIT.FIRST.plusMinutes(20)
         );
-        final Set<UUID> seeded = Set.of(own, accepted, ownRemoval, foreign);
+        final Set<UUID> seeded = Set.of(own, accepted, deletion, foreign);
         MatcherAssert.assertThat(
             "Kolejka pokazuje własne zgłoszenia Weryfikatora albo ukrywa je przed innym",
             List.of(
@@ -112,38 +112,42 @@ final class ReviewQueueHttpIT {
                     context, ReviewQueueHttpIT.bearer("VERIFIER.drugi-weryfikator"), seeded
                 )
             ),
-            Matchers.contains(List.of(foreign), List.of(own, ownRemoval, foreign))
+            Matchers.contains(List.of(foreign), List.of(own, deletion, foreign))
         );
     }
 
     @Test
     void excludesSubmissionsWithoutAllPhotos(final WebApplicationContext context)
         throws Exception {
-        final UUID firstPhoto = UUID.randomUUID();
-        final UUID secondPhoto = UUID.randomUUID();
+        final UUID first = UUID.randomUUID();
+        final UUID second = UUID.randomUUID();
         final UUID complete = ReviewQueueHttpIT.store(
             context, "SENT", "inne-konto",
-            ReviewQueueHttpIT.twoPhotos(firstPhoto, secondPhoto),
+            ReviewQueueHttpIT.twoPhotos(first, second),
             ReviewQueueHttpIT.FIRST
         );
-        ReviewQueueHttpIT.putPhoto(context, complete, firstPhoto);
-        ReviewQueueHttpIT.putPhoto(context, complete, secondPhoto);
-        final UUID thirdPhoto = UUID.randomUUID();
+        ReviewQueueHttpIT.putPhoto(context, complete, first);
+        ReviewQueueHttpIT.putPhoto(context, complete, second);
+        final UUID third = UUID.randomUUID();
         final UUID partial = ReviewQueueHttpIT.store(
             context, "SENT", "inne-konto",
-            ReviewQueueHttpIT.twoPhotos(thirdPhoto, UUID.randomUUID()),
+            ReviewQueueHttpIT.twoPhotos(third, UUID.randomUUID()),
             ReviewQueueHttpIT.FIRST.plusMinutes(1)
         );
-        ReviewQueueHttpIT.putPhoto(context, partial, thirdPhoto);
-        final UUID missing = ReviewQueueHttpIT.store(
-            context, "SENT", "inne-konto",
-            SampleSubmissions.quick(UUID.randomUUID()),
-            ReviewQueueHttpIT.FIRST.plusMinutes(2)
-        );
-        final Set<UUID> seeded = Set.of(complete, partial, missing);
+        ReviewQueueHttpIT.putPhoto(context, partial, third);
         MatcherAssert.assertThat(
             "Zgłoszenie bez wszystkich zdjęć z photoIds trafiło do kolejki",
-            ReviewQueueHttpIT.queueIds(context, new AsVerifier(), seeded),
+            ReviewQueueHttpIT.queueIds(
+                context, new AsVerifier(),
+                Set.of(
+                    complete, partial,
+                    ReviewQueueHttpIT.store(
+                        context, "SENT", "inne-konto",
+                        SampleSubmissions.quick(UUID.randomUUID()),
+                        ReviewQueueHttpIT.FIRST.plusMinutes(2)
+                    )
+                )
+            ),
             Matchers.contains(complete)
         );
     }
@@ -185,17 +189,18 @@ final class ReviewQueueHttpIT {
     private static UUID removal(final WebApplicationContext context, final UUID replaced)
         throws IOException {
         final UUID photo = UUID.randomUUID();
-        final SubmissionContent content = new SubmissionContent(
-            SubmissionKind.PRECISE,
-            new SubmissionPlace(
-                new SubmissionPoint(17.05, 51.108), null, false, "A-1",
-                new SubmissionFloor("A-1-0", 0, false)
-            ),
-            new BarrierDetails(null, new BarrierType(9), null, null, true),
-            null, null, replaced, List.of(photo)
-        );
         final UUID id = ReviewQueueHttpIT.store(
-            context, "SENT", "konto-testowe", content, ReviewQueueHttpIT.FIRST.plusMinutes(10)
+            context, "SENT", "konto-testowe",
+            new SubmissionContent(
+                SubmissionKind.PRECISE,
+                new SubmissionPlace(
+                    new SubmissionPoint(17.05, 51.108), null, false, "A-1",
+                    new SubmissionFloor("A-1-0", 0, false)
+                ),
+                new BarrierDetails(null, new BarrierType(9), null, null, true),
+                null, null, replaced, List.of(photo)
+            ),
+            ReviewQueueHttpIT.FIRST.plusMinutes(10)
         );
         ReviewQueueHttpIT.putPhoto(context, id, photo);
         return id;
@@ -244,10 +249,11 @@ final class ReviewQueueHttpIT {
         MatcherAssert.assertThat(
             "Kolejka weryfikacji nie daje 200", response.getStatus(), Matchers.equalTo(200)
         );
-        final JsonNode items = context.getBean(ObjectMapper.class).readTree(
-            response.getContentAsString(StandardCharsets.UTF_8)
-        );
-        return StreamSupport.stream(items.spliterator(), false)
+        return StreamSupport.stream(
+            context.getBean(ObjectMapper.class).readTree(
+                response.getContentAsString(StandardCharsets.UTF_8)
+            ).spliterator(), false
+        )
             .map(item -> UUID.fromString(item.path("id").asString()))
             .filter(seeded::contains)
             .toList();
@@ -256,9 +262,9 @@ final class ReviewQueueHttpIT {
     private static int status(
         final WebApplicationContext context, final RequestPostProcessor identity
     ) throws Exception {
-        final MockHttpServletRequestBuilder request =
-            MockMvcRequestBuilders.get(ReviewQueueHttpIT.QUEUE);
-        return context.getBean(MockMvc.class).perform(request.with(identity))
+        return context.getBean(MockMvc.class).perform(
+            MockMvcRequestBuilders.get(ReviewQueueHttpIT.QUEUE).with(identity)
+        )
             .andReturn().getResponse().getStatus();
     }
 
