@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.mine
@@ -56,7 +56,7 @@ class SubmissionCardTest {
     private fun show(item: OwnSubmissionItem, onOpen: (() -> Unit)? = { opened++ }) {
         compose.setContent {
             DostepnyKampusTheme {
-                SubmissionCard(item = item, onOpen = onOpen)
+                SubmissionCard(item = item, onOpen = onOpen, onMeasure = {})
             }
         }
     }
@@ -164,7 +164,7 @@ class SubmissionCardTest {
         var shown by mutableStateOf(rows.first().first)
         compose.setContent {
             DostepnyKampusTheme {
-                SubmissionCard(item = shown, onOpen = null)
+                SubmissionCard(item = shown, onOpen = null, onMeasure = {})
             }
         }
         val grays =
@@ -254,7 +254,7 @@ class SubmissionCardTest {
         var shown by mutableStateOf(cases.first().first)
         compose.setContent {
             DostepnyKampusTheme {
-                SubmissionCard(item = shown, onOpen = { opened++ })
+                SubmissionCard(item = shown, onOpen = { opened++ }, onMeasure = {})
             }
         }
         var expectedClicks = 0

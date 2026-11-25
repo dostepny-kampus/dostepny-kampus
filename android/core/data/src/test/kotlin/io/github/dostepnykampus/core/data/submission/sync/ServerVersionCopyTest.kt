@@ -7,7 +7,6 @@ package io.github.dostepnykampus.core.data.submission.sync
 
 import io.github.dostepnykampus.core.data.cache.FakeServerCopyDao
 import io.github.dostepnykampus.core.data.server.ServerEdit
-import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.photo
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.precise
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.server
@@ -31,19 +30,7 @@ class ServerVersionCopyTest {
     private val copies = FakeServerCopyDao()
     private val edits = ArrayDeque<ServerEdit>()
     private val queue by lazy {
-        SubmissionQueue(
-            store = store,
-            ioContext = EmptyCoroutineContext,
-            server =
-                submissionServer(
-                    create = { id, content -> ServerReply.Ok(server(id, content, version = 1)) },
-                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { id, _, content ->
-                        ServerReply.Ok(edits.removeFirstOrNull() ?: ServerEdit.Saved(server(id, content, 8)))
-                    },
-                ),
-            records = SentRecords(history = history, conflicts = copies),
-        )
+        editQueue(store = store, records = SentRecords(history = history, conflicts = copies), edits = edits)
     }
 
     @Test
@@ -58,7 +45,8 @@ class ServerVersionCopyTest {
 
             val copy = serverVersionCopy(copies, ID, EmptyCoroutineContext).restore()
             assertEquals(theirs, copy?.value, "kopia ma całą wersję z serwera")
-            assertEquals(2, store.rows.single().submission.severity, "wersja własna zostaje w kolejce")
+            val stored = store.rows.single()
+            assertEquals(2, stored.submission.severity, "wersja własna zostaje w kolejce")
         }
 
     @Test

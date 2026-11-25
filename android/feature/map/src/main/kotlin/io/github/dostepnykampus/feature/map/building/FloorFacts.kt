@@ -5,8 +5,8 @@
  */
 package io.github.dostepnykampus.feature.map.building
 
+import io.github.dostepnykampus.core.data.room.RoomSummary
 import io.github.dostepnykampus.core.model.building.Floor
-import io.github.dostepnykampus.core.model.room.Room
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.room.RoomList
 import java.util.Locale
@@ -62,11 +62,24 @@ data class FloorFacts(val elevator: FloorPresence?, val toilet: FloorPresence?, 
  *
  * Wymagania: US16.3, US2.3, NFR-19
  */
-fun floorFacts(floors: List<Floor>, rooms: Map<String, RoomList>): FloorFacts {
+fun floorFacts(floors: List<Floor>, rooms: Map<String, RoomList>): FloorFacts =
+    floorFactsOf(
+        floors = floors,
+        rooms = rooms.mapValues { (_, list) -> list.rooms.map { RoomSummary(it.category, it.function) } },
+    )
+
+/**
+ * Fakty o piętrach [floors] z kategoriami i funkcjami pomieszczeń [rooms] (identyfikator piętra → lista). Opis
+ * piętra bierze funkcje poza korytarzem, klatką schodową, windą i toaletami, najwyżej cztery, od najczęstszej;
+ * przy równej liczbie w kolejności pierwszego wystąpienia. Piętro bez wpisu nie ma windy, toalety ani opisu.
+ *
+ * Wymagania: US16.3, US2.3, US2.4, NFR-19, NFR-56
+ */
+internal fun floorFactsOf(floors: List<Floor>, rooms: Map<String, List<RoomSummary>>): FloorFacts {
     val ordered = floors.sortedBy { it.order }
     val descriptions =
         ordered.map { floor ->
-            val described = rooms.roomsOf(floor).filter { it.category !in UNDESCRIBED }
+            val described = rooms[floor.id].orEmpty().filter { it.category !in UNDESCRIBED }
             val functions = described.groupingBy { it.function }.eachCount()
             val top = functions.entries.sortedByDescending { it.value }.take(MAX_FUNCTIONS)
             FloorDescription(floor = floor, functions = top.map { Counted(name = it.key, count = it.value) })
@@ -78,16 +91,18 @@ fun floorFacts(floors: List<Floor>, rooms: Map<String, RoomList>): FloorFacts {
     )
 }
 
-private fun presence(floors: List<Floor>, rooms: Map<String, RoomList>, category: RoomCategory): FloorPresence? {
-    val counts = floors.associateWith { floor -> rooms.roomsOf(floor).count { it.category == category } }
+private fun presence(
+    floors: List<Floor>,
+    rooms: Map<String, List<RoomSummary>>,
+    category: RoomCategory,
+): FloorPresence? {
+    val counts = floors.associateWith { floor -> rooms[floor.id].orEmpty().count { it.category == category } }
     val present = floors.filter { counts.getValue(it) > 0 }
     return FloorPresence(
         floors = present.map { Counted(name = it.label, count = counts.getValue(it)) },
         missing = floors.filter { counts.getValue(it) == 0 }.map { it.label },
     ).takeIf { present.isNotEmpty() }
 }
-
-private fun Map<String, RoomList>.roomsOf(floor: Floor): List<Room> = this[floor.id]?.rooms.orEmpty()
 
 /**
  * Słowa tekstu pięter z windą albo toaletą.

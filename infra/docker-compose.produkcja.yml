@@ -1,0 +1,52 @@
+# Dostępny Kampus
+# Author: Vladyslav Yevkov
+# Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+
+# Nakładka serwera docelowego na docker-compose.yml (infra/README.md, „Serwer docelowy”):
+#   docker compose -f infra/docker-compose.yml -f infra/docker-compose.produkcja.yml --profile serwer up -d --build
+# Usługa logowania w trybie produkcyjnym z bazą w PostgreSQL i realmem bez kont testowych, a przed nią i serwerem
+# pośrednik HTTPS pod jedną nazwą hosta DK_PUBLIC_HOST.
+services:
+  logowanie:
+    command: ["start", "--import-realm", "--http-port=8180", "--health-enabled=true"]
+    environment:
+      KC_HOSTNAME: https://${DK_PUBLIC_HOST:?ustaw DK_PUBLIC_HOST w infra/.env}
+      # Za pośrednikiem: HTTP tylko w sieci compose, adres i protokół z nagłówków X-Forwarded-*.
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgis:5432/${DK_AUTH_DB_NAME:-logowanie}
+      KC_DB_USERNAME: ${DK_DB_USER:?ustaw DK_DB_USER w infra/.env}
+      KC_DB_PASSWORD: ${DK_DB_PASSWORD:?ustaw DK_DB_PASSWORD w infra/.env}
+    volumes:
+      - ./keycloak/realm-produkcja.json:/opt/keycloak/data/import/realm.json:ro
+    depends_on:
+      postgis:
+        condition: service_healthy
+  serwer:
+    environment:
+      DK_AUTH_ISSUER: https://${DK_PUBLIC_HOST:?ustaw DK_PUBLIC_HOST w infra/.env}/realms/dostepny-kampus
+      # Adres klienta z X-Forwarded-For od pośrednika, więc limit żądań liczy się dla każdego telefonu osobno.
+      SERVER_FORWARD_HEADERS_STRATEGY: native
+  posrednik:
+    image: caddy:2.10.2
+    profiles: ["serwer"]
+    environment:
+      DK_PUBLIC_HOST: ${DK_PUBLIC_HOST:?ustaw DK_PUBLIC_HOST w infra/.env}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - posrednik-dane:/data
+      - posrednik-konfiguracja:/config
+    depends_on:
+      serwer:
+        condition: service_started
+      logowanie:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  posrednik-dane:
+  posrednik-konfiguracja:

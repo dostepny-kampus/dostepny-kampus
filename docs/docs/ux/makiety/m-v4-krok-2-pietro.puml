@@ -14,9 +14,9 @@ Czego dotyczy bariera?
 $przycisk("Nie wiem")
 ..
 $przycisk("Parter")
-$przycisk("1")
-$przycisk("2")
-$przycisk("3")
+$przycisk("1 piętro")
+$przycisk("2 piętro")
+$przycisk("3 piętro")
 $tekst("[kolejne piętra budynku]", "i")
 $ekran_koniec()
 @endsalt

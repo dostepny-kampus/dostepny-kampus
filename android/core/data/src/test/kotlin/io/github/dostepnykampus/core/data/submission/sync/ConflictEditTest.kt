@@ -31,20 +31,7 @@ class ConflictEditTest {
     private val versions = mutableListOf<Int>()
     private val edits = ArrayDeque<ServerEdit>()
     private val queue by lazy {
-        SubmissionQueue(
-            store = store,
-            ioContext = EmptyCoroutineContext,
-            server =
-                submissionServer(
-                    create = { id, content -> ServerReply.Ok(server(id, content, version = 1)) },
-                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { id, version, content ->
-                        versions += version
-                        ServerReply.Ok(edits.removeFirstOrNull() ?: ServerEdit.Saved(server(id, content, 8)))
-                    },
-                ),
-            records = SentRecords(history = history),
-        )
+        editQueue(store = store, records = SentRecords(history = history), edits = edits) { versions += it }
     }
 
     @Test
@@ -87,3 +74,24 @@ class ConflictEditTest {
         const val PHOTO = "p-konflikt"
     }
 }
+
+internal fun editQueue(
+    store: FakeStore,
+    records: SentRecords,
+    edits: ArrayDeque<ServerEdit>,
+    onVersion: (Int) -> Unit = {},
+): SubmissionQueue =
+    SubmissionQueue(
+        store = store,
+        ioContext = EmptyCoroutineContext,
+        server =
+            submissionServer(
+                create = { id, content -> ServerReply.Ok(server(id, content, version = 1)) },
+                putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
+                update = { id, version, content ->
+                    onVersion(version)
+                    ServerReply.Ok(edits.removeFirstOrNull() ?: ServerEdit.Saved(server(id, content, 8)))
+                },
+            ),
+        records = records,
+    )

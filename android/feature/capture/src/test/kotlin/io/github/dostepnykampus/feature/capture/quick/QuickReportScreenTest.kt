@@ -20,6 +20,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.BuildingFloors
 import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource
@@ -46,6 +48,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
+import java.time.Instant
 
 /**
  * Ekran V4: krok 2 przekazuje grupę i piętro dalej, a potwierdzenie prowadzi do mapy.
@@ -246,6 +249,29 @@ class QuickReportScreenTest {
         compose.onNodeWithText("Dziękujemy", substring = true).assertDoesNotExist()
         compose.onNodeWithText("Wróć do mapy").performClick()
         assertEquals(1, toMap)
+    }
+
+    /**
+     * Wiersz: V4 brak sieci → nad potwierdzeniem linia „Bez internetu” z dniem pobrania danych mapy, jak na V1.
+     *
+     * Wymagania: US9.1, NFR-10, US4.2
+     */
+    @Test
+    fun showsOfflineLineOnSaved() {
+        val synced = Instant.parse("2026-10-27T09:00:00Z")
+        val barriers =
+            object : AcceptedBarriers {
+                override suspend fun barriers(): List<AcceptedBarrier> = emptyList()
+
+                override fun syncedAt(): Instant = synced
+            }
+        val send = quickSendModel(positions = PositionSource { flowOf() }, saver = { _, _, _ -> })
+        shown.value = ReportRoute(step = ReportStep.SENT, isSavedOffline = true)
+        compose.showQuickReport(route = shown, actions = actions, send = send, barriers = barriers)
+
+        val line = compose.onNodeWithText("Bez internetu · dane z 27.10.2026").fetchSemanticsNode().boundsInRoot
+        val saved = compose.onNodeWithText("Zapisaliśmy", substring = true).fetchSemanticsNode().boundsInRoot
+        assertTrue("linia nad potwierdzeniem", line.bottom <= saved.top)
     }
 
     /**
