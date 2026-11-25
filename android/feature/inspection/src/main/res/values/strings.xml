@@ -41,6 +41,7 @@
     <string name="eksport_pobierz">Pobierz plik</string>
     <string name="eksport_przygotowujemy">Przygotowujemy plik…</string>
     <string name="eksport_zapisany">Plik zapisany w pobranych plikach.</string>
+    <string name="eksport_zapisany_wybrane">Plik zapisany w wybranym miejscu.</string>
     <string name="eksport_pusty">Nie ma jeszcze przyjętych barier.</string>
     <string name="eksport_pusty_plik">Pobrany plik będzie pusty.</string>
     <string name="zaproszenie_naglowek">Zaproś osobę</string>

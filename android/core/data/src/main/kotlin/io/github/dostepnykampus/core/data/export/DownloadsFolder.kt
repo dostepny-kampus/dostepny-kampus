@@ -7,6 +7,7 @@ package io.github.dostepnykampus.core.data.export
 
 import android.content.ContentResolver
 import android.content.ContentValues
+import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
@@ -18,10 +19,14 @@ internal fun interface DownloadsFolder {
     fun save(name: String, mediaType: String, text: String): Boolean
 }
 
+/** Plik wybrany przez osobę w systemowym oknie zapisu. Wymagania: US13, NFR-41 */
+internal fun interface ChosenFile {
+    /** Zapisuje treść [text] w UTF-8 w dokumencie [uri]; `true`, gdy zapis się udał. */
+    fun save(uri: String, text: String): Boolean
+}
+
 /**
  * „Pobrane” przez MediaStore, bez uprawnień do pamięci od Androida 10; wcześniej zapis się nie udaje.
- *
- * TODO(#3805): zapis na Androidzie 8–9.
  *
  * @param resolver dostęp do MediaStore
  */
@@ -42,4 +47,21 @@ internal class MediaStoreDownloads(private val resolver: ContentResolver) : Down
             false
         }
     }
+}
+
+/**
+ * Dokument z okna systemu zapisany przez [resolver]; nowa treść zastępuje poprzednią.
+ *
+ * @param resolver dostęp do dokumentu
+ */
+internal class ResolverChosenFile(private val resolver: ContentResolver) : ChosenFile {
+    override fun save(uri: String, text: String): Boolean =
+        try {
+            val stream = resolver.openOutputStream(Uri.parse(uri), "wt")
+            stream?.use { output -> output.write(text.toByteArray()) } != null
+        } catch (_: IOException) {
+            false
+        } catch (_: SecurityException) {
+            false
+        }
 }
