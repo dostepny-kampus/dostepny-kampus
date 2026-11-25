@@ -13,6 +13,7 @@ package io.github.dostepnykampus.identity.account;
  * @since 0.1.0
  */
 public enum Grant {
+
     /** Konta nie było: powstało z rolą Odwiedzającego i nadaną rolą. */
     CREATED,
 

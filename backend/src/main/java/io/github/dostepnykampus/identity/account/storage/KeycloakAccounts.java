@@ -35,25 +35,26 @@ import tools.jackson.databind.JsonNode;
  */
 @Component
 @EnableConfigurationProperties(AccountSettings.class)
-final class KeycloakAccounts implements Accounts {
+public final class KeycloakAccounts implements Accounts {
 
     /** Limit czasu połączenia i odczytu odpowiedzi Usługi logowania. */
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
 
-    /** Ścieżka ról realmu konta pod adresem Admin REST API. */
-    private static final String MAPPINGS = "/users/{id}/role-mappings/realm";
+    /** Klient HTTP Usługi logowania z limitem czasu. */
+    private static final RestClient CLIENT = KeycloakAccounts.client();
 
-    /** Klient HTTP Usługi logowania. */
-    private final RestClient client;
+    /** Role realmu konta pod adresem Admin REST API. */
+    private static final String MAPPINGS = "/users/{id}/role-mappings/realm";
 
     /** Ustawienia konta technicznego. */
     private final AccountSettings settings;
 
-    KeycloakAccounts(final AccountSettings settings) {
-        final SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(KeycloakAccounts.TIMEOUT);
-        factory.setReadTimeout(KeycloakAccounts.TIMEOUT);
-        this.client = RestClient.builder().requestFactory(factory).build();
+    /**
+     * Tworzy adapter.
+     *
+     * @param settings Ustawienia konta technicznego
+     */
+    public KeycloakAccounts(final AccountSettings settings) {
         this.settings = settings;
     }
 
@@ -67,7 +68,7 @@ final class KeycloakAccounts implements Accounts {
             if (found.isPresent() && this.holds(bearer, account, role)) {
                 result = Grant.UNCHANGED;
             } else {
-                this.client.post()
+                KeycloakAccounts.CLIENT.post()
                     .uri(this.settings.admin().concat(KeycloakAccounts.MAPPINGS), account)
                     .header(HttpHeaders.AUTHORIZATION, bearer)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -83,13 +84,20 @@ final class KeycloakAccounts implements Accounts {
         }
     }
 
+    private static RestClient client() {
+        final SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(KeycloakAccounts.TIMEOUT);
+        factory.setReadTimeout(KeycloakAccounts.TIMEOUT);
+        return RestClient.builder().requestFactory(factory).build();
+    }
+
     private String token() {
         final MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add("grant_type", "client_credentials");
         form.add("client_id", this.settings.client());
         form.add("client_secret", this.settings.secret());
-        return this.json(
-            this.client.post().uri(this.settings.token())
+        return KeycloakAccounts.json(
+            KeycloakAccounts.CLIENT.post().uri(this.settings.token())
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(form).retrieve().body(JsonNode.class)
         ).path("access_token").asString();
@@ -101,18 +109,19 @@ final class KeycloakAccounts implements Accounts {
     }
 
     private String create(final String bearer, final String email) {
-        this.client.post().uri(this.settings.admin().concat("/users"))
+        KeycloakAccounts.CLIENT.post().uri(this.settings.admin().concat("/users"))
             .header(HttpHeaders.AUTHORIZATION, bearer)
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(
-                Map.of(
-                    "username", email, "email", email, "enabled", true,
-                    "requiredActions", List.of("UPDATE_PASSWORD")
-                )
-            )
+            .contentType(MediaType.APPLICATION_JSON).body(KeycloakAccounts.invited(email))
             .retrieve().toBodilessEntity();
         return this.find(bearer, email).orElseThrow(
             () -> new IllegalStateException("Usługa logowania nie pokazała nowego konta")
+        );
+    }
+
+    private static Map<String, Object> invited(final String email) {
+        return Map.of(
+            "username", email, "email", email, "enabled", true,
+            "requiredActions", List.of("UPDATE_PASSWORD")
         );
     }
 
@@ -122,14 +131,14 @@ final class KeycloakAccounts implements Accounts {
     }
 
     private JsonNode read(final String bearer, final String path, final Object... values) {
-        return this.json(
-            this.client.get().uri(this.settings.admin().concat(path), values)
+        return KeycloakAccounts.json(
+            KeycloakAccounts.CLIENT.get().uri(this.settings.admin().concat(path), values)
                 .header(HttpHeaders.AUTHORIZATION, bearer)
                 .retrieve().body(JsonNode.class)
         );
     }
 
-    private JsonNode json(final @Nullable JsonNode body) {
+    private static JsonNode json(final @Nullable JsonNode body) {
         if (body == null) {
             throw new IllegalStateException("Usługa logowania odpowiedziała bez treści");
         }

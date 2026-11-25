@@ -7,8 +7,7 @@
 /**
  * Moduł identity: profil zalogowanej osoby, zabezpieczenie API i konta w Usłudze logowania.
  *
- * <p>Zadanie: role osoby z tokenu Keycloak, dostęp do operacji API według ról i nadawanie
- * ról kontom przez konto techniczne serwera.</p>
+ * <p>Zadanie: role z tokenu Keycloak, dostęp do API według ról i nadawanie ról kontom.</p>
  *
  * <p>API: brak typów dla innych modułów; operacja HTTP {@code /me}.</p>
  *

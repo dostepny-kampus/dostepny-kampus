@@ -29,14 +29,12 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Serwer z domyślnym dekoderem ocenia token z prawdziwego Keycloaka
- * (ADR-0003): podpis, wystawcę realmu, odbiorcę serwera w {@code aud} oraz role z
- * {@code realm_access.roles}.
+ * Serwer z domyślnym dekoderem ocenia token z prawdziwego Keycloaka (ADR-0003): podpis,
+ * wystawcę realmu, odbiorcę serwera w {@code aud} oraz role z {@code realm_access.roles}.
  *
- * <p>Ma własny kontekst bez tożsamości testowej, bo sprawdza drogę używaną
- * w działającym systemie: adres realmu z ustawień, klucze pobrane z realmu
- * i odczyt ról z tokenu konta z {@code infra/keycloak/realm.json}. Konto techniczne serwera
- * nadaje w tym realmie role kontom z adresem e-mail.</p>
+ * <p>Ma własny kontekst bez tożsamości testowej, bo sprawdza drogę z działającego systemu:
+ * adres realmu z ustawień, klucze z realmu i role z tokenu konta z
+ * {@code infra/keycloak/realm.json}. Konto techniczne serwera nadaje tam role kontom.</p>
  *
  * <p>Wymagania: NFR-33, US14.1, US12.1, US12.2</p>
  *
