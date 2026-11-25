@@ -22,14 +22,9 @@ import org.jspecify.annotations.Nullable;
 public class ConflictingState extends RuntimeException {
 
     /**
-     * Nazwa właściwości odpowiedzi z bieżącym stanem.
+     * Nazwa właściwości odpowiedzi i bieżący stan zasobu.
      */
-    private final String property;
-
-    /**
-     * Bieżący stan zasobu, serializowany jako obiekt JSON.
-     */
-    private final transient Object value;
+    private final transient Map.Entry<String, Object> state;
 
     /**
      * Rodzaj błędu do pola {@code type}; brak dla zwykłego konfliktu.
@@ -59,8 +54,7 @@ public class ConflictingState extends RuntimeException {
         final String detail, final Map.Entry<String, Object> state, final @Nullable URI kind
     ) {
         super(detail);
-        this.property = state.getKey();
-        this.value = state.getValue();
+        this.state = state;
         this.kind = kind;
     }
 
@@ -70,7 +64,7 @@ public class ConflictingState extends RuntimeException {
      * @return Nazwa właściwości, np. {@code serverSubmission}
      */
     public String property() {
-        return this.property;
+        return this.state.getKey();
     }
 
     /**
@@ -79,7 +73,7 @@ public class ConflictingState extends RuntimeException {
      * @return Wartość właściwości {@link #property()}
      */
     public Object value() {
-        return this.value;
+        return this.state.getValue();
     }
 
     /**
