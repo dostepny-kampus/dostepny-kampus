@@ -6,8 +6,11 @@
 package io.github.dostepnykampus.feature.capture.mine
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.dostepnykampus.core.data.submission.own.SendState
@@ -77,7 +80,9 @@ class SubmissionKindTest {
         val sentence = "Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa."
         compose.onNodeWithText(sentence).assertIsDisplayed()
         compose.onNodeWithText("Wyślij ponownie").assertDoesNotExist()
-        compose.onNodeWithText("Zmierz i zgłoś barierę").performClick()
+        val buttons = compose.onAllNodesWithText("Zmierz i zgłoś barierę")
+        buttons.assertCountEquals(2)
+        buttons.onLast().performClick()
         assertEquals("„Zmierz i zgłoś barierę” otwiera C1", 1, measured)
     }
 
