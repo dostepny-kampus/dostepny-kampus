@@ -178,9 +178,11 @@ private class FakeFloorPlanDao : FloorPlanDao {
 
     override suspend fun roomFacts(building: String): List<FloorRoomFact> =
         rooms
+            .asSequence()
             .filter { it.building == building }
             .sortedWith(compareBy({ it.floor }, { it.id }))
             .map { FloorRoomFact(floor = it.floor, category = it.category, function = it.function) }
+            .toList()
 
     override suspend fun deleteRooms(building: String) {
         rooms.removeAll { it.building == building }
