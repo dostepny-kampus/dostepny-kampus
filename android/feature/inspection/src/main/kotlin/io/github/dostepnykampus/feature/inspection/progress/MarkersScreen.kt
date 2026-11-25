@@ -134,6 +134,7 @@ private fun MarkerCard(marker: ProgressMarker, floorLabel: String?, isAsking: Bo
     OutlinedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
             Text(placeText(marker.marker.place, floorLabel), style = MaterialTheme.typography.titleMedium)
+            InspectedLabel(stringResource(R.string.zbierajacy_obejrzane))
             Text(stringResource(R.string.znaczniki_autor, marker.authorPseudonym))
             if (isAsking) {
                 Text(questionText(marker.marker.place, floorLabel))
