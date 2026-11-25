@@ -17,4 +17,8 @@ internal class FakeServerCopyDao : ServerCopyDao {
     override suspend fun save(entity: ServerCopyEntity) {
         rows[entity.key] = entity
     }
+
+    override suspend fun delete(key: String) {
+        rows.remove(key)
+    }
 }

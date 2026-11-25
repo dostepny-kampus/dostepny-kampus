@@ -68,6 +68,12 @@ internal class FakeStore : PendingSubmissionDao {
         }
     }
 
+    override suspend fun markQueued(id: String) {
+        rows.replaceAll { item ->
+            if (item.submission.id == id) item.copy(submission = item.submission.copy(isRefused = false)) else item
+        }
+    }
+
     override suspend fun markUploaded(submissionId: String, photoId: String) {
         photos.add(submissionId to photoId)
         rows.replaceAll { item ->
