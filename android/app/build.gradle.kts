@@ -107,6 +107,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.monitor)
     androidTestImplementation(libs.junit4)
+    androidTestImplementation(project(":core:location"))
     androidTestImplementation(project(":core:network"))
     androidTestImplementation(project(":core:testing"))
     androidTestImplementation(libs.okhttp)
