@@ -6,15 +6,40 @@
 package io.github.dostepnykampus.app.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation3.runtime.NavKey
+import io.github.dostepnykampus.feature.capture.measure.MeasureScreen
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsScreen
 import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
+import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
+import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
+import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.report.ReportEditExits
+import io.github.dostepnykampus.feature.capture.report.ReportFormScreen
 import io.github.dostepnykampus.feature.capture.report.edit.ReportEditScreen
 import io.github.dostepnykampus.feature.capture.report.marking.MarkingScreen
 import io.github.dostepnykampus.feature.capture.report.removed.RemovedScreen
+
+/** Trasy pomiaru, formularza i własnych zgłoszeń. */
+@Composable
+internal fun AppNavigator.Capture(route: NavKey) {
+    when (route) {
+        MeasureRoute -> MeasureScreen(onBack = { back() }, onNext = { openReportForm(it) })
+        is ReportFormRoute -> ReportForm(route)
+        is ReportEditRoute -> ReportEdit(route)
+        is RemovedRoute -> Removed(route)
+        is MarkingRoute -> Marking(route)
+        MySubmissionsRoute -> MySubmissions()
+        else -> Unit
+    }
+}
+
+@Composable
+private fun AppNavigator.ReportForm(route: ReportFormRoute) {
+    ReportFormScreen(route = route, onLeave = { back() }, onSave = { reportSaved() }, draft = reportDraft)
+}
 
 /** C3 „Moje zgłoszenia”: „Otwórz” prowadzi do poprawki w C2, „Zmierz i zgłoś barierę” do C1. Wymagania: US8.1, US8.3 */
 @Composable

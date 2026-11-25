@@ -11,8 +11,6 @@ import kotlinx.serialization.Serializable
 /**
  * R1 Kolejka weryfikacji, bez paska nawigacji; wejście z L2 „Konto i praca” tylko dla Weryfikatora.
  *
- * TODO(#3759): wejście z L2 i ekran trasy w aplikacji.
- *
  * Wymagania: US10.4
  */
 @Serializable

@@ -40,8 +40,6 @@ import io.github.dostepnykampus.feature.review.R
 /**
  * R1 „Zgłoszenia do sprawdzenia” ze stanem z modelu widoku.
  *
- * TODO(#3759): wejście z L2 i ekran trasy w aplikacji.
- *
  * Wymagania: US10.4, US10.7
  *
  * @param onBack powrót do konta

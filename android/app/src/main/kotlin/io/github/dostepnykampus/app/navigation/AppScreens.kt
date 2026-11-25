@@ -23,17 +23,9 @@ import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
-import io.github.dostepnykampus.feature.capture.measure.MeasureScreen
-import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
-import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
-import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
-import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
-import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
-import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.quick.QuickReportActions
 import io.github.dostepnykampus.feature.capture.quick.QuickReportScreen
-import io.github.dostepnykampus.feature.capture.report.ReportFormScreen
 import io.github.dostepnykampus.feature.help.HelpScreen
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.inspection.navigation.CollectorMarkersRoute
@@ -47,6 +39,7 @@ import io.github.dostepnykampus.feature.map.building.CardMode
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
+import io.github.dostepnykampus.feature.review.navigation.ReviewQueueRoute
 import kotlinx.coroutines.flow.first
 import kotlin.math.roundToInt
 
@@ -156,21 +149,15 @@ private fun AppNavigator.KeepCardOnLeave(route: BuildingRoute?, isExpanded: Bool
 @Composable
 @NonRestartableComposable
 internal fun AppNavigator.AppScreen(route: NavKey) {
-    val save = { reportSaved() }
     when (route) {
         is BuildingRoute -> HiltBuildingCard(route.symbol)
         is ReportRoute -> QuickReport(route)
-        MeasureRoute -> MeasureScreen(onBack = { back() }, onNext = { openReportForm(it) })
-        is ReportFormRoute -> ReportFormScreen(route = route, onLeave = { back() }, onSave = save, draft = reportDraft)
-        is ReportEditRoute -> ReportEdit(route)
-        is RemovedRoute -> Removed(route)
-        is MarkingRoute -> Marking(route)
-        MySubmissionsRoute -> MySubmissions()
         ProgressRoute, ExportRoute, is MarkersRoute, is CollectorMarkersRoute -> Inspection(route)
+        ReviewQueueRoute -> ReviewQueue()
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
         is SignInRoute, AccountRoute -> Account(route)
         is MapRoute -> HiltMapScreen(focus = route.focus)
-        else -> Unit
+        else -> Capture(route)
     }
 }
 
