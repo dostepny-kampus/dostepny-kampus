@@ -73,7 +73,7 @@ Reguły włączają się, gdy skala czcionki w telefonie wynosi co najmniej 1,5.
 
 | Nr | Reguła | Odwołanie |
 | --- | --- | --- |
-| 1 | Data i źródło oceny wejść to jeden napis bez ikony nad wejściami, np. „Z map i opisów, 18.12.2023”. Przy dużej czcionce napis może się zawinąć. Gdy wejścia mają różne źródła, taki napis stoi przy każdym wejściu. | US17.3, BR-24, decyzja 48 |
+| 1 | Data i źródło oceny wejść to jeden napis bez ikony nad wejściami, np. „Z map i opisów, stan z 18.12.2023”. Przy dużej czcionce napis może się zawinąć. Gdy wejścia mają różne źródła, taki napis stoi przy każdym wejściu. | US17.3, BR-24, decyzja 48 |
 | 2 | „Źródło: Politechnika Wrocławska” stoi raz na dole V2. Na mapie V1 nie stoi, nawet przy planie piętra: jest w legendzie pod „ⓘ”, a na mapie zostaje jeden podpis OpenStreetMap. Grupy pięter go nie powtarzają. | NFR-40, NFR-37, decyzja z 20.11.2026 |
 | 3 | Podpis OpenStreetMap jest odnośnikiem w rogu mapy. Otwarty arkusz znaku na V1 może go zasłonić wraz z „ⓘ”. Przycisk „Zamknij” odsłania podpis i „ⓘ”. Pełna informacja o licencji jest pod „ⓘ” na mapie. | NFR-37 |
 | 4 | Napisy na mapie i na mapie nieba (C1) rosną z czcionką, najwyżej 1,4 raza. Mapa chowa napisy, które się nie mieszczą, i nie nakłada ich. | NFR-20 |
@@ -199,7 +199,7 @@ Arkusz wejścia na dole mapy otwiera dotknięcie znaku wejścia, a z karty V2 do
 | Znak oznaczenia obok nagłówka „Wejście” i „Zamknij”. Nagłówek nie powtarza budynku, bo podaje go wiersz budynku pod nim. Pod wierszem słowo oznaczenia: „Dostępne”, „Niedostępne” albo „Brak danych”, a przy wejściu głównym dopisek „wejście główne” | dane, czynność | US2.1, NFR-21, NFR-53 | „Zamknij”: V1; „Wstecz” arkusza otwartego z karty budynku albo przy niej: ta karta na tej samej wysokości i w tym samym miejscu przewinięcia |
 | Wiersz budynku „Budynek A-1” pod nagłówkiem | czynność | US2.8, US3.3, NFR-18 | V2 na niskiej wysokości; otwarty z karty: ta karta na tej samej wysokości i w tym samym miejscu przewinięcia |
 | Nazwa wejścia i uwaga tylko wtedy, gdy są w danych | dane | US2.1 | — |
-| Pod słowem oznaczenia data i źródło oznaczenia, np. „Z map i opisów, 18.12.2023”; przy wejściu zalecanym przed nimi „Zalecane.” | dane | US17.3, BR-24, BR-25, PW-3 | — |
+| Pod słowem oznaczenia data i źródło oznaczenia, np. „Z map i opisów, stan z 18.12.2023”; przy wejściu zalecanym przed nimi „Zalecane.” | dane | US17.3, BR-24, BR-25, PW-3 | — |
 | Przy „Brak danych” zdanie „Nie mamy danych o dostępności tego wejścia.”. Mówi, czego brakuje, i nie ocenia ludzi | dane | US2.1, US17.1 | — |
 | Część „Bariery przy tym wejściu” zaraz pod oznaczeniem, źródłem i nazwą wejścia, przed „Dojście”: zgłoszenia przyjęte przy tym wejściu. Każde ma typ, uciążliwość, zdjęcie i datę weryfikacji jako „Sprawdzone 12.11.2026”. Typ bariery stoi krojem nagłówków części, jak „Drzwi”, a nie krojem nagłówka arkusza. Bez takich zgłoszeń części nie ma, a reszta arkusza się nie zmienia | dane | US2.2, US3.3, UC4 5a, PW-3, PW-13, decyzja z 19.11.2026 | — |
 | Części „Dojście”, „Drzwi” z szerokością, np. „Szerokość drzwi: 90 cm”, i „Za drzwiami”. Każde wejście ma te części z nagłówkami, zalecane i każde inne tak samo. Część bez danych nie stoi; szerokość drzwi 0 to brak danych. Przy wejściu z planów PWr „Dojście” to opis z uwag. Przy wejściu bez nazwy w danych „Dojście” najpierw podaje opis położenia, np. „Od strony C-20, od północy.”, a pod nim opis z uwag (BR-27) | dane | US3.3, US16.3, BR-25, BR-27 | — |
