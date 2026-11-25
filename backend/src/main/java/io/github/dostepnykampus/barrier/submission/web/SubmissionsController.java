@@ -16,7 +16,6 @@ import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import io.github.dostepnykampus.shared.error.MissingResource;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
@@ -30,10 +29,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Zgłoszenia barier: wysłanie nowego zgłoszenia, edycja
- * z kontrolą wersji, odczyt zgłoszenia nieprzyjętego przez autora i Weryfikatora
- * i podobne zgłoszenia dla Weryfikatora.
+ * z kontrolą wersji i odczyt zgłoszenia nieprzyjętego przez autora i Weryfikatora.
  *
- * <p>Wymagania: US4, US7, BR-9, US8.3, BR-10, BR-6, BR-5, US10.1, BR-13</p>
+ * <p>Wymagania: US4, US7, BR-9, US8.3, BR-10, BR-6, BR-5</p>
  *
  * @since 0.1.0
  */
@@ -92,26 +90,6 @@ public final class SubmissionsController {
             )
         ).map(SubmissionResponse::new)
             .orElseThrow(() -> new MissingResource(SubmissionsController.MISSING));
-    }
-
-    /**
-     * Zwraca zgłoszenia podobne do danego w promieniu 10 m, z każdego piętra.
-     * Sprawdzane zgłoszenie może mieć dowolny status.
-     * Wymóg roli Weryfikatora dochodzi z logowaniem w sprincie 5.
-     *
-     * <p>Wymagania: US10.1, BR-13</p>
-     *
-     * @param id Identyfikator sprawdzanego zgłoszenia
-     * @return Podobne zgłoszenia od najbliższego
-     */
-    @GetMapping("/submissions/{submissionId}/similar")
-    List<SimilarSubmissionResponse> listSimilarSubmissions(
-        @PathVariable("submissionId") final UUID id
-    ) {
-        if (this.finder.find(id).isEmpty()) {
-            throw new MissingResource(SubmissionsController.MISSING);
-        }
-        return this.finder.similar(id).stream().map(SimilarSubmissionResponse::new).toList();
     }
 
     /**

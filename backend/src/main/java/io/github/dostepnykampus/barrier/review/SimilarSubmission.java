@@ -3,8 +3,10 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier.submission;
+package io.github.dostepnykampus.barrier.review;
 
+import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import java.util.EnumSet;
 import java.util.Set;
 

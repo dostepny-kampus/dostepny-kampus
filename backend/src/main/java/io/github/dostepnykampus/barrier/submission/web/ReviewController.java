@@ -5,15 +5,14 @@
  */
 package io.github.dostepnykampus.barrier.submission.web;
 
+import io.github.dostepnykampus.barrier.review.ReviewDecision;
 import io.github.dostepnykampus.barrier.submission.EditResult;
-import io.github.dostepnykampus.barrier.submission.ReviewDecision;
 import io.github.dostepnykampus.barrier.submission.StoredPhotos;
 import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.application.ReviewQueue;
 import io.github.dostepnykampus.barrier.submission.application.StaleEntranceMarking;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReview;
-import io.github.dostepnykampus.barrier.submission.application.SubmissionService;
 import io.github.dostepnykampus.shared.error.ConflictingState;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import io.github.dostepnykampus.shared.error.MissingResource;
@@ -28,11 +27,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Weryfikacja zgłoszeń: kolejka weryfikacji, wzięcie zgłoszenia do weryfikacji
+ * Weryfikacja zgłoszeń: kolejka weryfikacji, podobne zgłoszenia, wzięcie do weryfikacji
  * i decyzja Weryfikatora. Własnego zgłoszenia Weryfikator nie widzi w kolejce,
  * nie bierze ani nie rozstrzyga.
+ * TODO(#3999): klasa przechodzi do tematu review.
  *
- * <p>Wymagania: US10, US10.4, US10.5, US10.7, BR-4, BR-11, BR-3, BR-16, BR-7, BR-8</p>
+ * <p>Wymagania: US10, US10.1, US10.4, US10.5, US10.7, BR-3, BR-4, BR-7, BR-8, BR-11, BR-13,
+ * BR-16</p>
  *
  * @since 0.1.0
  */
@@ -42,26 +43,22 @@ public final class ReviewController {
     /** Opis braku zgłoszenia w odpowiedzi 404. */
     private static final String MISSING = "Nie ma takiego zgłoszenia";
 
-    /** Zapis zgłoszeń. */
-    private final SubmissionService service;
-
-    /** Zapis i zastosowanie decyzji. */
+    /** Wzięcie zgłoszenia i zapis decyzji. */
     private final SubmissionReview review;
 
     /** Odczyt zgłoszeń. */
     private final SubmissionReading finder;
 
-    /** Kolejka weryfikacji. */
+    /** Kolejka weryfikacji i podobne zgłoszenia. */
     private final ReviewQueue queue;
 
     /** Kontrola kompletu zdjęć przed wzięciem i decyzją. */
     private final StoredPhotos photos;
 
     ReviewController(
-        final SubmissionService service, final SubmissionReview review,
-        final SubmissionReading finder, final ReviewQueue queue, final StoredPhotos photos
+        final SubmissionReview review, final SubmissionReading finder, final ReviewQueue queue,
+        final StoredPhotos photos
     ) {
-        this.service = service;
         this.review = review;
         this.finder = finder;
         this.queue = queue;
@@ -87,6 +84,25 @@ public final class ReviewController {
     }
 
     /**
+     * Zwraca zgłoszenia podobne do danego w promieniu 10 m, z każdego piętra.
+     * Sprawdzane zgłoszenie może mieć dowolny status; jego brak daje 404.
+     *
+     * <p>Wymagania: US10.1, BR-13</p>
+     *
+     * @param id Identyfikator sprawdzanego zgłoszenia
+     * @return Podobne zgłoszenia od najbliższego
+     */
+    @GetMapping("/submissions/{submissionId}/similar")
+    List<SimilarSubmissionResponse> listSimilarSubmissions(
+        @PathVariable("submissionId") final UUID id
+    ) {
+        if (this.finder.find(id).isEmpty()) {
+            throw new MissingResource(ReviewController.MISSING);
+        }
+        return this.queue.similar(id).stream().map(SimilarSubmissionResponse::new).toList();
+    }
+
+    /**
      * Bierze zgłoszenie „wysłane” do weryfikacji; wzięte już przez tego Weryfikatora
      * zostaje bez zmiany. Własne zgłoszenie daje 403, wzięte przez innego
      * Weryfikatora, rozstrzygnięte albo bez wszystkich zdjęć w magazynie 409.
@@ -103,7 +119,7 @@ public final class ReviewController {
     ) {
         this.checkNotOwn(id, account);
         this.checkPhotos(id);
-        return ReviewController.saved(this.service.claim(id, account.getName()));
+        return ReviewController.saved(this.review.claim(id, account.getName()));
     }
 
     /**
@@ -125,7 +141,7 @@ public final class ReviewController {
         @RequestBody final ReviewRequest body, final Principal account
     ) {
         this.checkNotOwn(id, account);
-        if (!this.finder.claimedBy(id, account.getName())) {
+        if (!this.review.claimedBy(id, account.getName())) {
             throw new ForbiddenChange("Zgłoszenie nie jest wzięte przez tego Weryfikatora");
         }
         this.checkPhotos(id);

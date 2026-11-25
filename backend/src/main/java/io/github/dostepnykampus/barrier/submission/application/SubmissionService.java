@@ -118,20 +118,6 @@ public class SubmissionService {
         return result;
     }
 
-    /**
-     * Daje zgłoszenie Weryfikatorowi.
-     *
-     * <p>Wymagania: BR-11, US10.4</p>
-     *
-     * @param id Identyfikator zgłoszenia
-     * @param reviewer Identyfikator konta Weryfikatora
-     * @return Wynik wzięcia zgłoszenia
-     */
-    @Transactional
-    public EditResult claim(final UUID id, final String reviewer) {
-        return this.repository.claim(id, reviewer);
-    }
-
     private SubmissionContent placed(final SubmissionContent content) {
         final SubmissionContent result;
         if (content.kind().buildingFromOutline() && content.entranceId() == null) {

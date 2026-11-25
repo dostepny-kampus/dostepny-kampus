@@ -51,17 +51,6 @@ public interface SubmissionFinder {
     boolean foreign(UUID id, String account);
 
     /**
-     * Sprawdza, czy zgłoszenie istnieje i wzięło je do weryfikacji to konto.
-     *
-     * <p>Wymagania: BR-11</p>
-     *
-     * @param id Identyfikator zgłoszenia
-     * @param account Identyfikator konta Weryfikatora
-     * @return Prawda, gdy konto wzięło zgłoszenie; fałsz dla cudzego, niczyjego i braku
-     */
-    boolean claimedBy(UUID id, String account);
-
-    /**
      * Sprawdza, czy zwykłą zmianę zgłoszenia przyjętego może złożyć tylko
      * autor, a konto nim nie jest: zgłoszenie istnieje, złożyło je
      * inne konto i nie jest zgłoszeniem szybkim.
@@ -93,27 +82,6 @@ public interface SubmissionFinder {
      * @return Zgłoszenia autora posortowane po chwili utworzenia, potem po identyfikatorze
      */
     List<Submission> own(String author, SubmissionQuery query);
-
-    /**
-     * Wyszukuje zgłoszenia podobne do danego, bez niego samego.
-     *
-     * <p>Wymagania: US10.1, BR-13</p>
-     *
-     * @param id Identyfikator sprawdzanego zgłoszenia
-     * @return Podobne zgłoszenia od najbliższego; puste, gdy zgłoszenia nie ma
-     */
-    List<SimilarSubmission> similar(UUID id);
-
-    /**
-     * Wyszukuje zgłoszenia w kolejce weryfikacji dla danego konta: „wysłane” innych osób
-     * oraz „w weryfikacji” wzięte przez to konto, od najdawniej wysłanego.
-     *
-     * <p>Wymagania: US10.4, US10.5, US10.7, BR-4, BR-11</p>
-     *
-     * @param reviewer Identyfikator konta Weryfikatora
-     * @return Zgłoszenia w kolejce posortowane po chwili utworzenia, potem po identyfikatorze
-     */
-    List<Submission> reviewQueue(String reviewer);
 
     /**
      * Port stron listy zgłoszeń: strona po kursorze, w kolejności identyfikatorów.

@@ -5,32 +5,34 @@
  */
 package io.github.dostepnykampus.barrier.submission.application;
 
+import io.github.dostepnykampus.barrier.review.ReviewRepository;
+import io.github.dostepnykampus.barrier.review.SimilarSubmission;
 import io.github.dostepnykampus.barrier.submission.Submission;
-import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 /**
- * Kolejka weryfikacji dla warstwy web: kontroler nie sięga do portu
- * {@link SubmissionFinder}, tylko do tej usługi.
+ * Kolejka weryfikacji i podobne zgłoszenia dla warstwy web.
+ * TODO(#3999): klasa przechodzi do tematu review.
  *
- * <p>Wymagania: US10.4, US10.5, US10.7, BR-4, BR-11</p>
+ * <p>Wymagania: US10.1, US10.4, US10.5, US10.7, BR-4, BR-11, BR-13</p>
  *
  * @since 0.1.0
  */
 @Service
 public final class ReviewQueue {
 
-    /** Port odczytu zgłoszeń. */
-    private final SubmissionFinder finder;
+    /** Port weryfikacji zgłoszeń. */
+    private final ReviewRepository reviews;
 
     /**
      * Ctor.
      *
-     * @param finder Port odczytu zgłoszeń
+     * @param reviews Port weryfikacji zgłoszeń
      */
-    public ReviewQueue(final SubmissionFinder finder) {
-        this.finder = finder;
+    public ReviewQueue(final ReviewRepository reviews) {
+        this.reviews = reviews;
     }
 
     /**
@@ -41,6 +43,18 @@ public final class ReviewQueue {
      * @return Zgłoszenia w kolejce od najdawniej wysłanego
      */
     public List<Submission> forReviewer(final String reviewer) {
-        return this.finder.reviewQueue(reviewer);
+        return this.reviews.reviewQueue(reviewer);
+    }
+
+    /**
+     * Wyszukuje zgłoszenia podobne do danego.
+     *
+     * <p>Wymagania: US10.1, BR-13</p>
+     *
+     * @param id Identyfikator sprawdzanego zgłoszenia
+     * @return Podobne zgłoszenia od najbliższego
+     */
+    public List<SimilarSubmission> similar(final UUID id) {
+        return this.reviews.similar(id);
     }
 }
