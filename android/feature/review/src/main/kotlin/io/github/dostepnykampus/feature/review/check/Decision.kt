@@ -62,8 +62,6 @@ internal data class DecisionActions(val onAccept: () -> Unit, val onReject: (Rej
 /**
  * „Przyjmij” i „Powód odrzucenia” z „Odrzuć” na końcu treści R2, z komunikatem [notice] w miejscu czynności.
  *
- * TODO(#3854): widok R2 z danymi zgłoszenia.
- *
  * Wymagania: US10.2, BR-13, BR-16, BR-24, NFR-18
  *
  * @param similar podobne zgłoszenia do wskazania przy „Duplikat”

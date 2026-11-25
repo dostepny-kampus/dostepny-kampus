@@ -66,8 +66,6 @@ sealed interface CheckUiState {
 /**
  * R2 „Sprawdzenie zgłoszenia”: zgłoszenie i podobne zgłoszenia przy otwarciu, przyjęcie i odrzucenie z powodem.
  *
- * TODO(#3761): widok R2 i przejście z R1.
- *
  * Wymagania: US10.1, US10.2, US10.8, BR-3, BR-11, BR-13, BR-16, NFR-50
  *
  * @param submissionId identyfikator sprawdzanego zgłoszenia
