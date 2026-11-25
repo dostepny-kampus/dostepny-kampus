@@ -38,7 +38,7 @@ public const val SEVERITY_SIGN_TAG: String = "znak-uciazliwosci"
  * „Uciążliwość”: nagłówek, podpowiedź i trzy wybory z opisem, oceniane dla osoby, dla której bariera jest
  * najtrudniejsza.
  *
- * Wymagania: US7.1, US10.3, PW-13
+ * Wymagania: US7.1, US10.3
  *
  * @param severity wybrana uciążliwość albo `null`
  * @param onPick wybór uciążliwości
