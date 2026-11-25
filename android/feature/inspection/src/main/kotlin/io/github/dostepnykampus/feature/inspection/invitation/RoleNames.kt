@@ -21,4 +21,8 @@ internal fun nameOf(role: StaffRole): Int =
 /** Nazwa roli [role] w dopełniaczu. Wymagania: US12.2 */
 @StringRes
 internal fun genitiveOf(role: StaffRole): Int =
-    if (role == StaffRole.COLLECTOR) R.string.zaproszenie_zbierajacego else nameOf(role)
+    when (role) {
+        StaffRole.COLLECTOR -> R.string.zaproszenie_zbierajacego
+        StaffRole.VERIFIER -> R.string.zaproszenie_weryfikatora
+        StaffRole.COORDINATOR -> R.string.zaproszenie_koordynatora
+    }

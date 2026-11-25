@@ -9,6 +9,7 @@ import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.TestRoles
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
+import io.github.dostepnykampus.feature.inspection.navigation.ExportRoute
 import io.github.dostepnykampus.feature.inspection.navigation.MarkersRoute
 import io.github.dostepnykampus.feature.inspection.navigation.ProgressRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
@@ -37,6 +38,20 @@ class InspectionTransitionsTest {
     fun openLeadsToMarkers() {
         navigator().openMarkers(SYMBOL)
         assertEquals(listOf(MapRoute(), AccountRoute, ProgressRoute, MarkersRoute(SYMBOL)), stack, "stos po „Otwórz”")
+    }
+
+    /**
+     * „Pobierz eksport” na L2 prowadzi do K3, a „Wstecz” z K3 wraca do L2.
+     *
+     * Wymagania: US13, RO-KOO
+     */
+    @Test
+    fun exportOpensAndGoesBack() {
+        val navigator = AppNavigator(backStack = stack.apply { removeAt(lastIndex) }, roles = TestRoles(coordinator))
+        navigator.inspectionExport()
+        assertEquals(listOf(MapRoute(), AccountRoute, ExportRoute), stack, "stos po „Pobierz eksport”")
+        navigator.back()
+        assertEquals(listOf(MapRoute(), AccountRoute), stack, "stos po „Wstecz” z K3")
     }
 
     /**
