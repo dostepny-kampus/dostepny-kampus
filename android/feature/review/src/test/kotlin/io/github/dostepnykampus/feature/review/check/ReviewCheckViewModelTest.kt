@@ -18,6 +18,7 @@ import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionField
+import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import io.github.dostepnykampus.feature.review.queue.queued
 import io.github.dostepnykampus.feature.review.queue.quick
 import kotlinx.coroutines.Dispatchers
@@ -32,9 +33,10 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 /**
- * Stan R2: zgłoszenie z podobnymi, przyjęcie, odrzucenie z powodem, nowa wersja, brak sieci i stany wspólne.
+ * Stan R2: zgłoszenie z podobnymi, przyjęcie, odrzucenie z powodem, nowa wersja, poprzednie zgłoszenie przy
+ * „bariera usunięta”, brak sieci i stany wspólne.
  *
- * Wymagania: US10.1, US10.2, US10.8, BR-3, BR-13, BR-16, NFR-50
+ * Wymagania: US10.1, US10.2, US10.6, US10.8, BR-3, BR-13, BR-16, BR-19, NFR-50
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReviewCheckViewModelTest {
@@ -168,6 +170,20 @@ class ReviewCheckViewModelTest {
     }
 
     @Test
+    fun removedReadsPrevious() {
+        val earlier = queued(id = "p", day = 1).copy(status = SubmissionStatus.ACCEPTED)
+        val change = CHECKED.content.copy(isBarrierRemoved = true, replacesSubmissionId = earlier.id)
+        checkTest(Fake(found = ServerReply.Ok(CHECKED.copy(content = change)), previous = earlier)) { model ->
+            runCurrent()
+            assertEquals(
+                PreviousSubmission(status = SubmissionStatus.ACCEPTED, photoUrl = "p/p-p"),
+                (model.state.value as CheckUiState.Ready).previous,
+                "status i zdjęcie poprzedniego zgłoszenia",
+            )
+        }
+    }
+
+    @Test
     fun offlineDecisionWaits() =
         checkTest(Fake(outcome = ServerReply.Offline)) { model ->
             runCurrent()
@@ -195,10 +211,12 @@ class ReviewCheckViewModelTest {
         private val found: ServerReply<Submission> = ServerReply.Ok(CHECKED),
         private val similar: ServerReply<List<SimilarSubmission>> = ServerReply.Ok(listOf(NEAR)),
         private val outcome: ServerReply<ReviewOutcome> = ServerReply.Ok(ReviewOutcome.Decided(CHECKED)),
+        private val previous: Submission? = null,
     ) : Reviews {
         override suspend fun queue(): ServerReply<ReviewQueue> = ServerReply.Missing
 
-        override suspend fun submission(submissionId: String): ServerReply<Submission> = found
+        override suspend fun submission(submissionId: String): ServerReply<Submission> =
+            previous?.takeIf { it.id == submissionId }?.let { ServerReply.Ok(it) } ?: found
 
         override fun photoUrl(submissionId: String, photoId: String): String = "$submissionId/$photoId"
 

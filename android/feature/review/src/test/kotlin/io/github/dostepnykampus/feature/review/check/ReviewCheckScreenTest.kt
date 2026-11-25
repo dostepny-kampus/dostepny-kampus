@@ -24,6 +24,7 @@ import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionField
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
+import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import io.github.dostepnykampus.feature.review.queue.queued
 import io.github.dostepnykampus.feature.review.queue.quick
 import org.junit.Assert.assertEquals
@@ -35,9 +36,10 @@ import org.robolectric.annotation.Config
 
 /**
  * R2 „Sprawdzenie zgłoszenia”: dane zgłoszenia z miejscem słowami, podobne zgłoszenia, decyzja, typ i uciążliwość
- * zgłoszenia szybkiego, komunikaty, zmiana oznaczenia wejścia bez „Duplikat”, wczytywanie i stany wspólne.
+ * zgłoszenia szybkiego, komunikaty, poprzednie zgłoszenie przy „bariera usunięta”, zmiana oznaczenia wejścia
+ * bez „Duplikat”, wczytywanie i stany wspólne.
  *
- * Wymagania: US10, US10.1, US10.2, US10.3, NFR-19, US10.8, BR-3, BR-11, BR-24, NFR-50
+ * Wymagania: US10, US10.1, US10.2, US10.3, US10.6, NFR-19, US10.8, BR-3, BR-11, BR-19, BR-24, NFR-50
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
@@ -129,6 +131,22 @@ class ReviewCheckScreenTest {
         show(READY.copy(submission = marking))
         compose.onNodeWithText("Nieaktualne").performScrollTo()
         assertEquals("bez „Duplikat”", 0, compose.onAllNodes(hasTextExactly("Duplikat")).fetchSemanticsNodes().size)
+    }
+
+    @Test
+    fun showsPreviousOfRemoved() {
+        val removed = CHECKED.run { copy(content = content.copy(isBarrierRemoved = true, replacesSubmissionId = "p")) }
+        show(
+            READY.copy(
+                submission = removed,
+                photoUrls = listOf("a/p-a"),
+                previous = PreviousSubmission(status = SubmissionStatus.ARCHIVED, photoUrl = "p/p-p"),
+            ),
+        )
+        compose.onNodeWithText("Zdjęcie z poprzedniego zgłoszenia").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Nowe zdjęcie miejsca").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Poprzednie zgłoszenie:").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Archiwalne").performScrollTo().assertIsDisplayed()
     }
 
     @Test
