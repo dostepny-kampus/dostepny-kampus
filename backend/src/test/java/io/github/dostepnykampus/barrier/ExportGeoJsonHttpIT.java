@@ -103,23 +103,21 @@ final class ExportGeoJsonHttpIT {
         final JsonNode features =
             context.getBean(ObjectMapper.class).readTree(json).path("features");
         final JsonNode one = ExportGeoJsonHttpIT.byId(features, accepted);
-        final JsonNode props = one.path("properties");
         final String low = json.toLowerCase(Locale.ROOT);
         MatcherAssert.assertThat(
             "Eksport GeoJSON zawiera niewłaściwe zgłoszenia, dane autora, kontur albo zły układ",
             List.of(
                 new OpenApiContract().violations("ExportFeatureCollection", json),
                 features.size(), one.path("geometry").path("coordinates").toString(),
-                props.path("barrierGroup").asString(), props.path("buildingSymbol").asString(),
-                props.path("floor").asString(), props.path("description").asString(),
+                one.path("properties").path("barrierGroup").asString(), one.path("properties").path("buildingSymbol").asString(),
+                one.path("properties").path("floor").asString(), one.path("properties").path("description").asString(),
                 low.contains("konto-testowe") || low.contains("author")
                     || low.contains("polygon") || low.contains("outline")
             ),
             Matchers.is(
                 List.of(
                     List.of(), 1, "[17.05989,51.10916]", "ENTRANCE_AND_DOORS",
-                    "A-1", "0 półpiętro", "=Schody, \"próg\" i żółta poręcz",
-                    false
+                    "A-1", "0 półpiętro", "=Schody, \"próg\" i żółta poręcz", false
                 )
             )
         );
