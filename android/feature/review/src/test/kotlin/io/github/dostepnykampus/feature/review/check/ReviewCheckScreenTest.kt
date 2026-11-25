@@ -54,6 +54,7 @@ class ReviewCheckScreenTest {
     fun showsChangedAndOffline() {
         show(READY.copy(notice = CheckNotice.CHANGED))
         compose.onNodeWithText("Autor zmienił zgłoszenie.").assertIsDisplayed()
+        compose.onNodeWithText("Sprawdź nową wersję przed decyzją.").assertIsDisplayed()
         shown.value = READY.copy(notice = CheckNotice.OFFLINE)
         compose.onNodeWithText("Bez internetu").assertIsDisplayed()
     }
