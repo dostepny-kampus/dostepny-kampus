@@ -9,7 +9,7 @@
  *
  * <p>Zadanie: role z tokenu Keycloak, dostęp do API według ról i nadawanie ról kontom.</p>
  *
- * <p>API: brak typów dla innych modułów; operacje HTTP {@code /me} i {@code /invitations}.</p>
+ * <p>API: identyfikator konta z pseudonimem; operacje HTTP {@code /me} i {@code /invitations}.</p>
  *
  * <p>Zależności: {@code shared}.</p>
  *

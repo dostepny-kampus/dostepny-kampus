@@ -34,9 +34,9 @@ testy architektury i kompilator.
 
 Moduł to pakiet najwyższego poziomu pod `io.github.dostepnykampus`. Wszystkie działają w jednym procesie,
 granice sprawdza Spring Modulith. Schemat zależności modułów powstaje z kodu (`ModularityIT` porównuje
-go z plikiem `moduly-serwera.iuml`); moduł bez zależności, dziś `identity`, nie ma na nim strzałek.
+go z plikiem `moduly-serwera.iuml`). Każdy moduł zależy od `shared`; `identity` poza nim od nikogo.
 
-![Diagram zależności modułów serwera: barrier zależy od building i shared, inspection zależy od building i shared, sync zależy od inspection i shared, building zależy od shared](../_generated/moduly-serwera.svg)
+![Diagram zależności modułów serwera: barrier zależy od building i shared, inspection zależy od building, identity i shared, sync zależy od inspection i shared, building i identity zależą od shared](../_generated/moduly-serwera.svg)
 
 Moduł z kilkoma tematami, na przykładzie `barrier`:
 

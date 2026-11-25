@@ -8,6 +8,7 @@ package io.github.dostepnykampus.inspection.persistence;
 import io.github.dostepnykampus.inspection.domain.BuildingProgress;
 import io.github.dostepnykampus.inspection.domain.ProgressMarker;
 import io.github.dostepnykampus.inspection.domain.ProgressRepository;
+import io.github.dostepnykampus.inspection.domain.Pseudonyms;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -32,12 +33,19 @@ public final class JdbcProgress implements ProgressRepository {
     private final JdbcClient jdbc;
 
     /**
+     * Pseudonimy autorów znaczników.
+     */
+    private final Pseudonyms pseudonyms;
+
+    /**
      * Tworzy adapter odczytu postępu.
      *
      * @param jdbc Dostęp do bazy
+     * @param pseudonyms Pseudonimy autorów znaczników
      */
-    public JdbcProgress(final JdbcClient jdbc) {
+    public JdbcProgress(final JdbcClient jdbc, final Pseudonyms pseudonyms) {
         this.jdbc = jdbc;
+        this.pseudonyms = pseudonyms;
     }
 
     @Override
@@ -76,11 +84,11 @@ public final class JdbcProgress implements ProgressRepository {
             WHERE NOT revoked
             ORDER BY building_symbol, created_at, id
             """
-        ).query((rows, num) -> JdbcProgress.marker(rows, viewer)).list().stream()
+        ).query((rows, num) -> this.marker(rows, viewer)).list().stream()
             .collect(Collectors.groupingBy(item -> item.place().building()));
     }
 
-    private static ProgressMarker marker(final ResultSet rows, final String viewer)
+    private ProgressMarker marker(final ResultSet rows, final String viewer)
         throws SQLException {
         final String author = MarkerRows.text(rows, "author");
         return new ProgressMarker(
@@ -88,7 +96,7 @@ public final class JdbcProgress implements ProgressRepository {
             MarkerRows.place(rows),
             MarkerRows.instant(rows, "created_at"),
             author.equals(viewer),
-            JdbcProgress.pseudonym(author)
+            this.pseudonyms.of(author)
         );
     }
 
@@ -115,9 +123,5 @@ public final class JdbcProgress implements ProgressRepository {
             ),
             grouped.getOrDefault(symbol, List.of())
         );
-    }
-
-    private static String pseudonym(final String author) {
-        return String.format("Autor %d", Math.floorMod(author.hashCode(), 999) + 1);
     }
 }
