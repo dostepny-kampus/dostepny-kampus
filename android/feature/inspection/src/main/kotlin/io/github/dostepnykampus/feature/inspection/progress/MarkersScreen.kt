@@ -193,4 +193,8 @@ private fun ProgressMarker.floorLabel(floorLabels: Map<String, String>): String?
     (marker.place as? MarkerPlace.Floor)?.let { floorLabels[it.floorId] }
 
 private val RevokeFailure.message: Int
-    get() = if (this == RevokeFailure.OFFLINE) DesignR.string.praca_wymaga_internetu else DesignR.string.praca_blad_serwera
+    get() =
+        when (this) {
+            RevokeFailure.OFFLINE -> DesignR.string.praca_wymaga_internetu
+            RevokeFailure.SERVER -> DesignR.string.praca_blad_serwera
+        }
