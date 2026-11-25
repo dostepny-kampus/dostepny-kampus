@@ -26,7 +26,7 @@ import kotlin.coroutines.CoroutineContext
  * Wymagania: US9.3, BR-10
  */
 public interface VersionConflicts {
-    /** Obie wersje zgłoszenia [id]; `null`, gdy nie czeka ono na wybór wersji albo należy do innego konta. */
+    /** Obie wersje zgłoszenia [id]; `null`, gdy nie czeka na wybór wersji albo należy do innego konta. */
     public suspend fun find(id: String): VersionConflict?
 
     /**
