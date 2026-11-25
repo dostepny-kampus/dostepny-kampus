@@ -1,4 +1,9 @@
 dk:
+  accounts:
+    admin: ${DK_AUTH_ADMIN_URL:http://localhost:8180/admin/realms/dostepny-kampus}
+    client: ${DK_AUTH_SERVICE_CLIENT:dostepny-kampus-serwer}
+    secret: ${DK_AUTH_SERVICE_SECRET:}
+    token: ${DK_AUTH_TOKEN_URL:http://localhost:8180/realms/dostepny-kampus/protocol/openid-connect/token}
   photos:
     access-key: ${DK_PHOTOS_ACCESS_KEY:}
     bucket: ${DK_PHOTOS_BUCKET:zdjecia}
