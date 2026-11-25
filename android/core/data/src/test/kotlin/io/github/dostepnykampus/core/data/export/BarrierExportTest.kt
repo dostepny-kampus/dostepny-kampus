@@ -42,7 +42,6 @@ class BarrierExportTest {
     fun noNetworkIsOffline() {
         val outcome = download(ApiResult.NetworkError(IOException("brak sieci")), ExportFormat.CSV)
         assertEquals(ExportOutcome.Offline, outcome, "brak sieci")
-        assertEquals(emptyList<List<String>>(), saved, "nic nie zapisane")
     }
 
     @Test

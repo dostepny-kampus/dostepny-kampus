@@ -7,13 +7,14 @@ package io.github.dostepnykampus.core.network.export
 
 import io.github.dostepnykampus.core.model.export.ExportFormat
 import io.github.dostepnykampus.core.network.ApiResult
+import io.github.dostepnykampus.core.network.decodeContract
 import io.github.dostepnykampus.core.network.decodedResult
 import io.github.dostepnykampus.core.network.exchange
 import io.github.dostepnykampus.core.network.unexpectedResult
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -67,5 +68,5 @@ public class ExportApi(private val http: OkHttpClient, private val json: Json, b
         }
 
     private fun features(body: String): JsonArray =
-        requireNotNull(json.parseToJsonElement(body).jsonObject["features"]).jsonArray
+        requireNotNull(json.decodeContract(JsonObject.serializer(), body)["features"]).jsonArray
 }
