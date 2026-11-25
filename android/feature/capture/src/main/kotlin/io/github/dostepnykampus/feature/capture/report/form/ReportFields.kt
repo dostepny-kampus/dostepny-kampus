@@ -31,6 +31,7 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.marking.descriptionRes
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
+import io.github.dostepnykampus.core.geo.building.EntranceDistance
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.capture.R
 import java.util.Locale
@@ -78,6 +79,17 @@ private fun buildingText(place: ReportPlace): String {
 private fun placeInWords(place: ReportPlace): String {
     val accuracy = String.format(POLISH, "%.1f", place.accuracyMeters)
     val nearest = place.nearestEntrance ?: return stringResource(R.string.formularz_dokladnosc, accuracy)
+    return stringResource(R.string.formularz_miejsce, nearestInWords(nearest), accuracy)
+}
+
+/**
+ * Odległość od najbliższego wejścia słowami, np. „ok. 3 m od wejścia głównego”; bez współrzędnych.
+ *
+ * Wymagania: US7.4, US8.4, NFR-19
+ */
+@Composable
+@ReadOnlyComposable
+internal fun nearestInWords(nearest: EntranceDistance): String {
     val name = nearest.entrance.name
     val entrance =
         when {
@@ -86,7 +98,7 @@ private fun placeInWords(place: ReportPlace): String {
             else -> stringResource(R.string.formularz_wejscie)
         }
     val meters = nearest.meters.roundToInt().coerceAtLeast(1)
-    return stringResource(R.string.formularz_miejsce, meters, entrance, accuracy)
+    return stringResource(R.string.formularz_miejsce_od, meters, entrance)
 }
 
 /**

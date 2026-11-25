@@ -36,6 +36,7 @@ import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
 import io.github.dostepnykampus.feature.capture.report.form.PhotoSection
 import io.github.dostepnykampus.feature.capture.report.form.SendFailure
+import io.github.dostepnykampus.feature.capture.report.form.nearestInWords
 
 /**
  * Treść C7 „Usunięcie bariery” dla stanu [state], bez ViewModelu: dane zgłoszenia przyjętego bez edycji, nowe
@@ -92,6 +93,7 @@ private fun Accepted(barrier: AcceptedBarrier, state: RemovedUiState) {
                 floor = barrier.floor,
             )
         Text(place)
+        state.nearest?.let { Text(nearestInWords(it)) }
         barrier.verifiedAt?.let { verified ->
             val text = stringResource(R.string.usuniecie_sprawdzone, campusDay(verified))
             Text(text, color = MaterialTheme.colorScheme.onSurfaceVariant)
