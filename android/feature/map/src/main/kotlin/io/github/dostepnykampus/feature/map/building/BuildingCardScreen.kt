@@ -200,7 +200,7 @@ private fun Modifier.fixedTopPadding(): Modifier =
     padding(start = Odstepy.m, top = Odstepy.m, end = Odstepy.m, bottom = Odstepy.s)
 
 @Composable
-private fun FactsOrMissing(
+private fun ColumnScope.FactsOrMissing(
     card: BuildingCardUiState,
     isFullScreen: Boolean,
     onReport: () -> Unit,
