@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier.submission.application;
+package io.github.dostepnykampus.barrier.review.application;
 
 import io.github.dostepnykampus.barrier.review.ReviewDecision;
 import io.github.dostepnykampus.barrier.review.ReviewRepository;

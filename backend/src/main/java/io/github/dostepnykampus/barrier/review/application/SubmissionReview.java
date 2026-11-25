@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier.submission.application;
+package io.github.dostepnykampus.barrier.review.application;
 
 import io.github.dostepnykampus.barrier.review.ReviewDecision;
 import io.github.dostepnykampus.barrier.review.ReviewRepository;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Wzięcie zgłoszenia do weryfikacji i zapis decyzji Weryfikatora ze skutkami przyjęcia:
  * archiwizacją zastąpionego zgłoszenia, zgłoszenia „bariera usunięta” i zastosowanej
- * zmiany oznaczenia wejścia. TODO(#3999): klasa przechodzi do tematu review.
+ * zmiany oznaczenia wejścia.
  *
  * <p>Wymagania: US10.6, US17.2, US17.3, BR-11, BR-18, BR-19, BR-23, BR-24</p>
  *
