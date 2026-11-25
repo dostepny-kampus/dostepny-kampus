@@ -1,6 +1,6 @@
 mkdocs==1.6.1
-mkdocs-material==9.8.1
-pymdown-extensions==13.1
-PyYAML==6.0.3
+mkdocs-material==9.8.2
+pymdown-extensions==13.1.2
+PyYAML==6.0.4
 language-tool-python==3.4.0
 playwright==1.65.2
