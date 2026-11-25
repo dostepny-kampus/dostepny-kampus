@@ -36,3 +36,14 @@ internal fun queued(id: String, day: Int): Submission =
                 severity = 2,
             ),
     )
+
+/**
+ * Zgłoszenie szybkie [id] z grupą „Komunikacja pionowa”, bez typu i uciążliwości, wysłane jak [queued].
+ *
+ * @param id identyfikator zgłoszenia
+ */
+internal fun quick(id: String): Submission =
+    queued(id = id, day = 27).run {
+        val asked = content.copy(barrierGroup = BarrierGroup.VERTICAL_CIRCULATION, barrierType = null, severity = null)
+        copy(content = asked.copy(kind = SubmissionKind.QUICK))
+    }

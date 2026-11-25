@@ -12,8 +12,11 @@ import io.github.dostepnykampus.core.model.review.ReviewClaim
 import io.github.dostepnykampus.core.model.review.ReviewDecision
 import io.github.dostepnykampus.core.model.review.ReviewOutcome
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
+import io.github.dostepnykampus.core.model.submission.BarrierType
+import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.feature.review.queue.queued
+import io.github.dostepnykampus.feature.review.queue.quick
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -100,6 +103,35 @@ class ReviewCheckViewModelTest {
                     ReviewDecision.Reject(version = 1, reason = "Nieaktualne"),
                 )
             assertEquals(expected, decisions, "odrzucenie duplikatu i odrzucenie z powodem")
+        }
+
+    @Test
+    fun quickNeedsTypeAndSeverity() =
+        checkTest(Fake(found = ServerReply.Ok(quick(CHECKED.id)))) { model ->
+            runCurrent()
+            model.pickType(BarrierType.THRESHOLD)
+            model.accept { done++ }
+            runCurrent()
+            assertEquals(CheckNotice.TYPE_MISSING, (model.state.value as CheckUiState.Ready).notice, "komunikat")
+            assertEquals(emptyList<ReviewDecision>(), decisions, "bez uciążliwości nic nie idzie na serwer")
+        }
+
+    @Test
+    fun quickSendsChosenType() =
+        checkTest(Fake(found = ServerReply.Ok(quick(CHECKED.id)))) { model ->
+            runCurrent()
+            model.pickType(BarrierType.THRESHOLD)
+            model.pickSeverity(Severity.BLOCKING)
+            model.accept { done++ }
+            runCurrent()
+            val expected =
+                ReviewDecision.AcceptQuick(
+                    version = 1,
+                    barrierType = BarrierType.THRESHOLD.code,
+                    severity = Severity.BLOCKING.value,
+                )
+            assertEquals(listOf(expected), decisions, "przyjęcie z typem i uciążliwością")
+            assertEquals(1, done, "powrót do R1 po decyzji")
         }
 
     @Test
