@@ -9,7 +9,7 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.2</version>
+    <version>4.2.0</version>
     <relativePath/>
   </parent>
   <groupId>io.github.dostepnykampus</groupId>
@@ -21,19 +21,19 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
     <java.version>25</java.version>
     <qulice.version>0.36.1</qulice.version>
     <jtcop.version>1.4.4</jtcop.version>
-    <spring-modulith.version>2.1.2</spring-modulith.version>
+    <spring-modulith.version>2.2.0</spring-modulith.version>
     <archunit.version>1.5.1</archunit.version>
-    <cucumber.version>8.0.4</cucumber.version>
+    <cucumber.version>8.1.0</cucumber.version>
     <jacoco.version>0.8.16</jacoco.version>
-    <awssdk.version>2.59.1</awssdk.version>
+    <awssdk.version>2.59.7</awssdk.version>
     <argLine/>
-    <errorprone.version>2.52.0</errorprone.version>
-    <nullaway.version>0.14.3</nullaway.version>
+    <errorprone.version>2.53.0</errorprone.version>
+    <nullaway.version>0.14.4</nullaway.version>
     <jspecify.version>1.0.1</jspecify.version>
     <!-- Wersja, której wymaga openapi-request-validator (#830); 3.x ma inne API na Jackson 3. -->
     <json-schema-validator.version>2.0.1</json-schema-validator.version>
     <openapi-request-validator.version>3.0.0</openapi-request-validator.version>
-    <proj4j.version>1.4.3</proj4j.version>
+    <proj4j.version>1.5.0</proj4j.version>
     <pitest.version>1.30.2</pitest.version>
     <!-- Wydanie z 20.05.2025, starsze niż 12 miesięcy: wyjątek od ADR-0004 w ADR-0010 (#900). -->
     <pitest-junit5.version>1.2.3</pitest-junit5.version>
@@ -102,7 +102,7 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
     <dependency>
       <groupId>com.bucket4j</groupId>
       <artifactId>bucket4j_jdk17-core</artifactId>
-      <version>8.22.0</version>
+      <version>8.23.0</version>
     </dependency>
     <dependency>
       <groupId>com.github.ben-manes.caffeine</groupId>
