@@ -85,8 +85,10 @@ public final class ExportGeoJsonController {
         out.writeEndObject();
         out.writeObjectPropertyStart("properties");
         out.writeStringProperty("submissionId", submission.id().toString());
-        ExportGeoJsonController.prop(out, "barrierType",
-            Optional.ofNullable(barrier.type()).map(BarrierType::code).orElse(null));
+        ExportGeoJsonController.prop(
+            out, "barrierType",
+            Optional.ofNullable(barrier.type()).map(BarrierType::code).orElse(null)
+        );
         ExportGeoJsonController.prop(out, "barrierGroup", BarrierExport.group(barrier.group()));
         final @Nullable Integer severity = barrier.severity();
         if (severity != null) {
@@ -97,9 +99,11 @@ public final class ExportGeoJsonController {
             out, "floor", this.export.floor(place.buildingSymbol(), place.floor())
         );
         ExportGeoJsonController.prop(out, "description", barrier.description());
-        ExportGeoJsonController.prop(out, "verifiedAt",
+        ExportGeoJsonController.prop(
+            out, "verifiedAt",
             Optional.ofNullable(BarrierExport.verifiedAt(submission))
-                .map(Instant::toString).orElse(null));
+                .map(Instant::toString).orElse(null)
+        );
         out.writeEndObject();
         out.writeEndObject();
     }

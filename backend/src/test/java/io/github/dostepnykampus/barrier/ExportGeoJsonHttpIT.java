@@ -63,18 +63,24 @@ final class ExportGeoJsonHttpIT {
         final OpenApiContract contract = new OpenApiContract();
         final HttpResponse<String> anon = ExportGeoJsonHttpIT.send(port, null);
         final HttpResponse<String> visitor = ExportGeoJsonHttpIT.send(port, "Bearer VISITOR");
-        final HttpResponse<String> ok = ExportGeoJsonHttpIT.send(port, "Bearer COORDINATOR");
+        final HttpResponse<String> done = ExportGeoJsonHttpIT.send(port, "Bearer COORDINATOR");
         MatcherAssert.assertThat(
             "Kontrola dostępu albo schemat odpowiedzi GET /export.geojson jest błędna",
             List.of(
                 anon.statusCode(), contract.violations("Problem", anon.body()),
                 visitor.statusCode(), contract.violations("Problem", visitor.body()),
-                ok.statusCode(), MediaType.parseMediaType(
-                    ok.headers().firstValue(HttpHeaders.CONTENT_TYPE).orElseThrow()
-                ), contract.violations("ExportFeatureCollection", ok.body())
+                done.statusCode(),
+                MediaType.parseMediaType(
+                    done.headers().firstValue(HttpHeaders.CONTENT_TYPE).orElseThrow()
+                ),
+                contract.violations("ExportFeatureCollection", done.body())
             ),
-            Matchers.is(List.of(401, List.of(), 403, List.of(), 200,
-                MediaType.parseMediaType("application/geo+json;charset=UTF-8"), List.of()))
+            Matchers.is(
+                List.of(
+                    401, List.of(), 403, List.of(), 200,
+                    MediaType.parseMediaType("application/geo+json;charset=UTF-8"), List.of()
+                )
+            )
         );
     }
 
@@ -83,28 +89,52 @@ final class ExportGeoJsonHttpIT {
         final WebApplicationContext context, @LocalServerPort final int port
     ) throws Exception {
         final SampleSubmissions samples = new SampleSubmissions(context);
-        final SubmissionPlace atA1 = new SubmissionPlace(new SubmissionPoint(17.059_89, 51.109_16),
-            null, false, "A-1", new SubmissionFloor(null, 0, true));
+        final SubmissionPlace inside = new SubmissionPlace(
+            new SubmissionPoint(17.059_89, 51.109_16),
+            null, false, "A-1", new SubmissionFloor(null, 0, true)
+        );
         final UUID accepted = UUID.randomUUID();
         final UUID outside = UUID.randomUUID();
         final List<UUID> created = new ArrayList<>(List.of(accepted, outside));
         final String json;
         try {
-            samples.add(accepted, "ACCEPTED", new SubmissionContent(SubmissionKind.PRECISE, atA1,
-                new BarrierDetails(BarrierGroup.ENTRANCE, new BarrierType(1), 3,
-                    "=Schody, \"próg\" i żółta poręcz", false),
-                null, null, null, List.of(UUID.randomUUID())));
+            samples.add(
+                accepted, "ACCEPTED",
+                new SubmissionContent(
+                    SubmissionKind.PRECISE, inside,
+                    new BarrierDetails(
+                        BarrierGroup.ENTRANCE, new BarrierType(1), 3,
+                        "=Schody, \"próg\" i żółta poręcz", false
+                    ),
+                    null, null, null, List.of(UUID.randomUUID())
+                )
+            );
             samples.add(outside, "ACCEPTED", ExportGeoJsonHttpIT.OUTSIDE);
-            for (final String st : List.of("ARCHIVED", "IN_REVIEW", "SENT", "REJECTED")) {
-                created.add(samples.add(st, ExportGeoJsonHttpIT.OUTSIDE));
+            for (final String state : List.of("ARCHIVED", "IN_REVIEW", "SENT", "REJECTED")) {
+                created.add(samples.add(state, ExportGeoJsonHttpIT.OUTSIDE));
             }
-            created.add(samples.add("ACCEPTED", new SubmissionContent(SubmissionKind.PRECISE, atA1,
-                new BarrierDetails(BarrierGroup.ENTRANCE, new BarrierType(1), null, null, true),
-                null, null, UUID.randomUUID(), List.of(UUID.randomUUID()))));
-            created.add(samples.add("ACCEPTED", new SubmissionContent(
-                SubmissionKind.ENTRANCE_MARKING, atA1,
-                new BarrierDetails(null, null, null, null, false), "wejscie-a1",
-                NewEntranceMarking.ACCESSIBLE, null, List.of(UUID.randomUUID()))));
+            created.add(
+                samples.add(
+                    "ACCEPTED",
+                    new SubmissionContent(
+                        SubmissionKind.PRECISE, inside,
+                        new BarrierDetails(
+                            BarrierGroup.ENTRANCE, new BarrierType(1), null, null, true
+                        ),
+                        null, null, UUID.randomUUID(), List.of(UUID.randomUUID())
+                    )
+                )
+            );
+            created.add(
+                samples.add(
+                    "ACCEPTED",
+                    new SubmissionContent(
+                        SubmissionKind.ENTRANCE_MARKING, inside,
+                        new BarrierDetails(null, null, null, null, false), "wejscie-a1",
+                        NewEntranceMarking.ACCESSIBLE, null, List.of(UUID.randomUUID())
+                    )
+                )
+            );
             json = ExportGeoJsonHttpIT.send(port, "Bearer COORDINATOR").body();
         } finally {
             samples.remove(created);
@@ -117,17 +147,23 @@ final class ExportGeoJsonHttpIT {
         final String low = json.toLowerCase(Locale.ROOT);
         MatcherAssert.assertThat(
             "Eksport GeoJSON zawiera niewłaściwe zgłoszenia, dane autora, kontur albo zły układ",
-            List.of(new OpenApiContract().violations("ExportFeatureCollection", json),
+            List.of(
+                new OpenApiContract().violations("ExportFeatureCollection", json),
                 features.size(), one.path("geometry").path("coordinates").toString(),
                 props.path("barrierGroup").asString(), props.path("buildingSymbol").asString(),
                 props.path("floor").asString(), props.path("description").asString(),
                 absent.has("buildingSymbol"), absent.has("floor"), absent.has("description"),
                 low.contains("konto-testowe") || low.contains("author")
                     || low.contains("pseudonym") || low.contains("email"),
-                low.contains("polygon") || low.contains("outline")),
-            Matchers.is(List.of(List.of(), 2, "[17.05989,51.10916]", "ENTRANCE_AND_DOORS",
-                "A-1", "0 półpiętro", "=Schody, \"próg\" i żółta poręcz",
-                false, false, false, false, false))
+                low.contains("polygon") || low.contains("outline")
+            ),
+            Matchers.is(
+                List.of(
+                    List.of(), 2, "[17.05989,51.10916]", "ENTRANCE_AND_DOORS",
+                    "A-1", "0 półpiętro", "=Schody, \"próg\" i żółta poręcz",
+                    false, false, false, false, false
+                )
+            )
         );
     }
 

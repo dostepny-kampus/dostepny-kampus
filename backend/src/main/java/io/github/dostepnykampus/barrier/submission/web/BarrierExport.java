@@ -52,19 +52,21 @@ final class BarrierExport {
     ) {
         @Nullable String result = null;
         if (floor != null) {
-            result = this.submissions.floorLabel(symbol, floor.floorId()).orElse(null);
-            if (result == null) {
-                final String suffix;
-                if (floor.mezzanine()) {
-                    suffix = " półpiętro";
-                } else {
-                    suffix = "";
-                }
-                result = Optional.ofNullable(floor.number())
-                    .map(number -> number + suffix).orElse(floor.floorId());
-            }
+            result = this.submissions.floorLabel(symbol, floor.floorId())
+                .orElseGet(() -> BarrierExport.number(floor));
         }
         return result;
+    }
+
+    private static @Nullable String number(final SubmissionFloor floor) {
+        final String suffix;
+        if (floor.mezzanine()) {
+            suffix = " półpiętro";
+        } else {
+            suffix = "";
+        }
+        return Optional.ofNullable(floor.number())
+            .map(number -> number + suffix).orElse(floor.floorId());
     }
 
     static @Nullable String group(final @Nullable BarrierGroup group) {
@@ -79,16 +81,24 @@ final class BarrierExport {
     }
 
     static @Nullable Instant verifiedAt(final Submission submission) {
-        @Nullable Instant result = submission.verification();
-        if (Instant.MIN.equals(result)) {
+        final @Nullable Instant verified = submission.verification();
+        final @Nullable Instant result;
+        if (Instant.MIN.equals(verified)) {
             result = null;
+        } else {
+            result = verified;
         }
         return result;
     }
 
-    /** Zapis pojedynczego zgłoszenia. @since 0.1.0 */
+    /**
+     * Zapis pojedynczego zgłoszenia.
+     *
+     * @since 0.1.0
+     */
     @FunctionalInterface
     interface Writer {
+
         void write(Submission submission) throws IOException;
     }
 }
