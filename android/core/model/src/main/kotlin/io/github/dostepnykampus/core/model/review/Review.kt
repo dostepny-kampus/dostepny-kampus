@@ -60,13 +60,7 @@ public sealed interface ReviewDecision {
         ReviewDecision
 }
 
-/**
- * Wynik wzięcia zgłoszenia do sprawdzenia.
- *
- * TODO(#3796): wynik trasy wzięcia w kliencie HTTP sprawdzania.
- *
- * Wymagania: US10.4, BR-11
- */
+/** Wynik wzięcia zgłoszenia do sprawdzenia. Wymagania: US10.4, BR-11 */
 public sealed interface ReviewClaim {
     /**
      * Zgłoszenie jest w weryfikacji u tego Weryfikatora.
@@ -79,13 +73,7 @@ public sealed interface ReviewClaim {
     public data object Taken : ReviewClaim
 }
 
-/**
- * Wynik decyzji o zgłoszeniu.
- *
- * TODO(#3796): wynik trasy decyzji w kliencie HTTP sprawdzania.
- *
- * Wymagania: US10.8, BR-3
- */
+/** Wynik decyzji o zgłoszeniu. Wymagania: US10.8, BR-3 */
 public sealed interface ReviewOutcome {
     /**
      * Serwer zapisał decyzję.

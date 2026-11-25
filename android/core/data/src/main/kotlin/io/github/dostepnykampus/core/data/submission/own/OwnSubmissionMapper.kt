@@ -65,12 +65,6 @@ internal fun versionOf(result: ServerReply<*>): Int? {
     }
 }
 
-/** Wersja z serwera z odpowiedzi 409 na edycję; `null` przy innym wyniku. Wymagania: US9.3, BR-10 */
-internal fun conflictVersionOf(result: ServerReply<*>): Int? {
-    val conflict = (result as? ServerReply.Ok)?.value as? ServerEdit.Conflict
-    return conflict?.run { server.version }
-}
-
 /** Kod odpowiedzi HTTP odmowy do pokazania przy „Nie wysłano”; `null`, gdy serwer nie odmówił. */
 internal fun refusalCodeOf(result: ServerReply<*>): Int? =
     when (result) {

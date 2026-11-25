@@ -50,7 +50,7 @@ class RefusedSubmissionTest {
                     update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content, version = 2))) },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
-            history = history,
+            records = SentRecords(history = history),
         )
     }
 

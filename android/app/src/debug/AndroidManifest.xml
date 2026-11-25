@@ -25,5 +25,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- Włącznik trybu pokazu pomiaru C1 z osobną ikoną w launcherze, tylko w debug (US6.1). -->
+        <activity
+            android:name=".debug.DemoModeActivity"
+            android:exported="true"
+            android:label="@string/debug_pokaz_tytul">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>
