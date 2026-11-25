@@ -53,7 +53,12 @@ public class ReviewApi(private val http: OkHttpClient, private val json: Json, b
      * Wymagania: US10.4, US10.5, US10.7
      */
     public suspend fun queue(): ApiResult<List<Submission>> {
-        val target = base.newBuilder().addPathSegment(REVIEW).addPathSegment(QUEUE).build()
+        val target =
+            base
+                .newBuilder()
+                .addPathSegment(REVIEW)
+                .addPathSegment(QUEUE)
+                .build()
         return http.exchange(request(target, body = null)) { code, body ->
             if (code == HTTP_OK) decodedResult(code) { json.decodeSubmissions(body) } else unexpectedResult(code)
         }
