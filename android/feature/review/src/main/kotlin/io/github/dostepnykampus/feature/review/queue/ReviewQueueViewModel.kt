@@ -69,6 +69,11 @@ class ReviewQueueViewModel
             load()
         }
 
+        /** Powrót do R1 z R2: czyta kolejkę od nowa, gdy jest już pokazana; pierwszy odczyt idzie przy otwarciu. */
+        fun reopen() {
+            if (current.value is ReviewQueueUiState.Ready) refresh()
+        }
+
         /**
          * „Weź do sprawdzenia”. Zgłoszenie wzięte przez kogoś innego znika z listy z komunikatem.
          *

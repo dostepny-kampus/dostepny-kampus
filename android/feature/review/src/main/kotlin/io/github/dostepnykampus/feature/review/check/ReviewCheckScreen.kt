@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -44,8 +45,6 @@ data class ReviewCheckActions(val onBack: () -> Unit, val onDecided: () -> Unit)
 
 /**
  * R2 „Sprawdzenie zgłoszenia” [submissionId] ze stanem z modelu widoku.
- *
- * TODO(#3761): wejście z R1 i lista „Podobne zgłoszenia do 10 m”.
  *
  * Wymagania: US10, US10.2, US10.8
  *
@@ -134,6 +133,8 @@ private fun Check(state: CheckUiState.Ready, decision: DecisionActions) {
             Notice(title = R.string.sprawdzenie_zmienione, body = R.string.sprawdzenie_zmienione_sprawdz)
         }
         SubmissionDetails(submission = state.submission, photoUrls = state.photoUrls)
+        SimilarList(similar = state.similar, photos = state.similarPhotos)
+        HorizontalDivider()
         Decision(
             similar = state.similar,
             allowsDuplicate = state.submission.content.kind != SubmissionKind.ENTRANCE_MARKING,

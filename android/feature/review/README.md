@@ -7,7 +7,7 @@ Sprawdzanie zgłoszeń przez Weryfikatora: kolejka weryfikacji (R1) z „Wzięty
 ## Pakiety
 
 - `feature.review.check` — ekran, stan i ViewModel sprawdzenia zgłoszenia.
-- `feature.review.navigation` — trasa ekranu kolejki weryfikacji.
+- `feature.review.navigation` — trasy kolejki weryfikacji i sprawdzenia zgłoszenia.
 - `feature.review.queue` — ekran, stan i ViewModel kolejki weryfikacji.
 
 ## API
