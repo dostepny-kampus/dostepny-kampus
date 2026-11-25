@@ -52,9 +52,12 @@ internal fun versionConflictsOf(
     ioContext: CoroutineContext,
     subject: () -> String?,
     onSaved: () -> Unit,
-): VersionConflicts {
-    return StoredVersionConflicts(store = store, ioContext = ioContext, subject = subject, onSaved = onSaved)
-}
+): VersionConflicts = StoredVersionConflicts(
+    store = store,
+    ioContext = ioContext,
+    subject = subject,
+    onSaved = onSaved,
+)
 
 private class StoredVersionConflicts(
     private val store: SubmissionStore,
