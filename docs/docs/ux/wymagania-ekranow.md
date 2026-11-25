@@ -956,13 +956,14 @@ Stanu pustego nie ma: lista budynków pochodzi z importu, a 0% to zwykła warto�
 | Wybór formatu: „GeoJSON (WGS84)” albo „CSV (PUWG 1992, EPSG:2180)” | czynność | US13.1, US13.2 | — |
 | Napis „Plik zawiera tylko obecne, sprawdzone bariery, bez danych autorów.” | dane | US13.3, BR-22 | — |
 | „Pobierz plik” | czynność główna | US13 | plik w pobranych plikach telefonu |
+| Na Androidzie 8–9 „Pobierz plik” otwiera systemowe okno wyboru miejsca z podpowiedzianą nazwą pliku; zamknięcie okna bez zapisu wraca do K3 bez komunikatu | czynność | US13, NFR-41 | plik w wybranym miejscu |
 
 | Stan | Co widać |
 | --- | --- |
 | Zwykły | wybór formatu i opis zawartości |
 | Ładowanie | „Przygotowujemy plik…” |
 | Pusty | „Nie ma jeszcze przyjętych barier. Pobrany plik będzie pusty.” Pobranie działa (UC17 2a) |
-| Sukces | „Plik zapisany w pobranych plikach.” |
+| Sukces | „Plik zapisany w pobranych plikach.” Na Androidzie 8–9: „Plik zapisany w wybranym miejscu.” (NFR-41) |
 | Brak sieci, błąd serwera, brak uprawnień | stany wspólne (UC17 1a) |
 
 ## Decyzje fazy B
