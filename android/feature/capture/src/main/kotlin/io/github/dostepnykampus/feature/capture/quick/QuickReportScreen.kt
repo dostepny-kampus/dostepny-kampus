@@ -81,6 +81,7 @@ fun QuickReportScreen(
                 }
             }
             BackHeader(title = stringResource(R.string.szybkie_naglowek), onBack = back)
+            if (route.step == ReportStep.SENT && route.isSavedOffline) QuickOfflineLine(models.offline)
             val slot = remember { QuickPinnedSlot() }
             Column(
                 modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
