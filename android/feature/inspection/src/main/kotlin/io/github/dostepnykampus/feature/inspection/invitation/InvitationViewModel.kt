@@ -58,16 +58,19 @@ enum class InvitationProblem {
  * @property role wybrana rola; `null`, dopóki osoba jej nie wybierze
  * @property stage etap wysłania
  * @property problems błędy danych z ostatniej próby wysłania
+ * @property addedRole rola dodana istniejącemu kontu przy [InvitationStage.ROLE_ADDED]; `null` w innych etapach
  */
 data class InvitationUiState(
     val email: String = "",
     val role: StaffRole? = null,
     val stage: InvitationStage = InvitationStage.IDLE,
     val problems: Set<InvitationProblem> = emptySet(),
+    val addedRole: StaffRole? = null,
 )
 
 /**
- * K2 „Zaproszenie”: adres e-mail i rola, sprawdzenie ich przed wysłaniem i wynik zaproszenia.
+ * K2 „Zaproszenie”: adres e-mail i rola, sprawdzenie ich przed wysłaniem i wynik zaproszenia. Po wysłaniu
+ * formularz jest pusty, więc następne zaproszenie zaczyna się od nowa.
  *
  * Wymagania: US12.1, US12.2, NFR-50, PW-10
  *
@@ -103,13 +106,20 @@ class InvitationViewModel
                 current.update { it.copy(stage = InvitationStage.IDLE, problems = problems) }
                 return
             }
-            current.update { it.copy(stage = InvitationStage.SENDING, problems = emptySet()) }
-            viewModelScope.launch { finish(invitations.invite(email, role)) }
+            current.update { it.copy(stage = InvitationStage.SENDING, problems = emptySet(), addedRole = null) }
+            viewModelScope.launch { finish(invitations.invite(email, role), role) }
         }
 
-        private fun finish(outcome: InviteOutcome) {
-            val problems = if (outcome == InviteOutcome.INVALID_EMAIL) setOf(InvitationProblem.EMAIL) else emptySet()
-            current.update { it.copy(stage = stageOf(outcome), problems = problems) }
+        private fun finish(outcome: InviteOutcome, role: StaffRole) {
+            val stage = stageOf(outcome)
+            if (stage == InvitationStage.SENT || stage == InvitationStage.ROLE_ADDED) {
+                val added = role.takeIf { stage == InvitationStage.ROLE_ADDED }
+                current.value = InvitationUiState(stage = stage, addedRole = added)
+            } else {
+                val problems =
+                    if (outcome == InviteOutcome.INVALID_EMAIL) setOf(InvitationProblem.EMAIL) else emptySet()
+                current.update { it.copy(stage = stage, problems = problems) }
+            }
         }
     }
 

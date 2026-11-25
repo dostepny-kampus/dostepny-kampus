@@ -47,6 +47,18 @@ class InvitationViewModelTest {
             runCurrent()
             assertEquals(InvitationStage.SENT, viewModel.state.value.stage, "zaproszenie wysłane")
             assertEquals(listOf(EMAIL to StaffRole.VERIFIER), sent, "adres i rola")
+            assertEquals(InvitationUiState(stage = InvitationStage.SENT), viewModel.state.value, "pusty formularz")
+        }
+
+    @Test
+    fun roleAddedKeepsRole() =
+        invitationTest(InviteOutcome.ROLE_ADDED) { viewModel ->
+            viewModel.edit(EMAIL)
+            viewModel.choose(StaffRole.VERIFIER)
+            viewModel.send()
+            runCurrent()
+            val expected = InvitationUiState(stage = InvitationStage.ROLE_ADDED, addedRole = StaffRole.VERIFIER)
+            assertEquals(expected, viewModel.state.value, "pusty formularz i dodana rola")
         }
 
     @Test
