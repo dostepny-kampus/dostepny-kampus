@@ -14,6 +14,7 @@ import io.github.dostepnykampus.core.network.building.BuildingsApi
 import io.github.dostepnykampus.core.network.di.NetworkModule
 import io.github.dostepnykampus.core.network.inspection.InspectionProgressApi
 import io.github.dostepnykampus.core.network.inspection.MarkerChangesApi
+import io.github.dostepnykampus.core.network.invitation.InvitationsApi
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 import io.github.dostepnykampus.core.network.sync.SyncPullApi
 import kotlinx.serialization.json.Json
@@ -101,6 +102,11 @@ object NoServerNetworkModule {
     @Provides
     @Singleton
     fun syncPullApi(http: OkHttpClient, json: Json): SyncPullApi = NetworkModule.syncPullApi(http, json)
+
+    /** Zaproszenia Koordynatora na kliencie bez serwera. */
+    @Provides
+    @Singleton
+    fun invitationsApi(http: OkHttpClient, json: Json): InvitationsApi = NetworkModule.invitationsApi(http, json)
 
     /** Jedna odpowiedź ma własny strumień PNG; odbiorca zamyka go razem z [response], jak odpowiedź sieciową. */
     private class LocalTileResponse(request: Request, tile: ByteArray) {
