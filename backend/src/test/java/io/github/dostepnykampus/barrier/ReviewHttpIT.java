@@ -28,7 +28,7 @@ import tools.jackson.databind.ObjectMapper;
  * Weryfikator bierze cudze zgłoszenie do weryfikacji i rozstrzyga je, ale nie własne
  * ani takie, któremu brakuje zdjęcia w magazynie.
  *
- * <p>Wymagania: US10.3, BR-4, BR-11, BR-3, BR-14, BR-16, BR-7, BR-8</p>
+ * <p>Wymagania: US10.3, BR-4, BR-11, BR-3, BR-14, BR-16, BR-7, BR-8, BR-18, BR-19</p>
  *
  * @since 0.1.0
  */
@@ -40,6 +40,12 @@ final class ReviewHttpIT {
      * Zdjęcie zgłoszenia próbnego.
      */
     private static final UUID PHOTO = UUID.fromString("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d");
+
+    /**
+     * Przyjęcie zgłoszenia szybkiego z typem bariery i uciążliwością.
+     */
+    private static final String ACCEPT =
+        "{\"decision\":\"ACCEPT\",\"version\":1,\"barrierType\":\"TB-3\",\"severity\":2}";
 
     @Test
     void refusesReviewOfOwnSubmission(final WebApplicationContext context)
@@ -211,6 +217,40 @@ final class ReviewHttpIT {
     }
 
     @Test
+    void archivesAcceptedSubmissionReplacedByAcceptedChange(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Przyjęcie zmiany nie dało 200, ARCHIVED zastąpionego i ACCEPTED zmiany",
+            ReviewHttpIT.decidedChange(context, "{}", ReviewHttpIT.ACCEPT),
+            Matchers.contains(200, "ARCHIVED", "ACCEPTED")
+        );
+    }
+
+    @Test
+    void archivesBothOnAcceptedRemoval(final WebApplicationContext context) throws Exception {
+        MatcherAssert.assertThat(
+            "Przyjęcie „bariera usunięta” nie dało 200 i ARCHIVED obu zgłoszeń",
+            ReviewHttpIT.decidedChange(
+                context, "{\"barrierRemoved\":true}", ReviewHttpIT.ACCEPT
+            ),
+            Matchers.contains(200, "ARCHIVED", "ARCHIVED")
+        );
+    }
+
+    @Test
+    void keepsReplacedSubmissionWhenChangeIsRejected(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Odrzucenie zmiany nie dało 200, ACCEPTED zastąpionego i REJECTED zmiany",
+            ReviewHttpIT.decidedChange(
+                context, "{}",
+                "{\"decision\":\"REJECT\",\"version\":1,\"rejectionReason\":\"Nie\"}"
+            ),
+            Matchers.contains(200, "ACCEPTED", "REJECTED")
+        );
+    }
+
+    @Test
     void refusesClaimOfOwnSubmission(final WebApplicationContext context)
         throws Exception {
         final UUID id = ReviewHttpIT.sent(context, "konto-testowe");
@@ -315,6 +355,27 @@ final class ReviewHttpIT {
         return id;
     }
 
+    private static List<Object> decidedChange(
+        final WebApplicationContext context, final String content, final String decision
+    ) throws Exception {
+        final UUID replaced = new SampleSubmissions(context)
+            .add("ACCEPTED", SampleSubmissions.quick(ReviewHttpIT.PHOTO));
+        final UUID id = ReviewHttpIT.sent(context, "inne-konto");
+        context.getBean(JdbcClient.class).sql(
+            """
+            UPDATE submissions SET content = content || CAST(:content AS JSONB)
+                || JSONB_BUILD_OBJECT('replacesSubmissionId', CAST(:replaced AS TEXT))
+            WHERE id = :id
+            """
+        ).param("content", content).param("replaced", replaced).param("id", id).update();
+        ReviewHttpIT.claim(context, id);
+        return List.of(
+            ReviewHttpIT.review(context, id, decision),
+            ReviewHttpIT.status(context, replaced),
+            ReviewHttpIT.status(context, id)
+        );
+    }
+
     private static List<Object> refused(final WebApplicationContext context, final String body)
         throws Exception {
         final UUID id = ReviewHttpIT.sent(context, "inne-konto");
@@ -372,10 +433,7 @@ final class ReviewHttpIT {
 
     private static int review(final WebApplicationContext context, final UUID id)
         throws Exception {
-        return ReviewHttpIT.review(
-            context, id,
-            "{\"decision\":\"ACCEPT\",\"version\":1,\"barrierType\":\"TB-3\",\"severity\":2}"
-        );
+        return ReviewHttpIT.review(context, id, ReviewHttpIT.ACCEPT);
     }
 
     private static int review(

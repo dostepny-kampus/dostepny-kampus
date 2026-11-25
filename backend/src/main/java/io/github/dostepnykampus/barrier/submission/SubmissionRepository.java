@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.submission;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -64,4 +65,15 @@ public interface SubmissionRepository {
      * @return Zgłoszenie po decyzji, bieżący stan przy konflikcie albo brak zgłoszenia
      */
     EditResult decide(ReviewDecision decision);
+
+    /**
+     * Zmienia status zgłoszenia przyjętego na archiwalny. Zgłoszenie w innym statusie
+     * albo nieistniejące zostaje bez zmiany.
+     *
+     * <p>Wymagania: BR-18, BR-19, BR-24</p>
+     *
+     * @param id Identyfikator zgłoszenia
+     * @return Zgłoszenie archiwalne albo brak, gdy zgłoszenie nie było przyjęte
+     */
+    Optional<Submission> archive(UUID id);
 }
