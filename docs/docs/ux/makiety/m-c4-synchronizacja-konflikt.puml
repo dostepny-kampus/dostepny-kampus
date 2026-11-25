@@ -12,14 +12,14 @@ $komunikat("Dwie wersje: wybierz jedną. Druga wersja zostanie usunięta.")
 $ramka()
 <b>Moja wersja</b>
 próg
-<i>[budynek]</i>, piętro <i>[piętro]</i>
+<i>[budynek]</i>, <i>[piętro]</i>
 <b>Uciążliwość:</b> $tylko_z_pomoca()
 $przycisk_glowny("Zostaw moją wersję")
 }
 $ramka()
 <b>Wersja z serwera</b>
 próg
-<i>[budynek]</i>, piętro <i>[piętro]</i>
+<i>[budynek]</i>, <i>[piętro]</i>
 <b>Uciążliwość:</b> $blokada()
 $przycisk_glowny("Weź wersję z serwera")
 }

@@ -190,7 +190,7 @@ Czynność główna: przeczytanie, na które piętra jedzie winda.
 
 ### V1: legenda przy planie
 
-![Makieta V1 z arkuszem Legenda otwartym przyciskiem informacji pod planem: nagłówek Legenda z Zamknij, budynek z planem pięter i bez planu, trzy znaki wejść, ścieżka dostosowana, pochylnia i trzy znaki barier, kolory sali, korytarza i klatki schodowej, znaki windy i toalety dostosowanej, znak zgłoszenia bez piętra, na końcu Źródła danych i Przewiń w dół](../../_generated/m-v1-mapa-plan-legenda.svg)
+![Makieta V1 z arkuszem Legenda otwartym przyciskiem informacji pod planem: nagłówek Legenda z Zamknij, budynek z planem pięter i bez planu, ścieżka dostosowana, pochylnia, trzy znaki wejść i trzy znaki barier, kolory sali, korytarza i klatki schodowej, znaki windy i toalety dostosowanej, znak zgłoszenia bez piętra, na końcu Źródła danych i Przewiń w dół](../../_generated/m-v1-mapa-plan-legenda.svg)
 
 Czynność główna: odczytanie znaków planu.
 
@@ -537,7 +537,7 @@ Czynność główna: wybór jednej z 6 grup barier.
 
 ### V4: krok 2, pytanie o piętro
 
-![Makieta V4, krok 2 z 3 po wyborze grupy Schody i windy: pytanie Na którym piętrze?, przycisk Nie wiem, a pod nim przyciski Parter, 1, 2, 3](../../_generated/m-v4-krok-2-pietro.svg)
+![Makieta V4, krok 2 z 3 po wyborze grupy Schody i windy: pytanie Na którym piętrze?, przycisk Nie wiem, a pod nim przyciski Parter, 1 piętro, 2 piętro, 3 piętro](../../_generated/m-v4-krok-2-pietro.svg)
 
 Czynność główna: wybór piętra albo „Nie wiem”. Stan pojawia się tylko w konturze budynku i przy grupie z tabeli w [regułach](../../biznes/reguly.md#pietro-w-zgloszeniu-szybkim).
 
@@ -547,12 +547,12 @@ Czynność główna: wybór piętra albo „Nie wiem”. Stan pojawia się tylko
 | Wybrana grupa pod pytaniem „Czego dotyczy bariera?” | US4.5 |
 | „Na którym piętrze?” i przyciski na pełną szerokość | US4.5, NFR-17 |
 | „Nie wiem” nad piętrami, widoczne bez przewijania; zostawia piętro puste | US4.5, BR-14 |
-| Budynek podstawowy: „Parter”, „1”, „2”…; budynek szczegółowy: etykiety pięter z danych PWr | US4.5, BR-G1 |
+| Budynek podstawowy: „Piwnica”, „Parter”, „1 piętro”, „2 piętro”…; budynek szczegółowy: etykiety pięter z danych PWr | US4.5, BR-G1 |
 | „Wstecz” wraca do listy grup, a zdjęcie zostaje | US4.5 |
 
 ### V4: krok 3 z 3
 
-![Makieta V4, krok 3 z 3: miniatura zdjęcia, wybrana grupa Schody i windy, piętro 2, zdanie o dołączeniu miejsca i pogrubiony przycisk Wyślij](../../_generated/m-v4-krok-3.svg)
+![Makieta V4, krok 3 z 3: miniatura zdjęcia, wybrana grupa Schody i windy, 2 piętro, zdanie o dołączeniu miejsca i pogrubiony przycisk Wyślij](../../_generated/m-v4-krok-3.svg)
 
 Czynność główna: „Wyślij”.
 

@@ -56,9 +56,14 @@
     <string name="miejsce_pietro">piętro %1$d</string>
     <string name="miejsce_polpietro">półpiętro</string>
     <string name="bez_internetu">Bez internetu</string>
+    <string name="bez_internetu_dane_z">Bez internetu · dane z %1$s</string>
     <string name="bariera_bez_typu">Bariera</string>
     <string name="bariera_zdjecie">Zdjęcie bariery: %1$s</string>
     <string name="zdjecie_wczytujemy">Wczytujemy zdjęcie…</string>
     <string name="zdjecie_blad">Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.</string>
     <string name="sprobuj_ponownie">Spróbuj ponownie</string>
+    <string name="praca_wymaga_internetu">Ta czynność wymaga internetu. Połącz się z internetem i spróbuj ponownie.</string>
+    <string name="praca_blad_serwera">Serwer chwilowo nie odpowiada. Spróbuj ponownie za kilka minut.</string>
+    <string name="praca_brak_uprawnien">Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.</string>
+    <string name="praca_wroc_do_mapy">Wróć do mapy</string>
 </resources>
