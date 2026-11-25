@@ -22,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -52,17 +53,21 @@ private enum class Reason { DUPLICATE, OUTDATED, OTHER }
 internal data class Rejection(val reason: String, val duplicateOf: String? = null)
 
 /**
- * Czynności decyzji R2.
+ * Czynności przyjęcia i odrzucenia zgłoszenia.
  *
  * @property onAccept „Przyjmij”
  * @property onReject „Odrzuć” z wybranym powodem
  */
 internal data class DecisionActions(val onAccept: () -> Unit, val onReject: (Rejection) -> Unit)
 
+/** Zrzut podobnych zgłoszeń stosowany do wyboru duplikatu. */
+@Immutable
+internal class SimilarReports(items: List<SimilarSubmission>) {
+    val items = items.toList()
+}
+
 /**
  * „Przyjmij” i „Powód odrzucenia” z „Odrzuć” na końcu treści R2, z komunikatem [notice] w miejscu czynności.
- *
- * TODO(#3854): widok R2 z danymi zgłoszenia.
  *
  * Wymagania: US10.2, BR-13, BR-16, BR-24, NFR-18
  *
@@ -73,7 +78,7 @@ internal data class DecisionActions(val onAccept: () -> Unit, val onReject: (Rej
  */
 @Composable
 internal fun Decision(
-    similar: List<SimilarSubmission>,
+    similar: SimilarReports,
     allowsDuplicate: Boolean,
     notice: CheckNotice?,
     actions: DecisionActions,
@@ -127,10 +132,10 @@ internal fun Decision(
 }
 
 @Composable
-private fun Earlier(similar: List<SimilarSubmission>, chosen: String?, onChoose: (String) -> Unit) {
+private fun Earlier(similar: SimilarReports, chosen: String?, onChoose: (String) -> Unit) {
     Column(modifier = Modifier.padding(start = Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(stringResource(R.string.sprawdzenie_wczesniejsze))
-        similar.forEach { near ->
+        similar.items.forEach { near ->
             val label =
                 stringResource(
                     R.string.sprawdzenie_wczesniejsze_pozycja,
@@ -170,7 +175,10 @@ private fun Choice(label: String, isChosen: Boolean, onChoose: () -> Unit) {
  * @param body drugie zdanie
  */
 @Composable
-internal fun Notice(@StringRes title: Int, @StringRes body: Int) {
+internal fun Notice(
+    @StringRes title: Int,
+    @StringRes body: Int,
+) {
     GroupFrame {
         Text(stringResource(title), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(body), style = MaterialTheme.typography.bodyLarge)

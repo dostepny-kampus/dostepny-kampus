@@ -28,7 +28,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
- * Decyzja R2: „Przyjmij”, powody odrzucenia z „Duplikat” i „Inny powód”, brak powodu, komunikaty braku powodu
+ * R2: „Przyjmij”, powody odrzucenia z „Duplikat” i „Inny powód”, brak powodu, komunikaty braku powodu
  * i braku sieci oraz zmiana oznaczenia wejścia bez „Duplikat”.
  *
  * Wymagania: US10.2, BR-11, BR-13, BR-16, BR-24
@@ -114,6 +114,6 @@ class DecisionTest {
     }
 
     private companion object {
-        val SIMILAR = listOf(SimilarSubmission(submission = queued(id = "b", day = 20), distanceMeters = 4.0))
+        val SIMILAR = SimilarReports(listOf(SimilarSubmission(submission = queued(id = "b", day = 20), distanceMeters = 4.0)))
     }
 }
