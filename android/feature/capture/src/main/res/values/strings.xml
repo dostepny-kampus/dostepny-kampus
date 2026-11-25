@@ -150,6 +150,9 @@
     <string name="moje_nieaktualne">Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji.</string>
     <string name="moje_nieaktualne_oznaczenie">Oznaczenie tego wejścia już się zmieniło. Sprawdź je i wyślij swoją zmianę ponownie.</string>
     <string name="moje_wyslij_ponownie">Wyślij ponownie</string>
+    <string name="moje_bariery_juz_nie_ma">Bariery już nie ma</string>
+    <string name="moje_nowe_oznaczenie">Nowe oznaczenie:</string>
+    <string name="moje_nieaktualne_usuniecie">Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa.</string>
     <string name="usuniecie_naglowek">Zgłoś, że bariery nie ma</string>
     <string name="usuniecie_sprawdzone">Sprawdzone %1$s</string>
     <string name="usuniecie_nowe_zdjecie">Nowe zdjęcie miejsca</string>

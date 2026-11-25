@@ -16,6 +16,7 @@ import io.github.dostepnykampus.core.data.submission.own.OwnSubmissions
 import io.github.dostepnykampus.core.data.submission.own.RefusalReason
 import io.github.dostepnykampus.core.data.submission.own.SendState
 import io.github.dostepnykampus.core.data.submission.own.StatusRefresh
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
@@ -46,6 +47,8 @@ private const val STOP_TIMEOUT_MS = 5_000L
  * @property rejectionReason powód odrzucenia od Weryfikatora
  * @property isChangeWaiting zmiana wysłanego zgłoszenia czeka w telefonie na wysłanie
  * @property kind rodzaj: zgłoszenie albo zmiana oznaczenia wejścia
+ * @property isBarrierRemoved zgłoszenie „bariera usunięta”
+ * @property entranceMarking nowe oznaczenie wejścia przy zmianie oznaczenia; `null` poza nią
  */
 data class OwnSubmissionItem(
     val id: String,
@@ -59,6 +62,8 @@ data class OwnSubmissionItem(
     val rejectionReason: String? = null,
     val isChangeWaiting: Boolean = false,
     val kind: SubmissionKind = SubmissionKind.PRECISE,
+    val isBarrierRemoved: Boolean = false,
+    val entranceMarking: EntranceMarking? = null,
 )
 
 /**
@@ -157,4 +162,6 @@ internal fun OwnSubmission.toItem(): OwnSubmissionItem =
         rejectionReason = rejectionReason,
         isChangeWaiting = isChangeWaiting,
         kind = kind,
+        isBarrierRemoved = isBarrierRemoved,
+        entranceMarking = entranceMarking,
     )
