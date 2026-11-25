@@ -30,6 +30,7 @@ pending	temat	oczekujące zmiany	Zmiany zgłoszeń czekające na wysłanie.
 photo	temat	zdjęcie	Zdjęcie zgłoszenia: wykonanie, zapis, wysłanie.
 plan	temat	plan piętra	Plan piętra budynku na mapie i wybór budynku, którego plan widać.
 progress	ścieżka	postęp inwentaryzacji	Lista budynków z postępem inwentaryzacji dla Koordynatora.
+queue	ścieżka	kolejka weryfikacji	Zgłoszenia do sprawdzenia i wzięte przez Weryfikatora (R1).
 quick	ścieżka	szybkie zgłoszenie	Zgłoszenie wejścia w kilku krokach.
 removed	ścieżka	bariera usunięta	Zgłoszenie, że bariery ze zgłoszenia przyjętego już nie ma (C7).
 report	ścieżka	pełne zgłoszenie	Formularz i edycja pełnego zgłoszenia.
