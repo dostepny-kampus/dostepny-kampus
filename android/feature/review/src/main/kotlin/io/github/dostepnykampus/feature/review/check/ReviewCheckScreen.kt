@@ -105,13 +105,21 @@ internal fun ReviewCheckContent(
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
             BackHeader(title = stringResource(R.string.sprawdzenie_naglowek), onBack = actions.onBack)
             when (state) {
-                CheckUiState.Loading -> CircularProgressIndicator(modifier = Modifier.padding(Odstepy.m))
+                CheckUiState.Loading -> Loading()
                 is CheckUiState.Ready -> Check(state = state, decision = decision)
                 CheckUiState.Offline -> StaffProblemMessage(StaffProblem.OFFLINE, onRetry)
                 CheckUiState.ServerError -> StaffProblemMessage(StaffProblem.SERVER, onRetry)
                 CheckUiState.Forbidden -> StaffProblemMessage(StaffProblem.FORBIDDEN, actions.onBack)
             }
         }
+    }
+}
+
+@Composable
+private fun Loading() {
+    Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        CircularProgressIndicator()
+        Text(stringResource(R.string.sprawdzenie_wczytujemy), style = MaterialTheme.typography.bodyLarge)
     }
 }
 

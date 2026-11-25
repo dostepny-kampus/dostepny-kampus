@@ -27,6 +27,7 @@
     <string name="sprawdzenie_bez_sieci">Decyzja wymaga internetu, a zgłoszenie czeka w »Wziętych przeze mnie«.</string>
     <string name="sprawdzenie_bez_sieci_ponownie">Połącz się z internetem i podejmij decyzję ponownie.</string>
     <string name="sprawdzenie_naglowek">Sprawdzenie zgłoszenia</string>
+    <string name="sprawdzenie_wczytujemy">Wczytujemy zgłoszenie…</string>
     <string name="sprawdzenie_zmienione">Autor zmienił zgłoszenie.</string>
     <string name="sprawdzenie_zmienione_sprawdz">Sprawdź nową wersję przed decyzją.</string>
 </resources>

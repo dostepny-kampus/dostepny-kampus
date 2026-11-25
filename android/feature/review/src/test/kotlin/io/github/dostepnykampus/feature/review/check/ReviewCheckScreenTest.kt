@@ -71,6 +71,12 @@ class ReviewCheckScreenTest {
     }
 
     @Test
+    fun showsLoading() {
+        show(CheckUiState.Loading)
+        compose.onNodeWithText("Wczytujemy zgłoszenie…").assertIsDisplayed()
+    }
+
+    @Test
     fun entranceHasNoDuplicate() {
         val marking = CHECKED.copy(content = CHECKED.content.copy(kind = SubmissionKind.ENTRANCE_MARKING))
         show(READY.copy(submission = marking))

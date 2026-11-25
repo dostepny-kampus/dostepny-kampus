@@ -31,6 +31,8 @@ import io.github.dostepnykampus.feature.review.queue.titleRes
 /**
  * Dane zgłoszenia na R2 bez pól do edycji: rodzaj, typ albo grupa, uciążliwość ikoną i napisem, miejsce i zdjęcia.
  *
+ * TODO(#3866): miejsce słowami od najbliższego wejścia i dokładność pomiaru.
+ *
  * Wymagania: US10, BR-14, BR-15, NFR-21
  *
  * @param submission zgłoszenie
