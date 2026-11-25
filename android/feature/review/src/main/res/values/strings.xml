@@ -14,4 +14,16 @@
     <string name="kolejka_szybkie">Zgłoszenie szybkie</string>
     <string name="kolejka_bariery_nie_ma">Bariery już nie ma</string>
     <string name="kolejka_zmiana_oznaczenia">Zmiana oznaczenia wejścia</string>
+    <string name="sprawdzenie_przyjmij">Przyjmij</string>
+    <string name="sprawdzenie_powod">Powód odrzucenia</string>
+    <string name="sprawdzenie_duplikat">Duplikat</string>
+    <string name="sprawdzenie_wczesniejsze">Wcześniejsze zgłoszenie:</string>
+    <string name="sprawdzenie_wczesniejsze_pozycja">%1$s, %2$d m</string>
+    <string name="sprawdzenie_nieaktualne">Nieaktualne</string>
+    <string name="sprawdzenie_inny">Inny powód</string>
+    <string name="sprawdzenie_opisz">Opisz powód dla autora</string>
+    <string name="sprawdzenie_odrzuc">Odrzuć</string>
+    <string name="sprawdzenie_podaj_powod">Podaj powód odrzucenia, aby autor wiedział, co poprawić.</string>
+    <string name="sprawdzenie_bez_sieci">Decyzja wymaga internetu, a zgłoszenie czeka w »Wziętych przeze mnie«.</string>
+    <string name="sprawdzenie_bez_sieci_ponownie">Połącz się z internetem i podejmij decyzję ponownie.</string>
 </resources>
