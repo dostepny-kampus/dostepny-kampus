@@ -13,7 +13,7 @@ Typy domeny wspólne dla całej aplikacji: budynek, wejście, bariera, zgłoszen
 - `core.model.path` — odcinek ścieżki dostosowanej z mapy kampusu.
 - `core.model.review` — decyzja Weryfikatora z powodami odrzucenia, wynik wzięcia i decyzji, podobne zgłoszenie.
 - `core.model.room` — pomieszczenie z planu piętra i grupa jego funkcji.
-- `core.model.submission` — zgłoszenie z treścią i typem bariery.
+- `core.model.submission` — zgłoszenie z treścią, typem bariery i polami treści z ich różnicami (`fieldsChanged`).
 
 ## API
 
