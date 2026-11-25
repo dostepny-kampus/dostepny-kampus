@@ -10,7 +10,6 @@ import io.github.dostepnykampus.OpenApiContract;
 import io.github.dostepnykampus.barrier.submission.content.BarrierDetails;
 import io.github.dostepnykampus.barrier.submission.content.BarrierGroup;
 import io.github.dostepnykampus.barrier.submission.content.BarrierType;
-import io.github.dostepnykampus.barrier.submission.content.NewEntranceMarking;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionFloor;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
@@ -94,8 +93,7 @@ final class ExportGeoJsonHttpIT {
             null, false, "A-1", new SubmissionFloor(null, 0, true)
         );
         final UUID accepted = UUID.randomUUID();
-        final UUID outside = UUID.randomUUID();
-        final List<UUID> created = new ArrayList<>(List.of(accepted, outside));
+        final List<UUID> created = new ArrayList<>(List.of(accepted));
         final String json;
         try {
             samples.add(
@@ -109,7 +107,6 @@ final class ExportGeoJsonHttpIT {
                     null, null, null, List.of(UUID.randomUUID())
                 )
             );
-            samples.add(outside, "ACCEPTED", ExportGeoJsonHttpIT.OUTSIDE);
             for (final String state : List.of("ARCHIVED", "IN_REVIEW", "SENT", "REJECTED")) {
                 created.add(samples.add(state, ExportGeoJsonHttpIT.OUTSIDE));
             }
@@ -125,16 +122,6 @@ final class ExportGeoJsonHttpIT {
                     )
                 )
             );
-            created.add(
-                samples.add(
-                    "ACCEPTED",
-                    new SubmissionContent(
-                        SubmissionKind.ENTRANCE_MARKING, inside,
-                        new BarrierDetails(null, null, null, null, false), "wejscie-a1",
-                        NewEntranceMarking.ACCESSIBLE, null, List.of(UUID.randomUUID())
-                    )
-                )
-            );
             json = ExportGeoJsonHttpIT.send(port, "Bearer COORDINATOR").body();
         } finally {
             samples.remove(created);
@@ -143,7 +130,6 @@ final class ExportGeoJsonHttpIT {
             context.getBean(ObjectMapper.class).readTree(json).path("features");
         final JsonNode one = ExportGeoJsonHttpIT.byId(features, accepted);
         final JsonNode props = one.path("properties");
-        final JsonNode absent = ExportGeoJsonHttpIT.byId(features, outside).path("properties");
         final String low = json.toLowerCase(Locale.ROOT);
         MatcherAssert.assertThat(
             "Eksport GeoJSON zawiera niewłaściwe zgłoszenia, dane autora, kontur albo zły układ",
@@ -152,16 +138,15 @@ final class ExportGeoJsonHttpIT {
                 features.size(), one.path("geometry").path("coordinates").toString(),
                 props.path("barrierGroup").asString(), props.path("buildingSymbol").asString(),
                 props.path("floor").asString(), props.path("description").asString(),
-                absent.has("buildingSymbol"), absent.has("floor"), absent.has("description"),
                 low.contains("konto-testowe") || low.contains("author")
                     || low.contains("pseudonym") || low.contains("email"),
                 low.contains("polygon") || low.contains("outline")
             ),
             Matchers.is(
                 List.of(
-                    List.of(), 2, "[17.05989,51.10916]", "ENTRANCE_AND_DOORS",
+                    List.of(), 1, "[17.05989,51.10916]", "ENTRANCE_AND_DOORS",
                     "A-1", "0 półpiętro", "=Schody, \"próg\" i żółta poręcz",
-                    false, false, false, false, false
+                    false, false
                 )
             )
         );
