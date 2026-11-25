@@ -25,7 +25,30 @@ curl -fs http://127.0.0.1:8080/buildings
 
 Serwer startuje, gdy baza i usługa logowania są `healthy`, a `zdjecia-konto` założyło klucz serwera. Serwer w kontenerze łączy się z usługami po nazwach z compose (`postgis`, `zdjecia`, `logowanie`), więc `DK_DB_HOST`, `DK_PHOTOS_HOST` i porty wewnętrzne ustawia sam plik compose. Tokeny mają wydawcę `DK_AUTH_ISSUER` (`http://localhost:8180/…`, jak z emulatora), a klucze tokenów serwer pobiera z `DK_AUTH_JWKS` w sieci compose. Bez profilu `up` uruchamia tylko usługi pomocnicze, a serwer startuje z `backend/` przez `./mvnw`.
 
-Usługa logowania działa tu w trybie deweloperskim. Tryb produkcyjny z pośrednikiem HTTPS opisuje #3793.
+Usługa logowania działa tu w trybie deweloperskim. Serwer docelowy uruchamia się z nakładką produkcyjną.
+
+## Serwer docelowy
+
+Nakładka `docker-compose.produkcja.yml` zmienia plik deweloperski w serwer dostępny z telefonów:
+
+- usługa logowania startuje w trybie produkcyjnym (`start`) z bazą `DK_AUTH_DB_NAME` w PostgreSQL i realmem `keycloak/realm-produkcja.json`: bez kont testowych i bez logowania hasłem z pominięciem przeglądarki;
+- pośrednik `posrednik` (Caddy) przyjmuje HTTPS na portach 80 i 443 pod nazwą `DK_PUBLIC_HOST`, sam pobiera certyfikat Let's Encrypt i kieruje `/realms/*` i `/resources/*` do usługi logowania, a resztę do serwera; konsoli administratora nie wystawia;
+- serwer przyjmuje tokeny z wydawcą `https://DK_PUBLIC_HOST/realms/dostepny-kampus` i liczy limit żądań według adresu telefonu z nagłówka `X-Forwarded-For`.
+
+Potrzebny jest komputer z publicznym adresem, rekord DNS nazwy `DK_PUBLIC_HOST` na ten adres i otwarte porty 80 i 443. W `infra/.env` trzeba ustawić `DK_PUBLIC_HOST` i zmienić wszystkie hasła przykładowe.
+
+```sh
+(cd backend && ./mvnw -DskipTests package)
+docker compose -f infra/docker-compose.yml -f infra/docker-compose.produkcja.yml --profile serwer up -d --build
+```
+
+Baza założona przed tą zmianą nie ma bazy usługi logowania. Zakłada ją jedno polecenie:
+
+```sh
+docker compose -f infra/docker-compose.yml exec -T postgis bash /docker-entrypoint-initdb.d/baza-logowania.sh
+```
+
+Konto Koordynatora zakłada administrator w konsoli usługi logowania, otwartej tylko na `127.0.0.1:${DK_AUTH_PORT}` komputera serwera (np. przez tunel SSH). Aplikację release buduje się z adresami tego hosta, jak opisuje `README.md` repozytorium: `-Pdk.apiUrl=https://<host>/ -Pdk.loginRealmUrl=https://<host>/realms/dostepny-kampus/`.
 
 ## Zmienne
 
@@ -56,6 +79,8 @@ Compose czyta zmienne z `infra/.env`, którego nie ma w repozytorium. Serwer czy
 | `DK_AUTH_AUDIENCE` | odbiorca w `aud`, bez którego serwer odrzuca token | `dostepny-kampus-api` |
 | `DK_AUTH_JWKS` | adres kluczy tokenów usługi logowania, tylko usługa `serwer` w compose | `http://logowanie:8180/realms/dostepny-kampus/protocol/openid-connect/certs` |
 | `DK_API_PORT` | port serwera na `127.0.0.1`, tylko usługa `serwer` w compose | `8080` |
+| `DK_AUTH_DB_NAME` | baza usługi logowania w PostgreSQL, tylko nakładka produkcyjna | `logowanie` |
+| `DK_PUBLIC_HOST` | nazwa hosta serwera docelowego dla HTTPS i wydawcy tokenów, tylko nakładka produkcyjna | brak |
 
 ## Konta bazy
 
