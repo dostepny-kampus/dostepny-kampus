@@ -18,6 +18,7 @@ dependencies {
     api(libs.kotlinx.serialization.core)
     api(project(":core:data"))
     api(project(":core:model"))
+    implementation(libs.androidx.compose.runtime)
     implementation(libs.hilt.core)
     testImplementation(libs.kotlinx.coroutines.test)
 }

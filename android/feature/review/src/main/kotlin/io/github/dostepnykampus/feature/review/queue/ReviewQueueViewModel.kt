@@ -79,9 +79,11 @@ class ReviewQueueViewModel
          */
         fun claim(submissionId: String, onClaimed: (String) -> Unit) {
             viewModelScope.launch {
-                when (val reply = reviews.claim(submissionId)) {
-                    is ServerReply.Ok -> claimed(reply.value, submissionId, onClaimed)
-                    else -> current.value = reply.failure()
+                val reply = reviews.claim(submissionId)
+                if (reply is ServerReply.Ok) {
+                    claimed(reply.value, submissionId, onClaimed)
+                } else {
+                    current.value = reply.failure()
                 }
             }
         }
@@ -94,11 +96,8 @@ class ReviewQueueViewModel
 
         private fun load() {
             viewModelScope.launch {
-                current.value =
-                    when (val reply = reviews.queue()) {
-                        is ServerReply.Ok -> reply.value.toState()
-                        else -> reply.failure()
-                    }
+                val reply = reviews.queue()
+                current.value = if (reply is ServerReply.Ok) reply.value.toState() else reply.failure()
             }
         }
 
@@ -112,7 +111,7 @@ class ReviewQueueViewModel
             when (this) {
                 ServerReply.Offline -> ReviewQueueUiState.Offline
                 is ServerReply.Fault -> faultState(code)
-                else -> ReviewQueueUiState.ServerError
+                ServerReply.NotFound, is ServerReply.Ok -> ReviewQueueUiState.ServerError
             }
 
         private fun faultState(code: Int): ReviewQueueUiState =
@@ -123,7 +122,7 @@ class ReviewQueueViewModel
         }
     }
 
-private fun ReviewQueueUiState.Ready.after(claim: ReviewClaim, submissionId: String): ReviewQueueUiState.Ready {
+internal fun ReviewQueueUiState.Ready.after(claim: ReviewClaim, submissionId: String): ReviewQueueUiState.Ready {
     val left = waiting.filterNot { it.id == submissionId }
     return when (claim) {
         is ReviewClaim.Claimed -> copy(waiting = left, mine = mine + claim.submission, isTaken = false)
