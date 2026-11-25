@@ -63,6 +63,12 @@
     <string name="pole_usunieta">Bariera usunięta</string>
     <string name="pole_wejscie">Wejście</string>
     <string name="pole_oznaczenie">Oznaczenie wejścia</string>
+    <string name="miejsce_od">ok. %1$d m od %2$s</string>
+    <string name="miejsce_wejscie">wejścia</string>
+    <string name="miejsce_wejscie_glowne">wejścia głównego</string>
+    <string name="miejsce_wejscie_nazwa">wejścia „%1$s”</string>
+    <string name="miejsce_dokladnosc">dokładność %1$s m</string>
+    <string name="miejsce_z_dokladnoscia">%1$s, dokładność %2$s m</string>
     <string name="bez_internetu">Bez internetu</string>
     <string name="bez_internetu_dane_z">Bez internetu · dane z %1$s</string>
     <string name="bariera_bez_typu">Bariera</string>
