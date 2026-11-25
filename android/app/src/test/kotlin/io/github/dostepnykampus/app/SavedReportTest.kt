@@ -13,6 +13,7 @@ import androidx.compose.ui.test.onNodeWithText
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
@@ -38,6 +39,7 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import javax.inject.Inject
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * „Zapisz” na C2 aż do karty na C3: formularz, zapis przez kolejkę w bazie z grafu Hilt, historia i lista
@@ -102,7 +104,8 @@ class SavedReportTest {
     }
 
     private fun save(vararg edits: ReportEdit) {
-        val form = ReportFormViewModel(saver = ReportSaverModule.reportSaver(queue()))
+        val catalog = BuildingCatalogRepository(EmptyCoroutineContext) { NO_BUILDINGS }
+        val form = ReportFormViewModel(catalog = catalog, saver = ReportSaverModule.reportSaver(queue()))
         form.open(ReportForm(place = A1))
         form.edit(ReportEdit.Floor(ReportFloor.Numbered(0, isMezzanine = false)))
         form.edit(ReportEdit.Photo(photo()))
@@ -128,6 +131,7 @@ class SavedReportTest {
 }
 
 private const val WAIT_MS = 5_000L
+private const val NO_BUILDINGS = """{"type":"FeatureCollection","attribution":"© plik","features":[]}"""
 private const val DESCRIPTION = "Na długim korytarzu nie ma gdzie usiąść i odpocząć"
 private val A1 =
     ReportPlace(
