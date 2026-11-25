@@ -37,6 +37,7 @@ dependencies {
     implementation(libs.hilt.core)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit4)
+    testImplementation(libs.androidx.compose.ui.geometry)
     testImplementation(libs.androidx.compose.ui.test)
     testImplementation(libs.androidx.compose.ui.test.junit4)
     testImplementation(libs.androidx.test.core)
