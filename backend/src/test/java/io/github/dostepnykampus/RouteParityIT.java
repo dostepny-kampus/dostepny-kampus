@@ -37,8 +37,7 @@ final class RouteParityIT {
      */
     static final Map<String, String> PENDING = Map.ofEntries(
         Map.entry("GET /sync/pull", "pobranie zmian do aplikacji: synchronizacja"),
-        Map.entry("GET /export.geojson", "eksport GeoJSON: moduł eksportu"),
-        Map.entry("POST /invitations", "zaproszenia: moduł tożsamości")
+        Map.entry("GET /export.geojson", "eksport GeoJSON: moduł eksportu")
     );
 
     @Test
