@@ -56,7 +56,7 @@ class SubmissionCardTest {
     private fun show(item: OwnSubmissionItem, onOpen: (() -> Unit)? = { opened++ }) {
         compose.setContent {
             DostepnyKampusTheme {
-                SubmissionCard(item = item, onOpen = onOpen, onMeasure = {})
+                SubmissionCard(item = item, onOpen = onOpen, onMeasure = {}, onConflict = null)
             }
         }
     }
@@ -164,7 +164,7 @@ class SubmissionCardTest {
         var shown by mutableStateOf(rows.first().first)
         compose.setContent {
             DostepnyKampusTheme {
-                SubmissionCard(item = shown, onOpen = null, onMeasure = {})
+                SubmissionCard(item = shown, onOpen = null, onMeasure = {}, onConflict = null)
             }
         }
         val grays =
@@ -254,7 +254,7 @@ class SubmissionCardTest {
         var shown by mutableStateOf(cases.first().first)
         compose.setContent {
             DostepnyKampusTheme {
-                SubmissionCard(item = shown, onOpen = { opened++ }, onMeasure = {})
+                SubmissionCard(item = shown, onOpen = { opened++ }, onMeasure = {}, onConflict = null)
             }
         }
         var expectedClicks = 0
