@@ -29,8 +29,9 @@ import io.github.dostepnykampus.core.model.submission.Severity
  * Wymagania: NFR-21
  */
 @Composable
-public fun SeverityBadge(severity: Severity) {
+public fun SeverityBadge(severity: Severity, modifier: Modifier = Modifier) {
     Surface(
+        modifier = modifier,
         shape = RoundedCornerShape(Zaokraglenia.srednie),
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
         border = BorderStroke(Obramowania.ramka, MaterialTheme.colorScheme.outline),
