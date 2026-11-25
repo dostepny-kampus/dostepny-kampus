@@ -32,10 +32,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,6 +42,7 @@ import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.StaffProblem
 import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
+import io.github.dostepnykampus.core.designsystem.StaffResultMessage
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
@@ -146,22 +145,8 @@ private fun Message(stage: ExportStage) {
             ExportStage.EMPTY -> R.string.eksport_pusty
             ExportStage.IDLE, ExportStage.OFFLINE, ExportStage.SERVER_ERROR, ExportStage.FORBIDDEN -> null
         } ?: return
-    Surface(
-        modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-    ) {
-        Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-            Text(
-                text = stringResource(title),
-                fontWeight = Typografia.wyroznienieWaga,
-                style = MaterialTheme.typography.titleLarge,
-            )
-            if (stage == ExportStage.EMPTY) {
-                Text(text = stringResource(R.string.eksport_pusty_plik), style = MaterialTheme.typography.bodyLarge)
-            }
-        }
-    }
+    val message = if (stage == ExportStage.EMPTY) stringResource(R.string.eksport_pusty_plik) else null
+    StaffResultMessage(title = stringResource(title), message = message)
 }
 
 @Composable

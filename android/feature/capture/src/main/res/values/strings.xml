@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pl">
     <string name="pomiar_naglowek">Zmierz i zgłoś barierę</string>
     <string name="pomiar_szukanie">Szukamy satelitów. Na otwartej przestrzeni pomiar będzie dokładniejszy.</string>
