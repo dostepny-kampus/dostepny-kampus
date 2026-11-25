@@ -36,8 +36,7 @@ final class RouteParityIT {
      * Operacje kontraktu bez handlera i powód każdej; lista tylko się kurczy.
      */
     static final Map<String, String> PENDING = Map.ofEntries(
-        Map.entry("GET /export.geojson", "eksport GeoJSON: moduł eksportu"),
-        Map.entry("POST /invitations", "zaproszenia: moduł tożsamości")
+        Map.entry("GET /export.geojson", "eksport GeoJSON: moduł eksportu")
     );
 
     @Test

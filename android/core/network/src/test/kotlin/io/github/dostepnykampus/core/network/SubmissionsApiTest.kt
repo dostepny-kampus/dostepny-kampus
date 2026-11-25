@@ -69,6 +69,22 @@ class SubmissionsApiTest {
     }
 
     @Test
+    fun fetchesSubmissionById() {
+        enqueue(code = 200, body = submission(version = 2))
+        val result = blocking { submission(ID) }
+        assertEquals(2, (result as ApiResult.Success).value.version, "Bieżąca wersja zgłoszenia")
+        val request = server.takeRequest()
+        assertEquals("GET", request.method, "Odczyt to GET")
+        assertEquals("/submissions/$ID", request.path, "Ścieżka pojedynczego zgłoszenia")
+    }
+
+    @Test
+    fun reportsMissingSubmission() {
+        enqueue(code = 404, body = "")
+        assertEquals(ApiResult.NotFound, blocking { submission(ID) }, "Brak zgłoszenia to NotFound")
+    }
+
+    @Test
     fun savesUpdate() {
         enqueue(code = 200, body = submission(version = 2))
         val saved = blocking { update(id = ID, version = 1, content = quick) }
