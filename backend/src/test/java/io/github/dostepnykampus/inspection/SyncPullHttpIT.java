@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -130,10 +129,11 @@ final class SyncPullHttpIT {
     private static JsonNode pull(
         final WebApplicationContext context, final String token, final String query
     ) throws Exception {
-        final MockHttpServletResponse response = context.getBean(MockMvc.class).perform(
-            MockMvcRequestBuilders.get("/sync/pull".concat(query))
-                .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", token))
-        ).andReturn().getResponse();
-        return context.getBean(ObjectMapper.class).readTree(response.getContentAsString());
+        return context.getBean(ObjectMapper.class).readTree(
+            context.getBean(MockMvc.class).perform(
+                MockMvcRequestBuilders.get("/sync/pull".concat(query))
+                    .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", token))
+            ).andReturn().getResponse().getContentAsString()
+        );
     }
 }
