@@ -152,4 +152,13 @@
     <string name="usuniecie_brak_zdjecia">Dodaj zdjęcie miejsca, aby wysłać zgłoszenie.</string>
     <string name="usuniecie_zostaje">Bariera zostanie na mapie, dopóki Weryfikator nie sprawdzi zgłoszenia.</string>
     <string name="usuniecie_wyslij">Wyślij do sprawdzenia</string>
+    <string name="zmiana_oznaczenia_naglowek">Zmień oznaczenie wejścia</string>
+    <string name="zmiana_oznaczenia_obecne">Obecne oznaczenie</string>
+    <string name="zmiana_oznaczenia_bez_nazwy">Wejście</string>
+    <string name="zmiana_oznaczenia_nowe">Nowe oznaczenie</string>
+    <string name="zmiana_oznaczenia_potwierdzasz">Potwierdzasz obecne oznaczenie. Zmieni się data i źródło.</string>
+    <string name="zmiana_oznaczenia_wybierz">Wybierz: dostępne czy niedostępne.</string>
+    <string name="zmiana_oznaczenia_zdjecie">Zdjęcie wejścia</string>
+    <string name="zmiana_oznaczenia_brak_zdjecia">Dodaj zdjęcie wejścia, aby wysłać zmianę.</string>
+    <string name="zmiana_oznaczenia_sprawdzi">Zmianę sprawdzi inna osoba. Do tego czasu karta budynku pokazuje obecne oznaczenie.</string>
 </resources>
