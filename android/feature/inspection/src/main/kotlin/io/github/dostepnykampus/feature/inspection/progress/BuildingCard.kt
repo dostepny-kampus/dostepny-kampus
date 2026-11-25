@@ -25,33 +25,10 @@ import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.core.model.inspection.BuildingProgress
 import io.github.dostepnykampus.core.model.inspection.InspectionCoverage
 import io.github.dostepnykampus.feature.inspection.R
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 private const val PERCENT = 100
 
-private val READ_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy, HH:mm", Locale.ROOT)
-
 private val OpenIcon: ImageVector = pathIcon("M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z")
-
-/**
- * Chwila odczytu postępu i „Odśwież”; postęp nie odświeża się sam.
- *
- * Wymagania: US11.2
- *
- * @param readAt chwila odczytu
- * @param isRefreshing czy trwa odświeżanie; wyłącza przycisk
- * @param onRefresh „Odśwież”
- */
-@Composable
-internal fun ReadLine(readAt: Instant, isRefreshing: Boolean, onRefresh: () -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        Text(stringResource(R.string.postep_stan_z, READ_FORMAT.format(readAt.atZone(ZoneId.systemDefault()))))
-        OutlinedButton(onClick = onRefresh, enabled = !isRefreshing) { Text(stringResource(R.string.postep_odswiez)) }
-    }
-}
 
 /**
  * Karta budynku K1: symbol, pod nim nazwa z katalogu, postęp słowem, liczby zgłoszeń, wejścia sprawdzone na miejscu
