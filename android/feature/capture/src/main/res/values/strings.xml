@@ -152,12 +152,6 @@
     <string name="usuniecie_brak_zdjecia">Dodaj zdjęcie miejsca, aby wysłać zgłoszenie.</string>
     <string name="usuniecie_zostaje">Bariera zostanie na mapie, dopóki Weryfikator nie sprawdzi zgłoszenia.</string>
     <string name="usuniecie_wyslij">Wyślij do sprawdzenia</string>
-    <string name="konflikt_pole_miejsce">miejsce</string>
-    <string name="konflikt_pole_zdjecia">zdjęcia</string>
-    <string name="konflikt_pole_budynek">budynek</string>
-    <string name="konflikt_pole_grupa">grupa barier</string>
-    <string name="konflikt_pole_usunieta">bariera usunięta</string>
-    <string name="konflikt_pole_oznaczenie">oznaczenie wejścia</string>
     <string name="zmiana_oznaczenia_naglowek">Zmień oznaczenie wejścia</string>
     <string name="zmiana_oznaczenia_obecne">Obecne oznaczenie</string>
     <string name="zmiana_oznaczenia_bez_nazwy">Wejście</string>

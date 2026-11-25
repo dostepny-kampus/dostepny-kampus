@@ -28,7 +28,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
-import io.github.dostepnykampus.core.data.submission.conflict.ConflictField
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
@@ -41,6 +40,7 @@ import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
+import io.github.dostepnykampus.core.model.submission.SubmissionField
 import io.github.dostepnykampus.feature.capture.R
 
 /**
@@ -130,14 +130,14 @@ private fun Version(
                 style = MaterialTheme.typography.titleLarge,
             )
             content.barrierType?.let(BarrierType::fromCode)?.let { type ->
-                Fact(text = stringResource(type.nameRes()), isBold = ConflictField.BARRIER_TYPE in differs)
+                Fact(text = stringResource(type.nameRes()), isBold = SubmissionField.BARRIER_TYPE in differs)
             }
             val place =
                 barrierPlace(symbol = content.buildingSymbol, name = null, entrance = null, floor = content.floor)
-            Fact(text = place, isBold = ConflictField.BUILDING in differs || ConflictField.FLOOR in differs)
-            content.description?.let { Fact(text = it, isBold = ConflictField.DESCRIPTION in differs) }
+            Fact(text = place, isBold = SubmissionField.BUILDING in differs || SubmissionField.FLOOR in differs)
+            content.description?.let { Fact(text = it, isBold = SubmissionField.DESCRIPTION in differs) }
             content.severity?.let(Severity::fromValue)?.let { severity ->
-                Fact(text = stringResource(R.string.konflikt_uciazliwosc), isBold = ConflictField.SEVERITY in differs)
+                Fact(text = stringResource(R.string.konflikt_uciazliwosc), isBold = SubmissionField.SEVERITY in differs)
                 SeverityBadge(severity = severity, mapColors = DostepnyKampusTheme.mapColors)
             }
         }

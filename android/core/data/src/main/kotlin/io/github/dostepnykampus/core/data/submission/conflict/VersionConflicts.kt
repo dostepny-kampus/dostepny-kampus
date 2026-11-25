@@ -17,6 +17,7 @@ import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState.LOCAL
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionWithPhotos
 import io.github.dostepnykampus.core.model.submission.Submission
+import io.github.dostepnykampus.core.model.submission.fieldsChanged
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -59,7 +60,8 @@ internal class StoredVersionConflicts(
         return if (own == null || server == null) {
             null
         } else {
-            VersionConflict(id = id, own = own, server = server, differences = differencesOf(own, server.content))
+            val differences = fieldsChanged(previous = own, current = server.content)
+            VersionConflict(id = id, own = own, server = server, differences = differences)
         }
     }
 

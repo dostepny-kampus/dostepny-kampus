@@ -55,6 +55,17 @@
     <string name="miejsce_parter">parter</string>
     <string name="miejsce_pietro">piętro %1$d</string>
     <string name="miejsce_polpietro">półpiętro</string>
+    <string name="pole_miejsce">miejsce</string>
+    <string name="pole_zdjecia">zdjęcia</string>
+    <string name="pole_budynek">budynek</string>
+    <string name="pole_pietro">piętro</string>
+    <string name="pole_grupa">grupa barier</string>
+    <string name="pole_typ">typ bariery</string>
+    <string name="pole_uciazliwosc">uciążliwość</string>
+    <string name="pole_opis">opis</string>
+    <string name="pole_usunieta">bariera usunięta</string>
+    <string name="pole_wejscie">wejście</string>
+    <string name="pole_oznaczenie">oznaczenie wejścia</string>
     <string name="bez_internetu">Bez internetu</string>
     <string name="bez_internetu_dane_z">Bez internetu · dane z %1$s</string>
     <string name="bariera_bez_typu">Bariera</string>
