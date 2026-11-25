@@ -5,17 +5,13 @@
  */
 package io.github.dostepnykampus.feature.map.barrier
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,13 +22,11 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
-import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
-import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.campusDay
 import io.github.dostepnykampus.core.designsystem.marking.BarrierPhoto
-import io.github.dostepnykampus.core.designsystem.marking.SeverityIcon
+import io.github.dostepnykampus.core.designsystem.marking.SeverityBadge
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.submission.Severity
@@ -80,33 +74,6 @@ private fun SheetTop(severity: Severity, onClose: () -> Unit) {
             SeverityBadge(severity)
             Spacer(Modifier.weight(1f))
             if (!isLarge) SheetCloseButton(onClose)
-        }
-    }
-}
-
-/**
- * Plakietka uciążliwości: znak i słowo.
- *
- * Wymagania: NFR-21
- */
-@Composable
-internal fun SeverityBadge(severity: Severity) {
-    Surface(
-        shape = RoundedCornerShape(Zaokraglenia.srednie),
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-        border = BorderStroke(Obramowania.ramka, MaterialTheme.colorScheme.outline),
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = Odstepy.m, vertical = Odstepy.s),
-            horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            SeverityIcon(severity)
-            Text(
-                text = stringResource(severity.nameRes()),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = Typografia.wyroznienieWaga,
-            )
         }
     }
 }
