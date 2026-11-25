@@ -5,10 +5,9 @@
  */
 package io.github.dostepnykampus.identity.account.web;
 
-import io.github.dostepnykampus.identity.account.Accounts;
-import io.github.dostepnykampus.identity.account.Grant;
 import io.github.dostepnykampus.identity.account.RoleAlreadyGranted;
 import io.github.dostepnykampus.identity.account.StaffRole;
+import io.github.dostepnykampus.identity.account.application.InviteAccount;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,11 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public final class InvitationsController {
 
-    /** Konta w Usłudze logowania. */
-    private final Accounts accounts;
+    /** Przypadek użycia nadania roli. */
+    private final InviteAccount invitations;
 
-    InvitationsController(final Accounts accounts) {
-        this.accounts = accounts;
+    InvitationsController(final InviteAccount invitations) {
+        this.invitations = invitations;
     }
 
     /**
@@ -45,10 +44,8 @@ public final class InvitationsController {
     InvitationResponse createInvitation(@RequestBody final InvitationRequest request) {
         final String email = request.address();
         final StaffRole role = request.staffRole();
-        final Grant grant = this.accounts.grant(email, role);
-        if (grant == Grant.UNCHANGED) {
-            throw new RoleAlreadyGranted(role.name());
-        }
-        return new InvitationResponse(email, role.name(), grant == Grant.ADDED);
+        return new InvitationResponse(
+            email, role.name(), this.invitations.invite(email, role)
+        );
     }
 }

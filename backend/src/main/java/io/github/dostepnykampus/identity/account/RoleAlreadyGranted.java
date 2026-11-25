@@ -7,6 +7,7 @@ package io.github.dostepnykampus.identity.account;
 
 import io.github.dostepnykampus.shared.error.ConflictingState;
 import java.net.URI;
+import java.util.Optional;
 
 /**
  * Konto z adresem z zaproszenia ma już zapraszaną rolę; nic się nie zmieniło. Odpowiedź 409
@@ -30,6 +31,11 @@ public final class RoleAlreadyGranted extends ConflictingState {
      * @param role Nazwa zapraszanej roli
      */
     public RoleAlreadyGranted(final String role) {
-        super("Konto ma już zapraszaną rolę", "role", role, RoleAlreadyGranted.TYPE);
+        super("Konto ma już zapraszaną rolę", "role", role);
+    }
+
+    @Override
+    public Optional<URI> type() {
+        return Optional.of(RoleAlreadyGranted.TYPE);
     }
 }

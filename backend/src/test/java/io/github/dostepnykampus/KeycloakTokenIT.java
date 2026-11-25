@@ -158,32 +158,35 @@ final class KeycloakTokenIT {
             final String boss = KeycloakTokenIT.token(
                 client, mapper, realm, KeycloakTokenIT.APP, "koordynator.test"
             );
-            final String verifier = KeycloakTokenIT.token(
-                client, mapper, realm, KeycloakTokenIT.APP, "weryfikator.test"
-            );
             final List<HttpResponse<String>> answers = List.of(
-                KeycloakTokenIT.invite(client, address, verifier, email, "COLLECTOR"),
+                KeycloakTokenIT.invite(
+                    client, address,
+                    KeycloakTokenIT.token(
+                        client, mapper, realm, KeycloakTokenIT.APP, "weryfikator.test"
+                    ),
+                    email, "COLLECTOR"
+                ),
                 KeycloakTokenIT.invite(client, address, boss, email, "COLLECTOR"),
                 KeycloakTokenIT.invite(client, address, boss, email, "VERIFIER"),
                 KeycloakTokenIT.invite(client, address, boss, email, "VERIFIER"),
                 KeycloakTokenIT.invite(client, address, boss, "bez-malpy", "VERIFIER")
             );
             MatcherAssert.assertThat(
-                "Kody zaproszeń: Weryfikator, nowe konto, nowa rola, ta sama rola, zły adres",
-                answers.stream().map(HttpResponse::statusCode).toList(),
-                Matchers.contains(403, 201, 201, 409, 400)
-            );
-            MatcherAssert.assertThat(
-                "Zaproszenie nie mówi, czy konto istniało, albo 409 bez rodzaju „rola już nadana”",
+                "Kody zaproszeń oraz informacje o koncie i błędzie 409",
                 List.of(
+                    answers.stream().map(HttpResponse::statusCode).toList(),
                     mapper.readTree(answers.get(1).body()).path("accountExisted").asBoolean(),
                     mapper.readTree(answers.get(2).body()).path("accountExisted").asBoolean(),
                     mapper.readTree(answers.get(3).body()).path("type").asString()
                 ),
-                Matchers.contains(false, true, "urn:dostepny-kampus:rola-juz-nadana")
+                Matchers.contains(
+                    List.of(403, 201, 201, 409, 400),
+                    false, true, "urn:dostepny-kampus:rola-juz-nadana"
+                )
             );
         }
     }
+
     private static int edit(
         final HttpClient client, final String operation, final String token
     ) throws Exception {
@@ -237,8 +240,7 @@ final class KeycloakTokenIT {
         return client.send(
             HttpRequest.newBuilder(URI.create(address))
                 .header(HttpHeaders.AUTHORIZATION, "Bearer %s".formatted(token))
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .POST(
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).POST(
                     HttpRequest.BodyPublishers.ofString(
                         "{\"email\":\"%s\",\"role\":\"%s\"}".formatted(email, role)
                     )

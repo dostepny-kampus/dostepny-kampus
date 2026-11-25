@@ -25,9 +25,6 @@ record InvitationRequest(@Nullable String email, @Nullable String role) {
     /** Adres z jednym znakiem @ i kropką w domenie, bez spacji. */
     private static final Pattern ADDRESS = Pattern.compile("[^@\\s]+@[^@\\s]+\\.[^@\\s]+");
 
-    /** Najdłuższy adres e-mail według RFC 5321. */
-    private static final int LONGEST = 254;
-
     /**
      * Sprawdzony adres; brak adresu albo tekst, który nie jest adresem e-mail, daje
      * {@link InvalidInput}.
@@ -35,7 +32,7 @@ record InvitationRequest(@Nullable String email, @Nullable String role) {
      * @return Adres e-mail
      */
     String address() {
-        if (this.email == null || this.email.length() > InvitationRequest.LONGEST
+        if (this.email == null || this.email.length() > 254
             || !InvitationRequest.ADDRESS.matcher(this.email).matches()) {
             throw new InvalidInput("Pole email nie jest adresem e-mail");
         }
@@ -49,8 +46,7 @@ record InvitationRequest(@Nullable String email, @Nullable String role) {
      */
     StaffRole staffRole() {
         return Arrays.stream(StaffRole.values())
-            .filter(known -> known.name().equals(this.role)).findFirst()
-            .orElseThrow(
+            .filter(known -> known.name().equals(this.role)).findFirst().orElseThrow(
                 () -> new InvalidInput("Pole role przyjmuje COLLECTOR, VERIFIER albo COORDINATOR")
             );
     }
