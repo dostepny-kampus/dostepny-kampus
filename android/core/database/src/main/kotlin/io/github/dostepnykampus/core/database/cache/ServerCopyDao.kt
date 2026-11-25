@@ -20,4 +20,8 @@ public interface ServerCopyDao {
     /** Zapisuje kopię; nowy zapis zastępuje poprzedni pod tym samym kluczem. */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun save(entity: ServerCopyEntity)
+
+    /** Usuwa kopię pod kluczem [key]; brak kopii nic nie zmienia. */
+    @Query("DELETE FROM server_copy WHERE `key` = :key")
+    public suspend fun delete(key: String)
 }
