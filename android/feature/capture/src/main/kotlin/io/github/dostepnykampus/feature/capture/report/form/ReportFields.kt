@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
@@ -29,6 +30,7 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.designsystem.marking.SeverityIcon
 import io.github.dostepnykampus.core.designsystem.marking.descriptionRes
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.submission.Severity
@@ -89,6 +91,9 @@ private fun placeInWords(place: ReportPlace): String {
     return stringResource(R.string.formularz_miejsce, meters, entrance, accuracy)
 }
 
+/** Znacznik testowy znaku uciążliwości przy wartości wyboru „Uciążliwość”. */
+internal const val SEVERITY_SIGN_TAG: String = "znak-uciazliwosci"
+
 /**
  * „Uciążliwość”: trzy wybory z opisem, oceniane dla osoby, dla której bariera jest najtrudniejsza (PW-13).
  *
@@ -121,6 +126,8 @@ private fun SeverityOption(option: Severity, isChosen: Boolean, onEdit: (ReportE
         Column(modifier = Modifier.padding(Odstepy.m)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(selected = isChosen, onClick = null)
+                val sign = Modifier.padding(start = Odstepy.s).testTag(SEVERITY_SIGN_TAG)
+                SeverityIcon(severity = option, modifier = sign)
                 Text(
                     text = stringResource(option.nameRes()),
                     modifier = Modifier.padding(start = Odstepy.s),
