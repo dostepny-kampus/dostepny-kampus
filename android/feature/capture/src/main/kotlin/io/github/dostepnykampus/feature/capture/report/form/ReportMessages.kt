@@ -167,6 +167,24 @@ internal fun ReportBanner(state: ReportUiState, onRetry: () -> Unit) {
     }
 }
 
+/**
+ * Błąd zapisu w telefonie z ekranu wysyłanego do sprawdzenia: „Za mało miejsca w telefonie” z „Spróbuj ponownie”
+ * albo odmowa kolejki ([isRejected]) z tym samym przyciskiem.
+ *
+ * Wymagania: NFR-7, NFR-50
+ */
+@Composable
+internal fun SendFailure(isRejected: Boolean, onRetry: () -> Unit) {
+    val message = if (isRejected) R.string.formularz_zapis_odrzucony else R.string.formularz_blad_zapisu
+    Column(
+        modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Assertive },
+        verticalArrangement = Arrangement.spacedBy(Odstepy.s),
+    ) {
+        Text(stringResource(message), color = MaterialTheme.colorScheme.error, fontWeight = Typografia.wyroznienieWaga)
+        FilledTonalButton(onClick = onRetry) { Text(stringResource(R.string.formularz_sprobuj_ponownie)) }
+    }
+}
+
 /** „Wyjść bez zapisu?” po „Wstecz” z niezapisanymi zmianami. Wymagania: US7.4, NFR-23 */
 @Composable
 internal fun ExitDialog(onConfirmExit: () -> Unit, onStay: () -> Unit) {

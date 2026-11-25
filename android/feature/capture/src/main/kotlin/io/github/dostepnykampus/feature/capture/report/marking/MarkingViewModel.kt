@@ -30,7 +30,6 @@ import javax.inject.Inject
  * Model widoku C6 „Zmiana oznaczenia wejścia”. Zmiana wymaga wyboru „dostępne” albo „niedostępne” i zdjęcia
  * wejścia; bez nich nic się nie zapisuje. Zapis idzie tą samą ścieżką co formularz C2 i czeka w telefonie
  * na wysłanie.
- * TODO(#3676): ekran C6 i przejście z karty budynku.
  *
  * Wymagania: US17.2, BR-24, BR-7, NFR-7
  *
