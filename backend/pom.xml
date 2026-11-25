@@ -72,6 +72,16 @@ Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
         <artifactId>commons-imaging</artifactId>
         <version>1.0.0-alpha6</version>
       </dependency>
+      <dependency>
+        <groupId>io.cucumber</groupId>
+        <artifactId>messages</artifactId>
+        <version>34.2.1</version>
+      </dependency>
+      <dependency>
+        <groupId>io.cucumber</groupId>
+        <artifactId>query</artifactId>
+        <version>16.4.0</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <dependencies>
