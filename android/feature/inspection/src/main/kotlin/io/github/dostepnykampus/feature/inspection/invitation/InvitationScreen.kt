@@ -52,14 +52,6 @@ import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.feature.inspection.R
 
 /**
- * Czynności K2, które prowadzą poza ekran.
- *
- * @property onBack „Wstecz”
- * @property onLeave „Wróć do mapy” przy braku uprawnień
- */
-data class InvitationActions(val onBack: () -> Unit, val onLeave: () -> Unit)
-
-/**
  * Widok K2 bez modelu widoku: adres, rola, wynik zaproszenia, błędy danych i stany wspólne.
  * TODO(#3868): znak przed błędami pól.
  *
@@ -143,16 +135,11 @@ private fun SendButton(onSend: () -> Unit) {
 @Composable
 private fun Message(state: InvitationUiState) {
     val title =
-        when (state.stage) {
-            InvitationStage.SENT -> R.string.zaproszenie_wyslane
-            InvitationStage.ROLE_ADDED -> R.string.zaproszenie_konto_istnieje
-            InvitationStage.IDLE,
-            InvitationStage.SENDING,
-            InvitationStage.OFFLINE,
-            InvitationStage.SERVER_ERROR,
-            InvitationStage.FORBIDDEN,
-            -> null
-        } ?: return
+        when {
+            state.stage == InvitationStage.SENT -> R.string.zaproszenie_wyslane
+            state.stage == InvitationStage.ROLE_ADDED -> R.string.zaproszenie_konto_istnieje
+            else -> return
+        }
     val role = state.addedRole
     Surface(
         modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
@@ -176,11 +163,7 @@ private fun Message(state: InvitationUiState) {
 }
 
 @Composable
-private fun EmailField(
-    email: String,
-    isWrong: Boolean,
-    onEdit: (String) -> Unit,
-) {
+private fun EmailField(email: String, isWrong: Boolean, onEdit: (String) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         SectionTitle(R.string.zaproszenie_adres)
         if (isWrong) ProblemText(R.string.zaproszenie_adres_niepelny)
@@ -196,11 +179,7 @@ private fun EmailField(
 }
 
 @Composable
-private fun Roles(
-    chosen: StaffRole?,
-    isMissing: Boolean,
-    onChoose: (StaffRole) -> Unit,
-) {
+private fun Roles(chosen: StaffRole?, isMissing: Boolean, onChoose: (StaffRole) -> Unit) {
     Column(modifier = Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         SectionTitle(R.string.zaproszenie_rola)
         if (isMissing) ProblemText(R.string.zaproszenie_wybierz_role)
@@ -211,7 +190,9 @@ private fun Roles(
 }
 
 @Composable
-private fun SectionTitle(@StringRes text: Int) {
+private fun SectionTitle(
+    @StringRes text: Int,
+) {
     Text(
         text = stringResource(text),
         modifier = Modifier.semantics { heading() },
@@ -220,7 +201,9 @@ private fun SectionTitle(@StringRes text: Int) {
 }
 
 @Composable
-private fun ProblemText(@StringRes text: Int) {
+private fun ProblemText(
+    @StringRes text: Int,
+) {
     Text(
         text = stringResource(text),
         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive },
@@ -230,12 +213,7 @@ private fun ProblemText(@StringRes text: Int) {
 }
 
 @Composable
-private fun RoleOption(
-    role: StaffRole,
-    isChosen: Boolean,
-    isMissing: Boolean,
-    onClick: () -> Unit,
-) {
+private fun RoleOption(role: StaffRole, isChosen: Boolean, isMissing: Boolean, onClick: () -> Unit) {
     OutlinedCard(
         modifier = Modifier.fillMaxWidth().selectable(selected = isChosen, role = Role.RadioButton, onClick = onClick),
         border =
