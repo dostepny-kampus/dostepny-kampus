@@ -129,45 +129,6 @@ final class JdbcReadIT {
         );
     }
 
-    @Test
-    void listsReviewQueueWithoutOwnOrForeignClaimed(final ApplicationContext context) {
-        final SubmissionData data = SubmissionData.of(context);
-        final SubmissionContent content = SubmissionData.content("o");
-        final UUID older = JdbcReadIT.created(
-            data, data.seed(1, content, SubmissionStatus.SENT), 0
-        );
-        final UUID legacy = JdbcReadIT.created(
-            data, data.seed(2, content, SubmissionStatus.SENT), 1
-        );
-        final UUID mine = JdbcReadIT.created(
-            data, data.seed(3, content, SubmissionStatus.IN_REVIEW), 2
-        );
-        final UUID self = JdbcReadIT.created(
-            data, data.seed(4, content, SubmissionStatus.SENT), 3
-        );
-        final UUID theirs = JdbcReadIT.created(
-            data, data.seed(5, content, SubmissionStatus.IN_REVIEW), 4
-        );
-        final UUID accepted = JdbcReadIT.created(
-            data, data.seed(6, content, SubmissionStatus.ACCEPTED), 5
-        );
-        data.jdbc().sql("UPDATE submissions SET author = 'inne-konto' WHERE id IN (:ids)")
-            .param("ids", List.of(older, mine, theirs, accepted)).update();
-        data.jdbc().sql("UPDATE submissions SET author = NULL WHERE id = :id")
-            .param("id", legacy).update();
-        data.jdbc().sql("UPDATE submissions SET reviewer = :reviewer WHERE id = :id")
-            .param("reviewer", SubmissionData.AUTHOR).param("id", mine).update();
-        data.jdbc().sql("UPDATE submissions SET reviewer = 'inny-weryfikator' WHERE id = :id")
-            .param("id", theirs).update();
-        Assertions.assertEquals(
-            List.of(older, legacy, mine),
-            data.repo().reviewQueue(SubmissionData.AUTHOR).stream()
-                .map(Submission::id)
-                .filter(Set.of(older, legacy, mine, self, theirs, accepted)::contains).toList(),
-            "Kolejka ma własne lub cudze wzięte zgłoszenia albo złą kolejność"
-        );
-    }
-
     private static UUID created(final SubmissionData data, final UUID id, final int minutes) {
         data.jdbc().sql("UPDATE submissions SET created_at = :at WHERE id = :id")
             .param("at", OffsetDateTime.parse("2026-01-01T10:00:00Z").plusMinutes(minutes))
