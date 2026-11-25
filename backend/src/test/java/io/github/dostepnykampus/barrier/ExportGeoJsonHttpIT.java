@@ -47,14 +47,6 @@ import tools.jackson.databind.ObjectMapper;
 @IntegrationTest
 final class ExportGeoJsonHttpIT {
 
-    /** Zgłoszenie spoza budynku bez pól opcjonalnych. */
-    private static final SubmissionContent OUTSIDE = new SubmissionContent(
-        SubmissionKind.PRECISE,
-        new SubmissionPlace(new SubmissionPoint(17.061_25, 51.107_92), null, false, null, null),
-        new BarrierDetails(BarrierGroup.HORIZONTAL, new BarrierType(13), 2, null, false),
-        null, null, null, List.of(UUID.randomUUID())
-    );
-
     @Test
     void enforcesCoordinatorRoleAndRejectsMissingOrOtherToken(
         @LocalServerPort final int port
@@ -93,22 +85,20 @@ final class ExportGeoJsonHttpIT {
             null, false, "A-1", new SubmissionFloor(null, 0, true)
         );
         final UUID accepted = UUID.randomUUID();
+        final SubmissionContent content = new SubmissionContent(
+            SubmissionKind.PRECISE, inside,
+            new BarrierDetails(
+                BarrierGroup.ENTRANCE, new BarrierType(1), 3,
+                "=Schody, \"próg\" i żółta poręcz", false
+            ),
+            null, null, null, List.of(UUID.randomUUID())
+        );
         final List<UUID> created = new ArrayList<>(List.of(accepted));
         final String json;
         try {
-            samples.add(
-                accepted, "ACCEPTED",
-                new SubmissionContent(
-                    SubmissionKind.PRECISE, inside,
-                    new BarrierDetails(
-                        BarrierGroup.ENTRANCE, new BarrierType(1), 3,
-                        "=Schody, \"próg\" i żółta poręcz", false
-                    ),
-                    null, null, null, List.of(UUID.randomUUID())
-                )
-            );
+            samples.add(accepted, "ACCEPTED", content);
             for (final String state : List.of("ARCHIVED", "IN_REVIEW", "SENT", "REJECTED")) {
-                created.add(samples.add(state, ExportGeoJsonHttpIT.OUTSIDE));
+                created.add(samples.add(state, content));
             }
             json = ExportGeoJsonHttpIT.send(port, "Bearer COORDINATOR").body();
         } finally {
