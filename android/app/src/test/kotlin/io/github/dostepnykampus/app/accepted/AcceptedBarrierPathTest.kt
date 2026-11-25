@@ -293,14 +293,13 @@ class AcceptedBarrierPathTest {
         compose.onNodeWithText("Blokada").performScrollTo().performClick()
         takeCameraPhoto()
         compose.onNodeWithText("Zapisz").performClick()
-
         awaitOwnList("W telefonie", "Przyjęte")
         val queued = runBlocking { pending.all() }.single().submission
         assertEquals("nowe zgłoszenie wskazuje poprzednie przyjęte", THRESHOLD_ID, queued.replacesSubmissionId)
         assertEquals("nowe zgłoszenie ma zmienioną uciążliwość", Severity.BLOCKING.value, queued.severity)
         assertTrue("bez sieci zmiana nie trafia na serwer", Fakes.created.isEmpty())
-        val rows = runBlocking { history.observe(TEST_ACCOUNT).first() }
-        assertEquals("zmiana tworzy nowy wpis obok przyjętego", 2, rows.size)
+        val rows = runBlocking { history.observe(TEST_ACCOUNT).first() }.size
+        assertEquals("zmiana tworzy nowy wpis obok przyjętego", 2, rows)
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
         expandBarriers()
         compose.onNodeWithText("Próg").performScrollTo().assertIsDisplayed()
@@ -323,7 +322,6 @@ class AcceptedBarrierPathTest {
         compose.waitUntil(WAIT_MS) { hasText("Zgłoś, że bariery nie ma") }
         takeCameraPhoto()
         compose.onNodeWithText("Wyślij do sprawdzenia").performClick()
-
         compose.waitUntil(WAIT_MS) { hasText("Moje zgłoszenia") }
         val infos = WorkManager.getInstance(app).getWorkInfosForUniqueWork("wysylka-zgloszen")
         val workId = infos.get().single().id
