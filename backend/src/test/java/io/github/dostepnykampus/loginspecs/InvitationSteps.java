@@ -52,7 +52,7 @@ public final class InvitationSteps {
     private String email;
 
     /** Token osoby, która wykonuje czynność. */
-    private String token = "";
+    private String token;
 
     /** Kod odpowiedzi serwera na ostatnie zaproszenie. */
     private int status;
@@ -67,6 +67,7 @@ public final class InvitationSteps {
         this.settings = settings;
         this.mapper = mapper;
         this.email = "";
+        this.token = "";
     }
 
     /**
