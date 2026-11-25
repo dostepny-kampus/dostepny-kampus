@@ -140,7 +140,10 @@ class AcceptedBarrierPathTest {
         @Singleton
         fun catalog(app: Application): BuildingCatalogRepository =
             BuildingCatalogRepository(EmptyCoroutineContext) {
-                app.assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() }
+                app.assets
+                    .open(BUILDINGS_ASSET)
+                    .bufferedReader()
+                    .use { it.readText() }
             }
 
         @Provides
@@ -217,8 +220,11 @@ class AcceptedBarrierPathTest {
     private val app = RuntimeEnvironment.getApplication()
 
     @Inject lateinit var session: AccountSession
+
     @Inject lateinit var queue: SubmissionQueue
+
     @Inject lateinit var history: OwnSubmissionDao
+
     @Inject lateinit var pending: PendingSubmissionDao
 
     @Before
@@ -236,13 +242,22 @@ class AcceptedBarrierPathTest {
         runBlocking { session.signIn(token) }
         val factory =
             object : WorkerFactory() {
-                override fun createWorker(c: Context, name: String, p: WorkerParameters): Worker =
-                    object : Worker(c, p) {
+                override fun createWorker(
+                    appContext: Context,
+                    workerClassName: String,
+                    workerParameters: WorkerParameters,
+                ): Worker =
+                    object : Worker(appContext, workerParameters) {
                         override fun doWork(): Result =
                             if (runBlocking { queue.sendAll() }) Result.success() else Result.retry()
                     }
             }
-        val config = Configuration.Builder().setExecutor(SynchronousExecutor()).setWorkerFactory(factory).build()
+        val config =
+            Configuration
+                .Builder()
+                .setExecutor(SynchronousExecutor())
+                .setWorkerFactory(factory)
+                .build()
         WorkManagerTestInitHelper.initializeTestWorkManager(app, config)
         Fakes.scheduleSync = true
     }
@@ -257,7 +272,7 @@ class AcceptedBarrierPathTest {
      * Wymagania: BR-3, BR-18
      */
     @Test
-    fun replacesAcceptedThresholdThroughScreens() {
+    fun replacesAcceptedThreshold() {
         runBlocking {
             history.save(
                 OwnSubmissionEntity(
@@ -306,7 +321,7 @@ class AcceptedBarrierPathTest {
      * Wymagania: US8.4, BR-19
      */
     @Test
-    fun reportsLiftRemovalThroughScreens() {
+    fun reportsLiftRemoval() {
         Fakes.network.value = true
         Fakes.accepted = listOf(barrier("s-9", BarrierType.BROKEN_LIFT, Severity.BLOCKING, floor = 2))
         openCard()
@@ -319,7 +334,13 @@ class AcceptedBarrierPathTest {
         compose.onNodeWithText("Wyślij do sprawdzenia").performClick()
 
         compose.waitUntil(WAIT_MS) { hasText("Moje zgłoszenia") }
-        val workId = WorkManager.getInstance(app).getWorkInfosForUniqueWork("wysylka-zgloszen").get().single().id
+        val workId =
+            WorkManager
+                .getInstance(app)
+                .getWorkInfosForUniqueWork("wysylka-zgloszen")
+                .get()
+                .single()
+                .id
         WorkManagerTestInitHelper.getTestDriver(app)?.setAllConstraintsMet(workId)
             ?: error("brak sterownika WorkManagera")
         awaitOwnList("Wysłane")
