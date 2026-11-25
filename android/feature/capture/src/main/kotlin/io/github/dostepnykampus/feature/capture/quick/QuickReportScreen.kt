@@ -44,7 +44,6 @@ import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.location.WithLocationPermission
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
-import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
 import kotlinx.coroutines.flow.filter
 import java.io.File
 
@@ -99,7 +98,13 @@ fun QuickReportScreen(
 
                     else -> {
                         QuickStepProgress(step = route.step.ordinal + 1)
-                        QuickSteps(route, actions, models, slot = slot, onGiveUp = { isLeaving = true })
+                        QuickSteps(
+                            route = route,
+                            actions = actions,
+                            models = models,
+                            slot = slot,
+                            onGiveUp = { isLeaving = true },
+                        )
                     }
                 }
             }
