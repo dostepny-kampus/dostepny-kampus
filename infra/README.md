@@ -1,6 +1,6 @@
 # Infrastruktura lokalna
 
-`docker-compose.yml` uruchamia bazę serwera, czyli PostgreSQL z PostGIS (oficjalny obraz `postgis/postgis`). Uruchamia też magazyn zdjęć zgłoszeń RustFS, zgodny z S3 (obraz `rustfs/rustfs`, [ADR-0009](../docs/docs/architektura/decyzje/0009-magazyn-zdjec.md)). Uruchamia także usługę logowania Keycloak z realmem deweloperskim ([ADR-0003](../docs/docs/architektura/decyzje/0003-keycloak.md)). Serwer dojdzie tu w kolejnych zadaniach.
+`docker-compose.yml` uruchamia bazę serwera, czyli PostgreSQL z PostGIS (oficjalny obraz `postgis/postgis`). Uruchamia też magazyn zdjęć zgłoszeń RustFS, zgodny z S3 (obraz `rustfs/rustfs`, [ADR-0009](../docs/docs/architektura/decyzje/0009-magazyn-zdjec.md)). Uruchamia także usługę logowania Keycloak z realmem deweloperskim ([ADR-0003](../docs/docs/architektura/decyzje/0003-keycloak.md)). Serwer uruchamia się z `backend/` przez `./mvnw` albo w compose jako usługa `serwer` z profilu `serwer`.
 
 ## Uruchomienie
 
@@ -12,6 +12,20 @@ docker compose -f infra/docker-compose.yml down -v
 ```
 
 Baza, magazyn i usługa logowania są gotowe, gdy `ps` pokazuje stan `healthy`. Porty są otwarte tylko na `127.0.0.1`. `down -v` usuwa kontenery razem z danymi.
+
+## Serwer w compose
+
+Obraz serwera powstaje z `backend/Dockerfile` z pliku JAR zbudowanego wcześniej. Profil `serwer` uruchamia serwer razem z bazą, magazynem zdjęć i usługą logowania:
+
+```sh
+(cd backend && ./mvnw -DskipTests package)
+docker compose -f infra/docker-compose.yml --profile serwer up -d --build
+curl -fs http://127.0.0.1:8080/buildings
+```
+
+Serwer startuje, gdy baza i usługa logowania są `healthy`, a `zdjecia-konto` założyło klucz serwera. Serwer w kontenerze łączy się z usługami po nazwach z compose (`postgis`, `zdjecia`, `logowanie`), więc `DK_DB_HOST`, `DK_PHOTOS_HOST` i porty wewnętrzne ustawia sam plik compose. Tokeny mają wydawcę `DK_AUTH_ISSUER` (`http://localhost:8180/…`, jak z emulatora), a klucze tokenów serwer pobiera z `DK_AUTH_JWKS` w sieci compose. Bez profilu `up` uruchamia tylko usługi pomocnicze, a serwer startuje z `backend/` przez `./mvnw`.
+
+Usługa logowania działa tu w trybie deweloperskim. Tryb produkcyjny z pośrednikiem HTTPS opisuje #3793.
 
 ## Zmienne
 
@@ -40,6 +54,8 @@ Compose czyta zmienne z `infra/.env`, którego nie ma w repozytorium. Serwer czy
 | `DK_PUBLIC_RATE_LIMIT` | żądania bez logowania z jednego adresu na minutę (NFR-34) | `60` |
 | `DK_RATE_LIMIT_UNLIMITED` | adresy bez limitu, po przecinku | puste |
 | `DK_AUTH_AUDIENCE` | odbiorca w `aud`, bez którego serwer odrzuca token | `dostepny-kampus-api` |
+| `DK_AUTH_JWKS` | adres kluczy tokenów usługi logowania, tylko usługa `serwer` w compose | `http://logowanie:8180/realms/dostepny-kampus/protocol/openid-connect/certs` |
+| `DK_API_PORT` | port serwera na `127.0.0.1`, tylko usługa `serwer` w compose | `8080` |
 
 ## Konta bazy
 
