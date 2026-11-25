@@ -9,8 +9,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.dostepnykampus.core.data.submission.conflict.StoredVersionConflicts
 import io.github.dostepnykampus.core.data.submission.conflict.VersionConflicts
-import io.github.dostepnykampus.core.data.submission.conflict.versionConflictsOf
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionSyncScheduler
 import io.github.dostepnykampus.core.network.auth.AccessTokens
@@ -28,7 +28,7 @@ internal object ConflictDataModule {
         tokens: AccessTokens,
         @IoContext ioContext: CoroutineContext,
     ): VersionConflicts =
-        versionConflictsOf(
+        StoredVersionConflicts(
             store = store,
             ioContext = ioContext,
             subject = tokens::subject,
