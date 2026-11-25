@@ -5,7 +5,7 @@
  */
 
 /**
- * Operacja HTTP wysyłki zmian z telefonu, ciała żądania i odpowiedzi.
+ * Operacje HTTP wysyłki zmian z telefonu i pobrania zmian do niego, ciała żądań i odpowiedzi.
  *
  * @since 0.1.0
  */

@@ -16,13 +16,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-/**
- * Tryb pokazu: trasa z zasobów debug daje pełny pomiar C1 i satelity kilku systemów.
- *
- * TODO(#3817): test wyboru źródeł położenia przez włącznik trybu pokazu.
- *
- * Wymagania: US6.1, NFR-1
- */
+/** Tryb pokazu: trasa z zasobów debug daje pełny pomiar C1 i satelity kilku systemów. Wymagania: US6.1, NFR-1 */
 @OptIn(TrybPokazu::class, ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class DemoRouteTest {

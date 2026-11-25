@@ -82,7 +82,7 @@ class RefusedResaveTest {
                 ),
             stamps = SubmissionStamps(newId = { ID }),
             onSaved = { scheduled++ },
-            history = history,
+            records = SentRecords(history = history),
         )
 }
 

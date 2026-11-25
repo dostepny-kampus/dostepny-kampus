@@ -81,7 +81,7 @@ class QueueTransactionTest {
                     update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content))) },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
-            history = FailingHistory(),
+            records = SentRecords(history = FailingHistory()),
         )
 
     /** Historia, której wybrany zapis [failing] kończy się błędem, np. po zabiciu procesu. */
