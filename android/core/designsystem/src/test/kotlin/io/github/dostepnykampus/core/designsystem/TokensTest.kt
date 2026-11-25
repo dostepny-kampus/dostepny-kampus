@@ -111,7 +111,13 @@ class TokensTest {
     /** Grubości, progi powiększenia i krycia mapy z podsekcji `mapa` poza kolorami. Wymagania: NFR-16, NFR-21 */
     @Test
     fun takesMapSectionsFromTokens() {
-        val generated = mapOf("plan" to MapaPlan, "sciezka" to MapaSciezka, "przygaszenie" to MapaPrzygaszenie)
+        val generated =
+            mapOf(
+                "plan" to MapaPlan,
+                "sciezka" to MapaSciezka,
+                "przygaszenie" to MapaPrzygaszenie,
+                "kontur" to MapaKontur,
+            )
         val sections = tokens.sub("mapa").filter { (name, value) -> name != "kolory" && value is Map<*, *> }
         assertEquals(sections.keys, generated.keys)
         generated.forEach { (section, holder) ->

@@ -9,6 +9,7 @@ Klient HTTP serwera: budynki, zgłoszenia, ich sprawdzanie, zmiany znaczników p
 - `core.network` — wspólna wymiana HTTP z wynikiem `ApiResult`, właścicielem wpisu kolejki i parserem kontraktu.
 - `core.network.auth` — token dostępu, role realmu i kontrola właściciela przy wysyłce wpisu kolejki.
 - `core.network.di` — wiązania Hilt klienta HTTP i interfejsów API.
+- `core.network.export` — klient eksportu GeoJSON i CSV dla Koordynatora.
 - `core.network.building` — klient listy budynków, karty budynku, podpowiedzi punktu i ścieżek dostosowanych.
 - `core.network.inspection` — klienty znaczników piętra obejrzanego i wysyłki ich zmian.
 - `core.network.review` — klient sprawdzania zgłoszeń przez Weryfikatora: kolejka, wzięcie, decyzja, podobne zgłoszenia.
@@ -23,6 +24,12 @@ Modele JSON z pakietu `json` generuje przy budowie openapi-generator z `api/open
 zmienia je bez edycji kodu.
 Tekst JSON treści HTTP powstaje i jest czytany tylko w `ContractJson.kt` (`encodeContract`, `decodeContract`);
 klienci HTTP pracują na modelach.
+
+Adres serwera to `BuildConfig.API_BASE_URL`. Debug ma `http://10.0.2.2:8080/`, czyli komputer gospodarza
+emulatora. Release bierze adres z właściwości Gradle `dk.apiUrl` albo ze zmiennej środowiska `DK_API_URL`
+(np. `./gradlew assembleRelease -Pdk.apiUrl=https://serwer.example/`). Adres musi zaczynać się od `https://`
+i kończyć ukośnikiem. Bez takiego adresu wersja release się kompiluje, ale zadanie `checkReleaseAddresses`
+zatrzymuje budowę pliku APK i pakietu.
 
 ## Zależności
 

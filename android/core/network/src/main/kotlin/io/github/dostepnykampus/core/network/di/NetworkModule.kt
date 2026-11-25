@@ -13,6 +13,7 @@ import io.github.dostepnykampus.core.network.BuildConfig
 import io.github.dostepnykampus.core.network.auth.AccessTokenInterceptor
 import io.github.dostepnykampus.core.network.auth.AccessTokens
 import io.github.dostepnykampus.core.network.building.BuildingsApi
+import io.github.dostepnykampus.core.network.export.ExportApi
 import io.github.dostepnykampus.core.network.inspection.InspectionProgressApi
 import io.github.dostepnykampus.core.network.inspection.MarkerChangesApi
 import io.github.dostepnykampus.core.network.review.ReviewApi
@@ -97,4 +98,10 @@ public object NetworkModule {
     @Singleton
     public fun reviewApi(http: OkHttpClient, json: Json): ReviewApi =
         ReviewApi(http = http, json = json, baseUrl = BuildConfig.API_BASE_URL)
+
+    /** Eksport GeoJSON i CSV dla Koordynatora; ten sam adres co [buildingsApi]. */
+    @Provides
+    @Singleton
+    public fun exportApi(http: OkHttpClient, json: Json): ExportApi =
+        ExportApi(http = http, json = json, baseUrl = BuildConfig.API_BASE_URL)
 }
