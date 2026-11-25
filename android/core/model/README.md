@@ -10,6 +10,7 @@ Typy domeny wspólne dla całej aplikacji: budynek, wejście, bariera, zgłoszen
 - `core.model.building` — budynek, katalog budynków, piętra, wejście i jego ocena.
 - `core.model.inspection` — postęp inwentaryzacji budynku.
 - `core.model.path` — odcinek ścieżki dostosowanej z mapy kampusu.
+- `core.model.review` — decyzja Weryfikatora, wynik wzięcia i decyzji, podobne zgłoszenie.
 - `core.model.room` — pomieszczenie z planu piętra i grupa jego funkcji.
 - `core.model.submission` — zgłoszenie z treścią i typem bariery.
 
