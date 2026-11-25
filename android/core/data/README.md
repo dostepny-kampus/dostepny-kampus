@@ -17,6 +17,7 @@ Wysyłka obejmuje wpisy bieżącego konta. Pierwsze zalogowanie po migracji przy
 - `core.data.network` — stan połączenia z siecią.
 - `core.data.path` — ścieżki dostosowane z serwera z kopią w telefonie.
 - `core.data.photo` — wykonanie zdjęcia zgłoszenia i jego wynik.
+- `core.data.review` — sprawdzanie zgłoszeń przez Weryfikatora: kolejka, wzięcie, decyzja, podobne zgłoszenia.
 - `core.data.room` — plany pięter budynków z serwera z kopią w telefonie.
 - `core.data.server` — wynik żądania do serwera bez typów klienta HTTP.
 - `core.data.start` — pierwsze uruchomienie aplikacji.
@@ -26,7 +27,7 @@ Wysyłka obejmuje wpisy bieżącego konta. Pierwsze zalogowanie po migracji przy
 
 ## API
 
-Repozytoria i przypadki użycia w podpakietach `account`, `barrier`, `building`, `inspection`, `submission` (`own`, `pending`, `sync`), `map`, `network`, `start`; odpowiedź serwera bez typów klienta HTTP (`ServerReply`, `ServerBuildings`, `ServerCard`) w `server`; wiązania Hilt w `di`. Tekst JSON dokumentów kopii w bazie telefonu powstaje i jest czytany tylko w `cache` (`encodeCache`, `decodeCache`); każdą kopię odpowiedzi serwera trzyma `ServerCopy` pod własnym kluczem tabeli `server_copy`. `SubmissionQueue.save` zwraca `SavedSubmission` z identyfikatorem zgłoszenia, bez encji Room. Tabele bazy są za uchwytami `SubmissionStore` i `ServerCopyStore`, które daje Hilt; `:core:database` jest zależnością `implementation`.
+Repozytoria i przypadki użycia w podpakietach `account`, `barrier`, `building`, `inspection`, `review`, `submission` (`own`, `pending`, `sync`), `map`, `network`, `start`; odpowiedź serwera bez typów klienta HTTP (`ServerReply`, `ServerBuildings`, `ServerCard`) w `server`; wiązania Hilt w `di`. Tekst JSON dokumentów kopii w bazie telefonu powstaje i jest czytany tylko w `cache` (`encodeCache`, `decodeCache`); każdą kopię odpowiedzi serwera trzyma `ServerCopy` pod własnym kluczem tabeli `server_copy`. `SubmissionQueue.save` zwraca `SavedSubmission` z identyfikatorem zgłoszenia, bez encji Room. Tabele bazy są za uchwytami `SubmissionStore` i `ServerCopyStore`, które daje Hilt; `:core:database` jest zależnością `implementation`.
 
 ## Zależności
 
