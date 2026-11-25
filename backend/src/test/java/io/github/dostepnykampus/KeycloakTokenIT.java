@@ -5,6 +5,9 @@
  */
 package io.github.dostepnykampus;
 
+import io.github.dostepnykampus.identity.account.Accounts;
+import io.github.dostepnykampus.identity.account.Grant;
+import io.github.dostepnykampus.identity.account.StaffRole;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -12,6 +15,7 @@ import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Tag;
@@ -25,15 +29,14 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Serwer z domyślnym dekoderem ocenia token z prawdziwego Keycloaka
- * (ADR-0003): podpis, wystawcę realmu, odbiorcę serwera w {@code aud} oraz role z
- * {@code realm_access.roles}.
+ * Serwer z domyślnym dekoderem ocenia token z prawdziwego Keycloaka (ADR-0003): podpis,
+ * wystawcę realmu, odbiorcę serwera w {@code aud} oraz role z {@code realm_access.roles}.
  *
- * <p>Ma własny kontekst bez tożsamości testowej, bo sprawdza drogę używaną
- * w działającym systemie: adres realmu z ustawień, klucze pobrane z realmu
- * i odczyt ról z tokenu konta z {@code infra/keycloak/realm.json}.</p>
+ * <p>Ma własny kontekst bez tożsamości testowej, bo sprawdza drogę z działającego systemu:
+ * adres realmu z ustawień, klucze z realmu i role z tokenu konta z
+ * {@code infra/keycloak/realm.json}. Konto techniczne serwera nadaje tam role kontom.</p>
  *
- * <p>Wymagania: NFR-33, US14.1</p>
+ * <p>Wymagania: NFR-33, US14.1, US12.1, US12.2</p>
  *
  * @since 0.1.0
  */
@@ -122,6 +125,22 @@ final class KeycloakTokenIT {
                 Matchers.is(new Rotation(200, true, 400))
             );
         }
+    }
+
+    @Test
+    void grantsRoleThroughTechnicalAccount(final WebApplicationContext context) {
+        final Accounts accounts = context.getBean(Accounts.class);
+        final String email = "zaproszona-%s@example.test".formatted(UUID.randomUUID());
+        MatcherAssert.assertThat(
+            "Nowe konto, dodana rola i powtórzone zaproszenie dały złe wyniki",
+            List.of(
+                accounts.grant(email, StaffRole.COLLECTOR),
+                accounts.grant(email, StaffRole.VERIFIER),
+                accounts.grant(email, StaffRole.VERIFIER),
+                accounts.grant(email, StaffRole.COLLECTOR)
+            ),
+            Matchers.contains(Grant.CREATED, Grant.ADDED, Grant.UNCHANGED, Grant.UNCHANGED)
+        );
     }
 
     private static int edit(
