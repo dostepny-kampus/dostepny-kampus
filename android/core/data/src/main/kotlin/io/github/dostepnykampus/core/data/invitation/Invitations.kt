@@ -14,7 +14,7 @@ import java.net.HttpURLConnection.HTTP_FORBIDDEN
 /**
  * Wynik zaproszenia dla ekranu K2.
  *
- * TODO(#3826): stan „ma już rolę” z odpowiedzi 409 według kontraktu po zmianie.
+ * TODO(#3764): stan „ma już rolę” z odpowiedzi 409 według kontraktu po zmianie.
  *
  * Wymagania: US12.1, US12.2, NFR-50
  */
