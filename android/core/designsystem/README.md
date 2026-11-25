@@ -8,11 +8,12 @@ Wspólne elementy interfejsu Compose: motyw, nagłówki, przyciski, ikony i znak
 
 - `core.designsystem` — motyw, skala czcionki, kontener grupy, wybór piętra, ikony, plakietka i linia braku sieci, wspólne błędy i wyniki działań pracownika, ikony statusów zgłoszenia oraz zapis dnia.
 - `core.designsystem.bar` — nagłówek z powrotem, dolny pasek i przypięte przyciski ekranu.
+- `core.designsystem.card` — karta pozycji listy, jej czynność i panel informacyjny.
 - `core.designsystem.marking` — oznaczenie wejścia i bariery: etykieta, obraz, dzień i źródło oznaczenia, znak i plakietka uciążliwości, nazwy i zdjęcie bariery.
 
 ## API
 
-Funkcje `@Composable` i stałe wyglądu w pakiecie `core.designsystem`.
+Funkcje `@Composable` i stałe wyglądu w pakiecie `core.designsystem` i jego podpakietach.
 
 ## Zależności
 
