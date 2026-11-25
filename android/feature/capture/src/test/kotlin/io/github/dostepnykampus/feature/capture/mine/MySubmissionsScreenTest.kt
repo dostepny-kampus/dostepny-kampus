@@ -18,11 +18,15 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import io.github.dostepnykampus.core.data.submission.own.RefusalReason
 import io.github.dostepnykampus.core.data.submission.own.SendState
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.BarrierType
+import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
+import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -220,6 +224,29 @@ class MySubmissionsScreenTest {
         assertEquals("C4 zgłoszenia z konfliktem", listOf("k"), chosen)
     }
 
+    /**
+     * Wiersz: C3 „Otwórz” przy zmianie oznaczenia wejścia → C6 tej zmiany; „Wyślij ponownie” po „nieaktualne” → C6
+     * tego wejścia z bieżącym oznaczeniem.
+     *
+     * Wymagania: US8.3, US17.2, BR-23
+     */
+    @Test
+    fun opensMarkingChange() {
+        val waiting = marking(id = "m-1").copy(state = SendState.LOCAL)
+        val outdated =
+            marking(id = "m-2").copy(serverStatus = SubmissionStatus.REJECTED, rejectionReason = "nieaktualne")
+        val routes = mutableListOf<MarkingRoute>()
+        val actions = MySubmissionsActions(onBack = {}, onMeasure = {}, onOpen = {}, onOpenMarking = { routes += it })
+        val state = MySubmissionsUiState.Ready(MySubmissions(listOf(waiting, outdated)))
+        compose.setContent {
+            DostepnyKampusTheme { MySubmissionsContent(state = state, actions = actions) }
+        }
+        compose.onNodeWithText("Otwórz").performScrollTo().performClick()
+        compose.onNodeWithText("Wyślij ponownie").performScrollTo().performClick()
+        val entrance = MarkingRoute(entranceId = "n/1", buildingSymbol = "B-8")
+        assertEquals("C6 poprawki, potem C6 wejścia", listOf(entrance.copy(submissionId = "m-1"), entrance), routes)
+    }
+
     /** Pozycja bez konfliktu wersji nie ma znaku wyboru wersji. Wymagania: US9.3 */
     @Test
     fun noConflictNoChoice() {
@@ -227,6 +254,16 @@ class MySubmissionsScreenTest {
         compose.onNodeWithText("Dwie wersje: wybierz jedną").assertDoesNotExist()
     }
 }
+
+private fun marking(id: String) =
+    item(id = id, state = SendState.SENT).copy(
+        kind = SubmissionKind.ENTRANCE_MARKING,
+        type = null,
+        buildingSymbol = "B-8",
+        floorNumber = null,
+        entranceId = "n/1",
+        entranceMarking = EntranceMarking.ACCESSIBLE,
+    )
 
 private fun item(id: String, state: SendState) =
     OwnSubmissionItem(

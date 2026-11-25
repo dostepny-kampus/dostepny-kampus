@@ -46,6 +46,7 @@ class MarkingWithoutPhotoTest {
             MarkingViewModel(
                 catalog = BuildingCatalogRepository(EmptyCoroutineContext) { CATALOG },
                 saver = { content, _, _ -> saved += content },
+                edits = { null },
             )
         viewModel.open(MarkingRoute(entranceId = "n/1", buildingSymbol = "B-8"))
         compose.setContent {

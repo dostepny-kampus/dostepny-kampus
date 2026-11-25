@@ -36,6 +36,30 @@ class MarkingTransitionsTest {
         assertEquals(expected, stack, "C6 znika z historii, „Wstecz” z C3 wraca do V2")
     }
 
+    /**
+     * Wiersz: C3 „Otwórz” przy zmianie oznaczenia wejścia → C6 tej zmiany, zapis → to samo C3.
+     *
+     * Wymagania: US8.3, US17.2, NFR-54
+     */
+    @Test
+    fun editsMarkingFromList() {
+        stack += MySubmissionsRoute
+        val route = MarkingRoute(entranceId = "n/1", buildingSymbol = "B-8", submissionId = "m-1")
+        collector().run {
+            openListMarking(route)
+            assertEquals(route, current, "C3 otwiera C6 zmiany")
+            reportSaved()
+        }
+        assertEquals(listOf(MapRoute(), BuildingRoute("B-8"), MySubmissionsRoute), stack, "C6 znika, zostaje C3")
+    }
+
+    /** Wiersz: C6 zmiany otwiera się tylko z C3. Wymagania: US8.3 */
+    @Test
+    fun listMarkingOnlyFromList() {
+        collector().openListMarking(MarkingRoute(entranceId = "n/1", buildingSymbol = "B-8", submissionId = "m-1"))
+        assertEquals(listOf(MapRoute(), BuildingRoute("B-8")), stack, "poza C3 bez zmiany")
+    }
+
     /** Wiersz: „Wstecz” z C6 wraca do V2. Wymagania: US17.2 */
     @Test
     fun backFromMarkingToCard() {
