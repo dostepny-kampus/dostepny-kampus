@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.style
 
+import io.github.dostepnykampus.core.designsystem.MapaKontur
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
@@ -63,11 +64,14 @@ class BuildingLevelsStyleTest {
     fun drawsThinOutlineOfBasic() {
         val width = style().layerById(OUTLINES_LAYER).paintText("line-width")
         assertEquals(
-            """["case",$level,$DETAILED_OUTLINE_DP,$BASIC_OUTLINE_DP]""",
+            """["case",$level,${MapaKontur.szczegolowyDp},${MapaKontur.podstawowyDp}]""",
             width,
             "Grubość konturu nie zależy od poziomu budynku",
         )
-        assertTrue(BASIC_OUTLINE_DP < DETAILED_OUTLINE_DP, "Kontur budynku podstawowego nie jest cieńszy")
+        assertTrue(
+            MapaKontur.podstawowyDp < MapaKontur.szczegolowyDp,
+            "Kontur budynku podstawowego nie jest cieńszy",
+        )
     }
 
     @Test

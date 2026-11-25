@@ -105,6 +105,17 @@ public interface SubmissionFinder {
     List<SimilarSubmission> similar(UUID id);
 
     /**
+     * Wyszukuje zgłoszenia w kolejce weryfikacji dla danego konta: „wysłane” innych osób
+     * oraz „w weryfikacji” wzięte przez to konto, od najdawniej wysłanego.
+     *
+     * <p>Wymagania: US10.4, US10.5, US10.7, BR-4, BR-11</p>
+     *
+     * @param reviewer Identyfikator konta Weryfikatora
+     * @return Zgłoszenia w kolejce posortowane po chwili utworzenia, potem po identyfikatorze
+     */
+    List<Submission> reviewQueue(String reviewer);
+
+    /**
      * Port stron listy zgłoszeń: strona po kursorze, w kolejności identyfikatorów.
      *
      * <p>Wymagania: NFR-34</p>

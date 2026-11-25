@@ -184,7 +184,6 @@ final class KeycloakTokenIT {
             );
         }
     }
-
     private static int edit(
         final HttpClient client, final String operation, final String token
     ) throws Exception {
