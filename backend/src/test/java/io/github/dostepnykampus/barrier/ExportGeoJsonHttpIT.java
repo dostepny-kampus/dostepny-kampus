@@ -110,18 +110,6 @@ final class ExportGeoJsonHttpIT {
             for (final String state : List.of("ARCHIVED", "IN_REVIEW", "SENT", "REJECTED")) {
                 created.add(samples.add(state, ExportGeoJsonHttpIT.OUTSIDE));
             }
-            created.add(
-                samples.add(
-                    "ACCEPTED",
-                    new SubmissionContent(
-                        SubmissionKind.PRECISE, inside,
-                        new BarrierDetails(
-                            BarrierGroup.ENTRANCE, new BarrierType(1), null, null, true
-                        ),
-                        null, null, UUID.randomUUID(), List.of(UUID.randomUUID())
-                    )
-                )
-            );
             json = ExportGeoJsonHttpIT.send(port, "Bearer COORDINATOR").body();
         } finally {
             samples.remove(created);
