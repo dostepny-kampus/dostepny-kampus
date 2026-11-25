@@ -114,6 +114,9 @@ class DecisionTest {
     }
 
     private companion object {
-        val SIMILAR = SimilarReports(listOf(SimilarSubmission(submission = queued(id = "b", day = 20), distanceMeters = 4.0)))
+        val SIMILAR =
+            SimilarReports(
+                listOf(SimilarSubmission(submission = queued(id = "b", day = 20), distanceMeters = 4.0)),
+            )
     }
 }
