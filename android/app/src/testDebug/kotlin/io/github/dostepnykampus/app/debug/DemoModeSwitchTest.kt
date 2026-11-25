@@ -26,6 +26,7 @@ class DemoModeSwitchTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
+    /** Dotknięcie opisu włącznika uruchamia tryb pokazu. */
     @Test
     fun tapTurnsDemoOn() {
         val changes = mutableListOf<Boolean>()
