@@ -23,7 +23,7 @@ public final class AccountPseudonyms implements Pseudonyms {
      * Tworzy pseudonimy według reguły modułu tożsamości.
      */
     public AccountPseudonyms() {
-        super();
+        // Bez stanu: regułę pseudonimu ma identyfikator konta.
     }
 
     @Override
