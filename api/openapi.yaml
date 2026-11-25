@@ -613,7 +613,8 @@ paths:
       summary: Zaproszenie osoby z rolą
       description: >-
         Koordynator wpisuje adres e-mail i rolę; Usługa logowania zakłada konto z tą rolą (US12.1, BR-2). Zaproszenie
-        na adres istniejącego konta dodaje mu rolę, a dotychczasowe role zostają (US12.2, BR-1).
+        na adres istniejącego konta dodaje mu rolę, a dotychczasowe role zostają (US12.2, BR-1). Konto, które ma już
+        tę rolę, daje 409 z `type` równym `urn:dostepny-kampus:rola-juz-nadana` i niczego nie zmienia (US12.2).
       tags: [identity]
       security: [{keycloak: [COORDINATOR]}]
       requestBody:
@@ -631,6 +632,7 @@ paths:
         '400': {$ref: '#/components/responses/BadRequest'}
         '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
         '429': {$ref: '#/components/responses/TooManyRequests'}
 
 components:

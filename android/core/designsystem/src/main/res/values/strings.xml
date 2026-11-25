@@ -3,6 +3,9 @@
     <string name="oznaczenie_dostepne">Dostępne</string>
     <string name="oznaczenie_niedostepne">Niedostępne</string>
     <string name="oznaczenie_brak_danych">Brak danych</string>
+    <string name="ocena_wejscia_import">Z map i opisów, stan z %1$s</string>
+    <string name="ocena_wejscia_obchod">Sprawdzone na miejscu %1$s</string>
+    <string name="ocena_wejscia_plany_pwr">Z planów Politechniki Wrocławskiej, stan z %1$s</string>
     <string name="wstecz">Wstecz</string>
     <string name="pietro_kolumna">Piętro</string>
     <string name="typ_bariery_1">Schody przy wejściu</string>
@@ -53,6 +56,7 @@
     <string name="miejsce_pietro">piętro %1$d</string>
     <string name="miejsce_polpietro">półpiętro</string>
     <string name="bez_internetu">Bez internetu</string>
+    <string name="bez_internetu_dane_z">Bez internetu · dane z %1$s</string>
     <string name="bariera_bez_typu">Bariera</string>
     <string name="bariera_zdjecie">Zdjęcie bariery: %1$s</string>
     <string name="zdjecie_wczytujemy">Wczytujemy zdjęcie…</string>

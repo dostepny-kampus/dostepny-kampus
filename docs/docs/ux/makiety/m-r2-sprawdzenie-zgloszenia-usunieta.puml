@@ -8,7 +8,7 @@ $ekran_poczatek()
 $naglowek("Sprawdzenie zgłoszenia")
 <b>Bariery już nie ma</b>
 niesprawna winda
-Budynek D-2, piętro <i>[piętro]</i>
+Budynek D-2, <i>[piętro]</i>
 Miejsce: <i>[punkt z poprzedniego]</i>
 Poprzednie zgłoszenie:
 <b>$archiwalne()</b>
@@ -33,7 +33,7 @@ $sekcja("Podobne zgłoszenia do 10 m")
 $ramka()
 <b>niesprawna winda</b>
 $obraz("zdjęcie")
-0 m, piętro <i>[piętro]</i>
+0 m, <i>[piętro]</i>
 $przyjete()
 }
 $r2_decyzja("Nieaktualne")
