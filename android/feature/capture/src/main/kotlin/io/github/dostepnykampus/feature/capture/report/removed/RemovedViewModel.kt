@@ -12,11 +12,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.NearestEntrance
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submission.sync.SaveRefusedException
-import io.github.dostepnykampus.core.geo.building.EntranceDistance
-import io.github.dostepnykampus.core.geo.building.nearestEntrance
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
+import io.github.dostepnykampus.core.model.building.EntranceDistance
 import io.github.dostepnykampus.feature.capture.report.ReportSaver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,6 +36,7 @@ import javax.inject.Inject
  *
  * @param barriers zgłoszenia przyjęte, z których bierze się poprzednie
  * @param catalog katalog budynków, z którego są nazwy budynku i wejścia; bez niego miejsce ma sam symbol
+ * @param nearest najbliższe wejście budynku bariery z katalogu
  * @param saver zapis w kolejce telefonu
  */
 @HiltViewModel
@@ -44,6 +45,7 @@ class RemovedViewModel
     constructor(
         private val barriers: AcceptedBarriers,
         private val catalog: BuildingCatalogRepository,
+        private val nearest: NearestEntrance,
         private val saver: ReportSaver,
     ) : ViewModel() {
         private val state = MutableStateFlow(RemovedUiState())
@@ -110,9 +112,8 @@ class RemovedViewModel
             val found = catalogOrNull() ?: return null
             val building = found.buildings.firstOrNull { it.symbol == barrier.buildingSymbol }
             val entrance = found.entrances.firstOrNull { it.id == barrier.entranceId }
-            val own = found.entrances.filter { it.buildingSymbol == barrier.buildingSymbol }
-            val nearest = nearestEntrance(point = barrier.location, entrances = own)
-            return AcceptedPlace(building = building?.name, entrance = entrance?.name, nearest = nearest)
+            val closest = nearest.of(buildingSymbol = barrier.buildingSymbol, point = barrier.location)
+            return AcceptedPlace(building = building?.name, entrance = entrance?.name, nearest = closest)
         }
 
         private suspend fun catalogOrNull(): BuildingCatalog? =

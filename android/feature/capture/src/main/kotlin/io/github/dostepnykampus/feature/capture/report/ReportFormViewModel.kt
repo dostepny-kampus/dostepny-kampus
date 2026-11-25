@@ -11,13 +11,12 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.BuildingFloors
+import io.github.dostepnykampus.core.data.building.NearestEntrance
 import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submission.sync.SaveRefusal
 import io.github.dostepnykampus.core.data.submission.sync.SaveRefusedException
-import io.github.dostepnykampus.core.geo.building.EntranceDistance
-import io.github.dostepnykampus.core.geo.building.nearestEntrance
-import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EntranceDistance
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.feature.capture.report.form.PlanFloor
@@ -69,7 +68,7 @@ fun interface ReportSaver {
  * Wymagania: US7.1, US7.2, US7.3, US7.4, NFR-7, BR-G1
  *
  * @param floors piętra budynku z serwera; domyślnie brak, jak budynek podstawowy
- * @param catalog katalog budynków z wejściami; bez wejść budynku miejsce ma samą dokładność
+ * @param nearest najbliższe wejście budynku z katalogu; bez niego miejsce ma samą dokładność
  * @param saver zapis w kolejce telefonu
  */
 @HiltViewModel
@@ -77,7 +76,7 @@ class ReportFormViewModel
     @Inject
     constructor(
         private val floors: BuildingFloors = BuildingFloors { null },
-        private val catalog: BuildingCatalogRepository = emptyBuildingCatalog(),
+        private val nearest: NearestEntrance = NearestEntrance(emptyBuildingCatalog()),
         private val saver: ReportSaver,
     ) : ViewModel() {
         private val state = MutableStateFlow<ReportUiState?>(null)
@@ -168,9 +167,8 @@ class ReportFormViewModel
             }
 
             viewModelScope.launch {
-                val own = catalog.entrancesOrEmpty(symbol)
-                val nearest = nearestEntrance(point = place.location, entrances = own)
-                if (nearest != null) refine { form -> form.withNearest(place, nearest) }
+                val found = nearest.of(buildingSymbol = symbol, point = place.location)
+                if (found != null) refine { form -> form.withNearest(place, found) }
             }
             viewModelScope.launch {
                 val plan = floors.floors(symbol)?.toPlanFloors()
@@ -224,17 +222,6 @@ internal fun ReportForm.withNearest(measured: ReportPlace, nearest: EntranceDist
         this
     } else {
         copy(place = place.copy(nearestEntrance = nearest))
-    }
-
-internal suspend fun BuildingCatalogRepository.entrancesOrEmpty(symbol: String): List<Entrance> =
-    try {
-        catalog().entrances.filter { it.buildingSymbol == symbol }
-    } catch (error: IOException) {
-        Timber.w("Katalog budynków dla formularza niedostępny: %s", error.javaClass.simpleName)
-        emptyList()
-    } catch (error: SQLiteException) {
-        Timber.w("Katalog budynków dla formularza niedostępny: %s", error.javaClass.simpleName)
-        emptyList()
     }
 
 /** Piętra z planu do formularza albo `null` dla budynku podstawowego z pustą listą. Wymagania: BR-G1 */

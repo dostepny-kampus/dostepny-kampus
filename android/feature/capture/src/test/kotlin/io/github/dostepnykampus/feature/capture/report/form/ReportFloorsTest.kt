@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.capture.report.form
 
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.NearestEntrance
 import io.github.dostepnykampus.core.data.building.BuildingFloors
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.building.Floor
@@ -119,7 +120,8 @@ class ReportFloorsTest {
                 answer
             }
         val catalog = BuildingCatalogRepository(EmptyCoroutineContext) { NO_BUILDINGS }
-        return ReportFormViewModel(floors = floors, catalog = catalog) { content, _, _ -> saved += content }
+        val nearest = NearestEntrance(catalog)
+        return ReportFormViewModel(floors = floors, nearest = nearest) { content, _, _ -> saved += content }
             .apply { open(ReportForm(place = place)) }
     }
 

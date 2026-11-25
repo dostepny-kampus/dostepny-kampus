@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.capture.report.form
 
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.NearestEntrance
 import io.github.dostepnykampus.feature.capture.report.A1
 import io.github.dostepnykampus.feature.capture.report.ReportFormViewModel
 import kotlinx.coroutines.Dispatchers
@@ -62,9 +63,10 @@ class ReportNearestEntranceTest {
             assertNull(state(viewModel).form.place.nearestEntrance, "bez budynku bez wejścia")
         }
 
-    private fun opened(place: ReportPlace): ReportFormViewModel =
-        ReportFormViewModel(catalog = BuildingCatalogRepository(EmptyCoroutineContext) { CATALOG }) { _, _, _ -> }
-            .apply { open(ReportForm(place = place)) }
+    private fun opened(place: ReportPlace): ReportFormViewModel {
+        val nearest = NearestEntrance(BuildingCatalogRepository(EmptyCoroutineContext) { CATALOG })
+        return ReportFormViewModel(nearest = nearest) { _, _, _ -> }.apply { open(ReportForm(place = place)) }
+    }
 
     private fun state(viewModel: ReportFormViewModel): ReportUiState = checkNotNull(viewModel.uiState.value)
 

@@ -14,6 +14,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.NearestEntrance
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
@@ -105,7 +106,8 @@ class SavedReportTest {
 
     private fun save(vararg edits: ReportEdit) {
         val catalog = BuildingCatalogRepository(EmptyCoroutineContext) { NO_BUILDINGS }
-        val form = ReportFormViewModel(catalog = catalog, saver = ReportSaverModule.reportSaver(queue()))
+        val nearest = NearestEntrance(catalog)
+        val form = ReportFormViewModel(nearest = nearest, saver = ReportSaverModule.reportSaver(queue()))
         form.open(ReportForm(place = A1))
         form.edit(ReportEdit.Floor(ReportFloor.Numbered(0, isMezzanine = false)))
         form.edit(ReportEdit.Photo(photo()))

@@ -9,7 +9,7 @@ Wysyłka obejmuje wpisy bieżącego konta. Pierwsze zalogowanie po migracji przy
 
 - `core.data.account` — rola zalogowanej osoby, sesja konta, logowanie w przeglądarce (AppAuth) i zalogowanie zapisane w pliku szyfrowanym kluczem z Android Keystore.
 - `core.data.barrier` — przyjęte bariery z serwera z kopią w telefonie.
-- `core.data.building` — katalog budynków, wejścia i piętra z serwera z kopią w telefonie.
+- `core.data.building` — katalog budynków, wejścia i piętra z serwera z kopią w telefonie oraz najbliższe wejście budynku dla punktu.
 - `core.data.cache` — wspólny zapis JSON kopii danych.
 - `core.data.di` — wiązania Hilt modułu.
 - `core.data.export` — eksport Koordynatora pobrany z serwera i zapisany w folderze „Pobrane”.
