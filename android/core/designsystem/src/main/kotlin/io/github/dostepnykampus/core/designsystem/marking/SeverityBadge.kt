@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
@@ -27,9 +28,11 @@ import io.github.dostepnykampus.core.model.submission.Severity
  * Plakietka uciążliwości: znak i słowo.
  *
  * Wymagania: NFR-21
+ *
+ * @param mapColors paleta znaku z mapy; `null` używa barw motywu ekranu
  */
 @Composable
-public fun SeverityBadge(severity: Severity, modifier: Modifier = Modifier) {
+public fun SeverityBadge(severity: Severity, modifier: Modifier = Modifier, mapColors: MapColors? = null) {
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(Zaokraglenia.srednie),
@@ -41,7 +44,7 @@ public fun SeverityBadge(severity: Severity, modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            SeverityIcon(severity)
+            SeverityIcon(severity = severity, mapColors = mapColors)
             Text(
                 text = stringResource(severity.nameRes()),
                 style = MaterialTheme.typography.titleMedium,

@@ -29,6 +29,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import io.github.dostepnykampus.core.data.submission.conflict.ConflictField
+import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
@@ -43,25 +44,10 @@ import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.feature.capture.R
 
 /**
- * Czynności C4 przy konflikcie wersji.
- *
- * @property onBack „Wstecz”; wybór czeka jak po „Zdecyduję później”
- * @property onKeepMine „Zostaw moją wersję”
- * @property onTakeServer „Weź wersję z serwera”
- * @property onLater „Zdecyduję później”
- */
-data class ConflictActions(
-    val onBack: () -> Unit,
-    val onKeepMine: () -> Unit,
-    val onTakeServer: () -> Unit,
-    val onLater: () -> Unit,
-)
-
-/**
  * Widok C4 przy konflikcie wersji bez modelu widoku: napis o skutku, pola różnicy, obie wersje i wybór
  * na końcu treści. Poza [ConflictUiState.Ready] pokazuje sam nagłówek.
  *
- * Wymagania: US9.3, BR-10, PW-12, NFR-21, NFR-52
+ * Wymagania: US9.3, BR-10, NFR-21, NFR-52
  *
  * @param state stan ekranu
  * @param actions czynności wyboru i powrotu
@@ -152,7 +138,7 @@ private fun Version(
             content.description?.let { Fact(text = it, isBold = ConflictField.DESCRIPTION in differs) }
             content.severity?.let(Severity::fromValue)?.let { severity ->
                 Fact(text = stringResource(R.string.konflikt_uciazliwosc), isBold = ConflictField.SEVERITY in differs)
-                SeverityBadge(severity)
+                SeverityBadge(severity = severity, mapColors = DostepnyKampusTheme.mapColors)
             }
         }
     }
@@ -170,9 +156,9 @@ private fun Fact(text: String, isBold: Boolean) {
 @Composable
 private fun Choices(actions: ConflictActions) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        Choice(text = R.string.konflikt_zostaw, onClick = actions.onKeepMine, kind = PinnedButtonKind.Tonal)
-        Choice(text = R.string.konflikt_wez, onClick = actions.onTakeServer, kind = PinnedButtonKind.Tonal)
-        Choice(text = R.string.konflikt_pozniej, onClick = actions.onLater, kind = PinnedButtonKind.Outlined)
+        Choice(text = R.string.konflikt_zostaw, onClick = actions.onKeepMine)
+        Choice(text = R.string.konflikt_wez, onClick = actions.onTakeServer)
+        Choice(text = R.string.konflikt_pozniej, onClick = actions.onLater)
     }
 }
 
@@ -180,7 +166,6 @@ private fun Choices(actions: ConflictActions) {
 private fun Choice(
     @StringRes text: Int,
     onClick: () -> Unit,
-    kind: PinnedButtonKind,
 ) {
-    PinnedButton(text = stringResource(text), onClick = onClick, modifier = Modifier.fillMaxWidth(), kind = kind)
+    PinnedButton(text = stringResource(text), onClick = onClick, modifier = Modifier.fillMaxWidth(), kind = PinnedButtonKind.Outlined)
 }
