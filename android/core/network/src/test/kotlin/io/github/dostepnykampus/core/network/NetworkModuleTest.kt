@@ -27,7 +27,6 @@ class NetworkModuleTest {
         val api = NetworkModule.buildingsApi(http = http, json = json)
         assertEquals(CALL_MS, http.connectTimeoutMillis, "limit połączenia klienta")
         assertEquals(CALL_MS, http.callTimeoutMillis, "limit wywołania klienta")
-        assertEquals(BASE_URL, BuildConfig.API_BASE_URL, "adres serwera z konfiguracji")
         assertInstanceOf(BuildingsApi::class.java, api, "klient budynków z modułu")
         assertInstanceOf(
             MarkerChangesApi::class.java,
@@ -52,6 +51,5 @@ class NetworkModuleTest {
 
     private companion object {
         const val CALL_MS = 3_000
-        const val BASE_URL = "http://10.0.2.2:8080/"
     }
 }

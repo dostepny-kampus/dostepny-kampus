@@ -301,6 +301,21 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
             );
     }
 
+    @Override
+    public List<Submission> reviewQueue(final String reviewer) {
+        return this.jdbc.sql(
+            String.format(
+                """
+                SELECT %s FROM submissions
+                WHERE (status = 'SENT' OR (status = 'IN_REVIEW' AND reviewer = :reviewer))
+                    AND author IS DISTINCT FROM :reviewer
+                ORDER BY created_at, id
+                """,
+                JdbcSubmissions.COLUMNS
+            )
+        ).param("reviewer", reviewer).query(SubmissionRows.readable(this.rows));
+    }
+
     private static @Nullable String reason(final ReviewDecision decision) {
         final String result;
         if (decision instanceof ReviewDecision.Rejected rejected) {

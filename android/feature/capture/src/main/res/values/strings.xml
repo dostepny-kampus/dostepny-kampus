@@ -50,7 +50,8 @@
     <string name="formularz_budynek">Budynek %1$s</string>
     <string name="formularz_dokladnosc">dokładność %1$s m</string>
     <string name="formularz_budynek_nazwa">Budynek %1$s %2$s</string>
-    <string name="formularz_miejsce">ok. %1$d m od %2$s, dokładność %3$s m</string>
+    <string name="formularz_miejsce">%1$s, dokładność %2$s m</string>
+    <string name="formularz_miejsce_od">ok. %1$d m od %2$s</string>
     <string name="formularz_wejscie">wejścia</string>
     <string name="formularz_wejscie_glowne">wejścia głównego</string>
     <string name="formularz_wejscie_nazwa">wejścia „%1$s”</string>
@@ -146,10 +147,26 @@
     <string name="moje_sprawdzamy">Sprawdzamy statusy…</string>
     <string name="moje_blad_statusow">Nie udało się sprawdzić statusów, ale zgłoszenia są bezpieczne w telefonie. Spróbuj ponownie za chwilę.</string>
     <string name="moje_typ_nieznany">Nieznany typ bariery</string>
+    <string name="moje_zmiana_oznaczenia">Zmiana oznaczenia wejścia</string>
+    <string name="moje_nieaktualne">Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji.</string>
+    <string name="moje_nieaktualne_oznaczenie">Oznaczenie tego wejścia już się zmieniło. Sprawdź je i wyślij swoją zmianę ponownie.</string>
+    <string name="moje_wyslij_ponownie">Wyślij ponownie</string>
+    <string name="moje_bariery_juz_nie_ma">Bariery już nie ma</string>
+    <string name="moje_nowe_oznaczenie">Nowe oznaczenie:</string>
+    <string name="moje_nieaktualne_usuniecie">Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa.</string>
     <string name="usuniecie_naglowek">Zgłoś, że bariery nie ma</string>
     <string name="usuniecie_sprawdzone">Sprawdzone %1$s</string>
     <string name="usuniecie_nowe_zdjecie">Nowe zdjęcie miejsca</string>
     <string name="usuniecie_brak_zdjecia">Dodaj zdjęcie miejsca, aby wysłać zgłoszenie.</string>
     <string name="usuniecie_zostaje">Bariera zostanie na mapie, dopóki Weryfikator nie sprawdzi zgłoszenia.</string>
     <string name="usuniecie_wyslij">Wyślij do sprawdzenia</string>
+    <string name="zmiana_oznaczenia_naglowek">Zmień oznaczenie wejścia</string>
+    <string name="zmiana_oznaczenia_obecne">Obecne oznaczenie</string>
+    <string name="zmiana_oznaczenia_bez_nazwy">Wejście</string>
+    <string name="zmiana_oznaczenia_nowe">Nowe oznaczenie</string>
+    <string name="zmiana_oznaczenia_potwierdzasz">Potwierdzasz obecne oznaczenie. Zmieni się data i źródło.</string>
+    <string name="zmiana_oznaczenia_wybierz">Wybierz: dostępne czy niedostępne.</string>
+    <string name="zmiana_oznaczenia_zdjecie">Zdjęcie wejścia</string>
+    <string name="zmiana_oznaczenia_brak_zdjecia">Dodaj zdjęcie wejścia, aby wysłać zmianę.</string>
+    <string name="zmiana_oznaczenia_sprawdzi">Zmianę sprawdzi inna osoba. Do tego czasu karta budynku pokazuje obecne oznaczenie.</string>
 </resources>

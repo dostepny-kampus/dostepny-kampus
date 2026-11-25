@@ -22,6 +22,7 @@ dependencies {
     api(libs.dagger)
     api(libs.kotlinx.coroutines.core)
     implementation(libs.hilt.core)
+    debugImplementation(libs.androidx.core)
     testImplementation(libs.junit4)
     testImplementation(libs.robolectric)
     testImplementation(libs.robolectric.shadows.framework)

@@ -1,12 +1,13 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.quick
 
 import androidx.compose.runtime.State
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.BuildingFloors
 import io.github.dostepnykampus.core.data.network.NetworkStatus
@@ -61,12 +62,14 @@ internal fun ComposeContentTestRule.showQuickReport(
     route: State<ReportRoute>,
     actions: QuickReportActions,
     send: QuickSendViewModel,
+    barriers: AcceptedBarriers = AcceptedBarriers { emptyList() },
 ) {
     val models =
         QuickReportModels(
             photoTranscoder = PhotoTranscoder(),
             entrances = QuickEntranceViewModel(quickCatalog()),
             send = send,
+            offline = QuickOfflineViewModel(catalog = quickCatalog(), barriers = barriers),
         )
     setContent {
         DostepnyKampusTheme {
