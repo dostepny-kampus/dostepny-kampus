@@ -9,6 +9,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,14 +42,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.StaffProblem
+import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.model.export.ExportFormat
 import io.github.dostepnykampus.feature.inspection.R
-import io.github.dostepnykampus.feature.inspection.progress.Failure
-import io.github.dostepnykampus.feature.inspection.progress.Problem
 
 /**
  * K3 „Eksport” ze stanem z modelu widoku.
@@ -60,11 +61,7 @@ import io.github.dostepnykampus.feature.inspection.progress.Problem
  * @param viewModel stan pobrania; w aplikacji z grafu Hilt
  */
 @Composable
-fun ExportScreen(
-    actions: ExportActions,
-    modifier: Modifier = Modifier,
-    viewModel: ExportViewModel = hiltViewModel(),
-) {
+fun ExportScreen(actions: ExportActions, modifier: Modifier = Modifier, viewModel: ExportViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     ExportContent(
         state = state,
@@ -94,34 +91,44 @@ fun ExportContent(
     onDownload: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isInContent = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     val problem = problemOf(state.stage)
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
             BackHeader(title = stringResource(R.string.eksport_naglowek), onBack = actions.onBack)
             if (problem != null) {
-                Failure(problem = problem, onAction = if (problem == Problem.FORBIDDEN) actions.onLeave else onDownload)
+                val onAction = if (problem == StaffProblem.FORBIDDEN) actions.onLeave else onDownload
+                StaffProblemMessage(problem = problem, onAction = onAction)
             } else {
-                Column(
-                    modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
-                    verticalArrangement = Arrangement.spacedBy(Odstepy.m),
-                ) {
-                    Message(state.stage)
-                    Formats(chosen = state.format, onChoose = onChoose)
-                    Text(text = stringResource(R.string.eksport_zawartosc), style = MaterialTheme.typography.bodyLarge)
-                    if (isInContent) DownloadButton(onDownload)
-                }
-                if (!isInContent) PinnedActionBar { DownloadButton(onDownload) }
+                ExportBody(state = state, onChoose = onChoose, onDownload = onDownload)
             }
         }
     }
 }
 
-private fun problemOf(stage: ExportStage): Problem? =
+@Composable
+private fun ColumnScope.ExportBody(
+    state: ExportUiState,
+    onChoose: (ExportFormat) -> Unit,
+    onDownload: () -> Unit,
+) {
+    val isInContent = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+    Column(
+        modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
+        verticalArrangement = Arrangement.spacedBy(Odstepy.m),
+    ) {
+        Message(state.stage)
+        Formats(chosen = state.format, onChoose = onChoose)
+        Text(text = stringResource(R.string.eksport_zawartosc), style = MaterialTheme.typography.bodyLarge)
+        if (isInContent) DownloadButton(onDownload)
+    }
+    if (!isInContent) PinnedActionBar { DownloadButton(onDownload) }
+}
+
+private fun problemOf(stage: ExportStage): StaffProblem? =
     when (stage) {
-        ExportStage.OFFLINE -> Problem.OFFLINE
-        ExportStage.SERVER_ERROR -> Problem.SERVER
-        ExportStage.FORBIDDEN -> Problem.FORBIDDEN
+        ExportStage.OFFLINE -> StaffProblem.OFFLINE
+        ExportStage.SERVER_ERROR -> StaffProblem.SERVER
+        ExportStage.FORBIDDEN -> StaffProblem.FORBIDDEN
         else -> null
     }
 
