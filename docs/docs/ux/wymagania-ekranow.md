@@ -892,7 +892,7 @@ Dostępność: podobne zgłoszenia mają odległość tekstem, np. „5 m”, a 
 | Cel | Koordynator wie, gdzie zespół musi jeszcze pójść. |
 | Role | RO-KOO |
 | Realizuje | US11.1, US11.2, US11.3, US11.4 |
-| Czynność główna | dotknięcie budynku — otwarcie jego pięter |
+| Czynność główna | „Otwórz” przy budynku — otwarcie jego pięter |
 | Czynność główna przypięta | nie: czynność powtarza się w pozycjach listy |
 
 | Element | Rodzaj | Odwołanie | Dokąd |
@@ -902,7 +902,7 @@ Dostępność: podobne zgłoszenia mają odległość tekstem, np. „5 m”, a 
 | Budynek podstawowy: „Obejrzany” tekstem i ikoną albo „Nieobejrzany” samym tekstem | dane | US11.1, PW-11 | — |
 | Liczby: „Czeka na sprawdzenie: 3” i „Przyjęte: 4”, jak w scenariuszu `@US11.1` | dane | US11.1, BR-21 | — |
 | Budynek szczegółowy: „Wejścia sprawdzone na miejscu: 1 z 6” | dane | US11.4, BR-24, PW-3 | — |
-| Dotknięcie budynku; „Otwórz” jako czynność karty ze strzałką (wymagania wspólne) | czynność główna | US11.3, NFR-21 | C5 |
+| „Otwórz” jako czynność karty ze strzałką (wymagania wspólne). Karta budynku nie jest osobnym celem dotyku | czynność główna | US11.3, NFR-21 | C5 |
 | „Odśwież” i data z godziną odczytu, np. „Stan z 12.11.2026, 10:42”; bez samoczynnego odświeżania | czynność | US11.2 | — |
 
 Sortowania ani filtrów nie ma, bo nie wynikają z żadnego kryterium (decyzja 16). Budynki szczegółowe nie idą więc na początek listy (decyzja 94). Wiersz o wejściach pozwala odczytać miarę M-1 z [wizji](../biznes/wizja.md) bez liczenia na kartach budynków (decyzja 38). Wejście liczy się dopiero po przyjęciu zmiany oznaczenia, bo wtedy dostaje źródło „obchód” (BR-24).
