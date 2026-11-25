@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.review.check
 
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.review.ReviewQueue
 import io.github.dostepnykampus.core.data.review.Reviews
 import io.github.dostepnykampus.core.data.server.ServerReply
@@ -69,6 +70,14 @@ class ReviewCheckViewModelTest {
             }
         }
     }
+
+    @Test
+    fun findsNearestEntrance() =
+        checkTest(campus = WITH_ENTRANCE) { model ->
+            runCurrent()
+            val nearest = (model.state.value as CheckUiState.Ready).nearest
+            assertEquals("n/1", nearest?.run { entrance.id }, "najbliższe wejście budynku C-13")
+        }
 
     @Test
     fun acceptReturnsToQueue() =
@@ -160,11 +169,16 @@ class ReviewCheckViewModelTest {
             assertEquals(CheckNotice.OFFLINE, (model.state.value as CheckUiState.Ready).notice, "decyzja bez sieci")
         }
 
-    private fun checkTest(fake: Fake = Fake(), block: suspend TestScope.(ReviewCheckViewModel) -> Unit) {
+    private fun checkTest(
+        fake: Fake = Fake(),
+        campus: String = NO_ENTRANCES,
+        block: suspend TestScope.(ReviewCheckViewModel) -> Unit,
+    ) {
         val dispatcher = StandardTestDispatcher()
         Dispatchers.setMain(dispatcher)
         try {
-            runTest(dispatcher) { block(ReviewCheckViewModel(CHECKED.id, fake)) }
+            val catalog = BuildingCatalogRepository(dispatcher) { campus }
+            runTest(dispatcher) { block(ReviewCheckViewModel(CHECKED.id, fake, catalog)) }
         } finally {
             Dispatchers.resetMain()
         }
@@ -203,5 +217,12 @@ class ReviewCheckViewModelTest {
         const val SERVER_ERROR = 500
         val CHECKED = queued(id = "a", day = 27)
         val NEAR = SimilarSubmission(submission = queued(id = "b", day = 20), distanceMeters = 4.0)
+        const val NO_ENTRANCES = """{"type":"FeatureCollection","attribution":"© plik","features":[]}"""
+        const val WITH_ENTRANCE =
+            """{"type":"FeatureCollection","attribution":"© plik","features":[""" +
+                """{"type":"Feature","properties":{"kind":"building","symbols":["C-13"],"osm_id":"way/1"},""" +
+                """"geometry":{"type":"Polygon","coordinates":[[[17,51],[18,51],[18,52],[17,51]]]}},""" +
+                """{"type":"Feature","properties":{"kind":"entrance","symbols":["C-13"],"osm_id":"n/1",""" +
+                """"ref":"Wejście A"},"geometry":{"type":"Point","coordinates":[17.06,51.1]}}]}"""
     }
 }
