@@ -7,6 +7,7 @@ Postęp inwentaryzacji: lista budynków z postępem dla Koordynatora (K1), znacz
 ## Pakiety
 
 - `feature.inspection.export` — ekran eksportu K3, jego stan i ViewModel.
+- `feature.inspection.invitation` — stan i ViewModel zaproszenia K2.
 - `feature.inspection.navigation` — trasy ekranów postępu i eksportu.
 - `feature.inspection.progress` — ekrany, stan i ViewModele postępu budynków i znaczników pięter.
 

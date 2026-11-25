@@ -35,8 +35,6 @@ import java.net.HttpURLConnection.HTTP_OK
  * spoza opisanych przy funkcji, np. 401 i 403, to [ApiResult.ServerError] z tym kodem. Anulowanie korutyny
  * przerywa żądanie HTTP.
  *
- * TODO(#3758): repozytorium sprawdzania w `core:data`.
- *
  * Wymagania: US10, NFR-55
  *
  * @param http klient OkHttp
