@@ -46,8 +46,6 @@ sealed interface ReviewQueueUiState {
 /**
  * R1 „Zgłoszenia do sprawdzenia”: odczyt kolejki przy otwarciu i na „Spróbuj ponownie” oraz wzięcie zgłoszenia.
  *
- * TODO(#3820): widok listy R1.
- *
  * Wymagania: US10.4, US10.7, BR-11, NFR-50
  *
  * @param reviews sprawdzanie zgłoszeń na serwerze
