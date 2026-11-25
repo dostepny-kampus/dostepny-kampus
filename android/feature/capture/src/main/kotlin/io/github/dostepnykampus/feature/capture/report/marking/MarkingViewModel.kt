@@ -13,6 +13,7 @@ import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submission.sync.SaveRefusedException
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
+import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
 import io.github.dostepnykampus.feature.capture.report.ReportSaver
@@ -55,11 +56,8 @@ class MarkingViewModel
             requested = route
             viewModelScope.launch {
                 val found = catalogOrNull()
-                val entrance =
-                    found?.entrances?.firstOrNull {
-                        it.id == route.entranceId && it.buildingSymbol == route.buildingSymbol
-                    }
-                val building = found?.buildings?.firstOrNull { it.symbol == route.buildingSymbol }
+                val entrance = found?.run { entrances.firstOrNull { it.matches(route) } }
+                val building = found?.run { buildings.firstOrNull { it.symbol == route.buildingSymbol } }
                 val stage = if (entrance == null) MarkingStage.MISSING else MarkingStage.EDITING
                 state.update { it.copy(entrance = entrance, buildingName = building?.name, stage = stage) }
             }
@@ -117,3 +115,7 @@ class MarkingViewModel
                 null
             }
     }
+
+/** Czy to wejście z [route]: ten sam identyfikator i budynek. Wymagania: US17.2 */
+internal fun Entrance.matches(route: MarkingRoute): Boolean =
+    id == route.entranceId && buildingSymbol == route.buildingSymbol
