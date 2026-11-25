@@ -11,7 +11,7 @@
  *
  * <p>API: pakiet {@code api}; HTTP {@code /submissions} i {@code /export.csv}.</p>
  *
- * <p>Zależności: {@code building :: api}, {@code shared}.</p>
+ * <p>Zależności: {@code building :: api}, {@code identity :: api}, {@code shared}.</p>
  *
  * <p>Nie robi: nie przechowuje budynków ani kont.</p>
  *
@@ -21,7 +21,7 @@
  *
  * @since 0.1.0
  */
-@ApplicationModule(allowedDependencies = {"building :: api", "shared"})
+@ApplicationModule(allowedDependencies = {"building :: api", "identity :: api", "shared"})
 @NullMarked
 package io.github.dostepnykampus.barrier;
 
