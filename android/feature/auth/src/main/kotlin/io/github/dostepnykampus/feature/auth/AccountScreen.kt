@@ -36,6 +36,7 @@ import io.github.dostepnykampus.core.designsystem.GroupContainer
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
+import io.github.dostepnykampus.core.designsystem.card.InfoPanel
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
 
@@ -84,14 +85,9 @@ fun AccountScreen(account: Account.SignedIn, actions: AccountActions, modifier: 
 @Composable
 private fun PersonCard(account: Account.SignedIn) {
     val names = listOf(stringResource(R.string.rola_odwiedzajacy)) + roleNames(account)
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-    ) {
+    InfoPanel {
         Text(
             text = stringResource(R.string.konto_twoje_role, names.joinToString(separator = ", ")),
-            modifier = Modifier.padding(Odstepy.m),
             style = MaterialTheme.typography.bodyLarge,
         )
     }
