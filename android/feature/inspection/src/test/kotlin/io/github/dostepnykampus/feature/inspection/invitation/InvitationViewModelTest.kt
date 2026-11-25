@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test
 /**
  * Stan K2: sprawdzenie adresu i roli, wysłanie zaproszenia i jego wynik.
  *
- * Wymagania: US12.1, US12.2, NFR-50, PW-10
+ * Wymagania: US12.1, US12.2, NFR-50
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class InvitationViewModelTest {

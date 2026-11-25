@@ -8,8 +8,8 @@ package io.github.dostepnykampus.feature.inspection.invitation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.dostepnykampus.core.data.invitation.InviteOutcome
 import io.github.dostepnykampus.core.data.invitation.Invitations
+import io.github.dostepnykampus.core.data.invitation.InviteOutcome
 import io.github.dostepnykampus.core.model.StaffRole
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,7 +42,7 @@ enum class InvitationStage {
     FORBIDDEN,
 }
 
-/** Błąd danych zaproszenia, przez który się nie wysyła. Wymagania: US12.1, PW-10 */
+/** Błąd danych zaproszenia, przez który się nie wysyła. Wymagania: US12.1 */
 enum class InvitationProblem {
     /** Adres e-mail niepełny. */
     EMAIL,
@@ -72,7 +72,7 @@ data class InvitationUiState(
  * K2 „Zaproszenie”: adres e-mail i rola, sprawdzenie ich przed wysłaniem i wynik zaproszenia. Po wysłaniu
  * formularz jest pusty, więc następne zaproszenie zaczyna się od nowa.
  *
- * Wymagania: US12.1, US12.2, NFR-50, PW-10
+ * Wymagania: US12.1, US12.2, NFR-50
  *
  * @param invitations wysłanie zaproszenia
  */
@@ -123,15 +123,15 @@ class InvitationViewModel
         }
     }
 
-private val EMAIL_SHAPE = Regex("[^@\\s]+@[^@\\s]+\\.[^@\\s]+")
+private val EMAIL_SHAPE = Regex("""[^@\s]+@[^@\s]+\.[^@\s]+""")
 
-private fun problemsOf(email: String, role: StaffRole?): Set<InvitationProblem> =
+internal fun problemsOf(email: String, role: StaffRole?): Set<InvitationProblem> =
     buildSet {
         if (!EMAIL_SHAPE.matches(email)) add(InvitationProblem.EMAIL)
         if (role == null) add(InvitationProblem.ROLE)
     }
 
-private fun stageOf(outcome: InviteOutcome): InvitationStage =
+internal fun stageOf(outcome: InviteOutcome): InvitationStage =
     when (outcome) {
         InviteOutcome.SENT -> InvitationStage.SENT
         InviteOutcome.ROLE_ADDED -> InvitationStage.ROLE_ADDED
