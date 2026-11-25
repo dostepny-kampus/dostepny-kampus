@@ -51,5 +51,6 @@ private fun AppNavigator.openWork(work: WorkAction) {
         WorkAction.MEASURE -> measure()
         WorkAction.MINE -> mySubmissions()
         WorkAction.PROGRESS -> inspectionProgress()
+        WorkAction.EXPORT -> inspectionExport()
     }
 }
