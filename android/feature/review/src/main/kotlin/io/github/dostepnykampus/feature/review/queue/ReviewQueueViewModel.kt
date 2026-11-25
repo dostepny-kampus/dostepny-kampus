@@ -111,7 +111,7 @@ class ReviewQueueViewModel
             when (this) {
                 ServerReply.Offline -> ReviewQueueUiState.Offline
                 is ServerReply.Fault -> faultState(code)
-                ServerReply.NotFound, is ServerReply.Ok -> ReviewQueueUiState.ServerError
+                ServerReply.Missing, is ServerReply.Ok -> ReviewQueueUiState.ServerError
             }
 
         private fun faultState(code: Int): ReviewQueueUiState =
