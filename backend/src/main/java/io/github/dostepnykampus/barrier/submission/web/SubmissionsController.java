@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.submission.web;
 
+import io.github.dostepnykampus.barrier.submission.AuthorRole;
 import io.github.dostepnykampus.barrier.submission.CreateResult;
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.Reader;
@@ -16,8 +17,11 @@ import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import io.github.dostepnykampus.shared.error.MissingResource;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -123,7 +127,7 @@ public final class SubmissionsController {
             throw new ForbiddenChange("Zwykłą zmianę tego zgłoszenia składa tylko jego autor");
         }
         final CreateResult result = this.service.create(
-            body.toCommand(account.getName(), this.entrances)
+            body.toCommand(account.getName(), SubmissionsController.roles(request), this.entrances)
         );
         final HttpStatus status;
         if (result instanceof CreateResult.Created) {
@@ -164,5 +168,11 @@ public final class SubmissionsController {
             case EditResult.Missing _ -> throw new MissingResource(SubmissionsController.MISSING);
             case null -> throw new IllegalStateException("Brak wyniku edycji zgłoszenia");
         };
+    }
+
+    private static Set<AuthorRole> roles(final HttpServletRequest request) {
+        return Arrays.stream(AuthorRole.values())
+            .filter(role -> role == AuthorRole.VISITOR || request.isUserInRole(role.name()))
+            .collect(Collectors.toUnmodifiableSet());
     }
 }

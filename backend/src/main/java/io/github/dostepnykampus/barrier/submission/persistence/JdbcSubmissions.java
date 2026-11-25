@@ -46,8 +46,8 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
      */
     private static final String INSERT = String.format(
         """
-            INSERT INTO submissions (id, content, author)
-            VALUES (:id, CAST(:content AS JSONB), :author)
+            INSERT INTO submissions (id, content, author, author_roles)
+            VALUES (:id, CAST(:content AS JSONB), :author, :roles)
             ON CONFLICT (id) DO NOTHING
             RETURNING %s
         """,
@@ -106,7 +106,9 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     @Override
     public CreateResult create(final NewSubmission submission) {
         final Optional<Submission> created = this.write(
-            this.jdbc.sql(JdbcSubmissions.INSERT).param("author", submission.author()),
+            this.jdbc.sql(JdbcSubmissions.INSERT).param("author", submission.author()).param(
+                "roles", submission.roles().stream().sorted().map(Enum::name).toArray(String[]::new)
+            ),
             submission.id(), submission.content()
         );
         if (created.isEmpty() && this.foreign(submission.id(), submission.author())) {
