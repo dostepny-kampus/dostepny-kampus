@@ -871,7 +871,7 @@ Własnych zgłoszeń, także zmian „bariera usunięta” i zmian oznaczenia we
 | --- | --- |
 | Zwykły | dane, zdjęcie, podobne zgłoszenia, decyzja |
 | Pusty — brak podobnych | „W promieniu 10 m nie ma podobnych zgłoszeń.” (US10.1) |
-| Ładowanie | tekst od razu, zdjęcia z napisem „Wczytujemy zdjęcie…” |
+| Ładowanie | „Wczytujemy zgłoszenie…”, dopóki nie przyjdą dane; potem tekst od razu, zdjęcia z napisem „Wczytujemy zdjęcie…” |
 | Błąd walidacji — przyjęcie | „Ustal typ bariery i uciążliwość, aby przyjąć zgłoszenie.” (US10.3) |
 | Błąd walidacji — odrzucenie | „Podaj powód odrzucenia, aby autor wiedział, co poprawić.” (US10.2) |
 | Nowa wersja | „Autor zmienił zgłoszenie. Sprawdź nową wersję przed decyzją.” Pod komunikatem „Zmienione:” i nazwy zmienionych pól, np. „Zmienione: uciążliwość” (US10.8, BR-3, BR-15, UC14 5e, PW-10) |
