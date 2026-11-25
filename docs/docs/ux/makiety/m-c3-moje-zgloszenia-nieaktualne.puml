@@ -11,7 +11,7 @@ $przycisk("Zmierz i zgłoś barierę")
 $ramka()
 <b>$odrzucone()</b>
 próg
-<i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
+<i>[budynek]</i>, <i>[piętro]</i>, <i>[data]</i>
 Powód odrzucenia: Nieaktualne
 $tekst("Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji.")
 $przycisk_glowny("Wyślij ponownie")
@@ -19,7 +19,7 @@ $przycisk_glowny("Wyślij ponownie")
 $ramka()
 <b>$odrzucone()</b>
 niesprawna winda
-<i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
+<i>[budynek]</i>, <i>[piętro]</i>, <i>[data]</i>
 Powód odrzucenia: Nieaktualne
 $tekst("Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa.")
 $przycisk("Zmierz i zgłoś barierę")

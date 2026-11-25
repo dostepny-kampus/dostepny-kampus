@@ -96,6 +96,23 @@ jobs:
       - name: Zbuduj, przetestuj i sprawdź qulice
         if: ${{ github.event_name != 'push' }}
         run: bash ../.github/scripts/mvn-z-ponowieniem.sh -B verify
+      - name: Obraz serwera z backend/Dockerfile w compose z profilem serwer odpowiada na /buildings
+        # Plik JAR pochodzi z `verify` powyżej.
+        if: ${{ github.event_name != 'push' }}
+        timeout-minutes: 8
+        working-directory: .
+        run: |
+          cp infra/.env.example infra/.env
+          compose=(docker compose -f infra/docker-compose.yml --profile serwer)
+          "${compose[@]}" up -d --build serwer
+          if ! timeout 240 bash -c 'until curl -fs -o /dev/null http://127.0.0.1:8080/buildings; do sleep 3; done'; then
+            echo "::error title=Obraz serwera::Serwer z compose nie odpowiedział na /buildings w 240 s."
+            "${compose[@]}" ps
+            "${compose[@]}" logs serwer
+            "${compose[@]}" down -v
+            exit 1
+          fi
+          "${compose[@]}" down -v
       - name: Testy mutacyjne PIT dziedziny serwera
         # Na PR; w grupie kolejki PIT nie padał, więc po scaleniu biegnie w kontroli sprintu (zadanie `mutacje`).
         if: ${{ github.event_name == 'pull_request' }}

@@ -9,11 +9,14 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
@@ -21,19 +24,35 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
+import io.github.dostepnykampus.core.designsystem.Ikony
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
 import io.github.dostepnykampus.feature.capture.photo.PhotoPreviews
+
+/** Znacznik testowy znaku „!” w kole przed słowem „Ważne”. */
+internal const val IMPORTANT_SIGN_TAG: String = "znak-wazne"
+
+private val ImportantSign: ImageVector =
+    pathIcon(
+        path =
+            "M11 15h2v2h-2zm0-8h2v6h-2zm0.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 " +
+                "11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z",
+        name = "Important",
+    )
 
 /**
  * „Zdjęcie”: ostrzeżenie „Ważne” jak w kroku 1 V4, podgląd zdjęć, „Zrób zdjęcie” i komunikat, gdy zdjęcia nie dało
@@ -62,11 +81,7 @@ internal fun PhotoSection(
             border = BorderStroke(Obramowania.ramka, MaterialTheme.colorScheme.error),
         ) {
             Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {
-                Text(
-                    text = stringResource(R.string.formularz_wazne),
-                    color = MaterialTheme.colorScheme.error,
-                    fontWeight = Typografia.wyroznienieWaga,
-                )
+                ImportantWord()
                 Text(stringResource(R.string.formularz_wazne_twarze), fontWeight = Typografia.wyroznienieWaga)
                 Text(stringResource(R.string.formularz_wazne_widoczne))
             }
@@ -192,3 +207,17 @@ private fun ReportFormError.messageRes(): Int =
         ReportFormError.MISSING_PHOTO -> R.string.formularz_brak_zdjecia
         ReportFormError.MISSING_DESCRIPTION -> R.string.formularz_brak_opisu
     }
+
+@Composable
+private fun ImportantWord() {
+    val color = MaterialTheme.colorScheme.error
+    Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
+        Icon(
+            imageVector = ImportantSign,
+            contentDescription = null,
+            modifier = Modifier.size(Ikony.rozmiar).testTag(IMPORTANT_SIGN_TAG),
+            tint = color,
+        )
+        Text(text = stringResource(R.string.formularz_wazne), color = color, fontWeight = Typografia.wyroznienieWaga)
+    }
+}

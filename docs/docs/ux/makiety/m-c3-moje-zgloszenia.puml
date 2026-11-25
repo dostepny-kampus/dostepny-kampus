@@ -16,13 +16,13 @@ $ramka()
 <b>$w_telefonie()</b>
 Bariery już nie ma
 niesprawna winda
-<i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
+<i>[budynek]</i>, <i>[piętro]</i>, <i>[data]</i>
 $przycisk("Otwórz", "chevron-right")
 }
 $ramka()
 <b>$odrzucone()</b>
 próg
-<i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
+<i>[budynek]</i>, <i>[piętro]</i>, <i>[data]</i>
 Powód odrzucenia:
 Zdjęcie nie pokazuje progu
 $przycisk("Otwórz", "chevron-right")
@@ -30,21 +30,21 @@ $przycisk("Otwórz", "chevron-right")
 $ramka()
 <b>$w_weryfikacji()</b>
 ciężkie drzwi
-<i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
+<i>[budynek]</i>, <i>[piętro]</i>, <i>[data]</i>
 Zmiana czeka na wysłanie
 $przycisk("Otwórz", "chevron-right")
 }
 $ramka()
 <b>$wyslane()</b>
 próg
-<i>[budynek]</i>, piętro <i>[piętro]</i>, <i>[data]</i>
+<i>[budynek]</i>, <i>[piętro]</i>, <i>[data]</i>
 $przycisk("Dwie wersje: wybierz jedną")
 $przycisk("Otwórz", "chevron-right")
 }
 $ramka()
 <b>$przyjete()</b>
 schody przy wejściu
-A-1, piętro <i>[1]</i>, <i>[data]</i>
+A-1, <i>[1 piętro]</i>, <i>[data]</i>
 }
 $ramka()
 <b>$archiwalne()</b>
