@@ -22,6 +22,7 @@ import io.github.dostepnykampus.barrier.submission.persistence.JdbcSubmissions;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -251,7 +252,7 @@ public final class VerificationSteps {
                     new BarrierDetails(group, type, severity, null, false),
                     null, null, null, List.of(VerificationSteps.PHOTO)
                 ),
-                "autor-zgloszenia"
+                "autor-zgloszenia", Set.of()
             )
         );
         this.photos.put(

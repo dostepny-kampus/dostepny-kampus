@@ -28,6 +28,7 @@ import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -76,7 +77,7 @@ final class SubmissionPhotosPruneIT {
         final UUID dropped = UUID.randomUUID();
         service.create(
             new NewSubmission(
-                submission, SubmissionPhotosPruneIT.content(kept, dropped), "konto"
+                submission, SubmissionPhotosPruneIT.content(kept, dropped), "konto", Set.of()
             )
         );
         store.put(submission, kept, new byte[] {1});

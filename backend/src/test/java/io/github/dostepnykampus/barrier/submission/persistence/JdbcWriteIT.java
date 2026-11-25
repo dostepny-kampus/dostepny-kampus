@@ -17,6 +17,7 @@ import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -44,15 +45,17 @@ final class JdbcWriteIT {
         final SubmissionData data = SubmissionData.of(context);
         final UUID id = SubmissionData.id(1);
         final CreateResult created = data.repo().create(
-            new NewSubmission(id, SubmissionData.content("pierwsza"), SubmissionData.AUTHOR)
+            new NewSubmission(
+                id, SubmissionData.content("pierwsza"), SubmissionData.AUTHOR, Set.of()
+            )
         );
         final CreateResult repeated = data.repo().create(
-            new NewSubmission(id, SubmissionData.content("druga"), SubmissionData.AUTHOR)
+            new NewSubmission(id, SubmissionData.content("druga"), SubmissionData.AUTHOR, Set.of())
         );
         Assertions.assertThrows(
             ForbiddenChange.class,
             () -> data.repo().create(
-                new NewSubmission(id, SubmissionData.content("trzecia"), "inne-konto")
+                new NewSubmission(id, SubmissionData.content("trzecia"), "inne-konto", Set.of())
             ),
             "Inne konto dostało zapisane zgłoszenie"
         );
