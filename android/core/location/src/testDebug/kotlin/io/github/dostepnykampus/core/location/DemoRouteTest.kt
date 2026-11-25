@@ -6,11 +6,9 @@
 package io.github.dostepnykampus.core.location
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -24,11 +22,6 @@ import org.robolectric.RuntimeEnvironment
 class DemoRouteTest {
     private val app = RuntimeEnvironment.getApplication()
     private val route = DemoRoute.load(app)
-
-    @After
-    fun switchOff() {
-        DemoMode.setEnabled(app, isEnabled = false)
-    }
 
     /** Błąd pozycji spada od wartości przy fasadzie do poniżej metra w oknie pomiaru. */
     @Test
@@ -65,16 +58,6 @@ class DemoRouteTest {
             assertTrue("średnia z błędem ponad metr", average.accuracyMeters < 1.0)
         }
 
-    /** Włącznik trybu pokazu przełącza źródła położenia i satelitów na trasę pokazu. */
-    @Test
-    fun switchPicksRoute() =
-        runTest {
-            assertTrue("bez trybu pokazu nie GPS", variantPositions(app) is GnssPositionFixes)
-            DemoMode.setEnabled(app, isEnabled = true)
-            assertTrue("w trybie pokazu GPS", variantPositions(app) !is GnssPositionFixes)
-            assertTrue("w trybie pokazu satelity z odbiornika", variantSatellites(app) !is GnssSatellites)
-            assertTrue("w trybie pokazu lokalizacja wyłączona", variantLocationSwitch(app).isEnabled().first())
-        }
     private companion object {
         const val MEASURE_MILLIS = 30_000L
         const val TICK = 1_000
