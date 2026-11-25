@@ -136,6 +136,16 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | „Zmienione: uciążliwość” pod komunikatem: Weryfikator nie szuka różnicy sam | BR-3, BR-15 |
 | Dane nowej wersji: uciążliwość „Tylko z pomocą” zamiast „Utrudnienie”, jak w scenariuszu `@BR-3` | BR-3 |
 
+![Makieta zasłaniania zdjęcia z R2: napis Dotknij zdjęcia w miejscu twarzy albo tablicy, zdjęcie z dwiema zasłonami, druga zaznaczona, Zasłona 2 z 2: zaznaczona, przyciski Większy i Mniejszy obok siebie, Usuń zasłonę, w przypiętym pasie na dole Zapisz zdjęcie](../../_generated/m-r2-zaslanianie-zdjecia.svg)
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| „Zasłoń twarz lub tablicę” z R2 otwiera zdjęcie na cały ekran; nagłówek z „Wstecz”, który wraca do R2 bez zmian | BR-15, NFR-15 |
+| Napis „Dotknij zdjęcia w miejscu twarzy albo tablicy.”; dotknięcie stawia prostokąt zasłony stałej wielkości, bez przeciągania i szczypania | NFR-53, NFR-25 |
+| Zaznaczona zasłona ma grubszą obwódkę i napis „Zaznaczona”; TalkBack czyta numer i położenie słowami | NFR-21, NFR-18 |
+| „Większy” i „Mniejszy” obok siebie oraz „Usuń zasłonę” dla zaznaczonej zasłony; cele co najmniej 48 × 48 dp | NFR-17, NFR-53 |
+| „Zapisz zdjęcie”, pogrubiony, na pełną szerokość w przypiętym pasie na dole, jak „Zapisz” na C2: zasłony wypalone w pikselach, oryginał nie opuszcza telefonu | BR-15, NFR-25, NFR-52 |
+
 | Stan bez osobnej makiety | Co widać |
 | --- | --- |
 | Ładowanie | tekst od razu, w ramkach zdjęć napis „Wczytujemy zdjęcie…” (PW-9) |

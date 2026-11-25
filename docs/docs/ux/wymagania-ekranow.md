@@ -862,7 +862,11 @@ Własnych zgłoszeń, także zmian „bariera usunięta” i zmian oznaczenia we
 | „Podobne zgłoszenia do 10 m”: typ, zdjęcie, odległość, piętro, status | dane | US10.1, BR-13 | — |
 | Zgłoszenie szybkie: „Czego dotyczy:” i grupa barier wybrana przez autora | dane | BR-14, US4.3 | — |
 | Zgłoszenie szybkie: wybór „Typ bariery” i „Uciążliwość” z wartościami „Utrudnienie”, „Tylko z pomocą”, „Blokada”. Lista typów otwiera się na grupie wybranej przez autora, a pozostałe grupy są pod nią | czynność | US10.3, BR-14, PW-13 | — |
-| „Zasłoń twarz lub tablicę” na zdjęciu | czynność | BR-15, NFR-25 | — |
+| „Zasłoń twarz lub tablicę” na zdjęciu otwiera to zdjęcie na cały ekran do zasłaniania; zasłonięcie nie tworzy nowej wersji zgłoszenia | czynność | BR-15, NFR-25 | zasłanianie zdjęcia |
+| Zasłanianie: nad zdjęciem napis „Dotknij zdjęcia w miejscu twarzy albo tablicy.” Dotknięcie zdjęcia stawia w tym miejscu prostokąt zasłony stałej wielkości. Dotknięcie prostokąta go zaznacza; zaznaczony ma grubszą obwódkę i napis „Zaznaczona”, nie sam kolor. Bez przeciągania i szczypania | czynność | NFR-53, NFR-21 | — |
+| Zasłanianie: „Większy”, „Mniejszy” i „Usuń zasłonę” dla zaznaczonego prostokąta, pod zdjęciem; każdy cel co najmniej 48 × 48 dp | czynność | NFR-17, NFR-53 | — |
+| Zasłanianie: TalkBack czyta każdy prostokąt z numerem i położeniem słowami, np. „Zasłona 1 z 2, u góry po lewej, zaznaczona” | dane | NFR-18 | — |
+| Zasłanianie: „Zapisz zdjęcie” jako czynność główna w przypiętym pasie na dole ekranu, jak „Zapisz” na C2, wypala zasłony w pikselach zdjęcia i wysyła je; oryginał nie opuszcza telefonu. Po zapisie R2 pokazuje nowe zdjęcie. „Wstecz” wraca do R2 bez zmian | czynność | BR-15, NFR-25 | R2 |
 | Zmiana oznaczenia wejścia: obecne oznaczenie z datą i źródłem, wybrane oznaczenie, nowe zdjęcie | dane | US17.2, BR-24 | — |
 | Zmiana oznaczenia wejścia: tekstem i ikoną, czy oznaczenie jest „Bez zmian od wysłania”, czy „Zmienione po wysłaniu” przez inną przyjętą zmianę | dane | US10.8, BR-23, BR-24, NFR-21 | — |
 | „Bariera usunięta”: zdjęcie poprzedniego zgłoszenia obok nowego, z podpisami „Zdjęcie z poprzedniego zgłoszenia” i „Nowe zdjęcie miejsca” | dane | US10.8, US10.6, BR-19 | — |
@@ -879,6 +883,8 @@ Własnych zgłoszeń, także zmian „bariera usunięta” i zmian oznaczenia we
 | Błąd walidacji — odrzucenie | „Podaj powód odrzucenia, aby autor wiedział, co poprawić.” (US10.2) |
 | Nowa wersja | „Autor zmienił zgłoszenie. Sprawdź nową wersję przed decyzją.” Pod komunikatem „Zmienione:” i nazwy zmienionych pól, np. „Zmienione: uciążliwość” (US10.8, BR-3, BR-15, UC14 5e, PW-10) |
 | Brak sieci | „Decyzja wymaga internetu, a zgłoszenie czeka w »Wziętych przeze mnie«. Połącz się z internetem i podejmij decyzję ponownie.” (BR-11, PW-10) |
+| Zasłanianie — zapisywanie | „Zapisujemy zdjęcie…” zamiast „Zapisz zdjęcie” |
+| Zasłanianie — brak sieci przy zapisie | „Zapisanie zdjęcia wymaga internetu. Połącz się z internetem i zapisz ponownie.” Zasłony zostają (PW-10) |
 | Błąd serwera, brak uprawnień | stany wspólne |
 
 Dostępność: podobne zgłoszenia mają odległość tekstem, np. „5 m”, a nie tylko punkt na mapie (NFR-19). Przy skali czcionki co najmniej 1,5 dwa zdjęcia „bariera usunięta” stoją jedno pod drugim (NFR-20).
