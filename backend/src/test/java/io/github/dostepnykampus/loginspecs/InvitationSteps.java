@@ -8,7 +8,7 @@ package io.github.dostepnykampus.loginspecs;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.github.dostepnykampus.KeycloakTestConfiguration;
+import io.github.dostepnykampus.KeycloakTestConfiguration.RealmCredentials;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -52,7 +52,7 @@ public final class InvitationSteps {
     private String email;
 
     /** Token osoby, która wykonuje czynność. */
-    private String token;
+    private String token = "";
 
     /** Kod odpowiedzi serwera na ostatnie zaproszenie. */
     private int status;
@@ -67,7 +67,6 @@ public final class InvitationSteps {
         this.settings = settings;
         this.mapper = mapper;
         this.email = "";
-        this.token = "";
     }
 
     /**
@@ -103,9 +102,8 @@ public final class InvitationSteps {
      */
     @When("^Koordynator zaprosi ten adres z rolą „([^”]+)”$")
     void invites(final String role) throws Exception {
-        this.status = this.invite(role);
         MatcherAssert.assertThat(
-            "Serwer nie przyjął zaproszenia Koordynatora", this.status, Matchers.equalTo(201)
+            "Serwer nie przyjął zaproszenia Koordynatora", this.invite(role), Matchers.equalTo(201)
         );
     }
 
@@ -171,6 +169,17 @@ public final class InvitationSteps {
             "Serwer odmówił ekranu %s".formatted(screen), this.open(screen),
             Matchers.not(Matchers.oneOf(401, 403))
         );
+    }
+
+    /**
+     * Serwer nie odmawia pomiaru precyzyjnego ani kolejki weryfikacji.
+     *
+     * @throws Exception Gdy żądanie nie dojdzie do serwera
+     */
+    @Then("^może otworzyć pomiar precyzyjny i kolejkę weryfikacji$")
+    void opensBoth() throws Exception {
+        this.opens("pomiar precyzyjny");
+        this.opens("kolejka weryfikacji");
     }
 
     /**
@@ -280,8 +289,7 @@ public final class InvitationSteps {
     }
 
     private String staffToken(final String user) throws Exception {
-        final var credentials = new KeycloakTestConfiguration.RealmCredentials(this.mapper);
-        return this.login(user, credentials.password(user));
+        return this.login(user, new RealmCredentials(this.mapper).password(user));
     }
 
     private String login(final String user, final String secret) throws Exception {

@@ -69,8 +69,7 @@ Funkcja: Logowanie, role i zaproszenia
     Jeżeli Koordynator zaprosi ten adres z rolą „Weryfikator”
     Oraz Anna Nowak zaloguje się ponownie
     Wtedy w profilu widzi role Odwiedzający, Zbierający i Weryfikator
-    Oraz ma dostęp do ekranu „pomiar precyzyjny”
-    I ma dostęp do ekranu „kolejka weryfikacji”
+    Oraz może otworzyć pomiar precyzyjny i kolejkę weryfikacji
 
   @BR-2 @serwer @usluga-logowania
   Scenariusz: Rolę pracowniczą nadaje tylko Koordynator
