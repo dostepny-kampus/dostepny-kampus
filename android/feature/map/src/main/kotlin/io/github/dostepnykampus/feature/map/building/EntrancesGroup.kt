@@ -136,15 +136,22 @@ internal fun EntrancesGroup(
 ) {
     GroupContainer(title = stringResource(R.string.karta_wejscia)) {
         when {
-            card.entrances.isEmpty() -> NoEntrances()
-            card.hasOnlyNamelessEntrances() -> NamelessEntrances(count = card.entrances.size, onReport = onReport)
-            else ->
+            card.entrances.isEmpty() -> {
+                NoEntrances()
+            }
+
+            card.hasOnlyNamelessEntrances() -> {
+                NamelessEntrances(count = card.entrances.size, onReport = onReport)
+            }
+
+            else -> {
                 EntranceList(
                     card = card,
                     withAssessment = withAssessment,
                     onShow = onShowEntrance,
                     onChange = onChangeMarking,
                 )
+            }
         }
     }
 }
