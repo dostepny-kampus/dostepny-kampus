@@ -29,9 +29,9 @@ import java.time.Instant
 
 /**
  * Sprawdzanie zgłoszeń jako odpowiedź serwera bez typów klienta HTTP: podział kolejki, zajęte zgłoszenie,
- * nowa wersja przy decyzji, brak sieci, brak zgłoszenia i brak uprawnień.
+ * nowa wersja przy decyzji, zastąpienie zdjęcia, brak sieci, brak zgłoszenia i brak uprawnień.
  *
- * Wymagania: US10.1, US10.4, US10.7, US10.8, BR-11
+ * Wymagania: US10.1, US10.4, US10.7, US10.8, BR-11, BR-15, NFR-25
  */
 class ReviewsTest {
     @Test
@@ -77,6 +77,15 @@ class ReviewsTest {
     }
 
     @Test
+    fun us10ReplacesPhoto() {
+        val jpeg = byteArrayOf(1, 2, 3)
+        val saved = answered(NO_CONTENT, "") { it.replacePhoto(submissionId = ID, photoId = PHOTO, jpeg = jpeg) }
+        assertEquals(ServerReply.Ok(Unit), saved, "zdjęcie z zasłonami zapisane")
+        val refused = answered(FORBIDDEN, "{}") { it.replacePhoto(submissionId = ID, photoId = PHOTO, jpeg = jpeg) }
+        assertEquals(ServerReply.Fault(FORBIDDEN), refused, "zgłoszenie nie jest wzięte przez tego Weryfikatora")
+    }
+
+    @Test
     fun us10MissingAndForbidden() {
         assertEquals(ServerReply.Missing, answered(NOT_FOUND, "{}") { it.similar(ID) }, "nieznane zgłoszenie")
         assertEquals(ServerReply.Fault(FORBIDDEN), answered(FORBIDDEN, "{}") { it.queue() }, "403 bez roli")
@@ -113,6 +122,7 @@ class ReviewsTest {
         const val SENT = "SENT"
         const val IN_REVIEW = "IN_REVIEW"
         const val OK = 200
+        const val NO_CONTENT = 204
         const val FORBIDDEN = 403
         const val NOT_FOUND = 404
         const val CONFLICT = 409

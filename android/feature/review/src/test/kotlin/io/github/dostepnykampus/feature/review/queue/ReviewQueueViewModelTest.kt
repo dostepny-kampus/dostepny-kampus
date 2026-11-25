@@ -130,6 +130,9 @@ class ReviewQueueViewModelTest {
             ServerReply.Missing
 
         override suspend fun similar(submissionId: String): ServerReply<List<SimilarSubmission>> = ServerReply.Missing
+
+        override suspend fun replacePhoto(submissionId: String, photoId: String, jpeg: ByteArray): ServerReply<Unit> =
+            ServerReply.Missing
     }
 
     private companion object {
