@@ -25,10 +25,10 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
- * R2 „Sprawdzenie zgłoszenia”: dane zgłoszenia, „Przyjmij”, powody odrzucenia z „Duplikat” i „Inny powód”,
+ * R2 „Sprawdzenie zgłoszenia”: dane zgłoszenia, podobne zgłoszenia, „Przyjmij”, powody odrzucenia z „Duplikat” i „Inny powód”,
  * komunikaty nowej wersji, braku powodu i braku sieci oraz zmiana oznaczenia wejścia bez „Duplikat”.
  *
- * Wymagania: US10.2, US10.8, BR-11, BR-13, BR-16, BR-24
+ * Wymagania: US10.1, US10.2, US10.8, BR-11, BR-13, BR-16, BR-24
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
@@ -68,6 +68,16 @@ class ReviewCheckScreenTest {
         shown.value = READY.copy(notice = CheckNotice.OFFLINE)
         compose.onNodeWithText("Bez internetu").assertIsDisplayed()
         compose.onNodeWithText("Połącz się z internetem i podejmij decyzję ponownie.").performScrollTo()
+    }
+
+    @Test
+    fun showsSimilar() {
+        show(READY)
+        compose.onNodeWithText("Podobne zgłoszenia do 10 m").performScrollTo()
+        compose.onNodeWithText("4 m").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Wysłane").performScrollTo().assertIsDisplayed()
+        shown.value = READY.copy(similar = emptyList())
+        compose.onNodeWithText("W promieniu 10 m nie ma podobnych zgłoszeń.").performScrollTo().assertIsDisplayed()
     }
 
     @Test

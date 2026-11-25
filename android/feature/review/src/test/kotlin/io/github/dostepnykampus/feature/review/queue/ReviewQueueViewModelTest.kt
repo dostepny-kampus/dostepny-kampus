@@ -101,6 +101,22 @@ class ReviewQueueViewModelTest {
             assertEquals(ReviewQueueUiState.Offline, model.state.value, "drugi odczyt bez internetu")
         }
 
+    @Test
+    fun reopenReadsShownQueue() =
+        queueTest { model ->
+            runCurrent()
+            model.reopen()
+            assertEquals(ReviewQueueUiState.Loading, model.state.value, "powrót z R2 czyta kolejkę od nowa")
+        }
+
+    @Test
+    fun reopenKeepsProblem() =
+        queueTest(queue = ServerReply.Offline) { model ->
+            runCurrent()
+            model.reopen()
+            assertEquals(ReviewQueueUiState.Offline, model.state.value, "bez odczytu, gdy kolejki nie ma")
+        }
+
     private fun queueTest(
         queue: ServerReply<ReviewQueue> = ServerReply.Ok(QUEUE),
         claim: ServerReply<ReviewClaim> = ServerReply.Missing,
