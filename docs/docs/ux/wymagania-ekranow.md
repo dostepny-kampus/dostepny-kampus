@@ -427,7 +427,7 @@ Aplikacja nie pyta o typ bariery, uciążliwość ani budynek (US4.3, BR-14). Po
 
 Przy wybranym wejściu pozycji nie ustala, o zgodę na lokalizację nie prosi i o piętro nie pyta. Stany o lokalizacji, pozycji i terenie PWr wtedy nie występują (US4.6, BR-8).
 
-O piętro aplikacja pyta tylko w konturze budynku i przy każdej grupie poza „Coś innego” (US4.5, tabela w [regułach](../biznes/reguly.md#pietro-w-zgloszeniu-szybkim)). W budynku podstawowym, a także zanim telefon ustali pozycję, przyciski pięter to piętra od -1 do 10 w postaci etykiet PWr: „Piwnica”, „Parter”, „1 piętro” … „10 piętro”. Tak samo nazywa piętro podsumowanie kroku 3. W budynku szczegółowym są to piętra z danych PWr, a zgłoszenie dostaje identyfikator piętra zamiast numeru.
+O piętro aplikacja pyta tylko w konturze budynku i przy każdej grupie poza „Coś innego” (US4.5, tabela w [regułach](../biznes/reguly.md#pietro-w-zgloszeniu-szybkim)). W budynku podstawowym i przed ustaleniem pozycji piętra od -1 do 10 mają postać „Piwnica”, „Parter”, „1 piętro” i dalsze, także w podsumowaniu kroku 3. W budynku szczegółowym są to piętra z danych PWr, a zgłoszenie dostaje identyfikator piętra zamiast numeru.
 
 | Stan | Co widać |
 | --- | --- |
