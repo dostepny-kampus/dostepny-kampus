@@ -13,9 +13,11 @@ import io.github.dostepnykampus.core.network.encodeContract
 import io.github.dostepnykampus.core.network.exchange
 import io.github.dostepnykampus.core.network.unexpectedResult
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -28,9 +30,9 @@ import java.net.HttpURLConnection.HTTP_CREATED
 /**
  * Wynik zaproszenia z serwera.
  *
- * @property accountExisted czy konto z tym adresem istniało; wtedy dostało rolę obok dotychczasowych
+ * @property isExistingAccount czy konto z tym adresem istniało; wtedy dostało rolę obok dotychczasowych
  */
-public data class Invited(val accountExisted: Boolean)
+public data class Invited(val isExistingAccount: Boolean)
 
 /**
  * Klient HTTP zaproszeń Koordynatora: `POST /invitations`.
@@ -47,7 +49,12 @@ public data class Invited(val accountExisted: Boolean)
  * @param baseUrl adres serwera
  */
 public class InvitationsApi(private val http: OkHttpClient, private val json: Json, baseUrl: String) {
-    private val target = baseUrl.toHttpUrl().newBuilder().addPathSegment("invitations").build()
+    private val target =
+        baseUrl
+            .toHttpUrl()
+            .newBuilder()
+            .addPathSegment("invitations")
+            .build()
 
     /**
      * Zaprasza osobę z adresem [email] i rolą [role]; konto, które już istnieje, dostaje tę rolę.
@@ -58,8 +65,8 @@ public class InvitationsApi(private val http: OkHttpClient, private val json: Js
     public suspend fun invite(email: String, role: StaffRole): ApiResult<Invited> {
         val payload =
             buildJsonObject {
-                put("email", email)
-                put("role", role.name)
+                put(key = "email", value = email)
+                put(key = "role", value = role.name)
             }
         val request =
             Request
@@ -74,8 +81,8 @@ public class InvitationsApi(private val http: OkHttpClient, private val json: Js
     }
 
     private fun invitedOf(body: String): Invited {
-        val existed = json.decodeContract(JsonObject.serializer(), body)["accountExisted"]
-        return Invited(accountExisted = requireNotNull(existed).jsonPrimitive.boolean)
+        val existed = json.decodeContract(JsonElement.serializer(), body).jsonObject["accountExisted"]
+        return Invited(isExistingAccount = requireNotNull(existed).jsonPrimitive.boolean)
     }
 
     private companion object {

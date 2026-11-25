@@ -21,12 +21,12 @@ import java.io.IOException
 class ServerInvitationsTest {
     @Test
     fun newAccountIsSent() {
-        assertEquals(InviteOutcome.SENT, invite(ApiResult.Success(Invited(accountExisted = false))), "nowe konto")
+        assertEquals(InviteOutcome.SENT, invite(ApiResult.Success(Invited(isExistingAccount = false))), "nowe konto")
     }
 
     @Test
     fun existingAccountGetsRole() {
-        val outcome = invite(ApiResult.Success(Invited(accountExisted = true)))
+        val outcome = invite(ApiResult.Success(Invited(isExistingAccount = true)))
         assertEquals(InviteOutcome.ROLE_ADDED, outcome, "rola dodana do istniejącego konta")
     }
 

@@ -14,7 +14,7 @@ import java.net.HttpURLConnection.HTTP_FORBIDDEN
 /**
  * Wynik zaproszenia dla ekranu K2.
  *
- * TODO(#3826): stan „ma już rolę” z odpowiedzi 409 według kontraktu po zmianie.
+ * TODO(#3764): stan „ma już rolę” z odpowiedzi 409 według kontraktu po zmianie.
  *
  * Wymagania: US12.1, US12.2, NFR-50
  */
@@ -48,7 +48,7 @@ public fun interface Invitations {
 internal class ServerInvitations(private val send: suspend (String, StaffRole) -> ApiResult<Invited>) : Invitations {
     override suspend fun invite(email: String, role: StaffRole): InviteOutcome =
         when (val reply = send(email, role)) {
-            is ApiResult.Success -> if (reply.value.accountExisted) InviteOutcome.ROLE_ADDED else InviteOutcome.SENT
+            is ApiResult.Success -> if (reply.value.isExistingAccount) InviteOutcome.ROLE_ADDED else InviteOutcome.SENT
             is ApiResult.ServerError -> refused(reply.code)
             is ApiResult.NetworkError -> InviteOutcome.OFFLINE
             ApiResult.NotFound -> InviteOutcome.FAILED
