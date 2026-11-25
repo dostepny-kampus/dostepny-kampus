@@ -112,14 +112,14 @@ final class ExportGeoJsonHttpIT {
                 features.size(), one.path("geometry").path("coordinates").toString(),
                 props.path("barrierGroup").asString(), props.path("buildingSymbol").asString(),
                 props.path("floor").asString(), props.path("description").asString(),
-                low.contains("konto-testowe") || low.contains("author"),
-                low.contains("polygon") || low.contains("outline")
+                low.contains("konto-testowe") || low.contains("author")
+                    || low.contains("polygon") || low.contains("outline")
             ),
             Matchers.is(
                 List.of(
                     List.of(), 1, "[17.05989,51.10916]", "ENTRANCE_AND_DOORS",
                     "A-1", "0 półpiętro", "=Schody, \"próg\" i żółta poręcz",
-                    false, false
+                    false
                 )
             )
         );
