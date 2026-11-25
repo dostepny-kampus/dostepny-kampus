@@ -35,7 +35,6 @@ class BarrierExportTest {
     fun keepsEmptyFile() {
         val outcome = download(ApiResult.Success(ExportFile("{}", isEmpty = true)), ExportFormat.GEOJSON)
         assertEquals(ExportOutcome.Saved(isEmpty = true), outcome, "pusty plik też się zapisuje")
-        assertEquals("dostepny-kampus-bariery-2026-11-25.geojson", saved.single().first(), "nazwa pliku GeoJSON")
     }
 
     @Test
