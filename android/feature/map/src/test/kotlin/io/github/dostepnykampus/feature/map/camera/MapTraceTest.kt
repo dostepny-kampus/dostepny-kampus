@@ -13,7 +13,7 @@ import org.robolectric.RobolectricTestRunner
 
 /**
  * Ślad mapy bez włączonego śledzenia: znaczniki niczego nie zmieniają, a zmiana terenu i sekcja oddają wynik
- * bloku albo jego wyjątek.
+ * bloku albo jego wyjątek. Sekcja GeoJSON nosi stałą nazwę źródła.
  *
  * Wymagania: NFR-57, NFR-56
  */
@@ -55,5 +55,12 @@ class MapTraceTest {
         assertThrows("sekcja przepuszcza wyjątek bloku", IllegalStateException::class.java) {
             MapTrace.section(name = MapTrace.SELECTION_SECTION) { error("styl bez warstwy") }
         }
+    }
+
+    @Test
+    fun namesGeoJsonSection() {
+        val name = MapTrace.geoJsonSection("plan")
+
+        assertEquals("nazwa sekcji GeoJSON źródła", "Mapa: GeoJSON plan", name)
     }
 }

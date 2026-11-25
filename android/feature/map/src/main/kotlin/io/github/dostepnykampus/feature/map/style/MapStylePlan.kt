@@ -238,7 +238,7 @@ internal suspend fun MapStyleTarget.showPlanData(
     numbered: MutableSet<String>,
     worker: CoroutineContext = Dispatchers.Default,
 ) {
-    data(source = PLAN_SOURCE, geoJson = withContext(worker) { planFeatures(floors).asStyleText() })
+    data(source = PLAN_SOURCE, geoJson = withContext(worker) { geoJsonText(PLAN_SOURCE) { planFeatures(floors) } })
     val bitmaps =
         withContext(worker) {
             floors.values

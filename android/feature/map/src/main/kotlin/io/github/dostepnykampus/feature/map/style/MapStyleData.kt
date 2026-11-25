@@ -5,11 +5,13 @@
  */
 package io.github.dostepnykampus.feature.map.style
 
+import io.github.dostepnykampus.feature.map.camera.MapTrace
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.featureCollection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.JsonElement
 import kotlin.coroutines.CoroutineContext
 
 private val EMPTY_MAP_DATA =
@@ -36,12 +38,21 @@ internal fun campusMapShell(selection: MapSelection, colors: MapStyleColors, bas
  */
 internal fun CampusMapData.sourceTexts(): Map<String, String> =
     mapOf(
-        BUILDINGS_SOURCE to buildings.asStyleText(),
-        LABELS_SOURCE to labelPoints.asStyleText(),
-        ENTRANCES_SOURCE to entrances.asStyleText(),
-        BARRIERS_SOURCE to barriers.asStyleText(),
-        PATHS_SOURCE to paths.asStyleText(),
+        BUILDINGS_SOURCE to geoJsonText(BUILDINGS_SOURCE) { buildings },
+        LABELS_SOURCE to geoJsonText(LABELS_SOURCE) { labelPoints },
+        ENTRANCES_SOURCE to geoJsonText(ENTRANCES_SOURCE) { entrances },
+        BARRIERS_SOURCE to geoJsonText(BARRIERS_SOURCE) { barriers },
+        PATHS_SOURCE to geoJsonText(PATHS_SOURCE) { paths },
     )
+
+/**
+ * Tekst GeoJSON źródła stylu [source] z danych od [build]. Przy włączonym śledzeniu budowa leży w sekcji
+ * [MapTrace.geoJsonSection] tego źródła; [build] nie może zmienić wątku.
+ *
+ * Wymagania: NFR-57
+ */
+internal inline fun geoJsonText(source: String, build: () -> JsonElement): String =
+    MapTrace.section(name = MapTrace.geoJsonSection(source)) { build().asStyleText() }
 
 /**
  * Pokazuje [data] we wczytanym stylu z [campusMapShell]: dodaje obrazy podpisów spoza [labelled] i zastępuje dane

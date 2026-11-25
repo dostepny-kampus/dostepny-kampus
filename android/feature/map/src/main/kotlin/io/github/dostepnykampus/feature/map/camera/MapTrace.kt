@@ -25,6 +25,7 @@ internal object MapTrace {
     const val SELECTION_SECTION = "Mapa: zaznaczenie w stylu"
     const val CARD_STATE_SECTION = "Karta: stan"
     const val CARD_FLOORS_SECTION = "Karta: fakty o piętrach"
+    private const val GEOJSON_SECTION = "Mapa: GeoJSON"
     private const val ZOOM_SCALE = 100.0
     private const val DEGREE_SCALE = 1_000_000.0
 
@@ -81,6 +82,9 @@ internal object MapTrace {
             Trace.endSection()
         }
     }
+
+    /** Nazwa sekcji budowy GeoJSON źródła stylu [source]: stała nazwa źródła, bez danych osobowych. */
+    fun geoJsonSection(source: String): String = "$GEOJSON_SECTION $source"
 
     private fun moveSection(motion: CameraMotion): String =
         when (motion) {
