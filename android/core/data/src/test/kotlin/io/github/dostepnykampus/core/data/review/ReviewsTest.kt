@@ -17,6 +17,7 @@ import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import io.github.dostepnykampus.core.network.review.ReviewApi
+import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
@@ -71,8 +72,8 @@ class ReviewsTest {
     fun us10SubmissionAndPhoto() {
         val reply = answered(OK, body(IN_REVIEW)) { it.submission(ID) }
         assertEquals(ServerReply.Ok(submission(IN_REVIEW)), reply, "zgłoszenie do sprawdzenia")
-        val url = source("http://serwer/").photoUrl(ID, PHOTO)
-        assertEquals("http://serwer/$ID/$PHOTO", url, "adres zdjęcia z adresu klienta zgłoszeń")
+        val url = source("http://serwer/").photoUrl(submissionId = ID, photoId = PHOTO)
+        assertEquals("http://serwer/submissions/$ID/photos/$PHOTO", url, "adres zdjęcia z klienta zgłoszeń")
     }
 
     @Test
@@ -100,8 +101,11 @@ class ReviewsTest {
             runBlocking { call(source(server.url("/").toString())) }
         }
 
-    private fun source(url: String): Reviews =
-        reviewsOf(ReviewApi(OkHttpClient(), Json { ignoreUnknownKeys = true }, url)) { id, photo -> "$url$id/$photo" }
+    private fun source(url: String): Reviews {
+        val json = Json { ignoreUnknownKeys = true }
+        val http = OkHttpClient()
+        return reviewsOf(api = ReviewApi(http, json, url), submissions = SubmissionsApi(http, json, url))
+    }
 
     private companion object {
         const val ID = "0b6f6c1e-8a43-4d5e-9f43-2f1d3c4b5a69"

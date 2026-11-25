@@ -14,6 +14,7 @@ import io.github.dostepnykampus.core.model.review.SimilarSubmission
 import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import io.github.dostepnykampus.core.network.review.ReviewApi
+import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 
 /**
  * Sprawdzanie zgłoszeń przez Weryfikatora na serwerze. Każde wywołanie wymaga sieci; bez niej wynik to
@@ -78,9 +79,9 @@ public data class ReviewQueue(val waiting: List<Submission>, val mine: List<Subm
  * Sprawdzanie zgłoszeń z klienta [api].
  *
  * @param api klient HTTP sprawdzania
- * @param photoAddress adres zdjęcia zgłoszenia z jego identyfikatora i identyfikatora zdjęcia
+ * @param submissions klient HTTP zgłoszeń, który podaje adres zdjęcia
  */
-internal fun reviewsOf(api: ReviewApi, photoAddress: (String, String) -> String): Reviews =
+internal fun reviewsOf(api: ReviewApi, submissions: SubmissionsApi): Reviews =
     object : Reviews {
         override suspend fun queue(): ServerReply<ReviewQueue> =
             api.queue().toReply { all ->
@@ -91,7 +92,8 @@ internal fun reviewsOf(api: ReviewApi, photoAddress: (String, String) -> String)
         override suspend fun submission(submissionId: String): ServerReply<Submission> =
             api.submission(submissionId).toReply { it }
 
-        override fun photoUrl(submissionId: String, photoId: String): String = photoAddress(submissionId, photoId)
+        override fun photoUrl(submissionId: String, photoId: String): String =
+            submissions.photoUrl(submissionId = submissionId, photoId = photoId)
 
         override suspend fun claim(submissionId: String): ServerReply<ReviewClaim> =
             api.claim(submissionId).toReply { it }

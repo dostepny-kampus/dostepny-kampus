@@ -20,5 +20,5 @@ import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 internal object ReviewDataModule {
     /** Kolejka, wzięcie, decyzja i podobne zgłoszenia Weryfikatora z serwera. Wymagania: US10, BR-11 */
     @Provides
-    fun reviews(api: ReviewApi, submissions: SubmissionsApi): Reviews = reviewsOf(api, submissions::photoUrl)
+    fun reviews(api: ReviewApi, submissions: SubmissionsApi): Reviews = reviewsOf(api = api, submissions = submissions)
 }
