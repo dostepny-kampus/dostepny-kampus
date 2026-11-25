@@ -44,11 +44,11 @@ import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.StaffProblem
 import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
-import io.github.dostepnykampus.core.designsystem.StaffResultMessage
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
+import io.github.dostepnykampus.core.designsystem.card.StaffResultMessage
 import io.github.dostepnykampus.core.model.export.ExportFormat
 import io.github.dostepnykampus.feature.inspection.R
 

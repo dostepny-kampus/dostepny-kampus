@@ -8,18 +8,13 @@ package io.github.dostepnykampus.core.designsystem
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.semantics
 
 /**
  * Stan wspólny ekranu roli pracowniczej, który potrzebuje serwera.
@@ -56,20 +51,5 @@ public fun StaffProblemMessage(problem: StaffProblem, onAction: () -> Unit, modi
         problem.headline?.let { Text(stringResource(it), style = MaterialTheme.typography.titleMedium) }
         Text(stringResource(problem.message), style = MaterialTheme.typography.bodyLarge)
         Button(onClick = onAction) { Text(stringResource(problem.action)) }
-    }
-}
-
-/** Wynik czynności pracownika z nagłówkiem i opcjonalnym objaśnieniem, ogłaszany przez TalkBack. */
-@Composable
-public fun StaffResultMessage(title: String, modifier: Modifier = Modifier, message: String? = null) {
-    Surface(
-        modifier = modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-    ) {
-        Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-            Text(text = title, fontWeight = Typografia.wyroznienieWaga, style = MaterialTheme.typography.titleLarge)
-            if (message != null) Text(text = message, style = MaterialTheme.typography.bodyLarge)
-        }
     }
 }
