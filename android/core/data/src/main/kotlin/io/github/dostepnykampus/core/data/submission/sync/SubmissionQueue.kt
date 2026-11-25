@@ -108,7 +108,7 @@ public data class SubmissionStamps(
  * zostaje, a kolejna próba wysyła treść raz i tylko brakujące zdjęcia, z tym samym identyfikatorem. [onSaved] planuje
  * wysyłkę po powrocie sieci. Poprawka ([saveEdit]) zastępuje wiersz zgłoszenia i idzie jako [SubmissionServer.update] z
  * wersją bazową. Po 401 wysyłka czeka na [onLoggedIn] ([loginExpired]). Zgłoszenia Zbierającego trafiają też do
- * historii wysłanych. Chwile zapisu z [SubmissionStamps.nowMillis] rosną ściśle, a serwer jest wołany poza blokadą wierszy.
+ * historii wysłanych. Chwile zapisu z [SubmissionStamps.nowMillis] rosną ściśle, a serwer jest wołany poza blokadą.
  *
  * Wymagania: NFR-5, US9.1, US9.2, BR-9, NFR-8, NFR-6, US8.3, BR-10, BR-26, US14.4, US8
  */
