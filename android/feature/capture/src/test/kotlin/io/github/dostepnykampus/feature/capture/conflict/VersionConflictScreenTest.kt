@@ -35,7 +35,7 @@ import java.time.Instant
 /**
  * C4 przy konflikcie wersji: obie wersje, pole różnicy i trzy wybory.
  *
- * Wymagania: US9.3, BR-10, PW-12
+ * Wymagania: US9.3, BR-10
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -61,7 +61,7 @@ class VersionConflictScreenTest {
         compose.onNodeWithText("Blokada").performScrollTo().assertIsDisplayed()
     }
 
-    /** Przy zgłoszeniu przyjętym napis mówi, co stanie się z wersją własną. Wymagania: PW-12 */
+    /** Przy zgłoszeniu przyjętym napis mówi, co stanie się z wersją własną. Wymagania: US9.3 */
     @Test
     fun acceptedHasSecondLine() {
         show(SubmissionStatus.ACCEPTED)
@@ -139,7 +139,12 @@ class VersionConflictScreenTest {
                     createdAt = Instant.parse("2026-11-20T10:00:00Z"),
                     content = own.copy(severity = 3),
                 )
-            return VersionConflict(id = "s-c4", own = own, server = server, differences = listOf(ConflictField.SEVERITY))
+            return VersionConflict(
+                id = "s-c4",
+                own = own,
+                server = server,
+                differences = listOf(ConflictField.SEVERITY),
+            )
         }
     }
 }

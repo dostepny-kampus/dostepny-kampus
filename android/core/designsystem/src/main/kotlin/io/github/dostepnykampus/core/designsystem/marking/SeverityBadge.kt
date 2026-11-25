@@ -29,6 +29,8 @@ import io.github.dostepnykampus.core.model.submission.Severity
  *
  * Wymagania: NFR-21
  *
+ * @param severity uciążliwość wyświetlana jako znak i nazwa
+ * @param modifier modyfikator plakietki
  * @param mapColors paleta znaku z mapy; `null` używa barw motywu ekranu
  */
 @Composable

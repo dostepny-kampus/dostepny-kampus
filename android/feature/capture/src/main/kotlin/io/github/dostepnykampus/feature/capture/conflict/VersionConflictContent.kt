@@ -97,7 +97,7 @@ private fun Effect(isAccepted: Boolean) {
 
 @Composable
 private fun Differences(state: ConflictUiState.Ready) {
-    val label = pluralStringResource(R.plurals.konflikt_rozni_sie, state.differences.size)
+    val label = pluralStringResource(id = R.plurals.konflikt_wykaz_roznic, count = state.differences.size)
     val names = state.differences.map { stringResource(it).lowercase() }.joinToString(separator = ", ")
     Text(
         text =
@@ -167,5 +167,10 @@ private fun Choice(
     @StringRes text: Int,
     onClick: () -> Unit,
 ) {
-    PinnedButton(text = stringResource(text), onClick = onClick, modifier = Modifier.fillMaxWidth(), kind = PinnedButtonKind.Outlined)
+    PinnedButton(
+        text = stringResource(text),
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        kind = PinnedButtonKind.Outlined,
+    )
 }

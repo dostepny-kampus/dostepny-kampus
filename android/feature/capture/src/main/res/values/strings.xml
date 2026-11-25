@@ -179,7 +179,7 @@
     <string name="konflikt_tytul">Dwie wersje: wybierz jedną.</string>
     <string name="konflikt_skutek">Druga wersja zostanie usunięta.</string>
     <string name="konflikt_przyjete">Przyjęte zgłoszenie zostanie, a Twoja wersja, jeśli ją wybierzesz, trafi do sprawdzenia jako nowe.</string>
-    <plurals name="konflikt_rozni_sie">
+    <plurals name="konflikt_wykaz_roznic">
         <item quantity="one">Różni się:</item>
         <item quantity="few">Różnią się:</item>
         <item quantity="many">Różnią się:</item>
