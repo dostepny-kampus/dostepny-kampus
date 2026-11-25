@@ -64,7 +64,7 @@ fun AccountScreen(account: Account.SignedIn, actions: AccountActions, modifier: 
                     GroupContainer(title = stringResource(R.string.konto_twoja_praca)) {
                         work.forEachIndexed { index, action ->
                             if (index > 0) HorizontalDivider()
-                            ActionRow(icon = AccountIcons.of(action), label = action.label) { actions.onWork(action) }
+                            ActionRow(AccountIcons.iconOf(action), action.label) { actions.onWork(action) }
                         }
                     }
                 }
@@ -83,7 +83,7 @@ fun AccountScreen(account: Account.SignedIn, actions: AccountActions, modifier: 
 
 @Composable
 private fun PersonCard(account: Account.SignedIn) {
-    val names = listOf(stringResource(R.string.rola_odwiedzajacy)) + roleNames(account.staffRoles)
+    val names = listOf(stringResource(R.string.rola_odwiedzajacy)) + roleNames(account)
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
@@ -99,9 +99,9 @@ private fun PersonCard(account: Account.SignedIn) {
 
 @Composable
 @ReadOnlyComposable
-private fun roleNames(roles: Set<StaffRole>): List<String> =
+private fun roleNames(account: Account.SignedIn): List<String> =
     StaffRole.entries
-        .filter { it in roles }
+        .filter { it in account.staffRoles }
         .map { role -> stringResource(roleLabel(role)) }
 
 @StringRes
@@ -113,7 +113,12 @@ private fun roleLabel(role: StaffRole): Int =
     }
 
 @Composable
-private fun ActionRow(icon: ImageVector, @StringRes label: Int, hasForward: Boolean = true, onClick: () -> Unit) {
+private fun ActionRow(
+    icon: ImageVector,
+    @StringRes label: Int,
+    hasForward: Boolean = true,
+    onClick: () -> Unit,
+) {
     Row(
         modifier =
             Modifier
