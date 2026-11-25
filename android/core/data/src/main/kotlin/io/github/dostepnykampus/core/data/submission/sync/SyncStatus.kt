@@ -49,7 +49,7 @@ internal fun syncStatusOf(
     log: SyncLog,
 ): SyncStatusSource =
     SyncStatusSource {
-        combine(pending, markers, subjects, log.runs()) { rows, changes, owner, run ->
+        combine(flow = pending, flow2 = markers, flow3 = subjects, flow4 = log.runs()) { rows, changes, owner, run ->
             val submissions = if (owner == null) 0 else rows.count { it.ownerSub == owner && !it.isRefused }
             SyncStatus(
                 submissions = submissions,

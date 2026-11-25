@@ -54,8 +54,7 @@ internal class SyncLog(private val dataStore: DataStore<Preferences>) {
                     lastSyncedAt = preferences[LAST_SYNCED_AT]?.let(Instant::ofEpochMilli),
                     isLastRunFailed = preferences[LAST_RUN_FAILED] == true,
                 )
-            }
-            .catch { error ->
+            }.catch { error ->
                 if (error !is IOException) throw error
                 emit(SyncRun(lastSyncedAt = null, isLastRunFailed = false))
             }
