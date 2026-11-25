@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.quick
@@ -84,6 +84,7 @@ fun QuickReportScreen(
                 }
             }
             BackHeader(title = stringResource(R.string.szybkie_naglowek), onBack = back)
+            if (route.step == ReportStep.SENT && route.isSavedOffline) QuickOfflineLine(models.offline)
             Column(
                 modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
                 verticalArrangement = Arrangement.spacedBy(Odstepy.m),
