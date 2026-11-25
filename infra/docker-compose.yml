@@ -9,11 +9,13 @@ services:
       POSTGRES_PASSWORD: ${DK_DB_PASSWORD:?ustaw DK_DB_PASSWORD w infra/.env}
       DK_DB_APP_USER: ${DK_DB_APP_USER:?ustaw DK_DB_APP_USER w infra/.env}
       DK_DB_APP_PASSWORD: ${DK_DB_APP_PASSWORD:?ustaw DK_DB_APP_PASSWORD w infra/.env}
+      DK_AUTH_DB_NAME: ${DK_AUTH_DB_NAME:-logowanie}
     ports:
       - "127.0.0.1:${DK_DB_PORT:-5432}:5432"
     volumes:
       - postgis-dane:/var/lib/postgresql
       - ./postgis/konto-serwera.sh:/docker-entrypoint-initdb.d/konto-serwera.sh:ro
+      - ./postgis/baza-logowania.sh:/docker-entrypoint-initdb.d/baza-logowania.sh:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 5s
@@ -55,7 +57,6 @@ services:
     restart: "no"
   logowanie:
     image: quay.io/keycloak/keycloak:26.4
-    # TODO(#3793): tryb produkcyjny (start) z pośrednikiem HTTPS w osobnej nakładce dla serwera docelowego.
     command: ["start-dev", "--import-realm", "--http-port=8180", "--health-enabled=true"]
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${DK_AUTH_ADMIN_USER:?ustaw DK_AUTH_ADMIN_USER w infra/.env}

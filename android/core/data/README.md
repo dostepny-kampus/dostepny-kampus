@@ -14,6 +14,7 @@ Wysyłka obejmuje wpisy bieżącego konta. Pierwsze zalogowanie po migracji przy
 - `core.data.di` — wiązania Hilt modułu.
 - `core.data.export` — eksport Koordynatora pobrany z serwera i zapisany w folderze „Pobrane”.
 - `core.data.inspection` — znaczniki piętra obejrzanego czekające w kolejce telefonu.
+- `core.data.invitation` — zaproszenie osoby z rolą przez Koordynatora.
 - `core.data.map` — zapamiętany wybór między mapą a listą budynków.
 - `core.data.network` — stan połączenia z siecią.
 - `core.data.path` — ścieżki dostosowane z serwera z kopią w telefonie.
@@ -27,7 +28,7 @@ Wysyłka obejmuje wpisy bieżącego konta. Pierwsze zalogowanie po migracji przy
 
 ## API
 
-Repozytoria i przypadki użycia w podpakietach `account`, `barrier`, `building`, `export`, `inspection`, `submission` (`own`, `pending`, `sync`), `map`, `network`, `start`; odpowiedź serwera bez typów klienta HTTP (`ServerReply`, `ServerBuildings`, `ServerCard`) w `server`; wiązania Hilt w `di`. Tekst JSON dokumentów kopii w bazie telefonu powstaje i jest czytany tylko w `cache` (`encodeCache`, `decodeCache`); każdą kopię odpowiedzi serwera trzyma `ServerCopy` pod własnym kluczem tabeli `server_copy`. `SubmissionQueue.save` zwraca `SavedSubmission` z identyfikatorem zgłoszenia, bez encji Room. Tabele bazy są za uchwytami `SubmissionStore` i `ServerCopyStore`, które daje Hilt; `:core:database` jest zależnością `implementation`.
+Repozytoria i przypadki użycia w podpakietach `account`, `barrier`, `building`, `export`, `inspection`, `invitation`, `submission` (`own`, `pending`, `sync`), `map`, `network`, `start`; odpowiedź serwera bez typów klienta HTTP (`ServerReply`, `ServerBuildings`, `ServerCard`) w `server`; wiązania Hilt w `di`. Tekst JSON dokumentów kopii w bazie telefonu powstaje i jest czytany tylko w `cache` (`encodeCache`, `decodeCache`); każdą kopię odpowiedzi serwera trzyma `ServerCopy` pod własnym kluczem tabeli `server_copy`. `SubmissionQueue.save` zwraca `SavedSubmission` z identyfikatorem zgłoszenia, bez encji Room. Tabele bazy są za uchwytami `SubmissionStore` i `ServerCopyStore`, które daje Hilt; `:core:database` jest zależnością `implementation`.
 
 Adres realmu logowania to `BuildConfig.LOGIN_REALM_URL`. Debug ma `http://10.0.2.2:8180/realms/dostepny-kampus/`.
 Release bierze adres z właściwości Gradle `dk.loginRealmUrl` albo ze zmiennej `DK_LOGIN_REALM_URL`, z tymi samymi

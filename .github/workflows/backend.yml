@@ -96,13 +96,15 @@ jobs:
       - name: Zbuduj, przetestuj i sprawdź qulice
         if: ${{ github.event_name != 'push' }}
         run: bash ../.github/scripts/mvn-z-ponowieniem.sh -B verify
-      - name: Obraz serwera z backend/Dockerfile w compose z profilem serwer odpowiada na /buildings
+      - name: Nakładka produkcyjna poprawna, obraz serwera w compose z profilem serwer odpowiada na /buildings
         # Plik JAR pochodzi z `verify` powyżej.
         if: ${{ github.event_name != 'push' }}
         timeout-minutes: 8
         working-directory: .
         run: |
           cp infra/.env.example infra/.env
+          DK_PUBLIC_HOST=kampus.example.test docker compose -f infra/docker-compose.yml \
+            -f infra/docker-compose.produkcja.yml --profile serwer config -q
           compose=(docker compose -f infra/docker-compose.yml --profile serwer)
           "${compose[@]}" up -d --build serwer
           if ! timeout 240 bash -c 'until curl -fs -o /dev/null http://127.0.0.1:8080/buildings; do sleep 3; done'; then
