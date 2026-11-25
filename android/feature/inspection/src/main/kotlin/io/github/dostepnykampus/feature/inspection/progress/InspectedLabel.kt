@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.inspection.progress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,10 +34,10 @@ private val InspectedIcon: ImageVector =
  * Wymagania: US11.1, US11.3, US15.1, NFR-21
  *
  * @param text słowo stanu, np. „Obejrzane”
- * @param style styl słowa
+ * @param style styl słowa; domyślnie styl tekstu otoczenia z typografii motywu
  */
 @Composable
-internal fun InspectedLabel(text: String, style: TextStyle = TextStyle.Default) {
+internal fun InspectedLabel(text: String, style: TextStyle = LocalTextStyle.current) {
     Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
         Icon(InspectedIcon, contentDescription = null, modifier = Modifier.testTag(INSPECTED_ICON_TAG))
         Text(text = text, style = style)
