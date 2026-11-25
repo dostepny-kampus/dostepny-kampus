@@ -6,7 +6,9 @@
 package io.github.dostepnykampus.shared.error;
 
 import java.net.URI;
+import java.util.Map;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Konflikt z bieżącym stanem zasobu na serwerze, np. nieaktualna wersja zgłoszenia.
@@ -30,6 +32,11 @@ public class ConflictingState extends RuntimeException {
     private final transient Object value;
 
     /**
+     * Rodzaj błędu do pola {@code type}; brak dla zwykłego konfliktu.
+     */
+    private final @Nullable URI kind;
+
+    /**
      * Wyjątek, który w obsłudze żądania daje odpowiedź 409.
      *
      * @param detail Opis dla klienta, trafia bez zmian do pola
@@ -38,9 +45,23 @@ public class ConflictingState extends RuntimeException {
      * @param value Bieżący stan zasobu, np. rekord odpowiedzi API
      */
     public ConflictingState(final String detail, final String property, final Object value) {
+        this(detail, Map.entry(property, value), null);
+    }
+
+    /**
+     * Wyjątek 409 z rodzajem błędu w polu {@code type} odpowiedzi.
+     *
+     * @param detail Opis dla klienta w polu {@code detail}
+     * @param state Nazwa właściwości i bieżący stan zasobu
+     * @param kind Rodzaj błędu do pola {@code type} lub brak
+     */
+    protected ConflictingState(
+        final String detail, final Map.Entry<String, Object> state, final @Nullable URI kind
+    ) {
         super(detail);
-        this.property = property;
-        this.value = value;
+        this.property = state.getKey();
+        this.value = state.getValue();
+        this.kind = kind;
     }
 
     /**
@@ -67,6 +88,6 @@ public class ConflictingState extends RuntimeException {
      * @return Rodzaj; brak dla zwykłego konfliktu
      */
     public Optional<URI> type() {
-        return Optional.empty();
+        return Optional.ofNullable(this.kind);
     }
 }
