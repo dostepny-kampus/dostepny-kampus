@@ -28,7 +28,7 @@ class InvitationsApiTest {
         val (result, sent) = served(code = 201, body = answer(existed = false))
         assertEquals(ApiResult.Success(Invited(accountExisted = false)), result, "nowe konto")
         assertEquals(listOf("POST", "/invitations"), listOf(sent.method, sent.path), "metoda i ścieżka żądania")
-        val expected = """{"email":"","role":"VERIFIER"}"""
+        val expected = """{"email":"$EMAIL","role":"VERIFIER"}"""
         assertEquals(expected, sent.body.readUtf8(), "adres i rola w treści")
     }
 
@@ -45,7 +45,7 @@ class InvitationsApiTest {
     }
 
     private fun answer(existed: Boolean): String =
-        """{"email":"","role":"VERIFIER","accountExisted":}"""
+        """{"email":"$EMAIL","role":"VERIFIER","accountExisted":$existed}"""
 
     private fun served(code: Int, body: String): Pair<ApiResult<Invited>, RecordedRequest> {
         MockWebServer().use { server ->
