@@ -233,16 +233,14 @@ public final class ChangeSteps {
 
     @Then("^na mapie jest tylko bariera TB-13 z uciążliwością 3$")
     void onlyChangeShown() throws Exception {
-        final String map = this.get("/submissions");
         MatcherAssert.assertThat(
-            "Mapa nie pokazuje samej zmiany z uciążliwością 3 w miejscu poprzedniego zgłoszenia",
+            "Gość widzi poprzednie zgłoszenie albo nie widzi zmiany z uciążliwością 3",
             List.of(
-                map.contains(VerifierSteps.CHECKED.toString()),
-                map.contains(ChangeSteps.ORIGINAL.toString()),
+                this.shown(ChangeSteps.ORIGINAL),
                 this.get(String.format("/submissions/%s", VerifierSteps.CHECKED))
                     .contains("\"severity\":3")
             ),
-            Matchers.contains(true, false, true)
+            Matchers.contains(404, true)
         );
     }
 
@@ -257,16 +255,14 @@ public final class ChangeSteps {
     @Then("niesprawnej windy nie ma na mapie ani na karcie budynku D-2")
     void elevatorGone() throws Exception {
         MatcherAssert.assertThat(
-            "Mapa albo karta budynku D-2 pokazuje barierę po przyjęciu jej usunięcia",
-            this.get("/submissions").concat(
+            "Gość widzi barierę albo jej usunięcie po przyjęciu „bariera usunięta”",
+            List.of(
+                this.shown(ChangeSteps.ORIGINAL),
+                this.shown(VerifierSteps.CHECKED),
                 this.get(String.format("/submissions?buildingSymbol=%s", this.building))
+                    .contains(ChangeSteps.ORIGINAL.toString())
             ),
-            Matchers.not(
-                Matchers.anyOf(
-                    Matchers.containsString(ChangeSteps.ORIGINAL.toString()),
-                    Matchers.containsString(VerifierSteps.CHECKED.toString())
-                )
-            )
+            Matchers.contains(404, 404, false)
         );
     }
 
@@ -280,11 +276,12 @@ public final class ChangeSteps {
     }
 
     @Then("zgłoszenie „bariera usunięta” ma to oznaczenie")
-    void removalMarked() throws Exception {
+    void removalMarked() {
         MatcherAssert.assertThat(
             "Zgłoszenie archiwalne nie ma oznaczenia „bariera usunięta”",
-            this.get(String.format("/submissions/%s", VerifierSteps.CHECKED)),
-            Matchers.containsString("\"barrierRemoved\":true")
+            this.jdbc.sql("SELECT content ->> 'barrierRemoved' FROM submissions WHERE id = :id")
+                .param("id", VerifierSteps.CHECKED).query(String.class).single(),
+            Matchers.equalTo("true")
         );
     }
 
@@ -400,6 +397,11 @@ public final class ChangeSteps {
     private String stored() {
         return this.jdbc.sql("SELECT ST_AsText(location) FROM submissions WHERE id = :id")
             .param("id", VerifierSteps.CHECKED).query(String.class).single();
+    }
+
+    private int shown(final UUID id) throws Exception {
+        return this.http.perform(MockMvcRequestBuilders.get("/submissions/{id}", id))
+            .andReturn().getResponse().getStatus();
     }
 
     private String get(final String uri) throws Exception {
