@@ -60,7 +60,11 @@ import io.github.dostepnykampus.feature.inspection.progress.Problem
  * @param viewModel stan pobrania; w aplikacji z grafu Hilt
  */
 @Composable
-fun ExportScreen(actions: ExportActions, modifier: Modifier = Modifier, viewModel: ExportViewModel = hiltViewModel()) {
+fun ExportScreen(
+    actions: ExportActions,
+    modifier: Modifier = Modifier,
+    viewModel: ExportViewModel = hiltViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     ExportContent(
         state = state,
@@ -179,7 +183,11 @@ private fun labelOf(format: ExportFormat): Int =
     }
 
 @Composable
-private fun FormatOption(@StringRes label: Int, isChosen: Boolean, onClick: () -> Unit) {
+private fun FormatOption(
+    @StringRes label: Int,
+    isChosen: Boolean,
+    onClick: () -> Unit,
+) {
     OutlinedCard(
         modifier = Modifier.fillMaxWidth().selectable(selected = isChosen, role = Role.RadioButton, onClick = onClick),
         border =
