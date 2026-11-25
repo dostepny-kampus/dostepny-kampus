@@ -17,6 +17,8 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Usługa logowania Keycloak w kontenerze, z realmem deweloperskim.
@@ -106,6 +108,20 @@ public final class KeycloakTestConfiguration {
             );
             registry.add("dk.accounts.secret", () -> "haslo-testowe-konta-serwera");
         };
+    }
+
+    /**
+     * Hasło konta testowego z realmu importowanego przez kontener.
+     *
+     * @param mapper Czytnik realmu
+     * @param user Nazwa użytkownika
+     * @return Hasło konta testowego
+     */
+    public static String password(final JsonMapper mapper, final String user) {
+        return mapper.readTree(Path.of("../infra/keycloak/realm.json").toFile()).path("users")
+            .valueStream().filter(account -> user.equals(account.path("username").asString()))
+            .map(account -> account.path("credentials").path(0).path("value"))
+            .map(JsonNode::asString).findFirst().orElseThrow();
     }
 
     private static String base(final GenericContainer<?> keycloak) {

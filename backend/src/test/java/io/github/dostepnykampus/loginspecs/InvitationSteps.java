@@ -8,13 +8,13 @@ package io.github.dostepnykampus.loginspecs;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.github.dostepnykampus.KeycloakTestConfiguration;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -80,7 +80,7 @@ public final class InvitationSteps {
     @Given("^Koordynator wysłał zaproszenie na adres (\\S+) z rolą „([^”]+)”$")
     void invited(final String address, final String role) throws Exception {
         this.email = address;
-        this.token = this.login("koordynator.test", this.password("koordynator.test"));
+        this.token = this.staffToken("koordynator.test");
         this.invites(role);
     }
 
@@ -191,7 +191,7 @@ public final class InvitationSteps {
      */
     @Given("^Weryfikator jest zalogowany z rolą Weryfikatora$")
     void verifier() throws Exception {
-        this.token = this.login("weryfikator.test", this.password("weryfikator.test"));
+        this.token = this.staffToken("weryfikator.test");
     }
 
     /**
@@ -290,6 +290,10 @@ public final class InvitationSteps {
         ).header(HttpHeaders.AUTHORIZATION, "Bearer %s".formatted(this.token));
     }
 
+    private String staffToken(final String user) throws Exception {
+        return this.login(user, KeycloakTestConfiguration.password(this.mapper, user));
+    }
+
     private String login(final String user, final String secret) throws Exception {
         return this.issued(
             "%s/protocol/openid-connect/token".formatted(
@@ -313,19 +317,6 @@ public final class InvitationSteps {
             Matchers.equalTo(200)
         );
         return this.mapper.readTree(answer.body()).path("access_token").asString();
-    }
-
-    private String password(final String user) {
-        String found = "";
-        final JsonNode realm = this.mapper.readTree(
-            Path.of("../infra/keycloak/realm.json").toFile()
-        );
-        for (final JsonNode account : realm.path("users")) {
-            if (user.equals(account.path("username").asString())) {
-                found = account.path("credentials").path(0).path("value").asString();
-            }
-        }
-        return found;
     }
 
     private JsonNode account(final String address) throws Exception {

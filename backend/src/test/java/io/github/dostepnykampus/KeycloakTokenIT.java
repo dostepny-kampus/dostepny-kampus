@@ -12,7 +12,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +24,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.context.WebApplicationContext;
-import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
@@ -216,7 +214,7 @@ final class KeycloakTokenIT {
         return KeycloakTokenIT.exchange(
             client, realm,
             "grant_type=password&client_id=%s&username=%s&password=%s".formatted(
-                app, user, KeycloakTokenIT.password(mapper, user)
+                app, user, KeycloakTestConfiguration.password(mapper, user)
             )
         );
     }
@@ -247,17 +245,6 @@ final class KeycloakTokenIT {
                 ).build(),
             HttpResponse.BodyHandlers.ofString()
         );
-    }
-
-    private static String password(final JsonMapper mapper, final String user) {
-        String found = KeycloakTestConfiguration.ADMIN;
-        final JsonNode realm = mapper.readTree(Path.of("../infra/keycloak/realm.json").toFile());
-        for (final JsonNode account : realm.path("users")) {
-            if (user.equals(account.path("username").asString())) {
-                found = account.path("credentials").path(0).path("value").asString();
-            }
-        }
-        return found;
     }
 
     private record Rotation(int refreshStatus, boolean replaced, int retiredStatus) {
