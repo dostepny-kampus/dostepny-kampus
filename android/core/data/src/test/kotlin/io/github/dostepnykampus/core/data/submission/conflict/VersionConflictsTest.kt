@@ -73,7 +73,7 @@ class VersionConflictsTest {
         )
     }
     private val conflicts by lazy {
-        versionConflictsOf(
+        StoredVersionConflicts(
             store = store,
             ioContext = EmptyCoroutineContext,
             subject = { OWNER },
@@ -147,7 +147,7 @@ class VersionConflictsTest {
         runBlocking {
             conflictOnSeverity()
             val other =
-                versionConflictsOf(
+                StoredVersionConflicts(
                     store = store,
                     ioContext = EmptyCoroutineContext,
                     subject = { "inne-konto" },

@@ -47,16 +47,7 @@ public interface VersionConflicts {
  *
  * Wymagania: US9.3, BR-10, NFR-33
  */
-internal fun versionConflictsOf(
-    store: SubmissionStore,
-    ioContext: CoroutineContext,
-    subject: () -> String?,
-    onSaved: () -> Unit,
-): VersionConflicts {
-    return StoredVersionConflicts(store = store, ioContext = ioContext, subject = subject, onSaved = onSaved)
-}
-
-private class StoredVersionConflicts(
+internal class StoredVersionConflicts(
     private val store: SubmissionStore,
     private val ioContext: CoroutineContext,
     private val subject: () -> String?,
