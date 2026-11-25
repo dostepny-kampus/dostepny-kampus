@@ -276,15 +276,23 @@ Przy pierwszym uruchomieniu „Wstecz” na tym kroku pomija instrukcję i otwie
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Instrukcja otwarta sama przy pierwszym uruchomieniu, Jak korzystać z aplikacji, krok 1 z 3: Znajdź budynek, wyjaśnienie, że po wpisaniu symbolu w polu na górze mapy pokażemy opis budynku z wejściami i barierami, przykład pola wyszukiwania bez lupy, przyciski Dalej i Pomiń instrukcję oraz pasek dolny z zaznaczoną Pomocą](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny.webp) | [![Ten sam pierwszy krok instrukcji w motywie ciemnym](obrazy/m-v5-pomoc-pierwsze-uruchomienie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-pierwsze-uruchomienie-ciemny.webp) | [![Ten sam pierwszy krok instrukcji przy czcionce 200%: Dalej i Pomiń instrukcję na końcu treści, pod przykładem pola](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny-200.webp) |
+| [![Instrukcja otwarta sama przy pierwszym uruchomieniu, Jak korzystać z aplikacji, krok 1 z 3: Znajdź budynek, wyjaśnienie, że po wpisaniu symbolu w polu na górze mapy pokażemy opis budynku z wejściami i barierami, przykład pola wyszukiwania Szukaj budynku, np. C-13 bez lupy, przyciski Dalej i Pomiń instrukcję oraz pasek dolny z zaznaczoną Pomocą](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny.webp) | [![Ten sam pierwszy krok instrukcji w motywie ciemnym](obrazy/m-v5-pomoc-pierwsze-uruchomienie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-pierwsze-uruchomienie-ciemny.webp) | [![Ten sam pierwszy krok instrukcji przy czcionce 200%: Dalej i Pomiń instrukcję na końcu treści, pod przykładem pola](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny-200.webp) |
 
 ### V5: krok 2 z 3, co znaczy „Dostępne”
 
-Instrukcja ma 3 kroki, trzeci to „Zgłoś barierę” ze zdaniem o koncie, bez osobnej makiety.
+Oznaczenie wejścia w przykładzie to ten sam znak co na mapie i słowo, bez plakietki.
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Jak korzystać z aplikacji, krok 2 z 3: wyjaśnienie napisu Dostępne przy wejściu, przykład wejścia z opisu budynku z oznaczeniem Dostępne, Wejście dostosowane, Drzwi 120 cm, przyciski Dalej i Pomiń instrukcję oraz pasek dolny z zaznaczoną Pomocą](obrazy/m-v5-pomoc-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-jasny.webp) | [![Ten sam krok instrukcji w motywie ciemnym](obrazy/m-v5-pomoc-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-ciemny.webp) | [![Ten sam krok instrukcji przy czcionce 200%: Dalej i Pomiń instrukcję na końcu treści, pod przykładem](obrazy/m-v5-pomoc-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-jasny-200.webp) |
+| [![Jak korzystać z aplikacji, krok 2 z 3: wyjaśnienie napisu Dostępne przy wejściu, przykład wejścia z opisu budynku: zielone koło ze znakiem ✓ i słowo Dostępne, Wejście dostosowane, Drzwi 120 cm, przyciski Dalej i Pomiń instrukcję oraz pasek dolny z zaznaczoną Pomocą](obrazy/m-v5-pomoc-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-jasny.webp) | [![Ten sam krok instrukcji w motywie ciemnym](obrazy/m-v5-pomoc-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-ciemny.webp) | [![Ten sam krok instrukcji przy czcionce 200%: Dalej i Pomiń instrukcję na końcu treści, pod przykładem](obrazy/m-v5-pomoc-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-jasny-200.webp) |
+
+### V5: krok 3 z 3, zgłoś barierę {#v5-krok-3}
+
+Ostatni krok nie ma obrazu. Zamiast „Dalej” stoi „Zacznij”, które otwiera mapę.
+
+| Jasny | Ciemny | Czcionka 200% |
+| --- | --- | --- |
+| [![Jak korzystać z aplikacji, krok 3 z 3: Zgłoś barierę ze zdaniem, że do zgłoszenia potrzebne jest konto, które można założyć teraz w Konto, przyciski Zacznij i Pomiń instrukcję oraz pasek dolny z zaznaczoną Pomocą](obrazy/m-v5-pomoc-krok-3-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-krok-3-jasny.webp) | [![Ten sam ostatni krok instrukcji w motywie ciemnym](obrazy/m-v5-pomoc-krok-3-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-krok-3-ciemny.webp) | [![Ten sam ostatni krok instrukcji przy czcionce 200%: Zacznij i Pomiń instrukcję na końcu treści, pod zdaniem o koncie](obrazy/m-v5-pomoc-krok-3-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-krok-3-jasny-200.webp) |
 
 ## L1 Prośba o logowanie
 
