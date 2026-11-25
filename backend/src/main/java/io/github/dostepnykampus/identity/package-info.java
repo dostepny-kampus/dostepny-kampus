@@ -5,15 +5,16 @@
  */
 
 /**
- * Moduł identity: profil zalogowanej osoby i zabezpieczenie API.
+ * Moduł identity: profil zalogowanej osoby, zabezpieczenie API i konta w Usłudze logowania.
  *
- * <p>Zadanie: role osoby z tokenu Keycloak i dostęp do operacji API według ról.</p>
+ * <p>Zadanie: role osoby z tokenu Keycloak, dostęp do operacji API według ról i nadawanie
+ * ról kontom przez konto techniczne serwera.</p>
  *
  * <p>API: brak typów dla innych modułów; operacja HTTP {@code /me}.</p>
  *
  * <p>Zależności: brak.</p>
  *
- * <p>Nie robi: nie przechowuje kont ani haseł (Keycloak) i nie zaprasza do zespołu.</p>
+ * <p>Nie robi: nie przechowuje kont ani haseł (Keycloak) i nie wysyła e-maili.</p>
  *
  * <p>Kiedy dodawać tutaj: odczyt tożsamości i ról; dostęp operacji zostaje przy operacji.</p>
  *
