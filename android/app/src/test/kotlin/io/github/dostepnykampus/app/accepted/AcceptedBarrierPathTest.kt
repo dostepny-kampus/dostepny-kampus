@@ -132,7 +132,7 @@ class AcceptedBarrierPathTest {
     object Fakes {
         val network = MutableStateFlow(false)
         var accepted: List<AcceptedBarrier> = emptyList()
-        var scheduleSync = false
+        var isSyncScheduled = false
         val created = mutableListOf<SubmissionContent>()
         var uploadedPhotos = 0
 
@@ -193,7 +193,7 @@ class AcceptedBarrierPathTest {
                         putPhoto = { _, _, _, _ -> send { ServerReply.Ok(Unit).also { uploadedPhotos += 1 } } },
                         update = { _, _, _, _ -> ServerReply.Missing },
                     ),
-                onSaved = { if (scheduleSync) sync.scheduleAfterSave() },
+                onSaved = { if (isSyncScheduled) sync.scheduleAfterSave() },
             )
         }
 
@@ -228,7 +228,7 @@ class AcceptedBarrierPathTest {
     fun prepareEnvironment() {
         Fakes.network.value = false
         Fakes.accepted = emptyList()
-        Fakes.scheduleSync = false
+        Fakes.isSyncScheduled = false
         Fakes.created.clear()
         Fakes.uploadedPhotos = 0
         val cache = FileProvider::class.java.getDeclaredField("sCache").apply { isAccessible = true }
@@ -254,11 +254,11 @@ class AcceptedBarrierPathTest {
         builder.setWorkerFactory(factory)
         val config = builder.build()
         WorkManagerTestInitHelper.initializeTestWorkManager(app, config)
-        Fakes.scheduleSync = true
+        Fakes.isSyncScheduled = true
     }
 
     @After
-    fun closeWorkDatabase() = WorkManagerTestInitHelper.closeWorkDatabase()
+    fun closeWorkDatabase(): Unit = WorkManagerTestInitHelper.closeWorkDatabase()
 
     /**
      * Zmiana przyjętego progu przez ekran zmiany tworzy zgłoszenie lokalne obok przyjętego na liście i karcie.
@@ -285,7 +285,7 @@ class AcceptedBarrierPathTest {
                 ),
             )
         }
-        Fakes.accepted = listOf(barrier(THRESHOLD_ID, BarrierType.THRESHOLD, Severity.ONLY_WITH_HELP, floor = 0))
+        Fakes.accepted = listOf(barrier(id = THRESHOLD_ID, type = BarrierType.THRESHOLD, severity = Severity.ONLY_WITH_HELP, floor = 0))
         openCard()
         compose.waitUntil(WAIT_MS) { hasText(REPLACE_BUTTON) }
         compose.onNodeWithText(REPLACE_BUTTON).performScrollTo().performClick()
@@ -314,7 +314,7 @@ class AcceptedBarrierPathTest {
     @Test
     fun reportsLiftRemoval() {
         Fakes.network.value = true
-        Fakes.accepted = listOf(barrier("s-9", BarrierType.BROKEN_LIFT, Severity.BLOCKING, floor = 2))
+        Fakes.accepted = listOf(barrier(id = "s-9", type = BarrierType.BROKEN_LIFT, severity = Severity.BLOCKING, floor = 2))
         openCard()
         compose.onNodeWithText(LIFT_NAME).performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Zgłoś, że bariery nie ma").performScrollTo().performClick()
