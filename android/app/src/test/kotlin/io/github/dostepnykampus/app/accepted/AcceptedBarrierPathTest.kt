@@ -326,7 +326,7 @@ class AcceptedBarrierPathTest {
         compose.onNodeWithText("W telefonie").assertDoesNotExist()
         assertTrue("kolejka pusta po wysłaniu usunięcia", runBlocking { pending.all() }.isEmpty())
         val sent = Fakes.created.single()
-        assertTrue("oznaczenie usunięcia bariery", sent.isBarrierRemoved)
+        assertEquals("oznaczenie usunięcia bariery", true, sent.isBarrierRemoved)
         assertEquals("powiązanie z poprzednim zgłoszeniem windy", "s-9", sent.replacesSubmissionId)
         assertEquals("zgłoszenie usunięcia bez uciążliwości", null, sent.severity)
         assertEquals("wysłane jedno nowe zdjęcie sprawnej windy", 1, Fakes.uploadedPhotos)
