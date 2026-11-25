@@ -40,8 +40,6 @@ public data class Invited(val isExistingAccount: Boolean)
  * Wynik to [ApiResult]: błąd sieci i zła treść nie wychodzą jako wyjątek; 400 przy złym adresie i 403 bez roli
  * Koordynatora to [ApiResult.ServerError] z tym kodem. Anulowanie korutyny przerywa żądanie HTTP.
  *
- * TODO(#1990): serwer nie ma jeszcze `POST /invitations`.
- *
  * Wymagania: US12.1, US12.2, BR-2
  *
  * @param http klient OkHttp

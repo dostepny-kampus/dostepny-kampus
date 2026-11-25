@@ -9,9 +9,9 @@
  *
  * <p>Zadanie: role z tokenu Keycloak, dostęp do API według ról i nadawanie ról kontom.</p>
  *
- * <p>API: brak typów dla innych modułów; operacja HTTP {@code /me}.</p>
+ * <p>API: brak typów dla innych modułów; operacje HTTP {@code /me} i {@code /invitations}.</p>
  *
- * <p>Zależności: brak.</p>
+ * <p>Zależności: {@code shared}.</p>
  *
  * <p>Nie robi: nie przechowuje kont ani haseł (Keycloak) i nie wysyła e-maili.</p>
  *
@@ -21,7 +21,7 @@
  *
  * @since 0.1.0
  */
-@ApplicationModule(allowedDependencies = {})
+@ApplicationModule(allowedDependencies = "shared")
 @NullMarked
 package io.github.dostepnykampus.identity;
 

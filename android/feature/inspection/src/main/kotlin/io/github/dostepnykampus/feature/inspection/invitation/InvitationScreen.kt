@@ -9,6 +9,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,14 +42,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.StaffProblem
+import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.feature.inspection.R
-import io.github.dostepnykampus.feature.inspection.progress.Failure
-import io.github.dostepnykampus.feature.inspection.progress.Problem
 
 /**
  * Czynności K2, które prowadzą poza ekran.
@@ -62,7 +63,7 @@ data class InvitationActions(val onBack: () -> Unit, val onLeave: () -> Unit)
  * Widok K2 bez modelu widoku: adres, rola, wynik zaproszenia, błędy danych i stany wspólne.
  * TODO(#3868): znak przed błędami pól.
  *
- * Wymagania: US12.1, US12.2, NFR-50, NFR-52, PW-10
+ * Wymagania: US12.1, US12.2, NFR-50, NFR-52
  *
  * @param state stan ekranu
  * @param actions czynności prowadzące poza ekran
@@ -80,43 +81,54 @@ fun InvitationContent(
     onSend: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isInContent = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     val problem = problemOf(state.stage)
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
             BackHeader(title = stringResource(R.string.zaproszenie_naglowek), onBack = actions.onBack)
             if (problem != null) {
-                Failure(problem = problem, onAction = if (problem == Problem.FORBIDDEN) actions.onLeave else onSend)
+                val onAction = if (problem == StaffProblem.FORBIDDEN) actions.onLeave else onSend
+                StaffProblemMessage(problem = problem, onAction = onAction)
             } else {
-                Column(
-                    modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
-                    verticalArrangement = Arrangement.spacedBy(Odstepy.m),
-                ) {
-                    Message(state)
-                    EmailField(
-                        email = state.email,
-                        isWrong = InvitationProblem.EMAIL in state.problems,
-                        onEdit = onEdit,
-                    )
-                    Roles(
-                        chosen = state.role,
-                        isMissing = InvitationProblem.ROLE in state.problems,
-                        onChoose = onChoose,
-                    )
-                    if (isInContent) SendButton(onSend)
-                }
-                if (!isInContent) PinnedActionBar { SendButton(onSend) }
+                InvitationBody(state = state, onEdit = onEdit, onChoose = onChoose, onSend = onSend)
             }
         }
     }
 }
 
-private fun problemOf(stage: InvitationStage): Problem? =
+@Composable
+private fun ColumnScope.InvitationBody(
+    state: InvitationUiState,
+    onEdit: (String) -> Unit,
+    onChoose: (StaffRole) -> Unit,
+    onSend: () -> Unit,
+) {
+    val isInContent = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+    Column(
+        modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
+        verticalArrangement = Arrangement.spacedBy(Odstepy.m),
+    ) {
+        Message(state)
+        EmailField(
+            email = state.email,
+            isWrong = InvitationProblem.EMAIL in state.problems,
+            onEdit = onEdit,
+        )
+        Roles(
+            chosen = state.role,
+            isMissing = InvitationProblem.ROLE in state.problems,
+            onChoose = onChoose,
+        )
+        if (isInContent) SendButton(onSend)
+    }
+    if (!isInContent) PinnedActionBar { SendButton(onSend) }
+}
+
+private fun problemOf(stage: InvitationStage): StaffProblem? =
     when (stage) {
-        InvitationStage.OFFLINE -> Problem.OFFLINE
-        InvitationStage.SERVER_ERROR -> Problem.SERVER
-        InvitationStage.FORBIDDEN -> Problem.FORBIDDEN
-        else -> null
+        InvitationStage.OFFLINE -> StaffProblem.OFFLINE
+        InvitationStage.SERVER_ERROR -> StaffProblem.SERVER
+        InvitationStage.FORBIDDEN -> StaffProblem.FORBIDDEN
+        InvitationStage.IDLE, InvitationStage.SENDING, InvitationStage.SENT, InvitationStage.ROLE_ADDED -> null
     }
 
 @Composable
@@ -134,7 +146,12 @@ private fun Message(state: InvitationUiState) {
         when (state.stage) {
             InvitationStage.SENT -> R.string.zaproszenie_wyslane
             InvitationStage.ROLE_ADDED -> R.string.zaproszenie_konto_istnieje
-            else -> null
+            InvitationStage.IDLE,
+            InvitationStage.SENDING,
+            InvitationStage.OFFLINE,
+            InvitationStage.SERVER_ERROR,
+            InvitationStage.FORBIDDEN,
+            -> null
         } ?: return
     val role = state.addedRole
     Surface(
@@ -194,9 +211,7 @@ private fun Roles(
 }
 
 @Composable
-private fun SectionTitle(
-    @StringRes text: Int,
-) {
+private fun SectionTitle(@StringRes text: Int) {
     Text(
         text = stringResource(text),
         modifier = Modifier.semantics { heading() },
@@ -205,9 +220,7 @@ private fun SectionTitle(
 }
 
 @Composable
-private fun ProblemText(
-    @StringRes text: Int,
-) {
+private fun ProblemText(@StringRes text: Int) {
     Text(
         text = stringResource(text),
         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive },

@@ -24,10 +24,12 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
+private const val BAD_EMAIL = "Adres e-mail jest niepełny, np. brakuje znaku @. Popraw go i wyślij ponownie."
+
 /**
  * K2 „Zaproś osobę”: adres, rola, wysłanie, wyniki i błędy.
  *
- * Wymagania: US12.1, US12.2, NFR-50, PW-10
+ * Wymagania: US12.1, US12.2, NFR-50
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -61,7 +63,7 @@ class InvitationScreenTest {
     fun entersAndSends() {
         compose.onNode(hasSetTextAction()).performTextInput("a@pwr.edu.pl")
         compose.onNodeWithText("Weryfikator").performClick()
-        compose.onNodeWithText(SEND).performClick()
+        compose.onNodeWithText("Wyślij zaproszenie").performClick()
         assertEquals("adres, rola i wysłanie", listOf("a@pwr.edu.pl", "VERIFIER", "send"), events)
     }
 
@@ -80,7 +82,7 @@ class InvitationScreenTest {
         compose.onNodeWithText("Zaproszenie wysłane na podany adres.").assertIsDisplayed()
         show(InvitationUiState(stage = InvitationStage.ROLE_ADDED, addedRole = StaffRole.COLLECTOR))
         compose.onNodeWithText("To konto już istnieje.").assertIsDisplayed()
-        compose.onNodeWithText(ADDED_COLLECTOR).assertIsDisplayed()
+        compose.onNodeWithText("Dodaliśmy mu rolę Zbierającego, dotychczasowe role zostają.").assertIsDisplayed()
     }
 
     /** Brak sieci ponawia wysłanie, a brak uprawnień wraca do mapy. */
@@ -95,11 +97,5 @@ class InvitationScreenTest {
 
     private fun show(next: InvitationUiState) {
         compose.runOnIdle { state.value = next }
-    }
-
-    private companion object {
-        const val SEND = "Wyślij zaproszenie"
-        const val BAD_EMAIL = "Adres e-mail jest niepełny, np. brakuje znaku @. Popraw go i wyślij ponownie."
-        const val ADDED_COLLECTOR = "Dodaliśmy mu rolę Zbierającego, dotychczasowe role zostają."
     }
 }
