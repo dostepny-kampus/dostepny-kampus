@@ -22,7 +22,7 @@ services:
       start_period: 30s
     restart: unless-stopped
   zdjecia:
-    image: rustfs/rustfs:1.0.5
+    image: rustfs/rustfs:1.0.6
     environment:
       RUSTFS_ACCESS_KEY: ${DK_PHOTOS_ROOT_ACCESS_KEY:?ustaw DK_PHOTOS_ROOT_ACCESS_KEY w infra/.env}
       RUSTFS_SECRET_KEY: ${DK_PHOTOS_ROOT_SECRET_KEY:?ustaw DK_PHOTOS_ROOT_SECRET_KEY w infra/.env}
