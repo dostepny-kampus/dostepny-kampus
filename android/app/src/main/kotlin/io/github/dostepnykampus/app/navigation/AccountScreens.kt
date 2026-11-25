@@ -33,21 +33,26 @@ import io.github.dostepnykampus.feature.auth.SignInScreen
 import io.github.dostepnykampus.feature.auth.SignInViewModel
 import io.github.dostepnykampus.feature.capture.R as CaptureR
 import io.github.dostepnykampus.feature.inspection.R as InspectionR
+import io.github.dostepnykampus.feature.review.R as ReviewR
 
 private typealias Action = Pair<String, () -> Unit>
 
 private val Account.isCollector: Boolean
     get() = this is Account.SignedIn && StaffRole.COLLECTOR in staffRoles
 
+private val Account.isVerifier: Boolean
+    get() = this is Account.SignedIn && StaffRole.VERIFIER in staffRoles
+
 private val Account.isCoordinator: Boolean
     get() = this is Account.SignedIn && StaffRole.COORDINATOR in staffRoles
 
 /**
  * Ekran konta: L1 „Prośba o logowanie” albo L2 „Konto i praca” jako zaślepka z czynnościami roli.
- * „Zmierz i zgłoś barierę” i „Moje zgłoszenia” widzi tylko Zbierający, „Postęp inwentaryzacji” tylko Koordynator.
+ * „Zmierz i zgłoś barierę” i „Moje zgłoszenia” widzi tylko Zbierający, „Zgłoszenia do sprawdzenia” tylko
+ * Weryfikator, „Postęp inwentaryzacji” tylko Koordynator.
  * Zaślepki nie zapamiętują stanu, więc nie muszą się odświeżać osobno od nawigatora.
  *
- * Wymagania: US14.2, US11.1
+ * Wymagania: US14.2, US11.1, US10.4
  *
  * @param route L1 albo L2
  * @param signIn stan L1; `null` bierze go z grafu Hilt
@@ -71,8 +76,10 @@ internal fun AppNavigator.Account(route: NavKey, signIn: SignInViewModel? = null
             val toMeasure = stringResource(R.string.zmierz_i_zglos) to { measure() }
             val toMine = stringResource(CaptureR.string.moje_naglowek) to { mySubmissions() }
             val isCollector = current.isCollector
+            val toReview = stringResource(ReviewR.string.kolejka_naglowek) to { reviewQueue() }
             val coordinated = progress.takeIf { current.isCoordinator }
-            Stub(title, toMeasure.takeIf { isCollector }, toMine.takeIf { isCollector }, coordinated)
+            val verified = toReview.takeIf { current.isVerifier }
+            Stub(title, toMeasure.takeIf { isCollector }, toMine.takeIf { isCollector }, verified, coordinated)
         }
 
         else -> {
