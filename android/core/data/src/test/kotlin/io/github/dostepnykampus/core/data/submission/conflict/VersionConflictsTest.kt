@@ -43,6 +43,7 @@ class VersionConflictsTest {
     private val history = FakeHistory()
     private val copies = FakeServerCopyDao()
     private val versions = mutableListOf<Int>()
+    private val severities = mutableListOf<Int?>()
     private val edits = ArrayDeque<ServerEdit>()
     private var scheduled = 0
     private val store by lazy {
@@ -67,6 +68,7 @@ class VersionConflictsTest {
                     putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                     update = { id, version, content ->
                         versions += version
+                        severities += content.severity
                         ServerReply.Ok(edits.removeFirstOrNull() ?: ServerEdit.Saved(server(id, content, 8)))
                     },
                 ),
@@ -81,6 +83,9 @@ class VersionConflictsTest {
         )
     }
 
+    /**
+     * Scenariusz (częściowo): synchronizacja.feature: Przy konflikcie wersji aplikacja pokazuje obie wersje.
+     */
     @Test
     fun showsBothVersions() =
         runBlocking {
@@ -92,8 +97,12 @@ class VersionConflictsTest {
             assertEquals(3, conflict.server.content.severity, "wersja z serwera ma uciążliwość 3")
             assertEquals(7, conflict.server.version, "wersja z serwera ma jej numer")
             assertEquals(listOf(ConflictField.SEVERITY), conflict.differences, "różni się tylko uciążliwość")
+            assertEquals(listOf(4), versions, "serwer ma nadal swoją wersję")
         }
 
+    /**
+     * Scenariusz (przykład: własną): synchronizacja.feature: Przy konflikcie wersji Zbierający wybiera wersję.
+     */
     @Test
     fun keepMineSendsAgain() =
         runBlocking {
@@ -107,9 +116,13 @@ class VersionConflictsTest {
             assertEquals(OwnSubmissionState.LOCAL, history.rows.getValue(ID).state, "C3 pokazuje „W telefonie”")
             queue.sendAll()
             assertEquals(listOf(4, 7), versions, "moja wersja idzie jako edycja wersji z serwera")
+            assertEquals(2, severities.last(), "serwer dostaje uciążliwość 2")
             assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state, "moja wersja jest wysłana")
         }
 
+    /**
+     * Scenariusz (przykład: z serwera): synchronizacja.feature: Przy konflikcie wersji Zbierający wybiera wersję.
+     */
     @Test
     fun takeServerDropsMine() =
         runBlocking {
@@ -128,6 +141,9 @@ class VersionConflictsTest {
             assertEquals(listOf(4), versions, "nic nie idzie na serwer")
         }
 
+    /**
+     * Scenariusz: synchronizacja.feature: Odłożony wybór wersji zostawia zmianę w telefonie.
+     */
     @Test
     fun laterChangesNothing() =
         runBlocking {
