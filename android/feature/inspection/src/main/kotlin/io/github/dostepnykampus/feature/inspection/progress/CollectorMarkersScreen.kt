@@ -44,6 +44,7 @@ import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.core.model.inspection.MarkerPlace
 import io.github.dostepnykampus.feature.inspection.R
+import io.github.dostepnykampus.core.designsystem.R as DesignR
 
 private val InspectedIcon: ImageVector =
     pathIcon(
@@ -169,7 +170,7 @@ private fun FloorCard(row: FloorRow, isAsking: Boolean, isUnsaved: Boolean, acti
             } else {
                 Text(stringResource(R.string.zbierajacy_nieobejrzane), style = MaterialTheme.typography.titleMedium)
                 if (isUnsaved) Text(stringResource(R.string.zbierajacy_blad_zapisu))
-                val action = if (isUnsaved) R.string.postep_sprobuj_ponownie else R.string.zbierajacy_oznacz
+                val action = if (isUnsaved) DesignR.string.sprobuj_ponownie else R.string.zbierajacy_oznacz
                 FilledTonalButton(
                     onClick = { actions.onMark(row.place) },
                     modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.minimum),

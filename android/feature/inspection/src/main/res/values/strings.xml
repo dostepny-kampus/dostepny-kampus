@@ -11,12 +11,6 @@
     <string name="postep_przyjete">Przyjęte: %1$d</string>
     <string name="postep_wejscia">Wejścia sprawdzone na miejscu: %1$d z %2$d</string>
     <string name="postep_otworz">Otwórz</string>
-    <string name="postep_bez_internetu">Bez internetu</string>
-    <string name="postep_wymaga_internetu">Ta czynność wymaga internetu. Połącz się z internetem i spróbuj ponownie.</string>
-    <string name="postep_blad_serwera">Serwer chwilowo nie odpowiada. Spróbuj ponownie za kilka minut.</string>
-    <string name="postep_brak_uprawnien">Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.</string>
-    <string name="postep_sprobuj_ponownie">Spróbuj ponownie</string>
-    <string name="postep_wroc_do_mapy">Wróć do mapy</string>
     <string name="znaczniki_naglowek">Obejrzane piętra</string>
     <string name="znaczniki_postep">Obejrzane piętra: %1$d z %2$d</string>
     <string name="znaczniki_obejrzany">Budynek obejrzany</string>
