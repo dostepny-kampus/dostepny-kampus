@@ -128,7 +128,7 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | grupa „inne” | „Coś innego” | Odwiedzający | Brzmi jak odpowiedź na pytanie z kroku 2. | 4.5 |
 | piętro (pytanie w kroku 2, US4.5) | „Na którym piętrze?” | Odwiedzający | Pytanie zamiast samego słowa „piętro”. | 4.5 |
 | puste piętro (odpowiedź w kroku 2) | „Nie wiem” | Odwiedzający | Odpowiedź na pytanie z ekranu; nie zmusza do zgadywania. | 4.5 |
-| piętro 0 w budynku podstawowym (krok 2) | „Parter” | Odwiedzający | Osoba starsza nie liczy pięter od zera. W budynku szczegółowym są etykiety z danych PWr. | 4.5 |
+| piętro w budynku podstawowym (krok 2 i 3) | „Piwnica”, „Parter”, „1 piętro” … „10 piętro” | Odwiedzający | Osoba starsza nie liczy pięter od zera. Ta sama postać co etykiety z danych PWr w budynku szczegółowym, więc piętro brzmi tak samo na każdym ekranie. | 4.5 |
 | bieżąca pozycja (krok 3) | „Dołączymy miejsce, w którym teraz stoisz.”; przy wybranym wejściu zamiast tego „Wejście: »nazwa wejścia«” | Odwiedzający | Miejscem jest wtedy wejście, więc zdanie o staniu byłoby nieprawdą. | 3.4 |
 | „Wyślij” | „Wyślij” | Odwiedzający | bez zmian | 3.4 |
 | „Anuluj zgłoszenie” | „Zrezygnuj” | Odwiedzający | Bez rzeczownika „zgłoszenie”. | 4.8 |
@@ -185,7 +185,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | opis „Blokada” (C2) | „Osoba nie pokona jej wcale albo tylko wtedy, gdy ktoś ją przeniesie.” | Zbierający | Skrócone kryterium stopnia 3. | 10.2, 10.5 |
 | opis przy TB-29 (C2) | „Obowiązkowy przy typie »inna bariera«.” | Zbierający | Mówi przed zapisem, kiedy pole jest wymagane (US7.3). | 10.2 |
 | „półpiętro” | „Półpiętro” | Zbierający | bez zmian | 10.2 |
-| budynek, piętro i data w pozycji listy (C3, C4, C7, R2) | „C-13, piętro 2, 12.11.2026”; w R2 „Budynek C-13, piętro 2”; przy zmianie oznaczenia wejścia „A-1, Wejście główne” | Zbierający, Weryfikator | Ten sam wzór co „Piętro:” na karcie budynku. | 10.3 |
+| budynek, piętro i data w pozycji listy (C3, C4, C7, R2) | „C-13, 2 piętro, 12.11.2026”; w R2 „Budynek C-13, 2 piętro”; przy zmianie oznaczenia wejścia „A-1, Wejście główne” | Zbierający, Weryfikator | Ten sam wzór co „Piętro:” na karcie budynku. | 10.3 |
 | piętro wpisywane ręcznie (C2, budynek podstawowy) | „Wpisz numer piętra, 0 to parter.” | Zbierający | Mówi, jak liczyć piętra, bo bez planu nie ma etykiet (BR-G1). | 10.2 |
 | status „lokalne” | „W telefonie” | Zbierający | Odpowiada na pytanie PE-2, czy zgłoszenie dotarło. | 10.3 |
 | status „Nie wysłano” | „Nie wysłano” | Zbierający | Mówi wprost, że zgłoszenie nie dotarło, i różni się od „W telefonie”, które czeka samo (US9.5, BR-26). | 10.3 |
@@ -233,7 +233,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | rodzaj zgłoszenia (R1, R2) | „Zgłoszenie z pomiaru”, „Zgłoszenie szybkie”, „Bariery już nie ma”, „Zmiana oznaczenia wejścia” | Weryfikator | Rodzaj mówi, czy typ i uciążliwość trzeba ustalić (BR-14, BR-15). Dwa ostatnie napisy są te same co na C3. | 10.5 |
 | data wysłania w kolejce (R1) | „Wysłane 12.11.2026” | Weryfikator | To samo słowo co status „Wysłane” u Zbierającego. | 10.5 |
 | etykiety danych zgłoszenia (R2) | „Czego dotyczy:”, „Miejsce:”, „Obecne oznaczenie:”, „Wybrane oznaczenie:”, „Wcześniejsze zgłoszenie:” | Weryfikator | Krótka etykieta przed wartością z danych. „Czego dotyczy” powtarza pytanie z kroku 2 V4. | 10.5 |
-| podobne zgłoszenie: odległość i piętro (R2) | „5 m, piętro 2”; przy wyborze duplikatu „schody przy wejściu, 2 m”, „próg, 5 m” | Weryfikator | Odległość tekstem, a nie tylko punktem na mapie (NFR-19). | 10.4 |
+| podobne zgłoszenie: odległość i piętro (R2) | „5 m, 2 piętro”; przy wyborze duplikatu „schody przy wejściu, 2 m”, „próg, 5 m” | Weryfikator | Odległość tekstem, a nie tylko punktem na mapie (NFR-19). | 10.4 |
 | postęp inwentaryzacji | „Postęp inwentaryzacji” | Koordynator | bez zmian | 10.7 |
 | postęp budynku | „4 z 5 pięter, 80%” | Koordynator | bez zmian | 10.7 |
 | liczby zgłoszeń w K1 | „Czeka na sprawdzenie: 3”, „Przyjęte: 4” | Koordynator | bez zmian; liczby jak w scenariuszu `@US11.1` | 10.7 |
