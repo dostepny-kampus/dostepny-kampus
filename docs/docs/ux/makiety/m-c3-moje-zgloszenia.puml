@@ -3,6 +3,7 @@
 ' zgłoszeń szybkich lista nie pokazuje (US8.1, US4.4).
 ' Status jako pierwsza informacja, słowem i ikoną (US8.1, NFR-21); TalkBack czyta go przed typem.
 ' „Otwórz” ze strzałką tylko przy zgłoszeniach przed decyzją i odrzuconych; otwiera C2, C6 albo C7.
+' Przy konflikcie wersji zamiast „Otwórz” tylko „Dwie wersje: wybierz jedną” do C4, status wersji z serwera (BR-10).
 ' Przyjęte i archiwalne nie są przyciskami (US8.1, decyzja 93).
 ' „Bariery już nie ma” nigdy nie jest „Przyjęte”: po przyjęciu oba zgłoszenia są archiwalne (BR-19).
 !include _wspolne.iuml
@@ -38,8 +39,7 @@ $ramka()
 <b>$wyslane()</b>
 próg
 <i>[budynek]</i>, <i>[piętro]</i>, <i>[data]</i>
-$przycisk("Dwie wersje: wybierz jedną")
-$przycisk("Otwórz", "chevron-right")
+$przycisk("Dwie wersje: wybierz jedną", "chevron-right")
 }
 $ramka()
 <b>$przyjete()</b>
