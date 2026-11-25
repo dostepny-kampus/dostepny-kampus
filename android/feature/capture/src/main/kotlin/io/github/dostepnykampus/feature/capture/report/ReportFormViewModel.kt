@@ -40,6 +40,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Zapis zgłoszenia w kolejce telefonu; w aplikacji to `SubmissionQueue.save` albo `saveEdit`.
@@ -76,7 +77,7 @@ class ReportFormViewModel
     @Inject
     constructor(
         private val floors: BuildingFloors = BuildingFloors { null },
-        private val catalog: BuildingCatalogRepository,
+        private val catalog: BuildingCatalogRepository = emptyBuildingCatalog(),
         private val saver: ReportSaver,
     ) : ViewModel() {
         private val state = MutableStateFlow<ReportUiState?>(null)
@@ -251,3 +252,8 @@ private val StagesWithoutNewDraft = setOf(ReportStage.LEFT, ReportStage.PLACE_CH
 
 internal val ReportUiState.isSavingOrSaved: Boolean
     get() = stage == ReportStage.SAVING || stage == ReportStage.SAVED
+
+private fun emptyBuildingCatalog(): BuildingCatalogRepository =
+    BuildingCatalogRepository(EmptyCoroutineContext) { EMPTY_CATALOG }
+
+private const val EMPTY_CATALOG = """{"type":"FeatureCollection","attribution":"© plik","features":[]}"""
