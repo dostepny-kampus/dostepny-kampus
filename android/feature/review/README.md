@@ -12,8 +12,7 @@ Sprawdzanie zgłoszeń przez Weryfikatora: kolejka weryfikacji (R1) z „Wzięty
 
 ## API
 
-Trasa ekranu w pakiecie `navigation`; ekran R1, jego czynności i ViewModel w pakiecie `queue`; ekran R2,
-jego czynności i ViewModel w pakiecie `check`.
+Trasa ekranu w pakiecie `navigation`; ekran R1, jego czynności i ViewModel w pakiecie `queue`; ekran R2, jego czynności i ViewModel w pakiecie `check`.
 
 ## Zależności
 
