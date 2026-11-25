@@ -27,6 +27,9 @@ import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.feature.map.ASSET_JSON
+import io.github.dostepnykampus.feature.map.entranceFeature
+import io.github.dostepnykampus.feature.map.unitSquareCatalog
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -251,7 +254,15 @@ class CardStateCombineTest {
             computeContext = computeContext,
         )
 
-    private fun catalog(): BuildingCatalogRepository = BuildingCatalogRepository(EmptyCoroutineContext) { ASSET_JSON }
+    private fun catalog(): BuildingCatalogRepository =
+        unitSquareCatalog(
+            symbol = "A-1",
+            entrances =
+                listOf(
+                    entranceFeature("A-1", "node/1", """"entrance":"main","wheelchair":"yes","ref":"Główne""""),
+                    entranceFeature("A-1", "node/2", """"entrance":"yes","wheelchair":"yes","ref":"Boczne""""),
+                ),
+        )
 
     private fun ownSubmission(id: String, state: SendState): OwnSubmission =
         OwnSubmission(
@@ -307,16 +318,5 @@ class CardStateCombineTest {
                 verifiedAt = SYNCED_AT,
                 entranceId = "node/1",
             )
-
-        const val ASSET_JSON =
-            """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
-                """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"display_name":"Gmach",""" +
-                """"osm_id":"way/1"},"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}},""" +
-                """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/1",""" +
-                """"entrance":"main","wheelchair":"yes","ref":"Główne"},""" +
-                """"geometry":{"type":"Point","coordinates":[0,0]}},""" +
-                """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/2",""" +
-                """"entrance":"yes","wheelchair":"yes","ref":"Boczne"},""" +
-                """"geometry":{"type":"Point","coordinates":[1,0]}}]}"""
     }
 }
