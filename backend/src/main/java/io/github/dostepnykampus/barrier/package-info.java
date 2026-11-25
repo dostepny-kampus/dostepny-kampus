@@ -9,7 +9,7 @@
  *
  * <p>Zadanie: przyjęcie, edycja i status zgłoszenia ze zdjęciami, podgląd podobnych, eksport.</p>
  *
- * <p>API: brak typów dla innych modułów; HTTP {@code /submissions} i {@code /export.csv}.</p>
+ * <p>API: brak typów dla innych modułów; HTTP {@code /submissions}, {@code /export.*}.</p>
  *
  * <p>Zależności: {@code building :: api}, {@code shared}.</p>
  *
@@ -17,7 +17,7 @@
  *
  * <p>Kiedy dodawać tutaj: kod zgłoszenia albo zdjęcia; weryfikacja to osobny moduł.</p>
  *
- * <p>Wymagania: US4, US7, US8, US10.1, BR-13</p>
+ * <p>Wymagania: US4, US7, US8, US10.1, US13.1, US13.3, BR-13</p>
  *
  * @since 0.1.0
  */

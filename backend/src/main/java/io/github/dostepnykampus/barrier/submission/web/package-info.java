@@ -5,7 +5,7 @@
  */
 
 /**
- * Operacje HTTP zgłoszeń, ciała żądań i odpowiedzi oraz eksport CSV.
+ * Operacje HTTP zgłoszeń, ciała żądań i odpowiedzi oraz eksport CSV i GeoJSON.
  *
  * @since 0.1.0
  */

@@ -114,4 +114,17 @@ final class SampleSubmissions {
             .sql("UPDATE submissions SET version = :version WHERE id = :id")
             .param("version", version).param("id", id).update();
     }
+
+    /**
+     * Usuwa zgłoszenia o podanych identyfikatorach z bazy.
+     *
+     * @param ids Identyfikatory zgłoszeń do usunięcia
+     */
+    void remove(final List<UUID> ids) {
+        if (!ids.isEmpty()) {
+            this.context.getBean(JdbcClient.class)
+                .sql("DELETE FROM submissions WHERE id IN (:ids)")
+                .param("ids", ids).update();
+        }
+    }
 }
