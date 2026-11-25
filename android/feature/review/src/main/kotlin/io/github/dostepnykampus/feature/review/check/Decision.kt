@@ -37,6 +37,7 @@ import io.github.dostepnykampus.core.designsystem.GroupFrame
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.model.review.RejectionReasons
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
 import io.github.dostepnykampus.feature.review.R
 import io.github.dostepnykampus.feature.review.queue.titleRes
@@ -118,7 +119,7 @@ internal fun Decision(
                 val rejection =
                     when (reason) {
                         Reason.DUPLICATE -> Rejection(reason = duplicate, duplicateOf = earlier)
-                        Reason.OUTDATED -> Rejection(reason = outdated)
+                        Reason.OUTDATED -> Rejection(reason = RejectionReasons.OUTDATED)
                         Reason.OTHER -> Rejection(reason = text)
                         null -> Rejection(reason = "")
                     }
