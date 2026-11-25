@@ -36,6 +36,7 @@ import io.github.dostepnykampus.feature.capture.report.ReportFormScreen
 import io.github.dostepnykampus.feature.help.HelpScreen
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.inspection.navigation.CollectorMarkersRoute
+import io.github.dostepnykampus.feature.inspection.navigation.ExportRoute
 import io.github.dostepnykampus.feature.inspection.navigation.MarkersRoute
 import io.github.dostepnykampus.feature.inspection.navigation.ProgressRoute
 import io.github.dostepnykampus.feature.map.building.BuildingCardContent
@@ -163,7 +164,7 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         is ReportEditRoute -> ReportEdit(route)
         is RemovedRoute -> Removed(route)
         MySubmissionsRoute -> MySubmissions()
-        ProgressRoute, is MarkersRoute, is CollectorMarkersRoute -> Inspection(route)
+        ProgressRoute, ExportRoute, is MarkersRoute, is CollectorMarkersRoute -> Inspection(route)
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
         is SignInRoute, AccountRoute -> Account(route)
         is MapRoute -> HiltMapScreen(focus = route.focus)

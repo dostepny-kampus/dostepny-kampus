@@ -39,4 +39,14 @@
     <string name="zbierajacy_pytanie_pietra">Cofnąć znacznik piętra %1$s? Postęp budynku się zmniejszy.</string>
     <string name="zbierajacy_pytanie_budynku">Cofnąć znacznik całego budynku? Postęp budynku się zmniejszy.</string>
     <string name="zbierajacy_blad_zapisu">Nie udało się zapisać znacznika w telefonie. Spróbuj ponownie, a jeśli to nie pomoże, zwolnij miejsce.</string>
+    <string name="eksport_naglowek">Pobierz eksport</string>
+    <string name="eksport_format">Format pliku</string>
+    <string name="eksport_geojson">GeoJSON (WGS84)</string>
+    <string name="eksport_csv">CSV (PUWG 1992, EPSG:2180)</string>
+    <string name="eksport_zawartosc">Plik zawiera tylko obecne, sprawdzone bariery, bez danych autorów.</string>
+    <string name="eksport_pobierz">Pobierz plik</string>
+    <string name="eksport_przygotowujemy">Przygotowujemy plik…</string>
+    <string name="eksport_zapisany">Plik zapisany w pobranych plikach.</string>
+    <string name="eksport_pusty">Nie ma jeszcze przyjętych barier.</string>
+    <string name="eksport_pusty_plik">Pobrany plik będzie pusty.</string>
 </resources>
