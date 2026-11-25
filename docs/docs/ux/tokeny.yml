@@ -76,7 +76,7 @@ kolory:
     # Ten sam ton co surfaceVariant; Material 3 bierze go dla kontenerów nad arkuszem.
     jasny: "#DCE2E4"
     ciemny: "#3A4246"
-    uzycie: wskaźnik braku internetu: linia pod górą ekranu i plakietka
+    uzycie: wskaźnik braku internetu (linia pod górą ekranu i plakietka)
     zrodlo: styl „Karta miejsca”
   background:
     # Tło ekranu bez arkusza; Scaffold bierze tę rolę. Ten sam ton co surfaceContainer.
