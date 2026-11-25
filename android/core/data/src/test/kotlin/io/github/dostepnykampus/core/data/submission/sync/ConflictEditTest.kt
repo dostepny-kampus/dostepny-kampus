@@ -43,7 +43,7 @@ class ConflictEditTest {
                         ServerReply.Ok(edits.removeFirstOrNull() ?: ServerEdit.Saved(server(id, content, 8)))
                     },
                 ),
-            history = history,
+            records = SentRecords(history = history),
         )
     }
 

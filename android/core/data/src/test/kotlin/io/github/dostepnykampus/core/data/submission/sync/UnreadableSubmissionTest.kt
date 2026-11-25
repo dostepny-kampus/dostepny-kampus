@@ -46,7 +46,7 @@ class UnreadableSubmissionTest {
                     ServerReply.Ok(server(id, content))
                 },
             stamps = SubmissionStamps(newId = { ids.removeFirst() }),
-            history = history,
+            records = SentRecords(history = history),
         )
     }
 

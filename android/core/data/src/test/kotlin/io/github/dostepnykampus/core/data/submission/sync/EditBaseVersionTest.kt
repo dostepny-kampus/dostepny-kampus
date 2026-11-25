@@ -125,7 +125,7 @@ class EditBaseVersionTest {
                     },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
-            history = history,
+            records = SentRecords(history = history),
         )
 
     private companion object {

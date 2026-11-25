@@ -11,6 +11,7 @@ import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
 import io.github.dostepnykampus.core.data.submission.sync.FakeHistory
 import io.github.dostepnykampus.core.data.submission.sync.FakeStore
 import io.github.dostepnykampus.core.data.submission.sync.SavedSubmission
+import io.github.dostepnykampus.core.data.submission.sync.SentRecords
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.photo
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.precise
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.server
@@ -398,8 +399,8 @@ class OwnHistoryTest {
                     update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content, version = 3))) },
                 ),
             stamps = SubmissionStamps(newId = newId),
-            history = history,
             onSaved = onSaved,
+            records = SentRecords(history = history),
         )
 
     private fun accepted(id: String, content: SubmissionContent): ServerReply<Submission> =
