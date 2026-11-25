@@ -78,7 +78,7 @@ public final class InvitationSteps {
      * @throws Exception Gdy żądanie nie dojdzie do serwera
      */
     @Given("^Koordynator wysłał zaproszenie na adres (\\S+) z rolą „([^”]+)”$")
-    public void invited(final String address, final String role) throws Exception {
+    void invited(final String address, final String role) throws Exception {
         this.email = address;
         this.token = this.login("koordynator.test", this.password("koordynator.test"));
         this.invites(role);
@@ -91,7 +91,7 @@ public final class InvitationSteps {
      * @throws Exception Gdy żądanie nie dojdzie do serwera
      */
     @Given("^konto z adresem (\\S+) ma role Odwiedzający i Zbierający$")
-    public void existing(final String address) throws Exception {
+    void existing(final String address) throws Exception {
         this.invited(address, "Zbierający");
     }
 
@@ -102,7 +102,7 @@ public final class InvitationSteps {
      * @throws Exception Gdy żądanie nie dojdzie do serwera
      */
     @When("^Koordynator zaprosi ten adres z rolą „([^”]+)”$")
-    public void invites(final String role) throws Exception {
+    void invites(final String role) throws Exception {
         this.status = this.invite(role);
         MatcherAssert.assertThat(
             "Serwer nie przyjął zaproszenia Koordynatora", this.status, Matchers.equalTo(201)
@@ -115,14 +115,17 @@ public final class InvitationSteps {
      * @throws Exception Gdy żądanie nie dojdzie do Keycloaka
      */
     @When("^(?:osoba z tym adresem zaloguje się pierwszy raz|Anna Nowak zaloguje się ponownie)$")
-    public void signsIn() throws Exception {
+    void signsIn() throws Exception {
         final String secret = UUID.randomUUID().toString();
         final String account = this.account(this.email).path("id").asString();
-        final HttpResponse<String> set = this.admin(
-            "/users/%s/reset-password".formatted(account),
-            "{\"type\":\"password\",\"temporary\":false,\"value\":\"%s\"}".formatted(secret)
+        MatcherAssert.assertThat(
+            "Hasło nie ustawione",
+            this.admin(
+                "/users/%s/reset-password".formatted(account),
+                "{\"type\":\"password\",\"temporary\":false,\"value\":\"%s\"}".formatted(secret)
+            ).statusCode(),
+            Matchers.equalTo(204)
         );
-        MatcherAssert.assertThat("Hasło nie ustawione", set.statusCode(), Matchers.equalTo(204));
         this.admin(
             "/users/%s".formatted(account), "{\"firstName\":\"Osoba\",\"lastName\":\"Zaproszona\"}"
         );
@@ -136,7 +139,7 @@ public final class InvitationSteps {
      * @throws Exception Gdy żądanie nie dojdzie do serwera
      */
     @Then("^w profilu widzi rolę „(Zbierający|Weryfikator|Koordynator)”$")
-    public void seesRole(final String role) throws Exception {
+    void seesRole(final String role) throws Exception {
         MatcherAssert.assertThat(
             "Profil nie ma roli z zaproszenia", this.profile(),
             Matchers.hasItem(InvitationSteps.ROLES.get(role))
@@ -149,7 +152,7 @@ public final class InvitationSteps {
      * @throws Exception Gdy żądanie nie dojdzie do serwera
      */
     @Then("^w profilu widzi role Odwiedzający, Zbierający i Weryfikator$")
-    public void seesRoles() throws Exception {
+    void seesRoles() throws Exception {
         MatcherAssert.assertThat(
             "Zaproszenie zmieniło dotychczasowe role konta", this.profile(),
             Matchers.containsInAnyOrder("VISITOR", "COLLECTOR", "VERIFIER")
@@ -163,7 +166,7 @@ public final class InvitationSteps {
      * @throws Exception Gdy żądanie nie dojdzie do serwera
      */
     @Then("^ma dostęp do ekranu „([^”]+)”$")
-    public void opens(final String screen) throws Exception {
+    void opens(final String screen) throws Exception {
         MatcherAssert.assertThat(
             "Serwer odmówił ekranu %s".formatted(screen), this.open(screen),
             Matchers.not(Matchers.oneOf(401, 403))
@@ -176,7 +179,7 @@ public final class InvitationSteps {
      * @throws Exception Gdy żądanie nie dojdzie do serwera
      */
     @Then("^może otworzyć pomiar precyzyjny i kolejkę weryfikacji$")
-    public void opensBoth() throws Exception {
+    void opensBoth() throws Exception {
         this.opens("pomiar precyzyjny");
         this.opens("kolejka weryfikacji");
     }
@@ -187,7 +190,7 @@ public final class InvitationSteps {
      * @throws Exception Gdy żądanie nie dojdzie do Keycloaka
      */
     @Given("^Weryfikator jest zalogowany z rolą Weryfikatora$")
-    public void verifier() throws Exception {
+    void verifier() throws Exception {
         this.token = this.login("weryfikator.test", this.password("weryfikator.test"));
     }
 
@@ -199,14 +202,14 @@ public final class InvitationSteps {
      * @throws Exception Gdy żądanie nie dojdzie do serwera
      */
     @When("^spróbuje zaprosić adres (\\S+) z rolą „([^”]+)” z pominięciem aplikacji$")
-    public void tries(final String address, final String role) throws Exception {
+    void tries(final String address, final String role) throws Exception {
         this.email = address;
         this.status = this.invite(role);
     }
 
     /** Serwer odmawia zaproszenia osobie bez roli Koordynatora. */
     @Then("^próba jest odrzucona$")
-    public void refused() {
+    void refused() {
         MatcherAssert.assertThat(
             "Serwer przyjął zaproszenie od Weryfikatora", this.status, Matchers.equalTo(403)
         );
@@ -219,7 +222,7 @@ public final class InvitationSteps {
      * @throws Exception Gdy żądanie nie dojdzie do Keycloaka
      */
     @Then("^konto z adresem (\\S+) nie dostaje roli Zbierającego$")
-    public void noRole(final String address) throws Exception {
+    void noRole(final String address) throws Exception {
         final JsonNode account = this.account(address);
         String roles = "[]";
         if (!account.isMissingNode()) {
@@ -236,8 +239,7 @@ public final class InvitationSteps {
     private int invite(final String role) throws Exception {
         return InvitationSteps.send(
             this.server("/invitations")
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .POST(
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).POST(
                     HttpRequest.BodyPublishers.ofString(
                         "{\"email\":\"%s\",\"role\":\"%s\"}"
                             .formatted(this.email, InvitationSteps.ROLES.get(role))
@@ -247,26 +249,30 @@ public final class InvitationSteps {
     }
 
     private int open(final String screen) throws Exception {
-        final HttpRequest.Builder request = switch (screen) {
-            case "pomiar precyzyjny" -> this.server("/submissions")
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .POST(
-                    HttpRequest.BodyPublishers.ofString(
-                        String.join(
-                            "", "{\"id\":\"", UUID.randomUUID().toString(),
-                            "\",\"kind\":\"PRECISE\",\"buildingSymbol\":\"C-13\",",
-                            "\"floor\":{\"number\":0},\"barrierGroup\":\"HORIZONTAL_CIRCULATION\",",
-                            "\"barrierType\":\"TB-13\",\"severity\":2,\"photoIds\":[\"",
-                            UUID.randomUUID().toString(), "\"],\"location\":{\"type\":\"Point\",",
-                            "\"coordinates\":[17.06209,51.10785]}}"
+        return InvitationSteps.send(
+            switch (screen) {
+                case "pomiar precyzyjny" -> this.server("/submissions")
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).POST(
+                        HttpRequest.BodyPublishers.ofString(
+                            String.join(
+                                "", "{\"id\":\"", UUID.randomUUID().toString(),
+                                "\",\"kind\":\"PRECISE\",\"buildingSymbol\":\"C-13\",",
+                                "\"floor\":{\"number\":0},",
+                                "\"barrierGroup\":\"HORIZONTAL_CIRCULATION\",",
+                                "\"barrierType\":\"TB-13\",\"severity\":2,\"photoIds\":[\"",
+                                UUID.randomUUID().toString(),
+                                "\"],\"location\":{\"type\":\"Point\",",
+                                "\"coordinates\":[17.06209,51.10785]}}"
+                            )
                         )
-                    )
+                    );
+                case "kolejka weryfikacji" -> this.server("/review/queue");
+                case "postęp inwentaryzacji" -> this.server("/progress");
+                case null, default -> throw new IllegalArgumentException(
+                    "Nieznany ekran %s".formatted(screen)
                 );
-            case "kolejka weryfikacji" -> this.server("/review/queue");
-            case "postęp inwentaryzacji" -> this.server("/progress");
-            default -> throw new IllegalArgumentException("Nieznany ekran %s".formatted(screen));
-        };
-        return InvitationSteps.send(request).statusCode();
+            }
+        ).statusCode();
     }
 
     private List<String> profile() throws Exception {
@@ -340,16 +346,20 @@ public final class InvitationSteps {
     }
 
     private HttpRequest.Builder admin(final String path) throws Exception {
-        final String technical = this.issued(
-            this.settings.getRequiredProperty("dk.accounts.token"),
-            "grant_type=client_credentials&client_id=%s&client_secret=%s".formatted(
-                this.settings.getRequiredProperty("dk.accounts.client"),
-                this.settings.getRequiredProperty("dk.accounts.secret")
-            )
-        );
         return HttpRequest.newBuilder(
             URI.create(this.settings.getRequiredProperty("dk.accounts.admin").concat(path))
-        ).header(HttpHeaders.AUTHORIZATION, "Bearer %s".formatted(technical));
+        ).header(
+            HttpHeaders.AUTHORIZATION,
+            "Bearer %s".formatted(
+                this.issued(
+                    this.settings.getRequiredProperty("dk.accounts.token"),
+                    "grant_type=client_credentials&client_id=%s&client_secret=%s".formatted(
+                        this.settings.getRequiredProperty("dk.accounts.client"),
+                        this.settings.getRequiredProperty("dk.accounts.secret")
+                    )
+                )
+            )
+        );
     }
 
     private static String encoded(final String text) {
