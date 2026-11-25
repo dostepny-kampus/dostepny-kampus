@@ -62,11 +62,13 @@ class ExportScreenTest {
         assertEquals("wybór i pobranie", listOf("CSV", "download"), events)
     }
 
-    /** Wyniki pobrania: zapisany, pusty i przygotowanie. */
+    /** Wyniki pobrania: zapisany w „Pobrane” albo w wybranym miejscu, pusty i przygotowanie. */
     @Test
     fun showsResults() {
         show(ExportUiState(stage = ExportStage.SAVED))
         compose.onNodeWithText("Plik zapisany w pobranych plikach.").assertIsDisplayed()
+        show(ExportUiState(stage = ExportStage.SAVED_CHOSEN))
+        compose.onNodeWithText("Plik zapisany w wybranym miejscu.").assertIsDisplayed()
         show(ExportUiState(stage = ExportStage.EMPTY))
         compose.onNodeWithText("Pobrany plik będzie pusty.").assertIsDisplayed()
         show(ExportUiState(format = ExportFormat.CSV, stage = ExportStage.LOADING))
