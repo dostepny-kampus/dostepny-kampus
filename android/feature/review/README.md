@@ -2,10 +2,11 @@
 
 ## Zadanie
 
-Sprawdzanie zgłoszeń przez Weryfikatora: kolejka weryfikacji (R1) z „Wziętymi przeze mnie”.
+Sprawdzanie zgłoszeń przez Weryfikatora: kolejka weryfikacji (R1) z „Wziętymi przeze mnie” i sprawdzenie zgłoszenia (R2).
 
 ## Pakiety
 
+- `feature.review.check` — stan i ViewModel sprawdzenia zgłoszenia.
 - `feature.review.navigation` — trasa ekranu kolejki weryfikacji.
 - `feature.review.queue` — stan i ViewModel kolejki weryfikacji.
 
