@@ -27,16 +27,23 @@ import io.github.dostepnykampus.feature.capture.report.removed.RemovedScreen
 internal fun AppNavigator.Capture(route: NavKey) {
     when (route) {
         MeasureRoute -> MeasureScreen(onBack = { back() }, onNext = { openReportForm(it) })
-        is ReportFormRoute -> ReportFormScreen(
-            route = route,
-            onLeave = { back() },
-            onSave = { reportSaved() },
-            draft = reportDraft,
-        )
+
+        is ReportFormRoute ->
+            ReportFormScreen(
+                route = route,
+                onLeave = { back() },
+                onSave = { reportSaved() },
+                draft = reportDraft,
+            )
+
         is ReportEditRoute -> ReportEdit(route)
+
         is RemovedRoute -> Removed(route)
+
         is MarkingRoute -> Marking(route)
+
         MySubmissionsRoute -> MySubmissions()
+
         else -> Unit
     }
 }
