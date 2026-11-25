@@ -9,6 +9,7 @@ cache	temat	kopia danych	Kopia danych serwera na urządzeniu do pracy bez sieci.
 camera	temat	kamera mapy	Położenie i ruch widoku mapy.
 campus	temat	kampus na mapie	Wspólne dane mapy kampusu: budynki, tereny, zaznaczenie i dzień danych.
 check	ścieżka	sprawdzenie zgłoszenia	Zgłoszenie wzięte przez Weryfikatora i decyzja o nim (R2).
+conflict	temat	konflikt wersji	Dwie wersje zgłoszenia po odmowie serwera i wybór jednej z nich.
 content	temat	treść zgłoszenia	Typ, grupa, miejsce i piętro bariery w zgłoszeniu.
 edit	ścieżka	edycja zgłoszenia	Zmiana wysłanego zgłoszenia.
 entrance	temat	wejście	Wejście do budynku wybrane na mapie i jego arkusz.
