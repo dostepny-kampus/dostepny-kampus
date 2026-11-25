@@ -604,7 +604,11 @@ Dostępność i osoby starsze: klauzula jest najwyżej 2 dotknięcia od mapy: �
 | Wybór innego budynku | po „Wybierz inny” w miejscu pytania sekcja „Wybierz budynek”: budynki najbliżej punktu, od najbliższego, każdy z nazwą i odległością, i „Poza budynkiem”. Wybór zamyka listę i pokazuje „Budynek [symbol]” z „Wybierz inny”. Lista działa bez sieci, z konturów w telefonie (US6.2, BR-G2, NFR-4). |
 | Daleko od budynków PWr | „Poza budynkiem”, bez podpowiedzi i bez komunikatu o błędzie (BR-G4, NFR-49) |
 | Budynek podstawowy | bez przełącznika „Plan piętra” i „Mapa”, wyboru piętra i korekty na planie. W ich miejscu napis „Nie mamy planu pięter tego budynku.”, jak na V2. Korekta na mapie działa (US6.4, BR-G1, PW-6). |
-| Brak zgody, zgoda tylko przybliżona albo lokalizacja wyłączona | jak w V4: prośba o zgodę albo o dokładną lokalizację, a po odmowie „Otwórz ustawienia” (NFR-27). Bez przycisku „Wróć do mapy”: rezygnacja przez „Wstecz” do ekranu, z którego otwarto C1, czyli L2, C2 albo C3 (NFR-15) |
+| Brak zgody na lokalizację | „Aby zapisać miejsce bariery, potrzebujemy lokalizacji. Sprawdzimy ją tylko teraz i nie będziemy Cię śledzić.” Przycisk „Pozwól na lokalizację” (NFR-27) |
+| Odmowa zgody | „Bez lokalizacji nie zapiszesz miejsca bariery. Możesz ją włączyć w ustawieniach telefonu.” Przycisk „Otwórz ustawienia”. Aplikacja nie ponawia prośby sama (NFR-27, BR-8) |
+| Zgoda tylko na przybliżoną lokalizację | „Telefon podaje tylko przybliżone miejsce, a to za mało, by wskazać barierę. Pozwól na dokładną lokalizację.” Przycisk „Pozwól na dokładną lokalizację” (BR-8, US6.1) |
+| Lokalizacja wyłączona w telefonie | „Lokalizacja w telefonie jest wyłączona. Włącz ją, aby zapisać miejsce bariery.” Przycisk „Otwórz ustawienia” |
+| Stany zgody, wspólnie | ten sam układ co w V4, z jednym nagłówkiem „Zmierz i zgłoś barierę”. Bez przycisku „Wróć do mapy”: rezygnacja przez „Wstecz” do ekranu, z którego otwarto C1, czyli L2, C2 albo C3 (NFR-15) |
 | Brak sieci | pomiar i podpowiedź działają; mapa bez nowego podkładu, a fragmenty obejrzane wcześniej mogą się pokazać z pamięci telefonu (NFR-4, NFR-39) |
 
 Dostępność: liczby dokładności i satelitów są tekstem, a nie tylko wykresem (NFR-18). Uśrednianie można przerwać i powtórzyć bez limitu (NFR-23). TalkBack ogłasza szukanie satelitów, „Pomiar zakończony”, podpowiedź budynku i błędy, a odliczanie co sekundę nie jest ogłaszane (NFR-18).
