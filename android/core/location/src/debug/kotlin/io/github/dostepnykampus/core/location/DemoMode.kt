@@ -12,7 +12,6 @@ private const val ENABLED = "wlaczony"
 
 /**
  * Włącznik trybu pokazu zapisany w telefonie. Domyślnie wyłączony; zmiana działa od następnego otwarcia ekranu C1.
- * TODO(#3817): przełącznik w aplikacji debug.
  *
  * Wymagania: US6.1
  */

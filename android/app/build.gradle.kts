@@ -119,6 +119,7 @@ dependencies {
     debugImplementation(libs.androidx.metrics.performance)
     debugImplementation(libs.androidx.tracing.perfetto.binary)
     debugImplementation(libs.leakcanary.android)
+    debugImplementation(project(":core:location"))
     debugImplementation(project(":core:network"))
     debugImplementation(libs.okhttp)
     testDebugImplementation(libs.okhttp.mockwebserver)
