@@ -23,5 +23,6 @@
     <string name="konto_zmierz">Zmierz i zgłoś barierę</string>
     <string name="konto_moje_zgloszenia">Moje zgłoszenia</string>
     <string name="konto_postep">Postęp inwentaryzacji</string>
+    <string name="konto_sprawdz">Zgłoszenia do sprawdzenia</string>
     <string name="konto_wyloguj">Wyloguj się</string>
 </resources>

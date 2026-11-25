@@ -28,6 +28,9 @@ enum class WorkAction(
 
     /** Postęp inwentaryzacji K1. Wymagania: US11 */
     PROGRESS(StaffRole.COORDINATOR, R.string.konto_postep),
+
+    /** Kolejka Weryfikatora R1. Wymagania: US10.4 */
+    REVIEW(StaffRole.VERIFIER, R.string.konto_sprawdz),
 }
 
 /**
