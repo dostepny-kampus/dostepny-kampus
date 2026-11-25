@@ -74,7 +74,7 @@ class ReviewApiTest {
     @Test
     fun sendsAccept() {
         enqueue(code = 200, body = body(ACCEPTED_STATUS))
-        val accept = ReviewDecision.Accept(version = 2, barrierType = "TB-3", severity = 2)
+        val accept = ReviewDecision.AcceptQuick(version = 2, barrierType = "TB-3", severity = 2)
         val result = blocking { decide(ID, accept) }
         val decided = assertInstanceOf(ApiResult.Success::class.java, result, "przyjęcie zapisane").value
         assertInstanceOf(ReviewOutcome.Decided::class.java, decided, "decyzja zapadła")
