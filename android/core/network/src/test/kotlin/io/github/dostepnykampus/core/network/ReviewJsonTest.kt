@@ -38,7 +38,7 @@ class ReviewJsonTest {
                 ReviewDecision.Accept(version = 1) to """{"decision":"ACCEPT","version":1}""",
                 ReviewDecision.RejectDuplicate(version = 2, reason = "Duplikat", duplicateOf = OLD) to
                     """{"decision":"REJECT","version":2,"rejectionReason":"Duplikat",""" +
-                        """"duplicateOfSubmissionId":"$OLD"}""",
+                    """"duplicateOfSubmissionId":"$OLD"}""",
                 ReviewDecision.Reject(version = 3, reason = "Nieaktualne") to
                     """{"decision":"REJECT","version":3,"rejectionReason":"Nieaktualne"}""",
             )

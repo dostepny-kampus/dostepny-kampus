@@ -34,11 +34,8 @@ public sealed interface ReviewDecision {
      * @property barrierType typ bariery, np. `TB-3`
      * @property severity uciążliwość 1–3
      */
-    public data class AcceptQuick(
-        override val version: Int,
-        val barrierType: String,
-        val severity: Int,
-    ) : ReviewDecision
+    public data class AcceptQuick(override val version: Int, val barrierType: String, val severity: Int) :
+        ReviewDecision
 
     /**
      * Odrzucenie zgłoszenia z powodem widocznym dla autora.
@@ -59,11 +56,8 @@ public sealed interface ReviewDecision {
      * @property reason powód odrzucenia, od 1 do 500 znaków
      * @property duplicateOf identyfikator wcześniejszego zgłoszenia
      */
-    public data class RejectDuplicate(
-        override val version: Int,
-        val reason: String,
-        val duplicateOf: String,
-    ) : ReviewDecision
+    public data class RejectDuplicate(override val version: Int, val reason: String, val duplicateOf: String) :
+        ReviewDecision
 }
 
 /**
