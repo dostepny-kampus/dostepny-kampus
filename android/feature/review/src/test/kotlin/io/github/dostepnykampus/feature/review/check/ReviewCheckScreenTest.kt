@@ -68,14 +68,10 @@ class ReviewCheckScreenTest {
     }
 
     @Test
-    fun showsLoading() {
+    fun loadsAndRetries() {
         show(CheckUiState.Loading)
         compose.onNodeWithText("Wczytujemy zgłoszenie…").assertIsDisplayed()
-    }
-
-    @Test
-    fun retriesAfterOffline() {
-        show(CheckUiState.Offline)
+        shown.value = CheckUiState.Offline
         compose.onNodeWithText("Spróbuj ponownie").performClick()
         assertEquals("ponowienie", 1, retries)
     }

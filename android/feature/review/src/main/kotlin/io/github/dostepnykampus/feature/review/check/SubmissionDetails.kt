@@ -49,7 +49,10 @@ internal fun SubmissionDetails(shown: CheckUiState.Ready) {
         content.severity?.let { Severity.fromValue(it) }?.let { severity ->
             SeverityBadge(severity = severity, modifier = Modifier.padding(vertical = Odstepy.s))
         }
-        Text(barrierPlace(symbol = content.buildingSymbol, name = null, entrance = null, floor = content.floor))
+        Text(
+            text = barrierPlace(symbol = content.buildingSymbol, name = null, entrance = null, floor = content.floor),
+            style = MaterialTheme.typography.bodyLarge,
+        )
         shown.photoUrls.forEach { url ->
             BarrierPhoto(url = url, type = type, modifier = Modifier.fillMaxWidth().padding(top = Odstepy.s))
         }
