@@ -26,7 +26,7 @@ import kotlin.coroutines.CoroutineContext
  * Wymagania: US9.3, BR-10
  */
 public interface VersionConflicts {
-    /** Obie wersje zgłoszenia [id]; `null`, gdy nie czeka ono na wybór wersji albo należy do innego konta. */
+    /** Obie wersje zgłoszenia [id]; `null`, gdy nie czeka na wybór wersji albo należy do innego konta. */
     public suspend fun find(id: String): VersionConflict?
 
     /**
@@ -52,7 +52,9 @@ internal fun versionConflictsOf(
     ioContext: CoroutineContext,
     subject: () -> String?,
     onSaved: () -> Unit,
-): VersionConflicts = StoredVersionConflicts(store, ioContext, subject, onSaved)
+): VersionConflicts {
+    return StoredVersionConflicts(store = store, ioContext = ioContext, subject = subject, onSaved = onSaved)
+}
 
 private class StoredVersionConflicts(
     private val store: SubmissionStore,
@@ -82,7 +84,7 @@ private class StoredVersionConflicts(
 
     override suspend fun takeServer(id: String) {
         val server = find(id)?.server ?: return
-        val paths = refusedRow(id)?.photos?.map { it.path }.orEmpty()
+        val paths = refusedRow(id)?.run { photos.map { it.path } }.orEmpty()
         store.pending.together {
             store.pending.delete(id)
             store.history.find(id)?.let { own -> store.history.save(serverRow(server, own)) }
