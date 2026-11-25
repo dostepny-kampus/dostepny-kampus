@@ -106,11 +106,7 @@ fun ExportContent(
 }
 
 @Composable
-private fun ColumnScope.ExportBody(
-    state: ExportUiState,
-    onChoose: (ExportFormat) -> Unit,
-    onDownload: () -> Unit,
-) {
+private fun ColumnScope.ExportBody(state: ExportUiState, onChoose: (ExportFormat) -> Unit, onDownload: () -> Unit) {
     val isInContent = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     Column(
         modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
@@ -129,7 +125,7 @@ private fun problemOf(stage: ExportStage): StaffProblem? =
         ExportStage.OFFLINE -> StaffProblem.OFFLINE
         ExportStage.SERVER_ERROR -> StaffProblem.SERVER
         ExportStage.FORBIDDEN -> StaffProblem.FORBIDDEN
-        else -> null
+        ExportStage.IDLE, ExportStage.LOADING, ExportStage.SAVED, ExportStage.EMPTY -> null
     }
 
 @Composable
@@ -148,7 +144,7 @@ private fun Message(stage: ExportStage) {
             ExportStage.LOADING -> R.string.eksport_przygotowujemy
             ExportStage.SAVED -> R.string.eksport_zapisany
             ExportStage.EMPTY -> R.string.eksport_pusty
-            else -> null
+            ExportStage.IDLE, ExportStage.OFFLINE, ExportStage.SERVER_ERROR, ExportStage.FORBIDDEN -> null
         } ?: return
     Surface(
         modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },

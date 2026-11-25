@@ -81,6 +81,7 @@ public final class ProblemResponses {
             HttpStatus.CONFLICT, error.getMessage()
         );
         problem.setProperty(error.property(), error.value());
+        error.type().ifPresent(problem::setType);
         return problem;
     }
 
