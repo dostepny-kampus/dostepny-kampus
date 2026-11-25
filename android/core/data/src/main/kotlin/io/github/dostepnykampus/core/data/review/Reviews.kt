@@ -117,5 +117,5 @@ internal fun reviewsOf(api: ReviewApi, submissions: SubmissionsApi): Reviews =
             api.similar(submissionId).toReply { it }
 
         override suspend fun replacePhoto(submissionId: String, photoId: String, jpeg: ByteArray): ServerReply<Unit> =
-            submissions.putPhoto(submissionId = submissionId, photoId = photoId, jpeg = jpeg).toReply { it }
+            submissions.putPhoto(submissionId = submissionId, photoId = photoId, jpeg = jpeg).toReply { }
     }
