@@ -253,10 +253,11 @@ final class ReviewQueueHttpIT {
             context.getBean(ObjectMapper.class).readTree(
                 response.getContentAsString(StandardCharsets.UTF_8)
             ).spliterator(), false
-        )
-            .map(item -> UUID.fromString(item.path("id").asString()))
-            .filter(seeded::contains)
-            .toList();
+        ).map(ReviewQueueHttpIT::identifier).filter(seeded::contains).toList();
+    }
+
+    private static UUID identifier(final JsonNode item) {
+        return UUID.fromString(item.path("id").asString());
     }
 
     private static int status(
@@ -264,8 +265,7 @@ final class ReviewQueueHttpIT {
     ) throws Exception {
         return context.getBean(MockMvc.class).perform(
             MockMvcRequestBuilders.get(ReviewQueueHttpIT.QUEUE).with(identity)
-        )
-            .andReturn().getResponse().getStatus();
+        ).andReturn().getResponse().getStatus();
     }
 
     private static RequestPostProcessor bearer(final String token) {
