@@ -13,6 +13,7 @@ Wysyłka obejmuje wpisy bieżącego konta. Pierwsze zalogowanie po migracji przy
 - `core.data.cache` — wspólny zapis JSON kopii danych.
 - `core.data.di` — wiązania Hilt modułu.
 - `core.data.inspection` — znaczniki piętra obejrzanego czekające w kolejce telefonu.
+- `core.data.invitation` — zaproszenie osoby z rolą przez Koordynatora.
 - `core.data.map` — zapamiętany wybór między mapą a listą budynków.
 - `core.data.network` — stan połączenia z siecią.
 - `core.data.path` — ścieżki dostosowane z serwera z kopią w telefonie.
@@ -26,7 +27,7 @@ Wysyłka obejmuje wpisy bieżącego konta. Pierwsze zalogowanie po migracji przy
 
 ## API
 
-Repozytoria i przypadki użycia w podpakietach `account`, `barrier`, `building`, `inspection`, `submission` (`own`, `pending`, `sync`), `map`, `network`, `start`; odpowiedź serwera bez typów klienta HTTP (`ServerReply`, `ServerBuildings`, `ServerCard`) w `server`; wiązania Hilt w `di`. Tekst JSON dokumentów kopii w bazie telefonu powstaje i jest czytany tylko w `cache` (`encodeCache`, `decodeCache`); każdą kopię odpowiedzi serwera trzyma `ServerCopy` pod własnym kluczem tabeli `server_copy`. `SubmissionQueue.save` zwraca `SavedSubmission` z identyfikatorem zgłoszenia, bez encji Room. Tabele bazy są za uchwytami `SubmissionStore` i `ServerCopyStore`, które daje Hilt; `:core:database` jest zależnością `implementation`.
+Repozytoria i przypadki użycia w podpakietach `account`, `barrier`, `building`, `inspection`, `invitation`, `submission` (`own`, `pending`, `sync`), `map`, `network`, `start`; odpowiedź serwera bez typów klienta HTTP (`ServerReply`, `ServerBuildings`, `ServerCard`) w `server`; wiązania Hilt w `di`. Tekst JSON dokumentów kopii w bazie telefonu powstaje i jest czytany tylko w `cache` (`encodeCache`, `decodeCache`); każdą kopię odpowiedzi serwera trzyma `ServerCopy` pod własnym kluczem tabeli `server_copy`. `SubmissionQueue.save` zwraca `SavedSubmission` z identyfikatorem zgłoszenia, bez encji Room. Tabele bazy są za uchwytami `SubmissionStore` i `ServerCopyStore`, które daje Hilt; `:core:database` jest zależnością `implementation`.
 
 ## Zależności
 
