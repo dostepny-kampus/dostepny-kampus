@@ -7,12 +7,13 @@ package io.github.dostepnykampus.core.network.export
 
 import io.github.dostepnykampus.core.model.export.ExportFormat
 import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.decodeContract
 import io.github.dostepnykampus.core.network.decodedResult
 import io.github.dostepnykampus.core.network.exchange
-import io.github.dostepnykampus.core.network.json.ExportFeatureCollection
 import io.github.dostepnykampus.core.network.unexpectedResult
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -45,13 +46,11 @@ public class ExportApi(private val http: OkHttpClient, private val json: Json, b
 
     /** Plik eksportu w formacie [format]. */
     public suspend fun download(format: ExportFormat): ApiResult<ExportFile> {
-        val target = base.newBuilder().addPathSegment("export.${format.extension}").build()
         val request =
             Request
                 .Builder()
-                .url(target)
+                .url(base.newBuilder().addPathSegment("export.${format.extension}").build())
                 .header(name = "Accept", value = "${format.mediaType}, application/problem+json")
-                .get()
                 .build()
         return http.exchange(request) { code, body ->
             if (code == HTTP_OK) decodedResult(code) { fileOf(format, body) } else unexpectedResult(code)
@@ -63,7 +62,10 @@ public class ExportApi(private val http: OkHttpClient, private val json: Json, b
 
     private fun isEmpty(format: ExportFormat, body: String): Boolean =
         when (format) {
-            ExportFormat.GEOJSON -> json.decodeContract(ExportFeatureCollection.serializer(), body).features.isEmpty()
-            ExportFormat.CSV -> body.lineSequence().drop(1).none { line -> line.isNotBlank() }
+            ExportFormat.GEOJSON -> features(body).isEmpty()
+            ExportFormat.CSV -> body.lineSequence().drop(1).all { line -> line.isBlank() }
         }
+
+    private fun features(body: String): JsonArray =
+        requireNotNull(json.parseToJsonElement(body).jsonObject["features"]).jsonArray
 }

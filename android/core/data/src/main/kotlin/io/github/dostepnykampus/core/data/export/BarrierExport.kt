@@ -38,35 +38,27 @@ public fun interface BarrierExport {
     public suspend fun download(format: ExportFormat): ExportOutcome
 }
 
-/**
- * Eksport z pobraniem [fetch] i zapisem w [folder] pod nazwą z datą [today]; zapis idzie w [work].
- *
- * @param fetch pobranie pliku z serwera
- * @param folder folder „Pobrane”
- * @param today dzisiejsza data do nazwy pliku
- * @param work wątek zapisu
- */
-internal fun barrierExportOf(
-    fetch: suspend (ExportFormat) -> ApiResult<ExportFile>,
-    folder: DownloadsFolder,
-    today: () -> LocalDate,
-    work: CoroutineContext,
-): BarrierExport =
-    BarrierExport { format ->
+/** Eksport z pobraniem [fetch] i zapisem w [folder] pod nazwą z datą [today]; zapis idzie w [work]. */
+internal class ServerExport(
+    private val fetch: suspend (ExportFormat) -> ApiResult<ExportFile>,
+    private val folder: DownloadsFolder,
+    private val today: () -> LocalDate,
+    private val work: CoroutineContext,
+) : BarrierExport {
+    override suspend fun download(format: ExportFormat): ExportOutcome =
         when (val reply = fetch(format)) {
-            is ApiResult.Success -> {
-                val name = "dostepny-kampus-bariery-${today()}.${format.extension}"
-                val file = reply.value
-                val type = format.mediaType
-                val isSaved = withContext(work) { folder.save(name = name, mediaType = type, text = file.text) }
-                if (isSaved) ExportOutcome.Saved(isEmpty = file.isEmpty) else ExportOutcome.Failed
-            }
-
+            is ApiResult.Success -> save(format, reply.value)
             is ApiResult.NetworkError -> ExportOutcome.Offline
-            is ApiResult.ServerError -> refusal(reply.code)
+            is ApiResult.ServerError -> refused(reply.code)
             ApiResult.NotFound -> ExportOutcome.Failed
         }
+
+    private suspend fun save(format: ExportFormat, file: ExportFile): ExportOutcome {
+        val name = "dostepny-kampus-bariery-${today()}.${format.extension}"
+        val isSaved = withContext(work) { folder.save(name = name, mediaType = format.mediaType, text = file.text) }
+        return if (isSaved) ExportOutcome.Saved(isEmpty = file.isEmpty) else ExportOutcome.Failed
     }
 
-private fun refusal(code: Int): ExportOutcome =
-    if (code == HTTP_FORBIDDEN) ExportOutcome.Forbidden else ExportOutcome.Failed
+    private fun refused(code: Int): ExportOutcome =
+        if (code == HTTP_FORBIDDEN) ExportOutcome.Forbidden else ExportOutcome.Failed
+}

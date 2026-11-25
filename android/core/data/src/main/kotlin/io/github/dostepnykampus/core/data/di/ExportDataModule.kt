@@ -13,7 +13,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.export.BarrierExport
 import io.github.dostepnykampus.core.data.export.MediaStoreDownloads
-import io.github.dostepnykampus.core.data.export.barrierExportOf
+import io.github.dostepnykampus.core.data.export.ServerExport
 import io.github.dostepnykampus.core.network.export.ExportApi
 import java.time.LocalDate
 import kotlin.coroutines.CoroutineContext
@@ -29,7 +29,7 @@ internal object ExportDataModule {
         @ApplicationContext context: Context,
         @IoContext work: CoroutineContext,
     ): BarrierExport =
-        barrierExportOf(
+        ServerExport(
             fetch = api::download,
             folder = MediaStoreDownloads(context.contentResolver),
             today = LocalDate::now,

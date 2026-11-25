@@ -64,7 +64,7 @@ class BarrierExportTest {
                 canWrite
             }
         val export =
-            barrierExportOf(
+            ServerExport(
                 fetch = { reply },
                 folder = folder,
                 today = { LocalDate.parse("2026-11-25") },
