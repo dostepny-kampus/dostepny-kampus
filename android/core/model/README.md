@@ -8,6 +8,7 @@ Typy domeny wspólne dla całej aplikacji: budynek, wejście, bariera, zgłoszen
 
 - `core.model` — konto, punkt i obszar geograficzny oraz strefa czasu kampusu.
 - `core.model.building` — budynek, katalog budynków, piętra, wejście i jego ocena.
+- `core.model.export` — format pliku eksportu.
 - `core.model.inspection` — postęp inwentaryzacji budynku.
 - `core.model.path` — odcinek ścieżki dostosowanej z mapy kampusu.
 - `core.model.room` — pomieszczenie z planu piętra i grupa jego funkcji.
