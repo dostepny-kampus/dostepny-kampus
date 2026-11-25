@@ -89,7 +89,7 @@ public final class MissingRoleSteps {
      *
      * @param screen Nazwa ekranu ze scenariusza
      */
-    @Then("^nie widzi ekranu „(.+)”$")
+    @Then("^nie widzi (?:ekranu|czynności) „(.+)”$")
     public void screenHidden(final String screen) {
         MatcherAssert.assertThat(
             String.format("Krok o ekranie „%s” stoi przed logowaniem osoby", screen),
@@ -104,6 +104,7 @@ public final class MissingRoleSteps {
      * @throws Exception Gdy MockMvc nie wykona żądania
      */
     @Then("^próba wykonania czynności „(.+)” z pominięciem aplikacji jest odrzucona$")
+    @Then("^próba złożenia (zmiany oznaczenia wejścia) z pominięciem aplikacji jest odrzucona$")
     public void attemptRefused(final String action) throws Exception {
         MatcherAssert.assertThat(
             String.format("Serwer nie odmówił czynności „%s” roli %s", action, this.token),
@@ -119,6 +120,8 @@ public final class MissingRoleSteps {
         return switch (action) {
             case "pomiar precyzyjny" -> MockMvcRequestBuilders.post("/submissions")
                 .contentType(MediaType.APPLICATION_JSON).content(MissingRoleSteps.precise());
+            case "zmiany oznaczenia wejścia" -> MockMvcRequestBuilders.post("/submissions")
+                .contentType(MediaType.APPLICATION_JSON).content(MissingRoleSteps.marking());
             case "lista zgłoszeń" -> MockMvcRequestBuilders.get("/submissions")
                 .param("mine", "true");
             case "kolejka weryfikacji" -> MockMvcRequestBuilders.get("/review/queue");
@@ -140,6 +143,17 @@ public final class MissingRoleSteps {
             "\"buildingSymbol\":\"C-13\",\"floor\":{\"number\":0},",
             "\"barrierGroup\":\"HORIZONTAL_CIRCULATION\",\"barrierType\":\"TB-13\",",
             "\"severity\":2,\"photoIds\":[\"", UUID.randomUUID().toString(), "\"]}"
+        );
+    }
+
+    private static String marking() {
+        return String.join(
+            "",
+            "{\"id\":\"", UUID.randomUUID().toString(), "\",\"kind\":\"ENTRANCE_MARKING\",",
+            "\"buildingSymbol\":\"B-8\",\"entranceId\":\"node/12127546084\",",
+            "\"entranceMarking\":\"ACCESSIBLE\",",
+            "\"location\":{\"type\":\"Point\",\"coordinates\":[17.065862,51.1078003]},",
+            "\"photoIds\":[\"", UUID.randomUUID().toString(), "\"]}"
         );
     }
 }
