@@ -66,4 +66,9 @@
     <string name="praca_blad_serwera">Serwer chwilowo nie odpowiada. Spróbuj ponownie za kilka minut.</string>
     <string name="praca_brak_uprawnien">Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.</string>
     <string name="praca_wroc_do_mapy">Wróć do mapy</string>
+    <string name="status_wyslane">Wysłane</string>
+    <string name="status_w_weryfikacji">W weryfikacji</string>
+    <string name="status_przyjete">Przyjęte</string>
+    <string name="status_odrzucone">Odrzucone</string>
+    <string name="status_archiwalne">Archiwalne</string>
 </resources>

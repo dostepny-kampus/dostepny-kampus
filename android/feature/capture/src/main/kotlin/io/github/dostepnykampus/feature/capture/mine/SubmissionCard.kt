@@ -24,6 +24,7 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.data.submission.own.RefusalReason
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.StatusIcons
+import io.github.dostepnykampus.core.designsystem.StatusLine
 import io.github.dostepnykampus.core.designsystem.campusDay
 import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
@@ -73,7 +74,7 @@ private fun SubmissionDetails(item: OwnSubmissionItem, status: ShownStatus) {
         modifier = Modifier.semantics(mergeDescendants = true) {},
         verticalArrangement = Arrangement.spacedBy(Odstepy.xs),
     ) {
-        StatusLine(status)
+        StatusLine(text = stringResource(status.textRes), icon = status.icon)
         if (item.isChangeWaiting) Text(stringResource(R.string.moje_zmiana_czeka))
         if (item.isBarrierRemoved) Text(stringResource(R.string.moje_bariery_juz_nie_ma))
         Text(text = titleText(item), style = MaterialTheme.typography.titleMedium)
@@ -101,18 +102,6 @@ private fun NewMarking(marking: EntranceMarking) {
     Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
         Text(stringResource(R.string.moje_nowe_oznaczenie))
         MarkingSign(marking)
-    }
-}
-
-@Composable
-private fun StatusLine(status: ShownStatus) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(imageVector = status.icon, contentDescription = null)
-        Text(
-            text = stringResource(status.textRes),
-            modifier = Modifier.padding(start = Odstepy.s),
-            style = MaterialTheme.typography.labelLarge,
-        )
     }
 }
 
