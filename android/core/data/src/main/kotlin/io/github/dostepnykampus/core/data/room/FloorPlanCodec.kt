@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.data.cache.decodeCache
 import io.github.dostepnykampus.core.data.cache.encodeCache
 import io.github.dostepnykampus.core.database.room.FloorPlanEntity
 import io.github.dostepnykampus.core.database.room.FloorRoomEntity
+import io.github.dostepnykampus.core.database.room.FloorRoomFact
 import io.github.dostepnykampus.core.geo.GeoAreaJson
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Floor
@@ -70,4 +71,10 @@ internal fun FloorPlanEntity.toRoomList(rooms: List<FloorRoomEntity>): RoomList?
                     )
                 },
         )
+    }.getOrNull()
+
+/** Kategorie i funkcje pomieszczeń piętra z kopii; `null` dla nieznanej grupy funkcji. Wymagania: US2.4, NFR-56 */
+internal fun List<FloorRoomFact>.toRoomSummaries(): List<RoomSummary>? =
+    runCatching {
+        map { row -> RoomSummary(category = RoomCategory.valueOf(row.category), function = row.function) }
     }.getOrNull()

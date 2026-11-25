@@ -299,6 +299,12 @@ class AppNavigator(
         }
     }
 
+    /** „Wyloguj się” na L2: konto wraca do Gościa, a aplikacja otwiera V1. Wymagania: US14.4 */
+    fun signOut() {
+        roles.signOut()
+        backToMap()
+    }
+
     private fun MutableList<NavKey>.dropReport() {
         while (last() is ReportRoute) removeAt(lastIndex)
     }

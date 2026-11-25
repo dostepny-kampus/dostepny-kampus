@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.database.room.FloorPlanDao
 import io.github.dostepnykampus.core.database.room.FloorPlanEntity
 import io.github.dostepnykampus.core.database.room.FloorRoomEntity
+import io.github.dostepnykampus.core.database.room.FloorRoomFact
 import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.GeoPolygon
@@ -90,6 +91,33 @@ class FloorPlanCopyTest {
             assertEquals(listOf(first, plan("P1")), listOf(kept, fresh), "Pamięć piętra")
         }
 
+    @Test
+    fun readsRoomFactsWithoutGeometry() =
+        runBlocking {
+            val dao = FakeFloorPlanDao()
+            dao.copy(rooms = { _, floor -> ServerReply.Ok(plan(floor)) }).download(C13)
+            dao.plans.replaceAll { it.copy(outlineJson = "{zepsute") }
+            dao.rooms.replaceAll { it.copy(geometryJson = "{zepsute") }
+            val expected = mapOf("P0" to floorSummaries(), "P1" to floorSummaries())
+            assertEquals(expected, dao.copy().roomFacts(C13), "Fakty o piętrach nie powinny dekodować geometrii")
+        }
+
+    @Test
+    fun skipsBrokenRoomCategory() =
+        runBlocking {
+            val dao = FakeFloorPlanDao()
+            dao.copy(rooms = { _, floor -> ServerReply.Ok(plan(floor)) }).download(C13)
+            dao.rooms.replaceAll { if (it.floor == "P0") it.copy(category = "GARAGE") else it }
+            val expected = mapOf("P1" to floorSummaries())
+            assertEquals(expected, dao.copy().roomFacts(C13), "Zepsute piętro powinno zostać pominięte")
+        }
+
+    private fun floorSummaries(): List<RoomSummary> =
+        listOf(
+            RoomSummary(RoomCategory.ELEVATOR, "elevator"),
+            RoomSummary(RoomCategory.CORRIDOR, "corridor"),
+        )
+
     private fun FakeFloorPlanDao.copy(
         floors: suspend (String) -> ServerReply<FloorList> = { ServerReply.Ok(FLOORS) },
         rooms: suspend (String, String) -> ServerReply<RoomList> = { _, _ -> ServerReply.Offline },
@@ -147,6 +175,14 @@ private class FakeFloorPlanDao : FloorPlanDao {
 
     override suspend fun rooms(building: String, floor: String): List<FloorRoomEntity> =
         rooms.filter { it.building == building && it.floor == floor }.sortedBy { it.id }
+
+    override suspend fun roomFacts(building: String): List<FloorRoomFact> =
+        rooms
+            .asSequence()
+            .filter { it.building == building }
+            .sortedWith(compareBy({ it.floor }, { it.id }))
+            .map { FloorRoomFact(floor = it.floor, category = it.category, function = it.function) }
+            .toList()
 
     override suspend fun deleteRooms(building: String) {
         rooms.removeAll { it.building == building }

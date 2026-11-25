@@ -35,6 +35,8 @@ import java.net.HttpURLConnection.HTTP_OK
  * spoza opisanych przy funkcji, np. 401 i 403, to [ApiResult.ServerError] z tym kodem. Anulowanie korutyny
  * przerywa żądanie HTTP.
  *
+ * TODO(#3758): repozytorium sprawdzania w `core:data`.
+ *
  * Wymagania: US10, NFR-55
  *
  * @param http klient OkHttp
@@ -51,7 +53,12 @@ public class ReviewApi(private val http: OkHttpClient, private val json: Json, b
      * Wymagania: US10.4, US10.5, US10.7
      */
     public suspend fun queue(): ApiResult<List<Submission>> {
-        val target = base.newBuilder().addPathSegment(REVIEW).addPathSegment(QUEUE).build()
+        val target =
+            base
+                .newBuilder()
+                .addPathSegment(REVIEW)
+                .addPathSegment(QUEUE)
+                .build()
         return http.exchange(request(target, body = null)) { code, body ->
             if (code == HTTP_OK) decodedResult(code) { json.decodeSubmissions(body) } else unexpectedResult(code)
         }

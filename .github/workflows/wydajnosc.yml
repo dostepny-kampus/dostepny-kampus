@@ -40,6 +40,10 @@ jobs:
         uses: ./.github/actions/android-gradle
       - name: Zbuduj aplikację (release) i pomiary
         working-directory: android
+        # Release wymaga adresów https://; pomiary nie łączą się z serwerem, więc adresy z domeny .invalid.
+        env:
+          DK_API_URL: https://serwer.invalid/
+          DK_LOGIN_REALM_URL: https://logowanie.invalid/realms/dostepny-kampus/
         run: ./gradlew :app:assembleRelease :macrobenchmark:assembleBenchmark --console=plain
       - name: Podpisz aplikację kluczem pomiarów
         # Instrumentacja wymaga tego samego podpisu aplikacji i pakietu pomiarów (klucz debug z repozytorium).

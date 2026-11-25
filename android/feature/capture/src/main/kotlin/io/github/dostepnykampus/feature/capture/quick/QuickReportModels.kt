@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.quick
@@ -16,9 +16,11 @@ import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
  * @property photoTranscoder przekodowanie zdjęcia w kroku 1, które przetrwa obrót ekranu
  * @property entrances wejście z „Zgłoś barierę przy wejściu” do kroku 1
  * @property send pozycja i zapis w kroku 3
+ * @property offline wiek danych mapy do linii „Bez internetu” na potwierdzeniu
  */
 data class QuickReportModels(
     val photoTranscoder: PhotoTranscoder? = null,
     val entrances: QuickEntranceViewModel? = null,
     val send: QuickSendViewModel? = null,
+    val offline: QuickOfflineViewModel? = null,
 )

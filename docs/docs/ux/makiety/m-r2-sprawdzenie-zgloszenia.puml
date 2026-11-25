@@ -8,7 +8,7 @@ $naglowek("Sprawdzenie zgłoszenia")
 <b>Zgłoszenie z pomiaru</b>
 schody przy wejściu
 $blokada()
-Budynek A-1, piętro <i>[piętro]</i>
+Budynek A-1, <i>[piętro]</i>
 Miejsce: <i>[punkt z pomiaru]</i>
 $r2_zdjecie("zdjęcie bariery")
 Autor: Zbierający, Autor <i>[nr]</i>
@@ -16,7 +16,7 @@ $sekcja("Podobne zgłoszenia do 10 m")
 $ramka()
 <b>próg</b>
 $obraz("zdjęcie")
-5 m, piętro <i>[inne piętro]</i>
+5 m, <i>[inne piętro]</i>
 $przyjete()
 }
 $r2_decyzja()
