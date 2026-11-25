@@ -117,7 +117,7 @@ private fun Severity.mapTones(colors: MapColors): Pair<Color, Color> =
  * Znak uciążliwości obok napisu: trójkąt ze znakiem „!” dla „Utrudnienie”, tarcza z dwiema osobami dla „Tylko
  * z pomocą”, zaokrąglona tablica z jedną poziomą belką dla „Blokada”. Znaczenie niesie kształt, nie barwa.
  *
- * Kształt ma kolor `onSurface`, znak w nim `surface`; rozmiar
+ * Domyślne barwy to `onSurface` i `surface`. [mapColors] stosuje paletę mapy. Rozmiar
  * [io.github.dostepnykampus.core.designsystem.Ikony.rozmiar] skalowany jak tekst w sp. Ikona jest ozdobna:
  * TalkBack czyta nazwę uciążliwości z napisu obok.
  *
@@ -125,12 +125,13 @@ private fun Severity.mapTones(colors: MapColors): Pair<Color, Color> =
  *
  * @param severity uciążliwość, która wyznacza kształt
  * @param modifier modyfikator zewnętrzny
+ * @param mapColors paleta znaku na mapie; `null` używa barw motywu ekranu
  */
 @Composable
-public fun SeverityIcon(severity: Severity, modifier: Modifier = Modifier) {
+public fun SeverityIcon(severity: Severity, modifier: Modifier = Modifier, mapColors: MapColors? = null) {
     val paths = remember(severity) { SeverityPaths(severity.look()) }
-    val shapeColor = MaterialTheme.colorScheme.onSurface
-    val markColor = MaterialTheme.colorScheme.surface
+    val (shapeColor, markColor) =
+        mapColors?.let(severity::mapTones) ?: (MaterialTheme.colorScheme.onSurface to MaterialTheme.colorScheme.surface)
     Canvas(modifier = modifier.size(iconSizeLikeText())) {
         drawSeverity(paths = paths, shapeColor = shapeColor, markColor = markColor)
     }
