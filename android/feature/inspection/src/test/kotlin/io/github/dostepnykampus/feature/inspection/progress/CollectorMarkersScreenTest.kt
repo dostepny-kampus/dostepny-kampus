@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.inspection.progress
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -15,6 +16,7 @@ import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.inspection.MarkerPlace
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -57,6 +59,20 @@ class CollectorMarkersScreenTest {
         compose.onNodeWithText("Nieobejrzane").assertIsDisplayed()
         compose.onNodeWithText("Oznacz jako obejrzane").performClick()
         assertEquals("oznaczone piętro", listOf<MarkerPlace>(MarkerPlace.Floor("p1")), marked)
+    }
+
+    /**
+     * „Oznacz jako obejrzane” i „Cofnij znacznik” to czynności karty szerokie jak napis, węższe niż treść karty.
+     *
+     * Wymagania: NFR-17, US15.1, US15.2
+     */
+    @Test
+    fun keepsCardActionsCompact() {
+        show(CollectorMarkersUiState.Ready(ROWS))
+        listOf("Oznacz jako obejrzane", REVOKE).forEach { label ->
+            val bounds = compose.onNodeWithText(label).getUnclippedBoundsInRoot()
+            assertTrue("„$label” ma być węższe niż treść karty: $bounds", (bounds.right - bounds.left).value < CONTENT)
+        }
     }
 
     /** Budynek bez pięter ma jeden wiersz „Cały budynek”. Wymagania: US15.1, BR-G3 */
@@ -187,6 +203,7 @@ class CollectorMarkersScreenTest {
     private companion object {
         const val KEEP = "Zostaw znacznik"
         const val REVOKE = "Cofnij znacznik"
+        const val CONTENT = 296f
         val ROWS =
             listOf(
                 FloorRow(place = MarkerPlace.Floor("p0"), label = "Parter", markerId = "m-1", isPending = true),
