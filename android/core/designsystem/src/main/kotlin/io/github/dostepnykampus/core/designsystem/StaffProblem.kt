@@ -61,7 +61,7 @@ public fun StaffProblemMessage(problem: StaffProblem, onAction: () -> Unit, modi
 
 /** Wynik czynności pracownika z nagłówkiem i opcjonalnym objaśnieniem, ogłaszany przez TalkBack. */
 @Composable
-public fun StaffResultMessage(title: String, message: String? = null, modifier: Modifier = Modifier) {
+public fun StaffResultMessage(title: String, modifier: Modifier = Modifier, message: String? = null) {
     Surface(
         modifier = modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
         shape = MaterialTheme.shapes.large,
