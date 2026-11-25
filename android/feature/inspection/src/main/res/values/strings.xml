@@ -43,4 +43,19 @@
     <string name="eksport_zapisany">Plik zapisany w pobranych plikach.</string>
     <string name="eksport_pusty">Nie ma jeszcze przyjętych barier.</string>
     <string name="eksport_pusty_plik">Pobrany plik będzie pusty.</string>
+    <string name="zaproszenie_naglowek">Zaproś osobę</string>
+    <string name="zaproszenie_adres">Adres e-mail</string>
+    <string name="zaproszenie_adres_niepelny">Adres e-mail jest niepełny, np. brakuje znaku @. Popraw go i wyślij ponownie.</string>
+    <string name="zaproszenie_rola">Rola</string>
+    <string name="zaproszenie_wybierz_role">Wybierz rolę.</string>
+    <string name="zaproszenie_zbierajacy">Zbierający</string>
+    <string name="zaproszenie_weryfikator">Weryfikator</string>
+    <string name="zaproszenie_koordynator">Koordynator</string>
+    <string name="zaproszenie_zbierajacego">Zbierającego</string>
+    <string name="zaproszenie_weryfikatora">Weryfikatora</string>
+    <string name="zaproszenie_koordynatora">Koordynatora</string>
+    <string name="zaproszenie_wyslij">Wyślij zaproszenie</string>
+    <string name="zaproszenie_wyslane">Zaproszenie wysłane na podany adres.</string>
+    <string name="zaproszenie_konto_istnieje">To konto już istnieje.</string>
+    <string name="zaproszenie_rola_dodana">Dodaliśmy mu rolę %1$s, dotychczasowe role zostają.</string>
 </resources>
