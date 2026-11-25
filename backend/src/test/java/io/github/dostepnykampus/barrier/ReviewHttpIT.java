@@ -28,7 +28,7 @@ import tools.jackson.databind.ObjectMapper;
  * Weryfikator bierze cudze zgłoszenie do weryfikacji i rozstrzyga je, ale nie własne
  * ani takie, któremu brakuje zdjęcia w magazynie.
  *
- * <p>Wymagania: US10.3, BR-4, BR-11, BR-3, BR-14, BR-16, BR-7, BR-8, BR-18</p>
+ * <p>Wymagania: US10.3, BR-4, BR-11, BR-3, BR-14, BR-16, BR-7, BR-8, BR-18, BR-19</p>
  *
  * @since 0.1.0
  */
@@ -225,6 +225,26 @@ final class ReviewHttpIT {
                 ReviewHttpIT.status(context, id)
             ),
             Matchers.contains(200, "ARCHIVED", "ACCEPTED")
+        );
+    }
+
+    @Test
+    void archivesBothOnAcceptedRemoval(final WebApplicationContext context) throws Exception {
+        final UUID replaced = new SampleSubmissions(context)
+            .add("ACCEPTED", SampleSubmissions.quick(ReviewHttpIT.PHOTO));
+        final UUID id = ReviewHttpIT.replacing(context, replaced);
+        context.getBean(JdbcClient.class).sql(
+            "UPDATE submissions SET content = content || '{\"barrierRemoved\":true}' WHERE id = :id"
+        ).param("id", id).update();
+        ReviewHttpIT.claim(context, id);
+        MatcherAssert.assertThat(
+            "Przyjęcie „bariera usunięta” nie dało 200 i ARCHIVED obu zgłoszeń",
+            List.of(
+                ReviewHttpIT.review(context, id),
+                ReviewHttpIT.status(context, replaced),
+                ReviewHttpIT.status(context, id)
+            ),
+            Matchers.contains(200, "ARCHIVED", "ARCHIVED")
         );
     }
 
