@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
@@ -29,8 +30,10 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.designsystem.marking.SeverityIcon
 import io.github.dostepnykampus.core.designsystem.marking.descriptionRes
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
+import io.github.dostepnykampus.core.geo.building.EntranceDistance
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.capture.R
 import java.util.Locale
@@ -78,6 +81,17 @@ private fun buildingText(place: ReportPlace): String {
 private fun placeInWords(place: ReportPlace): String {
     val accuracy = String.format(POLISH, "%.1f", place.accuracyMeters)
     val nearest = place.nearestEntrance ?: return stringResource(R.string.formularz_dokladnosc, accuracy)
+    return stringResource(R.string.formularz_miejsce, nearestInWords(nearest), accuracy)
+}
+
+/**
+ * Odległość od najbliższego wejścia słowami, np. „ok. 3 m od wejścia głównego”; bez współrzędnych.
+ *
+ * Wymagania: US7.4, US8.4, NFR-19
+ */
+@Composable
+@ReadOnlyComposable
+internal fun nearestInWords(nearest: EntranceDistance): String {
     val name = nearest.entrance.name
     val entrance =
         when {
@@ -86,8 +100,11 @@ private fun placeInWords(place: ReportPlace): String {
             else -> stringResource(R.string.formularz_wejscie)
         }
     val meters = nearest.meters.roundToInt().coerceAtLeast(1)
-    return stringResource(R.string.formularz_miejsce, meters, entrance, accuracy)
+    return stringResource(R.string.formularz_miejsce_od, meters, entrance)
 }
+
+/** Znacznik testowy znaku uciążliwości przy wartości wyboru „Uciążliwość”. */
+internal const val SEVERITY_SIGN_TAG: String = "znak-uciazliwosci"
 
 /**
  * „Uciążliwość”: trzy wybory z opisem, oceniane dla osoby, dla której bariera jest najtrudniejsza (PW-13).
@@ -121,6 +138,8 @@ private fun SeverityOption(option: Severity, isChosen: Boolean, onEdit: (ReportE
         Column(modifier = Modifier.padding(Odstepy.m)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(selected = isChosen, onClick = null)
+                val sign = Modifier.padding(start = Odstepy.s).testTag(SEVERITY_SIGN_TAG)
+                SeverityIcon(severity = option, modifier = sign)
                 Text(
                     text = stringResource(option.nameRes()),
                     modifier = Modifier.padding(start = Odstepy.s),

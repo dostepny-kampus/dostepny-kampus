@@ -73,7 +73,12 @@ internal fun BuildingCard(building: BuildingProgress, name: String?, onOpen: () 
             ) {
                 Text(building.buildingSymbol, style = MaterialTheme.typography.titleMedium)
                 name?.let { Text(it) }
-                Text(coverageText(building.coverage))
+                val coverage = building.coverage
+                if (coverage is InspectionCoverage.Whole && coverage.isInspected) {
+                    InspectedLabel(stringResource(R.string.postep_obejrzany))
+                } else {
+                    Text(coverageText(coverage))
+                }
                 Text(stringResource(R.string.postep_czeka, building.pendingSubmissions))
                 Text(stringResource(R.string.postep_przyjete, building.acceptedSubmissions))
                 if (building.coverage is InspectionCoverage.Floors) {

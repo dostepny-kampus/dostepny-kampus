@@ -15,11 +15,11 @@ val buildingsFile: RegularFile = layout.projectDirectory.file("../../../data/bui
 
 android {
     buildFeatures.buildConfig = true
-    /* Realm Usługi logowania; z emulatora 10.0.2.2 to komputer gospodarza. Release zostaje przy tym samym placeholderze. */
-    val loginRealmUrl = "\"http://10.0.2.2:8180/realms/dostepny-kampus/\""
+    /* Realm Usługi logowania: debug z emulatora (10.0.2.2 to komputer gospodarza), release z konfiguracji budowania. */
+    val address = ServerAddress.LOGIN_REALM
     buildTypes {
-        getByName("debug") { buildConfigField("String", "LOGIN_REALM_URL", loginRealmUrl) }
-        getByName("release") { buildConfigField("String", "LOGIN_REALM_URL", loginRealmUrl) }
+        getByName("debug") { buildConfigField("String", address.field, address.debugField) }
+        getByName("release") { buildConfigField("String", address.field, address.releaseField(providers)) }
     }
     testOptions.unitTests.all {
         /* Test repozytorium na prawdziwym pliku konturów z katalogu data/ w repozytorium. */

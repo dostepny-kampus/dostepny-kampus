@@ -10,7 +10,7 @@ $komunikat("Autor zmienił zgłoszenie. Sprawdź nową wersję przed decyzją.")
 <b>Zgłoszenie z pomiaru</b>
 próg
 $tylko_z_pomoca()
-Budynek C-13, piętro <i>[piętro]</i>
+Budynek C-13, <i>[piętro]</i>
 Miejsce: <i>[punkt z pomiaru]</i>
 $r2_zdjecie("zdjęcie bariery")
 Autor: Zbierający, Autor <i>[nr]</i>

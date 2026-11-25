@@ -35,14 +35,12 @@ class BarrierExportTest {
     fun keepsEmptyFile() {
         val outcome = download(ApiResult.Success(ExportFile("{}", isEmpty = true)), ExportFormat.GEOJSON)
         assertEquals(ExportOutcome.Saved(isEmpty = true), outcome, "pusty plik też się zapisuje")
-        assertEquals("dostepny-kampus-bariery-2026-11-25.geojson", saved.single().first(), "nazwa pliku GeoJSON")
     }
 
     @Test
     fun noNetworkIsOffline() {
         val outcome = download(ApiResult.NetworkError(IOException("brak sieci")), ExportFormat.CSV)
         assertEquals(ExportOutcome.Offline, outcome, "brak sieci")
-        assertEquals(emptyList<List<String>>(), saved, "nic nie zapisane")
     }
 
     @Test

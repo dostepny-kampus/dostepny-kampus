@@ -74,6 +74,16 @@ public interface PendingSubmissionDao : PendingSubmissionRows {
     public suspend fun markRefused(id: String)
 
     /**
+     * Przywraca odrzucone zgłoszenie do wysyłki: [all] znów je zwraca.
+     *
+     * Wymagania: US9.3, BR-10
+     *
+     * @param id identyfikator zgłoszenia
+     */
+    @Query("UPDATE pending_submissions SET refused = 0 WHERE id = :id")
+    public suspend fun markQueued(id: String)
+
+    /**
      * Zaznacza zdjęcie wysłane na serwer.
      *
      * @param submissionId identyfikator zgłoszenia

@@ -24,6 +24,7 @@ import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.feature.capture.measure.MeasureScreen
+import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
@@ -163,6 +164,7 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         is ReportFormRoute -> ReportFormScreen(route = route, onLeave = { back() }, onSave = save, draft = reportDraft)
         is ReportEditRoute -> ReportEdit(route)
         is RemovedRoute -> Removed(route)
+        is MarkingRoute -> Marking(route)
         MySubmissionsRoute -> MySubmissions()
         ProgressRoute, ExportRoute, is MarkersRoute, is CollectorMarkersRoute -> Inspection(route)
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
@@ -189,10 +191,10 @@ private fun AppNavigator.HiltBuildingCard(
  * V2 ze stanem [state] i czynnościami podpiętymi do nawigatora; „Zgłoś barierę przy wejściu” prowadzi do V4
  * bez wybranego wejścia, a Gościa najpierw do L1. „Pokaż wejście na mapie” i wiersz wejścia prowadzą do V1
  * z zaznaczonym wejściem tego budynku, a „Pokaż na planie” do V1 z planem tego piętra. „Zgłoś, że bariery nie ma”
- * widzi tylko Zbierający i prowadzi do C7, a „Oznacz obejrzane piętra” widzi tylko Zbierający i prowadzi do C5.
+ * widzi tylko Zbierający i prowadzi do C7, „Oznacz obejrzane piętra” do C5, a „Zmień oznaczenie” do C6.
  * [onRetry] to „Spróbuj ponownie”.
  *
- * Wymagania: US4.6, US14.2, US3.3, US2.1, US8.4, US15.1
+ * Wymagania: US4.6, US14.2, US3.3, US2.1, US8.4, US15.1, US17.2
  */
 @Composable
 internal fun AppNavigator.BuildingCard(
@@ -221,6 +223,7 @@ internal fun AppNavigator.BuildingCard(
         onRetry = onRetry,
         onShowPlan = { showOnMap(MapFocus.Building(symbol, command = System.nanoTime(), floor = it)) },
         onMarkFloors = { openFloorMarking(symbol) }.takeIf { isCollector },
+        onChangeMarking = { id: String -> openMarking(id, buildingSymbol = symbol) }.takeIf { isCollector },
         onExpand = card.onExpand,
         scroll = card.scroll,
     )

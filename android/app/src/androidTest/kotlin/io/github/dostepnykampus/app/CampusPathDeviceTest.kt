@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.app
 
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotFocused
@@ -14,6 +15,7 @@ import androidx.compose.ui.test.isFocused
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -83,7 +85,7 @@ class CampusPathDeviceTest {
     fun opensCardFromList() {
         compose.onNode(hasText("Pokaż listę")).performClick()
         steps.waitFor(BuildingA1InCatalog)
-        compose.onAllNodes(BuildingA1InCatalog).onFirst().performClick()
+        compose.onAllNodes(BuildingA1InCatalog).onFirst().performSemanticsAction(SemanticsActions.OnClick)
         steps.waitFor(openedCard())
     }
 

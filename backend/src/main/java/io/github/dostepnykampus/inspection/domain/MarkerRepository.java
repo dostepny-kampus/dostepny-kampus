@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.inspection.domain;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -54,4 +56,15 @@ public interface MarkerRepository {
      * @return Prawda, gdy znacznik istniał; fałsz, gdy go nie ma
      */
     boolean revokeAny(UUID id);
+
+    /**
+     * Znaczniki zmienione od chwili {@code since} włącznie, od najdawniej zmienionego.
+     *
+     * <p>Wymagania: US15.1, US15.2, US11.3</p>
+     *
+     * @param since Chwila, od której liczą się zmiany
+     * @param reader Identyfikator konta pobierającego zmiany
+     * @return Znaczniki z chwilą zmiany
+     */
+    List<SyncedMarker> changedSince(Instant since, String reader);
 }
