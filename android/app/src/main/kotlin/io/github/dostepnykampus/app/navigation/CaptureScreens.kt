@@ -27,25 +27,18 @@ import io.github.dostepnykampus.feature.capture.report.removed.RemovedScreen
 internal fun AppNavigator.Capture(route: NavKey) {
     when (route) {
         MeasureRoute -> MeasureScreen(onBack = { back() }, onNext = { openReportForm(it) })
-
-        is ReportFormRoute ->
-            ReportFormScreen(
-                route = route,
-                onLeave = { back() },
-                onSave = { reportSaved() },
-                draft = reportDraft,
-            )
-
+        is ReportFormRoute -> ReportForm(route)
         is ReportEditRoute -> ReportEdit(route)
-
         is RemovedRoute -> Removed(route)
-
         is MarkingRoute -> Marking(route)
-
         MySubmissionsRoute -> MySubmissions()
-
         else -> Unit
     }
+}
+
+@Composable
+private fun AppNavigator.ReportForm(route: ReportFormRoute) {
+    ReportFormScreen(route = route, onLeave = { back() }, onSave = { reportSaved() }, draft = reportDraft)
 }
 
 /** C3 „Moje zgłoszenia”: „Otwórz” prowadzi do poprawki w C2, „Zmierz i zgłoś barierę” do C1. Wymagania: US8.1, US8.3 */
