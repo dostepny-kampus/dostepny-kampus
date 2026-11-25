@@ -21,9 +21,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-/** Komunikat nad decyzją R2. Wymagania: US10.2, US10.8, BR-3, BR-11 */
+/** Komunikat dla Weryfikatora nad formularzem. Wymagania: US10.2, US10.8, BR-3, BR-11 */
 enum class CheckNotice {
-    /** „Podaj powód odrzucenia, aby autor wiedział, co poprawić.” */
+    /** Brakuje powodu odrzucenia. */
     REASON_MISSING,
 
     /** „Autor zmienił zgłoszenie. Sprawdź nową wersję przed decyzją.” */
@@ -76,7 +76,10 @@ sealed interface CheckUiState {
 @HiltViewModel(assistedFactory = ReviewCheckViewModel.Factory::class)
 class ReviewCheckViewModel
     @AssistedInject
-    constructor(@Assisted private val submissionId: String, private val reviews: Reviews) : ViewModel() {
+    constructor(
+        @Assisted private val submissionId: String,
+        private val reviews: Reviews,
+    ) : ViewModel() {
         private val current = MutableStateFlow<CheckUiState>(CheckUiState.Loading)
 
         /** Stan ekranu; zmienia się po otwarciu, po [refresh] i po decyzji. */
@@ -134,11 +137,13 @@ class ReviewCheckViewModel
 
         private fun decide(decision: ReviewDecision, onDone: () -> Unit) {
             viewModelScope.launch {
-                val shown = current.value as? CheckUiState.Ready ?: return@launch
-                when (val reply = reviews.decide(submissionId, decision)) {
-                    is ServerReply.Ok -> decided(reply.value, shown, onDone)
-                    ServerReply.Offline -> current.value = shown.copy(notice = CheckNotice.OFFLINE)
-                    else -> current.value = reply.failure()
+                val shown = current.value
+                if (shown is CheckUiState.Ready) {
+                    when (val reply = reviews.decide(submissionId, decision)) {
+                        is ServerReply.Ok -> decided(reply.value, shown, onDone)
+                        ServerReply.Offline -> current.value = shown.copy(notice = CheckNotice.OFFLINE)
+                        ServerReply.Missing, is ServerReply.Fault -> current.value = reply.failure()
+                    }
                 }
             }
         }
@@ -154,19 +159,12 @@ class ReviewCheckViewModel
             viewModelScope.launch { current.value = read() }
         }
 
-        private suspend fun read(): CheckUiState =
-            when (val found = reviews.submission(submissionId)) {
-                is ServerReply.Ok -> {
-                    when (val similar = reviews.similar(submissionId)) {
-                        is ServerReply.Ok -> ready(found.value, similar.value, notice = null)
-                        else -> similar.failure()
-                    }
-                }
-
-                else -> {
-                    found.failure()
-                }
-            }
+        private suspend fun read(): CheckUiState {
+            val found = reviews.submission(submissionId)
+            if (found !is ServerReply.Ok) return found.failure()
+            val similar = reviews.similar(submissionId)
+            return if (similar is ServerReply.Ok) ready(found.value, similar.value, notice = null) else similar.failure()
+        }
 
         private fun ready(
             submission: Submission,
@@ -187,7 +185,7 @@ class ReviewCheckViewModel
             when (this) {
                 ServerReply.Offline -> CheckUiState.Offline
                 is ServerReply.Fault -> if (code == FORBIDDEN) CheckUiState.Forbidden else CheckUiState.ServerError
-                else -> CheckUiState.ServerError
+                is ServerReply.Ok, ServerReply.Missing -> CheckUiState.ServerError
             }
 
         /** Tworzy [ReviewCheckViewModel] dla zgłoszenia z trasy R2. */
