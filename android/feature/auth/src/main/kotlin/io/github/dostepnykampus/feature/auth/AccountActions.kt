@@ -28,6 +28,9 @@ enum class WorkAction(
 
     /** Postęp inwentaryzacji K1. Wymagania: US11 */
     PROGRESS(StaffRole.COORDINATOR, R.string.konto_postep),
+
+    /** Eksport K3. Wymagania: US13 */
+    EXPORT(StaffRole.COORDINATOR, R.string.konto_eksport),
 }
 
 /**
