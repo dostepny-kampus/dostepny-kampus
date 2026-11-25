@@ -8,10 +8,12 @@ package io.github.dostepnykampus.app.navigation
 import androidx.compose.runtime.Composable
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsActions
 import io.github.dostepnykampus.feature.capture.mine.MySubmissionsScreen
+import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.report.ReportEditExits
 import io.github.dostepnykampus.feature.capture.report.edit.ReportEditScreen
+import io.github.dostepnykampus.feature.capture.report.marking.MarkingScreen
 import io.github.dostepnykampus.feature.capture.report.removed.RemovedScreen
 
 /** C3 „Moje zgłoszenia”: „Otwórz” prowadzi do poprawki w C2, „Zmierz i zgłoś barierę” do C1. Wymagania: US8.1, US8.3 */
@@ -43,4 +45,10 @@ internal fun AppNavigator.ReportEdit(route: ReportEditRoute) {
 @Composable
 internal fun AppNavigator.Removed(route: RemovedRoute) {
     RemovedScreen(route = route, onLeave = { back() }, onFinish = { reportSaved() })
+}
+
+/** C6 wejścia z [route] z V2; „Wyślij do sprawdzenia” otwiera C3 bez C6 w historii. Wymagania: US17.2, NFR-54 */
+@Composable
+internal fun AppNavigator.Marking(route: MarkingRoute) {
+    MarkingScreen(route = route, onLeave = { back() }, onFinish = { reportSaved() })
 }
