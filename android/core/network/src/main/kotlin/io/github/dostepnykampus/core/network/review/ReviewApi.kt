@@ -67,7 +67,7 @@ public class ReviewApi(private val http: OkHttpClient, private val json: Json, b
      * @param submissionId identyfikator zgłoszenia
      */
     public suspend fun claim(submissionId: String): ApiResult<ReviewClaim> {
-        val request = request(submission(submissionId, CLAIM), body = EMPTY.toRequestBody())
+        val request = request(submission(id = submissionId, action = CLAIM), body = EMPTY.toRequestBody())
         return http.exchange(request) { code, body ->
             when (code) {
                 HTTP_OK -> decodedResult(code) { ReviewClaim.Claimed(json.decodeSubmission(body)) }
@@ -88,7 +88,7 @@ public class ReviewApi(private val http: OkHttpClient, private val json: Json, b
      */
     public suspend fun decide(submissionId: String, decision: ReviewDecision): ApiResult<ReviewOutcome> {
         val payload = json.encodeDecision(decision).toRequestBody(JSON)
-        val request = request(submission(submissionId, DECISION), body = payload)
+        val request = request(submission(id = submissionId, action = DECISION), body = payload)
         return http.exchange(request) { code, body ->
             when (code) {
                 HTTP_OK -> decodedResult(code) { ReviewOutcome.Decided(json.decodeSubmission(body)) }
@@ -106,7 +106,7 @@ public class ReviewApi(private val http: OkHttpClient, private val json: Json, b
      * @param submissionId identyfikator sprawdzanego zgłoszenia
      */
     public suspend fun similar(submissionId: String): ApiResult<List<SimilarSubmission>> =
-        http.exchange(request(submission(submissionId, SIMILAR), body = null)) { code, body ->
+        http.exchange(request(submission(id = submissionId, action = SIMILAR), body = null)) { code, body ->
             if (code == HTTP_OK) decodedResult(code) { json.decodeSimilar(body) } else unexpectedResult(code)
         }
 
