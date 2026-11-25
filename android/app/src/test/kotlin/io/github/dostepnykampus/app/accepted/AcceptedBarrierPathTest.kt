@@ -298,8 +298,7 @@ class AcceptedBarrierPathTest {
         assertEquals("nowe zgłoszenie wskazuje poprzednie przyjęte", THRESHOLD_ID, queued.replacesSubmissionId)
         assertEquals("nowe zgłoszenie ma zmienioną uciążliwość", Severity.BLOCKING.value, queued.severity)
         assertTrue("bez sieci zmiana nie trafia na serwer", Fakes.created.isEmpty())
-        val rows = runBlocking { history.observe(TEST_ACCOUNT).first() }.size
-        assertEquals("zmiana tworzy nowy wpis obok przyjętego", 2, rows)
+        assertEquals("zmiana tworzy wpis", 2, runBlocking { history.observe(TEST_ACCOUNT).first() }.size)
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
         expandBarriers()
         compose.onNodeWithText("Próg").performScrollTo().assertIsDisplayed()
