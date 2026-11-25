@@ -243,6 +243,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | C3 | „Zmierz i zgłoś barierę”, także w stanie pustym | C1 | RO-ZBI | US6 |
 | C3, stan „błąd” | „Spróbuj ponownie” | C3 | RO-ZBI | NFR-50 |
 | C4 | „Synchronizuj teraz” | C4 | RO-ZBI | US9.2 |
+| C4, wygasłe zalogowanie | „Zaloguj się” | L1 | RO-ZBI | US9.4, US14.4 |
 | C4, konflikt | „Zostaw moją wersję”, „Weź wersję z serwera” | C3 | RO-ZBI | US9.3, BR-10 |
 | C4, konflikt | „Zdecyduję później” | C3 | RO-ZBI | BR-10 |
 | C5 | „Oznacz jako obejrzane” | C5, nowy stan | RO-ZBI | US15.1 |

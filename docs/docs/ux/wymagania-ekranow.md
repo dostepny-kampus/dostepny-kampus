@@ -697,9 +697,9 @@ Dostępność: status jest słowem, a ikona go tylko wzmacnia (NFR-21). TalkBack
 
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
-| Liczba zgłoszeń i znaczników czekających w telefonie, bez zgłoszeń „Nie wysłano” | dane | US9.1, US9.5, BR-9, BR-26 | — |
+| „Czeka na wysłanie: 3” i pod nim podział, np. „2 zgłoszenia i 1 znacznik piętra”: zgłoszenia „W telefonie” i zmiany znaczników pięter, bez zgłoszeń „Nie wysłano” i bez zgłoszeń czekających na wybór wersji (te mają znak na C3) | dane | US9.1, US9.5, BR-9, BR-10, BR-26 | — |
 | Przy wygasłym zalogowaniu: „Logowanie wygasło. Zaloguj się, a wyślemy zgłoszenia same.” i przycisk „Zaloguj się” | dane, czynność | US9.4, US14.4, BR-26, PW-10 | L1 |
-| „Ostatnia synchronizacja: 12.11.2026, 10:42” | dane | NFR-10 | — |
+| „Ostatnia synchronizacja: 12.11.2026, 10:42”: chwila ostatniej wysyłki, która doszła do końca kolejki; zostaje po ponownym uruchomieniu aplikacji. Przed pierwszą taką wysyłką wiersza nie ma | dane | NFR-10, US9.1 | — |
 | „Synchronizuj teraz”; synchronizacja i tak rusza sama | czynność | UC10, US9.2 | — |
 | Ostrzeżenie „W telefonie zostało mniej niż 100 MB. Zwolnij miejsce, aby dalej robić zdjęcia.” | dane | NFR-7, PW-10 | — |
 | Konflikt: napis „Dwie wersje: wybierz jedną. Druga wersja zostanie usunięta.”; przy zgłoszeniu przyjętym drugie zdanie „Przyjęte zgłoszenie zostanie, a Twoja wersja, jeśli ją wybierzesz, trafi do sprawdzenia jako nowe.” (UC11 3b) | dane | US9.3, BR-10, PW-12 | — |
