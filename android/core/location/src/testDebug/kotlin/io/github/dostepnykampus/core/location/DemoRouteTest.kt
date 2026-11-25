@@ -25,11 +25,13 @@ class DemoRouteTest {
     private val app = RuntimeEnvironment.getApplication()
     private val route = DemoRoute.load(app)
 
+    /** Wyłącza tryb pokazu po każdym teście. */
     @After
     fun switchOff() {
         DemoMode.setEnabled(app, isEnabled = false)
     }
 
+    /** Błąd pozycji spada od wartości przy fasadzie do poniżej metra w oknie pomiaru. */
     @Test
     fun errorDropsBelowMeter() {
         assertTrue("trasa krótsza niż pomiar", route.fixes.last().offsetMillis >= MEASURE_MILLIS)
@@ -37,6 +39,7 @@ class DemoRouteTest {
         assertTrue("błąd na końcu nie poniżej metra", route.fixes.last().accuracyMeters < 1.0)
     }
 
+    /** Satelity czterech systemów dochodzą do pozycji w czasie pomiaru. */
     @Test
     fun satellitesJoinFix() {
         val early = route.visibleAt(offsetMillis = 0).countsInFix()
@@ -45,11 +48,17 @@ class DemoRouteTest {
         assertTrue("satelity nie dochodzą do pozycji", early.values.sum() < late.values.sum())
     }
 
+    /** Uśrednianie z trasy kończy się po 30 s z błędem poniżej metra. */
     @Test
     fun averagingFinishesOnRoute() =
         runTest {
             val clock = ElapsedClock { testScheduler.currentTime }
-            val fixes = route.positions(clock).fixes().take(route.fixes.size + 1).toList()
+            val fixes =
+                route
+                    .positions(clock)
+                    .fixes()
+                    .take(route.fixes.size + 1)
+                    .toList()
             val averaging = fixes.fold(PositionAveraging(fixes.first().elapsedMillis)) { sum, fix -> sum.withFix(fix) }
             val average = checkNotNull(averaging.average()) { "brak średniej z trasy" }
             assertTrue("pomiar nie skończył się po 30 s", averaging.isFinished(fixes.last().elapsedMillis))
@@ -57,6 +66,7 @@ class DemoRouteTest {
             assertTrue("średnia z błędem ponad metr", average.accuracyMeters < 1.0)
         }
 
+    /** Włącznik trybu pokazu zamienia odbiornik GNSS na trasę. */
     @Test
     fun switchPicksRoute() =
         runTest {

@@ -82,7 +82,12 @@ public class DemoRoute(public val fixes: List<DemoFix>, public val satellites: L
     public companion object {
         /** Trasa z pliku zasobów debug aplikacji [context]. */
         public fun load(context: Context): DemoRoute =
-            parse(context.assets.open(ROUTE_ASSET).bufferedReader().use { it.readText() })
+            parse(
+                context.assets
+                    .open(ROUTE_ASSET)
+                    .bufferedReader()
+                    .use { it.readText() },
+            )
 
         /** Trasa z tekstu JSON [text]; błędny tekst kończy się [org.json.JSONException]. */
         public fun parse(text: String): DemoRoute {
