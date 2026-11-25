@@ -37,25 +37,7 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
-import io.github.dostepnykampus.core.model.inspection.MarkerPlace
 import io.github.dostepnykampus.feature.inspection.R
-
-/**
- * Czynności przy wierszu piętra w C5 Zbierającego.
- *
- * Wymagania: US15.1, US15.2
- *
- * @property onMark „Oznacz jako obejrzane” i „Spróbuj ponownie” po błędzie zapisu: miejsce znacznika
- * @property onAsk „Cofnij znacznik”: identyfikator własnego znacznika
- * @property onKeep „Zostaw znacznik”
- * @property onConfirm „Cofnij znacznik” w potwierdzeniu
- */
-data class CollectorMarkerActions(
-    val onMark: (MarkerPlace) -> Unit = {},
-    val onAsk: (markerId: String) -> Unit = {},
-    val onKeep: () -> Unit = {},
-    val onConfirm: () -> Unit = {},
-)
 
 /**
  * C5 „Obejrzane piętra” w wariancie Zbierającego budynku [symbol].

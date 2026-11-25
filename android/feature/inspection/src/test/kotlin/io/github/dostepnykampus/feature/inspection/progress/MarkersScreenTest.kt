@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.inspection.progress
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -59,8 +60,8 @@ class MarkersScreenTest {
     @Test
     fun marksFloorSeenWithIcon() {
         show(MarkersUiState.Ready(BUILDING))
-        val seen = compose.onNodeWithText("Obejrzane").fetchSemanticsNode().boundsInRoot
-        val author = compose.onNodeWithText("Znacznik: Zbierający, Autor 14").fetchSemanticsNode().boundsInRoot
+        val seen = compose.onNodeWithText("Obejrzane").getUnclippedBoundsInRoot()
+        val author = compose.onNodeWithText("Znacznik: Zbierający, Autor 14").getUnclippedBoundsInRoot()
         assertTrue("„Obejrzane” nad autorem", seen.bottom <= author.top)
         compose.onAllNodesWithTag(INSPECTED_ICON_TAG, useUnmergedTree = true).assertCountEquals(1)
     }
