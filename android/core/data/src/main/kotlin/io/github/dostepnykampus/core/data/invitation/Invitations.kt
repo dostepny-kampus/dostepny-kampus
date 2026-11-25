@@ -11,7 +11,13 @@ import io.github.dostepnykampus.core.network.invitation.Invited
 import java.net.HttpURLConnection.HTTP_BAD_REQUEST
 import java.net.HttpURLConnection.HTTP_FORBIDDEN
 
-/** Wynik zaproszenia dla ekranu K2. Wymagania: US12.1, US12.2, NFR-50 */
+/**
+ * Wynik zaproszenia dla ekranu K2.
+ *
+ * TODO(#3826): stan „ma już rolę” z odpowiedzi 409 według kontraktu po zmianie.
+ *
+ * Wymagania: US12.1, US12.2, NFR-50
+ */
 public enum class InviteOutcome {
     /** Zaproszenie wysłane na nowy adres. */
     SENT,
