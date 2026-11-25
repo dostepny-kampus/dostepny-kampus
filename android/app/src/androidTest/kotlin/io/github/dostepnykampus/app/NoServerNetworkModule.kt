@@ -12,6 +12,7 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import io.github.dostepnykampus.core.network.building.BuildingsApi
 import io.github.dostepnykampus.core.network.di.NetworkModule
+import io.github.dostepnykampus.core.network.export.ExportApi
 import io.github.dostepnykampus.core.network.inspection.InspectionProgressApi
 import io.github.dostepnykampus.core.network.inspection.MarkerChangesApi
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi
@@ -101,6 +102,11 @@ object NoServerNetworkModule {
     @Provides
     @Singleton
     fun syncPullApi(http: OkHttpClient, json: Json): SyncPullApi = NetworkModule.syncPullApi(http, json)
+
+    /** Eksport GeoJSON i CSV na kliencie bez serwera. */
+    @Provides
+    @Singleton
+    fun exportApi(http: OkHttpClient, json: Json): ExportApi = NetworkModule.exportApi(http, json)
 
     /** Jedna odpowiedź ma własny strumień PNG; odbiorca zamyka go razem z [response], jak odpowiedź sieciową. */
     private class LocalTileResponse(request: Request, tile: ByteArray) {
