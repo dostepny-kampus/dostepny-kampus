@@ -163,7 +163,11 @@ class ReviewCheckViewModel
             val found = reviews.submission(submissionId)
             if (found !is ServerReply.Ok) return found.failure()
             val similar = reviews.similar(submissionId)
-            return if (similar is ServerReply.Ok) ready(found.value, similar.value, notice = null) else similar.failure()
+            return if (similar is ServerReply.Ok) {
+                ready(found.value, similar.value, notice = null)
+            } else {
+                similar.failure()
+            }
         }
 
         private fun ready(
