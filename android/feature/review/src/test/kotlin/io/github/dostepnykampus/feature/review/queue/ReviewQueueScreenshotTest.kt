@@ -58,7 +58,8 @@ class ReviewQueueScreenshotTest {
             DostepnyKampusTheme {
                 ReviewQueueContent(
                     state = state,
-                    actions = ReviewQueueActions(onBack = {}, onOpen = {}),
+                    onBack = {},
+                    onOpen = {},
                     onClaim = {},
                     onRetry = {},
                 )
