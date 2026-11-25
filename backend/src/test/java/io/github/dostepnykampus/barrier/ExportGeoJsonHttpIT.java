@@ -32,7 +32,6 @@ import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -61,15 +60,13 @@ final class ExportGeoJsonHttpIT {
                 anon.statusCode(), contract.violations("Problem", anon.body()),
                 visitor.statusCode(), contract.violations("Problem", visitor.body()),
                 done.statusCode(),
-                MediaType.parseMediaType(
-                    done.headers().firstValue(HttpHeaders.CONTENT_TYPE).orElseThrow()
-                ),
+                done.headers().firstValue(HttpHeaders.CONTENT_TYPE).orElseThrow(),
                 contract.violations("ExportFeatureCollection", done.body())
             ),
             Matchers.is(
                 List.of(
                     401, List.of(), 403, List.of(), 200,
-                    MediaType.parseMediaType("application/geo+json;charset=UTF-8"), List.of()
+                    "application/geo+json;charset=UTF-8", List.of()
                 )
             )
         );
