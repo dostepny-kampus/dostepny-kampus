@@ -28,8 +28,6 @@ private const val REASON = "rejectionReason"
 /**
  * Treść `ReviewDecision` dla `POST /submissions/{submissionId}/review`.
  *
- * TODO(#3796): wywołanie trasy decyzji w kliencie HTTP sprawdzania.
- *
  * Wymagania: US10.2, US10.3, BR-3
  *
  * @param decision decyzja Weryfikatora
@@ -67,8 +65,6 @@ internal fun Json.encodeDecision(decision: ReviewDecision): String =
 /**
  * Lista `SimilarSubmission` z odpowiedzi serwera. Brak odległości albo zła treść zgłoszenia daje
  * [IllegalArgumentException].
- *
- * TODO(#3796): odczyt odpowiedzi trasy podobnych zgłoszeń w kliencie HTTP sprawdzania.
  *
  * Wymagania: US10.1, BR-13
  *
