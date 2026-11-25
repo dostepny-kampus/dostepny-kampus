@@ -9,11 +9,22 @@ import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.database.room.FloorPlanDao
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.building.FloorList
+import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.room.RoomList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
+
+/**
+ * Kategoria i funkcja pomieszczenia z kopii planu, bez jego geometrii.
+ *
+ * Wymagania: US2.4, NFR-56
+ *
+ * @property category grupa funkcji pomieszczenia
+ * @property function funkcja z danych PWr
+ */
+public data class RoomSummary(val category: RoomCategory, val function: String)
 
 /**
  * Plany pięter budynków z kopią w telefonie, do rysowania planu bez sieci.
@@ -35,6 +46,22 @@ public interface FloorPlans {
 
     /** Pomieszczenia piętra [floor] budynku [symbol] z kopii; `null`, gdy kopia nie ma piętra albo jest zepsuta. */
     public suspend fun rooms(symbol: String, floor: String): RoomList?
+
+    /**
+     * Kategorie i funkcje pomieszczeń budynku [symbol] z kopii według identyfikatora piętra, bez geometrii;
+     * piętro z zepsutą kopią jest pomijane.
+     *
+     * Wymagania: US2.4, NFR-56
+     */
+    public suspend fun roomFacts(symbol: String): Map<String, List<RoomSummary>> =
+        floors(symbol)
+            ?.floors
+            .orEmpty()
+            .mapNotNull { floor ->
+                rooms(symbol, floor.id)?.let { list ->
+                    floor.id to list.rooms.map { RoomSummary(category = it.category, function = it.function) }
+                }
+            }.toMap()
 }
 
 /**
@@ -92,4 +119,12 @@ internal class FloorPlanCopy(
         read[symbol to floor] ?: withContext(ioContext) {
             dao.plan(building = symbol, floor = floor)?.toRoomList(dao.rooms(building = symbol, floor = floor))
         }?.also { read[symbol to floor] = it }
+
+    override suspend fun roomFacts(symbol: String): Map<String, List<RoomSummary>> {
+        val rows = withContext(ioContext) { dao.roomFacts(symbol) }
+        return rows
+            .groupBy { it.floor }
+            .mapNotNull { (floor, floorRows) -> floorRows.toRoomSummaries()?.let { floor to it } }
+            .toMap()
+    }
 }

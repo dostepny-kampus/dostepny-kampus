@@ -108,7 +108,7 @@ public data class SubmissionStamps(
  * zostaje, a kolejna próba wysyła treść raz i tylko brakujące zdjęcia, z tym samym identyfikatorem. [onSaved] planuje
  * wysyłkę po powrocie sieci. Poprawka ([saveEdit]) zastępuje wiersz zgłoszenia i idzie jako [SubmissionServer.update] z
  * wersją bazową. Po 401 wysyłka czeka na [onLoggedIn] ([loginExpired]). Zgłoszenia Zbierającego trafiają też do
- * [history]. Chwile zapisu z [SubmissionStamps.nowMillis] rosną ściśle, a serwer jest wołany poza blokadą wierszy.
+ * historii wysłanych. Chwile zapisu z [SubmissionStamps.nowMillis] rosną ściśle, a serwer jest wołany poza blokadą.
  *
  * Wymagania: NFR-5, US9.1, US9.2, BR-9, NFR-8, NFR-6, US8.3, BR-10, BR-26, US14.4, US8
  */
@@ -118,10 +118,11 @@ public class SubmissionQueue internal constructor(
     private val server: SubmissionServer,
     private val stamps: SubmissionStamps = SubmissionStamps(),
     private val onSaved: () -> Unit = {},
-    private val history: OwnSubmissionDao? = null,
+    records: SentRecords = SentRecords(),
 ) {
     private val sending = Mutex()
-    private val results = SentResults(store = store, history = history, ioContext = ioContext)
+    private val history = records.history
+    private val results = SentResults(store = store, records = records, ioContext = ioContext)
     private val lastSavedAt = AtomicLong(Long.MIN_VALUE)
     private val logins = AtomicLong()
     private val expired = MutableStateFlow(false)
@@ -150,7 +151,7 @@ public class SubmissionQueue internal constructor(
         server = server,
         stamps = stamps,
         onSaved = onSaved,
-        history = store.history,
+        records = SentRecords(history = store.history, conflicts = store.conflicts),
     )
 
     /**
@@ -415,7 +416,8 @@ internal fun outcomeOf(result: ServerReply<*>): Outcome =
 
 /**
  * Wynik edycji [result]: konflikt wersji (409) zostaje w telefonie jako „Nie wysłano”, bez ponawiania w kółko.
- * Wersja z serwera trafia do wiersza kolejki i historii, więc ponowny zapis poprawki idzie od niej.
+ * Numer wersji z serwera trafia do wiersza kolejki i historii, więc ponowny zapis poprawki idzie od niej, a cała
+ * wersja z serwera do kopii w telefonie.
  *
  * Wymagania: US9.3, BR-10
  */

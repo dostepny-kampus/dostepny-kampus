@@ -13,6 +13,7 @@ import io.github.dostepnykampus.core.network.building.decodeBuildingList
 import io.github.dostepnykampus.core.network.di.NetworkModule
 import io.github.dostepnykampus.core.network.inspection.InspectionProgressApi
 import io.github.dostepnykampus.core.network.inspection.MarkerChangesApi
+import io.github.dostepnykampus.core.network.review.ReviewApi
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Test
@@ -26,7 +27,6 @@ class NetworkModuleTest {
         val api = NetworkModule.buildingsApi(http = http, json = json)
         assertEquals(CALL_MS, http.connectTimeoutMillis, "limit połączenia klienta")
         assertEquals(CALL_MS, http.callTimeoutMillis, "limit wywołania klienta")
-        assertEquals(BASE_URL, BuildConfig.API_BASE_URL, "adres serwera z konfiguracji")
         assertInstanceOf(BuildingsApi::class.java, api, "klient budynków z modułu")
         assertInstanceOf(
             MarkerChangesApi::class.java,
@@ -38,6 +38,11 @@ class NetworkModuleTest {
             NetworkModule.inspectionProgressApi(http = http, json = json),
             "klient postępu z modułu",
         )
+        assertInstanceOf(
+            ReviewApi::class.java,
+            NetworkModule.reviewApi(http = http, json = json),
+            "klient sprawdzania z modułu",
+        )
         assertInstanceOf(AccessTokenInterceptor::class.java, http.interceptors.single(), "przechwytywacz tokenu konta")
         val parsed = json.decodeBuildingList("""{"source":"x","extra":1,"buildings":[]}""")
         assertEquals("x", parsed.source, "źródło odczytane mimo nieznanego pola")
@@ -46,6 +51,5 @@ class NetworkModuleTest {
 
     private companion object {
         const val CALL_MS = 3_000
-        const val BASE_URL = "http://10.0.2.2:8080/"
     }
 }

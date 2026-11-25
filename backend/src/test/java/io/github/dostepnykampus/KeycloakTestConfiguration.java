@@ -80,18 +80,37 @@ public final class KeycloakTestConfiguration {
     }
 
     /**
-     * Wskazuje serwerowi realm z kontenera jako wystawcę tokenów.
+     * Wskazuje serwerowi realm z kontenera jako wystawcę tokenów, a kontu technicznemu
+     * serwera Admin REST API i tokeny realmu z sekretem klienta z realmu deweloperskiego.
      *
      * @param keycloak Kontener usługi logowania
-     * @return Ustawienie adresu wystawcy tokenów
+     * @return Ustawienia adresu wystawcy tokenów i {@code dk.accounts}
      */
     @Bean
     static DynamicPropertyRegistrar issuer(final GenericContainer<?> keycloak) {
-        return registry -> registry.add(
-            "spring.security.oauth2.resourceserver.jwt.issuer-uri",
-            () -> "http://%s:%d/realms/dostepny-kampus".formatted(
-                keycloak.getHost(), keycloak.getMappedPort(KeycloakTestConfiguration.PORT)
-            )
+        final String realm = "%s/realms/dostepny-kampus";
+        return registry -> {
+            registry.add(
+                "spring.security.oauth2.resourceserver.jwt.issuer-uri",
+                () -> realm.formatted(KeycloakTestConfiguration.base(keycloak))
+            );
+            registry.add(
+                "dk.accounts.admin",
+                () -> "%s/admin/realms/dostepny-kampus"
+                    .formatted(KeycloakTestConfiguration.base(keycloak))
+            );
+            registry.add(
+                "dk.accounts.token",
+                () -> realm.concat("/protocol/openid-connect/token")
+                    .formatted(KeycloakTestConfiguration.base(keycloak))
+            );
+            registry.add("dk.accounts.secret", () -> "haslo-testowe-konta-serwera");
+        };
+    }
+
+    private static String base(final GenericContainer<?> keycloak) {
+        return "http://%s:%d".formatted(
+            keycloak.getHost(), keycloak.getMappedPort(KeycloakTestConfiguration.PORT)
         );
     }
 }

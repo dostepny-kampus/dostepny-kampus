@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Yevhenii Lukianenko
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.database
@@ -288,6 +288,26 @@ class MigrationTest {
         } finally {
             database.close()
         }
+    }
+
+    /** Wersja 13→14: historia zostaje, nowe kolumny są puste. Wymagania: US8.4, US17.2 */
+    @Test
+    fun keepsHistoryFrom13To14() {
+        helper.createDatabase(DB_NAME, 13).use { thirteenth ->
+            thirteenth.execSQL(
+                "INSERT INTO own_submissions (id, saved_at, kind, state) VALUES ('h', 7, 'PRECISE', 'SENT')",
+            )
+        }
+
+        helper
+            .runMigrationsAndValidate(DB_NAME, 14, true, MIGRATION_13_14)
+            .use { fourteenth ->
+                val empty =
+                    "SELECT COUNT(*) FROM own_submissions WHERE barrier_removed IS NULL " +
+                        "AND entrance_id IS NULL AND entrance_marking IS NULL"
+                val history = fourteenth.query(empty).use { row -> readCount(row) }
+                assertEquals("wiersz historii zostaje z pustymi nowymi kolumnami", 1, history)
+            }
     }
 }
 

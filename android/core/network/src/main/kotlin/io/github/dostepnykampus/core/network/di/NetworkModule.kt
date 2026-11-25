@@ -13,9 +13,11 @@ import io.github.dostepnykampus.core.network.BuildConfig
 import io.github.dostepnykampus.core.network.auth.AccessTokenInterceptor
 import io.github.dostepnykampus.core.network.auth.AccessTokens
 import io.github.dostepnykampus.core.network.building.BuildingsApi
+import io.github.dostepnykampus.core.network.export.ExportApi
 import io.github.dostepnykampus.core.network.inspection.InspectionProgressApi
-import io.github.dostepnykampus.core.network.invitation.InvitationsApi
 import io.github.dostepnykampus.core.network.inspection.MarkerChangesApi
+import io.github.dostepnykampus.core.network.invitation.InvitationsApi
+import io.github.dostepnykampus.core.network.review.ReviewApi
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 import io.github.dostepnykampus.core.network.sync.SyncPullApi
 import kotlinx.serialization.json.Json
@@ -26,7 +28,8 @@ import javax.inject.Singleton
 /**
  * Klient HTTP `core:network` w grafie Hilt aplikacji.
  *
- * Jedna instancja klienta, parsera, [BuildingsApi], [SubmissionsApi], [MarkerChangesApi] i [SyncPullApi] na proces.
+ * Jedna instancja klienta, parsera, [BuildingsApi], [SubmissionsApi], [MarkerChangesApi], [SyncPullApi] i [ReviewApi]
+ * na proces.
  */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -91,9 +94,21 @@ public object NetworkModule {
     public fun syncPullApi(http: OkHttpClient, json: Json): SyncPullApi =
         SyncPullApi(http = http, json = json, baseUrl = BuildConfig.API_BASE_URL)
 
+    /** Kolejka, wzięcie, decyzja i podobne zgłoszenia Weryfikatora; ten sam adres co [buildingsApi]. */
+    @Provides
+    @Singleton
+    public fun reviewApi(http: OkHttpClient, json: Json): ReviewApi =
+        ReviewApi(http = http, json = json, baseUrl = BuildConfig.API_BASE_URL)
+
     /** Zaproszenia Koordynatora; ten sam adres co [buildingsApi]. */
     @Provides
     @Singleton
     public fun invitationsApi(http: OkHttpClient, json: Json): InvitationsApi =
         InvitationsApi(http = http, json = json, baseUrl = BuildConfig.API_BASE_URL)
+
+    /** Eksport GeoJSON i CSV dla Koordynatora; ten sam adres co [buildingsApi]. */
+    @Provides
+    @Singleton
+    public fun exportApi(http: OkHttpClient, json: Json): ExportApi =
+        ExportApi(http = http, json = json, baseUrl = BuildConfig.API_BASE_URL)
 }

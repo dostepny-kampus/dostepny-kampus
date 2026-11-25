@@ -57,6 +57,17 @@
           }
         }
       ]
+    },
+    {
+      "clientId": "dostepny-kampus-serwer",
+      "name": "Serwer Dostępny Kampus (konto techniczne zaproszeń)",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "haslo-testowe-konta-serwera",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": true
     }
   ],
   "users": [
@@ -131,6 +142,18 @@
       "realmRoles": [
         "COORDINATOR"
       ]
+    },
+    {
+      "username": "service-account-dostepny-kampus-serwer",
+      "enabled": true,
+      "serviceAccountClientId": "dostepny-kampus-serwer",
+      "clientRoles": {
+        "realm-management": [
+          "manage-users",
+          "view-users",
+          "view-realm"
+        ]
+      }
     }
   ]
 }
