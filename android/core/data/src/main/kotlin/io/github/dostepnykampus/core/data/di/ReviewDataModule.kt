@@ -12,6 +12,7 @@ import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.review.Reviews
 import io.github.dostepnykampus.core.data.review.reviewsOf
 import io.github.dostepnykampus.core.network.review.ReviewApi
+import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 
 /** Sprawdzanie zgłoszeń `core:data` w grafie Hilt aplikacji. */
 @Module
@@ -19,5 +20,5 @@ import io.github.dostepnykampus.core.network.review.ReviewApi
 internal object ReviewDataModule {
     /** Kolejka, wzięcie, decyzja i podobne zgłoszenia Weryfikatora z serwera. Wymagania: US10, BR-11 */
     @Provides
-    fun reviews(api: ReviewApi): Reviews = reviewsOf(api)
+    fun reviews(api: ReviewApi, submissions: SubmissionsApi): Reviews = reviewsOf(api = api, submissions = submissions)
 }

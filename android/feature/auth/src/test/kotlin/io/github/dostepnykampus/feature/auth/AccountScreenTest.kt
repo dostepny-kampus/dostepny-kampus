@@ -41,7 +41,8 @@ class AccountScreenTest {
         compose.onNodeWithText("Zmierz i zgłoś barierę").performScrollTo().performClick()
         compose.onNodeWithText("Moje zgłoszenia").performScrollTo().performClick()
         compose.onNodeWithText("Postęp inwentaryzacji").performScrollTo().performClick()
-        assertEquals("czynności ról", listOf("MEASURE", "MINE", "PROGRESS"), events)
+        compose.onNodeWithText("Pobierz eksport").performScrollTo().performClick()
+        assertEquals("czynności ról", listOf("MEASURE", "MINE", "PROGRESS", "EXPORT"), events)
     }
 
     /** „Wyloguj się” i „Wstecz” prowadzą poza ekran. */

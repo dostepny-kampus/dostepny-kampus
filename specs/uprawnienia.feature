@@ -50,8 +50,7 @@ Funkcja: Logowanie, role i zaproszenia
     Oraz może złożyć zgłoszenie szybkie
     Ale nie widzi pomiaru precyzyjnego, kolejki weryfikacji ani postępu inwentaryzacji
 
-  # kroki serwera: #1990
-  @US12.1 @BR-2 @aplikacja @serwer @do-zrobienia
+  @US12.1 @BR-2 @aplikacja @serwer @usluga-logowania
   Szablon scenariusza: Osoba z zaproszenia loguje się z wybraną rolą
     Zakładając, że Koordynator wysłał zaproszenie na adres <adres> z rolą „<rola>”
     Jeżeli osoba z tym adresem zaloguje się pierwszy raz
@@ -64,8 +63,7 @@ Funkcja: Logowanie, role i zaproszenia
       | weryfikator@example.org    | Weryfikator | kolejka weryfikacji    |
       | koordynator@example.org    | Koordynator | postęp inwentaryzacji  |
 
-  # kroki serwera: #1990
-  @US12.2 @BR-1 @BR-2 @aplikacja @serwer @do-zrobienia
+  @US12.2 @BR-1 @BR-2 @aplikacja @serwer @usluga-logowania
   Scenariusz: Zaproszenie na adres istniejącego konta dodaje rolę
     Zakładając, że konto z adresem anna.nowak@example.org ma role Odwiedzający i Zbierający
     Jeżeli Koordynator zaprosi ten adres z rolą „Weryfikator”
@@ -73,8 +71,7 @@ Funkcja: Logowanie, role i zaproszenia
     Wtedy w profilu widzi role Odwiedzający, Zbierający i Weryfikator
     Oraz może otworzyć pomiar precyzyjny i kolejkę weryfikacji
 
-  # kroki serwera: #1990
-  @BR-2 @serwer @do-zrobienia
+  @BR-2 @serwer @usluga-logowania
   Scenariusz: Rolę pracowniczą nadaje tylko Koordynator
     Zakładając, że Weryfikator jest zalogowany z rolą Weryfikatora
     Jeżeli spróbuje zaprosić adres nowy@example.org z rolą „Zbierający” z pominięciem aplikacji
