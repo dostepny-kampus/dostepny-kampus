@@ -8,7 +8,6 @@ package io.github.dostepnykampus.core.location
 import android.content.Context
 import io.github.dostepnykampus.core.model.GeoPoint
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.json.JSONArray
 import org.json.JSONObject

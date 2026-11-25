@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.location
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
@@ -18,7 +19,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
 /** Tryb pokazu: trasa z zasobów debug daje pełny pomiar C1 i satelity kilku systemów. Wymagania: US6.1, NFR-1 */
-@OptIn(TrybPokazu::class)
+@OptIn(TrybPokazu::class, ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class DemoRouteTest {
     private val app = RuntimeEnvironment.getApplication()
