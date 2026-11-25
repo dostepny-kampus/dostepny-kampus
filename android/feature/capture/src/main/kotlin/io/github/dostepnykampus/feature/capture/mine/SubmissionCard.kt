@@ -38,7 +38,7 @@ import java.time.ZoneId
  * wersji, a zgłoszenie z pomiaru zamiast „Otwórz” ma „Wyślij ponownie”; usunięcie bariery ma
  * „Zmierz i zgłoś barierę”.
  *
- * Wymagania: US8.1, NFR-18, NFR-21, US9.5, US8.3, US8.4, US17.2, BR-23, PW-12
+ * Wymagania: US8.1, NFR-18, NFR-21, US9.5, US8.3, US8.4, US17.2, BR-23
  *
  * @param item zgłoszenie
  * @param onOpen „Otwórz” albo „Wyślij ponownie”: poprawka w C2 dla zgłoszeń, które można poprawić; `null` bez

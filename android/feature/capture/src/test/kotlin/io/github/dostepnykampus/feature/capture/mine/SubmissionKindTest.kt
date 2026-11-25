@@ -69,7 +69,7 @@ class SubmissionKindTest {
     /**
      * Wiersz: „bariera usunięta” odrzucona jako „nieaktualne” ma zdanie o mapie i „Zmierz i zgłoś barierę” do C1.
      *
-     * Wymagania: BR-23, PW-12
+     * Wymagania: BR-23
      */
     @Test
     fun measuresAfterOutdatedRemoval() {
