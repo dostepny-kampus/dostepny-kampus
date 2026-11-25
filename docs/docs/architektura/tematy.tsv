@@ -15,6 +15,7 @@ error	temat	błąd	Błędy wspólne dla modułów i ich odpowiedź HTTP.
 form	ścieżka	formularz zgłoszenia	Pełny formularz nowego zgłoszenia.
 geo	temat	geometria	Punkty, obszary i układy współrzędnych.
 inspection	temat	obejrzenie piętra	Znacznik piętra obejrzanego i zmiany znaczników czekające na wysłanie.
+invitation	temat	zaproszenie	Zaproszenie osoby z rolą pracowniczą przez Koordynatora.
 location	temat	położenie	Położenie osoby i dopasowanie go do budynku.
 map	temat	widok mapy	Wybór między mapą a listą budynków, zapamiętany na urządzeniu.
 marking	temat	oznaczenie	Oznaczenie wejścia i bariery: kolor, znak, nazwa.

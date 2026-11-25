@@ -13,9 +13,11 @@ import io.github.dostepnykampus.core.network.encodeContract
 import io.github.dostepnykampus.core.network.exchange
 import io.github.dostepnykampus.core.network.unexpectedResult
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -74,7 +76,7 @@ public class InvitationsApi(private val http: OkHttpClient, private val json: Js
     }
 
     private fun invitedOf(body: String): Invited {
-        val existed = json.decodeContract(JsonObject.serializer(), body)["accountExisted"]
+        val existed = json.decodeContract(JsonElement.serializer(), body).jsonObject["accountExisted"]
         return Invited(accountExisted = requireNotNull(existed).jsonPrimitive.boolean)
     }
 
