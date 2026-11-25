@@ -9,8 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.feature.inspection.export.ExportActions
 import io.github.dostepnykampus.feature.inspection.export.ExportScreen
+import io.github.dostepnykampus.feature.inspection.invitation.InvitationScreen
 import io.github.dostepnykampus.feature.inspection.navigation.CollectorMarkersRoute
 import io.github.dostepnykampus.feature.inspection.navigation.ExportRoute
+import io.github.dostepnykampus.feature.inspection.navigation.InvitationRoute
 import io.github.dostepnykampus.feature.inspection.navigation.MarkersRoute
 import io.github.dostepnykampus.feature.inspection.navigation.ProgressRoute
 import io.github.dostepnykampus.feature.inspection.progress.CollectorMarkersScreen
@@ -29,6 +31,11 @@ fun AppNavigator.inspectionExport() {
     leaving { add(ExportRoute) }
 }
 
+/** L2 → K2: „Zaproś osobę”. Wymagania: US12.1 */
+fun AppNavigator.inspectionInvitation() {
+    leaving { add(InvitationRoute) }
+}
+
 /** K1 → C5: „Otwórz” przy budynku [symbol]; działa tylko z K1. Wymagania: US11.3 */
 fun AppNavigator.openMarkers(symbol: String) {
     if (current == ProgressRoute) leaving { add(MarkersRoute(symbol)) }
@@ -40,16 +47,17 @@ fun AppNavigator.openFloorMarking(symbol: String) {
 }
 
 /**
- * K1 „Postęp inwentaryzacji”, C5 „Obejrzane piętra” i K3 „Eksport” Koordynatora: „Wstecz” z K1 i K3 wraca do L2,
+ * K1 „Postęp inwentaryzacji”, C5 „Obejrzane piętra” i K3 „Eksport” Koordynatora: „Wstecz” z K1, K2 i K3 wraca do L2,
  * z C5 do K1, „Otwórz” przy budynku prowadzi z K1 do C5. C5 Zbierającego wraca „Wstecz” do V2.
  *
- * Wymagania: US11.1, US11.3, US13, US15.1
+ * Wymagania: US11.1, US11.3, US12.1, US13, US15.1
  */
 @Composable
 internal fun AppNavigator.Inspection(route: NavKey) {
     when (route) {
         is MarkersRoute -> MarkersScreen(symbol = route.buildingSymbol, onBack = { back() })
         is CollectorMarkersRoute -> CollectorMarkersScreen(symbol = route.buildingSymbol, onBack = { back() })
+        InvitationRoute -> InvitationScreen(onBack = { back() }, onLeave = { backToMap() })
         ExportRoute -> ExportScreen(ExportActions(onBack = { back() }, onLeave = { backToMap() }))
         else -> ProgressScreen(ProgressActions(onBack = { back() }, onOpen = { openMarkers(it) }))
     }
