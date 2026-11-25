@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pl">
+    <string name="kolejka_naglowek">Zgłoszenia do sprawdzenia</string>
+    <string name="kolejka_do_sprawdzenia">Do sprawdzenia</string>
+    <string name="kolejka_wziete">Wzięte przeze mnie</string>
+    <string name="kolejka_wez">Weź do sprawdzenia</string>
+    <string name="kolejka_otworz">Otwórz</string>
+    <string name="kolejka_wyslane">Wysłane %1$s</string>
+    <string name="kolejka_pusta">Nie ma zgłoszeń do sprawdzenia. Zajrzyj tu później.</string>
+    <string name="kolejka_wczytujemy">Wczytujemy zgłoszenia…</string>
+    <string name="kolejka_zajete">Ktoś inny wziął już to zgłoszenie.</string>
+    <string name="kolejka_zajete_wybierz">Wybierz inne.</string>
+    <string name="kolejka_pomiar">Zgłoszenie z pomiaru</string>
+    <string name="kolejka_szybkie">Zgłoszenie szybkie</string>
+    <string name="kolejka_bariery_nie_ma">Bariery już nie ma</string>
+    <string name="kolejka_zmiana_oznaczenia">Zmiana oznaczenia wejścia</string>
+</resources>
