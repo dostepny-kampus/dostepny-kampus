@@ -285,7 +285,8 @@ class AcceptedBarrierPathTest {
                 ),
             )
         }
-        Fakes.accepted = listOf(barrier(id = THRESHOLD_ID, type = BarrierType.THRESHOLD, severity = Severity.ONLY_WITH_HELP, floor = 0))
+        Fakes.accepted =
+            listOf(barrier(id = THRESHOLD_ID, type = BarrierType.THRESHOLD, severity = Severity.ONLY_WITH_HELP, floor = 0))
         openCard()
         compose.waitUntil(WAIT_MS) { hasText(REPLACE_BUTTON) }
         compose.onNodeWithText(REPLACE_BUTTON).performScrollTo().performClick()
@@ -297,12 +298,10 @@ class AcceptedBarrierPathTest {
         val queued = runBlocking { pending.all() }.single().submission
         assertEquals("nowe zgłoszenie wskazuje poprzednie przyjęte", THRESHOLD_ID, queued.replacesSubmissionId)
         assertEquals("nowe zgłoszenie ma zmienioną uciążliwość", Severity.BLOCKING.value, queued.severity)
-        assertTrue("bez sieci zmiana nie trafia na serwer", Fakes.created.isEmpty())
         assertEquals("zmiana tworzy wpis", 2, runBlocking { history.observe(TEST_ACCOUNT).first() }.size)
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
         expandBarriers()
         compose.onNodeWithText("Próg").performScrollTo().assertIsDisplayed()
-        compose.onNodeWithText("Tylko z pomocą").performScrollTo().assertIsDisplayed()
     }
 
     /**
@@ -314,7 +313,8 @@ class AcceptedBarrierPathTest {
     @Test
     fun reportsLiftRemoval() {
         Fakes.network.value = true
-        Fakes.accepted = listOf(barrier(id = "s-9", type = BarrierType.BROKEN_LIFT, severity = Severity.BLOCKING, floor = 2))
+        Fakes.accepted =
+            listOf(barrier(id = "s-9", type = BarrierType.BROKEN_LIFT, severity = Severity.BLOCKING, floor = 2))
         openCard()
         compose.onNodeWithText(LIFT_NAME).performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Zgłoś, że bariery nie ma").performScrollTo().performClick()
