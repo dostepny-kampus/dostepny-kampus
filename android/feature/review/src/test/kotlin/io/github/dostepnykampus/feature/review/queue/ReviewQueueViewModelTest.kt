@@ -105,7 +105,7 @@ class ReviewQueueViewModelTest {
         claim: ServerReply<ReviewClaim> = ServerReply.Missing,
         block: suspend TestScope.(ReviewQueueViewModel) -> Unit,
     ) {
-        val reviews = FakeReviews(queue, claim)
+        val reviews = FakeReviews(list = queue, take = claim)
         val dispatcher = StandardTestDispatcher()
         Dispatchers.setMain(dispatcher)
         try {
