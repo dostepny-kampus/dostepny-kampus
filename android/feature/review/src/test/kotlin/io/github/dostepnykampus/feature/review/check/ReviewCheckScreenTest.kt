@@ -25,8 +25,9 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
- * R2 „Sprawdzenie zgłoszenia”: dane zgłoszenia, podobne zgłoszenia, „Przyjmij”, powody odrzucenia z „Duplikat” i „Inny powód”,
- * komunikaty nowej wersji, braku powodu i braku sieci oraz zmiana oznaczenia wejścia bez „Duplikat”.
+ * R2 „Sprawdzenie zgłoszenia”: dane zgłoszenia, podobne zgłoszenia, „Przyjmij”, powody odrzucenia z „Duplikat”
+ * i „Inny powód”, komunikaty nowej wersji, braku powodu i braku sieci oraz zmiana oznaczenia wejścia
+ * bez „Duplikat”.
  *
  * Wymagania: US10.1, US10.2, US10.8, BR-11, BR-13, BR-16, BR-24
  */
