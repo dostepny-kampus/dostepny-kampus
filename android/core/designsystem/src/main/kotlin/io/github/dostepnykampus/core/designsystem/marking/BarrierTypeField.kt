@@ -61,7 +61,7 @@ public fun BarrierTypeField(type: BarrierType?, onPick: (BarrierType) -> Unit, m
     var isReturning by remember { mutableStateOf(false) }
     val field = remember { FocusRequester() }
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        TypeTitle(modifier = Modifier)
+        TypeTitle()
         OutlinedButton(
             onClick = { isOpen = true },
             modifier =
@@ -100,7 +100,7 @@ public fun BarrierTypeField(type: BarrierType?, onPick: (BarrierType) -> Unit, m
 }
 
 @Composable
-private fun TypeTitle(modifier: Modifier) {
+private fun TypeTitle(modifier: Modifier = Modifier) {
     Text(
         text = stringResource(R.string.wybor_typ),
         modifier = modifier.semantics { heading() },
