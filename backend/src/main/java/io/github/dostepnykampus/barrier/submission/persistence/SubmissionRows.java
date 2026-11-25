@@ -33,7 +33,13 @@ import tools.jackson.databind.ObjectMapper;
  *
  * @since 0.1.0
  */
-final class SubmissionRows implements RowMapper<Submission> {
+public final class SubmissionRows implements RowMapper<Submission> {
+
+    /**
+     * Kolumny zgłoszenia czytane do modelu.
+     */
+    public static final String COLUMNS =
+        "id, version, status, created_at, verified_at, content::text AS content, rejection_reason, duplicate_of";
 
     /** Diagnostyka wierszy pomijanych w listach. */
     private static final Logger LOG = LoggerFactory.getLogger(SubmissionRows.class);
@@ -41,7 +47,12 @@ final class SubmissionRows implements RowMapper<Submission> {
     /** Odczyt treści z kolumny JSON. */
     private final ObjectMapper mapper;
 
-    SubmissionRows(final ObjectMapper mapper) {
+    /**
+     * Tworzy odczyt wierszy zgłoszeń.
+     *
+     * @param mapper Odczyt treści z kolumny JSON
+     */
+    public SubmissionRows(final ObjectMapper mapper) {
         this.mapper = mapper;
     }
 
@@ -69,14 +80,6 @@ final class SubmissionRows implements RowMapper<Submission> {
         }
     }
 
-    static <T> ResultSetExtractor<List<T>> readable(final RowMapper<T> mapping) {
-        return rows -> {
-            final List<T> results = new ArrayList<>(16);
-            SubmissionRows.fill(rows, mapping, Integer.MAX_VALUE, results);
-            return results;
-        };
-    }
-
     static ResultSetExtractor<SubmissionFinder.Page> page(
         final RowMapper<Submission> mapping, final SubmissionFinder.Window window
     ) {
@@ -92,7 +95,7 @@ final class SubmissionRows implements RowMapper<Submission> {
         };
     }
 
-    private static <T> @Nullable UUID fill(
+    static <T> @Nullable UUID fill(
         final ResultSet rows, final RowMapper<T> mapping, final int limit, final List<T> into
     ) throws SQLException {
         @Nullable UUID last = null;
