@@ -8,7 +8,6 @@ package io.github.dostepnykampus.core.location
 import android.content.Context
 import io.github.dostepnykampus.core.model.GeoPoint
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.json.JSONArray
 import org.json.JSONObject
@@ -83,7 +82,12 @@ public class DemoRoute(public val fixes: List<DemoFix>, public val satellites: L
     public companion object {
         /** Trasa z pliku zasobów debug aplikacji [context]. */
         public fun load(context: Context): DemoRoute =
-            parse(context.assets.open(ROUTE_ASSET).bufferedReader().use { it.readText() })
+            parse(
+                context.assets
+                    .open(ROUTE_ASSET)
+                    .bufferedReader()
+                    .use { it.readText() },
+            )
 
         /** Trasa z tekstu JSON [text]; błędny tekst kończy się [org.json.JSONException]. */
         public fun parse(text: String): DemoRoute {

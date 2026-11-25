@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.core.location
 
 import android.content.Context
+import androidx.core.content.edit
 
 private const val PREFERENCES = "tryb_pokazu"
 private const val ENABLED = "wlaczony"
@@ -22,7 +23,7 @@ public object DemoMode {
 
     /** Zapisuje stan włącznika [isEnabled]. */
     public fun setEnabled(context: Context, isEnabled: Boolean) {
-        context.preferences().edit().putBoolean(ENABLED, isEnabled).apply()
+        context.preferences().edit { putBoolean(ENABLED, isEnabled) }
     }
 
     private fun Context.preferences() = applicationContext.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)

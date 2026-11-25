@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.location
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
@@ -18,7 +19,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
 /** Tryb pokazu: trasa z zasobów debug daje pełny pomiar C1 i satelity kilku systemów. Wymagania: US6.1, NFR-1 */
-@OptIn(TrybPokazu::class)
+@OptIn(TrybPokazu::class, ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class DemoRouteTest {
     private val app = RuntimeEnvironment.getApplication()
@@ -29,6 +30,7 @@ class DemoRouteTest {
         DemoMode.setEnabled(app, isEnabled = false)
     }
 
+    /** Błąd pozycji spada od wartości przy fasadzie do poniżej metra w oknie pomiaru. */
     @Test
     fun errorDropsBelowMeter() {
         assertTrue("trasa krótsza niż pomiar", route.fixes.last().offsetMillis >= MEASURE_MILLIS)
@@ -36,6 +38,7 @@ class DemoRouteTest {
         assertTrue("błąd na końcu nie poniżej metra", route.fixes.last().accuracyMeters < 1.0)
     }
 
+    /** Satelity czterech systemów dochodzą do pozycji w czasie pomiaru. */
     @Test
     fun satellitesJoinFix() {
         val early = route.visibleAt(offsetMillis = 0).countsInFix()
@@ -44,11 +47,17 @@ class DemoRouteTest {
         assertTrue("satelity nie dochodzą do pozycji", early.values.sum() < late.values.sum())
     }
 
+    /** Uśrednianie z trasy kończy się po 30 s z błędem poniżej metra. */
     @Test
     fun averagingFinishesOnRoute() =
         runTest {
             val clock = ElapsedClock { testScheduler.currentTime }
-            val fixes = route.positions(clock).fixes().take(route.fixes.size + 1).toList()
+            val fixes =
+                route
+                    .positions(clock)
+                    .fixes()
+                    .take(route.fixes.size + 1)
+                    .toList()
             val averaging = fixes.fold(PositionAveraging(fixes.first().elapsedMillis)) { sum, fix -> sum.withFix(fix) }
             val average = checkNotNull(averaging.average()) { "brak średniej z trasy" }
             assertTrue("pomiar nie skończył się po 30 s", averaging.isFinished(fixes.last().elapsedMillis))
@@ -56,6 +65,7 @@ class DemoRouteTest {
             assertTrue("średnia z błędem ponad metr", average.accuracyMeters < 1.0)
         }
 
+    /** Włącznik trybu pokazu przełącza źródła położenia i satelitów na trasę pokazu. */
     @Test
     fun switchPicksRoute() =
         runTest {
@@ -65,7 +75,6 @@ class DemoRouteTest {
             assertTrue("w trybie pokazu satelity z odbiornika", variantSatellites(app) !is GnssSatellites)
             assertTrue("w trybie pokazu lokalizacja wyłączona", variantLocationSwitch(app).isEnabled().first())
         }
-
     private companion object {
         const val MEASURE_MILLIS = 30_000L
         const val TICK = 1_000
