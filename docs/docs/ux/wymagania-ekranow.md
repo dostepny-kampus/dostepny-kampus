@@ -667,12 +667,12 @@ Dostępność: błąd walidacji jest tekstem przy polu i w podsumowaniu, a fokus
 | --- | --- | --- | --- |
 | Zgłoszenie: typ, budynek, piętro, data | dane | US8.1 | — |
 | Rodzaj: zgłoszenie, „bariera usunięta” (na ekranie „Bariery już nie ma”) albo zmiana oznaczenia wejścia; przy zmianie oznaczenia „Nowe oznaczenie:” tekstem i ikoną | dane | US8.4, US17.2, NFR-21 | — |
-| Jeden status tekstem i ikoną: „W telefonie” (lokalne), „Nie wysłano”, „Wysłane”, „W weryfikacji”, „Przyjęte”, „Odrzucone”, „Archiwalne” | dane | US8.1, US8.2, NFR-21, PW-12 | — |
+| Jeden status tekstem i ikoną: „W telefonie” (lokalne), „Nie wysłano”, „Wysłane”, „W weryfikacji”, „Przyjęte”, „Odrzucone”, „Archiwalne”. Przy konflikcie wersji status wersji z serwera, nie „Nie wysłano”: zmiana nie jest odrzucona, czeka na wybór | dane | US8.1, US8.2, NFR-21, PW-12, BR-10 | — |
 | Przy odrzuconym: powód odrzucenia | dane | US8.1, BR-16 | — |
 | Przy „Nie wysłano”: powód. Przy odebranej roli „Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.”, w pozostałych przypadkach „Serwer nie przyjął zgłoszenia. Otwórz je, popraw i zapisz ponownie.” | dane | US9.5, US14.1, BR-26, PW-10 | — |
 | Znak „Zmiana czeka na wysłanie” przy niewysłanej edycji | dane | US8.1, BR-9, [reguły, cykl życia zgłoszenia](../biznes/reguly.md) | — |
-| Znak „Dwie wersje: wybierz jedną” przy konflikcie | czynność | US9.3 | C4 |
-| Przy zgłoszeniu przed decyzją, odrzuconym albo „Nie wysłano” „Otwórz” jako czynność karty ze strzałką (wymagania wspólne). Zgłoszenia przyjęte i archiwalne nie są przyciskami | czynność główna | US8.1, US8.3, US9.5, BR-3, BR-26 | C2; zmiana oznaczenia wejścia: C6; „bariera usunięta”: C7 |
+| Znak „Dwie wersje: wybierz jedną” jako czynność karty ze strzałką przy konflikcie wersji, bez powodu odmowy | czynność | US9.3, BR-10 | C4 |
+| Przy zgłoszeniu przed decyzją, odrzuconym albo „Nie wysłano” „Otwórz” jako czynność karty ze strzałką (wymagania wspólne). Zgłoszenia przyjęte i archiwalne nie są przyciskami. Przy konflikcie wersji „Otwórz” nie ma do wyboru wersji w C4, bo poprawka go nie rozstrzyga | czynność główna | US8.1, US8.3, US9.5, BR-3, BR-26, BR-10 | C2; zmiana oznaczenia wejścia: C6; „bariera usunięta”: C7 |
 | Przy powodzie „nieaktualne”: „Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji.” (przy zmianie oznaczenia wejścia: „Oznaczenie tego wejścia już się zmieniło. Sprawdź je i wyślij swoją zmianę ponownie.”) i przycisk „Wyślij ponownie” | czynność | BR-23, BR-24, PW-14 | C2; zmiana oznaczenia wejścia: C6; „bariera usunięta”: C7 |
 | Przy „nieaktualne” po usunięciu bariery: „Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa.” Przycisk „Zmierz i zgłoś barierę” | dane, czynność | BR-23, PW-12 | C1 |
 | Stan synchronizacji, np. „Czeka na wysłanie: 3” | czynność | US9.1 | C4 |
