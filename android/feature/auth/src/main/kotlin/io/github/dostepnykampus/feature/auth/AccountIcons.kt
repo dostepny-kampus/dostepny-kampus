@@ -53,6 +53,14 @@ internal object AccountIcons {
             name = "FactCheck",
         )
 
+    private val PersonAdd: ImageVector =
+        pathIcon(
+            path =
+                "M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-7-2V7H6v3H3v2h3v3h2v-3h3v" +
+                    "-2H8zm7 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z",
+            name = "PersonAdd",
+        )
+
     private val Download: ImageVector =
         pathIcon(path = "M5 20h14v-2H5v2zm7-4 5-5h-3V4h-4v7H7l5 5z", name = "Download")
 
@@ -63,6 +71,7 @@ internal object AccountIcons {
             WorkAction.MINE -> Mine
             WorkAction.PROGRESS -> Progress
             WorkAction.REVIEW -> FactCheck
+            WorkAction.INVITE -> PersonAdd
             WorkAction.EXPORT -> Download
         }
 }

@@ -52,6 +52,7 @@ private fun AppNavigator.openWork(work: WorkAction) {
         WorkAction.MINE -> mySubmissions()
         WorkAction.PROGRESS -> inspectionProgress()
         WorkAction.REVIEW -> reviewQueue()
+        WorkAction.INVITE -> inspectionInvitation()
         WorkAction.EXPORT -> inspectionExport()
     }
 }

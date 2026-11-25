@@ -29,6 +29,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -39,6 +40,8 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
@@ -51,6 +54,35 @@ import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.feature.inspection.R
+
+/**
+ * K2 „Zaproś osobę” ze stanem z modelu widoku.
+ *
+ * Wymagania: US12.1
+ *
+ * @param onBack powrót do konta
+ * @param onLeave powrót do mapy przy braku uprawnień
+ * @param modifier wymiary nadane przez aplikację
+ * @param viewModel stan zaproszenia; w aplikacji z grafu Hilt
+ */
+@Composable
+fun InvitationScreen(
+    onBack: () -> Unit,
+    onLeave: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: InvitationViewModel = hiltViewModel(),
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    InvitationContent(
+        state = state,
+        onBack = onBack,
+        onLeave = onLeave,
+        onEdit = viewModel::edit,
+        onChoose = viewModel::choose,
+        onSend = viewModel::send,
+        modifier = modifier,
+    )
+}
 
 /**
  * Widok K2 bez modelu widoku: adres, rola, wynik zaproszenia, błędy danych i stany wspólne.
