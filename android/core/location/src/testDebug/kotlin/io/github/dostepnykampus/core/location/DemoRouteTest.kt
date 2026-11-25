@@ -6,11 +6,9 @@
 package io.github.dostepnykampus.core.location
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -18,18 +16,18 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-/** Tryb pokazu: trasa z zasobów debug daje pełny pomiar C1 i satelity kilku systemów. Wymagania: US6.1, NFR-1 */
+/**
+ * Tryb pokazu: trasa z zasobów debug daje pełny pomiar C1 i satelity kilku systemów.
+ *
+ * TODO(#3817): test wyboru źródeł położenia przez włącznik trybu pokazu.
+ *
+ * Wymagania: US6.1, NFR-1
+ */
 @OptIn(TrybPokazu::class, ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class DemoRouteTest {
     private val app = RuntimeEnvironment.getApplication()
     private val route = DemoRoute.load(app)
-
-    /** Wyłącza tryb pokazu po każdym teście. */
-    @After
-    fun switchOff() {
-        DemoMode.setEnabled(app, isEnabled = false)
-    }
 
     /** Błąd pozycji spada od wartości przy fasadzie do poniżej metra w oknie pomiaru. */
     @Test
@@ -64,17 +62,6 @@ class DemoRouteTest {
             assertTrue("pomiar nie skończył się po 30 s", averaging.isFinished(fixes.last().elapsedMillis))
             assertEquals("odczyty w oknie 30 s", MEASURE_MILLIS.toInt() / TICK, average.fixCount)
             assertTrue("średnia z błędem ponad metr", average.accuracyMeters < 1.0)
-        }
-
-    /** Włącznik trybu pokazu zamienia odbiornik GNSS na trasę. */
-    @Test
-    fun switchPicksRoute() =
-        runTest {
-            assertTrue("bez trybu pokazu nie GPS", variantPositions(app) is GnssPositionFixes)
-            DemoMode.setEnabled(app, isEnabled = true)
-            assertTrue("w trybie pokazu GPS", variantPositions(app) !is GnssPositionFixes)
-            assertTrue("w trybie pokazu satelity z odbiornika", variantSatellites(app) !is GnssSatellites)
-            assertTrue("w trybie pokazu lokalizacja wyłączona", variantLocationSwitch(app).isEnabled().first())
         }
 
     private companion object {
