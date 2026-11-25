@@ -17,33 +17,52 @@ public sealed interface ReviewDecision {
     public val version: Int
 
     /**
-     * Przyjęcie zgłoszenia.
+     * Przyjęcie zgłoszenia z typem i uciążliwością ustalonymi przez autora.
+     *
+     * Wymagania: US10.4
+     *
+     * @property version wersja ocenionego zgłoszenia
+     */
+    public data class Accept(override val version: Int) : ReviewDecision
+
+    /**
+     * Przyjęcie zgłoszenia szybkiego z typem i uciążliwością ustalonymi przez Weryfikatora.
      *
      * Wymagania: US10.3, BR-14
      *
      * @property version wersja ocenionego zgłoszenia
-     * @property barrierType typ bariery ustalony dla zgłoszenia szybkiego, np. `TB-3`; `null` poza nim
-     * @property severity uciążliwość 1–3 ustalona dla zgłoszenia szybkiego; `null` poza nim
+     * @property barrierType typ bariery, np. `TB-3`
+     * @property severity uciążliwość 1–3
      */
-    public data class Accept(
+    public data class AcceptQuick(
         override val version: Int,
-        val barrierType: String? = null,
-        val severity: Int? = null,
+        val barrierType: String,
+        val severity: Int,
     ) : ReviewDecision
 
     /**
      * Odrzucenie zgłoszenia z powodem widocznym dla autora.
      *
+     * Wymagania: US10.2, BR-16
+     *
+     * @property version wersja ocenionego zgłoszenia
+     * @property reason powód odrzucenia, od 1 do 500 znaków
+     */
+    public data class Reject(override val version: Int, val reason: String) : ReviewDecision
+
+    /**
+     * Odrzucenie duplikatu ze wskazaniem wcześniejszego zgłoszenia.
+     *
      * Wymagania: US10.2, BR-13, BR-16
      *
      * @property version wersja ocenionego zgłoszenia
      * @property reason powód odrzucenia, od 1 do 500 znaków
-     * @property duplicateOf wcześniejsze zgłoszenie przy odrzuceniu duplikatu; `null` przy innym powodzie
+     * @property duplicateOf identyfikator wcześniejszego zgłoszenia
      */
-    public data class Reject(
+    public data class RejectDuplicate(
         override val version: Int,
         val reason: String,
-        val duplicateOf: String? = null,
+        val duplicateOf: String,
     ) : ReviewDecision
 }
 

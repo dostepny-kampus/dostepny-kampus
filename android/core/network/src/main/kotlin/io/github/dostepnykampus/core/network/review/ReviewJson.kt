@@ -20,9 +20,13 @@ import kotlinx.serialization.json.put
 import io.github.dostepnykampus.core.network.json.Submission as SubmissionDto
 
 private const val DISTANCE = "distanceMeters"
+private const val DECISION = "decision"
+private const val ACCEPT = "ACCEPT"
+private const val REJECT = "REJECT"
+private const val REASON = "rejectionReason"
 
 /**
- * Treść `ReviewDecision` dla `POST /submissions/{submissionId}/review`. Pola puste nie trafiają do JSON.
+ * Treść `ReviewDecision` dla `POST /submissions/{submissionId}/review`.
  *
  * TODO(#3796): wywołanie trasy decyzji w kliencie HTTP sprawdzania.
  *
@@ -37,15 +41,24 @@ internal fun Json.encodeDecision(decision: ReviewDecision): String =
             put("version", decision.version)
             when (decision) {
                 is ReviewDecision.Accept -> {
-                    put("decision", "ACCEPT")
-                    decision.barrierType?.let { put("barrierType", it) }
-                    decision.severity?.let { put("severity", it) }
+                    put(DECISION, ACCEPT)
+                }
+
+                is ReviewDecision.AcceptQuick -> {
+                    put(DECISION, ACCEPT)
+                    put("barrierType", decision.barrierType)
+                    put("severity", decision.severity)
                 }
 
                 is ReviewDecision.Reject -> {
-                    put("decision", "REJECT")
-                    put("rejectionReason", decision.reason)
-                    decision.duplicateOf?.let { put("duplicateOfSubmissionId", it) }
+                    put(DECISION, REJECT)
+                    put(REASON, decision.reason)
+                }
+
+                is ReviewDecision.RejectDuplicate -> {
+                    put(DECISION, REJECT)
+                    put(REASON, decision.reason)
+                    put("duplicateOfSubmissionId", decision.duplicateOf)
                 }
             }
         },

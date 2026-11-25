@@ -33,10 +33,10 @@ class ReviewJsonTest {
     fun encodesDecisions() {
         val decisions =
             mapOf(
-                ReviewDecision.Accept(version = 2, barrierType = "TB-3", severity = 2) to
+                ReviewDecision.AcceptQuick(version = 2, barrierType = "TB-3", severity = 2) to
                     """{"decision":"ACCEPT","version":2,"barrierType":"TB-3","severity":2}""",
                 ReviewDecision.Accept(version = 1) to """{"decision":"ACCEPT","version":1}""",
-                ReviewDecision.Reject(version = 2, reason = "Duplikat", duplicateOf = OLD) to
+                ReviewDecision.RejectDuplicate(version = 2, reason = "Duplikat", duplicateOf = OLD) to
                     """{"decision":"REJECT","version":2,"rejectionReason":"Duplikat",""" +
                         """"duplicateOfSubmissionId":"$OLD"}""",
                 ReviewDecision.Reject(version = 3, reason = "Nieaktualne") to
