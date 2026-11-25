@@ -38,37 +38,30 @@ import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.feature.review.R
 
 /**
- * Czynności ekranu R1.
- *
- * Wymagania: US10.4, US10.7
- *
- * @property onBack „Wstecz” i „Wróć do mapy”
- * @property onOpen otwarcie zgłoszenia wziętego przez tego Weryfikatora; argument to identyfikator zgłoszenia
- */
-data class ReviewQueueActions(val onBack: () -> Unit, val onOpen: (submissionId: String) -> Unit)
-
-/**
  * R1 „Zgłoszenia do sprawdzenia” ze stanem z modelu widoku.
  *
  * TODO(#3759): wejście z L2 i ekran trasy w aplikacji.
  *
  * Wymagania: US10.4, US10.7
  *
- * @param actions czynności ekranu
+ * @param onBack powrót do konta
+ * @param onOpen otwarcie wziętego zgłoszenia po identyfikatorze
  * @param modifier wymiary nadane przez aplikację
  * @param viewModel stan kolejki; w aplikacji z grafu Hilt
  */
 @Composable
 fun ReviewQueueScreen(
-    actions: ReviewQueueActions,
+    onBack: () -> Unit,
+    onOpen: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ReviewQueueViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     ReviewQueueContent(
         state = state,
-        actions = actions,
-        onClaim = { id -> viewModel.claim(id, actions.onOpen) },
+        onBack = onBack,
+        onOpen = onOpen,
+        onClaim = { id -> viewModel.claim(id, onOpen) },
         onRetry = viewModel::refresh,
         modifier = modifier,
     )
@@ -80,7 +73,8 @@ fun ReviewQueueScreen(
  * Wymagania: US10.4, US10.7, BR-11, NFR-50
  *
  * @param state stan ekranu
- * @param actions czynności ekranu
+ * @param onBack powrót do konta
+ * @param onOpen otwarcie wziętego zgłoszenia po identyfikatorze
  * @param onClaim „Weź do sprawdzenia”; argument to identyfikator zgłoszenia
  * @param onRetry „Spróbuj ponownie”
  * @param modifier wymiary nadane przez aplikację
@@ -88,20 +82,21 @@ fun ReviewQueueScreen(
 @Composable
 fun ReviewQueueContent(
     state: ReviewQueueUiState,
-    actions: ReviewQueueActions,
+    onBack: () -> Unit,
+    onOpen: (String) -> Unit,
     onClaim: (String) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            BackHeader(title = stringResource(R.string.kolejka_naglowek), onBack = actions.onBack)
+            BackHeader(title = stringResource(R.string.kolejka_naglowek), onBack = onBack)
             when (state) {
                 ReviewQueueUiState.Loading -> Loading()
-                is ReviewQueueUiState.Ready -> Queue(state = state, onOpen = actions.onOpen, onClaim = onClaim)
+                is ReviewQueueUiState.Ready -> Queue(state = state, onOpen = onOpen, onClaim = onClaim)
                 ReviewQueueUiState.Offline -> StaffProblemMessage(StaffProblem.OFFLINE, onRetry)
                 ReviewQueueUiState.ServerError -> StaffProblemMessage(StaffProblem.SERVER, onRetry)
-                ReviewQueueUiState.Forbidden -> StaffProblemMessage(StaffProblem.FORBIDDEN, actions.onBack)
+                ReviewQueueUiState.Forbidden -> StaffProblemMessage(StaffProblem.FORBIDDEN, onBack)
             }
         }
     }
