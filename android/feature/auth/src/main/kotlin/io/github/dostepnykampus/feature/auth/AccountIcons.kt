@@ -53,6 +53,9 @@ internal object AccountIcons {
             name = "FactCheck",
         )
 
+    private val Download: ImageVector =
+        pathIcon(path = "M5 20h14v-2H5v2zm7-4 5-5h-3V4h-4v7H7l5 5z", name = "Download")
+
     /** Ikona czynności [work]. */
     fun iconOf(work: WorkAction): ImageVector =
         when (work) {
@@ -60,5 +63,6 @@ internal object AccountIcons {
             WorkAction.MINE -> Mine
             WorkAction.PROGRESS -> Progress
             WorkAction.REVIEW -> FactCheck
+            WorkAction.EXPORT -> Download
         }
 }

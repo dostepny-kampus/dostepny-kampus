@@ -31,6 +31,9 @@ enum class WorkAction(
 
     /** Kolejka Weryfikatora R1. Wymagania: US10.4 */
     REVIEW(StaffRole.VERIFIER, R.string.konto_sprawdz),
+
+    /** Eksport K3. Wymagania: US13 */
+    EXPORT(StaffRole.COORDINATOR, R.string.konto_eksport),
 }
 
 /**
