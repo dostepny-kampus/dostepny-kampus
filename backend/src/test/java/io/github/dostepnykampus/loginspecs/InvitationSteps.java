@@ -174,17 +174,6 @@ public final class InvitationSteps {
     }
 
     /**
-     * Serwer nie odmawia pomiaru precyzyjnego ani kolejki weryfikacji.
-     *
-     * @throws Exception Gdy żądanie nie dojdzie do serwera
-     */
-    @Then("^może otworzyć pomiar precyzyjny i kolejkę weryfikacji$")
-    void opensBoth() throws Exception {
-        this.opens("pomiar precyzyjny");
-        this.opens("kolejka weryfikacji");
-    }
-
-    /**
      * Weryfikator loguje się kontem testowym realmu.
      *
      * @throws Exception Gdy żądanie nie dojdzie do Keycloaka
@@ -291,7 +280,8 @@ public final class InvitationSteps {
     }
 
     private String staffToken(final String user) throws Exception {
-        return this.login(user, new KeycloakTestConfiguration.RealmCredentials(this.mapper).password(user));
+        final var credentials = new KeycloakTestConfiguration.RealmCredentials(this.mapper);
+        return this.login(user, credentials.password(user));
     }
 
     private String login(final String user, final String secret) throws Exception {

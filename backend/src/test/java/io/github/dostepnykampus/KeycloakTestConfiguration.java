@@ -118,18 +118,21 @@ public final class KeycloakTestConfiguration {
 
     /**
      * Dane logowania z realmu importowanego przez kontener.
+     *
      * @param mapper Czytnik realmu
      * @since 0.1.0
      */
     public record RealmCredentials(JsonMapper mapper) {
         /**
          * Hasło konta testowego lub administratora kontenera.
+         *
          * @param user Nazwa użytkownika
          * @return Hasło do logowania
          */
         public String password(final String user) {
             return this.mapper.readTree(Path.of("../infra/keycloak/realm.json").toFile())
-                .path("users").valueStream().filter(account -> user.equals(account.path("username").asString()))
+                .path("users").valueStream()
+                .filter(account -> user.equals(account.path("username").asString()))
                 .map(account -> account.path("credentials").path(0).path("value"))
                 .map(JsonNode::asString).findFirst().orElse(KeycloakTestConfiguration.ADMIN);
         }
