@@ -58,6 +58,20 @@ public class ReviewApi(private val http: OkHttpClient, private val json: Json, b
     }
 
     /**
+     * Zgłoszenie do sprawdzenia w bieżącej wersji (`GET /submissions/{submissionId}`).
+     *
+     * Wymagania: US10.8, BR-5
+     *
+     * @param submissionId identyfikator zgłoszenia
+     */
+    public suspend fun submission(submissionId: String): ApiResult<Submission> {
+        val target = base.newBuilder().addPathSegment(SUBMISSIONS).addPathSegment(submissionId).build()
+        return http.exchange(request(target, body = null)) { code, body ->
+            if (code == HTTP_OK) decodedResult(code) { json.decodeSubmission(body) } else unexpectedResult(code)
+        }
+    }
+
+    /**
      * Bierze zgłoszenie do sprawdzenia. 409 to [ReviewClaim.Taken].
      *
      * Wymagania: US10.4, BR-11
@@ -65,7 +79,7 @@ public class ReviewApi(private val http: OkHttpClient, private val json: Json, b
      * @param submissionId identyfikator zgłoszenia
      */
     public suspend fun claim(submissionId: String): ApiResult<ReviewClaim> {
-        val request = request(submission(id = submissionId, action = CLAIM), body = EMPTY.toRequestBody())
+        val request = request(actionOf(id = submissionId, action = CLAIM), body = EMPTY.toRequestBody())
         return http.exchange(request) { code, body ->
             when (code) {
                 HTTP_OK -> decodedResult(code) { ReviewClaim.Claimed(json.decodeSubmission(body)) }
@@ -86,7 +100,7 @@ public class ReviewApi(private val http: OkHttpClient, private val json: Json, b
      */
     public suspend fun decide(submissionId: String, decision: ReviewDecision): ApiResult<ReviewOutcome> {
         val payload = json.encodeDecision(decision).toRequestBody(JSON)
-        val request = request(submission(id = submissionId, action = DECISION), body = payload)
+        val request = request(actionOf(id = submissionId, action = DECISION), body = payload)
         return http.exchange(request) { code, body ->
             when (code) {
                 HTTP_OK -> decodedResult(code) { ReviewOutcome.Decided(json.decodeSubmission(body)) }
@@ -104,7 +118,7 @@ public class ReviewApi(private val http: OkHttpClient, private val json: Json, b
      * @param submissionId identyfikator sprawdzanego zgłoszenia
      */
     public suspend fun similar(submissionId: String): ApiResult<List<SimilarSubmission>> =
-        http.exchange(request(submission(id = submissionId, action = SIMILAR), body = null)) { code, body ->
+        http.exchange(request(actionOf(id = submissionId, action = SIMILAR), body = null)) { code, body ->
             if (code == HTTP_OK) decodedResult(code) { json.decodeSimilar(body) } else unexpectedResult(code)
         }
 
@@ -116,7 +130,7 @@ public class ReviewApi(private val http: OkHttpClient, private val json: Json, b
             .method(if (body == null) GET else POST, body)
             .build()
 
-    private fun submission(id: String, action: String): HttpUrl =
+    private fun actionOf(id: String, action: String): HttpUrl =
         base
             .newBuilder()
             .addPathSegment(SUBMISSIONS)

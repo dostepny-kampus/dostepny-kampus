@@ -27,6 +27,21 @@ public interface Reviews {
     public suspend fun queue(): ServerReply<ReviewQueue>
 
     /**
+     * Zgłoszenie do sprawdzenia w bieżącej wersji.
+     *
+     * @param submissionId identyfikator zgłoszenia
+     */
+    public suspend fun submission(submissionId: String): ServerReply<Submission>
+
+    /**
+     * Adres zdjęcia zgłoszenia dla biblioteki obrazów, która pobiera je z tokenem konta.
+     *
+     * @param submissionId identyfikator zgłoszenia
+     * @param photoId identyfikator zdjęcia z listy `photoIds`
+     */
+    public fun photoUrl(submissionId: String, photoId: String): String
+
+    /**
      * Bierze zgłoszenie do sprawdzenia.
      *
      * @param submissionId identyfikator zgłoszenia
@@ -63,14 +78,20 @@ public data class ReviewQueue(val waiting: List<Submission>, val mine: List<Subm
  * Sprawdzanie zgłoszeń z klienta [api].
  *
  * @param api klient HTTP sprawdzania
+ * @param photoAddress adres zdjęcia zgłoszenia z jego identyfikatora i identyfikatora zdjęcia
  */
-internal fun reviewsOf(api: ReviewApi): Reviews =
+internal fun reviewsOf(api: ReviewApi, photoAddress: (String, String) -> String): Reviews =
     object : Reviews {
         override suspend fun queue(): ServerReply<ReviewQueue> =
             api.queue().toReply { all ->
                 val (mine, waiting) = all.partition { it.status == SubmissionStatus.IN_REVIEW }
                 ReviewQueue(waiting = waiting, mine = mine)
             }
+
+        override suspend fun submission(submissionId: String): ServerReply<Submission> =
+            api.submission(submissionId).toReply { it }
+
+        override fun photoUrl(submissionId: String, photoId: String): String = photoAddress(submissionId, photoId)
 
         override suspend fun claim(submissionId: String): ServerReply<ReviewClaim> =
             api.claim(submissionId).toReply { it }
