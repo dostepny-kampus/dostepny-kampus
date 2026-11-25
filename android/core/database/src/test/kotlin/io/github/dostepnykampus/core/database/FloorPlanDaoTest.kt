@@ -9,6 +9,7 @@ import androidx.room.Room
 import io.github.dostepnykampus.core.database.room.FloorPlanDao
 import io.github.dostepnykampus.core.database.room.FloorPlanEntity
 import io.github.dostepnykampus.core.database.room.FloorRoomEntity
+import io.github.dostepnykampus.core.database.room.FloorRoomFact
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -45,6 +46,32 @@ class FloorPlanDaoTest {
             )
         }
 
+    @Test
+    fun readsRoomFactsForBuilding() =
+        stored { dao ->
+            dao.replace(
+                building = "A-1",
+                plans = listOf(plan(floor = "P0", building = "A-1")),
+                rooms = listOf(room(id = "9", building = "A-1")),
+            )
+            val rooms =
+                listOf(
+                    room(id = "2", floor = "P0", category = "CORRIDOR", function = "Korytarz"),
+                    room(id = "1", floor = "P0", category = "ELEVATOR", function = "Winda"),
+                    room(id = "3", floor = "P1", category = "CLASSROOM", function = "Sala"),
+                )
+            dao.replace("C-13", listOf(plan("P0"), plan("P1")), rooms)
+            assertEquals(
+                "kategorie i funkcje sal budynku po piętrach i identyfikatorach",
+                listOf(
+                    FloorRoomFact(floor = "P0", category = "ELEVATOR", function = "Winda"),
+                    FloorRoomFact(floor = "P0", category = "CORRIDOR", function = "Korytarz"),
+                    FloorRoomFact(floor = "P1", category = "CLASSROOM", function = "Sala"),
+                ),
+                dao.roomFacts("C-13"),
+            )
+        }
+
     private fun stored(check: suspend (FloorPlanDao) -> Unit) {
         val database =
             Room
@@ -74,14 +101,20 @@ class FloorPlanDaoTest {
             syncedAt = 42,
         )
 
-    private fun room(id: String, floor: String = "P0"): FloorRoomEntity =
+    private fun room(
+        id: String,
+        floor: String = "P0",
+        building: String = "C-13",
+        category: String = "ELEVATOR",
+        function: String = "Winda",
+    ): FloorRoomEntity =
         FloorRoomEntity(
-            building = "C-13",
+            building = building,
             floor = floor,
             id = id,
             number = if (id == "2") null else "10$id",
-            function = "Winda",
-            category = "ELEVATOR",
+            function = function,
+            category = category,
             geometryJson = SQUARE,
             labelLongitude = 17.05,
             labelLatitude = 51.1,

@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.building
 
+import io.github.dostepnykampus.core.data.room.RoomSummary
 import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Floor
@@ -63,6 +64,25 @@ class FloorFactsTest {
             listOf(emptyList<Counted>(), emptyList(), emptyList()),
             facts.floors.map { it.functions },
             "Piętro z samą windą i toaletą albo bez planu dostało opis",
+        )
+    }
+
+    @Test
+    fun matchesFactsFromSummaries() {
+        val rooms =
+            mapOf(
+                "P-1" to plan(TOILET, room("Sala")),
+                "P0" to plan(LIFT, room("Portiernia"), room("Sala"), room("Sala"), CORRIDOR),
+                "P1" to plan(TOILET, TOILET),
+            )
+        val summaries =
+            rooms.mapValues { (_, list) ->
+                list.rooms.map { RoomSummary(category = it.category, function = it.function) }
+            }
+        assertEquals(
+            floorFacts(FLOORS, rooms),
+            floorFactsOf(FLOORS, summaries),
+            "Fakty z podsumowań różnią się od faktów z pełnych pomieszczeń",
         )
     }
 
