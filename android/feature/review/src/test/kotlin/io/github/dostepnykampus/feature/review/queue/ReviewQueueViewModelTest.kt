@@ -12,6 +12,7 @@ import io.github.dostepnykampus.core.model.review.ReviewClaim
 import io.github.dostepnykampus.core.model.review.ReviewDecision
 import io.github.dostepnykampus.core.model.review.ReviewOutcome
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
+import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -118,6 +119,10 @@ class ReviewQueueViewModelTest {
     private class FakeReviews(private val list: ServerReply<ReviewQueue>, private val take: ServerReply<ReviewClaim>) :
         Reviews {
         override suspend fun queue(): ServerReply<ReviewQueue> = list
+
+        override suspend fun submission(submissionId: String): ServerReply<Submission> = ServerReply.Missing
+
+        override fun photoUrl(submissionId: String, photoId: String): String = photoId
 
         override suspend fun claim(submissionId: String): ServerReply<ReviewClaim> = take
 

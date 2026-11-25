@@ -68,6 +68,14 @@ class ReviewsTest {
     }
 
     @Test
+    fun us10SubmissionAndPhoto() {
+        val reply = answered(OK, body(IN_REVIEW)) { it.submission(ID) }
+        assertEquals(ServerReply.Ok(submission(IN_REVIEW)), reply, "zgłoszenie do sprawdzenia")
+        val url = source("http://serwer/").photoUrl(ID, PHOTO)
+        assertEquals("http://serwer/$ID/$PHOTO", url, "adres zdjęcia z adresu klienta zgłoszeń")
+    }
+
+    @Test
     fun us10MissingAndForbidden() {
         assertEquals(ServerReply.Missing, answered(NOT_FOUND, "{}") { it.similar(ID) }, "nieznane zgłoszenie")
         assertEquals(ServerReply.Fault(FORBIDDEN), answered(FORBIDDEN, "{}") { it.queue() }, "403 bez roli")
@@ -93,7 +101,7 @@ class ReviewsTest {
         }
 
     private fun source(url: String): Reviews =
-        reviewsOf(ReviewApi(OkHttpClient(), Json { ignoreUnknownKeys = true }, url))
+        reviewsOf(ReviewApi(OkHttpClient(), Json { ignoreUnknownKeys = true }, url)) { id, photo -> "$url$id/$photo" }
 
     private companion object {
         const val ID = "0b6f6c1e-8a43-4d5e-9f43-2f1d3c4b5a69"

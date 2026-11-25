@@ -59,6 +59,13 @@ class ReviewApiTest {
     }
 
     @Test
+    fun readsSubmission() {
+        enqueue(code = 200, body = body(IN_REVIEW_STATUS))
+        assertEquals(ApiResult.Success(inReview), blocking { submission(ID) }, "zgłoszenie do sprawdzenia")
+        assertEquals(listOf("GET", "/submissions/$ID"), route(server.takeRequest()), "metoda i ścieżka zgłoszenia")
+    }
+
+    @Test
     fun claimsSubmission() {
         enqueue(code = 200, body = body(IN_REVIEW_STATUS))
         assertEquals(ApiResult.Success(ReviewClaim.Claimed(inReview)), blocking { claim(ID) }, "wzięte zgłoszenie")
@@ -127,6 +134,7 @@ class ReviewApiTest {
 
     @Test
     fun mapsMissingSubmission() {
+        assertMissing { submission(ID) }
         assertMissing { claim(ID) }
         assertMissing { decide(ID, REJECT) }
         assertMissing { similar(ID) }
