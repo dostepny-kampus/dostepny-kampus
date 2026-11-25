@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Yevhenii Lukianenko
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.database
@@ -41,7 +41,7 @@ import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
         FloorRoomEntity::class,
         InspectionMarkerEntity::class,
     ],
-    version = 13,
+    version = 14,
     autoMigrations = [AutoMigration(from = 9, to = 10), AutoMigration(from = 10, to = 11)],
     exportSchema = true,
 )

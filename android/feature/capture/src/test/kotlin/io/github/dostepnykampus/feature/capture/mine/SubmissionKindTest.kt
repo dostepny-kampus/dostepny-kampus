@@ -6,12 +6,16 @@
 package io.github.dostepnykampus.feature.capture.mine
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.dostepnykampus.core.data.submission.own.SendState
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
@@ -31,9 +35,10 @@ class SubmissionKindTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val opened = mutableListOf<String>()
+    private var measured = 0
 
     private fun show(vararg items: OwnSubmissionItem) {
-        val actions = MySubmissionsActions(onBack = {}, onMeasure = {}, onOpen = { opened.add(it) })
+        val actions = MySubmissionsActions(onBack = {}, onMeasure = { measured++ }, onOpen = { opened.add(it) })
         val state = MySubmissionsUiState.Ready(MySubmissions(items.toList()))
         compose.setContent { DostepnyKampusTheme { MySubmissionsContent(state = state, actions = actions) } }
     }
@@ -45,6 +50,40 @@ class SubmissionKindTest {
         compose.onNodeWithText("Zmiana oznaczenia wejścia").assertIsDisplayed()
         compose.onNodeWithText("Nieznany typ bariery").assertDoesNotExist()
         compose.onNodeWithText("Otwórz").assertDoesNotExist()
+    }
+
+    /** Wiersz: zmiana oznaczenia wejścia pokazuje „Nowe oznaczenie:” ze słowem przy znaku. Wymagania: US17.2, NFR-21 */
+    @Test
+    fun showsNewMarking() {
+        show(item("m", kind = SubmissionKind.ENTRANCE_MARKING).copy(entranceMarking = EntranceMarking.ACCESSIBLE))
+        compose.onNodeWithText("Nowe oznaczenie:").assertIsDisplayed()
+        compose.onNodeWithText("Dostępne").assertIsDisplayed()
+    }
+
+    /** Wiersz: „bariera usunięta” ma „Bariery już nie ma” przed typem i nie otwiera C2. Wymagania: US8.4, BR-19 */
+    @Test
+    fun namesRemovedBarrier() {
+        show(item("u", kind = SubmissionKind.PRECISE).copy(isBarrierRemoved = true))
+        compose.onNodeWithText("Bariery już nie ma").assertIsDisplayed()
+        compose.onNodeWithText("Schody przy wejściu").assertIsDisplayed()
+        compose.onNodeWithText("Otwórz").assertDoesNotExist()
+    }
+
+    /**
+     * Wiersz: „bariera usunięta” odrzucona jako „nieaktualne” ma zdanie o mapie i „Zmierz i zgłoś barierę” do C1.
+     *
+     * Wymagania: BR-23
+     */
+    @Test
+    fun measuresAfterOutdatedRemoval() {
+        show(item("u", kind = SubmissionKind.PRECISE).copy(isBarrierRemoved = true, rejectionReason = "nieaktualne"))
+        val sentence = "Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa."
+        compose.onNodeWithText(sentence).assertIsDisplayed()
+        compose.onNodeWithText("Wyślij ponownie").assertDoesNotExist()
+        val buttons = compose.onAllNodesWithText("Zmierz i zgłoś barierę")
+        buttons.assertCountEquals(2)
+        buttons.onLast().performClick()
+        assertEquals("„Zmierz i zgłoś barierę” otwiera C1", 1, measured)
     }
 
     /**
