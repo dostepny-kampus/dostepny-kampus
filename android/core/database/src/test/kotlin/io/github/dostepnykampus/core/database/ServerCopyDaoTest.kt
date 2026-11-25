@@ -51,6 +51,16 @@ class ServerCopyDaoTest {
         }
 
     @Test
+    fun deletesOnlyGivenKey() =
+        runTest {
+            dao.save(ServerCopyEntity(key = BUILDINGS_COPY, documentJson = DOCUMENT, syncedAt = 1))
+            dao.save(ServerCopyEntity(key = BARRIERS_COPY, documentJson = DOCUMENT, syncedAt = 2))
+            dao.delete(BUILDINGS_COPY)
+            assertNull("usunięta kopia", dao.get(BUILDINGS_COPY))
+            assertEquals("inny klucz zostaje", 2L, dao.get(BARRIERS_COPY)?.syncedAt)
+        }
+
+    @Test
     fun returnsSavedCopy() =
         runTest {
             val entity = ServerCopyEntity(key = BUILDINGS_COPY, documentJson = DOCUMENT, syncedAt = 42)

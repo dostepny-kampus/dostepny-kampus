@@ -15,11 +15,12 @@ Zgłoszenie bariery: pomiar położenia, formularz z zdjęciami, szybkie zgłosz
 - `feature.capture.report` — ekran pełnego zgłoszenia: szkic, akcje, model widoku formularza i zapis stanu.
 - `feature.capture.report.edit` — edycja wysłanego zgłoszenia.
 - `feature.capture.report.form` — model formularza pełnego zgłoszenia ze stanem edycji, pola, wybory i komunikaty.
+- `feature.capture.report.marking` — zgłoszenie zmiany oznaczenia wejścia.
 - `feature.capture.report.removed` — zgłoszenie usunięcia bariery z przyjętego zgłoszenia.
 
 ## API
 
-Trasy pomiaru, formularza, poprawki i listy zgłoszeń w pakiecie `navigation`.
+Trasy pomiaru, formularza, poprawki, zmiany oznaczenia wejścia i listy zgłoszeń w pakiecie `navigation`.
 
 ## Zależności
 

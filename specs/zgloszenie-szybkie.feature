@@ -145,7 +145,7 @@ Funkcja: Zgłoszenie szybkie
     Przykłady:
       | miejsce                              | grupa                 | pytanie                                                                   |
       | w budynku D-2                        | „komunikacja pionowa” | widzi pytanie o piętro z „Nie wiem” i etykietami pięter z danych PWr      |
-      | w budynku B-4                        | „toalety”             | widzi pytanie o piętro z „Nie wiem” i przyciskami „Parter”, „1”, „2”      |
+      | w budynku B-4                        | „toalety”             | widzi pytanie o piętro z „Nie wiem” i przyciskami „Parter”, „1 piętro”, „2 piętro” |
       | w budynku C-13, przy wejściu         | „wejście i drzwi”     | widzi pytanie o piętro z „Nie wiem” i etykietami pięter z danych PWr      |
       | w budynku C-13                       | „inne”                | przechodzi do kroku 3 bez pytania o piętro                                |
       | na chodniku przed A-1, poza konturem | „komunikacja pozioma” | przechodzi do kroku 3 bez pytania o piętro                                |
@@ -172,7 +172,7 @@ Funkcja: Zgłoszenie szybkie
   Scenariusz: Pozycja poza konturem przy wysłaniu zostawia piętro puste
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz wybrał grupę barier „komunikacja pozioma”, zanim telefon ustalił bieżącą pozycję
-    Oraz na pytanie o piętro wybrał „1”
+    Oraz na pytanie o piętro wybrał „1 piętro”
     Jeżeli telefon ustali pozycję na chodniku przed A-1, poza konturem budynku
     Oraz Odwiedzający wyśle zgłoszenie
     Wtedy zgłoszenie jest „poza budynkiem”

@@ -48,7 +48,7 @@ public fun interface Invitations {
 internal class ServerInvitations(private val send: suspend (String, StaffRole) -> ApiResult<Invited>) : Invitations {
     override suspend fun invite(email: String, role: StaffRole): InviteOutcome =
         when (val reply = send(email, role)) {
-            is ApiResult.Success -> if (reply.value.accountExisted) InviteOutcome.ROLE_ADDED else InviteOutcome.SENT
+            is ApiResult.Success -> if (reply.value.isExistingAccount) InviteOutcome.ROLE_ADDED else InviteOutcome.SENT
             is ApiResult.ServerError -> refused(reply.code)
             is ApiResult.NetworkError -> InviteOutcome.OFFLINE
             ApiResult.NotFound -> InviteOutcome.FAILED
