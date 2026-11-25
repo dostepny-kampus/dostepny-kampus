@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.mine
@@ -17,6 +17,7 @@ import io.github.dostepnykampus.core.data.submission.own.RefusalReason
 import io.github.dostepnykampus.core.data.submission.own.SendState
 import io.github.dostepnykampus.core.data.submission.own.StatusRefresh
 import io.github.dostepnykampus.core.model.submission.BarrierType
+import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -44,6 +45,7 @@ private const val STOP_TIMEOUT_MS = 5_000L
  * @property serverStatus status z serwera po odświeżeniu; `null`, gdy telefon go nie zna
  * @property rejectionReason powód odrzucenia od Weryfikatora
  * @property isChangeWaiting zmiana wysłanego zgłoszenia czeka w telefonie na wysłanie
+ * @property kind rodzaj: zgłoszenie albo zmiana oznaczenia wejścia
  */
 data class OwnSubmissionItem(
     val id: String,
@@ -56,6 +58,7 @@ data class OwnSubmissionItem(
     val serverStatus: SubmissionStatus? = null,
     val rejectionReason: String? = null,
     val isChangeWaiting: Boolean = false,
+    val kind: SubmissionKind = SubmissionKind.PRECISE,
 )
 
 /**
@@ -153,4 +156,5 @@ internal fun OwnSubmission.toItem(): OwnSubmissionItem =
         serverStatus = serverStatus,
         rejectionReason = rejectionReason,
         isChangeWaiting = isChangeWaiting,
+        kind = kind,
     )

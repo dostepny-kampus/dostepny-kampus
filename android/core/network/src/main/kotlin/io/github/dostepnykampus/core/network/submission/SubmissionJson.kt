@@ -94,7 +94,8 @@ private fun Boolean?.trueOrNull(): Boolean? = takeIf { it == true }
 
 private inline fun <reified T : Enum<T>> Enum<*>.into(): T = enumValueOf<T>(name)
 
-private fun SubmissionDto.toModel(): Submission =
+/** Zgłoszenie z modelu kontraktu; zła chwila daje [IllegalArgumentException]. */
+internal fun SubmissionDto.toModel(): Submission =
     Submission(
         id = id,
         version = version,

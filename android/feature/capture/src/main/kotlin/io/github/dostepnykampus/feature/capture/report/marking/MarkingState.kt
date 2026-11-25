@@ -58,6 +58,10 @@ data class MarkingUiState(
     val stage: MarkingStage = MarkingStage.LOADING,
 )
 
+/** Czy wybór [chosen] potwierdza obecne oznaczenie wejścia; wtedy zmieni się tylko data i źródło. Wymagania: BR-24 */
+val MarkingUiState.isConfirming: Boolean
+    get() = chosen != null && chosen == entrance?.marking
+
 internal val MarkingUiState.isEditable: Boolean
     get() = entrance != null && stage in EditableStages
 
