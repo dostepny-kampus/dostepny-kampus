@@ -34,11 +34,8 @@ sealed interface ConflictUiState {
      * @property isAccepted wersja z serwera jest przyjęta, więc wersja własna trafi do sprawdzenia jako nowa
      */
     @Immutable
-    data class Ready(
-        val conflict: VersionConflict,
-        val differences: List<Int>,
-        val isAccepted: Boolean,
-    ) : ConflictUiState
+    data class Ready(val conflict: VersionConflict, val differences: List<Int>, val isAccepted: Boolean) :
+        ConflictUiState
 
     /** Wybór wykonany albo odłożony; ekran wraca do C3. */
     data object Closed : ConflictUiState
@@ -55,9 +52,7 @@ sealed interface ConflictUiState {
 @HiltViewModel
 class VersionConflictViewModel
     @Inject
-    constructor(
-        private val conflicts: VersionConflicts,
-    ) : ViewModel() {
+    constructor(private val conflicts: VersionConflicts) : ViewModel() {
         private val current = MutableStateFlow<ConflictUiState>(ConflictUiState.Loading)
         private var requested: String? = null
         private var isChosen = false
