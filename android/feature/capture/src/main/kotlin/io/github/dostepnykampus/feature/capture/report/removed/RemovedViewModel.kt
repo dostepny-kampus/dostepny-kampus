@@ -60,8 +60,8 @@ class RemovedViewModel
                 val previous = barriers.barriers().firstOrNull { it.id == id }
                 val stage = if (previous == null) RemovedStage.MISSING else RemovedStage.EDITING
                 val found = previous?.let { place(it) } ?: AcceptedPlace()
-                state.update {
-                    it.copy(
+                state.update { current ->
+                    current.copy(
                         previous = previous,
                         buildingName = found.building,
                         entranceName = found.entrance,
