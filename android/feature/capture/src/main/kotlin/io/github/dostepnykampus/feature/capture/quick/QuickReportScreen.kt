@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.quick
@@ -38,15 +38,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
+import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.location.WithLocationPermission
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
-import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
-import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
-import io.github.dostepnykampus.feature.capture.photo.rememberPhotoCamera
-import io.github.dostepnykampus.feature.capture.report.form.PhotoSection
 import kotlinx.coroutines.flow.filter
 import java.io.File
 
@@ -84,6 +81,7 @@ fun QuickReportScreen(
                 }
             }
             BackHeader(title = stringResource(R.string.szybkie_naglowek), onBack = back)
+            val slot = remember { QuickPinnedSlot() }
             Column(
                 modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
                 verticalArrangement = Arrangement.spacedBy(Odstepy.m),
@@ -100,10 +98,17 @@ fun QuickReportScreen(
 
                     else -> {
                         QuickStepProgress(step = route.step.ordinal + 1)
-                        QuickSteps(route = route, actions = actions, models = models, onGiveUp = { isLeaving = true })
+                        QuickSteps(
+                            route = route,
+                            actions = actions,
+                            models = models,
+                            slot = slot,
+                            onGiveUp = { isLeaving = true },
+                        )
                     }
                 }
             }
+            slot.content?.let { PinnedActionBar(content = it) }
         }
     }
 }
@@ -113,10 +118,11 @@ private fun QuickSteps(
     route: ReportRoute,
     actions: QuickReportActions,
     models: QuickReportModels,
+    slot: QuickPinnedSlot,
     onGiveUp: () -> Unit,
 ) {
     val step: @Composable () -> Unit = {
-        QuickStep(route = route, actions = actions, models = models, onGiveUp = onGiveUp)
+        QuickStep(route = route, actions = actions, models = models, slot = slot, onGiveUp = onGiveUp)
     }
     if (!route.isPlaceChosen) {
         WithLocationPermission(onBack = actions.onBack, content = step)
@@ -135,6 +141,7 @@ private fun QuickStep(
     route: ReportRoute,
     actions: QuickReportActions,
     models: QuickReportModels,
+    slot: QuickPinnedSlot,
     onGiveUp: () -> Unit,
 ) {
     val where = models.sendModel()
@@ -149,9 +156,9 @@ private fun QuickStep(
             }
             route.place?.let { Text(placeLine(it)) }
             if (photoTranscoder == null) {
-                QuickPhotoStep(route = route, onNext = actions.onNext)
+                QuickPhotoStep(route = route, onNext = actions.onNext, slot = slot)
             } else {
-                QuickPhotoStep(route = route, onNext = actions.onNext, transcoder = photoTranscoder)
+                QuickPhotoStep(route = route, onNext = actions.onNext, slot = slot, transcoder = photoTranscoder)
             }
         }
 
@@ -179,21 +186,6 @@ private fun QuickReportModels.sendModel(): QuickSendViewModel = send ?: hiltView
 @Composable
 private fun QuickPositionWarmUp(where: QuickSendViewModel) {
     where.lookup.collectAsStateWithLifecycle()
-}
-
-@Composable
-private fun QuickPhotoStep(
-    route: ReportRoute,
-    onNext: (ReportRoute) -> Unit,
-    transcoder: PhotoTranscoder = hiltViewModel(),
-) {
-    val camera =
-        rememberPhotoCamera(
-            onPhoto = { onNext(route.copy(photoId = it.photoId, photoPath = it.path)) },
-            transcoder = transcoder,
-        )
-    PhotoSection(photos = PhotoPaths(listOfNotNull(route.photoPath)), camera = camera)
-    if (route.photoPath != null) MainButton(text = stringResource(R.string.pomiar_dalej), onClick = { onNext(route) })
 }
 
 @Composable

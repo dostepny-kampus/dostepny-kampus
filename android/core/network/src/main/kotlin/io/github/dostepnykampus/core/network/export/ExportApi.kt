@@ -7,11 +7,13 @@ package io.github.dostepnykampus.core.network.export
 
 import io.github.dostepnykampus.core.model.export.ExportFormat
 import io.github.dostepnykampus.core.network.ApiResult
+import io.github.dostepnykampus.core.network.decodeContract
 import io.github.dostepnykampus.core.network.decodedResult
 import io.github.dostepnykampus.core.network.exchange
 import io.github.dostepnykampus.core.network.unexpectedResult
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -32,8 +34,6 @@ public data class ExportFile(val text: String, val isEmpty: Boolean)
  *
  * Wynik to [ApiResult]: błąd sieci i zła treść nie wychodzą jako wyjątek; 403 bez roli Koordynatora to
  * [ApiResult.ServerError] z tym kodem. Anulowanie korutyny przerywa żądanie HTTP.
- *
- * TODO(#3062): serwer nie ma jeszcze `GET /export.geojson`.
  *
  * Wymagania: US13.1, US13.2, US13.3
  *
@@ -67,5 +67,5 @@ public class ExportApi(private val http: OkHttpClient, private val json: Json, b
         }
 
     private fun features(body: String): JsonArray =
-        requireNotNull(json.parseToJsonElement(body).jsonObject["features"]).jsonArray
+        requireNotNull(json.decodeContract(JsonElement.serializer(), body).jsonObject["features"]).jsonArray
 }

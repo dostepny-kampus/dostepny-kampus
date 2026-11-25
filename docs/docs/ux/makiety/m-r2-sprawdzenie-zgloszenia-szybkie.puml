@@ -7,7 +7,7 @@ $ekran_poczatek()
 $naglowek("Sprawdzenie zgłoszenia")
 <b>Zgłoszenie szybkie</b>
 Czego dotyczy: Schody i windy
-Budynek D-2, piętro <i>[etykieta]</i>
+Budynek D-2, <i>[etykieta piętra]</i>
 Miejsce: <i>[punkt z telefonu]</i>
 $r2_zdjecie("zdjęcie bariery")
 Autor: Odwiedzający, Autor <i>[nr]</i>
