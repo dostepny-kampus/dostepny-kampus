@@ -5,10 +5,10 @@
  */
 package io.github.dostepnykampus.feature.map.style
 
-import io.github.dostepnykampus.feature.map.camera.MapTrace
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.featureCollection
+import io.github.dostepnykampus.feature.map.trace.MapTrace
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement

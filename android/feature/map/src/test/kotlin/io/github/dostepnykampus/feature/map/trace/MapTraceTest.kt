@@ -3,8 +3,10 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map.camera
+package io.github.dostepnykampus.feature.map.trace
 
+import io.github.dostepnykampus.feature.map.camera.CameraMotion
+import io.github.dostepnykampus.feature.map.camera.traceSection
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
@@ -32,9 +34,9 @@ class MapTraceTest {
             MapTrace.areaChange {
                 MapTrace.startStyle(1)
                 CameraMotion.entries.forEachIndexed { index, motion ->
-                    MapTrace.startMove(motion, index)
+                    MapTrace.startMove(section = motion.traceSection, move = index)
                     MapTrace.frame(zoom = 17.5, latitude = 51.1, longitude = 17.06)
-                    MapTrace.endMove(motion, index)
+                    MapTrace.endMove(section = motion.traceSection, move = index)
                 }
                 MapTrace.endStyle(1)
                 CameraMotion.entries.size
