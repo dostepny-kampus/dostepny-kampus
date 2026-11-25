@@ -61,10 +61,16 @@ internal data class Rejection(val reason: String, val duplicateOf: String? = nul
  */
 internal data class DecisionActions(val onAccept: () -> Unit, val onReject: (Rejection) -> Unit)
 
-/** Zrzut podobnych zgłoszeń stosowany do wyboru duplikatu. */
+/**
+ * Zrzut podobnych zgłoszeń do pokazania i do wyboru duplikatu.
+ *
+ * @param items podobne zgłoszenia od najbliższego
+ * @param photos adres pierwszego zdjęcia podobnego zgłoszenia według jego identyfikatora
+ */
 @Immutable
-internal class SimilarReports(items: List<SimilarSubmission>) {
+internal class SimilarReports(items: List<SimilarSubmission>, photos: Map<String, String> = emptyMap()) {
     val items = items.toList()
+    val photos = photos.toMap()
 }
 
 /**

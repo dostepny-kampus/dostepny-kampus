@@ -45,12 +45,14 @@ sealed interface CheckUiState {
      * @property photoUrls adresy zdjęć zgłoszenia w kolejności `photoIds`
      * @property similar zgłoszenia do 10 m, od najbliższego
      * @property notice komunikat nad decyzją; `null` bez komunikatu
+     * @property similarPhotos adres pierwszego zdjęcia podobnego zgłoszenia według jego identyfikatora
      */
     data class Ready(
         val submission: Submission,
         val photoUrls: List<String>,
         val similar: List<SimilarSubmission>,
         val notice: CheckNotice? = null,
+        val similarPhotos: Map<String, String> = emptyMap(),
     ) : CheckUiState
 
     /** Bez internetu przy wczytywaniu. */
@@ -181,7 +183,14 @@ class ReviewCheckViewModel
                     },
                 similar = similar,
                 notice = notice,
+                similarPhotos = similar.mapNotNull(::firstPhoto).toMap(),
             )
+
+        private fun firstPhoto(near: SimilarSubmission): Pair<String, String>? {
+            val id = near.submission.id
+            val photo = near.submission.content.photoIds.firstOrNull() ?: return null
+            return id to reviews.photoUrl(submissionId = id, photoId = photo)
+        }
 
         private fun ServerReply<*>.failure(): CheckUiState =
             when (this) {

@@ -40,6 +40,7 @@ import io.github.dostepnykampus.feature.map.building.CardMode
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
+import io.github.dostepnykampus.feature.review.navigation.ReviewCheckRoute
 import io.github.dostepnykampus.feature.review.navigation.ReviewQueueRoute
 import kotlinx.coroutines.flow.first
 import kotlin.math.roundToInt
@@ -154,7 +155,7 @@ internal fun AppNavigator.AppScreen(route: NavKey) {
         is BuildingRoute -> HiltBuildingCard(route.symbol)
         is ReportRoute -> QuickReport(route)
         ProgressRoute, ExportRoute, InvitationRoute, is MarkersRoute, is CollectorMarkersRoute -> Inspection(route)
-        ReviewQueueRoute -> ReviewQueue()
+        ReviewQueueRoute, is ReviewCheckRoute -> Review(route)
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
         is SignInRoute, AccountRoute -> Account(route)
         is MapRoute -> HiltMapScreen(focus = route.focus)
