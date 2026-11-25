@@ -9,6 +9,9 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.dostepnykampus.core.data.submission.own.SendState
 import io.github.dostepnykampus.core.designsystem.StatusIcons
+import io.github.dostepnykampus.core.designsystem.icon
+import io.github.dostepnykampus.core.designsystem.nameRes
+import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import io.github.dostepnykampus.feature.capture.R
 
 /**
@@ -31,19 +34,19 @@ internal enum class ShownStatus(
     REFUSED(R.string.moje_nie_wyslano, StatusIcons.Refused),
 
     /** „Wysłane”. */
-    SENT(R.string.moje_wyslane, StatusIcons.Sent),
+    SENT(SubmissionStatus.SENT.nameRes(), SubmissionStatus.SENT.icon()),
 
     /** „W weryfikacji”. */
-    IN_REVIEW(R.string.moje_w_weryfikacji, StatusIcons.InReview),
+    IN_REVIEW(SubmissionStatus.IN_REVIEW.nameRes(), SubmissionStatus.IN_REVIEW.icon()),
 
     /** „Przyjęte”. */
-    ACCEPTED(R.string.moje_przyjete, StatusIcons.Accepted),
+    ACCEPTED(SubmissionStatus.ACCEPTED.nameRes(), SubmissionStatus.ACCEPTED.icon()),
 
     /** „Odrzucone” z powodem. Wymagania: BR-16 */
-    REJECTED(R.string.moje_odrzucone, StatusIcons.Rejected),
+    REJECTED(SubmissionStatus.REJECTED.nameRes(), SubmissionStatus.REJECTED.icon()),
 
     /** „Archiwalne”. */
-    ARCHIVED(R.string.moje_archiwalne, StatusIcons.Archived),
+    ARCHIVED(SubmissionStatus.ARCHIVED.nameRes(), SubmissionStatus.ARCHIVED.icon()),
 }
 
 internal fun OwnSubmissionItem.shownStatus(): ShownStatus =
