@@ -33,6 +33,7 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.OfflinePill
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
+import io.github.dostepnykampus.core.designsystem.marking.AssessmentLine
 import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.R
