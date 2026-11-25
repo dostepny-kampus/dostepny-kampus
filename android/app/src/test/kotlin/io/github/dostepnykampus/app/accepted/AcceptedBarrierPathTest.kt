@@ -286,7 +286,7 @@ class AcceptedBarrierPathTest {
             )
         }
         Fakes.accepted =
-            listOf(barrier(id = THRESHOLD_ID, type = BarrierType.THRESHOLD, severity = Severity.ONLY_WITH_HELP, floor = 0))
+            listOf(barrier(id = THRESHOLD_ID, type = BarrierType.THRESHOLD, severity = Severity.ONLY_WITH_HELP))
         openCard()
         compose.waitUntil(WAIT_MS) { hasText(REPLACE_BUTTON) }
         compose.onNodeWithText(REPLACE_BUTTON).performScrollTo().performClick()
@@ -372,7 +372,7 @@ class AcceptedBarrierPathTest {
 
     private fun hasText(text: String) = compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()
 
-    private fun barrier(id: String, type: BarrierType, severity: Severity, floor: Int) =
+    private fun barrier(id: String, type: BarrierType, severity: Severity, floor: Int = 0) =
         AcceptedBarrier(
             id = id,
             location = LOCATION,
