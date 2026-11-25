@@ -175,7 +175,10 @@ class ReviewCheckViewModel
         ): CheckUiState =
             CheckUiState.Ready(
                 submission = submission,
-                photoUrls = submission.content.photoIds.map { reviews.photoUrl(submission.id, it) },
+                photoUrls =
+                    submission.content.photoIds.map { photo ->
+                        reviews.photoUrl(submissionId = submission.id, photoId = photo)
+                    },
                 similar = similar,
                 notice = notice,
             )
