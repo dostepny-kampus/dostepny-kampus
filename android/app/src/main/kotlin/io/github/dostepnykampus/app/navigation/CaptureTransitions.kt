@@ -55,6 +55,16 @@ fun AppNavigator.openMarking(entranceId: String, buildingSymbol: String) {
     if (current is BuildingRoute) leaving { add(route) }
 }
 
+/**
+ * C3 → C6: „Otwórz” albo „Wyślij ponownie” przy zmianie oznaczenia wejścia otwiera C6 z [route]; poza C3 nic nie
+ * robi.
+ *
+ * Wymagania: US8.3, US17.2, BR-23
+ */
+fun AppNavigator.openListMarking(route: MarkingRoute) {
+    if (current == MySubmissionsRoute) leaving { add(route) }
+}
+
 /** V2 → C2: „Popraw zgłoszenie” przy zgłoszeniu przyjętym; poza V2 nic nie robi. Wymagania: BR-3, BR-18 */
 fun AppNavigator.openReplace(acceptedId: String) {
     if (current is BuildingRoute) leaving { add(ReportEditRoute(acceptedId, isAccepted = true)) }

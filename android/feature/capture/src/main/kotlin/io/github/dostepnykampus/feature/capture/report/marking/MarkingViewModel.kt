@@ -10,6 +10,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.submission.pending.PendingEdits
+import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submission.sync.SaveRefusedException
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
@@ -35,6 +37,7 @@ import javax.inject.Inject
  *
  * @param catalog katalog budynków z wejściem, jego obecnym oznaczeniem i nazwą budynku
  * @param saver zapis w kolejce telefonu
+ * @param edits własne zmiany z kolejki telefonu do poprawki
  */
 @HiltViewModel
 class MarkingViewModel
@@ -42,9 +45,11 @@ class MarkingViewModel
     constructor(
         private val catalog: BuildingCatalogRepository,
         private val saver: ReportSaver,
+        private val edits: PendingEdits,
     ) : ViewModel() {
         private val state = MutableStateFlow(MarkingUiState())
         private var requested: MarkingRoute? = null
+        private var edited: EditedSubmission? = null
 
         /** Stan ekranu. */
         val uiState: StateFlow<MarkingUiState> = state.asStateFlow()
@@ -57,8 +62,19 @@ class MarkingViewModel
                 val found = catalogOrNull()
                 val entrance = found?.run { entrances.firstOrNull { it.matches(route) } }
                 val building = found?.run { buildings.firstOrNull { it.symbol == route.buildingSymbol } }
-                val stage = if (entrance == null) MarkingStage.MISSING else MarkingStage.EDITING
-                state.update { it.copy(entrance = entrance, buildingName = building?.name, stage = stage) }
+                val own = route.submissionId?.let { id -> edits.load(id) }
+                edited = own?.edited
+                val isMissing = entrance == null || route.submissionId != null && own == null
+                val stage = if (isMissing) MarkingStage.MISSING else MarkingStage.EDITING
+                state.update { current ->
+                    current.copy(
+                        entrance = entrance,
+                        buildingName = building?.name,
+                        stage = stage,
+                        chosen = own?.content?.entranceMarking,
+                        photo = own?.photos?.firstOrNull(),
+                    )
+                }
             }
         }
 
@@ -88,7 +104,7 @@ class MarkingViewModel
             viewModelScope.launch {
                 val stage =
                     try {
-                        saver.save(entrance.markingContent(chosen, photo), listOf(photo), null)
+                        saver.save(entrance.markingContent(chosen, photo), listOf(photo), edited)
                         MarkingStage.SAVED
                     } catch (error: IOException) {
                         Timber.w("Zapis zmiany oznaczenia wejścia nieudany: %s", error.javaClass.simpleName)

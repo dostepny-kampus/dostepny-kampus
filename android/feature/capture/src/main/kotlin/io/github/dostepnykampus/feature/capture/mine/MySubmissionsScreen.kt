@@ -29,7 +29,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
+import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.capture.R
+import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
 
 /**
  * C3 „Moje zgłoszenia” z listą z telefonu.
@@ -89,11 +91,10 @@ private fun SubmissionList(state: MySubmissionsUiState.Ready, actions: MySubmiss
             StatusCheckLine(check = state.check, isOnline = state.isOnline, onRetry = onRetry)
         }
         items(state.list.items, key = { it.id }) { item ->
-            val open = actions.onOpen.takeIf { item.canOpenHere() }
             val conflict = actions.onConflict.takeIf { item.hasVersionConflict }
             SubmissionCard(
                 item = item,
-                onOpen = open?.let { { it(item.id) } },
+                onOpen = openAction(item, actions),
                 onMeasure = actions.onMeasure,
                 onConflict = conflict?.let { { it(item.id) } },
             )
@@ -139,3 +140,32 @@ private fun StatusCheckLine(check: StatusCheck, isOnline: Boolean, onRetry: () -
         }
     }
 }
+
+/**
+ * „Otwórz” albo „Wyślij ponownie” pozycji [item]: zmiana oznaczenia wejścia otwiera C6 (po „nieaktualne” jako nową
+ * zmianę tego wejścia), reszta poprawkę w C2; `null`, gdy pozycji nie da się otworzyć.
+ *
+ * Wymagania: US8.3, US17.2, BR-23
+ */
+internal fun openAction(item: OwnSubmissionItem, actions: MySubmissionsActions): (() -> Unit)? {
+    val marking = item.markingRoute()
+    return when {
+        !item.canOpenHere() -> null
+        item.kind != SubmissionKind.ENTRANCE_MARKING -> actions.onOpen?.boundTo(item.id)
+        marking == null -> null
+        else -> actions.onOpenMarking?.boundTo(marking)
+    }
+}
+
+private fun <T> ((T) -> Unit).boundTo(value: T): () -> Unit = { this(value) }
+
+private fun OwnSubmissionItem.markingRoute(): MarkingRoute? =
+    if (entranceId == null || buildingSymbol == null) {
+        null
+    } else {
+        MarkingRoute(
+            entranceId = entranceId,
+            buildingSymbol = buildingSymbol,
+            submissionId = id.takeUnless { isOutdated },
+        )
+    }
