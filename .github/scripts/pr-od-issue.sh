@@ -88,7 +88,7 @@ report() {
 
 load_pr
 author="$(jq -r '.author.login' <<<"$pr_data")" || tool_error jq "nie odczytano autora PR"
-if [[ $author == 'dependabot[bot]' ]]; then
+if [[ $author == 'dependabot[bot]' || $author == 'app/dependabot' ]]; then
   echo "PR Dependabota: kontrola pominięta."
   exit 0
 fi
