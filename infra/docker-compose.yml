@@ -103,6 +103,9 @@ services:
       DK_AUTH_AUDIENCE: ${DK_AUTH_AUDIENCE:-dostepny-kampus-api}
       # Klucze tokenów z sieci compose: adres wydawcy (localhost) nie wskazuje usługi logowania z kontenera serwera.
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: ${DK_AUTH_JWKS:-http://logowanie:8180/realms/dostepny-kampus/protocol/openid-connect/certs}
+      DK_AUTH_ADMIN_URL: ${DK_AUTH_ADMIN_URL:-http://logowanie:8180/admin/realms/dostepny-kampus}
+      DK_AUTH_TOKEN_URL: ${DK_AUTH_TOKEN_URL:-http://logowanie:8180/realms/dostepny-kampus/protocol/openid-connect/token}
+      DK_AUTH_SERVICE_SECRET: ${DK_AUTH_SERVICE_SECRET:?ustaw DK_AUTH_SERVICE_SECRET w infra/.env}
       DK_PUBLIC_RATE_LIMIT: ${DK_PUBLIC_RATE_LIMIT:-60}
       DK_RATE_LIMIT_UNLIMITED: ${DK_RATE_LIMIT_UNLIMITED:-}
     ports:
