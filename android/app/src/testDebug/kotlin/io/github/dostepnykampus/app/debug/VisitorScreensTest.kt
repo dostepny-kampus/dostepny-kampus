@@ -32,7 +32,7 @@ class VisitorScreensTest {
     @Test
     fun visitorHasNoMeasure() {
         compose.showShell(Account.SignedIn())
-        compose.onNodeWithText("Konto").performClick()
+        compose.onNodeWithText(ACCOUNT).performClick()
         compose.onNodeWithText(MEASURE).assertDoesNotExist()
         compose.onNodeWithText(PROGRESS).assertDoesNotExist()
     }
@@ -44,7 +44,7 @@ class VisitorScreensTest {
     @Test
     fun visitorHasNoMine() {
         compose.showShell(Account.SignedIn())
-        compose.onNodeWithText("Konto").performClick()
+        compose.onNodeWithText(ACCOUNT).performClick()
         compose.onNodeWithText(MINE).assertDoesNotExist()
     }
 
@@ -52,7 +52,7 @@ class VisitorScreensTest {
     @Test
     fun visitorSeesOnlyOwnRole() {
         compose.showShell(Account.SignedIn())
-        compose.onNodeWithText("Konto").performClick()
+        compose.onNodeWithText(ACCOUNT).performClick()
         compose.onNodeWithText("Twoje role: Odwiedzający").assertIsDisplayed()
         compose.onNodeWithText(MEASURE).assertDoesNotExist()
         compose.onNodeWithText(QUEUE).assertDoesNotExist()
@@ -60,6 +60,7 @@ class VisitorScreensTest {
     }
 
     private companion object {
+        const val ACCOUNT = "Konto"
         const val MEASURE = "Zmierz i zgłoś barierę"
         const val MINE = "Moje zgłoszenia"
         const val PROGRESS = "Postęp inwentaryzacji"
