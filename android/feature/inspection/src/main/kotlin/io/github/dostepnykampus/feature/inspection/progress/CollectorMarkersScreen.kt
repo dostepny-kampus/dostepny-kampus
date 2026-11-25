@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.inspection.progress
@@ -8,7 +8,6 @@ package io.github.dostepnykampus.feature.inspection.progress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -30,9 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -41,15 +37,8 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
-import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.core.model.inspection.MarkerPlace
 import io.github.dostepnykampus.feature.inspection.R
-
-private val InspectedIcon: ImageVector =
-    pathIcon(
-        "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z " +
-            "M17.99 9l-1.41-1.42-6.59 6.59-2.58-2.57-1.42 1.41 4 3.99z",
-    )
 
 /**
  * Czynności przy wierszu piętra w C5 Zbierającego.
@@ -184,10 +173,7 @@ private fun FloorCard(row: FloorRow, isAsking: Boolean, isUnsaved: Boolean, acti
 @Composable
 private fun Inspected(row: FloorRow, isAsking: Boolean, isUnsaved: Boolean, actions: CollectorMarkerActions) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
-            Icon(InspectedIcon, contentDescription = null)
-            Text(stringResource(R.string.zbierajacy_obejrzane), style = MaterialTheme.typography.titleMedium)
-        }
+        InspectedLabel(stringResource(R.string.zbierajacy_obejrzane), style = MaterialTheme.typography.titleMedium)
         val authorText =
             if (row.isMine) R.string.zbierajacy_twoj_znacznik else R.string.zbierajacy_znacznik_innej_osoby
         Text(stringResource(authorText))

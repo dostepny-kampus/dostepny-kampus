@@ -6,8 +6,10 @@
 package io.github.dostepnykampus.feature.inspection.progress
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -17,6 +19,7 @@ import io.github.dostepnykampus.core.model.inspection.InspectionMarker
 import io.github.dostepnykampus.core.model.inspection.MarkerPlace
 import io.github.dostepnykampus.core.model.inspection.ProgressMarker
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -46,6 +49,20 @@ class MarkersScreenTest {
         compose.onNodeWithText(FLOOR).assertIsDisplayed()
         compose.onNodeWithText("Znacznik: Zbierający, Autor 14").assertIsDisplayed()
         compose.onNodeWithText("Obejrzane piętra: 4 z 5").assertIsDisplayed()
+    }
+
+    /**
+     * Piętro ze znacznikiem ma „Obejrzane” z ikoną nad autorem znacznika.
+     *
+     * Wymagania: US11.3, NFR-21
+     */
+    @Test
+    fun marksFloorSeenWithIcon() {
+        show(MarkersUiState.Ready(BUILDING))
+        val seen = compose.onNodeWithText("Obejrzane").fetchSemanticsNode().boundsInRoot
+        val author = compose.onNodeWithText("Znacznik: Zbierający, Autor 14").fetchSemanticsNode().boundsInRoot
+        assertTrue("„Obejrzane” nad autorem", seen.bottom <= author.top)
+        compose.onAllNodesWithTag(INSPECTED_ICON_TAG, useUnmergedTree = true).assertCountEquals(1)
     }
 
     /**
