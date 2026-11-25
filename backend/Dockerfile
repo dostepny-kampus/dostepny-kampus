@@ -8,7 +8,7 @@ FROM eclipse-temurin:25-jre
 RUN groupadd --system serwer && useradd --system --gid serwer --home-dir /app serwer
 
 WORKDIR /app
-COPY --chown=serwer:serwer target/backend-0.1.0.jar serwer.jar
+COPY --chown=serwer:serwer target/backend-*.jar serwer.jar
 
 USER serwer
 EXPOSE 8080
