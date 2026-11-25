@@ -85,7 +85,7 @@ class ExportViewModel
         }
     }
 
-private fun stageOf(outcome: ExportOutcome): ExportStage =
+internal fun stageOf(outcome: ExportOutcome): ExportStage =
     when (outcome) {
         is ExportOutcome.Saved -> if (outcome.isEmpty) ExportStage.EMPTY else ExportStage.SAVED
         ExportOutcome.Offline -> ExportStage.OFFLINE
