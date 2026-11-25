@@ -37,6 +37,7 @@ import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.marking.BarrierTypeField
 import io.github.dostepnykampus.core.designsystem.marking.SeverityChoice
+import io.github.dostepnykampus.core.designsystem.submission.nameRes
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.review.R
 
@@ -130,7 +131,13 @@ private fun Check(state: CheckUiState.Ready, decision: DecisionActions) {
     ) {
         if (state.notice == CheckNotice.OFFLINE) OfflinePill()
         if (state.notice == CheckNotice.CHANGED) {
-            Notice(title = R.string.sprawdzenie_zmienione, body = R.string.sprawdzenie_zmienione_sprawdz)
+            val names = state.changed.map { stringResource(it.nameRes()).lowercase() }.joinToString(separator = ", ")
+            val detail = if (names.isEmpty()) null else stringResource(R.string.sprawdzenie_zmienione_pola, names)
+            Notice(
+                title = R.string.sprawdzenie_zmienione,
+                body = R.string.sprawdzenie_zmienione_sprawdz,
+                detail = detail,
+            )
         }
         SubmissionDetails(state)
         if (state.submission.content.kind == SubmissionKind.QUICK) QuickChoice(state = state, decision = decision)
