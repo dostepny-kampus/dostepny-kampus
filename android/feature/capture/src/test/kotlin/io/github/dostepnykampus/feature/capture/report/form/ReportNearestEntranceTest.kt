@@ -45,9 +45,9 @@ class ReportNearestEntranceTest {
             val viewModel = opened(A1)
             runCurrent()
 
-            val nearest = state(viewModel).form.place.nearestEntrance
-            assertEquals("n/1", nearest?.entrance?.id, "najbliższe wejście budynku A-1")
-            assertTrue(checkNotNull(nearest).meters < NEAR_METERS, "odległość od punktu pomiaru")
+            val nearest = checkNotNull(state(viewModel).form.place.nearestEntrance)
+            assertEquals("n/1", nearest.entrance.id, "najbliższe wejście budynku A-1")
+            assertTrue(nearest.meters < NEAR_METERS, "odległość od punktu pomiaru")
             viewModel.back()
             assertEquals(ReportStage.LEFT, state(viewModel).stage, "wejście nie jest zmianą Zbierającego")
         }
