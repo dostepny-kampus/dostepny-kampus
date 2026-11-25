@@ -110,23 +110,28 @@ public final class KeycloakTestConfiguration {
         };
     }
 
-    /**
-     * Hasło konta testowego z realmu importowanego przez kontener.
-     *
-     * @param mapper Czytnik realmu
-     * @param user Nazwa użytkownika
-     * @return Hasło konta testowego
-     */
-    public static String password(final JsonMapper mapper, final String user) {
-        return mapper.readTree(Path.of("../infra/keycloak/realm.json").toFile()).path("users")
-            .valueStream().filter(account -> user.equals(account.path("username").asString()))
-            .map(account -> account.path("credentials").path(0).path("value"))
-            .map(JsonNode::asString).findFirst().orElseThrow();
-    }
-
     private static String base(final GenericContainer<?> keycloak) {
         return "http://%s:%d".formatted(
             keycloak.getHost(), keycloak.getMappedPort(KeycloakTestConfiguration.PORT)
         );
+    }
+
+    /**
+     * Dane logowania z realmu importowanego przez kontener.
+     * @param mapper Czytnik realmu
+     * @since 0.1.0
+     */
+    public record RealmCredentials(JsonMapper mapper) {
+        /**
+         * Hasło konta testowego lub administratora kontenera.
+         * @param user Nazwa użytkownika
+         * @return Hasło do logowania
+         */
+        public String password(final String user) {
+            return this.mapper.readTree(Path.of("../infra/keycloak/realm.json").toFile())
+                .path("users").valueStream().filter(account -> user.equals(account.path("username").asString()))
+                .map(account -> account.path("credentials").path(0).path("value"))
+                .map(JsonNode::asString).findFirst().orElse(KeycloakTestConfiguration.ADMIN);
+        }
     }
 }

@@ -214,7 +214,7 @@ final class KeycloakTokenIT {
         return KeycloakTokenIT.exchange(
             client, realm,
             "grant_type=password&client_id=%s&username=%s&password=%s".formatted(
-                app, user, KeycloakTestConfiguration.password(mapper, user)
+                app, user, new KeycloakTestConfiguration.RealmCredentials(mapper).password(user)
             )
         );
     }

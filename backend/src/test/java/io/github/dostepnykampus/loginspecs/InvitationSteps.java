@@ -291,7 +291,7 @@ public final class InvitationSteps {
     }
 
     private String staffToken(final String user) throws Exception {
-        return this.login(user, KeycloakTestConfiguration.password(this.mapper, user));
+        return this.login(user, new KeycloakTestConfiguration.RealmCredentials(this.mapper).password(user));
     }
 
     private String login(final String user, final String secret) throws Exception {

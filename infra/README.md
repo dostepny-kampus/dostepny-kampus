@@ -131,7 +131,6 @@ Realm jest deweloperski. Ma cztery role z kontraktu, klienta publicznego `dostep
 | `VERIFIER` | `weryfikator.test` | `haslo-testowe-weryfikator` |
 | `COORDINATOR` | `koordynator.test` | `haslo-testowe-koordynator` |
 
-Klient poufny `dostepny-kampus-serwer` to konto techniczne serwera: z sekretem `DK_AUTH_SERVICE_SECRET` zakłada konta z zaproszeń i nadaje im role (`manage-users`, `view-users`, `view-realm` z `realm-management`). Sekret w tym realmie jest jawny, jak hasła kont testowych.
 
 Realm pozwala założyć konto samemu (`registrationAllowed`). Nowe konto trafia do grupy domyślnej `odwiedzajacy` i dostaje z niej tylko rolę `VISITOR` (US14.3); role pracownicze nadaje Koordynator.
 
