@@ -7,9 +7,9 @@
 /**
  * Moduł inspection: znaczniki pięter obejrzanych przez Zbierających.
  *
- * <p>Zadanie: zapis znaczników i odczyt postępu inwentaryzacji.</p>
+ * <p>Zadanie: zapis znaczników, ich pobranie do telefonu i odczyt postępu inwentaryzacji.</p>
  *
- * <p>API: {@code /sync/push}, {@code /inspection-markers/{id}}, {@code /progress}.</p>
+ * <p>API: operacje HTTP {@code /sync/*}, {@code /inspection-markers/{id}}, {@code /progress}.</p>
  *
  * <p>Zależności: {@code building :: api}, {@code shared}.</p>
  *
