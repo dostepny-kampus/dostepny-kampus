@@ -44,6 +44,7 @@ import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.StaffProblem
 import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
+import io.github.dostepnykampus.core.designsystem.StaffResultMessage
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
@@ -58,7 +59,8 @@ import io.github.dostepnykampus.feature.inspection.R
  * Wymagania: US12.1, US12.2, NFR-50, NFR-52
  *
  * @param state stan ekranu
- * @param actions czynności prowadzące poza ekran
+ * @param onBack powrót do konta
+ * @param onLeave powrót do mapy przy braku uprawnień
  * @param onEdit zmiana adresu
  * @param onChoose wybór roli
  * @param onSend „Wyślij zaproszenie” i „Spróbuj ponownie”
@@ -67,7 +69,8 @@ import io.github.dostepnykampus.feature.inspection.R
 @Composable
 fun InvitationContent(
     state: InvitationUiState,
-    actions: InvitationActions,
+    onBack: () -> Unit,
+    onLeave: () -> Unit,
     onEdit: (String) -> Unit,
     onChoose: (StaffRole) -> Unit,
     onSend: () -> Unit,
@@ -76,9 +79,9 @@ fun InvitationContent(
     val problem = problemOf(state.stage)
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            BackHeader(title = stringResource(R.string.zaproszenie_naglowek), onBack = actions.onBack)
+            BackHeader(title = stringResource(R.string.zaproszenie_naglowek), onBack = onBack)
             if (problem != null) {
-                val onAction = if (problem == StaffProblem.FORBIDDEN) actions.onLeave else onSend
+                val onAction = if (problem == StaffProblem.FORBIDDEN) onLeave else onSend
                 StaffProblemMessage(problem = problem, onAction = onAction)
             } else {
                 InvitationBody(state = state, onEdit = onEdit, onChoose = onChoose, onSend = onSend)
@@ -141,25 +144,13 @@ private fun Message(state: InvitationUiState) {
             else -> return
         }
     val role = state.addedRole
-    Surface(
-        modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-    ) {
-        Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-            Text(
-                text = stringResource(title),
-                fontWeight = Typografia.wyroznienieWaga,
-                style = MaterialTheme.typography.titleLarge,
-            )
-            if (state.stage == InvitationStage.ROLE_ADDED && role != null) {
-                Text(
-                    text = stringResource(R.string.zaproszenie_rola_dodana, stringResource(genitiveOf(role))),
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-            }
+    val message =
+        if (state.stage == InvitationStage.ROLE_ADDED && role != null) {
+            stringResource(R.string.zaproszenie_rola_dodana, stringResource(genitiveOf(role)))
+        } else {
+            null
         }
-    }
+    StaffResultMessage(title = stringResource(title), message = message)
 }
 
 @Composable

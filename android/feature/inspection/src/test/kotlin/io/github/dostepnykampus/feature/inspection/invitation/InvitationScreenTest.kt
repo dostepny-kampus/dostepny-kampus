@@ -49,7 +49,8 @@ class InvitationScreenTest {
             DostepnyKampusTheme {
                 InvitationContent(
                     state = state.value,
-                    actions = InvitationActions(onBack = { events += "back" }, onLeave = { events += "leave" }),
+                    onBack = { events += "back" },
+                    onLeave = { events += "leave" },
                     onEdit = { email -> events += email },
                     onChoose = { role -> events += role.name },
                     onSend = { events += "send" },
