@@ -48,4 +48,5 @@
     <string name="zaslona_na_dole_po_prawej">na dole po prawej</string>
     <string name="sprawdzenie_czego_dotyczy">Czego dotyczy:</string>
     <string name="sprawdzenie_ustal_typ">Ustal typ bariery i uciążliwość, aby przyjąć zgłoszenie.</string>
+    <string name="sprawdzenie_miejsce">Miejsce: %1$s</string>
 </resources>

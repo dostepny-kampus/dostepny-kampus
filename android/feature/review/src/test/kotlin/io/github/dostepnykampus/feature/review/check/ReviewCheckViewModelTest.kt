@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.review.check
 
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.NearestEntrance
 import io.github.dostepnykampus.core.data.review.ReviewQueue
 import io.github.dostepnykampus.core.data.review.Reviews
 import io.github.dostepnykampus.core.data.server.ServerReply
@@ -178,7 +179,7 @@ class ReviewCheckViewModelTest {
         Dispatchers.setMain(dispatcher)
         try {
             val catalog = BuildingCatalogRepository(dispatcher) { campus }
-            runTest(dispatcher) { block(ReviewCheckViewModel(CHECKED.id, fake, catalog)) }
+            runTest(dispatcher) { block(ReviewCheckViewModel(CHECKED.id, fake, NearestEntrance(catalog))) }
         } finally {
             Dispatchers.resetMain()
         }

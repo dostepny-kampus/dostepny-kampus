@@ -11,8 +11,10 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.dostepnykampus.core.data.building.NearestEntrance
 import io.github.dostepnykampus.core.data.review.Reviews
 import io.github.dostepnykampus.core.data.server.ServerReply
+import io.github.dostepnykampus.core.model.building.EntranceDistance
 import io.github.dostepnykampus.core.model.review.ReviewDecision
 import io.github.dostepnykampus.core.model.review.ReviewOutcome
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
@@ -54,6 +56,7 @@ sealed interface CheckUiState {
      * @property quickType typ bariery nadany zgłoszeniu szybkiemu; `null`, zanim Weryfikator go wybierze
      * @property quickSeverity uciążliwość nadana zgłoszeniu szybkiemu; `null`, zanim Weryfikator ją wybierze
      * @property missingAttempts liczba prób przyjęcia zgłoszenia szybkiego bez typu albo uciążliwości
+     * @property nearest najbliższe wejście budynku zgłoszenia; `null` bez budynku, wejść albo katalogu
      */
     data class Ready(
         val submission: Submission,
@@ -64,6 +67,7 @@ sealed interface CheckUiState {
         val quickType: BarrierType? = null,
         val quickSeverity: Severity? = null,
         val missingAttempts: Int = 0,
+        val nearest: EntranceDistance? = null,
     ) : CheckUiState
 
     /** Bez internetu przy wczytywaniu. */
@@ -83,6 +87,7 @@ sealed interface CheckUiState {
  *
  * @param submissionId identyfikator sprawdzanego zgłoszenia
  * @param reviews sprawdzanie zgłoszeń na serwerze
+ * @param nearestEntrance najbliższe wejście budynku do miejsca zgłoszenia słowami
  */
 @HiltViewModel(assistedFactory = ReviewCheckViewModel.Factory::class)
 class ReviewCheckViewModel
@@ -90,6 +95,7 @@ class ReviewCheckViewModel
     constructor(
         @Assisted private val submissionId: String,
         private val reviews: Reviews,
+        private val nearestEntrance: NearestEntrance,
     ) : ViewModel() {
         private val current = MutableStateFlow<CheckUiState>(CheckUiState.Loading)
 
@@ -183,7 +189,12 @@ class ReviewCheckViewModel
 
                 is ReviewOutcome.Changed -> {
                     val changed = ready(outcome.server, shown.similar, CheckNotice.CHANGED)
-                    current.value = changed.copy(quickType = shown.quickType, quickSeverity = shown.quickSeverity)
+                    current.value =
+                        changed.copy(
+                            quickType = shown.quickType,
+                            quickSeverity = shown.quickSeverity,
+                            nearest = shown.nearest,
+                        )
                 }
             }
         }
@@ -196,8 +207,10 @@ class ReviewCheckViewModel
             val found = reviews.submission(submissionId)
             if (found !is ServerReply.Ok) return found.checkFailure()
             val similar = reviews.similar(submissionId)
+            val content = found.value.content
             return if (similar is ServerReply.Ok) {
-                ready(found.value, similar.value, notice = null)
+                val nearest = nearestEntrance.find(buildingSymbol = content.buildingSymbol, point = content.location)
+                ready(found.value, similar.value, notice = null).copy(nearest = nearest)
             } else {
                 similar.checkFailure()
             }
