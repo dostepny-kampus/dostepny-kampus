@@ -16,17 +16,14 @@ import io.github.dostepnykampus.barrier.submission.SubmissionEdit;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
 import io.github.dostepnykampus.barrier.submission.SubmissionRepository;
-import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import io.github.dostepnykampus.barrier.submission.content.json.SubmissionContentJson;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
@@ -180,8 +177,8 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
             this.write(
                 this.jdbc.sql(JdbcSubmissions.UPDATE)
                     .param("version", edit.expectedVersion())
-                    .param("from", JdbcSubmissions.editable(Function.identity()))
-                    .param("to", JdbcSubmissions.editable(SubmissionStatus::afterEdit)),
+                    .param("from", EditTransition.from())
+                    .param("to", EditTransition.to()),
                 edit.id(),
                 edit.content()
             ).orElse(null),
@@ -409,13 +406,5 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
 
     private String json(final SubmissionContent content) {
         return this.mapper.writeValueAsString(new SubmissionContentJson(content));
-    }
-
-    private static String[] editable(final Function<SubmissionStatus, SubmissionStatus> after) {
-        return Arrays.stream(SubmissionStatus.values())
-            .filter(SubmissionStatus::editable)
-            .map(after)
-            .map(Enum::name)
-            .toArray(String[]::new);
     }
 }
