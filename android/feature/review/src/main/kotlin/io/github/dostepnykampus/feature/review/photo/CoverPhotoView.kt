@@ -54,8 +54,6 @@ import io.github.dostepnykampus.core.designsystem.R as DesignR
 private const val SHOWN_PIXELS = 2048
 private const val CENTER = 0.5f
 
-// TODO(#4094): ekran zasłaniania wokół zdjęcia.
-
 /**
  * Zdjęcie [photo] z zasłonami [covers]; dotknięcie zdjęcia albo zasłony zgłasza [onTap] we współrzędnych
  * względnych.
