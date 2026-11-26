@@ -193,20 +193,25 @@ class ReviewCheckViewModelTest {
 
     @Test
     fun markingComparesWithCurrent() {
+        assertMarkingComparison(day = 27, changed = false)
+        assertMarkingComparison(day = 28, changed = true)
+    }
+
+    private fun assertMarkingComparison(day: Int, changed: Boolean) {
         val marking =
             CHECKED.content.copy(
                 kind = SubmissionKind.ENTRANCE_MARKING,
                 entranceId = "e",
                 entranceMarking = EntranceMarking.INACCESSIBLE,
             )
-        val assessed = EntranceAssessment(date = LocalDate.of(2026, 10, 28), source = AssessmentSource.WALKTHROUGH)
+        val assessed = EntranceAssessment(date = LocalDate.of(2026, 10, day), source = AssessmentSource.WALKTHROUGH)
         val current = ENTRANCE.copy(assessment = assessed)
         checkTest(Fake(found = ServerReply.Ok(CHECKED.copy(content = marking))), entrances = listOf(current)) { model ->
             runCurrent()
             assertEquals(
-                CurrentMarking(entrance = current, isChangedSinceSent = true),
+                CurrentMarking(entrance = current, isChangedSinceSent = changed),
                 (model.state.value as CheckUiState.Ready).current,
-                "obecne oznaczenie przyjęte dzień po wysłaniu",
+                "obecne oznaczenie przyjęte $day października",
             )
         }
     }
@@ -231,7 +236,16 @@ class ReviewCheckViewModelTest {
         try {
             val catalog = BuildingCatalogRepository(dispatcher) { campus }
             val server = ServerEntrances { symbol -> entrances.filter { it.buildingSymbol == symbol } }
-            runTest(dispatcher) { block(ReviewCheckViewModel(CHECKED.id, fake, NearestEntrance(catalog), server)) }
+            runTest(dispatcher) {
+                val model =
+                    ReviewCheckViewModel(
+                        submissionId = CHECKED.id,
+                        reviews = fake,
+                        nearestEntrance = NearestEntrance(catalog),
+                        serverEntrances = server,
+                    )
+                block(model)
+            }
         } finally {
             Dispatchers.resetMain()
         }

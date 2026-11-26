@@ -193,7 +193,7 @@ class ReviewCheckViewModel
             }
         }
 
-        private fun decided(outcome: ReviewOutcome, shown: CheckUiState.Ready, onDone: () -> Unit) {
+        private suspend fun decided(outcome: ReviewOutcome, shown: CheckUiState.Ready, onDone: () -> Unit) {
             when (outcome) {
                 is ReviewOutcome.Decided -> {
                     onDone()
@@ -208,7 +208,7 @@ class ReviewCheckViewModel
                             nearest = shown.nearest,
                             changed = fieldsChanged(previous = shown.submission.content, current = server.content),
                             previous = shown.previous,
-                            current = shown.current,
+                            current = serverEntrances.currentMarking(server),
                         )
                 }
             }

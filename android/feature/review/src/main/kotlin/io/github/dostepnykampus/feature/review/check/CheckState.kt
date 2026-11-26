@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.review.Reviews
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.isAfterDayOf
 import io.github.dostepnykampus.core.model.review.ReviewDecision
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
 import io.github.dostepnykampus.core.model.submission.BarrierType
@@ -129,9 +130,10 @@ data class CurrentMarking(val entrance: Entrance, val isChangedSinceSent: Boolea
  */
 internal suspend fun ServerEntrances.currentMarking(submission: Submission): CurrentMarking? {
     val content = submission.content
-    val symbol = content.buildingSymbol.takeIf { content.kind == SubmissionKind.ENTRANCE_MARKING } ?: return null
-    return entrances(symbol).firstOrNull { it.id == content.entranceId }?.let { entrance ->
-        val isChanged = entrance.assessment?.isAfterDayOf(submission.createdAt) == true
-        CurrentMarking(entrance = entrance, isChangedSinceSent = isChanged)
-    }
+    if (content.kind != SubmissionKind.ENTRANCE_MARKING) return null
+    val symbol = content.buildingSymbol ?: return null
+    val id = content.entranceId ?: return null
+    val entrance = entrances(symbol).firstOrNull { it.id == id } ?: return null
+    val isChanged = entrance.assessment?.isAfterDayOf(submission.createdAt) == true
+    return CurrentMarking(entrance = entrance, isChangedSinceSent = isChanged)
 }
