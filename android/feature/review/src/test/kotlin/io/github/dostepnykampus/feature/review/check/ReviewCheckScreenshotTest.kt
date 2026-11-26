@@ -5,8 +5,12 @@
  */
 package io.github.dostepnykampus.feature.review.check
 
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -22,6 +26,8 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import java.io.File
+import io.github.dostepnykampus.core.designsystem.R as DesignR
 
 /**
  * Zrzuty R2 „Sprawdzenie zgłoszenia” z danymi zgłoszenia, podobnymi i decyzją, jasny, ciemny i przy czcionce 200 %,
@@ -66,6 +72,20 @@ class ReviewCheckScreenshotTest {
         capture(quickWithoutType())
     }
 
+    @Test
+    fun drawsCoverActionBelowPhoto() {
+        val photo = File.createTempFile("r2-photo", ".png", compose.activity.cacheDir)
+        val bitmap = Bitmap.createBitmap(240, 120, Bitmap.Config.ARGB_8888)
+        bitmap.eraseColor(Color.GRAY)
+        try {
+            photo.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+            capture(ready().copy(photoUrls = listOf(Uri.fromFile(photo).toString())))
+        } finally {
+            bitmap.recycle()
+            photo.delete()
+        }
+    }
+
     private fun quickWithoutType(): CheckUiState.Ready =
         ready(submission = quick(id = "a")).copy(notice = CheckNotice.TYPE_MISSING)
 
@@ -83,13 +103,19 @@ class ReviewCheckScreenshotTest {
             DostepnyKampusTheme {
                 ReviewCheckContent(
                     state = state,
-                    actions = ReviewCheckActions(onBack = {}, onDecided = {}),
+                    actions = ReviewCheckActions(onBack = {}, onDecided = {}, onCover = { _, _ -> }),
                     decision = DecisionActions(onAccept = {}, onReject = {}),
                     onRetry = {},
                 )
             }
         }
         compose.waitForIdle()
+        if (state is CheckUiState.Ready && state.photoUrls.isNotEmpty()) {
+            val loading = compose.activity.getString(DesignR.string.zdjecie_wczytujemy)
+            compose.waitUntil(timeoutMillis = 5_000) {
+                compose.onAllNodesWithText(loading).fetchSemanticsNodes().isEmpty()
+            }
+        }
         compose.onRoot().captureRoboImage()
     }
 }

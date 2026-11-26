@@ -11,15 +11,16 @@ import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import io.github.dostepnykampus.feature.review.navigation.ReviewCheckRoute
+import io.github.dostepnykampus.feature.review.navigation.ReviewCoverRoute
 import io.github.dostepnykampus.feature.review.navigation.ReviewQueueRoute
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
 
 /**
- * Przejścia Weryfikatora: L2 → R1 → R2 i z powrotem.
+ * Przejścia Weryfikatora: L2 → R1 → R2 → zasłanianie zdjęcia i z powrotem.
  *
- * Wymagania: US10.4, US10.7
+ * Wymagania: US10.4, US10.7, BR-15
  */
 class ReviewTransitionsTest {
     private val stack = mutableListOf<NavKey>(MapRoute(), AccountRoute)
@@ -61,7 +62,29 @@ class ReviewTransitionsTest {
         assertNotEquals(queue, navigator.contentKey(stack.lastIndex), "R1 w świeżym stanie")
     }
 
+    /** Wiersze: R2 „Zasłoń twarz lub tablicę” → zasłanianie, „Wstecz” i „Zapisz zdjęcie” → R2. Wymagania: BR-15 */
+    @Test
+    fun coverOpensFromCheckAndReturns() {
+        val navigator = navigator()
+        val cover = ReviewCoverRoute(submissionId = ID, photoId = PHOTO, photoUrl = URL)
+        navigator.openCover(submissionId = ID, photoId = PHOTO, photoUrl = URL)
+        assertEquals(AccountRoute, stack.last(), "zasłanianie tylko z R2")
+        navigator.reviewQueue()
+        navigator.openReviewCheck(ID)
+        navigator.openCover(submissionId = ID, photoId = PHOTO, photoUrl = URL)
+        assertEquals(cover, stack.last(), "zasłanianie nad R2")
+        navigator.back()
+        assertEquals(ReviewCheckRoute(ID), stack.last(), "„Wstecz” do R2")
+        val check = navigator.contentKey(stack.lastIndex)
+        navigator.openCover(submissionId = ID, photoId = PHOTO, photoUrl = URL)
+        navigator.coverSaved()
+        assertEquals(ReviewCheckRoute(ID), stack.last(), "po zapisie R2")
+        assertNotEquals(check, navigator.contentKey(stack.lastIndex), "R2 czyta zgłoszenie od nowa")
+    }
+
     private companion object {
         const val ID = "a"
+        const val PHOTO = "p-a"
+        const val URL = "a/p-a"
     }
 }

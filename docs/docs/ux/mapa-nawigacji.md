@@ -266,7 +266,9 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | R1 | „Weź do sprawdzenia” | R2 | RO-WER | US10.4, BR-11 |
 | R1 | „Weź do sprawdzenia”, zgłoszenie już zajęte | R1, komunikat, zgłoszenie znika | RO-WER | UC14 2a, BR-11 |
 | R1 | „Otwórz” przy zgłoszeniu z sekcji „Wzięte przeze mnie” | R2 | RO-WER | BR-11, UC14 2b |
-| R2 | „Zasłoń twarz lub tablicę” | R2, zdjęcie z zasłoniętym miejscem | RO-WER | BR-15, NFR-25 |
+| R2 | „Zasłoń twarz lub tablicę” przy zdjęciu | zasłanianie zdjęcia | RO-WER | BR-15, NFR-25 |
+| zasłanianie zdjęcia | „Zapisz zdjęcie” | R2 z nowym zdjęciem | RO-WER | BR-15, NFR-25 |
+| zasłanianie zdjęcia | „Wstecz” | R2 bez zmian | RO-WER | BR-15, NFR-15 |
 | R2 | „Przyjmij” | R1 | RO-WER | US10, US10.6 |
 | R2 | „Odrzuć” z powodem | R1 | RO-WER | US10.2, BR-16 |
 | R2, błąd walidacji | „Przyjmij” albo „Odrzuć” bez wymaganych danych | R2, komunikat | RO-WER | US10.2, US10.3 |

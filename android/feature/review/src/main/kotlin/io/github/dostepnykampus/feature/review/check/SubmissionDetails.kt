@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.review.check
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,8 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.GroupFrame
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.designsystem.marking.BarrierPhoto
 import io.github.dostepnykampus.core.designsystem.marking.SeverityLabel
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
@@ -31,7 +34,6 @@ import io.github.dostepnykampus.feature.review.queue.titleRes
 /**
  * Dane zgłoszenia na R2 bez pól do edycji.
  *
- * TODO(#3846): zasłanianie twarzy i tablic na zdjęciu.
  * TODO(#4027): rola i pseudonim autora.
  *
  * Przy zmianie „bariera usunięta” pierwsze zdjęcie stoi obok zdjęcia poprzedniego zgłoszenia.
@@ -39,9 +41,10 @@ import io.github.dostepnykampus.feature.review.queue.titleRes
  * Wymagania: US10, US10.6, US17.2, BR-14, BR-15, BR-19, BR-24, NFR-19, NFR-21
  *
  * @param shown zgłoszenie z adresami zdjęć
+ * @param onCover „Zasłoń twarz lub tablicę” przy zdjęciu o identyfikatorze i adresie
  */
 @Composable
-internal fun SubmissionDetails(shown: CheckUiState.Ready) {
+internal fun SubmissionDetails(shown: CheckUiState.Ready, onCover: (photoId: String, photoUrl: String) -> Unit) {
     val content = shown.submission.content
     val type = content.barrierType?.let { BarrierType.fromCode(it) }
     GroupFrame {
@@ -65,11 +68,38 @@ internal fun SubmissionDetails(shown: CheckUiState.Ready) {
             Text(stringResource(R.string.sprawdzenie_miejsce, measuredPlace(near = near, accuracyMeters = accuracy)))
         }
         if (content.kind == SubmissionKind.ENTRANCE_MARKING) MarkingChange(shown.current, content.entranceMarking)
-        val previous = shown.previous
-        val photos = if (previous == null) shown.photoUrls else shown.photoUrls.drop(1)
-        if (previous != null) RemovedComparison(previous, newPhoto = shown.photoUrls.firstOrNull(), type = type)
-        photos.forEach { url ->
-            BarrierPhoto(url = url, type = type, modifier = Modifier.fillMaxWidth().padding(top = Odstepy.s))
+        SubmissionPhotos(shown = shown, type = type, onCover = onCover)
+    }
+}
+
+@Composable
+private fun SubmissionPhotos(
+    shown: CheckUiState.Ready,
+    type: BarrierType?,
+    onCover: (photoId: String, photoUrl: String) -> Unit,
+) {
+    val ids = shown.submission.content.photoIds
+    val photos = ids.zip(shown.photoUrls)
+    val previous = shown.previous
+    val compared = previous?.let { photos.firstOrNull() }
+    if (previous != null) {
+        RemovedComparison(previous = previous, newPhoto = compared?.second, type = type) {
+            if (compared != null) CoverPhotoAction { onCover(compared.first, compared.second) }
         }
+    }
+    val remaining = if (compared == null) photos else photos.drop(1)
+    remaining.forEach { (photoId, url) ->
+        BarrierPhoto(url = url, type = type, modifier = Modifier.fillMaxWidth().padding(top = Odstepy.s))
+        CoverPhotoAction { onCover(photoId, url) }
+    }
+}
+
+@Composable
+private fun CoverPhotoAction(onClick: () -> Unit) {
+    OutlinedAction(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth().padding(top = Odstepy.s).heightIn(min = CeleDotyku.przycisk),
+    ) {
+        Text(stringResource(R.string.zaslona_naglowek))
     }
 }
