@@ -135,7 +135,7 @@ private fun drawUnknownFloorBadge(canvas: Canvas, centerX: Float, centerY: Float
             color = colors.tusz.toArgb()
         }
     val question = PathParser().parsePathString(QUESTION_PATH).toPath().asAndroidPath()
-    canvas.withTranslation(centerX, centerY) {
+    canvas.withTranslation(x = centerX, y = centerY) {
         scale(scale, scale)
         translate(-gridCenter, -gridCenter)
         drawCircle(gridCenter, gridCenter, BADGE_CIRCLE_RADIUS + BADGE_HALO / 2f, fill)
