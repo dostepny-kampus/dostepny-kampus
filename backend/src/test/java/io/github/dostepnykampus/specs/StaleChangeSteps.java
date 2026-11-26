@@ -237,7 +237,8 @@ public final class StaleChangeSteps {
         this.jdbc.sql(
             """
             UPDATE submissions
-            SET status = CASE id WHEN :original THEN 'ARCHIVED' WHEN :accepted THEN 'ACCEPTED' ELSE 'REJECTED' END,
+            SET status = CASE id WHEN :original THEN 'ARCHIVED'
+            WHEN :accepted THEN 'ACCEPTED' ELSE 'REJECTED' END,
             rejection_reason = CASE WHEN id = :rival THEN 'nieaktualne' END,
             author = CASE WHEN id = :rival THEN :rivalAuthor ELSE author END
             WHERE id IN (:original, :accepted, :rival)
@@ -254,11 +255,12 @@ public final class StaleChangeSteps {
      */
     @When("ten Zbierający wyśle swoją zmianę ponownie")
     void resends() throws Exception {
+        final String token = "Bearer COLLECTOR.".concat(StaleChangeSteps.RIVAL_AUTHOR);
         MatcherAssert.assertThat(
             "Serwer nie przyjął nowej zmiany bieżącego zgłoszenia, nie dał 201",
             this.status(
                 MockMvcRequestBuilders.post("/submissions").contentType(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer COLLECTOR.".concat(StaleChangeSteps.RIVAL_AUTHOR))
+                    .header(HttpHeaders.AUTHORIZATION, token)
                     .content(StaleChangeSteps.resentRemoval())
             ),
             Matchers.equalTo(201)
@@ -320,11 +322,6 @@ public final class StaleChangeSteps {
             .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
     }
 
-    /**
-     * Treść ponownie wysłanej zmiany „bariera usunięta” wskazującej przyjętą zmianę autora.
-     *
-     * @return Zgłoszenie w JSON
-     */
     private static String resentRemoval() {
         return String.join(
             "",
