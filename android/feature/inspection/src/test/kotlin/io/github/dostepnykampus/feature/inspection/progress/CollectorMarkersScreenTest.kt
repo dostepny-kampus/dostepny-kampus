@@ -153,6 +153,18 @@ class CollectorMarkersScreenTest {
         compose.onNodeWithText("Cofnąć znacznik całego budynku? Postęp budynku się zmniejszy.").assertIsDisplayed()
     }
 
+    /** Pytanie o cofnięcie z etykietą „2 piętro” nie powiela słowa „piętro”. Wymagania: US15.2 */
+    @Test
+    fun asksRevokeWithNumberedFloor() {
+        checkFloorQuestion("2 piętro")
+    }
+
+    /** Pytanie o cofnięcie z etykietą „Parter” brzmi poprawnie bez słowa „piętra”. Wymagania: US15.2 */
+    @Test
+    fun asksRevokeWithGroundFloor() {
+        checkFloorQuestion("Parter")
+    }
+
     /**
      * Znacznik z serwera: własny bez „Czeka na wysłanie”, cudzy jako „Znacznik innej osoby” bez „Cofnij znacznik”.
      *
@@ -208,6 +220,12 @@ class CollectorMarkersScreenTest {
     fun matchesDarkMockup() {
         show(CollectorMarkersUiState.Ready(ROWS))
         compose.onRoot().captureRoboImage()
+    }
+
+    private fun checkFloorQuestion(label: String) {
+        val rows = listOf(FloorRow(place = MarkerPlace.Floor("p2"), label = label, markerId = "m-1"))
+        show(CollectorMarkersUiState.Ready(rows, asking = "m-1"))
+        compose.onNodeWithText("Cofnąć znacznik: $label? Postęp budynku się zmniejszy.").assertIsDisplayed()
     }
 
     private fun show(state: CollectorMarkersUiState, actions: CollectorMarkerActions = CollectorMarkerActions()) {

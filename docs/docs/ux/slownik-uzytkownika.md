@@ -336,8 +336,8 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | C4, błąd serwera | „Serwer chwilowo nie odpowiada. Zgłoszenia czekają w telefonie i wyślą się później.” | — | — |
 | C4, mało miejsca | „W telefonie zostało mniej niż 100 MB. Zwolnij miejsce, aby dalej robić zdjęcia.” | — | PW-10 |
 | C4, konflikt | „Dwie wersje: wybierz jedną. Druga wersja zostanie usunięta.” Przy zgłoszeniu przyjętym drugie zdanie: „Przyjęte zgłoszenie zostanie, a Twoja wersja, jeśli ją wybierzesz, trafi do sprawdzenia jako nowe.” (UC11 3b) | „Zostaw moją wersję”, „Weź wersję z serwera”, „Zdecyduję później” | PW-12 |
-| C5, potwierdzenie cofnięcia (Zbierający) | „Cofnąć znacznik piętra 2? Postęp budynku się zmniejszy.” | „Cofnij znacznik”, „Zostaw znacznik” | PW-12 |
-| C5, potwierdzenie cofnięcia (Koordynator) | „Cofnąć znacznik piętra 2? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.” | „Cofnij znacznik”, „Zostaw znacznik” | PW-12 |
+| C5, potwierdzenie cofnięcia (Zbierający) | „Cofnąć znacznik: 2 piętro? Postęp budynku się zmniejszy.” | „Cofnij znacznik”, „Zostaw znacznik” | PW-12 |
+| C5, potwierdzenie cofnięcia (Koordynator) | „Cofnąć znacznik: 2 piętro? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.” | „Cofnij znacznik”, „Zostaw znacznik” | PW-12 |
 | C5, brak sieci | „Znacznik zapisany w telefonie. Wyślemy go, gdy wróci internet.” | — | — |
 | C5, błąd zapisu | „Nie udało się zapisać znacznika w telefonie. Spróbuj ponownie, a jeśli to nie pomoże, zwolnij miejsce.” | „Spróbuj ponownie” | — |
 | C6, wybór obecnej wartości | „Potwierdzasz obecne oznaczenie. Zmieni się data i źródło.” | — | — |
