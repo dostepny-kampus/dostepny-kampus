@@ -269,7 +269,7 @@ internal suspend fun storedFloorFacts(plans: FloorPlans, symbol: String): FloorF
 }
 
 /** Plany pięter budynku bez planu: nic nie pobiera i nic nie ma. */
-private object NoFloorPlans : FloorPlans {
+internal object NoFloorPlans : FloorPlans {
     override suspend fun download(symbol: String): Boolean = false
 
     override suspend fun floors(symbol: String): FloorList? = null

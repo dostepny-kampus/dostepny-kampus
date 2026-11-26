@@ -159,11 +159,7 @@ class CardStateCombineTest {
             fetchedBarriers.complete(listOf(BLOCKING_ON_MAIN))
             val after = card.uiState.value as BuildingCardUiState.Ready
             assertNotSame(before.entrances, after.entrances, "Nowa bariera buduje nową listę wejść")
-            assertEquals(
-                "node/2",
-                after.recommendedEntrance()?.run { entrance.id },
-                "Blokada zmienia wejście zalecane",
-            )
+            assertEquals("node/2", after.recommendedEntrance()?.run { entrance.id }, "Blokada zmienia wejście zalecane")
         }
 
     @Test
@@ -238,7 +234,7 @@ class CardStateCombineTest {
         repository: BuildingCatalogRepository = catalog(),
         serverEntrances: ServerEntrances = ServerEntrances { emptyList() },
         acceptedBarriers: AcceptedBarriers = AcceptedBarriers { emptyList() },
-        plans: FloorPlans = NoPlans,
+        plans: FloorPlans = NoFloorPlans,
     ): BuildingCardViewModel =
         viewModels.keep(
             BuildingCardViewModel(
@@ -258,7 +254,7 @@ class CardStateCombineTest {
         BuildingCardSources(
             serverEntrances = ServerEntrances { emptyList() },
             acceptedBarriers = AcceptedBarriers { emptyList() },
-            plans = NoPlans,
+            plans = NoFloorPlans,
             ownSubmissions = ownSubmissions,
             computeContext = computeContext,
         )
@@ -291,14 +287,6 @@ class CardStateCombineTest {
             state = state,
             refusal = null,
         )
-
-    private object NoPlans : FloorPlans {
-        override suspend fun download(symbol: String): Boolean = false
-
-        override suspend fun floors(symbol: String): FloorList? = null
-
-        override suspend fun rooms(symbol: String, floor: String): RoomList? = null
-    }
 
     private companion object {
         val SYNCED_AT: Instant = Instant.parse("2026-11-12T10:00:00Z")
