@@ -16,6 +16,8 @@ import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.review.ReviewDecision
 import io.github.dostepnykampus.core.model.review.ReviewOutcome
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
+import io.github.dostepnykampus.core.model.submission.BarrierType
+import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.Submission
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +27,9 @@ import kotlinx.coroutines.launch
 enum class CheckNotice {
     /** Brakuje powodu odrzucenia. */
     REASON_MISSING,
+
+    /** Zgłoszenie szybkie nie ma jeszcze typu bariery albo uciążliwości. */
+    TYPE_MISSING,
 
     /** „Autor zmienił zgłoszenie. Sprawdź nową wersję przed decyzją.” */
     CHANGED,
@@ -46,6 +51,9 @@ sealed interface CheckUiState {
      * @property similar zgłoszenia do 10 m, od najbliższego
      * @property notice komunikat nad decyzją; `null` bez komunikatu
      * @property similarPhotos adres pierwszego zdjęcia podobnego zgłoszenia według jego identyfikatora
+     * @property quickType typ bariery nadany zgłoszeniu szybkiemu; `null`, zanim Weryfikator go wybierze
+     * @property quickSeverity uciążliwość nadana zgłoszeniu szybkiemu; `null`, zanim Weryfikator ją wybierze
+     * @property missingAttempts liczba prób przyjęcia zgłoszenia szybkiego bez typu albo uciążliwości
      */
     data class Ready(
         val submission: Submission,
@@ -53,6 +61,9 @@ sealed interface CheckUiState {
         val similar: List<SimilarSubmission>,
         val notice: CheckNotice? = null,
         val similarPhotos: Map<String, String> = emptyMap(),
+        val quickType: BarrierType? = null,
+        val quickSeverity: Severity? = null,
+        val missingAttempts: Int = 0,
     ) : CheckUiState
 
     /** Bez internetu przy wczytywaniu. */
@@ -96,15 +107,31 @@ class ReviewCheckViewModel
         }
 
         /**
-         * „Przyjmij”.
-         *
-         * TODO(#3762): typ i uciążliwość ustalone dla zgłoszenia szybkiego.
+         * „Przyjmij”. Zgłoszenie szybkie bez typu albo uciążliwości daje [CheckNotice.TYPE_MISSING].
          *
          * @param onDone powrót do R1 po zapisanej decyzji
          */
         fun accept(onDone: () -> Unit) {
             val shown = current.value as? CheckUiState.Ready ?: return
-            decide(ReviewDecision.Accept(version = shown.submission.version), onDone)
+            val decision = shown.acceptance()
+            if (decision == null) {
+                val attempts = shown.missingAttempts + 1
+                current.value = shown.copy(notice = CheckNotice.TYPE_MISSING, missingAttempts = attempts)
+            } else {
+                decide(decision, onDone)
+            }
+        }
+
+        /** Typ bariery dla zgłoszenia szybkiego. Wymagania: US10.3, BR-14 */
+        fun pickType(type: BarrierType) {
+            val shown = current.value as? CheckUiState.Ready ?: return
+            current.value = shown.picked(type = type)
+        }
+
+        /** Uciążliwość dla zgłoszenia szybkiego. Wymagania: US10.3 */
+        fun pickSeverity(severity: Severity) {
+            val shown = current.value as? CheckUiState.Ready ?: return
+            current.value = shown.picked(severity = severity)
         }
 
         /**
@@ -142,7 +169,7 @@ class ReviewCheckViewModel
                     when (val reply = reviews.decide(submissionId, decision)) {
                         is ServerReply.Ok -> decided(reply.value, shown, onDone)
                         ServerReply.Offline -> current.value = shown.copy(notice = CheckNotice.OFFLINE)
-                        ServerReply.Missing, is ServerReply.Fault -> current.value = reply.failure()
+                        ServerReply.Missing, is ServerReply.Fault -> current.value = reply.checkFailure()
                     }
                 }
             }
@@ -150,8 +177,14 @@ class ReviewCheckViewModel
 
         private fun decided(outcome: ReviewOutcome, shown: CheckUiState.Ready, onDone: () -> Unit) {
             when (outcome) {
-                is ReviewOutcome.Decided -> onDone()
-                is ReviewOutcome.Changed -> current.value = ready(outcome.server, shown.similar, CheckNotice.CHANGED)
+                is ReviewOutcome.Decided -> {
+                    onDone()
+                }
+
+                is ReviewOutcome.Changed -> {
+                    val changed = ready(outcome.server, shown.similar, CheckNotice.CHANGED)
+                    current.value = changed.copy(quickType = shown.quickType, quickSeverity = shown.quickSeverity)
+                }
             }
         }
 
@@ -161,12 +194,12 @@ class ReviewCheckViewModel
 
         private suspend fun read(): CheckUiState {
             val found = reviews.submission(submissionId)
-            if (found !is ServerReply.Ok) return found.failure()
+            if (found !is ServerReply.Ok) return found.checkFailure()
             val similar = reviews.similar(submissionId)
             return if (similar is ServerReply.Ok) {
                 ready(found.value, similar.value, notice = null)
             } else {
-                similar.failure()
+                similar.checkFailure()
             }
         }
 
@@ -174,7 +207,7 @@ class ReviewCheckViewModel
             submission: Submission,
             similar: List<SimilarSubmission>,
             notice: CheckNotice?,
-        ): CheckUiState =
+        ): CheckUiState.Ready =
             CheckUiState.Ready(
                 submission = submission,
                 photoUrls =
@@ -183,31 +216,13 @@ class ReviewCheckViewModel
                     },
                 similar = similar,
                 notice = notice,
-                similarPhotos = similar.mapNotNull(::firstPhoto).toMap(),
+                similarPhotos = similar.mapNotNull { near -> reviews.firstPhotoOf(near) }.toMap(),
             )
-
-        private fun firstPhoto(near: SimilarSubmission): Pair<String, String>? {
-            val id = near.submission.id
-            val photos = near.submission.content.photoIds
-            val photo = photos.firstOrNull() ?: return null
-            return id to reviews.photoUrl(submissionId = id, photoId = photo)
-        }
-
-        private fun ServerReply<*>.failure(): CheckUiState =
-            when (this) {
-                ServerReply.Offline -> CheckUiState.Offline
-                is ServerReply.Fault -> if (code == FORBIDDEN) CheckUiState.Forbidden else CheckUiState.ServerError
-                is ServerReply.Ok, ServerReply.Missing -> CheckUiState.ServerError
-            }
 
         /** Tworzy [ReviewCheckViewModel] dla zgłoszenia z trasy R2. */
         @AssistedFactory
         interface Factory {
             /** Ekran R2 zgłoszenia [submissionId]. */
             fun create(submissionId: String): ReviewCheckViewModel
-        }
-
-        private companion object {
-            const val FORBIDDEN = 403
         }
     }
