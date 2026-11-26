@@ -17,10 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import io.github.dostepnykampus.core.designsystem.GroupFrame
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.StatusLine
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.designsystem.card.ListItemCard
 import io.github.dostepnykampus.core.designsystem.icon
 import io.github.dostepnykampus.core.designsystem.marking.BarrierPhoto
 import io.github.dostepnykampus.core.designsystem.marking.floorText
@@ -49,7 +49,9 @@ internal fun SimilarList(similar: SimilarReports) {
         if (similar.items.isEmpty()) {
             Text(stringResource(R.string.sprawdzenie_brak_podobnych), style = MaterialTheme.typography.bodyLarge)
         }
-        similar.items.forEach { near -> SimilarCard(near = near, photo = similar.photos[near.submission.id]) }
+        Column(verticalArrangement = Arrangement.spacedBy(Odstepy.m)) {
+            similar.items.forEach { near -> SimilarCard(near = near, photo = similar.photos[near.submission.id]) }
+        }
     }
 }
 
@@ -57,7 +59,7 @@ internal fun SimilarList(similar: SimilarReports) {
 private fun SimilarCard(near: SimilarSubmission, photo: String?) {
     val content = near.submission.content
     val status = near.submission.status
-    GroupFrame {
+    ListItemCard {
         BarrierPhoto(
             url = photo,
             type = content.barrierType?.let { BarrierType.fromCode(it) },
