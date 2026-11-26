@@ -6,8 +6,11 @@
 package io.github.dostepnykampus.core.designsystem.marking
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Text
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
@@ -23,7 +26,9 @@ import coil3.request.ErrorResult
 import coil3.test.FakeImageLoaderEngine
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.submission.BarrierType
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.awaitCancellation
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -79,6 +84,38 @@ class BarrierPhotoTest {
         compose.onNodeWithContentDescription(DESCRIPTION).assertDoesNotExist()
     }
 
+    /** Wiersz: treść pod zdjęciem nie przesuwa się po załadowaniu obrazu. Wymagania: NFR-12 */
+    @OptIn(DelicateCoilApi::class)
+    @Test
+    fun keepsHeightBeforeAndAfterLoad() {
+        val gate = CompletableDeferred<Unit>()
+        val engine = photoAvailable()
+        val loader =
+            Interceptor { chain ->
+                gate.await()
+                engine.intercept(chain)
+            }
+        val imageLoader = ImageLoader.Builder(compose.activity).components { add(loader) }.build()
+        SingletonImageLoader.setUnsafe(imageLoader)
+        compose.setContent {
+            DostepnyKampusTheme {
+                Column {
+                    BarrierPhoto(url = PHOTO_URL, type = BarrierType.STAIRS_AT_ENTRANCE)
+                    Text(BELOW_LABEL)
+                }
+            }
+        }
+
+        compose.onNodeWithText("Wczytujemy zdjęcie…").assertIsDisplayed()
+        val topWhileLoading = compose.onNodeWithText(BELOW_LABEL).getUnclippedBoundsInRoot().top
+
+        gate.complete(Unit)
+        compose.waitUntil(WAIT_MS) { shown(DESCRIPTION) }
+        val topAfterLoad = compose.onNodeWithText(BELOW_LABEL).getUnclippedBoundsInRoot().top
+
+        assertEquals(topWhileLoading, topAfterLoad)
+    }
+
     private fun shown(description: String) =
         compose.onAllNodesWithContentDescription(description).fetchSemanticsNodes().isNotEmpty()
 
@@ -101,5 +138,6 @@ class BarrierPhotoTest {
         const val PHOTO_URL = "https://serwer.test/submissions/z1/photos/p1"
         const val PHOTO_COLOR = 0xFF336699.toInt()
         const val DESCRIPTION = "Zdjęcie bariery: Schody przy wejściu"
+        const val BELOW_LABEL = "Treść pod zdjęciem"
     }
 }
