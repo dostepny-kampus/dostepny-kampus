@@ -13,6 +13,7 @@ import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
+import io.github.dostepnykampus.feature.capture.navigation.RemovedEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
@@ -561,6 +562,18 @@ class AppNavigatorTest {
         navigator(collector).run {
             openEdit("s1")
             assertEquals(ReportEditRoute("s1"), current)
+            reportSaved()
+        }
+        assertEquals(stackOf(AccountRoute, MySubmissionsRoute), stack)
+    }
+
+    /** Wiersz: C3 „Otwórz” przy „bariera usunięta” → C7 tego zgłoszenia, zapis → to samo C3. Wymagania: US8.4 */
+    @Test
+    fun removalEditBackToList() {
+        stack += listOf(AccountRoute, MySubmissionsRoute)
+        navigator(collector).run {
+            openEdit("u1", isBarrierRemoved = true)
+            assertEquals(RemovedEditRoute("u1"), current)
             reportSaved()
         }
         assertEquals(stackOf(AccountRoute, MySubmissionsRoute), stack)

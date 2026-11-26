@@ -13,10 +13,10 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.dostepnykampus.feature.capture.navigation.RemovedEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
 import io.github.dostepnykampus.feature.capture.photo.rememberPhotoCamera
-import kotlinx.coroutines.flow.first
 
 /**
  * C7 „Usunięcie bariery” dla zgłoszenia z [route]. Po zapisie woła [onFinish], a gdy zgłoszenia
@@ -28,26 +28,47 @@ import kotlinx.coroutines.flow.first
  * @param onLeave „Wstecz” albo brak zgłoszenia przyjętego
  * @param onFinish zgłoszenie zapisane w telefonie; dalej C3
  * @param modifier wymiary nadane przez aplikację
- * @param viewModel model widoku; w aplikacji z grafu Hilt, w testach z atrapą danych
- * @param photoTranscoder przekodowanie zdjęcia, które przetrwa obrót ekranu
  */
 @Composable
-fun RemovedScreen(
-    route: RemovedRoute,
+fun RemovedScreen(route: RemovedRoute, onLeave: () -> Unit, onFinish: () -> Unit, modifier: Modifier = Modifier) {
+    RemovedHost(open = { open(route.acceptedId) }, onLeave = onLeave, onFinish = onFinish, modifier = modifier)
+}
+
+/**
+ * C7 z C3 dla własnego zgłoszenia z [route]: zapisane zdjęcie na start, zapis zastępuje to zgłoszenie. Gdy
+ * zgłoszenia nie ma już w telefonie, wraca przez [onLeave].
+ *
+ * Wymagania: US8.3, US8.4, BR-19, NFR-54
+ *
+ * @param route własne zgłoszenie z kolejki telefonu
+ * @param onLeave „Wstecz” albo brak zgłoszenia
+ * @param onFinish poprawka zapisana w telefonie; dalej C3
+ * @param modifier wymiary nadane przez aplikację
+ */
+@Composable
+fun RemovedEditScreen(
+    route: RemovedEditRoute,
+    onLeave: () -> Unit,
+    onFinish: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    RemovedHost(open = { openEdit(route.submissionId) }, onLeave = onLeave, onFinish = onFinish, modifier = modifier)
+}
+
+@Composable
+private fun RemovedHost(
+    open: RemovedViewModel.() -> Unit,
     onLeave: () -> Unit,
     onFinish: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RemovedViewModel = hiltViewModel(),
     photoTranscoder: PhotoTranscoder = hiltViewModel(),
 ) {
-    SideEffect { viewModel.open(route.acceptedId) }
+    SideEffect { viewModel.open() }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val leave by rememberUpdatedState(onLeave)
     val finish by rememberUpdatedState(onFinish)
-    LaunchedEffect(viewModel) {
-        val done = viewModel.uiState.first { it.stage == RemovedStage.SAVED || it.stage == RemovedStage.MISSING }
-        if (done.stage == RemovedStage.SAVED) finish() else leave()
-    }
+    LaunchedEffect(viewModel) { if (viewModel.awaitExit()) finish() else leave() }
     val camera = rememberPhotoCamera(onPhoto = viewModel::takePhoto, transcoder = photoTranscoder)
     RemovedContent(
         state = state,

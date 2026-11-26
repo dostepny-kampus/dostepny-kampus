@@ -19,6 +19,8 @@ import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
  * @property onConflict wybór wersji w C4 przy zgłoszeniu z konfliktem wersji; `null` ukrywa znak wszędzie
  * @property onOpenMarking „Otwórz” i „Wyślij ponownie” przy zmianie oznaczenia wejścia: C6 z tą trasą; `null`
  *   ukrywa przyciski przy zmianach oznaczenia
+ * @property onOpenRemoval „Otwórz” przy zgłoszeniu „bariera usunięta”: C7 z jego identyfikatorem; `null` ukrywa
+ *   przycisk przy takich zgłoszeniach
  */
 data class MySubmissionsActions(
     val onBack: () -> Unit,
@@ -26,4 +28,5 @@ data class MySubmissionsActions(
     val onOpen: ((id: String) -> Unit)? = null,
     val onConflict: ((id: String) -> Unit)? = null,
     val onOpenMarking: ((route: MarkingRoute) -> Unit)? = null,
+    val onOpenRemoval: ((id: String) -> Unit)? = null,
 )

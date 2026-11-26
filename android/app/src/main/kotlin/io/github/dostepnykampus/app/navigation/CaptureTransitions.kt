@@ -9,6 +9,7 @@ import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
+import io.github.dostepnykampus.feature.capture.navigation.RemovedEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
@@ -30,9 +31,16 @@ fun AppNavigator.mySubmissions() {
     leaving { add(MySubmissionsRoute) }
 }
 
-/** C3 → C2: „Otwórz” przy zgłoszeniu z telefonu otwiera jego poprawkę; poza C3 nic nie robi. Wymagania: US8.3 */
-fun AppNavigator.openEdit(submissionId: String) {
-    if (current == MySubmissionsRoute) leaving { add(ReportEditRoute(submissionId)) }
+/**
+ * C3 → poprawka: „Otwórz” przy zgłoszeniu z telefonu otwiera C2, a przy zgłoszeniu „bariera usunięta”
+ * ([isBarrierRemoved]) C7; poza C3 nic nie robi.
+ *
+ * Wymagania: US8.3, US8.4
+ */
+fun AppNavigator.openEdit(submissionId: String, isBarrierRemoved: Boolean = false) {
+    // TODO(#4056): C2 i C7 otwierają tylko zgłoszenia z kolejki telefonu; wysłane wracają na C3.
+    val route = if (isBarrierRemoved) RemovedEditRoute(submissionId) else ReportEditRoute(submissionId)
+    if (current == MySubmissionsRoute) leaving { add(route) }
 }
 
 /** C3 → C4: wybór wersji zgłoszenia z konfliktem wersji; poza C3 nic nie robi. Wymagania: US9.3 */
@@ -94,4 +102,5 @@ internal fun NavKey.isCaptureRoute(): Boolean =
         this is ReportFormRoute ||
         this is ReportEditRoute ||
         this is RemovedRoute ||
+        this is RemovedEditRoute ||
         this is MarkingRoute

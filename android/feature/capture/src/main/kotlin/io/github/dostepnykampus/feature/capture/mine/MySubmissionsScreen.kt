@@ -151,6 +151,7 @@ internal fun openAction(item: OwnSubmissionItem, actions: MySubmissionsActions):
     val marking = item.markingRoute()
     return when {
         !item.canOpenHere() -> null
+        item.isBarrierRemoved -> actions.onOpenRemoval?.boundTo(item.id)
         item.kind != SubmissionKind.ENTRANCE_MARKING -> actions.onOpen?.boundTo(item.id)
         marking == null -> null
         else -> actions.onOpenMarking?.boundTo(marking)
