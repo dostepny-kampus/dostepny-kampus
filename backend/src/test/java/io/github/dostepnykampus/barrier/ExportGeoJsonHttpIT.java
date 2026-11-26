@@ -104,7 +104,8 @@ final class ExportGeoJsonHttpIT {
                     "ExportFeatureCollection",
                     "{\"type\":\"FeatureCollection\",\"features\":[%s]}".formatted(one)
                 ),
-                ExportGeoJsonHttpIT.owned(features, created), one.path("geometry").path("coordinates").toString(),
+                ExportGeoJsonHttpIT.owned(features, created),
+                one.path("geometry").path("coordinates").toString(),
                 props.path("barrierGroup").asString(), props.path("buildingSymbol").asString(),
                 props.path("floor").asString(), props.path("description").asString(),
                 low.contains("konto-testowe") || low.contains("author")
