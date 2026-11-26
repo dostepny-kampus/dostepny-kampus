@@ -12,14 +12,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
-import java.util.List;
 import org.jspecify.annotations.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Pobranie zmian do telefonu: zgłoszenia i znaczniki pięter zmienione od kursora.
+ * Pobranie zmian do telefonu: zgłoszenia, wejścia i znaczniki pięter zmienione od kursora.
  *
  * <p>Wymagania: US15.1, US15.2, US11.3, US8.1, US1.3, US10.6, BR-20</p>
  *
@@ -58,7 +57,7 @@ public final class SyncPullController {
             request.isUserInRole("COLLECTOR")
         );
         return new SyncPullResponse(
-            changes.cursor().toString(), changes.submissions(), List.of(),
+            changes.cursor().toString(), changes.submissions(), changes.entrances(),
             changes.markers().stream().map(SyncMarkerResponse::from).toList()
         );
     }

@@ -30,12 +30,12 @@ import tools.jackson.databind.ObjectMapper;
 
 /**
  * Pobranie zmian daje od kursora własne zgłoszenia w każdym statusie i cudze przyjęte
- * i archiwalne, a Zbierającemu znaczniki wszystkich Zbierających, także cofnięte, z oznaczeniem
- * własnych; inne role dostają pustą listę znaczników, a zły kursor 400. Kursor odpowiedzi jest
- * cofnięty o margines dłuższy niż limit czasu transakcji zapisu, więc zmiana zatwierdzona po
- * pobraniu z wcześniejszą chwilą przychodzi w następnym.
+ * i archiwalne, wejścia z oznaczeniem z obchodu, a Zbierającemu znaczniki wszystkich Zbierających,
+ * także cofnięte, z oznaczeniem własnych; inne role dostają pustą listę znaczników, a zły kursor
+ * 400. Kursor odpowiedzi jest cofnięty o margines dłuższy niż limit czasu transakcji zapisu, więc
+ * zmiana zatwierdzona po pobraniu z wcześniejszą chwilą przychodzi w następnym.
  *
- * <p>Wymagania: US15.1, US15.2, US11.3, US8.1, US1.3, US10.6, BR-20</p>
+ * <p>Wymagania: US15.1, US15.2, US11.3, US8.1, US1.3, US10.6, US17.2, BR-20</p>
  *
  * @since 0.1.0
  */
@@ -102,6 +102,30 @@ final class SyncPullHttpIT {
                 new OpenApiContract().violations("SyncPullResponse", body.toString())
             ),
             Matchers.contains(List.of(1, 2, 3, 4, 5, 9, 10), true, List.of())
+        );
+    }
+
+    @Test
+    void givesEntrancesMarkedOnWalkthroughSinceCursor(final WebApplicationContext context)
+        throws Exception {
+        final JdbcClient jdbc = context.getBean(JdbcClient.class);
+        SyncPullHttpIT.entrance(jdbc, "node/pobranie-stare");
+        final Instant cursor = jdbc.sql("SELECT clock_timestamp()")
+            .query(OffsetDateTime.class).single().toInstant();
+        SyncPullHttpIT.entrance(jdbc, "node/pobranie-nowe");
+        final JsonNode body = SyncPullHttpIT.pull(
+            context, "VISITOR.autor", "?since=".concat(cursor.toString())
+        );
+        MatcherAssert.assertThat(
+            "Pobranie nie dało wejścia z oznaczeniem z obchodu od kursora w kształcie kontraktu",
+            List.of(
+                body.path("entrances").valueStream()
+                    .map(node -> node.path("id").asString())
+                    .filter(id -> id.startsWith("node/pobranie-")).toList(),
+                Instant.parse(body.path("cursor").asString()).equals(cursor),
+                new OpenApiContract().violations("SyncPullResponse", body.toString())
+            ),
+            Matchers.contains(List.of("node/pobranie-nowe"), true, List.of())
         );
     }
 
@@ -206,6 +230,17 @@ final class SyncPullHttpIT {
         ).param("id", id).param("author", author).param("revoked", revoked)
             .param("changed", changed).update();
         return id;
+    }
+
+    private static void entrance(final JdbcClient jdbc, final String id) {
+        jdbc.sql(
+            """
+            INSERT INTO entrances (id, building_symbol, name, main, location, marking,
+                marking_date, marking_source, walkthrough_at)
+            VALUES (:id, 'C-13', 'Wejście', false, ST_SetSRID(ST_MakePoint(17.06, 51.11), 4326),
+                'ACCESSIBLE', CURRENT_DATE, 'WALKTHROUGH', statement_timestamp())
+            """
+        ).param("id", id).update();
     }
 
     private static UUID submission(

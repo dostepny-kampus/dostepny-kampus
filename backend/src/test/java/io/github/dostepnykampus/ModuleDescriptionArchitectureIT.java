@@ -49,6 +49,13 @@ final class ModuleDescriptionArchitectureIT {
     );
 
     /**
+     * Zadanie opisane w pierwszym zdaniu Javadoc.
+     */
+    private static final Pattern TASK_SUMMARY = Pattern.compile(
+        "/\\*\\*\\R\\h*\\* Zadanie:"
+    );
+
+    /**
      * Akapit zależności.
      */
     private static final Pattern DEPENDENCIES = Pattern.compile(
@@ -87,6 +94,31 @@ final class ModuleDescriptionArchitectureIT {
     }
 
     @Test
+    void acceptsTaskAsJavadocSummary() {
+        Assertions.assertEquals(
+            "",
+            ModuleDescriptionArchitectureIT.problem(
+                """
+                %s
+                 * Zadanie: składa zmiany od kursora.
+                 *
+                 * <p>API: HTTP.</p>
+                 *
+                 * <p>Zależności: {@code barrier :: api}, {@code building :: api},
+                 * {@code inspection :: api}, {@code shared}.</p>
+                 *
+                 * <p>Nie robi: nie przechowuje danych.</p>
+                 *
+                 * <p>Kiedy dodawać tutaj: pobranie zmian.</p>
+                %s
+                """.formatted("/**", " */"),
+                Set.of("barrier :: api", "building :: api", "inspection :: api", "shared")
+            ),
+            "Pierwszy akapit zadania w Javadoc nie wymaga znacznika HTML"
+        );
+    }
+
+    @Test
     void rejectsMissingPartAndWrongDependencies() {
         final String full = """
             <p>Zadanie: a.</p>
@@ -114,6 +146,9 @@ final class ModuleDescriptionArchitectureIT {
 
     private static String problem(final String text, final Set<String> allowed) {
         final List<String> parts = new ArrayList<>(5);
+        if (ModuleDescriptionArchitectureIT.TASK_SUMMARY.matcher(text).find()) {
+            parts.add("Zadanie");
+        }
         final Matcher part = ModuleDescriptionArchitectureIT.PART.matcher(text);
         while (part.find()) {
             parts.add(part.group(1));

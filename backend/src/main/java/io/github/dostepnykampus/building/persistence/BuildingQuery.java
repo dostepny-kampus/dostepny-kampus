@@ -14,10 +14,13 @@ import io.github.dostepnykampus.building.domain.Entrance;
 import io.github.dostepnykampus.building.domain.EvacuationExit;
 import io.github.dostepnykampus.building.domain.Floor;
 import io.github.dostepnykampus.building.domain.FloorList;
+import io.github.dostepnykampus.building.domain.MarkedEntrance;
 import io.github.dostepnykampus.building.domain.Placement;
 import io.github.dostepnykampus.building.entrance.persistence.EntranceRows;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -122,6 +125,20 @@ public final class BuildingQuery implements Buildings {
         ).param(symbol).query(String.class).optional().map(
             found -> new FloorList(FloorList.PWR_SOURCE, this.buildingFloors(found))
         );
+    }
+
+    @Override
+    public List<MarkedEntrance> markedSince(final Instant since) {
+        final EntranceRows mapper = new EntranceRows();
+        return this.jdbc.sql(
+            EntranceRows.SELECT.concat(
+                "WHERE walkthrough_at >= :since ORDER BY walkthrough_at, building_symbol, id"
+            )
+        ).param("since", since.atOffset(ZoneOffset.UTC)).query(
+            (rows, num) -> new MarkedEntrance(
+                BuildingQuery.text(rows, "building_symbol"), mapper.mapRow(rows, num)
+            )
+        ).list();
     }
 
     private Placement near(final double lat, final double lon) {
