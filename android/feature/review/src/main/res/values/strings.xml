@@ -46,4 +46,13 @@
     <string name="zaslona_na_dole_po_lewej">na dole po lewej</string>
     <string name="zaslona_na_dole">na dole pośrodku</string>
     <string name="zaslona_na_dole_po_prawej">na dole po prawej</string>
+    <string name="zaslona_naglowek">Zasłoń twarz lub tablicę</string>
+    <string name="zaslona_dotknij">Dotknij zdjęcia w miejscu twarzy albo tablicy.</string>
+    <string name="zaslona_ktora_zaznaczona">Zasłona %1$d z %2$d: zaznaczona</string>
+    <string name="zaslona_wiekszy">Większy</string>
+    <string name="zaslona_mniejszy">Mniejszy</string>
+    <string name="zaslona_usun">Usuń zasłonę</string>
+    <string name="zaslona_zapisz">Zapisz zdjęcie</string>
+    <string name="zaslona_zapisujemy">Zapisujemy zdjęcie…</string>
+    <string name="zaslona_bez_sieci">Zapisanie zdjęcia wymaga internetu. Połącz się z internetem i zapisz ponownie.</string>
 </resources>

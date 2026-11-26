@@ -69,8 +69,6 @@ sealed interface CoverUiState {
     data object Forbidden : CoverUiState
 }
 
-// TODO(#4094): ekran zasłaniania na tym stanie.
-
 /**
  * Zasłanianie twarzy i tablic na zdjęciu zgłoszenia: zasłony po dotknięciu i przyciskach, zapis zdjęcia
  * z zasłonami wypalonymi w pikselach; oryginał nie opuszcza telefonu.
