@@ -9,7 +9,10 @@ import io.github.dostepnykampus.building.domain.BuildingCard;
 import io.github.dostepnykampus.building.domain.BuildingList;
 import io.github.dostepnykampus.building.domain.Buildings;
 import io.github.dostepnykampus.building.domain.FloorList;
+import io.github.dostepnykampus.building.domain.MarkedEntrance;
 import io.github.dostepnykampus.building.domain.Placement;
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 
@@ -74,5 +77,17 @@ public final class BuildingReading {
      */
     public Optional<FloorList> floors(final String symbol) {
         return this.buildings.floors(symbol);
+    }
+
+    /**
+     * Wejścia z oznaczeniem zmienionym na obchodzie od {@code since} włącznie.
+     *
+     * <p>Wymagania: US17.2</p>
+     *
+     * @param since Chwila, od której liczą się zmiany
+     * @return Wejścia z budynkiem od najdawniej zmienionego
+     */
+    public List<MarkedEntrance> markedSince(final Instant since) {
+        return this.buildings.markedSince(since);
     }
 }

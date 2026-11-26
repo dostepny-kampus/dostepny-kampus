@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.building.domain;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -49,4 +51,13 @@ public interface Buildings {
      * @return Piętra rosnąco według kolejności albo pusty wynik, gdy budynku nie ma
      */
     Optional<FloorList> floors(String symbol);
+
+    /**
+     * Wejścia, których oznaczenie zmieniło przyjęte zgłoszenie z obchodu od {@code since}
+     * włącznie, od najdawniej zmienionego.
+     *
+     * @param since Chwila, od której liczą się zmiany
+     * @return Wejścia z budynkiem
+     */
+    List<MarkedEntrance> markedSince(Instant since);
 }
