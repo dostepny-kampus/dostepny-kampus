@@ -10,12 +10,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.designsystem.IMPORTANT_SIGN_TAG
 import io.github.dostepnykampus.core.model.StaffRole
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -74,6 +77,18 @@ class InvitationScreenTest {
         show(InvitationUiState(problems = setOf(InvitationProblem.EMAIL, InvitationProblem.ROLE)))
         compose.onNodeWithText(BAD_EMAIL).assertIsDisplayed()
         compose.onNodeWithText("Wybierz rolę.").assertIsDisplayed()
+    }
+
+    /** Przed każdym błędem pola stoi znak „!” w kole. Wymagania: NFR-21 */
+    @Test
+    fun signsBeforeProblems() {
+        show(InvitationUiState(problems = setOf(InvitationProblem.EMAIL, InvitationProblem.ROLE)))
+        val signs = compose.onAllNodesWithTag(IMPORTANT_SIGN_TAG, useUnmergedTree = true).fetchSemanticsNodes()
+        val texts = listOf(BAD_EMAIL, "Wybierz rolę.").map { text -> compose.onNodeWithText(text).fetchSemanticsNode() }
+        assertEquals("znak przy każdym błędzie", 2, signs.size)
+        signs.zip(texts).forEach { (sign, text) ->
+            assertTrue("znak przed tekstem", sign.boundsInRoot.right <= text.boundsInRoot.left)
+        }
     }
 
     /** Wyniki: zaproszenie wysłane i rola dodana z nazwą roli w dopełniaczu. */

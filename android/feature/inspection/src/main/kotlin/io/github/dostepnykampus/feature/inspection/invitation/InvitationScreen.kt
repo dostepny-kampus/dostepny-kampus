@@ -42,6 +42,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.dostepnykampus.core.designsystem.ImportantSign
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
@@ -86,7 +87,6 @@ fun InvitationScreen(
 
 /**
  * Widok K2 bez modelu widoku: adres, rola, wynik zaproszenia, błędy danych i stany wspólne.
- * TODO(#3868): znak przed błędami pól.
  *
  * Wymagania: US12.1, US12.2, NFR-50, NFR-52
  *
@@ -227,12 +227,16 @@ private fun SectionTitle(
 private fun ProblemText(
     @StringRes text: Int,
 ) {
-    Text(
-        text = stringResource(text),
-        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive },
-        color = MaterialTheme.colorScheme.error,
-        fontWeight = Typografia.wyroznienieWaga,
-    )
+    val color = MaterialTheme.colorScheme.error
+    Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        ImportantSign(tint = color)
+        Text(
+            text = stringResource(text),
+            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive },
+            color = color,
+            fontWeight = Typografia.wyroznienieWaga,
+        )
+    }
 }
 
 @Composable
