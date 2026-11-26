@@ -50,6 +50,7 @@ import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind.Outlined
+import io.github.dostepnykampus.core.designsystem.card.InfoPanel
 import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 
@@ -121,27 +122,25 @@ private fun StepNumberAndBar(step: Int) {
 
 @Composable
 private fun StepTitleTextAndImage(content: HelpStep) {
-    Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLowest) {
-        Column(Modifier.fillMaxWidth().padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+    InfoPanel {
+        Text(
+            text = stringResource(content.title),
+            modifier = Modifier.semantics { heading() },
+            style = MaterialTheme.typography.titleLarge,
+        )
+        Text(text = stringResource(content.text), style = MaterialTheme.typography.bodyLarge)
+        content.example?.let { example ->
             Text(
-                text = stringResource(content.title),
-                modifier = Modifier.semantics { heading() },
-                style = MaterialTheme.typography.titleLarge,
+                text = stringResource(example.caption),
+                modifier = Modifier.padding(top = Odstepy.s),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium,
             )
-            Text(text = stringResource(content.text), style = MaterialTheme.typography.bodyLarge)
-            content.example?.let { example ->
-                Text(
-                    text = stringResource(example.caption),
-                    modifier = Modifier.padding(top = Odstepy.s),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                val description = stringResource(example.description)
-                val image = Modifier.fillMaxWidth().clearAndSetSemantics { contentDescription = description }
-                when (example) {
-                    HelpExample.SEARCH_FIELD -> SearchFieldExample(image)
-                    HelpExample.ENTRANCE -> EntranceExample(image)
-                }
+            val description = stringResource(example.description)
+            val image = Modifier.fillMaxWidth().clearAndSetSemantics { contentDescription = description }
+            when (example) {
+                HelpExample.SEARCH_FIELD -> SearchFieldExample(image)
+                HelpExample.ENTRANCE -> EntranceExample(image)
             }
         }
     }

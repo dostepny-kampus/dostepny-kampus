@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.auth
@@ -39,6 +39,7 @@ import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
+import io.github.dostepnykampus.core.designsystem.card.InfoPanel
 
 /**
  * L1 „Prośba o logowanie” ze stanem z modelu widoku.
@@ -120,7 +121,7 @@ private fun Message(state: SignInUiState, isForReport: Boolean, onLeave: () -> U
         when {
             !state.isOnline -> {
                 OfflinePill()
-                Card(title = R.string.logowanie_wymaga_internetu, text = R.string.logowanie_mapa_bez_internetu) {
+                SignInPanel(title = R.string.logowanie_wymaga_internetu, text = R.string.logowanie_mapa_bez_internetu) {
                     PinnedButton(
                         text = stringResource(R.string.logowanie_wroc_do_mapy),
                         onClick = onLeave,
@@ -130,11 +131,15 @@ private fun Message(state: SignInUiState, isForReport: Boolean, onLeave: () -> U
             }
 
             state.stage == SignInStage.FAILED -> {
-                Card(title = R.string.logowanie_nie_udalo, text = R.string.logowanie_sprawdz_internet, isAlert = true)
+                SignInPanel(
+                    title = R.string.logowanie_nie_udalo,
+                    text = R.string.logowanie_sprawdz_internet,
+                    isAlert = true,
+                )
             }
 
             else -> {
-                Card(title = R.string.logowanie_potrzebne_konto, text = R.string.logowanie_konto_chroni)
+                SignInPanel(title = R.string.logowanie_potrzebne_konto, text = R.string.logowanie_konto_chroni)
                 if (isForReport) {
                     Text(
                         text = stringResource(R.string.logowanie_trzy_kroki),
@@ -147,27 +152,21 @@ private fun Message(state: SignInUiState, isForReport: Boolean, onLeave: () -> U
 }
 
 @Composable
-private fun Card(
+private fun SignInPanel(
     @StringRes title: Int,
     @StringRes text: Int,
     isAlert: Boolean = false,
     content: (@Composable () -> Unit)? = null,
 ) {
     val live = if (isAlert) Modifier.semantics { liveRegion = LiveRegionMode.Polite } else Modifier
-    Surface(
-        modifier = live.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-    ) {
-        Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-            Text(
-                text = stringResource(title),
-                modifier = Modifier.semantics { heading() },
-                style = MaterialTheme.typography.titleLarge,
-            )
-            Text(text = stringResource(text), style = MaterialTheme.typography.bodyLarge)
-            content?.invoke()
-        }
+    InfoPanel(modifier = live) {
+        Text(
+            text = stringResource(title),
+            modifier = Modifier.semantics { heading() },
+            style = MaterialTheme.typography.titleLarge,
+        )
+        Text(text = stringResource(text), style = MaterialTheme.typography.bodyLarge)
+        content?.invoke()
     }
 }
 
