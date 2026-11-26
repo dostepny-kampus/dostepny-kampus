@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.review.cover
+package io.github.dostepnykampus.feature.review.photo
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory

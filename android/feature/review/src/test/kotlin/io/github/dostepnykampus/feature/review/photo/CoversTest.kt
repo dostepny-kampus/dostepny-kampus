@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.review.cover
+package io.github.dostepnykampus.feature.review.photo
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
@@ -33,7 +33,8 @@ class CoversTest {
     @Test
     fun resizesWithinLimits() {
         val one = Covers().tap(x = 0.5f, y = 0.5f)
-        assertEquals(Cover.START + Cover.STEP, one.bigger().items.single().size, 0.0001f, "większy o krok")
+        val bigger = one.bigger().items.single()
+        assertEquals(Cover.START + Cover.STEP, bigger.size, 0.0001f, "większy o krok")
         val smallest = generateSequence(one) { it.smaller() }.take(STEPS).last()
         assertEquals(Cover.MIN, smallest.items.single().size, 0.0001f, "nie mniejszy niż najmniejszy")
         val largest = generateSequence(one) { it.bigger() }.take(STEPS).last()
