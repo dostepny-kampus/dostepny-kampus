@@ -142,14 +142,9 @@ internal fun Decision(
         if (isMissing) ProblemText(text = stringResource(R.string.sprawdzenie_podaj_powod))
         OutlinedAction(
             onClick = {
-                val rejection =
-                    when (reason) {
-                        Reason.DUPLICATE -> Rejection(reason = duplicate, duplicateOf = earlier)
-                        Reason.OUTDATED -> Rejection(reason = RejectionReasons.OUTDATED)
-                        Reason.OTHER -> Rejection(reason = text)
-                        null -> Rejection(reason = "")
-                    }
-                actions.onReject(rejection)
+                actions.onReject(
+                    rejectionOf(reason = reason, duplicate = duplicate, earlier = earlier, text = text),
+                )
             },
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -157,6 +152,14 @@ internal fun Decision(
         }
     }
 }
+
+private fun rejectionOf(reason: Reason?, duplicate: String, earlier: String?, text: String): Rejection =
+    when (reason) {
+        Reason.DUPLICATE -> Rejection(reason = duplicate, duplicateOf = earlier)
+        Reason.OUTDATED -> Rejection(reason = RejectionReasons.OUTDATED)
+        Reason.OTHER -> Rejection(reason = text)
+        null -> Rejection(reason = "")
+    }
 
 @Composable
 private fun Earlier(similar: SimilarReports, chosen: String?, onChoose: (String) -> Unit) {
