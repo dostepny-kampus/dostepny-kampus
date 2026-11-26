@@ -128,7 +128,7 @@ class EntranceBarrierCardTest {
             .onNodeWithText("Zalecane: „Wejście główne”. Drzwi 100 cm. Przy wejściu jest bariera: utrudnienie.")
             .assertExists("Zdanie pod wierszem zostawia wejście główne przy równych barierach")
         assertRow(name = MAIN, marking = ACCESSIBLE, recommended = true, barrier = THRESHOLD_LINE)
-        assertRow(name = SIDE, marking = ACCESSIBLE, recommended = false, barrier = HEAVY_DOOR_LINE)
+        assertRow(name = SIDE, marking = ACCESSIBLE, recommended = false, barrier = "Utrudnienie: ciężkie drzwi")
         assertRow(name = YARD, marking = INACCESSIBLE, recommended = false)
         assertEquals(
             "Kolejność pozostałych wejść na liście „Wejścia” się nie zmienia",
