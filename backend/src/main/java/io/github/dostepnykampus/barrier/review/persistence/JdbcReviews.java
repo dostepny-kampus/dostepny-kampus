@@ -8,14 +8,21 @@ package io.github.dostepnykampus.barrier.review.persistence;
 import io.github.dostepnykampus.barrier.review.ReviewDecision;
 import io.github.dostepnykampus.barrier.review.ReviewRepository;
 import io.github.dostepnykampus.barrier.review.SimilarSubmission;
+import io.github.dostepnykampus.barrier.review.SubmissionAuthor;
+import io.github.dostepnykampus.barrier.submission.AuthorRole;
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.persistence.ReadableRows;
 import io.github.dostepnykampus.barrier.submission.persistence.SubmissionRows;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
@@ -25,7 +32,7 @@ import tools.jackson.databind.ObjectMapper;
  * atomowe zapytania z warunkiem statusu, Weryfikatora i wersji; przy odmowie wynik
  * niesie bieżący stan zgłoszenia.
  *
- * <p>Wymagania: US10, US10.1, US10.4, BR-3, BR-11, BR-13, BR-16</p>
+ * <p>Wymagania: US10, US10.1, US10.4, BR-3, BR-5, BR-11, BR-13, BR-16</p>
  *
  * @since 0.1.0
  */
@@ -169,6 +176,29 @@ public final class JdbcReviews implements ReviewRepository {
                 SubmissionRows.COLUMNS
             )
         ).param("reviewer", reviewer).query(new ReadableRows<>(this.rows));
+    }
+
+    @Override
+    public Map<UUID, SubmissionAuthor> authors(final Collection<UUID> ids) {
+        final Map<UUID, SubmissionAuthor> found = new HashMap<>(ids.size());
+        if (!ids.isEmpty()) {
+            this.jdbc.sql(
+                """
+                SELECT id, author, author_roles FROM submissions
+                WHERE id IN (:ids) AND author IS NOT NULL
+                """
+            ).param("ids", ids).query(
+                (RowCallbackHandler) row -> found.put(
+                    row.getObject("id", UUID.class),
+                    new SubmissionAuthor(
+                        row.getString("author"),
+                        Arrays.stream((String[]) row.getArray("author_roles").getArray())
+                            .map(AuthorRole::valueOf).toList()
+                    )
+                )
+            );
+        }
+        return found;
     }
 
     private EditResult result(final @Nullable Submission saved, final UUID id) {
