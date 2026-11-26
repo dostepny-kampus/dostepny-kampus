@@ -124,6 +124,7 @@ robolectric-shadows-framework = { module = "org.robolectric:shadows-framework", 
 robolectric-annotations = { module = "org.robolectric:annotations", version.ref = "robolectric" }
 junit4 = { module = "junit:junit", version.ref = "junit4" }
 androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
+androidx-test-espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "espresso" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidxTestCore" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTestRunner" }
 androidx-test-monitor = { module = "androidx.test:monitor", version.ref = "androidxTestMonitor" }
