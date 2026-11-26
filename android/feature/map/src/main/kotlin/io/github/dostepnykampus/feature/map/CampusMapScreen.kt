@@ -208,7 +208,7 @@ fun CampusMapScreen(
         val isList = if (room == null) state.isListSaved ?: isLarge else false
         if (!isList || isCovered) {
             states.SaveableStateProvider(MAP_STATE) {
-                MapArea(state, sheet, search) { shown ->
+                MapArea(state = state, sheet = sheet, search = search, planBuilding = plan?.building) { shown ->
                     CampusMap(
                         ui = state,
                         barriers = shown,
@@ -317,6 +317,7 @@ private fun MapArea(
     state: CampusMapUiState,
     sheet: ScreenSheet,
     search: SearchFocus,
+    planBuilding: String?,
     content: @Composable (ShownBarriers) -> Unit,
 ) {
     val shown = ShownBarriers(state.barriers.takeUnless { sheet.isCardOpen }.orEmpty())
@@ -327,7 +328,7 @@ private fun MapArea(
             .then(if (sheet.isEntranceFull) Modifier.clearAndSetSemantics {} else Modifier)
     Box(modifier) {
         content(shown)
-        BarrierDescriptions(shown)
+        BarrierDescriptions(barriers = shown, planBuilding = planBuilding)
     }
 }
 

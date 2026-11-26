@@ -17,6 +17,7 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.feature.map.CampusMapScreen
 import io.github.dostepnykampus.feature.map.CampusMapUiState
 import org.junit.Rule
@@ -45,6 +46,27 @@ class MapBarrierNamesTest {
 
         compose.onNodeWithContentDescription("Blokada: schody przy wejściu, budynek A-1").assertExists()
         compose.onNodeWithContentDescription("Utrudnienie: krawężnik, poza budynkiem").assertExists()
+        compose.onNodeWithContentDescription("Tylko z pomocą, budynek C-13").assertExists()
+    }
+
+    /**
+     * Wiersz: V1 z planem budynku A-1, TalkBack dopowiada „piętro nieznane” tylko barierze tego budynku bez piętra.
+     *
+     * Wymagania: NFR-18, US16.1, BR-14
+     */
+    @Test
+    fun namesUnknownFloorOnPlan() {
+        val known = stairs.copy(id = "known", type = BarrierType.CURB, floor = SubmissionFloor(floorId = "P1"))
+        compose.setContent {
+            DostepnyKampusTheme {
+                BarrierDescriptions(barriers = ShownBarriers(listOf(stairs, known, untyped)), planBuilding = "A-1")
+            }
+        }
+
+        compose
+            .onNodeWithContentDescription("Blokada: schody przy wejściu, budynek A-1, piętro nieznane")
+            .assertExists()
+        compose.onNodeWithContentDescription("Blokada: krawężnik, budynek A-1").assertExists()
         compose.onNodeWithContentDescription("Tylko z pomocą, budynek C-13").assertExists()
     }
 

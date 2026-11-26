@@ -28,18 +28,21 @@ internal data class ShownBarriers(val barriers: List<AcceptedBarrier>)
 
 /**
  * Węzły dla TalkBack: natywna mapa nie opisuje znaków barier, więc każda bariera z [barriers] ma tu nazwę, np.
- * „Blokada: schody przy wejściu, budynek A-1”. Węzły nie leżą w punktach znaków i nic nie rysują;
- * TalkBack dochodzi do nich przesuwaniem po kolei, tak jak do zaznaczonego wejścia, a pełną treść
- * bariery ma lista budynków.
+ * „Blokada: schody przy wejściu, budynek A-1”. Gdy pokazany jest plan budynku [planBuilding], bariera tego budynku
+ * bez piętra dostaje dopisek „piętro nieznane”. Węzły nie leżą w punktach znaków i nic nie rysują.
  *
- * Wymagania: NFR-18, NFR-19
+ * Wymagania: NFR-18, NFR-19, US16.1, BR-14
  */
 @Composable
-internal fun BarrierDescriptions(barriers: ShownBarriers, modifier: Modifier = Modifier) {
+internal fun BarrierDescriptions(
+    barriers: ShownBarriers,
+    modifier: Modifier = Modifier,
+    planBuilding: String? = null,
+) {
     Column(modifier) {
         barriers.barriers.forEach { barrier ->
             key(barrier.id) {
-                val text = barrierName(barrier)
+                val text = barrierName(barrier = barrier, planBuilding = planBuilding)
                 Spacer(Modifier.size(NodeSize).semantics { contentDescription = text })
             }
         }
@@ -47,14 +50,22 @@ internal fun BarrierDescriptions(barriers: ShownBarriers, modifier: Modifier = M
 }
 
 @Composable
-private fun barrierName(barrier: AcceptedBarrier): String {
+private fun barrierName(barrier: AcceptedBarrier, planBuilding: String?): String {
     val severity = stringResource(barrier.severity.nameRes())
     val type = barrier.type?.run { stringResource(nameRes()).replaceFirstChar(Char::lowercaseChar) }
     val what = if (type == null) severity else stringResource(R.string.mapa_bariera_typ, severity, type)
     val symbol = barrier.buildingSymbol
-    return if (symbol == null) {
-        stringResource(R.string.mapa_bariera_poza_budynkiem, what)
+    val place =
+        if (symbol == null) {
+            stringResource(R.string.mapa_bariera_poza_budynkiem, what)
+        } else {
+            stringResource(R.string.mapa_bariera_w_budynku, what, symbol)
+        }
+    val isUnknownFloorOnPlan =
+        planBuilding != null && symbol == planBuilding && barrier.floor?.floorId == null
+    return if (isUnknownFloorOnPlan) {
+        stringResource(R.string.mapa_bariera_pietro_nieznane, place)
     } else {
-        stringResource(R.string.mapa_bariera_w_budynku, what, symbol)
+        place
     }
 }

@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.feature.map.campus.BARRIER_FLOOR
 import io.github.dostepnykampus.feature.map.campus.BARRIER_ID
 import io.github.dostepnykampus.feature.map.campus.BARRIER_SEVERITY
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
@@ -78,6 +79,28 @@ class CampusMapBarriersStyleTest {
         val images = layout.getValue("icon-image").jsonArray.map { it.toString() }
         val expected = Severity.entries.map { JsonPrimitive(chosenBarrierImage(it)).toString() }
         assertEquals(true, images.containsAll(expected))
+    }
+
+    /**
+     * Wiersz: V1, przy planie budynku bariera tego budynku bez piętra bierze znak z „?”; bez planu znak się nie
+     * zmienia.
+     *
+     * Wymagania: US16.1, BR-14
+     */
+    @Test
+    fun picksUnknownFloorSigns() {
+        val plain = barrierSignsImage(planBuilding = null).toString()
+        assertEquals(false, plain.contains("bez_pietra"), "bez planu nie ma znaków z „?”")
+        val planned = barrierSignsImage(planBuilding = "C-13").jsonArray
+        assertEquals("\"case\"", planned.first().toString(), "wybór obrazu zależy od warunku")
+        val condition = planned[1].toString()
+        assertEquals(true, condition.contains("\"C-13\""), "warunek dotyczy budynku z planem")
+        val noFloor = """["!",["has","$BARRIER_FLOOR"]]"""
+        assertEquals(true, condition.contains(noFloor), "warunek dotyczy bariery bez piętra")
+        val unknown = planned[2].toString()
+        val named = Severity.entries.map { JsonPrimitive(barrierNoFloorImage(it)).toString() }
+        assertEquals(true, named.all(unknown::contains), "przy planie znaki z „?”")
+        assertEquals(plain, planned[3].toString(), "pozostałe bariery mają zwykłe znaki")
     }
 
     /** Wiersz: V1 bez pobranych barier działa bez znaków barier. Wymagania: NFR-11 */
