@@ -32,11 +32,11 @@ import io.github.dostepnykampus.core.designsystem.campusDay
 import io.github.dostepnykampus.core.designsystem.marking.BarrierPhoto
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
+import io.github.dostepnykampus.core.designsystem.marking.nearEntrance
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
 import io.github.dostepnykampus.feature.capture.report.form.PhotoSection
 import io.github.dostepnykampus.feature.capture.report.form.SendFailure
-import io.github.dostepnykampus.feature.capture.report.form.nearestInWords
 
 /**
  * Treść C7 „Usunięcie bariery” dla stanu [state], bez ViewModelu: dane zgłoszenia przyjętego bez edycji, nowe
@@ -93,7 +93,7 @@ private fun Accepted(barrier: AcceptedBarrier, state: RemovedUiState) {
                 floor = barrier.floor,
             )
         Text(place)
-        state.nearest?.let { Text(nearestInWords(it)) }
+        state.nearest?.let { Text(nearEntrance(entrance = it.entrance, meters = it.meters)) }
         barrier.verifiedAt?.let { verified ->
             val text = stringResource(R.string.usuniecie_sprawdzone, campusDay(verified))
             Text(text, color = MaterialTheme.colorScheme.onSurfaceVariant)

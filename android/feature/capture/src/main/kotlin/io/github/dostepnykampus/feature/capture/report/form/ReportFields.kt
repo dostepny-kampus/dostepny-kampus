@@ -21,12 +21,9 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
-import io.github.dostepnykampus.core.model.building.EntranceDistance
+import io.github.dostepnykampus.core.designsystem.marking.measuredPlace
+import io.github.dostepnykampus.core.designsystem.marking.nearEntrance
 import io.github.dostepnykampus.feature.capture.R
-import java.util.Locale
-import kotlin.math.roundToInt
-
-private val POLISH = Locale.forLanguageTag("pl-PL")
 
 /**
  * Budynek i miejsce słowami z C1 bez współrzędnych oraz „Zmień miejsce”. Miejsce brzmi np. „ok. 3 m
@@ -66,28 +63,8 @@ private fun buildingText(place: ReportPlace): String {
 @Composable
 @ReadOnlyComposable
 private fun placeInWords(place: ReportPlace): String {
-    val accuracy = String.format(POLISH, "%.1f", place.accuracyMeters)
-    val nearest = place.nearestEntrance ?: return stringResource(R.string.formularz_dokladnosc, accuracy)
-    return stringResource(R.string.formularz_miejsce, nearestInWords(nearest), accuracy)
-}
-
-/**
- * Odległość od najbliższego wejścia słowami, np. „ok. 3 m od wejścia głównego”; bez współrzędnych.
- *
- * Wymagania: US7.4, US8.4, NFR-19
- */
-@Composable
-@ReadOnlyComposable
-internal fun nearestInWords(nearest: EntranceDistance): String {
-    val name = nearest.entrance.name
-    val entrance =
-        when {
-            name != null && nearest.entrance.hasName -> stringResource(R.string.formularz_wejscie_nazwa, name)
-            nearest.entrance.isMain -> stringResource(R.string.formularz_wejscie_glowne)
-            else -> stringResource(R.string.formularz_wejscie)
-        }
-    val meters = nearest.meters.roundToInt().coerceAtLeast(1)
-    return stringResource(R.string.formularz_miejsce_od, meters, entrance)
+    val near = place.nearestEntrance?.let { nearEntrance(entrance = it.entrance, meters = it.meters) }
+    return measuredPlace(near = near, accuracyMeters = place.accuracyMeters)
 }
 
 @Composable
