@@ -66,8 +66,8 @@ internal class SentResults(
         }
 
     /**
-     * Serwer ma całe zgłoszenie [item]: wiersz kolejki znika. Pliki zdjęć zgłoszenia z historii zostają do decyzji
-     * na poprawkę z C3 (usuwa je sprzątanie przy starcie), pozostałe znikają od razu.
+     * Serwer ma całe zgłoszenie [item]: wiersz kolejki znika. Pliki zdjęć zgłoszenia z historii zostają na poprawkę
+     * z C3 (usuwa je sprzątanie przy starcie po przyjęciu albo archiwizacji), pozostałe znikają od razu.
      *
      * Wymagania: NFR-5, US8.3
      */
