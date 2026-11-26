@@ -57,7 +57,8 @@ internal fun SubmissionDetails(shown: CheckUiState.Ready) {
             text = barrierPlace(symbol = content.buildingSymbol, name = null, entrance = null, floor = content.floor),
             style = MaterialTheme.typography.bodyLarge,
         )
-        content.accuracyMeters?.let { accuracy ->
+        val accuracy = content.accuracyMeters
+        if (accuracy != null) {
             val near = shown.nearest?.let { nearEntrance(entrance = it.entrance, meters = it.meters) }
             Text(stringResource(R.string.sprawdzenie_miejsce, measuredPlace(near = near, accuracyMeters = accuracy)))
         }

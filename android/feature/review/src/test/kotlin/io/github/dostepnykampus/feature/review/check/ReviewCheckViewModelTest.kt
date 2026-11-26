@@ -77,7 +77,7 @@ class ReviewCheckViewModelTest {
         checkTest(campus = WITH_ENTRANCE) { model ->
             runCurrent()
             val nearest = (model.state.value as CheckUiState.Ready).nearest
-            assertEquals("n/1", nearest?.run { entrance.id }, "najbliższe wejście budynku C-13")
+            assertEquals("node/7", nearest?.run { entrance.id }, "najbliższe wejście budynku C-13")
         }
 
     @Test
@@ -220,10 +220,8 @@ class ReviewCheckViewModelTest {
         val NEAR = SimilarSubmission(submission = queued(id = "b", day = 20), distanceMeters = 4.0)
         const val NO_ENTRANCES = """{"type":"FeatureCollection","attribution":"© plik","features":[]}"""
         const val WITH_ENTRANCE =
-            """{"type":"FeatureCollection","attribution":"© plik","features":[""" +
-                """{"type":"Feature","properties":{"kind":"building","symbols":["C-13"],"osm_id":"way/1"},""" +
-                """"geometry":{"type":"Polygon","coordinates":[[[17,51],[18,51],[18,52],[17,51]]]}},""" +
-                """{"type":"Feature","properties":{"kind":"entrance","symbols":["C-13"],"osm_id":"n/1",""" +
-                """"ref":"Wejście A"},"geometry":{"type":"Point","coordinates":[17.06,51.1]}}]}"""
+            """{"type":"FeatureCollection","attribution":"© R2","features":[""" +
+                """{"type":"Feature","properties":{"kind":"entrance","symbols":["C-13"],"osm_id":"node/7",""" +
+                """"ref":"Wejście B"},"geometry":{"type":"Point","coordinates":[17.06,51.1]}}]}"""
     }
 }
