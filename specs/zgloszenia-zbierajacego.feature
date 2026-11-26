@@ -96,8 +96,7 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
       | wysłane       |
       | w weryfikacji |
 
-  # kroki serwera: #2456
-  @US8.3 @BR-3 @BR-16 @serwer @do-zrobienia
+  @US8.3 @BR-3 @BR-16 @serwer
   Scenariusz: Poprawa i ponowne wysłanie zgłoszenia odrzuconego
     Zakładając, że zgłoszenie Zbierającego odrzucono z powodem „Zdjęcie nie pokazuje progu”
     Jeżeli Zbierający zrobi nowe zdjęcie progu
