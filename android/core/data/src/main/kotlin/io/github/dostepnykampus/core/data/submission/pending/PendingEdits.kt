@@ -70,7 +70,7 @@ internal fun pendingEditsOf(
  * Poprawka wysłanego zgłoszenia konta [owner] przed decyzją z wersją bazową z serwera; zdjęcie, którego pliku już
  * nie ma, wypada. `null` dla innego konta, po decyzji i bez treści w historii.
  */
-private fun OwnSubmissionEntity.toSentEdit(owner: String): PendingEdit? {
+internal fun OwnSubmissionEntity.toSentEdit(owner: String): PendingEdit? {
     val copy = ownCopyOf(contentJson)
     val isOpen = ownerSub == owner && serverStatus !in DECIDED
     if (copy == null || !isOpen) return null

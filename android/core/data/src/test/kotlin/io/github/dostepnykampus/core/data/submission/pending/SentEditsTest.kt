@@ -85,9 +85,10 @@ class SentEditsTest {
         runBlocking {
             val store = FakeStore()
             val versions = mutableListOf<Int>()
-            val queue = editQueue(store = store, records = SentRecords(history = history), edits = ArrayDeque()) {
-                versions += it
-            }
+            val queue =
+                editQueue(store = store, records = SentRecords(history = history), edits = ArrayDeque()) {
+                    versions += it
+                }
             val saved = queue.save(content(), photo(tempDir, "p1"))
             queue.sendAll()
             val inReview = SubmissionStatus.IN_REVIEW.name
