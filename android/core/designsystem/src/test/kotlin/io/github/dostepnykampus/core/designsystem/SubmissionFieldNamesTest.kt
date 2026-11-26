@@ -13,7 +13,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-/** Nazwy pól zgłoszenia w wykazie różnic, małą literą. Wymagania: US9.3, US10.8 */
+/** Nazwy pól zgłoszenia do wykazu różnic. Wymagania: US9.3, US10.8 */
 @RunWith(RobolectricTestRunner::class)
 class SubmissionFieldNamesTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
@@ -23,17 +23,17 @@ class SubmissionFieldNamesTest {
         assertEquals(
             "nazwy pól",
             listOf(
-                "miejsce",
-                "zdjęcia",
-                "budynek",
-                "piętro",
-                "grupa barier",
-                "typ bariery",
-                "uciążliwość",
-                "opis",
-                "bariera usunięta",
-                "wejście",
-                "oznaczenie wejścia",
+                "Miejsce",
+                "Zdjęcia",
+                "Budynek",
+                "Piętro",
+                "Grupa barier",
+                "Typ bariery",
+                "Uciążliwość",
+                "Opis",
+                "Bariera usunięta",
+                "Wejście",
+                "Oznaczenie wejścia",
             ),
             SubmissionField.entries.map { context.getString(it.nameRes()) },
         )

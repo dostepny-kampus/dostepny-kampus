@@ -10,41 +10,41 @@ package io.github.dostepnykampus.core.model.submission
  *
  * Wymagania: US9.3, US10.8
  *
- * @property valueIn wartość pola w treści; pola bez wartości i z wartością `false` są sobie równe
+ * @property valueIn wartości pola w treści; pola bez wartości i z wartością `false` są sobie równe
  */
-public enum class SubmissionField(internal val valueIn: (SubmissionContent) -> Any?) {
+public enum class SubmissionField(internal val valueIn: (SubmissionContent) -> List<Any?>) {
     /** Miejsce bariery z dokładnością pomiaru i oznaczeniem korekty ręcznej. */
     LOCATION({ listOf(it.location, it.accuracyMeters, it.isManualCorrection == true) }),
 
     /** Zdjęcia, bez względu na kolejność. */
-    PHOTOS({ it.photoIds.toSet() }),
+    PHOTOS({ listOf(it.photoIds.toSet()) }),
 
     /** Budynek. */
-    BUILDING({ it.buildingSymbol }),
+    BUILDING({ listOf(it.buildingSymbol) }),
 
     /** Piętro. */
-    FLOOR({ it.floor }),
+    FLOOR({ listOf(it.floor) }),
 
     /** Grupa barier zgłoszenia szybkiego. */
-    BARRIER_GROUP({ it.barrierGroup }),
+    BARRIER_GROUP({ listOf(it.barrierGroup) }),
 
     /** Typ bariery. */
-    BARRIER_TYPE({ it.barrierType }),
+    BARRIER_TYPE({ listOf(it.barrierType) }),
 
     /** Uciążliwość. */
-    SEVERITY({ it.severity }),
+    SEVERITY({ listOf(it.severity) }),
 
     /** Opis. */
-    DESCRIPTION({ it.description }),
+    DESCRIPTION({ listOf(it.description) }),
 
     /** Oznaczenie „bariera usunięta”. */
-    BARRIER_REMOVED({ it.isBarrierRemoved == true }),
+    BARRIER_REMOVED({ listOf(it.isBarrierRemoved == true) }),
 
     /** Wejście. */
-    ENTRANCE({ it.entranceId }),
+    ENTRANCE({ listOf(it.entranceId) }),
 
     /** Oznaczenie wejścia. */
-    ENTRANCE_MARKING({ it.entranceMarking }),
+    ENTRANCE_MARKING({ listOf(it.entranceMarking) }),
 }
 
 /**
