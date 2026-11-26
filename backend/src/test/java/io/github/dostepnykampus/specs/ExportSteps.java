@@ -51,12 +51,12 @@ public final class ExportSteps {
     static final UUID STAIRS =
         UUID.fromString("5e1f2a3b-4c5d-4e6f-8a7b-9c0d1e2f3a4b");
 
+    /** Wejście główne A-1 założone przez scenariusz. */
+    static final String ENTRANCE = "wejscie-eksport-a1";
+
     /** Zgłoszenie TB-13 w budynku C-13. */
     private static final UUID THRESHOLD =
         UUID.fromString("6f2a3b4c-5d6e-4f70-9b8c-0d1e2f3a4b5c");
-
-    /** Wejście główne A-1 założone przez scenariusz. */
-    static final String ENTRANCE = "wejscie-eksport-a1";
 
     /** Konto autora zgłoszeń, które nie może trafić do pliku. */
     private static final String AUTHOR = "sub-autora-eksportu";
