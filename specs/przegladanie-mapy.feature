@@ -431,8 +431,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy pinezka wejścia zalecanego stoi na środku części mapy nad arkuszem tego wejścia
     Oraz arkusz zajmuje najwyżej połowę ekranu, a jego treść się przewija
 
-  # brak pełnego testu: #3645
-  @US3.3 @NFR-18 @NFR-53 @aplikacja @do-zrobienia
+  @US3.3 @NFR-18 @NFR-53 @aplikacja
   Szablon scenariusza: Pinezka i podpis wejścia są na mapie tylko przy otwartym arkuszu wejścia
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
     Jeżeli otworzy arkusz wejścia A-1 przez <otwarcie>
@@ -447,8 +446,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | znak wejścia A-1 na mapie               | wiersz budynku A-1     |
       | znak wejścia A-1 na mapie               | dotyk pustej mapy      |
 
-  # brak pełnego testu: #3645
-  @US2.8 @US3.3 @NFR-15 @NFR-53 @aplikacja @do-zrobienia
+  @US2.8 @US3.3 @NFR-15 @NFR-53 @aplikacja
   Szablon scenariusza: „Wstecz” w arkuszu wejścia wraca tam, skąd arkusz otwarto, a „Zamknij” zostawia mapę
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
     Jeżeli <otwarcie>
