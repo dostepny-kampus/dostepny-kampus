@@ -82,7 +82,7 @@ class CollectorMarkersViewModel
         private val plans: FloorPlans,
         private val markers: FloorMarkers,
         private val serverMarkers: ServerFloorMarkers,
-        private val network: NetworkStatus,
+        network: NetworkStatus,
     ) : ViewModel() {
         private val asking = MutableStateFlow<String?>(null)
         private val unsaved = MutableStateFlow<MarkerPlace?>(null)
