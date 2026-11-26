@@ -66,14 +66,14 @@ class FlightAreaTest {
      * Wymagania: US1.8, NFR-56
      */
     @Test
-    fun keepsBasemapAfterShortFlight() {
+    fun isBasemapKeptAfterShortFlight() {
         areas.zoom(16.0)
         areas.start(CameraMotion.FLIGHT)
         areas.area(other)
         areas.zoom(15.2)
         areas.endFlight()
         assertEquals(other, areas.shown, "po przelocie nowy teren")
-        assertTrue(areas.keepsBasemap, "podkład starego terenu zostaje do wczytania nowego")
+        assertTrue(areas.isBasemapKept, "podkład starego terenu zostaje do wczytania nowego")
     }
 
     /** Wiersz: V1, przelot oddalił mapę poniżej obu podkładów: nowy podkład czeka ukryty na kafelki. */
@@ -84,7 +84,7 @@ class FlightAreaTest {
         areas.area(other)
         areas.zoom(14.0)
         assertEquals(other, areas.shown, "oba podkłady ukryte: nowy teren")
-        assertFalse(areas.keepsBasemap, "podkładu nie było na ekranie")
+        assertFalse(areas.isBasemapKept, "podkładu nie było na ekranie")
     }
 
     /** Wiersz: V1, skok na inny teren bez animacji: stary podkład nie leży pod nowym widokiem. */
@@ -95,16 +95,16 @@ class FlightAreaTest {
         areas.zoom(16.0)
         areas.area(other)
         assertEquals(other, areas.shown, "po skoku nowy teren")
-        assertFalse(areas.keepsBasemap, "kafelki nowego widoku nie są wczytane")
+        assertFalse(areas.isBasemapKept, "kafelki nowego widoku nie są wczytane")
     }
 
     /** Wiersz: V1, przesunięcie na bliski teren: podkład zostaje na ekranie. */
     @Test
-    fun keepsBasemapOnShift() {
+    fun isBasemapKeptOnShift() {
         areas.zoom(16.0)
         areas.start(CameraMotion.EASE)
         areas.area(other)
-        assertTrue(areas.keepsBasemap, "przesunięcie bez skoku: podkład zostaje")
+        assertTrue(areas.isBasemapKept, "przesunięcie bez skoku: podkład zostaje")
     }
 
     /** Wiersz: V1, widok poniżej podkładu nowego terenu: po zmianie podkład nie jest rysowany, więc czeka ukryty. */
@@ -112,7 +112,7 @@ class FlightAreaTest {
     fun hidesBelowNewBasemapZoom() {
         areas.zoom(14.8)
         areas.area(other)
-        assertFalse(areas.keepsBasemap, "nowy podkład od wyższego powiększenia")
+        assertFalse(areas.isBasemapKept, "nowy podkład od wyższego powiększenia")
     }
 
     private fun areaOf(bounds: CampusBounds, minZoom: Double) =

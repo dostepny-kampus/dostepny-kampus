@@ -43,7 +43,7 @@ internal class FlightArea(first: StyleArea) {
      * starego i nowego terenu jest rysowany przy bieżącym powiększeniu. `false`, gdy podkład nowego terenu ma czekać
      * ukryty na wczytanie kafelków.
      */
-    var keepsBasemap: Boolean = false
+    var isBasemapKept: Boolean = false
         private set
     private var latest = first
     private var isFlying = false
@@ -78,7 +78,7 @@ internal class FlightArea(first: StyleArea) {
 
     private fun show(next: StyleArea) {
         if (next == shown) return
-        keepsBasemap = !isJump && zoomNow >= maxOf(a = shown.hiddenBelow, b = next.hiddenBelow)
+        isBasemapKept = !isJump && zoomNow >= maxOf(a = shown.hiddenBelow, b = next.hiddenBelow)
         shown = next
     }
 }
