@@ -42,11 +42,17 @@ final class ModuleDescriptionArchitectureIT {
     );
 
     /**
-     * Początek nazwanego akapitu; zadanie może być pierwszym zdaniem Javadoc.
+     * Początek akapitu opisu z jego nazwą.
      */
     private static final Pattern PART = Pattern.compile(
-        "(?:<p>|/\\*\\*\\R\\h*\\* (?=Zadanie:))"
-            + "(Zadanie|API|Zależności|Nie robi|Kiedy dodawać tutaj):"
+        "<p>(Zadanie|API|Zależności|Nie robi|Kiedy dodawać tutaj):"
+    );
+
+    /**
+     * Zadanie opisane w pierwszym zdaniu Javadoc.
+     */
+    private static final Pattern TASK_SUMMARY = Pattern.compile(
+        "/\\*\\*\\R\\h*\\* Zadanie:"
     );
 
     /**
@@ -89,24 +95,24 @@ final class ModuleDescriptionArchitectureIT {
 
     @Test
     void acceptsTaskAsJavadocSummary() {
-        final String description = """
-            /**
-             * Zadanie: składa zmiany od kursora.
-             *
-             * <p>API: HTTP.</p>
-             *
-             * <p>Zależności: {@code barrier :: api}, {@code building :: api},
-             * {@code inspection :: api}, {@code shared}.</p>
-             *
-             * <p>Nie robi: nie przechowuje danych.</p>
-             *
-             * <p>Kiedy dodawać tutaj: pobranie zmian.</p>
-             */
-            """;
         Assertions.assertEquals(
             "",
             ModuleDescriptionArchitectureIT.problem(
-                description, Set.of("barrier :: api", "building :: api", "inspection :: api", "shared")
+                """
+                %s
+                 * Zadanie: składa zmiany od kursora.
+                 *
+                 * <p>API: HTTP.</p>
+                 *
+                 * <p>Zależności: {@code barrier :: api}, {@code building :: api},
+                 * {@code inspection :: api}, {@code shared}.</p>
+                 *
+                 * <p>Nie robi: nie przechowuje danych.</p>
+                 *
+                 * <p>Kiedy dodawać tutaj: pobranie zmian.</p>
+                 %s
+                """.formatted("/**", "*/"),
+                Set.of("barrier :: api", "building :: api", "inspection :: api", "shared")
             ),
             "Pierwszy akapit zadania w Javadoc nie wymaga znacznika HTML"
         );
@@ -140,6 +146,9 @@ final class ModuleDescriptionArchitectureIT {
 
     private static String problem(final String text, final Set<String> allowed) {
         final List<String> parts = new ArrayList<>(5);
+        if (ModuleDescriptionArchitectureIT.TASK_SUMMARY.matcher(text).find()) {
+            parts.add("Zadanie");
+        }
         final Matcher part = ModuleDescriptionArchitectureIT.PART.matcher(text);
         while (part.find()) {
             parts.add(part.group(1));
