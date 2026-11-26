@@ -5,5 +5,9 @@
  */
 
 plugins {
-    id("dostepnykampus.android.feature")
+    id("dostepnykampus.jvm.library")
+}
+
+kotlin {
+    explicitApi()
 }

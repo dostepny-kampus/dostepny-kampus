@@ -12,7 +12,7 @@ import java.text.Normalizer
  * Zamienia wielkie litery na małe, składa polskie znaki do liter ASCII, usuwa interpunkcję
  * z zachowaniem minusa przed cyfrą oraz zastępuje polskie liczebniki słowne cyframi.
  */
-fun normalizeSpeechText(text: String): String {
+public fun normalizeSpeechText(text: String): String {
     val cleaned =
         PUNCTUATION
             .replace(input = foldDiacritics(text), replacement = " ")
