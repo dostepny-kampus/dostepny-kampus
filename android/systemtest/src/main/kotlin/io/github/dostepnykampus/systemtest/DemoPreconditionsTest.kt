@@ -23,6 +23,8 @@ class DemoPreconditionsTest {
     private val server = DemoServer()
 
     /**
+     * Drugie przygotowanie założeń zostawia 4 z 5 pięter i jedno przyjęte TB-13.
+     *
      * Scenariusz (częściowo): scenariusz-demo.feature: Schody przy wejściu głównym A-1 od pomiaru do eksportu
      *
      * Wymagania: US10.1, US11.1
