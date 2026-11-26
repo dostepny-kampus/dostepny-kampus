@@ -26,11 +26,12 @@ import io.github.dostepnykampus.feature.capture.report.form.ReportEdit
 import kotlinx.coroutines.flow.first
 
 /**
- * C2 z polami zgłoszenia [route] z C3. „Zapisz” zastępuje to samo zgłoszenie, „Zmień miejsce” idzie
- * przez C1 z polami w [draft], a „Wstecz” wraca do C3. Gdy zgłoszenia nie ma już w telefonie,
- * ekran od razu wraca do C3.
+ * C2 z polami zgłoszenia [route] z C3. „Zapisz” zastępuje to samo zgłoszenie, a przy ponownym wysłaniu
+ * nieaktualnej zmiany tworzy nową zmianę bieżącego przyjętego zgłoszenia. „Zmień miejsce” idzie przez C1 z polami
+ * w [draft], a „Wstecz” wraca do C3. Gdy zgłoszenia albo bieżącego przyjętego zgłoszenia nie ma w telefonie, ekran
+ * od razu wraca do C3.
  *
- * Wymagania: US8.3, US7.4, NFR-54, NFR-22
+ * Wymagania: US8.3, US7.4, NFR-54, NFR-22, BR-23
  *
  * @param route zgłoszenie do poprawki
  * @param exits wyjścia do nawigacji
@@ -50,7 +51,7 @@ fun ReportEditScreen(
     viewModel: ReportFormViewModel = hiltViewModel(),
     photoTranscoder: PhotoTranscoder = hiltViewModel(),
 ) {
-    SideEffect { loader.open(route.submissionId, route.isAccepted) }
+    SideEffect { loader.open(route) }
     val load by loader.load.collectAsStateWithLifecycle()
     val start = (load as? ReportEditLoad.Ready)?.start
     if (start != null) SideEffect { viewModel.open(start.form, draft, start.photos) }

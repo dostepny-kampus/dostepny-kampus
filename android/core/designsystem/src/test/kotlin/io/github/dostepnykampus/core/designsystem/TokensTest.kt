@@ -22,7 +22,8 @@ import java.io.File
 import kotlin.reflect.KVisibility
 import kotlin.reflect.full.memberProperties
 
-private const val MATERIAL_TEXT_SLOT_COUNT = 15
+private const val MATERIAL_TEXT_SLOT_COUNT = 30
+private const val EMPHASIZED = "Emphasized"
 
 /**
  * Kolory, typografia i wymiary motywu pochodzą z pliku tokenów.
@@ -74,7 +75,7 @@ class TokensTest {
     /**
      * Każdy publiczny slot `Typography` ma krój motywu i co najmniej `minimum_sp`, a slot spoza skali ma styl
      * swojego zastępstwa. Komponenty Material same sięgają po sloty spoza skali, więc żaden nie może zostać
-     * domyślny. Wymagania: NFR-16, NFR-20
+     * domyślny. Slot `…Emphasized` ma rozmiar swojego slotu i wagę wyróżnienia. Wymagania: NFR-16, NFR-20
      */
     @Test
     fun slotsHaveAppFontAndMinimum() {
@@ -91,6 +92,12 @@ class TokensTest {
             val style = checkNotNull(slot.getter.call(typography)) as TextStyle
             assertEquals("${slot.name} krój", font, style.fontFamily)
             assertTrue("${slot.name} ${style.fontSize} < $minimum sp", style.fontSize.value >= minimum)
+        }
+        slots.filter { it.name.endsWith(EMPHASIZED) }.forEach { slot ->
+            val style = checkNotNull(slot.getter.call(typography)) as TextStyle
+            val base = checkNotNull(typography.property(slot.name.removeSuffix(EMPHASIZED))) as TextStyle
+            assertEquals("${slot.name} rozmiar", base.fontSize, style.fontSize)
+            assertTrue("${slot.name} waga", checkNotNull(style.fontWeight) >= Typografia.wyroznienieWaga)
         }
         section.sub("zastepstwa").forEach { (slot, target) ->
             assertEquals("zastępstwo $slot", typography.property(target.toString()), typography.property(slot))
