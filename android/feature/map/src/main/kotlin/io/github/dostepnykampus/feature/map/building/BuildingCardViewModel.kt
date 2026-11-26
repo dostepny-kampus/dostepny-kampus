@@ -22,6 +22,7 @@ import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.data.submission.own.OwnSubmissions
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EvacuationExit
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.feature.map.camera.MapTrace
@@ -231,10 +232,7 @@ class BuildingCardViewModel
                 }
             }
 
-        private fun orderedEntrancesFor(
-            raw: List<Entrance>,
-            accepted: List<AcceptedBarrier>?,
-        ): List<OrderedEntrance> {
+        private fun orderedEntrancesFor(raw: List<Entrance>, accepted: List<AcceptedBarrier>?): List<OrderedEntrance> {
             val applied = accepted.orEmpty()
             val previous = cachedEntrances.get()
             if (previous != null && previous.raw == raw && previous.barriers == applied) {
