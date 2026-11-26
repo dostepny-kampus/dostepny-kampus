@@ -22,7 +22,7 @@ Zgłoszenie bariery: pomiar położenia, formularz z zdjęciami, szybkie zgłosz
 
 ## API
 
-Trasy pomiaru, formularza, poprawki, zmiany oznaczenia wejścia, listy zgłoszeń i wyboru wersji w pakiecie `navigation`.
+Trasy pomiaru, formularza, poprawki, zmiany oznaczenia wejścia, listy zgłoszeń, wyboru wersji i synchronizacji w pakiecie `navigation`.
 
 ## Zależności
 

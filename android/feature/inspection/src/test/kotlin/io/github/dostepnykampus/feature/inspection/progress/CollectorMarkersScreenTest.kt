@@ -51,6 +51,24 @@ class CollectorMarkersScreenTest {
         compose.onNodeWithText(REVOKE).assertIsDisplayed()
     }
 
+    /**
+     * Wiersz: C5 bez internetu, znacznik w telefonie dostaje zdanie, że wyśle się po powrocie internetu.
+     *
+     * Wymagania: US15.3
+     */
+    @Test
+    fun explainsPendingMarkerOffline() {
+        show(CollectorMarkersUiState.Ready(ROWS, isOnline = false))
+        compose.onNodeWithText(SAVED_IN_PHONE).assertIsDisplayed()
+    }
+
+    /** Wiersz: C5 z internetem, przy znaczniku w telefonie nie ma zdania o braku internetu. Wymagania: US15.3 */
+    @Test
+    fun omitsOfflineSentenceOnline() {
+        show(CollectorMarkersUiState.Ready(ROWS))
+        compose.onNodeWithText(SAVED_IN_PHONE).assertDoesNotExist()
+    }
+
     /** Wiersz: C5, „Oznacz jako obejrzane” przy nieobejrzanym piętrze oznacza to piętro. Wymagania: US15.1 */
     @Test
     fun marksUninspectedFloor() {
@@ -135,6 +153,18 @@ class CollectorMarkersScreenTest {
         compose.onNodeWithText("Cofnąć znacznik całego budynku? Postęp budynku się zmniejszy.").assertIsDisplayed()
     }
 
+    /** Pytanie o cofnięcie z etykietą „2 piętro” nie powiela słowa „piętro”. Wymagania: US15.2 */
+    @Test
+    fun asksRevokeWithNumberedFloor() {
+        checkFloorQuestion("2 piętro")
+    }
+
+    /** Pytanie o cofnięcie z etykietą „Parter” brzmi poprawnie bez słowa „piętra”. Wymagania: US15.2 */
+    @Test
+    fun asksRevokeWithGroundFloor() {
+        checkFloorQuestion("Parter")
+    }
+
     /**
      * Znacznik z serwera: własny bez „Czeka na wysłanie”, cudzy jako „Znacznik innej osoby” bez „Cofnij znacznik”.
      *
@@ -192,6 +222,12 @@ class CollectorMarkersScreenTest {
         compose.onRoot().captureRoboImage()
     }
 
+    private fun checkFloorQuestion(label: String) {
+        val rows = listOf(FloorRow(place = MarkerPlace.Floor("p2"), label = label, markerId = "m-1"))
+        show(CollectorMarkersUiState.Ready(rows, asking = "m-1"))
+        compose.onNodeWithText("Cofnąć znacznik: $label? Postęp budynku się zmniejszy.").assertIsDisplayed()
+    }
+
     private fun show(state: CollectorMarkersUiState, actions: CollectorMarkerActions = CollectorMarkerActions()) {
         compose.setContent {
             DostepnyKampusTheme {
@@ -211,3 +247,5 @@ class CollectorMarkersScreenTest {
             )
     }
 }
+
+private const val SAVED_IN_PHONE = "Znacznik zapisany w telefonie. Wyślemy go, gdy wróci internet."

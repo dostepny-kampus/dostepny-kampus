@@ -35,10 +35,13 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.GroupFrame
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.ProblemText
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.model.review.RejectionReasons
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
+import io.github.dostepnykampus.core.model.submission.BarrierType
+import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.review.R
 import io.github.dostepnykampus.feature.review.queue.titleRes
 import kotlin.math.roundToInt
@@ -58,8 +61,15 @@ internal data class Rejection(val reason: String, val duplicateOf: String? = nul
  *
  * @property onAccept „Przyjmij”
  * @property onReject „Odrzuć” z wybranym powodem
+ * @property onType typ bariery wybrany dla zgłoszenia szybkiego
+ * @property onSeverity uciążliwość wybrana dla zgłoszenia szybkiego
  */
-internal data class DecisionActions(val onAccept: () -> Unit, val onReject: (Rejection) -> Unit)
+internal data class DecisionActions(
+    val onAccept: () -> Unit,
+    val onReject: (Rejection) -> Unit,
+    val onType: (BarrierType) -> Unit = {},
+    val onSeverity: (Severity) -> Unit = {},
+)
 
 /**
  * Zrzut podobnych zgłoszeń do pokazania i do wyboru duplikatu.
@@ -99,6 +109,7 @@ internal fun Decision(
         if (notice == CheckNotice.OFFLINE) {
             Notice(title = R.string.sprawdzenie_bez_sieci, body = R.string.sprawdzenie_bez_sieci_ponownie)
         }
+        if (notice == CheckNotice.TYPE_MISSING) ProblemText(text = stringResource(R.string.sprawdzenie_ustal_typ))
         Button(onClick = actions.onAccept, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.sprawdzenie_przyjmij))
         }
@@ -107,29 +118,33 @@ internal fun Decision(
             modifier = Modifier.padding(top = Odstepy.m).semantics { heading() },
             style = MaterialTheme.typography.titleLarge,
         )
+        val isMissing = notice == CheckNotice.REASON_MISSING
         Column(modifier = Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-            if (allowsDuplicate) Choice(duplicate, reason == Reason.DUPLICATE) { reason = Reason.DUPLICATE }
+            if (allowsDuplicate) {
+                Choice(label = duplicate, isChosen = reason == Reason.DUPLICATE, isError = isMissing) {
+                    reason = Reason.DUPLICATE
+                }
+            }
             if (reason == Reason.DUPLICATE) Earlier(similar = similar, chosen = earlier) { earlier = it }
-            Choice(outdated, reason == Reason.OUTDATED) { reason = Reason.OUTDATED }
-            Choice(stringResource(R.string.sprawdzenie_inny), reason == Reason.OTHER) { reason = Reason.OTHER }
+            Choice(label = outdated, isChosen = reason == Reason.OUTDATED, isError = isMissing) {
+                reason = Reason.OUTDATED
+            }
+            val other = stringResource(R.string.sprawdzenie_inny)
+            Choice(label = other, isChosen = reason == Reason.OTHER, isError = isMissing) { reason = Reason.OTHER }
         }
         OutlinedTextField(
             value = text,
             onValueChange = { text = it },
             modifier = Modifier.fillMaxWidth(),
             label = { Text(stringResource(R.string.sprawdzenie_opisz)) },
+            isError = isMissing && reason == Reason.OTHER,
         )
-        if (notice == CheckNotice.REASON_MISSING) Text(stringResource(R.string.sprawdzenie_podaj_powod))
+        if (isMissing) ProblemText(text = stringResource(R.string.sprawdzenie_podaj_powod))
         OutlinedAction(
             onClick = {
-                val rejection =
-                    when (reason) {
-                        Reason.DUPLICATE -> Rejection(reason = duplicate, duplicateOf = earlier)
-                        Reason.OUTDATED -> Rejection(reason = RejectionReasons.OUTDATED)
-                        Reason.OTHER -> Rejection(reason = text)
-                        null -> Rejection(reason = "")
-                    }
-                actions.onReject(rejection)
+                actions.onReject(
+                    rejectionOf(reason = reason, duplicate = duplicate, earlier = earlier, text = text),
+                )
             },
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -137,6 +152,14 @@ internal fun Decision(
         }
     }
 }
+
+private fun rejectionOf(reason: Reason?, duplicate: String, earlier: String?, text: String): Rejection =
+    when (reason) {
+        Reason.DUPLICATE -> Rejection(reason = duplicate, duplicateOf = earlier)
+        Reason.OUTDATED -> Rejection(reason = RejectionReasons.OUTDATED)
+        Reason.OTHER -> Rejection(reason = text)
+        null -> Rejection(reason = "")
+    }
 
 @Composable
 private fun Earlier(similar: SimilarReports, chosen: String?, onChoose: (String) -> Unit) {
@@ -149,19 +172,21 @@ private fun Earlier(similar: SimilarReports, chosen: String?, onChoose: (String)
                     stringResource(near.submission.content.titleRes()),
                     near.distanceMeters.roundToInt(),
                 )
-            Choice(label, chosen == near.submission.id) { onChoose(near.submission.id) }
+            Choice(label = label, isChosen = chosen == near.submission.id, isError = false) {
+                onChoose(near.submission.id)
+            }
         }
     }
 }
 
 @Composable
-private fun Choice(label: String, isChosen: Boolean, onChoose: () -> Unit) {
+private fun Choice(label: String, isChosen: Boolean, isError: Boolean, onChoose: () -> Unit) {
     OutlinedCard(
         modifier = Modifier.fillMaxWidth().selectable(selected = isChosen, role = Role.RadioButton, onClick = onChoose),
         border =
             BorderStroke(
                 width = if (isChosen) Obramowania.wybrane else Obramowania.ramka,
-                color = MaterialTheme.colorScheme.outline,
+                color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline,
             ),
     ) {
         Row(modifier = Modifier.padding(Odstepy.m), verticalAlignment = Alignment.CenterVertically) {
@@ -176,18 +201,21 @@ private fun Choice(label: String, isChosen: Boolean, onChoose: () -> Unit) {
 }
 
 /**
- * Komunikat w ramce: zdanie pogrubione i zdanie pod nim.
+ * Komunikat w ramce: zdanie pogrubione, zdanie pod nim i opcjonalny wiersz szczegółów.
  *
  * @param title pierwsze zdanie
  * @param body drugie zdanie
+ * @param detail wiersz pod zdaniami; `null` bez wiersza
  */
 @Composable
 internal fun Notice(
     @StringRes title: Int,
     @StringRes body: Int,
+    detail: String? = null,
 ) {
     GroupFrame {
         Text(stringResource(title), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(body), style = MaterialTheme.typography.bodyLarge)
+        if (detail != null) Text(detail, style = MaterialTheme.typography.bodyLarge)
     }
 }

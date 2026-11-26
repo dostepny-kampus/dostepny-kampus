@@ -123,8 +123,14 @@ class ReportFormViewModel
             val current = state.value ?: return
             if (current.isSavingOrSaved) return
             when (val check = current.form.check()) {
-                is ReportCheck.Incomplete -> keep(current.copy(errors = check.errors, isSaveAttempted = true))
-                is ReportCheck.Complete -> store(current, check.content)
+                is ReportCheck.Incomplete -> {
+                    val attempts = current.missingAttempts + 1
+                    keep(current.copy(errors = check.errors, isSaveAttempted = true, missingAttempts = attempts))
+                }
+
+                is ReportCheck.Complete -> {
+                    store(current, check.content)
+                }
             }
         }
 

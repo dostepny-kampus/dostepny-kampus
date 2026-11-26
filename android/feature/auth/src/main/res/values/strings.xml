@@ -16,9 +16,6 @@
     <string name="konto_i_praca">Konto i praca</string>
     <string name="konto_twoje_role">Twoje role: %1$s</string>
     <string name="rola_odwiedzajacy">Odwiedzający</string>
-    <string name="rola_zbierajacy">Zbierający</string>
-    <string name="rola_weryfikator">Weryfikator</string>
-    <string name="rola_koordynator">Koordynator</string>
     <string name="konto_twoja_praca">Twoja praca</string>
     <string name="konto_zmierz">Zmierz i zgłoś barierę</string>
     <string name="konto_moje_zgloszenia">Moje zgłoszenia</string>

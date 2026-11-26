@@ -14,14 +14,15 @@ Funkcja: Scenariusz demo w budynku A-1
   6. Eksport GeoJSON otwiera się w QGIS bez ustawiania układu współrzędnych, a TB-1 leży przy wejściu głównym.
   Odcinki tej drogi mają własne scenariusze z testami w plikach pomiar-precyzyjny, synchronizacja, weryfikacja,
   przegladanie-mapy, postep-inwentaryzacji i eksport.
-  Połączenie aplikacji z serwerem na tej drodze sprawdzają testy systemowe na emulatorze, odcinek po odcinku.
+  Całą drogę z serwerem sprawdza jeden test systemowy na emulatorze; piętra i wejścia A-1 ze stanu PWr
+  dostaje baza testu z pliku danych pokazu.
 
   Założenia:
     Zakładając, że Zbierający, Weryfikator, Odwiedzający i Koordynator są zalogowani ze swoimi rolami
     Oraz Zbierający oznaczył wcześniej 4 z 5 pięter budynku A-1 jako obejrzane
     Oraz 5 m od wejścia głównego A-1 jest przyjęte zgłoszenie TB-13 „próg”, które opisuje inną barierę
 
-  # brak pełnego testu (test systemowy całej drogi demo): #3691
+  # brak pełnego testu (DemoPathTest czeka na eksport GeoJSON na serwerze): #4162
   @US6.1 @US6.2 @US7.1 @US9.2 @US10.1 @US2.1 @US11.1 @US13.1 @aplikacja @serwer @do-zrobienia
   Scenariusz: Schody przy wejściu głównym A-1 od pomiaru do eksportu
     Zakładając, że Zbierający przy wejściu głównym A-1 po 30 s uśredniania pozycji potwierdza podpowiedziany budynek A-1

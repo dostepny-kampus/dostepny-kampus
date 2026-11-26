@@ -30,6 +30,7 @@
     <string name="sprawdzenie_wczytujemy">Wczytujemy zgłoszenie…</string>
     <string name="sprawdzenie_zmienione">Autor zmienił zgłoszenie.</string>
     <string name="sprawdzenie_zmienione_sprawdz">Sprawdź nową wersję przed decyzją.</string>
+    <string name="sprawdzenie_zmienione_pola">Zmienione: %1$s</string>
     <string name="sprawdzenie_podobne">Podobne zgłoszenia do 10 m</string>
     <string name="sprawdzenie_brak_podobnych">W promieniu 10 m nie ma podobnych zgłoszeń.</string>
     <string name="sprawdzenie_odleglosc">%1$d m</string>
@@ -46,4 +47,16 @@
     <string name="zaslona_na_dole_po_lewej">na dole po lewej</string>
     <string name="zaslona_na_dole">na dole pośrodku</string>
     <string name="zaslona_na_dole_po_prawej">na dole po prawej</string>
+    <string name="sprawdzenie_czego_dotyczy">Czego dotyczy:</string>
+    <string name="sprawdzenie_ustal_typ">Ustal typ bariery i uciążliwość, aby przyjąć zgłoszenie.</string>
+    <string name="sprawdzenie_miejsce">Miejsce: %1$s</string>
+    <string name="zaslona_naglowek">Zasłoń twarz lub tablicę</string>
+    <string name="zaslona_dotknij">Dotknij zdjęcia w miejscu twarzy albo tablicy.</string>
+    <string name="zaslona_ktora_zaznaczona">Zasłona %1$d z %2$d: zaznaczona</string>
+    <string name="zaslona_wiekszy">Większy</string>
+    <string name="zaslona_mniejszy">Mniejszy</string>
+    <string name="zaslona_usun">Usuń zasłonę</string>
+    <string name="zaslona_zapisz">Zapisz zdjęcie</string>
+    <string name="zaslona_zapisujemy">Zapisujemy zdjęcie…</string>
+    <string name="zaslona_bez_sieci">Zapisanie zdjęcia wymaga internetu. Połącz się z internetem i zapisz ponownie.</string>
 </resources>

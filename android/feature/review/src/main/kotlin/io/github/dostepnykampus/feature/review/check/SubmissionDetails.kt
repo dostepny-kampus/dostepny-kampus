@@ -19,19 +19,22 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.marking.BarrierPhoto
 import io.github.dostepnykampus.core.designsystem.marking.SeverityLabel
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
+import io.github.dostepnykampus.core.designsystem.marking.measuredPlace
+import io.github.dostepnykampus.core.designsystem.marking.nearEntrance
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.core.model.submission.SubmissionKind
+import io.github.dostepnykampus.feature.review.R
 import io.github.dostepnykampus.feature.review.queue.kindRes
 import io.github.dostepnykampus.feature.review.queue.titleRes
 
 /**
  * Dane zgłoszenia na R2 bez pól do edycji.
  *
- * TODO(#3866): miejsce słowami od najbliższego wejścia i dokładność pomiaru.
  * TODO(#3846): zasłanianie twarzy i tablic na zdjęciu.
  * TODO(#4027): rola i pseudonim autora.
  *
- * Wymagania: US10, BR-14, BR-15, NFR-21
+ * Wymagania: US10, BR-14, BR-15, NFR-19, NFR-21
  *
  * @param shown zgłoszenie z adresami zdjęć
  */
@@ -41,6 +44,7 @@ internal fun SubmissionDetails(shown: CheckUiState.Ready) {
     val type = content.barrierType?.let { BarrierType.fromCode(it) }
     GroupFrame {
         Text(stringResource(content.kindRes()), style = MaterialTheme.typography.titleSmall)
+        if (content.kind == SubmissionKind.QUICK) Text(stringResource(R.string.sprawdzenie_czego_dotyczy))
         Text(
             text = stringResource(content.titleRes()),
             modifier = Modifier.semantics { heading() },
@@ -53,6 +57,11 @@ internal fun SubmissionDetails(shown: CheckUiState.Ready) {
             text = barrierPlace(symbol = content.buildingSymbol, name = null, entrance = null, floor = content.floor),
             style = MaterialTheme.typography.bodyLarge,
         )
+        val accuracy = content.accuracyMeters
+        if (accuracy != null) {
+            val near = shown.nearest?.let { nearEntrance(entrance = it.entrance, meters = it.meters) }
+            Text(stringResource(R.string.sprawdzenie_miejsce, measuredPlace(near = near, accuracyMeters = accuracy)))
+        }
         shown.photoUrls.forEach { url ->
             BarrierPhoto(url = url, type = type, modifier = Modifier.fillMaxWidth().padding(top = Odstepy.s))
         }

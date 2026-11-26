@@ -119,8 +119,8 @@ internal fun DescriptionSection(text: String, onEdit: (ReportEdit) -> Unit) {
 
 /** Ten sam tekst braku przy polu, co nad formularzem (PW-10), gdy [isShown]. */
 @Composable
-internal fun FieldError(error: ReportFormError, isShown: Boolean) {
-    if (isShown) ProblemText(text = stringResource(error.messageRes()))
+internal fun FieldError(error: ReportFormError, isShown: Boolean, modifier: Modifier = Modifier) {
+    if (isShown) ProblemText(text = stringResource(error.messageRes()), modifier = modifier)
 }
 
 /**

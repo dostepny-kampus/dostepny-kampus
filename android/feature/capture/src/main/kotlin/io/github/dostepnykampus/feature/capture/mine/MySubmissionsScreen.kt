@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +29,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
+import io.github.dostepnykampus.core.designsystem.card.CardAction
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
@@ -88,7 +89,7 @@ private fun SubmissionList(state: MySubmissionsUiState.Ready, actions: MySubmiss
         verticalArrangement = Arrangement.spacedBy(Odstepy.m),
     ) {
         item {
-            ListTop(list = state.list, onMeasure = actions.onMeasure)
+            ListTop(list = state.list, onMeasure = actions.onMeasure, onSync = actions.onSync)
         }
         item {
             StatusCheckLine(check = state.check, isOnline = state.isOnline, onRetry = onRetry)
@@ -106,13 +107,18 @@ private fun SubmissionList(state: MySubmissionsUiState.Ready, actions: MySubmiss
 }
 
 @Composable
-private fun ListTop(list: MySubmissions, onMeasure: () -> Unit) {
+private fun ListTop(list: MySubmissions, onMeasure: () -> Unit, onSync: (() -> Unit)?) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         if (list.items.isEmpty()) {
             Text(stringResource(R.string.moje_pusty), style = MaterialTheme.typography.bodyLarge)
         }
         if (list.waitingCount > 0) {
-            Text(stringResource(R.string.moje_czeka, list.waitingCount), style = MaterialTheme.typography.titleMedium)
+            val waiting = stringResource(R.string.moje_czeka, list.waitingCount)
+            if (onSync == null) {
+                Text(waiting, style = MaterialTheme.typography.titleMedium)
+            } else {
+                CardAction(text = waiting, onClick = onSync, opensScreen = true)
+            }
         }
         Button(onClick = onMeasure) {
             Text(stringResource(R.string.pomiar_naglowek))
@@ -136,7 +142,7 @@ private fun StatusCheckLine(check: StatusCheck, isOnline: Boolean, onRetry: () -
 
             StatusCheck.FAILED -> {
                 Text(stringResource(R.string.moje_blad_statusow), style = MaterialTheme.typography.bodyMedium)
-                OutlinedButton(onClick = onRetry) { Text(stringResource(R.string.formularz_sprobuj_ponownie)) }
+                OutlinedAction(onClick = onRetry) { Text(stringResource(R.string.formularz_sprobuj_ponownie)) }
             }
 
             StatusCheck.DONE -> {}

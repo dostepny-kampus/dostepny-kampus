@@ -45,7 +45,6 @@ import io.github.dostepnykampus.feature.map.camera.FlightArea
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
-import io.github.dostepnykampus.feature.map.camera.MapTrace
 import io.github.dostepnykampus.feature.map.camera.StyleArea
 import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.camera.belowTop
@@ -54,6 +53,7 @@ import io.github.dostepnykampus.feature.map.camera.styleAreaOf
 import io.github.dostepnykampus.feature.map.camera.styleColors
 import io.github.dostepnykampus.feature.map.camera.toCamera
 import io.github.dostepnykampus.feature.map.camera.toPosition
+import io.github.dostepnykampus.feature.map.camera.traceSection
 import io.github.dostepnykampus.feature.map.campus.BARRIER_BUILDING
 import io.github.dostepnykampus.feature.map.campus.BARRIER_OFFSET
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
@@ -87,6 +87,7 @@ import io.github.dostepnykampus.feature.map.style.showPlanData
 import io.github.dostepnykampus.feature.map.style.showSelection
 import io.github.dostepnykampus.feature.map.style.styleBuilder
 import io.github.dostepnykampus.feature.map.tiles.MapTileHttpEntryPoint
+import io.github.dostepnykampus.feature.map.trace.MapTrace
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonPrimitive
@@ -473,7 +474,7 @@ object MapLibreMapView : CampusMapView {
         override fun move(camera: MapCamera, inset: MapInset, motion: CameraMotion, millis: Long, end: () -> Unit) {
             val update = CameraUpdateFactory.newCameraPosition(camera.toPosition(inset))
             val number = ++moves
-            MapTrace.startMove(motion, number)
+            MapTrace.startMove(section = motion.traceSection, move = number)
             val callback =
                 object : MapLibreMap.CancelableCallback {
                     override fun onCancel() = done()
@@ -481,7 +482,7 @@ object MapLibreMapView : CampusMapView {
                     override fun onFinish() = done()
 
                     private fun done() {
-                        MapTrace.endMove(motion, number)
+                        MapTrace.endMove(section = motion.traceSection, move = number)
                         end()
                     }
                 }

@@ -9,7 +9,7 @@
  *
  * <p>Zadanie: przyjęcie, edycja i status zgłoszenia ze zdjęciami, weryfikacja, eksport.</p>
  *
- * <p>API: pakiet {@code api}; HTTP {@code /submissions} i {@code /export.csv}.</p>
+ * <p>API: {@code api}; HTTP {@code /submissions}, {@code /export.csv}, {@code /export.geojson}.</p>
  *
  * <p>Zależności: {@code building :: api}, {@code identity :: api}, {@code shared}.</p>
  *
@@ -17,7 +17,7 @@
  *
  * <p>Kiedy dodawać tutaj: kod zgłoszenia, jego zdjęcia albo weryfikacji.</p>
  *
- * <p>Wymagania: US4, US7, US8, US10, BR-13</p>
+ * <p>Wymagania: US4, US7, US8, US10, US13.1, US13.3, BR-13</p>
  *
  * @since 0.1.0
  */

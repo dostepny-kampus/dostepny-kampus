@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.feature.review.check
 
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.NearestEntrance
 import io.github.dostepnykampus.core.data.review.ReviewQueue
 import io.github.dostepnykampus.core.data.review.Reviews
 import io.github.dostepnykampus.core.data.server.ServerReply
@@ -12,8 +14,12 @@ import io.github.dostepnykampus.core.model.review.ReviewClaim
 import io.github.dostepnykampus.core.model.review.ReviewDecision
 import io.github.dostepnykampus.core.model.review.ReviewOutcome
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
+import io.github.dostepnykampus.core.model.submission.BarrierType
+import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.Submission
+import io.github.dostepnykampus.core.model.submission.SubmissionField
 import io.github.dostepnykampus.feature.review.queue.queued
+import io.github.dostepnykampus.feature.review.queue.quick
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -68,6 +74,14 @@ class ReviewCheckViewModelTest {
     }
 
     @Test
+    fun findsNearestEntrance() =
+        checkTest(campus = WITH_ENTRANCE) { model ->
+            runCurrent()
+            val nearest = (model.state.value as CheckUiState.Ready).nearest
+            assertEquals("node/7", nearest?.run { entrance.id }, "najbliższe wejście budynku C-13")
+        }
+
+    @Test
     fun acceptReturnsToQueue() =
         checkTest { model ->
             runCurrent()
@@ -103,14 +117,52 @@ class ReviewCheckViewModelTest {
         }
 
     @Test
+    fun quickNeedsTypeAndSeverity() =
+        checkTest(Fake(found = ServerReply.Ok(quick(CHECKED.id)))) { model ->
+            runCurrent()
+            model.pickType(BarrierType.THRESHOLD)
+            model.accept { done++ }
+            runCurrent()
+            assertEquals(CheckNotice.TYPE_MISSING, (model.state.value as CheckUiState.Ready).notice, "komunikat")
+            assertEquals(emptyList<ReviewDecision>(), decisions, "bez uciążliwości nic nie idzie na serwer")
+            model.accept { done++ }
+            runCurrent()
+            val attempts = (model.state.value as CheckUiState.Ready).missingAttempts
+            assertEquals(2, attempts, "każda próba przyjęcia z brakami")
+        }
+
+    @Test
+    fun quickSendsChosenType() =
+        checkTest(Fake(found = ServerReply.Ok(quick(CHECKED.id)))) { model ->
+            runCurrent()
+            model.pickType(BarrierType.THRESHOLD)
+            model.pickSeverity(Severity.BLOCKING)
+            model.accept { done++ }
+            runCurrent()
+            val expected =
+                ReviewDecision.AcceptQuick(
+                    version = 1,
+                    barrierType = BarrierType.THRESHOLD.code,
+                    severity = Severity.BLOCKING.value,
+                )
+            assertEquals(listOf(expected), decisions, "przyjęcie z typem i uciążliwością")
+            assertEquals(1, done, "powrót do R1 po decyzji")
+        }
+
+    @Test
     fun changedShowsNewVersion() {
-        val server = CHECKED.copy(version = 2)
+        val server = CHECKED.copy(version = 2, content = CHECKED.content.copy(severity = 3, description = "Nowy"))
         checkTest(Fake(outcome = ServerReply.Ok(ReviewOutcome.Changed(server)))) { model ->
             runCurrent()
             model.accept { done++ }
             runCurrent()
             val shown = model.state.value as CheckUiState.Ready
             assertEquals(server to CheckNotice.CHANGED, shown.submission to shown.notice, "nowa wersja z komunikatem")
+            assertEquals(
+                listOf(SubmissionField.SEVERITY, SubmissionField.DESCRIPTION),
+                shown.changed,
+                "pola różniące pokazaną wersję od nowej",
+            )
             assertEquals(0, done, "bez powrotu do R1")
         }
     }
@@ -124,11 +176,16 @@ class ReviewCheckViewModelTest {
             assertEquals(CheckNotice.OFFLINE, (model.state.value as CheckUiState.Ready).notice, "decyzja bez sieci")
         }
 
-    private fun checkTest(fake: Fake = Fake(), block: suspend TestScope.(ReviewCheckViewModel) -> Unit) {
+    private fun checkTest(
+        fake: Fake = Fake(),
+        campus: String = NO_ENTRANCES,
+        block: suspend TestScope.(ReviewCheckViewModel) -> Unit,
+    ) {
         val dispatcher = StandardTestDispatcher()
         Dispatchers.setMain(dispatcher)
         try {
-            runTest(dispatcher) { block(ReviewCheckViewModel(CHECKED.id, fake)) }
+            val catalog = BuildingCatalogRepository(dispatcher) { campus }
+            runTest(dispatcher) { block(ReviewCheckViewModel(CHECKED.id, fake, NearestEntrance(catalog))) }
         } finally {
             Dispatchers.resetMain()
         }
@@ -167,5 +224,10 @@ class ReviewCheckViewModelTest {
         const val SERVER_ERROR = 500
         val CHECKED = queued(id = "a", day = 27)
         val NEAR = SimilarSubmission(submission = queued(id = "b", day = 20), distanceMeters = 4.0)
+        const val NO_ENTRANCES = """{"type":"FeatureCollection","attribution":"© plik","features":[]}"""
+        const val WITH_ENTRANCE =
+            """{"type":"FeatureCollection","attribution":"© R2","features":[""" +
+                """{"type":"Feature","properties":{"kind":"entrance","symbols":["C-13"],"osm_id":"node/7",""" +
+                """"ref":"Wejście B"},"geometry":{"type":"Point","coordinates":[17.06,51.1]}}]}"""
     }
 }
