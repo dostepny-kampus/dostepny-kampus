@@ -85,6 +85,21 @@ class AcceptedBarriersCopyTest {
             )
         }
 
+    /** Wiersz: zmiana przyjęta zna zastąpione zgłoszenie z odpowiedzi i z kopii. Wymagania: BR-18, BR-23 */
+    @Test
+    fun keepsReplacedId() =
+        runBlocking {
+            val change = precise(type = null, symbol = "A-1").copy(replacesSubmissionId = "z1")
+            val online = source { ServerReply.Ok(listOf(submission(id = "z2", content = change))) }.barriers()
+            val offline = source { OFFLINE }.barriers()
+
+            assertEquals(
+                listOf("z1", "z1"),
+                (online + offline).map(AcceptedBarrier::replacesSubmissionId),
+                "zastąpione zgłoszenie z serwera i z kopii",
+            )
+        }
+
     /** Wiersz: bez kopii i przy zepsutej kopii brak odpowiedzi serwera daje pustą listę. Wymagania: NFR-11 */
     @Test
     fun givesEmptyWithoutCopy() =
