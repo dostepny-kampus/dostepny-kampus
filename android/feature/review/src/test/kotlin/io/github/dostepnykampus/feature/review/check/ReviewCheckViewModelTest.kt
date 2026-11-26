@@ -148,6 +148,8 @@ class ReviewCheckViewModelTest {
 
         override suspend fun similar(submissionId: String): ServerReply<List<SimilarSubmission>> = similar
 
+        override suspend fun photo(submissionId: String, photoId: String): ServerReply<ByteArray> = ServerReply.Missing
+
         override suspend fun replacePhoto(submissionId: String, photoId: String, jpeg: ByteArray): ServerReply<Unit> =
             ServerReply.Missing
 
