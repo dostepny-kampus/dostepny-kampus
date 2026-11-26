@@ -10,6 +10,8 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasurePolicy
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.ParentDataModifierNode
@@ -65,41 +67,67 @@ private data class Action(val measurable: Measurable, val placeable: Placeable?)
 }
 
 /**
- * Układ przycisków w wierszach z odstępem [CeleDotyku.odstep]. Przyciski bez wagi mierzy w całej szerokości;
- * przycisk zaczyna nowy wiersz, gdy z nim wiersz byłby szerszy od układu albo udział któregoś przycisku z wagą
- * byłby węższy niż jego najmniejsza szerokość własna, czyli najdłuższe słowo napisu.
+ * Układ przycisków w wierszach z odstępem [CeleDotyku.odstep]. Jedyny przycisk dostaje całą szerokość układu;
+ * z wielu przyciski bez wagi mierzy w całej szerokości, a przycisk zaczyna nowy wiersz, gdy z nim wiersz byłby
+ * szerszy od układu albo udział któregoś przycisku z wagą byłby węższy niż najdłuższe słowo napisu.
  */
 internal val pinnedActionsPolicy: MeasurePolicy =
     MeasurePolicy { measurables, constraints ->
-        val gap = CeleDotyku.odstep.roundToPx()
-        val width = constraints.maxWidth
-        val loose = constraints.copy(minWidth = 0, minHeight = 0)
-        val lines = mutableListOf<List<Action>>()
-        measurables.forEach { measurable ->
-            val isWeighted = measurable.parentData is WeightNode
-            val action = Action(measurable, if (isWeighted) null else measurable.measure(loose))
-            val line = lines.lastOrNull()
-            if (line != null && fitsInOneRow(line + action, width, gap)) {
-                lines[lines.lastIndex] = line + action
-            } else {
-                lines += listOf(action)
-            }
-        }
-        val placed = lines.map { line -> measureRow(line, width, gap) }
-        val heights = placed.map { line -> line.maxOf { it.height } }
-        val height = heights.sum() + gap * (lines.size - 1).coerceAtLeast(0)
-        layout(width, height.coerceIn(minimumValue = constraints.minHeight, maximumValue = constraints.maxHeight)) {
-            var y = 0
-            placed.forEachIndexed { row, line ->
-                var x = 0
-                line.forEach { placeable ->
-                    placeable.placeRelative(x, y)
-                    x += placeable.width + gap
-                }
-                y += heights[row] + gap
-            }
+        if (measurables.size == 1) {
+            layoutSole(measurables.single(), constraints)
+        } else {
+            layoutRows(measurables, constraints)
         }
     }
+
+private fun MeasureScope.layoutSole(measurable: Measurable, constraints: Constraints): MeasureResult {
+    val width = constraints.maxWidth
+    val soleConstraints =
+        if (constraints.hasBoundedWidth) {
+            constraints.copy(minWidth = width, minHeight = 0)
+        } else {
+            constraints.copy(minWidth = 0, minHeight = 0)
+        }
+    val sole = measurable.measure(soleConstraints)
+    val height =
+        sole.height.coerceIn(
+            minimumValue = constraints.minHeight,
+            maximumValue = constraints.maxHeight,
+        )
+    return layout(width, height) { sole.placeRelative(0, 0) }
+}
+
+private fun MeasureScope.layoutRows(measurables: List<Measurable>, constraints: Constraints): MeasureResult {
+    val gap = CeleDotyku.odstep.roundToPx()
+    val width = constraints.maxWidth
+    val loose = constraints.copy(minWidth = 0, minHeight = 0)
+    val lines = mutableListOf<List<Action>>()
+    measurables.forEach { measurable ->
+        val isWeighted = measurable.parentData is WeightNode
+        val action = Action(measurable, if (isWeighted) null else measurable.measure(loose))
+        val line = lines.lastOrNull()
+        if (line != null && fitsInOneRow(line + action, width, gap)) {
+            lines[lines.lastIndex] = line + action
+        } else {
+            lines += listOf(action)
+        }
+    }
+    val placed = lines.map { line -> measureRow(line, width, gap) }
+    val heights = placed.map { line -> line.maxOf { it.height } }
+    val height = heights.sum() + gap * (lines.size - 1).coerceAtLeast(0)
+    val clampedHeight = height.coerceIn(minimumValue = constraints.minHeight, maximumValue = constraints.maxHeight)
+    return layout(width, clampedHeight) {
+        var y = 0
+        placed.forEachIndexed { row, line ->
+            var x = 0
+            line.forEach { placeable ->
+                placeable.placeRelative(x, y)
+                x += placeable.width + gap
+            }
+            y += heights[row] + gap
+        }
+    }
+}
 
 private fun widthLeftForWeights(line: List<Action>, width: Int, gap: Int): Int =
     width - gap * (line.size - 1) - line.sumOf { it.placeable?.width ?: 0 }
