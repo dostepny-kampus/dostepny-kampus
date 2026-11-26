@@ -23,6 +23,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
 import io.github.dostepnykampus.app.navigation.AppNavigator
+import io.github.dostepnykampus.app.navigation.AppScreen
 import io.github.dostepnykampus.app.navigation.BuildingCard
 import io.github.dostepnykampus.app.navigation.reportSaved
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
@@ -202,7 +203,7 @@ class EntranceMarkingPathTest {
             }
 
             else -> {
-                Unit
+                AppScreen(route)
             }
         }
     }
