@@ -21,6 +21,7 @@ import androidx.compose.ui.test.isHeading
 import androidx.compose.ui.test.isNotSelected
 import androidx.compose.ui.test.isSelected
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -28,6 +29,7 @@ import androidx.compose.ui.test.performTextInput
 import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.designsystem.IMPORTANT_SIGN_TAG
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceDistance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
@@ -291,6 +293,8 @@ class ReportScreenTest {
 
         val text = "Brakuje typu bariery. Uzupełnij to pole, aby zapisać."
         assertEquals(2, compose.onAllNodes(hasText(text)).fetchSemanticsNodes().size)
+        val signs = compose.onAllNodesWithTag(IMPORTANT_SIGN_TAG, useUnmergedTree = true).fetchSemanticsNodes()
+        assertEquals("znak „!” przy polu", 1, signs.size)
     }
 
     @Test
