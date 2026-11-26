@@ -66,6 +66,7 @@ internal fun AppNavigator.MySubmissions() {
             onConflict = { openConflict(it) },
             onOpenMarking = { openMarking(it) },
             onOpenRemoval = { openEdit(it, isBarrierRemoved = true) },
+            onResendChange = { openEdit(it, isResend = true) },
             onSync = { openSync() },
         )
     MySubmissionsScreen(actions)

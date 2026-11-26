@@ -31,13 +31,15 @@ fun AppNavigator.mySubmissions() {
 }
 
 /**
- * C3 → poprawka: „Otwórz” przy zgłoszeniu z telefonu otwiera C2, a przy zgłoszeniu „bariera usunięta”
- * ([isBarrierRemoved]) C7; poza C3 nic nie robi.
+ * C3 → poprawka: „Otwórz” przy zgłoszeniu z telefonu otwiera C2, przy zgłoszeniu „bariera usunięta”
+ * ([isBarrierRemoved]) C7, a „Wyślij ponownie” przy nieaktualnej zmianie bariery ([isResend]) C2 nowej zmiany
+ * bieżącego przyjętego zgłoszenia; poza C3 nic nie robi.
  *
- * Wymagania: US8.3, US8.4
+ * Wymagania: US8.3, US8.4, BR-23
  */
-fun AppNavigator.openEdit(submissionId: String, isBarrierRemoved: Boolean = false) {
-    val route = if (isBarrierRemoved) RemovedEditRoute(submissionId) else ReportEditRoute(submissionId)
+fun AppNavigator.openEdit(submissionId: String, isBarrierRemoved: Boolean = false, isResend: Boolean = false) {
+    val route =
+        if (isBarrierRemoved) RemovedEditRoute(submissionId) else ReportEditRoute(submissionId, isResend = isResend)
     if (current == MySubmissionsRoute) leaving { add(route) }
 }
 

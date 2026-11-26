@@ -10,7 +10,7 @@ import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
 /**
  * Czynności ekranu C3.
  *
- * Wymagania: US8.3, US9.3, US17.2
+ * Wymagania: US8.3, US9.3, US17.2, BR-23
  *
  * @property onBack „Wstecz”
  * @property onMeasure „Zmierz i zgłoś barierę”: C1 (PW-12)
@@ -21,6 +21,8 @@ import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
  *   ukrywa przyciski przy zmianach oznaczenia
  * @property onOpenRemoval „Otwórz” przy zgłoszeniu „bariera usunięta”: C7 z jego identyfikatorem; `null` ukrywa
  *   przycisk przy takich zgłoszeniach
+ * @property onResendChange „Wyślij ponownie” przy nieaktualnej zmianie bariery: C2 z jej treścią jako nowa zmiana
+ *   bieżącego przyjętego zgłoszenia; `null` ukrywa przycisk przy takich zmianach
  * @property onSync „Czeka na wysłanie: N”: C4 bez konfliktu; `null` zostawia sam napis
  */
 data class MySubmissionsActions(
@@ -30,5 +32,6 @@ data class MySubmissionsActions(
     val onConflict: ((id: String) -> Unit)? = null,
     val onOpenMarking: ((route: MarkingRoute) -> Unit)? = null,
     val onOpenRemoval: ((id: String) -> Unit)? = null,
+    val onResendChange: ((id: String) -> Unit)? = null,
     val onSync: (() -> Unit)? = null,
 )

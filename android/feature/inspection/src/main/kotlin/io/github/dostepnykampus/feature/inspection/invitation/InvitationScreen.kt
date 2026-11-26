@@ -34,18 +34,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.dostepnykampus.core.designsystem.ImportantSign
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.ProblemText
 import io.github.dostepnykampus.core.designsystem.StaffProblem
 import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
 import io.github.dostepnykampus.core.designsystem.Typografia
@@ -189,7 +187,7 @@ private fun Message(state: InvitationUiState) {
 private fun EmailField(email: String, isWrong: Boolean, onEdit: (String) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         SectionTitle(R.string.zaproszenie_adres)
-        if (isWrong) ProblemText(R.string.zaproszenie_adres_niepelny)
+        if (isWrong) ProblemText(stringResource(R.string.zaproszenie_adres_niepelny))
         OutlinedTextField(
             value = email,
             onValueChange = onEdit,
@@ -205,7 +203,7 @@ private fun EmailField(email: String, isWrong: Boolean, onEdit: (String) -> Unit
 private fun Roles(chosen: StaffRole?, isMissing: Boolean, onChoose: (StaffRole) -> Unit) {
     Column(modifier = Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         SectionTitle(R.string.zaproszenie_rola)
-        if (isMissing) ProblemText(R.string.zaproszenie_wybierz_role)
+        if (isMissing) ProblemText(stringResource(R.string.zaproszenie_wybierz_role))
         StaffRole.entries.forEach { role ->
             RoleOption(role = role, isChosen = role == chosen, isMissing = isMissing) { onChoose(role) }
         }
@@ -221,22 +219,6 @@ private fun SectionTitle(
         modifier = Modifier.semantics { heading() },
         style = MaterialTheme.typography.titleLarge,
     )
-}
-
-@Composable
-private fun ProblemText(
-    @StringRes text: Int,
-) {
-    val color = MaterialTheme.colorScheme.error
-    Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        ImportantSign(tint = color)
-        Text(
-            text = stringResource(text),
-            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive },
-            color = color,
-            fontWeight = Typografia.wyroznienieWaga,
-        )
-    }
 }
 
 @Composable

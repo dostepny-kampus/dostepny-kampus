@@ -13,6 +13,8 @@ dk:
     public-per-minute: ${DK_PUBLIC_RATE_LIMIT:60}
     writes-per-minute: ${DK_WRITES_RATE_LIMIT:120}
     exempt: ${DK_RATE_LIMIT_UNLIMITED:}
+  sync:
+    cursor-margin: 2m
 logging:
   level:
     io.github.dostepnykampus: ${DK_LOG_LEVEL:INFO}
@@ -50,3 +52,5 @@ spring:
         jwt:
           audiences: ${DK_AUTH_AUDIENCE:dostepny-kampus-api}
           issuer-uri: ${DK_AUTH_ISSUER:http://localhost:8180/realms/dostepny-kampus}
+  transaction:
+    default-timeout: 30s

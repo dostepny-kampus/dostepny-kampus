@@ -11,17 +11,17 @@
  *
  * <p>API: brak typów dla innych modułów; HTTP {@code /sync/pull}.</p>
  *
- * <p>Zależności: {@code inspection :: api}, {@code shared}.</p>
+ * <p>Zależności: {@code barrier :: api}, {@code inspection :: api}, {@code shared}.</p>
  *
  * <p>Nie robi: nie przechowuje danych i nie zna ich tabel; zmiany daje moduł właściciel.</p>
  *
  * <p>Kiedy dodawać tutaj: składanie pobrania zmian; reguły danych zostają u właściciela.</p>
  *
- * <p>Wymagania: US15.1, US15.2, BR-20</p>
+ * <p>Wymagania: US15.1, US15.2, US8.1, BR-20</p>
  *
  * @since 0.1.0
  */
-@ApplicationModule(allowedDependencies = {"inspection :: api", "shared"})
+@ApplicationModule(allowedDependencies = {"barrier :: api", "inspection :: api", "shared"})
 @NullMarked
 package io.github.dostepnykampus.sync;
 
