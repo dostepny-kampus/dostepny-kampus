@@ -13,8 +13,7 @@ Funkcja: Weryfikacja zgłoszeń
     Wtedy pierwsze jest zgłoszenie z 26.10.2026, a drugie z 27.10.2026
     Oraz przy każdym widzi rodzaj zgłoszenia, budynek i datę wysłania
 
-  # brak ekranu przeglądu Weryfikatora: #3687
-  @US10.8 @aplikacja @do-zrobienia
+  @US10.8 @aplikacja
   Szablon scenariusza: Przy zmianie Weryfikator widzi, czym różni się od poprzedniego stanu
     Zakładając, że w kolejce jest <zmiana>
     Jeżeli pierwszy Weryfikator weźmie tę zmianę
