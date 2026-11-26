@@ -9,8 +9,7 @@ Funkcja: Oznaczenie wejścia
     # Dane testowe, a nie stan faktyczny budynku B-8.
     Oraz w danych testowych wejście boczne B-8 nie ma informacji o dostępności ani w danych PWr, ani w OpenStreetMap
 
-  # kroki serwera: #3172
-  @US14.1 @aplikacja @serwer @do-zrobienia
+  @US14.1 @aplikacja @serwer
   Szablon scenariusza: Bez roli Zbierającego zmiany oznaczenia wejścia nie da się złożyć
     Zakładając, że osoba jest zalogowana tylko z rolą <rola>
     Jeżeli przejrzy dostępne ekrany aplikacji
@@ -112,8 +111,7 @@ Funkcja: Oznaczenie wejścia
       Wtedy aplikacja wskazuje brak zdjęcia i nie zapisuje zgłoszenia
       Ale nie pyta o typ bariery ani uciążliwość
 
-    # kroki serwera: #3172
-    @US17.2 @US17.3 @serwer @do-zrobienia
+    @US17.2 @US17.3 @serwer
     Scenariusz: Przyjęta zmiana zmienia oznaczenie, datę i źródło na karcie budynku
       Zakładając, że wejście boczne B-8 ma oznaczenie „brak danych” ze źródłem „import”
       Oraz Zbierający wysłał zmianę oznaczenia tego wejścia na „niedostępne” z nowym zdjęciem
@@ -123,8 +121,7 @@ Funkcja: Oznaczenie wejścia
       Oraz przy tym wejściu widnieje data oznaczenia 12.11.2026 i źródło „obchód”
       Ale zgłoszenie zmiany oznaczenia nie jest widoczne na mapie ani w eksporcie
 
-    # kroki serwera: #3172
-    @US17.2 @US17.3 @serwer @do-zrobienia
+    @US17.2 @US17.3 @serwer
     Scenariusz: Zmiana może potwierdzić dotychczasowe oznaczenie
       Zakładając, że wejście główne A-1 ma oznaczenie „niedostępne” z datą 3.11.2026 i źródłem „import”
       Oraz Zbierający wysłał zmianę oznaczenia tego wejścia na „niedostępne” z nowym zdjęciem
@@ -132,8 +129,7 @@ Funkcja: Oznaczenie wejścia
       Wtedy wejście główne A-1 nadal ma oznaczenie „niedostępne”
       Oraz przy tym wejściu widnieje data oznaczenia 12.11.2026 i źródło „obchód”
 
-    # kroki serwera: #3172
-    @US17.2 @BR-16 @serwer @do-zrobienia
+    @US17.2 @BR-16 @serwer
     Scenariusz: Odrzucona zmiana nie zmienia oznaczenia wejścia
       Zakładając, że inne wejście A-1 ma oznaczenie „dostępne” z datą 3.11.2026 i źródłem „import”
       Oraz Zbierający wysłał zmianę oznaczenia tego wejścia na „niedostępne” ze zdjęciem innego miejsca
@@ -142,8 +138,7 @@ Funkcja: Oznaczenie wejścia
       Oraz inne wejście A-1 nadal ma oznaczenie „dostępne” z datą 3.11.2026 i źródłem „import”
       Oraz Zbierający widzi powód odrzucenia na liście swoich zgłoszeń
 
-    # kroki serwera: #3172
-    @US17.2 @US10.5 @BR-4 @serwer @do-zrobienia
+    @US17.2 @US10.5 @BR-4 @serwer
     Scenariusz: Weryfikator nie sprawdza zmiany oznaczenia, którą sam złożył
       Zakładając, że pierwszy Weryfikator ma też rolę Zbierającego
       Oraz jako Zbierający wysłał zmianę oznaczenia wejścia bocznego B-8 na „dostępne”
@@ -152,8 +147,7 @@ Funkcja: Oznaczenie wejścia
       Oraz próba przyjęcia tej zmiany przez pierwszego Weryfikatora z pominięciem aplikacji jest odrzucona
       Ale drugi Weryfikator widzi tę zmianę w swojej kolejce
 
-    # kroki serwera: #3172
-    @US17.2 @BR-23 @serwer @do-zrobienia
+    @US17.2 @BR-23 @serwer
     Scenariusz: Po przyjęciu jednej zmiany wejścia drugą czekającą odrzuca się jako „nieaktualne”
       Zakładając, że Zbierający wysłał zmianę oznaczenia wejścia bocznego B-8 na „dostępne”
       Oraz inny Zbierający wysłał zmianę oznaczenia tego wejścia na „niedostępne”
