@@ -32,6 +32,7 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.ImportantSign
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.ProblemText
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
@@ -119,13 +120,7 @@ internal fun DescriptionSection(text: String, onEdit: (ReportEdit) -> Unit) {
 /** Ten sam tekst braku przy polu, co nad formularzem (PW-10), gdy [isShown]. */
 @Composable
 internal fun FieldError(error: ReportFormError, isShown: Boolean) {
-    if (isShown) {
-        Text(
-            text = stringResource(error.messageRes()),
-            color = MaterialTheme.colorScheme.error,
-            fontWeight = Typografia.wyroznienieWaga,
-        )
-    }
+    if (isShown) ProblemText(text = stringResource(error.messageRes()))
 }
 
 /**
