@@ -57,6 +57,7 @@ enum class ReportStage {
  * @property errors braki pokazywane dopiero po pierwszym „Zapisz”
  * @property stage etap ekranu
  * @property isSaveAttempted czy „Zapisz” było już naciśnięte; od tej chwili braki liczą się na bieżąco
+ * @property missingAttempts liczba „Zapisz” z brakami; każde prowadzi do pierwszego brakującego pola
  */
 data class ReportUiState(
     val form: ReportForm,
@@ -64,6 +65,7 @@ data class ReportUiState(
     val errors: List<ReportFormError> = emptyList(),
     val stage: ReportStage = ReportStage.EDITING,
     val isSaveAttempted: Boolean = false,
+    val missingAttempts: Int = 0,
 )
 
 /** Zmiana jednego pola na ekranie C2. */

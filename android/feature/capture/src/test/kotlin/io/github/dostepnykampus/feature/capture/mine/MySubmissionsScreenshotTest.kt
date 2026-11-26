@@ -36,7 +36,7 @@ class MySubmissionsScreenshotTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private fun capture() {
-        val actions = MySubmissionsActions(onBack = {}, onMeasure = {}, onOpen = {})
+        val actions = MySubmissionsActions(onBack = {}, onMeasure = {}, onOpen = {}, onSync = {})
         compose.setContent {
             DostepnyKampusTheme {
                 MySubmissionsContent(state = MySubmissionsUiState.Ready(MySubmissions(ITEMS)), actions = actions)

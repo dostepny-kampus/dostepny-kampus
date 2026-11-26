@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +20,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.designsystem.marking.measuredPlace
 import io.github.dostepnykampus.core.designsystem.marking.nearEntrance
 import io.github.dostepnykampus.feature.capture.R
@@ -41,7 +41,7 @@ internal fun PlaceCard(place: ReportPlace, onChangePlace: () -> Unit) {
                 fontWeight = Typografia.wyroznienieWaga,
             )
             Text(placeInWords(place))
-            OutlinedButton(onClick = onChangePlace, modifier = Modifier.fillMaxWidth()) {
+            OutlinedAction(onClick = onChangePlace, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.formularz_zmien_miejsce))
             }
         }
