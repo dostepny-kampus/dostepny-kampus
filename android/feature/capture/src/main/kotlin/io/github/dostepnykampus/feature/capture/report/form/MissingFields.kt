@@ -46,15 +46,15 @@ internal class MissingFields {
  *
  * Wymagania: NFR-15, NFR-18
  *
- * @param errors braki w kolejności pól na ekranie
+ * @param firstError pierwszy brak w kolejności pól na ekranie albo `null`
  * @param attempts liczba prób zapisu z brakami
  */
 @Composable
-internal fun rememberMissingFields(errors: List<ReportFormError>, attempts: Int): MissingFields {
+internal fun rememberMissingFields(firstError: ReportFormError?, attempts: Int): MissingFields {
     val fields = remember { MissingFields() }
-    val shown by rememberUpdatedState(errors)
+    val target by rememberUpdatedState(firstError)
     LaunchedEffect(attempts) {
-        if (attempts > 0) shown.firstOrNull()?.let { fields.reveal(it) }
+        if (attempts > 0) target?.let { fields.reveal(it) }
     }
     return fields
 }
@@ -65,14 +65,14 @@ internal fun rememberMissingFields(errors: List<ReportFormError>, attempts: Int)
  * Wymagania: NFR-15, NFR-18
  *
  * @param error brak, który dotyczy tego pola
- * @param errors braki pokazane na ekranie
+ * @param isShown czy komunikat tego braku jest teraz pokazany
  * @param fields cele przewinięcia i fokusu
  * @param content pole formularza
  */
 @Composable
 internal fun MissingField(
     error: ReportFormError,
-    errors: List<ReportFormError>,
+    isShown: Boolean,
     fields: MissingFields,
     content: @Composable () -> Unit,
 ) {
@@ -83,7 +83,7 @@ internal fun MissingField(
         content()
         FieldError(
             error = error,
-            isShown = error in errors,
+            isShown = isShown,
             modifier = Modifier.focusRequester(fields.focus(error)).focusable(),
         )
     }

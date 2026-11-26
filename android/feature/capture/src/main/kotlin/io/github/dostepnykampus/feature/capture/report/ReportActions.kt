@@ -85,7 +85,7 @@ fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifi
     val isEdit = state.form.replacesSubmissionId != null || state.form.editedSubmission != null
     val title = stringResource(if (isEdit) R.string.formularz_naglowek_edycja else R.string.formularz_naglowek)
     val errors = state.errors
-    val fields = rememberMissingFields(errors = errors, attempts = state.missingAttempts)
+    val fields = rememberMissingFields(firstError = errors.firstOrNull(), attempts = state.missingAttempts)
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
             BackHeader(title = title, onBack = actions.onBack)
@@ -97,7 +97,7 @@ fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifi
                 ReportBanner(state = state, onRetry = actions.onSave)
                 PlaceCard(place = state.form.place, onChangePlace = actions.onChangePlace)
                 state.form.place.buildingSymbol?.let { building ->
-                    MissingField(error = MISSING_FLOOR, errors = errors, fields = fields) {
+                    MissingField(error = MISSING_FLOOR, isShown = MISSING_FLOOR in errors, fields = fields) {
                         val floors = state.form.place.floors
                         if (floors.items.isEmpty()) {
                             FloorSection(building = building, floor = state.form.floor, onEdit = actions.onEdit)
@@ -106,24 +106,24 @@ fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifi
                         }
                     }
                 }
-                MissingField(error = MISSING_BARRIER_TYPE, errors = errors, fields = fields) {
+                MissingField(error = MISSING_BARRIER_TYPE, isShown = MISSING_BARRIER_TYPE in errors, fields = fields) {
                     BarrierTypeField(
                         type = state.form.barrierType,
                         onPick = { actions.onEdit(ReportEdit.Type(it)) },
                         isError = MISSING_BARRIER_TYPE in errors,
                     )
                 }
-                MissingField(error = MISSING_SEVERITY, errors = errors, fields = fields) {
+                MissingField(error = MISSING_SEVERITY, isShown = MISSING_SEVERITY in errors, fields = fields) {
                     SeverityChoice(
                         severity = state.form.severity,
                         onPick = { actions.onEdit(ReportEdit.Rating(it)) },
                         isError = MISSING_SEVERITY in errors,
                     )
                 }
-                MissingField(error = MISSING_PHOTO, errors = errors, fields = fields) {
+                MissingField(error = MISSING_PHOTO, isShown = MISSING_PHOTO in errors, fields = fields) {
                     PhotoSection(photos = PhotoPaths(state.photos.map { it.path }), camera = actions.camera)
                 }
-                MissingField(error = MISSING_DESCRIPTION, errors = errors, fields = fields) {
+                MissingField(error = MISSING_DESCRIPTION, isShown = MISSING_DESCRIPTION in errors, fields = fields) {
                     DescriptionSection(text = state.form.description, onEdit = actions.onEdit)
                 }
             }
