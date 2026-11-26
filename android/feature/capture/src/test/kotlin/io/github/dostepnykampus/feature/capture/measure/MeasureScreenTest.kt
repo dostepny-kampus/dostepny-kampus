@@ -130,11 +130,13 @@ class MeasureScreenTest {
     @Test
     fun opensLocationSettingsWhenOff() {
         show(MeasureUiState.LocationOff)
-        compose.onNodeWithText("Lokalizacja w telefonie jest wyłączona", substring = true).assertIsDisplayed()
+        compose
+            .onNodeWithText("Lokalizacja w telefonie jest wyłączona. Włącz ją, aby zapisać miejsce bariery.")
+            .assertIsDisplayed()
         compose.onNodeWithText("Dalej").assertDoesNotExist()
         compose.onNodeWithText("Otwórz ustawienia").performClick()
         val opened = shadowOf(compose.activity).nextStartedActivity
-        assertEquals(Settings.ACTION_LOCATION_SOURCE_SETTINGS, opened.action)
+        assertEquals("otwiera ustawienia lokalizacji", Settings.ACTION_LOCATION_SOURCE_SETTINGS, opened.action)
     }
 
     /** Wiersz: C1, TalkBack ogłasza szukanie i koniec pomiaru, a odliczanie zostaje ciche. Wymagania: NFR-18 */
