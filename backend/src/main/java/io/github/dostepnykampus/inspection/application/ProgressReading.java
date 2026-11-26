@@ -107,7 +107,8 @@ public class ProgressReading {
                 building.floors().size(),
                 Math.toIntExact(
                     markers.stream().map(ActiveMarker::place)
-                        .filter(MarkerPlace.Floor.class::isInstance).map(MarkerPlace.Floor.class::cast)
+                        .filter(MarkerPlace.Floor.class::isInstance)
+                        .map(MarkerPlace.Floor.class::cast)
                         .map(MarkerPlace.Floor::floor).filter(building.floors()::contains)
                         .distinct().count()
                 )
