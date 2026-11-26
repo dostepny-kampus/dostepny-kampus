@@ -22,6 +22,7 @@ System_Boundary("DostepnyKampusApplication_boundary", "DostepnyKampusApplication
     Component(DostepnyKampusApplication.DostepnyKampusApplication.Barrier, "Barrier", $techn="Module", $descr="", $tags="", $link="")
     Component(DostepnyKampusApplication.DostepnyKampusApplication.Identity, "Identity", $techn="Module", $descr="", $tags="", $link="")
     Component(DostepnyKampusApplication.DostepnyKampusApplication.Inspection, "Inspection", $techn="Module", $descr="", $tags="", $link="")
+    Component(DostepnyKampusApplication.DostepnyKampusApplication.Sync, "Sync", $techn="Module", $descr="", $tags="", $link="")
   }
 
 }
@@ -32,6 +33,8 @@ Rel(DostepnyKampusApplication.DostepnyKampusApplication.Barrier, DostepnyKampusA
 Rel(DostepnyKampusApplication.DostepnyKampusApplication.Identity, DostepnyKampusApplication.DostepnyKampusApplication.Shared, "depends on", $techn="", $tags="", $link="")
 Rel(DostepnyKampusApplication.DostepnyKampusApplication.Inspection, DostepnyKampusApplication.DostepnyKampusApplication.Shared, "depends on", $techn="", $tags="", $link="")
 Rel(DostepnyKampusApplication.DostepnyKampusApplication.Inspection, DostepnyKampusApplication.DostepnyKampusApplication.Building, "uses", $techn="", $tags="", $link="")
+Rel(DostepnyKampusApplication.DostepnyKampusApplication.Sync, DostepnyKampusApplication.DostepnyKampusApplication.Shared, "depends on", $techn="", $tags="", $link="")
+Rel(DostepnyKampusApplication.DostepnyKampusApplication.Sync, DostepnyKampusApplication.DostepnyKampusApplication.Inspection, "uses", $techn="", $tags="", $link="")
 
 SHOW_LEGEND(true)
 hide stereotypes

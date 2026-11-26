@@ -9,10 +9,8 @@ import io.github.dostepnykampus.building.api.KnownBuildings;
 import io.github.dostepnykampus.inspection.domain.MarkerPlace;
 import io.github.dostepnykampus.inspection.domain.MarkerRepository;
 import io.github.dostepnykampus.inspection.domain.NewMarker;
-import io.github.dostepnykampus.inspection.domain.SyncedMarker;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import io.github.dostepnykampus.shared.error.MissingResource;
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -111,20 +109,6 @@ public class MarkerService {
             }
             this.repository.revoke(id, actor);
         }
-    }
-
-    /**
-     * Znaczniki wszystkich Zbierających zmienione od {@code since} włącznie, także cofnięte.
-     *
-     * <p>Wymagania: US15.1, US15.2, US11.3</p>
-     *
-     * @param since Chwila, od której liczą się zmiany
-     * @param reader Identyfikator konta z tokenu
-     * @return Znaczniki z oznaczeniem własnych
-     */
-    @Transactional(readOnly = true)
-    public List<SyncedMarker> changedSince(final Instant since, final String reader) {
-        return this.repository.changedSince(since, reader);
     }
 
     private boolean exists(final MarkerPlace place) {
