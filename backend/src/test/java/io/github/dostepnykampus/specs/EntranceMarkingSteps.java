@@ -53,13 +53,14 @@ public final class EntranceMarkingSteps {
     /** Zapis dnia w scenariuszach. */
     private static final DateTimeFormatter DAY = DateTimeFormatter.ofPattern("d.MM.yyyy");
 
-    /** Wartości API, wejście i numer konta dla słów ze scenariuszy. */
+    /** Wartości API, wejście i konta dla słów ze scenariuszy. */
     private static final Map<String, String> API = Map.ofEntries(
         Map.entry("dostępne", "ACCESSIBLE"), Map.entry("niedostępne", "INACCESSIBLE"),
         Map.entry("brak danych", "NO_DATA"), Map.entry("import", "IMPORT"),
         Map.entry("obchód", "WALKTHROUGH"), Map.entry("archiwalne", "ARCHIVED"),
         Map.entry("odrzucone", "REJECTED"), Map.entry("pierwszy", "1"), Map.entry("drugi", "2"),
-        Map.entry("wejście", "spec-wejscie-oznaczenie")
+        Map.entry("wejście", "spec-wejscie-oznaczenie"),
+        Map.entry("", "COLLECTOR.c1"), Map.entry("jako ", "COLLECTOR+VERIFIER")
     );
 
     /** Klient żądań HTTP do aplikacji. */
@@ -100,9 +101,7 @@ public final class EntranceMarkingSteps {
     }
 
     @Given("^(\\S+ \\S+ \\S+) ma oznaczenie „([^”]+)”(?: z datą (\\S+) i| ze) źródłem „import”$")
-    void entranceWithSource(
-        final String target, final String marking, final @Nullable String day
-    ) {
+    void entranceWithSource(final String target, final String marking, final @Nullable String day) {
         this.place(target, marking, Objects.requireNonNullElse(day, "1.11.2026"));
     }
 
@@ -115,8 +114,10 @@ public final class EntranceMarkingSteps {
     void sentSideChange(final @Nullable String own, final String symbol, final String marking)
         throws Exception {
         this.place("wejście boczne ".concat(symbol), "brak danych", "1.11.2026");
-        final String token = own == null ? "COLLECTOR.c1" : "COLLECTOR+VERIFIER";
-        this.submit(EntranceMarkingSteps.id("pierwszy"), token, marking);
+        this.submit(
+            EntranceMarkingSteps.id("pierwszy"),
+            EntranceMarkingSteps.api(Objects.requireNonNullElse(own, "")), marking
+        );
     }
 
     @Given("^inny Zbierający wysłał zmianę oznaczenia tego wejścia na „([^”]+)”$")
