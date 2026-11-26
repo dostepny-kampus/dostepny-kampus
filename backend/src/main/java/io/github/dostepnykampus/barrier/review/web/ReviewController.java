@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
  * i decyzja Weryfikatora. Reguły sprawdzają usługi; kontroler zamienia żądanie na polecenie,
  * a wynik albo wyjątek na odpowiedź.
  *
- * <p>Wymagania: US10.1, US10.4, US10.5, US10.7, BR-3, BR-4, BR-7, BR-8, BR-11, BR-13, BR-16</p>
+ * <p>Wymagania: US10.1, US10.3, US10.4, US10.5, US10.7, BR-3, BR-4, BR-5, BR-7, BR-11, BR-16</p>
  *
  * @since 0.1.0
  */
@@ -38,7 +38,7 @@ public final class ReviewController {
     /** Wzięcie zgłoszenia i zapis decyzji. */
     private final SubmissionReview review;
 
-    /** Kolejka weryfikacji i podobne zgłoszenia. */
+    /** Kolejka weryfikacji, autorzy zgłoszeń i podobne zgłoszenia. */
     private final ReviewQueue queue;
 
     ReviewController(final SubmissionReview review, final ReviewQueue queue) {
@@ -57,9 +57,9 @@ public final class ReviewController {
      * @return Zgłoszenia w kolejce od najstarszego
      */
     @GetMapping("/review/queue")
-    List<SubmissionResponse> listReviewQueue(final Principal account) {
+    List<ReviewedSubmissionResponse> listReviewQueue(final Principal account) {
         return this.queue.forReviewer(account.getName()).stream()
-            .map(SubmissionResponse::new)
+            .map(ReviewedSubmissionResponse::new)
             .toList();
     }
 
@@ -91,10 +91,10 @@ public final class ReviewController {
      * @return Zgłoszenie w weryfikacji
      */
     @PostMapping("/submissions/{submissionId}/claim")
-    SubmissionResponse claimSubmission(
+    ReviewedSubmissionResponse claimSubmission(
         @PathVariable("submissionId") final UUID id, final Principal account
     ) {
-        return ReviewController.saved(() -> this.review.claim(id, account.getName()));
+        return this.saved(() -> this.review.claim(id, account.getName()));
     }
 
     /**
@@ -111,16 +111,16 @@ public final class ReviewController {
      * @return Zgłoszenie po decyzji
      */
     @PostMapping("/submissions/{submissionId}/review")
-    SubmissionResponse reviewSubmission(
+    ReviewedSubmissionResponse reviewSubmission(
         @PathVariable("submissionId") final UUID id,
         @RequestBody final ReviewRequest body, final Principal account
     ) {
-        return ReviewController.saved(
+        return this.saved(
             () -> this.review.decide(body.toDecision(id, account.getName()))
         );
     }
 
-    private static SubmissionResponse saved(final Supplier<EditResult> operation) {
+    private ReviewedSubmissionResponse saved(final Supplier<EditResult> operation) {
         final EditResult result;
         try {
             result = operation.get();
@@ -133,7 +133,9 @@ public final class ReviewController {
             throw conflict;
         }
         return switch (result) {
-            case EditResult.Saved saved -> new SubmissionResponse(saved.submission());
+            case EditResult.Saved saved -> new ReviewedSubmissionResponse(
+                this.queue.reviewed(saved.submission())
+            );
             case EditResult.Conflict conflict -> throw new ConflictingState(
                 "Na serwerze jest inna wersja zgłoszenia albo jego status nie pozwala na decyzję",
                 "serverSubmission",

@@ -37,7 +37,8 @@ public final class SyncPullController {
 
     /**
      * Zmiany od kursora {@code since} włącznie; brak kursora daje wszystko. Kursor odpowiedzi to
-     * chwila najpóźniejszej zwróconej zmiany, a bez zmian kursor z żądania. Zgłoszenia: własne
+     * chwila pobrania cofnięta o margines {@code dk.sync.cursor-margin}, nie wcześniejsza niż
+     * kursor z żądania, więc zmiany z marginesu przychodzą ponownie. Zgłoszenia: własne
      * w każdym statusie oraz cudze przyjęte i archiwalne. Znaczniki dostaje tylko rola
      * Zbierającego, inne role pustą listę. Kursor, który nie jest chwilą ISO 8601,
      * daje 400.

@@ -26,7 +26,7 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.campusDay
 import io.github.dostepnykampus.core.designsystem.marking.BarrierPhoto
-import io.github.dostepnykampus.core.designsystem.marking.SeverityBadge
+import io.github.dostepnykampus.core.designsystem.marking.SeverityLabel
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.submission.Severity
@@ -71,7 +71,7 @@ private fun SheetTop(severity: Severity, onClose: () -> Unit) {
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            SeverityBadge(severity)
+            SeverityLabel(severity)
             Spacer(Modifier.weight(1f))
             if (!isLarge) SheetCloseButton(onClose)
         }

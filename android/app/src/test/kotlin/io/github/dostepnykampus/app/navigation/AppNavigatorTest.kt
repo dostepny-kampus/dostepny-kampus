@@ -579,6 +579,22 @@ class AppNavigatorTest {
         assertEquals(stackOf(AccountRoute, MySubmissionsRoute), stack)
     }
 
+    /**
+     * Wiersz: C3 „Wyślij ponownie” przy nieaktualnej zmianie bariery → C2 nowej zmiany, zapis → to samo C3.
+     *
+     * Wymagania: US8.3, BR-23
+     */
+    @Test
+    fun resendChangeBackToList() {
+        stack += listOf(AccountRoute, MySubmissionsRoute)
+        navigator(collector).run {
+            openEdit("z1", isResend = true)
+            assertEquals(ReportEditRoute("z1", isResend = true), current)
+            reportSaved()
+        }
+        assertEquals(stackOf(AccountRoute, MySubmissionsRoute), stack)
+    }
+
     /** Wiersz: poprawka C2 „Zmień miejsce” → C1, „Dalej” → C2, „Zapisz” → to samo C3. Wymagania: US7.4, US8.3 */
     @Test
     fun changesPlaceOnEdit() {

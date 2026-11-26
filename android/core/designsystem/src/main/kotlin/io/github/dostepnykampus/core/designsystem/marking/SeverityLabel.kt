@@ -30,7 +30,7 @@ import io.github.dostepnykampus.core.model.submission.Severity
  * @param mapColors paleta znaków mapy; domyślnie paleta bieżącego motywu
  */
 @Composable
-public fun SeverityBadge(
+public fun SeverityLabel(
     severity: Severity,
     modifier: Modifier = Modifier,
     mapColors: MapColors = DostepnyKampusTheme.mapColors,
