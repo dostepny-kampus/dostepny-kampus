@@ -204,22 +204,25 @@ public class SubmissionQueue internal constructor(
         val entity = content.toPendingSubmissionEntity(id = id, savedAtMillis = savedAt).copy(ownerSub = owner)
         store.together {
             store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = id) })
-            remember(entity)
+            remember(entity, OwnCopy(content = content, photoPaths = photos.map { it.path }))
         }
         runCatching(onSaved)
         return SavedSubmission(id = id)
     }
 
     /**
-     * Sprzątanie przy starcie: usuwa z [dir] pliki zdjęć, których nie ma w kolejce ani w [kept].
+     * Sprzątanie przy starcie: usuwa z [dir] pliki zdjęć, których nie ma w kolejce, w [kept] ani w historii
+     * zgłoszeń przed decyzją.
      *
-     * Wymagania: NFR-5
+     * Wymagania: NFR-5, US8.3
      *
      * @param dir katalog zdjęć zgłoszeń; odczytany poza wątkiem głównym
      * @param kept pliki zdjęć odtworzonych szkiców
      */
     public suspend fun deleteOrphanPhotos(dir: () -> File, kept: Set<String>) {
-        deleteOrphanPhotos(store = store, dir = dir, kept = kept, nowMillis = stamps.nowMillis(), ioContext = ioContext)
+        val undecided = history?.undecidedContents().orEmpty()
+        val all = kept + ownPhotoPaths(undecided)
+        deleteOrphanPhotos(store = store, dir = dir, kept = all, nowMillis = stamps.nowMillis(), ioContext = ioContext)
     }
 
     /**
@@ -247,7 +250,7 @@ public class SubmissionQueue internal constructor(
                     val version = baseVersionOf(edited = edited, store = store, history = history)
                     val entity = fresh.copy(baseVersion = version, ownerSub = owner)
                     paths = store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) })
-                    remember(entity)
+                    remember(entity, OwnCopy(content = content, photoPaths = photos.map { it.path }))
                 }
                 paths
             }
@@ -296,9 +299,11 @@ public class SubmissionQueue internal constructor(
         runCatching(onSaved)
     }
 
-    private suspend fun remember(entity: PendingSubmissionEntity) {
+    private suspend fun remember(entity: PendingSubmissionEntity, copy: OwnCopy) {
         val own = history ?: return
-        if (entity.isOwnHistory()) own.save(entity.toOwnSubmissionEntity().keepingServerState(own.find(entity.id)))
+        if (!entity.isOwnHistory()) return
+        val row = entity.toOwnSubmissionEntity().copy(contentJson = ownCopyJson(entity.id, copy))
+        own.save(row.keepingServerState(own.find(entity.id)))
     }
 
     private suspend fun sendUntilStop(owner: String): Outcome? {
