@@ -247,6 +247,21 @@ class MySubmissionsScreenTest {
         assertEquals("C6 poprawki, potem C6 wejścia", listOf(entrance.copy(submissionId = "m-1"), entrance), routes)
     }
 
+    /** Przy konflikcie wersji nie ma „Otwórz”: konflikt rozstrzyga tylko wybór w C4. Wymagania: US9.3, BR-10 */
+    @Test
+    fun conflictHasNoOpen() {
+        val conflicted = item(id = "k", state = SendState.REFUSED).copy(refusal = RefusalReason.CHANGED_ON_SERVER)
+        val opened = mutableListOf<String>()
+        val actions = MySubmissionsActions(onBack = {}, onMeasure = {}, onOpen = { opened += it }, onConflict = {})
+        val state = MySubmissionsUiState.Ready(MySubmissions(listOf(conflicted)))
+        compose.setContent {
+            DostepnyKampusTheme { MySubmissionsContent(state = state, actions = actions) }
+        }
+        compose.onNodeWithText("Dwie wersje: wybierz jedną").assertExists()
+        compose.onNodeWithText("Otwórz").assertDoesNotExist()
+        assertEquals("C2 się nie otwiera", emptyList<String>(), opened)
+    }
+
     /** Pozycja bez konfliktu wersji nie ma znaku wyboru wersji. Wymagania: US9.3 */
     @Test
     fun noConflictNoChoice() {
