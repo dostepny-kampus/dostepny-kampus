@@ -20,6 +20,7 @@ import io.github.dostepnykampus.core.data.submission.sync.submissionServer
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import io.github.dostepnykampus.core.database.submission.PendingEditDao
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionWithPhotos
+import io.github.dostepnykampus.core.model.submission.SubmissionField
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -96,7 +97,7 @@ class VersionConflictsTest {
             assertEquals(2, conflict.own.severity, "wersja własna ma uciążliwość 2")
             assertEquals(3, conflict.server.content.severity, "wersja z serwera ma uciążliwość 3")
             assertEquals(7, conflict.server.version, "wersja z serwera ma jej numer")
-            assertEquals(listOf(ConflictField.SEVERITY), conflict.differences, "różni się tylko uciążliwość")
+            assertEquals(listOf(SubmissionField.SEVERITY), conflict.differences, "różni się tylko uciążliwość")
             assertEquals(listOf(4), versions, "serwer ma nadal swoją wersję")
         }
 

@@ -13,12 +13,12 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import com.github.takahirom.roborazzi.captureRoboImage
-import io.github.dostepnykampus.core.data.submission.conflict.ConflictField
 import io.github.dostepnykampus.core.data.submission.conflict.VersionConflict
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
+import io.github.dostepnykampus.core.model.submission.SubmissionField
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
@@ -143,7 +143,7 @@ class VersionConflictScreenTest {
                 id = "s-c4",
                 own = own,
                 server = server,
-                differences = listOf(ConflictField.SEVERITY),
+                differences = listOf(SubmissionField.SEVERITY),
             )
         }
     }

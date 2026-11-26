@@ -5,15 +5,14 @@
  */
 package io.github.dostepnykampus.feature.capture.conflict
 
-import io.github.dostepnykampus.core.data.submission.conflict.ConflictField
 import io.github.dostepnykampus.core.data.submission.conflict.VersionConflict
 import io.github.dostepnykampus.core.data.submission.conflict.VersionConflicts
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
+import io.github.dostepnykampus.core.model.submission.SubmissionField
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
-import io.github.dostepnykampus.feature.capture.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -28,6 +27,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.Instant
+import io.github.dostepnykampus.core.designsystem.R as DesignR
 
 /** C4 wczytuje obie wersje i wykonuje wybór raz. Wymagania: US9.3, BR-10 */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -66,7 +66,7 @@ class VersionConflictViewModelTest {
             runCurrent()
 
             val ready = viewModel.state.value as ConflictUiState.Ready
-            assertEquals(listOf(R.string.formularz_uciazliwosc), ready.differences, "nazwa pola różnicy")
+            assertEquals(listOf(DesignR.string.wybor_uciazliwosc), ready.differences, "nazwa pola różnicy")
             assertFalse(ready.isAccepted, "zgłoszenie nie jest przyjęte")
         }
 
@@ -147,7 +147,7 @@ class VersionConflictViewModelTest {
                     createdAt = Instant.parse("2026-11-20T10:00:00Z"),
                     content = own.copy(severity = 3),
                 )
-            return VersionConflict(id = ID, own = own, server = server, differences = listOf(ConflictField.SEVERITY))
+            return VersionConflict(id = ID, own = own, server = server, differences = listOf(SubmissionField.SEVERITY))
         }
     }
 }

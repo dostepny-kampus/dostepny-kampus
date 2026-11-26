@@ -10,13 +10,13 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import io.github.dostepnykampus.core.data.submission.conflict.ConflictField
 import io.github.dostepnykampus.core.data.submission.conflict.VersionConflict
 import io.github.dostepnykampus.core.data.submission.conflict.VersionConflicts
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
+import io.github.dostepnykampus.core.model.submission.SubmissionField
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import io.github.dostepnykampus.feature.capture.navigation.VersionConflictRoute
@@ -126,7 +126,7 @@ class VersionConflictScreenExitTest {
                     createdAt = Instant.parse("2026-11-20T10:00:00Z"),
                     content = own.copy(severity = 3),
                 )
-            return VersionConflict(id = ID, own = own, server = server, differences = listOf(ConflictField.SEVERITY))
+            return VersionConflict(id = ID, own = own, server = server, differences = listOf(SubmissionField.SEVERITY))
         }
     }
 }

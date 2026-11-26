@@ -5,16 +5,14 @@
  */
 package io.github.dostepnykampus.feature.capture.conflict
 
-import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.dostepnykampus.core.data.submission.conflict.ConflictField
 import io.github.dostepnykampus.core.data.submission.conflict.VersionConflict
 import io.github.dostepnykampus.core.data.submission.conflict.VersionConflicts
+import io.github.dostepnykampus.core.designsystem.nameRes
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
-import io.github.dostepnykampus.feature.capture.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -98,24 +96,6 @@ class VersionConflictViewModel
 internal fun VersionConflict.toUiState(): ConflictUiState.Ready =
     ConflictUiState.Ready(
         conflict = this,
-        differences = differences.map { it.label },
+        differences = differences.map { it.nameRes() },
         isAccepted = server.status == SubmissionStatus.ACCEPTED,
     )
-
-/** Nazwa pola w napisie „Różni się:”. */
-@get:StringRes
-internal val ConflictField.label: Int
-    get() =
-        when (this) {
-            ConflictField.LOCATION -> R.string.konflikt_pole_miejsce
-            ConflictField.PHOTOS -> R.string.konflikt_pole_zdjecia
-            ConflictField.BUILDING -> R.string.konflikt_pole_budynek
-            ConflictField.FLOOR -> R.string.formularz_pietro
-            ConflictField.BARRIER_GROUP -> R.string.konflikt_pole_grupa
-            ConflictField.BARRIER_TYPE -> R.string.formularz_typ
-            ConflictField.SEVERITY -> R.string.formularz_uciazliwosc
-            ConflictField.DESCRIPTION -> R.string.formularz_opis
-            ConflictField.BARRIER_REMOVED -> R.string.konflikt_pole_usunieta
-            ConflictField.ENTRANCE -> R.string.zmiana_oznaczenia_bez_nazwy
-            ConflictField.ENTRANCE_MARKING -> R.string.konflikt_pole_oznaczenie
-        }
