@@ -12,7 +12,7 @@ $ramka()
 Budynek A-1
 Zgłoszenie z pomiaru
 Wysłane <i>[data]</i>
-$czynnosc_karty("Otwórz", "chevron-right")
+$czynnosc_karty("Otwórz", "arrow-right")
 }
 ..
 <b>Do sprawdzenia</b>
