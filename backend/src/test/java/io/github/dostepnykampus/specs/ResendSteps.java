@@ -157,21 +157,25 @@ public final class ResendSteps {
 
     private int send(final MockHttpServletRequestBuilder request, final String head)
         throws Exception {
-        final String body = String.join(
-            "",
-            "{", head, ",\"kind\":\"PRECISE\",\"location\":{\"type\":\"Point\",",
-            "\"coordinates\":[17.06209,51.10785]},\"buildingSymbol\":\"C-13\",",
-            "\"floor\":{\"number\":0},\"barrierGroup\":\"HORIZONTAL_CIRCULATION\",",
-            "\"barrierType\":\"TB-13\",\"severity\":2,\"photoIds\":[\"",
-            this.photo.toString(), "\"]}"
-        );
         final int status = this.http.perform(
             request.contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer COLLECTOR").content(body)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer COLLECTOR")
+                .content(ResendSteps.body(head, this.photo))
         ).andReturn().getResponse().getStatus();
         this.photos.put(
             ResendSteps.SUBMISSION, this.photo, "zdjęcie".getBytes(StandardCharsets.UTF_8)
         );
         return status;
+    }
+
+    private static String body(final String head, final UUID photo) {
+        return String.join(
+            "",
+            "{", head, ",\"kind\":\"PRECISE\",\"location\":{\"type\":\"Point\",",
+            "\"coordinates\":[17.06209,51.10785]},\"buildingSymbol\":\"C-13\",",
+            "\"floor\":{\"number\":0},\"barrierGroup\":\"HORIZONTAL_CIRCULATION\",",
+            "\"barrierType\":\"TB-13\",\"severity\":2,\"photoIds\":[\"",
+            photo.toString(), "\"]}"
+        );
     }
 }
