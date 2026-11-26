@@ -7,13 +7,7 @@ package io.github.dostepnykampus.feature.review.queue
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -21,8 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.StatusIcons
 import io.github.dostepnykampus.core.designsystem.campusDay
+import io.github.dostepnykampus.core.designsystem.card.CardAction
+import io.github.dostepnykampus.core.designsystem.card.ListItemCard
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.BarrierType
@@ -44,29 +39,18 @@ import io.github.dostepnykampus.core.designsystem.R as DesignR
 @Composable
 internal fun QueueCard(submission: Submission, isMine: Boolean, onAction: () -> Unit) {
     val content = submission.content
-    OutlinedCard(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-            Column(
-                modifier = Modifier.semantics(mergeDescendants = true) {},
-                verticalArrangement = Arrangement.spacedBy(Odstepy.xs),
-            ) {
-                Text(text = stringResource(content.titleRes()), style = MaterialTheme.typography.titleMedium)
-                Text(text = buildingText(content))
-                Text(text = stringResource(content.kindRes()))
-                Text(text = stringResource(R.string.kolejka_wyslane, campusDay(submission.createdAt)))
-            }
-            val actionColors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary)
-            if (isMine) {
-                OutlinedButton(onClick = onAction, colors = actionColors) {
-                    Text(stringResource(R.string.kolejka_otworz))
-                    Icon(StatusIcons.Open, contentDescription = null, modifier = Modifier.padding(start = Odstepy.s))
-                }
-            } else {
-                OutlinedButton(onClick = onAction, modifier = Modifier.fillMaxWidth(), colors = actionColors) {
-                    Text(stringResource(R.string.kolejka_wez))
-                }
-            }
+    ListItemCard {
+        Column(
+            modifier = Modifier.semantics(mergeDescendants = true) {},
+            verticalArrangement = Arrangement.spacedBy(Odstepy.xs),
+        ) {
+            Text(text = stringResource(content.titleRes()), style = MaterialTheme.typography.titleMedium)
+            Text(text = buildingText(content))
+            Text(text = stringResource(content.kindRes()))
+            Text(text = stringResource(R.string.kolejka_wyslane, campusDay(submission.createdAt)))
         }
+        val action = if (isMine) R.string.kolejka_otworz else R.string.kolejka_wez
+        CardAction(text = stringResource(action), onClick = onAction, opensScreen = isMine)
     }
 }
 

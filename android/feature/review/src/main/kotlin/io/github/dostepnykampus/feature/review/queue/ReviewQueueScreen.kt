@@ -29,11 +29,11 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.dostepnykampus.core.designsystem.GroupFrame
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.StaffProblem
 import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
+import io.github.dostepnykampus.core.designsystem.card.InfoPanel
 import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.feature.review.R
 
@@ -105,7 +105,7 @@ private fun Queue(state: ReviewQueueUiState.Ready, onOpen: (String) -> Unit, onC
     LazyColumn(contentPadding = PaddingValues(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.m)) {
         if (state.isTaken) {
             item {
-                GroupFrame {
+                InfoPanel {
                     Text(stringResource(R.string.kolejka_zajete), style = MaterialTheme.typography.titleMedium)
                     Text(stringResource(R.string.kolejka_zajete_wybierz), style = MaterialTheme.typography.bodyLarge)
                 }
