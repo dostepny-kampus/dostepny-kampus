@@ -15,6 +15,7 @@ import io.github.dostepnykampus.core.data.submission.pending.PendingEdits
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
+import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
 import io.github.dostepnykampus.feature.capture.report.form.ReportForm
 import io.github.dostepnykampus.feature.capture.report.form.ReportPlace
@@ -41,7 +42,12 @@ sealed interface ReportEditLoad {
     data object Missing : ReportEditLoad
 }
 
-/** Model widoku wczytujący zgłoszenie z kolejki albo zgłoszenie przyjęte raz na ekran. Wymagania: US8.3, BR-18 */
+/**
+ * Model widoku wczytujący raz na ekran zgłoszenie z kolejki, zgłoszenie przyjęte albo nieaktualną zmianę do ponownego
+ * wysłania.
+ *
+ * Wymagania: US8.3, BR-18, BR-23
+ */
 @HiltViewModel
 class ReportEditViewModel
     @Inject
@@ -58,19 +64,26 @@ class ReportEditViewModel
         /** Wariant dla testów poprawki z kolejki bez źródła zgłoszeń przyjętych. */
         constructor(edits: PendingEdits) : this(edits = edits, barriers = AcceptedBarriers { emptyList() })
 
-        /** Wczytuje zgłoszenie [id]; kolejne wywołania nic nie zmieniają, więc obrót ekranu nie kasuje pól. */
-        fun open(id: String, isAccepted: Boolean = false) {
+        /** Wczytuje zgłoszenie z [route]; kolejne wywołania nic nie zmieniają, więc obrót ekranu nie kasuje pól. */
+        fun open(route: ReportEditRoute) {
             if (requested != null) return
+            val id = route.submissionId
             requested = id
             viewModelScope.launch {
                 val loaded =
-                    if (isAccepted) {
-                        barriers.barriers().firstOrNull { it.id == id }?.toReplaceUiState()
-                    } else {
-                        edits.load(id)?.toReportUiState()
+                    when {
+                        route.isAccepted -> barriers.barriers().firstOrNull { it.id == id }?.toReplaceUiState()
+                        route.isResend -> edits.load(id)?.let { old -> resendOf(old) }
+                        else -> edits.load(id)?.toReportUiState()
                     }
                 state.value = if (loaded == null) ReportEditLoad.Missing else ReportEditLoad.Ready(loaded)
             }
+        }
+
+        private suspend fun resendOf(old: PendingEdit): ReportUiState? {
+            val replaced = old.content.replacesSubmissionId ?: return null
+            val current = barriers.barriers().firstOrNull { it.replacesSubmissionId == replaced }
+            return current?.let { old.toResendUiState(currentId = it.id) }
         }
     }
 
@@ -95,6 +108,18 @@ internal fun PendingEdit.toReportUiState(): ReportUiState {
             editedSubmission = edited,
         )
     return ReportUiState(form = form, photos = photos)
+}
+
+/**
+ * Stan formularza na start ponownego wysłania nieaktualnej zmiany: treść i zdjęcia tej zmiany jako nowa zmiana
+ * bieżącego przyjętego zgłoszenia [currentId]; zapis tworzy nowe zgłoszenie, a nieaktualna zmiana zostaje odrzucona.
+ *
+ * Wymagania: US8.3, BR-18, BR-23
+ */
+internal fun PendingEdit.toResendUiState(currentId: String): ReportUiState {
+    val start = toReportUiState()
+    val form = start.form.copy(replacesSubmissionId = currentId, editedSubmission = null)
+    return start.copy(form = form)
 }
 
 internal fun SubmissionFloor.toReportFloor(): ReportFloor? =
