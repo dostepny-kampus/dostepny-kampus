@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +29,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
@@ -136,7 +136,7 @@ private fun StatusCheckLine(check: StatusCheck, isOnline: Boolean, onRetry: () -
 
             StatusCheck.FAILED -> {
                 Text(stringResource(R.string.moje_blad_statusow), style = MaterialTheme.typography.bodyMedium)
-                OutlinedButton(onClick = onRetry) { Text(stringResource(R.string.formularz_sprobuj_ponownie)) }
+                OutlinedAction(onClick = onRetry) { Text(stringResource(R.string.formularz_sprobuj_ponownie)) }
             }
 
             StatusCheck.DONE -> {}
