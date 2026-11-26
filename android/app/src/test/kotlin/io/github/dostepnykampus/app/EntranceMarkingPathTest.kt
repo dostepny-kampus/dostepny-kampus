@@ -260,29 +260,29 @@ class EntranceMarkingPathTest {
         const val PHOTO = "p-wejscie"
         val CATALOG =
             """
-            {
-              "type": "FeatureCollection",
-              "attribution": "© OpenStreetMap",
-              "features": [
                 {
-                  "type": "Feature",
-                  "properties": {"kind": "building", "symbols": ["$BUILDING"], "osm_id": "way/715985124"},
-                  "geometry": {
-                    "type": "Polygon",
-                    "coordinates": [[[17.06602,51.10786],[17.06589,51.10790],[17.06581,51.10781],
-                                     [17.06595,51.10778],[17.06602,51.10786]]]
-                  }
-                },
-                {
-                  "type": "Feature",
-                  "properties": {
-                    "kind": "entrance", "symbols": ["$BUILDING"], "osm_id": "$ENTRANCE",
-                    "entrance": "yes", "ref": "$SIDE_ENTRANCE"
-                  },
-                  "geometry": {"type": "Point", "coordinates": [17.06587,51.10787]}
+                  "type": "FeatureCollection",
+                  "attribution": "© OpenStreetMap",
+                  "features": [
+                    {
+                      "type": "Feature",
+                      "properties": {"kind": "building", "symbols": ["$BUILDING"], "osm_id": "way/715985124"},
+                      "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [[[17.06602,51.10786],[17.06589,51.10790],[17.06581,51.10781],
+                                         [17.06595,51.10778],[17.06602,51.10786]]]
+                      }
+                    },
+                    {
+                      "type": "Feature",
+                      "properties": {
+                        "kind": "entrance", "symbols": ["$BUILDING"], "osm_id": "$ENTRANCE",
+                        "entrance": "yes", "ref": "$SIDE_ENTRANCE"
+                      },
+                      "geometry": {"type": "Point", "coordinates": [17.06587,51.10787]}
+                    }
+                  ]
                 }
-              ]
-            }
             """.trimIndent()
     }
 }
