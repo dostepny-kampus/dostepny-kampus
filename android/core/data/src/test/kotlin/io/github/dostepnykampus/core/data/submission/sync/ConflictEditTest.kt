@@ -103,22 +103,8 @@ class ConflictEditTest {
     fun editsAfterOtherRefusal() =
         runBlocking {
             val replies = ArrayDeque<ServerReply<ServerEdit>>(listOf(ServerReply.Fault(code = UNPROCESSABLE)))
-            val other =
-                SubmissionQueue(
-                    store = store,
-                    ioContext = EmptyCoroutineContext,
-                    server =
-                        submissionServer(
-                            create = { id, content -> ServerReply.Ok(server(id, content, version = 1)) },
-                            putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                            update = { id, version, content ->
-                                versions += version
-                                val saved = ServerReply.Ok(ServerEdit.Saved(server(id, content, version = 5)))
-                                replies.removeFirstOrNull() ?: saved
-                            },
-                        ),
-                    records = SentRecords(history = history, conflicts = copies),
-                )
+            val records = SentRecords(history = history, conflicts = copies)
+            val other = editQueue(store = store, records = records, edits = edits, replies = replies) { versions += it }
             other.saveEdit(
                 EditedSubmission(id = ID, baseVersion = 4),
                 precise(PHOTO, severity = 2),
@@ -149,6 +135,7 @@ internal fun editQueue(
     store: FakeStore,
     records: SentRecords,
     edits: ArrayDeque<ServerEdit>,
+    replies: ArrayDeque<ServerReply<ServerEdit>> = ArrayDeque(),
     onVersion: (Int) -> Unit = {},
 ): SubmissionQueue =
     SubmissionQueue(
@@ -160,7 +147,8 @@ internal fun editQueue(
                 putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                 update = { id, version, content ->
                     onVersion(version)
-                    ServerReply.Ok(edits.removeFirstOrNull() ?: ServerEdit.Saved(server(id, content, 8)))
+                    replies.removeFirstOrNull()
+                        ?: ServerReply.Ok(edits.removeFirstOrNull() ?: ServerEdit.Saved(server(id, content, 8)))
                 },
             ),
         records = records,
