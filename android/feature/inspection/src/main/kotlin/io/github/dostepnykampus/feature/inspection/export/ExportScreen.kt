@@ -73,7 +73,7 @@ fun ExportScreen(actions: ExportActions, modifier: Modifier = Modifier, viewMode
         actions = actions,
         onChoose = viewModel::choose,
         onDownload = {
-            if (viewModel.asksForPlace) chooser.launch(viewModel.suggestedName()) else viewModel.download()
+            if (viewModel.isPlaceAsked) chooser.launch(viewModel.suggestedName()) else viewModel.download()
         },
         modifier = modifier,
     )

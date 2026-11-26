@@ -77,7 +77,7 @@ class ExportViewModelTest {
     @Test
     fun downloadsWithoutPlace() =
         exportTest(ExportOutcome.Saved(isEmpty = false)) { viewModel ->
-            assertFalse(viewModel.asksForPlace, "od Androida 10 bez okna wyboru miejsca")
+            assertFalse(viewModel.isPlaceAsked, "od Androida 10 bez okna wyboru miejsca")
             viewModel.download()
             runCurrent()
             assertEquals(listOf<ExportPlace>(ExportPlace.Downloads), places, "zapis w „Pobrane”")
@@ -85,8 +85,8 @@ class ExportViewModelTest {
 
     @Test
     fun savesToChosenPlace() =
-        exportTest(ExportOutcome.Saved(isEmpty = false), savesToDownloads = false) { viewModel ->
-            assertTrue(viewModel.asksForPlace, "na Androidzie 8–9 okno wyboru miejsca")
+        exportTest(ExportOutcome.Saved(isEmpty = false), hasDownloadsFolder = false) { viewModel ->
+            assertTrue(viewModel.isPlaceAsked, "na Androidzie 8–9 okno wyboru miejsca")
             viewModel.choose(ExportFormat.CSV)
             assertEquals("eksport.csv", viewModel.suggestedName(), "podpowiedziana nazwa w wybranym formacie")
             viewModel.downloadTo(URI)
@@ -97,7 +97,7 @@ class ExportViewModelTest {
 
     @Test
     fun chosenEmptyFileIsEmpty() =
-        exportTest(ExportOutcome.Saved(isEmpty = true), savesToDownloads = false) { viewModel ->
+        exportTest(ExportOutcome.Saved(isEmpty = true), hasDownloadsFolder = false) { viewModel ->
             viewModel.downloadTo(URI)
             runCurrent()
             assertEquals(ExportStage.EMPTY, viewModel.state.value.stage, "plik bez barier")
@@ -114,12 +114,12 @@ class ExportViewModelTest {
 
     private fun exportTest(
         outcome: ExportOutcome,
-        savesToDownloads: Boolean = true,
+        hasDownloadsFolder: Boolean = true,
         body: suspend TestScope.(ExportViewModel) -> Unit,
     ) {
         val export =
             object : BarrierExport {
-                override val savesToDownloads: Boolean = savesToDownloads
+                override val hasDownloadsFolder: Boolean = hasDownloadsFolder
 
                 override fun fileName(format: ExportFormat): String = "eksport.${format.extension}"
 

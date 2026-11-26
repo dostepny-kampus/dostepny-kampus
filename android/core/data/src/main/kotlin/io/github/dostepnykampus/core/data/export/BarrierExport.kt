@@ -34,7 +34,7 @@ public sealed interface ExportOutcome {
 
 /** Miejsce zapisu pliku eksportu. Wymagania: US13, NFR-41 */
 public sealed interface ExportPlace {
-    /** Folder „Pobrane” telefonu; tylko gdy [BarrierExport.savesToDownloads]. */
+    /** Folder „Pobrane” telefonu; tylko gdy [BarrierExport.hasDownloadsFolder]. */
     public data object Downloads : ExportPlace
 
     /**
@@ -48,7 +48,7 @@ public sealed interface ExportPlace {
 /** Eksport bieżących zgłoszeń przyjętych do pliku; wymaga sieci. Wymagania: US13, US13.1, US13.2, NFR-41 */
 public interface BarrierExport {
     /** `true`, gdy telefon zapisuje plik w „Pobrane” bez pytania; inaczej miejsce wybiera osoba w oknie systemu. */
-    public val savesToDownloads: Boolean
+    public val hasDownloadsFolder: Boolean
 
     /** Nazwa pliku eksportu w formacie [format] z dzisiejszą datą. */
     public fun fileName(format: ExportFormat): String
@@ -62,13 +62,9 @@ public interface BarrierExport {
  *
  * @property downloads folder „Pobrane”
  * @property chosen plik wybrany w oknie systemu
- * @property savesToDownloads czy telefon zapisuje w „Pobrane” bez pytania o miejsce
+ * @property isDirect czy telefon zapisuje w „Pobrane” bez pytania o miejsce
  */
-internal data class ExportPlaces(
-    val downloads: DownloadsFolder,
-    val chosen: ChosenFile,
-    val savesToDownloads: Boolean,
-)
+internal data class ExportPlaces(val downloads: DownloadsFolder, val chosen: ChosenFile, val isDirect: Boolean)
 
 /** Eksport z pobraniem [fetch] i zapisem w [places] pod nazwą z datą [today]; zapis idzie w [work]. */
 internal class ServerExport(
@@ -77,7 +73,7 @@ internal class ServerExport(
     private val today: () -> LocalDate,
     private val work: CoroutineContext,
 ) : BarrierExport {
-    override val savesToDownloads: Boolean get() = places.savesToDownloads
+    override val hasDownloadsFolder: Boolean get() = places.isDirect
 
     override fun fileName(format: ExportFormat): String = "dostepny-kampus-bariery-${today()}.${format.extension}"
 

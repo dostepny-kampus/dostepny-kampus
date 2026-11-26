@@ -38,7 +38,7 @@ internal object ExportDataModule {
                 ExportPlaces(
                     downloads = MediaStoreDownloads(context.contentResolver),
                     chosen = ResolverChosenFile(context.contentResolver),
-                    savesToDownloads = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q,
+                    isDirect = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q,
                 ),
             today = LocalDate::now,
             work = work,

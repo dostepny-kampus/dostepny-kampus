@@ -72,13 +72,13 @@ class ExportViewModel
         /** Stan ekranu. */
         val state: StateFlow<ExportUiState> = current.asStateFlow()
 
+        /** Czy „Pobierz plik” najpierw otwiera okno systemu z wyborem miejsca zapisu. */
+        val isPlaceAsked: Boolean get() = !export.hasDownloadsFolder
+
         /** Wybiera format [format] następnego pobrania. */
         fun choose(format: ExportFormat) {
             current.update { it.copy(format = format) }
         }
-
-        /** Czy „Pobierz plik” najpierw otwiera okno systemu z wyborem miejsca zapisu. */
-        val asksForPlace: Boolean get() = !export.savesToDownloads
 
         /** Podpowiedziana nazwa pliku w wybranym formacie. */
         fun suggestedName(): String = export.fileName(current.value.format)

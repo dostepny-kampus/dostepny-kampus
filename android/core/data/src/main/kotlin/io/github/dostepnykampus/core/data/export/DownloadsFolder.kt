@@ -7,10 +7,10 @@ package io.github.dostepnykampus.core.data.export
 
 import android.content.ContentResolver
 import android.content.ContentValues
-import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
+import androidx.core.net.toUri
 import java.io.IOException
 
 /** Folder „Pobrane” telefonu. Wymagania: US13 */
@@ -57,8 +57,7 @@ internal class MediaStoreDownloads(private val resolver: ContentResolver) : Down
 internal class ResolverChosenFile(private val resolver: ContentResolver) : ChosenFile {
     override fun save(uri: String, text: String): Boolean =
         try {
-            val stream = resolver.openOutputStream(Uri.parse(uri), "wt")
-            stream?.use { output -> output.write(text.toByteArray()) } != null
+            resolver.openOutputStream(uri.toUri(), "wt")?.use { output -> output.write(text.toByteArray()) } != null
         } catch (_: IOException) {
             false
         } catch (_: SecurityException) {

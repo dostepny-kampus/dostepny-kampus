@@ -91,10 +91,7 @@ class BarrierExportTest {
         canWrite: Boolean = true,
     ): ExportOutcome = runBlocking { export(reply, canWrite).download(format, place) }
 
-    private fun export(
-        reply: ApiResult<ExportFile> = ApiResult.NotFound,
-        canWrite: Boolean = true,
-    ): ServerExport {
+    private fun export(reply: ApiResult<ExportFile> = ApiResult.NotFound, canWrite: Boolean = true): ServerExport {
         val folder =
             DownloadsFolder { name, mediaType, text ->
                 if (canWrite) saved += listOf(name, mediaType, text)
@@ -107,7 +104,7 @@ class BarrierExportTest {
             }
         return ServerExport(
             fetch = { reply },
-            places = ExportPlaces(downloads = folder, chosen = chosen, savesToDownloads = true),
+            places = ExportPlaces(downloads = folder, chosen = chosen, isDirect = true),
             today = { LocalDate.parse("2026-11-25") },
             work = EmptyCoroutineContext,
         )
