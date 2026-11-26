@@ -8,7 +8,9 @@ package io.github.dostepnykampus.app
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -125,12 +127,14 @@ class EntranceMarkingPathTest {
     }
 
     /**
+     * Wysłanie zmiany nie zastępuje oznaczenia na karcie budynku.
+     *
      * Scenariusz: oznaczenie-wejscia.feature: Zmiana oznaczenia wejścia przechodzi te same statusy co zgłoszenie
      *
      * Wymagania: US17.2, BR-9
      */
     @Test
-    fun sendsMarkingWithoutChangingEntrance() {
+    fun sendsAndKeepsEntrance() {
         val photo = photoDraft(compose.activity.cacheDir, PHOTO)
         compose.setContent {
             DostepnyKampusTheme {
@@ -174,28 +178,43 @@ class EntranceMarkingPathTest {
     @Composable
     private fun AppNavigator.TestScreen(route: NavKey, takePhoto: () -> Unit) {
         when (route) {
-            is MapRoute -> LaunchedEffect(Unit) { openBuilding(BUILDING, isDirect = true) }
+            is MapRoute -> {
+                SideEffect {
+                    if (current == route) openBuilding(BUILDING, isDirect = true)
+                }
+            }
+
             is BuildingRoute -> {
                 val state by card.uiState.collectAsStateWithLifecycle()
-                BuildingCard(symbol = route.symbol, state = state, isOnline = online.value, onRetry = card::retry)
+                val isOnline by online.collectAsStateWithLifecycle()
+                BuildingCard(symbol = route.symbol, state = state, isOnline = isOnline, onRetry = card::retry)
             }
-            is MarkingRoute -> EditMarking(route, takePhoto, onSaved = { reportSaved() }, onBack = { back() })
-            MySubmissionsRoute ->
+
+            is MarkingRoute -> {
+                EditMarking(route = route, takePhoto = takePhoto, onFinish = { reportSaved() }, onBack = { back() })
+            }
+
+            MySubmissionsRoute -> {
                 MySubmissionsScreen(
                     actions = MySubmissionsActions(onBack = { back() }, onMeasure = {}, onOpen = {}),
                     viewModel = mine,
                 )
-            else -> Unit
+            }
+
+            else -> {
+                Unit
+            }
         }
     }
 
     @Composable
-    private fun EditMarking(route: MarkingRoute, takePhoto: () -> Unit, onSaved: () -> Unit, onBack: () -> Unit) {
+    private fun EditMarking(route: MarkingRoute, takePhoto: () -> Unit, onFinish: () -> Unit, onBack: () -> Unit) {
         val state by marking.uiState.collectAsStateWithLifecycle()
+        val finish by rememberUpdatedState(onFinish)
         LaunchedEffect(route) {
             marking.open(route)
             marking.uiState.first { it.stage == MarkingStage.SAVED }
-            onSaved()
+            finish()
         }
         val actions =
             MarkingActions(
@@ -234,15 +253,35 @@ class EntranceMarkingPathTest {
     private companion object {
         const val WAIT_MS = 5_000L
         const val BUILDING = "B-8"
-        const val ENTRANCE = "n/1"
+        const val ENTRANCE = "node/b-8-side"
         const val SIDE_ENTRANCE = "Wejście boczne"
         const val CHANGE = "Zmień oznaczenie"
         const val PHOTO = "p-wejscie"
-        const val CATALOG =
-            """{"type":"FeatureCollection","attribution":"© plik","features":[""" +
-                """{"type":"Feature","properties":{"kind":"building","symbols":["B-8"],"osm_id":"way/1"},""" +
-                """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}},""" +
-                """{"type":"Feature","properties":{"kind":"entrance","symbols":["B-8"],"osm_id":"n/1",""" +
-                """"ref":"Wejście boczne"},"geometry":{"type":"Point","coordinates":[17.06,51.1]}}]}"""
+        val CATALOG =
+            """
+            {
+              "type": "FeatureCollection",
+              "attribution": "© OpenStreetMap",
+              "features": [
+                {
+                  "type": "Feature",
+                  "properties": {"kind": "building", "symbols": ["$BUILDING"], "osm_id": "way/715985124"},
+                  "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [[[17.06602,51.10786],[17.06589,51.10790],[17.06581,51.10781],
+                                     [17.06595,51.10778],[17.06602,51.10786]]]
+                  }
+                },
+                {
+                  "type": "Feature",
+                  "properties": {
+                    "kind": "entrance", "symbols": ["$BUILDING"], "osm_id": "$ENTRANCE",
+                    "entrance": "yes", "ref": "$SIDE_ENTRANCE"
+                  },
+                  "geometry": {"type": "Point", "coordinates": [17.06587,51.10787]}
+                }
+              ]
+            }
+            """.trimIndent()
     }
 }
