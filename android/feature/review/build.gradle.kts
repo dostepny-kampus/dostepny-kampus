@@ -28,6 +28,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.runtime.annotation)
     implementation(libs.androidx.compose.runtime.saveable)
+    implementation(libs.androidx.compose.ui.geometry)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.text)
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
