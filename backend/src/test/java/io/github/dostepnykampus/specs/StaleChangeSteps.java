@@ -236,11 +236,10 @@ public final class StaleChangeSteps {
         this.changes.parallelChanges();
         this.jdbc.sql(
             """
-            UPDATE submissions SET status = CASE id
-                    WHEN :original THEN 'ARCHIVED' WHEN :accepted THEN 'ACCEPTED'
-                    ELSE 'REJECTED' END,
-                rejection_reason = CASE WHEN id = :rival THEN 'nieaktualne' END,
-                author = CASE WHEN id = :rival THEN :rivalAuthor ELSE author END
+            UPDATE submissions
+            SET status = CASE id WHEN :original THEN 'ARCHIVED' WHEN :accepted THEN 'ACCEPTED' ELSE 'REJECTED' END,
+            rejection_reason = CASE WHEN id = :rival THEN 'nieaktualne' END,
+            author = CASE WHEN id = :rival THEN :rivalAuthor ELSE author END
             WHERE id IN (:original, :accepted, :rival)
             """
         ).param("original", ChangeSteps.ORIGINAL).param("accepted", VerifierSteps.CHECKED)
@@ -259,23 +258,8 @@ public final class StaleChangeSteps {
             "Serwer nie przyjął nowej zmiany bieżącego zgłoszenia, nie dał 201",
             this.status(
                 MockMvcRequestBuilders.post("/submissions").contentType(MediaType.APPLICATION_JSON)
-                    .header(
-                        HttpHeaders.AUTHORIZATION,
-                        "Bearer COLLECTOR.".concat(StaleChangeSteps.RIVAL_AUTHOR)
-                    )
-                    .content(
-                        String.join(
-                            "",
-                            "{\"id\":\"", StaleChangeSteps.RESENT.toString(),
-                            "\",\"kind\":\"PRECISE\",\"location\":{\"type\":\"Point\",",
-                            "\"coordinates\":[17.05,51.108]},\"buildingSymbol\":\"D-2\",",
-                            "\"floor\":{\"number\":0},",
-                            "\"barrierGroup\":\"VERTICAL_CIRCULATION\",\"barrierType\":\"TB-9\",",
-                            "\"barrierRemoved\":true,\"replacesSubmissionId\":\"",
-                            VerifierSteps.CHECKED.toString(), "\",\"photoIds\":[\"",
-                            VerifierSteps.PHOTO.toString(), "\"]}"
-                        )
-                    )
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer COLLECTOR.".concat(StaleChangeSteps.RIVAL_AUTHOR))
+                    .content(StaleChangeSteps.resentRemoval())
             ),
             Matchers.equalTo(201)
         );
@@ -334,5 +318,24 @@ public final class StaleChangeSteps {
     private String map() throws Exception {
         return this.http.perform(MockMvcRequestBuilders.get("/submissions"))
             .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Treść ponownie wysłanej zmiany „bariera usunięta” wskazującej przyjętą zmianę autora.
+     *
+     * @return Zgłoszenie w JSON
+     */
+    private static String resentRemoval() {
+        return String.join(
+            "",
+            "{\"id\":\"", StaleChangeSteps.RESENT.toString(),
+            "\",\"kind\":\"PRECISE\",\"location\":{\"type\":\"Point\",",
+            "\"coordinates\":[17.05,51.108]},\"buildingSymbol\":\"D-2\",",
+            "\"floor\":{\"number\":0},",
+            "\"barrierGroup\":\"VERTICAL_CIRCULATION\",\"barrierType\":\"TB-9\",",
+            "\"barrierRemoved\":true,\"replacesSubmissionId\":\"",
+            VerifierSteps.CHECKED.toString(), "\",\"photoIds\":[\"",
+            VerifierSteps.PHOTO.toString(), "\"]}"
+        );
     }
 }
