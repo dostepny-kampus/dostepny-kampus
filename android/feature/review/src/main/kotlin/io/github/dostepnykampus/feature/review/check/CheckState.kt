@@ -39,7 +39,9 @@ internal suspend fun Reviews.previousOf(content: SubmissionContent): PreviousSub
     val id = content.replacesSubmissionId?.takeIf { content.isBarrierRemoved == true } ?: return null
     val found = submission(id)
     return if (found is ServerReply.Ok) {
-        val firstPhoto = found.value.content.photoIds.firstOrNull()
+        val firstPhoto =
+            found.value.content.photoIds
+                .firstOrNull()
         val photo = firstPhoto?.let { photoUrl(submissionId = id, photoId = it) }
         PreviousSubmission(status = found.value.status, photoUrl = photo)
     } else {

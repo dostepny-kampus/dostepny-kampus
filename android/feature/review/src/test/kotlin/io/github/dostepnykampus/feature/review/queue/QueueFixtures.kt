@@ -24,7 +24,7 @@ internal fun queued(id: String, day: Int): Submission =
         id = id,
         version = 1,
         status = SubmissionStatus.SENT,
-        createdAt = Instant.parse("2026-10-${day}T12:00:00Z"),
+        createdAt = Instant.parse("2026-10-${day.toString().padStart(2, '0')}T12:00:00Z"),
         content =
             SubmissionContent(
                 kind = SubmissionKind.PRECISE,

@@ -44,8 +44,18 @@ internal fun RemovedComparison(previous: PreviousSubmission, newPhoto: String?, 
             SignedPhoto(url = newPhoto, caption = R.string.sprawdzenie_zdjecie_nowe, type = type)
         } else {
             Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-                SignedPhoto(previous.photoUrl, R.string.sprawdzenie_zdjecie_poprzednie, type, Modifier.weight(1f))
-                SignedPhoto(newPhoto, R.string.sprawdzenie_zdjecie_nowe, type, Modifier.weight(1f))
+                SignedPhoto(
+                    url = previous.photoUrl,
+                    caption = R.string.sprawdzenie_zdjecie_poprzednie,
+                    type = type,
+                    modifier = Modifier.weight(1f),
+                )
+                SignedPhoto(
+                    url = newPhoto,
+                    caption = R.string.sprawdzenie_zdjecie_nowe,
+                    type = type,
+                    modifier = Modifier.weight(1f),
+                )
             }
         }
         Text(stringResource(R.string.sprawdzenie_poprzednie), style = MaterialTheme.typography.bodyLarge)
