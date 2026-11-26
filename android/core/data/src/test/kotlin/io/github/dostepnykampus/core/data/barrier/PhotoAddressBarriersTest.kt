@@ -44,6 +44,21 @@ class PhotoAddressBarriersTest {
         assertEquals(SYNCED, PhotoAddressBarriers(source) { _, _ -> "" }.syncedAt(), "chwila ze źródła")
     }
 
+    /** Wiersz: bariery znane źródłu bez pytania serwera dostają adres zdjęcia jak przy pobraniu. */
+    @Test
+    fun addsAddressToKnown() {
+        val source =
+            object : AcceptedBarriers {
+                override suspend fun barriers(): List<AcceptedBarrier> = emptyList()
+
+                override fun known(): List<AcceptedBarrier> = listOf(barrier(id = "z1", photoIds = listOf("p1")))
+            }
+
+        val known = PhotoAddressBarriers(source) { submission, photo -> "/$submission/$photo" }.known()
+
+        assertEquals(listOf("/z1/p1"), known?.map(AcceptedBarrier::photoUrl), "adres zdjęcia znanej bariery")
+    }
+
     private fun barrier(id: String, photoIds: List<String>) =
         AcceptedBarrier(
             id = id,

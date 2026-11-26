@@ -18,7 +18,7 @@ Mapa pokazuje A-1, bo tam wejście główne ma schody, a dostępne jest inne wej
 | J1-1 | dowiaduje się o wykładzie otwartym | „Chętnie pójdę, ale nie znam budynku” (4 → 4) | — | — | niskie |
 | J1-2 | córka instaluje aplikację i razem pierwszy raz ją otwierają | „Czy to będzie proste? Czy trafię w przyciski?” (— → 3) | — | V5: instrukcja, którą można pominąć i otworzyć ponownie (US5.1) | średnie |
 | J1-3 | razem szukają A-1 | „Gdzie to w ogóle jest?” (2 → 4) | P-2 | V1: wyszukiwanie po symbolu w każdej pisowni, bez logowania (US1.1, US1.2); lista zamiast gestów na mapie (NFR-19) | średnie |
-| J1-4 | sprawdzają, którym wejściem wejdzie bez schodów | „Którędy mam wejść?” (2 → 4) | P-1, P-9 | V3 „Którędy wejść” w ≤ 3 dotknięciach (US3.2); V2: oznaczenie każdego wejścia tekstem i ikoną (US2.1) | **wysokie** |
+| J1-4 | sprawdzają, którym wejściem wejdzie bez schodów | „Którędy mam wejść?” (2 → 4) | P-1, P-9 | V2: odpowiedź o wejściu po 1 dotknięciu od mapy (US3.2); V2: oznaczenie każdego wejścia tekstem i ikoną (US2.1) | **wysokie** |
 | J1-5 | ocenia, czy informacja jest aktualna | „Czy to jeszcze prawda? Ostatnio piętro się nie zgadzało” (2 → 4) | P-3, P-4 | V2: data i źródło oznaczenia wejścia (US17.3), zdjęcie i data weryfikacji bariery (US2.2) | średnie |
 | J1-6 | sprawdza windę, salę 329 i toaletę na piętrze wykładu | „Czy winda działa? Gdzie jest sala?” (1 → 3) | P-5 | V2: przełącznik pięter i plan piętra z windami i toaletami (US16.1); V1: sala po numerze z krokami od wejścia (US18) | **wysokie** |
 | J1-7 | dojeżdża tramwajem i szuka wskazanego wejścia | „Czy to na pewno tu?” (2 → 3) | P-9 | V2: wejście na planie piętra z oznaczeniem tekstem i ikoną (US16.1, US2.1); nawigacja po trasie jest poza zakresem | średnie |
@@ -65,10 +65,10 @@ Tomasz ma pierwsze zajęcia w A-1 i porusza się na wózku. Cel: przed wyjazdem 
 | --- | --- | --- | --- | --- | --- |
 | J3-1 | dostaje plan zajęć w nieznanym budynku | „Znowu nowy budynek. Czy wjadę?” (2 → 3) | — | — | niskie |
 | J3-2 | szuka A-1 i otwiera kartę budynku | „Oby to nie był znowu sam tekst” (2 → 4) | P-1, P-2 | V1, V2: skrót faktów na górze karty: wejście dostępne, winda, toaleta (US2.3) | niskie |
-| J3-3 | sprawdza wejście dostępne i szerokość drzwi | „Czy to wejście na pewno jest bez progu?” (2 → 4) | P-4, P-9 | V3: wejście zalecane z dojściem, szerokością drzwi i najbliższą windą (US3.3); data i źródło oznaczenia (US17.3) | **wysokie** |
+| J3-3 | sprawdza wejście dostępne i szerokość drzwi | „Czy to wejście na pewno jest bez progu?” (2 → 4) | P-4, P-9 | arkusz wejścia na V1: wejście zalecane z dojściem, szerokością drzwi i najbliższą windą (US3.3); data i źródło oznaczenia (US17.3) | **wysokie** |
 | J3-4 | sprawdza drogę od wejścia do sali | „Czy po drodze nie ma stopnia?” (1 → 3) | P-9 | V1: sala po numerze i kroki bez schodów albo zdanie, że takiej drogi nie ma (US18); plan piętra (US16.1) | **wysokie** |
 | J3-5 | sprawdza, czy winda działa | „Ostatnio winda stała, a nikt nie uprzedził” (1 → 3) | P-5 | V2: sprawdzona awaria przy windzie ze zdjęciem i datą (US2.2) | **wysokie** |
-| J3-6 | parkuje i szuka wskazanego wejścia | „Które to drzwi?” (2 → 4) | P-9 | V3: wejście dostępne na mapie (US3.3) | średnie |
+| J3-6 | parkuje i szuka wskazanego wejścia | „Które to drzwi?” (2 → 4) | P-9 | V2: „Pokaż wejście na mapie” (US3.3) | średnie |
 | J3-7 | przy wejściu widzi za stromy podjazd | „Zgłoszę, żeby następny wiedział” (2 → 4) | P-6 | V4: zdjęcie, grupa barier, wysłanie (US4.1, US4.3); bez sieci zgłoszenie czeka w telefonie (US4.2) | niskie |
 | J3-8 | widzi potwierdzenie po wysłaniu | „Dobrze, ktoś to sprawdzi” (2 → 4) | P-6 | V4: potwierdzenie, że zgłoszenie trafi do weryfikacji (US4.4) | niskie |
 

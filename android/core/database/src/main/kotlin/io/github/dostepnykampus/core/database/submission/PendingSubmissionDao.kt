@@ -51,6 +51,10 @@ public interface PendingSubmissionDao : PendingSubmissionRows {
     @Query("SELECT * FROM pending_submissions WHERE refused = 0 ORDER BY saved_at, id")
     public suspend fun all(): List<PendingSubmissionWithPhotos>
 
+    /** Czy zapis pod [id] należy do innego konta. */
+    @Query("SELECT EXISTS(SELECT 1 FROM pending_submissions WHERE id = :id AND owner_sub IS NOT :owner)")
+    public suspend fun belongsToAnotherAccount(id: String, owner: String): Boolean
+
     /**
      * Zaznacza, że serwer ma już zgłoszenie, a czekają tylko zdjęcia.
      *
@@ -68,6 +72,16 @@ public interface PendingSubmissionDao : PendingSubmissionRows {
      */
     @Query("UPDATE pending_submissions SET refused = 1 WHERE id = :id")
     public suspend fun markRefused(id: String)
+
+    /**
+     * Przywraca odrzucone zgłoszenie do wysyłki: [all] znów je zwraca.
+     *
+     * Wymagania: US9.3, BR-10
+     *
+     * @param id identyfikator zgłoszenia
+     */
+    @Query("UPDATE pending_submissions SET refused = 0 WHERE id = :id")
+    public suspend fun markQueued(id: String)
 
     /**
      * Zaznacza zdjęcie wysłane na serwer.

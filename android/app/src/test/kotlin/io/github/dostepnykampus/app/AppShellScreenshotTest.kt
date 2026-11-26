@@ -3,31 +3,34 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.SemanticsActions.OnClick
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
-import androidx.compose.ui.test.isSelectable
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.app.navigation.AppScreen
+import io.github.dostepnykampus.app.navigation.LocalSheetPadding
 import io.github.dostepnykampus.app.navigation.sheetCard
-import io.github.dostepnykampus.core.data.account.GuestRoleProvider
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.CampusMapScreen
@@ -51,6 +54,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 /**
  * Zrzuty oboczki z ekranami: V1 z przyciskami mapy i podpisem OSM, V2 jako arkusz nad V1 i pasek nawigacji.
  * Natywnej mapy MapLibre w testach JVM nie ma: zamiast niej jest tło lądu z palety mapy, bez konturów i ulic.
+ * Klawiatury Robolectric nie rysuje, więc zrzut z klawiaturą ma w jej miejscu ciemny prostokąt jej wysokości.
  * Katalog to „Budynek testowy” C-13, nie dane PWr. Zrzut robi akcja zamiast dotyku, więc na przełączniku nie ma
  * śladu dotknięcia. Przy dużej czcionce V1 startuje na liście, więc V2 otwiera budynek z listy.
  *
@@ -83,6 +87,36 @@ class AppShellScreenshotTest {
                 """"geometry":{"type":"Point","coordinates":[1,0]}}]}"""
         }
 
+    @Composable
+    private fun ShellWithMap(isOnline: Boolean) {
+        AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
+            if (route is MapRoute) {
+                CampusMapScreen(
+                    onBuildingClick = { openBuilding(it) },
+                    contentPadding = LocalSheetPadding.current,
+                    mapView = landOnly,
+                    viewModel = remember { inlineMapViewModel(repository, { flowOf(isOnline) }, choice) },
+                )
+            } else if (route is BuildingRoute) {
+                val card =
+                    remember(route.symbol) {
+                        BuildingCardViewModel(route.symbol, repository, { flowOf(isOnline) })
+                    }
+                val sheet = sheetCard()
+                BuildingCardScreen(
+                    symbol = route.symbol,
+                    mode = sheet.mode,
+                    onShowOnMap = { showOnMap(MapFocus.Building(route.symbol)) },
+                    onBack = sheet.onBack,
+                    onClose = sheet.onClose,
+                    viewModel = card,
+                )
+            } else {
+                AppScreen(route)
+            }
+        }
+    }
+
     private fun capture(
         isSheetOpen: Boolean = true,
         query: String? = null,
@@ -92,45 +126,22 @@ class AppShellScreenshotTest {
     ) {
         compose.setContent {
             DostepnyKampusTheme {
-                AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
-                    if (route is MapRoute) {
-                        CampusMapScreen(
-                            onBuildingClick = { openBuilding(it) },
-                            contentPadding = LocalSheetPadding.current,
-                            mapView = landOnly,
-                            viewModel = remember { inlineMapViewModel(repository, { flowOf(isOnline) }, choice) },
-                        )
-                    } else if (route is BuildingRoute) {
-                        val card =
-                            remember(route.symbol) {
-                                BuildingCardViewModel(route.symbol, repository, { flowOf(isOnline) })
-                            }
-                        val sheet = sheetCard()
-                        BuildingCardScreen(
-                            symbol = route.symbol,
-                            mode = sheet.mode,
-                            onCheckEntrances = { openEntrances(route.symbol) },
-                            onShowOnMap = { showOnMap(MapFocus.Building(route.symbol)) },
-                            onBack = sheet.onBack,
-                            onClose = sheet.onClose,
-                            viewModel = card,
-                        )
-                    } else {
-                        AppScreen(route)
-                    }
+                Box {
+                    ShellWithMap(isOnline)
+                    if (isKeyboardOpen) KeyboardPlaceholder(Modifier.align(Alignment.BottomCenter))
                 }
             }
         }
         compose.waitForIdle()
-        val list = compose.onNode(hasContentDescription("Lista budynków") and isSelectable())
+        val list = compose.onNode(hasText("Pokaż listę"))
         if (isList) list.performSemanticsAction(OnClick)
         val isFromList = compose.onAllNodes(hasContentDescription("C-13")).fetchSemanticsNodes().isNotEmpty()
         if (isSheetOpen && isFromList) compose.onNodeWithContentDescription("C-13").performSemanticsAction(OnClick)
         if (isSheetOpen && !isFromList) compose.runOnUiThread { touch(listOf("C-13")) }
         query?.let { compose.onNode(hasSetTextAction()).performTextInput(it) }
         if (isKeyboardOpen) compose.runOnUiThread { dispatchKeyboard(compose.activity, isOpen = true) }
-        val check = "Sprawdź, którędy wejść"
-        if (isSheetOpen) compose.waitUntil { compose.onAllNodesWithText(check).fetchSemanticsNodes().isNotEmpty() }
+        val card = hasContentDescription("Budynek C-13", substring = true)
+        if (isSheetOpen) compose.waitUntil { compose.onAllNodes(card).fetchSemanticsNodes().isNotEmpty() }
         compose.onRoot().captureRoboImage()
     }
 
@@ -207,5 +218,16 @@ class AppShellScreenshotTest {
     @Config(qualifiers = "w640dp-h480dp-xhdpi")
     fun drawsWideSheet() {
         capture()
+    }
+}
+
+@Composable
+private fun KeyboardPlaceholder(modifier: Modifier = Modifier) {
+    val height = with(LocalDensity.current) { KEYBOARD_HEIGHT.toDp() }
+    Box(
+        modifier = modifier.fillMaxWidth().height(height).background(MaterialTheme.colorScheme.inverseSurface),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(text = "klawiatura", color = MaterialTheme.colorScheme.inverseOnSurface)
     }
 }

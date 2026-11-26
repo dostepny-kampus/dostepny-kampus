@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,7 +39,7 @@ class DeviceStepsTest {
 
     private val steps = DeviceSteps(compose, waitMs = 2_000L)
 
-    /** Wstecz zamyka pomoc, a wpisany symbol i wybór wyniku prowadzą do karty z przyciskiem wejść. */
+    /** Wstecz zamyka pomoc, a wpisany symbol i wybór wyniku prowadzą do karty z uchwytem wysokości. */
     @Test
     fun helpThenCard() {
         compose.setContent { Campus() }
@@ -52,20 +53,20 @@ class DeviceStepsTest {
     fun missingNodeTimesOut() {
         compose.setContent { BasicText("Mapa") }
         assertThrows("Brak węzła po czasie", ComposeTimeoutException::class.java) {
-            steps.waitFor(hasText(CHECK_ENTRANCES))
+            steps.waitFor(openedCard())
         }
     }
 
     @Composable
     private fun Campus() {
         var isHelp by remember { mutableStateOf(true) }
-        var query by remember { mutableStateOf("") }
+        val query = rememberTextFieldState()
         var isCard by remember { mutableStateOf(false) }
         BackHandler(enabled = isHelp) { isHelp = false }
         Column {
             if (isHelp) BasicText("Pomoc")
-            BasicTextField(value = query, onValueChange = { query = it })
-            if (query == "A-1") {
+            BasicTextField(state = query)
+            if (query.text.toString() == "A-1") {
                 BasicText(
                     text = "A-1",
                     modifier =
@@ -74,7 +75,7 @@ class DeviceStepsTest {
                             .clickable { isCard = true },
                 )
             }
-            if (isCard) BasicText(CHECK_ENTRANCES)
+            if (isCard) BasicText(text = "A-1", modifier = Modifier.semantics { contentDescription = CARD_HANDLE })
         }
     }
 }

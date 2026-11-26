@@ -15,6 +15,9 @@ import io.github.dostepnykampus.core.model.building.Building
  */
 internal const val NEAR_METERS = 50.0
 
+/** Tolerancja porównania odległości z [NEAR_METERS] na błąd zaokrąglenia obliczeń (1 mm). Wymagania: BR-G4 */
+internal const val NEAR_TOLERANCE_METERS = 0.001
+
 /**
  * Podpowiedź budynku po pomiarze na C1: „Czy to budynek C-13?” z nazwą i odległością.
  *
@@ -52,7 +55,8 @@ internal const val NEAREST_COUNT = 3
  */
 public fun buildingHints(point: GeoPoint, buildings: List<Building>, limit: Int = NEAREST_COUNT): BuildingHints {
     val ranked = buildings.map { building -> building.hintFor(point) }.sortedWith(nearestFirst)
-    return BuildingHints(ranked.take(limit), ranked.firstOrNull()?.takeIf { it.distanceMeters <= NEAR_METERS })
+    val nearest = ranked.firstOrNull()?.takeIf { it.distanceMeters <= NEAR_METERS + NEAR_TOLERANCE_METERS }
+    return BuildingHints(ranked.take(limit), nearest)
 }
 
 private val nearestFirst = compareBy<BuildingHint> { it.distanceMeters }.thenBy { !it.isInside }

@@ -15,7 +15,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapArea
+import io.github.dostepnykampus.feature.map.campus.areaOf
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import timber.log.Timber
 
 /**
  * Tereny w kolejności nagłówków listy budynków: pokazany na mapie pierwszy, pozostałe od najbliższego.
@@ -53,11 +55,14 @@ internal class MapAreas(
     private val followed: MutableState<String?>,
     private val noticeMemory: NoticeMemory = NoticeMemory(),
 ) {
-    /** Nazwa terenu ustawionego przez osobę albo wyborem budynku; `null`, gdy mapa stoi na terenie startowym. */
-    val chosenName: String? get() = chosen.value
+    /**
+     * Nazwa terenu ustawionego przez osobę albo wyborem budynku; `null`, gdy mapa stoi na terenie startowym. Nowy
+     * budynek z innego terenu daje swój teren już w klatce wyboru, zanim [followSelection] go zapisze.
+     */
+    val chosenName: String? get() = arriving()?.name ?: chosen.value
 
     /** Teren pokazany na mapie; `null` bez danych mapy. */
-    val current: MapArea? get() = data?.areaOf(chosen.value, symbol)
+    val current: MapArea? get() = data?.areaOf(chosenName, symbol)
 
     /**
      * Lista terenów: pokazany pierwszy, pozostałe od najbliższego, z liczbą budynków i odległością.
@@ -145,10 +150,14 @@ internal class MapAreas(
         }
         val area = data?.areaOf(chosen = null, symbol = selected) ?: return
         if (followed.value != selected) {
+            if (chosen.value != area.name) Timber.i("Mapa: teren %s po wyborze budynku %s", area.name, selected)
             chosen.value = area.name
             followed.value = selected
         }
     }
+
+    private fun arriving(): MapArea? =
+        symbol?.takeIf { it != followed.value }?.let { data?.areaOf(chosen = null, symbol = it) }
 
     /**
      * Wybiera teren [name] i zwraca prostokąt wszystkich jego budynków, który mapa pokazuje po wyborze.
@@ -160,6 +169,7 @@ internal class MapAreas(
         val campus = data ?: return null
         val area = campus.areas.firstOrNull { it.name == name }
         if (area != null) {
+            Timber.i("Mapa: teren %s wybrany przez osobę", name)
             chosen.value = name
             seen.value = name
         }

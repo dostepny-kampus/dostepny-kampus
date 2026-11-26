@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 /**
- * Odczyt zapytania sali w różnych zapisach symbolu budynku.
+ * Odczyt zapytania sali w różnych zapisach symbolu budynku i w dowolnej kolejności części.
  *
  * <p>Wymagania: US18.1</p>
  *
@@ -31,7 +31,18 @@ final class RoomQueryTest {
             " A 1  329 |A-1 329",
             "C–13 2.21|C-13 2.21",
             "d-20B 015|D-20b 015",
-            "329|- 329"
+            "329|- 329",
+            "224 A-4|A-4 224",
+            "329 a 1|A-1 329",
+            "sala 224 A-4|A-4 224",
+            "Sala 224|- 224",
+            "A-4/224|A-4 224",
+            "224/A-4|A-4 224",
+            "A-4, 224|A-4 224",
+            "224,A-4|A-4 224",
+            "s. 224 A-4|A-4 224",
+            "A-4 s.224|A-4 224",
+            "pok. 224, A-4|A-4 224"
         }
     )
     void readsBuildingAndNumber(final String text, final String expected) {
@@ -46,7 +57,7 @@ final class RoomQueryTest {
     @ParameterizedTest
     @ValueSource(
         strings = {
-            "", "   ", "A-1 329 330", "budynek A-1 sala 329",
+            "", "   ", "A-1 329 330", "budynek A-1 sala 329", "sala", "pok. /",
             "A-1 12345678901234567890123456789012345678901234567"
         }
     )

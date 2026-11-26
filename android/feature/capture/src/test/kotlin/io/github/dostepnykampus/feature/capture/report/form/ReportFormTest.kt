@@ -1,17 +1,17 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.report.form
 
+import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
-import io.github.dostepnykampus.feature.capture.measure.place
 import io.github.dostepnykampus.feature.capture.report.A1
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
@@ -85,6 +85,25 @@ class ReportFormTest {
             ),
             complete().copy(description = "  Próg przy sekretariacie ").check(),
         )
+    }
+
+    /**
+     * Korekta punktu po pomiarze w budynku szczegółowym z piętrem z planu: nowe położenie i oznaczenie
+     * korekty ręcznej trafiają do zgłoszenia, a piętro zostaje.
+     * Scenariusz: pomiar-precyzyjny.feature: Korekta punktu na planie piętra w budynku szczegółowym
+     *
+     * Wymagania: US6.3, US6.4
+     */
+    @Test
+    fun keepsFloorAfterCorrection() {
+        val moved = A1.copy(location = GeoPoint(longitude = 17.06215, latitude = 51.10790), isManualCorrection = true)
+
+        val check = ReportUiState(form = complete()).edited(ReportEdit.Place(moved)).form.check()
+
+        val content = (check as ReportCheck.Complete).content
+        assertEquals(moved.location, content.location, "nowe położenie punktu z korekty")
+        assertEquals(true, content.isManualCorrection, "zgłoszenie z oznaczeniem korekta ręczna")
+        assertEquals(SubmissionFloor(floorId = "A-1-0"), content.floor, "piętro z planu zostaje po korekcie")
     }
 
     @Test

@@ -5,23 +5,23 @@
  */
 package io.github.dostepnykampus.barrier.submission.web;
 
+import io.github.dostepnykampus.barrier.submission.AuthorRole;
 import io.github.dostepnykampus.barrier.submission.CreateResult;
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.Reader;
-import io.github.dostepnykampus.barrier.submission.Submission;
-import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionService;
+import io.github.dostepnykampus.barrier.submission.content.EntrancePlaces;
 import io.github.dostepnykampus.shared.error.ConflictingState;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
-import io.github.dostepnykampus.shared.error.MissingLogin;
 import io.github.dostepnykampus.shared.error.MissingResource;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
-import org.jspecify.annotations.Nullable;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,11 +33,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Zgłoszenia barier: wysłanie nowego zgłoszenia, edycja
- * z kontrolą wersji, odczyt zgłoszeń przyjętych,
- * odczyt zgłoszenia nieprzyjętego przez autora i Weryfikatora
- * i podobne zgłoszenia dla Weryfikatora.
+ * z kontrolą wersji i odczyt zgłoszenia nieprzyjętego przez autora i Weryfikatora.
  *
- * <p>Wymagania: US4, US7, BR-9, US8.3, BR-10, BR-6, BR-5, US10.1, BR-13</p>
+ * <p>Wymagania: US4, US7, BR-9, US8.3, BR-10, BR-6, BR-5</p>
  *
  * @since 0.1.0
  */
@@ -59,33 +57,18 @@ public final class SubmissionsController {
      */
     private final SubmissionReading finder;
 
-    SubmissionsController(final SubmissionService service, final SubmissionReading finder) {
+    /**
+     * Wejścia, od których zgłoszenie szybkie bierze miejsce. Wymagania: BR-8
+     */
+    private final EntrancePlaces entrances;
+
+    SubmissionsController(
+        final SubmissionService service, final SubmissionReading finder,
+        final EntrancePlaces entrances
+    ) {
         this.service = service;
         this.finder = finder;
-    }
-
-    /**
-     * Zwraca zgłoszenia przyjęte według filtrów, a z
-     * mine=true własne zgłoszenia zalogowanej osoby w każdym statusie.
-     *
-     * <p>Wymagania: US1.3, US2.2, BR-6, US8.1</p>
-     *
-     * @param filter Filtry z parametrów zapytania
-     * @param account Zalogowane konto albo null bez logowania
-     * @return Zgłoszenia od najstarszego
-     */
-    @GetMapping("/submissions")
-    List<SubmissionResponse> listSubmissions(
-        final SubmissionFilter filter, @Nullable final Principal account
-    ) {
-        final SubmissionQuery query = filter.toQuery();
-        final List<Submission> found;
-        if (filter.own()) {
-            found = this.finder.own(SubmissionsController.name(account), query);
-        } else {
-            found = this.finder.list(query);
-        }
-        return found.stream().map(SubmissionResponse::new).toList();
+        this.entrances = entrances;
     }
 
     /**
@@ -111,26 +94,6 @@ public final class SubmissionsController {
             )
         ).map(SubmissionResponse::new)
             .orElseThrow(() -> new MissingResource(SubmissionsController.MISSING));
-    }
-
-    /**
-     * Zwraca zgłoszenia podobne do danego w promieniu 10 m, z każdego piętra.
-     * Sprawdzane zgłoszenie może mieć dowolny status.
-     * Wymóg roli Weryfikatora dochodzi z logowaniem w sprincie 5.
-     *
-     * <p>Wymagania: US10.1, BR-13</p>
-     *
-     * @param id Identyfikator sprawdzanego zgłoszenia
-     * @return Podobne zgłoszenia od najbliższego
-     */
-    @GetMapping("/submissions/{submissionId}/similar")
-    List<SimilarSubmissionResponse> listSimilarSubmissions(
-        @PathVariable("submissionId") final UUID id
-    ) {
-        if (this.finder.find(id).isEmpty()) {
-            throw new MissingResource(SubmissionsController.MISSING);
-        }
-        return this.finder.similar(id).stream().map(SimilarSubmissionResponse::new).toList();
     }
 
     /**
@@ -163,7 +126,9 @@ public final class SubmissionsController {
             .filter(replaced -> this.finder.authorOnly(replaced, account.getName())).isPresent()) {
             throw new ForbiddenChange("Zwykłą zmianę tego zgłoszenia składa tylko jego autor");
         }
-        final CreateResult result = this.service.create(body.toCommand(account.getName()));
+        final CreateResult result = this.service.create(
+            body.toCommand(account.getName(), SubmissionsController.roles(request), this.entrances)
+        );
         final HttpStatus status;
         if (result instanceof CreateResult.Created) {
             status = HttpStatus.CREATED;
@@ -193,7 +158,7 @@ public final class SubmissionsController {
         if (this.finder.foreign(id, account.getName())) {
             throw new ForbiddenChange("Zgłoszenie zmienia tylko jego autor");
         }
-        return switch (this.service.update(body.toCommand(id))) {
+        return switch (this.service.update(body.toCommand(id, this.entrances))) {
             case EditResult.Saved saved -> new SubmissionResponse(saved.submission());
             case EditResult.Conflict conflict -> throw new ConflictingState(
                 "Na serwerze jest inna wersja zgłoszenia albo jego status nie pozwala na zmianę",
@@ -205,10 +170,9 @@ public final class SubmissionsController {
         };
     }
 
-    private static String name(@Nullable final Principal account) {
-        if (account == null) {
-            throw new MissingLogin("Własne zgłoszenia wymagają logowania");
-        }
-        return account.getName();
+    private static Set<AuthorRole> roles(final HttpServletRequest request) {
+        return Arrays.stream(AuthorRole.values())
+            .filter(role -> role == AuthorRole.VISITOR || request.isUserInRole(role.name()))
+            .collect(Collectors.toUnmodifiableSet());
     }
 }

@@ -86,7 +86,7 @@ internal fun MapTogglePill(
     ) {
         Row(
             modifier = Modifier.heightIn(min = MapControlTouchSize).then(rowModifier),
-            horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
+            horizontalArrangement = Arrangement.spacedBy(Odstepy.xs),
             verticalAlignment = Alignment.CenterVertically,
             content = content,
         )
@@ -154,7 +154,7 @@ internal fun MapButton(name: Int, icon: ImageVector, isActive: Boolean = false, 
 }
 
 /**
- * Ikony mapy: szewrony, plus, minus, znak wyboru, znak terenu i lista legendy z Material Icons,
+ * Ikony mapy: szewrony, plus, minus, znak wyboru, znak terenu, lista legendy i budynek z Material Icons,
  * siatka 24 × 24.
  */
 internal object MapControlIcons {
@@ -169,6 +169,11 @@ internal object MapControlIcons {
         pathIcon(
             "M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 " +
                 "8 3.59 8 8-3.59 8-8 8zm3-8c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3z",
+        )
+    val Building: ImageVector =
+        pathIcon(
+            "M17 11V3H7v4H3v14h8v-4h2v4h8V11h-4zM7 19H5v-2h2v2zm0-4H5v-2h2v2zm0-4H5V9h2v2zm4 4H9v-2h2v2zm0-4H9V9h2v2z" +
+                "m0-4H9V5h2v2zm4 8h-2v-2h2v2zm0-4h-2V9h2v2zm0-4h-2V5h2v2zm4 12h-2v-2h2v2zm0-4h-2v-2h2v2z",
         )
     val Legend: ImageVector =
         pathIcon("M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z")

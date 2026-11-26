@@ -73,11 +73,11 @@ class QuickSendViewModelTest {
             buildingFloors = BuildingFloors { null },
             buildingLookup =
                 BuildingLookup(
-                    catalog = BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS },
+                    catalog = BuildingCatalogRepository(EmptyCoroutineContext) { QUICK_CAMPUS },
                     computeContext = dispatcher,
                     grounds = CampusGrounds { isOnGrounds },
                 ),
-        )
+        ).apply { start(entranceId = null) }
     }
 
     @BeforeEach
@@ -118,7 +118,14 @@ class QuickSendViewModelTest {
             assertEquals(listOf(SubmissionFloor(number = 1)), saved.map { it.floor })
         }
 
-    /** Następny odczyt nie zmienia budynku używanego w zgłoszeniu V4. Wymagania: US4.1 */
+    /**
+     * Zgłoszenie bez wybranego wejścia bierze miejsce z bieżącej pozycji, a następny odczyt nie zmienia budynku
+     * używanego w zgłoszeniu V4.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Odnośnik w wierszu kilku wejść bez danych bierze miejsce
+     *   z bieżącej pozycji
+     *
+     * Wymagania: US4.1, US4.6
+     */
     @Test
     fun keepsFirstPosition() =
         runTest(dispatcher) {
@@ -192,6 +199,32 @@ class QuickSendViewModelTest {
         }
 
     /**
+     * Pozycja ustalona przy „Spróbuj ponownie” wysyła zgłoszenie z tym samym zdjęciem, grupą „Coś innego” i pozycją.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Pozycja ustalona przy ponownej próbie pozwala
+     *   wysłać zgłoszenie
+     *
+     * Wymagania: UC7, US4.1
+     */
+    @Test
+    fun sendsAfterRetry() =
+        runTest(dispatcher) {
+            val other = report.copy(group = BarrierGroup.OTHER, floorNumber = null)
+            source = flow { throw SecurityException("brak zgody") }
+            watch()
+            assertEquals(QuickLookup.Lost, viewModel.lookup.value, "bez pozycji")
+            source = fixes
+            viewModel.retry()
+            runCurrent()
+            fix(INSIDE_A1)
+            viewModel.send(other)
+            runCurrent()
+            assertEquals(listOf(INSIDE_A1), saved.map { it.location }, "pozycja z ponownej próby")
+            assertEquals(listOf(listOf("zdjecie-1")), saved.map { it.photoIds }, "to samo zdjęcie")
+            assertEquals(listOf(BarrierGroup.OTHER), saved.map { it.barrierGroup }, "ta sama grupa")
+            assertEquals(QuickSendStage.SENT, viewModel.stage.value, "potwierdzenie po wysyłce")
+        }
+
+    /**
      * Pozycja poza terenem PWr: „Wyślij” niczego nie zapisuje, a „Spróbuj ponownie” ustala pozycję od nowa; zdjęcie
      * i grupa zostają.
      * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie szybkie tylko na terenie PWr
@@ -246,7 +279,13 @@ class QuickSendViewModelTest {
             assertEquals(1, saved.size)
         }
 
-    /** Drugie „Wyślij” nie wysyła zdjęcia drugi raz. Wymagania: US4.7 */
+    /**
+     * Drugie „Wyślij” nie wysyła zdjęcia drugi raz, a zapisane zgłoszenie niesie jedno zdjęcie.
+     * Scenariusz (częściowo): zgloszenie-szybkie-powrot.feature: Po wysłaniu „Wstecz” wraca do ekranu,
+     *   z którego zaczęto zgłoszenie
+     *
+     * Wymagania: US4.7
+     */
     @Test
     fun sendsOnce() =
         runTest(dispatcher) {
@@ -257,7 +296,8 @@ class QuickSendViewModelTest {
             runCurrent()
             viewModel.send(report)
             runCurrent()
-            assertEquals(1, saved.size)
+            assertEquals(1, saved.size, "jedno zapisanie zgłoszenia")
+            assertEquals(listOf("zdjecie-1"), saved.single().photoIds, "jedno zdjęcie w zgłoszeniu")
         }
 
     /** Pełna pamięć: „Spróbuj ponownie” zostaje. Wymagania: NFR-7 */
@@ -272,6 +312,25 @@ class QuickSendViewModelTest {
             assertEquals(QuickSendStage.FAILED, viewModel.stage.value)
         }
 
+    /**
+     * Zgłoszenie przy wejściu bierze punkt i budynek wejścia z katalogu i nie słucha odbiornika pozycji.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego
+     *   wejścia
+     *
+     * Wymagania: US4.6, BR-8
+     */
+    @Test
+    fun takesPlaceFromEntrance() =
+        runTest(dispatcher) {
+            source = flow { error("odbiornik pozycji przy wejściu") }
+            viewModel.start(entranceId = "node/6")
+            watch()
+            val position = (viewModel.lookup.value as QuickLookup.Found).position
+            assertEquals(ENTRANCE, position.point)
+            assertEquals("A-1", position.buildingSymbol)
+            assertEquals("node/6", position.entrance?.id)
+        }
+
     private fun TestScope.watch() = backgroundScope.launch { viewModel.lookup.collect {} }.also { runCurrent() }
 
     private fun TestScope.fix(point: GeoPoint) {
@@ -282,10 +341,6 @@ class QuickSendViewModelTest {
     private companion object {
         val INSIDE_A1 = GeoPoint(longitude = 17.0605, latitude = 51.1105)
         val OUTSIDE = GeoPoint(longitude = 17.10, latitude = 51.20)
-        const val CAMPUS =
-            """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
-                """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"A-1",""" +
-                """"osm_id":"way/A-1"},"geometry":{"type":"Polygon","coordinates":[[[17.06,51.11],""" +
-                """[17.061,51.11],[17.061,51.111],[17.06,51.111],[17.06,51.11]]]}}]}"""
+        val ENTRANCE = GeoPoint(longitude = 17.06, latitude = 51.11)
     }
 }

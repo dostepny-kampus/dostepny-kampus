@@ -5,76 +5,79 @@
  */
 package io.github.dostepnykampus.feature.map.building
 
-import androidx.compose.foundation.focusable
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.withFrameMillis
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
-import io.github.dostepnykampus.core.designsystem.GroupContainer
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.OfflinePill
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
-import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
-import io.github.dostepnykampus.core.designsystem.marking.MarkingChip
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
+import io.github.dostepnykampus.core.designsystem.marking.AssessmentLine
+import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.R
-import io.github.dostepnykampus.feature.map.overlay.OfflinePill
+
+/** Znacznik kreski między górą karty a pełnym opisem. */
+internal const val DESCRIPTION_LINE_TAG = "kreska-opisu"
+internal const val SCROLL_LINE_TAG = "linia-przewiniecia"
 
 /**
  * V2 Karta budynku: nagłówek z symbolem i nazwą z danych (budynek bez nazwy ma sam symbol), który TalkBack czyta jako
- * jeden, np. „Budynek A-1, Gmach Główny”, z fokusem po otwarciu. Pod nim wiersz o wejściach i wejścia z oznaczeniem
- * tekstem i ikoną, zalecane pierwsze. Czynności stoją w przewijanej treści: „Sprawdź, którędy wejść” zawsze, „Zamknij”
- * w [CardMode.Compact], „Pokaż budynek na mapie” w [CardMode.Direct]; pasek „Wstecz” oraz grupy „Wejścia”
- * i „Bariery w budynku” ma pełny ekran.
+ * jeden, np. „Budynek A-1, Gmach Główny”, z fokusem po otwarciu; poza [CardMode.Direct] obok niego „Zamknij”. Pod
+ * nim wiersz o wejściach z odpowiedzią, a bez danych o wejściach cichy napis. Czynności stoją w przewijanej treści:
+ * „Pokaż wejście na mapie” dla wejścia zalecanego, „Pokaż budynek na mapie” w [CardMode.isWhole]; grupy
+ * „Wejścia” i „Bariery w budynku” ma pełny opis, a pasek „Wstecz” tylko [CardMode.Direct].
  * Nieznany symbol: „budynku nie ma w telefonie”. Bez internetu nad nagłówkiem stoi [OfflinePill] bez daty.
  *
- * Wymagania: US2, BR-25, US2.8, NFR-18, US2.7, NFR-10
+ * Wymagania: US2, BR-25, US2.8, US3.2, NFR-18, US2.7, NFR-10
  *
  * @param symbol symbol z trasy, widoczny w nagłówku także w trakcie wczytywania
- * @param mode mała karta nad mapą, pełny ekran rozwinięty z niej albo pełny ekran otwarty od razu
- * @param onCheckEntrances „Sprawdź, którędy wejść” otwiera V3
+ * @param mode mała karta nad mapą, karta rozwinięta z niej, karta na cały ekran nad mapą albo pełny ekran od razu
  * @param onShowOnMap „Pokaż budynek na mapie” zaznacza budynek na V1
- * @param onBack „Wstecz”
- * @param onClose „Zamknij” małej karty
+ * @param onBack „Wstecz” w [CardMode.Direct]
+ * @param onClose „Zamknij” w nagłówku karty nad mapą
  * @param modifier wymiary nadane przez arkusz; mała karta ma wysokość treści, pełny ekran wypełnia całe miejsce
- * @param onReportEntrance „Zgłoś barierę przy wejściu” dla identyfikatora wejścia
- * @param onShowEntrance „Pokaż wejście na mapie” dla identyfikatora wejścia zalecanego
+ * @param onReport „Zgłoś barierę przy wejściu” bez wybranego wejścia, przy kilku wejściach bez danych
+ * @param onShowEntrance „Pokaż wejście na mapie” pod wierszem o wejściach i dotknięcie wiersza na liście wejść,
+ *   z identyfikatorem wejścia
  * @param onReportRemoval „Zgłoś, że bariery nie ma” dla identyfikatora zgłoszenia; `null` ukrywa przycisk
+ * @param onReplaceBarrier „Popraw zgłoszenie” dla identyfikatora zgłoszenia przyjętego; `null` ukrywa przycisk
  * @param viewModel stan karty; w aplikacji z grafu Hilt, w testach z podróbką katalogu
  */
 @Composable
 fun BuildingCardScreen(
     symbol: String,
     mode: CardMode,
-    onCheckEntrances: () -> Unit,
     onShowOnMap: () -> Unit,
     onBack: () -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
-    onReportEntrance: (String) -> Unit = {},
+    onReport: () -> Unit = {},
     onShowEntrance: (String) -> Unit = {},
     onReportRemoval: ((String) -> Unit)? = null,
+    onReplaceBarrier: ((String) -> Unit)? = null,
     viewModel: BuildingCardViewModel =
         hiltViewModel<BuildingCardViewModel, BuildingCardViewModel.Factory>(
             creationCallback = { factory -> factory.create(symbol) },
@@ -87,21 +90,24 @@ fun BuildingCardScreen(
         mode = mode,
         card = state,
         isOnline = isOnline,
-        onCheckEntrances = onCheckEntrances,
         onShowOnMap = onShowOnMap,
         onBack = onBack,
         onClose = onClose,
-        onReportEntrance = onReportEntrance,
+        onReport = onReport,
         onRetry = viewModel::retry,
         modifier = modifier,
         onShowEntrance = onShowEntrance,
         onReportRemoval = onReportRemoval,
+        onReplaceBarrier = onReplaceBarrier,
     )
 }
 
 /**
  * V2 dla gotowego stanu [card] i [isOnline]; „Spróbuj ponownie” to [onRetry], „Pokaż na planie” to [onShowPlan]
- * z identyfikatorem piętra, reszta jak w [BuildingCardScreen].
+ * z identyfikatorem piętra, „Oznacz obejrzane piętra” pod grupą „Piętra” to [onMarkFloors] (`null` ukrywa przycisk),
+ * „Zmień oznaczenie” pod wejściem to [onChangeMarking] z identyfikatorem wejścia (`null` ukrywa przycisk),
+ * dotknięcie wystającego nagłówka „Wejścia” niskiej karty to [onExpand], przewijanie treści to [scroll], reszta jak
+ * w [BuildingCardScreen]. Przy przewiniętej treści nad jej górną krawędzią stoi linia.
  */
 @Composable
 fun BuildingCardContent(
@@ -109,114 +115,131 @@ fun BuildingCardContent(
     mode: CardMode,
     card: BuildingCardUiState,
     isOnline: Boolean,
-    onCheckEntrances: () -> Unit,
     onShowOnMap: () -> Unit,
     onBack: () -> Unit,
     onClose: () -> Unit,
-    onReportEntrance: (String) -> Unit,
+    onReport: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     onShowEntrance: (String) -> Unit = {},
     onReportRemoval: ((String) -> Unit)? = null,
+    onReplaceBarrier: ((String) -> Unit)? = null,
     onShowPlan: (String) -> Unit = {},
+    onMarkFloors: (() -> Unit)? = null,
+    onChangeMarking: ((String) -> Unit)? = null,
+    onExpand: () -> Unit = {},
+    scroll: ScrollState = rememberScrollState(),
 ) {
     val isFullScreen = mode != CardMode.Compact
+    val isHeaderFixed = mode == CardMode.Expanded
+    val top = @Composable { CardTop(symbol = symbol, card = card, mode = mode, isOnline = isOnline, onClose = onClose) }
     Column(if (isFullScreen) modifier.fillMaxSize() else modifier) {
-        if (isFullScreen) BackHeader(title = symbol, onBack = onBack)
-        Column(
-            modifier = Modifier.weight(1f, isFullScreen).verticalScroll(rememberScrollState()).padding(Odstepy.m),
-            verticalArrangement = Arrangement.spacedBy(Odstepy.s),
-        ) {
-            if (!isOnline) OfflinePill()
-            HeaderOrSpace(symbol = symbol, card = card, isFullScreen = isFullScreen)
-            if (card is BuildingCardUiState.Ready || card.isWaiting(isFullScreen)) {
-                CardActions(
-                    mode = mode,
-                    onCheckEntrances = onCheckEntrances,
-                    onShowOnMap = onShowOnMap,
-                    onClose = onClose,
+        if (mode == CardMode.Direct) BackHeader(title = symbol, onBack = onBack)
+        if (isHeaderFixed) Box(Modifier.fixedTopPadding()) { top() }
+        Box(Modifier.weight(1f, isFullScreen)) {
+            Column(
+                modifier =
+                    Modifier
+                        .verticalScroll(scroll)
+                        .cardPadding(isPeek = card.hasEntrancesPeek(isFullScreen), hasTop = !isHeaderFixed),
+                verticalArrangement = Arrangement.spacedBy(Odstepy.s),
+            ) {
+                if (!isHeaderFixed) top()
+                if (card is BuildingCardUiState.Ready || card.isWaiting(isFullScreen)) {
+                    CardActions(
+                        mode = mode,
+                        recommended = card.recommendedEntrance(),
+                        onShowEntrance = onShowEntrance,
+                        onShowOnMap = onShowOnMap,
+                    )
+                }
+                FactsOrMissing(
+                    card = card,
+                    isFullScreen = isFullScreen,
+                    onReport = onReport,
+                    onShowEntrance = onShowEntrance,
+                    onReportRemoval = onReportRemoval,
+                    onReplaceBarrier = onReplaceBarrier,
+                    onRetry = onRetry,
+                    onShowPlan = onShowPlan,
+                    onMarkFloors = onMarkFloors,
+                    onChangeMarking = onChangeMarking,
+                    onExpand = onExpand,
                 )
             }
-            FactsOrMissing(
-                card = card,
-                isFullScreen = isFullScreen,
-                onReportEntrance = onReportEntrance,
-                onShowEntrance = onShowEntrance,
-                onReportRemoval = onReportRemoval,
-                onRetry = onRetry,
-                onShowPlan = onShowPlan,
-            )
+            ScrollLine(scroll)
         }
     }
 }
 
 @Composable
-private fun FactsOrMissing(
+private fun BoxScope.ScrollLine(scroll: ScrollState) {
+    if (scroll.canScrollBackward) {
+        HorizontalDivider(
+            modifier = Modifier.align(Alignment.TopCenter).testTag(SCROLL_LINE_TAG),
+            color = MaterialTheme.colorScheme.outlineVariant,
+        )
+    }
+}
+
+@Composable
+private fun CardTop(
+    symbol: String,
+    card: BuildingCardUiState,
+    mode: CardMode,
+    isOnline: Boolean,
+    onClose: () -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        if (!isOnline) OfflinePill()
+        CardHeader(symbol = symbol, card = card, mode = mode, onClose = onClose)
+    }
+}
+
+private fun Modifier.fixedTopPadding(): Modifier =
+    padding(start = Odstepy.m, top = Odstepy.m, end = Odstepy.m, bottom = Odstepy.s)
+
+@Composable
+private fun ColumnScope.FactsOrMissing(
     card: BuildingCardUiState,
     isFullScreen: Boolean,
-    onReportEntrance: (String) -> Unit,
+    onReport: () -> Unit,
     onShowEntrance: (String) -> Unit,
     onReportRemoval: ((String) -> Unit)?,
+    onReplaceBarrier: ((String) -> Unit)?,
     onRetry: () -> Unit,
     onShowPlan: (String) -> Unit,
+    onMarkFloors: (() -> Unit)?,
+    onChangeMarking: ((String) -> Unit)?,
+    onExpand: () -> Unit,
 ) {
+    if (card.hasEntrancesPeek(isFullScreen)) {
+        Column {
+            DescriptionLine()
+            EntrancesPeek(card = card, onExpand = onExpand)
+        }
+    }
     if (card is BuildingCardUiState.Ready && isFullScreen) {
         BuildingFacts(
             card = card,
-            onReportEntrance = onReportEntrance,
+            onReport = onReport,
             onShowEntrance = onShowEntrance,
             onReportRemoval = onReportRemoval,
+            onReplaceBarrier = onReplaceBarrier,
             onShowPlan = onShowPlan,
+            onMarkFloors = onMarkFloors,
+            onChangeMarking = onChangeMarking,
         )
     }
     if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = onRetry)
 }
 
 @Composable
-private fun HeaderOrSpace(symbol: String, card: BuildingCardUiState, isFullScreen: Boolean) {
-    val ready = card as? BuildingCardUiState.Ready
-    if (ready == null && !card.isWaiting(isFullScreen)) return
-    Column(
-        modifier = if (ready == null) Modifier.alpha(0f).clearAndSetSemantics {} else Modifier,
-        verticalArrangement = Arrangement.spacedBy(Odstepy.s),
-    ) {
-        if (ready != null) {
-            SymbolOverName(symbol = symbol, name = ready.name)
-            EntranceSummaryRow(entranceSummary(ready.entrances))
-        } else {
-            Column {
-                Text(text = symbol, style = MaterialTheme.typography.displayLarge)
-                Text(text = " ", style = MaterialTheme.typography.headlineMedium)
-            }
-            EntranceSummaryRow(EntranceSummary.NoData)
-        }
-    }
-}
-
-private fun BuildingCardUiState.isWaiting(isFullScreen: Boolean): Boolean =
-    this == BuildingCardUiState.Loading && !isFullScreen
-
-@Composable
-private fun SymbolOverName(symbol: String, name: String?) {
-    val spoken =
-        name?.let { stringResource(R.string.karta_czytaj, symbol, it) } ?: stringResource(R.string.mapa_budynek, symbol)
-    val focus = remember { FocusRequester() }
-    Column(
-        modifier =
-            Modifier
-                .semantics(mergeDescendants = true) { contentDescription = spoken }
-                .focusRequester(focus)
-                .focusable(),
-    ) {
-        Text(text = symbol, style = MaterialTheme.typography.displayLarge, color = MaterialTheme.colorScheme.primary)
-        name?.let { Text(text = it, style = MaterialTheme.typography.headlineMedium) }
-    }
-    LaunchedEffect(focus) { withFrameMillis { focus.requestFocus() } }
-}
+private fun DescriptionLine() =
+    HorizontalDivider(Modifier.testTag(DESCRIPTION_LINE_TAG), color = MaterialTheme.colorScheme.outlineVariant)
 
 /**
- * Wiersz o wejściach pod nagłówkiem: słowo i ikona oznaczenia jak w [MarkingChip] (kształt, nie
- * para zielony/czerwony).
+ * Wiersz o wejściach pod nagłówkiem: znak oznaczenia z mapy i słowo o wejściach budynku.
  *
  * Wymagania: US2.8, NFR-21
  */
@@ -228,32 +251,41 @@ internal fun EntranceSummaryRow(summary: EntranceSummary) {
             EntranceSummary.NoAccessible -> EntranceMarking.INACCESSIBLE to R.string.karta_wiersz_niedostepne
             EntranceSummary.NoData -> EntranceMarking.NO_DATA to R.string.karta_wiersz_brak_danych
         }
-    MarkingChip(marking = marking, label = stringResource(word))
+    MarkingSign(marking = marking, label = stringResource(word))
 }
 
 @Composable
-private fun BuildingFacts(
+private fun ColumnScope.BuildingFacts(
     card: BuildingCardUiState.Ready,
-    onReportEntrance: (String) -> Unit,
+    onReport: () -> Unit,
     onShowEntrance: (String) -> Unit,
     onReportRemoval: ((String) -> Unit)?,
+    onReplaceBarrier: ((String) -> Unit)?,
     onShowPlan: (String) -> Unit,
+    onMarkFloors: (() -> Unit)?,
+    onChangeMarking: ((String) -> Unit)?,
 ) {
     val common = commonAssessment(card.entrances)
+    Column {
+        DescriptionLine()
+        EntrancesGroup(
+            card = card,
+            withAssessment = common == null,
+            onShowEntrance = onShowEntrance,
+            onReport = onReport,
+            onChangeMarking = onChangeMarking,
+        )
+    }
     common?.let { AssessmentLine(it) }
-    GroupContainer(title = stringResource(R.string.karta_wejscia)) {
-        card.entrances.forEach { entrance ->
-            EntranceRow(
-                listed = entrance,
-                withAssessment = common == null,
-                onShowEntrance = onShowEntrance.takeIf { entrance.isRecommended },
-                onReportEntrance = onReportEntrance,
-            )
+    EvacuationExits(card)
+    BarriersGroup(card, onReportRemoval, onReplaceBarrier)
+    card.floors?.let { LiftToiletGroup(it) }
+    FloorsGroup(facts = card.floors, isBasic = card.isBasic, onShowPlan = onShowPlan)
+    onMarkFloors?.let { onMark ->
+        OutlinedAction(onClick = onMark, modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.minimum)) {
+            Text(stringResource(R.string.karta_oznacz_pietra))
         }
     }
-    BarriersGroup(card, onReportRemoval)
-    card.floors?.let { LiftToiletGroup(it) }
-    FloorsGroup(facts = card.floors, onShowPlan = onShowPlan)
 }
 
 @Composable
@@ -268,20 +300,25 @@ internal fun MissingBuilding(onRetry: () -> Unit) {
     }
 }
 
-@Composable
-private fun CardActions(mode: CardMode, onCheckEntrances: () -> Unit, onShowOnMap: () -> Unit, onClose: () -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(CeleDotyku.odstep)) {
-        CardButton(text = stringResource(R.string.karta_sprawdz), onClick = onCheckEntrances)
-        when (mode) {
-            CardMode.Compact -> CardButton(stringResource(R.string.mapa_zamknij), onClose, outlined = true)
-            CardMode.Expanded -> Unit
-            CardMode.Direct -> CardButton(stringResource(R.string.karta_pokaz), onShowOnMap, outlined = true)
-        }
-    }
+/** Tryb treści V2 Karta budynku. Wymagania: US2.8, US2.9 */
+enum class CardMode {
+    /** Mała karta nad mapą: nagłówek z „Zamknij”, wiersz o wejściach z odpowiedzią i „Pokaż wejście na mapie”. */
+    Compact,
+
+    /** Karta rozwinięta nad mapą: nagłówek z „Zamknij” i pod nim cały opis budynku. */
+    Expanded,
+
+    /**
+     * Pełny ekran otwarty od razu, bez małej karty: szerokie okno, poziomo albo wybór z listy przy TalkBack.
+     *
+     * Wymagania: NFR-19, NFR-51
+     */
+    Direct,
+
+    /** Karta przy dużej czcionce na cały ekran nad mapą: nagłówek z „Zamknij” i cały opis. Wymagania: NFR-20, US2.9 */
+    Large,
 }
 
-@Composable
-private fun CardButton(text: String, onClick: () -> Unit, outlined: Boolean = false) {
-    val kind = if (outlined) PinnedButtonKind.Outlined else PinnedButtonKind.Filled
-    PinnedButton(text = text, onClick = onClick, modifier = Modifier.fillMaxWidth(), kind = kind)
-}
+/** Czy karta stoi od razu na całym ekranie, bez małej karty po drodze. Wymagania: NFR-19, NFR-20, US2.9 */
+val CardMode.isWhole: Boolean
+    get() = this == CardMode.Direct || this == CardMode.Large

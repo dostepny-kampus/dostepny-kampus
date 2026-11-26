@@ -3,8 +3,6 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app
 
 import androidx.activity.ComponentActivity
@@ -24,8 +22,7 @@ import androidx.compose.ui.test.isHiddenFromAccessibility
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import io.github.dostepnykampus.core.data.account.GuestRoleProvider
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
+import io.github.dostepnykampus.app.navigation.isExpanded
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Rule
@@ -45,7 +42,7 @@ class SheetTalkBackTest {
 
     @Composable
     private fun Shell(isCard: Boolean) {
-        AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+        AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
             if (route is MapRoute) {
                 Text(text = "mapa", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
             } else if (route is BuildingRoute) {
@@ -64,8 +61,8 @@ class SheetTalkBackTest {
         matcher and !isHiddenFromAccessibility() and !hasAnyAncestor(isHiddenFromAccessibility())
 
     /**
-     * Wiersz: uchwyt małej karty → przycisk „Rozwiń opis budynku” ze stanem „zwinięte”, a po rozwinięciu ten sam
-     * przycisk ze stanem „rozwinięte”.
+     * Wiersz: uchwyt niskiej karty → przycisk „Wysokość karty” ze stanem „niska”, a po dotknięciu ten sam
+     * przycisk ze stanem „rozwinięta”.
      *
      * Wymagania: US2.8, NFR-18
      */

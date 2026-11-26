@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
@@ -17,13 +18,16 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
+import io.github.dostepnykampus.feature.map.camera.TouchSign
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
+import io.github.dostepnykampus.feature.map.campus.NO_SERVER
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,10 +46,10 @@ class MapBarrierTouchTest {
     private var touchBuildings: (List<String>) -> Unit = {}
     private var marked: String? = null
     private val fakeMap =
-        CampusMapView { _: CampusMapData, selection, _, _, _, onBuildingsTouch, onBarrierTouch, _: Modifier ->
+        CampusMapView { _: CampusMapData, selection, _, _, _, onBuildingsTouch, onSignTouch, _: Modifier ->
             marked = selection.barrier
             touchBuildings = onBuildingsTouch
-            touchBarrier = onBarrierTouch
+            touchBarrier = { onSignTouch(TouchSign.BARRIER, it) }
         }
     private val repository =
         BuildingCatalogRepository(ioContext = EmptyCoroutineContext) {
@@ -87,15 +91,17 @@ class MapBarrierTouchTest {
     }
 
     /**
-     * Wiersz: arkusz bariery, „Pokaż opis budynku” otwiera V2 budynku bariery i zamyka arkusz (PW-5).
+     * Wiersz: arkusz bariery, wiersz budynku otwiera V2 budynku bariery i zamyka arkusz (PW-5).
+     * Scenariusz (częściowo, przykład: dotknie znaku bariery przy budynku A-1): przegladanie-mapy.feature:
+     *   Wiersz budynku w arkuszu otwiera kartę budynku bez przelotu mapy
      *
-     * Wymagania: US1.5
+     * Wymagania: US1.5, US2.8
      */
     @Test
     fun opensBuildingFromSheet() {
         start()
         compose.runOnIdle { touchBarrier("z1") }
-        compose.onNodeWithText("Pokaż opis budynku").performClick()
+        compose.onNodeWithContentDescription("Budynek C-13").performClick()
 
         assertEquals(listOf("C-13"), opened)
         compose.onNodeWithText("Próg").assertDoesNotExist()
@@ -115,6 +121,18 @@ class MapBarrierTouchTest {
         compose.onNodeWithText("Próg").assertDoesNotExist()
     }
 
+    /** „Wstecz” przy otwartym arkuszu „Który budynek?” zamyka arkusz, a mapa zostaje. Wymagania: US2, NFR-15 */
+    @Test
+    fun closesChoiceOnBack() {
+        start()
+        compose.runOnIdle { touchBuildings(listOf("C-13", "C-14")) }
+        compose.onNodeWithText("Który budynek?").assertExists()
+        compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
+
+        compose.onNodeWithText("Który budynek?").assertDoesNotExist()
+        compose.runOnIdle { assertFalse(compose.activity.isFinishing) }
+    }
+
     private fun start() {
         val viewModel =
             CampusMapViewModel(
@@ -123,7 +141,7 @@ class MapBarrierTouchTest {
                 mapListChoice = TestMapListChoice(),
                 computeContext = UnconfinedTestDispatcher(),
                 geometry = ::campusMapData,
-                barriers = { listOf(THRESHOLD) },
+                server = NO_SERVER.copy(barriers = { listOf(THRESHOLD) }),
             )
         compose.setContent {
             DostepnyKampusTheme {

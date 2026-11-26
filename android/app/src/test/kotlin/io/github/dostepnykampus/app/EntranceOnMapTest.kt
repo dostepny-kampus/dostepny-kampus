@@ -3,8 +3,6 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app
 
 import androidx.activity.ComponentActivity
@@ -15,31 +13,31 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.AppScreen
-import io.github.dostepnykampus.core.data.account.GuestRoleProvider
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
+import io.github.dostepnykampus.app.navigation.SignInRoute
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.feature.map.building.BuildingCardViewModel
-import io.github.dostepnykampus.feature.map.building.EntrancesScreen
+import io.github.dostepnykampus.feature.map.camera.CameraMotion
+import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
-import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
-import io.github.dostepnykampus.feature.map.navigation.MapFocus
-import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 import kotlin.coroutines.EmptyCoroutineContext
 
 private const val BUILDING =
@@ -50,8 +48,11 @@ private const val NAMED_ID = "node/10"
 private val NAMED_AT = GeoPoint(longitude = 0.2, latitude = 0.3)
 private const val NAMED = "Wejście dostosowane"
 private const val SELECTED_NAMED = "Zaznaczone wejście: »$NAMED«, budynek A-1"
-private const val UNNAMED = "Wejście bez nazwy w danych"
+private const val UNNAMED = "Wejście"
 private const val SHOW_ENTRANCE = "Pokaż wejście na mapie"
+private const val SIDE = "Wejście boczne"
+private val SIDE_AT = GeoPoint(longitude = 0.9, latitude = 0.5)
+private const val SHOW_OTHER = "Pokaż to wejście na mapie"
 
 private fun entrance(id: Int, at: GeoPoint, tags: String): String =
     """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/$id",$tags},""" +
@@ -68,16 +69,17 @@ private val OTHERS =
     )
 
 /**
- * „Pokaż wejście na mapie” na V3 przez prawdziwy ekran V1 do tego, co dostaje widok mapy (podróbka): zaznaczone
- * wejście, pinezka z podpisem, kamera i nazwa dla TalkBack. Katalog
+ * „Pokaż wejście na mapie” na karcie V2 przez prawdziwy ekran V1 do tego, co dostaje widok mapy (podróbka):
+ * zaznaczone wejście, pinezka z podpisem, kamera, arkusz wejścia i nazwa dla TalkBack. Katalog
  * „Budynek testowy” jest syntetyczny (nie dane PWr).
  *
- * `showEntranceOnMap`: Od dotknięcia budynku na V1 przez V2 i V3 do „Pokaż wejście na mapie”; zwraca to, co dostała
+ * `showEntranceOnMap`: Od dotknięcia budynku na V1 przez V2 do „Pokaż wejście na mapie”; zwraca to, co dostała
  * mapa po tym.
  *
- * Wymagania: US3.3, US2.1, NFR-18, NFR-15
+ * Wymagania: US3.3, US2.1, US4.6, US14.2, NFR-18, NFR-15
  */
 @RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h800dp")
 class EntranceOnMapTest {
     @get:Rule
@@ -85,17 +87,23 @@ class EntranceOnMapTest {
 
     private val shown = mutableListOf<Pair<CampusMapData, MapCamera>>()
     private val selections = mutableListOf<MapSelection>()
+    private val moves = mutableListOf<Pair<CameraTransition, MapInset>>()
+    private var idle: (MapCamera) -> Unit = {}
     private var touch: (List<String>) -> Unit = {}
     private val choice = TestMapListChoice()
+    private lateinit var navigator: AppNavigator
     private val fakeMap =
-        CampusMapView { data: CampusMapData, selection, move, _, _, onBuildingsTouch, _, _: Modifier ->
+        CampusMapView { data: CampusMapData, selection, move, inset, onCameraIdle, onBuildingsTouch, _, _: Modifier ->
             shown += data to move.camera
             selections += selection
+            moves += move to inset
+            idle = onCameraIdle
             touch = onBuildingsTouch
         }
 
     @Composable
     private fun AppNavigator.Screen(route: NavKey, json: String) {
+        navigator = this
         val repository = remember { BuildingCatalogRepository(ioContext = EmptyCoroutineContext) { json } }
         MapOrBuildingScreen(
             route = route,
@@ -103,14 +111,7 @@ class EntranceOnMapTest {
             choice = choice,
             mapView = fakeMap,
         ) { other ->
-            if (other is EntrancesRoute) {
-                EntrancesScreen(
-                    symbol = other.symbol,
-                    onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = other.symbol)) },
-                    onBack = { back() },
-                    viewModel = remember { BuildingCardViewModel(other.symbol, repository, { flowOf(true) }) },
-                )
-            } else {
+            if (other !is SignInRoute) {
                 AppScreen(other)
             }
         }
@@ -121,7 +122,7 @@ class EntranceOnMapTest {
             DostepnyKampusTheme {
                 AppShell(
                     firstLaunch = false,
-                    roles = GuestRoleProvider,
+                    roles = TestRoles(),
                     onFirstHelpLeft = {},
                     onChooseMap = { choice.savedChoice.value = false },
                 ) {
@@ -143,22 +144,126 @@ class EntranceOnMapTest {
         show(json)
         compose.waitUntil { shown.isNotEmpty() }
         compose.runOnUiThread { touch(listOf("A-1")) }
-        click("Sprawdź, którędy wejść")
         click(SHOW_ENTRANCE)
-        val v3 = hasText("Którędy wejść", substring = true)
-        compose.waitUntil { compose.onAllNodes(v3).fetchSemanticsNodes().isEmpty() }
         return shown.last()
     }
 
     private fun namedCatalog(): String =
         catalog(entrance(10, NAMED_AT, """"entrance":"yes","ref":"$NAMED","wheelchair":"yes""""), *OTHERS)
 
-    /** Wiersz E2 (O1, O2, O4): V3 → V1; mapa dostaje wybrane wejście z punktem i podpisem z nazwą. */
+    /** Wiersz E2 (O1, O2, O4): V2 → V1; mapa dostaje wybrane wejście z punktem i podpisem z nazwą. */
     @Test
     fun passesEntranceToMap() {
         showEntranceOnMap(namedCatalog())
         val expected = SelectedEntrance(id = NAMED_ID, location = NAMED_AT, label = NAMED, buildingSymbol = "A-1")
         assertEquals(expected, selections.last().entrance)
+    }
+
+    /**
+     * Wiersz: V1, dotknięcie budynku → niska karta V2 z „Wejście dostępne” i zdaniem o wejściu zalecanym, czytanymi
+     *   razem; to 1 dotknięcie od mapy.
+     * Scenariusz: przegladanie-mapy.feature: Wejście dostępne najwyżej 3 dotknięcia od mapy
+     *
+     * Wymagania: US3.2, US3.1, BR-25
+     */
+    @Test
+    fun answersAfterOneTap() {
+        show(namedCatalog())
+        compose.waitUntil { shown.isNotEmpty() }
+        compose.runOnUiThread { touch(listOf("A-1")) }
+        val answer = hasText("Wejście dostępne") and hasText("Zalecane: „$NAMED”.")
+        compose.waitUntil { compose.onAllNodes(answer).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNode(hasText(SHOW_ENTRANCE)).assertExists("„Pokaż wejście na mapie” pod zdaniem")
+    }
+
+    /**
+     * Wiersz: V1, dotknięcie budynku bez wejścia dostępnego → karta z „Brak wejścia dostępnego” i zdaniem, ile wejść
+     *   nie jest dostępnych; bez „Pokaż wejście na mapie”.
+     * Scenariusz: przegladanie-mapy.feature: Brak wejścia dostępnego jest powiedziany wprost
+     *
+     * Wymagania: US3.1, BR-25
+     */
+    @Test
+    fun saysNoAccessibleAfterTap() {
+        show(catalog(entrance(10, NAMED_AT, """"entrance":"yes","ref":"$NAMED","wheelchair":"no""""), OTHERS[0]))
+        compose.waitUntil { shown.isNotEmpty() }
+        compose.runOnUiThread { touch(listOf("A-1")) }
+        val answer = hasText("Brak wejścia dostępnego") and hasText("Żadne z 2 wejść nie jest dostępne.")
+        compose.waitUntil { compose.onAllNodes(answer).fetchSemanticsNodes().isNotEmpty() }
+        val buttons = compose.onAllNodes(hasText(SHOW_ENTRANCE)).fetchSemanticsNodes()
+        assertTrue("bez „Pokaż wejście na mapie”, a jest ${buttons.size}", buttons.isEmpty())
+    }
+
+    /**
+     * Wiersz: arkusz wejścia z „Pokaż wejście na mapie”, kamera stoi, „Zamknij” → V1: mapa dostaje ten sam obraz bez
+     * arkusza w jednym skoku, ze środkiem niżej i dopełnieniem bez dołu, bez przelotu ani zjazdu mapy.
+     *
+     * Wymagania: US3.3, US16.1, NFR-56
+     */
+    @Test
+    fun closesEntranceWithoutMotion() {
+        showEntranceOnMap(namedCatalog())
+        compose.waitUntil { moves.last().second.bottom > 0.0 }
+        val (above, inset) = moves.last()
+        compose.runOnUiThread { idle(above.camera) }
+        compose.waitForIdle()
+        val before = moves.size
+        click("Zamknij")
+        val after = moves.subList(fromIndex = before, toIndex = moves.size).filter { it.first != above }
+        val (closed, uncovered) = after.last()
+        val motions = after.map { it.first.motion }.toSet()
+        assertEquals("po zamknięciu tylko skok: $after", setOf(CameraMotion.NONE), motions)
+        assertEquals("dopełnienie bez dołu po zamknięciu", 0.0, uncovered.bottom, 0.0)
+        assertEquals("ta sama góra mapy", inset.top, uncovered.top, 0.0)
+        assertEquals("to samo powiększenie", above.camera.zoom, closed.camera.zoom, 0.0)
+        assertTrue(
+            "środek niżej o połowę arkusza, ten sam obraz: ${above.camera} → ${closed.camera}",
+            closed.camera.center.latitude < above.camera.center.latitude,
+        )
+    }
+
+    /** Wiersz: „Pokaż wejście na mapie” na V2 → V1 z otwartym arkuszem tego wejścia. Wymagania: US3.3, US3.2 */
+    @Test
+    fun opensEntranceSheet() {
+        showEntranceOnMap(namedCatalog())
+        val sheet = hasText("Wejście")
+        compose.waitUntil { compose.onAllNodes(sheet).fetchSemanticsNodes().isNotEmpty() }
+    }
+
+    /**
+     * Wiersz: arkusz wejścia zalecanego nie pokazuje innego wejścia dostępnego ani „Pokaż to wejście na mapie”;
+     *   inne wejścia są na liście „Wejścia” karty.
+     *
+     * Wymagania: US3.3
+     */
+    @Test
+    fun hidesOtherEntranceInSheet() {
+        val main = entrance(10, NAMED_AT, """"entrance":"main","ref":"$NAMED","wheelchair":"yes"""")
+        val side = entrance(11, SIDE_AT, """"entrance":"yes","ref":"$SIDE","wheelchair":"yes"""")
+        showEntranceOnMap(catalog(main, side))
+        compose.waitUntil { compose.onAllNodes(hasText("Wejście")).fetchSemanticsNodes().isNotEmpty() }
+
+        assertEquals("node/10", selections.last().entrance?.id)
+        compose.onNode(hasText(SIDE)).assertDoesNotExist()
+        compose.onNode(hasContentDescription(SHOW_OTHER, substring = true)).assertDoesNotExist()
+    }
+
+    /**
+     * Wiersz: arkusz wejścia, Gość → „Zgłoś barierę przy wejściu” prowadzi do L1, który pamięta wejście.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego
+     *   wejścia
+     *
+     * Wymagania: US4.6, US14.2
+     */
+    @Test
+    fun sendsGuestFromSheetToSignIn() {
+        showEntranceOnMap(namedCatalog())
+        val report = hasContentDescription("Zgłoś barierę przy wejściu: »$NAMED«")
+        compose.waitUntil { compose.onAllNodes(report).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNode(report).performScrollTo().performClick()
+        compose.waitForIdle()
+
+        assertEquals(SignInRoute(isForReport = true, entranceId = NAMED_ID), navigator.current)
     }
 
     /** Wiersz E2, E4: wejście bez nazwy w danych dostaje podpis zastępczy, także dla TalkBack. */
@@ -169,7 +274,7 @@ class EntranceOnMapTest {
         val selected = selections.last().entrance
         assertEquals(UNNAMED, selected?.label)
         assertEquals(NAMED_AT, selected?.location)
-        compose.onNode(read("Zaznaczone wejście: »$UNNAMED«, budynek A-1")).assertExists()
+        compose.onNode(read("Zaznaczone wejście: $UNNAMED, budynek A-1")).assertExists()
     }
 
     /** Wiersz E2 (O5): pozostałe wejścia, także niedostępne i bez danych, zostają w danych mapy. */

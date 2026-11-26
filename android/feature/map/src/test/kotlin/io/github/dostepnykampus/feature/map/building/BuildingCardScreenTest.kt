@@ -8,6 +8,8 @@ package io.github.dostepnykampus.feature.map.building
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -49,7 +51,6 @@ class BuildingCardScreenTest {
                 BuildingCardScreen(
                     symbol = "C-13",
                     mode = CardMode.Expanded,
-                    onCheckEntrances = {},
                     onShowOnMap = {},
                     onBack = {},
                     onClose = {},
@@ -60,7 +61,7 @@ class BuildingCardScreenTest {
         compose.onNodeWithText("Budynek testowy").assertIsDisplayed()
         compose.onNodeWithText("Wejścia").assertIsDisplayed()
         compose.onNodeWithText("Główne").assertIsDisplayed()
-        compose.onNodeWithText("Sprawdź, którędy wejść").assertIsDisplayed()
+        compose.onAllNodesWithText("Pokaż wejście na mapie").onFirst().assertIsDisplayed()
         listOf("Brak zgłoszonych barier", "Bariera pojawi się tutaj", "Bariery w budynku").forEach { text ->
             compose.onNodeWithText(text, substring = true, ignoreCase = true).assertDoesNotExist()
         }

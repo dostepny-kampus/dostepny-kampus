@@ -51,7 +51,6 @@ class BuildingCardOfflineTest {
                 BuildingCardScreen(
                     symbol = "A-1",
                     mode = CardMode.Expanded,
-                    onCheckEntrances = {},
                     onShowOnMap = {},
                     onBack = {},
                     onClose = {},
@@ -85,7 +84,6 @@ class BuildingCardOfflineTest {
                 BuildingCardScreen(
                     symbol = "A-1",
                     mode = CardMode.Expanded,
-                    onCheckEntrances = {},
                     onShowOnMap = {},
                     onBack = {},
                     onClose = {},

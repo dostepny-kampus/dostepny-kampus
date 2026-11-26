@@ -75,13 +75,13 @@ class QueueTransactionTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
+                submissionServer(
                     create = { id, content -> ServerReply.Ok(server(id, content)) },
                     putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                     update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content))) },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
-            history = FailingHistory(),
+            records = SentRecords(history = FailingHistory()),
         )
 
     /** Historia, której wybrany zapis [failing] kończy się błędem, np. po zabiciu procesu. */

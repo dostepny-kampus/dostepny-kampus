@@ -1,0 +1,15 @@
+@startsalt
+' V2 Karta budynku, budynek z trzema wejściami bez oznaczenia i bez nazwy: jeden wiersz
+' zamiast trzech jednakowych (US2.1, US17.1).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$naglowek_karty("<i>[symbol]</i>", "<i>[nazwa budynku z danych]</i>")
+$karta_gora(0, "bez_danych")
+$sekcja("Wejścia")
+$wejscia_bez_nazw("3 wejścia")
+Z map i opisów, stan z <i>[data]</i>
+$tekst("[dalej pełny opis jak na wzorcu]", "i")
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

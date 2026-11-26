@@ -35,7 +35,7 @@ internal const val WATERWAY = "waterway"
 
 private const val CITY_BUILDINGS = "budynki_miasta"
 private const val PATHS = "chodniki"
-private val OWN_MIN_ZOOM = mapOf(CITY_BUILDINGS to CITY_ZOOM, PATHS to STREET_ZOOM)
+private val OWN_MIN_ZOOM = mapOf(CITY_BUILDINGS to CITY_ZOOM, PATHS to STREET_ZOOM, STREET_NAMES to STREET_ZOOM)
 private val GREEN_CLASSES = listOf("grass", "wood", "farmland", "wetland")
 private val PATH_CLASSES = listOf("path", "track")
 private val RAIL_CLASSES = listOf("rail", "transit")
@@ -53,6 +53,10 @@ private val RAIL_CLASSES = listOf("rail", "transit")
  * @property path chodniki i place (`chodnik`)
  * @property building budynki spoza PWr (`budynek`)
  * @property buildingOutline kontur budynków spoza PWr (`budynek_kontur`)
+ * @property streetName nazwy ulic (`napis_ulica`)
+ * @property waterName nazwa rzeki (`napis_woda`)
+ * @property districtName nazwy dzielnic (`napis_dzielnica`)
+ * @property halo obwódka napisów (`obwodka`)
  */
 data class BasemapColors(
     val green: String,
@@ -63,6 +67,10 @@ data class BasemapColors(
     val path: String,
     val building: String,
     val buildingOutline: String,
+    val streetName: String,
+    val waterName: String,
+    val districtName: String,
+    val halo: String,
 )
 
 /** Źródło kafelków wektorowych podkładu w stylu JSON. Wymagania: NFR-39 */
@@ -85,6 +93,9 @@ internal val BASEMAP_LAYERS: List<String>
             "ulice",
             "tory",
             CITY_BUILDINGS,
+            "nazwy_rzek",
+            STREET_NAMES,
+            "dzielnice",
         )
 
 /**
@@ -96,13 +107,14 @@ internal val BASEMAP_LAYERS: List<String>
 internal fun basemapMinZoom(layer: String, area: Double): Double = maxOf(a = area, b = OWN_MIN_ZOOM[layer] ?: 0.0)
 
 /**
- * Warstwy podkładu wektorowego w kolorach [colors], każda od powiększenia [basemapMinZoom] dla [minZoom]. Mapa nie
- * ma punktów usług, numerów domów ani napisów: tylko zieleń, woda, ulice, chodniki, tory i budynki miasta.
+ * Kształty podkładu wektorowego w kolorach [colors], każdy od powiększenia [basemapMinZoom] dla [minZoom]: zieleń,
+ * woda, ulice, chodniki, tory i budynki miasta. Mapa nie ma punktów usług ani numerów domów; nazwy podaje
+ * [basemapNameLayers], rysowane nad warstwami, które leżą na kształtach podkładu.
  *
  * Wymagania: NFR-16, NFR-39, US1.4
  */
-internal fun basemapLayers(colors: BasemapColors, minZoom: Double): List<JsonObject> {
-    val layers =
+internal fun basemapShapeLayers(colors: BasemapColors, minZoom: Double): List<JsonObject> =
+    withMinZoom(
         listOf(
             basemapFill(id = "zielen", layer = "landcover", color = colors.green, filter = classIn(GREEN_CLASSES)),
             basemapFill(id = "parki", layer = "park", color = colors.green),
@@ -115,12 +127,24 @@ internal fun basemapLayers(colors: BasemapColors, minZoom: Double): List<JsonObj
             basemapLine(id = "tory", layer = TRANSPORTATION, color = colors.rail, width = railWidth())
                 .filtered(RAIL_CLASSES),
             cityBuildings(id = CITY_BUILDINGS, colors = colors),
-        )
-    return layers.map { layer ->
+        ),
+        minZoom,
+    )
+
+/**
+ * Nazwy rzek, ulic i dzielnic podkładu w kolorach [colors], z tekstem wysokim na [textSize], każda od powiększenia
+ * [basemapMinZoom] dla [minZoom].
+ *
+ * Wymagania: NFR-16, NFR-39
+ */
+internal fun basemapNameLayers(colors: BasemapColors, minZoom: Double, textSize: Double): List<JsonObject> =
+    withMinZoom(basemapNames(colors, textSize), minZoom)
+
+private fun withMinZoom(layers: List<JsonObject>, minZoom: Double): List<JsonObject> =
+    layers.map { layer ->
         val id = layer.getValue("id").jsonPrimitive.content
         JsonObject(layer + ("minzoom" to JsonPrimitive(basemapMinZoom(layer = id, area = minZoom))))
     }
-}
 
 /** Filtr obiektów źródła, których klasa OpenMapTiles jest jedną z [names]. */
 internal fun classIn(names: List<String>): JsonArray =

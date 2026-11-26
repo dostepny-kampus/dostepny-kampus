@@ -17,6 +17,16 @@ android {
         versionCode = 1
         versionName = "0.1.0"
     }
+    signingConfigs.getByName("debug").useRepositoryDebugKey(rootDir.resolve("debug.keystore"))
+}
+
+/* Plik APK i pakiet release powstają tylko z adresami https:// z konfiguracji budowania (ServerAddress). */
+val releaseAddresses =
+    tasks.register<ReleaseAddressCheck>("checkReleaseAddresses") {
+        addresses.set(ServerAddress.entries.associate { it.name to it.release(providers).orEmpty() })
+    }
+tasks.matching { it.name == "packageRelease" || it.name == "bundleRelease" }.configureEach {
+    dependsOn(releaseAddresses)
 }
 
 moduleGraphAssert {

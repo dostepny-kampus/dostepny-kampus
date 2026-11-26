@@ -34,13 +34,25 @@ public fun GroupContainer(title: String, modifier: Modifier = Modifier, content:
             color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.titleLarge,
         )
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.surfaceContainerLowest,
-            border = BorderStroke(Obramowania.ramka, MaterialTheme.colorScheme.outline),
-        ) {
-            Column(modifier = Modifier.padding(horizontal = Odstepy.m, vertical = Odstepy.s), content = content)
-        }
+        GroupFrame(content = content)
+    }
+}
+
+/**
+ * Kontener treści grupy bez nagłówka, np. lista rozwinięta pod przyciskiem: taki sam jak w [GroupContainer].
+ *
+ * Tokeny: tło `surfaceContainerLowest`, ramka [Obramowania.ramka] w kolorze `outline`, zaokrąglenie
+ * [Zaokraglenia.duze], wcięcie treści [Odstepy.m] w poziomie i [Odstepy.s] w pionie. Treść [content] układa się
+ * w kolumnie.
+ */
+@Composable
+public fun GroupFrame(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+        border = BorderStroke(Obramowania.ramka, MaterialTheme.colorScheme.outline),
+    ) {
+        Column(modifier = Modifier.padding(horizontal = Odstepy.m, vertical = Odstepy.s), content = content)
     }
 }

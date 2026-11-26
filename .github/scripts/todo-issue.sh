@@ -10,6 +10,7 @@ set -euo pipefail
 # w android/ (zawierają przykłady).
 # Rozwiązania tymczasowe (@Ignore, @Disabled, @Tymczasowe, @RequiresOptIn, tag wykluczający w .feature) też muszą wskazywać otwarte issue.
 # Stan issue z gh (bez dostępu do issue skrypt kończy się kodem 2); w teście zamiast sieci: ISSUE_JSON_DIR z plikami <numer>.json (gh issue view --json state,url).
+# Chwilowy błąd GitHuba (HTTP 5xx, błąd sieci) jest ponawiany: do 3 prób co TODO_ISSUE_RETRY_DELAY sekund (domyślnie 10).
 # PR_BODY (opis PR, opcjonalny): znacznik wskazujący issue zamykane przez ten PR (słowa zamykające z slowa-zamykajace.sh, np. Closes, Fixed) to naruszenie,
 # bo po scaleniu issue się zamknie, a znacznik zostanie i zaczerwieni cudze PR.
 # Kod wyjścia: 0 = czysto, 1 = naruszenie, 2 = błąd narzędzia gh lub jq (nie wiemy, czy issue jest w porządku).
@@ -25,6 +26,9 @@ while read -r numer; do
   [[ -n $numer ]] && zamykane[$numer]=1
 done < <(numery_zamykanych_issue <<<"${PR_BODY:-}")
 state=''
+retry_delay="${TODO_ISSUE_RETRY_DELAY:-10}"
+attempts=3
+transient='HTTP 5[0-9][0-9]|error connecting|timeout|unexpected EOF|connection reset'
 
 tool_error() {
   echo "::error title=Błąd narzędzia::błąd narzędzia $1: $2"
@@ -33,7 +37,7 @@ tool_error() {
 
 # Ustawia $state (OPEN, CLOSED, PULL albo MISSING); każde issue pytamy raz, bez podpowłoki, żeby pamięć działała.
 load_state() {
-  local number="$1" json err_file
+  local number="$1" json err_file attempt
   if [[ -n ${states[$number]:-} ]]; then
     state="${states[$number]}"
     return
@@ -46,13 +50,22 @@ load_state() {
     fi
   else
     err_file="$(mktemp)"
-    if ! json="$(gh issue view "$number" --json state,url 2>"$err_file")"; then
+    attempt=1
+    until json="$(gh issue view "$number" --json state,url 2>"$err_file")"; do
       if grep -qi 'could not resolve\|not found' "$err_file"; then
         json=''
-      else
+        break
+      fi
+      if ! grep -qiE "$transient" "$err_file"; then
         tool_error gh "gh issue view ${number}: $(head -n 1 "$err_file")"
       fi
-    fi
+      if ((attempt >= attempts)); then
+        tool_error gh "GitHub nie odpowiedział po ${attempts} próbach: gh issue view ${number}: $(head -n 1 "$err_file")"
+      fi
+      echo "::warning title=GitHub::gh issue view ${number}: $(head -n 1 "$err_file"); ponowienie za ${retry_delay} s."
+      sleep "$retry_delay"
+      attempt=$((attempt + 1))
+    done
     rm -f "$err_file"
   fi
   if [[ -z $json ]]; then

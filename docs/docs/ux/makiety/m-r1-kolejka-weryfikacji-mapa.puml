@@ -11,18 +11,18 @@ $ramka()
 Budynek A-1
 Zgłoszenie z pomiaru
 Wysłane <i>[data]</i>
-$przycisk("Otwórz", "chevron-right")
+$czynnosc_karty("Otwórz", "arrow-right")
 }
 ..
 <b>Do sprawdzenia</b>
 $przelacznik("Mapa", "Lista", 1)
-$mapa("mapa kampusu z punktami zgłoszeń do sprawdzenia; wybrany punkt przy C-13", "", "info")
+$mapa("mapa kampusu z punktami zgłoszeń do sprawdzenia; wybrany punkt przy C-13", "", "info", "© OpenStreetMap contributors")
 $ramka()
 <b>próg</b>
 Budynek C-13
 Zgłoszenie z pomiaru
 Wysłane <i>[data]</i>
-$przycisk("Weź do sprawdzenia")
+$czynnosc_karty("Weź do sprawdzenia")
 }
 $ekran_koniec()
 @endsalt

@@ -4,7 +4,7 @@
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek_mapy("Pokaż mapę")
-$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$pole_tekstowe("Szukaj budynku, np. C-13")
 $sekcja("Kampus główny · 78")
 $ramka()
 <b>Budynek A-1</b>

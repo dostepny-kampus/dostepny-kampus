@@ -9,7 +9,8 @@ Funkcja: Oznaczenie wejścia
     # Dane testowe, a nie stan faktyczny budynku B-8.
     Oraz w danych testowych wejście boczne B-8 nie ma informacji o dostępności ani w danych PWr, ani w OpenStreetMap
 
-  @US14.1 @aplikacja @serwer
+  # kroki serwera: #3172
+  @US14.1 @aplikacja @serwer @do-zrobienia
   Szablon scenariusza: Bez roli Zbierającego zmiany oznaczenia wejścia nie da się złożyć
     Zakładając, że osoba jest zalogowana tylko z rolą <rola>
     Jeżeli przejrzy dostępne ekrany aplikacji
@@ -44,13 +45,40 @@ Funkcja: Oznaczenie wejścia
       Oraz data oznaczenia tego wejścia to 3.11.2026, a źródło to „import”
       Oraz oznaczenia „dostępne”, „niedostępne” i „brak danych” da się odróżnić w odcieniach szarości
 
+    @BR-27 @US17.1 @US2.6 @serwer
+    Szablon scenariusza: Import bierze oznaczenie, nazwę i opis wejścia z warstwy wejść PWr
+      Zakładając, że w danych testowych warstwa wejść PWr ma przy A-1 wpis z polami <pola>
+      Jeżeli zakończy się import budynków
+      Wtedy A-1 ma <wynik>
+
+      Przykłady:
+        | pola                                                                         | wynik                                                                        |
+        | Czy_dostos „Tak”, Szerokosc 120, Uwagi „Wejście Cesarskie. Od ul. Wybrzeże.” | wejście „Wejście Cesarskie”, „dostępne”, drzwi 120 cm, opis „Od ul. Wybrzeże.” |
+        | Czy_dostos „Tak”, Szerokosc 0, Uwagi „Wyjście ewakuacyjne z pomieszczenia 41” | wyjście ewakuacyjne, a nie wejście                                           |
+        | Czy_dostos „Nie”, Szerokosc 0, Uwagi „Do wejścia prowadzą schody.”           | wejście „Wejście”, „niedostępne”, bez szerokości drzwi, opis „Do wejścia prowadzą schody.” |
+
+    @BR-27 @BR-25 @US2.1 @serwer
+    Szablon scenariusza: Import opisuje położenie wejścia bez nazwy
+      Zakładając, że w danych testowych warstwa wejść PWr ma przy A-1 wpisy: <wpisy>
+      Jeżeli zakończy się import budynków
+      Wtedy wejścia A-1 z tych wpisów mają nazwy <nazwy> i opisy położenia <opisy>
+      Ale żadna z tych nazw nie daje pierwszeństwa przy wyborze wejścia zalecanego
+
+      Przykłady:
+        | wpisy                                                                               | nazwy              | opisy                                  |
+        | jeden bez uwag na wschodniej ścianie, 30 m od budynku B-7                           | „Wejście”          | „Od strony B-7, od wschodu.”           |
+        | jeden bez uwag na wschodniej ścianie, bez innego budynku do 40 m                    | „Wejście”          | „Od wschodu.”                          |
+        | jeden z uwagą „Do wejścia prowadzą schody.” na wschodniej ścianie, bez innego budynku do 40 m | „Wejście” | „Od wschodu.” |
+        | dwa bez uwag na wschodniej ścianie 20 m od siebie, 30 m od budynku C-14             | dwa razy „Wejście” | dwa razy „Od strony C-14, od wschodu.” |
+        | jeden przy wejściu głównym z OpenStreetMap bez nazwy, bez innego budynku do 40 m    | „Wejście główne”   | „Od wschodu.”                          |
+
   Reguła: Wspólną datę i źródło ekran podaje raz, a różne przy każdym wejściu
 
     @US17.3 @aplikacja
-    Scenariusz: Wspólna data i źródło stoją raz nad listą wejść
+    Scenariusz: Wspólna data i źródło stoją raz pod listą wejść
       Zakładając, że wszystkie wejścia A-1 mają oznaczenie z datą 3.11.2026 i źródłem „import”
       Jeżeli Gość niezalogowany otworzy kartę budynku A-1
-      Wtedy nad listą wejść widnieje jeden wiersz z datą 3.11.2026 i źródłem „import”
+      Wtedy pod listą wejść widnieje jeden wiersz z datą 3.11.2026 i źródłem „import”
       Ale przy wejściach nie ma osobnej daty ani źródła
 
     @US17.3 @aplikacja
@@ -59,7 +87,7 @@ Funkcja: Oznaczenie wejścia
       Oraz pozostałe wejścia A-1 mają oznaczenie z datą 3.11.2026 i źródłem „import”
       Jeżeli Gość niezalogowany otworzy kartę budynku A-1
       Wtedy przy każdym wejściu widnieje jego data i źródło
-      Ale nad listą wejść nie ma wspólnego wiersza z datą
+      Ale pod listą wejść nie ma wspólnego wiersza z datą
 
   Reguła: Zmianę oznaczenia składa Zbierający, a sprawdza Weryfikator, który jej nie złożył
 
@@ -67,7 +95,8 @@ Funkcja: Oznaczenie wejścia
       Zakładając, że Zbierający jest zalogowany z rolą Zbierającego
       Oraz pierwszy i drugi Weryfikator są zalogowani z rolą Weryfikatora
 
-    @US17.2 @BR-9 @aplikacja
+    # pełny test przebiegu w aplikacji: #3816
+    @US17.2 @BR-9 @aplikacja @do-zrobienia
     Scenariusz: Zmiana oznaczenia wejścia przechodzi te same statusy co zgłoszenie
       Zakładając, że wejście boczne B-8 ma oznaczenie „brak danych”
       Oraz telefon nie ma sieci
@@ -83,7 +112,8 @@ Funkcja: Oznaczenie wejścia
       Wtedy aplikacja wskazuje brak zdjęcia i nie zapisuje zgłoszenia
       Ale nie pyta o typ bariery ani uciążliwość
 
-    @US17.2 @US17.3 @serwer
+    # kroki serwera: #3172
+    @US17.2 @US17.3 @serwer @do-zrobienia
     Scenariusz: Przyjęta zmiana zmienia oznaczenie, datę i źródło na karcie budynku
       Zakładając, że wejście boczne B-8 ma oznaczenie „brak danych” ze źródłem „import”
       Oraz Zbierający wysłał zmianę oznaczenia tego wejścia na „niedostępne” z nowym zdjęciem
@@ -93,7 +123,8 @@ Funkcja: Oznaczenie wejścia
       Oraz przy tym wejściu widnieje data oznaczenia 12.11.2026 i źródło „obchód”
       Ale zgłoszenie zmiany oznaczenia nie jest widoczne na mapie ani w eksporcie
 
-    @US17.2 @US17.3 @serwer
+    # kroki serwera: #3172
+    @US17.2 @US17.3 @serwer @do-zrobienia
     Scenariusz: Zmiana może potwierdzić dotychczasowe oznaczenie
       Zakładając, że wejście główne A-1 ma oznaczenie „niedostępne” z datą 3.11.2026 i źródłem „import”
       Oraz Zbierający wysłał zmianę oznaczenia tego wejścia na „niedostępne” z nowym zdjęciem
@@ -101,7 +132,8 @@ Funkcja: Oznaczenie wejścia
       Wtedy wejście główne A-1 nadal ma oznaczenie „niedostępne”
       Oraz przy tym wejściu widnieje data oznaczenia 12.11.2026 i źródło „obchód”
 
-    @US17.2 @BR-16 @serwer
+    # kroki serwera: #3172
+    @US17.2 @BR-16 @serwer @do-zrobienia
     Scenariusz: Odrzucona zmiana nie zmienia oznaczenia wejścia
       Zakładając, że inne wejście A-1 ma oznaczenie „dostępne” z datą 3.11.2026 i źródłem „import”
       Oraz Zbierający wysłał zmianę oznaczenia tego wejścia na „niedostępne” ze zdjęciem innego miejsca
@@ -110,7 +142,8 @@ Funkcja: Oznaczenie wejścia
       Oraz inne wejście A-1 nadal ma oznaczenie „dostępne” z datą 3.11.2026 i źródłem „import”
       Oraz Zbierający widzi powód odrzucenia na liście swoich zgłoszeń
 
-    @US17.2 @US10.5 @BR-4 @serwer
+    # kroki serwera: #3172
+    @US17.2 @US10.5 @BR-4 @serwer @do-zrobienia
     Scenariusz: Weryfikator nie sprawdza zmiany oznaczenia, którą sam złożył
       Zakładając, że pierwszy Weryfikator ma też rolę Zbierającego
       Oraz jako Zbierający wysłał zmianę oznaczenia wejścia bocznego B-8 na „dostępne”
@@ -119,7 +152,8 @@ Funkcja: Oznaczenie wejścia
       Oraz próba przyjęcia tej zmiany przez pierwszego Weryfikatora z pominięciem aplikacji jest odrzucona
       Ale drugi Weryfikator widzi tę zmianę w swojej kolejce
 
-    @US17.2 @BR-23 @serwer
+    # kroki serwera: #3172
+    @US17.2 @BR-23 @serwer @do-zrobienia
     Scenariusz: Po przyjęciu jednej zmiany wejścia drugą czekającą odrzuca się jako „nieaktualne”
       Zakładając, że Zbierający wysłał zmianę oznaczenia wejścia bocznego B-8 na „dostępne”
       Oraz inny Zbierający wysłał zmianę oznaczenia tego wejścia na „niedostępne”

@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.database.submission
@@ -41,6 +41,12 @@ public enum class OwnSubmissionState {
  * @property refusalCode kod odpowiedzi HTTP przy odmowie; `null`, gdy telefon nie odczytał zgłoszenia
  * @property serverStatus status z serwera (`SubmissionStatus`); `null` przed pierwszym odświeżeniem
  * @property rejectionReason powód odrzucenia od Weryfikatora; `null` poza odrzuceniem
+ * @property ownerSub identyfikator konta albo `null` przed przypisaniem po migracji
+ * @property isBarrierRemoved oznaczenie „bariera usunięta”; `null` w wierszach sprzed tej kolumny
+ * @property entranceId wejście w zmianie oznaczenia wejścia
+ * @property entranceMarking nowe oznaczenie wejścia w zmianie oznaczenia
+ * @property contentJson pełna treść z ostatniego zapisu ze ścieżkami zdjęć, do poprawki wysłanego zgłoszenia bez
+ *   sieci; `null` w wierszach sprzed tej kolumny
  */
 @Entity(tableName = "own_submissions")
 public data class OwnSubmissionEntity(
@@ -57,4 +63,9 @@ public data class OwnSubmissionEntity(
     @ColumnInfo(name = "refusal_code") val refusalCode: Int? = null,
     @ColumnInfo(name = "server_status") val serverStatus: String? = null,
     @ColumnInfo(name = "rejection_reason") val rejectionReason: String? = null,
+    @ColumnInfo(name = "owner_sub") val ownerSub: String? = null,
+    @ColumnInfo(name = "barrier_removed") val isBarrierRemoved: Boolean? = null,
+    @ColumnInfo(name = "entrance_id") val entranceId: String? = null,
+    @ColumnInfo(name = "entrance_marking") val entranceMarking: String? = null,
+    @ColumnInfo(name = "content_json") val contentJson: String? = null,
 )

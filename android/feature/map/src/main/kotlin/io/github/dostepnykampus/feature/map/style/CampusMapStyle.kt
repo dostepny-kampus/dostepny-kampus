@@ -6,6 +6,8 @@
 package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.designsystem.Ikony
+import io.github.dostepnykampus.core.designsystem.MapaKontur
+import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
@@ -49,42 +51,54 @@ internal const val BUILDINGS_FILL = "fill-color"
 internal const val OUTLINES_COLOR = "line-color"
 
 internal const val BUILDINGS_SOURCE = BUILDINGS_LAYER
-private const val ENTRANCES_SOURCE = ENTRANCES_LAYER
+internal const val ENTRANCES_SOURCE = ENTRANCES_LAYER
 
 private const val LABELS = "podpisy"
+internal const val LABELS_SOURCE = LABELS
+
+/** Warstwa symboli budynków. Wymagania: US1, US16.1 */
+internal const val LABELS_LAYER = LABELS
 internal const val LABEL = "label"
 private const val STYLE_VERSION = 8
-private const val OUTLINE_WIDTH = 1.5
+
+private val OUTLINE_WIDTH =
+    byLevel(detailed = JsonPrimitive(MapaKontur.szczegolowyDp), basic = JsonPrimitive(MapaKontur.podstawowyDp))
 
 /**
- * Kolory stylu mapy z tokenów `mapa.kolory` jako `#RRGGBB`.
+ * Wygląd stylu mapy: kolory z tokenów `mapa.kolory` jako `#RRGGBB` i rozmiar napisów podkładu.
  *
  * @property land tło lądu (`lad`)
- * @property building wypełnienie budynków PWr (`pwr`)
+ * @property building wypełnienie budynków szczegółowych, z planem pięter (`pwr`)
  * @property buildingOutline kontur budynków PWr (`pwr_kontur`)
  * @property selectedOutline obrys zaznaczonego budynku (`pwr_wybrany`), grubszy niż kontur
- * @property dimmed wypełnienie budynków obok zaznaczonego (`budynek`)
- * @property dimmedOutline kontur budynków obok zaznaczonego (`budynek_kontur`)
  * @property plan kolory planu piętra; bez nich plan ma barwy budynków
  * @property basemap kolory podkładu wektorowego; bez nich mapa nie ma podkładu, tylko tło [land]
+ * @property labelSize wysokość napisów podkładu w dp mapy, z tokenu `mapa.napisy_sp` i skali czcionki
+ * @property basicBuilding wypełnienie budynków podstawowych, bez planu pięter (`pwr_podstawowy`); bez niego budynki
+ *   obu poziomów mają barwę [building]
+ * @property path barwy ścieżki dostosowanej; bez nich brzeg ma barwę konturu, a wnętrze barwę lądu
  */
 data class MapStyleColors(
     val land: String,
     val building: String,
     val buildingOutline: String,
     val selectedOutline: String,
-    val dimmed: String = building,
-    val dimmedOutline: String = buildingOutline,
     val plan: PlanColors =
         PlanColors(
             classroom = building,
             corridor = land,
-            other = dimmed,
+            other = building,
             elevator = building,
             toilet = land,
             wall = buildingOutline,
+            floorWall = buildingOutline,
+            chosen = land,
+            chosenOutline = selectedOutline,
         ),
     val basemap: BasemapColors? = null,
+    val labelSize: Double = Typografia.napisyMapy.value.toDouble(),
+    val basicBuilding: String = building,
+    val path: PathColors = PathColors(edge = buildingOutline, inside = land),
 )
 
 /**
@@ -112,11 +126,12 @@ fun campusMapStyle(
     colors: MapStyleColors,
     basemap: Basemap? = selection.bounds?.let { Basemap() },
 ): String {
-    val look = selectionLook(data, selection, colors)
+    val look = selectionLook(data, selection)
     val style =
         buildJsonObject {
             put(key = "version", value = STYLE_VERSION)
-            val all = sources(data = data, look = look)
+            if (colors.basemap != null) put(key = "glyphs", value = BASEMAP_GLYPHS)
+            val all = sources(data = data, look = look, plan = planFeatures(selection.plan?.rooms.orEmpty()))
             put(key = "sources", element = all)
             val list = layers(look = look, colors = colors, basemap = basemap)
             put(key = "layers", element = list)
@@ -136,38 +151,51 @@ internal fun entranceMarkImage(marking: EntranceMarking): String = "wejscie_${ma
 /** Nazwa obrazu podpisu zaznaczonego wejścia o nazwie [label]; przedrostek odróżnia go od podpisów budynków. */
 internal fun entranceCaptionImage(label: String): String = "wejscie: $label"
 
-private fun sources(data: CampusMapData, look: SelectionLook): JsonObject =
+private fun sources(data: CampusMapData, look: SelectionLook, plan: JsonElement): JsonObject =
     buildJsonObject {
         put(key = BASEMAP, element = basemapSource())
         put(key = BUILDINGS_SOURCE, element = geoJsonSource(data.buildings))
-        put(key = LABELS, element = geoJsonSource(data.labelPoints))
+        put(key = LABELS_SOURCE, element = geoJsonSource(data.labelPoints))
         put(key = ENTRANCES_SOURCE, element = geoJsonSource(data.entrances))
         put(key = BARRIERS_SOURCE, element = geoJsonSource(data.barriers))
+        put(key = PATHS_SOURCE, element = geoJsonSource(data.paths))
         put(key = CHOSEN_SOURCE, element = geoJsonSource(look.chosenEntrance))
-        put(key = PLAN_SOURCE, element = geoJsonSource(look.plan))
+        put(key = PLAN_SOURCE, element = geoJsonSource(plan))
+        put(key = ROOM_STEPS_SOURCE, element = geoJsonSource(look.roomSteps))
     }
 
 private fun layers(look: SelectionLook, colors: MapStyleColors, basemap: Basemap?): JsonArray =
     buildJsonArray {
         add(styleLayer(id = "lad", type = "background") { paint("background-color" to JsonPrimitive(colors.land)) })
-        colors.basemap?.let { basemapLayers(colors = it, minZoom = basemap?.minZoom ?: 0.0).forEach(::add) }
+        val minZoom = basemap?.minZoom ?: 0.0
+        val palette = colors.basemap
+        palette?.let { basemapShapeLayers(colors = it, minZoom = minZoom).forEach(::add) }
+        pathLayers(colors.path).forEach(::add)
+        palette?.let { basemapNameLayers(colors = it, minZoom = minZoom, textSize = colors.labelSize).forEach(::add) }
         add(
             styleLayer(id = BUILDINGS_LAYER, type = "fill", source = BUILDINGS_SOURCE) {
-                paint(BUILDINGS_FILL to look.buildingsFill)
+                val fill =
+                    byLevel(detailed = JsonPrimitive(colors.building), basic = JsonPrimitive(colors.basicBuilding))
+                paint(BUILDINGS_FILL to fill, "fill-opacity" to buildingOpacity(dimmed = DIMMED_FILL_OPACITY))
             },
         )
         add(
             styleLayer(id = OUTLINES_LAYER, type = "line", source = BUILDINGS_SOURCE) {
-                paint(OUTLINES_COLOR to look.outlinesColor, "line-width" to JsonPrimitive(OUTLINE_WIDTH))
+                val opacity = buildingOpacity(dimmed = DIMMED_OUTLINE_OPACITY)
+                val color = JsonPrimitive(colors.buildingOutline)
+                paint(OUTLINES_COLOR to color, "line-width" to OUTLINE_WIDTH, "line-opacity" to opacity)
             },
         )
-        planLayers(colors.plan, look.planFloor).forEach { add(it) }
+        planLayers(colors = colors.plan, floor = look.planFloor, room = look.planRoom).forEach { add(it) }
         add(selectedLayer(look.selectedFilter, colors))
+        add(selectedPlanLayer(look.selectedPlanFilter, colors))
         add(marksLayer(look.entrancesFilter, look.entrancesMinZoom))
-        barrierLayers(look.barriersFilter).forEach { add(it) }
-        add(symbolLayer(id = LABELS, source = LABELS, image = property(LABEL)))
-        add(chosenBarrierLayer(look.chosenBarrierFilter))
+        barrierLayers(filter = look.barriersFilter, beside = look.besideEntrance).forEach { add(it) }
+        val labels = symbolLayer(id = LABELS_LAYER, source = LABELS_SOURCE, image = property(LABEL))
+        add(JsonObject(labels + ("filter" to look.labelsFilter)))
+        add(chosenBarrierLayer(filter = look.chosenBarrierFilter, beside = look.besideEntrance))
         chosenLayers().forEach { add(it) }
+        add(roomStepsLayer())
     }
 
 private fun marksLayer(filter: JsonElement, minZoom: Double): JsonObject {

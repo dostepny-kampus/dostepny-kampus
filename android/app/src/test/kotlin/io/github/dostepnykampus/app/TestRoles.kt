@@ -17,4 +17,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
  */
 internal class TestRoles(start: Account = Account.Guest) : RoleProvider {
     override val account = MutableStateFlow(start)
+
+    override fun signOut() {
+        account.value = Account.Guest
+    }
 }

@@ -10,8 +10,7 @@ import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.submission.own.isOwnHistory
 import io.github.dostepnykampus.core.data.submission.own.keepingServerState
 import io.github.dostepnykampus.core.data.submission.own.toOwnSubmissionEntity
-import io.github.dostepnykampus.core.data.submission.pending.toPendingSubmissionEntity
-import io.github.dostepnykampus.core.data.submission.pending.toSubmissionContentOrNull
+import io.github.dostepnykampus.core.database.cache.ServerCopyDao
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import io.github.dostepnykampus.core.database.submission.PendingPhotoEntity
@@ -80,14 +79,16 @@ private const val FIRST_SERVER_FAULT_CODE = 500
  *
  * Wymagania: BR-10
  *
+ * @property subject identyfikator bieżącego konta
  * @property create nowe zgłoszenie (`POST /submissions`)
  * @property putPhoto zdjęcie zgłoszenia (`PUT /submissions/{id}/photos/{photoId}`)
  * @property update edycja z wersją bazową (`PUT /submissions/{id}`)
  */
 public data class SubmissionServer(
-    val create: suspend (id: String, content: SubmissionContent) -> ServerReply<Submission>,
-    val putPhoto: suspend (submissionId: String, photoId: String, jpeg: ByteArray) -> ServerReply<Unit>,
-    val update: suspend (id: String, version: Int, content: SubmissionContent) -> ServerReply<ServerEdit>,
+    val subject: () -> String?,
+    val create: suspend (owner: String, id: String, content: SubmissionContent) -> ServerReply<Submission>,
+    val putPhoto: suspend (owner: String, id: String, photo: String, jpeg: ByteArray) -> ServerReply<Unit>,
+    val update: suspend (sub: String, id: String, version: Int, content: SubmissionContent) -> ServerReply<ServerEdit>,
 )
 
 /**
@@ -108,7 +109,7 @@ public data class SubmissionStamps(
  * zostaje, a kolejna próba wysyła treść raz i tylko brakujące zdjęcia, z tym samym identyfikatorem. [onSaved] planuje
  * wysyłkę po powrocie sieci. Poprawka ([saveEdit]) zastępuje wiersz zgłoszenia i idzie jako [SubmissionServer.update] z
  * wersją bazową. Po 401 wysyłka czeka na [onLoggedIn] ([loginExpired]). Zgłoszenia Zbierającego trafiają też do
- * [history]. Chwile zapisu z [SubmissionStamps.nowMillis] rosną ściśle, a serwer jest wołany poza blokadą wierszy.
+ * historii wysłanych. Chwile zapisu z [SubmissionStamps.nowMillis] rosną ściśle, a serwer jest wołany poza blokadą.
  *
  * Wymagania: NFR-5, US9.1, US9.2, BR-9, NFR-8, NFR-6, US8.3, BR-10, BR-26, US14.4, US8
  */
@@ -118,11 +119,14 @@ public class SubmissionQueue internal constructor(
     private val server: SubmissionServer,
     private val stamps: SubmissionStamps = SubmissionStamps(),
     private val onSaved: () -> Unit = {},
-    private val history: OwnSubmissionDao? = null,
+    records: SentRecords = SentRecords(),
 ) {
     private val sending = Mutex()
-    private val results = SentResults(store = store, history = history, ioContext = ioContext)
+    private val history = records.history
+    private val conflicts = records.conflicts
+    private val results = SentResults(store = store, records = records, ioContext = ioContext)
     private val lastSavedAt = AtomicLong(Long.MIN_VALUE)
+    private val logins = AtomicLong()
     private val expired = MutableStateFlow(false)
 
     /** `true` po odpowiedzi 401 aż do [onLoggedIn]: aplikacja prosi o ponowne zalogowanie. Wymagania: BR-26 */
@@ -149,7 +153,7 @@ public class SubmissionQueue internal constructor(
         server = server,
         stamps = stamps,
         onSaved = onSaved,
-        history = store.history,
+        records = SentRecords(history = store.history, conflicts = store.conflicts),
     )
 
     /**
@@ -157,6 +161,7 @@ public class SubmissionQueue internal constructor(
      *
      * @param store zgłoszenia zapisane w telefonie; historia Zbierającego zostaje nieużyta
      * @param ioContext kontekst zapisu i odczytu bazy
+     * @param subject identyfikator bieżącego konta
      * @param create utworzenie zgłoszenia na serwerze
      * @param putPhoto wysłanie zdjęcia zgłoszenia
      * @param onSaved planowanie wysyłki po zapisie
@@ -164,30 +169,20 @@ public class SubmissionQueue internal constructor(
     public constructor(
         store: SubmissionStore,
         ioContext: CoroutineContext = Dispatchers.IO,
+        subject: () -> String?,
         create: suspend (id: String, content: SubmissionContent) -> ServerReply<Submission>,
         putPhoto: suspend (submissionId: String, photoId: String, jpeg: ByteArray) -> ServerReply<Unit>,
         onSaved: () -> Unit = {},
     ) : this(
         store = store.pending,
         ioContext = ioContext,
-        create = create,
-        putPhoto = putPhoto,
-        onSaved = onSaved,
-    )
-
-    /** Kolejka bez edycji na serwerze: poprawka z wersją bazową zostaje w telefonie jak odmowa (404). */
-    internal constructor(
-        store: PendingSubmissionDao,
-        ioContext: CoroutineContext = Dispatchers.IO,
-        create: suspend (id: String, content: SubmissionContent) -> ServerReply<Submission>,
-        putPhoto: suspend (submissionId: String, photoId: String, jpeg: ByteArray) -> ServerReply<Unit>,
-        newId: () -> String = { UUID.randomUUID().toString() },
-        onSaved: () -> Unit = {},
-    ) : this(
-        store = store,
-        ioContext = ioContext,
-        server = SubmissionServer(create = create, putPhoto = putPhoto, update = { _, _, _ -> ServerReply.Missing }),
-        stamps = SubmissionStamps(newId = newId),
+        server =
+            SubmissionServer(
+                subject = subject,
+                create = { _, id, content -> create(id, content) },
+                putPhoto = { _, id, photo, jpeg -> putPhoto(id, photo, jpeg) },
+                update = { _, _, _, _ -> ServerReply.Missing },
+            ),
         onSaved = onSaved,
     )
 
@@ -203,27 +198,31 @@ public class SubmissionQueue internal constructor(
      */
     public suspend fun save(content: SubmissionContent, photos: List<PendingPhotoDraft>): SavedSubmission {
         requireMatchingPhotos(content, photos)
+        val owner = server.subject() ?: throw queueOwnerChanged()
         val id = stamps.newId()
         val savedAt = lastSavedAt.nextAfter(stamps.nowMillis())
-        val entity = content.toPendingSubmissionEntity(id = id, savedAtMillis = savedAt)
+        val entity = content.toPendingSubmissionEntity(id = id, savedAtMillis = savedAt).copy(ownerSub = owner)
         store.together {
             store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = id) })
-            remember(entity)
+            remember(entity, OwnCopy(content = content, photoPaths = photos.map { it.path }))
         }
         runCatching(onSaved)
         return SavedSubmission(id = id)
     }
 
     /**
-     * Sprzątanie przy starcie: usuwa z [dir] pliki zdjęć, których nie ma w kolejce ani w [kept].
+     * Sprzątanie przy starcie: usuwa z [dir] pliki zdjęć, których nie ma w kolejce, w [kept] ani w historii
+     * zgłoszeń przed decyzją.
      *
-     * Wymagania: NFR-5
+     * Wymagania: NFR-5, US8.3
      *
-     * @param dir katalog zdjęć zgłoszeń
+     * @param dir katalog zdjęć zgłoszeń; odczytany poza wątkiem głównym
      * @param kept pliki zdjęć odtworzonych szkiców
      */
-    public suspend fun deleteOrphanPhotos(dir: File, kept: Set<String>) {
-        deleteOrphanPhotos(store = store, dir = dir, kept = kept, nowMillis = stamps.nowMillis(), ioContext = ioContext)
+    public suspend fun deleteOrphanPhotos(dir: () -> File, kept: Set<String>) {
+        val undecided = history?.undecidedContents().orEmpty()
+        val all = kept + ownPhotoPaths(undecided)
+        deleteOrphanPhotos(store = store, dir = dir, kept = all, nowMillis = stamps.nowMillis(), ioContext = ioContext)
     }
 
     /**
@@ -234,21 +233,24 @@ public class SubmissionQueue internal constructor(
      * @param edited poprawiane zgłoszenie
      * @param content nowa treść zgłoszenia
      * @param photos zdjęcia do wysłania; identyfikatory wracają w [content]
-     * @throws SaveRefusedException zdjęcia nie odpowiadają treści albo serwer ma już zgłoszenie, a telefon nie zna
-     *   jego wersji
+     * @throws SaveRefusedException zdjęcia nie odpowiadają treści, serwer ma już zgłoszenie, a telefon nie zna
+     *   jego wersji, albo zgłoszenie czeka na wybór wersji
      */
     public suspend fun saveEdit(edited: EditedSubmission, content: SubmissionContent, photos: List<PendingPhotoDraft>) {
         requireMatchingPhotos(content, photos)
+        val owner = server.subject() ?: throw queueOwnerChanged()
         val replaced =
             results.locked {
                 val savedAt = lastSavedAt.nextAfter(stamps.nowMillis())
-                val baseVersion = baseVersionOf(edited = edited, store = store, history = history)
                 val fresh = content.toPendingSubmissionEntity(id = edited.id, savedAtMillis = savedAt)
-                val entity = fresh.copy(baseVersion = baseVersion)
                 var paths = emptyList<String>()
                 store.together {
+                    if (store.belongsToAnotherAccount(edited.id, owner)) throw queueOwnerChanged()
+                    conflicts?.let { copies -> requireNoVersionChoice(id = edited.id, conflicts = copies) }
+                    val version = baseVersionOf(edited = edited, store = store, history = history)
+                    val entity = fresh.copy(baseVersion = version, ownerSub = owner)
                     paths = store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) })
-                    remember(entity)
+                    remember(entity, OwnCopy(content = content, photoPaths = photos.map { it.path }))
                 }
                 paths
             }
@@ -270,33 +272,51 @@ public class SubmissionQueue internal constructor(
      */
     public suspend fun sendAll(): Boolean =
         sending.withLock {
-            val stop = if (expired.value) Outcome.LOGIN_EXPIRED else sendUntilStop()
-            if (stop == Outcome.LOGIN_EXPIRED) expired.value = true
+            val login = logins.get()
+            val owner = server.subject()
+            val stop =
+                when {
+                    owner == null -> Outcome.LOGIN_EXPIRED.takeIf { store.all().isNotEmpty() }
+                    expired.value -> Outcome.LOGIN_EXPIRED
+                    else -> sendUntilStop(owner)
+                }
+            synchronized(logins) {
+                val current = server.subject()
+                val isSameAccount = current == owner || current == null
+                if (login == logins.get() && stop == Outcome.LOGIN_EXPIRED && isSameAccount) {
+                    expired.value = true
+                }
+            }
             stop != Outcome.LATER
         }
 
     /** Po ponownym zalogowaniu wysyłka rusza sama, bez działania Zbierającego. Wymagania: BR-26, US14.4 */
-    public fun onLoggedIn() {
-        expired.value = false
+    internal fun onLoggedIn() {
+        synchronized(logins) {
+            logins.incrementAndGet()
+            expired.value = false
+        }
         runCatching(onSaved)
     }
 
-    private suspend fun remember(entity: PendingSubmissionEntity) {
+    private suspend fun remember(entity: PendingSubmissionEntity, copy: OwnCopy) {
         val own = history ?: return
-        if (entity.isOwnHistory()) own.save(entity.toOwnSubmissionEntity().keepingServerState(own.find(entity.id)))
+        if (!entity.isOwnHistory()) return
+        val row = entity.toOwnSubmissionEntity().copy(contentJson = ownCopyJson(entity.id, copy))
+        own.save(row.keepingServerState(own.find(entity.id)))
     }
 
-    private suspend fun sendUntilStop(): Outcome? {
+    private suspend fun sendUntilStop(owner: String): Outcome? {
         val tried = mutableSetOf<String>()
         val outcomes = mutableListOf<Outcome>()
         var stop: Outcome? = null
-        var next = store.all().firstOrNull()
-        while (next != null && stop == null) {
-            val outcome = sendOne(next)
+        var next = nextFor(owner, tried)
+        while (next != null && stop == null && server.subject() == owner) {
+            val outcome = sendOne(next, owner)
             outcomes += outcome
             if (outcome != Outcome.REPLACED) tried += next.submission.id
             stop = outcome.takeIf { it == Outcome.LATER || it == Outcome.LOGIN_EXPIRED }
-            next = store.all().firstOrNull { it.submission.id !in tried }
+            next = nextFor(owner, tried)
         }
         if (outcomes.isNotEmpty()) {
             Timber.i("Przebieg wysyłki zgłoszeń: %s, zatrzymanie: %s", outcomes.groupingBy { it }.eachCount(), stop)
@@ -304,34 +324,37 @@ public class SubmissionQueue internal constructor(
         return stop
     }
 
-    private suspend fun sendOne(item: PendingSubmissionWithPhotos): Outcome =
+    private suspend fun nextFor(owner: String, tried: Set<String>): PendingSubmissionWithPhotos? =
+        store.all().firstOrNull { it.submission.ownerSub == owner && it.submission.id !in tried }
+
+    private suspend fun sendOne(item: PendingSubmissionWithPhotos, owner: String): Outcome =
         if (item.submission.isCreatedOnServer) {
-            sendRemaining(item)
+            sendRemaining(item, owner)
         } else {
-            val status = sendContent(item)
-            if (status == Outcome.SENT) sendRemaining(item) else status
+            val status = sendContent(item, owner)
+            if (status == Outcome.SENT) sendRemaining(item, owner) else status
         }
 
-    private suspend fun sendContent(item: PendingSubmissionWithPhotos): Outcome {
+    private suspend fun sendContent(item: PendingSubmissionWithPhotos, owner: String): Outcome {
         val version = item.submission.baseVersion
         val content = item.toSubmissionContentOrNull() ?: return results.unreadable(item)
         val result: ServerReply<*>
         val outcome =
             if (version == null) {
-                result = server.create(item.submission.id, content)
+                result = server.create(owner, item.submission.id, content)
                 outcomeOf(result)
             } else {
-                val edit = server.update(item.submission.id, version, content)
+                val edit = server.update(owner, item.submission.id, version, content)
                 result = edit
                 editOutcome(edit)
             }
         return results.content(item, result, outcome)
     }
 
-    private suspend fun sendRemaining(item: PendingSubmissionWithPhotos): Outcome {
+    private suspend fun sendRemaining(item: PendingSubmissionWithPhotos, owner: String): Outcome {
         for (photo in item.photos.filterNot { it.isUploaded }) {
             val jpeg = jpeg(photo.path, ioContext)
-            val result = jpeg?.let { server.putPhoto(item.submission.id, photo.photoId, it) }
+            val result = jpeg?.let { server.putPhoto(owner, item.submission.id, photo.photoId, it) }
             val outcome = results.photo(item, photo.photoId, result)
             if (outcome != Outcome.SENT) return outcome
         }
@@ -382,6 +405,16 @@ internal suspend fun baseVersionOf(
     return version
 }
 
+/**
+ * Odrzuca poprawkę zgłoszenia [id], które czeka na wybór wersji: kopia wersji z serwera w [conflicts] powstaje razem
+ * z odmową 409 i znika dopiero po wyborze w C4, a inne odmowy jej nie mają.
+ *
+ * Wymagania: US9.3, BR-10
+ */
+internal suspend fun requireNoVersionChoice(id: String, conflicts: ServerCopyDao) {
+    if (conflicts.get(serverVersionKey(id)) != null) throw versionChoicePending(id)
+}
+
 internal fun requireMatchingPhotos(content: SubmissionContent, photos: List<PendingPhotoDraft>) {
     if (photos.map { it.photoId } != content.photoIds) {
         throw SaveRefusedException(
@@ -401,7 +434,8 @@ internal fun outcomeOf(result: ServerReply<*>): Outcome =
 
 /**
  * Wynik edycji [result]: konflikt wersji (409) zostaje w telefonie jako „Nie wysłano”, bez ponawiania w kółko.
- * Wersja z serwera trafia do wiersza kolejki i historii, więc ponowny zapis poprawki idzie od niej.
+ * Numer wersji z serwera trafia do wiersza kolejki i historii, więc ponowny zapis poprawki idzie od niej, a cała
+ * wersja z serwera do kopii w telefonie.
  *
  * Wymagania: US9.3, BR-10
  */

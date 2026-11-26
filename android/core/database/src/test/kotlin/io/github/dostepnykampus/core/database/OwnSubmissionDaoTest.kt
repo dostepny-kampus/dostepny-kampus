@@ -55,7 +55,7 @@ class OwnSubmissionDaoTest {
             dao.markSent(id = "a")
             dao.saveServerStatus(id = "a", status = "REJECTED", reason = "Zdjęcie nieostre", version = 3)
 
-            val row = dao.observe().first().single()
+            val row = dao.observe(OWNER).first().single()
 
             assertEquals(OwnSubmissionState.SENT, row.state)
             assertEquals("REJECTED", row.serverStatus)
@@ -84,7 +84,7 @@ class OwnSubmissionDaoTest {
                 }
 
             assertTrue(failure != null)
-            val row = dao.observe().first().single()
+            val row = dao.observe(OWNER).first().single()
             assertEquals(OwnSubmissionState.LOCAL, row.state)
         }
 
@@ -95,7 +95,7 @@ class OwnSubmissionDaoTest {
             dao.save(own(id = "a", savedAt = 1))
             dao.save(own(id = "b", savedAt = 2))
 
-            assertEquals(listOf("b", "a"), dao.observe().first().map { it.id })
+            assertEquals(listOf("b", "a"), dao.observe(OWNER).first().map { it.id })
         }
 
     @Test
@@ -104,7 +104,7 @@ class OwnSubmissionDaoTest {
             dao.save(own(id = "a", savedAt = 1))
             dao.save(own(id = "a", savedAt = 5).copy(severity = 3))
 
-            val rows = dao.observe().first()
+            val rows = dao.observe(OWNER).first()
 
             assertEquals(1, rows.size)
             assertEquals(3, rows.single().severity)
@@ -118,7 +118,7 @@ class OwnSubmissionDaoTest {
             dao.saveVersion(id = "a", version = 4)
             dao.markSent(id = "a")
 
-            val row = dao.observe().first().single()
+            val row = dao.observe(OWNER).first().single()
 
             assertEquals(OwnSubmissionState.SENT, row.state)
             assertEquals(4, row.serverVersion)
@@ -131,7 +131,7 @@ class OwnSubmissionDaoTest {
             dao.save(own(id = "a", savedAt = 1))
             dao.markRefused(id = "a", code = 422)
 
-            val row = dao.observe().first().single()
+            val row = dao.observe(OWNER).first().single()
 
             assertEquals(OwnSubmissionState.REFUSED, row.state)
             assertEquals(422, row.refusalCode)
@@ -139,4 +139,13 @@ class OwnSubmissionDaoTest {
 }
 
 private fun own(id: String, savedAt: Long) =
-    OwnSubmissionEntity(id = id, savedAtMillis = savedAt, kind = "PRECISE", barrierType = "TB-1", severity = 2)
+    OwnSubmissionEntity(
+        id = id,
+        savedAtMillis = savedAt,
+        kind = "PRECISE",
+        barrierType = "TB-1",
+        severity = 2,
+        ownerSub = OWNER,
+    )
+
+private const val OWNER = "konto"

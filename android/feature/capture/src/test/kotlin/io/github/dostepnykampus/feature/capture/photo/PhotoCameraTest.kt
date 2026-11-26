@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.photo
@@ -30,9 +30,9 @@ import androidx.core.content.FileProvider
 import androidx.core.content.IntentCompat
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
+import io.github.dostepnykampus.feature.capture.report.ReportFormScreen
+import io.github.dostepnykampus.feature.capture.report.ReportFormViewModel
 import io.github.dostepnykampus.feature.capture.report.form.PhotoSection
-import io.github.dostepnykampus.feature.capture.report.form.ReportFormScreen
-import io.github.dostepnykampus.feature.capture.report.form.ReportFormViewModel
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

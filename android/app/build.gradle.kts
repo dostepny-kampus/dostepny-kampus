@@ -26,10 +26,12 @@ tasks.withType<Test>().configureEach {
 }
 
 dependencies {
+    implementation(project(":feature:auth"))
     implementation(project(":feature:map"))
     implementation(project(":feature:capture"))
     implementation(project(":feature:help"))
     implementation(project(":feature:inspection"))
+    implementation(project(":feature:review"))
     implementation(project(":core:data"))
     implementation(project(":core:database"))
     implementation(project(":core:designsystem"))
@@ -106,6 +108,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.monitor)
     androidTestImplementation(libs.junit4)
+    androidTestImplementation(project(":core:location"))
     androidTestImplementation(project(":core:network"))
     androidTestImplementation(project(":core:testing"))
     androidTestImplementation(libs.okhttp)
@@ -114,8 +117,11 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    debugImplementation(libs.androidx.compose.runtime.tracing)
     debugImplementation(libs.androidx.metrics.performance)
+    debugImplementation(libs.androidx.tracing.perfetto.binary)
     debugImplementation(libs.leakcanary.android)
+    debugImplementation(project(":core:location"))
     debugImplementation(project(":core:network"))
     debugImplementation(libs.okhttp)
     testDebugImplementation(libs.okhttp.mockwebserver)

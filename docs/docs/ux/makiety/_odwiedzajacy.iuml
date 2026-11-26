@@ -8,39 +8,106 @@
 <b>$t</b>
 !endprocedure
 
+' ---------- V1 arkusze na mapie ----------
+
+' Wiersz budynku pod nagłówkiem arkusza: znak budynku, napis i strzałka; otwiera V2 na niskiej
+' wysokości (decyzja z 18.11.2026). Ten sam w arkuszach wejścia, toalety, schodów, bariery, sali.
+!procedure $wiersz_budynku($symbol="A-1")
+<&home> <b>Budynek $symbol</b> <&chevron-right>
+!endprocedure
+
 ' ---------- V2 Karta budynku (decyzje 48, 115) ----------
 
-' Góra pełnego ekranu, bez mapy: wiersz o wejściach, czynność główna w treści, potem chipy faktów z danych.
+' Nagłówek karty na każdej wysokości: symbol, po prawej obrysowany „Zamknij”, pod nim nazwa
+' bez powtórzonego symbolu; bez „Wstecz” (decyzja 152). Kreski pod nagłówkiem nie ma.
+!procedure $naglowek_karty($symbol, $nazwa="")
+{ <b>$symbol</b>$dk_spacje(12) | [Zamknij] }
+!if $nazwa != ""
+$nazwa
+!endif
+!endprocedure
+
+' Wiersz o wejściach pod nagłówkiem, na każdej wysokości karty (US2.8, US3.1).
+' $wejscia: "dostepne" — znak, „Wejście dostępne”, zdanie z wejściem zalecanym i „Pokaż wejście na mapie”;
+' "brak" — znak, „Brak wejścia dostępnego” i zdanie o liczbie wejść, bez przycisku;
+' "bez_danych" — cichy napis „Brak danych o wejściach”, bez znaku, zdania i przycisku.
+' $zdanie: zdanie z odpowiedzią; $dane: zastępnik drzwi i windy, pusty, gdy danych nie ma.
+' $budynek: 1 — pod czynnością obrysowany „Pokaż budynek na mapie”, tylko na karcie otwartej od razu
+' na cały ekran (US2.9).
+!procedure $wiersz_wejsc($wejscia="dostepne", $zdanie="Zalecane: „Wejście bramą od ul. Norwida”.", $dane="[drzwi i winda za drzwiami z danych]", $budynek=0)
+!if $wejscia == "dostepne"
+<b><&check> Wejście dostępne</b>
+$tekst($zdanie)
+!if $dane != ""
+$tekst($dane, "i")
+!endif
+$przycisk_glowny("Pokaż wejście na mapie")
+!elseif $wejscia == "brak"
+<b><&x> Brak wejścia dostępnego</b>
+$tekst($zdanie)
+!else
+Brak danych o wejściach
+!endif
+!if $budynek == 1
+$przycisk("Pokaż budynek na mapie")
+!endif
+!endprocedure
+
+' Góra karty: wiersz o wejściach z czynnością główną, kreska, a pod nią początek pełnego opisu:
+' chipy faktów z danych. Kreska nad pełnym opisem stoi na każdej wysokości (decyzja 115).
 ' $chipy: 1 — „Winda”, „Toaleta dostosowana” (wejście dostępne podaje wiersz); 0 — bez chipów.
-' $wejscia: napis wiersza o wejściach (US2.8).
-!procedure $karta_gora($chipy=1, $wejscia="Wejście dostępne")
-<b>$wejscia</b>
-$przycisk_glowny("Sprawdź, którędy wejść")
+' $budynek: jak w $wiersz_wejsc.
+!procedure $karta_gora($chipy=1, $wejscia="dostepne", $zdanie="Zalecane: „Wejście bramą od ul. Norwida”.", $budynek=0)
+$wiersz_wejsc($wejscia, $zdanie, "[drzwi i winda za drzwiami z danych]", $budynek)
+--
 !if $chipy == 1
 { [$dk_napis("Winda", "", 11)] | [$dk_napis("Toaleta dostosowana", "", 21)] }
 !endif
 !endprocedure
 
-' Wejście na karcie: oznaczenie, przy wejściu zalecanym „Zalecane” z piętrem (BR-25),
-' nazwa, opis z danych, „Pokaż wejście na mapie” tylko przy zalecanym i „Zgłoś barierę przy wejściu”
-' (TalkBack: „Zgłoś barierę przy wejściu: nazwa wejścia”, WCAG 2.5.3).
+' Grupa „Wejścia”: wejścia w jednym bloku, jako lista; między wejściami cienka linia (US2.1, NFR-21).
+' Blok otwiera $wejscia_poczatek(), zamyka $wejscia_koniec(). Pierwsze wejście: $wejscie_pierwsze,
+' każde następne: $wejscie_karty (z linią nad nim).
+!procedure $wejscia_poczatek()
+$ramka()
+!endprocedure
+
+!procedure $wejscia_koniec()
+}
+!endprocedure
+
+' Wiersz wejścia: oznaczenie, przy wejściu zalecanym „Zalecane” bez piętra (BR-25), nazwa ze strzałką,
+' opis z danych. Cały wiersz jest dotykalny: pokazuje wejście na mapie V1 i otwiera jego arkusz (US3.3).
+' „Zgłoś barierę przy wejściu” jest w arkuszu wejścia, nie w wierszu.
 ' $zrodlo: data i źródło przy wejściu, gdy nie są wspólne dla wszystkich (BR-24).
 ' $akcja tylko dla Zbierającego: "Zmień oznaczenie".
-!procedure $wejscie_karty($oznaczenie, $nazwa, $zalecane="", $zrodlo="", $akcja="")
-$ramka()
+' $opis: zastępnik opisu; przy wejściu z planów PWr nazwa, opis dojścia i szerokość drzwi (BR-27).
+!procedure $wejscie_pierwsze($oznaczenie, $nazwa, $zalecane="", $zrodlo="", $akcja="", $opis="[opis i szerokość drzwi z danych]")
 <b>$oznaczenie</b>$dk_spacje(2)$zalecane
-<b>$nazwa</b>
-$tekst("[opis i szerokość drzwi z danych]", "i")
+{ <b>$nazwa</b> | <&chevron-right> }
+$tekst($opis, "i")
 !if $zrodlo != ""
-$zrodlo
+$tekst($zrodlo)
 !endif
-!if $zalecane != ""
-$przycisk("Pokaż wejście na mapie")
-!endif
-$przycisk("Zgłoś barierę przy wejściu")
 !if $akcja != ""
 $przycisk($akcja)
 !endif
+!endprocedure
+
+!procedure $wejscie_karty($oznaczenie, $nazwa, $zalecane="", $zrodlo="", $akcja="", $opis="[opis i szerokość drzwi z danych]")
+--
+$wejscie_pierwsze($oznaczenie, $nazwa, $zalecane, $zrodlo, $akcja, $opis)
+!endprocedure
+
+' Jeden wiersz dla co najmniej dwóch wejść bez oznaczenia i bez nazwy, gdy żadne wejście budynku nie ma
+' oznaczenia ani nazwy (US17.1). $liczba: np. "3 wejścia"; 5 i więcej: "5 wejść".
+' Jedyny odnośnik „Zgłoś barierę przy wejściu” otwiera V4 bez wybranego wejścia (US4.6).
+!procedure $wejscia_bez_nazw($liczba)
+$ramka()
+<b>$brak_danych()</b>
+<b>$liczba</b>
+Nikt jeszcze nie sprawdził tych wejść.
+$przycisk("Zgłoś barierę przy wejściu")
 }
 !endprocedure
 

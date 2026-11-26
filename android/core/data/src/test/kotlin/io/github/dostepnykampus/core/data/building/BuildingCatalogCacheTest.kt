@@ -5,10 +5,10 @@
  */
 package io.github.dostepnykampus.core.data.building
 
+import io.github.dostepnykampus.core.data.cache.FakeServerCopyDao
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.database.cache.BUILDING_CACHE_SINGLE_ROW
-import io.github.dostepnykampus.core.database.cache.BuildingCacheDao
-import io.github.dostepnykampus.core.database.cache.BuildingCacheEntity
+import io.github.dostepnykampus.core.database.cache.BUILDINGS_COPY
+import io.github.dostepnykampus.core.database.cache.ServerCopyEntity
 import io.github.dostepnykampus.core.geo.parseGeoArea
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.building.Building
@@ -30,7 +30,7 @@ import kotlin.coroutines.EmptyCoroutineContext
  * Wymagania: NFR-10
  */
 class BuildingCatalogCacheTest {
-    private val fake = FakeBuildingCacheDao()
+    private val fake = FakeServerCopyDao()
 
     /** Wiersz: pobranie listy z serwera zapisuje kopię z momentem pobrania. Wymagania: NFR-10 */
     @Test
@@ -38,8 +38,9 @@ class BuildingCatalogCacheTest {
         val repository = repository(remote = { listed("A-2") })
         runBlocking {
             repository.catalog()
-            assertTrue(fake.entity?.run { listJson.contains("Serwer A-2") } == true, "lista budynków zapisana w kopii")
-            assertEquals(42L, fake.entity?.syncedAt, "czas zapisu kopii")
+            val saved = fake.rows[BUILDINGS_COPY]
+            assertTrue(saved?.run { documentJson.contains("Serwer A-2") } == true, "lista budynków zapisana w kopii")
+            assertEquals(42L, saved?.syncedAt, "czas zapisu kopii")
             assertEquals(Instant.ofEpochMilli(42L), repository.syncedAt(), "czas synchronizacji z repozytorium")
         }
     }
@@ -75,7 +76,7 @@ class BuildingCatalogCacheTest {
      */
     @Test
     fun usesAssetForCorruptCopy() {
-        fake.entity = BuildingCacheEntity(id = BUILDING_CACHE_SINGLE_ROW, listJson = "{", syncedAt = 7L)
+        fake.rows[BUILDINGS_COPY] = ServerCopyEntity(key = BUILDINGS_COPY, documentJson = "{", syncedAt = 7L)
         val repository = repository(remote = { OFFLINE })
         runBlocking {
             assertEquals(catalog(), repository.catalog(), "katalog wbudowany bez kopii")
@@ -91,7 +92,7 @@ class BuildingCatalogCacheTest {
             ioContext = EmptyCoroutineContext,
             listBuildings = remote,
             readGeoJson = { assetJson() },
-            buildingCache = fake,
+            serverCopy = fake,
             nowMillis = { 42L },
         )
 
@@ -124,16 +125,5 @@ class BuildingCatalogCacheTest {
         const val ENTRANCE_FEATURE =
             """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-2"],"osm_id":"n/A-2",""" +
                 """"entrance":"main"},"geometry":{"type":"Point","coordinates":[0,0]}}"""
-    }
-}
-
-/** Kopia listy budynków w pamięci testu: jeden wiersz, więc test JVM obejdzie się bez Room i Robolectric. */
-private class FakeBuildingCacheDao : BuildingCacheDao {
-    var entity: BuildingCacheEntity? = null
-
-    override suspend fun get(): BuildingCacheEntity? = entity
-
-    override suspend fun save(entity: BuildingCacheEntity) {
-        this.entity = entity
     }
 }

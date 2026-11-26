@@ -11,6 +11,7 @@ import io.github.dostepnykampus.core.geo.CampusGrounds
 import io.github.dostepnykampus.core.geo.PwrGrounds
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Building
+import io.github.dostepnykampus.core.model.building.Entrance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -41,6 +42,14 @@ class BuildingLookup
         /** Czy [point] leży na terenie PWr (wewnątrz granicy albo na jej linii), liczone w kontekście obliczeń. */
         internal suspend fun isOnGrounds(point: GeoPoint): Boolean =
             withContext(computeContext) { grounds.covers(point) }
+
+        /** Wejście [id] z katalogu; `null`, gdy katalog go nie ma. Wymagania: US4.6, BR-8 */
+        internal suspend fun entrance(id: String): Entrance? =
+            catalog
+                .catalogUpdates()
+                .first()
+                .entrances
+                .firstOrNull { it.id == id }
 
         private suspend fun currentBuildings(): List<Building> = catalog.catalogUpdates().first().buildings
     }

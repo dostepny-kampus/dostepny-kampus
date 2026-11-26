@@ -6,30 +6,27 @@
 package io.github.dostepnykampus.systemtest
 
 import androidx.compose.ui.test.assertCountEquals
-import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.dostepnykampus.app.MainActivity
 import io.github.dostepnykampus.core.testing.DeviceSteps
+import io.github.dostepnykampus.core.testing.openedCard
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 private const val WAIT_MS = 30_000L
-private const val EXPAND = "Rozwiń opis budynku"
-private const val SERVER_ASSESSMENT = "Z map i opisów, stan z "
+private const val SERVER_ASSESSMENT = "Z planów Politechniki Wrocławskiej, stan z "
+private const val SERVER_ONLY_SYMBOL = "TS-1"
+private const val SERVER_ONLY_NAME = "Budynek testu systemowego"
 
 /**
  * Aplikacja z własnym grafem Hilt i siecią na emulatorze, serwer z bazą na komputerze gospodarza: katalog budynków
  * i karta budynku idą z serwera pod adresem z `API_BASE_URL`. Dzień i źródło oznaczenia wejść ma tylko odpowiedź
- * serwera, nie plik konturów w aplikacji.
- *
- * Test wykonuje ze scenariusza demo tylko krok karty budynku A-1 z serwera. Nie wykonuje kroków bez ekranu albo
- * przepływu w aplikacji: zapisu zgłoszenia TB-1 bez sieci, wysyłki po powrocie sieci, przyjęcia przez Weryfikatora,
- * postępu pięter i eksportu GeoJSON.
+ * serwera, nie plik konturów w aplikacji: wejścia A-1 mają w bazie testu oznaczenie z planów PWr.
  *
  * Wymagania: US17.3, NFR-41
  */
@@ -48,7 +45,7 @@ class BuildingCardFromServerTest {
     }
 
     /**
-     * Scenariusz (częściowo): oznaczenie-wejscia.feature: Wspólna data i źródło stoją raz nad listą wejść.
+     * Scenariusz (częściowo): oznaczenie-wejscia.feature: Wspólna data i źródło stoją raz pod listą wejść.
      * Scenariusz (częściowo): scenariusz-demo.feature: Schody przy wejściu głównym A-1 od pomiaru do eksportu
      *
      * Wymagania: US17.3, US1.1, US2.8
@@ -56,9 +53,21 @@ class BuildingCardFromServerTest {
     @Test
     fun cardA1FromServer() {
         steps.openCard("A-1")
-        compose.onNode(hasContentDescription(EXPAND)).performClick()
+        compose.onNode(openedCard()).performClick()
         val assessment = hasText(SERVER_ASSESSMENT, substring = true)
         steps.waitFor(assessment)
         compose.onAllNodes(assessment).assertCountEquals(1)
+    }
+
+    /**
+     * Lista budynków pochodzi z serwera, a nie z pliku konturów w aplikacji: budynek [SERVER_ONLY_SYMBOL] istnieje
+     * wyłącznie w bazie serwera, więc bez pobrania listy z serwera nie pojawia się w wynikach wyszukiwania.
+     *
+     * Wymagania: US1.2, NFR-41
+     */
+    @Test
+    fun listContainsServerOnlyBuilding() {
+        steps.openCard(symbol = SERVER_ONLY_SYMBOL, query = SERVER_ONLY_NAME)
+        steps.waitFor(hasText(SERVER_ONLY_NAME, substring = true))
     }
 }

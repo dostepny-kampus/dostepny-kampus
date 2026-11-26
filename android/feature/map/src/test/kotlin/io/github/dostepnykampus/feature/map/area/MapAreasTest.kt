@@ -215,7 +215,24 @@ class MapAreasTest {
         assertEquals("Kampus główny", areas().current?.name)
         assertEquals("Bartoszowice", areas(symbol = "P-14").current?.name)
         chosen.value = "Wittigowo"
+        followed.value = "P-14"
         assertEquals("Wittigowo", areas(symbol = "P-14").current?.name)
+    }
+
+    /**
+     * Wiersz: V1, budynek z innego terenu daje swój teren już w klatce wyboru, zanim teren zostanie zapisany, więc
+     * cel kamery nie jest przycinany granicą starego terenu.
+     *
+     * Wymagania: US1.8, BR-G5
+     */
+    @Test
+    fun givesBuildingAreaAtOnce() {
+        chosen.value = "Wittigowo"
+        followed.value = "T-15"
+        assertEquals("Bartoszowice", areas(symbol = "P-14").chosenName, "teren budynku przed zapisem")
+        assertEquals("Bartoszowice", areas(symbol = "P-14").current?.name, "pokazany teren budynku")
+        areas(symbol = "P-14").followSelection()
+        assertEquals("Bartoszowice", chosen.value, "zapisany teren budynku")
     }
 
     /**

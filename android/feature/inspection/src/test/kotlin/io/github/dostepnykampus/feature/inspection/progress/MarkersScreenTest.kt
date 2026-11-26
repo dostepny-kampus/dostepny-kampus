@@ -6,8 +6,11 @@
 package io.github.dostepnykampus.feature.inspection.progress
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -17,6 +20,7 @@ import io.github.dostepnykampus.core.model.inspection.InspectionMarker
 import io.github.dostepnykampus.core.model.inspection.MarkerPlace
 import io.github.dostepnykampus.core.model.inspection.ProgressMarker
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -49,6 +53,20 @@ class MarkersScreenTest {
     }
 
     /**
+     * Piętro ze znacznikiem ma „Obejrzane” z ikoną nad autorem znacznika.
+     *
+     * Wymagania: US11.3, NFR-21
+     */
+    @Test
+    fun marksFloorSeenWithIcon() {
+        show(MarkersUiState.Ready(BUILDING))
+        val seen = compose.onNodeWithText("Obejrzane").getUnclippedBoundsInRoot()
+        val author = compose.onNodeWithText("Znacznik: Zbierający, Autor 14").getUnclippedBoundsInRoot()
+        assertTrue("„Obejrzane” nad autorem", seen.bottom <= author.top)
+        compose.onAllNodesWithTag(INSPECTED_ICON_TAG, useUnmergedTree = true).assertCountEquals(1)
+    }
+
+    /**
      * Potwierdzenie cofnięcia mówi, że postęp budynku się zmniejszy.
      *
      * Scenariusz: postep-inwentaryzacji.feature: Koordynator cofa znacznik dowolnego Zbierającego po potwierdzeniu
@@ -60,6 +78,14 @@ class MarkersScreenTest {
         show(MarkersUiState.Ready(BUILDING, asking = MARKER_ID))
         compose.onNodeWithText("Postęp budynku się zmniejszy", substring = true).assertIsDisplayed()
         compose.onNodeWithText(KEEP).assertIsDisplayed()
+    }
+
+    /** Wiersz: znacznik piętra pokazuje etykietę z danych PWr, a pytanie o cofnięcie też. Wymagania: US11.3 */
+    @Test
+    fun showsFloorLabelNotId() {
+        show(MarkersUiState.Ready(BUILDING, asking = MARKER_ID, floorLabels = mapOf("2" to "1 piętro")))
+        compose.onNodeWithText("1 piętro").assertIsDisplayed()
+        compose.onNodeWithText("Cofnąć znacznik piętra „1 piętro”?", substring = true).assertIsDisplayed()
     }
 
     /**

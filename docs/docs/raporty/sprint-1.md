@@ -63,7 +63,7 @@ W tym sprincie doszło pięć ekranów: L1, L2 (US14), C5 (US15), C6 (US17.2) i 
 
 | V1: Mapa kampusu | V2: Karta budynku | V3: Którędy wejść |
 | --- | --- | --- |
-| [![Makieta V1: pole symbolu budynku, przełącznik Mapa i Lista budynków, mapa z oznaczeniami barier, przyciski przesuwania mapy, pasek dolny](../_generated/m-v1-mapa.png){: width="210" }](../_generated/m-v1-mapa.png) | [![Makieta V2: budynek A-1, trzy wejścia z oznaczeniami Niedostępne, Dostępne i Brak danych, przycisk Sprawdź, którędy wejść, wybór piętra, plan piętra, bariery](../_generated/m-v2-karta-budynku.png){: width="210" }](../_generated/m-v2-karta-budynku.png) | [![Makieta V3: zdanie o wejściu dostępnym do A-1, wejście z oznaczeniem, bariera ze zdjęciem](../_generated/m-v3-ktoredy-wejsc.png){: width="210" }](../_generated/m-v3-ktoredy-wejsc.png) |
+| [![Makieta V1: pole symbolu budynku, przełącznik Mapa i Lista budynków, mapa z oznaczeniami barier, przyciski przesuwania mapy, pasek dolny](../_generated/m-v1-mapa.png){: width="210" }](../_generated/m-v1-mapa.png) | [![Makieta V2: budynek A-1, trzy wejścia z oznaczeniami Niedostępne, Dostępne i Brak danych, przycisk Sprawdź, którędy wejść, wybór piętra, plan piętra, bariery](../_generated/m-v2-karta-budynku.png){: width="210" }](../_generated/m-v2-karta-budynku.png) | Makieta usunięta w sprincie 4 razem z ekranem V3; jego treść przejęły karta V2 i arkusz wejścia na V1. |
 
 | V4: Zgłoszenie szybkie, krok 1 | C1: Pomiar pozycji | R2: Sprawdzenie zgłoszenia |
 | --- | --- | --- |

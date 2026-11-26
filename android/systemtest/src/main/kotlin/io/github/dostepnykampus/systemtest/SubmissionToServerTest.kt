@@ -13,13 +13,9 @@ import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.network.ApiResult
-import io.github.dostepnykampus.core.network.NetworkModule
 import io.github.dostepnykampus.core.network.auth.AccessTokens
+import io.github.dostepnykampus.core.network.di.NetworkModule
 import kotlinx.coroutines.runBlocking
-import okhttp3.FormBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.json.JSONObject
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -41,7 +37,7 @@ class SubmissionToServerTest {
     @Test
     fun submissionReachesServer() {
         runBlocking {
-            tokens.signIn(collectorToken())
+            tokens.signIn(realmToken(login = "zbierajacy.test", password = "haslo-testowe-zbierajacy"))
             val place = firstBuildingPoint()
             val id = UUID.randomUUID().toString()
             val content =
@@ -75,28 +71,5 @@ class SubmissionToServerTest {
         return polygon.rings
             .first()
             .first()
-    }
-
-    private fun collectorToken(): String {
-        val form =
-            FormBody
-                .Builder()
-                .add(name = "grant_type", value = "password")
-                .add(name = "client_id", value = "dostepny-kampus-android")
-                .add(name = "username", value = "zbierajacy.test")
-                .add(name = "password", value = "haslo-testowe-zbierajacy")
-                .build()
-        val request =
-            Request
-                .Builder()
-                .url(TOKEN_URL)
-                .post(form)
-                .build()
-        val body = OkHttpClient().newCall(request).execute().use { it.body.string() }
-        return JSONObject(body).getString("access_token")
-    }
-
-    private companion object {
-        const val TOKEN_URL = "http://10.0.2.2:8180/realms/dostepny-kampus/protocol/openid-connect/token"
     }
 }

@@ -114,6 +114,23 @@ class CardServerEntrancesTest {
             assertEquals(listOf(SERVER_ENTRANCE), datedEntrances(cardOf(source)))
         }
 
+    /**
+     * Wiersz: kolejne otwarcie V2, serwer jeszcze nie odpowiedział → od pierwszego stanu wejścia z karty pobranej
+     * wcześniej. Wymagania: NFR-56, NFR-12
+     */
+    @Test
+    fun showsKnownServerAtOnce() =
+        runTest {
+            val answers =
+                ArrayDeque(
+                    listOf<suspend () -> ServerReply<ServerCard>>({ ServerReply.Ok(DETAILS) }, { awaitCancellation() }),
+                )
+            val source = ServerEntrancesRepository { answers.removeFirst()() }
+            datedEntrances(cardOf(source))
+            val first = cardOf(source).uiState.value as BuildingCardUiState.Ready
+            assertEquals(listOf(SERVER_ENTRANCE), first.entrances.map { it.entrance }, "karta czeka na serwer")
+        }
+
     /** Wiersz: zamknięcie karty w trakcie pobierania → wywołanie serwera przerwane, bez działającego zapytania. */
     @Test
     fun cancelsCallOnClose() =

@@ -9,7 +9,6 @@ import io.github.dostepnykampus.barrier.submission.CreateResult;
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.NewSubmission;
 import io.github.dostepnykampus.barrier.submission.OutsideCampus;
-import io.github.dostepnykampus.barrier.submission.ReviewDecision;
 import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.SubmissionEdit;
 import io.github.dostepnykampus.barrier.submission.SubmissionRepository;
@@ -29,6 +28,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
@@ -129,7 +129,7 @@ final class SubmissionServiceTest {
             () -> Assertions.assertThrows(
                 InvalidSubmission.class,
                 () -> service.create(
-                    new NewSubmission(SubmissionServiceTest.ID, unknown, "konto")
+                    new NewSubmission(SubmissionServiceTest.ID, unknown, "konto", Set.of())
                 ),
                 "Utworzenie zgłoszenia z nieznanym budynkiem jest odrzucane"
             ),
@@ -149,7 +149,7 @@ final class SubmissionServiceTest {
     void returnsRepositoryResultOnCreate() {
         final NewSubmission command = new NewSubmission(
             SubmissionServiceTest.ID,
-            SubmissionServiceTest.content(SubmissionKind.PRECISE, "Z9"), "konto"
+            SubmissionServiceTest.content(SubmissionKind.PRECISE, "Z9"), "konto", Set.of()
         );
         Assertions.assertAll(
             Stream.of(
@@ -203,20 +203,18 @@ final class SubmissionServiceTest {
     }
 
     @Test
-    void returnsClaimResultAndPassesReviewer() {
-        final EditResult result = new EditResult.Saved(SubmissionServiceTest.STORED);
+    void keepsBuildingOfEntranceForQuickAtEntrance() {
         final SubmissionServiceTest.RecordingSubmissions fake =
-            new SubmissionServiceTest.RecordingSubmissions(null, result);
-        final SubmissionService service =
-            SubmissionServiceTest.service(fake, SubmissionServiceTest.FORBIDDEN);
-        Assertions.assertAll(
-            () -> Assertions.assertSame(
-                result, service.claim(SubmissionServiceTest.ID, "weryfikator"),
-                "Wynik wzięcia nie wrócił tym samym obiektem"
-            ),
-            () -> Assertions.assertEquals(
-                List.of("weryfikator"), fake.seen(), "Konto Weryfikatora zmienione po drodze"
-            )
+            new SubmissionServiceTest.RecordingSubmissions(null, null);
+        final SubmissionContent entrance =
+            SubmissionServiceTest.content(SubmissionKind.QUICK, "Z9", "e1");
+        SubmissionServiceTest.service(fake, SubmissionServiceTest.CONTOUR).create(
+            new NewSubmission(SubmissionServiceTest.ID, entrance, "konto", Set.of())
+        );
+        Assertions.assertEquals(
+            entrance,
+            ((NewSubmission) fake.seen().get(0)).content(),
+            "Zgłoszenie przy wejściu powinno zachować budynek wejścia"
         );
     }
 
@@ -290,7 +288,7 @@ final class SubmissionServiceTest {
         );
         final NewSubmission command = new NewSubmission(
             SubmissionServiceTest.ID,
-            SubmissionServiceTest.content(SubmissionKind.QUICK, null), "konto"
+            SubmissionServiceTest.content(SubmissionKind.QUICK, null), "konto", Set.of()
         );
         Assertions.assertThrows(
             OutsideCampus.class, () -> service.create(command),
@@ -319,7 +317,8 @@ final class SubmissionServiceTest {
             new SubmissionServiceTest.RecordingSubmissions(null, null);
         SubmissionServiceTest.service(fake, outlines).create(
             new NewSubmission(
-                SubmissionServiceTest.ID, SubmissionServiceTest.content(kind, building), "konto"
+                SubmissionServiceTest.ID, SubmissionServiceTest.content(kind, building), "konto",
+                Set.of()
             )
         );
         return ((NewSubmission) fake.seen().get(0)).content();
@@ -330,6 +329,18 @@ final class SubmissionServiceTest {
     }
 
     private static SubmissionContent content(final SubmissionKind kind, final String building) {
+        final String entrance;
+        if (kind == SubmissionKind.QUICK) {
+            entrance = null;
+        } else {
+            entrance = "e1";
+        }
+        return SubmissionServiceTest.content(kind, building, entrance);
+    }
+
+    private static SubmissionContent content(
+        final SubmissionKind kind, final String building, final String entrance
+    ) {
         return new SubmissionContent(
             kind,
             new SubmissionPlace(
@@ -337,7 +348,7 @@ final class SubmissionServiceTest {
                 new SubmissionFloor("p2", 2, false)
             ),
             new BarrierDetails(BarrierGroup.OTHER, new BarrierType(5), 2, "opis", false),
-            "e1", NewEntranceMarking.ACCESSIBLE, null,
+            entrance, NewEntranceMarking.ACCESSIBLE, null,
             List.of(UUID.fromString("5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d"))
         );
     }
@@ -378,15 +389,9 @@ final class SubmissionServiceTest {
         }
 
         @Override
-        public EditResult claim(final UUID id, final String reviewer) {
-            this.seen.add(reviewer);
-            return this.edited;
-        }
-
-        @Override
-        public EditResult decide(final ReviewDecision decision) {
-            this.seen.add(decision);
-            return this.edited;
+        public Optional<Submission> archive(final UUID id) {
+            this.seen.add(id);
+            return Optional.empty();
         }
 
         List<Object> seen() {

@@ -13,6 +13,8 @@ import androidx.compose.ui.test.onNodeWithText
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.NearestEntrance
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
@@ -20,13 +22,13 @@ import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.feature.capture.report.ReportFormViewModel
 import io.github.dostepnykampus.feature.capture.report.ReportSaverModule
-import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
-import io.github.dostepnykampus.feature.capture.report.edit.ReportStage
+import io.github.dostepnykampus.feature.capture.report.form.ReportEdit
 import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
 import io.github.dostepnykampus.feature.capture.report.form.ReportForm
-import io.github.dostepnykampus.feature.capture.report.form.ReportFormViewModel
 import io.github.dostepnykampus.feature.capture.report.form.ReportPlace
+import io.github.dostepnykampus.feature.capture.report.form.ReportStage
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -38,6 +40,7 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import javax.inject.Inject
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * „Zapisz” na C2 aż do karty na C3: formularz, zapis przez kolejkę w bazie z grafu Hilt, historia i lista
@@ -102,7 +105,9 @@ class SavedReportTest {
     }
 
     private fun save(vararg edits: ReportEdit) {
-        val form = ReportFormViewModel(saver = ReportSaverModule.reportSaver(queue()))
+        val catalog = BuildingCatalogRepository(EmptyCoroutineContext) { NO_BUILDINGS }
+        val nearest = NearestEntrance(catalog)
+        val form = ReportFormViewModel(nearest = nearest, saver = ReportSaverModule.reportSaver(queue()))
         form.open(ReportForm(place = A1))
         form.edit(ReportEdit.Floor(ReportFloor.Numbered(0, isMezzanine = false)))
         form.edit(ReportEdit.Photo(photo()))
@@ -128,6 +133,7 @@ class SavedReportTest {
 }
 
 private const val WAIT_MS = 5_000L
+private const val NO_BUILDINGS = """{"type":"FeatureCollection","attribution":"© plik","features":[]}"""
 private const val DESCRIPTION = "Na długim korytarzu nie ma gdzie usiąść i odpocząć"
 private val A1 =
     ReportPlace(

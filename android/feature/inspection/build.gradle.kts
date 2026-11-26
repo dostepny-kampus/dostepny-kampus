@@ -23,6 +23,8 @@ dependencies {
     api(project(":core:data"))
     api(project(":core:model"))
     implementation(project(":core:designsystem"))
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.material3)
@@ -35,7 +37,7 @@ dependencies {
     implementation(libs.hilt.core)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit4)
-    testImplementation(libs.androidx.activity)
+    testImplementation(libs.androidx.compose.ui.geometry)
     testImplementation(libs.androidx.compose.ui.test)
     testImplementation(libs.androidx.compose.ui.test.junit4)
     testImplementation(libs.androidx.test.core)
@@ -44,6 +46,7 @@ dependencies {
     testImplementation(libs.robolectric.shadows.framework)
     testImplementation(libs.roborazzi.core)
     testImplementation(libs.androidx.compose.ui.test.manifest)
+    testImplementation(libs.androidx.compose.ui.unit)
     constraints {
         /* Starsze espresso-core z zależności testów Compose nie działa z Robolectric na bieżącym SDK. */
         testImplementation(libs.androidx.test.espresso.core)

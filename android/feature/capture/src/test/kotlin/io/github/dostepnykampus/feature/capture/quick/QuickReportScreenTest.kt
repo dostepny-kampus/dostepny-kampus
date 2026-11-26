@@ -7,27 +7,34 @@ package io.github.dostepnykampus.feature.capture.quick
 
 import android.Manifest
 import android.app.Application
+import android.graphics.Bitmap
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
-import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.BuildingFloors
-import io.github.dostepnykampus.core.data.network.NetworkStatus
-import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.building.FloorList
+import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
-import io.github.dostepnykampus.feature.capture.location.BuildingLookup
+import io.github.dostepnykampus.core.model.submission.SubmissionContent
+import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
-import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
+import io.github.dostepnykampus.feature.capture.report.ReportSaver
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertEquals
@@ -41,7 +48,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
-import kotlin.coroutines.EmptyCoroutineContext
+import java.time.Instant
 
 /**
  * Ekran V4: krok 2 przekazuje grupę i piętro dalej, a potwierdzenie prowadzi do mapy.
@@ -60,8 +67,16 @@ class QuickReportScreenTest {
     private val next = mutableListOf<ReportRoute>()
     private var toMap = 0
     private var backs = 0
+    private val shown = mutableStateOf(ReportRoute())
+    private val saved = mutableListOf<SubmissionContent>()
+    private val sent = mutableListOf<Boolean>()
     private val actions =
-        QuickReportActions(onNext = { next.add(it) }, onSent = {}, onBack = { backs++ }, onBackToMap = { toMap++ })
+        QuickReportActions(
+            onNext = { next.add(it) },
+            onSent = { sent.add(it) },
+            onBack = { backs++ },
+            onBackToMap = { toMap++ },
+        )
     private val atGroup = ReportRoute(step = ReportStep.GROUP, photoId = "zdjecie-1", photoPath = "/zdjecie-1.jpg")
 
     /** Pozycja nieznana (odbiornik bez odczytu): pytanie o piętro jak w budynku podstawowym. Wymagania: BR-14 */
@@ -156,7 +171,13 @@ class QuickReportScreenTest {
         statuses.forEach { compose.onNodeWithText(it).assertDoesNotExist() }
     }
 
-    /** Wiersz: V4 krok 1 ze zdjęciem, „Wstecz” → potwierdzenie rezygnacji. Wymagania: US4.8 */
+    /**
+     * Wiersz: V4 krok 1 ze zdjęciem, „Wstecz” → potwierdzenie rezygnacji; zdjęcie znika po potwierdzeniu.
+     * Scenariusz (częściowo): zgloszenie-szybkie-powrot.feature: Powrót między krokami nie usuwa zdjęcia ani grupy
+     *   barier
+     *
+     * Wymagania: US4.8
+     */
     @Test
     fun leavesAfterConfirm() {
         val photo = folder.newFile("zdjecie-1.jpg").apply { writeBytes(byteArrayOf(1, 2, 3)) }
@@ -165,11 +186,45 @@ class QuickReportScreenTest {
         compose.onNodeWithText("Wróć do zdjęcia").performClick()
         compose.onNodeWithText("Krok 1 z 3").assertIsDisplayed()
         assertEquals(0, backs)
-        assertTrue(photo.exists())
+        assertTrue("zdjęcie zostaje w telefonie", photo.exists())
         compose.onNodeWithText("Wstecz").performClick()
         compose.onNodeWithText("Tak, zrezygnuj").performClick()
         assertEquals(1, backs)
         assertFalse(photo.exists())
+    }
+
+    /**
+     * Wiersz: V4 krok 1 po powrocie z kroku 2 pokazuje zrobione zdjęcie i nadal pozwala przejść dalej.
+     * Scenariusz (częściowo): zgloszenie-szybkie-powrot.feature: Powrót między krokami nie usuwa zdjęcia ani grupy
+     *   barier
+     *
+     * Wymagania: US4.8
+     */
+    @Test
+    fun showsPhotoOnReturnToStepOne() {
+        val photo = folder.newFile("zdjecie-1.jpg")
+        photo.outputStream().use { out ->
+            Bitmap.createBitmap(4, 3, Bitmap.Config.ARGB_8888).compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, out)
+        }
+        show(ReportRoute(step = ReportStep.PHOTO, photoId = "zdjecie-1", photoPath = photo.path))
+        val preview = hasContentDescription("Zrobione zdjęcie 1 z 1")
+        compose.waitUntil(timeoutMillis = PREVIEW_MS) { compose.onAllNodes(preview).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNode(preview).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Dalej").assertIsEnabled()
+    }
+
+    /**
+     * Wiersz: V4 krok 2 po ponownym przejściu dalej pokazuje grupę „Toalety” wybraną wcześniej.
+     * Scenariusz (częściowo): zgloszenie-szybkie-powrot.feature: Powrót między krokami nie usuwa zdjęcia ani grupy
+     *   barier
+     *
+     * Wymagania: US4.8
+     */
+    @Test
+    fun keepsToiletsOnReturnToStepTwo() {
+        show(atGroup.copy(group = BarrierGroup.TOILETS))
+        compose.onNodeWithText("Krok 2 z 3").assertIsDisplayed()
+        compose.onNodeWithText("✓ Toalety").assertIsSelected()
     }
 
     /** Wiersz: V4 krok 1 po „Zgłoś barierę przy wejściu”, napis z wejściem. Wymagania: US4.6 */
@@ -181,19 +236,44 @@ class QuickReportScreenTest {
     }
 
     /**
-     * Wiersz: V4 brak sieci → „Zapisaliśmy zdjęcie w telefonie…” i „Wróć do mapy”. Napis nie mówi o weryfikacji.
-     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Potwierdzenie bez sieci mówi o późniejszej wysyłce
+     * Wiersz: V4 brak sieci → „Zapisaliśmy zdjęcie w telefonie…” z późniejszym sprawdzeniem i „Wróć do mapy”.
+     * Scenariusz: zgloszenie-szybkie.feature: Potwierdzenie bez sieci mówi o późniejszej wysyłce
      *
-     * Wymagania: US4.2
+     * Wymagania: US4.2, US4.4
      */
     @Test
     fun confirmsSavedOffline() {
         show(ReportRoute(step = ReportStep.SENT, isSavedOffline = true))
-        val saved = "Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet."
+        val saved =
+            "Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet. " +
+                "Potem sprawdzimy zdjęcie, a jeśli bariera się potwierdzi, pokażemy ją na mapie."
         compose.onNodeWithText(saved).assertIsDisplayed()
         compose.onNodeWithText("Dziękujemy", substring = true).assertDoesNotExist()
         compose.onNodeWithText("Wróć do mapy").performClick()
         assertEquals(1, toMap)
+    }
+
+    /**
+     * Wiersz: V4 brak sieci → nad potwierdzeniem linia „Bez internetu” z dniem pobrania danych mapy, jak na V1.
+     *
+     * Wymagania: US9.1, NFR-10, US4.2
+     */
+    @Test
+    fun showsOfflineLineOnSaved() {
+        val synced = Instant.parse("2026-10-27T09:00:00Z")
+        val barriers =
+            object : AcceptedBarriers {
+                override suspend fun barriers(): List<AcceptedBarrier> = emptyList()
+
+                override fun syncedAt(): Instant = synced
+            }
+        val send = quickSendModel(positions = PositionSource { flowOf() }, saver = { _, _, _ -> })
+        shown.value = ReportRoute(step = ReportStep.SENT, isSavedOffline = true)
+        compose.showQuickReport(route = shown, actions = actions, send = send, barriers = barriers)
+
+        val line = compose.onNodeWithText("Bez internetu · dane z 27.10.2026").fetchSemanticsNode().boundsInRoot
+        val saved = compose.onNodeWithText("Zapisaliśmy", substring = true).fetchSemanticsNode().boundsInRoot
+        assertTrue("linia nad potwierdzeniem", line.bottom <= saved.top)
     }
 
     /**
@@ -209,62 +289,194 @@ class QuickReportScreenTest {
         compose.onNodeWithText("Zrezygnuj").performClick()
         compose.onNodeWithText("Wróć do zdjęcia").performClick()
         compose.onNodeWithText("Spróbuj ponownie").assertIsDisplayed()
-        assertTrue(photo.exists())
+        assertTrue("zdjęcie zostaje w telefonie", photo.exists())
         compose.onNodeWithText("Zrezygnuj").performClick()
         compose.onNodeWithText("Tak, zrezygnuj").performClick()
         assertEquals(1, toMap)
         assertFalse(photo.exists())
     }
 
+    /**
+     * Wiersz: V4 krok 1 bez wybranego wejścia → bez napisu o wejściu.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Odnośnik w wierszu kilku wejść bez danych bierze miejsce
+     *   z bieżącej pozycji
+     *
+     * Wymagania: US4.6
+     */
     @Test
     fun opensStepOneWithoutEntrance() {
         show(ReportRoute())
         compose.onNodeWithText("Wejście", substring = true).assertDoesNotExist()
     }
 
+    /**
+     * Wiersz: V4 po „Zgłoś barierę przy wejściu” → bez zgody na lokalizację, bez odbiornika pozycji i bez pytania
+     *   o piętro.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego
+     *   wejścia
+     *
+     * Wymagania: US4.6, BR-8
+     */
+    @Test
+    fun skipsLocationAtEntrance() {
+        var isListened = false
+        val atEntrance = atGroup.copy(entranceId = "node/6")
+        show(atEntrance, positions = PositionSource { flow { isListened = true } }, isLocationGranted = false)
+        compose.onNodeWithText("Toalety").performClick()
+        compose.onNodeWithText("Na którym piętrze?").assertDoesNotExist()
+        assertEquals(listOf(atEntrance.copy(group = BarrierGroup.TOILETS)), next)
+        assertFalse(isListened)
+    }
+
+    /**
+     * Wiersz: V4 po przycisku zgłoszenia w arkuszu toalety → napis obiektu w kroku 1, bez zgody na lokalizację,
+     *   bez odbiornika pozycji i bez pytania o piętro w kroku 2.
+     * Scenariusz (częściowo, przykład: arkusz toalety): zgloszenie-szybkie.feature: Zgłoszenie przy obiekcie
+     *   planu ma miejsce w punkcie obiektu i piętro planu
+     *
+     * Wymagania: US4.6, BR-8, BR-14
+     */
+    @Test
+    fun reportsAtPlanObject() {
+        var isListened = false
+        val place =
+            ReportPlace(
+                category = RoomCategory.ACCESSIBLE_TOILET,
+                buildingSymbol = "A-1",
+                floorId = "A-1/p0",
+                floorLabel = "Parter",
+                latitude = 51.1105,
+                longitude = 17.0605,
+            )
+        val positions = PositionSource { flow { isListened = true } }
+        show(ReportRoute(place = place), positions = positions, isLocationGranted = false)
+        compose.onNodeWithText("Toaleta dostosowana: Budynek A-1, parter").assertIsDisplayed()
+        compose.onNodeWithText("Zrób zdjęcie").assertIsDisplayed()
+        assertFalse(isListened)
+    }
+
+    /** Wiersz: V4 krok 3 przy wejściu → napis o wejściu zamiast zdania o miejscu, „Wyślij” czynne. Wymagania: US4.6 */
+    @Test
+    fun sendsAtEntrance() {
+        val photo = folder.newFile("zdjecie-1.jpg").apply { writeBytes(byteArrayOf(1, 2, 3)) }
+        show(atSend(photo.path).copy(entranceId = "node/6"), isLocationGranted = false)
+        compose.onNodeWithText("Wejście: „G”").assertIsDisplayed()
+        compose.onNodeWithText("Wyślij").assertIsEnabled()
+    }
+
+    /**
+     * Bez pozycji „Wyślij” nic nie wysyła, a komunikat mówi, co zrobić; zdjęcie i grupa „Coś innego” zostają.
+     * Scenariusz: zgloszenie-szybkie.feature: Bez bieżącej pozycji zgłoszenie czeka na ponowną próbę
+     *
+     * Wymagania: UC7, US4.1
+     */
+    @Test
+    fun keepsReportWithoutPosition() {
+        val photo = folder.newFile("zdjecie-1.jpg").apply { writeBytes(byteArrayOf(1, 2, 3)) }
+        show(atSend(photo.path).copy(group = BarrierGroup.OTHER))
+        compose.onNodeWithText("Telefon nie ustalił, gdzie jesteś.", substring = true).assertIsDisplayed()
+        compose.onNodeWithText("Podejdź do okna", substring = true).assertIsDisplayed()
+        compose.onNodeWithText("Wyślij").assertDoesNotExist()
+        compose.onNodeWithText("Spróbuj ponownie").assertIsDisplayed()
+        compose.onNodeWithText("Dziękujemy", substring = true).assertDoesNotExist()
+        compose.onNodeWithText("Coś innego").assertIsDisplayed()
+        assertTrue("zdjęcie zostaje w telefonie", photo.exists())
+        assertTrue("zgłoszenie nie zapisuje się w telefonie", saved.isEmpty())
+        assertTrue("zgłoszenie nie zostaje wysłane", sent.isEmpty())
+    }
+
+    /**
+     * Pozycja ustalona przy „Spróbuj ponownie” wysyła zgłoszenie z tym samym zdjęciem, grupą „Coś innego” i pozycją;
+     * po wysłaniu ekran potwierdza, że zgłoszenie trafi do weryfikacji.
+     * Scenariusz: zgloszenie-szybkie.feature: Pozycja ustalona przy ponownej próbie pozwala
+     *   wysłać zgłoszenie
+     *
+     * Wymagania: UC7, US4.1
+     */
+    @Test
+    fun sendsAfterRetryWithPosition() {
+        val photo = folder.newFile("zdjecie-1.jpg").apply { writeBytes(byteArrayOf(1, 2, 3)) }
+        var isFixed = false
+        val positions =
+            PositionSource {
+                if (isFixed) {
+                    flowOf(PositionFix(INSIDE, ACCURACY, 0L))
+                } else {
+                    flow { throw SecurityException("brak zgody") }
+                }
+            }
+        show(atSend(photo.path).copy(group = BarrierGroup.OTHER), positions = positions)
+        compose.onNodeWithText("Telefon nie ustalił", substring = true).assertIsDisplayed()
+        isFixed = true
+        compose.onNodeWithText("Spróbuj ponownie").performClick()
+        compose.waitUntil(timeoutMillis = PREVIEW_MS) {
+            compose.onAllNodes(hasText("Wyślij")).fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNodeWithText("Wyślij").assertIsEnabled().performClick()
+        compose.waitUntil(timeoutMillis = PREVIEW_MS) { sent.isNotEmpty() }
+        assertEquals("wysłane przy sieci", listOf(false), sent)
+        val content = saved.single()
+        assertEquals("to samo zdjęcie", listOf("zdjecie-1"), content.photoIds)
+        assertEquals("ta sama grupa", BarrierGroup.OTHER, content.barrierGroup)
+        assertEquals("pozycja z ponownej próby", INSIDE, content.location)
+        compose.runOnIdle { shown.value = ReportRoute(step = ReportStep.SENT, isSavedOffline = sent.single()) }
+        compose.onNodeWithText("Sprawdzimy zdjęcie", substring = true).assertIsDisplayed()
+    }
+
+    /**
+     * Bez zdjęcia albo bez grupy barier krok 3 nie ma zgłoszenia: „Wyślij” się nie pojawia i nic nie zostaje wysłane.
+     * Scenariusz: zgloszenie-szybkie.feature: Zgłoszenia szybkiego nie da się wysłać bez zdjęcia albo grupy barier
+     *
+     * Wymagania: US4.1, US4.3
+     */
+    @Test
+    fun refusesSendWithoutPhotoOrGroup() {
+        val photo = folder.newFile("zdjecie-1.jpg").apply { writeBytes(byteArrayOf(1, 2, 3)) }
+        val withoutPhoto = atSend(photo.path).copy(photoId = null, photoPath = null)
+        val withoutGroup = atSend(photo.path).copy(group = null)
+        show(withoutPhoto)
+        compose.onNodeWithText("Wyślij").assertDoesNotExist()
+        compose.runOnIdle { shown.value = withoutGroup }
+        compose.onNodeWithText("Wyślij").assertDoesNotExist()
+        assertTrue("zgłoszenie nie zapisuje się w telefonie", saved.isEmpty())
+        assertTrue("zgłoszenie nie zostaje wysłane", sent.isEmpty())
+    }
+
+    /**
+     * Bez zgody na lokalizację krok 1 pyta o zgodę zamiast otwierać aparat.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Bez zgody na lokalizację aparat się nie otwiera
+     *
+     * Wymagania: US4.1, NFR-27
+     */
+    @Test
+    fun asksLocationBeforeCamera() {
+        show(ReportRoute(step = ReportStep.PHOTO), isLocationGranted = false)
+        compose.onNodeWithText("Zezwól na lokalizację").assertIsDisplayed()
+        compose.onNodeWithText("Zrób zdjęcie").assertDoesNotExist()
+    }
+
     private fun show(
         route: ReportRoute,
         positions: PositionSource = PositionSource { flow { throw SecurityException("brak zgody") } },
         floors: BuildingFloors = BuildingFloors { null },
+        isLocationGranted: Boolean = true,
     ) {
+        shown.value = route
         val app = ApplicationProvider.getApplicationContext<Application>()
-        shadowOf(app).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
-        val transcoder = PhotoTranscoder()
-        val catalog = BuildingCatalogRepository(EmptyCoroutineContext) { CAMPUS }
-        val entrances = QuickEntranceViewModel(catalog)
-        val send =
-            QuickSendViewModel(
-                positions = positions,
-                locationSwitch = LocationSwitch { flowOf(true) },
-                saver = { _, _, _ -> },
-                networkStatus = NetworkStatus { flowOf(true) },
-                buildingFloors = floors,
-                buildingLookup = BuildingLookup(catalog, EmptyCoroutineContext),
-            )
-        compose.setContent {
-            DostepnyKampusTheme {
-                QuickReportScreen(
-                    route = route,
-                    actions = actions,
-                    models = QuickReportModels(photoTranscoder = transcoder, entrances = entrances, send = send),
-                )
-            }
-        }
+        if (isLocationGranted) shadowOf(app).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+        val saver = ReportSaver { content, _, _ -> saved.add(content) }
+        val send = quickSendModel(positions = positions, saver = saver, floors = floors)
+        compose.showQuickReport(route = shown, actions = actions, send = send)
     }
 
     private fun atSend(path: String) =
         ReportRoute(step = ReportStep.SEND, photoId = "zdjecie-1", photoPath = path, group = BarrierGroup.TOILETS)
 
     private companion object {
+        const val JPEG_QUALITY = 90
+        const val PREVIEW_MS = 5_000L
         const val ACCURACY = 6.0
         val INSIDE = GeoPoint(longitude = 17.0605, latitude = 51.1105)
         val OUTSIDE = GeoPoint(longitude = 17.059, latitude = 51.109)
-        const val CAMPUS =
-            """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
-                """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"name":"A-1",""" +
-                """"osm_id":"way/A-1"},"geometry":{"type":"Polygon","coordinates":[[[17.06,51.11],""" +
-                """[17.061,51.11],[17.061,51.111],[17.06,51.111],[17.06,51.11]]]}},""" +
-                """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/6",""" +
-                """"entrance":"yes","ref":"G"},"geometry":{"type":"Point","coordinates":[17.06,51.11]}}]}"""
     }
 }

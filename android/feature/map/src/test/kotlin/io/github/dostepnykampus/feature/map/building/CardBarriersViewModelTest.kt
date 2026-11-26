@@ -13,6 +13,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.Severity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -69,6 +70,35 @@ class CardBarriersViewModelTest {
             val barriers = cardBarriers(listOf(barrier(id = "z1", symbol = "A-1")), syncedAt = null)
             Dispatchers.resetMain()
             assertNull(barriers, "Bez pobrania barier karta nie ma danych o barierach")
+        }
+
+    /**
+     * Wiersz: telefon ma już bariery z ostatniego pobrania, serwer jeszcze nie odpowiedział → karta od pierwszego stanu
+     * ma bariery swojego budynku. Wymagania: NFR-56, US2.2
+     */
+    @Test
+    fun showsKnownBarriersAtOnce() =
+        runTest {
+            Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+            val catalog = BuildingCatalogRepository(EmptyCoroutineContext) { ASSET_JSON }
+            catalog.catalog()
+            val known = listOf(barrier(id = "z1", symbol = "A-1"), barrier(id = "z2", symbol = "B-4"))
+            val card =
+                BuildingCardViewModel(
+                    symbol = "A-1",
+                    repository = catalog,
+                    networkStatus = { flowOf(true) },
+                    acceptedBarriers =
+                        object : AcceptedBarriers {
+                            override suspend fun barriers(): List<AcceptedBarrier> = awaitCancellation()
+
+                            override fun known() = known
+                        },
+                )
+            val first = card.uiState.value as BuildingCardUiState.Ready
+            card.viewModelScope.cancel()
+            Dispatchers.resetMain()
+            assertEquals(listOf("z1"), first.barriers?.map { it.id }, "Karta czekała na serwer, choć znała bariery")
         }
 
     private fun TestScope.cardBarriers(

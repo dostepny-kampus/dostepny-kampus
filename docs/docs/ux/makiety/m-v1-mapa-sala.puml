@@ -1,21 +1,26 @@
 @startsalt
-' V1 Mapa kampusu, znaleziona sala: plan piętra na mapie i kroki tekstem (decyzja 48, punkt 5).
+' V1 Mapa kampusu, znaleziona sala: plan piętra z wyróżnioną salą i karta sali z listą „Jak dojść”, nic nie wybrane (US18.1, US18.2).
+' Nad kartą bez wiersza tytułu i pola z numerem sali, jak nad V2 (decyzja z 21.11.2026).
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
-$pole_tekstowe("A-1 329")
 $przycisk("Kampus główny ▾")
-$mapa("plan 2 piętra A-1 z wyróżnioną salą; krótkie podpisy: Winda, Toaleta, Sala 329; kolumna pięter po lewej pod przyciskiem terenu, wybrane 2", "", "info")
-Źródło: Politechnika Wrocławska
+$mapa("plan 2 piętra A-1 z wyróżnioną salą 329; numery kroków w kółkach: 2 przy windzie, 3 w sali, bez linii trasy; kolumna pięter po lewej, wybrane 2", "", "info")
 $ramka()
-<b>A-1: Sala 329</b>
-<i>[funkcja sali z danych]</i>, 2 piętro
-1. <i>[wejście zalecane]</i> (parter)
-2. Winda przy klatkach C i D
-3. 2 piętro
-4. Sala 329, ok. <i>[odległość]</i> od windy
-$przycisk_glowny("Pokaż opis budynku")
-$przycisk("Zamknij")
+{ <b>Sala 329</b>$dk_spacje(14) | [Zamknij] }
+<i>[rodzaj sali z danych]</i> · 2 piętro
+$wiersz_budynku()
+{ <b>Jak dojść</b>$dk_spacje(6) | <b>Pokaż po kolei</b> }
+{+
+(1) <b><i>[wejście zalecane]</i></b> ›
+Parter, <i>[położenie wejścia]</i>
+--
+(2) <b>Winda</b> ›
+Ok. <i>[odległość]</i> od wejścia. Jedź na 2 piętro.
+--
+(3) <b>Sala 329</b> ›
+2 piętro, ok. <i>[odległość]</i> od windy.
+}
 }
 $pasek_dolny_konto()
 $ekran_koniec()

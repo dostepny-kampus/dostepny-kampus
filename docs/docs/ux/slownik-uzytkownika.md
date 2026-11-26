@@ -11,7 +11,7 @@ Słownik pojęć zostaje źródłem nazw w dokumentach i w kodzie. Ta strona ust
 
 | Zasada | Przykład | Dlaczego |
 | --- | --- | --- |
-| Przycisk czynności zaczyna się od czasownika w trybie rozkazującym. | „Zrób zdjęcie”, „Sprawdź, którędy wejść” | Osoba wie, co się stanie po dotknięciu. |
+| Przycisk czynności zaczyna się od czasownika w trybie rozkazującym. | „Zrób zdjęcie”, „Pokaż wejście na mapie” | Osoba wie, co się stanie po dotknięciu. |
 | Przycisk do listy albo ekranu nosi nazwę tego miejsca, taką jak nagłówek ekranu docelowego. | „Moje zgłoszenia” prowadzi do ekranu „Moje zgłoszenia” | Osoba sprawdza, czy trafiła tam, gdzie chciała (NFR-15, WCAG 3.2.4). |
 | Wyjątki od trybu rozkazującego to utarte zwroty rezygnacji i przejścia oraz odpowiedzi na pytanie z ekranu. | „Nie teraz”, „Dalej”, „Zdecyduję później”, „Poza budynkiem”, „Coś innego” | Brzmią naturalnie, a forma rozkazująca byłaby sztuczna. |
 | Aplikacja mówi o sobie „my”, do osoby „Ty”, a zaimki pisze wielką literą. | „Wyślemy je, gdy wróci internet.” | Jeden głos na wszystkich ekranach. |
@@ -21,6 +21,7 @@ Słownik pojęć zostaje źródłem nazw w dokumentach i w kodzie. Ta strona ust
 | Bez anglicyzmów. | „Plik”, „Pobierz” | Wyjątek: „© OpenStreetMap contributors”, bo podpis wymaga NFR-37. |
 | Jedno słowo ma jedno znaczenie w całej aplikacji. | „niedostępne” tylko o wejściu | Osoba nie myli wejścia z brakiem planu albo zdjęcia. |
 | Cudzysłów w aplikacji to „…”. W dokumentacji cały napis stoi już w „…”, więc cudzysłów wewnątrz napisu zapisujemy jako »…«. | W dokumentacji „Co znaczy »Dostępne«”, na ekranie: Co znaczy „Dostępne” | Zasada polskiej interpunkcji: „…” to cudzysłów zwykły, a »…« to cudzysłów wewnątrz cytatu. |
+| Nazwa wejścia stoi w cudzysłowie tylko wtedy, gdy jest własną nazwą z danych. „Wejście” i „Wejście główne”, które nadaje import (BR-27), stoją bez cudzysłowu w każdym napisie: na karcie, w arkuszu, w zgłoszeniu i w nazwie dla TalkBack. | „Zalecane: »Wejście dostosowane«.”, ale „Zalecane: Wejście główne.” i „Wejście: Wejście, od strony E-3, od południa” | Cudzysłów mówi, że to nazwa, którą osoba zobaczy na miejscu. Słowa, które sami wstawiamy, nie są taką nazwą, a „»Wejście«” w napisie „Wejście: »Wejście«” czyta się jak błąd (decyzja z 19.11.2026). |
 | Daty jako 12.11.2026, liczby cyframi. | „3 kroki”, „Krok 2 z 3” | Cyfry czyta się szybciej niż słowa. |
 | Jednoliterowe słowo, np. „i”, „w” albo „z”, nie zostaje na końcu wiersza: po nim stoi twarda spacja. | „Konto i praca” łamie się jako „Konto / i praca” | Zasada polskiego składu. Przy dużej czcionce wiersz zaczyna się od słowa, które niesie znaczenie. |
 
@@ -63,30 +64,42 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | Pojęcie w dokumentacji | Napis w aplikacji | Dla kogo (rola) | Dlaczego tak | Do sprawdzenia w wywiadzie (nr pytania) |
 | --- | --- | --- | --- | --- |
 | mapa kampusu (nagłówek V1) | „Mapa kampusu” | wszystkie | bez zmian | 1.3 |
-| symbol budynku (pole V1) | „Wpisz symbol budynku, np. C-13” | wszystkie | Symbol wisi na budynku. Przykład pokazuje zapis, a czasownik mówi, co zrobić. | 1.3, część 5 |
+| symbol budynku (pole V1) | „Szukaj budynku, np. C-13” | wszystkie | Czasownik mówi, co zrobić, jak w innych polach wyszukiwania. Słowo „budynek” zna każdy, a przykład pokazuje zapis. Tekst mieści się w jednym wierszu na ekranie 360 dp. | 1.3, część 5 |
 | przejście między mapą a listą budynków (V1) | „Pokaż listę” na mapie, „Pokaż mapę” na liście | wszystkie | Czasownik i to, co się pokaże, jak inne przejścia. Lista pomaga osobie, której mapa sprawia kłopot, i czytnikowi TalkBack. | część 5 |
 | przyciski „+” i „−” | „Powiększ” i „Pomniejsz” | wszystkie | Sam znak „+” nie mówi, co powiększy. | obserwacja w części 3 |
 | przyciski przesuwania mapy | strzałki na mapie; nazwa dla TalkBack „Przesuń mapę w górę”, „…w dół”, „…w lewo”, „…w prawo” | wszystkie | Cztery strzałki w krzyżu na mapie, każda co najmniej 48 dp. Kierunek widać po położeniu i strzałce, a pełną nazwę czyta TalkBack (PW-11). PE-1 nie lubi przeciągania. | obserwacja w części 3 |
-| karta budynku (nagłówek V2) | symbol dużym napisem, np. „A-1”, a pod nim nazwa budynku bez powtórzonego symbolu, np. „Budynek główny”; bez nazwy sam symbol; TalkBack czyta „Budynek A-1, Budynek główny”, a bez nazwy „Budynek C-4” | wszystkie | Osoba szuka budynku, a nie „karty”. | 4.4 |
+| karta budynku (nagłówek V2) | symbol, np. „A-1”, a pod nim nazwa budynku bez powtórzonego symbolu, np. „Budynek główny”; bez nazwy sam symbol; TalkBack czyta „Budynek A-1, Budynek główny”, a bez nazwy „Budynek C-4” | wszystkie | Osoba szuka budynku, a nie „karty”. | 4.4 |
 | karta budynku (w zdaniach) | „opis budynku” | Gość, Odwiedzający | Tego słowa używa pytanie 4.4 scenariusza. „Karta” kojarzy się z kartą płatniczą (hipoteza). | 4.4 |
 | oznaczenie wejścia „dostępne” | „Dostępne” | wszystkie | Słowo z kryterium US2.1, krótkie. „Bez schodów” byłoby nieprawdą przy wejściu z podnośnikiem (recenzja B3, uwaga 12). | 4.1, 4.2, część 5 |
 | oznaczenie wejścia „niedostępne” | „Niedostępne” | wszystkie | Przeciwieństwo „Dostępne”. To słowo nie pada w innym znaczeniu. | 4.1, 4.2 |
 | oznaczenie wejścia „brak danych” | „Brak danych” | wszystkie | Mówi uczciwie, że nie wiemy, i różni się od „Niedostępne” (US17.1). | 4.3, 4.4 |
-| wejście zalecane (V2, V3, BR-25) | „Zalecane” | wszystkie | Jedno słowo obok oznaczenia mówi, którym wejściem wejść (decyzja 48). Napis nie podaje piętra, żeby etykieta była krótka; piętro podają kroki do sali i opis wejścia (decyzje 53 i 64). | 4.1 |
-| wejście bez nazwy w danych | „Wejście bez nazwy w danych” | wszystkie | Mówi, skąd brak nazwy, zamiast zmyślać nazwę. | 4.4 |
+| wejście zalecane (V2, arkusz wejścia, BR-25) | „Zalecane” | wszystkie | Jedno słowo obok oznaczenia mówi, którym wejściem wejść (decyzja 48). Napis nie podaje piętra, żeby etykieta była krótka; piętro podają kroki do sali i opis wejścia (decyzje 53 i 64). | 4.1 |
+| wejście bez nazwy w danych (lista „Wejścia” na V2, arkusz wejścia, podpis pinezki na V1, TalkBack) | „Wejście” | wszystkie | Tak samo nazywa się wejście z planów PWr bez nazwy w uwagach (BR-27). Jedno zjawisko ma więc jedną nazwę, z jakiegokolwiek źródła są dane. Dopisek „bez nazwy w danych” w podpisie na mapie czytał się jak komunikat o błędzie (decyzja z 18.11.2026). | 4.4 |
+| kilka wejść bez oznaczenia i bez nazwy (V2, grupa „Wejścia”) | „3 wejścia”, pod nim „Nikt jeszcze nie sprawdził tych wejść.”; 2–4 „wejścia”, 5 i więcej „wejść” | wszystkie | Dwa jednakowe bloki „Brak danych” i „Wejście” czytają się jak błąd i nie dają odróżnić wejść. Jeden wiersz z liczbą mówi to samo krócej i nazywa wejścia tak jak pojedynczy wiersz. Zdanie pod nim mówi, dlaczego danych brak, i zaprasza do zgłoszenia. | 4.3, 4.4 |
+| arkusz wejścia na mapie (V1) | nagłówek „Wejście”, pod nim wiersz „Budynek A-1”; przy wejściu głównym dopisek „wejście główne”. Pod oznaczeniem i źródłem część „Bariery przy tym wejściu”, gdy są przyjęte zgłoszenia. Dalej „Dojście”, „Drzwi” z „Szerokość drzwi: 90 cm” i „Za drzwiami”, gdy są w danych | wszystkie | Wiersz budynku mówi, do którego budynku prowadzi wejście, bez szukania konturu, więc nagłówek go nie powtarza. Części mają te same nagłówki przy każdym wejściu, więc arkusze różnych wejść czyta się tak samo. Bariera stoi przed opisem, bo osoba ma się o niej dowiedzieć bez przewijania (decyzja z 19.11.2026). | 4.1 |
+| arkusz znaku planu (V1) | nagłówek „Toaleta dostosowana” albo „Schody”, pod nim wiersz „Budynek A-1”, a niżej etykieta piętra z danych PWr, np. „Parter” | wszystkie | Te same słowa co chip na V2 i etykiety pięter jak w kolumnie pięter. | 4.2 |
 | chipy na V2 (pełny ekran) | „Winda”, „Toaleta dostosowana” | wszystkie | Chip stoi tylko przy fakcie z danych, nigdy przy braku (decyzja 48). Wejście dostępne podaje wiersz o wejściach, więc chipa nie powtarzamy (US2.8). | 4.1, 4.2 |
-| zgłoszenie szybkie przy wejściu (V2, V3) | „Zgłoś barierę przy wejściu”; nazwa dla TalkBack „Zgłoś barierę przy wejściu: »nazwa wejścia«”; na kroku 1 V4 „Wejście: »nazwa wejścia«” | wszystkie; Gość przechodzi do L1 | Zaczyna się nazwą ekranu V4, a koniec odróżnia ten przycisk od pozycji „Zgłoś barierę” w pasku dolnym: wejście będzie już wybrane (WCAG 2.4.6, 2.5.3). | 4.6 |
-| wybór budynku przy konturze wspólnym (V1) | nagłówek „Który budynek?”; przycisk na każdy symbol, np. „Budynek C-3” i „Budynek C-4”, z nazwą z danych, gdy jest; „Zamknij” | wszystkie | Pytanie mówi, co wybrać. Przycisk ma ten sam wzór co wynik wyszukiwania (decyzja 85). | 1.3 |
+| część „Za drzwiami” (V1, arkusz wejścia) | „Winda przy klatkach C i D, ok. 30 m od wejścia.” Bez klatek w danych: „Winda, ok. 30 m od wejścia.” Pod spodem „Jeździ od piwnicy do 3 piętra.” Przy nazwie piętra spoza odmiany: „Jedzie na: piwnica, parter, antresola.” | wszystkie | Zdanie z odmianą czyta się jak mowa (decyzja z 18.11.2026). Listę pięter zostawiamy tam, gdzie odmiana dałaby złe słowo. Słowo „ok.” mówi, że to odległość w przybliżeniu. | 4.2 |
+| zgłoszenie szybkie przy wejściu (V2, arkusz wejścia) | „Zgłoś barierę przy wejściu”; nazwa dla TalkBack „Zgłoś barierę przy wejściu: »nazwa wejścia«”. Na kroku 1 V4 „Wejście: »nazwa wejścia«”, a bez nazwy w danych bez cudzysłowu: „Wejście: Wejście główne” albo „Wejście: Wejście, od strony E-3, od południa” | wszystkie; Gość przechodzi do L1 | Zaczyna się nazwą ekranu V4, a koniec odróżnia ten przycisk od pozycji „Zgłoś barierę” w pasku dolnym: wejście będzie już wybrane (WCAG 2.4.6, 2.5.3). | 4.6 |
+| zgłoszenie szybkie przy obiekcie planu (V1, arkusze toalety, schodów i windy) | „Zgłoś barierę przy toalecie”, „Zgłoś barierę przy schodach”, „Zgłoś barierę przy windzie”; nazwa dla TalkBack z budynkiem i piętrem, np. „Zgłoś barierę przy toalecie: Budynek A-1, parter”. Na kroku 1 V4 nagłówek arkusza z budynkiem i piętrem, np. „Toaleta dostosowana: Budynek A-1, parter” | wszystkie; Gość przechodzi do L1 | Początek jak przy wejściu, a koniec mówi, przy czym stoi bariera (WCAG 2.4.6, 2.5.3). Budynek i piętro odróżniają przyciski czytane przez TalkBack poza arkuszem. | 4.6 |
+| wybór budynku przy konturze wspólnym (V1) | nagłówek „Który budynek?”; wiersz budynku na każdy symbol, np. „Budynek C-3” i „Budynek C-4”, z nazwą z danych pod napisem, gdy jest; „Zamknij” | wszystkie | Pytanie mówi, co wybrać. Wybór otwiera kartę, więc ma ten sam wiersz co przejście do karty w innych arkuszach (decyzja z 18.11.2026). | 1.3 |
 | tereny mapy (V1) | Przycisk z nazwą wybranego terenu, np. „Kampus główny”. Nagłówek panelu: „Teren na mapie”. Teren na liście: nazwa, a pod nią „9 budynków · 2 km”. Przy wybranym: „78 budynków · wybrany”. Dopisek wyniku: „Wittigowo · inny teren”. Napis po zmianie terenu: „Pokazuję teren: Wittigowo · 2 km na południowy wschód”. Nazwa przycisku dla TalkBack: „Teren: Kampus główny. Zmień teren” | wszystkie | „Teren” zamiast „kampus”, bo budynki PWr stoją w kilku miejscach miasta, a „kampus” znaczy już całą mapę. Nazwę terenu widać cały czas (US1.6). Liczba budynków i odległość pomagają wybrać teren bez znajomości nazw (US1.7). Dopisek i napis mówią, że mapa zmieniła teren (US1.8). Napis podaje też odległość i kierunek, więc ta informacja nie zależy od samego ruchu mapy (NFR-56). | 1.3 |
-| przejścia z V1 i V2 | „Pokaż na mapie” (kroki do sali), „Pokaż budynek na mapie” (pełny ekran V2), „Pokaż na planie”, „Pokaż opis budynku”, „Pokaż wyjścia ewakuacyjne (2)” | wszystkie | Czasownik i to, co się pokaże. | 4.4, 6.3 |
-| wejście na mapie (V2, V3) | „Pokaż wejście na mapie”; nazwa dla TalkBack „Pokaż wejście na mapie: »nazwa wejścia«” | wszystkie | Inny cel niż „Pokaż budynek na mapie”, więc inne słowa (WCAG 2.4.6, decyzja 53). | 4.4 |
-| mała karta budynku nad mapą (V2) | obrysowany „Zamknij”; uchwyt z nazwą dla TalkBack „Rozwiń opis budynku” | wszystkie | „Zamknij” jak w innych arkuszach mapy. Uchwyt mówi, co się stanie, słowem „opis budynku” (decyzja 115). | 4.4 |
+| przejścia z V1 i V2 | „Pokaż na mapie” (karta sali przy dużej czcionce), „Pokaż budynek na mapie” (V2 na cały ekran), „Pokaż na planie”, „Pokaż wyjścia ewakuacyjne (2)” | wszystkie | Czasownik i to, co się pokaże. Rozwinięty przycisk wyjść ma napis „Ukryj wyjścia ewakuacyjne (2)”, bo mówi, co zrobi następne dotknięcie. | 4.4, 6.3 |
+| przejście do karty budynku z arkusza (V1: arkusze wejścia, toalety, schodów i bariery, karta sali, „Który budynek?”) | wiersz „Budynek A-1” ze znakiem budynku i strzałką w prawo; nazwa dla TalkBack „Budynek A-1, otwiera opis budynku” | wszystkie | Jeden wzór we wszystkich arkuszach, więc osoba uczy się go raz. Napis to budynek z symbolem, a czynność dopowiada TalkBack tymi słowami co na liście budynków. Nazwa zaczyna się widocznym napisem (WCAG 2.5.3). Przycisku „Pokaż opis budynku” już nie ma: jeden cel ma jeden wzór (decyzja z 18.11.2026). | 4.4 |
+| karta sali (V1) | nagłówek listy „Jak dojść” i przycisk „Pokaż po kolei”. W trybie „po kolei”: „Krok 1 z 3”, „Wszystkie kroki”, „‹ Wstecz” i „Dalej ›”. W wybranym kroku „Szczegóły wejścia ›” albo „Szczegóły windy ›”, a w arkuszu z nich „‹ Sala 329” (TalkBack: „Wróć do sali 329”) | wszystkie | „Jak dojść” mówi, czego osoba szuka, a nie jak działa aplikacja. „Pokaż po kolei” nazywa czynność i to, co się stanie. Liczba kroków cyframi, jak w „Krok 2 z 3”. Pokaz drogi zaczyna sama osoba, więc karta nie rusza mapy bez prośby (decyzja z 19.11.2026). „Wszystkie kroki” mówi, dokąd wraca odsyłacz. „Wstecz” i „Dalej” to te same słowa co w innych krokach aplikacji (decyzja z 20.11.2026). | 4.4 |
+| wyjście ewakuacyjne na rozwiniętej liście (V2) | pogrubione „Wyjście ewakuacyjne”, pod nim reszta opisu z danych, np. „Z pomieszczenia 41.”; „Szerokość drzwi: 90 cm”, gdy szerokość jest w danych; w bloku z ramką jak lista „Wejścia” | wszystkie | Wiersz czyta się jak wiersz wejścia: krótka nazwa, potem gdzie. Opis z planów PWr mówi, gdzie jest wyjście, bez zmyślonej nazwy. Szerokość drzwi tymi samymi słowami co w arkuszu wejścia. | 4.4 |
+| wejście na mapie (V2) | „Pokaż wejście na mapie”; nazwa dla TalkBack z nazwą wejścia, np. „Pokaż wejście na mapie: »nazwa wejścia«”; bez nazwy w danych bez cudzysłowu, np. „Pokaż wejście na mapie: Wejście główne” | wszystkie | Inny cel niż „Pokaż budynek na mapie”, więc inne słowa (WCAG 2.4.6, decyzja 53). Arkusz wejścia nie ma przycisku do innego wejścia: inne wejścia są na liście „Wejścia” karty. | 4.4 |
+| karta budynku nad mapą (V2) | obrysowany „Zamknij” w nagłówku; uchwyt z nazwą dla TalkBack „Wysokość karty” i bieżącą wysokością: „niska” albo „rozwinięta” | wszystkie | „Zamknij” jak w innych arkuszach mapy. Uchwyt mówi, co zmienia, i gdzie karta jest teraz (decyzja 115). „Rozwinięta”, nie „cały ekran”, bo stan pasuje do czynności TalkBack „Rozwiń” i „Zwiń” na tym samym uchwycie. | 4.4 |
 | wiersz o wejściach (V2) | „Wejście dostępne”, „Brak wejścia dostępnego”, „Brak danych o wejściach” | wszystkie | Mówi słowami także o braku, bo chip stoi tylko przy fakcie z danych (US2.8). „Brak danych” nie udaje niedostępności (US17.1). | 4.1, 4.3 |
-| wejście dostępne (zdanie na V3) | „Budynek A-1 ma wejście dostępne: »nazwa wejścia«.” | wszystkie | bez zmian; zdanie powtarza słowo z oznaczenia | 4.1 |
+| bariera przy wejściu w wierszu wejścia (V2) | znak uciążliwości i np. „Tylko z pomocą: ciężkie drzwi”, „Blokada: wejście zamknięte” | wszystkie | Te same słowa uciążliwości co na mapie, a typ bariery z przyjętego zgłoszenia. Oznaczenie wejścia zostaje, bo ciężkie drzwi to nie zamknięte wejście (BR-25). | 4.1, 4.2 |
+| odpowiedź pod wierszem o wejściach (V2) | „Zalecane: »Wejście dostosowane«. Drzwi 120 cm, winda ok. 30 m za drzwiami.”; przy wejściu „Wejście” z opisem położenia „Zalecane wejście od strony C-20, od północy. Drzwi 100 cm.”; „Żadne z 3 wejść nie jest dostępne.”, przy jednym wejściu „Jedyne wejście nie jest dostępne.”. Bariera przy wejściu zalecanym dodaje na końcu np. „Przy wejściu jest bariera: tylko z pomocą.”. Blokada każdego wejścia dostępnego daje „Jedyne wejście dostępne ma blokadę.” albo np. „Każde z 2 wejść dostępnych ma blokadę.” Wejście bez nazwy w danych stoi bez cudzysłowu: „Zalecane: Wejście główne.” | wszystkie | Zdanie odpowiada na pytanie o wejście tam, gdzie osoba już patrzy, bez osobnego ekranu (US3.1, US3.2). „Zalecane” powtarza słowo z grupy „Wejścia”, a „za drzwiami” mówi, gdzie liczy się odległość do windy. Opis położenia stoi bez cudzysłowu, bo nie jest nazwą. | 4.1 |
 | źródło oznaczenia „obchód” z datą | „Sprawdzone na miejscu 12.11.2026” | wszystkie | Mówi, że ktoś tam był. To buduje zaufanie (N2). | 2.5, 4.3, 4.4 |
 | źródło oznaczenia „import” z datą | „Z map i opisów, stan z 1.10.2026” | wszystkie | Import bierze dane z planów PWr i z OpenStreetMap. „Dane uczelni” byłyby nieprawdą przy OpenStreetMap (recenzja B3, uwaga 23). | 2.2, 4.3 |
+| źródło oznaczenia z warstwy wejść PWr z datą (BR-27) | „Z planów Politechniki Wrocławskiej, stan z 10.1.2024” | wszystkie | Przy danych z planów uczelni źródło jest pewne, więc napis je nazywa. Data to data edycji warstwy. Brzmienie robocze, do potwierdzenia w wywiadzie. | 2.2, 4.3 |
+| wejście bez nazwy w danych, opis położenia (BR-27) | Nazwa „Wejście”, główne w OpenStreetMap „Wejście główne”. Pierwszy wiersz pod nazwą to opis położenia: „Od strony B-7, od wschodu.” albo „Od wschodu.”. Drugi to uwaga uczelni, gdy jest. Numerów nie ma. | wszystkie | Nazwa nie udaje nazwy z danych, a budynek obok i stronę świata osoba sprawdzi na miejscu. Dwa wejścia z tym samym opisem różnią się miejscem na mapie (decyzja z 18.11.2026). | 4.4 |
+| wejście z planów PWr bez nazwy w uwagach i bez nazwy w OpenStreetMap, z opisem dojścia (BR-27) | „Wejście” | wszystkie | Plany PWr wiedzą, że to wejście, a uwagi nie podają nazwy. Gdy wejście ma nazwę w OpenStreetMap, pokazuje tę nazwę. | 4.4 |
 | data weryfikacji | „Sprawdzone 12.11.2026” | wszystkie | „Weryfikacja” to żargon, a data budzi zaufanie (N2). | 2.5, 4.4, 5.1 |
-| zgłoszenie przyjęte (listy na V1–V3) | nagłówek „Bariery w budynku”, w wierszu typ bariery | Gość, Odwiedzający | Osoba widzi bariery, a nie zgłoszenia. | 2.3, 4.5 |
+| zgłoszenie przyjęte (listy na V1 i V2) | nagłówek „Bariery w budynku”, w wierszu typ bariery | Gość, Odwiedzający | Osoba widzi bariery, a nie zgłoszenia. | 2.3, 4.5 |
 | typ bariery | nazwa z klasyfikacji, np. „niesprawna winda” | wszystkie | Nazwy są potoczne. Wyjątki są w 3 wierszach niżej. | 2.3, 4.2 |
 | typ „toaleta niedostępna w praktyce” (TB-20) | „toaleta zamknięta, zastawiona lub trudna do dojścia” | Gość, Odwiedzający | Słowo „niedostępne” zostaje dla wejścia. | 2.3 |
 | typ „brak planu tyflograficznego” (TB-22) | „brak planu dotykowego lub głosowego” | Gość, Odwiedzający | „Tyflograficzny” to słowo specjalistów. | 2.3, 5.1 |
@@ -96,10 +109,9 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | uciążliwość 3 „blokada” | „Blokada” | wszystkie | bez zmian; krótkie i jednoznaczne | 4.2 |
 | przełącznik pięter | „Piętro:” i etykiety z danych PWr | wszystkie | Bez słowa „przełącznik”. | 6.3 |
 | plan piętra (V1) i opis pięter (V2) | grupa „Piętra”, przy piętrze „Pokaż na planie” | wszystkie | Plan jest na mapie, a karta opisuje piętra słowami (decyzja 44). | 6.3 |
-| podpis pod planem (NFR-40) | „Źródło: Politechnika Wrocławska” | wszystkie | bez zmian; mówi, skąd jest plan | 2.2 |
+| źródło planu i wejść (NFR-40) | „Źródło: Politechnika Wrocławska” | wszystkie | na dole karty V2, pod planem C1 i w legendzie pod „ⓘ” na V1 (bez napisu na samej mapie V1) | 2.2 |
 | budynek podstawowy (napis na V2, C1 i C2) | „Nie mamy planu pięter tego budynku.” | wszystkie | Słowo „niedostępny” zostaje dla wejścia. Ten sam napis na każdym ekranie, na którym brakuje planu (BR-G1). | 6.3 |
-| przycisk do ekranu V3 (US3) | „Sprawdź, którędy wejść” | wszystkie | Dawna robocza nazwa brzmiała jak rezerwacja terminu. Ekran odpowiada na pytanie o wejście. | 2.1, 2.2, 4.1 |
-| nagłówek V3 | „Którędy wejść do C-13” | wszystkie | Nagłówek powtarza napis przycisku. | 4.1, część 5 |
+| czynność główna karty budynku (US3) | „Pokaż wejście na mapie”; dawniej „Sprawdź, którędy wejść” do ekranu V3 | wszystkie | Odpowiedź o wejściu stoi już na karcie, więc przycisk nie obiecuje odpowiedzi, tylko mówi, co się pokaże: wejście na mapie z jego opisem. Dawna nazwa zastąpiła roboczą, która brzmiała jak rezerwacja terminu; wraz z ekranem V3 zniknął też nagłówek „Którędy wejść do C-13”. | 2.1, 2.2, 4.1 |
 | zgłoszenie szybkie (nagłówek V4) | „Zgłoś barierę” | Odwiedzający | Ten sam napis co na pasku. | 4.6 |
 | zgłoszenie (rzeczownik w komunikatach) | „zdjęcie bariery”, „bariera” | Gość, Odwiedzający | Osoba robi zdjęcie i to widzi. Plan fazy B zakazuje tu słowa „zgłoszenie”. | 3.4, 4.6 |
 | „Krok 1 z 3” | „Krok 1 z 3” | Odwiedzający | bez zmian | 4.8 |
@@ -116,8 +128,8 @@ Kolumna „Do sprawdzenia w wywiadzie” podaje pytanie, przy którym słuchamy 
 | grupa „inne” | „Coś innego” | Odwiedzający | Brzmi jak odpowiedź na pytanie z kroku 2. | 4.5 |
 | piętro (pytanie w kroku 2, US4.5) | „Na którym piętrze?” | Odwiedzający | Pytanie zamiast samego słowa „piętro”. | 4.5 |
 | puste piętro (odpowiedź w kroku 2) | „Nie wiem” | Odwiedzający | Odpowiedź na pytanie z ekranu; nie zmusza do zgadywania. | 4.5 |
-| piętro 0 w budynku podstawowym (krok 2) | „Parter” | Odwiedzający | Osoba starsza nie liczy pięter od zera. W budynku szczegółowym są etykiety z danych PWr. | 4.5 |
-| bieżąca pozycja (krok 3) | „Dołączymy miejsce, w którym teraz stoisz.” | Odwiedzający | bez zmian | 3.4 |
+| piętro w budynku podstawowym (krok 2 i 3) | „Piwnica”, „Parter”, „1 piętro” … „10 piętro” | Odwiedzający | Osoba starsza nie liczy pięter od zera. Ta sama postać co etykiety z danych PWr w budynku szczegółowym, więc piętro brzmi tak samo na każdym ekranie. | 4.5 |
+| bieżąca pozycja (krok 3) | „Dołączymy miejsce, w którym teraz stoisz.”; przy wybranym wejściu zamiast tego „Wejście: »nazwa wejścia«” | Odwiedzający | Miejscem jest wtedy wejście, więc zdanie o staniu byłoby nieprawdą. | 3.4 |
 | „Wyślij” | „Wyślij” | Odwiedzający | bez zmian | 3.4 |
 | „Anuluj zgłoszenie” | „Zrezygnuj” | Odwiedzający | Bez rzeczownika „zgłoszenie”. | 4.8 |
 | zgoda na lokalizację | „Pozwól na lokalizację”, „Pozwól na dokładną lokalizację” | Odwiedzający, Zbierający | Słowo „lokalizacja” widać w prośbie systemu i w ustawieniach telefonu (hipoteza, do sprawdzenia na telefonie testowym). | 3.2, 3.3 |
@@ -173,7 +185,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | opis „Blokada” (C2) | „Osoba nie pokona jej wcale albo tylko wtedy, gdy ktoś ją przeniesie.” | Zbierający | Skrócone kryterium stopnia 3. | 10.2, 10.5 |
 | opis przy TB-29 (C2) | „Obowiązkowy przy typie »inna bariera«.” | Zbierający | Mówi przed zapisem, kiedy pole jest wymagane (US7.3). | 10.2 |
 | „półpiętro” | „Półpiętro” | Zbierający | bez zmian | 10.2 |
-| budynek, piętro i data w pozycji listy (C3, C4, C7, R2) | „C-13, piętro 2, 12.11.2026”; w R2 „Budynek C-13, piętro 2”; przy zmianie oznaczenia wejścia „A-1, Wejście główne” | Zbierający, Weryfikator | Ten sam wzór co „Piętro:” na karcie budynku. | 10.3 |
+| budynek, piętro i data w pozycji listy (C3, C4, C7, R2) | „C-13, 2 piętro, 12.11.2026”; w R2 „Budynek C-13, 2 piętro”; przy zmianie oznaczenia wejścia „A-1, Wejście główne” | Zbierający, Weryfikator | Ten sam wzór co „Piętro:” na karcie budynku. | 10.3 |
 | piętro wpisywane ręcznie (C2, budynek podstawowy) | „Wpisz numer piętra, 0 to parter.” | Zbierający | Mówi, jak liczyć piętra, bo bez planu nie ma etykiet (BR-G1). | 10.2 |
 | status „lokalne” | „W telefonie” | Zbierający | Odpowiada na pytanie PE-2, czy zgłoszenie dotarło. | 10.3 |
 | status „Nie wysłano” | „Nie wysłano” | Zbierający | Mówi wprost, że zgłoszenie nie dotarło, i różni się od „W telefonie”, które czeka samo (US9.5, BR-26). | 10.3 |
@@ -221,7 +233,7 @@ Role zespołu pracują z aplikacją często i mają wysokie umiejętności cyfro
 | rodzaj zgłoszenia (R1, R2) | „Zgłoszenie z pomiaru”, „Zgłoszenie szybkie”, „Bariery już nie ma”, „Zmiana oznaczenia wejścia” | Weryfikator | Rodzaj mówi, czy typ i uciążliwość trzeba ustalić (BR-14, BR-15). Dwa ostatnie napisy są te same co na C3. | 10.5 |
 | data wysłania w kolejce (R1) | „Wysłane 12.11.2026” | Weryfikator | To samo słowo co status „Wysłane” u Zbierającego. | 10.5 |
 | etykiety danych zgłoszenia (R2) | „Czego dotyczy:”, „Miejsce:”, „Obecne oznaczenie:”, „Wybrane oznaczenie:”, „Wcześniejsze zgłoszenie:” | Weryfikator | Krótka etykieta przed wartością z danych. „Czego dotyczy” powtarza pytanie z kroku 2 V4. | 10.5 |
-| podobne zgłoszenie: odległość i piętro (R2) | „5 m, piętro 2”; przy wyborze duplikatu „schody przy wejściu, 2 m”, „próg, 5 m” | Weryfikator | Odległość tekstem, a nie tylko punktem na mapie (NFR-19). | 10.4 |
+| podobne zgłoszenie: odległość i piętro (R2) | „5 m, 2 piętro”; przy wyborze duplikatu „schody przy wejściu, 2 m”, „próg, 5 m” | Weryfikator | Odległość tekstem, a nie tylko punktem na mapie (NFR-19). | 10.4 |
 | postęp inwentaryzacji | „Postęp inwentaryzacji” | Koordynator | bez zmian | 10.7 |
 | postęp budynku | „4 z 5 pięter, 80%” | Koordynator | bez zmian | 10.7 |
 | liczby zgłoszeń w K1 | „Czeka na sprawdzenie: 3”, „Przyjęte: 4” | Koordynator | bez zmian; liczby jak w scenariuszu `@US11.1` | 10.7 |
@@ -253,21 +265,23 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | Ekran i stan | Komunikat | Przyciski | Zmiana |
 | --- | --- | --- | --- |
 | V1, ładowanie | „Wczytujemy mapę kampusu…” | — | PW-9 |
-| V1, brak wyniku | „Nie znaleźliśmy budynku »X«. Sprawdź symbol, np. C-13, albo wybierz budynek z listy.” | „Pokaż listę” | PW-9 |
+| V1, brak wyniku | „Nie znaleźliśmy budynku »X«. Sprawdź zapis, np. C-13, albo wybierz budynek z listy.” | „Pokaż listę” | PW-9 |
 | V1, brak sieci przy pierwszym otwarciu | bez komunikatu: jedna linia „Bez internetu” bez daty nad mapą z konturami i wejściami | — | PW-4; decyzja 84 |
 | V1, brak mapy ulic | „Mapa ulic chwilowo się nie wczytuje. Budynki i bariery nadal możesz oglądać.” | — | — |
-| V1, brak sali | „Nie znaleźliśmy sali »X« w budynku A-1. Sprawdź numer albo otwórz opis budynku.” | „Pokaż opis budynku” | decyzja 44 |
-| V1, sala bez drogi | „Nie znaleźliśmy w danych wejścia i windy, którymi dotrzesz do tej sali bez schodów.” | „Pokaż opis budynku” | decyzja 48 |
+| V1, brak sali | „Nie znaleźliśmy sali »X« w budynku A-1. Sprawdź numer albo otwórz opis budynku.” | wiersz „Budynek A-1” | decyzja 44 |
+| V1, sam numer sali | „Dopisz budynek do numeru sali. Na przykład: A-1 329.” | — | decyzja z 19.11.2026 |
+| V1, sala bez drogi | „Nie znaleźliśmy w danych wejścia i windy, którymi dotrzesz do tej sali bez schodów.” | wiersz „Budynek A-1” | decyzja 48 |
+| V1, arkusz wejścia z oznaczeniem „Brak danych” | „Nie mamy danych o dostępności tego wejścia.” | „Zgłoś barierę przy wejściu” | — |
 | V2, ładowanie zdjęcia | „Wczytujemy zdjęcie…” | — | PW-9 |
 | V2, brak barier | nagłówek „Brak zgłoszonych barier”, zdanie „Bariera pojawi się tutaj, gdy ktoś ją zgłosi i zostanie sprawdzona.” | „Zgłoś barierę” | PW-6; decyzja 48 |
+| V2, brak wejść w danych | „Nie mamy jeszcze danych o wejściach do tego budynku.” | — | US3.1, US17.1; symbolu nie ma, bo podaje go nagłówek karty. Brak danych nie potwierdza niedostępności. |
 | V2, brak planu (budynek podstawowy) | „Nie mamy planu pięter tego budynku.” | — | PW-6; lista barier stoi nad napisem (decyzja 54) |
+| V2, plan jeszcze nieznany (bez danych z serwera) | „Plan pięter sprawdzimy, gdy telefon połączy się z internetem.” | — | PW-6; mówi, że plan nie jest jeszcze sprawdzony i kiedy będzie, zamiast twierdzić, że go nie ma |
 | V2, zdjęcie bez internetu | „Zdjęcie zobaczysz po połączeniu z internetem.” | — | PW-6 |
 | V2, budynku nie ma w telefonie | „Tego budynku nie ma jeszcze w telefonie. Połącz się z internetem, aby zobaczyć opis budynku.” | „Spróbuj ponownie” | PW-4 |
 | V2, błąd zdjęcia | „Nie udało się wczytać zdjęcia. Spróbuj ponownie za chwilę.” | „Spróbuj ponownie” | PW-10 |
-| V3, jest wejście dostępne | „Budynek A-1 ma wejście dostępne: »nazwa wejścia«.” | — | — |
-| V3, pusta lista wejść odwiedzających | „Nie mamy jeszcze danych o wejściach do budynku A-2.” | — | US3.1, US17.1, PW-10; symbol zależy od budynku. Brak danych nie potwierdza niedostępności. |
-| V3, brak wejścia dostępnego | „Budynek B-8 nie ma wejścia dostępnego. Wybierz »Wstecz«, aby w opisie budynku zobaczyć bariery przy każdym wejściu.” | — | PW-10; rada wskazuje przycisk „Wstecz” (recenzja B5) |
-| V3, brak danych o wejściach | „Nie wiemy jeszcze, czy budynek B-8 ma wejście dostępne: brak danych o 2 z 3 wejść. Wybierz »Wstecz«, aby w opisie budynku zobaczyć każde wejście z datą.” Bez daty i źródła w danych zdanie kończy się na „każde wejście” | — | PW-10; rada wskazuje przycisk „Wstecz” (recenzja B5); bez obiecywania dat (decyzja 115) |
+| V2, brak wejścia dostępnego | „Brak wejścia dostępnego”, pod nim „Żadne z 3 wejść nie jest dostępne.” | — | US3.1; liczba wejść z danych |
+| V2, blokada przy jedynym wejściu dostępnym | „Brak wejścia dostępnego”, pod nim „Jedyne wejście dostępne ma blokadę.” | — | US3.1, BR-25; oznaczenie wejścia zostaje „Dostępne” |
 | V4, krok 1 | „Ważne”, „Nie fotografuj twarzy ani tablic rejestracyjnych.”, „Zdjęcie zobaczą inni użytkownicy.” | „Zrób zdjęcie”, „Zrób nowe zdjęcie” | PW-8; decyzja 54 |
 | V4, krok 3 | „Dołączymy miejsce, w którym teraz stoisz.” | „Wyślij” | — |
 | V4, brak zgody na lokalizację | „Aby wysłać zdjęcie bariery, potrzebujemy jej miejsca. Sprawdzimy je tylko teraz i nie będziemy Cię śledzić.” | „Pozwól na lokalizację”, „Wróć do mapy” | PW-5 |
@@ -278,7 +292,7 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | V4, brak pozycji | „Telefon nie ustalił, gdzie jesteś. Podejdź do okna albo wyjdź na zewnątrz i spróbuj ponownie.” | „Spróbuj ponownie”, „Zrezygnuj” | PW-5 |
 | V4, potwierdzenie rezygnacji (po „Zrezygnuj” albo po „Wstecz” w kroku 1 ze zdjęciem) | „Jeśli zrezygnujesz, usuniemy zrobione zdjęcie i niczego nie wyślemy. Aby je zachować, wybierz »Wróć do zdjęcia«.” | „Tak, zrezygnuj”, „Wróć do zdjęcia” | nowy; recenzja B4, uwaga 17 |
 | V4, potwierdzenie | „Dziękujemy. Sprawdzimy zdjęcie, a jeśli bariera się potwierdzi, pokażemy ją na mapie.” | „Wróć do mapy” | PW-5 |
-| V4, potwierdzenie bez internetu | „Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet.” | „Wróć do mapy” | PW-5 |
+| V4, potwierdzenie bez internetu | „Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet. Potem sprawdzimy zdjęcie, a jeśli bariera się potwierdzi, pokażemy ją na mapie.” | „Wróć do mapy” | PW-5 |
 | V4, za mało miejsca | „W telefonie brakuje miejsca, więc nie zapisaliśmy zdjęcia bariery. Usuń niepotrzebne zdjęcia albo filmy i spróbuj ponownie.” | „Spróbuj ponownie” | PW-5 |
 | V5, zdanie o koncie | „Aby zgłosić barierę, potrzebne jest konto. Możesz je założyć teraz w »Konto«.” | „Dalej”, „Pomiń instrukcję” | PW-5 |
 | V5, zdanie o wejściu | „Napis »Dostępne« przy wejściu znaczy, że wejdziesz bez pokonywania stopni: z poziomu chodnika, pochylnią albo podnośnikiem.” | „Dalej”, „Pomiń instrukcję” | PW-15 |
@@ -355,6 +369,7 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | K3, ładowanie | „Przygotowujemy plik…” | — | PW-9 |
 | K3, pusty | „Nie ma jeszcze przyjętych barier. Pobrany plik będzie pusty.” | „Pobierz plik” | — |
 | K3, sukces | „Plik zapisany w pobranych plikach.” | — | — |
+| K3, sukces na Androidzie 8–9 | „Plik zapisany w wybranym miejscu.” | — | — |
 | K3, informacja | „Plik zawiera tylko obecne, sprawdzone bariery, bez danych autorów.” | „Pobierz plik” | — |
 
 ## Metafory i ikony
@@ -392,7 +407,7 @@ Zatwierdzone makiety hi-fi rysują znaki oznaczenia wejścia i uciążliwości w
 | Element | Ikona (nazwa z OpenIconic) | Tekst obok | Metafora / dlaczego zrozumiała |
 | --- | --- | --- | --- |
 | pasek dolny: mapa | `map` | „Mapa” | plan w ramce ze znacznikiem miejsca, jak w aplikacjach map |
-| pasek dolny: zgłoszenie | `camera-slr` | „Zgłoś barierę”; ta sama ikona przy „Zgłoś barierę przy wejściu” (V2, V3) | zgłoszenie zaczyna się od zdjęcia (US4.1) |
+| pasek dolny: zgłoszenie | `camera-slr` | „Zgłoś barierę”; ta sama ikona przy „Zgłoś barierę przy wejściu” (V2, arkusz wejścia) i przy przyciskach zgłoszenia w arkuszach toalety, schodów i windy | zgłoszenie zaczyna się od zdjęcia (US4.1) |
 | pasek dolny: pomoc | `question-mark` | „Pomoc” | znak zapytania, czyli „mam pytanie” |
 | pasek dolny: konto | `person` | „Konto” albo „Konto i praca” | sylwetka, czyli „ja”; ta sama ikona dla obu napisów |
 | wskaźnik braku sieci | `wifi` | „Bez internetu” | znak internetu znany z telefonu i kawiarni (hipoteza) |
@@ -411,6 +426,7 @@ Zatwierdzone makiety hi-fi rysują znaki oznaczenia wejścia i uciążliwości w
 | status „archiwalne” | `box` | „Archiwalne” | pudło na stare dokumenty |
 | znacznik „obejrzane” | `task` | „Obejrzane” | odhaczona pozycja na liście kontrolnej |
 | otwarcie pozycji listy (R1, K1, C3) | `chevron-right` | „Otwórz” | strzałka w prawo: dalej, do szczegółów |
+| wiersz budynku w arkuszach V1 | `home`, po napisie `chevron-right`; hi-fi: budynek z oknami z Material Icons („Apartment”) | „Budynek A-1” | budynek z oknami, czyli „otwórz kartę tego budynku”; strzałka w prawo jak przy „Otwórz”. W lo-fi `home` to najbliższy znak OpenIconic. Przy skali czcionki co najmniej 1,5 znak budynku znika jak inne ikony obok słowa, a strzałka zostaje |
 | przycisk „Wstecz” | `arrow-left` | „Wstecz” | strzałka w lewo: powrót do poprzedniego miejsca |
 | przesuwanie mapy (V1, C1, R1) | `caret-top`, `caret-bottom`, `caret-left`, `caret-right` | brak; nazwa dla TalkBack „Przesuń mapę w górę” i dalsze kierunki | grot pokazuje, w którą stronę przesunie się mapa; inny znak niż strzałka „Wstecz” |
 | legenda i źródła mapy (V1, C1, R1) | `info` | brak; nazwa dla TalkBack „Legenda i źródła mapy” | litera „i” jak w punkcie informacji; słowo „Legenda” nie mieści się obok pełnego podpisu OpenStreetMap (NFR-37) |
@@ -424,8 +440,8 @@ Zasady ikon. Ikona stoi tylko w przypadkach z tabel w tej sekcji, a pozostałe e
 | --- | --- |
 | Jeden znak ma jedno znaczenie. | W makietach lo-fi `question-mark` oznacza tylko pomoc, dlatego „Brak danych” ma tam `minus`. W hi-fi „Brak danych” to romb ze znakiem zapytania: od „Pomocy” różni go kształt rombu i słowo obok. Lupa stoi tylko w polu wyszukiwania. |
 | Ikonę mają elementy, dla których wymaga jej NFR-21 albo wymagania wspólne, oraz pasek dolny. | Status, oznaczenie wejścia, uciążliwość, znacznik i wskaźnik sieci mają ikonę. Pasek dolny ma ikony, bo widać go na 5 ekranach i osoba uczy się ich raz. |
-| Przy zwykłej czcionce ikona może stać obok słowa w odnośnikach, chipach, wierszach L2 i blokach V3. | Ikona pomaga rozpoznać czynność, ale znaczenie niesie słowo. „Zgłoś barierę przy wejściu” powtarza ikonę paska, bo zaczyna to samo zgłoszenie. Przy skali czcionki co najmniej 1,5 te ikony znikają ([reguła 11](wymagania-ekranow.md#duza-czcionka)). |
-| Strzałki zostają przy każdej czcionce. | Strzałka „Wstecz” i strzałka w dół przy rozwijanych piętrach i wyjściach ewakuacyjnych. Strzałka w prawo przy „Otwórz” w R1, K1 i C3 odróżnia otwarcie pozycji od czynności na niej (recenzja B5); ta sama stoi w wierszach L2. Ołówek przy „Popraw zgłoszenie” (V2, Zbierający) odróżnia poprawę od nowego zgłoszenia. |
+| Przy zwykłej czcionce ikona może stać obok słowa w odnośnikach, chipach, wierszach L2 i częściach arkusza wejścia. | Ikona pomaga rozpoznać czynność, ale znaczenie niesie słowo. „Zgłoś barierę przy wejściu” powtarza ikonę paska, bo zaczyna to samo zgłoszenie. Przy skali czcionki co najmniej 1,5 te ikony znikają ([reguła 11](wymagania-ekranow.md#duza-czcionka)). |
+| Strzałki zostają przy każdej czcionce. | Strzałka „Wstecz” i strzałka w dół przy rozwijanych piętrach i wyjściach ewakuacyjnych. Strzałka w prawo przy „Otwórz” w R1, K1 i C3 odróżnia otwarcie pozycji od czynności na niej (recenzja B5). Ta sama stoi w wierszach L2 i w wierszu budynku w arkuszach V1. Ołówek przy „Popraw zgłoszenie” (V2, Zbierający) odróżnia poprawę od nowego zgłoszenia. |
 | Na V1, C1 i R1 sterowanie mapą, na V1 też lupa, a na C1 i R1 wybrana pozycja przełącznika mają ikony przy każdej czcionce. | Strzałki przesuwania, „+”, „−” i „ⓘ” stoją na mapie jako jeden zestaw. Lupa oznacza pole wyszukiwania. Sam ptaszek bez koła pokazuje wybraną pozycję przełącznika i nie myli się ze znakiem „Dostępne”. Ikona przy „Pokaż listę” jest ozdobna i znika przy dużej czcionce. |
 | Nawigacja wstecz i przesuwanie mapy mają strzałkę. | „Wstecz” to strzałka w lewo i słowo. Przyciski przesuwania mapy to same strzałki na mapie z nazwą dla TalkBack, bo słowa pod mapą zabierały jej miejsce. „Powiększ” i „Pomniejsz” to w hi-fi znaki „+” i „−” na mapie, też z nazwą dla TalkBack. Wzorzec znają aplikacje map, a przesuwanie nadal nie wymaga przeciągania (WCAG 2.5.7). |
 | Pozostałe elementy są bez ikony. | 6 grup barier, przyciski czynności, „Zrób zdjęcie” i „Zrób nowe zdjęcie” (V4, C2, C6, C7; decyzja 94), „Nieobejrzane”. Słowo jest dla PE-1 jaśniejsze niż strzałka albo symbol [6]. |
@@ -475,13 +491,13 @@ Propozycje PW-1…PW-15 są wprowadzone w [wymaganiach do ekranów](wymagania-ek
 | Nr | Ekran | Przed zmianą | Propozycja | Dlaczego |
 | --- | --- | --- | --- | --- |
 | PW-1 | pasek dolny, L2 | „Konto” dla wszystkich ról | „Konto i praca” dla ról pracowniczych; sekcja L2 „Twoja praca” zamiast „Twoje czynności” | spór z recenzji, uwaga 24 |
-| PW-2 | V2, V3 | dawna nazwa przycisku i ekranu V3 | przycisk „Sprawdź, którędy wejść”, nagłówek V3 „Którędy wejść do C-13” | dawna nazwa brzmiała jak rezerwacja terminu |
+| PW-2 | V2 | dawna nazwa przycisku i ekranu V3 | przycisk „Sprawdź, którędy wejść”, nagłówek V3 „Którędy wejść do C-13”; od wycofania V3 przycisk „Pokaż wejście na mapie” | dawna nazwa brzmiała jak rezerwacja terminu; odpowiedź stoi teraz na karcie |
 | PW-3 | V2, V3, C6, K1 | źródło „import” albo „obchód”; data weryfikacji bez słowa; K1 „Wejścia potwierdzone na obchodzie” | „Z map i opisów, stan z …”, „Sprawdzone na miejscu …”, „Sprawdzone …”; K1 „Wejścia sprawdzone na miejscu: x z y” | recenzja B3, uwaga 23; te same słowa dla Odwiedzającego i Koordynatora |
 | PW-4 | wymagania wspólne, V1, V2, L1 | wskaźnik braku sieci bez napisu; „Do pierwszego uruchomienia”; „karta budynku” w komunikatach | „Bez internetu · dane z …”, a przy pierwszym otwarciu samo „Bez internetu” (decyzja 84); „opis budynku” | żargon dla osoby starszej |
 | PW-5 | V4, V5, L1, L2 | rzeczownik „zgłoszenie” w komunikatach; „Anuluj zgłoszenie”; „Anuluj” w potwierdzeniu wycofania zgody | „zdjęcie bariery”, „bariera”; „Zrezygnuj”; „Zostaw zgodę”; treść według katalogu komunikatów | plan fazy B: bez słowa „zgłoszenie” dla Odwiedzającego |
 | PW-6 | V2 | „Plan piętra niedostępny dla tego budynku”, „Zdjęcie niedostępne bez internetu”, zdanie o barierach „którą sprawdziliśmy” | „Nie mamy planu pięter tego budynku.”, „Zdjęcie zobaczysz po połączeniu z internetem.”, „Nie mamy jeszcze sprawdzonych barier w tym budynku…” | słowo „niedostępne” tylko o wejściu; prostsze zdanie |
 | PW-7 | V4 | 6 przycisków grup barier z tekstem i ikoną; nazwy grup z klasyfikacji | pytanie „Czego dotyczy bariera?”, nazwy „Wejście i drzwi”, „Schody i windy”, „Przejścia i chodniki”, „Toalety”, „Napisy i oznaczenia”, „Coś innego”, bez ikon | NFR-21 nie obejmuje grup; brak trafnych ikon; limit 50% ikon |
-| PW-8 | V4, C2, C6, C7, V1, V5 | „Zrób ponownie”; „+” i „−”; pole „Symbol budynku”; „Pomiń” | „Zrób nowe zdjęcie”; „Powiększ”, „Pomniejsz”; strzałki przesuwania mapy z nazwą „Przesuń mapę w górę” itd.; „Wpisz symbol budynku, np. C-13”; „Pomiń instrukcję” | napis mówi, co się stanie |
+| PW-8 | V4, C2, C6, C7, V1, V5 | „Zrób ponownie”; „+” i „−”; pole „Symbol budynku”; „Pomiń” | „Zrób nowe zdjęcie”; „Powiększ”, „Pomniejsz”; strzałki przesuwania mapy z nazwą „Przesuń mapę w górę” itd.; „Szukaj budynku, np. C-13”; „Pomiń instrukcję” | napis mówi, co się stanie |
 | PW-9 | V1, V2, V4, C1, C3, C4, R1, R2, K1, K3 | ładowanie w 1. osobie liczby pojedynczej, np. „Wczytuję”, „Ustalam”; „Nie znaleziono” | 1. osoba liczby mnogiej: „Wczytujemy”, „Ustalamy, gdzie jesteś”, „Nie znaleźliśmy” | jeden głos aplikacji, jak w „Wyślemy”, „Dziękujemy” |
 | PW-10 | stany wspólne, V2, V3, C2, C3, C4, R1, R2, K2 | komunikaty z 3 zdaniami albo bez rady, co zrobić | treść według katalogu komunikatów; „Spróbuj ponownie” także przy błędzie serwera | zasada „co się stało i co zrobić” w 2 zdaniach |
 | PW-11 | wymagania wspólne, V1, C5, K1 | ikona przy „Wstecz” nieopisana; „nieobejrzane” tekstem i ikoną | „Wstecz” ze strzałką i słowem: wyjątek dla nawigacji wstecz. Przyciski przesuwania mapy to strzałki z nazwą dla TalkBack. „Nieobejrzane” bez ikony, „Obejrzane” z ikoną `task` | limit 50% ikon; NFR-21 nie obejmuje znacznika |

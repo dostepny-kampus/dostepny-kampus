@@ -12,7 +12,6 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onFirst
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import dagger.Module
 import dagger.Provides
@@ -45,6 +44,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 import javax.inject.Singleton
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -57,7 +57,7 @@ private const val CATALOG =
         """"geometry":{"type":"Point","coordinates":[0.2,0.3]}}]}"""
 
 /**
- * „Pokaż wejście na mapie” przez prawdziwe `AppScreen` i graf Hilt: V2, V3, V1 z nazwą zaznaczonego wejścia dla
+ * „Pokaż wejście na mapie” przez prawdziwe `AppScreen` i graf Hilt: V2, V1 z nazwą zaznaczonego wejścia dla
  * TalkBack. Dane są w pamięci, bo katalog w zasobach nie ma wejść dostępnych.
  *
  * Wymagania: US3.3, NFR-18
@@ -65,6 +65,7 @@ private const val CATALOG =
 @HiltAndroidTest
 @UninstallModules(DataModule::class)
 @RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(application = HiltTestApplication::class, qualifiers = "w360dp-h800dp")
 class EntranceHiltTest {
     /** Źródła danych z pamięci zamiast `DataModule`; katalog „Budynek testowy” nie jest danymi PWr. */
@@ -117,6 +118,7 @@ class EntranceHiltTest {
         fun queue(store: SubmissionStore, sync: SubmissionSyncScheduler): SubmissionQueue =
             SubmissionQueue(
                 store = store,
+                subject = { "konto-testowe" },
                 create = { _, _ -> ServerReply.Offline },
                 putPhoto = { _, _, _ -> ServerReply.Offline },
                 onSaved = sync::schedule,
@@ -140,15 +142,22 @@ class EntranceHiltTest {
         compose.onAllNodes(matcher).onFirst().assertExists()
     }
 
-    /** Wiersz: V1 lista, budynek → V2 → V3 → „Pokaż wejście na mapie” → V1, TalkBack czyta wejście i budynek. */
+    /**
+     * Wiersz: V1 lista, budynek → V2 od razu na cały ekran → „Pokaż wejście na mapie” → arkusz wejścia na cały ekran;
+     *   po „Zamknij” V1 bez pinezki, więc TalkBack nie czyta już zaznaczonego wejścia.
+     *
+     * Wymagania: US3.3, NFR-18, NFR-19
+     */
     @Test
     fun selectsEntranceThroughHilt() {
         waitFor(ListedA1)
         compose.onNode(ListedA1).performClick()
-        waitFor(hasText("Sprawdź, którędy wejść"))
-        compose.onNodeWithText("Sprawdź, którędy wejść").performClick()
         waitFor(hasText("Pokaż wejście na mapie"))
         compose.onAllNodes(hasText("Pokaż wejście na mapie")).onFirst().performClick()
-        waitFor(hasContentDescription("Zaznaczone wejście: »Wejście dostosowane«, budynek A-1"))
+        waitFor(hasText("Wejście"))
+        compose.onNode(hasText("Zamknij")).performClick()
+        compose.waitForIdle()
+        compose.onNode(hasText("Zamknij")).assertDoesNotExist()
+        compose.onNode(hasContentDescription("Zaznaczone wejście", substring = true)).assertDoesNotExist()
     }
 }

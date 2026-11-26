@@ -1,0 +1,11 @@
+# Usługa mapy kampusu PWr: warstwy całego kampusu, niezależne od planów budynków.
+# Tylko adres i numery warstw, bez danych PWr (NFR-40). Numery sprawdzone w usłudze 20.11.2026.
+dk:
+  campus-map:
+    service: https://services3.arcgis.com/rrLByHvJ7zuJQDVw/arcgis/rest/services/MAPA_KAMPUSU_PWr_14122023_WFL1_widok/FeatureServer
+    layers:
+      # Warstwy wejść planów nie mają pól Uwagi i Szerokosc (poza A-1); ma je ta warstwa,
+      # z punktami w tych samych miejscach (sprawdzone 18.11.2026).
+      entrances: 29
+      # „Ścieżki dostosowane”: polilinie z GlobalID (sprawdzone 20.11.2026).
+      paths: 2

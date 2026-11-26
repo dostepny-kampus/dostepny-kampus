@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.network
 
+import io.github.dostepnykampus.core.network.di.NetworkModule
 import io.github.dostepnykampus.core.network.inspection.MarkerChange
 import io.github.dostepnykampus.core.network.inspection.MarkerChangeResult
 import io.github.dostepnykampus.core.network.inspection.MarkerChangesApi

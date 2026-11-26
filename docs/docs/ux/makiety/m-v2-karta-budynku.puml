@@ -4,13 +4,15 @@
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
-$naglowek("A-1", "<i>[nazwa budynku z danych]</i>")
+$naglowek_karty("A-1", "<i>[nazwa budynku z danych]</i>")
 $karta_gora()
-Z map i opisów, stan z <i>[data]</i>
 $sekcja("Wejścia")
-$wejscie_karty($dostepne(), "Wejście bramą od ul. Norwida", "Zalecane")
+$wejscia_poczatek()
+$wejscie_pierwsze($dostepne(), "Wejście bramą od ul. Norwida", "Zalecane")
 $wejscie_karty($niedostepne(), "Wejście główne")
 $wejscie_karty($brak_danych(), "<i>[nazwa wejścia z danych]</i>")
+$wejscia_koniec()
+Z map i opisów, stan z <i>[data]</i>
 $przycisk("Pokaż wyjścia ewakuacyjne (2)")
 $grupy_pwr()
 $sekcja("Bariery w budynku")

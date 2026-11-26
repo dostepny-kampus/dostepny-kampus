@@ -12,6 +12,8 @@ import androidx.compose.ui.test.onNodeWithText
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import org.junit.Rule
 import org.junit.Test
@@ -45,6 +47,56 @@ class QuickSendStepTest {
         compose.onNodeWithText("Toalety").assertIsDisplayed()
         compose.onNodeWithText("Piętro 2").assertIsDisplayed()
         compose.onNodeWithText("Dołączymy miejsce, w którym teraz stoisz.").assertIsDisplayed()
+    }
+
+    /**
+     * Wiersz: V4 krok 3 przy wejściu bez nazwy w danych → napis z nazwą z importu i opisem położenia.
+     * Scenariusz: zgloszenie-szybkie.feature: Napis wejścia bez nazwy w danych ma opis położenia
+     *
+     * Wymagania: US4.6, BR-27
+     */
+    @Test
+    fun showsPlaceOfUnnamedEntrance() {
+        val entrance =
+            Entrance(
+                id = "node/3",
+                buildingSymbol = "E-3",
+                name = "Wejście",
+                isMain = false,
+                type = null,
+                location = point,
+                marking = EntranceMarking.NO_DATA,
+                isNameGenerated = true,
+                placeDescription = "Od strony E-3, od południa.",
+            )
+        val report = QuickReport(photo = photo, group = BarrierGroup.ENTRANCE_AND_DOORS)
+        show(report = report, isFloorAsked = false, lookup = QuickLookup.Found(entrancePosition(entrance)))
+        compose.onNodeWithText("Wejście: Wejście, od strony E-3, od południa").assertIsDisplayed()
+    }
+
+    /**
+     * Wiersz: V4 krok 3 przy wejściu głównym z nazwą nadaną przez import → napis bez cudzysłowu.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego
+     *   wejścia
+     *
+     * Wymagania: US4.6, BR-27
+     */
+    @Test
+    fun showsMainWithoutQuotes() {
+        val entrance =
+            Entrance(
+                id = "node/1",
+                buildingSymbol = "A-1",
+                name = "Wejście główne",
+                isMain = true,
+                type = null,
+                location = point,
+                marking = EntranceMarking.ACCESSIBLE,
+                isNameGenerated = true,
+            )
+        val report = QuickReport(photo = photo, group = BarrierGroup.ENTRANCE_AND_DOORS)
+        show(report = report, isFloorAsked = false, lookup = QuickLookup.Found(entrancePosition(entrance)))
+        compose.onNodeWithText("Wejście: Wejście główne").assertIsDisplayed()
     }
 
     /** Wiersz: V4 krok 3, „Nie wiem” → podsumowanie z „Nie wiem”. Wymagania: US4.5 */

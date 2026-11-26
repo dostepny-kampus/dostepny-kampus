@@ -28,15 +28,15 @@ internal fun mapDataStore(context: Context): DataStore<Preferences> =
     )
 
 /**
- * Ostatni wybór w przełączniku „Mapa” i „Lista budynków” na V1; aplikacja pamięta go po zamknięciu.
+ * Ostatni widok V1 wybrany przez osobę, mapa albo lista; aplikacja pamięta go po zamknięciu.
  *
  * Wymagania: NFR-19
  */
 public interface MapListChoice {
-    /** Prawda dla „Lista budynków”, fałsz dla „Mapa”, `null`, dopóki osoba nic nie wybrała. */
+    /** Prawda dla listy, fałsz dla mapy, `null`, dopóki osoba nic nie wybrała. */
     public val savedChoice: Flow<Boolean?>
 
-    /** Zapisuje wybór osoby w przełączniku. */
+    /** Zapisuje widok wybrany przez osobę. */
     public suspend fun choose(isList: Boolean)
 }
 

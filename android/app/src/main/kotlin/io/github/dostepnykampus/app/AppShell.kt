@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.union
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationRailDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldLayout
@@ -18,15 +19,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSerializable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -39,10 +44,12 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.AppScreen
+import io.github.dostepnykampus.app.navigation.SheetSceneStrategy
 import io.github.dostepnykampus.app.navigation.TopLevel
 import io.github.dostepnykampus.app.navigation.WIDE_WINDOW_DP
 import io.github.dostepnykampus.app.navigation.currentCardWindow
 import io.github.dostepnykampus.app.navigation.isCaptureRoute
+import io.github.dostepnykampus.app.navigation.sceneStrategies
 import io.github.dostepnykampus.app.navigation.selectedItem
 import io.github.dostepnykampus.app.navigation.startBackStack
 import io.github.dostepnykampus.core.data.account.RoleProvider
@@ -65,7 +72,7 @@ private val RestartsSaver =
  * stoi z boku, inaczej na dole. Historia zaczyna się od V5 przy [firstLaunch], inaczej od V1, i przetrwa odtworzenie
  * aktywności. [roles] wybiera cele Gościa i napis czwartej pozycji; [onFirstHelpLeft] dostaje znać, gdy instrukcja
  * pierwszego uruchomienia zejdzie z wierzchu, a [onChooseMap] zapisuje wybór „Mapa” po „Pokaż budynek na mapie”.
- * [content] rysuje ekran trasy; wcięcia zajęte przez pasek są dla treści zużyte. V2 jest arkuszem nad V1
+ * [content] rysuje ekran trasy; cały pasek jest dla treści zużytym wcięciem. V2 jest arkuszem nad V1
  * ([SheetSceneStrategy]) albo osobnym ekranem karty `Direct`; [onRestore] dostaje zdjęcia odtworzonych szkiców.
  *
  * Wymagania: US5.1, NFR-22, US2.9, NFR-51
@@ -114,29 +121,51 @@ fun AppShell(
     BoxWithConstraints(modifier = modifier) {
         val isWide = maxWidth >= WideWindow
         val selected = selectedItem(navigator.current)?.ordinal
+        var bar by remember { mutableStateOf(IntSize.Zero) }
         NavigationSuiteScaffoldLayout(
             navigationSuite = {
                 if (selected != null) {
-                    val onSelect = { index: Int -> navigator.open(TopLevel.entries[index]) }
-                    if (isWide) SideBar(items, selected, onSelect) else BottomBar(items, selected, onSelect)
+                    ShellBar(items = items, selected = selected, isWide = isWide, navigator = navigator) { bar = it }
                 }
             },
             navigationSuiteType = if (isWide) NavigationSuiteType.NavigationRail else NavigationSuiteType.NavigationBar,
             content = {
-                val barInsets =
-                    when {
-                        selected == null -> WindowInsets(0)
-                        isWide -> NavigationRailDefaults.windowInsets.only(WindowInsetsSides.Start)
-                        else -> NavigationBarDefaults.windowInsets.only(WindowInsetsSides.Bottom)
-                    }
                 NavDisplay(
                     entries = entries,
-                    modifier = Modifier.consumeWindowInsets(barInsets),
+                    modifier = Modifier.consumeWindowInsets(insetsTakenByBar(bar, selected != null, isWide)),
                     sceneStrategies = currentCardWindow().sceneStrategies(navigator.rememberSheetStrategy()),
                     onBack = { navigator.back() },
                 )
             },
         )
+    }
+}
+
+@Composable
+private fun ShellBar(
+    items: BottomBarItems,
+    selected: Int,
+    isWide: Boolean,
+    navigator: AppNavigator,
+    onSize: (IntSize) -> Unit,
+) {
+    val onSelect = { index: Int -> navigator.open(TopLevel.entries[index]) }
+    val measured = Modifier.onSizeChanged(onSize)
+    if (isWide) {
+        SideBar(items = items, selectedIndex = selected, onSelect = onSelect, modifier = measured)
+    } else {
+        BottomBar(items = items, selectedIndex = selected, onSelect = onSelect, modifier = measured)
+    }
+}
+
+@Composable
+private fun insetsTakenByBar(bar: IntSize, isShown: Boolean, isWide: Boolean): WindowInsets {
+    val rail = WindowInsets(left = bar.width, right = bar.width).only(WindowInsetsSides.Start)
+    val bottomBar = WindowInsets(bottom = bar.height)
+    return when {
+        !isShown -> WindowInsets(0)
+        isWide -> NavigationRailDefaults.windowInsets.only(WindowInsetsSides.Start).union(rail)
+        else -> NavigationBarDefaults.windowInsets.only(WindowInsetsSides.Bottom).union(bottomBar)
     }
 }
 

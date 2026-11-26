@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.core.data.building
 
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.database.cache.BuildingCacheDao
-import io.github.dostepnykampus.core.database.cache.BuildingCacheEntity
+import io.github.dostepnykampus.core.database.cache.ServerCopyDao
+import io.github.dostepnykampus.core.database.cache.ServerCopyEntity
 import io.github.dostepnykampus.core.geo.parseGeoArea
 import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.building.Building
@@ -21,7 +21,9 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.yield
@@ -46,14 +48,16 @@ class BuildingCatalogFailureTest {
         val calls = AtomicInteger()
         val gate = CompletableDeferred<Unit>()
         val failingCopy =
-            object : BuildingCacheDao {
-                override suspend fun get(): BuildingCacheEntity? = null
+            object : ServerCopyDao {
+                override suspend fun get(key: String): ServerCopyEntity? = null
 
-                override suspend fun save(entity: BuildingCacheEntity) = error("disk full")
+                override suspend fun save(entity: ServerCopyEntity) = error("disk full")
+
+                override suspend fun delete(key: String) = Unit
             }
         val repository =
             BuildingCatalogRepository(
-                buildingCache = failingCopy,
+                serverCopy = failingCopy,
                 ioContext = EmptyCoroutineContext,
                 listBuildings = {
                     calls.incrementAndGet()
@@ -100,6 +104,31 @@ class BuildingCatalogFailureTest {
         val expected = List(WAITERS) { true }
         assertEquals(expected, failures, "wywołujący nie dostali tego samego błędu")
         assertEquals(1, reads.get(), "plik czytany raz")
+    }
+
+    /** Czekający wznawia pobranie, gdy prowadzący je anuluje. */
+    @Test
+    fun retriesWhenLeaderIsCancelled() {
+        val calls = AtomicInteger()
+        val gate = CompletableDeferred<Unit>()
+        val repository =
+            BuildingCatalogRepository(
+                serverCopy = null,
+                ioContext = EmptyCoroutineContext,
+                listBuildings = {
+                    if (calls.incrementAndGet() == 1) gate.await()
+                    serverList()
+                },
+            ) { FILE_JSON }
+        val catalog =
+            runBlocking {
+                val leader = launch(start = CoroutineStart.UNDISPATCHED) { repository.catalog() }
+                val follower = async(start = CoroutineStart.UNDISPATCHED) { repository.catalog() }
+                leader.cancelAndJoin()
+                follower.await()
+            }
+        assertEquals(listOf("C-1"), catalog.buildings.map { it.symbol }, "katalog po ponowieniu")
+        assertEquals(2, calls.get(), "po anulowaniu oczekiwano jednego ponowienia")
     }
 
     private fun CoroutineScope.parallel(call: suspend () -> Any): List<Deferred<Any>> =

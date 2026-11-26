@@ -6,9 +6,9 @@ Aplikacja: start, nawigacja między ekranami funkcji, powłoka z paskiem nawigac
 
 ## Pakiety
 
-- `app` — aktywność, powłoka aplikacji z arkuszem, start wysyłki zgłoszeń, ekran wygasłego logowania i drzewo logów wersji release.
+- `app` — aktywność, powłoka aplikacji, start wysyłki zgłoszeń, ekran wygasłego logowania i drzewo logów wersji release.
 - `app.di` — wiązania Hilt aplikacji: nagłówek klienta mapy i ładowanie obrazów.
-- `app.navigation` — nawigacja między ekranami mapy, zgłoszeń i logowania.
+- `app.navigation` — nawigacja między ekranami mapy, zgłoszeń i logowania oraz arkusz, w którym ekrany się pokazują.
 
 ## API
 
@@ -20,10 +20,12 @@ Brak API dla innych modułów; to moduł końcowy, który składa graf Hilt i ek
 - `:core:database`
 - `:core:designsystem`
 - `:core:model`
+- `:feature:auth`
 - `:feature:capture`
 - `:feature:help`
 - `:feature:inspection`
 - `:feature:map`
+- `:feature:review`
 
 ## Czego moduł nie robi
 

@@ -6,9 +6,6 @@
 package io.github.dostepnykampus.core.designsystem.bar
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -21,6 +18,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.text.style.TextAlign
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
@@ -30,27 +28,26 @@ import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 
 /**
- * Przypięty pasek czynności nad paskiem dolnym, np. „Sprawdź, którędy wejść” i „Pokaż na mapie” (V2).
+ * Przypięty pasek czynności nad paskiem dolnym, np. „Zgłoś barierę” i „Anuluj”.
  *
  * Tokeny: tło `surface`, cień [Wysokosci.pasekCzynnosci], margines [Odstepy.m], odstęp między przyciskami
- * [CeleDotyku.odstep]. Szerokość przycisków [content] ustala wywołujący, np. `Modifier.weight` w wierszu albo
- * `fillMaxWidth()`; przyciski, które się nie mieszczą, np. przy dużej czcionce, przechodzą do następnego
- * wiersza.
+ * [CeleDotyku.odstep]. Szerokość przycisków [content] ustala wywołujący: [PinnedActionScope.weight] w wierszu,
+ * `fillMaxWidth()` albo szerokość napisu. Przycisk, który się nie mieści, np. przy dużej czcionce, przechodzi do
+ * następnego wiersza; słowo napisu przycisku z wagą nie łamie się w środku.
  *
  * Wymagania: NFR-20
  */
 @Composable
-public fun PinnedActionBar(modifier: Modifier = Modifier, content: @Composable FlowRowScope.() -> Unit) {
+public fun PinnedActionBar(modifier: Modifier = Modifier, content: @Composable PinnedActionScope.() -> Unit) {
     Surface(
         modifier = modifier,
         color = MaterialTheme.colorScheme.surface,
         shadowElevation = Wysokosci.pasekCzynnosci,
     ) {
-        FlowRow(
+        Layout(
+            content = { PinnedActionScopeInstance.content() },
             modifier = Modifier.fillMaxWidth().padding(Odstepy.m),
-            horizontalArrangement = Arrangement.spacedBy(CeleDotyku.odstep),
-            verticalArrangement = Arrangement.spacedBy(CeleDotyku.odstep),
-            content = content,
+            measurePolicy = pinnedActionsPolicy,
         )
     }
 }

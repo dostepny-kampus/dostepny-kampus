@@ -10,13 +10,13 @@ import io.github.dostepnykampus.core.data.account.RoleProvider
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.hasStaffRole
 import io.github.dostepnykampus.core.model.isSignedIn
+import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.capture.report.ReportDraft
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
-import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.flow.StateFlow
@@ -47,15 +47,15 @@ fun startBackStack(firstLaunch: Boolean): List<NavKey> =
     if (firstLaunch) listOf(MapRoute(), HelpRoute(isFirstLaunch = true)) else listOf(MapRoute())
 
 /**
- * Czy ekran [route] ma pasek nawigacji, dolny albo z boku: V1, V2, V3, V5 i L2 tak, L1 i V4
- * nie (wymagania wspólne, wiersz „Pasek dolny na V1, V2, V3, V5 i L2”).
+ * Czy ekran [route] ma pasek nawigacji, dolny albo z boku: V1, V2, V5 i L2 tak, L1 i V4
+ * nie (wymagania wspólne, wiersz „Pasek dolny na V1, V2, V5 i L2”).
  */
 fun hasNavigationBar(route: NavKey): Boolean = selectedItem(route) != null
 
 /** Pozycja paska zaznaczona na ekranie [route] albo `null`, gdy żadna nie jest zaznaczona. */
 fun selectedItem(route: NavKey): TopLevel? =
     when (route) {
-        is MapRoute, is BuildingRoute, is EntrancesRoute -> TopLevel.MAP
+        is MapRoute, is BuildingRoute -> TopLevel.MAP
         is HelpRoute -> TopLevel.HELP
         AccountRoute -> TopLevel.ACCOUNT
         else -> null
@@ -91,14 +91,25 @@ sealed class NavigationHistory(
 
     /**
      * „Wstecz” w nagłówku i wstecz telefonu: poprzedni ekran. Zamknięcie V2 zdejmuje z V1 zaznaczenie
-     * budynku, a resztę stanu V1 zostawia. Na V1 fałsz, wtedy aplikacja się zamyka.
+     * budynku, a resztę stanu V1 zostawia. Poprzedni krok V4 dostaje dane zdjętego kroku. Na V1 fałsz,
+     * wtedy aplikacja się zamyka.
      *
-     * Wymagania: NFR-15
+     * Wymagania: NFR-15, US4.8
      */
     fun back(): Boolean {
         if (backStack.size == 1) return false
-        leaving { if (removeAt(lastIndex) is BuildingRoute) this[0] = MapRoute() }
+        leaving {
+            val left = removeAt(lastIndex)
+            val previous = last()
+            if (left is BuildingRoute) this[0] = MapRoute()
+            if (left is ReportRoute && previous is ReportRoute) this[lastIndex] = left.copy(step = previous.step)
+        }
         return true
+    }
+
+    /** „Wstecz” do poprzedniego ekranu w świeżym stanie, np. po zmianie jego danych na zdjętym ekranie. */
+    fun backToFresh() {
+        if (back()) restartTop()
     }
 
     /** V1 z wyczyszczoną historią, np. „Wróć do mapy”, „Pomiń instrukcję”, „Zacznij”, „Nie teraz”. */
@@ -143,7 +154,7 @@ internal val openBuildingFromList: AppNavigator.(String, Boolean) -> Unit = AppN
 /**
  * Przejścia między ekranami (mapa nawigacji: tabele „start, pasek dolny i »Wstecz«”, „Gość i Odwiedzający” oraz
  * „logowanie i konto”). Konto z [roles] wybiera cel: Gość trafia do L1 zamiast V4 i L2.
- * [onChooseMap] zapisuje wybór „Mapa” w przełączniku V1 po „Pokaż budynek na mapie” i po
+ * [onChooseMap] zapisuje widok mapy na V1 po „Pokaż budynek na mapie” i po
  * „Pokaż wejście na mapie”.
  *
  * Wymagania: US14, US14.2, US2.9, US2.1
@@ -159,6 +170,9 @@ class AppNavigator(
     /** Ruchy mapy V1 do budynku, z których karta V2 bierze czas wjazdu. Wymagania: NFR-56 */
     internal val mapMotion: MapMotion = MapMotion()
 
+    /** V2 z wysokością i przewinięciem z chwili, gdy ostatnio zeszła z ekranu; `null`, zanim jakaś zeszła. */
+    internal var keptCard: BuildingRoute? = null
+
     /** Konto osoby do obserwowania przez ekrany; zmienia się po zalogowaniu i wylogowaniu. */
     internal val account: StateFlow<Account>
         get() = roles.account
@@ -171,13 +185,13 @@ class AppNavigator(
 
     /**
      * Pozycja [item] paska: „Mapa” wraca do V1, inna otwiera swój ekran nad bieżącym. Ponowne dotknięcie wybranej
-     * pozycji wraca do pierwszego ekranu sekcji w postaci jak po wejściu.
+     * pozycji wraca do pierwszego ekranu sekcji w postaci jak po wejściu; „Mapa” niczego wtedy nie zamyka.
      *
      * Wymagania: NFR-15
      */
     fun open(item: TopLevel) {
         if (selectedItem(current) == item) {
-            restartSection(item)
+            if (item != TopLevel.MAP) restartTop()
             return
         }
         when (item) {
@@ -188,11 +202,6 @@ class AppNavigator(
         }
     }
 
-    private fun restartSection(item: TopLevel) {
-        if (item == TopLevel.MAP) showOnMap(focus = null)
-        restartTop()
-    }
-
     /**
      * V1 → V2 budynku [symbol]; „Wstecz” z V2 wraca do V1 bez zaznaczenia budynku. Dotknięcie
      * innego budynku przy otwartym arkuszu V2 zastępuje V2, więc „Wstecz” dalej wraca prosto do V1.
@@ -201,21 +210,21 @@ class AppNavigator(
      * Wymagania: US2.8, NFR-19
      */
     fun openBuilding(symbol: String, isDirect: Boolean = false) {
-        leaving {
-            subList(fromIndex = 1, toIndex = size).clear()
-            this[0] = MapRoute(MapFocus.Building(symbol))
-            add(BuildingRoute(symbol, isDirect))
-        }
+        openCard(BuildingRoute(symbol, isDirect))
     }
 
-    /** V2 → V3 budynku [symbol]: „Sprawdź, którędy wejść”. Wymagania: US3, US3.2 */
-    fun openEntrances(symbol: String) {
-        leaving { add(EntrancesRoute(symbol)) }
+    /** V1 → V2 [card] z jej wysokością i przewinięciem, jak [openBuilding]. Wymagania: US2.8 */
+    internal fun openCard(card: BuildingRoute) {
+        leaving {
+            subList(fromIndex = 1, toIndex = size).clear()
+            this[0] = MapRoute(MapFocus.Building(card.symbol))
+            add(card)
+        }
     }
 
     /**
      * V1 z zaznaczonym [focus] i wyczyszczoną historią: „Pokaż na mapie”, „Pokaż wejście na mapie”.
-     * Budynek i wejście wybierają też widok „Mapa” w przełączniku V1.
+     * Budynek i wejście wybierają też widok mapy na V1.
      *
      * Wymagania: US2.1, BR-25
      */
@@ -228,16 +237,16 @@ class AppNavigator(
     }
 
     /**
-     * „Zgłoś barierę”, także przy wejściu [entranceId]: V4 krok 1, a Gość najpierw L1.
+     * „Zgłoś barierę”, także przy wejściu [entranceId] albo obiekcie planu [place]: V4 krok 1, a Gość najpierw L1.
      *
      * Wymagania: US4, US4.6, US14.2
      */
-    fun report(entranceId: String? = null) {
+    fun report(entranceId: String? = null, place: ReportPlace? = null) {
         val route =
             if (isSignedIn) {
-                ReportRoute(entranceId = entranceId)
+                ReportRoute(entranceId = entranceId, place = place)
             } else {
-                SignInRoute(isForReport = true, entranceId = entranceId)
+                SignInRoute(isForReport = true, entranceId = entranceId, spot = place)
             }
         leaving { add(route) }
     }
@@ -276,13 +285,29 @@ class AppNavigator(
         leaving { dropReport() }
     }
 
-    /** Po zalogowaniu na L1: V4 krok 1 z wejściem wybranym przed L1 albo L2 (P3). Wymagania: US14.2, UC7 */
+    /**
+     * Po zalogowaniu na L1: V4 krok 1 z wejściem albo obiektem wybranym przed L1 albo L2 (P3).
+     *
+     * Wymagania: US14.2, UC7
+     */
     fun signedIn() {
         val route = current as? SignInRoute ?: return
         leaving {
             removeAt(lastIndex)
-            add(if (route.isForReport) ReportRoute(entranceId = route.entranceId) else AccountRoute)
+            add(
+                if (route.isForReport) {
+                    ReportRoute(entranceId = route.entranceId, place = route.spot)
+                } else {
+                    AccountRoute
+                },
+            )
         }
+    }
+
+    /** „Wyloguj się” na L2: konto wraca do Gościa, a aplikacja otwiera V1. Wymagania: US14.4 */
+    fun signOut() {
+        roles.signOut()
+        backToMap()
     }
 
     private fun MutableList<NavKey>.dropReport() {

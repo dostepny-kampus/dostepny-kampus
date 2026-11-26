@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <!-- Debug: serwer na komputerze gospodarza (10.0.2.2) to sieć lokalna, od Androida 17 tylko z tym uprawnieniem. -->
+    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
     <!-- Debug: czysty HTTP tylko do komputera gospodarza z emulatora i do localhost. -->
     <application android:networkSecurityConfig="@xml/network_security_config">
         <!-- Narzędzia diagnostyczne (JankStats, StrictMode) uruchamiane z androidx.startup, tylko w debug. -->
@@ -18,6 +20,16 @@
             android:name=".debug.DebugRoleActivity"
             android:exported="true"
             android:label="@string/debug_rola_tytul">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!-- Włącznik trybu pokazu pomiaru C1 z osobną ikoną w launcherze, tylko w debug (US6.1). -->
+        <activity
+            android:name=".debug.DemoModeActivity"
+            android:exported="true"
+            android:label="@string/debug_pokaz_tytul">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

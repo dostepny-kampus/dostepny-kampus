@@ -67,7 +67,8 @@ final class NullabilityArchitectureIT {
         Map.entry("SubmissionQuery", Set.of("buildingSymbol", "floorId")),
         Map.entry("Building", Set.of("name")),
         Map.entry("BuildingCard", Set.of("name")),
-        Map.entry("Entrance", Set.of("name", "type", "floorId")),
+        Map.entry("Entrance", Set.of("type", "floorId")),
+        Map.entry("Name", Set.of("text")),
         Map.entry("Submission", Set.of("rejection")),
         Map.entry("Rejection", Set.of("duplicateOf")),
         Map.entry("Rejected", Set.of("duplicateOf"))

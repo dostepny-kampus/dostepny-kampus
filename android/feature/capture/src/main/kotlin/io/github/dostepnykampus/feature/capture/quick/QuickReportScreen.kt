@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.quick
@@ -19,11 +19,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,24 +37,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
+import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.location.WithLocationPermission
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
-import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
-import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
-import io.github.dostepnykampus.feature.capture.photo.rememberPhotoCamera
-import io.github.dostepnykampus.feature.capture.report.form.PhotoSection
 import kotlinx.coroutines.flow.filter
 import java.io.File
 
 /**
- * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie; kroki przed
- * wysłaniem wymagają zgody na dokładną lokalizację, a pozycja jest ustalana od kroku 1. Krok 1: „Zrób zdjęcie” otwiera
- * aparat i prowadzi do kroku 2; „Wstecz” ze zdjęciem pyta o rezygnację, a „Tak, zrezygnuj” usuwa zdjęcie. Krok 2:
- * grupa, a w konturze albo przy nieznanej pozycji pytanie o piętro. Krok 3: „Brak pozycji” ma „Spróbuj ponownie” i
- * „Zrezygnuj”, a „Tak, zrezygnuj” otwiera mapę. Po wysłaniu ekran pokazuje tylko potwierdzenie (`SENT`).
+ * V4 Zgłoszenie szybkie na kroku z [route]: zdjęcie, grupa barier z piętrem, wysłanie i potwierdzenie (`SENT`).
+ * Kroki przed wysłaniem wymagają zgody na dokładną lokalizację, a pozycja jest ustalana od kroku 1; zgłoszenie
+ * przy wejściu albo obiekcie planu wybranym w arkuszu bierze miejsce z niego, bez tej zgody i bez pytania o piętro.
+ * „Wstecz” z kroku 1 ze zdjęciem i „Zrezygnuj” przy „Brak pozycji” pytają o rezygnację; „Tak, zrezygnuj” usuwa
+ * zdjęcie i wraca z kroku 1 do ekranu sprzed V4, a z kroku 3 na mapę.
  *
  * Wymagania: US4.1, NFR-27, BR-8, BR-14, BR-G2, UC7
  *
@@ -83,6 +81,8 @@ fun QuickReportScreen(
                 }
             }
             BackHeader(title = stringResource(R.string.szybkie_naglowek), onBack = back)
+            if (route.step == ReportStep.SENT && route.isSavedOffline) QuickOfflineLine(models.offline)
+            val slot = remember { QuickPinnedSlot() }
             Column(
                 modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
                 verticalArrangement = Arrangement.spacedBy(Odstepy.m),
@@ -99,18 +99,36 @@ fun QuickReportScreen(
 
                     else -> {
                         QuickStepProgress(step = route.step.ordinal + 1)
-                        WithLocationPermission(onBack = actions.onBack) {
-                            QuickStep(
-                                route = route,
-                                actions = actions,
-                                models = models,
-                                onGiveUp = { isLeaving = true },
-                            )
-                        }
+                        QuickSteps(
+                            route = route,
+                            actions = actions,
+                            models = models,
+                            slot = slot,
+                            onGiveUp = { isLeaving = true },
+                        )
                     }
                 }
             }
+            slot.content?.let { PinnedActionBar(content = it) }
         }
+    }
+}
+
+@Composable
+private fun QuickSteps(
+    route: ReportRoute,
+    actions: QuickReportActions,
+    models: QuickReportModels,
+    slot: QuickPinnedSlot,
+    onGiveUp: () -> Unit,
+) {
+    val step: @Composable () -> Unit = {
+        QuickStep(route = route, actions = actions, models = models, slot = slot, onGiveUp = onGiveUp)
+    }
+    if (!route.isPlaceChosen) {
+        WithLocationPermission(onBack = actions.onBack, content = step)
+    } else {
+        step()
     }
 }
 
@@ -124,9 +142,11 @@ private fun QuickStep(
     route: ReportRoute,
     actions: QuickReportActions,
     models: QuickReportModels,
+    slot: QuickPinnedSlot,
     onGiveUp: () -> Unit,
 ) {
     val where = models.sendModel()
+    SideEffect { where.start(route.entranceId, route.place) }
     when (route.step) {
         ReportStep.PHOTO -> {
             QuickPositionWarmUp(where)
@@ -135,10 +155,11 @@ private fun QuickStep(
             route.entranceId?.let { id ->
                 if (entrances == null) QuickEntranceLine(id = id) else QuickEntranceLine(id = id, entrances = entrances)
             }
+            route.place?.let { Text(placeLine(it)) }
             if (photoTranscoder == null) {
-                QuickPhotoStep(route = route, onNext = actions.onNext)
+                QuickPhotoStep(route = route, onNext = actions.onNext, slot = slot)
             } else {
-                QuickPhotoStep(route = route, onNext = actions.onNext, transcoder = photoTranscoder)
+                QuickPhotoStep(route = route, onNext = actions.onNext, slot = slot, transcoder = photoTranscoder)
             }
         }
 
@@ -169,46 +190,28 @@ private fun QuickPositionWarmUp(where: QuickSendViewModel) {
 }
 
 @Composable
-private fun QuickPhotoStep(
-    route: ReportRoute,
-    onNext: (ReportRoute) -> Unit,
-    transcoder: PhotoTranscoder = hiltViewModel(),
-) {
-    val camera =
-        rememberPhotoCamera(
-            onPhoto = { onNext(route.copy(photoId = it.photoId, photoPath = it.path)) },
-            transcoder = transcoder,
-        )
-    PhotoSection(photos = PhotoPaths(listOfNotNull(route.photoPath)), camera = camera)
-    if (route.photoPath != null) MainButton(text = stringResource(R.string.pomiar_dalej), onClick = { onNext(route) })
-}
-
-@Composable
 private fun QuickEntranceLine(id: String, entrances: QuickEntranceViewModel = hiltViewModel()) {
     val updates = remember(entrances, id) { entrances.entrance(id) }
     val entrance by updates.collectAsStateWithLifecycle(initialValue = null)
-    entrance?.let { chosen ->
-        val name = chosen.name
-        Text(
-            when {
-                name != null -> stringResource(R.string.szybkie_wejscie, name)
-                chosen.isMain -> stringResource(R.string.szybkie_wejscie_glowne)
-                else -> stringResource(R.string.szybkie_wejscie_bez_nazwy)
-            },
-        )
-    }
+    entrance?.let { Text(entranceLine(it)) }
 }
 
 @Composable
 private fun QuickGroupStep(route: ReportRoute, onNext: (ReportRoute) -> Unit, where: QuickSendViewModel) {
     var asked by rememberSaveable { mutableStateOf<BarrierGroup?>(null) }
     val lookup by where.lookup.collectAsStateWithLifecycle()
-    val isInBuilding = (lookup as? QuickLookup.Found)?.run { position.isInBuilding }
+    val isInBuilding =
+        when (val found = lookup) {
+            is QuickLookup.Found -> found.position.isInBuilding
+            QuickLookup.Outside -> false
+            else -> null
+        }
     val floors by where.floorChoices.collectAsStateWithLifecycle()
     val group = asked
     if (group == null) {
         QuickGroupQuestion(selected = route.group, onGroup = { chosen ->
-            if (chosen.asksFloor(isInBuilding)) asked = chosen else onNext(route.copy(group = chosen))
+            val isAskingFloor = !route.isPlaceChosen && chosen.asksFloor(isInBuilding)
+            if (isAskingFloor) asked = chosen else onNext(route.copy(group = chosen))
         })
     } else {
         BackHandler { asked = null }
@@ -239,7 +242,7 @@ private fun QuickSendStep(
     QuickSendSummary(report = report, isFloorAsked = route.isFloorAsked, lookup = lookup)
     if (lookup == QuickLookup.Lost || lookup == QuickLookup.Outside) {
         MainButton(text = stringResource(R.string.formularz_sprobuj_ponownie), onClick = viewModel::retry)
-        OutlinedButton(onClick = onGiveUp, modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk)) {
+        OutlinedAction(onClick = onGiveUp, modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk)) {
             Text(stringResource(R.string.szybkie_zrezygnuj))
         }
     } else {

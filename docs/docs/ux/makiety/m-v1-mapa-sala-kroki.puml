@@ -1,0 +1,22 @@
+@startsalt
+' V1 Mapa kampusu, kroki po kolei: po „Pokaż po kolei” sam krok 1, plan parteru przy wejściu zalecanym (US18.2).
+' Nad kartą bez wiersza tytułu i pola z numerem sali, jak nad V2 (decyzja z 21.11.2026).
+!include _wspolne.iuml
+!include _odwiedzajacy.iuml
+$ekran_poczatek()
+$przycisk("Kampus główny ▾")
+$mapa("plan parteru A-1 przy wejściu zalecanym; wypełnione kółko 1 przy wejściu, kółko 2 przy windzie, bez linii trasy; kolumna pięter po lewej, wybrany parter", "", "info")
+$ramka()
+{ <b>Sala 329</b>$dk_spacje(14) | [Zamknij] }
+{ <b>Krok 1 z 3</b>$dk_spacje(6) | <b>Wszystkie kroki</b> }
+<i>[pasek postępu: 1 z 3]</i>
+{+
+(1) <b><i>[wejście zalecane]</i></b>
+Parter, <i>[położenie wejścia]</i>
+<b>Szczegóły wejścia ›</b>
+}
+{ [‹ Wstecz] | [Dalej ›] }
+}
+$pasek_dolny_konto()
+$ekran_koniec()
+@endsalt

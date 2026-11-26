@@ -1,11 +1,12 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.network.inspection
 
 import io.github.dostepnykampus.core.network.ApiResult
+import io.github.dostepnykampus.core.network.QueueOwner
 import io.github.dostepnykampus.core.network.decodeContract
 import io.github.dostepnykampus.core.network.encodeContract
 import io.github.dostepnykampus.core.network.exchange
@@ -51,16 +52,18 @@ public class MarkerChangesApi(private val http: OkHttpClient, private val json: 
      * żądania. Kontrakt przyjmuje najwyżej 100 operacji w jednej paczce; dłuższą listę dzieli wywołujący.
      *
      * @param changes zmiany znaczników, najwyżej 100
+     * @param owner konto zapisujące zmiany w kolejce
      */
-    public suspend fun push(changes: List<MarkerChange>): ApiResult<List<MarkerChangeResult>> =
-        if (changes.isEmpty()) ApiResult.Success(emptyList()) else http.exchange(request(changes), ::results)
+    public suspend fun push(changes: List<MarkerChange>, owner: String? = null): ApiResult<List<MarkerChangeResult>> =
+        if (changes.isEmpty()) ApiResult.Success(emptyList()) else http.exchange(request(changes, owner), ::results)
 
-    private fun request(changes: List<MarkerChange>): Request {
+    private fun request(changes: List<MarkerChange>, owner: String?): Request {
         val operations = buildJsonArray { changes.forEach { add(it.toOperation()) } }
         val body = json.encodeContract(JsonObject.serializer(), JsonObject(mapOf(OPERATIONS to operations)))
         return Request
             .Builder()
             .url(target)
+            .tag(QueueOwner::class.java, owner?.let(::QueueOwner))
             .header(name = ACCEPT, value = ACCEPTED_TYPES)
             .post(body.toRequestBody(JSON))
             .build()

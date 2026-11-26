@@ -24,7 +24,11 @@ private const val FLIGHT_MILLIS_PER_PATH = 250.0
 private const val WORLD_DP_AT_ZOOM_0 = 512.0
 private const val FULL_TURN_DEGREES = 360.0
 private const val SAME_PLACE_DP = 1e-6
-private const val CONTROL_MILLIS = 300L
+
+/** Czas ruchu po przycisku mapy i ruchu bez arkusza w zasięgu ekranu w ms. */
+internal const val CONTROL_MILLIS = 300L
+
+private const val APPROACH_MAX_ZOOM = 19.0
 
 /**
  * Rodzaj ruchu mapy do wybranego budynku.
@@ -32,7 +36,10 @@ private const val CONTROL_MILLIS = 300L
  * Wymagania: US2.8, NFR-56
  */
 enum class CameraMotion {
-    /** Bez ruchu: systemowe „Usuń animacje”, od razu stan końcowy. */
+    /**
+     * Bez ruchu kamery: od razu stan końcowy. Karta i pasek ruszają się w czasie ruchu: 0 przy systemowym
+     * „Usuń animacje”, 300 ms po wyborze z listy budynków ([placed]).
+     */
     NONE,
 
     /** Przesunięcie, z ewentualną zmianą powiększenia, po krzywej MapLibre. */
@@ -50,17 +57,19 @@ enum class CameraMotion {
  */
 data class CameraTransition(val camera: MapCamera, val motion: CameraMotion, val durationMillis: Long)
 
+/** Ten sam ruch z widokiem w granicy terenu [limits] dla wolnej części mapy [free]. Wymagania: US1.7, US2.8 */
+internal fun CameraTransition.within(limits: MapLimits?, free: FreeMap): CameraTransition =
+    limits?.let { copy(camera = it.clamp(camera, viewWidthDp = free.widthDp, viewHeightDp = free.heightDp)) } ?: this
+
 /** Ruch do widoku po przycisku mapy, odtworzeniu widoku albo zmianie terenu: przelot w 300 ms. Wymagania: NFR-53 */
 internal fun MapCamera.byControl(): CameraTransition =
     CameraTransition(camera = this, motion = CameraMotion.FLIGHT, durationMillis = CONTROL_MILLIS)
 
 /**
- * Ruch mapy z widoku [from] do budynku o prostokącie [outline] w wolnej części mapy [free] przy systemowej
- * skali animacji [animationScale]. Rodzaj zależy tylko od położenia budynku względem widoku: cały kontur
- * widoczny — przesunięcie 300 ms; środek budynku najwyżej szerokość wolnej mapy od środka widoku —
- * przesunięcie 400 ms; dalej — przelot, którego czas rośnie z drogą od 400 ms do najwyżej 1,5 s.
- * Powiększenie [from] zostaje: mniejsze niż [START_ZOOM] rośnie do niego, a takie, przy którym kontur się
- * nie mieści, maleje, aż się zmieści. Skala 0 daje ruch [CameraMotion.NONE], inna mnoży czas.
+ * Ruch mapy z widoku [from] do budynku o prostokącie [outline] w wolnej części mapy [free]: rodzaj i czas według
+ * położenia budynku względem widoku, czas mnożony przez skalę animacji [animationScale] (0 daje
+ * [CameraMotion.NONE]). Kontur kończy na połowie wolnej mapy, najwyżej przy powiększeniu 19; większe powiększenie
+ * [from], a przy [keepsZoom] każde, zostaje. Kontur, który się nie mieści, oddala mapę do zmieszczenia.
  *
  * Wymagania: US2.8, US3.2, NFR-56
  */
@@ -69,8 +78,11 @@ internal fun cameraTransition(
     outline: CampusBounds,
     free: FreeMap,
     animationScale: Float,
+    keepsZoom: Boolean = false,
 ): CameraTransition {
-    val zoom = maxOf(a = from.zoom, b = START_ZOOM).coerceAtMost(fittingZoom(outline, free))
+    val fits = fittingZoom(outline, free)
+    val approach = (fits - 1).coerceAtMost(maximumValue = APPROACH_MAX_ZOOM)
+    val zoom = (if (keepsZoom) from.zoom else maxOf(a = from.zoom, b = approach)).coerceAtMost(fits)
     val camera = centered(outline, zoom, free)
     val distance = distanceDp(from = from, to = camera)
     val (motion, millis) =
@@ -109,7 +121,8 @@ private fun flightMillis(from: MapCamera, to: MapCamera, free: FreeMap, distance
 internal fun fitted(outline: CampusBounds, free: FreeMap, maxZoom: Double): MapCamera =
     centered(outline = outline, zoom = fittingZoom(outline, free).coerceAtMost(maximumValue = maxZoom), free = free)
 
-private fun fittingZoom(outline: CampusBounds, free: FreeMap): Double {
+/** Powiększenie, przy którym [outline] mieści się w wolnej części [free] z marginesem, poza pasem przycisków. */
+internal fun fittingZoom(outline: CampusBounds, free: FreeMap): Double {
     val width = (free.widthDp - free.endDp - 2 * free.marginDp).coerceAtLeast(minimumValue = 1.0)
     val height = (free.heightDp - 2 * free.marginDp).coerceAtLeast(minimumValue = 1.0)
     return minOf(
@@ -118,7 +131,8 @@ private fun fittingZoom(outline: CampusBounds, free: FreeMap): Double {
     )
 }
 
-private fun centered(outline: CampusBounds, zoom: Double, free: FreeMap): MapCamera {
+/** Widok w powiększeniu [zoom] z [outline] na środku wolnej części [free], obok pasa przycisków. */
+internal fun centered(outline: CampusBounds, zoom: Double, free: FreeMap): MapCamera {
     val behindControls = free.endDp / 2 / dpPerDegree(zoom)
     val center =
         GeoPoint(
@@ -126,6 +140,20 @@ private fun centered(outline: CampusBounds, zoom: Double, free: FreeMap): MapCam
             latitude = (outline.south + outline.north) / 2,
         )
     return MapCamera(center = center, zoom = zoom)
+}
+
+/**
+ * Ten widok przesunięty w poziomie tak, że prostokąt [outline] stoi na środku części mapy szerokiej na [widthDp]
+ * obok pasa szerokiego na [startDp] przy lewym brzegu; prostokąt szerszy niż ta część zaczyna się tuż za pasem.
+ * Powiększenie i szerokość geograficzna środka zostają.
+ *
+ * Wymagania: US16.1, US1.3, US1.4, NFR-17
+ */
+internal fun MapCamera.besideStart(outline: CampusBounds, widthDp: Double, startDp: Double): MapCamera {
+    val perDegree = dpPerDegree(zoom)
+    val spare = widthDp - startDp - (outline.east - outline.west) * perDegree
+    val westDp = startDp + (spare / 2).coerceAtLeast(minimumValue = 0.0)
+    return copy(center = center.copy(longitude = outline.west + (widthDp / 2 - westDp) / perDegree))
 }
 
 private fun isVisible(outline: CampusBounds, view: MapCamera, free: FreeMap): Boolean {
@@ -141,11 +169,13 @@ private fun isVisible(outline: CampusBounds, view: MapCamera, free: FreeMap): Bo
     return left >= -halfWidth && right <= halfWidth - free.endDp && top >= -halfHeight && bottom <= halfHeight
 }
 
-private fun distanceDp(from: MapCamera, to: MapCamera): Double {
+/** Odległość w dp między środkami widoków [from] i [to] przy powiększeniu [from]. */
+internal fun distanceDp(from: MapCamera, to: MapCamera): Double {
     val east = (to.center.longitude - from.center.longitude) * dpPerDegree(from.zoom)
     val perRadian = WORLD_DP_AT_ZOOM_0 * 2.0.pow(from.zoom) / (2 * PI)
     val south = (mercatorY(from.center.latitude) - mercatorY(to.center.latitude)) * perRadian
     return hypot(x = east, y = south)
 }
 
-private fun dpPerDegree(zoom: Double): Double = WORLD_DP_AT_ZOOM_0 * 2.0.pow(zoom) / FULL_TURN_DEGREES
+/** Dp na stopień długości geograficznej przy powiększeniu [zoom]. */
+internal fun dpPerDegree(zoom: Double): Double = WORLD_DP_AT_ZOOM_0 * 2.0.pow(zoom) / FULL_TURN_DEGREES

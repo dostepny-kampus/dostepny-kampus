@@ -54,7 +54,7 @@ kolory:
   surfaceContainerLowest:
     jasny: "#FFFFFF"   # białe kontenery na szarym arkuszu zastępują linie podziału
     ciemny: "#343C41"  # najjaśniejsza warstwa: kontener grupy leży na arkuszu
-    uzycie: kontenery grup („Wejścia”, „Winda i toaleta”, „Piętra”, stan pusty barier), pływające kontrolki mapy, legenda, napis o zmianie terenu, chipy
+    uzycie: kontenery grup („Wejścia”, „Winda i toaleta”, „Piętra”, stan pusty barier), karty pozycji list, panele informacyjne, pływające kontrolki mapy, legenda, napis o zmianie terenu, chipy
     zrodlo: NFR-16, styl „Karta miejsca”
   surfaceContainerLow:
     jasny: "#EFF4F6"
@@ -76,7 +76,7 @@ kolory:
     # Ten sam ton co surfaceVariant; Material 3 bierze go dla kontenerów nad arkuszem.
     jasny: "#DCE2E4"
     ciemny: "#3A4246"
-    uzycie: wspólny kontener statusów zgłoszeń i znaczników pięter (C3, C5), plakietki stopni uciążliwości
+    uzycie: wskaźnik braku internetu (linia pod górą ekranu i plakietka)
     zrodlo: styl „Karta miejsca”
   background:
     # Tło ekranu bez arkusza; Scaffold bierze tę rolę. Ten sam ton co surfaceContainer.
@@ -119,7 +119,7 @@ kolory:
   onPrimary:
     jasny: "#FFFFFF"
     ciemny: "#00303B"  # ciemny morski na jasnym akcencie; biel dawałaby za mały kontrast
-    uzycie: napis i ikona na przycisku wypełnionym w jasnym motywie, np. „Sprawdź, którędy wejść”
+    uzycie: napis i ikona na przycisku wypełnionym w jasnym motywie, np. „Pokaż wejście na mapie”
     zrodlo: NFR-16
   primaryContainer:
     jasny: "#C3E9F6"   # tylko to, co wybrane: osoba widzi, gdzie jest
@@ -141,8 +141,8 @@ kolory:
     ciemny: "#E1EEF2"
     uzycie: napis i ikona przycisku tonalnego
     zrodlo: NFR-16
-  # Kontenery oznaczeń wejścia (decyzja 48 pkt 3). Znaczenie niesie kształt ikony i słowo;
-  # ten sam kształt mają znaczniki wejść na mapie. Kształt rysuje kolor `on…Container`.
+  # Kontenery oznaczeń wejścia (decyzja 48 pkt 3). Wymagania ich już nie używają: oznaczenie wejścia to znak
+  # z mapy i słowo, bez tła. Role zostają, dopóki kod rysuje plakietkę, i znikają razem z nią.
   statusDostepneContainer:
     # Kształt: koło ze znakiem ✓, słowo „Dostępne”.
     jasny: "#CDE8F0"   # spokojny morski
@@ -209,13 +209,13 @@ kontrast:
     - {kolor: onSurface, tlo: surfaceContainerLow, rodzaj: tekst, gdzie: "pole wyszukiwania, pasek dolny"}
     - {kolor: onSurface, tlo: surfaceVariant, rodzaj: tekst, gdzie: "komunikat i wskaźnik braku internetu"}
     - {kolor: onBackground, tlo: background, rodzaj: tekst, gdzie: "nagłówki sekcji na tle ekranu"}
-    - {kolor: onSurface, tlo: surfaceContainerHigh, rodzaj: tekst, gdzie: "status zgłoszenia i znacznik piętra (C3, C5)"}
+    - {kolor: onSurface, tlo: surfaceContainerHigh, rodzaj: tekst, gdzie: "napis wskaźnika braku internetu"}
     - {kolor: onSurfaceVariant, tlo: surfaceContainer, rodzaj: tekst, gdzie: "źródło i data na arkuszu"}
     - {kolor: onSurfaceVariant, tlo: surfaceContainerLowest, rodzaj: tekst, gdzie: "„Zalecane”, podpis mapy"}
     - {kolor: onSurfaceVariant, tlo: surfaceContainerLow, rodzaj: tekst, gdzie: "podpowiedź w polu, napisy paska dolnego"}
     - {kolor: onSurfaceVariant, tlo: surfaceVariant, rodzaj: tekst, gdzie: "data przy wskaźniku braku internetu"}
     - {kolor: primary, tlo: surfaceContainer, rodzaj: tekst, gdzie: "symbol budynku na arkuszu"}
-    - {kolor: primary, tlo: surfaceContainerLowest, rodzaj: tekst, gdzie: "przyciski tekstowe w kontenerach grup"}
+    - {kolor: primary, tlo: surfaceContainerLowest, rodzaj: tekst, gdzie: "przyciski tekstowe w kontenerach grup, czynność karty"}
     - {kolor: primary, tlo: surface, rodzaj: tekst, gdzie: "„Wstecz”, przycisk obrysowany"}
     - {kolor: onPrimary, tlo: primary, rodzaj: tekst, gdzie: "przycisk wypełniony (jasny)"}
     - {kolor: onPrimaryContainer, tlo: primaryContainer, rodzaj: tekst, gdzie: "wybrane piętro, plakietka budynku, przycisk wypełniony (ciemny)"}
@@ -230,7 +230,7 @@ kontrast:
     - {kolor: outlineVariant, tlo: surfaceContainerLow, rodzaj: komponent, gdzie: "górna krawędź paska dolnego"}
     - {kolor: outline, tlo: surface, rodzaj: komponent, gdzie: "obramowanie pola i przycisku obrysowanego"}
     - {kolor: outline, tlo: surfaceContainer, rodzaj: komponent, gdzie: "obramowanie chipu na arkuszu"}
-    - {kolor: outline, tlo: surfaceContainerLowest, rodzaj: komponent, gdzie: "obramowanie chipu w kontenerze"}
+    - {kolor: outline, tlo: surfaceContainerLowest, rodzaj: komponent, gdzie: "obramowanie chipu i karty w kontenerze, czynność karty"}
     - {kolor: outline, tlo: surfaceVariant, rodzaj: komponent, gdzie: "obramowanie ramki komunikatu"}
     - {kolor: error, tlo: surfaceContainer, rodzaj: komponent, gdzie: "ramka pola z błędem i koło „!” na tle ekranu"}
     - {kolor: error, tlo: surfaceContainerLowest, rodzaj: komponent, gdzie: "ramka pola z błędem do jego wnętrza, ramka „Ważne”"}
@@ -243,7 +243,8 @@ kontrast:
 # Typografia — rozmiary w sp, żeby tekst rósł z ustawieniem czcionki (NFR-20, WCAG 1.4.4).
 # Skala stylu „Karta miejsca”: symbol / nazwa / nagłówek grupy / pozycja / treść / podpis.
 # Każdy styl interfejsu ma co najmniej 18 sp. Mniejsze (16 sp) są tylko napisy na mapie,
-# zapisane w sekcji `mapa`.
+# zapisane w sekcji `mapa`. Jedyny wyjątek od `minimum_sp` to podpis „© OpenStreetMap”
+# (`mapa.podpis_osm_sp`).
 # Interlinia tekstu podstawowego ≈ 1,45 rozmiaru (WCAG 1.4.8, poziom AAA, zaleca 1,5).
 # ---------------------------------------------------------------------------
 typografia:
@@ -251,18 +252,18 @@ typografia:
   # słabowidzących. Licencja SIL Open Font License: aplikacja dołącza plik czcionki.
   # Gdy krój się nie wczyta, aplikacja używa kroju systemowego.
   kroj: Atkinson Hyperlegible Next
-  # Żaden tekst w aplikacji nie jest mniejszy (próg zespołu, dotyczy też napisów mapy).
-  # Skrypt sprawdza każdy styl.
+  # Żaden tekst w aplikacji nie jest mniejszy (próg zespołu, dotyczy też napisów mapy),
+  # poza podpisem „© OpenStreetMap” (`mapa.podpis_osm_sp`). Skrypt sprawdza każdy styl.
   minimum_sp: 16
   # Pogrubienie przycisków, oznaczeń wejścia i błędu przy polu.
   wyroznienie_waga: 700
   style:
-    displayLarge:
-      sp: 57
+    headlineLarge:
+      sp: 36
       waga: 800
-      interlinia_sp: 57   # symbol ma jeden krótki wiersz, np. „A-1”
-      uzycie: symbol budynku na karcie, np. „A-1”
-      zrodlo: styl „Karta miejsca”
+      interlinia_sp: 40   # symbol ma jeden krótki wiersz, np. „A-1”
+      uzycie: symbol budynku w nagłówku karty budynku na każdej wysokości, np. „A-1”, w kolorze primary
+      zrodlo: styl „Karta miejsca”, wybór właściciela po porównaniu z prototypem karty, NFR-16 (duży tekst ≥ 24 sp)
     headlineMedium:
       sp: 28
       waga: 700
@@ -273,7 +274,7 @@ typografia:
       sp: 22
       waga: 600
       interlinia_sp: 28
-      uzycie: nagłówek grupy, np. „Wejścia”, „Bariery w budynku”
+      uzycie: nagłówek grupy, np. „Wejścia”, „Bariery w budynku”, i nazwa budynku pod symbolem w nagłówku karty budynku
       zrodlo: styl „Karta miejsca”, NFR-16 (duży tekst ≥ 19 sp pogrubiony)
     titleMedium:
       sp: 20
@@ -297,7 +298,7 @@ typografia:
       sp: 18
       waga: 500
       interlinia_sp: 28  # podpis bywa dwuwierszowy, ta sama interlinia co tekst podstawowy (decyzja 50)
-      uzycie: podpis, np. źródło i data oceny wejść, napisy „Zalecane”, podpisy OpenStreetMap
+      uzycie: podpis, np. źródło i data oceny wejść, napisy „Zalecane”
       zrodlo: styl „Karta miejsca”, US17.3, NFR-37, NFR-40
     labelMedium:
       sp: 18
@@ -305,6 +306,19 @@ typografia:
       interlinia_sp: 20   # ciaśniej niż podpis, bo napis może mieć dwa wiersze pod ikoną
       uzycie: napisy pod ikonami paska dolnego, w razie potrzeby w dwóch wierszach
       zrodlo: styl „Karta miejsca”, wymagania wspólne (pasek dolny)
+
+  # Sloty Material 3 bez własnego stylu w skali. Komponenty biblioteki sięgają po nie same,
+  # np. tytuł okna dialogowego (headlineSmall), etykieta i podpowiedź pola tekstowego (bodySmall).
+  # Każdy dostaje styl z tej listy, więc ma krój aplikacji i co najmniej `minimum_sp`,
+  # a nie krój systemowy i 12–14 sp z domyślnej skali Material.
+  zastepstwa:
+    displayLarge: headlineLarge
+    displayMedium: headlineLarge
+    displaySmall: headlineLarge
+    headlineSmall: headlineMedium
+    titleSmall: titleMedium
+    bodySmall: bodyMedium
+    labelSmall: labelMedium
 
 # ---------------------------------------------------------------------------
 # Wymiary w dp. Odstępy na siatce 4 dp (Material 3); skrypt sprawdza wielokrotność.
@@ -332,11 +346,11 @@ odstepy:
 cele_dotyku:
   minimum:
     dp: 48
-    uzycie: najmniejszy cel dotyku, np. przyciski „Zgłoś barierę przy wejściu”, chipy, strzałki przesuwania mapy, piętra w przełączniku
+    uzycie: najmniejszy cel dotyku, np. odnośniki „Zgłoś barierę przy wejściu”, chipy, strzałki przesuwania mapy, czynności kart
     zrodlo: NFR-17
   przycisk:
     dp: 56             # zapas ponad 48 dp: PE-1 ma lekkie drżenie dłoni i chybia małe przyciski
-    uzycie: najmniejsza wysokość przycisku wypełnionego, tonalnego i obrysowanego; przy dużej czcionce rośnie razem z tekstem
+    uzycie: najmniejsza wysokość przycisku wypełnionego, tonalnego i obrysowanego poza kartą; przy dużej czcionce rośnie z tekstem
     zrodlo: NFR-17, NFR-20, PE-1
   przypiety:
     dp: 60
@@ -344,7 +358,7 @@ cele_dotyku:
     zrodlo: styl „Karta miejsca”, NFR-17
   odstep:
     dp: 16             # PE-1 ma lekkie drżenie dłoni: między sąsiednimi przyciskami zostaje pas, w który trudno trafić przypadkiem
-    uzycie: odstęp między sąsiednimi przyciskami, np. „Sprawdź, którędy wejść” i „Zamknij” na małej karcie V2 i w potwierdzeniach
+    uzycie: odstęp między sąsiednimi przyciskami, np. „Pokaż wejście na mapie” i „Zamknij” na małej karcie V2 i w potwierdzeniach
     zrodlo: NFR-17, PE-1, decyzja 50
   odstep_w_grupie:
     dp: 8
@@ -384,11 +398,11 @@ zaokraglenia:
     zrodlo: styl „Karta miejsca” (Material 3, kształt średni)
   duze:
     dp: 16
-    uzycie: kontenery grup, legenda, kroki do sali, plakietka „A-1” na arkuszu
+    uzycie: kontenery grup, karty pozycji list, panele informacyjne, legenda, kroki do sali, plakietka „A-1” na arkuszu
     zrodlo: styl „Karta miejsca” (Material 3, kształt duży)
   kapsula:
     dp: 24             # połowa celu 48 dp: kontrolka ma kształt kapsuły
-    uzycie: kontrolki 48 dp, np. „Wstecz” na mapie, przyciski +/−, piętra w przełączniku, segmenty, małe przyciski
+    uzycie: kontrolki 48 dp, np. „Wstecz” na mapie, przyciski +/−, piętra w przełączniku, segmenty, czynności kart
     zrodlo: styl „Karta miejsca”
   bardzo_duze:
     dp: 28             # połowa przycisku 56 dp
@@ -397,8 +411,8 @@ zaokraglenia:
 
 ikony:
   rozmiar:
-    dp: 24             # ikona oznaczenia wejścia i chipu rośnie z tekstem: 1,33 wysokości napisu
-    uzycie: ikona oznaczenia wejścia, chipu, przycisku i paska dolnego, zawsze z napisem obok
+    dp: 24             # znak oznaczenia wejścia i ikona chipu rosną z tekstem: 1,33 wysokości napisu
+    uzycie: znak oznaczenia wejścia w tekście (ten sam co na mapie), ikona chipu, przycisku i paska dolnego, zawsze z napisem obok
     zrodlo: NFR-21, słownik użytkownika (Metafory i ikony)
   znak_mapy:
     dp: 28
@@ -406,7 +420,7 @@ ikony:
     zrodlo: US1.4, US2.1, NFR-21
   znak_mapy_brak_danych:
     dp: 20             # cichy znak: mniej informacji, mniejsza waga; pusty romb, wnętrze `papier`, kontur i ? `tusz`
-    uzycie: znak wejścia „Brak danych” na mapie V1; w legendzie i na kartach ma rozmiar zwykłego znaku
+    uzycie: znak wejścia „Brak danych” na mapie V1; w legendzie ma rozmiar zwykłego znaku, a w tekście `ikony.rozmiar`
     zrodlo: US1.4, US2.1, NFR-16, NFR-21
 
 # ---------------------------------------------------------------------------
@@ -422,21 +436,90 @@ wysokosci:
     zrodlo: styl „Karta miejsca”
   pasek_czynnosci:
     dp: 6              # Material 3, poziom 3; cień pada w górę
-    uzycie: przypięty pasek czynności (V4, ekrany zespołu), arkusz na mapie (V1), mała karta V2 nad mapą
+    uzycie: przypięty pasek czynności (V4, ekrany zespołu), arkusz na mapie (V1), karta V2 nad mapą na każdej wysokości
     zrodlo: styl „Karta miejsca”; cień arkusza z makiety hi-fi V2
+
+# ---------------------------------------------------------------------------
+# Wysokości karty budynku V2 nad mapą. Niska ma wysokość treści, cały ekran to wysokość okna.
+# Połowa ekranu to ułamek wysokości okna nad paskiem dolnym; przy skali czcionki co najmniej 1,5 jej nie ma.
+# ---------------------------------------------------------------------------
+karta_budynku:
+  polowa_ekranu:
+    ulamek: 0.5
+    uzycie: środkowa wysokość karty V2, z mapą nad kartą i początkiem pełnego opisu
+    zrodlo: US2.8, NFR-53
 
 # ---------------------------------------------------------------------------
 # Paleta mapy: podkład, budynki PWr, plan piętra (styl mapy wektorowej, decyzja 44, ADR-0014).
 # Jasny podkład to wariant „żywy”: wyraźna zieleń i woda, budynki spoza PWr od powiększenia 13,
 # nazwy dzielnic wielkimi literami, budynki PWr najbardziej nasycone na mapie.
 # Nie są to role Material 3: aplikacja wstawia je do stylu mapy, a nie do motywu.
-# W jasnym motywie kontur PWr i ścieżka mają barwę `primary`. Ciemny to wariant „żywy ciemny”: łupkowe tło
+# W jasnym motywie kontur PWr ma barwę `primary`. Ciemny to wariant „żywy ciemny”: łupkowe tło
 # (nie czarne), drogi jaśniejsze od tła, wyraźna woda i zieleń, budynki PWr najjaśniejsze na mapie. Napisy: Noto Sans z obwódką.
 # Skrypt strony jeszcze nie sprawdza tej sekcji; pary niżej mają ten sam zapis
 # co `kontrast.pary`, a progi są te same (tekst 7:1, nietekst 3:1).
 # ---------------------------------------------------------------------------
 mapa:
   napisy_sp: 16
+  # Podpis „© OpenStreetMap” w rogu mapy: wyjątek od `minimum_sp`. To atrybucja wymagana licencją ODbL,
+  # a nie informacja dla osoby; mały napis nie zasłania mapy. Pełne źródła danych są w legendzie
+  # pod „ⓘ” stylem bodyLarge (NFR-37). Krój ten sam co w całej aplikacji.
+  podpis_osm_sp: 12
+  # Plan piętra na mapie V1: grubości linii i rozmiar znaków planu według powiększenia, liniowo między progami.
+  # Przy widocznym planie tło i kontur budynku z OpenStreetMap są ukryte. Ściana piętra z planu PWr to jedna linia
+  # `pwr_kontur` (obrys wybranego budynku też idzie po niej), a pod pomieszczeniami w jej obrysie leży `p_korytarz`. Winda, toaleta dostosowana i schody mają ten sam rozmiar; ważność niesie jasność
+  # i kolejność rysowania (winda i toaleta nad schodami). Znak ma obwódkę `papier` i kontur `tusz` jak znaki
+  # wejść i barier, a obszar dotyku co najmniej `cele_dotyku.minimum` przy każdym rozmiarze obrazu.
+  plan:
+    obrys_dp: 2.4
+    sciany_dp:
+      - {powiekszenie: 17, dp: 0.75}
+      - {powiekszenie: 20, dp: 1.5}
+    znak_dp:
+      - {powiekszenie: 17, dp: 20}
+      - {powiekszenie: 18, dp: 24}
+      - {powiekszenie: 19, dp: 28}
+    zrodlo: US16.1, NFR-16, NFR-17, NFR-21
+  # Ścieżka dostosowana na mapie V1: pod budynkami PWr, od powiększenia `od_powiekszenia`. Szerokość rośnie
+  # wykładniczo między progami: `sciezka_brzeg` to cała wstęga, `sciezka_wnetrze` leży na niej węższa, więc z każdej
+  # strony zostaje brzeg. Chodniki OSM zostają bez zmian: od ścieżki odróżnia je barwa i legenda.
+  sciezka:
+    od_powiekszenia: 15.5
+    wstega_dp:
+      - {powiekszenie: 15.5, dp: 4.2}
+      - {powiekszenie: 17, dp: 7}
+      - {powiekszenie: 19, dp: 20}
+    wnetrze_dp:
+      - {powiekszenie: 15.5, dp: 2}
+      - {powiekszenie: 17, dp: 4.8}
+      - {powiekszenie: 19, dp: 16}
+    zrodlo: US1.4, NFR-16, NFR-21
+  # Przygaszony budynek PWr (inne budynki przy zaznaczonym budynku i przy planie piętra) zostaje w swojej barwie,
+  # bledszy: tło `pwr` albo `pwr_podstawowy` z kryciem `tlo_krycie`, kontur `pwr_kontur` z kryciem `kontur_krycie`,
+  # grubość konturu i podpis symbolu bez zmian. Barw `budynek` i `budynek_kontur` przygaszony budynek PWr nie dostaje.
+  # Na `lad` daje to tło #CDE5EC (szczegółowy) i #DDECF0 (podstawowy) oraz kontur #477F8A w motywie jasnym, a w ciemnym
+  # tło #2C424B i #26373D oraz kontur #7EA1AD. Pary niżej liczą kontur nałożony na `lad` do lądu i do przygaszonego
+  # tła; `min_symulacja` to najniższy wynik po symulacji widzenia barw. Krycie konturu 60% daje w jasnym motywie
+  # 2,72 do tła, dlatego 70%.
+  przygaszenie:
+    tlo_krycie: 0.4
+    kontur_krycie: 0.7
+    pary:
+      - {kolor: "#477F8A", tlo: "#EEF1F0", motyw: jasny, kontrast: 3.95, min_symulacja: 3.71, gdzie: kontur przygaszonego budynku do lądu}
+      - {kolor: "#477F8A", tlo: "#CDE5EC", motyw: jasny, kontrast: 3.42, min_symulacja: 3.28, gdzie: kontur do przygaszonego tła budynku szczegółowego}
+      - {kolor: "#477F8A", tlo: "#DDECF0", motyw: jasny, kontrast: 3.71, min_symulacja: 3.52, gdzie: kontur do przygaszonego tła budynku podstawowego}
+      - {kolor: "#7EA1AD", tlo: "#20272B", motyw: ciemny, kontrast: 5.47, min_symulacja: 5.35, gdzie: kontur przygaszonego budynku do lądu}
+      - {kolor: "#7EA1AD", tlo: "#2C424B", motyw: ciemny, kontrast: 3.81, min_symulacja: 3.79, gdzie: kontur do przygaszonego tła budynku szczegółowego}
+      - {kolor: "#7EA1AD", tlo: "#26373D", motyw: ciemny, kontrast: 4.47, min_symulacja: 4.41, gdzie: kontur do przygaszonego tła budynku podstawowego}
+    zrodlo: US2.8, US16.1, NFR-16, NFR-21
+  # Kontury budynków PWr na mapie V1: budynek szczegółowy (z planem pięter) ma gruby kontur,
+  # a podstawowy (bez planu pięter) cienki ciągły kontur, żeby poziomy różniły się nie tylko
+  # jasnością tła (US16.1, NFR-21). Wartość `szczegolowy_dp` jest równa `mapa.plan.obrys_dp`,
+  # ale to osobny token warstwy konturów budynków.
+  kontur:
+    szczegolowy_dp: 2.4
+    podstawowy_dp: 1.0
+    zrodlo: US16.1, NFR-21
   kolory:
     lad: {jasny: "#EEF1F0", ciemny: "#20272B", uzycie: tło lądu}
     zielen: {jasny: "#CBE2C6", ciemny: "#24352C", uzycie: parki i trawniki}
@@ -452,15 +535,18 @@ mapa:
     # jasność tła i cienki kontur.
     pwr_podstawowy: {jasny: "#C4E5F0", ciemny: "#2F4E59", uzycie: "wypełnienie budynków podstawowych (bez planu pięter)"}
     # Ciemny kontur PWr: najciemniejszy ton, który do wypełnienia ma ≥ 3:1 także po symulacji daltonizmu.
-    pwr_kontur: {jasny: "#004E5E", ciemny: "#A6D6E5", uzycie: "kontur budynków PWr (jasny = primary): gruby przy szczegółowym, cienki ciągły przy podstawowym"}
+    pwr_kontur: {jasny: "#004E5E", ciemny: "#A6D6E5", uzycie: "kontur budynków PWr (jasny = primary): gruby przy szczegółowym, cienki ciągły przy podstawowym, ściana zewnętrzna planu piętra"}
     # Obrys wybranego budynku jest grubszy niż kontur; wybór pokazuje też arkusz z nazwą (NFR-21).
     pwr_wybrany: {jasny: "#001F27", ciemny: "#E6F4F8", uzycie: obrys wybranego budynku}
     napis_pwr: {jasny: "#00303B", ciemny: "#F0F6F8", uzycie: "symbol budynku, „Sala 329”, „Winda”, „Toaleta”"}
-    napis_ulica: {jasny: "#3A4549", ciemny: "#A9B4B8", uzycie: nazwy ulic i numery sal}
+    napis_ulica: {jasny: "#3A4549", ciemny: "#A9B4B8", uzycie: "nazwy ulic od powiększenia 15 i numery sal"}
     napis_woda: {jasny: "#2B454D", ciemny: "#96B9CC", uzycie: nazwa rzeki}
     napis_dzielnica: {jasny: "#4E5A5E", ciemny: "#A9B2B6", uzycie: "nazwy dzielnic wielkimi literami, z odstępem liter"}
     obwodka: {jasny: "#FFFFFF", ciemny: "#20272B", uzycie: obwódka napisów}
-    sciezka: {jasny: "#004E5E", ciemny: "#8AA7B2", uzycie: ścieżka dostosowana}
+    # Ścieżka dostosowana: piaskowa wstęga z cienkimi turkusowymi brzegami. Piasku nie ma nigdzie indziej na mapie,
+    # ale do lądu ma tylko ok. 1,1:1, więc ścieżkę wyznaczają brzegi (≥ 3:1 do lądu, zieleni, ulicy i piasku).
+    sciezka_brzeg: {jasny: "#3D7C88", ciemny: "#6E95A1", uzycie: brzegi ścieżki dostosowanej}
+    sciezka_wnetrze: {jasny: "#EFE2C4", ciemny: "#4A4334", uzycie: wnętrze ścieżki dostosowanej}
     tusz: {jasny: "#181C1D", ciemny: "#D5DADC", uzycie: "kontur znaków wejść i barier, znak „Niedostępne”, ikony pochylni i planu"}
     papier: {jasny: "#FFFFFF", ciemny: "#20272B", uzycie: "obwódka znaków wejść i barier, wnętrze znaczników"}
     # Znaki wejść i barier na mapie i w legendzie. Barwa powtarza kształt i słowo, których nie zastępuje (NFR-21).
@@ -475,13 +561,13 @@ mapa:
     znak_tylko_z_pomoca_symbol: {jasny: "#181C1D", ciemny: "#101314", uzycie: "dwie osoby w tarczy „Tylko z pomocą”"}
     znak_blokada: {jasny: "#A3180A", ciemny: "#D92D1A", uzycie: "tablica znaku „Blokada”"}
     znak_blokada_symbol: {jasny: "#FFFFFF", ciemny: "#FFFFFF", uzycie: "pozioma belka na tablicy „Blokada”"}
-    p_korytarz: {jasny: "#FFFFFF", ciemny: "#2C3236", uzycie: korytarz na planie piętra}
+    p_korytarz: {jasny: "#FFFFFF", ciemny: "#2C3236", uzycie: "korytarz na planie piętra i tło w obrysie piętra pod pomieszczeniami"}
     p_sala: {jasny: "#D2EAF3", ciemny: "#2C3C44", uzycie: sala na planie piętra}
     p_inne: {jasny: "#E1E6E8", ciemny: "#23282B", uzycie: inne pomieszczenia i klatki schodowe}
     p_winda: {jasny: "#A7C0C9", ciemny: "#3B4D55", uzycie: winda}
     p_wzor: {jasny: "#4A5559", ciemny: "#8D979B", uzycie: kreskowanie klatek schodowych i kropki toalet}
     p_wc: {jasny: "#F2F5F6", ciemny: "#272C30", uzycie: toaleta}
-    p_kontur: {jasny: "#6A7579", ciemny: "#828E94", uzycie: ściany na planie piętra}
+    p_kontur: {jasny: "#6A7579", ciemny: "#828E94", uzycie: ściany pomieszczeń na planie piętra}
     p_wybrana: {jasny: "#8FD3EA", ciemny: "#2F5A68", uzycie: szukana sala}
     p_wybrana_kontur: {jasny: "#001F27", ciemny: "#D9E6EB", uzycie: kontur szukanej sali}
   pary:
@@ -496,8 +582,10 @@ mapa:
     - {kolor: pwr_wybrany, tlo: pwr, rodzaj: komponent, gdzie: obrys wybranego budynku do wypełnienia}
     - {kolor: pwr_wybrany, tlo: pwr_podstawowy, rodzaj: komponent, gdzie: obrys wybranego budynku podstawowego do wypełnienia}
     - {kolor: pwr_wybrany, tlo: lad, rodzaj: komponent, gdzie: obrys wybranego budynku na podkładzie}
-    - {kolor: sciezka, tlo: lad, rodzaj: komponent, gdzie: ścieżka dostosowana na podkładzie}
-    - {kolor: sciezka, tlo: droga, rodzaj: komponent, gdzie: ścieżka dostosowana na ulicy}
+    - {kolor: sciezka_brzeg, tlo: lad, rodzaj: komponent, gdzie: brzeg ścieżki dostosowanej na podkładzie}
+    - {kolor: sciezka_brzeg, tlo: zielen, rodzaj: komponent, gdzie: brzeg ścieżki dostosowanej przez trawnik}
+    - {kolor: sciezka_brzeg, tlo: droga, rodzaj: komponent, gdzie: brzeg ścieżki dostosowanej na ulicy}
+    - {kolor: sciezka_brzeg, tlo: sciezka_wnetrze, rodzaj: komponent, gdzie: brzeg do wnętrza ścieżki dostosowanej}
     - {kolor: tusz, tlo: lad, rodzaj: komponent, gdzie: "znacznik wejścia, ikona pochylni"}
     - {kolor: tusz, tlo: pwr, rodzaj: komponent, gdzie: znacznik wejścia na budynku PWr}
     - {kolor: tusz, tlo: pwr_podstawowy, rodzaj: komponent, gdzie: znacznik wejścia na budynku podstawowym}
@@ -514,6 +602,15 @@ mapa:
     - {kolor: p_kontur, tlo: p_sala, rodzaj: komponent, gdzie: ściany sali}
     - {kolor: p_kontur, tlo: p_korytarz, rodzaj: komponent, gdzie: ściany korytarza}
     - {kolor: p_kontur, tlo: p_inne, rodzaj: komponent, gdzie: ściany innych pomieszczeń}
+    - {kolor: pwr_kontur, tlo: p_korytarz, rodzaj: komponent, gdzie: ściana zewnętrzna planu przy korytarzu}
+    - {kolor: pwr_kontur, tlo: p_sala, rodzaj: komponent, gdzie: ściana zewnętrzna planu przy sali}
+    - {kolor: pwr_kontur, tlo: p_inne, rodzaj: komponent, gdzie: ściana zewnętrzna planu przy innym pomieszczeniu}
+    - {kolor: pwr_kontur, tlo: p_wc, rodzaj: komponent, gdzie: ściana zewnętrzna planu przy toalecie}
+    - {kolor: pwr_kontur, tlo: p_winda, rodzaj: komponent, gdzie: ściana zewnętrzna planu przy windzie}
+    - {kolor: pwr_wybrany, tlo: p_korytarz, rodzaj: komponent, gdzie: obrys wybranego budynku po ścianie piętra przy korytarzu}
+    - {kolor: pwr_wybrany, tlo: p_sala, rodzaj: komponent, gdzie: obrys wybranego budynku po ścianie piętra przy sali}
+    - {kolor: tusz, tlo: papier, rodzaj: komponent, gdzie: kontur znaku planu do jego obwódki}
+    - {kolor: papier, tlo: p_kontur, rodzaj: komponent, gdzie: obwódka znaku planu do ściany pomieszczenia}
     - {kolor: p_wzor, tlo: p_inne, rodzaj: komponent, gdzie: kreskowanie klatek schodowych}
     - {kolor: p_wzor, tlo: p_wc, rodzaj: komponent, gdzie: kropki toalet}
     - {kolor: p_wybrana_kontur, tlo: p_wybrana, rodzaj: komponent, gdzie: kontur szukanej sali do wypełnienia}

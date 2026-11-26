@@ -10,7 +10,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 /**
  * Wejście do budynku z oznaczeniem wejścia (`Entrance` z kontraktu API).
  *
- * Wymagania: US17.3
+ * Wymagania: US17.3, US2.1, US3.3, BR-27
  *
  * @property id identyfikator wejścia
  * @property buildingSymbol symbol budynku, do którego prowadzi wejście
@@ -23,6 +23,11 @@ import io.github.dostepnykampus.core.model.GeoPoint
  * @property assessment dzień i źródło oznaczenia z serwera; `null` dla wejścia z pliku konturów,
  *   który ich nie podaje
  * @property floorId piętro wejścia z listy pięter budynku (`Floor.id`); `null`, gdy dane go nie podają
+ * @property approach opis dojścia do wejścia, np. „Do wejścia prowadzą schody.”; pusty, gdy dane go nie podają
+ * @property doorWidthCm szerokość drzwi w centymetrach; 0, gdy dane jej nie podają
+ * @property isNameGenerated czy [name] nadał import, np. „Wejście”, a nie dane (pole `generatedName`)
+ * @property placeDescription opis położenia wejścia bez nazwy w danych, np. „Od strony C-20, od północy.”; pusty
+ *   przy wejściu z nazwą w danych (pole `placeDescription`)
  */
 public data class Entrance(
     val id: String,
@@ -34,7 +39,19 @@ public data class Entrance(
     val marking: EntranceMarking,
     val assessment: EntranceAssessment? = null,
     val floorId: String? = null,
+    val approach: String = "",
+    val doorWidthCm: Int = 0,
+    val isNameGenerated: Boolean = false,
+    val placeDescription: String = "",
 ) {
+    /**
+     * Czy wejście ma nazwę w danych: niepustą i nienadaną przez import ([isNameGenerated]).
+     *
+     * Wymagania: BR-25, BR-27
+     */
+    val hasName: Boolean
+        get() = !name.isNullOrBlank() && !isNameGenerated
+
     /** Czy rodzaj wejścia kwalifikuje je do pokazania odwiedzającym. Wymagania: BR-25 */
     val isForVisitors: Boolean
         get() =

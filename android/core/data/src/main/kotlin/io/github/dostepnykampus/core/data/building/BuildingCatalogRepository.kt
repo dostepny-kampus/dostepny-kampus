@@ -9,7 +9,7 @@ import android.content.res.AssetManager
 import io.github.dostepnykampus.core.data.server.ServerBuildings
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.server.map
-import io.github.dostepnykampus.core.database.cache.BuildingCacheDao
+import io.github.dostepnykampus.core.database.cache.ServerCopyDao
 import io.github.dostepnykampus.core.geo.building.parseBuildingCatalog
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.network.building.ApiBuilding
@@ -42,23 +42,23 @@ private typealias Running = CompletableDeferred<Result<BuildingCatalog>>
 public const val BUILDINGS_ASSET: String = "pwr-buildings.geojson"
 
 /**
- * Katalog budynków dla mapy. Z [listBuildings] kontury, nazwy i atrybucja są z serwera, a wejścia z pliku konturów,
- * tylko dla budynków podanych przez serwer. Bez niego, przy błędzie albo pustej liście katalog jest z pliku, chyba że
- * wcześniej pobrano katalog z serwera albo jego kopię w [buildingCache]. Budynki są sortowane naturalnie po symbolu
- * (A-2 przed A-10), bez wejść `emergency`, `exit` i `garage`. Trwające pobranie i odczyt pliku są wspólne dla
- * [catalogUpdates], [catalog] i [refresh]; [catalogUpdates] oddaje najpierw katalog bez czekania, potem z serwera.
- * Błąd prowadzącego dostają też czekający, a jego anulowanie każe im pytać od nowa. [syncedAt] to chwila pobrania.
+ * Katalog budynków dla mapy. Z [listBuildings] kontury, nazwy, atrybucja i wejścia są z serwera; lista bez wejść
+ * zostawia wejścia z pliku konturów budynków podanych przez serwer. Bez niego, przy błędzie albo pustej liście katalog
+ * jest z pliku, chyba że wcześniej pobrano katalog z serwera albo jego kopię w [serverCopy]. Budynki są sortowane
+ * naturalnie po symbolu (A-2 przed A-10), bez wejść `emergency`, `exit` i `garage`. Pobranie i odczyt pliku są wspólne
+ * dla [catalogUpdates] (najpierw katalog bez czekania, potem z serwera), [catalog] i [refresh]. Czekający na to samo
+ * pobranie dostają jego błąd, a po anulowaniu prowadzącego ponawiają pobranie. [syncedAt] to chwila pobrania z serwera.
  *
- * Wymagania: US1, US1.2, US17.3, BR-25, NFR-11, NFR-10
+ * Wymagania: US1, US1.2, US1.4, US17.3, BR-25, NFR-11, NFR-10
  *
- * @param buildingCache kopia listy budynków w bazie; `null` zostawia katalog bez kopii
+ * @param serverCopy kopie odpowiedzi serwera w bazie; `null` zostawia katalog bez kopii
  * @param ioContext kontekst odczytu pliku i parsowania, np. dyspozytor wejścia-wyjścia
  * @param listBuildings lista z serwera; `null` zostawia katalog wyłącznie z pliku
  * @param nowMillis zegar chwili pobrania listy z serwera
  * @param readGeoJson odczyt treści pliku konturów
  */
 public class BuildingCatalogRepository internal constructor(
-    private val buildingCache: BuildingCacheDao?,
+    serverCopy: ServerCopyDao?,
     private val ioContext: CoroutineContext,
     private val listBuildings: (suspend () -> ServerReply<BuildingList>)? = null,
     private val nowMillis: () -> Long = System::currentTimeMillis,
@@ -67,7 +67,7 @@ public class BuildingCatalogRepository internal constructor(
     private val lock = Any()
     private var inflight: Running? = null
     private val downloaded = MutableStateFlow<Downloaded?>(null)
-    private val copy = buildingCache?.let { dao -> BuildingListCopy(dao, ioContext) }
+    private val copy = serverCopy?.let { dao -> buildingCopy(dao, ioContext) }
 
     @Volatile private var cached: BuildingCatalog? = null
 
@@ -116,7 +116,7 @@ public class BuildingCatalogRepository internal constructor(
     /**
      * Pyta serwer i czyta plik od nowa, zapamiętuje wynik i zwraca katalog dla „Spróbuj ponownie”, gdy budynku
      * nie ma w telefonie. Gdy pobranie już trwa, czeka na jego wynik. Gdy serwer nie odpowie, zostaje
-     * ostatni katalog z serwera, a bez niego kopia z bazy [buildingCache], a bez kopii plik.
+     * ostatni katalog z serwera, a bez niego kopia z bazy, a bez kopii plik.
      *
      * Wymagania: NFR-10
      *
@@ -153,9 +153,7 @@ public class BuildingCatalogRepository internal constructor(
 
     private suspend fun follow(running: Running, isFresh: Boolean): BuildingCatalog {
         running.join()
-        if (!running.isCancelled) return running.await().getOrThrow()
-        synchronized(lock) { if (inflight === running) inflight = null }
-        return fetched(isFresh)
+        return if (running.isCancelled) fetched(isFresh) else running.await().getOrThrow()
     }
 
     private suspend fun lead(mine: Running, isFresh: Boolean): BuildingCatalog =
@@ -166,10 +164,7 @@ public class BuildingCatalogRepository internal constructor(
                         load(isFresh).also { mine.complete(Result.success(it)) }
                     }
                 work.invokeOnCompletion { cause ->
-                    when {
-                        cause is CancellationException -> mine.cancel()
-                        cause != null -> mine.complete(Result.failure(cause))
-                    }
+                    if (cause != null && cause !is CancellationException) mine.complete(Result.failure(cause))
                 }
                 work.await()
             }
@@ -184,12 +179,13 @@ public class BuildingCatalogRepository internal constructor(
         val server = nonEmptyServerList()
         var source = if (server != null) "serwer" else "poprzedni odczyt"
         if (server != null) {
-            val synced = SyncedBuildingList(list = server, syncedAtMillis = nowMillis())
-            downloaded.value = Downloaded(file.withServerList(server), synced.syncedAtMillis)
-            copy?.save(synced)
+            val syncedAtMillis = nowMillis()
+            downloaded.value = Downloaded(file.withServerList(server), syncedAtMillis)
+            copy?.save(server, Instant.ofEpochMilli(syncedAtMillis))
         } else if (downloaded.value == null) {
             val restored = copy?.restore()
-            downloaded.value = restored?.let { Downloaded(file.withServerList(it.list), it.syncedAtMillis) }
+            downloaded.value =
+                restored?.let { Downloaded(file.withServerList(it.value), it.syncedAt.toEpochMilli()) }
             source = if (restored != null) "kopia z bazy" else "plik"
         }
         val result = downloaded.value?.catalog ?: file
@@ -218,16 +214,19 @@ internal fun assetRepository(
     assets: AssetManager,
     ioContext: CoroutineContext = Dispatchers.IO,
     listBuildings: (suspend () -> ServerReply<BuildingList>)? = null,
-    buildingCache: BuildingCacheDao? = null,
+    serverCopy: ServerCopyDao? = null,
 ): BuildingCatalogRepository =
     BuildingCatalogRepository(
         ioContext = ioContext,
         listBuildings = listBuildings,
         readGeoJson = { assets.open(BUILDINGS_ASSET).bufferedReader().use { it.readText() } },
-        buildingCache = buildingCache,
+        serverCopy = serverCopy,
     )
 
 internal fun elapsedMillis(startedNanos: Long): Long = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startedNanos)
 
 private fun basicList(list: suspend () -> ServerReply<ServerBuildings>): suspend () -> ServerReply<BuildingList> =
-    { list().map { found -> BuildingList(found.source, found.buildings.map { ApiBuilding(it, DetailLevel.BASIC) }) } }
+    { list().map { found -> BuildingList(found.source, found.apiBuildings()) } }
+
+private fun ServerBuildings.apiBuildings(): List<ApiBuilding> =
+    buildings.map { ApiBuilding(it, if (it.symbol in detailed) DetailLevel.DETAILED else DetailLevel.BASIC) }

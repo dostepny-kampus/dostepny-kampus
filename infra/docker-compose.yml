@@ -9,11 +9,13 @@ services:
       POSTGRES_PASSWORD: ${DK_DB_PASSWORD:?ustaw DK_DB_PASSWORD w infra/.env}
       DK_DB_APP_USER: ${DK_DB_APP_USER:?ustaw DK_DB_APP_USER w infra/.env}
       DK_DB_APP_PASSWORD: ${DK_DB_APP_PASSWORD:?ustaw DK_DB_APP_PASSWORD w infra/.env}
+      DK_AUTH_DB_NAME: ${DK_AUTH_DB_NAME:-logowanie}
     ports:
       - "127.0.0.1:${DK_DB_PORT:-5432}:5432"
     volumes:
       - postgis-dane:/var/lib/postgresql
       - ./postgis/konto-serwera.sh:/docker-entrypoint-initdb.d/konto-serwera.sh:ro
+      - ./postgis/baza-logowania.sh:/docker-entrypoint-initdb.d/baza-logowania.sh:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 5s
@@ -22,11 +24,10 @@ services:
       start_period: 30s
     restart: unless-stopped
   zdjecia:
-    image: rustfs/rustfs:1.0.4
+    image: rustfs/rustfs:1.0.6
     environment:
-      # TODO(#2696): serwer dostanie własny klucz ograniczony do kubełka zdjęć.
-      RUSTFS_ACCESS_KEY: ${DK_PHOTOS_ACCESS_KEY:?ustaw DK_PHOTOS_ACCESS_KEY w infra/.env}
-      RUSTFS_SECRET_KEY: ${DK_PHOTOS_SECRET_KEY:?ustaw DK_PHOTOS_SECRET_KEY w infra/.env}
+      RUSTFS_ACCESS_KEY: ${DK_PHOTOS_ROOT_ACCESS_KEY:?ustaw DK_PHOTOS_ROOT_ACCESS_KEY w infra/.env}
+      RUSTFS_SECRET_KEY: ${DK_PHOTOS_ROOT_SECRET_KEY:?ustaw DK_PHOTOS_ROOT_SECRET_KEY w infra/.env}
     ports:
       - "127.0.0.1:${DK_PHOTOS_PORT:-9000}:9000"
     volumes:
@@ -38,6 +39,22 @@ services:
       retries: 12
       start_period: 10s
     restart: unless-stopped
+  zdjecia-konto:
+    image: rustfs/rc:v0.1.38
+    entrypoint: ["sh", "/konto-serwera.sh"]
+    environment:
+      DK_PHOTOS_ENDPOINT: http://zdjecia:9000
+      DK_PHOTOS_ROOT_ACCESS_KEY: ${DK_PHOTOS_ROOT_ACCESS_KEY:?ustaw DK_PHOTOS_ROOT_ACCESS_KEY w infra/.env}
+      DK_PHOTOS_ROOT_SECRET_KEY: ${DK_PHOTOS_ROOT_SECRET_KEY:?ustaw DK_PHOTOS_ROOT_SECRET_KEY w infra/.env}
+      DK_PHOTOS_BUCKET: ${DK_PHOTOS_BUCKET:-zdjecia}
+      DK_PHOTOS_ACCESS_KEY: ${DK_PHOTOS_ACCESS_KEY:?ustaw DK_PHOTOS_ACCESS_KEY w infra/.env}
+      DK_PHOTOS_SECRET_KEY: ${DK_PHOTOS_SECRET_KEY:?ustaw DK_PHOTOS_SECRET_KEY w infra/.env}
+    volumes:
+      - ./rustfs/konto-serwera.sh:/konto-serwera.sh:ro
+    depends_on:
+      zdjecia:
+        condition: service_healthy
+    restart: "no"
   logowanie:
     image: quay.io/keycloak/keycloak:26.4
     command: ["start-dev", "--import-realm", "--http-port=8180", "--health-enabled=true"]
@@ -62,6 +79,44 @@ services:
       timeout: 5s
       retries: 24
       start_period: 60s
+    restart: unless-stopped
+  serwer:
+    # Obraz z backend/Dockerfile; najpierw plik JAR: ./mvnw -DskipTests package w katalogu backend/.
+    build: ../backend
+    image: dostepny-kampus/serwer:lokalny
+    # Profil: zwykłe `up` zostawia serwer uruchamiany z backend/ przez ./mvnw, jak dotąd.
+    profiles: ["serwer"]
+    environment:
+      DK_DB_HOST: postgis
+      DK_DB_PORT: "5432"
+      DK_DB_NAME: ${DK_DB_NAME:?ustaw DK_DB_NAME w infra/.env}
+      DK_DB_USER: ${DK_DB_USER:?ustaw DK_DB_USER w infra/.env}
+      DK_DB_PASSWORD: ${DK_DB_PASSWORD:?ustaw DK_DB_PASSWORD w infra/.env}
+      DK_DB_APP_USER: ${DK_DB_APP_USER:?ustaw DK_DB_APP_USER w infra/.env}
+      DK_DB_APP_PASSWORD: ${DK_DB_APP_PASSWORD:?ustaw DK_DB_APP_PASSWORD w infra/.env}
+      DK_PHOTOS_HOST: zdjecia
+      DK_PHOTOS_PORT: "9000"
+      DK_PHOTOS_BUCKET: ${DK_PHOTOS_BUCKET:-zdjecia}
+      DK_PHOTOS_ACCESS_KEY: ${DK_PHOTOS_ACCESS_KEY:?ustaw DK_PHOTOS_ACCESS_KEY w infra/.env}
+      DK_PHOTOS_SECRET_KEY: ${DK_PHOTOS_SECRET_KEY:?ustaw DK_PHOTOS_SECRET_KEY w infra/.env}
+      DK_AUTH_ISSUER: ${DK_AUTH_ISSUER:-http://localhost:8180/realms/dostepny-kampus}
+      DK_AUTH_AUDIENCE: ${DK_AUTH_AUDIENCE:-dostepny-kampus-api}
+      # Klucze tokenów z sieci compose: adres wydawcy (localhost) nie wskazuje usługi logowania z kontenera serwera.
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: ${DK_AUTH_JWKS:-http://logowanie:8180/realms/dostepny-kampus/protocol/openid-connect/certs}
+      DK_AUTH_ADMIN_URL: ${DK_AUTH_ADMIN_URL:-http://logowanie:8180/admin/realms/dostepny-kampus}
+      DK_AUTH_TOKEN_URL: ${DK_AUTH_TOKEN_URL:-http://logowanie:8180/realms/dostepny-kampus/protocol/openid-connect/token}
+      DK_AUTH_SERVICE_SECRET: ${DK_AUTH_SERVICE_SECRET:?ustaw DK_AUTH_SERVICE_SECRET w infra/.env}
+      DK_PUBLIC_RATE_LIMIT: ${DK_PUBLIC_RATE_LIMIT:-60}
+      DK_RATE_LIMIT_UNLIMITED: ${DK_RATE_LIMIT_UNLIMITED:-}
+    ports:
+      - "127.0.0.1:${DK_API_PORT:-8080}:8080"
+    depends_on:
+      postgis:
+        condition: service_healthy
+      zdjecia-konto:
+        condition: service_completed_successfully
+      logowanie:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:

@@ -2,16 +2,18 @@
 
 ## Zadanie
 
-Postęp inwentaryzacji dla Koordynatora: lista budynków z postępem (K1) i znaczniki budynku do cofnięcia (C5).
+Postęp inwentaryzacji: lista budynków z postępem dla Koordynatora (K1), znaczniki budynku do cofnięcia (C5 Koordynatora) i piętra do oznaczenia jako obejrzane (C5 Zbierającego) oraz eksport barier dla Koordynatora (K3).
 
 ## Pakiety
 
-- `feature.inspection.navigation` — trasa ekranu postępu.
-- `feature.inspection.progress` — ekran, stan i ViewModel listy postępu budynków.
+- `feature.inspection.export` — ekran eksportu K3, jego stan i ViewModel.
+- `feature.inspection.invitation` — ekran, stan i ViewModel zaproszenia K2.
+- `feature.inspection.navigation` — trasy ekranów postępu, zaproszenia i eksportu.
+- `feature.inspection.progress` — ekrany, stan i ViewModele postępu budynków i znaczników pięter.
 
 ## API
 
-Trasa ekranu w pakiecie `navigation`; ekran i jego ViewModel w pakiecie `progress`.
+Trasy ekranów w pakiecie `navigation`; ekrany i ViewModele w pakietach `progress`, `export` i `invitation`.
 
 ## Zależności
 
@@ -21,8 +23,8 @@ Trasa ekranu w pakiecie `navigation`; ekran i jego ViewModel w pakiecie `progres
 
 ## Czego moduł nie robi
 
-Nie pobiera danych z serwera sam; odczyt postępu i cofnięcie znacznika są w `:core:data`.
+Nie pobiera danych z serwera sam; odczyt postępu, piętra budynku, kolejka znaczników i cofnięcie znacznika są w `:core:data`.
 
 ## Kiedy dodawać tutaj
 
-Ekrany i stan postępu inwentaryzacji. Pobieranie i zapis danych należy do `:core:data`.
+Ekrany i stan postępu inwentaryzacji i eksportu. Pobieranie i zapis danych należy do `:core:data`.

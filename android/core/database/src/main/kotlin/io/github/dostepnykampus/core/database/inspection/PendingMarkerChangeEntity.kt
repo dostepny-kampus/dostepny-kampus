@@ -29,6 +29,7 @@ public enum class PendingMarkerChangeType {
  * @property buildingSymbol budynek znacznika
  * @property floorId piętro budynku szczegółowego; `null` to znacznik całego budynku podstawowego
  * @property savedAtMillis chwila zapisu w telefonie w milisekundach od epoki Unix
+ * @property ownerSub identyfikator konta albo `null` przed przypisaniem po migracji
  */
 @Entity(tableName = "pending_marker_changes")
 public data class PendingMarkerChangeEntity(
@@ -38,4 +39,5 @@ public data class PendingMarkerChangeEntity(
     @ColumnInfo(name = "building_symbol") val buildingSymbol: String,
     @ColumnInfo(name = "floor_id") val floorId: String?,
     @ColumnInfo(name = "saved_at") val savedAtMillis: Long,
+    @ColumnInfo(name = "owner_sub") val ownerSub: String? = null,
 )

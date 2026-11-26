@@ -1,25 +1,14 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Yevhenii Lukianenko
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.geo.building
 
-import io.github.dostepnykampus.core.geo.toPosition
+import io.github.dostepnykampus.core.geo.metersTo
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Entrance
-import org.maplibre.spatialk.turf.measurement.distance
-import org.maplibre.spatialk.units.International
-
-/**
- * Wejście z odległością od punktu pomiaru, do opisu miejsca słowami w C2.
- *
- * Wymagania: US7.4, NFR-19
- *
- * @property entrance wejście z danych
- * @property meters odległość w metrach na ziemi od punktu do wejścia
- */
-public data class EntranceDistance(val entrance: Entrance, val meters: Double)
+import io.github.dostepnykampus.core.model.building.EntranceDistance
 
 /**
  * Najbliższe wejście do [point]; obliczenia wykonuje Turf.
@@ -32,9 +21,3 @@ public fun nearestEntrance(point: GeoPoint, entrances: List<Entrance>): Entrance
     entrances
         .map { entrance -> EntranceDistance(entrance, meters = point.metersTo(entrance.location)) }
         .minByOrNull { it.meters }
-
-private fun GeoPoint.metersTo(other: GeoPoint): Double =
-    distance(
-        from = toPosition(),
-        to = other.toPosition(),
-    ).toDouble(International.Meters)

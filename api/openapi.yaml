@@ -17,10 +17,13 @@ info:
     | `outline` | kontur budynku |
     | `detailLevel`: `DETAILED`, `BASIC` | poziom szczegółowości: budynek szczegółowy, budynek podstawowy |
     | `Entrance`, `main` | wejście, wejście główne |
+    | `approach`, `doorWidthCm` | opis dojścia do wejścia, szerokość drzwi w centymetrach |
+    | `EvacuationExit` | wyjście ewakuacyjne |
     | `marking`: `ACCESSIBLE`, `INACCESSIBLE`, `NO_DATA` | oznaczenie wejścia: dostępne, niedostępne, brak danych |
     | `markingSource`: `IMPORT`, `WALKTHROUGH` | źródło oznaczenia: import, obchód |
     | `Floor`, `label` | piętro, etykieta piętra wyliczona z nazwy w danych PWr |
     | `Room` | pomieszczenie z planu piętra |
+    | `AccessiblePath` | ścieżka dostosowana (odcinek) |
     | `source` | źródło danych w podpisie (NFR-40) |
     | `Submission` | zgłoszenie |
     | `status`: `SENT`, `IN_REVIEW`, `ACCEPTED`, `REJECTED`, `ARCHIVED` | status zgłoszenia: wysłane, w weryfikacji, przyjęte, odrzucone, archiwalne |
@@ -59,7 +62,7 @@ paths:
     get:
       operationId: listBuildings
       summary: Lista budynków z konturami
-      description: Wszystkie budynki PWr z konturem budynku i poziomem szczegółowości do mapy kampusu (US1, US1.2).
+      description: Wszystkie budynki PWr z konturem budynku, poziomem szczegółowości i wejściami do mapy kampusu (US1, US1.2, US1.4).
       tags: [building]
       security: []
       responses:
@@ -171,7 +174,10 @@ paths:
         - name: q
           in: query
           required: true
-          description: Numer sali, opcjonalnie poprzedzony symbolem budynku, np. `A-1 135`.
+          description: >-
+            Numer sali i opcjonalnie symbol budynku w dowolnej kolejności, rozdzielone odstępem, przecinkiem
+            albo ukośnikiem; słowa „sala”, „s.” i „pok.” są pomijane, np. `A-1 135`, `135 A-1`, `sala 135 A-1`,
+            `A-1/135`.
           schema: {type: string, minLength: 1, maxLength: 50, description: "Tekst wyszukiwania."}
       responses:
         '429': {$ref: '#/components/responses/TooManyRequests'}
@@ -181,6 +187,23 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/RoomSearchResults'}
         '400': {$ref: '#/components/responses/BadRequest'}
+  /accessible-paths:
+    get:
+      operationId: listAccessiblePaths
+      summary: Ścieżki dostosowane kampusu
+      description: >-
+        Odcinki ścieżek dostosowanych z mapy kampusu PWr do rysowania na mapie kampusu (US1.4, NFR-40). Pusta lista,
+        gdy serwer nie ma jeszcze danych ścieżek.
+      tags: [building]
+      security: []
+      responses:
+        '429': {$ref: '#/components/responses/TooManyRequests'}
+        '200':
+          description: Odcinki ścieżek dostosowanych i źródło danych.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AccessiblePathList'}
+        '4XX': {$ref: '#/components/responses/ClientError'}
   /submissions:
     get:
       operationId: listSubmissions
@@ -189,6 +212,8 @@ paths:
         Bez tokenu i dla Odwiedzającego tylko zgłoszenia przyjęte do mapy i karty budynku (US1.3, US2.2, BR-6).
         Zbierający z `mine=true` dostaje własne zgłoszenia w każdym statusie, odrzucone z powodem odrzucenia (US8.1).
         Zgłoszenie z nieczytelną zapisaną treścią jest pomijane na liście.
+        Lista ma strony w kolejności `id`: odpowiedź ma najwyżej `limit` zgłoszeń, a dalszy ciąg wskazuje nagłówek
+        `Link` z `rel="next"` (RFC 8288); jego brak oznacza ostatnią stronę (NFR-34).
       tags: [barrier]
       security: [{}, {keycloak: []}]
       parameters:
@@ -199,10 +224,16 @@ paths:
           description: Tylko zgłoszenia w tych statusach; bez `mine=true` dozwolone jest tylko `ACCEPTED`.
           schema: {type: array, description: "Statusy zgłoszenia.", items: {$ref: '#/components/schemas/SubmissionStatus'}}
         - {name: mine, in: query, description: "Tylko własne zgłoszenia; wymaga roli `COLLECTOR`.", schema: {type: boolean, default: false, description: "Czy tylko własne."}}
+        - {name: limit, in: query, description: "Najwięcej zgłoszeń na stronie.", schema: {type: integer, minimum: 1, maximum: 500, default: 500, description: "Rozmiar strony."}}
+        - {name: after, in: query, description: "Kursor z adresu w nagłówku `Link`; lista zaczyna się po nim.", schema: {type: string, format: uuid, description: "Kursor strony."}}
       responses:
         '429': {$ref: '#/components/responses/TooManyRequests'}
         '200':
           description: Zgłoszenia według filtrów.
+          headers:
+            Link:
+              description: Adres następnej strony z `rel="next"`; brak na ostatniej stronie.
+              schema: {type: string, description: "Nagłówek Link według RFC 8288."}
           content:
             application/json:
               schema: {type: array, description: "Zgłoszenia.", items: {$ref: '#/components/schemas/Submission'}}
@@ -582,7 +613,8 @@ paths:
       summary: Zaproszenie osoby z rolą
       description: >-
         Koordynator wpisuje adres e-mail i rolę; Usługa logowania zakłada konto z tą rolą (US12.1, BR-2). Zaproszenie
-        na adres istniejącego konta dodaje mu rolę, a dotychczasowe role zostają (US12.2, BR-1).
+        na adres istniejącego konta dodaje mu rolę, a dotychczasowe role zostają (US12.2, BR-1). Konto, które ma już
+        tę rolę, daje 409 z `type` równym `urn:dostepny-kampus:rola-juz-nadana` i niczego nie zmienia (US12.2).
       tags: [identity]
       security: [{keycloak: [COORDINATOR]}]
       requestBody:
@@ -600,6 +632,7 @@ paths:
         '400': {$ref: '#/components/responses/BadRequest'}
         '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
         '429': {$ref: '#/components/responses/TooManyRequests'}
 
 components:
@@ -674,8 +707,9 @@ components:
           schema: {$ref: '#/components/schemas/VersionConflictProblem'}
     ReviewConflict:
       description: >-
-        Decyzja nie może zapaść przy tym stanie zgłoszenia: inna wersja niż aktualna, zgłoszenie już rozstrzygnięte albo
-        brak zdjęcia z `photoIds` w magazynie; w odpowiedzi wersja z serwera.
+        Decyzja nie może zapaść przy tym stanie zgłoszenia: inna wersja niż aktualna, zgłoszenie już rozstrzygnięte,
+        brak zdjęcia z `photoIds` w magazynie albo przyjęcie zmiany zgłoszenia, które nie jest już przyjęte, bo przyjęto
+        wcześniej inną zmianę (BR-23); w odpowiedzi wersja z serwera.
       content:
         application/problem+json:
           schema: {$ref: '#/components/schemas/VersionConflictProblem'}
@@ -717,6 +751,17 @@ components:
         description: Zamknięty pierścień; pierwszy i ostatni punkt są równe.
         minItems: 4
         items: {$ref: '#/components/schemas/Position'}
+    GeoLineString:
+      type: object
+      description: Linia GeoJSON.
+      required: [type, coordinates]
+      properties:
+        type: {const: LineString, description: "Typ geometrii."}
+        coordinates:
+          type: array
+          description: Kolejne punkty linii.
+          minItems: 2
+          items: {$ref: '#/components/schemas/Position'}
     GeoPolygon:
       type: object
       description: Wielokąt GeoJSON.
@@ -759,6 +804,12 @@ components:
         name: {type: string, description: "Nazwa budynku; brak pola oznacza budynek bez nazwy (aplikacja pokazuje wtedy sam symbol)."}
         detailLevel: {$ref: '#/components/schemas/DetailLevel'}
         outline: {$ref: '#/components/schemas/GeoArea', description: "Kontur budynku z OpenStreetMap."}
+        entrances:
+          type: array
+          description: >-
+            Wejścia budynku do znaków wejść na mapie, te same co w karcie budynku; wejście główne jest pierwsze.
+            Brak pola oznacza, że serwer nie podał wejść (US1.4, US17.1, BR-24, BR-27).
+          items: {$ref: '#/components/schemas/Entrance'}
     BuildingList:
       type: object
       description: Budynki z atrybucją źródła konturów.
@@ -782,13 +833,17 @@ components:
       allOf:
         - $ref: '#/components/schemas/Building'
         - type: object
-          description: Wejścia budynku.
+          description: Wejścia budynku, w karcie zawsze podane.
           required: [entrances]
           properties:
             entrances:
               type: array
               description: Wejścia budynku; wejście główne jest pierwsze.
               items: {$ref: '#/components/schemas/Entrance'}
+            evacuationExits:
+              type: array
+              description: Wyjścia ewakuacyjne budynku z planów PWr; nie są wejściami budynku. Brak albo pusta lista, gdy dane ich nie podają (US2.6, BR-27).
+              items: {$ref: '#/components/schemas/EvacuationExit'}
 
     EntranceMarking:
       type: string
@@ -801,7 +856,8 @@ components:
       properties:
         id: {type: string, description: "Identyfikator wejścia."}
         buildingSymbol: {type: string, description: "Budynek, do którego prowadzi wejście."}
-        name: {type: string, description: "Opis wejścia na karcie budynku, np. „Wejście bramą od ul. Norwida”; brak, gdy dane nie opisują wejścia."}
+        name: {type: string, description: "Opis wejścia na karcie budynku, np. „Wejście bramą od ul. Norwida”; wejście bez nazwy w danych ma nazwę „Wejście”, a główne z OpenStreetMap — „Wejście główne” (BR-27). Brak przy wejściu `emergency`, `exit` i `garage` bez nazwy w danych."}
+        generatedName: {type: boolean, default: false, description: "Czy nazwę nadał import: „Wejście” albo „Wejście główne” (BR-27). Taka nazwa nie jest nazwą w danych przy wyborze wejścia zalecanego (BR-25)."}
         type: {type: string, description: "Rodzaj wejścia z tagu OpenStreetMap `entrance`, np. `main`, `service`, `emergency`; brak, gdy dane go nie podają."}
         main: {type: boolean, description: "Czy to wejście główne."}
         location: {$ref: '#/components/schemas/GeoPoint', description: "Położenie wejścia."}
@@ -812,6 +868,21 @@ components:
           type: string
           description: Źródło oznaczenia. `IMPORT` — dane PWr albo OpenStreetMap, `WALKTHROUGH` — obchód (US17.3, BR-24).
           enum: [IMPORT, WALKTHROUGH]
+        placeDescription: {type: string, description: "Opis położenia wejścia bez nazwy w danych, który liczy serwer, np. „Od strony C-20, od północy.” albo „Od wschodu.”; stoi obok `approach`, nie zamiast. Brak przy wejściu z nazwą w danych (US2.1, US3.3, BR-27)."}
+        approach: {type: string, description: "Opis dojścia do wejścia z danych, np. „Do wejścia prowadzą schody.”; brak, gdy dane go nie podają (US3.3, BR-27)."}
+        doorWidthCm: {type: integer, minimum: 1, description: "Szerokość drzwi wejścia w centymetrach; brak, gdy dane jej nie podają albo podają 0 (US2.1, US3.3, BR-27)."}
+        source: {$ref: '#/components/schemas/PwrSource', description: "Źródło danych wejścia, gdy wejście jest w warstwie wejść planów PWr; brak przy wejściu tylko z OpenStreetMap (US17.3, BR-24)."}
+    EvacuationExit:
+      type: object
+      description: Wyjście ewakuacyjne budynku z warstwy wejść planów PWr (BR-27).
+      required: [id, location, source]
+      properties:
+        id: {type: string, description: "Identyfikator wyjścia ewakuacyjnego."}
+        location: {$ref: '#/components/schemas/GeoPoint', description: "Położenie wyjścia ewakuacyjnego."}
+        floorId: {type: string, description: "Piętro wyjścia z listy pięter budynku (`Floor.id`); brak, gdy dane go nie podają."}
+        description: {type: string, description: "Opis wyjścia z danych, np. „Wyjście ewakuacyjne z pomieszczenia 41”."}
+        doorWidthCm: {type: integer, minimum: 1, description: "Szerokość drzwi wyjścia w centymetrach; brak, gdy dane jej nie podają albo podają 0 (BR-27)."}
+        source: {$ref: '#/components/schemas/PwrSource', description: "Źródło danych wyjścia ewakuacyjnego."}
 
     LocateResult:
       type: object
@@ -823,7 +894,7 @@ components:
 
     PwrSource:
       type: string
-      description: Źródło danych planów pięter do podpisu na ekranie (NFR-40, decyzja projektu nr 44).
+      description: Źródło danych planów pięter i mapy kampusu PWr do podpisu na ekranie (NFR-40, decyzja projektu nr 44).
       const: Politechnika Wrocławska
     Floor:
       type: object
@@ -895,6 +966,23 @@ components:
               buildingSymbol: {type: string, description: "Budynek z salą."}
               floor: {$ref: '#/components/schemas/Floor', description: "Piętro z salą."}
               room: {$ref: '#/components/schemas/Room', description: "Sala do wyróżnienia na planie piętra."}
+    AccessiblePath:
+      type: object
+      description: Odcinek ścieżki dostosowanej z mapy kampusu PWr (US1.4).
+      required: [id, line]
+      properties:
+        id: {type: string, description: "Identyfikator odcinka z danych PWr."}
+        line: {$ref: '#/components/schemas/GeoLineString', description: "Przebieg odcinka."}
+    AccessiblePathList:
+      type: object
+      description: Odcinki ścieżek dostosowanych ze źródłem danych.
+      required: [source, paths]
+      properties:
+        source: {$ref: '#/components/schemas/PwrSource'}
+        paths:
+          type: array
+          description: Odcinki według identyfikatora.
+          items: {$ref: '#/components/schemas/AccessiblePath'}
 
     VersionConflictProblem:
       description: Błąd konfliktu wersji z wersją zgłoszenia z serwera do ekranu wyboru wersji (US9.3, BR-10).
@@ -938,25 +1026,25 @@ components:
         mezzanine: {type: boolean, default: false, description: "Dopisek „półpiętro” w budynku podstawowym."}
     SubmissionContent:
       type: object
-      description: Treść zgłoszenia ustalana przez składającego.
-      required: [kind, location, photoIds]
+      description: Treść zgłoszenia ustalana przez składającego. Bez `location` serwer przyjmuje tylko zgłoszenie szybkie z `entranceId` (US4.6, BR-8).
+      required: [kind, photoIds]
       properties:
         kind:
           type: string
           description: "`PRECISE` — pomiar precyzyjny, `QUICK` — zgłoszenie szybkie, `ENTRANCE_MARKING` — zmiana oznaczenia wejścia."
           enum: [PRECISE, QUICK, ENTRANCE_MARKING]
-        location: {$ref: '#/components/schemas/GeoPoint', description: "Miejsce bariery po pomiarze precyzyjnym albo bieżąca pozycja."}
+        location: {$ref: '#/components/schemas/GeoPoint', description: "Miejsce bariery po pomiarze precyzyjnym albo bieżąca pozycja. Wymagane poza zgłoszeniem szybkim z `entranceId`, w którym serwer bierze punkt wejścia zamiast podanego (BR-8)."}
         accuracyMeters: {type: number, format: double, minimum: 0, maximum: 10000, description: "Dokładność pozycji w metrach (US6.1)."}
         manualCorrection: {type: boolean, default: false, description: "Oznaczenie „korekta ręczna” (US6.3, US6.4)."}
-        buildingSymbol: {type: string, maxLength: 16, description: "Budynek; brak to „poza budynkiem” (BR-G2). W zgłoszeniu szybkim ustala go serwer z konturu (BR-14)."}
-        floor: {$ref: '#/components/schemas/SubmissionFloor', description: "Piętro; w budynku wymagane przy pomiarze precyzyjnym (BR-7), w zgłoszeniu szybkim może być puste (BR-14)."}
+        buildingSymbol: {type: string, maxLength: 16, description: "Budynek; brak to „poza budynkiem” (BR-G2). W zgłoszeniu szybkim ustala go serwer z konturu, a przy `entranceId` z wejścia (BR-14); przy wejściu kilku budynków podany symbol wybiera budynek."}
+        floor: {$ref: '#/components/schemas/SubmissionFloor', description: "Piętro; w budynku wymagane przy pomiarze precyzyjnym (BR-7), w zgłoszeniu szybkim może być puste, a przy `entranceId` serwer bierze piętro wejścia (BR-14)."}
         barrierGroup: {$ref: '#/components/schemas/BarrierGroup', description: "Grupa barier; w zgłoszeniu szybkim zamiast typu bariery (US4.3)."}
         barrierType: {$ref: '#/components/schemas/BarrierType', description: "Typ bariery; wymagany przy pomiarze precyzyjnym (BR-7)."}
         severity: {$ref: '#/components/schemas/Severity', description: "Uciążliwość; wymagana przy pomiarze precyzyjnym poza „bariera usunięta” (BR-7, BR-19)."}
         description: {type: string, maxLength: 2000, description: "Opis; obowiązkowy przy TB-29 „inna bariera” (US7.3)."}
         replacesSubmissionId: {type: string, format: uuid, description: "Zgłoszenie przyjęte, które ta zmiana zastąpi po przyjęciu (BR-18)."}
         barrierRemoved: {type: boolean, default: false, description: "Oznaczenie „bariera usunięta”; wymaga `replacesSubmissionId` (US8.4, BR-19)."}
-        entranceId: {type: string, maxLength: 64, description: "Wejście w zmianie oznaczenia wejścia (BR-24) albo w zgłoszeniu szybkim z „Zgłoś barierę przy wejściu” (US4.6)."}
+        entranceId: {type: string, maxLength: 64, description: "Wejście w zmianie oznaczenia wejścia (BR-24) albo w zgłoszeniu szybkim z „Zgłoś barierę przy wejściu” (US4.6); nieznane wejście w zgłoszeniu szybkim daje 400."}
         entranceMarking: {type: string, enum: [ACCESSIBLE, INACCESSIBLE], description: "Nowe oznaczenie wejścia w zmianie oznaczenia wejścia (US17.2)."}
         photoIds:
           type: array
@@ -988,8 +1076,9 @@ components:
         - $ref: '#/components/schemas/SubmissionContent'
         - type: object
           description: Dane nadane przez serwer.
-          required: [id, version, status, createdAt]
+          required: [id, version, status, createdAt, location]
           properties:
+            location: {$ref: '#/components/schemas/GeoPoint', description: "Miejsce zgłoszenia zapisane przez serwer, przy wejściu punkt wejścia (BR-8)."}
             id: {type: string, format: uuid, description: "Identyfikator zgłoszenia."}
             version: {type: integer, minimum: 1, description: "Wersja zgłoszenia; rośnie po każdej zapisanej edycji (BR-3)."}
             status: {$ref: '#/components/schemas/SubmissionStatus'}
@@ -1148,7 +1237,7 @@ components:
       description: Zmiany z serwera od poprzedniego pobrania.
       required: [cursor, submissions, entrances, inspectionMarkers]
       properties:
-        cursor: {type: string, description: "Znacznik do parametru `since` w następnym pobraniu."}
+        cursor: {type: string, description: "Znacznik do parametru `since` w następnym pobraniu. Zmiany z kilku minut przed znacznikiem przychodzą w następnym pobraniu ponownie; telefon zapisuje je bez skutku."}
         submissions: {type: array, description: "Własne zgłoszenia oraz zgłoszenia przyjęte i archiwalne.", items: {$ref: '#/components/schemas/Submission'}}
         entrances: {type: array, description: "Wejścia ze zmienionym oznaczeniem wejścia.", items: {$ref: '#/components/schemas/Entrance'}}
         inspectionMarkers: {type: array, description: "Dla roli `COLLECTOR` znaczniki wszystkich Zbierających, także cofnięte (US15.2); dla innych ról pusta lista.", items: {$ref: '#/components/schemas/InspectionMarker'}}

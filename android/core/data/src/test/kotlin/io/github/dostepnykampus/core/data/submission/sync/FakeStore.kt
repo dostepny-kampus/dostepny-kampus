@@ -51,6 +51,9 @@ internal class FakeStore : PendingSubmissionDao {
             .filterNot { it.submission.isRefused }
             .sortedWith(compareBy({ it.submission.savedAtMillis }, { it.submission.id }))
 
+    override suspend fun belongsToAnotherAccount(id: String, owner: String): Boolean =
+        rows.any { it.submission.id == id && it.submission.ownerSub != owner }
+
     override suspend fun markCreated(id: String) {
         created.add(id)
         rows.replaceAll { item ->
@@ -62,6 +65,12 @@ internal class FakeStore : PendingSubmissionDao {
     override suspend fun markRefused(id: String) {
         rows.replaceAll { item ->
             if (item.submission.id == id) item.copy(submission = item.submission.copy(isRefused = true)) else item
+        }
+    }
+
+    override suspend fun markQueued(id: String) {
+        rows.replaceAll { item ->
+            if (item.submission.id == id) item.copy(submission = item.submission.copy(isRefused = false)) else item
         }
     }
 

@@ -10,9 +10,9 @@ import io.github.dostepnykampus.core.model.GeoPolygon
 import io.github.dostepnykampus.core.model.room.Room
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.room.RoomList
+import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
-import io.github.dostepnykampus.feature.map.plan.ShownPlan
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -33,9 +33,9 @@ class MapStylePlanTest {
         val expected =
             listOf(
                 """{"floor":"P0","kind":"outline"}""",
-                """{"floor":"P0","kind":"room","category":"ELEVATOR"}""",
-                """{"floor":"P0","kind":"room","category":"CORRIDOR"}""",
-                """{"floor":"P0","kind":"sign","image":"znak planu: ELEVATOR"}""",
+                """{"floor":"P0","kind":"room","category":"ELEVATOR","room_id":"0"}""",
+                """{"floor":"P0","kind":"room","category":"CORRIDOR","room_id":"1"}""",
+                """{"floor":"P0","kind":"sign","image":"znak planu: ELEVATOR","room_id":"0"}""",
             )
         assertEquals(expected, parts.map(JsonElement::toString), "Obiekty planu nie mają piętra i rodzaju")
     }
@@ -69,6 +69,24 @@ class MapStylePlanTest {
         assertEquals(planFilter(floor = null, kind = "sign"), layer.getValue("filter"), "Znaki planu widać bez piętra")
     }
 
+    /** Znak planu rośnie z powiększeniem: 20 dp przy 17, 24 dp przy 18, 28 dp od 19, liniowo między progami. */
+    @Test
+    fun growsSignsWithZoom() {
+        val layout = layers().getValue(PLAN_SIGNS_LAYER).part("layout")
+        val size = """["interpolate",["linear"],["zoom"],17.0,${20.0 / 28},18.0,${24.0 / 28},19.0,1.0]"""
+        assertEquals(size, layout.getValue("icon-size").toString(), "Rozmiar znaku planu nie zależy od powiększenia")
+        assertEquals(28.0, PLAN_SIGN_DP, "Obraz znaku planu nie ma największego rozmiaru")
+    }
+
+    /** Winda i toaleta dostosowana mają pierwszeństwo przed schodami: niższy klucz kolejności. */
+    @Test
+    fun putsLiftAndToiletAboveStairs() {
+        val layout = layers().getValue(PLAN_SIGNS_LAYER).part("layout")
+        val stairs = planSignImage(RoomCategory.STAIRCASE)
+        val order = """["case",["==",["get","image"],"$stairs"],1,0]"""
+        assertEquals(order, layout.getValue("symbol-sort-key").toString(), "Schody nie ustępują windzie i toalecie")
+    }
+
     @Test
     fun colorsRoomsByCategory() {
         val layers = layers()
@@ -88,7 +106,35 @@ class MapStylePlanTest {
                 RoomCategory.OTHER to "#E1E6E8",
             )
         assertEquals(expected, colors, "Kolor grupy funkcji nie pochodzi z tokenów")
-        assertEquals("#6A7579", layers.paint(PLAN_OUTLINE_LAYER).text("line-color"), "Obrys nie ma koloru ściany")
+        val outline = layers.paint(PLAN_OUTLINE_LAYER).text("line-color")
+        assertEquals("#004E5E", outline, "Ściana piętra nie ma barwy konturu budynku z planem")
+    }
+
+    /** Ściana piętra to jedna linia 2,4 dp. Wymagania: US16.1, NFR-21 */
+    @Test
+    fun drawsOneFloorWall() {
+        val paint = layers().paint(PLAN_OUTLINE_LAYER)
+        val width = paint.getValue("line-width").jsonPrimitive
+        assertEquals(2.4, width.double, "Ściana piętra nie ma 2,4 dp")
+    }
+
+    /** Ściany pomieszczeń mają 0,75 dp przy powiększeniu 17 i rosną liniowo do 1,5 dp przy 20. Wymagania: US16.1 */
+    @Test
+    fun growsRoomWallsWithZoom() {
+        val width = layers().paint(PLAN_WALLS_LAYER).getValue("line-width").toString()
+        val expected = """["interpolate",["linear"],["zoom"],17.0,0.75,20.0,1.5]"""
+        assertEquals(expected, width, "Grubość ścian pomieszczeń nie zależy od powiększenia")
+    }
+
+    /** Pod pomieszczeniami leży ściana piętra w barwie korytarza, więc szczeliny nie pokazują podkładu. */
+    @Test
+    fun fillsFloorUnderRooms() {
+        val layers = layers()
+        val floor = layers.getValue(PLAN_FLOOR_LAYER)
+        assertEquals("#FFFFFF", layers.paint(PLAN_FLOOR_LAYER).text("fill-color"), "Tło piętra nie ma barwy korytarza")
+        assertEquals(planFilter(floor = null, kind = "outline"), floor.getValue("filter"), "Tło piętra bez piętra")
+        val order = planLayers(TOKENS).map { it.text("id") }
+        assertEquals(0, order.indexOf(PLAN_FLOOR_LAYER), "Tło piętra nie leży pod pomieszczeniami")
     }
 
     @Test
@@ -107,13 +153,68 @@ class MapStylePlanTest {
         val style = style(plan)
         val layers = style.items("layers").associate { it.jsonObject.text("id") to it.jsonObject }
 
-        val filters = listOf(PLAN_ROOMS_LAYER, PLAN_OUTLINE_LAYER).map { layers.getValue(it).getValue("filter") }
+        val shown = listOf(PLAN_ROOMS_LAYER, PLAN_OUTLINE_LAYER, PLAN_FLOOR_LAYER)
+        val filters = shown.map { layers.getValue(it).getValue("filter") }
         val sources = style.getValue("sources").jsonObject
         val source = sources.getValue(PLAN_SOURCE).jsonObject.getValue("data")
+        val outline = planFilter(floor = "P1", kind = "outline")
         assertEquals(
-            listOf(planFilter(floor = "P1", kind = "room"), planFilter(floor = "P1", kind = "outline"), 2),
+            listOf(planFilter(floor = "P1", kind = "room"), outline, outline, 2),
             filters + source.jsonObject.items("features").size,
             "Plan nie pokazuje wybranego piętra z jego obiektami",
+        )
+    }
+
+    /**
+     * Wiersz: wyróżniona sala ma nad ścianami wypełnienie `p_wybrana` i kontur `p_wybrana_kontur` grubszy od ściany
+     * piętra, więc widać ją nie tylko po kolorze.
+     * Scenariusz (częściowo): szukanie-sali.feature:
+     *   Wyszukanie sali po budynku i numerze w różnym zapisie
+     */
+    @Test
+    fun outlinesChosenRoom() {
+        val layers = planLayers(TOKENS, floor = "P1", room = "7")
+        val ids = layers.map { it.text("id") }
+        val byId = layers.associateBy { it.text("id") }
+        val outline = byId.paint(PLAN_CHOSEN_OUTLINE_LAYER)
+        assertEquals(
+            listOf(ids.indexOf(PLAN_WALLS_LAYER) + 1, "#8FD3EA", "#001F27", true),
+            listOf(
+                ids.indexOf(PLAN_CHOSEN_LAYER),
+                byId.paint(PLAN_CHOSEN_LAYER).text("fill-color"),
+                outline.text("line-color"),
+                outline.getValue("line-width").jsonPrimitive.double > 2.4,
+            ),
+            "Wyróżnienie sali nie leży nad ścianami albo nie ma barw i grubego konturu",
+        )
+    }
+
+    /** Styl mapy wyróżnia salę z planu, a plan bez sali nie wyróżnia żadnej. Wymagania: US18.1 */
+    @Test
+    fun showsChosenRoomOfPlan() {
+        val rooms = mapOf("P1" to plan(RoomCategory.CLASSROOM))
+        val plan = ShownPlan(building = "A", floors = emptyList(), floor = "P1", rooms = rooms, room = "0")
+        val filters =
+            listOf(plan, plan.copy(room = null)).map { shown ->
+                val layers = style(shown).items("layers").associate { it.jsonObject.text("id") to it.jsonObject }
+                layers.getValue(PLAN_CHOSEN_LAYER).getValue("filter")
+            }
+        assertEquals(
+            listOf(chosenRoomFilter(floor = "P1", room = "0"), chosenRoomFilter(floor = "P1", room = null)),
+            filters,
+            "Styl nie wyróżnia sali planu albo wyróżnia ją bez sali w planie",
+        )
+    }
+
+    /** Filtr wyróżnienia bierze identyfikator sali jako literał, a bez sali nie przepuszcza niczego. */
+    @Test
+    fun filtersChosenRoomById() {
+        val chosen = chosenRoomFilter(floor = "P1", room = """["get","x"]""").jsonArray
+        val none = chosenRoomFilter(floor = "P1", room = null).jsonArray
+        assertEquals(
+            listOf("""["==",["get","room_id"],["literal","[\"get\",\"x\"]"]]""", """["==",["get","room_id"],false]"""),
+            listOf(chosen.last().toString(), none.last().toString()),
+            "Identyfikator sali nie trafił do filtra jako literał albo filtr bez sali coś przepuszcza",
         )
     }
 
@@ -171,6 +272,9 @@ class MapStylePlanTest {
                 elevator = "#A7C0C9",
                 toilet = "#F2F5F6",
                 wall = "#6A7579",
+                floorWall = "#004E5E",
+                chosen = "#8FD3EA",
+                chosenOutline = "#001F27",
             )
     }
 }

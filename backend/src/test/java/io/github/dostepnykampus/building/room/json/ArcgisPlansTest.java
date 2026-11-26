@@ -11,11 +11,14 @@ import com.sun.net.httpserver.HttpServer;
 import io.github.dostepnykampus.building.room.PlanEntrance;
 import io.github.dostepnykampus.building.room.PlanFloor;
 import io.github.dostepnykampus.building.room.PlanRoom;
+import io.github.dostepnykampus.building.room.PlanSource;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -30,7 +33,7 @@ import tools.jackson.databind.json.JsonMapper;
  * Klient usługi ArcGIS zamienia wymyśloną odpowiedź usługi na piętra i pomieszczenia
  * z konturem, numerem i funkcją; przekroczenie limitu czasu kończy odczyt wyjątkiem.
  *
- * <p>Wymagania: US16, US18, NFR-40</p>
+ * <p>Wymagania: US16, US18, NFR-40, BR-24</p>
  *
  * @since 0.1.0
  */
@@ -151,9 +154,141 @@ final class ArcgisPlansTest {
                     )
                 ),
                 new CountDownLatch(0),
-                url -> new ArcgisPlans(JsonMapper.builder().build()).entrances(url, 2)
+                url -> new ArcgisPlans(JsonMapper.builder().build()).entrances(
+                    new PlanSource.Layer(url, 2), ArcgisPlansTest.emptyCampus(url)
+                )
             ),
-            Matchers.contains(new PlanEntrance("T.X.P0", point))
+            Matchers.contains(
+                new PlanEntrance("T.X.P0", point, "NO_DATA", null, null, null, false)
+            )
+        );
+    }
+
+    @Test
+    void readsEntranceMarkingNoteAndDoorWidth() throws IOException {
+        MatcherAssert.assertThat(
+            "Wpisy warstwy wejść nie dały oznaczenia, nazwy, opisu, szerokości i wyjścia",
+            ArcgisPlansTest.served(
+                exchange -> ArcgisPlansTest.send(
+                    exchange,
+                    String.format(
+                        "{\"features\":[%s]}",
+                        String.join(
+                            ",",
+                            ArcgisPlansTest.entrance(
+                                "\"Tak\"", "120", "\"Wejście Cesarskie. Od ul. Wybrzeże.\""
+                            ),
+                            ArcgisPlansTest.entrance("\"Nie\"", "0", "null"),
+                            ArcgisPlansTest.entrance(
+                                "\"Tak\"", "\"90\"", "\"Wyjście ewakuacyjne z pomieszczenia 41\""
+                            ),
+                            ArcgisPlansTest.entrance(
+                                "\"?\"", "null", "\"Do wejścia prowadzą schody.\""
+                            )
+                        )
+                    )
+                ),
+                new CountDownLatch(0),
+                url -> new ArcgisPlans(JsonMapper.builder().build())
+                    .entrances(new PlanSource.Layer(url, 2), ArcgisPlansTest.emptyCampus(url))
+                    .stream()
+                    .map(ArcgisPlansTest::describe).toList()
+            ),
+            Matchers.contains(
+                "ACCESSIBLE|Wejście Cesarskie|Od ul. Wybrzeże.|120|false",
+                "INACCESSIBLE|null|null|null|false",
+                "ACCESSIBLE|Wyjście ewakuacyjne|Wyjście ewakuacyjne z pomieszczenia 41|90|true",
+                "NO_DATA|null|Do wejścia prowadzą schody.|null|false"
+            )
+        );
+    }
+
+    @Test
+    void takesNoteAndDoorWidthFromCampusLayerAtSamePoint() throws IOException {
+        final HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
+        server.createContext(
+            ArcgisPlansTest.QUERY,
+            exchange -> ArcgisPlansTest.send(
+                exchange,
+                String.format(
+                    "{\"features\":[%s]}",
+                    String.join(
+                        ",",
+                        ArcgisPlansTest.bare("17.1", "\"Tak\""),
+                        ArcgisPlansTest.bare("17.2", "\"Nie\""),
+                        ArcgisPlansTest.bare("17.3", "\"Tak\"")
+                    )
+                )
+            )
+        );
+        server.createContext(
+            "/Kampus/FeatureServer/29/query",
+            exchange -> ArcgisPlansTest.send(
+                exchange,
+                String.format(
+                    "{\"features\":[%s]}",
+                    String.join(
+                        ",",
+                        ArcgisPlansTest.entrance("\"Nie\"", "100", "\"Wejście \\\"C\\\"\""),
+                        ArcgisPlansTest.entrance(
+                            "\"Tak\"", "90", "\"Wyjście ewakuacyjne z pomieszczenia 41\""
+                        ).replace("17.1", "17.2")
+                    )
+                )
+            )
+        );
+        server.start();
+        try {
+            final String root = String.format("http://localhost:%d", server.getAddress().getPort());
+            MatcherAssert.assertThat(
+                "Wejście nie wzięło uwag i szerokości z warstwy kampusu w tym samym punkcie",
+                new ArcgisPlans(JsonMapper.builder().build()).entrances(
+                    new PlanSource.Layer(root.concat("/FeatureServer"), 2),
+                    new PlanSource.Layer(root.concat("/Kampus/FeatureServer"), 29)
+                ).stream().map(ArcgisPlansTest::describe).toList(),
+                Matchers.contains(
+                    "ACCESSIBLE|Wejście \"C\"|null|100|false",
+                    String.join(
+                        "|", "INACCESSIBLE", "Wyjście ewakuacyjne",
+                        "Wyjście ewakuacyjne z pomieszczenia 41", "90", "true"
+                    ),
+                    "ACCESSIBLE|null|null|null|false"
+                )
+            );
+        } finally {
+            server.stop(0);
+        }
+    }
+
+    @Test
+    void readsDataEditDateOfLayerInWarsawTime() throws IOException {
+        MatcherAssert.assertThat(
+            "Data edycji warstwy nie wzięła daty edycji danych w strefie Warszawy",
+            ArcgisPlansTest.edited(
+                String.join(
+                    "", "{\"editingInfo\":{\"lastEditDate\":1700000000000,",
+                    "\"dataLastEditDate\":1793748600000}}"
+                )
+            ),
+            Matchers.equalTo(Optional.of(LocalDate.of(2026, 11, 4)))
+        );
+    }
+
+    @Test
+    void readsLastEditDateWithoutDataEditDate() throws IOException {
+        MatcherAssert.assertThat(
+            "Data edycji warstwy bez daty edycji danych nie wzięła daty ostatniej edycji",
+            ArcgisPlansTest.edited("{\"editingInfo\":{\"lastEditDate\":1793748600000}}"),
+            Matchers.equalTo(Optional.of(LocalDate.of(2026, 11, 4)))
+        );
+    }
+
+    @Test
+    void givesNoEditDateWithoutEditingInfo() throws IOException {
+        MatcherAssert.assertThat(
+            "Warstwa bez informacji o edycji dała datę edycji",
+            ArcgisPlansTest.edited("{\"name\":\"Wejscia\"}"),
+            Matchers.equalTo(Optional.empty())
         );
     }
 
@@ -195,6 +330,20 @@ final class ArcgisPlansTest {
         );
     }
 
+    private static Optional<LocalDate> edited(final String body) throws IOException {
+        final HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
+        server.createContext("/FeatureServer/2", exchange -> ArcgisPlansTest.send(exchange, body));
+        server.start();
+        try {
+            return new ArcgisPlans(JsonMapper.builder().build()).edited(
+                String.format("http://localhost:%d/FeatureServer", server.getAddress().getPort()),
+                2
+            );
+        } finally {
+            server.stop(0);
+        }
+    }
+
     private static List<PlanRoom> rooms() throws IOException {
         return ArcgisPlansTest.read(
             String.format(
@@ -207,6 +356,35 @@ final class ArcgisPlansTest {
                     "{\"geometry\":null,\"properties\":{\"Pietro\":\"T.X.P0\"}}"
                 )
             )
+        );
+    }
+
+    private static String entrance(final String adapted, final String width, final String note) {
+        return String.join(
+            "",
+            "{\"geometry\":{\"type\":\"Point\",\"coordinates\":[17.1,51.1]},",
+            "\"properties\":{\"Pietro\":\"T.X.P0\",\"Czy_dostos\":", adapted,
+            ",\"Szerokosc\":", width, ",\"Uwagi\":", note, ",\"Budynek\":\"X\"}}"
+        );
+    }
+
+    private static String bare(final String longitude, final String adapted) {
+        return String.join(
+            "",
+            "{\"geometry\":{\"type\":\"Point\",\"coordinates\":[", longitude, ",51.1]},",
+            "\"properties\":{\"Pietro\":\"T.X.P0\",\"Czy_dostos\":", adapted,
+            ",\"Budynek\":\"X\"}}"
+        );
+    }
+
+    private static PlanSource.Layer emptyCampus(final String url) {
+        return new PlanSource.Layer(url.replace("/FeatureServer", "/Pusty/FeatureServer"), 29);
+    }
+
+    private static String describe(final PlanEntrance entry) {
+        return String.join(
+            "|", entry.marking(), String.valueOf(entry.name()), String.valueOf(entry.approach()),
+            String.valueOf(entry.doorWidthCm()), String.valueOf(entry.evacuationExit())
         );
     }
 
@@ -269,6 +447,10 @@ final class ArcgisPlansTest {
     ) throws IOException {
         final HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
         server.createContext(ArcgisPlansTest.QUERY, handler);
+        server.createContext(
+            "/Pusty/FeatureServer/29/query",
+            exchange -> ArcgisPlansTest.send(exchange, "{\"features\":[]}")
+        );
         server.start();
         try {
             return call.apply(

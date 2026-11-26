@@ -7,7 +7,7 @@ $ekran_poczatek()
 $naglowek("Zgłoś, że bariery nie ma")
 $ramka()
 <b>niesprawna winda</b>
-<i>[budynek]</i>, piętro <i>[piętro]</i>
+<i>[budynek]</i>, <i>[piętro]</i>
 <i>[miejsce]</i>
 $obraz("zdjęcie z przyjętego zgłoszenia")
 Sprawdzone <i>[data]</i>

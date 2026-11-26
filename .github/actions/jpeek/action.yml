@@ -1,0 +1,56 @@
+# Dostępny Kampus
+# Author: Vladyslav Yevkov
+# Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+
+name: jpeek
+description: jpeek i nowszy ASM w katalogu tymczasowym zadania jako jpeek.jar i asm.jar; pliki pochodzą z pamięci podręcznej, a z Maven Central tylko przy braku wpisu dla tych wersji.
+
+inputs:
+  zapisz:
+    description: Zapisz pobrane pliki w pamięci podręcznej; tylko push do gałęzi sprintu, żeby PR i kolejka nie wypierały wpisu
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - id: wersje
+      shell: bash
+      run: |
+        {
+          echo "jpeek=0.32.3"
+          # jpeek ma w środku ASM bez obsługi klas Javy 25; nowszy ASM stoi w ścieżce klas przed nim.
+          echo "asm=9.10.1"
+        } >> "${GITHUB_OUTPUT}"
+    - id: pamiec
+      uses: actions/cache/restore@v6.1.0
+      with:
+        path: |
+          ${{ runner.temp }}/jpeek.jar
+          ${{ runner.temp }}/asm.jar
+        key: jpeek-${{ steps.wersje.outputs.jpeek }}-asm-${{ steps.wersje.outputs.asm }}
+    - name: Pobierz jpeek i ASM
+      if: steps.pamiec.outputs.cache-hit != 'true'
+      shell: bash
+      working-directory: ${{ runner.temp }}
+      env:
+        JPEEK_VERSION: ${{ steps.wersje.outputs.jpeek }}
+        JPEEK_SHA256: 34e138f402c99386c36477300e8c9e2df90014ffb544855b47b03caa975c8598
+        ASM_VERSION: ${{ steps.wersje.outputs.asm }}
+        ASM_SHA256: ed825d10ab1399c8c0cb669e688cf0c8c82629b4c8399b58352b68e92ca10fcb
+      run: |
+        jar="jpeek-${JPEEK_VERSION}-jar-with-dependencies.jar"
+        curl -sSfLO --retry 5 --retry-all-errors --retry-delay 10 "https://repo1.maven.org/maven2/org/jpeek/jpeek/${JPEEK_VERSION}/${jar}"
+        echo "${JPEEK_SHA256}  ${jar}" | sha256sum --check --strict
+        mv "${jar}" jpeek.jar
+        asm="asm-${ASM_VERSION}.jar"
+        curl -sSfLO --retry 5 --retry-all-errors --retry-delay 10 "https://repo1.maven.org/maven2/org/ow2/asm/asm/${ASM_VERSION}/${asm}"
+        echo "${ASM_SHA256}  ${asm}" | sha256sum --check --strict
+        mv "${asm}" asm.jar
+    - if: steps.pamiec.outputs.cache-hit != 'true' && inputs.zapisz == 'true'
+      uses: actions/cache/save@v6.1.0
+      with:
+        path: |
+          ${{ runner.temp }}/jpeek.jar
+          ${{ runner.temp }}/asm.jar
+        key: jpeek-${{ steps.wersje.outputs.jpeek }}-asm-${{ steps.wersje.outputs.asm }}

@@ -45,7 +45,7 @@ private val hasDate =
         node.config.getOrNull(SemanticsProperties.Text)?.any { DATE_TEXT.containsMatchIn(it.text) } == true
     }
 
-/** Data i źródło oznaczenia wejść na V2 Karta budynku i V3 Którędy wejść (PW-3). Wymagania: US17.3, BR-24 */
+/** Data i źródło oznaczenia wejść na V2 Karta budynku (PW-3). Wymagania: US17.3, BR-24 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class EntranceAssessmentTextTest {
@@ -54,8 +54,8 @@ class EntranceAssessmentTextTest {
 
     /**
      * Wiersz: V2, wszystkie wejścia z importu z tym samym dniem → jeden wiersz „Z map i opisów, stan z 1.10.2026”
-     *   nad grupą „Wejścia”, import. Przy wejściach nie ma osobnej daty ani źródła.
-     * Scenariusz: oznaczenie-wejscia.feature: Wspólna data i źródło stoją raz nad listą wejść
+     *   pod listą wejść, import. Przy wejściach nie ma osobnej daty ani źródła.
+     * Scenariusz: oznaczenie-wejscia.feature: Wspólna data i źródło stoją raz pod listą wejść
      *
      * Wymagania: US17.3, BR-24
      */
@@ -65,7 +65,7 @@ class EntranceAssessmentTextTest {
         compose.onNodeWithText(IMPORT_TEXT).assertExists()
         assertEquals(1, datedCount())
         assertEquals(1, compose.onAllNodesWithText(SOURCE_IMPORT, substring = true).fetchSemanticsNodes().size)
-        assertTrue(top(IMPORT_TEXT) < top(GROUP_V2))
+        assertTrue(isBelowEntrances(IMPORT_TEXT))
     }
 
     /**
@@ -80,11 +80,11 @@ class EntranceAssessmentTextTest {
         compose.onNodeWithText(WALK_TEXT).assertExists()
         assertEquals(1, datedCount())
         compose.onNodeWithText("Z map i opisów", substring = true).assertDoesNotExist()
-        assertTrue(top(WALK_TEXT) < top(GROUP_V2))
+        assertTrue(isBelowEntrances(WALK_TEXT))
     }
 
     /**
-     * Wiersz: V2, wejścia z różnym źródłem → napis przy każdym wejściu, nad grupą go nie ma.
+     * Wiersz: V2, wejścia z różnym źródłem → napis przy każdym wejściu, pod listą go nie ma.
      * Scenariusz: oznaczenie-wejscia.feature: Różne źródła stoją przy każdym wejściu
      *
      * Wymagania: US17.3, BR-24
@@ -96,7 +96,7 @@ class EntranceAssessmentTextTest {
     }
 
     /**
-     * Wiersz: V2, wejścia z tym samym źródłem i różnym dniem → napis przy każdym wejściu, nad grupą go nie ma, import.
+     * Wiersz: V2, wejścia z tym samym źródłem i różnym dniem → napis przy każdym wejściu, pod listą go nie ma, import.
      *
      * Wymagania: US17.3, BR-24
      */
@@ -104,31 +104,6 @@ class EntranceAssessmentTextTest {
     fun showsCardPerDay() {
         showCard(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, IMPORT, NEXT_DAY)))
         assertPerEntrance(first = IMPORT_TEXT, second = NEXT_TEXT, group = GROUP_V2)
-    }
-
-    /**
-     * Wiersz: V3, wszystkie wejścia z importu z tym samym dniem → jeden wiersz „Z map i opisów, stan z 1.10.2026”
-     *   nad wejściami, import.
-     *
-     * Wymagania: US17.3, BR-24
-     */
-    @Test
-    fun showsListCommonRow() {
-        showVisit(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, IMPORT, IMPORT_DAY)))
-        compose.onNodeWithText(IMPORT_TEXT).assertExists()
-        assertEquals(1, datedCount())
-        assertTrue(top(IMPORT_TEXT) < top(GROUP_V3))
-    }
-
-    /**
-     * Wiersz: V3, wejścia z różnym źródłem → napis przy każdym wejściu, nad wejściami go nie ma.
-     *
-     * Wymagania: US17.3, BR-24
-     */
-    @Test
-    fun showsListPerEntrance() {
-        showVisit(listOf(entrance(MAIN, IMPORT, IMPORT_DAY), entrance(SIDE, WALKTHROUGH, WALK_DAY)))
-        assertPerEntrance(first = IMPORT_TEXT, second = WALK_TEXT, group = GROUP_V3)
     }
 
     /**
@@ -143,19 +118,6 @@ class EntranceAssessmentTextTest {
         listOf("stan z", "Sprawdzone").forEach { compose.onNodeWithText(it, substring = true).assertDoesNotExist() }
     }
 
-    /**
-     * Wiersz: V3, wejścia z pliku → brak daty, zdanie „brak danych o wejściach” bez „z datą”, PW-10.
-     *
-     * Wymagania: US17.3
-     */
-    @Test
-    fun omitsListDateForFile() {
-        showVisit(emptyList())
-        compose.onNodeWithText("zobaczyć każde wejście.", substring = true).assertExists()
-        assertEquals(0, datedCount())
-        compose.onNodeWithText("z datą", substring = true).assertDoesNotExist()
-    }
-
     private fun assertPerEntrance(first: String, second: String, group: String) {
         compose.onNodeWithText(first).assertExists()
         compose.onNodeWithText(second).assertExists()
@@ -168,7 +130,6 @@ class EntranceAssessmentTextTest {
             BuildingCardScreen(
                 symbol = SYMBOL,
                 mode = CardMode.Expanded,
-                onCheckEntrances = {},
                 onShowOnMap = {},
                 onBack = {},
                 onClose = {},
@@ -176,16 +137,7 @@ class EntranceAssessmentTextTest {
             )
         }
 
-    private fun showVisit(server: List<Entrance>) =
-        show(server, if (server.isEmpty()) "brak danych o 1 z 1" else null) { viewModel ->
-            EntrancesScreen(symbol = SYMBOL, onShowEntrance = {}, onBack = {}, viewModel = viewModel)
-        }
-
-    private fun show(
-        server: List<Entrance>,
-        awaited: String? = null,
-        screen: @Composable (BuildingCardViewModel) -> Unit,
-    ) {
+    private fun show(server: List<Entrance>, screen: @Composable (BuildingCardViewModel) -> Unit) {
         val viewModel =
             BuildingCardViewModel(
                 symbol = SYMBOL,
@@ -194,11 +146,20 @@ class EntranceAssessmentTextTest {
                 serverEntrances = ServerEntrances { server },
             )
         compose.setContent { DostepnyKampusTheme { screen(viewModel) } }
-        val expected = awaited ?: server.firstOrNull()?.name ?: FILE_ENTRANCE
+        val expected = server.firstOrNull()?.name ?: FILE_ENTRANCE
         compose.waitUntil { compose.onAllNodes(hasText(expected, substring = true)).fetchSemanticsNodes().isNotEmpty() }
     }
 
     private fun datedCount(): Int = compose.onAllNodes(hasDate).fetchSemanticsNodes().size
+
+    private fun isBelowEntrances(row: String): Boolean {
+        val line = compose.onNodeWithText(row).fetchSemanticsNode().boundsInRoot
+        val entrances =
+            listOf(MAIN, SIDE).flatMap { name ->
+                compose.onAllNodes(hasText(name, substring = true)).fetchSemanticsNodes()
+            }
+        return entrances.size >= 2 && entrances.all { node -> node.boundsInRoot.bottom <= line.top }
+    }
 
     private fun top(text: String) = compose.onNodeWithText(text).getUnclippedBoundsInRoot().top
 
@@ -220,7 +181,6 @@ class EntranceAssessmentTextTest {
         const val SIDE = "Boczne"
         const val FILE_ENTRANCE = "Brama"
         const val GROUP_V2 = "Wejścia"
-        const val GROUP_V3 = "Zalecane wejście"
         const val IMPORT_TEXT = "Z map i opisów, stan z 1.10.2026"
         const val NEXT_TEXT = "Z map i opisów, stan z 2.10.2026"
         const val WALK_TEXT = "Sprawdzone na miejscu 5.3.2026"

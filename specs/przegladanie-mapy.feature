@@ -21,6 +21,24 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | c-13  |
       | C-13  |
 
+  @US1.1 @aplikacja
+  Scenariusz: Podpowiedzi budynków od pierwszego znaku symbolu
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
+    Jeżeli wpisze w pole wyszukiwania „A”
+    Wtedy widzi w wynikach wyszukiwania budynki A-1, A-2 i A-10 w tej kolejności
+    Ale nie widzi komunikatu „Nie znaleźliśmy budynku”
+
+  @US1.1 @aplikacja
+  Szablon scenariusza: Wyszukanie budynku po nazwie
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
+    Jeżeli wpisze w pole wyszukiwania „<tekst>”
+    Wtedy widzi budynek A-1 „Budynek główny” w wynikach wyszukiwania
+
+    Przykłady:
+      | tekst  |
+      | glow   |
+      | GŁÓWNY |
+
   @US1.2 @aplikacja
   Scenariusz: Mapa i wyszukiwanie działają bez logowania
     Zakładając, że Gość niezalogowany pierwszy raz otwiera aplikację i pomija instrukcję
@@ -51,10 +69,11 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | Odwiedzający       | przyjęte      | jest widoczne       |
 
   @US2.1 @aplikacja
-  Scenariusz: Wejście ma oznaczenie tekstem i ikoną, nie tylko kolorem
+  Scenariusz: Wejście ma oznaczenie znakiem z mapy i słowem, nie tylko kolorem
     Zakładając, że Gość niezalogowany otworzył kartę budynku A-1
     Jeżeli przejrzy listę wejść
-    Wtedy każde z 6 wejść ma napis „dostępne” albo „niedostępne” i ikonę
+    Wtedy każde z 6 wejść ma słowo „dostępne” albo „niedostępne” i znak tego wejścia z mapy
+    Oraz oznaczenie nie ma barwnego tła
     Oraz wejście główne ma napis „niedostępne”
     Oraz oznaczenia wejść da się odróżnić w odcieniach szarości
 
@@ -78,10 +97,44 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     # Dane testowe, a nie stan faktyczny budynku C-13.
     Zakładając, że w danych testowych wejście boczne i wejście od dziedzińca C-13 mają oznaczenie „dostępne”
     Oraz wejście główne C-13 ma oznaczenie „niedostępne”
+    Oraz oba wejścia dostępne mają nazwę w danych
     Oraz wejście boczne jest pierwsze w kolejności z danych
     Jeżeli Gość niezalogowany otworzy kartę budynku C-13
     Wtedy pierwsze jest wejście boczne z napisem „Zalecane”
     Ale wejście od dziedzińca nie ma napisu „Zalecane”
+
+  @US2.1 @BR-25 @aplikacja
+  Scenariusz: Wejścia z jednym oznaczeniem stoją na karcie alfabetycznie
+    # Dane testowe, a nie stan faktyczny budynku C-13.
+    Zakładając, że w danych testowych wejścia C-13 „Wejście "E"”, „Wejście "A"” i „Wejście "C"” mają oznaczenie „niedostępne”
+    Oraz jedno wejście C-13 z oznaczeniem „niedostępne” nie ma nazwy w danych
+    Jeżeli Gość niezalogowany otworzy kartę budynku C-13
+    Wtedy wejścia „niedostępne” stoją w kolejności „Wejście "A"”, „Wejście "C"”, „Wejście "E"”
+    Oraz wejście bez nazwy w danych stoi po nich
+
+  @US2.1 @US3.3 @BR-27 @aplikacja
+  Scenariusz: Wejście bez nazwy w danych ma na karcie opis położenia pod nazwą
+    # Dane testowe, a nie stan faktyczny budynku C-19.
+    Zakładając, że w danych testowych jedyne wejście C-19 z oznaczeniem „dostępne” nie ma nazwy
+    Oraz ma uwagę uczelni „Do wejścia prowadzi rampa.” i drzwi 100 cm
+    Oraz serwer podaje dla niego opis położenia „Od strony C-20, od północy.”
+    Jeżeli Gość niezalogowany otworzy kartę budynku C-19
+    Wtedy pod nagłówkiem stoi zdanie „Zalecane wejście od strony C-20, od północy. Drzwi 100 cm.”
+    Oraz w grupie „Wejścia” to wejście ma nazwę „Wejście”
+    Oraz pod nazwą stoi najpierw „Od strony C-20, od północy.”, a potem „Do wejścia prowadzi rampa.”
+    Jeżeli dotknie wiersza tego wejścia
+    Wtedy wejście na mapie ma podpis „Wejście”
+    Oraz część „Dojście” arkusza wejścia podaje oba opisy w tej samej kolejności
+
+  @BR-25 @aplikacja
+  Scenariusz: Przy kilku wejściach dostępnych bez głównego zalecane jest wejście z nazwą
+    # Dane testowe, a nie stan faktyczny budynku C-13.
+    Zakładając, że w danych testowych dwa wejścia C-13 z planów PWr mają oznaczenie „dostępne” i żadne nie jest główne
+    Oraz pierwsze w kolejności z danych nie ma nazwy w uwagach, więc import nazywa je „Wejście”
+    Oraz drugie ma w uwagach nazwę „Wejście dostosowane”
+    Jeżeli Gość niezalogowany otworzy kartę budynku C-13
+    Wtedy pierwsze jest „Wejście dostosowane” z napisem „Zalecane”
+    Ale wejście „Wejście” nie ma napisu „Zalecane”
 
   @US3.1 @BR-25 @aplikacja
   Scenariusz: Budynek bez wejścia dostępnego nie ma wejścia zalecanego
@@ -89,6 +142,21 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli przejrzy listę wejść
     Wtedy żadne wejście nie ma napisu „Zalecane”
     Oraz lista zaczyna się od wejść z oznaczeniem „niedostępne”
+
+  @US3.1 @US17.1 @aplikacja
+  Scenariusz: Karta budynku bez wejść w danych mówi o braku danych zamiast pustej grupy
+    Zakładając, że budynek A-2 nie ma wejść w danych
+    Jeżeli Gość niezalogowany otworzy kartę budynku A-2
+    Wtedy w grupie „Wejścia” widzi zdanie „Nie mamy jeszcze danych o wejściach do tego budynku.”
+    Ale karta nie mówi, że budynek jest niedostępny
+
+  @US2.1 @US17.1 @aplikacja
+  Scenariusz: Kilka wejść bez oznaczenia i bez nazwy stoi jako jeden wiersz
+    Zakładając, że budynek C-7 ma w danych 3 wejścia bez oznaczenia i bez nazwy
+    Jeżeli Gość niezalogowany otworzy kartę budynku C-7 na całym ekranie
+    Wtedy w grupie „Wejścia” widzi jeden wiersz „3 wejścia” ze znakiem „Brak danych”
+    Oraz pod nim zdanie „Nikt jeszcze nie sprawdził tych wejść.” i jeden odnośnik „Zgłoś barierę przy wejściu”
+    Ale nie widzi trzech jednakowych bloków „Wejście”
 
   @US2.2 @BR-17 @aplikacja
   Scenariusz: Zgłoszenie przyjęte na karcie budynku ma zdjęcie i datę weryfikacji
@@ -101,48 +169,86 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
   Scenariusz: Wejście dostępne najwyżej 3 dotknięcia od mapy
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
     Jeżeli dotknie budynku A-1
-    Oraz wybierze „Sprawdź, którędy wejść”
-    Wtedy widzi wejście dostępne budynku A-1
-    Oraz od mapy wykonał najwyżej 3 dotknięcia
+    Wtedy na karcie budynku A-1 widzi „Wejście dostępne” i zdanie z wejściem zalecanym
+    Oraz od mapy wykonał 1 dotknięcie, czyli nie więcej niż 3
 
-  @US2.8 @aplikacja
-  Szablon scenariusza: Mała karta nad mapą mówi słowami o wejściach
+  # brak pełnego testu: #3645
+  @US2.8 @aplikacja @do-zrobienia
+  Szablon scenariusza: Niska karta nad mapą mówi słowami o wejściach
     Zakładając, że w danych testowych <dane>
     Oraz Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
     Jeżeli dotknie budynku <budynek>
-    Wtedy nad mapą widzi małą kartę budynku <budynek> z napisem „<napis>”
-    Oraz na karcie są „Sprawdź, którędy wejść” i „Zamknij”
+    Wtedy nad mapą widzi kartę budynku <budynek> na niskiej wysokości z napisem „<napis>”
+    Oraz <pod napisem>
+    Oraz w nagłówku karty jest „Zamknij”, a pod kreską wystaje nagłówek „Wejścia”
     Ale na karcie nie ma „Pokaż budynek na mapie”
 
     Przykłady:
-      | budynek | dane                                                 | napis                   |
-      | A-1     | budynek A-1 ma wejście z oznaczeniem „dostępne”      | Wejście dostępne        |
-      | B-8     | wszystkie wejścia B-8 mają oznaczenie „niedostępne”  | Brak wejścia dostępnego |
-      | C-13    | wszystkie wejścia C-13 mają oznaczenie „brak danych” | Brak danych o wejściach |
-      | A-2     | budynek A-2 nie ma wejść w danych                    | Brak danych o wejściach |
-
-  @US2.8 @aplikacja
-  Scenariusz: Z małej karty osoba rozwija opis albo wraca do mapy
-    Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
-    Jeżeli wybierze „Rozwiń opis budynku”
-    Wtedy widzi opis budynku A-1 na całym ekranie bez mapy
-    Oraz po „Wstecz” widzi znowu małą kartę nad mapą
-    Oraz po „Zamknij” widzi mapę bez zaznaczonego budynku
-
-  @US2.8 @US1.4 @NFR-53 @aplikacja
-  Scenariusz: Przy małej karcie budynek jest cały widoczny, a mapą sterują przyciski
-    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
-    Jeżeli dotknie budynku A-1
-    Wtedy cały kontur budynku A-1 i jego wejścia mieszczą się w części mapy nad małą kartą
-    Oraz nad małą kartą są „Powiększ”, „Pomniejsz” i strzałki przesuwania mapy
-    Oraz po „Pomniejsz” mapa się oddala, a mała karta budynku A-1 zostaje otwarta
-    Ale nad małą kartą nie ma pola „Wpisz symbol budynku, np. C-13” ani przełącznika „Mapa” i „Lista budynków”
+      | budynek | dane                                                 | napis                   | pod napisem                                                                             |
+      | A-1     | budynek A-1 ma wejście z oznaczeniem „dostępne”      | Wejście dostępne        | pod napisem stoi zdanie z wejściem zalecanym i przycisk „Pokaż wejście na mapie”        |
+      | B-8     | wszystkie wejścia B-8 mają oznaczenie „niedostępne”  | Brak wejścia dostępnego | pod napisem stoi zdanie, że żadne wejście nie jest dostępne, bez przycisku wypełnionego |
+      | C-13    | wszystkie wejścia C-13 mają oznaczenie „brak danych” | Brak danych o wejściach | na karcie nie ma zdania ani przycisku wypełnionego                                      |
+      | A-2     | budynek A-2 nie ma wejść w danych                    | Brak danych o wejściach | na karcie nie ma zdania ani przycisku wypełnionego                                      |
 
   @US2.8 @NFR-53 @aplikacja
-  Scenariusz: Przy niskiej mapie nad małą kartą nie ma przycisków mapy
+  Scenariusz: Uchwyt zmienia wysokość karty bez przeciągania
     Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
-    Oraz nad małą kartą zostaje mniej niż 300 dp mapy
-    Wtedy nad małą kartą nie ma „Powiększ”, „Pomniejsz” ani strzałek przesuwania mapy
+    Jeżeli dotknie uchwytu karty
+    Wtedy opis budynku A-1 zajmuje cały ekran
+    Oraz pod kreską karty stoi pełny opis budynku A-1
+    Jeżeli znowu dotknie uchwytu karty
+    Wtedy karta wraca na niską wysokość nad mapą
+
+  # brak pełnego testu: #3645
+  @US2.8 @NFR-53 @aplikacja @do-zrobienia
+  Szablon scenariusza: Wystający nagłówek „Wejścia” od razu rozwija kartę
+    Zakładając, że w danych testowych <dane>
+    Oraz Gość niezalogowany dotknął budynku <budynek> na mapie przy zwykłej czcionce
+    Jeżeli dotknie wystającego nagłówka „Wejścia”
+    Wtedy <po rozwinięciu>
+
+    Przykłady:
+      | budynek | dane                                                | po rozwinięciu                                                               |
+      | A-1     | budynek A-1 ma wejścia i plany pięter PWr           | opis budynku A-1 zajmuje cały ekran                                          |
+      | A-2     | budynek A-2 nie ma wejść ani planów pięter w danych | opis budynku A-2 zajmuje cały ekran, a pod krótką treścią jest puste miejsce |
+
+  @US2.8 @NFR-53 @aplikacja
+  Szablon scenariusza: Karta budynku zamyka się na każdej wysokości
+    Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
+    Oraz karta stoi na wysokości „<wysokość>”
+    Jeżeli <czynność>
+    Wtedy widzi mapę bez zaznaczonego budynku
+    Oraz położenie i powiększenie mapy są takie jak w chwili zamknięcia karty
+
+    Przykłady:
+      | wysokość   | czynność                   |
+      | niska      | przeciągnie kartę w dół    |
+      | niska      | dotknie pustej mapy        |
+      | rozwinięta | wybierze „Zamknij”         |
+      | rozwinięta | wybierze „Wstecz” telefonu |
+
+  @US2.8 @NFR-15 @aplikacja
+  Scenariusz: Ponowne dotknięcie „Mapa” w pasku dolnym nie zamyka karty
+    Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
+    Jeżeli dotknie pozycji „Mapa” w pasku dolnym
+    Wtedy nad mapą nadal widzi kartę budynku A-1 na tej samej wysokości
+
+  @US2.8 @US1.4 @NFR-53 @aplikacja
+  Scenariusz: Przy karcie budynek jest cały widoczny, a mapą sterują przyciski
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
+    Oraz cały kontur budynku A-1 jest widoczny na mapie
+    Jeżeli dotknie budynku A-1
+    Wtedy cały kontur budynku A-1 mieści się w części mapy nad kartą
+    Oraz powiększenie mapy jest takie jak przed dotknięciem
+    Oraz nad kartą są „Powiększ”, „Pomniejsz” i strzałki przesuwania mapy
+    Oraz po „Pomniejsz” mapa się oddala, a karta budynku A-1 zostaje otwarta
+    Ale nad kartą nie ma pola „Szukaj budynku, np. C-13” ani przycisku „Pokaż listę”
+
+  @US2.8 @NFR-53 @aplikacja
+  Scenariusz: Przy niskiej mapie nad kartą nie ma przycisków mapy
+    Zakładając, że Gość niezalogowany dotknął budynku A-1 na mapie przy zwykłej czcionce
+    Oraz nad kartą zostaje mniej niż 300 dp mapy
+    Wtedy nad kartą nie ma „Powiększ”, „Pomniejsz” ani strzałek przesuwania mapy
     Oraz po „Zamknij” przyciski mapy wracają
 
   @US2.9 @aplikacja
@@ -151,15 +257,66 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli wybierze budynek A-1
     Wtedy widzi opis budynku A-1 na całym ekranie bez mapy
     Oraz po „Pokaż budynek na mapie” widzi mapę z zaznaczonym budynkiem A-1, a nie listę
-    Oraz przełącznik „Mapa” i „Lista budynków” pamięta wybór „Mapa”
+    Oraz aplikacja pamięta widok mapy, a w wierszu tytułu jest „Pokaż listę”
 
   @US3.1 @aplikacja
   Scenariusz: Brak wejścia dostępnego jest powiedziany wprost
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
     Jeżeli dotknie budynku B-8
-    Oraz wybierze „Sprawdź, którędy wejść”
-    Wtedy widzi zdanie, że budynek B-8 nie ma wejścia dostępnego
-    Ale ekran nie jest pusty i nie pokazuje samego braku wyniku
+    Wtedy na karcie budynku B-8 widzi „Brak wejścia dostępnego” i zdanie, że żadne wejście nie jest dostępne
+    Ale karta nie jest pusta i nie pokazuje samego braku wyniku
+
+  @US2.1 @US2.2 @BR-25 @aplikacja
+  Scenariusz: Bariera przy wejściu zalecanym jest na karcie przy tym wejściu
+    Zakładając, że przy wejściu zalecanym budynku C-13 jest przyjęta bariera „Tylko z pomocą” typu „ciężkie drzwi”
+    Oraz C-13 nie ma innego wejścia dostępnego bez barier
+    Jeżeli Gość niezalogowany otworzy kartę budynku C-13
+    Wtedy to wejście zostaje zalecane, a zdanie pod wierszem o wejściach kończy się „Przy wejściu jest bariera: tylko z pomocą.”
+    Oraz wiersz tego wejścia na liście „Wejścia” ma pod szerokością drzwi „Tylko z pomocą: ciężkie drzwi”
+
+  # brak pełnego testu: #3645
+  @US3.1 @BR-25 @aplikacja @do-zrobienia
+  Szablon scenariusza: Wejście z blokadą nie jest zalecane, a jego oznaczenie zostaje
+    Zakładając, że w budynku C-13 <inne> wejścia dostępnego bez blokady
+    Oraz przy wejściu dostępnym C-13 jest przyjęta bariera „Blokada” typu „wejście zamknięte”
+    Jeżeli Gość niezalogowany otworzy kartę budynku C-13
+    Wtedy wiersz o wejściach mówi „<wiersz>”, a zdanie pod nim „<zdanie>”
+    Oraz wiersz zablokowanego wejścia ma „Dostępne” i „Blokada: wejście zamknięte”, bez „Zalecane”
+
+    Przykłady:
+      | inne      | wiersz                  | zdanie                                 |
+      | jest inne | Wejście dostępne        | Zalecane: »Wejście C«. Drzwi 100 cm.   |
+      | nie ma    | Brak wejścia dostępnego | Jedyne wejście dostępne ma blokadę.    |
+
+  # brak pełnego testu: #3645
+  @US3.1 @BR-25 @aplikacja @do-zrobienia
+  Szablon scenariusza: Wejście bez barier jest zalecane przed wejściem z barierą
+    # Dane testowe, a nie stan faktyczny budynku C-13.
+    Zakładając, że w danych testowych wejście główne i wejście boczne C-13 mają oznaczenie „dostępne”
+    Oraz przy wejściu głównym jest przyjęta bariera „<przy głównym>”, a przy bocznym <przy bocznym>
+    Jeżeli Gość niezalogowany otworzy kartę budynku C-13
+    Wtedy zalecane jest <zalecane>
+    Oraz kolejność pozostałych wejść na liście „Wejścia” się nie zmienia
+
+    Przykłady:
+      | przy głównym   | przy bocznym                         | zalecane                                |
+      | Utrudnienie    | żadnej                               | wejście boczne                          |
+      | Tylko z pomocą | przyjęta bariera „Utrudnienie”       | wejście boczne, bo ma najlżejszą barierę |
+      | Utrudnienie    | przyjęta bariera „Utrudnienie”       | wejście główne                          |
+
+  # @do-zrobienia #3381: brak pełnego testu sceny; położenie i dotyk sprawdzają testy częściowe.
+  @US1.5 @US2.2 @BR-8 @NFR-17 @aplikacja @do-zrobienia
+  Szablon scenariusza: Znak bariery przy wejściu stoi obok znaku wejścia
+    Zakładając, że przy wejściu głównym A-1 są przyjęte bariery „Utrudnienie” i „Blokada” zgłoszone w jego arkuszu
+    Jeżeli Gość niezalogowany otworzy mapę kampusu przy budynku A-1 bez zaznaczonego budynku, w powiększeniu <powiększenie>
+    Wtedy <znak wejścia>, a jeden znak bariery „Blokada” stoi <miejsce>
+    Oraz dotknięcie znaku bariery otwiera arkusz bariery, a dotknięcie widocznego znaku wejścia arkusz wejścia
+    Oraz widoczny znak wejścia ma to samo oznaczenie co bez barier
+
+    Przykłady:
+      | powiększenie | znak wejścia               | miejsce                                                       |
+      | 16           | znaku wejścia nie widać    | w punkcie wejścia                                             |
+      | 18           | znak wejścia jest widoczny | tuż obok znaku wejścia, na zewnątrz ściany, i oba się stykają |
 
   @US1.4 @aplikacja
   Scenariusz: Mapa pokazuje wejścia i ścieżki, a legenda objaśnia znaki słowem
@@ -216,10 +373,119 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
 
   @US3.3 @BR-25 @aplikacja
   Scenariusz: Opis wejścia zalecanego podaje dojście, drzwi i najbliższą windę
-    Zakładając, że Gość niezalogowany otworzył ekran „Którędy wejść” budynku A-1
-    Jeżeli przejrzy opis wejścia zalecanego
-    Wtedy widzi dojście do drzwi, szerokość drzwi i najbliższą windę z przybliżoną odległością od wejścia
-    Oraz przy każdym wejściu dostępnym jest „Pokaż wejście na mapie”
+    Zakładając, że Gość niezalogowany otworzył kartę budynku A-1
+    Jeżeli wybierze „Pokaż wejście na mapie”
+    Wtedy widzi mapę z zaznaczonym wejściem zalecanym i arkusz tego wejścia
+    Oraz arkusz podaje dojście do drzwi, szerokość drzwi i najbliższą windę z przybliżoną odległością od wejścia
+    Ale arkusz nie pokazuje innych wejść budynku
+
+  # @do-zrobienia #3052: plan piętra nie ma jeszcze klatek schodowych przy windzie.
+  @US3.3 @US16.3 @BR-25 @aplikacja @do-zrobienia
+  Szablon scenariusza: Część „Za drzwiami” podaje najbliższą windę i jej piętra
+    Zakładając, że najbliższa winda wejścia zalecanego A-1 na planie PWr: <winda>
+    Jeżeli Gość niezalogowany otworzy arkusz tego wejścia
+    Wtedy w części „Za drzwiami” widzi „<pierwsze zdanie>”
+    Oraz pod spodem widzi „<drugie zdanie>”
+
+    Przykłady:
+      | winda                                            | pierwsze zdanie                                 | drugie zdanie                          |
+      | przy klatkach C i D, 28 m, z piwnicy na 3 piętro | Winda przy klatkach C i D, ok. 30 m od wejścia. | Jeździ od piwnicy do 3 piętra.         |
+      | bez klatek w danych, 31 m, z parteru na 1 piętro | Winda, ok. 30 m od wejścia.                     | Jeździ od parteru do 1 piętra.         |
+      | 12 m, staje na piwnicy, parterze i antresoli     | Winda, ok. 10 m od wejścia.                     | Jedzie na: piwnica, parter, antresola. |
+
+  @US3.3 @BR-25 @aplikacja
+  Scenariusz: Bez windy na planie arkusz wejścia nie ma części „Za drzwiami”
+    Zakładając, że plan PWr budynku A-1 nie ma windy
+    Jeżeli Gość niezalogowany otworzy arkusz wejścia zalecanego A-1
+    Wtedy arkusz nie ma części „Za drzwiami”
+
+  @US2.1 @US3.3 @aplikacja
+  Scenariusz: Arkusz każdego wejścia ma te same części
+    Zakładając, że niezalecane wejście A-1 ma w danych opis dojścia, szerokość drzwi i zgłoszenie przyjęte
+    Oraz Gość niezalogowany otworzył kartę budynku A-1
+    Jeżeli dotknie wiersza tego wejścia na liście „Wejścia”
+    Wtedy arkusz tego wejścia ma części „Dojście”, „Drzwi” i „Bariery przy tym wejściu” jak arkusz wejścia zalecanego
+
+  @US2.2 @US3.3 @aplikacja
+  Scenariusz: Bariery przy wejściu stoją w arkuszu zaraz pod oznaczeniem
+    Zakładając, że przy wejściu zalecanym E-1 jest przyjęta bariera „Blokada” typu „schody przy wejściu”
+    Jeżeli Gość niezalogowany otworzy arkusz tego wejścia
+    Wtedy pod oznaczeniem, źródłem i nazwą wejścia stoi część „Bariery przy tym wejściu” z typem, uciążliwością, zdjęciem i datą sprawdzenia
+    Oraz części „Dojście”, „Drzwi” i „Za drzwiami” stoją pod nią
+    Ale arkusz wejścia bez przyjętych barier nie ma tej części i zaczyna się od „Dojście”
+
+  @US2.8 @US16.1 @aplikacja
+  Scenariusz: Arkusz windy ma wiersz budynku i piętro osobnym wierszem
+    Zakładając, że Gość niezalogowany ma otwarty plan parteru A-1
+    Jeżeli dotknie znaku windy na planie
+    Wtedy arkusz „Winda” ma pod nagłówkiem wiersz „Budynek A-1”, a pod nim piętro „Parter”
+    Oraz pod piętrem stoi „Jedzie na: …” z piętrami windy
+    Jeżeli wybierze wiersz „Budynek A-1”
+    Wtedy widzi kartę budynku A-1 na niskiej wysokości
+
+  @US3.3 @NFR-53 @aplikacja
+  Scenariusz: Pinezka wejścia jest widoczna nad arkuszem wejścia
+    Zakładając, że wejście zalecane A-1 ma w danych opis dojścia, szerokość drzwi i zgłoszenie przyjęte ze zdjęciem
+    Oraz Gość niezalogowany otworzył kartę budynku A-1 przy zwykłej czcionce
+    Jeżeli wybierze „Pokaż wejście na mapie”
+    Wtedy pinezka wejścia zalecanego stoi na środku części mapy nad arkuszem tego wejścia
+    Oraz arkusz zajmuje najwyżej połowę ekranu, a jego treść się przewija
+
+  # brak pełnego testu: #3645
+  @US3.3 @NFR-18 @NFR-53 @aplikacja @do-zrobienia
+  Szablon scenariusza: Pinezka i podpis wejścia są na mapie tylko przy otwartym arkuszu wejścia
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
+    Jeżeli otworzy arkusz wejścia A-1 przez <otwarcie>
+    Wtedy to wejście ma na mapie pinezkę i podpis z nazwą
+    Jeżeli zamknie arkusz przez <zamknięcie>
+    Wtedy na mapie nie ma pinezki ani podpisu wejścia
+
+    Przykłady:
+      | otwarcie                                | zamknięcie             |
+      | „Pokaż wejście na mapie” na karcie A-1  | „Zamknij”              |
+      | wiersz wejścia na karcie A-1            | „Wstecz”               |
+      | znak wejścia A-1 na mapie               | wiersz budynku A-1     |
+      | znak wejścia A-1 na mapie               | dotyk pustej mapy      |
+
+  # brak pełnego testu: #3645
+  @US2.8 @US3.3 @NFR-15 @NFR-53 @aplikacja @do-zrobienia
+  Szablon scenariusza: „Wstecz” w arkuszu wejścia wraca tam, skąd arkusz otwarto, a „Zamknij” zostawia mapę
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
+    Jeżeli <otwarcie>
+    Oraz wybierze <czynność> w arkuszu wejścia
+    Wtedy <po zamknięciu>
+
+    Przykłady:
+      | otwarcie                                                                   | czynność  | po zamknięciu                                    |
+      | rozwinie kartę A-1, przewinie ją i dotknie wiersza wejścia                 | „Wstecz”  | widzi kartę A-1 rozwiniętą, tak samo przewiniętą |
+      | otworzy kartę A-1 na niskiej wysokości i wybierze „Pokaż wejście na mapie” | „Wstecz”  | widzi kartę A-1 na niskiej wysokości             |
+      | otworzy kartę A-1 na niskiej wysokości i wybierze „Pokaż wejście na mapie” | „Zamknij” | widzi mapę bez karty budynku                     |
+      | dotknie znaku wejścia A-1 na mapie bez otwartej karty                      | „Zamknij” | widzi mapę bez karty budynku                     |
+
+  # @do-zrobienia #3645: powrót do karty budynku z arkusza sali bez ruchu kamery.
+  @US2 @US2.8 @NFR-18 @NFR-53 @aplikacja @do-zrobienia
+  Szablon scenariusza: Wiersz budynku w arkuszu otwiera kartę budynku bez przelotu mapy
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce, bez otwartej karty
+    Jeżeli <otwarcie>
+    Oraz wybierze wiersz „<budynek>” pod nagłówkiem arkusza
+    Wtedy widzi kartę budynku <budynek> na niskiej wysokości
+    Ale mapa nie przelatuje do budynku, tylko zachowuje się jak po dotknięciu jego konturu
+
+    Przykłady:
+      | otwarcie                                          | budynek     |
+      | dotknie znaku wejścia A-1 na mapie                | Budynek A-1 |
+      | dotknie znaku toalety dostosowanej na planie A-1  | Budynek A-1 |
+      | dotknie schodów na planie A-1                     | Budynek A-1 |
+      | dotknie znaku bariery przy budynku A-1            | Budynek A-1 |
+      | wyszuka „A-1 329”                                 | Budynek A-1 |
+      | dotknie wspólnego konturu C-3/C-4                 | Budynek C-3 |
+
+  @US2.8 @US3.3 @aplikacja
+  Scenariusz: Wiersz budynku w arkuszu otwartym z karty wraca do tej karty
+    Zakładając, że Gość niezalogowany rozwinął kartę budynku A-1 i ją przewinął
+    Jeżeli dotknie wiersza wejścia na liście „Wejścia”
+    Oraz wybierze wiersz „Budynek A-1” pod nagłówkiem arkusza wejścia
+    Wtedy widzi kartę A-1 rozwiniętą, tak samo przewiniętą
 
   @US16.3 @aplikacja
   Scenariusz: Karta budynku szczegółowego opisuje piętra tekstem
@@ -258,6 +524,16 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | D-1     | 5      |
       | D-2     | 5      |
 
+  @US16.1 @US2.8 @aplikacja
+  Scenariusz: Otwarta karta budynku albo sali trzyma plan tego budynku
+    Zakładając, że na mapie w powiększeniu 18 widać plan budynku szczegółowego A-1
+    Jeżeli Odwiedzający dotknie sąsiedniego budynku szczegółowego B-1 bliżej niż 60 m
+    Wtedy otwiera się karta budynku B-1 i plan piętra przełącza się na B-1
+    Jeżeli przesunie mapę dalej niż 60 m od budynku B-1
+    Wtedy karta budynku B-1 zostaje otwarta, a plan piętra znika
+    Jeżeli zamknie kartę budynku B-1
+    Wtedy plan piętra znów wybiera budynek ze środka mapy bez poruszenia widoku
+
   @US1.6 @BR-G5 @aplikacja
   Scenariusz: Mapa otwiera się na terenie „Kampus główny”
     Zakładając, że Gość niezalogowany pierwszy raz otwiera aplikację i pomija instrukcję
@@ -293,6 +569,14 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli przesunie mapę do brzegu terenu w stronę terenu „Wittigowo”
     Wtedy mapa dalej się nie przesuwa
     Oraz brzeg mapy leży na brzegu prostokąta terenu
+
+  @US2.8 @NFR-39 @aplikacja
+  Scenariusz: Na małym terenie zamknięcie karty przesuwa mapę tylko do brzegu terenu
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu na terenie „T-9 Atol”
+    Oraz dotknął budynku T-9 na mapie
+    Jeżeli wybierze „Wstecz” telefonu
+    Wtedy cały widok mapy leży w prostokącie terenu
+    Oraz powiększenie mapy jest takie jak w chwili zamknięcia karty
 
   @US1.7 @BR-G5 @NFR-39 @aplikacja
   Scenariusz: Przy najmniejszym powiększeniu teren wypełnia mapę w krótszym wymiarze
@@ -330,7 +614,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
 
   @US1.8 @aplikacja
   Scenariusz: Zamknięcie karty budynku z innego terenu zostawia ten teren
-    Zakładając, że Gość niezalogowany wyszukał „T-15”, wybrał wynik i widzi małą kartę budynku
+    Zakładając, że Gość niezalogowany wyszukał „T-15”, wybrał wynik i widzi kartę budynku
     Jeżeli zamknie kartę przyciskiem „Wstecz”
     Wtedy mapa dalej pokazuje teren „Wittigowo”
     Oraz zaznaczenie budynku zniknęło

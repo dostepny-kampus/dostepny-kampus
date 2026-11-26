@@ -5,12 +5,15 @@
  */
 package io.github.dostepnykampus.inspection.domain;
 
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
  * Port zapisu i cofania znaczników piętra obejrzanego.
  *
- * <p>Wymagania: US15.1, BR-9, BR-20</p>
+ * <p>Wymagania: US15.1, US15.2, US11.3, BR-9, BR-20</p>
  *
  * @since 0.1.0
  */
@@ -33,4 +36,35 @@ public interface MarkerRepository {
      * @return Prawda, gdy konto ma taki znacznik; fałsz dla nieistniejącego albo cudzego
      */
     boolean revoke(UUID id, String author);
+
+    /**
+     * Zwraca identyfikator autora znacznika albo pusty wynik, gdy znacznika nie ma.
+     *
+     * <p>Wymagania: US15.2, BR-20</p>
+     *
+     * @param id Identyfikator znacznika
+     * @return Identyfikator konta autora
+     */
+    Optional<String> authorOf(UUID id);
+
+    /**
+     * Cofa znacznik niezależnie od autora; cofnięcie już cofniętego zostawia go cofniętym.
+     *
+     * <p>Wymagania: US11.3, BR-20</p>
+     *
+     * @param id Identyfikator cofanego znacznika
+     * @return Prawda, gdy znacznik istniał; fałsz, gdy go nie ma
+     */
+    boolean revokeAny(UUID id);
+
+    /**
+     * Znaczniki zmienione od chwili {@code since} włącznie, od najdawniej zmienionego.
+     *
+     * <p>Wymagania: US15.1, US15.2, US11.3</p>
+     *
+     * @param since Chwila, od której liczą się zmiany
+     * @param reader Identyfikator konta pobierającego zmiany
+     * @return Znaczniki z chwilą zmiany
+     */
+    List<SyncedMarker> changedSince(Instant since, String reader);
 }

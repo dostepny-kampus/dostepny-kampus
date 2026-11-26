@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test
 import org.maplibre.spatialk.geojson.FeatureCollection
 import org.maplibre.spatialk.geojson.Geometry
 
-private const val UNNAMED = "Wejście bez nazwy w danych"
+private const val UNNAMED = "Wejście"
 
 /** Dane wejść dla mapy V1 z syntetycznego katalogu „Budynek testowy” (nie dane PWr). Wymagania: US2.1, US3.3 */
 class SelectedEntranceTest {

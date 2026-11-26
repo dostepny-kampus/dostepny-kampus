@@ -113,6 +113,9 @@ public final class MapSteps {
     @Given(
         "^w danych testowych budynek podstawowy (\\S+) ma wejścia wyłącznie .+$"
     )
+    @Given(
+        "^w danych testowych wejście boczne (\\S+) nie ma informacji o dostępności .+$"
+    )
     public void entranceData(final String symbol) {
         this.hasBuildings(symbol);
     }

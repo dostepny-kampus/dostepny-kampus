@@ -15,11 +15,11 @@ plugins {
 
 android {
     buildFeatures.buildConfig = true
-    /* Z emulatora 10.0.2.2 to komputer gospodarza. Release zostaje przy tym samym placeholderze. */
-    val apiBaseUrl = "\"http://10.0.2.2:8080/\""
+    /* Adres serwera: debug z emulatora (10.0.2.2 to komputer gospodarza), release z konfiguracji budowania. */
+    val address = ServerAddress.API
     buildTypes {
-        getByName("debug") { buildConfigField("String", "API_BASE_URL", apiBaseUrl) }
-        getByName("release") { buildConfigField("String", "API_BASE_URL", apiBaseUrl) }
+        getByName("debug") { buildConfigField("String", address.field, address.debugField) }
+        getByName("release") { buildConfigField("String", address.field, address.releaseField(providers)) }
     }
 }
 
@@ -41,7 +41,8 @@ val generateContractModels =
         modelFilesConstrainedTo =
             listOf(
                 "BuildingList", "BuildingDetails", "LocateResult", "FloorList", "RoomList", "RoomSearchResults",
-                "SubmissionContent", "Submission", "VersionConflictProblem", "BuildingProgress",
+                "SubmissionContent", "Submission", "VersionConflictProblem", "BuildingProgress", "SyncPullResponse",
+                "AccessiblePathList",
             )
         generateRecursiveDependentModels = true
         generateModelDocumentation = false

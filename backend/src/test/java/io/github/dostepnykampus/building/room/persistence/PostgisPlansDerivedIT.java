@@ -18,15 +18,18 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Zapis planu liczy grupę funkcji, podpis numeru i obrys piętra.
+ * Transakcja testu cofa budynek, piętra i pomieszczenia, więc nie zostają dla innych testów.
  *
  * <p>Wymagania: US16.1, US18.1</p>
  *
  * @since 0.1.0
  */
 @IntegrationTest
+@Transactional
 final class PostgisPlansDerivedIT {
 
     @Test
@@ -60,7 +63,46 @@ final class PostgisPlansDerivedIT {
         );
     }
 
+    @Test
+    void closesNarrowWallsAndKeepsSquareCorners(final ApplicationContext context) {
+        MatcherAssert.assertThat(
+            "Obrys piętra nie domyka ściany 1,1 m, domyka przejście 1,5 m albo zaokrągla narożniki",
+            PostgisPlansDerivedIT.saved(
+                context, "G-943",
+                List.of(
+                    PostgisPlansDerivedIT.room("1", "P0", "", "Inne", 0, 10),
+                    PostgisPlansDerivedIT.room("2", "P0", "", "Inne", 11.1, 10),
+                    PostgisPlansDerivedIT.room("3", "P1", "", "Inne", 0, 10),
+                    PostgisPlansDerivedIT.room("4", "P1", "", "Inne", 11.5, 10)
+                )
+            ).sql(
+                """
+                SELECT id || ' ' || ST_NumGeometries(outline) || ' ' || ST_NPoints(outline)
+                FROM floors WHERE building_symbol = 'G-943' AND outline IS NOT NULL
+                ORDER BY sort_order
+                """
+            ).query(String.class).list(),
+            Matchers.contains("P0 1 5", "P1 2 10")
+        );
+    }
+
     private static JdbcClient saved(final ApplicationContext context, final String symbol) {
+        return PostgisPlansDerivedIT.saved(
+            context, symbol,
+            List.of(
+                PostgisPlansDerivedIT.room("1", "P0", "101", "Sala dydaktyczna", 0, 10),
+                PostgisPlansDerivedIT.room("2", "P0", "101", "Laboratorium", 20, 6),
+                PostgisPlansDerivedIT.room("3", "P0", "102", "Toaleta dla OzN", 40, 4),
+                PostgisPlansDerivedIT.room("4", "P0", "", "Korytarz", 60, 10),
+                PostgisPlansDerivedIT.room("5", "P1", "", "Inne", 0, 10),
+                PostgisPlansDerivedIT.room("6", "P1", "", "Inne", 10, 10)
+            )
+        );
+    }
+
+    private static JdbcClient saved(
+        final ApplicationContext context, final String symbol, final List<PlanRoom> rooms
+    ) {
         final JdbcClient jdbc = context.getBean(JdbcClient.class);
         new SampleBuilding(symbol, "Budynek z planem", "DETAILED")
             .wkt(jdbc, "POLYGON((17 51,17.01 51,17.01 51.01,17 51.01,17 51))");
@@ -71,14 +113,7 @@ final class PostgisPlansDerivedIT {
                     new PlanFloor("P0", "Parter", 0), new PlanFloor("P1", "1 piętro", 1),
                     new PlanFloor("P2", "2 piętro", 2)
                 ),
-                List.of(
-                    PostgisPlansDerivedIT.room("1", "P0", "101", "Sala dydaktyczna", 0, 10),
-                    PostgisPlansDerivedIT.room("2", "P0", "101", "Laboratorium", 20, 6),
-                    PostgisPlansDerivedIT.room("3", "P0", "102", "Toaleta dla OzN", 40, 4),
-                    PostgisPlansDerivedIT.room("4", "P0", "", "Korytarz", 60, 10),
-                    PostgisPlansDerivedIT.room("5", "P1", "", "Inne", 0, 10),
-                    PostgisPlansDerivedIT.room("6", "P1", "", "Inne", 10, 10)
-                ),
+                rooms,
                 List.of()
             )
         );

@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.quick
@@ -17,7 +17,8 @@ import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.feature.capture.location.BuildingLookup
-import io.github.dostepnykampus.feature.capture.report.form.ReportSaver
+import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
+import io.github.dostepnykampus.feature.capture.report.ReportSaver
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,8 +28,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -112,7 +115,14 @@ class QuickSendViewModel
 
         private val attempts = MutableStateFlow(0)
 
-        private val lookups: Flow<QuickLookup> = attempts.flatMapLatest { whenLocationOn() }
+        private val origins = MutableStateFlow<QuickOrigin?>(null)
+
+        private val lookups: Flow<QuickLookup> =
+            origins.filterNotNull().flatMapLatest { origin ->
+                origin.place?.let { flowOf(QuickLookup.Found(placePosition(it))) }
+                    ?: origin.entranceId?.let(::atEntrance)
+                    ?: attempts.flatMapLatest { whenLocationOn() }
+            }
 
         /** Bieżąca pozycja, jej ustalanie, „Brak pozycji” albo pozycja poza terenem PWr. */
         val lookup: StateFlow<QuickLookup> =
@@ -125,6 +135,17 @@ class QuickSendViewModel
                 .distinctUntilChanged()
                 .mapLatest { symbol -> floorsOf(symbol) }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), emptyList())
+
+        /**
+         * Skąd zgłoszenie bierze miejsce: z obiektu planu [place] albo z wejścia [entranceId] wybranego w arkuszu,
+         * bez odbiornika pozycji, albo z bieżącej pozycji, gdy oba to `null`. Do pierwszego wywołania pozycja nie
+         * jest ustalana.
+         *
+         * Wymagania: BR-8, US4.6
+         */
+        fun start(entranceId: String?, place: ReportPlace? = null) {
+            origins.value = QuickOrigin(entranceId, place)
+        }
 
         /** „Spróbuj ponownie” po „Brak pozycji” albo poza terenem PWr: ustalanie od nowa; zdjęcie i grupa zostają. */
         fun retry() {
@@ -150,6 +171,9 @@ class QuickSendViewModel
                     }
             }
         }
+
+        private fun atEntrance(id: String): Flow<QuickLookup> =
+            flow { buildingLookup.entrance(id)?.let { emit(QuickLookup.Found(entrancePosition(it))) } }
 
         private fun whenLocationOn(): Flow<QuickLookup> =
             locationSwitch
@@ -185,3 +209,6 @@ class QuickSendViewModel
             )
         }
     }
+
+/** Wejście albo obiekt planu, od którego zgłoszenie bierze miejsce; oba `null` to bieżąca pozycja. */
+private data class QuickOrigin(val entranceId: String?, val place: ReportPlace?)

@@ -13,6 +13,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 import java.io.IOException
+import java.net.HttpURLConnection.HTTP_UNAUTHORIZED
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 
@@ -71,7 +72,13 @@ private suspend fun <T> OkHttpClient.awaitExchange(request: Request, read: (Resp
         call.enqueue(
             object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    continuation.resume(ApiResult.NetworkError(e))
+                    val result =
+                        if (e is QueueOwnerMismatch) {
+                            ApiResult.ServerError(HTTP_UNAUTHORIZED)
+                        } else {
+                            ApiResult.NetworkError(e)
+                        }
+                    continuation.resume(result)
                 }
 
                 override fun onResponse(call: Call, response: Response) {

@@ -7,9 +7,13 @@ package io.github.dostepnykampus.feature.capture.quick
 
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EntranceMarking
+import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
+import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
@@ -77,5 +81,77 @@ class QuickReportTest {
         val report = QuickReport(photo = photo, group = BarrierGroup.TOILETS)
         val content = report.content(QuickPosition(point = point, accuracyMeters = 6.0, isInBuilding = true))
         assertNull(content.floor)
+    }
+
+    /**
+     * Zgłoszenie przy wejściu wybranym w arkuszu wejścia ma punkt, budynek i piętro wejścia, bez dokładności
+     * pozycji; piętro z kroku 2 nie zastępuje piętra wejścia.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego
+     *   wejścia
+     *
+     * Wymagania: US4.6, BR-8
+     */
+    @Test
+    fun takesPlaceFromEntrance() {
+        val entrance =
+            Entrance(
+                id = "node/6",
+                buildingSymbol = "A-1",
+                name = null,
+                isMain = true,
+                type = "main",
+                location = point,
+                marking = EntranceMarking.ACCESSIBLE,
+                floorId = "A-1/p0",
+            )
+        val report = QuickReport(photo = photo, group = BarrierGroup.ENTRANCE_AND_DOORS, floorNumber = 2)
+        val content = report.content(entrancePosition(entrance))
+        assertEquals(point, content.location)
+        assertNull(content.accuracyMeters)
+        assertEquals("node/6", content.entranceId)
+        assertEquals(SubmissionFloor(floorId = "A-1/p0"), content.floor)
+    }
+
+    /**
+     * Zgłoszenie przy obiekcie planu ma punkt obiektu, jego budynek i piętro oglądanego planu, bez dokładności
+     * pozycji i bez wejścia.
+     * Scenariusz (częściowo, przykład: arkusz windy): zgloszenie-szybkie.feature: Zgłoszenie przy obiekcie
+     *   planu ma miejsce w punkcie obiektu i piętro planu
+     *
+     * Wymagania: US4.6, BR-8, BR-14
+     */
+    @Test
+    fun takesPlaceFromPlanObject() {
+        val place =
+            ReportPlace(
+                category = RoomCategory.ELEVATOR,
+                buildingSymbol = "A-1",
+                floorId = "A-1/p2",
+                floorLabel = "2 piętro",
+                latitude = point.latitude,
+                longitude = point.longitude,
+            )
+        val report = QuickReport(photo = photo, group = BarrierGroup.VERTICAL_CIRCULATION, floorNumber = 1)
+        val content = report.content(placePosition(place))
+        assertEquals(point, content.location)
+        assertNull(content.accuracyMeters)
+        assertNull(content.entranceId)
+        assertEquals(SubmissionFloor(floorId = "A-1/p2"), content.floor)
+    }
+
+    /**
+     * Krok 2 pyta o piętro tylko w budynku i przy grupie, która je wymaga; przy „Coś innego” i poza konturem nie pyta.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Pytanie o piętro tylko w budynku i przy grupie, która go
+     *   wymaga
+     *
+     * Wymagania: US4.5, BR-14
+     */
+    @Test
+    fun asksFloorWhereNeeded() {
+        assertTrue(BarrierGroup.VERTICAL_CIRCULATION.asksFloor(isInBuilding = true), "D-2, schody i windy")
+        assertTrue(BarrierGroup.TOILETS.asksFloor(isInBuilding = true), "B-4, toalety")
+        assertTrue(BarrierGroup.ENTRANCE_AND_DOORS.asksFloor(isInBuilding = true), "C-13, wejście i drzwi")
+        assertFalse(BarrierGroup.OTHER.asksFloor(isInBuilding = true), "C-13, coś innego")
+        assertFalse(BarrierGroup.HORIZONTAL_CIRCULATION.asksFloor(isInBuilding = false), "przed A-1, poza konturem")
     }
 }

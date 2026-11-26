@@ -12,467 +12,13 @@ W aplikacji kontury budynków pochodzą z OpenStreetMap. Przykładowe są barier
 
 Obrazy jasne i ciemne mają 780 px szerokości, czyli ekran 390 dp w skali 2. Obrazy przy czcionce 200% mają 390 px szerokości (skala 1). Kliknięcie obrazu otwiera go w pełnym rozmiarze.
 
-## V1 Mapa kampusu
+## Zakres stron hi-fi
 
-Wymagania: [V1 Mapa kampusu](../wymagania-ekranow.md#v1-mapa-kampusu).
-
-### V1: mapa ze znakami barier
-
-`m-v1-mapa` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-stan-zwyky) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.6
-
-| Jasny | Ciemny | Czcionka 200% |
+| Grupa ekranów | Zawartość | Strona |
 | --- | --- | --- |
-| [![Mapa kampusu: pole „Wpisz symbol budynku, np. C-13”, przełącznik Mapa i Lista budynków, przycisk terenu „Kampus główny” w lewym górnym rogu nad przyciskiem Legenda, mapa z budynkami Politechniki i znakami barier, strzałki przesuwania mapy w krzyżu, plus i minus, podpis OpenStreetMap, przycisk informacji i pasek dolny](obrazy/m-v1-mapa-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-jasny.webp) | [![Ta sama mapa z przyciskiem terenu w motywie ciemnym](obrazy/m-v1-mapa-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-ciemny.webp) | [![Ta sama mapa przy czcionce 200%: przycisk terenu w osobnym wierszu, Legenda i przyciski mapy pod nim](obrazy/m-v1-mapa-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-jasny-200.webp) |
-
-### V1: lista budynków
-
-`m-v1-mapa-lista` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-lista-budynkow) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.8, NFR-19
-
-Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista ma wszystkie budynki.
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Lista budynków z nagłówkami terenów: „Kampus główny · 78”, „Wittigowo · 9”, „Długa · 4”, „T-9 Atol · 1”, „Bartoszowice · 3”; pod każdym nagłówkiem karty budynków](obrazy/m-v1-mapa-lista-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-jasny.webp) | [![Ta sama lista z nagłówkami terenów w motywie ciemnym](obrazy/m-v1-mapa-lista-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-ciemny.webp) | [![Ta sama lista z nagłówkami terenów przy czcionce 200%](obrazy/m-v1-mapa-lista-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-lista-jasny-200.webp) |
-
-### V1: wyszukiwanie `c13`
-
-`m-v1-mapa-wyszukiwanie` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-wyszukiwanie)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Wyszukiwanie: w polu wpisano c13, pod polem karta wyniku C-13 Zintegrowane Centrum Studenckie, Budynek C-13, a niżej mapa](obrazy/m-v1-mapa-wyszukiwanie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-wyszukiwanie-jasny.webp) | [![To samo wyszukiwanie w motywie ciemnym](obrazy/m-v1-mapa-wyszukiwanie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-wyszukiwanie-ciemny.webp) | [![To samo wyszukiwanie przy czcionce 200%: nazwa budynku w wyniku zajmuje trzy wiersze, mapa jest niżej](obrazy/m-v1-mapa-wyszukiwanie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-wyszukiwanie-jasny-200.webp) |
-
-### V1: brak wyniku dla „C-31”
-
-`m-v1-mapa-pusty` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-brak-wyniku)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Brak wyniku: komunikat „Nie znaleźliśmy budynku »C-31«.”, podpowiedź, by sprawdzić symbol albo wybrać budynek z listy, i przycisk Lista budynków nad mapą](obrazy/m-v1-mapa-pusty-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pusty-jasny.webp) | [![Ten sam komunikat o braku wyniku w motywie ciemnym](obrazy/m-v1-mapa-pusty-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pusty-ciemny.webp) | [![Ten sam komunikat przy czcionce 200%: tekst w kilku wierszach, przycisk Lista budynków pod nim, mapa niżej](obrazy/m-v1-mapa-pusty-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pusty-jasny-200.webp) |
-
-### V1: arkusz bariery po dotknięciu znaku
-
-`m-v1-mapa-bariera` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-bariera-na-mapie)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Po dotknięciu znaku bariery: na mapie wybrany znak Blokada, pod mapą arkusz z napisem Blokada, przyciskiem Zamknij, tytułem Schody przy wejściu, miejscem A-1 Gmach Główny, Wejście Cesarskie, parter, datą Sprawdzone 14.10.2026, rysunkiem schodów i przyciskiem Pokaż opis budynku](obrazy/m-v1-mapa-bariera-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-bariera-jasny.webp) | [![Ten sam arkusz bariery w motywie ciemnym: rysunek schodów w ciemnych tonach](obrazy/m-v1-mapa-bariera-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-bariera-ciemny.webp) | [![Ten sam arkusz bariery przy czcionce 200%: mapa zajmuje mniej miejsca, tekst bariery w kilku wierszach](obrazy/m-v1-mapa-bariera-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-bariera-jasny-200.webp) |
-
-### V1: znaleziona sala A-1 329
-
-`m-v1-mapa-sala` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-znaleziona-sala)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Znaleziona sala: w polu A-1 329, plan 2 piętra A-1, po prawej kolumna Piętro z zaznaczonym 2, na planie sala 329 z numerem kroku 4 i winda z numerem kroku 2, a w arkuszu cztery kroki: Wejście dostosowane, parter, Winda przy klatkach C i D, 2 piętro, Sala 329 przy klatkach A i B, ok. 85 m od windy, i przycisk Pokaż opis budynku](obrazy/m-v1-mapa-sala-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-jasny.webp) | [![Ta sama sala w motywie ciemnym z ciemnym planem piętra](obrazy/m-v1-mapa-sala-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-ciemny.webp) | [![Kroki do sali przy czcionce 200% na cały ekran: u góry tylko Wstecz, potem Sala 329, cztery kroki oraz przyciski Pokaż opis budynku i Pokaż na mapie](obrazy/m-v1-mapa-sala-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-sala-jasny-200.webp) |
-
-### V1: plan piętra
-
-`m-v1-mapa-plan` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-plan-pietra) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.1, NFR-40
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Plan parteru A-1 po przybliżeniu: sale, korytarze, klatki schodowe w kreski i toalety w kolorach grup, znaki windy i toalety dostosowanej, sąsiednie budynki przygaszone, po prawej pod przyciskami mapy kolumna Piętro z piętrami od 3 do -1 i zaznaczonym 0, na dole podpis Źródło: Politechnika Wrocławska](obrazy/m-v1-mapa-plan-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-jasny.webp) | [![Ten sam plan parteru w motywie ciemnym: te same grupy kolorów, przyciemnione](obrazy/m-v1-mapa-plan-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-ciemny.webp) | [![Ten sam plan przy czcionce 200%: kolumna pięter przewija się, zaznaczone piętro jest widoczne](obrazy/m-v1-mapa-plan-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-jasny-200.webp) |
-
-### V1: budynek bez planu
-
-`m-v1-mapa-plan-podstawowy` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-budynek-bez-planu) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.2, BR-G1
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Przybliżony budynek podstawowy A-4: nad mapą zdanie Nie mamy planu pięter tego budynku, budynek zalany bez planu i bez kolumny pięter](obrazy/m-v1-mapa-plan-podstawowy-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-podstawowy-jasny.webp) | [![To samo zdanie i budynek bez planu w motywie ciemnym](obrazy/m-v1-mapa-plan-podstawowy-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-podstawowy-ciemny.webp) | [![To samo zdanie przy czcionce 200% w dwóch wierszach, przyciski mapy schodzą pod nie](obrazy/m-v1-mapa-plan-podstawowy-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-podstawowy-jasny-200.webp) |
-
-### V1: winda na planie
-
-`m-v1-mapa-plan-winda` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-winda-na-planie) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.1, US18.2
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Plan 2 piętra A-1 przesunięty do windy, pod nim arkusz: A-1, Winda przy klatkach C i D, przycisk Zamknij i zdanie Jedzie na: piwnica, parter, 1, 2 (tutaj jesteś) i 3 piętro](obrazy/m-v1-mapa-plan-winda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-jasny.webp) | [![Ten sam arkusz windy w motywie ciemnym](obrazy/m-v1-mapa-plan-winda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-ciemny.webp) | [![Arkusz windy przy czcionce 200% na cały ekran: u góry Wstecz, niżej Winda, piętra i przycisk Pokaż na mapie](obrazy/m-v1-mapa-plan-winda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-winda-jasny-200.webp) |
-
-### V1: legenda przy planie
-
-`m-v1-mapa-plan-legenda` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-legenda-przy-planie) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.1, US2.1
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Legenda otwarta nad planem parteru, przewinięta do barier: Utrudnienie, Tylko z pomocą, Blokada, Bariera bez podanego piętra ze znakiem zapytania, niżej początek części Plan piętra z pozycją Sala; kolumna pięter chowa się na czas legendy](obrazy/m-v1-mapa-plan-legenda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-jasny.webp) | [![Ta sama legenda przy planie w motywie ciemnym](obrazy/m-v1-mapa-plan-legenda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-ciemny.webp) | [![Ta sama legenda przy czcionce 200%: pozycje w kilku wierszach, legenda przewija się](obrazy/m-v1-mapa-plan-legenda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-legenda-jasny-200.webp) |
-
-### V1: bariery na planie
-
-`m-v1-mapa-plan-bariery` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-bariery-na-planie) · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.1, BR-14, NFR-18
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Plan 2 piętra A-1: znak bariery Tylko z pomocą z tego piętra oraz znak bariery bez podanego piętra ze znakiem zapytania w kółku; bariery parteru nie widać](obrazy/m-v1-mapa-plan-bariery-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-bariery-jasny.webp) | [![Te same bariery na planie w motywie ciemnym](obrazy/m-v1-mapa-plan-bariery-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-bariery-ciemny.webp) | [![Te same bariery na planie przy czcionce 200%](obrazy/m-v1-mapa-plan-bariery-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-bariery-jasny-200.webp) |
-
-### V1: numery sal na planie
-
-`m-v1-mapa-plan-numery` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US16.1, NFR-16
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Plan 2 piętra A-1 bardzo blisko przy sali 329: jeden numer na grupę pomieszczeń, bez numerów małych pomieszczeń](obrazy/m-v1-mapa-plan-numery-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-numery-jasny.webp) | [![Te same numery sal w motywie ciemnym](obrazy/m-v1-mapa-plan-numery-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-numery-ciemny.webp) | [![Te same numery sal przy czcionce 200%](obrazy/m-v1-mapa-plan-numery-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-plan-numery-jasny-200.webp) |
-
-### V1: legenda
-
-`m-v1-mapa-legenda`
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Otwarta legenda nad mapą z przyciskiem Zamknij: w części Na mapie Budynek Politechniki, Wejście dostępne, Wejście niedostępne, Wejście bez danych, Zalecane wejście, Ścieżka dostosowana i Pochylnia, niżej początek części Bariery, na dole Przewiń w dół](obrazy/m-v1-mapa-legenda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-legenda-jasny.webp) | [![Ta sama legenda w motywie ciemnym](obrazy/m-v1-mapa-legenda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-legenda-ciemny.webp) | [![Ta sama legenda przy czcionce 200%: nagłówek z przyciskiem Zamknij, pięć pierwszych pozycji części Na mapie, na dole Przewiń w dół](obrazy/m-v1-mapa-legenda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-legenda-jasny-200.webp) |
-
-### V1: źródła danych
-
-`m-v1-mapa-info`
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Panel Źródła danych z przyciskiem Zamknij po dotknięciu przycisku informacji: mapa ulic i kontury budynków © OpenStreetMap contributors na otwartej licencji ODbL, wejścia i plany pięter ze źródła Politechnika Wrocławska, stan z 18.12.2023](obrazy/m-v1-mapa-info-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-info-jasny.webp) | [![Ten sam panel źródeł danych w motywie ciemnym](obrazy/m-v1-mapa-info-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-info-ciemny.webp) | [![Ten sam panel źródeł danych przy czcionce 200%: tekst w wielu wierszach nad mapą](obrazy/m-v1-mapa-info-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-info-jasny-200.webp) |
-
-### V1: bez internetu
-
-`m-v1-mapa-brak-sieci` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-brak-sieci)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Mapa bez internetu: pod przełącznikiem pasek „Bez internetu · dane z 27.10.2026”, mapa bez mapy ulic, tylko kontury budynków, ścieżki i znaki barier zapisane w telefonie](obrazy/m-v1-mapa-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-brak-sieci-jasny.webp) | [![Ta sama mapa bez internetu w motywie ciemnym](obrazy/m-v1-mapa-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-brak-sieci-ciemny.webp) | [![Ta sama mapa bez internetu przy czcionce 200%: pasek Bez internetu w dwóch wierszach](obrazy/m-v1-mapa-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-brak-sieci-jasny-200.webp) |
-
-### V1: pierwsze otwarcie bez internetu
-
-`m-v1-mapa-pierwsze-otwarcie` · [makieta low-fi](../makiety/odwiedzajacy.md#v1-pierwsze-otwarcie-bez-internetu)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Pierwsze otwarcie bez internetu: pole symbolu, przełącznik Mapa i Lista budynków, pod nim pasek „Bez internetu” bez daty, mapa bez mapy ulic i bez znaków barier, tylko kontury budynków z symbolami](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny.webp) | [![Ta sama mapa przy pierwszym otwarciu w motywie ciemnym](obrazy/m-v1-mapa-pierwsze-otwarcie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-ciemny.webp) | [![Ta sama mapa przy pierwszym otwarciu przy czcionce 200%: pole symbolu w dwóch wierszach, przełącznik Mapa i Lista, pasek Bez internetu](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pierwsze-otwarcie-jasny-200.webp) |
-
-### V1: panel „Teren na mapie”
-
-`m-v1-mapa-teren-panel` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.7
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Otwarty panel „Teren na mapie” pod przyciskiem terenu: nagłówek z przyciskiem Zamknij i pięć terenów; Kampus główny, 78 budynków, wybrany, ze znakiem wyboru; Wittigowo, 9 budynków, 2 km; Długa; T-9 Atol; Bartoszowice](obrazy/m-v1-mapa-teren-panel-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-panel-jasny.webp) | [![Ten sam panel w motywie ciemnym](obrazy/m-v1-mapa-teren-panel-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-panel-ciemny.webp) | [![Ten sam panel przy czcionce 200%: panel zastępuje przycisk terenu, widać dwa tereny i napis „Przewiń w dół”](obrazy/m-v1-mapa-teren-panel-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-panel-jasny-200.webp) |
-
-### V1: granica terenu
-
-`m-v1-mapa-teren-granica` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.7, BR-G5, NFR-16
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Cały teren Kampus główny przy najmniejszym powiększeniu. Granica ma kilka części: dużą wokół budynków nad Odrą i mniejsze, np. wokół T-2 i L-2. Poza granicą podkład jest wyblakły, a granicę pokazuje czarna linia z białą obwódką](obrazy/m-v1-mapa-teren-granica-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-granica-jasny.webp) | [![Ta sama granica w motywie ciemnym: poza granicą podkład przygaszony kolorem tła, linia jasna z ciemną obwódką](obrazy/m-v1-mapa-teren-granica-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-granica-ciemny.webp) | [![Ta sama granica przy czcionce 200%: cały teren mieści się na mapie pod większymi przyciskami](obrazy/m-v1-mapa-teren-granica-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-granica-jasny-200.webp) |
-
-### V1: wynik z innego terenu
-
-`m-v1-mapa-teren-wynik` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.8
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Wpisany symbol T-15 i wynik pod polem: Dom Studencki „Hades”, Budynek T-15, dopisek „Wittigowo · inny teren”; pod wynikiem mapa terenu Kampus główny](obrazy/m-v1-mapa-teren-wynik-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-wynik-jasny.webp) | [![Ten sam wynik w motywie ciemnym](obrazy/m-v1-mapa-teren-wynik-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-wynik-ciemny.webp) | [![Ten sam wynik przy czcionce 200%: nazwa budynku i dopisek terenu w kilku wierszach](obrazy/m-v1-mapa-teren-wynik-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-wynik-jasny-200.webp) |
-
-### V1: mapa po zmianie terenu
-
-`m-v1-mapa-teren-zmiana` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.8
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Mapa terenu Wittigowo po wybraniu budynku T-15: przycisk terenu „Wittigowo”, budynki T-15, T-16, T-17, T-22, P-20, P-22 i P-23, nad podpisem mapy napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód” w wyglądzie przycisków mapy](obrazy/m-v1-mapa-teren-zmiana-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-zmiana-jasny.webp) | [![Ta sama mapa terenu Wittigowo w motywie ciemnym](obrazy/m-v1-mapa-teren-zmiana-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-zmiana-ciemny.webp) | [![Ta sama mapa terenu Wittigowo przy czcionce 200%: napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód” w trzech wierszach](obrazy/m-v1-mapa-teren-zmiana-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-zmiana-jasny-200.webp) |
-
-## V2 Karta budynku
-
-Wymagania: [V2 Karta budynku](../wymagania-ekranow.md#v2-karta-budynku).
-
-### V2: pełny ekran po rozwinięciu karty (A-1)
-
-`m-v2-karta-budynku` · [makieta low-fi](../makiety/index.md#wzorcowa-makieta-v2-karta-budynku)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Cały opis budynku A-1 Gmach Główny po rozwinięciu małej karty, bez mapy: u góry Wstecz, nazwa, wiersz Wejście dostępne, przycisk Sprawdź, którędy wejść w treści, chipy Winda i Toaleta dostosowana, cztery wejścia z wejściem zalecanym na górze, bariery z rysunkami, grupa Winda i toaleta oraz piętra od piwnicy z rozwiniętym parterem; bez przypiętego pasa przycisków](obrazy/m-v2-karta-budynku-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-jasny.webp) | [![Ten sam opis budynku A-1 w motywie ciemnym](obrazy/m-v2-karta-budynku-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-ciemny.webp) | [![Ten sam opis budynku A-1 przy czcionce 200%, otwarty od razu na pełnym ekranie: pod nazwą i wierszem o wejściach przyciski Sprawdź, którędy wejść i Pokaż budynek na mapie, potem chipy, wejścia, bariery, winda i toaleta oraz piętra](obrazy/m-v2-karta-budynku-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-jasny-200.webp) |
-
-### V2: mała karta nad mapą {#v2-mala-karta}
-
-`m-v2-karta-budynku-mala`. Po dotknięciu budynku na V1 mapa otwiera V2 jako małą kartę o wysokości treści. Nie ma na niej chipów ani listy wejść. Uchwyt, przewinięcie albo przeciągnięcie w górę otwiera pełny ekran.
-
-Nad kartą zostają przyciski mapy, a zaznaczony budynek mieści się w części mapy obok nich (NFR-53). „Zamknij” i „Wstecz” wracają do mapy bez zaznaczenia.
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Mała karta budynku A-1 nad mapą z wyróżnionym konturem, podpisami sąsiednich budynków i przyciskami mapy: uchwyt, symbol A-1, nazwa Gmach Główny, wiersz Wejście dostępne i przyciski Sprawdź, którędy wejść oraz Zamknij](obrazy/m-v2-karta-budynku-mala-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-jasny.webp) | [![Ta sama mała karta w motywie ciemnym](obrazy/m-v2-karta-budynku-mala-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-ciemny.webp) | [![Ten sam budynek przy czcionce 200%: zamiast małej karty od razu pełny ekran bez mapy, z przyciskami Sprawdź, którędy wejść i Pokaż budynek na mapie](obrazy/m-v2-karta-budynku-mala-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-jasny-200.webp) |
-
-### V2: mała karta po zmianie terenu
-
-`m-v2-karta-budynku-mala-teren` · [wymagania V1](../wymagania-ekranow.md#v1-mapa-kampusu): US1.8, NFR-56
-
-Budynek T-15 wybrany z wyszukiwania na terenie Kampus główny: mapa przeleciała na teren Wittigowo. Budynek mieści się w części mapy nad napisem o zmianie terenu. Napis:
-
-- stoi tuż nad małą kartą i podpisem OpenStreetMap, gdzie patrzy osoba, i nie zasłania budynku ani przycisków mapy;
-- ma wygląd przycisków mapy, więc w ciemnym motywie nie jest jasną plamą;
-- TalkBack czyta go raz, po nagłówku karty.
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Mała karta budynku T-15 Dom Studencki Hades nad mapą terenu Wittigowo: wyróżniony kontur T-15, przyciski mapy, nad podpisem OpenStreetMap napis „Pokazuję teren: Wittigowo · 2 km na południowy wschód” w wyglądzie przycisków mapy; na karcie wiersz Brak danych o wejściach i przyciski Sprawdź, którędy wejść oraz Zamknij](obrazy/m-v2-karta-budynku-mala-teren-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-teren-jasny.webp) | [![Ta sama mała karta po zmianie terenu w motywie ciemnym: napis na ciemnym tle przycisków mapy](obrazy/m-v2-karta-budynku-mala-teren-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-teren-ciemny.webp) | Małej karty nie ma, V2 otwiera się od razu na pełnym ekranie jak w [V2: mała karta nad mapą](#v2-mala-karta). Napis czeka na mapę: pojawia się po „Pokaż budynek na mapie”. |
-
-### V2: budynek bez planu pięter (H-4)
-
-`m-v2-karta-budynku-podstawowy` · [makieta low-fi](../makiety/odwiedzajacy.md#v2-budynek-podstawowy)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Opis budynku H-4 Studium Języków Obcych na pełnym ekranie: przycisk Sprawdź, którędy wejść w treści, jedno wejście Dostępne z napisem Zalecane i trzy wejścia Niedostępne, bariera Próg z oznaczeniem Tylko z pomocą i napis „Nie mamy planu pięter tego budynku.”](obrazy/m-v2-karta-budynku-podstawowy-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-podstawowy-jasny.webp) | [![Ten sam opis budynku H-4 w motywie ciemnym](obrazy/m-v2-karta-budynku-podstawowy-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-podstawowy-ciemny.webp) | [![Ten sam opis budynku H-4 przy czcionce 200%](obrazy/m-v2-karta-budynku-podstawowy-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-podstawowy-jasny-200.webp) |
-
-### V2: bez zalecanego wejścia (C-4)
-
-`m-v2-karta-budynku-bez-zalecanego`
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Opis budynku C-4: wiersz Brak wejścia dostępnego pod samym symbolem C-4, jedyne wejście z oznaczeniem Niedostępne na górze, z opisem przeszkód z danych i odnośnikiem Zgłoś barierę przy wejściu, bez napisu Zalecane, niżej Bariery w budynku](obrazy/m-v2-karta-budynku-bez-zalecanego-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-bez-zalecanego-jasny.webp) | [![Ten sam opis budynku C-4 w motywie ciemnym](obrazy/m-v2-karta-budynku-bez-zalecanego-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-bez-zalecanego-ciemny.webp) | [![Ten sam opis budynku C-4 przy czcionce 200%: pod samym symbolem C-4 wiersz Brak wejścia dostępnego i przyciski Sprawdź, którędy wejść oraz Pokaż budynek na mapie, potem wejście Niedostępne](obrazy/m-v2-karta-budynku-bez-zalecanego-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-bez-zalecanego-jasny-200.webp) |
-
-### V2: wejście bez danych (C-7)
-
-`m-v2-karta-budynku-wejscie-brak-danych`
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Opis budynku C-7: wiersz Brak danych o wejściach pod samym symbolem C-7, w grupie Wejścia data Z map i opisów, 18.12.2023, Wejście 1 Niedostępne z opisem schodów i drzwiami 90 cm, Wejście 2 i 3 z oznaczeniem Brak danych i rombem z minusem, przy każdym Zgłoś barierę przy wejściu](obrazy/m-v2-karta-budynku-wejscie-brak-danych-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-wejscie-brak-danych-jasny.webp) | [![Ten sam opis budynku C-7 w motywie ciemnym](obrazy/m-v2-karta-budynku-wejscie-brak-danych-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-wejscie-brak-danych-ciemny.webp) | [![Ten sam opis budynku C-7 przy czcionce 200%: wiersz Brak danych o wejściach, przyciski Sprawdź, którędy wejść i Pokaż budynek na mapie, potem Wejście 1 Niedostępne oraz Wejście 2 i 3 Brak danych](obrazy/m-v2-karta-budynku-wejscie-brak-danych-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-wejscie-brak-danych-jasny-200.webp) |
-
-### V2: brak zgłoszonych barier
-
-`m-v2-karta-budynku-pusty` · [makieta low-fi](../makiety/odwiedzajacy.md#v2-brak-sprawdzonych-barier)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Opis budynku A-1 bez barier: w grupie Bariery w budynku napis Brak zgłoszonych barier, wyjaśnienie, kiedy bariera się tu pojawi, i przycisk Zgłoś barierę](obrazy/m-v2-karta-budynku-pusty-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-pusty-jasny.webp) | [![Ten sam opis bez barier w motywie ciemnym](obrazy/m-v2-karta-budynku-pusty-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-pusty-ciemny.webp) | [![Ten sam opis bez barier przy czcionce 200%](obrazy/m-v2-karta-budynku-pusty-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-pusty-jasny-200.webp) |
-
-### V2: bez internetu
-
-`m-v2-karta-budynku-brak-sieci` · [makieta low-fi](../makiety/odwiedzajacy.md#v2-brak-sieci)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Opis budynku A-1 z telefonu: nad nazwą „Bez internetu · dane z 27.10.2026”, a przy jednej barierze zamiast rysunku napis „Zdjęcie zobaczysz po połączeniu z internetem.”](obrazy/m-v2-karta-budynku-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-brak-sieci-jasny.webp) | [![Ten sam opis bez internetu w motywie ciemnym](obrazy/m-v2-karta-budynku-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-brak-sieci-ciemny.webp) | [![Ten sam opis bez internetu przy czcionce 200%: pasek Bez internetu w dwóch wierszach nad nazwą budynku](obrazy/m-v2-karta-budynku-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-brak-sieci-jasny-200.webp) |
-
-### V2: mała karta bez internetu
-
-`m-v2-karta-budynku-mala-brak-sieci`. Plakietka „Bez internetu” stoi nad symbolem, w tym samym miejscu co na pełnym ekranie. Mapa nad kartą nie ma podkładu.
-
-| Jasny | Ciemny |
-| --- | --- |
-| [![Mała karta budynku A-1 bez internetu: mapa bez podkładu z konturami, podpisami budynków i przyciskami mapy, a na karcie plakietka Bez internetu · dane z 27.10.2026 nad symbolem A-1, nazwa Gmach Główny, wiersz Wejście dostępne i przyciski Sprawdź, którędy wejść oraz Zamknij](obrazy/m-v2-karta-budynku-mala-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-brak-sieci-jasny.webp) | [![Ta sama mała karta bez internetu w motywie ciemnym](obrazy/m-v2-karta-budynku-mala-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-mala-brak-sieci-ciemny.webp) |
-
-### V2: budynku nie ma w telefonie (C-13)
-
-`m-v2-karta-budynku-brak-w-telefonie` · [makieta low-fi](../makiety/odwiedzajacy.md#v2-budynku-nie-ma-w-telefonie)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Budynek C-13 bez internetu: Wstecz, pasek Bez internetu i komunikat „Tego budynku nie ma jeszcze w telefonie.” z prośbą o połączenie oraz przyciskiem Spróbuj ponownie](obrazy/m-v2-karta-budynku-brak-w-telefonie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-brak-w-telefonie-jasny.webp) | [![Ten sam komunikat w motywie ciemnym](obrazy/m-v2-karta-budynku-brak-w-telefonie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-brak-w-telefonie-ciemny.webp) | [![Ten sam komunikat przy czcionce 200%: tytuł Budynek C-13 w treści pod paskiem Bez internetu](obrazy/m-v2-karta-budynku-brak-w-telefonie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-brak-w-telefonie-jasny-200.webp) |
-
-### V2: widok Zbierającego
-
-`m-v2-karta-budynku-zbierajacy` · [makieta low-fi](../makiety/odwiedzajacy.md#v2-zbierajacy)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Opis budynku A-1 dla Zbierającego: przy każdym wejściu własna data i źródło, przycisk Zmień oznaczenie i odnośniki, pod piętrami Oznacz obejrzane piętra, przy barierze Zgłoś, że bariery nie ma, w pasku dolnym Konto i praca](obrazy/m-v2-karta-budynku-zbierajacy-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-zbierajacy-jasny.webp) | [![Ten sam widok Zbierającego w motywie ciemnym](obrazy/m-v2-karta-budynku-zbierajacy-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-zbierajacy-ciemny.webp) | [![Ten sam widok Zbierającego przy czcionce 200%: przy wejściu Zalecane źródło Sprawdzone na miejscu 23.10.2026](obrazy/m-v2-karta-budynku-zbierajacy-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v2-karta-budynku-zbierajacy-jasny-200.webp) |
-
-## V3 „Którędy wejść”
-
-Wymagania: [V3 „Którędy wejść”](../wymagania-ekranow.md#v3-zaplanuj-wizyte).
-
-### V3: zalecane wejście do A-1
-
-`m-v3-ktoredy-wejsc` · [makieta low-fi](../makiety/odwiedzajacy.md#v3-wejscie-jest)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Którędy wejść do A-1: odpowiedź „Budynek A-1 ma wejście dostępne: »Wejście dostosowane«.”, data i źródło, Zalecane wejście z fragmentem mapy, opisami Dojście, Drzwi i Za drzwiami, odnośnikami Pokaż wejście na mapie i Zgłoś barierę przy wejściu, niżej Inne wejście dostępne](obrazy/m-v3-ktoredy-wejsc-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v3-ktoredy-wejsc-jasny.webp) | [![To samo zalecane wejście w motywie ciemnym](obrazy/m-v3-ktoredy-wejsc-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v3-ktoredy-wejsc-ciemny.webp) | [![To samo zalecane wejście przy czcionce 200%: bez fragmentu mapy, tytuł Którędy wejść do A-1 w treści, odpowiedź pod znakiem](obrazy/m-v3-ktoredy-wejsc-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v3-ktoredy-wejsc-jasny-200.webp) |
-
-### V3: brak wejścia dostępnego (C-4)
-
-`m-v3-ktoredy-wejsc-brak-dostepnego` · [makieta low-fi](../makiety/odwiedzajacy.md#v3-brak-wejscia-dostepnego)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Którędy wejść do C-4: ramka ze znakiem krzyżyka (niedostępne) i zdaniem „Budynek C-4 nie ma wejścia dostępnego.” oraz radą, by wrócić Wstecz do opisu budynku i zobaczyć bariery przy każdym wejściu](obrazy/m-v3-ktoredy-wejsc-brak-dostepnego-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v3-ktoredy-wejsc-brak-dostepnego-jasny.webp) | [![Ta sama odpowiedź w motywie ciemnym](obrazy/m-v3-ktoredy-wejsc-brak-dostepnego-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v3-ktoredy-wejsc-brak-dostepnego-ciemny.webp) | [![Ta sama odpowiedź przy czcionce 200%](obrazy/m-v3-ktoredy-wejsc-brak-dostepnego-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v3-ktoredy-wejsc-brak-dostepnego-jasny-200.webp) |
-
-### V3: brak danych o wejściach (C-7)
-
-`m-v3-ktoredy-wejsc-brak-danych` · [makieta low-fi](../makiety/odwiedzajacy.md#v3-brak-danych-o-wejsciach)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Którędy wejść do C-7: ramka ze znakiem rombu z minusem (brak danych) i zdaniem „Nie wiemy jeszcze, czy budynek C-7 ma wejście dostępne: brak danych o 2 z 3 wejść.” oraz radą, by wrócić do opisu budynku](obrazy/m-v3-ktoredy-wejsc-brak-danych-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v3-ktoredy-wejsc-brak-danych-jasny.webp) | [![Ta sama odpowiedź w motywie ciemnym](obrazy/m-v3-ktoredy-wejsc-brak-danych-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v3-ktoredy-wejsc-brak-danych-ciemny.webp) | [![Ta sama odpowiedź przy czcionce 200%](obrazy/m-v3-ktoredy-wejsc-brak-danych-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v3-ktoredy-wejsc-brak-danych-jasny-200.webp) |
-
-## V4 Zgłoszenie szybkie
-
-Wymagania: [V4 Zgłoszenie szybkie](../wymagania-ekranow.md#v4-zgoszenie-szybkie).
-
-### V4: prośba o lokalizację
-
-`m-v4-zgoda-lokalizacja` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-prosba-o-zgode-na-lokalizacje)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Zgłoś barierę przed aparatem: „Aby wysłać zdjęcie bariery, potrzebujemy jej miejsca.”, zapewnienie, że nie będziemy śledzić, przyciski Pozwól na lokalizację i Wróć do mapy](obrazy/m-v4-zgoda-lokalizacja-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-zgoda-lokalizacja-jasny.webp) | [![Ta sama prośba w motywie ciemnym](obrazy/m-v4-zgoda-lokalizacja-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-zgoda-lokalizacja-ciemny.webp) | [![Ta sama prośba przy czcionce 200%: oba przyciski w treści pod tekstem](obrazy/m-v4-zgoda-lokalizacja-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-zgoda-lokalizacja-jasny-200.webp) |
-
-### V4: tylko przybliżona lokalizacja
-
-`m-v4-zgoda-przyblizona` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-zgoda-tylko-przyblizona)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Zgłoś barierę: „Telefon podaje tylko przybliżone miejsce, a to za mało, by wskazać barierę.”, przyciski Pozwól na dokładną lokalizację i Wróć do mapy](obrazy/m-v4-zgoda-przyblizona-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-zgoda-przyblizona-jasny.webp) | [![Ten sam komunikat w motywie ciemnym](obrazy/m-v4-zgoda-przyblizona-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-zgoda-przyblizona-ciemny.webp) | [![Ten sam komunikat przy czcionce 200%](obrazy/m-v4-zgoda-przyblizona-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-zgoda-przyblizona-jasny-200.webp) |
-
-### V4: krok 1 z 3, zdjęcie
-
-`m-v4-krok-1` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-krok-1-z-3)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Krok 1 z 3 z paskiem postępu: ostrzeżenie Ważne „Nie fotografuj twarzy ani tablic rejestracyjnych.” z dopiskiem, że zdjęcie zobaczą inni, i przypięty na dole przycisk Zrób zdjęcie](obrazy/m-v4-krok-1-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-1-jasny.webp) | [![Ten sam krok 1 w motywie ciemnym](obrazy/m-v4-krok-1-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-1-ciemny.webp) | [![Ten sam krok 1 przy czcionce 200%](obrazy/m-v4-krok-1-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-1-jasny-200.webp) |
-
-### V4: krok 1 po zrobieniu zdjęcia
-
-`m-v4-krok-1-zdjecie` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-krok-1-ze-zdjeciem)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Krok 1 z 3 po powrocie z kroku 2: zrobione zdjęcie wejścia ze schodami, to samo ostrzeżenie Ważne, przyciski Dalej i Zrób nowe zdjęcie](obrazy/m-v4-krok-1-zdjecie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-1-zdjecie-jasny.webp) | [![Ten sam krok 1 ze zdjęciem w motywie ciemnym](obrazy/m-v4-krok-1-zdjecie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-1-zdjecie-ciemny.webp) | [![Ten sam krok 1 ze zdjęciem przy czcionce 200%: Zrób nowe zdjęcie w treści pod ostrzeżeniem, przypięty tylko Dalej](obrazy/m-v4-krok-1-zdjecie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-1-zdjecie-jasny-200.webp) |
-
-### V4: krok 2, czego dotyczy bariera
-
-`m-v4-krok-2` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-krok-2-z-3)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Krok 2 z 3: pytanie „Czego dotyczy bariera?” i sześć dużych przycisków: Wejście i drzwi, Schody i windy, Przejścia i chodniki, Toalety, Napisy i oznaczenia, Coś innego](obrazy/m-v4-krok-2-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-2-jasny.webp) | [![Ten sam krok 2 w motywie ciemnym](obrazy/m-v4-krok-2-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-2-ciemny.webp) | [![Ten sam krok 2 przy czcionce 200%](obrazy/m-v4-krok-2-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-2-jasny-200.webp) |
-
-### V4: krok 2, na którym piętrze
-
-`m-v4-krok-2-pietro` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-krok-2-pytanie-o-pietro)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Krok 2 z 3 po wyborze Schody i windy: pytanie „Na którym piętrze?”, przycisk Nie wiem i piętra A-1 od najniższego: Piwnica, Parter, 1, 2 i 3 piętro](obrazy/m-v4-krok-2-pietro-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-2-pietro-jasny.webp) | [![Ten sam wybór piętra w motywie ciemnym](obrazy/m-v4-krok-2-pietro-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-2-pietro-ciemny.webp) | [![Ten sam wybór piętra przy czcionce 200%](obrazy/m-v4-krok-2-pietro-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-2-pietro-jasny-200.webp) |
-
-### V4: krok 3, sprawdzenie i wysłanie
-
-`m-v4-krok-3` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-krok-3-z-3)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Krok 3 z 3: miniatura zdjęcia, podsumowanie Schody i windy oraz 2 piętro, zdanie „Dołączymy miejsce, w którym teraz stoisz.” i przypięty przycisk Wyślij](obrazy/m-v4-krok-3-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-3-jasny.webp) | [![Ten sam krok 3 w motywie ciemnym](obrazy/m-v4-krok-3-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-3-ciemny.webp) | [![Ten sam krok 3 przy czcionce 200%](obrazy/m-v4-krok-3-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-krok-3-jasny-200.webp) |
-
-### V4: telefon nie ustalił miejsca
-
-`m-v4-brak-pozycji` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-brak-pozycji)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Krok 3 z 3 z podsumowaniem i komunikatem „Telefon nie ustalił, gdzie jesteś.”, radą, by podejść do okna albo wyjść na zewnątrz, oraz przyciskami Spróbuj ponownie i Zrezygnuj](obrazy/m-v4-brak-pozycji-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-brak-pozycji-jasny.webp) | [![Ten sam komunikat w motywie ciemnym](obrazy/m-v4-brak-pozycji-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-brak-pozycji-ciemny.webp) | [![Ten sam komunikat przy czcionce 200%](obrazy/m-v4-brak-pozycji-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-brak-pozycji-jasny-200.webp) |
-
-### V4: potwierdzenie rezygnacji
-
-`m-v4-rezygnacja` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-potwierdzenie-rezygnacji)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Potwierdzenie rezygnacji: miniatura zdjęcia, które zostanie usunięte, zdanie „Jeśli zrezygnujesz, usuniemy zrobione zdjęcie i niczego nie wyślemy.” i dwa jednakowe przyciski Tak, zrezygnuj oraz Wróć do zdjęcia](obrazy/m-v4-rezygnacja-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-rezygnacja-jasny.webp) | [![To samo potwierdzenie w motywie ciemnym](obrazy/m-v4-rezygnacja-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-rezygnacja-ciemny.webp) | [![To samo potwierdzenie przy czcionce 200%](obrazy/m-v4-rezygnacja-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-rezygnacja-jasny-200.webp) |
-
-### V4: wysłane
-
-`m-v4-wyslane` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-potwierdzenie-wysania)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Po wysłaniu: „Dziękujemy.” i zdanie, że sprawdzimy zdjęcie i pokażemy barierę na mapie, jeśli się potwierdzi, oraz przypięty przycisk Wróć do mapy](obrazy/m-v4-wyslane-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-wyslane-jasny.webp) | [![To samo potwierdzenie w motywie ciemnym](obrazy/m-v4-wyslane-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-wyslane-ciemny.webp) | [![To samo potwierdzenie przy czcionce 200%](obrazy/m-v4-wyslane-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-wyslane-jasny-200.webp) |
-
-### V4: zapisane bez internetu
-
-`m-v4-wyslane-brak-sieci` · [makieta low-fi](../makiety/odwiedzajacy.md#v4-potwierdzenie-bez-internetu)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Po wysłaniu bez internetu: pasek „Bez internetu · dane z 27.10.2026”, „Zapisaliśmy zdjęcie w telefonie.”, „Wyślemy je sami, gdy wróci internet.” i przycisk Wróć do mapy](obrazy/m-v4-wyslane-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v4-wyslane-brak-sieci-jasny.webp) | [![To samo potwierdzenie w motywie ciemnym](obrazy/m-v4-wyslane-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v4-wyslane-brak-sieci-ciemny.webp) | [![To samo potwierdzenie przy czcionce 200%](obrazy/m-v4-wyslane-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v4-wyslane-brak-sieci-jasny-200.webp) |
-
-## V5 Pomoc
-
-Wymagania: [V5 Pomoc](../wymagania-ekranow.md#v5-pomoc).
-
-### V5: pierwsze uruchomienie, krok 1 z 3
-
-`m-v5-pomoc-pierwsze-uruchomienie` · [makieta low-fi](../makiety/odwiedzajacy.md#v5-pomoc). Przy pierwszym uruchomieniu „Wstecz” na tym kroku pomija instrukcję i otwiera mapę.
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Instrukcja otwarta sama przy pierwszym uruchomieniu, Jak korzystać z aplikacji, krok 1 z 3: Znajdź budynek, wyjaśnienie, że po wpisaniu symbolu w polu na górze mapy pokażemy opis budynku z wejściami i barierami, przykład pola wyszukiwania bez lupy, przyciski Dalej i Pomiń instrukcję oraz pasek dolny z zaznaczoną Pomocą](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny.webp) | [![Ten sam pierwszy krok instrukcji w motywie ciemnym](obrazy/m-v5-pomoc-pierwsze-uruchomienie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-pierwsze-uruchomienie-ciemny.webp) | [![Ten sam pierwszy krok instrukcji przy czcionce 200%: Dalej i Pomiń instrukcję na końcu treści, pod przykładem pola](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-pierwsze-uruchomienie-jasny-200.webp) |
-
-### V5: krok 2 z 3, co znaczy „Dostępne”
-
-`m-v5-pomoc` · [makieta low-fi](../makiety/odwiedzajacy.md#v5-pomoc). Instrukcja ma 3 kroki, trzeci to „Zgłoś barierę” ze zdaniem o koncie, bez osobnej makiety.
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Jak korzystać z aplikacji, krok 2 z 3: wyjaśnienie napisu Dostępne przy wejściu, przykład wejścia z opisu budynku z oznaczeniem Dostępne, Wejście dostosowane, Drzwi 120 cm, przyciski Dalej i Pomiń instrukcję oraz pasek dolny z zaznaczoną Pomocą](obrazy/m-v5-pomoc-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-jasny.webp) | [![Ten sam krok instrukcji w motywie ciemnym](obrazy/m-v5-pomoc-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-ciemny.webp) | [![Ten sam krok instrukcji przy czcionce 200%: Dalej i Pomiń instrukcję na końcu treści, pod przykładem](obrazy/m-v5-pomoc-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v5-pomoc-jasny-200.webp) |
-
-## L1 Prośba o logowanie
-
-Wymagania: [L1 Prośba o logowanie](../wymagania-ekranow.md#l1-prosba-o-logowanie).
-
-### L1: prośba o logowanie przy zgłoszeniu
-
-`m-l1-konto` · [makieta low-fi](../makiety/odwiedzajacy.md#l1-stan-zwyky)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Konto: „Aby zgłosić barierę, potrzebne jest konto.”, wyjaśnienie, że konto chroni mapę przed fałszywymi informacjami, informacja o trzech krótkich krokach i trzy przyciski jeden pod drugim: Zaloguj się, Załóż konto, Nie teraz](obrazy/m-l1-konto-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l1-konto-jasny.webp) | [![Ta sama prośba w motywie ciemnym](obrazy/m-l1-konto-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l1-konto-ciemny.webp) | [![Ta sama prośba przy czcionce 200%: trzy przyciski na końcu treści](obrazy/m-l1-konto-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l1-konto-jasny-200.webp) |
-
-### L1: logowanie bez internetu
-
-`m-l1-konto-brak-sieci` · [makieta low-fi](../makiety/odwiedzajacy.md#l1-brak-sieci)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Konto bez internetu: pasek „Bez internetu · dane z 27.10.2026”, komunikat „Logowanie wymaga internetu.”, dopisek, że mapa i opisy budynków działają bez niego, i przycisk Wróć do mapy](obrazy/m-l1-konto-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l1-konto-brak-sieci-jasny.webp) | [![Ten sam komunikat w motywie ciemnym](obrazy/m-l1-konto-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l1-konto-brak-sieci-ciemny.webp) | [![Ten sam komunikat przy czcionce 200%](obrazy/m-l1-konto-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l1-konto-brak-sieci-jasny-200.webp) |
-
-## L2 Konto
-
-Wymagania: [L2 Konto](../wymagania-ekranow.md#l2-konto).
-
-### L2: konto Odwiedzającego
-
-`m-l2-konto` · [makieta low-fi](../makiety/odwiedzajacy.md#l2-odwiedzajacy)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Konto: karta osoby Halina Nowak z rolą Odwiedzający, a pod nią lista Konto z wierszami Informacja o danych osobowych, Wycofaj zgodę i Wyloguj się, w pasku dolnym zaznaczone Konto](obrazy/m-l2-konto-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-jasny.webp) | [![To samo konto w motywie ciemnym](obrazy/m-l2-konto-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-ciemny.webp) | [![To samo konto przy czcionce 200%](obrazy/m-l2-konto-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-jasny-200.webp) |
-
-### L2: Konto i praca
-
-`m-l2-konto-praca` · [makieta low-fi](../makiety/odwiedzajacy.md#l2-rola-pracownicza)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Konto i praca: karta osoby z rolami Odwiedzający, Zbierający, Koordynator, lista Twoja praca z wierszami Zmierz i zgłoś barierę, Moje zgłoszenia, Postęp inwentaryzacji, Zaproś osobę, Pobierz eksport, niżej lista Konto](obrazy/m-l2-konto-praca-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-praca-jasny.webp) | [![Ten sam ekran Konto i praca w motywie ciemnym](obrazy/m-l2-konto-praca-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-praca-ciemny.webp) | [![Ten sam ekran Konto i praca przy czcionce 200%: wiersze list bez ikon, dłuższe nazwy w dwóch wierszach tekstu](obrazy/m-l2-konto-praca-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-praca-jasny-200.webp) |
-
-### L2: informacja o danych osobowych
-
-`m-l2-konto-klauzula` · [makieta low-fi](../makiety/odwiedzajacy.md#l2-klauzula-informacyjna). Tekst klauzuli nie był jeszcze sprawdzony prawnie.
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Informacja o danych osobowych: administratorem jest Zespół projektu Dostępny Kampus, Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko, ze zdaniem „Politechnika Wrocławska nie jest administratorem Twoich danych.”, dalej kontakt przez repozytorium projektu na GitHub, jakie dane, po co, na jakiej podstawie, jak długo i jakie masz prawa](obrazy/m-l2-konto-klauzula-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-klauzula-jasny.webp) | [![Ta sama informacja w motywie ciemnym](obrazy/m-l2-konto-klauzula-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-klauzula-ciemny.webp) | [![Ta sama informacja przy czcionce 200%](obrazy/m-l2-konto-klauzula-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-klauzula-jasny-200.webp) |
-
-### L2: wycofanie zgody
-
-`m-l2-konto-wycofanie` · [makieta low-fi](../makiety/odwiedzajacy.md#l2-potwierdzenie-wycofania-zgody)
-
-| Jasny | Ciemny | Czcionka 200% |
-| --- | --- | --- |
-| [![Wycofanie zgody: „Wylogujemy Cię i w ciągu miesiąca usuniemy Twoje dane osobowe.”, dopisek, że wysłane zdjęcia barier zostaną bez danych osoby, i dwa jednakowe przyciski Wycofaj zgodę oraz Zostaw zgodę](obrazy/m-l2-konto-wycofanie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-wycofanie-jasny.webp) | [![To samo potwierdzenie w motywie ciemnym](obrazy/m-l2-konto-wycofanie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-wycofanie-ciemny.webp) | [![To samo potwierdzenie przy czcionce 200%](obrazy/m-l2-konto-wycofanie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-wycofanie-jasny-200.webp) |
+| Gość i Odwiedzający | V1 Mapa kampusu, V2 Karta budynku, V4 Zgłoszenie szybkie, V5 Pomoc, L1–L2 Konto | [Ekrany odwiedzającego](odwiedzajacy.md) |
+| Zespół w terenie | C1–C7 pomiar pozycji, formularze i przeglądy | poniższe sekcje (`C1–C7`) |
+| Weryfikacja i koordynacja | R1–R2 kolejka sprawdzenia, K1–K3 inwentaryzacja i eksport | poniższe sekcje (`R1–K3`) |
 
 ## C1 Pomiar pozycji
 
@@ -608,7 +154,7 @@ Wymagania: [C3 Moje zgłoszenia](../wymagania-ekranow.md#c3-moje-zgoszenia). Nag
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Lista zgłoszeń: przyciski Czeka na wysłanie: 2 i Zmierz i zgłoś barierę, potem karty ze statusem słowem i ikoną: W telefonie, Bariery już nie ma, Niesprawna winda z Otwórz; Odrzucone, Próg z powodem odrzucenia Zdjęcie nie pokazuje progu i Otwórz; W weryfikacji, Ciężkie drzwi ze Zmiana czeka na wysłanie; Wysłane, Próg z Dwie wersje: wybierz jedną; Przyjęte, Schody przy wejściu bez przycisku; Archiwalne, zmiana oznaczenia Wejścia Cesarskiego z Nowe oznaczenie: Niedostępne](obrazy/m-c3-moje-zgloszenia-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-jasny.webp) | [![Ta sama lista zgłoszeń w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, karty na całą szerokość, statusy i daty w kilku wierszach](obrazy/m-c3-moje-zgloszenia-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-jasny-200.webp) |
+| [![Lista zgłoszeń: Czeka na wysłanie: 2 i przycisk wypełniony Zmierz i zgłoś barierę, potem karty z ramką, w każdej status słowem z ikoną, typ, Budynek i piętro, data: W telefonie, Bariery już nie ma, Niesprawna winda z Otwórz ze strzałką; Odrzucone, Próg z Powód odrzucenia: Zdjęcie nie pokazuje progu i Otwórz; W weryfikacji, Zmiana czeka na wysłanie, Ciężkie drzwi; Wysłane, Próg z Dwie wersje: wybierz jedną i Otwórz; Przyjęte, Schody przy wejściu bez przycisku; Archiwalne, Zmiana oznaczenia wejścia z Nowe oznaczenie: Niedostępne](obrazy/m-c3-moje-zgloszenia-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-jasny.webp) | [![Ta sama lista zgłoszeń w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, karty na całą szerokość, statusy i daty w kilku wierszach](obrazy/m-c3-moje-zgloszenia-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-jasny-200.webp) |
 
 ### C3: odrzucone jako „Nieaktualne”
 
@@ -616,7 +162,7 @@ Wymagania: [C3 Moje zgłoszenia](../wymagania-ekranow.md#c3-moje-zgoszenia). Nag
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Trzy zgłoszenia odrzucone z powodem Nieaktualne: Próg z Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji i Wyślij ponownie; Bariery już nie ma, Niesprawna winda z Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa i Zmierz i zgłoś barierę; zmiana oznaczenia Wejścia Cesarskiego z Nowe oznaczenie: Dostępne, zdaniem Oznaczenie tego wejścia już się zmieniło i Wyślij ponownie](obrazy/m-c3-moje-zgloszenia-nieaktualne-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-nieaktualne-jasny.webp) | [![Te same odrzucone zgłoszenia w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-nieaktualne-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-nieaktualne-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, wyjaśnienia w kilku wierszach](obrazy/m-c3-moje-zgloszenia-nieaktualne-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-nieaktualne-jasny-200.webp) |
+| [![Trzy karty Odrzucone z Powód odrzucenia: nieaktualne: Próg z Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji i Wyślij ponownie ze strzałką; Bariery już nie ma, Niesprawna winda z Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa i Zmierz i zgłoś barierę; Zmiana oznaczenia wejścia z Nowe oznaczenie: Niedostępne, zdaniem Oznaczenie tego wejścia już się zmieniło i Wyślij ponownie](obrazy/m-c3-moje-zgloszenia-nieaktualne-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-nieaktualne-jasny.webp) | [![Te same odrzucone zgłoszenia w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-nieaktualne-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-nieaktualne-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, wyjaśnienia w kilku wierszach](obrazy/m-c3-moje-zgloszenia-nieaktualne-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-nieaktualne-jasny-200.webp) |
 
 ### C3: pusta lista
 
@@ -624,7 +170,7 @@ Wymagania: [C3 Moje zgłoszenia](../wymagania-ekranow.md#c3-moje-zgoszenia). Nag
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Pusta lista: Nie masz jeszcze zgłoszeń. Zmierz i zgłoś pierwszą barierę, przycisk Zmierz i zgłoś barierę](obrazy/m-c3-moje-zgloszenia-pusty-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-pusty-jasny.webp) | [![Ta sama pusta lista w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-pusty-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-pusty-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, przycisk w dwóch wierszach](obrazy/m-c3-moje-zgloszenia-pusty-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-pusty-jasny-200.webp) |
+| [![Pusta lista: Nie masz jeszcze zgłoszeń. Zmierz i zgłoś pierwszą barierę, pod spodem przycisk wypełniony Zmierz i zgłoś barierę](obrazy/m-c3-moje-zgloszenia-pusty-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-pusty-jasny.webp) | [![Ta sama pusta lista w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-pusty-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-pusty-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, przycisk w dwóch wierszach](obrazy/m-c3-moje-zgloszenia-pusty-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-pusty-jasny-200.webp) |
 
 ### C3: sprawdzanie statusów
 
@@ -632,7 +178,7 @@ Wymagania: [C3 Moje zgłoszenia](../wymagania-ekranow.md#c3-moje-zgoszenia). Nag
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Ładowanie: nad listą z telefonu wskaźnik i napis Sprawdzamy statusy…, karty zgłoszeń widoczne](obrazy/m-c3-moje-zgloszenia-ladowanie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-ladowanie-jasny.webp) | [![To samo ładowanie w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-ladowanie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-ladowanie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, napis ładowania nad kartami](obrazy/m-c3-moje-zgloszenia-ladowanie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-ladowanie-jasny-200.webp) |
+| [![Sprawdzanie statusów: nad listą z telefonu napis Sprawdzamy statusy…, karty zgłoszeń z ramką widoczne](obrazy/m-c3-moje-zgloszenia-ladowanie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-ladowanie-jasny.webp) | [![To samo ładowanie w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-ladowanie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-ladowanie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, napis ładowania nad kartami](obrazy/m-c3-moje-zgloszenia-ladowanie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-ladowanie-jasny-200.webp) |
 
 ### C3: bez internetu
 
@@ -640,7 +186,7 @@ Wymagania: [C3 Moje zgłoszenia](../wymagania-ekranow.md#c3-moje-zgoszenia). Nag
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Bez internetu: linia Bez internetu · Ostatnia synchronizacja: 29.10.2026, 16:20, pod nią lista zgłoszeń z telefonu ze statusami](obrazy/m-c3-moje-zgloszenia-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-brak-sieci-jasny.webp) | [![Ta sama lista bez internetu w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-brak-sieci-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, linia braku internetu w dwóch wierszach, data z godziną razem](obrazy/m-c3-moje-zgloszenia-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-brak-sieci-jasny-200.webp) |
+| [![Bez internetu: nad listą napis Bez internetu, pod nim karty zgłoszeń z telefonu ze statusami](obrazy/m-c3-moje-zgloszenia-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-brak-sieci-jasny.webp) | [![Ta sama lista bez internetu w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-brak-sieci-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, linia braku internetu w dwóch wierszach, data z godziną razem](obrazy/m-c3-moje-zgloszenia-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-brak-sieci-jasny-200.webp) |
 
 ### C3: błąd sprawdzania statusów
 
@@ -648,7 +194,7 @@ Wymagania: [C3 Moje zgłoszenia](../wymagania-ekranow.md#c3-moje-zgoszenia). Nag
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Błąd: Nie udało się sprawdzić statusów, ale zgłoszenia są bezpieczne w telefonie. Spróbuj ponownie za chwilę, przycisk Spróbuj ponownie, pod nim lista z telefonu](obrazy/m-c3-moje-zgloszenia-blad-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-blad-jasny.webp) | [![Ten sam błąd w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-blad-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-blad-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach nad listą](obrazy/m-c3-moje-zgloszenia-blad-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-blad-jasny-200.webp) |
+| [![Błąd: Nie udało się sprawdzić statusów, ale zgłoszenia są bezpieczne w telefonie. Spróbuj ponownie za chwilę, przycisk obrysowany Spróbuj ponownie, pod nim karty z telefonu](obrazy/m-c3-moje-zgloszenia-blad-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-blad-jasny.webp) | [![Ten sam błąd w motywie ciemnym](obrazy/m-c3-moje-zgloszenia-blad-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-blad-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach nad listą](obrazy/m-c3-moje-zgloszenia-blad-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c3-moje-zgloszenia-blad-jasny-200.webp) |
 
 ## C4 Synchronizacja i wybór wersji
 
@@ -720,7 +266,7 @@ Wymagania: [C5 Piętra obejrzane](../wymagania-ekranow.md#c5-pietra-obejrzane). 
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Budynek A-1, Gmach Główny: piętra od Piwnica do 3 piętro, przy obejrzanych Obejrzane z ikoną i Twój znacznik albo Znacznik innej osoby, przy własnych Cofnij znacznik, przy 1 piętrze Czeka na wysłanie, 3 piętro Nieobejrzane z Oznacz jako obejrzane](obrazy/m-c5-obejrzane-pietra-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-jasny.webp) | [![Ta sama lista pięter w motywie ciemnym](obrazy/m-c5-obejrzane-pietra-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, karty pięter na całą szerokość](obrazy/m-c5-obejrzane-pietra-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-jasny-200.webp) |
+| [![Budynek A-1: piętra od Piwnica do 3 piętro w kartach z ramką, przy obejrzanych Obejrzane z ikoną i Twój znacznik albo Znacznik innej osoby, przy własnych przycisk obrysowany Cofnij znacznik, przy 1 piętrze Czeka na wysłanie, 3 piętro Nieobejrzane z przyciskiem obrysowanym Oznacz jako obejrzane](obrazy/m-c5-obejrzane-pietra-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-jasny.webp) | [![Ta sama lista pięter w motywie ciemnym](obrazy/m-c5-obejrzane-pietra-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, karty pięter na całą szerokość](obrazy/m-c5-obejrzane-pietra-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-jasny-200.webp) |
 
 ### C5: Zbierający, potwierdzenie cofnięcia
 
@@ -728,7 +274,7 @@ Wymagania: [C5 Piętra obejrzane](../wymagania-ekranow.md#c5-pietra-obejrzane). 
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Potwierdzenie przy 2 piętrze: Cofnąć znacznik piętra 2? Postęp budynku się zmniejszy, przyciski Cofnij znacznik i Zostaw znacznik](obrazy/m-c5-obejrzane-pietra-potwierdzenie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-potwierdzenie-jasny.webp) | [![To samo potwierdzenie w motywie ciemnym](obrazy/m-c5-obejrzane-pietra-potwierdzenie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-potwierdzenie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, pytanie w kilku wierszach](obrazy/m-c5-obejrzane-pietra-potwierdzenie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-potwierdzenie-jasny-200.webp) |
+| [![Potwierdzenie w karcie 2 piętra pod linią: Cofnąć znacznik piętra 2? Postęp budynku się zmniejszy, pod pytaniem na całą szerokość przycisk wypełniony Cofnij znacznik i obrysowany Zostaw znacznik](obrazy/m-c5-obejrzane-pietra-potwierdzenie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-potwierdzenie-jasny.webp) | [![To samo potwierdzenie w motywie ciemnym](obrazy/m-c5-obejrzane-pietra-potwierdzenie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-potwierdzenie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, pytanie w kilku wierszach](obrazy/m-c5-obejrzane-pietra-potwierdzenie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-potwierdzenie-jasny-200.webp) |
 
 ### C5: Koordynator, autorzy znaczników
 
@@ -736,7 +282,7 @@ Wymagania: [C5 Piętra obejrzane](../wymagania-ekranow.md#c5-pietra-obejrzane). 
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Widok Koordynatora: przy każdym piętrze Znacznik: Zbierający, Autor 14 albo Autor 9 i Cofnij znacznik, przy 2 piętrze pytanie Cofnąć znacznik piętra 2? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający, z przyciskami Cofnij znacznik i Zostaw znacznik](obrazy/m-c5-obejrzane-pietra-koordynator-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-koordynator-jasny.webp) | [![Ten sam widok Koordynatora w motywie ciemnym](obrazy/m-c5-obejrzane-pietra-koordynator-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-koordynator-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, pytanie i przyciski pod znacznikiem](obrazy/m-c5-obejrzane-pietra-koordynator-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-koordynator-jasny-200.webp) |
+| [![Widok Koordynatora: A-1 i Obejrzane piętra: 4 z 5, karty pięter z ramką, w każdej Znacznik: Zbierający, Autor 14 albo Autor 9 i przycisk obrysowany Cofnij znacznik, przy 2 piętrze pytanie Cofnąć znacznik piętra 2? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający, z przyciskami Cofnij znacznik i Zostaw znacznik](obrazy/m-c5-obejrzane-pietra-koordynator-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-koordynator-jasny.webp) | [![Ten sam widok Koordynatora w motywie ciemnym](obrazy/m-c5-obejrzane-pietra-koordynator-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-koordynator-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, pytanie i przyciski pod znacznikiem](obrazy/m-c5-obejrzane-pietra-koordynator-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-koordynator-jasny-200.webp) |
 
 ### C5: budynek bez planu (A-6), bez internetu
 
@@ -744,7 +290,7 @@ Wymagania: [C5 Piętra obejrzane](../wymagania-ekranow.md#c5-pietra-obejrzane). 
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Budynek A-6, Karlicówka bez internetu: linia Bez internetu · Ostatnia synchronizacja, komunikat Znacznik zapisany w telefonie. Wyślemy go, gdy wróci internet, jeden wiersz Cały budynek z Obejrzane, Twój znacznik, Czeka na wysłanie i Cofnij znacznik](obrazy/m-c5-obejrzane-pietra-podstawowy-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-podstawowy-brak-sieci-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-c5-obejrzane-pietra-podstawowy-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-podstawowy-brak-sieci-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, linia braku internetu w dwóch wierszach](obrazy/m-c5-obejrzane-pietra-podstawowy-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-podstawowy-brak-sieci-jasny-200.webp) |
+| [![Budynek A-6 bez internetu: jedna karta Cały budynek z Obejrzane, Twój znacznik, Czeka na wysłanie, zdaniem Znacznik zapisany w telefonie. Wyślemy go, gdy wróci internet, i przyciskiem obrysowanym Cofnij znacznik](obrazy/m-c5-obejrzane-pietra-podstawowy-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-podstawowy-brak-sieci-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-c5-obejrzane-pietra-podstawowy-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-podstawowy-brak-sieci-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, linia braku internetu w dwóch wierszach](obrazy/m-c5-obejrzane-pietra-podstawowy-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-podstawowy-brak-sieci-jasny-200.webp) |
 
 ### C5: błąd zapisu znacznika
 
@@ -752,7 +298,7 @@ Wymagania: [C5 Piętra obejrzane](../wymagania-ekranow.md#c5-pietra-obejrzane). 
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Błąd zapisu: Nie udało się zapisać znacznika w telefonie. Spróbuj ponownie, a jeśli to nie pomoże, zwolnij miejsce, przycisk Spróbuj ponownie, pod nim lista pięter](obrazy/m-c5-obejrzane-pietra-blad-zapisu-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-blad-zapisu-jasny.webp) | [![Ten sam błąd w motywie ciemnym](obrazy/m-c5-obejrzane-pietra-blad-zapisu-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-blad-zapisu-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-c5-obejrzane-pietra-blad-zapisu-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-blad-zapisu-jasny-200.webp) |
+| [![Błąd zapisu w karcie 3 piętra: Nieobejrzane, Nie udało się zapisać znacznika w telefonie. Spróbuj ponownie, a jeśli to nie pomoże, zwolnij miejsce, i przycisk obrysowany Spróbuj ponownie; nad nią pozostałe piętra](obrazy/m-c5-obejrzane-pietra-blad-zapisu-jasny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-blad-zapisu-jasny.webp) | [![Ten sam błąd w motywie ciemnym](obrazy/m-c5-obejrzane-pietra-blad-zapisu-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-blad-zapisu-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach](obrazy/m-c5-obejrzane-pietra-blad-zapisu-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-c5-obejrzane-pietra-blad-zapisu-jasny-200.webp) |
 
 ## C6 Zmiana oznaczenia wejścia
 
@@ -844,7 +390,7 @@ Wymagania: [R1 Kolejka weryfikacji](../wymagania-ekranow.md#r1-kolejka-weryfikac
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Lista: sekcja Wzięte przeze mnie z kartą Schody przy wejściu, Budynek A-1, Zgłoszenie z pomiaru, Wysłane 26.10.2026 i Otwórz, nagłówek Do sprawdzenia, przełącznik Mapa i Lista z wybraną listą, cztery zgłoszenia od najdawniej wysłanego: Próg w C-13, Schody i windy w C-6 jako zgłoszenie szybkie, Niesprawna winda w A-1 z Bariery już nie ma, Wejście dostosowane w A-1 ze Zmiana oznaczenia wejścia, każde z przyciskiem Weź do sprawdzenia](obrazy/m-r1-kolejka-weryfikacji-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-jasny.webp) | [![Ta sama lista w motywie ciemnym](obrazy/m-r1-kolejka-weryfikacji-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, przełącznik i karty na całą szerokość, Weź do sprawdzenia przy każdej karcie](obrazy/m-r1-kolejka-weryfikacji-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-jasny-200.webp) |
+| [![Lista: sekcja Wzięte przeze mnie z kartą z ramką Schody przy wejściu, Budynek A-1, Zgłoszenie z pomiaru, Wysłane 26.10.2026 i przyciskiem obrysowanym Otwórz ze strzałką, nagłówek Do sprawdzenia, przełącznik Mapa i Lista z wybraną listą, cztery karty od najdawniej wysłanego zgłoszenia: Próg w C-13, Schody i windy w C-6 jako zgłoszenie szybkie, Niesprawna winda w A-1 z Bariery już nie ma, Wejście dostosowane w A-1 ze Zmiana oznaczenia wejścia, w każdej z lewej przycisk obrysowany Weź do sprawdzenia](obrazy/m-r1-kolejka-weryfikacji-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-jasny.webp) | [![Ta sama lista w motywie ciemnym](obrazy/m-r1-kolejka-weryfikacji-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, przełącznik i karty na całą szerokość, Weź do sprawdzenia w każdej karcie](obrazy/m-r1-kolejka-weryfikacji-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-jasny-200.webp) |
 
 ### R1: widok mapy
 
@@ -868,7 +414,7 @@ Wymagania: [R1 Kolejka weryfikacji](../wymagania-ekranow.md#r1-kolejka-weryfikac
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Zgłoszenie zajęte: na górze Ktoś inny wziął już to zgłoszenie. Wybierz inne, niżej Wzięte przeze mnie i lista bez zgłoszenia Próg z C-13](obrazy/m-r1-kolejka-weryfikacji-zajete-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-zajete-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-r1-kolejka-weryfikacji-zajete-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-zajete-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach nad listą](obrazy/m-r1-kolejka-weryfikacji-zajete-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-zajete-jasny-200.webp) |
+| [![Zgłoszenie zajęte: na górze panel bez ramki Ktoś inny wziął już to zgłoszenie. Wybierz inne, niżej Wzięte przeze mnie i karty z ramką bez zgłoszenia Próg z C-13](obrazy/m-r1-kolejka-weryfikacji-zajete-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-zajete-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-r1-kolejka-weryfikacji-zajete-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-zajete-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach nad listą](obrazy/m-r1-kolejka-weryfikacji-zajete-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r1-kolejka-weryfikacji-zajete-jasny-200.webp) |
 
 ### R1: bez internetu
 
@@ -896,7 +442,7 @@ Wymagania: [R2 Sprawdzenie zgłoszenia](../wymagania-ekranow.md#r2-sprawdzenie-z
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Zgłoszenie z pomiaru Schody przy wejściu z uciążliwością Blokada, Budynek A-1, parter, Miejsce: ok. 2 m od Wejścia Cesarskiego, dokładność 0,8 m, zdjęcie schodów, Zasłoń twarz lub tablicę, Autor: Zbierający, Autor 14; Podobne zgłoszenia do 10 m: Próg, 5 m, piętro 1, Przyjęte; pod kreską Przyjmij, Powód odrzucenia z wyborem Duplikat, Nieaktualne, Inny powód i polem Opisz powód dla autora, przycisk Odrzuć](obrazy/m-r2-sprawdzenie-zgloszenia-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-jasny.webp) | [![To samo zgłoszenie w motywie ciemnym](obrazy/m-r2-sprawdzenie-zgloszenia-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, dane zgłoszenia w kilku wierszach, decyzja na końcu strony](obrazy/m-r2-sprawdzenie-zgloszenia-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-jasny-200.webp) |
+| [![W ramce: Zgłoszenie z pomiaru Schody przy wejściu, znak Blokada ze słowem, Budynek A-1, parter, Miejsce: ok. 2 m od Wejścia Cesarskiego, dokładność 0,8 m, zdjęcie schodów, obrysowany przycisk Zasłoń twarz lub tablicę, Autor: Zbierający, Autor 14; Podobne zgłoszenia do 10 m: karta w ramce ze zdjęciem progu, Próg, 5 m, piętro 1, Przyjęte; pod kreską Przyjmij, Powód odrzucenia z wyborem Duplikat, Nieaktualne, Inny powód i polem Opisz powód dla autora, przycisk Odrzuć](obrazy/m-r2-sprawdzenie-zgloszenia-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-jasny.webp) | [![To samo zgłoszenie w motywie ciemnym](obrazy/m-r2-sprawdzenie-zgloszenia-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, dane zgłoszenia w kilku wierszach, decyzja na końcu strony](obrazy/m-r2-sprawdzenie-zgloszenia-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-jasny-200.webp) |
 
 ### R2: duplikat
 
@@ -928,7 +474,7 @@ Wymagania: [R2 Sprawdzenie zgłoszenia](../wymagania-ekranow.md#r2-sprawdzenie-z
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Zmiana oznaczenia wejścia: Wejście dostosowane, Budynek A-1, Obecne oznaczenie: Dostępne, Z map i opisów, 18.12.2023, Bez zmian od wysłania z ikoną ogniwa, Wybrane oznaczenie: Dostępne, zdjęcie wejścia, Autor: Zbierający, Autor 14; W promieniu 10 m nie ma podobnych zgłoszeń; Przyjmij i powody Nieaktualne oraz Inny powód, bez Duplikat](obrazy/m-r2-sprawdzenie-zgloszenia-wejscie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-wejscie-jasny.webp) | [![Ta sama zmiana oznaczenia w motywie ciemnym](obrazy/m-r2-sprawdzenie-zgloszenia-wejscie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-wejscie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, oznaczenia i daty w kilku wierszach](obrazy/m-r2-sprawdzenie-zgloszenia-wejscie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-wejscie-jasny-200.webp) |
+| [![Zmiana oznaczenia wejścia: Wejście dostosowane, Budynek A-1, Obecne oznaczenie: znak i słowo Niedostępne, Z map i opisów, 18.12.2023, Bez zmian od wysłania z ikoną ogniwa, Wybrane oznaczenie: znak i słowo Dostępne, zdjęcie wejścia, Autor: Zbierający, Autor 14; W promieniu 10 m nie ma podobnych zgłoszeń; Przyjmij i powody Nieaktualne oraz Inny powód, bez Duplikat](obrazy/m-r2-sprawdzenie-zgloszenia-wejscie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-wejscie-jasny.webp) | [![Ta sama zmiana oznaczenia w motywie ciemnym](obrazy/m-r2-sprawdzenie-zgloszenia-wejscie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-wejscie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, oznaczenia i daty w kilku wierszach](obrazy/m-r2-sprawdzenie-zgloszenia-wejscie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-wejscie-jasny-200.webp) |
 
 ### R2: nowa wersja od autora
 
@@ -944,7 +490,7 @@ Wymagania: [R2 Sprawdzenie zgłoszenia](../wymagania-ekranow.md#r2-sprawdzenie-z
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Ładowanie: dane zgłoszenia widoczne od razu, w ramkach zdjęć wskaźnik i napis Wczytujemy zdjęcie…](obrazy/m-r2-sprawdzenie-zgloszenia-ladowanie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-ladowanie-jasny.webp) | [![To samo ładowanie w motywie ciemnym](obrazy/m-r2-sprawdzenie-zgloszenia-ladowanie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-ladowanie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, ramki zdjęć z napisem ładowania](obrazy/m-r2-sprawdzenie-zgloszenia-ladowanie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-ladowanie-jasny-200.webp) |
+| [![Ładowanie: dane zgłoszenia widoczne od razu, w miejscu zdjęć napis Wczytujemy zdjęcie…](obrazy/m-r2-sprawdzenie-zgloszenia-ladowanie-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-ladowanie-jasny.webp) | [![To samo ładowanie w motywie ciemnym](obrazy/m-r2-sprawdzenie-zgloszenia-ladowanie-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-ladowanie-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, napisy ładowania w miejscu zdjęć](obrazy/m-r2-sprawdzenie-zgloszenia-ladowanie-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-ladowanie-jasny-200.webp) |
 
 ### R2: błąd przy przyjęciu
 
@@ -968,7 +514,7 @@ Wymagania: [R2 Sprawdzenie zgłoszenia](../wymagania-ekranow.md#r2-sprawdzenie-z
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Bez internetu przy decyzji: na górze linia Bez internetu, nad Przyjmij komunikat Decyzja wymaga internetu, a zgłoszenie czeka w »Wziętych przeze mnie«. Połącz się z internetem i podejmij decyzję ponownie; wybrane wartości zostają](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach nad Przyjmij](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-jasny-200.webp) |
+| [![Bez internetu przy decyzji: na górze pigułka Bez internetu, nad Przyjmij komunikat w ramce Decyzja wymaga internetu, a zgłoszenie czeka w »Wziętych przeze mnie«. Połącz się z internetem i podejmij decyzję ponownie; wybrane wartości zostają](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-jasny.webp) | [![Ten sam stan w motywie ciemnym](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, komunikat w kilku wierszach nad Przyjmij](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-r2-sprawdzenie-zgloszenia-brak-sieci-jasny-200.webp) |
 
 ## K1 Postęp inwentaryzacji
 
@@ -980,7 +526,7 @@ Wymagania: [K1 Postęp inwentaryzacji](../wymagania-ekranow.md#k1-postep-inwenta
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Lista budynków w kolejności katalogu: Stan z 30.10.2026, 10:42 i przycisk Odśwież, karty z symbolem i nazwą z danych PWr, np. L-2 Kompleks badawczy GEO-3EM Energia, Ekologia, Edukacja Nieobejrzany, C-18 Strefa Kultury Studenckiej Obejrzany z ikoną, z liczbami Czeka na sprawdzenie i Przyjęte oraz przyciskiem Otwórz](obrazy/m-k1-postep-inwentaryzacji-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-jasny.webp) | [![Ta sama lista w motywie ciemnym](obrazy/m-k1-postep-inwentaryzacji-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, karty na całą szerokość, nazwy budynków w kilku wierszach](obrazy/m-k1-postep-inwentaryzacji-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-jasny-200.webp) |
+| [![Lista budynków w kolejności katalogu: Stan z 30.10.2026, 10:42, pod nim przycisk obrysowany Odśwież. Karty z ramką: symbol, nazwa z danych PWr, stan i liczby Czeka na sprawdzenie i Przyjęte, np. L-2 Kompleks badawczy GEO-3EM Energia, Ekologia, Edukacja Nieobejrzany, C-18 Strefa Kultury Studenckiej Obejrzany z ikoną; na dole każdej karty z lewej przycisk obrysowany Otwórz ze strzałką](obrazy/m-k1-postep-inwentaryzacji-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-jasny.webp) | [![Ta sama lista w motywie ciemnym](obrazy/m-k1-postep-inwentaryzacji-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, karty na całą szerokość, nazwy budynków i liczby w kilku wierszach](obrazy/m-k1-postep-inwentaryzacji-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-jasny-200.webp) |
 
 ### K1: budynek szczegółowy A-1
 
@@ -988,7 +534,7 @@ Wymagania: [K1 Postęp inwentaryzacji](../wymagania-ekranow.md#k1-postep-inwenta
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Lista przewinięta do A-1 Gmach Główny: 4 z 5 pięter, 80%, Czeka na sprawdzenie: 3, Przyjęte: 4, Wejścia sprawdzone na miejscu: 1 z 6 i Otwórz, obok budynki podstawowe H-5 i A-7 Nieobejrzany oraz A-6 Karlicówka Obejrzany](obrazy/m-k1-postep-inwentaryzacji-a1-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-a1-jasny.webp) | [![Ta sama lista w motywie ciemnym](obrazy/m-k1-postep-inwentaryzacji-a1-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-a1-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, liczby w osobnych wierszach](obrazy/m-k1-postep-inwentaryzacji-a1-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-a1-jasny-200.webp) |
+| [![Lista przewinięta do A-1 Gmach Główny: karta z ramką, 4 z 5 pięter, 80%, Czeka na sprawdzenie: 3, Przyjęte: 4, Wejścia sprawdzone na miejscu: 1 z 6 i przycisk obrysowany Otwórz ze strzałką; obok budynki podstawowe H-5 i A-7 Nieobejrzany oraz A-6 Karlicówka Obejrzany](obrazy/m-k1-postep-inwentaryzacji-a1-jasny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-a1-jasny.webp) | [![Ta sama lista w motywie ciemnym](obrazy/m-k1-postep-inwentaryzacji-a1-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-a1-ciemny.webp) | [![Ten sam stan przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, liczby w osobnych wierszach](obrazy/m-k1-postep-inwentaryzacji-a1-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-k1-postep-inwentaryzacji-a1-jasny-200.webp) |
 
 ### K1: wczytywanie
 

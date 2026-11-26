@@ -3,8 +3,6 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app
 
 import androidx.activity.ComponentActivity
@@ -17,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
@@ -25,8 +24,6 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.BuildingCard
-import io.github.dostepnykampus.core.data.account.GuestRoleProvider
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.feature.map.building.BuildingCardViewModel
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
@@ -45,7 +42,7 @@ private const val SHOW_ENTRANCE = "Pokaż wejście na mapie"
 
 private val ShowButton = hasClickAction() and hasContentDescription("$SHOW_ENTRANCE: »Boczne«")
 
-/** „Pokaż wejście na mapie” na V2 od dotknięcia do V1 z zaznaczonym wejściem. Wymagania: US3.3, US2.1, BR-25 */
+/** „Pokaż wejście na mapie” i wiersz wejścia na V2 → V1 z zaznaczonym wejściem. Wymagania: US3.3, US2.1, BR-25 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
 class ShowEntranceTest {
@@ -55,15 +52,38 @@ class ShowEntranceTest {
     private lateinit var navigator: AppNavigator
 
     /**
-     * Wiersz: V2 pełny ekran, wejście zalecane nie jest pierwsze w danych ani główne → „Pokaż wejście na mapie” przy
-     *   nim prowadzi do V1 z zaznaczonym tym wejściem i budynkiem karty.
+     * Wiersz: V2 pełny ekran, wejście zalecane nie jest pierwsze w danych ani główne → „Pokaż wejście na mapie” pod
+     *   wierszem o wejściach prowadzi do V1 z zaznaczonym tym wejściem i budynkiem karty; karta otwarta od razu
+     *   na cały ekran otwiera arkusz wejścia na cały ekran.
      *
-     * Wymagania: US3.3, US2.1, BR-25
+     * Wymagania: US3.3, US2.1, BR-25, NFR-19
      */
     @Test
     fun opensMapAtEntrance() {
+        openCard()
+        compose.onAllNodes(hasContentDescription(SHOW_ENTRANCE, substring = true)).assertCountEquals(1)
+        compose.onNode(ShowButton).performScrollTo().performClick()
+        val focus = MapFocus.Entrance(id = "node/2", buildingSymbol = "A-1", isFullSheet = true)
+        assertEquals(MapRoute(focus), navigator.current)
+    }
+
+    /**
+     * Wiersz: V2 pełny ekran, dotknięcie wiersza wejścia niezalecanego na liście → V1 z zaznaczonym tym wejściem
+     *   i jego arkuszem, tak jak „Pokaż wejście na mapie”.
+     *
+     * Wymagania: US3.3
+     */
+    @Test
+    fun opensMapFromEntranceRow() {
+        openCard()
+        compose.onNode(hasClickAction() and hasText("Schody")).performScrollTo().performClick()
+        val focus = MapFocus.Entrance(id = "node/1", buildingSymbol = "A-1", isFullSheet = true)
+        assertEquals(MapRoute(focus), navigator.current)
+    }
+
+    private fun openCard() {
         compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
                 navigator = this
                 if (route is MapRoute) {
                     Text(text = "V1", modifier = Modifier.clickable { openBuilding("A-1", isDirect = true) })
@@ -74,9 +94,6 @@ class ShowEntranceTest {
         }
         compose.onNodeWithText("V1").performClick()
         compose.waitUntil { compose.onAllNodesWithText("Wejścia").fetchSemanticsNodes().isNotEmpty() }
-        compose.onAllNodes(hasContentDescription(SHOW_ENTRANCE, substring = true)).assertCountEquals(1)
-        compose.onNode(ShowButton).performScrollTo().performClick()
-        assertEquals(MapRoute(MapFocus.Entrance(id = "node/2", buildingSymbol = "A-1")), navigator.current)
     }
 
     @Composable

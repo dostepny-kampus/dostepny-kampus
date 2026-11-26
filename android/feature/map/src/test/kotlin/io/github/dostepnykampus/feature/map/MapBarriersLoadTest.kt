@@ -6,14 +6,12 @@
 package io.github.dostepnykampus.feature.map
 
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
-import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.Severity
-import io.github.dostepnykampus.feature.map.campus.campusMapData
+import io.github.dostepnykampus.feature.map.campus.NO_SERVER
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -25,19 +23,12 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.coroutines.EmptyCoroutineContext
 
 /** Bariery ze zgłoszeń przyjętych w danych mapy V1, na podróbkach źródeł. Wymagania: US1.3, NFR-10 */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MapBarriersLoadTest {
     private val online = MutableStateFlow(true)
     private val answers = ArrayDeque<List<AcceptedBarrier>>()
-    private val repository =
-        BuildingCatalogRepository(EmptyCoroutineContext) {
-            """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""" +
-                """{"type":"Feature","properties":{"kind":"building","symbols":["C-13"],"osm_id":"way/1"},""" +
-                """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
-        }
 
     @BeforeEach
     fun main() {
@@ -89,19 +80,8 @@ class MapBarriersLoadTest {
 
     private fun TestScope.shownBarriers(): Int = started().barrierCount()
 
-    private fun TestScope.started(): CampusMapViewModel {
-        val viewModel =
-            CampusMapViewModel(
-                repository = repository,
-                networkStatus = { online },
-                mapListChoice = TestMapListChoice(),
-                computeContext = EmptyCoroutineContext,
-                geometry = ::campusMapData,
-                barriers = { answers.removeFirst() },
-            )
-        backgroundScope.launch { viewModel.uiState.collect {} }
-        return viewModel
-    }
+    private fun TestScope.started(): CampusMapViewModel =
+        mapWithServer(online = online, server = NO_SERVER.copy(barriers = { answers.removeFirst() }))
 
     private fun CampusMapViewModel.barrierCount(): Int {
         val barriers = checkNotNull(uiState.value.mapData).barriers

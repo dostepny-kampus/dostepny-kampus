@@ -6,8 +6,6 @@
 package io.github.dostepnykampus.feature.map.campus
 
 import io.github.dostepnykampus.core.model.GeoArea
-import io.github.dostepnykampus.feature.map.area.areaOf
-import io.github.dostepnykampus.feature.map.plan.ShownPlan
 
 /**
  * Zaznaczenie na mapie V1. Zmienia się przy każdym wyborze osoby, a dane katalogu [CampusMapData] zostają te same,
@@ -24,6 +22,7 @@ import io.github.dostepnykampus.feature.map.plan.ShownPlan
  * `null` bez wybranej bariery
  * @property boundary wielokąt granicy terenu pokazanego na mapie; `null`, gdy granicą jest prostokąt [bounds]
  * @property plan plan piętra budynku przy środku mapy; `null`, gdy planu nie widać
+ * @property roomSteps numery kroków na widocznym piętrze
  */
 data class MapSelection(
     val building: String? = null,
@@ -32,6 +31,7 @@ data class MapSelection(
     val barrier: String? = null,
     val boundary: GeoArea? = null,
     val plan: ShownPlan? = null,
+    val roomSteps: List<RoomStepMarker> = emptyList(),
 )
 
 /**
@@ -49,3 +49,12 @@ fun CampusMapData.selection(
     val shown = areaOf(chosen = area, symbol = building ?: entrance?.buildingSymbol)
     return MapSelection(building = building, entrance = entrance, bounds = shown?.bounds, boundary = shown?.boundary)
 }
+
+/**
+ * Teren pokazany na mapie: teren o nazwie [chosen] wybrany przez osobę, bez wyboru teren budynku [symbol],
+ * np. z wyszukiwania, a bez niego teren startowy. `null` bez budynków w katalogu.
+ *
+ * Wymagania: US1.7, US1.8, US1.6
+ */
+fun CampusMapData.areaOf(chosen: String?, symbol: String?): MapArea? =
+    areas.firstOrNull { it.name == chosen } ?: areas.firstOrNull { it.bounds == boundsOf(symbol) }

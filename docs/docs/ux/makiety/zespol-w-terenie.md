@@ -174,7 +174,7 @@ Czynność główna: „Zapisz”.
 
 ### Lista zgłoszeń
 
-![Makieta C3: przyciski Czeka na wysłanie 2 i Zmierz i zgłoś barierę, potem sześć zgłoszeń, każde ze statusem tekstem i ikoną na początku: W telefonie Bariery już nie ma, Odrzucone z powodem, W weryfikacji ze znakiem Zmiana czeka na wysłanie, Wysłane z przyciskiem Dwie wersje, w tych czterech przycisk Otwórz ze strzałką, Przyjęte schody przy wejściu A-1, Archiwalne zmiana oznaczenia wejścia](../../_generated/m-c3-moje-zgloszenia.svg)
+![Makieta C3: przyciski Czeka na wysłanie 2 i Zmierz i zgłoś barierę, potem sześć zgłoszeń, każde ze statusem tekstem i ikoną na początku: W telefonie Bariery już nie ma, Odrzucone z powodem, W weryfikacji ze znakiem Zmiana czeka na wysłanie, Wysłane z przyciskiem Dwie wersje ze strzałką, w pierwszych trzech przycisk Otwórz ze strzałką, Przyjęte schody przy wejściu A-1, Archiwalne zmiana oznaczenia wejścia](../../_generated/m-c3-moje-zgloszenia.svg)
 
 Czynność główna: „Otwórz” przy zgłoszeniu do poprawy. Przycisk powtarza się w pozycjach, więc nie jest pogrubiony. Tak samo jest z „Otwórz” na R1.
 
@@ -188,7 +188,7 @@ Czynność główna: „Otwórz” przy zgłoszeniu do poprawy. Przycisk powtarz
 | „Otwórz” ze strzałką przy zgłoszeniu przed decyzją i odrzuconym; prowadzi do C2 | US8.1, US8.3, BR-3, decyzja 93 |
 | Przyjęte i archiwalne bez „Otwórz” | US8.1 |
 | „Zmiana czeka na wysłanie” przy niewysłanej edycji | US8.1, BR-9 |
-| „Dwie wersje: wybierz jedną”, prowadzi do C4 | US9.3 |
+| „Dwie wersje: wybierz jedną”, prowadzi do C4; przy konflikcie status wersji z serwera i bez „Otwórz” | US9.3, BR-10 |
 | Rodzaj „Bariery już nie ma”, tu „W telefonie”; po przyjęciu byłby „Archiwalne”, nigdy „Przyjęte” | US8.4, BR-19, PW-12 |
 | Rodzaj „Zmiana oznaczenia wejścia”: wejście główne A-1 „Niedostępne”, przyjęta zmiana staje się archiwalna | US17.2, BR-24 |
 

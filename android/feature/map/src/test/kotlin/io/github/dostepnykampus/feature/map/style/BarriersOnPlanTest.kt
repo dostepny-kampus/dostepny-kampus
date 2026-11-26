@@ -9,14 +9,8 @@ import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
-import io.github.dostepnykampus.feature.map.barrier.withBarriers
 import io.github.dostepnykampus.feature.map.campus.campusMapData
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.boolean
+import io.github.dostepnykampus.feature.map.campus.withBarriers
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -59,27 +53,9 @@ class BarriersOnPlanTest {
         return features
             .asSequence()
             .map { it.jsonObject.getValue("properties").jsonObject }
-            .filter { evaluate(expression = filter, properties = it).jsonPrimitive.boolean }
+            .filter { passes(filter = filter, properties = it) }
             .map { it.getValue("id").jsonPrimitive.content }
             .toList()
-    }
-
-    private fun evaluate(expression: JsonElement, properties: JsonObject): JsonElement {
-        if (expression !is JsonArray) return expression
-        val name = expression.first().jsonPrimitive.content
-        val arguments = expression.drop(1)
-
-        fun value(index: Int) = evaluate(expression = arguments[index], properties = properties)
-
-        return when (name) {
-            "get" -> properties[arguments[0].jsonPrimitive.content] ?: JsonNull
-            "has" -> JsonPrimitive(arguments[0].jsonPrimitive.content in properties)
-            "!" -> JsonPrimitive(!value(0).jsonPrimitive.boolean)
-            "==" -> JsonPrimitive(value(0) == value(1))
-            "!=" -> JsonPrimitive(value(0) != value(1))
-            "any" -> JsonPrimitive(arguments.indices.any { value(it).jsonPrimitive.boolean })
-            else -> error("Wyrażenie $name poza filtrem barier")
-        }
     }
 
     private companion object {

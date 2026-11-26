@@ -5,8 +5,11 @@
  */
 package io.github.dostepnykampus.core.data.barrier
 
+import io.github.dostepnykampus.core.data.cache.ServerCopy
 import io.github.dostepnykampus.core.data.cache.decodeCache
 import io.github.dostepnykampus.core.data.cache.encodeCache
+import io.github.dostepnykampus.core.database.cache.BARRIERS_COPY
+import io.github.dostepnykampus.core.database.cache.ServerCopyDao
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
@@ -14,10 +17,21 @@ import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import java.time.Instant
+import kotlin.coroutines.CoroutineContext
 
 private val cachedList = ListSerializer(CachedBarrier.serializer())
 
-/** Bariery jako dokument JSON do wiersza `barrier_cache`. Wymagania: NFR-10 */
+/** Kopia barier pod kluczem [BARRIERS_COPY] w [dao]. Wymagania: NFR-10 */
+internal fun barrierCopy(dao: ServerCopyDao, ioContext: CoroutineContext): ServerCopy<List<AcceptedBarrier>> =
+    ServerCopy(
+        dao = dao,
+        key = BARRIERS_COPY,
+        encode = List<AcceptedBarrier>::toCacheJson,
+        decode = String::toCachedBarriers,
+        ioContext = ioContext,
+    )
+
+/** Bariery jako dokument JSON kopii. Wymagania: NFR-10 */
 internal fun List<AcceptedBarrier>.toCacheJson(): String = encodeCache(cachedList, map(::cached))
 
 /** Bariery z dokumentu kopii; `null` dla zepsutego dokumentu albo nieznanej uciążliwości. Wymagania: NFR-10 */
@@ -36,6 +50,9 @@ private data class CachedBarrier(
     val entranceId: String? = null,
     val floor: CachedFloor? = null,
     val photoIds: List<String> = emptyList(),
+    val description: String? = null,
+    val isQuick: Boolean = false,
+    val replacesSubmissionId: String? = null,
 )
 
 @Serializable
@@ -53,6 +70,9 @@ private fun cached(barrier: AcceptedBarrier): CachedBarrier =
         entranceId = barrier.entranceId,
         floor = barrier.floor?.run { CachedFloor(floorId = floorId, number = number, isMezzanine = isMezzanine) },
         photoIds = barrier.photoIds,
+        description = barrier.description,
+        isQuick = barrier.isQuick,
+        replacesSubmissionId = barrier.replacesSubmissionId,
     )
 
 private fun CachedBarrier.toBarrier(): AcceptedBarrier =
@@ -66,4 +86,7 @@ private fun CachedBarrier.toBarrier(): AcceptedBarrier =
         entranceId = entranceId,
         floor = floor?.run { SubmissionFloor(floorId = floorId, number = number, isMezzanine = isMezzanine) },
         photoIds = photoIds,
+        description = description,
+        isQuick = isQuick,
+        replacesSubmissionId = replacesSubmissionId,
     )

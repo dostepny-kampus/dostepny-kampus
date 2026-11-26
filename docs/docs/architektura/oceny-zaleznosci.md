@@ -146,3 +146,17 @@ Data sprawdzenia: 16 listopada 2026. Decyzja: LeakCanary `3.0-alpha-9` tylko w w
 | Potrzeba | Wykrycie wycieków pamięci w wersji debug bez wysyłania danych poza telefon (NFR-28). |
 | Ryzyko wersji alfa | Narzędzie działa tylko w wersji debug i nie trafia do APK release. |
 | Znane podatności | Zapytanie do [OSV](https://google.github.io/osv.dev/post-v1-query/) dla ekosystemu `Maven` i wersji `3.0-alpha-9` zwróciło 0 wpisów. |
+
+## Śledzenie kompozycji 1.12.1 i Tracing Perfetto 1.0.1
+
+Zadanie: [#2875](https://github.com/dostepny-kampus/dostepny-kampus/issues/2875).
+
+Data sprawdzenia: 17 listopada 2026. Decyzja: `runtime-tracing` `1.12.1` i `tracing-perfetto-binary` `1.0.1` tylko w wersji debug.
+
+| Kryterium | Wynik |
+| --- | --- |
+| Dokładna wersja | `androidx.compose.runtime:runtime-tracing` w wersji `1.12.1` z BOM Compose `2026.09.00`; `tracingPerfetto = "1.0.1"` w katalogu wersji Androida. Obie jako `debugImplementation`. |
+| Licencja | Apache-2.0, dozwolona przez ADR-0004; potwierdzają ją metadane Maven Google [śledzenia kompozycji](https://dl.google.com/android/maven2/androidx/compose/runtime/runtime-tracing/1.12.1/runtime-tracing-1.12.1.pom) i [biblioteki natywnej](https://dl.google.com/android/maven2/androidx/tracing/tracing-perfetto-binary/1.0.1/tracing-perfetto-binary-1.0.1.pom). |
+| Aktualność | Wydania z 09.09.2026 (`1.12.1`) i 19.11.2025 (`1.0.1`), w ostatnich 12 miesiącach. |
+| Potrzeba | Nazwy funkcji kompozycji w śladzie Perfetto, żeby wskazać, co przelicza się w klatkach animacji. Biblioteka natywna jest potrzebna, bo bez niej aplikacja nie włączy zapisu śladu. |
+| Znane podatności | Zapytania do [OSV](https://google.github.io/osv.dev/post-v1-query/) dla ekosystemu `Maven` i obu wersji zwróciły 0 wpisów. |

@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.report.edit
@@ -8,11 +8,13 @@ package io.github.dostepnykampus.feature.capture.report.edit
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
-import io.github.dostepnykampus.feature.capture.measure.place
 import io.github.dostepnykampus.feature.capture.report.A1
+import io.github.dostepnykampus.feature.capture.report.form.ReportEdit
 import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
 import io.github.dostepnykampus.feature.capture.report.form.ReportForm
 import io.github.dostepnykampus.feature.capture.report.form.ReportFormError
+import io.github.dostepnykampus.feature.capture.report.form.ReportUiState
+import io.github.dostepnykampus.feature.capture.report.form.edited
 import io.github.dostepnykampus.feature.capture.report.form.errors
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
@@ -51,6 +53,13 @@ class ReportEditTest {
         assertEquals(listOf(photo("p1"), photo("p2")), state.photos)
     }
 
+    /**
+     * Zmiana miejsca w tym samym budynku zostawia piętro i wybrany typ.
+     * Scenariusz (przykład: w budynku A-1): pomiar-precyzyjny.feature: Piętro zostaje po zmianie miejsca tylko w tym
+     *   samym budynku
+     *
+     * Wymagania: US7.4
+     */
     @Test
     fun keepsFloorInSameBuilding() {
         val state =
@@ -67,7 +76,8 @@ class ReportEditTest {
     /**
      * Zmiana miejsca do innego budynku albo na ulicę kasuje piętro, a wybrany typ zostaje. Brak pola piętra na
      * ulicy sprawdza `ReportScreenTest`.
-     * Scenariusz (częściowo): pomiar-precyzyjny.feature: Piętro zostaje po zmianie miejsca tylko w tym samym budynku
+     * Scenariusz (przykład: do budynku C-13): pomiar-precyzyjny.feature: Piętro zostaje po zmianie miejsca
+     *   tylko w tym samym budynku
      *
      * Wymagania: US7.4
      */
@@ -84,6 +94,13 @@ class ReportEditTest {
         assertEquals(BarrierType.STAIRS_AT_ENTRANCE, state.form.barrierType)
     }
 
+    /**
+     * Zmiana miejsca na ulicę kasuje piętro, a wybrany typ zostaje.
+     * Scenariusz (przykład: poza budynek, na ulicę): pomiar-precyzyjny.feature: Piętro zostaje po zmianie miejsca
+     *   tylko w tym samym budynku
+     *
+     * Wymagania: US7.4, BR-G4
+     */
     @Test
     fun dropsFloorOutside() {
         val state =

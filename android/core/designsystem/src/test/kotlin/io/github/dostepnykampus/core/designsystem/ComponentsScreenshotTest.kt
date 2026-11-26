@@ -22,7 +22,7 @@ import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
-import io.github.dostepnykampus.core.designsystem.marking.MarkingChip
+import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -74,15 +74,15 @@ class ComponentsScreenshotTest {
     private fun Components() {
         DostepnyKampusTheme {
             Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceContainer)) {
-                BackHeader(title = "Którędy wejść do A-1", onBack = {})
+                BackHeader(title = "A-1", onBack = {})
                 GroupContainer(title = "Wejścia", modifier = Modifier.padding(horizontal = Odstepy.m)) {
                     Text(text = "Wejście dostosowane", style = MaterialTheme.typography.titleMedium)
                     EntranceMarking.entries.forEach {
-                        MarkingChip(marking = it, modifier = Modifier.padding(vertical = Odstepy.xs))
+                        MarkingSign(marking = it, modifier = Modifier.padding(vertical = Odstepy.xs))
                     }
                 }
                 PinnedActionBar(modifier = Modifier.padding(top = Odstepy.l)) {
-                    PinnedButton(text = "Sprawdź, którędy wejść", onClick = {}, modifier = Modifier.weight(3f))
+                    PinnedButton(text = "Zgłoś barierę", onClick = {}, modifier = Modifier.weight(3f))
                     PinnedButton(
                         text = "Pokaż na mapie",
                         onClick = {},

@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Yevhenii Lukianenko
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.database
@@ -122,6 +122,20 @@ class PendingSubmissionDaoTest {
             assertEquals(setOf("p1", "p2"), found.photos.map { it.photoId }.toSet())
             dao.delete(ID)
             assertNull(database.pendingEdits().find(ID))
+        }
+
+    /**
+     * „Zostaw moją wersję” na C4 przywraca odrzucone zgłoszenie do wysyłki.
+     *
+     * Wymagania: US9.3, BR-10
+     */
+    @Test
+    fun requeuesRefused() =
+        runTest {
+            dao.save(submission(id = ID, savedAt = 1), photos("p1", of = ID))
+            dao.markRefused(ID)
+            dao.markQueued(ID)
+            assertEquals(listOf(ID), dao.all().map { it.submission.id })
         }
 
     private fun submission(id: String, savedAt: Long): PendingSubmissionEntity =

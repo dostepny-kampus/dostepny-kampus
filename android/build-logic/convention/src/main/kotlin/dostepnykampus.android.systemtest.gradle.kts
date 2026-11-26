@@ -17,12 +17,14 @@ plugins {
 extensions.configure<TestExtension> {
     namespace = "io.github.dostepnykampus" + path.replace(':', '.')
     compileSdk = libs.versionInt("androidCompileSdk")
+    compileSdkMinor = libs.versionInt("androidCompileSdkMinor")
     defaultConfig.minSdk = libs.versionInt("androidMinSdk")
     defaultConfig.targetSdk = libs.versionInt("androidTargetSdk")
     defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     compileOptions.sourceCompatibility = JavaVersion.toVersion(libs.versionInt("jvmTarget"))
     compileOptions.targetCompatibility = JavaVersion.toVersion(libs.versionInt("jvmTarget"))
-    lint.configureStrict()
+    lint.configureStrict(exceptions = rootDir.resolve("lint.xml"))
+    signingConfigs.getByName("debug").useRepositoryDebugKey(rootDir.resolve("debug.keystore"))
 }
 
 tasks.withType<KotlinCompilationTask<*>>().configureEach {

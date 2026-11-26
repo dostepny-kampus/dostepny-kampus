@@ -46,7 +46,7 @@ class RecommendedEntrancePathTest {
             entrance(name = "Zachodnie"),
         )
         assertEquals(
-            listOf("Zalecane", "Boczne", "Główne", "Od dziedzińca", "Północne", "Południowe", "Zachodnie"),
+            listOf("Zalecane", "Boczne", "Główne", "Od dziedzińca", "Południowe", "Północne", "Zachodnie"),
             shown(NAMES),
         )
         assertEquals("Dostępne", shown(MARKINGS).first())
@@ -80,6 +80,20 @@ class RecommendedEntrancePathTest {
         assertEquals(listOf("Dostępne", "Dostępne", "Niedostępne"), shown(MARKINGS))
     }
 
+    /**
+     * Scenariusz: przegladanie-mapy.feature: Przy kilku wejściach dostępnych bez głównego zalecane jest wejście
+     *   z nazwą.
+     */
+    @Test
+    fun recommendsNamedWithoutMain() {
+        openCard(
+            symbol = "C-13",
+            entrance(name = null, wheelchair = "yes"),
+            entrance(name = ADAPTED, wheelchair = "yes"),
+        )
+        assertEquals(listOf("Zalecane", ADAPTED, UNNAMED), shown(NAMES))
+    }
+
     /** Scenariusz: przegladanie-mapy.feature: Budynek bez wejścia dostępnego nie ma wejścia zalecanego. */
     @Test
     fun recommendsNoneIfInaccessible() {
@@ -88,7 +102,7 @@ class RecommendedEntrancePathTest {
             entrance(name = "Główne", type = "main", wheelchair = "no"),
             entrance(name = "Boczne", wheelchair = "no"),
         )
-        assertEquals(listOf("Główne", "Boczne"), shown(NAMES))
+        assertEquals(listOf("Boczne", "Główne"), shown(NAMES))
         assertEquals(listOf("Niedostępne", "Niedostępne"), shown(MARKINGS))
     }
 
@@ -114,7 +128,6 @@ class RecommendedEntrancePathTest {
                 BuildingCardScreen(
                     symbol = symbol,
                     mode = CardMode.Expanded,
-                    onCheckEntrances = {},
                     onShowOnMap = {},
                     onBack = {},
                     onClose = {},
@@ -140,10 +153,16 @@ class RecommendedEntrancePathTest {
     }
 
     private companion object {
-        val NAMES = setOf("Zalecane", "Główne", "Boczne", "Od dziedzińca", "Północne", "Południowe", "Zachodnie")
+        const val UNNAMED = "Wejście"
+        const val ADAPTED = "Wejście dostosowane"
+        val NAMES =
+            setOf("Zalecane", "Główne", "Boczne", "Od dziedzińca", "Północne", "Południowe", "Zachodnie") +
+                setOf(UNNAMED, ADAPTED)
         val MARKINGS = setOf("Dostępne", "Niedostępne", "Brak danych")
 
-        fun entrance(name: String, type: String = "yes", wheelchair: String? = null): String =
-            """"entrance":"$type","ref":"$name"""" + wheelchair?.let { ""","wheelchair":"$it"""" }.orEmpty()
+        fun entrance(name: String?, type: String = "yes", wheelchair: String? = null): String =
+            """"entrance":"$type"""" +
+                name?.let { ""","ref":"$it"""" }.orEmpty() +
+                wheelchair?.let { ""","wheelchair":"$it"""" }.orEmpty()
     }
 }

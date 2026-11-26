@@ -34,21 +34,24 @@ testy architektury i kompilator.
 
 Moduł to pakiet najwyższego poziomu pod `io.github.dostepnykampus`. Wszystkie działają w jednym procesie,
 granice sprawdza Spring Modulith. Schemat zależności modułów powstaje z kodu (`ModularityIT` porównuje
-go z plikiem `moduly-serwera.iuml`); moduł bez zależności, dziś `identity`, nie ma na nim strzałek.
+go z plikiem `moduly-serwera.iuml`). Każdy moduł zależy od `shared`; `identity` poza nim od nikogo.
 
-![Diagram zależności modułów serwera: barrier zależy od building i shared, inspection zależy od building i shared, building zależy od shared](../_generated/moduly-serwera.svg)
+![Diagram zależności modułów serwera: barrier zależy od building, identity i shared, inspection zależy od building, identity i shared, sync zależy od barrier, inspection i shared, building i identity zależą od shared](../_generated/moduly-serwera.svg)
 
 Moduł z kilkoma tematami, na przykładzie `barrier`:
 
 ```text
 barrier/
   package-info.java      opis modułu i lista zależności
+  api/                   zgłoszenia zmienione od kursora dla innych modułów
   submission/            zgłoszenie (agregat); dziedzina i porty
     content/             treść zgłoszenia: typ, grupa, miejsce, piętro
       json/              treść w kolumnie JSON
     application/         przypadki użycia z transakcją
     web/                 kontroler, żądania, odpowiedzi
     persistence/         JDBC
+  review/                weryfikacja: decyzja, podobne zgłoszenia; port weryfikacji
+    application/  web/  persistence/
   photo/                 zdjęcia zgłoszenia; port magazynu
     application/  storage/  web/
 ```
@@ -61,6 +64,8 @@ building/
   api/  domain/  web/  persistence/   budynek, temat od nazwy modułu
   room/                               pomieszczenie piętra
     json/  persistence/  web/
+  entrance/                           wejście: wiersz z regułą nazwy i oznaczenia
+    persistence/
 ```
 
 - **API modułu** leży w pakiecie `api` z `@NamedInterface("api")`: interfejsy, rekordy danych,
@@ -94,6 +99,8 @@ Moduł to moduł Gradle. Granicę wyznacza kompilator: moduł widzi tylko to, co
 | `:feature:capture` | zgłaszanie barier i moje zgłoszenia | jak `:feature:map` oraz `:core:location` |
 | `:feature:help` | pomoc i pierwsze uruchomienie | `:core:model`, `:core:data`, `:core:designsystem` |
 | `:feature:inspection` | postęp inwentaryzacji Koordynatora: lista budynków i znaczniki do cofnięcia | `:core:model`, `:core:data`, `:core:designsystem` |
+| `:feature:review` | sprawdzanie zgłoszeń przez Weryfikatora: kolejka weryfikacji | `:core:model`, `:core:data`, `:core:designsystem` |
+| `:feature:auth` | konto: logowanie i rejestracja | `:core:data`, `:core:designsystem` |
 | `:core:data` | repozytoria, kolejka wysyłki, synchronizacja | `:core:model`, `:core:database`, `:core:network`, `:core:geo` |
 | `:core:database` | baza Room | — |
 | `:core:network` | klient HTTP serwera | `:core:model`, `:core:geo` |

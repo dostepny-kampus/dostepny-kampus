@@ -1,4 +1,9 @@
 dk:
+  accounts:
+    admin: ${DK_AUTH_ADMIN_URL:http://localhost:8180/admin/realms/dostepny-kampus}
+    client: ${DK_AUTH_SERVICE_CLIENT:dostepny-kampus-serwer}
+    secret: ${DK_AUTH_SERVICE_SECRET:}
+    token: ${DK_AUTH_TOKEN_URL:http://localhost:8180/realms/dostepny-kampus/protocol/openid-connect/token}
   photos:
     access-key: ${DK_PHOTOS_ACCESS_KEY:}
     bucket: ${DK_PHOTOS_BUCKET:zdjecia}
@@ -8,6 +13,8 @@ dk:
     public-per-minute: ${DK_PUBLIC_RATE_LIMIT:60}
     writes-per-minute: ${DK_WRITES_RATE_LIMIT:120}
     exempt: ${DK_RATE_LIMIT_UNLIMITED:}
+  sync:
+    cursor-margin: 2m
 logging:
   level:
     io.github.dostepnykampus: ${DK_LOG_LEVEL:INFO}
@@ -25,7 +32,7 @@ spring:
   application:
     name: dostepny-kampus
   config:
-    import: classpath:pwr-plans.yaml
+    import: classpath:pwr-plans.yaml,classpath:pwr-campus-map.yaml
   datasource:
     password: ${DK_DB_APP_PASSWORD:}
     url: jdbc:postgresql://${DK_DB_HOST:127.0.0.1}:${DK_DB_PORT:5432}/${DK_DB_NAME:dostepny_kampus}
@@ -45,3 +52,5 @@ spring:
         jwt:
           audiences: ${DK_AUTH_AUDIENCE:dostepny-kampus-api}
           issuer-uri: ${DK_AUTH_ISSUER:http://localhost:8180/realms/dostepny-kampus}
+  transaction:
+    default-timeout: 30s

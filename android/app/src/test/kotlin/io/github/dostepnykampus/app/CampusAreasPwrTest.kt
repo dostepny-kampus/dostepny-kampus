@@ -3,8 +3,6 @@
  * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app
 
 import androidx.activity.ComponentActivity
@@ -27,8 +25,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
-import io.github.dostepnykampus.core.data.account.GuestRoleProvider
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.area.AreaShift
@@ -71,7 +67,7 @@ class CampusAreasPwrTest {
         val mapViewModel = compose.activity.appMapViewModel(choice)
         compose.setContent {
             DostepnyKampusTheme {
-                AppShell(isFirstLaunch, GuestRoleProvider, onFirstHelpLeft = {}) {
+                AppShell(isFirstLaunch, TestRoles(), onFirstHelpLeft = {}) {
                     TestAppScreen(it, mapViewModel, fakeMap)
                 }
             }

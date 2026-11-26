@@ -43,6 +43,7 @@ Plik `_wspolne.iuml` ma rozszerzenie `.iuml`, więc skrypt `render.py` nie trakt
 | `$pozycja("Tytuł", $blokada(), "Dopisek", "Przycisk")` | pozycja listy z oznaczeniem tekstem i ikoną | NFR-21 |
 | `$przycisk_glowny("…")`, `$przycisk("…", "camera-slr")` | przycisk na pełną szerokość, zawsze tej samej szerokości, z ikoną albo bez | NFR-17, NFR-21 |
 | `$przyciski_obok("…", "…")` | dwa przyciski po pół szerokości w jednym wierszu | NFR-17 |
+| `$czynnosc_karty("…", "arrow-right")` | czynność karty pozycji listy: obrysowany przycisk szeroki jak napis, przy lewej krawędzi ramki; ikona, np. strzałka w prawo, stoi po napisie | NFR-17, NFR-21; wymagania wspólne |
 | `$mapa("opis", legenda, kontrolki)`, `$przyciski_mapy()` | mapa na pełną szerokość z podpisem OpenStreetMap w ramce. Z `kontrolki` na mapie są „Powiększ”, „Pomniejsz” i strzałki przesuwania w krzyżu, a z wartością `"info"` także „ⓘ” przy podpisie (V1, R1). Na C1 to samo rysuje `$punkt_na_srodku` z `_zespol-w-terenie.iuml`: punkt na środku mapy albo planu (decyzja 93). | NFR-15, NFR-37, NFR-40, PW-8, PW-11 |
 | `$ramka()` … `}` | ramka pozycji listy na pełną szerokość; używają jej `$wejscie`, `$pozycja`, `$opcja`, `$komunikat` i `$mapa` | NFR-17 |
 | `$pole_tekstowe("…")`, `$blad_pola("…")` | pole tekstowe stałej szerokości; błąd przy polu pogrubiony | NFR-15, NFR-21 |
@@ -75,7 +76,6 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 | --- | --- | --- |
 | V1 | „Mapa kampusu” | [odwiedzający](odwiedzajacy.md) |
 | V2 | „C-13” i nazwa budynku | [odwiedzający](odwiedzajacy.md) |
-| V3 | „Którędy wejść do C-13” | [odwiedzający](odwiedzajacy.md) |
 | V4 | „Zgłoś barierę” | [odwiedzający](odwiedzajacy.md) |
 | V5 | „Jak korzystać z aplikacji” | [odwiedzający](odwiedzajacy.md) |
 | L1 | „Konto” | [odwiedzający](odwiedzajacy.md) |
@@ -95,7 +95,7 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 
 ## Wszystkie makiety
 
-79 makiet ekranów i katalog fragmentów. Stan zwykły nie ma dopisku w nazwie pliku. Stany, które różnią się jednym napisem, opisuje tabela pod makietą na stronie grupy.
+80 makiet ekranów i katalog fragmentów. Stan zwykły nie ma dopisku w nazwie pliku. Stany, które różnią się jednym napisem, opisuje tabela pod makietą na stronie grupy.
 
 | Ekran | Stan | Makieta | Strona |
 | --- | --- | --- | --- |
@@ -106,21 +106,23 @@ Każda grupa ma własną stronę z makietami, tabelami „Element → AC/BR/NFR�
 | V1 | brak sieci | [`m-v1-mapa-brak-sieci`](../../_generated/m-v1-mapa-brak-sieci.svg) | [odwiedzający](odwiedzajacy.md) |
 | V1 | pierwsze otwarcie bez internetu | [`m-v1-mapa-pierwsze-otwarcie`](../../_generated/m-v1-mapa-pierwsze-otwarcie.svg) | [odwiedzający](odwiedzajacy.md) |
 | V1 | znaleziona sala | [`m-v1-mapa-sala`](../../_generated/m-v1-mapa-sala.svg) | [odwiedzający](odwiedzajacy.md) |
+| V1 | kroki po kolei | [`m-v1-mapa-sala-kroki`](../../_generated/m-v1-mapa-sala-kroki.svg) | [odwiedzający](odwiedzajacy.md) |
 | V1 | bariera na mapie | [`m-v1-mapa-bariera`](../../_generated/m-v1-mapa-bariera.svg) | [odwiedzający](odwiedzajacy.md) |
+| V1 | arkusz wejścia | [`m-v1-mapa-wejscie`](../../_generated/m-v1-mapa-wejscie.svg) | [odwiedzający](odwiedzajacy.md) |
 | V1 | panel „Teren na mapie” | [`m-v1-mapa-teren-panel`](../../_generated/m-v1-mapa-teren-panel.svg) | [odwiedzający](odwiedzajacy.md) |
 | V1 | granica terenu | [`m-v1-mapa-teren-granica`](../../_generated/m-v1-mapa-teren-granica.svg) | [odwiedzający](odwiedzajacy.md) |
 | V1 | wynik z innego terenu | [`m-v1-mapa-teren-wynik`](../../_generated/m-v1-mapa-teren-wynik.svg) | [odwiedzający](odwiedzajacy.md) |
 | V1 | po zmianie terenu | [`m-v1-mapa-teren-zmiana`](../../_generated/m-v1-mapa-teren-zmiana.svg) | [odwiedzający](odwiedzajacy.md) |
-| V2 | mała karta nad mapą | [`m-v2-karta-budynku-mala`](../../_generated/m-v2-karta-budynku-mala.svg) | [odwiedzający](odwiedzajacy.md) |
+| V2 | niska wysokość nad mapą | [`m-v2-karta-budynku-mala`](../../_generated/m-v2-karta-budynku-mala.svg) | [odwiedzający](odwiedzajacy.md) |
+| V2 | od razu na cały ekran | [`m-v2-karta-budynku-caly-ekran`](../../_generated/m-v2-karta-budynku-caly-ekran.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | zwykły, budynek szczegółowy (wzorzec) | [`m-v2-karta-budynku`](../../_generated/m-v2-karta-budynku.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | budynek podstawowy bez wejścia zalecanego | [`m-v2-karta-budynku-podstawowy`](../../_generated/m-v2-karta-budynku-podstawowy.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | brak sprawdzonych barier | [`m-v2-karta-budynku-pusty`](../../_generated/m-v2-karta-budynku-pusty.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | brak sieci | [`m-v2-karta-budynku-brak-sieci`](../../_generated/m-v2-karta-budynku-brak-sieci.svg) | [odwiedzający](odwiedzajacy.md) |
+| V2 | wejścia bez nazw | [`m-v2-karta-budynku-wejscia-bez-nazw`](../../_generated/m-v2-karta-budynku-wejscia-bez-nazw.svg) | [odwiedzający](odwiedzajacy.md) |
+| V2 | wejścia z opisem położenia | [`m-v2-karta-budynku-opis-polozenia`](../../_generated/m-v2-karta-budynku-opis-polozenia.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | budynku nie ma w telefonie | [`m-v2-karta-budynku-brak-w-telefonie`](../../_generated/m-v2-karta-budynku-brak-w-telefonie.svg) | [odwiedzający](odwiedzajacy.md) |
 | V2 | Zbierający | [`m-v2-karta-budynku-zbierajacy`](../../_generated/m-v2-karta-budynku-zbierajacy.svg) | [odwiedzający](odwiedzajacy.md) |
-| V3 | wejście jest | [`m-v3-ktoredy-wejsc`](../../_generated/m-v3-ktoredy-wejsc.svg) | [odwiedzający](odwiedzajacy.md) |
-| V3 | brak wejścia dostępnego | [`m-v3-ktoredy-wejsc-brak-dostepnego`](../../_generated/m-v3-ktoredy-wejsc-brak-dostepnego.svg) | [odwiedzający](odwiedzajacy.md) |
-| V3 | brak danych o wejściach | [`m-v3-ktoredy-wejsc-brak-danych`](../../_generated/m-v3-ktoredy-wejsc-brak-danych.svg) | [odwiedzający](odwiedzajacy.md) |
 | V4 | krok 1 z 3 | [`m-v4-krok-1`](../../_generated/m-v4-krok-1.svg) | [odwiedzający](odwiedzajacy.md) |
 | V4 | krok 1 ze zdjęciem | [`m-v4-krok-1-zdjecie`](../../_generated/m-v4-krok-1-zdjecie.svg) | [odwiedzający](odwiedzajacy.md) |
 | V4 | krok 2 z 3 | [`m-v4-krok-2`](../../_generated/m-v4-krok-2.svg) | [odwiedzający](odwiedzajacy.md) |
@@ -185,24 +187,26 @@ Stan zwykły, budynek szczegółowy, Gość niezalogowany. Budynek A-1 ma trzy w
 
 Wejście główne ma schody, a dostępne jest wejście z tyłu budynku, bramą od ulicy Norwida [1]. Dlatego ono jest wejściem zalecanym (BR-25). Trzecie wejście to przykład oznaczenia „Brak danych”.
 
-Makiety V2 pokazują pełny ekran bez mapy. Po dotknięciu budynku na mapie V2 jest najpierw małą kartą nad mapą V1 (wymagania V2, decyzja 115), osobna makieta `m-v2-karta-budynku-mala`.
+Makiety V2 pokazują kartę na całym ekranie, bez mapy. Po dotknięciu budynku na mapie karta otwiera się na niskiej wysokości nad mapą V1 (wymagania V2, decyzja 115), osobna makieta `m-v2-karta-budynku-mala`.
 
-![Makieta V2 Karta budynku: nagłówek A-1, wiersz Wejście dostępne, Sprawdź, którędy wejść, chipy Winda i Toaleta dostosowana, wiersz daty i źródła, trzy wejścia z wejściem zalecanym na górze, grupy Winda i toaleta oraz Piętra, dwie bariery i pasek dolny](../../_generated/m-v2-karta-budynku.svg)
+![Makieta V2 Karta budynku: nagłówek A-1 z Zamknij, wiersz Wejście dostępne ze zdaniem Zalecane, Pokaż wejście na mapie, kreska, chipy Winda i Toaleta dostosowana, trzy wejścia z wejściem zalecanym na górze, wiersz daty i źródła, grupy Winda i toaleta oraz Piętra, dwie bariery i pasek dolny](../../_generated/m-v2-karta-budynku.svg)
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| „Wstecz” i nagłówek „A-1” | US2, NFR-15 (wymagania wspólne) |
+| Nagłówek „A-1” i obrysowany „Zamknij” po prawej, bez „Wstecz” | US2, NFR-53, decyzja 152 |
 | Nazwa budynku z danych, zastępnik | US2 |
 | Chipy „Winda”, „Toaleta dostosowana” pod czynnościami: fakty z danych, dotknięcie przewija do grupy; wejście dostępne podaje wiersz o wejściach | US2.3, US2.8, US16.1, NFR-17 |
-| Wejście zalecane pierwsze, z napisem „Zalecane” bez piętra i „Pokaż wejście na mapie” | BR-25, decyzja 48, decyzja 53 |
+| Wejście zalecane pierwsze, z napisem „Zalecane” bez piętra | BR-25, decyzja 48, decyzja 53 |
 | Wejście: oznaczenie tekstem i ikoną na początku, potem nazwa wejścia; „Wejście główne” niedostępne, „Wejście bramą od ul. Norwida” dostępne [1]; nazwa odróżnia je od drugiego wejścia przy ul. Norwida, które według deklaracji nie jest dostosowane | US2.1, US17.1, NFR-21 |
 | „Brak danych” z ikoną `minus`, inną niż `x` przy „Niedostępne” | US17.1 |
-| Wspólna data i źródło jeden raz nad grupą „Wejścia”: „Z map i opisów, stan z [data]” | US17.3, BR-24, PW-3 |
-| „Zgłoś barierę przy wejściu” przy każdym wejściu: otwiera V4 z wybranym wejściem; TalkBack dodaje nazwę wejścia | US4, NFR-18, decyzja 48 |
+| Wspólna data i źródło jeden raz pod grupą „Wejścia”: „Z map i opisów, stan z [data]” | US17.3, BR-24, PW-3, decyzja z 19.11.2026 |
+| Wejścia w jednym bloku, z linią między wejściami. Cały wiersz jest dotykalny i ma strzałkę: pokazuje wejście na V1 i otwiera jego arkusz | US2.1, US3.3, NFR-17, NFR-18 |
+| „Zgłoś barierę przy wejściu” nie stoi w wierszu, tylko w arkuszu wejścia | US4.6 |
 | „Pokaż wyjścia ewakuacyjne (2)” pod wejściami, liczba z danych | US2.1, decyzja 44, decyzja 48 |
 | Grupy „Winda i toaleta” i „Piętra”: zastępniki danych PWr, przy piętrze „Pokaż na planie” | US16.1, decyzja 44 |
 | „Źródło: Politechnika Wrocławska” na dole karty | NFR-40 |
-| Wiersz o wejściach pod nagłówkiem, a pod nim „Sprawdź, którędy wejść”, czynność główna, pogrubiona, pierwsza w kolejności czytania; bez przypiętego pasa | US2.8, US3, US3.2, NFR-21, NFR-52 |
+| Wiersz o wejściach pod nagłówkiem: znak, „Wejście dostępne” i zdanie „Zalecane: »Wejście bramą od ul. Norwida«.”, a pod nim „Pokaż wejście na mapie”, czynność główna, pogrubiona, pierwsza w kolejności czytania; bez przypiętego pasa | US2.8, US3, US3.2, BR-25, NFR-21, NFR-52 |
+| Kreska między wierszem o wejściach a pełnym opisem, na każdej wysokości karty | US2.8, NFR-53 |
 | „Bariery w budynku”: typ, uciążliwość tekstem i ikoną, zdjęcie, „Sprawdzone [data]”; pierwsza bariera to schody przy wejściu głównym (TB-1, „Blokada”) [1] | US2.2, BR-17, NFR-21 |
 | Druga bariera: typ i uciążliwość jako zastępniki, bo deklaracja nie podaje innej bariery A-1 | US2.2, BR-7, NFR-21 |
 | Pasek dolny z „Konto” | US1, US4, US5.1, US14 (wymagania wspólne) |

@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.barrier.submission.web;
 
 import io.github.dostepnykampus.barrier.submission.Reader;
-import io.github.dostepnykampus.barrier.submission.SimilarSubmission;
 import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.SubmissionChange;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
 import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
@@ -144,7 +144,9 @@ final class SubmissionReadingTest {
     private static SubmissionReading reading(
         final @Nullable Submission saved, final @Nullable Submission visible
     ) {
-        return new SubmissionReading(new Finder(saved, visible), symbol -> false);
+        return new SubmissionReading(
+            new Finder(saved, visible), new Finder(saved, visible), symbol -> false
+        );
     }
 
     private static Submission stored(final SubmissionStatus status) {
@@ -161,7 +163,7 @@ final class SubmissionReadingTest {
      * @since 0.1.0
      */
     private record Finder(@Nullable Submission saved, @Nullable Submission visible)
-        implements SubmissionFinder {
+        implements SubmissionFinder, SubmissionFinder.Pages {
 
         @Override
         public Optional<Submission> find(final UUID id) {
@@ -182,11 +184,6 @@ final class SubmissionReadingTest {
         }
 
         @Override
-        public boolean claimedBy(final UUID id, final String account) {
-            throw new UnsupportedOperationException("Sprawdzenie zmiany nie pyta o Weryfikatora");
-        }
-
-        @Override
         public boolean authorOnly(final UUID id, final String account) {
             throw new UnsupportedOperationException("Sprawdzenie zmiany nie pyta o autora");
         }
@@ -198,12 +195,26 @@ final class SubmissionReadingTest {
 
         @Override
         public List<Submission> own(final String author, final SubmissionQuery query) {
-            throw new UnsupportedOperationException("Sprawdzenie nie czyta własnych");
+            throw new UnsupportedOperationException("Sprawdzenie nie czyta własnych bez stron");
         }
 
         @Override
-        public List<SimilarSubmission> similar(final UUID id) {
-            throw new UnsupportedOperationException("Sprawdzenie zmiany nie szuka podobnych");
+        public List<SubmissionChange> changedSince(final Instant since, final String reader) {
+            throw new UnsupportedOperationException("Sprawdzenie nie czyta zmian od kursora");
+        }
+
+        @Override
+        public SubmissionFinder.Page page(
+            final SubmissionQuery query, final SubmissionFinder.Window window
+        ) {
+            throw new UnsupportedOperationException("Sprawdzenie nie czyta stron listy");
+        }
+
+        @Override
+        public SubmissionFinder.Page own(
+            final String author, final SubmissionQuery query, final SubmissionFinder.Window window
+        ) {
+            throw new UnsupportedOperationException("Sprawdzenie nie czyta własnych");
         }
     }
 }

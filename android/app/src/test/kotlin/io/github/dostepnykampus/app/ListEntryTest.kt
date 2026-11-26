@@ -3,26 +3,20 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app
 
 import android.view.accessibility.AccessibilityManager
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
-import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.isSelectable
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import io.github.dostepnykampus.core.data.account.GuestRoleProvider
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
+import io.github.dostepnykampus.app.navigation.isExpanded
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import org.junit.Assert.assertEquals
@@ -40,7 +34,7 @@ internal const val BUILDING_ON_MAP = "Pokaż budynek na mapie"
 /** Budynek A-1 na liście V1 z katalogu w zasobach aplikacji. Wymagania: NFR-19 */
 internal val ListedA1 = hasContentDescription("A-1, ", substring = true)
 
-private const val OSM = "© OpenStreetMap contributors"
+private const val OSM = "© OpenStreetMap"
 
 /** Budynek z listy V1, z wyszukiwania albo z mapy: tryb karty V2 przy TalkBack i bez niego. Wymagania: NFR-19 */
 @RunWith(RobolectricTestRunner::class)
@@ -62,7 +56,7 @@ class ListEntryTest {
 
     @Composable
     private fun Shell() {
-        AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) {
+        AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) {
             TestAppScreen(it, appViewModel, fakeMap)
         }
     }
@@ -95,7 +89,7 @@ class ListEntryTest {
 
     /**
      * Wiersze: V1 bez TalkBack, dotknięcie budynku na liście przy zwykłej czcionce → V1 w widoku mapy z małą kartą
-     * V2; „Wstecz” → lista, zapamiętany wybór „Lista budynków” bez zmian, także po odtworzeniu aktywności.
+     * V2; „Wstecz” → lista, zapamiętany widok listy bez zmian, także po odtworzeniu aktywności.
      *
      * Wymagania: US2.8, NFR-19, NFR-22
      */
@@ -110,12 +104,12 @@ class ListEntryTest {
         compose.onNodeWithText(OSM).assertExists("mapa pod małą kartą")
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
         compose.waitForIdle()
-        compose.onNode(hasText("Lista budynków") and isSelectable()).assertIsSelected()
+        compose.onNodeWithText("Pokaż mapę").assertExists()
         assertEquals(true, choice.savedChoice.value)
     }
 
     /**
-     * Wiersz: V1, wybór wyniku w polu „Wpisz symbol budynku, np. C-13” → V2, mała karta także przy TalkBack.
+     * Wiersz: V1, wybór wyniku w polu „Szukaj budynku, np. C-13” → V2, mała karta także przy TalkBack.
      *
      * Wymagania: US1.1, US2.8
      */

@@ -8,10 +8,12 @@ package io.github.dostepnykampus.feature.map.plan
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.campus.ShownPlan
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -29,6 +31,7 @@ private const val STOP_TIMEOUT_MS = 5_000L
  * @param repository katalog budynków z listą budynków szczegółowych
  * @param plans plany pięter z kopią w telefonie
  * @param entrances wejścia budynku z serwera z piętrem wejścia
+ * @param barriers przyjęte bariery przy wejściach, z którymi wybiera się wejście zalecane
  */
 @HiltViewModel
 class MapPlanViewModel
@@ -37,8 +40,9 @@ class MapPlanViewModel
         repository: BuildingCatalogRepository,
         plans: FloorPlans,
         entrances: ServerEntrances,
+        barriers: AcceptedBarriers,
     ) : ViewModel() {
-        private val plan = MapPlan(plans, entrances)
+        private val plan = MapPlan(plans, entrances, barriers)
 
         /** Plan piętra budynku przy środku mapy; `null`, gdy planu nie widać. */
         val shown: StateFlow<ShownPlan?> =
@@ -51,13 +55,23 @@ class MapPlanViewModel
             plan.camera(view)
         }
 
+        /** Zapomina widok mapy, gdy mapa schodzi z ekranu; do następnego widoku planu nie ma. */
+        fun hide() {
+            plan.hide()
+        }
+
         /** Pokazuje piętro [floor] budynku [building] i zapamiętuje je. */
         fun chooseFloor(building: String, floor: String) {
             plan.choose(building, floor)
         }
 
-        /** Pokazuje piętro z zaznaczenia budynku [focus] raz na zaznaczenie; zaznaczenie bez piętra nic nie zmienia. */
+        /** Pokazuje piętro i salę z zaznaczenia [focus] raz na zaznaczenie. */
         fun show(focus: MapFocus?) {
             plan.show(focus)
+        }
+
+        /** Wybiera budynek [building] karty albo arkusza nad mapą, który trzyma plan; `null` wraca do środka mapy. */
+        fun select(building: String?) {
+            plan.select(building)
         }
     }

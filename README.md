@@ -30,6 +30,20 @@ cd android
 
 `assembleDebug` buduje plik APK w `android/app/build/outputs/apk/debug/`. `installDebug` instaluje go na uruchomionym emulatorze albo telefonie z włączonym debugowaniem USB. `check` uruchamia testy, lintery i próg pokrycia Kover. Można też otworzyć katalog `android/` w Android Studio i uruchomić konfigurację `app`.
 
+Wersja debug łączy się z serwerem na komputerze gospodarza (`http://10.0.2.2:8080/` z emulatora). Od Androida 17 (API 37) to sieć lokalna, do której aplikacja potrzebuje uprawnienia „Dostęp do sieci lokalnej”. Bez niego każde żądanie kończy się po 3 s błędem sieci. Po każdej instalacji:
+
+```sh
+adb shell pm grant io.github.dostepnykampus android.permission.ACCESS_LOCAL_NETWORK
+```
+
+Wersja release łączy się tylko przez HTTPS, z adresami podanymi przy budowie:
+
+```sh
+./gradlew assembleRelease -Pdk.apiUrl=https://serwer.example/ -Pdk.loginRealmUrl=https://logowanie.example/realms/dostepny-kampus/
+```
+
+Te same adresy można podać zmiennymi `DK_API_URL` i `DK_LOGIN_REALM_URL`. Bez nich albo z adresem `http://` budowa pliku release się zatrzymuje.
+
 **Serwer:** baza według [`infra/README.md`](infra/README.md), potem `./mvnw verify` w katalogu `backend/`.
 
 ## Jak pracujemy

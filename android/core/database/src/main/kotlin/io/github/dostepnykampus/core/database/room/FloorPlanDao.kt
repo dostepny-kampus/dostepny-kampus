@@ -5,10 +5,26 @@
  */
 package io.github.dostepnykampus.core.database.room
 
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+
+/**
+ * Piętro, kategoria i funkcja pomieszczenia bez geometrii, do faktów o piętrach.
+ *
+ * Wymagania: US2.4, NFR-56
+ *
+ * @property floor identyfikator piętra
+ * @property category nazwa grupy funkcji z kontraktu API, np. `ELEVATOR`
+ * @property function funkcja z danych PWr
+ */
+public data class FloorRoomFact(
+    @ColumnInfo(name = "floor_id") val floor: String,
+    val category: String,
+    val function: String,
+)
 
 /** Odczyt i zapis kopii planów pięter i ich pomieszczeń. Wymagania: US16.1, NFR-10 */
 @Dao
@@ -24,6 +40,13 @@ public interface FloorPlanDao {
     /** Pomieszczenia piętra [floor] budynku [building] w kolejności identyfikatorów. */
     @Query("SELECT * FROM floor_rooms WHERE building_symbol = :building AND floor_id = :floor ORDER BY id")
     public suspend fun rooms(building: String, floor: String): List<FloorRoomEntity>
+
+    /** Piętro, kategoria i funkcja pomieszczeń budynku [building] w kolejności pięter i identyfikatorów. */
+    @Query(
+        "SELECT floor_id, category, function FROM floor_rooms WHERE building_symbol = :building " +
+            "ORDER BY floor_id, id",
+    )
+    public suspend fun roomFacts(building: String): List<FloorRoomFact>
 
     /**
      * Zastępuje cały plan budynku [building] planami [plans] i pomieszczeniami [rooms] wszystkich pięter w jednej

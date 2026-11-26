@@ -9,16 +9,18 @@ import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
 import io.github.dostepnykampus.core.data.submission.sync.FakeHistory
 import io.github.dostepnykampus.core.data.submission.sync.FakeStore
+import io.github.dostepnykampus.core.data.submission.sync.SentRecords
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.photo
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.server
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
-import io.github.dostepnykampus.core.data.submission.sync.SubmissionServer
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStamps
+import io.github.dostepnykampus.core.data.submission.sync.submissionServer
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -35,6 +37,7 @@ class OwnListTest {
 
     private val store = FakeStore()
     private val history = FakeHistory()
+    private val account = flowOf("konto-testowe")
     private val ids = ArrayDeque(listOf(QUICK_ID, PRECISE_ID))
 
     /**
@@ -49,7 +52,7 @@ class OwnListTest {
             queue.sendAll()
             queue.save(precise(), photo(tempDir, "p2"))
 
-            val list = ownSubmissionsOf(history, store).observe().first()
+            val list = ownSubmissionsOf(history, store, account).observe().first()
 
             val item = list.single()
             assertEquals(PRECISE_ID, item.id, "lista pokazuje zgłoszenie dokładne")
@@ -71,7 +74,7 @@ class OwnListTest {
             queue.sendAll()
             queue.saveEdit(EditedSubmission(id = saved.id, baseVersion = 1), precise(), photo(tempDir, "p2"))
 
-            val item = ownSubmissionsOf(history, store).observe().first().single()
+            val item = ownSubmissionsOf(history, store, account).observe().first().single()
 
             assertEquals(SendState.SENT, item.state, "wysłane zgłoszenie pokazuje stan Wysłane")
             assertTrue(item.isChangeWaiting, "poprawka bez sieci czeka na wysyłkę")
@@ -84,7 +87,7 @@ class OwnListTest {
             queue.save(precise(), photo(tempDir, "p2"))
             queue.sendAll()
 
-            val listed = ownSubmissionsOf(history, store).observe().first()
+            val listed = ownSubmissionsOf(history, store, account).observe().first()
             assertFalse(listed.single().isChangeWaiting, "bez poprawki nic nie czeka")
         }
 
@@ -93,13 +96,13 @@ class OwnListTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
+                submissionServer(
                     create = { id, content -> ServerReply.Ok(server(id, content)) },
                     putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
                     update = { _, _, _ -> ServerReply.Missing },
                 ),
             stamps = SubmissionStamps(newId = { ids.removeFirst() }),
-            history = history,
+            records = SentRecords(history = history),
         )
 
     private fun quick(): SubmissionContent =

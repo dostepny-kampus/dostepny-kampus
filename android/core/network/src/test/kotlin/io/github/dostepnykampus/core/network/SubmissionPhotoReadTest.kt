@@ -7,6 +7,7 @@ package io.github.dostepnykampus.core.network
 
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.ID
 import io.github.dostepnykampus.core.network.SubmissionServer.Companion.PHOTO
+import io.github.dostepnykampus.core.network.di.NetworkModule
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient

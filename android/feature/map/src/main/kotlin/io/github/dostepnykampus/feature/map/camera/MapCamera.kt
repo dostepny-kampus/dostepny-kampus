@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.style.Basemap
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.asinh
 import kotlin.math.atan
 import kotlin.math.cos
@@ -28,6 +29,8 @@ private const val QUARTER_VIEW_DEGREES_AT_ZOOM_0 = 70.0
 private const val WORLD_DP_AT_ZOOM_0 = 512.0
 private const val FULL_TURN_DEGREES = 360.0
 private const val BASEMAP_ZOOM_MARGIN = 0.5
+private const val SAME_VIEW_DEGREES = 1e-7
+private const val SAME_VIEW_ZOOM = 1e-6
 
 /**
  * Widok mapy V1. Przyciski „Powiększ”, „Pomniejsz” i cztery strzałki zmieniają go bez gestów (WCAG 2.5.1, WCAG 2.5.7).
@@ -40,6 +43,15 @@ private const val BASEMAP_ZOOM_MARGIN = 0.5
 data class MapCamera(val center: GeoPoint, val zoom: Double)
 
 /**
+ * Czy [other] to ten sam widok: środki różnią się najwyżej o ok. 1 cm, a powiększenia o rachunek zmiennoprzecinkowy.
+ * Widok zgłoszony po geście i zapisany wraca jako cel ruchu, a mapa już w nim stoi. Wymagania: NFR-56
+ */
+internal fun MapCamera.isSameView(other: MapCamera): Boolean =
+    abs(center.longitude - other.center.longitude) <= SAME_VIEW_DEGREES &&
+        abs(center.latitude - other.center.latitude) <= SAME_VIEW_DEGREES &&
+        abs(zoom - other.zoom) <= SAME_VIEW_ZOOM
+
+/**
  * Wolna część mapy nad arkuszem V2, w dp.
  *
  * @property widthDp szerokość mapy
@@ -50,6 +62,9 @@ data class MapCamera(val center: GeoPoint, val zoom: Double)
 internal data class FreeMap(val widthDp: Double, val heightDp: Double, val endDp: Double, val marginDp: Double) {
     /** Czy w wolnej części stoją przyciski mapy: mają tam zarezerwowany pas [endDp]. Wymagania: NFR-53 */
     val hasRoomForControls: Boolean get() = endDp > 0
+
+    /** Czy mapa jest już zmierzona: przed pierwszym pomiarem wolna część nie ma rozmiaru. Wymagania: US2.8 */
+    val isMeasured: Boolean get() = widthDp > 0 && heightDp > 0
 }
 
 /** Widok po „Powiększ”: o jeden poziom, najwyżej do powiększenia planu budynku. */
@@ -142,11 +157,38 @@ internal class MapLimits(val bounds: CampusBounds, val widthDp: Double, val heig
 /** Powiększenie, przy którym część świata [worldShare] (0–1) zajmuje [viewDp] dp widoku. */
 internal fun fitZoom(viewDp: Double, worldShare: Double): Double = log2(viewDp / (WORLD_DP_AT_ZOOM_0 * worldShare))
 
+/**
+ * Widok na [outline] jak w [fitted], po podniesieniu powiększenia do najmniejszego dla terenu [area] (`null`: dla
+ * granic [limits]). Podniesione powiększenie wyśrodkowuje [outline] na całej wolnej części, bo pas przycisków nie
+ * zostawia wtedy dość miejsca obok.
+ *
+ * Wymagania: US1.7, BR-G5
+ */
+internal fun landed(
+    outline: CampusBounds,
+    free: FreeMap,
+    maxZoom: Double,
+    limits: MapLimits?,
+    area: CampusBounds?,
+): MapCamera {
+    val fit = fitted(outline = outline, free = free, maxZoom = maxZoom)
+    val next = limits?.run { MapLimits(bounds = area ?: bounds, widthDp = widthDp, heightDp = heightDp) }
+    val zoom = next?.run { clamp(fit, viewWidthDp = free.widthDp, viewHeightDp = free.heightDp).zoom } ?: fit.zoom
+    return centered(outline = outline, zoom = zoom, free = if (zoom > fit.zoom) free.copy(endDp = 0.0) else free)
+}
+
 /** Współrzędna pionowa szerokości [latitude] w rzucie Merkatora, w radianach. */
 internal fun mercatorY(latitude: Double): Double = asinh(tan(Math.toRadians(latitude)))
 
 /** Szerokość geograficzna w stopniach dla współrzędnej pionowej [y] rzutu Merkatora w radianach. */
 internal fun latitudeOf(y: Double): Double = Math.toDegrees(atan(sinh(y)))
+
+/** Ten widok ze środkiem przesuniętym na północ o [dp] przy jego powiększeniu; ujemne [dp] przesuwa na południe. */
+internal fun MapCamera.shiftedNorth(dp: Double): MapCamera {
+    if (dp == 0.0) return this
+    val perRadian = WORLD_DP_AT_ZOOM_0 * 2.0.pow(zoom) / (2 * PI)
+    return copy(center = center.copy(latitude = latitudeOf(mercatorY(center.latitude) + dp / perRadian)))
+}
 
 /**
  * Kierunek strzałki przesuwania mapy, np. „Przesuń mapę w górę”.

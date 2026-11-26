@@ -17,6 +17,7 @@ import io.github.dostepnykampus.core.network.building.decodeBuildingDetails
 import io.github.dostepnykampus.core.network.building.decodeBuildingList
 import io.github.dostepnykampus.core.network.building.decodeFloorList
 import io.github.dostepnykampus.core.network.building.decodeLocateResult
+import io.github.dostepnykampus.core.network.di.NetworkModule
 import io.github.dostepnykampus.core.network.json.Submission
 import io.github.dostepnykampus.core.network.submission.decodeConflict
 import io.github.dostepnykampus.core.network.submission.decodeSubmission

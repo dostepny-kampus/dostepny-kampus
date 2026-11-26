@@ -33,10 +33,21 @@ check "tytuł PR" "${PR_TITLE:-}"
 if [[ "${PR_AUTHOR:-}" != 'dependabot[bot]' ]]; then
   check "opis PR" "${PR_BODY:-}"
 fi
+# Scalenie sprintu do main idzie bez squasha, a każdy commit przeszedł tę kontrolę w swoim PR do sprintu,
+# więc commitów i ich autorów nie sprawdzamy; gałąź, tytuł, opis i pliki tak.
+sprint_release=0
+if [[ ${BASE_REF:-} == main && ${HEAD_REF:-} =~ ^sprint/[0-9]+$ && -n ${HEAD_REPO:-} &&
+  ${HEAD_REPO:-} == "${GITHUB_REPOSITORY:-}" ]]; then
+  sprint_release=1
+  echo "Scalenie sprintu do main: commity i ich autorzy sprawdzone w PR do gałęzi sprintu."
+fi
 # Przy squashu PR Dependabota GitHub sam dopisuje wiersz o współautorze-bocie; tylko ten jeden wiersz pomijamy.
 # Wzorzec ma klasę znaków, żeby ten plik sam nie zawierał sprawdzanego słowa.
 bot_trailer='^Co-[a]uthored-by: dependabot\[bot\] <[0-9]+\+dependabot\[bot\]@users\.noreply\.github\.com>$'
-commits="$(git rev-list "$base..$head")"
+commits=""
+if ((sprint_release == 0)); then
+  commits="$(git rev-list "$base..$head")"
+fi
 for sha in $commits; do
   check "commit ${sha:0:7}" "$(git log -1 --format=%B "$sha" | grep -vE -- "$bot_trailer" || true)"
 done
@@ -45,7 +56,7 @@ done
 # innej osoby. Gdy ten wiersz jest zakazany, grupa kolejki będzie czerwona, więc zgłaszamy to już na PR.
 # W grupie kolejki (bez autora PR) commity różnych osób są zwykłe, a Dependabot ma wyjątek wyżej.
 trailer="Co-[a]uthored-by"
-if [[ -n "${PR_AUTHOR:-}" && "${PR_AUTHOR}" != 'dependabot[bot]' ]] &&
+if ((sprint_release == 0)) && [[ -n "${PR_AUTHOR:-}" && "${PR_AUTHOR}" != 'dependabot[bot]' ]] &&
   printf '%s\n' "${trailer//[\[\]]/}" | grep -qP -- "$FORBIDDEN_PATTERNS" 2>/dev/null; then
   if (($(git log --format='%ae' "$base..$head" | sort -u | wc -l) > 1)); then
     authors="$(git log --format='%an' "$base..$head" | sort -u)"

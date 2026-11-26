@@ -11,9 +11,11 @@ import io.github.dostepnykampus.building.room.PlanEntrance;
 import io.github.dostepnykampus.building.room.PlanFloor;
 import io.github.dostepnykampus.building.room.PlanRoom;
 import io.github.dostepnykampus.building.room.PwrFunction;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionOperations;
@@ -22,9 +24,9 @@ import org.springframework.transaction.support.TransactionOperations;
  * Plan budynku w tabelach floors i rooms, zastępowany w jednej transakcji; piętro spoza planu
  * znika z pomieszczeniami, pusty numer to NULL, kontur jest poprawny, punkt podpisu leży w nim.
  * Podpis ma tylko największe od 20 m² z pomieszczeń piętra o tym samym numerze. Obrys piętra to
- * suma pomieszczeń poszerzonych i zwężonych o 0,5 m. Budynek z planem jest szczegółowy (DETAILED).
- * Wejście bierze piętro najbliższego wejścia PWr z piętrem planu do 15 m. Windy nad sobą łączy
- * w szyb (lift_id).
+ * suma pomieszczeń z domkniętymi ścianami do 1,2 m i ostrymi narożnikami, uproszczona o 0,25 m.
+ * Budynek z planem jest szczegółowy (DETAILED). Wejście bierze piętro najbliższego wejścia PWr
+ * z piętrem planu do 15 m. Windy nad sobą łączy w szyb (lift_id).
  *
  * <p>Wymagania: US16, US18, US18.2, BR-G1, NFR-40</p>
  *
@@ -79,7 +81,7 @@ public final class PostgisPlans implements FloorPlans {
                 this.jdbc.sql(
                     "UPDATE buildings SET detail_level = 'DETAILED' WHERE symbol = :building"
                 ).param("building", building).update();
-                this.entrances(building, known, entrances);
+                this.entrances(building, known, entrances, plan.edited());
                 new PostgisShafts(this.jdbc).link(building);
             }
         );
@@ -138,9 +140,18 @@ public final class PostgisPlans implements FloorPlans {
             """
             UPDATE floors SET outline = (
                 SELECT ST_Multi(
-                    ST_Buffer(
-                        ST_Union(ST_Buffer(outline::geography, 0.5)::geometry)::geography, -0.5
-                    )::geometry
+                    ST_Transform(
+                        ST_SimplifyPreserveTopology(
+                            ST_Buffer(
+                                ST_Buffer(
+                                    ST_Union(ST_Transform(outline, 2180)), 0.6, 'join=mitre'
+                                ),
+                                -0.6, 'join=mitre'
+                            ),
+                            0.25
+                        ),
+                        4326
+                    )
                 )
                 FROM rooms
                 WHERE rooms.building_symbol = floors.building_symbol AND rooms.floor_id = floors.id
@@ -151,7 +162,8 @@ public final class PostgisPlans implements FloorPlans {
     }
 
     private void entrances(
-        final String building, final Set<String> known, final List<PlanEntrance> entrances
+        final String building, final Set<String> known, final List<PlanEntrance> entrances,
+        final @Nullable LocalDate edited
     ) {
         this.jdbc.sql(
             """
@@ -172,5 +184,6 @@ public final class PostgisPlans implements FloorPlans {
             .param("floors", entrances.stream().map(PlanEntrance::floorId).toArray(String[]::new))
             .param("points", entrances.stream().map(PlanEntrance::point).toArray(String[]::new))
             .update();
+        new PostgisPwrEntrances(this.jdbc, edited).save(building, known, entrances);
     }
 }

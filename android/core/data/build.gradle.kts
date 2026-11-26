@@ -7,12 +7,20 @@
 plugins {
     id("dostepnykampus.android.library")
     id("dostepnykampus.android.hilt")
+    id("dostepnykampus.android.robolectric")
     id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 val buildingsFile: RegularFile = layout.projectDirectory.file("../../../data/buildings/pwr-buildings.geojson")
 
 android {
+    buildFeatures.buildConfig = true
+    /* Realm Usługi logowania: debug z emulatora (10.0.2.2 to komputer gospodarza), release z konfiguracji budowania. */
+    val address = ServerAddress.LOGIN_REALM
+    buildTypes {
+        getByName("debug") { buildConfigField("String", address.field, address.debugField) }
+        getByName("release") { buildConfigField("String", address.field, address.releaseField(providers)) }
+    }
     testOptions.unitTests.all {
         /* Test repozytorium na prawdziwym pliku konturów z katalogu data/ w repozytorium. */
         it.jvmArgumentProviders.add(
@@ -34,7 +42,11 @@ dependencies {
     api(libs.androidx.datastore.preferences.core)
     api(libs.dagger)
     api(libs.javax.inject)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.annotation)
+    implementation(libs.androidx.core)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.appauth)
     implementation(libs.androidx.work.runtime)
     implementation(libs.hilt.core)
     implementation(libs.kotlinx.serialization.core)
@@ -42,6 +54,9 @@ dependencies {
     implementation(libs.timber)
     api(libs.kotlinx.coroutines.core)
     testImplementation(libs.junit.jupiter.params)
+    testImplementation(libs.junit4)
+    testImplementation(libs.robolectric.shadows.framework)
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp)
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.kotlinx.serialization.json)

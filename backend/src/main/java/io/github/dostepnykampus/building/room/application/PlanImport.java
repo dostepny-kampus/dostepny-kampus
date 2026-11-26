@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.building.room.application;
 
+import io.github.dostepnykampus.building.application.CampusMapSettings;
+import io.github.dostepnykampus.building.application.PwrImportStep;
 import io.github.dostepnykampus.building.room.BuildingPlan;
 import io.github.dostepnykampus.building.room.FloorPlans;
 import io.github.dostepnykampus.building.room.PlanFloor;
@@ -14,27 +16,26 @@ import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.DefaultApplicationArguments;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationListener;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * Ręczny import planów pięter PWr (ADR-0012), uruchamiany profilem import-pwr. Każdy budynek z
- * konfiguracji dostaje piętra swojego FACILITY_ID oraz pomieszczenia i wejścia swoich warstw.
- * Import rusza, gdy aplikacja jest gotowa (po wszystkich zadaniach startu), a po nim aplikacja
- * się zamyka. Opcja --budynek ogranicza import do podanych symboli. Każdy budynek zapisuje się
- * osobno, więc błąd usługi przerywa import, a budynki zapisane wcześniej zostają.
+ * Pierwszy krok importu PWr (ADR-0012): plany pięter. Każdy budynek z konfiguracji dostaje
+ * piętra swojego FACILITY_ID oraz pomieszczenia i wejścia swoich warstw z dniem edycji warstwy
+ * wejść; uwagi i szerokość drzwi wejść uzupełnia warstwa mapy kampusu. Opcja --budynek ogranicza
+ * import do podanych symboli. Każdy budynek zapisuje się osobno, więc błąd usługi przerywa
+ * import, a budynki zapisane wcześniej zostają.
  *
- * <p>Wymagania: US16, US18.2, NFR-40, NFR-47</p>
+ * <p>Wymagania: US16, US18.2, NFR-40, NFR-47, BR-24, BR-27</p>
  *
  * @since 0.1.0
  */
 @Component
 @Profile("import-pwr")
-final class PlanImport implements ApplicationListener<ApplicationReadyEvent> {
+@Order(1)
+final class PlanImport implements PwrImportStep {
 
     /**
      * Dziennik importu.
@@ -47,6 +48,11 @@ final class PlanImport implements ApplicationListener<ApplicationReadyEvent> {
     private final PlanSettings settings;
 
     /**
+     * Usługa mapy kampusu z warstwą wejść.
+     */
+    private final CampusMapSettings campus;
+
+    /**
      * Usługa z planami.
      */
     private final PlanSource source;
@@ -56,21 +62,23 @@ final class PlanImport implements ApplicationListener<ApplicationReadyEvent> {
      */
     private final FloorPlans store;
 
-    PlanImport(final PlanSettings settings, final PlanSource source, final FloorPlans store) {
+    PlanImport(
+        final PlanSettings settings, final CampusMapSettings campus, final PlanSource source,
+        final FloorPlans store
+    ) {
         this.settings = settings;
+        this.campus = campus;
         this.source = source;
         this.store = store;
     }
 
     @Override
-    public void onApplicationEvent(final ApplicationReadyEvent event) {
-        final List<String> only = Optional.ofNullable(
-            new DefaultApplicationArguments(event.getArgs()).getOptionValues("budynek")
-        ).orElse(List.of());
+    public void run(final ApplicationArguments args) {
+        final List<String> only = Optional.ofNullable(args.getOptionValues("budynek"))
+            .orElse(List.of());
         this.settings.buildings().stream()
             .filter(layer -> only.isEmpty() || only.contains(layer.symbol()))
             .forEach(this::building);
-        SpringApplication.exit(event.getApplicationContext());
     }
 
     private void building(final PlanSettings.Layer layer) {
@@ -83,7 +91,13 @@ final class PlanImport implements ApplicationListener<ApplicationReadyEvent> {
         final List<PlanRoom> rooms = this.source.rooms(service, layer.rooms());
         this.store.save(
             new BuildingPlan(
-                layer.symbol(), floors, rooms, this.source.entrances(service, layer.entrances())
+                layer.symbol(), floors, rooms, this.source.entrances(
+                    new PlanSource.Layer(service, layer.entrances()),
+                    new PlanSource.Layer(
+                        this.campus.service().toString(), this.campus.layers().entrances()
+                    )
+                ),
+                this.source.edited(service, layer.entrances()).orElse(null)
             )
         );
         PlanImport.LOG.info(

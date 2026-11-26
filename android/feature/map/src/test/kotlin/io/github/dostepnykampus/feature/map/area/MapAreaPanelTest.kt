@@ -13,17 +13,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.assertWidthIsAtLeast
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.feature.map.R
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -92,6 +98,32 @@ class MapAreaPanelTest {
         assertEquals(R.string.mapa_teren_budynek, buildingsWord(count = 1))
     }
 
+    /** „Zamknij” w panelu terenu ma co najmniej 48 × 48 dp. Wymagania: NFR-17 */
+    @Test
+    fun keepsCloseTouchTarget() {
+        compose.setContent { Panel() }
+        compose
+            .onNodeWithText("Zamknij")
+            .assertHasClickAction()
+            .assertHeightIsAtLeast(48.dp)
+            .assertWidthIsAtLeast(48.dp)
+    }
+
+    /** Wiersz: V1, „Zamknij” ma od prawej krawędzi panelu taki odstęp jak tytuł od lewej i nie dotyka góry. */
+    @Test
+    fun keepsCloseInsidePanel() {
+        compose.setContent { Panel() }
+        assertCloseMirrorsTitle()
+    }
+
+    /** Wiersz: V1, przy czcionce 200% „Zamknij” też ma odstęp od krawędzi panelu. Wymagania: NFR-20, NFR-17 */
+    @Test
+    @Config(fontScale = 2f)
+    fun keepsCloseInsideLargeFont() {
+        compose.setContent { Panel() }
+        assertCloseMirrorsTitle()
+    }
+
     @Test
     fun matchesLightMockup() {
         compose.setContent { Panel() }
@@ -103,6 +135,17 @@ class MapAreaPanelTest {
     fun matchesDarkMockup() {
         compose.setContent { Panel() }
         compose.onRoot().captureRoboImage()
+    }
+
+    private fun assertCloseMirrorsTitle() {
+        val root = compose.onRoot().getUnclippedBoundsInRoot()
+        val title = compose.onNodeWithText("Teren na mapie").getUnclippedBoundsInRoot()
+        val close = compose.onNodeWithText("Zamknij").getUnclippedBoundsInRoot()
+        val start = title.left - (root.left + Odstepy.s)
+        val end = root.right - Odstepy.s - close.right
+        val top = close.top - (root.top + Odstepy.s)
+        assertEquals("odstęp „Zamknij” od prawej krawędzi panelu w dp", start.value, end.value, EDGE_TOLERANCE_DP)
+        assertTrue("przycisk „Zamknij” nie dotyka górnej krawędzi panelu", top.value > 0f)
     }
 
     @Composable
@@ -117,5 +160,9 @@ class MapAreaPanelTest {
                 )
             }
         }
+    }
+
+    private companion object {
+        const val EDGE_TOLERANCE_DP = 0.5f
     }
 }

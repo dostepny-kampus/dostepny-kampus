@@ -12,23 +12,69 @@ Funkcja: Wyszukanie sali
     Oraz widzi funkcję sali i jej piętro z danych PWr
 
     Przykłady:
-      | zapis   |
-      | A-1 329 |
-      | a1 329  |
+      | zapis        |
+      | A-1 329      |
+      | a1 329       |
+      | 329 A-1      |
+      | sala 329 A-1 |
+      | A-1/329      |
+
+  @US18.1 @aplikacja
+  Scenariusz: Symbol budynku i cyfra podpowiadają sale tego budynku
+    Zakładając, że dane PWr budynku A-1 mają sale 301, 314 i 329 na 2 piętrze
+    Jeżeli Gość niezalogowany wpisze „A-1 3”
+    Wtedy wyniki pod polem to sale 301, 314 i 329 budynku A-1 w tej kolejności
+    Oraz każdy wynik ma symbol budynku, numer sali, rodzaj pomieszczenia i piętro
+
+  @US18.1 @aplikacja
+  Scenariusz: Sam numer sali bez budynku prosi o dopisanie budynku
+    Jeżeli Gość niezalogowany wpisze „329”
+    Wtedy pod polem widzi „Dopisz budynek do numeru sali. Na przykład: A-1 329.”
+    Ale aplikacja nie szuka sali
 
   @US18.2 @BR-25 @aplikacja
   Szablon scenariusza: Kroki do sali podane tekstem bez rysowania trasy
     # Sala 012 na piętrze wejścia i brak piętra wejścia to dane testowe, a nie stan faktyczny A-1.
     Zakładając, że <dane>
     Jeżeli Gość niezalogowany znajdzie salę <sala> w budynku A-1
-    Wtedy widzi po kolei kroki: <kroki>
+    Wtedy widzi listę „Jak dojść” z krokami: <kroki>
     Ale mapa nie pokazuje narysowanej trasy
 
     Przykłady:
-      | dane                                                                 | sala | kroki                                                                                   |
-      | wejście zalecane A-1 jest na parterze, a winda łączy parter z piętrem sali 329 | 329  | wejście zalecane na parterze, winda, piętro sali, sala z przybliżoną odległością od windy |
-      | sala 012 jest na piętrze wejścia zalecanego A-1                      | 012  | wejście zalecane, sala z przybliżoną odległością od wejścia                             |
-      | dane A-1 nie podają piętra wejścia zalecanego                        | 329  | wejście zalecane z dopiskiem, że przyjęto parter, winda, piętro sali, sala              |
+      | dane                                                                 | sala | kroki                                                                                              |
+      | wejście zalecane A-1 jest na parterze, a winda łączy parter z piętrem sali 329 | 329  | wejście zalecane na parterze, winda z odległością od wejścia i piętrem sali, sala z odległością od windy |
+      | sala 012 jest na piętrze wejścia zalecanego A-1                      | 012  | wejście zalecane, sala z przybliżoną odległością od wejścia                                        |
+      | dane A-1 nie podają piętra wejścia zalecanego                        | 329  | wejście zalecane z dopiskiem, że przyjęto parter, winda, sala                                      |
+
+  @US18.2 @aplikacja
+  Scenariusz: Znaleziona sala nie zaczyna pokazu drogi
+    Jeżeli Gość niezalogowany znajdzie salę 329 w budynku A-1
+    Wtedy plan pokazuje 2 piętro z wyróżnioną salą 329
+    Oraz karta sali ma całą listę „Jak dojść” bez wybranego kroku i przycisk „Pokaż po kolei”
+
+  @US18.2 @aplikacja
+  Scenariusz: Pokaż po kolei prowadzi od wejścia do sali
+    Zakładając, że Gość niezalogowany znalazł salę 329 w budynku A-1
+    Jeżeli dotknie „Pokaż po kolei”
+    Wtedy karta pokazuje tylko krok 1 i „Krok 1 z 3”
+    Oraz plan pokazuje parter z wejściem zalecanym
+    Jeżeli dotknie „Dalej”
+    Wtedy karta pokazuje krok 2, a mapa pokazuje windę
+    Jeżeli dotknie „Wszystkie kroki”
+    Wtedy widzi całą listę „Jak dojść” z wybranym krokiem 2
+
+  @US18.2 @aplikacja
+  Scenariusz: Arkusz wejścia z kroku wraca do tego kroku
+    Zakładając, że w karcie sali 329 jest wybrany krok 1
+    Jeżeli Gość niezalogowany dotknie „Szczegóły wejścia” i potem „‹ Sala 329”
+    Wtedy widzi kartę sali 329 z wybranym krokiem 1
+
+  @US18.1 @aplikacja
+  Scenariusz: Dotknięcie sali z numerem na planie otwiera kartę sali
+    Zakładając, że Gość niezalogowany widzi plan 2 piętra A-1 z numerami sal
+    Jeżeli dotknie sali 329
+    Wtedy widzi kartę sali 329 z listą „Jak dojść”
+    Ale dotknięcie korytarza nie otwiera karty sali
 
   @US18.3 @aplikacja
   Szablon scenariusza: Bez sali w danych albo bez drogi bez schodów aplikacja mówi to zdaniem
@@ -36,9 +82,9 @@ Funkcja: Wyszukanie sali
     Zakładając, że <sytuacja>
     Jeżeli Gość niezalogowany wyszuka „A-1 <numer>”
     Wtedy widzi zdanie, które mówi, czego brakuje
-    Oraz widzi propozycję „Pokaż opis budynku”
+    Oraz widzi wiersz „Budynek A-1”, który otwiera opis budynku
 
     Przykłady:
-      | sytuacja                                                     | numer |
-      | dane PWr budynku A-1 nie mają sali 999                       | 999   |
-      | żadna winda budynku A-1 nie łączy piętra wejścia z piętrem sali 329 | 329   |
+      | sytuacja                                                      | numer |
+      | dane PWr budynku A-1 nie mają sali 999                        | 999   |
+      | żadna winda w A-1 nie łączy piętra wejścia z piętrem sali 329 | 329   |

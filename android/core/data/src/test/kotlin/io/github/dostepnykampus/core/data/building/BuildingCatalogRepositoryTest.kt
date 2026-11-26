@@ -9,9 +9,9 @@ import io.github.dostepnykampus.core.data.CapturedLogs
 import io.github.dostepnykampus.core.data.di.DataModule
 import io.github.dostepnykampus.core.model.building.AssessmentSource.WALKTHROUGH
 import io.github.dostepnykampus.core.model.building.EntranceAssessment
-import io.github.dostepnykampus.core.network.NetworkModule
 import io.github.dostepnykampus.core.network.auth.AccessTokens
 import io.github.dostepnykampus.core.network.building.BuildingsApi
+import io.github.dostepnykampus.core.network.di.NetworkModule
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async

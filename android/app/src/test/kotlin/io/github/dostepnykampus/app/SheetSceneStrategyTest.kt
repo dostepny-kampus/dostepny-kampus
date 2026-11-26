@@ -9,9 +9,10 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategyScope
+import io.github.dostepnykampus.app.navigation.SheetSceneStrategy
+import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
-import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -25,13 +26,13 @@ class SheetSceneStrategyTest {
         with(SheetSceneStrategy(MapMotion())) { SceneStrategyScope<NavKey>().calculateScene(routes.map(::entry)) }
 
     /**
-     * Wiersz: V2, „Sprawdź, którędy wejść” → V3 na cały ekran; inne układy historii rysuje scena z jednym ekranem.
+     * Wiersz: ekran nad V2, np. V4, i inne układy historii poza V2 nad samym V1 rysuje scena z jednym ekranem.
      *
-     * Wymagania: US3
+     * Wymagania: US2.8
      */
     @Test
-    fun showsEntranceAlone() {
-        assertNull(scene(MapRoute(), BuildingRoute("A-1"), EntrancesRoute("A-1")))
+    fun showsOtherScreenAlone() {
+        assertNull(scene(MapRoute(), BuildingRoute("A-1"), ReportRoute()))
         assertNull(scene(BuildingRoute("A-1")))
     }
 }

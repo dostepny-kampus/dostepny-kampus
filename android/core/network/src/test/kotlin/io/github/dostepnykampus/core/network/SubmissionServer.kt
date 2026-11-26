@@ -6,13 +6,16 @@
 package io.github.dostepnykampus.core.network
 
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.core.model.submission.Submission
+import io.github.dostepnykampus.core.model.submission.SubmissionAuthor
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
+import io.github.dostepnykampus.core.network.di.NetworkModule
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonObject
@@ -104,6 +107,7 @@ internal class SubmissionServer {
                 createdAt = Instant.parse("2026-11-03T18:00:00Z"),
                 content = precise,
                 rejectionReason = REASON,
+                author = SubmissionAuthor(pseudonym = "Autor 17", staffRoles = setOf(StaffRole.COLLECTOR)),
             )
 
         fun submission(status: String): String = "{$SERVER_DATA$status$PRECISE}"

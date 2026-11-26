@@ -5,12 +5,16 @@
  */
 package io.github.dostepnykampus.feature.map.area
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -28,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.overlay.mapControlBorder
 
 /**
@@ -66,6 +71,32 @@ internal fun AreaNotice(shift: AreaShift, isNew: Boolean, onShow: (Boolean) -> U
             style = MaterialTheme.typography.bodyLarge,
         )
     }
+}
+
+private const val NOTICE_FADE_MILLIS = 200
+
+/**
+ * Krycie napisu o zmianie terenu [shift]: nowy napis czeka do końca ruchu mapy z [motion], który zaczął się razem
+ * z nim, i przenika w 200 ms (`short4` Material 3); bez [motion] albo przy ruchu bez czasu (wyłączone animacje)
+ * pojawia się od razu. Ten sam napis pokazany znów, np. po zamknięciu panelu, nie czeka.
+ *
+ * Wymagania: US1.8, NFR-56
+ */
+@Composable
+internal fun rememberNoticeAlpha(shift: AreaShift?, motion: MapMotion?): Animatable<Float, AnimationVector1D> {
+    val alpha = remember(shift) { Animatable(0f) }
+    val after = remember(shift) { motion?.moves ?: 0 }
+    LaunchedEffect(shift) {
+        if (shift != null) {
+            motion?.awaitEnd(after)
+            if (motion == null || motion.durationMillis == 0L) {
+                alpha.snapTo(1f)
+            } else {
+                alpha.animateTo(targetValue = 1f, animationSpec = tween(NOTICE_FADE_MILLIS))
+            }
+        }
+    }
+    return alpha
 }
 
 /**

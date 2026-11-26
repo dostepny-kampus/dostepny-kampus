@@ -14,14 +14,15 @@ import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.BucketAlreadyExistsException;
 import software.amazon.awssdk.services.s3.model.BucketAlreadyOwnedByYouException;
+import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 
 /**
  * Tworzy kubełek zdjęć przy starcie serwera (ADR-0009), więc zapis zdjęcia
  * nie tworzy go w żądaniu.
  *
- * <p>Istniejący kubełek to sukces. Przy skonfigurowanych kluczach każda inna
- * awaria magazynu zatrzymuje start. Bez kluczy (np. w testach bez magazynu)
- * serwer tylko ostrzega i startuje.</p>
+ * <p>Istniejącego kubełka nie tworzy, bo klucz serwera ma prawa tylko do niego.
+ * Przy skonfigurowanych kluczach każda inna awaria magazynu zatrzymuje start.
+ * Bez kluczy (np. w testach bez magazynu) serwer tylko ostrzega i startuje.</p>
  *
  * @since 0.1.0
  */
@@ -49,17 +50,31 @@ final class PhotoBucket implements ApplicationRunner {
             return;
         }
         try {
+            this.client.headBucket(request -> request.bucket(this.settings.bucket()));
+        } catch (final NoSuchBucketException ex) {
+            this.create();
+        } catch (final SdkException ex) {
+            throw this.failure(ex);
+        }
+    }
+
+    private void create() {
+        try {
             this.client.createBucket(request -> request.bucket(this.settings.bucket()));
         } catch (final BucketAlreadyOwnedByYouException | BucketAlreadyExistsException ex) {
             PhotoBucket.LOG.debug("Kubełek zdjęć już istnieje: {}", this.settings.bucket());
         } catch (final SdkException ex) {
-            throw new IllegalStateException(
-                String.format(
-                    "dk.photos: nie utworzono kubełka %s w %s",
-                    this.settings.bucket(), this.settings.endpoint()
-                ),
-                ex
-            );
+            throw this.failure(ex);
         }
+    }
+
+    private IllegalStateException failure(final SdkException cause) {
+        return new IllegalStateException(
+            String.format(
+                "dk.photos: nie utworzono kubełka %s w %s",
+                this.settings.bucket(), this.settings.endpoint()
+            ),
+            cause
+        );
     }
 }

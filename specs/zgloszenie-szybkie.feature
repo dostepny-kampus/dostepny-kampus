@@ -14,19 +14,56 @@ Funkcja: Zgłoszenie szybkie
     Wtedy zgłoszenie powstaje po 3 krokach
     Oraz ma dołączoną bieżącą pozycję telefonu, o którą aplikacja nie pytała
 
-  @US4.6 @aplikacja
-  Szablon scenariusza: Zgłoszenie przy wejściu podpowiada wejście, a miejsce bierze z bieżącej pozycji
+  # brak pełnego testu: #3734
+  @US4.6 @BR-8 @BR-14 @aplikacja @do-zrobienia
+  Scenariusz: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego wejścia
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
-    Oraz otworzył <ekran> budynku A-1
-    Jeżeli przy wejściu głównym wybierze „Zgłoś barierę przy wejściu”
-    Wtedy krok 1 zgłoszenia szybkiego ma napis „Wejście: »Wejście główne«”
-    Oraz wysłane zgłoszenie ma wejście główne A-1 jako wskazówkę dla Weryfikatora
-    Ale miejsce zgłoszenia pochodzi z bieżącej pozycji telefonu, a nie z wybranego wejścia
+    Oraz otworzył arkusz wejścia głównego A-1 na mapie
+    Jeżeli wybierze „Zgłoś barierę przy wejściu”
+    Wtedy krok 1 zgłoszenia szybkiego ma napis „Wejście: Wejście główne”, bez cudzysłowu, bo to nie nazwa z danych
+    Oraz aplikacja nie prosi o zgodę na lokalizację i nie ustala bieżącej pozycji
+    Jeżeli zrobi zdjęcie, wybierze grupę barier „wejście i drzwi” i wyśle zgłoszenie
+    Wtedy aplikacja nie pyta o piętro
+    Oraz miejscem zgłoszenia jest punkt wejścia głównego A-1, a budynkiem A-1
+
+  @US4.6 @BR-27 @aplikacja
+  Scenariusz: Napis wejścia bez nazwy w danych ma opis położenia
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz otworzył arkusz wejścia bez nazwy w danych, położonego od strony E-3, od południa
+    Jeżeli wybierze „Zgłoś barierę przy wejściu”
+    Wtedy napis o wejściu w zgłoszeniu szybkim brzmi „Wejście: Wejście, od strony E-3, od południa”
+
+  @US4.6 @BR-8 @BR-14 @serwer
+  Scenariusz: Serwer bierze miejsce, budynek i piętro zgłoszenia od wybranego wejścia
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Jeżeli wyśle zgłoszenie szybkie ze zdjęciem, grupą barier i wejściem głównym A-1, bez bieżącej pozycji
+    Wtedy zgłoszenie ma miejsce w punkcie wejścia głównego A-1, budynek A-1 i piętro tego wejścia
+    Ale zgłoszenie bez bieżącej pozycji i bez wejścia albo z nieznanym wejściem serwer odrzuca
+
+  @US4.6 @BR-8 @aplikacja
+  Scenariusz: Odnośnik w wierszu kilku wejść bez danych bierze miejsce z bieżącej pozycji
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz karta budynku pokazuje jeden wiersz kilku wejść bez danych
+    Jeżeli wybierze w nim „Zgłoś barierę przy wejściu”
+    Wtedy krok 1 zgłoszenia szybkiego nie ma napisu o wejściu
+    Oraz miejscem zgłoszenia jest bieżąca pozycja telefonu
+
+  @US4.6 @BR-8 @BR-14 @aplikacja
+  Szablon scenariusza: Zgłoszenie przy obiekcie planu ma miejsce w punkcie obiektu i piętro planu
+    Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
+    Oraz na planie 2 piętra A-1 otworzył <arkusz>
+    Jeżeli wybierze „<przycisk>”
+    Wtedy krok 1 zgłoszenia szybkiego ma napis „<napis>”
+    Oraz aplikacja nie prosi o zgodę na lokalizację i nie ustala bieżącej pozycji
+    Jeżeli zrobi zdjęcie, wybierze grupę barier i wyśle zgłoszenie
+    Wtedy aplikacja nie pyta o piętro
+    Oraz miejscem zgłoszenia jest punkt tego obiektu, budynkiem A-1, a piętrem 2 piętro
 
     Przykłady:
-      | ekran                   |
-      | kartę                   |
-      | ekran „Którędy wejść” |
+      | arkusz         | przycisk                    | napis                                      |
+      | arkusz schodów | Zgłoś barierę przy schodach | Schody: Budynek A-1, 2 piętro              |
+      | arkusz toalety | Zgłoś barierę przy toalecie | Toaleta dostosowana: Budynek A-1, 2 piętro |
+      | arkusz windy   | Zgłoś barierę przy windzie  | Winda: Budynek A-1, 2 piętro               |
 
   @US4.3 @aplikacja
   Scenariusz: Wybór jednej z 6 grup barier dużymi przyciskami
@@ -48,7 +85,8 @@ Funkcja: Zgłoszenie szybkie
       | zdjęcia       |
       | grupy barier  |
 
-  @US4.1 @aplikacja
+  # brak pełnego testu: #3696
+  @US4.1 @aplikacja @do-zrobienia
   Scenariusz: Bez zgody na lokalizację aparat się nie otwiera
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz aplikacja nie ma zgody na lokalizację
@@ -107,8 +145,8 @@ Funkcja: Zgłoszenie szybkie
     Przykłady:
       | miejsce                              | grupa                 | pytanie                                                                   |
       | w budynku D-2                        | „komunikacja pionowa” | widzi pytanie o piętro z „Nie wiem” i etykietami pięter z danych PWr      |
-      | w budynku B-4                        | „toalety”             | widzi pytanie o piętro z „Nie wiem” i przyciskami „Parter”, „1”, „2”      |
-      | w budynku C-13                       | „wejście i drzwi”     | widzi pytanie o piętro z „Nie wiem” i etykietami pięter z danych PWr      |
+      | w budynku B-4                        | „toalety”             | widzi pytanie o piętro z „Nie wiem” i przyciskami „Parter”, „1 piętro”, „2 piętro” |
+      | w budynku C-13, przy wejściu         | „wejście i drzwi”     | widzi pytanie o piętro z „Nie wiem” i etykietami pięter z danych PWr      |
       | w budynku C-13                       | „inne”                | przechodzi do kroku 3 bez pytania o piętro                                |
       | na chodniku przed A-1, poza konturem | „komunikacja pozioma” | przechodzi do kroku 3 bez pytania o piętro                                |
 
@@ -134,7 +172,7 @@ Funkcja: Zgłoszenie szybkie
   Scenariusz: Pozycja poza konturem przy wysłaniu zostawia piętro puste
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz wybrał grupę barier „komunikacja pozioma”, zanim telefon ustalił bieżącą pozycję
-    Oraz na pytanie o piętro wybrał „1”
+    Oraz na pytanie o piętro wybrał „1 piętro”
     Jeżeli telefon ustali pozycję na chodniku przed A-1, poza konturem budynku
     Oraz Odwiedzający wyśle zgłoszenie
     Wtedy zgłoszenie jest „poza budynkiem”

@@ -91,7 +91,7 @@ class RevokedRoleTest {
         assertEquals(1, creates)
         assertNotNull(runBlocking { edits.find(ID) })
 
-        val list = runBlocking { DataModule.ownSubmissions(store).observe().first() }
+        val list = runBlocking { DataModule.ownSubmissions(store, testTokens()).observe().first() }
         val viewModel =
             MySubmissionsViewModel(
                 history = OwnSubmissions { flowOf(list) },
@@ -120,12 +120,13 @@ class RevokedRoleTest {
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
-                    create = { _, _ ->
+                    subject = { "konto-testowe" },
+                    create = { _, _, _ ->
                         creates++
                         ServerReply.Fault(code = FORBIDDEN)
                     },
-                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { _, _, _ -> ServerReply.Missing },
+                    putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
+                    update = { _, _, _, _ -> ServerReply.Missing },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
         )

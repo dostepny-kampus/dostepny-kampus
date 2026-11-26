@@ -7,6 +7,7 @@ package io.github.dostepnykampus.barrier.submission.web;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import io.github.dostepnykampus.barrier.submission.SubmissionEdit;
+import io.github.dostepnykampus.barrier.submission.content.EntrancePlaces;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.json.SubmissionContentJson;
 import java.util.UUID;
@@ -27,12 +28,13 @@ record SubmissionUpdateRequest(
      * Przenosi ciało żądania do komendy domeny.
      *
      * @param path Identyfikator zgłoszenia z adresu
+     * @param entrances Miejsca wejść znanych serwerowi
      * @return Komenda edycji zgłoszenia
      */
-    SubmissionEdit toCommand(final UUID path) {
+    SubmissionEdit toCommand(final UUID path, final EntrancePlaces entrances) {
         if (this.version == null) {
             throw new InvalidSubmission("Brak wersji bazowej edycji w polu version");
         }
-        return new SubmissionEdit(path, this.version, this.content.toContent());
+        return new SubmissionEdit(path, this.version, this.content.toContent(entrances));
     }
 }

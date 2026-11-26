@@ -31,6 +31,14 @@ if ! grep -q 'Start p50 (ms) | 150.0 | 100.0 | +50%' <<<"$podsumowanie"; then
 else
   echo "OK: trend względem poprzedniego wpisu"
 fi
+autor="$(git -C "$workdir/zdalne.git" log -1 --format='%an <%ae>|%cn <%ce>' dane-wydajnosci)"
+bot='github-actions[bot] <41898283+github-actions[bot]@users.noreply.github.com>'
+if [[ $autor != "${bot}|${bot}" ]]; then
+  echo "NIEUDANY autor wpisu: oczekiwano bota GitHub Actions, jest ${autor}"
+  failures=$((failures + 1))
+else
+  echo "OK: wpis zapisany jako bot GitHub Actions"
+fi
 
 echo '{"sha":"c","p50_ms":5.0}' >"$WPIS"
 if [[ -z "$(PLIK=obciazenie.jsonl BEZ_PODSUMOWANIA=1 bash "$script")" ]]   && git -C "$workdir/zdalne.git" show dane-wydajnosci:obciazenie.jsonl | grep -q '"sha":"c"'; then

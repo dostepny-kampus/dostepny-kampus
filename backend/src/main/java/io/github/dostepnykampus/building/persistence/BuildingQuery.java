@@ -11,26 +11,32 @@ import io.github.dostepnykampus.building.domain.BuildingCard;
 import io.github.dostepnykampus.building.domain.BuildingList;
 import io.github.dostepnykampus.building.domain.Buildings;
 import io.github.dostepnykampus.building.domain.Entrance;
+import io.github.dostepnykampus.building.domain.EvacuationExit;
 import io.github.dostepnykampus.building.domain.Floor;
 import io.github.dostepnykampus.building.domain.FloorList;
 import io.github.dostepnykampus.building.domain.Placement;
+import io.github.dostepnykampus.building.entrance.persistence.EntranceRows;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 
 /**
- * Odczyt REST budynków: lista na mapie, podpowiedź budynku dla punktu i karta budynku
- * z wejściami. Zawieranie punktu liczy tylko {@link Outlines}, więc podpowiedź i budynek
- * zapisany przy zgłoszeniu szybkim są zawsze równe. Atrybucja listy to źródła konturów
- * bez powtórzeń, alfabetycznie, rozdzielone średnikiem; pusta tabela ma pustą atrybucję.
+ * Odczyt REST budynków: lista na mapie i karta budynku z wejściami, karta też z wyjściami
+ * ewakuacyjnymi, oraz podpowiedź budynku dla punktu. Nazwa wejścia z planów PWr wygrywa
+ * z OpenStreetMap; oznaczenie z datą: obchód, potem plany PWr, potem OpenStreetMap. Zawieranie
+ * punktu liczy tylko {@link Outlines}, więc podpowiedź i budynek zgłoszenia szybkiego są zawsze
+ * równe. Atrybucja listy to źródła konturów bez powtórzeń, alfabetycznie, rozdzielone średnikiem;
+ * pusta tabela ma pustą atrybucję.
  *
- * <p>Wymagania: US1, BR-G2, US2, BR-14, NFR-40, US16</p>
+ * <p>Wymagania: US1, BR-G2, US2, BR-14, NFR-40, US16, BR-24, BR-27, US17.3, US2.6, US1.4</p>
  *
  * @since 0.1.0
  */
@@ -61,6 +67,18 @@ public final class BuildingQuery implements Buildings {
 
     @Override
     public BuildingList listBuildings() {
+        final Map<String, List<Entrance>> entrances = this.jdbc.sql(
+            EntranceRows.SELECT.concat("ORDER BY building_symbol, main DESC, id")
+        ).query(
+            (rows, num) -> Map.entry(
+                BuildingQuery.text(rows, "building_symbol"), new EntranceRows().mapRow(rows, num)
+            )
+        ).list().stream().collect(
+            Collectors.groupingBy(
+                Map.Entry::getKey,
+                Collectors.mapping(Map.Entry::getValue, Collectors.toUnmodifiableList())
+            )
+        );
         return this.jdbc.sql(
             """
             SELECT symbol, name, detail_level, source,
@@ -68,7 +86,7 @@ public final class BuildingQuery implements Buildings {
             FROM buildings
             ORDER BY symbol
             """
-        ).query(BuildingQuery::rows);
+        ).query((final ResultSet rows) -> BuildingQuery.rows(rows, entrances));
     }
 
     @Override
@@ -136,34 +154,36 @@ public final class BuildingQuery implements Buildings {
             item.name(),
             item.detailLevel(),
             item.outline(),
-            this.entrances(item.symbol())
+            this.entrances(item.symbol()),
+            this.exits(item.symbol())
         );
     }
 
     private List<Entrance> entrances(final String symbol) {
         return this.jdbc.sql(
+            EntranceRows.SELECT.concat(
+                "WHERE building_symbol = :symbol ORDER BY main DESC, id"
+            )
+        ).param("symbol", symbol).query(
+            new EntranceRows()
+        ).list();
+    }
+
+    private List<EvacuationExit> exits(final String symbol) {
+        return this.jdbc.sql(
             """
-            SELECT id, building_symbol, name, type, main,
-                ST_AsGeoJSON(location) AS location, floor_id, marking,
-                marking_date::text AS marking_date, marking_source
-            FROM entrances
+            SELECT id, ST_AsGeoJSON(location) AS location, floor_id, description, door_width_cm
+            FROM evacuation_exits
             WHERE building_symbol = :symbol
-            ORDER BY main DESC, id
+            ORDER BY id
             """
         ).param("symbol", symbol).query(
-            (rows, num) -> new Entrance(
+            (rows, num) -> new EvacuationExit(
                 BuildingQuery.text(rows, "id"),
-                BuildingQuery.text(rows, "building_symbol"),
-                rows.getString("name"),
-                rows.getString("type"),
-                rows.getBoolean("main"),
                 BuildingQuery.text(rows, "location"),
-                rows.getString("floor_id"),
-                new Entrance.Marking(
-                    BuildingQuery.text(rows, "marking"),
-                    BuildingQuery.text(rows, "marking_date"),
-                    BuildingQuery.text(rows, "marking_source")
-                )
+                BuildingQuery.text(rows, "floor_id"),
+                BuildingQuery.text(rows, "description"),
+                new EntranceRows().door(rows)
             )
         ).list();
     }
@@ -185,14 +205,16 @@ public final class BuildingQuery implements Buildings {
         ).list();
     }
 
-    private static BuildingList rows(final ResultSet rows) throws SQLException {
+    private static BuildingList rows(
+        final ResultSet rows, final Map<String, List<Entrance>> entrances
+    ) throws SQLException {
         final List<Building> found = new ArrayList<>(8);
         final SortedSet<String> sources = new TreeSet<>();
         while (rows.next()) {
             sources.add(BuildingQuery.text(rows, "source"));
             found.add(BuildingQuery.one(rows));
         }
-        return new BuildingList(String.join("; ", sources), found);
+        return new BuildingList(String.join("; ", sources), found, entrances);
     }
 
     private static Building one(final ResultSet rows) throws SQLException {

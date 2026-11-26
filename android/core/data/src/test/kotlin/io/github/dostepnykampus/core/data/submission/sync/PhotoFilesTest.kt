@@ -37,7 +37,7 @@ class PhotoFilesTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
+                submissionServer(
                     create = { id, content ->
                         if (isOnline) ServerReply.Ok(server(id, content)) else ServerReply.Offline
                     },

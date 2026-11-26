@@ -5,144 +5,100 @@
  */
 package io.github.dostepnykampus.feature.map.barrier
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import io.github.dostepnykampus.core.designsystem.CeleDotyku
-import io.github.dostepnykampus.core.designsystem.Obramowania
+import androidx.compose.ui.text.TextStyle
+import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
-import io.github.dostepnykampus.core.designsystem.Zaokraglenia
-import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.campusDay
-import io.github.dostepnykampus.core.designsystem.marking.SeverityIcon
+import io.github.dostepnykampus.core.designsystem.marking.BarrierPhoto
+import io.github.dostepnykampus.core.designsystem.marking.SeverityLabel
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
-import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.map.R
+import io.github.dostepnykampus.feature.map.overlay.BuildingLink
+import io.github.dostepnykampus.feature.map.overlay.MapSheet
+import io.github.dostepnykampus.feature.map.overlay.SheetCloseButton
+import io.github.dostepnykampus.feature.map.overlay.SheetExits
 
 /**
  * Arkusz bariery na dole mapy V1 po dotknięciu znaku: plakietka uciążliwości ze znakiem i słowem,
- * obrysowany „Zamknij”, typ bariery tymi samymi napisami co na V2 jako nagłówek, miejsce
- * i „Sprawdzone 14.10.2026”. „Pokaż opis budynku” jest tylko dla bariery w budynku z katalogu: bariera poza
+ * obrysowany „Zamknij”, wiersz budynku, typ bariery tymi samymi napisami co na V2 jako nagłówek, miejsce
+ * i „Sprawdzone 14.10.2026”. Wiersz budynku jest tylko dla bariery w budynku z katalogu: bariera poza
  * budynkiem nie ma budynku do pokazania (PW-5). Przy dużej czcionce arkusz się przewija.
  *
  * Miejsce składa [barrierPlace]. Dzień sprawdzenia liczy się w strefie czasu kampusu, nie telefonu.
  *
- * Wymagania: US1.5, NFR-21, NFR-53, NFR-17, NFR-20
+ * Wymagania: US1.5, US2.8, NFR-21, NFR-53, NFR-17, NFR-20
  *
  * @param chosen bariera z budynkiem i wejściem
- * @param onClose „Zamknij” zostawia samą mapę
- * @param onBuildingClick „Pokaż opis budynku” otwiera V2 budynku bariery
+ * @param exits „Zamknij” i wiersz budynku
  * @param modifier położenie arkusza na mapie
  */
 @Composable
-internal fun BarrierSheet(
-    chosen: ChosenBarrier,
-    onClose: () -> Unit,
-    onBuildingClick: (Building) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Surface(modifier.fillMaxWidth(), shape = RoundedCornerShape(Zaokraglenia.duze), shadowElevation = Odstepy.s) {
-        Column(
-            Modifier.verticalScroll(rememberScrollState()).padding(Odstepy.m),
-            verticalArrangement = Arrangement.spacedBy(Odstepy.s),
-        ) {
-            SheetTop(chosen.barrier.severity, onClose)
-            BarrierFacts(chosen)
-            chosen.building?.let { building ->
-                PinnedButton(
-                    text = stringResource(R.string.mapa_bariera_opis_budynku),
-                    onClick = { onBuildingClick(building) },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
+internal fun BarrierSheet(chosen: ChosenBarrier, exits: SheetExits, modifier: Modifier = Modifier) {
+    MapSheet(modifier) {
+        SheetTop(chosen.barrier.severity, exits.onClose)
+        chosen.building?.let { building ->
+            BuildingLink(building.symbol, onClick = { exits.onBuilding(building.symbol) })
         }
+        BarrierFacts(chosen)
     }
 }
 
 @Composable
 private fun SheetTop(severity: Severity, onClose: () -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        SeverityBadge(severity)
-        Spacer(Modifier.weight(1f))
-        OutlinedButton(onClick = onClose, modifier = Modifier.heightIn(min = CeleDotyku.minimum)) {
-            Text(stringResource(R.string.mapa_zamknij))
+    val isLarge = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        if (isLarge) {
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                SheetCloseButton(onClose)
+            }
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            SeverityLabel(severity)
+            Spacer(Modifier.weight(1f))
+            if (!isLarge) SheetCloseButton(onClose)
         }
     }
 }
 
 /**
- * Plakietka uciążliwości: znak i słowo.
+ * Typ bariery jako nagłówek krojem [titleStyle], miejsce z [barrierPlace], gdy [hasPlace], „Sprawdzone 14.10.2026”
+ * i zdjęcie z [BarrierPhoto].
  *
- * Wymagania: NFR-21
+ * Wymagania: US1.5, US2.2, BR-17, NFR-21
  */
 @Composable
-internal fun SeverityBadge(severity: Severity) {
-    Surface(
-        shape = RoundedCornerShape(Zaokraglenia.srednie),
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-        border = BorderStroke(Obramowania.ramka, MaterialTheme.colorScheme.outline),
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = Odstepy.m, vertical = Odstepy.s),
-            horizontalArrangement = Arrangement.spacedBy(Odstepy.s),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            SeverityIcon(severity)
-            Text(
-                text = stringResource(severity.nameRes()),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = Typografia.wyroznienieWaga,
-            )
-        }
-    }
-}
-
-/**
- * Typ bariery jako nagłówek, miejsce z [barrierPlace], „Sprawdzone 14.10.2026” i zdjęcie z [BarrierPhoto].
- *
- * Wymagania: US1.5, US2.2, BR-17
- */
-@Composable
-internal fun BarrierFacts(chosen: ChosenBarrier) {
+internal fun BarrierFacts(
+    chosen: ChosenBarrier,
+    hasPlace: Boolean = true,
+    titleStyle: TextStyle = MaterialTheme.typography.headlineMedium,
+) {
     val barrier = chosen.barrier
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(
             text = stringResource(barrier.type?.nameRes() ?: R.string.mapa_bariera_bez_typu),
             modifier = Modifier.semantics { heading() },
-            style = MaterialTheme.typography.headlineSmall,
+            style = titleStyle,
             fontWeight = Typografia.wyroznienieWaga,
         )
-        Text(
-            text =
-                barrierPlace(
-                    symbol = barrier.buildingSymbol,
-                    name = chosen.building?.name,
-                    entrance = chosen.entrance,
-                    floor = barrier.floor,
-                ),
-            style = MaterialTheme.typography.bodyLarge,
-        )
+        if (hasPlace) BarrierPlace(chosen)
         barrier.verifiedAt?.let { verified ->
             val day = campusDay(verified)
             Text(
@@ -151,6 +107,20 @@ internal fun BarrierFacts(chosen: ChosenBarrier) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        BarrierPhoto(chosen)
+        BarrierPhoto(url = barrier.photoUrl, type = barrier.type)
     }
+}
+
+@Composable
+private fun BarrierPlace(chosen: ChosenBarrier) {
+    Text(
+        text =
+            barrierPlace(
+                symbol = chosen.barrier.buildingSymbol,
+                name = chosen.building?.name,
+                entrance = chosen.entrance,
+                floor = chosen.barrier.floor,
+            ),
+        style = MaterialTheme.typography.bodyLarge,
+    )
 }

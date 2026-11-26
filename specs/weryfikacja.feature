@@ -13,7 +13,8 @@ Funkcja: Weryfikacja zgłoszeń
     Wtedy pierwsze jest zgłoszenie z 26.10.2026, a drugie z 27.10.2026
     Oraz przy każdym widzi rodzaj zgłoszenia, budynek i datę wysłania
 
-  @US10.8 @aplikacja
+  # brak ekranu przeglądu Weryfikatora: #3687
+  @US10.8 @aplikacja @do-zrobienia
   Szablon scenariusza: Przy zmianie Weryfikator widzi, czym różni się od poprzedniego stanu
     Zakładając, że w kolejce jest <zmiana>
     Jeżeli pierwszy Weryfikator weźmie tę zmianę
@@ -70,7 +71,8 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-5
   Reguła: Weryfikator zna autora tylko z roli i pseudonimu
 
-    @serwer
+    # brak kroków serwera: #4007
+    @serwer @do-zrobienia
     Scenariusz: Weryfikator widzi rolę i pseudonim autora, a nie jego dane osobowe
       Zakładając, że zgłoszenie wysłał Zbierający Jan Kowalski z adresem e-mail jan.kowalski@example.org
       Jeżeli pierwszy Weryfikator weźmie to zgłoszenie
@@ -280,7 +282,8 @@ Funkcja: Weryfikacja zgłoszeń
         | zmianę autora z uciążliwością 2    | zmianę „bariera usunięta”  |
         | zmianę „bariera usunięta”          | zmianę autora              |
 
-    @serwer
+    # brak kroków serwera: #4104
+    @serwer @do-zrobienia
     Scenariusz: Zmianę odrzuconą jako „nieaktualne” Zbierający wysyła ponownie do bieżącego zgłoszenia
       Zakładając, że zmianę „bariera usunięta” innego Zbierającego niż autor zgłoszenia TB-9 „niesprawna winda” w budynku D-2 odrzucono z powodem „nieaktualne”, bo wcześniej przyjęto zmianę autora z uciążliwością 2
       Jeżeli ten Zbierający wyśle swoją zmianę ponownie

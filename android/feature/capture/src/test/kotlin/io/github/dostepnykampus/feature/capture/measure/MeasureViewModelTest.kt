@@ -6,6 +6,8 @@
 package io.github.dostepnykampus.feature.capture.measure
 
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.server.ServerBuildings
+import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.geo.PwrGrounds
 import io.github.dostepnykampus.core.location.ElapsedClock
 import io.github.dostepnykampus.core.location.GnssSystem
@@ -56,6 +58,7 @@ class MeasureViewModelTest {
             }
         }
     private var catalogReads = 0
+    private var server: (suspend () -> ServerReply<ServerBuildings>)? = null
     private val fixes = MutableSharedFlow<PositionFix>(extraBufferCapacity = 1)
     private val satellites = MutableSharedFlow<List<Satellite>>(extraBufferCapacity = 1)
     private var failure: RuntimeException? = null
@@ -69,10 +72,14 @@ class MeasureViewModelTest {
             locationSwitch = LocationSwitch { locationOn },
             buildingLookup =
                 BuildingLookup(
-                    BuildingCatalogRepository(catalogDispatcher) {
-                        catalogReads += 1
-                        CAMPUS
-                    },
+                    BuildingCatalogRepository(
+                        ioContext = catalogDispatcher,
+                        listBuildings = server,
+                        readGeoJson = {
+                            catalogReads += 1
+                            CAMPUS
+                        },
+                    ),
                     lookupDispatcher,
                 ),
         )
@@ -268,6 +275,29 @@ class MeasureViewModelTest {
             assertEquals("A-1", (place() as PlaceChoice.Suggested).hint.building.symbol)
         }
 
+    /**
+     * Telefon bez sieci: serwer nie odpowiada, a podpowiedź budynku z pliku pojawia się najpóźniej 2 s
+     *   po końcu pomiaru.
+     * Scenariusz: pomiar-precyzyjny.feature: Podpowiedź budynku działa bez sieci
+     *
+     * Wymagania: US6.2
+     */
+    @Test
+    fun hintsBuildingWithoutNetwork() =
+        runTest(dispatcher) {
+            server = { ServerReply.Offline }
+            watch()
+            fix(accuracy = 6.0)
+            advanceTimeBy(30_000)
+            runCurrent()
+            advanceTimeBy(2_000)
+            assertEquals(
+                "A-1",
+                (place() as PlaceChoice.Suggested).hint.building.symbol,
+                "podpowiedź A-1 z pliku bez sieci po końcu pomiaru",
+            )
+        }
+
     @Test
     fun finishesOnceAtDeadline() =
         runTest(dispatcher) {
@@ -372,8 +402,8 @@ class MeasureViewModelTest {
 
     /**
      * 30 m na południe od konturu A-1, na terenie PWr: podpowiedź A-1 do potwierdzenia, punkt nie leży w konturze.
-     * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od odległości od
-     *   konturu
+     * Scenariusz (przykład: 30 m): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od
+     *   odległości od konturu
      *
      * Wymagania: BR-G4
      */
@@ -382,31 +412,42 @@ class MeasureViewModelTest {
         runTest(dispatcher) {
             finish(southOfA1(meters = 30.0))
             val suggested = place() as PlaceChoice.Suggested
-            assertEquals("A-1", suggested.hint.building.symbol)
-            assertFalse(suggested.hint.isInside)
+            assertEquals("A-1", suggested.hint.building.symbol, "podpowiedź budynku A-1 przy 30 m")
+            assertFalse(suggested.hint.isInside, "punkt 30 m od konturu nie leży w konturze")
         }
 
-    /**
-     * Tuż poniżej progu 50 m na południe od konturu A-1, na terenie PWr: nadal podpowiedź A-1 do potwierdzenia.
-     * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od odległości od
-     *   konturu
-     *
-     * Wymagania: BR-G4
-     */
+    /** Tuż poniżej progu 50 m na południe od konturu A-1, na terenie PWr: nadal podpowiedź A-1. Wymagania: BR-G4 */
     @Test
     fun suggestsBuildingAt49Meters() =
         runTest(dispatcher) {
             finish(southOfA1(meters = 49.0))
             val suggested = place() as PlaceChoice.Suggested
-            assertEquals("A-1", suggested.hint.building.symbol)
-            assertFalse(suggested.hint.isInside)
+            assertEquals("A-1", suggested.hint.building.symbol, "podpowiedź budynku A-1 przy 49 m")
+            assertFalse(suggested.hint.isInside, "punkt 49 m od konturu nie leży w konturze")
+        }
+
+    /**
+     * Dokładnie 50 m na południe od konturu A-1, na terenie PWr: nadal podpowiedź A-1 do potwierdzenia, bo granica
+     * jest ostra („poza budynkiem” dopiero powyżej 50 m).
+     * Scenariusz (przykład: 50 m): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od
+     *   odległości od konturu
+     *
+     * Wymagania: BR-G4
+     */
+    @Test
+    fun suggestsBuildingAt50Meters() =
+        runTest(dispatcher) {
+            finish(southOfA1(meters = 50.0))
+            val suggested = place() as PlaceChoice.Suggested
+            assertEquals("A-1", suggested.hint.building.symbol, "podpowiedź w 50 m od konturu")
+            assertFalse(suggested.hint.isInside, "punkt w 50 m nie leży w konturze")
         }
 
     /**
      * 60 m na południe od konturu A-1, na terenie PWr i dalej od innych budynków: bez podpowiedzi, od razu „poza
      * budynkiem”.
-     * Scenariusz (częściowo): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od odległości od
-     *   konturu
+     * Scenariusz (przykład: 60 m): budynki-bez-szczegolow.feature: Propozycja budynku po pomiarze zależy od
+     *   odległości od konturu
      *
      * Wymagania: BR-G4
      */
@@ -414,7 +455,7 @@ class MeasureViewModelTest {
     fun putsPointAt60MetersOutside() =
         runTest(dispatcher) {
             finish(southOfA1(meters = 60.0))
-            assertEquals(PlaceChoice.Outside, place())
+            assertEquals(PlaceChoice.Outside, place(), "punkt 60 m od konturu jest poza budynkiem")
         }
 
     private fun southOfA1(meters: Double): GeoPoint {
@@ -450,7 +491,7 @@ class MeasureViewModelTest {
         val MOVED = GeoPoint(longitude = 17.0606, latitude = 51.1106)
         val A1_EDGE_POINT = GeoPoint(longitude = 17.06, latitude = 51.1105)
         const val A1_SOUTH_EDGE = 51.11
-        const val METERS_PER_DEGREE = 111_195.0
+        const val METERS_PER_DEGREE = 111_195.080234
         val CAMPUS =
             """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
                 feature("A-1", west = 17.06) +

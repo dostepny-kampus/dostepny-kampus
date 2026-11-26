@@ -16,7 +16,7 @@ set -euo pipefail
 kontekst=kontrola-sprintu
 obszar=(android backend infra data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml .github/actions/android-gradle
   .github/workflows/android.yml .github/workflows/kontrola-sprintu.yml .github/scripts/pakuj-serwer-systemowy.sh
-  .github/scripts/mvn-z-ponowieniem.sh)
+  .github/scripts/mvn-z-ponowieniem.sh .github/scripts/uruchom-serwer-systemowy.sh .github/scripts/dane-pokazu-a1.sql)
 teraz="${TERAZ:-$(date -u +%s)}"
 
 stan() {

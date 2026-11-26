@@ -19,8 +19,6 @@ import tools.jackson.databind.ObjectMapper;
  *
  * <p>Wymagania: NFR-34</p>
  *
- * <p>TODO(#2706): podłączyć do listy zgłoszeń w API zamiast listy bez stron.</p>
- *
  * @since 0.1.0
  */
 @Component
@@ -70,7 +68,7 @@ public final class JdbcSubmissionPages implements SubmissionFinder.Pages {
                             AND id > :after
                         ORDER BY id LIMIT :fetch
                         """,
-                        JdbcSubmissions.COLUMNS, SubmissionSelection.WHERE
+                        SubmissionRows.COLUMNS, SubmissionSelection.WHERE
                     )
                 ),
                 query, author

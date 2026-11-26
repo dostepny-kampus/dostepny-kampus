@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.inspection.progress
 
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.inspection.InspectionProgress
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.inspection.BuildingProgress
@@ -21,8 +22,10 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.Clock
 import java.time.Instant
+import java.time.ZoneId
 import java.time.ZoneOffset
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Stan listy K1: wczytywanie, lista z chwilą odczytu, bez sieci, błąd serwera, brak uprawnień i odświeżanie.
@@ -36,8 +39,16 @@ class ProgressViewModelTest {
         viewModelTest(ServerReply.Ok(listOf(DETAILED))) { viewModel ->
             assertEquals(ProgressUiState.Loading, viewModel.state.value, "przed odpowiedzią serwera")
             runCurrent()
-            val expected = ProgressUiState.Ready(buildings = listOf(DETAILED), readAt = READ_AT)
+            val expected = ProgressUiState.Ready(buildings = listOf(DETAILED), readAt = READ_AT, names = NAMES)
             assertEquals(expected, viewModel.state.value, "lista z chwilą odczytu")
+        }
+
+    @Test
+    fun carriesNamesFromCatalog() =
+        viewModelTest(ServerReply.Ok(listOf(DETAILED, BASIC))) { viewModel ->
+            runCurrent()
+            val state = viewModel.state.value as ProgressUiState.Ready
+            assertEquals(mapOf("A-1" to "Gmach A"), state.names, "nazwa z katalogu tylko dla budynku, który ją ma")
         }
 
     @Test
@@ -67,10 +78,43 @@ class ProgressViewModelTest {
             runCurrent()
             viewModel.refresh()
             val state = viewModel.state
-            assertEquals(ProgressUiState.Ready(listOf(DETAILED), READ_AT, true), state.value, "stara lista w trakcie")
+            val busy =
+                ProgressUiState.Ready(
+                    buildings = listOf(DETAILED),
+                    readAt = READ_AT,
+                    isRefreshing = true,
+                    names = NAMES,
+                )
+            assertEquals(busy, state.value, "stara lista w trakcie")
             runCurrent()
-            assertEquals(ProgressUiState.Ready(listOf(BASIC), READ_AT), state.value, "nowa lista po odświeżeniu")
+            val fresh = ProgressUiState.Ready(listOf(BASIC), READ_AT, names = NAMES)
+            assertEquals(fresh, state.value, "nowa lista po odświeżeniu")
         }
+
+    /**
+     * Przykład: Koordynator otworzył postęp 28.10.2026 o 10:15, a potem na serwer dotarł znacznik czwartego piętra A-1.
+     * Scenariusz: postep-inwentaryzacji.feature: Postęp podaje datę i godzinę odczytu i daje się odświeżyć
+     */
+    @Test
+    fun showsNewReadAfterRefresh() {
+        val before = DETAILED.copy(coverage = InspectionCoverage.Floors(floorsTotal = 5, floorsInspected = 3))
+        val replies = listOf(ServerReply.Ok(listOf(before)), ServerReply.Ok(listOf(DETAILED))).iterator()
+        val source =
+            object : InspectionProgress {
+                override suspend fun buildings(): ServerReply<List<BuildingProgress>> = replies.next()
+
+                override suspend fun revoke(markerId: String): ServerReply<Unit> = ServerReply.Missing
+            }
+        runViewModelTest(source, StepClock(OPENED_AT, READ_AT)) { viewModel ->
+            runCurrent()
+            val opened = ProgressUiState.Ready(listOf(before), OPENED_AT, names = NAMES)
+            assertEquals(opened, viewModel.state.value, "po otwarciu")
+            viewModel.refresh()
+            runCurrent()
+            val refreshed = ProgressUiState.Ready(listOf(DETAILED), READ_AT, names = NAMES)
+            assertEquals(refreshed, viewModel.state.value, "po odświeżeniu")
+        }
+    }
 
     @Test
     fun noSecondReadWhileBusy() {
@@ -103,23 +147,37 @@ class ProgressViewModelTest {
 
                 override suspend fun revoke(markerId: String): ServerReply<Unit> = ServerReply.Missing
             }
-        runViewModelTest(source, block)
+        runViewModelTest(source = source, block = block)
     }
 
-    private fun runViewModelTest(source: InspectionProgress, block: suspend TestScope.(ProgressViewModel) -> Unit) {
+    private fun runViewModelTest(
+        source: InspectionProgress,
+        clock: Clock = Clock.fixed(READ_AT, ZoneOffset.UTC),
+        block: suspend TestScope.(ProgressViewModel) -> Unit,
+    ) {
         val dispatcher = StandardTestDispatcher()
         Dispatchers.setMain(dispatcher)
         try {
-            runTest(dispatcher) { block(ProgressViewModel(source, Clock.fixed(READ_AT, ZoneOffset.UTC))) }
+            runTest(dispatcher) { block(ProgressViewModel(source, catalog(), clock)) }
         } finally {
             Dispatchers.resetMain()
         }
     }
 
+    private fun catalog() = BuildingCatalogRepository(EmptyCoroutineContext) { FILE }
+
     private companion object {
         const val SERVER_ERROR = 500
         const val FORBIDDEN = 403
+        val OPENED_AT: Instant = Instant.parse("2026-10-28T09:15:00Z")
         val READ_AT: Instant = Instant.parse("2026-11-12T10:42:00Z")
+        val NAMES = mapOf("A-1" to "Gmach A")
+        const val FILE =
+            """{"type":"FeatureCollection","attribution":"© plik","features":[""" +
+                """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"display_name":"Gmach A",""" +
+                """"osm_id":"way/1"},"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}},""" +
+                """{"type":"Feature","properties":{"kind":"building","symbols":["B-4"],"osm_id":"way/2"},""" +
+                """"geometry":{"type":"Polygon","coordinates":[[[2,2],[3,2],[3,3],[2,2]]]}}]}"""
         val DETAILED =
             BuildingProgress(
                 buildingSymbol = "A-1",
@@ -141,4 +199,15 @@ class ProgressViewModelTest {
                 markers = emptyList(),
             )
     }
+}
+
+/** Zegar, który przy każdym odczycie podaje kolejną chwilę z listy. */
+private class StepClock(vararg instants: Instant) : Clock() {
+    private val next = instants.iterator()
+
+    override fun instant(): Instant = next.next()
+
+    override fun getZone(): ZoneId = ZoneOffset.UTC
+
+    override fun withZone(zone: ZoneId): Clock = this
 }

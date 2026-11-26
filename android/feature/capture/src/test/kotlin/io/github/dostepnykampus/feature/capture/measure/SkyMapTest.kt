@@ -31,11 +31,16 @@ class SkyMapTest {
         compose.setContent { DostepnyKampusTheme { SkyMap(Sky(satellites.toList())) } }
     }
 
-    /** Wiersz: GPS, Galileo i GLONASS da się odróżnić w odcieniach szarości. */
+    /**
+     * Wiersz: GPS, Galileo i GLONASS da się odróżnić w odcieniach szarości.
+     * Scenariusz: pomiar-precyzyjny.feature: Mapa nieba rozróżnia systemy GNSS nie tylko kolorem
+     *
+     * Wymagania: US6.5
+     */
     @Test
     fun differsSystemsByShape() {
         val marks = listOf(GnssSystem.GPS, GnssSystem.GALILEO, GnssSystem.GLONASS, GnssSystem.BEIDOU).map { it.mark() }
-        assertEquals(marks.size, marks.toSet().size)
+        assertEquals("GPS, Galileo, GLONASS i BeiDou mają różne kształty", marks.size, marks.toSet().size)
     }
 
     @Test
@@ -60,6 +65,12 @@ class SkyMapTest {
         compose.onNodeWithContentDescription("Mapa nieba: nie widać jeszcze satelitów").assertIsDisplayed()
     }
 
+    /**
+     * Położenie satelity na mapie z azymutu i wysokości: zenit w środku, horyzont na brzegu, północ u góry.
+     * Scenariusz: pomiar-precyzyjny.feature: Mapa nieba rozróżnia systemy GNSS nie tylko kolorem
+     *
+     * Wymagania: US6.5
+     */
     @Test
     fun putsZenithCenterNorthUp() {
         assertEquals(0f, skyOffset(azimuthDegrees = 0.0, elevationDegrees = 90.0, radius = 100f).getDistance(), DELTA)

@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Yevhenii Lukianenko
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.report
@@ -13,8 +13,11 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnyChild
+import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isFocused
 import androidx.compose.ui.test.isHeading
@@ -28,23 +31,23 @@ import androidx.compose.ui.test.performTextInput
 import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import io.github.dostepnykampus.core.geo.building.EntranceDistance
+import io.github.dostepnykampus.core.designsystem.IMPORTANT_SIGN_TAG
 import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EntranceDistance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
-import io.github.dostepnykampus.feature.capture.measure.place
 import io.github.dostepnykampus.feature.capture.photo.LocalPhotoDecodeContext
 import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
-import io.github.dostepnykampus.feature.capture.report.edit.ReportEdit
-import io.github.dostepnykampus.feature.capture.report.edit.ReportStage
-import io.github.dostepnykampus.feature.capture.report.edit.ReportUiState
 import io.github.dostepnykampus.feature.capture.report.form.PlanFloor
 import io.github.dostepnykampus.feature.capture.report.form.PlanFloors
+import io.github.dostepnykampus.feature.capture.report.form.ReportEdit
 import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
 import io.github.dostepnykampus.feature.capture.report.form.ReportForm
 import io.github.dostepnykampus.feature.capture.report.form.ReportFormError
 import io.github.dostepnykampus.feature.capture.report.form.ReportPlace
+import io.github.dostepnykampus.feature.capture.report.form.ReportStage
+import io.github.dostepnykampus.feature.capture.report.form.ReportUiState
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -136,6 +139,13 @@ class ReportScreenTest {
         compose.onNodeWithText("Popraw zgłoszenie").assertIsDisplayed()
     }
 
+    /**
+     * Miejsce na ulicy: formularz nie pokazuje pola piętra.
+     * Scenariusz (przykład: poza budynek, na ulicę): pomiar-precyzyjny.feature: Piętro zostaje po zmianie miejsca
+     *   tylko w tym samym budynku
+     *
+     * Wymagania: BR-G4
+     */
     @Test
     fun hidesFloorOutside() {
         show(place = A1.copy(buildingSymbol = null))
@@ -208,6 +218,26 @@ class ReportScreenTest {
     }
 
     /**
+     * Budynek szczegółowy: pięć etykiet pięter z planu i brak pola na piętro wpisane ręcznie.
+     * Scenariusz: pomiar-precyzyjny.feature: Piętro w budynku szczegółowym wybiera się z etykiet z danych PWr
+     *
+     * Wymagania: US7.2
+     */
+    @Test
+    fun offersOnlyPlanFloorLabels() {
+        val labels = listOf("Piwnica", "Parter", "1 piętro", "2 piętro", "3 piętro")
+        val floors = labels.mapIndexed { index, label -> PlanFloor(id = "A-1-$index", label = label) }
+        show(A1.copy(floors = PlanFloors(floors, source = "Politechnika Wrocławska")))
+
+        labels.forEach { label -> compose.onNodeWithText(label).performScrollTo().assertIsDisplayed() }
+        assertEquals(
+            "brak pola na piętro wpisane ręcznie",
+            0,
+            compose.onAllNodes(hasText("Numer piętra")).fetchSemanticsNodes().size,
+        )
+    }
+
+    /**
      * Budynek szczegółowy: piętra we wspólnym wyborze piętra, wybrane widać w stanie opcji.
      *
      * Wymagania: US7.2, NFR-18
@@ -265,6 +295,18 @@ class ReportScreenTest {
 
         val text = "Brakuje typu bariery. Uzupełnij to pole, aby zapisać."
         assertEquals(2, compose.onAllNodes(hasText(text)).fetchSemanticsNodes().size)
+        val signAtText = hasTestTag(IMPORTANT_SIGN_TAG) and hasParent(hasAnyChild(hasText(text)))
+        val signs = compose.onAllNodes(signAtText, useUnmergedTree = true).fetchSemanticsNodes()
+        assertEquals("znak „!” przy polu", 1, signs.size)
+    }
+
+    @Test
+    fun leadsToFirstMissingField() {
+        val missing = listOf(ReportFormError.MISSING_SEVERITY, ReportFormError.MISSING_PHOTO)
+        show(ReportUiState(form = ReportForm(place = A1), errors = missing, missingAttempts = 1))
+        val text = "Brakuje uciążliwości. Uzupełnij to pole, aby zapisać."
+        val atField = isFocused() and hasAnyDescendant(hasText(text))
+        compose.onNode(atField, useUnmergedTree = true).assertIsDisplayed()
     }
 
     @Test

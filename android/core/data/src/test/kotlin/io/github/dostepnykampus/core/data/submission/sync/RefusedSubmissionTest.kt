@@ -41,7 +41,7 @@ class RefusedSubmissionTest {
             store = store,
             ioContext = EmptyCoroutineContext,
             server =
-                SubmissionServer(
+                submissionServer(
                     create = { id, content ->
                         creates++
                         store.createResults.removeFirstOrNull() ?: ServerReply.Ok(server(id, content, version = 2))
@@ -50,7 +50,7 @@ class RefusedSubmissionTest {
                     update = { id, _, content -> ServerReply.Ok(ServerEdit.Saved(server(id, content, version = 2))) },
                 ),
             stamps = SubmissionStamps(newId = { ID }),
-            history = history,
+            records = SentRecords(history = history),
         )
     }
 

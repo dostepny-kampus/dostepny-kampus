@@ -12,6 +12,7 @@ import io.github.dostepnykampus.barrier.photo.PhotoUpload;
 import io.github.dostepnykampus.barrier.photo.application.SubmissionPhotos;
 import io.github.dostepnykampus.barrier.photo.storage.PhotoSettings;
 import io.github.dostepnykampus.barrier.photo.storage.S3PhotoStore;
+import io.github.dostepnykampus.barrier.review.ReviewRepository;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionService;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
@@ -88,7 +89,8 @@ final class SubmissionPhotoRaceIT {
                     ),
                     context.getBean(PhotoSettings.class)
                 ),
-                context.getBean(SubmissionService.class)
+                context.getBean(SubmissionService.class),
+                context.getBean(ReviewRepository.class)
             );
             service.put(id, photo, new PhotoUpload(input, jpeg.length));
             SubmissionPhotoRaceIT.accept(context.getBean(JdbcClient.class), id);

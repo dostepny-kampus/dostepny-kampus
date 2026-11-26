@@ -3,17 +3,21 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app
 
 import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -41,8 +45,10 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigationevent.DirectNavigationEventInput
 import androidx.navigationevent.NavigationEvent
-import io.github.dostepnykampus.core.data.account.GuestRoleProvider
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
+import io.github.dostepnykampus.app.navigation.SheetSceneStrategy
+import io.github.dostepnykampus.app.navigation.isExpanded
+import io.github.dostepnykampus.app.navigation.sceneStrategies
+import io.github.dostepnykampus.app.navigation.sheetBackOffset
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
@@ -72,16 +78,20 @@ class SheetBackGestureTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
     private val models = mutableSetOf<ViewModel>()
     private val gesture = DirectNavigationEventInput()
+    private var cardExtra by mutableStateOf(0.dp)
 
     @Composable
     private fun Shell() {
-        AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+        AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
             if (route is MapRoute) {
                 models += viewModel { MapModel() }
                 val map = Modifier.fillMaxSize().background(Brush.linearGradient(listOf(Color.Green, Color.Blue)))
                 Text(text = "A-1", modifier = map.clickable { openBuilding(symbol = "A-1") })
             } else {
-                Text(text = "karta")
+                Column {
+                    Text(text = "karta")
+                    Spacer(Modifier.height(cardExtra))
+                }
             }
         }
     }
@@ -268,7 +278,7 @@ class SheetBackGestureTest {
     }
 
     /**
-     * Wiersz: mała karta, przeciągnięcie uchwytu w górę poza uchwyt → pełny ekran na całe okno.
+     * Wiersz: mała karta, przeciągnięcie uchwytu w górę poza uchwyt → rozwinięta karta do góry ekranu, także krótka.
      *
      * Wymagania: US2.8, NFR-53
      */
@@ -281,8 +291,9 @@ class SheetBackGestureTest {
             repeat(times = 10) { moveBy(Offset(x = 0f, y = -60f)) }
             up()
         }
-        assertEquals("góra pełnego ekranu po przeciągnięciu", 0f, sheetTop("po przeciągnięciu").value, 1f)
-        compose.onNode(sheetHandle(isExpanded = true)).assertExists("pełny ekran po przeciągnięciu")
+        compose.onNode(sheetHandle(isExpanded = true)).assertExists("rozwinięta karta po przeciągnięciu")
+        val top = sheetTop("po przeciągnięciu")
+        assertEquals("krótka treść też do góry ekranu", 0f, top.value, 1f)
     }
 
     private fun checkSlideBack(isExpanded: Boolean) {
@@ -449,7 +460,7 @@ class SheetBackGestureTest {
     }
 
     /**
-     * Wiersz: pasek stanu 24 px → uchwyt rozwiniętego V2 pod paskiem stanu, zwiniętego przy górze arkusza.
+     * Wiersz: pasek stanu 24 px → uchwyt długiej karty rozwiniętej pod paskiem stanu, niskiej przy górze arkusza.
      *
      * Wymagania: NFR-52
      */
@@ -463,10 +474,12 @@ class SheetBackGestureTest {
         openSheet(isExpanded = false)
         val card = compose.onNodeWithText("karta").getUnclippedBoundsInRoot()
         val compact = mapBottom() - CeleDotyku.minimum - (card.bottom - card.top)
-        assertEquals("uchwyt małej karty przy górze arkusza", compact.value, sheetTop("zwinięte").value, 1f)
+        assertEquals("uchwyt małej karty przy górze arkusza", compact.value, sheetTop("niska").value, 1f)
         compose.mainClock.autoAdvance = true
-        compose.onNode(sheetHandle(isExpanded = false)).performClick()
+        cardExtra = 1000.dp
+        compose.waitForIdle()
+        compose.onNode(hasContentDescription(EXPAND_HANDLE)).performClick()
         val belowStatusBar = top + with(compose.density) { 24.toDp() }
-        assertEquals("uchwyt rozwiniętego V2 pod paskiem stanu", belowStatusBar.value, sheetTop("rozwinięte").value, 1f)
+        assertEquals("uchwyt rozwiniętego V2 pod paskiem stanu", belowStatusBar.value, sheetTop("cały ekran").value, 1f)
     }
 }

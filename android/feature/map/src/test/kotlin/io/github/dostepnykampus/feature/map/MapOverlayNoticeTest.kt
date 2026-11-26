@@ -26,9 +26,11 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.MapAreaFixtures.area
 import io.github.dostepnykampus.feature.map.MapAreaFixtures.twoAreas
 import io.github.dostepnykampus.feature.map.area.center
+import io.github.dostepnykampus.feature.map.camera.CameraMotion
+import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
-import io.github.dostepnykampus.feature.map.overlay.MapOverlay
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -67,7 +69,7 @@ class MapOverlayNoticeTest {
         val notice = compose.onNodeWithText(NOTICE)
         notice.assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.LiveRegion))
         notice.assert(hasContentDescription("Pokazuję teren: Wittigowo, 2 km na wschód"))
-        val attribution = compose.onNodeWithText("© OpenStreetMap contributors").getUnclippedBoundsInRoot()
+        val attribution = compose.onNodeWithText("© OpenStreetMap").getUnclippedBoundsInRoot()
         assertTrue(notice.getUnclippedBoundsInRoot().bottom <= attribution.top)
     }
 
@@ -113,6 +115,30 @@ class MapOverlayNoticeTest {
         compose.onNodeWithText(NOTICE).assert(SemanticsMatcher.keyNotDefined(SemanticsProperties.LiveRegion))
     }
 
+    /**
+     * Wiersz: V1, napis o zmianie terenu pojawia się po przelocie: w czasie ruchu mapy go nie ma, po jego czasie
+     * przenika.
+     *
+     * Wymagania: US1.8, NFR-56
+     */
+    @Test
+    fun showsNoticeAfterFlight() {
+        val motion = MapMotion()
+        val flight =
+            CameraTransition(
+                camera = MapCamera(center = other.bounds.center, zoom = START_ZOOM),
+                motion = CameraMotion.FLIGHT,
+                durationMillis = FLIGHT_MILLIS,
+            )
+        compose.mainClock.autoAdvance = false
+        compose.setContent { Overlay(motion = motion) }
+        compose.runOnUiThread { motion.record(flight) }
+        compose.mainClock.advanceTimeBy(FLIGHT_MILLIS / 2)
+        compose.onNodeWithText(NOTICE).assertDoesNotExist()
+        compose.mainClock.advanceTimeBy(FLIGHT_MILLIS)
+        compose.onNodeWithText(NOTICE).assertExists()
+    }
+
     @Test
     fun matchesLightMockup() {
         compose.setContent { Overlay() }
@@ -120,7 +146,7 @@ class MapOverlayNoticeTest {
     }
 
     @Composable
-    private fun Overlay(hasPanels: Boolean = true) {
+    private fun Overlay(hasPanels: Boolean = true, motion: MapMotion? = null) {
         DostepnyKampusTheme {
             MapOverlay(
                 camera = MapCamera(center = other.bounds.center, zoom = START_ZOOM),
@@ -132,12 +158,14 @@ class MapOverlayNoticeTest {
                 modifier = Modifier.fillMaxSize().background(Color(color = 0xFFBEE3F2)),
                 hasPanels = hasPanels,
                 hasNotice = true,
+                motion = motion,
                 content = {},
             )
         }
     }
 
     private companion object {
+        const val FLIGHT_MILLIS = 1000L
         const val NOTICE = "Pokazuję teren: Wittigowo · 2 km na wschód"
     }
 }

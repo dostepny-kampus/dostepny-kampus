@@ -18,12 +18,16 @@ import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionServer
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStamps
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
+import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
+import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -59,6 +63,12 @@ class OwnListPathTest {
 
     @Inject
     lateinit var store: SubmissionStore
+
+    @Inject
+    lateinit var history: OwnSubmissionDao
+
+    @Inject
+    lateinit var pending: PendingSubmissionDao
 
     private var isServerReachable = false
     private var today = LocalDate.of(YEAR, OCTOBER, FIRST_DAY)
@@ -114,14 +124,106 @@ class OwnListPathTest {
         compose.onNodeWithText("W telefonie").assertDoesNotExist()
     }
 
-    private fun sendOne() {
-        val queue = queue()
+    /**
+     * Serwer odrzucił zgłoszenie z powodem: lista pokazuje status „Odrzucone” i powód przy zgłoszeniu.
+     * Scenariusz: zgloszenia-zbierajacego.feature: Zgłoszenie odrzucone pokazuje powód odrzucenia
+     */
+    @Test
+    fun showsRejectionReason() {
+        isServerReachable = true
+        send()
         runBlocking {
-            queue.save(precise(), photo())
-            queue.sendAll()
+            history.saveServerStatus(id = "s-0", status = "REJECTED", reason = REASON, version = 2)
         }
+
+        showMine()
+
+        compose.onNodeWithText("Odrzucone").assertExists()
+        compose.onNodeWithText("Powód odrzucenia: $REASON").assertExists()
+    }
+
+    /**
+     * Przyjęte zgłoszenie zostaje „Przyjęte”, a jego zmiana czeka w telefonie jako nowe „W telefonie”.
+     * Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Zmiana zgłoszenia przyjętego tworzy nowe zgłoszenie
+     *
+     * Wymagania: BR-3, BR-18
+     */
+    @Test
+    fun showsReplacementBesideAccepted() {
+        isServerReachable = true
+        send()
+        runBlocking {
+            history.saveServerStatus(id = "s-0", status = "ACCEPTED", reason = null, version = 2)
+        }
+        isServerReachable = false
+        runBlocking { queue().save(precise().copy(replacesSubmissionId = "s-0"), photo()) }
+
+        showMine()
+
+        compose.onNodeWithText("Przyjęte").assertExists("przyjęte zgłoszenie zostaje na liście")
+        compose.onNodeWithText("W telefonie").assertExists("zmiana czeka w telefonie")
+    }
+
+    /**
+     * Zmiana przyjętego zgłoszenia zostaje nowym zgłoszeniem obok przyjętego, a przyjęte zostaje przyjęte.
+     * Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Zmiana zgłoszenia przyjętego tworzy nowe zgłoszenie
+     *
+     * Wymagania: BR-3, BR-18, NFR-10
+     */
+    @Test
+    fun keepsAcceptedBesideChange() {
+        isServerReachable = true
+        send()
+        runBlocking {
+            history.saveServerStatus(id = "s-0", status = "ACCEPTED", reason = null, version = 2)
+        }
+        isServerReachable = false
+        runBlocking { queue().save(precise().copy(replacesSubmissionId = "s-0", severity = 3), photo()) }
+
+        showMine()
+
+        compose.onNodeWithText("Przyjęte").assertExists("przyjęte zgłoszenie zostaje na liście")
+        compose.onNodeWithText("W telefonie").assertExists("zmiana czeka w telefonie")
+        val rows = runBlocking { history.observe(TEST_ACCOUNT).first() }
+        assertEquals("zmiana to osobny wpis obok przyjętego", 2, rows.size)
+        assertEquals("przyjęte zostaje przyjęte", "ACCEPTED", rows.first { it.id == "s-0" }.serverStatus)
+        val pendingChange = runBlocking { pending.observe().first() }.single().submission
+        assertEquals("zmiana wskazuje przyjęte", "s-0", pendingChange.replacesSubmissionId)
+        assertEquals("zmiana ma nową uciążliwość", 3, pendingChange.severity)
+    }
+
+    /**
+     * Usunięcie bariery wysłane przy dostępnej sieci: na liście zgłoszenie ma status „Wysłane”.
+     * Scenariusz (częściowo): zgloszenia-zbierajacego.feature: Inny Zbierający niż autor zgłasza usunięcie bariery
+     *
+     * Wymagania: US8.4, BR-19
+     */
+    @Test
+    fun showsRemovalSent() {
+        isServerReachable = true
+        send(removal())
+
+        showMine()
+
+        compose.onNodeWithText("Wysłane").assertExists("usunięcie bariery wysłane")
+        compose.onNodeWithText("W telefonie").assertDoesNotExist()
+    }
+
+    private fun sendOne() {
+        send()
         showMine()
     }
+
+    private fun send(content: SubmissionContent = precise()) {
+        val queue = queue()
+        runBlocking {
+            queue.save(content, photo())
+            queue.sendAll()
+        }
+    }
+
+    private fun removal(): SubmissionContent =
+        precise().copy(severity = null, isBarrierRemoved = true, replacesSubmissionId = "tb9", barrierType = "TB-9")
 
     private fun showMine() {
         val viewModel = offlineOwnList(store)
@@ -136,9 +238,10 @@ class OwnListPathTest {
             ioContext = EmptyCoroutineContext,
             server =
                 SubmissionServer(
-                    create = { id, content -> if (isServerReachable) accepted(id, content) else noAnswer() },
-                    putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
-                    update = { _, _, _ -> ServerReply.Missing },
+                    subject = { "konto-testowe" },
+                    create = { _, id, content -> if (isServerReachable) accepted(id, content) else noAnswer() },
+                    putPhoto = { _, _, _, _ -> ServerReply.Ok(Unit) },
+                    update = { _, _, _, _ -> ServerReply.Missing },
                 ),
             stamps =
                 SubmissionStamps(
@@ -190,3 +293,4 @@ private const val FIRST_DAY = 12
 private const val MIDDLE_DAY = 24
 private const val LAST_DAY = 28
 private const val NOON = 12
+private const val REASON = "Zdjęcie nie pokazuje progu"

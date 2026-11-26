@@ -28,9 +28,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 import org.springframework.security.web.session.DisableEncodeUrlFilter;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -76,8 +77,8 @@ public final class ApiSecurity {
             sessions -> sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
         http.addFilterBefore(new RequestLog(), DisableEncodeUrlFilter.class);
-        http.addFilterBefore(
-            new PublicRateLimit(limit, mapper), BearerTokenAuthenticationFilter.class
+        http.addFilterAfter(
+            new PublicRateLimit(limit, mapper), SecurityContextHolderAwareRequestFilter.class
         );
         http.addFilterAfter(
             new AccountRateLimit(limit.writesPerMinute(), mapper), AuthorizationFilter.class
@@ -107,7 +108,7 @@ public final class ApiSecurity {
         rules.requestMatchers(
             HttpMethod.GET, "/buildings", "/buildings/locate", "/buildings/{symbol}",
             "/buildings/{symbol}/floors", "/buildings/{symbol}/floors/{floor}/rooms",
-            "/rooms", "/submissions", "/submissions/{id}",
+            "/rooms", "/accessible-paths", "/submissions", "/submissions/{id}",
             "/submissions/{id}/photos/{photo}"
         ).permitAll();
         rules.requestMatchers(HttpMethod.GET, "/actuator/health").permitAll();
@@ -131,8 +132,8 @@ public final class ApiSecurity {
     }
 
     private static boolean ownSubmissions(final HttpServletRequest request) {
-        return HttpMethod.GET.matches(request.getMethod())
-            && request.getContextPath().concat("/submissions").equals(request.getRequestURI())
+        return PathPatternRequestMatcher.withDefaults()
+            .matcher(HttpMethod.GET, "/submissions").matches(request)
             && request.getParameterValues("mine") != null
             && !Arrays.stream(request.getParameterValues("mine")).allMatch("false"::equals);
     }

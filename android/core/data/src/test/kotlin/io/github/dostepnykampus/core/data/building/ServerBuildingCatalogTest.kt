@@ -188,7 +188,7 @@ class ServerBuildingCatalogTest {
         }
         val repository =
             BuildingCatalogRepository(
-                buildingCache = null,
+                serverCopy = null,
                 ioContext = EmptyCoroutineContext,
                 listBuildings = server,
             ) { assetJson() }
@@ -211,7 +211,7 @@ class ServerBuildingCatalogTest {
     private fun catalog(remote: (suspend () -> ServerReply<BuildingList>)? = null): BuildingCatalog =
         runBlocking {
             BuildingCatalogRepository(
-                buildingCache = null,
+                serverCopy = null,
                 ioContext = EmptyCoroutineContext,
                 listBuildings = remote,
             ) { assetJson() }.catalog()
@@ -221,7 +221,7 @@ class ServerBuildingCatalogTest {
         val next = answers.iterator()
         val server: suspend () -> ServerReply<BuildingList> = { next.next()().also { serverCalls.incrementAndGet() } }
         return BuildingCatalogRepository(
-            buildingCache = null,
+            serverCopy = null,
             ioContext = EmptyCoroutineContext,
             listBuildings = server,
         ) { assetJson() }

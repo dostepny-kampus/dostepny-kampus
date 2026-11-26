@@ -84,7 +84,9 @@ nav:
       - Analiza SWOT: ux/swot.md
       - QFD — potrzeby a funkcje: ux/qfd.md
       - Wymagania do ekranów: ux/wymagania-ekranow.md
-      - Ekrany (makiety hi-fi): ux/ekrany/index.md
+      - Ekrany (makiety hi-fi):
+          - Przegląd i ekrany zespołu: ux/ekrany/index.md
+          - Odwiedzający: ux/ekrany/odwiedzajacy.md
       - Mapa nawigacji: ux/mapa-nawigacji.md
       - Słownik użytkownika: ux/slownik-uzytkownika.md
       - Dostępność w aplikacji: ux/dostepnosc.md
@@ -118,6 +120,8 @@ nav:
           - ADR-0012 Import planów pięter: architektura/decyzje/0012-import-planow-pieter.md
           - ADR-0013 Logi aplikacji i serwera: architektura/decyzje/0013-logi-aplikacji-i-serwera.md
           - ADR-0014 Podkład mapy wektorowy: architektura/decyzje/0014-podklad-wektorowy.md
+          - ADR-0015 Jeden sterownik kamery: architektura/decyzje/0015-sterownik-kamery.md
+          - ADR-0016 Model zdarzeń kamery: architektura/decyzje/0016-model-zdarzen-kamery.md
   - Raporty:
       - Tydzień 2: raporty/tydzien-2.md
       - Sprint 1: raporty/sprint-1.md

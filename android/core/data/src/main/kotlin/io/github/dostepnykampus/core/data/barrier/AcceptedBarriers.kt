@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.data.barrier
 
+import io.github.dostepnykampus.core.data.cache.ServerCopy
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierType
@@ -30,6 +31,10 @@ import java.time.Instant
  * @property photoIds zdjęcia zgłoszenia do arkusza bariery
  * @property photoUrl adres pierwszego ze zdjęć [photoIds]; `null`, gdy zgłoszenie nie ma zdjęć albo adres nie jest
  *   nadany
+ * @property description opis bariery ze zgłoszenia; `null`, gdy zgłoszenie nie ma opisu
+ * @property isQuick czy zgłoszenie pochodzi ze zgłoszenia szybkiego
+ * @property replacesSubmissionId zgłoszenie, które to przyjęte zgłoszenie zastąpiło jako zmiana; `null` dla nowej
+ *   bariery
  */
 public data class AcceptedBarrier(
     val id: String,
@@ -42,6 +47,9 @@ public data class AcceptedBarrier(
     val floor: SubmissionFloor? = null,
     val photoIds: List<String> = emptyList(),
     val photoUrl: String? = null,
+    val description: String? = null,
+    val isQuick: Boolean = false,
+    val replacesSubmissionId: String? = null,
 )
 
 /** Bariery ze zgłoszeń przyjętych dla mapy. Wymagania: US1.3, BR-6 */
@@ -61,6 +69,24 @@ public fun interface AcceptedBarriers {
      * Wymagania: NFR-10
      */
     public fun syncedAt(): Instant? = null
+
+    /**
+     * Bariery z ostatniego wywołania [barriers] bez pytania serwera: z odpowiedzi albo kopii; `null` przed pierwszym
+     * wywołaniem i wtedy, gdy nie były ani z serwera, ani z kopii.
+     *
+     * Wymagania: NFR-10, NFR-56
+     */
+    public fun known(): List<AcceptedBarrier>? = null
+
+    /**
+     * Bariery budynku [symbol] z [barriers]; `null`, gdy bariery nie są ani z serwera, ani z kopii.
+     *
+     * Wymagania: BR-25
+     */
+    public suspend fun barriersOf(symbol: String): List<AcceptedBarrier>? {
+        val accepted = barriers()
+        return syncedAt()?.let { accepted.filter { barrier -> barrier.buildingSymbol == symbol } }
+    }
 }
 
 /**
@@ -75,12 +101,16 @@ public fun interface AcceptedBarriers {
  *
  * @param copy kopia ostatnich barier w bazie; `null` zostawia źródło bez kopii
  * @param accepted zgłoszenia przyjęte z serwera
+ * @param nowMillis zegar chwili pobrania z serwera
  */
 internal class ServerAcceptedBarriers internal constructor(
-    private val copy: BarrierListCopy?,
+    private val copy: ServerCopy<List<AcceptedBarrier>>?,
     private val accepted: suspend () -> ServerReply<List<Submission>>,
+    private val nowMillis: () -> Long = System::currentTimeMillis,
 ) : AcceptedBarriers {
     @Volatile private var synced: Instant? = null
+
+    @Volatile private var last: List<AcceptedBarrier>? = null
 
     /**
      * Bariery bez kopii w bazie.
@@ -93,16 +123,22 @@ internal class ServerAcceptedBarriers internal constructor(
         val result = accepted()
         return if (result is ServerReply.Ok) {
             val shown = result.value.mapNotNull { it.toBarrier() }
-            synced = copy?.save(shown) ?: Instant.now()
+            val syncedAt = Instant.ofEpochMilli(nowMillis())
+            copy?.save(shown, syncedAt)
+            synced = syncedAt
+            last = shown
             shown
         } else {
-            val restored = copy?.restoreSynced()
+            val restored = copy?.restore()
             synced = restored?.syncedAt
-            restored?.barriers.orEmpty()
+            last = restored?.value
+            restored?.value.orEmpty()
         }
     }
 
     override fun syncedAt(): Instant? = synced
+
+    override fun known(): List<AcceptedBarrier>? = last
 }
 
 internal fun Submission.toBarrier(): AcceptedBarrier? {
@@ -121,6 +157,9 @@ internal fun Submission.toBarrier(): AcceptedBarrier? {
             entranceId = content.entranceId,
             floor = content.floor,
             photoIds = content.photoIds,
+            description = content.description,
+            isQuick = content.kind == SubmissionKind.QUICK,
+            replacesSubmissionId = content.replacesSubmissionId,
         )
     }
 }

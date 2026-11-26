@@ -14,6 +14,7 @@ import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
 import io.github.dostepnykampus.barrier.submission.persistence.JdbcSubmissions;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 import org.springframework.context.ApplicationContext;
@@ -96,7 +97,7 @@ final class SampleSubmissions {
      */
     UUID add(final UUID id, final String status, final SubmissionContent content) {
         this.context.getBean(JdbcSubmissions.class)
-            .create(new NewSubmission(id, content, "konto-testowe"));
+            .create(new NewSubmission(id, content, "konto-testowe", Set.of()));
         this.context.getBean(JdbcClient.class)
             .sql("UPDATE submissions SET status = :status WHERE id = :id")
             .param("status", status).param("id", id).update();

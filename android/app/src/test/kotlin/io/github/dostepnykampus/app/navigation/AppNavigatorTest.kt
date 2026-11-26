@@ -7,20 +7,21 @@ package io.github.dostepnykampus.app.navigation
 
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.TestRoles
-import io.github.dostepnykampus.app.closeCardOnEmptyMap
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
+import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
+import io.github.dostepnykampus.feature.capture.navigation.RemovedEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
+import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
-import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -141,19 +142,27 @@ class AppNavigatorTest {
         assertEquals(stack.size, restarts.size)
     }
 
-    /** Wiersz: pasek dolny, ponowne dotknięcie „Mapa” → V1 bez arkusza i wyniku wyszukiwania. Wymagania: NFR-15 */
+    /**
+     * Wiersz: pasek dolny, ponowne dotknięcie „Mapa” niczego nie zamyka: karta i V1 pod nią zostają.
+     * Scenariusz: przegladanie-mapy.feature: Ponowne dotknięcie „Mapa” w pasku dolnym nie zamyka karty
+     *
+     * Wymagania: NFR-15, US2.8
+     */
     @Test
-    fun restartsMapOnReselect() {
+    fun keepsCardOnMapReselect() {
         navigator().run {
             val key = contentKey(index = 0)
             open(TopLevel.HELP)
             open(TopLevel.MAP)
             assertEquals(key, contentKey(index = 0))
             openBuilding(symbol = "C-13")
+            val keys = stack.indices.map(::contentKey)
+            val routes = stack.toList()
             open(TopLevel.MAP)
-            assertNotEquals(key, contentKey(index = 0))
+            assertEquals(keys, stack.indices.map(::contentKey))
+            assertEquals(routes, stack)
         }
-        assertEquals(stackOf(), stack)
+        assertEquals(BuildingRoute("C-13"), stack.last())
     }
 
     /**
@@ -231,11 +240,11 @@ class AppNavigatorTest {
         assertEquals(stackOf(), stack)
     }
 
-    /** Wymagania wspólne, wiersz „Pasek dolny na V1, V2, V3, V5 i L2”: L1 i V4 bez paska. */
+    /** Wymagania wspólne, wiersz „Pasek dolny na V1, V2, V5 i L2”: L1 i V4 bez paska. */
     @Test
     fun showsBarOnBarScreensOnly() {
-        val expected = listOf(TopLevel.MAP, TopLevel.MAP, TopLevel.MAP, TopLevel.HELP, TopLevel.ACCOUNT)
-        val routes = listOf(MapRoute(), BuildingRoute("A-1"), EntrancesRoute("A-1"), HelpRoute(), AccountRoute)
+        val expected = listOf(TopLevel.MAP, TopLevel.MAP, TopLevel.HELP, TopLevel.ACCOUNT)
+        val routes = listOf(MapRoute(), BuildingRoute("A-1"), HelpRoute(), AccountRoute)
         assertEquals(expected, routes.map(::selectedItem))
         assertTrue(hasNavigationBar(AccountRoute))
         val noBar = listOf(SignInRoute(isForReport = false), ReportRoute(), ReportRoute(step = ReportStep.SENT))
@@ -270,8 +279,31 @@ class AppNavigatorTest {
     }
 
     /**
+     * Wiersz: karta zastąpiona arkuszem znaku, powrót do karty tego budynku → V2 z zapamiętaną wysokością
+     *   i przewinięciem, a do karty innego budynku albo po dotknięciu konturu → V2 od nowa.
+     *
+     * Wymagania: US2.8, US3.3
+     */
+    @Test
+    fun returnsToKeptCard() {
+        val kept = BuildingRoute("A-1", isExpanded = true, scroll = 300)
+        navigator().run {
+            openBuilding(symbol = "A-1")
+            keepCard(kept)
+            showOnMap(MapFocus.Entrance(id = "node/1", buildingSymbol = "A-1"))
+            returnToCard("A-1")
+            assertEquals(listOf(MapRoute(MapFocus.Building("A-1")), kept), stack)
+            returnToCard("C-13")
+            assertEquals(BuildingRoute("C-13"), current, "karta innego budynku od nowa")
+            keepCard(kept)
+            openBuilding(symbol = "A-1")
+            assertEquals(BuildingRoute("A-1"), current, "dotknięcie konturu od nowa")
+        }
+    }
+
+    /**
      * Wiersz: mała karta V2 nad V1, dotknięcie pustej mapy → V1 bez zaznaczenia budynku;
-     * samo V1, także z budynkiem zaznaczonym przez „Pokaż na mapie”, i V3 nad V2 zostają.
+     * samo V1, także z budynkiem zaznaczonym przez „Pokaż na mapie”, i V4 nad V2 zostają.
      *
      * Wymagania: US2.8, NFR-17
      */
@@ -283,49 +315,13 @@ class AppNavigatorTest {
             closeCardOnEmptyMap()
             assertEquals(listOf(selected), stack)
             openBuilding(symbol = "A-1")
-            openEntrances(symbol = "A-1")
+            report()
             closeCardOnEmptyMap()
-            assertEquals(listOf(selected, BuildingRoute("A-1"), EntrancesRoute("A-1")), stack)
+            assertEquals(listOf(selected, BuildingRoute("A-1"), SignInRoute(isForReport = true)), stack)
             back()
             closeCardOnEmptyMap()
         }
         assertEquals(listOf(MapRoute()), stack)
-    }
-
-    /**
-     * Wiersz: V3, „Wstecz” → pełny ekran V2, a pod nim V1 dalej z zaznaczonym budynkiem; zaznaczenie znika dopiero
-     * z zamknięciem karty.
-     *
-     * Wymagania: US2.8
-     */
-    @Test
-    fun keepsSelectionOnEntranceBack() {
-        navigator().run {
-            openBuilding(symbol = "A-1")
-            openEntrances(symbol = "A-1")
-            back()
-        }
-        assertEquals(listOf(MapRoute(MapFocus.Building("A-1")), BuildingRoute("A-1")), stack)
-    }
-
-    /**
-     * Wiersze: V3, „Wstecz” → V2 i „Pokaż wejście na mapie” → V1 z zaznaczonym wejściem.
-     * Scenariusz (częściowo): przegladanie-mapy.feature: Wejście dostępne najwyżej 3 dotknięcia od mapy
-     *
-     * Wymagania: US2.1, US3
-     */
-    @Test
-    fun goesBackToCard() {
-        navigator().run {
-            openBuilding(symbol = "A-1")
-            openEntrances(symbol = "A-1")
-            assertEquals(3, stack.size)
-            back()
-            assertEquals(BuildingRoute("A-1"), current)
-            openEntrances(symbol = "A-1")
-            showOnMap(MapFocus.Entrance(id = "A-1-glowne", buildingSymbol = "A-1"))
-        }
-        assertEquals(listOf(MapRoute(MapFocus.Entrance(id = "A-1-glowne", buildingSymbol = "A-1"))), stack)
     }
 
     /**
@@ -384,7 +380,7 @@ class AppNavigatorTest {
     }
 
     /**
-     * Wiersze: V3, „Pokaż wejście na mapie” → V1 z zaznaczonym wejściem w widoku „Mapa”;
+     * Wiersze: V2, „Pokaż wejście na mapie” → V1 z zaznaczonym wejściem w widoku „Mapa”;
      * pasek, ponowne „Mapa” → V1, nie zmienia wyboru drugi raz.
      *
      * Wymagania: US2.1, NFR-15
@@ -400,8 +396,8 @@ class AppNavigatorTest {
 
     /**
      * Wiersz: V4, „Tak, zrezygnuj” po „Wstecz” z kroku 1 → ekran sprzed V4; poza V4 kroki nic nie robią.
-     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu podpowiada wejście, a miejsce
-     *   bierze z bieżącej pozycji
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie przy wejściu ma miejsce w punkcie wybranego
+     *   wejścia
      *
      * Wymagania: UC7
      */
@@ -436,6 +432,27 @@ class AppNavigatorTest {
         assertEquals(BuildingRoute("D-2"), stack.last())
     }
 
+    /**
+     * Wiersz: V4 po wysłaniu „Wstecz” wraca do karty budynku, kolejne „Wstecz” nie otwiera kroków zgłoszenia.
+     * Scenariusz (częściowo): zgloszenie-szybkie-powrot.feature: Po wysłaniu „Wstecz” wraca do ekranu,
+     *   z którego zaczęto zgłoszenie
+     *
+     * Wymagania: US4.7
+     */
+    @Test
+    fun returnsToCardThenMapAfterSend() {
+        navigator(visitor).run {
+            openBuilding(symbol = "A-1")
+            report()
+            repeat(times = 3) { nextReportStep() }
+            reportSent()
+            back()
+            assertEquals(BuildingRoute("A-1"), stack.last(), "karta budynku po pierwszym „Wstecz”")
+            back()
+        }
+        assertEquals(listOf<NavKey>(MapRoute()), stack, "po drugim „Wstecz” nie ma kroków wysłanego zgłoszenia")
+    }
+
     /** Wysłanie bez internetu: potwierdzenie mówi, że zdjęcie wyśle się samo. Wymagania: US4.2 */
     @Test
     fun sendsOffline() {
@@ -456,6 +473,33 @@ class AppNavigatorTest {
         }
         repeat(times = 2) { navigator(visitor).signedIn() }
         assertEquals(listOf(BuildingRoute("A-1"), ReportRoute(entranceId = "A-1-glowne")), stack.drop(1))
+    }
+
+    /**
+     * Wiersz: arkusz toalety, schodów albo windy, przycisk zgłoszenia → V4 z obiektem; Gość przez L1 wraca do V4
+     *   z tym samym obiektem.
+     * Scenariusz (częściowo, przykład: arkusz windy): zgloszenie-szybkie.feature: Zgłoszenie przy obiekcie
+     *   planu ma miejsce w punkcie obiektu i piętro planu
+     *
+     * Wymagania: US4.6, US14.2
+     */
+    @Test
+    fun reportsAtPlanObjectAfterSignIn() {
+        val place =
+            ReportPlace(
+                category = RoomCategory.ELEVATOR,
+                buildingSymbol = "A-1",
+                floorId = "A-1/p2",
+                floorLabel = "2 piętro",
+                latitude = 51.11,
+                longitude = 17.06,
+            )
+        navigator().run {
+            report(place = place)
+            assertEquals(SignInRoute(isForReport = true, spot = place), current)
+        }
+        navigator(visitor).signedIn()
+        assertEquals(ReportRoute(place = place), stack.last())
     }
 
     /** Wiersz: strona logowania, wejście z „Konto”, zalogowanie → L2, P3. Wymagania: UC6 */
@@ -523,6 +567,34 @@ class AppNavigatorTest {
         assertEquals(stackOf(AccountRoute, MySubmissionsRoute), stack)
     }
 
+    /** Wiersz: C3 „Otwórz” przy „bariera usunięta” → C7 tego zgłoszenia, zapis → to samo C3. Wymagania: US8.4 */
+    @Test
+    fun removalEditBackToList() {
+        stack += listOf(AccountRoute, MySubmissionsRoute)
+        navigator(collector).run {
+            openEdit("u1", isBarrierRemoved = true)
+            assertEquals(RemovedEditRoute("u1"), current)
+            reportSaved()
+        }
+        assertEquals(stackOf(AccountRoute, MySubmissionsRoute), stack)
+    }
+
+    /**
+     * Wiersz: C3 „Wyślij ponownie” przy nieaktualnej zmianie bariery → C2 nowej zmiany, zapis → to samo C3.
+     *
+     * Wymagania: US8.3, BR-23
+     */
+    @Test
+    fun resendChangeBackToList() {
+        stack += listOf(AccountRoute, MySubmissionsRoute)
+        navigator(collector).run {
+            openEdit("z1", isResend = true)
+            assertEquals(ReportEditRoute("z1", isResend = true), current)
+            reportSaved()
+        }
+        assertEquals(stackOf(AccountRoute, MySubmissionsRoute), stack)
+    }
+
     /** Wiersz: poprawka C2 „Zmień miejsce” → C1, „Dalej” → C2, „Zapisz” → to samo C3. Wymagania: US7.4, US8.3 */
     @Test
     fun changesPlaceOnEdit() {
@@ -549,6 +621,32 @@ class AppNavigatorTest {
         assertEquals(stackOf(BuildingRoute("A-1"), MySubmissionsRoute), stack, "C7 znika z historii, C3 po V2")
     }
 
+    /** Wiersz: V2 „Popraw zgłoszenie” → C2 zmiany przyjętego, „Zapisz” → C3 bez C2. Wymagania: BR-18, NFR-54 */
+    @Test
+    fun replaceSavedOpensC3() {
+        stack += BuildingRoute("A-1")
+        navigator(collector).run {
+            openReplace("tb13")
+            assertEquals(ReportEditRoute("tb13", isAccepted = true), current, "V2 otwiera C2 zmiany przyjętego")
+            reportSaved()
+        }
+        assertEquals(stackOf(BuildingRoute("A-1"), MySubmissionsRoute), stack, "C2 znika z historii, C3 po V2")
+    }
+
+    /** Wiersz: zmiana przyjętego C2 „Zmień miejsce” → C1 → C2 → „Zapisz” → C3. Wymagania: BR-18, US7.4 */
+    @Test
+    fun changesPlaceOnReplace() {
+        val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = "A-1")
+        stack += listOf(BuildingRoute("A-1"), ReportEditRoute("tb13", isAccepted = true))
+        navigator(collector).run {
+            changeEditPlace()
+            assertEquals(MeasureRoute, current)
+            openReportForm(form)
+            reportSaved()
+        }
+        assertEquals(stackOf(BuildingRoute("A-1"), MySubmissionsRoute), stack)
+    }
+
     /** Wiersz: „Otwórz” i „Zmień miejsce” poza C3 i poprawką nic nie robią. Wymagania: US8.3 */
     @Test
     fun editsOnlyFromOwnList() {
@@ -573,5 +671,22 @@ class AppNavigatorTest {
         assertEquals(ReportStep.GROUP, step.step)
         assertEquals(BarrierGroup.TOILETS, step.group)
         assertEquals("z-1", (stack[1] as ReportRoute).photoId)
+    }
+
+    /** Wiersz: V4, „Wstecz” do kroku 1 i ponowne „Dalej” zostawiają wybraną grupę. Wymagania: US4.8 */
+    @Test
+    fun keepsGroupAfterPhotoStep() {
+        navigator(visitor).run {
+            report()
+            nextReportStep(ReportRoute(photoId = "z-1", photoPath = "/z-1.jpg"))
+            nextReportStep((current as ReportRoute).copy(group = BarrierGroup.TOILETS))
+            back()
+            back()
+            nextReportStep()
+        }
+        val step = stack.last() as ReportRoute
+        assertEquals(ReportStep.GROUP, step.step, "krok grupy po ponownym „Dalej”")
+        assertEquals(BarrierGroup.TOILETS, step.group, "grupa po powrocie do kroku 1")
+        assertEquals("z-1", step.photoId, "zdjęcie po powrocie do kroku 1")
     }
 }

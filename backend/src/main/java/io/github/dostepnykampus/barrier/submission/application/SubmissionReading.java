@@ -6,19 +6,21 @@
 package io.github.dostepnykampus.barrier.submission.application;
 
 import io.github.dostepnykampus.barrier.submission.Reader;
-import io.github.dostepnykampus.barrier.submission.SimilarSubmission;
 import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.SubmissionChange;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
 import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
 import io.github.dostepnykampus.building.api.KnownBuildings;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Odczyt zgłoszeń dla warstwy web: kontroler nie sięga do portu
@@ -29,10 +31,13 @@ import org.springframework.stereotype.Service;
  * @since 0.1.0
  */
 @Service
-public final class SubmissionReading {
+public class SubmissionReading {
 
     /** Port odczytu zgłoszeń. */
     private final SubmissionFinder finder;
+
+    /** Port stron listy zgłoszeń. */
+    private final SubmissionFinder.Pages pages;
 
     /** Etykiety pięter. */
     private final KnownBuildings floors;
@@ -41,11 +46,31 @@ public final class SubmissionReading {
      * Ctor.
      *
      * @param finder Port odczytu zgłoszeń
+     * @param pages Port stron listy zgłoszeń
      * @param floors Etykiety pięter
      */
-    public SubmissionReading(final SubmissionFinder finder, final KnownBuildings floors) {
+    public SubmissionReading(
+        final SubmissionFinder finder, final SubmissionFinder.Pages pages,
+        final KnownBuildings floors
+    ) {
         this.finder = finder;
+        this.pages = pages;
         this.floors = floors;
+    }
+
+    /**
+     * Własne zgłoszenia konta w każdym statusie oraz cudze przyjęte i archiwalne, zmienione od
+     * {@code since} włącznie, od najdawniej zmienionego, w jednej transakcji odczytu.
+     *
+     * <p>Wymagania: US8.1, US1.3, US10.6</p>
+     *
+     * @param since Chwila, od której liczą się zmiany
+     * @param reader Identyfikator konta z tokenu
+     * @return Zgłoszenia z chwilą zmiany
+     */
+    @Transactional(readOnly = true)
+    public List<SubmissionChange> changedSince(final Instant since, final String reader) {
+        return this.finder.changedSince(since, reader);
     }
 
     /**
@@ -85,19 +110,6 @@ public final class SubmissionReading {
     }
 
     /**
-     * Sprawdza, czy zgłoszenie wzięło do weryfikacji to konto.
-     *
-     * <p>Wymagania: BR-11</p>
-     *
-     * @param id Identyfikator zgłoszenia
-     * @param account Identyfikator konta Weryfikatora
-     * @return Prawda, gdy konto wzięło zgłoszenie
-     */
-    public boolean claimedBy(final UUID id, final String account) {
-        return this.finder.claimedBy(id, account);
-    }
-
-    /**
      * Sprawdza, czy zmianę przyjętego zgłoszenia może złożyć tylko autor, a konto nim nie jest.
      *
      * <p>Wymagania: BR-18</p>
@@ -121,15 +133,24 @@ public final class SubmissionReading {
     }
 
     /**
-     * Przyjęte zgłoszenia istniejących barier.
+     * Strona przyjętych zgłoszeń istniejących barier. Pominięte zgłoszenia nadal
+     * przesuwają kursor, nawet gdy strona nie ma wierszy do eksportu.
      *
-     * @return Zgłoszenia w kolejności utworzenia
+     * @param after Kursor albo {@link SubmissionFinder.Page#START} dla pierwszej strony
+     * @return Strona eksportu w kolejności identyfikatorów z kursorem listy zgłoszeń
      */
-    public List<Submission> exportable() {
-        return this.finder.list(new SubmissionQuery(Set.of(SubmissionStatus.ACCEPTED), null, null))
-            .stream().filter(item -> !item.content().barrier().removed())
-            .filter(item -> item.content().kind() != SubmissionKind.ENTRANCE_MARKING)
-            .toList();
+    public SubmissionFinder.Page exportablePage(final UUID after) {
+        final SubmissionFinder.Page page = this.pages.page(
+            new SubmissionQuery(Set.of(SubmissionStatus.ACCEPTED), null, null),
+            new SubmissionFinder.Window(after, 500)
+        );
+        return new SubmissionFinder.Page(
+            page.items().stream()
+                .filter(item -> !item.content().barrier().removed())
+                .filter(item -> item.content().kind() != SubmissionKind.ENTRANCE_MARKING)
+                .toList(),
+            page.last(), page.more()
+        );
     }
 
     /**
@@ -144,27 +165,25 @@ public final class SubmissionReading {
     }
 
     /**
-     * Wyszukuje zgłoszenia jednego autora.
+     * Wyszukuje stronę zgłoszeń, a z autorem tylko jego zgłoszenia.
      *
-     * <p>Wymagania: US8.1</p>
+     * <p>Wymagania: NFR-34, US1.3, US8.1</p>
      *
-     * @param author Identyfikator konta autora
      * @param query Statusy oraz opcjonalny budynek i piętro
-     * @return Zgłoszenia autora
+     * @param author Identyfikator konta autora albo null dla zgłoszeń wszystkich kont
+     * @param window Kursor i rozmiar strony
+     * @return Czytelne zgłoszenia strony i kursor następnej
      */
-    public List<Submission> own(final String author, final SubmissionQuery query) {
-        return this.finder.own(author, query);
-    }
-
-    /**
-     * Wyszukuje zgłoszenia podobne do danego.
-     *
-     * <p>Wymagania: US10.1, BR-13</p>
-     *
-     * @param id Identyfikator sprawdzanego zgłoszenia
-     * @return Podobne zgłoszenia od najbliższego
-     */
-    public List<SimilarSubmission> similar(final UUID id) {
-        return this.finder.similar(id);
+    public SubmissionFinder.Page page(
+        final SubmissionQuery query, final @Nullable String author,
+        final SubmissionFinder.Window window
+    ) {
+        final SubmissionFinder.Page page;
+        if (author == null) {
+            page = this.pages.page(query, window);
+        } else {
+            page = this.pages.own(author, query, window);
+        }
+        return page;
     }
 }

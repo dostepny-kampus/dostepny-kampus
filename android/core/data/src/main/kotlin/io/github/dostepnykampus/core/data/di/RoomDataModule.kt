@@ -11,13 +11,15 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.room.FloorPlanCopy
 import io.github.dostepnykampus.core.data.room.FloorPlans
+import io.github.dostepnykampus.core.data.room.RoomSearch
+import io.github.dostepnykampus.core.data.room.roomSearchOf
 import io.github.dostepnykampus.core.data.server.toReply
 import io.github.dostepnykampus.core.database.room.FloorPlanDao
 import io.github.dostepnykampus.core.network.building.BuildingsApi
 import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 
-/** Plany pięter `core:data` w grafie Hilt aplikacji; osobno od [DataModule], żeby ten nie rósł. */
+/** Plany pięter i wyszukiwanie sali `core:data` w grafie Hilt aplikacji; osobno od [DataModule], żeby ten nie rósł. */
 @Module
 @InstallIn(SingletonComponent::class)
 internal object RoomDataModule {
@@ -35,4 +37,9 @@ internal object RoomDataModule {
             fetchRooms = { symbol, floor -> api.rooms(symbol, floor).toReply { it } },
             ioContext = ioContext,
         )
+
+    /** Wyszukiwanie sali na serwerze. Wymagania: US18.1 */
+    @Provides
+    @Singleton
+    fun roomSearch(api: BuildingsApi): RoomSearch = roomSearchOf(api)
 }

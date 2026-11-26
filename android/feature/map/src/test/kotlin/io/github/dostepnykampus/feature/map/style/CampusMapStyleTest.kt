@@ -31,9 +31,9 @@ class CampusMapStyleTest {
     @Test
     fun drawsOutlinesOverBasemap() {
         val layers = style.array("layers").map { it.jsonObject }
-        val below = listOf("lad") + BASEMAP_LAYERS + listOf(BUILDINGS_LAYER, "kontury") + PLAN + listOf(SELECTED_LAYER)
+        val below = listOf("lad") + basemapShapesPathsNames() + listOf(BUILDINGS_LAYER, "kontury") + PLAN + SELECTED
         val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)
-        val expected = below + marks + listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
+        val expected = below + marks + listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER, ROOM_STEPS_LAYER)
         assertEquals(expected, layers.map { it.text("id") })
         assertEquals("#E8EDEE", layers.first().obj("paint").text("background-color"))
     }
@@ -70,6 +70,8 @@ class CampusMapStyleTest {
                 "waterway",
                 "transportation",
                 "building",
+                "transportation_name",
+                "place",
             )
         assertEquals(allowed, used.toSet(), "bez punktów usług i numerów domów")
     }
@@ -91,6 +93,26 @@ class CampusMapStyleTest {
         assertEquals(15.0, zooms.getValue("chodniki"), "chodniki od własnego progu")
         assertEquals(0.0, plain.getValue("woda"), "bez podkładu terenu od powiększenia 0")
         assertEquals(13.0, plain.getValue("budynki_miasta"), "budynki miasta od własnego progu")
+    }
+
+    /**
+     * Napisy podkładu: glify z OpenFreeMap, nazwy ulic od powiększenia 15, rzeka kursywą, dzielnice wielkimi
+     * literami; kolory z tokenów, a wysokość tekstu z rozmiaru napisów mapy, który rośnie ze skalą czcionki.
+     *
+     * Wymagania: NFR-16, US1.4
+     */
+    @Test
+    fun namesStreetsRiverAndDistricts() {
+        val large = Json.parseToJsonElement(styled(colors = colors.copy(labelSize = 22.4))).jsonObject
+        val layers = large.array("layers").map { it.jsonObject }.associateBy { it.text("id") }
+        val names = listOf("nazwy_rzek", "nazwy_ulic", "dzielnice").map(layers::getValue)
+        assertEquals(BASEMAP_GLYPHS, large.text("glyphs"), "glify OpenFreeMap")
+        assertEquals(listOf(22.4, 22.4, 22.4), names.map { it.obj("layout").number("text-size") }, "rozmiar napisów")
+        val paints = names.map { it.obj("paint").text("text-color") }
+        assertEquals(listOf("#2B454D", "#3A4549", "#4E5A5E"), paints, "kolory napisów z tokenów")
+        assertEquals("#FFFFFF", names.first().obj("paint").text("text-halo-color"), "obwódka z tokenu")
+        assertEquals(15.0, layers.getValue("nazwy_ulic").number("minzoom"), "nazwy ulic od powiększenia 15")
+        assertEquals("uppercase", layers.getValue("dzielnice").obj("layout").text("text-transform"), "dzielnice")
     }
 
     @Test
@@ -126,16 +148,17 @@ class CampusMapStyleTest {
     @Test
     fun ordersOptionalLayers() {
         val bare = Json.parseToJsonElement(styled(MapSelection()))
-        val base = listOf("lad") + BASEMAP_LAYERS + listOf(BUILDINGS_LAYER, "kontury") + PLAN
+        val base = listOf("lad") + basemapShapesPathsNames() + listOf(BUILDINGS_LAYER, "kontury") + PLAN
         val marks = listOf(ENTRANCES_LAYER, BARRIER_WORDS_LAYER, BARRIERS_LAYER, "podpisy", CHOSEN_BARRIER_LAYER)
-        val pin = listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER)
+        val top = listOf(ENTRANCE_PIN_LAYER, ENTRANCE_CAPTION_LAYER, ROOM_STEPS_LAYER)
         val bareIds = bare.jsonObject.array("layers").map { it.jsonObject.text("id") }
-        assertEquals(base + SELECTED_LAYER + marks + pin, bareIds)
-        val sources = setOf(BASEMAP, "budynki", "podpisy", "wejscia", "bariery", CHOSEN_SOURCE, PLAN_SOURCE)
-        assertEquals(sources, bare.jsonObject.obj("sources").keys)
+        assertEquals(base + SELECTED + marks + top, bareIds)
+        val sources =
+            setOf(BASEMAP, "budynki", "podpisy", "wejscia", "bariery", PATHS_SOURCE, CHOSEN_SOURCE, PLAN_SOURCE)
+        assertEquals(sources + ROOM_STEPS_SOURCE, bare.jsonObject.obj("sources").keys)
         val entrance = SelectedEntrance(id = "w1", location = STYLE_ORIGIN, label = "Główne", buildingSymbol = "C-13")
         val full = Json.parseToJsonElement(styled(data.selection(building = "C-13", entrance = entrance)))
-        val expected = base + SELECTED_LAYER + marks + pin
+        val expected = base + SELECTED + marks + top
         assertEquals(expected, full.jsonObject.array("layers").map { it.jsonObject.text("id") })
     }
 
@@ -158,4 +181,23 @@ class CampusMapStyleTest {
 }
 
 private val PLAN =
-    listOf(PLAN_ROOMS_LAYER, PLAN_WALLS_LAYER, PLAN_OUTLINE_LAYER, PLAN_SIGNS_LAYER, PLAN_NUMBERS_LAYER)
+    listOf(
+        PLAN_FLOOR_LAYER,
+        PLAN_ROOMS_LAYER,
+        PLAN_WALLS_LAYER,
+        PLAN_CHOSEN_LAYER,
+        PLAN_CHOSEN_OUTLINE_LAYER,
+        PLAN_OUTLINE_LAYER,
+        PLAN_SIGNS_LAYER,
+        PLAN_NUMBERS_LAYER,
+    )
+
+private val SELECTED = listOf(SELECTED_LAYER, SELECTED_PLAN_LAYER)
+
+private val PATHS = listOf(PATH_EDGE_LAYER, PATH_INSIDE_LAYER)
+
+private fun basemapShapesPathsNames(): List<String> {
+    val names = basemapNameLayers(checkNotNull(styleColors().basemap), minZoom = 0.0, textSize = 1.0)
+    val nameIds = names.map { it.getValue("id").jsonPrimitive.content }
+    return BASEMAP_LAYERS - nameIds.toSet() + PATHS + nameIds
+}

@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.feature.inspection.progress
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -28,8 +26,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.StaffProblem
+import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.feature.inspection.R
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+
+private val READ_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy, HH:mm", Locale.ROOT)
 
 /**
  * K1 „Postęp inwentaryzacji” ze stanem z modelu widoku.
@@ -73,9 +80,9 @@ fun ProgressContent(
             when (state) {
                 ProgressUiState.Loading -> Loading()
                 is ProgressUiState.Ready -> BuildingList(state = state, onOpen = actions.onOpen, onRefresh = onRefresh)
-                ProgressUiState.Offline -> Failure(Problem.OFFLINE, onRefresh)
-                ProgressUiState.ServerError -> Failure(Problem.SERVER, onRefresh)
-                ProgressUiState.Forbidden -> Failure(Problem.FORBIDDEN, actions.onBack)
+                ProgressUiState.Offline -> StaffProblemMessage(StaffProblem.OFFLINE, onRefresh)
+                ProgressUiState.ServerError -> StaffProblemMessage(StaffProblem.SERVER, onRefresh)
+                ProgressUiState.Forbidden -> StaffProblemMessage(StaffProblem.FORBIDDEN, actions.onBack)
             }
         }
     }
@@ -89,31 +96,33 @@ internal fun Loading() {
     }
 }
 
-internal enum class Problem(
-    @param:StringRes val message: Int,
-    @param:StringRes val action: Int,
-    @param:StringRes val headline: Int? = null,
-) {
-    OFFLINE(R.string.postep_wymaga_internetu, R.string.postep_sprobuj_ponownie, R.string.postep_bez_internetu),
-    SERVER(R.string.postep_blad_serwera, R.string.postep_sprobuj_ponownie),
-    FORBIDDEN(R.string.postep_brak_uprawnien, R.string.postep_wroc_do_mapy),
-}
-
-@Composable
-internal fun Failure(problem: Problem, onAction: () -> Unit) {
-    Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        problem.headline?.let { Text(stringResource(it), style = MaterialTheme.typography.titleMedium) }
-        Text(stringResource(problem.message), style = MaterialTheme.typography.bodyLarge)
-        Button(onClick = onAction) { Text(stringResource(problem.action)) }
-    }
-}
-
 @Composable
 private fun BuildingList(state: ProgressUiState.Ready, onOpen: (String) -> Unit, onRefresh: () -> Unit) {
     LazyColumn(contentPadding = PaddingValues(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.m)) {
         item { ReadLine(readAt = state.readAt, isRefreshing = state.isRefreshing, onRefresh = onRefresh) }
         items(state.buildings, key = { it.buildingSymbol }) { building ->
-            BuildingCard(building = building, onOpen = { onOpen(building.buildingSymbol) })
+            BuildingCard(
+                building = building,
+                name = state.names[building.buildingSymbol],
+                onOpen = { onOpen(building.buildingSymbol) },
+            )
         }
+    }
+}
+
+/**
+ * Chwila odczytu postępu i „Odśwież”; postęp nie odświeża się sam.
+ *
+ * Wymagania: US11.2
+ *
+ * @param readAt chwila odczytu
+ * @param isRefreshing czy trwa odświeżanie; wyłącza przycisk
+ * @param onRefresh „Odśwież”
+ */
+@Composable
+internal fun ReadLine(readAt: Instant, isRefreshing: Boolean, onRefresh: () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        Text(stringResource(R.string.postep_stan_z, READ_FORMAT.format(readAt.atZone(ZoneId.systemDefault()))))
+        OutlinedAction(onClick = onRefresh, enabled = !isRefreshing) { Text(stringResource(R.string.postep_odswiez)) }
     }
 }

@@ -8,6 +8,7 @@ package io.github.dostepnykampus.building;
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.SampleBuilding;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.StreamSupport;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,13 +25,14 @@ import tools.jackson.databind.ObjectMapper;
 
 /**
  * Kontrakt odczytu budynku: pełne metadane wejść, wejście główne
- * przed pozostałymi, próg podpowiedzi 50 m i piętra budynku.
+ * przed pozostałymi, dane wejść z planów PWr w karcie i w liście budynków, wyjścia
+ * ewakuacyjne, próg podpowiedzi 50 m i piętra budynku.
  *
  * <p>Geometria przy równiku jest niezależna od danych kampusu. Punkty
  * oddalone o 49 i 51 m od północnej krawędzi powstają przez ST_Project;
  * margines jednego metra nie zależy od zaokrąglenia na granicy 50 m.</p>
  *
- * <p>Wymagania: US17.3, US2.1, BR-G4, US16.1, US16.2, NFR-40</p>
+ * <p>Wymagania: US17.3, US2.1, BR-G4, US16.1, US16.2, NFR-40, BR-24, BR-27, US2.6, US1.4</p>
  *
  * @since 0.1.0
  */
@@ -75,6 +77,101 @@ final class BuildingReadContractIT {
             Matchers.equalTo(
                 context.getBean(ObjectMapper.class)
                     .readTree(BuildingReadContractIT.entrances())
+            )
+        );
+    }
+
+    @Test
+    void showsPwrEntranceDataWithWalkthroughMarkingFirst(
+        final WebApplicationContext context
+    ) throws Exception {
+        BuildingReadContractIT.insertPwrEntrances(context);
+        MatcherAssert.assertThat(
+            "Dane wejść z planów PWr albo pierwszeństwo oznaczenia nie zgadzają się z kontraktem",
+            BuildingReadContractIT.get(context, "/buildings/G-900").required("entrances"),
+            Matchers.equalTo(
+                context.getBean(ObjectMapper.class)
+                    .readTree(BuildingReadContractIT.pwrEntrances())
+            )
+        );
+    }
+
+    @Test
+    void listsBuildingWithSameEntrancesAsCard(final WebApplicationContext context)
+        throws Exception {
+        BuildingReadContractIT.insertPwrEntrances(context);
+        MatcherAssert.assertThat(
+            "Wejścia budynku w liście nie są tymi samymi wejściami co w karcie",
+            StreamSupport.stream(
+                BuildingReadContractIT.get(context, "/buildings").required("buildings")
+                    .spliterator(),
+                false
+            ).filter(building -> "G-900".equals(building.path("symbol").asString()))
+                .map(building -> building.required("entrances")).toList(),
+            Matchers.contains(
+                context.getBean(ObjectMapper.class)
+                    .readTree(BuildingReadContractIT.pwrEntrances())
+            )
+        );
+    }
+
+    @Test
+    void showsPwrMarkingDateUnlessWalkthrough(final WebApplicationContext context)
+        throws Exception {
+        context.getBean(JdbcClient.class).sql(
+            """
+            INSERT INTO entrances (id, building_symbol, main, location, marking, marking_date,
+                marking_source, pwr_name, pwr_marking, pwr_marking_date)
+            VALUES ('node/8', 'G-900', false, ST_SetSRID(ST_MakePoint(0.0005, 0), 4326),
+                'NO_DATA', DATE '2026-11-01', 'IMPORT', 'Wejście', 'ACCESSIBLE',
+                DATE '2026-11-04'),
+                ('node/9', 'G-900', false, ST_SetSRID(ST_MakePoint(0, 0.0005), 4326),
+                'INACCESSIBLE', DATE '2026-11-02', 'WALKTHROUGH', 'Wejście', 'ACCESSIBLE',
+                DATE '2026-11-04')
+            """
+        ).update();
+        final JsonNode card = BuildingReadContractIT.get(context, "/buildings/G-900");
+        MatcherAssert.assertThat(
+            "Data oznaczenia nie jest datą warstwy PWr albo datą obchodu",
+            String.join(
+                " ", card.at("/entrances/0/markingDate").asString(),
+                card.at("/entrances/1/markingDate").asString()
+            ),
+            Matchers.equalTo("2026-11-04 2026-11-02")
+        );
+    }
+
+    @Test
+    void showsEvacuationExitsApartFromEntrances(
+        final WebApplicationContext context
+    ) throws Exception {
+        context.getBean(JdbcClient.class).sql(
+            """
+            INSERT INTO evacuation_exits (id, building_symbol, floor_id, location, description,
+                door_width_cm)
+            VALUES ('pwr/s00000002', 'G-900', 'P0', ST_SetSRID(ST_MakePoint(0.0002, 0.0003), 4326),
+                'Wyjście ewakuacyjne z pomieszczenia 41', NULL),
+                ('pwr/s00000003', 'G-900', 'P1', ST_SetSRID(ST_MakePoint(0.0003, 0.0002), 4326),
+                'Wyjście ewakuacyjne', 90)
+            """
+        ).update();
+        MatcherAssert.assertThat(
+            "Wyjścia ewakuacyjne nie są osobną listą karty budynku zgodną z kontraktem",
+            BuildingReadContractIT.get(context, "/buildings/G-900")
+                .required("evacuationExits"),
+            Matchers.equalTo(
+                context.getBean(ObjectMapper.class).readTree(
+                    """
+                    [{"id":"pwr/s00000002","floorId":"P0",
+                    "location":{"type":"Point","coordinates":[0.0002,0.0003]},
+                    "description":"Wyjście ewakuacyjne z pomieszczenia 41",
+                    "source":"Politechnika Wrocławska"},
+                    {"id":"pwr/s00000003","floorId":"P1",
+                    "location":{"type":"Point","coordinates":[0.0003,0.0002]},
+                    "description":"Wyjście ewakuacyjne","doorWidthCm":90,
+                    "source":"Politechnika Wrocławska"}]
+                    """
+                )
             )
         );
     }
@@ -206,6 +303,53 @@ final class BuildingReadContractIT {
             """;
     }
 
+    private static void insertPwrEntrances(final WebApplicationContext context) {
+        final JdbcClient jdbc = context.getBean(JdbcClient.class);
+        jdbc.sql(
+            """
+            INSERT INTO entrances (id, building_symbol, name, main, location, marking,
+                marking_date, marking_source, pwr_name, pwr_marking, approach, door_width_cm)
+            VALUES ('node/5', 'G-900', 'W-1', true, ST_SetSRID(ST_MakePoint(0.0005, 0), 4326),
+                'NO_DATA', DATE '2026-11-01', 'IMPORT', 'Wejście Cesarskie', 'ACCESSIBLE',
+                'Od ul. Wybrzeże.', 120),
+                ('node/6', 'G-900', NULL, false, ST_SetSRID(ST_MakePoint(0, 0.0005), 4326),
+                'INACCESSIBLE', DATE '2026-11-02', 'WALKTHROUGH', NULL, 'ACCESSIBLE',
+                NULL, NULL),
+                ('node/7', 'G-900', 'Wejście boczne', false,
+                ST_SetSRID(ST_MakePoint(0.001, 0.0005), 4326), 'NO_DATA', DATE '2026-11-01',
+                'IMPORT', NULL, NULL, NULL, NULL),
+                ('pwr/s00000001', 'G-900', NULL, false,
+                ST_SetSRID(ST_MakePoint(0.0005, 0.001), 4326), 'INACCESSIBLE',
+                DATE '2026-11-01', 'IMPORT', NULL, 'INACCESSIBLE',
+                'Do wejścia prowadzą schody.', 90)
+            """
+        ).update();
+    }
+
+    private static String pwrEntrances() {
+        return """
+            [{"id":"node/5","buildingSymbol":"G-900","name":"Wejście Cesarskie","main":true,
+            "location":{"type":"Point","coordinates":[0.0005,0]},
+            "marking":"ACCESSIBLE","markingDate":"2026-11-01","markingSource":"IMPORT",
+            "approach":"Od ul. Wybrzeże.","doorWidthCm":120,
+            "source":"Politechnika Wrocławska"},
+            {"id":"node/6","buildingSymbol":"G-900","name":"Wejście",
+            "generatedName":true,"placeDescription":"Od zachodu.","main":false,
+            "location":{"type":"Point","coordinates":[0,0.0005]},
+            "marking":"INACCESSIBLE","markingDate":"2026-11-02",
+            "markingSource":"WALKTHROUGH","source":"Politechnika Wrocławska"},
+            {"id":"node/7","buildingSymbol":"G-900","name":"Wejście boczne","main":false,
+            "location":{"type":"Point","coordinates":[0.001,0.0005]},
+            "marking":"NO_DATA","markingDate":"2026-11-01","markingSource":"IMPORT"},
+            {"id":"pwr/s00000001","buildingSymbol":"G-900","name":"Wejście",
+            "generatedName":true,"placeDescription":"Od północy.","main":false,
+            "location":{"type":"Point","coordinates":[0.0005,0.001]},
+            "marking":"INACCESSIBLE","markingDate":"2026-11-01","markingSource":"IMPORT",
+            "approach":"Do wejścia prowadzą schody.","doorWidthCm":90,
+            "source":"Politechnika Wrocławska"}]
+            """;
+    }
+
     private static String entrances() {
         return """
             [{"id":"node/2","buildingSymbol":"G-900","name":"Wejście główne",
@@ -213,7 +357,8 @@ final class BuildingReadContractIT {
             "location":{"type":"Point","coordinates":[0.0005,0]},"floorId":"K1.G900.P0",
             "marking":"ACCESSIBLE","markingDate":"2026-10-02",
             "markingSource":"WALKTHROUGH"},
-            {"id":"node/1","buildingSymbol":"G-900","main":false,
+            {"id":"node/1","buildingSymbol":"G-900","name":"Wejście",
+            "generatedName":true,"placeDescription":"Od zachodu.","main":false,
             "location":{"type":"Point","coordinates":[0,0.0005]},
             "marking":"NO_DATA","markingDate":"2026-10-01",
             "markingSource":"IMPORT"},

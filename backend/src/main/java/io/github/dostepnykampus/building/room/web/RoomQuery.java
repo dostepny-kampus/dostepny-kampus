@@ -6,16 +6,18 @@
 package io.github.dostepnykampus.building.room.web;
 
 import io.github.dostepnykampus.shared.error.InvalidInput;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Zapytanie sali z parametru {@code q} operacji searchRooms: numer sali, a przed nim
- * opcjonalnie symbol budynku w zapisie jak w wyszukiwaniu budynku w aplikacji. Wielkość liter
- * nie ma znaczenia, a między literą i numerem budynku może stać dywiz, inna kreska, odstęp albo
- * nic, więc „A-1 329”, „a1 329” i „A 1 329” szukają sali 329 w budynku A-1.
+ * Zapytanie sali z parametru {@code q} operacji searchRooms: numer sali i opcjonalnie symbol
+ * budynku w dowolnej kolejności, rozdzielone odstępem, przecinkiem albo ukośnikiem; słowa
+ * „sala”, „s.” i „pok.” są pomijane. Wielkość liter nie ma znaczenia, a między literą
+ * i numerem budynku może stać dywiz, inna kreska, odstęp albo nic, więc „A-1 329”, „329 a1”,
+ * „sala 329 A-1” i „A-1/329” szukają sali 329 w budynku A-1.
  *
  * <p>Wymagania: US18.1</p>
  *
@@ -24,10 +26,34 @@ import java.util.regex.Pattern;
 public final class RoomQuery {
 
     /**
-     * Symbol budynku (grupy 1–3) i numer sali (grupa 4).
+     * Symbol budynku: litera, numer i opcjonalna litera skrzydła.
      */
-    private static final Pattern TEXT = Pattern.compile(
-        "\\s*(?:([A-Za-z])\\s*[-‐‑‒–—―−]?\\s*(\\d+)([A-Za-z]?)\\s+)?(\\S+)\\s*"
+    private static final String BUILDING =
+        "(?<letter>[A-Za-z])\\s*[-‐‑‒–—―−]?\\s*(?<digits>\\d+)(?<wing>[A-Za-z]?)";
+
+    /**
+     * Zapisy zapytania od najbardziej typowego: budynek przed numerem albo sam numer, potem
+     * numer przed budynkiem.
+     */
+    private static final List<Pattern> FORMS = List.of(
+        Pattern.compile(String.format("\\s*(?:%s\\s+)?(?<number>\\S+)\\s*", RoomQuery.BUILDING)),
+        Pattern.compile(String.format("\\s*(?<number>\\S+)\\s+%s\\s*", RoomQuery.BUILDING))
+    );
+
+    /**
+     * Słowa przed numerem sali i znaki rozdzielające części, które zapytanie pomija.
+     */
+    private static final Pattern NOISE = Pattern.compile(
+        "(?iu)(?<![\\p{L}\\d])(?:sala|pok\\.|s\\.)(?!\\p{L})|[,/]"
+    );
+
+    /**
+     * Opis błędu zapytania, którego nie da się rozebrać.
+     */
+    private static final String ERROR = String.join(
+        " ",
+        "Parametr q to numer sali i opcjonalnie symbol budynku w dowolnej",
+        "kolejności, np. A-1 329 albo 329 A-1, do 50 znaków"
     );
 
     /**
@@ -51,7 +77,7 @@ public final class RoomQuery {
      * @return Numer bez odstępów na brzegach
      */
     public String number() {
-        return this.parts().group(4);
+        return this.parts().group("number");
     }
 
     /**
@@ -61,21 +87,20 @@ public final class RoomQuery {
      */
     public Optional<String> building() {
         final Matcher parts = this.parts();
-        return Optional.ofNullable(parts.group(1)).map(
+        return Optional.ofNullable(parts.group("letter")).map(
             letter -> String.join(
-                "", letter.toUpperCase(Locale.ROOT), "-", parts.group(2),
-                parts.group(3).toLowerCase(Locale.ROOT)
+                "", letter.toUpperCase(Locale.ROOT), "-", parts.group("digits"),
+                parts.group("wing").toLowerCase(Locale.ROOT)
             )
         );
     }
 
     private Matcher parts() {
-        final Matcher parts = RoomQuery.TEXT.matcher(this.text);
-        if (this.text.length() > 50 || !parts.matches()) {
-            throw new InvalidInput(
-                "Parametr q to numer sali, opcjonalnie po symbolu budynku, np. A-1 329, do 50 znaków"
-            );
-        }
-        return parts;
+        final String plain = RoomQuery.NOISE.matcher(this.text).replaceAll(" ");
+        return RoomQuery.FORMS.stream()
+            .map(form -> form.matcher(plain))
+            .filter(parts -> this.text.length() <= 50 && parts.matches())
+            .findFirst()
+            .orElseThrow(() -> new InvalidInput(RoomQuery.ERROR));
     }
 }

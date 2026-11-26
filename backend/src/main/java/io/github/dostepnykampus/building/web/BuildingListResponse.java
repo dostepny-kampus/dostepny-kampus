@@ -25,7 +25,9 @@ public record BuildingListResponse(String source, List<BuildingResponse> buildin
     public BuildingListResponse(final BuildingList list) {
         this(
             list.source(),
-            list.buildings().stream().map(BuildingResponse::new).toList()
+            list.buildings().stream()
+                .map(building -> new BuildingResponse(building, list.entrances(building.symbol())))
+                .toList()
         );
     }
 }

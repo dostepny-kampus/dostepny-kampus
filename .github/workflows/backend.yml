@@ -20,6 +20,7 @@ on:
       - ".github/scripts/mvn-z-ponowieniem.sh"
       - ".github/scripts/zmiany-obszaru.sh"
       - ".github/actions/java-serwera/**"
+      - ".github/actions/jpeek/**"
   merge_group:
     types:
       - checks_requested
@@ -67,7 +68,7 @@ jobs:
           .github/scripts/zmiany-obszaru.sh serwer backend data api/openapi.yaml specs infra
           .github/workflows/backend.yml .github/scripts/wynik-pit.sh .github/scripts/mvn-z-ponowieniem.sh
           .github/scripts/zmiany-obszaru.sh
-          .github/actions/java-serwera
+          .github/actions/java-serwera .github/actions/jpeek
 
   serwer:
     # `mutacje` w needs: jego porażka w kontroli sprintu przechodzi przez wymagany job (na PR jest pominięty).
@@ -83,6 +84,8 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/java-serwera
+        with:
+          zapisz: "true"
       - name: Zależności skryptów danych
         if: ${{ github.event_name != 'push' }}
         run: python3 -m pip install --no-input -r ../data/requirements.txt
@@ -93,6 +96,25 @@ jobs:
       - name: Zbuduj, przetestuj i sprawdź qulice
         if: ${{ github.event_name != 'push' }}
         run: bash ../.github/scripts/mvn-z-ponowieniem.sh -B verify
+      - name: Nakładka produkcyjna poprawna, obraz serwera w compose z profilem serwer odpowiada na /buildings
+        # Plik JAR pochodzi z `verify` powyżej.
+        if: ${{ github.event_name != 'push' }}
+        timeout-minutes: 8
+        working-directory: .
+        run: |
+          cp infra/.env.example infra/.env
+          DK_PUBLIC_HOST=kampus.example.test docker compose -f infra/docker-compose.yml \
+            -f infra/docker-compose.produkcja.yml --profile serwer config -q
+          compose=(docker compose -f infra/docker-compose.yml --profile serwer)
+          "${compose[@]}" up -d --build serwer
+          if ! timeout 240 bash -c 'until curl -fs -o /dev/null http://127.0.0.1:8080/buildings; do sleep 3; done'; then
+            echo "::error title=Obraz serwera::Serwer z compose nie odpowiedział na /buildings w 240 s."
+            "${compose[@]}" ps
+            "${compose[@]}" logs serwer
+            "${compose[@]}" down -v
+            exit 1
+          fi
+          "${compose[@]}" down -v
       - name: Testy mutacyjne PIT dziedziny serwera
         # Na PR; w grupie kolejki PIT nie padał, więc po scaleniu biegnie w kontroli sprintu (zadanie `mutacje`).
         if: ${{ github.event_name == 'pull_request' }}
@@ -114,8 +136,9 @@ jobs:
           retention-days: 14
       - name: Pobierz zależności do cache Maven
         # Na push po scaleniu z kolejki kontrole przeszły już w merge_group na tym samym SHA; tu tylko zapis cache zależności.
+        # resolve-plugins dokłada wtyczki dalszych faz (package, PIT, qulice), których używają pozostałe zadania serwera.
         if: ${{ github.event_name == 'push' }}
-        run: ./mvnw -B -DskipTests test-compile
+        run: ./mvnw -B -DskipTests test-compile dependency:resolve-plugins
 
   mutacje:
     # Tylko kontrola sprintu (inputs.sha): PIT na połączonych zmianach kilku PR po scaleniu.
@@ -163,12 +186,6 @@ jobs:
     if: *warunek-jakosc
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    env:
-      JPEEK_VERSION: 0.32.3
-      JPEEK_SHA256: 34e138f402c99386c36477300e8c9e2df90014ffb544855b47b03caa975c8598
-      # jpeek ma w środku ASM bez obsługi klas Javy 25; nowszy ASM stoi w ścieżce klas przed nim.
-      ASM_VERSION: 9.10.1
-      ASM_SHA256: ed825d10ab1399c8c0cb669e688cf0c8c82629b4c8399b58352b68e92ca10fcb
     defaults:
       run:
         working-directory: backend
@@ -179,17 +196,7 @@ jobs:
       - uses: ./.github/actions/java-serwera
       - name: Skompiluj kod serwera
         run: bash ../.github/scripts/mvn-z-ponowieniem.sh -B -DskipTests -Dqulice.skip=true compile
-      - name: Pobierz jpeek i ASM
-        working-directory: ${{ runner.temp }}
-        run: |
-          jar="jpeek-${JPEEK_VERSION}-jar-with-dependencies.jar"
-          curl -sSfLO "https://repo1.maven.org/maven2/org/jpeek/jpeek/${JPEEK_VERSION}/${jar}"
-          echo "${JPEEK_SHA256}  ${jar}" | sha256sum --check --strict
-          mv "${jar}" jpeek.jar
-          asm="asm-${ASM_VERSION}.jar"
-          curl -sSfLO "https://repo1.maven.org/maven2/org/ow2/asm/asm/${ASM_VERSION}/${asm}"
-          echo "${ASM_SHA256}  ${asm}" | sha256sum --check --strict
-          mv "${asm}" asm.jar
+      - uses: ./.github/actions/jpeek
       - name: Policz spójność klas
         run: >-
           java -cp "${RUNNER_TEMP}/asm.jar:${RUNNER_TEMP}/jpeek.jar" org.jpeek.Main
@@ -203,3 +210,16 @@ jobs:
           path: backend/target/jpeek
           if-no-files-found: ignore
           retention-days: 14
+
+  # PR i kolejka tylko odtwarzają wpis jpeek gałęzi sprintu; Maven Central ogranicza równoległe pobrania.
+  pamiec-jpeek:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/sprint/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/jpeek
+        with:
+          zapisz: "true"

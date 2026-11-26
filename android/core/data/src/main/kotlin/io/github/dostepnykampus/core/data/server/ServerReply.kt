@@ -7,6 +7,7 @@ package io.github.dostepnykampus.core.data.server
 
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EvacuationExit
 import io.github.dostepnykampus.core.model.submission.Submission
 
 /**
@@ -38,20 +39,30 @@ public sealed interface ServerReply<out T> {
 }
 
 /**
- * Lista budynków z serwera; każdy budynek jest podstawowy, bez planów pięter.
+ * Lista budynków z serwera z atrybucją i listą budynków mających plany pięter.
  *
  * @property source atrybucja konturów
  * @property buildings budynki w kolejności odpowiedzi
+ * @property detailed symbole budynków z planami pięter; domyślnie puste
  */
-public data class ServerBuildings(val source: String, val buildings: List<Building>)
+public data class ServerBuildings(
+    val source: String,
+    val buildings: List<Building>,
+    val detailed: Set<String> = emptySet(),
+)
 
 /**
  * Karta budynku podstawowego z serwera.
  *
  * @property building budynek karty
  * @property entrances wejścia budynku
+ * @property evacuationExits wyjścia ewakuacyjne budynku; pusta lista, gdy serwer ich nie podał
  */
-public data class ServerCard(val building: Building, val entrances: List<Entrance>)
+public data class ServerCard(
+    val building: Building,
+    val entrances: List<Entrance>,
+    val evacuationExits: List<EvacuationExit> = emptyList(),
+)
 
 /** Wynik edycji zgłoszenia z wersją bazową na serwerze. Wymagania: US9.3, BR-10 */
 public sealed interface ServerEdit {

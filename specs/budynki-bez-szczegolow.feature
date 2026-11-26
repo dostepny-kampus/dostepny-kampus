@@ -1,6 +1,6 @@
 # language: pl
 Funkcja: Budynki podstawowe i miejsca poza budynkiem
-  Plany pięter PWr ma 25 budynków szczegółowych. W pozostałych budynkach i poza nimi
+  Plany pięter PWr ma 24 budynki szczegółowe. W pozostałych budynkach i poza nimi
   aplikacja działa w prostszej formie, ale nic się nie psuje (N1, N3).
 
   Założenia:
@@ -15,6 +15,20 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
       Wtedy nie widzi przełącznika pięter
       Oraz w miejscu planu piętra widzi napis „Nie mamy planu pięter tego budynku.”
       Oraz widzi wejścia budynku B-8 i jego zgłoszenia przyjęte
+
+    @US16.2 @aplikacja
+    Scenariusz: Budynek podstawowy blisko budynku szczegółowego nie pokazuje planu sąsiada
+      Zakładając, że budynek podstawowy B-8 leży bliżej niż 60 m od budynku szczegółowego A-1
+      Jeżeli Odwiedzający otworzy kartę budynku B-8 przy powiększeniu 18 albo przesunie środek mapy do B-8
+      Wtedy nie widzi planu piętra ani kolumny pięter budynku A-1
+      Oraz po wyjściu środka poza kontur B-8 o ponad 5 m bez karty widzi plan budynku A-1
+
+    @US16.2 @NFR-10 @aplikacja
+    Scenariusz: Bez danych z serwera karta nie twierdzi, że budynek nie ma planu
+      Zakładając, że Gość niezalogowany pierwszy raz otwiera aplikację bez internetu
+      Jeżeli otworzy kartę budynku A-1
+      Wtedy w grupie „Piętra” widzi napis „Plan pięter sprawdzimy, gdy telefon połączy się z internetem.”
+      Ale nie widzi napisu „Nie mamy planu pięter tego budynku.”
 
     @US7.2 @aplikacja
     Szablon scenariusza: Piętro w budynku podstawowym wpisuje się jako liczbę całkowitą
@@ -102,7 +116,8 @@ Funkcja: Budynki podstawowe i miejsca poza budynkiem
   @BR-G3
   Reguła: Nieudany import planów nie psuje pozostałych budynków
 
-    @US16.2 @aplikacja
+    # brak kodu: import nie toleruje uszkodzonych planów i nie ma raportu importu: #3665
+    @US16.2 @aplikacja @do-zrobienia
     Scenariusz: Budynek z uszkodzonymi danymi planów działa jako budynek podstawowy
       Zakładając, że dane planów pięter budynku B-1 są uszkodzone
       Jeżeli import planów pięter się zakończy

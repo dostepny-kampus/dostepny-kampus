@@ -9,7 +9,8 @@ import java.time.Instant
 
 /**
  * [AcceptedBarriers] ze źródła [source], w którym każda bariera ze zdjęciem dostaje adres pierwszego zdjęcia
- * w [AcceptedBarrier.photoUrl]. Bariera bez zdjęć zostaje bez adresu. Chwila pobrania pochodzi ze źródła.
+ * w [AcceptedBarrier.photoUrl], także wśród barier już znanych. Bariera bez zdjęć zostaje bez adresu. Chwila pobrania
+ * pochodzi ze źródła.
  *
  * Wymagania: US1.5, US2.2, BR-17
  *
@@ -20,10 +21,12 @@ internal class PhotoAddressBarriers(
     private val source: AcceptedBarriers,
     private val address: (submissionId: String, photoId: String) -> String,
 ) : AcceptedBarriers {
-    override suspend fun barriers(): List<AcceptedBarrier> =
-        source.barriers().map { barrier ->
-            barrier.copy(photoUrl = barrier.photoIds.firstOrNull()?.let { address(barrier.id, it) })
-        }
+    override suspend fun barriers(): List<AcceptedBarrier> = source.barriers().map(::withPhoto)
+
+    override fun known(): List<AcceptedBarrier>? = source.known()?.map(::withPhoto)
+
+    private fun withPhoto(barrier: AcceptedBarrier): AcceptedBarrier =
+        barrier.copy(photoUrl = barrier.photoIds.firstOrNull()?.let { address(barrier.id, it) })
 
     override fun syncedAt(): Instant? = source.syncedAt()
 }

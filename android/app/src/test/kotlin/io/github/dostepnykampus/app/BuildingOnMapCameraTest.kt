@@ -3,8 +3,6 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app
 
 import android.view.accessibility.AccessibilityManager
@@ -19,7 +17,6 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.isSelectable
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -28,13 +25,12 @@ import androidx.compose.ui.unit.IntSize
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.AppScreen
-import io.github.dostepnykampus.core.data.account.GuestRoleProvider
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -85,6 +81,9 @@ private val CATALOG =
 
 private fun mercatorY(latitude: Double): Double = asinh(tan(Math.toRadians(latitude)))
 
+private fun centerNearestInside(ideal: Double, half: Double, area: CampusBounds): Double =
+    ideal.coerceIn(minimumValue = mercatorY(area.south) + half, maximumValue = mercatorY(area.north) - half)
+
 /**
  * „Pokaż budynek na mapie” z V2 przez prawdziwe ekrany aplikacji do kamery podróbki widoku mapy: budynek jest widoczny,
  * a dalsze przesuwanie i obrót zostają przy osobie. Katalog jest syntetyczny: A-1 w środku pierwszego widoku, T-9 i
@@ -106,6 +105,7 @@ class BuildingOnMapCameraTest {
     private var touch: (List<String>) -> Unit = {}
     private var mapSize = IntSize.Zero
     private var bottomInset = 0.0
+    private var topInset = 0.0
     private var density = 1f
     private var isIdleReported = false
     private val choice = TestMapListChoice()
@@ -114,6 +114,7 @@ class BuildingOnMapCameraTest {
         CampusMapView { data: CampusMapData, _, move, inset, onCameraIdle, onBuildingsTouch, _, modifier: Modifier ->
             shown += data to move.camera
             bottomInset = inset.bottom
+            topInset = inset.top
             touch = onBuildingsTouch
             density = LocalDensity.current.density
             SideEffect { if (isIdleReported) onCameraIdle(move.camera) }
@@ -127,7 +128,7 @@ class BuildingOnMapCameraTest {
             DostepnyKampusTheme {
                 AppShell(
                     firstLaunch = false,
-                    roles = GuestRoleProvider,
+                    roles = TestRoles(),
                     onFirstHelpLeft = {},
                     onChooseMap = { choice.savedChoice.value = false },
                 ) {
@@ -177,7 +178,7 @@ class BuildingOnMapCameraTest {
         val (data, before) = shown.last()
         assertFalse("$symbol widać już przed poleceniem", before.shows(data.labelPointOf(symbol)))
         val count = shown.size
-        click(hasText("Lista budynków") and isSelectable())
+        click(hasText("Pokaż listę"))
         click(hasContentDescription("$symbol, ", substring = true) and hasClickAction())
         click(hasText(BUILDING_ON_MAP))
         compose.waitUntil { shown.size > count }
@@ -219,16 +220,27 @@ class BuildingOnMapCameraTest {
         assertShown("U-1")
     }
 
-    /** Wiersz: K3 (strażnik), mała karta V2 i „Wstecz” → kamera sprzed karty. */
+    /** Wiersz: K3 (strażnik), mała karta V2 i „Wstecz” → mapa stoi na ekranie. Wymagania: US2.8, NFR-56 */
     @Test
     fun keepsViewOnBack() {
         pan("prawo", times = 2)
-        val before = shown.last().second
         compose.runOnUiThread { touch(listOf("A-1")) }
         compose.waitForIdle()
+        val above = shown.last().second
+        val under = bottomInset
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
         compose.waitForIdle()
-        assertEquals(before, shown.last().second)
+        assertStays(above = above, under = under)
+    }
+
+    private fun assertStays(above: MapCamera, under: Double) {
+        val after = shown.last().second
+        val perRadian = WORLD_DP_AT_ZOOM_0 * 2.0.pow(above.zoom) / (2 * PI) * density
+        val shift = (mercatorY(above.center.latitude) - mercatorY(after.center.latitude)) * perRadian
+        assertEquals("bez arkusza", 0.0, bottomInset, 0.0)
+        assertEquals("powiększenie zostaje", above.zoom, after.zoom, 0.0)
+        assertEquals("bez ruchu w poziomie", above.center.longitude, after.center.longitude, 1e-9)
+        assertEquals("ekran stoi: środek niżej o pół paska i karty", (topInset + under) / 2, shift, 1.0)
     }
 
     /** Wiersz: K4, po „Pokaż budynek na mapie” strzałka przesuwa mapę i fokus jej nie cofa. Wymagania: US2.9, NFR-53 */
@@ -281,22 +293,62 @@ class BuildingOnMapCameraTest {
     }
 
     /**
-     * Wiersz: K3, po „Pokaż” i geście osoby na V1 mała karta budynku i „Wstecz” bez ruszania mapy
-     * → widok jak przed kartą. Widok mapy zgłasza kamerę tylko po geście osoby, więc przy
-     * otwartej karcie atrapa nic nie zgłasza.
+     * Wiersz: K3, po „Pokaż” i geście osoby na V1 mała karta budynku i „Wstecz” → mapa nie wraca, budynek
+     * dalej widać, powiększenie zostaje. Widok mapy zgłasza kamerę tylko po geście osoby, więc przy otwartej karcie
+     * atrapa nic nie zgłasza.
+     *
+     * Wymagania: US2.8, NFR-56
      */
     @Test
     fun goesBackAfterShow() {
         isIdleReported = true
         showOnMap("T-9")
         compose.waitForIdle()
-        val before = shown.last().second
         isIdleReported = false
         compose.runOnUiThread { touch(listOf("T-9")) }
         compose.waitForIdle()
+        val above = shown.last().second
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
         compose.waitForIdle()
         assertShown("T-9")
-        assertEquals(before, shown.last().second)
+        assertEquals("powiększenie zostaje", above.zoom, shown.last().second.zoom, 0.0)
+    }
+
+    /**
+     * Wiersz: K3, po „Pokaż” mała karta T-9 i „Wstecz” na małym terenie: widoczna część mapy pod paskiem wraca do
+     * prostokąta terenu najmniejszym przesunięciem w pionie, powiększenie zostaje. Na terenie, który mieści widok,
+     * mapa stoi (`keepsViewOnBack`).
+     * Scenariusz: przegladanie-mapy.feature: Na małym terenie zamknięcie karty przesuwa mapę tylko do brzegu terenu
+     *
+     * Wymagania: US2.8, NFR-39, NFR-56
+     */
+    @Test
+    fun keepsSmallAreaViewInBounds() {
+        isIdleReported = true
+        showOnMap("T-9")
+        compose.waitForIdle()
+        isIdleReported = false
+        compose.runOnUiThread { touch(listOf("T-9")) }
+        compose.waitForIdle()
+        val above = shown.last().second
+        val under = bottomInset
+        compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
+        compose.waitForIdle()
+        val (data, after) = shown.last()
+        val area = data.areas.first { "T-9" in it.symbols }.bounds
+        val perRadian = WORLD_DP_AT_ZOOM_0 * 2.0.pow(above.zoom) / (2 * PI) * density
+        val ideal = mercatorY(above.center.latitude) - (topInset + under) / 2 / perRadian
+        val half = (mapSize.height - topInset) / 2 / perRadian
+        val expected = centerNearestInside(ideal = ideal, half = half, area = area)
+        assertTrue("teren T-9 mieści widok, test nie sprawdza małego terenu", abs(expected - ideal) * perRadian > 1.0)
+        assertEquals("bez arkusza", 0.0, bottomInset, 0.0)
+        assertEquals("powiększenie zostaje", above.zoom, after.zoom, 0.0)
+        assertEquals("bez ruchu w poziomie", above.center.longitude, after.center.longitude, 1e-9)
+        assertEquals(
+            "widok w granicy terenu, przesunięty najmniej",
+            expected * perRadian,
+            mercatorY(after.center.latitude) * perRadian,
+            1.0,
+        )
     }
 }

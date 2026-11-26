@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.quick
@@ -16,17 +16,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.OfflineLine
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.feature.capture.R
+import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
 import io.github.dostepnykampus.feature.capture.photo.PhotoPreviews
 
 /**
  * Krok 3 V4 przed „Wyślij”: miniatura zdjęcia, wybrana grupa, piętro albo „Nie wiem”, jeśli było pytanie,
- * i zdanie o dołączeniu bieżącego miejsca. Gdy pozycja jest jeszcze nieznana,
- * zamiast zdania „Ustalamy, gdzie jesteś…”; „Wyślij” wtedy czeka. Przy „Brak pozycji” i pozycji poza terenem PWr
- * komunikat mówi, co zrobić; zdjęcie i grupa zostają.
+ * i zdanie o dołączeniu bieżącego miejsca albo, przy wybranym wejściu lub obiekcie planu, napis o nim. Gdy
+ * pozycja jest jeszcze nieznana, zamiast zdania „Ustalamy, gdzie jesteś…”; „Wyślij” wtedy czeka. Przy „Brak
+ * pozycji” i pozycji poza terenem PWr komunikat mówi, co zrobić; zdjęcie i grupa zostają.
  *
  * Wymagania: US4.1, US4.5, NFR-27, NFR-23, UC7, US4.9
  *
@@ -42,7 +47,16 @@ internal fun QuickSendSummary(report: QuickReport, isFloorAsked: Boolean, lookup
         if (isFloorAsked) Text(report.floorLabel ?: floorLabel(report.floorNumber))
         when (lookup) {
             is QuickLookup.Found -> {
-                Text(stringResource(R.string.szybkie_dolaczymy_miejsce))
+                val entrance = lookup.position.entrance
+                val place = lookup.position.place
+                val current = stringResource(R.string.szybkie_dolaczymy_miejsce)
+                Text(
+                    when {
+                        entrance != null -> entranceLine(entrance)
+                        place != null -> placeLine(place)
+                        else -> current
+                    },
+                )
             }
 
             QuickLookup.Locating -> {
@@ -83,6 +97,19 @@ internal fun QuickSentMessage(isSavedOffline: Boolean = false) {
     Text(stringResource(if (isSavedOffline) R.string.szybkie_zapisane_bez_sieci else R.string.szybkie_dziekujemy))
 }
 
+/**
+ * Linia „Bez internetu” nad potwierdzeniem zapisu bez sieci, z dniem pobrania danych mapy.
+ *
+ * Wymagania: US9.1, NFR-10
+ *
+ * @param given model podany z zewnątrz, np. w testach; `null` bierze model z grafu Hilt
+ */
+@Composable
+internal fun QuickOfflineLine(given: QuickOfflineViewModel?) {
+    val model = given ?: hiltViewModel()
+    OfflineLine(syncedAt = model.syncedAt)
+}
+
 @Composable
 @ReadOnlyComposable
 private fun floorLabel(floor: Int?): String =
@@ -91,3 +118,64 @@ private fun floorLabel(floor: Int?): String =
         0 -> stringResource(R.string.szybkie_parter)
         else -> stringResource(R.string.szybkie_pietro, floor)
     }
+
+/**
+ * Napis o wejściu [entrance] w krokach 1 i 3 V4: nazwa, „Wejście główne” albo wejście bez nazwy; cudzysłów tylko
+ * przy nazwie z danych. Przy nazwie nadanej przez import napis ma też opis położenia, bo kilka wejść może się
+ * nazywać „Wejście”.
+ *
+ * Wymagania: US4.6, BR-27
+ */
+@Composable
+@ReadOnlyComposable
+internal fun entranceLine(entrance: Entrance): String {
+    val quoted = entrance.name?.takeIf { entrance.hasName }?.let { stringResource(R.string.szybkie_wejscie_nazwa, it) }
+    val name = quoted ?: entrance.name
+    val place = entrance.placeDescription.removeSuffix(".").replaceFirstChar(Char::lowercaseChar)
+    return when {
+        name != null && entrance.isNameGenerated && place.isNotEmpty() -> {
+            stringResource(R.string.szybkie_wejscie_polozenie, name, place)
+        }
+
+        name != null -> {
+            stringResource(R.string.szybkie_wejscie, name)
+        }
+
+        entrance.isMain -> {
+            stringResource(R.string.szybkie_wejscie_glowne)
+        }
+
+        else -> {
+            stringResource(R.string.szybkie_wejscie_bez_nazwy)
+        }
+    }
+}
+
+/**
+ * Napis o obiekcie planu [place] w krokach 1 i 3 V4: nazwa obiektu, budynek i piętro planu, np. „Toaleta
+ * dostosowana: Budynek A-1, parter”.
+ *
+ * Wymagania: US4.6, BR-8
+ */
+@Composable
+@ReadOnlyComposable
+internal fun placeLine(place: ReportPlace): String {
+    val floor = place.floorLabel.replaceFirstChar(Char::lowercaseChar)
+    val name =
+        when (place.category) {
+            RoomCategory.STAIRCASE -> stringResource(R.string.szybkie_obiekt_schody)
+
+            RoomCategory.ELEVATOR -> stringResource(R.string.szybkie_obiekt_winda)
+
+            RoomCategory.ACCESSIBLE_TOILET -> stringResource(R.string.szybkie_obiekt_toaleta)
+
+            RoomCategory.CLASSROOM,
+            RoomCategory.LECTURE_HALL,
+            RoomCategory.CORRIDOR,
+            RoomCategory.TOILET,
+            RoomCategory.OFFICE,
+            RoomCategory.OTHER,
+            -> stringResource(R.string.szybkie_obiekt_inny)
+        }
+    return stringResource(R.string.szybkie_obiekt, name, place.buildingSymbol, floor)
+}

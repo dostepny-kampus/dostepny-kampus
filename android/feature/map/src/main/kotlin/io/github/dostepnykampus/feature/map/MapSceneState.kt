@@ -8,11 +8,11 @@ package io.github.dostepnykampus.feature.map
 import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -32,22 +32,32 @@ import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.MapMotion
+import io.github.dostepnykampus.feature.map.camera.PickOrigin
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
+import io.github.dostepnykampus.feature.map.camera.ShownCamera
+import io.github.dostepnykampus.feature.map.camera.TapSight
 import io.github.dostepnykampus.feature.map.camera.belowTop
+import io.github.dostepnykampus.feature.map.camera.besideStart
 import io.github.dostepnykampus.feature.map.camera.byControl
-import io.github.dostepnykampus.feature.map.camera.cameraTransition
-import io.github.dostepnykampus.feature.map.camera.fitted
+import io.github.dostepnykampus.feature.map.camera.landed
 import io.github.dostepnykampus.feature.map.camera.mapLimits
+import io.github.dostepnykampus.feature.map.camera.pickLine
+import io.github.dostepnykampus.feature.map.camera.pickView
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
+import io.github.dostepnykampus.feature.map.camera.rememberPrevious
+import io.github.dostepnykampus.feature.map.camera.rememberSeen
+import io.github.dostepnykampus.feature.map.camera.uncoveredMove
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.overlay.MapControlTouchSize
+import timber.log.Timber
 
 private const val CONTROLS_COLUMNS = 3
 private const val FIT_MARGIN_DP = 24.0
 private val ControlsMinFreeMap = 300.dp
+private val FloorColumnReserve = 80.dp
 
 private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore = { it })
 
@@ -60,7 +70,7 @@ private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore
  * @property shown ruch kamery do pokazania z zasłoniętym dołem mapy; `null` bez danych
  * @property limits granice kamery dla terenu i rozmiaru mapy; `null` przed pomiarem mapy
  * @property cover czy arkusz V2 zasłania dół mapy i czy nad nim mieszczą się przyciski mapy
- * @param choices zapisywana lista budynków do wyboru
+ * @property taps wybór budynku dotykiem i arkusz „Który budynek?”
  * @param onCamera zapis widoku kamery po ruchu osoby, zob. [cameraKeeper]
  */
 internal class MapSceneState(
@@ -68,7 +78,7 @@ internal class MapSceneState(
     val shown: SceneCamera?,
     val limits: MapLimits?,
     val cover: MapCover,
-    private val choices: MutableState<List<String>>,
+    val taps: MapPicking,
     private val onCamera: (MapCamera) -> Unit,
 ) {
     /** Ruch kamery do pokazania, zob. [SceneCamera.move]; `null` bez danych. */
@@ -86,63 +96,37 @@ internal class MapSceneState(
     /** Mapa ma miejsce na przyciski powiększania i przesuwania. Wymagania: NFR-53 */
     val hasControls: Boolean get() = cover != MapCover.SHEET_WITHOUT_CONTROLS
 
-    /** Symbole budynków czekających na wybór w arkuszu „Który budynek?”. */
-    val choice: List<String> get() = choices.value
-
     /** Zapisuje widok [idle] po geście osoby. */
     fun keep(idle: MapCamera) {
         onCamera(idle)
     }
 
     /**
-     * Pokazuje teren wybrany z listy: wszystkie jego budynki [buildings] w wolnej części mapy, w powiększeniu
-     * najwyżej startowym, przy którym symbole budynków są czytelne.
+     * Pokazuje teren wybrany z listy: wszystkie jego budynki [buildings] w powiększeniu najwyżej startowym, przy
+     * którym symbole budynków są czytelne. [area] to prostokąt nowego terenu; bez niego granice zostają dotychczasowe.
      *
      * Wymagania: US1.7, BR-G5
      */
-    fun land(buildings: CampusBounds) {
-        shown?.let { keep(fitted(outline = buildings, free = it.landing, maxZoom = START_ZOOM)) }
+    fun land(buildings: CampusBounds, area: CampusBounds? = null) {
+        shown?.let { scene ->
+            keep(landed(outline = buildings, free = scene.landing, maxZoom = START_ZOOM, limits = limits, area = area))
+        }
     }
 
     /** Przesuwa kamerę przyciskiem na [next], w granicach terenu, także nad arkuszem V2. Wymagania: NFR-53, BR-G5 */
     fun move(next: MapCamera) {
         limits?.run { keep(clamp(next)) }
     }
-
-    /**
-     * Dotknięcie konturów [symbols]: jeden budynek otwiera [onBuilding], kilka czeka na wybór w arkuszu, a puste
-     * miejsce zgłasza [onEmpty].
-     *
-     * Wymagania: US2.8
-     */
-    fun touch(symbols: List<String>, onBuilding: (String) -> Unit, onEmpty: () -> Unit) {
-        when (symbols.size) {
-            0 -> onEmpty()
-            1 -> choose(symbols.single(), onBuilding)
-            else -> choices.value = symbols
-        }
-    }
-
-    /** Budynek [symbol] wybrany w arkuszu albo jedynym dotknięciem: zamyka wybór i otwiera [onBuilding]. */
-    fun choose(symbol: String, onBuilding: (String) -> Unit) {
-        dismiss()
-        onBuilding(symbol)
-    }
-
-    /** Zamyka arkusz „Który budynek?” bez wyboru. */
-    fun dismiss() {
-        choices.value = emptyList()
-    }
 }
 
 /**
- * Stan sceny mapy z danych [layers], katalogu [catalog], zaznaczenia [focus] z trasy i nazwy terenu [area]
- * wybranego przez osobę, dla mapy o rozmiarze [size] zasłoniętej od dołu arkuszem V2 na wysokość
- * [cover]. Nad arkuszem budynek mieści się też nad napisem o zmianie terenu wysokim na [notice]. Widok kamery
- * i lista budynków do wyboru są zapisywane, więc wracają po „Wstecz” z V2 i po obrocie ekranu. Każdy ruch nad kartą
- * do nowego budynku trafia do [motion].
+ * Stan sceny mapy z danych [layers], katalogu [catalog], zaznaczenia [focus] z trasy i nazwy terenu [area] dla mapy
+ * o rozmiarze [size] zasłoniętej od dołu arkuszem V2 na [cover] albo innym arkuszem na [sheet] pikseli. Nad arkuszem
+ * V2 budynek mieści się też nad napisem o zmianie terenu wysokim na [notice]. Widok kamery i lista budynków do wyboru
+ * wracają po obrocie ekranu. Zamknięcie każdego arkusza zostawia obraz mapy bez ruchu: zapisany widok to widok
+ * z chwili zamknięcia. Każdy ruch nad kartą do nowego budynku trafia do [motion].
  *
- * Wymagania: US1.7, US1.8, NFR-22, NFR-56
+ * Wymagania: US1.7, US1.8, US3.3, NFR-22, NFR-56
  */
 @Composable
 internal fun rememberMapSceneState(
@@ -155,15 +139,28 @@ internal fun rememberMapSceneState(
     top: Dp = 0.dp,
     motion: MapMotion? = null,
     notice: Dp = 0.dp,
+    sheet: Int = 0,
+    roomCamera: MapCamera? = null,
+    signCamera: MapCamera? = null,
+    isRoomJump: Boolean = false,
+    heldInset: MapInset? = null,
 ): MapSceneState {
     val scene = rememberMapScene(layers = layers, catalog = catalog, focus = focus, area = area)
     val selection = scene?.selection
-    val view = rememberCameraView(focus, layers)
+    val view = rememberCameraView(focus = focus, layers = layers, roomCamera = roomCamera, signCamera = signCamera)
     val choices = rememberSaveable(stateSaver = ChoiceSaver) { mutableStateOf(emptyList<String>()) }
     val isCovered = cover > 0.dp
     val density = LocalDensity.current
-    val own = view.camera ?: selection?.entrance?.let { MapCamera(center = it.location, zoom = ENTRANCE_ZOOM) }
+    val last = remember { ShownCamera() }
+    val (isCoveredBefore, topBefore) = rememberPrevious(isCovered to top)
     val topInset = with(density) { top.toPx() }.toDouble()
+    val next = cameraInset(held = heldInset, isAbove = false, top = topInset, bottom = 0.0, sign = sheet)
+    val (seen, closed) = last.rememberSeen(isCovered = isCovered, next = next, sheet = sheet, view = view)
+    val shown =
+        seen?.let {
+            density.besideFloorColumn(camera = it, symbol = view.shown, catalog = catalog, layers = layers, size = size)
+        }
+    val own = shown ?: selection?.entrance?.let { MapCamera(center = it.location, zoom = ENTRANCE_ZOOM) }
     val limits = density.mapLimits(selection?.bounds, size.belowTop(topInset))
     val start = layers?.start?.let { MapCamera(center = it, zoom = START_ZOOM) }
     val uncovered = (own ?: start)?.let { limits?.clamp(it) ?: it }
@@ -172,24 +169,32 @@ internal fun rememberMapSceneState(
     val free = density.freeMap(size, cover)
     val fit = free.copy(heightDp = free.heightDp - reserve.value)
     val outline = layers?.run { outlinesBySymbol[selection?.building] }.takeIf { isCovered }
-    val last = remember { ShownCamera() }
     val scale = rememberAnimatorScale()
+    val origin = remember { PickOrigin(isUnderCard = isCovered) }
+    SideEffect { origin.follow(selection?.building) }
     val pick =
-        remember(selection?.building, outline != null) {
-            pickMove(from = last.startOr(uncovered), outline = outline, free = fit, scale = scale, limits = limits)
+        remember(key1 = selection?.building, key2 = outline != null, key3 = size != IntSize.Zero) {
+            val from = last.startOr(uncovered)
+            val sight = tapSight(wasCovered = isCoveredBefore, bar = topBefore, under = cover + reserve, free = fit)
+            pickView(from = from, outline = outline, free = fit, limits = limits, scale = scale)?.let { view ->
+                origin.move(building = selection?.building, view = view, keepsZoom = isCoveredBefore, sight = sight)
+            }
         }
-    motion.RecordPick(pick)
+    motion.RecordPick(pick) {
+        pickLine(building = selection?.building, area = area, limits = limits, free = fit, move = it)
+    }
     val card = rememberCardMove(building = selection?.building, pick = pick)
     val above = card.move?.takeIf { isCovered }
-    val move = above ?: uncovered?.byControl()
-    SideEffect { last.keep(move?.camera) }
-    val inset = sheetOrBarInset(isAbove = above != null, top = topInset, bottom = bottomInset)
+    val move = above ?: last.moveTo(target = uncovered, closed = closed, free = fit, isJump = isRoomJump)
+    val inset =
+        cameraInset(held = heldInset, isAbove = above != null, top = topInset, bottom = bottomInset, sign = sheet)
+    SideEffect { last.keep(shown = move?.camera, inset = inset) }
     return MapSceneState(
         scene = scene,
         shown = move?.let { SceneCamera(move = it, inset = inset, landing = fit) },
         limits = limits,
         cover = mapCover(isCovered, hasControls = free.hasRoomForControls),
-        choices = choices,
+        taps = MapPicking(choices = choices, onTap = origin::tap),
         onCamera = cameraKeeper(isCovered, onMap = view.keep, onCard = card.keep),
     )
 }
@@ -198,15 +203,21 @@ internal fun rememberMapSceneState(
  * Ruch mapy V1 do pokazania.
  *
  * @property move ruch kamery do widoku: nad arkuszem V2 do zaznaczonego budynku według [cameraTransition], liczony raz
- *   na wybór, dopóki osoba nie ruszy mapy; poza tym przelot przycisków ([byControl]) do widoku zapisanego, na
- *   zaznaczonym wejściu albo startowego
+ *   na wybór, dopóki osoba nie ruszy mapy; po zamknięciu arkusza skok do tego samego obrazu mapy
+ *   ([uncoveredMove]); poza tym przelot przycisków ([byControl]) do widoku zapisanego, na zaznaczonym wejściu albo
+ *   startowego
  * @property inset zasłonięte krawędzie mapy: dół zasłonięty arkuszem V2, gdy [move] stawia budynek nad arkuszem
+ *   V2, a poza tym góra pod paskiem i dół pod arkuszem zaznaczonego wejścia
  * @property landing wolna część mapy, w której staje widok po wyborze terenu
  */
 internal data class SceneCamera(val move: CameraTransition, val inset: MapInset, val landing: FreeMap)
 
-private fun sheetOrBarInset(isAbove: Boolean, top: Double, bottom: Double): MapInset =
-    if (isAbove) MapInset(bottom = bottom) else MapInset(top = top)
+private fun cameraInset(held: MapInset?, isAbove: Boolean, top: Double, bottom: Double, sign: Int): MapInset =
+    when {
+        held != null -> held
+        isAbove -> MapInset(bottom = bottom)
+        else -> MapInset(top = top, bottom = sign.toDouble())
+    }
 
 /**
  * Zasłonięcie mapy V1 przez arkusz V2. Nad arkuszem przyciski mapy stoją tylko przy co najmniej 300 dp wolnej mapy.
@@ -225,8 +236,7 @@ internal fun mapCover(isCovered: Boolean, hasControls: Boolean): MapCover =
 
 /**
  * Zapis widoku kamery po ruchu osoby. Nad arkuszem V2 ([isCovered]) widok trafia do [onCard], więc kamera nie
- * ustawia już budynku na nowo. Trafia też do [onMap], więc po zamknięciu karty zostaje widok osoby, a widok
- * sprzed karty wraca tylko wtedy, gdy osoba nie ruszyła mapy.
+ * ustawia już budynku na nowo. Każdy widok trafia też do [onMap].
  */
 internal fun cameraKeeper(
     isCovered: Boolean,
@@ -262,43 +272,54 @@ internal fun rememberNoticeReserve(building: String?, notice: Dp): Dp = remember
 /** Ruch mapy nad arkuszem V2 [move] i zapis widoku po ruchu osoby [keep]. */
 internal data class CardMove(val move: CameraTransition?, val keep: (MapCamera) -> Unit)
 
-/** Ostatni widok podany mapie: początek ruchu do następnego wybranego budynku. Nie jest stanem kompozycji. */
-private class ShownCamera {
-    private var camera: MapCamera? = null
-
-    fun startOr(fallback: MapCamera?): MapCamera? = camera ?: fallback
-
-    fun keep(shown: MapCamera?) {
-        camera = shown
-    }
-}
-
 @Composable
-private fun MapMotion?.RecordPick(pick: CameraTransition?) {
+private fun MapMotion?.RecordPick(pick: CameraTransition?, line: (CameraTransition) -> String) {
     val motion = this
+    val currentLine by rememberUpdatedState(line)
     DisposableEffect(motion, pick) {
+        if (pick != null) Timber.d(currentLine(pick))
         if (motion != null && pick != null) motion.record(pick)
         onDispose {}
     }
 }
 
-private fun pickMove(
-    from: MapCamera?,
-    outline: CampusBounds?,
-    free: FreeMap,
-    scale: Float,
-    limits: MapLimits?,
-): CameraTransition? {
-    if (outline == null || from == null) return null
-    val move = cameraTransition(from = from, outline = outline, free = free, animationScale = scale)
-    val clamped = limits?.clamp(move.camera, viewWidthDp = free.widthDp, viewHeightDp = free.heightDp)
-    return clamped?.let { move.copy(camera = it) } ?: move
+private fun tapSight(wasCovered: Boolean, bar: Dp, under: Dp, free: FreeMap): TapSight {
+    val bottom = free.heightDp + under.value
+    return if (wasCovered) {
+        TapSight(belowDp = 0.0, topDp = 0.0, bottomDp = bottom)
+    } else {
+        TapSight(belowDp = (bar + under).value / 2.0, topDp = bar.value.toDouble(), bottomDp = bottom)
+    }
 }
 
+/** Skala animacji systemu („Skala długości animacji”); 0 przy „Usuń animacje”. Wymagania: NFR-56 */
 @Composable
-private fun rememberAnimatorScale(): Float {
+internal fun rememberAnimatorScale(): Float {
     val resolver = LocalContext.current.contentResolver
     return remember(resolver) { Settings.Global.getFloat(resolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) }
+}
+
+/**
+ * Widok [camera] po poleceniu „Pokaż budynek na mapie” dla budynku [symbol]: budynek szczegółowy z katalogu
+ * [catalog] stoi obok pasa kolumny pięter przy lewym brzegu mapy o rozmiarze [size] w pikselach, z konturem
+ * z [layers]. Budynek podstawowy, nieznany albo mapa bez rozmiaru zostawiają [camera].
+ *
+ * Wymagania: US16.1, US1.3, US1.4, NFR-17
+ */
+internal fun Density.besideFloorColumn(
+    camera: MapCamera,
+    symbol: String?,
+    catalog: BuildingCatalog?,
+    layers: CampusMapData?,
+    size: IntSize,
+): MapCamera {
+    val outline = layers?.outlinesBySymbol.orEmpty()[symbol].takeIf { symbol in catalog?.detailed.orEmpty() }
+    val width = size.width.toDp()
+    val widthDp = width.value.toDouble()
+    val reserve = FloorColumnReserve * fontScale.coerceAtLeast(minimumValue = 1f)
+    val startDp = reserve.value.toDouble()
+    if (outline == null || widthDp <= startDp) return camera
+    return camera.besideStart(outline = outline, widthDp = widthDp, startDp = startDp)
 }
 
 /** Wolna część mapy o rozmiarze [size] w pikselach nad arkuszem V2 wysokim na [cover]. */

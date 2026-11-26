@@ -13,12 +13,14 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import io.github.dostepnykampus.core.designsystem.MapColors
+import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.style.BasemapColors
 import io.github.dostepnykampus.feature.map.style.MapStyleColors
+import io.github.dostepnykampus.feature.map.style.PathColors
 import io.github.dostepnykampus.feature.map.style.PlanColors
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
@@ -31,12 +33,12 @@ fun interface CampusMapView {
     /**
      * Mapa [data] z zaznaczeniem [selection] po ruchu [move], z krawędziami zasłoniętymi według [inset]: cel
      * ruchu stoi w środku części odkrytej. Każdy ruch wykonuje raz; zmiana [inset] zmienia tylko dopełnienie
-     * mapy i nie przerywa trwającego ruchu. Po geście widok zgłasza nowy widok przez
-     * [onCameraIdle], a po dotknięciu konturu albo miejsca obok niego symbole trafionych budynków przez
-     * [onBuildingsTouch], a po dotknięciu pustej mapy pustą listę. Dotknięcie znaku bariery zgłasza identyfikator
-     * jej zgłoszenia przez [onBarrierTouch] i nie zgłasza konturu pod znakiem.
+     * mapy i nie przerywa trwającego ruchu. Po geście widok zgłasza nowy widok przez [onCameraIdle].
+     * Dotknięcie wewnątrz konturu zgłasza przez [onBuildingsTouch] symbole tego konturu, dotknięcie obok konturów
+     * symbole konturów w zasięgu dotknięcia, a dotknięcie pustej mapy pustą listę. Dotknięcie znaku zgłasza
+     * przez [onSignTouch] rodzaj znaku i identyfikator jego obiektu i nie zgłasza konturu pod znakiem.
      *
-     * Wymagania: US1.5, NFR-56
+     * Wymagania: US1.5, US2.1, NFR-56
      */
     @Composable
     fun Show(
@@ -46,7 +48,7 @@ fun interface CampusMapView {
         inset: MapInset,
         onCameraIdle: (MapCamera) -> Unit,
         onBuildingsTouch: (List<String>) -> Unit,
-        onBarrierTouch: (String) -> Unit,
+        onSignTouch: (TouchSign, String) -> Unit,
         modifier: Modifier,
     )
 }
@@ -63,17 +65,17 @@ internal fun Density.mapLimits(bounds: CampusBounds?, size: IntSize): MapLimits?
         MapLimits(area, widthDp = width.toDouble(), heightDp = height.toDouble())
     }
 
-/** Kolory stylu mapy z palety mapy motywu. Wymagania: NFR-16 */
+/**
+ * Wygląd stylu mapy z palety mapy motywu, z napisami podkładu powiększonymi o [fontScale]. Wymagania: NFR-16, US1.4
+ */
 @Composable
 @ReadOnlyComposable
-internal fun MapColors.styleColors(): MapStyleColors =
+internal fun MapColors.styleColors(fontScale: Float = 1f): MapStyleColors =
     MapStyleColors(
         land = lad.hex(),
         building = pwr.hex(),
         buildingOutline = pwrKontur.hex(),
         selectedOutline = pwrWybrany.hex(),
-        dimmed = budynek.hex(),
-        dimmedOutline = budynekKontur.hex(),
         plan =
             PlanColors(
                 classroom = pSala.hex(),
@@ -82,7 +84,11 @@ internal fun MapColors.styleColors(): MapStyleColors =
                 elevator = pWinda.hex(),
                 toilet = pWc.hex(),
                 wall = pKontur.hex(),
+                floorWall = pwrKontur.hex(),
+                chosen = pWybrana.hex(),
+                chosenOutline = pWybranaKontur.hex(),
             ),
+        basicBuilding = pwrPodstawowy.hex(),
         basemap =
             BasemapColors(
                 green = zielen.hex(),
@@ -93,7 +99,13 @@ internal fun MapColors.styleColors(): MapStyleColors =
                 path = chodnik.hex(),
                 building = budynek.hex(),
                 buildingOutline = budynekKontur.hex(),
+                streetName = napisUlica.hex(),
+                waterName = napisWoda.hex(),
+                districtName = napisDzielnica.hex(),
+                halo = obwodka.hex(),
             ),
+        labelSize = (Typografia.napisyMapy.value * fontScale).toDouble(),
+        path = PathColors(edge = sciezkaBrzeg.hex(), inside = sciezkaWnetrze.hex()),
     )
 
 internal fun Color.hex(): String = "#%06X".format(Locale.ROOT, toArgb() and RGB_MASK)

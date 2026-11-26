@@ -12,7 +12,7 @@ $ramka()
 Budynek A-1
 Zgłoszenie z pomiaru
 Wysłane <i>[data]</i>
-$przycisk("Otwórz", "chevron-right")
+$czynnosc_karty("Otwórz", "arrow-right")
 }
 ..
 <b>Do sprawdzenia</b>
@@ -22,21 +22,21 @@ $ramka()
 Budynek D-2
 Zgłoszenie szybkie
 Wysłane <i>[data]</i>
-$przycisk("Weź do sprawdzenia")
+$czynnosc_karty("Weź do sprawdzenia")
 }
 $ramka()
 <b>niesprawna winda</b>
 Budynek D-2
 Bariery już nie ma
 Wysłane <i>[data]</i>
-$przycisk("Weź do sprawdzenia")
+$czynnosc_karty("Weź do sprawdzenia")
 }
 $ramka()
 <b>Wejście bramą od ul. Norwida</b>
 Budynek A-1
 Zmiana oznaczenia wejścia
 Wysłane <i>[data]</i>
-$przycisk("Weź do sprawdzenia")
+$czynnosc_karty("Weź do sprawdzenia")
 }
 $ekran_koniec()
 @endsalt

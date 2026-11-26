@@ -3,7 +3,6 @@ Funkcja: Logowanie, role i zaproszenia
   Każda osoba korzysta tylko z czynności swojej roli. Role pracownicze nadaje Koordynator,
   więc o publikacji decydują osoby mu znane (N2, N8, N9).
 
-  # test aplikacji: #708
   @US14.1 @aplikacja @serwer
   Szablon scenariusza: Bez wymaganej roli czynność jest niedostępna w aplikacji i na serwerze
     Zakładając, że osoba jest zalogowana tylko z rolą <rola>
@@ -43,7 +42,6 @@ Funkcja: Logowanie, role i zaproszenia
     Wtedy próba jest odrzucona
     Oraz zgłoszenie ma nadal uciążliwość nadaną przez autora
 
-  # test aplikacji: #708
   @US14.3 @BR-1 @BR-2 @aplikacja @serwer @usluga-logowania
   Scenariusz: Samodzielna rejestracja daje tylko uprawnienia Odwiedzającego
     Zakładając, że osoba bez konta korzysta z aplikacji jako Gość niezalogowany
@@ -52,8 +50,7 @@ Funkcja: Logowanie, role i zaproszenia
     Oraz może złożyć zgłoszenie szybkie
     Ale nie widzi pomiaru precyzyjnego, kolejki weryfikacji ani postępu inwentaryzacji
 
-  # kroki serwera: #1990
-  @US12.1 @BR-2 @aplikacja @serwer @do-zrobienia
+  @US12.1 @BR-2 @aplikacja @serwer @usluga-logowania
   Szablon scenariusza: Osoba z zaproszenia loguje się z wybraną rolą
     Zakładając, że Koordynator wysłał zaproszenie na adres <adres> z rolą „<rola>”
     Jeżeli osoba z tym adresem zaloguje się pierwszy raz
@@ -66,8 +63,7 @@ Funkcja: Logowanie, role i zaproszenia
       | weryfikator@example.org    | Weryfikator | kolejka weryfikacji    |
       | koordynator@example.org    | Koordynator | postęp inwentaryzacji  |
 
-  # kroki serwera: #1990
-  @US12.2 @BR-1 @BR-2 @aplikacja @serwer @do-zrobienia
+  @US12.2 @BR-1 @BR-2 @aplikacja @serwer @usluga-logowania
   Scenariusz: Zaproszenie na adres istniejącego konta dodaje rolę
     Zakładając, że konto z adresem anna.nowak@example.org ma role Odwiedzający i Zbierający
     Jeżeli Koordynator zaprosi ten adres z rolą „Weryfikator”
@@ -75,8 +71,7 @@ Funkcja: Logowanie, role i zaproszenia
     Wtedy w profilu widzi role Odwiedzający, Zbierający i Weryfikator
     Oraz może otworzyć pomiar precyzyjny i kolejkę weryfikacji
 
-  # kroki serwera: #1990
-  @BR-2 @serwer @do-zrobienia
+  @BR-2 @serwer @usluga-logowania
   Scenariusz: Rolę pracowniczą nadaje tylko Koordynator
     Zakładając, że Weryfikator jest zalogowany z rolą Weryfikatora
     Jeżeli spróbuje zaprosić adres nowy@example.org z rolą „Zbierający” z pominięciem aplikacji
@@ -91,6 +86,7 @@ Funkcja: Logowanie, role i zaproszenia
     Wtedy próba jest odrzucona
     Oraz zgłoszenie ma nadal status „wysłane”
 
+  # test aplikacji: #3773
   @US14.4 @aplikacja
   Scenariusz: Zalogowany Odwiedzający nie jest proszony o logowanie ponownie
     Zakładając, że Odwiedzający zalogował się przy pierwszym zgłoszeniu szybkim

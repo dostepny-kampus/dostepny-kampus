@@ -24,32 +24,41 @@ sealed interface MapFocus {
      * Budynek o symbolu [symbol], np. `C-13`. [command] to tożsamość polecenia „Pokaż budynek na mapie”, po którym
      * kamera staje na budynku; każde dotknięcie przycisku dostaje inną. Bez niego (`null`) budynek jest tylko
      * zaznaczony, a widok zostaje, np. po „Wstecz” z V2. [floor] to piętro planu do pokazania po „Pokaż na planie”;
-     * `null` zostawia piętro wybrane przez plan.
+     * budynek z piętrem nie jest zaznaczony. `null` zostawia piętro wybrane przez plan i zaznaczenie. [room] to
+     * identyfikator sali z danych planu, wyróżnionej na planie po wyborze wyniku sali; `null` bez wyróżnienia.
      *
-     * Wymagania: US2.9, US16.1
+     * Wymagania: US2.9, US16.1, US18.1
      */
     @Serializable
-    data class Building(val symbol: String, val command: Long? = null, val floor: String? = null) : MapFocus
+    data class Building(
+        val symbol: String,
+        val command: Long? = null,
+        val floor: String? = null,
+        val room: String? = null,
+    ) : MapFocus
 
     /**
      * Wejście o identyfikatorze [id] z danych wejść, pokazane z ekranu budynku [buildingSymbol]; TalkBack
-     * czyta ten budynek także dla wejścia wspólnego kilku budynków.
+     * czyta ten budynek także dla wejścia wspólnego kilku budynków. [isFullSheet]: ekran budynku był od razu na
+     * cały ekran, więc arkusz tego wejścia też otwiera się na cały ekran.
      *
-     * Wymagania: BR-25
+     * Wymagania: BR-25, NFR-19
      */
     @Serializable
-    data class Entrance(val id: String, val buildingSymbol: String) : MapFocus
+    data class Entrance(val id: String, val buildingSymbol: String, val isFullSheet: Boolean = false) : MapFocus
 }
 
 /**
  * V2 Karta budynku o symbolu [symbol]. [isDirect]: karta otwarta od razu na pełnym ekranie, bez
- * małej karty, bo budynek wybrano z listy przy TalkBack.
+ * małej karty, bo budynek wybrano z listy przy TalkBack. [isExpanded] i [scroll] to wysokość rozwinięta
+ * i przewinięcie treści w px, od których karta startuje.
  *
- * Wymagania: US2, US3.2, NFR-19
+ * Wymagania: US2, US3.2, NFR-19, US2.8
  */
 @Serializable
-data class BuildingRoute(val symbol: String, val isDirect: Boolean = false) : NavKey
-
-/** V3 Którędy wejść do budynku o symbolu [symbol]. Wymagania: US3 */
-@Serializable
-data class EntrancesRoute(val symbol: String) : NavKey
+data class BuildingRoute(
+    val symbol: String,
+    val isDirect: Boolean = false,
+    val isExpanded: Boolean = false,
+    val scroll: Int = 0,
+) : NavKey

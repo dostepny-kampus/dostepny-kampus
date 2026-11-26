@@ -32,6 +32,7 @@ import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.feature.map.PHOTO_URL
+import io.github.dostepnykampus.feature.map.overlay.SheetExits
 import io.github.dostepnykampus.feature.map.photoAvailable
 import io.github.dostepnykampus.feature.map.usePhotoLoader
 import org.junit.Assert.assertEquals
@@ -54,10 +55,11 @@ class BarrierSheetTest {
     private val clicks = mutableListOf<String>()
 
     /**
-     * Wiersz: arkusz bariery, typ, uciążliwość, miejsce, data sprawdzenia, zdjęcie z opisem i przyciski (PW-5).
+     * Wiersz: arkusz bariery, typ, uciążliwość, miejsce, data sprawdzenia, zdjęcie z opisem, „Zamknij” i wiersz
+     *   budynku zamiast „Pokaż opis budynku” (PW-5).
      * Scenariusz: przegladanie-mapy.feature: Dotknięcie znaku bariery pokazuje jej opis z miejscem
      *
-     * Wymagania: US1.5, NFR-18
+     * Wymagania: US1.5, US2.8, NFR-18
      */
     @Test
     fun showsBarrierInBuilding() {
@@ -71,28 +73,29 @@ class BarrierSheetTest {
         compose.waitUntil(WAIT_MS) { photoShown() }
         compose.onNodeWithContentDescription("Zdjęcie bariery: Schody przy wejściu").assertExists()
         compose.onNodeWithText("Zamknij").assertHeightIsAtLeast(48.dp).performClick()
-        compose.onNodeWithText("Pokaż opis budynku").performClick()
+        compose.onNodeWithContentDescription("Budynek A-1").assertHeightIsAtLeast(48.dp).performClick()
+        compose.onNodeWithText("Pokaż opis budynku").assertDoesNotExist()
         assertEquals(listOf("zamknij", "A-1"), clicks)
     }
 
-    /** Wiersz: bariera poza budynkiem ma „Poza budynkiem” i nie ma „Pokaż opis budynku”. Wymagania: US1.5, BR-G2 */
+    /** Wiersz: bariera poza budynkiem ma „Poza budynkiem” i nie ma wiersza budynku. Wymagania: US1.5, BR-G2 */
     @Test
     fun showsBarrierOutside() {
         val barrier = barrier(type = null, symbol = null, floor = null).copy(verifiedAt = null)
         compose.setContent { Sheet(ChosenBarrier(barrier = barrier, building = null, entrance = null)) }
 
         listOf("Bariera", "Poza budynkiem").forEach { compose.onNodeWithText(it).assertExists() }
-        compose.onNodeWithText("Pokaż opis budynku").assertDoesNotExist()
+        compose.onNodeWithContentDescription("Budynek", substring = true).assertDoesNotExist()
         compose.onNodeWithText("Sprawdzone", substring = true).assertDoesNotExist()
     }
 
-    /** Wiersz: przy czcionce 200% arkusz się przewija, a przycisk budynku jest osiągalny. Wymagania: NFR-20 */
+    /** Wiersz: przy czcionce 200% arkusz się przewija, a wiersz budynku stoi pod nagłówkiem. Wymagania: NFR-20 */
     @Test
     @Config(fontScale = 2f)
     fun matchesLargeFontMockup() {
         compose.setContent { Sheet(inBuilding()) }
 
-        compose.onNodeWithText("Pokaż opis budynku").performScrollTo().assertExists()
+        compose.onNodeWithContentDescription("Budynek A-1").performScrollTo().assertExists()
         compose.onRoot().captureRoboImage()
     }
 
@@ -117,8 +120,7 @@ class BarrierSheetTest {
             Box(Modifier.fillMaxSize().background(MapGround)) {
                 BarrierSheet(
                     chosen = chosen,
-                    onClose = { clicks += "zamknij" },
-                    onBuildingClick = { clicks += it.symbol },
+                    exits = SheetExits(onClose = { clicks += "zamknij" }, onBuilding = { clicks += it }),
                     modifier = Modifier.align(Alignment.BottomCenter),
                 )
             }

@@ -3,8 +3,6 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app
 
 import android.content.Context
@@ -14,16 +12,11 @@ import android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED
 import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.exclude
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -51,13 +43,10 @@ import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.swipeUp
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
@@ -66,40 +55,35 @@ import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
 import com.github.takahirom.roborazzi.captureRoboImage
+import io.github.dostepnykampus.app.navigation.Account
 import io.github.dostepnykampus.app.navigation.AppNavigator
 import io.github.dostepnykampus.app.navigation.AppScreen
 import io.github.dostepnykampus.app.navigation.BuildingCard
 import io.github.dostepnykampus.app.navigation.MapScreen
-import io.github.dostepnykampus.app.navigation.sheetCard
-import io.github.dostepnykampus.core.data.account.GuestRoleProvider
+import io.github.dostepnykampus.app.navigation.SignInRoute
+import io.github.dostepnykampus.app.navigation.isExpanded
 import io.github.dostepnykampus.core.data.account.RoleProvider
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
 import io.github.dostepnykampus.core.data.building.BUILDINGS_ASSET
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.network.ConnectivityNetworkStatus
 import io.github.dostepnykampus.core.data.network.NetworkStatus
-import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
+import io.github.dostepnykampus.feature.auth.SignInViewModel
 import io.github.dostepnykampus.feature.map.CampusMapViewModel
 import io.github.dostepnykampus.feature.map.MapLibreMapView
 import io.github.dostepnykampus.feature.map.building.BuildingCardViewModel
-import io.github.dostepnykampus.feature.map.building.CardMode
-import io.github.dostepnykampus.feature.map.building.EntrancesScreen
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.campus.campusMapData
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
-import io.github.dostepnykampus.feature.map.navigation.EntrancesRoute
-import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -117,12 +101,15 @@ import kotlin.coroutines.EmptyCoroutineContext
 /** Pozycja „Mapa” paska dolnego; V1 ma też „Mapa” w przełączniku „Mapa” i „Lista budynków”. Wymagania: NFR-19 */
 internal val MapTab = hasText("Mapa") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
 
-/** Opis uchwytu arkusza V2 dla TalkBack, ten sam na małej karcie i na pełnym ekranie. Wymagania: US2.8, NFR-18 */
-internal const val EXPAND_HANDLE = "Rozwiń opis budynku"
+/** Opis uchwytu arkusza V2 dla TalkBack, ten sam na każdej wysokości. Wymagania: US2.8, NFR-18 */
+internal const val EXPAND_HANDLE = "Wysokość karty"
 
-/** Uchwyt arkusza V2: przycisk [EXPAND_HANDLE] ze stanem „rozwinięte” albo „zwinięte”. Wymagania: US2.8, NFR-18 */
+/**
+ * Uchwyt arkusza V2: przycisk [EXPAND_HANDLE] ze stanem „niska” albo, gdy [isExpanded], „rozwinięta”.
+ * Wymagania: US2.8, NFR-18
+ */
 internal fun sheetHandle(isExpanded: Boolean): SemanticsMatcher =
-    hasContentDescription(EXPAND_HANDLE) and hasStateDescription(if (isExpanded) "rozwinięte" else "zwinięte")
+    hasContentDescription(EXPAND_HANDLE) and hasStateDescription(if (isExpanded) "rozwinięta" else "niska")
 
 /** Karta V2 na katalogu z zasobów, bez grafu Hilt (aktywność testu go nie ma). */
 internal fun Context.buildingCardViewModel(symbol: String): BuildingCardViewModel =
@@ -133,19 +120,6 @@ internal fun Context.buildingCardViewModel(symbol: String): BuildingCardViewMode
         },
         ConnectivityNetworkStatus(getSystemService(ConnectivityManager::class.java)),
     )
-
-/** V3 jak w aplikacji, ze stanem [buildingCardViewModel] zamiast ViewModel z grafu Hilt. */
-@Composable
-internal fun AppNavigator.TestEntrances(symbol: String) {
-    val context = LocalContext.current
-    val card = remember(symbol) { context.buildingCardViewModel(symbol) }
-    EntrancesScreen(
-        symbol = symbol,
-        onShowEntrance = { showOnMap(MapFocus.Entrance(id = it, buildingSymbol = symbol)) },
-        onBack = { back() },
-        viewModel = card,
-    )
-}
 
 /** V2 jak w aplikacji, ze stanem [buildingCardViewModel] zamiast ViewModel z grafu Hilt. */
 @Composable
@@ -204,17 +178,18 @@ internal fun AppNavigator.TestAppScreen(
         )
     } else if (route is BuildingRoute) {
         TestBuildingCard(route.symbol)
-    } else if (route is EntrancesRoute) {
-        TestEntrances(route.symbol)
+    } else if (route is SignInRoute) {
+        TestSignIn(route)
     } else {
         AppScreen(route)
     }
 }
 
-/** ViewModel z licznikiem dotknięć: pokazuje, czy ekran dostał ten sam ViewModel, czy nowy. */
-private class TapsModel : ViewModel() {
-    /** Liczba dotknięć. */
-    var taps by mutableIntStateOf(0)
+/** L1 jak w aplikacji, ale ze stanem spoza grafu Hilt: sieć jest, a logowanie kończy się błędem. */
+@Composable
+internal fun AppNavigator.TestSignIn(route: SignInRoute) {
+    val model = remember { SignInViewModel(network = { flowOf(true) }, signIn = { false }) }
+    Account(route = route, signIn = model)
 }
 
 /**
@@ -253,7 +228,7 @@ class AppShellTest {
         mapViewModel = compose.activity.appMapViewModel()
     }
 
-    private fun show(firstLaunch: Boolean = false, roles: RoleProvider = GuestRoleProvider) {
+    private fun show(firstLaunch: Boolean = false, roles: RoleProvider = TestRoles()) {
         compose.setContent { Shell(firstLaunch = firstLaunch, roles = roles) }
     }
 
@@ -268,7 +243,7 @@ class AppShellTest {
 
     @Composable
     private fun CardShell(other: @Composable AppNavigator.(NavKey) -> Unit = {}) {
-        AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+        AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
             if (route is MapRoute) {
                 Text(route.focus?.toString() ?: "V1", Modifier.clickable { openBuilding(symbol = "A-1") })
             } else if (route is BuildingRoute) {
@@ -408,7 +383,7 @@ class AppShellTest {
     }
 
     /**
-     * Wiersz: V2, „Wstecz” → V1 w poprzednim stanie; ponowne „Mapa” → świeże V1.
+     * Wiersz: V2, „Wstecz” → V1 w poprzednim stanie; ponowne „Mapa” przy karcie niczego nie zamyka.
      * V1 żyje pod arkuszem V2, więc zostaje nawet stan z remember.
      *
      * Wymagania: US1.1
@@ -416,7 +391,7 @@ class AppShellTest {
     @Test
     fun keepsMapStateOnCardBack() {
         compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
                     Column {
                         var taps by remember { mutableIntStateOf(0) }
@@ -433,98 +408,14 @@ class AppShellTest {
         compose.waitUntil { compose.onAllNodesWithText("v=1").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("A-1").performClick()
         compose.onNode(MapTab).performClick()
-        compose.onNodeWithText("v=0").assertExists()
-    }
-
-    /**
-     * Wiersz: V3, „Wstecz” → V2 → V1 w poprzednim stanie: ViewModel V1 żyje tyle, co wpis V1
-     * w historii, także gdy V1 nie jest rysowane pod V3; ponowne „Mapa” → nowy ViewModel.
-     *
-     * Wymagania: US1.1
-     */
-    @Test
-    fun keepsMapModelOnEntranceBack() {
-        compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
-                if (route is MapRoute) {
-                    val model = viewModel { TapsModel() }
-                    Column {
-                        Text(text = "vm=${model.taps}", modifier = Modifier.clickable { model.taps++ })
-                        Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
-                    }
-                } else if (route is BuildingRoute) {
-                    TestBuildingCard(route.symbol)
-                } else if (route is EntrancesRoute) {
-                    TestEntrances(route.symbol)
-                } else {
-                    AppScreen(route)
-                }
-            }
-        }
-        compose.onNodeWithText("vm=0").performClick()
-        compose.onNodeWithText("A-1").performClick()
-        compose.onNodeWithText("vm=1").assertIsDisplayed()
-        compose.onNodeWithText("Sprawdź, którędy wejść").performClick()
-        compose.onAllNodesWithText("vm=1").assertCountEquals(0)
-        pressBack()
-        pressBack()
-        compose.onNodeWithText("vm=1").assertExists()
-        compose.onNode(MapTab).performClick()
-        compose.onNodeWithText("vm=0").assertExists()
-    }
-
-    /**
-     * Wiersz: V1, dotknięcie konturu → V2, mała karta o wysokości treści nad mapą, a V1 dostaje zasłoniętą część
-     * jako dopełnienie od dołu; uchwyt, przewinięcie treści albo przeciągnięcie w górę
-     * rozwija ją na całe okno z kartą w trybie pełnego ekranu.
-     *
-     * Wymagania: US2.8, NFR-53
-     */
-    @Test
-    fun expandsAfterCompact() {
-        var cover = 1.dp
-        compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
-                if (route is MapRoute) {
-                    cover = LocalSheetPadding.current.calculateBottomPadding()
-                    Box(modifier = Modifier.fillMaxSize().testTag("V1")) {
-                        Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
-                    }
-                } else {
-                    val mode = sheetCard().mode
-                    val height = if (mode == CardMode.Compact) 120.dp else 2000.dp
-                    val scroll = Modifier.verticalScroll(rememberScrollState())
-                    Column(modifier = scroll) { Text(text = "$mode", modifier = Modifier.requiredHeight(height)) }
-                }
-            }
-        }
-        assertEquals(0.dp, cover)
-        compose.onNodeWithText("A-1").performClick()
-        val handleTop = { label: String -> compose.onNodeWithContentDescription(label).getUnclippedBoundsInRoot().top }
-        val map = compose.onNodeWithTag("V1").getUnclippedBoundsInRoot().height
-        compose.onNodeWithText("Compact").assertExists("mała karta po dotknięciu konturu")
-        val compact = handleTop(EXPAND_HANDLE)
-        assertEquals("uchwyt i treść małej karty", (map - CeleDotyku.minimum - 120.dp).value, compact.value, 1f)
-        assertEquals("dopełnienie V1 pod małą kartą", (map - compact).value, cover.value, 1f)
-        val handle = { compose.onNodeWithContentDescription(EXPAND_HANDLE) }
-        listOf<Pair<String, () -> Unit>>(
-            "uchwyt" to { handle().performClick() },
-            "przewinięcie treści" to { compose.onNodeWithText("Compact").performTouchInput { swipeUp() } },
-            "przeciągnięcie w górę" to { handle().performTouchInput { swipeUp() } },
-        ).forEach { (way, expand) ->
-            expand()
-            assertEquals("góra pełnego ekranu: $way", 0f, handleTop(EXPAND_HANDLE).value, 1f)
-            compose.onNodeWithText("Expanded").assertExists("pełny ekran: $way")
-            assertEquals("dopełnienie V1 pod pełnym ekranem: $way", map.value, cover.value, 1f)
-            compose.onNode(sheetHandle(isExpanded = true)).performClick()
-        }
+        compose.onNodeWithText("v=1").assertExists()
     }
 
     /** Wiersz: V2 rozwinięte, „Wstecz” → V1, dotknięcie konturu → nowe V2 znów jako mała karta. Wymagania: US2.8 */
     @Test
     fun startsNewCardCompact() {
         compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
                     Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
                 }
@@ -538,22 +429,19 @@ class AppShellTest {
     }
 
     /**
-     * Wiersz: pełny ekran po małej karcie, „Wstecz” w górnym pasku karty → znowu mała karta; „Zamknij”
-     * małej karty → V1 bez zaznaczenia budynku. Nad małą kartą zostaje co najmniej 300 dp
-     * mapy, czyli miejsce na przyciski mapy.
-     * Scenariusz (częściowo): przegladanie-mapy.feature: Z małej karty osoba rozwija opis albo wraca do mapy
+     * Wiersz: karta rozwinięta z małej karty nie ma paska „Wstecz”; „Zamknij” w nagłówku → V1 bez zaznaczenia
+     * budynku. Nad małą kartą zostaje co najmniej 300 dp mapy, czyli miejsce na przyciski mapy.
      *
      * Wymagania: NFR-53, NFR-15, US2.8
      */
     @Test
-    fun closesCardAfterBack() {
+    fun closesExpandedCard() {
         compose.setContent { CardShell() }
         compose.onNodeWithText("V1").performClick()
         val compact = compose.onNodeWithContentDescription(EXPAND_HANDLE).getUnclippedBoundsInRoot().top
         assertTrue("nad małą kartą zostaje mapa z miejscem na przyciski mapy: uchwyt $compact", compact >= 300.dp)
         compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
-        compose.onNodeWithText("Wstecz").performClick()
-        compose.onNodeWithContentDescription(EXPAND_HANDLE).assertExists("mała karta po „Wstecz” w górnym pasku")
+        compose.onNodeWithText("Wstecz").assertDoesNotExist()
         compose.onNodeWithText("Zamknij").performClick()
         compose.onNodeWithText("V1").assertExists("V1 bez zaznaczenia budynku po „Zamknij”")
     }
@@ -567,7 +455,7 @@ class AppShellTest {
     @Test
     fun showsOtherCardOverMap() {
         compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) { route ->
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
                 if (route is MapRoute) {
                     Column {
                         Text(text = "A-1", modifier = Modifier.clickable { openBuilding(symbol = "A-1") })
@@ -587,7 +475,7 @@ class AppShellTest {
     @Test
     fun keepsHistoryAfterRestore() {
         val restoration = StateRestorationTester(compose)
-        restoration.setContent { Shell(firstLaunch = false, roles = GuestRoleProvider) }
+        restoration.setContent { Shell(firstLaunch = false, roles = TestRoles()) }
         compose.onNodeWithText("Pomoc").performClick()
         restoration.emulateSavedInstanceStateRestore()
         compose.onNodeWithText("Pomoc").assertIsSelected()
@@ -608,43 +496,11 @@ class AppShellTest {
         compose.onNode(MapTab).assertIsSelected()
     }
 
-    /**
-     * Wiersz: V2 → „Sprawdź, którędy wejść” → V3, „Wstecz” → V2 → V1 bez zaznaczenia budynku; historia
-     * z parametrami tras przetrwa odtworzenie aktywności.
-     *
-     * Wymagania: US3, US1.1, NFR-22
-     */
-    @Test
-    fun keepsParamsAfterRestore() {
-        val restoration = StateRestorationTester(compose)
-        restoration.setContent {
-            CardShell { route ->
-                if (route is EntrancesRoute) {
-                    TestEntrances(route.symbol)
-                } else {
-                    AppScreen(route)
-                }
-            }
-        }
-        compose.onNodeWithText("V1").performClick()
-        compose.onNodeWithText("Sprawdź, którędy wejść").performClick()
-        restoration.emulateSavedInstanceStateRestore()
-        compose.onNodeWithText("Którędy wejść do A-1").assertExists()
-        compose.waitUntil {
-            val nodes = compose.onAllNodesWithText("brak danych o 1 z 1 wejść", substring = true)
-            nodes.fetchSemanticsNodes().isNotEmpty()
-        }
-        pressBack()
-        compose.onNodeWithText("Sprawdź, którędy wejść").assertExists()
-        pressBack()
-        compose.onNodeWithText("V1").assertExists("V1 bez zaznaczenia budynku po zamknięciu małej karty")
-    }
-
     /** Wiersz: wymagania wspólne, pasek dolny na V1, bez niego na L1: treść nie wchodzi pod paski. Wymagania: NFR-52 */
     @Test
     fun insetsContentAfterBar() {
         compose.setContent {
-            AppShell(firstLaunch = false, roles = GuestRoleProvider, onFirstHelpLeft = {}) {
+            AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) {
                 var consumed by remember { mutableStateOf(WindowInsets(0)) }
                 val rest = WindowInsets.safeDrawing.exclude(consumed)
                 val text = "${rest.getTop(LocalDensity.current)}:${rest.getBottom(LocalDensity.current)}"

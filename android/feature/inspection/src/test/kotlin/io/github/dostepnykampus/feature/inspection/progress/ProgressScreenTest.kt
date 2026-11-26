@@ -9,7 +9,9 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -17,6 +19,7 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.inspection.BuildingProgress
 import io.github.dostepnykampus.core.model.inspection.InspectionCoverage
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,6 +37,21 @@ import java.time.Instant
 class ProgressScreenTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
+
+    /**
+     * Nazwa z katalogu stoi pod symbolem; budynek bez nazwy pokazuje sam symbol.
+     *
+     * Wymagania: US11.1
+     */
+    @Test
+    fun showsNameUnderSymbol() {
+        show(ready(DETAILED, BASIC_SEEN).copy(names = mapOf("A-1" to "Gmach A")))
+        val symbol = compose.onNodeWithText("A-1", useUnmergedTree = true).getUnclippedBoundsInRoot()
+        val name = compose.onNodeWithText("Gmach A", useUnmergedTree = true).getUnclippedBoundsInRoot()
+        assertTrue("nazwa pod symbolem", name.top >= symbol.bottom)
+        compose.onNodeWithText("A-6").assertIsDisplayed()
+        compose.onAllNodesWithText("Gmach", substring = true).assertCountEquals(1)
+    }
 
     /**
      * Przykład „4 z 5 pięter, 80%” z wymagań K1 z liczbami zgłoszeń i wejść.
@@ -61,6 +79,17 @@ class ProgressScreenTest {
         compose.onNodeWithText("Obejrzany").assertIsDisplayed()
         compose.onNodeWithText("Nieobejrzany").assertIsDisplayed()
         compose.onAllNodesWithText("Wejścia sprawdzone na miejscu", substring = true).assertCountEquals(0)
+    }
+
+    /**
+     * Budynek podstawowy obejrzany ma „Obejrzany” z ikoną, a nieobejrzany samo słowo.
+     *
+     * Wymagania: US11.1, NFR-21
+     */
+    @Test
+    fun marksSeenWithIcon() {
+        show(ready(BASIC_SEEN, BASIC_UNSEEN))
+        compose.onAllNodesWithTag(INSPECTED_ICON_TAG, useUnmergedTree = true).assertCountEquals(1)
     }
 
     /**

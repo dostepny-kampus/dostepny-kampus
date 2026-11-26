@@ -137,6 +137,16 @@ $tekst("[" + $opis + "]", "i")
 [$dk_przycisk($t, $ikona)]
 !endprocedure
 
+' Czynność karty pozycji listy: obrysowany przycisk szeroki jak napis, przy lewej
+' krawędzi ramki; ikona stoi po napisie, np. „Otwórz” ze strzałką w prawo (wymagania wspólne).
+!procedure $czynnosc_karty($t, $ikona="")
+!if $ikona != ""
+[$t <&$ikona>]
+!else
+[$t]
+!endif
+!endprocedure
+
 ' Dwa zwykłe przyciski obok siebie, każdy na pół szerokości (NFR-17).
 !procedure $przyciski_obok($t1, $t2)
 { [$dk_napis($t1, "", $DK_PRZYCISK_POL)] | [$dk_napis($t2, "", $DK_PRZYCISK_POL)] }
@@ -187,7 +197,7 @@ $tekst($dopisek)
 
 ' ---------- Pasek dolny ----------
 
-' Cztery pozycje: ikona nad napisem. Tylko na V1, V2, V3, V5 i L2.
+' Cztery pozycje: ikona nad napisem. Tylko na V1, V2, V5 i L2.
 ' Napis „Konto” jest dopełniony do długości „Konto i praca”, więc pasek ma
 ' tę samą szerokość dla wszystkich ról.
 !procedure $dk_pasek($konto, $dopelnienie)
@@ -393,8 +403,8 @@ $przycisk("Zrób nowe zdjęcie")
 ' ---------- Mapa ----------
 
 ' Napis o prawach autorskich OpenStreetMap jako odnośnik, zawsze w ramce mapy (NFR-37).
-!procedure $osm()
-<u>© OpenStreetMap contributors</u>
+!procedure $osm($podpis="© OpenStreetMap")
+<u>$podpis</u>
 !endprocedure
 
 ' Zastępnik mapy na pełną szerokość, z podpisem OpenStreetMap w ramce (NFR-37).
@@ -402,7 +412,7 @@ $przycisk("Zrób nowe zdjęcie")
 ' (NFR-21), np. $blokada() na V1; pusta, gdy mapa nie pokazuje barier.
 ' $kontrolki: "" (bez przycisków), "mapa" (same przyciski mapy)
 ' albo "info" (przyciski mapy i „ⓘ” przy podpisie OpenStreetMap, V1 i R1; C1: $punkt_na_srodku).
-!procedure $mapa($opis, $legenda="", $kontrolki="")
+!procedure $mapa($opis, $legenda="", $kontrolki="", $podpis="© OpenStreetMap")
 $ramka()
 .
 $tekst("[" + $opis + "]", "i")
@@ -416,9 +426,9 @@ $legenda
 $przyciski_mapy()
 !endif
 !if $kontrolki == "info"
-{ [<&info>] | <u>© OpenStreetMap contributors</u> }
+{ [<&info>] | <u>$podpis</u> }
 !else
-$osm()
+$osm($podpis)
 !endif
 }
 !endprocedure

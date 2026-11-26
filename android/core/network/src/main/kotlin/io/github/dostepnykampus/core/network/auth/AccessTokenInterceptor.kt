@@ -1,10 +1,12 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.network.auth
 
+import io.github.dostepnykampus.core.network.QueueOwner
+import io.github.dostepnykampus.core.network.QueueOwnerMismatch
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Interceptor
@@ -26,6 +28,8 @@ internal class AccessTokenInterceptor(serverUrl: String, private val tokens: Acc
         val request = chain.request()
         val isServer = request.url.isOnServer()
         val token = tokens.token?.takeIf { isServer && !request.url.isPublic() }
+        val owner = request.tag(QueueOwner::class.java)
+        if (owner != null && token?.let(::subjectOf) != owner.subject) throw QueueOwnerMismatch()
         val sent =
             if (token == null) {
                 request

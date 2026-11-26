@@ -13,11 +13,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.BuildingFloors
-import io.github.dostepnykampus.core.data.building.BuildingListStore
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.building.ServerEntrancesRepository
 import io.github.dostepnykampus.core.data.building.ServerFloorsRepository
 import io.github.dostepnykampus.core.data.building.assetRepository
+import io.github.dostepnykampus.core.data.cache.ServerCopyStore
 import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.map.MapListChoiceRepository
 import io.github.dostepnykampus.core.data.map.mapDataStore
@@ -39,6 +39,7 @@ import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionServer
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionSyncScheduler
+import io.github.dostepnykampus.core.network.auth.AccessTokens
 import io.github.dostepnykampus.core.network.building.BuildingsApi
 import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 import javax.inject.Singleton
@@ -57,22 +58,22 @@ public object DataModule {
     public fun buildingCatalog(
         app: Application,
         api: BuildingsApi,
-        buildingList: BuildingListStore,
+        copies: ServerCopyStore,
         @IoContext ioContext: CoroutineContext,
     ): BuildingCatalogRepository =
         assetRepository(
             assets = app.assets,
             ioContext = ioContext,
             listBuildings = { api.listBuildings().toReply { it } },
-            buildingCache = buildingList.cache,
+            serverCopy = copies.dao,
         )
 
-    /** Wejścia karty budynku z serwera z dniem i źródłem oznaczenia. Wymagania: US17.3 */
+    /** Wejścia z dniem i źródłem oznaczenia i wyjścia ewakuacyjne karty budynku z serwera. Wymagania: US17.3, US2.6 */
     @Provides
     @Singleton
     public fun cardEntrances(api: BuildingsApi): ServerEntrances =
         ServerEntrancesRepository { symbol ->
-            api.building(symbol).toReply { ServerCard(it.building, it.entrances) }
+            api.building(symbol).toReply { ServerCard(it.building, it.entrances, it.evacuationExits) }
         }
 
     /** Piętra budynku szczegółowego z serwera do formularza C2. Wymagania: US7.2 */
@@ -81,7 +82,7 @@ public object DataModule {
     public fun buildingFloors(api: BuildingsApi): BuildingFloors =
         ServerFloorsRepository { symbol -> api.floors(symbol).toReply { it } }
 
-    /** Wybór „Mapa” albo „Lista budynków” w pliku ustawień mapy. Wymagania: NFR-19 */
+    /** Widok V1, mapa albo lista, w pliku ustawień mapy. Wymagania: NFR-19 */
     @Provides
     @Singleton
     public fun mapListChoice(app: Application): MapListChoice = MapListChoiceRepository(mapDataStore(app))
@@ -109,6 +110,7 @@ public object DataModule {
         api: SubmissionsApi,
         store: SubmissionStore,
         sync: SubmissionSyncScheduler,
+        tokens: AccessTokens,
         @IoContext ioContext: CoroutineContext,
     ): SubmissionQueue =
         SubmissionQueue(
@@ -116,27 +118,31 @@ public object DataModule {
             ioContext = ioContext,
             server =
                 SubmissionServer(
-                    create = { id, content -> api.create(id, content).toReply { it } },
-                    putPhoto = { id, photo, jpeg ->
-                        api.putPhoto(submissionId = id, photoId = photo, jpeg = jpeg).toReply {}
+                    subject = tokens::subject,
+                    create = { owner, id, content -> api.create(id, content, owner).toReply { it } },
+                    putPhoto = { owner, id, photo, jpeg ->
+                        api.putPhoto(submissionId = id, photoId = photo, jpeg = jpeg, owner = owner).toReply {}
                     },
-                    update = { id, version, content ->
-                        api.update(id = id, version = version, content = content).toReply { it.toServerEdit() }
+                    update = { owner, id, version, content ->
+                        val result = api.update(id = id, version = version, content = content, owner = owner)
+                        result.toReply { it.toServerEdit() }
                     },
                 ),
             onSaved = sync::scheduleAfterSave,
         )
 
-    /** Własne zgłoszenia dla listy C3 z historii w telefonie. Wymagania: US8.1, NFR-5 */
+    /** Własne zgłoszenia dla listy C3 z historii zalogowanego konta. Wymagania: US8.1, NFR-5, NFR-33 */
     @Provides
-    public fun ownSubmissions(store: SubmissionStore): OwnSubmissions = ownSubmissionsOf(store.history, store.pending)
+    public fun ownSubmissions(store: SubmissionStore, tokens: AccessTokens): OwnSubmissions =
+        ownSubmissionsOf(store.history, store.pending, tokens.subjects)
 
     /** Zgłoszenia z kolejki telefonu do poprawki w C2. Wymagania: US8.3 */
     @Provides
-    public fun pendingEdits(store: SubmissionStore): PendingEdits = pendingEditsOf(store.edits)
+    public fun pendingEdits(store: SubmissionStore, tokens: AccessTokens): PendingEdits =
+        pendingEditsOf(store = store.edits, history = store.history, subject = tokens::subject)
 
-    /** Odświeżenie statusów listy C3 z serwera. Wymagania: US8.2 */
+    /** Odświeżenie statusów listy C3 z serwera dla zalogowanego konta. Wymagania: US8.2, NFR-33 */
     @Provides
-    public fun ownStatuses(api: SubmissionsApi, store: SubmissionStore): OwnStatuses =
-        ownStatusesOf(api::mine, store.history)
+    public fun ownStatuses(api: SubmissionsApi, store: SubmissionStore, tokens: AccessTokens): OwnStatuses =
+        ownStatusesOf(api::mine, store.history, tokens::subject)
 }

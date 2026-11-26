@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
                 val isFirst by firstLaunch.firstLaunchState.collectAsStateWithLifecycle()
                 val queue = graph.submissionQueue()
                 val isLoginExpired by queue.loginExpired.collectAsStateWithLifecycle()
-                LoginExpiredGate(isExpired = isLoginExpired, roles = graph.roles(), onLoggedIn = queue::onLoggedIn) {
+                LoginExpiredGate(isExpired = isLoginExpired) {
                     isFirst?.let { first ->
                         AppShell(
                             firstLaunch = first,
@@ -74,7 +74,7 @@ class MainActivity : ComponentActivity() {
 }
 
 internal suspend fun MainActivity.deleteOrphanPhotos(queue: SubmissionQueue, kept: Set<String>) {
-    queue.deleteOrphanPhotos(dir = photoDir(filesDir), kept = kept)
+    queue.deleteOrphanPhotos(dir = { photoDir(filesDir) }, kept = kept)
 }
 
 /**
@@ -87,7 +87,7 @@ interface MainActivityEntryPoint {
     /** Konto i role osoby. Wymagania: US14.1 */
     fun roles(): RoleProvider
 
-    /** Wybór „Mapa” albo „Lista budynków” w V1. Wymagania: NFR-19 */
+    /** Widok V1, mapa albo lista. Wymagania: NFR-19 */
     fun mapListChoice(): MapListChoice
 
     /** Kolejka zgłoszeń: prośba o logowanie po 401 i wznowienie po zalogowaniu. Wymagania: BR-26 */

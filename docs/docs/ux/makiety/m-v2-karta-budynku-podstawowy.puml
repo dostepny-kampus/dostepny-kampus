@@ -3,12 +3,14 @@
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
-$naglowek("<i>[symbol]</i>", "<i>[nazwa budynku z danych]</i>")
-$karta_gora(0, "Brak danych o wejściach")
-Z map i opisów, stan z <i>[data]</i>
+$naglowek_karty("<i>[symbol]</i>", "<i>[nazwa budynku z danych]</i>")
+$karta_gora(0, "bez_danych")
 $sekcja("Wejścia")
-$wejscie_karty($niedostepne(), "<i>[nazwa wejścia z danych]</i>")
+$wejscia_poczatek()
+$wejscie_pierwsze($niedostepne(), "<i>[nazwa wejścia z danych]</i>")
 $wejscie_karty($brak_danych(), "<i>[nazwa wejścia z danych]</i>")
+$wejscia_koniec()
+Z map i opisów, stan z <i>[data]</i>
 ..
 $tekst("Nie mamy planu pięter tego budynku.")
 $sekcja("Bariery w budynku")

@@ -1,18 +1,21 @@
 @startsalt
-' V1 Mapa kampusu, arkusz windy po dotknięciu windy na planie (US16.1, US18.2).
+' V1 Mapa kampusu, arkusz windy po dotknięciu windy na planie (US16.1, US18.2). Wiersz budynku
+' pod nagłówkiem otwiera kartę V2, jak w arkuszu toalety; piętro stoi pod nim.
 !include _wspolne.iuml
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek_mapy("Pokaż listę")
-$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$pole_tekstowe("Szukaj budynku, np. C-13")
 $przycisk("Kampus główny ▾")
 $mapa("plan 2 piętra A-1 z wyróżnioną windą; kolumna pięter po lewej pod przyciskiem terenu, wybrane 2", "", "info")
-Źródło: Politechnika Wrocławska
 $ramka()
 { <b>Winda</b> | [Zamknij] }
+$wiersz_budynku()
+2 piętro
 Przy klatkach C i D
 Jedzie na: piwnica, parter, 1 piętro,
 2 piętro (tutaj jesteś), 3 piętro
+$przycisk("Zgłoś barierę przy windzie")
 }
 $pasek_dolny_konto()
 $ekran_koniec()

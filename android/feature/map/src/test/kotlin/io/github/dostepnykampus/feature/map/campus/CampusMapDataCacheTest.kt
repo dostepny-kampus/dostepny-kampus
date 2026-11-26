@@ -35,10 +35,22 @@ class CampusMapDataCacheTest {
         assertEquals(2 to listOf("C-13"), computed to other.labels, "drugie liczenie dla nowego budynku")
     }
 
-    private fun catalog(symbol: String, attribution: String): BuildingCatalog =
+    /**
+     * Te same budynki z serwera, który zna już plany pięter, liczą się od nowa, bo poziom budynku jest w danych
+     * konturów. Wymagania: US16.1, NFR-11
+     */
+    @Test
+    fun computesAgainForOtherLevels() {
+        cache.dataFor(catalog(symbol = "A-1", attribution = "plik"))
+        cache.dataFor(catalog(symbol = "A-1", attribution = "serwer", detailed = setOf("A-1")))
+        assertEquals(2, computed, "drugie liczenie po zmianie budynków z planem pięter")
+    }
+
+    private fun catalog(symbol: String, attribution: String, detailed: Set<String> = emptySet()): BuildingCatalog =
         BuildingCatalog(
             buildings = listOf(unitSquareBuilding(symbol)),
             entrances = emptyList(),
             attribution = attribution,
+            detailed = detailed,
         )
 }

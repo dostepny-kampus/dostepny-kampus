@@ -4,7 +4,7 @@
 !include _odwiedzajacy.iuml
 $ekran_poczatek()
 $naglowek_mapy("Pokaż listę")
-$pole_tekstowe("Wpisz symbol budynku, np. C-13")
+$pole_tekstowe("Szukaj budynku, np. C-13")
 $przycisk("Wittigowo ▾")
 $mapa("mapa terenu Wittigowo z zaznaczonym budynkiem T-15; nad podpisem mapy napis: Pokazuję teren: Wittigowo · 2 km na południowy wschód", "", "info")
 $pasek_dolny_konto()

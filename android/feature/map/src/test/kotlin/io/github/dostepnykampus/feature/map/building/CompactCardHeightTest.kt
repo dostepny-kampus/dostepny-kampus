@@ -54,11 +54,10 @@ class CompactCardHeightTest {
                         mode = CardMode.Compact,
                         card = card.value,
                         isOnline = true,
-                        onCheckEntrances = {},
                         onShowOnMap = {},
                         onBack = {},
                         onClose = {},
-                        onReportEntrance = {},
+                        onReport = {},
                         onRetry = {},
                     )
                 }

@@ -12,17 +12,27 @@ split
   -> budynek na mapie albo\nwynik wyszukiwania budynku;
   :V2 Karta budynku;
   split
-    -> „Sprawdź,\nktórędy wejść”;
-    :V3 Którędy wejść;
-    -> „Pokaż wejście\nna mapie”;
-    :V1 Mapa kampusu\nz zaznaczonym wejściem;
-    detach
+    -> „Pokaż wejście\nna mapie” albo\nwiersz wejścia;
+    :V1 Arkusz wejścia\nz zaznaczonym wejściem; <<stan>>
+    split
+      -> „Wstecz” albo\n„Budynek A-1”;
+      :V2 Karta budynku\nna tej samej wysokości;
+      detach
+    split again
+      -> „Zamknij”;
+      :V1 Mapa kampusu;
+      detach
+    split again
+      -> „Zgłoś barierę\nprzy wejściu”;
+      :V4 Zgłoszenie szybkie\n(następny rysunek);
+      detach
+    end split
   split again
     -> „Pokaż\nna planie”;
     :V1 Plan piętra\nna mapie; <<stan>>
     detach
   split again
-    -> „Zgłoś barierę\nprzy wejściu”;
+    -> „Zgłoś barierę przy wejściu”\nw wierszu wejść bez danych;
     :V4 Zgłoszenie szybkie\n(następny rysunek);
     detach
   split again
@@ -31,14 +41,32 @@ split
     detach
   end split
 split again
+  -> dotknięcie znaku wejścia,\ntoalety, schodów albo bariery;
+  :V1 Arkusz znaku; <<stan>>
+  split
+    -> „Budynek A-1”;
+    :V2 Karta budynku\nna niskiej wysokości;
+    detach
+  split again
+    -> „Zgłoś barierę\nprzy wejściu”\nw arkuszu wejścia;
+    :V4 Zgłoszenie szybkie\n(następny rysunek);
+    detach
+  end split
+split again
   -> przybliżenie budynku\nszczegółowego;
   :V1 Plan piętra\nna mapie; <<stan>>
   split
     -> dotknięcie\nwindy;
     :V1 Arkusz windy; <<stan>>
-    -> „Zamknij”;
-    :V1 Plan piętra\nna mapie; <<stan>>
-    detach
+    split
+      -> „Zamknij”;
+      :V1 Plan piętra\nna mapie; <<stan>>
+      detach
+    split again
+      -> „Budynek A-1”;
+      :V2 Karta budynku\nna niskiej wysokości;
+      detach
+    end split
   split again
     -> oddalenie;
     :V1 Mapa kampusu;
@@ -47,8 +75,8 @@ split again
 split again
   -> wynik „A-1 329”;
   :V1 Plan piętra\nze znalezioną salą; <<stan>>
-  -> „Pokaż opis\nbudynku”;
-  :V2 Karta budynku;
+  -> „Budynek A-1”;
+  :V2 Karta budynku\nna niskiej wysokości;
   detach
 end split
 @enduml

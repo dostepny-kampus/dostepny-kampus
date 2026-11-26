@@ -9,6 +9,7 @@ import io.github.dostepnykampus.barrier.photo.JpegCleaner;
 import io.github.dostepnykampus.barrier.photo.PhotoStorageException;
 import io.github.dostepnykampus.barrier.photo.PhotoStore;
 import io.github.dostepnykampus.barrier.photo.PhotoUpload;
+import io.github.dostepnykampus.barrier.review.ReviewRepository;
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.Reader;
 import io.github.dostepnykampus.barrier.submission.Submission;
@@ -55,33 +56,57 @@ public final class SubmissionPhotos {
     /** Blokada wiersza podczas kontroli statusu i zapisu zdjęcia. */
     private final SubmissionService service;
 
+    /** Weryfikator, który wziął zgłoszenie. */
+    private final ReviewRepository reviews;
+
     /**
      * Tworzy usługę zdjęć zgłoszeń.
      *
      * @param submissions Odczyt zgłoszeń
      * @param photos Magazyn zdjęć
      * @param service Blokada wiersza podczas kontroli statusu i zapisu zdjęcia
+     * @param reviews Weryfikator, który wziął zgłoszenie
      */
     public SubmissionPhotos(
-        final SubmissionFinder submissions, final PhotoStore photos, final SubmissionService service
+        final SubmissionFinder submissions, final PhotoStore photos,
+        final SubmissionService service, final ReviewRepository reviews
     ) {
         this.submissions = submissions;
         this.photos = photos;
         this.service = service;
+        this.reviews = reviews;
     }
 
     /**
-     * Odmawia kontu, które nie jest autorem zgłoszenia: zdjęcie dodaje tylko
-     * autor. Brak zgłoszenia zostawia dalszej obsłudze.
+     * Zapisuje zdjęcie od konta z tokenu. Weryfikator, który wziął zgłoszenie w weryfikacji,
+     * zastępuje zapisane zdjęcie, np. wersją z zasłoniętą twarzą, bez nowej wersji zgłoszenia.
+     * Inne konto niż autor dostaje odmowę, a autor zapisuje zdjęcie jak w {@link #put(UUID,
+     * UUID, PhotoUpload)}.
      *
-     * <p>Wymagania: BR-3</p>
+     * <p>Wymagania: NFR-25, BR-15, BR-3</p>
      *
-     * @param submission Identyfikator zgłoszenia
-     * @param account Identyfikator konta z tokenu
+     * @param write Zdjęcie zgłoszenia i konto, które je wysyła
+     * @param upload Ciało żądania z JPEG
+     * @throws IOException Gdy odczyt ciała się nie uda albo przekracza limit
+     *  rozmiaru (PhotoTooLargeException)
      */
-    public void author(final UUID submission, final String account) {
-        if (this.submissions.foreign(submission, account)) {
-            throw new ForbiddenChange("Zdjęcie dodaje tylko autor zgłoszenia");
+    public void put(final PhotoWrite write, final PhotoUpload upload) throws IOException {
+        final UUID submission = write.submission();
+        final UUID photo = write.photo();
+        if (this.reviewing(submission, write.account())) {
+            this.find(submission, photo);
+            this.write(
+                submission, photo, upload, () -> {
+                    if (!this.reviewing(submission, write.account())) {
+                        throw new ForbiddenChange(
+                            "Zdjęcie zastępuje tylko Weryfikator, który wziął zgłoszenie"
+                        );
+                    }
+                }
+            );
+        } else {
+            this.author(submission, write.account());
+            this.put(submission, photo, upload);
         }
     }
 
@@ -100,18 +125,7 @@ public final class SubmissionPhotos {
     public void put(final UUID submission, final UUID photo, final PhotoUpload upload)
         throws IOException {
         this.editable(submission, photo);
-        final UUID staged = UUID.randomUUID();
-        this.photos.stage(staged, SubmissionPhotos.clean(upload.read()));
-        try {
-            this.service.locked(
-                submission, () -> {
-                    this.replaceable(submission, photo);
-                    this.photos.promote(staged, submission, photo);
-                }
-            );
-        } finally {
-            this.discard(staged);
-        }
+        this.write(submission, photo, upload, () -> this.replaceable(submission, photo));
     }
 
     /**
@@ -151,6 +165,35 @@ public final class SubmissionPhotos {
             SubmissionPhotos.LOG.warn(
                 String.format("Nie usunięto starych zdjęć zgłoszenia %s", submission.id()), ex
             );
+        }
+    }
+
+    private void write(
+        final UUID submission, final UUID photo, final PhotoUpload upload, final Runnable check
+    ) throws IOException {
+        final UUID staged = UUID.randomUUID();
+        this.photos.stage(staged, SubmissionPhotos.clean(upload.read()));
+        try {
+            this.service.locked(
+                submission, () -> {
+                    check.run();
+                    this.photos.promote(staged, submission, photo);
+                }
+            );
+        } finally {
+            this.discard(staged);
+        }
+    }
+
+    private boolean reviewing(final UUID submission, final String account) {
+        return this.submissions.find(submission)
+            .filter(item -> item.status() == SubmissionStatus.IN_REVIEW).isPresent()
+            && this.reviews.claimedBy(submission, account);
+    }
+
+    private void author(final UUID submission, final String account) {
+        if (this.submissions.foreign(submission, account)) {
+            throw new ForbiddenChange("Zdjęcie dodaje tylko autor zgłoszenia");
         }
     }
 

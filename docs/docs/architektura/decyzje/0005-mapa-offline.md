@@ -27,7 +27,7 @@ Zbierający pracuje w miejscach bez sieci (N6), a Odwiedzający sprawdza budynek
 - Dobrze: mapa i podpowiedź budynku działają bez sieci (NFR-4, NFR-10).
 - Dobrze: zgodność z polityką kafelków OSM i licencją ODbL [3].
 - Gorzej: bez sieci nie ma ulic ani tła, tylko kontury i plany pięter.
-- Gorzej: kontury trzeba odświeżać skryptem, a atrybucja OSM jest stale widoczna na mapie (NFR-37).
+- Gorzej: kontury trzeba odświeżać skryptem, a mapa musi wyświetlać atrybucję OSM zgodnie z NFR-37.
 
 ## Źródła
 

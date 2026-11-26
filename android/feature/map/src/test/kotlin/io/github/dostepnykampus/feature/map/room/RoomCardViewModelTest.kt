@@ -1,0 +1,204 @@
+/*
+ * Dostępny Kampus
+ * Author: Vladyslav Yevkov
+ * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+ */
+package io.github.dostepnykampus.feature.map.room
+
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
+import io.github.dostepnykampus.core.data.building.CardEntrances
+import io.github.dostepnykampus.core.data.building.ServerEntrances
+import io.github.dostepnykampus.core.data.room.FloorPlans
+import io.github.dostepnykampus.core.model.GeoPolygon
+import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.FloorList
+import io.github.dostepnykampus.core.model.room.RoomList
+import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.ENTRANCE
+import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.FOUND
+import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.GROUND
+import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.SECOND
+import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.VIA_LIFT
+import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.lift
+import io.github.dostepnykampus.feature.map.room.RoomCardFixtures.point
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+
+/** Karta sali: droga z planów pięter i wejścia zalecanego, kroki pokazu i zamknięcie. Wymagania: US18.1, US18.2 */
+@OptIn(ExperimentalCoroutinesApi::class)
+class RoomCardViewModelTest {
+    @BeforeEach
+    fun setUp() {
+        Dispatchers.setMain(UnconfinedTestDispatcher())
+    }
+
+    @AfterEach
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
+    /** Wiersz: karta otwiera się bez kroku z drogą od wejścia zalecanego przez windę do sali. */
+    @Test
+    fun loadsWayFromPlansAndEntrance() {
+        val card = RoomCardViewModel(plans = Plans(), entrances = ENTRANCES, barriers = NO_BARRIERS)
+
+        card.show(FOUND)
+
+        assertEquals(RoomCard(found = FOUND, way = VIA_LIFT), card.shown.value, "Karta nie wczytała drogi")
+    }
+
+    /** Wiersz: „Pokaż po kolei”, „Dalej” i „Wstecz” przestawiają krok, a „Zamknij” zamyka kartę. */
+    @Test
+    fun walksStepsAndCloses() {
+        val card = RoomCardViewModel(plans = Plans(), entrances = ENTRANCES, barriers = NO_BARRIERS)
+        card.show(FOUND)
+
+        val steps =
+            buildList {
+                card.stepByStep(isOn = true)
+                add(card.shown.value?.step)
+                card.next()
+                card.next()
+                add(card.shown.value?.step)
+                card.previous()
+                add(card.shown.value?.step)
+                card.choose(0)
+                add(card.shown.value?.step)
+            }
+        card.close()
+
+        assertEquals(listOf(0, 2, 1, 0), steps, "Kroki pokazu przeszły źle")
+        assertEquals(null, card.shown.value, "„Zamknij” nie zamknął karty")
+    }
+
+    /** Wiersz: „Wszystkie kroki” wraca z trybu po kolei do listy z tym samym krokiem wybranym. */
+    @Test
+    fun returnsToAllSteps() {
+        val card = RoomCardViewModel(plans = Plans(), entrances = ENTRANCES, barriers = NO_BARRIERS)
+        card.show(FOUND)
+
+        card.stepByStep(isOn = true)
+        val isStarted = card.shown.value?.isStepByStep
+        card.next()
+        card.stepByStep(isOn = false)
+
+        assertEquals(true, isStarted, "„Pokaż po kolei” nie włączył trybu")
+        assertEquals(RoomCard(found = FOUND, way = VIA_LIFT, step = 1), card.shown.value, "Lista bez kroku 2")
+    }
+
+    /** Wiersz: wejścia pobrane wcześniej idą z pamięci, więc karta ma drogę bez pytania serwera. */
+    @Test
+    fun usesKnownEntrances() {
+        val server =
+            object : ServerEntrances {
+                override suspend fun entrances(symbol: String): List<Entrance> = error("Karta pytała serwer")
+
+                override fun knownCard(symbol: String): CardEntrances = CardEntrances(listOf(ENTRANCE))
+            }
+        val card = RoomCardViewModel(plans = Plans(), entrances = server, barriers = NO_BARRIERS)
+
+        card.show(FOUND)
+
+        assertEquals(RoomCard(found = FOUND, way = VIA_LIFT), card.shown.value, "Karta nie wzięła wejść z pamięci")
+    }
+
+    /** Wiersz: droga gotowa przed upływem [QUICK_WAY_MILLIS] otwiera kartę od razu z drogą, bez stanu wczytywania. */
+    @Test
+    fun opensWithWayWhenQuick() =
+        runTest {
+            val slow = CompletableDeferred<Unit>()
+            val card = RoomCardViewModel(plans = Plans(waitFor = slow), entrances = ENTRANCES, barriers = NO_BARRIERS)
+
+            card.show(FOUND)
+            val waiting = card.shown.value
+            slow.complete(Unit)
+
+            assertEquals(null, waiting, "Karta otworzyła się przed drogą")
+            assertEquals(RoomCard(found = FOUND, way = VIA_LIFT), card.shown.value, "Karta bez drogi")
+        }
+
+    /** Wiersz: wczytywanie dłuższe niż [QUICK_WAY_MILLIS] otwiera kartę bez drogi, a droga dochodzi później. */
+    @Test
+    fun opensWithoutWayWhenSlow() =
+        runTest {
+            val slow = CompletableDeferred<Unit>()
+            val card = RoomCardViewModel(plans = Plans(waitFor = slow), entrances = ENTRANCES, barriers = NO_BARRIERS)
+
+            card.show(FOUND)
+            advanceTimeBy(QUICK_WAY_MILLIS + 1)
+            val waiting = card.shown.value
+            slow.complete(Unit)
+
+            assertEquals(RoomCard(found = FOUND, way = null), waiting, "Karta czekała na drogę zbyt długo")
+            assertEquals(RoomCard(found = FOUND, way = VIA_LIFT), card.shown.value, "Droga nie doszła")
+        }
+
+    /** Nowa sala przerywa wczytywanie drogi poprzedniej, więc karta nie dostaje cudzej drogi. */
+    @Test
+    fun dropsWayOfPreviousRoom() {
+        val slow = CompletableDeferred<Unit>()
+        val card = RoomCardViewModel(plans = Plans(waitFor = slow), entrances = ENTRANCES, barriers = NO_BARRIERS)
+
+        card.show(FOUND)
+        val other = FOUND.copy(room = FOUND.room.copy(id = "301", number = "301"))
+        card.show(other)
+        slow.complete(Unit)
+
+        assertEquals(other, card.shown.value?.found, "Karta pokazała poprzednią salę")
+    }
+
+    /** Blokada przy jedynym dostępnym wejściu wyklucza zalecaną drogę. */
+    @Test
+    fun skipsBlockedEntrance() {
+        val blocked =
+            AcceptedBarriers {
+                listOf(
+                    AcceptedBarrier(
+                        id = "barrier",
+                        location = point(meters = 0.0),
+                        severity = Severity.BLOCKING,
+                        type = null,
+                        buildingSymbol = FOUND.building,
+                        verifiedAt = null,
+                        entranceId = "node/1",
+                    ),
+                )
+            }
+        val card = RoomCardViewModel(plans = Plans(), entrances = ENTRANCES, barriers = blocked)
+
+        card.show(FOUND)
+
+        assertEquals(RoomWay.NoEntrance, card.shown.value?.way, "Karta prowadzi przez zablokowane wejście")
+    }
+
+    private class Plans(private val waitFor: CompletableDeferred<Unit>? = null) : FloorPlans {
+        override suspend fun download(symbol: String): Boolean = false
+
+        override suspend fun floors(symbol: String): FloorList {
+            waitFor?.await()
+            return FloorList(source = "PWr", floors = listOf(GROUND, SECOND))
+        }
+
+        override suspend fun rooms(symbol: String, floor: String): RoomList =
+            RoomList(source = "PWr", floorOutline = NO_AREA, rooms = listOf(lift(floor)))
+    }
+
+    private companion object {
+        val NO_BARRIERS = AcceptedBarriers { emptyList() }
+
+        val NO_AREA = GeoPolygon(emptyList())
+
+        val ENTRANCES = ServerEntrances { listOf(ENTRANCE) }
+    }
+}

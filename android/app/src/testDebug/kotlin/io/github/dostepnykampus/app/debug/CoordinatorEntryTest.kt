@@ -3,26 +3,15 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-@file:OptIn(TymczasoweRole::class)
-
 package io.github.dostepnykampus.app.debug
 
 import androidx.activity.ComponentActivity
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.navigation3.runtime.NavKey
-import io.github.dostepnykampus.app.AppShell
-import io.github.dostepnykampus.app.navigation.AppNavigator
-import io.github.dostepnykampus.app.navigation.AppScreen
-import io.github.dostepnykampus.core.data.account.TymczasoweRole
-import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
-import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -76,18 +65,8 @@ class CoordinatorEntryTest {
     }
 
     private fun show(role: StaffRole) {
-        val roles = DebugRoles().apply { switchTo(Account.SignedIn(setOf(role))) }
-        compose.setContent {
-            DostepnyKampusTheme {
-                AppShell(firstLaunch = false, roles = roles, onFirstHelpLeft = {}) { route -> Screen(route) }
-            }
-        }
+        compose.showShell(Account.SignedIn(setOf(role)))
         compose.onNodeWithText("praca", substring = true).performClick()
-    }
-
-    @Composable
-    private fun AppNavigator.Screen(route: NavKey) {
-        if (route is MapRoute) Text("V1") else AppScreen(route)
     }
 
     private companion object {

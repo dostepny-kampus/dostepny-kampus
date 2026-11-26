@@ -19,7 +19,8 @@ opisy w kodzie), mówi [AGENTS.md](AGENTS.md).
    PR z `sprint/N` tego repozytorium do `main` nie musi zamykać pojedynczego issue.
    Kolejka uruchamia kontrole także na wyniku scalenia (zdarzenie `merge_group`, np. w [`android.yml`](.github/workflows/android.yml)
    i [`api.yml`](.github/workflows/api.yml)); squash i kolejka to ustawienia repozytorium, nie plik.
-   Android w grupie kolejki uruchamia tylko `testy` (kompilacja, lint, detekt, testy jednostkowe i architektury, Roborazzi);
+   Android w grupie kolejki uruchamia tylko `testy` w dwóch równoległych częściach: `testy` (testy jednostkowe
+   i architektury, Kover, Roborazzi) i `analiza-statyczna` (lint, detekt);
    `buildHealth` biegnie na PR i w kontroli sprintu (punkt 7), APK i emulatory tylko w kontroli sprintu albo po ręcznym
    uruchomieniu `android.yml` z commitem (`gh workflow run android.yml -f sha=<commit>`); push po scaleniu tylko przekłada cache.
    Serwer w grupie kolejki uruchamia `mvn verify` bez testów mutacyjnych PIT; PIT biegnie na PR i w kontroli sprintu.
@@ -47,10 +48,10 @@ opisy w kodzie), mówi [AGENTS.md](AGENTS.md).
 Aktualizacje zależności otwiera Dependabot do gałęzi sprintu ([`dependabot.yml`](.github/dependabot.yml)); PR Dependabota
 jest zwolniony z kontroli „PR od issue”.
 Przepływ strażnika jakości ([`straznik-jakosci.yml`](.github/workflows/straznik-jakosci.yml)) uruchamia się zdarzeniem
-`pull_request_target`, więc GitHub bierze go z gałęzi domyślnej (`main`), a skrypt
-[`straznik-jakosci.sh`](.github/scripts/straznik-jakosci.sh) z bazy PR (`sprint/N`). Dzięki temu PR nie podmieni ani
-jednego, ani drugiego. Zmiana przepływu scalona do `sprint/N` działa dla kolejnych PR dopiero po przeniesieniu pliku do
-`main`, a skrypt ze sprintu musi działać z przepływem z `main`; strażnik ostrzega o tym przy zmianie przepływu (#1173).
+`pull_request`, a skrypt [`straznik-jakosci.sh`](.github/scripts/straznik-jakosci.sh) bierze z bazy PR (`sprint/N`),
+więc PR nie podmieni skryptu. Przepływ pochodzi z PR: jego zmiana jest zmianą reguł jakości i wymaga etykiety
+zatwierdzenia (#2757). PR Dependabota dostają bazę na bieżący sprint i kamień milowy co godzinę
+([`dependabot-sprint.yml`](.github/workflows/dependabot-sprint.yml)).
 Strażnik jakości przepuszcza zmianę wersji istniejących pakietów npm przez Dependabota w `.github/commitlint/` i `api/`,
 gdy manifest i odpowiadający mu plik lock są aktualizowane razem.
 
@@ -67,7 +68,7 @@ zajmuje jedną maszynę. Każdy krok biegnie także po porażce wcześniejszego:
 | Nazwa gałęzi PR ma format `N-krotki-opis`: numer zamykanego issue, łącznik i opis z małych liter ASCII, cyfr i łączników. | [`pr-od-issue.sh`](.github/scripts/pr-od-issue.sh) |
 | PR ma etykietę obszaru, a jeśli zamykane issue ma etykiety obszaru, PR ma co najmniej jedną z nich. | [`pr-od-issue.sh`](.github/scripts/pr-od-issue.sh), obszary z [`labeler.yml`](.github/labeler.yml) |
 | PR do `sprint/N` zamyka tylko issue z kamieniem milowym `Sprint N`. | [`pr-od-issue.sh`](.github/scripts/pr-od-issue.sh) |
-| Zamykane issue (poza epikiem) ma dokładnie jedną etykietę `złożoność: 1 …` – `złożoność: 4 …`; issue „do podziału” trzeba najpierw rozbić. Kontrola nie rusza sama po zmianie etykiety issue: po ocenie edytuj PR albo ponów przebieg. | [`pr-od-issue.sh`](.github/scripts/pr-od-issue.sh), skala w sekcji „Ocena złożoności” |
+| Zamykane issue (poza epikiem) ma dokładnie jedną etykietę `złożoność: 1 …` – `złożoność: 4 …`; issue „do podziału” trzeba najpierw rozbić. Nadanie etykiety przez `zlozonosc.yml` ponawia nieudaną kontrolę otwartych PR zamykających to issue (od scalenia sprintu do `main`). | [`pr-od-issue.sh`](.github/scripts/pr-od-issue.sh), [`ponow-pr-od-issue.sh`](.github/scripts/ponow-pr-od-issue.sh), skala w sekcji „Ocena złożoności” |
 | Jeden PR to jedna logiczna zmiana, najwyżej 400 dodanych linii (usunięte linie się nie liczą; bez danych, plików lock i kodu generowanego). | [`rozmiar-pr.sh`](.github/scripts/rozmiar-pr.sh), krok `rozmiar` zadania `pr-guard` w [`pr-guard.yml`](.github/workflows/pr-guard.yml) |
 | Tytuł PR i każdy commit mają postać Conventional Commits po polsku: `typ(zakres): opis`, typ jeden z `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, `test`; opis małą literą, nagłówek do 100 znaków. | [`commitlint.config.mjs`](commitlint.config.mjs), krok `commity` zadania `pr-guard` w [`pr-guard.yml`](.github/workflows/pr-guard.yml) |
 | Commit scalający sprint do gałęzi robocznej ma domyślny komunikat („Merge remote-tracking branch …”) — commitlint go pomija; własny komunikat z typem spoza listy jest odrzucany. | [`commitlint.config.mjs`](commitlint.config.mjs) |
