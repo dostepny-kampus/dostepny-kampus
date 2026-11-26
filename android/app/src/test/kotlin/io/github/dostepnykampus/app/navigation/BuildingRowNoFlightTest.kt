@@ -367,16 +367,12 @@ class BuildingRowNoFlightTest {
 
 @Composable
 private fun AppNavigator.OtherScreen(route: NavKey, repo: BuildingCatalogRepository) {
-    when (route) {
-        is BuildingRoute -> {
-            val card = remember(route.symbol) { BuildingCardViewModel(route.symbol, repo, { flowOf(true) }) }
-            val state by card.uiState.collectAsStateWithLifecycle()
-            val isOnline by card.online.collectAsStateWithLifecycle()
-            BuildingCard(symbol = route.symbol, state = state, isOnline = isOnline, onRetry = card::retry)
-        }
-
-        else -> {
-            AppScreen(route)
-        }
+    if (route is BuildingRoute) {
+        val card = remember(route.symbol) { BuildingCardViewModel(route.symbol, repo, { flowOf(true) }) }
+        val state by card.uiState.collectAsStateWithLifecycle()
+        val isOnline by card.online.collectAsStateWithLifecycle()
+        BuildingCard(symbol = route.symbol, state = state, isOnline = isOnline, onRetry = card::retry)
+    } else {
+        AppScreen(route)
     }
 }
