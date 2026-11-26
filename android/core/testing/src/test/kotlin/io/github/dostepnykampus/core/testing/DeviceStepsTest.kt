@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,13 +60,13 @@ class DeviceStepsTest {
     @Composable
     private fun Campus() {
         var isHelp by remember { mutableStateOf(true) }
-        var query by remember { mutableStateOf("") }
+        val query = rememberTextFieldState()
         var isCard by remember { mutableStateOf(false) }
         BackHandler(enabled = isHelp) { isHelp = false }
         Column {
             if (isHelp) BasicText("Pomoc")
-            BasicTextField(value = query, onValueChange = { query = it })
-            if (query == "A-1") {
+            BasicTextField(state = query)
+            if (query.text.toString() == "A-1") {
                 BasicText(
                     text = "A-1",
                     modifier =

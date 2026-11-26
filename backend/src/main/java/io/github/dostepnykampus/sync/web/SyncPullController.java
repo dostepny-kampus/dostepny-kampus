@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Pobranie zmian do telefonu: znaczniki pięter zmienione od kursora, także cofnięte.
+ * Pobranie zmian do telefonu: zgłoszenia i znaczniki pięter zmienione od kursora.
  *
- * <p>Wymagania: US15.1, US15.2, US11.3, BR-20</p>
+ * <p>Wymagania: US15.1, US15.2, US11.3, US8.1, US1.3, US10.6, BR-20</p>
  *
  * @since 0.1.0
  */
@@ -37,8 +37,10 @@ public final class SyncPullController {
 
     /**
      * Zmiany od kursora {@code since} włącznie; brak kursora daje wszystko. Kursor odpowiedzi to
-     * chwila najpóźniejszej zwróconej zmiany, a bez zmian kursor z żądania. Znaczniki dostaje
-     * tylko rola Zbierającego, inne role pustą listę. Kursor, który nie jest chwilą ISO 8601,
+     * chwila pobrania cofnięta o margines {@code dk.sync.cursor-margin}, nie wcześniejsza niż
+     * kursor z żądania, więc zmiany z marginesu przychodzą ponownie. Zgłoszenia: własne
+     * w każdym statusie oraz cudze przyjęte i archiwalne. Znaczniki dostaje tylko rola
+     * Zbierającego, inne role pustą listę. Kursor, który nie jest chwilą ISO 8601,
      * daje 400.
      *
      * @param since Kursor z poprzedniego pobrania
@@ -56,7 +58,7 @@ public final class SyncPullController {
             request.isUserInRole("COLLECTOR")
         );
         return new SyncPullResponse(
-            changes.cursor().toString(), List.of(), List.of(),
+            changes.cursor().toString(), changes.submissions(), List.of(),
             changes.markers().stream().map(SyncMarkerResponse::from).toList()
         );
     }

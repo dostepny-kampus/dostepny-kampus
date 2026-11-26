@@ -6,8 +6,10 @@
 package io.github.dostepnykampus.core.network
 
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
+import io.github.dostepnykampus.core.model.submission.SubmissionAuthor
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
@@ -19,6 +21,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.Instant
@@ -26,7 +29,7 @@ import java.time.Instant
 /**
  * JSON zgłoszeń według kontraktu: `NewSubmission`, `SubmissionUpdate` i `Submission`, bez sieci.
  *
- * Wymagania: BR-9, BR-10, US7, US8.1
+ * Wymagania: BR-9, BR-10, BR-5, US7, US8.1
  */
 class SubmissionJsonTest {
     private val json = Json { ignoreUnknownKeys = true }
@@ -94,6 +97,15 @@ class SubmissionJsonTest {
         assertEquals(SubmissionStatus.SENT, submission.status, "status zgłoszenia z serwera")
         assertEquals(Instant.parse("2026-11-03T18:00:00Z"), submission.createdAt, "data utworzenia z serwera")
         assertEquals(quick.copy(buildingSymbol = "A-1"), submission.content, "treść zgłoszenia z serwera")
+    }
+
+    @Test
+    fun readsAuthorForVerifier() {
+        val author = """"author":{"pseudonym":"Autor 14","roles":["VISITOR","COLLECTOR"]},"photoIds""""
+        val withAuthor = decode(SERVER.replace(oldValue = "\"photoIds\"", newValue = author))
+        val expected = SubmissionAuthor(pseudonym = "Autor 14", staffRoles = setOf(StaffRole.COLLECTOR))
+        assertEquals(expected, withAuthor.author, "pseudonim i role pracownicze autora")
+        assertNull(decode(SERVER).author, "zgłoszenie bez pola author")
     }
 
     @Test

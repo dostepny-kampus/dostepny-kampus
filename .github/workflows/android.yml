@@ -24,6 +24,7 @@ on:
       - ".github/scripts/obrazy-robolectric.sh"
       - ".github/scripts/wyniki-androida.sh"
       - ".github/scripts/uruchom-serwer-systemowy.sh"
+      - ".github/scripts/dane-pokazu-a1.sql"
       - ".github/scripts/zmiany-obszaru.sh"
   merge_group:
     types:
@@ -83,7 +84,7 @@ jobs:
           .github/scripts/zmiany-obszaru.sh android android data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml
           .github/workflows/android.yml .github/actions/android-gradle .github/scripts/cache-budowania-sprintu.sh
           .github/scripts/cache-z-kolejki.sh .github/scripts/czysc-cache.sh .github/scripts/przytnij-cache-budowania.sh
-          .github/scripts/wyniki-androida.sh .github/scripts/uruchom-serwer-systemowy.sh
+          .github/scripts/wyniki-androida.sh .github/scripts/uruchom-serwer-systemowy.sh .github/scripts/dane-pokazu-a1.sql
           .github/scripts/zmiany-obszaru.sh .github/scripts/pobierz-artefakty.sh .github/scripts/obrazy-robolectric.sh
 
   emulator:

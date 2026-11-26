@@ -28,13 +28,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
-import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
-import io.github.dostepnykampus.core.designsystem.marking.SeverityBadge
+import io.github.dostepnykampus.core.designsystem.card.InfoPanel
+import io.github.dostepnykampus.core.designsystem.card.ListItemCard
+import io.github.dostepnykampus.core.designsystem.marking.SeverityLabel
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.submission.BarrierType
@@ -57,7 +58,7 @@ import io.github.dostepnykampus.feature.capture.R
 fun VersionConflictContent(state: ConflictUiState, actions: ConflictActions, modifier: Modifier = Modifier) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            BackHeader(title = stringResource(R.string.konflikt_naglowek), onBack = actions.onBack)
+            BackHeader(title = stringResource(R.string.synchronizacja_naglowek), onBack = actions.onBack)
             if (state is ConflictUiState.Ready) {
                 Column(
                     modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
@@ -76,21 +77,15 @@ fun VersionConflictContent(state: ConflictUiState, actions: ConflictActions, mod
 
 @Composable
 private fun Effect(isAccepted: Boolean) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-    ) {
-        Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-            Text(
-                text = stringResource(R.string.konflikt_tytul),
-                fontWeight = Typografia.wyroznienieWaga,
-                style = MaterialTheme.typography.titleLarge,
-            )
-            Text(text = stringResource(R.string.konflikt_skutek), style = MaterialTheme.typography.bodyLarge)
-            if (isAccepted) {
-                Text(text = stringResource(R.string.konflikt_przyjete), style = MaterialTheme.typography.bodyLarge)
-            }
+    InfoPanel {
+        Text(
+            text = stringResource(R.string.konflikt_tytul),
+            fontWeight = Typografia.wyroznienieWaga,
+            style = MaterialTheme.typography.titleLarge,
+        )
+        Text(text = stringResource(R.string.konflikt_skutek), style = MaterialTheme.typography.bodyLarge)
+        if (isAccepted) {
+            Text(text = stringResource(R.string.konflikt_przyjete), style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
@@ -117,29 +112,22 @@ private fun Version(
     state: ConflictUiState.Ready,
 ) {
     val differs = state.conflict.differences
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-    ) {
-        Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-            Text(
-                text = stringResource(title),
-                modifier = Modifier.semantics { heading() },
-                fontWeight = Typografia.wyroznienieWaga,
-                style = MaterialTheme.typography.titleLarge,
-            )
-            content.barrierType?.let(BarrierType::fromCode)?.let { type ->
-                Fact(text = stringResource(type.nameRes()), isBold = SubmissionField.BARRIER_TYPE in differs)
-            }
-            val place =
-                barrierPlace(symbol = content.buildingSymbol, name = null, entrance = null, floor = content.floor)
-            Fact(text = place, isBold = SubmissionField.BUILDING in differs || SubmissionField.FLOOR in differs)
-            content.description?.let { Fact(text = it, isBold = SubmissionField.DESCRIPTION in differs) }
-            content.severity?.let(Severity::fromValue)?.let { severity ->
-                Fact(text = stringResource(R.string.konflikt_uciazliwosc), isBold = SubmissionField.SEVERITY in differs)
-                SeverityBadge(severity = severity, mapColors = DostepnyKampusTheme.mapColors)
-            }
+    ListItemCard {
+        Text(
+            text = stringResource(title),
+            modifier = Modifier.semantics { heading() },
+            fontWeight = Typografia.wyroznienieWaga,
+            style = MaterialTheme.typography.titleLarge,
+        )
+        content.barrierType?.let(BarrierType::fromCode)?.let { type ->
+            Fact(text = stringResource(type.nameRes()), isBold = SubmissionField.BARRIER_TYPE in differs)
+        }
+        val place = barrierPlace(symbol = content.buildingSymbol, name = null, entrance = null, floor = content.floor)
+        Fact(text = place, isBold = SubmissionField.BUILDING in differs || SubmissionField.FLOOR in differs)
+        content.description?.let { Fact(text = it, isBold = SubmissionField.DESCRIPTION in differs) }
+        content.severity?.let(Severity::fromValue)?.let { severity ->
+            Fact(text = stringResource(R.string.konflikt_uciazliwosc), isBold = SubmissionField.SEVERITY in differs)
+            SeverityLabel(severity = severity)
         }
     }
 }

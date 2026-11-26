@@ -54,8 +54,51 @@ internal fun serverVersionCopy(dao: ServerCopyDao, id: String, ioContext: Corout
         ioContext = ioContext,
     )
 
+/**
+ * Treść własnego zgłoszenia z ostatniego zapisu i ścieżki jego zdjęć, trzymane w historii do poprawki bez sieci.
+ *
+ * Wymagania: US8.3, NFR-5
+ *
+ * @property content pełna treść
+ * @property photoPaths ścieżki plików zdjęć w kolejności [SubmissionContent.photoIds]
+ */
+internal data class OwnCopy(val content: SubmissionContent, val photoPaths: List<String>)
+
+/**
+ * Dokument [OwnCopy] zgłoszenia [id] do kolumny historii, w tym samym formacie co kopia wersji z serwera. Nie niesie
+ * wersji z serwera: tę trzyma kolumna `server_version`.
+ */
+internal fun ownCopyJson(id: String, copy: OwnCopy): String {
+    val draft =
+        Submission(
+            id = id,
+            version = 1,
+            status = SubmissionStatus.SENT,
+            createdAt = Instant.EPOCH,
+            content = copy.content,
+        )
+    return encodeCache(StoredOwn.serializer(), StoredOwn(submission = cached(draft), photoPaths = copy.photoPaths))
+}
+
+/** [OwnCopy] z kolumny historii; brak albo zepsuty dokument to `null`. */
+internal fun ownCopyOf(json: String?): OwnCopy? {
+    val stored = json?.let { runCatching { decodeCache(StoredOwn.serializer(), it) }.getOrNull() }
+    return stored?.let { OwnCopy(content = it.submission.toContent(), photoPaths = it.photoPaths) }
+}
+
+/** Ścieżki zdjęć z dokumentów historii [contents]; zepsute dokumenty pomija. */
+internal fun ownPhotoPaths(contents: List<String>): List<String> =
+    contents.flatMap { ownCopyOf(it)?.photoPaths.orEmpty() }
+
 /** Klucz kopii wersji z serwera zgłoszenia [id] w tabeli kopii. */
 internal fun serverVersionKey(id: String): String = "submission_server_version:$id"
+
+/**
+ * Treść i zdjęcia własnego zgłoszenia. Wersja i status w [submission] tylko wypełniają format kopii i nikt ich nie
+ * czyta: wersja bazowa poprawki pochodzi z kolumny `server_version` historii.
+ */
+@Serializable
+private data class StoredOwn(val submission: CachedVersion, val photoPaths: List<String>)
 
 @Serializable
 private data class CachedVersion(

@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -70,10 +71,12 @@ fun MySubmissionsContent(
     modifier: Modifier = Modifier,
     onRetry: () -> Unit = {},
 ) {
-    Column(modifier = modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
-        BackHeader(title = stringResource(R.string.moje_naglowek), onBack = actions.onBack)
-        if (state is MySubmissionsUiState.Ready) {
-            SubmissionList(state = state, actions = actions, onRetry = onRetry)
+    Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
+        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
+            BackHeader(title = stringResource(R.string.moje_naglowek), onBack = actions.onBack)
+            if (state is MySubmissionsUiState.Ready) {
+                SubmissionList(state = state, actions = actions, onRetry = onRetry)
+            }
         }
     }
 }
@@ -143,16 +146,20 @@ private fun StatusCheckLine(check: StatusCheck, isOnline: Boolean, onRetry: () -
 
 /**
  * „Otwórz” albo „Wyślij ponownie” pozycji [item]: zmiana oznaczenia wejścia otwiera C6 (po „nieaktualne” jako nową
- * zmianę tego wejścia), reszta poprawkę w C2; `null`, gdy pozycji nie da się otworzyć.
+ * zmianę tego wejścia), nieaktualna zmiana bariery C2 jako nową zmianę bieżącego przyjętego zgłoszenia, reszta
+ * poprawkę w C2; `null`, gdy pozycji nie da się otworzyć albo czeka na wybór wersji, bo poprawka nie rozstrzyga
+ * konfliktu.
  *
- * Wymagania: US8.3, US17.2, BR-23
+ * Wymagania: US8.3, US17.2, BR-18, BR-23, BR-10
  */
 internal fun openAction(item: OwnSubmissionItem, actions: MySubmissionsActions): (() -> Unit)? {
     val marking = item.markingRoute()
+    val isBarrier = item.kind != SubmissionKind.ENTRANCE_MARKING
     return when {
-        !item.canOpenHere() -> null
+        !item.canOpenHere() || item.hasVersionConflict -> null
         item.isBarrierRemoved -> actions.onOpenRemoval?.boundTo(item.id)
-        item.kind != SubmissionKind.ENTRANCE_MARKING -> actions.onOpen?.boundTo(item.id)
+        isBarrier && item.isOutdated -> actions.onResendChange?.boundTo(item.id)
+        isBarrier -> actions.onOpen?.boundTo(item.id)
         marking == null -> null
         else -> actions.onOpenMarking?.boundTo(marking)
     }

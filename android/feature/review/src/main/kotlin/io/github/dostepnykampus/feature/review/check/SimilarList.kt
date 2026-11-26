@@ -18,13 +18,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.StatusLine
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.card.ListItemCard
-import io.github.dostepnykampus.core.designsystem.icon
 import io.github.dostepnykampus.core.designsystem.marking.BarrierPhoto
 import io.github.dostepnykampus.core.designsystem.marking.floorText
-import io.github.dostepnykampus.core.designsystem.nameRes
+import io.github.dostepnykampus.core.designsystem.submission.StatusLine
+import io.github.dostepnykampus.core.designsystem.submission.icon
+import io.github.dostepnykampus.core.designsystem.submission.nameRes
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.feature.review.R

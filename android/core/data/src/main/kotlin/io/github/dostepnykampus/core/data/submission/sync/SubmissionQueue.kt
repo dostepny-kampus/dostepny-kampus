@@ -10,6 +10,7 @@ import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.submission.own.isOwnHistory
 import io.github.dostepnykampus.core.data.submission.own.keepingServerState
 import io.github.dostepnykampus.core.data.submission.own.toOwnSubmissionEntity
+import io.github.dostepnykampus.core.database.cache.ServerCopyDao
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import io.github.dostepnykampus.core.database.submission.PendingPhotoEntity
@@ -122,6 +123,7 @@ public class SubmissionQueue internal constructor(
 ) {
     private val sending = Mutex()
     private val history = records.history
+    private val conflicts = records.conflicts
     private val results = SentResults(store = store, records = records, ioContext = ioContext)
     private val lastSavedAt = AtomicLong(Long.MIN_VALUE)
     private val logins = AtomicLong()
@@ -202,22 +204,25 @@ public class SubmissionQueue internal constructor(
         val entity = content.toPendingSubmissionEntity(id = id, savedAtMillis = savedAt).copy(ownerSub = owner)
         store.together {
             store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = id) })
-            remember(entity)
+            remember(entity, OwnCopy(content = content, photoPaths = photos.map { it.path }))
         }
         runCatching(onSaved)
         return SavedSubmission(id = id)
     }
 
     /**
-     * Sprzątanie przy starcie: usuwa z [dir] pliki zdjęć, których nie ma w kolejce ani w [kept].
+     * Sprzątanie przy starcie: usuwa z [dir] pliki zdjęć, których nie ma w kolejce, w [kept] ani w historii
+     * zgłoszeń przed decyzją.
      *
-     * Wymagania: NFR-5
+     * Wymagania: NFR-5, US8.3
      *
      * @param dir katalog zdjęć zgłoszeń; odczytany poza wątkiem głównym
      * @param kept pliki zdjęć odtworzonych szkiców
      */
     public suspend fun deleteOrphanPhotos(dir: () -> File, kept: Set<String>) {
-        deleteOrphanPhotos(store = store, dir = dir, kept = kept, nowMillis = stamps.nowMillis(), ioContext = ioContext)
+        val undecided = history?.undecidedContents().orEmpty()
+        val all = kept + ownPhotoPaths(undecided)
+        deleteOrphanPhotos(store = store, dir = dir, kept = all, nowMillis = stamps.nowMillis(), ioContext = ioContext)
     }
 
     /**
@@ -228,8 +233,8 @@ public class SubmissionQueue internal constructor(
      * @param edited poprawiane zgłoszenie
      * @param content nowa treść zgłoszenia
      * @param photos zdjęcia do wysłania; identyfikatory wracają w [content]
-     * @throws SaveRefusedException zdjęcia nie odpowiadają treści albo serwer ma już zgłoszenie, a telefon nie zna
-     *   jego wersji
+     * @throws SaveRefusedException zdjęcia nie odpowiadają treści, serwer ma już zgłoszenie, a telefon nie zna
+     *   jego wersji, albo zgłoszenie czeka na wybór wersji
      */
     public suspend fun saveEdit(edited: EditedSubmission, content: SubmissionContent, photos: List<PendingPhotoDraft>) {
         requireMatchingPhotos(content, photos)
@@ -241,10 +246,11 @@ public class SubmissionQueue internal constructor(
                 var paths = emptyList<String>()
                 store.together {
                     if (store.belongsToAnotherAccount(edited.id, owner)) throw queueOwnerChanged()
+                    conflicts?.let { copies -> requireNoVersionChoice(id = edited.id, conflicts = copies) }
                     val version = baseVersionOf(edited = edited, store = store, history = history)
                     val entity = fresh.copy(baseVersion = version, ownerSub = owner)
                     paths = store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) })
-                    remember(entity)
+                    remember(entity, OwnCopy(content = content, photoPaths = photos.map { it.path }))
                 }
                 paths
             }
@@ -293,9 +299,11 @@ public class SubmissionQueue internal constructor(
         runCatching(onSaved)
     }
 
-    private suspend fun remember(entity: PendingSubmissionEntity) {
+    private suspend fun remember(entity: PendingSubmissionEntity, copy: OwnCopy) {
         val own = history ?: return
-        if (entity.isOwnHistory()) own.save(entity.toOwnSubmissionEntity().keepingServerState(own.find(entity.id)))
+        if (!entity.isOwnHistory()) return
+        val row = entity.toOwnSubmissionEntity().copy(contentJson = ownCopyJson(entity.id, copy))
+        own.save(row.keepingServerState(own.find(entity.id)))
     }
 
     private suspend fun sendUntilStop(owner: String): Outcome? {
@@ -395,6 +403,16 @@ internal suspend fun baseVersionOf(
         )
     }
     return version
+}
+
+/**
+ * Odrzuca poprawkę zgłoszenia [id], które czeka na wybór wersji: kopia wersji z serwera w [conflicts] powstaje razem
+ * z odmową 409 i znika dopiero po wyborze w C4, a inne odmowy jej nie mają.
+ *
+ * Wymagania: US9.3, BR-10
+ */
+internal suspend fun requireNoVersionChoice(id: String, conflicts: ServerCopyDao) {
+    if (conflicts.get(serverVersionKey(id)) != null) throw versionChoicePending(id)
 }
 
 internal fun requireMatchingPhotos(content: SubmissionContent, photos: List<PendingPhotoDraft>) {

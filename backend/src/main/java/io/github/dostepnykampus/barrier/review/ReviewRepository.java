@@ -7,7 +7,9 @@ package io.github.dostepnykampus.barrier.review;
 
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.Submission;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -72,4 +74,14 @@ public interface ReviewRepository {
      * @return Zgłoszenia w kolejce posortowane po chwili utworzenia, potem po identyfikatorze
      */
     List<Submission> reviewQueue(String reviewer);
+
+    /**
+     * Odczytuje autorów zgłoszeń.
+     *
+     * <p>Wymagania: BR-5</p>
+     *
+     * @param ids Identyfikatory zgłoszeń
+     * @return Autor według identyfikatora zgłoszenia; bez zgłoszeń, których autora serwer nie zna
+     */
+    Map<UUID, SubmissionAuthor> authors(Collection<UUID> ids);
 }

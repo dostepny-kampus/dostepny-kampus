@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submission.sync
@@ -65,7 +65,12 @@ internal class SentResults(
             }
         }
 
-    /** Serwer ma całe zgłoszenie [item]: wiersz i pliki zdjęć znikają z telefonu. Wymagania: NFR-5 */
+    /**
+     * Serwer ma całe zgłoszenie [item]: wiersz kolejki znika. Pliki zdjęć zgłoszenia z historii zostają na poprawkę
+     * z C3 (usuwa je sprzątanie przy starcie po przyjęciu albo archiwizacji), pozostałe znikają od razu.
+     *
+     * Wymagania: NFR-5, US8.3
+     */
     suspend fun finish(item: PendingSubmissionWithPhotos): Outcome {
         val outcome =
             ifCurrent(item) {
@@ -73,7 +78,8 @@ internal class SentResults(
                 history?.markSent(id = item.submission.id)
                 Outcome.SENT
             }
-        if (outcome == Outcome.SENT) deletePhotoFiles(item.photos.map { it.path }, ioContext)
+        val isKept = history?.find(item.submission.id) != null
+        if (outcome == Outcome.SENT && !isKept) deletePhotoFiles(item.photos.map { it.path }, ioContext)
         return outcome
     }
 

@@ -33,4 +33,17 @@
     <string name="sprawdzenie_podobne">Podobne zgłoszenia do 10 m</string>
     <string name="sprawdzenie_brak_podobnych">W promieniu 10 m nie ma podobnych zgłoszeń.</string>
     <string name="sprawdzenie_odleglosc">%1$d m</string>
+    <string name="zaslona_zdjecie">Zdjęcie do zasłonięcia</string>
+    <string name="zaslona_zaznaczona">Zaznaczona</string>
+    <string name="zaslona_czytnik">Zasłona %1$d z %2$d, %3$s</string>
+    <string name="zaslona_czytnik_zaznaczona">Zasłona %1$d z %2$d, %3$s, zaznaczona</string>
+    <string name="zaslona_u_gory_po_lewej">u góry po lewej</string>
+    <string name="zaslona_u_gory">u góry pośrodku</string>
+    <string name="zaslona_u_gory_po_prawej">u góry po prawej</string>
+    <string name="zaslona_po_lewej">pośrodku po lewej</string>
+    <string name="zaslona_posrodku">pośrodku</string>
+    <string name="zaslona_po_prawej">pośrodku po prawej</string>
+    <string name="zaslona_na_dole_po_lewej">na dole po lewej</string>
+    <string name="zaslona_na_dole">na dole pośrodku</string>
+    <string name="zaslona_na_dole_po_prawej">na dole po prawej</string>
 </resources>

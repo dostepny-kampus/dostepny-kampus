@@ -101,9 +101,17 @@ fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifi
                     }
                     FieldError(MISSING_FLOOR, isShown = MISSING_FLOOR in state.errors)
                 }
-                BarrierTypeField(type = state.form.barrierType, onPick = { actions.onEdit(ReportEdit.Type(it)) })
+                BarrierTypeField(
+                    type = state.form.barrierType,
+                    onPick = { actions.onEdit(ReportEdit.Type(it)) },
+                    isError = MISSING_BARRIER_TYPE in state.errors,
+                )
                 FieldError(MISSING_BARRIER_TYPE, isShown = MISSING_BARRIER_TYPE in state.errors)
-                SeverityChoice(severity = state.form.severity, onPick = { actions.onEdit(ReportEdit.Rating(it)) })
+                SeverityChoice(
+                    severity = state.form.severity,
+                    onPick = { actions.onEdit(ReportEdit.Rating(it)) },
+                    isError = MISSING_SEVERITY in state.errors,
+                )
                 FieldError(MISSING_SEVERITY, isShown = MISSING_SEVERITY in state.errors)
                 PhotoSection(photos = PhotoPaths(state.photos.map { it.path }), camera = actions.camera)
                 FieldError(MISSING_PHOTO, isShown = MISSING_PHOTO in state.errors)

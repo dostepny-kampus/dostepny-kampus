@@ -46,7 +46,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Po dotknięciu znaku bariery: na mapie wybrany znak Blokada, pod mapą arkusz z napisem Blokada, przyciskiem Zamknij, wierszem Budynek A-1, tytułem Schody przy wejściu, miejscem A-1 Gmach Główny · Wejście Cesarskie, parter, datą Sprawdzone 14.10.2026 i rysunkiem schodów](obrazy/m-v1-mapa-bariera-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-bariera-jasny.webp) | [![Ten sam arkusz bariery w motywie ciemnym: rysunek schodów w ciemnych tonach](obrazy/m-v1-mapa-bariera-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-bariera-ciemny.webp) | [![Ten sam arkusz bariery przy czcionce 200%: nagłówek z polem zostaje, wiersz Budynek A-1 bez ikony budynku, tekst bariery w kilku wierszach, rysunek niżej w przewijanym arkuszu](obrazy/m-v1-mapa-bariera-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-bariera-jasny-200.webp) |
+| [![Po dotknięciu znaku bariery: na mapie wybrany znak Blokada, pod mapą arkusz z czerwonym znakiem Blokada i pogrubionym słowem Blokada obok, bez ramki, przyciskiem Zamknij, wierszem Budynek A-1, tytułem Schody przy wejściu, miejscem A-1 Gmach Główny · Wejście Cesarskie, parter, datą Sprawdzone 14.10.2026 i rysunkiem schodów](obrazy/m-v1-mapa-bariera-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-bariera-jasny.webp) | [![Ten sam arkusz bariery w motywie ciemnym: rysunek schodów w ciemnych tonach](obrazy/m-v1-mapa-bariera-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-bariera-ciemny.webp) | [![Ten sam arkusz bariery przy czcionce 200%: nagłówek z polem zostaje, wiersz Budynek A-1 bez ikony budynku, tekst bariery w kilku wierszach, rysunek niżej w przewijanym arkuszu](obrazy/m-v1-mapa-bariera-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-bariera-jasny-200.webp) |
 
 ### V1: arkusz wejścia po dotknięciu znaku {#v1-arkusz-wejscia}
 
@@ -310,7 +310,7 @@ Zestaw [makiet low-fi L1](../makiety/odwiedzajacy.md#l1-stan-zwyky).
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Konto bez internetu: pasek „Bez internetu · dane z 27.10.2026”, komunikat „Logowanie wymaga internetu.”, dopisek, że mapa i opisy budynków działają bez niego, i przycisk Wróć do mapy](obrazy/m-l1-konto-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l1-konto-brak-sieci-jasny.webp) | [![Ten sam komunikat w motywie ciemnym](obrazy/m-l1-konto-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l1-konto-brak-sieci-ciemny.webp) | [![Ten sam komunikat przy czcionce 200%](obrazy/m-l1-konto-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l1-konto-brak-sieci-jasny-200.webp) |
+| [![Konto bez internetu: pigułka z ikoną „Bez internetu”, pod nią panel z komunikatem „Logowanie wymaga internetu.”, dopiskiem, że mapa i opisy budynków działają bez niego, i przyciskiem Wróć do mapy](obrazy/m-l1-konto-brak-sieci-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l1-konto-brak-sieci-jasny.webp) | [![Ten sam komunikat w motywie ciemnym](obrazy/m-l1-konto-brak-sieci-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l1-konto-brak-sieci-ciemny.webp) | [![Ten sam komunikat przy czcionce 200%](obrazy/m-l1-konto-brak-sieci-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l1-konto-brak-sieci-jasny-200.webp) |
 
 ## L2 Konto
 
@@ -322,13 +322,13 @@ Zestaw [makiet low-fi L2](../makiety/odwiedzajacy.md#l2-odwiedzajacy).
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Konto: karta osoby Halina Nowak z rolą Odwiedzający, a pod nią lista Konto z wierszami Informacja o danych osobowych, Wycofaj zgodę i Wyloguj się, w pasku dolnym zaznaczone Konto](obrazy/m-l2-konto-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-jasny.webp) | [![To samo konto w motywie ciemnym](obrazy/m-l2-konto-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-ciemny.webp) | [![To samo konto przy czcionce 200%](obrazy/m-l2-konto-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-jasny-200.webp) |
+| [![Konto: karta osoby Halina Nowak z rolą Odwiedzający, a pod nią lista Konto w ramce z wierszami Informacja o danych osobowych, Wycofaj zgodę i Wyloguj się, każdy z ikoną, w pasku dolnym zaznaczone Konto](obrazy/m-l2-konto-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-jasny.webp) | [![To samo konto w motywie ciemnym](obrazy/m-l2-konto-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-ciemny.webp) | [![To samo konto przy czcionce 200%](obrazy/m-l2-konto-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-jasny-200.webp) |
 
 ### L2: Konto i praca
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Konto i praca: karta osoby z rolami Odwiedzający, Zbierający, Koordynator, lista Twoja praca z wierszami Zmierz i zgłoś barierę, Moje zgłoszenia, Postęp inwentaryzacji, Zaproś osobę, Pobierz eksport, niżej lista Konto](obrazy/m-l2-konto-praca-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-praca-jasny.webp) | [![Ten sam ekran Konto i praca w motywie ciemnym](obrazy/m-l2-konto-praca-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-praca-ciemny.webp) | [![Ten sam ekran Konto i praca przy czcionce 200%: wiersze list bez ikon, dłuższe nazwy w dwóch wierszach tekstu](obrazy/m-l2-konto-praca-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-praca-jasny-200.webp) |
+| [![Konto i praca: karta osoby Halina Nowak z rolami Odwiedzający, Zbierający, Koordynator, lista Twoja praca w ramce z wierszami Zmierz i zgłoś barierę, Moje zgłoszenia, Postęp inwentaryzacji, Zaproś osobę, Pobierz eksport, niżej lista Konto](obrazy/m-l2-konto-praca-jasny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-praca-jasny.webp) | [![Ten sam ekran Konto i praca w motywie ciemnym](obrazy/m-l2-konto-praca-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-praca-ciemny.webp) | [![Ten sam ekran Konto i praca przy czcionce 200%: na górze tylko „Wstecz”, nazwa ekranu w treści, dłuższe nazwy wierszy w dwóch wierszach tekstu](obrazy/m-l2-konto-praca-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-l2-konto-praca-jasny-200.webp) |
 
 ### L2: informacja o danych osobowych
 
