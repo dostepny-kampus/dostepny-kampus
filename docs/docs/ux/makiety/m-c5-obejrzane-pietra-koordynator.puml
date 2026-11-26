@@ -10,7 +10,7 @@ $ramka()
 <b>Piętro: <i>[1]</i></b>
 <b>$obejrzane()</b>
 Znacznik: Zbierający, Autor <i>[nr]</i>
-$przycisk("Cofnij znacznik")
+$czynnosc_karty("Cofnij znacznik")
 }
 $ramka()
 <b>Piętro: <i>[2]</i></b>

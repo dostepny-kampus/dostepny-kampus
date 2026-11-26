@@ -9,7 +9,7 @@ $ramka()
 <b>Piętro: <i>[1]</i></b>
 <b>$obejrzane()</b>
 Twój znacznik
-$przycisk("Cofnij znacznik")
+$czynnosc_karty("Cofnij znacznik")
 }
 $ramka()
 <b>Piętro: <i>[2]</i></b>
@@ -21,17 +21,17 @@ $ramka()
 <b>$obejrzane()</b>
 Twój znacznik
 Czeka na wysłanie
-$przycisk("Cofnij znacznik")
+$czynnosc_karty("Cofnij znacznik")
 }
 $ramka()
 <b>Piętro: <i>[4]</i></b>
 $nieobejrzane()
-$przycisk("Oznacz jako obejrzane")
+$czynnosc_karty("Oznacz jako obejrzane")
 }
 $ramka()
 <b>Piętro: <i>[5]</i></b>
 $nieobejrzane()
-$przycisk("Oznacz jako obejrzane")
+$czynnosc_karty("Oznacz jako obejrzane")
 }
 $ekran_koniec()
 @endsalt

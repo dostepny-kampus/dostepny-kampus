@@ -18,7 +18,7 @@ $ramka()
 Bariery już nie ma
 niesprawna winda
 <i>[budynek]</i>, <i>[piętro]</i>, <i>[data]</i>
-$przycisk("Otwórz", "chevron-right")
+$czynnosc_karty("Otwórz", "arrow-right")
 }
 $ramka()
 <b>$odrzucone()</b>
@@ -26,20 +26,20 @@ próg
 <i>[budynek]</i>, <i>[piętro]</i>, <i>[data]</i>
 Powód odrzucenia:
 Zdjęcie nie pokazuje progu
-$przycisk("Otwórz", "chevron-right")
+$czynnosc_karty("Otwórz", "arrow-right")
 }
 $ramka()
 <b>$w_weryfikacji()</b>
 ciężkie drzwi
 <i>[budynek]</i>, <i>[piętro]</i>, <i>[data]</i>
 Zmiana czeka na wysłanie
-$przycisk("Otwórz", "chevron-right")
+$czynnosc_karty("Otwórz", "arrow-right")
 }
 $ramka()
 <b>$wyslane()</b>
 próg
 <i>[budynek]</i>, <i>[piętro]</i>, <i>[data]</i>
-$przycisk("Dwie wersje: wybierz jedną", "chevron-right")
+$czynnosc_karty("Dwie wersje: wybierz jedną", "arrow-right")
 }
 $ramka()
 <b>$przyjete()</b>
