@@ -64,6 +64,8 @@ building/
   api/  domain/  web/  persistence/   budynek, temat od nazwy modułu
   room/                               pomieszczenie piętra
     json/  persistence/  web/
+  entrance/                           wejście: wiersz z regułą nazwy i oznaczenia
+    persistence/
 ```
 
 - **API modułu** leży w pakiecie `api` z `@NamedInterface("api")`: interfejsy, rekordy danych,
