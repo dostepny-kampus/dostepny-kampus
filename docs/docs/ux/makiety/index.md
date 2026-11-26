@@ -43,6 +43,7 @@ Plik `_wspolne.iuml` ma rozszerzenie `.iuml`, więc skrypt `render.py` nie trakt
 | `$pozycja("Tytuł", $blokada(), "Dopisek", "Przycisk")` | pozycja listy z oznaczeniem tekstem i ikoną | NFR-21 |
 | `$przycisk_glowny("…")`, `$przycisk("…", "camera-slr")` | przycisk na pełną szerokość, zawsze tej samej szerokości, z ikoną albo bez | NFR-17, NFR-21 |
 | `$przyciski_obok("…", "…")` | dwa przyciski po pół szerokości w jednym wierszu | NFR-17 |
+| `$czynnosc_karty("…", "chevron-right")` | czynność karty pozycji listy: obrysowany przycisk szeroki jak napis, przy lewej krawędzi ramki, z ikoną albo bez | NFR-17, NFR-21; wymagania wspólne |
 | `$mapa("opis", legenda, kontrolki)`, `$przyciski_mapy()` | mapa na pełną szerokość z podpisem OpenStreetMap w ramce. Z `kontrolki` na mapie są „Powiększ”, „Pomniejsz” i strzałki przesuwania w krzyżu, a z wartością `"info"` także „ⓘ” przy podpisie (V1, R1). Na C1 to samo rysuje `$punkt_na_srodku` z `_zespol-w-terenie.iuml`: punkt na środku mapy albo planu (decyzja 93). | NFR-15, NFR-37, NFR-40, PW-8, PW-11 |
 | `$ramka()` … `}` | ramka pozycji listy na pełną szerokość; używają jej `$wejscie`, `$pozycja`, `$opcja`, `$komunikat` i `$mapa` | NFR-17 |
 | `$pole_tekstowe("…")`, `$blad_pola("…")` | pole tekstowe stałej szerokości; błąd przy polu pogrubiony | NFR-15, NFR-21 |

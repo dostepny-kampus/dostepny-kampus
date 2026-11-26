@@ -137,6 +137,12 @@ $tekst("[" + $opis + "]", "i")
 [$dk_przycisk($t, $ikona)]
 !endprocedure
 
+' Czynność karty pozycji listy: obrysowany przycisk szeroki jak napis, przy lewej
+' krawędzi ramki, np. „Otwórz” ze strzałką (wymagania wspólne).
+!procedure $czynnosc_karty($t, $ikona="")
+[$dk_napis($t, $ikona, 0)]
+!endprocedure
+
 ' Dwa zwykłe przyciski obok siebie, każdy na pół szerokości (NFR-17).
 !procedure $przyciski_obok($t1, $t2)
 { [$dk_napis($t1, "", $DK_PRZYCISK_POL)] | [$dk_napis($t2, "", $DK_PRZYCISK_POL)] }

@@ -34,7 +34,7 @@ Czynność główna: „Weź do sprawdzenia” przy wybranym zgłoszeniu. Przyci
 | Pozycja zgłoszenia „wysłane”: typ albo grupa barier, budynek, rodzaj, data wysłania; przy zmianie oznaczenia wejścia nazwa wejścia, bo zmiana nie ma typu | US10.4, BR-14, BR-24 |
 | Grupa „Schody i windy” zamiast typu przy zgłoszeniu szybkim, bo typ ustala dopiero Weryfikator | BR-14, PW-7 |
 | Rodzaj: „Zgłoszenie z pomiaru”, „Zgłoszenie szybkie”, „Bariery już nie ma”, „Zmiana oznaczenia wejścia” | US10.5, US17.2, BR-19, BR-24 |
-| „Weź do sprawdzenia” przy każdym zgłoszeniu, zwykły przycisk na pełną szerokość ramki | US10.4, BR-11, NFR-17, NFR-21 |
+| „Weź do sprawdzenia” przy każdym zgłoszeniu jako czynność karty szeroka jak napis | US10.4, BR-11, NFR-17, NFR-21 |
 | Brak zgłoszeń samego Weryfikatora, także jego zmian „bariera usunięta” i oznaczenia wejścia; filtr robi serwer | US10.5, BR-4 |
 
 ![Makieta R1 w widoku mapy: mapa z punktami i podpisem OpenStreetMap, na mapie Powiększ, Pomniejsz, cztery strzałki w krzyżu i przycisk informacji przy podpisie oraz zgłoszenie wybranego punktu](../../_generated/m-r1-kolejka-weryfikacji-mapa.svg)
