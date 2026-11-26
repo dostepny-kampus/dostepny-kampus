@@ -5,16 +5,11 @@
  */
 package io.github.dostepnykampus.feature.capture.report.removed
 
-import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.NearestEntrance
 import io.github.dostepnykampus.core.data.submission.pending.PendingEdit
 import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
-import io.github.dostepnykampus.core.model.GeoPoint
-import io.github.dostepnykampus.core.model.submission.BarrierType
-import io.github.dostepnykampus.core.model.submission.Severity
-import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -34,16 +29,7 @@ class RemovedEditTest {
     private val dispatcher = StandardTestDispatcher()
     private val saved = mutableListOf<Triple<Int, List<PendingPhotoDraft>, EditedSubmission?>>()
     private val photo = PendingPhotoDraft(photoId = "p2", path = "/data/p2.jpg")
-    private val lift =
-        AcceptedBarrier(
-            id = "tb9",
-            location = GeoPoint(longitude = 17.06209, latitude = 51.10785),
-            severity = Severity.BLOCKING,
-            type = BarrierType.BROKEN_LIFT,
-            buildingSymbol = "C-13",
-            verifiedAt = null,
-            floor = SubmissionFloor(number = 2, isMezzanine = false),
-        )
+    private val lift = acceptedLift
     private val own =
         PendingEdit(
             edited = EditedSubmission(id = OWN, baseVersion = 3),

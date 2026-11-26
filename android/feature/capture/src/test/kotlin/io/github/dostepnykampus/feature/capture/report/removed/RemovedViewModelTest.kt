@@ -9,11 +9,8 @@ import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.NearestEntrance
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
-import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierType
-import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
-import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,16 +34,7 @@ class RemovedViewModelTest {
     private val saved = mutableListOf<Pair<SubmissionContent, List<PendingPhotoDraft>>>()
     private var failure: Exception? = null
     private val photo = PendingPhotoDraft(photoId = "p2", path = "/data/p2.jpg")
-    private val lift =
-        AcceptedBarrier(
-            id = "tb9",
-            location = GeoPoint(longitude = 17.06209, latitude = 51.10785),
-            severity = Severity.BLOCKING,
-            type = BarrierType.BROKEN_LIFT,
-            buildingSymbol = "C-13",
-            verifiedAt = null,
-            floor = SubmissionFloor(number = 2, isMezzanine = false),
-        )
+    private val lift = acceptedLift
     private val viewModel = viewModel(PLAIN)
 
     private fun viewModel(file: String, barrier: AcceptedBarrier = lift): RemovedViewModel {
