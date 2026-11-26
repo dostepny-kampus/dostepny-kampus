@@ -451,7 +451,7 @@ class QuickReportScreenTest {
     @Test
     fun asksLocationBeforeCamera() {
         show(ReportRoute(step = ReportStep.PHOTO), isLocationGranted = false)
-        compose.onNodeWithText("Zezwól na lokalizację").assertIsDisplayed()
+        compose.onNodeWithText("Pozwól na lokalizację").assertIsDisplayed()
         compose.onNodeWithText("Zrób zdjęcie").assertDoesNotExist()
     }
 

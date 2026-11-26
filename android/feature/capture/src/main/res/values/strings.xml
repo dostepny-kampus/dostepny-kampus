@@ -4,7 +4,7 @@
     <string name="pomiar_szukanie">Szukamy satelitów. Na otwartej przestrzeni pomiar będzie dokładniejszy.</string>
     <string name="pomiar_od_nowa">Pomiar był przerwany, więc zaczęliśmy go od nowa.</string>
     <string name="pomiar_blad">Nie odczytaliśmy pozycji z telefonu. Wybierz „Powtórz pomiar”, aby spróbować jeszcze raz.</string>
-    <string name="pomiar_lokalizacja_wylaczona">Lokalizacja w telefonie jest wyłączona. Włącz ją, aby zmierzyć miejsce bariery.</string>
+    <string name="pomiar_lokalizacja_wylaczona">Lokalizacja w telefonie jest wyłączona. Włącz ją, aby zapisać miejsce bariery.</string>
     <string name="pomiar_zostalo">Pomiar: zostało %1$d s</string>
     <string name="pomiar_zakonczony">Pomiar zakończony</string>
     <string name="pomiar_dokladnosc">Dokładność: %1$s m (szacunek)</string>
@@ -20,9 +20,11 @@
     <string name="system_navic">NavIC</string>
     <string name="system_sbas">SBAS</string>
     <string name="system_inny">inne</string>
-    <string name="pomiar_zgoda_tekst">Do pomiaru potrzebna jest dokładna lokalizacja telefonu. Aplikacja używa jej tylko na tym ekranie.</string>
-    <string name="pomiar_zgoda_przycisk">Zezwól na lokalizację</string>
-    <string name="pomiar_zgoda_odmowa">Bez zgody na dokładną lokalizację pomiar nie zadziała. Możesz ją włączyć w ustawieniach aplikacji.</string>
+    <string name="pomiar_zgoda_tekst">Aby zapisać miejsce bariery, potrzebujemy lokalizacji. Sprawdzimy ją tylko teraz i nie będziemy Cię śledzić.</string>
+    <string name="pomiar_zgoda_przycisk">Pozwól na lokalizację</string>
+    <string name="pomiar_zgoda_odmowa">Bez lokalizacji nie zapiszesz miejsca bariery. Możesz ją włączyć w ustawieniach telefonu.</string>
+    <string name="pomiar_zgoda_przyblizona">Telefon podaje tylko przybliżone miejsce, a to za mało, by wskazać barierę. Pozwól na dokładną lokalizację.</string>
+    <string name="pomiar_zgoda_dokladna_przycisk">Pozwól na dokładną lokalizację</string>
     <string name="pomiar_otworz_ustawienia">Otwórz ustawienia</string>
     <string name="pomiar_mapa_nieba">Mapa nieba</string>
     <string name="pomiar_mapa_nieba_opis">Mapa nieba, widoczne satelity: %1$s</string>

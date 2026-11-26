@@ -13,6 +13,7 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
@@ -46,11 +47,49 @@ private val LOCATION = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifes
 internal fun Context.hasFineLocation(): Boolean =
     checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
+/** Czy aplikacja ma zgodę na przybliżoną lokalizację. Wymagania: BR-8, US6.1 */
+internal fun Context.hasCoarseLocation(): Boolean =
+    checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
 /**
- * Pokazuje [content] dopiero ze zgodą na dokładną lokalizację, a bez niej prośbę o zgodę. Po odmowie
- * prowadzi do ustawień aplikacji, a po powrocie z nich sprawdza zgodę jeszcze raz.
+ * Stan prośby o zgodę na lokalizację albo `null`, gdy aplikacja ma zgodę na dokładną lokalizację.
  *
- * Wymagania: NFR-27
+ * Wymagania: NFR-27, BR-8, US6.1
+ *
+ * @param isDenied czy użytkownik wcześniej odmówił zgody
+ */
+internal fun Context.permissionNeed(isDenied: Boolean): LocationPermissionState? =
+    when {
+        hasFineLocation() -> null
+        hasCoarseLocation() -> LocationPermissionState.APPROXIMATE
+        isDenied -> LocationPermissionState.DENIED
+        else -> LocationPermissionState.MISSING
+    }
+
+/**
+ * Stan braku dokładnej zgody na lokalizację na ekranie prośby.
+ *
+ * Wymagania: NFR-27, BR-8, US6.1
+ */
+enum class LocationPermissionState(
+    @param:StringRes internal val messageRes: Int,
+    @param:StringRes internal val actionRes: Int,
+) {
+    /** Brak zgody na lokalizację przed systemowym pytaniem. */
+    MISSING(R.string.pomiar_zgoda_tekst, R.string.pomiar_zgoda_przycisk),
+
+    /** Zgoda tylko na przybliżoną lokalizację: prośba o zmianę na dokładną. */
+    APPROXIMATE(R.string.pomiar_zgoda_przyblizona, R.string.pomiar_zgoda_dokladna_przycisk),
+
+    /** Odmowa zgody: przejście do ustawień telefonu. */
+    DENIED(R.string.pomiar_zgoda_odmowa, R.string.pomiar_otworz_ustawienia),
+}
+
+/**
+ * Pokazuje [content] dopiero ze zgodą na dokładną lokalizację, a bez niej ekran prośby odpowiedni do stanu zgody.
+ * Po powrocie z ustawień sprawdza zgodę jeszcze raz.
+ *
+ * Wymagania: NFR-27, BR-8
  *
  * @param onBack „Wstecz” z ekranu prośby
  * @param content ekran, który używa lokalizacji
@@ -58,22 +97,30 @@ internal fun Context.hasFineLocation(): Boolean =
 @Composable
 fun WithLocationPermission(onBack: () -> Unit, content: @Composable () -> Unit) {
     val context = LocalContext.current
-    var isGranted by rememberSaveable { mutableStateOf(context.hasFineLocation()) }
     var isDenied by rememberSaveable { mutableStateOf(false) }
+    var state by rememberSaveable { mutableStateOf(context.permissionNeed(isDenied)) }
     val request =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
-            isGranted = result[Manifest.permission.ACCESS_FINE_LOCATION] == true
-            isDenied = !isGranted
+            val isFine = result[Manifest.permission.ACCESS_FINE_LOCATION] == true || context.hasFineLocation()
+            val isCoarse = result[Manifest.permission.ACCESS_COARSE_LOCATION] == true || context.hasCoarseLocation()
+            isDenied = !isFine && !isCoarse
+            state =
+                when {
+                    isFine -> null
+                    isCoarse -> LocationPermissionState.APPROXIMATE
+                    else -> LocationPermissionState.DENIED
+                }
         }
     LifecycleResumeEffect(Unit) {
-        isGranted = context.hasFineLocation()
+        state = context.permissionNeed(isDenied)
         onPauseOrDispose {}
     }
-    if (isGranted) {
+    val current = state
+    if (current == null) {
         content()
     } else {
         LocationPermissionContent(
-            isDenied = isDenied,
+            state = current,
             onAllow = { request.launch(LOCATION) },
             onOpenSettings = { context.startActivity(context.appSettings()) },
             onBack = onBack,
@@ -82,19 +129,19 @@ fun WithLocationPermission(onBack: () -> Unit, content: @Composable () -> Unit) 
 }
 
 /**
- * Prośba o zgodę na lokalizację: przed pytaniem „Zezwól na lokalizację”, po odmowie „Otwórz ustawienia”.
+ * Ekran prośby o zgodę na lokalizację dla stanu [state].
  *
- * Wymagania: NFR-27
+ * Wymagania: NFR-27, BR-8, US6.1
  *
- * @param isDenied czy użytkownik już odmówił
- * @param onAllow systemowe pytanie o zgodę
- * @param onOpenSettings ustawienia aplikacji
+ * @param state stan braku dokładnej zgody
+ * @param onAllow wywołuje systemowe pytanie o zgodę
+ * @param onOpenSettings otwiera ustawienia aplikacji
  * @param onBack „Wstecz”
  * @param modifier wymiary nadane przez aplikację
  */
 @Composable
 fun LocationPermissionContent(
-    isDenied: Boolean,
+    state: LocationPermissionState,
     onAllow: () -> Unit,
     onOpenSettings: () -> Unit,
     onBack: () -> Unit,
@@ -105,15 +152,12 @@ fun LocationPermissionContent(
         modifier = modifier,
         actions = {
             PinnedActionBar {
-                if (isDenied) {
-                    PinnedButton(text = stringResource(R.string.pomiar_otworz_ustawienia), onClick = onOpenSettings)
-                } else {
-                    PinnedButton(text = stringResource(R.string.pomiar_zgoda_przycisk), onClick = onAllow)
-                }
+                val action = if (state == LocationPermissionState.DENIED) onOpenSettings else onAllow
+                PinnedButton(text = stringResource(state.actionRes), onClick = action)
             }
         },
     ) {
-        Text(stringResource(if (isDenied) R.string.pomiar_zgoda_odmowa else R.string.pomiar_zgoda_tekst))
+        Text(stringResource(state.messageRes))
     }
 }
 
