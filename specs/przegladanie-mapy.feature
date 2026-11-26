@@ -274,7 +274,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy to wejście zostaje zalecane, a zdanie pod wierszem o wejściach kończy się „Przy wejściu jest bariera: tylko z pomocą.”
     Oraz wiersz tego wejścia na liście „Wejścia” ma pod szerokością drzwi „Tylko z pomocą: ciężkie drzwi”
 
-  # brak pełnego testu: #3645
+  # brak typu bariery „wejście zamknięte” w TB-1…TB-29: #3645
   @US3.1 @BR-25 @aplikacja @do-zrobienia
   Szablon scenariusza: Wejście z blokadą nie jest zalecane, a jego oznaczenie zostaje
     Zakładając, że w budynku C-13 <inne> wejścia dostępnego bez blokady
@@ -288,8 +288,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | jest inne | Wejście dostępne        | Zalecane: »Wejście C«. Drzwi 100 cm.   |
       | nie ma    | Brak wejścia dostępnego | Jedyne wejście dostępne ma blokadę.    |
 
-  # brak pełnego testu: #3645
-  @US3.1 @BR-25 @aplikacja @do-zrobienia
+  @US3.1 @BR-25 @aplikacja
   Szablon scenariusza: Wejście bez barier jest zalecane przed wejściem z barierą
     # Dane testowe, a nie stan faktyczny budynku C-13.
     Zakładając, że w danych testowych wejście główne i wejście boczne C-13 mają oznaczenie „dostępne”
