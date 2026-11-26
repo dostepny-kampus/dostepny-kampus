@@ -160,3 +160,17 @@ Data sprawdzenia: 17 listopada 2026. Decyzja: `runtime-tracing` `1.12.1` i `trac
 | Aktualność | Wydania z 09.09.2026 (`1.12.1`) i 19.11.2025 (`1.0.1`), w ostatnich 12 miesiącach. |
 | Potrzeba | Nazwy funkcji kompozycji w śladzie Perfetto, żeby wskazać, co przelicza się w klatkach animacji. Biblioteka natywna jest potrzebna, bo bez niej aplikacja nie włączy zapisu śladu. |
 | Znane podatności | Zapytania do [OSV](https://google.github.io/osv.dev/post-v1-query/) dla ekosystemu `Maven` i obu wersji zwróciły 0 wpisów. |
+
+## ProfileInstaller 1.4.1
+
+Zadanie: [#2670](https://github.com/dostepny-kampus/dostepny-kampus/issues/2670).
+
+Data sprawdzenia: 26 listopada 2026. Decyzja: `profileinstaller` `1.4.1` w aplikacji (tylko w czasie działania), z wyjątkiem od kryterium aktualności z ADR-0004.
+
+| Kryterium | Wynik |
+| --- | --- |
+| Dokładna wersja | `profileinstaller = "1.4.1"` w katalogu wersji Androida, zależność `runtimeOnly` aplikacji. |
+| Licencja | Apache-2.0, dozwolona przez ADR-0004; potwierdzają ją [metadane Maven Google](https://dl.google.com/android/maven2/androidx/profileinstaller/profileinstaller/1.4.1/profileinstaller-1.4.1.pom). |
+| Aktualność | Wydanie z 02.10.2024, poza oknem 12 miesięcy; Maven Google nie ma nowszej wersji. Biblioteka ma jedno zadanie: instalację profilu bazowego z APK. Compose UI `1.12.1` i tak dołącza ją do aplikacji (`1.4.0`, zakres `runtime`), więc deklaracja nie dodaje nowego kodu, tylko ustala wersję i powód. |
+| Potrzeba | Bez niej profil bazowy z `baseline-prof.txt` działa tylko przy instalacji ze sklepu, a aplikacja jest instalowana także z pliku APK; pomiar startu z profilem też jej wymaga. |
+| Znane podatności | Zapytanie do [OSV](https://google.github.io/osv.dev/post-v1-query/) dla ekosystemu `Maven` i pakietu `androidx.profileinstaller:profileinstaller` zwróciło 0 wpisów. |
