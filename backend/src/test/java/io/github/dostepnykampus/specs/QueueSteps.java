@@ -372,8 +372,7 @@ public final class QueueSteps {
     void stillFirst() {
         MatcherAssert.assertThat(
             "Zgłoszenie zmieniło Weryfikatora albo status po próbie drugiego",
-            this.jdbc.sql("SELECT status || ' ' || reviewer FROM submissions WHERE id = :id")
-                .param("id", QueueSteps.ONE).query(String.class).single(),
+            this.stored("status || ' ' || reviewer"),
             Matchers.equalTo("IN_REVIEW konto-testowe")
         );
     }
@@ -383,9 +382,7 @@ public final class QueueSteps {
     void inReview() {
         MatcherAssert.assertThat(
             "Wzięte zgłoszenie nie ma statusu „w weryfikacji”",
-            this.jdbc.sql("SELECT status FROM submissions WHERE id = :id")
-                .param("id", QueueSteps.ONE).query(String.class).single(),
-            Matchers.equalTo("IN_REVIEW")
+            this.stored("status"), Matchers.equalTo("IN_REVIEW")
         );
     }
 
@@ -467,6 +464,12 @@ public final class QueueSteps {
             Matchers.equalTo(201)
         );
         this.photos.put(id, QueueSteps.PHOTO, "zdjęcie".getBytes(StandardCharsets.UTF_8));
+    }
+
+    private String stored(final String column) {
+        return this.jdbc.sql(
+            String.format("SELECT %s FROM submissions WHERE id = :id", column)
+        ).param("id", QueueSteps.ONE).query(String.class).single();
     }
 
     private String rejection() {
