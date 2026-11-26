@@ -34,8 +34,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Kroki scenariuszy zmiany oznaczenia wejścia: złożenie zmiany przez Zbierającego,
- * przyjęcie i odrzucenie przez Weryfikatora, wynik na karcie budynku i lista własna.
+ * Kroki scenariuszy zmiany oznaczenia wejścia od wysłania po decyzję i wynik na karcie.
  *
  * <p>Wymagania: US17.2, US17.3, BR-16, BR-23</p>
  *
