@@ -74,18 +74,19 @@ class QuickFloorScenarioTest {
     }
 
     /**
-     * W budynku B-4 przy grupie „Toalety” krok 2 pyta o piętro z „Nie wiem” i przyciskami „Parter”, „1 piętro”,
+     * W budynku A-4 przy grupie „Toalety” krok 2 pyta o piętro z „Nie wiem” i przyciskami „Parter”, „1 piętro”,
      *   „2 piętro”.
-     * Scenariusz (przykład: w budynku B-4): zgloszenie-szybkie.feature: Pytanie o piętro tylko w budynku i przy
+     * Scenariusz (przykład: w budynku A-4): zgloszenie-szybkie.feature: Pytanie o piętro tylko w budynku i przy
      *   grupie, która go wymaga
      *
      * Wymagania: US4.5, BR-14
      */
     @Test
-    fun asksFloorInB4() {
-        standAt(B4)
+    fun asksFloorInA4() {
+        val model = standAt(A4)
         compose.onNodeWithText("Toalety").performClick()
         assertFloorAnswers(listOf("Piwnica", "Parter", "1 piętro", "2 piętro"))
+        assertEquals("budynek A-4", "A-4", model.building())
     }
 
     /**
@@ -152,20 +153,20 @@ class QuickFloorScenarioTest {
     }
 
     /**
-     * W budynku B-4 wybrane piętro 2 trafia do zgłoszenia z budynku B-4.
+     * W budynku A-4 wybrane piętro 2 trafia do zgłoszenia z budynku A-4.
      * Scenariusz: zgloszenie-szybkie.feature: Wybrane piętro trafia do zgłoszenia
      *
      * Wymagania: US4.5, BR-14
      */
     @Test
-    fun sendsChosenFloorInB4() {
-        val model = standAt(B4)
+    fun sendsChosenFloorInA4() {
+        val model = standAt(A4)
         compose.onNodeWithText("Toalety").performClick()
         compose.onNodeWithText("Na którym piętrze?").assertIsDisplayed()
         compose.onNodeWithText("2 piętro").performClick()
         sendFromStepThree()
-        assertEquals("budynek B-4", "B-4", model.building())
-        assertEquals("miejsce w budynku B-4", listOf(B4), submissions.map { it.location })
+        assertEquals("budynek A-4", "A-4", model.building())
+        assertEquals("miejsce w budynku A-4", listOf(A4), submissions.map { it.location })
         assertEquals("piętro 2", SubmissionFloor(number = 2), submissions.single().floor)
     }
 
@@ -227,7 +228,7 @@ class QuickFloorScenarioTest {
     private companion object {
         const val WAIT_MS = 5_000L
         val D2 = GeoPoint(longitude = 17.0568, latitude = 51.10985)
-        val B4 = GeoPoint(longitude = 17.0653, latitude = 51.10815)
+        val A4 = GeoPoint(longitude = 17.06285, latitude = 51.10805)
         val C13 = GeoPoint(longitude = 17.0597, latitude = 51.1076)
         val BEFORE_A1 = GeoPoint(longitude = 17.059, latitude = 51.109)
         val OUTSIDE_PWR = GeoPoint(longitude = 17.0082293, latitude = 51.1269098)
