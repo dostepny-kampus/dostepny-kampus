@@ -44,6 +44,7 @@ import io.github.dostepnykampus.feature.review.R
 import io.github.dostepnykampus.core.designsystem.R as DesignR
 
 // TODO(#4087): wejście z R2 „Zasłoń twarz lub tablicę” i trasa ekranu.
+
 /**
  * Zasłanianie twarzy i tablic na zdjęciu [photoId] zgłoszenia [submissionId] ze stanem z modelu widoku.
  *
