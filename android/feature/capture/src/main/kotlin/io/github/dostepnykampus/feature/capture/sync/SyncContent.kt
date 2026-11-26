@@ -60,9 +60,7 @@ fun SyncContent(state: SyncUiState, actions: SyncActions, modifier: Modifier = M
                 ) {
                     if (state.phase != SyncPhase.Done) Queue(state.status)
                     PhaseMessage(phase = state.phase, status = state.status)
-                    if (state.isLowSpace) {
-                        InfoPanel { Text(stringResource(R.string.synchronizacja_miejsce)) }
-                    }
+                    if (state.isLowSpace) InfoPanel { Text(stringResource(R.string.synchronizacja_miejsce)) }
                     MainAction(phase = state.phase, actions = actions)
                 }
             }
