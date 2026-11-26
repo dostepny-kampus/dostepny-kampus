@@ -59,6 +59,7 @@ class RemovedViewModelTest {
                 failure?.let { throw it }
                 saved.add(content to photos)
             },
+            edits = { null },
         )
     }
 

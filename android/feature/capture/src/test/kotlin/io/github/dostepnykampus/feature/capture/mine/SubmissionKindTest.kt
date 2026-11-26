@@ -35,10 +35,17 @@ class SubmissionKindTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val opened = mutableListOf<String>()
+    private val removals = mutableListOf<String>()
     private var measured = 0
 
     private fun show(vararg items: OwnSubmissionItem) {
-        val actions = MySubmissionsActions(onBack = {}, onMeasure = { measured++ }, onOpen = { opened.add(it) })
+        val actions =
+            MySubmissionsActions(
+                onBack = {},
+                onMeasure = { measured++ },
+                onOpen = { opened.add(it) },
+                onOpenRemoval = { removals.add(it) },
+            )
         val state = MySubmissionsUiState.Ready(MySubmissions(items.toList()))
         compose.setContent { DostepnyKampusTheme { MySubmissionsContent(state = state, actions = actions) } }
     }
@@ -60,13 +67,19 @@ class SubmissionKindTest {
         compose.onNodeWithText("Dostępne").assertIsDisplayed()
     }
 
-    /** Wiersz: „bariera usunięta” ma „Bariery już nie ma” przed typem i nie otwiera C2. Wymagania: US8.4, BR-19 */
+    /**
+     * Wiersz: „bariera usunięta” ma „Bariery już nie ma” przed typem, a „Otwórz” prowadzi do C7, nie do C2.
+     *
+     * Wymagania: US8.3, US8.4, BR-19
+     */
     @Test
     fun namesRemovedBarrier() {
         show(item("u", kind = SubmissionKind.PRECISE).copy(isBarrierRemoved = true))
         compose.onNodeWithText("Bariery już nie ma").assertIsDisplayed()
         compose.onNodeWithText("Schody przy wejściu").assertIsDisplayed()
-        compose.onNodeWithText("Otwórz").assertDoesNotExist()
+        compose.onNodeWithText("Otwórz").performClick()
+        assertEquals("„Otwórz” otwiera C7 tego zgłoszenia", listOf("u"), removals)
+        assertEquals("C2 się nie otwiera", emptyList<String>(), opened)
     }
 
     /**
