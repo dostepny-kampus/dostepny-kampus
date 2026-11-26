@@ -8,6 +8,8 @@ package io.github.dostepnykampus.feature.map
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapInset
+import io.github.dostepnykampus.feature.map.camera.ShownCamera
+import io.github.dostepnykampus.feature.map.camera.closingView
 import io.github.dostepnykampus.feature.map.camera.keptUnder
 import io.github.dostepnykampus.feature.map.camera.shiftedNorth
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -31,7 +33,30 @@ class SheetClosingTest {
         assertEquals(VIEW, VIEW.keptUnder(from = inset, to = inset, pxPerDp = 2f), "Widok się zmienił")
     }
 
+    /** Wiersz: zamknięcie karty zostawia obraz mapy: ostatni widok pod dopełnieniem bez karty. Wymagania: NFR-56 */
+    @Test
+    fun keepsPictureOnClose() {
+        val last = ShownCamera().apply { keep(shown = VIEW, inset = CARD) }
+        val left = last.closingView(wasCovered = true, isCovered = false, hasTarget = false, to = BAR, pxPerDp = 2f)
+
+        assertEquals(VIEW.keptUnder(from = CARD, to = BAR, pxPerDp = 2f), left, "Obraz mapy się zmienił")
+    }
+
+    /** Wiersz: arkusz nadal zasłania mapę albo zaznaczenie samo wyznacza widok, więc bez widoku zamknięcia. */
+    @Test
+    fun leavesViewWithoutClose() {
+        val last = ShownCamera().apply { keep(shown = VIEW, inset = CARD) }
+        val covered = last.closingView(wasCovered = true, isCovered = true, hasTarget = false, to = BAR, pxPerDp = 2f)
+        val target = last.closingView(wasCovered = true, isCovered = false, hasTarget = true, to = BAR, pxPerDp = 2f)
+
+        assertEquals(null, covered, "Arkusz zasłania mapę")
+        assertEquals(null, target, "Zaznaczenie wyznacza widok")
+    }
+
     private companion object {
+        val CARD = MapInset(bottom = 1200.0)
+        val BAR = MapInset(top = 400.0)
+
         val VIEW = MapCamera(center = GeoPoint(longitude = 17.06, latitude = 51.11), zoom = 19.0)
     }
 }
