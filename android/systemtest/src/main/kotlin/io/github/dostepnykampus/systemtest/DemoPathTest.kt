@@ -28,6 +28,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -89,6 +90,7 @@ class DemoPathTest {
      *
      * Wymagania: US6.1, US6.2, US7.1, US9.2, US10.1, US2.1, US11.1, US13.1
      */
+    @Ignore("Serwer nie ma jeszcze GET /export.geojson (#3062); powrót testu w #4162")
     @Test
     fun demoPathInA1() {
         server.prepare()
