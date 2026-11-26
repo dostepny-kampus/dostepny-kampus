@@ -102,7 +102,7 @@ class QuickThreeStepsTest {
         compose.onNodeWithText("Krok 2 z 3").assertExists("krok 2: grupa barier po zdjęciu")
         compose.onNodeWithText("Schody i windy").performClick()
         compose.onNodeWithText("Na którym piętrze?").assertExists("pytanie o piętro w budynku")
-        compose.onNodeWithText("1").performClick()
+        compose.onNodeWithText("1 piętro").performClick()
         compose.onNodeWithText("Krok 3 z 3").assertExists("krok 3: wysłanie")
         compose.onNodeWithText("Dołączymy miejsce, w którym teraz stoisz.").assertExists("pozycja dołączana sama")
         compose.onNodeWithText("Wyślij").performClick()

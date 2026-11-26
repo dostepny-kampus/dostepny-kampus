@@ -26,6 +26,7 @@ import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
 import io.github.dostepnykampus.feature.capture.photo.PhotoPreviews
+import io.github.dostepnykampus.feature.capture.report.form.basicFloorLabel
 
 /**
  * Krok 3 V4 przed „Wyślij”: miniatura zdjęcia, wybrana grupa, piętro albo „Nie wiem”, jeśli było pytanie,
@@ -113,11 +114,7 @@ internal fun QuickOfflineLine(given: QuickOfflineViewModel?) {
 @Composable
 @ReadOnlyComposable
 private fun floorLabel(floor: Int?): String =
-    when (floor) {
-        null -> stringResource(R.string.szybkie_nie_wiem)
-        0 -> stringResource(R.string.szybkie_parter)
-        else -> stringResource(R.string.szybkie_pietro, floor)
-    }
+    if (floor == null) stringResource(R.string.szybkie_nie_wiem) else basicFloorLabel(floor)
 
 /**
  * Napis o wejściu [entrance] w krokach 1 i 3 V4: nazwa, „Wejście główne” albo wejście bez nazwy; cudzysłów tylko

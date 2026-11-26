@@ -28,6 +28,7 @@ import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.review.RejectionReasons
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.capture.R
+import io.github.dostepnykampus.feature.capture.report.form.basicFloorLabel
 import java.time.ZoneId
 
 /**
@@ -141,7 +142,7 @@ private fun placeText(item: OwnSubmissionItem): String {
     val parts =
         listOfNotNull(
             stringResource(R.string.formularz_budynek, building),
-            item.floorNumber?.let { stringResource(R.string.szybkie_pietro, it) },
+            item.floorNumber?.let { basicFloorLabel(it) },
         )
     return parts.joinToString(", ")
 }

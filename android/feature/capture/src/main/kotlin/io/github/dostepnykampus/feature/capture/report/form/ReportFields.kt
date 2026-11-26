@@ -71,3 +71,18 @@ private fun placeInWords(place: ReportPlace): String {
 internal fun SectionTitle(text: String) {
     Text(text = text, modifier = Modifier.semantics { heading() }, style = MaterialTheme.typography.titleLarge)
 }
+
+/**
+ * Etykieta piętra budynku podstawowego jak w danych PWr: -1 to „Piwnica”, 0 to „Parter”, pozostałe to
+ * „N piętro”.
+ *
+ * Wymagania: US4.5, BR-G1
+ */
+@Composable
+@ReadOnlyComposable
+internal fun basicFloorLabel(floor: Int): String =
+    when (floor) {
+        -1 -> stringResource(R.string.szybkie_piwnica)
+        0 -> stringResource(R.string.szybkie_parter)
+        else -> stringResource(R.string.szybkie_pietro, floor)
+    }

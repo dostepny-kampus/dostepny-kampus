@@ -16,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.selected
@@ -30,6 +31,7 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.feature.capture.R
+import io.github.dostepnykampus.feature.capture.report.form.basicFloorLabel
 
 private val BASIC_FLOORS = -1..10
 
@@ -90,8 +92,8 @@ internal fun QuickGroupQuestion(selected: BarrierGroup? = null, onGroup: (Barrie
 
 /**
  * Krok 2 V4, pytanie o piętro po wyborze [group]: „Nie wiem” na górze i piętra od najniższego.
- * W budynku szczegółowym etykiety z danych PWr ([floors]); w podstawowym i przy nieznanej pozycji numery od -1
- * do 10, z „Parter” zamiast 0.
+ * W budynku szczegółowym etykiety z danych PWr ([floors]); w podstawowym i przy nieznanej pozycji etykiety
+ * od -1 do 10 w postaci „Piwnica”, „Parter”, „1 piętro” … „10 piętro”.
  *
  * Wymagania: US4.5, BR-14
  *
@@ -101,9 +103,7 @@ internal fun QuickGroupQuestion(selected: BarrierGroup? = null, onGroup: (Barrie
  */
 @Composable
 internal fun QuickFloorQuestion(group: BarrierGroup, floors: QuickFloors, onFloor: (QuickFloor) -> Unit) {
-    val unknown = stringResource(R.string.szybkie_nie_wiem)
-    val ground = stringResource(R.string.szybkie_parter)
-    val answers = quickFloorAnswers(floors = floors, unknownLabel = unknown, groundLabel = ground)
+    val answers = quickFloorAnswers(floors = floors)
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(stringResource(group.quickLabel()))
         Text(stringResource(R.string.szybkie_pytanie_pietro))
@@ -118,24 +118,24 @@ internal fun QuickFloorQuestion(group: BarrierGroup, floors: QuickFloors, onFloo
 
 /**
  * Opcje pytania o piętro z odpowiedzią każdej: „Nie wiem” na górze, potem piętra z danych PWr od najniższego
- * albo numery od -1 do 10 w budynku podstawowym.
+ * albo etykiety od -1 do 10 w budynku podstawowym.
  *
  * Wymagania: US4.5, BR-G1
  */
-internal fun quickFloorAnswers(
-    floors: QuickFloors,
-    unknownLabel: String,
-    groundLabel: String,
-): List<Pair<FloorOption, QuickFloor>> {
-    val unknown = FloorOption(key = UNKNOWN_KEY, label = unknownLabel) to QuickFloor()
+@Composable
+@ReadOnlyComposable
+internal fun quickFloorAnswers(floors: QuickFloors): List<Pair<FloorOption, QuickFloor>> {
+    val unknown =
+        FloorOption(key = UNKNOWN_KEY, label = stringResource(R.string.szybkie_nie_wiem)) to QuickFloor()
     val known =
         if (floors.items.isEmpty()) {
             BASIC_FLOORS.map { number ->
-                val label = if (number == 0) groundLabel else number.toString()
-                FloorOption(key = "n$number", label = label) to QuickFloor(number = number)
+                FloorOption(key = "n$number", label = basicFloorLabel(number)) to QuickFloor(number = number)
             }
         } else {
-            floors.items.map { floor -> FloorOption(key = floor.id, label = floor.label) to QuickFloor(floor = floor) }
+            floors.items.map { floor ->
+                FloorOption(key = floor.id, label = floor.label) to QuickFloor(floor = floor)
+            }
         }
     return listOf(unknown) + known
 }
