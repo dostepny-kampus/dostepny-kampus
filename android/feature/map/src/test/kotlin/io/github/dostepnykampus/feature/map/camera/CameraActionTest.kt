@@ -160,17 +160,20 @@ class CameraActionTest {
     }
 
     /**
-     * Wiersz: V1, wybór terenu z listy terenów to jeden ruch mapy.
+     * Wiersz: V1, wybór dalekiego terenu z listy terenów to jeden przelot z czasem z drogi, dłuższy niż ruch
+     * przycisku i najwyżej 1,5 s.
      *
      * Wymagania: US1.7, NFR-56
      */
     @Test
-    fun areaChoiceMovesOnce() {
+    fun areaChoiceFliesOnce() {
         showMap()
         compose.onNode(hasClickAction() and hasContentDescription("Teren: Kampus główny. Zmień teren")).performClick()
         compose.onNode(hasText("Wittigowo") and isSelectable()).performClick()
         compose.waitForIdle()
-        assertEquals("Jeden ruch: ${camera.moves}", 1, camera.moves.size)
+        val flight = camera.moves.singleOrNull()
+        assertEquals("Jeden przelot: ${camera.moves}", CameraMotion.FLIGHT, flight?.motion)
+        assertTrue("Czas z drogi, 300–1500 ms: ${camera.moves}", (flight?.millis ?: 0L) in 301L..FLIGHT_MAX_MILLIS)
     }
 
     /**
