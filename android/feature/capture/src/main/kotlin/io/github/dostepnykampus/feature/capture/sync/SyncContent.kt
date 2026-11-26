@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.capture.sync
 
+import androidx.annotation.PluralsRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -98,8 +99,8 @@ private fun Queue(status: SyncStatus) {
 private fun splitText(status: SyncStatus): String? {
     val submissions = status.submissions
     val markers = status.markers
-    val reports = pluralStringResource(R.plurals.synchronizacja_zgloszenia, submissions, submissions)
-    val floors = pluralStringResource(R.plurals.synchronizacja_znaczniki, markers, markers)
+    val reports = countText(plural = R.plurals.synchronizacja_zgloszenia, count = submissions)
+    val floors = countText(plural = R.plurals.synchronizacja_znaczniki, count = markers)
     return when {
         submissions > 0 && markers > 0 -> stringResource(R.string.synchronizacja_podzial, reports, floors)
         submissions > 0 -> reports
@@ -107,6 +108,10 @@ private fun splitText(status: SyncStatus): String? {
         else -> null
     }
 }
+
+@Composable
+private fun countText(@PluralsRes plural: Int, count: Int): String =
+    stringResource(R.string.synchronizacja_liczba, count, pluralStringResource(id = plural, count = count))
 
 @Composable
 private fun PhaseMessage(phase: SyncPhase, status: SyncStatus) {

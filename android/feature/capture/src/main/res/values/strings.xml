@@ -173,17 +173,18 @@
     <string name="konflikt_pozniej">Zdecyduję później</string>
     <string name="synchronizacja_naglowek">Synchronizacja</string>
     <plurals name="synchronizacja_zgloszenia">
-        <item quantity="one">%d zgłoszenie</item>
-        <item quantity="few">%d zgłoszenia</item>
-        <item quantity="many">%d zgłoszeń</item>
-        <item quantity="other">%d zgłoszenia</item>
+        <item quantity="one">zgłoszenie</item>
+        <item quantity="few">zgłoszenia</item>
+        <item quantity="many">zgłoszeń</item>
+        <item quantity="other">zgłoszenia</item>
     </plurals>
     <plurals name="synchronizacja_znaczniki">
-        <item quantity="one">%d znacznik piętra</item>
-        <item quantity="few">%d znaczniki pięter</item>
-        <item quantity="many">%d znaczników pięter</item>
-        <item quantity="other">%d znacznika piętra</item>
+        <item quantity="one">znacznik piętra</item>
+        <item quantity="few">znaczniki pięter</item>
+        <item quantity="many">znaczników pięter</item>
+        <item quantity="other">znacznika piętra</item>
     </plurals>
+    <string name="synchronizacja_liczba">%1$d %2$s</string>
     <string name="synchronizacja_podzial">%1$s i %2$s</string>
     <string name="synchronizacja_ostatnia">Ostatnia synchronizacja: %1$s</string>
     <string name="synchronizacja_wszystko">Wszystko wysłane.</string>
