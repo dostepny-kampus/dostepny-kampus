@@ -7,9 +7,15 @@ package io.github.dostepnykampus.feature.review.check
 
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.NearestEntrance
+import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.review.ReviewQueue
 import io.github.dostepnykampus.core.data.review.Reviews
 import io.github.dostepnykampus.core.data.server.ServerReply
+import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.building.AssessmentSource
+import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EntranceAssessment
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.review.ReviewClaim
 import io.github.dostepnykampus.core.model.review.ReviewDecision
 import io.github.dostepnykampus.core.model.review.ReviewOutcome
@@ -18,6 +24,7 @@ import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionField
+import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import io.github.dostepnykampus.feature.review.queue.queued
 import io.github.dostepnykampus.feature.review.queue.quick
@@ -31,12 +38,13 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 /**
  * Stan R2: zgłoszenie z podobnymi, przyjęcie, odrzucenie z powodem, nowa wersja, poprzednie zgłoszenie przy
- * „bariera usunięta”, brak sieci i stany wspólne.
+ * „bariera usunięta”, obecne oznaczenie przy zmianie oznaczenia wejścia, brak sieci i stany wspólne.
  *
- * Wymagania: US10.1, US10.2, US10.6, US10.8, BR-3, BR-13, BR-16, BR-19, NFR-50
+ * Wymagania: US10.1, US10.2, US10.6, US10.8, BR-3, BR-13, BR-16, BR-19, BR-24, NFR-50
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReviewCheckViewModelTest {
@@ -184,6 +192,31 @@ class ReviewCheckViewModelTest {
     }
 
     @Test
+    fun markingComparesWithCurrent() {
+        assertMarkingComparison(day = 27, changed = false)
+        assertMarkingComparison(day = 28, changed = true)
+    }
+
+    private fun assertMarkingComparison(day: Int, changed: Boolean) {
+        val marking =
+            CHECKED.content.copy(
+                kind = SubmissionKind.ENTRANCE_MARKING,
+                entranceId = "e",
+                entranceMarking = EntranceMarking.INACCESSIBLE,
+            )
+        val assessed = EntranceAssessment(date = LocalDate.of(2026, 10, day), source = AssessmentSource.WALKTHROUGH)
+        val current = ENTRANCE.copy(assessment = assessed)
+        checkTest(Fake(found = ServerReply.Ok(CHECKED.copy(content = marking))), entrances = listOf(current)) { model ->
+            runCurrent()
+            assertEquals(
+                CurrentMarking(entrance = current, isChangedSinceSent = changed),
+                (model.state.value as CheckUiState.Ready).current,
+                "obecne oznaczenie przyjęte $day października",
+            )
+        }
+    }
+
+    @Test
     fun offlineDecisionWaits() =
         checkTest(Fake(outcome = ServerReply.Offline)) { model ->
             runCurrent()
@@ -195,13 +228,24 @@ class ReviewCheckViewModelTest {
     private fun checkTest(
         fake: Fake = Fake(),
         campus: String = NO_ENTRANCES,
+        entrances: List<Entrance> = emptyList(),
         block: suspend TestScope.(ReviewCheckViewModel) -> Unit,
     ) {
         val dispatcher = StandardTestDispatcher()
         Dispatchers.setMain(dispatcher)
         try {
             val catalog = BuildingCatalogRepository(dispatcher) { campus }
-            runTest(dispatcher) { block(ReviewCheckViewModel(CHECKED.id, fake, NearestEntrance(catalog))) }
+            val server = ServerEntrances { symbol -> entrances.filter { it.buildingSymbol == symbol } }
+            runTest(dispatcher) {
+                val model =
+                    ReviewCheckViewModel(
+                        submissionId = CHECKED.id,
+                        reviews = fake,
+                        nearestEntrance = NearestEntrance(catalog),
+                        serverEntrances = server,
+                    )
+                block(model)
+            }
         } finally {
             Dispatchers.resetMain()
         }
@@ -242,6 +286,16 @@ class ReviewCheckViewModelTest {
         const val SERVER_ERROR = 500
         val CHECKED = queued(id = "a", day = 27)
         val NEAR = SimilarSubmission(submission = queued(id = "b", day = 20), distanceMeters = 4.0)
+        val ENTRANCE =
+            Entrance(
+                id = "e",
+                buildingSymbol = "C-13",
+                name = "Wejście A",
+                isMain = true,
+                type = null,
+                location = GeoPoint(longitude = 17.06, latitude = 51.1),
+                marking = EntranceMarking.ACCESSIBLE,
+            )
         const val NO_ENTRANCES = """{"type":"FeatureCollection","attribution":"© plik","features":[]}"""
         const val WITH_ENTRANCE =
             """{"type":"FeatureCollection","attribution":"© R2","features":[""" +

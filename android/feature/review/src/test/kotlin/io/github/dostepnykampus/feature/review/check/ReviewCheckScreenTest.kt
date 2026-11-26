@@ -16,7 +16,9 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.IMPORTANT_SIGN_TAG
+import io.github.dostepnykampus.core.model.building.AssessmentSource
 import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EntranceAssessment
 import io.github.dostepnykampus.core.model.building.EntranceDistance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
@@ -33,11 +35,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.time.LocalDate
 
 /**
  * R2 „Sprawdzenie zgłoszenia”: dane zgłoszenia z miejscem słowami, podobne zgłoszenia, decyzja, typ i uciążliwość
  * zgłoszenia szybkiego, komunikaty, poprzednie zgłoszenie przy „bariera usunięta”, zmiana oznaczenia wejścia
- * bez „Duplikat”, wczytywanie i stany wspólne.
+ * z obecnym oznaczeniem i bez „Duplikat”, wczytywanie i stany wspólne.
  *
  * Wymagania: US10, US10.1, US10.2, US10.3, US10.6, NFR-19, US10.8, BR-3, BR-11, BR-19, BR-24, NFR-50
  */
@@ -64,18 +67,8 @@ class ReviewCheckScreenTest {
 
     @Test
     fun showsPlaceInWords() {
-        val entrance =
-            Entrance(
-                id = "n/1",
-                buildingSymbol = "C-13",
-                name = "Wejście A",
-                isMain = false,
-                type = null,
-                location = CHECKED.content.location,
-                marking = EntranceMarking.ACCESSIBLE,
-            )
         val measured = CHECKED.copy(content = CHECKED.content.copy(accuracyMeters = 0.8))
-        show(READY.copy(submission = measured, nearest = EntranceDistance(entrance = entrance, meters = 2.0)))
+        show(READY.copy(submission = measured, nearest = EntranceDistance(entrance = ENTRANCE, meters = 2.0)))
         compose.onNodeWithText("Miejsce: ok. 2 m od wejścia „Wejście A”, dokładność 0,8 m").assertIsDisplayed()
     }
 
@@ -143,6 +136,25 @@ class ReviewCheckScreenTest {
     }
 
     @Test
+    fun showsMarkingSinceSent() {
+        val change =
+            CHECKED.content.copy(
+                kind = SubmissionKind.ENTRANCE_MARKING,
+                entranceId = ENTRANCE.id,
+                entranceMarking = EntranceMarking.INACCESSIBLE,
+            )
+        val assessed = EntranceAssessment(date = LocalDate.of(2023, 12, 18), source = AssessmentSource.IMPORT)
+        val current = ENTRANCE.copy(assessment = assessed)
+        val ready = READY.copy(submission = CHECKED.copy(content = change))
+        show(ready.copy(current = CurrentMarking(entrance = current, isChangedSinceSent = false)))
+        listOf("Obecne oznaczenie:", "Bez zmian od wysłania", "Wybrane oznaczenie:").forEach { text ->
+            compose.onNodeWithText(text).performScrollTo().assertIsDisplayed()
+        }
+        shown.value = ready.copy(current = CurrentMarking(entrance = current, isChangedSinceSent = true))
+        compose.onNodeWithText("Zmienione po wysłaniu").performScrollTo().assertIsDisplayed()
+    }
+
+    @Test
     fun showsPreviousOfRemoved() {
         val removed = CHECKED.run { copy(content = content.copy(isBarrierRemoved = true, replacesSubmissionId = "p")) }
         show(
@@ -185,6 +197,16 @@ class ReviewCheckScreenTest {
     private companion object {
         val CHECKED = queued(id = "a", day = 27)
         val NEAR = queued(id = "b", day = 20).run { copy(content = content.copy(floor = SubmissionFloor(number = 0))) }
+        val ENTRANCE =
+            Entrance(
+                id = "n/1",
+                buildingSymbol = "C-13",
+                name = "Wejście A",
+                isMain = false,
+                type = null,
+                location = CHECKED.content.location,
+                marking = EntranceMarking.ACCESSIBLE,
+            )
         val READY =
             CheckUiState.Ready(
                 submission = CHECKED,
