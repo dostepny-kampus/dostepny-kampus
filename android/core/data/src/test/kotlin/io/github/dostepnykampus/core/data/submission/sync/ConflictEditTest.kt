@@ -98,7 +98,48 @@ class ConflictEditTest {
             assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state, "poprawka po wyborze jest wysłana")
         }
 
+    /** Inna odmowa niż konflikt wersji nie blokuje poprawki: osoba ją poprawia i wysyła. Wymagania: US8.1, BR-26 */
+    @Test
+    fun editsAfterOtherRefusal() =
+        runBlocking {
+            val replies = ArrayDeque<ServerReply<ServerEdit>>(listOf(ServerReply.Fault(code = UNPROCESSABLE)))
+            val other =
+                SubmissionQueue(
+                    store = store,
+                    ioContext = EmptyCoroutineContext,
+                    server =
+                        submissionServer(
+                            create = { id, content -> ServerReply.Ok(server(id, content, version = 1)) },
+                            putPhoto = { _, _, _ -> ServerReply.Ok(Unit) },
+                            update = { id, version, content ->
+                                versions += version
+                                val saved = ServerReply.Ok(ServerEdit.Saved(server(id, content, version = 5)))
+                                replies.removeFirstOrNull() ?: saved
+                            },
+                        ),
+                    records = SentRecords(history = history, conflicts = copies),
+                )
+            other.saveEdit(
+                EditedSubmission(id = ID, baseVersion = 4),
+                precise(PHOTO, severity = 2),
+                photo(tempDir, PHOTO),
+            )
+            other.sendAll()
+            assertTrue(store.rows.single().submission.isRefused, "odmowa 422 zostawia „Nie wysłano”")
+
+            other.saveEdit(
+                EditedSubmission(id = ID, baseVersion = 4),
+                precise(PHOTO, severity = 1),
+                photo(tempDir, PHOTO),
+            )
+            other.sendAll()
+
+            assertEquals(listOf(4, 4), versions, "poprawka po innej odmowie idzie na serwer")
+            assertEquals(OwnSubmissionState.SENT, history.rows.getValue(ID).state, "poprawka jest wysłana")
+        }
+
     private companion object {
+        const val UNPROCESSABLE = 422
         const val ID = "s-konflikt"
         const val PHOTO = "p-konflikt"
     }
