@@ -16,7 +16,6 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -37,6 +36,7 @@ import io.github.dostepnykampus.core.designsystem.GroupFrame
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.model.review.RejectionReasons
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
 import io.github.dostepnykampus.feature.review.R
@@ -120,7 +120,7 @@ internal fun Decision(
             label = { Text(stringResource(R.string.sprawdzenie_opisz)) },
         )
         if (notice == CheckNotice.REASON_MISSING) Text(stringResource(R.string.sprawdzenie_podaj_powod))
-        OutlinedButton(
+        OutlinedAction(
             onClick = {
                 val rejection =
                     when (reason) {

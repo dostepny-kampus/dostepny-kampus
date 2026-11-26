@@ -41,6 +41,7 @@ import androidx.compose.ui.window.DialogProperties
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.R
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.core.model.submission.BarrierType
 
@@ -132,7 +133,7 @@ private fun TypePanelHeader(title: FocusRequester, onClose: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(Odstepy.s),
     ) {
         TypeTitle(modifier = Modifier.focusRequester(title).focusable())
-        OutlinedButton(onClick = onClose, modifier = Modifier.heightIn(min = CeleDotyku.przycisk)) {
+        OutlinedAction(onClick = onClose, modifier = Modifier.heightIn(min = CeleDotyku.przycisk)) {
             Text(stringResource(R.string.wybor_zamknij))
         }
     }
