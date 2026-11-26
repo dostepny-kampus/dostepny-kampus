@@ -23,6 +23,7 @@ import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
  *   przycisk przy takich zgłoszeniach
  * @property onResendChange „Wyślij ponownie” przy nieaktualnej zmianie bariery: C2 z jej treścią jako nowa zmiana
  *   bieżącego przyjętego zgłoszenia; `null` ukrywa przycisk przy takich zmianach
+ * @property onSync „Czeka na wysłanie: N”: C4 bez konfliktu; `null` zostawia sam napis
  */
 data class MySubmissionsActions(
     val onBack: () -> Unit,
@@ -32,4 +33,5 @@ data class MySubmissionsActions(
     val onOpenMarking: ((route: MarkingRoute) -> Unit)? = null,
     val onOpenRemoval: ((id: String) -> Unit)? = null,
     val onResendChange: ((id: String) -> Unit)? = null,
+    val onSync: (() -> Unit)? = null,
 )

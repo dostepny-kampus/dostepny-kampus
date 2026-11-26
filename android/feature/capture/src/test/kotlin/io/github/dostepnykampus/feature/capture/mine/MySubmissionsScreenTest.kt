@@ -262,6 +262,19 @@ class MySubmissionsScreenTest {
         assertEquals("C2 się nie otwiera", emptyList<String>(), opened)
     }
 
+    /** Wiersz: „Czeka na wysłanie: N” to czynność ze strzałką prowadząca do C4. Wymagania: US9.1 */
+    @Test
+    fun waitingOpensSync() {
+        var opened = 0
+        val actions = MySubmissionsActions(onBack = {}, onMeasure = {}, onSync = { opened++ })
+        val state = MySubmissionsUiState.Ready(MySubmissions(listOf(item(id = "w", state = SendState.LOCAL))))
+        compose.setContent {
+            DostepnyKampusTheme { MySubmissionsContent(state = state, actions = actions) }
+        }
+        compose.onNodeWithText("Czeka na wysłanie: 1").performClick()
+        assertEquals("C4 bez konfliktu", 1, opened)
+    }
+
     /** Pozycja bez konfliktu wersji nie ma znaku wyboru wersji. Wymagania: US9.3 */
     @Test
     fun noConflictNoChoice() {
