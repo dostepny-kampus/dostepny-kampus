@@ -51,7 +51,7 @@ class QuickLocationPermissionTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private val isLocationOn = MutableStateFlow(true)
+    private val locationOn = MutableStateFlow(true)
     private val permissionOwner = DeniedResultOwner()
     private var mapOpens = 0
 
@@ -59,7 +59,7 @@ class QuickLocationPermissionTest {
     fun asksForLocationBeforeCamera() {
         show()
 
-        expectNotice("Aby wysłać zdjęcie bariery, potrzebujemy jej miejsca.", ALLOW)
+        expectNotice(message = "Aby wysłać zdjęcie bariery, potrzebujemy jej miejsca.", action = ALLOW)
         compose.onNodeWithText("Sprawdzimy je tylko teraz i nie będziemy Cię śledzić.").assertIsDisplayed()
         compose.onRoot().captureRoboImage()
         compose.onNodeWithText(BACK_TO_MAP).performClick()
@@ -67,7 +67,7 @@ class QuickLocationPermissionTest {
     }
 
     @Test
-    fun asksForPreciseLocationWithCoarsePermission() {
+    fun asksForPreciseWithCoarse() {
         RuntimeEnvironment.setFontScale(2f)
         show(Manifest.permission.ACCESS_COARSE_LOCATION)
 
@@ -80,29 +80,37 @@ class QuickLocationPermissionTest {
     }
 
     @Test
-    fun opensAppSettingsAfterPermissionIsDenied() {
+    fun opensAppSettingsAfterDenial() {
         show()
 
         compose.onNodeWithText(ALLOW).performClick()
-        expectNotice("Bez lokalizacji nie wyślesz zdjęcia bariery.", SETTINGS)
+        expectNotice(message = "Bez lokalizacji nie wyślesz zdjęcia bariery.", action = SETTINGS)
         compose.onNodeWithText("Możesz ją włączyć w ustawieniach telefonu.").assertIsDisplayed()
         compose.onNodeWithText(SETTINGS).performClick()
         val opened = shadowOf(compose.activity).nextStartedActivity
-        assertEquals("po odmowie otwiera ustawienia aplikacji", Settings.ACTION_APPLICATION_DETAILS_SETTINGS, opened.action)
+        assertEquals(
+            "po odmowie otwiera ustawienia aplikacji",
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            opened.action,
+        )
     }
 
     @Test
-    fun opensLocationSettingsWhenOffAndResumesAfterEnabling() {
-        isLocationOn.value = false
+    fun resumesAfterEnablingLocation() {
+        locationOn.value = false
         show(Manifest.permission.ACCESS_FINE_LOCATION)
 
-        expectNotice("Lokalizacja w telefonie jest wyłączona.", SETTINGS)
+        expectNotice(message = "Lokalizacja w telefonie jest wyłączona.", action = SETTINGS)
         compose.onNodeWithText("Włącz ją, aby wysłać zdjęcie bariery.").assertIsDisplayed()
         compose.onNodeWithText(SETTINGS).performClick()
         val opened = shadowOf(compose.activity).nextStartedActivity
-        assertEquals("otwiera systemowe ustawienia lokalizacji", Settings.ACTION_LOCATION_SOURCE_SETTINGS, opened.action)
+        assertEquals(
+            "otwiera systemowe ustawienia lokalizacji",
+            Settings.ACTION_LOCATION_SOURCE_SETTINGS,
+            opened.action,
+        )
 
-        compose.runOnIdle { isLocationOn.value = true }
+        compose.runOnIdle { locationOn.value = true }
         compose.onNodeWithText("Zrób zdjęcie").assertIsDisplayed()
         compose.onNodeWithText(BACK_TO_MAP).assertDoesNotExist()
     }
@@ -119,7 +127,10 @@ class QuickLocationPermissionTest {
 
     private fun show(vararg grants: String) {
         val app = ApplicationProvider.getApplicationContext<Application>()
-        shadowOf(app).denyPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+        shadowOf(app).denyPermissions(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+        )
         shadowOf(app).grantPermissions(*grants)
         val actions = QuickReportActions(onNext = {}, onSent = {}, onBack = {}, onBackToMap = { mapOpens++ })
         val models =
@@ -129,7 +140,7 @@ class QuickLocationPermissionTest {
                     quickSendModel(
                         positions = PositionSource { emptyFlow() },
                         saver = ReportSaver { _, _, _ -> },
-                        locationSwitch = LocationSwitch { isLocationOn },
+                        locationSwitch = LocationSwitch { locationOn },
                     ),
             )
         compose.setContent {

@@ -13,53 +13,45 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
 import io.github.dostepnykampus.core.designsystem.card.InfoPanel
 import io.github.dostepnykampus.feature.capture.R
-import io.github.dostepnykampus.feature.capture.location.LocationPermissionGate
 import io.github.dostepnykampus.feature.capture.location.LocationPermissionState
 import io.github.dostepnykampus.feature.capture.location.locationSettings
 
 /**
- * Udostępnia [content] po uzyskaniu dokładnej zgody i włączeniu lokalizacji. Przy braku zgody lub wyłączonym
- * dostawcy udostępnia odpowiednią akcję systemową oraz [onBackToMap].
+ * Udostępnia odpowiednią czynność systemową dla [state] oraz [onBackToMap].
  *
  * Wymagania: UC7, NFR-27, BR-8, BR-14
  */
 @Composable
 internal fun QuickLocationPermission(
-    viewModel: QuickSendViewModel,
+    state: LocationPermissionState,
+    onAllow: () -> Unit,
+    onOpenSettings: () -> Unit,
     onBackToMap: () -> Unit,
-    content: @Composable () -> Unit,
 ) {
-    LocationPermissionGate(
-        permission = { state, onAllow, onOpenSettings ->
-            val notice =
-                when (state) {
-                    LocationPermissionState.MISSING -> LocationNotice.MISSING
-                    LocationPermissionState.APPROXIMATE -> LocationNotice.APPROXIMATE
-                    LocationPermissionState.DENIED -> LocationNotice.DENIED
-                }
-            val action = if (state == LocationPermissionState.DENIED) onOpenSettings else onAllow
-            QuickLocationNotice(notice, action, onBackToMap)
-        },
-    ) {
-        val context = LocalContext.current
-        val enabled by viewModel.locationEnabled.collectAsStateWithLifecycle()
-        when (enabled) {
-            true -> content()
-            false -> QuickLocationNotice(LocationNotice.OFF, { context.startActivity(locationSettings()) }, onBackToMap)
-            null -> Unit
+    val notice =
+        when (state) {
+            LocationPermissionState.MISSING -> LocationNotice.MISSING
+            LocationPermissionState.APPROXIMATE -> LocationNotice.APPROXIMATE
+            LocationPermissionState.DENIED -> LocationNotice.DENIED
         }
-    }
+    val action = if (state == LocationPermissionState.DENIED) onOpenSettings else onAllow
+    QuickLocationNotice(notice, action, onBackToMap)
+}
+
+/** Udostępnia ustawienia dostawców lokalizacji oraz [onBackToMap]. Wymagania: UC7 */
+@Composable
+internal fun QuickLocationOff(onBackToMap: () -> Unit) {
+    val context = LocalContext.current
+    QuickLocationNotice(LocationNotice.OFF, { context.startActivity(locationSettings()) }, onBackToMap)
 }
 
 @Composable
@@ -75,7 +67,11 @@ private fun QuickLocationNotice(notice: LocationNotice, onAction: () -> Unit, on
             modifier = Modifier.padding(top = Odstepy.s),
             verticalArrangement = Arrangement.spacedBy(Odstepy.m),
         ) {
-            PinnedButton(text = stringResource(notice.actionRes), onClick = onAction, modifier = Modifier.fillMaxWidth())
+            PinnedButton(
+                text = stringResource(notice.actionRes),
+                onClick = onAction,
+                modifier = Modifier.fillMaxWidth(),
+            )
             PinnedButton(
                 text = stringResource(R.string.szybkie_wroc_do_mapy),
                 onClick = onBackToMap,

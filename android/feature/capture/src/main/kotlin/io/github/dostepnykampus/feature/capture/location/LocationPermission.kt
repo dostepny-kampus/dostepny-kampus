@@ -98,7 +98,12 @@ enum class LocationPermissionState(
 fun WithLocationPermission(onBack: () -> Unit, content: @Composable () -> Unit) {
     LocationPermissionGate(
         permission = { state, onAllow, onOpenSettings ->
-            LocationPermissionContent(state, onAllow, onOpenSettings, onBack)
+            LocationPermissionContent(
+                state = state,
+                onAllow = onAllow,
+                onOpenSettings = onOpenSettings,
+                onBack = onBack,
+            )
         },
         content = content,
     )

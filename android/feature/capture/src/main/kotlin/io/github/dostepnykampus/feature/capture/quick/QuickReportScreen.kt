@@ -41,8 +41,10 @@ import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.feature.capture.R
+import io.github.dostepnykampus.feature.capture.location.LocationPermissionGate
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
 import java.io.File
 
@@ -120,25 +122,29 @@ private fun QuickSteps(
     slot: QuickPinnedSlot,
     onGiveUp: () -> Unit,
 ) {
-    val where = models.sendModel()
-    val sent by rememberUpdatedState(actions.onSent)
-    if (route.step == ReportStep.SEND) {
-        LaunchedEffect(where) {
-            where.stage
-                .filter { it == QuickSendStage.SENT || it == QuickSendStage.SAVED_OFFLINE }
-                .collect { sent(it == QuickSendStage.SAVED_OFFLINE) }
-        }
-    }
+    val onBackToMap = if (route.photoPath == null) actions.onBackToMap else onGiveUp
     val step: @Composable () -> Unit = {
-        QuickStepProgress(step = route.step.ordinal + 1)
-        QuickStep(route = route, actions = actions, models = models, slot = slot, onGiveUp = onGiveUp, where = where)
+        QuickStep(
+            route = route,
+            actions = actions,
+            models = models,
+            slot = slot,
+            onGiveUp = onGiveUp,
+            onBackToMap = onBackToMap,
+        )
     }
     if (route.isPlaceChosen) {
         step()
     } else {
-        QuickLocationPermission(
-            viewModel = where,
-            onBackToMap = if (route.photoPath == null) actions.onBackToMap else onGiveUp,
+        LocationPermissionGate(
+            permission = { state, onAllow, onOpenSettings ->
+                QuickLocationPermission(
+                    state = state,
+                    onAllow = onAllow,
+                    onOpenSettings = onOpenSettings,
+                    onBackToMap = onBackToMap,
+                )
+            },
             content = step,
         )
     }
@@ -156,9 +162,17 @@ private fun QuickStep(
     models: QuickReportModels,
     slot: QuickPinnedSlot,
     onGiveUp: () -> Unit,
-    where: QuickSendViewModel,
+    onBackToMap: () -> Unit,
 ) {
+    val where = models.sendModel()
+    if (route.step == ReportStep.SEND) ObserveQuickSend(stage = where.stage, onSent = actions.onSent)
+    val isEnabled = if (route.isPlaceChosen) true else where.locationEnabled.collectAsStateWithLifecycle().value
+    if (isEnabled != true) {
+        if (isEnabled == false) QuickLocationOff(onBackToMap)
+        return
+    }
     SideEffect { where.start(route.entranceId, route.place) }
+    QuickStepProgress(step = route.step.ordinal + 1)
     when (route.step) {
         ReportStep.PHOTO -> {
             QuickPositionWarmUp(where)
@@ -189,6 +203,16 @@ private fun QuickStep(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ObserveQuickSend(stage: StateFlow<QuickSendStage>, onSent: (Boolean) -> Unit) {
+    val sent by rememberUpdatedState(onSent)
+    LaunchedEffect(stage) {
+        stage
+            .filter { it == QuickSendStage.SENT || it == QuickSendStage.SAVED_OFFLINE }
+            .collect { sent(it == QuickSendStage.SAVED_OFFLINE) }
     }
 }
 
