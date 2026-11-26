@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.database.submission
@@ -64,6 +64,17 @@ public interface OwnSubmissionDao {
      */
     @Query("UPDATE own_submissions SET state = 'REFUSED', refusal_code = :code WHERE id = :id")
     public suspend fun markRefused(id: String, code: Int?)
+
+    /**
+     * Pełna treść zgłoszeń przed decyzją, także odrzuconych: ich zdjęcia zostają w telefonie do poprawki.
+     *
+     * Wymagania: US8.3, NFR-5
+     */
+    @Query(
+        "SELECT content_json FROM own_submissions WHERE content_json IS NOT NULL " +
+            "AND (server_status IS NULL OR server_status NOT IN ('ACCEPTED', 'ARCHIVED'))",
+    )
+    public suspend fun undecidedContents(): List<String>
 
     /**
      * Zapisuje status z serwera po odświeżeniu listy C3; stan wysyłki z telefonu zostaje.
