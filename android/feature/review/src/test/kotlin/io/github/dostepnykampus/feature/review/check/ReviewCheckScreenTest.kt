@@ -21,10 +21,7 @@ import io.github.dostepnykampus.core.model.building.EntranceDistance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
 import io.github.dostepnykampus.core.model.submission.Severity
-<<<<<<< HEAD
 import io.github.dostepnykampus.core.model.submission.SubmissionField
-=======
->>>>>>> origin/sprint/5
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.review.queue.queued
