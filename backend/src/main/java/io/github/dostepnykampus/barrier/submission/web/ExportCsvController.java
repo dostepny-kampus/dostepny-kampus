@@ -6,12 +6,9 @@
 package io.github.dostepnykampus.barrier.submission.web;
 
 import io.github.dostepnykampus.barrier.submission.Submission;
-import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
 import io.github.dostepnykampus.barrier.submission.content.BarrierDetails;
-import io.github.dostepnykampus.barrier.submission.content.BarrierGroup;
 import io.github.dostepnykampus.barrier.submission.content.BarrierType;
-import io.github.dostepnykampus.barrier.submission.content.SubmissionFloor;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPlace;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionPoint;
 import io.github.dostepnykampus.shared.geo.Puwg1992;
@@ -21,12 +18,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.jspecify.annotations.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
@@ -57,11 +53,11 @@ public final class ExportCsvController {
         "buildingSymbol", "floor", "description", "verifiedAt"
     ).get();
 
-    /** Przyjęte zgłoszenia. */
-    private final SubmissionReading submissions;
+    /** Wspólne stronicowanie i formatowanie eksportu. */
+    private final BarrierExport export;
 
     ExportCsvController(final SubmissionReading submissions) {
-        this.submissions = submissions;
+        this.export = new BarrierExport(submissions);
     }
 
     @GetMapping(value = "/export.csv", produces = "text/csv;charset=UTF-8")
@@ -78,17 +74,7 @@ public final class ExportCsvController {
                 ExportCsvController.FORMAT
             )
         ) {
-            UUID after = SubmissionFinder.Page.START;
-            boolean more;
-            do {
-                final SubmissionFinder.Page page = this.submissions.exportablePage(after);
-                for (final Submission submission : page.items()) {
-                    this.printRow(printer, submission);
-                }
-                printer.flush();
-                after = page.last();
-                more = page.more();
-            } while (more);
+            this.export.write(submission -> this.printRow(printer, submission), printer);
         }
     }
 
@@ -101,13 +87,14 @@ public final class ExportCsvController {
         printer.printRecord(
             submission.id(), point.easting(), point.northing(),
             Optional.ofNullable(barrier.type()).map(BarrierType::code).orElse(""),
-            Optional.ofNullable(barrier.group()).map(ExportCsvController::group).orElse(""),
+            Objects.requireNonNullElse(BarrierExport.group(barrier.group()), ""),
             Optional.ofNullable(barrier.severity()).map(String::valueOf).orElse(""),
             Optional.ofNullable(place.buildingSymbol()).orElse(""),
-            Optional.ofNullable(place.floor())
-                .map(floor -> this.floor(place.buildingSymbol(), floor)).orElse(""),
+            Objects.requireNonNullElse(
+                this.export.floor(place.buildingSymbol(), place.floor()), ""
+            ),
             Optional.ofNullable(barrier.description()).map(ExportCsvController::text).orElse(""),
-            Optional.of(submission.verification()).filter(time -> !Instant.MIN.equals(time))
+            Optional.ofNullable(BarrierExport.verifiedAt(submission))
                 .map(Instant::toString).orElse("")
         );
     }
@@ -118,28 +105,5 @@ public final class ExportCsvController {
             result = "'".concat(value);
         }
         return result;
-    }
-
-    private static String group(final BarrierGroup group) {
-        return switch (group) {
-            case ENTRANCE -> "ENTRANCE_AND_DOORS";
-            case VERTICAL -> "VERTICAL_CIRCULATION";
-            case HORIZONTAL -> "HORIZONTAL_CIRCULATION";
-            case ORIENTATION -> "ORIENTATION_AND_INFORMATION";
-            default -> group.name();
-        };
-    }
-
-    private String floor(final @Nullable String symbol, final SubmissionFloor floor) {
-        final String suffix;
-        if (floor.mezzanine()) {
-            suffix = " półpiętro";
-        } else {
-            suffix = "";
-        }
-        return this.submissions.floorLabel(symbol, floor.floorId()).orElseGet(
-            () -> Optional.ofNullable(floor.number()).map(number -> number + suffix)
-                .orElseGet(() -> Optional.ofNullable(floor.floorId()).orElse(""))
-        );
     }
 }

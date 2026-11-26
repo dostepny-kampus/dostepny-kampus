@@ -48,7 +48,7 @@ private const val NEAR_ENTRANCE_METERS = 10.0
  * przez ekrany jak u osoby, założenia scenariusza i eksport przez API serwera ([DemoServer]). Pozycję podaje trasa
  * pokazu, a zdjęcie aparat podstawiony intencją ([DemoDevice.stubCamera]).
  *
- * TODO(#3062): test czeka na `GET /export.geojson` na serwerze; po jego scaleniu zdjąć `@Ignore`.
+ * TODO(#4162): test czeka na włączenie po scaleniu eksportu.
  *
  * Wymagania: US6.1, US6.2, US7.1, US9.2, US10.1, US2.1, US11.1, US13.1
  */
