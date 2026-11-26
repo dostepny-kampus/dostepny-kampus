@@ -18,6 +18,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.model.review.RejectionReasons
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
 import io.github.dostepnykampus.feature.review.queue.queued
 import org.junit.Assert.assertEquals
@@ -49,7 +50,7 @@ class DecisionTest {
         click("Nieaktualne")
         click("Odrzuć")
         assertEquals("przyjęcie", 1, accepts)
-        assertEquals("powód gotowy", listOf(Rejection(reason = "Nieaktualne")), rejections)
+        assertEquals("powód gotowy", listOf(Rejection(reason = RejectionReasons.OUTDATED)), rejections)
     }
 
     @Test

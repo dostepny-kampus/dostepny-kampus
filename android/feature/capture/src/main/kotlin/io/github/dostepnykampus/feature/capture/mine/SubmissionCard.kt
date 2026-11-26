@@ -29,6 +29,7 @@ import io.github.dostepnykampus.core.designsystem.campusDay
 import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.building.EntranceMarking
+import io.github.dostepnykampus.core.model.review.RejectionReasons
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.capture.R
 import java.time.ZoneId
@@ -131,15 +132,13 @@ private fun outdatedText(item: OwnSubmissionItem): Int =
         else -> R.string.moje_nieaktualne
     }
 
-private const val OUTDATED_REASON = "nieaktualne"
-
 /** Czy zgłoszenie czeka w telefonie na wybór jednej z dwóch wersji. Wymagania: US9.3, BR-10 */
 internal val OwnSubmissionItem.hasVersionConflict: Boolean
     get() = refusal == RefusalReason.CHANGED_ON_SERVER
 
 /** Czy zgłoszenie odrzucono jako „nieaktualne”. Wymagania: BR-23, BR-24 */
 internal val OwnSubmissionItem.isOutdated: Boolean
-    get() = shownStatus() == ShownStatus.REJECTED && rejectionReason?.trim().equals(OUTDATED_REASON, ignoreCase = true)
+    get() = shownStatus() == ShownStatus.REJECTED && RejectionReasons.isOutdated(rejectionReason)
 
 /**
  * Czy pozycję można otworzyć z C3: status pozwala na poprawkę ([canOpen]), a rodzaj ma ekran poprawki. Zmiana
