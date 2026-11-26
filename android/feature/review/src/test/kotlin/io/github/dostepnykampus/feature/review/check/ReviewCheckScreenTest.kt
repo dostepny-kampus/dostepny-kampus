@@ -11,6 +11,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTextExactly
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -40,9 +41,9 @@ import java.time.LocalDate
 /**
  * R2 „Sprawdzenie zgłoszenia”: dane zgłoszenia z miejscem słowami, podobne zgłoszenia, decyzja, typ i uciążliwość
  * zgłoszenia szybkiego, komunikaty, poprzednie zgłoszenie przy „bariera usunięta”, zmiana oznaczenia wejścia
- * z obecnym oznaczeniem i bez „Duplikat”, wczytywanie i stany wspólne.
+ * z obecnym oznaczeniem i bez „Duplikat”, przejście do zasłaniania, wczytywanie i stany wspólne.
  *
- * Wymagania: US10, US10.1, US10.2, US10.3, US10.6, NFR-19, US10.8, BR-3, BR-11, BR-19, BR-24, NFR-50
+ * Wymagania: US10, US10.1, US10.2, US10.3, US10.6, NFR-19, US10.8, BR-3, BR-11, BR-15, BR-19, BR-24, NFR-50
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
@@ -52,6 +53,7 @@ class ReviewCheckScreenTest {
 
     private var accepts = 0
     private var retries = 0
+    private val covers = mutableListOf<Pair<String, String>>()
     private val severities = mutableListOf<Severity>()
     private val shown = mutableStateOf<CheckUiState>(CheckUiState.Loading)
 
@@ -155,6 +157,16 @@ class ReviewCheckScreenTest {
     }
 
     @Test
+    fun coverOpensForPhoto() {
+        val submission = CHECKED.copy(content = CHECKED.content.copy(photoIds = listOf("p-a", "p-b")))
+        show(READY.copy(submission = submission, photoUrls = listOf("a/p-a", "a/p-b")))
+        val buttons = compose.onAllNodesWithText("Zasłoń twarz lub tablicę")
+        buttons[0].performScrollTo().performClick()
+        buttons[1].performScrollTo().performClick()
+        assertEquals("zasłanianie wskazanego zdjęcia", listOf("p-a" to "a/p-a", "p-b" to "a/p-b"), covers)
+    }
+
+    @Test
     fun showsPreviousOfRemoved() {
         val removed = CHECKED.run { copy(content = content.copy(isBarrierRemoved = true, replacesSubmissionId = "p")) }
         show(
@@ -168,6 +180,8 @@ class ReviewCheckScreenTest {
         compose.onNodeWithText("Nowe zdjęcie miejsca").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Poprzednie zgłoszenie:").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Archiwalne").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Zasłoń twarz lub tablicę").performScrollTo().performClick()
+        assertEquals("zasłanianie nowego zdjęcia", listOf("p-a" to "a/p-a"), covers)
     }
 
     @Test
@@ -186,7 +200,12 @@ class ReviewCheckScreenTest {
             DostepnyKampusTheme {
                 ReviewCheckContent(
                     state = shown.value,
-                    actions = ReviewCheckActions(onBack = {}, onDecided = {}),
+                    actions =
+                        ReviewCheckActions(
+                            onBack = {},
+                            onDecided = {},
+                            onCover = { photoId, photoUrl -> covers += photoId to photoUrl },
+                        ),
                     decision = decision,
                     onRetry = { retries++ },
                 )
