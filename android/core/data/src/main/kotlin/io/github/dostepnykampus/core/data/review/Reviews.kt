@@ -21,7 +21,7 @@ import io.github.dostepnykampus.core.network.submission.SubmissionsApi
  * [ServerReply.Offline], a nic nie czeka w telefonie. Brak zgłoszenia to [ServerReply.Missing], a 401 i 403
  * to [ServerReply.Fault].
  *
- * Wymagania: US10.1, US10.2, US10.3, US10.4, US10.7, BR-11
+ * Wymagania: US10.1, US10.2, US10.3, US10.4, US10.7, BR-11, BR-15
  */
 public interface Reviews {
     /** Kolejka Weryfikatora podzielona na zgłoszenia do wzięcia i wzięte przez niego. */
@@ -63,6 +63,18 @@ public interface Reviews {
      * @param submissionId identyfikator sprawdzanego zgłoszenia
      */
     public suspend fun similar(submissionId: String): ServerReply<List<SimilarSubmission>>
+
+    /**
+     * Zastępuje zdjęcie zgłoszenia wziętego przez tego Weryfikatora wersją z zasłoniętymi twarzami i tablicami;
+     * nie tworzy nowej wersji zgłoszenia.
+     *
+     * Wymagania: BR-15, NFR-25
+     *
+     * @param submissionId identyfikator zgłoszenia
+     * @param photoId identyfikator zdjęcia z listy `photoIds`
+     * @param jpeg plik JPEG z zasłonami w pikselach, już obrócony
+     */
+    public suspend fun replacePhoto(submissionId: String, photoId: String, jpeg: ByteArray): ServerReply<Unit>
 }
 
 /**
@@ -103,4 +115,7 @@ internal fun reviewsOf(api: ReviewApi, submissions: SubmissionsApi): Reviews =
 
         override suspend fun similar(submissionId: String): ServerReply<List<SimilarSubmission>> =
             api.similar(submissionId).toReply { it }
+
+        override suspend fun replacePhoto(submissionId: String, photoId: String, jpeg: ByteArray): ServerReply<Unit> =
+            submissions.putPhoto(submissionId = submissionId, photoId = photoId, jpeg = jpeg).toReply { }
     }
