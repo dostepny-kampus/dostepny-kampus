@@ -1,0 +1,60 @@
+/*
+ * Dostępny Kampus
+ * Author: Myroslav Hryniuka
+ * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+ */
+package io.github.dostepnykampus.feature.map.style
+
+import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.feature.map.campus.BARRIER_BUILDING
+import io.github.dostepnykampus.feature.map.campus.BARRIER_FLOOR
+import io.github.dostepnykampus.feature.map.campus.BARRIER_SEVERITY
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
+
+/** Nazwa obrazu znaku bariery o uciążliwości [severity]. Wymagania: NFR-21 */
+internal fun barrierSignImage(severity: Severity): String = "bariera_${severity.name}"
+
+/** Nazwa obrazu znaku bariery o uciążliwości [severity] bez piętra na planie. Wymagania: US16.1, BR-14 */
+internal fun barrierNoFloorImage(severity: Severity): String = "bariera_bez_pietra_${severity.name}"
+
+/** Nazwa obrazu wyróżnionego znaku wybranej bariery o uciążliwości [severity]. Wymagania: NFR-21 */
+internal fun chosenBarrierImage(severity: Severity): String = "bariera_wybrana_${severity.name}"
+
+/** Nazwa obrazu wyróżnionego znaku bariery [severity] bez piętra na planie. Wymagania: US16.1, BR-14 */
+internal fun chosenNoFloorImage(severity: Severity): String = "bariera_wybrana_bez_pietra_${severity.name}"
+
+/** Nazwa obrazu słowa uciążliwości [severity] obok znaku bariery. */
+internal fun barrierWordImage(severity: Severity): String = "bariera_slowo_${severity.name}"
+
+/** Wyrażenie obrazu warstwy [BARRIERS_LAYER] dla planu budynku [planBuilding]. Wymagania: US16.1, BR-14 */
+internal fun barrierSignsImage(planBuilding: String?): JsonElement =
+    barrierImage(planBuilding = planBuilding, regular = ::barrierSignImage, noFloor = ::barrierNoFloorImage)
+
+/** Wyrażenie obrazu warstwy [CHOSEN_BARRIER_LAYER] dla planu budynku [planBuilding]. Wymagania: US16.1, BR-14 */
+internal fun chosenSignsImage(planBuilding: String?): JsonElement =
+    barrierImage(planBuilding = planBuilding, regular = ::chosenBarrierImage, noFloor = ::chosenNoFloorImage)
+
+private fun barrierImage(
+    planBuilding: String?,
+    regular: (Severity) -> String,
+    noFloor: (Severity) -> String,
+): JsonElement {
+    val base = bySeverity(regular)
+    if (planBuilding == null) return base
+    val unknownFloor =
+        expression(
+            "all",
+            expression("==", property(BARRIER_BUILDING), JsonPrimitive(planBuilding)),
+            expression("!", expression("has", JsonPrimitive(BARRIER_FLOOR))),
+        )
+    return expression("case", unknownFloor, bySeverity(noFloor), base)
+}
+
+/** Wyrażenie wyboru obrazu [image] według uciążliwości punktu. Wymagania: NFR-21 */
+internal fun bySeverity(image: (Severity) -> String): JsonArray {
+    val named = Severity.entries.dropLast(n = 1).flatMap { listOf(JsonPrimitive(it.name), JsonPrimitive(image(it))) }
+    val other = JsonPrimitive(image(Severity.entries.last()))
+    return JsonArray(listOf(JsonPrimitive("match"), property(BARRIER_SEVERITY)) + named + other)
+}

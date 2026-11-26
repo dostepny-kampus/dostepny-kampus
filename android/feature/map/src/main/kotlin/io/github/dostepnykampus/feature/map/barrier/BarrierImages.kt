@@ -115,13 +115,7 @@ private fun unknownFloorChosen(severity: Severity, images: MapImages): Bitmap {
     return image
 }
 
-private fun drawUnknownFloorBadge(
-    canvas: Canvas,
-    centerX: Float,
-    centerY: Float,
-    badgePx: Float,
-    colors: MapColors,
-) {
+private fun drawUnknownFloorBadge(canvas: Canvas, centerX: Float, centerY: Float, badgePx: Float, colors: MapColors) {
     val scale = badgePx / (BADGE_GRID + BADGE_HALO)
     val gridCenter = BADGE_GRID / 2f
     val fill = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = colors.papier.toArgb() }

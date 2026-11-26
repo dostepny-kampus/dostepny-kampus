@@ -90,20 +90,17 @@ class CampusMapBarriersStyleTest {
     @Test
     fun picksUnknownFloorSigns() {
         val plain = barrierSignsImage(planBuilding = null).toString()
-        assertEquals("bez planu nie ma znaków z „?”", false, plain.contains("bez_pietra"))
+        assertEquals(false, plain.contains("bez_pietra"), "bez planu nie ma znaków z „?”")
         val planned = barrierSignsImage(planBuilding = "C-13").jsonArray
-        assertEquals("wybór obrazu zależy od warunku", "\"case\"", planned.first().toString())
+        assertEquals("\"case\"", planned.first().toString(), "wybór obrazu zależy od warunku")
         val condition = planned[1].toString()
-        assertEquals("warunek dotyczy budynku z planem", true, condition.contains("\"C-13\""))
-        assertEquals(
-            "warunek dotyczy bariery bez piętra",
-            true,
-            condition.contains("""["!",["has","$BARRIER_FLOOR"]]"""),
-        )
+        assertEquals(true, condition.contains("\"C-13\""), "warunek dotyczy budynku z planem")
+        val noFloor = """["!",["has","$BARRIER_FLOOR"]]"""
+        assertEquals(true, condition.contains(noFloor), "warunek dotyczy bariery bez piętra")
         val unknown = planned[2].toString()
         val named = Severity.entries.map { JsonPrimitive(barrierNoFloorImage(it)).toString() }
-        assertEquals("przy planie znaki z „?”", true, named.all(unknown::contains))
-        assertEquals("pozostałe bariery mają zwykłe znaki", plain, planned[3].toString())
+        assertEquals(true, named.all(unknown::contains), "przy planie znaki z „?”")
+        assertEquals(plain, planned[3].toString(), "pozostałe bariery mają zwykłe znaki")
     }
 
     /** Wiersz: V1 bez pobranych barier działa bez znaków barier. Wymagania: NFR-11 */

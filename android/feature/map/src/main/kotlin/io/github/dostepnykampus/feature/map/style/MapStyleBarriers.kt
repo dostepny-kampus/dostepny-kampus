@@ -85,21 +85,6 @@ internal class BesideEntrance(val minZoom: Double, val buildings: List<String>?)
     }
 }
 
-/** Nazwa obrazu znaku bariery o uciążliwości [severity]. Wymagania: NFR-21 */
-internal fun barrierSignImage(severity: Severity): String = "bariera_${severity.name}"
-
-/** Nazwa obrazu znaku bariery o uciążliwości [severity] bez piętra na planie. Wymagania: US16.1, BR-14 */
-internal fun barrierNoFloorImage(severity: Severity): String = "bariera_bez_pietra_${severity.name}"
-
-/** Nazwa obrazu wyróżnionego znaku wybranej bariery o uciążliwości [severity]. Wymagania: NFR-21 */
-internal fun chosenBarrierImage(severity: Severity): String = "bariera_wybrana_${severity.name}"
-
-/** Nazwa obrazu wyróżnionego znaku bariery [severity] bez piętra na planie. Wymagania: US16.1, BR-14 */
-internal fun chosenNoFloorImage(severity: Severity): String = "bariera_wybrana_bez_pietra_${severity.name}"
-
-/** Nazwa obrazu słowa uciążliwości [severity] obok znaku bariery. */
-internal fun barrierWordImage(severity: Severity): String = "bariera_slowo_${severity.name}"
-
 /**
  * Warstwy barier: słowo uciążliwości obok znaku i sam znak. Znak rysuje się zawsze, a jego kształt zależy
  * od uciążliwości, więc znaczenie niesie kształt, a barwa je powtarza. Słowo jest obrazem, bo napisy z czcionek
@@ -213,38 +198,8 @@ internal fun MapStyleTarget.showPlanBarriers(planBuilding: String?) {
     layout(layer = CHOSEN_BARRIER_LAYER, property = ICON_IMAGE, value = chosenSignsImage(planBuilding))
 }
 
-/** Wyrażenie obrazu warstwy [BARRIERS_LAYER] dla planu budynku [planBuilding]. Wymagania: US16.1, BR-14 */
-internal fun barrierSignsImage(planBuilding: String?): JsonElement =
-    barrierImage(planBuilding = planBuilding, regular = ::barrierSignImage, noFloor = ::barrierNoFloorImage)
-
-/** Wyrażenie obrazu warstwy [CHOSEN_BARRIER_LAYER] dla planu budynku [planBuilding]. Wymagania: US16.1, BR-14 */
-internal fun chosenSignsImage(planBuilding: String?): JsonElement =
-    barrierImage(planBuilding = planBuilding, regular = ::chosenBarrierImage, noFloor = ::chosenNoFloorImage)
-
 /** Filtr warstwy [CHOSEN_BARRIER_LAYER]: tylko bariera [id]. */
 internal fun ofBarrier(id: String): JsonElement = expression("==", property(BARRIER_ID), JsonPrimitive(id))
-
-private fun barrierImage(
-    planBuilding: String?,
-    regular: (Severity) -> String,
-    noFloor: (Severity) -> String,
-): JsonElement {
-    val base = bySeverity(regular)
-    if (planBuilding == null) return base
-    val isUnknownFloor =
-        expression(
-            "all",
-            expression("==", property(BARRIER_BUILDING), JsonPrimitive(planBuilding)),
-            expression("!", expression("has", JsonPrimitive(BARRIER_FLOOR))),
-        )
-    return expression("case", isUnknownFloor, bySeverity(noFloor), base)
-}
-
-private fun bySeverity(image: (Severity) -> String): JsonArray {
-    val named = Severity.entries.dropLast(n = 1).flatMap { listOf(JsonPrimitive(it.name), JsonPrimitive(image(it))) }
-    val other = JsonPrimitive(image(Severity.entries.last()))
-    return JsonArray(listOf(JsonPrimitive("match"), property(BARRIER_SEVERITY)) + named + other)
-}
 
 /** Przesunięcie z właściwości [key] punktu, a bez niej [fallback]. */
 internal fun offsetOr(key: String, fallback: JsonArray): JsonArray =
