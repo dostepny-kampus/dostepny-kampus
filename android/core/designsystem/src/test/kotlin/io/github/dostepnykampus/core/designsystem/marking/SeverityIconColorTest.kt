@@ -32,6 +32,7 @@ private const val SIGN = "znak"
 
 private const val CHANNEL_TOLERANCE_0_255 = 2
 private const val CHANNEL_MAX = 255f
+private const val DRAW_TIMEOUT_MS = 5_000L
 
 /**
  * Poza mapą znak uciążliwości ma barwę i kontur znaku z mapy bieżącego motywu.
@@ -63,11 +64,18 @@ class SeverityIconColorTest {
                 SeverityIcon(severity = Severity.BLOCKING, modifier = Modifier.testTag(SIGN))
             }
         }
-        compose.waitForIdle()
-        val map = compose.onNodeWithTag(SIGN).captureToImage().toPixelMap()
-        val pixels = (0 until map.width).flatMap { x -> (0 until map.height).map { y -> map[x, y] } }
+        compose.waitUntil(
+            conditionDescription = "znak narysowany w barwie ${colors.znakBlokada.hex()}",
+            timeoutMillis = DRAW_TIMEOUT_MS,
+        ) { signPixels().any { distance(a = it, b = colors.znakBlokada) <= CHANNEL_TOLERANCE_0_255 } }
+        val pixels = signPixels()
         assertNear("znak bez barwy tablicy „Blokady”", colors.znakBlokada, pixels)
         assertNear("znak bez konturu znaku mapy", colors.tusz, pixels)
+    }
+
+    private fun signPixels(): List<Color> {
+        val map = compose.onNodeWithTag(SIGN).captureToImage().toPixelMap()
+        return (0 until map.width).flatMap { x -> (0 until map.height).map { y -> map[x, y] } }
     }
 
     private fun assertNear(message: String, expected: Color, pixels: List<Color>) {
