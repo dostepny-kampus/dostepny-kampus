@@ -43,6 +43,23 @@ public final class EntranceRows implements RowMapper<Entrance> {
         FROM entrances LEFT JOIN entrance_places AS place USING (id, building_symbol)
         """;
 
+    /** Nazwa kolumny z szerokością drzwi w centymetrach. */
+    private final String widthColumn;
+
+    /** Tworzy odczyt wiersza wejścia z kolumną szerokości {@code door_width_cm}. */
+    public EntranceRows() {
+        this("door_width_cm");
+    }
+
+    /**
+     * Tworzy odczyt wiersza wejścia z podaną kolumną szerokości drzwi.
+     *
+     * @param column Nazwa kolumny z szerokością drzwi
+     */
+    private EntranceRows(final String column) {
+        this.widthColumn = column;
+    }
+
     @Override
     public Entrance mapRow(final ResultSet rows, final int num) throws SQLException {
         return new Entrance(
@@ -60,15 +77,33 @@ public final class EntranceRows implements RowMapper<Entrance> {
                 EntranceRows.text(rows, "marking_date"),
                 EntranceRows.text(rows, "marking_source")
             ),
-            EntranceRows.layer(rows)
+            this.layer(rows)
         );
     }
 
-    private static Entrance.Layer layer(final ResultSet rows) throws SQLException {
+    /**
+     * Szerokość drzwi z kolumny {@code door_width_cm}; brak albo NULL to drzwi niezmierzone.
+     *
+     * @param rows Wiersz wyniku
+     * @return Drzwi zmierzone albo niezmierzone
+     * @throws SQLException Gdy odczyt kolumny się nie uda
+     */
+    public Door door(final ResultSet rows) throws SQLException {
+        final Integer width = rows.getObject(this.widthColumn, Integer.class);
+        final Door result;
+        if (width == null) {
+            result = new Door.Unmeasured();
+        } else {
+            result = new Door.Measured(width);
+        }
+        return result;
+    }
+
+    private Entrance.Layer layer(final ResultSet rows) throws SQLException {
         final Entrance.Layer result;
         if (rows.getBoolean("pwr")) {
             result = new Entrance.Layer.Listed(
-                EntranceRows.approach(rows.getString("approach")), EntranceRows.door(rows)
+                EntranceRows.approach(rows.getString("approach")), this.door(rows)
             );
         } else {
             result = new Entrance.Layer.Unlisted();
@@ -82,24 +117,6 @@ public final class EntranceRows implements RowMapper<Entrance> {
             result = new Entrance.Approach.Undescribed();
         } else {
             result = new Entrance.Approach.Described(text);
-        }
-        return result;
-    }
-
-    /**
-     * Szerokość drzwi z kolumny {@code door_width_cm}; brak albo NULL to drzwi niezmierzone.
-     *
-     * @param rows Wiersz wyniku
-     * @return Drzwi zmierzone albo niezmierzone
-     * @throws SQLException Gdy odczyt kolumny się nie uda
-     */
-    public static Door door(final ResultSet rows) throws SQLException {
-        final Integer width = rows.getObject("door_width_cm", Integer.class);
-        final Door result;
-        if (width == null) {
-            result = new Door.Unmeasured();
-        } else {
-            result = new Door.Measured(width);
         }
         return result;
     }

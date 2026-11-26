@@ -183,7 +183,7 @@ public final class BuildingQuery implements Buildings {
                 BuildingQuery.text(rows, "location"),
                 BuildingQuery.text(rows, "floor_id"),
                 BuildingQuery.text(rows, "description"),
-                EntranceRows.door(rows)
+                new EntranceRows().door(rows)
             )
         ).list();
     }
