@@ -13,6 +13,7 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnyChild
+import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasSetTextAction
@@ -297,6 +298,15 @@ class ReportScreenTest {
         val signAtText = hasTestTag(IMPORTANT_SIGN_TAG) and hasParent(hasAnyChild(hasText(text)))
         val signs = compose.onAllNodes(signAtText, useUnmergedTree = true).fetchSemanticsNodes()
         assertEquals("znak „!” przy polu", 1, signs.size)
+    }
+
+    @Test
+    fun leadsToFirstMissingField() {
+        val missing = listOf(ReportFormError.MISSING_SEVERITY, ReportFormError.MISSING_PHOTO)
+        show(ReportUiState(form = ReportForm(place = A1), errors = missing, missingAttempts = 1))
+        val text = "Brakuje uciążliwości. Uzupełnij to pole, aby zapisać."
+        val atField = isFocused() and hasAnyDescendant(hasText(text))
+        compose.onNode(atField, useUnmergedTree = true).assertIsDisplayed()
     }
 
     @Test

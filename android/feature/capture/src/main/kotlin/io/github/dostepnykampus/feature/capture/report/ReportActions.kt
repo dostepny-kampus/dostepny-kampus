@@ -31,8 +31,8 @@ import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
 import io.github.dostepnykampus.feature.capture.report.form.DescriptionSection
 import io.github.dostepnykampus.feature.capture.report.form.ExitDialog
-import io.github.dostepnykampus.feature.capture.report.form.FieldError
 import io.github.dostepnykampus.feature.capture.report.form.FloorSection
+import io.github.dostepnykampus.feature.capture.report.form.MissingField
 import io.github.dostepnykampus.feature.capture.report.form.PhotoSection
 import io.github.dostepnykampus.feature.capture.report.form.PlaceCard
 import io.github.dostepnykampus.feature.capture.report.form.PlanFloorSection
@@ -45,6 +45,7 @@ import io.github.dostepnykampus.feature.capture.report.form.ReportFormError.MISS
 import io.github.dostepnykampus.feature.capture.report.form.ReportFormError.MISSING_SEVERITY
 import io.github.dostepnykampus.feature.capture.report.form.ReportStage
 import io.github.dostepnykampus.feature.capture.report.form.ReportUiState
+import io.github.dostepnykampus.feature.capture.report.form.rememberMissingFields
 
 /**
  * Czynności ekranu C2 przekazywane z ViewModelu.
@@ -70,9 +71,10 @@ data class ReportActions(
 )
 
 /**
- * Treść C2 „Opisz barierę” dla stanu [state], bez ViewModelu.
+ * Treść C2 „Opisz barierę” dla stanu [state], bez ViewModelu. Każde „Zapisz” z brakami przewija do pierwszego
+ * brakującego pola i przenosi fokus na komunikat przy nim.
  *
- * Wymagania: US7
+ * Wymagania: US7, NFR-15
  *
  * @param state stan formularza
  * @param actions czynności ekranu
@@ -82,6 +84,8 @@ data class ReportActions(
 fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifier = Modifier) {
     val isEdit = state.form.replacesSubmissionId != null || state.form.editedSubmission != null
     val title = stringResource(if (isEdit) R.string.formularz_naglowek_edycja else R.string.formularz_naglowek)
+    val errors = state.errors
+    val fields = rememberMissingFields(firstError = errors.firstOrNull(), attempts = state.missingAttempts)
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
             BackHeader(title = title, onBack = actions.onBack)
@@ -93,30 +97,35 @@ fun ReportContent(state: ReportUiState, actions: ReportActions, modifier: Modifi
                 ReportBanner(state = state, onRetry = actions.onSave)
                 PlaceCard(place = state.form.place, onChangePlace = actions.onChangePlace)
                 state.form.place.buildingSymbol?.let { building ->
-                    val floors = state.form.place.floors
-                    if (floors.items.isEmpty()) {
-                        FloorSection(building = building, floor = state.form.floor, onEdit = actions.onEdit)
-                    } else {
-                        PlanFloorSection(floors = floors, floor = state.form.floor, onEdit = actions.onEdit)
+                    MissingField(error = MISSING_FLOOR, isShown = MISSING_FLOOR in errors, fields = fields) {
+                        val floors = state.form.place.floors
+                        if (floors.items.isEmpty()) {
+                            FloorSection(building = building, floor = state.form.floor, onEdit = actions.onEdit)
+                        } else {
+                            PlanFloorSection(floors = floors, floor = state.form.floor, onEdit = actions.onEdit)
+                        }
                     }
-                    FieldError(MISSING_FLOOR, isShown = MISSING_FLOOR in state.errors)
                 }
-                BarrierTypeField(
-                    type = state.form.barrierType,
-                    onPick = { actions.onEdit(ReportEdit.Type(it)) },
-                    isError = MISSING_BARRIER_TYPE in state.errors,
-                )
-                FieldError(MISSING_BARRIER_TYPE, isShown = MISSING_BARRIER_TYPE in state.errors)
-                SeverityChoice(
-                    severity = state.form.severity,
-                    onPick = { actions.onEdit(ReportEdit.Rating(it)) },
-                    isError = MISSING_SEVERITY in state.errors,
-                )
-                FieldError(MISSING_SEVERITY, isShown = MISSING_SEVERITY in state.errors)
-                PhotoSection(photos = PhotoPaths(state.photos.map { it.path }), camera = actions.camera)
-                FieldError(MISSING_PHOTO, isShown = MISSING_PHOTO in state.errors)
-                DescriptionSection(text = state.form.description, onEdit = actions.onEdit)
-                FieldError(MISSING_DESCRIPTION, isShown = MISSING_DESCRIPTION in state.errors)
+                MissingField(error = MISSING_BARRIER_TYPE, isShown = MISSING_BARRIER_TYPE in errors, fields = fields) {
+                    BarrierTypeField(
+                        type = state.form.barrierType,
+                        onPick = { actions.onEdit(ReportEdit.Type(it)) },
+                        isError = MISSING_BARRIER_TYPE in errors,
+                    )
+                }
+                MissingField(error = MISSING_SEVERITY, isShown = MISSING_SEVERITY in errors, fields = fields) {
+                    SeverityChoice(
+                        severity = state.form.severity,
+                        onPick = { actions.onEdit(ReportEdit.Rating(it)) },
+                        isError = MISSING_SEVERITY in errors,
+                    )
+                }
+                MissingField(error = MISSING_PHOTO, isShown = MISSING_PHOTO in errors, fields = fields) {
+                    PhotoSection(photos = PhotoPaths(state.photos.map { it.path }), camera = actions.camera)
+                }
+                MissingField(error = MISSING_DESCRIPTION, isShown = MISSING_DESCRIPTION in errors, fields = fields) {
+                    DescriptionSection(text = state.form.description, onEdit = actions.onEdit)
+                }
             }
             if (state.stage == ReportStage.EXIT_ASKED) {
                 ExitDialog(onConfirmExit = actions.onConfirmExit, onStay = actions.onStay)
