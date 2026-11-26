@@ -5,7 +5,9 @@
  */
 
 /**
- * Moduł sync: pobranie zmian. <p>Zadanie: składa zmiany od kursora w jedną odpowiedź.</p>
+ * Moduł sync: pobranie zmian z serwera do telefonu.
+ *
+ * <p>Zadanie: składa zmiany od kursora z modułów właścicieli danych w jedną odpowiedź.</p>
  *
  * <p>API: brak typów dla innych modułów; HTTP {@code /sync/pull}.</p>
  *

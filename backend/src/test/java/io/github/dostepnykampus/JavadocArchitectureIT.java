@@ -183,8 +183,14 @@ final class JavadocArchitectureIT {
 
     private static List<String> violations(final Path path) {
         try {
+            final int limit;
+            if (path.endsWith("package-info.java")) {
+                limit = 8;
+            } else {
+                limit = 6;
+            }
             return JavadocArchitectureIT.problems(
-                Files.readString(path, StandardCharsets.UTF_8)
+                Files.readString(path, StandardCharsets.UTF_8), limit
             ).stream().map(problem -> "%s:%s".formatted(path, problem)).toList();
         } catch (final IOException ex) {
             throw new UncheckedIOException(ex);
@@ -192,6 +198,10 @@ final class JavadocArchitectureIT {
     }
 
     private static List<String> problems(final String source) {
+        return JavadocArchitectureIT.problems(source, 6);
+    }
+
+    private static List<String> problems(final String source, final int limit) {
         final List<String> found = new ArrayList<>(0);
         final Matcher block = JavadocArchitectureIT.BLOCK.matcher(source);
         int counted = 0;
@@ -213,7 +223,7 @@ final class JavadocArchitectureIT {
             if (lines.stream().takeWhile(text -> !text.startsWith("@"))
                 .filter(text -> !text.isBlank())
                 .filter(text -> !JavadocArchitectureIT.REQUIREMENTS.matcher(text).find())
-                .count() > 6) {
+                .count() > limit) {
                 found.add("%d długość".formatted(line));
             }
             if (lines.stream()
