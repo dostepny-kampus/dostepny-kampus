@@ -19,7 +19,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,6 +33,7 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.OfflinePill
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.designsystem.marking.AssessmentLine
 import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.model.building.EntranceMarking
@@ -282,7 +282,7 @@ private fun ColumnScope.BuildingFacts(
     card.floors?.let { LiftToiletGroup(it) }
     FloorsGroup(facts = card.floors, isBasic = card.isBasic, onShowPlan = onShowPlan)
     onMarkFloors?.let { onMark ->
-        OutlinedButton(onClick = onMark, modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.minimum)) {
+        OutlinedAction(onClick = onMark, modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.minimum)) {
             Text(stringResource(R.string.karta_oznacz_pietra))
         }
     }

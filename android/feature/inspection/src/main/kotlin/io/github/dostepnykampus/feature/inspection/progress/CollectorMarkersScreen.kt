@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +34,7 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.card.CardAction
 import io.github.dostepnykampus.core.designsystem.card.ListItemCard
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.feature.inspection.R
 import io.github.dostepnykampus.core.designsystem.R as DesignR
 
@@ -159,10 +159,7 @@ private fun Inspected(row: FloorRow, isAsking: Boolean, isUnsaved: Boolean, acti
             ) {
                 Text(stringResource(R.string.znaczniki_cofnij))
             }
-            OutlinedButton(
-                onClick = actions.onKeep,
-                modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.minimum),
-            ) {
+            OutlinedAction(onClick = actions.onKeep, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.znaczniki_zostaw))
             }
         } else {

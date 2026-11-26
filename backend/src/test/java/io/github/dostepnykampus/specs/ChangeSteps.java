@@ -49,10 +49,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 public final class ChangeSteps {
 
     /** Przyjęte zgłoszenie, którego dotyczą zmiany. */
-    private static final UUID ORIGINAL = UUID.fromString("b4c5d6e7-0011-4f8a-9b0c-1d2e3f4a5b6c");
+    static final UUID ORIGINAL = UUID.fromString("b4c5d6e7-0011-4f8a-9b0c-1d2e3f4a5b6c");
 
     /** Zmiana „bariera usunięta” złożona niezależnie od zmiany sprawdzanej. */
-    private static final UUID RIVAL = UUID.fromString("b4c5d6e7-0012-4f8a-9b0c-1d2e3f4a5b6c");
+    static final UUID RIVAL = UUID.fromString("b4c5d6e7-0012-4f8a-9b0c-1d2e3f4a5b6c");
 
     /** Miejsce zgłoszeń scenariuszy. */
     private static final SubmissionPoint ORIGIN = new SubmissionPoint(17.05, 51.108);
