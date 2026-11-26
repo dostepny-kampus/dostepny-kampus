@@ -44,7 +44,8 @@ import java.time.LocalDate
 /**
  * R2 „Sprawdzenie zgłoszenia”: dane zgłoszenia z miejscem słowami, rola i pseudonim autora, podobne zgłoszenia,
  * decyzja, typ i uciążliwość zgłoszenia szybkiego, komunikaty, poprzednie zgłoszenie przy „bariera usunięta”,
- * zmiana oznaczenia wejścia z obecnym oznaczeniem i bez „Duplikat”, przejście do zasłaniania, wczytywanie i stany wspólne.
+ * zmiana oznaczenia wejścia z obecnym oznaczeniem i bez „Duplikat”, przejście do zasłaniania, wczytywanie
+ * i stany wspólne.
  *
  * Wymagania: US10, US10.1, US10.2, US10.3, US10.6, NFR-19, US10.8, BR-3, BR-5, BR-11, BR-15, BR-19, BR-24, NFR-50
  */

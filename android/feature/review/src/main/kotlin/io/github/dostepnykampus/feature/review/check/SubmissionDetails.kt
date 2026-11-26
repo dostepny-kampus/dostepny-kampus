@@ -18,13 +18,13 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.GroupFrame
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.account.nameRes
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.designsystem.marking.BarrierPhoto
 import io.github.dostepnykampus.core.designsystem.marking.SeverityLabel
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.designsystem.marking.measuredPlace
 import io.github.dostepnykampus.core.designsystem.marking.nearEntrance
-import io.github.dostepnykampus.core.designsystem.nameRes
 import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
