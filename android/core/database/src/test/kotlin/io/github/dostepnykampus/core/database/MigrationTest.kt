@@ -309,6 +309,24 @@ class MigrationTest {
                 assertEquals("wiersz historii zostaje z pustymi nowymi kolumnami", 1, history)
             }
     }
+
+    /** Wersja 14→15: historia zostaje, treść do poprawki jest pusta. Wymagania: US8.3, NFR-5 */
+    @Test
+    fun keepsHistoryFrom14To15() {
+        helper.createDatabase(DB_NAME, 14).use { fourteenth ->
+            fourteenth.execSQL(
+                "INSERT INTO own_submissions (id, saved_at, kind, state) VALUES ('h', 7, 'PRECISE', 'SENT')",
+            )
+        }
+
+        helper
+            .runMigrationsAndValidate(DB_NAME, 15, true, MIGRATION_14_15)
+            .use { fifteenth ->
+                val empty = "SELECT COUNT(*) FROM own_submissions WHERE id = 'h' AND content_json IS NULL"
+                val history = fifteenth.query(empty).use { row -> readCount(row) }
+                assertEquals("wiersz historii zostaje bez treści do poprawki", 1, history)
+            }
+    }
 }
 
 private fun databaseAfterFirstAccount(): DkDatabase {

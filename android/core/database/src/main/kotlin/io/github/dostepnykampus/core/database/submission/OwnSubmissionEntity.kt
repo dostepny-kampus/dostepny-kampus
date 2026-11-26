@@ -45,6 +45,8 @@ public enum class OwnSubmissionState {
  * @property isBarrierRemoved oznaczenie „bariera usunięta”; `null` w wierszach sprzed tej kolumny
  * @property entranceId wejście w zmianie oznaczenia wejścia
  * @property entranceMarking nowe oznaczenie wejścia w zmianie oznaczenia
+ * @property contentJson pełna treść z ostatniego zapisu ze ścieżkami zdjęć, do poprawki wysłanego zgłoszenia bez
+ *   sieci; `null` w wierszach sprzed tej kolumny
  */
 @Entity(tableName = "own_submissions")
 public data class OwnSubmissionEntity(
@@ -65,4 +67,5 @@ public data class OwnSubmissionEntity(
     @ColumnInfo(name = "barrier_removed") val isBarrierRemoved: Boolean? = null,
     @ColumnInfo(name = "entrance_id") val entranceId: String? = null,
     @ColumnInfo(name = "entrance_marking") val entranceMarking: String? = null,
+    @ColumnInfo(name = "content_json") val contentJson: String? = null,
 )
