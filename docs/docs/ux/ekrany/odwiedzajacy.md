@@ -38,7 +38,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Brak wyniku: komunikat „Nie znaleźliśmy budynku »C-31«.”, podpowiedź, by sprawdzić symbol albo wybrać budynek z listy, i przycisk Pokaż listę nad mapą](obrazy/m-v1-mapa-pusty-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pusty-jasny.webp) | [![Ten sam komunikat o braku wyniku w motywie ciemnym](obrazy/m-v1-mapa-pusty-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pusty-ciemny.webp) | [![Ten sam komunikat przy czcionce 200%: tekst w kilku wierszach, przycisk Pokaż listę pod nim, mapa niżej](obrazy/m-v1-mapa-pusty-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pusty-jasny-200.webp) |
+| [![Brak wyniku: pole z wpisanym C-31, pod nim komunikat „Nie znaleźliśmy budynku „C-31”.”, rada „Sprawdź zapis, np. C-13, albo wybierz budynek z listy.” i przycisk Pokaż listę nad mapą](obrazy/m-v1-mapa-pusty-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pusty-jasny.webp) | [![Ten sam komunikat o braku wyniku w motywie ciemnym](obrazy/m-v1-mapa-pusty-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pusty-ciemny.webp) | [![Ten sam komunikat przy czcionce 200%: tekst w kilku wierszach, przycisk Pokaż listę pod nim, mapa niżej](obrazy/m-v1-mapa-pusty-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-pusty-jasny-200.webp) |
 
 ### V1: arkusz bariery po dotknięciu znaku
 
@@ -46,7 +46,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Po dotknięciu znaku bariery: na mapie wybrany znak Blokada, pod mapą arkusz z czerwonym znakiem Blokada i pogrubionym słowem Blokada obok, bez ramki, przyciskiem Zamknij, wierszem Budynek A-1, tytułem Schody przy wejściu, miejscem A-1 Gmach Główny · Wejście Cesarskie, parter, datą Sprawdzone 14.10.2026 i rysunkiem schodów](obrazy/m-v1-mapa-bariera-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-bariera-jasny.webp) | [![Ten sam arkusz bariery w motywie ciemnym: rysunek schodów w ciemnych tonach](obrazy/m-v1-mapa-bariera-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-bariera-ciemny.webp) | [![Ten sam arkusz bariery przy czcionce 200%: nagłówek z polem zostaje, wiersz Budynek A-1 bez ikony budynku, tekst bariery w kilku wierszach, rysunek niżej w przewijanym arkuszu](obrazy/m-v1-mapa-bariera-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-bariera-jasny-200.webp) |
+| [![Po dotknięciu znaku bariery: na mapie wybrany znak Blokada, pod mapą arkusz z czerwonym znakiem Blokada i pogrubionym słowem Blokada obok, bez ramki, przyciskiem Zamknij, wierszem Budynek A-1, tytułem Schody przy wejściu, miejscem A-1 Gmach Główny · Wejście Cesarskie, parter, datą Sprawdzone 14.10.2026 i rysunkiem schodów](obrazy/m-v1-mapa-bariera-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-bariera-jasny.webp) | [![Ten sam arkusz bariery w motywie ciemnym: rysunek schodów w ciemnych tonach](obrazy/m-v1-mapa-bariera-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-bariera-ciemny.webp) | [![Ten sam arkusz bariery przy czcionce 200%: nagłówek z polem zostaje, przycisk Zamknij w osobnym wierszu nad słowem Blokada, wiersz Budynek A-1 bez ikony budynku, tekst bariery w kilku wierszach, rysunek niżej w przewijanym arkuszu](obrazy/m-v1-mapa-bariera-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-bariera-jasny-200.webp) |
 
 ### V1: arkusz wejścia po dotknięciu znaku {#v1-arkusz-wejscia}
 
@@ -118,7 +118,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Pełna legenda otwarta przyciskiem informacji z przyciskiem Zamknij: oba poziomy budynków PWr, trzy znaki wejść, ścieżka dostosowana, pochylnia, trzy znaki barier, pozycje planu piętra od Sali po Zgłoszenie bez piętra oraz pełna sekcja Źródła danych ze źródłem PWr i datą stanu](obrazy/m-v1-mapa-legenda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-legenda-jasny.webp) | [![Ta sama pełna legenda w motywie ciemnym](obrazy/m-v1-mapa-legenda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-legenda-ciemny.webp) | [![Ta sama legenda przy czcionce 200%: wszystkie pozycje mapy, planu piętra i Źródła danych widoczne w całości nad podpisem OpenStreetMap](obrazy/m-v1-mapa-legenda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-legenda-jasny-200.webp) |
+| [![Pełna legenda otwarta przyciskiem informacji z przyciskiem Zamknij: oba poziomy budynków PWr, ścieżka dostosowana, pochylnia, trzy znaki wejść, trzy znaki barier, pozycje planu piętra od Sali po Zgłoszenie bez piętra oraz pełna sekcja Źródła danych ze źródłem PWr i datą stanu](obrazy/m-v1-mapa-legenda-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-legenda-jasny.webp) | [![Ta sama pełna legenda w motywie ciemnym](obrazy/m-v1-mapa-legenda-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-legenda-ciemny.webp) | [![Ta sama legenda przy czcionce 200%: wszystkie pozycje mapy, planu piętra i Źródła danych widoczne w całości nad podpisem OpenStreetMap](obrazy/m-v1-mapa-legenda-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-legenda-jasny-200.webp) |
 
 ### V1: bez internetu
 
@@ -134,7 +134,7 @@ Obraz pokazuje po pięć pierwszych budynków każdego terenu. W aplikacji lista
 
 | Jasny | Ciemny | Czcionka 200% |
 | --- | --- | --- |
-| [![Otwarty panel „Teren na mapie” pod przyciskiem terenu: nagłówek z przyciskiem Zamknij i pięć terenów; Kampus główny, 78 budynków, wybrany, ze znakiem wyboru; Wittigowo, 9 budynków, 2 km; Długa; T-9 Atol; Bartoszowice](obrazy/m-v1-mapa-teren-panel-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-panel-jasny.webp) | [![Ten sam panel w motywie ciemnym](obrazy/m-v1-mapa-teren-panel-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-panel-ciemny.webp) | [![Ten sam panel przy czcionce 200%: panel zastępuje przycisk terenu, widać dwa tereny i napis „Przewiń w dół”](obrazy/m-v1-mapa-teren-panel-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-panel-jasny-200.webp) |
+| [![Otwarty panel „Teren na mapie” pod przyciskiem terenu: nagłówek z przyciskiem Zamknij i pięć terenów, nazwy zwykłą czcionką; Kampus główny, 78 budynków, wybrany, na tle wyboru i ze znakiem wyboru; Wittigowo, 9 budynków, 2 km; Długa; T-9 Atol; Bartoszowice](obrazy/m-v1-mapa-teren-panel-jasny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-panel-jasny.webp) | [![Ten sam panel w motywie ciemnym](obrazy/m-v1-mapa-teren-panel-ciemny.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-panel-ciemny.webp) | [![Ten sam panel przy czcionce 200%: panel zastępuje przycisk terenu, tytuł w dwóch wierszach, widać Kampus główny, Wittigowo i początek terenu Długa, resztę listy się przewija](obrazy/m-v1-mapa-teren-panel-jasny-200.webp){: width="240" loading="lazy" }](obrazy/m-v1-mapa-teren-panel-jasny-200.webp) |
 
 ### V1: mapa po zmianie terenu
 
