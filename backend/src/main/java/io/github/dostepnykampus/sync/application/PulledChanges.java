@@ -5,27 +5,33 @@
  */
 package io.github.dostepnykampus.sync.application;
 
+import io.github.dostepnykampus.shared.json.RawJson;
 import java.time.Instant;
 import java.util.List;
 
 /**
  * Zmiany od kursora i kursor następnego pobrania.
  *
- * <p>Wymagania: US15.1, US15.2</p>
+ * <p>Wymagania: US15.1, US15.2, US8.1</p>
  *
  * @param cursor Chwila najpóźniejszej zwróconej zmiany, bez zmian kursor z żądania
+ * @param submissions Zgłoszenia zmienione od kursora w kształcie schematu Submission
  * @param markers Znaczniki pięter zmienione od kursora
  * @since 0.1.0
  */
-public record PulledChanges(Instant cursor, List<PulledMarker> markers) {
+public record PulledChanges(
+    Instant cursor, List<RawJson> submissions, List<PulledMarker> markers
+) {
 
     /**
-     * Kopiuje listę, żeby rekord był niezmienny.
+     * Kopiuje listy, żeby rekord był niezmienny.
      *
      * @param cursor Chwila najpóźniejszej zwróconej zmiany, bez zmian kursor z żądania
+     * @param submissions Zgłoszenia zmienione od kursora w kształcie schematu Submission
      * @param markers Znaczniki pięter zmienione od kursora
      */
     public PulledChanges {
+        submissions = List.copyOf(submissions);
         markers = List.copyOf(markers);
     }
 }

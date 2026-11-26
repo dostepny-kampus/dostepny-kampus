@@ -7,11 +7,11 @@
 /**
  * Testy modułu pobrania zmian: zmiany od kursora z modułów właścicieli danych.
  *
- * <p>Wymagania: US15.1, US15.2, BR-20</p>
+ * <p>Wymagania: US15.1, US15.2, US8.1, BR-20</p>
  *
  * @since 0.1.0
  */
-@ApplicationModule(allowedDependencies = {"inspection :: api", "shared"})
+@ApplicationModule(allowedDependencies = {"barrier :: api", "inspection :: api", "shared"})
 package io.github.dostepnykampus.sync;
 
 import org.springframework.modulith.ApplicationModule;
