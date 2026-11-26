@@ -6,8 +6,7 @@ Funkcja: Weryfikacja zgłoszeń
   Założenia:
     Zakładając, że pierwszy i drugi Weryfikator są zalogowani z rolą Weryfikatora
 
-  # brak kroków serwera: #3751
-  @US10.4 @serwer @do-zrobienia
+  @US10.4 @serwer
   Scenariusz: Kolejka pokazuje rodzaj, budynek i datę wysłania, od najdawniej wysłanego
     Zakładając, że w kolejce są zgłoszenia wysłane 27.10.2026 z budynku C-13 i 26.10.2026 z budynku A-1
     Jeżeli pierwszy Weryfikator otworzy kolejkę weryfikacji
@@ -30,7 +29,7 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-11
   Reguła: Zgłoszenie w weryfikacji obsługuje tylko Weryfikator, który je wziął
 
-    # brak kroków serwera: #3751
+    # brak kroków serwera: #4044
     @US10.4 @US8.2 @serwer @do-zrobienia
     Scenariusz: Wzięte zgłoszenie znika z kolejki pozostałych Weryfikatorów
       Zakładając, że w kolejce jest zgłoszenie TB-13 „próg” z budynku C-13 ze statusem „wysłane”
@@ -52,7 +51,7 @@ Funkcja: Weryfikacja zgłoszeń
         | przyjąć  |
         | odrzucić |
 
-    # brak kroków serwera: #3751
+    # brak kroków serwera: #4044
     @US10.7 @serwer @do-zrobienia
     Scenariusz: Wzięte zgłoszenia bez decyzji Weryfikator widzi osobno i do nich wraca
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie TB-13 „próg” z budynku C-13 i nie podjął decyzji
@@ -63,8 +62,7 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-4
   Reguła: Nikt nie weryfikuje własnego zgłoszenia
 
-    # brak kroków serwera: #3751
-    @US10.5 @BR-1 @serwer @do-zrobienia
+    @US10.5 @BR-1 @serwer
     Scenariusz: Weryfikator nie widzi w kolejce własnych zgłoszeń
       Zakładając, że pierwszy Weryfikator ma też rolę Zbierającego
       Oraz jako Zbierający wysłał zgłoszenie TB-1 „schody przy wejściu” przy wejściu głównym A-1
@@ -111,8 +109,7 @@ Funkcja: Weryfikacja zgłoszeń
       Jeżeli pierwszy Weryfikator przejrzy podobne zgłoszenia
       Wtedy przy zgłoszeniu TB-13 widzi typ bariery, zdjęcie, odległość 5 m i piętro
 
-    # brak kroków serwera: #3751
-    @serwer @do-zrobienia
+    @serwer
     Scenariusz: System sam nie odrzuca ani nie łączy podobnych zgłoszeń
       Zakładając, że 2 m od siebie przy wejściu głównym A-1 wysłano dwa zgłoszenia TB-1 „schody przy wejściu”
       Jeżeli pierwszy Weryfikator otworzy kolejkę weryfikacji
