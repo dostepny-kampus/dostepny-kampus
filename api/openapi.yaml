@@ -1236,7 +1236,7 @@ components:
       description: Zmiany z serwera od poprzedniego pobrania.
       required: [cursor, submissions, entrances, inspectionMarkers]
       properties:
-        cursor: {type: string, description: "Znacznik do parametru `since` w następnym pobraniu."}
+        cursor: {type: string, description: "Znacznik do parametru `since` w następnym pobraniu. Zmiany z kilku minut przed znacznikiem przychodzą w następnym pobraniu ponownie; telefon zapisuje je bez skutku."}
         submissions: {type: array, description: "Własne zgłoszenia oraz zgłoszenia przyjęte i archiwalne.", items: {$ref: '#/components/schemas/Submission'}}
         entrances: {type: array, description: "Wejścia ze zmienionym oznaczeniem wejścia.", items: {$ref: '#/components/schemas/Entrance'}}
         inspectionMarkers: {type: array, description: "Dla roli `COLLECTOR` znaczniki wszystkich Zbierających, także cofnięte (US15.2); dla innych ról pusta lista.", items: {$ref: '#/components/schemas/InspectionMarker'}}
