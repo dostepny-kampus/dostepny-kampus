@@ -10,6 +10,7 @@ import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.NewSubmission;
 import io.github.dostepnykampus.barrier.submission.Reader;
 import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.SubmissionChange;
 import io.github.dostepnykampus.barrier.submission.SubmissionEdit;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
@@ -18,6 +19,9 @@ import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import io.github.dostepnykampus.barrier.submission.content.json.SubmissionContentJson;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -209,6 +213,28 @@ public final class JdbcSubmissions implements SubmissionRepository, SubmissionFi
     @Override
     public List<Submission> own(final String author, final SubmissionQuery query) {
         return this.select(query, author);
+    }
+
+    @Override
+    public List<SubmissionChange> changedSince(final Instant since, final String reader) {
+        return this.jdbc.sql(
+            String.format(
+                """
+                SELECT %s, changed_at FROM submissions
+                WHERE changed_at >= :since
+                    AND (author = :reader OR status IN ('ACCEPTED', 'ARCHIVED'))
+                ORDER BY changed_at, id
+                """,
+                SubmissionRows.COLUMNS
+            )
+        ).param("since", since.atOffset(ZoneOffset.UTC)).param("reader", reader).query(
+            new ReadableRows<>(
+                (row, number) -> new SubmissionChange(
+                    this.rows.mapRow(row, number),
+                    row.getObject("changed_at", OffsetDateTime.class).toInstant()
+                )
+            )
+        );
     }
 
     private EditResult written(@Nullable final Submission saved, final UUID id) {

@@ -9,7 +9,7 @@
  *
  * <p>Zadanie: przyjęcie, edycja i status zgłoszenia ze zdjęciami, weryfikacja, eksport.</p>
  *
- * <p>API: brak typów dla innych modułów; HTTP {@code /submissions} i {@code /export.csv}.</p>
+ * <p>API: pakiet {@code api}; HTTP {@code /submissions} i {@code /export.csv}.</p>
  *
  * <p>Zależności: {@code building :: api}, {@code shared}.</p>
  *
