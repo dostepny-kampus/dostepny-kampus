@@ -114,6 +114,7 @@ dependencies {
     androidTestImplementation(project(":core:testing"))
     androidTestImplementation(libs.okhttp)
     androidTestImplementation(libs.maplibre.android)
+    androidTestImplementation(libs.maplibre.geojson)
     androidTestImplementation(libs.kotlinx.serialization.json)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
