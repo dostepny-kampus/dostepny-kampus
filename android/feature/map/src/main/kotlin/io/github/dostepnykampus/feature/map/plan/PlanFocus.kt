@@ -44,15 +44,16 @@ internal data class PlanBuildings(val detailed: List<Building>, val basic: List<
  * Wymagania: US16.2, BR-G1
  */
 internal fun hasBasicBuildingInCenter(camera: MapCamera, catalog: BuildingCatalog?, data: CampusMapData?): Boolean {
-    if (camera.zoom < PLAN_SHOW_ZOOM || catalog == null || !catalog.hasServerList || data == null) return false
+    val confirmed = catalog?.takeIf { it.hasServerList }
+    if (camera.zoom < PLAN_SHOW_ZOOM || confirmed == null || data == null) return false
     val point = camera.center
     val nearby =
-        catalog.buildings.filter { building ->
+        confirmed.buildings.filter { building ->
             data.outlinesBySymbol[building.symbol]?.run {
                 point.longitude in west..east && point.latitude in south..north
             } == true
         }
-    val (detailed, basic) = nearby.partition { it.symbol in catalog.detailed }
+    val (detailed, basic) = nearby.partition { it.symbol in confirmed.detailed }
     return containingBuilding(point, basic) != null && containingBuilding(point, detailed) == null
 }
 
