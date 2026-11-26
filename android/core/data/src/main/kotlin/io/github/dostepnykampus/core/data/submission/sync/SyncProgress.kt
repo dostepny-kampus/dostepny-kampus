@@ -33,10 +33,8 @@ public interface SyncNow {
 }
 
 /** [SyncNow] na zadaniu [scheduler] i stanie kolejki [status]. */
-internal class ScheduledSync(
-    private val scheduler: SubmissionSyncScheduler,
-    private val status: SyncStatusSource,
-) : SyncNow {
+internal class ScheduledSync(private val scheduler: SubmissionSyncScheduler, private val status: SyncStatusSource) :
+    SyncNow {
     override fun progress(): Flow<SyncProgress?> =
         progressOf(isRunning = scheduler.isRunning(), waiting = status.status().map { it.waiting })
 
@@ -54,7 +52,7 @@ internal fun progressOf(isRunning: Flow<Boolean>, waiting: Flow<Int>): Flow<Sync
 /** Postęp po zmianie: całość nie maleje, a wysłane to całość bez czekających. */
 internal fun nextProgress(last: SyncProgress?, isRunning: Boolean, waiting: Int): SyncProgress? {
     if (!isRunning) return null
-    val total = maxOf(last?.total ?: waiting, waiting + (last?.sent ?: 0))
+    val total = maxOf(a = last?.total ?: waiting, b = waiting + (last?.sent ?: 0))
     return SyncProgress(sent = total - waiting, total = total)
 }
 

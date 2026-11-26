@@ -14,8 +14,8 @@ import io.github.dostepnykampus.core.data.inspection.FloorMarkers
 import io.github.dostepnykampus.core.data.submission.sync.ScheduledSync
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionSyncScheduler
-import io.github.dostepnykampus.core.data.submission.sync.SyncNow
 import io.github.dostepnykampus.core.data.submission.sync.SyncLog
+import io.github.dostepnykampus.core.data.submission.sync.SyncNow
 import io.github.dostepnykampus.core.data.submission.sync.SyncStatusSource
 import io.github.dostepnykampus.core.data.submission.sync.syncDataStore
 import io.github.dostepnykampus.core.data.submission.sync.syncStatusOf

@@ -40,22 +40,23 @@ class SyncProgressTest {
     /** Bez trwającego przebiegu nie ma postępu. Wymagania: US9.1 */
     @Test
     fun noProgressWhenIdle() {
-        assertNull(nextProgress(last = SyncProgress(sent = 5, total = 5), isRunning = false, waiting = 0))
+        val after = nextProgress(last = SyncProgress(sent = 5, total = 5), isRunning = false, waiting = 0)
+        assertNull(after, "po przebiegu nie ma postępu")
     }
 
     /** Strumień postępu idzie za przebiegiem i za kolejką. Wymagania: US9.1 */
     @Test
     fun followsRunAndQueue() =
         runTest(UnconfinedTestDispatcher()) {
-            val isRunning = MutableStateFlow(false)
+            val running = MutableStateFlow(false)
             val waiting = MutableStateFlow(3)
             val seen = mutableListOf<SyncProgress?>()
-            val job = launch { progressOf(isRunning = isRunning, waiting = waiting).toList(seen) }
+            val job = launch { progressOf(isRunning = running, waiting = waiting).toList(seen) }
 
-            isRunning.value = true
+            running.value = true
             waiting.value = 2
             waiting.value = 0
-            isRunning.value = false
+            running.value = false
             job.cancel()
 
             val expected =
