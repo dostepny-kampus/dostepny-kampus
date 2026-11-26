@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.core.model.building
 
+import io.github.dostepnykampus.core.model.CampusZone
+import java.time.Instant
 import java.time.LocalDate
 
 /**
@@ -15,7 +17,17 @@ import java.time.LocalDate
  * @property date dzień importu albo dzień przyjęcia zmiany oznaczenia (pole `markingDate` w kontrakcie)
  * @property source skąd pochodzi oznaczenie (pole `markingSource` w kontrakcie)
  */
-public data class EntranceAssessment(val date: LocalDate, val source: AssessmentSource)
+public data class EntranceAssessment(val date: LocalDate, val source: AssessmentSource) {
+    /**
+     * Czy oznaczenie przyjęto w dniu późniejszym niż dzień [sentAt] w strefie kampusu. Oznaczenie z tego samego dnia
+     * liczy się jako sprzed wysłania, bo kontrakt podaje tylko dzień.
+     *
+     * Wymagania: US10.8, BR-23, BR-24
+     *
+     * @param sentAt chwila wysłania zmiany oznaczenia
+     */
+    public fun isAfterDayOf(sentAt: Instant): Boolean = date.isAfter(sentAt.atZone(CampusZone).toLocalDate())
+}
 
 /**
  * Źródło oznaczenia wejścia (`markingSource` z kontraktu API, przy imporcie razem z polem `source` wejścia).

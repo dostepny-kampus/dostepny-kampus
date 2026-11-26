@@ -36,7 +36,7 @@ import io.github.dostepnykampus.feature.review.queue.titleRes
  *
  * Przy zmianie „bariera usunięta” pierwsze zdjęcie stoi obok zdjęcia poprzedniego zgłoszenia.
  *
- * Wymagania: US10, US10.6, BR-14, BR-15, BR-19, NFR-19, NFR-21
+ * Wymagania: US10, US10.6, US17.2, BR-14, BR-15, BR-19, BR-24, NFR-19, NFR-21
  *
  * @param shown zgłoszenie z adresami zdjęć
  */
@@ -64,6 +64,7 @@ internal fun SubmissionDetails(shown: CheckUiState.Ready) {
             val near = shown.nearest?.let { nearEntrance(entrance = it.entrance, meters = it.meters) }
             Text(stringResource(R.string.sprawdzenie_miejsce, measuredPlace(near = near, accuracyMeters = accuracy)))
         }
+        if (content.kind == SubmissionKind.ENTRANCE_MARKING) MarkingChange(shown.current, content.entranceMarking)
         val previous = shown.previous
         val photos = if (previous == null) shown.photoUrls else shown.photoUrls.drop(1)
         if (previous != null) RemovedComparison(previous, newPhoto = shown.photoUrls.firstOrNull(), type = type)

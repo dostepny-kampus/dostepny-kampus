@@ -12,6 +12,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.building.NearestEntrance
+import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.review.Reviews
 import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.model.building.EntranceDistance
@@ -61,6 +62,7 @@ sealed interface CheckUiState {
      * @property nearest najbliższe wejście budynku zgłoszenia; `null` bez budynku, wejść albo katalogu
      * @property changed pola, którymi nowa wersja różni się od wcześniej pokazanej; pusta lista bez nowej wersji
      * @property previous poprzednie zgłoszenie zmiany „bariera usunięta”; `null` przy innej zmianie
+     * @property current obecne oznaczenie wejścia przy zmianie oznaczenia; `null` przy innym zgłoszeniu
      */
     data class Ready(
         val submission: Submission,
@@ -74,6 +76,7 @@ sealed interface CheckUiState {
         val nearest: EntranceDistance? = null,
         val changed: List<SubmissionField> = emptyList(),
         val previous: PreviousSubmission? = null,
+        val current: CurrentMarking? = null,
     ) : CheckUiState
 
     /** Bez internetu przy wczytywaniu. */
@@ -87,14 +90,15 @@ sealed interface CheckUiState {
 }
 
 /**
- * R2 „Sprawdzenie zgłoszenia”: zgłoszenie, podobne zgłoszenia i poprzednie zgłoszenie zmiany „bariera usunięta”
- * przy otwarciu, przyjęcie i odrzucenie z powodem.
+ * R2 „Sprawdzenie zgłoszenia”: zgłoszenie, podobne zgłoszenia, poprzednie zgłoszenie zmiany „bariera usunięta”
+ * i obecne oznaczenie przy zmianie oznaczenia wejścia przy otwarciu, przyjęcie i odrzucenie z powodem.
  *
- * Wymagania: US10.1, US10.2, US10.6, US10.8, BR-3, BR-11, BR-13, BR-16, BR-19, NFR-50
+ * Wymagania: US10.1, US10.2, US10.6, US10.8, BR-3, BR-11, BR-13, BR-16, BR-19, BR-24, NFR-50
  *
  * @param submissionId identyfikator sprawdzanego zgłoszenia
  * @param reviews sprawdzanie zgłoszeń na serwerze
  * @param nearestEntrance najbliższe wejście budynku do miejsca zgłoszenia słowami
+ * @param serverEntrances wejścia budynku z serwera z obecnym oznaczeniem
  */
 @HiltViewModel(assistedFactory = ReviewCheckViewModel.Factory::class)
 class ReviewCheckViewModel
@@ -103,6 +107,7 @@ class ReviewCheckViewModel
         @Assisted private val submissionId: String,
         private val reviews: Reviews,
         private val nearestEntrance: NearestEntrance,
+        private val serverEntrances: ServerEntrances,
     ) : ViewModel() {
         private val current = MutableStateFlow<CheckUiState>(CheckUiState.Loading)
 
@@ -203,6 +208,7 @@ class ReviewCheckViewModel
                             nearest = shown.nearest,
                             changed = fieldsChanged(previous = shown.submission.content, current = server.content),
                             previous = shown.previous,
+                            current = shown.current,
                         )
                 }
             }
@@ -219,8 +225,11 @@ class ReviewCheckViewModel
             val content = found.value.content
             return if (similar is ServerReply.Ok) {
                 val nearest = nearestEntrance.find(buildingSymbol = content.buildingSymbol, point = content.location)
-                val previous = reviews.previousOf(content)
-                ready(found.value, similar.value, notice = null).copy(nearest = nearest, previous = previous)
+                ready(found.value, similar.value, notice = null).copy(
+                    nearest = nearest,
+                    previous = reviews.previousOf(content),
+                    current = serverEntrances.currentMarking(found.value),
+                )
             } else {
                 similar.checkFailure()
             }
