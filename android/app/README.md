@@ -26,6 +26,7 @@ Brak API dla innych modułów; to moduł końcowy, który składa graf Hilt i ek
 - `:feature:inspection`
 - `:feature:map`
 - `:feature:review`
+- `:feature:voice`
 
 ## Czego moduł nie robi
 
