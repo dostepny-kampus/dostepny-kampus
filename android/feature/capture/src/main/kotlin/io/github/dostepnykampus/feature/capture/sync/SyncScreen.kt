@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
+// TODO(#3993): trasa C4 bez konfliktu w `app` otwiera ten ekran z „Czeka na wysłanie” na C3.
+
 /**
  * C4 bez konfliktu ze stanem z modelu widoku; „Synchronizuj teraz” rusza wysyłkę.
  *
@@ -21,7 +23,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
  * @param modifier wymiary nadane przez aplikację
  * @param viewModel model widoku; w aplikacji z grafu Hilt
  */
-// TODO(#3993): trasa C4 bez konfliktu w `app` otwiera ten ekran z „Czeka na wysłanie” na C3.
 @Composable
 fun SyncScreen(
     onBack: () -> Unit,
