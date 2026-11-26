@@ -147,16 +147,14 @@ internal fun MapOverlay(
                 }
             },
             areaSwitch = {
-                Column {
-                    MapAreaSelection(
-                        areas = areas,
-                        isVisible = hasPanels && open != MapPanel.Info && controlsCover == 0.dp,
-                        isOpen = open == MapPanel.Area,
-                        onOpenChange = { isOpening -> saved = MapPanel.Area.takeIf { isOpening } },
-                        onAreaShow = onAreaShow,
-                    )
-                    if (hasMissingPlan && open == null && controlsCover == 0.dp) MissingPlanNotice()
-                }
+                MapAreaSelection(
+                    areas = areas,
+                    isVisible = hasPanels && open != MapPanel.Info && controlsCover == 0.dp,
+                    isOpen = open == MapPanel.Area,
+                    hasMissingPlan = hasMissingPlan,
+                    onOpenChange = { isOpening -> saved = MapPanel.Area.takeIf { isOpening } },
+                    onAreaShow = onAreaShow,
+                )
             },
             floorColumn = { if (open != MapPanel.Area) Column(content = start) },
         )
@@ -202,20 +200,24 @@ private fun MapAreaSelection(
     areas: MapAreas,
     isVisible: Boolean,
     isOpen: Boolean,
+    hasMissingPlan: Boolean,
     onOpenChange: (Boolean) -> Unit,
     onAreaShow: (CampusBounds) -> Unit,
 ) {
     if (!isVisible) return
-    MapAreaSwitch(
-        areas = AreaList(areas.choices),
-        isOpen = isOpen,
-        onOpenChange = onOpenChange,
-        onChoose = { name ->
-            areas.show(name)?.let(onAreaShow)
-            onOpenChange(false)
-        },
-        modifier = Modifier.padding(start = Odstepy.s, top = Odstepy.s, end = Odstepy.s),
-    )
+    Column {
+        MapAreaSwitch(
+            areas = AreaList(areas.choices),
+            isOpen = isOpen,
+            onOpenChange = onOpenChange,
+            onChoose = { name ->
+                areas.show(name)?.let(onAreaShow)
+                onOpenChange(false)
+            },
+            modifier = Modifier.padding(start = Odstepy.s, top = Odstepy.s, end = Odstepy.s),
+        )
+        if (hasMissingPlan && !isOpen) MissingPlanNotice()
+    }
 }
 
 @Composable
