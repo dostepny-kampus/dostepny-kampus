@@ -8,7 +8,7 @@
 | Autorzy raportu | Myroslav Hryniuka, Vladyslav Yevkov |
 | Członkowie zespołu | Myroslav Hryniuka, Vladyslav Yevkov, Yevhenii Lukianenko |
 | Zakres prac | 05–21.11.2026, od zakończenia prac opisanych w raporcie Sprint 3 do scalenia `sprint/4` z `main` |
-| Stan końcowy | 21.11.2026, [commit `4294e4844`][s4] i [PR zamykający sprint #3654][pr-close] |
+| Stan końcowy | 21.11.2026, [commit `4294e4844`][s4] i [PR zamykający sprint][pr-close] |
 
 ## 1. Cel i wynik sprintu
 
@@ -16,7 +16,7 @@ Dostępny Kampus ma pomóc odwiedzającemu zaplanować wizytę na uczelni. Przed
 
 W Sprincie 3 aplikacja pobierała już dane o budynkach, a serwer przyjmował zgłoszenia przez API. Osoba korzystająca z aplikacji nie mogła jeszcze wysłać zdjęcia z dostępnego formularza. Dlatego głównym celem Sprintu 4 było przejście od pomiaru i zdjęcia do zapisu w telefonie oraz późniejszej wysyłki. Plan obejmował też przygotowanie danych dla Weryfikatora i przeliczenie współrzędnych potrzebne do eksportu. [Plan projektu](tydzien-2.md) · [Wynik Sprintu 3](sprint-3.md)
 
-Na koniec sprintu można było zademonstrować dwie ścieżki. Gość mógł znaleźć budynek, obejrzeć wejścia i przyjęte bariery, a w budynku z planem sprawdzić, jak dojść do sali. Zbierający po zalogowaniu mógł zmierzyć pozycję, zrobić zdjęcie i zapisać zgłoszenie. Zgłoszenie zapisane bez internetu czekało w telefonie na wysyłkę. [Kopia barier offline #1136][pr-offline-map] · [Droga do sali #3517][pr-room-steps] · [Trasy zgłoszeń w aplikacji][routes]
+Na koniec sprintu można było zademonstrować dwie ścieżki. Gość mógł znaleźć budynek, obejrzeć wejścia i przyjęte bariery, a w budynku z planem sprawdzić, jak dojść do sali. Zbierający po zalogowaniu mógł zmierzyć pozycję, zrobić zdjęcie i zapisać zgłoszenie. Zgłoszenie zapisane bez internetu czekało w telefonie na wysyłkę. [Kopia barier offline][pr-offline-map] · [Droga do sali][pr-room-steps] · [Trasy zgłoszeń w aplikacji][routes]
 
 Na koniec sprintu oba wyniki dało się pokazać osobno. Brak kolejki i ekranu decyzji dla Weryfikatora przerywał jednak przejście od nowego zdjęcia do publikacji na mapie. Serwer obsługiwał już samą decyzję, a mapa potrafiła wyświetlić przyjęte dane. To połączenie zostało zadaniem Sprintu 5. [Operacje weryfikacji][review] · [Brakujące trasy][pending]
 
@@ -24,31 +24,51 @@ Na koniec sprintu oba wyniki dało się pokazać osobno. Brak kolejki i ekranu d
 
 ### Zgłoszenie w terenie
 
-Zbierający uruchamia pomiar pozycji. Aplikacja przez 30 sekund zbiera odczyty, pokazuje dokładność i satelity, a potem podpowiada budynek. Osoba może wybrać inny budynek lub skorygować punkt. W formularzu wybiera piętro, typ bariery i uciążliwość, po czym dodaje zdjęcie. Odwiedzający korzysta z krótszej ścieżki. Robi zdjęcie, wybiera grupę barier i wysyła zgłoszenie. [Pomiar #321][pr-gnss] · [Podpowiedź budynku #354][pr-building] · [Korekta punktu #1497][pr-point] · [Formularz C2 #367][pr-form] · [Ekran V4 #375][pr-quick] · [Zapis V4 #374][pr-quick-save]
+Zbierający uruchamia pomiar pozycji. Aplikacja przez 30 sekund zbiera odczyty, pokazuje dokładność i satelity, a potem podpowiada budynek. Osoba może wybrać inny budynek lub skorygować punkt. [Pomiar][pr-gnss] · [Podpowiedź budynku][pr-building] · [Korekta punktu][pr-point]
 
-Pierwsza wersja raportu z 9 listopada opisywała już formularze, do których użytkownik nie mógł dojść bez logowania. Później podłączyliśmy logowanie w przeglądarce systemowej i role. Zbierający zyskał też listę własnych zgłoszeń. Może na niej sprawdzić stan wysyłki i wrócić do poprawki. Po wygaśnięciu sesji aplikacja prosi o ponowne zalogowanie, a zmiana konta nie powoduje wysłania cudzych zgłoszeń. [Logowanie #2899][pr-login] · [Sesja i role #2813][pr-session] · [Powrót po 401 #664][pr-relogin] · [Kolejka konta #2993][pr-owner] · [Statusy #807][pr-history] · [Poprawka #772][pr-edit]
+W formularzu wybiera piętro, typ bariery i uciążliwość, po czym dodaje zdjęcie. Odwiedzający korzysta z krótszej ścieżki. Robi zdjęcie, wybiera grupę barier i wysyła zgłoszenie. [Formularz C2][pr-form] · [Ekran V4][pr-quick] · [Zapis V4][pr-quick-save]
+
+Pierwsza wersja raportu z 9 listopada opisywała już formularze, do których użytkownik nie mógł dojść bez logowania. Później podłączyliśmy logowanie w przeglądarce systemowej i role. [Logowanie][pr-login] · [Sesja i role][pr-session]
+
+Zbierający zyskał listę własnych zgłoszeń. Może na niej sprawdzić stan wysyłki i wrócić do poprawki. Po wygaśnięciu sesji aplikacja prosi o ponowne zalogowanie, a zmiana konta nie powoduje wysłania cudzych zgłoszeń. [Powrót po 401][pr-relogin] · [Kolejka konta][pr-owner] · [Statusy][pr-history] · [Poprawka][pr-edit]
 
 ### Dostępność budynku przed wizytą
 
-Mapa zaczęła pokazywać przyjęte bariery z serwera i zachowywać ich kopię na wypadek braku internetu. Na karcie budynku widać bariery przy wejściach, a po otwarciu szczegółów także ich zdjęcia. Wskazanie zalecanego wejścia przenieśliśmy na kartę budynku, a szczegóły wejścia do arkusza na mapie. Osobny ekran V3 stał się zbędny. Dane z planów PWr uzupełniły informacje o wejściach i wyjściach ewakuacyjnych. [Bariery przy wejściu #3360][pr-card-barrier] · [Zdjęcia #2238][pr-public-photo] · [Zmiana ścieżki #3082][pr-v3-ux] · [Usunięcie V3 #3130][pr-v3] · [Dane PWr #3158][pr-entrances]
+Mapa zaczęła pokazywać przyjęte bariery z serwera i zachowywać ich kopię na wypadek braku internetu. Na karcie budynku widać bariery przy wejściach, a po otwarciu szczegółów także ich zdjęcia. [Bariery przy wejściu][pr-card-barrier] · [Zdjęcia][pr-public-photo]
 
-Odwiedzający może wybrać piętro lub znaleźć salę po numerze. Karta sali podaje kolejne kroki od zalecanego wejścia przez windę, jeśli jest potrzebna, do drzwi sali. Wybór kroku wskazuje dane miejsce na planie. [Plan piętra #2596][pr-plan] · [Wyszukiwanie #3357][pr-room-search] · [Karta sali #3512][pr-room]
+Wskazanie zalecanego wejścia przenieśliśmy na kartę budynku, a szczegóły wejścia do arkusza na mapie. Osobny ekran V3 stał się zbędny. Dane z planów PWr uzupełniły informacje o wejściach i wyjściach ewakuacyjnych. [Zmiana ścieżki][pr-v3-ux] · [Usunięcie V3][pr-v3] · [Dane PWr][pr-entrances]
+
+Odwiedzający może wybrać piętro lub znaleźć salę po numerze. Karta sali podaje kolejne kroki od zalecanego wejścia przez windę, jeśli jest potrzebna, do drzwi sali. Wybór kroku wskazuje dane miejsce na planie. [Plan piętra][pr-plan] · [Wyszukiwanie][pr-room-search] · [Karta sali][pr-room]
 
 ### Postęp obchodów i aktualność barier
 
-Zbierający oznacza, które piętra obejrzał. Zmiany czekają w kolejce przy braku internetu. Koordynator może sprawdzić postęp według budynku, obejrzeć znaczniki i cofnąć znacznik. Na karcie budynku można też zgłosić, że opisana wcześniej bariera zniknęła. Taka informacja wymaga ponownej weryfikacji, zanim zmieni się publiczna mapa. [Kolejka znaczników #1978][pr-marker-queue] · [Oznaczanie pięter #2820][pr-c5] · [Ekran postępu #2448][pr-k1] · [API postępu #3590][pr-progress] · [Poprawka bariery #3616][pr-replace] · [Usunięcie bariery #2257][pr-removed]
+Zbierający oznacza, które piętra obejrzał. Zmiany czekają w kolejce przy braku internetu. Koordynator może sprawdzić postęp według budynku, obejrzeć znaczniki i cofnąć znacznik. [Kolejka znaczników][pr-marker-queue] · [Oznaczanie pięter][pr-c5] · [Ekran postępu][pr-k1] · [API postępu][pr-progress]
+
+Na karcie budynku można też zgłosić, że opisana wcześniej bariera zniknęła. Taka informacja wymaga ponownej weryfikacji, zanim zmieni się publiczna mapa. [Poprawka bariery][pr-replace] · [Usunięcie bariery][pr-removed]
 
 ## 3. Co zmieniliśmy pod spodem i po co
 
-**Wiarygodność danych.** Serwer ogranicza edycję zgłoszenia i zdjęć do autora. Weryfikator może wziąć zgłoszenie i rozstrzygnąć je przez API. Dla szybkiego zgłoszenia ustala typ i uciążliwość. API podaje też podobne zgłoszenia w promieniu 10 m, co pomaga zauważyć duplikaty. Serwer potrafi zastosować przyjętą zmianę oznaczenia wejścia. [Edycja #1149][pr-author] · [Podobne zgłoszenia #366][pr-similar] · [Klasyfikacja #2246][pr-accept-quick] · [Oznaczenie wejścia #3595][pr-marking]
+### Wiarygodność danych
 
-**Dane dla Koordynatora.** Do CSV trafiają bieżące, przyjęte bariery ze współrzędnymi w układzie PUWG 1992 (EPSG:2180), które można wczytać do QGIS. Eksport pobiera i zapisuje dane partiami, dzięki czemu nie musi przechowywać całej odpowiedzi w pamięci. Na koniec sprintu CSV był dostępny przez serwer. Przycisk pobrania w aplikacji był jeszcze przed nami. [Przeliczenie #1070][pr-proj] · [CSV #1981][pr-csv] · [Eksport strumieniowy #3461][pr-stream] · [Test HTTP][csv-test]
+Serwer ogranicza edycję zgłoszenia i zdjęć do autora. Weryfikator może wziąć zgłoszenie i rozstrzygnąć je przez API. Dla szybkiego zgłoszenia ustala typ i uciążliwość. [Edycja][pr-author] · [Klasyfikacja][pr-accept-quick]
 
-**Utrzymanie aplikacji.** Podzieliliśmy odpowiedzialność pomiędzy moduły i uporządkowaliśmy zależności w Androidzie. Ekrany pobierają dane przez `core:data`. Jedno miejsce steruje ruchem kamery i granicami widoku. Zmiana piętra aktualizuje filtry mapy, co ogranicza pracę przy przełączaniu planu. Uporządkowaliśmy też zasady przeglądu i przenieśliśmy cięższe testy mutacyjne PIT z kolejki na PR i kontrolę sprintu. [Architektura][adr-modules] · [Zależności Androida #1811][pr-android-modules] · [Usunięcie cykli #3553][pr-cycles] · [Kamera #2862][pr-camera] · [Pomiary #2849][pr-trace] · [Filtry #2777][pr-style] · [Zasady pracy #1348][pr-agents] · [Rozmiar PR #2660][pr-size] · [PIT #2415][pr-pit]
+API podaje też podobne zgłoszenia w promieniu 10 m, co pomaga zauważyć duplikaty. Serwer potrafi zastosować przyjętą zmianę oznaczenia wejścia. [Podobne zgłoszenia][pr-similar] · [Oznaczenie wejścia][pr-marking]
+
+### Dane dla Koordynatora
+
+Do CSV trafiają bieżące, przyjęte bariery ze współrzędnymi w układzie PUWG 1992 (EPSG:2180), które można wczytać do QGIS. Eksport pobiera i zapisuje dane partiami, dzięki czemu nie musi przechowywać całej odpowiedzi w pamięci. Na koniec sprintu CSV był dostępny przez serwer. Przycisk pobrania pozostawał do dodania w aplikacji. [Przeliczenie][pr-proj] · [CSV][pr-csv] · [Eksport strumieniowy][pr-stream] · [Test HTTP][csv-test]
+
+### Utrzymanie aplikacji
+
+Podzieliliśmy odpowiedzialność pomiędzy moduły i uporządkowaliśmy zależności w Androidzie. Ekrany pobierają dane przez `core:data`. [Architektura][adr-modules] · [Zależności Androida][pr-android-modules] · [Usunięcie cykli][pr-cycles]
+
+Jedno miejsce steruje ruchem kamery i granicami widoku. Zmiana piętra aktualizuje filtry mapy, co ogranicza pracę przy przełączaniu planu. [Kamera][pr-camera] · [Pomiary][pr-trace] · [Filtry][pr-style]
+
+Uporządkowaliśmy zasady przeglądu. Testy mutacyjne w narzędziu PIT zostawiliśmy w kontrolach PR i sprintu. Dzięki temu nie obciążają kolejki scalania. [Zasady pracy][pr-agents] · [Rozmiar PR][pr-size] · [PIT][pr-pit]
 
 ## 4. Jak sprawdziliśmy wynik
 
-Na końcowym commicie `4294e4844` przeszły testy Androida, analiza statyczna, kontrola zależności i dokumentacji. W ostatnim pełnym przebiegu przed zamknięciem przeszły też emulatory API 26, 36 i 37 oraz testy mutacyjne serwera. Późniejsze zmiany objęły specyfikacje scenariuszy i kontrolę PR. [Android][ci-final] · [Dokumentacja][ci-docs] · [Przebieg z emulatorami][ci-full] · [Różnica rewizji][ci-delta]
+Na końcowej rewizji `4294e4844` przeszły testy Androida, analiza statyczna, kontrola zależności i dokumentacji. W ostatnim pełnym przebiegu przed zamknięciem przeszły też emulatory API 26, 36 i 37 oraz testy mutacyjne serwera. Późniejsze zmiany objęły specyfikacje scenariuszy i kontrolę PR. [Android][ci-final] · [Dokumentacja][ci-docs] · [Przebieg z emulatorami][ci-full] · [Różnica rewizji][ci-delta]
 
 Test systemowy wysyłki uruchamia klienta z prawdziwym serwerem testowym. Tworzy zgłoszenie przez HTTP i sprawdza, że wraca na liście autora. Zakres testu kończy się przed obsługą zdjęcia z aparatu i decyzją Weryfikatora. Na koniec sprintu nie mieliśmy dowodu pełnego przejścia od zdjęcia do publikacji ani pomiaru GNSS w terenie. [Test wysyłki][system-upload] · [Scenariusz pokazu A-1][demo]
 
