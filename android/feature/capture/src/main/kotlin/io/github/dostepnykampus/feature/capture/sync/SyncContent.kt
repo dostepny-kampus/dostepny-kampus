@@ -38,15 +38,6 @@ import io.github.dostepnykampus.core.designsystem.card.InfoPanel
 import io.github.dostepnykampus.feature.capture.R
 
 /**
- * Czynności C4 bez konfliktu.
- *
- * @property onBack „Wstecz”
- * @property onSyncNow „Synchronizuj teraz”
- * @property onLogin „Zaloguj się” przy wygasłym zalogowaniu: L1
- */
-data class SyncActions(val onBack: () -> Unit, val onSyncNow: () -> Unit, val onLogin: () -> Unit)
-
-/**
  * Widok C4 bez konfliktu bez modelu widoku: co czeka na wysłanie, ostatnia synchronizacja, stan wysyłki,
  * ostrzeżenie o miejscu i jedna wypełniona czynność na końcu treści. Poza [SyncUiState.Ready] pokazuje sam
  * nagłówek.
