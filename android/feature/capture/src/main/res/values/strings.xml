@@ -155,7 +155,7 @@
     <string name="zmiana_oznaczenia_zdjecie">Zdjęcie wejścia</string>
     <string name="zmiana_oznaczenia_brak_zdjecia">Dodaj zdjęcie wejścia, aby wysłać zmianę.</string>
     <string name="zmiana_oznaczenia_sprawdzi">Zmianę sprawdzi inna osoba. Do tego czasu karta budynku pokazuje obecne oznaczenie.</string>
-    <string name="konflikt_naglowek">Synchronizacja</string>
+    <string name="synchronizacja_naglowek">Synchronizacja</string>
     <string name="konflikt_tytul">Dwie wersje: wybierz jedną.</string>
     <string name="konflikt_skutek">Druga wersja zostanie usunięta.</string>
     <string name="konflikt_przyjete">Przyjęte zgłoszenie zostanie, a Twoja wersja, jeśli ją wybierzesz, trafi do sprawdzenia jako nowe.</string>
@@ -171,4 +171,28 @@
     <string name="konflikt_zostaw">Zostaw moją wersję</string>
     <string name="konflikt_wez">Weź wersję z serwera</string>
     <string name="konflikt_pozniej">Zdecyduję później</string>
+    <plurals name="synchronizacja_zgloszenia">
+        <item quantity="one">zgłoszenie</item>
+        <item quantity="few">zgłoszenia</item>
+        <item quantity="many">zgłoszeń</item>
+        <item quantity="other">zgłoszenia</item>
+    </plurals>
+    <plurals name="synchronizacja_znaczniki">
+        <item quantity="one">znacznik piętra</item>
+        <item quantity="few">znaczniki pięter</item>
+        <item quantity="many">znaczników pięter</item>
+        <item quantity="other">znacznika piętra</item>
+    </plurals>
+    <string name="synchronizacja_liczba">%1$d %2$s</string>
+    <string name="synchronizacja_podzial">%1$s i %2$s</string>
+    <string name="synchronizacja_ostatnia">Ostatnia synchronizacja: %1$s</string>
+    <string name="synchronizacja_wszystko">Wszystko wysłane.</string>
+    <string name="synchronizacja_wszystko_ostatnia">Wszystko wysłane. Ostatnia synchronizacja: %1$s.</string>
+    <string name="synchronizacja_wysylamy">Wysyłamy %1$d z %2$d…</string>
+    <string name="synchronizacja_bez_internetu">Bez internetu. Wyślemy wszystko sami, gdy internet wróci.</string>
+    <string name="synchronizacja_serwer">Serwer chwilowo nie odpowiada. Zgłoszenia czekają w telefonie i wyślą się później.</string>
+    <string name="synchronizacja_logowanie">Logowanie wygasło. Zaloguj się, a wyślemy zgłoszenia same.</string>
+    <string name="synchronizacja_zaloguj">Zaloguj się</string>
+    <string name="synchronizacja_miejsce">W telefonie zostało mniej niż 100 MB. Zwolnij miejsce, aby dalej robić zdjęcia.</string>
+    <string name="synchronizacja_teraz">Synchronizuj teraz</string>
 </resources>

@@ -70,8 +70,6 @@ sealed interface SyncUiState {
     data class Ready(val status: SyncStatus, val phase: SyncPhase, val isLowSpace: Boolean) : SyncUiState
 }
 
-// TODO(#3992): widok C4 bez konfliktu podłącza ten model widoku, a #3993 jego trasę.
-
 /**
  * C4 bez konfliktu: co czeka na wysłanie, postęp, problemy z wysyłką i „Synchronizuj teraz”. Dane tylko z
  * `core:data`; wysyłka rusza też sama.
