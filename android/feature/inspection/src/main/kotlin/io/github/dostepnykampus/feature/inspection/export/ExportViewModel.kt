@@ -57,8 +57,6 @@ data class ExportUiState(val format: ExportFormat = ExportFormat.GEOJSON, val st
 /**
  * K3 „Eksport”: wybór formatu i pobranie pliku do „Pobrane” albo do miejsca wybranego w oknie systemu.
  *
- * TODO(#3062): serwer nie ma jeszcze eksportu GeoJSON, więc jego pobranie kończy się błędem serwera.
- *
  * Wymagania: US13, US13.1, US13.2, NFR-50, NFR-41
  *
  * @param export pobranie eksportu

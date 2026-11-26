@@ -50,12 +50,10 @@ final class BarrierExport {
     @Nullable String floor(
         final @Nullable String symbol, final @Nullable SubmissionFloor floor
     ) {
-        @Nullable String result = null;
-        if (floor != null) {
-            result = this.submissions.floorLabel(symbol, floor.floorId())
-                .orElseGet(() -> BarrierExport.number(floor));
-        }
-        return result;
+        return Optional.ofNullable(floor).flatMap(
+            present -> this.submissions.floorLabel(symbol, present.floorId())
+                .or(() -> Optional.ofNullable(BarrierExport.number(present)))
+        ).orElse(null);
     }
 
     static @Nullable String group(final @Nullable BarrierGroup group) {
@@ -70,11 +68,8 @@ final class BarrierExport {
     }
 
     static @Nullable Instant verifiedAt(final Submission submission) {
-        @Nullable Instant result = submission.verification();
-        if (Instant.MIN.equals(result)) {
-            result = null;
-        }
-        return result;
+        return Optional.of(submission.verification())
+            .filter(time -> !Instant.MIN.equals(time)).orElse(null);
     }
 
     private static @Nullable String number(final SubmissionFloor floor) {
@@ -88,9 +83,14 @@ final class BarrierExport {
             .map(number -> number + suffix).orElse(floor.floorId());
     }
 
-    /** Zapis pojedynczego zgłoszenia. @since 0.1.0 */
+    /**
+     * Zapis pojedynczego zgłoszenia.
+     *
+     * @since 0.1.0
+     */
     @FunctionalInterface
     interface Writer {
+
         void write(Submission submission) throws IOException;
     }
 }

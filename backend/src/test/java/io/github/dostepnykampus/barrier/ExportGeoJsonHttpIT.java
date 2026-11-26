@@ -109,10 +109,12 @@ final class ExportGeoJsonHttpIT {
                 low.contains("konto-testowe") || low.contains("author")
                     || low.contains("polygon") || low.contains("outline")
             ),
-            Matchers.is(List.of(
-                List.of(), 1, "[17.05989,51.10916]", "ENTRANCE_AND_DOORS",
-                "A-1", "0 półpiętro", "=Schody, \"próg\" i żółta poręcz", false
-            ))
+            Matchers.is(
+                List.of(
+                    List.of(), 1, "[17.05989,51.10916]", "ENTRANCE_AND_DOORS",
+                    "A-1", "0 półpiętro", "=Schody, \"próg\" i żółta poręcz", false
+                )
+            )
         );
     }
 

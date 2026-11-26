@@ -9,8 +9,7 @@
  *
  * <p>Zadanie: przyjęcie, edycja i status zgłoszenia ze zdjęciami, weryfikacja, eksport.</p>
  *
- * <p>API: pakiet {@code api}; HTTP {@code /submissions}, {@code /export.csv}
- * i {@code /export.geojson}.</p>
+ * <p>API: {@code api}; HTTP {@code /submissions}, {@code /export.csv}, {@code /export.geojson}.</p>
  *
  * <p>Zależności: {@code building :: api}, {@code identity :: api}, {@code shared}.</p>
  *
