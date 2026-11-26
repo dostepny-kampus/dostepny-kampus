@@ -122,6 +122,7 @@ public class SubmissionQueue internal constructor(
 ) {
     private val sending = Mutex()
     private val history = records.history
+    private val conflicts = records.conflicts
     private val results = SentResults(store = store, records = records, ioContext = ioContext)
     private val lastSavedAt = AtomicLong(Long.MIN_VALUE)
     private val logins = AtomicLong()
@@ -228,8 +229,8 @@ public class SubmissionQueue internal constructor(
      * @param edited poprawiane zgłoszenie
      * @param content nowa treść zgłoszenia
      * @param photos zdjęcia do wysłania; identyfikatory wracają w [content]
-     * @throws SaveRefusedException zdjęcia nie odpowiadają treści albo serwer ma już zgłoszenie, a telefon nie zna
-     *   jego wersji
+     * @throws SaveRefusedException zdjęcia nie odpowiadają treści, serwer ma już zgłoszenie, a telefon nie zna
+     *   jego wersji, albo zgłoszenie czeka na wybór wersji
      */
     public suspend fun saveEdit(edited: EditedSubmission, content: SubmissionContent, photos: List<PendingPhotoDraft>) {
         requireMatchingPhotos(content, photos)
@@ -241,6 +242,7 @@ public class SubmissionQueue internal constructor(
                 var paths = emptyList<String>()
                 store.together {
                     if (store.belongsToAnotherAccount(edited.id, owner)) throw queueOwnerChanged()
+                    if (isChoicePending(edited.id)) throw versionChoicePending(edited.id)
                     val version = baseVersionOf(edited = edited, store = store, history = history)
                     val entity = fresh.copy(baseVersion = version, ownerSub = owner)
                     paths = store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) })
@@ -292,6 +294,10 @@ public class SubmissionQueue internal constructor(
         }
         runCatching(onSaved)
     }
+
+    private suspend fun isChoicePending(id: String): Boolean =
+        conflicts?.get(serverVersionKey(id)) != null &&
+            store.all().any { it.submission.id == id && it.submission.isRefused }
 
     private suspend fun remember(entity: PendingSubmissionEntity) {
         val own = history ?: return
