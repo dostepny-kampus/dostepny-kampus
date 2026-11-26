@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.feature.inspection.export
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -62,11 +64,17 @@ import io.github.dostepnykampus.feature.inspection.R
 @Composable
 fun ExportScreen(actions: ExportActions, modifier: Modifier = Modifier, viewModel: ExportViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val chooser =
+        rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(state.format.mediaType)) { uri ->
+            uri?.let { chosen -> viewModel.downloadTo(chosen.toString()) }
+        }
     ExportContent(
         state = state,
         actions = actions,
         onChoose = viewModel::choose,
-        onDownload = viewModel::download,
+        onDownload = {
+            if (viewModel.isPlaceAsked) chooser.launch(viewModel.suggestedName()) else viewModel.download()
+        },
         modifier = modifier,
     )
 }
@@ -124,7 +132,7 @@ private fun problemOf(stage: ExportStage): StaffProblem? =
         ExportStage.OFFLINE -> StaffProblem.OFFLINE
         ExportStage.SERVER_ERROR -> StaffProblem.SERVER
         ExportStage.FORBIDDEN -> StaffProblem.FORBIDDEN
-        ExportStage.IDLE, ExportStage.LOADING, ExportStage.SAVED, ExportStage.EMPTY -> null
+        ExportStage.IDLE, ExportStage.LOADING, ExportStage.SAVED, ExportStage.SAVED_CHOSEN, ExportStage.EMPTY -> null
     }
 
 @Composable
@@ -142,6 +150,7 @@ private fun Message(stage: ExportStage) {
         when (stage) {
             ExportStage.LOADING -> R.string.eksport_przygotowujemy
             ExportStage.SAVED -> R.string.eksport_zapisany
+            ExportStage.SAVED_CHOSEN -> R.string.eksport_zapisany_wybrane
             ExportStage.EMPTY -> R.string.eksport_pusty
             ExportStage.IDLE, ExportStage.OFFLINE, ExportStage.SERVER_ERROR, ExportStage.FORBIDDEN -> null
         } ?: return

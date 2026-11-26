@@ -369,6 +369,7 @@ Komunikaty sprawdzimy w drugiej rozmowie (pytanie 6.3) i w prototypie papierowym
 | K3, ładowanie | „Przygotowujemy plik…” | — | PW-9 |
 | K3, pusty | „Nie ma jeszcze przyjętych barier. Pobrany plik będzie pusty.” | „Pobierz plik” | — |
 | K3, sukces | „Plik zapisany w pobranych plikach.” | — | — |
+| K3, sukces na Androidzie 8–9 | „Plik zapisany w wybranym miejscu.” | — | — |
 | K3, informacja | „Plik zawiera tylko obecne, sprawdzone bariery, bez danych autorów.” | „Pobierz plik” | — |
 
 ## Metafory i ikony
