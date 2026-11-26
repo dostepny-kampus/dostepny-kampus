@@ -7,8 +7,12 @@ package io.github.dostepnykampus.core.data.submission.pending
 
 import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
 import io.github.dostepnykampus.core.data.submission.sync.FakeHistory
+import io.github.dostepnykampus.core.data.submission.sync.FakeStore
 import io.github.dostepnykampus.core.data.submission.sync.OwnCopy
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
+import io.github.dostepnykampus.core.data.submission.sync.SentRecords
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.photo
+import io.github.dostepnykampus.core.data.submission.sync.editQueue
 import io.github.dostepnykampus.core.data.submission.sync.ownCopyJson
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
@@ -31,11 +35,7 @@ class SentEditsTest {
     lateinit var tempDir: File
 
     private val history = FakeHistory()
-    private val queue =
-        object : PendingEditDao {
-            override suspend fun find(id: String): PendingSubmissionWithPhotos? = null
-        }
-    private val edits = pendingEditsOf(store = queue, history = history, subject = { OWNER })
+    private val edits = pendingEditsOf(store = noQueued(), history = history, subject = { OWNER })
 
     /** Wysłane zgłoszenie przed decyzją otwiera się z treścią, zdjęciami i wersją z serwera. Wymagania: US8.3, BR-10 */
     @Test
@@ -75,6 +75,32 @@ class SentEditsTest {
             assertNull(edits.load(ID), "zgłoszenie innego konta")
         }
 
+    /**
+     * Poprawka wysłanego zgłoszenia idzie na serwer z wersją z serwera z historii, a nie z dokumentu treści.
+     *
+     * Wymagania: US8.3, BR-10
+     */
+    @Test
+    fun sendsEditWithServerVersion() =
+        runBlocking {
+            val store = FakeStore()
+            val versions = mutableListOf<Int>()
+            val queue = editQueue(store = store, records = SentRecords(history = history), edits = ArrayDeque()) {
+                versions += it
+            }
+            val saved = queue.save(content(), photo(tempDir, "p1"))
+            queue.sendAll()
+            val inReview = SubmissionStatus.IN_REVIEW.name
+            history.saveServerStatus(id = saved.id, status = inReview, reason = null, version = 3)
+            val fromHistory = pendingEditsOf(store = noQueued(), history = history, subject = { OWNER })
+
+            val edit = checkNotNull(fromHistory.load(saved.id))
+            queue.saveEdit(edit.edited, edit.content.copy(severity = 3), edit.photos)
+            queue.sendAll()
+
+            assertEquals(listOf(3), versions, "wersja bazowa poprawki z serwera")
+        }
+
     private fun sent(status: SubmissionStatus, paths: List<String>, owner: String = OWNER) {
         history.rows[ID] =
             OwnSubmissionEntity(
@@ -88,6 +114,11 @@ class SentEditsTest {
                 contentJson = ownCopyJson(ID, OwnCopy(content = content(), photoPaths = paths)),
             )
     }
+
+    private fun noQueued(): PendingEditDao =
+        object : PendingEditDao {
+            override suspend fun find(id: String): PendingSubmissionWithPhotos? = null
+        }
 
     private fun photoFile(id: String): File = tempDir.resolve("$id.jpg").apply { writeBytes(byteArrayOf(1)) }
 
