@@ -30,6 +30,8 @@ Opisy poniżej pochodzą z plików `README.md` modułów; zmienia się je przy k
 
 --8<-- "android/core/location/README.md"
 
+--8<-- "android/core/map/README.md"
+
 --8<-- "android/core/designsystem/README.md"
 
 --8<-- "android/detekt-rules/README.md"

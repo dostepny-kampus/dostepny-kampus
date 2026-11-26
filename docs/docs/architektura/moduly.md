@@ -95,7 +95,7 @@ Moduł to moduł Gradle. Granicę wyznacza kompilator: moduł widzi tylko to, co
 | Moduł | Zadanie | Zależy od (kod produkcyjny) |
 | --- | --- | --- |
 | `:app` | składa ekrany, nawigację i zależności Hilt | moduły funkcji, `:core:data`, `:core:database`, `:core:designsystem`, `:core:model` |
-| `:feature:map` | mapa kampusu, karta budynku, bariery na mapie | `:core:model`, `:core:data`, `:core:geo`, `:core:designsystem` |
+| `:feature:map` | mapa kampusu, karta budynku, bariery na mapie | `:core:model`, `:core:data`, `:core:geo`, `:core:designsystem`, `:core:map` |
 | `:feature:capture` | zgłaszanie barier i moje zgłoszenia | jak `:feature:map` oraz `:core:location` |
 | `:feature:help` | pomoc i pierwsze uruchomienie | `:core:model`, `:core:data`, `:core:designsystem` |
 | `:feature:inspection` | postęp inwentaryzacji Koordynatora: lista budynków i znaczniki do cofnięcia | `:core:model`, `:core:data`, `:core:designsystem` |
@@ -106,6 +106,7 @@ Moduł to moduł Gradle. Granicę wyznacza kompilator: moduł widzi tylko to, co
 | `:core:database` | baza Room | — |
 | `:core:network` | klient HTTP serwera | `:core:model`, `:core:geo` |
 | `:core:geo`, `:core:location`, `:core:designsystem` | geometria, pozycja GNSS, wygląd | `:core:model` |
+| `:core:map` | mapa kampusu MapLibre wspólna dla ekranów z mapą | `:core:designsystem` |
 | `:core:model` | typy dziedziny wspólne dla modułów | — |
 
 `core:data.photo` udostępnia kontrakt `PhotoCapture`: żądanie zdjęcia oraz wynik z plikiem,
