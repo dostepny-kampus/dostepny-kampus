@@ -15,6 +15,7 @@ import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
+import io.github.dostepnykampus.feature.capture.navigation.ReportEditMode
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportPlace
@@ -588,8 +589,8 @@ class AppNavigatorTest {
     fun resendChangeBackToList() {
         stack += listOf(AccountRoute, MySubmissionsRoute)
         navigator(collector).run {
-            openEdit("z1", isResend = true)
-            assertEquals(ReportEditRoute("z1", isResend = true), current)
+            openEdit("z1", mode = ReportEditMode.RESEND_OUTDATED)
+            assertEquals(ReportEditRoute("z1", ReportEditMode.RESEND_OUTDATED), current)
             reportSaved()
         }
         assertEquals(stackOf(AccountRoute, MySubmissionsRoute), stack)
@@ -627,7 +628,7 @@ class AppNavigatorTest {
         stack += BuildingRoute("A-1")
         navigator(collector).run {
             openReplace("tb13")
-            assertEquals(ReportEditRoute("tb13", isAccepted = true), current, "V2 otwiera C2 zmiany przyjętego")
+            assertEquals(ReportEditRoute("tb13", ReportEditMode.CHANGE_ACCEPTED), current, "V2 otwiera C2 zmiany przyjętego")
             reportSaved()
         }
         assertEquals(stackOf(BuildingRoute("A-1"), MySubmissionsRoute), stack, "C2 znika z historii, C3 po V2")
@@ -637,7 +638,7 @@ class AppNavigatorTest {
     @Test
     fun changesPlaceOnReplace() {
         val form = ReportFormRoute(longitude = 17.06, latitude = 51.11, accuracyMeters = 0.8, buildingSymbol = "A-1")
-        stack += listOf(BuildingRoute("A-1"), ReportEditRoute("tb13", isAccepted = true))
+        stack += listOf(BuildingRoute("A-1"), ReportEditRoute("tb13", ReportEditMode.CHANGE_ACCEPTED))
         navigator(collector).run {
             changeEditPlace()
             assertEquals(MeasureRoute, current)
