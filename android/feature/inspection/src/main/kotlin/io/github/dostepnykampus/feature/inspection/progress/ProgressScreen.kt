@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +31,12 @@ import io.github.dostepnykampus.core.designsystem.StaffProblem
 import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.feature.inspection.R
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+
+private val READ_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy, HH:mm", Locale.ROOT)
 
 /**
  * K1 „Postęp inwentaryzacji” ze stanem z modelu widoku.
@@ -100,5 +107,22 @@ private fun BuildingList(state: ProgressUiState.Ready, onOpen: (String) -> Unit,
                 onOpen = { onOpen(building.buildingSymbol) },
             )
         }
+    }
+}
+
+/**
+ * Chwila odczytu postępu i „Odśwież”; postęp nie odświeża się sam.
+ *
+ * Wymagania: US11.2
+ *
+ * @param readAt chwila odczytu
+ * @param isRefreshing czy trwa odświeżanie; wyłącza przycisk
+ * @param onRefresh „Odśwież”
+ */
+@Composable
+internal fun ReadLine(readAt: Instant, isRefreshing: Boolean, onRefresh: () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        Text(stringResource(R.string.postep_stan_z, READ_FORMAT.format(readAt.atZone(ZoneId.systemDefault()))))
+        OutlinedButton(onClick = onRefresh, enabled = !isRefreshing) { Text(stringResource(R.string.postep_odswiez)) }
     }
 }
