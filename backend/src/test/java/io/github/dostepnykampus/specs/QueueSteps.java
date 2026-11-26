@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -30,8 +31,9 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Kroki scenariuszy kolejki weryfikacji: kolejność, własne zgłoszenia i podobne zgłoszenia. Kolejka to {@code GET /review/queue}; kroki patrzą tylko
- * na zgłoszenia scenariusza, bo baza może mieć inne.
+ * Kroki scenariuszy kolejki weryfikacji: kolejność, własne zgłoszenia i podobne zgłoszenia.
+ * Kolejka to {@code GET /review/queue}; kroki patrzą tylko na zgłoszenia scenariusza, bo baza
+ * może mieć inne.
  *
  * <p>Pierwszy Weryfikator ma konto testowe z tokenu bez konta, drugi własne konto, a autor
  * zgłoszeń innych osób konto {@code autor-kolejki}.</p>
@@ -54,12 +56,6 @@ public final class QueueSteps {
     /** Jedyne zdjęcie każdego zgłoszenia scenariusza. */
     private static final UUID PHOTO = UUID.fromString("e1f2a3b4-0004-4c5d-8e6f-7a8b9c0d1e2f");
 
-    /** Token autora zgłoszeń innych osób. */
-    private static final String AUTHOR = "COLLECTOR.autor-kolejki";
-
-    /** Token drugiego Weryfikatora. */
-    private static final String SECOND = "VERIFIER.drugi-weryfikator";
-
     /** Miejsce przy wejściu głównym A-1. */
     private static final String ENTRANCE = "[17.06209,51.10785]";
 
@@ -71,6 +67,9 @@ public final class QueueSteps {
 
     /** Uciążliwość zgłoszeń scenariusza, poza zmianą „bariera usunięta”. */
     private static final String SEVERITY = ",\"severity\":2";
+
+    /** Separator dnia i budynku w opisie wysłania. */
+    private static final Pattern BUILDING = Pattern.compile(" z budynku ");
 
     /** Zapis dnia w scenariuszach. */
     private static final DateTimeFormatter DAY = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -93,8 +92,8 @@ public final class QueueSteps {
     /** Token pierwszego Weryfikatora. */
     private String first;
 
-    /** Kolejka ostatnio otwarta przez pierwszego Weryfikatora. */
-    private JsonNode queue;
+    /** Kolejka ostatnio otwarta przez pierwszego Weryfikatora, w JSON. */
+    private String queue;
 
     /**
      * Kroki na kontekście aplikacji.
@@ -114,29 +113,25 @@ public final class QueueSteps {
         this.mapper = mapper;
         this.sent = new HashMap<>(2);
         this.first = "VERIFIER";
-        this.queue = mapper.createArrayNode();
+        this.queue = "[]";
     }
 
     /**
      * Autor wysłał dwa zgłoszenia w podane dni z podanych budynków.
      *
-     * @param day Dzień wysłania pierwszego zgłoszenia
-     * @param building Budynek pierwszego zgłoszenia
-     * @param other Dzień wysłania drugiego zgłoszenia
-     * @param next Budynek drugiego zgłoszenia
+     * @param earlier Dzień i budynek pierwszego zgłoszenia, np. „27.10.2026 z budynku C-13”
+     * @param later Dzień i budynek drugiego zgłoszenia
      * @throws Exception Gdy MockMvc nie wykona żądania
      */
-    @Given("^w kolejce są zgłoszenia wysłane (\\S+) z budynku (\\S+) i (\\S+) z budynku (\\S+)$")
-    public void sentOn(
-        final String day, final String building, final String other, final String next
-    ) throws Exception {
-        this.sentOn(QueueSteps.ONE, day, building);
-        this.sentOn(QueueSteps.TWO, other, next);
+    @Given("^w kolejce są zgłoszenia wysłane (\\S+ z budynku \\S+) i (\\S+ z budynku \\S+)$")
+    void sentOn(final String earlier, final String later) throws Exception {
+        this.sentOn(QueueSteps.ONE, earlier);
+        this.sentOn(QueueSteps.TWO, later);
     }
 
     /** Pierwszy Weryfikator ma też rolę Zbierającego; token testowy niesie obie. */
     @Given("pierwszy Weryfikator ma też rolę Zbierającego")
-    public void alsoCollector() {
+    void alsoCollector() {
         this.first = "COLLECTOR+VERIFIER";
     }
 
@@ -148,10 +143,10 @@ public final class QueueSteps {
     @Given(
         "jako Zbierający wysłał zgłoszenie TB-1 „schody przy wejściu” przy wejściu głównym A-1"
     )
-    public void sentOwn() throws Exception {
+    void sentOwn() throws Exception {
         this.send(
             this.first, QueueSteps.ONE,
-            QueueSteps.body("A-1", "TB-1", QueueSteps.ENTRANCE, QueueSteps.SEVERITY)
+            QueueSteps.body("A-1", "TB-1", QueueSteps.SEVERITY)
         );
     }
 
@@ -161,14 +156,14 @@ public final class QueueSteps {
      * @throws Exception Gdy MockMvc nie wykona żądania
      */
     @Given("wysłał zmianę „bariera usunięta” zgłoszenia TB-9 „niesprawna winda” w budynku D-2")
-    public void sentRemoval() throws Exception {
-        this.barrier(QueueSteps.PRIOR, "D-2", "TB-9", QueueSteps.ENTRANCE);
+    void sentRemoval() throws Exception {
+        this.barrier(QueueSteps.PRIOR, "D-2", "TB-9");
         this.jdbc.sql("UPDATE submissions SET status = 'ACCEPTED' WHERE id = :id")
             .param("id", QueueSteps.PRIOR).update();
         this.send(
             this.first, QueueSteps.TWO,
             QueueSteps.body(
-                "D-2", "TB-9", QueueSteps.ENTRANCE,
+                "D-2", "TB-9",
                 String.format(
                     ",\"replacesSubmissionId\":\"%s\",\"barrierRemoved\":true",
                     QueueSteps.PRIOR
@@ -185,9 +180,13 @@ public final class QueueSteps {
     @Given(
         "2 m od siebie przy wejściu głównym A-1 wysłano dwa zgłoszenia TB-1 „schody przy wejściu”"
     )
-    public void sentNearby() throws Exception {
-        this.barrier(QueueSteps.ONE, "A-1", "TB-1", QueueSteps.ENTRANCE);
-        this.barrier(QueueSteps.TWO, "A-1", "TB-1", "[17.06209,51.107868]");
+    void sentNearby() throws Exception {
+        this.barrier(QueueSteps.ONE, "A-1", "TB-1");
+        this.send(
+            "COLLECTOR.autor-kolejki", QueueSteps.TWO,
+            QueueSteps.body("A-1", "TB-1", QueueSteps.SEVERITY)
+                .replace(QueueSteps.ENTRANCE, "[17.06209,51.107868]")
+        );
     }
 
     /**
@@ -196,7 +195,7 @@ public final class QueueSteps {
      * @throws Exception Gdy MockMvc nie wykona żądania
      */
     @When("pierwszy Weryfikator otworzy kolejkę weryfikacji")
-    public void opensQueue() throws Exception {
+    void opensQueue() throws Exception {
         this.queue = this.queue(this.first);
     }
 
@@ -207,10 +206,10 @@ public final class QueueSteps {
      * @param later Dzień wysłania zgłoszenia, które ma być drugie
      */
     @Then("^pierwsze jest zgłoszenie z (\\S+), a drugie z (\\S+)$")
-    public void ordered(final String earlier, final String later) {
+    void ordered(final String earlier, final String later) {
         MatcherAssert.assertThat(
             "Kolejka nie stawia najdawniej wysłanego zgłoszenia na początku",
-            QueueSteps.ids(this.queue),
+            this.ids(this.queue),
             Matchers.contains(
                 this.sent.get(earlier).toString(), this.sent.get(later).toString()
             )
@@ -219,10 +218,10 @@ public final class QueueSteps {
 
     /** Każde zgłoszenie scenariusza w kolejce ma rodzaj, budynek i datę wysłania. */
     @Then("przy każdym widzi rodzaj zgłoszenia, budynek i datę wysłania")
-    public void describesEach() {
+    void describesEach() {
         MatcherAssert.assertThat(
             "Zgłoszeniu w kolejce brakuje rodzaju, budynku albo daty wysłania",
-            QueueSteps.own(this.queue).stream().map(
+            this.own(this.queue).stream().map(
                 item -> String.join(
                     " ", item.path("kind").asString(), item.path("buildingSymbol").asString(),
                     item.path("createdAt").asString().substring(0, 10)
@@ -237,10 +236,10 @@ public final class QueueSteps {
 
     /** W kolejce pierwszego Weryfikatora nie ma jego zgłoszeń. */
     @Then("nie widzi w niej żadnego z tych zgłoszeń")
-    public void seesNoneOwn() {
+    void seesNoneOwn() {
         MatcherAssert.assertThat(
             "Weryfikator widzi w kolejce własne zgłoszenie albo własną zmianę",
-            QueueSteps.own(this.queue), Matchers.empty()
+            this.own(this.queue), Matchers.empty()
         );
     }
 
@@ -250,29 +249,29 @@ public final class QueueSteps {
      * @throws Exception Gdy MockMvc nie wykona żądania
      */
     @Then("drugi Weryfikator widzi w swojej kolejce oba zgłoszenia")
-    public void secondSeesBoth() throws Exception {
+    void secondSeesBoth() throws Exception {
         MatcherAssert.assertThat(
             "Drugi Weryfikator nie widzi obu zgłoszeń pierwszego",
-            QueueSteps.own(this.queue(QueueSteps.SECOND)), Matchers.hasSize(2)
+            this.own(this.queue("VERIFIER.drugi-weryfikator")), Matchers.hasSize(2)
         );
     }
 
     /** Oba zgłoszenia scenariusza są w kolejce osobno. */
     @Then("widzi w niej oba zgłoszenia osobno")
-    public void seesBoth() {
+    void seesBoth() {
         MatcherAssert.assertThat(
             "Kolejka nie pokazuje obu podobnych zgłoszeń osobno",
-            QueueSteps.ids(this.queue),
+            this.ids(this.queue),
             Matchers.hasItems(QueueSteps.ONE.toString(), QueueSteps.TWO.toString())
         );
     }
 
     /** Podobne zgłoszenia są nadal wysłane, bez wskazania duplikatu. */
     @Then("żadne z nich nie jest odrzucone ani połączone z drugim")
-    public void untouched() {
+    void untouched() {
         MatcherAssert.assertThat(
             "System sam odrzucił albo połączył podobne zgłoszenia",
-            QueueSteps.own(this.queue).stream().map(
+            this.own(this.queue).stream().map(
                 item -> String.join(
                     " ", item.path("status").asString(),
                     String.valueOf(item.has("duplicateOfSubmissionId"))
@@ -284,20 +283,19 @@ public final class QueueSteps {
 
     /** Usuwa zgłoszenia scenariusza. */
     @After
-    public void remove() {
+    void remove() {
         this.jdbc.sql("DELETE FROM submissions WHERE id IN (:ids)")
             .param("ids", List.of(QueueSteps.ONE, QueueSteps.TWO, QueueSteps.PRIOR)).update();
     }
 
-    private void sentOn(final UUID id, final String day, final String building)
-        throws Exception {
-        this.barrier(id, building, "TB-13", QueueSteps.ENTRANCE);
+    private void sentOn(final UUID id, final String sending) throws Exception {
+        final List<String> parts = List.of(QueueSteps.BUILDING.split(sending, 2));
+        this.barrier(id, parts.getLast(), "TB-13");
         this.jdbc.sql(
             "UPDATE submissions SET created_at = CAST(:day AS TIMESTAMPTZ) WHERE id = :id"
-        )
-            .param("day", LocalDate.parse(day, QueueSteps.DAY).toString())
+        ).param("day", LocalDate.parse(parts.getFirst(), QueueSteps.DAY).toString())
             .param("id", id).update();
-        this.sent.put(day, id);
+        this.sent.put(parts.getFirst(), id);
     }
 
     private void send(final String token, final UUID id, final String body) throws Exception {
@@ -314,48 +312,43 @@ public final class QueueSteps {
         this.photos.put(id, QueueSteps.PHOTO, "zdjęcie".getBytes(StandardCharsets.UTF_8));
     }
 
-    private JsonNode queue(final String token) throws Exception {
-        return this.mapper.readTree(
-            this.http.perform(
-                MockMvcRequestBuilders.get("/review/queue")
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer ".concat(token))
-            ).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8)
-        );
+    private String queue(final String token) throws Exception {
+        return this.http.perform(
+            MockMvcRequestBuilders.get("/review/queue")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer ".concat(token))
+        ).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
     }
 
     private int status(final RequestBuilder request) throws Exception {
         return this.http.perform(request).andReturn().getResponse().getStatus();
     }
 
-    private void barrier(
-        final UUID id, final String building, final String type, final String place
-    ) throws Exception {
+    private void barrier(final UUID id, final String building, final String type)
+        throws Exception {
         this.send(
-            QueueSteps.AUTHOR, id, QueueSteps.body(building, type, place, QueueSteps.SEVERITY)
+            "COLLECTOR.autor-kolejki", id, QueueSteps.body(building, type, QueueSteps.SEVERITY)
         );
     }
 
-    private static String body(
-        final String building, final String type, final String place, final String tail
-    ) {
+    private static String body(final String building, final String type, final String tail) {
         return String.join(
             "",
             "{\"kind\":\"PRECISE\",\"location\":{\"type\":\"Point\",\"coordinates\":",
-            place, "},\"buildingSymbol\":\"", building, "\",",
+            QueueSteps.ENTRANCE, "},\"buildingSymbol\":\"", building, "\",",
             "\"floor\":{\"number\":0},\"barrierGroup\":\"", QueueSteps.GROUPS.get(type),
             "\",\"barrierType\":\"", type, "\"", tail, ",\"photoIds\":[\"",
             QueueSteps.PHOTO.toString(), "\"]}"
         );
     }
 
-    private static List<JsonNode> own(final JsonNode queue) {
-        return StreamSupport.stream(queue.spliterator(), false).filter(
+    private List<JsonNode> own(final String queue) {
+        return StreamSupport.stream(this.mapper.readTree(queue).spliterator(), false).filter(
             item -> List.of(QueueSteps.ONE.toString(), QueueSteps.TWO.toString())
                 .contains(item.path("id").asString())
         ).toList();
     }
 
-    private static List<String> ids(final JsonNode queue) {
-        return QueueSteps.own(queue).stream().map(item -> item.path("id").asString()).toList();
+    private List<String> ids(final String queue) {
+        return this.own(queue).stream().map(item -> item.path("id").asString()).toList();
     }
 }
