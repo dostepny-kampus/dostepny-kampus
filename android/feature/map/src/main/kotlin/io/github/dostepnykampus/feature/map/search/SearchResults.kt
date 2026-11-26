@@ -52,7 +52,7 @@ import io.github.dostepnykampus.feature.map.room.RoomMissing
  * a bez wyniku karta „brak wyniku”. Wyniki budynków i sal są tylko przy mapie; prośba i „brak wyniku” także przy
  * liście. Bez niczego do pokazania nie ma panelu.
  *
- * Wymagania: US1.1, US18.1, NFR-18, NFR-50
+ * Wymagania: US1.1, US18.1, US18.3, NFR-18, NFR-50
  *
  * @param search najnowszy wynik; dotychczasowy panel pozostaje do odpowiedzi dla [query]
  * @param query tekst z pola
@@ -136,12 +136,6 @@ internal data class ShownResults(
     val missingRoom: MissingRoom?,
 )
 
-/**
- * Wyniki z [search] przy bieżącej widoczności panelu. Przy liście ([isList]) albo po schowaniu ([isHidden])
- * budynków i sal nie ma, a zdanie zostaje przy liście.
- *
- * Wymagania: US1.1, US18.1, US18.3
- */
 private fun shownResults(search: BuildingSearch, isList: Boolean, isHidden: Boolean): ShownResults {
     val found = search.buildings
     val rooms = search.rooms
