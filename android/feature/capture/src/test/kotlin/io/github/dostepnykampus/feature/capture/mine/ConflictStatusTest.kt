@@ -27,7 +27,8 @@ class ConflictStatusTest {
     /** Bez znanego statusu z serwera konflikt pokazuje „Wysłane”. Wymagania: US8.1, BR-10 */
     @Test
     fun showsSentWithoutServerStatus() {
-        assertEquals(ShownStatus.SENT, refused(RefusalReason.CHANGED_ON_SERVER, null).shownStatus())
+        val shown = refused(RefusalReason.CHANGED_ON_SERVER, null).shownStatus()
+        assertEquals(ShownStatus.SENT, shown, "bez statusu z serwera")
     }
 
     /** Inna odmowa serwera zostaje „Nie wysłano”. Wymagania: US8.1, BR-9 */
