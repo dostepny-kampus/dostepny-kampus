@@ -281,13 +281,12 @@ Funkcja: Weryfikacja zgłoszeń
         | zmianę autora z uciążliwością 2    | zmianę „bariera usunięta”  |
         | zmianę „bariera usunięta”          | zmianę autora              |
 
-    # brak kroków serwera: #4104
-    @serwer @do-zrobienia
+    @serwer
     Scenariusz: Zmianę odrzuconą jako „nieaktualne” Zbierający wysyła ponownie do bieżącego zgłoszenia
       Zakładając, że zmianę „bariera usunięta” innego Zbierającego niż autor zgłoszenia TB-9 „niesprawna winda” w budynku D-2 odrzucono z powodem „nieaktualne”, bo wcześniej przyjęto zmianę autora z uciążliwością 2
       Jeżeli ten Zbierający wyśle swoją zmianę ponownie
-      Wtedy zmiana jest powiązana z bieżącym zgłoszeniem TB-9 z uciążliwością 2
-      Oraz zmiana ma status „wysłane”
+      Wtedy powstaje nowa zmiana bieżącego zgłoszenia TB-9 z uciążliwością 2 ze statusem „wysłane”
+      Oraz odrzucona zmiana ma nadal status „odrzucone”
 
     @aplikacja
     Scenariusz: Po przyjęciu „bariera usunięta” barierę, która nadal istnieje, zgłasza się od nowa
