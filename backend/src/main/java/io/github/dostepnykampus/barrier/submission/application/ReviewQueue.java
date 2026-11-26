@@ -7,6 +7,7 @@ package io.github.dostepnykampus.barrier.submission.application;
 
 import io.github.dostepnykampus.barrier.review.ReviewRepository;
 import io.github.dostepnykampus.barrier.review.SimilarSubmission;
+import io.github.dostepnykampus.barrier.submission.StoredPhotos;
 import io.github.dostepnykampus.barrier.submission.Submission;
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
  * Kolejka weryfikacji i podobne zgłoszenia dla warstwy web.
  * TODO(#3999): klasa przechodzi do tematu review.
  *
- * <p>Wymagania: US10.1, US10.4, US10.5, US10.7, BR-4, BR-11, BR-13</p>
+ * <p>Wymagania: US10.1, US10.4, US10.5, US10.7, BR-4, BR-7, BR-11, BR-13</p>
  *
  * @since 0.1.0
  */
@@ -26,24 +27,29 @@ public final class ReviewQueue {
     /** Port weryfikacji zgłoszeń. */
     private final ReviewRepository reviews;
 
+    /** Port kontroli zdjęć w magazynie. */
+    private final StoredPhotos photos;
+
     /**
      * Ctor.
      *
      * @param reviews Port weryfikacji zgłoszeń
+     * @param photos Port kontroli zdjęć w magazynie
      */
-    public ReviewQueue(final ReviewRepository reviews) {
+    public ReviewQueue(final ReviewRepository reviews, final StoredPhotos photos) {
         this.reviews = reviews;
+        this.photos = photos;
     }
 
     /**
-     * Wyszukuje zgłoszenia w kolejce weryfikacji dla danego konta Weryfikatora,
-     * bez kontroli kompletu zdjęć w magazynie.
+     * Wyszukuje zgłoszenia w kolejce weryfikacji dla danego konta Weryfikatora; zgłoszenie,
+     * któremu brakuje zdjęcia w magazynie, jeszcze do niej nie trafia.
      *
      * @param reviewer Identyfikator konta Weryfikatora
      * @return Zgłoszenia w kolejce od najdawniej wysłanego
      */
     public List<Submission> forReviewer(final String reviewer) {
-        return this.reviews.reviewQueue(reviewer);
+        return this.reviews.reviewQueue(reviewer).stream().filter(this.photos::complete).toList();
     }
 
     /**
