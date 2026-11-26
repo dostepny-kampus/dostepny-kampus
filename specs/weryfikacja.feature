@@ -71,7 +71,7 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-5
   Reguła: Weryfikator zna autora tylko z roli i pseudonimu
 
-    # brak kroków serwera: #3707
+    # brak kroków serwera: #4007
     @serwer @do-zrobienia
     Scenariusz: Weryfikator widzi rolę i pseudonim autora, a nie jego dane osobowe
       Zakładając, że zgłoszenie wysłał Zbierający Jan Kowalski z adresem e-mail jan.kowalski@example.org
