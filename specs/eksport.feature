@@ -41,8 +41,7 @@ Funkcja: Eksport zgłoszeń przyjętych do QGIS
       | wysłane       | GeoJSON | nie występuje   |
       | odrzucone     | GeoJSON | nie występuje   |
 
-  # brak pełnego testu: #4173
-  @US13.3 @BR-22 @BR-19 @serwer @do-zrobienia
+  @US13.3 @BR-22 @BR-19 @serwer
   Scenariusz: Bariera usunięta nie trafia do eksportu
     Zakładając, że przyjęto zgłoszenie „bariera usunięta” dla niesprawnej windy TB-9 w budynku D-2
     Jeżeli Koordynator pobierze eksport GeoJSON
