@@ -44,7 +44,7 @@ public final class EntranceRows implements RowMapper<Entrance> {
         """;
 
     /** Nazwa kolumny z szerokością drzwi w centymetrach. */
-    private final String widthColumn;
+    private final String column;
 
     /** Tworzy odczyt wiersza wejścia z kolumną szerokości {@code door_width_cm}. */
     public EntranceRows() {
@@ -57,7 +57,7 @@ public final class EntranceRows implements RowMapper<Entrance> {
      * @param column Nazwa kolumny z szerokością drzwi
      */
     private EntranceRows(final String column) {
-        this.widthColumn = column;
+        this.column = column;
     }
 
     @Override
@@ -89,7 +89,7 @@ public final class EntranceRows implements RowMapper<Entrance> {
      * @throws SQLException Gdy odczyt kolumny się nie uda
      */
     public Door door(final ResultSet rows) throws SQLException {
-        final Integer width = rows.getObject(this.widthColumn, Integer.class);
+        final Integer width = rows.getObject(this.column, Integer.class);
         final Door result;
         if (width == null) {
             result = new Door.Unmeasured();
