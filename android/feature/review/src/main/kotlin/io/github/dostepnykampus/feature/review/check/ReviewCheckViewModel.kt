@@ -201,7 +201,7 @@ class ReviewCheckViewModel
             submission: Submission,
             similar: List<SimilarSubmission>,
             notice: CheckNotice?,
-        ): CheckUiState =
+        ): CheckUiState.Ready =
             CheckUiState.Ready(
                 submission = submission,
                 photoUrls =
