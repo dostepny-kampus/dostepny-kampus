@@ -240,7 +240,7 @@ Arkusz „Który budynek?” na dole mapy otwiera dotknięcie obok dwóch różn
 | Element | Rodzaj | Odwołanie | Dokąd |
 | --- | --- | --- | --- |
 | Nagłówek „Który budynek?” i „Zamknij” | dane, czynność | NFR-53, NFR-17 | „Zamknij”: V1 |
-| Wiersz budynku w ramce na pełną szerokość dla każdego konturu w zasięgu: znak budynku, „Budynek A-1” i strzałka w prawo, a pod napisem nazwa budynku, gdy jest. Cały wiersz to jeden cel dotyku, a TalkBack czyta „Budynek A-1”, nazwę i „otwiera opis budynku” | czynność główna stanu | US2, NFR-17, NFR-18 | V2 tego budynku na niskiej wysokości |
+| Wiersz budynku w ramce na pełną szerokość dla każdego konturu w zasięgu: znak budynku, „Budynek A-1” i strzałka w prawo. Pod napisem stoi nazwa budynku, gdy jest. Cały wiersz to jeden cel dotyku, a TalkBack czyta „Budynek A-1”, nazwę i „otwiera opis budynku” | czynność główna stanu | US2, NFR-17, NFR-18 | V2 tego budynku na niskiej wysokości |
 
 Karta sali na dole mapy otwiera się po wyniku wyszukiwania sali albo po dotknięciu sali na planie (US18.1, US18.2).
 
