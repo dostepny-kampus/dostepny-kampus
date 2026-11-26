@@ -21,6 +21,7 @@ import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
  *   ukrywa przyciski przy zmianach oznaczenia
  * @property onOpenRemoval „Otwórz” przy zgłoszeniu „bariera usunięta”: C7 z jego identyfikatorem; `null` ukrywa
  *   przycisk przy takich zgłoszeniach
+ * @property onSync „Czeka na wysłanie: N”: C4 bez konfliktu; `null` zostawia sam napis
  */
 data class MySubmissionsActions(
     val onBack: () -> Unit,
@@ -29,4 +30,5 @@ data class MySubmissionsActions(
     val onConflict: ((id: String) -> Unit)? = null,
     val onOpenMarking: ((route: MarkingRoute) -> Unit)? = null,
     val onOpenRemoval: ((id: String) -> Unit)? = null,
+    val onSync: (() -> Unit)? = null,
 )
