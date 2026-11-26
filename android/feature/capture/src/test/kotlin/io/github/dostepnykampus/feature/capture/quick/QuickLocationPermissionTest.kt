@@ -54,6 +54,7 @@ class QuickLocationPermissionTest {
     private val locationOn = MutableStateFlow(true)
     private val permissionOwner = DeniedResultOwner()
     private var mapOpens = 0
+    private var saves = 0
 
     @Test
     fun asksForLocationBeforeCamera() {
@@ -79,6 +80,12 @@ class QuickLocationPermissionTest {
         compose.onRoot().captureRoboImage()
     }
 
+    /**
+     * Odmowa zgody zostawia komunikat i ustawienia, bez aparatu i bez zapisu zgłoszenia.
+     * Scenariusz: zgloszenie-szybkie.feature: Bez zgody na lokalizację aparat się nie otwiera
+     *
+     * Wymagania: US4.1, NFR-27, BR-8
+     */
     @Test
     fun opensAppSettingsAfterDenial() {
         show()
@@ -93,6 +100,7 @@ class QuickLocationPermissionTest {
             Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
             opened.action,
         )
+        assertEquals("po odmowie zgłoszenie nie powstaje", 0, saves)
     }
 
     @Test
@@ -139,7 +147,7 @@ class QuickLocationPermissionTest {
                 send =
                     quickSendModel(
                         positions = PositionSource { emptyFlow() },
-                        saver = ReportSaver { _, _, _ -> },
+                        saver = ReportSaver { _, _, _ -> saves++ },
                         locationSwitch = LocationSwitch { locationOn },
                     ),
             )

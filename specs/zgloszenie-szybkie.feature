@@ -85,8 +85,7 @@ Funkcja: Zgłoszenie szybkie
       | zdjęcia       |
       | grupy barier  |
 
-  # brak pełnego testu: #3696
-  @US4.1 @aplikacja @do-zrobienia
+  @US4.1 @aplikacja
   Scenariusz: Bez zgody na lokalizację aparat się nie otwiera
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz aplikacja nie ma zgody na lokalizację
