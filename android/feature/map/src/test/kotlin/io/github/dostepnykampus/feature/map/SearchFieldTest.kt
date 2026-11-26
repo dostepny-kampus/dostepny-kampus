@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
@@ -19,6 +20,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.geo.building.searchBuildings
@@ -98,14 +100,54 @@ class SearchFieldTest {
         assertEquals("otwarty budynek", listOf("A-1"), opened)
     }
 
+    /** Wyniki pozostają pod polem do zakończenia kolejnego wyszukiwania. Wymagania: US1.1, NFR-56 */
+    @Test
+    fun keepsResultsWhileTyping() {
+        val catalog = catalogOf("C-13")
+        var completed by mutableStateOf(BuildingSearch())
+        compose.setContent { Search(onBuildingClick = {}, catalog = catalog, completed = completed) }
+        val field = compose.onNode(hasSetTextAction())
+
+        field.performTextInput("c")
+        compose.runOnIdle { completed = BuildingSearch("c", emptyList()) }
+        field.performTextInput("-")
+        assertNoResultDuringFrames("c")
+        compose.runOnIdle { completed = BuildingSearch("c-", emptyList()) }
+        field.performTextInput("1")
+        assertNoResultDuringFrames("c-")
+        compose.runOnIdle { completed = BuildingSearch("c-1", catalog.buildings) }
+        field.performTextInput("3")
+        compose.onNodeWithContentDescription(RESULT).assertIsDisplayed()
+        compose.runOnIdle { completed = BuildingSearch("c-13", catalog.buildings) }
+        compose.onNodeWithContentDescription(RESULT).assertIsDisplayed()
+
+        field.performTextClearance()
+        compose.onNodeWithContentDescription(RESULT).assertDoesNotExist()
+        field.performTextInput("a")
+        compose.onNodeWithContentDescription(RESULT).assertDoesNotExist()
+    }
+
+    private fun assertNoResultDuringFrames(query: String) {
+        repeat(3) {
+            compose.mainClock.advanceTimeByFrame()
+            compose.onNodeWithText("Nie znaleźliśmy budynku „$query”.").assertIsDisplayed()
+        }
+    }
+
     @Composable
-    private fun Search(onBuildingClick: (String) -> Unit, catalog: BuildingCatalog = catalogOf("C-13")) {
+    private fun Search(
+        onBuildingClick: (String) -> Unit,
+        catalog: BuildingCatalog = catalogOf("C-13"),
+        completed: BuildingSearch? = null,
+    ) {
         var search by remember { mutableStateOf(BuildingSearch()) }
         DostepnyKampusTheme {
             CampusSearch(
                 catalog = catalog,
-                search = search,
-                onSearch = { query -> search = BuildingSearch(query, searchBuildings(query, catalog.buildings)) },
+                search = completed ?: search,
+                onSearch = { query ->
+                    if (completed == null) search = BuildingSearch(query, searchBuildings(query, catalog.buildings))
+                },
                 isOnline = true,
                 syncedAt = null,
                 isList = false,
