@@ -13,7 +13,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasAnyAncestor
@@ -64,8 +63,8 @@ import org.robolectric.annotation.Config
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
- * Niska karta budynku nad mapą V1 z wierszem o wejściach, nagłówkiem „Zamknij” i wystającym nagłówkiem „Wejścia”,
- * oraz jej rozwinięcie do pełnego ekranu po dotknięciu „Wejścia”, na syntetycznym katalogu (nie dane PWr).
+ * Niska karta budynku nad mapą V1 z wierszem o wejściach, nagłówkiem „Zamknij” i wystającym nagłówkiem „Wejścia”
+ * oraz jej rozwinięcie do pełnego ekranu, na syntetycznym katalogu (nie dane PWr).
  *
  * Wymagania: US2.8, NFR-53
  */
@@ -84,27 +83,35 @@ class LowCardOverMapTest {
         }
 
     /**
-     * Budynek A-1 z wejściem dostępnym po dotknięciu na mapie: niska karta z „Wejście dostępne” i zalecanym.
+     * Budynek A-1 z wejściem dostępnym: niska karta z „Wejście dostępne”, zalecanym i „Pokaż wejście na mapie”.
      * Scenariusz (przykład: A-1): przegladanie-mapy.feature: Niska karta nad mapą mówi słowami o wejściach
      *
      * Wymagania: US2.8
      */
     @Test
     fun showsLowCardForAccessible() {
-        openCompactCard(symbol = "A-1")
-        assertCompactCard("A-1", "Wejście dostępne", "Zalecane: „Wejście główne”.", hasShowEntrance = true)
+        checkLowCard(
+            symbol = "A-1",
+            summary = "Wejście dostępne",
+            sentence = "Zalecane: „Wejście główne”.",
+            hasButton = true,
+        )
     }
 
     /**
-     * Budynek B-8 bez wejść dostępnych: niska karta z „Brak wejścia dostępnego” bez przycisku wypełnionego.
+     * Budynek B-8 bez wejść dostępnych: niska karta z „Brak wejścia dostępnego”, bez przycisku wypełnionego.
      * Scenariusz (przykład: B-8): przegladanie-mapy.feature: Niska karta nad mapą mówi słowami o wejściach
      *
      * Wymagania: US2.8
      */
     @Test
     fun showsLowCardWithoutAccess() {
-        openCompactCard(symbol = "B-8")
-        assertCompactCard("B-8", "Brak wejścia dostępnego", "Żadne z 2 wejść nie jest dostępne.", false)
+        checkLowCard(
+            symbol = "B-8",
+            summary = "Brak wejścia dostępnego",
+            sentence = "Żadne z 2 wejść nie jest dostępne.",
+            hasButton = false,
+        )
     }
 
     /**
@@ -115,8 +122,7 @@ class LowCardOverMapTest {
      */
     @Test
     fun showsLowCardWithoutData() {
-        openCompactCard(symbol = "C-13")
-        assertCompactCard("C-13", "Brak danych o wejściach", sentence = null, hasShowEntrance = false)
+        checkLowCard(symbol = "C-13", summary = "Brak danych o wejściach", sentence = null, hasButton = false)
     }
 
     /**
@@ -127,8 +133,7 @@ class LowCardOverMapTest {
      */
     @Test
     fun showsLowCardWithoutEntrances() {
-        openCompactCard(symbol = "A-2")
-        assertCompactCard("A-2", "Brak danych o wejściach", sentence = null, hasShowEntrance = false)
+        checkLowCard(symbol = "A-2", summary = "Brak danych o wejściach", sentence = null, hasButton = false)
     }
 
     /**
@@ -155,7 +160,8 @@ class LowCardOverMapTest {
     fun expandsShortCardFromPeek() {
         val cardBottom = expandFromPeek(symbol = "A-2", hasPlans = false)
         compose.onNodeWithText(NO_ENTRANCES_TEXT).assertIsDisplayed()
-        val lastContent = compose.onNodeWithText(NO_PLAN_TEXT).assertIsDisplayed().getUnclippedBoundsInRoot()
+        val lastNode = compose.onNodeWithText(NO_PLAN_TEXT).assertIsDisplayed()
+        val lastContent = lastNode.getUnclippedBoundsInRoot()
         assertTrue(
             "pod krótką treścią A-2 zostaje puste miejsce: do ${lastContent.bottom}, karta do $cardBottom",
             cardBottom - lastContent.bottom > EMPTY_SPACE_MIN_DP.dp,
@@ -166,15 +172,29 @@ class LowCardOverMapTest {
     private fun AppNavigator.TestScreen(route: NavKey, plans: FloorPlans) {
         when (route) {
             is MapRoute -> {
-                val model = remember { inlineMapViewModel(repository, { flowOf(true) }, choice) }
+                val model =
+                    remember {
+                        inlineMapViewModel(repository = repository, networkStatus = { flowOf(true) }, choice = choice)
+                    }
                 val state by model.uiState.collectAsStateWithLifecycle()
-                MapScreen(route.focus, state, model::chooseList, model::search, mapView = fakeMap)
+                MapScreen(
+                    focus = route.focus,
+                    state = state,
+                    onListChange = model::chooseList,
+                    onSearch = model::search,
+                    mapView = fakeMap,
+                )
             }
 
             is BuildingRoute -> {
                 val card =
                     remember(route.symbol) {
-                        BuildingCardViewModel(route.symbol, repository, { flowOf(true) }, plans = plans)
+                        BuildingCardViewModel(
+                            symbol = route.symbol,
+                            repository = repository,
+                            networkStatus = { flowOf(true) },
+                            plans = plans,
+                        )
                     }
                 val state by card.uiState.collectAsStateWithLifecycle()
                 Box(Modifier.testTag(CARD_TAG)) {
@@ -182,9 +202,7 @@ class LowCardOverMapTest {
                 }
             }
 
-            else -> {
-                AppScreen(route)
-            }
+            else -> AppScreen(route)
         }
     }
 
@@ -204,7 +222,8 @@ class LowCardOverMapTest {
         compose.waitForIdle()
     }
 
-    private fun assertCompactCard(symbol: String, summary: String, sentence: String?, hasShowEntrance: Boolean) {
+    private fun checkLowCard(symbol: String, summary: String, sentence: String?, hasButton: Boolean) {
+        openCompactCard(symbol = symbol)
         val map = compose.onNodeWithTag(MAP_TAG).getUnclippedBoundsInRoot()
         val handle = compose.onNode(sheetHandle(isExpanded = false)).assertIsDisplayed().getUnclippedBoundsInRoot()
         val osm = compose.onNodeWithText(OSM).assertIsDisplayed().getUnclippedBoundsInRoot()
@@ -218,20 +237,20 @@ class LowCardOverMapTest {
         val summaryBounds = summaryNode.getUnclippedBoundsInRoot()
         if (sentence != null) {
             compose.onNode(hasText(summary) and hasText(sentence)).assertIsDisplayed()
-            val sentenceBounds =
-                compose.onNodeWithText(sentence, useUnmergedTree = true).assertIsDisplayed().getUnclippedBoundsInRoot()
+            val sentenceNode = compose.onNodeWithText(sentence, useUnmergedTree = true).assertIsDisplayed()
+            val sentenceBounds = sentenceNode.getUnclippedBoundsInRoot()
             assertTrue("zdanie pod napisem „$summary”", sentenceBounds.top >= summaryBounds.bottom)
         } else {
             val merged = compose.onNodeWithText(summary).assertIsDisplayed().fetchSemanticsNode()
-            val texts = merged.config.getOrNull(SemanticsProperties.Text)?.map { it.text }.orEmpty()
-            assertEquals("wiersz ma tylko napis „$summary” bez zdania", listOf(summary), texts)
+            val rawTexts = merged.config[SemanticsProperties.Text]
+            assertEquals("wiersz ma tylko napis „$summary” bez zdania", listOf(summary), rawTexts.map { it.text })
         }
         val cardButtons =
             compose.onAllNodes(hasClickAction() and hasAnyAncestor(hasTestTag(CARD_TAG))).fetchSemanticsNodes()
-        if (hasShowEntrance) {
-            val buttonNode = compose.onNode(hasText(SHOW_ENTRANCE) and hasClickAction()).assertIsDisplayed()
-            val button = buttonNode.getUnclippedBoundsInRoot()
-            assertTrue("„$SHOW_ENTRANCE” pod wierszem o wejściach", button.top >= summaryBounds.bottom)
+        if (hasButton) {
+            val button = compose.onNode(hasText(SHOW_ENTRANCE) and hasClickAction()).assertIsDisplayed()
+            val buttonTop = button.getUnclippedBoundsInRoot().top
+            assertTrue("„$SHOW_ENTRANCE” pod wierszem o wejściach", buttonTop >= summaryBounds.bottom)
             assertEquals("czynności na karcie $symbol", ACTIONS_WITH_RECOMMENDED, cardButtons.size)
         } else {
             compose.onNodeWithText(SHOW_ENTRANCE).assertDoesNotExist()
@@ -274,10 +293,12 @@ class LowCardOverMapTest {
         override suspend fun download(symbol: String): Boolean = hasPlans && symbol == "A-1"
 
         override suspend fun floors(symbol: String): FloorList? =
-            FloorList(SOURCE, listOf(Floor("P0", "Parter", 0))).takeIf { hasPlans && symbol == "A-1" }
+            FloorList(source = SOURCE, floors = listOf(Floor(id = "P0", label = "Parter", order = 0)))
+                .takeIf { hasPlans && symbol == "A-1" }
 
         override suspend fun rooms(symbol: String, floor: String): RoomList? =
-            RoomList(SOURCE, NO_AREA, listOf(ROOM)).takeIf { hasPlans && symbol == "A-1" }
+            RoomList(source = SOURCE, floorOutline = NO_AREA, rooms = listOf(ROOM))
+                .takeIf { hasPlans && symbol == "A-1" }
     }
 
     private companion object {
@@ -300,56 +321,65 @@ class LowCardOverMapTest {
         const val SOURCE = "Politechnika Wrocławska"
         val NO_AREA = GeoMultiPolygon(emptyList())
         val ROOM =
-            Room("r1", "101", "Sala dydaktyczna", RoomCategory.CLASSROOM, NO_AREA, GeoPoint(0.0005, 0.0005), true)
-
-        fun building(symbol: String, name: String, west: Double): Building {
-            val east = west + 0.001
-            val ring = listOf(west to 0.0, east to 0.0, east to 0.001, west to 0.001, west to 0.0)
-            return Building(symbol, name, GeoPolygon(listOf(ring.map { (lon, lat) -> GeoPoint(lon, lat) })))
-        }
-
-        fun bldgJson(symbol: String, name: String, id: Int, west: Double): String {
-            val east = west + 0.001
-            val ring = "[[$west,0.0],[$east,0.0],[$east,0.001],[$west,0.001],[$west,0.0]]"
-            return """{"type":"Feature","properties":{"kind":"building","symbols":["$symbol"],""" +
-                """"display_name":"$name","osm_id":"way/$id"},"geometry":{"type":"Polygon","coordinates":[$ring]}}"""
-        }
-
-        fun entrJson(symbol: String, id: Int, lon: Double, tags: String): String =
-            """{"type":"Feature","properties":{"kind":"entrance","symbols":["$symbol"],"osm_id":"node/$id",$tags},""" +
-                """"geometry":{"type":"Point","coordinates":[$lon,0.0005]}}"""
-
+            Room(
+                id = "r1",
+                number = "101",
+                function = "Sala dydaktyczna",
+                category = RoomCategory.CLASSROOM,
+                geometry = NO_AREA,
+                labelPoint = GeoPoint(longitude = 0.0005, latitude = 0.0005),
+                isLabelled = true,
+            )
+        val BUILDINGS = listOf("A-1" to 0.0, "B-8" to 0.002, "C-13" to 0.004, "A-2" to 0.006)
+        val ENTRANCES =
+            listOf(
+                "A-1" to """"entrance":"main","wheelchair":"yes","ref":"Wejście główne"""",
+                "B-8" to """"entrance":"main","wheelchair":"no","ref":"Główne"""",
+                "B-8" to """"entrance":"yes","wheelchair":"no","ref":"Boczne"""",
+                "C-13" to """"entrance":"main","ref":"Główne"""",
+                "C-13" to """"entrance":"yes","ref":"Boczne"""",
+            )
         val SERVER_BUILDINGS =
             ServerBuildings(
                 source = SOURCE,
-                buildings =
-                    listOf(
-                        building("A-1", "Budynek A-1", west = 0.0),
-                        building("B-8", "Budynek B-8", west = 0.002),
-                        building("C-13", "Budynek C-13", west = 0.004),
-                        building("A-2", "Budynek A-2", west = 0.006),
-                    ),
+                buildings = BUILDINGS.map { (symbol, west) -> building(symbol = symbol, west = west) },
                 detailed = setOf("A-1", "C-13"),
             )
-
+        val GEOJSON_FEATURES =
+            BUILDINGS.map { (symbol, west) -> bldgJson(symbol = symbol, west = west) } +
+                ENTRANCES.mapIndexed { id, (symbol, tags) -> entrJson(symbol = symbol, id = id, tags = tags) }
         val GEOJSON =
-            listOf(
-                bldgJson("A-1", "Budynek A-1", id = 1, west = 0.0),
-                entrJson("A-1", 1, 0.0005, """"entrance":"main","wheelchair":"yes","ref":"Wejście główne""""),
-                bldgJson("B-8", "Budynek B-8", id = 2, west = 0.002),
-                entrJson("B-8", 2, 0.0025, """"entrance":"main","wheelchair":"no","ref":"Główne""""),
-                entrJson("B-8", 3, 0.0028, """"entrance":"yes","wheelchair":"no","ref":"Boczne""""),
-                bldgJson("C-13", "Budynek C-13", id = 3, west = 0.004),
-                entrJson("C-13", 4, 0.0045, """"entrance":"main","ref":"Główne""""),
-                entrJson("C-13", 5, 0.0048, """"entrance":"yes","ref":"Boczne""""),
-                bldgJson("A-2", "Budynek A-2", id = 4, west = 0.006),
-            ).joinToString(
+            GEOJSON_FEATURES.joinToString(
                 separator = ",",
                 prefix = """{"type":"FeatureCollection","attribution":"© OpenStreetMap contributors","features":[""",
                 postfix = "]}",
             )
-
         val repository =
-            BuildingCatalogRepository(EmptyCoroutineContext, { ServerReply.Ok(SERVER_BUILDINGS) }) { GEOJSON }
+            BuildingCatalogRepository(
+                ioContext = EmptyCoroutineContext,
+                listBuildings = { ServerReply.Ok(SERVER_BUILDINGS) },
+            ) { GEOJSON }
+
+        fun building(symbol: String, west: Double): Building {
+            val east = west + 0.001
+            val ring = listOf(west to 0.0, east to 0.0, east to 0.001, west to 0.001, west to 0.0)
+            return Building(
+                symbol = symbol,
+                name = "Budynek $symbol",
+                outline = GeoPolygon(listOf(ring.map { (lon, lat) -> GeoPoint(longitude = lon, latitude = lat) })),
+            )
+        }
+
+        fun bldgJson(symbol: String, west: Double): String {
+            val east = west + 0.001
+            val ring = "[[$west,0.0],[$east,0.0],[$east,0.001],[$west,0.001],[$west,0.0]]"
+            return """{"type":"Feature","properties":{"kind":"building","symbols":["$symbol"],""" +
+                """"display_name":"Budynek $symbol","osm_id":"way/$symbol"},""" +
+                """"geometry":{"type":"Polygon","coordinates":[$ring]}}"""
+        }
+
+        fun entrJson(symbol: String, id: Int, tags: String): String =
+            """{"type":"Feature","properties":{"kind":"entrance","symbols":["$symbol"],"osm_id":"node/$id",$tags},""" +
+                """"geometry":{"type":"Point","coordinates":[0.0005,0.0005]}}"""
     }
 }
