@@ -3,11 +3,10 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.inspection.web;
+package io.github.dostepnykampus.sync.web;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.github.dostepnykampus.inspection.domain.MarkerPlace;
-import io.github.dostepnykampus.inspection.domain.SyncedMarker;
+import io.github.dostepnykampus.sync.application.PulledMarker;
 import java.time.Instant;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
@@ -31,15 +30,10 @@ record SyncMarkerResponse(
     boolean revoked, boolean mine
 ) {
 
-    static SyncMarkerResponse from(final SyncedMarker marker) {
-        final MarkerPlace place = marker.place();
-        String floor = null;
-        if (place instanceof MarkerPlace.Floor on) {
-            floor = on.floor();
-        }
+    static SyncMarkerResponse from(final PulledMarker marker) {
         return new SyncMarkerResponse(
-            marker.id(), place.building(), floor, marker.created(), marker.revoked(),
-            marker.mine()
+            marker.id(), marker.buildingSymbol(), marker.floorId(), marker.created(),
+            marker.revoked(), marker.mine()
         );
     }
 }
