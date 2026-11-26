@@ -15,6 +15,7 @@ import io.github.dostepnykampus.core.data.submission.pending.PendingEdits
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
+import io.github.dostepnykampus.feature.capture.navigation.ReportEditMode
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
 import io.github.dostepnykampus.feature.capture.report.form.ReportForm
@@ -71,10 +72,11 @@ class ReportEditViewModel
             requested = id
             viewModelScope.launch {
                 val loaded =
-                    when {
-                        route.isAccepted -> barriers.barriers().firstOrNull { it.id == id }?.toReplaceUiState()
-                        route.isResend -> edits.load(id)?.let { old -> resendOf(old) }
-                        else -> edits.load(id)?.toReportUiState()
+                    when (route.mode) {
+                        ReportEditMode.OWN -> edits.load(id)?.toReportUiState()
+                        ReportEditMode.CHANGE_ACCEPTED ->
+                            barriers.barriers().firstOrNull { it.id == id }?.toReplaceUiState()
+                        ReportEditMode.RESEND_OUTDATED -> edits.load(id)?.let { old -> resendOf(old) }
                     }
                 state.value = if (loaded == null) ReportEditLoad.Missing else ReportEditLoad.Ready(loaded)
             }
