@@ -7,6 +7,7 @@ package io.github.dostepnykampus.sync;
 
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.OpenApiContract;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -22,6 +23,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -29,7 +31,9 @@ import tools.jackson.databind.ObjectMapper;
 /**
  * Pobranie zmian daje od kursora własne zgłoszenia w każdym statusie i cudze przyjęte
  * i archiwalne, a Zbierającemu znaczniki wszystkich Zbierających, także cofnięte, z oznaczeniem
- * własnych; inne role dostają pustą listę znaczników, a zły kursor 400.
+ * własnych; inne role dostają pustą listę znaczników, a zły kursor 400. Kursor odpowiedzi jest
+ * cofnięty o margines dłuższy niż limit czasu transakcji zapisu, więc zmiana zatwierdzona po
+ * pobraniu z wcześniejszą chwilą przychodzi w następnym.
  *
  * <p>Wymagania: US15.1, US15.2, US11.3, US8.1, US1.3, US10.6, BR-20</p>
  *
@@ -52,7 +56,7 @@ final class SyncPullHttpIT {
         );
         Assertions.assertEquals(
             String.join(
-                " ", "2999-04-01T00:00:00Z", own.toString(), "C-13 false true",
+                " ", "2999-02-01T00:00:00Z", own.toString(), "C-13 false true",
                 foreign.toString(), "C-13 true false", "stary false", "[] []"
             ),
             String.join(
@@ -94,10 +98,45 @@ final class SyncPullHttpIT {
                 body.path("submissions").valueStream()
                     .map(node -> UUID.fromString(node.path("id").asString()))
                     .filter(ids::contains).map(ids::indexOf).sorted().toList(),
-                Instant.parse(body.path("cursor").asString()).isAfter(cursor),
+                Instant.parse(body.path("cursor").asString()).equals(cursor),
                 new OpenApiContract().violations("SyncPullResponse", body.toString())
             ),
             Matchers.contains(List.of(1, 2, 3, 4, 5, 9, 10), true, List.of())
+        );
+    }
+
+    @Test
+    void givesChangeCommittedAfterPull(final WebApplicationContext context) throws Exception {
+        final String cursor = SyncPullHttpIT.pull(context, "COLLECTOR.autor", "")
+            .path("cursor").asString();
+        MatcherAssert.assertThat(
+            "Kursor nie jest cofnięty albo spóźniona zmiana nie przyszła w następnym pobraniu",
+            List.of(
+                Instant.parse(cursor).isBefore(Instant.now().minusSeconds(60)),
+                SyncPullHttpIT.pulledAfter(
+                    context, cursor,
+                    SyncPullHttpIT.marker(
+                        context, "autor", Instant.now().minusSeconds(1).toString(), false
+                    )
+                )
+            ),
+            Matchers.contains(true, true)
+        );
+    }
+
+    @Test
+    void keepsMarginLongerThanWriteTimeout(final WebApplicationContext context) {
+        final int timeout = context.getBean(AbstractPlatformTransactionManager.class)
+            .getDefaultTimeout();
+        MatcherAssert.assertThat(
+            "Limit czasu transakcji zapisu nie jest ustawiony albo przekracza margines kursora",
+            List.of(
+                timeout > 0,
+                context.getEnvironment().getRequiredProperty(
+                    "dk.sync.cursor-margin", Duration.class
+                ).compareTo(Duration.ofSeconds(timeout)) > 0
+            ),
+            Matchers.contains(true, true)
         );
     }
 
@@ -192,6 +231,14 @@ final class SyncPullHttpIT {
             "\"location\":{\"type\":\"Point\",\"coordinates\":[17.06209,51.10785]},",
             "\"photoIds\":[\"", UUID.randomUUID().toString(), "\"]}"
         );
+    }
+
+    private static boolean pulledAfter(
+        final WebApplicationContext context, final String cursor, final UUID marker
+    ) throws Exception {
+        return SyncPullHttpIT.pull(context, "COLLECTOR.autor", "?since=".concat(cursor))
+            .path("inspectionMarkers").valueStream()
+            .anyMatch(node -> marker.toString().equals(node.path("id").asString()));
     }
 
     private static JsonNode pull(
