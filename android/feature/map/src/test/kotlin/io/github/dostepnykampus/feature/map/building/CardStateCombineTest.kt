@@ -103,7 +103,7 @@ class CardStateCombineTest {
                     override suspend fun rooms(symbol: String, floor: String): RoomList? = null
                 }
             val card = cardViewModel(plans = plans)
-            backgroundScope.launch { card.uiState.collect {} }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { card.uiState.collect {} }
             val before = card.uiState.value as BuildingCardUiState.Ready
             assertNull(before.floors, "Przed pobraniem planu brak faktów o piętrach")
             downloaded.complete(true)
@@ -124,12 +124,12 @@ class CardStateCombineTest {
                 )
             val entrances = ServerEntrancesRepository { answers.removeFirst()() }
             val warm = cardViewModel(repository = repository, serverEntrances = entrances)
-            val warmCollector = backgroundScope.launch { warm.uiState.collect {} }
+            val warmCollector = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { warm.uiState.collect {} }
             warmCollector.cancel()
             viewModels.cancelAndJoin()
 
             val card = cardViewModel(repository = repository, serverEntrances = entrances)
-            backgroundScope.launch { card.uiState.collect {} }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { card.uiState.collect {} }
             val before = card.uiState.value as BuildingCardUiState.Ready
             assertEquals(emptyList<EvacuationExit>(), before.evacuationExits, "Przed odpowiedzią brak wyjść")
             secondAnswer.complete(ServerReply.Ok(SERVER_CARD.copy(evacuationExits = listOf(EXIT))))
@@ -149,7 +149,7 @@ class CardStateCombineTest {
                     override fun syncedAt(): Instant = SYNCED_AT
                 }
             val card = cardViewModel(acceptedBarriers = barriers)
-            backgroundScope.launch { card.uiState.collect {} }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { card.uiState.collect {} }
             val before = card.uiState.value as BuildingCardUiState.Ready
             assertEquals(
                 "node/1",
@@ -206,7 +206,7 @@ class CardStateCombineTest {
                     ),
                 )
             val emitted = mutableListOf<BuildingCardUiState>()
-            backgroundScope.launch { card.uiState.collect { emitted += it } }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { card.uiState.collect { emitted += it } }
             val countBefore = emitted.size
             val before = card.uiState.value as BuildingCardUiState.Ready
             own.value = listOf(ownSubmission(id = "z1", state = SendState.SENT))
@@ -219,11 +219,8 @@ class CardStateCombineTest {
         val pool = Executors.newSingleThreadExecutor { runnable -> Thread(runnable, COMPUTE_THREAD) }
         try {
             pool.asCoroutineDispatcher().use { worker ->
-                try {
-                    block(worker)
-                } finally {
-                    viewModels.cancelAndJoin()
-                }
+                block(worker)
+                viewModels.cancelAndJoin()
             }
         } finally {
             pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
