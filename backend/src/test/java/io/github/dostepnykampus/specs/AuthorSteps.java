@@ -38,9 +38,6 @@ public final class AuthorSteps {
     /** Konto autora w Usłudze logowania. */
     private static final String ACCOUNT = "jan-kowalski";
 
-    /** Token Zbierającego z kontem autora. */
-    private static final String TOKEN = "Bearer COLLECTOR.jan-kowalski";
-
     /** Klient żądań HTTP do aplikacji. */
     private final MockMvc http;
 
@@ -49,8 +46,6 @@ public final class AuthorSteps {
 
     /** Adres e-mail autora ze scenariusza. */
     private String email;
-
-
 
     /**
      * Kroki na kontekście aplikacji.
@@ -72,7 +67,7 @@ public final class AuthorSteps {
             this.http.perform(
                 MockMvcRequestBuilders.post("/submissions")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, AuthorSteps.TOKEN)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer COLLECTOR.".concat(AuthorSteps.ACCOUNT))
                     .content(AuthorSteps.body())
             ).andReturn().getResponse().getStatus(),
             Matchers.equalTo(201)
