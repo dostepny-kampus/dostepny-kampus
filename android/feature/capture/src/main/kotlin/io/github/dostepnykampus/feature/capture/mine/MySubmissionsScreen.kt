@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -70,10 +71,12 @@ fun MySubmissionsContent(
     modifier: Modifier = Modifier,
     onRetry: () -> Unit = {},
 ) {
-    Column(modifier = modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
-        BackHeader(title = stringResource(R.string.moje_naglowek), onBack = actions.onBack)
-        if (state is MySubmissionsUiState.Ready) {
-            SubmissionList(state = state, actions = actions, onRetry = onRetry)
+    Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
+        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
+            BackHeader(title = stringResource(R.string.moje_naglowek), onBack = actions.onBack)
+            if (state is MySubmissionsUiState.Ready) {
+                SubmissionList(state = state, actions = actions, onRetry = onRetry)
+            }
         }
     }
 }
