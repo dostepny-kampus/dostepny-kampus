@@ -21,9 +21,8 @@ case "$1 $2" in
   "pr view")
     if [[ $* == *headRefOid* ]]; then echo "glowa-$3"; else cat "$FAKE_DIR/body-$3" 2>/dev/null || true; fi ;;
   "run list")
-    head="${*##*--commit glowa-}"
-    head="${head%% *}"
-    cat "$FAKE_DIR/run-$head" 2>/dev/null || true ;;
+    while (($#)) && [[ $1 != --commit ]]; do shift; done
+    cat "$FAKE_DIR/run-${2#glowa-}" 2>/dev/null || true ;;
   "run rerun")
     [[ -f $FAKE_DIR/rerun-blad ]] && exit 1
     echo "$3 $4" >>"$FAKE_DIR/rerun" ;;
