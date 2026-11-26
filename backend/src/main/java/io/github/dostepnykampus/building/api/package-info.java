@@ -5,7 +5,7 @@
  */
 
 /**
- * Interfejs modułu budynków dla innych modułów: teren kampusu i kontury budynków.
+ * Interfejs modułu budynków dla innych modułów: teren kampusu, kontury, piętra i wejścia.
  *
  * @since 0.1.0
  */

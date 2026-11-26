@@ -5,13 +5,12 @@
  */
 
 /**
- * Moduł inspection: znaczniki pięter obejrzanych przez Zbierających.
- *
- * <p>Zadanie: zapis znaczników, ich zmiany od kursora i odczyt postępu inwentaryzacji.</p>
+ * Zadanie: zapis znaczników Zbierających, ich zmiany od kursora i odczyt postępu inwentaryzacji.
  *
  * <p>API: pakiet {@code api}; HTTP /sync/push, /inspection-markers/{id}, /progress.</p>
  *
- * <p>Zależności: {@code building :: api}, {@code identity :: api}, {@code shared}.</p>
+ * <p>Zależności: {@code barrier :: api}, {@code building :: api}, {@code identity :: api},
+ * {@code shared}.</p>
  *
  * <p>Nie robi: nie przyjmuje zgłoszeń barier.</p>
  *
@@ -21,7 +20,9 @@
  *
  * @since 0.1.0
  */
-@ApplicationModule(allowedDependencies = {"building :: api", "identity :: api", "shared"})
+@ApplicationModule(
+    allowedDependencies = {"barrier :: api", "building :: api", "identity :: api", "shared"}
+)
 @NullMarked
 package io.github.dostepnykampus.inspection;
 
