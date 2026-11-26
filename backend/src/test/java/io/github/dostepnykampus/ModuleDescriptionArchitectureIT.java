@@ -110,8 +110,8 @@ final class ModuleDescriptionArchitectureIT {
                  * <p>Nie robi: nie przechowuje danych.</p>
                  *
                  * <p>Kiedy dodawać tutaj: pobranie zmian.</p>
-                 %s
-                """.formatted("/**", "*/"),
+                %s
+                """.formatted("/**", " */"),
                 Set.of("barrier :: api", "building :: api", "inspection :: api", "shared")
             ),
             "Pierwszy akapit zadania w Javadoc nie wymaga znacznika HTML"
