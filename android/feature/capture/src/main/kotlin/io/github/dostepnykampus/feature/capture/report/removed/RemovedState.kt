@@ -7,7 +7,7 @@ package io.github.dostepnykampus.feature.capture.report.removed
 
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
-import io.github.dostepnykampus.core.geo.building.EntranceDistance
+import io.github.dostepnykampus.core.model.building.EntranceDistance
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 

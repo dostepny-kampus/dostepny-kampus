@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.capture.report.removed
 
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.NearestEntrance
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.BarrierType
@@ -48,15 +49,18 @@ class RemovedViewModelTest {
         )
     private val viewModel = viewModel(PLAIN)
 
-    private fun viewModel(file: String, barrier: AcceptedBarrier = lift) =
-        RemovedViewModel(
+    private fun viewModel(file: String, barrier: AcceptedBarrier = lift): RemovedViewModel {
+        val catalog = BuildingCatalogRepository(EmptyCoroutineContext) { file }
+        return RemovedViewModel(
             barriers = { listOf(barrier) },
-            catalog = BuildingCatalogRepository(EmptyCoroutineContext) { file },
+            catalog = catalog,
+            nearest = NearestEntrance(catalog),
             saver = { content, photos, _ ->
                 failure?.let { throw it }
                 saved.add(content to photos)
             },
         )
+    }
 
     @BeforeEach
     fun main() {

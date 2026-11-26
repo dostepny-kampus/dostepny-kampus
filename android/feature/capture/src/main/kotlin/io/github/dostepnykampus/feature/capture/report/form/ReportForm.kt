@@ -7,8 +7,8 @@ package io.github.dostepnykampus.feature.capture.report.form
 
 import androidx.compose.runtime.Immutable
 import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
-import io.github.dostepnykampus.core.geo.building.EntranceDistance
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.building.EntranceDistance
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
