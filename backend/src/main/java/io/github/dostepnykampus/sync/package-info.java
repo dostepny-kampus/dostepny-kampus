@@ -5,7 +5,7 @@
  */
 
 /**
- * <p>Zadanie: składa zmiany od kursora z modułów właścicieli danych w jedną odpowiedź.</p>
+ * Zadanie: składa zmiany od kursora z modułów właścicieli danych w jedną odpowiedź.
  *
  * <p>API: brak typów dla innych modułów; HTTP {@code /sync/pull}.</p>
  *
