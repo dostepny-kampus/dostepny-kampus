@@ -5,10 +5,8 @@
  */
 package io.github.dostepnykampus.app.navigation
 
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import io.github.dostepnykampus.app.EXPAND_HANDLE
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -16,8 +14,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 /**
- * Pinezka i podpis wejścia A-1 są na mapie tylko przy otwartym arkuszu wejścia, niezależnie od sposobu otwarcia
- * i zamknięcia arkusza.
+ * Pinezka i podpis wejścia A-1 są na mapie tylko przy otwartym arkuszu wejścia.
  *
  * Wymagania: US3.3, NFR-18, NFR-53
  */
@@ -35,10 +32,7 @@ class EntrancePinOnMapTest : EntranceSheetFixture() {
         openSheetByRecommended()
         assertPinned(ACCESSIBLE_PIN)
 
-        closeSheet()
-
-        assertUnpinned()
-        assertMapWithoutCard()
+        closeToMap()
     }
 
     /**
@@ -48,14 +42,13 @@ class EntrancePinOnMapTest : EntranceSheetFixture() {
     @Test
     fun hidesPinOnSheetBack() {
         start(withLowCard = true)
-        compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
-        compose.waitForIdle()
+        expandCard()
         compose.onNode(mainEntranceRow).performScrollTo().performClick()
-        waitForSheet()
+        waitFor(sheetBuildingRow)
         assertPinned(MAIN_PIN)
 
         pressBack()
-        waitForCard()
+        waitFor(cardHeader)
 
         assertUnpinned()
         compose.onNode(cardHeader).assertExists("karta A-1 po zamknięciu arkusza przez „Wstecz”")
@@ -72,7 +65,7 @@ class EntrancePinOnMapTest : EntranceSheetFixture() {
         assertPinned(ACCESSIBLE_PIN)
 
         compose.onNode(sheetBuildingRow).performClick()
-        waitForCard()
+        waitFor(cardHeader)
 
         assertUnpinned()
         compose.onNode(cardHeader).assertExists("karta A-1 po dotknięciu wiersza budynku")

@@ -26,8 +26,7 @@ import org.robolectric.annotation.GraphicsMode
 private const val SCROLLED_PX = 60f
 
 /**
- * „Wstecz” w arkuszu wejścia wraca do karty A-1 na jej wysokości i przewinięciu, a „Zamknij” zostawia mapę
- * bez karty budynku.
+ * „Wstecz” w arkuszu wejścia wraca do karty A-1, a „Zamknij” zostawia mapę bez karty.
  *
  * Wymagania: US2.8, US3.3, NFR-15, NFR-53
  */
@@ -36,8 +35,7 @@ private const val SCROLLED_PX = 60f
 @Config(qualifiers = "w360dp-h800dp")
 class EntranceSheetReturnTest : EntranceSheetFixture() {
     /**
-     * Wiersz: karta A-1 rozwinięta i przewinięta, wiersz wejścia → „Wstecz” zwraca kartę rozwiniętą i tak samo
-     * przewiniętą.
+     * Rozwinięta i przewinięta karta wraca po „Wstecz” rozwinięta i przewinięta.
      * Scenariusz: przegladanie-mapy.feature:
      *   „Wstecz” w arkuszu wejścia wraca tam, skąd arkusz otwarto, a „Zamknij” zostawia mapę.
      */
@@ -45,20 +43,18 @@ class EntranceSheetReturnTest : EntranceSheetFixture() {
     @Config(qualifiers = "w360dp-h420dp")
     fun returnsToScrolledCard() {
         start(withLowCard = true)
-        compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
-        compose.waitForIdle()
+        expandCard()
         compose.onNode(sheetHandle(isExpanded = true)).assertExists("karta A-1 rozwinięta")
         compose.onNode(cardScroll).performSemanticsAction(SemanticsActions.ScrollBy) { it(0f, SCROLLED_PX) }
         compose.waitForIdle()
         assertEquals("karta A-1 przewinięta przed arkuszem", SCROLLED_PX, scrolled(), 0f)
         compose.onNode(recommendedRow).performClick()
-        waitForSheet()
+        waitFor(sheetBuildingRow)
         assertPinned(ACCESSIBLE_PIN)
         compose.onNode(cardHeader).assertDoesNotExist()
 
         pressBack()
-        compose.waitUntil { compose.onAllNodes(cardScroll).fetchSemanticsNodes().isNotEmpty() }
-        compose.waitForIdle()
+        waitFor(cardScroll)
 
         assertUnpinned()
         compose.onNode(cardHeader).assertExists("karta A-1 po powrocie przez „Wstecz”")
@@ -67,7 +63,7 @@ class EntranceSheetReturnTest : EntranceSheetFixture() {
     }
 
     /**
-     * Wiersz: niska karta A-1, „Pokaż wejście na mapie” → „Wstecz” zwraca kartę A-1 na niskiej wysokości.
+     * Niska karta wraca po „Wstecz” z arkusza na niskiej wysokości.
      * Scenariusz: przegladanie-mapy.feature:
      *   „Wstecz” w arkuszu wejścia wraca tam, skąd arkusz otwarto, a „Zamknij” zostawia mapę.
      */
@@ -80,7 +76,7 @@ class EntranceSheetReturnTest : EntranceSheetFixture() {
         compose.onNode(cardHeader).assertDoesNotExist()
 
         pressBack()
-        waitForCard()
+        waitFor(cardHeader)
 
         assertUnpinned()
         compose.onNode(cardHeader).assertExists("karta A-1 po powrocie przez „Wstecz”")
@@ -91,7 +87,7 @@ class EntranceSheetReturnTest : EntranceSheetFixture() {
     }
 
     /**
-     * Wiersz: niska karta A-1, „Pokaż wejście na mapie” → „Zamknij” zostawia mapę bez karty budynku.
+     * Arkusz otwarty z niskiej karty po „Zamknij” zostawia mapę bez karty.
      * Scenariusz: przegladanie-mapy.feature:
      *   „Wstecz” w arkuszu wejścia wraca tam, skąd arkusz otwarto, a „Zamknij” zostawia mapę.
      */
@@ -102,14 +98,11 @@ class EntranceSheetReturnTest : EntranceSheetFixture() {
         openSheetByRecommended()
         assertPinned(ACCESSIBLE_PIN)
 
-        closeSheet()
-
-        assertUnpinned()
-        assertMapWithoutCard()
+        closeToMap()
     }
 
     /**
-     * Wiersz: znak wejścia A-1 na mapie bez karty → „Zamknij” zostawia mapę bez karty budynku.
+     * Arkusz otwarty znakiem wejścia bez karty po „Zamknij” zostawia mapę bez karty.
      * Scenariusz: przegladanie-mapy.feature:
      *   „Wstecz” w arkuszu wejścia wraca tam, skąd arkusz otwarto, a „Zamknij” zostawia mapę.
      */
@@ -120,12 +113,13 @@ class EntranceSheetReturnTest : EntranceSheetFixture() {
         openSheetBySign()
         assertPinned(ACCESSIBLE_PIN)
 
-        closeSheet()
-
-        assertUnpinned()
-        assertMapWithoutCard()
+        closeToMap()
     }
 
     private fun scrolled(): Float =
-        compose.onNode(cardScroll).fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange].value()
+        compose
+            .onNode(cardScroll)
+            .fetchSemanticsNode()
+            .config[SemanticsProperties.VerticalScrollAxisRange]
+            .value()
 }

@@ -9,6 +9,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
@@ -41,29 +42,35 @@ private const val BUILDING = "A-1"
 private const val BUILDING_ROW = "Budynek A-1"
 
 internal val ACCESSIBLE_PIN =
-    SelectedEntrance("node/2", GeoPoint(longitude = 0.2, latitude = 0.3), "Wejście dostosowane", BUILDING)
+    SelectedEntrance(
+        id = "node/2",
+        location = GeoPoint(longitude = 0.2, latitude = 0.3),
+        label = "Wejście dostosowane",
+        buildingSymbol = BUILDING,
+    )
 
 internal val MAIN_PIN =
-    SelectedEntrance("node/1", GeoPoint(longitude = 0.5, latitude = 0.0), "Wejście główne", BUILDING)
+    SelectedEntrance(
+        id = "node/1",
+        location = GeoPoint(longitude = 0.5, latitude = 0.0),
+        label = "Wejście główne",
+        buildingSymbol = BUILDING,
+    )
 
 private val CATALOG_JSON =
-    buildList {
-        val poly = "[[[0,0],[1,0],[1,1],[0,1],[0,0]]]"
-        val b = """"kind":"building","symbols":["$BUILDING"],"display_name":"Budynek główny","osm_id":"way/1""""
-        add("""{"type":"Feature","properties":{$b},"geometry":{"type":"Polygon","coordinates":$poly}}""")
-        val pts = listOf(MAIN_PIN.location, ACCESSIBLE_PIN.location)
-        listOf("Wejście główne", "Wejście dostosowane", "Boczne", "Dziedziniec", "Wschodnie", "Zachodnie")
-            .forEachIndexed { idx, name ->
-                val pt = pts.getOrElse(idx) { GeoPoint(0.1 * idx, 0.5) }
-                val kind = if (idx == 0) "main" else "yes"
-                val wc = if (idx == 1) "yes" else "no"
-                val p =
-                    """"kind":"entrance","symbols":["$BUILDING"],"osm_id":"node/${idx + 1}",""" +
-                        """"entrance":"$kind","wheelchair":"$wc","ref":"$name""""
-                val g = """"type":"Point","coordinates":[${pt.longitude},${pt.latitude}]"""
-                add("""{"type":"Feature","properties":{$p},"geometry":{$g}}""")
-            }
-    }.joinToString(",", """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""", "]}")
+    """{"type":"FeatureCollection","attribution":"© OpenStreetMap","features":[""" +
+        listOf(
+            """{"type":"Feature","properties":{"kind":"building","symbols":["$BUILDING"],""" +
+                """"display_name":"Budynek główny","osm_id":"way/1"},""" +
+                """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,1],[0,0]]]}}""",
+            """{"type":"Feature","properties":{"kind":"entrance","symbols":["$BUILDING"],"osm_id":"node/1",""" +
+                """"entrance":"main","wheelchair":"no","ref":"Wejście główne"},""" +
+                """"geometry":{"type":"Point","coordinates":[0.5,0.0]}}""",
+            """{"type":"Feature","properties":{"kind":"entrance","symbols":["$BUILDING"],"osm_id":"node/2",""" +
+                """"entrance":"yes","wheelchair":"yes","ref":"Wejście dostosowane"},""" +
+                """"geometry":{"type":"Point","coordinates":[0.2,0.3]}}""",
+        ).joinToString(separator = ",") +
+        "]}"
 
 /**
  * Powłoka aplikacji z mapą V1, kartą budynku A-1 i arkuszem wejścia nad mapą zastępczą.
@@ -94,10 +101,13 @@ open class EntranceSheetFixture {
         }
 
     protected fun start(withLowCard: Boolean = false) {
+        val onMap = { choice.savedChoice.value = false }
         compose.setContent {
             DostepnyKampusTheme {
-                AppShell(false, TestRoles(), {}, onChooseMap = { choice.savedChoice.value = false }) { route ->
-                    MapOrBuildingScreen(route, repository, choice, fakeMap) { AppScreen(it) }
+                AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}, onChooseMap = onMap) { route ->
+                    MapOrBuildingScreen(route = route, repository = repository, choice = choice, mapView = fakeMap) {
+                        AppScreen(it)
+                    }
                 }
             }
         }
@@ -106,33 +116,35 @@ open class EntranceSheetFixture {
         assertNull("bez pinezki wejścia na starcie", selections.last().entrance)
         if (withLowCard) {
             compose.runOnUiThread { touchBuildings(listOf(BUILDING)) }
-            waitForCard()
+            waitFor(cardHeader)
         }
     }
 
-    protected fun waitForCard() {
-        compose.waitUntil { compose.onAllNodes(cardHeader).fetchSemanticsNodes().isNotEmpty() }
+    protected fun waitFor(matcher: SemanticsMatcher) {
+        compose.waitUntil { compose.onAllNodes(matcher).fetchSemanticsNodes().isNotEmpty() }
         compose.waitForIdle()
     }
 
-    protected fun waitForSheet() {
-        compose.waitUntil { compose.onAllNodes(sheetBuildingRow).fetchSemanticsNodes().isNotEmpty() }
+    protected fun expandCard() {
+        compose.onNodeWithContentDescription(EXPAND_HANDLE).performClick()
         compose.waitForIdle()
     }
 
     protected fun openSheetByRecommended() {
         compose.onNodeWithText("Pokaż wejście na mapie").performClick()
-        waitForSheet()
+        waitFor(sheetBuildingRow)
     }
 
     protected fun openSheetBySign(id: String = ACCESSIBLE_PIN.id) {
         compose.runOnUiThread { touchSign(TouchSign.ENTRANCE, id) }
-        waitForSheet()
+        waitFor(sheetBuildingRow)
     }
 
-    protected fun closeSheet() {
+    protected fun closeToMap() {
         compose.onNodeWithText("Zamknij").performClick()
         compose.waitForIdle()
+        assertUnpinned()
+        assertMapWithoutCard()
     }
 
     protected fun pressBack() {
