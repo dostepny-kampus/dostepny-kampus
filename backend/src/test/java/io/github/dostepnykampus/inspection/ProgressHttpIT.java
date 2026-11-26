@@ -96,8 +96,12 @@ final class ProgressHttpIT {
     private static void basic(final JsonNode item) {
         Assertions.assertEquals("BASIC", item.path("detailLevel").asString(), "Rodzaj budynku");
         Assertions.assertTrue(item.path("inspected").asBoolean(false), "Znacznik całego budynku");
-        Assertions.assertEquals(0, item.path("pendingSubmissions").asInt(-1), "Brak oczekujących zgłoszeń");
-        Assertions.assertEquals(0, item.path("acceptedSubmissions").asInt(-1), "Brak przyjętych zgłoszeń");
+        Assertions.assertEquals(
+            0, item.path("pendingSubmissions").asInt(-1), "Brak oczekujących zgłoszeń"
+        );
+        Assertions.assertEquals(
+            0, item.path("acceptedSubmissions").asInt(-1), "Brak przyjętych zgłoszeń"
+        );
         Assertions.assertFalse(
             item.has("floorsTotal") || item.has("floorsInspected"),
             "Podstawowy nie ma pokrycia pięter"

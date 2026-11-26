@@ -11,6 +11,7 @@ import io.github.dostepnykampus.inspection.domain.BuildingProgress;
 import io.github.dostepnykampus.inspection.domain.MarkerPlace;
 import io.github.dostepnykampus.inspection.domain.ProgressMarker;
 import io.github.dostepnykampus.inspection.domain.ProgressRepository;
+import io.github.dostepnykampus.inspection.domain.ProgressRepository.ActiveMarker;
 import io.github.dostepnykampus.inspection.domain.Pseudonyms;
 import java.util.List;
 import java.util.Map;
@@ -67,18 +68,20 @@ public class ProgressReading {
      */
     @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
     public List<BuildingProgress> read(final String viewer) {
-        final Map<String, List<ProgressRepository.ActiveMarker>> markers = this.progress.activeMarkers()
+        final Map<String, List<ActiveMarker>> markers = this.progress.activeMarkers()
             .stream().collect(Collectors.groupingBy(marker -> marker.place().building()));
         final Map<String, SubmissionCounts.Counts> counts = this.submissions.byBuilding();
         final SubmissionCounts.Counts empty = new SubmissionCounts.Counts(0, 0);
-        return this.inventory.buildings().stream().map(building -> this.building(
-            building, markers.getOrDefault(building.symbol(), List.of()),
-            counts.getOrDefault(building.symbol(), empty), viewer
-        )).toList();
+        return this.inventory.buildings().stream().map(
+            building -> this.building(
+                building, markers.getOrDefault(building.symbol(), List.of()),
+                counts.getOrDefault(building.symbol(), empty), viewer
+            )
+        ).toList();
     }
 
     private BuildingProgress building(
-        final BuildingInventory.Building building, final List<ProgressRepository.ActiveMarker> markers,
+        final BuildingInventory.Building building, final List<ActiveMarker> markers,
         final SubmissionCounts.Counts counts, final String viewer
     ) {
         return new BuildingProgress(
@@ -86,22 +89,32 @@ public class ProgressReading {
             new BuildingProgress.Counts(
                 counts.pending(), counts.accepted(), building.entrances(), building.checked()
             ),
-            markers.stream().map(marker -> new ProgressMarker(
-                marker.id(), marker.place(), marker.created(), viewer.equals(marker.author()),
-                this.pseudonyms.of(marker.author())
-            )).toList()
+            markers.stream().map(
+                marker -> new ProgressMarker(
+                    marker.id(), marker.place(), marker.created(), viewer.equals(marker.author()),
+                    this.pseudonyms.of(marker.author())
+                )
+            ).toList()
         );
     }
 
     private static BuildingProgress.Coverage coverage(
-        final BuildingInventory.Building building, final List<ProgressRepository.ActiveMarker> markers
+        final BuildingInventory.Building building, final List<ActiveMarker> markers
     ) {
-        if (!building.detailed()) {
-            return new BuildingProgress.Coverage.Whole(!markers.isEmpty());
+        final BuildingProgress.Coverage coverage;
+        if (building.detailed()) {
+            coverage = new BuildingProgress.Coverage.Floors(
+                building.floors().size(),
+                Math.toIntExact(
+                    markers.stream().map(ActiveMarker::place)
+                        .filter(MarkerPlace.Floor.class::isInstance).map(MarkerPlace.Floor.class::cast)
+                        .map(MarkerPlace.Floor::floor).filter(building.floors()::contains)
+                        .distinct().count()
+                )
+            );
+        } else {
+            coverage = new BuildingProgress.Coverage.Whole(!markers.isEmpty());
         }
-        final long covered = markers.stream().map(ProgressRepository.ActiveMarker::place)
-            .filter(MarkerPlace.Floor.class::isInstance).map(MarkerPlace.Floor.class::cast)
-            .map(MarkerPlace.Floor::floor).filter(building.floors()::contains).distinct().count();
-        return new BuildingProgress.Coverage.Floors(building.floors().size(), Math.toIntExact(covered));
+        return coverage;
     }
 }

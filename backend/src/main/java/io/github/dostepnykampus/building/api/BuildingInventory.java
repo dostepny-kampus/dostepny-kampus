@@ -35,10 +35,18 @@ public interface BuildingInventory {
      * @param checked Wejścia sprawdzone na miejscu
      * @since 0.1.0
      */
-    record Building(String symbol, boolean detailed, Set<String> floors, int entrances, int checked) {
+    record Building(
+        String symbol, boolean detailed, Set<String> floors, int entrances, int checked
+    ) {
 
         /**
          * Utrwala niemodyfikowalny zbiór pięter.
+         *
+         * @param symbol Symbol budynku
+         * @param detailed Czy budynek ma poziom szczegółowy
+         * @param floors Identyfikatory aktualnych pięter
+         * @param entrances Wszystkie wejścia budynku
+         * @param checked Wejścia sprawdzone na miejscu
          */
         public Building {
             floors = Set.copyOf(floors);

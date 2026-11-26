@@ -11,7 +11,9 @@
  *
  * @since 0.1.0
  */
-@ApplicationModule(allowedDependencies = {"barrier :: api", "building :: api", "identity :: api", "shared"})
+@ApplicationModule(
+    allowedDependencies = {"barrier :: api", "building :: api", "identity :: api", "shared"}
+)
 package io.github.dostepnykampus.inspection;
 
 import org.springframework.modulith.ApplicationModule;
