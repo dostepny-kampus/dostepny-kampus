@@ -106,6 +106,19 @@ class BuildingRowNoFlightTest {
             Box(modifier)
         }
 
+    private val repo =
+        BuildingCatalogRepository(
+            ioContext = EmptyCoroutineContext,
+            listBuildings = { ServerReply.Ok(SERVER_BUILDINGS) },
+            readGeoJson = { GEOJSON },
+        )
+    private val server =
+        MapServer(
+            barriers = { listOf(BARRIER) },
+            rooms = { ServerReply.Ok(listOf(FOUND_329)) },
+            paths = { emptyList() },
+        )
+
     /**
      * Scenariusz (przykład: dotknie znaku wejścia A-1 na mapie): przegladanie-mapy.feature:
      *   Wiersz budynku w arkuszu otwiera kartę budynku bez przelotu mapy.
@@ -195,19 +208,7 @@ class BuildingRowNoFlightTest {
     }
 
     private fun startApp() {
-        val repo =
-            BuildingCatalogRepository(
-                ioContext = EmptyCoroutineContext,
-                listBuildings = { ServerReply.Ok(SERVER_BUILDINGS) },
-                readGeoJson = { GEOJSON },
-            )
         val plans = FakePlans()
-        val server =
-            MapServer(
-                barriers = { listOf(BARRIER) },
-                rooms = { ServerReply.Ok(listOf(FOUND_329)) },
-                paths = { emptyList() },
-            )
         compose.setContent {
             mapModel =
                 remember {
@@ -220,9 +221,30 @@ class BuildingRowNoFlightTest {
                         server = server,
                     )
                 }
+            val entrances = remember { ServerEntrances { emptyList() } }
+            val barriers = remember { AcceptedBarriers { emptyList() } }
+            val planModel =
+                remember {
+                    MapPlanViewModel(repository = repo, plans = plans, entrances = entrances, barriers = barriers)
+                }
+            val entrModel = remember { BuildingEntrancesViewModel(entrances) }
+            val liftModel = remember { EntranceLiftViewModel(plans) }
+            val roomModel = remember { RoomCardViewModel(plans = plans, entrances = entrances, barriers = barriers) }
             DostepnyKampusTheme {
                 AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
-                    NavScreen(route = route, repo = repo, plans = plans, mapModel = mapModel, mapView = fakeMap)
+                    if (route is MapRoute) {
+                        HiltMapScreen(
+                            focus = route.focus,
+                            viewModel = mapModel,
+                            planViewModel = planModel,
+                            entrancesViewModel = entrModel,
+                            liftViewModel = liftModel,
+                            mapView = fakeMap,
+                            roomViewModel = roomModel,
+                        )
+                    } else {
+                        OtherScreen(route = route, repo = repo)
+                    }
                 }
             }
         }
@@ -260,9 +282,11 @@ class BuildingRowNoFlightTest {
         val afterMoves =
             moves
                 .subList(fromIndex = before, toIndex = moves.size)
+                .asSequence()
                 .map { it.first }
                 .filter { it != beforeMove }
                 .distinct()
+                .toList()
         assertTrue("brak nowego ruchu po wyborze wiersza budynku", afterMoves.isNotEmpty())
         assertTrue("mapa bez przelotu: $afterMoves", afterMoves.none { it.motion == CameraMotion.FLIGHT })
         assertTrue("ruch jak przy dotknięciu konturu: $afterMoves", afterMoves.all { it.motion == CameraMotion.NONE })
@@ -342,33 +366,8 @@ class BuildingRowNoFlightTest {
 }
 
 @Composable
-private fun AppNavigator.NavScreen(
-    route: NavKey,
-    repo: BuildingCatalogRepository,
-    plans: FloorPlans,
-    mapModel: CampusMapViewModel,
-    mapView: CampusMapView,
-) {
-    val entrances = remember { ServerEntrances { emptyList() } }
-    val barriers = remember { AcceptedBarriers { emptyList() } }
-    val planModel =
-        remember { MapPlanViewModel(repository = repo, plans = plans, entrances = entrances, barriers = barriers) }
-    val entrModel = remember { BuildingEntrancesViewModel(entrances) }
-    val liftModel = remember { EntranceLiftViewModel(plans) }
-    val roomModel = remember { RoomCardViewModel(plans = plans, entrances = entrances, barriers = barriers) }
+private fun AppNavigator.OtherScreen(route: NavKey, repo: BuildingCatalogRepository) {
     when (route) {
-        is MapRoute -> {
-            HiltMapScreen(
-                focus = route.focus,
-                viewModel = mapModel,
-                planViewModel = planModel,
-                entrancesViewModel = entrModel,
-                liftViewModel = liftModel,
-                mapView = mapView,
-                roomViewModel = roomModel,
-            )
-        }
-
         is BuildingRoute -> {
             val card = remember(route.symbol) { BuildingCardViewModel(route.symbol, repo, { flowOf(true) }) }
             val state by card.uiState.collectAsStateWithLifecycle()
