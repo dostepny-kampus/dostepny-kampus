@@ -52,6 +52,7 @@ private data class CachedBarrier(
     val photoIds: List<String> = emptyList(),
     val description: String? = null,
     val isQuick: Boolean = false,
+    val replacesSubmissionId: String? = null,
 )
 
 @Serializable
@@ -71,6 +72,7 @@ private fun cached(barrier: AcceptedBarrier): CachedBarrier =
         photoIds = barrier.photoIds,
         description = barrier.description,
         isQuick = barrier.isQuick,
+        replacesSubmissionId = barrier.replacesSubmissionId,
     )
 
 private fun CachedBarrier.toBarrier(): AcceptedBarrier =
@@ -86,4 +88,5 @@ private fun CachedBarrier.toBarrier(): AcceptedBarrier =
         photoIds = photoIds,
         description = description,
         isQuick = isQuick,
+        replacesSubmissionId = replacesSubmissionId,
     )
