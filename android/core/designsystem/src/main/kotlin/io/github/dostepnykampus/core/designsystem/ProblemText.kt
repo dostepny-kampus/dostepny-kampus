@@ -18,7 +18,7 @@ import androidx.compose.ui.semantics.semantics
 /**
  * Komunikat błędu: znak „!” w kole i pogrubiony tekst w kolorze błędu, ogłaszany przez czytnik ekranu.
  *
- * Wymagania: NFR-18, NFR-21, PW-10
+ * Wymagania: NFR-18, NFR-21
  *
  * @param text treść komunikatu
  * @param modifier położenie komunikatu wyznacza wołający
