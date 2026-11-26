@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,7 +31,6 @@ import io.github.dostepnykampus.core.data.submission.sync.SyncStatus
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
-import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.campusMoment
 import io.github.dostepnykampus.core.designsystem.card.InfoPanel
 import io.github.dostepnykampus.feature.capture.R
@@ -140,9 +140,7 @@ private fun doneText(status: SyncStatus): String =
 @Composable
 private fun MainAction(phase: SyncPhase, actions: SyncActions) {
     val isLogin = phase == SyncPhase.LoginExpired
-    PinnedButton(
-        text = stringResource(if (isLogin) R.string.synchronizacja_zaloguj else R.string.synchronizacja_teraz),
-        onClick = if (isLogin) actions.onLogin else actions.onSyncNow,
-        modifier = Modifier.fillMaxWidth(),
-    )
+    Button(onClick = if (isLogin) actions.onLogin else actions.onSyncNow, modifier = Modifier.fillMaxWidth()) {
+        Text(stringResource(if (isLogin) R.string.synchronizacja_zaloguj else R.string.synchronizacja_teraz))
+    }
 }
