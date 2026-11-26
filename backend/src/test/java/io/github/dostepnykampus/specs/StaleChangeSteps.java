@@ -255,12 +255,11 @@ public final class StaleChangeSteps {
      */
     @When("ten Zbierający wyśle swoją zmianę ponownie")
     void resends() throws Exception {
-        final String token = "Bearer COLLECTOR.".concat(StaleChangeSteps.RIVAL_AUTHOR);
         MatcherAssert.assertThat(
             "Serwer nie przyjął nowej zmiany bieżącego zgłoszenia, nie dał 201",
             this.status(
                 MockMvcRequestBuilders.post("/submissions").contentType(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, token)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer COLLECTOR.inny-zbierajacy")
                     .content(StaleChangeSteps.resentRemoval())
             ),
             Matchers.equalTo(201)
