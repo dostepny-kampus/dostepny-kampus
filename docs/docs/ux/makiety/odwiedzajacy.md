@@ -171,7 +171,7 @@ Czynność główna: brak; zdanie mówi, dlaczego planu nie widać.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| Nad mapą „Nie mamy planu pięter tego budynku.” przy powiększeniu co najmniej 17, bez otwartej karty V2 | US16.2, BR-G1 |
+| Nad mapą „Nie mamy planu pięter tego budynku.” przy powiększeniu co najmniej 17, bez otwartej karty V2, dla budynku oznaczonego jako podstawowy na liście z serwera | US16.2, BR-G1 |
 | Bez kolumny pięter | US16.2 |
 
 ### V1: winda na planie

@@ -38,13 +38,13 @@ internal const val PLAN_BASIC_EXIT_METERS = 5.0
 internal data class PlanBuildings(val detailed: List<Building>, val basic: List<Building> = emptyList())
 
 /**
- * Czy od powiększenia planu środek [camera] leży w konturze budynku podstawowego. Przy wspólnym konturze
- * pierwszeństwo ma budynek szczegółowy. Prostokąty z [data] ograniczają sprawdzanie konturów [catalog].
+ * Czy od powiększenia planu środek [camera] leży w konturze budynku, który lista z serwera określa jako podstawowy.
+ * Przy wspólnym konturze pierwszeństwo ma budynek szczegółowy. [data] ogranicza sprawdzanie konturów [catalog].
  *
  * Wymagania: US16.2, BR-G1
  */
 internal fun hasBasicBuildingInCenter(camera: MapCamera, catalog: BuildingCatalog?, data: CampusMapData?): Boolean {
-    if (camera.zoom < PLAN_SHOW_ZOOM || catalog == null || data == null) return false
+    if (camera.zoom < PLAN_SHOW_ZOOM || catalog == null || !catalog.hasServerList || data == null) return false
     val point = camera.center
     val nearby =
         catalog.buildings.filter { building ->

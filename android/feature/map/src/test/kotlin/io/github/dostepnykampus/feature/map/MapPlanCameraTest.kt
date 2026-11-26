@@ -171,11 +171,12 @@ class MapPlanCameraTest {
     @Test
     fun showsMissingPlanFromZoom17() {
         var cover by mutableStateOf(0.dp)
+        var hasServerList by mutableStateOf(false)
         compose.setContent {
             val state by viewModel.uiState.collectAsState()
             DostepnyKampusTheme {
                 CampusMapScreen(
-                    state = state,
+                    state = state.copy(catalog = state.catalog?.copy(hasServerList = hasServerList)),
                     onListChange = {},
                     onSearch = {},
                     onBuildingClick = {},
@@ -188,6 +189,10 @@ class MapPlanCameraTest {
         }
         compose.waitUntil { moves.isNotEmpty() }
         val near = MapCamera(center = GeoPoint(longitude = 0.75, latitude = 0.25), zoom = 16.9)
+        compose.runOnIdle { idle(near.copy(zoom = 17.0)) }
+        compose.onNodeWithText(MISSING_PLAN).assertDoesNotExist()
+        compose.runOnIdle { hasServerList = true }
+        compose.onNodeWithText(MISSING_PLAN).assertIsDisplayed()
         compose.runOnIdle { idle(near) }
         compose.onNodeWithText(MISSING_PLAN).assertDoesNotExist()
         compose.runOnIdle { idle(near.copy(zoom = 17.0)) }

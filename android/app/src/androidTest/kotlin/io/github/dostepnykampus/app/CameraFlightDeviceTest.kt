@@ -22,6 +22,8 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import io.github.dostepnykampus.app.navigation.AppScreen
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.feature.map.CampusMapScreen
+import io.github.dostepnykampus.feature.map.CampusMapUiState
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
 import io.github.dostepnykampus.feature.map.campus.campusMapData
@@ -106,21 +108,13 @@ class CameraFlightDeviceTest {
     @Test
     fun showsMissingPlanOnMap() {
         val symbol = "A-4"
-        val data = runBlocking { campusMapData(catalog.catalog()) }
+        val verifiedCatalog = runBlocking { catalog.catalog() }.copy(hasServerList = true)
+        val data = campusMapData(verifiedCatalog)
         val point = data.labelPointsBySymbol.getValue(symbol)
         val target = LatLng(latitude = point.latitude, longitude = point.longitude)
         val outline = data.outlines.indexOfFirst { symbol in it }
         val focus = MapFocus.Building(symbol, command = 1L)
-        composeRule.activityRule.scenario.onActivity { activity ->
-            val roles = EntryPointAccessors.fromActivity<MainActivityEntryPoint>(activity).roles()
-            activity.setContent {
-                DostepnyKampusTheme {
-                    AppShell(firstLaunch = false, roles = roles, onFirstHelpLeft = {}) { route ->
-                        AppScreen(if (route is MapRoute) route.copy(focus = focus) else route)
-                    }
-                }
-            }
-        }
+        showMap(CampusMapUiState(catalog = verifiedCatalog, mapData = data), focus)
         val map = awaitReadyMap()
         val notice = hasText("Nie mamy planu pięter tego budynku.")
         composeRule.waitUntil(READY_TIMEOUT_MS) { nodeExists(notice) }
@@ -138,6 +132,29 @@ class CameraFlightDeviceTest {
             }
         }
         DeviceEvidence.record("v1-basic-no-floor-plan")
+    }
+
+    private fun showMap(state: CampusMapUiState, focus: MapFocus.Building) {
+        composeRule.activityRule.scenario.onActivity { activity ->
+            val roles = EntryPointAccessors.fromActivity<MainActivityEntryPoint>(activity).roles()
+            activity.setContent {
+                DostepnyKampusTheme {
+                    AppShell(firstLaunch = false, roles = roles, onFirstHelpLeft = {}) { route ->
+                        if (route is MapRoute) {
+                            CampusMapScreen(
+                                state = state,
+                                onListChange = {},
+                                onSearch = {},
+                                onBuildingClick = {},
+                                focus = focus,
+                            )
+                        } else {
+                            AppScreen(route)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun isSettled(map: MapLibreMap, tracker: MoveTracker): Boolean {
