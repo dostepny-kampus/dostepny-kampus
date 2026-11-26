@@ -9,6 +9,7 @@ import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.barrier.photo.PhotoStore;
 import io.github.dostepnykampus.barrier.photo.storage.PhotoSettings;
 import io.github.dostepnykampus.barrier.photo.storage.S3PhotoStore;
+import io.github.dostepnykampus.barrier.review.ReviewRepository;
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.NewSubmission;
 import io.github.dostepnykampus.barrier.submission.Submission;
@@ -103,7 +104,8 @@ final class SubmissionPhotosPruneIT {
                 new SubmissionPhotosPruneIT.NoBucket(),
                 new PhotoSettings(URI.create("http://magazyn"), "brak-kubelka", "", "")
             ),
-            context.getBean(SubmissionService.class)
+            context.getBean(SubmissionService.class),
+            context.getBean(ReviewRepository.class)
         );
         final UUID submission = UUID.randomUUID();
         Assertions.assertDoesNotThrow(
