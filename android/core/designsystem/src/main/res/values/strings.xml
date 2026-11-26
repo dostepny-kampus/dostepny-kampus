@@ -59,8 +59,6 @@
     <string name="pole_zdjecia">Zdjęcia</string>
     <string name="pole_budynek">Budynek</string>
     <string name="pole_grupa">Grupa barier</string>
-    <string name="pole_typ">Typ bariery</string>
-    <string name="pole_uciazliwosc">Uciążliwość</string>
     <string name="pole_opis">Opis</string>
     <string name="pole_usunieta">Bariera usunięta</string>
     <string name="pole_wejscie">Wejście</string>

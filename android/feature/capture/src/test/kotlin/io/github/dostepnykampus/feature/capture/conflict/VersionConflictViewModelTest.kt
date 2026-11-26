@@ -66,7 +66,7 @@ class VersionConflictViewModelTest {
             runCurrent()
 
             val ready = viewModel.state.value as ConflictUiState.Ready
-            assertEquals(listOf(DesignR.string.pole_uciazliwosc), ready.differences, "nazwa pola różnicy")
+            assertEquals(listOf(DesignR.string.wybor_uciazliwosc), ready.differences, "nazwa pola różnicy")
             assertFalse(ready.isAccepted, "zgłoszenie nie jest przyjęte")
         }
 

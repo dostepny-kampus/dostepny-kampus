@@ -17,8 +17,8 @@ public fun SubmissionField.nameRes(): Int =
         SubmissionField.BUILDING -> R.string.pole_budynek
         SubmissionField.FLOOR -> R.string.pietro_kolumna
         SubmissionField.BARRIER_GROUP -> R.string.pole_grupa
-        SubmissionField.BARRIER_TYPE -> R.string.pole_typ
-        SubmissionField.SEVERITY -> R.string.pole_uciazliwosc
+        SubmissionField.BARRIER_TYPE -> R.string.wybor_typ
+        SubmissionField.SEVERITY -> R.string.wybor_uciazliwosc
         SubmissionField.DESCRIPTION -> R.string.pole_opis
         SubmissionField.BARRIER_REMOVED -> R.string.pole_usunieta
         SubmissionField.ENTRANCE -> R.string.pole_wejscie
