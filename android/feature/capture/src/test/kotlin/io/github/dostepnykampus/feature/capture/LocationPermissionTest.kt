@@ -44,11 +44,7 @@ class LocationPermissionTest {
         }
     }
 
-    private fun show(
-        state: () -> LocationPermissionState,
-        onAllow: () -> Unit = {},
-        onOpenSettings: () -> Unit = {},
-    ) {
+    private fun show(state: () -> LocationPermissionState, onAllow: () -> Unit = {}, onOpenSettings: () -> Unit = {}) {
         compose.setContent {
             DostepnyKampusTheme {
                 LocationPermissionContent(
