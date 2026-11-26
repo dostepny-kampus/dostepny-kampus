@@ -26,7 +26,7 @@ Wysyłka obejmuje wpisy bieżącego konta. Pierwsze zalogowanie po migracji przy
 - `core.data.submission.conflict` — dwie wersje zgłoszenia po odmowie 409 i wybór jednej z nich.
 - `core.data.submission.own` — własne zgłoszenia w telefonie i ich statusy.
 - `core.data.submission.pending` — poprawki zgłoszeń czekających w kolejce na wysłanie.
-- `core.data.submission.sync` — kolejka zgłoszeń z jej wierszami w bazie, wysyłką w tle i wynikami wysyłki.
+- `core.data.submission.sync` — kolejka zgłoszeń z jej wierszami w bazie, wysyłką w tle, wynikami wysyłki i stanem kolejki dla ekranu synchronizacji.
 
 ## API
 
