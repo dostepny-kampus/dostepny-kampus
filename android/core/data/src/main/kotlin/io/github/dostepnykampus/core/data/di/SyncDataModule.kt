@@ -11,7 +11,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.inspection.FloorMarkers
+import io.github.dostepnykampus.core.data.submission.sync.ScheduledSync
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
+import io.github.dostepnykampus.core.data.submission.sync.SubmissionSyncScheduler
+import io.github.dostepnykampus.core.data.submission.sync.SyncNow
 import io.github.dostepnykampus.core.data.submission.sync.SyncLog
 import io.github.dostepnykampus.core.data.submission.sync.SyncStatusSource
 import io.github.dostepnykampus.core.data.submission.sync.syncDataStore
@@ -43,4 +46,9 @@ internal object SyncDataModule {
             subjects = tokens.subjects,
             log = log,
         )
+
+    /** „Synchronizuj teraz” i postęp przebiegu na zadaniu wysyłki. Wymagania: US9.1, BR-9 */
+    @Provides
+    fun syncNow(scheduler: SubmissionSyncScheduler, status: SyncStatusSource): SyncNow =
+        ScheduledSync(scheduler = scheduler, status = status)
 }
