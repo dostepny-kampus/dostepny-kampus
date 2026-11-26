@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.core.graphics.createBitmap
+import androidx.core.graphics.withTranslation
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.designsystem.marking.mapSeverityImage
 import io.github.dostepnykampus.core.model.submission.Severity
@@ -134,12 +135,11 @@ private fun drawUnknownFloorBadge(canvas: Canvas, centerX: Float, centerY: Float
             color = colors.tusz.toArgb()
         }
     val question = PathParser().parsePathString(QUESTION_PATH).toPath().asAndroidPath()
-    canvas.save()
-    canvas.translate(centerX, centerY)
-    canvas.scale(scale, scale)
-    canvas.translate(-gridCenter, -gridCenter)
-    canvas.drawCircle(gridCenter, gridCenter, BADGE_CIRCLE_RADIUS + BADGE_HALO / 2f, fill)
-    canvas.drawCircle(gridCenter, gridCenter, BADGE_CIRCLE_RADIUS, outline)
-    canvas.drawPath(question, mark)
-    canvas.restore()
+    canvas.withTranslation(centerX, centerY) {
+        scale(scale, scale)
+        translate(-gridCenter, -gridCenter)
+        drawCircle(gridCenter, gridCenter, BADGE_CIRCLE_RADIUS + BADGE_HALO / 2f, fill)
+        drawCircle(gridCenter, gridCenter, BADGE_CIRCLE_RADIUS, outline)
+        drawPath(question, mark)
+    }
 }
