@@ -61,6 +61,8 @@ class EntranceBarrierCardTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     /**
+     * Wejście bez bariery przed wejściem z utrudnieniem.
+     *
      * Scenariusz (przykład: Utrudnienie | żadnej | wejście boczne): przegladanie-mapy.feature:
      *   Wejście bez barier jest zalecane przed wejściem z barierą
      */
@@ -84,6 +86,8 @@ class EntranceBarrierCardTest {
     }
 
     /**
+     * Lżejsza bariera przed cięższą.
+     *
      * Scenariusz (przykład: Tylko z pomocą): przegladanie-mapy.feature:
      *   Wejście bez barier jest zalecane przed wejściem z barierą
      */
@@ -111,6 +115,8 @@ class EntranceBarrierCardTest {
     }
 
     /**
+     * Przy równych barierach zalecane zostaje wejście główne.
+     *
      * Scenariusz (przykład: Utrudnienie | przyjęta bariera „Utrudnienie” | wejście główne): przegladanie-mapy.feature:
      *   Wejście bez barier jest zalecane przed wejściem z barierą
      */
@@ -138,6 +144,8 @@ class EntranceBarrierCardTest {
     }
 
     /**
+     * Przy blokadzie zalecane jest inne wejście dostępne.
+     *
      * Scenariusz (częściowo, przykład: jest inne): przegladanie-mapy.feature:
      *   Wejście z blokadą nie jest zalecane, a jego oznaczenie zostaje
      */
@@ -161,6 +169,8 @@ class EntranceBarrierCardTest {
     }
 
     /**
+     * Jedyne wejście dostępne z blokadą nie jest zalecane.
+     *
      * Scenariusz (częściowo, przykład: nie ma): przegladanie-mapy.feature:
      *   Wejście z blokadą nie jest zalecane, a jego oznaczenie zostaje
      */
