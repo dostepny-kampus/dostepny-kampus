@@ -172,8 +172,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy na karcie budynku A-1 widzi „Wejście dostępne” i zdanie z wejściem zalecanym
     Oraz od mapy wykonał 1 dotknięcie, czyli nie więcej niż 3
 
-  # brak pełnego testu: #3645
-  @US2.8 @aplikacja @do-zrobienia
+  @US2.8 @aplikacja
   Szablon scenariusza: Niska karta nad mapą mówi słowami o wejściach
     Zakładając, że w danych testowych <dane>
     Oraz Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
@@ -199,8 +198,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli znowu dotknie uchwytu karty
     Wtedy karta wraca na niską wysokość nad mapą
 
-  # brak pełnego testu: #3645
-  @US2.8 @NFR-53 @aplikacja @do-zrobienia
+  @US2.8 @NFR-53 @aplikacja
   Szablon scenariusza: Wystający nagłówek „Wejścia” od razu rozwija kartę
     Zakładając, że w danych testowych <dane>
     Oraz Gość niezalogowany dotknął budynku <budynek> na mapie przy zwykłej czcionce
