@@ -11,3 +11,7 @@ plugins {
 kotlin {
     explicitApi()
 }
+
+dependencies {
+    testImplementation(libs.kotlinx.coroutines.test)
+}
