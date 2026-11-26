@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.submission;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -82,6 +83,17 @@ public interface SubmissionFinder {
      * @return Zgłoszenia autora posortowane po chwili utworzenia, potem po identyfikatorze
      */
     List<Submission> own(String author, SubmissionQuery query);
+
+    /**
+     * Własne zgłoszenia konta w każdym statusie oraz cudze przyjęte i archiwalne, zmienione od
+     * {@code since} włącznie, od najdawniej zmienionego. Zgłoszenie z nieczytelną treścią jest
+     * pomijane.
+     *
+     * @param since Chwila, od której liczą się zmiany
+     * @param reader Identyfikator konta z tokenu
+     * @return Zgłoszenia z chwilą zmiany
+     */
+    List<SubmissionChange> changedSince(Instant since, String reader);
 
     /**
      * Port stron listy zgłoszeń: strona po kursorze, w kolejności identyfikatorów.

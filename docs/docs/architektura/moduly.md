@@ -43,6 +43,7 @@ Moduł z kilkoma tematami, na przykładzie `barrier`:
 ```text
 barrier/
   package-info.java      opis modułu i lista zależności
+  api/                   zgłoszenia zmienione od kursora dla innych modułów
   submission/            zgłoszenie (agregat); dziedzina i porty
     content/             treść zgłoszenia: typ, grupa, miejsce, piętro
       json/              treść w kolumnie JSON

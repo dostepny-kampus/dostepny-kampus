@@ -7,6 +7,7 @@ package io.github.dostepnykampus.barrier.submission.web;
 
 import io.github.dostepnykampus.barrier.submission.Reader;
 import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.SubmissionChange;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
 import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
@@ -195,6 +196,11 @@ final class SubmissionReadingTest {
         @Override
         public List<Submission> own(final String author, final SubmissionQuery query) {
             throw new UnsupportedOperationException("Sprawdzenie nie czyta własnych bez stron");
+        }
+
+        @Override
+        public List<SubmissionChange> changedSince(final Instant since, final String reader) {
+            throw new UnsupportedOperationException("Sprawdzenie nie czyta zmian od kursora");
         }
 
         @Override
