@@ -57,17 +57,11 @@ final class ExportGeoJsonHttpIT {
         MatcherAssert.assertThat(
             "Kontrola dostępu albo schemat odpowiedzi GET /export.geojson jest błędna",
             List.of(
-                anon.statusCode(), visitor.statusCode(),
-                done.statusCode(),
+                anon.statusCode(), visitor.statusCode(), done.statusCode(),
                 done.headers().firstValue(HttpHeaders.CONTENT_TYPE).orElseThrow(),
                 contract.violations("ExportFeatureCollection", done.body())
             ),
-            Matchers.is(
-                List.of(
-                    401, 403, 200,
-                    "application/geo+json;charset=UTF-8", List.of()
-                )
-            )
+            Matchers.is(List.of(401, 403, 200, "application/geo+json;charset=UTF-8", List.of()))
         );
     }
 
@@ -115,12 +109,10 @@ final class ExportGeoJsonHttpIT {
                 low.contains("konto-testowe") || low.contains("author")
                     || low.contains("polygon") || low.contains("outline")
             ),
-            Matchers.is(
-                List.of(
-                    List.of(), 1, "[17.05989,51.10916]", "ENTRANCE_AND_DOORS",
-                    "A-1", "0 półpiętro", "=Schody, \"próg\" i żółta poręcz", false
-                )
-            )
+            Matchers.is(List.of(
+                List.of(), 1, "[17.05989,51.10916]", "ENTRANCE_AND_DOORS",
+                "A-1", "0 półpiętro", "=Schody, \"próg\" i żółta poręcz", false
+            ))
         );
     }
 

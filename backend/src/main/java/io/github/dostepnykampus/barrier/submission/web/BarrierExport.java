@@ -70,12 +70,9 @@ final class BarrierExport {
     }
 
     static @Nullable Instant verifiedAt(final Submission submission) {
-        final @Nullable Instant verified = submission.verification();
-        final @Nullable Instant result;
-        if (Instant.MIN.equals(verified)) {
+        @Nullable Instant result = submission.verification();
+        if (Instant.MIN.equals(result)) {
             result = null;
-        } else {
-            result = verified;
         }
         return result;
     }
@@ -91,14 +88,9 @@ final class BarrierExport {
             .map(number -> number + suffix).orElse(floor.floorId());
     }
 
-    /**
-     * Zapis pojedynczego zgłoszenia.
-     *
-     * @since 0.1.0
-     */
+    /** Zapis pojedynczego zgłoszenia. @since 0.1.0 */
     @FunctionalInterface
     interface Writer {
-
         void write(Submission submission) throws IOException;
     }
 }
