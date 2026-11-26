@@ -35,7 +35,7 @@ import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
 import io.github.dostepnykampus.core.designsystem.card.InfoPanel
 import io.github.dostepnykampus.core.designsystem.card.ListItemCard
-import io.github.dostepnykampus.core.designsystem.marking.SeverityBadge
+import io.github.dostepnykampus.core.designsystem.marking.SeverityLabel
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.submission.BarrierType
@@ -127,7 +127,7 @@ private fun Version(
         content.description?.let { Fact(text = it, isBold = SubmissionField.DESCRIPTION in differs) }
         content.severity?.let(Severity::fromValue)?.let { severity ->
             Fact(text = stringResource(R.string.konflikt_uciazliwosc), isBold = SubmissionField.SEVERITY in differs)
-            SeverityBadge(severity = severity)
+            SeverityLabel(severity = severity)
         }
     }
 }
