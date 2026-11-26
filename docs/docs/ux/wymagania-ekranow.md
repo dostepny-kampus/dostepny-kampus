@@ -749,7 +749,7 @@ C5 otwiera Zbierający z karty budynku (V2), a Koordynator z postępu (K1). Koor
 | Stan | Co widać |
 | --- | --- |
 | Zwykły | lista pięter albo wiersz „Cały budynek” |
-| Potwierdzenie cofnięcia | pod znacznikiem, u Zbierającego: „Cofnąć znacznik piętra 2? Postęp budynku się zmniejszy.”; u Koordynatora: „Cofnąć znacznik piętra 2? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.” Przyciski „Cofnij znacznik” i „Zostaw znacznik” (US15.2, US11.3, BR-20, PW-12) |
+| Potwierdzenie cofnięcia | pod znacznikiem, u Zbierającego: „Cofnąć znacznik: 2 piętro? Postęp budynku się zmniejszy.”; u Koordynatora: „Cofnąć znacznik: 2 piętro? Postęp budynku się zmniejszy, a znacznik postawi ponownie tylko Zbierający.” Przyciski „Cofnij znacznik” i „Zostaw znacznik” (US15.2, US11.3, BR-20, PW-12) |
 | Brak sieci | „Znacznik zapisany w telefonie. Wyślemy go, gdy wróci internet.” Cofnięcie działa tak samo (US15.3, BR-20) |
 | Błąd zapisu | „Nie udało się zapisać znacznika w telefonie. Spróbuj ponownie, a jeśli to nie pomoże, zwolnij miejsce.” Przycisk „Spróbuj ponownie” (NFR-7) |
 
