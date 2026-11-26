@@ -7,12 +7,14 @@ package io.github.dostepnykampus.feature.review.queue
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -51,6 +53,16 @@ class ReviewQueueScreenTest {
         compose.onNodeWithText("Wzięte przeze mnie").assertIsDisplayed()
         compose.onNodeWithText("Otwórz").performClick()
         assertEquals("otwarcie wziętego zgłoszenia", listOf(MINE.id), opened)
+    }
+
+    /** „Weź do sprawdzenia” i „Otwórz” to czynności karty szerokie jak napis, węższe niż treść karty. */
+    @Test
+    fun keepsCardActionsCompact() {
+        show(ReviewQueueUiState.Ready(waiting = listOf(WAITING), mine = listOf(MINE)))
+        listOf("Weź do sprawdzenia", "Otwórz").forEach { label ->
+            val bounds = compose.onNodeWithText(label).getUnclippedBoundsInRoot()
+            assertTrue("„$label” ma być węższe niż treść karty: $bounds", (bounds.right - bounds.left).value < CONTENT)
+        }
     }
 
     @Test
@@ -102,6 +114,8 @@ class ReviewQueueScreenTest {
     }
 
     private companion object {
+        const val CONTENT = 296f
+
         val WAITING = queued(id = "a", day = 27)
         val MINE = queued(id = "b", day = 26).copy(status = SubmissionStatus.IN_REVIEW)
     }
