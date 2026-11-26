@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
@@ -20,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -144,12 +147,25 @@ private fun Check(state: CheckUiState.Ready, decision: DecisionActions) {
 
 @Composable
 private fun QuickChoice(state: CheckUiState.Ready, decision: DecisionActions) {
+    val isMissing = state.notice == CheckNotice.TYPE_MISSING
+    val typeField = remember { BringIntoViewRequester() }
+    val severityField = remember { BringIntoViewRequester() }
+    LaunchedEffect(isMissing) {
+        if (isMissing) (if (state.quickType == null) typeField else severityField).bringIntoView()
+    }
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.m)) {
         BarrierTypeField(
             type = state.quickType,
             onPick = decision.onType,
+            modifier = Modifier.bringIntoViewRequester(typeField),
             firstGroup = state.submission.content.barrierGroup,
+            isError = isMissing && state.quickType == null,
         )
-        SeverityChoice(severity = state.quickSeverity, onPick = decision.onSeverity)
+        SeverityChoice(
+            severity = state.quickSeverity,
+            onPick = decision.onSeverity,
+            modifier = Modifier.bringIntoViewRequester(severityField),
+            isError = isMissing && state.quickSeverity == null,
+        )
     }
 }

@@ -35,6 +35,7 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.GroupFrame
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.ProblemText
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.model.review.RejectionReasons
@@ -108,7 +109,7 @@ internal fun Decision(
         if (notice == CheckNotice.OFFLINE) {
             Notice(title = R.string.sprawdzenie_bez_sieci, body = R.string.sprawdzenie_bez_sieci_ponownie)
         }
-        if (notice == CheckNotice.TYPE_MISSING) Text(stringResource(R.string.sprawdzenie_ustal_typ))
+        if (notice == CheckNotice.TYPE_MISSING) ProblemText(text = stringResource(R.string.sprawdzenie_ustal_typ))
         Button(onClick = actions.onAccept, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.sprawdzenie_przyjmij))
         }
