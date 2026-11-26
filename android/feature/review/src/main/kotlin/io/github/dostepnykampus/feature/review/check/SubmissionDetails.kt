@@ -34,7 +34,9 @@ import io.github.dostepnykampus.feature.review.queue.titleRes
  * TODO(#3846): zasłanianie twarzy i tablic na zdjęciu.
  * TODO(#3707): rola i pseudonim autora.
  *
- * Wymagania: US10, BR-14, BR-15, NFR-19, NFR-21
+ * Przy zmianie „bariera usunięta” pierwsze zdjęcie stoi obok zdjęcia poprzedniego zgłoszenia.
+ *
+ * Wymagania: US10, US10.6, BR-14, BR-15, BR-19, NFR-19, NFR-21
  *
  * @param shown zgłoszenie z adresami zdjęć
  */
@@ -61,7 +63,10 @@ internal fun SubmissionDetails(shown: CheckUiState.Ready) {
             val near = shown.nearest?.let { nearEntrance(entrance = it.entrance, meters = it.meters) }
             Text(stringResource(R.string.sprawdzenie_miejsce, measuredPlace(near = near, accuracyMeters = accuracy)))
         }
-        shown.photoUrls.forEach { url ->
+        val previous = shown.previous
+        val photos = if (previous == null) shown.photoUrls else shown.photoUrls.drop(1)
+        if (previous != null) RemovedComparison(previous, newPhoto = shown.photoUrls.firstOrNull(), type = type)
+        photos.forEach { url ->
             BarrierPhoto(url = url, type = type, modifier = Modifier.fillMaxWidth().padding(top = Odstepy.s))
         }
     }

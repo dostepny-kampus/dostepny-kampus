@@ -11,9 +11,40 @@ import io.github.dostepnykampus.core.model.review.ReviewDecision
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
+import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 
 private const val FORBIDDEN = 403
+
+/**
+ * Poprzednie zgłoszenie, które zmiana „bariera usunięta” zastąpi.
+ *
+ * Wymagania: US10.8, BR-19, BR-23
+ *
+ * @property status status poprzedniego zgłoszenia
+ * @property photoUrl adres pierwszego zdjęcia poprzedniego zgłoszenia; `null` bez zdjęć
+ */
+data class PreviousSubmission(val status: SubmissionStatus, val photoUrl: String?)
+
+/**
+ * Poprzednie zgłoszenie zmiany „bariera usunięta” z serwera.
+ *
+ * Wymagania: US10.8, BR-19
+ *
+ * @param content treść sprawdzanego zgłoszenia
+ * @return poprzednie zgłoszenie; `null` przy innej zmianie albo gdy serwer go nie dał
+ */
+internal suspend fun Reviews.previousOf(content: SubmissionContent): PreviousSubmission? {
+    val id = content.replacesSubmissionId?.takeIf { content.isBarrierRemoved == true } ?: return null
+    val found = submission(id)
+    return if (found is ServerReply.Ok) {
+        val photo = found.value.content.photoIds.firstOrNull()?.let { photoUrl(submissionId = id, photoId = it) }
+        PreviousSubmission(status = found.value.status, photoUrl = photo)
+    } else {
+        null
+    }
+}
 
 /**
  * Przyjęcie pokazanej wersji: zgłoszenie szybkie z typem i uciążliwością nadanymi przez Weryfikatora, inne bez nich.

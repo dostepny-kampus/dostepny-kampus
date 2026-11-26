@@ -60,6 +60,7 @@ sealed interface CheckUiState {
      * @property missingAttempts liczba prób przyjęcia zgłoszenia szybkiego bez typu albo uciążliwości
      * @property nearest najbliższe wejście budynku zgłoszenia; `null` bez budynku, wejść albo katalogu
      * @property changed pola, którymi nowa wersja różni się od wcześniej pokazanej; pusta lista bez nowej wersji
+     * @property previous poprzednie zgłoszenie zmiany „bariera usunięta”; `null` przy innej zmianie
      */
     data class Ready(
         val submission: Submission,
@@ -72,6 +73,7 @@ sealed interface CheckUiState {
         val missingAttempts: Int = 0,
         val nearest: EntranceDistance? = null,
         val changed: List<SubmissionField> = emptyList(),
+        val previous: PreviousSubmission? = null,
     ) : CheckUiState
 
     /** Bez internetu przy wczytywaniu. */
@@ -85,9 +87,10 @@ sealed interface CheckUiState {
 }
 
 /**
- * R2 „Sprawdzenie zgłoszenia”: zgłoszenie i podobne zgłoszenia przy otwarciu, przyjęcie i odrzucenie z powodem.
+ * R2 „Sprawdzenie zgłoszenia”: zgłoszenie, podobne zgłoszenia i poprzednie zgłoszenie zmiany „bariera usunięta”
+ * przy otwarciu, przyjęcie i odrzucenie z powodem.
  *
- * Wymagania: US10.1, US10.2, US10.8, BR-3, BR-11, BR-13, BR-16, NFR-50
+ * Wymagania: US10.1, US10.2, US10.6, US10.8, BR-3, BR-11, BR-13, BR-16, BR-19, NFR-50
  *
  * @param submissionId identyfikator sprawdzanego zgłoszenia
  * @param reviews sprawdzanie zgłoszeń na serwerze
@@ -199,6 +202,7 @@ class ReviewCheckViewModel
                             quickSeverity = shown.quickSeverity,
                             nearest = shown.nearest,
                             changed = fieldsChanged(previous = shown.submission.content, current = server.content),
+                            previous = shown.previous,
                         )
                 }
             }
@@ -215,7 +219,8 @@ class ReviewCheckViewModel
             val content = found.value.content
             return if (similar is ServerReply.Ok) {
                 val nearest = nearestEntrance.find(buildingSymbol = content.buildingSymbol, point = content.location)
-                ready(found.value, similar.value, notice = null).copy(nearest = nearest)
+                val previous = reviews.previousOf(content)
+                ready(found.value, similar.value, notice = null).copy(nearest = nearest, previous = previous)
             } else {
                 similar.checkFailure()
             }
