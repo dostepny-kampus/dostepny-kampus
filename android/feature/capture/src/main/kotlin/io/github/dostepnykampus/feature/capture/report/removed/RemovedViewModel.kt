@@ -82,7 +82,7 @@ class RemovedViewModel
                 val own = edits.load(id)
                 edited = own?.edited
                 val replaced = own?.run { content.replacesSubmissionId }
-                val previous = replaced?.let { id -> barriers.barriers().firstOrNull { it.id == id } }
+                val previous = replaced?.let { accepted -> barriers.barriers().firstOrNull { it.id == accepted } }
                 show(previous = previous, photo = own?.run { photos.firstOrNull() })
             }
         }

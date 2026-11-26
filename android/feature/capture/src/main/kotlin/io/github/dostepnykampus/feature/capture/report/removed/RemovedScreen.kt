@@ -30,12 +30,7 @@ import io.github.dostepnykampus.feature.capture.photo.rememberPhotoCamera
  * @param modifier wymiary nadane przez aplikację
  */
 @Composable
-fun RemovedScreen(
-    route: RemovedRoute,
-    onLeave: () -> Unit,
-    onFinish: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+fun RemovedScreen(route: RemovedRoute, onLeave: () -> Unit, onFinish: () -> Unit, modifier: Modifier = Modifier) {
     RemovedHost(open = { open(route.acceptedId) }, onLeave = onLeave, onFinish = onFinish, modifier = modifier)
 }
 
@@ -60,12 +55,6 @@ fun RemovedEditScreen(
     RemovedHost(open = { openEdit(route.submissionId) }, onLeave = onLeave, onFinish = onFinish, modifier = modifier)
 }
 
-/**
- * Wspólny C7: [open] wczytuje zgłoszenie do [viewModel], po zapisie woła [onFinish], bez zgłoszenia [onLeave].
- *
- * @param viewModel model widoku; w aplikacji z grafu Hilt
- * @param photoTranscoder przekodowanie zdjęcia, które przetrwa obrót ekranu
- */
 @Composable
 private fun RemovedHost(
     open: RemovedViewModel.() -> Unit,
