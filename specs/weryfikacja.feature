@@ -183,8 +183,7 @@ Funkcja: Weryfikacja zgłoszeń
       Jeżeli odrzuci je z powodem „Na zdjęciu są schody, a nie próg”
       Wtedy autor widzi zgłoszenie ze statusem „odrzucone” i powodem odrzucenia „Na zdjęciu są schody, a nie próg”
 
-    # brak kroków serwera: #3712
-    @serwer @do-zrobienia
+    @serwer
     Scenariusz: Zasłonięcie twarzy na zdjęciu nie tworzy nowej wersji
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie z pomiaru precyzyjnego, na którego zdjęciu widać twarz przechodnia
       Jeżeli zasłoni twarz na zdjęciu

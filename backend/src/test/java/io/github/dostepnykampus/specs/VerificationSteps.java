@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.specs;
@@ -47,7 +47,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 public final class VerificationSteps {
 
     /** Zgłoszenie scenariusza. */
-    private static final UUID SUBMISSION =
+    static final UUID SUBMISSION =
         UUID.fromString("8d3e4f5a-6b7c-4d8e-9f0a-1b2c3d4e5f6a");
 
     /** Jedyne zdjęcie zgłoszenia scenariusza. */
