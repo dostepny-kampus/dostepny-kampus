@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.macrobenchmark
 
+import androidx.benchmark.macro.CompilationMode
 import androidx.benchmark.macro.StartupMode
 import androidx.benchmark.macro.StartupTimingMetric
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
@@ -14,7 +15,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Czas zimnego startu aplikacji do pierwszej klatki, z oczekiwaniem na ekran mapy.
+ * Czas zimnego startu aplikacji do pierwszej klatki, z oczekiwaniem na ekran mapy: z profilem bazowym, gdy aplikacja
+ * go ma, i bez niego. Test z `WithoutProfile` w nazwie trafia do osobnej statystyki.
  *
  * Wymagania: NFR-11
  */
@@ -26,12 +28,19 @@ class StartupBenchmark {
 
     private var isPrepared = false
 
-    /** Uruchamia pomiar scenariusza. */
+    /** Pomiar z profilem bazowym, gdy jest w aplikacji. */
     @Test
-    fun measuresColdStart() =
+    fun measuresColdStart() = measure(CompilationMode.DEFAULT)
+
+    /** Pomiar bez profilu bazowego, do porównania. */
+    @Test
+    fun measuresStartWithoutProfile() = measure(CompilationMode.None())
+
+    private fun measure(mode: CompilationMode) =
         rule.measureRepeated(
             packageName = TARGET_PACKAGE,
             metrics = listOf(StartupTimingMetric()),
+            compilationMode = mode,
             iterations = ITERATIONS,
             startupMode = StartupMode.COLD,
             setupBlock = {
