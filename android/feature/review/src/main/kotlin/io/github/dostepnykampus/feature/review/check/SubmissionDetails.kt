@@ -24,6 +24,8 @@ import io.github.dostepnykampus.core.designsystem.marking.SeverityLabel
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.designsystem.marking.measuredPlace
 import io.github.dostepnykampus.core.designsystem.marking.nearEntrance
+import io.github.dostepnykampus.core.designsystem.nameRes
+import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
@@ -34,11 +36,9 @@ import io.github.dostepnykampus.feature.review.queue.titleRes
 /**
  * Dane zgłoszenia na R2 bez pól do edycji.
  *
- * TODO(#4027): rola i pseudonim autora.
- *
  * Przy zmianie „bariera usunięta” pierwsze zdjęcie stoi obok zdjęcia poprzedniego zgłoszenia.
  *
- * Wymagania: US10, US10.6, US17.2, BR-14, BR-15, BR-19, BR-24, NFR-19, NFR-21
+ * Wymagania: US10, US10.6, US17.2, BR-5, BR-14, BR-15, BR-19, BR-24, NFR-19, NFR-21
  *
  * @param shown zgłoszenie z adresami zdjęć
  * @param onCover „Zasłoń twarz lub tablicę” przy zdjęciu o identyfikatorze i adresie
@@ -69,6 +69,11 @@ internal fun SubmissionDetails(shown: CheckUiState.Ready, onCover: (photoId: Str
         }
         if (content.kind == SubmissionKind.ENTRANCE_MARKING) MarkingChange(shown.current, content.entranceMarking)
         SubmissionPhotos(shown = shown, type = type, onCover = onCover)
+        shown.submission.author?.let { author ->
+            val roles = StaffRole.entries.filter { it in author.staffRoles }.map { stringResource(it.nameRes()) }
+            val who = (roles + author.pseudonym).joinToString(separator = ", ")
+            Text(stringResource(R.string.sprawdzenie_autor, who), style = MaterialTheme.typography.bodyLarge)
+        }
     }
 }
 
