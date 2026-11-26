@@ -45,6 +45,8 @@ timber = "5.0.1"
 # Ocena wersji: docs/docs/architektura/oceny-zaleznosci.md#macrobenchmark-150-i-ui-automator-241 (#2668).
 benchmark = "1.5.0"
 uiautomator = "2.4.1"
+# Ocena wersji: docs/docs/architektura/oceny-zaleznosci.md#profileinstaller-141 (#2670).
+profileinstaller = "1.4.1"
 # Ocena wersji: docs/docs/architektura/oceny-zaleznosci.md#jankstats-100 (#2666).
 jankstats = "1.0.0"
 # Ocena wersji: docs/docs/architektura/oceny-zaleznosci.md#leakcanary-30-alpha-9 (#2666).
@@ -154,6 +156,7 @@ jackson-databind = { module = "tools.jackson.core:jackson-databind", version.ref
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 androidx-benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
+androidx-profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
 androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
 androidx-metrics-performance = { module = "androidx.metrics:metrics-performance", version.ref = "jankstats" }
 androidx-tracing-perfetto-binary = { module = "androidx.tracing:tracing-perfetto-binary", version.ref = "tracingPerfetto" }

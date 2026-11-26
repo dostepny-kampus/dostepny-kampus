@@ -2,7 +2,8 @@ name: wydajnosc
 
 # Pomiary wydajności aplikacji (Macrobenchmark) na emulatorze, dla commita gałęzi sprintu. Wywołuje je tylko kontrola
 # sprintu po scaleniu (albo ręcznie), nigdy PR ani kolejka: zajmuje emulator i kilkanaście minut. Wynik to artefakty
-# (liczby i ślady Perfetto), podsumowanie z trendem i wpis na gałęzi danych `dane-wydajnosci`. Zadanie `obciazenie`
+# (liczby i ślady Perfetto), profil bazowy `baseline-prof.txt` (artefakt `profil-bazowy`, do aplikacji trafia
+# ręcznym PR), podsumowanie z trendem i wpis na gałęzi danych `dane-wydajnosci`. Zadanie `obciazenie`
 # mierzy czas odpowiedzi serwera pod krótkim obciążeniem `/buildings`. Porażka pomiaru nie
 # zmienia statusu kontroli sprintu: nie jest w jego `needs`, a emulator bez GPU daje szum rzędu 10-20%.
 on:
@@ -25,7 +26,7 @@ permissions:
 jobs:
   pomiar:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 55
     permissions:
       contents: read
     env:
@@ -79,8 +80,8 @@ jobs:
           for scale in window_animation_scale transition_animation_scale animator_duration_scale; do
             adb shell settings put global "$scale" 0
           done
-      - name: Zainstaluj i uruchom pomiary
-        timeout-minutes: 20
+      - name: Zainstaluj i uruchom pomiary i generator profilu bazowego
+        timeout-minutes: 35
         run: |
           adb install -r "$RUNNER_TEMP/aplikacja.apk"
           adb install -r -t "$RUNNER_TEMP/pomiary.apk"
@@ -105,7 +106,7 @@ jobs:
           mkdir -p wyniki
           cp "$RUNNER_TEMP"/wyniki/*.perfetto-trace "$RUNNER_TEMP"/wyniki/*.json wyniki/ 2>/dev/null || true
           DATA="$(date -u +%F)" bash .github/scripts/wydajnosc-statystyki.sh wyniki/*benchmarkData.json > wyniki/wyniki-wydajnosci.json ||
-            echo '{"sha":"'"$SHA"'","data":"'"$(date -u +%F)"'","start_ms":{},"klatka_ms":{},"wolne_proc":null}' > wyniki/wyniki-wydajnosci.json
+            echo '{"sha":"'"$SHA"'","data":"'"$(date -u +%F)"'","start_ms":{},"start_bez_profilu_ms":{},"klatka_ms":{},"wolne_proc":null}' > wyniki/wyniki-wydajnosci.json
           cat wyniki/wyniki-wydajnosci.json
       - name: Udostępnij wyniki i ślady Perfetto
         if: ${{ !cancelled() }}
@@ -117,6 +118,26 @@ jobs:
           path: wyniki/
           if-no-files-found: warn
           retention-days: 30
+      - name: Wybierz profil bazowy
+        run: |
+          mkdir -p profil
+          plik="$(find "$RUNNER_TEMP/wyniki" -name 'BaselineProfileGenerator*-baseline-prof.txt' | head -n 1)"
+          if [[ -z $plik ]]; then
+            echo "::warning title=Profil bazowy::Generator nie zapisał profilu bazowego."
+          else
+            cp "$plik" profil/baseline-prof.txt
+            echo "Profil bazowy: $(wc -l < profil/baseline-prof.txt) reguł, artefakt profil-bazowy." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Udostępnij profil bazowy
+        if: ${{ !cancelled() && hashFiles('profil/baseline-prof.txt') != '' }}
+        uses: actions/upload-artifact@v7.0.2
+        # Raport diagnostyczny: błąd zapisu artefaktu nie zmienia wyniku zadania (#1028).
+        continue-on-error: true
+        with:
+          name: profil-bazowy
+          path: profil/baseline-prof.txt
+          if-no-files-found: warn
+          retention-days: 90
 
   obciazenie:
     runs-on: ubuntu-latest

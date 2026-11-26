@@ -6,6 +6,7 @@ set -euo pipefail
 
 # Liczy statystyki z plików wyników Macrobenchmark (`*-benchmarkData.json`) i wypisuje jeden wpis historii (JSON):
 #   start_ms     percentyle p50 i p90 z czasu do pierwszej klatki (timeToInitialDisplayMs) ze wszystkich przebiegów,
+#                a start_bez_profilu_ms to samo dla testów z `WithoutProfile` w nazwie (start bez profilu bazowego),
 #   klatka_ms    p50, p90 i p99 z czasu klatki (frameDurationCpuMs) ze wszystkich próbek,
 #   wolne_proc   odsetek klatek dłuższych niż 16,7 ms.
 # Brakująca metryka daje null, bo pomiar mógł się nie udać; wpis powstaje zawsze, żeby historia pokazała dziurę.
@@ -37,11 +38,12 @@ def flat(items):
             yield item
 
 
-startup, frames = [], []
+startup, plain, frames = [], [], []
 for path in sys.argv[1:]:
     with open(path, encoding="utf-8") as file:
         for bench in json.load(file).get("benchmarks", []):
-            startup += list(flat(bench.get("metrics", {}).get("timeToInitialDisplayMs", {}).get("runs", [])))
+            runs = list(flat(bench.get("metrics", {}).get("timeToInitialDisplayMs", {}).get("runs", [])))
+            (plain if "WithoutProfile" in bench.get("name", "") else startup).extend(runs)
             frames += list(flat(bench.get("sampledMetrics", {}).get("frameDurationCpuMs", {}).get("runs", [])))
 
 slow = round(100 * sum(1 for ms in frames if ms > SLOW_MS) / len(frames), 2) if frames else None
@@ -49,6 +51,7 @@ entry = {
     "sha": os.environ.get("SHA", ""),
     "data": os.environ.get("DATA", ""),
     "start_ms": {"p50": percentile(startup, 0.5), "p90": percentile(startup, 0.9), "proby": len(startup)},
+    "start_bez_profilu_ms": {"p50": percentile(plain, 0.5), "p90": percentile(plain, 0.9), "proby": len(plain)},
     "klatka_ms": {
         "p50": percentile(frames, 0.5),
         "p90": percentile(frames, 0.9),

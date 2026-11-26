@@ -18,7 +18,8 @@ folder = sys.argv[1]
 frames = [8.0] * 97 + [20.0, 30.0, 40.0]
 data = {
     "benchmarks": [
-        {"name": "start", "metrics": {"timeToInitialDisplayMs": {"runs": [float(n) for n in range(100, 1100, 100)]}}},
+        {"name": "measuresStartWithoutProfile", "metrics": {"timeToInitialDisplayMs": {"runs": [700.0, 900.0]}}},
+        {"name": "measuresColdStart", "metrics": {"timeToInitialDisplayMs": {"runs": [float(n) for n in range(100, 1100, 100)]}}},
         {"name": "klatki", "sampledMetrics": {"frameDurationCpuMs": {"runs": [frames[:50], frames[50:]]}}},
     ]
 }
@@ -39,6 +40,7 @@ sprawdz() {
 
 sprawdz "start p50" 500.0 "d['start_ms']['p50']" pelny.json
 sprawdz "start p90" 900.0 "d['start_ms']['p90']" pelny.json
+sprawdz "start bez profilu p50" 700.0 "d['start_bez_profilu_ms']['p50']" pelny.json
 sprawdz "klatka p50" 8.0 "d['klatka_ms']['p50']" pelny.json
 sprawdz "klatka p99" 30.0 "d['klatka_ms']['p99']" pelny.json
 sprawdz "wolne" 3.0 "d['wolne_proc']" pelny.json

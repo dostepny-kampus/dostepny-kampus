@@ -15,7 +15,7 @@ export ZDALNE="$workdir/zdalne.git" WPIS="$workdir/wpis.json"
 
 echo '{"sha":"a","start_ms":{"p50":100.0,"p90":120.0},"klatka_ms":{"p50":8.0,"p90":9.0,"p99":12.0},"wolne_proc":1.0}' >"$WPIS"
 bash "$script" >/dev/null
-echo '{"sha":"b","start_ms":{"p50":150.0,"p90":120.0},"klatka_ms":{"p50":8.0,"p90":9.0,"p99":12.0},"wolne_proc":1.0}' >"$WPIS"
+echo '{"sha":"b","start_ms":{"p50":150.0,"p90":120.0},"start_bez_profilu_ms":{"p50":400.0},"klatka_ms":{"p50":8.0,"p90":9.0,"p99":12.0},"wolne_proc":1.0}' >"$WPIS"
 podsumowanie="$(bash "$script")"
 
 linii="$(git -C "$workdir/zdalne.git" show dane-wydajnosci:wydajnosc.jsonl | wc -l | tr -d ' ')"
@@ -30,6 +30,12 @@ if ! grep -q 'Start p50 (ms) | 150.0 | 100.0 | +50%' <<<"$podsumowanie"; then
   failures=$((failures + 1))
 else
   echo "OK: trend względem poprzedniego wpisu"
+fi
+if ! grep -q 'Start bez profilu p50 (ms) | 400.0 | None | -' <<<"$podsumowanie"; then
+  echo "NIEUDANY start bez profilu: $podsumowanie"
+  failures=$((failures + 1))
+else
+  echo "OK: start bez profilu w podsumowaniu"
 fi
 autor="$(git -C "$workdir/zdalne.git" log -1 --format='%an <%ae>|%cn <%ce>' dane-wydajnosci)"
 bot='github-actions[bot] <41898283+github-actions[bot]@users.noreply.github.com>'
