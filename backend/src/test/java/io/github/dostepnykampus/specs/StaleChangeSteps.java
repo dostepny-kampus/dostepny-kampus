@@ -40,9 +40,6 @@ public final class StaleChangeSteps {
     /** Nowa zmiana wysłana po odrzuceniu nieaktualnej. */
     private static final UUID RESENT = UUID.fromString("b4c5d6e7-0013-4f8a-9b0c-1d2e3f4a5b6c");
 
-    /** Zbierający, który złożył zmianę „bariera usunięta”. */
-    private static final String RIVAL_AUTHOR = "inny-zbierajacy";
-
     /** Token drugiego Weryfikatora. */
     private static final String SECOND = "Bearer VERIFIER.drugi-weryfikator";
 
@@ -245,7 +242,7 @@ public final class StaleChangeSteps {
             """
         ).param("original", ChangeSteps.ORIGINAL).param("accepted", VerifierSteps.CHECKED)
             .param("rival", ChangeSteps.RIVAL)
-            .param("rivalAuthor", StaleChangeSteps.RIVAL_AUTHOR).update();
+            .param("rivalAuthor", "inny-zbierajacy").update();
     }
 
     /**
@@ -326,7 +323,7 @@ public final class StaleChangeSteps {
             "",
             "{\"id\":\"", StaleChangeSteps.RESENT.toString(),
             "\",\"kind\":\"PRECISE\",\"location\":{\"type\":\"Point\",",
-            "\"coordinates\":[17.05,51.108]},\"buildingSymbol\":\"D-2\",",
+            "\"coordinates\":[17.05758,51.10978]},\"buildingSymbol\":\"D-2\",",
             "\"floor\":{\"number\":0},",
             "\"barrierGroup\":\"VERTICAL_CIRCULATION\",\"barrierType\":\"TB-9\",",
             "\"barrierRemoved\":true,\"replacesSubmissionId\":\"",
