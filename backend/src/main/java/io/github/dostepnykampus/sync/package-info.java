@@ -11,8 +11,7 @@
  *
  * <p>API: brak typów dla innych modułów; HTTP {@code /sync/pull}.</p>
  *
- * <p>Zależności: {@code barrier :: api}, {@code building :: api}, {@code inspection :: api},
- * {@code shared}.</p>
+ * <p>Zależności: {@code barrier}, {@code building}, {@code inspection} ({@code api}), {@code shared}.</p>
  *
  * <p>Nie robi: nie przechowuje danych i nie zna ich tabel; zmiany daje moduł właściciel.</p>
  *
