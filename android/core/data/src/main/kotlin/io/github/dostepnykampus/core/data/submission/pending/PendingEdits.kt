@@ -68,21 +68,22 @@ internal fun pendingEditsOf(
 
 /**
  * Poprawka wysłanego zgłoszenia konta [owner] przed decyzją z wersją bazową z serwera; zdjęcie, którego pliku już
- * nie ma, wypada. `null` dla innego konta, po decyzji i bez treści w historii.
+ * nie ma, wypada. `null` dla innego konta, po decyzji, bez treści w historii i bez żadnego zdjęcia na dysku.
  */
 internal fun OwnSubmissionEntity.toSentEdit(owner: String): PendingEdit? {
-    val copy = ownCopyOf(contentJson)
     val isOpen = ownerSub == owner && serverStatus !in DECIDED
-    if (copy == null || !isOpen) return null
+    val copy = ownCopyOf(contentJson)?.takeIf { isOpen } ?: return null
     val photos =
         copy.content.photoIds
             .zip(copy.photoPaths) { photoId, path -> PendingPhotoDraft(photoId = photoId, path = path) }
             .filter { File(it.path).exists() }
-    return PendingEdit(
-        edited = EditedSubmission(id = id, baseVersion = serverVersion),
-        content = copy.content.copy(photoIds = photos.map { it.photoId }),
-        photos = photos,
-    )
+    return photos.takeIf { it.isNotEmpty() }?.let { kept ->
+        PendingEdit(
+            edited = EditedSubmission(id = id, baseVersion = serverVersion),
+            content = copy.content.copy(photoIds = kept.map { it.photoId }),
+            photos = kept,
+        )
+    }
 }
 
 private val DECIDED = setOf(SubmissionStatus.ACCEPTED.name, SubmissionStatus.ARCHIVED.name)

@@ -53,15 +53,13 @@ class SentEditsTest {
             assertEquals(expected, edits.load(ID), "poprawka z historii")
         }
 
-    /** Zdjęcie, którego pliku już nie ma, wypada z poprawki, a formularz poprosi o nowe. Wymagania: BR-7 */
+    /** Bez żadnego pliku zdjęcia na dysku poprawki nie ma, bo zgłoszenie wymaga zdjęcia. Wymagania: BR-7 */
     @Test
-    fun dropsMissingPhoto() =
+    fun skipsWithoutPhoto() =
         runBlocking {
             sent(status = SubmissionStatus.SENT, paths = listOf(tempDir.resolve("brak.jpg").path))
 
-            val edit = checkNotNull(edits.load(ID))
-            assertEquals(emptyList<String>(), edit.content.photoIds, "bez identyfikatora brakującego zdjęcia")
-            assertEquals(emptyList<PendingPhotoDraft>(), edit.photos, "bez brakującego zdjęcia")
+            assertNull(edits.load(ID), "zgłoszenie bez pliku zdjęcia")
         }
 
     /** Przyjęte zgłoszenie i zgłoszenie innego konta nie otwierają poprawki. Wymagania: US8.3, NFR-33 */
