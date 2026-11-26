@@ -31,7 +31,7 @@ import io.github.dostepnykampus.feature.review.queue.titleRes
  *
  * TODO(#3866): miejsce słowami od najbliższego wejścia i dokładność pomiaru.
  * TODO(#3846): zasłanianie twarzy i tablic na zdjęciu.
- * TODO(#3707): rola i pseudonim autora.
+ * TODO(#4027): rola i pseudonim autora.
  *
  * Wymagania: US10, BR-14, BR-15, NFR-21
  *
