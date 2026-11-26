@@ -478,7 +478,15 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | dotknie schodów na planie A-1                     | Budynek A-1 |
       | dotknie znaku bariery przy budynku A-1            | Budynek A-1 |
       | wyszuka „A-1 329”                                 | Budynek A-1 |
-      | dotknie wspólnego konturu C-3/C-4                 | Budynek C-3 |
+      | dotknie mapy obok konturów A-1 i A-4, poza nimi   | Budynek A-1 |
+
+  # @do-zrobienia #2499: kontur wspólny bez planów otwiera jedną kartę bez arkusza.
+  @US2 @US3.2 @aplikacja @do-zrobienia
+  Scenariusz: Kontur wspólny bez planów otwiera jedną kartę z oboma symbolami
+    Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
+    Jeżeli dotknie wspólnego konturu T-18/T-22
+    Wtedy widzi kartę z nagłówkiem „T-18 / T-22” na niskiej wysokości
+    Ale nie widzi arkusza „Który budynek?”
 
   @US2.8 @US3.3 @aplikacja
   Scenariusz: Wiersz budynku w arkuszu otwartym z karty wraca do tej karty

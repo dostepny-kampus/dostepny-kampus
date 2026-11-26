@@ -48,7 +48,7 @@ class BuildingChoiceSheetTest {
     /**
      * Wiersz: każdy budynek to wiersz budynku w ramce, z nazwą pod napisem, co najmniej 48 dp; TalkBack czyta
      *   „Budynek C-3, nazwa” z czynnością „otwiera opis budynku”, a dotknięcie wybiera budynek.
-     * Scenariusz (częściowo, przykład: dotknie wspólnego konturu C-3/C-4): przegladanie-mapy.feature:
+     * Scenariusz (częściowo, przykład: dotknie mapy obok konturów A-1 i A-4, poza nimi): przegladanie-mapy.feature:
      *   Wiersz budynku w arkuszu otwiera kartę budynku bez przelotu mapy
      *
      * Wymagania: US2, US2.8, NFR-17, NFR-18
