@@ -58,6 +58,7 @@ import io.github.dostepnykampus.core.model.submission.BarrierType
  * @param type wybrany typ albo `null`
  * @param onPick wybór typu
  * @param modifier położenie pola wyznacza wołający
+ * @param firstGroup grupa na początku listy typów, a pozostałe pod nią; `null` daje kolejność słownika
  * @param isError ramka pola w kolorze błędu, gdy typu brakuje przy czynności
  */
 @Composable
@@ -65,6 +66,7 @@ public fun BarrierTypeField(
     type: BarrierType?,
     onPick: (BarrierType) -> Unit,
     modifier: Modifier = Modifier,
+    firstGroup: BarrierGroup? = null,
     isError: Boolean = false,
 ) {
     var isOpen by rememberSaveable { mutableStateOf(false) }
@@ -94,6 +96,7 @@ public fun BarrierTypeField(
     }
     if (isOpen) {
         TypePanel(
+            firstGroup = firstGroup,
             onPick = { option ->
                 onPick(option)
                 close()
@@ -120,13 +123,13 @@ private fun TypeTitle(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun TypePanel(onPick: (BarrierType) -> Unit, onClose: () -> Unit) {
+private fun TypePanel(firstGroup: BarrierGroup?, onPick: (BarrierType) -> Unit, onClose: () -> Unit) {
     val title = remember { FocusRequester() }
     Dialog(onDismissRequest = onClose, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
                 TypePanelHeader(title = title, onClose = onClose)
-                TypeList(onPick = onPick, modifier = Modifier.weight(1f))
+                TypeList(firstGroup = firstGroup, onPick = onPick, modifier = Modifier.weight(1f))
             }
         }
         LaunchedEffect(title) {
@@ -150,9 +153,10 @@ private fun TypePanelHeader(title: FocusRequester, onClose: () -> Unit) {
 }
 
 @Composable
-private fun TypeList(onPick: (BarrierType) -> Unit, modifier: Modifier = Modifier) {
+private fun TypeList(firstGroup: BarrierGroup?, onPick: (BarrierType) -> Unit, modifier: Modifier = Modifier) {
+    val groups = listOfNotNull(firstGroup) + BarrierGroup.entries.filter { it != firstGroup }
     Column(modifier = modifier.verticalScroll(rememberScrollState()).padding(bottom = Odstepy.m)) {
-        BarrierGroup.entries.forEach { group ->
+        groups.forEach { group ->
             Text(
                 text = stringResource(group.nameRes()),
                 modifier = Modifier.padding(horizontal = Odstepy.m, vertical = Odstepy.s).semantics { heading() },

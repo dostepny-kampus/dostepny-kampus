@@ -17,32 +17,38 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import io.github.dostepnykampus.core.designsystem.Obramowania
+import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.feature.review.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
+import kotlin.math.roundToInt
 import io.github.dostepnykampus.core.designsystem.R as DesignR
 
 private const val SHOWN_PIXELS = 2048
@@ -115,6 +121,7 @@ internal fun CoverPhotoView(
                 area = maxWidth to maxHeight,
                 onSelect = { tap(cover.x, cover.y) },
             )
+            if (isSelected) SelectedLabel(cover = cover, area = maxWidth to maxHeight)
         }
     }
 }
@@ -143,18 +150,43 @@ private fun CoverMark(
                         true
                     }
                 },
-        contentAlignment = Alignment.Center,
-    ) {
-        if (isSelected) {
-            Text(
-                text = stringResource(R.string.zaslona_zaznaczona),
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.labelLarge,
-            )
+    )
+}
+
+@Composable
+private fun SelectedLabel(cover: Cover, area: Pair<Dp, Dp>) {
+    val (width, height) = area
+    val shape = RoundedCornerShape(Zaokraglenia.srednie)
+    Text(
+        text = stringResource(R.string.zaslona_zaznaczona),
+        modifier =
+            Modifier
+                .besideCover(cover = cover, width = width, height = height)
+                .background(MaterialTheme.colorScheme.surface, shape)
+                .border(Obramowania.ramka, MaterialTheme.colorScheme.outline, shape)
+                .padding(horizontal = Odstepy.s, vertical = Odstepy.xs)
+                .semantics { hideFromAccessibility() },
+        color = MaterialTheme.colorScheme.onSurface,
+        maxLines = 1,
+        softWrap = false,
+        style = MaterialTheme.typography.labelLarge,
+    )
+}
+
+private fun Modifier.besideCover(cover: Cover, width: Dp, height: Dp): Modifier =
+    layout { measurable, _ ->
+        val label = measurable.measure(Constraints())
+        val areaWidth = width.roundToPx()
+        val half = cover.size / 2
+        val gap = Odstepy.xs.roundToPx()
+        val left = (cover.x * areaWidth - label.width / 2f).roundToInt()
+        val x = left.coerceIn(minimumValue = 0, maximumValue = (areaWidth - label.width).coerceAtLeast(0))
+        val above = ((cover.y - half) * height.toPx()).roundToInt() - gap - label.height
+        val below = ((cover.y + half) * height.toPx()).roundToInt() + gap
+        layout(width = label.width, height = label.height) {
+            label.place(x = x, y = if (above >= 0) above else below)
         }
     }
-}
 
 @StringRes
 private fun CoverPlace.nameRes(): Int =

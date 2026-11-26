@@ -10,14 +10,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTextExactly
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.designsystem.IMPORTANT_SIGN_TAG
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
+import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.review.queue.queued
+import io.github.dostepnykampus.feature.review.queue.quick
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -26,10 +30,10 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
- * R2 „Sprawdzenie zgłoszenia”: dane zgłoszenia, podobne zgłoszenia, decyzja, komunikaty nowej wersji i braku
- * sieci, zmiana oznaczenia wejścia bez „Duplikat”, wczytywanie i stany wspólne.
+ * R2 „Sprawdzenie zgłoszenia”: dane zgłoszenia, podobne zgłoszenia, decyzja, typ i uciążliwość zgłoszenia
+ * szybkiego, komunikaty, zmiana oznaczenia wejścia bez „Duplikat”, wczytywanie i stany wspólne.
  *
- * Wymagania: US10, US10.1, US10.2, US10.8, BR-3, BR-11, BR-24, NFR-50
+ * Wymagania: US10, US10.1, US10.2, US10.3, US10.8, BR-3, BR-11, BR-24, NFR-50
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
@@ -39,6 +43,7 @@ class ReviewCheckScreenTest {
 
     private var accepts = 0
     private var retries = 0
+    private val severities = mutableListOf<Severity>()
     private val shown = mutableStateOf<CheckUiState>(CheckUiState.Loading)
 
     @Test
@@ -71,6 +76,31 @@ class ReviewCheckScreenTest {
     }
 
     @Test
+    fun quickAsksTypeAndSeverity() {
+        show(READY.copy(submission = quick(CHECKED.id), notice = CheckNotice.TYPE_MISSING))
+        listOf("Czego dotyczy:", "Typ bariery", "Uciążliwość").forEach { text ->
+            compose.onNodeWithText(text).performScrollTo().assertIsDisplayed()
+        }
+        compose.onNodeWithText("Ustal typ bariery i uciążliwość, aby przyjąć zgłoszenie.").performScrollTo()
+        compose.onNodeWithText("Blokada").performScrollTo().performClick()
+        assertEquals("wybrana uciążliwość", listOf(Severity.BLOCKING), severities)
+    }
+
+    @Test
+    fun quickMissingTypeLeadsToField() {
+        val quick = READY.copy(submission = quick(CHECKED.id))
+        show(quick)
+        compose.onNodeWithText("Przyjmij").performScrollTo()
+        shown.value = quick.copy(notice = CheckNotice.TYPE_MISSING, missingAttempts = 1)
+        compose.onNodeWithText("Typ bariery").assertIsDisplayed()
+        val signs = compose.onAllNodesWithTag(IMPORTANT_SIGN_TAG, useUnmergedTree = true).fetchSemanticsNodes()
+        assertEquals("znak „!” przy błędzie przyjęcia", 1, signs.size)
+        compose.onNodeWithText("Przyjmij").performScrollTo()
+        shown.value = quick.copy(notice = CheckNotice.TYPE_MISSING, missingAttempts = 2)
+        compose.onNodeWithText("Typ bariery").assertIsDisplayed()
+    }
+
+    @Test
     fun entranceHasNoDuplicate() {
         val marking = CHECKED.copy(content = CHECKED.content.copy(kind = SubmissionKind.ENTRANCE_MARKING))
         show(READY.copy(submission = marking))
@@ -89,12 +119,13 @@ class ReviewCheckScreenTest {
 
     private fun show(state: CheckUiState) {
         shown.value = state
+        val decision = DecisionActions(onAccept = { accepts++ }, onReject = {}, onSeverity = { severities += it })
         compose.setContent {
             DostepnyKampusTheme {
                 ReviewCheckContent(
                     state = shown.value,
                     actions = ReviewCheckActions(onBack = {}, onDecided = {}),
-                    decision = DecisionActions(onAccept = { accepts++ }, onReject = {}),
+                    decision = decision,
                     onRetry = { retries++ },
                 )
             }

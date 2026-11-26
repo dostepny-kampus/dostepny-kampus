@@ -21,6 +21,8 @@ import io.github.dostepnykampus.core.designsystem.marking.SeverityLabel
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.core.model.submission.SubmissionKind
+import io.github.dostepnykampus.feature.review.R
 import io.github.dostepnykampus.feature.review.queue.kindRes
 import io.github.dostepnykampus.feature.review.queue.titleRes
 
@@ -41,6 +43,7 @@ internal fun SubmissionDetails(shown: CheckUiState.Ready) {
     val type = content.barrierType?.let { BarrierType.fromCode(it) }
     GroupFrame {
         Text(stringResource(content.kindRes()), style = MaterialTheme.typography.titleSmall)
+        if (content.kind == SubmissionKind.QUICK) Text(stringResource(R.string.sprawdzenie_czego_dotyczy))
         Text(
             text = stringResource(content.titleRes()),
             modifier = Modifier.semantics { heading() },
