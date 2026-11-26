@@ -14,7 +14,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.building.CardEntrances
 import io.github.dostepnykampus.core.data.building.ServerEntrances
+import io.github.dostepnykampus.core.data.di.ComputeContext
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.data.submission.own.OwnSubmissions
@@ -24,15 +26,21 @@ import io.github.dostepnykampus.core.model.building.EvacuationExit
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.room.RoomList
 import io.github.dostepnykampus.feature.map.trace.MapTrace
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 private const val STOP_TIMEOUT_MS = 5_000L
 
@@ -72,7 +80,7 @@ sealed interface BuildingCardUiState {
     ) : BuildingCardUiState
 }
 
-/** Źródła danych serwera i własnych zgłoszeń dla karty budynku V2. Wymagania: US2, US17.3, US16.3, BR-3, BR-18 */
+/** Źródła danych i kontekst obliczeń karty budynku V2. Wymagania: US2, US17.3, US16.3, BR-3, BR-18 */
 data class BuildingCardSources
     @Inject
     constructor(
@@ -80,6 +88,7 @@ data class BuildingCardSources
         internal val acceptedBarriers: AcceptedBarriers,
         internal val plans: FloorPlans,
         internal val ownSubmissions: OwnSubmissions,
+        @ComputeContext internal val computeContext: CoroutineContext = Dispatchers.Default,
     )
 
 /**
@@ -105,34 +114,43 @@ class BuildingCardViewModel
 
         private val known = sources.serverEntrances.knownCard(symbol)
 
-        private val fromServer = MutableStateFlow(known?.entrances.orEmpty())
+        private val serverCard = MutableStateFlow(known ?: CardEntrances(emptyList()))
 
         private val barriers = MutableStateFlow(sources.acceptedBarriers.known()?.let(::ofBuilding))
 
         private val floors = MutableStateFlow<FloorFacts?>(null)
 
-        private val exits = MutableStateFlow(known?.evacuationExits.orEmpty())
-
         private val ownIds = sources.ownSubmissions.observe().map { rows -> rows.mapTo(mutableSetOf()) { it.id } }
+
+        private val cachedEntrances = AtomicReference<CachedEntrances?>(null)
 
         private val first =
             repository.current()?.let { catalog ->
-                withExits(
-                    withBarriers(withServerEntrances(buildingCard(catalog, symbol), fromServer.value), barriers.value),
-                    exits.value,
+                cardState(
+                    catalog = catalog,
+                    card = serverCard.value,
+                    accepted = barriers.value,
+                    facts = null,
+                    own = emptySet(),
                 )
             } ?: BuildingCardUiState.Loading
 
+        private val states =
+            combine(
+                flow = attempts.map { attempt -> catalogFor(repository, attempt) },
+                flow2 = serverCard,
+                flow3 = barriers,
+                flow4 = floors,
+                flow5 = ownIds,
+            ) { catalog, card, accepted, facts, own ->
+                cardState(catalog = catalog, card = card, accepted = accepted, facts = facts, own = own)
+            }
+
         /** Bieżący stan karty. */
         val uiState: StateFlow<BuildingCardUiState> =
-            attempts
-                .map { attempt -> catalogFor(repository, attempt) }
-                .map(::cardOf)
-                .combine(fromServer, ::withServerEntrances)
-                .combine(barriers, ::withBarriers)
-                .combine(floors, ::withFloors)
-                .combine(exits, ::withExits)
-                .combine(ownIds, ::withOwnBarriers)
+            states
+                .distinctUntilChanged()
+                .flowOn(sources.computeContext)
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
@@ -151,9 +169,7 @@ class BuildingCardViewModel
                 if (sources.plans.download(symbol)) floors.value = storedFloorFacts(sources.plans, symbol)
             }
             viewModelScope.launch {
-                val card = sources.serverEntrances.cardEntrances(symbol)
-                fromServer.value = card.entrances
-                exits.value = card.evacuationExits
+                serverCard.value = sources.serverEntrances.cardEntrances(symbol)
             }
             viewModelScope.launch {
                 barriers.value = sources.acceptedBarriers.barriersOf(symbol)
@@ -178,6 +194,7 @@ class BuildingCardViewModel
                     acceptedBarriers = acceptedBarriers,
                     plans = plans,
                     ownSubmissions = OwnSubmissions { flowOf(emptyList()) },
+                    computeContext = EmptyCoroutineContext,
                 ),
         )
 
@@ -189,38 +206,42 @@ class BuildingCardViewModel
             attempts.value++
         }
 
-        private fun cardOf(catalog: BuildingCatalog): BuildingCardUiState =
-            MapTrace.section(name = MapTrace.CARD_STATE_SECTION) { buildingCard(catalog, symbol) }
-
-        private fun withServerEntrances(card: BuildingCardUiState, entrances: List<Entrance>): BuildingCardUiState =
+        private fun cardState(
+            catalog: BuildingCatalog,
+            card: CardEntrances,
+            accepted: List<AcceptedBarrier>?,
+            facts: FloorFacts?,
+            own: Set<String>,
+        ): BuildingCardUiState =
             MapTrace.section(name = MapTrace.CARD_STATE_SECTION) {
-                if (card is BuildingCardUiState.Ready && entrances.isNotEmpty()) {
-                    card.copy(entrances = orderedEntrances(entrances))
+                val building = catalog.buildings.find { it.symbol == symbol }
+                if (building == null) {
+                    BuildingCardUiState.Missing
                 } else {
-                    card
-                }
-            }
-
-        private fun withBarriers(card: BuildingCardUiState, accepted: List<AcceptedBarrier>?): BuildingCardUiState =
-            MapTrace.section(name = MapTrace.CARD_STATE_SECTION) {
-                if (card is BuildingCardUiState.Ready) {
-                    card.copy(
+                    val raw = card.entrances.ifEmpty { catalog.entrances.filter { it.buildingSymbol == symbol } }
+                    BuildingCardUiState.Ready(
+                        symbol = building.symbol,
+                        name = building.name,
+                        entrances = orderedEntrancesFor(raw = raw, accepted = accepted),
                         barriers = accepted,
-                        entrances = orderedEntrances(card.entrances.map { it.entrance }, accepted.orEmpty()),
+                        floors = facts,
+                        isBasic = catalog.hasServerList && symbol !in catalog.detailed,
+                        evacuationExits = card.evacuationExits,
+                        ownBarrierIds = own,
                     )
-                } else {
-                    card
                 }
             }
 
-        private fun withFloors(card: BuildingCardUiState, facts: FloorFacts?): BuildingCardUiState =
-            if (card is BuildingCardUiState.Ready) card.copy(floors = facts) else card
-
-        private fun withExits(card: BuildingCardUiState, found: List<EvacuationExit>): BuildingCardUiState =
-            if (card is BuildingCardUiState.Ready) card.copy(evacuationExits = found) else card
-
-        private fun withOwnBarriers(card: BuildingCardUiState, ids: Set<String>): BuildingCardUiState =
-            if (card is BuildingCardUiState.Ready) card.copy(ownBarrierIds = ids) else card
+        private fun orderedEntrancesFor(raw: List<Entrance>, accepted: List<AcceptedBarrier>?): List<OrderedEntrance> {
+            val applied = accepted.orEmpty()
+            val previous = cachedEntrances.get()
+            if (previous != null && previous.raw == raw && previous.barriers == applied) {
+                return previous.ordered
+            }
+            val ordered = orderedEntrances(raw, applied)
+            cachedEntrances.set(CachedEntrances(raw = raw, barriers = applied, ordered = ordered))
+            return ordered
+        }
 
         private suspend fun catalogFor(repository: BuildingCatalogRepository, attempt: Int): BuildingCatalog =
             if (attempt == 0) repository.catalog() else repository.refresh()
@@ -233,6 +254,12 @@ class BuildingCardViewModel
         }
     }
 
+private data class CachedEntrances(
+    val raw: List<Entrance>,
+    val barriers: List<AcceptedBarrier>,
+    val ordered: List<OrderedEntrance>,
+)
+
 /** Fakty o piętrach budynku [symbol] z kopii planu w [plans], bez pobierania; `null`, gdy kopii nie ma. */
 internal suspend fun storedFloorFacts(plans: FloorPlans, symbol: String): FloorFacts? {
     val floors = plans.floors(symbol)?.floors.orEmpty()
@@ -242,7 +269,7 @@ internal suspend fun storedFloorFacts(plans: FloorPlans, symbol: String): FloorF
 }
 
 /** Plany pięter budynku bez planu: nic nie pobiera i nic nie ma. */
-private object NoFloorPlans : FloorPlans {
+internal object NoFloorPlans : FloorPlans {
     override suspend fun download(symbol: String): Boolean = false
 
     override suspend fun floors(symbol: String): FloorList? = null
