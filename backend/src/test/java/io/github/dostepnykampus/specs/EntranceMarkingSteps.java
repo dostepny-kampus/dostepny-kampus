@@ -11,10 +11,6 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.github.dostepnykampus.barrier.photo.PhotoStore;
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -33,6 +29,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.client.RestClient;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -114,16 +111,12 @@ public final class EntranceMarkingSteps {
         this.submit(EntranceMarkingSteps.id("pierwszy"), "COLLECTOR.c1", marking);
     }
 
-    @Given("^Zbierający wysłał zmianę oznaczenia wejścia bocznego (\\S+) na „([^”]+)”$")
-    void sentSideChange(final String symbol, final String marking) throws Exception {
+    @Given("^(jako )?Zbierający wysłał zmianę oznaczenia wejścia bocznego (\\S+) na „([^”]+)”$")
+    void sentSideChange(final @Nullable String own, final String symbol, final String marking)
+        throws Exception {
         this.place("wejście boczne ".concat(symbol), "brak danych", "1.11.2026");
-        this.collectorSentChange(marking);
-    }
-
-    @Given("^jako Zbierający wysłał zmianę oznaczenia wejścia bocznego (\\S+) na „([^”]+)”$")
-    void verifierSentSide(final String symbol, final String marking) throws Exception {
-        this.place("wejście boczne ".concat(symbol), "brak danych", "1.11.2026");
-        this.submit(EntranceMarkingSteps.id("pierwszy"), "COLLECTOR+VERIFIER", marking);
+        final String token = own == null ? "COLLECTOR.c1" : "COLLECTOR+VERIFIER";
+        this.submit(EntranceMarkingSteps.id("pierwszy"), token, marking);
     }
 
     @Given("^inny Zbierający wysłał zmianę oznaczenia tego wejścia na „([^”]+)”$")
@@ -186,9 +179,8 @@ public final class EntranceMarkingSteps {
 
     @Then("^\\S+ \\S+ (\\S+) nadal ma oznaczenie „([^”]+)” z datą (\\S+ i źródłem „[^”]+”)$")
     @Then("^\\S+ \\S+ (\\S+) ma oznaczenie „([^”]+)” z datą (\\S+ i źródłem „obchód”)$")
-    void entranceHasFullState(
-        final String symbol, final String marking, final String meta
-    ) throws Exception {
+    void entranceHasFullState(final String symbol, final String marking, final String meta)
+        throws Exception {
         this.entranceHasMarking(symbol, marking);
         this.checkMeta(symbol, meta);
     }
@@ -256,15 +248,11 @@ public final class EntranceMarkingSteps {
 
     @After
     void cleanUp() throws IOException {
-        this.photos.delete(
-            EntranceMarkingSteps.id("pierwszy"), EntranceMarkingSteps.id("zdjęcie")
-        );
-        this.photos.delete(EntranceMarkingSteps.id("drugi"), EntranceMarkingSteps.id("zdjęcie"));
+        for (final UUID item : EntranceMarkingSteps.IDS.values()) {
+            this.photos.delete(item, EntranceMarkingSteps.id("zdjęcie"));
+        }
         this.jdbc.sql("DELETE FROM submissions WHERE id IN (:ids)")
-            .param(
-                "ids",
-                List.of(EntranceMarkingSteps.id("pierwszy"), EntranceMarkingSteps.id("drugi"))
-            ).update();
+            .param("ids", EntranceMarkingSteps.IDS.values()).update();
         this.jdbc.sql("DELETE FROM entrances WHERE id = :id")
             .param("id", EntranceMarkingSteps.api("wejście")).update();
     }
@@ -375,23 +363,13 @@ public final class EntranceMarkingSteps {
         );
     }
 
-    private String exportCsv() throws Exception {
-        try (HttpClient client = HttpClient.newHttpClient()) {
-            final HttpResponse<String> reply = client.send(
-                HttpRequest.newBuilder(
-                    URI.create(
-                        "http://localhost:%s/export.csv".formatted(
-                            this.env.getRequiredProperty("local.server.port")
-                        )
-                    )
-                ).header(HttpHeaders.AUTHORIZATION, "Bearer COORDINATOR").build(),
-                HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)
-            );
-            MatcherAssert.assertThat(
-                "Eksport CSV nie dał 200", reply.statusCode(), Matchers.equalTo(200)
-            );
-            return reply.body();
-        }
+    private String exportCsv() {
+        return Objects.requireNonNull(
+            RestClient.create().get().uri(
+                "http://localhost:{port}/export.csv",
+                this.env.getRequiredProperty("local.server.port")
+            ).header(HttpHeaders.AUTHORIZATION, "Bearer COORDINATOR").retrieve().body(String.class)
+        );
     }
 
     private static UUID id(final String who) {
