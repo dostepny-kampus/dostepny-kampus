@@ -25,6 +25,10 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,9 +48,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.onSizeChanged
@@ -54,13 +58,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
@@ -274,9 +276,9 @@ private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: (
             unfocusedBorderColor = scheme.outline,
         )
     val textStyle = LocalTextStyle.current.merge(TextStyle(color = scheme.onSurface))
+    val state = rememberFollowedState(query = query, onQueryChange = onQueryChange)
     BasicTextField(
-        value = query,
-        onValueChange = onQueryChange,
+        state = state,
         modifier =
             Modifier
                 .fillMaxWidth()
@@ -285,49 +287,59 @@ private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: (
         textStyle = textStyle,
         keyboardOptions =
             KeyboardOptions(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Search),
-        singleLine = true,
+        lineLimits = TextFieldLineLimits.SingleLine,
         interactionSource = interactions,
         cursorBrush = SolidColor(scheme.primary),
-    ) { field ->
-        OutlinedTextFieldDefaults.DecorationBox(
-            value = query,
-            innerTextField = { FieldWithHint(isEmpty = query.isEmpty(), style = textStyle, content = field) },
-            enabled = true,
-            singleLine = true,
-            visualTransformation = VisualTransformation.None,
-            interactionSource = interactions,
-            leadingIcon = { Icon(SearchIcon, contentDescription = null) },
-            trailingIcon = { if (query.isNotEmpty()) ClearButton { onQueryChange("") } },
-            colors = colors,
-            container = {
-                OutlinedTextFieldDefaults.Container(
-                    enabled = true,
-                    isError = false,
-                    interactionSource = interactions,
-                    colors = colors,
-                    shape = RoundedCornerShape(Zaokraglenia.kapsula),
-                    focusedBorderThickness = Obramowania.pole,
-                    unfocusedBorderThickness = Obramowania.pole,
-                )
-            },
-        )
-    }
+        decorator =
+            OutlinedTextFieldDefaults.decorator(
+                state = state,
+                enabled = true,
+                lineLimits = TextFieldLineLimits.SingleLine,
+                outputTransformation = null,
+                interactionSource = interactions,
+                placeholder = { SearchHint(style = textStyle) },
+                leadingIcon = { Icon(SearchIcon, contentDescription = null) },
+                trailingIcon = { if (state.text.isNotEmpty()) ClearButton { onQueryChange("") } },
+                colors = colors,
+                container = {
+                    OutlinedTextFieldDefaults.Container(
+                        enabled = true,
+                        isError = false,
+                        interactionSource = interactions,
+                        colors = colors,
+                        shape = RoundedCornerShape(Zaokraglenia.kapsula),
+                        focusedBorderThickness = Obramowania.pole,
+                        unfocusedBorderThickness = Obramowania.pole,
+                    )
+                },
+            ),
+    )
 }
 
 @Composable
-private fun FieldWithHint(isEmpty: Boolean, style: TextStyle, content: @Composable () -> Unit) {
-    val isWrapped = isEmpty && LocalDensity.current.fontScale >= LARGE_FONT_SCALE
-    Box(contentAlignment = Alignment.CenterStart, propagateMinConstraints = true) {
-        Text(
-            text = stringResource(R.string.mapa_szukaj_podpowiedz),
-            modifier = if (isEmpty) Modifier else Modifier.alpha(0f).clearAndSetSemantics {},
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = if (isWrapped) Int.MAX_VALUE else 1,
-            overflow = TextOverflow.Ellipsis,
-            style = style,
-        )
-        content()
+private fun rememberFollowedState(query: String, onQueryChange: (String) -> Unit): TextFieldState {
+    val state = rememberTextFieldState(initialText = query)
+    val current by rememberUpdatedState(query)
+    val change by rememberUpdatedState(onQueryChange)
+    LaunchedEffect(state) {
+        snapshotFlow { state.text.toString() }.collect { text -> if (text != current) change(text) }
     }
+    LaunchedEffect(query) {
+        if (state.text.toString() != query) state.setTextAndPlaceCursorAtEnd(query)
+    }
+    return state
+}
+
+@Composable
+private fun SearchHint(style: TextStyle) {
+    val isWrapped = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+    Text(
+        text = stringResource(R.string.mapa_szukaj_podpowiedz),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        maxLines = if (isWrapped) Int.MAX_VALUE else 1,
+        overflow = TextOverflow.Ellipsis,
+        style = style,
+    )
 }
 
 @Composable
