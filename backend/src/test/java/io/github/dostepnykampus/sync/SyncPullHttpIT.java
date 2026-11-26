@@ -30,11 +30,10 @@ import tools.jackson.databind.ObjectMapper;
 
 /**
  * Pobranie zmian daje od kursora własne zgłoszenia w każdym statusie i cudze przyjęte
- * i archiwalne, wejścia z oznaczeniem z obchodu, a Zbierającemu znaczniki wszystkich
- * Zbierających, także cofnięte, z oznaczeniem własnych; inne role dostają pustą listę
- * znaczników, a zły kursor 400. Kursor odpowiedzi jest cofnięty o margines dłuższy niż limit
- * czasu transakcji zapisu, więc zmiana zatwierdzona po pobraniu z wcześniejszą chwilą
- * przychodzi w następnym.
+ * i archiwalne, wejścia z oznaczeniem z obchodu, a Zbierającemu znaczniki wszystkich Zbierających,
+ * także cofnięte, z oznaczeniem własnych; inne role dostają pustą listę znaczników, a zły kursor
+ * 400. Kursor odpowiedzi jest cofnięty o margines dłuższy niż limit czasu transakcji zapisu, więc
+ * zmiana zatwierdzona po pobraniu z wcześniejszą chwilą przychodzi w następnym.
  *
  * <p>Wymagania: US15.1, US15.2, US11.3, US8.1, US1.3, US10.6, US17.2, BR-20</p>
  *

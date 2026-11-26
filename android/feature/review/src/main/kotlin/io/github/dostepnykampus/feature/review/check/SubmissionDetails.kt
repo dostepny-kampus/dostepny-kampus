@@ -17,7 +17,7 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.GroupFrame
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.marking.BarrierPhoto
-import io.github.dostepnykampus.core.designsystem.marking.SeverityBadge
+import io.github.dostepnykampus.core.designsystem.marking.SeverityLabel
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
@@ -29,7 +29,7 @@ import io.github.dostepnykampus.feature.review.queue.titleRes
  *
  * TODO(#3866): miejsce słowami od najbliższego wejścia i dokładność pomiaru.
  * TODO(#3846): zasłanianie twarzy i tablic na zdjęciu.
- * TODO(#3707): rola i pseudonim autora.
+ * TODO(#4027): rola i pseudonim autora.
  *
  * Wymagania: US10, BR-14, BR-15, NFR-21
  *
@@ -47,7 +47,7 @@ internal fun SubmissionDetails(shown: CheckUiState.Ready) {
             style = MaterialTheme.typography.headlineSmall,
         )
         content.severity?.let { Severity.fromValue(it) }?.let { severity ->
-            SeverityBadge(severity = severity, modifier = Modifier.padding(vertical = Odstepy.s))
+            SeverityLabel(severity = severity, modifier = Modifier.padding(vertical = Odstepy.s))
         }
         Text(
             text = barrierPlace(symbol = content.buildingSymbol, name = null, entrance = null, floor = content.floor),

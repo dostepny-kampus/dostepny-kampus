@@ -19,7 +19,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +38,7 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.location.WithLocationPermission
@@ -242,7 +242,7 @@ private fun QuickSendStep(
     QuickSendSummary(report = report, isFloorAsked = route.isFloorAsked, lookup = lookup)
     if (lookup == QuickLookup.Lost || lookup == QuickLookup.Outside) {
         MainButton(text = stringResource(R.string.formularz_sprobuj_ponownie), onClick = viewModel::retry)
-        OutlinedButton(onClick = onGiveUp, modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk)) {
+        OutlinedAction(onClick = onGiveUp, modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk)) {
             Text(stringResource(R.string.szybkie_zrezygnuj))
         }
     } else {

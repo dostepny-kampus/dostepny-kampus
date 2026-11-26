@@ -7,11 +7,15 @@ package io.github.dostepnykampus.barrier.review.application;
 
 import io.github.dostepnykampus.barrier.review.ReviewRepository;
 import io.github.dostepnykampus.barrier.review.SimilarSubmission;
+import io.github.dostepnykampus.barrier.review.SubmissionAuthor;
 import io.github.dostepnykampus.barrier.submission.StoredPhotos;
 import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
+import io.github.dostepnykampus.identity.api.AccountId;
 import io.github.dostepnykampus.shared.error.MissingResource;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -50,14 +54,31 @@ public final class ReviewQueue {
     }
 
     /**
-     * Wyszukuje zgłoszenia w kolejce weryfikacji dla danego konta Weryfikatora; zgłoszenie,
-     * któremu brakuje zdjęcia w magazynie, jeszcze do niej nie trafia.
+     * Wyszukuje zgłoszenia w kolejce weryfikacji dla danego konta Weryfikatora, z autorem
+     * przedstawionym pseudonimem i rolami; zgłoszenie, któremu brakuje zdjęcia w magazynie,
+     * jeszcze do niej nie trafia.
+     *
+     * <p>Wymagania: BR-5, BR-7</p>
      *
      * @param reviewer Identyfikator konta Weryfikatora
      * @return Zgłoszenia w kolejce od najdawniej wysłanego
      */
-    public List<Submission> forReviewer(final String reviewer) {
-        return this.reviews.reviewQueue(reviewer).stream().filter(this.photos::complete).toList();
+    public List<ReviewedSubmission> forReviewer(final String reviewer) {
+        return this.reviewed(
+            this.reviews.reviewQueue(reviewer).stream().filter(this.photos::complete).toList()
+        );
+    }
+
+    /**
+     * Przedstawia autora zgłoszenia pseudonimem i rolami z chwili wysłania.
+     *
+     * <p>Wymagania: BR-5</p>
+     *
+     * @param submission Zgłoszenie zapisane na serwerze
+     * @return Zgłoszenie z autorem albo bez niego, gdy serwer nie zna konta autora
+     */
+    public ReviewedSubmission reviewed(final Submission submission) {
+        return this.reviewed(List.of(submission)).getFirst();
     }
 
     /**
@@ -74,5 +95,18 @@ public final class ReviewQueue {
             throw new MissingResource("Nie ma takiego zgłoszenia");
         }
         return this.reviews.similar(id);
+    }
+
+    private List<ReviewedSubmission> reviewed(final List<Submission> submissions) {
+        final Map<UUID, SubmissionAuthor> authors = this.reviews.authors(
+            submissions.stream().map(Submission::id).toList()
+        );
+        return submissions.stream().map(
+            submission -> Optional.ofNullable(authors.get(submission.id())).map(
+                author -> new ReviewedSubmission(
+                    submission, new AccountId(author.account()).pseudonym(), author.roles()
+                )
+            ).orElseGet(() -> new ReviewedSubmission(submission, null, List.of()))
+        ).toList();
     }
 }

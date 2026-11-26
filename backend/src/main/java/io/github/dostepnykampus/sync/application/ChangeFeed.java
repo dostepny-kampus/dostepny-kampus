@@ -52,7 +52,8 @@ public class ChangeFeed {
 
     /**
      * Zmiany od kursora {@code since} włącznie: własne zgłoszenia konta oraz cudze przyjęte
-     * i archiwalne, wejścia z obchodu, a znaczniki tylko dla Zbierającego. Kursor wyniku to
+     * i archiwalne, wejścia z obchodu, a znaczniki tylko dla Zbierającego, inni dostają pustą
+     * listę. Kursor wyniku to
      * chwila pobrania cofnięta o margines, nie wcześniejsza niż {@code since}: zmiana zatwierdzona
      * po pobraniu z wcześniejszą chwilą przychodzi w następnym, zmiany z marginesu powtórnie.
      *
