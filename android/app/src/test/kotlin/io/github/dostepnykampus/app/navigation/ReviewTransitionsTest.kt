@@ -49,7 +49,7 @@ class ReviewTransitionsTest {
         assertEquals(ReviewQueueRoute, stack.last(), "powrót do R1")
     }
 
-    /** Wiersz: decyzja na R2 → R1 ze świeżą kolejką, bez R2 w historii. Wymagania: US10, NFR-54 */
+    /** Wiersz: R1 ze świeżą kolejką po zapisanej decyzji; bez R2 w historii. Wymagania: US10, NFR-54 */
     @Test
     fun decisionRestartsQueue() {
         val navigator = navigator()

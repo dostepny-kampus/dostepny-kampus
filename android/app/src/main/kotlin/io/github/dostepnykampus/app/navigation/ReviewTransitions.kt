@@ -23,14 +23,15 @@ fun AppNavigator.openReviewCheck(submissionId: String) {
     if (current == ReviewQueueRoute) leaving { add(ReviewCheckRoute(submissionId)) }
 }
 
-/** R2 → R1 po zapisanej decyzji: R2 znika z historii, a R1 czyta kolejkę od nowa. Wymagania: US10, NFR-54 */
+/** Powrót z R2 do R1 po zapisanej decyzji; R2 znika z historii, a R1 czyta kolejkę od nowa. Wymagania: US10, NFR-54 */
 fun AppNavigator.reviewDecided() {
     backToFresh()
 }
 
 /**
  * R1 „Zgłoszenia do sprawdzenia” albo R2 „Sprawdzenie zgłoszenia” według [route]. Z R1 „Wstecz” wraca do L2,
- * a wzięte zgłoszenie i „Otwórz” prowadzą do R2; z R2 „Wstecz” wraca do R1, decyzja do R1 ze świeżą kolejką.
+ * a wzięte zgłoszenie i „Otwórz” prowadzą do R2; z R2 „Wstecz” wraca do R1, a zapisana decyzja też wraca tam
+ * ze świeżą kolejką.
  *
  * Wymagania: US10, US10.4, US10.7, NFR-54
  */

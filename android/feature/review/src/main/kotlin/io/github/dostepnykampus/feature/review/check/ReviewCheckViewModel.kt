@@ -188,7 +188,8 @@ class ReviewCheckViewModel
 
         private fun firstPhoto(near: SimilarSubmission): Pair<String, String>? {
             val id = near.submission.id
-            val photo = near.submission.content.photoIds.firstOrNull() ?: return null
+            val photos = near.submission.content.photoIds
+            val photo = photos.firstOrNull() ?: return null
             return id to reviews.photoUrl(submissionId = id, photoId = photo)
         }
 

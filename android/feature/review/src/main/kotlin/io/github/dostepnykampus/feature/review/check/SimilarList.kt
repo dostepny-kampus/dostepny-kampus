@@ -83,6 +83,7 @@ private fun SimilarCard(near: SimilarSubmission, photo: String?) {
 @ReadOnlyComposable
 private fun distanceAndFloor(near: SimilarSubmission): String {
     val distance = stringResource(R.string.sprawdzenie_odleglosc, near.distanceMeters.roundToInt())
-    val floor = near.submission.content.floor?.let { floorText(it) }
+    val content = near.submission.content
+    val floor = content.floor?.let { floorText(it) }
     return if (floor == null) distance else "$distance, $floor"
 }
