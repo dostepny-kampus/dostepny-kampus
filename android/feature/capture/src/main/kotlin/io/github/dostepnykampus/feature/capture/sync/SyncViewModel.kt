@@ -76,6 +76,7 @@ sealed interface SyncUiState {
  *
  * Wymagania: US9.1, US9.2, US9.4, US9.5, NFR-7, NFR-10, NFR-50
  */
+// TODO(#3992): widok C4 bez konfliktu podłącza ten model widoku, a #3993 jego trasę.
 @HiltViewModel
 class SyncViewModel
     @Inject
