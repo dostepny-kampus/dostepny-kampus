@@ -8,24 +8,20 @@ package io.github.dostepnykampus.core.designsystem.marking
 import android.graphics.Bitmap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.vector.PathParser
+import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.designsystem.iconSizeLikeText
 import io.github.dostepnykampus.core.model.submission.Severity
-
-private const val SIGN_VIEWPORT = 24f
 
 /**
  * Kształty znaku uciążliwości na siatce 24 × 24, jak w zatwierdzonym zestawie znaków mapy.
@@ -84,14 +80,6 @@ internal fun DrawScope.drawSeverityMark(paths: SeverityPaths, color: Color) {
     drawPath(path = paths.fills, color = color)
 }
 
-/** Znak uciążliwości na cały krótszy bok [DrawScope]: kształt w [shapeColor], kreski i wypełnienia w [markColor]. */
-internal fun DrawScope.drawSeverity(paths: SeverityPaths, shapeColor: Color, markColor: Color) {
-    scale(scale = size.minDimension / SIGN_VIEWPORT, pivot = Offset.Zero) {
-        drawPath(path = paths.shape, color = shapeColor)
-        drawSeverityMark(paths = paths, color = markColor)
-    }
-}
-
 /**
  * Znak uciążliwości [severity] jako obraz [sizePx] × [sizePx] dla mapy i jej legendy, z tych samych kształtów co
  * [SeverityIcon], w barwach znaku uciążliwości z [colors] (`znak_*`, `znak_*_symbol`), w konturze i obwódce.
@@ -114,25 +102,28 @@ private fun Severity.mapTones(colors: MapColors): Pair<Color, Color> =
     }
 
 /**
- * Znak uciążliwości obok napisu: trójkąt ze znakiem „!” dla „Utrudnienie”, tarcza z dwiema osobami dla „Tylko
- * z pomocą”, zaokrąglona tablica z jedną poziomą belką dla „Blokada”. Znaczenie niesie kształt, nie barwa.
+ * Znak uciążliwości obok napisu, ten sam co na mapie: trójkąt ze znakiem „!” dla „Utrudnienie”, tarcza z dwiema
+ * osobami dla „Tylko z pomocą”, zaokrąglona tablica z jedną poziomą belką dla „Blokada”, w barwach, konturze
+ * i obwódce znaku z [mapColors]. Rozmiar [io.github.dostepnykampus.core.designsystem.Ikony.rozmiar] skalowany
+ * jak tekst w sp. Ikona jest ozdobna, bez opisu.
  *
- * Domyślne barwy to `onSurface` i `surface`. [mapColors] stosuje paletę mapy. Rozmiar
- * [io.github.dostepnykampus.core.designsystem.Ikony.rozmiar] skalowany jak tekst w sp. Ikona jest ozdobna:
- * TalkBack czyta nazwę uciążliwości z napisu obok.
+ * Wymagania: NFR-21, NFR-20, US2.1
  *
- * Wymagania: NFR-21, NFR-20
- *
- * @param severity uciążliwość, która wyznacza kształt
+ * @param severity uciążliwość, która wyznacza kształt i barwę
  * @param modifier modyfikator zewnętrzny
- * @param mapColors paleta znaku na mapie; `null` używa barw motywu ekranu
+ * @param mapColors paleta znaków mapy; domyślnie paleta bieżącego motywu
  */
 @Composable
-public fun SeverityIcon(severity: Severity, modifier: Modifier = Modifier, mapColors: MapColors? = null) {
+public fun SeverityIcon(
+    severity: Severity,
+    modifier: Modifier = Modifier,
+    mapColors: MapColors = DostepnyKampusTheme.mapColors,
+) {
     val paths = remember(severity) { SeverityPaths(severity.look()) }
-    val (shapeColor, markColor) =
-        mapColors?.let(severity::mapTones) ?: (MaterialTheme.colorScheme.onSurface to MaterialTheme.colorScheme.surface)
+    val (fill, symbol) = severity.mapTones(mapColors)
     Canvas(modifier = modifier.size(iconSizeLikeText())) {
-        drawSeverity(paths = paths, shapeColor = shapeColor, markColor = markColor)
+        drawMapSign(shape = paths.shape, fill = fill, colors = mapColors) {
+            drawSeverityMark(paths = paths, color = symbol)
+        }
     }
 }
