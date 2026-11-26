@@ -34,14 +34,14 @@ import io.github.dostepnykampus.feature.review.R
  * @param previous poprzednie zgłoszenie
  * @param newPhoto adres nowego zdjęcia miejsca; `null` bez zdjęcia
  * @param type typ bariery do opisu zdjęć
- * @param newPhotoAction czynność pod nowym zdjęciem
+ * @param content czynność pod nowym zdjęciem
  */
 @Composable
 internal fun RemovedComparison(
     previous: PreviousSubmission,
     newPhoto: String?,
     type: BarrierType?,
-    newPhotoAction: @Composable () -> Unit = {},
+    content: @Composable () -> Unit = {},
 ) {
     val isStacked = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
@@ -51,7 +51,7 @@ internal fun RemovedComparison(
                 url = newPhoto,
                 caption = R.string.sprawdzenie_zdjecie_nowe,
                 type = type,
-                action = newPhotoAction,
+                action = content,
             )
         } else {
             Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s)) {
@@ -66,7 +66,7 @@ internal fun RemovedComparison(
                     caption = R.string.sprawdzenie_zdjecie_nowe,
                     type = type,
                     modifier = Modifier.weight(1f),
-                    action = newPhotoAction,
+                    action = content,
                 )
             }
         }

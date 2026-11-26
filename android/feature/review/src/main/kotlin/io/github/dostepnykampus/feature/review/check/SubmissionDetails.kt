@@ -78,9 +78,10 @@ private fun SubmissionPhotos(
     type: BarrierType?,
     onCover: (photoId: String, photoUrl: String) -> Unit,
 ) {
-    val photos = shown.submission.content.photoIds.zip(shown.photoUrls)
+    val ids = shown.submission.content.photoIds
+    val photos = ids.zip(shown.photoUrls)
     val previous = shown.previous
-    val compared = if (previous == null) null else photos.firstOrNull()
+    val compared = previous?.let { photos.firstOrNull() }
     if (previous != null) {
         RemovedComparison(previous = previous, newPhoto = compared?.second, type = type) {
             if (compared != null) CoverPhotoAction { onCover(compared.first, compared.second) }
