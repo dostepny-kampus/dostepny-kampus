@@ -202,7 +202,9 @@ class LowCardOverMapTest {
                 }
             }
 
-            else -> AppScreen(route)
+            else -> {
+                AppScreen(route)
+            }
         }
     }
 
