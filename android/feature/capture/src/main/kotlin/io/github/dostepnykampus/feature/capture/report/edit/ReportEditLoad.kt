@@ -73,10 +73,17 @@ class ReportEditViewModel
             viewModelScope.launch {
                 val loaded =
                     when (route.mode) {
-                        ReportEditMode.OWN -> edits.load(id)?.toReportUiState()
-                        ReportEditMode.CHANGE_ACCEPTED ->
+                        ReportEditMode.OWN -> {
+                            edits.load(id)?.toReportUiState()
+                        }
+
+                        ReportEditMode.CHANGE_ACCEPTED -> {
                             barriers.barriers().firstOrNull { it.id == id }?.toReplaceUiState()
-                        ReportEditMode.RESEND_OUTDATED -> edits.load(id)?.let { old -> resendOf(old) }
+                        }
+
+                        ReportEditMode.RESEND_OUTDATED -> {
+                            edits.load(id)?.let { old -> resendOf(old) }
+                        }
                     }
                 state.value = if (loaded == null) ReportEditLoad.Missing else ReportEditLoad.Ready(loaded)
             }
