@@ -69,7 +69,7 @@ internal fun ownCopyJson(id: String, copy: OwnCopy): String {
     val draft =
         Submission(
             id = id,
-            version = 0,
+            version = 1,
             status = SubmissionStatus.SENT,
             createdAt = Instant.EPOCH,
             content = copy.content,
