@@ -51,7 +51,7 @@ internal fun RemovedComparison(
                 url = newPhoto,
                 caption = R.string.sprawdzenie_zdjecie_nowe,
                 type = type,
-                action = content,
+                content = content,
             )
         } else {
             Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s)) {
@@ -66,7 +66,7 @@ internal fun RemovedComparison(
                     caption = R.string.sprawdzenie_zdjecie_nowe,
                     type = type,
                     modifier = Modifier.weight(1f),
-                    action = content,
+                    content = content,
                 )
             }
         }
@@ -81,11 +81,11 @@ private fun SignedPhoto(
     @StringRes caption: Int,
     type: BarrierType?,
     modifier: Modifier = Modifier,
-    action: @Composable () -> Unit = {},
+    content: @Composable () -> Unit = {},
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {
         BarrierPhoto(url = url, type = type, modifier = Modifier.fillMaxWidth())
         Text(stringResource(caption), style = MaterialTheme.typography.bodyMedium)
-        action()
+        content()
     }
 }
