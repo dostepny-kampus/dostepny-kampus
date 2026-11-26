@@ -45,7 +45,7 @@ import tools.jackson.databind.ObjectMapper;
 public final class QueueSteps {
 
     /** Pierwsze zgłoszenie scenariusza. */
-    private static final UUID ONE = UUID.fromString("e1f2a3b4-0001-4c5d-8e6f-7a8b9c0d1e2f");
+    static final UUID ONE = UUID.fromString("e1f2a3b4-0001-4c5d-8e6f-7a8b9c0d1e2f");
 
     /** Drugie zgłoszenie scenariusza. */
     private static final UUID TWO = UUID.fromString("e1f2a3b4-0002-4c5d-8e6f-7a8b9c0d1e2f");
