@@ -13,7 +13,6 @@ import io.github.dostepnykampus.feature.capture.navigation.RemovedEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
-import io.github.dostepnykampus.feature.capture.navigation.VersionConflictRoute
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 
 /** L2 → C1: „Zmierz i zgłoś barierę”. Wymagania: US6, US14.1 */
@@ -42,11 +41,6 @@ fun AppNavigator.openEdit(submissionId: String, isBarrierRemoved: Boolean = fals
     val route =
         if (isBarrierRemoved) RemovedEditRoute(submissionId) else ReportEditRoute(submissionId, isResend = isResend)
     if (current == MySubmissionsRoute) leaving { add(route) }
-}
-
-/** C3 → C4: wybór wersji zgłoszenia z konfliktem wersji; poza C3 nic nie robi. Wymagania: US9.3 */
-fun AppNavigator.openConflict(submissionId: String) {
-    if (current == MySubmissionsRoute) leaving { add(VersionConflictRoute(submissionId)) }
 }
 
 /** V2 → C7: „Zgłoś, że bariery nie ma” przy zgłoszeniu przyjętym; poza V2 nic nie robi. Wymagania: US8.4 */
