@@ -10,10 +10,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTextExactly
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.designsystem.IMPORTANT_SIGN_TAG
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
@@ -82,6 +84,17 @@ class ReviewCheckScreenTest {
         compose.onNodeWithText("Ustal typ bariery i uciążliwość, aby przyjąć zgłoszenie.").performScrollTo()
         compose.onNodeWithText("Blokada").performScrollTo().performClick()
         assertEquals("wybrana uciążliwość", listOf(Severity.BLOCKING), severities)
+    }
+
+    @Test
+    fun quickMissingTypeLeadsToField() {
+        val quick = READY.copy(submission = quick(CHECKED.id))
+        show(quick)
+        compose.onNodeWithText("Przyjmij").performScrollTo()
+        shown.value = quick.copy(notice = CheckNotice.TYPE_MISSING)
+        compose.onNodeWithText("Typ bariery").assertIsDisplayed()
+        val signs = compose.onAllNodesWithTag(IMPORTANT_SIGN_TAG, useUnmergedTree = true).fetchSemanticsNodes()
+        assertEquals("znak „!” przy błędzie przyjęcia", 1, signs.size)
     }
 
     @Test
