@@ -13,8 +13,8 @@ import org.junit.runner.RunWith
 
 /**
  * Generuje profil bazowy ze scenariusza: otwórz mapę, przesuń, zmień teren. Plik `*-baseline-prof.txt` powstaje
- * w katalogu wyników przebiegu pomiarów; do aplikacji trafia jako `app/src/main/baseline-prof.txt`.
- * TODO(#4183): dołączyć profil z przebiegu sprintu do aplikacji.
+ * w katalogu wyników przebiegu pomiarów; do aplikacji trafia jako
+ * `app/src/main/generated/baselineProfiles/baseline-prof.txt`.
  *
  * Wymagania: NFR-11
  */
