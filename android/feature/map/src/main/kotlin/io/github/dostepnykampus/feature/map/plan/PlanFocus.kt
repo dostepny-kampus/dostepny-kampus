@@ -7,8 +7,12 @@ package io.github.dostepnykampus.feature.map.plan
 
 import io.github.dostepnykampus.core.geo.building.BuildingHint
 import io.github.dostepnykampus.core.geo.building.buildingHints
+import io.github.dostepnykampus.core.geo.building.containingBuilding
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Building
+import io.github.dostepnykampus.core.model.building.BuildingCatalog
+import io.github.dostepnykampus.feature.map.camera.MapCamera
+import io.github.dostepnykampus.feature.map.campus.CampusMapData
 
 /** Najmniejsze powiększenie, od którego pojawia się plan piętra (R2). */
 internal const val PLAN_SHOW_ZOOM = 17.0
@@ -32,6 +36,26 @@ internal const val PLAN_BASIC_EXIT_METERS = 5.0
  * @property basic budynki podstawowe bez planów pięter; domyślnie puste
  */
 internal data class PlanBuildings(val detailed: List<Building>, val basic: List<Building> = emptyList())
+
+/**
+ * Czy od powiększenia planu środek [camera] leży w konturze budynku, który lista z serwera określa jako podstawowy.
+ * Przy wspólnym konturze pierwszeństwo ma budynek szczegółowy. [data] ogranicza sprawdzanie konturów [catalog].
+ *
+ * Wymagania: US16.2, BR-G1
+ */
+internal fun hasBasicBuildingInCenter(camera: MapCamera, catalog: BuildingCatalog?, data: CampusMapData?): Boolean {
+    val confirmed = catalog?.takeIf { it.hasServerList }
+    if (camera.zoom < PLAN_SHOW_ZOOM || confirmed == null || data == null) return false
+    val point = camera.center
+    val nearby =
+        confirmed.buildings.filter { building ->
+            data.outlinesBySymbol[building.symbol]?.run {
+                point.longitude in west..east && point.latitude in south..north
+            } == true
+        }
+    val (detailed, basic) = nearby.partition { it.symbol in confirmed.detailed }
+    return containingBuilding(point, basic) != null && containingBuilding(point, detailed) == null
+}
 
 /**
  * Budynek z planem piętra przy środku mapy [center], powiększeniu [zoom] i wybranym budynku [selected]; `null`,

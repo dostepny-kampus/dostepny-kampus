@@ -258,12 +258,9 @@ class CampusAreaEdgeDeviceTest {
         const val EXTRA_SWIPES_AT_EDGE = 2
         const val WINDOW_COORDINATES_SIZE = 2
 
-        /**
-         * Wysokość gestu w widoku mapy: mapa sięga pod górny pasek, a przyciski przesuwania stoją pod nim; na
-         * ekranie 320 × 640 dp kończą się na ok. 68% wysokości mapy, a podpis OSM zaczyna się na ok. 93%.
-         */
+        /** Wysokość gestu nad podpisem OSM; początek gestu leży na lewo od przycisków mapy. */
         const val SWIPE_Y_FRACTION = 0.82f
-        const val SWIPE_START_X_FRACTION = 0.78f
-        const val SWIPE_END_X_FRACTION = 0.22f
+        const val SWIPE_START_X_FRACTION = 0.45f
+        const val SWIPE_END_X_FRACTION = 0.12f
     }
 }
