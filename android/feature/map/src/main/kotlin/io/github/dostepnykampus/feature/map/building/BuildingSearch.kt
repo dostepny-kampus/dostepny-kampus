@@ -14,7 +14,7 @@ import io.github.dostepnykampus.core.model.room.FoundRoom
  *
  * Wymagania: US1.3, US18.1
  *
- * @property query zapytanie, dla którego policzono wynik; ekran pokazuje wynik tylko dla zapytania z pola
+ * @property query zapytanie, dla którego policzono wynik
  * @property buildings budynki o symbolu zaczynającym się od [query] w kolejności katalogu; `null`, dopóki katalog
  *   się wczytuje
  * @property rooms sale z serwera, gdy żaden budynek nie pasuje, a tekst ma cyfry i symbol budynku; pusta bez sieci

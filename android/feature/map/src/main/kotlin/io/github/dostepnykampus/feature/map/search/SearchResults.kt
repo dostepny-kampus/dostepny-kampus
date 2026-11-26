@@ -22,6 +22,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -38,7 +43,6 @@ import io.github.dostepnykampus.feature.map.area.otherAreaOf
 import io.github.dostepnykampus.feature.map.building.BuildingChoice
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
 import io.github.dostepnykampus.feature.map.building.MissingRoom
-import io.github.dostepnykampus.feature.map.building.foundFor
 import io.github.dostepnykampus.feature.map.room.BuildingMissing
 import io.github.dostepnykampus.feature.map.room.RoomChoice
 import io.github.dostepnykampus.feature.map.room.RoomMissing
@@ -50,7 +54,7 @@ import io.github.dostepnykampus.feature.map.room.RoomMissing
  *
  * Wymagania: US1.1, US18.1, NFR-18, NFR-50
  *
- * @param search wynik z modelu widoku; liczy się tylko dla zapytania [query]
+ * @param search najnowszy wynik; dotychczasowy panel pozostaje do odpowiedzi dla [query]
  * @param query tekst z pola
  * @param isList czy pod polem jest lista budynków
  * @param isHidden czy wyniki są schowane po wyborze albo po utracie fokusu pola
@@ -72,7 +76,8 @@ internal fun SearchResults(
     onRelease: () -> Unit,
     onShowList: () -> Unit,
 ) {
-    val results = shownResults(search = search, query = query, isList = isList, isHidden = isHidden)
+    val displayed = rememberSearchResult(search, query) ?: return
+    val results = shownResults(search = displayed, isList = isList, isHidden = isHidden)
     val hasItems = results.buildings.isNotEmpty() || results.rooms.isNotEmpty() || results.missingRoom != null
     if (!hasItems && results.note == null) return
     ResultPanel {
@@ -88,10 +93,21 @@ internal fun SearchResults(
         }
         when (results.note) {
             ResultNote.BUILDING_MISSING -> BuildingMissing()
-            ResultNote.NO_RESULT -> NoResult(query, onShowList = onShowList.takeUnless { isList })
+            ResultNote.NO_RESULT -> NoResult(displayed.query, onShowList = onShowList.takeUnless { isList })
             null -> Unit
         }
     }
+}
+
+@Composable
+private fun rememberSearchResult(search: BuildingSearch, query: String): BuildingSearch? {
+    var previous by remember { mutableStateOf<BuildingSearch?>(null) }
+    val isBlank = query.isBlank()
+    val current = search.takeIf { !isBlank && it.query == query }
+    SideEffect {
+        if (isBlank || current != null) previous = current
+    }
+    return current ?: previous.takeUnless { isBlank }
 }
 
 /** Zdanie pod wynikami pola szukaj. Wymagania: US1.1, US18.1 */
@@ -121,18 +137,17 @@ internal data class ShownResults(
 )
 
 /**
- * Wyniki z [search] dla tekstu [query] z pola: wynik liczy się tylko dla tego samego zapytania. Przy liście
- * ([isList]) albo po schowaniu ([isHidden]) budynków i sal nie ma, a zdanie zostaje przy liście.
+ * Wyniki z [search] przy bieżącej widoczności panelu. Przy liście ([isList]) albo po schowaniu ([isHidden])
+ * budynków i sal nie ma, a zdanie zostaje przy liście.
  *
  * Wymagania: US1.1, US18.1, US18.3
  */
-internal fun shownResults(search: BuildingSearch, query: String, isList: Boolean, isHidden: Boolean): ShownResults {
-    val isCurrent = search.query == query
-    val found = search.foundFor(query)
-    val rooms = search.rooms.takeIf { isCurrent }.orEmpty()
-    val missing = search.missingRoom.takeIf { isCurrent }
-    val isEmpty = query.isNotBlank() && found?.isEmpty() == true && rooms.isEmpty() && missing == null
-    val note = resultNote(isMissing = isCurrent && search.isBuildingMissing, isEmpty = isEmpty)
+private fun shownResults(search: BuildingSearch, isList: Boolean, isHidden: Boolean): ShownResults {
+    val found = search.buildings
+    val rooms = search.rooms
+    val missing = search.missingRoom
+    val isEmpty = found?.isEmpty() == true && rooms.isEmpty() && missing == null
+    val note = resultNote(isMissing = search.isBuildingMissing, isEmpty = isEmpty)
     val isOnMap = !isList && !isHidden
     return ShownResults(
         buildings = (found.orEmpty() + listOfNotNull(missing?.building)).takeIf { isOnMap }.orEmpty(),
