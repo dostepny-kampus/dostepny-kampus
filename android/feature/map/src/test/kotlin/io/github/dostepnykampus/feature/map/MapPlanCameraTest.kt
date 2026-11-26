@@ -193,6 +193,10 @@ class MapPlanCameraTest {
         compose.runOnIdle { idle(near.copy(zoom = 17.0)) }
         compose.onNodeWithText(MISSING_PLAN).assertIsDisplayed()
         compose.onNodeWithContentDescription(BASEMENT).assertDoesNotExist()
+        val street = MapCamera(center = GeoPoint(longitude = 0.25, latitude = 0.75), zoom = 17.0)
+        compose.runOnIdle { idle(street) }
+        compose.onNodeWithText(MISSING_PLAN).assertDoesNotExist()
+        compose.runOnIdle { idle(near.copy(zoom = 17.0)) }
         compose.runOnIdle { cover = CARD }
         compose.onNodeWithText(MISSING_PLAN).assertDoesNotExist()
     }

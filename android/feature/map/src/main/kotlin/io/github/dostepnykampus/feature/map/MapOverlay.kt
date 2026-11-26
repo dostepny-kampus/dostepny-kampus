@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,6 +31,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -96,6 +101,7 @@ private fun NoticeAndAttribution(
  * @param hasPanels czy mapa ma przycisk terenu i „ⓘ”; nie ma ich nad arkuszem V2
  * @param hasNotice czy mapa może pokazać napis o zmianie terenu; nie przy otwartej klawiaturze
  * @param hasPlan czy na mapie widać plan piętra, którego pozycje pokazuje legenda pod „ⓘ”
+ * @param hasMissingPlan czy środek przybliżonej mapy jest nad budynkiem podstawowym bez otwartej karty
  * @param motion ruchy mapy do budynku; nowy napis o zmianie terenu czeka do końca przelotu
  * @param controlsCover część dołu zasłonięta przez arkusz V1, poza obszarem przycisków i kolumny pięter
  * @param start elementy przy lewej krawędzi pod przyciskiem terenu, np. kolumna pięter; nie ma ich przy otwartym
@@ -114,6 +120,7 @@ internal fun MapOverlay(
     hasPanels: Boolean = hasControls,
     hasNotice: Boolean = hasPanels,
     hasPlan: Boolean = false,
+    hasMissingPlan: Boolean = false,
     motion: MapMotion? = null,
     controlsCover: Dp = 0.dp,
     start: @Composable ColumnScope.() -> Unit = {},
@@ -140,13 +147,16 @@ internal fun MapOverlay(
                 }
             },
             areaSwitch = {
-                MapAreaSelection(
-                    areas = areas,
-                    isVisible = hasPanels && open != MapPanel.Info && controlsCover == 0.dp,
-                    isOpen = open == MapPanel.Area,
-                    onOpenChange = { isOpening -> saved = MapPanel.Area.takeIf { isOpening } },
-                    onAreaShow = onAreaShow,
-                )
+                Column {
+                    MapAreaSelection(
+                        areas = areas,
+                        isVisible = hasPanels && open != MapPanel.Info && controlsCover == 0.dp,
+                        isOpen = open == MapPanel.Area,
+                        onOpenChange = { isOpening -> saved = MapPanel.Area.takeIf { isOpening } },
+                        onAreaShow = onAreaShow,
+                    )
+                    if (hasMissingPlan && open == null && controlsCover == 0.dp) MissingPlanNotice()
+                }
             },
             floorColumn = { if (open != MapPanel.Area) Column(content = start) },
         )
@@ -166,6 +176,24 @@ internal fun MapOverlay(
             )
         }
         content()
+    }
+}
+
+@Composable
+private fun MissingPlanNotice() {
+    Surface(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = Odstepy.s, vertical = Odstepy.xs),
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+        shadowElevation = Wysokosci.kontrolkiMapy,
+        border = mapControlBorder(),
+    ) {
+        Text(
+            text = stringResource(R.string.karta_bez_planu),
+            modifier = Modifier.padding(Odstepy.m).semantics { liveRegion = LiveRegionMode.Polite },
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = Typografia.wyroznienieWaga,
+        )
     }
 }
 

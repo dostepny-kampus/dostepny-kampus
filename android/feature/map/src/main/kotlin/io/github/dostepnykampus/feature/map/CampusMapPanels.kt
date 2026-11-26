@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
@@ -30,6 +31,7 @@ import io.github.dostepnykampus.feature.map.camera.MapMotion
 import io.github.dostepnykampus.feature.map.overlay.MapStatusBar
 import io.github.dostepnykampus.feature.map.overlay.dataDay
 import io.github.dostepnykampus.feature.map.plan.FloorColumn
+import io.github.dostepnykampus.feature.map.plan.hasBasicBuildingInCenter
 
 /** Sterowanie, kolumna pięter i arkusze nad widokiem mapy. Wymagania: US1.1, US2, US18.2 */
 @Composable
@@ -48,6 +50,14 @@ internal fun CampusMapPanels(
 ) {
     val camera = state.move?.camera ?: return
     val limits = state.limits ?: return
+    val hasPanels = !state.isCovered && !isKeyboardOpen
+    val data = state.scene?.data
+    val isBasic =
+        remember(camera, catalog, data) {
+            hasBasicBuildingInCenter(camera = camera, catalog = catalog, data = data)
+        }
+    val hasMissingPlan = hasPanels && sheet.panel.building == null && isBasic
+    val shownPlan = plan.shown.takeUnless { hasMissingPlan }
     Box(Modifier.fillMaxSize()) {
         FollowCamera(camera = camera, limits = limits, area = areas.current?.name, plan = plan)
         val barTop = top?.takeUnless { state.isCovered }
@@ -61,12 +71,13 @@ internal fun CampusMapPanels(
             areas = areas,
             onAreaShow = { state.land(buildings = it, area = areas.current?.bounds) },
             modifier = Modifier.overlayArea(underBar = underBar, sheet = sheet),
-            hasPanels = !state.isCovered && !isKeyboardOpen,
+            hasPanels = hasPanels,
             hasNotice = !isKeyboardOpen,
-            hasPlan = plan.shown != null,
+            hasPlan = shownPlan != null,
+            hasMissingPlan = hasMissingPlan,
             motion = motion,
             controlsCover = roomCover,
-            start = { FloorColumn(plan = plan.shown, onChoose = plan.onFloor) },
+            start = { FloorColumn(plan = shownPlan, onChoose = plan.onFloor) },
             content = content,
         )
     }
