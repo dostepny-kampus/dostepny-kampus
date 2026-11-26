@@ -13,12 +13,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import org.junit.Assert.assertEquals
@@ -32,7 +36,7 @@ import java.io.ByteArrayOutputStream
 
 /**
  * Zdjęcie do zasłaniania: dotknięcie we współrzędnych względnych, opis zasłon dla TalkBack z numerem
- * i położeniem słowami, zaznaczenie zasłony czynnością TalkBack.
+ * i położeniem słowami, zaznaczenie zasłony czynnością TalkBack, etykieta „Zaznaczona” w jednym wierszu.
  *
  * Wymagania: BR-15, NFR-18, NFR-53
  */
@@ -62,6 +66,15 @@ class CoverPhotoViewTest {
         show(TWO)
         compose.onNodeWithContentDescription("Zasłona 1 z 2, u góry po lewej").assertExists()
         compose.onNodeWithContentDescription("Zasłona 2 z 2, na dole po prawej, zaznaczona").assertExists()
+    }
+
+    @Test
+    fun labelsSelectedCoverInOneLine() {
+        show(TWO)
+        val label = compose.onNodeWithText("Zaznaczona").assertIsDisplayed().assertTextEquals("Zaznaczona")
+        val lines = mutableListOf<TextLayoutResult>()
+        label.performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(lines) }
+        assertEquals("„Zaznaczona” w jednym wierszu", 1, lines.single().lineCount)
     }
 
     @Test
