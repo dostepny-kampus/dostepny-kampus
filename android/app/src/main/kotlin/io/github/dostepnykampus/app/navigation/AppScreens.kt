@@ -23,19 +23,15 @@ import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
-import io.github.dostepnykampus.feature.capture.measure.MeasureScreen
-import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
-import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
-import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
-import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
-import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
+import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.quick.QuickReportActions
 import io.github.dostepnykampus.feature.capture.quick.QuickReportScreen
-import io.github.dostepnykampus.feature.capture.report.ReportFormScreen
 import io.github.dostepnykampus.feature.help.HelpScreen
 import io.github.dostepnykampus.feature.help.navigation.HelpRoute
 import io.github.dostepnykampus.feature.inspection.navigation.CollectorMarkersRoute
+import io.github.dostepnykampus.feature.inspection.navigation.ExportRoute
+import io.github.dostepnykampus.feature.inspection.navigation.InvitationRoute
 import io.github.dostepnykampus.feature.inspection.navigation.MarkersRoute
 import io.github.dostepnykampus.feature.inspection.navigation.ProgressRoute
 import io.github.dostepnykampus.feature.map.building.BuildingCardContent
@@ -45,6 +41,8 @@ import io.github.dostepnykampus.feature.map.building.CardMode
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
+import io.github.dostepnykampus.feature.review.navigation.ReviewCheckRoute
+import io.github.dostepnykampus.feature.review.navigation.ReviewQueueRoute
 import kotlinx.coroutines.flow.first
 import kotlin.math.roundToInt
 
@@ -154,20 +152,15 @@ private fun AppNavigator.KeepCardOnLeave(route: BuildingRoute?, isExpanded: Bool
 @Composable
 @NonRestartableComposable
 internal fun AppNavigator.AppScreen(route: NavKey) {
-    val save = { reportSaved() }
     when (route) {
         is BuildingRoute -> HiltBuildingCard(route.symbol)
         is ReportRoute -> QuickReport(route)
-        MeasureRoute -> MeasureScreen(onBack = { back() }, onNext = { openReportForm(it) })
-        is ReportFormRoute -> ReportFormScreen(route = route, onLeave = { back() }, onSave = save, draft = reportDraft)
-        is ReportEditRoute -> ReportEdit(route)
-        is RemovedRoute -> Removed(route)
-        MySubmissionsRoute -> MySubmissions()
-        ProgressRoute, is MarkersRoute, is CollectorMarkersRoute -> Inspection(route)
+        ProgressRoute, ExportRoute, InvitationRoute, is MarkersRoute, is CollectorMarkersRoute -> Inspection(route)
+        ReviewQueueRoute, is ReviewCheckRoute -> Review(route)
         is HelpRoute -> HelpScreen(route.isFirstLaunch, onOpenMap = { backToMap() }, onLeave = { back() })
         is SignInRoute, AccountRoute -> Account(route)
         is MapRoute -> HiltMapScreen(focus = route.focus)
-        else -> Unit
+        else -> Capture(route)
     }
 }
 
@@ -188,10 +181,10 @@ private fun AppNavigator.HiltBuildingCard(
  * V2 ze stanem [state] i czynnościami podpiętymi do nawigatora; „Zgłoś barierę przy wejściu” prowadzi do V4
  * bez wybranego wejścia, a Gościa najpierw do L1. „Pokaż wejście na mapie” i wiersz wejścia prowadzą do V1
  * z zaznaczonym wejściem tego budynku, a „Pokaż na planie” do V1 z planem tego piętra. „Zgłoś, że bariery nie ma”
- * widzi tylko Zbierający i prowadzi do C7, a „Oznacz obejrzane piętra” widzi tylko Zbierający i prowadzi do C5.
+ * widzi tylko Zbierający i prowadzi do C7, „Oznacz obejrzane piętra” do C5, a „Zmień oznaczenie” do C6.
  * [onRetry] to „Spróbuj ponownie”.
  *
- * Wymagania: US4.6, US14.2, US3.3, US2.1, US8.4, US15.1
+ * Wymagania: US4.6, US14.2, US3.3, US2.1, US8.4, US15.1, US17.2
  */
 @Composable
 internal fun AppNavigator.BuildingCard(
@@ -205,6 +198,7 @@ internal fun AppNavigator.BuildingCard(
     val mode = if (card.isRising && state !is BuildingCardUiState.Ready) CardMode.Compact else card.mode
     val roles by account.collectAsStateWithLifecycle()
     val isCollector = StaffRole.COLLECTOR in (roles as? Account.SignedIn)?.staffRoles.orEmpty()
+    val markingRoute = { id: String -> MarkingRoute(entranceId = id, buildingSymbol = symbol) }
     BuildingCardContent(
         symbol = symbol,
         mode = mode,
@@ -220,6 +214,7 @@ internal fun AppNavigator.BuildingCard(
         onRetry = onRetry,
         onShowPlan = { showOnMap(MapFocus.Building(symbol, command = System.nanoTime(), floor = it)) },
         onMarkFloors = { openFloorMarking(symbol) }.takeIf { isCollector },
+        onChangeMarking = { id: String -> openMarking(markingRoute(id)) }.takeIf { isCollector },
         onExpand = card.onExpand,
         scroll = card.scroll,
     )

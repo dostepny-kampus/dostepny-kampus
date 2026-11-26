@@ -12,6 +12,7 @@ import io.github.dostepnykampus.barrier.photo.application.SubmissionPhotos;
 import io.github.dostepnykampus.barrier.photo.storage.PhotoSettings;
 import io.github.dostepnykampus.barrier.photo.storage.S3PhotoStore;
 import io.github.dostepnykampus.barrier.photo.web.SubmissionPhotosController;
+import io.github.dostepnykampus.barrier.review.ReviewRepository;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionService;
 import io.github.dostepnykampus.shared.error.ProblemResponses;
@@ -238,7 +239,8 @@ final class SubmissionPhotosHttpIT {
                             String.format("brak-%s", UUID.randomUUID()), "", ""
                         )
                     ),
-                    context.getBean(SubmissionService.class)
+                    context.getBean(SubmissionService.class),
+                    context.getBean(ReviewRepository.class)
                 )
             )
         ).setControllerAdvice(context.getBean(ProblemResponses.class))

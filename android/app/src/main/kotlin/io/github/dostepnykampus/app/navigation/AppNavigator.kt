@@ -107,6 +107,11 @@ sealed class NavigationHistory(
         return true
     }
 
+    /** „Wstecz” do poprzedniego ekranu w świeżym stanie, np. po zmianie jego danych na zdjętym ekranie. */
+    fun backToFresh() {
+        if (back()) restartTop()
+    }
+
     /** V1 z wyczyszczoną historią, np. „Wróć do mapy”, „Pomiń instrukcję”, „Zacznij”, „Nie teraz”. */
     fun backToMap() {
         leaving { backStack.subList(fromIndex = 1, toIndex = backStack.size).clear() }

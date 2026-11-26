@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -357,7 +358,7 @@ public final class ExportSteps {
                     SubmissionKind.QUICK, place, barrier, null, null, null,
                     List.of(UUID.randomUUID())
                 ),
-                ExportSteps.AUTHOR
+                ExportSteps.AUTHOR, Set.of()
             )
         );
         this.jdbc.sql("UPDATE submissions SET status = :status WHERE id = :id")

@@ -6,12 +6,16 @@
 package io.github.dostepnykampus.feature.capture.mine
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.dostepnykampus.core.data.submission.own.SendState
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
@@ -31,9 +35,19 @@ class SubmissionKindTest {
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val opened = mutableListOf<String>()
+    private val removals = mutableListOf<String>()
+    private val resent = mutableListOf<String>()
+    private var measured = 0
 
     private fun show(vararg items: OwnSubmissionItem) {
-        val actions = MySubmissionsActions(onBack = {}, onMeasure = {}, onOpen = { opened.add(it) })
+        val actions =
+            MySubmissionsActions(
+                onBack = {},
+                onMeasure = { measured++ },
+                onOpen = { opened.add(it) },
+                onOpenRemoval = { removals.add(it) },
+                onResendChange = { resent.add(it) },
+            )
         val state = MySubmissionsUiState.Ready(MySubmissions(items.toList()))
         compose.setContent { DostepnyKampusTheme { MySubmissionsContent(state = state, actions = actions) } }
     }
@@ -47,10 +61,51 @@ class SubmissionKindTest {
         compose.onNodeWithText("Otwórz").assertDoesNotExist()
     }
 
+    /** Wiersz: zmiana oznaczenia wejścia pokazuje „Nowe oznaczenie:” ze słowem przy znaku. Wymagania: US17.2, NFR-21 */
+    @Test
+    fun showsNewMarking() {
+        show(item("m", kind = SubmissionKind.ENTRANCE_MARKING).copy(entranceMarking = EntranceMarking.ACCESSIBLE))
+        compose.onNodeWithText("Nowe oznaczenie:").assertIsDisplayed()
+        compose.onNodeWithText("Dostępne").assertIsDisplayed()
+    }
+
     /**
-     * Wiersz: zgłoszenie odrzucone jako „nieaktualne” ma zdanie o nowszej wersji i „Wyślij ponownie” do poprawki.
+     * Wiersz: „bariera usunięta” ma „Bariery już nie ma” przed typem, a „Otwórz” prowadzi do C7, nie do C2.
      *
-     * Wymagania: BR-23, US8.3
+     * Wymagania: US8.3, US8.4, BR-19
+     */
+    @Test
+    fun namesRemovedBarrier() {
+        show(item("u", kind = SubmissionKind.PRECISE).copy(isBarrierRemoved = true))
+        compose.onNodeWithText("Bariery już nie ma").assertIsDisplayed()
+        compose.onNodeWithText("Schody przy wejściu").assertIsDisplayed()
+        compose.onNodeWithText("Otwórz").performClick()
+        assertEquals("„Otwórz” otwiera C7 tego zgłoszenia", listOf("u"), removals)
+        assertEquals("C2 się nie otwiera", emptyList<String>(), opened)
+    }
+
+    /**
+     * Wiersz: „bariera usunięta” odrzucona jako „nieaktualne” ma zdanie o mapie i „Zmierz i zgłoś barierę” do C1.
+     *
+     * Wymagania: BR-23
+     */
+    @Test
+    fun measuresAfterOutdatedRemoval() {
+        show(item("u", kind = SubmissionKind.PRECISE).copy(isBarrierRemoved = true, rejectionReason = "nieaktualne"))
+        val sentence = "Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa."
+        compose.onNodeWithText(sentence).assertIsDisplayed()
+        compose.onNodeWithText("Wyślij ponownie").assertDoesNotExist()
+        val buttons = compose.onAllNodesWithText("Zmierz i zgłoś barierę")
+        buttons.assertCountEquals(2)
+        buttons.onLast().performClick()
+        assertEquals("„Zmierz i zgłoś barierę” otwiera C1", 1, measured)
+    }
+
+    /**
+     * Wiersz: zgłoszenie odrzucone jako „nieaktualne” ma zdanie o nowszej wersji i „Wyślij ponownie” do nowej zmiany
+     * bieżącego przyjętego zgłoszenia zamiast poprawki tej zmiany.
+     *
+     * Wymagania: BR-23, BR-18, US8.3
      */
     @Test
     fun resendsOutdatedReport() {
@@ -59,7 +114,7 @@ class SubmissionKindTest {
         compose.onNodeWithText(sentence).assertIsDisplayed()
         compose.onNodeWithText("Otwórz").assertDoesNotExist()
         compose.onNodeWithText("Wyślij ponownie").performClick()
-        assertEquals("„Wyślij ponownie” otwiera to zgłoszenie", listOf("s"), opened)
+        assertEquals("nowa zmiana, nie poprawka", listOf(emptyList<String>(), listOf("s")), listOf(opened, resent))
     }
 
     /** Wiersz: zmiana oznaczenia odrzucona jako „nieaktualne” ma zdanie o zmienionym oznaczeniu. Wymagania: BR-24 */

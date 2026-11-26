@@ -44,6 +44,8 @@ import io.github.dostepnykampus.feature.map.camera.mapLimits
 import io.github.dostepnykampus.feature.map.camera.pickLine
 import io.github.dostepnykampus.feature.map.camera.pickView
 import io.github.dostepnykampus.feature.map.camera.rememberCameraView
+import io.github.dostepnykampus.feature.map.camera.rememberPrevious
+import io.github.dostepnykampus.feature.map.camera.rememberSeen
 import io.github.dostepnykampus.feature.map.camera.uncoveredMove
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.CampusMapData

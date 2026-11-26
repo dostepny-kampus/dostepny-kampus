@@ -1,20 +1,21 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submission.sync
 
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.data.submission.own.conflictVersionOf
 import io.github.dostepnykampus.core.data.submission.own.refusalCodeOf
 import io.github.dostepnykampus.core.data.submission.own.versionOf
+import io.github.dostepnykampus.core.database.cache.ServerCopyDao
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionWithPhotos
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import java.time.Instant
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -23,14 +24,16 @@ import kotlin.coroutines.CoroutineContext
  * Blokada chroni tylko odczyt i zapis wierszy, nie wywołania serwera, więc poprawka z C3 zapisuje się od razu,
  * także gdy wysyłka czeka na sieć. Wynik trafia do wiersza tylko wtedy, gdy wiersza nie zastąpiła w tym czasie
  * poprawka: inaczej kolejka oznaczyłaby jako wysłaną albo usunęła treść, której serwer nie dostał.
- * Zapisy wiersza kolejki i historii jednego wyniku są jedną transakcją bazy.
+ * Zapisy wiersza kolejki, historii i kopii wersji z serwera jednego wyniku są jedną transakcją bazy.
  */
 internal class SentResults(
     private val store: PendingSubmissionDao,
-    private val history: OwnSubmissionDao?,
+    records: SentRecords,
     private val ioContext: CoroutineContext,
 ) {
     private val lock = Mutex()
+    private val history = records.history
+    private val conflicts = records.conflicts
 
     /** [write] pod tą samą blokadą co wyniki wysyłki, np. zapis poprawki z C3. */
     suspend fun <T> locked(write: suspend () -> T): T = lock.withLock { write() }
@@ -62,7 +65,12 @@ internal class SentResults(
             }
         }
 
-    /** Serwer ma całe zgłoszenie [item]: wiersz i pliki zdjęć znikają z telefonu. Wymagania: NFR-5 */
+    /**
+     * Serwer ma całe zgłoszenie [item]: wiersz kolejki znika. Pliki zdjęć zgłoszenia z historii zostają na poprawkę
+     * z C3 (usuwa je sprzątanie przy starcie po przyjęciu albo archiwizacji), pozostałe znikają od razu.
+     *
+     * Wymagania: NFR-5, US8.3
+     */
     suspend fun finish(item: PendingSubmissionWithPhotos): Outcome {
         val outcome =
             ifCurrent(item) {
@@ -70,7 +78,8 @@ internal class SentResults(
                 history?.markSent(id = item.submission.id)
                 Outcome.SENT
             }
-        if (outcome == Outcome.SENT) deletePhotoFiles(item.photos.map { it.path }, ioContext)
+        val isKept = history?.find(item.submission.id) != null
+        if (outcome == Outcome.SENT && !isKept) deletePhotoFiles(item.photos.map { it.path }, ioContext)
         return outcome
     }
 
@@ -96,9 +105,10 @@ internal class SentResults(
             store.markCreated(id = item.submission.id)
             versionOf(result)?.let { history?.saveVersion(id = item.submission.id, version = it) }
         }
-        conflictVersionOf(result)?.let { server ->
-            store.upsertSubmission(item.submission.copy(baseVersion = server))
-            history?.saveVersion(id = item.submission.id, version = server)
+        serverVersionOf(result)?.let { server ->
+            store.upsertSubmission(item.submission.copy(baseVersion = server.version))
+            history?.saveVersion(id = item.submission.id, version = server.version)
+            conflicts?.save(serverVersionRow(server, syncedAt = Instant.now()))
         }
         if (outcome == Outcome.REFUSED) refused(item.submission.id, refusalCodeOf(result))
         return outcome
@@ -118,6 +128,16 @@ internal class SentResults(
         return Outcome.REFUSED
     }
 }
+
+/**
+ * Zapisy wyników wysyłki poza wierszami kolejki.
+ *
+ * Wymagania: US8, US9.3
+ *
+ * @property history historia zgłoszeń Zbierającego; `null` dla kolejki bez historii
+ * @property conflicts kopie wersji z serwera po odmowie 409; `null`, gdy kolejka ich nie zapisuje
+ */
+internal data class SentRecords(val history: OwnSubmissionDao? = null, val conflicts: ServerCopyDao? = null)
 
 /** Wiersz, który zastąpił [item] w kolejce: inna chwila zapisu znaczy poprawkę zapisaną w trakcie wysyłki. */
 internal suspend fun PendingSubmissionDao.replacementOf(item: PendingSubmissionWithPhotos): PendingSubmissionEntity? {

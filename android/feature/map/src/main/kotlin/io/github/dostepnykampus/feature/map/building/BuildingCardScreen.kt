@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -18,7 +19,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,6 +33,7 @@ import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.OfflinePill
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.designsystem.marking.AssessmentLine
 import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.model.building.EntranceMarking
@@ -104,6 +105,7 @@ fun BuildingCardScreen(
 /**
  * V2 dla gotowego stanu [card] i [isOnline]; „Spróbuj ponownie” to [onRetry], „Pokaż na planie” to [onShowPlan]
  * z identyfikatorem piętra, „Oznacz obejrzane piętra” pod grupą „Piętra” to [onMarkFloors] (`null` ukrywa przycisk),
+ * „Zmień oznaczenie” pod wejściem to [onChangeMarking] z identyfikatorem wejścia (`null` ukrywa przycisk),
  * dotknięcie wystającego nagłówka „Wejścia” niskiej karty to [onExpand], przewijanie treści to [scroll], reszta jak
  * w [BuildingCardScreen]. Przy przewiniętej treści nad jej górną krawędzią stoi linia.
  */
@@ -124,6 +126,7 @@ fun BuildingCardContent(
     onReplaceBarrier: ((String) -> Unit)? = null,
     onShowPlan: (String) -> Unit = {},
     onMarkFloors: (() -> Unit)? = null,
+    onChangeMarking: ((String) -> Unit)? = null,
     onExpand: () -> Unit = {},
     scroll: ScrollState = rememberScrollState(),
 ) {
@@ -160,6 +163,7 @@ fun BuildingCardContent(
                     onRetry = onRetry,
                     onShowPlan = onShowPlan,
                     onMarkFloors = onMarkFloors,
+                    onChangeMarking = onChangeMarking,
                     onExpand = onExpand,
                 )
             }
@@ -196,7 +200,7 @@ private fun Modifier.fixedTopPadding(): Modifier =
     padding(start = Odstepy.m, top = Odstepy.m, end = Odstepy.m, bottom = Odstepy.s)
 
 @Composable
-private fun FactsOrMissing(
+private fun ColumnScope.FactsOrMissing(
     card: BuildingCardUiState,
     isFullScreen: Boolean,
     onReport: () -> Unit,
@@ -206,6 +210,7 @@ private fun FactsOrMissing(
     onRetry: () -> Unit,
     onShowPlan: (String) -> Unit,
     onMarkFloors: (() -> Unit)?,
+    onChangeMarking: ((String) -> Unit)?,
     onExpand: () -> Unit,
 ) {
     if (card.hasEntrancesPeek(isFullScreen)) {
@@ -223,6 +228,7 @@ private fun FactsOrMissing(
             onReplaceBarrier = onReplaceBarrier,
             onShowPlan = onShowPlan,
             onMarkFloors = onMarkFloors,
+            onChangeMarking = onChangeMarking,
         )
     }
     if (card == BuildingCardUiState.Missing) MissingBuilding(onRetry = onRetry)
@@ -249,7 +255,7 @@ internal fun EntranceSummaryRow(summary: EntranceSummary) {
 }
 
 @Composable
-private fun BuildingFacts(
+private fun ColumnScope.BuildingFacts(
     card: BuildingCardUiState.Ready,
     onReport: () -> Unit,
     onShowEntrance: (String) -> Unit,
@@ -257,36 +263,28 @@ private fun BuildingFacts(
     onReplaceBarrier: ((String) -> Unit)?,
     onShowPlan: (String) -> Unit,
     onMarkFloors: (() -> Unit)?,
+    onChangeMarking: ((String) -> Unit)?,
 ) {
     val common = commonAssessment(card.entrances)
-    LinedEntrances(card = card, withAssessment = common == null, onShowEntrance = onShowEntrance, onReport = onReport)
+    Column {
+        DescriptionLine()
+        EntrancesGroup(
+            card = card,
+            withAssessment = common == null,
+            onShowEntrance = onShowEntrance,
+            onReport = onReport,
+            onChangeMarking = onChangeMarking,
+        )
+    }
     common?.let { AssessmentLine(it) }
     EvacuationExits(card)
     BarriersGroup(card, onReportRemoval, onReplaceBarrier)
     card.floors?.let { LiftToiletGroup(it) }
     FloorsGroup(facts = card.floors, isBasic = card.isBasic, onShowPlan = onShowPlan)
     onMarkFloors?.let { onMark ->
-        OutlinedButton(onClick = onMark, modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.minimum)) {
+        OutlinedAction(onClick = onMark, modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.minimum)) {
             Text(stringResource(R.string.karta_oznacz_pietra))
         }
-    }
-}
-
-@Composable
-private fun LinedEntrances(
-    card: BuildingCardUiState.Ready,
-    withAssessment: Boolean,
-    onShowEntrance: (String) -> Unit,
-    onReport: () -> Unit,
-) {
-    Column {
-        DescriptionLine()
-        EntrancesGroup(
-            card = card,
-            withAssessment = withAssessment,
-            onShowEntrance = onShowEntrance,
-            onReport = onReport,
-        )
     }
 }
 

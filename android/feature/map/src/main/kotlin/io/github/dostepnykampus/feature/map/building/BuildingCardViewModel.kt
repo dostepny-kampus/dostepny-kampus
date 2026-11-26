@@ -265,9 +265,9 @@ private data class CachedEntrances(
 /** Fakty o piętrach budynku [symbol] z kopii planu w [plans], bez pobierania; `null`, gdy kopii nie ma. */
 internal suspend fun storedFloorFacts(plans: FloorPlans, symbol: String): FloorFacts? {
     val floors = plans.floors(symbol)?.floors.orEmpty()
-    val rooms = floors.mapNotNull { floor -> plans.rooms(symbol, floor.id)?.let { floor.id to it } }.toMap()
-    val facts = MapTrace.section(name = MapTrace.CARD_FLOORS_SECTION) { floorFacts(floors, rooms) }
-    return facts.takeIf { floors.isNotEmpty() }
+    if (floors.isEmpty()) return null
+    val rooms = plans.roomFacts(symbol)
+    return MapTrace.section(name = MapTrace.CARD_FLOORS_SECTION) { floorFactsOf(floors, rooms) }
 }
 
 /** Plany pięter budynku bez planu: nic nie pobiera i nic nie ma. */

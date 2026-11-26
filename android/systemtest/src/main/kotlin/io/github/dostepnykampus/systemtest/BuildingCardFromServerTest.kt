@@ -19,18 +19,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 private const val WAIT_MS = 30_000L
-private const val SERVER_ASSESSMENT = "Z map i opisów, stan z "
+private const val SERVER_ASSESSMENT = "Z planów Politechniki Wrocławskiej, stan z "
 private const val SERVER_ONLY_SYMBOL = "TS-1"
 private const val SERVER_ONLY_NAME = "Budynek testu systemowego"
 
 /**
  * Aplikacja z własnym grafem Hilt i siecią na emulatorze, serwer z bazą na komputerze gospodarza: katalog budynków
  * i karta budynku idą z serwera pod adresem z `API_BASE_URL`. Dzień i źródło oznaczenia wejść ma tylko odpowiedź
- * serwera, nie plik konturów w aplikacji.
- *
- * Test wykonuje ze scenariusza demo tylko krok karty budynku A-1 z serwera. Nie wykonuje kroków bez ekranu albo
- * przepływu w aplikacji: zapisu zgłoszenia TB-1 bez sieci, wysyłki po powrocie sieci, przyjęcia przez Weryfikatora,
- * postępu pięter i eksportu GeoJSON.
+ * serwera, nie plik konturów w aplikacji: wejścia A-1 mają w bazie testu oznaczenie z planów PWr.
  *
  * Wymagania: US17.3, NFR-41
  */

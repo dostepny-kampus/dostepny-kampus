@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pl">
     <string name="pomiar_naglowek">Zmierz i zgłoś barierę</string>
     <string name="pomiar_szukanie">Szukamy satelitów. Na otwartej przestrzeni pomiar będzie dokładniejszy.</string>
@@ -48,15 +48,9 @@
     <string name="formularz_naglowek_edycja">Popraw zgłoszenie</string>
     <string name="formularz_zmiana_przyjetego">Zapis utworzy nowe zgłoszenie, które znów sprawdzi Weryfikator.</string>
     <string name="formularz_budynek">Budynek %1$s</string>
-    <string name="formularz_dokladnosc">dokładność %1$s m</string>
     <string name="formularz_budynek_nazwa">Budynek %1$s %2$s</string>
-    <string name="formularz_miejsce">ok. %1$d m od %2$s, dokładność %3$s m</string>
-    <string name="formularz_wejscie">wejścia</string>
-    <string name="formularz_wejscie_glowne">wejścia głównego</string>
-    <string name="formularz_wejscie_nazwa">wejścia „%1$s”</string>
     <string name="formularz_zmien_miejsce">Zmień miejsce</string>
     <string name="formularz_uciazliwosc">Uciążliwość</string>
-    <string name="formularz_uciazliwosc_podpowiedz">Oceń dla osoby, dla której bariera jest najtrudniejsza.</string>
     <string name="formularz_pietro">Piętro</string>
     <string name="formularz_zrodlo_pieter">Źródło: %1$s.</string>
     <string name="formularz_pietro_bez_planu">Nie mamy planu pięter tego budynku. Wpisz numer piętra, 0 to parter.</string>
@@ -64,8 +58,6 @@
     <string name="formularz_numer_pietra_blad">Wpisz liczbę całkowitą, np. 0 albo -1.</string>
     <string name="formularz_polpietro">Półpiętro</string>
     <string name="formularz_typ">Typ bariery</string>
-    <string name="formularz_typ_wybierz">Wybierz typ bariery</string>
-    <string name="formularz_zamknij">Zamknij</string>
     <string name="formularz_zapisz">Zapisz</string>
     <string name="formularz_zdjecie">Zdjęcie</string>
     <string name="formularz_wazne">Ważne</string>
@@ -107,7 +99,7 @@
     <string name="szybkie_naglowek">Zgłoś barierę</string>
     <string name="szybkie_krok">Krok %1$d z 3</string>
     <string name="szybkie_wyslij">Wyślij</string>
-    <string name="szybkie_zapisane_bez_sieci">Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet.</string>
+    <string name="szybkie_zapisane_bez_sieci">Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet. Potem sprawdzimy zdjęcie, a jeśli bariera się potwierdzi, pokażemy ją na mapie.</string>
     <string name="szybkie_wroc_do_mapy">Wróć do mapy</string>
     <string name="szybkie_rezygnacja">Jeśli zrezygnujesz, usuniemy zrobione zdjęcie i niczego nie wyślemy. Aby je zachować, wybierz „Wróć do zdjęcia”.</string>
     <string name="szybkie_tak_zrezygnuj">Tak, zrezygnuj</string>
@@ -130,17 +122,12 @@
     <string name="moje_czeka">Czeka na wysłanie: %1$d</string>
     <string name="moje_pusty">Nie masz jeszcze zgłoszeń. Zmierz i zgłoś pierwszą barierę.</string>
     <string name="moje_w_telefonie">W telefonie</string>
-    <string name="moje_wyslane">Wysłane</string>
     <string name="moje_nie_wyslano">Nie wysłano</string>
     <string name="moje_brak_uprawnien">Nie masz już uprawnień do tej czynności. Jeśli to pomyłka, poproś Koordynatora o zaproszenie.</string>
     <string name="moje_nie_odczytano">Telefon nie może odczytać tego zgłoszenia, np. brakuje pliku zdjęcia. Otwórz je, popraw i zapisz ponownie.</string>
-    <string name="moje_zmienione_na_serwerze">Ktoś zmienił to zgłoszenie na serwerze po rozpoczęciu poprawki. Otwórz je, sprawdź i zapisz ponownie.</string>
+    <string name="moje_dwie_wersje">Dwie wersje: wybierz jedną</string>
     <string name="moje_nie_przyjal">Serwer nie przyjął zgłoszenia. Otwórz je, popraw i zapisz ponownie.</string>
     <string name="moje_otworz">Otwórz</string>
-    <string name="moje_w_weryfikacji">W weryfikacji</string>
-    <string name="moje_przyjete">Przyjęte</string>
-    <string name="moje_odrzucone">Odrzucone</string>
-    <string name="moje_archiwalne">Archiwalne</string>
     <string name="moje_zmiana_czeka">Zmiana czeka na wysłanie</string>
     <string name="moje_powod_odrzucenia">Powód odrzucenia: %1$s</string>
     <string name="moje_sprawdzamy">Sprawdzamy statusy…</string>
@@ -150,6 +137,9 @@
     <string name="moje_nieaktualne">Ktoś już zmienił to zgłoszenie. Twoja zmiana trafi do jego aktualnej wersji.</string>
     <string name="moje_nieaktualne_oznaczenie">Oznaczenie tego wejścia już się zmieniło. Sprawdź je i wyślij swoją zmianę ponownie.</string>
     <string name="moje_wyslij_ponownie">Wyślij ponownie</string>
+    <string name="moje_bariery_juz_nie_ma">Bariery już nie ma</string>
+    <string name="moje_nowe_oznaczenie">Nowe oznaczenie:</string>
+    <string name="moje_nieaktualne_usuniecie">Bariery nie ma już na mapie. Jeśli nadal istnieje, zgłoś ją od nowa.</string>
     <string name="usuniecie_naglowek">Zgłoś, że bariery nie ma</string>
     <string name="usuniecie_sprawdzone">Sprawdzone %1$s</string>
     <string name="usuniecie_nowe_zdjecie">Nowe zdjęcie miejsca</string>
@@ -165,4 +155,44 @@
     <string name="zmiana_oznaczenia_zdjecie">Zdjęcie wejścia</string>
     <string name="zmiana_oznaczenia_brak_zdjecia">Dodaj zdjęcie wejścia, aby wysłać zmianę.</string>
     <string name="zmiana_oznaczenia_sprawdzi">Zmianę sprawdzi inna osoba. Do tego czasu karta budynku pokazuje obecne oznaczenie.</string>
+    <string name="synchronizacja_naglowek">Synchronizacja</string>
+    <string name="konflikt_tytul">Dwie wersje: wybierz jedną.</string>
+    <string name="konflikt_skutek">Druga wersja zostanie usunięta.</string>
+    <string name="konflikt_przyjete">Przyjęte zgłoszenie zostanie, a Twoja wersja, jeśli ją wybierzesz, trafi do sprawdzenia jako nowe.</string>
+    <plurals name="konflikt_wykaz_roznic">
+        <item quantity="one">Różni się:</item>
+        <item quantity="few">Różnią się:</item>
+        <item quantity="many">Różnią się:</item>
+        <item quantity="other">Różnią się:</item>
+    </plurals>
+    <string name="konflikt_moja">Moja wersja</string>
+    <string name="konflikt_serwer">Wersja z serwera</string>
+    <string name="konflikt_uciazliwosc">Uciążliwość:</string>
+    <string name="konflikt_zostaw">Zostaw moją wersję</string>
+    <string name="konflikt_wez">Weź wersję z serwera</string>
+    <string name="konflikt_pozniej">Zdecyduję później</string>
+    <plurals name="synchronizacja_zgloszenia">
+        <item quantity="one">zgłoszenie</item>
+        <item quantity="few">zgłoszenia</item>
+        <item quantity="many">zgłoszeń</item>
+        <item quantity="other">zgłoszenia</item>
+    </plurals>
+    <plurals name="synchronizacja_znaczniki">
+        <item quantity="one">znacznik piętra</item>
+        <item quantity="few">znaczniki pięter</item>
+        <item quantity="many">znaczników pięter</item>
+        <item quantity="other">znacznika piętra</item>
+    </plurals>
+    <string name="synchronizacja_liczba">%1$d %2$s</string>
+    <string name="synchronizacja_podzial">%1$s i %2$s</string>
+    <string name="synchronizacja_ostatnia">Ostatnia synchronizacja: %1$s</string>
+    <string name="synchronizacja_wszystko">Wszystko wysłane.</string>
+    <string name="synchronizacja_wszystko_ostatnia">Wszystko wysłane. Ostatnia synchronizacja: %1$s.</string>
+    <string name="synchronizacja_wysylamy">Wysyłamy %1$d z %2$d…</string>
+    <string name="synchronizacja_bez_internetu">Bez internetu. Wyślemy wszystko sami, gdy internet wróci.</string>
+    <string name="synchronizacja_serwer">Serwer chwilowo nie odpowiada. Zgłoszenia czekają w telefonie i wyślą się później.</string>
+    <string name="synchronizacja_logowanie">Logowanie wygasło. Zaloguj się, a wyślemy zgłoszenia same.</string>
+    <string name="synchronizacja_zaloguj">Zaloguj się</string>
+    <string name="synchronizacja_miejsce">W telefonie zostało mniej niż 100 MB. Zwolnij miejsce, aby dalej robić zdjęcia.</string>
+    <string name="synchronizacja_teraz">Synchronizuj teraz</string>
 </resources>

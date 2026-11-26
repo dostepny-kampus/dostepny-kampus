@@ -44,11 +44,34 @@ internal object AccountIcons {
     private val Progress: ImageVector =
         pathIcon(path = "M4 9h4v11H4zm12 4h4v7h-4zm-6-9h4v16h-4z", name = "BarChart")
 
+    private val FactCheck: ImageVector =
+        pathIcon(
+            path =
+                "M20 3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM4 19V5h16" +
+                    "v14H4zm2-9 2 2 4-4-1.4-1.4L8 9.2l-.6-.6L6 10zm0 6 2 2 4-4-1.4-1.4L8 15.2l-.6-.6L6 16zm" +
+                    "7-7h5v2h-5zm0 6h5v2h-5z",
+            name = "FactCheck",
+        )
+
+    private val PersonAdd: ImageVector =
+        pathIcon(
+            path =
+                "M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-7-2V7H6v3H3v2h3v3h2v-3h3v" +
+                    "-2H8zm7 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z",
+            name = "PersonAdd",
+        )
+
+    private val Download: ImageVector =
+        pathIcon(path = "M5 20h14v-2H5v2zm7-4 5-5h-3V4h-4v7H7l5 5z", name = "Download")
+
     /** Ikona czynności [work]. */
     fun iconOf(work: WorkAction): ImageVector =
         when (work) {
             WorkAction.MEASURE -> Measure
             WorkAction.MINE -> Mine
             WorkAction.PROGRESS -> Progress
+            WorkAction.REVIEW -> FactCheck
+            WorkAction.INVITE -> PersonAdd
+            WorkAction.EXPORT -> Download
         }
 }

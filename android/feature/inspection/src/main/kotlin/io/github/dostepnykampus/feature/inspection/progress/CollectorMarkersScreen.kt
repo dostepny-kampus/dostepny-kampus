@@ -12,17 +12,13 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,9 +31,12 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
+import io.github.dostepnykampus.core.designsystem.card.CardAction
+import io.github.dostepnykampus.core.designsystem.card.ListItemCard
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.feature.inspection.R
+import io.github.dostepnykampus.core.designsystem.R as DesignR
 
 /**
  * C5 „Obejrzane piętra” w wariancie Zbierającego budynku [symbol].
@@ -119,6 +118,7 @@ private fun FloorRows(symbol: String, state: CollectorMarkersUiState.Ready, acti
                 row = row,
                 isAsking = row.markerId != null && state.asking == row.markerId,
                 isUnsaved = state.unsaved == row.place,
+                isOffline = !state.isOnline,
                 actions = actions,
             )
         }
@@ -126,34 +126,35 @@ private fun FloorRows(symbol: String, state: CollectorMarkersUiState.Ready, acti
 }
 
 @Composable
-private fun FloorCard(row: FloorRow, isAsking: Boolean, isUnsaved: Boolean, actions: CollectorMarkerActions) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(Zaokraglenia.duze),
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-    ) {
-        Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-            val name = row.label ?: stringResource(R.string.znaczniki_caly_budynek)
-            Text(name, style = MaterialTheme.typography.titleMedium)
-            if (row.markerId != null) {
-                Inspected(row = row, isAsking = isAsking, isUnsaved = isUnsaved, actions = actions)
-            } else {
-                Text(stringResource(R.string.zbierajacy_nieobejrzane), style = MaterialTheme.typography.titleMedium)
-                if (isUnsaved) Text(stringResource(R.string.zbierajacy_blad_zapisu))
-                val action = if (isUnsaved) R.string.postep_sprobuj_ponownie else R.string.zbierajacy_oznacz
-                FilledTonalButton(
-                    onClick = { actions.onMark(row.place) },
-                    modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.minimum),
-                ) {
-                    Text(stringResource(action))
-                }
-            }
+private fun FloorCard(
+    row: FloorRow,
+    isAsking: Boolean,
+    isUnsaved: Boolean,
+    isOffline: Boolean,
+    actions: CollectorMarkerActions,
+) {
+    ListItemCard {
+        val name = row.label ?: stringResource(R.string.znaczniki_caly_budynek)
+        Text(name, style = MaterialTheme.typography.titleMedium)
+        if (row.markerId != null) {
+            Inspected(row = row, isAsking = isAsking, isUnsaved = isUnsaved, isOffline = isOffline, actions = actions)
+        } else {
+            Text(stringResource(R.string.zbierajacy_nieobejrzane), style = MaterialTheme.typography.titleMedium)
+            if (isUnsaved) Text(stringResource(R.string.zbierajacy_blad_zapisu))
+            val action = if (isUnsaved) DesignR.string.sprobuj_ponownie else R.string.zbierajacy_oznacz
+            CardAction(text = stringResource(action), onClick = { actions.onMark(row.place) })
         }
     }
 }
 
 @Composable
-private fun Inspected(row: FloorRow, isAsking: Boolean, isUnsaved: Boolean, actions: CollectorMarkerActions) {
+private fun Inspected(
+    row: FloorRow,
+    isAsking: Boolean,
+    isUnsaved: Boolean,
+    isOffline: Boolean,
+    actions: CollectorMarkerActions,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         InspectedLabel(stringResource(R.string.zbierajacy_obejrzane), style = MaterialTheme.typography.titleMedium)
         val authorText =
@@ -161,6 +162,7 @@ private fun Inspected(row: FloorRow, isAsking: Boolean, isUnsaved: Boolean, acti
         Text(stringResource(authorText))
         if (!row.isMine) return
         if (row.isPending) Text(stringResource(R.string.zbierajacy_czeka), fontWeight = FontWeight.Bold)
+        if (row.isPending && isOffline) Text(stringResource(R.string.zbierajacy_zapisany_w_telefonie))
         if (isUnsaved) Text(stringResource(R.string.zbierajacy_blad_zapisu))
         if (isAsking) {
             HorizontalDivider()
@@ -171,20 +173,12 @@ private fun Inspected(row: FloorRow, isAsking: Boolean, isUnsaved: Boolean, acti
             ) {
                 Text(stringResource(R.string.znaczniki_cofnij))
             }
-            OutlinedButton(
-                onClick = actions.onKeep,
-                modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.minimum),
-            ) {
+            OutlinedAction(onClick = actions.onKeep, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.znaczniki_zostaw))
             }
         } else {
             val markerId = row.markerId ?: return
-            OutlinedButton(
-                onClick = { actions.onAsk(markerId) },
-                modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.minimum),
-            ) {
-                Text(stringResource(R.string.znaczniki_cofnij))
-            }
+            CardAction(text = stringResource(R.string.znaczniki_cofnij), onClick = { actions.onAsk(markerId) })
         }
     }
 }

@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.specs;
@@ -22,6 +22,7 @@ import io.github.dostepnykampus.barrier.submission.persistence.JdbcSubmissions;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -47,7 +48,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 public final class VerificationSteps {
 
     /** Zgłoszenie scenariusza. */
-    private static final UUID SUBMISSION =
+    static final UUID SUBMISSION =
         UUID.fromString("8d3e4f5a-6b7c-4d8e-9f0a-1b2c3d4e5f6a");
 
     /** Jedyne zdjęcie zgłoszenia scenariusza. */
@@ -251,7 +252,7 @@ public final class VerificationSteps {
                     new BarrierDetails(group, type, severity, null, false),
                     null, null, null, List.of(VerificationSteps.PHOTO)
                 ),
-                "autor-zgloszenia"
+                "autor-zgloszenia", Set.of()
             )
         );
         this.photos.put(

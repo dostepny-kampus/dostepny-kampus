@@ -95,6 +95,7 @@
     <string name="karta_bariery_brak">Brak zgłoszonych barier</string>
     <string name="karta_bariery_brak_opis">Bariera pojawi się tutaj, gdy ktoś ją zgłosi i zostanie sprawdzona.</string>
     <string name="karta_zalecane">Zalecane</string>
+    <string name="karta_zmien_oznaczenie">Zmień oznaczenie</string>
     <string name="karta_szerokosc_drzwi">Szerokość drzwi: %1$d cm</string>
     <string name="karta_wyjscia_ewakuacyjne">Pokaż wyjścia ewakuacyjne (%1$d)</string>
     <string name="karta_wyjscia_ukryj">Ukryj wyjścia ewakuacyjne (%1$d)</string>

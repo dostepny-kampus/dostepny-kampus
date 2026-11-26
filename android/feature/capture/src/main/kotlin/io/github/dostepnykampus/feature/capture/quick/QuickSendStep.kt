@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.quick
@@ -16,7 +16,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.OfflineLine
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.room.RoomCategory
@@ -93,6 +95,19 @@ private fun LookupProblem(text: String) {
 @Composable
 internal fun QuickSentMessage(isSavedOffline: Boolean = false) {
     Text(stringResource(if (isSavedOffline) R.string.szybkie_zapisane_bez_sieci else R.string.szybkie_dziekujemy))
+}
+
+/**
+ * Linia „Bez internetu” nad potwierdzeniem zapisu bez sieci, z dniem pobrania danych mapy.
+ *
+ * Wymagania: US9.1, NFR-10
+ *
+ * @param given model podany z zewnątrz, np. w testach; `null` bierze model z grafu Hilt
+ */
+@Composable
+internal fun QuickOfflineLine(given: QuickOfflineViewModel?) {
+    val model = given ?: hiltViewModel()
+    OfflineLine(syncedAt = model.syncedAt)
 }
 
 @Composable

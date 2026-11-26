@@ -9,6 +9,7 @@ import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
 import io.github.dostepnykampus.core.data.submission.sync.FakeHistory
 import io.github.dostepnykampus.core.data.submission.sync.FakeStore
+import io.github.dostepnykampus.core.data.submission.sync.SentRecords
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.photo
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionFixtures.server
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
@@ -101,7 +102,7 @@ class OwnListTest {
                     update = { _, _, _ -> ServerReply.Missing },
                 ),
             stamps = SubmissionStamps(newId = { ids.removeFirst() }),
-            history = history,
+            records = SentRecords(history = history),
         )
 
     private fun quick(): SubmissionContent =

@@ -73,9 +73,9 @@ według dziedziny, wnętrze modułu według tematów, warstwy leżą w temacie. 
 
 - Jeden temat na pakiet; nazwa tematu ze słownika, taka sama w każdym module, w liczbie pojedynczej.
   Pakietów `util`, `common`, `helper`, `misc`, `base`, `impl` nie ma.
-- Serwer: moduły `identity`, `building`, `barrier`, `shared`. Inne moduły widzą tylko pakiet `api`
-  modułu. Moduł z jednym tematem ma warstwy pod korzeniem, moduł z kilkoma tematami ma tematy, a w nich
-  warstwy `application`, `web`, `persistence`, `json`, `storage`. Zależności modułu są w
+- Serwer: moduły `identity`, `building`, `barrier`, `inspection`, `sync`, `shared`. Inne moduły widzą
+  tylko pakiet `api` modułu. Moduł z jednym tematem ma warstwy pod korzeniem, moduł z kilkoma tematami
+  ma tematy, a w nich warstwy `application`, `web`, `persistence`, `json`, `storage`. Zależności modułu są w
   `@ApplicationModule(allowedDependencies = …)`; `shared` ma tylko `error`, `json`, `geo`.
 - Android: granicę modułu wyznacza Gradle. Moduł funkcji nie zależy od innego modułu funkcji ani od
   `core:database` i `core:network`, także w testach; dane bierze z `core:data`. W `core` działa

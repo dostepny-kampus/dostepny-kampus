@@ -201,8 +201,7 @@ Funkcja: Zgłoszenie szybkie
     Wtedy widzi potwierdzenie, że zgłoszenie trafi do weryfikacji
     Ale aplikacja nie pokazuje mu listy jego zgłoszeń ani ich statusów
 
-  # brak pełnego testu: #3720
-  @US4.4 @US4.2 @aplikacja @do-zrobienia
+  @US4.4 @US4.2 @aplikacja
   Scenariusz: Potwierdzenie bez sieci mówi o późniejszej wysyłce
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz telefon nie ma sieci

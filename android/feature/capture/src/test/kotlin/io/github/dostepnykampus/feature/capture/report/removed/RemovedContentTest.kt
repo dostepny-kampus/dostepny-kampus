@@ -20,6 +20,9 @@ import coil3.test.FakeImageLoaderEngine
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EntranceDistance
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
@@ -66,6 +69,25 @@ class RemovedContentTest {
         compose.onNodeWithText("Bariera zostanie na mapie", substring = true).assertIsDisplayed()
         compose.onNodeWithText("Wyślij do sprawdzenia").performClick()
         assertEquals("„Wyślij do sprawdzenia” wysyła raz", 1, sends)
+    }
+
+    /** Wiersz: miejsce słowami od najbliższego wejścia, jak na C2, bez współrzędnych. Wymagania: US8.4, NFR-19 */
+    @Test
+    fun showsPlaceInWords() {
+        val entrance =
+            Entrance(
+                id = "n/1",
+                buildingSymbol = "A-1",
+                name = "Wejście dostosowane",
+                isMain = false,
+                type = null,
+                location = GeoPoint(longitude = 17.0621, latitude = 51.1079),
+                marking = EntranceMarking.ACCESSIBLE,
+            )
+        val near = EntranceDistance(entrance = entrance, meters = 24.6)
+        show(RemovedUiState(previous = LIFT, nearest = near, stage = RemovedStage.EDITING))
+
+        compose.onNodeWithText("ok. 25 m od wejścia „Wejście dostosowane”").assertIsDisplayed()
     }
 
     /** Wiersz: wysłanie bez zdjęcia pokazuje błąd walidacji. Wymagania: BR-19 */

@@ -168,6 +168,7 @@ class NullabilityArchitectureTest {
                 "Room.liftId" to "$OPTIONAL, szyb windy ma tylko pomieszczenie windy, US16.1",
                 "Submission.rejectionReason" to "$BY_STATUS, BR-16",
                 "Submission.verifiedAt" to "$BY_STATUS, BR-17",
+                "Submission.author" to "$OPTIONAL, BR-5: tylko w odpowiedziach dla Weryfikatora",
                 "SubmissionContent.accuracyMeters" to OPTIONAL,
                 "SubmissionContent.isManualCorrection" to ABSENT_FLAG,
                 "SubmissionContent.buildingSymbol" to "$OPTIONAL, BR-G2: poza budynkiem",

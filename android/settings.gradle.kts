@@ -41,6 +41,7 @@ include(
     ":feature:capture",
     ":feature:help",
     ":feature:inspection",
+    ":feature:review",
     ":feature:auth",
     ":detekt-rules",
     ":systemtest",

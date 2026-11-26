@@ -21,7 +21,7 @@ Znacznik innej osoby
 $ramka()
 <b>Piętro: <i>[3]</i></b>
 $nieobejrzane()
-$przycisk("Oznacz jako obejrzane")
+$czynnosc_karty("Oznacz jako obejrzane")
 }
 $ekran_koniec()
 @endsalt

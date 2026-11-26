@@ -1,0 +1,22 @@
+@startsalt
+' R2 Zasłanianie zdjęcia (BR-15, NFR-25): prostokąty stałej wielkości stawiane dotknięciem,
+' bez przeciągania i szczypania (NFR-53). Druga zasłona jest zaznaczona obwódką i słowem (NFR-21).
+!include _wspolne.iuml
+$ekran_poczatek()
+$naglowek("Zasłoń twarz lub tablicę")
+Dotknij zdjęcia w miejscu twarzy
+albo tablicy.
+{+
+.
+<i>[zdjęcie bariery]</i>
+<i>[zasłona 1]</i>
+<b>[zasłona 2, zaznaczona]</b>
+.
+}
+<b>Zasłona 2 z 2: zaznaczona</b>
+$przyciski_obok("Większy", "Mniejszy")
+$przycisk("Usuń zasłonę")
+--
+$przycisk_glowny("Zapisz zdjęcie")
+$ekran_koniec()
+@endsalt

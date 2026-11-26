@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.mine
@@ -18,11 +18,15 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import io.github.dostepnykampus.core.data.submission.own.RefusalReason
 import io.github.dostepnykampus.core.data.submission.own.SendState
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.BarrierType
+import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
+import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -199,7 +203,95 @@ class MySubmissionsScreenTest {
         compose.onNodeWithText("Otwórz").performClick()
         assertEquals(listOf("c"), opened)
     }
+
+    /**
+     * Wiersz: C3 znak „Dwie wersje: wybierz jedną” → C4 zgłoszenia z konfliktem wersji.
+     *
+     * Wymagania: US9.3
+     */
+    @Test
+    fun conflictOpensChoice() {
+        val conflicted = item(id = "k", state = SendState.REFUSED).copy(refusal = RefusalReason.CHANGED_ON_SERVER)
+        val chosen = mutableListOf<String>()
+        val actions = MySubmissionsActions(onBack = {}, onMeasure = {}, onConflict = { chosen += it })
+        val state = MySubmissionsUiState.Ready(MySubmissions(listOf(conflicted)))
+        compose.setContent {
+            DostepnyKampusTheme {
+                MySubmissionsContent(state = state, actions = actions)
+            }
+        }
+        compose.onNodeWithText("Dwie wersje: wybierz jedną").performClick()
+        assertEquals("C4 zgłoszenia z konfliktem", listOf("k"), chosen)
+    }
+
+    /**
+     * Wiersz: C3 „Otwórz” przy zmianie oznaczenia wejścia → C6 tej zmiany; „Wyślij ponownie” po „nieaktualne” → C6
+     * tego wejścia z bieżącym oznaczeniem.
+     *
+     * Wymagania: US8.3, US17.2, BR-23
+     */
+    @Test
+    fun opensMarkingChange() {
+        val waiting = marking(id = "m-1").copy(state = SendState.LOCAL)
+        val outdated =
+            marking(id = "m-2").copy(serverStatus = SubmissionStatus.REJECTED, rejectionReason = "nieaktualne")
+        val routes = mutableListOf<MarkingRoute>()
+        val actions = MySubmissionsActions(onBack = {}, onMeasure = {}, onOpen = {}, onOpenMarking = { routes += it })
+        val state = MySubmissionsUiState.Ready(MySubmissions(listOf(waiting, outdated)))
+        compose.setContent {
+            DostepnyKampusTheme { MySubmissionsContent(state = state, actions = actions) }
+        }
+        compose.onNodeWithText("Otwórz").performScrollTo().performClick()
+        compose.onNodeWithText("Wyślij ponownie").performScrollTo().performClick()
+        val entrance = MarkingRoute(entranceId = "n/1", buildingSymbol = "B-8")
+        assertEquals("C6 poprawki, potem C6 wejścia", listOf(entrance.copy(submissionId = "m-1"), entrance), routes)
+    }
+
+    /** Przy konflikcie wersji nie ma „Otwórz”: konflikt rozstrzyga tylko wybór w C4. Wymagania: US9.3, BR-10 */
+    @Test
+    fun conflictHasNoOpen() {
+        val conflicted = item(id = "k", state = SendState.REFUSED).copy(refusal = RefusalReason.CHANGED_ON_SERVER)
+        val opened = mutableListOf<String>()
+        val actions = MySubmissionsActions(onBack = {}, onMeasure = {}, onOpen = { opened += it }, onConflict = {})
+        val state = MySubmissionsUiState.Ready(MySubmissions(listOf(conflicted)))
+        compose.setContent {
+            DostepnyKampusTheme { MySubmissionsContent(state = state, actions = actions) }
+        }
+        compose.onNodeWithText("Dwie wersje: wybierz jedną").assertExists()
+        compose.onNodeWithText("Otwórz").assertDoesNotExist()
+        assertEquals("C2 się nie otwiera", emptyList<String>(), opened)
+    }
+
+    /** Wiersz: „Czeka na wysłanie: N” to czynność ze strzałką prowadząca do C4. Wymagania: US9.1 */
+    @Test
+    fun waitingOpensSync() {
+        var opened = 0
+        val actions = MySubmissionsActions(onBack = {}, onMeasure = {}, onSync = { opened++ })
+        val state = MySubmissionsUiState.Ready(MySubmissions(listOf(item(id = "w", state = SendState.LOCAL))))
+        compose.setContent {
+            DostepnyKampusTheme { MySubmissionsContent(state = state, actions = actions) }
+        }
+        compose.onNodeWithText("Czeka na wysłanie: 1").performClick()
+        assertEquals("C4 bez konfliktu", 1, opened)
+    }
+
+    /** Pozycja bez konfliktu wersji nie ma znaku wyboru wersji. Wymagania: US9.3 */
+    @Test
+    fun noConflictNoChoice() {
+        show(item(id = "a", state = SendState.REFUSED).copy(refusal = RefusalReason.NO_PERMISSION))
+        compose.onNodeWithText("Dwie wersje: wybierz jedną").assertDoesNotExist()
+    }
 }
+
+private fun marking(id: String) =
+    item(id = id, state = SendState.SENT).copy(
+        kind = SubmissionKind.ENTRANCE_MARKING,
+        type = null,
+        buildingSymbol = "B-8",
+        floorNumber = null,
+        entranceId = "n/1",
+        entranceMarking = EntranceMarking.ACCESSIBLE,
+    )
 
 private fun item(id: String, state: SendState) =
     OwnSubmissionItem(

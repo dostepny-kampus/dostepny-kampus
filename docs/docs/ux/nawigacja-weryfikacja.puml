@@ -16,7 +16,7 @@ split
 split again
   -> Koordynator:\n„Postęp\ninwentaryzacji”;
   :K1 Postęp\ninwentaryzacji;
-  -> dotknięcie\nbudynku;
+  -> „Otwórz”\nprzy budynku;
   :C5 Piętra obejrzane\n(tylko cofanie);
   -> „Cofnij znacznik”;
   :Potwierdzenie\ncofnięcia; <<stan>>

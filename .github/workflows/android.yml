@@ -21,8 +21,10 @@ on:
       - ".github/scripts/pobierz-artefakty.sh"
       - ".github/scripts/przytnij-cache-budowania.sh"
       - ".github/scripts/czysc-cache.sh"
+      - ".github/scripts/obrazy-robolectric.sh"
       - ".github/scripts/wyniki-androida.sh"
       - ".github/scripts/uruchom-serwer-systemowy.sh"
+      - ".github/scripts/dane-pokazu-a1.sql"
       - ".github/scripts/zmiany-obszaru.sh"
   merge_group:
     types:
@@ -82,8 +84,8 @@ jobs:
           .github/scripts/zmiany-obszaru.sh android android data/buildings api/openapi.yaml docs/docs/ux/tokeny.yml
           .github/workflows/android.yml .github/actions/android-gradle .github/scripts/cache-budowania-sprintu.sh
           .github/scripts/cache-z-kolejki.sh .github/scripts/czysc-cache.sh .github/scripts/przytnij-cache-budowania.sh
-          .github/scripts/wyniki-androida.sh .github/scripts/uruchom-serwer-systemowy.sh
-          .github/scripts/zmiany-obszaru.sh .github/scripts/pobierz-artefakty.sh
+          .github/scripts/wyniki-androida.sh .github/scripts/uruchom-serwer-systemowy.sh .github/scripts/dane-pokazu-a1.sql
+          .github/scripts/zmiany-obszaru.sh .github/scripts/pobierz-artefakty.sh .github/scripts/obrazy-robolectric.sh
 
   emulator:
     needs: apk
@@ -344,6 +346,10 @@ jobs:
       - name: Przygotuj JDK i cache Gradle
         id: gradle
         uses: ./.github/actions/android-gradle
+      - name: Pobierz obrazy Androida dla Robolectric z ponowieniami
+        # Robolectric pobiera je w trakcie testu bez ponowienia; błąd sieci czerwienił testy niezwiązane ze zmianą.
+        if: matrix.czesc == 'testy'
+        run: bash ../.github/scripts/obrazy-robolectric.sh pobierz
       - name: Testy, Kover i zrzuty Roborazzi albo lint i detekt
         env:
           CZESC: ${{ matrix.czesc }}
@@ -363,6 +369,9 @@ jobs:
             zadania=(lint "${detekt[@]}")
           fi
           ./gradlew "${zadania[@]}" --continue --console=plain 2>&1 | tee "$RUNNER_TEMP/gradle.log"
+      - name: Sprawdź, czy Robolectric użył tylko obrazów pobranych przed testami
+        if: ${{ !cancelled() && matrix.czesc == 'testy' }}
+        run: bash ../.github/scripts/obrazy-robolectric.sh sprawdz
       - name: Policz wykonane testy
         if: ${{ !cancelled() && matrix.czesc == 'testy' }}
         run: |

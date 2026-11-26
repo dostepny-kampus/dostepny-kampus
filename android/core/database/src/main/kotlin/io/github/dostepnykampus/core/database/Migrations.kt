@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka, Yevhenii Lukianenko
+ * Author: Myroslav Hryniuka, Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.database
@@ -134,6 +134,30 @@ internal val MIGRATION_12_13: Migration =
         }
     }
 
+/**
+ * Migracja 13→14: historia „Moje zgłoszenia” dostaje oznaczenie „bariera usunięta”, wejście i nowe oznaczenie
+ * zmiany oznaczenia wejścia. Wymagania: US8.4, US17.2
+ */
+internal val MIGRATION_13_14: Migration =
+    object : Migration(13, 14) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE `own_submissions` ADD COLUMN `barrier_removed` INTEGER")
+            db.execSQL("ALTER TABLE `own_submissions` ADD COLUMN `entrance_id` TEXT")
+            db.execSQL("ALTER TABLE `own_submissions` ADD COLUMN `entrance_marking` TEXT")
+        }
+    }
+
+/**
+ * Migracja 14→15: historia „Moje zgłoszenia” dostaje pełną treść z ostatniego zapisu do poprawki bez sieci.
+ * Wymagania: US8.3, NFR-5
+ */
+internal val MIGRATION_14_15: Migration =
+    object : Migration(14, 15) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE `own_submissions` ADD COLUMN `content_json` TEXT")
+        }
+    }
+
 /** Wszystkie migracje od wersji 1 w kolejności wersji. */
 internal val ALL_MIGRATIONS: List<Migration> =
     listOf(
@@ -147,4 +171,6 @@ internal val ALL_MIGRATIONS: List<Migration> =
         MIGRATION_8_9,
         MIGRATION_11_12,
         MIGRATION_12_13,
+        MIGRATION_13_14,
+        MIGRATION_14_15,
     )

@@ -6,7 +6,7 @@ set -euo pipefail
 
 # Test uruchom-serwer-systemowy.sh na atrapach docker, java i curl: kolejność startu usług, konto magazynu
 # osobno od --wait, serwer z pliku JAR bez -plain, wpis budynku TS-1 w bazie i błąd z dziennikiem, gdy serwer
-# nie odpowiada.
+# nie odpowiada. Dane A-1 idą do psql ze standardowego wejścia.
 script="$(cd "$(dirname "$0")" && pwd)/uruchom-serwer-systemowy.sh"
 test_dir="$(mktemp -d)"
 trap 'rm -rf "$test_dir"' EXIT
@@ -37,7 +37,11 @@ if ! grep -q "docker compose -f infra/docker-compose.yml exec -T postgis psql -v
   echo "BŁĄD: brak wpisu budynku TS-1 przez psql w „$(cat "$test_dir/log")”"
   exit 1
 fi
-echo "OK: usługi z --wait, konto magazynu osobno, serwer z JAR bez -plain i wpis budynku TS-1 w bazie"
+if ! grep -Fxq "docker compose -f infra/docker-compose.yml exec -T postgis psql -v ON_ERROR_STOP=1 -U u -d db" "$test_dir/log"; then
+  echo "BŁĄD: brak wpisu pięter i wejść A-1 przez psql w „$(cat "$test_dir/log")”"
+  exit 1
+fi
+echo "OK: usługi z --wait, konto magazynu osobno, serwer z JAR bez -plain i wpis budynku TS-1 oraz A-1 w bazie"
 
 : > "$test_dir/log"
 if out="$(CURL_KOD=7 CZAS_STARTU=1 bash "$script")"; then

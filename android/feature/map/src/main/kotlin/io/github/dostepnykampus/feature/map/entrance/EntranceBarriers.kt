@@ -12,10 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.res.stringResource
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.marking.SeverityLabel
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.barrier.BarrierFacts
 import io.github.dostepnykampus.feature.map.barrier.ChosenBarrier
-import io.github.dostepnykampus.feature.map.barrier.SeverityBadge
 
 /**
  * Część arkusza wejścia ze zgłoszeniami przyjętymi przy wejściu [shown]: każde z uciążliwością, typem, dniem
@@ -30,7 +30,7 @@ internal fun EntranceBarriers(shown: ShownEntrance) {
         shown.barriers.forEach { barrier ->
             key(barrier.id) {
                 Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-                    SeverityBadge(barrier.severity)
+                    SeverityLabel(barrier.severity)
                     BarrierFacts(
                         chosen = ChosenBarrier(barrier, building = null, entrance = null),
                         hasPlace = false,

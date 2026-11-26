@@ -16,9 +16,9 @@ import java.time.LocalDate
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
- * Pobranie eksportu i zapis w „Pobrane” jako wynik dla ekranu K3.
+ * Pobranie eksportu i zapis w „Pobrane” albo w miejscu wybranym w oknie systemu jako wynik dla ekranu K3.
  *
- * Wymagania: US13, US13.1, US13.2
+ * Wymagania: US13, US13.1, US13.2, NFR-41
  */
 class BarrierExportTest {
     private val saved = mutableListOf<List<String>>()
@@ -50,24 +50,67 @@ class BarrierExportTest {
     }
 
     @Test
+    fun savesToChosenPlace() {
+        val outcome =
+            download(
+                reply = ApiResult.Success(ExportFile("a\n", isEmpty = false)),
+                format = ExportFormat.CSV,
+                place = ExportPlace.Chosen(URI),
+            )
+        assertEquals(ExportOutcome.Saved(isEmpty = false), outcome, "plik zapisany w wybranym miejscu")
+        assertEquals(listOf(listOf(URI, "a\n")), saved, "miejsce i treść pliku, bez folderu „Pobrane”")
+    }
+
+    @Test
+    fun namesFileWithDate() {
+        assertEquals("dostepny-kampus-bariery-2026-11-25.geojson", export().fileName(ExportFormat.GEOJSON), "nazwa")
+    }
+
+    @Test
+    fun chosenWriteErrorFails() {
+        val outcome =
+            download(
+                reply = ApiResult.Success(ExportFile("a", isEmpty = false)),
+                format = ExportFormat.CSV,
+                place = ExportPlace.Chosen(URI),
+                canWrite = false,
+            )
+        assertEquals(ExportOutcome.Failed, outcome, "zapis w wybranym miejscu się nie udał")
+    }
+
+    @Test
     fun writeErrorIsFailed() {
         val outcome = download(ApiResult.Success(ExportFile("a", isEmpty = false)), ExportFormat.CSV, canWrite = false)
         assertEquals(ExportOutcome.Failed, outcome, "zapis się nie udał")
     }
 
-    private fun download(reply: ApiResult<ExportFile>, format: ExportFormat, canWrite: Boolean = true): ExportOutcome {
+    private fun download(
+        reply: ApiResult<ExportFile>,
+        format: ExportFormat,
+        place: ExportPlace = ExportPlace.Downloads,
+        canWrite: Boolean = true,
+    ): ExportOutcome = runBlocking { export(reply, canWrite).download(format, place) }
+
+    private fun export(reply: ApiResult<ExportFile> = ApiResult.NotFound, canWrite: Boolean = true): ServerExport {
         val folder =
             DownloadsFolder { name, mediaType, text ->
                 if (canWrite) saved += listOf(name, mediaType, text)
                 canWrite
             }
-        val export =
-            ServerExport(
-                fetch = { reply },
-                folder = folder,
-                today = { LocalDate.parse("2026-11-25") },
-                work = EmptyCoroutineContext,
-            )
-        return runBlocking { export.download(format) }
+        val chosen =
+            ChosenFile { uri, text ->
+                if (canWrite) saved += listOf(uri, text)
+                canWrite
+            }
+        return ServerExport(
+            fetch = { reply },
+            places = ExportPlaces(downloads = folder, chosen = chosen, isDirect = true),
+            today = { LocalDate.parse("2026-11-25") },
+            work = EmptyCoroutineContext,
+        )
+    }
+
+    private companion object {
+        const val URI = "content://dokumenty/eksport.csv"
     }
 }

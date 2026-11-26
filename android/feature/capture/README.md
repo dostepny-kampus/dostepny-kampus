@@ -6,6 +6,7 @@ Zgłoszenie bariery: pomiar położenia, formularz z zdjęciami, szybkie zgłosz
 
 ## Pakiety
 
+- `feature.capture.conflict` — widok i model widoku wyboru jednej z dwóch wersji zgłoszenia po konflikcie wersji.
 - `feature.capture.location` — budynek dla położenia i zgoda na lokalizację.
 - `feature.capture.measure` — ekran dokładnego pomiaru położenia z mapą nieba i wyborem budynku zgłoszenia.
 - `feature.capture.mine` — lista moich zgłoszeń z kartami i statusami.
@@ -17,10 +18,11 @@ Zgłoszenie bariery: pomiar położenia, formularz z zdjęciami, szybkie zgłosz
 - `feature.capture.report.form` — model formularza pełnego zgłoszenia ze stanem edycji, pola, wybory i komunikaty.
 - `feature.capture.report.marking` — zgłoszenie zmiany oznaczenia wejścia.
 - `feature.capture.report.removed` — zgłoszenie usunięcia bariery z przyjętego zgłoszenia.
+- `feature.capture.sync` — widok i model widoku synchronizacji bez konfliktu: kolejka, postęp i „Synchronizuj teraz”.
 
 ## API
 
-Trasy pomiaru, formularza, poprawki, zmiany oznaczenia wejścia i listy zgłoszeń w pakiecie `navigation`.
+Trasy pomiaru, formularza, poprawki, zmiany oznaczenia wejścia, listy zgłoszeń, wyboru wersji i synchronizacji w pakiecie `navigation`.
 
 ## Zależności
 

@@ -13,61 +13,54 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
-import io.github.dostepnykampus.core.designsystem.Ikony
+import io.github.dostepnykampus.core.designsystem.ImportantSign
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.ProblemText
 import io.github.dostepnykampus.core.designsystem.Typografia
-import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
 import io.github.dostepnykampus.feature.capture.photo.PhotoPreviews
-
-/** Znacznik testowy znaku „!” w kole przed słowem „Ważne”. */
-internal const val IMPORTANT_SIGN_TAG: String = "znak-wazne"
-
-private val ImportantSign: ImageVector =
-    pathIcon(
-        path =
-            "M11 15h2v2h-2zm0-8h2v6h-2zm0.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 " +
-                "11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z",
-        name = "Important",
-    )
 
 /**
  * „Zdjęcie”: ostrzeżenie „Ważne” jak w kroku 1 V4, podgląd zdjęć, „Zrób zdjęcie” i komunikat, gdy zdjęcia nie dało
  * się zapisać (PW-8). [error] stoi nad „Zrób zdjęcie”.
  *
  * Wymagania: US7.1, NFR-25, NFR-50
+ *
+ * @param photos zrobione zdjęcia do podglądu
+ * @param camera aparat „Zrób zdjęcie”
+ * @param title nagłówek sekcji; `null` daje sekcję bez nagłówka
+ * @param error komunikat walidacji nad „Zrób zdjęcie”; `null` bez komunikatu
+ * @param isTakeShown czy „Zrób zdjęcie” stoi w sekcji; bez niego ekran stawia przycisk sam
  */
 @Composable
 internal fun PhotoSection(
     photos: PhotoPaths,
     camera: PhotoCamera,
-    title: String = stringResource(R.string.formularz_zdjecie),
+    title: String? = stringResource(R.string.formularz_zdjecie),
     error: String? = null,
+    isTakeShown: Boolean = true,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        SectionTitle(title)
+        title?.let { SectionTitle(it) }
         OutlinedCard(
             modifier = Modifier.fillMaxWidth(),
             border = BorderStroke(Obramowania.ramka, MaterialTheme.colorScheme.error),
@@ -82,13 +75,13 @@ internal fun PhotoSection(
         if (error != null) {
             Text(text = error, color = MaterialTheme.colorScheme.error, fontWeight = Typografia.wyroznienieWaga)
         }
-        val hasPhoto = photos.items.isNotEmpty()
-        val label = if (hasPhoto) R.string.formularz_zrob_nowe_zdjecie else R.string.formularz_zrob_zdjecie
-        FilledTonalButton(
-            onClick = camera.onTake,
-            modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk),
-        ) {
-            Text(stringResource(label))
+        if (isTakeShown) {
+            FilledTonalButton(
+                onClick = camera.onTake,
+                modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk),
+            ) {
+                Text(takeLabel(photos))
+            }
         }
         if (camera.isFailed) {
             Text(
@@ -99,6 +92,14 @@ internal fun PhotoSection(
             )
         }
     }
+}
+
+/** „Zrób zdjęcie”, a gdy zdjęcie już jest, „Zrób nowe zdjęcie”. Wymagania: US7.1, US4.1 */
+@Composable
+@ReadOnlyComposable
+internal fun takeLabel(photos: PhotoPaths): String {
+    val label = if (photos.items.isEmpty()) R.string.formularz_zrob_zdjecie else R.string.formularz_zrob_nowe_zdjecie
+    return stringResource(label)
 }
 
 /** „Opis”, obowiązkowy przy TB-29 „inna bariera”. Wymagania: US7.3 */
@@ -118,14 +119,8 @@ internal fun DescriptionSection(text: String, onEdit: (ReportEdit) -> Unit) {
 
 /** Ten sam tekst braku przy polu, co nad formularzem (PW-10), gdy [isShown]. */
 @Composable
-internal fun FieldError(error: ReportFormError, isShown: Boolean) {
-    if (isShown) {
-        Text(
-            text = stringResource(error.messageRes()),
-            color = MaterialTheme.colorScheme.error,
-            fontWeight = Typografia.wyroznienieWaga,
-        )
-    }
+internal fun FieldError(error: ReportFormError, isShown: Boolean, modifier: Modifier = Modifier) {
+    if (isShown) ProblemText(text = stringResource(error.messageRes()), modifier = modifier)
 }
 
 /**
@@ -214,12 +209,7 @@ private fun ReportFormError.messageRes(): Int =
 private fun ImportantWord() {
     val color = MaterialTheme.colorScheme.error
     Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            imageVector = ImportantSign,
-            contentDescription = null,
-            modifier = Modifier.size(Ikony.rozmiar).testTag(IMPORTANT_SIGN_TAG),
-            tint = color,
-        )
+        ImportantSign(tint = color)
         Text(text = stringResource(R.string.formularz_wazne), color = color, fontWeight = Typografia.wyroznienieWaga)
     }
 }

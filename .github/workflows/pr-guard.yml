@@ -128,7 +128,7 @@ jobs:
         run: bash .github/scripts/zakazane-slowa.sh "$BASE_SHA" "$HEAD_SHA"
 
       - name: "zaleznosci: licencje i podatności nowych zależności"
-        uses: actions/dependency-review-action@v5.0.0
+        uses: actions/dependency-review-action@v5.0.1
         if: ${{ !cancelled() && github.event_name != 'merge_group' }}
         with:
           fail-on-severity: high

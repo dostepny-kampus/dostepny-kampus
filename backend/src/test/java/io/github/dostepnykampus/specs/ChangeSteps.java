@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.specs;
@@ -23,6 +23,7 @@ import io.github.dostepnykampus.barrier.submission.persistence.JdbcSubmissions;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -48,10 +49,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 public final class ChangeSteps {
 
     /** Przyjęte zgłoszenie, którego dotyczą zmiany. */
-    private static final UUID ORIGINAL = UUID.fromString("b4c5d6e7-0011-4f8a-9b0c-1d2e3f4a5b6c");
+    static final UUID ORIGINAL = UUID.fromString("b4c5d6e7-0011-4f8a-9b0c-1d2e3f4a5b6c");
 
     /** Zmiana „bariera usunięta” złożona niezależnie od zmiany sprawdzanej. */
-    private static final UUID RIVAL = UUID.fromString("b4c5d6e7-0012-4f8a-9b0c-1d2e3f4a5b6c");
+    static final UUID RIVAL = UUID.fromString("b4c5d6e7-0012-4f8a-9b0c-1d2e3f4a5b6c");
 
     /** Miejsce zgłoszeń scenariuszy. */
     private static final SubmissionPoint ORIGIN = new SubmissionPoint(17.05, 51.108);
@@ -185,6 +186,19 @@ public final class ChangeSteps {
         );
     }
 
+    @When("^przyjmie (?:zmianę|zgłoszenie „bariera usunięta”)$")
+    void acceptsChange() throws Exception {
+        MatcherAssert.assertThat(
+            "Serwer nie przyjął zmiany zgłoszenia przyjętego, nie dał 200",
+            this.http.perform(
+                MockMvcRequestBuilders.post("/submissions/{id}/review", VerifierSteps.CHECKED)
+                    .contentType(MediaType.APPLICATION_JSON).with(new AsVerifier())
+                    .content("{\"decision\":\"ACCEPT\",\"version\":1}")
+            ).andReturn().getResponse().getStatus(),
+            Matchers.equalTo(200)
+        );
+    }
+
     @When("^spróbuje zmienić w zgłoszeniu (typ bariery na TB-1 .+|uciążliwość na 3|miejsce)$")
     void triesToEdit(final String data) throws Exception {
         this.place = this.stored();
@@ -215,6 +229,60 @@ public final class ChangeSteps {
                 Matchers.containsString("\"barrierType\":\"TB-13\""),
                 Matchers.containsString("\"severity\":2")
             )
+        );
+    }
+
+    @Then("^na mapie jest tylko bariera TB-13 z uciążliwością 3$")
+    void onlyChangeShown() throws Exception {
+        MatcherAssert.assertThat(
+            "Gość widzi poprzednie zgłoszenie albo nie widzi zmiany z uciążliwością 3",
+            List.of(
+                this.shown(ChangeSteps.ORIGINAL),
+                this.get(String.format("/submissions/%s", VerifierSteps.CHECKED))
+                    .contains("\"severity\":3")
+            ),
+            Matchers.contains(404, true)
+        );
+    }
+
+    @Then("poprzednie zgłoszenie ma status „archiwalne”")
+    void originalArchived() {
+        MatcherAssert.assertThat(
+            "Poprzednie zgłoszenie nie zostało archiwalne po przyjęciu zmiany",
+            this.status(ChangeSteps.ORIGINAL), Matchers.equalTo("ARCHIVED")
+        );
+    }
+
+    @Then("niesprawnej windy nie ma na mapie ani na karcie budynku D-2")
+    void elevatorGone() throws Exception {
+        MatcherAssert.assertThat(
+            "Gość widzi barierę albo jej usunięcie po przyjęciu „bariera usunięta”",
+            List.of(
+                this.shown(ChangeSteps.ORIGINAL),
+                this.shown(VerifierSteps.CHECKED),
+                this.get(String.format("/submissions?buildingSymbol=%s", this.building))
+                    .contains(ChangeSteps.ORIGINAL.toString())
+            ),
+            Matchers.contains(404, 404, false)
+        );
+    }
+
+    @Then("oba zgłoszenia zostają w systemie ze statusem „archiwalne”")
+    void bothArchived() {
+        MatcherAssert.assertThat(
+            "Zgłoszenie usuniętej bariery albo „bariera usunięta” nie jest archiwalne",
+            List.of(this.status(ChangeSteps.ORIGINAL), this.status(VerifierSteps.CHECKED)),
+            Matchers.everyItem(Matchers.equalTo("ARCHIVED"))
+        );
+    }
+
+    @Then("zgłoszenie „bariera usunięta” ma to oznaczenie")
+    void removalMarked() {
+        MatcherAssert.assertThat(
+            "Zgłoszenie archiwalne nie ma oznaczenia „bariera usunięta”",
+            this.jdbc.sql("SELECT content ->> 'barrierRemoved' FROM submissions WHERE id = :id")
+                .param("id", VerifierSteps.CHECKED).query(String.class).single(),
+            Matchers.equalTo("true")
         );
     }
 
@@ -292,12 +360,17 @@ public final class ChangeSteps {
                     ),
                     null, null, replaces, List.of(VerifierSteps.PHOTO)
                 ),
-                "autor-zgloszenia"
+                "autor-zgloszenia", Set.of()
             )
         );
         this.photos.put(id, VerifierSteps.PHOTO, "zdjęcie".getBytes(StandardCharsets.UTF_8));
         this.jdbc.sql("UPDATE submissions SET status = :status WHERE id = :id")
             .param("status", status).param("id", id).update();
+    }
+
+    private String status(final UUID id) {
+        return this.jdbc.sql("SELECT status FROM submissions WHERE id = :id")
+            .param("id", id).query(String.class).single();
     }
 
     private void claim() throws Exception {
@@ -325,6 +398,11 @@ public final class ChangeSteps {
     private String stored() {
         return this.jdbc.sql("SELECT ST_AsText(location) FROM submissions WHERE id = :id")
             .param("id", VerifierSteps.CHECKED).query(String.class).single();
+    }
+
+    private int shown(final UUID id) throws Exception {
+        return this.http.perform(MockMvcRequestBuilders.get("/submissions/{id}", id))
+            .andReturn().getResponse().getStatus();
     }
 
     private String get(final String uri) throws Exception {

@@ -40,7 +40,7 @@ data class PhotoPaths(val items: List<String>)
  * `waitForIdle` obejmuje czytanie pliku bez czekania oknem zegara. W aplikacji to `Dispatchers.IO`,
  * podany parametrem domyślnym jak w [PhotoTranscoder].
  */
-internal val LocalPhotoDecodeContext = staticCompositionLocalOf { photoDecodeContext() }
+val LocalPhotoDecodeContext = staticCompositionLocalOf { photoDecodeContext() }
 
 private fun photoDecodeContext(context: CoroutineContext = Dispatchers.IO): CoroutineContext = context
 
