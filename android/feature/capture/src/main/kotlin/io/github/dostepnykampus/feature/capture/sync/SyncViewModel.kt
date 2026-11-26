@@ -70,13 +70,14 @@ sealed interface SyncUiState {
     data class Ready(val status: SyncStatus, val phase: SyncPhase, val isLowSpace: Boolean) : SyncUiState
 }
 
+// TODO(#3992): widok C4 bez konfliktu podłącza ten model widoku, a #3993 jego trasę.
+
 /**
  * C4 bez konfliktu: co czeka na wysłanie, postęp, problemy z wysyłką i „Synchronizuj teraz”. Dane tylko z
  * `core:data`; wysyłka rusza też sama.
  *
  * Wymagania: US9.1, US9.2, US9.4, US9.5, NFR-7, NFR-10, NFR-50
  */
-// TODO(#3992): widok C4 bez konfliktu podłącza ten model widoku, a #3993 jego trasę.
 @HiltViewModel
 class SyncViewModel
     @Inject
@@ -89,7 +90,12 @@ class SyncViewModel
     ) : ViewModel() {
         /** Stan ekranu zmieniający się po każdym zapisie, wysyłce i zmianie sieci. */
         val state: StateFlow<SyncUiState> =
-            combine(status.status(), sync.progress(), network.isOnline(), login.isExpired()) { now, run, net, out ->
+            combine(
+                flow = status.status(),
+                flow2 = sync.progress(),
+                flow3 = network.isOnline(),
+                flow4 = login.isExpired(),
+            ) { now, run, net, out ->
                 val phase = syncPhaseOf(status = now, progress = run, isOnline = net, isLoginExpired = out)
                 SyncUiState.Ready(status = now, phase = phase, isLowSpace = space.isLow())
             }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), SyncUiState.Loading)
