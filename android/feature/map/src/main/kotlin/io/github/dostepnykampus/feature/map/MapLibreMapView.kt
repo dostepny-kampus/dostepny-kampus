@@ -86,6 +86,7 @@ import io.github.dostepnykampus.feature.map.style.showData
 import io.github.dostepnykampus.feature.map.style.showPlanData
 import io.github.dostepnykampus.feature.map.style.showSelection
 import io.github.dostepnykampus.feature.map.style.styleBuilder
+import io.github.dostepnykampus.feature.map.tiles.MapTileHttp
 import io.github.dostepnykampus.feature.map.tiles.MapTileHttpEntryPoint
 import io.github.dostepnykampus.feature.map.trace.MapTrace
 import kotlinx.serialization.json.JsonArray
@@ -150,7 +151,8 @@ object MapLibreMapView : CampusMapView {
         val labelSize = Typografia.napisyMapy.value * density.density * fontScale
         val tolerance = TOUCH_TOLERANCE_DP * density.density
         val images = rememberMapImages(colors = colors, density = density.density, labelSize = labelSize)
-        val mapView = rememberMapView(context, background = colors.lad.toArgb())
+        val tiles = rememberMapTiles(context)
+        val mapView = rememberMapView(context, background = colors.lad.toArgb(), tiles = tiles)
         FollowScreenLifecycle(mapView)
         var map by remember { mutableStateOf<MapLibreMap?>(null) }
         var size by remember { mutableStateOf(IntSize.Zero) }
@@ -160,7 +162,7 @@ object MapLibreMapView : CampusMapView {
             }
         val basemap = remember(selection.bounds, size, density) { density.basemapOf(selection.bounds, size) }
         val area = styleAreaOf(selection = selection, basemap = basemap)
-        val areas = remember { FlightArea(area) }
+        val areas = remember { FlightArea(first = area, onTileAreas = { tiles.basemapAreas = it }) }
         val reveal = remember { BasemapReveal() }
         val currentMove by rememberUpdatedState(move)
         val currentInset by rememberUpdatedState(inset)
@@ -330,11 +332,16 @@ object MapLibreMapView : CampusMapView {
     }
 
     @Composable
-    private fun rememberMapView(context: Context, background: Int): MapView =
+    private fun rememberMapTiles(context: Context): MapTileHttp =
+        remember {
+            EntryPointAccessors.fromApplication<MapTileHttpEntryPoint>(context.applicationContext).mapTileHttp()
+        }
+
+    @Composable
+    private fun rememberMapView(context: Context, background: Int, tiles: MapTileHttp): MapView =
         remember {
             MapLibre.getInstance(context)
-            val tiles = EntryPointAccessors.fromApplication<MapTileHttpEntryPoint>(context.applicationContext)
-            HttpRequestUtil.setOkHttpClient(tiles.mapTileHttp().calls)
+            HttpRequestUtil.setOkHttpClient(tiles.calls)
             MapView(context, northUpOptions(context, background)).apply {
                 addOnDidFailLoadingMapListener { Timber.w("Mapa: błąd stylu: %s", it) }
             }
@@ -451,8 +458,8 @@ object MapLibreMapView : CampusMapView {
 
     /**
      * Kamera MapLibre [map] dla [CameraController]. Granica środka przy bieżącym powiększeniu i dopełnieniu idzie do
-     * mapy przy każdym ruchu gestem, więc odkryta część nie wychodzi poza teren. Przy przelocie stary teren
-     * i podkład zostają do zejścia poniżej powiększenia podkładu ([areas]).
+     * mapy przy każdym ruchu gestem, więc odkryta część nie wychodzi poza teren. Przelot zgłasza start
+     * i koniec do [areas].
      */
     private class MapLibreCamera(private val map: MapLibreMap, private val areas: FlightArea, private val view: View) :
         CameraPort {

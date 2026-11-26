@@ -102,8 +102,8 @@ data class MapStyleColors(
 )
 
 /**
- * Podkład mapy terenu: przy powiększeniu mniejszym niż [minZoom], np. w środku przelotu na inny teren, MapLibre go
- * nie rysuje ani nie pobiera. Kafelki dalej niż prostokąt terenu nie są potrzebne, bo widok z niego nie wychodzi.
+ * Podkład mapy terenu: przy powiększeniu mniejszym niż [minZoom] MapLibre go nie rysuje ani nie pobiera. Kafelki dalej
+ * niż prostokąt terenu nie są potrzebne, bo widok z niego nie wychodzi.
  *
  * Wymagania: NFR-39
  *
