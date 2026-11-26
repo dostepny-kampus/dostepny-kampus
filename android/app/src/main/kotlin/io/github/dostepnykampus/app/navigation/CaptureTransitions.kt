@@ -46,13 +46,14 @@ fun AppNavigator.openRemoved(acceptedId: String) {
 }
 
 /**
- * V2 → C6: „Zmień oznaczenie” pod wejściem [entranceId] budynku [buildingSymbol]; poza V2 nic nie robi.
+ * C6 z [route]: nową zmianę oznaczenia wejścia otwiera „Zmień oznaczenie” na V2, a zapisaną w telefonie „Otwórz”
+ * albo „Wyślij ponownie” na C3; z innego ekranu nic się nie dzieje.
  *
- * Wymagania: US17.2, BR-24
+ * Wymagania: US8.3, US17.2, BR-23, BR-24
  */
-fun AppNavigator.openMarking(entranceId: String, buildingSymbol: String) {
-    val route = MarkingRoute(entranceId = entranceId, buildingSymbol = buildingSymbol)
-    if (current is BuildingRoute) leaving { add(route) }
+fun AppNavigator.openMarking(route: MarkingRoute) {
+    val isFromHere = if (route.submissionId == null) current is BuildingRoute else current == MySubmissionsRoute
+    if (isFromHere) leaving { add(route) }
 }
 
 /** V2 → C2: „Popraw zgłoszenie” przy zgłoszeniu przyjętym; poza V2 nic nie robi. Wymagania: BR-3, BR-18 */

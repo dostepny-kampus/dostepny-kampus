@@ -58,6 +58,7 @@ internal fun AppNavigator.MySubmissions() {
             onMeasure = { measure() },
             onOpen = { openEdit(it) },
             onConflict = { openConflict(it) },
+            onOpenMarking = { openMarking(it) },
         )
     MySubmissionsScreen(actions)
 }

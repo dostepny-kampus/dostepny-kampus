@@ -23,6 +23,7 @@ import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
+import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.quick.QuickReportActions
 import io.github.dostepnykampus.feature.capture.quick.QuickReportScreen
@@ -196,6 +197,7 @@ internal fun AppNavigator.BuildingCard(
     val mode = if (card.isRising && state !is BuildingCardUiState.Ready) CardMode.Compact else card.mode
     val roles by account.collectAsStateWithLifecycle()
     val isCollector = StaffRole.COLLECTOR in (roles as? Account.SignedIn)?.staffRoles.orEmpty()
+    val markingRoute = { id: String -> MarkingRoute(entranceId = id, buildingSymbol = symbol) }
     BuildingCardContent(
         symbol = symbol,
         mode = mode,
@@ -211,7 +213,7 @@ internal fun AppNavigator.BuildingCard(
         onRetry = onRetry,
         onShowPlan = { showOnMap(MapFocus.Building(symbol, command = System.nanoTime(), floor = it)) },
         onMarkFloors = { openFloorMarking(symbol) }.takeIf { isCollector },
-        onChangeMarking = { id: String -> openMarking(id, buildingSymbol = symbol) }.takeIf { isCollector },
+        onChangeMarking = { id: String -> openMarking(markingRoute(id)) }.takeIf { isCollector },
         onExpand = card.onExpand,
         scroll = card.scroll,
     )
