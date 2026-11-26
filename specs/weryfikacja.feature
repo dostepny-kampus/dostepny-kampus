@@ -255,8 +255,7 @@ Funkcja: Weryfikacja zgłoszeń
       Jeżeli pierwszy Weryfikator weźmie zmianę autora
       Wtedy na liście podobnych zgłoszeń widzi zmianę „bariera usunięta”
 
-    # brak kroków serwera: #3958
-    @serwer @do-zrobienia
+    @serwer
     Szablon scenariusza: Zmiany zgłoszenia archiwalnego nie da się przyjąć
       Zakładając, że autor przyjętego zgłoszenia TB-9 „niesprawna winda” w budynku D-2 wysłał zmianę z uciążliwością 2, a inny Zbierający niezależnie wysłał zmianę „bariera usunięta” tego zgłoszenia
       Oraz drugi Weryfikator przyjął <przyjęta zmiana>
@@ -270,8 +269,7 @@ Funkcja: Weryfikacja zgłoszeń
         | zmianę autora z uciążliwością 2    | zmianę „bariera usunięta”  | na mapie jest tylko bariera TB-9 z uciążliwością 2   |
         | zmianę „bariera usunięta”          | zmianę autora              | niesprawnej windy nie ma na mapie                    |
 
-    # brak kroków serwera: #3958
-    @serwer @do-zrobienia
+    @serwer
     Szablon scenariusza: Zmianę zgłoszenia archiwalnego Weryfikator odrzuca z powodem „nieaktualne”
       Zakładając, że autor przyjętego zgłoszenia TB-9 „niesprawna winda” w budynku D-2 wysłał zmianę z uciążliwością 2, a inny Zbierający niezależnie wysłał zmianę „bariera usunięta” tego zgłoszenia
       Oraz drugi Weryfikator przyjął <przyjęta zmiana>
@@ -284,7 +282,7 @@ Funkcja: Weryfikacja zgłoszeń
         | zmianę autora z uciążliwością 2    | zmianę „bariera usunięta”  |
         | zmianę „bariera usunięta”          | zmianę autora              |
 
-    # brak kroków serwera: #3958
+    # brak kroków serwera: #4104
     @serwer @do-zrobienia
     Scenariusz: Zmianę odrzuconą jako „nieaktualne” Zbierający wysyła ponownie do bieżącego zgłoszenia
       Zakładając, że zmianę „bariera usunięta” innego Zbierającego niż autor zgłoszenia TB-9 „niesprawna winda” w budynku D-2 odrzucono z powodem „nieaktualne”, bo wcześniej przyjęto zmianę autora z uciążliwością 2

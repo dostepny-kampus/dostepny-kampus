@@ -707,8 +707,9 @@ components:
           schema: {$ref: '#/components/schemas/VersionConflictProblem'}
     ReviewConflict:
       description: >-
-        Decyzja nie może zapaść przy tym stanie zgłoszenia: inna wersja niż aktualna, zgłoszenie już rozstrzygnięte albo
-        brak zdjęcia z `photoIds` w magazynie; w odpowiedzi wersja z serwera.
+        Decyzja nie może zapaść przy tym stanie zgłoszenia: inna wersja niż aktualna, zgłoszenie już rozstrzygnięte,
+        brak zdjęcia z `photoIds` w magazynie albo przyjęcie zmiany zgłoszenia, które nie jest już przyjęte, bo przyjęto
+        wcześniej inną zmianę (BR-23); w odpowiedzi wersja z serwera.
       content:
         application/problem+json:
           schema: {$ref: '#/components/schemas/VersionConflictProblem'}
