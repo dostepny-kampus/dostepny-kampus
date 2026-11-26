@@ -44,7 +44,6 @@ class SeverityIconColorTest {
     val compose = createComposeRule()
 
     /** W jasnym motywie „Blokada” ma barwę tablicy i kontur z jasnej mapy. */
-    // TODO(#4125): w CI zrzut jasnego motywu nie zawiera znaku, lokalnie zawsze go zawiera.
     @Ignore("W CI zrzut jasnego motywu nie zawiera znaku; przyczyna w #4125")
     @Test
     fun usesLightMapTones() {
