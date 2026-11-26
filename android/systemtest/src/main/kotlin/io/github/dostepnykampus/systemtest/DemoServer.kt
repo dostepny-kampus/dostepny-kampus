@@ -22,10 +22,7 @@ import io.github.dostepnykampus.core.network.auth.AccessTokens
 import io.github.dostepnykampus.core.network.di.NetworkModule
 import io.github.dostepnykampus.core.network.inspection.MarkerChange
 import kotlinx.coroutines.runBlocking
-import okhttp3.FormBody
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.util.UUID
 
@@ -145,31 +142,11 @@ internal class DemoServer {
 
     private fun session(login: String, password: String): OkHttpClient {
         val tokens = AccessTokens()
-        tokens.signIn(token(login = login, password = password))
+        tokens.signIn(realmToken(login = login, password = password))
         return NetworkModule.okHttp(tokens)
     }
 
-    private fun token(login: String, password: String): String {
-        val form =
-            FormBody
-                .Builder()
-                .add(name = "grant_type", value = "password")
-                .add(name = "client_id", value = "dostepny-kampus-android")
-                .add(name = "username", value = login)
-                .add(name = "password", value = password)
-                .build()
-        val request =
-            Request
-                .Builder()
-                .url(TOKEN_URL)
-                .post(form)
-                .build()
-        val body = OkHttpClient().newCall(request).execute().use { it.body.string() }
-        return JSONObject(body).getString("access_token")
-    }
-
     private companion object {
-        const val TOKEN_URL = "http://10.0.2.2:8180/realms/dostepny-kampus/protocol/openid-connect/token"
         const val STAIRS = "TB-1"
         const val THRESHOLD = "TB-13"
         const val FLOOR_PREFIX = "pokaz-a1-"
