@@ -65,6 +65,16 @@ public interface Reviews {
     public suspend fun similar(submissionId: String): ServerReply<List<SimilarSubmission>>
 
     /**
+     * Zdjęcie zgłoszenia jako JPEG do zasłonięcia twarzy i tablic.
+     *
+     * Wymagania: BR-15, NFR-25
+     *
+     * @param submissionId identyfikator zgłoszenia
+     * @param photoId identyfikator zdjęcia z listy `photoIds`
+     */
+    public suspend fun photo(submissionId: String, photoId: String): ServerReply<ByteArray>
+
+    /**
      * Zastępuje zdjęcie zgłoszenia wziętego przez tego Weryfikatora wersją z zasłoniętymi twarzami i tablicami;
      * nie tworzy nowej wersji zgłoszenia.
      *
@@ -115,6 +125,9 @@ internal fun reviewsOf(api: ReviewApi, submissions: SubmissionsApi): Reviews =
 
         override suspend fun similar(submissionId: String): ServerReply<List<SimilarSubmission>> =
             api.similar(submissionId).toReply { it }
+
+        override suspend fun photo(submissionId: String, photoId: String): ServerReply<ByteArray> =
+            submissions.photo(submissionId = submissionId, photoId = photoId).toReply { it }
 
         override suspend fun replacePhoto(submissionId: String, photoId: String, jpeg: ByteArray): ServerReply<Unit> =
             submissions.putPhoto(submissionId = submissionId, photoId = photoId, jpeg = jpeg).toReply { }

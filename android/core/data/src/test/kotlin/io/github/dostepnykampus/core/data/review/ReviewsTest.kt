@@ -23,6 +23,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.Instant
@@ -83,6 +84,14 @@ class ReviewsTest {
         assertEquals(ServerReply.Ok(Unit), saved, "zdjęcie z zasłonami zapisane")
         val refused = answered(FORBIDDEN, "{}") { it.replacePhoto(submissionId = ID, photoId = PHOTO, jpeg = jpeg) }
         assertEquals(ServerReply.Fault(FORBIDDEN), refused, "zgłoszenie nie jest wzięte przez tego Weryfikatora")
+    }
+
+    @Test
+    fun us10ReadsPhoto() {
+        val read = answered(OK, "jpeg") { it.photo(submissionId = ID, photoId = PHOTO) }
+        assertArrayEquals("jpeg".toByteArray(), (read as ServerReply.Ok).value, "bajty zdjęcia do zasłaniania")
+        val missing = answered(NOT_FOUND, "{}") { it.photo(submissionId = ID, photoId = PHOTO) }
+        assertEquals(ServerReply.Missing, missing, "nieznane zdjęcie")
     }
 
     @Test
