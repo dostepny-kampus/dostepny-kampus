@@ -104,7 +104,11 @@ class MarkingViewModelTest {
                     entranceMarking = EntranceMarking.INACCESSIBLE,
                 )
             queued =
-                PendingEdit(edited = EditedSubmission(id = OWN, baseVersion = 3), content = content, photos = listOf(own))
+                PendingEdit(
+                    edited = EditedSubmission(id = OWN, baseVersion = 3),
+                    content = content,
+                    photos = listOf(own),
+                )
             open(SIDE.copy(submissionId = OWN))
             val state = viewModel.uiState.value
             assertEquals(EntranceMarking.INACCESSIBLE, state.chosen, "zapisany wybór")

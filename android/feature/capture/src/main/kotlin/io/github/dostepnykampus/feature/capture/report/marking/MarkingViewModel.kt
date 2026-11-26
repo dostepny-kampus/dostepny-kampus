@@ -64,15 +64,15 @@ class MarkingViewModel
                 val building = found?.run { buildings.firstOrNull { it.symbol == route.buildingSymbol } }
                 val own = route.submissionId?.let { id -> edits.load(id) }
                 edited = own?.edited
-                val isMissing = entrance == null || route.submissionId != null && own == null
+                val isMissing = entrance == null || (route.submissionId != null && own == null)
                 val stage = if (isMissing) MarkingStage.MISSING else MarkingStage.EDITING
                 state.update { current ->
                     current.copy(
                         entrance = entrance,
                         buildingName = building?.name,
                         stage = stage,
-                        chosen = own?.content?.entranceMarking,
-                        photo = own?.photos?.firstOrNull(),
+                        chosen = own?.run { content.entranceMarking },
+                        photo = own?.run { photos.firstOrNull() },
                     )
                 }
             }

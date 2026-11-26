@@ -23,6 +23,7 @@ import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.StaffRole
+import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.quick.QuickReportActions
 import io.github.dostepnykampus.feature.capture.quick.QuickReportScreen
@@ -211,7 +212,7 @@ internal fun AppNavigator.BuildingCard(
         onRetry = onRetry,
         onShowPlan = { showOnMap(MapFocus.Building(symbol, command = System.nanoTime(), floor = it)) },
         onMarkFloors = { openFloorMarking(symbol) }.takeIf { isCollector },
-        onChangeMarking = { id: String -> openMarking(id, buildingSymbol = symbol) }.takeIf { isCollector },
+        onChangeMarking = { id: String -> openMarking(MarkingRoute(id, symbol)) }.takeIf { isCollector },
         onExpand = card.onExpand,
         scroll = card.scroll,
     )

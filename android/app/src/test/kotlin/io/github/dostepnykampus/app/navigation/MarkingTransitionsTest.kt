@@ -28,7 +28,7 @@ class MarkingTransitionsTest {
     @Test
     fun savedMarkingOpensC3() {
         collector().run {
-            openMarking(entranceId = "n/1", buildingSymbol = "B-8")
+            openMarking(MarkingRoute(entranceId = "n/1", buildingSymbol = "B-8"))
             assertEquals(MarkingRoute(entranceId = "n/1", buildingSymbol = "B-8"), current, "V2 otwiera C6")
             reportSaved()
         }
@@ -46,7 +46,7 @@ class MarkingTransitionsTest {
         stack += MySubmissionsRoute
         val route = MarkingRoute(entranceId = "n/1", buildingSymbol = "B-8", submissionId = "m-1")
         collector().run {
-            openListMarking(route)
+            openMarking(route)
             assertEquals(route, current, "C3 otwiera C6 zmiany")
             reportSaved()
         }
@@ -56,7 +56,7 @@ class MarkingTransitionsTest {
     /** Wiersz: C6 zmiany otwiera się tylko z C3. Wymagania: US8.3 */
     @Test
     fun listMarkingOnlyFromList() {
-        collector().openListMarking(MarkingRoute(entranceId = "n/1", buildingSymbol = "B-8", submissionId = "m-1"))
+        collector().openMarking(MarkingRoute(entranceId = "n/1", buildingSymbol = "B-8", submissionId = "m-1"))
         assertEquals(listOf(MapRoute(), BuildingRoute("B-8")), stack, "poza C3 bez zmiany")
     }
 
@@ -64,7 +64,7 @@ class MarkingTransitionsTest {
     @Test
     fun backFromMarkingToCard() {
         collector().run {
-            openMarking(entranceId = "n/1", buildingSymbol = "B-8")
+            openMarking(MarkingRoute(entranceId = "n/1", buildingSymbol = "B-8"))
             back()
             assertEquals(BuildingRoute("B-8"), current, "„Wstecz” wraca do V2")
         }
@@ -74,7 +74,7 @@ class MarkingTransitionsTest {
     @Test
     fun ignoresMarkingOutsideCard() {
         stack.removeAt(stack.lastIndex)
-        collector().openMarking(entranceId = "n/1", buildingSymbol = "B-8")
+        collector().openMarking(MarkingRoute(entranceId = "n/1", buildingSymbol = "B-8"))
         assertEquals(listOf<NavKey>(MapRoute()), stack, "stos bez zmian")
     }
 
