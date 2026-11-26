@@ -118,6 +118,7 @@ private fun FloorRows(symbol: String, state: CollectorMarkersUiState.Ready, acti
                 row = row,
                 isAsking = row.markerId != null && state.asking == row.markerId,
                 isUnsaved = state.unsaved == row.place,
+                isOffline = !state.isOnline,
                 actions = actions,
             )
         }
@@ -125,12 +126,18 @@ private fun FloorRows(symbol: String, state: CollectorMarkersUiState.Ready, acti
 }
 
 @Composable
-private fun FloorCard(row: FloorRow, isAsking: Boolean, isUnsaved: Boolean, actions: CollectorMarkerActions) {
+private fun FloorCard(
+    row: FloorRow,
+    isAsking: Boolean,
+    isUnsaved: Boolean,
+    isOffline: Boolean,
+    actions: CollectorMarkerActions,
+) {
     ListItemCard {
         val name = row.label ?: stringResource(R.string.znaczniki_caly_budynek)
         Text(name, style = MaterialTheme.typography.titleMedium)
         if (row.markerId != null) {
-            Inspected(row = row, isAsking = isAsking, isUnsaved = isUnsaved, actions = actions)
+            Inspected(row = row, isAsking = isAsking, isUnsaved = isUnsaved, isOffline = isOffline, actions = actions)
         } else {
             Text(stringResource(R.string.zbierajacy_nieobejrzane), style = MaterialTheme.typography.titleMedium)
             if (isUnsaved) Text(stringResource(R.string.zbierajacy_blad_zapisu))
@@ -141,7 +148,13 @@ private fun FloorCard(row: FloorRow, isAsking: Boolean, isUnsaved: Boolean, acti
 }
 
 @Composable
-private fun Inspected(row: FloorRow, isAsking: Boolean, isUnsaved: Boolean, actions: CollectorMarkerActions) {
+private fun Inspected(
+    row: FloorRow,
+    isAsking: Boolean,
+    isUnsaved: Boolean,
+    isOffline: Boolean,
+    actions: CollectorMarkerActions,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         InspectedLabel(stringResource(R.string.zbierajacy_obejrzane), style = MaterialTheme.typography.titleMedium)
         val authorText =
@@ -149,6 +162,7 @@ private fun Inspected(row: FloorRow, isAsking: Boolean, isUnsaved: Boolean, acti
         Text(stringResource(authorText))
         if (!row.isMine) return
         if (row.isPending) Text(stringResource(R.string.zbierajacy_czeka), fontWeight = FontWeight.Bold)
+        if (row.isPending && isOffline) Text(stringResource(R.string.zbierajacy_zapisany_w_telefonie))
         if (isUnsaved) Text(stringResource(R.string.zbierajacy_blad_zapisu))
         if (isAsking) {
             HorizontalDivider()

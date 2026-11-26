@@ -126,6 +126,15 @@ class ReviewCheckScreenTest {
     }
 
     @Test
+    fun rejectWithoutReasonShowsSign() {
+        show(READY.copy(notice = CheckNotice.REASON_MISSING))
+        val text = "Podaj powód odrzucenia, aby autor wiedział, co poprawić."
+        compose.onNodeWithText(text).performScrollTo().assertIsDisplayed()
+        val signs = compose.onAllNodesWithTag(IMPORTANT_SIGN_TAG, useUnmergedTree = true).fetchSemanticsNodes()
+        assertEquals("znak „!” przy błędzie odrzucenia", 1, signs.size)
+    }
+
+    @Test
     fun entranceHasNoDuplicate() {
         val marking = CHECKED.copy(content = CHECKED.content.copy(kind = SubmissionKind.ENTRANCE_MARKING))
         show(READY.copy(submission = marking))

@@ -36,6 +36,7 @@ class SubmissionKindTest {
 
     private val opened = mutableListOf<String>()
     private val removals = mutableListOf<String>()
+    private val resent = mutableListOf<String>()
     private var measured = 0
 
     private fun show(vararg items: OwnSubmissionItem) {
@@ -45,6 +46,7 @@ class SubmissionKindTest {
                 onMeasure = { measured++ },
                 onOpen = { opened.add(it) },
                 onOpenRemoval = { removals.add(it) },
+                onResendChange = { resent.add(it) },
             )
         val state = MySubmissionsUiState.Ready(MySubmissions(items.toList()))
         compose.setContent { DostepnyKampusTheme { MySubmissionsContent(state = state, actions = actions) } }
@@ -100,9 +102,10 @@ class SubmissionKindTest {
     }
 
     /**
-     * Wiersz: zgłoszenie odrzucone jako „nieaktualne” ma zdanie o nowszej wersji i „Wyślij ponownie” do poprawki.
+     * Wiersz: zgłoszenie odrzucone jako „nieaktualne” ma zdanie o nowszej wersji i „Wyślij ponownie” do nowej zmiany
+     * bieżącego przyjętego zgłoszenia zamiast poprawki tej zmiany.
      *
-     * Wymagania: BR-23, US8.3
+     * Wymagania: BR-23, BR-18, US8.3
      */
     @Test
     fun resendsOutdatedReport() {
@@ -111,7 +114,7 @@ class SubmissionKindTest {
         compose.onNodeWithText(sentence).assertIsDisplayed()
         compose.onNodeWithText("Otwórz").assertDoesNotExist()
         compose.onNodeWithText("Wyślij ponownie").performClick()
-        assertEquals("„Wyślij ponownie” otwiera to zgłoszenie", listOf("s"), opened)
+        assertEquals("nowa zmiana, nie poprawka", listOf(emptyList<String>(), listOf("s")), listOf(opened, resent))
     }
 
     /** Wiersz: zmiana oznaczenia odrzucona jako „nieaktualne” ma zdanie o zmienionym oznaczeniu. Wymagania: BR-24 */

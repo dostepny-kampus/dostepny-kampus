@@ -28,7 +28,7 @@ import tools.jackson.databind.ObjectMapper;
  * Weryfikator bierze cudze zgłoszenie do weryfikacji i rozstrzyga je, ale nie własne
  * ani takie, któremu brakuje zdjęcia w magazynie.
  *
- * <p>Wymagania: US10.3, BR-4, BR-11, BR-3, BR-14, BR-16, BR-7, BR-8, BR-18, BR-19</p>
+ * <p>Wymagania: US10.3, BR-4, BR-11, BR-3, BR-14, BR-16, BR-7, BR-8, BR-18, BR-19, BR-23</p>
  *
  * @since 0.1.0
  */
@@ -221,7 +221,7 @@ final class ReviewHttpIT {
         throws Exception {
         MatcherAssert.assertThat(
             "Przyjęcie zmiany nie dało 200, ARCHIVED zastąpionego i ACCEPTED zmiany",
-            ReviewHttpIT.decidedChange(context, "{}", ReviewHttpIT.ACCEPT),
+            ReviewHttpIT.decidedChange(context, "ACCEPTED", "{}", ReviewHttpIT.ACCEPT),
             Matchers.contains(200, "ARCHIVED", "ACCEPTED")
         );
     }
@@ -231,7 +231,7 @@ final class ReviewHttpIT {
         MatcherAssert.assertThat(
             "Przyjęcie „bariera usunięta” nie dało 200 i ARCHIVED obu zgłoszeń",
             ReviewHttpIT.decidedChange(
-                context, "{\"barrierRemoved\":true}", ReviewHttpIT.ACCEPT
+                context, "ACCEPTED", "{\"barrierRemoved\":true}", ReviewHttpIT.ACCEPT
             ),
             Matchers.contains(200, "ARCHIVED", "ARCHIVED")
         );
@@ -243,10 +243,33 @@ final class ReviewHttpIT {
         MatcherAssert.assertThat(
             "Odrzucenie zmiany nie dało 200, ACCEPTED zastąpionego i REJECTED zmiany",
             ReviewHttpIT.decidedChange(
-                context, "{}",
+                context, "ACCEPTED", "{}",
                 "{\"decision\":\"REJECT\",\"version\":1,\"rejectionReason\":\"Nie\"}"
             ),
             Matchers.contains(200, "ACCEPTED", "REJECTED")
+        );
+    }
+
+    @Test
+    void conflictsOnAcceptedChangeOfArchivedSubmission(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Przyjęcie zmiany zgłoszenia archiwalnego nie dało 409 bez zmiany obu zgłoszeń",
+            ReviewHttpIT.decidedChange(context, "ARCHIVED", "{}", ReviewHttpIT.ACCEPT),
+            Matchers.contains(409, "ARCHIVED", "IN_REVIEW")
+        );
+    }
+
+    @Test
+    void rejectsStaleChangeOfArchivedSubmission(final WebApplicationContext context)
+        throws Exception {
+        MatcherAssert.assertThat(
+            "Odrzucenie nieaktualnej zmiany nie dało 200, ARCHIVED zastąpionego i REJECTED zmiany",
+            ReviewHttpIT.decidedChange(
+                context, "ARCHIVED", "{}",
+                "{\"decision\":\"REJECT\",\"version\":1,\"rejectionReason\":\"nieaktualne\"}"
+            ),
+            Matchers.contains(200, "ARCHIVED", "REJECTED")
         );
     }
 
@@ -356,10 +379,11 @@ final class ReviewHttpIT {
     }
 
     private static List<Object> decidedChange(
-        final WebApplicationContext context, final String content, final String decision
+        final WebApplicationContext context, final String former, final String content,
+        final String decision
     ) throws Exception {
         final UUID replaced = new SampleSubmissions(context)
-            .add("ACCEPTED", SampleSubmissions.quick(ReviewHttpIT.PHOTO));
+            .add(former, SampleSubmissions.quick(ReviewHttpIT.PHOTO));
         final UUID id = ReviewHttpIT.sent(context, "inne-konto");
         context.getBean(JdbcClient.class).sql(
             """

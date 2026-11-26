@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.inspection.progress
@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
@@ -174,10 +175,18 @@ class CollectorMarkersViewModelTest {
             assertEquals(CollectorMarkersUiState.Ready(expected), viewModel.state.value, "znaczniki z serwera")
         }
 
+    @Test
+    fun reportsOffline() =
+        viewModelTest(plans = FakePlans(stored = A1_FLOORS), online = flowOf(false)) { viewModel, _ ->
+            val state = viewModel.state.value as CollectorMarkersUiState.Ready
+            assertEquals(false, state.isOnline, "brak internetu w stanie ekranu")
+        }
+
     private fun viewModelTest(
         plans: FloorPlans,
         markers: FakeMarkers = FakeMarkers(),
         server: FakeServerMarkers = FakeServerMarkers(),
+        online: Flow<Boolean> = flowOf(true),
         block: suspend TestScope.(CollectorMarkersViewModel, FakeMarkers) -> Unit,
     ) {
         val dispatcher = StandardTestDispatcher()
@@ -190,6 +199,7 @@ class CollectorMarkersViewModelTest {
                         plans = plans,
                         markers = markers,
                         serverMarkers = server,
+                        network = { online },
                     )
                 runCurrent()
                 block(viewModel, markers)

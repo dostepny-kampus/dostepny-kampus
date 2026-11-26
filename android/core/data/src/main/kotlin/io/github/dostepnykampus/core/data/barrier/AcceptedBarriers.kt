@@ -33,6 +33,8 @@ import java.time.Instant
  *   nadany
  * @property description opis bariery ze zgłoszenia; `null`, gdy zgłoszenie nie ma opisu
  * @property isQuick czy zgłoszenie pochodzi ze zgłoszenia szybkiego
+ * @property replacesSubmissionId zgłoszenie, które to przyjęte zgłoszenie zastąpiło jako zmiana; `null` dla nowej
+ *   bariery
  */
 public data class AcceptedBarrier(
     val id: String,
@@ -47,6 +49,7 @@ public data class AcceptedBarrier(
     val photoUrl: String? = null,
     val description: String? = null,
     val isQuick: Boolean = false,
+    val replacesSubmissionId: String? = null,
 )
 
 /** Bariery ze zgłoszeń przyjętych dla mapy. Wymagania: US1.3, BR-6 */
@@ -156,6 +159,7 @@ internal fun Submission.toBarrier(): AcceptedBarrier? {
             photoIds = content.photoIds,
             description = content.description,
             isQuick = content.kind == SubmissionKind.QUICK,
+            replacesSubmissionId = content.replacesSubmissionId,
         )
     }
 }

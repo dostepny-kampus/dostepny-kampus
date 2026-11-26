@@ -14,7 +14,7 @@ import java.util.List;
  *
  * <p>Wymagania: US15.1, US15.2, US8.1</p>
  *
- * @param cursor Chwila najpóźniejszej zwróconej zmiany, bez zmian kursor z żądania
+ * @param cursor Chwila pobrania cofnięta o margines, nie wcześniejsza niż kursor z żądania
  * @param submissions Zgłoszenia zmienione od kursora w kształcie schematu Submission
  * @param markers Znaczniki pięter zmienione od kursora
  * @since 0.1.0
@@ -26,7 +26,7 @@ public record PulledChanges(
     /**
      * Kopiuje listy, żeby rekord był niezmienny.
      *
-     * @param cursor Chwila najpóźniejszej zwróconej zmiany, bez zmian kursor z żądania
+     * @param cursor Chwila pobrania cofnięta o margines, nie wcześniejsza niż kursor z żądania
      * @param submissions Zgłoszenia zmienione od kursora w kształcie schematu Submission
      * @param markers Znaczniki pięter zmienione od kursora
      */

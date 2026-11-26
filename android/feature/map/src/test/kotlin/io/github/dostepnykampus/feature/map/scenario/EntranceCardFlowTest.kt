@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.map.scenario
@@ -12,6 +12,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isHeading
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -136,7 +137,7 @@ class EntranceCardFlowTest {
         assertTrue("dół kamery zasłania arkusz: $covered", covered >= root.bottom - header.top)
         assertTrue("najwyżej o odstępy arkusza więcej: $covered", covered <= root.bottom - header.top + SHEET_EDGE)
         assertTrue("arkusz najwyżej do połowy ekranu: ${header.top}", header.top >= root.bottom / 2)
-        compose.onNode(hasScrollAction()).assertExists("treść arkusza się przewija")
+        compose.onNode(hasScrollAction() and !hasSetTextAction()).assertExists("treść arkusza się przewija")
         compose.onNodeWithText("Sprawdzone 14.10.2026").performScrollTo().assertIsDisplayed()
     }
 

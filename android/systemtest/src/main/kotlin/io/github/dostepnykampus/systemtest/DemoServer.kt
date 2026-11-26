@@ -8,6 +8,7 @@ package io.github.dostepnykampus.systemtest
 import android.graphics.Bitmap
 import android.graphics.Color
 import io.github.dostepnykampus.core.model.GeoPoint
+import io.github.dostepnykampus.core.model.export.ExportFormat
 import io.github.dostepnykampus.core.model.inspection.BuildingProgress
 import io.github.dostepnykampus.core.model.review.RejectionReasons
 import io.github.dostepnykampus.core.model.review.ReviewClaim
@@ -23,6 +24,7 @@ import io.github.dostepnykampus.core.network.di.NetworkModule
 import io.github.dostepnykampus.core.network.inspection.MarkerChange
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
+import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.util.UUID
 
@@ -35,6 +37,9 @@ internal const val DEMO_BUILDING = "A-1"
 /** Opis zgłoszenia TB-13 „próg” z założeń scenariusza; po nim powtórne uruchomienie znajduje to zgłoszenie. */
 internal const val THRESHOLD_NOTE = "Próg przy drzwiach, inna bariera niż schody (założenie drogi demo)"
 
+/** Wejście główne A-1 z pliku konturów; TB-1 z trasy pokazu leży ok. 3 m od niego. */
+internal val MAIN_ENTRANCE = GeoPoint(latitude = 51.1080911, longitude = 17.0614223)
+
 /** Miejsce TB-13: 5 m na wschód od średniej trasy pokazu, czyli od miejsca TB-1 po pomiarze. */
 internal val THRESHOLD_PLACE = GeoPoint(latitude = 51.1080604, longitude = 17.0614921)
 
@@ -44,7 +49,7 @@ internal val THRESHOLD_PLACE = GeoPoint(latitude = 51.1080604, longitude = 17.06
  * powtórnym uruchomieniu na tym samym serwerze: TB-13 jest szukane po opisie, znaczniki pięter się nie sumują,
  * a stare TB-1 z poprzednich uruchomień wychodzą z kolejki Weryfikatora.
  *
- * Wymagania: US10.1, US11.1
+ * Wymagania: US10.1, US11.1, US13.1
  */
 internal class DemoServer {
     private val json = NetworkModule.json()
@@ -70,6 +75,14 @@ internal class DemoServer {
             val all = NetworkModule.inspectionProgressApi(coordinator, json).progress()
             check(all is ApiResult.Success) { "Postęp inwentaryzacji: $all" }
             all.value.first { it.buildingSymbol == DEMO_BUILDING }
+        }
+
+    /** Eksport GeoJSON Koordynatora jako obiekt JSON. */
+    fun geoJson(): JSONObject =
+        runBlocking {
+            val file = NetworkModule.exportApi(coordinator, json).download(ExportFormat.GEOJSON)
+            check(file is ApiResult.Success) { "Eksport GeoJSON: $file" }
+            JSONObject(file.value.text)
         }
 
     private suspend fun find(note: String): List<Submission> {

@@ -51,6 +51,24 @@ class CollectorMarkersScreenTest {
         compose.onNodeWithText(REVOKE).assertIsDisplayed()
     }
 
+    /**
+     * Wiersz: C5 bez internetu, znacznik w telefonie dostaje zdanie, że wyśle się po powrocie internetu.
+     *
+     * Wymagania: US15.3
+     */
+    @Test
+    fun explainsPendingMarkerOffline() {
+        show(CollectorMarkersUiState.Ready(ROWS, isOnline = false))
+        compose.onNodeWithText(SAVED_IN_PHONE).assertIsDisplayed()
+    }
+
+    /** Wiersz: C5 z internetem, przy znaczniku w telefonie nie ma zdania o braku internetu. Wymagania: US15.3 */
+    @Test
+    fun omitsOfflineSentenceOnline() {
+        show(CollectorMarkersUiState.Ready(ROWS))
+        compose.onNodeWithText(SAVED_IN_PHONE).assertDoesNotExist()
+    }
+
     /** Wiersz: C5, „Oznacz jako obejrzane” przy nieobejrzanym piętrze oznacza to piętro. Wymagania: US15.1 */
     @Test
     fun marksUninspectedFloor() {
@@ -211,3 +229,5 @@ class CollectorMarkersScreenTest {
             )
     }
 }
+
+private const val SAVED_IN_PHONE = "Znacznik zapisany w telefonie. Wyślemy go, gdy wróci internet."

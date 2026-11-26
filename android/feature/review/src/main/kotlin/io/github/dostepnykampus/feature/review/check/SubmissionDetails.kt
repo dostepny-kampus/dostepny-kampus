@@ -17,7 +17,7 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.GroupFrame
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.marking.BarrierPhoto
-import io.github.dostepnykampus.core.designsystem.marking.SeverityBadge
+import io.github.dostepnykampus.core.designsystem.marking.SeverityLabel
 import io.github.dostepnykampus.core.designsystem.marking.barrierPlace
 import io.github.dostepnykampus.core.designsystem.marking.measuredPlace
 import io.github.dostepnykampus.core.designsystem.marking.nearEntrance
@@ -32,7 +32,7 @@ import io.github.dostepnykampus.feature.review.queue.titleRes
  * Dane zgłoszenia na R2 bez pól do edycji.
  *
  * TODO(#3846): zasłanianie twarzy i tablic na zdjęciu.
- * TODO(#3707): rola i pseudonim autora.
+ * TODO(#4027): rola i pseudonim autora.
  *
  * Przy zmianie „bariera usunięta” pierwsze zdjęcie stoi obok zdjęcia poprzedniego zgłoszenia.
  *
@@ -53,13 +53,14 @@ internal fun SubmissionDetails(shown: CheckUiState.Ready) {
             style = MaterialTheme.typography.headlineSmall,
         )
         content.severity?.let { Severity.fromValue(it) }?.let { severity ->
-            SeverityBadge(severity = severity, modifier = Modifier.padding(vertical = Odstepy.s))
+            SeverityLabel(severity = severity, modifier = Modifier.padding(vertical = Odstepy.s))
         }
         Text(
             text = barrierPlace(symbol = content.buildingSymbol, name = null, entrance = null, floor = content.floor),
             style = MaterialTheme.typography.bodyLarge,
         )
-        content.accuracyMeters?.let { accuracy ->
+        val accuracy = content.accuracyMeters
+        if (accuracy != null) {
             val near = shown.nearest?.let { nearEntrance(entrance = it.entrance, meters = it.meters) }
             Text(stringResource(R.string.sprawdzenie_miejsce, measuredPlace(near = near, accuracyMeters = accuracy)))
         }
