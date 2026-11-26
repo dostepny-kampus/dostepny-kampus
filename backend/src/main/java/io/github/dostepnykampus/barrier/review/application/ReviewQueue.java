@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier.submission.application;
+package io.github.dostepnykampus.barrier.review.application;
 
 import io.github.dostepnykampus.barrier.review.ReviewRepository;
 import io.github.dostepnykampus.barrier.review.SimilarSubmission;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * Kolejka weryfikacji i podobne zgłoszenia dla warstwy web.
- * TODO(#3999): klasa przechodzi do tematu review.
  *
  * <p>Wymagania: US10.1, US10.4, US10.5, US10.7, BR-4, BR-7, BR-11, BR-13</p>
  *

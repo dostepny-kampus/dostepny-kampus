@@ -3,10 +3,11 @@
  * Author: Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier.submission.web;
+package io.github.dostepnykampus.barrier.review.web;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import io.github.dostepnykampus.barrier.review.SimilarSubmission;
+import io.github.dostepnykampus.barrier.submission.web.SubmissionResponse;
 
 /**
  * Odpowiedź z podobnym zgłoszeniem, schemat SimilarSubmission w OpenAPI.

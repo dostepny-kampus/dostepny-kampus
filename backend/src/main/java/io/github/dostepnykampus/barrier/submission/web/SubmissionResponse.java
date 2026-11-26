@@ -32,7 +32,7 @@ import org.jspecify.annotations.Nullable;
  * @since 0.1.0
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-record SubmissionResponse(
+public record SubmissionResponse(
     UUID id, int version, SubmissionStatus status, Instant createdAt,
     @Nullable Instant verifiedAt, @Nullable String rejectionReason,
     @JsonProperty("duplicateOfSubmissionId") @Nullable UUID duplicateOf,
@@ -44,7 +44,7 @@ record SubmissionResponse(
      *
      * @param submission Zgłoszenie
      */
-    SubmissionResponse(final Submission submission) {
+    public SubmissionResponse(final Submission submission) {
         this(
             submission.id(), submission.version(), submission.status(), submission.createdAt(),
             SubmissionResponse.known(submission.verification()),

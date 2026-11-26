@@ -3,16 +3,17 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier.submission.web;
+package io.github.dostepnykampus.barrier.review.web;
 
 import io.github.dostepnykampus.barrier.review.ReviewDecision;
+import io.github.dostepnykampus.barrier.review.application.ReviewQueue;
+import io.github.dostepnykampus.barrier.review.application.StaleEntranceMarking;
+import io.github.dostepnykampus.barrier.review.application.SubmissionReview;
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.StoredPhotos;
 import io.github.dostepnykampus.barrier.submission.Submission;
-import io.github.dostepnykampus.barrier.submission.application.ReviewQueue;
-import io.github.dostepnykampus.barrier.submission.application.StaleEntranceMarking;
 import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
-import io.github.dostepnykampus.barrier.submission.application.SubmissionReview;
+import io.github.dostepnykampus.barrier.submission.web.SubmissionResponse;
 import io.github.dostepnykampus.shared.error.ConflictingState;
 import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import io.github.dostepnykampus.shared.error.MissingResource;
@@ -30,7 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
  * Weryfikacja zgłoszeń: kolejka weryfikacji, podobne zgłoszenia, wzięcie do weryfikacji
  * i decyzja Weryfikatora. Własnego zgłoszenia Weryfikator nie widzi w kolejce,
  * nie bierze ani nie rozstrzyga.
- * TODO(#3999): klasa przechodzi do tematu review.
  *
  * <p>Wymagania: US10.1, US10.4, US10.5, US10.7, BR-3, BR-4, BR-7, BR-8, BR-11, BR-13, BR-16</p>
  *
