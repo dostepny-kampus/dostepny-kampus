@@ -64,7 +64,10 @@ internal fun serverVersionCopy(dao: ServerCopyDao, id: String, ioContext: Corout
  */
 internal data class OwnCopy(val content: SubmissionContent, val photoPaths: List<String>)
 
-/** Dokument [OwnCopy] zgłoszenia [id] do kolumny historii; w tym samym formacie co kopia wersji z serwera. */
+/**
+ * Dokument [OwnCopy] zgłoszenia [id] do kolumny historii, w tym samym formacie co kopia wersji z serwera. Nie niesie
+ * wersji z serwera: tę trzyma kolumna `server_version`.
+ */
 internal fun ownCopyJson(id: String, copy: OwnCopy): String {
     val draft =
         Submission(
@@ -90,7 +93,10 @@ internal fun ownPhotoPaths(contents: List<String>): List<String> =
 /** Klucz kopii wersji z serwera zgłoszenia [id] w tabeli kopii. */
 internal fun serverVersionKey(id: String): String = "submission_server_version:$id"
 
-/** Wersja i status w [submission] nie są czytane: liczy się treść. */
+/**
+ * Treść i zdjęcia własnego zgłoszenia. Wersja i status w [submission] tylko wypełniają format kopii i nikt ich nie
+ * czyta: wersja bazowa poprawki pochodzi z kolumny `server_version` historii.
+ */
 @Serializable
 private data class StoredOwn(val submission: CachedVersion, val photoPaths: List<String>)
 
