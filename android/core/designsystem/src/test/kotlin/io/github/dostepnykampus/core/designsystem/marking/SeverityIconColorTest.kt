@@ -30,8 +30,7 @@ import kotlin.math.roundToInt
 
 private const val SIGN = "znak"
 
-/** Różnica kanału w skali 0–255, którą natywne rysowanie może dać na różnych procesorach. */
-private const val CHANNEL_TOLERANCE = 2
+private const val CHANNEL_TOLERANCE_0_255 = 2
 private const val CHANNEL_MAX = 255f
 
 /**
@@ -72,10 +71,10 @@ class SeverityIconColorTest {
     }
 
     private fun assertNear(message: String, expected: Color, pixels: List<Color>) {
-        val nearest = pixels.minBy { distance(it, expected) }
+        val nearest = pixels.minBy { distance(a = it, b = expected) }
         assertTrue(
             "$message: oczekiwano ${expected.hex()}, najbliższy piksel ${nearest.hex()}",
-            distance(nearest, expected) <= CHANNEL_TOLERANCE,
+            distance(a = nearest, b = expected) <= CHANNEL_TOLERANCE_0_255,
         )
     }
 
