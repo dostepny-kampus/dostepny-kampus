@@ -41,7 +41,7 @@ import io.github.dostepnykampus.core.database.submission.PendingSubmissionEntity
         FloorRoomEntity::class,
         InspectionMarkerEntity::class,
     ],
-    version = 14,
+    version = 15,
     autoMigrations = [AutoMigration(from = 9, to = 10), AutoMigration(from = 10, to = 11)],
     exportSchema = true,
 )

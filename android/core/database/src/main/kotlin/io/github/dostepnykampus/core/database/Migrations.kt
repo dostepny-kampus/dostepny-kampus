@@ -147,6 +147,17 @@ internal val MIGRATION_13_14: Migration =
         }
     }
 
+/**
+ * Migracja 14→15: historia „Moje zgłoszenia” dostaje pełną treść z ostatniego zapisu do poprawki bez sieci.
+ * Wymagania: US8.3, NFR-5
+ */
+internal val MIGRATION_14_15: Migration =
+    object : Migration(14, 15) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE `own_submissions` ADD COLUMN `content_json` TEXT")
+        }
+    }
+
 /** Wszystkie migracje od wersji 1 w kolejności wersji. */
 internal val ALL_MIGRATIONS: List<Migration> =
     listOf(
@@ -161,4 +172,5 @@ internal val ALL_MIGRATIONS: List<Migration> =
         MIGRATION_11_12,
         MIGRATION_12_13,
         MIGRATION_13_14,
+        MIGRATION_14_15,
     )
