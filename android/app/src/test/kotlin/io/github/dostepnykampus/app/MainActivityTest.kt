@@ -100,7 +100,11 @@ class MainActivityTest {
         }
         compose.onNodeWithText(BUILDING_ON_MAP).assertExists("pełny ekran od razu po odtworzeniu aktywności")
         compose.onNodeWithContentDescription(EXPAND_HANDLE).assertDoesNotExist()
-        compose.onNodeWithText(BUILDING_ON_MAP).performScrollTo().assertIsDisplayed().performClick()
+        compose
+            .onNodeWithText(BUILDING_ON_MAP)
+            .performScrollTo()
+            .assertIsDisplayed()
+            .performClick()
         compose.waitUntil("ekran mapy z podpisem OpenStreetMap", timeoutMillis = 5_000) {
             compose.onAllNodesWithText("© OpenStreetMap").fetchSemanticsNodes().isNotEmpty()
         }
