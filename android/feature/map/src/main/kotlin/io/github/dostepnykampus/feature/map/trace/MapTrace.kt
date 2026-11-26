@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map.camera
+package io.github.dostepnykampus.feature.map.trace
 
 import android.os.Build
 import android.os.Trace
@@ -25,20 +25,21 @@ internal object MapTrace {
     const val SELECTION_SECTION = "Mapa: zaznaczenie w stylu"
     const val CARD_STATE_SECTION = "Karta: stan"
     const val CARD_FLOORS_SECTION = "Karta: fakty o piętrach"
+    private const val GEOJSON_SECTION = "Mapa: GeoJSON"
     private const val ZOOM_SCALE = 100.0
     private const val DEGREE_SCALE = 1_000_000.0
 
-    /** Początek ruchu kamery [motion] o numerze [move]; koniec daje [endMove] z tym samym numerem. */
-    fun startMove(motion: CameraMotion, move: Int) {
+    /** Początek ruchu kamery w sekcji [section] o numerze [move]; koniec daje [endMove] z tą samą sekcją i numerem. */
+    fun startMove(section: String, move: Int) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Trace.isEnabled()) {
-            Trace.beginAsyncSection(moveSection(motion), move)
+            Trace.beginAsyncSection(section, move)
         }
     }
 
-    /** Koniec albo przerwanie ruchu kamery [motion] o numerze [move]. */
-    fun endMove(motion: CameraMotion, move: Int) {
+    /** Koniec albo przerwanie ruchu kamery w sekcji [section] o numerze [move]. */
+    fun endMove(section: String, move: Int) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Trace.isEnabled()) {
-            Trace.endAsyncSection(moveSection(motion), move)
+            Trace.endAsyncSection(section, move)
         }
     }
 
@@ -82,10 +83,6 @@ internal object MapTrace {
         }
     }
 
-    private fun moveSection(motion: CameraMotion): String =
-        when (motion) {
-            CameraMotion.NONE -> "Kamera: bez ruchu"
-            CameraMotion.EASE -> "Kamera: przesunięcie"
-            CameraMotion.FLIGHT -> "Kamera: przelot"
-        }
+    /** Nazwa sekcji budowy GeoJSON źródła stylu [source]: stała nazwa źródła, bez danych osobowych. */
+    fun geoJsonSection(source: String): String = "$GEOJSON_SECTION $source"
 }

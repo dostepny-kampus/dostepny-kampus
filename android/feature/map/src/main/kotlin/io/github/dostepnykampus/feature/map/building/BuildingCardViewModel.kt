@@ -25,7 +25,7 @@ import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EvacuationExit
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.room.RoomList
-import io.github.dostepnykampus.feature.map.camera.MapTrace
+import io.github.dostepnykampus.feature.map.trace.MapTrace
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

@@ -201,18 +201,21 @@ private fun Choice(label: String, isChosen: Boolean, isError: Boolean, onChoose:
 }
 
 /**
- * Komunikat w ramce: zdanie pogrubione i zdanie pod nim.
+ * Komunikat w ramce: zdanie pogrubione, zdanie pod nim i opcjonalny wiersz szczegółów.
  *
  * @param title pierwsze zdanie
  * @param body drugie zdanie
+ * @param detail wiersz pod zdaniami; `null` bez wiersza
  */
 @Composable
 internal fun Notice(
     @StringRes title: Int,
     @StringRes body: Int,
+    detail: String? = null,
 ) {
     GroupFrame {
         Text(stringResource(title), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(body), style = MaterialTheme.typography.bodyLarge)
+        if (detail != null) Text(detail, style = MaterialTheme.typography.bodyLarge)
     }
 }

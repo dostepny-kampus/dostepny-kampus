@@ -21,6 +21,8 @@ import io.github.dostepnykampus.core.model.review.SimilarSubmission
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.Submission
+import io.github.dostepnykampus.core.model.submission.SubmissionField
+import io.github.dostepnykampus.core.model.submission.fieldsChanged
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -57,6 +59,7 @@ sealed interface CheckUiState {
      * @property quickSeverity uciążliwość nadana zgłoszeniu szybkiemu; `null`, zanim Weryfikator ją wybierze
      * @property missingAttempts liczba prób przyjęcia zgłoszenia szybkiego bez typu albo uciążliwości
      * @property nearest najbliższe wejście budynku zgłoszenia; `null` bez budynku, wejść albo katalogu
+     * @property changed pola, którymi nowa wersja różni się od wcześniej pokazanej; pusta lista bez nowej wersji
      */
     data class Ready(
         val submission: Submission,
@@ -68,6 +71,7 @@ sealed interface CheckUiState {
         val quickSeverity: Severity? = null,
         val missingAttempts: Int = 0,
         val nearest: EntranceDistance? = null,
+        val changed: List<SubmissionField> = emptyList(),
     ) : CheckUiState
 
     /** Bez internetu przy wczytywaniu. */
@@ -188,12 +192,13 @@ class ReviewCheckViewModel
                 }
 
                 is ReviewOutcome.Changed -> {
-                    val changed = ready(outcome.server, shown.similar, CheckNotice.CHANGED)
+                    val server = outcome.server
                     current.value =
-                        changed.copy(
+                        ready(server, shown.similar, CheckNotice.CHANGED).copy(
                             quickType = shown.quickType,
                             quickSeverity = shown.quickSeverity,
                             nearest = shown.nearest,
+                            changed = fieldsChanged(previous = shown.submission.content, current = server.content),
                         )
                 }
             }

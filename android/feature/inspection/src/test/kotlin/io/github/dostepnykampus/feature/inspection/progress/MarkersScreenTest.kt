@@ -80,12 +80,16 @@ class MarkersScreenTest {
         compose.onNodeWithText(KEEP).assertIsDisplayed()
     }
 
-    /** Wiersz: znacznik piętra pokazuje etykietę z danych PWr, a pytanie o cofnięcie też. Wymagania: US11.3 */
+    /** Wiersz: znacznik piętra pokazuje etykietę „2 piętro”, a pytanie o cofnięcie też. Wymagania: US11.3 */
     @Test
     fun showsFloorLabelNotId() {
-        show(MarkersUiState.Ready(BUILDING, asking = MARKER_ID, floorLabels = mapOf("2" to "1 piętro")))
-        compose.onNodeWithText("1 piętro").assertIsDisplayed()
-        compose.onNodeWithText("Cofnąć znacznik piętra „1 piętro”?", substring = true).assertIsDisplayed()
+        checkFloorLabelQuestion("2 piętro")
+    }
+
+    /** Pytanie o cofnięcie z etykietą „Parter” brzmi poprawnie bez słowa „piętra”. Wymagania: US11.3 */
+    @Test
+    fun asksRevokeWithGroundFloor() {
+        checkFloorLabelQuestion("Parter")
     }
 
     /**
@@ -141,6 +145,15 @@ class MarkersScreenTest {
         show(MarkersUiState.ServerError, actions(onRetry = { retries++ }))
         compose.onNodeWithText("Spróbuj ponownie").performClick()
         assertEquals("liczba ponowień", 1, retries)
+    }
+
+    private fun checkFloorLabelQuestion(label: String) {
+        show(MarkersUiState.Ready(BUILDING, asking = MARKER_ID, floorLabels = mapOf("2" to label)))
+        compose.onNodeWithText(label).assertIsDisplayed()
+        val expected =
+            "Cofnąć znacznik: $label? Postęp budynku się zmniejszy, " +
+                "a znacznik postawi ponownie tylko Zbierający."
+        compose.onNodeWithText(expected).assertIsDisplayed()
     }
 
     private fun actions(

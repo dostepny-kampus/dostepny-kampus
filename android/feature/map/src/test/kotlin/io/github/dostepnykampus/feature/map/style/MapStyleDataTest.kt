@@ -79,6 +79,14 @@ class MapStyleDataTest {
         assertEquals("obrazy podpisów", listOf("C-13", "C-14"), target.images)
     }
 
+    /** Bez włączonego śledzenia tekst źródła jest tekstem jego danych. Wymagania: NFR-57 */
+    @Test
+    fun keepsSourceTextUnchanged() {
+        val data = dataOf("C-13")
+        val text = geoJsonText(BUILDINGS_SOURCE) { data.buildings }
+        assertEquals("tekst źródła konturów", data.buildings.asStyleText(), text)
+    }
+
     private fun dataOf(vararg symbols: String): CampusMapData =
         campusMapData(
             BuildingCatalog(

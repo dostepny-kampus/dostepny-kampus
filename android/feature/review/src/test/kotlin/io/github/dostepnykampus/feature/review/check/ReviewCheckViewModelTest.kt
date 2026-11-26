@@ -17,6 +17,7 @@ import io.github.dostepnykampus.core.model.review.SimilarSubmission
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.Submission
+import io.github.dostepnykampus.core.model.submission.SubmissionField
 import io.github.dostepnykampus.feature.review.queue.queued
 import io.github.dostepnykampus.feature.review.queue.quick
 import kotlinx.coroutines.Dispatchers
@@ -150,13 +151,18 @@ class ReviewCheckViewModelTest {
 
     @Test
     fun changedShowsNewVersion() {
-        val server = CHECKED.copy(version = 2)
+        val server = CHECKED.copy(version = 2, content = CHECKED.content.copy(severity = 3, description = "Nowy"))
         checkTest(Fake(outcome = ServerReply.Ok(ReviewOutcome.Changed(server)))) { model ->
             runCurrent()
             model.accept { done++ }
             runCurrent()
             val shown = model.state.value as CheckUiState.Ready
             assertEquals(server to CheckNotice.CHANGED, shown.submission to shown.notice, "nowa wersja z komunikatem")
+            assertEquals(
+                listOf(SubmissionField.SEVERITY, SubmissionField.DESCRIPTION),
+                shown.changed,
+                "pola różniące pokazaną wersję od nowej",
+            )
             assertEquals(0, done, "bez powrotu do R1")
         }
     }
