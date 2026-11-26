@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.map.style
 
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
 import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.feature.map.campus.BARRIER_FLOOR
 import io.github.dostepnykampus.feature.map.campus.BARRIER_ID
 import io.github.dostepnykampus.feature.map.campus.BARRIER_SEVERITY
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
@@ -78,6 +79,31 @@ class CampusMapBarriersStyleTest {
         val images = layout.getValue("icon-image").jsonArray.map { it.toString() }
         val expected = Severity.entries.map { JsonPrimitive(chosenBarrierImage(it)).toString() }
         assertEquals(true, images.containsAll(expected))
+    }
+
+    /**
+     * Wiersz: V1, przy planie budynku bariera tego budynku bez piętra bierze znak z „?”; bez planu znak się nie
+     * zmienia.
+     *
+     * Wymagania: US16.1, BR-14
+     */
+    @Test
+    fun picksUnknownFloorSigns() {
+        val plain = barrierSignsImage(planBuilding = null).toString()
+        assertEquals("bez planu nie ma znaków z „?”", false, plain.contains("bez_pietra"))
+        val planned = barrierSignsImage(planBuilding = "C-13").jsonArray
+        assertEquals("wybór obrazu zależy od warunku", "\"case\"", planned.first().toString())
+        val condition = planned[1].toString()
+        assertEquals("warunek dotyczy budynku z planem", true, condition.contains("\"C-13\""))
+        assertEquals(
+            "warunek dotyczy bariery bez piętra",
+            true,
+            condition.contains("""["!",["has","$BARRIER_FLOOR"]]"""),
+        )
+        val unknown = planned[2].toString()
+        val named = Severity.entries.map { JsonPrimitive(barrierNoFloorImage(it)).toString() }
+        assertEquals("przy planie znaki z „?”", true, named.all(unknown::contains))
+        assertEquals("pozostałe bariery mają zwykłe znaki", plain, planned[3].toString())
     }
 
     /** Wiersz: V1 bez pobranych barier działa bez znaków barier. Wymagania: NFR-11 */

@@ -89,6 +89,7 @@ internal fun selectedLayer(filter: JsonElement, colors: MapStyleColors): JsonObj
  * @property entrancesMinZoom najmniejsze powiększenie, przy którym rysuje się warstwa [ENTRANCES_LAYER]
  * @property chosenBarrierFilter filtr warstwy [CHOSEN_BARRIER_LAYER]
  * @property chosenEntrance dane GeoJSON źródła [CHOSEN_SOURCE]
+ * @property planBuilding symbol budynku z widocznym planem; `null` bez planu
  * @property planFloor piętro planu w warstwach planu; `null` bez planu
  * @property planRoom sala wyróżniona w warstwach z [chosenRoomLayers]; `null` bez wyróżnienia
  * @property roomSteps dane GeoJSON numerów kroków na planie
@@ -106,6 +107,7 @@ internal data class SelectionLook(
     val entrancesMinZoom: Double,
     val chosenBarrierFilter: JsonElement,
     val chosenEntrance: JsonElement,
+    val planBuilding: String?,
     val planFloor: String?,
     val planRoom: String?,
     val roomSteps: JsonElement,
@@ -140,6 +142,7 @@ internal fun selectionLook(data: CampusMapData, selection: MapSelection): Select
         entrancesMinZoom = entrancesZoom,
         chosenBarrierFilter = selection.barrier?.let(::ofBarrier) ?: NO_FEATURES,
         chosenEntrance = featureCollection(selection.entrance?.let(::chosenFeatures).orEmpty()),
+        planBuilding = selection.plan?.building,
         planFloor = selection.plan?.floor,
         planRoom = selection.plan?.room,
         roomSteps = roomStepsFeatures(selection.roomSteps),
@@ -221,6 +224,7 @@ internal fun MapStyleTarget.showSelection(
     data(source = ROOM_STEPS_SOURCE, geoJson = look.roomSteps.asStyleText())
     filter(layer = BARRIERS_LAYER, filter = look.barriersFilter)
     filter(layer = BARRIER_WORDS_LAYER, filter = look.barriersFilter)
+    showPlanBarriers(look.planBuilding)
     showBesideEntrance(look.besideEntrance)
 }
 
