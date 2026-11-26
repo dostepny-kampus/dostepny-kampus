@@ -39,6 +39,7 @@ private const val WAIT_MS = 30_000L
 private const val MEASURE_WAIT_MS = 120_000L
 private const val STAIRS = "Schody przy wejściu"
 private const val DESCRIPTION_HINT = "Obowiązkowy przy typie „inna bariera”."
+private const val PHOTO_LOADING = "Wczytujemy zdjęcie…"
 private const val METERS_PER_DEGREE = 111_320.0
 private const val NEAR_ENTRANCE_METERS = 10.0
 
@@ -139,6 +140,8 @@ class DemoPathTest {
                 .map { meters -> hasText(meters, substring = true) }
                 .reduce(SemanticsMatcher::or)
         device.reveal(hasAnySibling(threshold) and fiveMeters)
+        val loading = hasText(PHOTO_LOADING)
+        compose.waitUntil(WAIT_MS) { compose.onAllNodes(loading).fetchSemanticsNodes().isEmpty() }
         device.reveal(hasText("Przyjmij")).performClick()
         compose.waitUntil(WAIT_MS) { server.accepted(note).isNotEmpty() }
     }
