@@ -8,6 +8,7 @@ package io.github.dostepnykampus.app
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsFocused
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.assertIsNotFocused
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
@@ -89,6 +90,24 @@ class CampusPathDeviceTest {
         steps.waitFor(openedCard())
     }
 
+    /** Napis nad mapą budynku podstawowego po zamknięciu karty V2. Wymagania: US16.2, BR-G1 */
+    @Test
+    fun showsMissingPlanOnMap() {
+        steps.openCard("A-4")
+        Espresso.pressBack()
+        compose.waitUntil(timeoutMillis = WAIT_MS) {
+            compose.onAllNodes(openedCard()).fetchSemanticsNodes().isEmpty()
+        }
+        val notice = hasText("Nie mamy planu pięter tego budynku.")
+        val zoom = hasContentDescription("Powiększ")
+        steps.waitFor(zoom)
+        repeat(PLAN_ZOOM_STEPS) {
+            if (compose.onAllNodes(notice).fetchSemanticsNodes().isEmpty()) compose.onNode(zoom).performClick()
+        }
+        steps.waitFor(notice)
+        DeviceEvidence.record("v1-basic-no-floor-plan")
+    }
+
     /**
      * Wiersz: prawdziwa klawiatura → wybór A-1 → V2 bez fokusu i klawiatury → jedno Wstecz zamyka V2.
      *
@@ -131,5 +150,9 @@ class CampusPathDeviceTest {
                 }
             DeviceEvidence.shell(command)
         }
+    }
+
+    private companion object {
+        const val PLAN_ZOOM_STEPS = 4
     }
 }

@@ -20,6 +20,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
@@ -51,9 +52,11 @@ class MapPlanCameraTest {
 
     private val moves = mutableListOf<MapCamera>()
     private val reported = mutableListOf<MapCamera>()
+    private var idle: (MapCamera) -> Unit = {}
     private val fakeMap =
-        CampusMapView { _: CampusMapData, _, move, _, _, _, _, _: Modifier ->
+        CampusMapView { _: CampusMapData, _, move, _, onCameraIdle, _, _, _: Modifier ->
             moves += move.camera
+            idle = onCameraIdle
         }
     private val repository = unitSquareCatalog("C-13")
     private val viewModel by lazy {
@@ -164,10 +167,41 @@ class MapPlanCameraTest {
             .assertIsDisplayed()
     }
 
+    /** Napis nad budynkiem podstawowym od powiększenia 17, bez karty i kolumny pięter. Wymagania: US16.2, BR-G1 */
+    @Test
+    fun showsMissingPlanFromZoom17() {
+        var cover by mutableStateOf(0.dp)
+        compose.setContent {
+            val state by viewModel.uiState.collectAsState()
+            DostepnyKampusTheme {
+                CampusMapScreen(
+                    state = state,
+                    onListChange = {},
+                    onSearch = {},
+                    onBuildingClick = {},
+                    focus = MapFocus.Building("C-13").takeIf { cover > 0.dp },
+                    contentPadding = PaddingValues(bottom = cover),
+                    mapView = fakeMap,
+                    plan = OLD_PLAN,
+                )
+            }
+        }
+        compose.waitUntil { moves.isNotEmpty() }
+        val near = MapCamera(center = GeoPoint(longitude = 0.75, latitude = 0.25), zoom = 16.9)
+        compose.runOnIdle { idle(near) }
+        compose.onNodeWithText(MISSING_PLAN).assertDoesNotExist()
+        compose.runOnIdle { idle(near.copy(zoom = 17.0)) }
+        compose.onNodeWithText(MISSING_PLAN).assertIsDisplayed()
+        compose.onNodeWithContentDescription(BASEMENT).assertDoesNotExist()
+        compose.runOnIdle { cover = CARD }
+        compose.onNodeWithText(MISSING_PLAN).assertDoesNotExist()
+    }
+
     private companion object {
         const val BASEMENT = "Piwnica"
         const val INFO = "Legenda i źródła mapy"
         const val PLAN_HEADING = "Plan piętra"
+        const val MISSING_PLAN = "Nie mamy planu pięter tego budynku."
         const val FRAMES = 10
         val CARD = 300.dp
         val OLD_PLAN =
