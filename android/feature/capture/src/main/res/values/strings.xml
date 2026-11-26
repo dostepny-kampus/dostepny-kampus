@@ -103,6 +103,14 @@
     <string name="szybkie_krok">Krok %1$d z 3</string>
     <string name="szybkie_wyslij">Wyślij</string>
     <string name="szybkie_zapisane_bez_sieci">Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet. Potem sprawdzimy zdjęcie, a jeśli bariera się potwierdzi, pokażemy ją na mapie.</string>
+    <string name="szybkie_zgoda_tekst">Aby wysłać zdjęcie bariery, potrzebujemy jej miejsca.</string>
+    <string name="szybkie_zgoda_zapewnienie">Sprawdzimy je tylko teraz i nie będziemy Cię śledzić.</string>
+    <string name="szybkie_zgoda_przyblizona">Telefon podaje tylko przybliżone miejsce, a to za mało, by wskazać barierę.</string>
+    <string name="szybkie_zgoda_dokladna">Pozwól na dokładną lokalizację.</string>
+    <string name="szybkie_zgoda_odmowa">Bez lokalizacji nie wyślesz zdjęcia bariery.</string>
+    <string name="szybkie_zgoda_ustawienia">Możesz ją włączyć w ustawieniach telefonu.</string>
+    <string name="szybkie_lokalizacja_wylaczona">Lokalizacja w telefonie jest wyłączona.</string>
+    <string name="szybkie_lokalizacja_wlacz">Włącz ją, aby wysłać zdjęcie bariery.</string>
     <string name="szybkie_wroc_do_mapy">Wróć do mapy</string>
     <string name="szybkie_rezygnacja">Jeśli zrezygnujesz, usuniemy zrobione zdjęcie i niczego nie wyślemy. Aby je zachować, wybierz „Wróć do zdjęcia”.</string>
     <string name="szybkie_tak_zrezygnuj">Tak, zrezygnuj</string>

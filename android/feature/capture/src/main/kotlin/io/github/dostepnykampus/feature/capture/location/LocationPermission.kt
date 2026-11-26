@@ -96,6 +96,20 @@ enum class LocationPermissionState(
  */
 @Composable
 fun WithLocationPermission(onBack: () -> Unit, content: @Composable () -> Unit) {
+    LocationPermissionGate(
+        permission = { state, onAllow, onOpenSettings ->
+            LocationPermissionContent(state, onAllow, onOpenSettings, onBack)
+        },
+        content = content,
+    )
+}
+
+/** Wybiera [content] przy dokładnej zgodzie, inaczej przekazuje stan i czynności systemowe do [permission]. */
+@Composable
+internal fun LocationPermissionGate(
+    permission: @Composable (LocationPermissionState, onAllow: () -> Unit, onOpenSettings: () -> Unit) -> Unit,
+    content: @Composable () -> Unit,
+) {
     val context = LocalContext.current
     var isDenied by rememberSaveable { mutableStateOf(false) }
     var state by rememberSaveable { mutableStateOf(context.permissionNeed(isDenied)) }
@@ -119,11 +133,10 @@ fun WithLocationPermission(onBack: () -> Unit, content: @Composable () -> Unit) 
     if (current == null) {
         content()
     } else {
-        LocationPermissionContent(
-            state = current,
-            onAllow = { request.launch(LOCATION) },
-            onOpenSettings = { context.startActivity(context.appSettings()) },
-            onBack = onBack,
+        permission(
+            current,
+            { request.launch(LOCATION) },
+            { context.startActivity(context.appSettings()) },
         )
     }
 }
@@ -191,3 +204,7 @@ internal fun MeasureFrame(
 private fun Context.appSettings(): Intent =
     Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", packageName, null))
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+/** Otwiera ustawienia dostawców lokalizacji systemu. */
+internal fun locationSettings(): Intent =
+    Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

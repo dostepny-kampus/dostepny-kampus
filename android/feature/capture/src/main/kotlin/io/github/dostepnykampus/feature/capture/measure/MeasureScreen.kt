@@ -5,9 +5,7 @@
  */
 package io.github.dostepnykampus.feature.capture.measure
 
-import android.content.Intent
 import android.content.res.Resources
-import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +32,7 @@ import io.github.dostepnykampus.core.location.PositionAverage
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.location.MeasureFrame
 import io.github.dostepnykampus.feature.capture.location.WithLocationPermission
+import io.github.dostepnykampus.feature.capture.location.locationSettings
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import java.util.Locale
 
@@ -186,9 +185,6 @@ private fun Notice(text: String) {
         fontWeight = Typografia.wyroznienieWaga,
     )
 }
-
-private fun locationSettings(): Intent =
-    Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
 @Composable
 private fun Headline(text: String, isAnnounced: Boolean = false) {
