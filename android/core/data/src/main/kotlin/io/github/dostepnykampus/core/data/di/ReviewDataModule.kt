@@ -17,8 +17,9 @@ import io.github.dostepnykampus.core.network.submission.SubmissionsApi
 /** Sprawdzanie zgłoszeń `core:data` w grafie Hilt aplikacji. */
 @Module
 @InstallIn(SingletonComponent::class)
-internal object ReviewDataModule {
+public object ReviewDataModule {
     /** Kolejka, wzięcie, decyzja i podobne zgłoszenia Weryfikatora z serwera. Wymagania: US10, BR-11 */
     @Provides
-    fun reviews(api: ReviewApi, submissions: SubmissionsApi): Reviews = reviewsOf(api = api, submissions = submissions)
+    public fun reviews(api: ReviewApi, submissions: SubmissionsApi): Reviews =
+        reviewsOf(api = api, submissions = submissions)
 }
