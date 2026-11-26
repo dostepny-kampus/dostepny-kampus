@@ -15,6 +15,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
+import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.review.queue.queued
 import org.junit.Assert.assertEquals
@@ -25,10 +26,10 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
- * R2 „Sprawdzenie zgłoszenia”: dane zgłoszenia z decyzją, komunikaty nowej wersji i braku sieci,
- * zmiana oznaczenia wejścia bez „Duplikat”, wczytywanie i stany wspólne.
+ * R2 „Sprawdzenie zgłoszenia”: dane zgłoszenia, podobne zgłoszenia, decyzja, komunikaty nowej wersji i braku
+ * sieci, zmiana oznaczenia wejścia bez „Duplikat”, wczytywanie i stany wspólne.
  *
- * Wymagania: US10, US10.2, US10.8, BR-3, BR-11, BR-24, NFR-50
+ * Wymagania: US10, US10.1, US10.2, US10.8, BR-3, BR-11, BR-24, NFR-50
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
@@ -48,6 +49,16 @@ class ReviewCheckScreenTest {
         }
         compose.onNodeWithText("Przyjmij").performScrollTo().performClick()
         assertEquals("przyjęcie", 1, accepts)
+    }
+
+    @Test
+    fun showsSimilar() {
+        show(READY)
+        compose.onNodeWithText("Podobne zgłoszenia do 10 m").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("4 m, parter").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Wysłane").performScrollTo().assertIsDisplayed()
+        shown.value = READY.copy(similar = emptyList())
+        compose.onNodeWithText("W promieniu 10 m nie ma podobnych zgłoszeń.").performScrollTo().assertIsDisplayed()
     }
 
     @Test
@@ -92,11 +103,12 @@ class ReviewCheckScreenTest {
 
     private companion object {
         val CHECKED = queued(id = "a", day = 27)
+        val NEAR = queued(id = "b", day = 20).run { copy(content = content.copy(floor = SubmissionFloor(number = 0))) }
         val READY =
             CheckUiState.Ready(
                 submission = CHECKED,
                 photoUrls = emptyList(),
-                similar = listOf(SimilarSubmission(submission = queued(id = "b", day = 20), distanceMeters = 4.0)),
+                similar = listOf(SimilarSubmission(submission = NEAR, distanceMeters = 4.0)),
             )
     }
 }

@@ -41,8 +41,14 @@ class ReviewCheckViewModelTest {
             assertEquals(CheckUiState.Loading, model.state.value, "przed odpowiedzią serwera")
             runCurrent()
             val photos = listOf("${CHECKED.id}/p-${CHECKED.id}")
-            val expected = CheckUiState.Ready(submission = CHECKED, photoUrls = photos, similar = listOf(NEAR))
-            assertEquals(expected, model.state.value, "zgłoszenie z adresem zdjęcia i podobnymi")
+            val expected =
+                CheckUiState.Ready(
+                    submission = CHECKED,
+                    photoUrls = photos,
+                    similar = listOf(NEAR),
+                    similarPhotos = mapOf(NEAR.submission.id to "b/p-b"),
+                )
+            assertEquals(expected, model.state.value, "zgłoszenie z adresami zdjęć i podobnymi")
         }
 
     @Test

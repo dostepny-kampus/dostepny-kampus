@@ -22,9 +22,9 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 /**
- * Zrzuty R2 „Sprawdzenie zgłoszenia” z danymi zgłoszenia i decyzją, jasny, ciemny i przy czcionce 200 %.
+ * Zrzuty R2 „Sprawdzenie zgłoszenia” z danymi zgłoszenia, podobnymi i decyzją, jasny, ciemny i przy czcionce 200 %.
  *
- * Wymagania: US10, US10.2, NFR-20
+ * Wymagania: US10, US10.1, US10.2, NFR-20
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)

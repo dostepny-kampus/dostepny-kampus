@@ -38,8 +38,6 @@ import io.github.dostepnykampus.feature.review.R
 /**
  * R2 „Sprawdzenie zgłoszenia” [submissionId] ze stanem z modelu widoku.
  *
- * TODO(#3761): wejście z R1 i lista podobnych zgłoszeń.
- *
  * Wymagania: US10, US10.2, US10.8
  *
  * @param submissionId identyfikator sprawdzanego zgłoszenia
@@ -118,7 +116,7 @@ private fun Loading() {
 
 @Composable
 private fun Check(state: CheckUiState.Ready, decision: DecisionActions) {
-    val similar = remember(state.similar) { SimilarReports(state.similar) }
+    val similar = remember(state.similar, state.similarPhotos) { SimilarReports(state.similar, state.similarPhotos) }
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState()).padding(Odstepy.m),
         verticalArrangement = Arrangement.spacedBy(Odstepy.m),
@@ -128,6 +126,7 @@ private fun Check(state: CheckUiState.Ready, decision: DecisionActions) {
             Notice(title = R.string.sprawdzenie_zmienione, body = R.string.sprawdzenie_zmienione_sprawdz)
         }
         SubmissionDetails(state)
+        SimilarList(similar)
         HorizontalDivider(thickness = Obramowania.ramka, color = MaterialTheme.colorScheme.outlineVariant)
         Decision(
             similar = similar,
