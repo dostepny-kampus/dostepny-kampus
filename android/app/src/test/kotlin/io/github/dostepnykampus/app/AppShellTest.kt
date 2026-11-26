@@ -484,14 +484,14 @@ class AppShellTest {
     }
 
     /**
-     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Zgłoszenie szybkie w 3 krokach z pozycją dołączoną
-     *   automatycznie.
+     * Scenariusz (częściowo): zgloszenie-szybkie.feature: Bez zgody na lokalizację aparat się nie otwiera.
      */
     @Test
-    fun opensReportStepOne() {
+    fun opensQuickReportPermission() {
         show(roles = visitor)
         compose.onNodeWithText("Zgłoś barierę").performClick()
-        compose.onNodeWithText("Krok 1 z 3").assertExists()
+        compose.onNodeWithText("Pozwól na lokalizację").assertExists()
+        compose.onNodeWithText("Zrób zdjęcie").assertDoesNotExist()
         pressBack()
         compose.onNode(MapTab).assertIsSelected()
     }

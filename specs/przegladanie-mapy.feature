@@ -172,8 +172,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy na karcie budynku A-1 widzi „Wejście dostępne” i zdanie z wejściem zalecanym
     Oraz od mapy wykonał 1 dotknięcie, czyli nie więcej niż 3
 
-  # brak pełnego testu: #3645
-  @US2.8 @aplikacja @do-zrobienia
+  @US2.8 @aplikacja
   Szablon scenariusza: Niska karta nad mapą mówi słowami o wejściach
     Zakładając, że w danych testowych <dane>
     Oraz Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
@@ -199,8 +198,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Jeżeli znowu dotknie uchwytu karty
     Wtedy karta wraca na niską wysokość nad mapą
 
-  # brak pełnego testu: #3645
-  @US2.8 @NFR-53 @aplikacja @do-zrobienia
+  @US2.8 @NFR-53 @aplikacja
   Szablon scenariusza: Wystający nagłówek „Wejścia” od razu rozwija kartę
     Zakładając, że w danych testowych <dane>
     Oraz Gość niezalogowany dotknął budynku <budynek> na mapie przy zwykłej czcionce
@@ -274,7 +272,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy to wejście zostaje zalecane, a zdanie pod wierszem o wejściach kończy się „Przy wejściu jest bariera: tylko z pomocą.”
     Oraz wiersz tego wejścia na liście „Wejścia” ma pod szerokością drzwi „Tylko z pomocą: ciężkie drzwi”
 
-  # brak pełnego testu: #3645
+  # brak typu bariery „wejście zamknięte” w TB-1…TB-29: #3645
   @US3.1 @BR-25 @aplikacja @do-zrobienia
   Szablon scenariusza: Wejście z blokadą nie jest zalecane, a jego oznaczenie zostaje
     Zakładając, że w budynku C-13 <inne> wejścia dostępnego bez blokady
@@ -288,8 +286,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | jest inne | Wejście dostępne        | Zalecane: »Wejście C«. Drzwi 100 cm.   |
       | nie ma    | Brak wejścia dostępnego | Jedyne wejście dostępne ma blokadę.    |
 
-  # brak pełnego testu: #3645
-  @US3.1 @BR-25 @aplikacja @do-zrobienia
+  @US3.1 @BR-25 @aplikacja
   Szablon scenariusza: Wejście bez barier jest zalecane przed wejściem z barierą
     # Dane testowe, a nie stan faktyczny budynku C-13.
     Zakładając, że w danych testowych wejście główne i wejście boczne C-13 mają oznaczenie „dostępne”
@@ -431,8 +428,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
     Wtedy pinezka wejścia zalecanego stoi na środku części mapy nad arkuszem tego wejścia
     Oraz arkusz zajmuje najwyżej połowę ekranu, a jego treść się przewija
 
-  # brak pełnego testu: #3645
-  @US3.3 @NFR-18 @NFR-53 @aplikacja @do-zrobienia
+  @US3.3 @NFR-18 @NFR-53 @aplikacja
   Szablon scenariusza: Pinezka i podpis wejścia są na mapie tylko przy otwartym arkuszu wejścia
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
     Jeżeli otworzy arkusz wejścia A-1 przez <otwarcie>
@@ -447,8 +443,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | znak wejścia A-1 na mapie               | wiersz budynku A-1     |
       | znak wejścia A-1 na mapie               | dotyk pustej mapy      |
 
-  # brak pełnego testu: #3645
-  @US2.8 @US3.3 @NFR-15 @NFR-53 @aplikacja @do-zrobienia
+  @US2.8 @US3.3 @NFR-15 @NFR-53 @aplikacja
   Szablon scenariusza: „Wstecz” w arkuszu wejścia wraca tam, skąd arkusz otwarto, a „Zamknij” zostawia mapę
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce
     Jeżeli <otwarcie>
@@ -462,8 +457,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | otworzy kartę A-1 na niskiej wysokości i wybierze „Pokaż wejście na mapie” | „Zamknij” | widzi mapę bez karty budynku                     |
       | dotknie znaku wejścia A-1 na mapie bez otwartej karty                      | „Zamknij” | widzi mapę bez karty budynku                     |
 
-  # @do-zrobienia #3645: powrót do karty budynku z arkusza sali bez ruchu kamery.
-  @US2 @US2.8 @NFR-18 @NFR-53 @aplikacja @do-zrobienia
+  @US2 @US2.8 @NFR-18 @NFR-53 @aplikacja
   Szablon scenariusza: Wiersz budynku w arkuszu otwiera kartę budynku bez przelotu mapy
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu przy zwykłej czcionce, bez otwartej karty
     Jeżeli <otwarcie>

@@ -6,12 +6,14 @@
 package io.github.dostepnykampus.app
 
 import android.view.accessibility.AccessibilityManager
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
@@ -19,6 +21,7 @@ import io.github.dostepnykampus.core.data.map.MapListChoice
 import io.github.dostepnykampus.core.data.start.FirstLaunch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -97,10 +100,15 @@ class MainActivityTest {
         }
         compose.onNodeWithText(BUILDING_ON_MAP).assertExists("pełny ekran od razu po odtworzeniu aktywności")
         compose.onNodeWithContentDescription(EXPAND_HANDLE).assertDoesNotExist()
-        compose.onNodeWithText(BUILDING_ON_MAP).performClick()
-        compose.waitForIdle()
-        compose.waitUntil("zapamiętany wybór „Mapa”", timeoutMillis = 5_000) {
-            runBlocking { mapListChoice.savedChoice.first() } == false
+        compose
+            .onNodeWithText(BUILDING_ON_MAP)
+            .performScrollTo()
+            .assertIsDisplayed()
+            .performClick()
+        compose.waitUntil("ekran mapy z podpisem OpenStreetMap", timeoutMillis = 5_000) {
+            compose.onAllNodesWithText("© OpenStreetMap").fetchSemanticsNodes().isNotEmpty()
         }
+        compose.onNodeWithText("Pokaż listę").assertIsDisplayed()
+        assertEquals("zapamiętany wybór „Mapa”", false, runBlocking { mapListChoice.savedChoice.first() })
     }
 }

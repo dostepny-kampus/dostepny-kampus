@@ -16,6 +16,7 @@ import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
+import io.github.dostepnykampus.feature.capture.navigation.ReportEditMode
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.capture.navigation.SyncRoute
@@ -66,7 +67,7 @@ internal fun AppNavigator.MySubmissions() {
             onConflict = { openConflict(it) },
             onOpenMarking = { openMarking(it) },
             onOpenRemoval = { openEdit(it, isBarrierRemoved = true) },
-            onResendChange = { openEdit(it, isResend = true) },
+            onResendChange = { openEdit(it, mode = ReportEditMode.RESEND_OUTDATED) },
             onSync = { openSync() },
         )
     MySubmissionsScreen(actions)

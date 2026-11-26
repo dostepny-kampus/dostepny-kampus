@@ -85,8 +85,7 @@ Funkcja: Zgłoszenie szybkie
       | zdjęcia       |
       | grupy barier  |
 
-  # brak pełnego testu: #3696
-  @US4.1 @aplikacja @do-zrobienia
+  @US4.1 @aplikacja
   Scenariusz: Bez zgody na lokalizację aparat się nie otwiera
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
     Oraz aplikacja nie ma zgody na lokalizację
@@ -145,7 +144,7 @@ Funkcja: Zgłoszenie szybkie
     Przykłady:
       | miejsce                              | grupa                 | pytanie                                                                   |
       | w budynku D-2                        | „komunikacja pionowa” | widzi pytanie o piętro z „Nie wiem” i etykietami pięter z danych PWr      |
-      | w budynku B-4                        | „toalety”             | widzi pytanie o piętro z „Nie wiem” i przyciskami „Parter”, „1 piętro”, „2 piętro” |
+      | w budynku A-4                        | „toalety”             | widzi pytanie o piętro z „Nie wiem” i przyciskami „Parter”, „1 piętro”, „2 piętro” |
       | w budynku C-13, przy wejściu         | „wejście i drzwi”     | widzi pytanie o piętro z „Nie wiem” i etykietami pięter z danych PWr      |
       | w budynku C-13                       | „inne”                | przechodzi do kroku 3 bez pytania o piętro                                |
       | na chodniku przed A-1, poza konturem | „komunikacja pozioma” | przechodzi do kroku 3 bez pytania o piętro                                |
@@ -163,10 +162,10 @@ Funkcja: Zgłoszenie szybkie
   @US4.5 @aplikacja
   Scenariusz: Wybrane piętro trafia do zgłoszenia
     Zakładając, że Odwiedzający jest zalogowany z rolą Odwiedzającego
-    Oraz w budynku B-4 wybrał grupę barier „toalety” i widzi pytanie o piętro
+    Oraz w budynku A-4 wybrał grupę barier „toalety” i widzi pytanie o piętro
     Jeżeli wybierze piętro 2
     Oraz wyśle zgłoszenie
-    Wtedy zgłoszenie ma budynek B-4 i piętro 2
+    Wtedy zgłoszenie ma budynek A-4 i piętro 2
 
   @US4.5 @BR-14 @aplikacja
   Scenariusz: Pozycja poza konturem przy wysłaniu zostawia piętro puste

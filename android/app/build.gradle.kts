@@ -79,6 +79,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.okhttp)
     implementation(libs.timber)
+    runtimeOnly(libs.androidx.profileinstaller)
     runtimeOnly(libs.kotlinx.coroutines.android)
     testImplementation(libs.konsist)
     testImplementation(project(":core:location"))

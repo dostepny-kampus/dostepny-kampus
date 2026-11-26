@@ -105,7 +105,7 @@ internal fun ReviewCheckContent(
             BackHeader(title = stringResource(R.string.sprawdzenie_naglowek), onBack = actions.onBack)
             when (state) {
                 CheckUiState.Loading -> Loading()
-                is CheckUiState.Ready -> Check(state = state, decision = decision)
+                is CheckUiState.Ready -> Check(state = state, decision = decision, onCover = actions.onCover)
                 CheckUiState.Offline -> StaffProblemMessage(StaffProblem.OFFLINE, onRetry)
                 CheckUiState.ServerError -> StaffProblemMessage(StaffProblem.SERVER, onRetry)
                 CheckUiState.Forbidden -> StaffProblemMessage(StaffProblem.FORBIDDEN, actions.onBack)
@@ -123,7 +123,11 @@ private fun Loading() {
 }
 
 @Composable
-private fun Check(state: CheckUiState.Ready, decision: DecisionActions) {
+private fun Check(
+    state: CheckUiState.Ready,
+    decision: DecisionActions,
+    onCover: (photoId: String, photoUrl: String) -> Unit,
+) {
     val similar = remember(state.similar, state.similarPhotos) { SimilarReports(state.similar, state.similarPhotos) }
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState()).padding(Odstepy.m),
@@ -139,7 +143,7 @@ private fun Check(state: CheckUiState.Ready, decision: DecisionActions) {
                 detail = detail,
             )
         }
-        SubmissionDetails(state)
+        SubmissionDetails(shown = state, onCover = onCover)
         if (state.submission.content.kind == SubmissionKind.QUICK) QuickChoice(state = state, decision = decision)
         SimilarList(similar)
         HorizontalDivider(thickness = Obramowania.ramka, color = MaterialTheme.colorScheme.outlineVariant)

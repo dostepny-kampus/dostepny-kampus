@@ -102,7 +102,7 @@ class QuickSendViewModel
     @Inject
     constructor(
         private val positions: PositionSource,
-        private val locationSwitch: LocationSwitch,
+        locationSwitch: LocationSwitch,
         private val saver: ReportSaver,
         private val networkStatus: NetworkStatus,
         private val buildingFloors: BuildingFloors,
@@ -114,6 +114,10 @@ class QuickSendViewModel
         val stage: StateFlow<QuickSendStage> = state.asStateFlow()
 
         private val attempts = MutableStateFlow(0)
+
+        /** Stan dostawcy lokalizacji; `null` do pierwszego odczytu. Wymagania: UC7, NFR-27 */
+        internal val locationEnabled: StateFlow<Boolean?> =
+            locationSwitch.isEnabled().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
         private val origins = MutableStateFlow<QuickOrigin?>(null)
 
@@ -176,9 +180,8 @@ class QuickSendViewModel
             flow { buildingLookup.entrance(id)?.let { emit(QuickLookup.Found(entrancePosition(it))) } }
 
         private fun whenLocationOn(): Flow<QuickLookup> =
-            locationSwitch
-                .isEnabled()
-                .distinctUntilChanged()
+            locationEnabled
+                .filterNotNull()
                 .flatMapLatest { isOn -> if (isOn) locating() else flowOf(QuickLookup.Lost) }
 
         private fun locating(): Flow<QuickLookup> =

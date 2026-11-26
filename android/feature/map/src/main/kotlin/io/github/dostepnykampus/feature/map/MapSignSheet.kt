@@ -403,7 +403,7 @@ internal fun BoxScope.MapSheets(
     val room = open.room
     val modifier = Modifier.align(Alignment.BottomCenter).padding(Odstepy.s)
     if (room != null) {
-        val sources = RoomSheetSources(onBuilding, open.barriers, entranceActions)
+        val sources = RoomSheetSources({ state.taps.choose(it, onBuilding) }, open.barriers, entranceActions)
         RoomCardLayer(room, sources, modifier.onSizeChanged { room.card.onRoomHeight(it.height) })
         return
     }

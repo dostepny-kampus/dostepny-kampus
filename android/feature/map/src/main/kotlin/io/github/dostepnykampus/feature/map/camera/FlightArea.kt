@@ -31,36 +31,54 @@ internal fun styleAreaOf(selection: MapSelection, basemap: Basemap?): StyleArea 
  * z dwóch terenów nie jest rysowany; zamiana jest wtedy niewidoczna, a przy zejściu do celu wraca już podkład nowego
  * terenu. Koniec przelotu, także przerwanego gestem albo innym ruchem, pokazuje najnowszy teren.
  *
- * Wymagania: US1.8, NFR-39
+ * Wymagania: US1.8, NFR-39, NFR-56
  */
 internal class FlightArea(first: StyleArea) {
     /** Teren pokazany w stylu; zmiana rekomponuje widok mapy. */
     var shown: StyleArea by mutableStateOf(first)
         private set
+
+    /**
+     * Czy przy ostatniej zmianie [shown] podkład zostaje na ekranie: kamera doszła do widoku bez skoku, a podkład
+     * starego i nowego terenu jest rysowany przy bieżącym powiększeniu. `false`, gdy podkład nowego terenu ma czekać
+     * ukryty na wczytanie kafelków.
+     */
+    var isBasemapKept: Boolean = false
+        private set
     private var latest = first
     private var isFlying = false
+    private var isJump = false
+    private var zoomNow = 0.0
 
     /** Nowy teren [next]; w trakcie przelotu czeka na oddalenie mapy albo koniec przelotu. */
     fun area(next: StyleArea) {
         latest = next
-        if (!isFlying) shown = next
+        if (!isFlying) show(next)
     }
 
-    /** Start przelotu: teren startowy zostaje w stylu. */
-    fun startFlight() {
-        isFlying = true
+    /** Start ruchu kamery [motion]: przelot zostawia w stylu teren startowy, inny ruch kończy przelot. */
+    fun start(motion: CameraMotion) {
+        isJump = motion == CameraMotion.NONE
+        if (motion == CameraMotion.FLIGHT) isFlying = true else endFlight()
     }
 
     /** Powiększenie mapy [zoom] w trakcie ruchu kamery. */
     fun zoom(zoom: Double) {
-        if (isFlying && zoom < minOf(a = shown.hiddenBelow, b = latest.hiddenBelow)) shown = latest
+        zoomNow = zoom
+        if (isFlying && zoom < minOf(a = shown.hiddenBelow, b = latest.hiddenBelow)) show(latest)
     }
 
     /** Koniec przelotu: najnowszy teren w stylu. */
     fun endFlight() {
         if (isFlying) {
             isFlying = false
-            shown = latest
+            show(latest)
         }
+    }
+
+    private fun show(next: StyleArea) {
+        if (next == shown) return
+        isBasemapKept = !isJump && zoomNow >= maxOf(a = shown.hiddenBelow, b = next.hiddenBelow)
+        shown = next
     }
 }

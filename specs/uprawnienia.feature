@@ -21,8 +21,7 @@ Funkcja: Logowanie, role i zaproszenia
       | Koordynatora   | pomiar precyzyjny         |
       | Koordynatora   | kolejka weryfikacji       |
 
-  # kroki serwera: #1988
-  @US14.1 @BR-19 @BR-20 @aplikacja @serwer @do-zrobienia
+  @US14.1 @BR-19 @BR-20 @aplikacja @serwer
   Szablon scenariusza: Znacznik piętra i zmianę „bariera usunięta” składa tylko Zbierający
     Zakładając, że osoba jest zalogowana tylko z rolą <rola>
     Jeżeli przejrzy dostępne ekrany aplikacji

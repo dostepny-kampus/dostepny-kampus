@@ -5,7 +5,6 @@
  */
 package io.github.dostepnykampus.app
 
-import android.app.Application
 import android.view.accessibility.AccessibilityManager
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasContentDescription
@@ -22,21 +21,13 @@ import dagger.hilt.android.testing.HiltTestApplication
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
-import io.github.dostepnykampus.core.data.building.BuildingFloors
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.di.DataModule
 import io.github.dostepnykampus.core.data.map.MapListChoice
-import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.server.ServerReply
-import io.github.dostepnykampus.core.data.start.FirstLaunch
-import io.github.dostepnykampus.core.data.submission.own.OwnStatuses
-import io.github.dostepnykampus.core.data.submission.own.OwnSubmissions
-import io.github.dostepnykampus.core.data.submission.own.StatusRefresh
-import io.github.dostepnykampus.core.data.submission.pending.PendingEdits
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionQueue
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionStore
 import io.github.dostepnykampus.core.data.submission.sync.SubmissionSyncScheduler
-import kotlinx.coroutines.flow.flowOf
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -69,7 +60,7 @@ private const val CATALOG =
 @Config(application = HiltTestApplication::class, qualifiers = "w360dp-h800dp")
 class EntranceHiltTest {
     /** Źródła danych z pamięci zamiast `DataModule`; katalog „Budynek testowy” nie jest danymi PWr. */
-    @Module
+    @Module(includes = [OfflineDataFakes::class])
     @InstallIn(SingletonComponent::class)
     object Fakes {
         @Provides
@@ -81,37 +72,8 @@ class EntranceHiltTest {
         fun serverEntrances(): ServerEntrances = ServerEntrances { emptyList() }
 
         @Provides
-        fun buildingFloors(): BuildingFloors = BuildingFloors { null }
-
-        @Provides
         @Singleton
         fun mapChoice(): MapListChoice = TestMapListChoice().apply { savedChoice.value = true }
-
-        @Provides
-        @Singleton
-        fun network(): NetworkStatus = NetworkStatus { flowOf(true) }
-
-        @Provides
-        @Singleton
-        fun firstLaunch(): FirstLaunch =
-            object : FirstLaunch {
-                override suspend fun isFirstLaunch(): Boolean = false
-
-                override suspend fun markHelpSeen() = Unit
-            }
-
-        @Provides
-        fun ownSubmissions(): OwnSubmissions = OwnSubmissions { flowOf(emptyList()) }
-
-        @Provides
-        fun pendingEdits(): PendingEdits = PendingEdits { null }
-
-        @Provides
-        fun ownStatuses(): OwnStatuses = OwnStatuses { StatusRefresh.OFFLINE }
-
-        @Provides
-        @Singleton
-        fun sync(app: Application): SubmissionSyncScheduler = SubmissionSyncScheduler(app)
 
         @Provides
         @Singleton

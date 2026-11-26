@@ -41,9 +41,10 @@ import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
 import io.github.dostepnykampus.feature.capture.R
-import io.github.dostepnykampus.feature.capture.location.WithLocationPermission
+import io.github.dostepnykampus.feature.capture.location.LocationPermissionGate
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportStep
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
 import java.io.File
 
@@ -98,7 +99,6 @@ fun QuickReportScreen(
                     }
 
                     else -> {
-                        QuickStepProgress(step = route.step.ordinal + 1)
                         QuickSteps(
                             route = route,
                             actions = actions,
@@ -122,13 +122,31 @@ private fun QuickSteps(
     slot: QuickPinnedSlot,
     onGiveUp: () -> Unit,
 ) {
+    val onBackToMap = if (route.photoPath == null) actions.onBackToMap else onGiveUp
     val step: @Composable () -> Unit = {
-        QuickStep(route = route, actions = actions, models = models, slot = slot, onGiveUp = onGiveUp)
+        QuickStep(
+            route = route,
+            actions = actions,
+            models = models,
+            slot = slot,
+            onGiveUp = onGiveUp,
+            onBackToMap = onBackToMap,
+        )
     }
-    if (!route.isPlaceChosen) {
-        WithLocationPermission(onBack = actions.onBack, content = step)
-    } else {
+    if (route.isPlaceChosen) {
         step()
+    } else {
+        LocationPermissionGate(
+            permission = { state, onAllow, onOpenSettings ->
+                QuickLocationPermission(
+                    state = state,
+                    onAllow = onAllow,
+                    onOpenSettings = onOpenSettings,
+                    onBackToMap = onBackToMap,
+                )
+            },
+            content = step,
+        )
     }
 }
 
@@ -144,9 +162,17 @@ private fun QuickStep(
     models: QuickReportModels,
     slot: QuickPinnedSlot,
     onGiveUp: () -> Unit,
+    onBackToMap: () -> Unit,
 ) {
     val where = models.sendModel()
+    if (route.step == ReportStep.SEND) ObserveQuickSend(stage = where.stage, onComplete = actions.onSent)
+    val isEnabled = if (route.isPlaceChosen) true else where.locationEnabled.collectAsStateWithLifecycle().value
+    if (isEnabled != true) {
+        if (isEnabled == false) QuickLocationOff(onBackToMap)
+        return
+    }
     SideEffect { where.start(route.entranceId, route.place) }
+    QuickStepProgress(step = route.step.ordinal + 1)
     when (route.step) {
         ReportStep.PHOTO -> {
             QuickPositionWarmUp(where)
@@ -172,12 +198,21 @@ private fun QuickStep(
                 QuickSendStep(
                     route = route,
                     report = report,
-                    onSend = actions.onSent,
                     onGiveUp = onGiveUp,
                     viewModel = where,
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ObserveQuickSend(stage: StateFlow<QuickSendStage>, onComplete: (Boolean) -> Unit) {
+    val sent by rememberUpdatedState(onComplete)
+    LaunchedEffect(stage) {
+        stage
+            .filter { it == QuickSendStage.SENT || it == QuickSendStage.SAVED_OFFLINE }
+            .collect { sent(it == QuickSendStage.SAVED_OFFLINE) }
     }
 }
 
@@ -227,18 +262,11 @@ private fun QuickGroupStep(route: ReportRoute, onNext: (ReportRoute) -> Unit, wh
 private fun QuickSendStep(
     route: ReportRoute,
     report: QuickReport,
-    onSend: (isSavedOffline: Boolean) -> Unit,
     onGiveUp: () -> Unit,
-    viewModel: QuickSendViewModel = hiltViewModel(),
+    viewModel: QuickSendViewModel,
 ) {
     val lookup by viewModel.lookup.collectAsStateWithLifecycle()
     val stage by viewModel.stage.collectAsStateWithLifecycle()
-    val sent by rememberUpdatedState(onSend)
-    LaunchedEffect(viewModel) {
-        viewModel.stage
-            .filter { it == QuickSendStage.SENT || it == QuickSendStage.SAVED_OFFLINE }
-            .collect { sent(it == QuickSendStage.SAVED_OFFLINE) }
-    }
     QuickSendSummary(report = report, isFloorAsked = route.isFloorAsked, lookup = lookup)
     if (lookup == QuickLookup.Lost || lookup == QuickLookup.Outside) {
         MainButton(text = stringResource(R.string.formularz_sprobuj_ponownie), onClick = viewModel::retry)

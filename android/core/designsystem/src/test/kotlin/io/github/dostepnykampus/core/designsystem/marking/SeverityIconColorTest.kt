@@ -5,19 +5,18 @@
  */
 package io.github.dostepnykampus.core.designsystem.marking
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import androidx.activity.ComponentActivity
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.graphics.toPixelMap
-import androidx.compose.ui.test.captureToImage
-import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import io.github.dostepnykampus.core.designsystem.DarkMapColors
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.LightMapColors
 import io.github.dostepnykampus.core.designsystem.MapColors
 import io.github.dostepnykampus.core.model.submission.Severity
 import org.junit.Assert.assertTrue
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,7 +28,6 @@ import kotlin.math.roundToInt
 
 private const val CHANNEL_TOLERANCE_0_255 = 2
 private const val CHANNEL_MAX = 255f
-private const val DRAW_TIMEOUT_MS = 5_000L
 
 /**
  * Poza mapą znak uciążliwości ma barwę i kontur znaku z mapy bieżącego motywu.
@@ -41,10 +39,9 @@ private const val DRAW_TIMEOUT_MS = 5_000L
 @Config(qualifiers = "w360dp-h240dp-xxhdpi")
 class SeverityIconColorTest {
     @get:Rule
-    val compose = createComposeRule()
+    val compose = createAndroidComposeRule<ComponentActivity>()
 
     /** W jasnym motywie „Blokada” ma barwę tablicy i kontur z jasnej mapy. */
-    @Ignore("W CI zrzut jasnego motywu nie zawiera znaku; przyczyna w #4125")
     @Test
     fun usesLightMapTones() {
         assertSignColors(isDark = false, colors = LightMapColors)
@@ -62,18 +59,19 @@ class SeverityIconColorTest {
                 SeverityIcon(severity = Severity.BLOCKING)
             }
         }
-        compose.waitUntil(
-            conditionDescription = "znak narysowany w barwie ${colors.znakBlokada.hex()}",
-            timeoutMillis = DRAW_TIMEOUT_MS,
-        ) { signPixels().any { distance(a = it, b = colors.znakBlokada) <= CHANNEL_TOLERANCE_0_255 } }
+        compose.waitForIdle()
         val pixels = signPixels()
         assertNear("znak bez barwy tablicy „Blokady”", colors.znakBlokada, pixels)
         assertNear("znak bez konturu znaku mapy", colors.tusz, pixels)
     }
 
     private fun signPixels(): List<Color> {
-        val map = compose.onRoot().captureToImage().toPixelMap()
-        return (0 until map.width).flatMap { x -> (0 until map.height).map { y -> map[x, y] } }
+        val view = compose.activity.window.decorView
+        val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        compose.runOnIdle { view.draw(Canvas(bitmap)) }
+        val raw = IntArray(bitmap.width * bitmap.height)
+        bitmap.getPixels(raw, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+        return raw.distinct().map(::Color)
     }
 
     private fun assertNear(message: String, expected: Color, pixels: List<Color>) {

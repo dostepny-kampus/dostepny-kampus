@@ -14,8 +14,10 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.github.dostepnykampus.core.data.di.IoContext
 import okhttp3.OkHttpClient
 import javax.inject.Singleton
+import kotlin.coroutines.CoroutineContext
 
 /** Wczytywanie obrazów z serwera w grafie Hilt: jeden [ImageLoader] na proces. Wymagania: NFR-12, NFR-50 */
 @Module
@@ -40,4 +42,8 @@ object ImageLoaderModule {
 interface ImageLoaderEntryPoint {
     /** [ImageLoader] z [ImageLoaderModule]. */
     fun imageLoader(): ImageLoader
+
+    /** Kontekst operacji na dyskowej pamięci obrazów. */
+    @IoContext
+    fun imageDiskContext(): CoroutineContext
 }

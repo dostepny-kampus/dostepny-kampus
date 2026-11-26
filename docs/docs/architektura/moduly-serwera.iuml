@@ -34,6 +34,7 @@ Rel(DostepnyKampusApplication.DostepnyKampusApplication.Barrier, DostepnyKampusA
 Rel(DostepnyKampusApplication.DostepnyKampusApplication.Identity, DostepnyKampusApplication.DostepnyKampusApplication.Shared, "depends on", $techn="", $tags="", $link="")
 Rel(DostepnyKampusApplication.DostepnyKampusApplication.Inspection, DostepnyKampusApplication.DostepnyKampusApplication.Shared, "depends on", $techn="", $tags="", $link="")
 Rel(DostepnyKampusApplication.DostepnyKampusApplication.Inspection, DostepnyKampusApplication.DostepnyKampusApplication.Building, "uses", $techn="", $tags="", $link="")
+Rel(DostepnyKampusApplication.DostepnyKampusApplication.Inspection, DostepnyKampusApplication.DostepnyKampusApplication.Barrier, "uses", $techn="", $tags="", $link="")
 Rel(DostepnyKampusApplication.DostepnyKampusApplication.Sync, DostepnyKampusApplication.DostepnyKampusApplication.Shared, "depends on", $techn="", $tags="", $link="")
 Rel(DostepnyKampusApplication.DostepnyKampusApplication.Sync, DostepnyKampusApplication.DostepnyKampusApplication.Barrier, "uses", $techn="", $tags="", $link="")
 Rel(DostepnyKampusApplication.DostepnyKampusApplication.Sync, DostepnyKampusApplication.DostepnyKampusApplication.Building, "uses", $techn="", $tags="", $link="")

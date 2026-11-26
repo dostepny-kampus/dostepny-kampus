@@ -5,12 +5,16 @@
  */
 package io.github.dostepnykampus.feature.review.check
 
+import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.review.Reviews
 import io.github.dostepnykampus.core.data.server.ServerReply
+import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.isAfterDayOf
 import io.github.dostepnykampus.core.model.review.ReviewDecision
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
@@ -104,4 +108,32 @@ internal fun Reviews.firstPhotoOf(near: SimilarSubmission): Pair<String, String>
     val id = near.submission.id
     val photos = near.submission.content.photoIds
     return photos.firstOrNull()?.let { photo -> id to photoUrl(submissionId = id, photoId = photo) }
+}
+
+/**
+ * Obecne oznaczenie wejścia, którego dotyczy zmiana oznaczenia.
+ *
+ * Wymagania: US17.2, US10.8, BR-23, BR-24
+ *
+ * @property entrance wejście z serwera z oznaczeniem, dniem i źródłem
+ * @property isChangedSinceSent czy oznaczenie przyjęto po wysłaniu zmiany
+ */
+data class CurrentMarking(val entrance: Entrance, val isChangedSinceSent: Boolean)
+
+/**
+ * Obecne oznaczenie wejścia ze zmiany oznaczenia [submission].
+ *
+ * Wymagania: US17.2, US10.8, BR-24
+ *
+ * @param submission sprawdzane zgłoszenie
+ * @return obecne oznaczenie; `null` przy innym zgłoszeniu albo gdy serwer nie zna wejścia
+ */
+internal suspend fun ServerEntrances.currentMarking(submission: Submission): CurrentMarking? {
+    val content = submission.content
+    val symbol = content.buildingSymbol.takeIf { content.kind == SubmissionKind.ENTRANCE_MARKING }
+    val id = content.entranceId
+    val entrance = if (symbol == null || id == null) null else entrances(symbol).firstOrNull { it.id == id }
+    return entrance?.let {
+        CurrentMarking(entrance = it, isChangedSinceSent = it.assessment?.isAfterDayOf(submission.createdAt) == true)
+    }
 }

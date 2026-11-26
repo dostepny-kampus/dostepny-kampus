@@ -11,6 +11,7 @@ import io.github.dostepnykampus.feature.capture.navigation.MeasureRoute
 import io.github.dostepnykampus.feature.capture.navigation.MySubmissionsRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
+import io.github.dostepnykampus.feature.capture.navigation.ReportEditMode
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.ReportFormRoute
 import io.github.dostepnykampus.feature.map.navigation.BuildingRoute
@@ -31,15 +32,17 @@ fun AppNavigator.mySubmissions() {
 }
 
 /**
- * C3 → poprawka: „Otwórz” przy zgłoszeniu z telefonu otwiera C2, przy zgłoszeniu „bariera usunięta”
- * ([isBarrierRemoved]) C7, a „Wyślij ponownie” przy nieaktualnej zmianie bariery ([isResend]) C2 nowej zmiany
- * bieżącego przyjętego zgłoszenia; poza C3 nic nie robi.
+ * C3 → poprawka: „Otwórz” i „Wyślij ponownie” otwierają C2 w trybie [mode], a przy zgłoszeniu „bariera usunięta”
+ * ([isBarrierRemoved]) C7; poza C3 nic nie robi.
  *
  * Wymagania: US8.3, US8.4, BR-23
  */
-fun AppNavigator.openEdit(submissionId: String, isBarrierRemoved: Boolean = false, isResend: Boolean = false) {
-    val route =
-        if (isBarrierRemoved) RemovedEditRoute(submissionId) else ReportEditRoute(submissionId, isResend = isResend)
+fun AppNavigator.openEdit(
+    submissionId: String,
+    isBarrierRemoved: Boolean = false,
+    mode: ReportEditMode = ReportEditMode.OWN,
+) {
+    val route = if (isBarrierRemoved) RemovedEditRoute(submissionId) else ReportEditRoute(submissionId, mode)
     if (current == MySubmissionsRoute) leaving { add(route) }
 }
 
@@ -61,7 +64,7 @@ fun AppNavigator.openMarking(route: MarkingRoute) {
 
 /** V2 → C2: „Popraw zgłoszenie” przy zgłoszeniu przyjętym; poza V2 nic nie robi. Wymagania: BR-3, BR-18 */
 fun AppNavigator.openReplace(acceptedId: String) {
-    if (current is BuildingRoute) leaving { add(ReportEditRoute(acceptedId, isAccepted = true)) }
+    if (current is BuildingRoute) leaving { add(ReportEditRoute(acceptedId, ReportEditMode.CHANGE_ACCEPTED)) }
 }
 
 /** Poprawka C2 → C1: „Zmień miejsce”; pola czekają w szkicu, po „Dalej” wraca C2 z nowym miejscem. Wymagania: US7.4 */

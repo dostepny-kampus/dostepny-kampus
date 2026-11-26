@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.app.grounds
 
+import android.Manifest
 import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.LaunchedEffect
@@ -14,21 +15,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import io.github.dostepnykampus.app.AppShell
 import io.github.dostepnykampus.app.TestAppScreen
-import io.github.dostepnykampus.app.TestRoles
 import io.github.dostepnykampus.app.appMapViewModel
+import io.github.dostepnykampus.app.quick.showQuickApp
 import io.github.dostepnykampus.core.data.building.BUILDINGS_ASSET
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.BuildingFloors
-import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.location.LocationSwitch
 import io.github.dostepnykampus.core.location.PositionFix
 import io.github.dostepnykampus.core.location.PositionSource
-import io.github.dostepnykampus.core.model.Account
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.capture.location.BuildingLookup
+import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
 import io.github.dostepnykampus.feature.capture.quick.QuickLookup
+import io.github.dostepnykampus.feature.capture.quick.QuickReportModels
 import io.github.dostepnykampus.feature.capture.quick.QuickSendViewModel
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
@@ -64,13 +64,11 @@ class FarFromBuildingsTest {
     fun reportsFarFromBuildings() {
         val mapModel = compose.activity.appMapViewModel()
         val quick = quickModel()
-        compose.setContent {
-            DostepnyKampusTheme {
-                AppShell(firstLaunch = false, roles = TestRoles(Account.SignedIn()), onFirstHelpLeft = {}) { route ->
-                    LaunchedEffect(Unit) { quick.lookup.collect { lookup = it } }
-                    TestAppScreen(route = route, mapViewModel = mapModel, mapView = fakeMap)
-                }
-            }
+        val models = QuickReportModels(photoTranscoder = PhotoTranscoder(), send = quick)
+        shadowOf(compose.activity.application).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+        compose.showQuickApp(models) { route ->
+            LaunchedEffect(Unit) { quick.lookup.collect { lookup = it } }
+            TestAppScreen(route = route, mapViewModel = mapModel, mapView = fakeMap)
         }
         compose.waitUntil(timeoutMillis = WAIT_MS) {
             shadowOf(Looper.getMainLooper()).idle()

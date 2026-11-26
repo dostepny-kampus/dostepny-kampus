@@ -9,16 +9,24 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 /**
- * C2 w trybie poprawki zgłoszenia z C3, ponownego wysłania nieaktualnej zmiany z C3 albo zmiany przyjętego
- * zgłoszenia z V2.
+ * C2 w trybie [mode] dla zgłoszenia [submissionId].
  *
  * Wymagania: US8.3, BR-18, BR-23
  *
- * @property submissionId identyfikator zgłoszenia z kolejki telefonu albo zgłoszenia przyjętego
- * @property isAccepted czy poprawka dotyczy zgłoszenia przyjętego i tworzy nowe zgłoszenie
- * @property isResend czy [submissionId] to nieaktualna zmiana wysyłana ponownie jako nowa zmiana bieżącego przyjętego
- *   zgłoszenia tej bariery
+ * @property submissionId identyfikator własnego zgłoszenia albo zgłoszenia przyjętego
+ * @property mode co C2 robi ze zgłoszeniem
  */
 @Serializable
-data class ReportEditRoute(val submissionId: String, val isAccepted: Boolean = false, val isResend: Boolean = false) :
-    NavKey
+data class ReportEditRoute(val submissionId: String, val mode: ReportEditMode = ReportEditMode.OWN) : NavKey
+
+/** Tryb C2. Wymagania: US8.3, BR-18, BR-23 */
+enum class ReportEditMode {
+    /** Poprawka własnego zgłoszenia z C3; zapis zastępuje to samo zgłoszenie. */
+    OWN,
+
+    /** Zmiana zgłoszenia przyjętego z V2; zapis tworzy nowe zgłoszenie z powiązaniem. */
+    CHANGE_ACCEPTED,
+
+    /** Nieaktualna zmiana z C3 wysyłana ponownie jako nowa zmiana bieżącego przyjętego zgłoszenia tej bariery. */
+    RESEND_OUTDATED,
+}

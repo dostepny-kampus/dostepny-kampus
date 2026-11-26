@@ -5,7 +5,7 @@
  */
 
 /**
- * Interfejs modułu zgłoszeń dla innych modułów: zgłoszenia zmienione od kursora.
+ * Interfejs modułu zgłoszeń dla innych modułów: zmiany od kursora i liczniki budynków.
  *
  * @since 0.1.0
  */

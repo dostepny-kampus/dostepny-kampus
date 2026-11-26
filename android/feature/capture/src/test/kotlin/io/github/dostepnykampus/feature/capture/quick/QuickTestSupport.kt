@@ -50,10 +50,11 @@ internal fun quickSendModel(
     positions: PositionSource,
     saver: ReportSaver,
     floors: BuildingFloors = BuildingFloors { null },
+    locationSwitch: LocationSwitch = LocationSwitch { flowOf(true) },
 ): QuickSendViewModel =
     QuickSendViewModel(
         positions = positions,
-        locationSwitch = LocationSwitch { flowOf(true) },
+        locationSwitch = locationSwitch,
         saver = saver,
         networkStatus = NetworkStatus { flowOf(true) },
         buildingFloors = floors,
