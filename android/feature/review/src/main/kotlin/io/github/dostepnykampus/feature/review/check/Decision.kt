@@ -118,19 +118,28 @@ internal fun Decision(
             modifier = Modifier.padding(top = Odstepy.m).semantics { heading() },
             style = MaterialTheme.typography.titleLarge,
         )
+        val isMissing = notice == CheckNotice.REASON_MISSING
         Column(modifier = Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-            if (allowsDuplicate) Choice(duplicate, reason == Reason.DUPLICATE) { reason = Reason.DUPLICATE }
+            if (allowsDuplicate) {
+                Choice(label = duplicate, isChosen = reason == Reason.DUPLICATE, isError = isMissing) {
+                    reason = Reason.DUPLICATE
+                }
+            }
             if (reason == Reason.DUPLICATE) Earlier(similar = similar, chosen = earlier) { earlier = it }
-            Choice(outdated, reason == Reason.OUTDATED) { reason = Reason.OUTDATED }
-            Choice(stringResource(R.string.sprawdzenie_inny), reason == Reason.OTHER) { reason = Reason.OTHER }
+            Choice(label = outdated, isChosen = reason == Reason.OUTDATED, isError = isMissing) {
+                reason = Reason.OUTDATED
+            }
+            val other = stringResource(R.string.sprawdzenie_inny)
+            Choice(label = other, isChosen = reason == Reason.OTHER, isError = isMissing) { reason = Reason.OTHER }
         }
         OutlinedTextField(
             value = text,
             onValueChange = { text = it },
             modifier = Modifier.fillMaxWidth(),
             label = { Text(stringResource(R.string.sprawdzenie_opisz)) },
+            isError = isMissing && reason == Reason.OTHER,
         )
-        if (notice == CheckNotice.REASON_MISSING) Text(stringResource(R.string.sprawdzenie_podaj_powod))
+        if (isMissing) ProblemText(text = stringResource(R.string.sprawdzenie_podaj_powod))
         OutlinedAction(
             onClick = {
                 val rejection =
@@ -160,19 +169,21 @@ private fun Earlier(similar: SimilarReports, chosen: String?, onChoose: (String)
                     stringResource(near.submission.content.titleRes()),
                     near.distanceMeters.roundToInt(),
                 )
-            Choice(label, chosen == near.submission.id) { onChoose(near.submission.id) }
+            Choice(label = label, isChosen = chosen == near.submission.id, isError = false) {
+                onChoose(near.submission.id)
+            }
         }
     }
 }
 
 @Composable
-private fun Choice(label: String, isChosen: Boolean, onChoose: () -> Unit) {
+private fun Choice(label: String, isChosen: Boolean, isError: Boolean, onChoose: () -> Unit) {
     OutlinedCard(
         modifier = Modifier.fillMaxWidth().selectable(selected = isChosen, role = Role.RadioButton, onClick = onChoose),
         border =
             BorderStroke(
                 width = if (isChosen) Obramowania.wybrane else Obramowania.ramka,
-                color = MaterialTheme.colorScheme.outline,
+                color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline,
             ),
     ) {
         Row(modifier = Modifier.padding(Odstepy.m), verticalAlignment = Alignment.CenterVertically) {
