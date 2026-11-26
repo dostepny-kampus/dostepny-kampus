@@ -31,14 +31,14 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Kroki scenariuszy kolejki weryfikacji: kolejność, własne zgłoszenia i podobne zgłoszenia.
+ * Kroki scenariuszy kolejki weryfikacji: kolejność, wzięcie, własne i podobne zgłoszenia.
  * Kolejka to {@code GET /review/queue}; kroki patrzą tylko na zgłoszenia scenariusza, bo baza
  * może mieć inne.
  *
  * <p>Pierwszy Weryfikator ma konto testowe z tokenu bez konta, drugi własne konto, a autor
  * zgłoszeń innych osób konto {@code autor-kolejki}.</p>
  *
- * <p>Wymagania: US10.4, US10.5, BR-1, BR-4, BR-13</p>
+ * <p>Wymagania: US10.4, US10.5, US10.7, US8.2, BR-1, BR-4, BR-11, BR-13</p>
  *
  * @since 0.1.0
  */
@@ -55,6 +55,9 @@ public final class QueueSteps {
 
     /** Jedyne zdjęcie każdego zgłoszenia scenariusza. */
     private static final UUID PHOTO = UUID.fromString("e1f2a3b4-0004-4c5d-8e6f-7a8b9c0d1e2f");
+
+    /** Token drugiego Weryfikatora. */
+    private static final String SECOND = "VERIFIER.drugi-weryfikator";
 
     /** Miejsce przy wejściu głównym A-1. */
     private static final String ENTRANCE = "[17.06209,51.10785]";
@@ -195,6 +198,7 @@ public final class QueueSteps {
      * @throws Exception Gdy MockMvc nie wykona żądania
      */
     @When("pierwszy Weryfikator otworzy kolejkę weryfikacji")
+    @When("wyjdzie ze zgłoszenia i otworzy kolejkę weryfikacji")
     void opensQueue() throws Exception {
         this.queue = this.queue(this.first);
     }
@@ -252,7 +256,7 @@ public final class QueueSteps {
     void secondSeesBoth() throws Exception {
         MatcherAssert.assertThat(
             "Drugi Weryfikator nie widzi obu zgłoszeń pierwszego",
-            this.own(this.queue("VERIFIER.drugi-weryfikator")), Matchers.hasSize(2)
+            this.own(this.queue(QueueSteps.SECOND)), Matchers.hasSize(2)
         );
     }
 
@@ -278,6 +282,114 @@ public final class QueueSteps {
                 )
             ).toList(),
             Matchers.contains("SENT false", "SENT false")
+        );
+    }
+
+    /**
+     * Autor wysłał zgłoszenie progu z budynku.
+     *
+     * @param building Budynek zgłoszenia
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    @Given("^w kolejce jest zgłoszenie TB-13 „próg” z budynku (\\S+) ze statusem „wysłane”$")
+    void threshold(final String building) throws Exception {
+        this.barrier(QueueSteps.ONE, building, "TB-13");
+    }
+
+    /**
+     * Pierwszy Weryfikator wziął zgłoszenie progu i nie podjął decyzji.
+     *
+     * @param building Budynek zgłoszenia
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    @Given(
+        "^pierwszy Weryfikator wziął zgłoszenie TB-13 „próg” z budynku (\\S+) i nie podjął decyzji$"
+    )
+    void claimedThreshold(final String building) throws Exception {
+        this.threshold(building);
+        this.claims();
+    }
+
+    /**
+     * Pierwszy Weryfikator bierze zgłoszenie scenariusza.
+     *
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    @When("pierwszy Weryfikator weźmie to zgłoszenie")
+    void claims() throws Exception {
+        MatcherAssert.assertThat(
+            "Pierwszy Weryfikator nie wziął zgłoszenia, serwer nie dał 200",
+            this.status(
+                MockMvcRequestBuilders.post("/submissions/{id}/claim", QueueSteps.ONE)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer ".concat(this.first))
+            ),
+            Matchers.equalTo(200)
+        );
+    }
+
+    /** Wzięte zgłoszenie jest w weryfikacji. */
+    @Then("zgłoszenie ma status „w weryfikacji”")
+    void inReview() {
+        MatcherAssert.assertThat(
+            "Wzięte zgłoszenie nie ma statusu „w weryfikacji”",
+            this.jdbc.sql("SELECT status FROM submissions WHERE id = :id")
+                .param("id", QueueSteps.ONE).query(String.class).single(),
+            Matchers.equalTo("IN_REVIEW")
+        );
+    }
+
+    /**
+     * Drugi Weryfikator nie ma wziętego zgłoszenia w kolejce.
+     *
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    @Then("drugi Weryfikator nie widzi go w swojej kolejce")
+    void hiddenFromSecond() throws Exception {
+        MatcherAssert.assertThat(
+            "Drugi Weryfikator widzi zgłoszenie wzięte przez pierwszego",
+            this.ids(this.queue(QueueSteps.SECOND)),
+            Matchers.not(Matchers.hasItem(QueueSteps.ONE.toString()))
+        );
+    }
+
+    /** Wzięte zgłoszenie jest w kolejce pierwszego Weryfikatora jako jego wzięte. */
+    @Then("widzi to zgłoszenie osobno, wśród wziętych przez siebie")
+    void seesClaimed() {
+        MatcherAssert.assertThat(
+            "Kolejka pierwszego Weryfikatora nie pokazuje wziętego zgłoszenia jako wziętego",
+            this.own(this.queue).stream().map(item -> item.path("status").asString()).toList(),
+            Matchers.contains("IN_REVIEW")
+        );
+    }
+
+    /**
+     * Pierwszy Weryfikator otwiera wzięte zgłoszenie i odrzuca je z powodem.
+     *
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    @Then("może je otworzyć i podjąć decyzję")
+    void decides() throws Exception {
+        MatcherAssert.assertThat(
+            "Pierwszy Weryfikator nie otworzył albo nie rozstrzygnął wziętego zgłoszenia",
+            List.of(
+                this.status(
+                    MockMvcRequestBuilders.get("/submissions/{id}", QueueSteps.ONE)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer ".concat(this.first))
+                ),
+                this.status(
+                    MockMvcRequestBuilders.post("/submissions/{id}/review", QueueSteps.ONE)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer ".concat(this.first))
+                        .content(
+                            String.format(
+                                "{\"decision\":\"REJECT\",\"version\":%d,%s}",
+                                this.own(this.queue).getFirst().path("version").asInt(),
+                                "\"rejectionReason\":\"Zdjęcie nie pokazuje bariery\""
+                            )
+                        )
+                )
+            ),
+            Matchers.contains(200, 200)
         );
     }
 
