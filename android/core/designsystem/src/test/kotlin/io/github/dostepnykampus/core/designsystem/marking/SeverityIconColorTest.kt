@@ -5,14 +5,12 @@
  */
 package io.github.dostepnykampus.core.designsystem.marking
 
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.toPixelMap
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onRoot
 import io.github.dostepnykampus.core.designsystem.DarkMapColors
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.LightMapColors
@@ -27,8 +25,6 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import kotlin.math.abs
 import kotlin.math.roundToInt
-
-private const val SIGN = "znak"
 
 private const val CHANNEL_TOLERANCE_0_255 = 2
 private const val CHANNEL_MAX = 255f
@@ -61,7 +57,7 @@ class SeverityIconColorTest {
     private fun assertSignColors(isDark: Boolean, colors: MapColors) {
         compose.setContent {
             DostepnyKampusTheme(darkTheme = isDark) {
-                SeverityIcon(severity = Severity.BLOCKING, modifier = Modifier.testTag(SIGN))
+                SeverityIcon(severity = Severity.BLOCKING)
             }
         }
         compose.waitUntil(
@@ -74,7 +70,7 @@ class SeverityIconColorTest {
     }
 
     private fun signPixels(): List<Color> {
-        val map = compose.onNodeWithTag(SIGN).captureToImage().toPixelMap()
+        val map = compose.onRoot().captureToImage().toPixelMap()
         return (0 until map.width).flatMap { x -> (0 until map.height).map { y -> map[x, y] } }
     }
 
