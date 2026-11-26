@@ -285,7 +285,7 @@ Czynność główna: wybór budynku.
 
 | Element | AC/BR/NFR |
 | --- | --- |
-| Arkusz otwiera dotknięcie konturu wspólnego, np. „C-3/C-4”, albo dotknięcie obok dwóch konturów, poza nimi | US2, US3.2, decyzja 85 |
+| Arkusz otwiera dotknięcie obok dwóch różnych konturów, poza nimi. Kontur wspólny bez planów pięter otwiera od razu wspólną kartę; makieta pokazuje sam układ arkusza | US2, US3.2, decyzja 85 |
 | Nagłówek „Który budynek?” i obrysowany „Zamknij” | NFR-53 |
 | Każdy budynek to wiersz budynku w ramce na pełną szerokość: znak budynku, „Budynek C-3”, strzałka i pod spodem nazwa z danych, gdy jest. Otwiera V2 na niskiej wysokości; mapa zachowuje się jak po dotknięciu konturu | US2, NFR-17, NFR-18, decyzja z 18.11.2026 |
 

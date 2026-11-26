@@ -103,8 +103,9 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | V1 z małą kartą V2 | dotknięcie pustej mapy; „Zamknij”; „Wstecz” | V1 bez zaznaczenia w widoku sprzed karty: mapa albo lista; po otwarciu z listy wraca lista, a zapamiętany widok listy się nie zmienia. Tekst wyszukiwania bez zmian. Położenie i przybliżenie mapy się nie zmieniają: zostaje widok z chwili zamknięcia, także po wyborze z wyszukiwania | wszystkie | US2.8, NFR-19, NFR-53, NFR-56, decyzje 83, 116, 118, 153 |
 | V2, mała karta | dotknięcie uchwytu „Wysokość karty”, przewinięcie albo przeciągnięcie w górę | V2 rozwinięta: cały ekran bez mapy | wszystkie | US2.8, NFR-53 |
 | V2 rozwinięta po małej karcie | „Wstecz”; dotknięcie uchwytu „Wysokość karty” | V2, mała karta | wszystkie | NFR-15, decyzja 115 |
-| V1 | dotknięcie konturu wspólnego, np. „C-3/C-4”, albo dotknięcie obok dwóch konturów, poza nimi | V1, arkusz „Który budynek?” | wszystkie | US2, US3.2, decyzja 85 |
-| V1, arkusz „Który budynek?” | wiersz budynku, np. „Budynek C-3”; „Zamknij” | V2 tego budynku na niskiej wysokości, mapa jak po dotknięciu konturu; V1 | wszystkie | US2, NFR-53 |
+| V1 | dotknięcie konturu wspólnego bez planów, np. „T-18/T-22”, albo wybór symbolu z niego w wyszukiwaniu | V2 wspólna karta obu symboli, np. „T-18 / T-22”, na niskiej wysokości, bez arkusza „Który budynek?” | wszystkie | US2, US3.2, decyzja 85 |
+| V1 | dotknięcie obok dwóch różnych konturów, poza nimi | V1, arkusz „Który budynek?” | wszystkie | US2, US3.2, decyzja 85 |
+| V1, arkusz „Który budynek?” | wiersz budynku, np. „Budynek A-1”; „Zamknij” | V2 tego budynku na niskiej wysokości, mapa jak po dotknięciu konturu; V1 | wszystkie | US2, NFR-53 |
 | V1 | „Pokaż listę”; na liście „Pokaż mapę” | V1, lista; z listy V1, mapa | wszystkie | NFR-19 |
 | V1 | dotknięcie budynku na liście | zwykła czcionka: V1 w widoku mapy z kartą V2 na niskiej wysokości, chwilowo, bez zmiany zapamiętanego widoku listy. Mapa od razu stoi na budynku. Duża czcionka albo TalkBack: V2 na cały ekran | wszystkie | US2.8, US3.2, NFR-19, decyzje 115, 118 |
 | V1 | dotknięcie znaku bariery | V1, arkusz bariery | wszystkie | US1.3, US10.6 |
@@ -308,8 +309,9 @@ Wiersz o wejściach stoi na karcie na każdej wysokości, także na karcie otwar
 | E. Pierwsze uruchomienie: V5 „Pomiń instrukcję”, potem A | 2 | 3 | spełnione |
 | F. Pierwsze uruchomienie: V5 „Pomiń instrukcję”, potem C albo D | 3 | 4 | spełnione, na progu |
 | G. Brak wyniku: pole, litery, „Pokaż listę”, budynek, mapa z kartą V2 | 3 | 4 | droga po błędzie, na progu |
-| H. V1: kontur wspólny, np. „C-3/C-4”, budynek w „Który budynek?” | 2 | 3 | spełnione |
+| H. V1: kontur wspólny bez planów, np. „T-18/T-22”, wspólna karta z odpowiedzią | 1 | 2 | spełnione |
 | I. V1: znak wejścia na mapie, arkusz wejścia | — | 1 | spełnione; arkusz podaje oznaczenie i szczegóły wejścia |
+| J. V1: dotknięcie obok dwóch konturów, budynek w „Który budynek?” | 2 | 3 | spełnione |
 
 Kryterium liczy dotknięcia od mapy, więc ścieżki E i F się w nim mieszczą. Także licząc od otwarcia aplikacji, odpowiedź przychodzi najwyżej po 3 dotknięciach poza drogą po błędzie.
 
