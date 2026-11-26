@@ -2,7 +2,7 @@
 ' K1 Postęp inwentaryzacji, stan zwykły, Koordynator (RO-KOO).
 ' A-1: 4 z 5 pięter, 80% jak w scenariuszu demo, US11.2 i BR-21. Liczby zgłoszeń i wejść
 ' to zastępniki: scenariusze nie podają ich dla tego stanu, a 6 wejść z @US11.4 to dane testowe.
-' Dotknięcie ramki budynku albo "Otwórz" otwiera C5 "Obejrzane piętra" (US11.3).
+' "Otwórz" przy budynku otwiera C5 "Obejrzane piętra" (US11.3).
 !include _wspolne.iuml
 $ekran_poczatek()
 $naglowek("Postęp inwentaryzacji")
