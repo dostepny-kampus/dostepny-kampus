@@ -278,7 +278,7 @@ Kroki prowadzą od wejścia zalecanego (BR-25) windą, która staje na piętrze 
 | --- | --- |
 | Zwykły | mapa z podkładem OpenStreetMap, konturami i barierami. Podkład ma przygaszone barwy, więc budynki PWr i znaki są najwyraźniejsze, a zieleń, woda i ulice zostają rozpoznawalne; w motywie ciemnym podkład jest ciemny (NFR-16) |
 | Plan piętra | plan jednego budynku przy powiększeniu co najmniej 17 i kolumna pięter po lewej pod przyciskiem terenu. Inne budynki są przygaszone, jest „ⓘ” z legendą i źródłem danych (US16.1, NFR-40) |
-| Budynek bez planu | budynek podstawowy przybliżony bez karty V2: zdanie „Nie mamy planu pięter tego budynku.” nad mapą, bez kolumny pięter (US16.2, BR-G1) |
+| Budynek bez planu | Przy powiększeniu od 17 środek mapy leży w konturze budynku, który lista z serwera określa jako podstawowy. Bez karty V2 nad mapą widać zdanie „Nie mamy planu pięter tego budynku.” Kolumny pięter nie ma (US16.2, BR-G1). |
 | Winda na planie | arkusz z piętrami, na które jedzie winda (US16.1, US18.2) |
 | Znaleziona sala | plan piętra sali z wyróżnioną salą, numery kroków na planie bez linii trasy i karta sali z całą listą „Jak dojść”, bez wybranego kroku. Wiersza tytułu z „Pokaż listę” i pola z numerem sali nad kartą nie ma, jak nad V2; wracają po zamknięciu karty (US18.1, US18.2) |
 | Kroki po kolei | po „Pokaż po kolei”. Karta pokazuje jeden krok z „Krok 1 z 3”, paskiem postępu, „‹ Wstecz” i „Dalej ›”. Plan pokazuje piętro kroku, a mapa jego punkt. Wiersza tytułu i pola nad kartą nie ma jak w stanie „Znaleziona sala” (US18.2) |
