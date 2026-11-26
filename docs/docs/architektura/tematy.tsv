@@ -42,3 +42,4 @@ style	temat	styl mapy	Warstwy, kolory i obrazy mapy.
 submission	temat	zgłoszenie	Zgłoszenie bariery i jego cykl życia.
 sync	temat	synchronizacja	Wysyłanie zgłoszeń i pobieranie wyników w tle.
 tiles	temat	kafelki mapy	Pobieranie kafelków podkładu mapy z serwera kafelków z nagłówkiem aplikacji.
+trace	temat	ślad systemowy	Sekcje śladu Perfetto do pomiaru wydajności.
