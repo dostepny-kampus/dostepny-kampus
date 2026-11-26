@@ -10,9 +10,9 @@ import io.github.dostepnykampus.barrier.api.SubmissionChanges;
 import io.github.dostepnykampus.inspection.api.ChangedMarker;
 import io.github.dostepnykampus.inspection.api.MarkerChanges;
 import java.time.Instant;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 0.1.0
  */
 @Service
+@EnableConfigurationProperties(SyncSettings.class)
 public class ChangeFeed {
 
     /** Zmiany zgłoszeń. */
@@ -34,15 +35,23 @@ public class ChangeFeed {
     /** Zmiany znaczników pięter. */
     private final MarkerChanges markers;
 
-    ChangeFeed(final SubmissionChanges submissions, final MarkerChanges markers) {
+    /** Margines kursora. */
+    private final SyncSettings settings;
+
+    ChangeFeed(
+        final SubmissionChanges submissions, final MarkerChanges markers,
+        final SyncSettings settings
+    ) {
         this.submissions = submissions;
         this.markers = markers;
+        this.settings = settings;
     }
 
     /**
      * Zmiany od kursora {@code since} włącznie: własne zgłoszenia konta oraz cudze przyjęte
      * i archiwalne, a znaczniki tylko dla Zbierającego, inni dostają pustą listę. Kursor wyniku to
-     * chwila najpóźniejszej zwróconej zmiany, a bez zmian {@code since}.
+     * chwila pobrania cofnięta o margines, nie wcześniejsza niż {@code since}: zmiana zatwierdzona
+     * po pobraniu z wcześniejszą chwilą przychodzi w następnym, zmiany z marginesu powtórnie.
      *
      * @param since Kursor z poprzedniego pobrania
      * @param reader Identyfikator konta z tokenu
@@ -57,10 +66,7 @@ public class ChangeFeed {
             changed = this.markers.changedSince(since, reader);
         }
         return new PulledChanges(
-            Stream.concat(
-                reports.stream().map(ChangedSubmission::changed),
-                changed.stream().map(ChangedMarker::changed)
-            ).max(Comparator.naturalOrder()).orElse(since),
+            Collections.max(List.of(since, Instant.now().minus(this.settings.cursorMargin()))),
             reports.stream().map(ChangedSubmission::submission).toList(),
             changed.stream().map(ChangeFeed::pulled).toList()
         );

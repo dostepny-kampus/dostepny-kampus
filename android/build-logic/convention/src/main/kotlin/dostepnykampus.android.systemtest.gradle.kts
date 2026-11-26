@@ -17,6 +17,7 @@ plugins {
 extensions.configure<TestExtension> {
     namespace = "io.github.dostepnykampus" + path.replace(':', '.')
     compileSdk = libs.versionInt("androidCompileSdk")
+    compileSdkMinor = libs.versionInt("androidCompileSdkMinor")
     defaultConfig.minSdk = libs.versionInt("androidMinSdk")
     defaultConfig.targetSdk = libs.versionInt("androidTargetSdk")
     defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
