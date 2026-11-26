@@ -5,12 +5,15 @@
  */
 package io.github.dostepnykampus.feature.map
 
+import io.github.dostepnykampus.feature.map.camera.CameraMotion
 import io.github.dostepnykampus.feature.map.camera.FlightArea
 import io.github.dostepnykampus.feature.map.camera.StyleArea
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.style.Basemap
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /** Teren i podkład w stylu na czas przelotu na inny teren na prostokątach testowych (nie dane PWr). */
@@ -27,7 +30,7 @@ class FlightAreaTest {
      */
     @Test
     fun keepsOldAreaAtFlightStart() {
-        areas.startFlight()
+        areas.start(CameraMotion.FLIGHT)
         areas.area(other)
         areas.zoom(16.0)
         assertEquals(main, areas.shown, "pierwsza klatka przelotu: stary teren")
@@ -50,10 +53,66 @@ class FlightAreaTest {
     /** Wiersz: V1, przelot przerwany przed oddaleniem mapy kończy się terenem wybranym jako ostatni. */
     @Test
     fun showsLatestAfterCancel() {
-        areas.startFlight()
+        areas.start(CameraMotion.FLIGHT)
         areas.area(other)
         areas.endFlight()
         assertEquals(other, areas.shown, "po przerwaniu nowy teren")
+    }
+
+    /**
+     * Wiersz: V1, krótki przelot na inny teren nie oddala mapy poniżej powiększenia podkładu: teren zmienia się
+     * przy lądowaniu, a podkład starego terenu zostaje na ekranie, zamiast chować się do wczytania nowego.
+     *
+     * Wymagania: US1.8, NFR-56
+     */
+    @Test
+    fun isBasemapKeptAfterShortFlight() {
+        areas.zoom(16.0)
+        areas.start(CameraMotion.FLIGHT)
+        areas.area(other)
+        areas.zoom(15.2)
+        areas.endFlight()
+        assertEquals(other, areas.shown, "po przelocie nowy teren")
+        assertTrue(areas.isBasemapKept, "podkład starego terenu zostaje do wczytania nowego")
+    }
+
+    /** Wiersz: V1, przelot oddalił mapę poniżej obu podkładów: nowy podkład czeka ukryty na kafelki. */
+    @Test
+    fun hidesBasemapAfterDeepFlight() {
+        areas.zoom(16.0)
+        areas.start(CameraMotion.FLIGHT)
+        areas.area(other)
+        areas.zoom(14.0)
+        assertEquals(other, areas.shown, "oba podkłady ukryte: nowy teren")
+        assertFalse(areas.isBasemapKept, "podkładu nie było na ekranie")
+    }
+
+    /** Wiersz: V1, skok na inny teren bez animacji: stary podkład nie leży pod nowym widokiem. */
+    @Test
+    fun hidesBasemapAfterJump() {
+        areas.zoom(16.0)
+        areas.start(CameraMotion.NONE)
+        areas.zoom(16.0)
+        areas.area(other)
+        assertEquals(other, areas.shown, "po skoku nowy teren")
+        assertFalse(areas.isBasemapKept, "kafelki nowego widoku nie są wczytane")
+    }
+
+    /** Wiersz: V1, przesunięcie na bliski teren: podkład zostaje na ekranie. */
+    @Test
+    fun isBasemapKeptOnShift() {
+        areas.zoom(16.0)
+        areas.start(CameraMotion.EASE)
+        areas.area(other)
+        assertTrue(areas.isBasemapKept, "przesunięcie bez skoku: podkład zostaje")
+    }
+
+    /** Wiersz: V1, widok poniżej podkładu nowego terenu: po zmianie podkład nie jest rysowany, więc czeka ukryty. */
+    @Test
+    fun hidesBelowNewBasemapZoom() {
+        areas.zoom(14.8)
+        areas.area(other)
+        assertFalse(areas.isBasemapKept, "nowy podkład od wyższego powiększenia")
     }
 
     private fun areaOf(bounds: CampusBounds, minZoom: Double) =
