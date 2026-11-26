@@ -165,7 +165,7 @@ private fun QuickStep(
     onBackToMap: () -> Unit,
 ) {
     val where = models.sendModel()
-    if (route.step == ReportStep.SEND) ObserveQuickSend(stage = where.stage, onSent = actions.onSent)
+    if (route.step == ReportStep.SEND) ObserveQuickSend(stage = where.stage, onComplete = actions.onSent)
     val isEnabled = if (route.isPlaceChosen) true else where.locationEnabled.collectAsStateWithLifecycle().value
     if (isEnabled != true) {
         if (isEnabled == false) QuickLocationOff(onBackToMap)
@@ -207,8 +207,8 @@ private fun QuickStep(
 }
 
 @Composable
-private fun ObserveQuickSend(stage: StateFlow<QuickSendStage>, onSent: (Boolean) -> Unit) {
-    val sent by rememberUpdatedState(onSent)
+private fun ObserveQuickSend(stage: StateFlow<QuickSendStage>, onComplete: (Boolean) -> Unit) {
+    val sent by rememberUpdatedState(onComplete)
     LaunchedEffect(stage) {
         stage
             .filter { it == QuickSendStage.SENT || it == QuickSendStage.SAVED_OFFLINE }
