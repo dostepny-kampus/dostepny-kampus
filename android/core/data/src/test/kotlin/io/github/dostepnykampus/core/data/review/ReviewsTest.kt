@@ -90,7 +90,8 @@ class ReviewsTest {
     fun us10ReadsPhoto() {
         val read = answered(OK, "jpeg") { it.photo(submissionId = ID, photoId = PHOTO) }
         assertArrayEquals("jpeg".toByteArray(), (read as ServerReply.Ok).value, "bajty zdjęcia do zasłaniania")
-        assertEquals(ServerReply.Missing, answered(NOT_FOUND, "{}") { it.photo(ID, PHOTO) }, "nieznane zdjęcie")
+        val missing = answered(NOT_FOUND, "{}") { it.photo(submissionId = ID, photoId = PHOTO) }
+        assertEquals(ServerReply.Missing, missing, "nieznane zdjęcie")
     }
 
     @Test
