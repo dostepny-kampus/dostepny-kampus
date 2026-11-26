@@ -20,8 +20,5 @@ import kotlinx.serialization.Serializable
  *   zgłoszenia tej bariery
  */
 @Serializable
-data class ReportEditRoute(
-    val submissionId: String,
-    val isAccepted: Boolean = false,
-    val isResend: Boolean = false,
-) : NavKey
+data class ReportEditRoute(val submissionId: String, val isAccepted: Boolean = false, val isResend: Boolean = false) :
+    NavKey
