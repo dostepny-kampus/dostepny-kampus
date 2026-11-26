@@ -7,8 +7,7 @@ Funkcja: Eksport zgłoszeń przyjętych do QGIS
     Zakładając, że Koordynator jest zalogowany z rolą Koordynatora
     Oraz przy wejściu głównym A-1 jest przyjęte zgłoszenie TB-1 „schody przy wejściu” z uciążliwością 3
 
-  # brak pełnego testu: #3754
-  @US13.1 @serwer @do-zrobienia
+  @US13.1 @serwer
   Scenariusz: Plik GeoJSON otwiera się w QGIS bez ustawiania układu współrzędnych
     Jeżeli Koordynator pobierze eksport GeoJSON
     Oraz otworzy plik w QGIS
@@ -36,16 +35,13 @@ Funkcja: Eksport zgłoszeń przyjętych do QGIS
       | w weryfikacji | CSV     | nie występuje   |
       | archiwalne    | CSV     | nie występuje   |
 
-    # brak pełnego testu: #3754
-    @do-zrobienia
-    Przykłady:
+      Przykłady:
       | status        | format  | obecność        |
       | przyjęte      | GeoJSON | jest            |
       | wysłane       | GeoJSON | nie występuje   |
       | odrzucone     | GeoJSON | nie występuje   |
 
-  # brak pełnego testu: #3754
-  @US13.3 @BR-22 @BR-19 @serwer @do-zrobienia
+  @US13.3 @BR-22 @BR-19 @serwer
   Scenariusz: Bariera usunięta nie trafia do eksportu
     Zakładając, że przyjęto zgłoszenie „bariera usunięta” dla niesprawnej windy TB-9 w budynku D-2
     Jeżeli Koordynator pobierze eksport GeoJSON
@@ -62,8 +58,6 @@ Funkcja: Eksport zgłoszeń przyjętych do QGIS
       | format  |
       | CSV     |
 
-    # brak pełnego testu: #3754
-    @do-zrobienia
-    Przykłady:
+      Przykłady:
       | format  |
       | GeoJSON |
