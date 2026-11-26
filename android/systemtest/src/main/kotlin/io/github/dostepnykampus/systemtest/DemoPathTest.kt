@@ -90,7 +90,6 @@ class DemoPathTest {
      *
      * Wymagania: US6.1, US6.2, US7.1, US9.2, US10.1, US2.1, US11.1, US13.1
      */
-    @Ignore("Eksport GeoJSON nie ma jeszcze trasy na serwerze #3062")
     @Test
     fun demoPathInA1() {
         server.prepare()
