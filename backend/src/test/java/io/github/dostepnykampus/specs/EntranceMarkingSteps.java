@@ -111,7 +111,7 @@ public final class EntranceMarkingSteps {
 
     @Given("^Zbierający wysłał zmianę oznaczenia tego wejścia na „([^”]+)” (?:z nowym|ze) .+$")
     void collectorSentChange(final String marking) throws Exception {
-        this.submit(this.id("pierwszy"), "COLLECTOR.c1", marking);
+        this.submit(EntranceMarkingSteps.id("pierwszy"), "COLLECTOR.c1", marking);
     }
 
     @Given("^Zbierający wysłał zmianę oznaczenia wejścia bocznego (\\S+) na „([^”]+)”$")
@@ -123,28 +123,31 @@ public final class EntranceMarkingSteps {
     @Given("^jako Zbierający wysłał zmianę oznaczenia wejścia bocznego (\\S+) na „([^”]+)”$")
     void verifierSentSide(final String symbol, final String marking) throws Exception {
         this.place("wejście boczne ".concat(symbol), "brak danych", "1.11.2026");
-        this.submit(this.id("pierwszy"), "COLLECTOR+VERIFIER", marking);
+        this.submit(EntranceMarkingSteps.id("pierwszy"), "COLLECTOR+VERIFIER", marking);
     }
 
     @Given("^inny Zbierający wysłał zmianę oznaczenia tego wejścia na „([^”]+)”$")
     void otherCollectorSent(final String marking) throws Exception {
-        this.submit(this.id("drugi"), "COLLECTOR.c2", marking);
+        this.submit(EntranceMarkingSteps.id("drugi"), "COLLECTOR.c2", marking);
     }
 
     @Given("^pierwszy Weryfikator (\\d{1,2}\\.\\d{2}\\.\\d{4}) przyjął zmianę na „.+”$")
     @When("^pierwszy Weryfikator (\\d{1,2}\\.\\d{2}\\.\\d{4}) weźmie i przyjmie tę zmianę$")
     void firstVerifierAccepts(final String day) throws Exception {
-        this.decide(this.id("pierwszy"), "VERIFIER.v1", "{\"decision\":\"ACCEPT\",\"version\":1}");
+        this.decide(
+            EntranceMarkingSteps.id("pierwszy"), "VERIFIER.v1",
+            "{\"decision\":\"ACCEPT\",\"version\":1}"
+        );
         this.jdbc.sql("UPDATE entrances SET marking_date=:date WHERE id=:id AND building_symbol=:s")
             .param("date", LocalDate.parse(day, EntranceMarkingSteps.DAY))
-            .param("id", this.api("wejście")).param("s", this.building).update();
+            .param("id", EntranceMarkingSteps.api("wejście")).param("s", this.building).update();
     }
 
     @When("^(pierwszy|drugi) Weryfikator weźmie .+? i odrzuci ją z powodem „([^”]+)”$")
     void verifierRejects(final String who, final String text) throws Exception {
         this.reason = text;
         this.decide(
-            this.id(who), "VERIFIER.v".concat(this.api(who)),
+            EntranceMarkingSteps.id(who), "VERIFIER.v".concat(EntranceMarkingSteps.api(who)),
             "{\"decision\":\"REJECT\",\"version\":1,\"rejectionReason\":\"%s\"}".formatted(text)
         );
     }
@@ -152,11 +155,11 @@ public final class EntranceMarkingSteps {
     @Then("^zgłoszenie zmiany oznaczenia ma status „([^”]+)”( z tym powodem)?$")
     void submissionHasStatus(final String status, final @Nullable String why) throws Exception {
         final String body = this.get(
-            "/submissions/".concat(this.id("pierwszy").toString()), "VERIFIER.v1"
+            "/submissions/".concat(EntranceMarkingSteps.id("pierwszy").toString()), "VERIFIER.v1"
         );
         MatcherAssert.assertThat(
             "Status zgłoszenia nie zgadza się", body,
-            Matchers.containsString("\"status\":\"%s\"".formatted(this.api(status)))
+            Matchers.containsString("\"status\":\"%s\"".formatted(EntranceMarkingSteps.api(status)))
         );
         if (why != null) {
             MatcherAssert.assertThat(
@@ -172,7 +175,7 @@ public final class EntranceMarkingSteps {
         MatcherAssert.assertThat(
             "Oznaczenie wejścia %s nie zgadza się".formatted(symbol),
             this.entranceNode(symbol).path("marking").asString(""),
-            Matchers.equalTo(this.api(marking))
+            Matchers.equalTo(EntranceMarkingSteps.api(marking))
         );
     }
 
@@ -192,18 +195,20 @@ public final class EntranceMarkingSteps {
 
     @Then("zgłoszenie zmiany oznaczenia nie jest widoczne na mapie ani w eksporcie")
     void hiddenFromMapAndExport() throws Exception {
-        final String id = this.id("pierwszy").toString();
+        final String id = EntranceMarkingSteps.id("pierwszy").toString();
         MatcherAssert.assertThat(
             "Zgłoszenie jest widoczne na mapie albo w eksporcie",
             List.of(
                 this.get("/submissions", ""), this.exportCsv(),
                 this.get("/submissions?buildingSymbol=".concat(this.building), "")
-            ), Matchers.everyItem(Matchers.not(Matchers.containsString(id)))
+            ),
+            Matchers.everyItem(Matchers.not(Matchers.containsString(id)))
         );
         MatcherAssert.assertThat(
             "Gość nie dostał 404 dla zmiany oznaczenia",
             this.http.perform(MockMvcRequestBuilders.get("/submissions/{id}", id))
-                .andReturn().getResponse().getStatus(), Matchers.equalTo(404)
+                .andReturn().getResponse().getStatus(),
+            Matchers.equalTo(404)
         );
     }
 
@@ -214,20 +219,20 @@ public final class EntranceMarkingSteps {
 
     @Then("^inny Zbierający widzi tę zmianę ze statusem „(\\S+)” i powodem odrzucenia „([^”]+)”$")
     void otherCollectorSeesRejection(final String status, final String expected) throws Exception {
-        this.checkOwn("drugi", this.api(status), expected);
+        this.checkOwn("drugi", EntranceMarkingSteps.api(status), expected);
     }
 
     @Then("nie widzi w niej tej zmiany")
     void notInOwnQueue() throws Exception {
         MatcherAssert.assertThat(
             "Weryfikator widzi własną zmianę", this.get("/review/queue", "COLLECTOR+VERIFIER"),
-            Matchers.not(Matchers.containsString(this.id("pierwszy").toString()))
+            Matchers.not(Matchers.containsString(EntranceMarkingSteps.id("pierwszy").toString()))
         );
     }
 
     @Then("^próba przyjęcia tej zmiany przez pierwszego Weryfikatora z pominięciem .+$")
     void ownReviewRefused() throws Exception {
-        final UUID id = this.id("pierwszy");
+        final UUID id = EntranceMarkingSteps.id("pierwszy");
         MatcherAssert.assertThat(
             "Weryfikator mógł wziąć albo przyjąć własną zmianę oznaczenia",
             List.of(
@@ -236,7 +241,8 @@ public final class EntranceMarkingSteps {
                     "/submissions/%s/review".formatted(id), "COLLECTOR+VERIFIER",
                     "{\"decision\":\"ACCEPT\",\"version\":1}"
                 )
-            ), Matchers.contains(403, 403)
+            ),
+            Matchers.contains(403, 403)
         );
     }
 
@@ -244,31 +250,37 @@ public final class EntranceMarkingSteps {
     void secondSeesChange() throws Exception {
         MatcherAssert.assertThat(
             "Drugi Weryfikator nie widzi zmiany", this.get("/review/queue", "VERIFIER.v2"),
-            Matchers.containsString(this.id("pierwszy").toString())
+            Matchers.containsString(EntranceMarkingSteps.id("pierwszy").toString())
         );
     }
 
     @After
     void cleanUp() throws IOException {
-        this.photos.delete(this.id("pierwszy"), this.id("zdjęcie"));
-        this.photos.delete(this.id("drugi"), this.id("zdjęcie"));
+        this.photos.delete(
+            EntranceMarkingSteps.id("pierwszy"), EntranceMarkingSteps.id("zdjęcie")
+        );
+        this.photos.delete(EntranceMarkingSteps.id("drugi"), EntranceMarkingSteps.id("zdjęcie"));
         this.jdbc.sql("DELETE FROM submissions WHERE id IN (:ids)")
-            .param("ids", List.of(this.id("pierwszy"), this.id("drugi"))).update();
+            .param(
+                "ids",
+                List.of(EntranceMarkingSteps.id("pierwszy"), EntranceMarkingSteps.id("drugi"))
+            ).update();
         this.jdbc.sql("DELETE FROM entrances WHERE id = :id")
-            .param("id", this.api("wejście")).update();
+            .param("id", EntranceMarkingSteps.api("wejście")).update();
     }
 
     private void place(final String target, final String marking, final String day) {
         final int split = target.lastIndexOf(' ');
         final String kind = target.substring(0, split);
         this.building = target.substring(split + 1);
-        this.jdbc.sql("""
+        this.jdbc.sql(
+            """
             INSERT INTO entrances(id,building_symbol,name,main,location,marking,marking_date,
                 marking_source) SELECT :id,symbol,:name,:main,ST_PointOnSurface(outline),
             :marking,:date,'IMPORT' FROM buildings WHERE symbol=:symbol ON CONFLICT DO NOTHING"""
-        ).param("id", this.api("wejście")).param("name", kind)
+        ).param("id", EntranceMarkingSteps.api("wejście")).param("name", kind)
             .param("main", "wejście główne".equals(kind)).param("symbol", this.building)
-            .param("marking", this.api(marking))
+            .param("marking", EntranceMarkingSteps.api(marking))
             .param("date", LocalDate.parse(day, EntranceMarkingSteps.DAY)).update();
     }
 
@@ -277,17 +289,21 @@ public final class EntranceMarkingSteps {
             "Serwer nie przyjął zmiany oznaczenia wejścia",
             this.post("/submissions", token, this.payload(id, marking)), Matchers.equalTo(201)
         );
-        this.photos.put(id, this.id("zdjęcie"), "zdjęcie".getBytes(StandardCharsets.UTF_8));
+        this.photos.put(
+            id, EntranceMarkingSteps.id("zdjęcie"), "zdjęcie".getBytes(StandardCharsets.UTF_8)
+        );
     }
 
     private String payload(final UUID id, final String marking) {
         return """
             {"id":"%s","kind":"ENTRANCE_MARKING","buildingSymbol":"%s","entranceId":"%s",\
             "entranceMarking":"%s","location":%s,"photoIds":["%s"]}""".formatted(
-            id, this.building, this.api("wejście"), this.api(marking),
+            id, this.building, EntranceMarkingSteps.api("wejście"),
+            EntranceMarkingSteps.api(marking),
             this.jdbc.sql(
                 "SELECT ST_AsGeoJSON(ST_PointOnSurface(outline)) FROM buildings WHERE symbol=:s"
-            ).param("s", this.building).query(String.class).single(), this.id("zdjęcie")
+            ).param("s", this.building).query(String.class).single(),
+            EntranceMarkingSteps.id("zdjęcie")
         );
     }
 
@@ -297,7 +313,8 @@ public final class EntranceMarkingSteps {
             List.of(
                 this.post("/submissions/%s/claim".formatted(id), token, ""),
                 this.post("/submissions/%s/review".formatted(id), token, body)
-            ), Matchers.contains(200, 200)
+            ),
+            Matchers.contains(200, 200)
         );
     }
 
@@ -324,7 +341,7 @@ public final class EntranceMarkingSteps {
             JsonMapper.builder().build().readTree(this.get("/buildings/".concat(symbol), ""))
                 .path("entrances").spliterator(),
             false
-        ).filter(item -> this.api("wejście").equals(item.path("id").asString("")))
+        ).filter(item -> EntranceMarkingSteps.api("wejście").equals(item.path("id").asString("")))
             .findFirst().orElseThrow(() -> new AssertionError("Brak wejścia ".concat(symbol)));
     }
 
@@ -335,9 +352,12 @@ public final class EntranceMarkingSteps {
             "Data albo źródło wejścia %s nie zgadza się".formatted(symbol),
             List.of(
                 found.path("markingDate").asString(""), found.path("markingSource").asString("")
-            ), Matchers.contains(
+            ),
+            Matchers.contains(
                 LocalDate.parse(meta.substring(0, sep), EntranceMarkingSteps.DAY).toString(),
-                this.api(meta.substring(meta.indexOf('„', sep) + 1, meta.lastIndexOf('”')))
+                EntranceMarkingSteps.api(
+                    meta.substring(meta.indexOf('„', sep) + 1, meta.lastIndexOf('”'))
+                )
             )
         );
     }
@@ -346,29 +366,25 @@ public final class EntranceMarkingSteps {
         throws Exception {
         MatcherAssert.assertThat(
             "Lista własnych zgłoszeń nie zawiera odrzuconej zmiany z powodem",
-            this.get("/submissions?mine=true", "COLLECTOR.c".concat(this.api(who))),
+            this.get("/submissions?mine=true", "COLLECTOR.c".concat(EntranceMarkingSteps.api(who))),
             Matchers.allOf(
-                Matchers.containsString(this.id(who).toString()),
+                Matchers.containsString(EntranceMarkingSteps.id(who).toString()),
                 Matchers.containsString("\"status\":\"%s\"".formatted(status)),
                 Matchers.containsString("\"rejectionReason\":\"%s\"".formatted(expected))
             )
         );
     }
 
-    private UUID id(final String who) {
-        return EntranceMarkingSteps.IDS.get(who);
-    }
-
-    private String api(final String word) {
-        return EntranceMarkingSteps.API.get(word);
-    }
-
     private String exportCsv() throws Exception {
         try (HttpClient client = HttpClient.newHttpClient()) {
             final HttpResponse<String> reply = client.send(
-                HttpRequest.newBuilder(URI.create("http://localhost:%s/export.csv".formatted(
-                    this.env.getRequiredProperty("local.server.port")
-                ))).header(HttpHeaders.AUTHORIZATION, "Bearer COORDINATOR").build(),
+                HttpRequest.newBuilder(
+                    URI.create(
+                        "http://localhost:%s/export.csv".formatted(
+                            this.env.getRequiredProperty("local.server.port")
+                        )
+                    )
+                ).header(HttpHeaders.AUTHORIZATION, "Bearer COORDINATOR").build(),
                 HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)
             );
             MatcherAssert.assertThat(
@@ -376,5 +392,13 @@ public final class EntranceMarkingSteps {
             );
             return reply.body();
         }
+    }
+
+    private static UUID id(final String who) {
+        return EntranceMarkingSteps.IDS.get(who);
+    }
+
+    private static String api(final String word) {
+        return EntranceMarkingSteps.API.get(word);
     }
 }
