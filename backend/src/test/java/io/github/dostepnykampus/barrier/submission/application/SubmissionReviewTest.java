@@ -55,7 +55,11 @@ final class SubmissionReviewTest {
         );
     }
 
-    /** Atrapa portu weryfikacji: zapamiętuje wzięcie i zwraca podany wynik. */
+    /**
+     * Atrapa portu weryfikacji: zapamiętuje wzięcie i zwraca podany wynik.
+     *
+     * @since 0.1.0
+     */
     private static final class RecordingReviews implements ReviewRepository {
 
         /** Wynik zwracany z wzięcia. */
@@ -101,7 +105,11 @@ final class SubmissionReviewTest {
         }
     }
 
-    /** Atrapa portu zgłoszeń, której wzięcie nie używa. */
+    /**
+     * Atrapa portu zgłoszeń, której wzięcie nie używa.
+     *
+     * @since 0.1.0
+     */
     private static final class UnusedSubmissions implements SubmissionRepository {
 
         @Override

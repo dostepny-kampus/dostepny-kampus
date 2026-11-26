@@ -31,12 +31,11 @@ import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Adapter portów zgłoszeń na tabeli submissions. Zapis
- * i edycja to pojedyncze atomowe zapytania, bez odczytu przed zapisem.
- * Zapisuje tylko treść JSON; rodzaj, budynek, punkt i piętro baza liczy
- * z niej w kolumnach generowanych, więc mają jedno źródło. Klasa
- * nie jest repozytorium Springa, bo proxy tłumaczące wyjątki nie powstaje
- * dla klasy finalnej, a JdbcClient tłumaczy wyjątki sam.
+ * Adapter portów zgłoszeń na tabeli submissions. Zapis i edycja to pojedyncze atomowe
+ * zapytania, bez odczytu przed zapisem. Zapisuje tylko treść JSON; rodzaj, budynek, punkt
+ * i piętro baza liczy z niej w kolumnach generowanych, więc mają jedno źródło. Klasa nie jest
+ * repozytorium Springa, bo proxy tłumaczące wyjątki nie powstaje dla klasy finalnej, a
+ * JdbcClient tłumaczy wyjątki sam.
  * TODO(#3998): port weryfikacji przechodzi do adaptera w temacie review.
  *
  * <p>Wymagania: BR-9, BR-10, BR-18, BR-11</p>
