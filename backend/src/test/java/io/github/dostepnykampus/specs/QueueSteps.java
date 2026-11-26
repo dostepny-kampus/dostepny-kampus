@@ -341,14 +341,14 @@ public final class QueueSteps {
         );
     }
 
-    private List<JsonNode> own(final String queue) {
-        return StreamSupport.stream(this.mapper.readTree(queue).spliterator(), false).filter(
+    private List<JsonNode> own(final String json) {
+        return StreamSupport.stream(this.mapper.readTree(json).spliterator(), false).filter(
             item -> List.of(QueueSteps.ONE.toString(), QueueSteps.TWO.toString())
                 .contains(item.path("id").asString())
         ).toList();
     }
 
-    private List<String> ids(final String queue) {
-        return this.own(queue).stream().map(item -> item.path("id").asString()).toList();
+    private List<String> ids(final String json) {
+        return this.own(json).stream().map(item -> item.path("id").asString()).toList();
     }
 }
