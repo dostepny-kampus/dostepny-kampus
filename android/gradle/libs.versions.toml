@@ -5,7 +5,7 @@ detekt = "2.0.0-alpha.6"
 composeRules = "0.6.8"
 moduleGraphAssert = "2.9.1"
 dependencyAnalysis = "3.20.4"
-composeBom = "2026.09.00"
+composeBom = "2026.11.01"
 activityCompose = "1.13.0"
 appauth = "0.11.1"
 lifecycle = "2.11.0"
@@ -70,6 +70,7 @@ navigationevent = "1.2.0"
 savedstate = "1.4.0"
 javaxInject = "1"
 androidCompileSdk = "37"
+androidCompileSdkMinor = "1"
 androidTargetSdk = "37"
 androidMinSdk = "26"
 jvmTarget = "17"
@@ -124,6 +125,7 @@ robolectric-shadows-framework = { module = "org.robolectric:shadows-framework", 
 robolectric-annotations = { module = "org.robolectric:annotations", version.ref = "robolectric" }
 junit4 = { module = "junit:junit", version.ref = "junit4" }
 androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
+androidx-test-espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "espresso" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidxTestCore" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTestRunner" }
 androidx-test-monitor = { module = "androidx.test:monitor", version.ref = "androidxTestMonitor" }

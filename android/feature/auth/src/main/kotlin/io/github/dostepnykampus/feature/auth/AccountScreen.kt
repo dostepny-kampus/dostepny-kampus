@@ -35,6 +35,7 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.GroupContainer
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.designsystem.account.nameRes
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.card.InfoPanel
 import io.github.dostepnykampus.core.model.Account
@@ -98,15 +99,7 @@ private fun PersonCard(account: Account.SignedIn) {
 private fun roleNames(account: Account.SignedIn): List<String> =
     StaffRole.entries
         .filter { it in account.staffRoles }
-        .map { role -> stringResource(roleLabel(role)) }
-
-@StringRes
-private fun roleLabel(role: StaffRole): Int =
-    when (role) {
-        StaffRole.COLLECTOR -> R.string.rola_zbierajacy
-        StaffRole.VERIFIER -> R.string.rola_weryfikator
-        StaffRole.COORDINATOR -> R.string.rola_koordynator
-    }
+        .map { role -> stringResource(role.nameRes()) }
 
 @Composable
 private fun ActionRow(

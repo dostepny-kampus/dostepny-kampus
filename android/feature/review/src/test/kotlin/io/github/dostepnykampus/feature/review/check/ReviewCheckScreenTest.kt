@@ -21,7 +21,10 @@ import io.github.dostepnykampus.core.model.building.EntranceDistance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
 import io.github.dostepnykampus.core.model.submission.Severity
+<<<<<<< HEAD
 import io.github.dostepnykampus.core.model.submission.SubmissionField
+=======
+>>>>>>> origin/sprint/5
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.review.queue.queued
@@ -121,6 +124,15 @@ class ReviewCheckScreenTest {
         compose.onNodeWithText("Przyjmij").performScrollTo()
         shown.value = quick.copy(notice = CheckNotice.TYPE_MISSING, missingAttempts = 2)
         compose.onNodeWithText("Typ bariery").assertIsDisplayed()
+    }
+
+    @Test
+    fun rejectWithoutReasonShowsSign() {
+        show(READY.copy(notice = CheckNotice.REASON_MISSING))
+        val text = "Podaj powód odrzucenia, aby autor wiedział, co poprawić."
+        compose.onNodeWithText(text).performScrollTo().assertIsDisplayed()
+        val signs = compose.onAllNodesWithTag(IMPORTANT_SIGN_TAG, useUnmergedTree = true).fetchSemanticsNodes()
+        assertEquals("znak „!” przy błędzie odrzucenia", 1, signs.size)
     }
 
     @Test
