@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.capture.mine
 
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
+import io.github.dostepnykampus.core.data.submission.own.RefusalReason
 import io.github.dostepnykampus.core.data.submission.own.SendState
 import io.github.dostepnykampus.core.designsystem.StatusIcons
 import io.github.dostepnykampus.core.designsystem.icon
@@ -49,11 +50,17 @@ internal enum class ShownStatus(
     ARCHIVED(SubmissionStatus.ARCHIVED.nameRes(), SubmissionStatus.ARCHIVED.icon()),
 }
 
+/**
+ * Status karty pozycji. Zgłoszenie czekające na wybór wersji ma status wersji z serwera, a nie „Nie wysłano”: zmiana
+ * nie jest odrzucona, czeka na wybór.
+ *
+ * Wymagania: US8.1, US8.2, US9.3, BR-10
+ */
 internal fun OwnSubmissionItem.shownStatus(): ShownStatus =
-    when (state) {
-        SendState.LOCAL -> ShownStatus.LOCAL
-        SendState.REFUSED -> ShownStatus.REFUSED
-        SendState.SENT -> serverStatus?.let { ShownStatus.valueOf(it.name) } ?: ShownStatus.SENT
+    when {
+        state == SendState.LOCAL -> ShownStatus.LOCAL
+        state == SendState.REFUSED && refusal != RefusalReason.CHANGED_ON_SERVER -> ShownStatus.REFUSED
+        else -> serverStatus?.let { ShownStatus.valueOf(it.name) } ?: ShownStatus.SENT
     }
 
 /**
