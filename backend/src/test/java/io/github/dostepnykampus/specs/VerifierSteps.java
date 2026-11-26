@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -298,7 +299,7 @@ public final class VerifierSteps {
                     new BarrierDetails(null, new BarrierType(type), 2, null, false),
                     null, null, null, List.of(photo)
                 ),
-                "autor-zgloszenia"
+                "autor-zgloszenia", Set.of()
             )
         );
         this.photos.put(id, photo, "zdjęcie".getBytes(StandardCharsets.UTF_8));

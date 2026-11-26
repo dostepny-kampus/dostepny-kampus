@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -102,7 +103,7 @@ final class SubmissionData {
 
     UUID seed(final long number, final SubmissionContent content, final SubmissionStatus status) {
         final UUID id = SubmissionData.id(number);
-        this.adapter.create(new NewSubmission(id, content, SubmissionData.AUTHOR));
+        this.adapter.create(new NewSubmission(id, content, SubmissionData.AUTHOR, Set.of()));
         this.jdbc.sql("UPDATE submissions SET status = :status WHERE id = :id")
             .param("status", status.name()).param("id", id).update();
         return id;

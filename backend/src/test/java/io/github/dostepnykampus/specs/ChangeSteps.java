@@ -23,6 +23,7 @@ import io.github.dostepnykampus.barrier.submission.persistence.JdbcSubmissions;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -359,7 +360,7 @@ public final class ChangeSteps {
                     ),
                     null, null, replaces, List.of(VerifierSteps.PHOTO)
                 ),
-                "autor-zgloszenia"
+                "autor-zgloszenia", Set.of()
             )
         );
         this.photos.put(id, VerifierSteps.PHOTO, "zdjęcie".getBytes(StandardCharsets.UTF_8));
