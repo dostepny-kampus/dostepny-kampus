@@ -188,7 +188,7 @@ object MapLibreMapView : CampusMapView {
             selection = selection,
             images = images,
             colors = styleColors,
-            area = areas.shown,
+            areas = areas,
             reveal = reveal,
         )
         map.FollowBasemapReveal(mapView = mapView, reveal = reveal, area = areas.shown)
@@ -242,10 +242,11 @@ object MapLibreMapView : CampusMapView {
         selection: MapSelection,
         images: MapImages,
         colors: MapStyleColors,
-        area: StyleArea,
+        areas: FlightArea,
         reveal: BasemapReveal,
     ) {
         val map = this
+        val area = areas.shown
         val style = rememberMapStyle(selection = area.area, colors = colors, basemap = area.basemap)
         var loaded by remember { mutableStateOf<Style?>(null) }
         val currentLook by rememberUpdatedState(look)
@@ -295,8 +296,10 @@ object MapLibreMapView : CampusMapView {
         DisposableEffect(loaded, area) {
             loaded?.takeIf { area != shown }?.let { ready ->
                 StyleTarget(ready).showBasemap(basemap = area.basemap)
-                StyleTarget(ready).hideBasemap()
-                reveal.hide()
+                if (!areas.keepsBasemap) {
+                    StyleTarget(ready).hideBasemap()
+                    reveal.hide()
+                }
                 shown = area
             }
             onDispose {}
@@ -486,7 +489,7 @@ object MapLibreMapView : CampusMapView {
                         end()
                     }
                 }
-            if (motion == CameraMotion.FLIGHT) areas.startFlight() else areas.endFlight()
+            areas.start(motion)
             when (motion) {
                 CameraMotion.NONE -> map.moveCamera(update, callback)
                 CameraMotion.EASE -> map.easeCamera(update, millis.toInt(), callback)
