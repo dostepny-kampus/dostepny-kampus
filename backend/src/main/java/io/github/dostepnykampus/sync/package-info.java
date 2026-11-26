@@ -5,13 +5,12 @@
  */
 
 /**
- * Moduł sync: pobranie zmian z serwera do telefonu.
- *
  * <p>Zadanie: składa zmiany od kursora z modułów właścicieli danych w jedną odpowiedź.</p>
  *
  * <p>API: brak typów dla innych modułów; HTTP {@code /sync/pull}.</p>
  *
- * <p>Zależności: {@code barrier :: api}, {@code building :: api}, {@code inspection :: api}.</p>
+ * <p>Zależności: {@code barrier :: api}, {@code building :: api}, {@code inspection :: api},
+ * {@code shared}.</p>
  *
  * <p>Nie robi: nie przechowuje danych i nie zna ich tabel; zmiany daje moduł właściciel.</p>
  *
@@ -22,7 +21,7 @@
  * @since 0.1.0
  */
 @ApplicationModule(
-    allowedDependencies = {"barrier :: api", "building :: api", "inspection :: api"}
+    allowedDependencies = {"barrier :: api", "building :: api", "inspection :: api", "shared"}
 )
 @NullMarked
 package io.github.dostepnykampus.sync;
