@@ -295,6 +295,7 @@ public class SubmissionQueue internal constructor(
         runCatching(onSaved)
     }
 
+    /** Czeka na wybór wersji: kopia wersji z serwera powstaje tylko przy odmowie 409, inne odmowy jej nie mają. */
     private suspend fun isChoicePending(id: String): Boolean =
         conflicts?.get(serverVersionKey(id)) != null &&
             store.all().any { it.submission.id == id && it.submission.isRefused }
