@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +31,7 @@ import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.card.CardAction
 import io.github.dostepnykampus.core.designsystem.card.ListItemCard
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.model.inspection.InspectionCoverage
 import io.github.dostepnykampus.core.model.inspection.MarkerPlace
 import io.github.dostepnykampus.core.model.inspection.ProgressMarker
@@ -140,7 +140,7 @@ private fun MarkerCard(marker: ProgressMarker, floorLabel: String?, isAsking: Bo
         if (isAsking) {
             Text(questionText(marker.marker.place, floorLabel))
             Button(onClick = actions.onConfirm) { Text(stringResource(R.string.znaczniki_cofnij)) }
-            OutlinedButton(onClick = actions.onKeep) { Text(stringResource(R.string.znaczniki_zostaw)) }
+            OutlinedAction(onClick = actions.onKeep) { Text(stringResource(R.string.znaczniki_zostaw)) }
         } else {
             CardAction(text = stringResource(R.string.znaczniki_cofnij), onClick = { actions.onAsk(marker.marker.id) })
         }
