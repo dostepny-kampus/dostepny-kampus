@@ -179,3 +179,12 @@ internal fun distanceDp(from: MapCamera, to: MapCamera): Double {
 
 /** Dp na stopień długości geograficznej przy powiększeniu [zoom]. */
 internal fun dpPerDegree(zoom: Double): Double = WORLD_DP_AT_ZOOM_0 * 2.0.pow(zoom) / FULL_TURN_DEGREES
+
+/** Stała nazwa sekcji śladu ruchu kamery tego rodzaju, bez danych osobowych. Wymagania: NFR-57 */
+internal val CameraMotion.traceSection: String
+    get() =
+        when (this) {
+            CameraMotion.NONE -> "Kamera: bez ruchu"
+            CameraMotion.EASE -> "Kamera: przesunięcie"
+            CameraMotion.FLIGHT -> "Kamera: przelot"
+        }

@@ -3,8 +3,10 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map.camera
+package io.github.dostepnykampus.feature.map.trace
 
+import io.github.dostepnykampus.feature.map.camera.CameraMotion
+import io.github.dostepnykampus.feature.map.camera.traceSection
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
@@ -13,7 +15,7 @@ import org.robolectric.RobolectricTestRunner
 
 /**
  * Ślad mapy bez włączonego śledzenia: znaczniki niczego nie zmieniają, a zmiana terenu i sekcja oddają wynik
- * bloku albo jego wyjątek.
+ * bloku albo jego wyjątek. Sekcja GeoJSON nosi stałą nazwę źródła.
  *
  * Wymagania: NFR-57, NFR-56
  */
@@ -32,9 +34,9 @@ class MapTraceTest {
             MapTrace.areaChange {
                 MapTrace.startStyle(1)
                 CameraMotion.entries.forEachIndexed { index, motion ->
-                    MapTrace.startMove(motion, index)
+                    MapTrace.startMove(section = motion.traceSection, move = index)
                     MapTrace.frame(zoom = 17.5, latitude = 51.1, longitude = 17.06)
-                    MapTrace.endMove(motion, index)
+                    MapTrace.endMove(section = motion.traceSection, move = index)
                 }
                 MapTrace.endStyle(1)
                 CameraMotion.entries.size
@@ -55,5 +57,12 @@ class MapTraceTest {
         assertThrows("sekcja przepuszcza wyjątek bloku", IllegalStateException::class.java) {
             MapTrace.section(name = MapTrace.SELECTION_SECTION) { error("styl bez warstwy") }
         }
+    }
+
+    @Test
+    fun namesGeoJsonSection() {
+        val name = MapTrace.geoJsonSection("plan")
+
+        assertEquals("nazwa sekcji GeoJSON źródła", "Mapa: GeoJSON plan", name)
     }
 }
