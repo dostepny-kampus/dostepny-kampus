@@ -29,8 +29,7 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-11
   Reguła: Zgłoszenie w weryfikacji obsługuje tylko Weryfikator, który je wziął
 
-    # brak kroków serwera: #4044
-    @US10.4 @US8.2 @serwer @do-zrobienia
+    @US10.4 @US8.2 @serwer
     Scenariusz: Wzięte zgłoszenie znika z kolejki pozostałych Weryfikatorów
       Zakładając, że w kolejce jest zgłoszenie TB-13 „próg” z budynku C-13 ze statusem „wysłane”
       Jeżeli pierwszy Weryfikator weźmie to zgłoszenie
@@ -51,8 +50,7 @@ Funkcja: Weryfikacja zgłoszeń
         | przyjąć  |
         | odrzucić |
 
-    # brak kroków serwera: #4044
-    @US10.7 @serwer @do-zrobienia
+    @US10.7 @serwer
     Scenariusz: Wzięte zgłoszenia bez decyzji Weryfikator widzi osobno i do nich wraca
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie TB-13 „próg” z budynku C-13 i nie podjął decyzji
       Jeżeli wyjdzie ze zgłoszenia i otworzy kolejkę weryfikacji
