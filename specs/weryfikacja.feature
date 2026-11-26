@@ -36,8 +36,7 @@ Funkcja: Weryfikacja zgłoszeń
       Wtedy zgłoszenie ma status „w weryfikacji”
       Oraz drugi Weryfikator nie widzi go w swojej kolejce
 
-    # brak kroków serwera: #3712
-    @US10.4 @serwer @do-zrobienia
+    @US10.4 @serwer
     Szablon scenariusza: Drugi Weryfikator nie obsłuży zgłoszenia wziętego przez pierwszego
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie TB-13 „próg” z budynku C-13
       Jeżeli drugi Weryfikator spróbuje <czynność> to zgłoszenie

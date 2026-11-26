@@ -56,6 +56,12 @@ public final class QueueSteps {
     /** Jedyne zdjęcie każdego zgłoszenia scenariusza. */
     private static final UUID PHOTO = UUID.fromString("e1f2a3b4-0004-4c5d-8e6f-7a8b9c0d1e2f");
 
+    /** Decyzje drugiego Weryfikatora według czynności ze scenariusza. */
+    private static final Map<String, String> DECISIONS = Map.of(
+        "przyjąć", "{\"decision\":\"ACCEPT\",\"version\":1}",
+        "odrzucić", "{\"decision\":\"REJECT\",\"version\":1,\"rejectionReason\":\"Nieczytelne\"}"
+    );
+
     /** Token drugiego Weryfikatora. */
     private static final String SECOND = "VERIFIER.drugi-weryfikator";
 
@@ -89,6 +95,9 @@ public final class QueueSteps {
     /** Odczyt odpowiedzi JSON. */
     private final ObjectMapper mapper;
 
+    /** Status odpowiedzi na próbę, wspólny z krokiem odmowy. */
+    private final AttemptOutcome outcome;
+
     /** Zgłoszenia scenariusza według dnia wysłania. */
     private final Map<String, UUID> sent;
 
@@ -105,15 +114,17 @@ public final class QueueSteps {
      * @param jdbc Baza aplikacji
      * @param photos Magazyn zdjęć zgłoszeń
      * @param mapper Odczyt odpowiedzi JSON
+     * @param outcome Status odpowiedzi na próbę, wspólny z krokiem odmowy
      */
     public QueueSteps(
         final MockMvc http, final JdbcClient jdbc, final PhotoStore photos,
-        final ObjectMapper mapper
+        final ObjectMapper mapper, final AttemptOutcome outcome
     ) {
         this.http = http;
         this.jdbc = jdbc;
         this.photos = photos;
         this.mapper = mapper;
+        this.outcome = outcome;
         this.sent = new HashMap<>(2);
         this.first = "VERIFIER";
         this.queue = "[]";
@@ -303,7 +314,7 @@ public final class QueueSteps {
      * @throws Exception Gdy MockMvc nie wykona żądania
      */
     @Given(
-        "^pierwszy Weryfikator wziął zgłoszenie TB-13 „próg” z budynku (\\S+) i nie podjął decyzji$"
+        "^pierwszy Weryfikator wziął zgłoszenie TB-13 „próg” z budynku (\\S+)(?: i nie podjął .+)?$"
     )
     void claimedThreshold(final String building) throws Exception {
         this.threshold(building);
@@ -327,14 +338,51 @@ public final class QueueSteps {
         );
     }
 
+    /**
+     * Drugi Weryfikator próbuje obsłużyć zgłoszenie wzięte przez pierwszego.
+     *
+     * @param action Czynność słowami scenariusza
+     * @throws Exception Gdy MockMvc nie wykona żądania
+     */
+    @When("^drugi Weryfikator spróbuje (wziąć|przyjąć|odrzucić) to zgłoszenie$")
+    void secondTries(final String action) throws Exception {
+        if ("wziąć".equals(action)) {
+            this.outcome.record(
+                this.status(
+                    MockMvcRequestBuilders.post("/submissions/{id}/claim", QueueSteps.ONE)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer ".concat(QueueSteps.SECOND))
+                ),
+                409
+            );
+        } else {
+            this.outcome.record(
+                this.status(
+                    MockMvcRequestBuilders.post("/submissions/{id}/review", QueueSteps.ONE)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer ".concat(QueueSteps.SECOND))
+                        .content(QueueSteps.DECISIONS.get(action))
+                ),
+                403
+            );
+        }
+    }
+
+    /** Zgłoszenie jest nadal w weryfikacji u pierwszego Weryfikatora. */
+    @Then("zgłoszenie nadal obsługuje pierwszy Weryfikator")
+    void stillFirst() {
+        MatcherAssert.assertThat(
+            "Zgłoszenie zmieniło Weryfikatora albo status po próbie drugiego",
+            this.stored("status || ' ' || reviewer"),
+            Matchers.equalTo("IN_REVIEW konto-testowe")
+        );
+    }
+
     /** Wzięte zgłoszenie jest w weryfikacji. */
     @Then("zgłoszenie ma status „w weryfikacji”")
     void inReview() {
         MatcherAssert.assertThat(
             "Wzięte zgłoszenie nie ma statusu „w weryfikacji”",
-            this.jdbc.sql("SELECT status FROM submissions WHERE id = :id")
-                .param("id", QueueSteps.ONE).query(String.class).single(),
-            Matchers.equalTo("IN_REVIEW")
+            this.stored("status"), Matchers.equalTo("IN_REVIEW")
         );
     }
 
@@ -416,6 +464,12 @@ public final class QueueSteps {
             Matchers.equalTo(201)
         );
         this.photos.put(id, QueueSteps.PHOTO, "zdjęcie".getBytes(StandardCharsets.UTF_8));
+    }
+
+    private String stored(final String column) {
+        return this.jdbc.sql(
+            String.format("SELECT %s FROM submissions WHERE id = :id", column)
+        ).param("id", QueueSteps.ONE).query(String.class).single();
     }
 
     private String rejection() {
