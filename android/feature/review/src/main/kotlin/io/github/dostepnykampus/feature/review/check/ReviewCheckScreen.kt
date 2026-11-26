@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
@@ -20,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -32,6 +35,8 @@ import io.github.dostepnykampus.core.designsystem.OfflinePill
 import io.github.dostepnykampus.core.designsystem.StaffProblem
 import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
+import io.github.dostepnykampus.core.designsystem.marking.BarrierTypeField
+import io.github.dostepnykampus.core.designsystem.marking.SeverityChoice
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.review.R
 
@@ -63,6 +68,8 @@ fun ReviewCheckScreen(
             onReject = { choice ->
                 viewModel.reject(reason = choice.reason, duplicateOf = choice.duplicateOf, onDone = actions.onDecided)
             },
+            onType = viewModel::pickType,
+            onSeverity = viewModel::pickSeverity,
         )
     ReviewCheckContent(
         state = state,
@@ -126,6 +133,7 @@ private fun Check(state: CheckUiState.Ready, decision: DecisionActions) {
             Notice(title = R.string.sprawdzenie_zmienione, body = R.string.sprawdzenie_zmienione_sprawdz)
         }
         SubmissionDetails(state)
+        if (state.submission.content.kind == SubmissionKind.QUICK) QuickChoice(state = state, decision = decision)
         SimilarList(similar)
         HorizontalDivider(thickness = Obramowania.ramka, color = MaterialTheme.colorScheme.outlineVariant)
         Decision(
@@ -133,6 +141,31 @@ private fun Check(state: CheckUiState.Ready, decision: DecisionActions) {
             allowsDuplicate = state.submission.content.kind != SubmissionKind.ENTRANCE_MARKING,
             notice = state.notice,
             actions = decision,
+        )
+    }
+}
+
+@Composable
+private fun QuickChoice(state: CheckUiState.Ready, decision: DecisionActions) {
+    val isMissing = state.notice == CheckNotice.TYPE_MISSING
+    val typeField = remember { BringIntoViewRequester() }
+    val severityField = remember { BringIntoViewRequester() }
+    LaunchedEffect(state.missingAttempts) {
+        if (isMissing) (if (state.quickType == null) typeField else severityField).bringIntoView()
+    }
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.m)) {
+        BarrierTypeField(
+            type = state.quickType,
+            onPick = decision.onType,
+            modifier = Modifier.bringIntoViewRequester(typeField),
+            firstGroup = state.submission.content.barrierGroup,
+            isError = isMissing && state.quickType == null,
+        )
+        SeverityChoice(
+            severity = state.quickSeverity,
+            onPick = decision.onSeverity,
+            modifier = Modifier.bringIntoViewRequester(severityField),
+            isError = isMissing && state.quickSeverity == null,
         )
     }
 }

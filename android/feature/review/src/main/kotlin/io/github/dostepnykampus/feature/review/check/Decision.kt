@@ -35,10 +35,13 @@ import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.GroupFrame
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.ProblemText
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.model.review.RejectionReasons
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
+import io.github.dostepnykampus.core.model.submission.BarrierType
+import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.feature.review.R
 import io.github.dostepnykampus.feature.review.queue.titleRes
 import kotlin.math.roundToInt
@@ -58,8 +61,15 @@ internal data class Rejection(val reason: String, val duplicateOf: String? = nul
  *
  * @property onAccept „Przyjmij”
  * @property onReject „Odrzuć” z wybranym powodem
+ * @property onType typ bariery wybrany dla zgłoszenia szybkiego
+ * @property onSeverity uciążliwość wybrana dla zgłoszenia szybkiego
  */
-internal data class DecisionActions(val onAccept: () -> Unit, val onReject: (Rejection) -> Unit)
+internal data class DecisionActions(
+    val onAccept: () -> Unit,
+    val onReject: (Rejection) -> Unit,
+    val onType: (BarrierType) -> Unit = {},
+    val onSeverity: (Severity) -> Unit = {},
+)
 
 /**
  * Zrzut podobnych zgłoszeń do pokazania i do wyboru duplikatu.
@@ -99,6 +109,7 @@ internal fun Decision(
         if (notice == CheckNotice.OFFLINE) {
             Notice(title = R.string.sprawdzenie_bez_sieci, body = R.string.sprawdzenie_bez_sieci_ponownie)
         }
+        if (notice == CheckNotice.TYPE_MISSING) ProblemText(text = stringResource(R.string.sprawdzenie_ustal_typ))
         Button(onClick = actions.onAccept, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.sprawdzenie_przyjmij))
         }

@@ -11,8 +11,10 @@ import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
+import io.github.dostepnykampus.core.model.submission.Submission
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import io.github.dostepnykampus.feature.review.queue.queued
+import io.github.dostepnykampus.feature.review.queue.quick
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,9 +24,10 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 /**
- * Zrzuty R2 „Sprawdzenie zgłoszenia” z danymi zgłoszenia, podobnymi i decyzją, jasny, ciemny i przy czcionce 200 %.
+ * Zrzuty R2 „Sprawdzenie zgłoszenia” z danymi zgłoszenia, podobnymi i decyzją, jasny, ciemny i przy czcionce 200 %,
+ * oraz zgłoszenie szybkie z wyborem typu i uciążliwości po próbie przyjęcia bez nich.
  *
- * Wymagania: US10, US10.1, US10.2, NFR-20
+ * Wymagania: US10, US10.1, US10.2, US10.3, NFR-20
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -50,14 +53,32 @@ class ReviewCheckScreenshotTest {
         capture()
     }
 
-    private fun capture() {
+    @Test
+    @Config(qualifiers = "w360dp-h1600dp-xhdpi")
+    fun drawsQuickWithoutType() {
+        capture(quickWithoutType())
+    }
+
+    @Test
+    @Config(qualifiers = "w360dp-h3200dp-xhdpi")
+    fun drawsQuickWithoutTypeAtFont200() {
+        RuntimeEnvironment.setFontScale(2f)
+        capture(quickWithoutType())
+    }
+
+    private fun quickWithoutType(): CheckUiState.Ready =
+        ready(submission = quick(id = "a")).copy(notice = CheckNotice.TYPE_MISSING)
+
+    private fun ready(submission: Submission = queued(id = "a", day = 27)): CheckUiState.Ready {
         val near = queued(id = "b", day = 20).copy(status = SubmissionStatus.ACCEPTED)
-        val state =
-            CheckUiState.Ready(
-                submission = queued(id = "a", day = 27),
-                photoUrls = emptyList(),
-                similar = listOf(SimilarSubmission(submission = near, distanceMeters = 4.0)),
-            )
+        return CheckUiState.Ready(
+            submission = submission,
+            photoUrls = emptyList(),
+            similar = listOf(SimilarSubmission(submission = near, distanceMeters = 4.0)),
+        )
+    }
+
+    private fun capture(state: CheckUiState = ready()) {
         compose.setContent {
             DostepnyKampusTheme {
                 ReviewCheckContent(
