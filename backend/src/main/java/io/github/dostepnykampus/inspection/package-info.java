@@ -11,8 +11,7 @@
  *
  * <p>API: pakiet {@code api}; HTTP /sync/push, /inspection-markers/{id}, /progress.</p>
  *
- * <p>Zależności: {@code barrier :: api}, {@code building :: api}, {@code identity :: api},
- * {@code shared}.</p>
+ * <p>Zależności: {@code barrier :: api, building :: api, identity :: api, shared}.</p>
  *
  * <p>Nie robi: nie przyjmuje zgłoszeń barier.</p>
  *
