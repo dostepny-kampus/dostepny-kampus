@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.capture.quick
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
@@ -45,7 +46,7 @@ class QuickSendStepTest {
     /** Wiersz: V4 krok 3 → grupa, piętro i „Dołączymy miejsce, w którym teraz stoisz.”. Wymagania: US4.1, US4.5 */
     @Test
     fun showsSummaryWithFloor() {
-        var floor by mutableStateOf(2)
+        var floor by mutableIntStateOf(2)
         compose.setContent {
             DostepnyKampusTheme {
                 val report = QuickReport(photo = photo, group = BarrierGroup.TOILETS, floorNumber = floor)
