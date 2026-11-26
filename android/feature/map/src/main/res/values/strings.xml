@@ -12,6 +12,12 @@
     <string name="mapa_legenda_sciezka">Ścieżka dostosowana</string>
     <string name="mapa_legenda_wejscie_niedostepne">Wejście niedostępne</string>
     <string name="mapa_legenda_wejscie_bez_danych">Wejście bez danych</string>
+    <string name="mapa_legenda_plan">Plan piętra</string>
+    <string name="mapa_legenda_plan_sala">Sala</string>
+    <string name="mapa_legenda_plan_korytarz">Korytarz</string>
+    <string name="mapa_legenda_plan_klatka">Klatka schodowa</string>
+    <string name="mapa_legenda_plan_szukana">Szukana sala</string>
+    <string name="mapa_legenda_plan_bez_pietra">Zgłoszenie bez piętra</string>
     <string name="mapa_legenda_przewin">Przewiń w dół ↓</string>
     <string name="mapa_informacje">Legenda i źródła mapy</string>
     <string name="mapa_zrodla">Źródła danych</string>
