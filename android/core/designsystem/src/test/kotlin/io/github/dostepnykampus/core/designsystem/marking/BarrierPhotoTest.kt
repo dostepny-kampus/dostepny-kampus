@@ -113,7 +113,7 @@ class BarrierPhotoTest {
         compose.waitUntil(WAIT_MS) { shown(DESCRIPTION) }
         val topAfterLoad = compose.onNodeWithText(BELOW_LABEL).getUnclippedBoundsInRoot().top
 
-        assertEquals(topWhileLoading, topAfterLoad)
+        assertEquals("położenie treści pod zdjęciem przed i po wczytaniu", topWhileLoading, topAfterLoad)
     }
 
     private fun shown(description: String) =
