@@ -16,6 +16,9 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.IMPORTANT_SIGN_TAG
+import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EntranceDistance
+import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
@@ -30,10 +33,10 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
- * R2 „Sprawdzenie zgłoszenia”: dane zgłoszenia, podobne zgłoszenia, decyzja, typ i uciążliwość zgłoszenia
- * szybkiego, komunikaty, zmiana oznaczenia wejścia bez „Duplikat”, wczytywanie i stany wspólne.
+ * R2 „Sprawdzenie zgłoszenia”: dane zgłoszenia z miejscem słowami, podobne zgłoszenia, decyzja, typ i uciążliwość
+ * zgłoszenia szybkiego, komunikaty, zmiana oznaczenia wejścia bez „Duplikat”, wczytywanie i stany wspólne.
  *
- * Wymagania: US10, US10.1, US10.2, US10.3, US10.8, BR-3, BR-11, BR-24, NFR-50
+ * Wymagania: US10, US10.1, US10.2, US10.3, NFR-19, US10.8, BR-3, BR-11, BR-24, NFR-50
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w360dp-h800dp")
@@ -54,6 +57,23 @@ class ReviewCheckScreenTest {
         }
         compose.onNodeWithText("Przyjmij").performScrollTo().performClick()
         assertEquals("przyjęcie", 1, accepts)
+    }
+
+    @Test
+    fun showsPlaceInWords() {
+        val entrance =
+            Entrance(
+                id = "n/1",
+                buildingSymbol = "C-13",
+                name = "Wejście A",
+                isMain = false,
+                type = null,
+                location = CHECKED.content.location,
+                marking = EntranceMarking.ACCESSIBLE,
+            )
+        val measured = CHECKED.copy(content = CHECKED.content.copy(accuracyMeters = 0.8))
+        show(READY.copy(submission = measured, nearest = EntranceDistance(entrance = entrance, meters = 2.0)))
+        compose.onNodeWithText("Miejsce: ok. 2 m od wejścia „Wejście A”, dokładność 0,8 m").assertIsDisplayed()
     }
 
     @Test
