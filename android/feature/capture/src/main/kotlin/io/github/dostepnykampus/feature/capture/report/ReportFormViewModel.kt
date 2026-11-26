@@ -9,11 +9,14 @@ import android.database.sqlite.SQLiteException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.BuildingFloors
+import io.github.dostepnykampus.core.data.building.NearestEntrance
 import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.data.submission.sync.SaveRefusal
 import io.github.dostepnykampus.core.data.submission.sync.SaveRefusedException
+import io.github.dostepnykampus.core.model.building.EntranceDistance
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.feature.capture.report.form.PlanFloor
@@ -22,6 +25,7 @@ import io.github.dostepnykampus.feature.capture.report.form.ReportCheck
 import io.github.dostepnykampus.feature.capture.report.form.ReportEdit
 import io.github.dostepnykampus.feature.capture.report.form.ReportFloor
 import io.github.dostepnykampus.feature.capture.report.form.ReportForm
+import io.github.dostepnykampus.feature.capture.report.form.ReportPlace
 import io.github.dostepnykampus.feature.capture.report.form.ReportStage
 import io.github.dostepnykampus.feature.capture.report.form.ReportUiState
 import io.github.dostepnykampus.feature.capture.report.form.check
@@ -35,6 +39,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Zapis zgłoszenia w kolejce telefonu; w aplikacji to `SubmissionQueue.save` albo `saveEdit`.
@@ -57,11 +62,13 @@ fun interface ReportSaver {
 /**
  * Model widoku formularza C2 „Opisz barierę”. W czasie zapisu i po nim etap ustala tylko zapis, więc
  * nie ma dwóch zgłoszeń. Pełna pamięć przy zapisie w bazie Room kończy się etapem nieudanego zapisu.
- * Po otwarciu w budynku pobiera piętra z planu PWr; bez nich zostaje wpisanie piętra.
+ * Po otwarciu w budynku pobiera piętra z planu PWr; bez nich zostaje wpisanie piętra. Z katalogu budynków bierze
+ * najbliższe wejście tego budynku do opisu miejsca słowami.
  *
  * Wymagania: US7.1, US7.2, US7.3, US7.4, NFR-7, BR-G1
  *
  * @param floors piętra budynku z serwera; domyślnie brak, jak budynek podstawowy
+ * @param nearest najbliższe wejście budynku z katalogu; bez niego miejsce ma samą dokładność
  * @param saver zapis w kolejce telefonu
  */
 @HiltViewModel
@@ -69,6 +76,7 @@ class ReportFormViewModel
     @Inject
     constructor(
         private val floors: BuildingFloors = BuildingFloors { null },
+        private val nearest: NearestEntrance = NearestEntrance(emptyBuildingCatalog()),
         private val saver: ReportSaver,
     ) : ViewModel() {
         private val state = MutableStateFlow<ReportUiState?>(null)
@@ -90,7 +98,7 @@ class ReportFormViewModel
                 initial = form
                 this.draft = draft
                 keep(draft.restore(form, photos))
-                form.place.buildingSymbol?.let(::loadFloors)
+                loadBuilding(form.place)
             } else if (this.draft !== draft) {
                 this.draft = draft
                 if (current.stage !in StagesWithoutNewDraft) draft.keep(current)
@@ -115,8 +123,14 @@ class ReportFormViewModel
             val current = state.value ?: return
             if (current.isSavingOrSaved) return
             when (val check = current.form.check()) {
-                is ReportCheck.Incomplete -> keep(current.copy(errors = check.errors, isSaveAttempted = true))
-                is ReportCheck.Complete -> store(current, check.content)
+                is ReportCheck.Incomplete -> {
+                    val attempts = current.missingAttempts + 1
+                    keep(current.copy(errors = check.errors, isSaveAttempted = true, missingAttempts = attempts))
+                }
+
+                is ReportCheck.Complete -> {
+                    store(current, check.content)
+                }
             }
         }
 
@@ -147,14 +161,24 @@ class ReportFormViewModel
             state.value = current.copy(stage = stage)
         }
 
-        private fun loadFloors(symbol: String) {
+        private fun loadBuilding(place: ReportPlace) {
+            val symbol = place.buildingSymbol ?: return
+
+            fun refine(change: (ReportForm) -> ReportForm) {
+                val current = state.value
+                if (current != null && !current.isSavingOrSaved) {
+                    initial = initial?.let(change)
+                    keep(current.copy(form = change(current.form)))
+                }
+            }
+
+            viewModelScope.launch {
+                val found = nearest.find(buildingSymbol = symbol, point = place.location)
+                if (found != null) refine { form -> form.withNearest(place, found) }
+            }
             viewModelScope.launch {
                 val plan = floors.floors(symbol)?.toPlanFloors()
-                val current = state.value
-                if (plan != null && current != null && !current.isSavingOrSaved) {
-                    initial = initial?.withPlan(symbol, plan)
-                    keep(current.copy(form = current.form.withPlan(symbol, plan)))
-                }
+                if (plan != null) refine { form -> form.withPlan(symbol, plan) }
             }
         }
 
@@ -198,18 +222,36 @@ internal fun ReportForm.withPlan(symbol: String, plan: PlanFloors): ReportForm =
         copy(place = place.copy(floors = plan), floor = floor as? ReportFloor.Planned)
     }
 
+/** Formularz z najbliższym wejściem, gdy miejsce jest wciąż tym z [measured]. Wymagania: US7.4, NFR-19 */
+internal fun ReportForm.withNearest(measured: ReportPlace, nearest: EntranceDistance): ReportForm =
+    if (place.buildingSymbol != measured.buildingSymbol || place.location != measured.location) {
+        this
+    } else {
+        copy(place = place.copy(nearestEntrance = nearest))
+    }
+
 /** Piętra z planu do formularza albo `null` dla budynku podstawowego z pustą listą. Wymagania: BR-G1 */
 internal fun FloorList.toPlanFloors(): PlanFloors? =
     if (floors.isEmpty()) null else PlanFloors(items = floors.map { PlanFloor(id = it.id, label = it.label) }, source)
 
-/** Etap formularza po odmowie zapisu: inny komunikat dla zdjęć, inny dla nieznanej wersji. Wymagania: NFR-50, BR-10 */
+/**
+ * Etap formularza po odmowie zapisu: inny komunikat dla zdjęć, inny dla nieznanej wersji i zgłoszenia czekającego
+ * na wybór wersji; ten odsyła do „Moje zgłoszenia”, gdzie jest znak wyboru wersji.
+ *
+ * Wymagania: NFR-50, BR-10, US9.3
+ */
 internal fun SaveRefusal.toStage(): ReportStage =
     when (this) {
         SaveRefusal.PHOTOS_MISMATCH, SaveRefusal.ACCOUNT_CHANGED -> ReportStage.SAVE_REJECTED
-        SaveRefusal.UNKNOWN_VERSION -> ReportStage.VERSION_UNKNOWN
+        SaveRefusal.UNKNOWN_VERSION, SaveRefusal.VERSION_CHOICE_PENDING -> ReportStage.VERSION_UNKNOWN
     }
 
 private val StagesWithoutNewDraft = setOf(ReportStage.LEFT, ReportStage.PLACE_CHANGED, ReportStage.SAVED)
 
 internal val ReportUiState.isSavingOrSaved: Boolean
     get() = stage == ReportStage.SAVING || stage == ReportStage.SAVED
+
+internal fun emptyBuildingCatalog(): BuildingCatalogRepository =
+    BuildingCatalogRepository(EmptyCoroutineContext) { EMPTY_CATALOG }
+
+private const val EMPTY_CATALOG = """{"type":"FeatureCollection","attribution":"© plik","features":[]}"""

@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.inspection.progress
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -15,6 +16,7 @@ import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.inspection.MarkerPlace
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -49,6 +51,24 @@ class CollectorMarkersScreenTest {
         compose.onNodeWithText(REVOKE).assertIsDisplayed()
     }
 
+    /**
+     * Wiersz: C5 bez internetu, znacznik w telefonie dostaje zdanie, że wyśle się po powrocie internetu.
+     *
+     * Wymagania: US15.3
+     */
+    @Test
+    fun explainsPendingMarkerOffline() {
+        show(CollectorMarkersUiState.Ready(ROWS, isOnline = false))
+        compose.onNodeWithText(SAVED_IN_PHONE).assertIsDisplayed()
+    }
+
+    /** Wiersz: C5 z internetem, przy znaczniku w telefonie nie ma zdania o braku internetu. Wymagania: US15.3 */
+    @Test
+    fun omitsOfflineSentenceOnline() {
+        show(CollectorMarkersUiState.Ready(ROWS))
+        compose.onNodeWithText(SAVED_IN_PHONE).assertDoesNotExist()
+    }
+
     /** Wiersz: C5, „Oznacz jako obejrzane” przy nieobejrzanym piętrze oznacza to piętro. Wymagania: US15.1 */
     @Test
     fun marksUninspectedFloor() {
@@ -57,6 +77,20 @@ class CollectorMarkersScreenTest {
         compose.onNodeWithText("Nieobejrzane").assertIsDisplayed()
         compose.onNodeWithText("Oznacz jako obejrzane").performClick()
         assertEquals("oznaczone piętro", listOf<MarkerPlace>(MarkerPlace.Floor("p1")), marked)
+    }
+
+    /**
+     * „Oznacz jako obejrzane” i „Cofnij znacznik” to czynności karty szerokie jak napis, węższe niż treść karty.
+     *
+     * Wymagania: NFR-17, US15.1, US15.2
+     */
+    @Test
+    fun keepsCardActionsCompact() {
+        show(CollectorMarkersUiState.Ready(ROWS))
+        listOf("Oznacz jako obejrzane", REVOKE).forEach { label ->
+            val bounds = compose.onNodeWithText(label).getUnclippedBoundsInRoot()
+            assertTrue("„$label” ma być węższe niż treść karty: $bounds", (bounds.right - bounds.left).value < CONTENT)
+        }
     }
 
     /** Budynek bez pięter ma jeden wiersz „Cały budynek”. Wymagania: US15.1, BR-G3 */
@@ -187,6 +221,7 @@ class CollectorMarkersScreenTest {
     private companion object {
         const val KEEP = "Zostaw znacznik"
         const val REVOKE = "Cofnij znacznik"
+        const val CONTENT = 296f
         val ROWS =
             listOf(
                 FloorRow(place = MarkerPlace.Floor("p0"), label = "Parter", markerId = "m-1", isPending = true),
@@ -194,3 +229,5 @@ class CollectorMarkersScreenTest {
             )
     }
 }
+
+private const val SAVED_IN_PHONE = "Znacznik zapisany w telefonie. Wyślemy go, gdy wróci internet."

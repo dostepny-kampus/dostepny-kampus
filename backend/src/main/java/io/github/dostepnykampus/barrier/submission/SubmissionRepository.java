@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.submission;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -44,24 +45,13 @@ public interface SubmissionRepository {
     EditResult update(SubmissionEdit edit);
 
     /**
-     * Daje zgłoszenie „wysłane” Weryfikatorowi, a wzięte już przez niego zostawia bez zmiany.
+     * Zmienia status zgłoszenia przyjętego na archiwalny. Zgłoszenie w innym statusie
+     * albo nieistniejące zostaje bez zmiany.
      *
-     * <p>Wymagania: BR-11, US10.4</p>
+     * <p>Wymagania: BR-18, BR-19, BR-24</p>
      *
      * @param id Identyfikator zgłoszenia
-     * @param reviewer Identyfikator konta Weryfikatora
-     * @return Zgłoszenie w weryfikacji, bieżący stan przy konflikcie albo brak zgłoszenia
+     * @return Zgłoszenie archiwalne albo brak, gdy zgłoszenie nie było przyjęte
      */
-    EditResult claim(UUID id, String reviewer);
-
-    /**
-     * Zapisuje decyzję, gdy zgłoszenie jest w weryfikacji u tego Weryfikatora
-     * i ma oczekiwaną wersję.
-     *
-     * <p>Wymagania: BR-3, BR-11, BR-16</p>
-     *
-     * @param decision Decyzja Weryfikatora
-     * @return Zgłoszenie po decyzji, bieżący stan przy konflikcie albo brak zgłoszenia
-     */
-    EditResult decide(ReviewDecision decision);
+    Optional<Submission> archive(UUID id);
 }

@@ -14,13 +14,18 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:location"))
     implementation(project(":core:network"))
     implementation(project(":core:testing"))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui.test)
     implementation(libs.androidx.compose.ui.test.junit4)
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.test.espresso.core)
+    implementation(libs.androidx.test.espresso.intents)
     implementation(libs.androidx.test.ext.junit)
     implementation(libs.androidx.test.runner)
+    implementation(libs.hilt.android)
     implementation(libs.junit4)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)

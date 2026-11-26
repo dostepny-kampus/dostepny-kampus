@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submission.sync
@@ -35,6 +35,11 @@ internal class FakeHistory : OwnSubmissionDao {
     override suspend fun markRefused(id: String, code: Int?) {
         rows.computeIfPresent(id) { _, row -> row.copy(state = OwnSubmissionState.REFUSED, refusalCode = code) }
     }
+
+    override suspend fun undecidedContents(): List<String> =
+        rows.values
+            .filter { it.serverStatus != "ACCEPTED" && it.serverStatus != "ARCHIVED" }
+            .mapNotNull { it.contentJson }
 
     override suspend fun saveServerStatus(id: String, status: String, reason: String?, version: Int) {
         rows.computeIfPresent(id) { _, row ->

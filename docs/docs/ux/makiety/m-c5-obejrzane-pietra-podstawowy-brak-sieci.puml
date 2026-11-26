@@ -12,7 +12,7 @@ $ramka()
 <b>$obejrzany()</b>
 Twój znacznik
 Czeka na wysłanie
-$przycisk("Cofnij znacznik")
+$czynnosc_karty("Cofnij znacznik")
 }
 $ekran_koniec()
 @endsalt

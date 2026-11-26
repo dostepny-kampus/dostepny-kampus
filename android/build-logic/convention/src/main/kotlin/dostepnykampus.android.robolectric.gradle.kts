@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Vladyslav Yevkov, Yevhenii Lukianenko
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 
@@ -9,7 +9,8 @@ import com.android.build.api.dsl.CommonExtension
 /*
  * Testy Robolectric modułu Androida: zasoby w testach JVM i flagi JVM, bez których Robolectric
  * nie sięga do wewnętrznych klas JDK ani kodu natywnego. Jedyne miejsce tych flag. Obrazy `android-all`
- * Robolectric pobiera z lustra Maven Central od Google, jak Gradle w `settings.gradle.kts`.
+ * Robolectric pobiera z lustra Maven Central od Google, jak Gradle w `settings.gradle.kts`; w CI pobiera je wcześniej,
+ * z ponowieniami, `.github/scripts/obrazy-robolectric.sh` (nowy poziom SDK w testach trzeba dopisać do jego listy).
  */
 extensions.configure<CommonExtension> {
     testOptions.unitTests.isIncludeAndroidResources = true

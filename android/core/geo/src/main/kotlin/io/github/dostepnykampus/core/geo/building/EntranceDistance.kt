@@ -8,16 +8,7 @@ package io.github.dostepnykampus.core.geo.building
 import io.github.dostepnykampus.core.geo.metersTo
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Entrance
-
-/**
- * Wejście z odległością od punktu pomiaru, do opisu miejsca słowami w C2.
- *
- * Wymagania: US7.4, NFR-19
- *
- * @property entrance wejście z danych
- * @property meters odległość w metrach na ziemi od punktu do wejścia
- */
-public data class EntranceDistance(val entrance: Entrance, val meters: Double)
+import io.github.dostepnykampus.core.model.building.EntranceDistance
 
 /**
  * Najbliższe wejście do [point]; obliczenia wykonuje Turf.

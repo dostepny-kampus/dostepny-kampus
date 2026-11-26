@@ -13,8 +13,11 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnyChild
+import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isFocused
 import androidx.compose.ui.test.isHeading
@@ -28,8 +31,9 @@ import androidx.compose.ui.test.performTextInput
 import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
-import io.github.dostepnykampus.core.geo.building.EntranceDistance
+import io.github.dostepnykampus.core.designsystem.IMPORTANT_SIGN_TAG
 import io.github.dostepnykampus.core.model.building.Entrance
+import io.github.dostepnykampus.core.model.building.EntranceDistance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.submission.BarrierType
 import io.github.dostepnykampus.core.model.submission.Severity
@@ -291,6 +295,18 @@ class ReportScreenTest {
 
         val text = "Brakuje typu bariery. Uzupełnij to pole, aby zapisać."
         assertEquals(2, compose.onAllNodes(hasText(text)).fetchSemanticsNodes().size)
+        val signAtText = hasTestTag(IMPORTANT_SIGN_TAG) and hasParent(hasAnyChild(hasText(text)))
+        val signs = compose.onAllNodes(signAtText, useUnmergedTree = true).fetchSemanticsNodes()
+        assertEquals("znak „!” przy polu", 1, signs.size)
+    }
+
+    @Test
+    fun leadsToFirstMissingField() {
+        val missing = listOf(ReportFormError.MISSING_SEVERITY, ReportFormError.MISSING_PHOTO)
+        show(ReportUiState(form = ReportForm(place = A1), errors = missing, missingAttempts = 1))
+        val text = "Brakuje uciążliwości. Uzupełnij to pole, aby zapisać."
+        val atField = isFocused() and hasAnyDescendant(hasText(text))
+        compose.onNode(atField, useUnmergedTree = true).assertIsDisplayed()
     }
 
     @Test

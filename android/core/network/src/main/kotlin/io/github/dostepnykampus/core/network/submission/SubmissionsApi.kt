@@ -48,6 +48,20 @@ public class SubmissionsApi(private val http: OkHttpClient, private val json: Js
     private val photoHttp by lazy { http.newBuilder().callTimeout(PHOTO_TIMEOUT_SECONDS, TimeUnit.SECONDS).build() }
 
     /**
+     * Bieżąca wersja zgłoszenia; brak dostępu lub zgłoszenia to [ApiResult.NotFound].
+     *
+     * Wymagania: US10.8, BR-5
+     *
+     * @param id identyfikator zgłoszenia
+     */
+    public suspend fun submission(id: String): ApiResult<Submission> {
+        val request = request(target = path(id), body = null, method = GET)
+        return http.exchange(request) { code, body ->
+            if (code == HTTP_OK) decodedResult(code) { json.decodeSubmission(body) } else unexpectedResult(code)
+        }
+    }
+
+    /**
      * Wysyła nowe zgłoszenie. Ponowne wysłanie tego samego [id] zwraca zgłoszenie zapisane wcześniej.
      *
      * Wymagania: BR-9

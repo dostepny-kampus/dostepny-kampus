@@ -78,6 +78,9 @@ Compose czyta zmienne z `infra/.env`, którego nie ma w repozytorium. Serwer czy
 | `DK_RATE_LIMIT_UNLIMITED` | adresy bez limitu, po przecinku | puste |
 | `DK_AUTH_AUDIENCE` | odbiorca w `aud`, bez którego serwer odrzuca token | `dostepny-kampus-api` |
 | `DK_AUTH_JWKS` | adres kluczy tokenów usługi logowania, tylko usługa `serwer` w compose | `http://logowanie:8180/realms/dostepny-kampus/protocol/openid-connect/certs` |
+| `DK_AUTH_ADMIN_URL` | adres Admin REST API realmu dla konta technicznego serwera | `http://localhost:8180/admin/realms/dostepny-kampus`, w compose `http://logowanie:8180/…` |
+| `DK_AUTH_TOKEN_URL` | adres tokenów realmu dla konta technicznego serwera | `http://localhost:8180/realms/dostepny-kampus/protocol/openid-connect/token`, w compose `http://logowanie:8180/…` |
+| `DK_AUTH_SERVICE_SECRET` | sekret klienta `dostepny-kampus-serwer`, którym serwer nadaje role z zaproszeń (US12.1) | brak |
 | `DK_API_PORT` | port serwera na `127.0.0.1`, tylko usługa `serwer` w compose | `8080` |
 | `DK_AUTH_DB_NAME` | baza usługi logowania w PostgreSQL, tylko nakładka produkcyjna | `logowanie` |
 | `DK_PUBLIC_HOST` | nazwa hosta serwera docelowego dla HTTPS i wydawcy tokenów, tylko nakładka produkcyjna | brak |

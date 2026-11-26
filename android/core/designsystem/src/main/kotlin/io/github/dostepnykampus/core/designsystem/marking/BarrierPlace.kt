@@ -36,9 +36,17 @@ public fun barrierPlace(symbol: String?, name: String?, entrance: String?, floor
     return if (inside.isEmpty()) where else where + " · " + inside.joinToString(separator = ", ")
 }
 
+/**
+ * Piętro zgłoszenia słowami: „parter” albo „piętro 2”, z dopiskiem „półpiętro”.
+ *
+ * Wymagania: US1.5
+ *
+ * @param floor piętro zgłoszenia
+ * @return napis piętra; `null`, gdy piętro nie ma numeru
+ */
 @Composable
 @ReadOnlyComposable
-private fun floorText(floor: SubmissionFloor): String? {
+public fun floorText(floor: SubmissionFloor): String? {
     val number = floor.number
     val level =
         when (number) {

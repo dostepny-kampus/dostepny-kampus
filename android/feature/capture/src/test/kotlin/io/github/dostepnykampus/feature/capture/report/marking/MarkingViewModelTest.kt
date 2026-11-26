@@ -6,6 +6,9 @@
 package io.github.dostepnykampus.feature.capture.report.marking
 
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.data.submission.pending.PendingEdit
+import io.github.dostepnykampus.core.data.submission.pending.PendingEdits
+import io.github.dostepnykampus.core.data.submission.sync.EditedSubmission
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.EntranceMarking
@@ -34,15 +37,19 @@ import kotlin.coroutines.EmptyCoroutineContext
 class MarkingViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     private val saved = mutableListOf<Pair<SubmissionContent, List<PendingPhotoDraft>>>()
+    private val edited = mutableListOf<EditedSubmission?>()
     private var failure: Exception? = null
+    private var queued: PendingEdit? = null
     private val photo = PendingPhotoDraft(photoId = "p1", path = "/data/p1.jpg")
     private val viewModel =
         MarkingViewModel(
             catalog = BuildingCatalogRepository(EmptyCoroutineContext) { CATALOG },
-            saver = { content, photos, _ ->
+            saver = { content, photos, edit ->
                 failure?.let { throw it }
                 saved.add(content to photos)
+                edited.add(edit)
             },
+            edits = PendingEdits { id -> queued?.takeIf { it.edited.id == id } },
         )
 
     @BeforeEach
@@ -76,6 +83,47 @@ class MarkingViewModelTest {
             assertEquals(EntranceMarking.NO_DATA, state.entrance?.marking, "obecne oznaczenie z katalogu")
             assertEquals("Gmach B", state.buildingName, "nazwa budynku z katalogu")
             assertEquals(MarkingStage.EDITING, state.stage, "ekran gotowy do wyboru")
+        }
+
+    /**
+     * „Otwórz” na C3 przy własnej zmianie z kolejki: wybór i zdjęcie wracają, a zapis poprawia to samo zgłoszenie.
+     *
+     * Wymagania: US8.3, US17.2
+     */
+    @Test
+    fun editsOwnChange() =
+        runTest(dispatcher) {
+            val own = PendingPhotoDraft(photoId = "p9", path = "/data/p9.jpg")
+            val content =
+                SubmissionContent(
+                    kind = SubmissionKind.ENTRANCE_MARKING,
+                    location = GeoPoint(longitude = 17.06, latitude = 51.1),
+                    photoIds = listOf("p9"),
+                    buildingSymbol = "B-8",
+                    entranceId = "n/1",
+                    entranceMarking = EntranceMarking.INACCESSIBLE,
+                )
+            queued =
+                PendingEdit(
+                    edited = EditedSubmission(id = OWN, baseVersion = 3),
+                    content = content,
+                    photos = listOf(own),
+                )
+            open(SIDE.copy(submissionId = OWN))
+            val state = viewModel.uiState.value
+            assertEquals(EntranceMarking.INACCESSIBLE, state.chosen, "zapisany wybór")
+            assertEquals(own, state.photo, "zapisane zdjęcie")
+            viewModel.send()
+            runCurrent()
+            assertEquals(listOf(EditedSubmission(id = OWN, baseVersion = 3)), edited, "zapis jako poprawka")
+        }
+
+    /** Zmiany nie ma już w telefonie, np. wysłała się w międzyczasie, więc ekran wraca do C3. Wymagania: US8.3 */
+    @Test
+    fun leavesWhenChangeGone() =
+        runTest(dispatcher) {
+            open(SIDE.copy(submissionId = OWN))
+            assertEquals(MarkingStage.MISSING, viewModel.uiState.value.stage, "bez zmiany w kolejce")
         }
 
     /** Wejścia spoza budynku z trasy nie da się zmienić, więc ekran wraca. Wymagania: US17.2 */
@@ -173,6 +221,7 @@ class MarkingViewModelTest {
 
     private companion object {
         val SIDE = MarkingRoute(entranceId = "n/1", buildingSymbol = "B-8")
+        const val OWN = "s-zmiana"
         const val CATALOG =
             """{"type":"FeatureCollection","attribution":"© plik","features":[""" +
                 """{"type":"Feature","properties":{"kind":"building","symbols":["B-8"],"display_name":"Gmach B",""" +

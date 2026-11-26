@@ -96,8 +96,7 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
       | wysłane       |
       | w weryfikacji |
 
-  # kroki serwera: #2456
-  @US8.3 @BR-3 @BR-16 @serwer @do-zrobienia
+  @US8.3 @BR-3 @BR-16 @serwer
   Scenariusz: Poprawa i ponowne wysłanie zgłoszenia odrzuconego
     Zakładając, że zgłoszenie Zbierającego odrzucono z powodem „Zdjęcie nie pokazuje progu”
     Jeżeli Zbierający zrobi nowe zdjęcie progu
@@ -105,8 +104,7 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
     Wtedy zgłoszenie ma status „wysłane”
     Oraz trafia z powrotem do kolejki weryfikacji
 
-  # brak testu całej drogi: #3722
-  @BR-3 @BR-18 @aplikacja @serwer @do-zrobienia
+  @BR-3 @BR-18 @aplikacja @serwer
   Scenariusz: Zmiana zgłoszenia przyjętego tworzy nowe zgłoszenie
     Zakładając, że zgłoszenie Zbierającego TB-13 „próg” w C-13 z uciążliwością 2 jest przyjęte
     Jeżeli Zbierający zmieni uciążliwość na 3
@@ -128,8 +126,7 @@ Funkcja: Lista i zmiana własnych zgłoszeń Zbierającego
     Oraz autorem nowego zgłoszenia jest ten Zbierający
     Oraz poprzednie zgłoszenie nadal jest przyjęte i widoczne na mapie
 
-  # brak testu całej drogi: #3722
-  @US8.4 @BR-19 @aplikacja @do-zrobienia
+  @US8.4 @BR-19 @aplikacja
   Scenariusz: Inny Zbierający niż autor zgłasza usunięcie bariery
     Zakładając, że zgłoszenie TB-9 „niesprawna winda” na piętrze budynku C-13 jest przyjęte, a jego autorem jest inna osoba
     Jeżeli Zbierający na karcie budynku C-13 wybierze przy tym zgłoszeniu zmianę z oznaczeniem „bariera usunięta”

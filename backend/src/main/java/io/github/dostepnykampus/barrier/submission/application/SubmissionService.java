@@ -91,7 +91,9 @@ public class SubmissionService {
             throw new OutsideCampus();
         }
         return this.repository.create(
-            new NewSubmission(command.id(), this.placed(command.content()), command.author())
+            new NewSubmission(
+                command.id(), this.placed(command.content()), command.author(), command.roles()
+            )
         );
     }
 
@@ -116,20 +118,6 @@ public class SubmissionService {
             this.events.publishEvent(result);
         }
         return result;
-    }
-
-    /**
-     * Daje zgłoszenie Weryfikatorowi.
-     *
-     * <p>Wymagania: BR-11, US10.4</p>
-     *
-     * @param id Identyfikator zgłoszenia
-     * @param reviewer Identyfikator konta Weryfikatora
-     * @return Wynik wzięcia zgłoszenia
-     */
-    @Transactional
-    public EditResult claim(final UUID id, final String reviewer) {
-        return this.repository.claim(id, reviewer);
     }
 
     private SubmissionContent placed(final SubmissionContent content) {

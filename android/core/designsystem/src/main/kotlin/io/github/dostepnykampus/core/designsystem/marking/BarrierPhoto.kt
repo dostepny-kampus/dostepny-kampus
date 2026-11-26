@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,10 +24,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
-import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.R
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.model.submission.BarrierType
 
 private val PhotoMaxHeight = 240.dp
@@ -69,7 +68,7 @@ public fun BarrierPhoto(url: String?, type: BarrierType?, modifier: Modifier = M
 private fun PhotoError(onRetry: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         PhotoNote(stringResource(R.string.zdjecie_blad))
-        OutlinedButton(onClick = onRetry, modifier = Modifier.heightIn(min = CeleDotyku.minimum)) {
+        OutlinedAction(onClick = onRetry) {
             Text(stringResource(R.string.sprobuj_ponownie))
         }
     }

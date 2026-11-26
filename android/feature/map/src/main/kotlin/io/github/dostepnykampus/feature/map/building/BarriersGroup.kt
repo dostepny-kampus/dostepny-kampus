@@ -17,10 +17,10 @@ import io.github.dostepnykampus.core.designsystem.GroupContainer
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
+import io.github.dostepnykampus.core.designsystem.marking.SeverityLabel
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.barrier.BarrierFacts
 import io.github.dostepnykampus.feature.map.barrier.ChosenBarrier
-import io.github.dostepnykampus.feature.map.barrier.SeverityBadge
 
 /**
  * Grupa „Bariery w budynku” na karcie: każde zgłoszenie przyjęte budynku z uciążliwością, typem, miejscem, dniem
@@ -51,7 +51,7 @@ internal fun BarriersGroup(
         Column(verticalArrangement = Arrangement.spacedBy(Odstepy.m)) {
             barriers.forEach { barrier ->
                 Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-                    SeverityBadge(barrier.severity)
+                    SeverityLabel(barrier.severity)
                     BarrierFacts(ChosenBarrier(barrier, building = null, entrance = entranceNames[barrier.entranceId]))
                     if (onReplaceBarrier != null && (barrier.isQuick || barrier.id in card.ownBarrierIds)) {
                         PinnedButton(

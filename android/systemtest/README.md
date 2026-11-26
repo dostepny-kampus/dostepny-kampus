@@ -15,6 +15,7 @@ Brak API; moduł zawiera tylko testy.
 
 ## Zależności
 
+- `:core:location`
 - `:core:network`
 - `:core:testing`
 

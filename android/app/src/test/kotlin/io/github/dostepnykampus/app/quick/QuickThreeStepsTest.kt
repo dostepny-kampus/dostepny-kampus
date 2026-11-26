@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.app.quick
@@ -10,7 +10,6 @@ import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation3.runtime.NavKey
@@ -32,6 +31,7 @@ import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
 import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
 import io.github.dostepnykampus.feature.capture.quick.QuickLookup
 import io.github.dostepnykampus.feature.capture.quick.QuickReportModels
+import io.github.dostepnykampus.feature.capture.quick.QuickSendStage
 import io.github.dostepnykampus.feature.capture.report.ReportSaverModule
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.flow.flowOf
@@ -106,7 +106,9 @@ class QuickThreeStepsTest {
         compose.onNodeWithText("Krok 3 z 3").assertExists("krok 3: wysłanie")
         compose.onNodeWithText("Dołączymy miejsce, w którym teraz stoisz.").assertExists("pozycja dołączana sama")
         compose.onNodeWithText("Wyślij").performClick()
-        waitFor { compose.onAllNodesWithText("Dziękujemy", substring = true).fetchSemanticsNodes().isNotEmpty() }
+        waitFor { where.stage.value == QuickSendStage.SENT }
+        compose.waitForIdle()
+        compose.onNodeWithText("Dziękujemy", substring = true).assertExists("potwierdzenie po wysłaniu")
 
         val stored = runBlocking { pending.all() }.single().submission
         assertEquals("zgłoszenie szybkie", SubmissionKind.QUICK.name, stored.kind)

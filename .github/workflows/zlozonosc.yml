@@ -3,6 +3,8 @@ name: zlozonosc
 # Etykieta złożoności według sekcji oceny w treści issue (zlozonosc.sh). Zdarzenia issue GitHub uruchamia
 # z gałęzi domyślnej, więc workflow i skrypt działają od scalenia sprintu do main.
 # Błędny opis: jeden komentarz z listą braków, odświeżany przy edycji i usuwany po poprawie.
+# Po nadaniu etykiety ponawia nieudaną kontrolę „PR od issue” otwartych PR, które zamykają to issue
+# (ponow-pr-od-issue.sh): etykieta nadana tokenem workflow nie uruchamia żadnego innego workflow.
 on:
   issues:
     types:
@@ -25,6 +27,8 @@ jobs:
     permissions:
       contents: read
       issues: write
+      pull-requests: read
+      actions: write
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -39,13 +43,17 @@ jobs:
           labels="$(gh issue view "$ISSUE" --json labels --jq '.labels[].name')"
           result="$(gh issue view "$ISSUE" --json body --jq '.body // ""' | bash .github/scripts/zlozonosc.sh "$labels")"
           gaps=''
+          added=0
           while IFS=: read -r action rest; do
             case "$action" in
-              dodaj) gh issue edit "$ISSUE" --add-label "$rest" >/dev/null; echo "Dodano etykietę ${rest}." ;;
+              dodaj) gh issue edit "$ISSUE" --add-label "$rest" >/dev/null; echo "Dodano etykietę ${rest}."; added=1 ;;
               zdejmij) gh issue edit "$ISSUE" --remove-label "$rest" >/dev/null; echo "Zdjęto etykietę ${rest}." ;;
               brak) gaps+="- ${rest}"$'\n' ;;
             esac
           done <<<"$result"
+          if ((added)) && [[ -f .github/scripts/ponow-pr-od-issue.sh ]]; then
+            bash .github/scripts/ponow-pr-od-issue.sh "$ISSUE"
+          fi
           old="$(gh api "repos/${GH_REPO}/issues/${ISSUE}/comments" --paginate \
             --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"${mark}\"))) | .id" | head -n 1)"
           if [[ -z $gaps ]]; then

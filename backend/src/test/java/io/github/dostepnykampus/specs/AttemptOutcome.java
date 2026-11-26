@@ -22,11 +22,15 @@ public final class AttemptOutcome {
     /** Status odpowiedzi na ostatnią próbę; 0 do pierwszej próby. */
     private int status;
 
+    /** Status odmowy, który kontrakt daje ostatniej próbie. */
+    private int refusal;
+
     /**
      * Wynik bez próby.
      */
     public AttemptOutcome() {
         this.status = 0;
+        this.refusal = 403;
     }
 
     /**
@@ -36,6 +40,26 @@ public final class AttemptOutcome {
      */
     public void record(final int code) {
         this.status = code;
+    }
+
+    /**
+     * Zapamiętuje status odpowiedzi na próbę, której kontrakt odmawia innym statusem niż 403.
+     *
+     * @param code Status odpowiedzi serwera
+     * @param refused Status odmowy z kontraktu dla tej próby
+     */
+    public void record(final int code, final int refused) {
+        this.status = code;
+        this.refusal = refused;
+    }
+
+    /**
+     * Status odmowy, który kontrakt daje ostatniej próbie.
+     *
+     * @return Status odmowy; 403, gdy krok próby nie podał innego
+     */
+    public int refusal() {
+        return this.refusal;
     }
 
     /**

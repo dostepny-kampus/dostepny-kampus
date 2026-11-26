@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.barrier.submission;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -51,17 +52,6 @@ public interface SubmissionFinder {
     boolean foreign(UUID id, String account);
 
     /**
-     * Sprawdza, czy zgłoszenie istnieje i wzięło je do weryfikacji to konto.
-     *
-     * <p>Wymagania: BR-11</p>
-     *
-     * @param id Identyfikator zgłoszenia
-     * @param account Identyfikator konta Weryfikatora
-     * @return Prawda, gdy konto wzięło zgłoszenie; fałsz dla cudzego, niczyjego i braku
-     */
-    boolean claimedBy(UUID id, String account);
-
-    /**
      * Sprawdza, czy zwykłą zmianę zgłoszenia przyjętego może złożyć tylko
      * autor, a konto nim nie jest: zgłoszenie istnieje, złożyło je
      * inne konto i nie jest zgłoszeniem szybkim.
@@ -95,14 +85,15 @@ public interface SubmissionFinder {
     List<Submission> own(String author, SubmissionQuery query);
 
     /**
-     * Wyszukuje zgłoszenia podobne do danego, bez niego samego.
+     * Własne zgłoszenia konta w każdym statusie oraz cudze przyjęte i archiwalne, zmienione od
+     * {@code since} włącznie, od najdawniej zmienionego. Zgłoszenie z nieczytelną treścią jest
+     * pomijane.
      *
-     * <p>Wymagania: US10.1, BR-13</p>
-     *
-     * @param id Identyfikator sprawdzanego zgłoszenia
-     * @return Podobne zgłoszenia od najbliższego; puste, gdy zgłoszenia nie ma
+     * @param since Chwila, od której liczą się zmiany
+     * @param reader Identyfikator konta z tokenu
+     * @return Zgłoszenia z chwilą zmiany
      */
-    List<SimilarSubmission> similar(UUID id);
+    List<SubmissionChange> changedSince(Instant since, String reader);
 
     /**
      * Port stron listy zgłoszeń: strona po kursorze, w kolejności identyfikatorów.

@@ -68,7 +68,7 @@ public final class JdbcSubmissionPages implements SubmissionFinder.Pages {
                             AND id > :after
                         ORDER BY id LIMIT :fetch
                         """,
-                        JdbcSubmissions.COLUMNS, SubmissionSelection.WHERE
+                        SubmissionRows.COLUMNS, SubmissionSelection.WHERE
                     )
                 ),
                 query, author

@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.first
 /**
  * C6 „Zmiana oznaczenia wejścia” dla wejścia z [route]. Po zapisie woła [onFinish], a gdy wejścia nie ma w katalogu,
  * wraca przez [onLeave].
- * TODO(#3676): przejście z karty budynku.
  *
  * Wymagania: US17.2, BR-24, NFR-54
  *
