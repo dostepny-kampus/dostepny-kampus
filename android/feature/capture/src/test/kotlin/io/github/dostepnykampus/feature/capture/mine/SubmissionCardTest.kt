@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
@@ -59,6 +60,14 @@ class SubmissionCardTest {
                 SubmissionCard(item = item, onOpen = onOpen, onMeasure = {}, onConflict = null)
             }
         }
+    }
+
+    /** „Otwórz” to czynność karty szeroka jak napis, węższa niż treść karty. Wymagania: NFR-17, US8.1 */
+    @Test
+    fun keepsOpenCompact() {
+        show(item(id = "a", state = SendState.SENT))
+        val bounds = compose.onNodeWithText("Otwórz").getUnclippedBoundsInRoot()
+        assertTrue("„Otwórz” ma być węższe niż treść karty: $bounds", (bounds.right - bounds.left).value < CONTENT_DP)
     }
 
     /**
@@ -323,6 +332,7 @@ class SubmissionCardTest {
 
 private val ICON_DP = 48.dp
 private val STATUS_ICON_DP = 24.dp
+private const val CONTENT_DP = 328f
 private const val DARK_LUMA = 128
 private const val LUMA_DIFFERENCE = 64
 private const val MIN_PIXELS = 100

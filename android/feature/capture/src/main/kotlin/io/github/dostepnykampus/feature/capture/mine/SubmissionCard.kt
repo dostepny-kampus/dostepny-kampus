@@ -8,12 +8,7 @@ package io.github.dostepnykampus.feature.capture.mine
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -23,9 +18,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.data.submission.own.RefusalReason
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.StatusIcons
 import io.github.dostepnykampus.core.designsystem.StatusLine
 import io.github.dostepnykampus.core.designsystem.campusDay
+import io.github.dostepnykampus.core.designsystem.card.CardAction
+import io.github.dostepnykampus.core.designsystem.card.ListItemCard
 import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.designsystem.marking.nameRes
 import io.github.dostepnykampus.core.model.building.EntranceMarking
@@ -59,18 +55,16 @@ internal fun SubmissionCard(
     modifier: Modifier = Modifier,
 ) {
     val status = item.shownStatus()
-    OutlinedCard(modifier = modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-            SubmissionDetails(item = item, status = status)
-            onConflict?.let { choose ->
-                ArrowButton(text = stringResource(R.string.moje_dwie_wersje), onClick = choose)
-            }
-            if (item.isOutdated && item.isBarrierRemoved) {
-                OutlinedButton(onClick = onMeasure) { Text(stringResource(R.string.pomiar_naglowek)) }
-            } else if (onOpen != null && canOpen(status)) {
-                val open = if (item.isOutdated) R.string.moje_wyslij_ponownie else R.string.moje_otworz
-                ArrowButton(text = stringResource(open), onClick = onOpen)
-            }
+    ListItemCard(modifier = modifier) {
+        SubmissionDetails(item = item, status = status)
+        onConflict?.let { choose ->
+            CardAction(text = stringResource(R.string.moje_dwie_wersje), onClick = choose, opensScreen = true)
+        }
+        if (item.isOutdated && item.isBarrierRemoved) {
+            CardAction(text = stringResource(R.string.pomiar_naglowek), onClick = onMeasure)
+        } else if (onOpen != null && canOpen(status)) {
+            val open = if (item.isOutdated) R.string.moje_wyslij_ponownie else R.string.moje_otworz
+            CardAction(text = stringResource(open), onClick = onOpen, opensScreen = true)
         }
     }
 }
@@ -93,14 +87,6 @@ private fun SubmissionDetails(item: OwnSubmissionItem, status: ShownStatus) {
             Text(stringResource(R.string.moje_powod_odrzucenia, reason))
         }
         if (item.isOutdated) Text(stringResource(outdatedText(item)))
-    }
-}
-
-@Composable
-private fun ArrowButton(text: String, onClick: () -> Unit) {
-    OutlinedButton(onClick = onClick) {
-        Text(text)
-        Icon(imageVector = StatusIcons.Open, contentDescription = null, modifier = Modifier.padding(start = Odstepy.s))
     }
 }
 
