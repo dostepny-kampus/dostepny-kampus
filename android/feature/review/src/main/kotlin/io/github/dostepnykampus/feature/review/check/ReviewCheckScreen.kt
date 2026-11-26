@@ -150,7 +150,7 @@ private fun QuickChoice(state: CheckUiState.Ready, decision: DecisionActions) {
     val isMissing = state.notice == CheckNotice.TYPE_MISSING
     val typeField = remember { BringIntoViewRequester() }
     val severityField = remember { BringIntoViewRequester() }
-    LaunchedEffect(isMissing) {
+    LaunchedEffect(state.missingAttempts) {
         if (isMissing) (if (state.quickType == null) typeField else severityField).bringIntoView()
     }
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.m)) {

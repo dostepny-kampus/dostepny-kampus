@@ -116,7 +116,8 @@ class ReviewCheckViewModelTest {
             assertEquals(emptyList<ReviewDecision>(), decisions, "bez uciążliwości nic nie idzie na serwer")
             model.accept { done++ }
             runCurrent()
-            assertEquals(2, (model.state.value as CheckUiState.Ready).missingAttempts, "każda próba przyjęcia z brakami")
+            val attempts = (model.state.value as CheckUiState.Ready).missingAttempts
+            assertEquals(2, attempts, "każda próba przyjęcia z brakami")
         }
 
     @Test

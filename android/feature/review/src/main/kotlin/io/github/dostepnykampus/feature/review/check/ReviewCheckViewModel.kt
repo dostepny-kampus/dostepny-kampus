@@ -53,6 +53,7 @@ sealed interface CheckUiState {
      * @property similarPhotos adres pierwszego zdjęcia podobnego zgłoszenia według jego identyfikatora
      * @property quickType typ bariery nadany zgłoszeniu szybkiemu; `null`, zanim Weryfikator go wybierze
      * @property quickSeverity uciążliwość nadana zgłoszeniu szybkiemu; `null`, zanim Weryfikator ją wybierze
+     * @property missingAttempts liczba prób przyjęcia zgłoszenia szybkiego bez typu albo uciążliwości
      */
     data class Ready(
         val submission: Submission,
@@ -62,6 +63,7 @@ sealed interface CheckUiState {
         val similarPhotos: Map<String, String> = emptyMap(),
         val quickType: BarrierType? = null,
         val quickSeverity: Severity? = null,
+        val missingAttempts: Int = 0,
     ) : CheckUiState
 
     /** Bez internetu przy wczytywaniu. */
@@ -113,7 +115,8 @@ class ReviewCheckViewModel
             val shown = current.value as? CheckUiState.Ready ?: return
             val decision = shown.acceptance()
             if (decision == null) {
-                current.value = shown.copy(notice = CheckNotice.TYPE_MISSING)
+                val attempts = shown.missingAttempts + 1
+                current.value = shown.copy(notice = CheckNotice.TYPE_MISSING, missingAttempts = attempts)
             } else {
                 decide(decision, onDone)
             }
@@ -174,7 +177,10 @@ class ReviewCheckViewModel
 
         private fun decided(outcome: ReviewOutcome, shown: CheckUiState.Ready, onDone: () -> Unit) {
             when (outcome) {
-                is ReviewOutcome.Decided -> onDone()
+                is ReviewOutcome.Decided -> {
+                    onDone()
+                }
+
                 is ReviewOutcome.Changed -> {
                     val changed = ready(outcome.server, shown.similar, CheckNotice.CHANGED)
                     current.value = changed.copy(quickType = shown.quickType, quickSeverity = shown.quickSeverity)
