@@ -23,31 +23,68 @@ class FlightAreaTest {
     private val areas = FlightArea(main)
 
     /**
-     * Wiersz: V1, zmiana terenu: na starcie przelotu podkład obejmuje stary teren; zamiana na nowy teren przychodzi,
-     * gdy mapa oddali się poniżej powiększenia podkładu obu terenów, więc przy zejściu do celu wraca podkład nowego.
+     * Wiersz: V1, zmiana terenu: przez cały przelot styl ma teren startowy z podkładem rysowanym przy każdym
+     * powiększeniu, więc mapa w przelocie nie jest pusta; po przelocie nowy teren z jego podkładem.
      *
      * Wymagania: US1.8, NFR-39
      */
     @Test
-    fun keepsOldAreaAtFlightStart() {
+    fun drawsBasemapThroughFlight() {
         areas.start(CameraMotion.FLIGHT)
         areas.area(other)
         areas.zoom(16.0)
-        assertEquals(main, areas.shown, "pierwsza klatka przelotu: stary teren")
-        areas.zoom(14.7)
-        assertEquals(main, areas.shown, "podkład starego terenu jeszcze rysowany")
-        areas.zoom(14.0)
-        assertEquals(other, areas.shown, "oba podkłady ukryte: nowy teren")
+        assertEquals(main.area, areas.shown.area, "pierwsza klatka przelotu: stary teren")
+        areas.zoom(12.0)
+        assertEquals(main.area, areas.shown.area, "w środku przelotu stary teren")
+        assertEquals(0.0, areas.shown.hiddenBelow, "podkład przy każdym powiększeniu")
         areas.endFlight()
         assertEquals(other, areas.shown, "po przelocie nowy teren")
     }
 
-    /** Wiersz: V1, bez przelotu nowy teren i podkład są w stylu od razu. */
+    /**
+     * Wiersz: V1, zmiana terenu: w przelocie kafelki podkładu tylko w prostokątach starego i nowego terenu,
+     * po przelocie tylko nowego.
+     *
+     * Wymagania: NFR-39
+     */
+    @Test
+    fun limitsTilesToBothAreasInFlight() {
+        val tiles = mutableListOf<List<CampusBounds>>()
+        val flight = FlightArea(first = main, onTileAreas = { tiles += it })
+        flight.start(CameraMotion.FLIGHT)
+        flight.area(other)
+        assertEquals(listOf(main.area.bounds, other.area.bounds), tiles.last(), "w przelocie oba tereny")
+        flight.endFlight()
+        assertEquals(listOf(other.area.bounds), tiles.last(), "po przelocie nowy teren")
+    }
+
+    /** Wiersz: V1, bez przelotu nowy teren i podkład są w stylu od razu, a po spoczynku mapy zostaje sam nowy teren. */
     @Test
     fun showsAreaAtOnceWithoutFlight() {
         areas.zoom(10.0)
         areas.area(other)
-        assertEquals(other, areas.shown, "nowy teren od razu")
+        assertEquals(other.area, areas.shown.area, "nowy teren od razu")
+        areas.endFlight()
+        assertEquals(other, areas.shown, "po spoczynku sam nowy teren")
+    }
+
+    /**
+     * Wiersz: V1, zmiana terenu: teren zmienia się tuż przed startem przelotu. Podkład starego terenu zostaje na
+     * ekranie, a kafelki wolno pobierać w prostokątach obu terenów.
+     *
+     * Wymagania: US1.8, NFR-39, NFR-56
+     */
+    @Test
+    fun keepsBasemapOnEarlyChange() {
+        val tiles = mutableListOf<List<CampusBounds>>()
+        val flight = FlightArea(first = main, onTileAreas = { tiles += it })
+        flight.zoom(14.6)
+        flight.area(other)
+        assertTrue(flight.isBasemapKept, "podkład starego terenu przy bieżącym powiększeniu")
+        assertEquals(14.5, flight.shown.hiddenBelow, "podkład od mniejszego powiększenia")
+        flight.start(CameraMotion.FLIGHT)
+        assertTrue(flight.isBasemapKept, "start przelotu nie chowa podkładu")
+        assertEquals(listOf(main.area.bounds, other.area.bounds), tiles.last(), "w przelocie oba tereny")
     }
 
     /** Wiersz: V1, przelot przerwany przed oddaleniem mapy kończy się terenem wybranym jako ostatni. */
@@ -76,24 +113,37 @@ class FlightAreaTest {
         assertTrue(areas.isBasemapKept, "podkład starego terenu zostaje do wczytania nowego")
     }
 
-    /** Wiersz: V1, przelot oddalił mapę poniżej obu podkładów: nowy podkład czeka ukryty na kafelki. */
+    /** Wiersz: V1, przelot oddalił mapę i zszedł do celu: podkład był na ekranie przez cały lot, więc zostaje. */
     @Test
-    fun hidesBasemapAfterDeepFlight() {
+    fun keepsBasemapAfterDeepFlight() {
         areas.zoom(16.0)
         areas.start(CameraMotion.FLIGHT)
         areas.area(other)
-        areas.zoom(14.0)
-        assertEquals(other, areas.shown, "oba podkłady ukryte: nowy teren")
-        assertFalse(areas.isBasemapKept, "podkładu nie było na ekranie")
+        areas.zoom(12.0)
+        areas.zoom(16.0)
+        areas.endFlight()
+        assertEquals(other, areas.shown, "po przelocie nowy teren")
+        assertTrue(areas.isBasemapKept, "podkład rysowany przez cały lot")
+    }
+
+    /** Wiersz: V1, przelot przerwany gestem daleko od celu: podkład nowego terenu tam nie jest rysowany. */
+    @Test
+    fun hidesBasemapAfterFlightCutLow() {
+        areas.zoom(16.0)
+        areas.start(CameraMotion.FLIGHT)
+        areas.area(other)
+        areas.zoom(12.0)
+        areas.endFlight()
+        assertEquals(other, areas.shown, "po przerwaniu nowy teren")
+        assertFalse(areas.isBasemapKept, "widok poniżej podkładu nowego terenu")
     }
 
     /** Wiersz: V1, skok na inny teren bez animacji: stary podkład nie leży pod nowym widokiem. */
     @Test
     fun hidesBasemapAfterJump() {
         areas.zoom(16.0)
-        areas.start(CameraMotion.NONE)
-        areas.zoom(16.0)
         areas.area(other)
+        areas.start(CameraMotion.NONE)
         assertEquals(other, areas.shown, "po skoku nowy teren")
         assertFalse(areas.isBasemapKept, "kafelki nowego widoku nie są wczytane")
     }
@@ -107,11 +157,12 @@ class FlightAreaTest {
         assertTrue(areas.isBasemapKept, "przesunięcie bez skoku: podkład zostaje")
     }
 
-    /** Wiersz: V1, widok poniżej podkładu nowego terenu: po zmianie podkład nie jest rysowany, więc czeka ukryty. */
+    /** Wiersz: V1, widok poniżej podkładu nowego terenu: w spoczynku podkład nie jest rysowany, więc czeka ukryty. */
     @Test
     fun hidesBelowNewBasemapZoom() {
         areas.zoom(14.8)
         areas.area(other)
+        areas.endFlight()
         assertFalse(areas.isBasemapKept, "nowy podkład od wyższego powiększenia")
     }
 
