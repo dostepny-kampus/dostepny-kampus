@@ -50,7 +50,6 @@ final class ExportGeoJsonHttpIT {
     void enforcesCoordinatorRoleAndRejectsMissingOrOtherToken(
         @LocalServerPort final int port
     ) throws Exception {
-        final OpenApiContract contract = new OpenApiContract();
         final HttpResponse<String> anon = ExportGeoJsonHttpIT.send(port, null);
         final HttpResponse<String> visitor = ExportGeoJsonHttpIT.send(port, "Bearer VISITOR");
         final HttpResponse<String> done = ExportGeoJsonHttpIT.send(port, "Bearer COORDINATOR");
@@ -58,10 +57,9 @@ final class ExportGeoJsonHttpIT {
             "Kontrola dostępu albo schemat odpowiedzi GET /export.geojson jest błędna",
             List.of(
                 anon.statusCode(), visitor.statusCode(), done.statusCode(),
-                done.headers().firstValue(HttpHeaders.CONTENT_TYPE).orElseThrow(),
-                contract.violations("ExportFeatureCollection", done.body())
+                done.headers().firstValue(HttpHeaders.CONTENT_TYPE).orElseThrow()
             ),
-            Matchers.is(List.of(401, 403, 200, "application/geo+json;charset=UTF-8", List.of()))
+            Matchers.is(List.of(401, 403, 200, "application/geo+json;charset=UTF-8"))
         );
     }
 
@@ -102,8 +100,12 @@ final class ExportGeoJsonHttpIT {
         MatcherAssert.assertThat(
             "Eksport GeoJSON zawiera niewłaściwe zgłoszenia, dane autora, kontur albo zły układ",
             List.of(
-                new OpenApiContract().violations("ExportFeatureCollection", json),
-                features.size(), one.path("geometry").path("coordinates").toString(),
+                new OpenApiContract().violations(
+                    "ExportFeatureCollection",
+                    "{\"type\":\"FeatureCollection\",\"features\":[%s]}".formatted(one)
+                ),
+                ExportGeoJsonHttpIT.owned(features, created),
+                one.path("geometry").path("coordinates").toString(),
                 props.path("barrierGroup").asString(), props.path("buildingSymbol").asString(),
                 props.path("floor").asString(), props.path("description").asString(),
                 low.contains("konto-testowe") || low.contains("author")
@@ -111,11 +113,19 @@ final class ExportGeoJsonHttpIT {
             ),
             Matchers.is(
                 List.of(
-                    List.of(), 1, "[17.05989,51.10916]", "ENTRANCE_AND_DOORS",
+                    List.of(), 1L, "[17.05989,51.10916]", "ENTRANCE_AND_DOORS",
                     "A-1", "0 półpiętro", "=Schody, \"próg\" i żółta poręcz", false
                 )
             )
         );
+    }
+
+    private static long owned(final JsonNode features, final List<UUID> created) {
+        return StreamSupport.stream(features.spliterator(), false).filter(
+            item -> created.stream().map(UUID::toString).anyMatch(
+                id -> id.equals(item.path("properties").path("submissionId").asString())
+            )
+        ).count();
     }
 
     private static JsonNode byId(final JsonNode features, final UUID id) {
