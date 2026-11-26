@@ -14,6 +14,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.Severity
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
+import io.github.dostepnykampus.feature.capture.navigation.ReportEditMode
 import io.github.dostepnykampus.feature.capture.navigation.ReportEditRoute
 import io.github.dostepnykampus.feature.capture.report.form.edited
 import kotlinx.coroutines.Dispatchers
@@ -93,7 +94,7 @@ class ReportEditViewModelTest {
             val outdated = saved.copy(content = saved.content.copy(replacesSubmissionId = "a0"))
             val barriers = listOf(accepted(id = "a9", replaced = null), accepted(id = "a1", replaced = "a0"))
             val resend = ReportEditViewModel(edits = { outdated }, barriers = { barriers })
-            resend.open(ReportEditRoute("s1", isResend = true))
+            resend.open(ReportEditRoute("s1", ReportEditMode.RESEND_OUTDATED))
             runCurrent()
 
             val form = (resend.load.value as ReportEditLoad.Ready).start.form
@@ -107,7 +108,7 @@ class ReportEditViewModelTest {
         runTest(dispatcher) {
             val outdated = saved.copy(content = saved.content.copy(replacesSubmissionId = "a0"))
             val resend = ReportEditViewModel(edits = { outdated }, barriers = AcceptedBarriers { emptyList() })
-            resend.open(ReportEditRoute("s1", isResend = true))
+            resend.open(ReportEditRoute("s1", ReportEditMode.RESEND_OUTDATED))
             runCurrent()
 
             assertEquals(ReportEditLoad.Missing, resend.load.value, "bez bieżącego przyjętego wraca do C3")
