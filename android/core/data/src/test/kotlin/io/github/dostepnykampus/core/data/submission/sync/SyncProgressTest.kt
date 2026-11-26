@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.core.data.submission.sync
 
 import androidx.work.ExistingWorkPolicy
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
 /** Postęp „Wysyłamy X z Y” i „Synchronizuj teraz” bez dublowania przebiegów. Wymagania: US9.1, BR-9 */
+@OptIn(ExperimentalCoroutinesApi::class)
 class SyncProgressTest {
     /** Przebieg liczy wysłane od liczby czekających na jego początku. Wymagania: US9.1 */
     @Test
