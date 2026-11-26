@@ -8,10 +8,6 @@ plugins {
     id("dostepnykampus.jvm.library")
 }
 
-kotlin {
-    explicitApi()
-}
-
 dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
 }
