@@ -133,38 +133,41 @@ internal fun ScrollHint() {
 @Composable
 private fun PlanLegendSigns() {
     val mapColors = DostepnyKampusTheme.mapColors
-    val wallStroke = MapaPlan.scianyDp.last().dp.dp
-    HorizontalDivider()
-    Text(
-        text = stringResource(R.string.mapa_legenda_plan),
-        modifier = Modifier.semantics { heading() },
-        style = MaterialTheme.typography.titleMedium,
-    )
-    listOf(
-        R.string.mapa_legenda_plan_sala to mapColors.pSala,
-        R.string.mapa_legenda_plan_korytarz to mapColors.pKorytarz,
-    ).forEach { (word, fill) ->
-        LegendRow(stringResource(word)) {
-            RectSample(fill = fill, outlineColor = mapColors.pKontur, stroke = wallStroke)
-        }
-    }
-    listOf(
-        Triple(R.string.mapa_legenda_plan_klatka, mapColors.pInne, RoomCategory.STAIRCASE),
-        Triple(R.string.karta_winda, mapColors.pWinda, RoomCategory.ELEVATOR),
-        Triple(R.string.karta_toaleta, mapColors.pWc, RoomCategory.ACCESSIBLE_TOILET),
-    ).forEach { (word, fill, category) ->
-        LegendRow(stringResource(word)) {
-            PlanRoomSignSample(fill = fill, wallStroke = wallStroke, category = category)
-        }
-    }
-    LegendRow(stringResource(R.string.mapa_legenda_plan_szukana)) {
-        RectSample(
-            fill = mapColors.pWybrana,
-            outlineColor = mapColors.pWybranaKontur,
-            stroke = PLAN_CHOSEN_OUTLINE_WIDTH.dp,
+    val wallDp = MapaPlan.scianyDp.last().dp
+    val wallStroke = wallDp.dp
+    Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
+        HorizontalDivider()
+        Text(
+            text = stringResource(R.string.mapa_legenda_plan),
+            modifier = Modifier.semantics { heading() },
+            style = MaterialTheme.typography.titleMedium,
         )
+        listOf(
+            R.string.mapa_legenda_plan_sala to mapColors.pSala,
+            R.string.mapa_legenda_plan_korytarz to mapColors.pKorytarz,
+        ).forEach { (word, fill) ->
+            LegendRow(stringResource(word)) {
+                RectSample(fill = fill, outlineColor = mapColors.pKontur, stroke = wallStroke)
+            }
+        }
+        listOf(
+            Triple(R.string.mapa_legenda_plan_klatka, mapColors.pInne, RoomCategory.STAIRCASE),
+            Triple(R.string.karta_winda, mapColors.pWinda, RoomCategory.ELEVATOR),
+            Triple(R.string.karta_toaleta, mapColors.pWc, RoomCategory.ACCESSIBLE_TOILET),
+        ).forEach { (word, fill, category) ->
+            LegendRow(stringResource(word)) {
+                PlanRoomSignSample(fill = fill, wallStroke = wallStroke, category = category)
+            }
+        }
+        LegendRow(stringResource(R.string.mapa_legenda_plan_szukana)) {
+            RectSample(
+                fill = mapColors.pWybrana,
+                outlineColor = mapColors.pWybranaKontur,
+                stroke = PLAN_CHOSEN_OUTLINE_WIDTH.dp,
+            )
+        }
+        LegendRow(stringResource(R.string.mapa_legenda_plan_bez_pietra)) { FloorlessReportSample() }
     }
-    LegendRow(stringResource(R.string.mapa_legenda_plan_bez_pietra)) { FloorlessReportSample() }
 }
 
 @Composable

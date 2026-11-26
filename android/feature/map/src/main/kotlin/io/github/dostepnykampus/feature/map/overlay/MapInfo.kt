@@ -92,12 +92,7 @@ internal fun MapInfo(
 }
 
 @Composable
-private fun InfoPanel(
-    dataDay: LocalDate?,
-    hasPlan: Boolean,
-    onClose: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+private fun InfoPanel(dataDay: LocalDate?, hasPlan: Boolean, onClose: () -> Unit, modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(Zaokraglenia.duze),

@@ -35,6 +35,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.GraphicsMode
 
 /**
  * Ekran V1 z widokiem zastępczym, który nigdy nie zgłasza końca gestu: plan piętra dostaje widok kamery także po ruchu
@@ -133,6 +134,7 @@ class MapPlanCameraTest {
 
     /** Bez planu legenda na ekranie nie ma części „Plan piętra”, a z planem ją pokazuje. Wymagania: US1.4, US16.1 */
     @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
     fun showsPlanLegendOnlyWithPlan() {
         var plan by mutableStateOf<ShownPlan?>(null)
         compose.setContent {
