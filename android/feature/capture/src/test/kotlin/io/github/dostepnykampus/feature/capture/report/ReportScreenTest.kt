@@ -14,14 +14,15 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnyChild
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isFocused
 import androidx.compose.ui.test.isHeading
 import androidx.compose.ui.test.isNotSelected
 import androidx.compose.ui.test.isSelected
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -293,7 +294,8 @@ class ReportScreenTest {
 
         val text = "Brakuje typu bariery. Uzupełnij to pole, aby zapisać."
         assertEquals(2, compose.onAllNodes(hasText(text)).fetchSemanticsNodes().size)
-        val signs = compose.onAllNodesWithTag(IMPORTANT_SIGN_TAG, useUnmergedTree = true).fetchSemanticsNodes()
+        val signAtText = hasTestTag(IMPORTANT_SIGN_TAG) and hasParent(hasAnyChild(hasText(text)))
+        val signs = compose.onAllNodes(signAtText, useUnmergedTree = true).fetchSemanticsNodes()
         assertEquals("znak „!” przy polu", 1, signs.size)
     }
 
