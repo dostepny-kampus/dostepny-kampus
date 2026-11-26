@@ -12,7 +12,7 @@
  * @since 0.1.0
  */
 @ApplicationModule(
-    allowedDependencies = {"barrier :: api", "building :: api", "inspection :: api", "shared"}
+    allowedDependencies = {"barrier :: api", "building :: api", "inspection :: api"}
 )
 package io.github.dostepnykampus.sync;
 
