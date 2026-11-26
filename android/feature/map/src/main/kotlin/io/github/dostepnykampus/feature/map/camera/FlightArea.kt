@@ -8,6 +8,7 @@ package io.github.dostepnykampus.feature.map.camera
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.style.Basemap
 
@@ -26,14 +27,17 @@ internal fun styleAreaOf(selection: MapSelection, basemap: Basemap?): StyleArea 
     StyleArea(area = MapSelection(bounds = selection.bounds, boundary = selection.boundary), basemap = basemap)
 
 /**
- * Teren pokazany w stylu na czas przelotu na inny teren. Bez przelotu nowy teren idzie do stylu od razu. W przelocie
- * zostaje teren startowy z jego podkładem, aż mapa oddali się poniżej powiększenia, przy którym podkład żadnego
- * z dwóch terenów nie jest rysowany; zamiana jest wtedy niewidoczna, a przy zejściu do celu wraca już podkład nowego
- * terenu. Koniec przelotu, także przerwanego gestem albo innym ruchem, pokazuje najnowszy teren.
+ * Teren pokazany w stylu przy zmianie terenu. Do końca ruchu kamery, który po niej następuje, podkład jest rysowany
+ * od mniejszego z powiększeń podkładu starego i nowego terenu, a w przelocie przy każdym powiększeniu. Kafelki
+ * podkładu wolno wtedy pobierać w prostokątach obu terenów. Koniec przelotu, inny ruch kamery i spoczynek mapy, także
+ * po przelocie przerwanym gestem, pokazują sam najnowszy teren.
  *
  * Wymagania: US1.8, NFR-39, NFR-56
+ *
+ * @param first teren na starcie mapy
+ * @param onTileAreas prostokąty terenów, w których wolno pobierać kafelki podkładu, po każdej ich zmianie
  */
-internal class FlightArea(first: StyleArea) {
+internal class FlightArea(first: StyleArea, private val onTileAreas: (List<CampusBounds>) -> Unit = {}) {
     /** Teren pokazany w stylu; zmiana rekomponuje widok mapy. */
     var shown: StyleArea by mutableStateOf(first)
         private set
@@ -46,39 +50,67 @@ internal class FlightArea(first: StyleArea) {
     var isBasemapKept: Boolean = false
         private set
     private var latest = first
+    private var origin: StyleArea? = null
     private var isFlying = false
     private var isJump = false
     private var zoomNow = 0.0
 
-    /** Nowy teren [next]; w trakcie przelotu czeka na oddalenie mapy albo koniec przelotu. */
-    fun area(next: StyleArea) {
-        latest = next
-        if (!isFlying) show(next)
+    init {
+        tiles()
     }
 
-    /** Start ruchu kamery [motion]: przelot zostawia w stylu teren startowy, inny ruch kończy przelot. */
+    /** Nowy teren [next]; poza przelotem w stylu od razu, z podkładem starego terenu do końca następnego ruchu. */
+    fun area(next: StyleArea) {
+        latest = next
+        if (isFlying) {
+            tiles()
+        } else {
+            origin = origin ?: shown
+            show(StyleArea(area = next.area, basemap = lower(old = origin?.basemap, new = next.basemap)))
+        }
+    }
+
+    /** Start ruchu kamery [motion]: przelot rysuje podkład przy każdym powiększeniu, inny ruch kończy zmianę. */
     fun start(motion: CameraMotion) {
         isJump = motion == CameraMotion.NONE
-        if (motion == CameraMotion.FLIGHT) isFlying = true else endFlight()
+        if (motion != CameraMotion.FLIGHT) {
+            settle()
+        } else if (!isFlying) {
+            isFlying = true
+            origin = origin ?: shown
+            show(shown.copy(basemap = shown.basemap?.let { Basemap(minZoom = 0.0) }))
+        }
     }
 
     /** Powiększenie mapy [zoom] w trakcie ruchu kamery. */
     fun zoom(zoom: Double) {
         zoomNow = zoom
-        if (isFlying && zoom < minOf(a = shown.hiddenBelow, b = latest.hiddenBelow)) show(latest)
     }
 
-    /** Koniec przelotu: najnowszy teren w stylu. */
+    /** Spoczynek mapy, także po przelocie: sam najnowszy teren w stylu. */
     fun endFlight() {
-        if (isFlying) {
-            isFlying = false
-            show(latest)
-        }
+        settle()
+        isJump = false
+    }
+
+    private fun settle() {
+        isFlying = false
+        origin = null
+        show(latest)
     }
 
     private fun show(next: StyleArea) {
-        if (next == shown) return
-        isBasemapKept = !isJump && zoomNow >= maxOf(a = shown.hiddenBelow, b = next.hiddenBelow)
-        shown = next
+        if (next != shown) {
+            isBasemapKept = !isJump && zoomNow >= maxOf(a = shown.hiddenBelow, b = next.hiddenBelow)
+            shown = next
+        }
+        tiles()
     }
+
+    private fun tiles() {
+        onTileAreas(listOfNotNull(origin, latest).mapNotNull { it.area.bounds }.distinct())
+    }
+
+    private fun lower(old: Basemap?, new: Basemap?): Basemap? =
+        if (old == null || new == null) new else Basemap(minZoom = minOf(a = old.minZoom, b = new.minZoom))
 }

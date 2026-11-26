@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.map.tiles
@@ -8,6 +8,8 @@ package io.github.dostepnykampus.feature.map.tiles
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import okhttp3.CacheControl
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import java.time.Duration
@@ -26,7 +28,9 @@ annotation class MapUserAgent
  * Klient HTTP kafelków mapy z grafu Hilt, więc nagłówek nie zależy od kolejności startu. Powstaje z klienta
  * aplikacji [http] przez `newBuilder()` i dzieli z nim pulę połączeń. Każde żądanie ma nagłówek [userAgent].
  * Kafelki nie mają limitu całego wywołania klienta aplikacji, tylko domyślne 10 s na połączenie, jak
- * wcześniej. Token konta idzie tylko do serwera aplikacji, nie do serwera kafelków.
+ * wcześniej. Token konta idzie tylko do serwera aplikacji, nie do serwera kafelków. Kafelek wektorowy w całości
+ * poza prostokątami `basemapAreas` nie idzie do serwera: żądanie tylko z pamięci podręcznej, na które OkHttp
+ * odpowiada bez sieci (504).
  *
  * Wymagania: NFR-39
  *
@@ -40,6 +44,10 @@ class MapTileHttp
         http: OkHttpClient,
         @MapUserAgent userAgent: String,
     ) {
+        /** Prostokąty terenów, w których wolno pobierać kafelki podkładu; pusta lista nie ogranicza. */
+        @Volatile
+        internal var basemapAreas: List<CampusBounds> = emptyList()
+
         /** Klient kafelków z pulą połączeń klienta aplikacji i domyślnymi limitami czasu OkHttp. */
         internal val client: OkHttpClient =
             http
@@ -55,7 +63,10 @@ class MapTileHttp
          */
         val calls: Call.Factory =
             Call.Factory { request ->
-                client.newCall(request.newBuilder().header(name = "User-Agent", value = userAgent).build())
+                val sent = request.newBuilder().header(name = "User-Agent", value = userAgent)
+                val isBlocked = isOutside(url = request.url.toString(), areas = basemapAreas)
+                if (isBlocked) sent.cacheControl(CacheControl.FORCE_CACHE)
+                client.newCall(sent.build())
             }
     }
 
