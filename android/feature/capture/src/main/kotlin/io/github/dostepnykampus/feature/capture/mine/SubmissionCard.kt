@@ -127,12 +127,12 @@ internal val OwnSubmissionItem.isOutdated: Boolean
     get() = shownStatus() == ShownStatus.REJECTED && RejectionReasons.isOutdated(rejectionReason)
 
 /**
- * Czy pozycję można otworzyć z C3: status pozwala na poprawkę ([canOpen]), a rodzaj ma ekran poprawki. Usunięcie
- * bariery go nie ma. TODO(#4005): usunięcie bariery otwiera C7.
+ * Czy pozycję można otworzyć z C3: status pozwala na poprawkę ([canOpen]). Każdy rodzaj ma ekran poprawki: C2,
+ * C6 przy zmianie oznaczenia wejścia i C7 przy „bariera usunięta”.
  *
  * Wymagania: US8.1, US8.3, US8.4, US17.2
  */
-internal fun OwnSubmissionItem.canOpenHere(): Boolean = !isBarrierRemoved && canOpen(shownStatus())
+internal fun OwnSubmissionItem.canOpenHere(): Boolean = canOpen(shownStatus())
 
 @Composable
 @ReadOnlyComposable
