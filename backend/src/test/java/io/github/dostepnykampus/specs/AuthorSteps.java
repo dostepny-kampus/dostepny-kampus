@@ -62,13 +62,12 @@ public final class AuthorSteps {
     @Given("^zgłoszenie wysłał Zbierający Jan Kowalski z adresem e-mail (\\S+)$")
     void sentByCollector(final String address) throws Exception {
         this.email = address;
-        final String token = "Bearer COLLECTOR.".concat(AuthorSteps.ACCOUNT);
         MatcherAssert.assertThat(
             "Serwer nie przyjął zgłoszenia Zbierającego, nie dał 201",
             this.http.perform(
                 MockMvcRequestBuilders.post("/submissions")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, token)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer COLLECTOR.jan-kowalski")
                     .content(AuthorSteps.body())
             ).andReturn().getResponse().getStatus(),
             Matchers.equalTo(201)
