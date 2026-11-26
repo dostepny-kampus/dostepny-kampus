@@ -91,10 +91,13 @@ class ReviewCheckScreenTest {
         val quick = READY.copy(submission = quick(CHECKED.id))
         show(quick)
         compose.onNodeWithText("Przyjmij").performScrollTo()
-        shown.value = quick.copy(notice = CheckNotice.TYPE_MISSING)
+        shown.value = quick.copy(notice = CheckNotice.TYPE_MISSING, missingAttempts = 1)
         compose.onNodeWithText("Typ bariery").assertIsDisplayed()
         val signs = compose.onAllNodesWithTag(IMPORTANT_SIGN_TAG, useUnmergedTree = true).fetchSemanticsNodes()
         assertEquals("znak „!” przy błędzie przyjęcia", 1, signs.size)
+        compose.onNodeWithText("Przyjmij").performScrollTo()
+        shown.value = quick.copy(notice = CheckNotice.TYPE_MISSING, missingAttempts = 2)
+        compose.onNodeWithText("Typ bariery").assertIsDisplayed()
     }
 
     @Test

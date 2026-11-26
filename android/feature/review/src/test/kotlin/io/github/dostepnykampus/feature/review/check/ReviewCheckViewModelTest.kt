@@ -114,6 +114,9 @@ class ReviewCheckViewModelTest {
             runCurrent()
             assertEquals(CheckNotice.TYPE_MISSING, (model.state.value as CheckUiState.Ready).notice, "komunikat")
             assertEquals(emptyList<ReviewDecision>(), decisions, "bez uciążliwości nic nie idzie na serwer")
+            model.accept { done++ }
+            runCurrent()
+            assertEquals(2, (model.state.value as CheckUiState.Ready).missingAttempts, "każda próba przyjęcia z brakami")
         }
 
     @Test
