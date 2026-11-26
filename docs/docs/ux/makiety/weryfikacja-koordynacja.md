@@ -28,7 +28,7 @@ Czynność główna: „Weź do sprawdzenia” przy wybranym zgłoszeniu. Przyci
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Wstecz” i nagłówek „Zgłoszenia do sprawdzenia”, równy napisowi przycisku w L2 | NFR-15, PW-14 |
-| Sekcja „Wzięte przeze mnie” na górze; dotknięcie pozycji otwiera R2, a „Otwórz” z ikoną pokazuje, że pozycję da się otworzyć | BR-11, UC14 2b, NFR-21 |
+| Sekcja „Wzięte przeze mnie” na górze; „Otwórz” ze strzałką otwiera R2 | BR-11, UC14 2b, NFR-21 |
 | Nagłówek „Do sprawdzenia” nad przełącznikiem: nazywa listę i mapę | US10.4 |
 | Przełącznik „Mapa” i „Lista” w tej samej kolejności co na V1; domyślnie wybrana lista, wybrany widok widać po kształcie pola | UC14, NFR-19, NFR-21 |
 | Pozycja zgłoszenia „wysłane”: typ albo grupa barier, budynek, rodzaj, data wysłania; przy zmianie oznaczenia wejścia nazwa wejścia, bo zmiana nie ma typu | US10.4, BR-14, BR-24 |
@@ -146,7 +146,7 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 
 ## K1 Postęp inwentaryzacji
 
-Czynność główna: dotknięcie budynku albo „Otwórz” w jego ramce, które otwiera C5 „Obejrzane piętra”. Tam Koordynator cofa znacznik piętra (US11.3).
+Czynność główna: „Otwórz” przy budynku, które otwiera C5 „Obejrzane piętra”. Tam Koordynator cofa znacznik piętra (US11.3).
 
 A-1 ma 4 z 5 pięter obejrzanych, jak w scenariuszu demo, w US11.2 i w przykładzie BR-21. Liczby zgłoszeń i wejść to zastępniki, bo scenariusze nie podają ich dla tego stanu. Sześć wejść A-1 ze scenariuszy `@US11.4` to dane testowe, a nie stan budynku.
 
@@ -161,7 +161,7 @@ A-1 ma 4 z 5 pięter obejrzanych, jak w scenariuszu demo, w US11.2 i w przykład
 | Budynek podstawowy: „Obejrzany” tekstem i ikoną albo „Nieobejrzany” samym tekstem | US11.1, PW-11 |
 | „Czeka na sprawdzenie: [liczba]” i „Przyjęte: [liczba]” przy każdym budynku | US11.1, BR-21 |
 | Tylko budynek szczegółowy: „Wejścia sprawdzone na miejscu:” i liczby „[x] z [y]” w osobnym wierszu | US11.4, BR-24, PW-3 |
-| Cała ramka budynku to jeden cel dotyku, a „Otwórz” z ikoną pokazuje, że da się ją otworzyć; otwiera C5 | US11.3, NFR-17, NFR-21 |
+| „Otwórz” ze strzałką przy budynku otwiera C5; ramka budynku nie jest osobnym celem dotyku | US11.3, NFR-17, NFR-21 |
 
 Wiersz o wejściach ma dwie linie, bo cały napis jest dłuższy niż 34 znaki. Brzmienie „Wejścia sprawdzone na miejscu” jest to samo w US11.4, w scenariuszach `@US11.4` i przy wejściu na karcie budynku (PW-3).
 

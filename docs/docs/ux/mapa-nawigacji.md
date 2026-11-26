@@ -270,7 +270,7 @@ Weryfikator krąży między R1 i R2, a „Wstecz” z R1 po decyzji wraca do L2 
 | R2 | „Odrzuć” z powodem | R1 | RO-WER | US10.2, BR-16 |
 | R2, błąd walidacji | „Przyjmij” albo „Odrzuć” bez wymaganych danych | R2, komunikat | RO-WER | US10.2, US10.3 |
 | R2, brak sieci | „Przyjmij” albo „Odrzuć” | R2; zgłoszenie zostaje we „Wziętych przeze mnie” | RO-WER | BR-11 |
-| K1 | „Otwórz” albo dotknięcie budynku | C5 | RO-KOO | US11.3 |
+| K1 | „Otwórz” przy budynku | C5 | RO-KOO | US11.3 |
 | K1 | „Odśwież” | K1 | RO-KOO | US11.2 |
 | C5 | „Cofnij znacznik” | C5, potwierdzenie | RO-KOO | US11.3, BR-20 |
 | C5, potwierdzenie | „Cofnij znacznik” | C5 z nowym stanem | RO-KOO | US11.3 |
