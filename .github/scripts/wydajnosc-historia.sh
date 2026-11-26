@@ -42,6 +42,7 @@ def trend(now, before):
 rows = [
     ("Start p50 (ms)", ("start_ms", "p50")),
     ("Start p90 (ms)", ("start_ms", "p90")),
+    ("Start bez profilu p50 (ms)", ("start_bez_profilu_ms", "p50")),
     ("Klatka p50 (ms)", ("klatka_ms", "p50")),
     ("Klatka p90 (ms)", ("klatka_ms", "p90")),
     ("Klatka p99 (ms)", ("klatka_ms", "p99")),
