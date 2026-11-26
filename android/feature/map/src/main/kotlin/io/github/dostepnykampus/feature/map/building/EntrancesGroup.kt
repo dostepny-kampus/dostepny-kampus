@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -40,6 +39,7 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.GroupContainer
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.designsystem.marking.AssessmentLine
 import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.designsystem.pathIcon
@@ -172,7 +172,7 @@ private fun EntranceList(
         if (index > 0) HorizontalDivider(Modifier.padding(vertical = Odstepy.s), color = line)
         EntranceRow(listed = listed, withAssessment = withAssessment, onShowEntrance = onShow)
         onChange?.let { change ->
-            OutlinedButton(
+            OutlinedAction(
                 onClick = { change(listed.entrance.id) },
                 modifier = Modifier.padding(top = Odstepy.xs).heightIn(min = CeleDotyku.minimum),
             ) {
