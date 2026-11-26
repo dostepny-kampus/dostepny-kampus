@@ -9,9 +9,9 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.dostepnykampus.core.data.submission.own.RefusalReason
 import io.github.dostepnykampus.core.data.submission.own.SendState
-import io.github.dostepnykampus.core.designsystem.StatusIcons
-import io.github.dostepnykampus.core.designsystem.icon
-import io.github.dostepnykampus.core.designsystem.nameRes
+import io.github.dostepnykampus.core.designsystem.submission.StatusIcons
+import io.github.dostepnykampus.core.designsystem.submission.icon
+import io.github.dostepnykampus.core.designsystem.submission.nameRes
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import io.github.dostepnykampus.feature.capture.R
 

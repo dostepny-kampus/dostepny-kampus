@@ -3,9 +3,10 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.designsystem
+package io.github.dostepnykampus.core.designsystem.submission
 
 import androidx.annotation.StringRes
+import io.github.dostepnykampus.core.designsystem.R
 import io.github.dostepnykampus.core.model.submission.SubmissionField
 
 /** Nazwa pola zgłoszenia, np. „Uciążliwość”; wykaz różnic pisze ją małą literą. Wymagania: US9.3, US10.8 */

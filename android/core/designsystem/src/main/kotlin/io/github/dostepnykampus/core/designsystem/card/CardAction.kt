@@ -19,8 +19,8 @@ import androidx.compose.ui.Modifier
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
-import io.github.dostepnykampus.core.designsystem.StatusIcons
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
+import io.github.dostepnykampus.core.designsystem.submission.StatusIcons
 
 /**
  * Czynność karty pozycji listy ([ListItemCard]) z napisem [text]: przycisk obrysowany szeroki jak napis, wysokość
