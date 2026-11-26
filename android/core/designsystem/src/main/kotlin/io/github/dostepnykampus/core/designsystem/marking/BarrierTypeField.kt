@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.designsystem.marking
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -39,6 +41,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
+import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.R
 import io.github.dostepnykampus.core.model.submission.BarrierGroup
@@ -54,9 +57,15 @@ import io.github.dostepnykampus.core.model.submission.BarrierType
  * @param type wybrany typ albo `null`
  * @param onPick wybór typu
  * @param modifier położenie pola wyznacza wołający
+ * @param isError ramka pola w kolorze błędu, gdy typu brakuje przy czynności
  */
 @Composable
-public fun BarrierTypeField(type: BarrierType?, onPick: (BarrierType) -> Unit, modifier: Modifier = Modifier) {
+public fun BarrierTypeField(
+    type: BarrierType?,
+    onPick: (BarrierType) -> Unit,
+    modifier: Modifier = Modifier,
+    isError: Boolean = false,
+) {
     var isOpen by rememberSaveable { mutableStateOf(false) }
     var isReturning by remember { mutableStateOf(false) }
     val field = remember { FocusRequester() }
@@ -64,6 +73,7 @@ public fun BarrierTypeField(type: BarrierType?, onPick: (BarrierType) -> Unit, m
         TypeTitle()
         OutlinedButton(
             onClick = { isOpen = true },
+            border = fieldBorder(isError),
             modifier =
                 Modifier
                     .fillMaxWidth()
@@ -158,3 +168,11 @@ private fun TypeList(onPick: (BarrierType) -> Unit, modifier: Modifier = Modifie
         }
     }
 }
+
+@Composable
+private fun fieldBorder(isError: Boolean): BorderStroke =
+    if (isError) {
+        BorderStroke(Obramowania.ramka, MaterialTheme.colorScheme.error)
+    } else {
+        ButtonDefaults.outlinedButtonBorder(enabled = true)
+    }
