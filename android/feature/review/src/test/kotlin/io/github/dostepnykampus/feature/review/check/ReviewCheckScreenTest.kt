@@ -21,6 +21,7 @@ import io.github.dostepnykampus.core.model.building.EntranceDistance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 import io.github.dostepnykampus.core.model.review.SimilarSubmission
 import io.github.dostepnykampus.core.model.submission.Severity
+import io.github.dostepnykampus.core.model.submission.SubmissionField
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.review.queue.queued
@@ -88,9 +89,11 @@ class ReviewCheckScreenTest {
 
     @Test
     fun showsChangedAndOffline() {
-        show(READY.copy(notice = CheckNotice.CHANGED))
+        val changed = listOf(SubmissionField.SEVERITY, SubmissionField.DESCRIPTION)
+        show(READY.copy(notice = CheckNotice.CHANGED, changed = changed))
         compose.onNodeWithText("Autor zmienił zgłoszenie.").assertIsDisplayed()
         compose.onNodeWithText("Sprawdź nową wersję przed decyzją.").assertIsDisplayed()
+        compose.onNodeWithText("Zmienione: uciążliwość, opis").assertIsDisplayed()
         shown.value = READY.copy(notice = CheckNotice.OFFLINE)
         compose.onNodeWithText("Bez internetu").assertIsDisplayed()
     }

@@ -30,6 +30,7 @@
     <string name="sprawdzenie_wczytujemy">Wczytujemy zgłoszenie…</string>
     <string name="sprawdzenie_zmienione">Autor zmienił zgłoszenie.</string>
     <string name="sprawdzenie_zmienione_sprawdz">Sprawdź nową wersję przed decyzją.</string>
+    <string name="sprawdzenie_zmienione_pola">Zmienione: %1$s</string>
     <string name="sprawdzenie_podobne">Podobne zgłoszenia do 10 m</string>
     <string name="sprawdzenie_brak_podobnych">W promieniu 10 m nie ma podobnych zgłoszeń.</string>
     <string name="sprawdzenie_odleglosc">%1$d m</string>
