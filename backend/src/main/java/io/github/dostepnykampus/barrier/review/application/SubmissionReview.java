@@ -8,13 +8,17 @@ package io.github.dostepnykampus.barrier.review.application;
 import io.github.dostepnykampus.barrier.review.ReviewDecision;
 import io.github.dostepnykampus.barrier.review.ReviewRepository;
 import io.github.dostepnykampus.barrier.submission.EditResult;
+import io.github.dostepnykampus.barrier.submission.StoredPhotos;
 import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionRepository;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
 import io.github.dostepnykampus.building.api.EntranceMarkings;
 import io.github.dostepnykampus.building.api.EntrancePlace;
 import io.github.dostepnykampus.building.api.KnownBuildings;
+import io.github.dostepnykampus.shared.error.ForbiddenChange;
+import io.github.dostepnykampus.shared.error.MissingResource;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,11 +26,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Wzięcie zgłoszenia do weryfikacji i zapis decyzji Weryfikatora ze skutkami przyjęcia:
- * archiwizacją zastąpionego zgłoszenia, zgłoszenia „bariera usunięta” i zastosowanej
- * zmiany oznaczenia wejścia.
+ * Wzięcie zgłoszenia do weryfikacji i zapis decyzji Weryfikatora z regułami (własne zgłoszenie,
+ * wzięcie przez tego Weryfikatora, komplet zdjęć, decyzja zgodna z rodzajem) i ze skutkami
+ * przyjęcia: archiwizacją zastąpionego zgłoszenia, zgłoszenia „bariera usunięta”
+ * i zastosowanej zmiany oznaczenia wejścia. Każda operacja to jedna transakcja.
  *
- * <p>Wymagania: US10.6, US17.2, US17.3, BR-11, BR-18, BR-19, BR-23, BR-24</p>
+ * <p>Wymagania: US10.4, US10.6, US17.2, US17.3, BR-4, BR-7, BR-11, BR-18, BR-19, BR-24</p>
  *
  * @since 0.1.0
  */
@@ -36,8 +41,14 @@ public class SubmissionReview {
     /** Wzięcie zgłoszenia i zapis decyzji. */
     private final ReviewRepository reviews;
 
-    /** Archiwizacja zgłoszeń. */
+    /** Blokada i archiwizacja zgłoszeń. */
     private final SubmissionRepository submissions;
+
+    /** Odczyt zgłoszenia i jego autora. */
+    private final SubmissionFinder finder;
+
+    /** Kontrola kompletu zdjęć w magazynie. */
+    private final StoredPhotos photos;
 
     /** Zastosowanie oznaczenia w danych budynku. */
     private final EntranceMarkings entrances;
@@ -47,18 +58,22 @@ public class SubmissionReview {
 
     SubmissionReview(
         final ReviewRepository reviews, final SubmissionRepository submissions,
+        final SubmissionFinder finder, final StoredPhotos photos,
         final EntranceMarkings entrances, final KnownBuildings buildings
     ) {
         this.reviews = reviews;
         this.submissions = submissions;
+        this.finder = finder;
+        this.photos = photos;
         this.entrances = entrances;
         this.buildings = buildings;
     }
 
     /**
-     * Daje zgłoszenie Weryfikatorowi.
+     * Daje cudze zgłoszenie z kompletem zdjęć Weryfikatorowi. Brak zgłoszenia kończy się
+     * wyjątkiem MissingResource, własne ForbiddenChange, brak zdjęcia ReviewConflict.
      *
-     * <p>Wymagania: BR-11, US10.4</p>
+     * <p>Wymagania: BR-4, BR-7, BR-11, US10.4</p>
      *
      * @param id Identyfikator zgłoszenia
      * @param reviewer Identyfikator konta Weryfikatora
@@ -66,41 +81,63 @@ public class SubmissionReview {
      */
     @Transactional
     public EditResult claim(final UUID id, final String reviewer) {
+        this.complete(this.foreign(id, reviewer));
         return this.reviews.claim(id, reviewer);
     }
 
     /**
-     * Sprawdza, czy zgłoszenie wzięło do weryfikacji to konto.
+     * Zapisuje decyzję razem ze skutkami przyjęcia. Brak zgłoszenia kończy się wyjątkiem
+     * MissingResource, własne albo niewzięte przez tego Weryfikatora ForbiddenChange, brak
+     * zdjęcia i nieaktualna zmiana oznaczenia wejścia ReviewConflict, decyzja niezgodna
+     * z rodzajem InvalidSubmission. Przyjęte „bariera usunięta” i zmiana oznaczenia stają się
+     * archiwalne. TODO(#3958): przyjęcie zmiany nieprzyjętego zgłoszenia ma dać konflikt.
      *
-     * <p>Wymagania: BR-11</p>
-     *
-     * @param id Identyfikator zgłoszenia
-     * @param account Identyfikator konta Weryfikatora
-     * @return Prawda, gdy konto wzięło zgłoszenie
-     */
-    public boolean claimedBy(final UUID id, final String account) {
-        return this.reviews.claimedBy(id, account);
-    }
-
-    /**
-     * Zapisuje decyzję razem ze skutkami przyjęcia w jednej transakcji. Przyjęcie zmiany
-     * archiwizuje zastąpione zgłoszenie, jeśli jest jeszcze przyjęte. Przyjęte zgłoszenie
-     * „bariera usunięta” i zastosowana zmiana oznaczenia wejścia same stają się archiwalne.
-     * TODO(#3958): przyjęcie zmiany zgłoszenia, które nie jest już przyjęte, ma dać konflikt.
-     *
-     * <p>Wymagania: BR-18, BR-19, BR-24</p>
+     * <p>Wymagania: BR-4, BR-7, BR-11, BR-14, BR-18, BR-19, BR-23, BR-24</p>
      *
      * @param decision Decyzja Weryfikatora
      * @return Wynik zapisu decyzji; przy przyjęciu zgłoszenie po jego skutkach
-     * @throws StaleEntranceMarking Gdy przyjęcia nie da się zastosować do bieżącego wejścia
      */
     @Transactional
-    public EditResult decide(final ReviewDecision decision) throws StaleEntranceMarking {
-        EditResult result = this.reviews.decide(decision);
-        if (result instanceof EditResult.Saved saved && saved.submission().accepted()) {
-            result = new EditResult.Saved(this.accepted(saved.submission()));
+    public EditResult decide(final ReviewDecision decision) {
+        final Submission current = this.foreign(decision.id(), decision.reviewer());
+        if (!this.reviews.claimedBy(decision.id(), decision.reviewer())) {
+            throw new ForbiddenChange("Zgłoszenie nie jest wzięte przez tego Weryfikatora");
         }
-        return result;
+        this.complete(current);
+        decision.admit(current.content().kind());
+        try {
+            return this.applied(this.reviews.decide(decision));
+        } catch (final StaleEntranceMarking stale) {
+            final ReviewConflict conflict = new ReviewConflict(
+                Objects.requireNonNull(stale.getMessage()), current
+            );
+            conflict.initCause(stale);
+            throw conflict;
+        }
+    }
+
+    private Submission foreign(final UUID id, final String reviewer) {
+        this.submissions.lock(id);
+        final Submission current = this.finder.find(id)
+            .orElseThrow(() -> new MissingResource("Nie ma takiego zgłoszenia"));
+        if (!this.finder.foreign(id, reviewer)) {
+            throw new ForbiddenChange("Własnego zgłoszenia nie weryfikuje jego autor");
+        }
+        return current;
+    }
+
+    private void complete(final Submission current) {
+        if (!this.photos.complete(current)) {
+            throw new ReviewConflict("Serwer nie ma jeszcze wszystkich zdjęć zgłoszenia", current);
+        }
+    }
+
+    private EditResult applied(final EditResult result) {
+        EditResult applied = result;
+        if (result instanceof EditResult.Saved saved && saved.submission().accepted()) {
+            applied = new EditResult.Saved(this.accepted(saved.submission()));
+        }
+        return applied;
     }
 
     private Submission accepted(final Submission submission) {

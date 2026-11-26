@@ -9,6 +9,8 @@ import io.github.dostepnykampus.barrier.review.ReviewRepository;
 import io.github.dostepnykampus.barrier.review.SimilarSubmission;
 import io.github.dostepnykampus.barrier.submission.StoredPhotos;
 import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
+import io.github.dostepnykampus.shared.error.MissingResource;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -29,15 +31,22 @@ public final class ReviewQueue {
     /** Port kontroli zdjęć w magazynie. */
     private final StoredPhotos photos;
 
+    /** Port odczytu zgłoszeń. */
+    private final SubmissionFinder finder;
+
     /**
      * Ctor.
      *
      * @param reviews Port weryfikacji zgłoszeń
      * @param photos Port kontroli zdjęć w magazynie
+     * @param finder Port odczytu zgłoszeń
      */
-    public ReviewQueue(final ReviewRepository reviews, final StoredPhotos photos) {
+    public ReviewQueue(
+        final ReviewRepository reviews, final StoredPhotos photos, final SubmissionFinder finder
+    ) {
         this.reviews = reviews;
         this.photos = photos;
+        this.finder = finder;
     }
 
     /**
@@ -52,7 +61,8 @@ public final class ReviewQueue {
     }
 
     /**
-     * Wyszukuje zgłoszenia podobne do danego.
+     * Wyszukuje zgłoszenia podobne do danego; brak sprawdzanego zgłoszenia kończy się wyjątkiem
+     * MissingResource.
      *
      * <p>Wymagania: US10.1, BR-13</p>
      *
@@ -60,6 +70,9 @@ public final class ReviewQueue {
      * @return Podobne zgłoszenia od najbliższego
      */
     public List<SimilarSubmission> similar(final UUID id) {
+        if (this.finder.find(id).isEmpty()) {
+            throw new MissingResource("Nie ma takiego zgłoszenia");
+        }
         return this.reviews.similar(id);
     }
 }

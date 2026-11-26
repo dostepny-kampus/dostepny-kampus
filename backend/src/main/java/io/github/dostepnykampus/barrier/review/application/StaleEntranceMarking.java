@@ -12,7 +12,7 @@ package io.github.dostepnykampus.barrier.review.application;
  *
  * @since 0.1.0
  */
-public final class StaleEntranceMarking extends RuntimeException {
+final class StaleEntranceMarking extends RuntimeException {
 
     /** Identyfikator postaci serializowanej wyjątku. */
     private static final long serialVersionUID = 1L;
@@ -20,7 +20,7 @@ public final class StaleEntranceMarking extends RuntimeException {
     /**
      * Zgłoszenie wymaga ponownej oceny wobec bieżącego oznaczenia.
      */
-    public StaleEntranceMarking() {
+    StaleEntranceMarking() {
         super("Zmiana oznaczenia wejścia jest nieaktualna (BR-23)");
     }
 }
