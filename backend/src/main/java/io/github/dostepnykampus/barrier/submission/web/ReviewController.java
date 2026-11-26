@@ -32,8 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
  * nie bierze ani nie rozstrzyga.
  * TODO(#3999): klasa przechodzi do tematu review.
  *
- * <p>Wymagania: US10, US10.1, US10.4, US10.5, US10.7, BR-3, BR-4, BR-7, BR-8, BR-11, BR-13,
- * BR-16</p>
+ * <p>Wymagania: US10.1, US10.4, US10.5, US10.7, BR-3, BR-4, BR-7, BR-8, BR-11, BR-13, BR-16</p>
  *
  * @since 0.1.0
  */
