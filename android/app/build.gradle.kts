@@ -19,6 +19,11 @@ android {
     testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
 }
 
+/* Profil bazowy z generatora modułu :macrobenchmark (artefakt kontroli sprintu), dołączany do każdego wariantu. */
+androidComponents.onVariants { variant ->
+    variant.sources.baselineProfiles?.addStaticSourceDirectory("src/main/generated/baselineProfiles")
+}
+
 tasks.withType<Test>().configureEach {
     inputs.files(fileTree(rootDir) { include("**/src/**/*.kt").exclude("**/build/**") })
         .withPathSensitivity(PathSensitivity.RELATIVE)
