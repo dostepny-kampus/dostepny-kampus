@@ -18,7 +18,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -32,6 +31,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.overlay.MapControlIcons
 
@@ -64,7 +64,7 @@ internal fun RoomStepByStep(room: OpenRoom, roomTitle: String, onDetails: ((Room
         RoomWayStep(card = card, roomTitle = roomTitle, onDetails = onDetails)
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(CeleDotyku.odstep)) {
             val button = Modifier.weight(1f).heightIn(min = CeleDotyku.przycisk)
-            OutlinedButton(onClick = { room.onStep(index - 1) }, modifier = button, enabled = card.hasPrevious) {
+            OutlinedAction(onClick = { room.onStep(index - 1) }, modifier = button, enabled = card.hasPrevious) {
                 Icon(imageVector = MapControlIcons.Left, contentDescription = null)
                 Text(stringResource(R.string.mapa_sala_krok_wstecz))
             }

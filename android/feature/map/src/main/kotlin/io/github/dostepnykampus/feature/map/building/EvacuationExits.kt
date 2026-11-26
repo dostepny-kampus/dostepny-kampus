@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +27,7 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.GroupFrame
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.model.building.EvacuationExit
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.overlay.MapControlIcons
@@ -48,7 +48,7 @@ internal fun EvacuationExits(card: BuildingCardUiState.Ready) {
     val state = stringResource(if (isExpanded) R.string.karta_rozwiniete else R.string.karta_zwiniete)
     val label = if (isExpanded) R.string.karta_wyjscia_ukryj else R.string.karta_wyjscia_ewakuacyjne
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        OutlinedButton(
+        OutlinedAction(
             onClick = { isExpanded = !isExpanded },
             modifier =
                 Modifier
