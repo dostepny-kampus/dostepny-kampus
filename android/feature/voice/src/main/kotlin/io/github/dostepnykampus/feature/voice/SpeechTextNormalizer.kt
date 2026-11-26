@@ -77,12 +77,13 @@ private val WHITESPACE = Regex("""\s+""")
 
 private val HARD_ENDINGS = listOf("y", "a", "e", "ego", "ej", "emu", "ym", "ymi")
 private val SOFT_ENDINGS = listOf("i", "a", "ie", "iego", "iej", "iemu", "im", "imi")
+private val THIRD_ENDINGS = listOf("", "a", "e", "ego", "ej", "emu", "m", "mi")
 
 private val UNIT_DEFS =
     listOf(
         WordDef(listOf("jeden", "jedna", "jedno", "jednego", "jednej", "jednemu", "jednym"), "pierwsz"),
         WordDef(listOf("dwa", "dwie", "dwoch", "dwu", "dwom", "dwoma", "dwiema"), "drug", SOFT_ENDINGS),
-        WordDef(listOf("trzy", "trzech", "trzem", "trzema"), "trzec", SOFT_ENDINGS),
+        WordDef(listOf("trzy", "trzech", "trzem", "trzema"), "trzeci", THIRD_ENDINGS),
         WordDef(listOf("cztery", "czterech", "czterem", "czterema"), "czwart"),
         WordDef(listOf("piec", "pieciu", "piecioma"), "piat"),
         WordDef(listOf("szesc", "szesciu", "szescioma"), "szost"),
