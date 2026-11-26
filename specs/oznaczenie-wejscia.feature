@@ -94,8 +94,7 @@ Funkcja: Oznaczenie wejścia
       Zakładając, że Zbierający jest zalogowany z rolą Zbierającego
       Oraz pierwszy i drugi Weryfikator są zalogowani z rolą Weryfikatora
 
-    # pełny test przebiegu w aplikacji: #3816
-    @US17.2 @BR-9 @aplikacja @do-zrobienia
+    @US17.2 @BR-9 @aplikacja
     Scenariusz: Zmiana oznaczenia wejścia przechodzi te same statusy co zgłoszenie
       Zakładając, że wejście boczne B-8 ma oznaczenie „brak danych”
       Oraz telefon nie ma sieci
