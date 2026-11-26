@@ -13,7 +13,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.feature.capture.navigation.RemovedEditRoute
 import io.github.dostepnykampus.feature.capture.navigation.RemovedRoute
 import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
@@ -29,8 +28,6 @@ import io.github.dostepnykampus.feature.capture.photo.rememberPhotoCamera
  * @param onLeave „Wstecz” albo brak zgłoszenia przyjętego
  * @param onFinish zgłoszenie zapisane w telefonie; dalej C3
  * @param modifier wymiary nadane przez aplikację
- * @param viewModel model widoku; w aplikacji z grafu Hilt, w testach z atrapą danych
- * @param photoTranscoder przekodowanie zdjęcia, które przetrwa obrót ekranu
  */
 @Composable
 fun RemovedScreen(
@@ -38,23 +35,8 @@ fun RemovedScreen(
     onLeave: () -> Unit,
     onFinish: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: RemovedViewModel = hiltViewModel(),
-    photoTranscoder: PhotoTranscoder = hiltViewModel(),
 ) {
-    SideEffect { viewModel.open(route.acceptedId) }
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
-    RemovedHost(
-        state = state,
-        actions =
-            RemovedHostActions(
-                onPhoto = viewModel::takePhoto,
-                onSend = viewModel::send,
-                onLeave = onLeave,
-                onFinish = onFinish,
-            ),
-        photoTranscoder = photoTranscoder,
-        modifier = modifier,
-    )
+    RemovedHost(open = { open(route.acceptedId) }, onLeave = onLeave, onFinish = onFinish, modifier = modifier)
 }
 
 /**
@@ -67,8 +49,6 @@ fun RemovedScreen(
  * @param onLeave „Wstecz” albo brak zgłoszenia
  * @param onFinish poprawka zapisana w telefonie; dalej C3
  * @param modifier wymiary nadane przez aplikację
- * @param viewModel model widoku; w aplikacji z grafu Hilt, w testach z atrapą danych
- * @param photoTranscoder przekodowanie zdjęcia, które przetrwa obrót ekranu
  */
 @Composable
 fun RemovedEditScreen(
@@ -76,53 +56,34 @@ fun RemovedEditScreen(
     onLeave: () -> Unit,
     onFinish: () -> Unit,
     modifier: Modifier = Modifier,
+) {
+    RemovedHost(open = { openEdit(route.submissionId) }, onLeave = onLeave, onFinish = onFinish, modifier = modifier)
+}
+
+/**
+ * Wspólny C7: [open] wczytuje zgłoszenie do [viewModel], po zapisie woła [onFinish], bez zgłoszenia [onLeave].
+ *
+ * @param viewModel model widoku; w aplikacji z grafu Hilt
+ * @param photoTranscoder przekodowanie zdjęcia, które przetrwa obrót ekranu
+ */
+@Composable
+private fun RemovedHost(
+    open: RemovedViewModel.() -> Unit,
+    onLeave: () -> Unit,
+    onFinish: () -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: RemovedViewModel = hiltViewModel(),
     photoTranscoder: PhotoTranscoder = hiltViewModel(),
 ) {
-    SideEffect { viewModel.openEdit(route.submissionId) }
+    SideEffect { viewModel.open() }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    RemovedHost(
-        state = state,
-        actions =
-            RemovedHostActions(
-                onPhoto = viewModel::takePhoto,
-                onSend = viewModel::send,
-                onLeave = onLeave,
-                onFinish = onFinish,
-            ),
-        photoTranscoder = photoTranscoder,
-        modifier = modifier,
-    )
-}
-
-/** Czynności C7 niezależne od tego, skąd ekran otwarto. */
-private data class RemovedHostActions(
-    val onPhoto: (PendingPhotoDraft) -> Unit,
-    val onSend: () -> Unit,
-    val onLeave: () -> Unit,
-    val onFinish: () -> Unit,
-)
-
-@Composable
-private fun RemovedHost(
-    state: RemovedUiState,
-    actions: RemovedHostActions,
-    photoTranscoder: PhotoTranscoder,
-    modifier: Modifier = Modifier,
-) {
-    val leave by rememberUpdatedState(actions.onLeave)
-    val finish by rememberUpdatedState(actions.onFinish)
-    LaunchedEffect(state.stage) {
-        when (state.stage) {
-            RemovedStage.SAVED -> finish()
-            RemovedStage.MISSING -> leave()
-            else -> Unit
-        }
-    }
-    val camera = rememberPhotoCamera(onPhoto = actions.onPhoto, transcoder = photoTranscoder)
+    val leave by rememberUpdatedState(onLeave)
+    val finish by rememberUpdatedState(onFinish)
+    LaunchedEffect(viewModel) { if (viewModel.awaitExit()) finish() else leave() }
+    val camera = rememberPhotoCamera(onPhoto = viewModel::takePhoto, transcoder = photoTranscoder)
     RemovedContent(
         state = state,
-        actions = RemovedActions(camera = camera, onSend = actions.onSend, onBack = actions.onLeave),
+        actions = RemovedActions(camera = camera, onSend = viewModel::send, onBack = onLeave),
         modifier = modifier,
     )
 }

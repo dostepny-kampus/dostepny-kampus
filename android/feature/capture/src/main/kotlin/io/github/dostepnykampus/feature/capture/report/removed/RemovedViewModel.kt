@@ -23,6 +23,7 @@ import io.github.dostepnykampus.feature.capture.report.ReportSaver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -81,7 +82,7 @@ class RemovedViewModel
                 val own = edits.load(id)
                 edited = own?.edited
                 val replaced = own?.run { content.replacesSubmissionId }
-                val previous = replaced?.let { barriers.barriers().firstOrNull { it.id == replaced } }
+                val previous = replaced?.let { id -> barriers.barriers().firstOrNull { it.id == id } }
                 show(previous = previous, photo = own?.run { photos.firstOrNull() })
             }
         }
@@ -154,6 +155,10 @@ class RemovedViewModel
                 null
             }
     }
+
+/** Czeka, aż ekran ma się zamknąć: `true` po zapisie, `false`, gdy zgłoszenia nie ma. Wymagania: NFR-54 */
+internal suspend fun RemovedViewModel.awaitExit(): Boolean =
+    uiState.first { it.stage == RemovedStage.SAVED || it.stage == RemovedStage.MISSING }.stage == RemovedStage.SAVED
 
 /**
  * Miejsce zgłoszenia przyjętego z katalogu budynków. Wymagania: US8.4
