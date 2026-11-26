@@ -34,14 +34,25 @@ import io.github.dostepnykampus.feature.review.R
  * @param previous poprzednie zgłoszenie
  * @param newPhoto adres nowego zdjęcia miejsca; `null` bez zdjęcia
  * @param type typ bariery do opisu zdjęć
+ * @param newPhotoAction czynność pod nowym zdjęciem
  */
 @Composable
-internal fun RemovedComparison(previous: PreviousSubmission, newPhoto: String?, type: BarrierType?) {
+internal fun RemovedComparison(
+    previous: PreviousSubmission,
+    newPhoto: String?,
+    type: BarrierType?,
+    newPhotoAction: @Composable () -> Unit = {},
+) {
     val isStacked = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         if (isStacked) {
             SignedPhoto(url = previous.photoUrl, caption = R.string.sprawdzenie_zdjecie_poprzednie, type = type)
-            SignedPhoto(url = newPhoto, caption = R.string.sprawdzenie_zdjecie_nowe, type = type)
+            SignedPhoto(
+                url = newPhoto,
+                caption = R.string.sprawdzenie_zdjecie_nowe,
+                type = type,
+                action = newPhotoAction,
+            )
         } else {
             Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s)) {
                 SignedPhoto(
@@ -55,6 +66,7 @@ internal fun RemovedComparison(previous: PreviousSubmission, newPhoto: String?, 
                     caption = R.string.sprawdzenie_zdjecie_nowe,
                     type = type,
                     modifier = Modifier.weight(1f),
+                    action = newPhotoAction,
                 )
             }
         }
@@ -69,9 +81,11 @@ private fun SignedPhoto(
     @StringRes caption: Int,
     type: BarrierType?,
     modifier: Modifier = Modifier,
+    action: @Composable () -> Unit = {},
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {
         BarrierPhoto(url = url, type = type, modifier = Modifier.fillMaxWidth())
         Text(stringResource(caption), style = MaterialTheme.typography.bodyMedium)
+        action()
     }
 }

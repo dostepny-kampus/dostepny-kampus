@@ -8,13 +8,14 @@ Sprawdzanie zgłoszeń przez Weryfikatora: kolejka weryfikacji (R1) z „Wzięty
 
 - `feature.review.check` — ekran, stan, ViewModel i decyzja sprawdzenia zgłoszenia.
 - `feature.review.photo` — zasłony twarzy i tablic na zdjęciu zgłoszenia, ich wypalenie w pikselach, stan i ekran zasłaniania.
-- `feature.review.navigation` — trasy kolejki weryfikacji i sprawdzenia zgłoszenia.
+- `feature.review.navigation` — trasy kolejki weryfikacji, sprawdzenia zgłoszenia i zasłaniania zdjęcia.
 - `feature.review.queue` — ekran, stan i ViewModel kolejki weryfikacji.
 
 ## API
 
 Trasy ekranów w pakiecie `navigation`; ekran R1, jego czynności i ViewModel w pakiecie `queue`; ekran R2,
-jego czynności i ViewModel w pakiecie `check`.
+jego czynności i ViewModel w pakiecie `check`; ekran zasłaniania zdjęcia, jego czynności i ViewModel w pakiecie
+`photo`.
 
 ## Zależności
 
