@@ -55,15 +55,16 @@ internal fun BuildingCatalog.dataDay(): LocalDate? {
 }
 
 /**
- * Przycisk „ⓘ” mapy V1, a nad nim, gdy [isOpen], arkusz legendy: znaki mapy, a po nich źródła danych z dniem
- * stanu danych PWr. Systemowe „Wstecz” przy otwartym arkuszu zamyka go i zostawia mapę.
+ * Przycisk „ⓘ” mapy V1, a nad nim, gdy [isOpen], arkusz legendy: znaki mapy (z częścią planu, gdy [hasPlan]),
+ * a po nich źródła danych z dniem stanu danych PWr. Systemowe „Wstecz” przy otwartym arkuszu zamyka go i zostawia mapę.
  *
- * Wymagania: US1.4, NFR-21, NFR-37, NFR-40, NFR-17, NFR-18
+ * Wymagania: US1.4, US16.1, NFR-21, NFR-37, NFR-40, NFR-17, NFR-18
  *
  * @param isOpen czy panel jest otwarty
  * @param dataDay dzień stanu danych PWr albo `null`, gdy dane go nie podają
  * @param onOpenChange dotknięcie przycisku albo „Zamknij” w panelu
  * @param modifier położenie na mapie
+ * @param hasPlan czy na mapie widać plan piętra i legenda ma część „Plan piętra”
  */
 @Composable
 internal fun MapInfo(
@@ -71,12 +72,18 @@ internal fun MapInfo(
     dataDay: LocalDate?,
     onOpenChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    hasPlan: Boolean = false,
 ) {
     BackHandler(enabled = isOpen) { onOpenChange(false) }
     Column(modifier.padding(horizontal = Odstepy.s), horizontalAlignment = Alignment.End) {
         if (isOpen) {
             val panel = Modifier.weight(weight = 1f, fill = false).padding(bottom = Odstepy.s)
-            InfoPanel(dataDay = dataDay, onClose = { onOpenChange(false) }, modifier = panel)
+            InfoPanel(
+                dataDay = dataDay,
+                hasPlan = hasPlan,
+                onClose = { onOpenChange(false) },
+                modifier = panel,
+            )
         }
         MapButton(name = R.string.mapa_informacje, icon = MapControlIcons.Info, isActive = isOpen) {
             onOpenChange(!isOpen)
@@ -85,7 +92,7 @@ internal fun MapInfo(
 }
 
 @Composable
-private fun InfoPanel(dataDay: LocalDate?, onClose: () -> Unit, modifier: Modifier = Modifier) {
+private fun InfoPanel(dataDay: LocalDate?, hasPlan: Boolean, onClose: () -> Unit, modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(Zaokraglenia.duze),
@@ -99,7 +106,7 @@ private fun InfoPanel(dataDay: LocalDate?, onClose: () -> Unit, modifier: Modifi
             HorizontalDivider()
             val inner = Modifier.weight(weight = 1f, fill = false).verticalScroll(scroll).padding(Odstepy.m)
             Column(inner, verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-                LegendSigns()
+                LegendSigns(hasPlan = hasPlan)
                 HorizontalDivider()
                 Text(
                     text = stringResource(R.string.mapa_zrodla),

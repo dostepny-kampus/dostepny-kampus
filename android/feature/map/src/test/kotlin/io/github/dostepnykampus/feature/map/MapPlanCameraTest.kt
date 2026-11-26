@@ -12,8 +12,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.model.building.Floor
@@ -31,6 +35,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.GraphicsMode
 
 /**
  * Ekran V1 z widokiem zastępczym, który nigdy nie zgłasza końca gestu: plan piętra dostaje widok kamery także po ruchu
@@ -127,8 +132,42 @@ class MapPlanCameraTest {
         }
     }
 
+    /** Bez planu legenda na ekranie nie ma części „Plan piętra”, a z planem ją pokazuje. Wymagania: US1.4, US16.1 */
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    fun showsPlanLegendOnlyWithPlan() {
+        var plan by mutableStateOf<ShownPlan?>(null)
+        compose.setContent {
+            val state by viewModel.uiState.collectAsState()
+            DostepnyKampusTheme {
+                CampusMapScreen(
+                    state = state,
+                    onListChange = {},
+                    onSearch = {},
+                    onBuildingClick = {},
+                    mapView = fakeMap,
+                    plan = plan,
+                )
+            }
+        }
+        compose.waitUntil { moves.isNotEmpty() }
+        compose.onNodeWithContentDescription(INFO).performClick()
+        compose.onNodeWithText("Legenda").assertExists()
+        compose.onNodeWithText(PLAN_HEADING).assertDoesNotExist()
+        compose.onNodeWithText("Zamknij").performClick()
+        plan = OLD_PLAN
+        compose.waitForIdle()
+        compose.onNodeWithContentDescription(INFO).performClick()
+        compose
+            .onNodeWithText(PLAN_HEADING)
+            .performScrollTo()
+            .assertIsDisplayed()
+    }
+
     private companion object {
         const val BASEMENT = "Piwnica"
+        const val INFO = "Legenda i źródła mapy"
+        const val PLAN_HEADING = "Plan piętra"
         const val FRAMES = 10
         val CARD = 300.dp
         val OLD_PLAN =

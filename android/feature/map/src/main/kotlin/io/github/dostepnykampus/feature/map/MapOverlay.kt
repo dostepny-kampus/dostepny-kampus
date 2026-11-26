@@ -95,6 +95,7 @@ private fun NoticeAndAttribution(
  * @param modifier wymiary nakładki, zwykle cała mapa bez części zasłoniętej
  * @param hasPanels czy mapa ma przycisk terenu i „ⓘ”; nie ma ich nad arkuszem V2
  * @param hasNotice czy mapa może pokazać napis o zmianie terenu; nie przy otwartej klawiaturze
+ * @param hasPlan czy na mapie widać plan piętra, którego pozycje pokazuje legenda pod „ⓘ”
  * @param motion ruchy mapy do budynku; nowy napis o zmianie terenu czeka do końca przelotu
  * @param controlsCover część dołu zasłonięta przez arkusz V1, poza obszarem przycisków i kolumny pięter
  * @param start elementy przy lewej krawędzi pod przyciskiem terenu, np. kolumna pięter; nie ma ich przy otwartym
@@ -112,6 +113,7 @@ internal fun MapOverlay(
     modifier: Modifier = Modifier,
     hasPanels: Boolean = hasControls,
     hasNotice: Boolean = hasPanels,
+    hasPlan: Boolean = false,
     motion: MapMotion? = null,
     controlsCover: Dp = 0.dp,
     start: @Composable ColumnScope.() -> Unit = {},
@@ -160,6 +162,7 @@ internal fun MapOverlay(
                 dataDay = dataDay,
                 onOpenChange = { saved = MapPanel.Info.takeIf { _ -> it } },
                 modifier = Modifier.align(Alignment.BottomEnd),
+                hasPlan = hasPlan,
             )
         }
         content()

@@ -23,6 +23,7 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertHeightIsAtLeast
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertWidthIsAtLeast
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -30,6 +31,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -37,6 +39,7 @@ import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.overlay.MapInfo
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -171,6 +174,76 @@ class MapInfoTest {
         compose.onRoot().captureRoboImage()
     }
 
+    /** Bez planu legenda nie pokazuje części „Plan piętra” ani pozycji planu. Wymagania: US1.4, US16.1 */
+    @Test
+    fun hidesPlanLegendWithoutPlan() {
+        compose.setContent { Info(isOpenAtStart = true, hasPlan = false) }
+        compose.onNodeWithText(PLAN_HEADING).assertDoesNotExist()
+        PLAN_SIGNS.forEach { compose.onNodeWithText(it).assertDoesNotExist() }
+    }
+
+    /**
+     * Gdy widać plan, legenda ma część „Plan piętra” ze wszystkimi pozycjami przed źródłami.
+     *
+     * Wymagania: US1.4, US16.1, US18.1
+     */
+    @Test
+    fun showsPlanLegendWithPlan() {
+        compose.setContent { Info(isOpenAtStart = true, hasPlan = true) }
+        assertPlanLegendShown()
+        assertCloseMirrorsTitle()
+    }
+
+    /**
+     * Legenda z częścią planu działa w motywie ciemnym i trzyma przycisk „Zamknij” w arkuszu.
+     *
+     * Wymagania: US1.4, US16.1, NFR-16
+     */
+    @Test
+    @Config(qualifiers = "+night")
+    fun showsPlanLegendInDarkTheme() {
+        compose.setContent { Info(isOpenAtStart = true, hasPlan = true) }
+        assertPlanLegendShown()
+        assertCloseMirrorsTitle()
+    }
+
+    /**
+     * Przy czcionce 200% legenda z planem podaje zachętę przewijania, wszystkie pozycje i mieści „Zamknij”.
+     *
+     * Wymagania: US1.4, US16.1, NFR-20
+     */
+    @Test
+    @Config(fontScale = 2f)
+    fun showsPlanLegendAtLargeFont() {
+        compose.setContent { Info(isOpenAtStart = true, hasPlan = true) }
+        assertCloseMirrorsTitle()
+        compose.onNodeWithText(SCROLL_HINT).assertIsDisplayed()
+        assertPlanLegendShown()
+    }
+
+    private fun assertPlanLegendShown() {
+        compose
+            .onNodeWithText(PLAN_HEADING)
+            .performScrollTo()
+            .assertIsDisplayed()
+        val lastBarrier = compose.onNodeWithText(SIGNS.last()).getUnclippedBoundsInRoot()
+        val heading = compose.onNodeWithText(PLAN_HEADING).getUnclippedBoundsInRoot()
+        assertTrue("część planu pod znakami mapy", heading.top >= lastBarrier.bottom)
+        PLAN_SIGNS.forEach { sign ->
+            compose
+                .onNodeWithText(sign)
+                .performScrollTo()
+                .assertIsDisplayed()
+        }
+        compose
+            .onNodeWithText("Źródła danych")
+            .performScrollTo()
+            .assertIsDisplayed()
+        val lastPlan = compose.onNodeWithText(PLAN_SIGNS.last()).getUnclippedBoundsInRoot()
+        val sources = compose.onNodeWithText("Źródła danych").getUnclippedBoundsInRoot()
+        assertTrue("źródła pod częścią planu", sources.top >= lastPlan.bottom)
+    }
+
     private fun assertCloseMirrorsTitle() {
         val root = compose.onRoot().getUnclippedBoundsInRoot()
         val title = compose.onNodeWithText("Legenda").getUnclippedBoundsInRoot()
@@ -181,12 +254,18 @@ class MapInfoTest {
     }
 
     @Composable
-    private fun Info(isOpenAtStart: Boolean, day: LocalDate? = DAY) {
+    private fun Info(isOpenAtStart: Boolean, day: LocalDate? = DAY, hasPlan: Boolean = false) {
         DostepnyKampusTheme {
             var isOpen by remember { mutableStateOf(isOpenAtStart) }
             Box(Modifier.fillMaxSize().background(MapGround)) {
                 val corner = Modifier.align(Alignment.BottomEnd)
-                MapInfo(isOpen = isOpen, dataDay = day, onOpenChange = { isOpen = it }, modifier = corner)
+                MapInfo(
+                    isOpen = isOpen,
+                    dataDay = day,
+                    onOpenChange = { isOpen = it },
+                    modifier = corner,
+                    hasPlan = hasPlan,
+                )
             }
         }
     }
@@ -195,6 +274,8 @@ class MapInfoTest {
         val MapGround = Color(0xFFBEE3F2)
         val DAY: LocalDate = LocalDate.of(2023, 12, 18)
         const val NAME = "Legenda i źródła mapy"
+        const val PLAN_HEADING = "Plan piętra"
+        const val SCROLL_HINT = "Przewiń w dół ↓"
         const val EDGE_TOLERANCE_DP = 0.5f
         val SIGNS =
             listOf(
@@ -207,6 +288,16 @@ class MapInfoTest {
                 "Utrudnienie",
                 "Tylko z pomocą",
                 "Blokada",
+            )
+        val PLAN_SIGNS =
+            listOf(
+                "Sala",
+                "Korytarz",
+                "Klatka schodowa",
+                "Winda",
+                "Toaleta dostosowana",
+                "Szukana sala",
+                "Zgłoszenie bez piętra",
             )
     }
 }

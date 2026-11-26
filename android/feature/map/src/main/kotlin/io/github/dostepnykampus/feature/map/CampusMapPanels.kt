@@ -63,6 +63,7 @@ internal fun CampusMapPanels(
             modifier = Modifier.overlayArea(underBar = underBar, sheet = sheet),
             hasPanels = !state.isCovered && !isKeyboardOpen,
             hasNotice = !isKeyboardOpen,
+            hasPlan = plan.shown != null,
             motion = motion,
             controlsCover = roomCover,
             start = { FloorColumn(plan = plan.shown, onChoose = plan.onFloor) },
