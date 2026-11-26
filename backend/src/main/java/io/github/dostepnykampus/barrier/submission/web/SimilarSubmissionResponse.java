@@ -6,7 +6,7 @@
 package io.github.dostepnykampus.barrier.submission.web;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import io.github.dostepnykampus.barrier.submission.SimilarSubmission;
+import io.github.dostepnykampus.barrier.review.SimilarSubmission;
 
 /**
  * Odpowiedź z podobnym zgłoszeniem, schemat SimilarSubmission w OpenAPI.

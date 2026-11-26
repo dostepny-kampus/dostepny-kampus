@@ -6,7 +6,7 @@
 package io.github.dostepnykampus.barrier.submission.web;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.github.dostepnykampus.barrier.submission.ReviewDecision;
+import io.github.dostepnykampus.barrier.review.ReviewDecision;
 import io.github.dostepnykampus.barrier.submission.content.BarrierType;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import java.util.UUID;

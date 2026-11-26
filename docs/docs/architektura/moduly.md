@@ -49,6 +49,7 @@ barrier/
     application/         przypadki użycia z transakcją
     web/                 kontroler, żądania, odpowiedzi
     persistence/         JDBC
+  review/                weryfikacja: decyzja, podobne zgłoszenia; port weryfikacji
   photo/                 zdjęcia zgłoszenia; port magazynu
     application/  storage/  web/
 ```

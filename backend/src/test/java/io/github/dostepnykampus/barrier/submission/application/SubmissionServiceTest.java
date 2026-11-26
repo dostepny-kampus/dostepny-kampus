@@ -9,7 +9,6 @@ import io.github.dostepnykampus.barrier.submission.CreateResult;
 import io.github.dostepnykampus.barrier.submission.EditResult;
 import io.github.dostepnykampus.barrier.submission.NewSubmission;
 import io.github.dostepnykampus.barrier.submission.OutsideCampus;
-import io.github.dostepnykampus.barrier.submission.ReviewDecision;
 import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.SubmissionEdit;
 import io.github.dostepnykampus.barrier.submission.SubmissionRepository;
@@ -203,24 +202,6 @@ final class SubmissionServiceTest {
     }
 
     @Test
-    void returnsClaimResultAndPassesReviewer() {
-        final EditResult result = new EditResult.Saved(SubmissionServiceTest.STORED);
-        final SubmissionServiceTest.RecordingSubmissions fake =
-            new SubmissionServiceTest.RecordingSubmissions(null, result);
-        final SubmissionService service =
-            SubmissionServiceTest.service(fake, SubmissionServiceTest.FORBIDDEN);
-        Assertions.assertAll(
-            () -> Assertions.assertSame(
-                result, service.claim(SubmissionServiceTest.ID, "weryfikator"),
-                "Wynik wzięcia nie wrócił tym samym obiektem"
-            ),
-            () -> Assertions.assertEquals(
-                List.of("weryfikator"), fake.seen(), "Konto Weryfikatora zmienione po drodze"
-            )
-        );
-    }
-
-    @Test
     void keepsBuildingOfEntranceForQuickAtEntrance() {
         final SubmissionServiceTest.RecordingSubmissions fake =
             new SubmissionServiceTest.RecordingSubmissions(null, null);
@@ -402,18 +383,6 @@ final class SubmissionServiceTest {
         @Override
         public EditResult update(final SubmissionEdit edit) {
             this.seen.add(edit);
-            return this.edited;
-        }
-
-        @Override
-        public EditResult claim(final UUID id, final String reviewer) {
-            this.seen.add(reviewer);
-            return this.edited;
-        }
-
-        @Override
-        public EditResult decide(final ReviewDecision decision) {
-            this.seen.add(decision);
             return this.edited;
         }
 

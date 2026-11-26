@@ -3,12 +3,14 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.barrier.submission;
+package io.github.dostepnykampus.barrier.review;
 
+import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.BarrierType;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -22,13 +24,18 @@ import org.junit.jupiter.api.Test;
  */
 final class ReviewDecisionTest {
 
+    /**
+     * Identyfikator ocenianego zgłoszenia.
+     */
+    private static final UUID ID = UUID.fromString("0b1c2d3e-4f50-4a6b-8c7d-9e0f1a2b3c4d");
+
     @Test
     void rejectsBlankReason() {
         Assertions.assertAll(
             Stream.of("", " ", "\t").map(
                 reason -> () -> Assertions.assertThrows(
                     IllegalArgumentException.class,
-                    () -> new ReviewDecision.Rejected(SubmissionSamples.ID, 1, "konto", reason),
+                    () -> new ReviewDecision.Rejected(ReviewDecisionTest.ID, 1, "konto", reason),
                     String.format("Pusty powód %s został przyjęty", reason)
                 )
             )
@@ -40,8 +47,8 @@ final class ReviewDecisionTest {
         Assertions.assertEquals(
             List.of(SubmissionStatus.ACCEPTED, SubmissionStatus.REJECTED),
             List.of(
-                new ReviewDecision.Accepted(SubmissionSamples.ID, 1, "konto").outcome(),
-                new ReviewDecision.Rejected(SubmissionSamples.ID, 1, "konto", "powód").outcome()
+                new ReviewDecision.Accepted(ReviewDecisionTest.ID, 1, "konto").outcome(),
+                new ReviewDecision.Rejected(ReviewDecisionTest.ID, 1, "konto", "powód").outcome()
             ),
             "Status po decyzji nie zgadza się z rodzajem decyzji"
         );
@@ -51,7 +58,7 @@ final class ReviewDecisionTest {
     void requiresClassificationOfQuickSubmission() {
         Assertions.assertThrows(
             InvalidSubmission.class,
-            () -> new ReviewDecision.Accepted(SubmissionSamples.ID, 1, "konto")
+            () -> new ReviewDecision.Accepted(ReviewDecisionTest.ID, 1, "konto")
                 .admit(SubmissionKind.QUICK),
             "Przyjęcie zgłoszenia szybkiego bez typu i uciążliwości zostało dopuszczone"
         );
@@ -64,7 +71,7 @@ final class ReviewDecisionTest {
                 kind -> () -> Assertions.assertThrows(
                     InvalidSubmission.class,
                     () -> new ReviewDecision.Classified(
-                        SubmissionSamples.ID, 1, "konto", new BarrierType(3), 2
+                        ReviewDecisionTest.ID, 1, "konto", new BarrierType(3), 2
                     ).admit(kind),
                     String.format("Typ i uciążliwość przy rodzaju %s zostały dopuszczone", kind)
                 )
@@ -79,7 +86,7 @@ final class ReviewDecisionTest {
                 severity -> () -> Assertions.assertThrows(
                     InvalidSubmission.class,
                     () -> new ReviewDecision.Classified(
-                        SubmissionSamples.ID, 1, "konto", new BarrierType(3), severity
+                        ReviewDecisionTest.ID, 1, "konto", new BarrierType(3), severity
                     ),
                     String.format("Uciążliwość %d spoza zakresu 1–3 została przyjęta", severity)
                 )
@@ -94,7 +101,7 @@ final class ReviewDecisionTest {
                 severity -> () -> Assertions.assertEquals(
                     SubmissionStatus.ACCEPTED,
                     new ReviewDecision.Classified(
-                        SubmissionSamples.ID, 1, "konto", new BarrierType(3), severity
+                        ReviewDecisionTest.ID, 1, "konto", new BarrierType(3), severity
                     ).outcome(),
                     String.format("Uciążliwość %d z zakresu 1–3 nie została przyjęta", severity)
                 )

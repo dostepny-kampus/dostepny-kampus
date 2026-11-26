@@ -6,7 +6,6 @@
 package io.github.dostepnykampus.barrier.submission.web;
 
 import io.github.dostepnykampus.barrier.submission.Reader;
-import io.github.dostepnykampus.barrier.submission.SimilarSubmission;
 import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
@@ -184,11 +183,6 @@ final class SubmissionReadingTest {
         }
 
         @Override
-        public boolean claimedBy(final UUID id, final String account) {
-            throw new UnsupportedOperationException("Sprawdzenie zmiany nie pyta o Weryfikatora");
-        }
-
-        @Override
         public boolean authorOnly(final UUID id, final String account) {
             throw new UnsupportedOperationException("Sprawdzenie zmiany nie pyta o autora");
         }
@@ -215,16 +209,6 @@ final class SubmissionReadingTest {
             final String author, final SubmissionQuery query, final SubmissionFinder.Window window
         ) {
             throw new UnsupportedOperationException("Sprawdzenie nie czyta własnych");
-        }
-
-        @Override
-        public List<SimilarSubmission> similar(final UUID id) {
-            throw new UnsupportedOperationException("Sprawdzenie zmiany nie szuka podobnych");
-        }
-
-        @Override
-        public List<Submission> reviewQueue(final String reviewer) {
-            throw new UnsupportedOperationException("Sprawdzenie zmiany nie czyta kolejki");
         }
     }
 }

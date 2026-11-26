@@ -6,7 +6,6 @@
 package io.github.dostepnykampus.barrier.submission.application;
 
 import io.github.dostepnykampus.barrier.submission.Reader;
-import io.github.dostepnykampus.barrier.submission.SimilarSubmission;
 import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
@@ -93,19 +92,6 @@ public final class SubmissionReading {
     }
 
     /**
-     * Sprawdza, czy zgłoszenie wzięło do weryfikacji to konto.
-     *
-     * <p>Wymagania: BR-11</p>
-     *
-     * @param id Identyfikator zgłoszenia
-     * @param account Identyfikator konta Weryfikatora
-     * @return Prawda, gdy konto wzięło zgłoszenie
-     */
-    public boolean claimedBy(final UUID id, final String account) {
-        return this.finder.claimedBy(id, account);
-    }
-
-    /**
      * Sprawdza, czy zmianę przyjętego zgłoszenia może złożyć tylko autor, a konto nim nie jest.
      *
      * <p>Wymagania: BR-18</p>
@@ -181,17 +167,5 @@ public final class SubmissionReading {
             page = this.pages.own(author, query, window);
         }
         return page;
-    }
-
-    /**
-     * Wyszukuje zgłoszenia podobne do danego.
-     *
-     * <p>Wymagania: US10.1, BR-13</p>
-     *
-     * @param id Identyfikator sprawdzanego zgłoszenia
-     * @return Podobne zgłoszenia od najbliższego
-     */
-    public List<SimilarSubmission> similar(final UUID id) {
-        return this.finder.similar(id);
     }
 }

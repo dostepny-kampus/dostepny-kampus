@@ -45,28 +45,6 @@ public interface SubmissionRepository {
     EditResult update(SubmissionEdit edit);
 
     /**
-     * Daje zgłoszenie „wysłane” Weryfikatorowi, a wzięte już przez niego zostawia bez zmiany.
-     *
-     * <p>Wymagania: BR-11, US10.4</p>
-     *
-     * @param id Identyfikator zgłoszenia
-     * @param reviewer Identyfikator konta Weryfikatora
-     * @return Zgłoszenie w weryfikacji, bieżący stan przy konflikcie albo brak zgłoszenia
-     */
-    EditResult claim(UUID id, String reviewer);
-
-    /**
-     * Zapisuje decyzję, gdy zgłoszenie jest w weryfikacji u tego Weryfikatora
-     * i ma oczekiwaną wersję.
-     *
-     * <p>Wymagania: BR-3, BR-11, BR-16</p>
-     *
-     * @param decision Decyzja Weryfikatora
-     * @return Zgłoszenie po decyzji, bieżący stan przy konflikcie albo brak zgłoszenia
-     */
-    EditResult decide(ReviewDecision decision);
-
-    /**
      * Zmienia status zgłoszenia przyjętego na archiwalny. Zgłoszenie w innym statusie
      * albo nieistniejące zostaje bez zmiany.
      *
