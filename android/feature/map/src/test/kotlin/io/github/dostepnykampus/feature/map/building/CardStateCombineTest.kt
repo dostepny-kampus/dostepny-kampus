@@ -124,7 +124,8 @@ class CardStateCombineTest {
                 )
             val entrances = ServerEntrancesRepository { answers.removeFirst()() }
             val warm = cardViewModel(repository = repository, serverEntrances = entrances)
-            val warmCollector = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { warm.uiState.collect {} }
+            val warmCollector =
+                backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { warm.uiState.collect {} }
             warmCollector.cancel()
             viewModels.cancelAndJoin()
 
