@@ -7,6 +7,7 @@ package io.github.dostepnykampus.app.navigation
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -27,6 +28,7 @@ import io.github.dostepnykampus.app.TestMapListChoice
 import io.github.dostepnykampus.app.TestRoles
 import io.github.dostepnykampus.app.sheetHandle
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.ServerEntrances
 import io.github.dostepnykampus.core.data.room.FloorPlans
@@ -110,12 +112,7 @@ class BuildingRowNoFlightTest {
      */
     @Test
     fun opensCardFromEntrance() {
-        startApp()
-        moveTo(OFF_CENTER)
-        compose.runOnUiThread { onSign(TouchSign.ENTRANCE, ENTRANCE_ID) }
-        compose.waitForIdle()
-        compose.onNodeWithText("Wejście").assertExists("arkusz wejścia przed wyborem budynku")
-        assertCardWithoutFlight(sheetHeader = "Wejście")
+        openSign(sign = TouchSign.ENTRANCE, id = "node/1", header = "Wejście")
     }
 
     /**
@@ -123,16 +120,18 @@ class BuildingRowNoFlightTest {
      *   Wiersz budynku w arkuszu otwiera kartę budynku bez przelotu mapy.
      */
     @Test
-    fun opensCardFromToilet() =
-        openPlanSign(id = WC_ID, header = "Toaleta dostosowana")
+    fun opensCardFromToilet() {
+        openSign(sign = TouchSign.PLAN, id = "wc", header = "Toaleta dostosowana")
+    }
 
     /**
      * Scenariusz (przykład: dotknie schodów na planie A-1): przegladanie-mapy.feature:
      *   Wiersz budynku w arkuszu otwiera kartę budynku bez przelotu mapy.
      */
     @Test
-    fun opensCardFromStairs() =
-        openPlanSign(id = STAIRS_ID, header = "Schody")
+    fun opensCardFromStairs() {
+        openSign(sign = TouchSign.PLAN, id = "schody", header = "Schody")
+    }
 
     /**
      * Scenariusz (przykład: dotknie znaku bariery przy budynku A-1): przegladanie-mapy.feature:
@@ -140,12 +139,7 @@ class BuildingRowNoFlightTest {
      */
     @Test
     fun opensCardFromBarrier() {
-        startApp()
-        moveTo(OFF_CENTER)
-        compose.runOnUiThread { onSign(TouchSign.BARRIER, BARRIER.id) }
-        compose.waitForIdle()
-        compose.onNodeWithText("Próg").assertExists("arkusz bariery przed wyborem budynku")
-        assertCardWithoutFlight(sheetHeader = "Próg")
+        openSign(sign = TouchSign.BARRIER, id = BARRIER.id, header = "Próg")
     }
 
     /**
@@ -155,6 +149,7 @@ class BuildingRowNoFlightTest {
     @Test
     fun opensCardFromRoomSearch() {
         startApp()
+        moveTo(OFF_CENTER)
         compose.onNode(hasSetTextAction()).performTextInput("A-1 329")
         val result = hasContentDescription("Sala 329, ", substring = true)
         compose.waitUntil("wynik sali 329", timeoutMillis = WAIT_MS) {
@@ -162,10 +157,11 @@ class BuildingRowNoFlightTest {
         }
         compose.onNode(result).performClick()
         compose.waitUntil("kamera i arkusz sali 329", timeoutMillis = WAIT_MS) {
-            compose.onAllNodes(hasContentDescription(BUILDING_ROW)).fetchSemanticsNodes().isNotEmpty() &&
-                moves.last().first.camera.center == ROOM_POINT
+            val rowNodes = compose.onAllNodes(hasContentDescription(BUILDING_ROW)).fetchSemanticsNodes()
+            val shown = moves.last().first
+            rowNodes.isNotEmpty() && shown.camera.center == ROOM_329.labelPoint
         }
-        moveTo(moves.last().first.camera)
+        moveTo(moves.last().run { first.camera })
         assertCardWithoutFlight(sheetHeader = "Sala 329")
     }
 
@@ -184,13 +180,15 @@ class BuildingRowNoFlightTest {
         assertCardWithoutFlight(sheetHeader = "Który budynek?")
     }
 
-    private fun openPlanSign(id: String, header: String) {
+    private fun openSign(sign: TouchSign, id: String, header: String) {
         startApp()
         moveTo(OFF_CENTER)
-        compose.waitUntil("plan A-1 przed dotknięciem $header", timeoutMillis = WAIT_MS) {
-            selections.lastOrNull()?.plan?.building == "A-1"
+        if (sign == TouchSign.PLAN) {
+            compose.waitUntil("plan A-1 przed dotknięciem $header", timeoutMillis = WAIT_MS) {
+                selections.lastOrNull()?.plan?.building == "A-1"
+            }
         }
-        compose.runOnUiThread { onSign(TouchSign.PLAN, id) }
+        compose.runOnUiThread { onSign(sign, id) }
         compose.waitForIdle()
         compose.onNodeWithText(header).assertExists("arkusz $header przed wyborem budynku")
         assertCardWithoutFlight(sheetHeader = header)
@@ -198,10 +196,18 @@ class BuildingRowNoFlightTest {
 
     private fun startApp() {
         val repo =
-            BuildingCatalogRepository(EmptyCoroutineContext, { ServerReply.Ok(SERVER_BUILDINGS) }) { GEOJSON }
+            BuildingCatalogRepository(
+                ioContext = EmptyCoroutineContext,
+                listBuildings = { ServerReply.Ok(SERVER_BUILDINGS) },
+                readGeoJson = { GEOJSON },
+            )
         val plans = FakePlans()
-        val entrances = ServerEntrances { emptyList() }
-        val server = MapServer({ listOf(BARRIER) }, { ServerReply.Ok(listOf(FOUND_329)) }, { emptyList() })
+        val server =
+            MapServer(
+                barriers = { listOf(BARRIER) },
+                rooms = { ServerReply.Ok(listOf(FOUND_329)) },
+                paths = { emptyList() },
+            )
         compose.setContent {
             mapModel =
                 remember {
@@ -214,51 +220,15 @@ class BuildingRowNoFlightTest {
                         server = server,
                     )
                 }
-            val planModel = remember { MapPlanViewModel(repo, plans, entrances, { listOf(BARRIER) }) }
-            val entrModel = remember { BuildingEntrancesViewModel(entrances) }
-            val liftModel = remember { EntranceLiftViewModel(plans) }
-            val roomModel = remember { RoomCardViewModel(plans, entrances, { listOf(BARRIER) }) }
             DostepnyKampusTheme {
-                AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route: NavKey ->
-                    when (route) {
-                        is MapRoute -> {
-                            HiltMapScreen(
-                                focus = route.focus,
-                                viewModel = mapModel,
-                                planViewModel = planModel,
-                                entrancesViewModel = entrModel,
-                                liftViewModel = liftModel,
-                                mapView = fakeMap,
-                                roomViewModel = roomModel,
-                            )
-                        }
-
-                        is BuildingRoute -> {
-                            val card =
-                                remember(route.symbol) {
-                                    BuildingCardViewModel(
-                                        route.symbol,
-                                        repo,
-                                        { flowOf(true) },
-                                        entrances,
-                                        { listOf(BARRIER) },
-                                        plans,
-                                    )
-                                }
-                            val state by card.uiState.collectAsStateWithLifecycle()
-                            val isOnline by card.online.collectAsStateWithLifecycle()
-                            BuildingCard(route.symbol, state, isOnline, card::retry)
-                        }
-
-                        else -> {
-                            AppScreen(route)
-                        }
-                    }
+                AppShell(firstLaunch = false, roles = TestRoles(), onFirstHelpLeft = {}) { route ->
+                    NavScreen(route = route, repo = repo, plans = plans, mapModel = mapModel, mapView = fakeMap)
                 }
             }
         }
         compose.waitUntil("widok mapy i bariery gotowe", timeoutMillis = WAIT_MS) {
-            onIdle != null && moves.isNotEmpty() && mapModel.uiState.value.barriers.isNotEmpty()
+            val state = mapModel.uiState.value
+            onIdle != null && moves.isNotEmpty() && state.barriers.isNotEmpty()
         }
         compose.waitForIdle()
     }
@@ -270,7 +240,8 @@ class BuildingRowNoFlightTest {
 
     private fun assertCardWithoutFlight(sheetHeader: String) {
         val before = moves.size
-        val beforeCamera = moves.last().first.camera
+        val beforeMove = moves.last().first
+        val beforeCamera = beforeMove.camera
         compose.onNodeWithContentDescription(BUILDING_ROW).performClick()
         compose.waitUntil("niska karta budynku A-1", timeoutMillis = WAIT_MS) {
             compose.onAllNodes(sheetHandle(isExpanded = false)).fetchSemanticsNodes().isNotEmpty()
@@ -286,10 +257,16 @@ class BuildingRowNoFlightTest {
         assertTrue("niska karta zostawia mapę nad sobą: $handleTop", handleTop > 0.dp)
         assertEquals("zaznaczony budynek A-1 na mapie", "A-1", selections.last().building)
 
-        val afterMoves = moves.subList(fromIndex = before, toIndex = moves.size).map { it.first }.distinct()
+        val afterMoves =
+            moves
+                .subList(fromIndex = before, toIndex = moves.size)
+                .map { it.first }
+                .filter { it != beforeMove }
+                .distinct()
+        assertTrue("brak nowego ruchu po wyborze wiersza budynku", afterMoves.isNotEmpty())
         assertTrue("mapa bez przelotu: $afterMoves", afterMoves.none { it.motion == CameraMotion.FLIGHT })
         assertTrue("ruch jak przy dotknięciu konturu: $afterMoves", afterMoves.all { it.motion == CameraMotion.NONE })
-        val finalCamera = moves.last().first.camera
+        val finalCamera = moves.last().run { first.camera }
         assertEquals("powiększenie zostaje jak przed wyborem", beforeCamera.zoom, finalCamera.zoom, 0.0)
         assertEquals("długość bez przelotu", beforeCamera.center.longitude, finalCamera.center.longitude, 1e-9)
     }
@@ -298,13 +275,13 @@ class BuildingRowNoFlightTest {
         override suspend fun download(symbol: String): Boolean = symbol == "A-1"
 
         override suspend fun floors(symbol: String): FloorList? =
-            FloorList(SOURCE, listOf(FLOOR_0, FLOOR_2)).takeIf { symbol == "A-1" }
+            FloorList(source = SOURCE, floors = listOf(FLOOR_0, FLOOR_2)).takeIf { symbol == "A-1" }
 
         override suspend fun rooms(symbol: String, floor: String): RoomList? =
             when {
                 symbol != "A-1" -> null
-                floor == FLOOR_0.id -> RoomList(SOURCE, AREA_A1, listOf(WC, STAIRS))
-                floor == FLOOR_2.id -> RoomList(SOURCE, AREA_A1, listOf(ROOM_329))
+                floor == FLOOR_0.id -> RoomList(source = SOURCE, floorOutline = EMPTY_POLY, rooms = listOf(WC, STAIRS))
+                floor == FLOOR_2.id -> RoomList(source = SOURCE, floorOutline = EMPTY_POLY, rooms = listOf(ROOM_329))
                 else -> null
             }
     }
@@ -313,69 +290,94 @@ class BuildingRowNoFlightTest {
         const val WAIT_MS = 5_000L
         const val SOURCE = "Politechnika Wrocławska"
         const val BUILDING_ROW = "Budynek A-1"
-        const val ENTRANCE_ID = "node/1"
-        const val WC_ID = "wc"
-        const val STAIRS_ID = "schody"
-        val OFF_CENTER = MapCamera(center = GeoPoint(longitude = 17.0506, latitude = 51.1102), zoom = 18.5)
-        val ROOM_POINT = GeoPoint(longitude = 17.0506, latitude = 51.1103)
+        val EMPTY_POLY = GeoMultiPolygon(emptyList())
+        val OFF_CENTER = MapCamera(center = GeoPoint(longitude = 17.0621, latitude = 51.1075), zoom = 18.5)
         val FLOOR_0 = Floor(id = "f0", label = "Parter", order = 0)
         val FLOOR_2 = Floor(id = "f2", label = "2 piętro", order = 2)
-        val A1_POINTS =
-            listOf(17.0500 to 51.1100, 17.0508 to 51.1100, 17.0508 to 51.1104, 17.0500 to 51.1104, 17.0500 to 51.1100)
-                .map { (lon, lat) -> GeoPoint(longitude = lon, latitude = lat) }
-        val AREA_A1 = GeoPolygon(listOf(A1_POINTS))
-        val ROOM_329 = room("329", RoomCategory.LECTURE_HALL, "Sala wykładowa", ROOM_POINT, number = "329")
+        val ROOM_329 = room(id = "329", kind = RoomCategory.LECTURE_HALL, lon = 17.0621, lat = 51.1076, num = "329")
         val FOUND_329 = FoundRoom(building = "A-1", floor = FLOOR_2, room = ROOM_329)
-        val WC = room(WC_ID, RoomCategory.ACCESSIBLE_TOILET, "Toaleta", GeoPoint(17.0502, 51.1102))
-        val STAIRS = room(STAIRS_ID, RoomCategory.STAIRCASE, "Schody", GeoPoint(17.0503, 51.1102))
+        val WC = room(id = "wc", kind = RoomCategory.ACCESSIBLE_TOILET, lon = 17.0617, lat = 51.1075)
+        val STAIRS = room(id = "schody", kind = RoomCategory.STAIRCASE, lon = 17.0618, lat = 51.1075)
         val BARRIER =
             AcceptedBarrier(
                 id = "b1",
-                location = GeoPoint(longitude = 17.0504, latitude = 51.1100),
+                location = GeoPoint(longitude = 17.0619, latitude = 51.1073),
                 severity = Severity.HINDRANCE,
                 type = BarrierType.THRESHOLD,
                 buildingSymbol = "A-1",
                 verifiedAt = null,
             )
-        val SERVER_BUILDINGS =
-            ServerBuildings(
-                source = SOURCE,
-                buildings = listOf(building("A-1", 17.0500, 17.0508), building("A-4", 17.0510, 17.0514)),
-                detailed = setOf("A-1"),
-            )
+        val A1 = building(symbol = "A-1", west = 17.0615, east = 17.0623)
+        val A4 = building(symbol = "A-4", west = 17.0625, east = 17.0629)
+        val SERVER_BUILDINGS = ServerBuildings(source = SOURCE, buildings = listOf(A1, A4), detailed = setOf("A-1"))
         const val GEOJSON =
             """{"type":"FeatureCollection","attribution":"© OSM","features":[""" +
                 """{"type":"Feature","properties":{"kind":"building","symbols":["A-1"],"osm_id":"way/a1"},""" +
-                """"geometry":{"type":"Polygon","coordinates":[[[17.0500,51.1100],[17.0508,51.1100],""" +
-                """[17.0508,51.1104],[17.0500,51.1104],[17.0500,51.1100]]]}},""" +
+                """"geometry":{"type":"Polygon","coordinates":[[[17.0615,51.1073],[17.0623,51.1073],""" +
+                """[17.0623,51.1077],[17.0615,51.1077],[17.0615,51.1073]]]}},""" +
                 """{"type":"Feature","properties":{"kind":"building","symbols":["A-4"],"osm_id":"way/a4"},""" +
-                """"geometry":{"type":"Polygon","coordinates":[[[17.0510,51.1100],[17.0514,51.1100],""" +
-                """[17.0514,51.1104],[17.0510,51.1104],[17.0510,51.1100]]]}},""" +
+                """"geometry":{"type":"Polygon","coordinates":[[[17.0625,51.1073],[17.0629,51.1073],""" +
+                """[17.0629,51.1077],[17.0625,51.1077],[17.0625,51.1073]]]}},""" +
                 """{"type":"Feature","properties":{"kind":"entrance","symbols":["A-1"],"osm_id":"node/1",""" +
                 """"entrance":"main","wheelchair":"yes"},"geometry":{"type":"Point",""" +
-                """"coordinates":[17.0504,51.1100]}}]}"""
+                """"coordinates":[17.0619,51.1073]}}]}"""
 
         fun building(symbol: String, west: Double, east: Double): Building {
-            val pts = listOf(west to 51.1100, east to 51.1100, east to 51.1104, west to 51.1104, west to 51.1100)
+            val pts = listOf(west to 51.1073, east to 51.1073, east to 51.1077, west to 51.1077, west to 51.1073)
             val outline = GeoPolygon(listOf(pts.map { (lon, lat) -> GeoPoint(longitude = lon, latitude = lat) }))
             return Building(symbol = symbol, name = null, outline = outline)
         }
 
-        fun room(
-            id: String,
-            category: RoomCategory,
-            function: String,
-            point: GeoPoint,
-            number: String? = null,
-        ): Room =
+        fun room(id: String, kind: RoomCategory, lon: Double, lat: Double, num: String? = null): Room =
             Room(
                 id = id,
-                number = number,
-                function = function,
-                category = category,
-                geometry = GeoMultiPolygon(emptyList()),
-                labelPoint = point,
-                isLabelled = number != null,
+                number = num,
+                function = kind.name,
+                category = kind,
+                geometry = EMPTY_POLY,
+                labelPoint = GeoPoint(longitude = lon, latitude = lat),
+                isLabelled = num != null,
             )
+    }
+}
+
+@Composable
+private fun AppNavigator.NavScreen(
+    route: NavKey,
+    repo: BuildingCatalogRepository,
+    plans: FloorPlans,
+    mapModel: CampusMapViewModel,
+    mapView: CampusMapView,
+) {
+    val entrances = remember { ServerEntrances { emptyList() } }
+    val barriers = remember { AcceptedBarriers { emptyList() } }
+    val planModel =
+        remember { MapPlanViewModel(repository = repo, plans = plans, entrances = entrances, barriers = barriers) }
+    val entrModel = remember { BuildingEntrancesViewModel(entrances) }
+    val liftModel = remember { EntranceLiftViewModel(plans) }
+    val roomModel = remember { RoomCardViewModel(plans = plans, entrances = entrances, barriers = barriers) }
+    when (route) {
+        is MapRoute -> {
+            HiltMapScreen(
+                focus = route.focus,
+                viewModel = mapModel,
+                planViewModel = planModel,
+                entrancesViewModel = entrModel,
+                liftViewModel = liftModel,
+                mapView = mapView,
+                roomViewModel = roomModel,
+            )
+        }
+
+        is BuildingRoute -> {
+            val card = remember(route.symbol) { BuildingCardViewModel(route.symbol, repo, { flowOf(true) }) }
+            val state by card.uiState.collectAsStateWithLifecycle()
+            val isOnline by card.online.collectAsStateWithLifecycle()
+            BuildingCard(symbol = route.symbol, state = state, isOnline = isOnline, onRetry = card::retry)
+        }
+
+        else -> {
+            AppScreen(route)
+        }
     }
 }
