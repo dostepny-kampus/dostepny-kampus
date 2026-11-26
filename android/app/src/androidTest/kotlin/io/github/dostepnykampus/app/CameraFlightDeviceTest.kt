@@ -108,6 +108,7 @@ class CameraFlightDeviceTest {
         val symbol = "A-4"
         val data = runBlocking { campusMapData(catalog.catalog()) }
         val point = data.labelPointsBySymbol.getValue(symbol)
+        val target = LatLng(latitude = point.latitude, longitude = point.longitude)
         val outline = data.outlines.indexOfFirst { symbol in it }
         val focus = MapFocus.Building(symbol, command = 1L)
         composeRule.activityRule.scenario.onActivity { activity ->
@@ -129,7 +130,7 @@ class CameraFlightDeviceTest {
         composeRule.waitUntil(READY_TIMEOUT_MS) { nodeExists(notice) }
         composeRule.waitUntil(READY_TIMEOUT_MS) {
             composeRule.runOnUiThread {
-                val pixel = map.projection.toScreenLocation(LatLng(latitude = point.latitude, longitude = point.longitude))
+                val pixel = map.projection.toScreenLocation(target)
                 map.cameraPosition.zoom >= FLOOR_PLAN_ZOOM &&
                     map.queryRenderedFeatures(pixel, BUILDINGS_LAYER).any {
                         it.getNumberProperty(OUTLINE_NUMBER)?.toInt() == outline
