@@ -8,7 +8,6 @@ package io.github.dostepnykampus.barrier;
 import io.github.dostepnykampus.IntegrationTest;
 import io.github.dostepnykampus.barrier.photo.PhotoStore;
 import io.github.dostepnykampus.barrier.review.application.ReviewQueue;
-import io.github.dostepnykampus.barrier.submission.Submission;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
@@ -47,7 +46,8 @@ final class ReviewQueuePhotosIT {
             MatcherAssert.assertThat(
                 "Kolejka zawiera zgłoszenie bez zdjęcia w magazynie albo pomija kompletne",
                 context.getBean(ReviewQueue.class).forReviewer("weryfikator-kolejki").stream()
-                    .map(Submission::id).filter(id -> List.of(complete, missing).contains(id))
+                    .map(item -> item.submission().id())
+                    .filter(id -> List.of(complete, missing).contains(id))
                     .toList(),
                 Matchers.contains(complete)
             );
