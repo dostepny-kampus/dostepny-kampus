@@ -47,7 +47,10 @@ private val SP = MemberName(UNIT, "sp", isExtension = true)
 private val TEXT_UNIT = ClassName(UNIT, "TextUnit")
 private val THEMES = listOf("jasny" to "Light", "ciemny" to "Dark")
 
-/** Wszystkie sloty `Typography` Material 3; każdy dostaje styl ze skali albo z `typografia.zastepstwa`. */
+/**
+ * Sloty `Typography` Material 3; każdy dostaje styl ze skali albo z `typografia.zastepstwa`, a jego wariant
+ * `…Emphasized` ten sam styl z wagą co najmniej `typografia.wyroznienie_waga`.
+ */
 private val M3_TEXT_SLOTS =
     listOf("display", "headline", "title", "body", "label").flatMap { role ->
         listOf("Large", "Medium", "Small").map { size -> role + size }
@@ -134,13 +137,17 @@ abstract class GenerateDesignTokens : DefaultTask() {
         val aliases = section.sub("zastepstwa")
         val missing = M3_TEXT_SLOTS - scale.keys - aliases.keys
         check(missing.isEmpty()) { "Sloty typografii bez stylu i bez zastępstwa: $missing" }
-        val styles = M3_TEXT_SLOTS.map { name ->
+        val emphasisWeight = section.require("wyroznienie_waga").toString().toInt()
+        val styles = M3_TEXT_SLOTS.flatMap { name ->
             val style = (scale[name] ?: scale.require(aliases.require(name).toString())).asMap()
-            CodeBlock.of(
-                "%N = %T(fontFamily = fontFamily, fontWeight = %T(%L), fontSize = %L.%M, lineHeight = %L.%M)",
-                name, TEXT_STYLE, FONT_WEIGHT, style.require("waga"),
-                style.require("sp"), SP, style.require("interlinia_sp"), SP,
-            )
+            val weight = style.require("waga").toString().toInt()
+            listOf(name to weight, "${name}Emphasized" to maxOf(weight, emphasisWeight)).map { (slot, slotWeight) ->
+                CodeBlock.of(
+                    "%N = %T(fontFamily = fontFamily, fontWeight = %T(%L), fontSize = %L.%M, lineHeight = %L.%M)",
+                    slot, TEXT_STYLE, FONT_WEIGHT, slotWeight,
+                    style.require("sp"), SP, style.require("interlinia_sp"), SP,
+                )
+            }
         }
         file.addFunction(
             FunSpec.builder("typography")

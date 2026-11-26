@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.core.designsystem.card
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -13,6 +14,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -30,6 +32,7 @@ import org.robolectric.annotation.Config
 private const val TITLE = "Budynek A-1"
 private const val OPEN = "Otwórz"
 private const val INFO = "Twoje role: Odwiedzający"
+private const val REFRESH = "Odśwież"
 
 /**
  * Karta pozycji listy, czynność karty i panel informacyjny: wcięcie treści, szerokość i wysokość czynności, jej
@@ -77,6 +80,23 @@ class CardTest {
         assertTrue("Czynność ma mieć co najmniej 48 dp: $bounds", (bounds.bottom - bounds.top).value >= 48f)
         node.performClick()
         assertEquals("Dotknięcie czynności wywołuje ją raz", 1, opened)
+    }
+
+    /** Przycisk obrysowany w treści ma co najmniej 48 dp, a wyłączony nie wywołuje czynności. */
+    @Test
+    fun outlinedActionIsButton() {
+        show {
+            Column {
+                OutlinedAction(onClick = { opened++ }) { Text(REFRESH) }
+                OutlinedAction(onClick = { opened++ }, enabled = false) { Text(OPEN) }
+            }
+        }
+        val refresh = compose.onNodeWithText(REFRESH)
+        val bounds = refresh.getUnclippedBoundsInRoot()
+        assertTrue("Przycisk ma mieć co najmniej 48 dp: $bounds", (bounds.bottom - bounds.top).value >= 48f)
+        refresh.performClick()
+        compose.onNodeWithText(OPEN).assertIsNotEnabled().performClick()
+        assertEquals("Czynność wywołuje tylko włączony przycisk", 1, opened)
     }
 
     /** Przy czcionce 200 % czynność rośnie z napisem ponad 48 dp. */

@@ -43,9 +43,15 @@ public const val SEVERITY_SIGN_TAG: String = "znak-uciazliwosci"
  * @param severity wybrana uciążliwość albo `null`
  * @param onPick wybór uciążliwości
  * @param modifier położenie wyboru wyznacza wołający
+ * @param isError ramki wyborów w kolorze błędu, gdy uciążliwości brakuje przy czynności
  */
 @Composable
-public fun SeverityChoice(severity: Severity?, onPick: (Severity) -> Unit, modifier: Modifier = Modifier) {
+public fun SeverityChoice(
+    severity: Severity?,
+    onPick: (Severity) -> Unit,
+    modifier: Modifier = Modifier,
+    isError: Boolean = false,
+) {
     Column(modifier = modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         Text(
             text = stringResource(R.string.wybor_uciazliwosc),
@@ -54,19 +60,19 @@ public fun SeverityChoice(severity: Severity?, onPick: (Severity) -> Unit, modif
         )
         Text(stringResource(R.string.wybor_uciazliwosc_podpowiedz))
         Severity.entries.forEach { option ->
-            SeverityOption(option = option, isChosen = option == severity, onPick = onPick)
+            SeverityOption(option = option, isChosen = option == severity, isError = isError, onPick = onPick)
         }
     }
 }
 
 @Composable
-private fun SeverityOption(option: Severity, isChosen: Boolean, onPick: (Severity) -> Unit) {
+private fun SeverityOption(option: Severity, isChosen: Boolean, isError: Boolean, onPick: (Severity) -> Unit) {
     OutlinedCard(
         modifier = Modifier.fillMaxWidth().selectable(selected = isChosen, role = Role.RadioButton) { onPick(option) },
         border =
             BorderStroke(
                 width = if (isChosen) Obramowania.wybrane else Obramowania.ramka,
-                color = MaterialTheme.colorScheme.outline,
+                color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline,
             ),
     ) {
         Column(modifier = Modifier.padding(Odstepy.m)) {

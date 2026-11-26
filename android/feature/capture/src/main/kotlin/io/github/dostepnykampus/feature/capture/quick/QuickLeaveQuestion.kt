@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.quick
@@ -9,13 +9,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.feature.capture.R
 
 /**
@@ -38,7 +38,7 @@ internal fun QuickLeaveQuestion(onLeave: () -> Unit, onStay: () -> Unit) {
 
 @Composable
 private fun LeaveChoice(text: String, onClick: () -> Unit) {
-    OutlinedButton(onClick = onClick, modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk)) {
+    OutlinedAction(onClick = onClick, modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk)) {
         Text(text)
     }
 }
