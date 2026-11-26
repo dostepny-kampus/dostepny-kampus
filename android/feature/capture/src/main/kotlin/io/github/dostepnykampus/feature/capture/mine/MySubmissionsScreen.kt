@@ -143,14 +143,15 @@ private fun StatusCheckLine(check: StatusCheck, isOnline: Boolean, onRetry: () -
 
 /**
  * „Otwórz” albo „Wyślij ponownie” pozycji [item]: zmiana oznaczenia wejścia otwiera C6 (po „nieaktualne” jako nową
- * zmianę tego wejścia), reszta poprawkę w C2; `null`, gdy pozycji nie da się otworzyć.
+ * zmianę tego wejścia), reszta poprawkę w C2; `null`, gdy pozycji nie da się otworzyć albo czeka na wybór wersji,
+ * bo poprawka nie rozstrzyga konfliktu.
  *
- * Wymagania: US8.3, US17.2, BR-23
+ * Wymagania: US8.3, US17.2, BR-23, BR-10
  */
 internal fun openAction(item: OwnSubmissionItem, actions: MySubmissionsActions): (() -> Unit)? {
     val marking = item.markingRoute()
     return when {
-        !item.canOpenHere() -> null
+        !item.canOpenHere() || item.hasVersionConflict -> null
         item.isBarrierRemoved -> actions.onOpenRemoval?.boundTo(item.id)
         item.kind != SubmissionKind.ENTRANCE_MARKING -> actions.onOpen?.boundTo(item.id)
         marking == null -> null

@@ -228,11 +228,16 @@ internal fun ReportForm.withNearest(measured: ReportPlace, nearest: EntranceDist
 internal fun FloorList.toPlanFloors(): PlanFloors? =
     if (floors.isEmpty()) null else PlanFloors(items = floors.map { PlanFloor(id = it.id, label = it.label) }, source)
 
-/** Etap formularza po odmowie zapisu: inny komunikat dla zdjęć, inny dla nieznanej wersji. Wymagania: NFR-50, BR-10 */
+/**
+ * Etap formularza po odmowie zapisu: inny komunikat dla zdjęć, inny dla nieznanej wersji i zgłoszenia czekającego
+ * na wybór wersji; ten odsyła do „Moje zgłoszenia”, gdzie jest znak wyboru wersji.
+ *
+ * Wymagania: NFR-50, BR-10, US9.3
+ */
 internal fun SaveRefusal.toStage(): ReportStage =
     when (this) {
         SaveRefusal.PHOTOS_MISMATCH, SaveRefusal.ACCOUNT_CHANGED -> ReportStage.SAVE_REJECTED
-        SaveRefusal.UNKNOWN_VERSION -> ReportStage.VERSION_UNKNOWN
+        SaveRefusal.UNKNOWN_VERSION, SaveRefusal.VERSION_CHOICE_PENDING -> ReportStage.VERSION_UNKNOWN
     }
 
 private val StagesWithoutNewDraft = setOf(ReportStage.LEFT, ReportStage.PLACE_CHANGED, ReportStage.SAVED)
