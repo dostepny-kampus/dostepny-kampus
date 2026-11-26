@@ -7,6 +7,8 @@
 extend-exclude = [
   "docs/",
   "data/buildings/",
+  # Profil bazowy generuje Macrobenchmark: skrócone nazwy klas i sygnatury metod, nie tekst do czytania.
+  "android/app/src/main/generated/baselineProfiles/",
 ]
 
 [default.extend-words]
