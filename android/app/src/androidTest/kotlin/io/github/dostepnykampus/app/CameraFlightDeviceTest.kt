@@ -7,6 +7,7 @@ package io.github.dostepnykampus.app
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.compose.setContent
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
@@ -15,11 +16,17 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.github.dostepnykampus.app.navigation.AppScreen
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
+import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
 import io.github.dostepnykampus.feature.map.campus.campusMapData
+import io.github.dostepnykampus.feature.map.navigation.MapFocus
+import io.github.dostepnykampus.feature.map.navigation.MapRoute
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -95,6 +102,43 @@ class CameraFlightDeviceTest {
         }
     }
 
+    /** Wiersz: V1 nad konturem budynku podstawowego po powiększeniu do 17. Wymagania: US16.2, BR-G1 */
+    @Test
+    fun showsMissingPlanOnMap() {
+        val symbol = "A-4"
+        val data = runBlocking { campusMapData(catalog.catalog()) }
+        val point = data.labelPointsBySymbol.getValue(symbol)
+        val outline = data.outlines.indexOfFirst { symbol in it }
+        val focus = MapFocus.Building(symbol, command = 1L)
+        composeRule.activityRule.scenario.onActivity { activity ->
+            val roles = EntryPointAccessors.fromActivity<MainActivityEntryPoint>(activity).roles()
+            activity.setContent {
+                DostepnyKampusTheme {
+                    AppShell(firstLaunch = false, roles = roles, onFirstHelpLeft = {}) { route ->
+                        AppScreen(if (route is MapRoute) route.copy(focus = focus) else route)
+                    }
+                }
+            }
+        }
+        val map = awaitReadyMap()
+        val notice = hasText("Nie mamy planu pięter tego budynku.")
+        composeRule.waitUntil(READY_TIMEOUT_MS) { nodeExists(notice) }
+        composeRule.onNode(hasContentDescription("Pomniejsz")).performClick()
+        composeRule.waitUntil(READY_TIMEOUT_MS) { !nodeExists(notice) }
+        composeRule.onNode(hasContentDescription("Powiększ")).performClick()
+        composeRule.waitUntil(READY_TIMEOUT_MS) { nodeExists(notice) }
+        composeRule.waitUntil(READY_TIMEOUT_MS) {
+            composeRule.runOnUiThread {
+                val pixel = map.projection.toScreenLocation(LatLng(latitude = point.latitude, longitude = point.longitude))
+                map.cameraPosition.zoom >= FLOOR_PLAN_ZOOM &&
+                    map.queryRenderedFeatures(pixel, BUILDINGS_LAYER).any {
+                        it.getNumberProperty(OUTLINE_NUMBER)?.toInt() == outline
+                    }
+            }
+        }
+        DeviceEvidence.record("v1-basic-no-floor-plan")
+    }
+
     private fun isSettled(map: MapLibreMap, tracker: MoveTracker): Boolean {
         val before = tracker.starts.get()
         val position = composeRule.runOnUiThread { map.cameraPosition.target }
@@ -163,6 +207,8 @@ class CameraFlightDeviceTest {
     private companion object {
         const val TARGET_BUILDING = "T-16"
         const val TARGET_AREA = "Wittigowo"
+        const val BUILDINGS_LAYER = "budynki"
+        const val FLOOR_PLAN_ZOOM = 17.0
         const val SKIP_HELP_TEXT = "Pomiń instrukcję"
         const val MAIN_AREA_BUTTON_DESCRIPTION = "Teren: Kampus główny. Zmień teren"
         const val READY_TIMEOUT_MS = 30_000L

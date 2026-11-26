@@ -9,17 +9,13 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotFocused
-import androidx.compose.ui.test.hasClickAction
-import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isFocused
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
-import androidx.compose.ui.text.AnnotatedString
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -93,50 +89,6 @@ class CampusPathDeviceTest {
         steps.waitFor(openedCard())
     }
 
-    /** Napis nad mapą po „Pokaż budynek na mapie” dla budynku podstawowego. Wymagania: US16.2, BR-G1 */
-    @Test
-    fun showsMissingPlanOnMap() {
-        val previousFont = DeviceEvidence.shell("settings get system font_scale").trim()
-        check(previousFont == "null" || previousFont.toFloatOrNull() != null) {
-            "Nieznana skala czcionki: $previousFont"
-        }
-        try {
-            setFontScale("1.5")
-            showBuildingOnMap("A-4")
-        } finally {
-            setFontScale(previousFont)
-        }
-        val notice = hasText("Nie mamy planu pięter tego budynku.")
-        val zoom = hasContentDescription("Powiększ")
-        steps.waitFor(zoom)
-        repeat(PLAN_ZOOM_STEPS) {
-            if (compose.onAllNodes(notice).fetchSemanticsNodes().isEmpty()) compose.onNode(zoom).performClick()
-        }
-        steps.waitFor(notice)
-        DeviceEvidence.record("v1-basic-no-floor-plan")
-    }
-
-    private fun setFontScale(value: String) {
-        val command =
-            if (value == "null") "settings delete system font_scale" else "settings put system font_scale $value"
-        DeviceEvidence.shell(command)
-        val scale = value.toFloatOrNull() ?: 1f
-        compose.waitUntil(timeoutMillis = WAIT_MS) { compose.activity.resources.configuration.fontScale == scale }
-    }
-
-    private fun showBuildingOnMap(symbol: String) {
-        steps.waitFor(hasSetTextAction())
-        compose
-            .onNode(hasSetTextAction())
-            .performSemanticsAction(SemanticsActions.SetText) { it(AnnotatedString(symbol)) }
-        val result = (hasContentDescription(symbol) or inCatalog(symbol)) and hasClickAction()
-        steps.waitFor(result)
-        compose.onAllNodes(result).onFirst().performClick()
-        val showOnMap = hasText("Pokaż budynek na mapie")
-        steps.waitFor(showOnMap)
-        compose.onNode(showOnMap).performScrollTo().performClick()
-    }
-
     /**
      * Wiersz: prawdziwa klawiatura → wybór A-1 → V2 bez fokusu i klawiatury → jedno Wstecz zamyka V2.
      *
@@ -179,9 +131,5 @@ class CampusPathDeviceTest {
                 }
             DeviceEvidence.shell(command)
         }
-    }
-
-    private companion object {
-        const val PLAN_ZOOM_STEPS = 4
     }
 }
