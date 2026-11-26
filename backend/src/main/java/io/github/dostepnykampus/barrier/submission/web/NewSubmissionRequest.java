@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.barrier.submission.web;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import io.github.dostepnykampus.barrier.submission.AuthorRole;
 import io.github.dostepnykampus.barrier.submission.NewSubmission;
 import io.github.dostepnykampus.barrier.submission.Reader;
 import io.github.dostepnykampus.barrier.submission.Submission;
@@ -15,6 +16,7 @@ import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.barrier.submission.content.json.SubmissionContentJson;
 import io.github.dostepnykampus.shared.error.ConflictingState;
 import io.github.dostepnykampus.shared.error.MissingResource;
+import java.util.Set;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 
@@ -33,14 +35,17 @@ record NewSubmissionRequest(
      * Przenosi ciało żądania do komendy domeny.
      *
      * @param author Identyfikator konta z tokenu
+     * @param roles Role autora z tokenu
      * @param entrances Miejsca wejść znanych serwerowi
      * @return Komenda utworzenia zgłoszenia
      */
-    NewSubmission toCommand(final String author, final EntrancePlaces entrances) {
+    NewSubmission toCommand(
+        final String author, final Set<AuthorRole> roles, final EntrancePlaces entrances
+    ) {
         if (this.id == null) {
             throw new InvalidSubmission("Brak identyfikatora zgłoszenia w polu id");
         }
-        return new NewSubmission(this.id, this.content.toContent(entrances), author);
+        return new NewSubmission(this.id, this.content.toContent(entrances), author, roles);
     }
 
     /**

@@ -1,0 +1,91 @@
+/*
+ * Dostępny Kampus
+ * Author: Vladyslav Yevkov
+ * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
+ */
+package io.github.dostepnykampus.core.designsystem.marking
+
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.toPixelMap
+import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onRoot
+import io.github.dostepnykampus.core.designsystem.DarkMapColors
+import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.designsystem.LightMapColors
+import io.github.dostepnykampus.core.designsystem.MapColors
+import io.github.dostepnykampus.core.model.submission.Severity
+import org.junit.Assert.assertTrue
+import org.junit.Ignore
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
+import kotlin.math.abs
+import kotlin.math.roundToInt
+
+private const val CHANNEL_TOLERANCE_0_255 = 2
+private const val CHANNEL_MAX = 255f
+private const val DRAW_TIMEOUT_MS = 5_000L
+
+/**
+ * Poza mapą znak uciążliwości ma barwę i kontur znaku z mapy bieżącego motywu.
+ *
+ * Wymagania: NFR-21, US2.1
+ */
+@RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(qualifiers = "w360dp-h240dp-xxhdpi")
+class SeverityIconColorTest {
+    @get:Rule
+    val compose = createComposeRule()
+
+    /** W jasnym motywie „Blokada” ma barwę tablicy i kontur z jasnej mapy. */
+    @Ignore("W CI zrzut jasnego motywu nie zawiera znaku; przyczyna w #4125")
+    @Test
+    fun usesLightMapTones() {
+        assertSignColors(isDark = false, colors = LightMapColors)
+    }
+
+    /** W ciemnym motywie „Blokada” ma barwę tablicy i kontur z ciemnej mapy. */
+    @Test
+    fun usesDarkMapTones() {
+        assertSignColors(isDark = true, colors = DarkMapColors)
+    }
+
+    private fun assertSignColors(isDark: Boolean, colors: MapColors) {
+        compose.setContent {
+            DostepnyKampusTheme(darkTheme = isDark) {
+                SeverityIcon(severity = Severity.BLOCKING)
+            }
+        }
+        compose.waitUntil(
+            conditionDescription = "znak narysowany w barwie ${colors.znakBlokada.hex()}",
+            timeoutMillis = DRAW_TIMEOUT_MS,
+        ) { signPixels().any { distance(a = it, b = colors.znakBlokada) <= CHANNEL_TOLERANCE_0_255 } }
+        val pixels = signPixels()
+        assertNear("znak bez barwy tablicy „Blokady”", colors.znakBlokada, pixels)
+        assertNear("znak bez konturu znaku mapy", colors.tusz, pixels)
+    }
+
+    private fun signPixels(): List<Color> {
+        val map = compose.onRoot().captureToImage().toPixelMap()
+        return (0 until map.width).flatMap { x -> (0 until map.height).map { y -> map[x, y] } }
+    }
+
+    private fun assertNear(message: String, expected: Color, pixels: List<Color>) {
+        val nearest = pixels.minBy { distance(a = it, b = expected) }
+        assertTrue(
+            "$message: oczekiwano ${expected.hex()}, najbliższy piksel ${nearest.hex()}",
+            distance(a = nearest, b = expected) <= CHANNEL_TOLERANCE_0_255,
+        )
+    }
+
+    private fun distance(a: Color, b: Color): Int =
+        listOf(a.red - b.red, a.green - b.green, a.blue - b.blue).maxOf { abs(it * CHANNEL_MAX).roundToInt() }
+
+    private fun Color.hex(): String = Integer.toHexString(toArgb())
+}

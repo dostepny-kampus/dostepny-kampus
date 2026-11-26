@@ -12,6 +12,10 @@ Pozycja telefonu z GNSS: źródła położenia, satelity i uśrednianie pomiaru.
 
 Interfejsy źródeł położenia i uśrednianie pozycji. Implementacje GNSS i wiązania Hilt (`LocationModule`) są `internal`.
 
+Źródła wybiera wariant budowy (`VariantSources.kt` w `src/release` i `src/debug`). Release ma tylko odbiornik GNSS.
+Debug ma też tryb pokazu (`DemoMode`, `DemoRoute`, adnotacja `TrybPokazu`): przy włączonym trybie pomiar C1 odtwarza
+trasę `src/debug/assets/trasa-pokazu.json` zamiast odbiornika. Tryb włącza się ikoną „Tryb pokazu (debug)” w launcherze.
+
 ## Zależności
 
 - `:core:model`

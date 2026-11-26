@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -26,6 +25,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.geo.building.BuildingHint
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.feature.capture.R
@@ -108,19 +108,19 @@ private fun PlaceQuestion(place: PlaceChoice, actions: PlaceActions, onPick: () 
             is PlaceChoice.Suggested -> {
                 Hint(place.hint)
                 Button(onClick = actions.onConfirm) { Text(stringResource(R.string.budynek_potwierdz)) }
-                OutlinedButton(onClick = onPick) { Text(stringResource(R.string.budynek_wybierz_inny)) }
+                OutlinedAction(onClick = onPick) { Text(stringResource(R.string.budynek_wybierz_inny)) }
                 TextButton(onClick = actions.onOutside) { Text(stringResource(R.string.budynek_poza)) }
             }
 
             is PlaceChoice.Chosen -> {
                 Text(stringResource(R.string.budynek_wybrany, place.building.label()))
-                OutlinedButton(onClick = onPick) { Text(stringResource(R.string.budynek_wybierz_inny)) }
+                OutlinedAction(onClick = onPick) { Text(stringResource(R.string.budynek_wybierz_inny)) }
                 TextButton(onClick = actions.onOutside) { Text(stringResource(R.string.budynek_poza)) }
             }
 
             PlaceChoice.Outside -> {
                 Text(stringResource(R.string.budynek_miejsce_poza))
-                OutlinedButton(onClick = onPick) { Text(stringResource(R.string.budynek_wybierz)) }
+                OutlinedAction(onClick = onPick) { Text(stringResource(R.string.budynek_wybierz)) }
             }
         }
     }
@@ -169,11 +169,11 @@ private fun NearestSection(
         Text(stringResource(R.string.budynek_najblizej))
         buildings.items.forEach { hint ->
             val meters = hint.distanceMeters.roundToInt()
-            OutlinedButton(onClick = { onPick(hint.building.symbol) }, modifier = Modifier.fillMaxWidth()) {
+            OutlinedAction(onClick = { onPick(hint.building.symbol) }, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.budynek_na_liscie, hint.building.label(), meters))
             }
         }
-        OutlinedButton(onClick = onOutside, modifier = Modifier.fillMaxWidth()) {
+        OutlinedAction(onClick = onOutside, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.budynek_poza))
         }
         TextButton(onClick = onCancel) { Text(stringResource(R.string.budynek_anuluj)) }

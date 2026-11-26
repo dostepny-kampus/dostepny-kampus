@@ -10,16 +10,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,11 +26,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.StaffProblem
+import io.github.dostepnykampus.core.designsystem.StaffProblemMessage
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
+import io.github.dostepnykampus.core.designsystem.card.CardAction
+import io.github.dostepnykampus.core.designsystem.card.ListItemCard
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.model.inspection.InspectionCoverage
 import io.github.dostepnykampus.core.model.inspection.MarkerPlace
 import io.github.dostepnykampus.core.model.inspection.ProgressMarker
 import io.github.dostepnykampus.feature.inspection.R
+import io.github.dostepnykampus.core.designsystem.R as DesignR
 
 /**
  * C5 „Obejrzane piętra” w wariancie Koordynatora budynku [symbol].
@@ -102,8 +104,8 @@ fun MarkersContent(state: MarkersUiState, actions: MarkerActions, onBack: () -> 
             BackHeader(title = stringResource(R.string.znaczniki_naglowek), onBack = onBack)
             when (state) {
                 MarkersUiState.Loading -> Loading()
-                MarkersUiState.Offline -> Failure(Problem.OFFLINE, actions.onRetry)
-                MarkersUiState.ServerError -> Failure(Problem.SERVER, actions.onRetry)
+                MarkersUiState.Offline -> StaffProblemMessage(StaffProblem.OFFLINE, actions.onRetry)
+                MarkersUiState.ServerError -> StaffProblemMessage(StaffProblem.SERVER, actions.onRetry)
                 is MarkersUiState.Ready -> MarkerList(state, actions)
             }
         }
@@ -131,19 +133,16 @@ private fun MarkerList(state: MarkersUiState.Ready, actions: MarkerActions) {
 
 @Composable
 private fun MarkerCard(marker: ProgressMarker, floorLabel: String?, isAsking: Boolean, actions: MarkerActions) {
-    OutlinedCard(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-            Text(placeText(marker.marker.place, floorLabel), style = MaterialTheme.typography.titleMedium)
-            Text(stringResource(R.string.znaczniki_autor, marker.authorPseudonym))
-            if (isAsking) {
-                Text(questionText(marker.marker.place, floorLabel))
-                Button(onClick = actions.onConfirm) { Text(stringResource(R.string.znaczniki_cofnij)) }
-                OutlinedButton(onClick = actions.onKeep) { Text(stringResource(R.string.znaczniki_zostaw)) }
-            } else {
-                OutlinedButton(onClick = { actions.onAsk(marker.marker.id) }) {
-                    Text(stringResource(R.string.znaczniki_cofnij))
-                }
-            }
+    ListItemCard {
+        Text(placeText(marker.marker.place, floorLabel), style = MaterialTheme.typography.titleMedium)
+        InspectedLabel(stringResource(R.string.zbierajacy_obejrzane))
+        Text(stringResource(R.string.znaczniki_autor, marker.authorPseudonym))
+        if (isAsking) {
+            Text(questionText(marker.marker.place, floorLabel))
+            Button(onClick = actions.onConfirm) { Text(stringResource(R.string.znaczniki_cofnij)) }
+            OutlinedAction(onClick = actions.onKeep) { Text(stringResource(R.string.znaczniki_zostaw)) }
+        } else {
+            CardAction(text = stringResource(R.string.znaczniki_cofnij), onClick = { actions.onAsk(marker.marker.id) })
         }
     }
 }
@@ -190,4 +189,8 @@ private fun ProgressMarker.floorLabel(floorLabels: Map<String, String>): String?
     (marker.place as? MarkerPlace.Floor)?.let { floorLabels[it.floorId] }
 
 private val RevokeFailure.message: Int
-    get() = if (this == RevokeFailure.OFFLINE) R.string.postep_wymaga_internetu else R.string.postep_blad_serwera
+    get() =
+        when (this) {
+            RevokeFailure.OFFLINE -> DesignR.string.praca_wymaga_internetu
+            RevokeFailure.SERVER -> DesignR.string.praca_blad_serwera
+        }

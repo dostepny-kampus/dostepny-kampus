@@ -613,7 +613,8 @@ paths:
       summary: Zaproszenie osoby z rolą
       description: >-
         Koordynator wpisuje adres e-mail i rolę; Usługa logowania zakłada konto z tą rolą (US12.1, BR-2). Zaproszenie
-        na adres istniejącego konta dodaje mu rolę, a dotychczasowe role zostają (US12.2, BR-1).
+        na adres istniejącego konta dodaje mu rolę, a dotychczasowe role zostają (US12.2, BR-1). Konto, które ma już
+        tę rolę, daje 409 z `type` równym `urn:dostepny-kampus:rola-juz-nadana` i niczego nie zmienia (US12.2).
       tags: [identity]
       security: [{keycloak: [COORDINATOR]}]
       requestBody:
@@ -631,6 +632,7 @@ paths:
         '400': {$ref: '#/components/responses/BadRequest'}
         '401': {$ref: '#/components/responses/Unauthorized'}
         '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
         '429': {$ref: '#/components/responses/TooManyRequests'}
 
 components:
@@ -705,8 +707,9 @@ components:
           schema: {$ref: '#/components/schemas/VersionConflictProblem'}
     ReviewConflict:
       description: >-
-        Decyzja nie może zapaść przy tym stanie zgłoszenia: inna wersja niż aktualna, zgłoszenie już rozstrzygnięte albo
-        brak zdjęcia z `photoIds` w magazynie; w odpowiedzi wersja z serwera.
+        Decyzja nie może zapaść przy tym stanie zgłoszenia: inna wersja niż aktualna, zgłoszenie już rozstrzygnięte,
+        brak zdjęcia z `photoIds` w magazynie albo przyjęcie zmiany zgłoszenia, które nie jest już przyjęte, bo przyjęto
+        wcześniej inną zmianę (BR-23); w odpowiedzi wersja z serwera.
       content:
         application/problem+json:
           schema: {$ref: '#/components/schemas/VersionConflictProblem'}
@@ -1234,7 +1237,7 @@ components:
       description: Zmiany z serwera od poprzedniego pobrania.
       required: [cursor, submissions, entrances, inspectionMarkers]
       properties:
-        cursor: {type: string, description: "Znacznik do parametru `since` w następnym pobraniu."}
+        cursor: {type: string, description: "Znacznik do parametru `since` w następnym pobraniu. Zmiany z kilku minut przed znacznikiem przychodzą w następnym pobraniu ponownie; telefon zapisuje je bez skutku."}
         submissions: {type: array, description: "Własne zgłoszenia oraz zgłoszenia przyjęte i archiwalne.", items: {$ref: '#/components/schemas/Submission'}}
         entrances: {type: array, description: "Wejścia ze zmienionym oznaczeniem wejścia.", items: {$ref: '#/components/schemas/Entrance'}}
         inspectionMarkers: {type: array, description: "Dla roli `COLLECTOR` znaczniki wszystkich Zbierających, także cofnięte (US15.2); dla innych ról pusta lista.", items: {$ref: '#/components/schemas/InspectionMarker'}}

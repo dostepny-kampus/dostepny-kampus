@@ -6,8 +6,7 @@ Funkcja: Weryfikacja zgłoszeń
   Założenia:
     Zakładając, że pierwszy i drugi Weryfikator są zalogowani z rolą Weryfikatora
 
-  # brak kroków serwera: #3063
-  @US10.4 @serwer @do-zrobienia
+  @US10.4 @serwer
   Scenariusz: Kolejka pokazuje rodzaj, budynek i datę wysłania, od najdawniej wysłanego
     Zakładając, że w kolejce są zgłoszenia wysłane 27.10.2026 z budynku C-13 i 26.10.2026 z budynku A-1
     Jeżeli pierwszy Weryfikator otworzy kolejkę weryfikacji
@@ -30,16 +29,14 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-11
   Reguła: Zgłoszenie w weryfikacji obsługuje tylko Weryfikator, który je wziął
 
-    # brak kroków serwera: #3063
-    @US10.4 @US8.2 @serwer @do-zrobienia
+    @US10.4 @US8.2 @serwer
     Scenariusz: Wzięte zgłoszenie znika z kolejki pozostałych Weryfikatorów
       Zakładając, że w kolejce jest zgłoszenie TB-13 „próg” z budynku C-13 ze statusem „wysłane”
       Jeżeli pierwszy Weryfikator weźmie to zgłoszenie
       Wtedy zgłoszenie ma status „w weryfikacji”
       Oraz drugi Weryfikator nie widzi go w swojej kolejce
 
-    # brak kroków serwera: #3712
-    @US10.4 @serwer @do-zrobienia
+    @US10.4 @serwer
     Szablon scenariusza: Drugi Weryfikator nie obsłuży zgłoszenia wziętego przez pierwszego
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie TB-13 „próg” z budynku C-13
       Jeżeli drugi Weryfikator spróbuje <czynność> to zgłoszenie
@@ -52,8 +49,7 @@ Funkcja: Weryfikacja zgłoszeń
         | przyjąć  |
         | odrzucić |
 
-    # brak kroków serwera: #3063
-    @US10.7 @serwer @do-zrobienia
+    @US10.7 @serwer
     Scenariusz: Wzięte zgłoszenia bez decyzji Weryfikator widzi osobno i do nich wraca
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie TB-13 „próg” z budynku C-13 i nie podjął decyzji
       Jeżeli wyjdzie ze zgłoszenia i otworzy kolejkę weryfikacji
@@ -63,8 +59,7 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-4
   Reguła: Nikt nie weryfikuje własnego zgłoszenia
 
-    # brak kroków serwera: #3063
-    @US10.5 @BR-1 @serwer @do-zrobienia
+    @US10.5 @BR-1 @serwer
     Scenariusz: Weryfikator nie widzi w kolejce własnych zgłoszeń
       Zakładając, że pierwszy Weryfikator ma też rolę Zbierającego
       Oraz jako Zbierający wysłał zgłoszenie TB-1 „schody przy wejściu” przy wejściu głównym A-1
@@ -76,7 +71,7 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-5
   Reguła: Weryfikator zna autora tylko z roli i pseudonimu
 
-    # brak kroków serwera: #3707
+    # brak kroków serwera: #4007
     @serwer @do-zrobienia
     Scenariusz: Weryfikator widzi rolę i pseudonim autora, a nie jego dane osobowe
       Zakładając, że zgłoszenie wysłał Zbierający Jan Kowalski z adresem e-mail jan.kowalski@example.org
@@ -111,8 +106,7 @@ Funkcja: Weryfikacja zgłoszeń
       Jeżeli pierwszy Weryfikator przejrzy podobne zgłoszenia
       Wtedy przy zgłoszeniu TB-13 widzi typ bariery, zdjęcie, odległość 5 m i piętro
 
-    # brak kroków serwera: #3063
-    @serwer @do-zrobienia
+    @serwer
     Scenariusz: System sam nie odrzuca ani nie łączy podobnych zgłoszeń
       Zakładając, że 2 m od siebie przy wejściu głównym A-1 wysłano dwa zgłoszenia TB-1 „schody przy wejściu”
       Jeżeli pierwszy Weryfikator otworzy kolejkę weryfikacji
@@ -186,8 +180,7 @@ Funkcja: Weryfikacja zgłoszeń
       Jeżeli odrzuci je z powodem „Na zdjęciu są schody, a nie próg”
       Wtedy autor widzi zgłoszenie ze statusem „odrzucone” i powodem odrzucenia „Na zdjęciu są schody, a nie próg”
 
-    # brak kroków serwera: #3712
-    @serwer @do-zrobienia
+    @serwer
     Scenariusz: Zasłonięcie twarzy na zdjęciu nie tworzy nowej wersji
       Zakładając, że pierwszy Weryfikator wziął zgłoszenie z pomiaru precyzyjnego, na którego zdjęciu widać twarz przechodnia
       Jeżeli zasłoni twarz na zdjęciu
@@ -218,8 +211,7 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-18
   Reguła: Zmiana zgłoszenia przyjętego zastępuje je dopiero po przyjęciu
 
-    # brak kroków serwera: #2174
-    @serwer @do-zrobienia
+    @serwer
     Scenariusz: Po przyjęciu zmiany poprzednie zgłoszenie staje się archiwalne
       Zakładając, że na mapie jest przyjęte zgłoszenie TB-13 „próg” z uciążliwością 2 w budynku C-13
       Oraz pierwszy Weryfikator wziął zmianę tego zgłoszenia z uciążliwością 3
@@ -238,8 +230,7 @@ Funkcja: Weryfikacja zgłoszeń
   @BR-19
   Reguła: Usunięcie bariery przechodzi weryfikację jak każda zmiana
 
-    # brak kroków serwera: #2174
-    @US10.6 @US8.4 @serwer @do-zrobienia
+    @US10.6 @US8.4 @serwer
     Scenariusz: Po przyjęciu „bariera usunięta” bariera znika z mapy i karty budynku
       Zakładając, że na mapie jest przyjęte zgłoszenie TB-9 „niesprawna winda” w budynku D-2
       Oraz pierwszy Weryfikator wziął zgłoszenie „bariera usunięta” tej bariery
@@ -264,8 +255,7 @@ Funkcja: Weryfikacja zgłoszeń
       Jeżeli pierwszy Weryfikator weźmie zmianę autora
       Wtedy na liście podobnych zgłoszeń widzi zmianę „bariera usunięta”
 
-    # brak kroków serwera: #2174
-    @serwer @do-zrobienia
+    @serwer
     Szablon scenariusza: Zmiany zgłoszenia archiwalnego nie da się przyjąć
       Zakładając, że autor przyjętego zgłoszenia TB-9 „niesprawna winda” w budynku D-2 wysłał zmianę z uciążliwością 2, a inny Zbierający niezależnie wysłał zmianę „bariera usunięta” tego zgłoszenia
       Oraz drugi Weryfikator przyjął <przyjęta zmiana>
@@ -279,8 +269,7 @@ Funkcja: Weryfikacja zgłoszeń
         | zmianę autora z uciążliwością 2    | zmianę „bariera usunięta”  | na mapie jest tylko bariera TB-9 z uciążliwością 2   |
         | zmianę „bariera usunięta”          | zmianę autora              | niesprawnej windy nie ma na mapie                    |
 
-    # brak kroków serwera: #2174
-    @serwer @do-zrobienia
+    @serwer
     Szablon scenariusza: Zmianę zgłoszenia archiwalnego Weryfikator odrzuca z powodem „nieaktualne”
       Zakładając, że autor przyjętego zgłoszenia TB-9 „niesprawna winda” w budynku D-2 wysłał zmianę z uciążliwością 2, a inny Zbierający niezależnie wysłał zmianę „bariera usunięta” tego zgłoszenia
       Oraz drugi Weryfikator przyjął <przyjęta zmiana>
@@ -293,7 +282,7 @@ Funkcja: Weryfikacja zgłoszeń
         | zmianę autora z uciążliwością 2    | zmianę „bariera usunięta”  |
         | zmianę „bariera usunięta”          | zmianę autora              |
 
-    # brak kroków serwera: #2174
+    # brak kroków serwera: #4104
     @serwer @do-zrobienia
     Scenariusz: Zmianę odrzuconą jako „nieaktualne” Zbierający wysyła ponownie do bieżącego zgłoszenia
       Zakładając, że zmianę „bariera usunięta” innego Zbierającego niż autor zgłoszenia TB-9 „niesprawna winda” w budynku D-2 odrzucono z powodem „nieaktualne”, bo wcześniej przyjęto zmianę autora z uciążliwością 2

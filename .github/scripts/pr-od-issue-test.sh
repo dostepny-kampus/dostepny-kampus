@@ -117,6 +117,7 @@ case_unassigned() { pr_json autor-pr 'Closes #12'; issue_json 12 OPEN; }
 case_other_assignee() { pr_json autor-pr 'Closes #12'; issue_json 12 OPEN inna-osoba; }
 case_author_among_assignees() { pr_json autor-pr 'Closes #12'; issue_json 12 OPEN inna-osoba autor-pr; }
 case_dependabot() { pr_json 'dependabot[bot]' 'Notatki wydania' dependabot/npm_and_yarn/docs/x-1.2.3; }
+case_dependabot_app() { pr_json 'app/dependabot' 'Notatki wydania' dependabot/maven/backend/x-1.2.3; }
 case_branch_no_number() { pr_json autor-pr 'Closes #12' poprawki-testow; issue_json 12 OPEN autor-pr; }
 case_branch_with_uppercase() { pr_json autor-pr 'Closes #12' 12-Opis; issue_json 12 OPEN autor-pr; }
 case_branch_with_slash() { pr_json autor-pr 'Closes #12' 12-krotki/opis; issue_json 12 OPEN autor-pr; }
@@ -242,6 +243,7 @@ run_case "issue bez przypisanej osoby" 1 "$unassigned" case_unassigned
 run_case "issue przypisane komuś innemu" 1 "$unassigned" case_other_assignee
 run_case "autor jest jedną z przypisanych osób" 0 '' case_author_among_assignees
 run_case "dependabot[bot] pomijany: bez issue i z gałęzią dependabot/*" 0 '' case_dependabot
+run_case "app/dependabot (autor z gh) pomijany: bez issue" 0 '' case_dependabot_app
 run_case "kilka issue w opisie, wszystkie poprawne" 0 '' case_two_issues_ok
 run_case "kilka issue w opisie, jedno zamknięte" 1 "$closed" case_second_issue_closed
 run_case "numer jest PR, nie issue" 1 "$is_pull" case_pull_number

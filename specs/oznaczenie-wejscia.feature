@@ -9,7 +9,6 @@ Funkcja: Oznaczenie wejścia
     # Dane testowe, a nie stan faktyczny budynku B-8.
     Oraz w danych testowych wejście boczne B-8 nie ma informacji o dostępności ani w danych PWr, ani w OpenStreetMap
 
-  # formularz w aplikacji: #3676
   @US14.1 @aplikacja @serwer
   Szablon scenariusza: Bez roli Zbierającego zmiany oznaczenia wejścia nie da się złożyć
     Zakładając, że osoba jest zalogowana tylko z rolą <rola>
@@ -95,7 +94,7 @@ Funkcja: Oznaczenie wejścia
       Zakładając, że Zbierający jest zalogowany z rolą Zbierającego
       Oraz pierwszy i drugi Weryfikator są zalogowani z rolą Weryfikatora
 
-    # brak formularza zmiany oznaczenia: #3676
+    # pełny test przebiegu w aplikacji: #3816
     @US17.2 @BR-9 @aplikacja @do-zrobienia
     Scenariusz: Zmiana oznaczenia wejścia przechodzi te same statusy co zgłoszenie
       Zakładając, że wejście boczne B-8 ma oznaczenie „brak danych”
@@ -106,8 +105,7 @@ Funkcja: Oznaczenie wejścia
       Wtedy zgłoszenie zmiany oznaczenia ma status „wysłane” i jest w kolejce weryfikacji
       Oraz wejście boczne B-8 nadal ma oznaczenie „brak danych”
 
-    # brak formularza zmiany oznaczenia: #3676
-    @US17.2 @BR-7 @aplikacja @do-zrobienia
+    @US17.2 @BR-7 @aplikacja
     Scenariusz: Zmiany oznaczenia wejścia nie da się zapisać bez zdjęcia
       Jeżeli Zbierający wybierze dla wejścia bocznego B-8 oznaczenie „dostępne” i nie zrobi zdjęcia
       Wtedy aplikacja wskazuje brak zdjęcia i nie zapisuje zgłoszenia
@@ -140,8 +138,7 @@ Funkcja: Oznaczenie wejścia
       Oraz inne wejście A-1 nadal ma oznaczenie „dostępne” z datą 3.11.2026 i źródłem „import”
       Oraz Zbierający widzi powód odrzucenia na liście swoich zgłoszeń
 
-    # brak kolejki weryfikacji: #3063
-    @US17.2 @US10.5 @BR-4 @serwer @do-zrobienia
+    @US17.2 @US10.5 @BR-4 @serwer
     Scenariusz: Weryfikator nie sprawdza zmiany oznaczenia, którą sam złożył
       Zakładając, że pierwszy Weryfikator ma też rolę Zbierającego
       Oraz jako Zbierający wysłał zmianę oznaczenia wejścia bocznego B-8 na „dostępne”

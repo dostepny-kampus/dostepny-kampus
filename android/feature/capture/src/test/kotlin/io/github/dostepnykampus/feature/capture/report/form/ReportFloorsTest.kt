@@ -5,7 +5,9 @@
  */
 package io.github.dostepnykampus.feature.capture.report.form
 
+import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.building.BuildingFloors
+import io.github.dostepnykampus.core.data.building.NearestEntrance
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.building.FloorList
@@ -27,6 +29,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Piętra z planu PWr w formularzu C2: pobranie po otwarciu i wpisanie piętra bez planu.
@@ -116,13 +119,17 @@ class ReportFloorsTest {
                 asked += symbol
                 answer
             }
-        return ReportFormViewModel(floors = floors) { content, _, _ -> saved += content }
+        val catalog = BuildingCatalogRepository(EmptyCoroutineContext) { NO_BUILDINGS }
+        val nearest = NearestEntrance(catalog)
+        return ReportFormViewModel(floors = floors, nearest = nearest) { content, _, _ -> saved += content }
             .apply { open(ReportForm(place = place)) }
     }
 
     private fun state(viewModel: ReportFormViewModel): ReportUiState = checkNotNull(viewModel.uiState.value)
 
     private companion object {
+        const val NO_BUILDINGS = """{"type":"FeatureCollection","attribution":"© plik","features":[]}"""
+
         val PLAN =
             FloorList(
                 source = "Politechnika Wrocławska",

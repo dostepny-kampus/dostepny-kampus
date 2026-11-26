@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.capture.mine
@@ -16,7 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,7 +29,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
+import io.github.dostepnykampus.core.designsystem.card.CardAction
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
+import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.feature.capture.R
+import io.github.dostepnykampus.feature.capture.navigation.MarkingRoute
 
 /**
  * C3 „Moje zgłoszenia” z listą z telefonu.
@@ -68,10 +72,12 @@ fun MySubmissionsContent(
     modifier: Modifier = Modifier,
     onRetry: () -> Unit = {},
 ) {
-    Column(modifier = modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
-        BackHeader(title = stringResource(R.string.moje_naglowek), onBack = actions.onBack)
-        if (state is MySubmissionsUiState.Ready) {
-            SubmissionList(state = state, actions = actions, onRetry = onRetry)
+    Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
+        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
+            BackHeader(title = stringResource(R.string.moje_naglowek), onBack = actions.onBack)
+            if (state is MySubmissionsUiState.Ready) {
+                SubmissionList(state = state, actions = actions, onRetry = onRetry)
+            }
         }
     }
 }
@@ -83,26 +89,36 @@ private fun SubmissionList(state: MySubmissionsUiState.Ready, actions: MySubmiss
         verticalArrangement = Arrangement.spacedBy(Odstepy.m),
     ) {
         item {
-            ListTop(list = state.list, onMeasure = actions.onMeasure)
+            ListTop(list = state.list, onMeasure = actions.onMeasure, onSync = actions.onSync)
         }
         item {
             StatusCheckLine(check = state.check, isOnline = state.isOnline, onRetry = onRetry)
         }
         items(state.list.items, key = { it.id }) { item ->
-            val open = actions.onOpen.takeIf { canOpen(item.shownStatus()) }
-            SubmissionCard(item = item, onOpen = open?.let { { it(item.id) } })
+            val conflict = actions.onConflict.takeIf { item.hasVersionConflict }
+            SubmissionCard(
+                item = item,
+                onOpen = openAction(item, actions),
+                onMeasure = actions.onMeasure,
+                onConflict = conflict?.let { { it(item.id) } },
+            )
         }
     }
 }
 
 @Composable
-private fun ListTop(list: MySubmissions, onMeasure: () -> Unit) {
+private fun ListTop(list: MySubmissions, onMeasure: () -> Unit, onSync: (() -> Unit)?) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         if (list.items.isEmpty()) {
             Text(stringResource(R.string.moje_pusty), style = MaterialTheme.typography.bodyLarge)
         }
         if (list.waitingCount > 0) {
-            Text(stringResource(R.string.moje_czeka, list.waitingCount), style = MaterialTheme.typography.titleMedium)
+            val waiting = stringResource(R.string.moje_czeka, list.waitingCount)
+            if (onSync == null) {
+                Text(waiting, style = MaterialTheme.typography.titleMedium)
+            } else {
+                CardAction(text = waiting, onClick = onSync, opensScreen = true)
+            }
         }
         Button(onClick = onMeasure) {
             Text(stringResource(R.string.pomiar_naglowek))
@@ -126,10 +142,44 @@ private fun StatusCheckLine(check: StatusCheck, isOnline: Boolean, onRetry: () -
 
             StatusCheck.FAILED -> {
                 Text(stringResource(R.string.moje_blad_statusow), style = MaterialTheme.typography.bodyMedium)
-                OutlinedButton(onClick = onRetry) { Text(stringResource(R.string.formularz_sprobuj_ponownie)) }
+                OutlinedAction(onClick = onRetry) { Text(stringResource(R.string.formularz_sprobuj_ponownie)) }
             }
 
             StatusCheck.DONE -> {}
         }
     }
 }
+
+/**
+ * „Otwórz” albo „Wyślij ponownie” pozycji [item]: zmiana oznaczenia wejścia otwiera C6 (po „nieaktualne” jako nową
+ * zmianę tego wejścia), nieaktualna zmiana bariery C2 jako nową zmianę bieżącego przyjętego zgłoszenia, reszta
+ * poprawkę w C2; `null`, gdy pozycji nie da się otworzyć albo czeka na wybór wersji, bo poprawka nie rozstrzyga
+ * konfliktu.
+ *
+ * Wymagania: US8.3, US17.2, BR-18, BR-23, BR-10
+ */
+internal fun openAction(item: OwnSubmissionItem, actions: MySubmissionsActions): (() -> Unit)? {
+    val marking = item.markingRoute()
+    val isBarrier = item.kind != SubmissionKind.ENTRANCE_MARKING
+    return when {
+        !item.canOpenHere() || item.hasVersionConflict -> null
+        item.isBarrierRemoved -> actions.onOpenRemoval?.boundTo(item.id)
+        isBarrier && item.isOutdated -> actions.onResendChange?.boundTo(item.id)
+        isBarrier -> actions.onOpen?.boundTo(item.id)
+        marking == null -> null
+        else -> actions.onOpenMarking?.boundTo(marking)
+    }
+}
+
+private fun <T> ((T) -> Unit).boundTo(value: T): () -> Unit = { this(value) }
+
+private fun OwnSubmissionItem.markingRoute(): MarkingRoute? =
+    if (entranceId == null || buildingSymbol == null) {
+        null
+    } else {
+        MarkingRoute(
+            entranceId = entranceId,
+            buildingSymbol = buildingSymbol,
+            submissionId = id.takeUnless { isOutdated },
+        )
+    }

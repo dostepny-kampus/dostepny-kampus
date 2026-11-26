@@ -7,6 +7,7 @@ package io.github.dostepnykampus.barrier.photo.web;
 
 import io.github.dostepnykampus.barrier.photo.PhotoTooLargeException;
 import io.github.dostepnykampus.barrier.photo.PhotoUpload;
+import io.github.dostepnykampus.barrier.photo.application.PhotoWrite;
 import io.github.dostepnykampus.barrier.photo.application.SubmissionPhotos;
 import io.github.dostepnykampus.barrier.submission.Reader;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,9 +51,9 @@ public final class SubmissionPhotosController {
 
     /**
      * Zapisuje zdjęcie bez metadanych. Ponowne wysłanie tego samego
-     * zdjęcia je zastępuje.
+     * zdjęcia je zastępuje; Weryfikator, który wziął zgłoszenie, zastępuje zapisane zdjęcie.
      *
-     * <p>Wymagania: NFR-26, BR-9</p>
+     * <p>Wymagania: NFR-26, BR-9, NFR-25, BR-15</p>
      *
      * @param submission Identyfikator zgłoszenia
      * @param photo Identyfikator zdjęcia z listy photoIds
@@ -69,9 +70,8 @@ public final class SubmissionPhotosController {
         @PathVariable("photoId") final UUID photo,
         final HttpServletRequest request
     ) throws IOException {
-        this.photos.author(submission, request.getUserPrincipal().getName());
         this.photos.put(
-            submission, photo,
+            new PhotoWrite(submission, photo, request.getUserPrincipal().getName()),
             new PhotoUpload(request.getInputStream(), request.getContentLengthLong())
         );
         return ResponseEntity.noContent().build();

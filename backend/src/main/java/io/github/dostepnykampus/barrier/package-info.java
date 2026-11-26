@@ -5,23 +5,23 @@
  */
 
 /**
- * Moduł barrier: zgłoszenia barier i ich zdjęcia.
+ * Moduł barrier: zgłoszenia barier, ich zdjęcia i weryfikacja.
  *
- * <p>Zadanie: przyjęcie, edycja i status zgłoszenia ze zdjęciami, podgląd podobnych, eksport.</p>
+ * <p>Zadanie: przyjęcie, edycja i status zgłoszenia ze zdjęciami, weryfikacja, eksport.</p>
  *
- * <p>API: brak typów dla innych modułów; HTTP {@code /submissions} i {@code /export.csv}.</p>
+ * <p>API: pakiet {@code api}; HTTP {@code /submissions} i {@code /export.csv}.</p>
  *
- * <p>Zależności: {@code building :: api}, {@code shared}.</p>
+ * <p>Zależności: {@code building :: api}, {@code identity :: api}, {@code shared}.</p>
  *
- * <p>Nie robi: nie przechowuje budynków i nie podejmuje decyzji Weryfikatora.</p>
+ * <p>Nie robi: nie przechowuje budynków ani kont.</p>
  *
- * <p>Kiedy dodawać tutaj: kod zgłoszenia albo zdjęcia; weryfikacja to osobny moduł.</p>
+ * <p>Kiedy dodawać tutaj: kod zgłoszenia, jego zdjęcia albo weryfikacji.</p>
  *
- * <p>Wymagania: US4, US7, US8, US10.1, BR-13</p>
+ * <p>Wymagania: US4, US7, US8, US10, BR-13</p>
  *
  * @since 0.1.0
  */
-@ApplicationModule(allowedDependencies = {"building :: api", "shared"})
+@ApplicationModule(allowedDependencies = {"building :: api", "identity :: api", "shared"})
 @NullMarked
 package io.github.dostepnykampus.barrier;
 

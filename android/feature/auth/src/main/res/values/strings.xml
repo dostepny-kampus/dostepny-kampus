@@ -13,4 +13,15 @@
     <string name="logowanie_nie_udalo">Logowanie się nie udało albo zostało przerwane.</string>
     <string name="logowanie_sprawdz_internet">Sprawdź internet i spróbuj ponownie.</string>
     <string name="logowanie_sprobuj_ponownie">Spróbuj ponownie</string>
+    <string name="konto_i_praca">Konto i praca</string>
+    <string name="konto_twoje_role">Twoje role: %1$s</string>
+    <string name="rola_odwiedzajacy">Odwiedzający</string>
+    <string name="konto_twoja_praca">Twoja praca</string>
+    <string name="konto_zmierz">Zmierz i zgłoś barierę</string>
+    <string name="konto_moje_zgloszenia">Moje zgłoszenia</string>
+    <string name="konto_postep">Postęp inwentaryzacji</string>
+    <string name="konto_sprawdz">Zgłoszenia do sprawdzenia</string>
+    <string name="konto_zapros">Zaproś osobę</string>
+    <string name="konto_eksport">Pobierz eksport</string>
+    <string name="konto_wyloguj">Wyloguj się</string>
 </resources>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Przełącznik ról tylko w wersji debug (US14.1); release go nie zawiera. -->
+<!-- Przełącznik ról (US14.1) i tryb pokazu pomiaru (US6.1) tylko w wersji debug; release ich nie zawiera. -->
 <resources>
     <string name="debug_rola_tytul">Rola (debug)</string>
     <string name="debug_rola_gosc">Gość</string>
@@ -7,5 +7,7 @@
     <string name="debug_rola_zbierajacy">Zbierający</string>
     <string name="debug_rola_weryfikator">Weryfikator</string>
     <string name="debug_rola_koordynator">Koordynator</string>
+    <string name="debug_pokaz_tytul">Tryb pokazu (debug)</string>
+    <string name="debug_pokaz_opis">Pomiar C1 z zapisanej trasy GNSS przy wejściu głównym A-1 zamiast z odbiornika telefonu. Działa od następnego otwarcia pomiaru.</string>
     <string name="debug_rola_blad">Nie udało się zalogować użytkownikiem testowym. Czy działa Keycloak z infra/?</string>
 </resources>

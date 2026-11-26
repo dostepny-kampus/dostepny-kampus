@@ -25,6 +25,11 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldDecorator
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,6 +49,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -60,12 +66,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.LARGE_FONT_SCALE
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.OfflineLine
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.bar.NavigationIcons
@@ -75,8 +81,8 @@ import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.map.area.AreaOrder
 import io.github.dostepnykampus.feature.map.building.BuildingList
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
-import io.github.dostepnykampus.feature.map.overlay.OfflineLine
 import io.github.dostepnykampus.feature.map.search.SearchResults
+import kotlinx.coroutines.flow.drop
 import java.time.Instant
 
 private val SearchIcon =
@@ -130,11 +136,13 @@ internal fun CampusSearch(
     onBarHeight: (Int) -> Unit = {},
     searchFocus: SearchFocus? = null,
 ) {
-    var query by rememberSaveable { mutableStateOf("") }
+    val field = rememberTextFieldState()
+    val query = field.text.toString()
     var isHidden by rememberSaveable { mutableStateOf(false) }
     SideEffect { onSearch(query) }
+    LaunchedEffect(field) { snapshotFlow { field.text.toString() }.drop(1).collect { isHidden = false } }
     val showList = {
-        query = ""
+        field.clearText()
         onListChange(true)
     }
     val release = searchRelease { isHidden = true }
@@ -143,18 +151,13 @@ internal fun CampusSearch(
         onBuildingClick(symbol)
     }
     Column(modifier.fillMaxWidth()) {
-        val onQueryChange = { text: String ->
-            query = text
-            isHidden = false
-        }
         Column(
             Modifier
                 .onSizeChanged { onBarHeight(it.height) }
                 .onFocusChanged { field -> searchFocus?.onField(isFocused = field.hasFocus) },
         ) {
             SearchHeader(
-                query = query,
-                onQueryChange = onQueryChange,
+                field = field,
                 onFieldTap = { isHidden = false },
                 onFieldLeave = { isHidden = true },
                 isList = isList,
@@ -200,8 +203,7 @@ private fun searchRelease(onHide: () -> Unit): () -> Unit {
 
 @Composable
 private fun SearchHeader(
-    query: String,
-    onQueryChange: (String) -> Unit,
+    field: TextFieldState,
     onFieldTap: () -> Unit,
     onFieldLeave: () -> Unit,
     isList: Boolean,
@@ -215,7 +217,7 @@ private fun SearchHeader(
                 verticalArrangement = Arrangement.spacedBy(Odstepy.s),
             ) {
                 TitleRow(isList, onListChange)
-                SymbolField(query = query, onQueryChange = onQueryChange, onTap = onFieldTap, onLeave = onFieldLeave)
+                SymbolField(state = field, onTap = onFieldTap, onLeave = onFieldLeave)
             }
             HorizontalDivider(thickness = Obramowania.ramka, color = MaterialTheme.colorScheme.outlineVariant)
         }
@@ -260,7 +262,7 @@ private fun ViewButton(isList: Boolean, hasIcon: Boolean, onListChange: (Boolean
 }
 
 @Composable
-private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: () -> Unit, onLeave: () -> Unit) {
+private fun SymbolField(state: TextFieldState, onTap: () -> Unit, onLeave: () -> Unit) {
     val interactions = remember { MutableInteractionSource() }
     val tap by rememberUpdatedState(onTap)
     LaunchedEffect(interactions) {
@@ -274,30 +276,15 @@ private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: (
             unfocusedBorderColor = scheme.outline,
         )
     val textStyle = LocalTextStyle.current.merge(TextStyle(color = scheme.onSurface))
-    BasicTextField(
-        value = query,
-        onValueChange = onQueryChange,
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .defaultMinSize(minHeight = OutlinedTextFieldDefaults.MinHeight)
-                .onFocusChanged { if (!it.isFocused) onLeave() },
-        textStyle = textStyle,
-        keyboardOptions =
-            KeyboardOptions(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Search),
-        singleLine = true,
-        interactionSource = interactions,
-        cursorBrush = SolidColor(scheme.primary),
-    ) { field ->
-        OutlinedTextFieldDefaults.DecorationBox(
-            value = query,
-            innerTextField = { FieldWithHint(isEmpty = query.isEmpty(), style = textStyle, content = field) },
+    val material =
+        OutlinedTextFieldDefaults.decorator(
+            state = state,
             enabled = true,
-            singleLine = true,
-            visualTransformation = VisualTransformation.None,
+            lineLimits = TextFieldLineLimits.SingleLine,
+            outputTransformation = null,
             interactionSource = interactions,
             leadingIcon = { Icon(SearchIcon, contentDescription = null) },
-            trailingIcon = { if (query.isNotEmpty()) ClearButton { onQueryChange("") } },
+            trailingIcon = { if (state.text.isNotEmpty()) ClearButton { state.clearText() } },
             colors = colors,
             container = {
                 OutlinedTextFieldDefaults.Container(
@@ -311,7 +298,26 @@ private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: (
                 )
             },
         )
-    }
+    BasicTextField(
+        state = state,
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = OutlinedTextFieldDefaults.MinHeight)
+                .onFocusChanged { if (!it.isFocused) onLeave() },
+        textStyle = textStyle,
+        keyboardOptions =
+            KeyboardOptions(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Search),
+        lineLimits = TextFieldLineLimits.SingleLine,
+        interactionSource = interactions,
+        cursorBrush = SolidColor(scheme.primary),
+        decorator =
+            TextFieldDecorator { inner ->
+                material.Decoration {
+                    FieldWithHint(isEmpty = state.text.isEmpty(), style = textStyle, content = inner)
+                }
+            },
+    )
 }
 
 @Composable

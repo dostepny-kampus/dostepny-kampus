@@ -6,19 +6,21 @@
 package io.github.dostepnykampus.barrier.submission.application;
 
 import io.github.dostepnykampus.barrier.submission.Reader;
-import io.github.dostepnykampus.barrier.submission.SimilarSubmission;
 import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.SubmissionChange;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
 import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
 import io.github.dostepnykampus.building.api.KnownBuildings;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Odczyt zgłoszeń dla warstwy web: kontroler nie sięga do portu
@@ -29,7 +31,7 @@ import org.springframework.stereotype.Service;
  * @since 0.1.0
  */
 @Service
-public final class SubmissionReading {
+public class SubmissionReading {
 
     /** Port odczytu zgłoszeń. */
     private final SubmissionFinder finder;
@@ -54,6 +56,21 @@ public final class SubmissionReading {
         this.finder = finder;
         this.pages = pages;
         this.floors = floors;
+    }
+
+    /**
+     * Własne zgłoszenia konta w każdym statusie oraz cudze przyjęte i archiwalne, zmienione od
+     * {@code since} włącznie, od najdawniej zmienionego, w jednej transakcji odczytu.
+     *
+     * <p>Wymagania: US8.1, US1.3, US10.6</p>
+     *
+     * @param since Chwila, od której liczą się zmiany
+     * @param reader Identyfikator konta z tokenu
+     * @return Zgłoszenia z chwilą zmiany
+     */
+    @Transactional(readOnly = true)
+    public List<SubmissionChange> changedSince(final Instant since, final String reader) {
+        return this.finder.changedSince(since, reader);
     }
 
     /**
@@ -90,19 +107,6 @@ public final class SubmissionReading {
      */
     public boolean foreign(final UUID id, final String account) {
         return this.finder.foreign(id, account);
-    }
-
-    /**
-     * Sprawdza, czy zgłoszenie wzięło do weryfikacji to konto.
-     *
-     * <p>Wymagania: BR-11</p>
-     *
-     * @param id Identyfikator zgłoszenia
-     * @param account Identyfikator konta Weryfikatora
-     * @return Prawda, gdy konto wzięło zgłoszenie
-     */
-    public boolean claimedBy(final UUID id, final String account) {
-        return this.finder.claimedBy(id, account);
     }
 
     /**
@@ -181,17 +185,5 @@ public final class SubmissionReading {
             page = this.pages.own(author, query, window);
         }
         return page;
-    }
-
-    /**
-     * Wyszukuje zgłoszenia podobne do danego.
-     *
-     * <p>Wymagania: US10.1, BR-13</p>
-     *
-     * @param id Identyfikator sprawdzanego zgłoszenia
-     * @return Podobne zgłoszenia od najbliższego
-     */
-    public List<SimilarSubmission> similar(final UUID id) {
-        return this.finder.similar(id);
     }
 }

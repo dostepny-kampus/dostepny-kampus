@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.location
@@ -13,27 +13,27 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 
-/** Źródła pomiaru ekranu C1 w grafie Hilt: odbiornik GNSS telefonu i jego zegar monotoniczny. Wymagania: US6.1 */
+/** Źródła pomiaru ekranu C1 w grafie Hilt według wariantu budowy i zegar monotoniczny telefonu. Wymagania: US6.1 */
 @Module
 @InstallIn(SingletonComponent::class)
 internal object LocationModule {
-    /** Odczyty z dostawcy GPS telefonu. */
+    /** Odczyty położenia: w release z dostawcy GPS telefonu. */
     @Provides
     fun positions(
         @ApplicationContext context: Context,
-    ): PositionSource = GnssPositionFixes(context)
+    ): PositionSource = variantPositions(context)
 
-    /** Stan satelitów z `GnssStatus` telefonu. */
+    /** Stan satelitów: w release z `GnssStatus` telefonu. */
     @Provides
     fun satellites(
         @ApplicationContext context: Context,
-    ): SatelliteSource = GnssSatellites(context)
+    ): SatelliteSource = variantSatellites(context)
 
-    /** Włącznik lokalizacji telefonu z systemowych zdarzeń zmiany dostawców. */
+    /** Włącznik lokalizacji: w release z systemowych zdarzeń zmiany dostawców. */
     @Provides
     fun locationSwitch(
         @ApplicationContext context: Context,
-    ): LocationSwitch = GnssLocationSwitch(context)
+    ): LocationSwitch = variantLocationSwitch(context)
 
     /** Czas od startu telefonu, ten sam co w odczytach GNSS. */
     @Provides

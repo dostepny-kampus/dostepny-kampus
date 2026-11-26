@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Yevhenii Lukianenko
+ * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.core.data.submission.own
@@ -9,6 +9,8 @@ import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionEntity
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import io.github.dostepnykampus.core.database.submission.PendingSubmissionDao
+import io.github.dostepnykampus.core.model.building.EntranceMarking
+import io.github.dostepnykampus.core.model.submission.SubmissionKind
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -59,6 +61,10 @@ public enum class RefusalReason {
  * @property serverStatus status z serwera po odświeżeniu; `null`, gdy telefon go jeszcze nie zna
  * @property rejectionReason powód odrzucenia od Weryfikatora; `null` poza odrzuceniem
  * @property isChangeWaiting serwer ma zgłoszenie, a jego zmiana czeka w kolejce telefonu na wysłanie
+ * @property kind rodzaj: zgłoszenie z pomiaru precyzyjnego albo zmiana oznaczenia wejścia
+ * @property isBarrierRemoved zgłoszenie „bariera usunięta”
+ * @property entranceId wejście zmiany oznaczenia; `null` poza zmianą oznaczenia
+ * @property entranceMarking nowe oznaczenie wejścia; `null` poza zmianą oznaczenia
  */
 public data class OwnSubmission(
     val id: String,
@@ -71,6 +77,10 @@ public data class OwnSubmission(
     val serverStatus: SubmissionStatus? = null,
     val rejectionReason: String? = null,
     val isChangeWaiting: Boolean = false,
+    val kind: SubmissionKind = SubmissionKind.PRECISE,
+    val isBarrierRemoved: Boolean = false,
+    val entranceId: String? = null,
+    val entranceMarking: EntranceMarking? = null,
 )
 
 /** Własne zgłoszenia od najnowszego; w aplikacji z historii Room. Wymagania: US8.1, NFR-5 */
@@ -116,4 +126,8 @@ internal fun OwnSubmissionEntity.toOwnSubmission(isQueued: Boolean = false): Own
         serverStatus = SubmissionStatus.entries.find { it.name == serverStatus },
         rejectionReason = rejectionReason,
         isChangeWaiting = isQueued && state == OwnSubmissionState.SENT,
+        kind = SubmissionKind.entries.find { it.name == kind } ?: SubmissionKind.PRECISE,
+        isBarrierRemoved = isBarrierRemoved == true,
+        entranceId = entranceId,
+        entranceMarking = EntranceMarking.entries.find { it.name == entranceMarking },
     )

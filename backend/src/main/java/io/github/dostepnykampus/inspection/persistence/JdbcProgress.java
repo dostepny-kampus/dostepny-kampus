@@ -6,15 +6,13 @@
 package io.github.dostepnykampus.inspection.persistence;
 
 import io.github.dostepnykampus.inspection.domain.BuildingProgress;
-import io.github.dostepnykampus.inspection.domain.MarkerPlace;
 import io.github.dostepnykampus.inspection.domain.ProgressMarker;
 import io.github.dostepnykampus.inspection.domain.ProgressRepository;
+import io.github.dostepnykampus.inspection.domain.Pseudonyms;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
@@ -35,12 +33,19 @@ public final class JdbcProgress implements ProgressRepository {
     private final JdbcClient jdbc;
 
     /**
+     * Pseudonimy autorów znaczników.
+     */
+    private final Pseudonyms pseudonyms;
+
+    /**
      * Tworzy adapter odczytu postępu.
      *
      * @param jdbc Dostęp do bazy
+     * @param pseudonyms Pseudonimy autorów znaczników
      */
-    public JdbcProgress(final JdbcClient jdbc) {
+    public JdbcProgress(final JdbcClient jdbc, final Pseudonyms pseudonyms) {
         this.jdbc = jdbc;
+        this.pseudonyms = pseudonyms;
     }
 
     @Override
@@ -79,40 +84,28 @@ public final class JdbcProgress implements ProgressRepository {
             WHERE NOT revoked
             ORDER BY building_symbol, created_at, id
             """
-        ).query((rows, num) -> JdbcProgress.marker(rows, viewer)).list().stream()
+        ).query((rows, num) -> this.marker(rows, viewer)).list().stream()
             .collect(Collectors.groupingBy(item -> item.place().building()));
     }
 
-    private static ProgressMarker marker(final ResultSet rows, final String viewer)
+    private ProgressMarker marker(final ResultSet rows, final String viewer)
         throws SQLException {
-        final String author = JdbcProgress.text(rows, "author");
-        final OffsetDateTime created = rows.getObject("created_at", OffsetDateTime.class);
-        if (created == null) {
-            throw new SQLException("Brak wartości kolumny created_at");
-        }
-        final String building = JdbcProgress.text(rows, "building_symbol");
-        final String floor = rows.getString("floor_id");
-        final MarkerPlace place;
-        if (floor == null) {
-            place = new MarkerPlace.Building(building);
-        } else {
-            place = new MarkerPlace.Floor(building, floor);
-        }
+        final String author = MarkerRows.text(rows, "author");
         return new ProgressMarker(
-            UUID.fromString(JdbcProgress.text(rows, "id")),
-            place,
-            created.toInstant(),
+            MarkerRows.id(rows),
+            MarkerRows.place(rows),
+            MarkerRows.instant(rows, "created_at"),
             author.equals(viewer),
-            JdbcProgress.pseudonym(author)
+            this.pseudonyms.of(author)
         );
     }
 
     private static BuildingProgress building(
         final ResultSet rows, final Map<String, List<ProgressMarker>> grouped
     ) throws SQLException {
-        final String symbol = JdbcProgress.text(rows, "symbol");
+        final String symbol = MarkerRows.text(rows, "symbol");
         final BuildingProgress.Coverage coverage;
-        if ("DETAILED".equals(JdbcProgress.text(rows, "detail_level"))) {
+        if ("DETAILED".equals(MarkerRows.text(rows, "detail_level"))) {
             coverage = new BuildingProgress.Coverage.Floors(
                 rows.getInt("floors_total"), rows.getInt("floors_inspected")
             );
@@ -130,17 +123,5 @@ public final class JdbcProgress implements ProgressRepository {
             ),
             grouped.getOrDefault(symbol, List.of())
         );
-    }
-
-    private static String pseudonym(final String author) {
-        return String.format("Autor %d", Math.floorMod(author.hashCode(), 999) + 1);
-    }
-
-    private static String text(final ResultSet rows, final String column) throws SQLException {
-        final String value = rows.getString(column);
-        if (value == null) {
-            throw new SQLException(String.format("Brak wartości kolumny %s", column));
-        }
-        return value;
     }
 }

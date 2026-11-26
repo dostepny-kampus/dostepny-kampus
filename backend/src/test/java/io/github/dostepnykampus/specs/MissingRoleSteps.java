@@ -147,13 +147,10 @@ public final class MissingRoleSteps {
     }
 
     private static String marking() {
-        return String.join(
-            "",
-            "{\"id\":\"", UUID.randomUUID().toString(), "\",\"kind\":\"ENTRANCE_MARKING\",",
-            "\"buildingSymbol\":\"B-8\",\"entranceId\":\"node/12127546084\",",
-            "\"entranceMarking\":\"ACCESSIBLE\",",
-            "\"location\":{\"type\":\"Point\",\"coordinates\":[17.065862,51.1078003]},",
-            "\"photoIds\":[\"", UUID.randomUUID().toString(), "\"]}"
-        );
+        return """
+            {"id":"%s","kind":"ENTRANCE_MARKING","buildingSymbol":"B-8",\
+            "entranceId":"node/12127546084","entranceMarking":"ACCESSIBLE",\
+            "location":{"type":"Point","coordinates":[17.065862,51.1078003]},\
+            "photoIds":["%s"]}""".formatted(UUID.randomUUID(), UUID.randomUUID());
     }
 }

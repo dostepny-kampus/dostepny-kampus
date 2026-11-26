@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.barrier.submission.web;
 
 import io.github.dostepnykampus.barrier.submission.Reader;
-import io.github.dostepnykampus.barrier.submission.SimilarSubmission;
 import io.github.dostepnykampus.barrier.submission.Submission;
+import io.github.dostepnykampus.barrier.submission.SubmissionChange;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionQuery;
 import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
@@ -184,11 +184,6 @@ final class SubmissionReadingTest {
         }
 
         @Override
-        public boolean claimedBy(final UUID id, final String account) {
-            throw new UnsupportedOperationException("Sprawdzenie zmiany nie pyta o Weryfikatora");
-        }
-
-        @Override
         public boolean authorOnly(final UUID id, final String account) {
             throw new UnsupportedOperationException("Sprawdzenie zmiany nie pyta o autora");
         }
@@ -204,6 +199,11 @@ final class SubmissionReadingTest {
         }
 
         @Override
+        public List<SubmissionChange> changedSince(final Instant since, final String reader) {
+            throw new UnsupportedOperationException("Sprawdzenie nie czyta zmian od kursora");
+        }
+
+        @Override
         public SubmissionFinder.Page page(
             final SubmissionQuery query, final SubmissionFinder.Window window
         ) {
@@ -215,11 +215,6 @@ final class SubmissionReadingTest {
             final String author, final SubmissionQuery query, final SubmissionFinder.Window window
         ) {
             throw new UnsupportedOperationException("Sprawdzenie nie czyta własnych");
-        }
-
-        @Override
-        public List<SimilarSubmission> similar(final UUID id) {
-            throw new UnsupportedOperationException("Sprawdzenie zmiany nie szuka podobnych");
         }
     }
 }
