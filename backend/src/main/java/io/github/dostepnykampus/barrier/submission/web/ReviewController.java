@@ -77,7 +77,6 @@ public final class ReviewController {
     @GetMapping("/review/queue")
     List<SubmissionResponse> listReviewQueue(final Principal account) {
         return this.queue.forReviewer(account.getName()).stream()
-            .filter(this.photos::complete)
             .map(SubmissionResponse::new)
             .toList();
     }
