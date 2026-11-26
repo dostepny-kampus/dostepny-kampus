@@ -295,10 +295,11 @@ public class SubmissionQueue internal constructor(
         runCatching(onSaved)
     }
 
-    /** Czeka na wybór wersji: kopia wersji z serwera powstaje tylko przy odmowie 409, inne odmowy jej nie mają. */
-    private suspend fun isChoicePending(id: String): Boolean =
-        conflicts?.get(serverVersionKey(id)) != null &&
-            store.all().any { it.submission.id == id && it.submission.isRefused }
+    /**
+     * Czeka na wybór wersji: kopia wersji z serwera powstaje razem z odmową 409 i znika dopiero po wyborze w C4, a inne
+     * odmowy jej nie mają.
+     */
+    private suspend fun isChoicePending(id: String): Boolean = conflicts?.get(serverVersionKey(id)) != null
 
     private suspend fun remember(entity: PendingSubmissionEntity) {
         val own = history ?: return
