@@ -380,13 +380,7 @@ public final class QueueSteps {
                     MockMvcRequestBuilders.post("/submissions/{id}/review", QueueSteps.ONE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer ".concat(this.first))
-                        .content(
-                            String.format(
-                                "{\"decision\":\"REJECT\",\"version\":%d,%s}",
-                                this.own(this.queue).getFirst().path("version").asInt(),
-                                "\"rejectionReason\":\"Zdjęcie nie pokazuje bariery\""
-                            )
-                        )
+                        .content(this.rejection())
                 )
             ),
             Matchers.contains(200, 200)
@@ -422,6 +416,14 @@ public final class QueueSteps {
             Matchers.equalTo(201)
         );
         this.photos.put(id, QueueSteps.PHOTO, "zdjęcie".getBytes(StandardCharsets.UTF_8));
+    }
+
+    private String rejection() {
+        return String.format(
+            "{\"decision\":\"REJECT\",\"version\":%d,%s}",
+            this.own(this.queue).getFirst().path("version").asInt(),
+            "\"rejectionReason\":\"Zdjęcie nie pokazuje bariery\""
+        );
     }
 
     private String queue(final String token) throws Exception {
