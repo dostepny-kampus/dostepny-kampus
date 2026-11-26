@@ -31,11 +31,11 @@ import io.github.dostepnykampus.core.designsystem.Wysokosci
  * Przypięty pasek czynności nad paskiem dolnym, np. „Zgłoś barierę” i „Anuluj”.
  *
  * Tokeny: tło `surface`, cień [Wysokosci.pasekCzynnosci], margines [Odstepy.m], odstęp między przyciskami
- * [CeleDotyku.odstep]. Szerokość przycisków [content] ustala wywołujący: [PinnedActionScope.weight] w wierszu,
- * `fillMaxWidth()` albo szerokość napisu. Przycisk, który się nie mieści, np. przy dużej czcionce, przechodzi do
- * następnego wiersza; słowo napisu przycisku z wagą nie łamie się w środku.
+ * [CeleDotyku.odstep]. Jedyny przycisk zajmuje całą szerokość pasa; przy kilku szerokość ustala wywołujący:
+ * [PinnedActionScope.weight] w wierszu, `fillMaxWidth()` albo szerokość napisu. Przycisk, który się nie mieści,
+ * np. przy dużej czcionce, przechodzi do następnego wiersza; słowo napisu przycisku z wagą nie łamie się w środku.
  *
- * Wymagania: NFR-20
+ * Wymagania: NFR-17, NFR-20, NFR-52
  */
 @Composable
 public fun PinnedActionBar(modifier: Modifier = Modifier, content: @Composable PinnedActionScope.() -> Unit) {
@@ -54,9 +54,9 @@ public fun PinnedActionBar(modifier: Modifier = Modifier, content: @Composable P
 
 /**
  * Przycisk przypiętego paska czynności ([PinnedActionBar]) rodzaju [kind] z napisem [text]; szerokość nadaje
- * [modifier]. Wysokość co najmniej [CeleDotyku.przypiety], rośnie z tekstem. Kolory rodzajów opisuje
- * [PinnedButtonKind]; w ciemnym motywie czynność główną od tonalnej odróżnia gruba ramka, bo jasne tło `primary`
- * świeciłoby.
+ * [modifier], a gdy stoi sam w pasku, zajmuje całą jego szerokość. Wysokość co najmniej [CeleDotyku.przypiety],
+ * rośnie z tekstem. Kolory rodzajów opisuje [PinnedButtonKind]; w ciemnym motywie czynność główną od tonalnej
+ * odróżnia gruba ramka, bo jasne tło `primary` świeciłoby.
  *
  * Wymagania: NFR-17, NFR-20, NFR-16, NFR-21
  */
