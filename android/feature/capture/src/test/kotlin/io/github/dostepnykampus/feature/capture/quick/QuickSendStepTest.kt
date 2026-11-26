@@ -6,6 +6,9 @@
 package io.github.dostepnykampus.feature.capture.quick
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -42,11 +45,22 @@ class QuickSendStepTest {
     /** Wiersz: V4 krok 3 → grupa, piętro i „Dołączymy miejsce, w którym teraz stoisz.”. Wymagania: US4.1, US4.5 */
     @Test
     fun showsSummaryWithFloor() {
-        val report = QuickReport(photo = photo, group = BarrierGroup.TOILETS, floorNumber = 2)
-        show(report = report, isFloorAsked = true, lookup = here)
+        var floor by mutableStateOf(2)
+        compose.setContent {
+            DostepnyKampusTheme {
+                val report = QuickReport(photo = photo, group = BarrierGroup.TOILETS, floorNumber = floor)
+                QuickSendSummary(report = report, isFloorAsked = true, lookup = here)
+            }
+        }
         compose.onNodeWithText("Toalety").assertIsDisplayed()
-        compose.onNodeWithText("Piętro 2").assertIsDisplayed()
+        compose.onNodeWithText("2 piętro").assertIsDisplayed()
         compose.onNodeWithText("Dołączymy miejsce, w którym teraz stoisz.").assertIsDisplayed()
+        floor = -1
+        compose.onNodeWithText("Piwnica").assertIsDisplayed()
+        floor = 0
+        compose.onNodeWithText("Parter").assertIsDisplayed()
+        floor = 10
+        compose.onNodeWithText("10 piętro").assertIsDisplayed()
     }
 
     /**

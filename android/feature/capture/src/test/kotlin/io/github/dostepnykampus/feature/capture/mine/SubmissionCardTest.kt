@@ -79,10 +79,21 @@ class SubmissionCardTest {
      */
     @Test
     fun showsItemDetails() {
-        show(item(id = "a", state = SendState.SENT))
+        var shown by mutableStateOf(item(id = "a", state = SendState.SENT))
+        compose.setContent {
+            DostepnyKampusTheme {
+                SubmissionCard(item = shown, onOpen = null, onMeasure = {}, onConflict = null)
+            }
+        }
         compose.onNodeWithText("Wysłane").assertIsDisplayed()
-        compose.onNodeWithText("Budynek A-1, Piętro 2").assertIsDisplayed()
+        compose.onNodeWithText("Budynek A-1, 2 piętro").assertIsDisplayed()
         compose.onNodeWithText("9.11.2026").assertIsDisplayed()
+        shown = shown.copy(floorNumber = -1)
+        compose.onNodeWithText("Budynek A-1, Piwnica").assertIsDisplayed()
+        shown = shown.copy(floorNumber = 0)
+        compose.onNodeWithText("Budynek A-1, Parter").assertIsDisplayed()
+        shown = shown.copy(floorNumber = 10)
+        compose.onNodeWithText("Budynek A-1, 10 piętro").assertIsDisplayed()
     }
 
     /**

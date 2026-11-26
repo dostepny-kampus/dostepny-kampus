@@ -94,18 +94,25 @@ class QuickGroupStepTest {
         show(floors = emptyList(), answers = answers)
         compose.onNodeWithText("Na którym piętrze?").assertIsDisplayed()
         compose.onNodeWithText("Nie wiem").performClick()
+        compose.onNodeWithText("Piwnica").performClick()
         compose.onNodeWithText("Parter").performClick()
-        compose.onNodeWithText("2").performClick()
-        assertEquals(listOf(QuickFloor(), QuickFloor(number = 0), QuickFloor(number = 2)), answers)
+        compose.onNodeWithText("2 piętro").performClick()
+        assertEquals(
+            listOf(QuickFloor(), QuickFloor(number = -1), QuickFloor(number = 0), QuickFloor(number = 2)),
+            answers,
+        )
     }
 
     /** Wiersz: V4 krok 2 w budynku podstawowym, piętra pod parterem i wyższe niż 4. Wymagania: US4.5 */
     @Test
     fun offersBasicFloorRange() {
         show(floors = emptyList(), answers = mutableListOf())
-        listOf("-1", "Parter", "5", "10").forEach { compose.onNodeWithText(it).assertExists() }
-        compose.onNodeWithText("-2").assertDoesNotExist()
-        compose.onNodeWithText("11").assertDoesNotExist()
+        listOf("Piwnica", "Parter", "1 piętro", "5 piętro", "10 piętro").forEach {
+            compose.onNodeWithText(it).assertExists()
+        }
+        listOf("-1", "1", "-2 piętro", "11 piętro").forEach {
+            compose.onNodeWithText(it).assertDoesNotExist()
+        }
     }
 
     /** Wiersz: V4 krok 2 w budynku szczegółowym, etykiety pięter z danych PWr od najniższego. Wymagania: US4.5 */
@@ -115,7 +122,7 @@ class QuickGroupStepTest {
         val basement = Floor(id = "A-1/p-1", label = "Piwnica", order = -1)
         show(floors = listOf(basement, Floor(id = "A-1/p0", label = "Parter", order = 0)), answers = answers)
         compose.onNodeWithText("Nie wiem").assertIsDisplayed()
-        compose.onNodeWithText("2").assertDoesNotExist()
+        compose.onNodeWithText("2 piętro").assertDoesNotExist()
         compose.onNodeWithText("Piwnica").performClick()
         assertEquals(listOf(QuickFloor(floor = basement)), answers)
     }
@@ -138,7 +145,7 @@ class QuickGroupStepTest {
     @Config(qualifiers = "w360dp-h800dp", fontScale = 2f)
     fun keepsLargeFloorTargets() {
         show(floors = emptyList(), answers = mutableListOf())
-        listOf("Nie wiem", "-1", "Parter", "10").forEach { label ->
+        listOf("Nie wiem", "Piwnica", "Parter", "10 piętro").forEach { label ->
             compose
                 .onNodeWithText(label)
                 .performScrollTo()

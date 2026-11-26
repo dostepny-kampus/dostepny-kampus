@@ -70,11 +70,12 @@ class QuickFloorScenarioTest {
         standAt(D2)
         compose.onNodeWithText("Schody i windy").performClick()
         assertFloorAnswers(requireNotNull(QUICK_PWR_FLOORS["D-2"]))
-        compose.onNodeWithText("10").assertDoesNotExist()
+        compose.onNodeWithText("10 piętro").assertDoesNotExist()
     }
 
     /**
-     * W budynku B-4 przy grupie „Toalety” krok 2 pyta o piętro z „Nie wiem” i przyciskami „Parter”, „1”, „2”.
+     * W budynku B-4 przy grupie „Toalety” krok 2 pyta o piętro z „Nie wiem” i przyciskami „Parter”, „1 piętro”,
+     *   „2 piętro”.
      * Scenariusz (przykład: w budynku B-4): zgloszenie-szybkie.feature: Pytanie o piętro tylko w budynku i przy
      *   grupie, która go wymaga
      *
@@ -84,7 +85,7 @@ class QuickFloorScenarioTest {
     fun asksFloorInB4() {
         standAt(B4)
         compose.onNodeWithText("Toalety").performClick()
-        assertFloorAnswers(listOf("Parter", "1", "2"))
+        assertFloorAnswers(listOf("Piwnica", "Parter", "1 piętro", "2 piętro"))
     }
 
     /**
@@ -99,7 +100,7 @@ class QuickFloorScenarioTest {
         standAt(C13)
         compose.onNodeWithText("Wejście i drzwi").performClick()
         assertFloorAnswers(requireNotNull(QUICK_PWR_FLOORS["C-13"]))
-        compose.onNodeWithText("10").assertDoesNotExist()
+        compose.onNodeWithText("10 piętro").assertDoesNotExist()
     }
 
     /**
@@ -161,7 +162,7 @@ class QuickFloorScenarioTest {
         val model = standAt(B4)
         compose.onNodeWithText("Toalety").performClick()
         compose.onNodeWithText("Na którym piętrze?").assertIsDisplayed()
-        compose.onNodeWithText("2").performClick()
+        compose.onNodeWithText("2 piętro").performClick()
         sendFromStepThree()
         assertEquals("budynek B-4", "B-4", model.building())
         assertEquals("miejsce w budynku B-4", listOf(B4), submissions.map { it.location })
