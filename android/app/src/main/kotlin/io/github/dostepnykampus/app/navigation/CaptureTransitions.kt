@@ -38,6 +38,7 @@ fun AppNavigator.mySubmissions() {
  * Wymagania: US8.3, US8.4
  */
 fun AppNavigator.openEdit(submissionId: String, isBarrierRemoved: Boolean = false) {
+    // TODO(#4056): C2 i C7 otwierają tylko zgłoszenia z kolejki telefonu; wysłane wracają na C3.
     val route = if (isBarrierRemoved) RemovedEditRoute(submissionId) else ReportEditRoute(submissionId)
     if (current == MySubmissionsRoute) leaving { add(route) }
 }

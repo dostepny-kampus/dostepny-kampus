@@ -77,6 +77,7 @@ class RemovedViewModel
             if (requested != null) return
             requested = id
             viewModelScope.launch {
+                // TODO(#4056): wysłanego zgłoszenia kolejka już nie ma, więc ekran wraca na C3.
                 val own = edits.load(id)
                 edited = own?.edited
                 val replaced = own?.run { content.replacesSubmissionId }
