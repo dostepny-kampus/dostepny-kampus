@@ -33,10 +33,10 @@ class BasemapTileTest {
         assertFalse(isOutside(tile(z = 5, x = 17, y = 10), listOf(area)), "kafelek nad całym terenem")
     }
 
-    /** Bez prostokątów, np. przed pomiarem mapy, i dla żądań innych niż kafelek podkładu filtr nic nie zatrzymuje. */
+    /** Bez prostokątów filtr zatrzymuje kafelki podkładu i przepuszcza inne zasoby. */
     @Test
     fun keepsOtherRequests() {
-        assertFalse(isOutside(tile(z = 14, x = 1, y = 1), emptyList()), "bez prostokątów")
+        assertTrue(isOutside(tile(z = 14, x = 1, y = 1), emptyList()), "bez prostokątów kafelek nie idzie do sieci")
         assertFalse(isOutside(BASEMAP_TILES, listOf(area)), "opis źródła")
         assertFalse(isOutside("https://tiles.openfreemap.org/fonts/Noto/0-255.pbf", listOf(area)), "napisy")
     }
