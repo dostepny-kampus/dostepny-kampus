@@ -5,22 +5,18 @@
  */
 package io.github.dostepnykampus.barrier.review.web;
 
-import io.github.dostepnykampus.barrier.review.ReviewDecision;
+import io.github.dostepnykampus.barrier.review.application.ReviewConflict;
 import io.github.dostepnykampus.barrier.review.application.ReviewQueue;
-import io.github.dostepnykampus.barrier.review.application.StaleEntranceMarking;
 import io.github.dostepnykampus.barrier.review.application.SubmissionReview;
 import io.github.dostepnykampus.barrier.submission.EditResult;
-import io.github.dostepnykampus.barrier.submission.StoredPhotos;
-import io.github.dostepnykampus.barrier.submission.Submission;
-import io.github.dostepnykampus.barrier.submission.application.SubmissionReading;
 import io.github.dostepnykampus.barrier.submission.web.SubmissionResponse;
 import io.github.dostepnykampus.shared.error.ConflictingState;
-import io.github.dostepnykampus.shared.error.ForbiddenChange;
 import io.github.dostepnykampus.shared.error.MissingResource;
 import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Supplier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,8 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Weryfikacja zgłoszeń: kolejka weryfikacji, podobne zgłoszenia, wzięcie do weryfikacji
- * i decyzja Weryfikatora. Własnego zgłoszenia Weryfikator nie widzi w kolejce,
- * nie bierze ani nie rozstrzyga.
+ * i decyzja Weryfikatora. Reguły sprawdzają usługi; kontroler zamienia żądanie na polecenie,
+ * a wynik albo wyjątek na odpowiedź.
  *
  * <p>Wymagania: US10.1, US10.4, US10.5, US10.7, BR-3, BR-4, BR-7, BR-8, BR-11, BR-13, BR-16</p>
  *
@@ -39,29 +35,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public final class ReviewController {
 
-    /** Opis braku zgłoszenia w odpowiedzi 404. */
-    private static final String MISSING = "Nie ma takiego zgłoszenia";
-
     /** Wzięcie zgłoszenia i zapis decyzji. */
     private final SubmissionReview review;
-
-    /** Odczyt zgłoszeń. */
-    private final SubmissionReading finder;
 
     /** Kolejka weryfikacji i podobne zgłoszenia. */
     private final ReviewQueue queue;
 
-    /** Kontrola kompletu zdjęć przed wzięciem i decyzją. */
-    private final StoredPhotos photos;
-
-    ReviewController(
-        final SubmissionReview review, final SubmissionReading finder, final ReviewQueue queue,
-        final StoredPhotos photos
-    ) {
+    ReviewController(final SubmissionReview review, final ReviewQueue queue) {
         this.review = review;
-        this.finder = finder;
         this.queue = queue;
-        this.photos = photos;
     }
 
     /**
@@ -94,9 +76,6 @@ public final class ReviewController {
     List<SimilarSubmissionResponse> listSimilarSubmissions(
         @PathVariable("submissionId") final UUID id
     ) {
-        if (this.finder.find(id).isEmpty()) {
-            throw new MissingResource(ReviewController.MISSING);
-        }
         return this.queue.similar(id).stream().map(SimilarSubmissionResponse::new).toList();
     }
 
@@ -115,9 +94,7 @@ public final class ReviewController {
     SubmissionResponse claimSubmission(
         @PathVariable("submissionId") final UUID id, final Principal account
     ) {
-        this.checkNotOwn(id, account);
-        this.checkPhotos(id);
-        return ReviewController.saved(this.review.claim(id, account.getName()));
+        return ReviewController.saved(() -> this.review.claim(id, account.getName()));
     }
 
     /**
@@ -138,46 +115,23 @@ public final class ReviewController {
         @PathVariable("submissionId") final UUID id,
         @RequestBody final ReviewRequest body, final Principal account
     ) {
-        this.checkNotOwn(id, account);
-        if (!this.review.claimedBy(id, account.getName())) {
-            throw new ForbiddenChange("Zgłoszenie nie jest wzięte przez tego Weryfikatora");
-        }
-        this.checkPhotos(id);
-        final ReviewDecision decision = body.toDecision(id, account.getName());
-        final Submission current = this.finder.find(id).orElseThrow();
-        decision.admit(current.content().kind());
+        return ReviewController.saved(
+            () -> this.review.decide(body.toDecision(id, account.getName()))
+        );
+    }
+
+    private static SubmissionResponse saved(final Supplier<EditResult> operation) {
+        final EditResult result;
         try {
-            return ReviewController.saved(this.review.decide(decision));
-        } catch (final StaleEntranceMarking stale) {
+            result = operation.get();
+        } catch (final ReviewConflict refused) {
             final ConflictingState conflict = new ConflictingState(
-                Objects.requireNonNull(stale.getMessage()), "serverSubmission",
-                new SubmissionResponse(current)
+                Objects.requireNonNull(refused.getMessage()), "serverSubmission",
+                new SubmissionResponse(refused.current())
             );
-            conflict.initCause(stale);
+            conflict.initCause(refused);
             throw conflict;
         }
-    }
-
-    private void checkNotOwn(final UUID id, final Principal account) {
-        if (this.finder.find(id).isEmpty()) {
-            throw new MissingResource(ReviewController.MISSING);
-        }
-        if (!this.finder.foreign(id, account.getName())) {
-            throw new ForbiddenChange("Własnego zgłoszenia nie weryfikuje jego autor");
-        }
-    }
-
-    private void checkPhotos(final UUID id) {
-        final Submission current = this.finder.find(id).orElseThrow();
-        if (!this.photos.complete(current)) {
-            throw new ConflictingState(
-                "Serwer nie ma jeszcze wszystkich zdjęć zgłoszenia",
-                "serverSubmission", new SubmissionResponse(current)
-            );
-        }
-    }
-
-    private static SubmissionResponse saved(final EditResult result) {
         return switch (result) {
             case EditResult.Saved saved -> new SubmissionResponse(saved.submission());
             case EditResult.Conflict conflict -> throw new ConflictingState(
@@ -185,7 +139,7 @@ public final class ReviewController {
                 "serverSubmission",
                 new SubmissionResponse(conflict.current())
             );
-            case EditResult.Missing _ -> throw new MissingResource(ReviewController.MISSING);
+            case EditResult.Missing _ -> throw new MissingResource("Nie ma takiego zgłoszenia");
             case null -> throw new IllegalStateException("Brak wyniku decyzji o zgłoszeniu");
         };
     }
