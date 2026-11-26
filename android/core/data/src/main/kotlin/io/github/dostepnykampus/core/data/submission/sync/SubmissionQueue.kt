@@ -10,6 +10,7 @@ import io.github.dostepnykampus.core.data.server.ServerReply
 import io.github.dostepnykampus.core.data.submission.own.isOwnHistory
 import io.github.dostepnykampus.core.data.submission.own.keepingServerState
 import io.github.dostepnykampus.core.data.submission.own.toOwnSubmissionEntity
+import io.github.dostepnykampus.core.database.cache.ServerCopyDao
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionDao
 import io.github.dostepnykampus.core.database.submission.OwnSubmissionState
 import io.github.dostepnykampus.core.database.submission.PendingPhotoEntity
@@ -242,7 +243,7 @@ public class SubmissionQueue internal constructor(
                 var paths = emptyList<String>()
                 store.together {
                     if (store.belongsToAnotherAccount(edited.id, owner)) throw queueOwnerChanged()
-                    if (isChoicePending(edited.id)) throw versionChoicePending(edited.id)
+                    requireNoVersionChoice(id = edited.id, conflicts = conflicts)
                     val version = baseVersionOf(edited = edited, store = store, history = history)
                     val entity = fresh.copy(baseVersion = version, ownerSub = owner)
                     paths = store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) })
@@ -294,12 +295,6 @@ public class SubmissionQueue internal constructor(
         }
         runCatching(onSaved)
     }
-
-    /**
-     * Czeka na wybór wersji: kopia wersji z serwera powstaje razem z odmową 409 i znika dopiero po wyborze w C4, a inne
-     * odmowy jej nie mają.
-     */
-    private suspend fun isChoicePending(id: String): Boolean = conflicts?.get(serverVersionKey(id)) != null
 
     private suspend fun remember(entity: PendingSubmissionEntity) {
         val own = history ?: return
@@ -403,6 +398,16 @@ internal suspend fun baseVersionOf(
         )
     }
     return version
+}
+
+/**
+ * Odrzuca poprawkę zgłoszenia [id], które czeka na wybór wersji: kopia wersji z serwera w [conflicts] powstaje razem
+ * z odmową 409 i znika dopiero po wyborze w C4, a inne odmowy jej nie mają.
+ *
+ * Wymagania: US9.3, BR-10
+ */
+internal suspend fun requireNoVersionChoice(id: String, conflicts: ServerCopyDao?) {
+    if (conflicts?.get(serverVersionKey(id)) != null) throw versionChoicePending(id)
 }
 
 internal fun requireMatchingPhotos(content: SubmissionContent, photos: List<PendingPhotoDraft>) {

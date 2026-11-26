@@ -111,7 +111,8 @@ class ConflictEditTest {
                 photo(tempDir, PHOTO),
             )
             other.sendAll()
-            assertTrue(store.rows.single().submission.isRefused, "odmowa 422 zostawia „Nie wysłano”")
+            val refused = store.rows.single()
+            assertTrue(refused.submission.isRefused, "odmowa 422 zostawia „Nie wysłano”")
 
             other.saveEdit(
                 EditedSubmission(id = ID, baseVersion = 4),
