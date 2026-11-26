@@ -3,9 +3,10 @@
  * Author: Yevhenii Lukianenko, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.designsystem
+package io.github.dostepnykampus.core.designsystem.submission
 
 import androidx.compose.ui.graphics.vector.ImageVector
+import io.github.dostepnykampus.core.designsystem.pathIcon
 
 /** Ikony statusów zgłoszenia i „Otwórz”; tylko wzmacniają słowo obok. Wymagania: NFR-21 */
 public object StatusIcons {

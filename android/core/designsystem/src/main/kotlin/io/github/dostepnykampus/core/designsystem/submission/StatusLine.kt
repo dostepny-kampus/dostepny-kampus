@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.core.designsystem
+package io.github.dostepnykampus.core.designsystem.submission
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Row
@@ -15,6 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.R
 import io.github.dostepnykampus.core.model.submission.SubmissionStatus
 
 /** Słowo statusu zgłoszenia z serwera, np. „Przyjęte”. Wymagania: NFR-21 */
