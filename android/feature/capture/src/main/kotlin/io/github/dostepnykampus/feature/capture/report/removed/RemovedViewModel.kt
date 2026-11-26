@@ -112,7 +112,7 @@ class RemovedViewModel
             val found = catalogOrNull() ?: return null
             val building = found.buildings.firstOrNull { it.symbol == barrier.buildingSymbol }
             val entrance = found.entrances.firstOrNull { it.id == barrier.entranceId }
-            val closest = nearest.of(buildingSymbol = barrier.buildingSymbol, point = barrier.location)
+            val closest = nearest.find(buildingSymbol = barrier.buildingSymbol, point = barrier.location)
             return AcceptedPlace(building = building?.name, entrance = entrance?.name, nearest = closest)
         }
 

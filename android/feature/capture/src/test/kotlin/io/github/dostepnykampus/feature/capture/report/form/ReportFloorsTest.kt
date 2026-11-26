@@ -6,8 +6,8 @@
 package io.github.dostepnykampus.feature.capture.report.form
 
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
-import io.github.dostepnykampus.core.data.building.NearestEntrance
 import io.github.dostepnykampus.core.data.building.BuildingFloors
+import io.github.dostepnykampus.core.data.building.NearestEntrance
 import io.github.dostepnykampus.core.data.submission.sync.PendingPhotoDraft
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.building.FloorList

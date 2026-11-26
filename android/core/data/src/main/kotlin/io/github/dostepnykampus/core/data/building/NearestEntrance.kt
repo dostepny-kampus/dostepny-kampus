@@ -24,9 +24,7 @@ import javax.inject.Inject
  */
 public class NearestEntrance
     @Inject
-    public constructor(
-        private val catalog: BuildingCatalogRepository,
-    ) {
+    public constructor(private val catalog: BuildingCatalogRepository) {
         /**
          * Najbliższe wejście budynku [buildingSymbol] do [point].
          *
@@ -34,8 +32,8 @@ public class NearestEntrance
          * @param point punkt zgłoszenia
          * @return wejście z odległością; `null` bez budynku, jego wejść albo katalogu
          */
-        public suspend fun of(buildingSymbol: String?, point: GeoPoint): EntranceDistance? {
-            val found = if (buildingSymbol == null) null else catalogOrNull()
+        public suspend fun find(buildingSymbol: String?, point: GeoPoint): EntranceDistance? {
+            val found = buildingSymbol?.let { catalogOrNull() }
             val own = found?.entrances.orEmpty().filter { it.buildingSymbol == buildingSymbol }
             return nearestEntrance(point = point, entrances = own)
         }

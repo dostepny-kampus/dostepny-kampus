@@ -23,21 +23,22 @@ class NearestEntranceTest {
 
     @Test
     fun findsOwnBuildingEntrance() {
-        val found = runBlocking { near.of(buildingSymbol = "C-13", point = POINT) }
-        assertEquals("n/1", found?.entrance?.id, "wejście budynku C-13")
-        assertEquals(0.0, found?.meters ?: -1.0, 1.0, "odległość od wejścia w punkcie")
+        val found = runBlocking { near.find(buildingSymbol = "C-13", point = POINT) }
+        val entrance = requireNotNull(found) { "brak wejścia" }
+        assertEquals("n/1", entrance.entrance.id, "wejście budynku C-13")
+        assertEquals(0.0, entrance.meters, 1.0, "odległość od wejścia w punkcie")
     }
 
     @Test
     fun noBuildingNoEntrance() {
-        assertNull(runBlocking { near.of(buildingSymbol = null, point = POINT) }, "zgłoszenie poza budynkiem")
-        assertNull(runBlocking { near.of(buildingSymbol = "A-1", point = POINT) }, "budynek bez wejść")
+        assertNull(runBlocking { near.find(buildingSymbol = null, point = POINT) }, "zgłoszenie poza budynkiem")
+        assertNull(runBlocking { near.find(buildingSymbol = "A-1", point = POINT) }, "budynek bez wejść")
     }
 
     @Test
     fun missingCatalogGivesNull() {
         val broken = NearestEntrance(BuildingCatalogRepository(EmptyCoroutineContext) { throw IOException("brak") })
-        assertNull(runBlocking { broken.of(buildingSymbol = "C-13", point = POINT) }, "bez katalogu")
+        assertNull(runBlocking { broken.find(buildingSymbol = "C-13", point = POINT) }, "bez katalogu")
     }
 
     private companion object {

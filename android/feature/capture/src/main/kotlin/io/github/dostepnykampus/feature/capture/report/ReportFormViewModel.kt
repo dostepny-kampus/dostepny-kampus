@@ -167,7 +167,7 @@ class ReportFormViewModel
             }
 
             viewModelScope.launch {
-                val found = nearest.of(buildingSymbol = symbol, point = place.location)
+                val found = nearest.find(buildingSymbol = symbol, point = place.location)
                 if (found != null) refine { form -> form.withNearest(place, found) }
             }
             viewModelScope.launch {
