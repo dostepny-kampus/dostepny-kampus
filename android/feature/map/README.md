@@ -22,7 +22,8 @@ Mapa kampusu: budynki, wejścia i bariery na mapie, wyszukiwanie budynku, karta 
 - `feature.map.room` — znaleziona sala: wynik pod polem szukaj, karta sali i droga do niej (wejście zalecane, winda i sala).
 - `feature.map.search` — wyniki pod polem szukaj: budynki i sale, prośba o budynek i karta „brak wyniku”.
 - `feature.map.style` — styl mapy: warstwy i obrazy.
-- `feature.map.tiles` — klient HTTP kafelków podkładu z nagłówkiem User-Agent aplikacji; kafelków poza prostokątami terenów nie pobiera.
+- `feature.map.tiles` — klient HTTP kafelków podkładu z nagłówkiem User-Agent aplikacji. Pobiera kafelki przecinające
+  prostokąt terenu co najmniej jednego widocznego widoku mapy.
 - `feature.map.trace` — sekcje śladu systemowego (Perfetto) wokół pracy mapy.
 
 ## API

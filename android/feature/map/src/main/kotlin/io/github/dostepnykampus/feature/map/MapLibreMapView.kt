@@ -153,7 +153,7 @@ object MapLibreMapView : CampusMapView {
         val images = rememberMapImages(colors = colors, density = density.density, labelSize = labelSize)
         val tiles = rememberMapTiles(context)
         val mapView = rememberMapView(context, background = colors.lad.toArgb(), tiles = tiles)
-        FollowScreenLifecycle(mapView)
+        val tileAreas = remember(tiles) { tiles.newView() }
         var map by remember { mutableStateOf<MapLibreMap?>(null) }
         var size by remember { mutableStateOf(IntSize.Zero) }
         val limits =
@@ -162,7 +162,8 @@ object MapLibreMapView : CampusMapView {
             }
         val basemap = remember(selection.bounds, size, density) { density.basemapOf(selection.bounds, size) }
         val area = styleAreaOf(selection = selection, basemap = basemap)
-        val areas = remember { FlightArea(first = area, onTileAreas = { tiles.basemapAreas = it }) }
+        val areas = remember(tileAreas) { FlightArea(first = area, onTileAreas = tileAreas::update) }
+        FollowScreenLifecycle(mapView, tileAreas)
         val reveal = remember { BasemapReveal() }
         val currentMove by rememberUpdatedState(move)
         val currentInset by rememberUpdatedState(inset)
@@ -348,15 +349,16 @@ object MapLibreMapView : CampusMapView {
         }
 
     @Composable
-    private fun FollowScreenLifecycle(mapView: MapView) {
+    private fun FollowScreenLifecycle(mapView: MapView, tileAreas: MapTileHttp.ViewAreas) {
         DisposableEffect(mapView) {
             mapView.onCreate(null)
             onDispose { mapView.onDestroy() }
         }
         val lifecycle = LocalLifecycleOwner.current.lifecycle
-        DisposableEffect(lifecycle, mapView) {
+        DisposableEffect(lifecycle, mapView, tileAreas) {
             val observer =
                 LifecycleEventObserver { _, event ->
+                    tileAreas.setVisible(lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED))
                     when (event) {
                         Lifecycle.Event.ON_START -> mapView.onStart()
                         Lifecycle.Event.ON_RESUME -> mapView.onResume()
@@ -368,6 +370,7 @@ object MapLibreMapView : CampusMapView {
             lifecycle.addObserver(observer)
             onDispose {
                 lifecycle.removeObserver(observer)
+                tileAreas.setVisible(false)
                 if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) mapView.onPause()
                 if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) mapView.onStop()
             }

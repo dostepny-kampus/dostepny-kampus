@@ -18,13 +18,13 @@ private const val HALF_DEGREES = 180.0
 
 /**
  * Czy adres [url] to kafelek wektorowy `…/z/x/y.pbf`, który w całości leży poza każdym z prostokątów [areas].
- * Pusta lista [areas] i adres innego zasobu niż kafelek dają `false`.
+ * Bez prostokątów żaden kafelek podkładu nie pasuje. Adres innego zasobu niż kafelek daje `false`.
  *
  * Wymagania: NFR-39
  */
 internal fun isOutside(url: String, areas: List<CampusBounds>): Boolean {
     val match = TILE_PATH.find(url.substringBefore('?'))
-    if (areas.isEmpty() || match == null) return false
+    if (match == null) return false
     val (z, x, y) = match.destructured.toList().map(String::toInt)
     return areas.none { it.hasTile(z = z, x = x, y = y) }
 }
