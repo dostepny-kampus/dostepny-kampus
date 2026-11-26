@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.capture.quick
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
@@ -18,6 +19,7 @@ import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.building.FloorList
 import io.github.dostepnykampus.feature.capture.location.BuildingLookup
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
+import io.github.dostepnykampus.feature.capture.photo.LocalPhotoDecodeContext
 import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
 import io.github.dostepnykampus.feature.capture.report.ReportSaver
 import kotlinx.coroutines.flow.flowOf
@@ -73,7 +75,9 @@ internal fun ComposeContentTestRule.showQuickReport(
         )
     setContent {
         DostepnyKampusTheme {
-            QuickReportScreen(route = route.value, actions = actions, models = models)
+            CompositionLocalProvider(LocalPhotoDecodeContext provides EmptyCoroutineContext) {
+                QuickReportScreen(route = route.value, actions = actions, models = models)
+            }
         }
     }
 }

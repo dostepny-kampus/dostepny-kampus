@@ -7,6 +7,7 @@ package io.github.dostepnykampus.app.quick
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.navigation3.runtime.NavKey
 import io.github.dostepnykampus.app.AppShell
@@ -26,6 +27,7 @@ import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.feature.capture.location.BuildingLookup
 import io.github.dostepnykampus.feature.capture.navigation.ReportRoute
+import io.github.dostepnykampus.feature.capture.photo.LocalPhotoDecodeContext
 import io.github.dostepnykampus.feature.capture.photo.PhotoTranscoder
 import io.github.dostepnykampus.feature.capture.quick.QuickReportActions
 import io.github.dostepnykampus.feature.capture.quick.QuickReportModels
@@ -78,7 +80,9 @@ internal fun AppNavigator.QuickTestScreen(route: ReportRoute, models: QuickRepor
             onBack = { back() },
             onBackToMap = { backToMap() },
         )
-    QuickReportScreen(route = route, actions = actions, models = models)
+    CompositionLocalProvider(LocalPhotoDecodeContext provides EmptyCoroutineContext) {
+        QuickReportScreen(route = route, actions = actions, models = models)
+    }
 }
 
 /** Modele V4 z siecią i zapisem do [saved]; telefon stoi w [point], a pozycje podaje [positions]. */

@@ -12,6 +12,7 @@ import io.github.dostepnykampus.barrier.submission.StoredPhotos;
 import io.github.dostepnykampus.barrier.submission.Submission;
 import io.github.dostepnykampus.barrier.submission.SubmissionFinder;
 import io.github.dostepnykampus.barrier.submission.SubmissionRepository;
+import io.github.dostepnykampus.barrier.submission.SubmissionStatus;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionContent;
 import io.github.dostepnykampus.barrier.submission.content.SubmissionKind;
 import io.github.dostepnykampus.building.api.EntranceMarkings;
@@ -88,9 +89,9 @@ public class SubmissionReview {
     /**
      * Zapisuje decyzję razem ze skutkami przyjęcia. Brak zgłoszenia kończy się wyjątkiem
      * MissingResource, własne albo niewzięte przez tego Weryfikatora ForbiddenChange, brak
-     * zdjęcia i nieaktualna zmiana oznaczenia wejścia ReviewConflict, decyzja niezgodna
-     * z rodzajem InvalidSubmission. Przyjęte „bariera usunięta” i zmiana oznaczenia stają się
-     * archiwalne. TODO(#3958): przyjęcie zmiany nieprzyjętego zgłoszenia ma dać konflikt.
+     * zdjęcia, przyjęcie zmiany zgłoszenia, które nie jest już przyjęte, i nieaktualna zmiana
+     * oznaczenia wejścia ReviewConflict, decyzja niezgodna z rodzajem InvalidSubmission.
+     * Przyjęte „bariera usunięta” i zmiana oznaczenia stają się archiwalne.
      *
      * <p>Wymagania: BR-4, BR-7, BR-11, BR-14, BR-18, BR-19, BR-23, BR-24</p>
      *
@@ -105,6 +106,9 @@ public class SubmissionReview {
         }
         this.complete(current);
         decision.admit(current.content().kind());
+        if (decision.outcome() == SubmissionStatus.ACCEPTED) {
+            this.replaceable(current);
+        }
         try {
             return this.applied(this.reviews.decide(decision));
         } catch (final StaleEntranceMarking stale) {
@@ -124,6 +128,18 @@ public class SubmissionReview {
             throw new ForbiddenChange("Własnego zgłoszenia nie weryfikuje jego autor");
         }
         return current;
+    }
+
+    private void replaceable(final Submission current) {
+        final UUID replaced = current.content().replaces();
+        if (replaced != null) {
+            this.submissions.lock(replaced);
+            if (!this.finder.find(replaced).map(Submission::accepted).orElse(false)) {
+                throw new ReviewConflict(
+                    "Zgłoszenie, które zmienia ta zmiana, nie jest już przyjęte (BR-23)", current
+                );
+            }
+        }
     }
 
     private void complete(final Submission current) {
