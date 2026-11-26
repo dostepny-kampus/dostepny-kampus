@@ -43,6 +43,7 @@ include(
     ":feature:inspection",
     ":feature:review",
     ":feature:auth",
+    ":feature:voice",
     ":detekt-rules",
     ":systemtest",
     ":macrobenchmark",
