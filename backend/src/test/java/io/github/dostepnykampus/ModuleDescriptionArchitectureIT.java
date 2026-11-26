@@ -42,10 +42,11 @@ final class ModuleDescriptionArchitectureIT {
     );
 
     /**
-     * Początek akapitu opisu z jego nazwą.
+     * Początek nazwanego akapitu; zadanie może być pierwszym zdaniem Javadoc.
      */
     private static final Pattern PART = Pattern.compile(
-        "<p>(Zadanie|API|Zależności|Nie robi|Kiedy dodawać tutaj):"
+        "(?:<p>|/\\*\\*\\R\\h*\\* (?=Zadanie:))"
+            + "(Zadanie|API|Zależności|Nie robi|Kiedy dodawać tutaj):"
     );
 
     /**
@@ -83,6 +84,31 @@ final class ModuleDescriptionArchitectureIT {
         Assertions.assertEquals(
             Map.of(), found,
             "Opis modułu w package-info.java nie ma wszystkich akapitów albo zależności"
+        );
+    }
+
+    @Test
+    void acceptsTaskAsJavadocSummary() {
+        final String description = """
+            /**
+             * Zadanie: składa zmiany od kursora.
+             *
+             * <p>API: HTTP.</p>
+             *
+             * <p>Zależności: {@code barrier :: api}, {@code building :: api},
+             * {@code inspection :: api}, {@code shared}.</p>
+             *
+             * <p>Nie robi: nie przechowuje danych.</p>
+             *
+             * <p>Kiedy dodawać tutaj: pobranie zmian.</p>
+             */
+            """;
+        Assertions.assertEquals(
+            "",
+            ModuleDescriptionArchitectureIT.problem(
+                description, Set.of("barrier :: api", "building :: api", "inspection :: api", "shared")
+            ),
+            "Pierwszy akapit zadania w Javadoc nie wymaga znacznika HTML"
         );
     }
 
