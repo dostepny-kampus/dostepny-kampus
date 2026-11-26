@@ -21,8 +21,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import tools.jackson.core.JacksonException;
@@ -40,9 +38,6 @@ public final class SubmissionRows implements RowMapper<Submission> {
      */
     public static final String COLUMNS =
         "id, version, status, created_at, verified_at, content::text AS content, rejection_reason, duplicate_of";
-
-    /** Diagnostyka wierszy pomijanych w listach. */
-    private static final Logger LOG = LoggerFactory.getLogger(SubmissionRows.class);
 
     /** Odczyt treści z kolumny JSON. */
     private final ObjectMapper mapper;
@@ -88,28 +83,12 @@ public final class SubmissionRows implements RowMapper<Submission> {
             return new SubmissionFinder.Page(
                 items,
                 Objects.requireNonNullElse(
-                    SubmissionRows.fill(rows, mapping, window.limit(), items), window.after()
+                    new ReadableRows<>(mapping, window.limit()).fill(rows, items),
+                    window.after()
                 ),
                 rows.next()
             );
         };
-    }
-
-    static <T> @Nullable UUID fill(
-        final ResultSet rows, final RowMapper<T> mapping, final int limit, final List<T> into
-    ) throws SQLException {
-        @Nullable UUID last = null;
-        int number = 0;
-        while (number < limit && rows.next()) {
-            last = rows.getObject("id", UUID.class);
-            try {
-                into.add(mapping.mapRow(rows, number));
-            } catch (final UnreadableSubmission ex) {
-                SubmissionRows.LOG.error("Pominięto nieczytelne zgłoszenie {}", ex.id());
-            }
-            ++number;
-        }
-        return last;
     }
 
     private static @Nullable Rejection rejection(final ResultSet rows) throws SQLException {
