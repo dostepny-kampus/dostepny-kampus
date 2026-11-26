@@ -18,8 +18,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 /**
  * Kroki scenariusza poprawy i ponownego wysłania zgłoszenia odrzuconego: autor wysyła edycję
@@ -157,19 +157,17 @@ public final class ResendSteps {
 
     private int send(final MockHttpServletRequestBuilder request, final String head)
         throws Exception {
+        final String body = String.join(
+            "",
+            "{", head, ",\"kind\":\"PRECISE\",\"location\":{\"type\":\"Point\",",
+            "\"coordinates\":[17.06209,51.10785]},\"buildingSymbol\":\"C-13\",",
+            "\"floor\":{\"number\":0},\"barrierGroup\":\"HORIZONTAL_CIRCULATION\",",
+            "\"barrierType\":\"TB-13\",\"severity\":2,\"photoIds\":[\"",
+            this.photo.toString(), "\"]}"
+        );
         final int status = this.http.perform(
             request.contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer COLLECTOR")
-                .content(
-                    String.join(
-                        "",
-                        "{", head, ",\"kind\":\"PRECISE\",\"location\":{\"type\":\"Point\",",
-                        "\"coordinates\":[17.06209,51.10785]},\"buildingSymbol\":\"C-13\",",
-                        "\"floor\":{\"number\":0},\"barrierGroup\":\"HORIZONTAL_CIRCULATION\",",
-                        "\"barrierType\":\"TB-13\",\"severity\":2,\"photoIds\":[\"",
-                        this.photo.toString(), "\"]}"
-                    )
-                )
+                .header(HttpHeaders.AUTHORIZATION, "Bearer COLLECTOR").content(body)
         ).andReturn().getResponse().getStatus();
         this.photos.put(
             ResendSteps.SUBMISSION, this.photo, "zdjęcie".getBytes(StandardCharsets.UTF_8)
