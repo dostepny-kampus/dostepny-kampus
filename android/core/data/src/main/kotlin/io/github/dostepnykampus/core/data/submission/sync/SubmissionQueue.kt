@@ -243,7 +243,7 @@ public class SubmissionQueue internal constructor(
                 var paths = emptyList<String>()
                 store.together {
                     if (store.belongsToAnotherAccount(edited.id, owner)) throw queueOwnerChanged()
-                    requireNoVersionChoice(id = edited.id, conflicts = conflicts)
+                    conflicts?.let { copies -> requireNoVersionChoice(id = edited.id, conflicts = copies) }
                     val version = baseVersionOf(edited = edited, store = store, history = history)
                     val entity = fresh.copy(baseVersion = version, ownerSub = owner)
                     paths = store.save(entity, photos.map { it.toPendingPhotoEntity(submissionId = edited.id) })
@@ -406,8 +406,8 @@ internal suspend fun baseVersionOf(
  *
  * Wymagania: US9.3, BR-10
  */
-internal suspend fun requireNoVersionChoice(id: String, conflicts: ServerCopyDao?) {
-    if (conflicts?.get(serverVersionKey(id)) != null) throw versionChoicePending(id)
+internal suspend fun requireNoVersionChoice(id: String, conflicts: ServerCopyDao) {
+    if (conflicts.get(serverVersionKey(id)) != null) throw versionChoicePending(id)
 }
 
 internal fun requireMatchingPhotos(content: SubmissionContent, photos: List<PendingPhotoDraft>) {
