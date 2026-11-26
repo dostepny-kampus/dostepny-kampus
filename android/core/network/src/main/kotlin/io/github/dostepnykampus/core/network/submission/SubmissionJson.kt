@@ -5,7 +5,9 @@
  */
 package io.github.dostepnykampus.core.network.submission
 
+import io.github.dostepnykampus.core.model.StaffRole
 import io.github.dostepnykampus.core.model.submission.Submission
+import io.github.dostepnykampus.core.model.submission.SubmissionAuthor
 import io.github.dostepnykampus.core.model.submission.SubmissionContent
 import io.github.dostepnykampus.core.model.submission.SubmissionFloor
 import io.github.dostepnykampus.core.network.building.toJson
@@ -94,7 +96,8 @@ private fun Boolean?.trueOrNull(): Boolean? = takeIf { it == true }
 
 private inline fun <reified T : Enum<T>> Enum<*>.into(): T = enumValueOf<T>(name)
 
-private fun SubmissionDto.toModel(): Submission =
+/** Zgłoszenie z modelu kontraktu; zła chwila daje [IllegalArgumentException]. */
+internal fun SubmissionDto.toModel(): Submission =
     Submission(
         id = id,
         version = version,
@@ -120,6 +123,11 @@ private fun SubmissionDto.toModel(): Submission =
             ),
         rejectionReason = rejectionReason,
         verifiedAt = verifiedAt?.let(::instant),
+        author =
+            author?.let { found ->
+                val staff = found.roles.mapNotNull { role -> StaffRole.entries.firstOrNull { it.name == role.name } }
+                SubmissionAuthor(pseudonym = found.pseudonym, staffRoles = staff.toSet())
+            },
     )
 
 private fun instant(text: String): Instant =

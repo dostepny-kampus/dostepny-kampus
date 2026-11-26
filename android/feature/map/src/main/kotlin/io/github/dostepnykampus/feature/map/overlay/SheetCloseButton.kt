@@ -7,7 +7,6 @@ package io.github.dostepnykampus.feature.map.overlay
 
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,6 +15,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.feature.map.R
 
 /**
@@ -32,7 +32,7 @@ import io.github.dostepnykampus.feature.map.R
 internal fun SheetCloseButton(onClose: () -> Unit, modifier: Modifier = Modifier, back: SheetBack? = null) {
     val spoken = back?.spoken
     val described = if (spoken == null) Modifier else Modifier.semantics { contentDescription = spoken }
-    OutlinedButton(onClick = onClose, modifier = modifier.heightIn(min = CeleDotyku.minimum).then(described)) {
+    OutlinedAction(onClick = onClose, modifier = modifier.heightIn(min = CeleDotyku.minimum).then(described)) {
         if (back == null) {
             Text(stringResource(R.string.mapa_zamknij))
         } else {

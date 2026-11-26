@@ -28,6 +28,7 @@ Ta część pokazuje, z czego składa się system i dlaczego wybraliśmy takie r
 | [ADR-0013](decyzje/0013-logi-aplikacji-i-serwera.md) | Timber w aplikacji, SLF4J z identyfikatorem żądania na serwerze, logi tylko na granicach i bez danych osobowych | — |
 | [ADR-0014](decyzje/0014-podklad-wektorowy.md) | podkład mapy z kafelków wektorowych OpenFreeMap w kolorach tokenów zamiast rastra OSM, zastępuje część ADR-0005 | — |
 | [ADR-0015](decyzje/0015-sterownik-kamery.md) | jeden sterownik kamery mapy: ruch, dopełnienie i granice przez jedno miejsce, „ostatni wygrywa”, karta za postępem kamery | — |
+| [ADR-0016](decyzje/0016-model-zdarzen-kamery.md) | model zdarzeń kamery mapy: polecenie ruchu z numerem czynności, jedna geometria mapy, oczekiwanie na pomiar karty, uzupełnia ADR-0015 | — |
 
 ADR nie zmieniamy po przyjęciu. Nową decyzję zapisujemy kolejnym numerem ze statusem „zastępuje ADR-…”.
 

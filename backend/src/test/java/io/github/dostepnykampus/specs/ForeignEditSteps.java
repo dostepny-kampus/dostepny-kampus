@@ -179,12 +179,13 @@ public final class ForeignEditSteps {
     }
 
     /**
-     * Serwer odmawia zmiany.
+     * Serwer odmawia próby statusem odmowy z kontraktu.
      */
     @Then("próba jest odrzucona")
     public void attemptRefused() {
         MatcherAssert.assertThat(
-            "Próba nie dała 403", this.outcome.status(), Matchers.equalTo(403)
+            "Próba nie dała statusu odmowy z kontraktu",
+            this.outcome.status(), Matchers.equalTo(this.outcome.refusal())
         );
     }
 

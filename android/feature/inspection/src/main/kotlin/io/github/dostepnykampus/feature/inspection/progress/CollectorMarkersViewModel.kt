@@ -1,6 +1,6 @@
 /*
  * Dostępny Kampus
- * Author: Myroslav Hryniuka
+ * Author: Myroslav Hryniuka, Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
 package io.github.dostepnykampus.feature.inspection.progress
@@ -15,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.dostepnykampus.core.data.inspection.FloorMarkers
 import io.github.dostepnykampus.core.data.inspection.PendingMarkerChange
 import io.github.dostepnykampus.core.data.inspection.ServerFloorMarkers
+import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.data.room.FloorPlans
 import io.github.dostepnykampus.core.model.building.Floor
 import io.github.dostepnykampus.core.model.inspection.InspectionMarker
@@ -56,9 +57,14 @@ sealed interface CollectorMarkersUiState {
      * @property rows piętra od najniższego albo jeden wiersz całego budynku
      * @property asking identyfikator własnego znacznika, o którego cofnięcie pyta aplikacja, albo `null`
      * @property unsaved miejsce, którego zmiany nie udało się zapisać w telefonie, albo `null`
+     * @property isOnline czy telefon ma internet
      */
-    data class Ready(val rows: List<FloorRow>, val asking: String? = null, val unsaved: MarkerPlace? = null) :
-        CollectorMarkersUiState
+    data class Ready(
+        val rows: List<FloorRow>,
+        val asking: String? = null,
+        val unsaved: MarkerPlace? = null,
+        val isOnline: Boolean = true,
+    ) : CollectorMarkersUiState
 }
 
 /**
@@ -76,6 +82,7 @@ class CollectorMarkersViewModel
         private val plans: FloorPlans,
         private val markers: FloorMarkers,
         private val serverMarkers: ServerFloorMarkers,
+        network: NetworkStatus,
     ) : ViewModel() {
         private val asking = MutableStateFlow<String?>(null)
         private val unsaved = MutableStateFlow<MarkerPlace?>(null)
@@ -96,7 +103,8 @@ class CollectorMarkersViewModel
                 val list = rows(floors, pending, synced)
                 val activeAsk = asked?.takeIf { id -> list.any { it.markerId == id && it.isMine } }
                 CollectorMarkersUiState.Ready(rows = list, asking = activeAsk, unsaved = failed)
-            }.stateIn(viewModelScope, SharingStarted.Eagerly, CollectorMarkersUiState.Loading)
+            }.combine(network.isOnline()) { ready, online -> ready.copy(isOnline = online) }
+                .stateIn(viewModelScope, SharingStarted.Eagerly, CollectorMarkersUiState.Loading)
 
         /** „Oznacz jako obejrzane” i „Spróbuj ponownie” po błędzie zapisu: zapisuje znacznik [place] w telefonie. */
         fun mark(place: MarkerPlace) {

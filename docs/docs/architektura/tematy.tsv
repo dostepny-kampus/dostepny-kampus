@@ -8,13 +8,18 @@ building	temat	budynek	Budynek, jego wejścia i piętra.
 cache	temat	kopia danych	Kopia danych serwera na urządzeniu do pracy bez sieci.
 camera	temat	kamera mapy	Położenie i ruch widoku mapy.
 campus	temat	kampus na mapie	Wspólne dane mapy kampusu: budynki, tereny, zaznaczenie i dzień danych.
+card	temat	karta	Karta pozycji listy, jej czynność, panel informacyjny i przycisk obrysowany w treści ekranu.
+check	ścieżka	sprawdzenie zgłoszenia	Zgłoszenie wzięte przez Weryfikatora i decyzja o nim (R2).
+conflict	temat	konflikt wersji	Dwie wersje zgłoszenia po odmowie serwera i wybór jednej z nich.
 content	temat	treść zgłoszenia	Typ, grupa, miejsce i piętro bariery w zgłoszeniu.
 edit	ścieżka	edycja zgłoszenia	Zmiana wysłanego zgłoszenia.
 entrance	temat	wejście	Wejście do budynku wybrane na mapie i jego arkusz.
 error	temat	błąd	Błędy wspólne dla modułów i ich odpowiedź HTTP.
+export	temat	eksport	Eksport barier dla Koordynatora do pliku.
 form	ścieżka	formularz zgłoszenia	Pełny formularz nowego zgłoszenia.
 geo	temat	geometria	Punkty, obszary i układy współrzędnych.
 inspection	temat	obejrzenie piętra	Znacznik piętra obejrzanego i zmiany znaczników czekające na wysłanie.
+invitation	temat	zaproszenie	Zaproszenie osoby z rolą pracowniczą przez Koordynatora.
 location	temat	położenie	Położenie osoby i dopasowanie go do budynku.
 map	temat	widok mapy	Wybór między mapą a listą budynków, zapamiętany na urządzeniu.
 marking	temat	oznaczenie	Oznaczenie wejścia i bariery: kolor, znak, nazwa.
@@ -28,10 +33,12 @@ pending	temat	oczekujące zmiany	Zmiany zgłoszeń czekające na wysłanie.
 photo	temat	zdjęcie	Zdjęcie zgłoszenia: wykonanie, zapis, wysłanie.
 plan	temat	plan piętra	Plan piętra budynku na mapie i wybór budynku, którego plan widać.
 progress	ścieżka	postęp inwentaryzacji	Lista budynków z postępem inwentaryzacji dla Koordynatora.
+queue	ścieżka	kolejka weryfikacji	Zgłoszenia do sprawdzenia i wzięte przez Weryfikatora (R1).
 quick	ścieżka	szybkie zgłoszenie	Zgłoszenie wejścia w kilku krokach.
 removed	ścieżka	bariera usunięta	Zgłoszenie, że bariery ze zgłoszenia przyjętego już nie ma (C7).
 report	ścieżka	pełne zgłoszenie	Formularz i edycja pełnego zgłoszenia.
 retention	temat	przechowywanie danych	Usuwanie zgłoszeń i zdjęć po terminie przechowywania (NFR-29).
+review	temat	weryfikacja	Kolejka weryfikacji, wzięcie zgłoszenia do sprawdzenia i decyzja Weryfikatora.
 room	temat	pomieszczenie	Pomieszczenie piętra: numer sali, funkcja, kontur.
 search	temat	wyszukiwanie	Pole „Szukaj” i wyniki pod nim.
 server	temat	odpowiedź serwera	Wynik żądania do serwera bez typów klienta HTTP.

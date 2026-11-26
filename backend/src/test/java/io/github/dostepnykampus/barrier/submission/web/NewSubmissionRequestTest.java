@@ -10,6 +10,7 @@ import io.github.dostepnykampus.barrier.submission.SubmissionEdit;
 import io.github.dostepnykampus.barrier.submission.content.InvalidSubmission;
 import io.github.dostepnykampus.shared.error.InvalidInput;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,10 +31,10 @@ final class NewSubmissionRequestTest {
     @Test
     void givesCommandWithIdAndContentForNewRequest() {
         Assertions.assertEquals(
-            new NewSubmission(WebBodies.ID, WebBodies.content(), "konto"),
+            new NewSubmission(WebBodies.ID, WebBodies.content(), "konto", Set.of()),
             WebBodies.MAPPER.readValue(
                 WebBodies.newBody("'extra':'x'"), NewSubmissionRequest.class
-            ).toCommand("konto", (id, symbol) -> Optional.empty()),
+            ).toCommand("konto", Set.of(), (id, symbol) -> Optional.empty()),
             "Komenda bez identyfikatora z ciała albo bez treści"
         );
     }
@@ -46,7 +47,7 @@ final class NewSubmissionRequestTest {
                 InvalidSubmission.class,
                 () -> WebBodies.MAPPER.readValue(
                     WebBodies.body("'extra':'x'"), NewSubmissionRequest.class
-                ).toCommand("konto", (id, symbol) -> Optional.empty()),
+                ).toCommand("konto", Set.of(), (id, symbol) -> Optional.empty()),
                 "Zgłoszenie bez id nie dało błędu 400"
             ).getMessage(),
             "Zły komunikat błędu"
@@ -85,7 +86,7 @@ final class NewSubmissionRequestTest {
                 WebBodies.MAPPER.readValue(
                     WebBodies.newBody(extra),
                     NewSubmissionRequest.class
-                ).toCommand("konto", (id, symbol) -> Optional.empty()).id(),
+                ).toCommand("konto", Set.of(), (id, symbol) -> Optional.empty()).id(),
                 "Nieznane pole zepsuło wiązanie POST"
             ),
             () -> Assertions.assertEquals(

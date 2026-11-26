@@ -11,7 +11,7 @@
  *
  * @since 0.1.0
  */
-@ApplicationModule(allowedDependencies = {"building :: api", "shared"})
+@ApplicationModule(allowedDependencies = {"building :: api", "identity :: api", "shared"})
 package io.github.dostepnykampus.inspection;
 
 import org.springframework.modulith.ApplicationModule;

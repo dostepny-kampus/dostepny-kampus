@@ -26,4 +26,10 @@ class CampusDayTest {
     fun countsSummerMomentWithOffset() {
         assertEquals("Latem kampus ma UTC+2", "1.8.2026", campusDay(Instant.parse("2026-07-31T22:30:00Z")))
     }
+
+    /** Dzień i godzina w strefie kampusu, np. ostatnia synchronizacja na C4. Wymagania: NFR-10 */
+    @Test
+    fun writesMomentWithHour() {
+        assertEquals("Dzień i godzina", "12.11.2026, 10:42", campusMoment(Instant.parse("2026-11-12T09:42:00Z")))
+    }
 }

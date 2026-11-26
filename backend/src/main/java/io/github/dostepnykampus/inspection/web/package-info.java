@@ -5,7 +5,7 @@
  */
 
 /**
- * Operacja HTTP wysyłki zmian z telefonu, ciała żądania i odpowiedzi.
+ * Operacje HTTP znaczników piętra i wysyłki zmian z telefonu, ciała żądań i odpowiedzi.
  *
  * @since 0.1.0
  */

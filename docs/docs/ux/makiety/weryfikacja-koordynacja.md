@@ -28,13 +28,13 @@ Czynność główna: „Weź do sprawdzenia” przy wybranym zgłoszeniu. Przyci
 | Element | AC/BR/NFR |
 | --- | --- |
 | „Wstecz” i nagłówek „Zgłoszenia do sprawdzenia”, równy napisowi przycisku w L2 | NFR-15, PW-14 |
-| Sekcja „Wzięte przeze mnie” na górze; dotknięcie pozycji otwiera R2, a „Otwórz” z ikoną pokazuje, że pozycję da się otworzyć | BR-11, UC14 2b, NFR-21 |
+| Sekcja „Wzięte przeze mnie” na górze; „Otwórz” ze strzałką otwiera R2 | BR-11, UC14 2b, NFR-21 |
 | Nagłówek „Do sprawdzenia” nad przełącznikiem: nazywa listę i mapę | US10.4 |
 | Przełącznik „Mapa” i „Lista” w tej samej kolejności co na V1; domyślnie wybrana lista, wybrany widok widać po kształcie pola | UC14, NFR-19, NFR-21 |
 | Pozycja zgłoszenia „wysłane”: typ albo grupa barier, budynek, rodzaj, data wysłania; przy zmianie oznaczenia wejścia nazwa wejścia, bo zmiana nie ma typu | US10.4, BR-14, BR-24 |
 | Grupa „Schody i windy” zamiast typu przy zgłoszeniu szybkim, bo typ ustala dopiero Weryfikator | BR-14, PW-7 |
 | Rodzaj: „Zgłoszenie z pomiaru”, „Zgłoszenie szybkie”, „Bariery już nie ma”, „Zmiana oznaczenia wejścia” | US10.5, US17.2, BR-19, BR-24 |
-| „Weź do sprawdzenia” przy każdym zgłoszeniu, zwykły przycisk na pełną szerokość ramki | US10.4, BR-11, NFR-17, NFR-21 |
+| „Weź do sprawdzenia” przy każdym zgłoszeniu jako czynność karty szeroka jak napis | US10.4, BR-11, NFR-17, NFR-21 |
 | Brak zgłoszeń samego Weryfikatora, także jego zmian „bariera usunięta” i oznaczenia wejścia; filtr robi serwer | US10.5, BR-4 |
 
 ![Makieta R1 w widoku mapy: mapa z punktami i podpisem OpenStreetMap, na mapie Powiększ, Pomniejsz, cztery strzałki w krzyżu i przycisk informacji przy podpisie oraz zgłoszenie wybranego punktu](../../_generated/m-r1-kolejka-weryfikacji-mapa.svg)
@@ -136,6 +136,16 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 | „Zmienione: uciążliwość” pod komunikatem: Weryfikator nie szuka różnicy sam | BR-3, BR-15 |
 | Dane nowej wersji: uciążliwość „Tylko z pomocą” zamiast „Utrudnienie”, jak w scenariuszu `@BR-3` | BR-3 |
 
+![Makieta zasłaniania zdjęcia z R2: napis Dotknij zdjęcia w miejscu twarzy albo tablicy, zdjęcie z dwiema zasłonami, druga zaznaczona, Zasłona 2 z 2: zaznaczona, przyciski Większy i Mniejszy obok siebie, Usuń zasłonę, w przypiętym pasie na dole Zapisz zdjęcie](../../_generated/m-r2-zaslanianie-zdjecia.svg)
+
+| Element | AC/BR/NFR |
+| --- | --- |
+| „Zasłoń twarz lub tablicę” z R2 otwiera zdjęcie na cały ekran; nagłówek z „Wstecz”, który wraca do R2 bez zmian | BR-15, NFR-15 |
+| Napis „Dotknij zdjęcia w miejscu twarzy albo tablicy.”; dotknięcie stawia prostokąt zasłony stałej wielkości, bez przeciągania i szczypania | NFR-53, NFR-25 |
+| Zaznaczona zasłona ma grubszą obwódkę i napis „Zaznaczona”; TalkBack czyta numer i położenie słowami | NFR-21, NFR-18 |
+| „Większy” i „Mniejszy” obok siebie oraz „Usuń zasłonę” dla zaznaczonej zasłony; cele co najmniej 48 × 48 dp | NFR-17, NFR-53 |
+| „Zapisz zdjęcie”, pogrubiony, na pełną szerokość w przypiętym pasie na dole, jak „Zapisz” na C2: zasłony wypalone w pikselach, oryginał nie opuszcza telefonu | BR-15, NFR-25, NFR-52 |
+
 | Stan bez osobnej makiety | Co widać |
 | --- | --- |
 | Ładowanie | tekst od razu, w ramkach zdjęć napis „Wczytujemy zdjęcie…” (PW-9) |
@@ -146,7 +156,7 @@ Stan zwykły pokazuje scenariusz demo w A-1: podobne zgłoszenie „próg” 5 m
 
 ## K1 Postęp inwentaryzacji
 
-Czynność główna: dotknięcie budynku albo „Otwórz” w jego ramce, które otwiera C5 „Obejrzane piętra”. Tam Koordynator cofa znacznik piętra (US11.3).
+Czynność główna: „Otwórz” przy budynku, które otwiera C5 „Obejrzane piętra”. Tam Koordynator cofa znacznik piętra (US11.3).
 
 A-1 ma 4 z 5 pięter obejrzanych, jak w scenariuszu demo, w US11.2 i w przykładzie BR-21. Liczby zgłoszeń i wejść to zastępniki, bo scenariusze nie podają ich dla tego stanu. Sześć wejść A-1 ze scenariuszy `@US11.4` to dane testowe, a nie stan budynku.
 
@@ -161,7 +171,7 @@ A-1 ma 4 z 5 pięter obejrzanych, jak w scenariuszu demo, w US11.2 i w przykład
 | Budynek podstawowy: „Obejrzany” tekstem i ikoną albo „Nieobejrzany” samym tekstem | US11.1, PW-11 |
 | „Czeka na sprawdzenie: [liczba]” i „Przyjęte: [liczba]” przy każdym budynku | US11.1, BR-21 |
 | Tylko budynek szczegółowy: „Wejścia sprawdzone na miejscu:” i liczby „[x] z [y]” w osobnym wierszu | US11.4, BR-24, PW-3 |
-| Cała ramka budynku to jeden cel dotyku, a „Otwórz” z ikoną pokazuje, że da się ją otworzyć; otwiera C5 | US11.3, NFR-17, NFR-21 |
+| „Otwórz” ze strzałką przy budynku otwiera C5; ramka budynku nie jest osobnym celem dotyku | US11.3, NFR-17, NFR-21 |
 
 Wiersz o wejściach ma dwie linie, bo cały napis jest dłuższy niż 34 znaki. Brzmienie „Wejścia sprawdzone na miejscu” jest to samo w US11.4, w scenariuszach `@US11.4` i przy wejściu na karcie budynku (PW-3).
 

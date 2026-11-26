@@ -139,7 +139,7 @@ public object DataModule {
     /** Zgłoszenia z kolejki telefonu do poprawki w C2. Wymagania: US8.3 */
     @Provides
     public fun pendingEdits(store: SubmissionStore, tokens: AccessTokens): PendingEdits =
-        pendingEditsOf(store.edits, tokens::subject)
+        pendingEditsOf(store = store.edits, history = store.history, subject = tokens::subject)
 
     /** Odświeżenie statusów listy C3 z serwera dla zalogowanego konta. Wymagania: US8.2, NFR-33 */
     @Provides

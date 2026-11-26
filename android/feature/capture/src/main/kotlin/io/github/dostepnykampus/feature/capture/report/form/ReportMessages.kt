@@ -9,6 +9,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -20,14 +21,18 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
+import io.github.dostepnykampus.core.designsystem.ImportantSign
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.ProblemText
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
@@ -39,26 +44,29 @@ import io.github.dostepnykampus.feature.capture.photo.PhotoPreviews
  * się zapisać (PW-8). [error] stoi nad „Zrób zdjęcie”.
  *
  * Wymagania: US7.1, NFR-25, NFR-50
+ *
+ * @param photos zrobione zdjęcia do podglądu
+ * @param camera aparat „Zrób zdjęcie”
+ * @param title nagłówek sekcji; `null` daje sekcję bez nagłówka
+ * @param error komunikat walidacji nad „Zrób zdjęcie”; `null` bez komunikatu
+ * @param isTakeShown czy „Zrób zdjęcie” stoi w sekcji; bez niego ekran stawia przycisk sam
  */
 @Composable
 internal fun PhotoSection(
     photos: PhotoPaths,
     camera: PhotoCamera,
-    title: String = stringResource(R.string.formularz_zdjecie),
+    title: String? = stringResource(R.string.formularz_zdjecie),
     error: String? = null,
+    isTakeShown: Boolean = true,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
-        SectionTitle(title)
+        title?.let { SectionTitle(it) }
         OutlinedCard(
             modifier = Modifier.fillMaxWidth(),
             border = BorderStroke(Obramowania.ramka, MaterialTheme.colorScheme.error),
         ) {
             Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {
-                Text(
-                    text = stringResource(R.string.formularz_wazne),
-                    color = MaterialTheme.colorScheme.error,
-                    fontWeight = Typografia.wyroznienieWaga,
-                )
+                ImportantWord()
                 Text(stringResource(R.string.formularz_wazne_twarze), fontWeight = Typografia.wyroznienieWaga)
                 Text(stringResource(R.string.formularz_wazne_widoczne))
             }
@@ -67,13 +75,13 @@ internal fun PhotoSection(
         if (error != null) {
             Text(text = error, color = MaterialTheme.colorScheme.error, fontWeight = Typografia.wyroznienieWaga)
         }
-        val hasPhoto = photos.items.isNotEmpty()
-        val label = if (hasPhoto) R.string.formularz_zrob_nowe_zdjecie else R.string.formularz_zrob_zdjecie
-        FilledTonalButton(
-            onClick = camera.onTake,
-            modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk),
-        ) {
-            Text(stringResource(label))
+        if (isTakeShown) {
+            FilledTonalButton(
+                onClick = camera.onTake,
+                modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk),
+            ) {
+                Text(takeLabel(photos))
+            }
         }
         if (camera.isFailed) {
             Text(
@@ -84,6 +92,14 @@ internal fun PhotoSection(
             )
         }
     }
+}
+
+/** „Zrób zdjęcie”, a gdy zdjęcie już jest, „Zrób nowe zdjęcie”. Wymagania: US7.1, US4.1 */
+@Composable
+@ReadOnlyComposable
+internal fun takeLabel(photos: PhotoPaths): String {
+    val label = if (photos.items.isEmpty()) R.string.formularz_zrob_zdjecie else R.string.formularz_zrob_nowe_zdjecie
+    return stringResource(label)
 }
 
 /** „Opis”, obowiązkowy przy TB-29 „inna bariera”. Wymagania: US7.3 */
@@ -103,14 +119,8 @@ internal fun DescriptionSection(text: String, onEdit: (ReportEdit) -> Unit) {
 
 /** Ten sam tekst braku przy polu, co nad formularzem (PW-10), gdy [isShown]. */
 @Composable
-internal fun FieldError(error: ReportFormError, isShown: Boolean) {
-    if (isShown) {
-        Text(
-            text = stringResource(error.messageRes()),
-            color = MaterialTheme.colorScheme.error,
-            fontWeight = Typografia.wyroznienieWaga,
-        )
-    }
+internal fun FieldError(error: ReportFormError, isShown: Boolean, modifier: Modifier = Modifier) {
+    if (isShown) ProblemText(text = stringResource(error.messageRes()), modifier = modifier)
 }
 
 /**
@@ -152,6 +162,24 @@ internal fun ReportBanner(state: ReportUiState, onRetry: () -> Unit) {
     }
 }
 
+/**
+ * Błąd zapisu w telefonie z ekranu wysyłanego do sprawdzenia: „Za mało miejsca w telefonie” z „Spróbuj ponownie”
+ * albo odmowa kolejki ([isRejected]) z tym samym przyciskiem.
+ *
+ * Wymagania: NFR-7, NFR-50
+ */
+@Composable
+internal fun SendFailure(isRejected: Boolean, onRetry: () -> Unit) {
+    val message = if (isRejected) R.string.formularz_zapis_odrzucony else R.string.formularz_blad_zapisu
+    Column(
+        modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Assertive },
+        verticalArrangement = Arrangement.spacedBy(Odstepy.s),
+    ) {
+        Text(stringResource(message), color = MaterialTheme.colorScheme.error, fontWeight = Typografia.wyroznienieWaga)
+        FilledTonalButton(onClick = onRetry) { Text(stringResource(R.string.formularz_sprobuj_ponownie)) }
+    }
+}
+
 /** „Wyjść bez zapisu?” po „Wstecz” z niezapisanymi zmianami. Wymagania: US7.4, NFR-23 */
 @Composable
 internal fun ExitDialog(onConfirmExit: () -> Unit, onStay: () -> Unit) {
@@ -176,3 +204,12 @@ private fun ReportFormError.messageRes(): Int =
         ReportFormError.MISSING_PHOTO -> R.string.formularz_brak_zdjecia
         ReportFormError.MISSING_DESCRIPTION -> R.string.formularz_brak_opisu
     }
+
+@Composable
+private fun ImportantWord() {
+    val color = MaterialTheme.colorScheme.error
+    Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
+        ImportantSign(tint = color)
+        Text(text = stringResource(R.string.formularz_wazne), color = color, fontWeight = Typografia.wyroznienieWaga)
+    }
+}

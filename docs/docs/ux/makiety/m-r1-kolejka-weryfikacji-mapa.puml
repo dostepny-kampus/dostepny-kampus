@@ -11,7 +11,7 @@ $ramka()
 Budynek A-1
 Zgłoszenie z pomiaru
 Wysłane <i>[data]</i>
-$przycisk("Otwórz", "chevron-right")
+$czynnosc_karty("Otwórz", "arrow-right")
 }
 ..
 <b>Do sprawdzenia</b>
@@ -22,7 +22,7 @@ $ramka()
 Budynek C-13
 Zgłoszenie z pomiaru
 Wysłane <i>[data]</i>
-$przycisk("Weź do sprawdzenia")
+$czynnosc_karty("Weź do sprawdzenia")
 }
 $ekran_koniec()
 @endsalt

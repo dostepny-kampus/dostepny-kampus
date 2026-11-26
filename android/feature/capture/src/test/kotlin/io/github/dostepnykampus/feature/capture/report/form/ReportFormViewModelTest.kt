@@ -67,6 +67,8 @@ class ReportFormViewModelTest {
         )
         assertEquals(ReportStage.EDITING, state().stage)
         assertEquals(emptyList<Any>(), saved)
+        viewModel.save()
+        assertEquals(2, state().missingAttempts, "każde „Zapisz” z brakami prowadzi do pola")
     }
 
     @Test

@@ -39,6 +39,8 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.GroupContainer
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
+import io.github.dostepnykampus.core.designsystem.marking.AssessmentLine
 import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.core.model.building.EntranceMarking
@@ -122,6 +124,7 @@ private fun CutGroup(card: BuildingCardUiState.Ready, shown: Dp) {
  * @param withAssessment czy przy każdym wejściu stoi data i źródło oznaczenia
  * @param onShowEntrance dotknięcie wiersza z identyfikatorem wejścia; `null` daje wiersze bez dotyku
  * @param onReport „Zgłoś barierę przy wejściu” bez wybranego wejścia; `null` ukrywa odnośnik
+ * @param onChangeMarking „Zmień oznaczenie” pod wejściem z identyfikatorem wejścia; `null` ukrywa przycisk
  */
 @Composable
 internal fun EntrancesGroup(
@@ -129,12 +132,26 @@ internal fun EntrancesGroup(
     withAssessment: Boolean,
     onShowEntrance: ((String) -> Unit)?,
     onReport: (() -> Unit)?,
+    onChangeMarking: ((String) -> Unit)? = null,
 ) {
     GroupContainer(title = stringResource(R.string.karta_wejscia)) {
         when {
-            card.entrances.isEmpty() -> NoEntrances()
-            card.hasOnlyNamelessEntrances() -> NamelessEntrances(count = card.entrances.size, onReport = onReport)
-            else -> EntranceList(card = card, withAssessment = withAssessment, onShow = onShowEntrance)
+            card.entrances.isEmpty() -> {
+                NoEntrances()
+            }
+
+            card.hasOnlyNamelessEntrances() -> {
+                NamelessEntrances(count = card.entrances.size, onReport = onReport)
+            }
+
+            else -> {
+                EntranceList(
+                    card = card,
+                    withAssessment = withAssessment,
+                    onShow = onShowEntrance,
+                    onChange = onChangeMarking,
+                )
+            }
         }
     }
 }
@@ -144,11 +161,24 @@ internal fun BuildingCardUiState.Ready.hasOnlyNamelessEntrances(): Boolean =
     entrances.size > 1 && entrances.all { it.entrance.marking == EntranceMarking.NO_DATA && it.entrance.name == null }
 
 @Composable
-private fun EntranceList(card: BuildingCardUiState.Ready, withAssessment: Boolean, onShow: ((String) -> Unit)?) {
+private fun EntranceList(
+    card: BuildingCardUiState.Ready,
+    withAssessment: Boolean,
+    onShow: ((String) -> Unit)?,
+    onChange: ((String) -> Unit)?,
+) {
     val line = MaterialTheme.colorScheme.outlineVariant
     card.entrances.forEachIndexed { index, listed ->
         if (index > 0) HorizontalDivider(Modifier.padding(vertical = Odstepy.s), color = line)
         EntranceRow(listed = listed, withAssessment = withAssessment, onShowEntrance = onShow)
+        onChange?.let { change ->
+            OutlinedAction(
+                onClick = { change(listed.entrance.id) },
+                modifier = Modifier.padding(top = Odstepy.xs).heightIn(min = CeleDotyku.minimum),
+            ) {
+                Text(stringResource(R.string.karta_zmien_oznaczenie))
+            }
+        }
     }
 }
 

@@ -6,7 +6,7 @@ $ekran_poczatek()
 $naglowek("Zgłoś barierę")
 $brak_internetu()
 .
-$tekst("Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet.")
+$tekst("Zapisaliśmy zdjęcie w telefonie. Wyślemy je sami, gdy wróci internet. Potem sprawdzimy zdjęcie, a jeśli bariera się potwierdzi, pokażemy ją na mapie.")
 .
 $przycisk_glowny("Wróć do mapy")
 $ekran_koniec()

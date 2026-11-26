@@ -56,6 +56,35 @@ class ServerFloorMarkersTest {
             assertEquals(listOf(null, "c-1"), cursors, "kursor since w kolejnych żądaniach")
         }
 
+    /**
+     * Kursor cofnięty o margines powtarza zmiany: ten sam znacznik i to samo cofnięcie przyjęte drugi raz nie
+     * zmieniają kopii w telefonie.
+     *
+     * Wymagania: US15.1, US15.2, BR-20
+     */
+    @Test
+    fun repeatedChangesKeepState() =
+        runTest {
+            val dao = FakeInspectionMarkerDao()
+            val revoked = OTHER.copy(isRevoked = true)
+            val replies =
+                ArrayDeque(
+                    listOf(
+                        ApiResult.Success(SyncPull(cursor = "c-1", inspectionMarkers = listOf(OWN, OTHER))),
+                        ApiResult.Success(SyncPull(cursor = "c-2", inspectionMarkers = listOf(OWN, revoked))),
+                        ApiResult.Success(SyncPull(cursor = "c-3", inspectionMarkers = listOf(OWN, revoked))),
+                    ),
+                )
+            val store = serverFloorMarkersOf(dao = dao) { replies.removeFirst() }
+            store.pull()
+            assertTrue(store.pull(), "pobranie z cofnięciem")
+            val once = store.markers("A-1").first()
+
+            assertTrue(store.pull(), "powtórzone zmiany przyjęte bez błędu")
+            assertEquals(once, store.markers("A-1").first(), "powtórka nie zmienia kopii")
+            assertEquals(listOf(OWN), once, "jeden wiersz znacznika, cofnięty usunięty")
+        }
+
     @Test
     fun keepsStoredMarkersOnError() =
         runTest {
