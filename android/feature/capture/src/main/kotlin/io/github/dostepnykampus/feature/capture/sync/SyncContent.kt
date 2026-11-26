@@ -21,12 +21,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import io.github.dostepnykampus.core.data.submission.sync.SyncProgress
 import io.github.dostepnykampus.core.data.submission.sync.SyncStatus
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
@@ -96,6 +98,7 @@ private fun Queue(status: SyncStatus) {
 }
 
 @Composable
+@ReadOnlyComposable
 private fun splitText(status: SyncStatus): String? {
     val submissions = status.submissions
     val markers = status.markers
@@ -110,8 +113,16 @@ private fun splitText(status: SyncStatus): String? {
 }
 
 @Composable
-private fun countText(@PluralsRes plural: Int, count: Int): String =
-    stringResource(R.string.synchronizacja_liczba, count, pluralStringResource(id = plural, count = count))
+@ReadOnlyComposable
+private fun countText(
+    @PluralsRes plural: Int,
+    count: Int,
+): String = stringResource(R.string.synchronizacja_liczba, count, pluralStringResource(id = plural, count = count))
+
+@Composable
+@ReadOnlyComposable
+private fun sendingText(progress: SyncProgress): String =
+    stringResource(R.string.synchronizacja_wysylamy, progress.sent, progress.total)
 
 @Composable
 private fun PhaseMessage(phase: SyncPhase, status: SyncStatus) {
@@ -119,10 +130,7 @@ private fun PhaseMessage(phase: SyncPhase, status: SyncStatus) {
         when (phase) {
             SyncPhase.Waiting -> null
             SyncPhase.Done -> doneText(status)
-            is SyncPhase.Sending -> {
-                val progress = phase.progress
-                stringResource(R.string.synchronizacja_wysylamy, progress.sent, progress.total)
-            }
+            is SyncPhase.Sending -> sendingText(phase.progress)
             SyncPhase.Offline -> stringResource(R.string.synchronizacja_bez_internetu)
             SyncPhase.ServerDown -> stringResource(R.string.synchronizacja_serwer)
             SyncPhase.LoginExpired -> stringResource(R.string.synchronizacja_logowanie)
@@ -133,6 +141,7 @@ private fun PhaseMessage(phase: SyncPhase, status: SyncStatus) {
 }
 
 @Composable
+@ReadOnlyComposable
 private fun doneText(status: SyncStatus): String =
     status.lastSyncedAt?.let { stringResource(R.string.synchronizacja_wszystko_ostatnia, campusMoment(it)) }
         ?: stringResource(R.string.synchronizacja_wszystko)

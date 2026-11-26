@@ -57,7 +57,7 @@ import io.github.dostepnykampus.feature.capture.R
 fun VersionConflictContent(state: ConflictUiState, actions: ConflictActions, modifier: Modifier = Modifier) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            BackHeader(title = stringResource(R.string.konflikt_naglowek), onBack = actions.onBack)
+            BackHeader(title = stringResource(R.string.synchronizacja_naglowek), onBack = actions.onBack)
             if (state is ConflictUiState.Ready) {
                 Column(
                     modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
