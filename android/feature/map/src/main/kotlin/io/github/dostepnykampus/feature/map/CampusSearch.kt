@@ -25,10 +25,11 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldDecorator
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -51,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.onSizeChanged
@@ -58,6 +60,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -79,6 +82,7 @@ import io.github.dostepnykampus.feature.map.area.AreaOrder
 import io.github.dostepnykampus.feature.map.building.BuildingList
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
 import io.github.dostepnykampus.feature.map.search.SearchResults
+import kotlinx.coroutines.flow.drop
 import java.time.Instant
 
 private val SearchIcon =
@@ -132,11 +136,13 @@ internal fun CampusSearch(
     onBarHeight: (Int) -> Unit = {},
     searchFocus: SearchFocus? = null,
 ) {
-    var query by rememberSaveable { mutableStateOf("") }
+    val field = rememberTextFieldState()
+    val query = field.text.toString()
     var isHidden by rememberSaveable { mutableStateOf(false) }
     SideEffect { onSearch(query) }
+    LaunchedEffect(field) { snapshotFlow { field.text.toString() }.drop(1).collect { isHidden = false } }
     val showList = {
-        query = ""
+        field.clearText()
         onListChange(true)
     }
     val release = searchRelease { isHidden = true }
@@ -145,18 +151,13 @@ internal fun CampusSearch(
         onBuildingClick(symbol)
     }
     Column(modifier.fillMaxWidth()) {
-        val onQueryChange = { text: String ->
-            query = text
-            isHidden = false
-        }
         Column(
             Modifier
                 .onSizeChanged { onBarHeight(it.height) }
                 .onFocusChanged { field -> searchFocus?.onField(isFocused = field.hasFocus) },
         ) {
             SearchHeader(
-                query = query,
-                onQueryChange = onQueryChange,
+                field = field,
                 onFieldTap = { isHidden = false },
                 onFieldLeave = { isHidden = true },
                 isList = isList,
@@ -202,8 +203,7 @@ private fun searchRelease(onHide: () -> Unit): () -> Unit {
 
 @Composable
 private fun SearchHeader(
-    query: String,
-    onQueryChange: (String) -> Unit,
+    field: TextFieldState,
     onFieldTap: () -> Unit,
     onFieldLeave: () -> Unit,
     isList: Boolean,
@@ -217,7 +217,7 @@ private fun SearchHeader(
                 verticalArrangement = Arrangement.spacedBy(Odstepy.s),
             ) {
                 TitleRow(isList, onListChange)
-                SymbolField(query = query, onQueryChange = onQueryChange, onTap = onFieldTap, onLeave = onFieldLeave)
+                SymbolField(state = field, onTap = onFieldTap, onLeave = onFieldLeave)
             }
             HorizontalDivider(thickness = Obramowania.ramka, color = MaterialTheme.colorScheme.outlineVariant)
         }
@@ -262,7 +262,7 @@ private fun ViewButton(isList: Boolean, hasIcon: Boolean, onListChange: (Boolean
 }
 
 @Composable
-private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: () -> Unit, onLeave: () -> Unit) {
+private fun SymbolField(state: TextFieldState, onTap: () -> Unit, onLeave: () -> Unit) {
     val interactions = remember { MutableInteractionSource() }
     val tap by rememberUpdatedState(onTap)
     LaunchedEffect(interactions) {
@@ -276,7 +276,28 @@ private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: (
             unfocusedBorderColor = scheme.outline,
         )
     val textStyle = LocalTextStyle.current.merge(TextStyle(color = scheme.onSurface))
-    val state = rememberFollowedState(query = query, onQueryChange = onQueryChange)
+    val material =
+        OutlinedTextFieldDefaults.decorator(
+            state = state,
+            enabled = true,
+            lineLimits = TextFieldLineLimits.SingleLine,
+            outputTransformation = null,
+            interactionSource = interactions,
+            leadingIcon = { Icon(SearchIcon, contentDescription = null) },
+            trailingIcon = { if (state.text.isNotEmpty()) ClearButton { state.clearText() } },
+            colors = colors,
+            container = {
+                OutlinedTextFieldDefaults.Container(
+                    enabled = true,
+                    isError = false,
+                    interactionSource = interactions,
+                    colors = colors,
+                    shape = RoundedCornerShape(Zaokraglenia.kapsula),
+                    focusedBorderThickness = Obramowania.pole,
+                    unfocusedBorderThickness = Obramowania.pole,
+                )
+            },
+        )
     BasicTextField(
         state = state,
         modifier =
@@ -291,55 +312,28 @@ private fun SymbolField(query: String, onQueryChange: (String) -> Unit, onTap: (
         interactionSource = interactions,
         cursorBrush = SolidColor(scheme.primary),
         decorator =
-            OutlinedTextFieldDefaults.decorator(
-                state = state,
-                enabled = true,
-                lineLimits = TextFieldLineLimits.SingleLine,
-                outputTransformation = null,
-                interactionSource = interactions,
-                placeholder = { SearchHint(style = textStyle) },
-                leadingIcon = { Icon(SearchIcon, contentDescription = null) },
-                trailingIcon = { if (state.text.isNotEmpty()) ClearButton { onQueryChange("") } },
-                colors = colors,
-                container = {
-                    OutlinedTextFieldDefaults.Container(
-                        enabled = true,
-                        isError = false,
-                        interactionSource = interactions,
-                        colors = colors,
-                        shape = RoundedCornerShape(Zaokraglenia.kapsula),
-                        focusedBorderThickness = Obramowania.pole,
-                        unfocusedBorderThickness = Obramowania.pole,
-                    )
-                },
-            ),
+            TextFieldDecorator { inner ->
+                material.Decoration {
+                    FieldWithHint(isEmpty = state.text.isEmpty(), style = textStyle, content = inner)
+                }
+            },
     )
 }
 
 @Composable
-private fun rememberFollowedState(query: String, onQueryChange: (String) -> Unit): TextFieldState {
-    val state = rememberTextFieldState(initialText = query)
-    val current by rememberUpdatedState(query)
-    val change by rememberUpdatedState(onQueryChange)
-    LaunchedEffect(state) {
-        snapshotFlow { state.text.toString() }.collect { text -> if (text != current) change(text) }
+private fun FieldWithHint(isEmpty: Boolean, style: TextStyle, content: @Composable () -> Unit) {
+    val isWrapped = isEmpty && LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+    Box(contentAlignment = Alignment.CenterStart, propagateMinConstraints = true) {
+        Text(
+            text = stringResource(R.string.mapa_szukaj_podpowiedz),
+            modifier = if (isEmpty) Modifier else Modifier.alpha(0f).clearAndSetSemantics {},
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = if (isWrapped) Int.MAX_VALUE else 1,
+            overflow = TextOverflow.Ellipsis,
+            style = style,
+        )
+        content()
     }
-    LaunchedEffect(query) {
-        if (state.text.toString() != query) state.setTextAndPlaceCursorAtEnd(query)
-    }
-    return state
-}
-
-@Composable
-private fun SearchHint(style: TextStyle) {
-    val isWrapped = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
-    Text(
-        text = stringResource(R.string.mapa_szukaj_podpowiedz),
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        maxLines = if (isWrapped) Int.MAX_VALUE else 1,
-        overflow = TextOverflow.Ellipsis,
-        style = style,
-    )
 }
 
 @Composable
