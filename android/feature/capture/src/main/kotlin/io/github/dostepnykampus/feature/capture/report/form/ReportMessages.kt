@@ -29,10 +29,10 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
+import io.github.dostepnykampus.core.designsystem.ImportantSign
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
-import io.github.dostepnykampus.core.designsystem.ImportantSign
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
