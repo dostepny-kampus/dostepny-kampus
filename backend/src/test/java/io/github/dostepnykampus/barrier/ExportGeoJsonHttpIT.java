@@ -97,11 +97,6 @@ final class ExportGeoJsonHttpIT {
         final JsonNode one = ExportGeoJsonHttpIT.byId(features, accepted);
         final JsonNode props = one.path("properties");
         final String low = json.toLowerCase(Locale.ROOT);
-        final long own = StreamSupport.stream(features.spliterator(), false).filter(
-            item -> created.stream().map(UUID::toString).anyMatch(
-                id -> id.equals(item.path("properties").path("submissionId").asString())
-            )
-        ).count();
         MatcherAssert.assertThat(
             "Eksport GeoJSON zawiera niewłaściwe zgłoszenia, dane autora, kontur albo zły układ",
             List.of(
@@ -109,7 +104,7 @@ final class ExportGeoJsonHttpIT {
                     "ExportFeatureCollection",
                     "{\"type\":\"FeatureCollection\",\"features\":[%s]}".formatted(one)
                 ),
-                own, one.path("geometry").path("coordinates").toString(),
+                ExportGeoJsonHttpIT.owned(features, created), one.path("geometry").path("coordinates").toString(),
                 props.path("barrierGroup").asString(), props.path("buildingSymbol").asString(),
                 props.path("floor").asString(), props.path("description").asString(),
                 low.contains("konto-testowe") || low.contains("author")
@@ -122,6 +117,14 @@ final class ExportGeoJsonHttpIT {
                 )
             )
         );
+    }
+
+    private static long owned(final JsonNode features, final List<UUID> created) {
+        return StreamSupport.stream(features.spliterator(), false).filter(
+            item -> created.stream().map(UUID::toString).anyMatch(
+                id -> id.equals(item.path("properties").path("submissionId").asString())
+            )
+        ).count();
     }
 
     private static JsonNode byId(final JsonNode features, final UUID id) {
