@@ -28,7 +28,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -101,7 +100,6 @@ class DemoPathTest {
         exportGeoJson()
     }
 
-    /** Zbierający mierzy przy wejściu głównym, potwierdza A-1 i bez sieci zapisuje TB-1 z uciążliwością 3. */
     private fun saveOffline() {
         device.signIn(DebugRole.COLLECTOR)
         device.openWork("Zmierz i zgłoś barierę")
@@ -123,7 +121,6 @@ class DemoPathTest {
         steps.waitFor(hasText("W telefonie"))
     }
 
-    /** Po włączeniu sieci zgłoszenie wysyła się samo, bez dotykania ekranu. */
     private fun sendAfterNetwork() {
         device.network(isOn = true)
         measuring.waitFor(hasText("Wysłane"))
@@ -131,7 +128,6 @@ class DemoPathTest {
         compose.waitUntil(MEASURE_WAIT_MS) { compose.onAllNodes(local).fetchSemanticsNodes().isEmpty() }
     }
 
-    /** Weryfikator bierze TB-1, widzi TB-13 jako podobne zgłoszenie 5 m dalej i przyjmuje TB-1. */
     private fun acceptWithSimilar() {
         device.signIn(DebugRole.VERIFIER)
         device.openWork("Zgłoszenia do sprawdzenia")
@@ -149,7 +145,6 @@ class DemoPathTest {
         compose.waitUntil(WAIT_MS) { server.accepted(note).isNotEmpty() }
     }
 
-    /** Odwiedzający widzi na karcie A-1 wejście główne „niedostępne”, inne wejście „dostępne” i schody TB-1. */
     private fun visitorCard() {
         device.signIn(DebugRole.VISITOR)
         steps.openCard(DEMO_BUILDING)
@@ -159,7 +154,6 @@ class DemoPathTest {
         device.reveal(hasText(STAIRS, substring = true, ignoreCase = true))
     }
 
-    /** Koordynator widzi przy A-1 4 z 5 pięter obejrzanych, czyli 80 procent. */
     private fun coordinatorProgress() {
         device.signIn(DebugRole.COORDINATOR)
         device.openWork("Postęp inwentaryzacji")
@@ -167,7 +161,6 @@ class DemoPathTest {
         device.reveal(hasText("4 z 5 pięter, 80%"))
     }
 
-    /** Eksport GeoJSON ma TB-1 w WGS84 (RFC 7946, bez układu do wskazania) przy wejściu głównym A-1. */
     private fun exportGeoJson() {
         val id = server.accepted(note).single().id
         val file = server.geoJson()
@@ -180,13 +173,13 @@ class DemoPathTest {
                 .first { it.getJSONObject("properties").getString("submissionId") == id }
         val point = feature.getJSONObject("geometry").getJSONArray("coordinates")
         val place = GeoPoint(longitude = point.getDouble(0), latitude = point.getDouble(1))
-        val meters = distance(place, MAIN_ENTRANCE)
+        val meters = distance(from = place, to = MAIN_ENTRANCE)
         assertTrue("TB-1 $meters m od wejścia głównego", meters < NEAR_ENTRANCE_METERS)
     }
 
     private fun distance(from: GeoPoint, to: GeoPoint): Double {
         val north = (from.latitude - to.latitude) * METERS_PER_DEGREE
         val east = (from.longitude - to.longitude) * METERS_PER_DEGREE * cos(Math.toRadians(to.latitude))
-        return hypot(north, east)
+        return hypot(x = north, y = east)
     }
 }

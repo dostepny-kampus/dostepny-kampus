@@ -117,7 +117,7 @@ internal class DemoDevice(private val compose: ComposeTestRule, private val step
             node.config
                 .getOrNull(SemanticsProperties.Text)
                 .orEmpty()
-                .any { shown -> shown.text.replace(NO_BREAK_SPACE, ' ') == text }
+                .any { shown -> shown.text.replace(oldChar = NO_BREAK_SPACE, newChar = ' ') == text }
         }
 
     private fun shell(command: String) {
