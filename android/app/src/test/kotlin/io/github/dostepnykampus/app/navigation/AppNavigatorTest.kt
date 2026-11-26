@@ -628,7 +628,8 @@ class AppNavigatorTest {
         stack += BuildingRoute("A-1")
         navigator(collector).run {
             openReplace("tb13")
-            assertEquals(ReportEditRoute("tb13", ReportEditMode.CHANGE_ACCEPTED), current, "V2 otwiera C2 zmiany przyjętego")
+            val replace = ReportEditRoute("tb13", ReportEditMode.CHANGE_ACCEPTED)
+            assertEquals(replace, current, "V2 otwiera C2 zmiany przyjętego")
             reportSaved()
         }
         assertEquals(stackOf(BuildingRoute("A-1"), MySubmissionsRoute), stack, "C2 znika z historii, C3 po V2")
