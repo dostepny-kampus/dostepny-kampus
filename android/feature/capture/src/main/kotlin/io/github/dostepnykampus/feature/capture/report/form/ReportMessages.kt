@@ -6,30 +6,23 @@
 package io.github.dostepnykampus.feature.capture.report.form
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.CeleDotyku
-import io.github.dostepnykampus.core.designsystem.ImportantSign
-import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.ProblemText
 import io.github.dostepnykampus.core.designsystem.Typografia
@@ -38,6 +31,7 @@ import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
 import io.github.dostepnykampus.feature.capture.photo.PhotoPaths
 import io.github.dostepnykampus.feature.capture.photo.PhotoPreviews
+import io.github.dostepnykampus.feature.capture.photo.PhotoWarning
 
 /**
  * „Zdjęcie”: ostrzeżenie „Ważne” jak w kroku 1 V4, podgląd zdjęć, „Zrób zdjęcie” i komunikat, gdy zdjęcia nie dało
@@ -61,15 +55,9 @@ internal fun PhotoSection(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         title?.let { SectionTitle(it) }
-        OutlinedCard(
-            modifier = Modifier.fillMaxWidth(),
-            border = BorderStroke(Obramowania.ramka, MaterialTheme.colorScheme.error),
-        ) {
-            Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {
-                ImportantWord()
-                Text(stringResource(R.string.formularz_wazne_twarze), fontWeight = Typografia.wyroznienieWaga)
-                Text(stringResource(R.string.formularz_wazne_widoczne))
-            }
+        PhotoWarning {
+            Text(stringResource(R.string.formularz_wazne_twarze), fontWeight = Typografia.wyroznienieWaga)
+            Text(stringResource(R.string.formularz_wazne_widoczne))
         }
         PhotoPreviews(photos)
         if (error != null) {
@@ -204,12 +192,3 @@ private fun ReportFormError.messageRes(): Int =
         ReportFormError.MISSING_PHOTO -> R.string.formularz_brak_zdjecia
         ReportFormError.MISSING_DESCRIPTION -> R.string.formularz_brak_opisu
     }
-
-@Composable
-private fun ImportantWord() {
-    val color = MaterialTheme.colorScheme.error
-    Row(horizontalArrangement = Arrangement.spacedBy(Odstepy.s), verticalAlignment = Alignment.CenterVertically) {
-        ImportantSign(tint = color)
-        Text(text = stringResource(R.string.formularz_wazne), color = color, fontWeight = Typografia.wyroznienieWaga)
-    }
-}

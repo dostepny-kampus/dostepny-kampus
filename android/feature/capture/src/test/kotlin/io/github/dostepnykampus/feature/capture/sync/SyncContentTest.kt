@@ -8,12 +8,14 @@ package io.github.dostepnykampus.feature.capture.sync
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import io.github.dostepnykampus.core.data.submission.sync.SyncProgress
 import io.github.dostepnykampus.core.data.submission.sync.SyncStatus
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.designsystem.IMPORTANT_SIGN_TAG
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -45,6 +47,7 @@ class SyncContentTest {
         compose.onNodeWithText("Czeka na wysłanie: 3").assertIsDisplayed()
         compose.onNodeWithText("2 zgłoszenia i 1 znacznik piętra").assertIsDisplayed()
         compose.onNodeWithText("Ostatnia synchronizacja: 12.11.2026, 10:42").assertIsDisplayed()
+        compose.onNodeWithText("Ważne").assertDoesNotExist()
         compose.onNodeWithText("Synchronizuj teraz").performScrollTo().performClick()
         assertEquals("„Synchronizuj teraz” rusza wysyłkę", listOf("teraz"), calls)
     }
@@ -101,6 +104,8 @@ class SyncContentTest {
 
         val warning = "W telefonie zostało mniej niż 100 MB. Zwolnij miejsce, aby dalej robić zdjęcia."
         compose.onNodeWithText(warning).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Ważne").assertIsDisplayed()
+        compose.onNodeWithTag(IMPORTANT_SIGN_TAG).assertIsDisplayed()
     }
 
     internal companion object {

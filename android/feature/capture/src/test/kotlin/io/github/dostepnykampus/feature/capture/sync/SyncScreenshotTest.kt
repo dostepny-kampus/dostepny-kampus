@@ -31,9 +31,9 @@ class SyncScreenshotTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private fun capture(phase: SyncPhase) {
+    private fun capture(phase: SyncPhase, isLowSpace: Boolean = false) {
         val actions = SyncActions(onBack = {}, onSyncNow = {}, onLogin = {})
-        val state = SyncUiState.Ready(status = QUEUE, phase = phase, isLowSpace = false)
+        val state = SyncUiState.Ready(status = QUEUE, phase = phase, isLowSpace = isLowSpace)
         compose.setContent { DostepnyKampusTheme { SyncContent(state = state, actions = actions) } }
         compose.waitForIdle()
         compose.onRoot().captureRoboImage()
@@ -49,6 +49,12 @@ class SyncScreenshotTest {
     @Config(qualifiers = "+night")
     fun drawsDarkQueue() {
         capture(SyncPhase.Waiting)
+    }
+
+    /** Ostrzeżenie „Ważne” o wolnym miejscu. Wymagania: NFR-7, NFR-21 */
+    @Test
+    fun drawsLowSpaceWarning() {
+        capture(phase = SyncPhase.Waiting, isLowSpace = true)
     }
 
     /** Czcionka 200 %: treść przewija się, czynność zostaje osiągalna. Wymagania: NFR-20 */
