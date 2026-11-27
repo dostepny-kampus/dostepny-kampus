@@ -27,7 +27,6 @@ import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.camera.CameraSaver
 import io.github.dostepnykampus.feature.map.camera.CameraTransition
-import io.github.dostepnykampus.feature.map.camera.ENTRANCE_ZOOM
 import io.github.dostepnykampus.feature.map.camera.FreeMap
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapInset
@@ -71,7 +70,7 @@ private val ChoiceSaver = listSaver<List<String>, String>(save = { it }, restore
  * @property limits granice kamery dla terenu i rozmiaru mapy; `null` przed pomiarem mapy
  * @property cover czy arkusz V2 zasłania dół mapy i czy nad nim mieszczą się przyciski mapy
  * @property taps wybór budynku dotykiem i arkusz „Który budynek?”
- * @param onCamera zapis widoku kamery po ruchu osoby, zob. [cameraKeeper]
+ * @param onCamera zapis widoku kamery po ruchu osoby i po wyborze terenu, zob. [cameraKeeper]
  */
 internal class MapSceneState(
     val scene: MapScene?,
@@ -79,7 +78,7 @@ internal class MapSceneState(
     val limits: MapLimits?,
     val cover: MapCover,
     val taps: MapPicking,
-    private val onCamera: (MapCamera) -> Unit,
+    private val onCamera: CameraKeeper,
 ) {
     /** Ruch kamery do pokazania, zob. [SceneCamera.move]; `null` bez danych. */
     val move: CameraTransition? get() = shown?.move
@@ -98,7 +97,7 @@ internal class MapSceneState(
 
     /** Zapisuje widok [idle] po geście osoby. */
     fun keep(idle: MapCamera) {
-        onCamera(idle)
+        onCamera.keep(idle)
     }
 
     /**
@@ -109,7 +108,9 @@ internal class MapSceneState(
      */
     fun land(buildings: CampusBounds, area: CampusBounds? = null) {
         shown?.let { scene ->
-            keep(landed(outline = buildings, free = scene.landing, maxZoom = START_ZOOM, limits = limits, area = area))
+            val view =
+                landed(outline = buildings, free = scene.landing, maxZoom = START_ZOOM, limits = limits, area = area)
+            onCamera.land(view)
         }
     }
 
@@ -160,10 +161,9 @@ internal fun rememberMapSceneState(
         seen?.let {
             density.besideFloorColumn(camera = it, symbol = view.shown, catalog = catalog, layers = layers, size = size)
         }
-    val own = shown ?: selection?.entrance?.let { MapCamera(center = it.location, zoom = ENTRANCE_ZOOM) }
     val limits = density.mapLimits(selection?.bounds, size.belowTop(topInset))
-    val start = layers?.start?.let { MapCamera(center = it, zoom = START_ZOOM) }
-    val uncovered = (own ?: start)?.let { limits?.clamp(it) ?: it }
+    val entrance = selection?.entrance?.location
+    val uncovered = uncoveredView(shown = shown, entrance = entrance, start = layers?.start, limits = limits)
     val reserve = rememberNoticeReserve(building = selection?.building, notice = notice)
     val bottomInset = with(density) { (cover + reserve).toPx() }.toDouble()
     val free = density.freeMap(size, cover)
@@ -185,7 +185,8 @@ internal fun rememberMapSceneState(
     }
     val card = rememberCardMove(building = selection?.building, pick = pick)
     val above = card.move?.takeIf { isCovered }
-    val move = above ?: last.moveTo(target = uncovered, closed = closed, free = fit, isJump = isRoomJump)
+    val toArea = last.landingMove(target = uncovered, view = view, closed = closed, free = fit, scale = scale)
+    val move = above ?: toArea ?: last.moveTo(target = uncovered, closed = closed, free = fit, isJump = isRoomJump)
     val inset =
         cameraInset(held = heldInset, isAbove = above != null, top = topInset, bottom = bottomInset, sign = sheet)
     SideEffect { last.keep(shown = move?.camera, inset = inset) }
@@ -195,7 +196,7 @@ internal fun rememberMapSceneState(
         limits = limits,
         cover = mapCover(isCovered, hasControls = free.hasRoomForControls),
         taps = MapPicking(choices = choices, onTap = origin::tap),
-        onCamera = cameraKeeper(isCovered, onMap = view.keep, onCard = card.keep),
+        onCamera = cameraKeeper(isCovered = isCovered, onMap = view.keep, onCard = card.keep, onLand = view.land),
     )
 }
 
@@ -235,18 +236,29 @@ internal fun mapCover(isCovered: Boolean, hasControls: Boolean): MapCover =
     }
 
 /**
- * Zapis widoku kamery po ruchu osoby. Nad arkuszem V2 ([isCovered]) widok trafia do [onCard], więc kamera nie
- * ustawia już budynku na nowo. Każdy widok trafia też do [onMap].
+ * Zapis widoku kamery: [keep] po ruchu osoby albo przycisku mapy, [land] po wyborze terenu.
+ *
+ * Wymagania: US1.7, US2.8
+ */
+internal data class CameraKeeper(val keep: (MapCamera) -> Unit, val land: (MapCamera) -> Unit)
+
+/**
+ * Zapis widoku kamery. Po ruchu osoby nad arkuszem V2 ([isCovered]) widok trafia do [onCard], więc kamera nie
+ * ustawia już budynku na nowo, a każdy widok trafia też do [onMap]. Widok wybranego terenu trafia do [onLand].
  */
 internal fun cameraKeeper(
     isCovered: Boolean,
     onMap: (MapCamera) -> Unit,
     onCard: (MapCamera) -> Unit,
-): (MapCamera) -> Unit =
-    { idle ->
-        if (isCovered) onCard(idle)
-        onMap(idle)
-    }
+    onLand: (MapCamera) -> Unit = onMap,
+): CameraKeeper =
+    CameraKeeper(
+        keep = { idle ->
+            if (isCovered) onCard(idle)
+            onMap(idle)
+        },
+        land = onLand,
+    )
 
 /**
  * Ruch mapy nad arkuszem V2 budynku [building]: [pick], dopóki osoba nie ruszy mapy gestem albo przyciskiem, potem
