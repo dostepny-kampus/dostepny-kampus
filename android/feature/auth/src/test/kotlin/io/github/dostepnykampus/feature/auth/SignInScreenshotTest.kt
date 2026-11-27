@@ -27,8 +27,7 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h800dp-xhdpi")
 class SignInScreenshotTest {
-    @get:Rule
-    val compose = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val compose = createAndroidComposeRule<ComponentActivity>()
 
     private fun capture(state: SignInUiState) {
         compose.setContent {
@@ -82,6 +81,7 @@ class SignInScreenshotTest {
     fun drawsLightFailure() {
         capture(SignInUiState(stage = SignInStage.FAILED))
     }
+
     @Test
     @Config(qualifiers = "w840dp-h800dp-xhdpi")
     fun drawsWideContent() {

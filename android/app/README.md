@@ -4,6 +4,8 @@
 
 Aplikacja: start, nawigacja między ekranami funkcji, powłoka z paskiem nawigacji i wysyłka zgłoszeń po starcie.
 
+Powłoka ogranicza szerokość tras treściowych wspólnym modyfikatorem; trasa mapy zachowuje pełny obszar.
+
 ## Pakiety
 
 - `app` — aktywność, powłoka z wcięciami systemu, start wysyłki, ekran wygasłego logowania i logi wersji release.

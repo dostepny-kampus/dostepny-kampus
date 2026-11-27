@@ -13,10 +13,10 @@ private val WideWindow = 600.dp
 private val ReadingColumn = 560.dp
 
 /**
- * Centers a reading column in windows from 600 dp. The 560 dp column leaves room for the usual
- * 16 dp padding and keeps bodyLarge prose below 75 characters per typical line (NFR-51).
- * Fields and actions receive the same constraints, including at 200% font size. Apply before
- * fillMaxWidth/fillMaxSize; maps and plans keep their full available width.
+ * Ogranicza mierzoną treść do 560 dp przy dostępnej szerokości od 600 dp i umieszcza ją pośrodku. W węższym albo
+ * nieograniczonym oknie zachowuje jego ograniczenia. Wstaw przed modyfikatorami wypełniającymi szerokość.
+ *
+ * Wymagania: NFR-51
  */
 public fun Modifier.readableWidth(): Modifier = layout { measurable, constraints ->
     val column =

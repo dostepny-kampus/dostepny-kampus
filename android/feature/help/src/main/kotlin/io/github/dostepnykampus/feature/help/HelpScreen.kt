@@ -51,8 +51,8 @@ import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind.Outlined
 import io.github.dostepnykampus.core.designsystem.card.InfoPanel
-import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.designsystem.layout.readableWidth
+import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 
 /**
@@ -85,9 +85,15 @@ fun HelpScreen(isFirstLaunch: Boolean, onOpenMap: () -> Unit, onLeave: () -> Uni
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.readableWidth().windowInsetsPadding(WindowInsets.safeDrawing)) {
             BackHeader(title = stringResource(R.string.pomoc_tytul), onBack = onBack)
-            val actions = @Composable {
-                NextAndSkipButtons(isLast = isLast, onNext = onNext, onOpenMap = onOpenMap, isInContent = isLargeFont)
-            }
+            val actions =
+                @Composable {
+                    NextAndSkipButtons(
+                        isLast = isLast,
+                        onNext = onNext,
+                        onOpenMap = onOpenMap,
+                        isInContent = isLargeFont,
+                    )
+                }
             key(step) {
                 Column(
                     modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),
@@ -158,8 +164,7 @@ private fun SearchFieldExample(modifier: Modifier = Modifier) {
         Text(
             text = stringResource(R.string.pomoc_budynek_pole),
             modifier =
-                Modifier
-                    .heightIn(min = CeleDotyku.przycisk)
+                Modifier.heightIn(min = CeleDotyku.przycisk)
                     .wrapContentHeight()
                     .padding(horizontal = Odstepy.m, vertical = Odstepy.s),
             color = MaterialTheme.colorScheme.onSurfaceVariant,

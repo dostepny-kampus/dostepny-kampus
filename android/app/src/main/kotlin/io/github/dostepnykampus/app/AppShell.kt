@@ -126,7 +126,13 @@ fun AppShell(
                         if (route is MapRoute) {
                             navigator.content(route)
                         } else {
-                            Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceContainer).readableWidth()) { navigator.content(route) }
+                            Box(
+                                Modifier.fillMaxSize()
+                                    .background(MaterialTheme.colorScheme.surfaceContainer)
+                                    .readableWidth()
+                            ) {
+                                navigator.content(route)
+                            }
                         }
                     }
                 },
@@ -148,8 +154,7 @@ fun AppShell(
                 NavDisplay(
                     entries = entries,
                     modifier =
-                        Modifier
-                            .consumeWindowInsets(insetsTakenByBar(bar, selected != null, isWide))
+                        Modifier.consumeWindowInsets(insetsTakenByBar(bar, selected != null, isWide))
                             .windowInsetsPadding(wideNavigationInsets(isWide)),
                     sceneStrategies = currentCardWindow().sceneStrategies(navigator.rememberSheetStrategy()),
                     onBack = { navigator.back() },
@@ -224,7 +229,7 @@ private fun bottomBarItems(hasWork: Boolean): BottomBarItems {
                 BottomBarItem(label = report, icon = NavigationIcons.Camera),
                 BottomBarItem(label = help, icon = NavigationIcons.Help),
                 BottomBarItem(label = account, icon = NavigationIcons.Account),
-            ),
+            )
         )
     }
 }

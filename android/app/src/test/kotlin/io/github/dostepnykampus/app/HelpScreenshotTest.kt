@@ -32,8 +32,7 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h800dp-xhdpi")
 class HelpScreenshotTest {
-    @get:Rule
-    val compose = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val compose = createAndroidComposeRule<ComponentActivity>()
 
     private fun capture(isFirstStep: Boolean) {
         compose.setContent {
@@ -87,6 +86,7 @@ class HelpScreenshotTest {
         RuntimeEnvironment.setFontScale(2f)
         capture(isFirstStep = false)
     }
+
     @Test
     @Config(qualifiers = "w840dp-h800dp-xhdpi")
     fun drawsWideContent() {

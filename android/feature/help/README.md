@@ -4,6 +4,8 @@
 
 Pomoc: ekran z krokami obsługi i jego pokazanie przy pierwszym uruchomieniu.
 
+V5 zachowuje wspólną szerokość tekstu i czynności w szerokim oknie.
+
 ## Pakiety
 
 - `feature.help` — ekran instrukcji, jej kroki i pierwsze uruchomienie.

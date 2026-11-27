@@ -75,8 +75,8 @@ import io.github.dostepnykampus.core.designsystem.OfflineLine
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.bar.NavigationIcons
-import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.core.designsystem.layout.readableWidth
+import io.github.dostepnykampus.core.designsystem.pathIcon
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.map.area.AreaOrder
@@ -90,7 +90,7 @@ private val SearchIcon =
     pathIcon(
         "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16" +
             "c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 " +
-            "9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z",
+            "9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
     )
 private val ListIcon =
     pathIcon("M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z")
@@ -98,9 +98,9 @@ private val ClearIcon =
     pathIcon("M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z")
 
 /**
- * Góra V1: wiersz tytułu z przejściem między mapą a listą, pole symbolu budynku i wynik pod nimi. Pole przyjmuje
- * zapis „c13” i szuka bez sieci; tekst, który nie jest symbolem, daje kartę „brak wyniku”, która przy mapie
- * prowadzi do listy. Przy liście pole zawęża listę.
+ * Góra V1: wiersz tytułu z przejściem między mapą a listą, pole symbolu budynku i wynik pod nimi. Pole przyjmuje zapis
+ * „c13” i szuka bez sieci; tekst, który nie jest symbolem, daje kartę „brak wyniku”, która przy mapie prowadzi do
+ * listy. Przy liście pole zawęża listę.
  *
  * Wymagania: NFR-19, US1.1, UC1, NFR-21, NFR-20, NFR-53, NFR-18, US2.5, NFR-11, US1.8, NFR-15
  *
@@ -113,12 +113,12 @@ private val ClearIcon =
  * @param areas tereny w kolejności nagłówków listy budynków
  * @param onListChange wybór widoku w wierszu tytułu albo przejście do listy z karty „brak wyniku”
  * @param onBuildingClick symbol wybranego wyniku albo budynku z listy; ekran otwiera V2 i zaznacza budynek. Wybór
- *   zdejmuje fokus z pola, chowa klawiaturę ekranową i wyniki, a tekst w polu zostaje; utrata fokusu z innego
- *   powodu też chowa wyniki. Wyniki wracają po dotknięciu pola albo zmianie tekstu. Pierwsze „Wstecz” zamyka V2
+ *   zdejmuje fokus z pola, chowa klawiaturę ekranową i wyniki, a tekst w polu zostaje; utrata fokusu z innego powodu
+ *   też chowa wyniki. Wyniki wracają po dotknięciu pola albo zmianie tekstu. Pierwsze „Wstecz” zamyka V2
  * @param modifier położenie nad mapą; przy liście cała wysokość nad paskiem dolnym
  * @param onRoomClick wybrany wynik sali; wybór chowa wyniki i klawiaturę jak wybór budynku
- * @param onBarHeight wysokość w pikselach wiersza tytułu, pola i wiersza bez internetu, bez wyników: tę część
- *   mapy kamera traktuje jako zasłoniętą, więc wpisywanie nie przesuwa mapy
+ * @param onBarHeight wysokość w pikselach wiersza tytułu, pola i wiersza bez internetu, bez wyników: tę część mapy
+ *   kamera traktuje jako zasłoniętą, więc wpisywanie nie przesuwa mapy
  * @param searchFocus fokus pola widziany przez mapę i listę
  */
 @Composable
@@ -153,9 +153,8 @@ internal fun CampusSearch(
     }
     Column(modifier.readableWidth().fillMaxWidth()) {
         Column(
-            Modifier
-                .onSizeChanged { onBarHeight(it.height) }
-                .onFocusChanged { field -> searchFocus?.onField(isFocused = field.hasFocus) },
+            Modifier.onSizeChanged { onBarHeight(it.height) }
+                .onFocusChanged { field -> searchFocus?.onField(isFocused = field.hasFocus) }
         ) {
             SearchHeader(
                 field = field,
@@ -266,9 +265,7 @@ private fun ViewButton(isList: Boolean, hasIcon: Boolean, onListChange: (Boolean
 private fun SymbolField(state: TextFieldState, onTap: () -> Unit, onLeave: () -> Unit) {
     val interactions = remember { MutableInteractionSource() }
     val tap by rememberUpdatedState(onTap)
-    LaunchedEffect(interactions) {
-        interactions.interactions.collect { if (it is PressInteraction.Release) tap() }
-    }
+    LaunchedEffect(interactions) { interactions.interactions.collect { if (it is PressInteraction.Release) tap() } }
     val scheme = MaterialTheme.colorScheme
     val colors =
         OutlinedTextFieldDefaults.colors(
@@ -302,10 +299,9 @@ private fun SymbolField(state: TextFieldState, onTap: () -> Unit, onLeave: () ->
     BasicTextField(
         state = state,
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .defaultMinSize(minHeight = OutlinedTextFieldDefaults.MinHeight)
-                .onFocusChanged { if (!it.isFocused) onLeave() },
+            Modifier.fillMaxWidth().defaultMinSize(minHeight = OutlinedTextFieldDefaults.MinHeight).onFocusChanged {
+                if (!it.isFocused) onLeave()
+            },
         textStyle = textStyle,
         keyboardOptions =
             KeyboardOptions(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Search),
@@ -339,7 +335,5 @@ private fun FieldWithHint(isEmpty: Boolean, style: TextStyle, content: @Composab
 
 @Composable
 private fun ClearButton(onClick: () -> Unit) {
-    IconButton(onClick = onClick) {
-        Icon(ClearIcon, contentDescription = stringResource(R.string.mapa_wyczysc_pole))
-    }
+    IconButton(onClick = onClick) { Icon(ClearIcon, contentDescription = stringResource(R.string.mapa_wyczysc_pole)) }
 }

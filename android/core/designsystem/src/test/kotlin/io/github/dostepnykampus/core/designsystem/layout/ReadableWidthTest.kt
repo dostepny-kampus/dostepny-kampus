@@ -19,34 +19,24 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** NFR-51: the same centered width for prose, fields and actions, independent of font size. */
+/** Wymagania: NFR-51 */
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "w840dp-h800dp")
 class ReadableWidthTest {
-    @get:Rule
-    val compose = createComposeRule()
+    @get:Rule val compose = createComposeRule()
 
     private fun check(width: Float, left: Float) {
-        compose.setContent {
-            Box(Modifier.readableWidth()) { Box(Modifier.fillMaxSize().testTag("column")) }
-        }
+        compose.setContent { Box(Modifier.readableWidth()) { Box(Modifier.fillMaxSize().testTag("column")) } }
         val bounds = compose.onNodeWithTag("column").getUnclippedBoundsInRoot()
         assertEquals("Reading column width", width, (bounds.right - bounds.left).value, 1f)
         assertEquals("Centered column position", left, bounds.left.value, 1f)
     }
 
-    @Test
-    fun centersWideContent() = check(width = 560f, left = 140f)
+    @Test fun centersWideContent() = check(width = 560f, left = 140f)
 
-    @Test
-    @Config(fontScale = 2f)
-    fun keepsActionsAlignedAtFont200() = check(width = 560f, left = 140f)
+    @Test @Config(fontScale = 2f) fun keepsActionsAlignedAtFont200() = check(width = 560f, left = 140f)
 
-    @Test
-    @Config(qualifiers = "w360dp-h800dp")
-    fun keepsNarrowContentFullWidth() = check(width = 360f, left = 0f)
+    @Test @Config(qualifiers = "w360dp-h800dp") fun keepsNarrowContentFullWidth() = check(width = 360f, left = 0f)
 
-    @Test
-    @Config(qualifiers = "w600dp-h800dp")
-    fun constrainsAtWideBreakpoint() = check(width = 560f, left = 20f)
+    @Test @Config(qualifiers = "w600dp-h800dp") fun constrainsAtWideBreakpoint() = check(width = 560f, left = 20f)
 }

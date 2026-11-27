@@ -110,11 +110,7 @@ fun SignInContent(
     }
 }
 
-private data class Choice(
-    @param:StringRes val text: Int,
-    val onClick: () -> Unit,
-    val kind: PinnedButtonKind,
-)
+private data class Choice(@param:StringRes val text: Int, val onClick: () -> Unit, val kind: PinnedButtonKind)
 
 @Composable
 private fun Message(state: SignInUiState, isForReport: Boolean, onLeave: () -> Unit) {

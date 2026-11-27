@@ -35,10 +35,9 @@ import io.github.dostepnykampus.feature.map.area.buildingsWord
 import io.github.dostepnykampus.feature.map.campus.MapArea
 
 /**
- * Lista budynków V1 podzielona nagłówkami terenów z liczbą budynków, np. „Wittigowo · 9”. W terenie
- * budynki stoją w kolejności katalogu, a wpisany symbol [query] zawęża listę; teren bez pasującego budynku nie ma
- * nagłówka. Nagłówek jest nagłówkiem dla TalkBack, który czyta „Wittigowo, 9 budynków”. Bez danych mapy
- * lista nie ma nagłówków.
+ * Lista budynków V1 podzielona nagłówkami terenów z liczbą budynków, np. „Wittigowo · 9”. W terenie budynki stoją w
+ * kolejności katalogu, a wpisany symbol [query] zawęża listę; teren bez pasującego budynku nie ma nagłówka. Nagłówek
+ * jest nagłówkiem dla TalkBack, który czyta „Wittigowo, 9 budynków”. Bez danych mapy lista nie ma nagłówków.
  *
  * Wymagania: US1.8, NFR-19, NFR-18, NFR-11
  *
@@ -72,12 +71,14 @@ internal fun BuildingList(
         items(buildings - groups.values.flatten().toSet(), key = Building::symbol) { building ->
             BuildingChoice(building) { onBuildingClick(building.symbol) }
         }
-        groups.filterValues { it.isNotEmpty() }.forEach { (area, inArea) ->
-            item(key = AREA_KEY + area.name) { AreaHeading(area) }
-            items(inArea, key = Building::symbol) { building ->
-                BuildingChoice(building) { onBuildingClick(building.symbol) }
+        groups
+            .filterValues { it.isNotEmpty() }
+            .forEach { (area, inArea) ->
+                item(key = AREA_KEY + area.name) { AreaHeading(area) }
+                items(inArea, key = Building::symbol) { building ->
+                    BuildingChoice(building) { onBuildingClick(building.symbol) }
+                }
             }
-        }
     }
 }
 
