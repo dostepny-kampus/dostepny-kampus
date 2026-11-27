@@ -4,6 +4,8 @@
 
 Wspólne elementy interfejsu Compose: motyw, nagłówki, przyciski, ikony i znaki oceny dostępności.
 
+Pasek nawigacji z boku uwzględnia wcięcia systemowe przy krawędziach okna.
+
 ## Pakiety
 
 - `core.designsystem` — motyw, skala czcionki, kontener grupy, wybór piętra, ikony, plakietka i linia braku sieci, wspólne błędy ekranów pracownika, znak „!” w kole i komunikat błędu z nim oraz zapis dnia.
