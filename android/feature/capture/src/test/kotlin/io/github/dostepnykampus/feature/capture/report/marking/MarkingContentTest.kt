@@ -6,12 +6,19 @@
 package io.github.dostepnykampus.feature.capture.report.marking
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
+import io.github.dostepnykampus.core.designsystem.IMPORTANT_SIGN_TAG
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.AssessmentSource
 import io.github.dostepnykampus.core.model.building.Entrance
@@ -80,8 +87,10 @@ class MarkingContentTest {
     fun showsValidationErrors() {
         show(MarkingUiState(entrance = SIDE, isChoiceMissing = true, isPhotoMissing = true))
 
-        compose.onNodeWithText("Wybierz: dostępne czy niedostępne.").assertIsDisplayed()
-        compose.onNodeWithText("Dodaj zdjęcie wejścia, aby wysłać zmianę.").assertExists()
+        val errorAnnouncement = SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Assertive)
+        compose.onNodeWithText("Wybierz: dostępne czy niedostępne.").assertIsDisplayed().assert(errorAnnouncement)
+        compose.onNodeWithText("Dodaj zdjęcie wejścia, aby wysłać zmianę.").assert(errorAnnouncement)
+        compose.onAllNodesWithTag(IMPORTANT_SIGN_TAG, useUnmergedTree = true).assertCountEquals(3)
         compose.onNodeWithText("Typ bariery").assertDoesNotExist()
         compose.onNodeWithText("Uciążliwość").assertDoesNotExist()
     }
@@ -92,6 +101,7 @@ class MarkingContentTest {
         show(MarkingUiState(entrance = SIDE, chosen = EntranceMarking.ACCESSIBLE, stage = MarkingStage.EDITING))
 
         compose.onNodeWithText("Dostępne").assertIsSelected()
+        compose.onAllNodesWithTag(IMPORTANT_SIGN_TAG, useUnmergedTree = true).assertCountEquals(1)
     }
 
     /** Wiersz: za mało miejsca w telefonie, „Spróbuj ponownie” wysyła jeszcze raz. Wymagania: NFR-7 */

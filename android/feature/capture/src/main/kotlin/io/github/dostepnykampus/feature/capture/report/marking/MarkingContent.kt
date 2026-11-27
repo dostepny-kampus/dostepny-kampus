@@ -34,6 +34,7 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.GroupFrame
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.ProblemText
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.bar.BackHeader
 import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
@@ -78,8 +79,9 @@ fun MarkingContent(state: MarkingUiState, actions: MarkingActions, modifier: Mod
                     photos = PhotoPaths(listOfNotNull(state.photo?.path)),
                     camera = actions.camera,
                     title = stringResource(R.string.zmiana_oznaczenia_zdjecie),
-                    error = stringResource(R.string.zmiana_oznaczenia_brak_zdjecia).takeIf { state.isPhotoMissing },
-                )
+                ) {
+                    if (state.isPhotoMissing) ProblemText(stringResource(R.string.zmiana_oznaczenia_brak_zdjecia))
+                }
                 Text(stringResource(R.string.zmiana_oznaczenia_sprawdzi))
             }
             PinnedActionBar {
@@ -117,15 +119,16 @@ private fun NewMarking(state: MarkingUiState, onChoose: (EntranceMarking) -> Uni
     Column(modifier = Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(Odstepy.s)) {
         SectionTitle(stringResource(R.string.zmiana_oznaczenia_nowe))
         if (state.isChoiceMissing) {
-            Text(
-                text = stringResource(R.string.zmiana_oznaczenia_wybierz),
-                color = MaterialTheme.colorScheme.error,
-                fontWeight = Typografia.wyroznienieWaga,
-            )
+            ProblemText(stringResource(R.string.zmiana_oznaczenia_wybierz))
         }
         Choices.forEach { option ->
             val isChosen = option == state.chosen
-            MarkingOption(option = option, isChosen = isChosen, isConfirming = isChosen && state.isConfirming) {
+            MarkingOption(
+                option = option,
+                isChosen = isChosen,
+                isConfirming = isChosen && state.isConfirming,
+                isError = state.isChoiceMissing,
+            ) {
                 onChoose(option)
             }
         }
@@ -133,7 +136,13 @@ private fun NewMarking(state: MarkingUiState, onChoose: (EntranceMarking) -> Uni
 }
 
 @Composable
-private fun MarkingOption(option: EntranceMarking, isChosen: Boolean, isConfirming: Boolean, onChoose: () -> Unit) {
+private fun MarkingOption(
+    option: EntranceMarking,
+    isChosen: Boolean,
+    isConfirming: Boolean,
+    isError: Boolean,
+    onChoose: () -> Unit,
+) {
     OutlinedCard(
         modifier =
             Modifier
@@ -143,7 +152,7 @@ private fun MarkingOption(option: EntranceMarking, isChosen: Boolean, isConfirmi
         border =
             BorderStroke(
                 width = if (isChosen) Obramowania.wybrane else Obramowania.ramka,
-                color = MaterialTheme.colorScheme.outline,
+                color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline,
             ),
     ) {
         Column(modifier = Modifier.padding(Odstepy.m), verticalArrangement = Arrangement.spacedBy(Odstepy.xs)) {

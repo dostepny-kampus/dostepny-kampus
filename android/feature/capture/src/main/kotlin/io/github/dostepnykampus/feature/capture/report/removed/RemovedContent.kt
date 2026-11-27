@@ -65,8 +65,15 @@ fun RemovedContent(state: RemovedUiState, actions: RemovedActions, modifier: Mod
                     photos = PhotoPaths(listOfNotNull(state.photo?.path)),
                     camera = actions.camera,
                     title = stringResource(R.string.usuniecie_nowe_zdjecie),
-                    error = stringResource(R.string.usuniecie_brak_zdjecia).takeIf { state.isPhotoMissing },
-                )
+                ) {
+                    if (state.isPhotoMissing) {
+                        Text(
+                            text = stringResource(R.string.usuniecie_brak_zdjecia),
+                            color = MaterialTheme.colorScheme.error,
+                            fontWeight = Typografia.wyroznienieWaga,
+                        )
+                    }
+                }
                 Text(stringResource(R.string.usuniecie_zostaje))
             }
             PinnedActionBar {
