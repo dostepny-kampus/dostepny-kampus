@@ -5,6 +5,8 @@
  */
 package io.github.dostepnykampus.feature.map.building
 
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarrier
+import io.github.dostepnykampus.core.data.barrier.AcceptedBarriers
 import io.github.dostepnykampus.core.data.building.BuildingCatalogRepository
 import io.github.dostepnykampus.core.data.network.NetworkStatus
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -13,6 +15,8 @@ import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.building.Entrance
 import io.github.dostepnykampus.core.model.building.EntranceMarking
+import io.github.dostepnykampus.core.model.submission.BarrierType
+import io.github.dostepnykampus.core.model.submission.Severity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -208,6 +212,63 @@ class BuildingCardTest {
             )
         assertEquals(VisitAnswer.Unknown(missing = 1, total = 1), visitAnswer(service))
     }
+
+    /** Karta konturu wspólnego bez planów łączy symbole i wejścia, a z planami zostaje osobna. Wymagania: US2, US3.2 */
+    @Test
+    fun buildsSameCardForSharedOutline() {
+        val shared = GeoPolygon(listOf(listOf(GeoPoint(longitude = 0.0, latitude = 0.0))))
+        val other = GeoPolygon(listOf(listOf(GeoPoint(longitude = 1.0, latitude = 1.0))))
+        val t18Entrance = entrance(id = "e1", marking = EntranceMarking.ACCESSIBLE).copy(buildingSymbol = "T-18")
+        val catalog =
+            BuildingCatalog(
+                buildings =
+                    listOf("T-18", "T-22").map { Building(it, null, shared) } +
+                        listOf("C-3", "C-4").map { Building(it, null, other) },
+                entrances = listOf(t18Entrance, t18Entrance.copy(buildingSymbol = "T-22")),
+                attribution = "©",
+                detailed = setOf("C-3", "C-4"),
+                hasServerList = true,
+            )
+        val first = buildingCard(catalog, "T-18") as BuildingCardUiState.Ready
+        assertEquals(first, buildingCard(catalog, "T-22"), "oba symbole dają tę samą kartę")
+        assertEquals(listOf("T-18", "T-22"), first.symbols, "symbole w nagłówku konturu wspólnego")
+        assertEquals(1, first.entrances.size, "wspólne wejście bez powtórzenia")
+        val detailed = buildingCard(catalog, "C-3") as BuildingCardUiState.Ready
+        assertEquals(listOf("C-3"), detailed.symbols, "kontur z planami zostawia jeden symbol")
+    }
+
+    /** Model widoku karty konturu wspólnego daje ten sam stan i bariery dla obu symboli. Wymagania: US2, BR-14 */
+    @Test
+    fun mergesSharedBarriersInViewModel() =
+        runTest(UnconfinedTestDispatcher()) {
+            val geo =
+                """{"type":"FeatureCollection","attribution":"©","features":[{"type":"Feature",""" +
+                    """"properties":{"kind":"building","symbols":["T-18","T-22"],"osm_id":"way/1"},""" +
+                    """"geometry":{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,0]]]}}]}"""
+            val repo = BuildingCatalogRepository(EmptyCoroutineContext) { geo }
+            val barrier =
+                AcceptedBarrier(
+                    id = "b1",
+                    location = GeoPoint(longitude = 0.5, latitude = 0.5),
+                    severity = Severity.HINDRANCE,
+                    type = BarrierType.THRESHOLD,
+                    buildingSymbol = "T-18",
+                    verifiedAt = null,
+                )
+            val barriers =
+                object : AcceptedBarriers {
+                    override suspend fun barriers(): List<AcceptedBarrier> = listOf(barrier)
+
+                    override fun syncedAt() = java.time.Instant.EPOCH
+                }
+            val first = BuildingCardViewModel("T-18", repo, online, acceptedBarriers = barriers)
+            val second = BuildingCardViewModel("T-22", repo, online, acceptedBarriers = barriers)
+            backgroundScope.launch { first.uiState.collect {} }
+            backgroundScope.launch { second.uiState.collect {} }
+            val state = first.uiState.value as BuildingCardUiState.Ready
+            assertEquals(state, second.uiState.value, "oba symbole otwierają ten sam stan karty z barierami")
+            assertEquals(listOf("b1"), state.barriers?.map { it.id }, "bariera przypisana do T-18")
+        }
 
     @Test
     fun buildsReadyAndMissing() {

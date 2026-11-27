@@ -65,6 +65,27 @@ class BuildingCardHeaderTest {
     }
 
     /**
+     * Nagłówek konturu wspólnego bez planów pokazuje oba symbole z ukośnikiem, a TalkBack czyta „Budynki …”.
+     *
+     * Wymagania: US2, US3.2, NFR-18
+     */
+    @Test
+    fun showsSharedOutlineSymbols() {
+        show(symbol = "T-18", name = null, symbols = listOf("T-18", "T-22"))
+        compose.onNodeWithText("T-18 / T-22", useUnmergedTree = true).assertIsDisplayed()
+        compose.onNode(hasContentDescription("Budynki T-18, T-22")).assertIsFocused()
+    }
+
+    /** Nagłówek konturu wspólnego z nazwą podaje oba symbole i nazwę w opisie dla TalkBack. Wymagania: US2, NFR-18 */
+    @Test
+    fun showsSharedOutlineSymbolsWithName() {
+        show(symbol = "T-18", name = "Dom studencki", symbols = listOf("T-18", "T-22"))
+        compose.onNodeWithText("T-18 / T-22", useUnmergedTree = true).assertIsDisplayed()
+        compose.onNodeWithText("Dom studencki", useUnmergedTree = true).assertIsDisplayed()
+        compose.onNode(hasContentDescription("Budynki T-18, T-22, Dom studencki")).assertIsFocused()
+    }
+
+    /**
      * Wiersz wymagań V2 „Nagłówek”: bez danych o wejściach pod nazwą cichy napis „Brak danych o wejściach”, bez
      *   zdania i bez „Pokaż wejście na mapie”.
      *
@@ -168,6 +189,7 @@ class BuildingCardHeaderTest {
         symbol: String = "A-1",
         name: String? = "Gmach Główny",
         entrances: List<Entrance> = emptyList(),
+        symbols: List<String> = listOf(symbol),
         onShowEntrance: (String) -> Unit = {},
     ) {
         val ordered = orderedEntrances(entrances)
@@ -176,7 +198,13 @@ class BuildingCardHeaderTest {
                 BuildingCardContent(
                     symbol = symbol,
                     mode = CardMode.Compact,
-                    card = BuildingCardUiState.Ready(symbol = symbol, name = name, entrances = ordered),
+                    card =
+                        BuildingCardUiState.Ready(
+                            symbol = symbol,
+                            name = name,
+                            entrances = ordered,
+                            symbols = symbols,
+                        ),
                     isOnline = true,
                     onShowOnMap = {},
                     onBack = {},

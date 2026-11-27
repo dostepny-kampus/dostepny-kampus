@@ -205,7 +205,14 @@ internal fun rememberMapSceneState(
         shown = move?.let { SceneCamera(move = it, inset = inset, landing = fit) },
         frame = frame,
         cover = mapCover(isCovered, hasControls = free.hasRoomForControls),
-        taps = MapPicking(choices = choices, onTap = origin::tap),
+        taps =
+            MapPicking(
+                choices = choices,
+                onTap = origin::tap,
+                singleTarget = {
+                    singleTouchedBuilding(symbols = it, data = scene?.data, detailed = catalog?.detailed.orEmpty())
+                },
+            ),
         onCamera = cameraKeeper(isCovered = isCovered, onMap = view.keep, onCard = card.keep, onLand = view.land),
     )
 }

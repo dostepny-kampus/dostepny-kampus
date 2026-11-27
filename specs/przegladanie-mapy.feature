@@ -474,8 +474,7 @@ Funkcja: Przeglądanie mapy kampusu i karty budynku
       | wyszuka „A-1 329”                                 | Budynek A-1 |
       | dotknie mapy obok konturów A-1 i A-4, poza nimi   | Budynek A-1 |
 
-  # @do-zrobienia #2499: kontur wspólny bez planów otwiera jedną kartę bez arkusza.
-  @US2 @US3.2 @aplikacja @do-zrobienia
+  @US2 @US3.2 @aplikacja
   Scenariusz: Kontur wspólny bez planów otwiera jedną kartę z oboma symbolami
     Zakładając, że Gość niezalogowany ma otwartą mapę kampusu
     Jeżeli dotknie wspólnego konturu T-18/T-22

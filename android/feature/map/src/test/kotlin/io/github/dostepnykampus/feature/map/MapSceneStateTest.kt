@@ -16,6 +16,8 @@ import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.camera.byControl
 import io.github.dostepnykampus.feature.map.camera.zoomedOut
+import io.github.dostepnykampus.feature.map.campus.CampusMapData
+import kotlinx.serialization.json.JsonObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -72,6 +74,29 @@ class MapSceneStateTest {
         assertEquals(listOf(MapCover.SHEET, MapCover.SHEET_WITHOUT_CONTROLS, MapCover.NONE), covers)
         assertEquals(true to true, state(isCovered = true).run { isCovered to hasControls })
         assertEquals(false to true, state().run { isCovered to hasControls })
+    }
+
+    private fun pickShared(outlines: List<List<String>>, touched: List<String>, detailed: Set<String> = emptySet()) {
+        val empty = JsonObject(emptyMap())
+        val data = CampusMapData(empty, emptyList(), empty, empty, start = null, outlines = outlines)
+        val picking = MapPicking(choices) { singleTouchedBuilding(symbols = it, data = data, detailed = detailed) }
+        picking.touch(symbols = touched, onBuilding = { opened += it }, onEmpty = { emptyTaps++ })
+    }
+
+    /** Wiersz: dotknięcie konturu wspólnego bez planów otwiera pierwszy budynek bez arkusza. Wymagania: US2, US3.2 */
+    @Test
+    fun opensSharedOutlineWithoutPlans() {
+        pickShared(listOf(listOf("T-18", "T-22"), listOf("C-3", "C-4")), listOf("T-18", "T-22"), setOf("C-3", "C-4"))
+        assertEquals(listOf("T-18"), opened, "kontur wspólny bez planów otwiera od razu pierwszy symbol")
+        assertEquals(emptyList<String>(), choices.value, "bez arkusza wyboru dla konturu wspólnego bez planów")
+    }
+
+    /** Wiersz: dotknięcie konturu wspólnego z planami otwiera arkusz „Który budynek?”. Wymagania: US2 */
+    @Test
+    fun waitsOnSharedOutlineWithPlans() {
+        pickShared(listOf(listOf("C-3", "C-4")), listOf("C-3", "C-4"), setOf("C-3", "C-4"))
+        assertEquals(listOf("C-3", "C-4"), choices.value, "kontur wspólny z planami otwiera arkusz")
+        assertEquals(emptyList<String>(), opened, "żaden budynek nie otwiera się przed wyborem")
     }
 
     /** Wiersz: dotknięcie dwóch konturów → oba symbole czekają na wybór, żaden budynek się nie otwiera. */

@@ -216,9 +216,18 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
         compose.onNodeWithContentDescription("Powiększ").assertDoesNotExist()
     }
 
-    /** Wiersz: kontur wspólny „C-13/C-14” → arkusz „Który budynek?”, wiersz „Budynek C-14” → V2. */
+    private fun separateOutlines() {
+        buildingSymbols = """["C-13"]"""
+        entrances =
+            """,{"type":"Feature","properties":{"kind":"building","symbols":["C-14"],""" +
+                """"display_name":"Budynek testowy","osm_id":"way/2"},""" +
+                """"geometry":{"type":"Polygon","coordinates":[[[2,0],[3,0],[3,1],[2,1],[2,0]]]}}"""
+    }
+
+    /** Wiersz: dwa różne kontury „C-13” i „C-14” → arkusz „Który budynek?”, wiersz „Budynek C-14” → V2. */
     @Test
     fun opensCardFromChoice() {
+        separateOutlines()
         compose.setContent { Screen() }
         compose.waitForIdle()
         compose.runOnUiThread { touch(listOf("C-13", "C-14")) }
@@ -232,9 +241,20 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
         assertEquals(listOf("C-14"), opened)
     }
 
+    /** Wiersz: kontur wspólny „C-13/C-14” bez planów pięter otwiera budynek od razu bez arkusza „Który budynek?”. */
+    @Test
+    fun opensSharedOutlineWithoutChoice() {
+        compose.setContent { Screen() }
+        compose.waitForIdle()
+        compose.runOnUiThread { touch(listOf("C-13", "C-14")) }
+        compose.onNodeWithText("Który budynek?").assertDoesNotExist()
+        assertEquals("kontur wspólny otwiera kartę bez arkusza", listOf("C-13"), opened)
+    }
+
     /** Wiersz: „Zamknij” w arkuszu „Który budynek?” → V1 bez arkusza. */
     @Test
     fun closesBuildingChoice() {
+        separateOutlines()
         compose.setContent { Screen() }
         compose.waitForIdle()
         compose.runOnUiThread { touch(listOf("C-13", "C-14")) }
@@ -250,6 +270,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
      */
     @Test
     fun closesChoiceOnEmptyTap() {
+        separateOutlines()
         compose.setContent { Screen() }
         compose.waitForIdle()
         compose.runOnUiThread { touch(listOf("C-13", "C-14")) }
@@ -403,7 +424,7 @@ class CampusMapScreenTest : CampusMapScreenFixture() {
         compose.setContent { Screen(focus = "C-13", sheet = 200.dp) }
         compose.waitForIdle()
         compose.runOnUiThread { listOf(listOf("C-13"), listOf("C-13", "C-14")).forEach(touch) }
-        assertEquals("dotknięcia konturów", 0 to listOf("C-13"), emptyTaps to opened)
+        assertEquals("dotknięcia konturów", 0 to listOf("C-13", "C-13"), emptyTaps to opened)
         compose.runOnUiThread { touch(emptyList()) }
         assertEquals("dotknięcie pustej mapy", 1, emptyTaps)
     }

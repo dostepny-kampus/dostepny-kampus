@@ -57,6 +57,7 @@
     <string name="mapa_teren_naglowek">%1$s · %2$d</string>
     <string name="mapa_teren_naglowek_opis">%1$s, %2$s</string>
     <string name="mapa_budynek">Budynek %1$s</string>
+    <string name="mapa_budynki">Budynki %1$s</string>
     <string name="mapa_zaznaczone_wejscie">Zaznaczone wejście: %1$s, budynek %2$s</string>
     <string name="mapa_bariera_typ">%1$s: %2$s</string>
     <string name="mapa_bariera_w_budynku">%1$s, budynek %2$s</string>
@@ -89,6 +90,7 @@
     <string name="mapa_pokaz_liste">Pokaż listę</string>
     <string name="mapa_pokaz_widok_mapy">Pokaż mapę</string>
     <string name="karta_czytaj">Budynek %1$s, %2$s</string>
+    <string name="karta_czytaj_wiele">Budynki %1$s, %2$s</string>
     <string name="mapa_zglos_schody">Zgłoś barierę przy schodach</string>
     <string name="mapa_zglos_toaleta">Zgłoś barierę przy toalecie</string>
     <string name="mapa_zglos_winda">Zgłoś barierę przy windzie</string>
