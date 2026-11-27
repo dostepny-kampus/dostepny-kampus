@@ -6,6 +6,7 @@
 package io.github.dostepnykampus.feature.map
 
 import androidx.compose.runtime.mutableStateOf
+import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.feature.map.camera.FreeMap
 import io.github.dostepnykampus.feature.map.camera.MapCamera
@@ -14,7 +15,6 @@ import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.START_ZOOM
 import io.github.dostepnykampus.feature.map.camera.byControl
 import io.github.dostepnykampus.feature.map.camera.zoomedOut
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

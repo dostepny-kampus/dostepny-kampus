@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.camera
 
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import io.github.dostepnykampus.core.model.CampusBounds
 
 /**
  * Skąd pochodzi wybór budynku i jaki ruch mapy z niego wynika. Pierwszy wybór na mapie, która powstała już pod

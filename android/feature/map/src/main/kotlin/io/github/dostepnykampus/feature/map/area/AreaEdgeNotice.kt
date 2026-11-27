@@ -15,10 +15,10 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.feature.map.R
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
 
 private const val EDGE_TOLERANCE_DEGREES = 1e-6
 

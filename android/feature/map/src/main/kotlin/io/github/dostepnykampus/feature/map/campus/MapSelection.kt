@@ -5,6 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.campus
 
+import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.core.model.GeoArea
 
 /**

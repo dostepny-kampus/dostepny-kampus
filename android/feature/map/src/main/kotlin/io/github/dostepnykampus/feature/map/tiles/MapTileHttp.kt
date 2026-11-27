@@ -8,7 +8,7 @@ package io.github.dostepnykampus.feature.map.tiles
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import io.github.dostepnykampus.core.model.CampusBounds
 import okhttp3.CacheControl
 import okhttp3.Call
 import okhttp3.OkHttpClient

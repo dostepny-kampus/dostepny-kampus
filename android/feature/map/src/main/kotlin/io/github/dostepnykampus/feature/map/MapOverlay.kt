@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Wysokosci
+import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.feature.map.area.AreaList
 import io.github.dostepnykampus.feature.map.area.AreaNotice
 import io.github.dostepnykampus.feature.map.area.MapAreaSwitch
@@ -48,7 +49,6 @@ import io.github.dostepnykampus.feature.map.area.MapAreas
 import io.github.dostepnykampus.feature.map.area.rememberNoticeAlpha
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapMotion
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.overlay.MapControlTouchSize
 import io.github.dostepnykampus.feature.map.overlay.MapControls
 import io.github.dostepnykampus.feature.map.overlay.MapControlsLayout
