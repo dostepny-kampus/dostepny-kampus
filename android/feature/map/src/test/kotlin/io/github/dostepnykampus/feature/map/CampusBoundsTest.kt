@@ -7,6 +7,7 @@ package io.github.dostepnykampus.feature.map
 
 import io.github.dostepnykampus.core.geo.PwrAreaBoundaries
 import io.github.dostepnykampus.core.geo.allRings
+import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.core.model.GeoArea
 import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.GeoPoint
@@ -17,7 +18,6 @@ import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapLimits
 import io.github.dostepnykampus.feature.map.camera.PanDirection
 import io.github.dostepnykampus.feature.map.camera.moved
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.START_BUILDING
 import io.github.dostepnykampus.feature.map.campus.boundsOf
 import io.github.dostepnykampus.feature.map.campus.campusMapData

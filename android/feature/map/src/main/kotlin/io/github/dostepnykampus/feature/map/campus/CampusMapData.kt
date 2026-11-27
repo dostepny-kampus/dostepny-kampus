@@ -10,6 +10,7 @@ import io.github.dostepnykampus.core.geo.allRings
 import io.github.dostepnykampus.core.geo.campusAreas
 import io.github.dostepnykampus.core.geo.labelPoint
 import io.github.dostepnykampus.core.geo.toPosition
+import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.core.model.GeoArea
 import io.github.dostepnykampus.core.model.GeoPoint
 import io.github.dostepnykampus.core.model.building.Building
@@ -171,18 +172,6 @@ fun selectedEntrance(catalog: BuildingCatalog, id: String, buildingSymbol: Strin
             isLabelFromData = found.hasName,
         )
     }
-
-/**
- * Prostokąt na mapie w stopniach.
- *
- * Wymagania: NFR-39
- *
- * @property west długość geograficzna zachodniego brzegu
- * @property south szerokość geograficzna południowego brzegu
- * @property east długość geograficzna wschodniego brzegu
- * @property north szerokość geograficzna północnego brzegu
- */
-data class CampusBounds(val west: Double, val south: Double, val east: Double, val north: Double)
 
 /**
  * Dane warstw mapy z [catalog]. Katalog z repozytorium nie ma już wejść `emergency`, `exit` i `garage`,

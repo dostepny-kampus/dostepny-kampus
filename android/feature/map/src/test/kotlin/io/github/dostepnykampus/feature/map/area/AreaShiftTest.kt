@@ -5,7 +5,7 @@
  */
 package io.github.dostepnykampus.feature.map.area
 
-import io.github.dostepnykampus.feature.map.campus.CampusBounds
+import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.feature.map.campus.MapArea
 import org.junit.Assert.assertEquals
 import org.junit.Test
