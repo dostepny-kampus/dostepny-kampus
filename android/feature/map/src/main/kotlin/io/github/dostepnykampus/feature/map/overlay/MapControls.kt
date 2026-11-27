@@ -27,11 +27,11 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Obramowania
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Wysokosci
@@ -43,8 +43,6 @@ import io.github.dostepnykampus.feature.map.camera.moved
 import io.github.dostepnykampus.feature.map.camera.zoomedIn
 import io.github.dostepnykampus.feature.map.camera.zoomedOut
 
-private const val DARK_SURFACE_LUMINANCE = 0.5f
-
 /** Cel dotyku pływającej kontrolki mapy. Wymagania: NFR-17 */
 internal val MapControlTouchSize = 48.dp
 internal val ControlCircleSize = 44.dp
@@ -55,10 +53,8 @@ internal val ControlCircleSize = 44.dp
  */
 @Composable
 @ReadOnlyComposable
-internal fun mapControlBorder(): BorderStroke? {
-    val isDark = MaterialTheme.colorScheme.surface.luminance() < DARK_SURFACE_LUMINANCE
-    return BorderStroke(Obramowania.ramka, Wysokosci.kontrolkiMapyObwodkaCiemny).takeIf { isDark }
-}
+internal fun mapControlBorder(): BorderStroke? =
+    BorderStroke(Obramowania.ramka, Wysokosci.kontrolkiMapyObwodkaCiemny).takeIf { DostepnyKampusTheme.isDark }
 
 /**
  * Przycisk kontrolki mapy otwierający panel: pigułka o wysokości celu dotyku, wypełniona, gdy panel jest
