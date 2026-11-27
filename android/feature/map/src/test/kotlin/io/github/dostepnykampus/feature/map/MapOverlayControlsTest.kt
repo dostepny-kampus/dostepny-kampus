@@ -222,8 +222,8 @@ class MapOverlayControlsTest {
 
     @Composable
     private fun Overlay(
-        controlsCover: Dp = 0.dp,
         modifier: Modifier = Modifier.fillMaxSize(),
+        controlsCover: Dp = 0.dp,
         hasControls: Boolean = true,
         hasPanels: Boolean = hasControls,
     ) {

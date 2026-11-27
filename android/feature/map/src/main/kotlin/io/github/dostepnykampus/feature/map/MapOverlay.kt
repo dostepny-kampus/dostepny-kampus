@@ -32,6 +32,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDecoration
@@ -65,6 +66,7 @@ private fun NoticeAndAttribution(
     areas: MapAreas,
     motion: MapMotion?,
     hasNotice: Boolean,
+    attributionEndPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
     val noticeAlpha = rememberNoticeAlpha(shift = areas.notice, motion = motion)
@@ -78,7 +80,7 @@ private fun NoticeAndAttribution(
                 modifier = Modifier.graphicsLayer { alpha = noticeAlpha.value },
             )
         }
-        OsmAttribution()
+        OsmAttribution(modifier = Modifier.padding(end = attributionEndPadding))
     }
 }
 
@@ -162,6 +164,7 @@ internal fun MapOverlay(
             areas = areas,
             motion = motion,
             hasNotice = hasNotice && open == null,
+            attributionEndPadding = if (hasPanels) MapControlTouchSize + Odstepy.s else 0.dp,
             modifier = Modifier.align(Alignment.BottomStart),
         )
         if (hasPanels) {
@@ -223,11 +226,12 @@ private fun MapAreaSelection(
 @Composable
 private fun OsmAttribution(modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
+    val openCopyright = stringResource(R.string.mapa_osm_otworz_prawa)
     Box(
         modifier =
             modifier
                 .padding(horizontal = Odstepy.s)
-                .clickable { uriHandler.openUri(OSM_COPYRIGHT) }
+                .clickable(onClickLabel = openCopyright, role = Role.Button) { uriHandler.openUri(OSM_COPYRIGHT) }
                 .heightIn(min = MapControlTouchSize),
         contentAlignment = Alignment.Center,
     ) {
@@ -241,7 +245,6 @@ private fun OsmAttribution(modifier: Modifier = Modifier) {
             Text(
                 text = stringResource(R.string.mapa_osm_podpis),
                 modifier = Modifier.padding(horizontal = Odstepy.s),
-                maxLines = 1,
                 textDecoration = TextDecoration.Underline,
                 style =
                     MaterialTheme.typography.bodyLarge.copy(
