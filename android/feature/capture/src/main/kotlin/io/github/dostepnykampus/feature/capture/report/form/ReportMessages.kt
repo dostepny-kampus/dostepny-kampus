@@ -26,6 +26,7 @@ import io.github.dostepnykampus.core.designsystem.CeleDotyku
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.ProblemText
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.designsystem.card.OutlinedAction
 import io.github.dostepnykampus.core.designsystem.card.TextAction
 import io.github.dostepnykampus.feature.capture.R
 import io.github.dostepnykampus.feature.capture.photo.PhotoCamera
@@ -64,7 +65,7 @@ internal fun PhotoSection(
             Text(text = error, color = MaterialTheme.colorScheme.error, fontWeight = Typografia.wyroznienieWaga)
         }
         if (isTakeShown) {
-            FilledTonalButton(
+            OutlinedAction(
                 onClick = camera.onTake,
                 modifier = Modifier.fillMaxWidth().heightIn(min = CeleDotyku.przycisk),
             ) {
