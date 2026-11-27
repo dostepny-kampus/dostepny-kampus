@@ -40,6 +40,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.maplibre.android.camera.CameraPosition
+import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE
@@ -172,12 +174,21 @@ class CameraFlightDeviceTest {
                     map.queryRenderedFeatures(sign, "bariery").any { it.getStringProperty("id") == barrier.id }
             }
         }
-        recordMap(map)
+        recordMap(map = map, location = location)
     }
 
-    private fun recordMap(map: MapLibreMap) {
+    private fun recordMap(map: MapLibreMap, location: LatLng) {
         val snapshot = AtomicReference<Bitmap>()
-        composeRule.runOnUiThread { map.snapshot(snapshot::set) }
+        composeRule.runOnUiThread {
+            val camera =
+                CameraPosition
+                    .Builder(map.cameraPosition)
+                    .target(location)
+                    .padding(doubleArrayOf(0.0, 0.0, 0.0, 0.0))
+                    .build()
+            map.moveCamera(CameraUpdateFactory.newCameraPosition(camera))
+            map.snapshot(snapshot::set)
+        }
         composeRule.waitUntil(READY_TIMEOUT_MS) { snapshot.get() != null }
         DeviceEvidence.record(label = "v1-barrier-beside-pin", bitmap = requireNotNull(snapshot.get()))
     }

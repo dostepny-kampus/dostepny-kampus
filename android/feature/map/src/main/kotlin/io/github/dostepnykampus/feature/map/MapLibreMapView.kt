@@ -614,7 +614,8 @@ object MapLibreMapView : CampusMapView {
     }
 }
 
-private fun Feature.signOffset(beside: BesideEntrance, zoom: Double): PointF {
+/** Przesunięcie punktu dotknięcia znaku względem współrzędnych obiektu, w dp. */
+internal fun Feature.signOffset(beside: BesideEntrance, zoom: Double): PointF {
     val pinned = beside.pinnedOffset(getStringProperty(BARRIER_ENTRANCE))
     if (pinned != null) return PointF(pinned.toFloat(), 0f)
     val offset =
@@ -622,8 +623,7 @@ private fun Feature.signOffset(beside: BesideEntrance, zoom: Double): PointF {
             ?.takeIf { value ->
                 val building = getStringProperty(BARRIER_BUILDING)
                 value.isJsonArray && beside.isBeside(zoom = zoom, building = building)
-            }
-            ?.asJsonArray
+            }?.asJsonArray
             ?: getProperty(ROOM_STEP_OFFSET)?.takeIf { it.isJsonArray }?.asJsonArray
     return offset?.run { PointF(get(0).asFloat, get(1).asFloat) } ?: PointF()
 }
