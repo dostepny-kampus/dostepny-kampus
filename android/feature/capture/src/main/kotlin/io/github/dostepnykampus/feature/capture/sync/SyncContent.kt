@@ -36,6 +36,7 @@ import io.github.dostepnykampus.core.designsystem.campusMoment
 import io.github.dostepnykampus.core.designsystem.card.InfoPanel
 import io.github.dostepnykampus.core.designsystem.card.PrimaryAction
 import io.github.dostepnykampus.feature.capture.R
+import io.github.dostepnykampus.feature.capture.photo.PhotoWarning
 
 /**
  * Widok C4 bez konfliktu bez modelu widoku: co czeka na wysłanie, ostatnia synchronizacja, stan wysyłki,
@@ -60,7 +61,7 @@ fun SyncContent(state: SyncUiState, actions: SyncActions, modifier: Modifier = M
                 ) {
                     if (state.phase != SyncPhase.Done) Queue(state.status)
                     PhaseMessage(phase = state.phase, status = state.status)
-                    if (state.isLowSpace) InfoPanel { Text(stringResource(R.string.synchronizacja_miejsce)) }
+                    if (state.isLowSpace) PhotoWarning { Text(stringResource(R.string.synchronizacja_miejsce)) }
                     MainAction(phase = state.phase, actions = actions)
                 }
             }
