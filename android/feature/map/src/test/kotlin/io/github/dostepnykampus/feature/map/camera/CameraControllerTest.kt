@@ -23,6 +23,20 @@ class CameraControllerTest {
     private val map = FakeCamera(start)
     private val controller = CameraController(map)
 
+    /** Pierwszy skok i ruch do tego samego widoku nie czekają na callback ani następny obieg. Wymagania: NFR-56 */
+    @Test
+    fun staysAfterPlacement() {
+        controller.place(far, card)
+        assertEquals(far, map.camera, "pierwszy widok ustawiony synchronicznie")
+        assertEquals(card, map.inset, "pierwsze dopełnienie ustawione synchronicznie")
+        assertEquals(CameraMoveState.Idle, controller.state, "skok nie rozpoczyna animacji")
+        controller.move(flight(far), card)
+        assertEquals(listOf("NONE do $far"), map.calls, "tylko skok startowy")
+        map.runPosted()
+        assertEquals(CameraMoveState.Idle, controller.state, "kamera nadal stoi")
+        assertEquals(listOf("NONE do $far"), map.calls, "bez opóźnionego ruchu")
+    }
+
     /**
      * Wiersz: V1, przelot na inny teren nie jest zatrzymywany przez granice: start zdejmuje granice, granice nowego
      * terenu z czasu przelotu idą do mapy dopiero po jego końcu.
@@ -154,6 +168,7 @@ class CameraControllerTest {
             val padding = if (camera == this.camera) " z $inset" else ""
             calls += "$motion do $camera$padding"
             this.inset = inset.copy(top = inset.top + drift)
+            if (motion == CameraMotion.NONE) this.camera = camera
             running += camera to end
         }
 
