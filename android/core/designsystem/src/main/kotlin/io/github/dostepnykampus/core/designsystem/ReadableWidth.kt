@@ -18,17 +18,20 @@ private val ReadingColumn = 560.dp
  *
  * Wymagania: NFR-51
  */
-public fun Modifier.readableWidth(): Modifier = layout { measurable, constraints ->
-    val column =
-        if (constraints.hasBoundedWidth && constraints.maxWidth >= WideWindow.roundToPx()) {
-            ReadingColumn.roundToPx()
-        } else {
-            constraints.maxWidth
+public fun Modifier.readableWidth(): Modifier =
+    layout { measurable, constraints ->
+        val column =
+            if (constraints.hasBoundedWidth && constraints.maxWidth >= WideWindow.roundToPx()) {
+                ReadingColumn.roundToPx()
+            } else {
+                constraints.maxWidth
+            }
+        val placeable =
+            measurable.measure(
+                constraints.copy(minWidth = constraints.minWidth.coerceAtMost(column), maxWidth = column),
+            )
+        val width = if (constraints.hasBoundedWidth) constraints.maxWidth else placeable.width
+        layout(width = width, height = placeable.height) {
+            placeable.placeRelative(x = (width - placeable.width) / 2, y = 0)
         }
-    val placeable =
-        measurable.measure(constraints.copy(minWidth = constraints.minWidth.coerceAtMost(column), maxWidth = column))
-    val width = if (constraints.hasBoundedWidth) constraints.maxWidth else placeable.width
-    layout(width = width, height = placeable.height) {
-        placeable.placeRelative(x = (width - placeable.width) / 2, y = 0)
     }
-}

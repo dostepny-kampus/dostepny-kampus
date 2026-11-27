@@ -85,7 +85,10 @@ internal fun BuildingList(
 private const val AREA_KEY = "teren:"
 
 @Composable
-private fun AreaHeading(area: MapArea, modifier: Modifier = Modifier) {
+private fun AreaHeading(
+    area: MapArea,
+    modifier: Modifier = Modifier,
+) {
     val count = area.symbols.size
     val buildings = stringResource(buildingsWord(count), count)
     val spoken = stringResource(R.string.mapa_teren_naglowek_opis, area.name, buildings)

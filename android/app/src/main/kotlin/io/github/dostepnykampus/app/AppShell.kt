@@ -123,19 +123,7 @@ fun AppShell(
                         key = route,
                         contentKey = navigator.contentKey(index),
                         metadata = SheetSceneStrategy.metadata(route),
-                    ) { route ->
-                        if (route is MapRoute || route is BuildingRoute) {
-                            navigator.content(route)
-                        } else {
-                            Box(
-                                Modifier.fillMaxSize()
-                                    .background(MaterialTheme.colorScheme.surfaceContainer)
-                                    .readableWidth()
-                            ) {
-                                navigator.content(route)
-                            }
-                        }
-                    }
+                    ) { route -> RouteContent(route) { navigator.content(route) } }
                 },
             entryDecorators =
                 listOf(rememberSaveableStateHolderNavEntryDecorator(), rememberViewModelStoreNavEntryDecorator()),
@@ -155,7 +143,8 @@ fun AppShell(
                 NavDisplay(
                     entries = entries,
                     modifier =
-                        Modifier.consumeWindowInsets(insetsTakenByBar(bar, selected != null, isWide))
+                        Modifier
+                            .consumeWindowInsets(insetsTakenByBar(bar, selected != null, isWide))
                             .windowInsetsPadding(wideNavigationInsets(isWide)),
                     sceneStrategies = currentCardWindow().sceneStrategies(navigator.rememberSheetStrategy()),
                     onBack = { navigator.back() },
@@ -163,6 +152,20 @@ fun AppShell(
             },
         )
     }
+}
+
+@Composable
+private fun RouteContent(
+    route: NavKey,
+    content: @Composable () -> Unit,
+) {
+    val frame =
+        if (route is MapRoute || route is BuildingRoute) {
+            Modifier
+        } else {
+            Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceContainer).readableWidth()
+        }
+    Box(modifier = frame, propagateMinConstraints = true) { content() }
 }
 
 @Composable
@@ -183,7 +186,11 @@ private fun ShellBar(
 }
 
 @Composable
-private fun insetsTakenByBar(bar: IntSize, isShown: Boolean, isWide: Boolean): WindowInsets {
+private fun insetsTakenByBar(
+    bar: IntSize,
+    isShown: Boolean,
+    isWide: Boolean,
+): WindowInsets {
     val rail = WindowInsets(left = bar.width, right = bar.width).only(WindowInsetsSides.Start)
     val bottomBar = WindowInsets(bottom = bar.height)
     return when {
@@ -202,11 +209,16 @@ private fun wideNavigationInsets(isWide: Boolean): WindowInsets =
     }
 
 /** Pliki zdjęć odtworzonych szkiców: zgłoszenia szybkiego w [routes] i C2 w [draft]. */
-internal fun keptPhotos(routes: List<NavKey>, draft: ReportDraft): Set<String> =
-    (routes.mapNotNull { (it as? ReportRoute)?.photoPath } + draft.photoPaths()).toSet()
+internal fun keptPhotos(
+    routes: List<NavKey>,
+    draft: ReportDraft,
+): Set<String> = (routes.mapNotNull { (it as? ReportRoute)?.photoPath } + draft.photoPaths()).toSet()
 
 @Composable
-private fun rememberCaptureDraft(routes: NavBackStack<NavKey>, onRestore: (Set<String>) -> Unit): ReportDraft {
+private fun rememberCaptureDraft(
+    routes: NavBackStack<NavKey>,
+    onRestore: (Set<String>) -> Unit,
+): ReportDraft {
     val draft = rememberSerializable(serializer = ReportDraft.serializer()) { ReportDraft() }
     if (routes.none { it.isCaptureRoute() }) SideEffect { draft.clear() }
     val currentOnRestore by rememberUpdatedState(onRestore)
@@ -230,7 +242,7 @@ private fun bottomBarItems(hasWork: Boolean): BottomBarItems {
                 BottomBarItem(label = report, icon = NavigationIcons.Camera),
                 BottomBarItem(label = help, icon = NavigationIcons.Help),
                 BottomBarItem(label = account, icon = NavigationIcons.Account),
-            )
+            ),
         )
     }
 }

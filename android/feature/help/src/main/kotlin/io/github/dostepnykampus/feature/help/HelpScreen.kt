@@ -51,8 +51,8 @@ import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind.Outlined
 import io.github.dostepnykampus.core.designsystem.card.InfoPanel
-import io.github.dostepnykampus.core.designsystem.readableWidth
 import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
+import io.github.dostepnykampus.core.designsystem.readableWidth
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 
 /**
@@ -69,7 +69,12 @@ import io.github.dostepnykampus.core.model.building.EntranceMarking
  * @param modifier wymiary ekranu nadane przez aplikację
  */
 @Composable
-fun HelpScreen(isFirstLaunch: Boolean, onOpenMap: () -> Unit, onLeave: () -> Unit, modifier: Modifier = Modifier) {
+fun HelpScreen(
+    isFirstLaunch: Boolean,
+    onOpenMap: () -> Unit,
+    onLeave: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var step by rememberSaveable { mutableIntStateOf(0) }
     val isLast = step == HelpSteps.lastIndex
     val onBack: () -> Unit = {
@@ -164,7 +169,8 @@ private fun SearchFieldExample(modifier: Modifier = Modifier) {
         Text(
             text = stringResource(R.string.pomoc_budynek_pole),
             modifier =
-                Modifier.heightIn(min = CeleDotyku.przycisk)
+                Modifier
+                    .heightIn(min = CeleDotyku.przycisk)
                     .wrapContentHeight()
                     .padding(horizontal = Odstepy.m, vertical = Odstepy.s),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -184,7 +190,12 @@ private fun EntranceExample(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun NextAndSkipButtons(isLast: Boolean, onNext: () -> Unit, onOpenMap: () -> Unit, isInContent: Boolean) {
+private fun NextAndSkipButtons(
+    isLast: Boolean,
+    onNext: () -> Unit,
+    onOpenMap: () -> Unit,
+    isInContent: Boolean,
+) {
     val next = stringResource(if (isLast) R.string.pomoc_zacznij else R.string.pomoc_dalej)
     val skip = stringResource(R.string.pomoc_pomin)
     val buttons: @Composable (Modifier) -> Unit = { width ->

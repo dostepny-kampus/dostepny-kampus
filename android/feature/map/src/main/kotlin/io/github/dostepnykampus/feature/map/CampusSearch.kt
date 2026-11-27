@@ -75,22 +75,22 @@ import io.github.dostepnykampus.core.designsystem.OfflineLine
 import io.github.dostepnykampus.core.designsystem.Typografia
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
 import io.github.dostepnykampus.core.designsystem.bar.NavigationIcons
-import io.github.dostepnykampus.core.designsystem.readableWidth
 import io.github.dostepnykampus.core.designsystem.pathIcon
+import io.github.dostepnykampus.core.designsystem.readableWidth
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.core.model.room.FoundRoom
 import io.github.dostepnykampus.feature.map.area.AreaOrder
 import io.github.dostepnykampus.feature.map.building.BuildingList
 import io.github.dostepnykampus.feature.map.building.BuildingSearch
 import io.github.dostepnykampus.feature.map.search.SearchResults
-import java.time.Instant
 import kotlinx.coroutines.flow.drop
+import java.time.Instant
 
 private val SearchIcon =
     pathIcon(
         "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16" +
             "c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 " +
-            "9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+            "9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z",
     )
 private val ListIcon =
     pathIcon("M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z")
@@ -153,8 +153,9 @@ internal fun CampusSearch(
     }
     Column(modifier.readableWidth().fillMaxWidth()) {
         Column(
-            Modifier.onSizeChanged { onBarHeight(it.height) }
-                .onFocusChanged { field -> searchFocus?.onField(isFocused = field.hasFocus) }
+            Modifier
+                .onSizeChanged { onBarHeight(it.height) }
+                .onFocusChanged { field -> searchFocus?.onField(isFocused = field.hasFocus) },
         ) {
             SearchHeader(
                 field = field,
@@ -225,7 +226,10 @@ private fun SearchHeader(
 }
 
 @Composable
-private fun TitleRow(isList: Boolean, onListChange: (Boolean) -> Unit) {
+private fun TitleRow(
+    isList: Boolean,
+    onListChange: (Boolean) -> Unit,
+) {
     val title: @Composable () -> Unit = {
         Text(
             text = stringResource(R.string.mapa_kampusu),
@@ -247,7 +251,11 @@ private fun TitleRow(isList: Boolean, onListChange: (Boolean) -> Unit) {
 }
 
 @Composable
-private fun ViewButton(isList: Boolean, hasIcon: Boolean, onListChange: (Boolean) -> Unit) {
+private fun ViewButton(
+    isList: Boolean,
+    hasIcon: Boolean,
+    onListChange: (Boolean) -> Unit,
+) {
     TextButton(onClick = { onListChange(!isList) }, modifier = Modifier.heightIn(min = CeleDotyku.minimum)) {
         if (hasIcon) {
             Icon(imageVector = if (isList) NavigationIcons.Map else ListIcon, contentDescription = null)
@@ -262,7 +270,11 @@ private fun ViewButton(isList: Boolean, hasIcon: Boolean, onListChange: (Boolean
 }
 
 @Composable
-private fun SymbolField(state: TextFieldState, onTap: () -> Unit, onLeave: () -> Unit) {
+private fun SymbolField(
+    state: TextFieldState,
+    onTap: () -> Unit,
+    onLeave: () -> Unit,
+) {
     val interactions = remember { MutableInteractionSource() }
     val tap by rememberUpdatedState(onTap)
     LaunchedEffect(interactions) { interactions.interactions.collect { if (it is PressInteraction.Release) tap() } }
@@ -318,7 +330,11 @@ private fun SymbolField(state: TextFieldState, onTap: () -> Unit, onLeave: () ->
 }
 
 @Composable
-private fun FieldWithHint(isEmpty: Boolean, style: TextStyle, content: @Composable () -> Unit) {
+private fun FieldWithHint(
+    isEmpty: Boolean,
+    style: TextStyle,
+    content: @Composable () -> Unit,
+) {
     val isWrapped = isEmpty && LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     Box(contentAlignment = Alignment.CenterStart, propagateMinConstraints = true) {
         Text(
