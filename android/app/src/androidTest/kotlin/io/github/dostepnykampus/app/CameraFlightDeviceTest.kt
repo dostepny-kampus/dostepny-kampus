@@ -37,10 +37,10 @@ import io.github.dostepnykampus.feature.map.camera.CameraTransition
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapInset
 import io.github.dostepnykampus.feature.map.campus.CampusMapData
-import io.github.dostepnykampus.feature.map.campus.MapSelection
 import io.github.dostepnykampus.feature.map.campus.OUTLINE_NUMBER
 import io.github.dostepnykampus.feature.map.campus.SelectedEntrance
 import io.github.dostepnykampus.feature.map.campus.campusMapData
+import io.github.dostepnykampus.feature.map.campus.selection
 import io.github.dostepnykampus.feature.map.campus.withBarriers
 import io.github.dostepnykampus.feature.map.navigation.MapFocus
 import io.github.dostepnykampus.feature.map.navigation.MapRoute
@@ -205,7 +205,7 @@ class CameraFlightDeviceTest {
                 DostepnyKampusTheme {
                     MapLibreMapView.Show(
                         data = data,
-                        selection = MapSelection(entrance = pin),
+                        selection = data.selection(entrance = pin),
                         move = CameraTransition(camera = camera, motion = CameraMotion.NONE, durationMillis = 0L),
                         inset = MapInset(),
                         onCameraIdle = {},

@@ -32,8 +32,9 @@ import java.net.ConnectException
 import javax.inject.Singleton
 
 /**
- * Sieć testów na urządzeniu bez serwera: kafelki OSM zastępuje lokalny przezroczysty PNG (pusty podkład),
- * a pozostałe żądania kończą się błędem połączenia. Interceptor nie przekazuje żądań dalej. Klient MapLibre
+ * Sieć testów na urządzeniu bez serwera: podkład wektorowy ma lokalny TileJSON i puste kafelki,
+ * a kafelki OSM zastępuje lokalny przezroczysty PNG. Pozostałe żądania kończą się błędem połączenia.
+ * Interceptor nie przekazuje żądań dalej. Klient MapLibre
  * dziedziczy go przez `newBuilder()`. Próba użycia DNS kończy test błędem, więc przejście testów nie zależy od
  * deklaracji braku sieci ani dostępności serwera. Parser i klienci API są te same co w [NetworkModule].
  */
@@ -41,20 +42,17 @@ import javax.inject.Singleton
 @TestInstallIn(components = [SingletonComponent::class], replaces = [NetworkModule::class])
 object NoServerNetworkModule {
     private const val TILE_SIZE = 256
+    private const val VECTOR_HOST = "tiles.openfreemap.org"
+    private const val VECTOR_METADATA =
+        """{"tilejson":"3.0.0","tiles":["https://tiles.openfreemap.org/planet/{z}/{x}/{y}.pbf"],""" +
+            """"minzoom":0,"maxzoom":14}"""
 
     /** Klient HTTP, który nie otwiera połączeń. */
     @Provides
     @Singleton
     fun okHttp(): OkHttpClient {
         val tile = blankTile()
-        val local =
-            Interceptor { chain ->
-                val request = chain.request()
-                if (request.url.host != "tile.openstreetmap.org") {
-                    throw ConnectException("Brak serwera w teście: ${request.url}")
-                }
-                LocalTileResponse(request, tile).response
-            }
+        val local = Interceptor { chain -> LocalTileResponse(chain.request(), tile).response }
         return OkHttpClient
             .Builder()
             .dns { host -> error("Test próbuje użyć sieci: $host") }
@@ -120,16 +118,24 @@ object NoServerNetworkModule {
     @Singleton
     fun reviewApi(http: OkHttpClient, json: Json): ReviewApi = NetworkModule.reviewApi(http, json)
 
-    /** Jedna odpowiedź ma własny strumień PNG; odbiorca zamyka go razem z [response], jak odpowiedź sieciową. */
+    /** Każda odpowiedź ma własny strumień zamykany razem z [response]. */
     private class LocalTileResponse(request: Request, tile: ByteArray) {
-        private val body = tile.toResponseBody("image/png".toMediaType())
+        private val vector = request.url.host == VECTOR_HOST
+        private val path = request.url.encodedPath
+        private val body =
+            when {
+                request.url.host == "tile.openstreetmap.org" -> tile.toResponseBody("image/png".toMediaType())
+                vector && path == "/planet" -> VECTOR_METADATA.toResponseBody("application/json".toMediaType())
+                vector && path.startsWith("/planet/") && path.endsWith(".pbf") -> ByteArray(0).toResponseBody()
+                else -> throw ConnectException("Brak serwera w teście: ${request.url}")
+            }
 
         val response: Response =
             Response
                 .Builder()
                 .request(request)
                 .protocol(Protocol.HTTP_1_1)
-                .code(200)
+                .code(if (vector && path != "/planet") 204 else 200)
                 .message("Lokalny kafelek testowy")
                 .body(body)
                 .build()
