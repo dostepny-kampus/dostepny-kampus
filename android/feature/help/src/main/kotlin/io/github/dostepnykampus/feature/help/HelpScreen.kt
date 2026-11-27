@@ -52,6 +52,7 @@ import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind.Outlined
 import io.github.dostepnykampus.core.designsystem.card.InfoPanel
 import io.github.dostepnykampus.core.designsystem.marking.MarkingSign
+import io.github.dostepnykampus.core.designsystem.readableWidth
 import io.github.dostepnykampus.core.model.building.EntranceMarking
 
 /**
@@ -82,11 +83,17 @@ fun HelpScreen(isFirstLaunch: Boolean, onOpenMap: () -> Unit, onLeave: () -> Uni
     BackHandler(enabled = step > 0, onBack = onBack)
     val isLargeFont = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
-        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
+        Column(modifier = Modifier.readableWidth().windowInsetsPadding(WindowInsets.safeDrawing)) {
             BackHeader(title = stringResource(R.string.pomoc_tytul), onBack = onBack)
-            val actions = @Composable {
-                NextAndSkipButtons(isLast = isLast, onNext = onNext, onOpenMap = onOpenMap, isInContent = isLargeFont)
-            }
+            val actions =
+                @Composable {
+                    NextAndSkipButtons(
+                        isLast = isLast,
+                        onNext = onNext,
+                        onOpenMap = onOpenMap,
+                        isInContent = isLargeFont,
+                    )
+                }
             key(step) {
                 Column(
                     modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),

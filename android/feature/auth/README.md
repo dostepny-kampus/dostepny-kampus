@@ -4,6 +4,8 @@
 
 Konto osoby: prośba o logowanie (L1) i konto zalogowanej osoby z nazwą, rolami i wylogowaniem (L2).
 
+L1 zachowuje wspólną szerokość tekstu i czynności w szerokim oknie.
+
 ## Pakiety
 
 - `feature.auth` — ekran L1, jego stan i ViewModel; ekran L2 i czynności ról.

@@ -40,6 +40,7 @@ import io.github.dostepnykampus.core.designsystem.bar.PinnedActionBar
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButton
 import io.github.dostepnykampus.core.designsystem.bar.PinnedButtonKind
 import io.github.dostepnykampus.core.designsystem.card.InfoPanel
+import io.github.dostepnykampus.core.designsystem.readableWidth
 
 /**
  * L1 „Prośba o logowanie” ze stanem z modelu widoku.
@@ -95,7 +96,7 @@ fun SignInContent(
         Choices(state = state, onLeave = actions.onLeave, onOpen = onOpen, onRetry = onRetry, isPinned = isPinned)
     }
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
-        Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
+        Column(modifier = Modifier.readableWidth().windowInsetsPadding(WindowInsets.safeDrawing)) {
             BackHeader(title = stringResource(R.string.logowanie_naglowek), onBack = actions.onBack)
             Column(
                 modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Odstepy.m),

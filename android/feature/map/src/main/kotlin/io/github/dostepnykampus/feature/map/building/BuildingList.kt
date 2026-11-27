@@ -26,6 +26,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import io.github.dostepnykampus.core.designsystem.Odstepy
+import io.github.dostepnykampus.core.designsystem.readableWidth
 import io.github.dostepnykampus.core.model.building.Building
 import io.github.dostepnykampus.core.model.building.BuildingCatalog
 import io.github.dostepnykampus.feature.map.R
@@ -34,10 +35,9 @@ import io.github.dostepnykampus.feature.map.area.buildingsWord
 import io.github.dostepnykampus.feature.map.campus.MapArea
 
 /**
- * Lista budynków V1 podzielona nagłówkami terenów z liczbą budynków, np. „Wittigowo · 9”. W terenie
- * budynki stoją w kolejności katalogu, a wpisany symbol [query] zawęża listę; teren bez pasującego budynku nie ma
- * nagłówka. Nagłówek jest nagłówkiem dla TalkBack, który czyta „Wittigowo, 9 budynków”. Bez danych mapy
- * lista nie ma nagłówków.
+ * Lista budynków V1 podzielona nagłówkami terenów z liczbą budynków, np. „Wittigowo · 9”. W terenie budynki stoją w
+ * kolejności katalogu, a wpisany symbol [query] zawęża listę; teren bez pasującego budynku nie ma nagłówka. Nagłówek
+ * jest nagłówkiem dla TalkBack, który czyta „Wittigowo, 9 budynków”. Bez danych mapy lista nie ma nagłówków.
  *
  * Wymagania: US1.8, NFR-19, NFR-18, NFR-11
  *
@@ -64,19 +64,21 @@ internal fun BuildingList(
         }
     val insets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
     LazyColumn(
-        modifier = modifier.fillMaxWidth().windowInsetsPadding(insets),
+        modifier = modifier.readableWidth().fillMaxWidth().windowInsetsPadding(insets),
         contentPadding = PaddingValues(Odstepy.m),
         verticalArrangement = Arrangement.spacedBy(Odstepy.s),
     ) {
         items(buildings - groups.values.flatten().toSet(), key = Building::symbol) { building ->
             BuildingChoice(building) { onBuildingClick(building.symbol) }
         }
-        groups.filterValues { it.isNotEmpty() }.forEach { (area, inArea) ->
-            item(key = AREA_KEY + area.name) { AreaHeading(area) }
-            items(inArea, key = Building::symbol) { building ->
-                BuildingChoice(building) { onBuildingClick(building.symbol) }
+        groups
+            .filterValues { it.isNotEmpty() }
+            .forEach { (area, inArea) ->
+                item(key = AREA_KEY + area.name) { AreaHeading(area) }
+                items(inArea, key = Building::symbol) { building ->
+                    BuildingChoice(building) { onBuildingClick(building.symbol) }
+                }
             }
-        }
     }
 }
 

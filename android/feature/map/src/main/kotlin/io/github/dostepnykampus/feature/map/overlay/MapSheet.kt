@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import io.github.dostepnykampus.core.designsystem.Odstepy
 import io.github.dostepnykampus.core.designsystem.Zaokraglenia
+import io.github.dostepnykampus.core.designsystem.readableWidth
 
 /**
  * Arkusz na dole mapy V1 z treścią [content] w przewijanej kolumnie, więc przy dużej czcionce treść się mieści.
@@ -46,7 +47,7 @@ internal fun MapSheet(
         shape = if (isFull) RectangleShape else RoundedCornerShape(Zaokraglenia.duze),
         shadowElevation = if (isFull) 0.dp else Odstepy.s,
     ) {
-        Column(if (isFull) Modifier.safeDrawingPadding() else Modifier) {
+        Column(if (isFull) Modifier.readableWidth().safeDrawingPadding() else Modifier.readableWidth()) {
             header?.let { Box(Modifier.padding(start = Odstepy.m, top = Odstepy.m, end = Odstepy.m)) { it() } }
             Column(
                 Modifier.verticalScroll(rememberScrollState()).padding(Odstepy.m),
