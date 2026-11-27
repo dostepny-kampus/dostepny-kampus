@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map
+package io.github.dostepnykampus.core.map
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,7 +22,7 @@ private const val LIBRARY = "maplibre"
  * Wymagania: NFR-11
  */
 @Composable
-internal fun rememberNativeMap(context: CoroutineContext = nativeLoadContext()): Boolean {
+public fun rememberNativeMap(context: CoroutineContext = nativeLoadContext()): Boolean {
     val isLoaded by produceState(initialValue = false) { value = withContext(context) { loadNativeMap() } }
     return isLoaded
 }

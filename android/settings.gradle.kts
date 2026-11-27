@@ -32,6 +32,7 @@ include(
     ":core:model",
     ":core:geo",
     ":core:location",
+    ":core:map",
     ":core:database",
     ":core:network",
     ":core:data",

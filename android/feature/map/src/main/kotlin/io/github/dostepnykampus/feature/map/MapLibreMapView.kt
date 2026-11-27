@@ -34,6 +34,9 @@ import com.google.gson.JsonObject
 import dagger.hilt.android.EntryPointAccessors
 import io.github.dostepnykampus.core.designsystem.DostepnyKampusTheme
 import io.github.dostepnykampus.core.designsystem.Typografia
+import io.github.dostepnykampus.core.map.rememberNativeMap
+import io.github.dostepnykampus.core.map.tiles.MapTileHttp
+import io.github.dostepnykampus.core.map.tiles.MapTileHttpEntryPoint
 import io.github.dostepnykampus.core.model.CampusBounds
 import io.github.dostepnykampus.feature.map.barrier.barrierImages
 import io.github.dostepnykampus.feature.map.camera.BasemapReveal
@@ -88,8 +91,6 @@ import io.github.dostepnykampus.feature.map.style.showData
 import io.github.dostepnykampus.feature.map.style.showPlanData
 import io.github.dostepnykampus.feature.map.style.showSelection
 import io.github.dostepnykampus.feature.map.style.styleBuilder
-import io.github.dostepnykampus.feature.map.tiles.MapTileHttp
-import io.github.dostepnykampus.feature.map.tiles.MapTileHttpEntryPoint
 import io.github.dostepnykampus.feature.map.trace.MapTrace
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -104,7 +105,6 @@ import org.maplibre.android.maps.MapLibreMap.OnCameraMoveStartedListener.REASON_
 import org.maplibre.android.maps.MapLibreMapOptions
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
-import org.maplibre.android.module.http.HttpRequestUtil
 import org.maplibre.android.style.expressions.Expression
 import org.maplibre.android.style.layers.FillLayer
 import org.maplibre.android.style.layers.LayoutPropertyValue
@@ -344,7 +344,7 @@ object MapLibreMapView : CampusMapView {
     private fun rememberMapView(context: Context, background: Int, tiles: MapTileHttp): MapView =
         remember {
             MapLibre.getInstance(context)
-            HttpRequestUtil.setOkHttpClient(tiles.calls)
+            tiles.install()
             MapView(context, northUpOptions(context, background)).apply {
                 addOnDidFailLoadingMapListener { Timber.w("Mapa: błąd stylu: %s", it) }
             }

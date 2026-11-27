@@ -9,6 +9,12 @@ import io.github.dostepnykampus.core.designsystem.MapaPlan
 import io.github.dostepnykampus.core.designsystem.ZoomStop
 import io.github.dostepnykampus.core.geo.toGeometry
 import io.github.dostepnykampus.core.geo.toPosition
+import io.github.dostepnykampus.core.map.style.expression
+import io.github.dostepnykampus.core.map.style.lineLayer
+import io.github.dostepnykampus.core.map.style.paint
+import io.github.dostepnykampus.core.map.style.property
+import io.github.dostepnykampus.core.map.style.styleLayer
+import io.github.dostepnykampus.core.map.style.symbolLayer
 import io.github.dostepnykampus.core.model.GeoMultiPolygon
 import io.github.dostepnykampus.core.model.room.RoomCategory
 import io.github.dostepnykampus.core.model.room.RoomList

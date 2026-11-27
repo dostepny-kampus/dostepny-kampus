@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map.style
+package io.github.dostepnykampus.core.map.style
 
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -23,17 +23,17 @@ private val LINE = JsonPrimitive("line")
 private val NAMED_STREETS = listOf("primary", "secondary", "tertiary", "minor")
 
 /** Glify napisów podkładu z OpenFreeMap (ADR-0014). */
-internal const val BASEMAP_GLYPHS = "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf"
+public const val BASEMAP_GLYPHS: String = "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf"
 
 /** Warstwa nazw ulic: od powiększenia [STREET_ZOOM], jak chodniki. */
-internal const val STREET_NAMES = "nazwy_ulic"
+public const val STREET_NAMES: String = "nazwy_ulic"
 private val DISTRICT_CLASSES = listOf("suburb", "quarter", "neighbourhood")
 
 /**
  * Warstwy napisów podkładu w kolorach [colors], z tekstem wysokim na [textSize] (dp mapy): nazwy rzek, ulic
  * i dzielnic. Wymagania: NFR-16, US1.4
  */
-internal fun basemapNames(colors: BasemapColors, textSize: Double): List<JsonObject> =
+public fun basemapNames(colors: BasemapColors, textSize: Double): List<JsonObject> =
     listOf(riverNames(colors, textSize), streetNames(colors, textSize), districtNames(colors, textSize))
 
 private fun riverNames(colors: BasemapColors, textSize: Double): JsonObject =

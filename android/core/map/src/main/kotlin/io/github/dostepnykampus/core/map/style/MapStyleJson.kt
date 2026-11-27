@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map.style
+package io.github.dostepnykampus.core.map.style
 
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -14,10 +14,10 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
 /** Układ znaku, który rysuje się także wtedy, gdy nachodzi na inny znak. */
-internal val OVERLAP: Pair<String, JsonElement> = "icon-allow-overlap" to JsonPrimitive(true)
+public val OVERLAP: Pair<String, JsonElement> = "icon-allow-overlap" to JsonPrimitive(true)
 
 /** Warstwa stylu MapLibre o nazwie [id] i rodzaju [type] ze źródła [source]; [content] dopisuje resztę pól. */
-internal fun styleLayer(
+public fun styleLayer(
     id: String,
     type: String,
     source: String? = null,
@@ -31,7 +31,7 @@ internal fun styleLayer(
     }
 
 /** Warstwa linii o barwie [color] i grubości [width]; [filter] zawęża ją do części źródła. */
-internal fun lineLayer(
+public fun lineLayer(
     id: String,
     source: String,
     color: String,
@@ -44,7 +44,7 @@ internal fun lineLayer(
     }
 
 /** Warstwa znaków z obrazem [image]; [layout] dopisuje pozostałe pola układu. */
-internal fun symbolLayer(
+public fun symbolLayer(
     id: String,
     source: String,
     image: JsonElement,
@@ -55,22 +55,22 @@ internal fun symbolLayer(
     }
 
 /** Pole `paint` warstwy z wpisów [entries]. */
-internal fun JsonObjectBuilder.paint(vararg entries: Pair<String, JsonElement>) {
+public fun JsonObjectBuilder.paint(vararg entries: Pair<String, JsonElement>) {
     put(key = "paint", element = JsonObject(entries.toMap()))
 }
 
 /** Wyrażenie stylu MapLibre: nazwa operatora [name] i jego [arguments]. */
-internal fun expression(name: String, vararg arguments: JsonElement): JsonArray =
+public fun expression(name: String, vararg arguments: JsonElement): JsonArray =
     JsonArray(listOf(JsonPrimitive(name)) + arguments)
 
 /** Wyrażenie, które czyta właściwość [name] obiektu ze źródła. */
-internal fun property(name: String): JsonArray = expression("get", JsonPrimitive(name))
+public fun property(name: String): JsonArray = expression("get", JsonPrimitive(name))
 
 /** Tablica liczb [values], np. współrzędne albo przesunięcie. */
-internal fun numbers(vararg values: Double): JsonArray = JsonArray(values.map { JsonPrimitive(it) })
+public fun numbers(vararg values: Double): JsonArray = JsonArray(values.map { JsonPrimitive(it) })
 
 /** Źródło GeoJSON stylu z danymi [data]. */
-internal fun geoJsonSource(data: JsonElement): JsonObject =
+public fun geoJsonSource(data: JsonElement): JsonObject =
     buildJsonObject {
         put(key = "type", value = "geojson")
         put(key = "data", element = data)

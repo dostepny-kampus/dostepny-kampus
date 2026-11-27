@@ -3,7 +3,7 @@
  * Author: Vladyslav Yevkov
  * Copyright (c) 2026 Vladyslav Yevkov, Myroslav Hryniuka, Yevhenii Lukianenko
  */
-package io.github.dostepnykampus.feature.map.style
+package io.github.dostepnykampus.core.map.style
 
 import io.github.dostepnykampus.core.designsystem.MapaSciezka
 import io.github.dostepnykampus.core.designsystem.ZoomStop
@@ -12,13 +12,13 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.put
 
 /** Źródło stylu z odcinkami ścieżek dostosowanych. Wymagania: US1.4 */
-internal const val PATHS_SOURCE = "sciezki"
+public const val PATHS_SOURCE: String = "sciezki"
 
 /** Warstwa całej wstęgi ścieżki w barwie brzegu. Wymagania: US1.4 */
-internal const val PATH_EDGE_LAYER = "sciezki_brzeg"
+public const val PATH_EDGE_LAYER: String = "sciezki_brzeg"
 
 /** Warstwa wnętrza ścieżki, węższa niż wstęga, więc z obu stron zostaje brzeg. Wymagania: US1.4 */
-internal const val PATH_INSIDE_LAYER = "sciezki_wnetrze"
+public const val PATH_INSIDE_LAYER: String = "sciezki_wnetrze"
 
 private val ROUND = JsonObject(mapOf("line-join" to JsonPrimitive("round"), "line-cap" to JsonPrimitive("round")))
 
@@ -28,7 +28,7 @@ private val ROUND = JsonObject(mapOf("line-join" to JsonPrimitive("round"), "lin
  * @property edge brzeg, czyli cała wstęga (`sciezka_brzeg`)
  * @property inside wnętrze na wstędze (`sciezka_wnetrze`)
  */
-data class PathColors(val edge: String, val inside: String)
+public data class PathColors(val edge: String, val inside: String)
 
 /**
  * Warstwy ścieżek dostosowanych: wstęga w barwie brzegu i węższe wnętrze na niej, od powiększenia
@@ -36,7 +36,7 @@ data class PathColors(val edge: String, val inside: String)
  *
  * Wymagania: US1.4, NFR-16, NFR-21
  */
-internal fun pathLayers(colors: PathColors): List<JsonObject> =
+public fun pathLayers(colors: PathColors): List<JsonObject> =
     listOf(
         pathLayer(id = PATH_EDGE_LAYER, color = colors.edge, widths = MapaSciezka.wstegaDp),
         pathLayer(id = PATH_INSIDE_LAYER, color = colors.inside, widths = MapaSciezka.wnetrzeDp),
