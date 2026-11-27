@@ -7,7 +7,6 @@ package io.github.dostepnykampus.feature.map
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -152,7 +151,7 @@ class MapOverlayControlsTest {
     @Config(fontScale = 2f)
     fun wrapsAttributionInNarrowMap() {
         compose.setContent {
-            Overlay(modifier = Modifier.width(160.dp).fillMaxHeight(), hasControls = false, hasPanels = true)
+            Overlay(modifier = Modifier.width(160.dp), hasControls = false, hasPanels = true)
         }
         val layouts = mutableListOf<TextLayoutResult>()
         val attribution = compose.onNodeWithText(OSM)
@@ -184,10 +183,14 @@ class MapOverlayControlsTest {
         }
         val attribution = compose.onNodeWithText(OSM)
         val semantics = attribution.fetchSemanticsNode().config
-        assertEquals(Role.Button, semantics[SemanticsProperties.Role])
-        assertEquals("Otwórz stronę praw autorskich OpenStreetMap", semantics[SemanticsActions.OnClick].label)
+        assertEquals("rola podpisu", Role.Button, semantics[SemanticsProperties.Role])
+        assertEquals(
+            "czynność odnośnika",
+            "Otwórz stronę praw autorskich OpenStreetMap",
+            semantics[SemanticsActions.OnClick].label,
+        )
         attribution.performClick()
-        assertEquals(listOf(OSM_COPYRIGHT), opened)
+        assertEquals("strona praw autorskich", listOf(OSM_COPYRIGHT), opened)
     }
 
     /** Wybrane piętro mieści się nad kartą sali. Wymagania: US16.1, US18.2 */
@@ -222,7 +225,7 @@ class MapOverlayControlsTest {
 
     @Composable
     private fun Overlay(
-        modifier: Modifier = Modifier.fillMaxSize(),
+        modifier: Modifier = Modifier,
         controlsCover: Dp = 0.dp,
         hasControls: Boolean = true,
         hasPanels: Boolean = hasControls,
@@ -236,7 +239,7 @@ class MapOverlayControlsTest {
                 onCameraChange = {},
                 areas = areas,
                 onAreaShow = {},
-                modifier = modifier.background(Color(color = 0xFFBEE3F2)),
+                modifier = modifier.fillMaxSize().background(Color(color = 0xFFBEE3F2)),
                 controlsCover = controlsCover,
                 start = {
                     FloorPicker(

@@ -66,7 +66,7 @@ private fun NoticeAndAttribution(
     areas: MapAreas,
     motion: MapMotion?,
     hasNotice: Boolean,
-    attributionEndPadding: Dp,
+    hasInfoButton: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val noticeAlpha = rememberNoticeAlpha(shift = areas.notice, motion = motion)
@@ -80,6 +80,7 @@ private fun NoticeAndAttribution(
                 modifier = Modifier.graphicsLayer { alpha = noticeAlpha.value },
             )
         }
+        val attributionEndPadding = if (hasInfoButton) MapControlTouchSize + Odstepy.s else 0.dp
         OsmAttribution(modifier = Modifier.padding(end = attributionEndPadding))
     }
 }
@@ -164,7 +165,7 @@ internal fun MapOverlay(
             areas = areas,
             motion = motion,
             hasNotice = hasNotice && open == null,
-            attributionEndPadding = if (hasPanels) MapControlTouchSize + Odstepy.s else 0.dp,
+            hasInfoButton = hasPanels,
             modifier = Modifier.align(Alignment.BottomStart),
         )
         if (hasPanels) {
