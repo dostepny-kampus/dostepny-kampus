@@ -46,6 +46,7 @@ import io.github.dostepnykampus.feature.map.area.rememberMapAreas
 import io.github.dostepnykampus.feature.map.area.rememberNoticeHeight
 import io.github.dostepnykampus.feature.map.barrier.BarrierDescriptions
 import io.github.dostepnykampus.feature.map.barrier.ShownBarriers
+import io.github.dostepnykampus.feature.map.barrier.caption
 import io.github.dostepnykampus.feature.map.camera.CampusMapView
 import io.github.dostepnykampus.feature.map.camera.MapCamera
 import io.github.dostepnykampus.feature.map.camera.MapMotion
@@ -328,7 +329,7 @@ private fun MapArea(
             .then(if (sheet.isEntranceFull) Modifier.clearAndSetSemantics {} else Modifier)
     Box(modifier) {
         content(shown)
-        BarrierDescriptions(barriers = shown, planBuilding = planBuilding)
+        BarrierDescriptions(barriers = shown, planBuilding = planBuilding, selected = sheet.signs.barrierId)
     }
 }
 
@@ -374,7 +375,14 @@ private fun CampusMap(
             val pinned = signs.rememberPinnedEntrance(ui.catalog, state.scene.selection.entrance)
             mapView.Show(
                 data = state.scene.data,
-                selection = signs.overlay(base = state.scene.selection, plan = plan.shown, room = room, pin = pinned),
+                selection =
+                    signs.overlay(
+                        base = state.scene.selection,
+                        plan = plan.shown,
+                        room = room,
+                        pin = pinned,
+                        barrierCaption = barriers.caption(signs.barrierId),
+                    ),
                 move = move,
                 inset = state.inset,
                 frame = state.frame,
@@ -417,12 +425,13 @@ private fun SignSheetState.overlay(
     plan: ShownPlan?,
     room: OpenRoom?,
     pin: SelectedEntrance?,
+    barrierCaption: String?,
 ): MapSelection {
     val card = room?.card
     val building = card?.run { found.building }
     val floor = plan?.takeIf { it.building == building }?.floor
     val markers = floor?.let { card?.markersOn(it) }.orEmpty()
-    return base.copy(entrance = pin, barrier = barrierId, plan = plan, roomSteps = markers)
+    return base.copy(entrance = pin, barrier = barrierId, plan = plan, roomSteps = markers, barrierCaption = barrierCaption)
 }
 
 private fun SignSheetState.signTouch(

@@ -38,11 +38,12 @@ internal fun BarrierDescriptions(
     barriers: ShownBarriers,
     modifier: Modifier = Modifier,
     planBuilding: String? = null,
+    selected: String? = null,
 ) {
     Column(modifier) {
         barriers.barriers.forEach { barrier ->
             key(barrier.id) {
-                val text = barrierName(barrier = barrier, planBuilding = planBuilding)
+                val text = barrierName(barrier = barrier, planBuilding = planBuilding, isSelected = barrier.id == selected)
                 Spacer(Modifier.size(NodeSize).semantics { contentDescription = text })
             }
         }
@@ -50,10 +51,11 @@ internal fun BarrierDescriptions(
 }
 
 @Composable
-private fun barrierName(barrier: AcceptedBarrier, planBuilding: String?): String {
+private fun barrierName(barrier: AcceptedBarrier, planBuilding: String?, isSelected: Boolean): String {
     val severity = stringResource(barrier.severity.nameRes())
     val type = barrier.type?.run { stringResource(nameRes()).replaceFirstChar(Char::lowercaseChar) }
-    val what = if (type == null) severity else stringResource(R.string.mapa_bariera_typ, severity, type)
+    val typeFormat = if (isSelected) R.string.mapa_wybrana_bariera_typ else R.string.mapa_bariera_typ
+    val what = if (type == null) severity else stringResource(typeFormat, severity, type)
     val symbol = barrier.buildingSymbol
     val place =
         if (symbol == null) {
@@ -63,9 +65,17 @@ private fun barrierName(barrier: AcceptedBarrier, planBuilding: String?): String
         }
     val isUnknownFloorOnPlan =
         planBuilding != null && symbol == planBuilding && barrier.floor?.floorId == null
-    return if (isUnknownFloorOnPlan) {
+    val name = if (isUnknownFloorOnPlan) {
         stringResource(R.string.mapa_bariera_pietro_nieznane, place)
     } else {
         place
     }
+    return if (isSelected) stringResource(R.string.mapa_zaznaczona_bariera, name) else name
 }
+
+/** Podpis bariery [id] z jej typem, jeśli bariera jest wśród [this]. */
+@Composable
+internal fun ShownBarriers.caption(id: String?): String? =
+    barriers.firstOrNull { it.id == id }?.let {
+        stringResource(it.type?.nameRes() ?: R.string.mapa_bariera_bez_typu)
+    }

@@ -48,22 +48,12 @@ internal fun barrierSignImage(severity: Severity): String = "bariera_${severity.
 /** Nazwa obrazu znaku bariery o uciążliwości [severity] bez piętra na planie. Wymagania: US16.1, BR-14 */
 internal fun barrierNoFloorImage(severity: Severity): String = "bariera_bez_pietra_${severity.name}"
 
-/** Nazwa obrazu wyróżnionego znaku wybranej bariery o uciążliwości [severity]. Wymagania: NFR-21 */
-internal fun chosenBarrierImage(severity: Severity): String = "bariera_wybrana_${severity.name}"
-
-/** Nazwa obrazu wyróżnionego znaku bariery [severity] bez piętra na planie. Wymagania: US16.1, BR-14 */
-internal fun chosenNoFloorImage(severity: Severity): String = "bariera_wybrana_bez_pietra_${severity.name}"
-
 /** Nazwa obrazu słowa uciążliwości [severity] obok znaku bariery. */
 internal fun barrierWordImage(severity: Severity): String = "bariera_slowo_${severity.name}"
 
 /** Wyrażenie obrazu warstwy [BARRIERS_LAYER] dla planu budynku [planBuilding]. Wymagania: US16.1, BR-14 */
 internal fun barrierSignsImage(planBuilding: String?): JsonElement =
     barrierImage(planBuilding = planBuilding, regular = ::barrierSignImage, noFloor = ::barrierNoFloorImage)
-
-/** Wyrażenie obrazu warstwy [CHOSEN_BARRIER_LAYER] dla planu budynku [planBuilding]. Wymagania: US16.1, BR-14 */
-internal fun chosenSignsImage(planBuilding: String?): JsonElement =
-    barrierImage(planBuilding = planBuilding, regular = ::chosenBarrierImage, noFloor = ::chosenNoFloorImage)
 
 private fun barrierImage(
     planBuilding: String?,
